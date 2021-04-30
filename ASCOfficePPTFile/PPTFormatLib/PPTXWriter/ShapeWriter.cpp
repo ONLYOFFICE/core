@@ -690,6 +690,7 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
 	}
 	m_oWriter.WriteString(std::wstring(L">"));
 
+
 	if (pVideoElement || pAudioElement)
 	{
 		m_oWriter.WriteString(std::wstring(L"<a:hlinkClick r:id=\"\" action=\"ppaction://media\"/>"));
@@ -888,6 +889,7 @@ void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
 		m_oWriter.WriteString(std::wstring(L"\""));
 	}
 	m_oWriter.WriteString(std::wstring(L">"));
+    WriteButton();
 	if (!pShapeElement->m_sHyperlink.empty())
 	{
         std::wstring rId = m_pRels->WriteHyperlink(pShapeElement->m_sHyperlink);
@@ -1680,6 +1682,82 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertGroup()
 	pGroupElement = NULL;
 
 	return m_oWriter.GetData();
+}
+
+void PPT_FORMAT::CShapeWriter::WriteButton()
+{
+    CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
+    if (!pShapeElement) return;
+
+    auto& actions = pShapeElement->m_arrActions;
+    for (unsigned i = 0; i < actions.size(); i++)
+    {
+        if (actions[i].m_eActivation == CInteractiveInfo::click)
+            m_oWriter.WriteString(std::wstring(L"<a:hlinkClick r:id=\"\" action=\"ppaction://"));
+        else
+            m_oWriter.WriteString(std::wstring(L"<a:hlinkHover r:id=\"\" action=\"ppaction://"));
+
+        switch (actions[i].m_lType)
+        {
+        case II_NoAction:
+        {
+            m_oWriter.WriteString(std::wstring(L"noaction\""));
+            break;
+        }
+        case II_JumpAction:
+        {
+            m_oWriter.WriteString(std::wstring(L"hlinkshowjump?jump="));
+            std::wstring strJump;
+            switch (actions[i].m_lJump)
+            {
+            case II_NextSlide:
+            {
+                strJump = L"nextslide";
+                break;
+            }
+            case II_PreviousSlide:
+            {
+                strJump = L"previousslide";
+                break;
+            }
+            case II_FirstSlide:
+            {
+                strJump = L"firstslide";
+                break;
+            }
+            case II_LastSlide:
+            {
+                strJump = L"lastslide";
+                break;
+            }
+            case II_LastSlideViewed:
+            {
+                strJump = L"lastslideviewed";
+                break;
+            }
+            case II_EndShow:
+            {
+                strJump = L"endshow";
+                break;
+            }
+            }
+            strJump += L"\"";
+            m_oWriter.WriteString(strJump);
+            break;
+        }
+//        case II_HyperlinkAction:
+//        {
+
+//            break;
+//        }
+        default:
+            m_oWriter.WriteString(std::wstring(L"noaction\""));
+        }
+        if (actions[i].m_eActivation == CInteractiveInfo::click)
+            m_oWriter.WriteString(std::wstring(L" highlightClick=\"1\"/>"));
+        else
+            m_oWriter.WriteString(std::wstring(L"/>"));
+    }
 }
 
 // TODO! Not work correct

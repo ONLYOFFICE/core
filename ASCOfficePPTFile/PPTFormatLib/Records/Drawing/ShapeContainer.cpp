@@ -1895,6 +1895,9 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
         std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
         GetRecordsByType(&oArrayInteractive, true, false);
+        if (oArrayInteractive.size() == 2)
+            oArrayInteractive[1]->m_oHeader.RecInstance = 1;
+
         for (auto const* interactiveAtom : oArrayInteractive)
         {
             CInteractiveInfo interactiveInfo;
@@ -1930,6 +1933,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
         std::vector<CRecordTextInteractiveInfoAtom*> oArrayTextInteractive;
         this->GetRecordsByType(&oArrayTextInteractive, true);
+
         if (!oArrayTextInteractive.empty())
         {
             pShapeElem->m_oTextActions.m_bPresent = true;

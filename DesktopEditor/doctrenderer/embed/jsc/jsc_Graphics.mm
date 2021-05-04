@@ -75,7 +75,6 @@
 -(JSValue*)RemoveClipRect;
 -(JSValue*)SetClip : (JSValue*)x : (JSValue*)y : (JSValue*)w : (JSValue*)h;
 -(JSValue*)RemoveClip;
--(JSValue*)drawCollaborativeChanges : (JSValue*)x : (JSValue*)y : (JSValue*)w : (JSValue*)h : (JSValue*)r : (JSValue*)g : (JSValue*)b : (JSValue*)a;
 -(JSValue*)drawMailMergeField : (JSValue*)x : (JSValue*)y : (JSValue*)w : (JSValue*)h;
 -(JSValue*)drawSearchResult : (JSValue*)x : (JSValue*)y : (JSValue*)w : (JSValue*)h;
 -(JSValue*)drawFlowAnchor : (JSValue*)x : (JSValue*)y;
@@ -203,7 +202,6 @@ FUNCTION_WRAPPER_JS_4(AddClipRect, AddClipRect)
 FUNCTION_WRAPPER_JS (RemoveClipRect, RemoveClipRect)
 FUNCTION_WRAPPER_JS_4(SetClip, SetClip)
 FUNCTION_WRAPPER_JS(RemoveClip, RemoveClip)
-FUNCTION_WRAPPER_JS_8(drawCollaborativeChanges, drawCollaborativeChanges)
 FUNCTION_WRAPPER_JS_4(drawMailMergeField, drawMailMergeField)
 FUNCTION_WRAPPER_JS_4(drawSearchResult, drawSearchResult)
 FUNCTION_WRAPPER_JS_2(drawFlowAnchor, drawFlowAnchor)

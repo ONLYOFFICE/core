@@ -155,6 +155,8 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
             NSFile::CFileBinary::Remove(strFontsSelectionBin);
         if (NSFile::CFileBinary::Exists(m_sDirectory + L"/fonts_thumbnail.png"))
             NSFile::CFileBinary::Remove(m_sDirectory + L"/fonts_thumbnail.png");
+        if (NSFile::CFileBinary::Exists(m_sDirectory + L"/fonts_thumbnail@1.5x.png"))
+            NSFile::CFileBinary::Remove(m_sDirectory + L"/fonts_thumbnail@1.5x.png");
         if (NSFile::CFileBinary::Exists(m_sDirectory + L"/fonts_thumbnail@2x.png"))
             NSFile::CFileBinary::Remove(m_sDirectory + L"/fonts_thumbnail@2x.png");
         

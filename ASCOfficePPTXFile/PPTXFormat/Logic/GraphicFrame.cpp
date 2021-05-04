@@ -332,7 +332,14 @@ namespace PPTX
 					else if (L"chart" == strName)
 					{
 						chartRec = oNode;
-						result = true;
+
+						if (chartRec.IsInit())
+						{
+							if (false == chartRec->m_bChartEx)
+								result = true;
+							else
+								chartRec.reset();
+						}
 					}
 					else if (L"slicer" == strName)
 					{

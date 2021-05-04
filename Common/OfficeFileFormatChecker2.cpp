@@ -31,7 +31,7 @@
  */
 #include "OfficeFileFormatChecker.h"
 
-#include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/common/Directory.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
 
 //#if defined FILE_FORMAT_CHECKER_WITH_MACRO
@@ -498,14 +498,24 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 
 	return false;
 }
-bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
+bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName, bool unpacked)
 {
 	COfficeUtils OfficeUtils(NULL);
 	
 	ULONG nBufferSize = 0;
 	BYTE *pBuffer = NULL;
 
-	HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"[Content_Types].xml", &pBuffer, nBufferSize);
+	HRESULT hresult = S_FALSE;
+	
+	if (unpacked)
+	{
+		if (NSFile::CFileBinary::ReadAllBytes(fileName + FILE_SEPARATOR_STR + L"[Content_Types].xml", &pBuffer, nBufferSize))
+			hresult = S_OK;
+	}
+	else
+	{
+		hresult = OfficeUtils.LoadFileFromArchive(fileName, L"[Content_Types].xml", &pBuffer, nBufferSize);
+	}
 	if (hresult == S_OK && pBuffer != NULL)
 	{
 

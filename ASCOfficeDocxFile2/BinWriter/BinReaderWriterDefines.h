@@ -754,7 +754,8 @@ extern int g_nCurFormatVersion;
 		Value = 0,
 		Color = 1,
 		ColorTheme = 2,
-		Fill = 3
+		Fill = 3,
+		FillTheme = 4
 	};}
 	namespace c_oSerPaddingType{enum c_oSerPaddingType
 	{

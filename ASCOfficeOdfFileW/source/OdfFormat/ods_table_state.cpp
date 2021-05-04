@@ -1660,7 +1660,13 @@ void ods_table_state::start_conditional_rule(int rule_type)
 				boost::algorithm::split(splitted, test, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 				cell = splitted[0];
 
-				condition->attr_.calcext_base_cell_address_ = table + cell;
+				std::wstring col, row;
+
+				utils::splitCellAddress(cell, col, row);
+				if (col.empty()) col = L".A";
+				if (row.empty()) row = L"1";
+
+				condition->attr_.calcext_base_cell_address_ = table + col + row;
 			}
 			switch(rule_type)
 			{

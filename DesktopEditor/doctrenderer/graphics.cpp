@@ -1206,11 +1206,33 @@ void CGraphics::put_brushTexture(std::wstring src, int type)
     else
     {
         std::wstring strImage = (0 == src.find(L"theme") ? m_sApplicationThemesDirectory : m_sApplicationImagesDirectory) + L'/' + src;
+        std::wstring sName = strImage.substr(0, strImage.rfind(L'.') + 1);
+        std::wstring sExt = src.substr(src.rfind(L'.') + 1);
+        if (sExt == L"svg")
+        {
+            if (NSFile::CFileBinary::Exists(sName + L"wmf") && src.find(L"display") == 0)
+                strImage = sName + L"wmf";
+            else if (NSFile::CFileBinary::Exists(sName + L"emf") && src.find(L"display") == 0)
+                strImage = sName + L"emf";
+
+            MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pApplicationFonts);
+            pMetafile->LoadFromFile(strImage.c_str());
+
+            double x = 0, y = 0, w = 0, h = 0;
+            pMetafile->GetBounds(&x, &y, &w, &h);
+
+            sName += L"png";
+            pMetafile->ConvertToRaster(sName.c_str(), 4, 1000);
+
+            RELEASEOBJECT(pMetafile);
+        }
+        else
+            sName += sExt;
         #ifdef _DEBUG
-        std::wcout << L"put_brushTexture " << strImage << L"  " << type << std::endl;
+        std::wcout << L"put_brushTexture " << sName << L"  " << type << std::endl;
         #endif
         m_pRenderer->put_BrushType(c_BrushTypeTexture);
-        m_pRenderer->put_BrushTexturePath(strImage);
+        m_pRenderer->put_BrushTexturePath(sName);
         m_pRenderer->put_BrushTextureMode(type);
     }
 }

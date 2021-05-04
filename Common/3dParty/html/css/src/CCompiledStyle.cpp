@@ -999,7 +999,7 @@ namespace NSCSS
 
                 size_t nPosGrid = sValueTemp.find(L'#');
 
-                if (nPosGrid != std::wstring::npos || !NS_STATIC_FUNCTIONS::ThereIsNumber(sValueTemp))
+                if (nPosGrid != std::wstring::npos || !NS_STATIC_FUNCTIONS::NumberInWString(sValueTemp))
                 {
                     if (!NS_STATIC_FUNCTIONS::ConvertAbsoluteValue(sValueTemp, fPreviousValue))
                     {

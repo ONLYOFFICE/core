@@ -344,7 +344,10 @@ public:
     BYTE SetShade(BYTE bShade)
 	{
 		m_byteShade = bShade;
-        //return (BYTE)( ( 1.0 - m_byteShade / 255 ) * bColor );
+		double dH, dS, dL;
+		GetHSL(dH, dS, dL);
+		dL = dL * bShade / 255.;
+		SetHSL(dH, dS, dL);
 		return bShade;
 	}
 	BYTE SetTint(BYTE bTint)

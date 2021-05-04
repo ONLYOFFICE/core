@@ -313,6 +313,10 @@ int Binary_CommonReader2::ReadShd(BYTE type, long length, void* poResult)
 		pShd->bFill = true;
 		pShd->Fill = ReadColor();
 		break;
+	case c_oSerShdType::FillTheme:
+		pShd->bThemeFill = true;
+		ReadThemeColor(length, pShd->ThemeFill);
+		break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;

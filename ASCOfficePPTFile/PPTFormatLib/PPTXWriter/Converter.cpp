@@ -1110,9 +1110,14 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
         start_index = 1;
     }
 
+    // I don't know: why do u need to write empty text box for footer and date
+    // If it exist he write it as shape.
     for (size_t i = start_index; i < pSlide->m_arElements.size(); ++i)
     {
-        WriteElement(oWriter, oRels, pSlide->m_arElements[i]);
+        auto pElement = pSlide->m_arElements[i];
+        auto type = pElement.get()->m_lPlaceholderType;
+        if (type != 7 && type != 9) // to fix date and footer empty box
+            WriteElement(oWriter, oRels, pElement);
     }
 
     oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
@@ -1172,7 +1177,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
         {
             type		= L"p:blinds";
             param_name	= L"dir";
-            param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
+            param_value = transition.m_nEffectDirection ? L"horz" : L"vert";
         }break;
     case 3:
         {
@@ -1222,10 +1227,10 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
             param_name	= L"dir";
             switch(transition.m_nEffectDirection)
             {
-                case 0:	param_value = L"ru"; break;
-                case 1:	param_value = L"lu"; break;
-                case 2:	param_value = L"rd"; break;
-                case 3:	param_value = L"ld"; break;
+                case 5:	param_value = L"ru"; break;
+                case 4:	param_value = L"lu"; break;
+                case 7:	param_value = L"rd"; break;
+                case 6:	param_value = L"ld"; break;
             }
         }break;
     case 10:
@@ -1339,7 +1344,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
         bool bExternal = false;
         std::wstring rId = m_pShapeWriter->m_pRels->WriteAudio(transition.m_oAudio.m_strAudioFileName, bExternal);
         oWriter.WriteString(std::wstring(L"<p:sndAc><p:stSnd>"));
-        oWriter.WriteString(L"<p:snd r:embed=\"" + rId + L"\" name=\"" + transition.m_oAudio.m_sImageName + L"\"/>");
+        oWriter.WriteString(L"<p:snd r:embed=\"" + rId + L"\" name=\"" + XmlUtils::EncodeXmlString(transition.m_oAudio.m_sImageName) + L"\"/>");
         oWriter.WriteString(std::wstring(L"</p:stSnd></p:sndAc>"));
     }
     oWriter.WriteString(std::wstring(L"</p:transition>"));
@@ -1472,6 +1477,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator
         oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
     }
 
+    animation.setNextRId(oRels.getNextRId());
     animation.Convert(oTiming);
     oWriter.WriteString(oTiming.toXML());
     //oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));

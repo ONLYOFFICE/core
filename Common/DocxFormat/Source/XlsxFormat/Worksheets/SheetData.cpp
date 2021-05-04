@@ -1761,6 +1761,14 @@ namespace OOX
 				}
 			WritingElement_ReadAttributes_EndChar( oReader )
 		}
+		void CSheetData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"ss:StyleID", m_sStyleID)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:DefaultColumnWidth", m_dDefaultColumnWidth)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:DefaultRowHeight", m_dDefaultRowHeight)
+			WritingElement_ReadAttributes_End(oReader)
+		}
 		void CSheetData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -1846,6 +1854,28 @@ namespace OOX
 							pColumn->m_oMax.Init();
 							pColumn->m_oMax->SetValue(pWorksheet->m_oCols->m_arrItems.size());
 						}
+					}
+				}
+				if (xlsx_flat)
+				{
+					CWorksheet* pWorksheet = xlsx_flat->m_arWorksheets.back();
+
+					if (false == pWorksheet->m_oCols.IsInit() && m_dDefaultColumnWidth.IsInit())
+					{
+						pWorksheet->m_oCols.Init();
+						
+						CCol *pColumn = new CCol(m_pMainDocument);
+
+						pColumn->m_oMin = 1;
+						pColumn->m_oMax = 16384;
+
+						double pixDpi = *m_dDefaultColumnWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
+						double maxDigitSize = 1;
+
+						pColumn->m_oWidth.Init();
+						pColumn->m_oWidth->SetValue((int((pixDpi /*/ 0.75*/ - 5) / maxDigitSize * 100. + 0.5)) / 100. * 0.9);
+
+						pWorksheet->m_oCols->m_arrItems.push_back(pColumn);
 					}
 				}
 			}
@@ -2096,8 +2126,14 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 							
 							r1c1_formula_convert convert;
 
+							std::wstring ref = convert.convert(oReader.GetText2());;
+
 							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());							
-							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = convert.convert(oReader.GetText2());
+							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = ref;
+
+							size_t pos_split = ref.find(L":");
+							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell =
+								pos_split != std::wstring::npos ? ref.substr(0, pos_split) : ref;
 						}
 					}
 					if (col.IsInit() && row.IsInit())
@@ -2106,6 +2142,7 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());
 
 						m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell = getCellAddress(*row + 1, *col + 1);
+						
 						if (false == m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref.IsInit())
 						{
 							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell;

@@ -18,6 +18,7 @@ core_android {
 core_ios {
 
     INCLUDEPATH += \
+        $$PWD/../ixwebsocket/IXWebSocket/build/ios/openssl-universal/include \
 
     LIBS        += \
         $$PWD/../openssl/build/ios/openssl-universal/lib/libcrypto.a \
@@ -29,26 +30,33 @@ core_ios {
 core_linux {
 
     INCLUDEPATH += \
-        $$PWD/../ixwebsocket/IXWebSocket/build/linux_64/include \
+        $$PWD/../ixwebsocket/IXWebSocket/build/linux/$$CORE_BUILDS_PLATFORM_PREFIX/include \
   
-    LIBS +=  $$PWD/../ixwebsocket/IXWebSocket/build/linux_64/lib/libixwebsocket.a
-    LIBS += $$PWD/../openssl/build/linux_64/lib/libssl.a
-    LIBS += $$PWD/../openssl/build/linux_64/lib/libcrypto.a
+    LIBS +=  $$PWD/../ixwebsocket/IXWebSocket/build/linux/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libixwebsocket.a
+    LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libssl.a
+    LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libcrypto.a
 
 }
 
 core_mac {
-    
+
+    INCLUDEPATH += \
+        $$PWD/../ixwebsocket/IXWebSocket/build/mac/$$CORE_BUILDS_PLATFORM_PREFIX/include \
+
+    LIBS        += \
+        $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libcrypto.a \
+        $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libssl.a \
+        $$PWD/../ixwebsocket/IXWebSocket/build/mac/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libixwebsocket.a \
 }
 
 core_windows {
 
  INCLUDEPATH += \
-        $$PWD/../ixwebsocket/IXWebSocket/build/win_64/include \
+        $$PWD/../ixwebsocket/IXWebSocket/build/windows/$$CORE_BUILDS_PLATFORM_PREFIX/include \
   
-    LIBS += $$PWD/../ixwebsocket/IXWebSocket/build/win_64/lib/ixwebsocket.lib
-    LIBS += $$PWD/../openssl/build/win_64/lib/libssl.lib
-    LIBS += $$PWD/../openssl/build/win_64/lib/libcrypto.lib
+    LIBS += $$PWD/../ixwebsocket/IXWebSocket/build/windows/$$CORE_BUILDS_PLATFORM_PREFIX/lib/ixwebsocket.lib
+    LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libssl.lib
+    LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libcrypto.lib
 	LIBS += -lwsock32
 	LIBS += -lws2_32
 	LIBS += -lIphlpapi

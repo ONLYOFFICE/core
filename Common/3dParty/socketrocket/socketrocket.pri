@@ -1,17 +1,13 @@
 core_ios {
 
-    INCLUDEPATH += \
-    	$$PWD/../socketrocket \
+    INCLUDEPATH += $$PWD
 
-    LIBS        += \
-    	$$PWD/../socketrocket/build/ios/lib/libSoсketRocket.a \
+    LIBS += $$PWD/build/ios/lib/libSoсketRocket.a
 }
 
 core_mac {
 
-    INCLUDEPATH += \
-    	$$PWD/../socketrocket \
+    INCLUDEPATH += $$PWD 
 
-    LIBS        += \
-    	$$PWD/../socketrocket/build/ios/lib/libSoсketRocket.a \
+    LIBS += $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libSoсketRocket.a
 }

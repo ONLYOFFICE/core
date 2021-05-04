@@ -1,1 +1,1 @@
-CONFIG += ixwebsocket
+CONFIG += socketrocket

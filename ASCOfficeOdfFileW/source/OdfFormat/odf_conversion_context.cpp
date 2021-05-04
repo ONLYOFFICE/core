@@ -153,7 +153,7 @@ void odf_conversion_context::end_document()
 		package::object_files *object_files =  new package::object_files();
 		if (object_files)
 		{
-			object_files->set_content	(content_root_);
+			object_files->set_content	(content_root_, object.content_ext);
 			object_files->set_styles	(content_style_);
 			object_files->set_mediaitems(object.mediaitems);
 			object_files->set_settings	(content_settings_);
@@ -209,10 +209,11 @@ void odf_conversion_context::start_presentation()
 
 	create_element(L"office", L"scripts", objects_.back().scripts, this);
 }
-void odf_conversion_context::create_object()
+void odf_conversion_context::create_object(bool bAddContentExt)
 {
 	_object obj;
 	
+	obj.content_ext			= bAddContentExt;
 	obj.style_context		= boost::make_shared<odf_style_context>();
 	obj.settings_context	= boost::make_shared<odf_settings_context>();
 	
@@ -236,7 +237,7 @@ bool odf_conversion_context::start_math()
 {
 	if (false == math_context_.isEmpty()) return false;
 
-	create_object();
+	create_object(false);
 	create_element(L"math", L"math", objects_.back().content, this, true);
 
 	drawing_context()->start_drawing();

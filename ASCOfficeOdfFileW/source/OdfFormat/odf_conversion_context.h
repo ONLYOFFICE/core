@@ -80,6 +80,8 @@ class odf_conversion_context : boost::noncopyable
 		_mediaitems							mediaitems;
 	
 		boost::unordered_map<std::wstring, int> mapFonts;
+
+		bool content_ext = true;
 	};
 
 public:
@@ -134,7 +136,7 @@ public:
 	void start_presentation();
 	void end_presentation();
 
-	void create_object();
+	void create_object(bool bAddContentExt = true);
 	void end_object();
 
 	std::wstring			get_next_name_object();

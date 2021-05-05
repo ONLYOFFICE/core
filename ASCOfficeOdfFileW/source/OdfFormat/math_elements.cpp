@@ -75,6 +75,8 @@ void office_math::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{			
+			CP_XML_ATTR(L"xmlns", L"http://www.w3.org/1998/Math/MathML");
+			
 			semantics_->serialize(CP_XML_STREAM());
 		}
 	}

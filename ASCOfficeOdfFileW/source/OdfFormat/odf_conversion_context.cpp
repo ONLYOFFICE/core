@@ -174,7 +174,22 @@ void odf_conversion_context::end_document()
 			}
 			else
 			{
-				rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.") + object.content->get_name(), object_files->local_path));
+				switch (object.content->get_type())
+				{
+				case typeOfficeText:
+					rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.text"), object_files->local_path)); break;
+				case typeOfficeSpreadsheet:
+					rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.spreadsheet"), object_files->local_path)); break;
+				case typeOfficePresentation:
+					rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.presentation"), object_files->local_path)); break;
+				case typeOfficeChart:
+					rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.chart"), object_files->local_path)); break;
+				case typeMath:
+					rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.formula"), object_files->local_path)); break;
+				default:
+					rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.") + object.content->get_name(), object_files->local_path));
+					break;
+				}
 			}
 
 			output_document_->add_object(package::element_ptr(object_files), isRoot);
@@ -237,12 +252,12 @@ bool odf_conversion_context::start_math()
 {
 	if (false == math_context_.isEmpty()) return false;
 
-	create_object(false);
-	create_element(L"math", L"math", objects_.back().content, this, true);
-
 	drawing_context()->start_drawing();
 	drawing_context()->start_object(get_next_name_object()); //имитация рисованного объекта - высота-ширина ????
 
+	create_object(false);
+	create_element(L"math", L"math", objects_.back().content, this, true);
+	
 	math_context_.set_styles_context(odf_conversion_context::styles_context());
 	math_context_.start_math(get_current_object_element());
 

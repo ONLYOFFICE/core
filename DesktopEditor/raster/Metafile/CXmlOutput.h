@@ -7,6 +7,12 @@
 
 namespace MetaFile
 {
+    enum TypeXmlOutput
+    {
+        IsWriter = 0,
+        IsReader = 1
+    };
+
     struct XmlArgument
     {
         std::wstring wsName;
@@ -24,8 +30,15 @@ namespace MetaFile
     class CXmlOutput
     {
     public:
-        CXmlOutput();
+        CXmlOutput(TypeXmlOutput oTypeXmlOutput);
         ~CXmlOutput();
+
+        void Clear();
+
+        bool IsWriter();
+        bool IsReader();
+
+        // Запись в Xml файл
 
         void WriteString(const std::wstring& wsValue);
 
@@ -74,7 +87,7 @@ namespace MetaFile
         void WriteNode(const std::wstring& wsNameNode,  const CEmfLogPalette&           oNodeValue, std::vector<XmlArgument> arArguments = {});
 
     private:
-        XmlUtils::CXmlWriter m_oXmlWriter;
+        XmlUtils::CXmlWriter        *m_pXmlWriter;
 
         void WriteTXForm                (const TXForm&                  oTXForm);
 
@@ -98,6 +111,38 @@ namespace MetaFile
         void WriteEmfLogFont            (      CEmfLogFont&             oEmfLogFont);
         void WriteEmfLogPen             (const CEmfLogPen&              oEmfLogPen);
         void WriteEmfLogPalette         (const CEmfLogPalette&          oEmfLogPalette);
+
+        // Чтение из Xml файла
+
+    public:
+        bool ReadFromFile(const std::wstring wsPathToFile);
+        void ReadArguments(unsigned int &unType,
+                           unsigned int &unSize);
+        void ReadNextRecord();
+
+        void operator>>(TEmfHeader&     oTEmfHeader);
+        void operator>>(TEmfAlphaBlend& oTEmfAlphaBlend);
+        void operator>>(CEmfLogBrushEx& oCEmfLogBrushEx);
+        void operator>>(TEmfBitBlt&     oTEmfBitBlt);
+        void operator>>(CEmfLogFont     &oCEmfLogFont);
+
+        void operator>>(TXForm&         oTXForm);
+        void operator>>(TEmfColor&      oTEmfColor);
+
+        void operator>>(unsigned int&   unValue);
+
+    private:
+        XmlUtils::CXmlLiteReader    *m_pXmlLiteReader;
+
+        void operator>>(TEmfRectL&      oTEmfRectL);
+        void operator>>(TEmfSizeL&      oTEmfSizeL);
+        void operator>>(TRect&          oTRect);
+
+        void operator>>(int&            nValue);
+        void operator>>(double&         dValue);
+        void operator>>(unsigned short& ushValue);
+        void operator>>(unsigned char&  ucValue);
+
     };
 }
 #endif // CXMLOUTPUT_H

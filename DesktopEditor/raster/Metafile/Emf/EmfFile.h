@@ -64,9 +64,9 @@ namespace MetaFile
 				delete m_pOutputXml;
 		}
 
-		void CreateOutputXml()
+		void CreateOutputXml(TypeXmlOutput oTypeXmlOutput)
 		{
-			m_pOutputXml = new CXmlOutput;
+			m_pOutputXml = new CXmlOutput(oTypeXmlOutput);
 		}
 
 		TEmfRectL* GetBounds()

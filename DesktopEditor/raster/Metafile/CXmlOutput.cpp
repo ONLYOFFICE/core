@@ -1,6 +1,10 @@
 #include "CXmlOutput.h"
 #include "../../common/Base64.h"
 
+#ifdef _DEBUG
+    #include <iostream>
+#endif
+
 namespace MetaFile
 {
     std::wstring StringNormalization(std::wstring wsString)
@@ -23,20 +27,47 @@ namespace MetaFile
         return wsText;
     }
 
-    CXmlOutput::CXmlOutput()
-    {}
+    CXmlOutput::CXmlOutput(TypeXmlOutput oTypeXmlOutput) :
+        m_pXmlWriter    (NULL),
+        m_pXmlLiteReader(NULL)
+    {
+        if (oTypeXmlOutput == TypeXmlOutput::IsWriter)
+            m_pXmlWriter = new XmlUtils::CXmlWriter;
+        else if (oTypeXmlOutput == TypeXmlOutput::IsReader)
+            m_pXmlLiteReader = new XmlUtils::CXmlLiteReader;
+    }
 
     MetaFile::CXmlOutput::~CXmlOutput()
-    {}
+    {
+        Clear();
+    }
+
+    void CXmlOutput::Clear()
+    {
+        if (NULL != m_pXmlWriter)
+            delete m_pXmlWriter;
+        else if (NULL != m_pXmlLiteReader)
+            delete m_pXmlLiteReader;
+    }
+
+    bool CXmlOutput::IsWriter()
+    {
+        return NULL != m_pXmlWriter;
+    }
+
+    bool CXmlOutput::IsReader()
+    {
+        return NULL != m_pXmlLiteReader;
+    }
 
     void CXmlOutput::WriteString(const std::wstring &wsValue)
     {
-        m_oXmlWriter.WriteString(wsValue);
+        m_pXmlWriter->WriteString(wsValue);
     }
 
     void CXmlOutput::SaveToFile(const std::wstring &wsPathToFile)
     {
-        m_oXmlWriter.SaveToFile(wsPathToFile);
+        m_pXmlWriter->SaveToFile(wsPathToFile);
     }
 
     void CXmlOutput::WriteNodeBegin(const std::wstring &wsNameNode, std::vector<XmlArgument> arArguments)
@@ -44,30 +75,30 @@ namespace MetaFile
         if (wsNameNode.empty())
             return;
 
-        m_oXmlWriter.WriteNodeBegin(wsNameNode, !arArguments.empty());
+        m_pXmlWriter->WriteNodeBegin(wsNameNode, !arArguments.empty());
 
         if (!arArguments.empty())
         {
             for (unsigned int i = 0; i < arArguments.size(); ++i)
                 WriteAttribute(arArguments[i].wsName, arArguments[i].wsValue);
 
-            m_oXmlWriter.WriteNodeEnd(wsNameNode, true, false);
+            m_pXmlWriter->WriteNodeEnd(wsNameNode, true, false);
         }
     }
 
     void CXmlOutput::WriteAttribute(const std::wstring &wsNameAttribute, const std::wstring &wsValue)
     {
-        m_oXmlWriter.WriteAttribute(wsNameAttribute, wsValue);
+        m_pXmlWriter->WriteAttribute(wsNameAttribute, wsValue);
     }
 
     void CXmlOutput::WriteAttribute(const std::wstring &wsNameAttribute, unsigned int unValue)
     {
-        m_oXmlWriter.WriteAttribute(wsNameAttribute, std::to_wstring(unValue));
+        m_pXmlWriter->WriteAttribute(wsNameAttribute, std::to_wstring(unValue));
     }
 
     void CXmlOutput::WriteAttribute(const std::wstring &wsNameAttribute, int nValue)
     {
-        m_oXmlWriter.WriteAttribute(wsNameAttribute, nValue);
+        m_pXmlWriter->WriteAttribute(wsNameAttribute, nValue);
     }
 
     void CXmlOutput::WriteNodeEnd(const std::wstring &wsNameAttribute, bool bEmptyNode, bool bEndNode)
@@ -75,17 +106,17 @@ namespace MetaFile
         if (wsNameAttribute.empty())
             return;
 
-        m_oXmlWriter.WriteNodeEnd(wsNameAttribute, bEmptyNode, bEndNode);
+        m_pXmlWriter->WriteNodeEnd(wsNameAttribute, bEmptyNode, bEndNode);
     }
 
     void CXmlOutput::WriteNode(const std::wstring& wsNameNode, const std::wstring& wsValueNode)
     {
-        m_oXmlWriter.WriteNode(wsNameNode, wsValueNode);
+        m_pXmlWriter->WriteNode(wsNameNode, wsValueNode);
     }
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, unsigned short usValueNode)
     {
-        m_oXmlWriter.WriteNode(wsNameNode, std::to_wstring(usValueNode));
+        m_pXmlWriter->WriteNode(wsNameNode, std::to_wstring(usValueNode));
     }
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, unsigned char ucValueNode)
@@ -95,7 +126,7 @@ namespace MetaFile
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, unsigned int unValueNode)
     {
-        m_oXmlWriter.WriteNode(wsNameNode, std::to_wstring(unValueNode));
+        m_pXmlWriter->WriteNode(wsNameNode, std::to_wstring(unValueNode));
     }
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const BYTE *pValueNode, unsigned int unSizeValue)
@@ -105,29 +136,29 @@ namespace MetaFile
 
         NSBase64::Base64Encode(pValueNode, unSizeValue, ucValue, &nSize);
         std::wstring wsValue(ucValue, ucValue + nSize);
-        m_oXmlWriter.WriteNode(wsNameNode, wsValue);
+        m_pXmlWriter->WriteNode(wsNameNode, wsValue);
 
         delete[] ucValue;
     }
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, double dValueNode)
     {
-        m_oXmlWriter.WriteNode(wsNameNode, dValueNode);
+        m_pXmlWriter->WriteNode(wsNameNode, dValueNode);
     }
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, short shValueNode)
     {
-        m_oXmlWriter.WriteNode(wsNameNode, std::to_wstring(shValueNode));
+        m_pXmlWriter->WriteNode(wsNameNode, std::to_wstring(shValueNode));
     }
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, int nValueNode)
     {
-        m_oXmlWriter.WriteNode(wsNameNode, nValueNode);
+        m_pXmlWriter->WriteNode(wsNameNode, nValueNode);
     }
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, std::vector<XmlArgument> arArguments)
     {
-        m_oXmlWriter.WriteNodeBegin(wsNameNode, true);
+        m_pXmlWriter->WriteNodeBegin(wsNameNode, true);
 
         if (!arArguments.empty())
         {
@@ -135,7 +166,7 @@ namespace MetaFile
                 WriteAttribute(arArguments[i].wsName, arArguments[i].wsValue);
         }
 
-        m_oXmlWriter.WriteNodeEnd(wsNameNode, true, true);
+        m_pXmlWriter->WriteNodeEnd(wsNameNode, true, true);
 
     }
 
@@ -552,7 +583,194 @@ namespace MetaFile
 		WriteNode(L"Green",	oEmfLogPalette.PaletteEntries[i].Green);
 		WriteNode(L"Red",	oEmfLogPalette.PaletteEntries[i].Red);
 		WriteNodeEnd(L"LogPaletteEntry" + std::to_wstring(i + 1));
-	}
+	    }
+    }
+
+    bool CXmlOutput::ReadFromFile(const std::wstring wsPathToFile)
+    {
+        if (m_pXmlLiteReader->FromFile(wsPathToFile))
+        {
+            m_pXmlLiteReader->ReadNextNode();
+
+            if (m_pXmlLiteReader->GetName() != L"EMF")
+                return false;
+
+            m_pXmlLiteReader->ReadNextSiblingNode(0);
+            return true;
+        }
+        return false;
+    }
+
+    void CXmlOutput::ReadArguments(unsigned int &unType, unsigned int &unSize)
+    {
+        if (m_pXmlLiteReader->GetAttributesCount() == 2)
+        {
+            m_pXmlLiteReader->MoveToFirstAttribute();
+            if (m_pXmlLiteReader->GetName() == L"Id")
+                unType = stoi(m_pXmlLiteReader->GetAttributeTextWithHHHH());
+
+            m_pXmlLiteReader->MoveToNextAttribute();
+            if (m_pXmlLiteReader->GetName() == L"Size")
+                unSize = stoi(m_pXmlLiteReader->GetAttributeTextWithHHHH());
+            m_pXmlLiteReader->MoveToElement();
+        }
+    }
+
+    void CXmlOutput::ReadNextRecord()
+    {
+        m_pXmlLiteReader->ReadNextSiblingNode(0);
+    }
+
+    void CXmlOutput::operator>>(TEmfHeader &oTEmfHeader)
+    {
+        *this >> oTEmfHeader.oBounds;
+        *this >> oTEmfHeader.oFrame;
+        *this >> oTEmfHeader.ulSignature;
+        *this >> oTEmfHeader.ulVersion;
+        *this >> oTEmfHeader.ulSize;
+        *this >> oTEmfHeader.ulRecords;
+        *this >> oTEmfHeader.ushObjects;
+        *this >> oTEmfHeader.ushReserved;
+        *this >> oTEmfHeader.ulSizeDescription;
+        *this >> oTEmfHeader.ulOffsetDescription;
+        *this >> oTEmfHeader.ulPalEntries;
+        *this >> oTEmfHeader.oDevice;
+        *this >> oTEmfHeader.oMillimeters;
+//        *this >> oTEmfHeader.oFrameToBounds;
+//        *this >> oTEmfHeader.oFramePx;
+    }
+
+    void CXmlOutput::operator>>(TEmfAlphaBlend &oTEmfAlphaBlend)
+    {
+        *this >> oTEmfAlphaBlend.Bounds;
+        *this >> oTEmfAlphaBlend.xDest;
+        *this >> oTEmfAlphaBlend.yDest;
+        *this >> oTEmfAlphaBlend.cxDest;
+        *this >> oTEmfAlphaBlend.cyDest;
+        //TODO: закончить реализацию при встрече примера
+
+    }
+
+    void CXmlOutput::operator>>(TEmfBitBlt &oTEmfBitBlt)
+    {
+        *this >> oTEmfBitBlt.Bounds;
+        *this >> oTEmfBitBlt.xDest;
+        *this >> oTEmfBitBlt.yDest;
+        *this >> oTEmfBitBlt.cxDest;
+        *this >> oTEmfBitBlt.cyDest;
+        *this >> oTEmfBitBlt.BitBltRasterOperation;
+        *this >> oTEmfBitBlt.xSrc;
+        *this >> oTEmfBitBlt.ySrc;
+        *this >> oTEmfBitBlt.XfromSrc;
+        *this >> oTEmfBitBlt.BkColorSrc;
+        *this >> oTEmfBitBlt.UsageSrc;
+        *this >> oTEmfBitBlt.offBmiSrc;
+        *this >> oTEmfBitBlt.cbBmiSrc;
+        *this >> oTEmfBitBlt.offBitsSrc;
+        *this >> oTEmfBitBlt.cbBitsSrc;
+
+        if (oTEmfBitBlt.cbBitsSrc != 0)
+        {
+            //TODO: закончить реализацию при встрече примера
+        }
+    }
+
+    void CXmlOutput::operator>>(CEmfLogFont &oCEmfLogFont)
+    {
+
+    }
+
+    void CXmlOutput::operator>>(TXForm &oTXForm)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+
+        *this >> oTXForm.M11;
+        *this >> oTXForm.M12;
+        *this >> oTXForm.M21;
+        *this >> oTXForm.M22;
+        *this >> oTXForm.Dx;
+        *this >> oTXForm.Dy;
+    }
+
+    void CXmlOutput::operator>>(TEmfColor &oTEmfColor)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+
+        *this >> oTEmfColor.r;
+        *this >> oTEmfColor.g;
+        *this >> oTEmfColor.b;
+        *this >> oTEmfColor.a;
+    }
+
+
+    void CXmlOutput::operator>>(CEmfLogBrushEx &oCEmfLogBrushEx)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+
+        *this >> oCEmfLogBrushEx.BrushStyle;
+        *this >> oCEmfLogBrushEx.Color;
+        *this >> oCEmfLogBrushEx.BrushHatch;
+    }
+
+    void CXmlOutput::operator>>(TEmfRectL &oTEmfRectL)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+        *this >> oTEmfRectL.lLeft;
+        *this >> oTEmfRectL.lTop;
+        *this >> oTEmfRectL.lRight;
+        *this >> oTEmfRectL.lBottom;
+    }
+
+    void CXmlOutput::operator>>(TEmfSizeL &oTEmfSizeL)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+        *this >> oTEmfSizeL.cx;
+        *this >> oTEmfSizeL.cy;
+    }
+
+    void CXmlOutput::operator>>(TRect &oTRect)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+        *this >> oTRect.nLeft;
+        *this >> oTRect.nTop;
+        *this >> oTRect.nRight;
+        *this >> oTRect.nBottom;
+    }
+
+    void CXmlOutput::operator>>(int &nValue)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+        const std::wstring wsValue = m_pXmlLiteReader->GetText2();
+        nValue = (wsValue.empty()) ? 0 : stoi(wsValue);
+    }
+
+    void CXmlOutput::operator>>(double &dValue)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+        const std::wstring wsValue = m_pXmlLiteReader->GetText2();
+        dValue = (wsValue.empty()) ? 0.0 : stod(wsValue);
+    }
+
+
+    void CXmlOutput::operator>>(unsigned int &unValue)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+        const std::wstring wsValue = m_pXmlLiteReader->GetText2();
+        unValue = (wsValue.empty()) ? 0 : (unsigned int)stoul(wsValue);
+    }
+
+    void CXmlOutput::operator>>(unsigned short &ushValue)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+        const std::wstring wsValue = m_pXmlLiteReader->GetText2();
+        ushValue = (wsValue.empty()) ? 0 : (unsigned short)stoul(wsValue);
+    }
+
+    void CXmlOutput::operator>>(unsigned char &ucValue)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+        const std::wstring wsValue = m_pXmlLiteReader->GetText2();
+        ucValue = (wsValue.empty()) ? 0 : (unsigned char)stoul(wsValue);
     }
 
 }

@@ -40,6 +40,7 @@
 #include "Shading.h"
 #include "Pattern.h"
 #include "Document.h"
+#include "Field.h"
 
 #ifdef DrawText
 #undef DrawText
@@ -886,7 +887,7 @@ namespace PdfWriter
 
 		return sKey;
 	}
-    void CPage::AddAnnotation(CAnnotation* pAnnot)
+    void CPage::AddAnnotation(CDictObject* pAnnot)
 	{
 		CArrayObject* pArray = (CArrayObject*)Get("Annots");
 		if (!pArray)

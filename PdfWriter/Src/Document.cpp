@@ -45,7 +45,8 @@
 #include "FontCidTT.h"
 #include "Shading.h"
 #include "Pattern.h"
-#include "AcroForm.h"'
+#include "AcroForm.h"
+#include "Field.h"
 
 #include "../../DesktopEditor/agg-2.4/include/agg_span_hatch.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
@@ -818,12 +819,19 @@ namespace PdfWriter
 		double pPattern[] ={ dX0, dY0, dR0, dX1, dY1, dR1 };
 		return CreateShading(pPage, pPattern, false, pColors, pAlphas, pPoints, nCount, pExtGrState);
 	}
-	void CDocument::CreateTextField()
+	CTextField* CDocument::CreateTextField()
 	{
 		if (!CheckAcroForm())
-			return;
+			return NULL;
 
-		m_pAcroForm->Add("Fields", new CArrayObject());
+		CTextField* pField = new CTextField(m_pXref);
+		if (!pField)
+			return NULL;
+
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pField);
+
+		return pField;
 	}
 	bool CDocument::CheckAcroForm()
 	{
@@ -837,6 +845,7 @@ namespace PdfWriter
 				return false;
 
 			m_pCatalog->Add("AcroForm", m_pAcroForm);
+			m_pAcroForm->Add("Fields", new CArrayObject());
 		}
 
 		return (!!m_pAcroForm);

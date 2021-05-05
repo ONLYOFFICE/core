@@ -114,6 +114,9 @@
     <ClInclude Include="..\Src\AcroForm.h">
       <Filter>PdfWriterLib</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Field.h">
+      <Filter>PdfWriterLib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PdfWriterLibTest.cpp">
@@ -340,6 +343,9 @@
     </ClCompile>
     <ClCompile Include="..\..\DesktopEditor\freetype-2.10.4\src\gzip\ftgzip.c">
       <Filter>FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Field.cpp">
+      <Filter>PdfWriterLib</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

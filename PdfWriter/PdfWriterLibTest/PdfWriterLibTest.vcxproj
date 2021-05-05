@@ -162,6 +162,7 @@
     <ClInclude Include="..\Src\Document.h" />
     <ClInclude Include="..\Src\Encrypt.h" />
     <ClInclude Include="..\Src\EncryptDictionary.h" />
+    <ClInclude Include="..\Src\Field.h" />
     <ClInclude Include="..\Src\Font.h" />
     <ClInclude Include="..\Src\Font14.h" />
     <ClInclude Include="..\Src\FontCidTT.h" />
@@ -242,6 +243,7 @@
     <ClCompile Include="..\Src\Document.cpp" />
     <ClCompile Include="..\Src\Encrypt.cpp" />
     <ClCompile Include="..\Src\EncryptDictionary.cpp" />
+    <ClCompile Include="..\Src\Field.cpp" />
     <ClCompile Include="..\Src\Font.cpp" />
     <ClCompile Include="..\Src\Font14.cpp" />
     <ClCompile Include="..\Src\FontCidTT.cpp" />

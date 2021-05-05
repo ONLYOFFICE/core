@@ -33,6 +33,7 @@
 #include "../Src/Font14.h"
 #include "../Src/FontCidTT.h"
 #include "../Src/Pattern.h"
+#include "../Src/Field.h"
 
 using namespace PdfWriter;
 
@@ -46,10 +47,32 @@ void TestDocument1()
 	oPdf.AddPage();
 	oPdf.AddPage();
 	oPdf.AddPageLabel(2, pagenumstyle_UpperRoman, 21, "UppRom-");
-
+	
 	oPdf.SetPasswords(L"123", L"qwe");
 
 	oPdf.SaveToFile(L"D:/Test/PDF/Test1.pdf");
+	oPdf.Close();
+}
+void TestField()
+{
+	CDocument oPdf;
+	oPdf.CreateNew();
+	CPage* pPage = oPdf.AddPage();
+
+	CTextField* pField1 = oPdf.CreateTextField();
+	pField1->SetRequiredFlag(true);
+	pField1->AddPageRect(pPage, TRect(0, 100, 100, 0));
+	pField1->SetFieldName("Test");
+	pField1->SetFieldHint("Подсказка");
+
+	CTextField* pField2 = oPdf.CreateTextField();
+	pField2->SetRequiredFlag(false);
+	pField2->SetCombFlag(true);
+	pField2->AddPageRect(pPage, TRect(200, 300, 300, 250));
+	pField2->SetFieldName("Test2");
+	pField2->SetFieldHint("Hint");
+
+	oPdf.SaveToFile(L"D:/Test/PDF/TestField1.pdf");
 	oPdf.Close();
 }
 void TestDocument2()
@@ -845,10 +868,10 @@ void TestOnlineBin()
 
 int main()
 {
-	//TestDocument1();
+	TestField();
 	//TestDocument6();
 
-	TestOnlineBin();
+	//TestOnlineBin();
 
     return 0;
 }

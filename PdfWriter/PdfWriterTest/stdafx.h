@@ -41,10 +41,15 @@
 #include <stdio.h>
 
 #ifdef _DEBUG
-#pragma comment(lib, "../x64/Debug/PdfWriter.lib")
-#pragma comment(lib, "../../SDK/lib/win_64/DEBUG/graphics.lib")
-#pragma comment(lib, "../../ASCOfficeUtils/ASCOfficeUtilsLib/Win/x64/Debug/ASCOfficeUtilsLib.lib")
+#pragma comment(lib, "../../build/lib/win_64/debug/CryptoPPLib.lib")
+#pragma comment(lib, "../../build/lib/win_64/debug/UnicodeConverter.lib")
+#pragma comment(lib, "../../build/lib/win_64/debug/graphics.lib")
+#pragma comment(lib, "../../build/lib/win_64/debug/kernel.lib")
 #pragma comment(lib, "Ws2_32.lib")
+
+#pragma comment(lib, "../x64/Debug/PdfWriter.lib")
+
+
 #else
 #pragma comment(lib, "../x64/Release/PdfWriter.lib")
 #pragma comment(lib, "../../SDK/lib/win_64/graphics.lib")

@@ -51,7 +51,7 @@ namespace PdfWriter
 		void SetNoExportFlag(bool isNoExport);
 		void AddPageRect(CPage* pPage, const TRect& oRect);
 		void SetFieldName(const char* sName);
-		void SetFieldHint(const char* sName);
+		void SetFieldHint(const char* sHint);
 	
 	protected:
 
@@ -73,6 +73,8 @@ namespace PdfWriter
 		void SetDoNotScrollFlag(bool isDoNotScroll);
 		void SetCombFlag(bool isFlag);
 		void SetRichTextFlag(bool isRichText);
+
+		void SetMaxLen(int nMaxLen);
 
 	private:
 	};

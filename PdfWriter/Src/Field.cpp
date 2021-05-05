@@ -147,4 +147,8 @@ namespace PdfWriter
 	{
 		SetFlag(isRichText, 1 << 25);
 	}
+	void CTextField::SetMaxLen(int nMaxLen)
+	{
+		Add("MaxLen", nMaxLen);
+	}
 }

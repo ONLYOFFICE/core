@@ -69,8 +69,25 @@ void TestField()
 	pField2->SetRequiredFlag(false);
 	pField2->SetCombFlag(true);
 	pField2->AddPageRect(pPage, TRect(200, 300, 300, 250));
-	pField2->SetFieldName("Test2");
+	pField2->SetFieldName("Test");
 	pField2->SetFieldHint("Hint");
+
+	CTextField* pField3 = oPdf.CreateTextField();
+	pField3->SetRequiredFlag(false);
+	pField3->SetCombFlag(true);
+	pField3->AddPageRect(pPage, TRect(200, 500, 300, 450));
+	pField3->SetFieldName("Test123");
+	pField3->SetFieldHint("Hint123");
+	pField3->SetMaxLen(10);
+
+	CTextField* pField4 = oPdf.CreateTextField();
+	pField4->SetRequiredFlag(false);
+	pField4->AddPageRect(pPage, TRect(400, 500, 500, 450));
+	pField4->SetFieldName("Test1234");
+	pField4->SetFieldHint("Hint1234");
+	pField4->SetMaxLen(10);
+
+
 
 	oPdf.SaveToFile(L"D:/Test/PDF/TestField1.pdf");
 	oPdf.Close();

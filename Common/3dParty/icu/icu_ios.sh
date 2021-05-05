@@ -201,7 +201,6 @@ function build() {
 
     export BUILD_DIR="${PWD}/build-${2}"
 
-    DEVELOPER="$(xcode-select --print-path)"
     SDKROOT="$(xcodebuild -version -sdk $4 | grep -E '^Path' | sed 's/Path: //')"
     ARCH=$2
 
@@ -209,8 +208,8 @@ function build() {
 
     export ADDITION_FLAG="-DIOS_SYSTEM_FIX"
 
-    export CXX="$DEVELOPER/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
-    export CC="$DEVELOPER/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
+    export CXX="$(xcrun -find clang++)"
+    export CC="$(xcrun -find clang)"
     export CFLAGS="-fembed-bitcode -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH -miphoneos-version-min=9.0 $ICU_FLAGS $CFLAGS ${ADDITION_FLAG}"
     export CXXFLAGS="${CXXFLAGS} -fembed-bitcode -stdlib=libc++ -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH -miphoneos-version-min=9.0 $ICU_FLAGS ${ADDITION_FLAG}"
     export LDFLAGS="-fembed-bitcode -stdlib=libc++ -L$SDKROOT/usr/lib/ -isysroot $SDKROOT -Wl,-dead_strip -miphoneos-version-min=9.0 -lstdc++ ${ADDITION_FLAG}"

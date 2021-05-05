@@ -14,11 +14,17 @@ namespace Oox2Odf
 
 		bool bStart = odf_context()->start_math(); //למזוע בûעü מעהוכüםמ מע COMathPara 
 
+		odf_writer::office_element_ptr elm;
+		odf_writer::create_element(L"math", L"mrow", elm, odf_context());
+		odf_context()->math_context()->start_element(elm);
 		for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
 		{
 			convert(oox_math->m_arrItems[i]);
 		}
+
 		
+		odf_context()->math_context()->end_element();
+
 		if (bStart) odf_context()->end_math();
 	}
 
@@ -602,16 +608,20 @@ namespace Oox2Odf
 	void DocxConverter::convert(OOX::Logic::CMText *oox_text)
 	{
 		if (!oox_text) return;
+	
+		std::wstring val = oox_text->m_sText;		
 
-		wchar_t wch_value = *(oox_text->m_sText.c_str());
-		
+		std::wstringstream ws;
+		ws << val;
+		wchar_t ival;
+		ws >> ival;
 		odf_writer::office_element_ptr elm;
 
-		if (wch_value <= 57 && wch_value >= 48)
+		if (ival <= 57 && ival >= 48)
 		{
 			odf_writer::create_element(L"math", L"mn", elm, odf_context());
 		}
-		else if(wch_value == '=' || wch_value == '*')
+		else if(ival == '=' || ival == '*')
 		{
 			odf_writer::create_element(L"math", L"mo", elm, odf_context());
 		}
@@ -619,9 +629,11 @@ namespace Oox2Odf
 		{
 			odf_writer::create_element(L"math", L"mi", elm, odf_context());
 		}		
-
+		elm->add_text(val);
 		odf_context()->math_context()->start_element(elm);
-		odf_context()->math_context()->end_element();
+		odf_context()->math_context()->end_element();	
+
+
 		//convert(oox_text->m_oSpace.GetPointer());	
 	}
 

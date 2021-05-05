@@ -66,16 +66,22 @@ void math_mi::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
+			CP_XML_CONTENT(text_);
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
 				content_[i]->serialize(CP_XML_STREAM());
 			}			
-			CP_XML_ATTR_OPT(L"math:text", text_);			
 		}
 	}
 }
+
+void math_mi::add_text(const std::wstring & Text)
+{
+	text_ = Text;
+}
+
 //----------------------------------------------------------------------------------------------------
 const wchar_t * math_mo::ns = L"math";
 const wchar_t * math_mo::name = L"mo";
@@ -96,16 +102,22 @@ void math_mo::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
+			CP_XML_CONTENT(text_);
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
 				content_[i]->serialize(CP_XML_STREAM());
 			}
-			CP_XML_ATTR_OPT(L"math:text", text_);
 		}
 	}
 }
+
+void math_mo::add_text(const std::wstring & Text)
+{
+	text_ = Text;
+}
+
 //----------------------------------------------------------------------------------------------------
 const wchar_t * math_mn::ns = L"math";
 const wchar_t * math_mn::name = L"mn";
@@ -126,16 +138,22 @@ void math_mn::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
+			CP_XML_CONTENT(text_);
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
 				content_[i]->serialize(CP_XML_STREAM());
 			}
-			CP_XML_ATTR_OPT(L"math:text", text_);
 		}
 	}
 }
+
+void math_mn::add_text(const std::wstring & Text)
+{
+	text_ = Text;
+}
+
 //----------------------------------------------------------------------------------------------------
 const wchar_t * math_ms::ns = L"math";
 const wchar_t * math_ms::name = L"ms";

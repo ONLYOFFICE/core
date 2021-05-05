@@ -62,7 +62,7 @@ CP_REGISTER_OFFICE_ELEMENT2(math_mstack);
 
 //--------------------------------------------------------------------
 
-class math_msrow : public office_math_element
+class math_mrow : public office_math_element
 {
 public:
     static const wchar_t * ns;
@@ -83,7 +83,7 @@ private:
     office_element_ptr_array    content_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(math_msrow);
+CP_REGISTER_OFFICE_ELEMENT2(math_mrow);
 //CP_REGISTER_OFFICE_ELEMENT3(math_msrow);
 
 //--------------------------------------------------------------------

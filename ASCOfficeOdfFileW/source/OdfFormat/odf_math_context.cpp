@@ -141,8 +141,8 @@ namespace odf_writer
 
 		size_t level = impl_->current_level_.size();
 
-		odf_element_state state(root, L"", office_element_ptr(), level);
 		odf_math_level_state	level_state = { NULL, NULL, root };
+		odf_element_state state(root, L"", office_element_ptr(), level);
 
 		impl_->current_level_.push_back(level_state);
 		impl_->current_math_state_.elements_.push_back(state);
@@ -150,6 +150,9 @@ namespace odf_writer
 
 	void odf_math_context::start_element(office_element_ptr & elm)
 	{		
+
+		impl_->current_level_.back().elm->add_child_element(elm);
+
 		size_t level = impl_->current_level_.size();
 
 		odf_element_state		state(elm, L"", office_element_ptr(), level);

@@ -51,6 +51,8 @@ private:
 
 	virtual void serialize(std::wostream & _Wostream);
 
+	virtual void add_text(const std::wstring & Text);
+
 	odf_types::common_math_style_attlist	common_attlist_;
    
 	office_element_ptr_array    content_;
@@ -76,6 +78,8 @@ private:
 
 	virtual void serialize(std::wostream & _Wostream);
 
+	virtual void add_text(const std::wstring & Text);
+
 	odf_types::common_math_style_attlist	common_attlist_;
 
 	office_element_ptr_array    content_;
@@ -99,6 +103,8 @@ private:
 	virtual void add_child_element(const office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);
+
+	virtual void add_text(const std::wstring & Text);
 
 	odf_types::common_math_style_attlist	common_attlist_;
 

@@ -27,6 +27,14 @@ public:
         m_lSizeCur = 0;
         m_pDataCur = m_pData;
     }
+    CData(unsigned char* value, unsigned int len)
+    {
+        m_lSize = len;
+        m_pData = value;
+
+        m_lSizeCur = m_lSize;
+        m_pDataCur = m_pData + m_lSizeCur;
+    }
     virtual ~CData()
     {
         Clear();

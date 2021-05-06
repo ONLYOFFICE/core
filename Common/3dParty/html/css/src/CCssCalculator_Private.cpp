@@ -347,6 +347,9 @@ namespace NSCSS
             if (oNode->m_sName == L"td")
                 oStyle->m_pMargin.SetPermission(false);
 
+            if (oNode->m_sName == L"table")
+                oStyle->m_pBorder.Block();
+
             if (!oNode->m_sClass.empty())
             {
                 if (oNode->m_sClass.find(L' ') != std::wstring::npos)

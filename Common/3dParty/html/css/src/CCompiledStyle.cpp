@@ -34,7 +34,7 @@ namespace NSCSS
     CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
     {
         m_pBackground   += oElement.m_pBackground;
-        m_pBorder       += oElement.m_pBorder;
+        m_pBorder        = oElement.m_pBorder;
         m_pFont         += oElement.m_pFont;
         m_pMargin       += oElement.m_pMargin;
         m_pText         += oElement.m_pText;

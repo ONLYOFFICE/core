@@ -75,6 +75,7 @@ public:
     USHORT      m_Reserved;
 
     _UINT32     m_SoundIdRef;
+    _UINT32     m_OldSoundIdRef;
     _UINT32     m_DelayTime;
 
     USHORT      m_OrderID;
@@ -131,6 +132,8 @@ public:
 
 
         StreamUtils::StreamSkip(2, pStream);
+
+        m_OldSoundIdRef = m_SoundIdRef;
     }
 };
 }

@@ -340,7 +340,7 @@ void Animation::FillAnimMotion(
     }
 
     if (!pMotion->m_pVarPath->m_Value.empty())
-        oAnim.path = pMotion->m_pVarPath->m_Value;
+        oAnim.path = XmlUtils::EncodeXmlString(pMotion->m_pVarPath->m_Value);
 
 
     oAnim.pathEditMode = new PPTX::Limit::TLPathEditMode;
@@ -605,6 +605,28 @@ void Animation::FillCBhvr(
         oBhvr.additive = new PPTX::Limit::TLAdditive;
         oBhvr.additive = pBhvr->m_oBehaviorAtom.m_nBehaviorAdditive ?
                     L"repl" : L"base";
+    }
+
+    if (pBhvr->m_pPropertyList)
+    {
+        // TimePropertyList for TimeBehavior
+        for (auto* pprop : pBhvr->m_pPropertyList->m_arRecords)
+        {
+            switch (pprop->m_oHeader.RecInstance)
+            {
+            case TL_TBPID_RuntimeContext:
+            {
+                oBhvr.rctx = XmlUtils::EncodeXmlString(static_cast<CRecordCString*>(pprop)->m_strText);
+                break;
+            }
+            case TL_TBPID_Override:
+            {
+                oBhvr.override_ = new PPTX::Limit::TLOverride;
+                oBhvr.override_ = L"childStyle";
+                break;
+            }
+            }
+        }
     }
 
     // accumulate   - MUST be 0
@@ -995,9 +1017,21 @@ void Animation::FillSet(
 
     // TODO
     FillCBhvr(pETNC, oSet.cBhvr);
+    FillSet(pETNC->m_pTimeSetBehavior, oSet);
+}
+
+void Animation::FillSet(
+        PPT_FORMAT::CRecordTimeSetBehaviorContainer *pTSBC,
+        PPTX::Logic::Set& oSet)
+{
+    if (!pTSBC)
+        return;
+
     oSet.to = new PPTX::Logic::AnimVariant();
     oSet.to->node_name = L"to";
-    oSet.to->strVal = pETNC->m_pTimeSetBehavior->m_oVarTo.m_Value;
+    oSet.to->strVal = pTSBC->m_oVarTo.m_Value;
+    oSet.cBhvr.cTn.id = m_cTnId++;
+//    FillCTn(pTSBC->m_oBehavior.m_pPropertyList., oSet.cBhvr.cTn);
 
 }
 
@@ -1102,6 +1136,15 @@ void Animation::FillSubTnLst (
 {
     for (auto pSEC : vecSEC)
     {
+        if (pSEC->m_pTimeSetBehavior)
+        {
+            PPTX::Logic::TimeNodeBase TNB;
+            auto pSet = new PPTX::Logic::Set;
+            FillSet(pSEC->m_pTimeSetBehavior, *pSet);
+            TNB.m_node = pSet;
+            oSubTnLst.list.push_back(TNB);
+        }
+
         if (pSEC->m_haveClientVisualElement)
         {
             PPTX::Logic::TimeNodeBase TNB;
@@ -1141,6 +1184,8 @@ void Animation::FillSubTnLst (
             oSubTnLst.list.push_back(TNB);
         }
     }
+    if (!vecSEC.empty())
+        oSubTnLst.node_name = L"subTnLst";
 }
 
 void Animation::FillCondLst(

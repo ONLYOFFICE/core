@@ -475,7 +475,7 @@ namespace MetaFile
         WriteNode(L"Rectangle", oTEmfEmrText.Rectangle);
         WriteNode(L"offDx",     oTEmfEmrText.offDx);
 
-        std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)oTEmfEmrText.OutputString, oTEmfEmrText.Chars);
+        std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oTEmfEmrText.OutputString, oTEmfEmrText.Chars);
 
         WriteNode(L"Text",      StringNormalization(wsText));
     }
@@ -637,7 +637,7 @@ namespace MetaFile
         *this >> oTEmfHeader.oDevice;
         *this >> oTEmfHeader.oMillimeters;
 //        *this >> oTEmfHeader.oFrameToBounds;
-//        *this >> oTEmfHeader.oFramePx;
+        //        *this >> oTEmfHeader.oFramePx;
     }
 
     void CXmlOutput::operator>>(TEmfAlphaBlend &oTEmfAlphaBlend)
@@ -677,7 +677,83 @@ namespace MetaFile
 
     void CXmlOutput::operator>>(CEmfLogFont &oCEmfLogFont)
     {
+        if (!oCEmfLogFont.IsFixedLength())
+            m_pXmlLiteReader->ReadNextNode();
 
+        *this >> oCEmfLogFont.LogFontEx;
+
+        if (!oCEmfLogFont.IsFixedLength())
+            *this >> oCEmfLogFont.DesignVector;
+    }
+
+    void CXmlOutput::operator>>(TEmfLogFontEx&  oTEmfLogFontEx)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+
+        *this >> oTEmfLogFontEx.LogFont;
+        *this >> oTEmfLogFontEx.FullName;
+        *this >> oTEmfLogFontEx.Style;
+        *this >> oTEmfLogFontEx.Script;
+    }
+
+    void CXmlOutput::operator>>(TEmfLogFont&  oTEmfLogFont)
+    {
+        *this >> oTEmfLogFont.Height;
+        *this >> oTEmfLogFont.Width;
+        *this >> oTEmfLogFont.Escapement;
+        *this >> oTEmfLogFont.Orientation;
+        *this >> oTEmfLogFont.Weight;
+        *this >> oTEmfLogFont.Italic;
+        *this >> oTEmfLogFont.Underline;
+        *this >> oTEmfLogFont.StrikeOut;
+        *this >> oTEmfLogFont.CharSet;
+        *this >> oTEmfLogFont.OutPrecision;
+        *this >> oTEmfLogFont.ClipPrecision;
+        *this >> oTEmfLogFont.Quality;
+        *this >> oTEmfLogFont.PitchAndFamily;
+        *this >> oTEmfLogFont.FaceName;
+    }
+
+    void CXmlOutput::operator>>(TEmfDesignVector&  oTEmfDesignVector)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+
+        *this >> oTEmfDesignVector.Signature;
+        *this >> oTEmfDesignVector.NumAxes;
+
+        if (oTEmfDesignVector.NumAxes > 0)
+        {
+            oTEmfDesignVector.Values = new int[oTEmfDesignVector.NumAxes];
+            int nValue;
+            for (unsigned int i = 0; i < oTEmfDesignVector.NumAxes; ++i)
+            {
+                *this >> nValue;
+                oTEmfDesignVector.Values[i] = nValue;
+            }
+        }
+    }
+
+    void CXmlOutput::operator>>(TEmfExtTextoutW &oTEmfExtTextoutW)
+    {
+        *this >> oTEmfExtTextoutW.Bounds;
+        *this >> oTEmfExtTextoutW.iGraphicsMode;
+        *this >> oTEmfExtTextoutW.exScale;
+        *this >> oTEmfExtTextoutW.eyScale;
+        *this >> oTEmfExtTextoutW.wEmrText;
+    }
+
+    void CXmlOutput::operator>>(TEmfEmrText &oTEmfEmrText)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+
+        *this >> oTEmfEmrText.Reference;
+        *this >> oTEmfEmrText.Chars;
+        *this >> oTEmfEmrText.offString;
+        *this >> oTEmfEmrText.Options;
+        *this >> oTEmfEmrText.Rectangle;
+        *this >> oTEmfEmrText.offDx;
+        oTEmfEmrText.OutputString = new unsigned short[oTEmfEmrText.Chars];
+        *this >> (unsigned short*)oTEmfEmrText.OutputString;
     }
 
     void CXmlOutput::operator>>(TXForm &oTXForm)
@@ -728,6 +804,13 @@ namespace MetaFile
         *this >> oTEmfSizeL.cy;
     }
 
+    void CXmlOutput::operator>>(TEmfPointL &oTEmfPointL)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+        *this >> oTEmfPointL.x;
+        *this >> oTEmfPointL.y;
+    }
+
     void CXmlOutput::operator>>(TRect &oTRect)
     {
         m_pXmlLiteReader->ReadNextNode();
@@ -773,4 +856,15 @@ namespace MetaFile
         ucValue = (wsValue.empty()) ? 0 : (unsigned char)stoul(wsValue);
     }
 
+    void CXmlOutput::operator>>(unsigned short arushValue[])
+    {
+        m_pXmlLiteReader->ReadNextNode();
+        const std::wstring wsValue = m_pXmlLiteReader->GetText2();
+
+        unsigned int unSize;
+        unsigned short *pTemp = NSStringExt::CConverter::GetUtf16FromUnicode(wsValue, unSize);
+
+        for (unsigned int i = 0; i < unSize; ++i)
+            arushValue[i] = pTemp[i];
+    }
 }

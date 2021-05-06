@@ -947,7 +947,6 @@ static const struct ActionNamesEmf
 		{
 			TEmfBitBlt oTestBitmap;
 			*m_pOutputXml >> oTestBitmap;
-			std::wcout << L"_" << std::endl;
 		}
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
@@ -1141,6 +1140,13 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulCount, ulOffset, ulSizeLast;
 
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> ulCount;
+			*m_pOutputXml >> ulOffset;
+			*m_pOutputXml >> ulSizeLast;
+		}
+
 		m_oStream >> ulCount;
 		m_oStream >> ulOffset;
 
@@ -1315,12 +1321,17 @@ static const struct ActionNamesEmf
 		if (!pFont)
 			return SetError();
 
-		m_oStream >> ulIndex;
-		m_oStream >> *pFont;
+
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
 		{
 			*m_pOutputXml >> ulIndex;
+			*m_pOutputXml >> *pFont;
+		}
+		else
+		{
+			m_oStream >> ulIndex;
+			m_oStream >> *pFont;
 		}
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
@@ -1375,7 +1386,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_DELETEOBJECT()
 	{
 		unsigned int ulIndex;
-		m_oStream >> ulIndex;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> ulIndex;
+		else
+			m_oStream >> ulIndex;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2225,7 +2240,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_EXTTEXTOUTW()
 	{
 		TEmfExtTextoutW oText;
-		m_oStream >> oText;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oText;
+		else
+			m_oStream >> oText;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{

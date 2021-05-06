@@ -124,7 +124,9 @@ namespace MetaFile
         void operator>>(TEmfAlphaBlend& oTEmfAlphaBlend);
         void operator>>(CEmfLogBrushEx& oCEmfLogBrushEx);
         void operator>>(TEmfBitBlt&     oTEmfBitBlt);
-        void operator>>(CEmfLogFont     &oCEmfLogFont);
+        void operator>>(CEmfLogFont&    oCEmfLogFont);
+        void operator>>(TEmfExtTextoutW& oTEmfExtTextoutW);
+        void operator>>(TEmfEmrText&    oTEmfEmrText);
 
         void operator>>(TXForm&         oTXForm);
         void operator>>(TEmfColor&      oTEmfColor);
@@ -134,15 +136,19 @@ namespace MetaFile
     private:
         XmlUtils::CXmlLiteReader    *m_pXmlLiteReader;
 
-        void operator>>(TEmfRectL&      oTEmfRectL);
-        void operator>>(TEmfSizeL&      oTEmfSizeL);
-        void operator>>(TRect&          oTRect);
+        void operator>>(TEmfRectL&          oTEmfRectL);
+        void operator>>(TEmfSizeL&          oTEmfSizeL);
+        void operator>>(TRect&              oTRect);
+        void operator>>(TEmfLogFontEx&      oTEmfLogFontEx);
+        void operator>>(TEmfLogFont&        oTEmfLogFont);
+        void operator>>(TEmfDesignVector&   oTEmfDesignVector);
+        void operator>>(TEmfPointL&         oTEmfPointL);
 
         void operator>>(int&            nValue);
         void operator>>(double&         dValue);
         void operator>>(unsigned short& ushValue);
         void operator>>(unsigned char&  ucValue);
-
+        void operator>>(unsigned short  arushValue[]);
     };
 }
 #endif // CXMLOUTPUT_H

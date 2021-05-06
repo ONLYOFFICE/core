@@ -6,14 +6,24 @@
 #include <ctime>
 #include <time.h>
 #include <vector>
+#include <algorithm>
 
 class CFile
 {
-    std::wstring sPath;
-    BYTE* pData;
-    DWORD nLength;
 public:
-    CFile(const std::wstring& _sPath, BYTE* _pData, DWORD _nLength) : sPath(_sPath), pData(_pData), nLength(_nLength) {}
+    std::wstring m_sPath;
+    BYTE* m_pData;
+    DWORD m_nLength;
+public:
+    CFile(const std::wstring& sPath, BYTE* pData, DWORD nLength) : m_sPath(sPath), m_pData(pData), m_nLength(nLength) {}
+
+    std::wstring GetFileExtention()
+    {
+        std::wstring::size_type nPos = m_sPath.rfind('.');
+        if (nPos != std::wstring::npos)
+            return m_sPath.substr(nPos + 1);
+        return m_sPath;
+    }
 };
 
 class CFileManagerBuffer
@@ -21,9 +31,73 @@ class CFileManagerBuffer
     vector<CFile> arrFiles;
 
 public:
-    void addFile(const std::wstring& sPath, BYTE* pData, DWORD nLength)
+    bool addFile(const std::wstring& sPath, BYTE* pData, DWORD nLength)
     {
-        arrFiles.push_back(CFile(sPath, pData, nLength));
+        if (!ExistFile(sPath))
+        {
+            arrFiles.push_back(CFile(sPath, pData, nLength));
+            return true;
+        }
+        return false;
+    }
+
+    bool removeFile(const std::wstring& sPath)
+    {
+        for (std::vector<CFile>::iterator i = arrFiles.begin(); i != arrFiles.end(); i++)
+        {
+            if (i->m_sPath == sPath)
+            {
+                arrFiles.erase(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool ExistFile(const std::wstring& sPath)
+    {
+        for (CFile& oFile : arrFiles)
+            if (oFile.m_sPath == sPath)
+                return true;
+        return false;
+    }
+
+    bool ExistDirectory(const std::wstring& sDirectory)
+    {
+        for (CFile& oFile : arrFiles)
+            if (oFile.m_sPath.find(sDirectory) == 0)
+                return true;
+        return false;
+    }
+
+    std::vector<CFile> GetFiles(const std::wstring& sDirectory, bool bIsRecursion)
+    {
+        std::vector<CFile> oRes;
+
+        for (CFile& oFile : arrFiles)
+        {
+            if (bIsRecursion)
+            {
+                if (oFile.m_sPath.find(sDirectory) == 0)
+                    oRes.push_back(oFile);
+            }
+            else
+            {
+                size_t nFindDirectory = oFile.m_sPath.find(sDirectory);
+                if (nFindDirectory == 0 && oFile.m_sPath.find_first_of(L"\\/", nFindDirectory) == std::wstring::npos)
+                    oRes.push_back(oFile);
+            }
+        }
+
+        return oRes;
+    }
+
+    CFile* GetFile(const std::wstring& sPath)
+    {
+        for (CFile& oFile : arrFiles)
+            if (oFile.m_sPath == sPath)
+                return &oFile;
+        return NULL;
     }
 };
 
@@ -209,10 +283,10 @@ public:
     {
         std::wstring sRelsFolder = folder + L"/_rels";
 
-        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(sRelsFolder, false);
+        std::vector<CFile> arFiles = m_file_manager.GetFiles(sRelsFolder, false);
         std::map<std::wstring, bool> arSigFiles;
 
-        for (std::vector<std::wstring>::iterator iter = arFiles.begin(); iter != arFiles.end(); iter++)
+        for (std::vector<CFile>::iterator iter = arFiles.begin(); iter != arFiles.end(); iter++)
         {
             XmlUtils::CXmlNode oNodeRels;
             if (!oNodeRels.FromXmlFile(*iter))
@@ -292,9 +366,9 @@ public:
 
     void ParseContentTypes()
     {
-        std::wstring file = m_sFolder + L"/[Content_Types].xml";
+        CFile* file = m_file_manager.GetFile(L"[Content_Types].xml");
         XmlUtils::CXmlNode oNode;
-        oNode.FromXmlFile(file);
+        oNode.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(file->m_pData, file->m_nLength));
 
         XmlUtils::CXmlNodes nodesDefaults;
         oNode.GetNodes(L"Default", nodesDefaults);
@@ -327,27 +401,18 @@ public:
         ParseContentTypes();
 
         // 2) Parse files in directory
-        std::vector<std::wstring> files = NSDirectory::GetFiles(m_sFolder, true);
+        std::vector<CFile> files = m_file_manager.GetFiles(L"", true);
 
         // 3) Check each file
-        std::wstring sFolder = m_sFolder;
-        NSStringUtils::string_replace(sFolder, L"\\", L"/");
-        for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
+        for (std::vector<CFile>::iterator i = files.begin(); i != files.end(); i++)
         {
-            std::wstring sCheckFile = *i;
-            NSStringUtils::string_replace(sCheckFile, L"\\", L"/");
-
-            if (0 != sCheckFile.find(sFolder))
-                continue;
-
-            // make cool filename
-            sCheckFile = sCheckFile.substr(sFolder.length());
+            std::wstring sCheckFile = i->m_sPath;
 
             // check needed file
-            if (0 == sCheckFile.find(L"/_xmlsignatures") ||
-                0 == sCheckFile.find(L"/docProps") ||
-                0 == sCheckFile.find(L"/[Content_Types].xml") ||
-                0 == sCheckFile.find(L"/[trash]"))
+            if (0 == sCheckFile.find(L"_xmlsignatures") ||
+                0 == sCheckFile.find(L"docProps") ||
+                0 == sCheckFile.find(L"[Content_Types].xml") ||
+                0 == sCheckFile.find(L"[trash]"))
                 continue;
 
             // check rels and add to needed array
@@ -413,9 +478,9 @@ public:
 
     void CorrectContentTypes(int nCountSignatures)
     {
-        std::wstring file = m_sFolder + L"/[Content_Types].xml";
+        CFile* file = m_file_manager.GetFile(L"[Content_Types].xml");
         XmlUtils::CXmlNode oNode;
-        oNode.FromXmlFile(file);
+        oNode.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(file->m_pData, file->m_nLength));
 
         NSStringUtils::CStringBuilder oBuilder;
         oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
@@ -462,11 +527,10 @@ public:
 
         oBuilder.WriteNodeEnd(oNode.GetName());
 
-        NSFile::CFileBinary::Remove(file);
-        NSFile::CFileBinary oFile;
-        oFile.CreateFileW(file);
-        oFile.WriteStringUTF8(oBuilder.GetData());
-        oFile.CloseFile();
+        m_file_manager.removeFile(L"[Content_Types].xml");
+        BYTE* pData; LONG nLength;
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(oBuilder.GetData().c_str(), oBuilder.GetSize(), pData, nLength);
+        m_file_manager.addFile(L"[Content_Types].xml", pData, nLength);
     }
 
     void SetGuid(const std::wstring& guid)
@@ -629,31 +693,17 @@ public:
 
     int AddSignatureReference()
     {
-        std::wstring sDirectory = m_sFolder + L"/_xmlsignatures";
-
-        if (!NSDirectory::Exists(sDirectory))
-            NSDirectory::CreateDirectory(sDirectory);
+        std::wstring sDirectory = L"_xmlsignatures";
 
         // remove old .sig file
-        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(sDirectory, false);
-        for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
-        {
-            if (NSFile::GetFileExtention(*i) == L"sigs")
-            {
-                NSFile::CFileBinary::Remove(*i);
-            }
-        }
+        std::vector<CFile> arFiles = m_file_manager.GetFiles(sDirectory, false);
+        for (std::vector<CFile>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
+            if (i->GetFileExtention() == L"sigs")
+                arFiles.erase(i);
 
         std::wstring sOriginName = L"origin.sigs";
-        if (!NSFile::CFileBinary::Exists(sDirectory + L"/" + sOriginName))
-        {
-            NSFile::CFileBinary oFile;
-            oFile.CreateFileW(sDirectory + L"/" + sOriginName);
-            oFile.CloseFile();
-        }
-
-        if (!NSDirectory::Exists(sDirectory + L"/_rels"))
-            NSDirectory::CreateDirectory(sDirectory + L"/_rels");
+        if (!m_file_manager.ExistFile(sDirectory + L"/" + sOriginName))
+            m_file_manager.addFile(sDirectory + L"/" + sOriginName, NULL, 0);
 
         int nSignNum = GetCountSigns(sDirectory);
 

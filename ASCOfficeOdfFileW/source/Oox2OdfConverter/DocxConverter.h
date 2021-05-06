@@ -392,6 +392,8 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CSSubSupPr				*oox_ssub_sup_pr);
 		void convert(OOX::Logic::CSSup					*oox_ssup);
 		void convert(OOX::Logic::CSSupPr				*oox_ssup_pr);		
+		void convert(OOX::Logic::CNum					*oox_num);
+		void convert(OOX::Logic::CDen					*oox_den);
 //--------------------------------------------------------------------------------
 	};
 }

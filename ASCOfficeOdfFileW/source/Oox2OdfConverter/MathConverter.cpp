@@ -1,18 +1,19 @@
-#include "DocxConverter.h"
+﻿#include "DocxConverter.h"
 
 //#include "../utils.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/DocxFlat.h"
 
 #include "../OdfFormat/odf_conversion_context.h"
-
+#include <set>
 namespace Oox2Odf
 {
+
 	void DocxConverter::convert(OOX::Logic::COMath *oox_math)
 	{
 		if (!oox_math) return;
 
-		bool bStart = odf_context()->start_math(); //����� ���� �������� �� COMathPara 
+		bool bStart = odf_context()->start_math(); //может быть отдельно от COMathPara 
 
 		odf_writer::office_element_ptr elm;
 		odf_writer::create_element(L"math", L"mrow", elm, odf_context());
@@ -290,15 +291,15 @@ namespace Oox2Odf
 	void DocxConverter::convert(OOX::Logic::CFraction *oox_fraction)
 	{
 		if (!oox_fraction) return;
-		odf_writer::office_element_ptr elm;
+		/*odf_writer::office_element_ptr elm;
 		odf_writer::create_element(L"math", L"mathFr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		odf_context()->math_context()->start_element(elm);*/
 
-		convert(oox_fraction->m_oDen.GetPointer());
 		convert(oox_fraction->m_oNum .GetPointer());
+		convert(oox_fraction->m_oDen.GetPointer());
 		// TODO m_oFr
 
-		odf_context()->math_context()->end_element();		
+		//odf_context()->math_context()->end_element();		
 	}
 	
 	void DocxConverter::convert(OOX::Logic::CFPr *oox_f_pr)
@@ -313,6 +314,32 @@ namespace Oox2Odf
 		convert(oox_f_pr->m_oType.GetPointer());
 		
 		odf_context()->math_context()->end_element();
+	}
+
+	void DocxConverter::convert(OOX::Logic::CNum *oox_num)
+	{
+		if (!oox_num) return;
+
+		for (size_t i = 0; i < oox_num->m_arrItems.size(); ++i)
+		{
+			convert(oox_num->m_arrItems[i]);
+		}
+	}
+
+	void DocxConverter::convert(OOX::Logic::CDen *oox_den)
+	{
+		if (!oox_den) return;
+
+		odf_writer::office_element_ptr elm;
+		odf_writer::create_element(L"math", L"mo", elm, odf_context());
+		elm->add_text(L"/");
+		odf_context()->math_context()->start_element(elm);
+		odf_context()->math_context()->end_element();
+
+		for (size_t i = 0; i < oox_den->m_arrItems.size(); ++i)
+		{
+			convert(oox_den->m_arrItems[i]);
+		}
 	}
 
 	void DocxConverter::convert(OOX::Logic::CFunc *oox_func)
@@ -605,23 +632,28 @@ namespace Oox2Odf
 		//odf_context()->math_context()->end_element();
 	}
 
+
+
 	void DocxConverter::convert(OOX::Logic::CMText *oox_text)
 	{
 		if (!oox_text) return;
+
+		std::set<wchar_t> mo = { L'=', L'+', L'-', L'±', L'∓', L'∙', L'×', L'∗', L'÷', L'/', L'∔', L'∸', L'≂', L'⊕', L'⊖', L'⊙', L'⊗', L'⊘', L'∘', L'¬', L'∧', L'∨' };
+
 	
-		std::wstring val = oox_text->m_sText;		
+		std::wstring s_val = oox_text->m_sText;		
 
 		std::wstringstream ws;
-		ws << val;
-		wchar_t ival;
-		ws >> ival;
+		ws << s_val;
+		wchar_t w_val;
+		ws >> w_val;
 		odf_writer::office_element_ptr elm;
 
-		if (ival <= 57 && ival >= 48)
+		if (w_val <= 57 && w_val >= 48)
 		{
 			odf_writer::create_element(L"math", L"mn", elm, odf_context());
 		}
-		else if(ival == '=' || ival == '*')
+		else if(mo.find(w_val) != mo.end())
 		{
 			odf_writer::create_element(L"math", L"mo", elm, odf_context());
 		}
@@ -629,7 +661,7 @@ namespace Oox2Odf
 		{
 			odf_writer::create_element(L"math", L"mi", elm, odf_context());
 		}		
-		elm->add_text(val);
+		elm->add_text(s_val);
 		odf_context()->math_context()->start_element(elm);
 		odf_context()->math_context()->end_element();	
 

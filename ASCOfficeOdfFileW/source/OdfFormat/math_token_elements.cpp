@@ -174,13 +174,13 @@ void math_ms::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
+			CP_XML_ATTR_OPT(L"math:text", text_);
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
 				content_[i]->serialize(CP_XML_STREAM());
 			}			
-			CP_XML_ATTR_OPT(L"math:text", text_);
 		}
 	}
 }
@@ -204,13 +204,13 @@ void math_mspace::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
+			CP_XML_ATTR_OPT(L"math:text", text_);
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
 				content_[i]->serialize(CP_XML_STREAM());
 			}
-			CP_XML_ATTR_OPT(L"math:text", text_);
 		}
 	}
 }
@@ -234,13 +234,13 @@ void math_mtext::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
+			CP_XML_ATTR_OPT(L"math:text", text_);
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
 				content_[i]->serialize(CP_XML_STREAM());
 			}
-			CP_XML_ATTR_OPT(L"math:text", text_);
 		}
 	}
 }
@@ -264,13 +264,13 @@ void math_mglyph::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
+			CP_XML_ATTR_OPT(L"math:text", text_);
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
 				content_[i]->serialize(CP_XML_STREAM());
 			}
-			CP_XML_ATTR_OPT(L"math:text", text_);
 		}
 	}
 } // odf_writer

@@ -34,9 +34,19 @@ private slots:
 
     void on_horizontalScrollBar_sliderMoved(int position);
 
+    void on_ScaleSlider_sliderMoved(int position);
+
 private:
+    int RenderOnByteData(int nPage, BYTE **pBgraData, int *w, int *h);
+
+    QImage pm;
     QString filename;
     int pos_x, pos_y;
+    double scale_factor;
     Ui::MainWindow *ui;
+    CApplicationFontsWorker oWorker;
+    NSFonts::IApplicationFonts* pFonts;
+    PdfReader::CPdfReader *PDFREADER;
+
 };
 #endif // MAINWINDOW_H

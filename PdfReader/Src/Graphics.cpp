@@ -2349,16 +2349,28 @@ namespace PdfReader
 		double dMinX, dMinY, dMaxX, dMaxY;
 		GrColor arrColors[4];
 
-		if (true)
-		{
-
-		}
+		
 		
 		pShading->GetDomain(&dMinX, &dMinY, &dMaxX, &dMaxY);
 		pShading->GetColor(dMinX, dMinY, &arrColors[0]);
 		pShading->GetColor(dMinX, dMaxY, &arrColors[1]);
 		pShading->GetColor(dMaxX, dMinY, &arrColors[2]);
 		pShading->GetColor(dMaxX, dMaxY, &arrColors[3]);
+
+		if (true)
+		{
+			double *pMatrix = pShading->GetMatrix();
+			m_pGState->MoveTo(dMinX * pMatrix[0] + dMinY * pMatrix[2] + pMatrix[4], dMinX * pMatrix[1] + dMinY * pMatrix[3] + pMatrix[5]);
+			m_pGState->LineTo(dMaxX * pMatrix[0] + dMinY * pMatrix[2] + pMatrix[4], dMaxX * pMatrix[1] + dMinY * pMatrix[3] + pMatrix[5]);
+			m_pGState->LineTo(dMaxX * pMatrix[0] + dMaxY * pMatrix[2] + pMatrix[4], dMaxX * pMatrix[1] + dMaxY * pMatrix[3] + pMatrix[5]);
+			m_pGState->LineTo(dMinX * pMatrix[0] + dMaxY * pMatrix[2] + pMatrix[4], dMinX * pMatrix[1] + dMaxY * pMatrix[3] + pMatrix[5]);
+			m_pGState->ClosePath();
+			
+			m_pOut->FillStrokeGradientFunctional(m_pGState, pShading);
+
+			m_pGState->ClearPath();
+		}
+
 		DoFunctionShadingFill(pShading, dMinX, dMinY, dMaxX, dMaxY, arrColors, 0);
 	}
 

@@ -4063,8 +4063,8 @@ namespace PdfReader
 		TransformToPixels(pGState, x1, y1);
 		TransformToPixels(pGState, x2, y2);
 
-		auto info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
-		pShading->GetExtendStart(), pShading->GetExtendEnd());
+		auto info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1);//,
+		//pShading->GetExtendStart(), pShading->GetExtendEnd());
 		
 		GrColorSpace *ColorSpace = pShading->GetColorSpace();;
 		float delta = (t1 - t0) / info.shading.function.get_resolution();
@@ -4082,7 +4082,7 @@ namespace PdfReader
 		((NSGraphics::IGraphicsRenderer*)m_pRenderer)->put_BrushGradInfo(info);
 		m_pRenderer->DrawPath(c_nWindingFillMode);
 			
-                m_pRenderer->EndCommand(c_nPathType);
+        m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
 	}
 	void RendererOutputDev::FillStrokeGradientTriangle(GrState *pGState, const std::vector<GrColor*> &colors, const std::vector<NSStructures::Point> &point)
@@ -4092,9 +4092,6 @@ namespace PdfReader
 
 		if (m_bTransparentGroupSoftMask)
 			return;
-
-		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
-
 		long brush;
 		int alpha = pGState->GetFillOpacity() * 255;
 		m_pRenderer->get_BrushType(&brush);
@@ -4124,6 +4121,27 @@ namespace PdfReader
 	}
 	void RendererOutputDev::FillStrokeGradientFunctional(GrState *pGState, GrFunctionShading *pShading)
 	{
+		if (m_bDrawOnlyText)
+				return;
 
+		if (m_bTransparentGroupSoftMask)
+			return;
+		long brush;
+		int alpha = pGState->GetFillOpacity() * 255;
+		m_pRenderer->get_BrushType(&brush);
+		m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
+		double x1,x2,y1,y2;
+		pShading->GetDomain(&x1, &y1, &x2, &y2);
+		std::vector<float> mapping(6);
+		for (int i = 0; i < 6; i++)
+		{
+			mapping[i] = pShading->GetMatrix()[i];
+		}
+		auto info = NSStructures::GInfoConstructor::get_functional(x1, x2, y1, y2, mapping);
+		((NSGraphics::IGraphicsRenderer*)m_pRenderer)->put_BrushGradInfo(info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
+			
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->put_BrushType(brush);
 	}
 }

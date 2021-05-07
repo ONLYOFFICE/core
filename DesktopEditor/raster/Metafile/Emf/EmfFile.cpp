@@ -1035,6 +1035,9 @@ static const struct ActionNamesEmf
 				DrawImage(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);				
 		}
 
+//		if (m_pOutput && m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		    m_oStream = oTemp;
+
 		if (pBgraBuffer)
 			delete[] pBgraBuffer;
 	}

@@ -126,9 +126,9 @@ namespace MetaFile
         void operator>>(CEmfLogBrushEx& oCEmfLogBrushEx);
         void operator>>(TEmfBitBlt&     oTEmfBitBlt);
         void operator>>(CEmfLogFont&    oCEmfLogFont);
-        void operator>>(TEmfExtTextoutW& oTEmfExtTextoutW);
+        void operator>>(TEmfExtTextoutW&oTEmfExtTextoutW);
         void operator>>(TEmfEmrText&    oTEmfEmrText);
-//        CDataStream
+        void operator>>(CDataStream&    oCDataStream);
 
         void operator>>(TXForm&         oTXForm);
         void operator>>(TEmfColor&      oTEmfColor);
@@ -151,6 +151,8 @@ namespace MetaFile
         void operator>>(unsigned short& ushValue);
         void operator>>(unsigned char&  ucValue);
         void operator>>(unsigned short  arushValue[]);
+        void operator>>(std::wstring&   wsValue);
+        void operator>>(std::string&    sValue);
     };
 }
 #endif // CXMLOUTPUT_H

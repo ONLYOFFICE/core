@@ -673,11 +673,6 @@ namespace MetaFile
         *this >> oTEmfBitBlt.cbBmiSrc;
         *this >> oTEmfBitBlt.offBitsSrc;
         *this >> oTEmfBitBlt.cbBitsSrc;
-
-        if (oTEmfBitBlt.cbBitsSrc != 0)
-        {
-            //TODO: закончить реализацию при встрече примера
-        }
     }
 
     void CXmlOutput::operator>>(CEmfLogFont &oCEmfLogFont)
@@ -759,6 +754,21 @@ namespace MetaFile
         *this >> oTEmfEmrText.offDx;
         oTEmfEmrText.OutputString = new unsigned short[oTEmfEmrText.Chars];
         *this >> (unsigned short*)oTEmfEmrText.OutputString;
+    }
+
+    void CXmlOutput::operator>>(CDataStream &oCDataStream)
+    {
+        std::string sBuffer;
+        *this >> sBuffer;
+
+        if (sBuffer.empty())
+            return;
+
+        BYTE* pBuffer;
+        int unSize = NSBase64::Base64DecodeGetRequiredLength(sBuffer.length());
+        pBuffer = new BYTE[unSize];
+        NSBase64::Base64Decode(sBuffer.c_str(), sBuffer.length(), pBuffer, &unSize);
+        oCDataStream.SetStream(pBuffer, unSize);
     }
 
     void CXmlOutput::operator>>(TXForm &oTXForm)
@@ -871,5 +881,17 @@ namespace MetaFile
 
         for (unsigned int i = 0; i < unSize; ++i)
             arushValue[i] = pTemp[i];
+    }
+
+    void CXmlOutput::operator>>(std::wstring& wsValue)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+        wsValue = m_pXmlLiteReader->GetText2();
+    }
+
+    void CXmlOutput::operator>>(std::string& sValue)
+    {
+        m_pXmlLiteReader->ReadNextNode();
+        sValue = U_TO_UTF8(m_pXmlLiteReader->GetText2());
     }
 }

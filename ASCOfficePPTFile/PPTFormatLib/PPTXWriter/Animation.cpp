@@ -158,11 +158,14 @@ void Animation::FillAnim(
         }
         }
 
-        tav.tm = std::to_wstring(
-                    animValue->m_oTimeAnimationValueAtom.m_nTime  *100);
+        long tavTime = animValue->m_oTimeAnimationValueAtom.m_nTime;
+        if (tavTime >= 0 && tavTime <= 1000)
+            tav.tm = std::to_wstring(tavTime  * 100);
+        if (tavTime == -1000)
+            tav.tm = L"indefinite";
 
         auto fmla = XmlUtils::EncodeXmlString(animValue->m_VarFormula.m_Value);
-        if (fmla.size())
+        if (fmla.size() > 1)
         {
             tav.fmla = fmla;
         }

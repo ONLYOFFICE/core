@@ -841,6 +841,39 @@ void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
 
     // TODO check pShapeElement->CElement.m_oAction.m_bPresent == true
     // It need for button
+    auto& action = pShapeElement->m_oActions;
+    if (action.m_bPresent       == true &&
+        action.m_lHyperlinkType != 0xff &&
+        action.m_lType == 3)                     // We need to locate it inside condition's body, but now it's here
+    {
+        m_oWriter.WriteString(std::wstring(L"<a:hlinkClick r:id=\"\" action=\"ppaction://hlinkshowjump?jump="));
+        std::wstring link;
+        switch (action.m_lHyperlinkType)
+        {
+        case 0:
+        {
+            link = L"nextslide";
+            break;
+        }
+        case 1:
+        {
+            link = L"previousslide";
+            break;
+        }
+        case 2:
+        {
+            link = L"fistslide";
+            break;
+        }
+        case 3:
+        {
+            link = L"lastslide";
+            break;
+        }
+        }
+        m_oWriter.WriteString(link);
+        m_oWriter.WriteString(std::wstring(L"\" highlightClick=\"1\">/"));
+    }
 	if (!pShapeElement->m_sHyperlink.empty())
 	{
         std::wstring rId = m_pRels->WriteHyperlink(pShapeElement->m_sHyperlink);

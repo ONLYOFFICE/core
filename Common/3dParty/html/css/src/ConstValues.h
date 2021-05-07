@@ -1612,20 +1612,33 @@ namespace NSCSS
                 std::vector<bool> bImportants;
                 std::vector<unsigned int> arLevels;
 
+                bool bBlock;
+
             public:
 
                 BorderSide() : fWidth(fNoneValue),
                                sStyle(L"auto"),
                                sColor(L"auto"),
                                bImportants({false, false, false}),
-                               arLevels({0, 0, 0}){}
+                               arLevels({0, 0, 0}),
+                               bBlock(false){}
 
                 void ClearImportants()
                 {
                     bImportants = {false, false, false};
                 }
 
-                BorderSide operator+=(const BorderSide& oBorderSide)
+                void Block()
+                {
+                    bBlock = true;
+                }
+
+                void Unlock()
+                {
+                    bBlock = false;
+                }
+
+                BorderSide operator=(const BorderSide& oBorderSide)
                 {
                     if (oBorderSide.Empty())
                         return *this;
@@ -1876,12 +1889,12 @@ namespace NSCSS
 
                 std::wstring GetStyle() const
                 {
-                    return sStyle;
+                    return (bBlock) ? L"auto" : sStyle;
                 }
 
                 std::wstring GetColor() const
                 {
-                    return sColor;
+                    return (bBlock) ? L"auto" : sColor;
                 }
 
                 std::wstring GetWidthW() const
@@ -1889,7 +1902,7 @@ namespace NSCSS
                     if (fWidth < 0)
                         return L"0";
 
-                    return std::to_wstring(static_cast<unsigned short>(fWidth + 0.5f));
+                    return (bBlock) ? L"0" : std::to_wstring(static_cast<unsigned short>(fWidth + 0.5f));
                 }
 
                 float GetWidth() const
@@ -1989,12 +2002,12 @@ namespace NSCSS
                     oLeft.ClearImportants();
                 }
 
-                Border operator+=(const Border& oBorder)
-                {
-                    oTop    += oBorder.oTop;
-                    oRight  += oBorder.oRight;
-                    oBottom += oBorder.oBottom;
-                    oLeft   += oBorder.oLeft;
+                Border operator=(const Border& oBorder)
+                { 
+                    oTop    = oBorder.oTop;
+                    oRight  = oBorder.oRight;
+                    oBottom = oBorder.oBottom;
+                    oLeft   = oBorder.oLeft;
 
                     return *this;
                 }
@@ -2005,6 +2018,22 @@ namespace NSCSS
                     BorderSide::BorderSideEquation(oFirstBorder.oRight, oSecondBorder.oRight);
                     BorderSide::BorderSideEquation(oFirstBorder.oBottom, oSecondBorder.oBottom);
                     BorderSide::BorderSideEquation(oFirstBorder.oLeft, oSecondBorder.oLeft);
+                }
+
+                void Block()
+                {
+                    oTop.Block();
+                    oRight.Block();
+                    oBottom.Block();
+                    oLeft.Block();
+                }
+
+                void Unlock()
+                {
+                    oTop.Unlock();
+                    oRight.Unlock();
+                    oBottom.Unlock();
+                    oLeft.Unlock();
                 }
 
                 bool operator==(const Border& oBorder) const

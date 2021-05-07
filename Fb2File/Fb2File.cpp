@@ -1819,6 +1819,10 @@ std::wstring ToLowerRoman(int number)
 void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasTable)
 {
     int nNum = 1;
+    while (oIndexHtml.MoveToNextAttribute())
+        if (oIndexHtml.GetName() == L"start")
+            nNum = std::stoi(oIndexHtml.GetText());
+    oIndexHtml.MoveToElement();
     int nDeath = oIndexHtml.GetDepth();
     if (oIndexHtml.IsEmptyNode() || !oIndexHtml.ReadNextSiblingNode2(nDeath))
         return;

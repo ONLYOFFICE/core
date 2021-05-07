@@ -16,12 +16,17 @@ CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-ADD_DEPENDENCY(kernel)
+ADD_DEPENDENCY(kernel, OfficeUtils, zlib)
+
+INCLUDEPATH += \
+    $$PWD/../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip \
+    $$PWD/../../../OfficeUtils/src/zlib-1.2.11
 
 DEFINES -= UNICODE
 HEADERS += \
     include/XmlCertificate.h \
     include/OOXMLSigner.h \
+    include/OOXMLSignerBuffer.h \
     include/OOXMLVerifier.h
 
 HEADERS += \
@@ -33,6 +38,7 @@ SOURCES += \
     src/XmlTransform.cpp \
     src/XmlCertificate.cpp \
     src/OOXMLSigner.cpp \
+    src/OOXMLSignerBuffer.cpp \
     src/OOXMLVerifier.cpp
 
 core_windows {

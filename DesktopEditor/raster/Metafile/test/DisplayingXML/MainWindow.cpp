@@ -3,9 +3,17 @@
 
 #include <QResizeEvent>
 #include <QMessageBox>
+#include <QFileDialog>
 #include <QTextEdit>
 #include <QDebug>
 #include <QFile>
+
+#include "../../../../graphics/pro/Fonts.h"
+#include "../../../../graphics/pro/Graphics.h"
+#include "../../../../fontengine/ApplicationFontsWorker.h"
+
+#include "../../../../raster/BgraFrame.h"
+#include "../../../../common/Directory.h"
 
 #include "../../../../common/Directory.h"
 
@@ -14,11 +22,6 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
-    QImage oImage(QString::fromStdWString(NSFile::GetProcessDirectory() + L"//test.png"));
-    QGraphicsScene *pGraphicsScene = new QGraphicsScene;
-    pGraphicsScene->addPixmap(QPixmap::fromImage(QImage(oImage)));
-    ui->graphicsView->setScene(pGraphicsScene);
 
     QFont oFont;
     oFont.setPointSize(15);
@@ -47,12 +50,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_oObjectTextFormat.setForeground(Qt::darkRed);
     m_oObjectTextFormat.setFont(oFont3);
-
-    m_wsFileName = NSFile::GetProcessDirectory() + L"//test.xml";
-    ReadFile();
-    QTextCursor cursor = ui->DataEdit->textCursor();
-    cursor.movePosition(QTextCursor::Start);
-    ui->DataEdit->setTextCursor(cursor);
 }
 
 MainWindow::~MainWindow()
@@ -63,7 +60,7 @@ MainWindow::~MainWindow()
 bool MainWindow::ReadFile()
 {
     XmlUtils::CXmlNode oXmlNode;
-    oXmlNode.FromXmlFile(m_wsFileName);
+    oXmlNode.FromXmlFile(m_wsPathToXmlFile);
 
     ReadXmlNode(oXmlNode);
 
@@ -156,7 +153,7 @@ void MainWindow::AddIndent(unsigned int unLevel)
 
 void MainWindow::WriteFile()
 {
-    QFile out(QString::fromStdWString(m_wsFileName));
+    QFile out(QString::fromStdWString(m_wsPathToXmlFile));
 
     if (out.open(QIODevice::WriteOnly))
     {
@@ -166,6 +163,35 @@ void MainWindow::WriteFile()
     }
     else
         QMessageBox::warning(this, "Warning", "Couldn't open file for saving");
+}
+
+void MainWindow::ConvertToRaster()
+{
+    if (m_wsPathToFile.empty())
+        return;
+
+    CApplicationFontsWorker oWorker;
+    oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
+    oWorker.m_bIsNeedThumbnails = false;
+
+    if (!NSDirectory::Exists(oWorker.m_sDirectory))
+        NSDirectory::CreateDirectory(oWorker.m_sDirectory);
+
+    NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+
+    MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+    pMetafile->LoadFromFile(m_wsPathToFile.c_str());
+    std::wstring wsPathToRasterFile = NSFile::GetProcessDirectory() + L"/test.png";
+    m_wsPathToXmlFile = NSFile::GetProcessDirectory() + L"/test.xml";
+    pMetafile->ConvertToRaster(wsPathToRasterFile.c_str(), 4, 1000);
+
+    pMetafile->Release();
+    pFonts->Release();
+
+    QImage oImage(QString::fromStdWString(wsPathToRasterFile));
+    QGraphicsScene *pGraphicsScene = new QGraphicsScene;
+    pGraphicsScene->addPixmap(QPixmap::fromImage(QImage(oImage)));
+    ui->graphicsView->setScene(pGraphicsScene);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *pResizeEvent)
@@ -179,4 +205,11 @@ void MainWindow::resizeEvent(QResizeEvent *pResizeEvent)
 void MainWindow::on_SaveButton_clicked()
 {
     WriteFile();
+}
+
+void MainWindow::on_ChangeButton_clicked()
+{
+    m_wsPathToFile = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Metafile (*.emf *.wmf)")).toStdWString();
+    ConvertToRaster();
+    ReadFile();
 }

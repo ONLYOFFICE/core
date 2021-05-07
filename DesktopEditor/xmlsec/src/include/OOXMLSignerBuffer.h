@@ -7,14 +7,14 @@ class COOXMLSignerBuffer_private;
 class Q_DECL_EXPORT COOXMLSignerBuffer
 {
 public:
-    COOXMLSignerBuffer(unsigned char* file, ICertificate* pContext);
+    COOXMLSignerBuffer  (unsigned char* file, unsigned int length, ICertificate* pContext);
     ~COOXMLSignerBuffer();
 
     void SetGuid(const std::wstring& guid);
-    void SetImageValid(unsigned char* file);
-    void SetImageInvalid(unsigned char* file);
+    void SetImageValid  (unsigned char* file, unsigned int length);
+    void SetImageInvalid(unsigned char* file, unsigned int length);
 
-    int Sign();
+    int Sign(unsigned char*& fileToWrite, unsigned int& lengthToWrite);
 
 private:
     COOXMLSignerBuffer_private* m_internal;

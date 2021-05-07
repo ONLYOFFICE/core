@@ -7,6 +7,11 @@
 #include <time.h>
 #include <vector>
 
+unsigned int GetLength(BYTE* x)
+{
+    return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
+}
+
 class CFile
 {
 public:
@@ -98,13 +103,31 @@ public:
                 return &oFile;
         return NULL;
     }
+
+    void write(BYTE*& fileToWrite, unsigned int& lengthToWrite)
+    {
+        CData* oData = new CData();
+        oData->SkipLen();
+        for (CFile& oFile : arrFiles)
+        {
+            BYTE* sPath; long nPathLength;
+            NSFile::CUtf8Converter::GetUtf8StringFromUnicode(oFile.m_sPath.c_str(), oFile.m_sPath.length(), sPath, nPathLength);
+            oData->WriteString(sPath, nPathLength);
+            oData->WriteString(oFile.m_pData, oFile.m_nLength);
+        }
+        oData->WriteLen();
+
+        Zlib* zipFile = Zlib_Create();
+        BYTE* oRes = Zlib_CompressFiles(zipFile, oData->GetBuffer());
+        fileToWrite = oRes + 4;
+        lengthToWrite = GetLength(oRes);
+    }
 };
 
 class COOXMLSignerBuffer_private
 {
 public:
     ICertificate*                           m_certificate;
-    CData*                                  m_file;
     CFileManagerBuffer                      m_file_manager;
 
     std::wstring                            m_date;
@@ -120,18 +143,10 @@ public:
 
     std::wstring                            m_guid;
 
-private:
-    unsigned int GetLength(BYTE* x)
-    {
-        return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
-    }
-
 public:
-    COOXMLSignerBuffer_private(BYTE* file, ICertificate* pContext)
+    COOXMLSignerBuffer_private(BYTE* file, unsigned int length, ICertificate* pContext)
     {
-        m_file = new CData(file, GetLength(file));
-
-        Zlib* zlib = Zlib_Load(file + 4, GetLength(file));
+        Zlib* zlib = Zlib_Load(file, length);
         BYTE* sPaths = Zlib_GetPathsInArchive(zlib);
         unsigned int nLength = GetLength(sPaths);
         unsigned int i = 4;
@@ -214,7 +229,7 @@ public:
         return sRet;
     }
 
-    std::wstring GetImageBase64(BYTE* file)
+    std::wstring GetImageBase64(BYTE* file, unsigned int length)
     {
         /*
         if (0 == file.find(L"data:image/"))
@@ -223,12 +238,11 @@ public:
         }
         */
 
-        DWORD dwLen = GetLength(file);
         BYTE* pData = file + 4;
 
         char* pDataC = NULL;
         int nLen = 0;
-        NSFile::CBase64Converter::Encode(pData, (int)dwLen, pDataC, nLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
+        NSFile::CBase64Converter::Encode(pData, (int)length, pDataC, nLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
         std::wstring sReturn = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pDataC, (LONG)nLen, FALSE);
 
@@ -542,13 +556,13 @@ public:
     {
         m_guid = guid;
     }
-    void SetImageValid(BYTE* file)
+    void SetImageValid  (BYTE* file, unsigned int length)
     {
-        m_image_valid = GetImageBase64(file);
+        m_image_valid = GetImageBase64(file, length);
     }
-    void SetImageInvalid(BYTE* file)
+    void SetImageInvalid(BYTE* file, unsigned int length)
     {
-        m_image_invalid = GetImageBase64(file);
+        m_image_invalid = GetImageBase64(file, length);
     }
 
     std::wstring GeneratePackageObject()
@@ -716,7 +730,7 @@ public:
         return nSignNum;
     }
 
-    int Sign()
+    int Sign(unsigned char*& fileToWrite, unsigned int& lengthToWrite)
     {
         Parse();
 
@@ -754,13 +768,14 @@ public:
         NSFile::CUtf8Converter::GetUtf8StringFromUnicode(builderResult.GetData().c_str(), builderResult.GetSize(), pData, nLength);
         m_file_manager.addFile(L"_xmlsignatures/sig" + std::to_wstring(nSignNum + 1) + L".xml", pData, nLength);
 
+        m_file_manager.write(fileToWrite, lengthToWrite);
         return (sSignedXml.empty()) ? 1 : 0;
     }
 };
 
-COOXMLSignerBuffer::COOXMLSignerBuffer(unsigned char* arrFileTree, ICertificate* pContext)
+COOXMLSignerBuffer::COOXMLSignerBuffer(BYTE* arrFileTree, unsigned int length, ICertificate* pContext)
 {
-    m_internal = new COOXMLSignerBuffer_private(arrFileTree, pContext);
+    m_internal = new COOXMLSignerBuffer_private(arrFileTree, length, pContext);
 }
 
 COOXMLSignerBuffer::~COOXMLSignerBuffer()
@@ -773,17 +788,17 @@ void COOXMLSignerBuffer::SetGuid(const std::wstring& guid)
     m_internal->SetGuid(guid);
 }
 
-void COOXMLSignerBuffer::SetImageValid(unsigned char* file)
+void COOXMLSignerBuffer::SetImageValid(BYTE* file, unsigned int length)
 {
-    m_internal->SetImageValid(file);
+    m_internal->SetImageValid(file, length);
 }
 
-void COOXMLSignerBuffer::SetImageInvalid(unsigned char* file)
+void COOXMLSignerBuffer::SetImageInvalid(BYTE* file, unsigned int length)
 {
-    m_internal->SetImageInvalid(file);
+    m_internal->SetImageInvalid(file, length);
 }
 
-int COOXMLSignerBuffer::Sign()
+int COOXMLSignerBuffer::Sign(unsigned char*& fileToWrite, unsigned int& lengthToWrite)
 {
-    return m_internal->Sign();
+    return m_internal->Sign(fileToWrite, lengthToWrite);
 }

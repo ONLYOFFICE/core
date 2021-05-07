@@ -6,7 +6,6 @@
 #include <ctime>
 #include <time.h>
 #include <vector>
-#include <algorithm>
 
 class CFile
 {
@@ -179,7 +178,8 @@ public:
         std::wstring sXml = L"<Reference URI=\"" + file + L"?ContentType=" + content_type + L"\">";
         sXml += (L"<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/>");
         sXml += L"<DigestValue>";
-        std::string sTmp = m_certificate->GetHash(m_sFolder + file, m_certificate->GetHashAlg());
+        CFile* oFile = m_file_manager.GetFile(file);
+        std::string sTmp = oFile ? m_certificate->GetHash(oFile->m_pData, oFile->m_nLength, m_certificate->GetHashAlg()) : "";
         sXml += UTF8_TO_U(sTmp);
         sXml += L"</DigestValue>";
         sXml += L"</Reference>";
@@ -240,13 +240,18 @@ public:
 
     std::wstring GetRelsReference(const std::wstring& file)
     {
-        COOXMLRelationships oRels(m_sFolder + file, true);
+        CFile* oFile = m_file_manager.GetFile(file);
+        if (!oFile)
+            return L"";
+        COOXMLRelationships oRels(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(oFile->m_pData, oFile->m_nLength), false);
         if (oRels.rels.size() == 0)
             return L"";
 
         if (L"/_rels/.rels" == file)
         {
-            oRels.CheckOriginSigs(m_sFolder + file);
+            long nLength;
+            oRels.CheckOriginSigs(oFile->m_pData, nLength);
+            oFile->m_nLength = nLength;
 
             // удалим все лишнее
             std::vector<COOXMLRelationship>::iterator i = oRels.rels.begin();
@@ -289,7 +294,7 @@ public:
         for (std::vector<CFile>::iterator iter = arFiles.begin(); iter != arFiles.end(); iter++)
         {
             XmlUtils::CXmlNode oNodeRels;
-            if (!oNodeRels.FromXmlFile(*iter))
+            if (oNodeRels.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(iter->m_pData, iter->m_nLength)))
                 continue;
             XmlUtils::CXmlNodes oNodesRels = oNodeRels.GetNodes(L"Relationship");
             int nCount = oNodesRels.GetCount();
@@ -302,7 +307,7 @@ public:
                 if (!sTarget.empty() && arSigFiles.find(sTarget) == arSigFiles.end() && NSFile::CFileBinary::Exists(folder + L"/" + sTarget))
                     arSigFiles.insert(std::pair<std::wstring, bool>(sTarget, true));
             }
-            NSFile::CFileBinary::Remove(*iter);
+            m_file_manager.removeFile(iter->m_sPath);
         }
 
         int nCountSigs = (int)arSigFiles.size();

@@ -221,6 +221,59 @@ Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-sign
         oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());
         oFile.CloseFile();
     }
+
+    void CheckOriginSigs(BYTE* pData, LONG& nSize)
+    {
+        int rId = 0;
+        std::wstring sReplace = L"";
+        std::vector<COOXMLRelationship>::iterator i = rels.begin();
+        while (i != rels.end())
+        {
+            if (0 == i->target.find(L"_xmlsignatures/"))
+            {
+                sReplace = i->target;
+                break;
+            }
+
+            std::wstring rid = i->rid;
+            rid = rid.substr(3);
+
+            int nTemp = std::stoi(rid);
+
+            if (nTemp > rId)
+                rId = nTemp;
+
+            i++;
+        }
+
+        if (!sReplace.empty())
+        {
+            if (sReplace == L"_xmlsignatures/origin.sigs")
+                return;
+
+            std::wstring sXml = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, nSize);
+            NSStringUtils::string_replace(sXml, sReplace, L"_xmlsignatures/origin.sigs");
+
+            RELEASEARRAYOBJECTS(pData);
+            NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.c_str(), sXml.length(), pData, nSize);
+            return;
+        }
+
+        std::wstring sXml = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, nSize);
+
+        std::wstring::size_type pos = sXml.rfind(L"</Relationships>");
+        if (pos == std::wstring::npos)
+            return;
+
+        rId++;
+        std::wstring sRet = sXml.substr(0, pos);
+        sRet += (L"<Relationship Id=\"rId" + std::to_wstring(rId) + L"\" \
+Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/origin\" Target=\"_xmlsignatures/origin.sigs\"/>\
+</Relationships>");
+
+        RELEASEARRAYOBJECTS(pData);
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sRet.c_str(), sRet.length(), pData, nSize);
+    }
 };
 
 #endif //_XML_RELS_H_

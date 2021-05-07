@@ -1893,8 +1893,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
     // title-info
     oDocument.WriteString(L"<title-info>");
     std::wstring sBookTitle = sInpTitle.empty() ? NSFile::GetFileName(sDst) : sInpTitle;
-    std::wstring sAuthor = sBookTitle;
-    std::wstring sAnnotation, sKeywords, sGenre;
+    std::wstring sAuthor, sAnnotation, sKeywords, sGenre;
     std::wstring sLanguage = L"en-EN", sVersion = L"1.0";
     std::wstring sIdentifier = GenerateUUID();
     XmlUtils::CXmlLiteReader oCoreReader;

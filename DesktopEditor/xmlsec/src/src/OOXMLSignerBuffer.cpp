@@ -304,7 +304,7 @@ public:
                 oNodesRels.GetAt(nIndex, oNodeRel);
 
                 std::wstring sTarget = oNodeRel.GetAttribute(L"Target");
-                if (!sTarget.empty() && arSigFiles.find(sTarget) == arSigFiles.end() && NSFile::CFileBinary::Exists(folder + L"/" + sTarget))
+                if (!sTarget.empty() && arSigFiles.find(sTarget) == arSigFiles.end() && m_file_manager.ExistFile(folder + L"/" + sTarget))
                     arSigFiles.insert(std::pair<std::wstring, bool>(sTarget, true));
             }
             m_file_manager.removeFile(iter->m_sPath);
@@ -327,20 +327,20 @@ public:
 
         oBuilder.WriteString(L"</Relationships>");
 
-        NSFile::CFileBinary::Remove(sFile);
-        NSFile::CFileBinary oFile;
-        oFile.CreateFileW(sFile);
-        oFile.WriteStringUTF8(oBuilder.GetData());
-        oFile.CloseFile();
+        CFile* oFile = m_file_manager.GetFile(sFile);
+        RELEASEARRAYOBJECTS(oFile->m_pData);
+        long nLong;
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(oBuilder.GetData().c_str(), oBuilder.GetSize(), oFile->m_pData, nLong);
+        oFile->m_nLength = nLong;
 
         // теперь перебьем все имена файлов
 
         std::vector<std::wstring> arSigs;
 
-        std::vector<std::wstring> arFilesXml = NSDirectory::GetFiles(folder, false);
-        for (std::vector<std::wstring>::iterator iter = arFilesXml.begin(); iter != arFilesXml.end(); iter++)
+        std::vector<CFile> arFilesXml = m_file_manager.GetFiles(folder, false);
+        for (std::vector<CFile>::iterator iter = arFilesXml.begin(); iter != arFilesXml.end(); iter++)
         {
-            std::wstring sXmlFileName = NSFile::GetFileName(*iter);
+            std::wstring sXmlFileName = NSFile::GetFileName(iter->m_sPath);
             if (NSFile::GetFileExtention(sXmlFileName) != L"xml")
                 continue;
 
@@ -348,7 +348,7 @@ public:
             if (find == arSigFiles.end())
             {
                 // ненужная xml
-                NSFile::CFileBinary::Remove(*iter);
+                m_file_manager.removeFile(iter->m_sPath);
                 continue;
             }
 
@@ -358,12 +358,12 @@ public:
         std::sort(arSigs.begin(), arSigs.end());
         for (std::vector<std::wstring>::iterator iter = arSigs.begin(); iter != arSigs.end(); iter++)
         {
-            NSFile::CFileBinary::Move(folder + L"/" + *iter, folder + L"/onlyoffice_" + *iter);
+            m_file_manager.GetFile(folder + L"/" + *iter)->m_sPath = folder + L"/onlyoffice_" + *iter;
         }
         int nSigNumber = 1;
         for (std::vector<std::wstring>::iterator iter = arSigs.begin(); iter != arSigs.end(); iter++)
         {
-            NSFile::CFileBinary::Move(folder + L"/onlyoffice_" + *iter, folder + L"/sig" + std::to_wstring(nSigNumber++) + L".xml");
+            m_file_manager.GetFile(folder + L"/onlyoffice_" + *iter)->m_sPath = folder + L"/sig" + std::to_wstring(nSigNumber++) + L".xml";
         }
 
         return (int)arSigs.size();

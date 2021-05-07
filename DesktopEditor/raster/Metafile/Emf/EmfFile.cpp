@@ -791,13 +791,7 @@ static const struct ActionNamesEmf
 
 				unsigned int unSize = m_ulRecordSize - 80;
 				if (unSize > 0)
-				{
-					BYTE *pData = new BYTE[unSize];
-					m_oStream.ReadBytes(pData, unSize);
-					m_oStream.SeekBack(unSize);
-					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
-					delete[] pData;
-				}
+					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
 
 				m_pOutputXml->WriteNodeEnd(L"EMR_HEADER");
 		}
@@ -849,13 +843,7 @@ static const struct ActionNamesEmf
 
 				unsigned int unSize = m_ulRecordSize - sizeof (TEmfAlphaBlend);
 				if (unSize > 0)
-				{
-					BYTE *pData = new BYTE[unSize];
-					m_oStream.ReadBytes(pData, unSize);
-					m_oStream.SeekBack(unSize);
-					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
-					delete[] pData;
-				}
+					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
 
 				m_pOutputXml->WriteNodeEnd(L"EMR_ALPHABLEND");
 		}
@@ -912,13 +900,7 @@ static const struct ActionNamesEmf
 
 				unsigned int unSize = m_ulRecordSize - sizeof (TEmfStretchDIBITS);
 				if (unSize > 0)
-				{
-					BYTE *pData = new BYTE[unSize];
-					m_oStream.ReadBytes(pData, unSize);
-					m_oStream.SeekBack(unSize);
-					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
-					delete[] pData;
-				}
+					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
 
 				m_pOutputXml->WriteNodeEnd(L"EMR_STRETCHDIBITS");
 		}
@@ -947,6 +929,7 @@ static const struct ActionNamesEmf
 		{
 			TEmfBitBlt oTestBitmap;
 			*m_pOutputXml >> oTestBitmap;
+			CDataStream oBuffer;
 		}
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
@@ -957,13 +940,7 @@ static const struct ActionNamesEmf
 
 				unsigned int unSize = m_ulRecordSize - 92;
 				if (unSize > 0)
-				{
-					BYTE *pData = new BYTE[unSize];
-					m_oStream.ReadBytes(pData, unSize);
-					m_oStream.SeekBack(unSize);
-					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
-					delete[] pData;
-				}
+					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
 
 				m_pOutputXml->WriteNodeEnd(L"EMR_BITBLT");
 		}
@@ -1074,13 +1051,7 @@ static const struct ActionNamesEmf
 
 				unsigned int unSize = m_ulRecordSize - sizeof (TEmfSetDiBitsToDevice);
 				if (unSize > 0)
-				{
-					BYTE *pData = new BYTE[unSize];
-					m_oStream.ReadBytes(pData, unSize);
-					m_oStream.SeekBack(unSize);
-					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
-					delete[] pData;
-				}
+					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
 
 				m_pOutputXml->WriteNodeEnd(L"EMR_SETDIBITSTODEVICE");
 		}
@@ -1109,13 +1080,7 @@ static const struct ActionNamesEmf
 
 				unsigned int unSize = m_ulRecordSize - 100;
 				if (unSize > 0)
-				{
-					BYTE *pData = new BYTE[unSize];
-					m_oStream.ReadBytes(pData, unSize);
-					m_oStream.SeekBack(unSize);
-					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
-					delete[] pData;
-				}
+					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
 
 				m_pOutputXml->WriteNodeEnd(L"EMR_STRETCHBLT");
 		}
@@ -1517,12 +1482,8 @@ static const struct ActionNamesEmf
 					m_pOutputXml->WriteNodeEnd(L"LogPenEx");
 
 				if (current_size > 0 && current_size < INT_MAX)
-				{
-					BYTE *pData = new BYTE[current_size];
-					m_oStream.ReadBytes(pData, current_size);
-					m_oStream.SeekBack(current_size);
-					m_pOutputXml->WriteNode(L"Buffer", pData, current_size);
-				}
+					m_pOutputXml->WriteNode(L"Buffer", m_oStream, current_size);
+
 				m_pOutputXml->WriteNodeEnd(L"EMR_EXTCREATEPEN");
 		}
 
@@ -1842,12 +1803,7 @@ static const struct ActionNamesEmf
 				unsigned int unSize = m_ulRecordSize - 24;
 
 				if (unSize > 0)
-				{
-					BYTE *pData = new BYTE[unSize];
-					m_oStream.ReadBytes(pData, unSize);
-					m_oStream.SeekBack(unSize);
-					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
-				}
+					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
 
 				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEDIBPATTERNBRUSHPT");
 		}
@@ -1962,12 +1918,7 @@ static const struct ActionNamesEmf
                                 unsigned int unSize = m_ulRecordSize - 8;
 
 				if (unSize > 0)
-				{
-					BYTE *pData = new BYTE[unSize];
-					m_oStream.ReadBytes(pData, unSize);
-					m_oStream.SeekBack(unSize);
-					m_pOutputXml->WriteNode(L"Buffer", pData, unSize);
-				}
+					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
 
                                 m_pOutputXml->WriteNodeEnd(L"EMR_EXTSELECTCLIPRGN");
                 }

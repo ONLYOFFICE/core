@@ -2,6 +2,7 @@
 #define CXMLOUTPUT_H
 
 #include "../../xml/include/xmlutils.h"
+#include "Common/MetaFileUtils.h"
 #include "Emf/EmfTypes.h"
 #include "Emf/EmfObjects.h"
 
@@ -56,7 +57,7 @@ namespace MetaFile
         void WriteNode(const std::wstring& wsNameNode,  unsigned short usValueNode);
         void WriteNode(const std::wstring& wsNameNode,  unsigned char ucValueNode);
         void WriteNode(const std::wstring& wsNameNode,  unsigned int unValueNode);
-        void WriteNode(const std::wstring& wsNameNode,  const BYTE* pValueNode, unsigned int unSizeValue);
+        void WriteNode(const std::wstring& wsNameNode,  CDataStream& oDataStream, unsigned int unSizeValue);
         void WriteNode(const std::wstring& wsNameNode,  double dValueNode);
         void WriteNode(const std::wstring& wsNameNode,  short shValueNode);
         void WriteNode(const std::wstring& wsNameNode,  int nValueNode);
@@ -127,6 +128,7 @@ namespace MetaFile
         void operator>>(CEmfLogFont&    oCEmfLogFont);
         void operator>>(TEmfExtTextoutW& oTEmfExtTextoutW);
         void operator>>(TEmfEmrText&    oTEmfEmrText);
+//        CDataStream
 
         void operator>>(TXForm&         oTXForm);
         void operator>>(TEmfColor&      oTEmfColor);

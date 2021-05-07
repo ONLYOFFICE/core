@@ -162,7 +162,7 @@ namespace MetaFile
 		{
 			CMetaFileRenderer oEmfOut(&m_oEmfFile, pRenderer, dX, dY, dWidth, dHeight);
 			m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut);
-			m_oEmfFile.CreateOutputXml(TypeXmlOutput::IsReader);
+			m_oEmfFile.CreateOutputXml(TypeXmlOutput::IsWriter);
 			m_oEmfFile.PlayMetaFile();
 		}
 		else if (c_lMetaSvm == m_lType)

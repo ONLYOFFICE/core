@@ -129,15 +129,20 @@ namespace MetaFile
         m_pXmlWriter->WriteNode(wsNameNode, std::to_wstring(unValueNode));
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const BYTE *pValueNode, unsigned int unSizeValue)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, CDataStream& oDataStream, unsigned int unSizeValue)
     {
+        BYTE *pData = new BYTE[unSizeValue];
+        oDataStream.ReadBytes(pData, unSizeValue);
+        oDataStream.SeekBack(unSizeValue);
+
         int nSize = NSBase64::Base64EncodeGetRequiredLength(unSizeValue);
         unsigned char* ucValue = new unsigned char[nSize];
 
-        NSBase64::Base64Encode(pValueNode, unSizeValue, ucValue, &nSize);
+        NSBase64::Base64Encode(pData, unSizeValue, ucValue, &nSize);
         std::wstring wsValue(ucValue, ucValue + nSize);
         m_pXmlWriter->WriteNode(wsNameNode, wsValue);
 
+        delete[] pData;
         delete[] ucValue;
     }
 

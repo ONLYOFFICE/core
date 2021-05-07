@@ -231,7 +231,7 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
     nImage = sIndexHtml.find(L"&nbsp;");
     while (nImage != std::wstring::npos)
     {
-        sIndexHtml.replace(nImage, 6, L" ");
+        sIndexHtml.replace(nImage, 6, L"&#160;");
         nImage = sIndexHtml.find(L"&nbsp;", nImage);
     }
     // заменяем <s> на style=text-decoration:line-through

@@ -1776,9 +1776,53 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
     } while (oIndexHtml.ReadNextSiblingNode2(nDeath));
 }
 
+std::wstring ToUpperRoman(int number)
+{
+    if (number < 0 || number > 3999) return L"";
+    if (number < 1) return L"";
+    if (number >= 1000) return L"M" + ToUpperRoman(number - 1000);
+    if (number >= 900) return L"CM" + ToUpperRoman(number - 900);
+    if (number >= 500) return L"D"  + ToUpperRoman(number - 500);
+    if (number >= 400) return L"CD" + ToUpperRoman(number - 400);
+    if (number >= 100) return L"C"  + ToUpperRoman(number - 100);
+    if (number >= 90) return L"XC"  + ToUpperRoman(number - 90);
+    if (number >= 50) return L"L"   + ToUpperRoman(number - 50);
+    if (number >= 40) return L"XL"  + ToUpperRoman(number - 40);
+    if (number >= 10) return L"X"   + ToUpperRoman(number - 10);
+    if (number >= 9) return L"IX"   + ToUpperRoman(number - 9);
+    if (number >= 5) return L"V"    + ToUpperRoman(number - 5);
+    if (number >= 4) return L"IV"   + ToUpperRoman(number - 4);
+    if (number >= 1) return L"I"    + ToUpperRoman(number - 1);
+    return L"";
+}
+
+std::wstring ToLowerRoman(int number)
+{
+    if (number < 0 || number > 3999) return L"";
+    if (number < 1) return L"";
+    if (number >= 1000) return L"m" + ToLowerRoman(number - 1000);
+    if (number >= 900) return L"cm" + ToLowerRoman(number - 900);
+    if (number >= 500) return L"d"  + ToLowerRoman(number - 500);
+    if (number >= 400) return L"cd" + ToLowerRoman(number - 400);
+    if (number >= 100) return L"c"  + ToLowerRoman(number - 100);
+    if (number >= 90) return L"xc"  + ToLowerRoman(number - 90);
+    if (number >= 50) return L"l"   + ToLowerRoman(number - 50);
+    if (number >= 40) return L"xl"  + ToLowerRoman(number - 40);
+    if (number >= 10) return L"x"   + ToLowerRoman(number - 10);
+    if (number >= 9) return L"ix"   + ToLowerRoman(number - 9);
+    if (number >= 5) return L"v"    + ToLowerRoman(number - 5);
+    if (number >= 4) return L"iv"   + ToLowerRoman(number - 4);
+    if (number >= 1) return L"i"    + ToLowerRoman(number - 1);
+    return L"";
+}
+
 void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasTable)
 {
     int nNum = 1;
+    while (oIndexHtml.MoveToNextAttribute())
+        if (oIndexHtml.GetName() == L"start")
+            nNum = std::stoi(oIndexHtml.GetText());
+    oIndexHtml.MoveToElement();
     int nDeath = oIndexHtml.GetDepth();
     if (oIndexHtml.IsEmptyNode() || !oIndexHtml.ReadNextSiblingNode2(nDeath))
         return;
@@ -1787,7 +1831,41 @@ void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oInde
         if (oIndexHtml.GetName() == L"li")
         {
             oXml.WriteString(L"<p>");
-            bUl ? oXml.AddCharSafe(183) : oXml.AddInt(nNum++);
+            if (bUl)
+                oXml.AddCharSafe(183);
+            else
+            {
+                std::wstring sPoint = std::to_wstring(nNum) + L'.';
+                while (oIndexHtml.MoveToNextAttribute())
+                {
+                    if (oIndexHtml.GetName() == L"style")
+                    {
+                        std::wstring sText = oIndexHtml.GetText();
+                        size_t nListType = sText.find(L"list-style-type: ");
+                        if (nListType != std::wstring::npos)
+                        {
+                            nListType += 17;
+                            size_t nListTypeEnd = sText.find(L';', nListType);
+                            std::wstring sListType = sText.substr(nListType, nListTypeEnd - nListType);
+                            if (sListType == L"decimal")
+                                break;
+                            else if (sListType == L"upper-alpha")
+                                sPoint = std::wstring((nNum - 1) / 26 + 1, L'A' + (nNum - 1) % 26);
+                            else if (sListType == L"lower-alpha")
+                                sPoint = std::wstring((nNum - 1) / 26 + 1, L'a' + (nNum - 1) % 26);
+                            else if (sListType == L"lower-roman")
+                                sPoint = ToLowerRoman(nNum);
+                            else if (sListType == L"upper-roman")
+                                sPoint = ToUpperRoman(nNum);
+                            sPoint += L'.';
+                        }
+                    }
+                }
+                oIndexHtml.MoveToElement();
+
+                nNum++;
+                oXml.WriteString(sPoint);
+            }
             oXml.WriteString(L" ");
             readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
             oXml.WriteString(L"</p>");
@@ -1819,8 +1897,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
     // title-info
     oDocument.WriteString(L"<title-info>");
     std::wstring sBookTitle = sInpTitle.empty() ? NSFile::GetFileName(sDst) : sInpTitle;
-    std::wstring sAuthor = sBookTitle;
-    std::wstring sAnnotation, sKeywords, sGenre;
+    std::wstring sAuthor, sAnnotation, sKeywords, sGenre;
     std::wstring sLanguage = L"en-EN", sVersion = L"1.0";
     std::wstring sIdentifier = GenerateUUID();
     XmlUtils::CXmlLiteReader oCoreReader;
@@ -1830,22 +1907,26 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
     while (oCoreReader.ReadNextSiblingNode(nDeath))
     {
         std::wstring sName = oCoreReader.GetName();
-        if (sName == L"dc:creator")
-            sAuthor     = oCoreReader.GetText2();
-        else if (sName == L"dc:title")
-            sBookTitle  = oCoreReader.GetText2();
-        else if (sName == L"dc:description")
-            sAnnotation = oCoreReader.GetText2();
-        else if (sName == L"dc:subject")
-            sGenre      = oCoreReader.GetText2();
-        else if (sName == L"cp:keywords")
-            sKeywords   = oCoreReader.GetText2();
-        else if (sName == L"dc:identifier")
-            sIdentifier = oCoreReader.GetText2();
-        else if (sName == L"dc:language")
-            sLanguage   = oCoreReader.GetText2();
-        else if (sName == L"cp:version")
-            sVersion    = oCoreReader.GetText2();
+        std::wstring sText = oCoreReader.GetText2();
+        if (!sText.empty())
+        {
+            if (sName == L"dc:creator")
+                sAuthor     = oCoreReader.GetText2();
+            else if (sName == L"dc:title")
+                sBookTitle  = oCoreReader.GetText2();
+            else if (sName == L"dc:description")
+                sAnnotation = oCoreReader.GetText2();
+            else if (sName == L"dc:subject")
+                sGenre      = oCoreReader.GetText2();
+            else if (sName == L"cp:keywords")
+                sKeywords   = oCoreReader.GetText2();
+            else if (sName == L"dc:identifier")
+                sIdentifier = oCoreReader.GetText2();
+            else if (sName == L"dc:language")
+                sLanguage   = oCoreReader.GetText2();
+            else if (sName == L"cp:version")
+                sVersion    = oCoreReader.GetText2();
+        }
     }
 
     oDocument.WriteString(L"<genre>");

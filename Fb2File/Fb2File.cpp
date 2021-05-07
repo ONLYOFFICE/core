@@ -1903,22 +1903,26 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
     while (oCoreReader.ReadNextSiblingNode(nDeath))
     {
         std::wstring sName = oCoreReader.GetName();
-        if (sName == L"dc:creator")
-            sAuthor     = oCoreReader.GetText2();
-        else if (sName == L"dc:title")
-            sBookTitle  = oCoreReader.GetText2();
-        else if (sName == L"dc:description")
-            sAnnotation = oCoreReader.GetText2();
-        else if (sName == L"dc:subject")
-            sGenre      = oCoreReader.GetText2();
-        else if (sName == L"cp:keywords")
-            sKeywords   = oCoreReader.GetText2();
-        else if (sName == L"dc:identifier")
-            sIdentifier = oCoreReader.GetText2();
-        else if (sName == L"dc:language")
-            sLanguage   = oCoreReader.GetText2();
-        else if (sName == L"cp:version")
-            sVersion    = oCoreReader.GetText2();
+        std::wstring sText = oCoreReader.GetText2();
+        if (!sText.empty())
+        {
+            if (sName == L"dc:creator")
+                sAuthor     = oCoreReader.GetText2();
+            else if (sName == L"dc:title")
+                sBookTitle  = oCoreReader.GetText2();
+            else if (sName == L"dc:description")
+                sAnnotation = oCoreReader.GetText2();
+            else if (sName == L"dc:subject")
+                sGenre      = oCoreReader.GetText2();
+            else if (sName == L"cp:keywords")
+                sKeywords   = oCoreReader.GetText2();
+            else if (sName == L"dc:identifier")
+                sIdentifier = oCoreReader.GetText2();
+            else if (sName == L"dc:language")
+                sLanguage   = oCoreReader.GetText2();
+            else if (sName == L"cp:version")
+                sVersion    = oCoreReader.GetText2();
+        }
     }
 
     oDocument.WriteString(L"<genre>");

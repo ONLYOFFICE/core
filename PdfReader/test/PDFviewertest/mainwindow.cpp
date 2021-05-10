@@ -6,34 +6,188 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->PDFLabel->setStyleSheet("QLabel { background-color : white;}");
-    pos_x = 0;
-    pos_y = 0;
-    scale_factor = 1;
+    m_nPosX = 0;
+    m_nPosY = 0;
+    m_dScale = 1.0;
+    m_pReader = NULL;
+    m_pImage = NULL;
 
-#ifdef QT_DEBUG
-    ui->PageLineEdit->setText("750");
-    ui->FileNameLineEdit->setText("./test.pdf");
-    filename = "./test.pdf";
-#endif
+    m_pLabel = new QLabel(ui->mainView);
+    m_pLabel->setScaledContents(true);
 
-
+    CApplicationFontsWorker oWorker;
     oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
     oWorker.m_bIsNeedThumbnails = false;
     if (!NSDirectory::Exists(oWorker.m_sDirectory))
         NSDirectory::CreateDirectory(oWorker.m_sDirectory);
 
-    pFonts = oWorker.Check();
-    PDFREADER = new PdfReader::CPdfReader(pFonts);
+    m_pFonts = oWorker.Check();
+
+    m_pFontManager = m_pFonts->GenerateFontManager();
+    NSFonts::IFontsCache* pFontsCache = NSFonts::NSFontCache::Create();
+    pFontsCache->SetStreams(m_pFonts->GetStreams());
+    pFontsCache->SetCacheSize(16);
+    m_pFontManager->SetOwnerCache(pFontsCache);
+    m_pImageCache = NSImages::NSFilesCache::Create(m_pFonts);
+
+#ifdef QT_DEBUG
+    ui->PageLineEdit->setText("750");
+    ui->FileNameLineEdit->setText("./test.pdf");
+    m_sFile = "./test.pdf";
+    OpenFile();
+#endif
 }
-
-
 
 MainWindow::~MainWindow()
 {
+    if (m_pFontManager) m_pFontManager->Release();
+    if (m_pFonts) m_pFonts->Release();
+    if (m_pImageCache) m_pImageCache->Release();
+    if (m_pReader) delete m_pReader;
     delete ui;
 }
 
+void MainWindow::OpenFile()
+{
+    if (m_pReader)
+        delete m_pReader;
+
+    m_pReader = new PdfReader::CPdfReader(m_pFonts);
+    if (!m_pReader->LoadFromFile(m_sFile.toStdWString()))
+    {
+        delete m_pReader;
+        m_pReader = NULL;
+    }
+    on_RenderButton_clicked();
+}
+
+bool MainWindow::RenderOnByteData(int nPage, BYTE*& pBgraData, int& w, int& h)
+{
+    if (!m_pReader)
+        return false;
+
+    double dWidth, dHeight;
+    double dDpiX, dDpiY;
+    m_pReader->GetPageInfo(nPage, &dWidth, &dHeight, &dDpiX, &dDpiY);
+
+    int nWidth  = (int)dWidth;
+    int nHeight = (int)dHeight;
+
+    nWidth = (int)(m_dScale * nWidth);
+    nHeight = (int)(m_dScale * nHeight);
+
+    w = nWidth;
+    h = nHeight;
+
+    pBgraData = new BYTE[nWidth * nHeight * 4];
+    if (!pBgraData)
+       return false;
+
+    memset(pBgraData, 0xff, nWidth * nHeight * 4);
+    CBgraFrame oFrame;
+    oFrame.put_Data(pBgraData);
+    oFrame.put_Width(nWidth);
+    oFrame.put_Height(nHeight);
+    oFrame.put_Stride(4 * nWidth);
+
+    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+    pRenderer->SetFontManager(m_pFontManager);
+    pRenderer->CreateFromBgraFrame(&oFrame);
+    pRenderer->SetSwapRGB(true);
+    pRenderer->put_Width(dWidth * 25.4 / dDpiX);
+    pRenderer->put_Height(dHeight * 25.4 / dDpiY);
+
+    m_pReader->DrawPageOnRenderer(pRenderer, nPage, NULL);
+    pRenderer->Release();
+
+    // иначе удалится память при деструктопе CBgraFrame
+    oFrame.put_Data(NULL);
+    return true;
+}
+
+void MainWindow::SetImage()
+{
+    int nX = 0;
+    int nY = 0;
+    int nW = m_pImage->width();
+    int nH = m_pImage->height();
+
+    int nBaseW = ui->mainView->width();
+    int nBaseH = ui->mainView->height();
+    if (nW <= nBaseW)
+    {
+        nX = (int)((nBaseW - nW) / 2);
+    }
+    else
+    {
+        if (nX > 0)
+            nX = 0;
+        if (nX + nW < nBaseW)
+            nX = nBaseW - nW;
+    }
+
+    if (nH <= nBaseH)
+    {
+        nY = (int)((nBaseH - nH) / 2);
+    }
+    else
+    {
+        if (nY > 0)
+            nY = 0;
+        if (nY + nH < nBaseH)
+            nY = nBaseH - nH;
+    }
+
+    ui->verticalScrollBar->setMaximum((nH > nBaseH) ? (nH - nBaseH) : 0);
+    ui->horizontalScrollBar->setMaximum((nW > nBaseW) ? (nW - nBaseW) : 0);
+
+    m_pLabel->setGeometry(nX, nY, nW, nH);
+    m_pLabel->setPixmap(QPixmap::fromImage(*m_pImage));
+
+    m_nPosX = nX;
+    m_nPosY = nY;
+    ui->verticalScrollBar->setValue(0);
+    ui->horizontalScrollBar->setValue(0);
+}
+
+void MainWindow::on_OpenFileButton_clicked()
+{
+    m_sFile = QFileDialog::getOpenFileName(this, tr("Open PDF"), "./", tr("PDF Files (*.pdf)"));
+    ui->FileNameLineEdit->setText(m_sFile);
+    OpenFile();
+}
+
+void cleanUpPixels(void* pixels)
+{
+    BYTE* arrPixels = (BYTE*)pixels;
+    delete [] arrPixels;
+}
+void MainWindow::on_RenderButton_clicked()
+{
+    if (!m_pReader)
+        return;
+
+    int page = ui->PageLineEdit->text().toInt();
+    int w, h;
+    BYTE *data;
+    if (!RenderOnByteData(page - 1, data, w, h))
+        return;
+
+    if (m_pImage)
+        delete m_pImage;
+
+    m_pImage = new QImage(data, w, h, 4 * w, QImage::Format_RGBA8888, &cleanUpPixels, data);
+    SetImage();
+}
+
+void MainWindow::on_ScaleSlider_sliderMoved(int position)
+{
+    if (!m_pReader)
+        return;
+
+    m_dScale = (double)position / 100;
+    on_RenderButton_clicked();
+}
 
 void MainWindow::on_LeftButton_clicked()
 {
@@ -51,122 +205,18 @@ void MainWindow::on_RightButton_clicked()
     on_RenderButton_clicked();
 }
 
-void MainWindow::on_RenderButton_clicked()
+void MainWindow::on_verticalScrollBar_valueChanged(int value)
 {
-
-
-    int page = ui->PageLineEdit->text().toInt();
-    PDFREADER->ConvertToRaster(page - 1, L"testpdf.bmp", 1);
-    int w, h;
-    BYTE *data;
-    RenderOnByteData(page - 1, &data, &w, &h);
-    pm = QImage(w, h, QImage::Format_RGBA8888);
-
-    for (int i = 0 ; i < h; i++)
-    {
-        for (int j = 0; j < w; j++)
-        {
-            BYTE *p = (data + 4 * (i * w + j));
-            QColor c(*(p + 2), *(p + 1), *(p + 0), *(p + 3));
-            pm.setPixelColor(j, i, c);
-
-        }
-    }
-    pm = pm.mirrored();
-    QImage to_draw = pm.copy((pm.size().width() - ui->PDFLabel->size().width()) * (pos_x / 99.),
-                             (pm.size().height() - ui->PDFLabel->size().height()) * (pos_y / 99.),
-                             ui->PDFLabel->size().width() * scale_factor,
-                             ui->PDFLabel->size().height() * scale_factor);
-
-    ui->PDFLabel->setPixmap(QPixmap::fromImage(to_draw));
-    ui->PDFLabel->setScaledContents(true);
-     //ui->PDFLabel->resize((pm.size()));
+    if (!m_pReader)
+        return;
+    m_nPosY = value;
+    m_pLabel->move(m_pLabel->x(), -m_nPosY);
 }
 
-void MainWindow::on_OpenFileButton_clicked()
+void MainWindow::on_horizontalScrollBar_valueChanged(int value)
 {
-    filename = QFileDialog::getOpenFileName(this,
-        tr("Open PDF"), "./", tr("PDF Files (*.pdf)"));
-
-    ui->FileNameLineEdit->setText(filename);
-    PDFREADER->LoadFromFile(filename.toStdWString());
-}
-
-void MainWindow::on_verticalScrollBar_sliderMoved(int position)
-{
-    pos_y = position;
-    QImage to_draw = pm.copy((pm.size().width() - ui->PDFLabel->size().width()) * (pos_x / 99.),
-                             (pm.size().height() - ui->PDFLabel->size().height()) * (pos_y / 99.),
-                             ui->PDFLabel->size().width() * scale_factor,
-                             ui->PDFLabel->size().height() * scale_factor);
-    ui->PDFLabel->setPixmap(QPixmap::fromImage(to_draw));
-    ui->PDFLabel->setScaledContents(true);
-}
-
-void MainWindow::on_horizontalScrollBar_sliderMoved(int position)
-{
-    pos_x = position;
-    QImage to_draw = pm.copy((pm.size().width() - ui->PDFLabel->size().width()) * (pos_x / 99.),
-                             (pm.size().height() - ui->PDFLabel->size().height()) * (pos_y / 99.),
-                             ui->PDFLabel->size().width() * scale_factor,
-                             ui->PDFLabel->size().height() * scale_factor);
-    ui->PDFLabel->setPixmap(QPixmap::fromImage(to_draw));
-    ui->PDFLabel->setScaledContents(true);
-}
-
-int MainWindow::RenderOnByteData(int nPage, BYTE **pBgraData, int *w, int *h)
-{
-    NSFonts::IFontManager *pFontManager = pFonts->GenerateFontManager();
-    NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
-    pFontCache->SetStreams(pFonts->GetStreams());
-    pFontManager->SetOwnerCache(pFontCache);
-
-    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-
-    pRenderer->SetFontManager(pFontManager);
-
-
-    double dWidth, dHeight;
-    double dDpiX, dDpiY;
-    PDFREADER->GetPageInfo(nPage, &dWidth, &dHeight, &dDpiX, &dDpiY);
-
-    int nWidth  = (int)dWidth  * 72 / 25.4;
-    int nHeight = (int)dHeight * 72 / 25.4;
-
-    *w = nWidth;
-    *h = nHeight;
-
-    *pBgraData = new BYTE[nWidth * nHeight * 4];
-    if (!*pBgraData)
-       return -1;
-
-    memset(*pBgraData, 0xff, nWidth * nHeight * 4);
-    CBgraFrame oFrame;
-    oFrame.put_Data(*pBgraData);
-    oFrame.put_Width(nWidth);
-    oFrame.put_Height(nHeight);
-    oFrame.put_Stride(-4 * nWidth);
-
-    pRenderer->CreateFromBgraFrame(&oFrame);
-    pRenderer->SetSwapRGB(false);
-
-    dWidth  *= 25.4 / dDpiX;
-    dHeight *= 25.4 / dDpiY;
-
-    pRenderer->put_Width(dWidth);
-    pRenderer->put_Height(dHeight);
-
-    bool bBreak = false;
-    PDFREADER->DrawPageOnRenderer(pRenderer, nPage, &bBreak);
-}
-
-void MainWindow::on_ScaleSlider_sliderMoved(int position)
-{
-    scale_factor = pow(2 , -position / 50.);
-    QImage to_draw = pm.copy((pm.size().width() - ui->PDFLabel->size().width()) * (pos_x / 99.),
-                             (pm.size().height() - ui->PDFLabel->size().height()) * (pos_y / 99.),
-                             ui->PDFLabel->size().width() * scale_factor,
-                             ui->PDFLabel->size().height() * scale_factor);
-    ui->PDFLabel->setPixmap(QPixmap::fromImage(to_draw));
-    ui->PDFLabel->setScaledContents(true);
+    if (!m_pReader)
+        return;
+    m_nPosX = value;
+    m_pLabel->move(-m_nPosX, m_pLabel->y());
 }

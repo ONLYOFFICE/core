@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QFileDialog>
+#include <QLabel>
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 #include "../../../DesktopEditor/common/Directory.h"
@@ -22,31 +23,38 @@ public:
 
 private slots:
     void on_LeftButton_clicked();
-
     void on_RightButton_clicked();
-
     void on_RenderButton_clicked();
-
 
     void on_OpenFileButton_clicked();
 
-    void on_verticalScrollBar_sliderMoved(int position);
-
-    void on_horizontalScrollBar_sliderMoved(int position);
-
     void on_ScaleSlider_sliderMoved(int position);
+    void on_verticalScrollBar_valueChanged(int value);
+    void on_horizontalScrollBar_valueChanged(int value);
 
 private:
-    int RenderOnByteData(int nPage, BYTE **pBgraData, int *w, int *h);
+    bool RenderOnByteData(int nPage, BYTE*& pBgraData, int& w, int& h);
+    void SetImage();
+    void OpenFile();
 
-    QImage pm;
-    QString filename;
-    int pos_x, pos_y;
-    double scale_factor;
+    QImage* m_pImage;
+    QLabel* m_pLabel;
+
+    QString m_sFile;
+    int m_nPosX;
+    int m_nPosY;
+    double m_dScale;
+
+    // шрифты системы
+    NSFonts::IApplicationFonts* m_pFonts;
+
+    // кэши для отрисовщика
+    NSFonts::IFontManager* m_pFontManager;
+    NSImages::IImageFilesCache* m_pImageCache;
+
+    // читалка PDF
+    PdfReader::CPdfReader* m_pReader;
+
     Ui::MainWindow *ui;
-    CApplicationFontsWorker oWorker;
-    NSFonts::IApplicationFonts* pFonts;
-    PdfReader::CPdfReader *PDFREADER;
-
 };
 #endif // MAINWINDOW_H

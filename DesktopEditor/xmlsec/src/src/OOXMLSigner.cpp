@@ -663,7 +663,7 @@ public:
         return nSignNum;
     }
 
-    int Sign(const std::wstring& sFiletoWrite)
+    int Sign(BYTE*& pFiletoWrite, DWORD& dwLenFiletoWrite)
     {
         Parse();
 
@@ -702,7 +702,7 @@ public:
         NSFile::CUtf8Converter::GetUtf8StringFromUnicode(builderResult.GetData().c_str(), builderResult.GetSize(), pData, nLen);
         m_pZipFolder->write(m_sFolder + L"/_xmlsignatures/sig" + std::to_wstring(nSignNum + 1) + L".xml", pData, nLen);
 
-        m_pZipFolder->writeZipFolder(sFiletoWrite);
+        m_pZipFolder->writeZipFolder(pFiletoWrite, dwLenFiletoWrite);
         return (sSignedXml.empty()) ? 1 : 0;
     }
 };
@@ -737,7 +737,7 @@ void COOXMLSigner::SetImageInvalid(const std::wstring& file)
     m_internal->SetImageInvalid(file);
 }
 
-int COOXMLSigner::Sign(const std::wstring& sFiletoWrite)
+int COOXMLSigner::Sign(BYTE*& pFiletoWrite, DWORD& dwLenFiletoWrite)
 {
-    return m_internal->Sign(sFiletoWrite);
+    return m_internal->Sign(pFiletoWrite, dwLenFiletoWrite);
 }

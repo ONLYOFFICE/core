@@ -15,7 +15,7 @@ public:
     virtual bool exists(const std::wstring& path) = 0;
     virtual void remove(const std::wstring& path) = 0;
     virtual void createDirectory(const std::wstring& path) = 0;
-    virtual void writeZipFolder (const std::wstring& path) = 0;
+    virtual void writeZipFolder(BYTE* data, DWORD& length) = 0;
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion) = 0;
 };
 
@@ -60,7 +60,7 @@ public:
         if (!NSDirectory::Exists(path))
             NSDirectory::CreateDirectory(path);
     }
-    virtual void writeZipFolder (const std::wstring& path)
+    virtual void writeZipFolder(BYTE* data, DWORD& length)
     {
     }
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)
@@ -164,7 +164,7 @@ public:
     virtual void createDirectory(const std::wstring& path)
     {
     }
-    virtual void writeZipFolder (const std::wstring& path)
+    virtual void writeZipFolder(BYTE* data, DWORD& length)
     {
         CData* oData = new CData();
         oData->SkipLen();
@@ -181,10 +181,8 @@ public:
         Zlib* zipFile = Zlib_Create();
         BYTE* oRes = Zlib_CompressFiles(zipFile, oData->GetBuffer());
 
-        NSFile::CFileBinary oFile;
-        oFile.CreateFileW(path);
-        oFile.WriteFile(oRes + 4, GetLength(oRes));
-        oFile.CloseFile();
+        data = oRes + 4;
+        length = GetLength(oRes);
     }
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)
     {

@@ -15,7 +15,7 @@ public:
     void SetImageValid  (const std::wstring& file);
     void SetImageInvalid(const std::wstring& file);
 
-    int Sign(const std::wstring& sFiletoWrite);
+    int Sign(unsigned char*& pFiletoWrite, unsigned long& dwLenFiletoWrite);
 
 private:
     COOXMLSigner_private* m_internal;

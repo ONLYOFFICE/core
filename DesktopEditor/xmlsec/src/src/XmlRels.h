@@ -161,68 +161,7 @@ public:
         return builder.GetData();
     }
 
-    void CheckOriginSigs(const std::wstring& file)
-    {
-        int rId = 0;
-        std::string sReplace = "";
-        std::vector<COOXMLRelationship>::iterator i = rels.begin();
-        while (i != rels.end())
-        {
-            if (0 == i->target.find(L"_xmlsignatures/"))
-            {
-                sReplace = U_TO_UTF8(i->target);
-                break;
-            }
-
-            std::wstring rid = i->rid;
-            rid = rid.substr(3);
-
-            int nTemp = std::stoi(rid);
-
-            if (nTemp > rId)
-                rId = nTemp;
-
-            i++;
-        }
-
-        if (!sReplace.empty())
-        {
-            if (sReplace == "_xmlsignatures/origin.sigs")
-                return;
-
-            std::string sXmlA;
-            NSFile::CFileBinary::ReadAllTextUtf8A(file, sXmlA);
-            NSStringUtils::string_replaceA(sXmlA, sReplace, "_xmlsignatures/origin.sigs");
-
-            NSFile::CFileBinary::Remove(file);
-            NSFile::CFileBinary oFile;
-            oFile.CreateFileW(file);
-            oFile.WriteFile((BYTE*)sXmlA.c_str(), (DWORD)sXmlA.length());
-            oFile.CloseFile();
-            return;
-        }
-
-        std::string sXmlA;
-        NSFile::CFileBinary::ReadAllTextUtf8A(file, sXmlA);
-
-        std::string::size_type pos = sXmlA.rfind("</Relationships>");
-        if (pos == std::string::npos)
-            return;
-
-        rId++;
-        std::string sRet = sXmlA.substr(0, pos);
-        sRet += ("<Relationship Id=\"rId" + std::to_string(rId) + "\" \
-Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/origin\" Target=\"_xmlsignatures/origin.sigs\"/>\
-</Relationships>");
-
-        NSFile::CFileBinary::Remove(file);
-        NSFile::CFileBinary oFile;
-        oFile.CreateFileW(file);
-        oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());
-        oFile.CloseFile();
-    }
-
-    void CheckOriginSigs(BYTE* pData, LONG& nSize)
+    void CheckOriginSigs(BYTE*& pData, LONG& nSize)
     {
         int rId = 0;
         std::wstring sReplace = L"";

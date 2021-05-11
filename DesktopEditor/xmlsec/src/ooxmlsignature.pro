@@ -26,8 +26,8 @@ DEFINES -= UNICODE
 HEADERS += \
     include/XmlCertificate.h \
     include/OOXMLSigner.h \
-    include/OOXMLSignerBuffer.h \
-    include/OOXMLVerifier.h
+    include/OOXMLVerifier.h \
+    include/ZipFolder.h
 
 HEADERS += \
     src/XmlCanonicalizator.h \
@@ -38,7 +38,6 @@ SOURCES += \
     src/XmlTransform.cpp \
     src/XmlCertificate.cpp \
     src/OOXMLSigner.cpp \
-    src/OOXMLSignerBuffer.cpp \
     src/OOXMLVerifier.cpp
 
 core_windows {

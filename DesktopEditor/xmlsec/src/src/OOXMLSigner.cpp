@@ -152,6 +152,18 @@ public:
 
         return sReturn;
     }
+    std::wstring GetImageBase64(BYTE* data, DWORD length)
+    {
+        char* pDataC = NULL;
+        int nLen = 0;
+        NSFile::CBase64Converter::Encode(data, (int)length, pDataC, nLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+        std::wstring sReturn = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pDataC, (LONG)nLen, FALSE);
+
+        RELEASEARRAYOBJECTS(pDataC);
+
+        return sReturn;
+    }
 
     std::wstring GetRelsReference(const std::wstring& file)
     {
@@ -485,9 +497,17 @@ public:
     {
         m_image_valid = GetImageBase64(file);
     }
+    void SetImageValid(BYTE* data, DWORD length)
+    {
+        m_image_valid = GetImageBase64(data, length);
+    }
     void SetImageInvalid(const std::wstring& file)
     {
         m_image_invalid = GetImageBase64(file);
+    }
+    void SetImageInvalid(BYTE* data, DWORD length)
+    {
+        m_image_invalid = GetImageBase64(data, length);
     }
 
     std::wstring GeneratePackageObject()
@@ -732,9 +752,19 @@ void COOXMLSigner::SetImageValid(const std::wstring& file)
     m_internal->SetImageValid(file);
 }
 
+void COOXMLSigner::SetImageValid(BYTE* data, DWORD length)
+{
+    m_internal->SetImageValid(data, length);
+}
+
 void COOXMLSigner::SetImageInvalid(const std::wstring& file)
 {
     m_internal->SetImageInvalid(file);
+}
+
+void COOXMLSigner::SetImageInvalid(BYTE* data, DWORD length)
+{
+    m_internal->SetImageInvalid(data, length);
 }
 
 int COOXMLSigner::Sign(BYTE*& pFiletoWrite, DWORD& dwLenFiletoWrite)

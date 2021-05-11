@@ -14,6 +14,8 @@ public:
     void SetGuid        (const std::wstring& guid);
     void SetImageValid  (const std::wstring& file);
     void SetImageInvalid(const std::wstring& file);
+    void SetImageValid  (unsigned char* data, unsigned long length);
+    void SetImageInvalid(unsigned char* data, unsigned long length);
 
     int Sign(unsigned char*& pFiletoWrite, unsigned long& dwLenFiletoWrite);
 

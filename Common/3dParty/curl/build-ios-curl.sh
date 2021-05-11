@@ -92,19 +92,19 @@ function configure_make() {
 
     if [[ "${ARCH}" == "x86_64" ]]; then
 
-        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ABI}.log" 2>&1
+        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ARCH}.log" 2>&1
 
     elif [[ "${ARCH}" == "armv7" ]]; then
 
-        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ABI}.log" 2>&1
+        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ARCH}.log" 2>&1
 
     elif [[ "${ARCH}" == "arm64" ]]; then
 
-        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ABI}.log" 2>&1
+        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ARCH}.log" 2>&1
     
     elif [[ "${ARCH}" == "i386" ]]; then
 
-        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ABI}.log" 2>&1
+        ./Configure --host=$(ios_get_build_host "$ARCH") --prefix="${PREFIX_DIR}" --enable-ipv6 --with-ssl=${OPENSSL_OUT_DIR} --enable-static --disable-shared >"${OUTPUT_ROOT}/log/${ARCH}.log" 2>&1
 
     else
         log_error "not support" && exit 1

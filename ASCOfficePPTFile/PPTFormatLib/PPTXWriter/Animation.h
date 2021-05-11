@@ -153,6 +153,9 @@ private:
     void FillSet(
             PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::Set& oSet);
+    void FillSet(
+            PPT_FORMAT::CRecordTimeSetBehaviorContainer *pTSBC,
+            PPTX::Logic::Set& oSet);
     void FillSubTnLst (
             std::vector<CRecordSubEffectContainer*> &vecSEC,
             PPTX::Logic::TnLst &oSubTnLst);

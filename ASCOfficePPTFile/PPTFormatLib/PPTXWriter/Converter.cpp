@@ -1467,17 +1467,17 @@ void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator
     if (!sound.empty())
     {
         animation.m_pSoundContainer = sound[0];
+        m_oManager.m_ridManager.setRIDfromAnimation(animation);
+        m_oManager.m_ridManager.setRID(oRels.getRId());
+        auto paths = m_oManager.m_ridManager.getPathesForSlideRels();
+        for (auto& path : paths)
+        {
+            oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
+        }
+
+        animation.setNextRId(oRels.getNextRId());
     }
 
-    m_oManager.m_ridManager.setRIDfromAnimation(animation);
-    m_oManager.m_ridManager.setRID(oRels.getRId());
-    auto paths = m_oManager.m_ridManager.getPathesForSlideRels();
-    for (auto& path : paths)
-    {
-        oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
-    }
-
-    animation.setNextRId(oRels.getNextRId());
     animation.Convert(oTiming);
     oWriter.WriteString(oTiming.toXML());
     //oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));

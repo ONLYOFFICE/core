@@ -56,23 +56,33 @@ public:
     virtual void ReadFromStream ( UINT& CurLen, SRecordHeader & oHeader, POLE::Stream* pStream )
     {
         m_oTimeAnimationValueAtom.ReadFromStream ( oHeader, pStream );
+        CurLen += 4;
 
 //        UINT res = 0;
         SRecordHeader ReadHeader;
 
-        if ( ReadHeader.ReadFromStream(pStream) )
+        ReadHeader.ReadFromStream(pStream);
+        if ( ReadHeader.RecInstance == 0 &&
+             ReadHeader.RecType == RT_TimeVariant )
         {
             m_pVarValue = TimeVariantFactoryMethod( ReadHeader, pStream );
+            CurLen += 8 + ReadHeader.RecLen;
+        }else
+        {
+            StreamUtils::StreamSkipBack(8, pStream);
         }
 
-        CurLen += 8 + ReadHeader.RecLen;
-
-        if ( ReadHeader.ReadFromStream(pStream) )
+        ReadHeader.ReadFromStream(pStream);
+        if ( ReadHeader.RecInstance == 1 &&
+             ReadHeader.RecType == RT_TimeVariant)
         {
             m_VarFormula.ReadFromStream ( ReadHeader, pStream );
+            CurLen += 8 + ReadHeader.RecLen;
+        } else
+        {
+            StreamUtils::StreamSkipBack(8, pStream);
         }
 
-        CurLen += 8 + ReadHeader.RecLen;
     }
 
     CRecordTimeAnimationValueAtom       m_oTimeAnimationValueAtom;

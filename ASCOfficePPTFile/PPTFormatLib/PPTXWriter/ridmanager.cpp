@@ -27,7 +27,11 @@ std::vector<std::wstring> RIDManager::getPathesForSlideRels()
         auto searchIter(mapRIDs.find(*pRID));
         if (searchIter == mapRIDs.end())
         {
-            paths.push_back(m_soundPaths[getSoundPos(*pRID)]);
+            unsigned soundPos = getSoundPos(*pRID);
+            if (soundPos >= m_soundPaths.size())
+                continue;
+
+            paths.push_back(m_soundPaths[soundPos]);
             mapRIDs.insert(std::make_pair(*pRID, pRID));
             *pRID = m_RID++;;
         }
@@ -98,7 +102,10 @@ void RIDManager::searchSound (const std::vector<SOldAnimation> &arrAnim)
     for (auto anim : arrAnim)
     {
         if (anim.anim->m_AnimationAtom.m_fSound)
+        {
             m_arrRID.push_back(&(anim.anim->m_AnimationAtom.m_SoundIdRef));
+            m_arrSoundRef.push_back(&(anim.anim->m_AnimationAtom.m_SoundIdRef));
+        }
     }
 }
 
@@ -106,7 +113,7 @@ void RIDManager::addSound(CRecordClientVisualElementContainer* const pCVEC)
 {
     if (!pCVEC) return;
 
-    if (pCVEC->m_bVisualShapeAtom)
+    if (pCVEC->m_bVisualShapeAtom && pCVEC->m_oVisualShapeAtom.m_Type == TL_TVET_Audio)
     {
         m_arrRID.push_back(&(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef));
         m_arrSoundRef.push_back(&(pCVEC->m_oVisualShapeAtom.m_nOldIdRef));

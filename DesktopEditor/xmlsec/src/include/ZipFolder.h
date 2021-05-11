@@ -104,9 +104,10 @@ public:
 
     virtual bool read  (const std::wstring& path, BYTE* data, DWORD& length)
     {
+        std::wstring sPath = normalPath(path);
         for (CFile& oFile : arrFiles)
         {
-            if (oFile.m_sPath == path)
+            if (oFile.m_sPath == sPath)
             {
                 data   = oFile.m_pData;
                 length = oFile.m_nLength;
@@ -117,10 +118,11 @@ public:
     }
     virtual void write (const std::wstring& path, BYTE* data, DWORD  length)
     {
+        std::wstring sPath = normalPath(path);
         bool bExists = false;
         for (CFile& oFile : arrFiles)
         {
-            if (oFile.m_sPath == path)
+            if (oFile.m_sPath == sPath)
             {
                 RELEASEARRAYOBJECTS(oFile.m_pData);
                 oFile.m_pData = data;
@@ -130,31 +132,34 @@ public:
             }
         }
         if (!bExists)
-            arrFiles.push_back(CFile(path, data, length));
+            arrFiles.push_back(CFile(sPath, data, length));
     }
     virtual void move  (const std::wstring& sSrc,  const std::wstring& sDst)
     {
+        std::wstring sSrcPath = normalPath(sSrc);
         for (CFile& oFile : arrFiles)
         {
-            if (oFile.m_sPath == sSrc)
+            if (oFile.m_sPath == sSrcPath)
             {
-                oFile.m_sPath = sDst;
+                oFile.m_sPath = normalPath(sDst);
                 break;
             }
         }
     }
     virtual bool exists(const std::wstring& path)
     {
+        std::wstring sPath = normalPath(path);
         for (CFile& oFile : arrFiles)
-            if (oFile.m_sPath == path)
+            if (oFile.m_sPath == sPath)
                 return true;
         return false;
     }
     virtual void remove(const std::wstring& path)
     {
+        std::wstring sPath = normalPath(path);
         for (std::vector<CFile>::iterator i = arrFiles.begin(); i != arrFiles.end(); i++)
         {
-            if (i->m_sPath == path)
+            if (i->m_sPath == sPath)
             {
                 arrFiles.erase(i);
                 break;
@@ -186,19 +191,20 @@ public:
     }
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)
     {
+        std::wstring sPath = normalPath(path);
         std::vector<std::wstring> sRes;
 
         for (CFile& oFile : arrFiles)
         {
             if (bIsRecursion)
             {
-                if (oFile.m_sPath.find(path) == 0)
+                if (oFile.m_sPath.find(sPath) == 0)
                     sRes.push_back(oFile.m_sPath);
             }
             else
             {
-                size_t nFindDirectory = oFile.m_sPath.find(path);
-                if (nFindDirectory == 0 && oFile.m_sPath.find_first_of(L"\\/", path.length()) == std::wstring::npos)
+                size_t nFindDirectory = oFile.m_sPath.find(sPath);
+                if (nFindDirectory == 0 && oFile.m_sPath.find_first_of(L"\\/", sPath.length()) == std::wstring::npos)
                     sRes.push_back(oFile.m_sPath);
             }
         }
@@ -209,6 +215,12 @@ public:
     DWORD GetLength(BYTE* x)
     {
         return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
+    }
+    std::wstring normalPath(const std::wstring& path)
+    {
+        if (!path.empty() && path[0] == L'/')
+            return path.substr(1);
+        return path;
     }
 };
 

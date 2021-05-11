@@ -9,9 +9,9 @@
 class IZipFolder
 {
 public:
-    virtual bool read  (const std::wstring& path, BYTE* data, DWORD& length) = 0;
-    virtual void write (const std::wstring& path, BYTE* data, DWORD  length) = 0;
-    virtual void move  (const std::wstring& sSrc,  const std::wstring& sDst) = 0;
+    virtual bool read  (const std::wstring& path, BYTE*& data, DWORD& length) = 0;
+    virtual void write (const std::wstring& path, BYTE*  data, DWORD  length) = 0;
+    virtual void move  (const std::wstring& sSrc,   const std::wstring& sDst) = 0;
     virtual bool exists(const std::wstring& path) = 0;
     virtual void remove(const std::wstring& path) = 0;
     virtual void createDirectory(const std::wstring& path) = 0;
@@ -29,13 +29,13 @@ class CZipFolder : public IZipFolder
 public:
     CZipFolder(const std::wstring& folder) : m_sFolder(folder) {}
 
-    virtual bool read  (const std::wstring& path, BYTE* data, DWORD& length)
+    virtual bool read  (const std::wstring& path, BYTE*& data, DWORD& length)
     {
         if (NSFile::CFileBinary::Exists(path))
             return NSFile::CFileBinary::ReadAllBytes(path, &data, length);
         return false;
     }
-    virtual void write (const std::wstring& path, BYTE* data, DWORD  length)
+    virtual void write (const std::wstring& path, BYTE*  data, DWORD  length)
     {
         NSFile::CFileBinary::Remove(path);
         NSFile::CFileBinary oFile;
@@ -43,7 +43,7 @@ public:
         oFile.WriteFile(data, length);
         oFile.CloseFile();
     }
-    virtual void move  (const std::wstring& sSrc,  const std::wstring& sDst)
+    virtual void move  (const std::wstring& sSrc,   const std::wstring& sDst)
     {
         NSFile::CFileBinary::Move(sSrc, sDst);
     }
@@ -102,7 +102,7 @@ public:
         RELEASEARRAYOBJECTS(sPaths);
     }
 
-    virtual bool read  (const std::wstring& path, BYTE* data, DWORD& length)
+    virtual bool read  (const std::wstring& path, BYTE*& data, DWORD& length)
     {
         std::wstring sPath = normalPath(path);
         for (CFile& oFile : arrFiles)
@@ -116,7 +116,7 @@ public:
         }
         return false;
     }
-    virtual void write (const std::wstring& path, BYTE* data, DWORD  length)
+    virtual void write (const std::wstring& path, BYTE*  data, DWORD  length)
     {
         std::wstring sPath = normalPath(path);
         bool bExists = false;
@@ -134,7 +134,7 @@ public:
         if (!bExists)
             arrFiles.push_back(CFile(sPath, data, length));
     }
-    virtual void move  (const std::wstring& sSrc,  const std::wstring& sDst)
+    virtual void move  (const std::wstring& sSrc,   const std::wstring& sDst)
     {
         std::wstring sSrcPath = normalPath(sSrc);
         for (CFile& oFile : arrFiles)
@@ -199,13 +199,13 @@ public:
             if (bIsRecursion)
             {
                 if (oFile.m_sPath.find(sPath) == 0)
-                    sRes.push_back(oFile.m_sPath);
+                    sRes.push_back(L'/' + oFile.m_sPath);
             }
             else
             {
                 size_t nFindDirectory = oFile.m_sPath.find(sPath);
                 if (nFindDirectory == 0 && oFile.m_sPath.find_first_of(L"\\/", sPath.length()) == std::wstring::npos)
-                    sRes.push_back(oFile.m_sPath);
+                    sRes.push_back(L'/' + oFile.m_sPath);
             }
         }
 

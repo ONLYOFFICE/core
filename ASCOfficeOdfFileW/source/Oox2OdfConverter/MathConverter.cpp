@@ -638,7 +638,13 @@ namespace Oox2Odf
 	{
 		if (!oox_text) return;
 
-		std::set<wchar_t> mo = { L'=', L'+', L'-', L'±', L'∓', L'∙', L'×', L'∗', L'÷', L'/', L'∔', L'∸', L'≂', L'⊕', L'⊖', L'⊙', L'⊗', L'⊘', L'∘', L'¬', L'∧', L'∨' };
+		std::set<wchar_t> mo = { L'+', L'-', L'±', L'∓', L'∙', L'×', L'∗', L'÷', L'/', L'≂', L'⊕', L'⊖', L'⊙', L'⊗', L'⊘', L'∘', L'¬', L'∧', L'∨',		// un/bi operators
+								 L'=', L'≠', L'<', L'≤', L'>', L'≥', L'≪', L'≫', L'≈', L'~', L'≃', L'≡', L'∝', L'∥', L'⟂', L'|', L'∤', L'→', L'⊷',	// relations
+								 L'⊶', L'≝', L'⇐', L'⇔', L'⇒', L'≺', L'≻',  L'≼', L'≽', L'≾', L'≿',  L'⊀', L'⊁',										// relationships over sets
+								 L'∈', L'∉', L'∋', L'∩', L'∪', L'//', L'/', L'⊂', L'⊆', L'⊃', L'⊇', L'⊄', L'⊈', L'⊅', L'⊉',						//
+								 L'∞', L'∂', L'∇', L'∃', L'∄', L'∀', L'ħ', L'ƛ', L'ℜ', L'ℑ', L'℘', L'ℒ', L'ℱ', L'←', L'→', L'↑', L'↓',					// others
+								 L'…', L'⋯', L'⋮', L'⋰', L'⋱'
+								};
 
 	
 		std::wstring s_val = oox_text->m_sText;		

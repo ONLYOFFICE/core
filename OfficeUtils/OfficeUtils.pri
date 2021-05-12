@@ -22,7 +22,8 @@ SOURCES +=  \
     $$PWD/src/zlib-1.2.11/contrib/minizip/minizip.c \
     $$PWD/src/zlib-1.2.11/contrib/minizip/mztools.c \
     $$PWD/src/zlib-1.2.11/contrib/minizip/unzip.c \
-    $$PWD/src/zlib-1.2.11/contrib/minizip/zip.c
+    $$PWD/src/zlib-1.2.11/contrib/minizip/zip.c \
+    $$PWD/src/zlib-1.2.11/contrib/minizip/ioapibuf.c
 core_windows {
 SOURCES +=  \
     $$PWD/src/zlib-1.2.11/contrib/minizip/iowin32.c
@@ -54,7 +55,8 @@ HEADERS +=  \
     $$PWD/src/zlib-1.2.11/contrib/minizip/ioapi.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/mztools.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/unzip.h \
-    $$PWD/src/zlib-1.2.11/contrib/minizip/zip.h
+    $$PWD/src/zlib-1.2.11/contrib/minizip/zip.h \
+    $$PWD/src/zlib-1.2.11/contrib/minizip/ioapibuf.h
 
 core_ios {
 OBJECTIVE_SOURCES += $$PWD/src/ZipUtilsCP_ios.mm

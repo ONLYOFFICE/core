@@ -1,7 +1,7 @@
 #include <string.h>
 
-#include "../../../src/zlib-1.2.11/zlib.h"
-#include "../../../src/zlib-1.2.11/contrib/minizip/ioapi.h"
+#include "../../zlib.h"
+#include "ioapi.h"
 
 #ifdef __cplusplus
 extern "C" {

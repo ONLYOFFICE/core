@@ -3,8 +3,7 @@
 
 #include "./../../common/File.h"
 #include "./../../common/Directory.h"
-#include "./../../../../OfficeUtils/js/wasm/src/base.h"
-#include "./../../../../OfficeUtils/js/wasm/src/engine.h"
+#include "./../../common/ZipLib.h"
 
 class IZipFolder
 {
@@ -83,8 +82,8 @@ class CZipFolderMemory : public IZipFolder
 public:
     CZipFolderMemory(BYTE* data, DWORD length)
     {
-        Zlib* zlib = Zlib_Load(data, length);
-        BYTE* sPaths = Zlib_GetPathsInArchive(zlib);
+        CZLib* zlib = new CZLib(data, length);
+        BYTE* sPaths = zlib->GetPathsInArchive();
         DWORD nLength = GetLength(sPaths);
         DWORD i = 4;
         nLength -= 4;
@@ -94,7 +93,7 @@ public:
             DWORD nPathLength = GetLength(sPaths + i);
             i += 4;
 
-            BYTE* sFile = Zlib_GetFileFromArchive(zlib, std::string((char*)(sPaths + i), nPathLength).c_str());
+            BYTE* sFile = zlib->GetFileFromArchive(std::string((char*)(sPaths + i), nPathLength).c_str());
 
             arrFiles.push_back(CFile(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(sPaths + i, nPathLength), sFile + 4, GetLength(sFile)));
             i += nPathLength;
@@ -183,8 +182,8 @@ public:
         }
         oData->WriteLen();
 
-        Zlib* zipFile = Zlib_Create();
-        BYTE* oRes = Zlib_CompressFiles(zipFile, oData->GetBuffer());
+        CZLib* zipFile = new CZLib();
+        BYTE* oRes = zipFile->CompressFiles(oData->GetBuffer());
 
         data = oRes + 4;
         length = GetLength(oRes);

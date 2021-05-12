@@ -16,7 +16,7 @@ CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-ADD_DEPENDENCY(kernel, OfficeUtils, zlib)
+ADD_DEPENDENCY(kernel, OfficeUtils)
 
 INCLUDEPATH += \
     $$PWD/../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip \

@@ -1,5 +1,9 @@
+#ifndef _ZIPLIB_H_
+#define _ZIPLIB_H_
+
 #include <stdlib.h>
 #include <string>
+#include "../../Common/kernel_config.h"
 
 class CData
 {
@@ -132,30 +136,33 @@ public:
     }
 };
 
-class Zlib
+class KERNEL_DECL CZLib
 {
-public:
     unsigned char* buffer;
     unsigned long  size;
-
 public:
-    Zlib()
+    CZLib()
     {
         buffer = NULL;
         size   = -1;
     }
-    Zlib(unsigned char* _buffer, unsigned long _size)
+    CZLib(unsigned char* _buffer, unsigned long _size)
     {
         buffer = _buffer;
         size   = _size;
     }
-    ~Zlib()
+    ~CZLib()
     {
         if (buffer) delete[] buffer;
     }
-
     bool isInit()
     {
         return buffer != NULL;
     }
+
+    unsigned char* GetPathsInArchive();
+    unsigned char* GetFileFromArchive(const char* path);
+    unsigned char* CompressFiles  (unsigned char* tree);
 };
+
+#endif // _ZIPLIB_H_

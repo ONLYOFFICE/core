@@ -11,11 +11,7 @@
 #include <malloc.h>
 #include <string>
 
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../../../src/zlib-1.2.11/contrib/minizip/unzip.h"
-#include "../../../src/ZipUtilsCP.h"
-#include "ioapibuf.h"
-class Zlib;
+#include "../../../DesktopEditor/common/ZipLib.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,13 +20,13 @@ extern "C" {
 ZLIB_DECL_EXPORT void* Zlib_Malloc(unsigned int size);
 ZLIB_DECL_EXPORT void  Zlib_Free(void* p);
 
-ZLIB_DECL_EXPORT Zlib* Zlib_Create();
-ZLIB_DECL_EXPORT Zlib* Zlib_Load(unsigned char* buffer, unsigned long size);
-ZLIB_DECL_EXPORT void  Zlib_Destroy(Zlib* p);
+ZLIB_DECL_EXPORT CZLib* Zlib_Create();
+ZLIB_DECL_EXPORT CZLib* Zlib_Load(unsigned char* buffer, unsigned long size);
+ZLIB_DECL_EXPORT void  Zlib_Destroy(CZLib* p);
 
-ZLIB_DECL_EXPORT unsigned char* Zlib_GetPathsInArchive(Zlib* p);
-ZLIB_DECL_EXPORT unsigned char* Zlib_GetFileFromArchive(Zlib* p, const char* path);
-ZLIB_DECL_EXPORT unsigned char* Zlib_CompressFiles(Zlib* p,   unsigned char* tree);
+ZLIB_DECL_EXPORT unsigned char* Zlib_GetPathsInArchive(CZLib* p);
+ZLIB_DECL_EXPORT unsigned char* Zlib_GetFileFromArchive(CZLib* p, const char* path);
+ZLIB_DECL_EXPORT unsigned char* Zlib_CompressFiles(CZLib* p,   unsigned char* tree);
 
 #ifdef __cplusplus
 }

@@ -360,6 +360,7 @@ std::wstring CXmlElement::ConvertPStyle() const
                 sPPr += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + oItem.second + L"\"/>";
                 break;
             }
+
             case NSCSS::NSConstValues::NSProperties::ParagraphProperties::P_TopBorder:
             {
                 sPBdr += L"<w:top" + oItem.second + L"/>";
@@ -456,9 +457,9 @@ std::wstring CXmlElement::ConvertRStyle() const
                     sRStyle += L"<w:u w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
-            case NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Shd:
+            case NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Highlight:
             {
-                sRStyle += L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + oItem.second + L"\"/>";
+                sRStyle += L"<w:highlight w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
             case NSCSS::NSConstValues::NSProperties::RunnerProperties::R_SmallCaps:

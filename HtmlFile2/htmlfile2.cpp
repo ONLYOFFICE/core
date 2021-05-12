@@ -1131,7 +1131,12 @@ private:
             {
                 std::wstring sColor = oStyle.m_pBorder.GetColorBottomSide();
                 std::wstring sSz    = oStyle.m_pBorder.GetWidthBottomSideW();
-                sBorders = L"<w:left w:val=\"single\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>";
+                sBorders =  L"<w:top w:val=\"single\" w:color=\""       + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:left w:val=\"single\" w:color=\""      + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:bottom w:val=\"single\" w:color=\""    + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:right w:val=\"single\" w:color=\""     + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:insideH w:val=\"single\" w:color=\""   + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:insideV w:val=\"single\" w:color=\""   + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>";
             }
             else
             {

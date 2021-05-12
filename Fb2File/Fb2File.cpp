@@ -1911,21 +1911,21 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
         if (!sText.empty())
         {
             if (sName == L"dc:creator")
-                sAuthor     = oCoreReader.GetText2();
+                sAuthor     = sText;
             else if (sName == L"dc:title")
-                sBookTitle  = oCoreReader.GetText2();
+                sBookTitle  = sText;
             else if (sName == L"dc:description")
-                sAnnotation = oCoreReader.GetText2();
+                sAnnotation = sText;
             else if (sName == L"dc:subject")
-                sGenre      = oCoreReader.GetText2();
+                sGenre      = sText;
             else if (sName == L"cp:keywords")
-                sKeywords   = oCoreReader.GetText2();
+                sKeywords   = sText;
             else if (sName == L"dc:identifier")
-                sIdentifier = oCoreReader.GetText2();
+                sIdentifier = sText;
             else if (sName == L"dc:language")
-                sLanguage   = oCoreReader.GetText2();
+                sLanguage   = sText;
             else if (sName == L"cp:version")
-                sVersion    = oCoreReader.GetText2();
+                sVersion    = sText;
         }
     }
 

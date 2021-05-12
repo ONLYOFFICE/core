@@ -303,25 +303,37 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         while (oCoreReader.ReadNextSiblingNode(nDeath))
         {
             std::wstring sOut = oCoreReader.GetOuterXml();
-            oContentOpf.WriteStringUTF8(sOut);
             std::wstring sName = oCoreReader.GetName();
             if (sName == L"dc:identifier")
+            {
                 bWasIdentifier = true;
+                oContentOpf.WriteStringUTF8(sOut);
+            }
             else if (sName == L"dc:title")
             {
-                bWasTitle = true;
-                size_t nBegin = sOut.find(L'>');
+                std::wstring sInTitle = sOut;
+                size_t nBegin = sInTitle.find(L'>');
                 if (nBegin == std::wstring::npos)
                     continue;
-                sOut.erase(0, nBegin + 1);
-                nBegin = sOut.find(L'<');
+                sInTitle.erase(0, nBegin + 1);
+                nBegin = sInTitle.find(L'<');
                 if (nBegin == std::wstring::npos)
                     continue;
-                sOut.erase(nBegin);
-                sTitle = sOut;
+                sInTitle.erase(nBegin);
+                if (!sInTitle.empty())
+                {
+                    bWasTitle = true;
+                    sTitle = sInTitle;
+                    oContentOpf.WriteStringUTF8(sOut);
+                }
             }
             else if (sName == L"dc:language")
+            {
                 bWasLanguage = true;
+                oContentOpf.WriteStringUTF8(sOut);
+            }
+            else
+                oContentOpf.WriteStringUTF8(sOut);
         }
         if (!bWasIdentifier)
         {

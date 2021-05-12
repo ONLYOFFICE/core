@@ -1643,7 +1643,7 @@ private:
         else
         {
             int nH = nHy * 9525;
-            nH = (nH > 9000000 ? 9000000 : nH);
+            nH = (nH > 8500000 ? 8500000 : nH);
             int nW = (int)((double)nWx * (double)nH / (double)nHy);
             if(nW > 7000000)
             {
@@ -1847,6 +1847,7 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
 {
     m_internal->m_sDst = sDst;
     m_internal->CreateDocxEmpty(oParams);
+    bool bFirst = true;
 
     for(const std::wstring& sS : sSrc)
     {
@@ -1864,8 +1865,9 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
         // Переходим в начало
         if(m_internal->m_oLightReader.MoveToStart())
         {
-            if(oParams && oParams->m_bNeedPageBreakBefore)
+            if(oParams && oParams->m_bNeedPageBreakBefore && !bFirst)
                 m_internal->PageBreakBefore();
+            bFirst = false;
             m_internal->readSrc();
             m_internal->m_oLightReader.Clear();
             m_internal->m_sBase.clear();

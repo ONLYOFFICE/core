@@ -553,6 +553,7 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
     bool no_entity_substitution = no_entity_sub.find(key) != std::string::npos;
     bool keep_whitespace        = preserve_whitespace.find(key) != std::string::npos;
     bool is_inline              = nonbreaking_inline.find(key) != std::string::npos;
+    bool is_like_inline         = treat_like_inline.find(key) != std::string::npos;
 
     GumboVector* children = &node->v.element.children;
 
@@ -580,7 +581,7 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
             prettyprint(child, contents);
         else if (child->type == GUMBO_NODE_WHITESPACE)
         {
-            if (keep_whitespace || is_inline)
+            if (keep_whitespace || is_inline || is_like_inline)
                 contents.WriteString(child->v.text.text);
         }
         else if (child->type != GUMBO_NODE_COMMENT)

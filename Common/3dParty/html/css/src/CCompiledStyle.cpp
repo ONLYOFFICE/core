@@ -891,6 +891,10 @@ namespace NSCSS
                         m_pBackground.SetColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBackground.SetImportantBackground(true);
                     }
+
+                    if (bIsThereBorder)
+                        m_pBackground.InBorder();
+
                     break;
                 }
                 CASE(L"background"):
@@ -905,6 +909,10 @@ namespace NSCSS
                         m_pBackground.SetBackground(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBackground.SetImportantAll(true);
                     }
+
+                    if (bIsThereBorder)
+                        m_pBackground.InBorder();
+
                     break;
                 }
             }

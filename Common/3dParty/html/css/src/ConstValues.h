@@ -59,7 +59,7 @@ namespace NSCSS
                 /* Red tones */
                 {L"indianeed",          L"CD5C5C"}, {L"lightcoral",            L"F08080"}, {L"salmon",        L"FA8072"},
                 {L"darksalmon",         L"E9967A"}, {L"lightsalmon",           L"FFA07A"}, {L"crimson",       L"DC143C"},
-                {L"red",                L"FF0000"}, {L"firebrick",             L"B22222"}, {L"darkeed",       L"8B0000"},
+                {L"red",                L"FF0000"}, {L"firebrick",             L"B22222"}, {L"darkred",       L"8B0000"},
                 /* Pink tones */
                 {L"pink",               L"FFC0CB"}, {L"lightpink",             L"FFB6C1"}, {L"hotpink",       L"FF69B4"},
                 {L"deeppink",           L"FF1493"}, {L"mediumvioletred",       L"C71585"}, {L"palevioleteed", L"DB7093"},
@@ -164,7 +164,7 @@ namespace NSCSS
                 R_I = 3,
                 R_Color = 4,
                 R_U = 5,
-                R_Shd = 6,
+                R_Highlight = 6,
                 R_SmallCaps = 7
             } RunnerProperties;
 
@@ -2419,18 +2419,28 @@ namespace NSCSS
             class Background
             {
                 std::wstring sColor;
+                bool bInBorder;
 
                 std::vector<bool> bImportants;
                 std::vector<unsigned int> arLevels;
             public:
 
-                Background() : bImportants({false}), arLevels({0}){}
+                Background() : bImportants({false}), arLevels({0}), bInBorder(false){}
 
                 void ClearImportants()
                 {
                     bImportants = {false};
                 }
 
+                void InBorder()
+                {
+                    bInBorder = true;
+                }
+
+                bool IsInBorder() const
+                {
+                    return bInBorder;
+                }
 
                 Background operator+=(const Background& oBackground)
                 {
@@ -2543,9 +2553,38 @@ namespace NSCSS
                     bImportants[0] = bImportant;
                 }
 
-                std::wstring GetColor() const
+                std::wstring GetColorHex() const
                 {
                     return sColor;
+                }
+
+                std::wstring GetColor() const
+                {
+                    std::wstring wsUpperColor = sColor;
+                    std::transform(wsUpperColor.begin(), wsUpperColor.end(), wsUpperColor.begin(), ::toupper);
+
+                    std::map<std::wstring, std::wstring>::const_iterator oIter = std::find_if(NSMaps::mColors.begin(), NSMaps::mColors.end(),
+                                                                                              [&wsUpperColor](const std::pair<std::wstring, std::wstring> oValue)
+                                                                                              { return oValue.second == wsUpperColor;});
+
+                    if (oIter != NSMaps::mColors.end() &&
+                       (oIter->first == L"yellow" ||
+                        oIter->first == L"green" ||
+                        oIter->first == L"cyan" ||
+                        oIter->first == L"magenta" ||
+                        oIter->first == L"blue" ||
+                        oIter->first == L"red" ||
+                        oIter->first == L"darkBlue" ||
+                        oIter->first == L"darkCyan" ||
+                        oIter->first == L"darkGreen" ||
+                        oIter->first == L"darkMagenta" ||
+                        oIter->first == L"darkRed" ||
+                        oIter->first == L"darkYellow" ||
+                        oIter->first == L"darkGray" ||
+                        oIter->first == L"lightGray"))
+                            return oIter->first;
+
+                    return L"";
                 }
             };
         }

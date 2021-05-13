@@ -11,7 +11,7 @@
 #include <malloc.h>
 #include <string>
 
-#include "../../../DesktopEditor/common/ZipLib.h"
+#include "../../../src/ZipLib.h"
 
 #ifdef __cplusplus
 extern "C" {

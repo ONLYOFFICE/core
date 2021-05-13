@@ -1,9 +1,9 @@
 #ifndef _ZIPFOLDER_H_
 #define _ZIPFOLDER_H_
 
-#include "./../../common/File.h"
-#include "./../../common/Directory.h"
-#include "./../../common/ZipLib.h"
+#include "./../../../../OfficeUtils/src/ZipLib.h"
+#include "./../../../common/File.h"
+#include "./../../../common/Directory.h"
 
 class IZipFolder
 {
@@ -17,10 +17,6 @@ public:
     virtual void writeZipFolder(BYTE* data, DWORD& length) = 0;
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion) = 0;
 };
-
-#if defined(CreateDirectory)
-#undef CreateDirectory
-#endif
 
 class CZipFolder : public IZipFolder
 {

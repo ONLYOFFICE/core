@@ -17,7 +17,7 @@ INCLUDEPATH += \
     $$PWD/../../src/zlib-1.2.11/contrib/minizip \
     $$PWD/../../src/zlib-1.2.11
 
-ADD_DEPENDENCY(kernel, OfficeUtils)
+ADD_DEPENDENCY(kernel)
 
 SOURCES += ../wasm/src/base.cpp
 HEADERS += ../wasm/src/base.h

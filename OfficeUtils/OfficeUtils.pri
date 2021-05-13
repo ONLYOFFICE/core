@@ -17,6 +17,7 @@ INCLUDEPATH += \
 SOURCES +=  \
     $$PWD/src/OfficeUtils.cpp \
     $$PWD/src/ZipUtilsCP.cpp \
+    $$PWD/src/ZipLib.cpp \
     $$PWD/src/zlib-1.2.11/contrib/minizip/ioapi.c \
     $$PWD/src/zlib-1.2.11/contrib/minizip/miniunz.c \
     $$PWD/src/zlib-1.2.11/contrib/minizip/minizip.c \
@@ -51,6 +52,7 @@ HEADERS +=  \
     $$PWD/src/OfficeUtilsCommon.h \
     $$PWD/src/OfficeUtils.h \
     $$PWD/src/ZipUtilsCP.h \
+    $$PWD/src/ZipLib.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/crypt.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/ioapi.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/mztools.h \

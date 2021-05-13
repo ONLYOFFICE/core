@@ -142,7 +142,3 @@ SOURCES += ./../DesktopEditor/common/Directory.cpp
 # SYSTEM
 HEADERS += ./../DesktopEditor/common/SystemUtils.h
 SOURCES += ./../DesktopEditor/common/SystemUtils.cpp
-
-# ZLIB & ZIPFOLDER
-HEADERS += ./../DesktopEditor/common/ZipLib.h
-SOURCES += ./../DesktopEditor/common/ZipLib.cpp

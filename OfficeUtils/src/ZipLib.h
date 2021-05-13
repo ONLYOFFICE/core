@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "../../Common/kernel_config.h"
-#include "Types.h"
+#include "../../DesktopEditor/common/Types.h"
 
 class KERNEL_DECL CZLib
 {

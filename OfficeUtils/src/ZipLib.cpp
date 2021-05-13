@@ -1,7 +1,6 @@
 #include "ZipLib.h"
-#include "../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/unzip.h"
-#include "../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/ioapibuf.h"
-#include "../../OfficeUtils/src/ZipUtilsCP.h"
+#include "./ZipUtilsCP.h"
+#include "zlib-1.2.11/contrib/minizip/ioapibuf.h"
 
 #include <algorithm> // для std::min в get_file_in_archive
 

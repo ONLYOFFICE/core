@@ -21,12 +21,15 @@ ZLIB_DECL_EXPORT void* Zlib_Malloc(unsigned int size);
 ZLIB_DECL_EXPORT void  Zlib_Free(void* p);
 
 ZLIB_DECL_EXPORT CZLib* Zlib_Create();
-ZLIB_DECL_EXPORT CZLib* Zlib_Load(unsigned char* buffer, unsigned long size);
-ZLIB_DECL_EXPORT void  Zlib_Destroy(CZLib* p);
+ZLIB_DECL_EXPORT CZLib* Zlib_Open(unsigned char* buffer, unsigned long size);
+ZLIB_DECL_EXPORT void   Zlib_Close(CZLib* p);
 
-ZLIB_DECL_EXPORT unsigned char* Zlib_GetPathsInArchive(CZLib* p);
-ZLIB_DECL_EXPORT unsigned char* Zlib_GetFileFromArchive(CZLib* p, const char* path);
-ZLIB_DECL_EXPORT unsigned char* Zlib_CompressFiles(CZLib* p,   unsigned char* tree);
+ZLIB_DECL_EXPORT void Zlib_AddFile   (CZLib* p, const char* path, unsigned char* data, unsigned long length);
+ZLIB_DECL_EXPORT void Zlib_RemoveFile(CZLib* p, const char* path);
+
+ZLIB_DECL_EXPORT unsigned char* Zlib_GetPaths(CZLib* p);
+ZLIB_DECL_EXPORT unsigned char* Zlib_GetFile (CZLib* p, const char* path);
+ZLIB_DECL_EXPORT unsigned char* Zlib_Save    (CZLib* p);
 
 #ifdef __cplusplus
 }

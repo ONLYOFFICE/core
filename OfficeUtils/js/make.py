@@ -35,25 +35,27 @@ exported_functions = ["_malloc",
                       "_Zlib_Malloc",
                       "_Zlib_Free",
                       "_Zlib_Create",
-                      "_Zlib_Load",
-                      "_Zlib_Destroy",
-                      "_Zlib_GetPathsInArchive",
-                      "_Zlib_GetFileFromArchive",
-                      "_Zlib_CompressFiles"]
+                      "_Zlib_Open",
+                      "_Zlib_Close",
+                      "_Zlib_AddFile",
+                      "_Zlib_RemoveFile",
+                      "_Zlib_GetPaths",
+                      "_Zlib_GetFile",
+                      "_Zlib_Save"]
 
 libZlib_src_path = "../src/zlib-1.2.11"
 input_zlib_sources = ["inflate.c", "zutil.c", "adler32.c", "crc32.c", "inftrees.c",
                       "inffast.c", "deflate.c", "trees.c"]
 
 libMinizip_src_path = "../src/zlib-1.2.11/contrib/minizip"
-input_minizip_sources = ["unzip.c", "ioapi.c", "zip.c"]
+input_minizip_sources = ["unzip.c", "ioapi.c", "zip.c", "ioapibuf.c"]
 
 sources = []
 for item in input_zlib_sources:
     sources.append(libZlib_src_path + '/' + item)
 for item in input_minizip_sources:
     sources.append(libMinizip_src_path + '/' + item)
-sources.append("wasm/src/ioapibuf.c")
+sources.append("../../DesktopEditor/common/ZipLib.cpp")
 sources.append("wasm/src/base.cpp")
 
 compiler_flags.append("-I../src/zlib-1.2.11")

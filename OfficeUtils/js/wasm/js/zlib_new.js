@@ -49,7 +49,7 @@
 		Module["HEAP8"].set(arrayBuffer, FileRawData);
 
 		// грузим данные
-		this.engine = Module["_Zlib_Load"](FileRawData, FileRawDataSize);
+		this.engine = Module["_Zlib_Open"](FileRawData, FileRawDataSize);
 		if (0 == this.engine)
 		{
 			Module["_Zlib_Free"](FileRawData);
@@ -57,10 +57,10 @@
 		}
 
 		// получаем пути в архиве
-		var pointer = Module["_Zlib_GetPathsInArchive"](this.engine);
+		var pointer = Module["_Zlib_GetPaths"](this.engine);
 		if (0 == pointer)
 		{
-			Module["_Zlib_Destroy"](this.engine);
+			Module["_Zlib_Close"](this.engine);
 			Module["_Zlib_Free"](FileRawData);
 			return false;
 		}
@@ -106,71 +106,13 @@
 		if (!this.isModuleInit || !this.engine)
 			return null;
 
-		// из текущего дерева this.files - делаем архив
-
-		// вычисление длины дерева
-		var _paths = [];
-		var nLength = 4;
-		for (var _path in this.files)
-		{
-			var pathUtf8 = _path.toUtf8();
-			_paths.push(pathUtf8);
-			nLength += 4;
-			nLength += pathUtf8.length;
-
-			nLength += 4;
-			nLength += this.files[_path].length;
-		}
-
-		// создание дерева файлов
-		var tmpBuffer = new Uint8Array(nLength);
-		tmpBuffer.set([
-			(nLength >>  0) & 0xFF,
-			(nLength >>  8) & 0xFF,
-			(nLength >> 16) & 0xFF,
-			(nLength >> 24) & 0xFF
-		], 0);
-		var index = 4;
-		var i = 0;
-		for (var _path in this.files)
-		{
-			tmpBuffer.set([
-				(_paths[i].length >>  0) & 0xFF,
-				(_paths[i].length >>  8) & 0xFF,
-				(_paths[i].length >> 16) & 0xFF,
-				(_paths[i].length >> 24) & 0xFF
-			], index);
-			index += 4;
-			tmpBuffer.set(_paths[i], index);
-			index += _paths[i].length;
-			i++;
-
-			tmpBuffer.set([
-				(this.files[_path].length >>  0) & 0xFF,
-				(this.files[_path].length >>  8) & 0xFF,
-				(this.files[_path].length >> 16) & 0xFF,
-				(this.files[_path].length >> 24) & 0xFF
-			], index);
-			index += 4;
-			tmpBuffer.set(this.files[_path], index);
-			index += this.files[_path].length;
-		}
-
-		// получение zip из дерева файлов
-		var pointer = Module["_Zlib_Malloc"](tmpBuffer.length);
-		if (0 == pointer)
-			return null;
-		Module["HEAP8"].set(tmpBuffer, pointer);
-		var pointerZip = Module["_Zlib_CompressFiles"](this.engine, pointer);
+		var pointerZip = Module["_Zlib_Save"](this.engine);
 		if (0 == pointerZip)
-		{
-			Module["_Zlib_Free"](pointer);
 			return null;
-		}
+
 		var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerZip, 4);
 		var len = _lenFile[0];
 		var zip = new Uint8Array(Module["HEAP8"].buffer, pointerZip + 4, len);
-		Module["_Zlib_Free"](pointer);
 		return zip;
 	};
 
@@ -192,15 +134,13 @@
 		if (null !== this.files[path])
 			return this.files[path];
 
-		// TODO: получаем данные
-
 		var tmp = path.toUtf8();
 		var pointer = Module["_Zlib_Malloc"](tmp.length);
 		if (0 == pointer)
 			return null;
 		Module["HEAP8"].set(tmp, pointer);
 
-		var pointerFile = Module["_Zlib_GetFileFromArchive"](this.engine, pointer);
+		var pointerFile = Module["_Zlib_GetFile"](this.engine, pointer);
 		if (0 == pointerFile) 
 		{
 			Module["_Zlib_Free"](pointer);
@@ -229,7 +169,26 @@
 
 		// проверяем - может такой файл уже есть? тогда его надо сначала удалить?
 		if (undefined !== this.files[path])
+			this.removeFile(path);
+
+		var tmp = path.toUtf8();
+		var pointer = Module["_Zlib_Malloc"](tmp.length);
+		if (0 == pointer)
 			return false;
+		Module["HEAP8"].set(tmp, pointer);
+		
+		if (!data)
+			return false;
+
+		var arrayBuffer = (undefined !== data.byteLength) ? new Uint8Array(data) : data;
+
+		var FileRawDataSize = arrayBuffer.length;
+		var FileRawData = Module["_Zlib_Malloc"](FileRawDataSize);
+		if (0 == FileRawData)
+			return false;
+		Module["HEAP8"].set(arrayBuffer, FileRawData);
+		
+		Module["_Zlib_AddFile"](this.engine, pointer, FileRawData, FileRawDataSize);
 
 		this.files[path] = data;
 		return true;
@@ -248,6 +207,14 @@
 		// проверяем - может такого файла и нет?
 		if (undefined === this.files[path])
 			return false;
+			
+		var tmp = path.toUtf8();
+		var pointer = Module["_Zlib_Malloc"](tmp.length);
+		if (0 == pointer)
+			return false;
+		Module["HEAP8"].set(tmp, pointer);
+		
+		Module["_Zlib_RemoveFile"](this.engine, pointer);
 
 		delete this.files[path];
 		return true;

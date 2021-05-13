@@ -3,7 +3,6 @@
 #include "../../../../DesktopEditor/common/Directory.h"
 #include "../../../../DesktopEditor/common/Path.h"
 #include "../../wasm/src/base.h"
-#include "../../wasm/src/engine.h"
 #include "../../../OfficeUtils.h"
 
 #include <string>
@@ -16,29 +15,19 @@ static unsigned int GetLength(BYTE* x)
 
 int main()
 {
-    CData oTree;
-    oTree.ClearNoAttack();
-    oTree.SkipLen();
+    CZLib* zlib1 = Zlib_Create();
     std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/test", true);
     for (std::wstring& path : arrFiles)
     {
-        BYTE* arrPath = NULL;
-        LONG pathLen;
-        std::wstring sPath = NSFile::GetFileName(path);
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sPath.c_str(), sPath.length(), arrPath, pathLen);
-        oTree.WriteString(arrPath, pathLen);
-
         DWORD nBytesCount;
         BYTE* pData;
         NSFile::CFileBinary oFile;
         if (oFile.ReadAllBytes(path, &pData, nBytesCount))
             oFile.CloseFile();
-        oTree.WriteString(pData, nBytesCount);
+        zlib1->addFile(U_TO_UTF8(NSFile::GetFileName(path)), pData, nBytesCount);
     }
-    oTree.WriteLen();
 
-    Zlib* zlib1 = Zlib_Create();
-    BYTE* oZip = Zlib_CompressFiles(zlib1, oTree.GetBuffer());
+    BYTE* oZip = Zlib_Save(zlib1);
     NSFile::CFileBinary oFile1;
     if (oFile1.CreateFileW(NSFile::GetProcessDirectory() + L"/test.zip"))
     {
@@ -52,9 +41,9 @@ int main()
     if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.zip", &pData, nBytesCount))
         oFile.CloseFile();
 
-    Zlib* zlib = Zlib_Load(pData, nBytesCount);
+    CZLib* zlib = Zlib_Open(pData, nBytesCount);
 
-    BYTE* sPaths = Zlib_GetPathsInArchive(zlib);
+    BYTE* sPaths = Zlib_GetPaths(zlib);
     unsigned int nLength = GetLength(sPaths);
     unsigned int i = 4;
     nLength -= 4;
@@ -63,7 +52,7 @@ int main()
     {
         unsigned int nPathLength = GetLength(sPaths + i);
         i += 4;
-        BYTE* sFile = Zlib_GetFileFromArchive(zlib, std::string((char*)(sPaths + i), nPathLength).c_str());
+        BYTE* sFile = Zlib_GetFile(zlib, std::string((char*)(sPaths + i), nPathLength).c_str());
 
         if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L'/' + NSFile::GetFileName(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(sPaths + i, nPathLength))))
         {
@@ -77,6 +66,6 @@ int main()
         i += nPathLength;
     }
 
-    Zlib_Destroy(zlib);
+    Zlib_Close(zlib);
     return 0;
 }

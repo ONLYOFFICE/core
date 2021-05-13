@@ -999,7 +999,7 @@ namespace NSCSS
                         if (oFirstMargin.arLevels[0] < oSecondMargin.arLevels[0])
                             oFirstMargin.fTopSide = fNoneValue;
                         else
-                            oSecondMargin.fTopSide = fNoneValue;
+                            oSecondMargin.fTopSide += oFirstMargin.fTopSide;
                     }
 
                     if (oFirstMargin.bImportants[1] && !oSecondMargin.bImportants[1] && oFirstMargin.fRightSide != fNoneValue)
@@ -1011,7 +1011,7 @@ namespace NSCSS
                         if (oFirstMargin.arLevels[1] < oSecondMargin.arLevels[1])
                             oFirstMargin.fRightSide = fNoneValue;
                         else
-                            oSecondMargin.fRightSide = fNoneValue;
+                            oSecondMargin.fRightSide += oFirstMargin.fRightSide;
                     }
 
                     if (oFirstMargin.bImportants[2] && !oSecondMargin.bImportants[2] && oFirstMargin.fBottomSide != fNoneValue)
@@ -1023,7 +1023,7 @@ namespace NSCSS
                         if (oFirstMargin.arLevels[2] < oSecondMargin.arLevels[2])
                             oFirstMargin.fBottomSide = fNoneValue;
                         else
-                            oSecondMargin.fBottomSide = fNoneValue;
+                            oSecondMargin.fBottomSide += oFirstMargin.fBottomSide;
                     }
 
                     if (oFirstMargin.bImportants[3] && !oSecondMargin.bImportants[3] && oFirstMargin.fLeftSide != fNoneValue)
@@ -1035,7 +1035,7 @@ namespace NSCSS
                         if (oFirstMargin.arLevels[3] < oSecondMargin.arLevels[3])
                             oFirstMargin.fLeftSide = fNoneValue;
                         else
-                            oSecondMargin.fLeftSide = fNoneValue;
+                            oSecondMargin.fLeftSide += oFirstMargin.fLeftSide;
                     }
                 }
 

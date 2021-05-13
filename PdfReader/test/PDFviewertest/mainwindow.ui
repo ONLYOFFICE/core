@@ -143,7 +143,7 @@
      <number>50</number>
     </property>
     <property name="maximum">
-     <number>300</number>
+     <number>600</number>
     </property>
     <property name="orientation">
      <enum>Qt::Horizontal</enum>
@@ -179,7 +179,7 @@
      <x>0</x>
      <y>0</y>
      <width>851</width>
-     <height>20</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuPDF_viewer">

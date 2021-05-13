@@ -131,8 +131,6 @@ namespace agg
             //     //return ginfo.shading.function.get_x_max() + 1;
             // }
 
-           
-
             float a = (r1 - r0) * (r1 - r0) - (p1.x - p0.x) * (p1.x - p0.x) - (p1.y - p0.y) * (p1.y - p0.y);
 
             float b = 2 * r0 * (r1 - r0) + 2 * (p1.x - p0.x) * (x - p0.x) + 2 * (p1.y - p0.y) * (y - p0.y);
@@ -271,6 +269,7 @@ namespace agg
         }
         virtual float eval(float x, float y) override
         {
+
             float t = (x - p0.x) * (p1.x - p0.x) + (y - p0.y) * (p1.y - p0.y);
             t /= (p1.x - p0.x) * (p1.x - p0.x) + (p1.y - p0.y) * (p1.y - p0.y);
 

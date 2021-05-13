@@ -405,7 +405,7 @@ namespace NSStructures
             ginfo.continue_shading_f = continue_shading_f;
             ginfo.continue_shading_b = continue_shading_b;
 
-            ginfo.shading.function = ColorFunction<agg::rgba8>(515, t0, t1);
+            ginfo.shading.function = ColorFunction<agg::rgba8>(512, t0, t1);
 
             ginfo.shading.set_two_points = true;
             ginfo.shading.point1 = p1;

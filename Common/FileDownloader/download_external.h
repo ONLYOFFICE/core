@@ -33,6 +33,7 @@
 #include <iostream>
 #include <unistd.h>
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
 
 #ifdef USE_EXTERNAL_DOWNLOAD
 
@@ -60,7 +61,11 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
     std::string sOutputA = U_TO_UTF8(sOutput);
     //sOutputA =("\"" + sOutputA + "\"");
 
-    if (0 != nReturnCode && NSFile::CFileBinary::Exists(L"/usr/bin/curl"))
+    std::wstring sDownloadUtilPrefix = NSSystemUtils::GetEnvVariable(L"DOWNLOAD_UTIL_PREFIX");
+    std::wstring sCurlPath = sDownloadUtilPrefix + L"/usr/bin/curl";
+    std::wstring sWgetPath = sDownloadUtilPrefix + L"/usr/bin/wget";
+
+    if (0 != nReturnCode && NSFile::CFileBinary::Exists(sCurlPath))
     {
         pid_t pid = fork(); // create child process
         int status;
@@ -73,7 +78,7 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
         case 0: // child process
         {
             const char* nargs[10];
-            nargs[0] = "/usr/bin/curl";
+            nargs[0] = U_TO_UTF8(sCurlPath).c_str();
             nargs[1] = "--url";
             nargs[2] = sUrlA.c_str();
             nargs[3] = "--output";
@@ -89,7 +94,7 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
             nenv[1] = "LD_LIBRARY_PATH=";
             nenv[2] = NULL;
 
-            execve("/usr/bin/curl", (char * const *)nargs, (char * const *)nenv);
+            execve(U_TO_UTF8(sCurlPath).c_str(), (char * const *)nargs, (char * const *)nenv);
             exit(EXIT_SUCCESS);
             break;
         }
@@ -103,7 +108,7 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
         }
     }
 
-    if (0 != nReturnCode && NSFile::CFileBinary::Exists(L"/usr/bin/wget"))
+    if (0 != nReturnCode && NSFile::CFileBinary::Exists(sWgetPath))
     {
         std::string sUrlValidateA = wget_url_validate(sUrlA);
 
@@ -118,7 +123,7 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
         case 0: // child process
         {
             const char* nargs[8];
-            nargs[0] = "/usr/bin/wget";
+            nargs[0] = U_TO_UTF8(sWgetPath).c_str();
             nargs[1] = sUrlValidateA.c_str();
             nargs[2] = "-O";
             nargs[3] = sOutputA.c_str();
@@ -131,7 +136,7 @@ int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
             nenv[0] = "LD_PRELOAD=";
             nenv[1] = NULL;
 
-            execve("/usr/bin/wget", (char * const *)nargs, (char * const *)nenv);
+            execve(U_TO_UTF8(sWgetPath).c_str(), (char * const *)nargs, (char * const *)nenv);
             exit(EXIT_SUCCESS);
             break;
         }

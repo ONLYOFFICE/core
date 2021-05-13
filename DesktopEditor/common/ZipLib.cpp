@@ -1,11 +1,9 @@
 #include "ZipLib.h"
-#include "../../DesktopEditor/common/Types.h"
 #include "../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/unzip.h"
 #include "../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/ioapibuf.h"
 #include "../../OfficeUtils/src/ZipUtilsCP.h"
 
 #include <algorithm> // для std::min в get_file_in_archive
-#include <vector>
 
 unzFile unzOpenHelp(BUFFER_IO* buffer)
 {
@@ -88,93 +86,106 @@ bool get_file_in_archive(unzFile unzip_file_handle, const char* filePathInZip, B
 }
 // end from (ZipUtilsCP.cpp)
 
-unsigned char* CZLib::GetPathsInArchive()
+void CZLib::create()
 {
-    if (isInit())
-    {
-        BUFFER_IO* buf = new BUFFER_IO;
-        buf->buffer = buffer;
-        buf->nSize  = size;
-        unzFile uf  = unzOpenHelp(buf);
-
-        CData* oPaths = new CData();
-        oPaths->SkipLen();
-        do
-        {
-            unz_file_info file_info;
-            unzGetCurrentFileInfo(uf, &file_info, NULL, 0, NULL, 0, NULL, 0);
-            if (file_info.uncompressed_size != 0)
-            {
-                std::string sPath = get_filename_from_unzfile(uf);
-                oPaths->WriteString((unsigned char*)sPath.c_str(), sPath.length());
-            }
-        } while (UNZ_OK == unzGoToNextFile(uf));
-        oPaths->WriteLen();
-        return oPaths->GetBuffer();
-    }
-    return NULL;
+    m_zipFile = NULL;
+    m_sizeZip = 0;
 }
-unsigned char* CZLib::GetFileFromArchive(const char* path)
+void CZLib::open(BYTE* buffer, DWORD size)
 {
-    if (isInit())
+    RELEASEARRAYOBJECTS(m_zipFile);
+    m_zipFile = buffer;
+    m_sizeZip = size;
+
+    // Получаем пути в архиве
+    BUFFER_IO* buf = new BUFFER_IO;
+    buf->buffer = buffer;
+    buf->nSize  = size;
+    unzFile uf  = unzOpenHelp(buf);
+
+    do
     {
-        BUFFER_IO* buf = new BUFFER_IO;
-        buf->buffer = buffer;
-        buf->nSize  = size;
-        unzFile uf  = unzOpenHelp(buf);
+        unz_file_info file_info;
+        unzGetCurrentFileInfo(uf, &file_info, NULL, 0, NULL, 0, NULL, 0);
+        if (file_info.uncompressed_size != 0)
+            m_arrFiles.push_back(CFile(get_filename_from_unzfile(uf), NULL, 0));
+    } while (UNZ_OK == unzGoToNextFile(uf));
+}
+void CZLib::close()
+{
+    RELEASEARRAYOBJECTS(m_zipFile);
+    m_arrFiles.clear();
+}
 
-        unsigned char* file = new BYTE;
-        unsigned long  nFileSize = 0;
-        bool fileIsIn = get_file_in_archive(uf, path, &file, nFileSize);
+std::vector<std::string> CZLib::getPaths()
+{
+    std::vector<std::string> oRes;
+    for (CFile& oFile : m_arrFiles)
+        oRes.push_back(oFile.m_sPath);
+    return oRes;
+}
+std::pair<DWORD, BYTE*> CZLib::save()
+{
+    BUFFER_IO* buf = new BUFFER_IO;
+    buf->bGrow = 1;
+    buf->nCurrentPos = 0;
+    zipFile zip_file_handle = zipOpenHelp(buf);
 
-        unzClose(uf);
-        if (fileIsIn)
+    for (CFile& oFile : m_arrFiles)
+    {
+        if (ZIP_OK != zipOpenNewFileInZip( zip_file_handle, oFile.m_sPath.c_str(), NULL, NULL, 0, NULL, 0, NULL, Z_DEFLATED, -1 ) ||
+            ZIP_OK != zipWriteInFileInZip(zip_file_handle, oFile.m_pData, oFile.m_nLength) ||
+            ZIP_OK != zipCloseFileInZip(zip_file_handle))
         {
-            CData* oFile = new CData();
-            oFile->WriteString(file, nFileSize);
-            return oFile->GetBuffer();
+            zipClose(zip_file_handle, NULL);
+            return make_pair(m_sizeZip, m_zipFile);
         }
     }
-    return NULL;
+    zipClose(zip_file_handle, NULL);
+
+    m_zipFile = buf->buffer;
+    m_sizeZip = buf->nSize;
+    return make_pair(m_sizeZip, m_zipFile);
 }
-unsigned char* CZLib::CompressFiles  (unsigned char* tree)
+std::pair<DWORD, BYTE*> CZLib::getFile(const std::string& sPath)
 {
-    if (tree)
+    BUFFER_IO* buf = new BUFFER_IO;
+    buf->buffer = m_zipFile;
+    buf->nSize  = m_sizeZip;
+    unzFile uf  = unzOpenHelp(buf);
+
+    BYTE* file = new BYTE;
+    DWORD nFileSize = 0;
+    get_file_in_archive(uf, sPath.c_str(), &file, nFileSize);
+    unzClose(uf);
+    return make_pair(nFileSize, file);
+}
+void CZLib::addFile   (const std::string& sPath, BYTE* data, DWORD length)
+{
+    bool bExists = false;
+    for (CFile& oFile : m_arrFiles)
     {
-        BUFFER_IO* buf = new BUFFER_IO;
-        buf->bGrow = 1;
-        buf->nCurrentPos = 0;
-        zipFile zip_file_handle = zipOpenHelp(buf);
-
-        unsigned int nLength = GetLength(tree);
-        unsigned int i = 4;
-        nLength -= 4;
-
-        while (i < nLength)
+        if (oFile.m_sPath == sPath)
         {
-            unsigned int nPathLength = GetLength(tree + i);
-            i += 4;
-            std::string sPath((char*)(tree + i), nPathLength);
-            i += nPathLength;
-            unsigned int nFileLength = GetLength(tree + i);
-            i += 4;
-
-            if (ZIP_OK != zipOpenNewFileInZip( zip_file_handle, sPath.c_str(), NULL, NULL, 0, NULL, 0, NULL, Z_DEFLATED, -1 ) ||
-                ZIP_OK != zipWriteInFileInZip(zip_file_handle, tree + i, nFileLength) ||
-                ZIP_OK != zipCloseFileInZip(zip_file_handle))
-            {
-                zipClose(zip_file_handle, NULL);
-                return NULL;
-            }
-            i += nFileLength;
+            RELEASEARRAYOBJECTS(oFile.m_pData);
+            oFile.m_pData = data;
+            oFile.m_nLength = length;
+            bExists = true;
+            break;
         }
-        zipClose(zip_file_handle, NULL);
-        buffer = buf->buffer;
-        size   = buf->nSize;
-
-        CData* oRes = new CData;
-        oRes->WriteString(buf->buffer, buf->nSize);
-        return oRes->GetBuffer();
     }
-    return NULL;
+    if (!bExists)
+        m_arrFiles.push_back(CFile(sPath, data, length));
+}
+bool CZLib::removeFile(const std::string& sPath)
+{
+    for (std::vector<CFile>::iterator i = m_arrFiles.begin(); i != m_arrFiles.end(); i++)
+    {
+        if (i->m_sPath == sPath)
+        {
+            m_arrFiles.erase(i);
+            return true;
+        }
+    }
+    return false;
 }

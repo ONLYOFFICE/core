@@ -70,156 +70,88 @@ public:
 
 class CZipFolderMemory : public IZipFolder
 {
-    struct CFile
-    {
-        std::wstring m_sPath;
-        BYTE* m_pData;
-        DWORD m_nLength;
-        CFile(const std::wstring& sPath, BYTE* pData, DWORD nLength) : m_sPath(sPath), m_pData(pData), m_nLength(nLength) {}
-    };
-
-    std::vector<CFile> arrFiles;
+    CZLib* m_zlib;
 public:
     CZipFolderMemory(BYTE* data, DWORD length)
     {
-        CZLib* zlib = new CZLib(data, length);
-        BYTE* sPaths = zlib->GetPathsInArchive();
-        DWORD nLength = GetLength(sPaths);
-        DWORD i = 4;
-        nLength -= 4;
-
-        while (i < nLength)
-        {
-            DWORD nPathLength = GetLength(sPaths + i);
-            i += 4;
-
-            BYTE* sFile = zlib->GetFileFromArchive(std::string((char*)(sPaths + i), nPathLength).c_str());
-
-            arrFiles.push_back(CFile(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(sPaths + i, nPathLength), sFile + 4, GetLength(sFile)));
-            i += nPathLength;
-        }
-        RELEASEARRAYOBJECTS(sPaths);
+        m_zlib = new CZLib(data, length);
+    }
+    std::string normalPath(const std::wstring& path)
+    {
+        if (!path.empty() && path[0] == L'/')
+            return U_TO_UTF8(path.substr(1));
+        return U_TO_UTF8(path);
     }
 
     virtual bool read  (const std::wstring& path, BYTE*& data, DWORD& length)
     {
-        std::wstring sPath = normalPath(path);
-        for (CFile& oFile : arrFiles)
+        std::string sPath = normalPath(path);
+        std::pair<DWORD, BYTE*> oRes = m_zlib->getFile(sPath);
+        if (oRes.first)
         {
-            if (oFile.m_sPath == sPath)
-            {
-                data   = oFile.m_pData;
-                length = oFile.m_nLength;
-                return true;
-            }
+            length = oRes.first;
+            data = oRes.second;
+            return true;
         }
         return false;
     }
     virtual void write (const std::wstring& path, BYTE*  data, DWORD  length)
     {
-        std::wstring sPath = normalPath(path);
-        bool bExists = false;
-        for (CFile& oFile : arrFiles)
-        {
-            if (oFile.m_sPath == sPath)
-            {
-                RELEASEARRAYOBJECTS(oFile.m_pData);
-                oFile.m_pData = data;
-                oFile.m_nLength = length;
-                bExists = true;
-                break;
-            }
-        }
-        if (!bExists)
-            arrFiles.push_back(CFile(sPath, data, length));
+        std::string sPath = normalPath(path);
+        m_zlib->addFile(sPath, data, length);
     }
     virtual void move  (const std::wstring& sSrc,   const std::wstring& sDst)
     {
-        std::wstring sSrcPath = normalPath(sSrc);
-        for (CFile& oFile : arrFiles)
-        {
-            if (oFile.m_sPath == sSrcPath)
-            {
-                oFile.m_sPath = normalPath(sDst);
-                break;
-            }
-        }
+        std::string sSrcPath = normalPath(sSrc);
+        std::pair<DWORD, BYTE*> oFile = m_zlib->getFile(sSrcPath);
+        m_zlib->removeFile(sSrcPath);
+        m_zlib->addFile(normalPath(sDst), oFile.second, oFile.first);
     }
     virtual bool exists(const std::wstring& path)
     {
-        std::wstring sPath = normalPath(path);
-        for (CFile& oFile : arrFiles)
-            if (oFile.m_sPath == sPath)
+        std::string sPath = normalPath(path);
+        std::vector<std::string> sPaths = m_zlib->getPaths();
+        for (std::string& i : sPaths)
+            if (i == sPath)
                 return true;
         return false;
     }
     virtual void remove(const std::wstring& path)
     {
-        std::wstring sPath = normalPath(path);
-        for (std::vector<CFile>::iterator i = arrFiles.begin(); i != arrFiles.end(); i++)
-        {
-            if (i->m_sPath == sPath)
-            {
-                arrFiles.erase(i);
-                break;
-            }
-        }
+        std::string sPath = normalPath(path);
+        m_zlib->removeFile(sPath);
     }
     virtual void createDirectory(const std::wstring& path)
     {
     }
     virtual void writeZipFolder(BYTE* data, DWORD& length)
     {
-        CData* oData = new CData();
-        oData->SkipLen();
-        for (CFile& oFile : arrFiles)
-        {
-            BYTE* pData = NULL;
-            LONG   nLen = 0;
-            NSFile::CUtf8Converter::GetUtf8StringFromUnicode(oFile.m_sPath.c_str(), oFile.m_sPath.length(), pData, nLen);
-            oData->WriteString(pData, nLen);
-            oData->WriteString(oFile.m_pData, oFile.m_nLength);
-        }
-        oData->WriteLen();
-
-        CZLib* zipFile = new CZLib();
-        BYTE* oRes = zipFile->CompressFiles(oData->GetBuffer());
-
-        data = oRes + 4;
-        length = GetLength(oRes);
+        std::pair<DWORD, BYTE*> oRes = m_zlib->save();
+        length = oRes.first;
+        data = oRes.second;
+        m_zlib->close();
     }
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)
     {
-        std::wstring sPath = normalPath(path);
+        std::string sPath = normalPath(path);
+        std::vector<std::string> sPaths = m_zlib->getPaths();
         std::vector<std::wstring> sRes;
 
-        for (CFile& oFile : arrFiles)
+        for (std::string& i : sPaths)
         {
             if (bIsRecursion)
             {
-                if (oFile.m_sPath.find(sPath) == 0)
-                    sRes.push_back(L'/' + oFile.m_sPath);
+                if (i.find(sPath) == 0)
+                    sRes.push_back(L'/' + UTF8_TO_U(i));
             }
             else
             {
-                size_t nFindDirectory = oFile.m_sPath.find(sPath);
-                if (nFindDirectory == 0 && oFile.m_sPath.find_first_of(L"\\/", sPath.length()) == std::wstring::npos)
-                    sRes.push_back(L'/' + oFile.m_sPath);
+                size_t nFindDirectory = i.find(sPath);
+                if (nFindDirectory == 0 && i.find_first_of("\\/", sPath.length()) == std::wstring::npos)
+                    sRes.push_back(L'/' + UTF8_TO_U(i));
             }
         }
-
         return sRes;
-    }
-
-    DWORD GetLength(BYTE* x)
-    {
-        return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
-    }
-    std::wstring normalPath(const std::wstring& path)
-    {
-        if (!path.empty() && path[0] == L'/')
-            return path.substr(1);
-        return path;
     }
 };
 

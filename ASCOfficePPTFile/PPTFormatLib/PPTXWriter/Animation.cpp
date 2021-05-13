@@ -57,13 +57,14 @@ void Animation::Convert(PPTX::Logic::Timing &oTiming)
             oTiming.bldLst = new PPTX::Logic::BldLst();
             FillBldLst(m_pPPT10->m_pBuildListContainer, *(oTiming.bldLst));
             m_pBldLst = oTiming.bldLst.GetPointer();
+
+            if (m_pPPT10->m_haveExtTime)
+            {
+                oTiming.tnLst = new PPTX::Logic::TnLst();
+                FillTnLst(m_pPPT10->m_pExtTimeNodeContainer, *(oTiming.tnLst));
+            }
         }
 
-        if (m_pPPT10->m_haveExtTime)
-        {
-            oTiming.tnLst = new PPTX::Logic::TnLst();
-            FillTnLst(m_pPPT10->m_pExtTimeNodeContainer, *(oTiming.tnLst));
-        }
     } else if (!m_arrOldAnim.empty())
     {
         InitTimingTags(oTiming);

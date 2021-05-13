@@ -1314,10 +1314,10 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
         switch (transition.m_nSpeed)
         {
         // TODO check this moment. Always write fast
-        case 0x00:	oWriter.WriteString(L" spd=\"fast\"");	break;
+        case 0x00:	oWriter.WriteString(L" spd=\"slow\"");	break;
         case 0x01:	oWriter.WriteString(L" spd=\"med\"");	break;
         case 0x02:
-        default:	oWriter.WriteString(L" spd=\"slow\"");	break;
+        default:	oWriter.WriteString(L" spd=\"fast\"");	break;
         }
         if (oSSInfo.m_bOnlyClick == false)
         {
@@ -1479,7 +1479,8 @@ void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator
     }
 
     animation.Convert(oTiming);
-    oWriter.WriteString(oTiming.toXML());
+    if (oTiming.tnLst.is_init())
+        oWriter.WriteString(oTiming.toXML());
     //oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
 
 }

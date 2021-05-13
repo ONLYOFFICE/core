@@ -57,11 +57,11 @@ core_windows {
     LIBS += $$PWD/../ixwebsocket/IXWebSocket/build/windows/$$CORE_BUILDS_PLATFORM_PREFIX/lib/ixwebsocket.lib
     LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libssl.lib
     LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libcrypto.lib
-	LIBS += -lwsock32
-	LIBS += -lws2_32
-	LIBS += -lIphlpapi
-	LIBS += -lcrypt32
-	LIBS += -lUser32
-	LIBS += -lshlwapi
+    LIBS += -lwsock32
+    LIBS += -lws2_32
+    LIBS += -lIphlpapi
+    LIBS += -lcrypt32
+    LIBS += -lUser32
+    LIBS += -lshlwapi
     
 }

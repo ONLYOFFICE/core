@@ -1,5 +1,4 @@
-/*
- * (c) Copyright Ascensio System SIA 2010-2019
+﻿ /* (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,37 +29,56 @@
  *
  */
 
-#ifndef _IX_WEB_SOCKET_H_
-#define _IX_WEB_SOCKET_H_
+#include "socketRocket_internal.h"
+#import "socketRocket_objc.h"
 
-#include "WebWorkerBase.h"
-#include <ixwebsocket/IXNetSystem.h>
-#include <ixwebsocket/IXWebSocket.h>
-
-namespace NSWebSocket
+namespace NSNetwork
 {
-    class CIXWebSocket: public CWebWorkerBase
+    namespace NSWebSocket
     {
 
-    private:
-
-        ix::WebSocket webSocket;
-       
-    public:
-
-        CIXWebSocket(const std::string& url, std::shared_ptr<IListener> listener): CWebWorkerBase(url, listener)
+        struct SocketRocketImpl
         {
-            ix::initNetSystem();
+            SocketRocketObjC* wrapped;
+        };
+
+        CSocketRocket::CSocketRocket(const std::string& url, std::shared_ptr<IListener> listener): CWebWorkerBase(url, listener)
+        {
+            impl = new SocketRocketImpl();
+            impl->wrapped = [[SocketRocketObjC alloc] init];
+
+            [impl->wrapped setUrl:[NSString stringWithAString:url]];
+
+            IListener* ptr = listener.get();
+            [impl->wrapped setListener: ptr];
         }
-        
-    public:
-        
-        virtual void open() override;
-        virtual void send(const std::string& message) override;
-        virtual void close() override;
-        void receive(const ix::WebSocketMessagePtr& msg);
 
-    };
+        CSocketRocket::~CSocketRocket()
+        {
+            if (impl)
+              [impl->wrapped release];
+            delete impl;
+        }
+
+        void CSocketRocket::open()
+        {
+            [impl->wrapped open];
+        }
+
+        void CSocketRocket::send(const std::string& message)
+        {
+            [impl->wrapped send:[NSString stringWithAString:message]];
+        }
+
+        void CSocketRocket::close()
+        {
+            [impl->wrapped close];
+        }
+
+        void CSocketRocket::setUrl(const std::string& url) 
+        {
+            [impl->wrapped setUrl:[NSString stringWithAString:url]];
+        }
+
+    }
 }
-
-#endif /* _IX_WEB_SOCKET_H_ */

@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,32 +30,36 @@
  *
  */
 
-#ifndef _WEB_WORKER_BASE_H_
-#define _WEB_WORKER_BASE_H_
+#include "../../include/websocket.h"
+#ifdef USE_IXWEBSOCKET
+#include "../ixwebsocket/ixwebsocket_internal.h"
+#elif defined USE_SOCKETROCKET
+#include "../socketrocket/socketRocket_internal.h"
+#endif
 
-#include "websocket.h"
-
-namespace NSWebSocket
+namespace NSNetwork
 {
-
-    class CWebWorkerBase: public IWebSocket
-    {
-        protected:
-            std::shared_ptr<IListener> listener;
-            std::string url;
-
-        public:
-            CWebWorkerBase(const std::string& url, std::shared_ptr<IListener> listener)
-            {
-                this->url = url;
-                this->listener = listener;
-            }
-            virtual void open() override {}
-            virtual void send(const std::string& message) override {}
-            virtual void close() override {}
-            virtual void setUrl(const std::string& url) override {this->url = url;}
-    };
-
+	namespace NSWebSocket
+	{
+	    std::shared_ptr<IWebSocket> createWebsocket(const std::string& type, std::shared_ptr<IListener> listener, const std::string& url)
+	    {
+		    if(type == "ixwebsocket")
+		    {
+			    #ifdef USE_IXWEBSOCKET
+				    return std::make_shared<CIXWebSocket>(url, listener);
+			    #else
+				    return nullptr;
+			    #endif
+		    }
+		    if(type == "socketRocket")
+		    {
+			    #ifdef USE_SOCKETROCKET
+				    return std::make_shared<CSocketRocket>(url, listener);
+			    #else
+				    return nullptr;
+			    #endif
+		    }
+		    else return nullptr;
+	    }
+	}
 }
-
-#endif /* _WEB_WORKER_BASE_H_ */

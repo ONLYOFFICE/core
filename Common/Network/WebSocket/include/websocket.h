@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -33,33 +33,36 @@
 #ifndef _WEB_SOCKET_H_
 #define _WEB_SOCKET_H_
 
-#include "../kernel_config.h"
+#include "../../../kernel_config.h"
 #include <string>
 #include <memory>
 
-namespace NSWebSocket
+namespace NSNetwork
 {
-    class IWebSocket
+    namespace NSWebSocket
     {
-    public:
-        virtual void open() = 0;
-        virtual void send(const std::string& message) = 0;
-        virtual void close() = 0;
-        virtual void setUrl(const std::string& url) = 0;
-        virtual ~IWebSocket() {}
-    };
+        class IWebSocket
+        {
+        public:
+            virtual void open() = 0;
+            virtual void send(const std::string& message) = 0;
+            virtual void close() = 0;
+            virtual void setUrl(const std::string& url) = 0;
+            virtual ~IWebSocket() {}
+        };
 
-    class IListener
-    {
-    public:
-        virtual void onMessage(const std::string& message) = 0;
-        virtual void onOpen() = 0;
-        virtual void onError(const std::string& error) = 0;
-        virtual void onClose(int code, const std::string& reason) = 0;
-        virtual ~IListener() {}
-    };
+        class IListener
+        {
+        public:
+            virtual void onMessage(const std::string& message) = 0;
+            virtual void onOpen() = 0;
+            virtual void onError(const std::string& error) = 0;
+            virtual void onClose(int code, const std::string& reason) = 0;
+            virtual ~IListener() {}
+        };
 
-    KERNEL_DECL std::shared_ptr<IWebSocket> createWebsocket(const std::string& type, std::shared_ptr<IListener> listener, const std::string& url = "");
+        KERNEL_DECL std::shared_ptr<IWebSocket> createWebsocket(const std::string& type, std::shared_ptr<IListener> listener, const std::string& url = "");
+    }
 }
 
 #endif /* _WEB_SOCKET_H_ */

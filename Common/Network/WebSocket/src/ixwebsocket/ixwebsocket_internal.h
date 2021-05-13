@@ -30,29 +30,40 @@
  *
  */
 
-//#ifndef _SOCKET_ROCKET_OBJC_H_
-//#define _SOCKET_ROCKET_OBJC_H_
+#ifndef _IX_WEB_SOCKET_H_
+#define _IX_WEB_SOCKET_H_
 
-#import <SocketRocket/SRWebSocket.h>
-#include "websocket.h"
+#include "../base/WebWorkerBase.h"
+#include <ixwebsocket/IXNetSystem.h>
+#include <ixwebsocket/IXWebSocket.h>
 
-
-@interface SocketRocketObjC: NSObject<SRWebSocketDelegate>
+namespace NSNetwork
 {
-    NSWebSocket::IListener* m_listener;
-    NSString* m_url;
+    namespace NSWebSocket
+    {
+        class CIXWebSocket: public CWebWorkerBase
+        {
+
+        private:
+
+            ix::WebSocket webSocket;
+           
+        public:
+
+            CIXWebSocket(const std::string& url, std::shared_ptr<IListener> listener): CWebWorkerBase(url, listener)
+            {
+                ix::initNetSystem();
+            }
+            
+        public:
+            
+            virtual void open() override;
+            virtual void send(const std::string& message) override;
+            virtual void close() override;
+            void receive(const ix::WebSocketMessagePtr& msg);
+
+        };
+    }
 }
 
-@property (strong, nonatomic) SRWebSocket *socket;
-
-
-- (void) open;
-- (void) send : (NSString *)name;
-- (void) close;
-- (void) setListener: (NSWebSocket::IListener *)listener;
-- (void) setUrl: (NSString *)url;
-
-@end
-
-
- /* _SOCKET_ROCKET_OBJC_H_ */
+#endif /* _IX_WEB_SOCKET_H_ */

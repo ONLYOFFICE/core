@@ -1,4 +1,5 @@
-﻿ /* (c) Copyright Ascensio System SIA 2010-2021
+/*
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,53 +30,29 @@
  *
  */
 
-#include "socketRocket_internal.h"
-#import "socketRocket_objc.h"
+//#ifndef _SOCKET_ROCKET_OBJC_H_
+//#define _SOCKET_ROCKET_OBJC_H_
 
-namespace NSWebSocket
+#import <SocketRocket/SRWebSocket.h>
+#include "../../include/websocket.h"
+
+
+@interface SocketRocketObjC: NSObject<SRWebSocketDelegate>
 {
-
-    struct SocketRocketImpl
-    {
-        SocketRocketObjC* wrapped;
-    };
-
-    CSocketRocket::CSocketRocket(const std::string& url, std::shared_ptr<IListener> listener): CWebWorkerBase(url, listener)
-    {
-        impl = new SocketRocketImpl();
-        impl->wrapped = [[SocketRocketObjC alloc] init];
-
-        [impl->wrapped setUrl:[NSString stringWithAString:url]];
-
-        IListener* ptr = listener.get();
-        [impl->wrapped setListener: ptr];
-    }
-
-    CSocketRocket::~CSocketRocket()
-    {
-        if (impl)
-          [impl->wrapped release];
-        delete impl;
-    }
-
-    void CSocketRocket::open()
-    {
-        [impl->wrapped open];
-    }
-
-    void CSocketRocket::send(const std::string& message)
-    {
-        [impl->wrapped send:[NSString stringWithAString:message]];
-    }
-
-    void CSocketRocket::close()
-    {
-        [impl->wrapped close];
-    }
-
-    void CSocketRocket::setUrl(const std::string& url) 
-    {
-        [impl->wrapped setUrl:[NSString stringWithAString:url]];
-    }
-
+    NSNetwork::NSWebSocket::IListener* m_listener;
+    NSString* m_url;
 }
+
+@property (strong, nonatomic) SRWebSocket *socket;
+
+
+- (void) open;
+- (void) send: (NSString *)name;
+- (void) close;
+- (void) setListener: (NSNetwork::NSWebSocket::IListener *)listener;
+- (void) setUrl: (NSString *)url;
+
+@end
+
+
+ /* _SOCKET_ROCKET_OBJC_H_ */

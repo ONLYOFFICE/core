@@ -1,5 +1,5 @@
-/*
- * (c) Copyright Ascensio System SIA 2010-2019
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,33 +30,51 @@
  *
  */
 
-#include "websocket.h"
-#ifdef USE_IXWEBSOCKET
 #include "ixwebsocket_internal.h"
-#elif defined USE_SOCKETROCKET
-#include "socketRocket_internal.h"
-#endif
 
-namespace NSWebSocket
+namespace NSNetwork
 {
-    std::shared_ptr<IWebSocket> createWebsocket(const std::string& type, std::shared_ptr<IListener> listener, const std::string& url)
+    namespace NSWebSocket
     {
-	    if(type == "ixwebsocket")
-	    {
-		    #ifdef USE_IXWEBSOCKET
-			    return std::make_shared<CIXWebSocket>(url, listener);
-		    #else
-			    return nullptr;
-		    #endif
-	    }
-	    if(type == "socketRocket")
-	    {
-		    #ifdef USE_SOCKETROCKET
-			    return std::make_shared<CSocketRocket>(url, listener);
-		    #else
-			    return nullptr;
-		    #endif
-	    }
-	    else return nullptr;
+        void CIXWebSocket::open()
+        {
+            ix::SocketTLSOptions tls;
+            tls.caFile = "NONE";
+            webSocket.setTLSOptions(tls);
+            webSocket.setUrl(url);
+            std::function<void(const ix::WebSocketMessagePtr&)> f = std::bind(&CIXWebSocket::receive, this, std::placeholders::_1);
+            webSocket.setOnMessageCallback(f);
+            webSocket.start();
+        }
+
+        void CIXWebSocket::receive(const ix::WebSocketMessagePtr& msg)
+        {
+            if (msg->type == ix::WebSocketMessageType::Message)
+            {
+                CWebWorkerBase::listener->onMessage(msg->str);
+            }
+            else if (msg->type == ix::WebSocketMessageType::Open)
+            {
+                CWebWorkerBase::listener->onOpen();
+            }
+            else if (msg->type == ix::WebSocketMessageType::Error)
+            {
+                CWebWorkerBase::listener->onError(msg->errorInfo.reason);
+            }
+            else if (msg->type == ix::WebSocketMessageType::Close)
+            {
+                CWebWorkerBase::listener->onClose(msg->closeInfo.code, msg->closeInfo.reason);
+            }
+        }
+
+        void CIXWebSocket::send(const std::string& message)
+        {
+            webSocket.send(message);
+        }
+
+        void CIXWebSocket::close()
+        {
+            webSocket.stop();
+        }
     }
 }

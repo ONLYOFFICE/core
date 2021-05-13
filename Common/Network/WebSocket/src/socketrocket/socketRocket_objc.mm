@@ -32,7 +32,7 @@
 
 
 #import "socketRocket_objc.h"
-#import "../../DesktopEditor/Common/Mac/NSString+StringUtils.h"
+#import "../../../../../DesktopEditor/Common/Mac/NSString+StringUtils.h"
 
 @implementation SocketRocketObjC
 
@@ -65,11 +65,10 @@
 
 - (void)send:(NSString*)message
 {
-
 #if _LOGGER_SOCKETS
         
-            NSLog(@"------------------- SEND TO SOCKET -------------------");
-            NSLog(@"%@", message);
+    NSLog(@"------------------- SEND TO SOCKET -------------------");
+    NSLog(@"%@", message);
         
 #endif
 
@@ -102,40 +101,39 @@
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message
 {
-    
 #if _LOGGER_SOCKETS
         
     NSLog(@"------------------- SOCKET RECEIVE MESSAGE -------------------");
     NSLog(@"%@", message);
         
 #endif
+
     NSString *s = (NSString *)message;
     if (s)
     {
        m_listener->onMessage(s.stdstring);
-    }
-    
+    }  
 }
 
 - (void)webSocketDidOpen:(SRWebSocket *)webSocket
 {
-  
     m_listener->onOpen();
+
 #if _LOGGER_SOCKETS
         
-        NSLog(@"------------------- SOCKET OPEN -------------------");
-        //    NSLog(@"URL : %@", webSocket.url);
-        //    NSLog(@"description : %@", webSocket.description);
-        //    NSLog(@"hash : %lu", (unsigned long)webSocket.hash);
-        //    NSLog(@"---------------------------------------------------");
+    NSLog(@"------------------- SOCKET OPEN -------------------");
+    NSLog(@"URL : %@", webSocket.url);
+    NSLog(@"description : %@", webSocket.description);
+    NSLog(@"hash : %lu", (unsigned long)webSocket.hash);
+    NSLog(@"---------------------------------------------------");
         
-#endif
-       
+#endif    
 }
 
 - (void)webSocket:(SRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
     m_listener->onError(error.localizedDescription.stdstring);
+
 #if _LOGGER_SOCKETS
     
     NSLog(@"---------------------------------------------------------");
@@ -147,27 +145,26 @@
 
 - (void)webSocket:(SRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean
 {
-    
-    m_listener->onClose(code, reason.stdstring);   
+    m_listener->onClose(code, reason.stdstring); 
+
 #if _LOGGER_SOCKETS
         
-        NSLog(@"---------------------------------------------------------");
-        NSLog(@"------------------- SOCKET CLOSE : %@ -----------", reason);
-        NSLog(@"---------------------------------------------------------");
+    NSLog(@"---------------------------------------------------------");
+    NSLog(@"------------------- SOCKET CLOSE : %@ -----------", reason);
+    NSLog(@"---------------------------------------------------------");
         
 #endif
 }     
 
 - (void)webSocket:(SRWebSocket *)webSocket didReceivePong:(NSData *)pongPayload
-{        
-        
+{           
 #if _LOGGER_SOCKETS
         
-        NSString *str = [[NSString alloc] initWithData:pongPayload encoding:NSUTF8StringEncoding];
+    NSString *str = [[NSString alloc] initWithData:pongPayload encoding:NSUTF8StringEncoding];
         
-        NSLog(@"---------------------------------------------------");
-        NSLog(@"------------------- SOCKET PONG : %@ ---------", str);
-        NSLog(@"---------------------------------------------------");
+    NSLog(@"---------------------------------------------------");
+    NSLog(@"------------------- SOCKET PONG : %@ ---------", str);
+    NSLog(@"---------------------------------------------------");
         
 #endif
 }

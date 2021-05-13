@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+/*
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,50 +30,33 @@
  *
  */
 
-#include "ixwebsocket_internal.h"
+#ifndef _WEB_WORKER_BASE_H_
+#define _WEB_WORKER_BASE_H_
 
-namespace NSWebSocket
+#include "../../include/websocket.h"
+
+namespace NSNetwork
 {
-
-    void CIXWebSocket::open()
+    namespace NSWebSocket
     {
-        ix::SocketTLSOptions tls;
-        tls.caFile = "NONE";
-        webSocket.setTLSOptions(tls);
-        webSocket.setUrl(url);
-        std::function<void(const ix::WebSocketMessagePtr&)> f = std::bind(&CIXWebSocket::receive, this, std::placeholders::_1);
-        webSocket.setOnMessageCallback(f);
-        webSocket.start();
-    }
-
-    void CIXWebSocket::receive(const ix::WebSocketMessagePtr& msg)
-    {
-        if (msg->type == ix::WebSocketMessageType::Message)
+        class CWebWorkerBase: public IWebSocket
         {
-            CWebWorkerBase::listener->onMessage(msg->str);
-        }
-        else if (msg->type == ix::WebSocketMessageType::Open)
-        {
-            CWebWorkerBase::listener->onOpen();
-        }
-        else if (msg->type == ix::WebSocketMessageType::Error)
-        {
-            CWebWorkerBase::listener->onError(msg->errorInfo.reason);
-        }
-        else if (msg->type == ix::WebSocketMessageType::Close)
-        {
-            CWebWorkerBase::listener->onClose(msg->closeInfo.code, msg->closeInfo.reason);
-        }
-    }
+            protected:
+                std::shared_ptr<IListener> listener;
+                std::string url;
 
-    void CIXWebSocket::send(const std::string& message)
-    {
-        webSocket.send(message);
+            public:
+                CWebWorkerBase(const std::string& url, std::shared_ptr<IListener> listener)
+                {
+                    this->url = url;
+                    this->listener = listener;
+                }
+                virtual void open() override {}
+                virtual void send(const std::string& message) override {}
+                virtual void close() override {}
+                virtual void setUrl(const std::string& url) override {this->url = url;}
+        };
     }
-
-    void CIXWebSocket::close()
-    {
-        webSocket.stop();
-    }
-
 }
+
+#endif /* _WEB_WORKER_BASE_H_ */

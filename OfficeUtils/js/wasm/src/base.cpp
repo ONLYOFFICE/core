@@ -1,6 +1,7 @@
 #include "base.h"
 
 #include <vector>
+#include <cstring>
 
 class CData
 {

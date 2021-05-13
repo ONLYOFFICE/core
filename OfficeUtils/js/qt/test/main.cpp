@@ -16,7 +16,7 @@ static unsigned int GetLength(BYTE* x)
 int main()
 {
     CZipBuffer* zlib1 = Zlib_Create();
-    std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/test", true);
+    std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/mytest", true);
     for (std::wstring& path : arrFiles)
     {
         DWORD nBytesCount;

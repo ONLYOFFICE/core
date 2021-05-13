@@ -93,7 +93,6 @@ void CZLib::create()
 }
 void CZLib::open(BYTE* buffer, DWORD size)
 {
-    RELEASEARRAYOBJECTS(m_zipFile);
     m_zipFile = buffer;
     m_sizeZip = size;
 

@@ -66,17 +66,24 @@ namespace odf_writer
 			
 			if (file.CreateFileW( RootPath + FILE_SEPARATOR_STR + file_name_ ) == true)
 			{
+				DWORD content_utf8_size = (DWORD)content_utf8_.length();
+				
 				if (utf8_) 
 				{
 					std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 					file.WriteFile((BYTE*)root.c_str(), (DWORD)root.length());
+
+
 					if (add_padding)
 					{
 						CryptoPP::RandomPool prng;
 						
-						CryptoPP::SecByteBlock padding(1024);
+						CryptoPP::SecByteBlock padding(1024 + (content_utf8_size % 2));
 						CryptoPP::OS_GenerateRandomBlock(false, padding, padding.size());
-						prng.IncorporateEntropy(padding, padding.size());
+						if (prng.CanIncorporateEntropy())
+						{
+							prng.IncorporateEntropy(padding, padding.size());
+						}
 
 						std::string padding_start	= "<!-- ";
 						std::string padding_end		= "-->";
@@ -96,7 +103,7 @@ namespace odf_writer
 						
 					}
 				}
-				file.WriteFile((BYTE*)content_utf8_.c_str(), (DWORD)content_utf8_.length());
+				file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_size);
 
 				file.CloseFile();
 			}

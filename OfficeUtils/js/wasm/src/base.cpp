@@ -142,33 +142,33 @@ void  Zlib_Free(void* p)
     if (p) ::free(p);
 }
 
-CZLib* Zlib_Create()
+CZipBuffer* Zlib_Create()
 {
-    return new CZLib();
+    return new CZipBuffer();
 }
-CZLib* Zlib_Open(unsigned char* buffer, unsigned long size)
+CZipBuffer* Zlib_Open(unsigned char* buffer, unsigned long size)
 {
-    return new CZLib(buffer, size);
+    return new CZipBuffer(buffer, size);
 }
-void   Zlib_Close(CZLib* p)
+void   Zlib_Close(CZipBuffer* p)
 {
     if (p) delete p;
 }
 
-void Zlib_AddFile   (CZLib* p, const char* path, unsigned char* data, unsigned long length)
+void Zlib_AddFile   (CZipBuffer* p, const char* path, unsigned char* data, unsigned long length)
 {
     if (!p)
         return;
     p->addFile(path, data, length);
 }
-void Zlib_RemoveFile(CZLib* p, const char* path)
+void Zlib_RemoveFile(CZipBuffer* p, const char* path)
 {
     if (!p)
         return;
     p->removeFile(path);
 }
 
-unsigned char* Zlib_GetPaths(CZLib* p)
+unsigned char* Zlib_GetPaths(CZipBuffer* p)
 {
     if (!p)
         return NULL;
@@ -183,7 +183,7 @@ unsigned char* Zlib_GetPaths(CZLib* p)
     oPaths->WriteLen();
     return oPaths->GetBuffer();
 }
-unsigned char* Zlib_GetFile (CZLib* p, const char* path)
+unsigned char* Zlib_GetFile (CZipBuffer* p, const char* path)
 {
     if (!p)
         return NULL;
@@ -195,7 +195,7 @@ unsigned char* Zlib_GetFile (CZLib* p, const char* path)
     oData->WriteString(oRes.second, oRes.first);
     return oData->GetBuffer();
 }
-unsigned char* Zlib_Save    (CZLib* p)
+unsigned char* Zlib_Save    (CZipBuffer* p)
 {
     if (!p)
         return NULL;

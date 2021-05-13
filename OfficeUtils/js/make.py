@@ -55,7 +55,7 @@ for item in input_zlib_sources:
     sources.append(libZlib_src_path + '/' + item)
 for item in input_minizip_sources:
     sources.append(libMinizip_src_path + '/' + item)
-sources.append("../../DesktopEditor/common/ZipLib.cpp")
+sources.append("../src/ZipBuffer.cpp")
 sources.append("wasm/src/base.cpp")
 
 compiler_flags.append("-I../src/zlib-1.2.11")

@@ -1,7 +1,7 @@
 #ifndef _ZIPFOLDER_H_
 #define _ZIPFOLDER_H_
 
-#include "./../../../../OfficeUtils/src/ZipLib.h"
+#include "./../../../../OfficeUtils/src/ZipBuffer.h"
 #include "./../../../common/File.h"
 #include "./../../../common/Directory.h"
 
@@ -66,11 +66,11 @@ public:
 
 class CZipFolderMemory : public IZipFolder
 {
-    CZLib* m_zlib;
+    CZipBuffer* m_zlib;
 public:
     CZipFolderMemory(BYTE* data, DWORD length)
     {
-        m_zlib = new CZLib(data, length);
+        m_zlib = new CZipBuffer(data, length);
     }
     std::string normalPath(const std::wstring& path)
     {

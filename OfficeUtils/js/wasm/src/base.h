@@ -11,7 +11,7 @@
 #include <malloc.h>
 #include <string>
 
-#include "../../../src/ZipLib.h"
+#include "../../../src/ZipBuffer.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,16 +20,16 @@ extern "C" {
 ZLIB_DECL_EXPORT void* Zlib_Malloc(unsigned int size);
 ZLIB_DECL_EXPORT void  Zlib_Free(void* p);
 
-ZLIB_DECL_EXPORT CZLib* Zlib_Create();
-ZLIB_DECL_EXPORT CZLib* Zlib_Open(unsigned char* buffer, unsigned long size);
-ZLIB_DECL_EXPORT void   Zlib_Close(CZLib* p);
+ZLIB_DECL_EXPORT CZipBuffer* Zlib_Create();
+ZLIB_DECL_EXPORT CZipBuffer* Zlib_Open(unsigned char* buffer, unsigned long size);
+ZLIB_DECL_EXPORT void   Zlib_Close(CZipBuffer* p);
 
-ZLIB_DECL_EXPORT void Zlib_AddFile   (CZLib* p, const char* path, unsigned char* data, unsigned long length);
-ZLIB_DECL_EXPORT void Zlib_RemoveFile(CZLib* p, const char* path);
+ZLIB_DECL_EXPORT void Zlib_AddFile   (CZipBuffer* p, const char* path, unsigned char* data, unsigned long length);
+ZLIB_DECL_EXPORT void Zlib_RemoveFile(CZipBuffer* p, const char* path);
 
-ZLIB_DECL_EXPORT unsigned char* Zlib_GetPaths(CZLib* p);
-ZLIB_DECL_EXPORT unsigned char* Zlib_GetFile (CZLib* p, const char* path);
-ZLIB_DECL_EXPORT unsigned char* Zlib_Save    (CZLib* p);
+ZLIB_DECL_EXPORT unsigned char* Zlib_GetPaths(CZipBuffer* p);
+ZLIB_DECL_EXPORT unsigned char* Zlib_GetFile (CZipBuffer* p, const char* path);
+ZLIB_DECL_EXPORT unsigned char* Zlib_Save    (CZipBuffer* p);
 
 #ifdef __cplusplus
 }

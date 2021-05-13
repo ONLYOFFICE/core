@@ -1,5 +1,5 @@
-#include "ZipLib.h"
-#include "./ZipUtilsCP.h"
+#include "ZipBuffer.h"
+#include "ZipUtilsCP.h"
 #include "zlib-1.2.11/contrib/minizip/ioapibuf.h"
 
 #include <algorithm> // для std::min в get_file_in_archive
@@ -85,12 +85,12 @@ bool get_file_in_archive(unzFile unzip_file_handle, const char* filePathInZip, B
 }
 // end from (ZipUtilsCP.cpp)
 
-void CZLib::create()
+void CZipBuffer::create()
 {
     m_zipFile = NULL;
     m_sizeZip = 0;
 }
-void CZLib::open(BYTE* buffer, DWORD size)
+void CZipBuffer::open(BYTE* buffer, DWORD size)
 {
     m_zipFile = buffer;
     m_sizeZip = size;
@@ -109,20 +109,20 @@ void CZLib::open(BYTE* buffer, DWORD size)
             m_arrFiles.push_back(CFile(get_filename_from_unzfile(uf), NULL, 0));
     } while (UNZ_OK == unzGoToNextFile(uf));
 }
-void CZLib::close()
+void CZipBuffer::close()
 {
     RELEASEARRAYOBJECTS(m_zipFile);
     m_arrFiles.clear();
 }
 
-std::vector<std::string> CZLib::getPaths()
+std::vector<std::string> CZipBuffer::getPaths()
 {
     std::vector<std::string> oRes;
     for (CFile& oFile : m_arrFiles)
         oRes.push_back(oFile.m_sPath);
     return oRes;
 }
-std::pair<DWORD, BYTE*> CZLib::save()
+std::pair<DWORD, BYTE*> CZipBuffer::save()
 {
     BUFFER_IO* buf = new BUFFER_IO;
     buf->bGrow = 1;
@@ -145,7 +145,7 @@ std::pair<DWORD, BYTE*> CZLib::save()
     m_sizeZip = buf->nSize;
     return make_pair(m_sizeZip, m_zipFile);
 }
-std::pair<DWORD, BYTE*> CZLib::getFile(const std::string& sPath)
+std::pair<DWORD, BYTE*> CZipBuffer::getFile(const std::string& sPath)
 {
     BUFFER_IO* buf = new BUFFER_IO;
     buf->buffer = m_zipFile;
@@ -158,7 +158,7 @@ std::pair<DWORD, BYTE*> CZLib::getFile(const std::string& sPath)
     unzClose(uf);
     return make_pair(nFileSize, file);
 }
-void CZLib::addFile   (const std::string& sPath, BYTE* data, DWORD length)
+void CZipBuffer::addFile   (const std::string& sPath, BYTE* data, DWORD length)
 {
     bool bExists = false;
     for (CFile& oFile : m_arrFiles)
@@ -175,7 +175,7 @@ void CZLib::addFile   (const std::string& sPath, BYTE* data, DWORD length)
     if (!bExists)
         m_arrFiles.push_back(CFile(sPath, data, length));
 }
-bool CZLib::removeFile(const std::string& sPath)
+bool CZipBuffer::removeFile(const std::string& sPath)
 {
     for (std::vector<CFile>::iterator i = m_arrFiles.begin(); i != m_arrFiles.end(); i++)
     {

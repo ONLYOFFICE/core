@@ -15,7 +15,7 @@ static unsigned int GetLength(BYTE* x)
 
 int main()
 {
-    CZLib* zlib1 = Zlib_Create();
+    CZipBuffer* zlib1 = Zlib_Create();
     std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/test", true);
     for (std::wstring& path : arrFiles)
     {
@@ -41,7 +41,7 @@ int main()
     if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.zip", &pData, nBytesCount))
         oFile.CloseFile();
 
-    CZLib* zlib = Zlib_Open(pData, nBytesCount);
+    CZipBuffer* zlib = Zlib_Open(pData, nBytesCount);
 
     BYTE* sPaths = Zlib_GetPaths(zlib);
     unsigned int nLength = GetLength(sPaths);

@@ -1,5 +1,5 @@
-#ifndef _ZIPLIB_H_
-#define _ZIPLIB_H_
+#ifndef _ZIPBUFFER_H_
+#define _ZIPBUFFER_H_
 
 #include <string>
 #include <vector>
@@ -7,7 +7,7 @@
 #include "../../Common/kernel_config.h"
 #include "../../DesktopEditor/common/Types.h"
 
-class KERNEL_DECL CZLib
+class KERNEL_DECL CZipBuffer
 {
 private:
     BYTE* m_zipFile;
@@ -22,15 +22,15 @@ private:
     };
     std::vector<CFile> m_arrFiles;
 public:
-    CZLib()
+    CZipBuffer()
     {
         create();
     }
-    CZLib(BYTE* buffer, DWORD size)
+    CZipBuffer(BYTE* buffer, DWORD size)
     {
         open(buffer, size);
     }
-    ~CZLib()
+    ~CZipBuffer()
     {
         close();
     }
@@ -46,4 +46,4 @@ public:
     bool removeFile(const std::string& sPath);
 };
 
-#endif // _ZIPLIB_H_
+#endif // _ZIPBUFFER_H_

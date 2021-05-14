@@ -38,14 +38,19 @@ namespace NSNetwork
 {
     namespace NSFileTransport
     {
-        CFileTransporter::CFileTransporter(std::wstring &sDownloadFileUrl, bool bDelete)
+        CFileTransporter::CFileTransporter(const std::wstring &sDownloadFileUrl, bool bDelete)
         {
             m_pInternal = new CFileTransporter_private(sDownloadFileUrl, bDelete);
         }
 
-        CFileTransporter::CFileTransporter(std::wstring &sUploadPathUrl, unsigned char* cData, const int nSize)
+        CFileTransporter::CFileTransporter(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
         {
-            m_pInternal = new CFileTransporter_private(sUploadPathUrl, cData, nSize);
+            m_pInternal = new CFileTransporter_private(sUploadUrl, cData, nSize);
+        }
+
+        CFileTransporter::CFileTransporter(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+        {
+            m_pInternal = new CFileTransporter_private(sUploadUrl, sUploadFilePath);
         }
 
         CFileTransporter::~CFileTransporter()
@@ -55,9 +60,9 @@ namespace NSNetwork
                 delete m_pInternal;
         }
 
-        void CFileTransporter::SetDownloadFilePath(const std::wstring& sPath)
+        void CFileTransporter::SetDownloadFilePath(const std::wstring& sDownloadFilePath)
         {
-            return m_pInternal->SetDownloadFilePath(sPath);
+            return m_pInternal->SetDownloadFilePath(sDownloadFilePath);
         }
 
         std::wstring CFileTransporter::GetDownloadFilePath()
@@ -70,9 +75,9 @@ namespace NSNetwork
             return m_pInternal->IsFileDownloaded();
         }
 
-        void CFileTransporter::SetDownloadProp(std::wstring &sDownloadFileUrl, bool bDelete)
+        void CFileTransporter::SetDownloadFileUrl(const std::wstring &sDownloadFileUrl, bool bDelete)
         {
-            m_pInternal->SetDownloadProp(sDownloadFileUrl, bDelete);
+            m_pInternal->SetDownloadFileUrl(sDownloadFileUrl, bDelete);
         }
 
         bool CFileTransporter::DownloadSync()
@@ -85,9 +90,19 @@ namespace NSNetwork
             m_pInternal->TransferAsync();
         }
 
-        void CFileTransporter::SetUploadProp(std::wstring &sUploadPathUrl, unsigned char* cData, const int nSize)
+        void CFileTransporter::SetUploadUrl(const std::wstring &sUploadUrl)
         {
-            m_pInternal->SetUploadProp(sUploadPathUrl, cData, nSize);
+            m_pInternal->SetUploadUrl(sUploadUrl);
+        }
+
+        void CFileTransporter::SetUploadBinaryData(const unsigned char* cData, const int nSize)
+        {
+            m_pInternal->SetUploadBinaryDara(cData, nSize);
+        }
+
+        void CFileTransporter::SetUploadFilePath(const std::wstring &sUploadFilePath)
+        {
+            m_pInternal->SetUploadFilePath(sUploadFilePath);
         }
 
         bool CFileTransporter::UploadSync()

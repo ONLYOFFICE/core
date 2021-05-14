@@ -33,7 +33,7 @@
 #include "FileTransporter_private.h"
 #include "FileTransporter.h"
 
-#ifdef USE_EXTERNAL_DOWNLOAD
+#ifdef USE_EXTERNAL_TRANSPORT
 #include "transport_external.h"
 #endif
 
@@ -58,15 +58,24 @@ namespace NSNetwork
         class CFileTransporterBaseCocoa : public CFileTransporterBase
         {
         public :
-            CFileTransporterBaseCocoa(std::wstring sFileUrl, bool bDelete = true)
-                : CFileTransporterBase(sFileUrl, bDelete)
+            CFileTransporterBaseCocoa(const std::wstring &sDownloadFileUrl, bool bDelete = true)
+                : CFileTransporterBase(sDownloadFileUrl, bDelete)
             {
+            }
+            CFileTransporterBaseCocoa(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
+                : CFileTransporterBase(sUploadUrl, cData, nSize)
+            {
+            }
+            CFileTransporterBaseCocoa(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+                : CFileTransporterBase(sUploadUrl, sUploadFilePath)
+            {
+
             }
             virtual ~CFileTransporterBaseCocoa()
             {
             }
 
-            virtual int DownloadFile()
+            virtual int DownloadFile() override
             {
                 if (m_sFilePath.empty())
                 {
@@ -75,8 +84,8 @@ namespace NSNetwork
                         NSFile::CFileBinary::Remove(m_sFilePath);
                 }
 
-        #ifdef USE_EXTERNAL_DOWNLOAD
-                int nExternalTransport = Transport_external(m_sFileUrl, m_sFilePath);
+        #ifdef USE_EXTERNAL_TRANSPORT
+                int nExternalTransport = download_external(m_sFileUrl, m_sFilePath);
                 if (0 == nExternalTransport)
                     return 0;
         #endif
@@ -121,16 +130,43 @@ namespace NSNetwork
         #endif
                 return 1;
             }
+
+            virtual int UploadData() override
+            {
+        #ifdef USE_EXTERNAL_TRANSPORT
+                int nExternalTransport = uploaddata_external(m_sFileUrl, m_cData, m_nSize);
+                if (0 == nExternalTransport)
+                    return 0;
+        #endif
+                //stub
+                return -1;
+            }
+
+            virtual int UploadFile() override
+            {
+        #ifdef USE_EXTERNAL_TRANSPORT
+                int nExternalTransport = uploadfile_external(m_sFileUrl, m_sFilePath);
+                if (0 == nExternalTransport)
+                    return 0;
+        #endif
+                //stub
+                return -1;
+            }
         };
 
-        CFileTransporter_private::CFileTransporter_private(std::wstring sFileUrl, bool bDelete)
+        CFileTransporter_private::CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete)
         {
-            m_pInternal = new CFileTransporterBaseCocoa(sFileUrl, bDelete);
+            m_pInternal = new CFileTransporterBaseCocoa(sDownloadFileUrl, bDelete);
         }
 
-        CFileTransporter_private::CFileTransporter_private(std::wstring &sUploadPathUrl, unsigned char* cData, const int nSize)
+        CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
         {
-            m_pInternal = new CFileTransporterBaseCocoa(sUploadPathUrl, cData, nSize);
+            m_pInternal = new CFileTransporterBaseCocoa(sUploadUrl, cData, nSize);
+        }
+
+        CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+        {
+            m_pInternal = new CFileTransporterBaseCocoa(sUploadUrl, sUploadFilePath);
         }
     }
 }

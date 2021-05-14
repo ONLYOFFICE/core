@@ -58,14 +58,20 @@ namespace NSNetwork
         class CFileTransporterBaseWin : public CFileTransporterBase
         {
         public :
-            CFileTransporterBaseWin(std::wstring &sDownloadFileUrl, bool bDelete = true) :
+            CFileTransporterBaseWin(const std::wstring &sDownloadFileUrl, bool bDelete = true) :
                 CFileTransporterBase(sDownloadFileUrl, bDelete)
             {
                 m_pFile     = NULL;
             }
 
-            CFileTransporterBaseWin(std::wstring &sUploadPathUrl, unsigned char* cData, const int nSize) :
-                CFileTransporterBase(sUploadPathUrl, cData, nSize)
+            CFileTransporterBaseWin(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize) :
+                CFileTransporterBase(sUploadUrl, cData, nSize)
+            {
+                m_pFile     = NULL;
+            }
+
+            CFileTransporterBaseWin(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath) :
+                CFileTransporterBase(sUploadUrl, sUploadFilePath)
             {
                 m_pFile     = NULL;
             }
@@ -96,6 +102,12 @@ namespace NSNetwork
 
                 CoUninitialize ();
                 m_bComplete = true;
+                return S_OK;
+            }
+
+            virtual int UploadData() override
+            {
+                //stub
                 return S_OK;
             }
 
@@ -411,14 +423,19 @@ namespace NSNetwork
             }
         };
 
-        CFileTransporter_private::CFileTransporter_private(std::wstring &sDownloadFileUrl, bool bDelete)
+        CFileTransporter_private::CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete)
         {
             m_pInternal = new CFileTransporterBaseWin(sDownloadFileUrl, bDelete);
         }
 
-        CFileTransporter_private::CFileTransporter_private(std::wstring &sUploadPathUrl, unsigned char* cData, const int nSize)
+        CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
         {
-            m_pInternal = new CFileTransporterBaseWin(sUploadPathUrl, cData, nSize);
+            m_pInternal = new CFileTransporterBaseWin(sUploadUrl, cData, nSize);
+        }
+
+        CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+        {
+            m_pInternal = new CFileTransporterBaseWin(sUploadUrl, sUploadFilePath);
         }
     }
 }

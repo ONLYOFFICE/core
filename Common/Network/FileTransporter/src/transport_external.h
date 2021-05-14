@@ -158,7 +158,13 @@ namespace NSNetwork
             return nReturnCode;
         }
 
-        int upload_external(std::wstring &sUploadPathUrl, unsigned char* cData, const int nSize)
+        int uploaddata_external(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
+        {
+            //stub
+            return -1;
+        }
+
+        int uploadfile_external(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
         {
             //stub
             return -1;

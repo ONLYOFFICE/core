@@ -56,19 +56,24 @@ namespace NSNetwork
         class CFileTransporterBaseCURL : public CFileTransporterBase
         {
         public :
-            CFileTransporterBaseCURL(std::wstring &sDownloadFileUrl, bool bDelete = true)
+            CFileTransporterBaseCURL(const std::wstring &sDownloadFileUrl, bool bDelete = true)
                 : CFileTransporterBase(sDownloadFileUrl, bDelete)
             {
             }
-            CFileTransporterBaseCURL(std::wstring &sUploadPathUrl, unsigned char* cData, const int nSize)
-                : CFileTransporterBase(sUploadPathUrl, cData, nSize)
+            CFileTransporterBaseCURL(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
+                : CFileTransporterBase(sUploadUrl, cData, nSize)
             {
+            }
+            CFileTransporterBaseCURL(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+                : CFileTransporterBase(sUploadUrl, sUploadFilePath)
+            {
+
             }
             virtual ~CFileTransporterBaseCURL()
             {
-                if (m_bDelete && !m_sFilePath.empty())
+                if (m_bDelete && !m_sDownloadFilePath.empty())
                 {
-                    std::string sFilePath = U_TO_UTF8(m_sFilePath);
+                    std::string sFilePath = U_TO_UTF8(m_sDownloadFilePath);
                     unlink(sFilePath.c_str());
                 }
             }
@@ -85,7 +90,7 @@ namespace NSNetwork
                 return size * nmemb;
             }
 
-            virtual int DownloadFile()
+            virtual int DownloadFile() override
             {
                 CURL *curl;
                 int fp;
@@ -118,18 +123,18 @@ namespace NSNetwork
                 m_bComplete = (CURLE_OK == res);
                 if (m_bComplete)
                 {
-                    if (m_sFilePath.empty())
-                        m_sFilePath = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sOut.c_str(), sOut.length());
+                    if (m_sDownloadFilePath.empty())
+                        m_sDownloadFilePath = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sOut.c_str(), sOut.length());
                     else
-                        NSFile::CFileBinary::Move(UTF8_TO_U(sOut), m_sFilePath);
+                        NSFile::CFileBinary::Move(UTF8_TO_U(sOut), m_sDownloadFilePath);
                 }
-                //int nRes = execl("/usr/bin/wget", stringWstingToUtf8String (m_sFileUrl).c_str(), "-P", stringWstingToUtf8String (m_sFilePath).c_str(), (char *)NULL);
+                //int nRes = execl("/usr/bin/wget", stringWstingToUtf8String (m_sFileUrl).c_str(), "-P", stringWstingToUtf8String (m_sDownloadFilePath).c_str(), (char *)NULL);
                 //m_bComplete = nRes >= 0;
 
                 return m_bComplete ? 0 : 1;
             }
 
-            virtual int UploadFile()
+            virtual int UploadData() override
             {
                 CURL *curl;
                 CURLcode res;
@@ -196,6 +201,18 @@ namespace NSNetwork
                 return m_bComplete ? 0 : 1;
             }
 
+            virtual int UploadData() override
+            {
+                //stub
+                return -1;
+            }
+
+            virtual int UploadFile() override
+            {
+                //stub
+                return -1;
+            }
+
         protected:
             int createUniqueTempFile (std::string &filename)
             {
@@ -209,35 +226,47 @@ namespace NSNetwork
         #else
             virtual int DownloadFile() override
             {
-                if (m_sFilePath.empty())
+                if (m_sDownloadFilePath.empty())
                 {
-                    m_sFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"DW");
-                    if (NSFile::CFileBinary::Exists(m_sFilePath))
-                        NSFile::CFileBinary::Remove(m_sFilePath);
+                    m_sDownloadFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSDirectory::GetTempPath(), L"DW");
+                    if (NSFile::CFileBinary::Exists(m_sDownloadFilePath))
+                        NSFile::CFileBinary::Remove(m_sDownloadFilePath);
                 }
-                return download_external(m_sDownloadFileUrl, m_sFilePath);
+                return download_external(m_sDownloadFileUrl, m_sDownloadFilePath);
+            }
+            virtual int UploadData() override
+            {
+                if (!m_sUploadUrl.empty() && m_cData != NULL && m_nSize != 0)
+                {
+                     return uploaddata_external(m_sUploadUrl, m_cData, m_nSize);
+                }
+                return -1;
             }
             virtual int UploadFile() override
             {
-                if (!m_sUploadPathUrl.empty() && m_cData != NULL && m_nSize != 0)
+                if (!m_sUploadUrl.empty() && !m_sUploadFilePath.empty())
                 {
-                     return upload_external(m_sUploadPathUrl, m_cData, m_nSize);
+                     return uploadfile_external(m_sUploadUrl, m_sUploadFilePath);
                 }
-
-                else return -1;
+                return -1;
             }
 
         #endif
         };
 
-        CFileTransporter_private::CFileTransporter_private(std::wstring &sDownloadFileUrl, bool bDelete)
+        CFileTransporter_private::CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete)
         {
             m_pInternal = new CFileTransporterBaseCURL(sDownloadFileUrl, bDelete);
         }
 
-        CFileTransporter_private::CFileTransporter_private(std::wstring &sUploadPathUrl, unsigned char* cData, const int nSize)
+        CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
         {
-            m_pInternal = new CFileTransporterBaseCURL(sUploadPathUrl, cData, nSize);
+            m_pInternal = new CFileTransporterBaseCURL(sUploadUrl, cData, nSize);
+        }
+
+        CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+        {
+            m_pInternal = new CFileTransporterBaseCURL(sUploadUrl, sUploadFilePath);
         }
     }
 }

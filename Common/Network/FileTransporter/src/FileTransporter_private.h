@@ -42,17 +42,20 @@ namespace NSNetwork
         class CFileTransporterBase
         {
         public :
-            CFileTransporterBase(std::wstring &sDownloadFileUrl, bool bDelete)
+            CFileTransporterBase(const std::wstring &sDownloadFileUrl, bool bDelete)
             {
-                m_sFilePath = L"";
+                m_sDownloadFilePath = L"";
                 m_sDownloadFileUrl = sDownloadFileUrl;
+                m_sUploadFilePath = L"";
+                m_sUploadUrl = L"";
+
                 m_bComplete = false;
                 m_bDelete   = bDelete;
-                m_bIsUpload = false;
+                m_eLoadType = DOWNLOADFILE;
 
-                m_sUploadPathUrl = L"";
                 m_cData = NULL;
                 m_nSize = 0;
+
                 m_sResponse = L"";
 
 
@@ -60,46 +63,82 @@ namespace NSNetwork
                 m_func_onProgress = NULL;
             }
 
-            CFileTransporterBase(std::wstring &sUploadPathUrl, unsigned char* cData, const int nSize)
+            CFileTransporterBase(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
             {
-                m_sFilePath = L"";
+                m_sDownloadFilePath = L"";
                 m_sDownloadFileUrl = L"";
+                m_sUploadFilePath = L"";
+                m_sUploadUrl = sUploadUrl;
+
                 m_bComplete = false;
                 m_bDelete   = true;
-                m_bIsUpload = true;
+                m_eLoadType = UPLOADDATA;
 
-                m_sUploadPathUrl = sUploadPathUrl;
                 m_cData = cData;
                 m_nSize = nSize;
+
                 m_sResponse = L"";
 
 
                 m_func_onComplete = NULL;
                 m_func_onProgress = NULL;
             }
+
+            CFileTransporterBase(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+            {
+                m_sDownloadFilePath = L"";
+                m_sDownloadFileUrl = L"";
+                m_sUploadFilePath = sUploadFilePath;
+                m_sUploadUrl = sUploadUrl;
+
+                m_bComplete = false;
+                m_bDelete   = true;
+                m_eLoadType = UPLOADFILE;
+
+                m_cData = NULL;
+                m_nSize = 0;
+
+                m_sResponse = L"";
+
+
+                m_func_onComplete = NULL;
+                m_func_onProgress = NULL;
+            }
+
             virtual ~CFileTransporterBase ()
             {
-                if ( m_sFilePath.length() > 0 && m_bDelete )
+                if ( m_sDownloadFilePath.length() > 0 && m_bDelete )
                 {
-                    NSFile::CFileBinary::Remove(m_sFilePath);
-                    m_sFilePath = L"";
+                    NSFile::CFileBinary::Remove(m_sDownloadFilePath);
+                    m_sDownloadFilePath = L"";
                 }
             }
 
             virtual int DownloadFile() = 0;
             virtual int UploadFile() = 0;
+            virtual int UploadData() = 0;
 
         public:
-            std::wstring    m_sFilePath;       // Путь к сохраненному файлу на диске
-            std::wstring    m_sDownloadFileUrl;        // Ссылка на скачивание файла
+            std::wstring    m_sDownloadFilePath; // Путь к сохраненному файлу на диске
+            std::wstring    m_sDownloadFileUrl;// Ссылка на скачивание файла
+            std::wstring    m_sUploadFilePath; // Путь к файлу для выгрузки на сервер
+            std::wstring    m_sUploadUrl;      // URL для выгрузки данных
 
             bool            m_bComplete;       // Закачался файл или нет
             bool            m_bDelete;         // Удалять ли файл в деструкторе
-            bool            m_bIsUpload;       // Если хотим выгрузку данных
 
-            std::wstring    m_sUploadPathUrl;  // URL для выгрузки данных
-            unsigned char*  m_cData;           // Данные в сыром виде
+            typedef enum LoadType
+            {
+                DOWNLOADFILE,
+                UPLOADFILE,
+                UPLOADDATA
+            } LoadType;
+
+            LoadType m_eLoadType;              // Тип загрузки/выгрузки данных/файла
+
+            const unsigned char*  m_cData;     // Данные в сыром виде для выгрузки
             int             m_nSize;           // Размер данных
+
             std::wstring    m_sResponse;       // Ответ сервера
 
             CFileTransporter_OnComplete m_func_onComplete;
@@ -119,8 +158,10 @@ namespace NSNetwork
             }
 
         public:
-            CFileTransporter_private(std::wstring &sDownloadFileUrl, bool bDelete = true);
-            CFileTransporter_private(std::wstring &sUploadPathUrl, unsigned char* cData, const int nSize);
+            CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete = true);
+            CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize);
+            CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath);
+
             virtual ~CFileTransporter_private()
             {
                 Stop();
@@ -128,21 +169,21 @@ namespace NSNetwork
                     delete m_pInternal;
             }
 
-            void SetDownloadProp(std::wstring &sDownloadFileUrl, bool bDelete = true)
+            void SetDownloadFileUrl(const std::wstring &sDownloadFileUrl, bool bDelete = true)
             {
                 m_pInternal->m_sDownloadFileUrl = sDownloadFileUrl;
                 m_pInternal->m_bDelete = bDelete;
-                m_pInternal->m_bIsUpload = false;
+                m_pInternal->m_eLoadType = m_pInternal->DOWNLOADFILE;
             }
 
-            void SetDownloadFilePath(const std::wstring& sPath)
+            void SetDownloadFilePath(const std::wstring& sDownloadFilePat)
             {
-                m_pInternal->m_sFilePath = sPath;
+                m_pInternal->m_sDownloadFilePath = sDownloadFilePat;
             }
 
             std::wstring GetDownloadFilePath()
             {
-                return m_pInternal->m_sFilePath;
+                return m_pInternal->m_sDownloadFilePath;
             }
 
             bool IsFileDownloaded()
@@ -150,12 +191,22 @@ namespace NSNetwork
                 return m_pInternal->m_bComplete;
             }
 
-            void SetUploadProp(std::wstring &sDownloadFileUrl, unsigned char* cData, const int nSize)
+            void SetUploadUrl(const std::wstring &sUploadUrl)
             {
-                m_pInternal->m_sUploadPathUrl = sDownloadFileUrl;
+                m_pInternal->m_sUploadUrl = sUploadUrl;
+            }
+
+            void SetUploadBinaryDara(const unsigned char* cData, const int nSize)
+            {
                 m_pInternal->m_cData = cData;
                 m_pInternal->m_nSize = nSize;
-                m_pInternal->m_bIsUpload = true;
+                m_pInternal->m_eLoadType = m_pInternal->UPLOADDATA;
+            }
+
+            void SetUploadFilePath(const std::wstring &sUploadFilePath)
+            {
+                m_pInternal->m_sUploadFilePath = sUploadFilePath;
+                m_pInternal->m_eLoadType = m_pInternal->UPLOADFILE;
             }
 
             std::wstring& GetResponse()
@@ -184,7 +235,14 @@ namespace NSNetwork
             {
                 m_pInternal->m_bComplete = false;
 
-                int hrResultAll = m_pInternal->m_bIsUpload?m_pInternal->UploadFile():m_pInternal->DownloadFile();
+                int hrResultAll = 0;
+                if(m_pInternal->m_eLoadType == m_pInternal->DOWNLOADFILE)
+                    hrResultAll = m_pInternal->DownloadFile();
+                else if(m_pInternal->m_eLoadType == m_pInternal->UPLOADFILE)
+                    hrResultAll = m_pInternal->UploadFile();
+                else if(m_pInternal->m_eLoadType == m_pInternal->UPLOADDATA)
+                    hrResultAll = m_pInternal->UploadData();
+
                 if (0 == hrResultAll)
                     m_pInternal->m_bComplete = true;
 

@@ -54,21 +54,25 @@ namespace NSNetwork
         #endif
 
         public:
-            CFileTransporter(std::wstring &sDownloadFileUrl, bool bDelete = true); //download constructor
-            CFileTransporter(std::wstring &sUploadPathUrl, unsigned char* cData, const int nSize); //upload constructor
+            CFileTransporter(const std::wstring &sDownloadFileUrl, bool bDelete = true); //download constructor
+            CFileTransporter(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize); //upload data constructor
+            CFileTransporter(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath); //upload file constructor
             virtual ~CFileTransporter();
 
-            void SetDownloadFilePath(const std::wstring& sPath);
+            void SetDownloadFilePath(const std::wstring& sDownloadFilePath);
             std::wstring GetDownloadFilePath();
             bool IsFileDownloaded();
-            void SetDownloadProp(std::wstring &sDownloadFileUrl, bool bDelete = true);
+            void SetDownloadFileUrl(const std::wstring &sDownloadFileUrl, bool bDelete = true);
             bool DownloadSync();
             void DownloadAsync();
 
-            void SetUploadProp(std::wstring &url, unsigned char* data, const int size);
+            void SetUploadUrl(const std::wstring &sUploadUrl);
+            void SetUploadBinaryData(const unsigned char* data, const int size);
+            void SetUploadFilePath(const std::wstring &sUploadFilePath);
             bool UploadSync();
             void UploadAsync();
 
+        public:
             std::wstring& GetResponse();
 
             void Start(int lPriority);
@@ -92,6 +96,99 @@ namespace NSNetwork
             static void SetARCEnabled(const bool& enabled);
             static bool GetARCEnabled();
         #endif
+        };
+
+        class KERNEL_DECL CFileDownloader: public CFileTransporter
+        {
+        public:
+
+            CFileDownloader(std::wstring sDownloadFileUrl, bool bDelete) :
+            CFileTransporter(sDownloadFileUrl, bDelete)
+            {
+
+            }
+
+            virtual ~CFileDownloader()
+            {
+
+            }
+
+            void SetFilePath(const std::wstring& sDownloadFilePath)
+            {
+                CFileTransporter::SetDownloadFilePath(sDownloadFilePath);
+            }
+
+            std::wstring GetFilePath()
+            {
+            	return CFileTransporter::GetDownloadFilePath();
+            }
+
+            bool IsFileDownloaded()
+            {
+            	return CFileTransporter::IsFileDownloaded();
+            }
+
+            void SetDownloadFileUrl(const std::wstring &sDownloadFileUrl, bool bDelete = true)
+            { 
+            	CFileTransporter::SetDownloadFileUrl(sDownloadFileUrl, bDelete);
+            }
+
+            bool DownloadSync()
+            {
+            	return CFileTransporter::DownloadSync();
+            }
+
+            void DownloadAsync()
+            {
+            	CFileTransporter::DownloadAsync();
+            }
+        };
+
+        class KERNEL_DECL CFileUploader: public CFileTransporter
+        {
+        public:
+
+            CFileUploader(std::wstring sUploadUrl, const unsigned char* cData, const int nSize) :
+            CFileTransporter(sUploadUrl, cData, nSize)
+            {
+
+            }
+
+            CFileUploader(std::wstring sUploadUrl, std::wstring sUploadFilePath) :
+            CFileTransporter(sUploadUrl, sUploadFilePath)
+            {
+
+            }
+
+            virtual ~CFileUploader()
+            {
+
+            }
+
+            void SetUploadUrl(const std::wstring& sUploadUrl)
+            {
+                CFileTransporter::SetUploadUrl(sUploadUrl);
+            }
+
+            std::wstring SetUploadBinaryData(const unsigned char* data, const int size)
+            {
+            	CFileTransporter::SetUploadBinaryData(data, size);
+            }
+
+            void SetUploadFilePath(const std::wstring &sUploadFilePath)
+            {
+            	CFileTransporter::SetUploadFilePath(sUploadFilePath);
+            }
+
+            bool UploadSync()
+            {
+            	return CFileTransporter::UploadSync();
+            }
+
+            void UploadAsync()
+            {
+            	CFileTransporter::UploadAsync();
+            }
         };
     }
 }

@@ -1231,11 +1231,12 @@ bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFi
                                        NSNativeControl::CNativeControl* pNative,
                                        JSSmart<CJSContext> context,
                                        JSSmart<CJSValue>* args,
-                                       std::wstring& strError)
+                                       std::wstring& strError, const std::wstring& jsonParams)
 {
     NSDoctRenderer::CExecuteParams oParams;
     oParams.m_eDstFormat = (NSDoctRenderer::DoctRendererFormat::FormatFile)nFormat;
     oParams.m_strDstFilePath = strDstFile;
+    oParams.m_sJsonParams = jsonParams;
 
     JSSmart<CJSObject> js_objectApi; // empty
     return NSDoctRenderer::CDoctRenderer_Private::Doct_renderer_SaveFile(&oParams,

@@ -27,49 +27,43 @@ JSSmart<CJSValue> CNativeControlEmbed::GetFileBinary(JSSmart<CJSValue> file)
     BYTE* pData = NULL;
     DWORD len = 0;
     m_pInternal->getFileData(file->toStringW(), pData, len);
+
+    if (0 == len)
+        return CJSContext::createNull();
+
     // TODO: copy (use gc)
     return CJSContext::createUint8Array(pData, (int)len);
 }
 
 JSSmart<CJSValue> CNativeControlEmbed::GetFontBinary(JSSmart<CJSValue> file)
 {
-    BYTE* pData = NULL;
-    DWORD len = 0;
-    std::wstring strDir = m_pInternal->m_strFontsDirectory;
-
-    #if 0
-    if (!strDir.empty())
-    {
-        strDir += L"/";
-        strDir += file->toStringW();
-    }
-    #endif
-
     // TODO:
     // по идее файлы могут совпадать по имени, но лежать в разных директориях.
     // и поэтому в AllFonts.js надо бы писать пути полные.
-    // пока оставим по-старому
-    std::wstring sFind = file->toStringW();
-    bool bIsFullFilePath = (std::wstring::npos != sFind.find('\\') || std::wstring::npos != sFind.find('/'));
+    // пока оставим поддержку старой версии тоже
+    std::wstring sFile = file->toStringW();
+    bool bIsFullFilePath = (std::wstring::npos != sFile.find('\\') || std::wstring::npos != sFile.find('/'));
     if (bIsFullFilePath)
     {
-        bIsFullFilePath = NSFile::CFileBinary::Exists(sFind);
+        bIsFullFilePath = NSFile::CFileBinary::Exists(sFile);
     }
 
     if (!bIsFullFilePath)
     {
-        std::map<std::wstring, std::wstring>::iterator pair = m_pInternal->m_map_fonts.find(sFind);
+        std::map<std::wstring, std::wstring>::iterator pair = m_pInternal->m_map_fonts.find(sFile);
         if (pair != m_pInternal->m_map_fonts.end())
-            strDir = pair->second;
+            sFile = pair->second;
         else
-            strDir = m_pInternal->m_sDefaultFont;
-    }
-    else
-    {
-        strDir = sFind;
+            sFile = m_pInternal->m_sDefaultFont;
     }
 
-    m_pInternal->getFileData(strDir, pData, len);
+    BYTE* pData = NULL;
+    DWORD len = 0;
+    m_pInternal->getFileData(sFile, pData, len);
+
+    if (0 == len)
+        return CJSContext::createNull();
+
     // TODO: copy (use gc)
     return CJSContext::createUint8Array(pData, (int)len);
 }

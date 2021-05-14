@@ -106,8 +106,8 @@ public:
     std::string GetGlobalVariable();
     std::wstring GetJSVariable(std::wstring sParam);
 
-    bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath);
-    bool SaveFileWithChanges(int type, const std::wstring& _path);
+    bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams = NULL);
+    bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"");
 };
 
 namespace NSDoctRenderer
@@ -724,11 +724,34 @@ namespace NSDoctRenderer
 
             LOGGER_SPEED_START
 
+            std::wstring sConvertionParams = L"";
+            if (NULL != params)
+            {
+                sConvertionParams = std::wstring(params);
+                NSStringUtils::string_replace(sConvertionParams, L"\'", L"&quot;");
+            }
+
             std::wstring sFileBin = L"/Editor.bin";
 
             if (!m_oParams.m_bSaveWithDoctrendererMode && m_pWorker)
             {
-                this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin");
+                std::wstring sJsonParams = sConvertionParams;
+                if (!sJsonParams.empty())
+                {
+                    std::wstring::size_type pos1 = sJsonParams.find(L">");
+                    std::wstring::size_type pos2 = sJsonParams.find(L"</");
+                    if (std::wstring::npos != pos1 && std::wstring::npos != pos2)
+                    {
+                        sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
+                        NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
+                    }
+                    else
+                    {
+                        sJsonParams = L"";
+                    }
+                }
+
+                this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin", sJsonParams);
                 sFileBin = L"/Editor2.bin";
             }
 
@@ -767,9 +790,8 @@ namespace NSDoctRenderer
                 oBuilder.WriteString(L"</m_sAllFontsPath>");
             }
 
-            if (NULL != params)
+            if (!sConvertionParams.empty())
             {
-                std::wstring sConvertionParams(params);
                 oBuilder.WriteString(sConvertionParams);
             }
 
@@ -923,7 +945,11 @@ namespace NSDoctRenderer
                 if (m_bIsCacheScript)
                     sCachePath = GetScriptCache();
 
-                bool bOpen = m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript(), sCachePath);
+                CV8Params oParams;
+                oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
+                oParams.DocumentDirectory = m_sFileDir;
+
+                bool bOpen = m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript(), sCachePath, &oParams);
                 if (!bOpen)
                     return false;
             }

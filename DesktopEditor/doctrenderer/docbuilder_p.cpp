@@ -132,7 +132,7 @@ std::wstring CV8RealTimeWorker::GetJSVariable(std::wstring sParam)
     return L"jsValue(" + sParam + L")";
 }
 
-bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath)
+bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams)
 {
     LOGGER_SPEED_START
 
@@ -192,12 +192,17 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         else
         {
             JSSmart<CJSObject> objNative = js_result2->toObject();
-            pNative = (NSNativeControl::CNativeControl*)objNative->getNative()->getObject();
+            pNative = (NSNativeControl::CNativeControl*)objNative->getNative()->getObject();            
         }
     }
 
     if (pNative != NULL)
     {
+        if (pParams)
+        {
+            pNative->m_oParams = *pParams;
+        }
+
         pNative->m_strFontsDirectory = sBasePath + L"/sdkjs/common";
         pNative->m_strImagesDirectory = path + L"/media";
 
@@ -244,7 +249,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
     return !bIsBreak;
 }
 
-bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path)
+bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams)
 {
     NSDoctRenderer::DoctRendererFormat::FormatFile _formatDst = NSDoctRenderer::DoctRendererFormat::DOCT;
     if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)
@@ -286,7 +291,8 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path)
                                                       pNative,
                                                       m_context,
                                                       args,
-                                                      strError);
+                                                      strError,
+                                                      sJsonParams);
 
     if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
         this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");

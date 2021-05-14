@@ -1692,10 +1692,14 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
     auto& actions = pShapeElement->m_arrActions;
     for (unsigned i = 0; i < actions.size(); i++)
     {
+        std::wstring strRid;
+        if (actions[i].m_strHyperlink.size() && m_pRels)
+            strRid = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);
+
         if (actions[i].m_eActivation == CInteractiveInfo::click)
-            m_oWriter.WriteString(std::wstring(L"<a:hlinkClick r:id=\"\" action=\"ppaction://"));
+            m_oWriter.WriteString(std::wstring(L"<a:hlinkClick r:id=\"" + strRid + L"\" action=\"ppaction://"));
         else
-            m_oWriter.WriteString(std::wstring(L"<a:hlinkHover r:id=\"\" action=\"ppaction://"));
+            m_oWriter.WriteString(std::wstring(L"<a:hlinkHover r:id=\"" + strRid + L"\" action=\"ppaction://"));
 
         switch (actions[i].m_lType)
         {
@@ -1745,11 +1749,11 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
             m_oWriter.WriteString(strJump);
             break;
         }
-//        case II_HyperlinkAction:
-//        {
-
-//            break;
-//        }
+        case II_HyperlinkAction:
+        {
+            m_oWriter.WriteString(std::wstring(L"hlinksldjump\""));
+            break;
+        }
         default:
             m_oWriter.WriteString(std::wstring(L"noaction\""));
         }

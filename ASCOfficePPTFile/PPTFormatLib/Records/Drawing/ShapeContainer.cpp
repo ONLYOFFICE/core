@@ -42,6 +42,7 @@
 #include "../../Enums/_includer.h"
 
 
+
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
 bool CPPTElement::ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2)
@@ -1906,15 +1907,15 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
             if (pMapIDs)
             {
-                CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(oArrayInteractive[0]->m_nSoundIdRef);
+                CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(interactiveAtom->m_nSoundIdRef);
                 if (NULL != pInfo1)
                 {
                     interactiveInfo.m_strAudioFileName = pInfo1->m_strFilePath;
                 }
-                CExFilesInfo* pInfo2 = pMapIDs->LockHyperlink(oArrayInteractive[0]->m_nExHyperlinkIdRef);
+                CExFilesInfo* pInfo2 = pMapIDs->LockHyperlink(interactiveAtom->m_nExHyperlinkIdRef);
                 if (NULL != pInfo2)
                 {
-                    interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
+                    interactiveInfo.m_strHyperlink = pInfo2->m_strLocation;
                 }
             }
 

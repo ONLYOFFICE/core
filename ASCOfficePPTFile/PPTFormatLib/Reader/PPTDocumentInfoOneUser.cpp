@@ -2385,8 +2385,12 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
             oInfo.m_dwID = oArrayHyperlink[0]->m_nHyperlinkID;
             for (size_t i = 0 ; i < oArrayCString.size(); i++)
             {
+                // Target atom. It's for eigher local and external files.
                 if (oArrayCString[i]->m_oHeader.RecInstance == 1)
                     oInfo.m_strFilePath		= oArrayCString[i]->m_strText;
+                // Location atom. It's for slides or other local pp objects.
+                if (oArrayCString[i]->m_oHeader.RecInstance == 3)
+                    oInfo.m_strLocation		= oArrayCString[i]->m_strText;
             }
             m_oExMedia.m_arHyperlinks.push_back(oInfo);
         }

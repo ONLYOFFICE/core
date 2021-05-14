@@ -1911,6 +1911,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
                 if (NULL != pInfo1)
                 {
                     interactiveInfo.m_strAudioFileName = pInfo1->m_strFilePath;
+                    interactiveInfo.m_strAudioName = pInfo1->m_name;
                 }
                 CExFilesInfo* pInfo2 = pMapIDs->LockHyperlink(interactiveAtom->m_nExHyperlinkIdRef);
                 if (NULL != pInfo2)

@@ -88,6 +88,7 @@ namespace PPT_FORMAT
 
                 m_strAudioFileName	= oSrc.m_strAudioFileName;
                 m_strHyperlink		= oSrc.m_strHyperlink;
+                m_strAudioName          = oSrc.m_strAudioName;
                 m_eActivation           = oSrc.m_eActivation;
                 return *this;
             }
@@ -110,6 +111,7 @@ namespace PPT_FORMAT
 
             std::wstring	m_strAudioFileName;
             std::wstring	m_strHyperlink;
+            std::wstring        m_strAudioName;
         };
 	class CTextInteractiveInfo
 	{

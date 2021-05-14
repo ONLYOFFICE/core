@@ -1696,6 +1696,15 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
         if (actions[i].m_strHyperlink.size() && m_pRels)
             hlink.id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);
 
+        if (actions[i].m_strAudioFileName.size() && m_pRels)
+        {
+            hlink.snd = new PPTX::Logic::WavAudioFile;
+            bool bExternal = false;
+            hlink.snd->embed = m_pRels->WriteAudio(actions[i].m_strAudioFileName, bExternal);
+            hlink.snd->m_name = L"snd";
+            hlink.snd->name = actions[i].m_strAudioName;
+        }
+
         if (actions[i].m_eActivation == CInteractiveInfo::over)
             hlink.m_name = L"hlinkHover";
         else

@@ -1692,26 +1692,25 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
     auto& actions = pShapeElement->m_arrActions;
     for (unsigned i = 0; i < actions.size(); i++)
     {
-        std::wstring strRid;
+        PPTX::Logic::Hyperlink hlink;
         if (actions[i].m_strHyperlink.size() && m_pRels)
-            strRid = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);
+            hlink.id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);
 
-        if (actions[i].m_eActivation == CInteractiveInfo::click)
-            m_oWriter.WriteString(std::wstring(L"<a:hlinkClick r:id=\"" + strRid + L"\" action=\"ppaction://"));
+        if (actions[i].m_eActivation == CInteractiveInfo::over)
+            hlink.m_name = L"hlinkHover";
         else
-            m_oWriter.WriteString(std::wstring(L"<a:hlinkHover r:id=\"" + strRid + L"\" action=\"ppaction://"));
+            hlink.highlightClick = true;
 
         switch (actions[i].m_lType)
         {
         case II_NoAction:
         {
-            m_oWriter.WriteString(std::wstring(L"noaction\""));
+            hlink.action = L"ppaction://noaction";
             break;
         }
         case II_JumpAction:
         {
-            m_oWriter.WriteString(std::wstring(L"hlinkshowjump?jump="));
-            std::wstring strJump;
+            std::wstring strJump(L"ppaction://hlinkshowjump?jump=");
             switch (actions[i].m_lJump)
             {
             case II_NextSlide:
@@ -1745,22 +1744,19 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
                 break;
             }
             }
-            strJump += L"\"";
-            m_oWriter.WriteString(strJump);
+            hlink.action = strJump;
             break;
         }
         case II_HyperlinkAction:
         {
-            m_oWriter.WriteString(std::wstring(L"hlinksldjump\""));
+            hlink.action = L"ppaction://hlinksldjump";
             break;
         }
         default:
-            m_oWriter.WriteString(std::wstring(L"noaction\""));
-        }
-        if (actions[i].m_eActivation == CInteractiveInfo::click)
-            m_oWriter.WriteString(std::wstring(L" highlightClick=\"1\"/>"));
-        else
-            m_oWriter.WriteString(std::wstring(L"/>"));
+            hlink.action = L"ppaction://noaction";
+    }
+
+        m_oWriter.WriteString(hlink.toXML());
     }
 }
 

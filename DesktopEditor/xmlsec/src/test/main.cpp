@@ -9,20 +9,42 @@
 
 int main()
 {
+    std::wstring sTestDir = NSFile::GetProcessDirectory() + L"/../../";
+    ICertificate* pCertificate = NULL;
+
 #ifdef USE_MS_CRYPTO
 
     // TODO: Load sertificate from store
 
 #else
 
-    std::wstring sTestDir = NSFile::GetProcessDirectory() + L"/../../keys/";
-    ICertificate* pCertificate = ICertificate::CreateInstance();
-    pCertificate->FromFiles(sTestDir + L"key.key", "", sTestDir + L"cert.crt", "");
+    pCertificate = ICertificate::CreateInstance();
+    pCertificate->FromFiles(sTestDir + L"keys/key.key", "", sTestDir + L"keys/cert.crt", "");
+#endif
 
+    BYTE* pDataDst = NULL;
+    unsigned long nLenDst = 0;
 
+#if 0
+    COOXMLSigner oSigner(sTestDir + L"file", pCertificate);
+    oSigner.Sign(pDataDst, nLenDst);
+#else
+    BYTE* pDataSrc = NULL;
+    unsigned long nLenSrc = 0;
+    NSFile::CFileBinary::ReadAllBytes(sTestDir + L"/file.docx", &pDataSrc, nLenSrc);
+
+    COOXMLSigner oSigner(pDataSrc, nLenSrc, pCertificate);
+    oSigner.Sign(pDataDst, nLenDst);
+    RELEASEARRAYOBJECTS(pDataSrc);
+
+    NSFile::CFileBinary oFileDst;
+    oFileDst.CreateFileW(sTestDir + L"/file2.docx");
+    oFileDst.WriteFile(pDataDst, nLenDst);
+    oFileDst.CloseFile();
+#endif
+
+    RELEASEARRAYOBJECTS(pDataDst);
 
     delete pCertificate;
-
-#endif
     return 0;
 }

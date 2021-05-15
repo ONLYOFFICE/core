@@ -780,10 +780,7 @@ public:
         }
         sXml += L"</Types>";
 
-        BYTE* pXmlData = NULL;
-        LONG nLen = 0;
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.c_str(), sXml.length(), pXmlData, nLen);
-        m_pZipFolder->write(m_sFolder + L"/[Content_Types].xml", pXmlData, nLen);
+        m_pZipFolder->writeXml(m_sFolder + L"/[Content_Types].xml", sXml);
 
         if (bIsRemoveAll)
         {
@@ -819,10 +816,7 @@ public:
             }
             sXml += L"</Relationships>";
 
-            BYTE* pXmlData = NULL;
-            LONG nLen = 0;
-            NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.c_str(), sXml.length(), pXmlData, nLen);
-            m_pZipFolder->write(m_sFolder + L"/_rels/.rels", pXmlData, nLen);
+            m_pZipFolder->writeXml(m_sFolder + L"/_rels/.rels", sXml);
         }
         else
         {
@@ -862,10 +856,7 @@ public:
             }
             sXml += L"</Relationships>";
 
-            BYTE* pXmlData = NULL;
-            LONG nLen = 0;
-            NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.c_str(), sXml.length(), pXmlData, nLen);
-            m_pZipFolder->write(sOriginRels, pXmlData, nLen);
+            m_pZipFolder->writeXml(sOriginRels, sXml);
         }
     }
 };

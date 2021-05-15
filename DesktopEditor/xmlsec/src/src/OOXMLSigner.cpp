@@ -260,10 +260,7 @@ public:
 
         oBuilder.WriteString(L"</Relationships>");
 
-        BYTE* pData = NULL;
-        LONG   nLen = 0;
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(oBuilder.GetData().c_str(), oBuilder.GetSize(), pData, nLen);
-        m_pZipFolder->write(sFile, pData, nLen);
+        m_pZipFolder->writeXml(sFile, oBuilder.GetData());
 
         // теперь перебьем все имена файлов
 
@@ -483,10 +480,7 @@ public:
 
         oBuilder.WriteNodeEnd(oNode.GetName());
 
-        BYTE* pBuilderData = NULL;
-        LONG nLen = 0;
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(oBuilder.GetData().c_str(), oBuilder.GetSize(), pBuilderData, nLen);
-        m_pZipFolder->write(file, pBuilderData, nLen);
+        m_pZipFolder->writeXml(file, oBuilder.GetData());
     }
 
     void SetGuid(const std::wstring& guid)
@@ -717,10 +711,7 @@ public:
 
         int nSignNum = AddSignatureReference();
 
-        BYTE* pData = NULL;
-        LONG   nLen = 0;
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(builderResult.GetData().c_str(), builderResult.GetSize(), pData, nLen);
-        m_pZipFolder->write(m_sFolder + L"/_xmlsignatures/sig" + std::to_wstring(nSignNum + 1) + L".xml", pData, nLen);
+        m_pZipFolder->writeXml(m_sFolder + L"/_xmlsignatures/sig" + std::to_wstring(nSignNum + 1) + L".xml", builderResult.GetData());
 
         m_pZipFolder->writeZipFolder(pFiletoWrite, dwLenFiletoWrite);
         return (sSignedXml.empty()) ? 1 : 0;

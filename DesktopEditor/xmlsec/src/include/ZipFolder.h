@@ -16,6 +16,12 @@ public:
     virtual void createDirectory(const std::wstring& path) = 0;
     virtual void writeZipFolder(BYTE* data, DWORD& length) = 0;
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion) = 0;
+
+    virtual void writeXml(const std::wstring& path, const std::wstring& xml)
+    {
+        std::string sXmlUtf8 = U_TO_UTF8(xml);
+        write(path, (BYTE*)sXmlUtf8.c_str(), (DWORD)sXmlUtf8.length());
+    }
 };
 
 class CZipFolder : public IZipFolder

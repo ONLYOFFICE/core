@@ -316,6 +316,8 @@ void BinaryCommonWriter::WriteShd(const ComplexTypes::Word::CShading& Shd)
 	//Fill
 	if (false != Shd.m_oFill.IsInit())
 		WriteColor(c_oSerShdType::Fill, Shd.m_oFill.get());
+
+	WriteThemeColor(c_oSerShdType::FillTheme, Shd.m_oColor, Shd.m_oThemeColor, Shd.m_oThemeTint, Shd.m_oThemeShade);
 }
 void BinaryCommonWriter::WritePaddings(const nullable<SimpleTypes::CTwipsMeasure>& left, const nullable<SimpleTypes::CTwipsMeasure>& top,
 	const nullable<SimpleTypes::CTwipsMeasure>& right, const nullable<SimpleTypes::CTwipsMeasure>& bottom)
@@ -3061,11 +3063,7 @@ void BinaryOtherTableWriter::Write()
 }
 void BinaryOtherTableWriter::WriteOtherContent()
 {
-	//ImageMap
-	//int nStart = m_oBcw.WriteItemStart(c_oSerOtherTableTypes::ImageMap);
-	//WriteImageMapContent();
-	//m_oBcw.WriteItemEnd(nStart);
-	//EmbeddedFonts
+//EmbeddedFonts
 	if(NULL != m_oBcw.m_pEmbeddedFontsManager)
 	{
 		EmbeddedBinaryWriter oEmbeddedBinaryWriter(m_oBcw.m_oStream);
@@ -3907,6 +3905,13 @@ void BinaryDocumentTableWriter::WriteFldChar(OOX::Logic::CFldChar* pFldChar)
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::CharType);
 		m_oBcw.m_oStream.WriteBYTE((BYTE)pFldChar->m_oFldCharType->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+//FFData
+	if (pFldChar->m_oFFData.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::FFData);
+		WriteFFData(pFldChar->m_oFFData.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }

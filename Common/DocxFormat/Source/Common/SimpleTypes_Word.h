@@ -1204,6 +1204,7 @@ namespace SimpleTypes
 	public:
 		CDecimalNumberOrPercent() 
 		{
+			m_dValue = 0;
 			m_bTrailingPercentSign = false;
 		}
 
@@ -2031,7 +2032,10 @@ namespace SimpleTypes
 		{
 			return m_sValue;
 		}
-
+		std::wstring ToXmlString() const
+		{
+			return XmlUtils::EncodeXmlString(m_sValue);
+		}
         SimpleType_FromString2    (std::wstring)
 		SimpleType_Operator_Equal (CFFHelpTextVal)
 	private:
@@ -2076,7 +2080,11 @@ namespace SimpleTypes
 		{
 			return m_sValue;
 		}
-
+		std::wstring ToXmlString() const
+		{
+			return XmlUtils::EncodeXmlString(m_sValue);
+		}
+		
         SimpleType_FromString2    (std::wstring)
 		SimpleType_Operator_Equal (CFFName)
 	private:
@@ -2098,7 +2106,7 @@ namespace SimpleTypes
 			return m_sValue;
 		}
 
-        void    SetValue(std::wstring &sValue)
+        void SetValue(std::wstring &sValue)
 		{
             if ( sValue.length() <= 140 )
 				m_sValue = sValue;
@@ -2117,11 +2125,14 @@ namespace SimpleTypes
 			return m_sValue;
 		}
 
-        std::wstring ToString  () const
+        std::wstring ToString () const
 		{
 			return m_sValue;
 		}
-
+		std::wstring ToXmlString() const
+		{
+			return XmlUtils::EncodeXmlString(m_sValue);
+		}
         SimpleType_FromString2    (std::wstring)
 		SimpleType_Operator_Equal (CFFStatusTextVal)
 	private:

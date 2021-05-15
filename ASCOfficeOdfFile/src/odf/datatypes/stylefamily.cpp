@@ -126,7 +126,7 @@ style_family style_family::parse(const std::wstring & Str)
         return style_family( Default );
     else if (tmp == L"drawing-page")
         return style_family( DrawingPage );
-    else if (tmp == L"graphic")
+    else if (tmp == L"graphic" || tmp == L"graphics")
         return style_family( Graphic );
     else if (tmp == L"presentation")
         return style_family( Presentation );

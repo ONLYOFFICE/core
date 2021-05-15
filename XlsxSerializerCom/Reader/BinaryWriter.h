@@ -117,6 +117,7 @@ namespace BinXlsxRW
 		void WriteCellXfs(const OOX::Spreadsheet::CCellXfs& cellXfs);
 		void WriteXfs(const OOX::Spreadsheet::CXfs& xfs);
 		void WriteAligment(const OOX::Spreadsheet::CAligment& aligment);
+		void WriteProtection(const OOX::Spreadsheet::CProtection& protection);
 		void WriteFills(const OOX::Spreadsheet::CFills& fills, OOX::Spreadsheet::CIndexedColors* pIndexedColors, PPTX::Theme* pTheme);
 		void WriteFill(const OOX::Spreadsheet::CFill& fill, OOX::Spreadsheet::CIndexedColors* pIndexedColors);
 		void WritePatternFill(const OOX::Spreadsheet::CPatternFill& fill, OOX::Spreadsheet::CIndexedColors* pIndexedColors);
@@ -218,6 +219,8 @@ namespace BinXlsxRW
 		
 		void WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet);
 		void WriteProtection(const OOX::Spreadsheet::CSheetProtection& protection);
+		void WriteProtectedRanges(const OOX::Spreadsheet::CProtectedRanges& protectedRanges);
+		void WriteProtectedRange(const OOX::Spreadsheet::CProtectedRange& protectedRanges);
 		void WriteCols(const OOX::Spreadsheet::CCols& oCols);
 		void WriteCol(const OOX::Spreadsheet::CCol& oCol);
 		void WriteSheetViews(const OOX::Spreadsheet::CSheetViews& oSheetViews);

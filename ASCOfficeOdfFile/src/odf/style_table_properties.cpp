@@ -187,7 +187,14 @@ void style_table_column_properties_attlist::add_attributes( const xml::attribute
    CP_APPLY_ATTR(L"style:use-optimal-column-width", style_use_optimal_column_width_);
    common_break_attlist_.add_attributes(Attributes);
 }
+void style_table_column_properties_attlist::apply_from(const style_table_column_properties_attlist & Other)
+{
+	_CP_APPLY_PROP(style_column_width_, Other.style_column_width_);
+	_CP_APPLY_PROP(style_rel_column_width_, Other.style_rel_column_width_);
+	_CP_APPLY_PROP(style_use_optimal_column_width_, Other.style_use_optimal_column_width_);
 
+	common_break_attlist_.apply_from(Other.common_break_attlist_);
+}
 // style:table-column-properties
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * style_table_column_properties::ns = L"style";
@@ -337,7 +344,16 @@ void style_table_row_properties_attlist::add_attributes( const xml::attributes_w
     common_break_attlist_.add_attributes(Attributes);
     CP_APPLY_ATTR(L"fo:keep-together", fo_keep_together_);     
 }
+void style_table_row_properties_attlist::apply_from(const style_table_row_properties_attlist & Other)
+{
+	_CP_APPLY_PROP(style_row_height_, Other.style_row_height_);
+	_CP_APPLY_PROP(style_min_row_height_, Other.style_min_row_height_);
+	_CP_APPLY_PROP(style_use_optimal_row_height_, Other.style_use_optimal_row_height_);
+	_CP_APPLY_PROP(fo_keep_together_, Other.fo_keep_together_);
 
+	common_background_color_attlist_.apply_from(Other.common_background_color_attlist_);
+	common_break_attlist_.apply_from(Other.common_break_attlist_);
+}
 void style_table_row_properties_attlist::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & strm = Context.output_stream();

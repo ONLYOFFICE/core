@@ -196,18 +196,17 @@ void CEpubFile::ShowMap()
         std::wcout << oItem.m_sID << L" - " << m_mapRefs[oItem.m_sID].GetRef() << std::endl;
 }
 
-HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDstFile)
+HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDstFile, const std::wstring& sInpTitle)
 {
     NSDirectory::CreateDirectory(m_sTempDir + L"/META-INF");
     NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS");
+    NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS/images");
     // index.html
     std::wstring sIndexHtml;
     NSFile::CFileBinary::ReadAllTextUtf8(sHtmlFile, sIndexHtml);
-
+    // картинки в файл
     size_t nImage = sIndexHtml.find(L"data:image/png;base64, ");
     int nNumImage = 1;
-    if (nImage != std::wstring::npos)
-        NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS/images");
     while (nImage != std::wstring::npos)
     {
         size_t nImageBegin = sIndexHtml.find(L' ', nImage) + 1;
@@ -224,16 +223,54 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
             RELEASEARRAYOBJECTS(pImageData);
             oImageWriter.CloseFile();
         }
+        sIndexHtml.insert(sIndexHtml.find(L"/>", nImage), L" alt=\"NO\"");
         sIndexHtml.replace(nImage, nImageEnd - nImage, L"images/img" + std::to_wstring(nNumImage++) + L".png");
         nImage = sIndexHtml.find(L"data:image/png;base64, ", nImage);
     }
-
-    NSFile::CFileBinary oIndexHtml;
-    if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index.html"))
+    // удаляем &nbsp;
+    nImage = sIndexHtml.find(L"&nbsp;");
+    while (nImage != std::wstring::npos)
     {
-        oIndexHtml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">");
-        oIndexHtml.WriteStringUTF8(sIndexHtml);
-        oIndexHtml.CloseFile();
+        sIndexHtml.replace(nImage, 6, L" ");
+        nImage = sIndexHtml.find(L"&nbsp;", nImage);
+    }
+    // заменяем <s> на style=text-decoration:line-through
+    nImage = sIndexHtml.find(L"<s>");
+    while (nImage != std::wstring::npos)
+    {
+        sIndexHtml.erase(nImage, 3);
+        size_t nEndTag = sIndexHtml.find(L"</s>", nImage);
+        sIndexHtml.erase(nEndTag, 4);
+        nImage = sIndexHtml.rfind(L"style=\"", nImage);
+        nEndTag = sIndexHtml.find(L"\"", nImage + 7);
+        sIndexHtml.insert(nEndTag, L";text-decoration:line-through");
+        nImage = sIndexHtml.find(L"<s>", nImage);
+    }
+    // удаляем атрибут width у <td>
+    nImage = sIndexHtml.find(L"<td");
+    while (nImage != std::wstring::npos)
+    {
+        size_t nEndTag = sIndexHtml.find(L">", nImage);
+        nImage = sIndexHtml.find(L"width=\"", nImage);
+        if (nImage < nEndTag)
+        {
+            nEndTag = sIndexHtml.find(L"\"", nImage + 7);
+            sIndexHtml.erase(nImage, nEndTag - nImage + 1);
+        }
+        nImage = sIndexHtml.find(L"<td", nImage);
+    }
+    // удаляем атрибут clear у <br/>
+    nImage = sIndexHtml.find(L"<br");
+    while (nImage != std::wstring::npos)
+    {
+        size_t nEndTag = sIndexHtml.find(L">", nImage);
+        nImage = sIndexHtml.find(L"clear=\"", nImage);
+        if (nImage < nEndTag)
+        {
+            nEndTag = sIndexHtml.find(L"\"", nImage + 7);
+            sIndexHtml.erase(nImage, nEndTag - nImage + 1);
+        }
+        nImage = sIndexHtml.find(L"<br", nImage);
     }
     // mimetype
     NSFile::CFileBinary oMimeType;
@@ -249,64 +286,42 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         oContainerXml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\"><rootfiles><rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/></rootfiles></container>");
         oContainerXml.CloseFile();
     }
-    // cover.html
-    bool bCoverFromImg1 = NSFile::CFileBinary::Exists(m_sTempDir + L"/OEBPS/images/img1.png");
-    if (bCoverFromImg1)
-    {
-        int nHy = 0;
-        int nWx = 0;
-        CBgraFrame oBgraFrame;
-        if (oBgraFrame.OpenFile(m_sTempDir + L"/OEBPS/images/img1.png"))
-        {
-            nHy = oBgraFrame.get_Height();
-            nWx = oBgraFrame.get_Width();
-        }
-        NSFile::CFileBinary oCoverHtml;
-        if (oCoverHtml.CreateFileW(m_sTempDir + L"/OEBPS/cover.html"))
-        {
-            oCoverHtml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\"><head><title>Cover</title></head><body><div style=\"text-align: center; padding: 0pt; margin: 0pt;\"><svg xmlns=\"http://www.w3.org/2000/svg\" height=\"100%\" preserveAspectRatio=\"xMidYMid meet\" version=\"1.1\" width=\"100%\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"0 0 " + std::to_wstring(nWx) + L' ' + std::to_wstring(nHy) + L"\"><image width=\"" + std::to_wstring(nWx) + L"\" height=\"" + std::to_wstring(nHy) + L"\" xlink:href=\"images/img1.png\"/></svg></div></body></html>");
-            oCoverHtml.CloseFile();
-        }
-    }
     // content.opf
     NSFile::CFileBinary oContentOpf;
-    std::wstring sTitle;
+    bool bWasLanguage = false, bWasTitle = false;
+    std::wstring sTitle = sInpTitle.empty() ? NSFile::GetFileName(sDstFile) : sInpTitle;
     std::wstring sUUID = GenerateUUID();
     if (oContentOpf.CreateFileW(m_sTempDir + L"/OEBPS/content.opf"))
     {
-        oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:opf=\"http://www.idpf.org/2007/opf\">");
+        oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:opf=\"http://www.idpf.org/2007/opf\">");
         // metadata
-        std::wstring sCoreXml;
         bool bWasIdentifier = false;
         XmlUtils::CXmlLiteReader oCoreReader;
-        if (NSFile::CFileBinary::ReadAllTextUtf8(sCoreFile, sCoreXml))
+        oCoreReader.FromString(sCoreFile);
+        oCoreReader.ReadNextNode();
+        int nDeath = oCoreReader.GetDepth();
+        while (oCoreReader.ReadNextSiblingNode(nDeath))
         {
-            oCoreReader.FromString(sCoreXml);
-            oCoreReader.ReadNextNode();
-            int nDeath = oCoreReader.GetDepth();
-            while (oCoreReader.ReadNextSiblingNode(nDeath))
+            std::wstring sOut = oCoreReader.GetOuterXml();
+            oContentOpf.WriteStringUTF8(sOut);
+            std::wstring sName = oCoreReader.GetName();
+            if (sName == L"dc:identifier")
+                bWasIdentifier = true;
+            else if (sName == L"dc:title")
             {
-                if (oCoreReader.GetNamespacePrefix() == L"dc")
-                {
-                    std::wstring sOut = oCoreReader.GetOuterXml();
-                    oContentOpf.WriteStringUTF8(sOut);
-                    std::wstring sName = oCoreReader.GetName();
-                    if (sName == L"dc:identifier")
-                        bWasIdentifier = true;
-                    else if (sName == L"dc:title")
-                    {
-                        size_t nBegin = sOut.find(L'>');
-                        if (nBegin == std::wstring::npos)
-                            continue;
-                        sOut.erase(0, nBegin + 1);
-                        nBegin = sOut.find(L'<');
-                        if (nBegin == std::wstring::npos)
-                            continue;
-                        sOut.erase(nBegin);
-                        sTitle = sOut;
-                    }
-                }
+                bWasTitle = true;
+                size_t nBegin = sOut.find(L'>');
+                if (nBegin == std::wstring::npos)
+                    continue;
+                sOut.erase(0, nBegin + 1);
+                nBegin = sOut.find(L'<');
+                if (nBegin == std::wstring::npos)
+                    continue;
+                sOut.erase(nBegin);
+                sTitle = sOut;
             }
+            else if (sName == L"dc:language")
+                bWasLanguage = true;
         }
         if (!bWasIdentifier)
         {
@@ -314,8 +329,14 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
             oContentOpf.WriteStringUTF8(sUUID);
             oContentOpf.WriteStringUTF8(L"</dc:identifier>");
         }
-        if (bCoverFromImg1)
-            oContentOpf.WriteStringUTF8(L"<meta name=\"cover\" content=\"img1.png\"/>");
+        if (!bWasTitle)
+        {
+            oContentOpf.WriteStringUTF8(L"<dc:title>");
+            oContentOpf.WriteStringUTF8(sTitle);
+            oContentOpf.WriteStringUTF8(L"</dc:title>");
+        }
+        if (!bWasLanguage)
+            oContentOpf.WriteStringUTF8(L"<dc:language>en-EN</dc:language>");
         // manifest
         oContentOpf.WriteStringUTF8(L"</metadata><manifest><item id=\"ncx\" href=\"toc.ncx\" media-type=\"application/x-dtbncx+xml\"/>");
         std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sTempDir + L"/OEBPS/images");
@@ -324,27 +345,33 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
             std::wstring sName = NSFile::GetFileName(sFileName);
             oContentOpf.WriteStringUTF8(L"<item id=\"" + sName + L"\" href=\"images/" + sName + L"\" media-type=\"image/png\"/>");
         }
-        oContentOpf.WriteStringUTF8(L"<item id=\"index\" href=\"index.html\" media-type=\"application/xhtml+xml\"/>");
-        if (bCoverFromImg1)
-            oContentOpf.WriteStringUTF8(L"<item id=\"cover\" href=\"cover.html\" media-type=\"application/xhtml+xml\"/>");
-        // spine
-        oContentOpf.WriteStringUTF8(L"</manifest><spine toc=\"ncx\">");
-        if (bCoverFromImg1)
-            oContentOpf.WriteStringUTF8(L"<itemref idref=\"cover\"/>");
-        // guide
-        oContentOpf.WriteStringUTF8(L"<itemref idref=\"index\"/></spine><guide>");
-        if (bCoverFromImg1)
-            oContentOpf.WriteStringUTF8(L"<reference type=\"cover\" title=\"Cover\" href=\"cover.html\"/>");
-        oContentOpf.WriteStringUTF8(L"</guide></package>");
+        // spine & guide
+        oContentOpf.WriteStringUTF8(L"<item id=\"index\" href=\"index.html\" media-type=\"application/xhtml+xml\"/></manifest><spine toc=\"ncx\"><itemref idref=\"index\"/></spine></package>");
         oContentOpf.CloseFile();
     }
     // toc.ncx
     NSFile::CFileBinary oTocNcx;
     if (oTocNcx.CreateFileW(m_sTempDir + L"/OEBPS/toc.ncx"))
     {
-        oTocNcx.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\" \"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\"><ncx xmlns=\"http://www.daisy.org/z3986/2005/ncx/\" version=\"2005-1\"><head><meta name=\"dtb:uid\" content=\"urn:uuid:" + sUUID + L"\"/><meta name=\"dtb:depth\" content=\"0\"/><meta name=\"dtb:totalPageCount\" content=\"0\"/><meta name=\"dtb:maxPageNumber\" content=\"0\"/></head><docTitle><text>" + sTitle + L"</text></docTitle><navMap><navPoint id=\"navPoint-1\" playOrder=\"1\"><navLabel><text>Start</text></navLabel><content src=\"index.html\"/></navPoint></navMap></ncx>");
+        oTocNcx.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE ncx PUBLIC \"-//NISO//DTD ncx 2005-1//EN\" \"http://www.daisy.org/z3986/2005/ncx-2005-1.dtd\"><ncx xmlns=\"http://www.daisy.org/z3986/2005/ncx/\" version=\"2005-1\"><head><meta name=\"dtb:uid\" content=\"urn:uuid:");
+        oTocNcx.WriteStringUTF8(sUUID);
+        oTocNcx.WriteStringUTF8(L"\"/><meta name=\"dtb:depth\" content=\"0\"/><meta name=\"dtb:totalPageCount\" content=\"0\"/><meta name=\"dtb:maxPageNumber\" content=\"0\"/></head><docTitle><text>");
+        oTocNcx.WriteStringUTF8(sTitle);
+        oTocNcx.WriteStringUTF8(L"</text></docTitle><navMap><navPoint id=\"navPoint-1\" playOrder=\"1\"><navLabel><text>Start</text></navLabel><content src=\"index.html\"/></navPoint></navMap></ncx>");
         oTocNcx.CloseFile();
     }
+    // write index.html
+    sIndexHtml.erase(0, 6);
+    if (sIndexHtml.find(L"<title>") == std::wstring::npos)
+        sIndexHtml.insert(sIndexHtml.find(L"</head>"), L"<title>" + sTitle + L"</title>");
+    NSFile::CFileBinary oIndexHtml;
+    if (oIndexHtml.CreateFileW(m_sTempDir + L"/OEBPS/index.html"))
+    {
+        oIndexHtml.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\"><html xmlns=\"http://www.w3.org/1999/xhtml\">");
+        oIndexHtml.WriteStringUTF8(sIndexHtml);
+        oIndexHtml.CloseFile();
+    }
+    // compress
     COfficeUtils oOfficeUtils;
     return oOfficeUtils.CompressFileOrDirectory(m_sTempDir, sDstFile);
 }

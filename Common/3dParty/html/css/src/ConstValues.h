@@ -651,34 +651,51 @@ namespace NSCSS
 
                 void SetFontFamily(const std::wstring &sFamily, const unsigned int& unLevel, const bool& bHardMode = false)
                 {
-                    if (sFamily.empty() || (bImportants[6] && !bHardMode))
+                    if (sFamily.empty() || (bImportants[6] && !bHardMode) || NS_STATIC_FUNCTIONS::NumberInWString(sFamily))
                         return;
 
-                    std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sFamily, L",");
+                    std::wstring sNewFamily(sFamily);
 
-                    for (std::vector<std::wstring>::reverse_iterator iWord = arWords.rbegin() + ((arWords.size() == 1) ? 0 : 1); iWord != arWords.rend(); ++iWord)
+                    sNewFamily.erase(std::remove(sNewFamily.begin(), sNewFamily.end(), '\''), sNewFamily.end());
+                    sNewFamily.erase(std::remove(sNewFamily.begin(), sNewFamily.end(), '"'), sNewFamily.end());
+
+                    std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sNewFamily, L",");
+
+                    for (std::vector<std::wstring>::iterator iWord = arWords.begin(); iWord != arWords.end(); ++iWord)
                     {
                         if ((*iWord).empty())
                             continue;
 
-                        const std::wstring sValue = NS_STATIC_FUNCTIONS::StripSymbols(*iWord, L" ");
-
-                        if (sValue[0] == L'"' || sValue[0] == L'\'')
-                        {
-                            arLevels[6] = unLevel;
-                            this->sFamily = sValue;
-                            return;
-                        }
-                        else if (sValue != L"serif"      && sValue != L"sans-serif"  && sValue != L"monospace" &&
-                                 sValue != L"cursive"    && sValue != L"fantasy"     && sValue != L"system-ui" &&
-                                 sValue != L"emoji"      && sValue != L"math"        && sValue != L"fangsong" &&
-                                 sValue != L"inherit"    && sValue != L"initial"     && sValue != L"unset")
-                        {
-                            arLevels[6] = unLevel;
-                            this->sFamily = L'\'' + sValue + L'\'';
-                            return;
-                        }
+                        arLevels[6] = unLevel;
+                        this->sFamily = L'"' + *iWord + L'"';
+                        return;
                     }
+
+//                    std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(sFamily, L",");
+
+//                    for (std::vector<std::wstring>::reverse_iterator iWord = arWords.rbegin() + ((arWords.size() == 1) ? 0 : 1); iWord != arWords.rend(); ++iWord)
+//                    {
+//                        if ((*iWord).empty())
+//                            continue;
+
+//                        const std::wstring sValue = NS_STATIC_FUNCTIONS::StripSymbols(*iWord, L" ");
+
+//                        if (sValue[0] == L'"' || sValue[0] == L'\'')
+//                        {
+//                            arLevels[6] = unLevel;
+//                            this->sFamily = sValue;
+//                            return;
+//                        }
+//                        else if (sValue != L"serif"      && sValue != L"sans-serif"  && sValue != L"monospace" &&
+//                                 sValue != L"cursive"    && sValue != L"fantasy"     && sValue != L"system-ui" &&
+//                                 sValue != L"emoji"      && sValue != L"math"        && sValue != L"fangsong" &&
+//                                 sValue != L"inherit"    && sValue != L"initial"     && sValue != L"unset")
+//                        {
+//                            arLevels[6] = unLevel;
+//                            this->sFamily = L'\'' + sValue + L'\'';
+//                            return;
+//                        }
+//                    }
                 }
 
                 void SetSize(const std::wstring &sSize, const unsigned int& unLevel, const bool& bHardMode = false)
@@ -1253,7 +1270,7 @@ namespace NSCSS
 
                 std::wstring GetRightSide() const
                 {
-                    if (fTopSide == fNoneValue || !bPermission)
+                    if (fRightSide == fNoneValue || !bPermission)
                         return std::wstring();
 
                     return (fRightSide >= -128.0f) ? std::to_wstring(static_cast<short int>(fRightSide  * 10.0f + ((fLeftSide > 0) ? 0.5f : -0.5f))) : L"-1280";
@@ -1280,6 +1297,7 @@ namespace NSCSS
             {
                 none = 0,
                 underline,
+                lineThrough,
                 normal
             };
 
@@ -1433,6 +1451,11 @@ namespace NSCSS
                         arLevels[2] = unLevel;
                         enDecoration = NSConstValues::NSCssProperties::TextDecoration::underline;
                     }
+                    else if (sDecoration == L"line-through")
+                    {
+                            arLevels[2] = unLevel;
+                            enDecoration = NSConstValues::NSCssProperties::TextDecoration::lineThrough;
+                    }
                     else if (sDecoration == L"none")
                     {
                         arLevels[2] = unLevel;
@@ -1553,6 +1576,8 @@ namespace NSCSS
                 {
                     if (enDecoration == TextDecoration::underline)
                         return L"single";
+                    else if (enDecoration == TextDecoration::lineThrough)
+                        return L"line-through";
                     else if (enDecoration == TextDecoration::normal)
                         return L"none";
 

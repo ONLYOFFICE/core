@@ -102,7 +102,6 @@ public:
     odf_types::common_value_and_type_attlist	common_value_and_type_attlist_;
 
     bool table_protect_; // default false
-        
 };
 
 class table_table_cell_attlist_extra
@@ -590,7 +589,7 @@ public:
     bool table_display_; // default true
     
 };
-
+//--------------------------------------------------------------------------------------------
 class table_table_row_group : public office_element_impl<table_table_row_group>
 {
 public:
@@ -617,7 +616,7 @@ public:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_row_group);
-
+//--------------------------------------------------------------------------------------------
 class table_table_protection : public office_element_impl<table_table_protection>
 {
 public:
@@ -649,7 +648,7 @@ public:
 	//_CP_OPT(bool)	format_cells;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_protection);
-
+//--------------------------------------------------------------------------------------------
 class table_table : public office_element_impl<table_table>
 {
 public:
@@ -687,7 +686,17 @@ public:
     //table-scenario
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table);
-
+//--------------------------------------------------------------------------------------------
+class table_sub_table : public table_table
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTableSubTable;
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_sub_table);
+//--------------------------------------------------------------------------------------------
 //table:content-shapes
 class table_shapes : public office_element_impl<table_shapes>
 {
@@ -733,7 +742,7 @@ private:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_content_validations);
-
+//--------------------------------------------------------------------------------------------
 //table:content-validation
 class table_content_validation : public office_element_impl<table_content_validation>
 {
@@ -784,7 +793,7 @@ public:
     office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_error_message);
-
+//--------------------------------------------------------------------------------------------
 //table:help-message
 class table_help_message : public office_element_impl<table_help_message>
 {

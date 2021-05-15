@@ -123,29 +123,29 @@ namespace OOX
 			{
 				sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if ( L"cols" == sName )
+				if (L"cols" == sName)
 					m_oCols = oReader;
-				else if ( L"dimension" == sName )
+				else if (L"dimension" == sName)
 					m_oDimension = oReader;
-				else if ( L"drawing" == sName )
+				else if (L"drawing" == sName)
 					m_oDrawing = oReader;
-				else if ( L"hyperlinks" == sName )
+				else if (L"hyperlinks" == sName)
 				{
 					m_oHyperlinks = new CHyperlinks(OOX::WritingElement::m_pMainDocument);
 					m_oHyperlinks->fromXML(oReader);
 				}
-				else if ( L"mergeCells" == sName )
+				else if (L"mergeCells" == sName)
 				{
 					m_oMergeCells = new CMergeCells(OOX::WritingElement::m_pMainDocument);
 					m_oMergeCells->fromXML(oReader);
 				}
-				else if ( L"pageMargins" == sName )
+				else if (L"pageMargins" == sName)
 					m_oPageMargins = oReader;
-				else if ( _T("pageSetup") == sName )
+				else if (_T("pageSetup") == sName)
 					m_oPageSetup = oReader;
-				else if ( L"printOptions" == sName )
+				else if (L"printOptions" == sName)
 					m_oPrintOptions = oReader;
-				else if ( L"sheetData" == sName || L"Table" == sName) // 2002 XML Format
+				else if (L"sheetData" == sName || L"Table" == sName) // 2002 XML Format
 				{
 					m_oSheetData = new CSheetData(OOX::WritingElement::m_pMainDocument);
 					m_oSheetData->fromXML(oReader);
@@ -156,7 +156,7 @@ namespace OOX
 				}
 				else if (L"Names" == sName)
 				{
-					CDefinedNames names(oReader);	
+					CDefinedNames names(oReader);
 
 					CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(WritingElement::m_pMainDocument);
 					if (xlsx_flat)
@@ -182,10 +182,12 @@ namespace OOX
 				}
 				else if (L"conditionalFormatting" == sName)
 					m_arrConditionalFormatting.push_back(new CConditionalFormatting(oReader));
-				else if ( L"sheetFormatPr" == sName )
+				else if (L"sheetFormatPr" == sName)
 					m_oSheetFormatPr = oReader;
-				else if ( L"sheetViews" == sName )
+				else if (L"sheetViews" == sName)
 					m_oSheetViews = oReader;
+				else if (L"protectedRanges" == sName)
+					m_oProtectedRanges = oReader;
 				else if ( L"autoFilter" == sName )
 					m_oAutofilter = oReader;
 				else if ( _T("tableParts") == sName )

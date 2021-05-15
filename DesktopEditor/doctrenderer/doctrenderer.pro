@@ -44,8 +44,7 @@ SOURCES += \
 SOURCES += \
     ../../Common/OfficeFileFormatChecker2.cpp \
     ../../Common/3dParty/pole/pole.cpp \
-    ../../Common/DocxFormat/Source/Base/unicode_util.cpp \
-    ../fontengine/ApplicationFontsWorker.cpp
+    ../../Common/DocxFormat/Source/Base/unicode_util.cpp
 
 HEADERS += \
     docbuilder_p.h \
@@ -65,6 +64,10 @@ SOURCES += \
     embed/MemoryStreamEmbed.cpp \
     embed/NativeControlEmbed.cpp \
     embed/NativeBuilderEmbed.cpp
+
+core_mac {
+    !use_v8:CONFIG += use_javascript_core
+}
 
 !use_javascript_core {
     HEADERS += js_internal/v8/v8_base.h

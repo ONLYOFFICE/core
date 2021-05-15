@@ -59,6 +59,7 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 #define UINT_TO_COMPLEX_BOOL(offset, val) \
 	if (0 != ((nFlags >> offset) & 1)) { \
@@ -311,6 +312,10 @@ int Binary_CommonReader2::ReadShd(BYTE type, long length, void* poResult)
 	case c_oSerShdType::Fill:
 		pShd->bFill = true;
 		pShd->Fill = ReadColor();
+		break;
+	case c_oSerShdType::FillTheme:
+		pShd->bThemeFill = true;
+		ReadThemeColor(length, pShd->ThemeFill);
 		break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
@@ -1762,7 +1767,7 @@ int Binary_pPrReader::Read_pgHeader(BYTE type, long length, void* poResult)
 		if(nHdrFtrIndex >= 0 && nHdrFtrIndex < (int)m_oFileWriter.get_headers_footers_writer().m_aHeaders.size())
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = m_oFileWriter.get_headers_footers_writer().m_aHeaders[nHdrFtrIndex];
-			pHdrFtrItem->m_sFilename;
+
             std::wstring sType;
 			if(SimpleTypes::hdrftrFirst == pHdrFtrItem->eType)
 				sType = _T("first");
@@ -1787,7 +1792,7 @@ int Binary_pPrReader::Read_pgFooter(BYTE type, long length, void* poResult)
 		if(nHdrFtrIndex >= 0 && nHdrFtrIndex <= (int)oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters.size())
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters[nHdrFtrIndex];
-			pHdrFtrItem->m_sFilename;
+
             std::wstring sType;
 			if(SimpleTypes::hdrftrFirst == pHdrFtrItem->eType)
 				sType = _T("first");
@@ -3444,11 +3449,13 @@ int Binary_OtherTableReader::Read()
 int Binary_OtherTableReader::ReadOtherContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if ( c_oSerOtherTableTypes::ImageMap == type )
-	{
-		READ1_DEF(length, res, this->ReadImageMapContent, NULL);
-	}
-	else if(c_oSerOtherTableTypes::DocxTheme == type)
+	// not using now
+	//if ( c_oSerOtherTableTypes::ImageMap == type )
+	//{
+	//	READ1_DEF(length, res, this->ReadImageMapContent, NULL);
+	//}
+	//else 
+	if(c_oSerOtherTableTypes::DocxTheme == type)
 	{
 		smart_ptr<PPTX::Theme> pTheme = new PPTX::Theme(NULL);
 		try
@@ -3472,49 +3479,64 @@ int Binary_OtherTableReader::ReadOtherContent(BYTE type, long length, void* poRe
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
-int Binary_OtherTableReader::ReadImageMapContent(BYTE type, long length, void* poResult)
-{
-	int res = c_oSerConstants::ReadOk;
-	if ( c_oSerOtherTableTypes::ImageMap_Src == type )
-	{
-        std::wstring sImage(m_oBufferedStream.GetString3(length));
-        std::wstring sFilePath;
-		bool bDeleteFile = false;
-		NSFile::CFileBinary oFile;
-        if(0 == sImage.find(_T("data:")))
-		{
-			if(oFile.CreateTempFile())
-				SerializeCommon::convertBase64ToImage(oFile, sImage);
-		}
-        else if(0 == sImage.find(_T("http:")) || 0 == sImage.find(_T("https:")) || 0 == sImage.find(_T("ftp:")) || 0 == sImage.find(_T("www")))
-		{
-			//url
-			sFilePath = SerializeCommon::DownloadImage(sImage);
-			bDeleteFile = true;
-		}
-		else
-		{
-			//local
-            sFilePath = m_sFileInDir + _T("media") + FILE_SEPARATOR_STR + sImage;
-		}
-
-		//Проверяем что файл существует
-		FILE* pFileNative = oFile.GetFileNative();
-		if(NULL != pFileNative)
-		{
-			m_oFileWriter.m_oMediaWriter.AddImage2(pFileNative);
-		}
-		else if(NSFile::CFileBinary::Exists(sFilePath))
-		{
-			m_oFileWriter.m_oMediaWriter.AddImage(sFilePath);
-			if(bDeleteFile)
-				NSFile::CFileBinary::Remove(sFilePath);
-		}
-	}
-	else
-		res = c_oSerConstants::ReadUnknown;
-	return res;
-}
+// not using now
+//int Binary_OtherTableReader::ReadImageMapContent(BYTE type, long length, void* poResult)
+//{
+//	int res = c_oSerConstants::ReadOk;
+//	if ( c_oSerOtherTableTypes::ImageMap_Src == type )
+//	{
+//        std::wstring sImage(m_oBufferedStream.GetString3(length));
+//        std::wstring sFilePath;
+//		bool bDeleteFile = false;
+//		NSFile::CFileBinary oFile;
+//        if(0 == sImage.find(_T("data:")))
+//		{
+//			if(oFile.CreateTempFile())
+//				SerializeCommon::convertBase64ToImage(oFile, sImage);
+//		}
+//        else if(0 == sImage.find(_T("http:")) || 0 == sImage.find(_T("https:")) || 0 == sImage.find(_T("ftp:")) || 0 == sImage.find(_T("www")))
+//		{
+//			//url
+//			sFilePath = SerializeCommon::DownloadImage(sImage);
+//			bDeleteFile = true;
+//		}
+//		else
+//		{
+//			OOX::CPath pathNormalizer = m_sFileInDir + L"media";
+//			std::wstring sPath = pathNormalizer.GetPath();
+//	//local
+//            sFilePath = sPath + FILE_SEPARATOR_STR + sImage;			
+//
+//			pathNormalizer = sFilePath;
+//			sFilePath = pathNormalizer.GetPath();
+//
+//			if (std::wstring::npos == sFilePath.find(sPath))
+//			{
+//				sFilePath.clear();
+//			}
+//		}
+//
+//	//Проверяем что файл существует
+//		FILE* pFileNative = oFile.GetFileNative();
+//		if(NULL != pFileNative)
+//		{
+//			m_oFileWriter.m_oMediaWriter.AddImage2(pFileNative);
+//		}
+//		else if (NSFile::CFileBinary::Exists(sFilePath)) //todooo IsFileExistInDirectory
+//		{
+//			CImageFileFormatChecker checker;
+//			if (true == checker.isImageFile(sFilePath))
+//			{
+//				m_oFileWriter.m_oMediaWriter.AddImage(sFilePath);
+//			}
+//			if(bDeleteFile)
+//				NSFile::CFileBinary::Remove(sFilePath);
+//		}
+//	}
+//	else
+//		res = c_oSerConstants::ReadUnknown;
+//	return res;
+//}
 //-----------------------------------------------------------------------------------------------------------------------------------------
 Binary_CustomsTableReader::Binary_CustomsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
 	: Binary_CommonReader(poBufferedStream), m_oFileWriter(oFileWriter)
@@ -5071,6 +5093,11 @@ int Binary_DocumentTableReader::ReadFldChar(BYTE type, long length, void* poResu
 	{
 		pFldChar->m_oFldCharType.Init();
 		pFldChar->m_oFldCharType->SetValue((SimpleTypes::EFldCharType)m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSer_FldSimpleType::FFData == type)
+	{
+		pFldChar->m_oFFData.Init();
+		READ1_DEF(length, res, this->ReadFFData, pFldChar->m_oFFData.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -9810,7 +9837,7 @@ int BinaryFileReader::ReadMainTable()
 					L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(L"/glossary") : L""), pFooter->m_sFilename);
 			}
 		}
-		for (size_t i = 0; i < m_oFileWriter.m_oCustomXmlWriter.arItems.size(); ++i)
+		for (size_t i = 0; (false == m_oFileWriter.m_bGlossaryMode) && (i < m_oFileWriter.m_oCustomXmlWriter.arItems.size()); ++i)
 		{
 			std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + m_oFileWriter.m_oCustomXmlWriter.arItems[i];
 			unsigned int rId;

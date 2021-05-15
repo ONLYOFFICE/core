@@ -29,46 +29,60 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#include "style_properties.h"
 
-#include <string>
+#include <xml/xmlchar.h>
+#include <xml/attributes.h>
+#include <xml/simple_xml_writer.h>
 
-#include "../CPSharedPtr.h"
+#include <odf/odf_document.h>
+
+#include <iostream>
+
+#include "office_elements.h"
+#include "office_elements_create.h"
+
 
 namespace cpdoccore { 
+namespace odf_reader {
 
-	namespace xml {
+// style:properties
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * style_properties::ns = L"style";
+const wchar_t * style_properties::name = L"properties";
 
-		class sax;
-		class attributes;
+void style_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+	text_properties_.add_attributes(Attributes);
+	paragraph_properties_.add_attributes(Attributes);
+	graphic_properties_.add_attributes(Attributes);
 
-		typedef attributes attributes_wc;
-		typedef shared_ptr< attributes_wc >::Type attributes_wc_ptr;
+	table_properties_.add_attributes(Attributes);
+	table_row_properties_.add_attributes(Attributes);
+	table_column_properties_.add_attributes(Attributes);
+	table_cell_properties_.add_attributes(Attributes);
+}
 
-	}
-	namespace common 
+void style_properties::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if (L"style" == Ns)
 	{
-
-	// Базовый класс для элемента, который может быть прочитан sax-reader -ом
-	// Для каждого элемента будут вызваны методы
-	// add_attributes, add_child_element, add_text как колбеки для чтения соответствующих данных
-
-	class read_doc_element 
-	{
-	public:
-		bool read_sax( xml::sax * Reader);
-		virtual ~read_doc_element() = 0; 
-
-		virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) = 0;
-		virtual void add_attributes		(const xml::attributes_wc_ptr & Attributes) = 0;
-	private:
-		virtual void add_text			(const std::wstring & Text) = 0;
-		virtual void add_space			(const std::wstring & Text) = 0;
-	};
-
-	inline read_doc_element::~read_doc_element()
-	{
-	}
-
+		if (L"tab-stops" == Name)
+		{
+			CP_CREATE_ELEMENT(paragraph_properties_.style_tab_stops_);
+		}
+		else if (L"drop-cap" == Name)
+		{
+			CP_CREATE_ELEMENT(paragraph_properties_.style_drop_cap_);
+		}
+		else if (L"background-image" == Name)
+		{
+			CP_CREATE_ELEMENT(paragraph_properties_.style_background_image_);
+		}
 	}
 }
+
+
+}
+}
+

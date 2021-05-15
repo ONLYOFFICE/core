@@ -63,7 +63,6 @@ namespace OOX
 		//<customProperties>
 		//<extLst>
 		//<phoneticPr>
-		//<protectedRanges>
 		//<scenarios>
 		//<sheetCalcPr>
 		//<smartTags>
@@ -159,6 +158,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CDataValidations>			m_oDataValidations;
 			nullable<OOX::Spreadsheet::CDataConsolidate>			m_oDataConsolidate;
 			nullable<OOX::Spreadsheet::CSortState>					m_oSortState;
+			nullable<OOX::Spreadsheet::CProtectedRanges>			m_oProtectedRanges;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 
@@ -167,6 +167,8 @@ namespace OOX
 			CThreadedComments	*m_pThreadedComments;
 
 			std::map<std::wstring, CConditionalFormattingRule*> m_mapConditionalFormattingEx;
+//--------------------------------------------------------------------------------------------
+			std::map<std::wstring, unsigned int> m_mapStyleMerges2003;
 		};
 	} //Spreadsheet
 } // namespace OOX

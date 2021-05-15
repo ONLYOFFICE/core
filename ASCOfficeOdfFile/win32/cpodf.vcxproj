@@ -354,6 +354,7 @@
     <ClCompile Include="..\src\odf\style_paragraph_properties_docx.cpp" />
     <ClCompile Include="..\src\odf\style_paragraph_properties_pptx.cpp" />
     <ClCompile Include="..\src\odf\style_presentation.cpp" />
+    <ClCompile Include="..\src\odf\style_properties.cpp" />
     <ClCompile Include="..\src\odf\style_regions.cpp" />
     <ClCompile Include="..\src\odf\style_table_properties.cpp" />
     <ClCompile Include="..\src\odf\style_text_properties.cpp" />
@@ -512,6 +513,7 @@
     <ClInclude Include="..\src\odf\style_map.h" />
     <ClInclude Include="..\src\odf\style_paragraph_properties.h" />
     <ClInclude Include="..\src\odf\style_presentation.h" />
+    <ClInclude Include="..\src\odf\style_properties.h" />
     <ClInclude Include="..\src\odf\style_ref.h" />
     <ClInclude Include="..\src\odf\style_regions.h" />
     <ClInclude Include="..\src\odf\style_table_properties.h" />

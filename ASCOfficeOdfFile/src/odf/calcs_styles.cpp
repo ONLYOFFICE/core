@@ -48,7 +48,7 @@ text_format_properties_content_ptr calc_text_properties_content(const std::vecto
 	for (size_t i = 0; i < textProps.size(); i++)
     {
         if (textProps[i])
-            result->apply_from(textProps[i]->content());
+            result->apply_from(textProps[i]->content_);
     }
     return result;
 }

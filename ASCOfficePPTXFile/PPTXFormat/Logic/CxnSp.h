@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_CXNSP_INCLUDE_H_
-#define PPTX_LOGIC_CXNSP_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "NvCxnSpPr.h"
@@ -78,13 +76,22 @@ namespace PPTX
 			{
 				pWriter->StartRecord(SPTREE_TYPE_CXNSP);
 
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteString2(0, macro);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
 				pWriter->WriteRecord1(0, nvCxnSpPr);
 				pWriter->WriteRecord1(1, spPr);
 				pWriter->WriteRecord2(2, style);
 
 				pWriter->EndRecord();
 			}
-
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("macro"),macro)
+				WritingElement_ReadAttributes_End(oReader)
+			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				std::wstring namespace_ = m_namespace;
@@ -96,7 +103,7 @@ namespace PPTX
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
                    
 				pWriter->StartNode(namespace_ + L":cxnSp");
-
+					pWriter->WriteAttribute(L"macro", macro);
                 pWriter->EndAttributes();
 
                 nvCxnSpPr.toXmlWriter(pWriter);
@@ -119,6 +126,24 @@ namespace PPTX
 			{
 				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+						{
+							macro = pReader->GetString2();						
+						}break;
+						default:
+							break;
+					}
+				}
 				while (pReader->GetPos() < _end_rec)
 				{
 					BYTE _at = pReader->GetUChar();
@@ -152,6 +177,8 @@ namespace PPTX
 
 			std::wstring			m_namespace;
 
+			nullable_string			macro;
+
 			NvCxnSpPr				nvCxnSpPr;
 			SpPr					spPr;
 			nullable<ShapeStyle>	style;
@@ -161,4 +188,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_CXNSP_INCLUDE_H

@@ -178,7 +178,6 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "r1",	m_oR1 )
 					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "r2",	m_oR2 )
 					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "ref",	m_oRef )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "si",	m_oSi )
 
 					WritingElement_ReadAttributes_EndChar( oReader )
 			}
@@ -284,7 +283,7 @@ namespace OOX
 				}
 				else if (m_oRow.IsInit() && m_oCol.IsInit())
 				{
-					return combineRef(m_oRow->GetValue(), m_oCol->GetValue());
+					return combineRef(*m_oRow, *m_oCol);
 				}
 				else
 				{
@@ -303,8 +302,8 @@ namespace OOX
 				if (m_oRow.IsInit() && m_oCol.IsInit())
 				{
 					bRes = true;
-					nRow = m_oRow->GetValue();
-					nCol = m_oCol->GetValue();
+					nRow = *m_oRow;
+					nCol = *m_oCol;
 				}
 				else if (m_oRef.IsInit())
 				{
@@ -319,10 +318,8 @@ namespace OOX
 			}
 			void setRowCol(int nRow, int nCol)
 			{
-				m_oRow.Init();
-				m_oRow->SetValue(nRow);
-				m_oCol.Init();
-				m_oCol->SetValue(nCol);
+				m_oRow = nRow;
+				m_oCol= nCol;
 			}
 
 			static bool parse3DRef(const std::wstring& sRef, std::wstring& workbook, std::wstring& sheetFrom, std::wstring& sheetTo, int& nRow1, int& nCol1, int& nRow2, int& nCol2)
@@ -387,19 +384,26 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);
 
-			nullable<std::string>								m_oRef;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRow;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCol;
+//----------- 2003			
+			nullable_string sStyleId;
+			nullable_string sArrayRange;
+			nullable_string sHyperlink;
+			nullable_int iColIndex;
+			nullable_int iAcross;
+			nullable_int iDown;
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCellMetadata;
 			nullable<SimpleTypes::COnOff<>>						m_oShowPhonetic;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oStyle;
+			nullable_uint										m_oStyle;
 			nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oValueMetadata;
 
-			nullable<CFormula>	m_oFormula;
-			nullable<CSi>		m_oRichText;
-			nullable<CText>		m_oValue;
+			nullable<std::string>	m_oRef;
+			nullable_uint			m_oRow;
+			nullable_uint			m_oCol;
+			nullable<CFormula>		m_oFormula;
+			nullable<CSi>			m_oRichText;
+			nullable<CText>			m_oValue;
 		};
 
 		//необработано:
@@ -465,6 +469,9 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>					m_oThickTop;
 			nullable<SimpleTypes::CDouble>					m_oDyDescent;
 
+//-------------------------------------------------------------------------
+			std::map<int, unsigned int>	m_mapStyleMerges2003;
+
 		};
 
 		class CSheetData  : public WritingElementWithChilds<CRow>
@@ -517,9 +524,12 @@ namespace OOX
 			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+	// spreadsheets 2003
+			nullable_string m_sStyleID;
+			nullable_double m_dDefaultColumnWidth;
+			nullable_double m_dDefaultRowHeight;
 		};
 	} //Spreadsheet
 } // namespace OOX

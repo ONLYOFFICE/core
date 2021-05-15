@@ -236,9 +236,13 @@ namespace NSBinPptxRW
 		std::wstring strExts = _T(".jpg");
 		//use GetFileName to avoid defining '.' in the directory as extension
 		std::wstring strFileName = NSFile::GetFileName(strInput);
-		int nIndexExt = (int)strFileName.rfind(wchar_t('.'));
-		if (-1 != nIndexExt)
-			strExts = strFileName.substr(nIndexExt);
+		int sizeExt = (int)strFileName.rfind(wchar_t('.'));
+		if (-1 != sizeExt)
+		{
+			strExts = strFileName.substr(sizeExt);
+			sizeExt = (int)strFileName.length() - sizeExt;
+		}
+		else sizeExt = 0;
 
 		int	typeAdditional = 0;
 		std::wstring strAdditional;
@@ -246,14 +250,14 @@ namespace NSBinPptxRW
 
 		int nDisplayType = IsDisplayedImage(strInput);
 		size_t nFileNameLength = strFileName.length();
-		if (0 != nDisplayType && nFileNameLength > 4)
+		if (0 != nDisplayType && nFileNameLength > sizeExt)
 		{
 			OOX::CPath oPath = strInput;
 			
 			std::wstring strFolder		= oPath.GetDirectory();
 			std::wstring strFileName	= oPath.GetFilename();
 
-			strFileName.erase(strFileName.length() - 4, 4);
+			strFileName.erase(strFileName.length() - sizeExt, sizeExt);
 
 			if(0 != (nDisplayType & 1))
 			{
@@ -690,7 +694,13 @@ namespace NSBinPptxRW
 			{
 				while (nNewSize >= m_lSize)
 				{
-					m_lSize *= 2;
+					unsigned int lSize = m_lSize * 2;
+					if (lSize < m_lSize)
+					{
+						m_lSize = nNewSize;
+						break;
+					}
+					m_lSize = lSize;
 				}
 
 				BYTE* pNew = new BYTE[m_lSize];
@@ -704,8 +714,8 @@ namespace NSBinPptxRW
 		}
 		else
 		{
-			m_lSize		= 1024 * 1024; // 1Mb
-			m_pStreamData	= new BYTE[m_lSize];
+			m_lSize = 1024 * 1024; // 1Mb
+			m_pStreamData = new BYTE[m_lSize];
 
 			m_lPosition = 0;
 			m_pStreamCur = m_pStreamData;
@@ -803,11 +813,6 @@ namespace NSBinPptxRW
 		m_lPosition += INT32_SIZEOF;
 		m_pStreamCur += INT32_SIZEOF;
 	}
-	void CBinaryFileWriter::WriteDouble64(const double& dValue)
-	{
-		_INT64 _val = (_INT64)(dValue * 100000);
-		WriteLONG64(_val);
-	}
 	void CBinaryFileWriter::WriteDouble(const double& dValue)
 	{
 		_INT64 _val = (_INT64)(dValue * 100000);
@@ -822,7 +827,7 @@ namespace NSBinPptxRW
 		}		
 		else
 		{
-			WriteLONG((long)_val);
+			WriteLONG((int)_val);
 		}
 	}
 	void CBinaryFileWriter::WriteDoubleReal(const double& dValue)
@@ -1042,8 +1047,20 @@ namespace NSBinPptxRW
 	}
 	void CBinaryFileWriter::WriteDouble1(int type, const double& val)
 	{
-		int _val = (int)(val * 10000);
-		WriteInt1(type, _val);
+		_INT64 _val = (_INT64)(val * 100000);
+
+		if (_val > 0x7fffffff)
+		{
+			WriteInt1(type, 0x7fffffff);
+		}
+		else if (_val < -0x7fffffff)
+		{
+			WriteInt1(type, -0x7fffffff);
+		}
+		else
+		{
+			WriteInt1(type, (int)_val);
+		}
 	}
 	void CBinaryFileWriter::WriteDouble2(int type, const NSCommon::nullable_double& val)
 	{
@@ -1896,12 +1913,9 @@ namespace NSBinPptxRW
 	}
 	double CBinaryFileReader::GetDouble()
 	{
-		return 1.0 * GetLong() / 100000;
+		return 1.0 * GetLong() / 100000.;
 	}
-	double CBinaryFileReader::GetDouble64()
-	{
-		return 1.0 * GetLong64() / 100000;
-	}	// 8 byte
+// 8 byte
 	double CBinaryFileReader::GetDoubleReal()
 	{
         if (m_lPos + (int)DOUBLE_SIZEOF > m_lSize)

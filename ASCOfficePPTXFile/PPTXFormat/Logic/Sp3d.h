@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_SP3D_INCLUDE_H_
-#define PPTX_LOGIC_SP3D_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Limit/Material.h"
@@ -104,6 +102,7 @@ namespace PPTX
 				XmlMacroReadAttributeBase(node, L"extrusionH", extrusionH);
 				XmlMacroReadAttributeBase(node, L"prstMaterial", prstMaterial);
 				XmlMacroReadAttributeBase(node, L"z", z);
+				XmlMacroReadAttributeBase(node, L"macro", macro);
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -140,6 +139,7 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("extrusionH"), extrusionH)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("prstMaterial"), prstMaterial)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("z"), z)
+					WritingElement_ReadAttributes_Read_else_if  (oReader, _T("macro"), macro)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -148,6 +148,7 @@ namespace PPTX
 				pWriter->StartNode(_T("a:sp3d"));
 
 				pWriter->StartAttributes();
+				pWriter->WriteAttribute(_T("macro"), macro);
 				pWriter->WriteAttribute(_T("contourW"), contourW);
 				pWriter->WriteAttribute(_T("extrusionH"), extrusionH);
 				pWriter->WriteAttribute(_T("prstMaterial"), prstMaterial);
@@ -178,10 +179,11 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, contourW);
-				pWriter->WriteInt2(1, extrusionH);
-				pWriter->WriteLimit2(2, prstMaterial);
-				pWriter->WriteInt2(3, z);
+					pWriter->WriteInt2(0, contourW);
+					pWriter->WriteInt2(1, extrusionH);
+					pWriter->WriteLimit2(2, prstMaterial);
+					pWriter->WriteInt2(3, z);
+					pWriter->WriteString2(4, macro);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->WriteRecord2(0, bevelT);
@@ -205,6 +207,7 @@ namespace PPTX
 					else if (1 == _at)	extrusionH = pReader->GetLong();
 					else if (2 == _at)	prstMaterial = pReader->GetUChar();
 					else if (3 == _at)	z = pReader->GetLong();
+					else if (4 == _at)	macro = pReader->GetString2();
 					else
 						break;
 				}
@@ -244,6 +247,7 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 			
+			nullable_string					macro;
 			nullable_int					contourW;
 			nullable_int					extrusionH;
 			nullable_limit<Limit::Material> prstMaterial;
@@ -273,4 +277,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_SP3D_INCLUDE_H_

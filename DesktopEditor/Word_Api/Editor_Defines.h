@@ -861,6 +861,9 @@
 
 // Others
 #define ASC_MENU_EVENT_TYPE_FOCUS_OBJECT                    26101
+#define ASC_MENU_EVENT_TYPE_LONGACTION_BEGIN                26102
+#define ASC_MENU_EVENT_TYPE_LONGACTION_END                  26103
+#define ASC_MENU_EVENT_TYPE_API_ERROR                       26104
 
 // Document Processing
 

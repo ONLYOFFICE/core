@@ -250,7 +250,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 
 			if( pHyperlink->m_oId.IsInit() )
 			{
-				std::wstring sTarget;
+				std::wstring sTarget, sLocation;
 				
 				if (oParam.oReader->m_currentContainer)
 				{ 
@@ -261,8 +261,13 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 						sTarget = pH->Uri().GetPath();
 					}
 				}
+
 				if( !sTarget.empty() )
 				{
+					if (pHyperlink->m_sAnchor.IsInit())
+					{
+						sTarget += L"#" + *pHyperlink->m_sAnchor;
+					}
 					//заменяем пробелы на %20
                     XmlUtils::replace_all(sTarget, L" ", L"%20" );
 
@@ -320,7 +325,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 					oOutputParagraph.AddItem( oCurField );
 				}
 			}
-			if( pHyperlink->m_sAnchor.IsInit() )
+			else if( pHyperlink->m_sAnchor.IsInit() )
 			{
 				RtfFieldPtr oCurField( new RtfField() );
 				

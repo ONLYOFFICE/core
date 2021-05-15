@@ -31,44 +31,51 @@
  */
 #pragma once
 
-#include <string>
+#include <iosfwd>
 
-#include "../CPSharedPtr.h"
+#include <xml/attributes.h>
+#include <CPOptional.h>
+#include <xml/xmlelement.h>
+#include <xml/nodetype.h>
+
+#include "office_elements_create.h"
+
+#include "style_text_properties.h"
+#include "style_paragraph_properties.h"
+#include "style_table_properties.h"
+#include "style_graphic_properties.h"
+#include "style_chart_properties.h"
+#include "style_presentation.h"
+#include "style_regions.h"
 
 namespace cpdoccore { 
+namespace odf_reader {
 
-	namespace xml {
+	// style:properties
+class style_properties : public office_element_impl<style_properties>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeStyleProperties;
 
-		class sax;
-		class attributes;
+    CPDOCCORE_DEFINE_VISITABLE();
+	 
+    text_format_properties_content text_properties_;
+	paragraph_format_properties paragraph_properties_;
+	graphic_format_properties graphic_properties_;
+	
+	table_format_properties table_properties_;
+	style_table_row_properties_attlist table_row_properties_;
+	style_table_column_properties_attlist table_column_properties_;
+	style_table_cell_properties_attlist	table_cell_properties_;
 
-		typedef attributes attributes_wc;
-		typedef shared_ptr< attributes_wc >::Type attributes_wc_ptr;
-
-	}
-	namespace common 
-	{
-
-	// Базовый класс для элемента, который может быть прочитан sax-reader -ом
-	// Для каждого элемента будут вызваны методы
-	// add_attributes, add_child_element, add_text как колбеки для чтения соответствующих данных
-
-	class read_doc_element 
-	{
-	public:
-		bool read_sax( xml::sax * Reader);
-		virtual ~read_doc_element() = 0; 
-
-		virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) = 0;
-		virtual void add_attributes		(const xml::attributes_wc_ptr & Attributes) = 0;
-	private:
-		virtual void add_text			(const std::wstring & Text) = 0;
-		virtual void add_space			(const std::wstring & Text) = 0;
-	};
-
-	inline read_doc_element::~read_doc_element()
-	{
-	}
-
-	}
+	chart_format_properties chart_properties_;
+private:
+    virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+};
+CP_REGISTER_OFFICE_ELEMENT2(style_properties);
+}
 }

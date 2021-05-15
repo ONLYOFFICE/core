@@ -352,10 +352,10 @@ namespace DocFileFormat
 			case sprmOldSCcolumns:
 			case sprmSCcolumns:
 			{
-				m_nColumns				=	static_cast<int> (FormatUtils::BytesToInt16 (iter->Arguments, 0, iter->argumentsSize) + 1);
+				m_nColumns = static_cast<int> (FormatUtils::BytesToInt16 (iter->Arguments, 0, iter->argumentsSize) + 1);
 
 				RELEASEARRAYOBJECTS (m_arrSpace);					
-				m_arrSpace				=	new short [m_nColumns];
+				m_arrSpace = new short [m_nColumns];
 
                 appendValueAttribute (&cols, L"w:num", FormatUtils::IntToWideString (m_nColumns));
 			}
@@ -388,10 +388,13 @@ namespace DocFileFormat
 				if (m_nColumns)
 				{
 					if (NULL == m_arrSpace)
-						m_arrSpace			=	new short[m_nColumns];
+						m_arrSpace = new short[m_nColumns];
 
-					unsigned char nInd		=	iter->Arguments[0];
-					m_arrSpace [nInd]		=	FormatUtils::BytesToInt16 (iter->Arguments, 1, iter->argumentsSize);
+					unsigned char nInd = iter->Arguments[0];
+					if (nInd < m_nColumns)
+					{
+						m_arrSpace[nInd] = FormatUtils::BytesToInt16(iter->Arguments, 1, iter->argumentsSize);
+					}
 				}
 			}break;
 

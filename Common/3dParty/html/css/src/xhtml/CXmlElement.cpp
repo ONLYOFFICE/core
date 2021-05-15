@@ -450,7 +450,10 @@ std::wstring CXmlElement::ConvertRStyle() const
             }
             case NSCSS::NSConstValues::NSProperties::RunnerProperties::R_U:
             {
-                sRStyle += L"<w:u w:val=\"" + oItem.second + L"\"/>";
+                if (oItem.second == L"line-through")
+                    sRStyle += L"<w:strike/>";
+                else
+                    sRStyle += L"<w:u w:val=\"" + oItem.second + L"\"/>";
                 break;
             }
             case NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Shd:

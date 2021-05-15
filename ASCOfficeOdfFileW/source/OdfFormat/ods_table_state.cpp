@@ -719,18 +719,21 @@ void ods_table_state::add_definded_expression(office_element_ptr & elm)
 	if (!table_defined_expressions_)return;
 	table_defined_expressions_->add_child_element(elm);
 }
-void ods_table_state::add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, bool bLocation)
+void ods_table_state::add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, const std::wstring & location)
 {
 	ods_hyperlink_state state;
-	state.row = row;  state.col = col; state.ref = ref; state.bLocation = bLocation;
+	state.row = row;  state.col = col; state.ref = ref; 
 
-	if (state.bLocation)
+	state.link = link;		
+	
+	if (link.empty())
 	{
-		state.link = L"#" + formulas_converter_table.convert_named_ref(link);
+		state.link += L"#" + formulas_converter_table.convert_named_ref(location);
+		state.bLocation = true;
 	}
 	else
 	{
-		state.link = link;		
+		state.link = link + (location.empty() ? L"" : (L"#" + location));
 	}
 
 	hyperlinks_.push_back(state);
@@ -1657,7 +1660,13 @@ void ods_table_state::start_conditional_rule(int rule_type)
 				boost::algorithm::split(splitted, test, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 				cell = splitted[0];
 
-				condition->attr_.calcext_base_cell_address_ = table + cell;
+				std::wstring col, row;
+
+				utils::splitCellAddress(cell, col, row);
+				if (col.empty()) col = L".A";
+				if (row.empty()) row = L"1";
+
+				condition->attr_.calcext_base_cell_address_ = table + col + row;
 			}
 			switch(rule_type)
 			{

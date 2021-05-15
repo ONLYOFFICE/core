@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_SHAPE_INCLUDE_H_
-#define PPTX_LOGIC_SHAPE_INCLUDE_H_
 
 #include "../WrapperWritingElement.h"
 #include "NvSpPr.h"
@@ -298,7 +296,8 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("useBgFill"),	attrUseBgFill)
+					WritingElement_ReadAttributes_Read_if( oReader, _T("useBgFill"),	attrUseBgFill)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("macro"), attrMacro)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 			std::wstring GetText()const{if(txBody.IsInit()) return txBody->GetText(); return _T(""); };
@@ -333,6 +332,7 @@ namespace PPTX
 			nullable<BodyPr>					oTextBoxBodyPr;
 
 			nullable_bool						attrUseBgFill;
+			nullable_string						attrMacro;
 //-------------------------------------------------------------------------------------------------
 			nullable<OOX::VmlOffice::CSignatureLine> signatureLine;
 			std::wstring						m_sClientDataXml;
@@ -341,5 +341,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_SHAPE_INCLUDE_H

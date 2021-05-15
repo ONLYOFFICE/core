@@ -85,7 +85,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("color") == sName )
+					if ( L"color" == sName )
 						m_oColor = oReader;
 				}
 			}
@@ -101,25 +101,60 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				nullable_string sColor;
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("style"), m_oStyle )
+				nullable_int iWeight;
+				nullable_string sColor, sLineStyle;
 
-					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("ss:Color"), sColor )
-					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("ss:LineStyle"), m_oStyle )
-					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("ss:Position"), m_oType )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, L"style", m_oStyle)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:Color", sColor)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:LineStyle", sLineStyle)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:Position", m_oType)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:Weight", iWeight)
+				WritingElement_ReadAttributes_End(oReader)
 
 				if (sColor.IsInit())
 				{
 					m_oColor.Init(); m_oColor->m_oRgb.Init();
 					m_oColor->m_oRgb->FromString(*sColor);
 				}
+				if (sLineStyle.IsInit())
+				{
+					if (*sLineStyle == L"Dot") 
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleDotted));
+					else if (*sLineStyle == L"Dash") 
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleDashed));
+					else if (*sLineStyle == L"Double")
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleDouble));
+					else if (*sLineStyle == L"Continuous")
+					{
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleThin));
+						bBorderContinuous = true;
+					}
+				}
+				if (iWeight.IsInit())
+				{
+					switch (*iWeight)
+					{
+						case 1:	 //Thin
+						{
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleThin));
+						}break;
+						case 3: //Thick
+						{
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleThick));
+						}break;
+						default://2: //Medium
+						{
+						}break;
+					}
+				}
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CBorderStyle<>>	m_oStyle;
 			nullable<CColor>									m_oColor;
 			nullable_string										m_oType;
+
+			bool bBorderContinuous = false; // merge cells border (2003)
 		};
 
 		class CBorder : public WritingElement
@@ -206,9 +241,9 @@ namespace OOX
 						m_oStart = oReader;
 					else if ( _T("top") == sName )
 						m_oTop = oReader;
-					else if ( _T("vertical") == sName )
+					else if ( L"vertical" == sName )
 						m_oVertical = oReader;
-					else if (L"Border")
+					else if (L"Border" == sName)
 					{
 						CBorderProp* border = new CBorderProp(oReader);
 						if ((border) && (border->m_oType.IsInit()))
@@ -217,6 +252,9 @@ namespace OOX
 							else if (*border->m_oType == L"Top")	m_oTop		= border;
 							else if (*border->m_oType == L"Left")	m_oStart	= border;
 							else if (*border->m_oType == L"Right")	m_oEnd		= border;
+
+							if (border->bBorderContinuous)
+								bBorderContinuous = true;
 						}
 						else
 						{
@@ -245,13 +283,15 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>	m_oDiagonalUp;
 			nullable<SimpleTypes::COnOff<>>	m_oOutline;
 
-			nullable<CBorderProp>			m_oBottom;
-			nullable<CBorderProp>			m_oDiagonal;
-			nullable<CBorderProp>			m_oEnd;
-			nullable<CBorderProp>			m_oHorizontal;
-			nullable<CBorderProp>			m_oStart;
-			nullable<CBorderProp>			m_oTop;
-			nullable<CBorderProp>			m_oVertical;
+			nullable<CBorderProp>	m_oBottom;
+			nullable<CBorderProp>	m_oDiagonal;
+			nullable<CBorderProp>	m_oEnd;
+			nullable<CBorderProp>	m_oHorizontal;
+			nullable<CBorderProp>	m_oStart;
+			nullable<CBorderProp>	m_oTop;
+			nullable<CBorderProp>	m_oVertical;
+
+			bool bBorderContinuous = false;
 		};
 
 		class CBorders : public WritingElementWithChilds<CBorder>

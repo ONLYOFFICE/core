@@ -2551,6 +2551,8 @@ namespace OOX
 								pItem = new CMr( oItem );
 								m_lRow++;
 							}
+							if (pItem)
+								m_arrItems.push_back(pItem);
 						}
 					}
 				}

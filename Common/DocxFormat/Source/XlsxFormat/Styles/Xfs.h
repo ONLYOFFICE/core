@@ -63,15 +63,15 @@ namespace OOX
 			{
 				writer.StartNodeWithNS(node_ns, node_name);
 				writer.StartAttributes();
-				WritingStringNullableAttrString(L"horizontal", m_oHorizontal, m_oHorizontal->ToString());
-				WritingStringNullableAttrInt(L"indent", m_oIndent, m_oIndent->GetValue());
-				WritingStringNullableAttrBool(L"justifyLastLine", m_oJustifyLastLine);
-				WritingStringNullableAttrInt(L"readingOrder", m_oReadingOrder, m_oReadingOrder->GetValue());
-				WritingStringNullableAttrInt(L"relativeIndent", m_oRelativeIndent, m_oRelativeIndent->GetValue());
-				WritingStringNullableAttrBool(L"shrinkToFit", m_oShrinkToFit);
-				WritingStringNullableAttrInt(L"textRotation", m_oTextRotation, m_oTextRotation->GetValue());
-				WritingStringNullableAttrString(L"vertical", m_oVertical, m_oVertical->ToString());
-				WritingStringNullableAttrBool(L"wrapText", m_oWrapText);
+					WritingStringNullableAttrString(L"horizontal", m_oHorizontal, m_oHorizontal->ToString());
+					WritingStringNullableAttrInt(L"indent", m_oIndent, *m_oIndent);
+					WritingStringNullableAttrBool(L"justifyLastLine", m_oJustifyLastLine);
+					WritingStringNullableAttrInt(L"readingOrder", m_oReadingOrder, *m_oReadingOrder);
+					WritingStringNullableAttrInt(L"relativeIndent", m_oRelativeIndent, *m_oRelativeIndent);
+					WritingStringNullableAttrBool(L"shrinkToFit", m_oShrinkToFit);
+					WritingStringNullableAttrInt(L"textRotation", m_oTextRotation, *m_oTextRotation);
+					WritingStringNullableAttrString(L"vertical", m_oVertical, m_oVertical->ToString());
+					WritingStringNullableAttrBool(L"wrapText", m_oWrapText);
 				writer.EndAttributesAndNode();
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -94,29 +94,51 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
+				nullable_string readingOrder;
+				nullable_double rotate;
+
 				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if( oReader, _T("horizontal"),			m_oHorizontal )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("indent"),			m_oIndent )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("justifyLastLine"),	m_oJustifyLastLine )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("readingOrder"),	m_oReadingOrder )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("relativeIndent"),	m_oRelativeIndent )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("shrinkToFit"),		m_oShrinkToFit )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("textRotation"),	m_oTextRotation )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("vertical"),		m_oVertical )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("wrapText"),		m_oWrapText )
+			// 2003
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:Horizontal"),	m_oHorizontal)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:Vertical"),		m_oVertical)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:WrapText"),		m_oWrapText)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:Indent"),		m_oIndent)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:ReadingOrder"),	readingOrder)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:Rotate"),		rotate)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:ShrinkToFit"),	m_oShrinkToFit)
+				WritingElement_ReadAttributes_End( oReader )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("horizontal"),      m_oHorizontal )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("indent"),      m_oIndent )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("justifyLastLine"),      m_oJustifyLastLine )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("readingOrder"),      m_oReadingOrder )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("relativeIndent"),      m_oRelativeIndent )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("shrinkToFit"),      m_oShrinkToFit )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("textRotation"),      m_oTextRotation )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("vertical"),      m_oVertical )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("wrapText"),      m_oWrapText )
-
-					WritingElement_ReadAttributes_End( oReader )
+				if (readingOrder.IsInit())
+				{
+					if (*readingOrder == L"Context")			m_oReadingOrder = (unsigned int)0;
+					else if (*readingOrder == L"LeftToRight")	m_oReadingOrder = (unsigned int)1;
+					else if (*readingOrder == L"RightToLeft")	m_oReadingOrder = (unsigned int)2;
+				}
+				if (rotate.IsInit())
+				{
+					if (*rotate >= 0)
+						m_oTextRotation = (unsigned int)(*rotate);
+					else
+						m_oTextRotation = (unsigned int)(90 - *rotate);
+				}
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CHorizontalAlignment<>>		m_oHorizontal;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>					m_oIndent;
+			nullable_uint													m_oIndent;
 			nullable<SimpleTypes::COnOff<>>									m_oJustifyLastLine;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>					m_oReadingOrder;
-			nullable<SimpleTypes::CDecimalNumber<>>							m_oRelativeIndent;
+			nullable_uint													m_oReadingOrder; //todooo to simple
+			nullable_int													m_oRelativeIndent;
 			nullable<SimpleTypes::COnOff<>>									m_oShrinkToFit;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>					m_oTextRotation;
+			nullable_uint													m_oTextRotation;
 			nullable<SimpleTypes::Spreadsheet::CVerticalAlignment<>>		m_oVertical;
 			nullable<SimpleTypes::COnOff<>>									m_oWrapText;
 		};
@@ -155,21 +177,17 @@ namespace OOX
 			{
 				return et_x_Protection;
 			}
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),      m_oHidden )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("locked"),      m_oLocked )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, _T("hidden"), m_oHidden )
+					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("locked"), m_oLocked )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::COnOff<>>									m_oHidden;
-			nullable<SimpleTypes::COnOff<>>									m_oLocked;
+			nullable<SimpleTypes::COnOff<>> m_oHidden;
+			nullable<SimpleTypes::COnOff<>> m_oLocked;
 		};
 		//нереализован:
 		//<extLst>

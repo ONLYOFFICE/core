@@ -31,7 +31,7 @@
  */
 #include "OfficeFileFormatChecker.h"
 
-#include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/common/Directory.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
 
 //#if defined FILE_FORMAT_CHECKER_WITH_MACRO
@@ -498,14 +498,24 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 
 	return false;
 }
-bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
+bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName, bool unpacked)
 {
 	COfficeUtils OfficeUtils(NULL);
 	
 	ULONG nBufferSize = 0;
 	BYTE *pBuffer = NULL;
 
-	HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"[Content_Types].xml", &pBuffer, nBufferSize);
+	HRESULT hresult = S_FALSE;
+	
+	if (unpacked)
+	{
+		if (NSFile::CFileBinary::ReadAllBytes(fileName + FILE_SEPARATOR_STR + L"[Content_Types].xml", &pBuffer, nBufferSize))
+			hresult = S_OK;
+	}
+	else
+	{
+		hresult = OfficeUtils.LoadFileFromArchive(fileName, L"[Content_Types].xml", &pBuffer, nBufferSize);
+	}
 	if (hresult == S_OK && pBuffer != NULL)
 	{
 
@@ -642,6 +652,9 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 	const char *otsFormatLine = "application/vnd.oasis.opendocument.spreadsheet-template";
  	const char *otpFormatLine = "application/vnd.oasis.opendocument.presentation-template";
 	const char *epubFormatLine = "application/epub+zip";
+	const char *sxwFormatLine = "application/vnd.sun.xml.writer";
+	const char *sxcFormatLine = "application/vnd.sun.xml.calc";
+	const char *sxiFormatLine = "application/vnd.sun.xml.impress";
 
     COfficeUtils OfficeUtils(NULL);
 	
@@ -673,15 +686,18 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP;
 		}		
-        else if ( NULL != strstr((char*)pBuffer, odtFormatLine) )
+        else if ( NULL != strstr((char*)pBuffer, odtFormatLine) ||
+					NULL != strstr((char*)pBuffer, sxwFormatLine) )
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
 		}
-        else if ( NULL != strstr((char*)pBuffer, odsFormatLine) )
+        else if ( NULL != strstr((char*)pBuffer, odsFormatLine) ||
+					NULL != strstr((char*)pBuffer, sxcFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
 		}
-        else if ( NULL != strstr((char*)pBuffer, odpFormatLine) )
+        else if ( NULL != strstr((char*)pBuffer, odpFormatLine) ||
+					NULL != strstr((char*)pBuffer, sxiFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
 		}

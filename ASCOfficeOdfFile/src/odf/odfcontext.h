@@ -161,8 +161,7 @@ public:
     
 	void add_style(	const std::wstring				& Name,
 					const std::wstring				& DisplayName,
-					odf_types::style_family::type	 Type,
-					style_content					* Content,
+					style_content					*Content,
 					bool							IsAutomatic,
 					bool							IsDefault,
 					const std::wstring				& ParentStyleName,

@@ -180,6 +180,7 @@ namespace BinXlsxRW
 		int ReadCellXfs(BYTE type, long length, void* poResult);
 		int ReadXfs(BYTE type, long length, void* poResult);
 		int ReadAligment(BYTE type, long length, void* poResult);
+		int ReadProtection(BYTE type, long length, void* poResult);
 		int ReadDxfs(BYTE type, long length, void* poResult);
 		int ReadDxf(BYTE type, long length, void* poResult);
 		int ReadDxfExternal(OOX::Spreadsheet::CDxf* pDxf);
@@ -294,6 +295,8 @@ namespace BinXlsxRW
 		int ReadWorksheetProp(BYTE type, long length, void* poResult);
 		int ReadWorksheetCols(BYTE type, long length, void* poResult);
 		int ReadWorksheetCol(BYTE type, long length, void* poResult);
+		int ReadProtectedRanges(BYTE type, long length, void* poResult);
+		int ReadProtectedRange(BYTE type, long length, void* poResult);
 		int ReadSheetViews(BYTE type, long length, void* poResult);
 		int ReadSheetView(BYTE type, long length, void* poResult);
 		int ReadPane(BYTE type, long length, void* poResult);

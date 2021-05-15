@@ -74,10 +74,10 @@ namespace Writers
 		_part_summary_writers(std::wstring sDirOutput, std::wstring sFontDir, bool bNoFontDir, int nVersion)
 			:
 			font_table(sDirOutput, sFontDir, bNoFontDir),
+			headers_footers(sDirOutput),
 			document(sDirOutput, headers_footers),
 			styles(sDirOutput, nVersion),
 			numbering(sDirOutput),
-			headers_footers(sDirOutput),
 			footnotes(sDirOutput),
 			endnotes(sDirOutput),
 			settings(sDirOutput, headers_footers),

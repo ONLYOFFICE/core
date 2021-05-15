@@ -1722,6 +1722,11 @@ int BinaryStyleTableReader::ReadXfs(BYTE type, long length, void* poResult)
 		pXfs->m_oApplyNumberFormat.Init();
 		pXfs->m_oApplyNumberFormat->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
+	else if (c_oSerXfsTypes::ApplyProtection == type)
+	{
+		pXfs->m_oApplyProtection.Init();
+		pXfs->m_oApplyProtection->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+	}
 	else if(c_oSerXfsTypes::BorderId == type)
 	{
 		pXfs->m_oBorderId.Init();
@@ -1757,6 +1762,11 @@ int BinaryStyleTableReader::ReadXfs(BYTE type, long length, void* poResult)
 		pXfs->m_oAligment.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadAligment, pXfs->m_oAligment.GetPointer());
 	}
+	else if (c_oSerXfsTypes::Protection == type)
+	{
+		pXfs->m_oProtection.Init();
+		READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, pXfs->m_oProtection.GetPointer());
+	}
 	else if (c_oSerXfsTypes::XfId == type)
 	{
 		pXfs->m_oXfId.Init();
@@ -1766,6 +1776,24 @@ int BinaryStyleTableReader::ReadXfs(BYTE type, long length, void* poResult)
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 };
+int BinaryStyleTableReader::ReadProtection(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CProtection* pProtection = static_cast<OOX::Spreadsheet::CProtection*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSerProtectionTypes::Hidden == type)
+	{
+		pProtection->m_oHidden.Init();
+		pProtection->m_oHidden->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+	}
+	else if (c_oSerProtectionTypes::Locked == type)
+	{
+		pProtection->m_oLocked.Init();
+		pProtection->m_oLocked->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+		return res;
+}
 int BinaryStyleTableReader::ReadAligment(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CAligment* pAligment = static_cast<OOX::Spreadsheet::CAligment*>(poResult);
@@ -1777,13 +1805,11 @@ int BinaryStyleTableReader::ReadAligment(BYTE type, long length, void* poResult)
 	}
 	else if(c_oSerAligmentTypes::Indent == type)
 	{
-		pAligment->m_oIndent.Init();
-		pAligment->m_oIndent->SetValue(m_oBufferedStream.GetLong());
+		pAligment->m_oIndent = m_oBufferedStream.GetLong();
 	}
 	else if(c_oSerAligmentTypes::RelativeIndent == type)
 	{
-		pAligment->m_oRelativeIndent.Init();
-		pAligment->m_oRelativeIndent->SetValue(m_oBufferedStream.GetLong());
+		pAligment->m_oRelativeIndent = m_oBufferedStream.GetLong();
 	}
 	else if(c_oSerAligmentTypes::ShrinkToFit == type)
 	{
@@ -1792,8 +1818,7 @@ int BinaryStyleTableReader::ReadAligment(BYTE type, long length, void* poResult)
 	}
 	else if(c_oSerAligmentTypes::TextRotation == type)
 	{
-		pAligment->m_oTextRotation.Init();
-		pAligment->m_oTextRotation->SetValue(m_oBufferedStream.GetLong());
+		pAligment->m_oTextRotation = m_oBufferedStream.GetLong();
 	}
 	else if(c_oSerAligmentTypes::Vertical == type)
 	{
@@ -3773,6 +3798,11 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, &oProtection);
 	SEEK_TO_POS_END(oProtection);
 //-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::ProtectedRanges);
+	OOX::Spreadsheet::CProtectedRanges oProtectedRanges;
+	READ1_DEF(length, res, this->ReadProtectedRanges, &oProtectedRanges);
+	SEEK_TO_POS_END(oProtectedRanges);
+//-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::PrintOptions);
 		OOX::Spreadsheet::CPrintOptions oPrintOptions;
 		READ2_DEF_SPREADSHEET(length, res, this->ReadPrintOptions, &oPrintOptions);
@@ -4199,6 +4229,60 @@ int BinaryWorksheetsTableReader::ReadWorksheetCol(BYTE type, long length, void* 
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryWorksheetsTableReader::ReadProtectedRanges(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CProtectedRanges* pProtectedRanges = static_cast<OOX::Spreadsheet::CProtectedRanges*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSerWorksheetsTypes::ProtectedRange == type)
+	{
+		OOX::Spreadsheet::CProtectedRange* pProtectedRange = new OOX::Spreadsheet::CProtectedRange();
+		READ2_DEF_SPREADSHEET(length, res, this->ReadProtectedRange, pProtectedRange);
+		pProtectedRanges->m_arrItems.push_back(pProtectedRange);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadProtectedRange(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CProtectedRange* pProtectedRange = static_cast<OOX::Spreadsheet::CProtectedRange*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+
+	if (c_oSerProtectedRangeTypes::AlgorithmName == type)
+	{
+		pProtectedRange->m_oAlgorithmName.Init();
+		pProtectedRange->m_oAlgorithmName->SetValue((SimpleTypes::ECryptAlgoritmName)m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerProtectedRangeTypes::SpinCount == type)
+	{
+		pProtectedRange->m_oSpinCount.Init();
+		pProtectedRange->m_oSpinCount->SetValue(m_oBufferedStream.GetULong());
+	}
+	else if (c_oSerProtectedRangeTypes::HashValue == type)
+	{
+		pProtectedRange->m_oHashValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerProtectedRangeTypes::SaltValue == type)
+	{
+		pProtectedRange->m_oSaltValue = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerProtectedRangeTypes::SqRef == type)
+	{
+		pProtectedRange->m_oSqref = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerProtectedRangeTypes::Name == type)
+	{
+		pProtectedRange->m_oName = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerProtectedRangeTypes::SecurityDescriptor == type)
+	{
+		pProtectedRange->m_arSecurityDescriptors.push_back(m_oBufferedStream.GetString4(length));
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+
 int BinaryWorksheetsTableReader::ReadSheetViews(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CSheetViews* pSheetViews = static_cast<OOX::Spreadsheet::CSheetViews*>(poResult);
@@ -7020,7 +7104,8 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 		int nType = 0;
 		std::string version = "";
 		std::string dst_len = "";
-		while (true)
+		
+		while (nIndex < nBase64DataSize)
 		{
 			nIndex++;
 			BYTE _c = pBase64Data[nIndex];

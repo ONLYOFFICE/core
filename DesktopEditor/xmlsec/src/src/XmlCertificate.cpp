@@ -1,4 +1,4 @@
-#ifdef WIN32
+#ifdef USE_MS_CRYPTO
 #include "./XmlSigner_mscrypto.h"
 #define CCertificate CCertificate_mscrypto
 
@@ -15,21 +15,15 @@ namespace NSOpenSSL
     }
 }
 
+#else
+
+#include "./XmlSigner_openssl.h"
+#define XML_CERTIFICATE_USE_OPENSSL
+#define CCertificate CCertificate_openssl
+
 #endif
 
 #include "../../../common/File.h"
-
-#if defined(_LINUX) && !defined(_MAC)
-#include "./XmlSigner_openssl.h"
-#define XML_CERTIFICATE_USE_OPENSSL
-#define CCertificate CCertificate_openssl
-#endif
-
-#ifdef _MAC
-#include "./XmlSigner_openssl.h"
-#define XML_CERTIFICATE_USE_OPENSSL
-#define CCertificate CCertificate_openssl
-#endif
 
 int ICertificate::GetOOXMLHashAlg(const std::string& sAlg)
 {
@@ -158,7 +152,7 @@ CCertificateInfo ICertificate::GetDefault()
 {
     CCertificateInfo info;
 
-#ifdef WIN32
+#ifdef USE_MS_CRYPTO
     // detect user name
     std::wstring sUserName;
 
@@ -191,7 +185,7 @@ CCertificateInfo ICertificate::GetDefault()
 
 ICertificate* ICertificate::GetById(const std::string& id)
 {
-#ifdef WIN32
+#ifdef USE_MS_CRYPTO
     HANDLE hStoreHandle = CertOpenSystemStoreA(NULL, "MY");
     if (!hStoreHandle)
         return NULL;

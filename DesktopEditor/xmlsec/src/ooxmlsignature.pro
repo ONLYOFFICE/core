@@ -37,25 +37,24 @@ SOURCES += \
     src/OOXMLVerifier.cpp
 
 core_windows {
-
-HEADERS += \
-    src/XmlSigner_mscrypto.h
+    CONFIG += windows_use_mscrypto
 
     LIBS += -lcrypt32
     LIBS += -lcryptui
     LIBS += -lAdvapi32
     LIBS += -lws2_32
     LIBS += -lUser32
-
 }
 
-!core_windows {
+windows_use_mscrypto {
 
-HEADERS += \
-    src/XmlSigner_openssl.h
+    DEFINES += USE_MS_CRYPTO
+    HEADERS += src/XmlSigner_mscrypto.h
 
-SOURCES += \
-    src/XmlSigner_openssl.cpp
+} else {
+
+    HEADERS += src/XmlSigner_openssl.h
+    SOURCES += src/XmlSigner_openssl.cpp
 
 }
 

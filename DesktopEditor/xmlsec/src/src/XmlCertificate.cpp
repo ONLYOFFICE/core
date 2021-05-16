@@ -13,6 +13,15 @@ namespace NSOpenSSL
     {
         return 0;
     }
+
+    int LoadKeyRaw(unsigned char* data, unsigned int len, std::string password)
+    {
+        return 0;
+    }
+    int LoadCertRaw(unsigned char* data, unsigned int len, std::string password)
+    {
+        return 0;
+    }
 }
 
 #else

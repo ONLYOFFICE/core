@@ -548,6 +548,37 @@ public:
         GetHashAlgs();
         return true;
     }
+    bool FromFilesRaw(unsigned char* key, unsigned int keyLen, const std::string& keyPassword,
+                      unsigned char* cert, unsigned int certLen, const std::string& certPassword)
+    {
+        std::string sKeyPassword = keyPassword;
+        std::string sCertPassword = certPassword;
+        if (NULL == cert)
+        {
+            cert = key;
+            certLen = keyLen;
+            sCertPassword = sKeyPassword;
+        }
+        if (NULL == key)
+        {
+            key = cert;
+            keyLen = certLen;
+            sKeyPassword = sCertPassword;
+        }
+
+        int nErr = LoadKey(key, keyLen, sKeyPassword, &m_key);
+
+        if (nErr != OPEN_SSL_WARNING_OK && nErr != OPEN_SSL_WARNING_ALL_OK)
+            return false;
+
+        nErr = LoadCert(cert, certLen, sCertPassword, &m_cert);
+
+        if (nErr != OPEN_SSL_WARNING_OK && nErr != OPEN_SSL_WARNING_ALL_OK)
+            return false;
+
+        GetHashAlgs();
+        return true;
+    }
 
     bool FromKey(const std::string& sId)
     {
@@ -986,6 +1017,12 @@ bool CCertificate_openssl::FromFiles(const std::wstring& keyPath, const std::str
     return m_internal->FromFiles(keyPath, keyPassword, certPath, certPassword);
 }
 
+bool CCertificate_openssl::FromFilesRaw(unsigned char* key, unsigned int keyLen, const std::string& keyPassword,
+                                       unsigned char* cert, unsigned int certLen, const std::string& certPassword)
+{
+    return m_internal->FromFilesRaw(key, keyLen, keyPassword, cert, certLen, certPassword);
+}
+
 bool CCertificate_openssl::FromId(const std::string& id)
 {
     return m_internal->FromKey(id);
@@ -1015,5 +1052,14 @@ namespace NSOpenSSL
     int LoadCert(std::wstring file, std::string password)
     {
         return CCertificate_openssl_private::LoadCert(file, password, NULL);
+    }
+
+    int LoadKeyRaw(unsigned char* data, unsigned int len, std::string password)
+    {
+        return CCertificate_openssl_private::LoadKey(data, (DWORD)len, password, NULL);
+    }
+    int LoadCertRaw(unsigned char* data, unsigned int len, std::string password)
+    {
+        return CCertificate_openssl_private::LoadCert(data, (DWORD)len, password, NULL);
     }
 }

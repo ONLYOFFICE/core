@@ -211,6 +211,7 @@ public:
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip);
 	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage);
+	virtual HRESULT AddTextForm(const double &dX, const double &dY, const double &dW, const double &dH);
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции Pdf рендерера
 	//----------------------------------------------------------------------------------------
@@ -1563,6 +1564,26 @@ private:
 		double       dDestY;
 		unsigned int unDestPage;
 	};
+	class CFieldsManager
+	{
+	public:
+
+		CFieldsManager()
+		{
+			m_unCounter = 0;
+		}
+
+		std::wstring GetNewFieldName()
+		{
+			std::wstring wsName(L"F");
+			wsName.append(std::to_wstring(++m_unCounter));
+			return wsName;
+		}
+
+	private:
+
+		unsigned int m_unCounter;
+	};
 
 private:
 
@@ -1596,6 +1617,7 @@ private:
 	LONG                         m_lClipDepth;
 	std::vector<TFontInfo>       m_vFonts;
 	std::vector<TDestinationInfo>m_vDestinations;
+	CFieldsManager               m_oFieldsManager;
 								 
 	bool                         m_bValid;
 								 

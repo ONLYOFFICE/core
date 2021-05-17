@@ -61,6 +61,7 @@ HEADERS += \
     Src/Document.h \
     Src/Encrypt.h \
     Src/EncryptDictionary.h \
+    Src/Field.h \
     Src/Font.h \
     Src/Font14.h \
     Src/FontCidTT.h \
@@ -89,6 +90,7 @@ SOURCES += \
     Src/Document.cpp \
     Src/Encrypt.cpp \
     Src/EncryptDictionary.cpp \
+    Src/Field.cpp \
     Src/Font.cpp \
     Src/Font14.cpp \
     Src/FontCidTT.cpp \

@@ -18,6 +18,8 @@
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../DesktopEditor/common/Directory.h"
 
+#include "../../UnicodeConverter/UnicodeConverter.h"
+
 #include "../Src/Streams.h"
 #include "../Src/Utils.h"
 #include "../Src/Objects.h"
@@ -62,30 +64,31 @@ void TestField()
 	CTextField* pField1 = oPdf.CreateTextField();
 	pField1->SetRequiredFlag(true);
 	pField1->AddPageRect(pPage, TRect(0, 100, 100, 0));
-	pField1->SetFieldName("Test");
-	pField1->SetFieldHint("Подсказка");
+	pField1->SetFieldName(L"Test");
+	pField1->SetFieldHint(L"Подсказка");
 
 	CTextField* pField2 = oPdf.CreateTextField();
 	pField2->SetRequiredFlag(false);
 	pField2->SetCombFlag(true);
 	pField2->AddPageRect(pPage, TRect(200, 300, 300, 250));
-	pField2->SetFieldName("Test");
-	pField2->SetFieldHint("Hint");
+	pField2->SetFieldName(L"Test");
+	pField2->SetFieldHint(L"Hint");
 
 	CTextField* pField3 = oPdf.CreateTextField();
 	pField3->SetRequiredFlag(false);
 	pField3->SetCombFlag(true);
 	pField3->AddPageRect(pPage, TRect(200, 500, 300, 450));
-	pField3->SetFieldName("Test123");
-	pField3->SetFieldHint("Hint123");
+	pField3->SetFieldName(L"Test123");
+	pField3->SetFieldHint(L"Hint123");
 	pField3->SetMaxLen(10);
 
 	CTextField* pField4 = oPdf.CreateTextField();
 	pField4->SetRequiredFlag(false);
 	pField4->AddPageRect(pPage, TRect(400, 500, 500, 450));
-	pField4->SetFieldName("Test1234");
-	pField4->SetFieldHint("Hint1234");
+	pField4->SetFieldName(L"Test1234");
+	pField4->SetFieldHint(L"Hint1234");
 	pField4->SetMaxLen(10);
+	pField4->SetValue(L"Илья");
 
 
 

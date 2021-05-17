@@ -32,6 +32,9 @@
 #include "Field.h"
 #include "Pages.h"
 
+#include "../../DesktopEditor/common/SystemUtils.h"
+#include "../../DesktopEditor/common/File.h"
+
 namespace PdfWriter
 {
 	//----------------------------------------------------------------------------------------
@@ -104,13 +107,15 @@ namespace PdfWriter
 
 		Add("F", 4);		
 	}
-	void CFieldBase::SetFieldName(const char* sName) 
+	void CFieldBase::SetFieldName(const std::wstring& wsName) 
 	{
-		Add("T", new CStringObject(sName));
+		std::string sName = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsName);
+		Add("T", new CStringObject(sName.c_str(), true));
 	}
-	void CFieldBase::SetFieldHint(const char* sHint)
+	void CFieldBase::SetFieldHint(const std::wstring& wsHint)
 	{
-		Add("TU", new CStringObject(sHint));
+		std::string sHint = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsHint);
+		Add("TU", new CStringObject(sHint.c_str(), true));
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextField
@@ -150,5 +155,10 @@ namespace PdfWriter
 	void CTextField::SetMaxLen(int nMaxLen)
 	{
 		Add("MaxLen", nMaxLen);
+	}
+	void CTextField::SetValue(const std::wstring &wsValue)
+	{
+		std::string sValue = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsValue);
+		Add("V", new CStringObject(sValue.c_str(), true));
 	}
 }

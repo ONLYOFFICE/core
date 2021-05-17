@@ -863,6 +863,25 @@ namespace NSOnlineOfficeBinToPdf
 				pRenderer->AddLink(dX, dY, dW, dH, dDestX, dDestY, nPage);
 				break;
 			}
+			case ctFormField:
+			{
+				BYTE* nStartPos   = current;
+				int   nStartIndex = curindex;
+
+				int nLen = ReadInt(current, curindex);
+
+				double dX = ReadDouble(current, curindex);
+				double dY = ReadDouble(current, curindex);
+				double dW = ReadDouble(current, curindex);
+				double dH = ReadDouble(current, curindex);
+
+				pRenderer->AddTextForm(dX, dY, dW, dH);
+
+				current  = nStartPos + nLen;
+				curindex = nStartIndex + nLen;
+
+				break;
+			}
 			default:
 			{
 				break;
@@ -1153,6 +1172,17 @@ namespace NSOnlineOfficeBinToPdf
 			{
 				SkipDouble(current, curindex, 6);
 				SkipInt(current, curindex);
+				break;
+			}
+			case ctFormField:
+			{
+				BYTE* nStartPos   = current;
+				int   nStartIndex = curindex;
+
+				int nLen = ReadInt(current, curindex);
+
+				current  = nStartPos + nLen;
+				curindex = nStartIndex + nLen;
 				break;
 			}
             default:

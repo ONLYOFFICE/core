@@ -50,8 +50,8 @@ namespace PdfWriter
 		void SetRequiredFlag(bool isRequired);
 		void SetNoExportFlag(bool isNoExport);
 		void AddPageRect(CPage* pPage, const TRect& oRect);
-		void SetFieldName(const char* sName);
-		void SetFieldHint(const char* sHint);
+		void SetFieldName(const std::wstring& wsName);
+		void SetFieldHint(const std::wstring& wsHint);
 	
 	protected:
 
@@ -75,6 +75,8 @@ namespace PdfWriter
 		void SetRichTextFlag(bool isRichText);
 
 		void SetMaxLen(int nMaxLen);
+
+		void SetValue(const std::wstring& wsValue);
 
 	private:
 	};

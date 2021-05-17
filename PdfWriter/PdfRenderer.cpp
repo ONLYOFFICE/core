@@ -41,6 +41,7 @@
 #include "Src/FontCidTT.h"
 #include "Src/Annotation.h"
 #include "Src/Destination.h"
+#include "Src/Field.h"
 
 #include "../DesktopEditor/graphics/Image.h"
 #include "../DesktopEditor/graphics/structures.h"
@@ -1500,6 +1501,18 @@ HRESULT CPdfRenderer::AddLink(const double& dX, const double& dY, const double& 
 	{
 		AddLink(unPagesCount - 1, dX, dY, dW, dH, dDestX, dDestY, nPage);
 	}
+
+	return S_OK;
+}
+HRESULT CPdfRenderer::AddTextForm(const double &dX, const double &dY, const double &dW, const double &dH)
+{
+	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
+	if (!m_pDocument || 0 == unPagesCount)
+		return S_OK;
+
+	CTextField* pField = m_pDocument->CreateTextField();
+	pField->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+	pField->SetFieldName(m_oFieldsManager.GetNewFieldName());
 
 	return S_OK;
 }

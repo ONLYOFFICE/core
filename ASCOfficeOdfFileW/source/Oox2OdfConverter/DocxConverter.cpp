@@ -667,7 +667,11 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		case OOX::et_m_sSupPr:
 		{
 			convert(dynamic_cast<OOX::Logic::CSSupPr*>(oox_unknown));
-		}break;		
+		}break;
+		case OOX::et_m_e:
+		{
+			convert(dynamic_cast<OOX::Logic::CElement*>(oox_unknown));
+		}break;
 		default:
 		{
 			OoxConverter::convert(oox_unknown);

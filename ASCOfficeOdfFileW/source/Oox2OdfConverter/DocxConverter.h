@@ -37,6 +37,7 @@
 #include <CPOptional.h>
 
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Math/oMathContent.h"
 
 namespace OOX 
 {
@@ -338,6 +339,8 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr,	odf_writer::style_table_row_properties	*table_row_properties);
 		//------------------------------------------------------------------------
+		void mrow();
+		void endOfMrow();
 		void convert(OOX::Logic::COMath					*oox_math);
 		void convert(OOX::Logic::CMathPr				*oox_math_pr);
 		void convert(OOX::Logic::CCtrlPr				*oox_ctrl_pr);
@@ -394,6 +397,12 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CSSupPr				*oox_ssup_pr);		
 		void convert(OOX::Logic::CNum					*oox_num);
 		void convert(OOX::Logic::CDen					*oox_den);
+		void convert(OOX::Logic::CBegChr				*oox_beg_chr);
+		void convert(OOX::Logic::CEndChr				*oox_beg_chr);
+		void convert(OOX::Logic::CElement				*oox_elm);
+		void convert(OOX::Logic::CDegHide				*oox_deg_hide);
+		void convert(OOX::Logic::CDeg *oox_deg, OOX::Logic::CElement *oox_elm);
+		void convert(OOX::Logic::CSup *oox_sup, OOX::Logic::CElement *oox_elm);
 //--------------------------------------------------------------------------------
 	};
 }

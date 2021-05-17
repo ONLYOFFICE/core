@@ -1758,7 +1758,10 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
         }
         case II_HyperlinkAction:
         {
-            hlink.action = L"ppaction://hlinksldjump";
+            if (hlink.id.is_init())
+                hlink.action = L"ppaction://hlinksldjump";
+            else
+                hlink.action = L"ppaction://noaction";
             break;
         }
         default:

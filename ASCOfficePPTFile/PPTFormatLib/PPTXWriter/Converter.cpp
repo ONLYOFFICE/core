@@ -47,6 +47,7 @@
 #include "StylesWriter.h"
 
 #include "Converter.h"
+#include "Animation.h"
 
 namespace PPT_FORMAT
 {
@@ -1472,21 +1473,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator
     if (!pPP10SlideBinaryTag && arrOldAnim.empty())
         return;
 
-    Animation animation(pPP10SlideBinaryTag, arrOldAnim);
-    std::vector<CRecordSoundCollectionContainer*> sound;
-    m_pUserInfo->m_oDocument.GetRecordsByType(&sound, false);
-    if (!sound.empty())
-    {
-        animation.m_pSoundContainer = sound[0];
-    }
-
-    m_oManager.m_ridManager.setRIDfromAnimation(animation);
-    m_oManager.m_ridManager.setRID(oRels.getRId());
-    auto paths = m_oManager.m_ridManager.getPathesForSlideRels();
-    for (auto& path : paths)
-    {
-        oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
-    }
+    Animation animation(pPP10SlideBinaryTag, arrOldAnim, &(m_pUserInfo->m_oExMedia), &oRels);
 
     animation.Convert(oTiming);
     oWriter.WriteString(oTiming.toXML());

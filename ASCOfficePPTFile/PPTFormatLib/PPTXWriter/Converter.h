@@ -32,7 +32,6 @@
 #pragma once
 
 #include "ImageManager.h"
-#include "ridmanager.h"
 
 
 class CStylesWriter;

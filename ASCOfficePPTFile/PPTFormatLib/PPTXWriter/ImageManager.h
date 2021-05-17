@@ -34,16 +34,13 @@
 #ifndef DISABLE_FILE_DOWNLOADER
 #include "../../../Common/FileDownloader/FileDownloader.h"
 #endif
-#include "ridmanager.h"
 #include <boost/algorithm/string.hpp>
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Attributes.h"
 
 namespace PPT_FORMAT
 {
 	class CMediaManager
 	{
-    public:
-        RIDManager                              m_ridManager;
-
     private:
 		std::map<std::wstring, std::wstring>	m_mapMedia;
 
@@ -151,7 +148,6 @@ namespace PPT_FORMAT
             for (auto& audio : audioCont)
             {
                 auto pathAudio = GenerateAudio(audio.m_strFilePath);
-                m_ridManager.addSoundPath(pathAudio);
             }
 
         }

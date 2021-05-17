@@ -406,15 +406,14 @@ void Animation::FillAudio(CRecordClientVisualElementContainer *pCVEC,
 {
     if (pCVEC->m_bVisualShapeAtom)
     {
-        oAudio.cMediaNode.tgtEl.embed =
-                new OOX::RId(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
-
-        std::vector<CRecordSoundContainer*> soundCont;
-        this->m_pSoundContainer->GetRecordsByType(
-                    &soundCont, false);
-        oAudio.cMediaNode.tgtEl.name =
-                static_cast<CRecordCString*>
-                (soundCont[pCVEC->m_oVisualShapeAtom.m_nOldIdRef -1]->m_arRecords[0])->m_strText;
+        CExFilesInfo* pInfo1 = m_pExMedia->LockAudioFromCollection(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
+        if (pInfo1 && m_pRels)
+        {
+            bool bExternal(false);
+            oAudio.cMediaNode.tgtEl.embed =
+                    new OOX::RId(m_pRels->WriteAudio(pInfo1->m_strFilePath, bExternal));
+             oAudio.cMediaNode.tgtEl.name = pInfo1->m_name;
+        }
     }
 }
 

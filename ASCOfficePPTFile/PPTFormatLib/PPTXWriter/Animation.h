@@ -51,7 +51,7 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Video.h"
 
 #include "../Records/SlideProgTagsContainer.h"
-#include "../Records/SoundCollectionContainer.h"
+#include "ImageManager.h"
 #include "../Records/Animations/AnimationInfoContainer.h"
 
 namespace PPT_FORMAT
@@ -86,10 +86,11 @@ struct SValue
 class Animation
 {
 public:
-    Animation(CRecordPP10SlideBinaryTagExtension *pPPT10Ext, const std::vector<SOldAnimation> &oldAnim) :
+    Animation(CRecordPP10SlideBinaryTagExtension *pPPT10Ext, const std::vector<SOldAnimation> &oldAnim, CExMedia* pExMedia, CRelsGenerator* pRels) :
         m_pPPT10(pPPT10Ext),
         m_arrOldAnim(oldAnim),
-        m_pSoundContainer(nullptr),
+        m_pExMedia(pExMedia),
+        m_pRels(pRels),
         m_cTnId(1),
         m_pBldLst(nullptr),
         m_currentBldP(nullptr)
@@ -97,11 +98,6 @@ public:
 
     }
 
-    // Not delete any pointers
-    CRecordPP10SlideBinaryTagExtension *m_pPPT10;       // Must be it xor (maybe 'or' i dunno)
-    std::vector<SOldAnimation>          m_arrOldAnim;   // this one
-
-    CRecordSoundCollectionContainer *m_pSoundContainer; // Optional
 
     // Call it and only it to convert animation
     void Convert(PPTX::Logic::Timing &oTiming);
@@ -236,7 +232,14 @@ private:
     void PushAnimEffect(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, std::wstring filter, std::wstring transition = L"in");
     void PushSet(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int dur = 0);
 
+public:
+    // Not delete any pointers
+    CRecordPP10SlideBinaryTagExtension *m_pPPT10;       // For new animation
+    std::vector<SOldAnimation>          m_arrOldAnim;   // this one can dublicate new animation
+
 private:
+    CExMedia            *m_pExMedia;
+    CRelsGenerator      *m_pRels;
     unsigned m_cTnId;
     PPTX::Logic::BldLst *m_pBldLst; // Do not delete
     PPTX::Logic::BldP   *m_currentBldP;

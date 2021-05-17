@@ -15,13 +15,8 @@ public:
     virtual void remove(const std::wstring& path) = 0;
     virtual void createDirectory(const std::wstring& path) = 0;
     virtual void writeZipFolder(BYTE*& data, DWORD& length) = 0;
+    virtual void writeXml(const std::wstring& path, const std::wstring& xml) = 0;
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion) = 0;
-
-    virtual void writeXml(const std::wstring& path, const std::wstring& xml)
-    {
-        std::string sXmlUtf8 = U_TO_UTF8(xml);
-        write(path, (BYTE*)sXmlUtf8.c_str(), (DWORD)sXmlUtf8.length());
-    }
 };
 
 class CZipFolder : public IZipFolder
@@ -63,6 +58,11 @@ public:
     }
     virtual void writeZipFolder(BYTE*& data, DWORD& length)
     {
+    }
+    virtual void writeXml(const std::wstring& path, const std::wstring& xml)
+    {
+        std::string sXmlUtf8 = U_TO_UTF8(xml);
+        write(path, (BYTE*)sXmlUtf8.c_str(), (DWORD)sXmlUtf8.length());
     }
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)
     {
@@ -133,6 +133,13 @@ public:
         data = new BYTE[length];
         memcpy(data, oRes.second, length);
         m_zlib->close();
+    }
+    virtual void writeXml(const std::wstring& path, const std::wstring& xml)
+    {
+        BYTE* pData = NULL;
+        LONG   nLen = 0;
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(xml.c_str(), xml.length(), pData, nLen);
+        write(path, pData, nLen);
     }
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)
     {

@@ -131,6 +131,7 @@ std::pair<DWORD, BYTE*>  CZipBuffer::save()
 
     for (CFile& oFile : m_arrFiles)
     {
+        getFile(oFile.m_sPath);
         if (ZIP_OK != zipOpenNewFileInZip( zip_file_handle, oFile.m_sPath.c_str(), NULL, NULL, 0, NULL, 0, NULL, Z_DEFLATED, -1 ) ||
             ZIP_OK != zipWriteInFileInZip(zip_file_handle, oFile.m_pData, oFile.m_nLength) ||
             ZIP_OK != zipCloseFileInZip(zip_file_handle))

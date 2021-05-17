@@ -14,7 +14,7 @@ public:
     virtual bool exists(const std::wstring& path) = 0;
     virtual void remove(const std::wstring& path) = 0;
     virtual void createDirectory(const std::wstring& path) = 0;
-    virtual void writeZipFolder(BYTE* data, DWORD& length) = 0;
+    virtual void writeZipFolder(BYTE*& data, DWORD& length) = 0;
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion) = 0;
 
     virtual void writeXml(const std::wstring& path, const std::wstring& xml)
@@ -61,7 +61,7 @@ public:
         if (!NSDirectory::Exists(path))
             NSDirectory::CreateDirectory(path);
     }
-    virtual void writeZipFolder(BYTE* data, DWORD& length)
+    virtual void writeZipFolder(BYTE*& data, DWORD& length)
     {
     }
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)
@@ -126,11 +126,12 @@ public:
     virtual void createDirectory(const std::wstring& path)
     {
     }
-    virtual void writeZipFolder(BYTE* data, DWORD& length)
+    virtual void writeZipFolder(BYTE*& data, DWORD& length)
     {
         std::pair<DWORD, BYTE*> oRes = m_zlib->save();
         length = oRes.first;
-        data = oRes.second;
+        data = new BYTE[length];
+        memcpy(data, oRes.second, length);
         m_zlib->close();
     }
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)
@@ -149,8 +150,12 @@ public:
             else
             {
                 size_t nFindDirectory = i.find(sPath);
-                if (nFindDirectory == 0 && i.find_first_of("\\/", sPath.length()) == std::wstring::npos)
-                    sRes.push_back(L'/' + UTF8_TO_U(i));
+                if (nFindDirectory == 0)
+                {
+                    nFindDirectory = i.find_first_of("\\/", sPath.length());
+                    if (nFindDirectory != std::wstring::npos && i.find_first_of("\\/", nFindDirectory + 1) == std::wstring::npos)
+                        sRes.push_back(L'/' + UTF8_TO_U(i));
+                }
             }
         }
         return sRes;

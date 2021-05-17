@@ -178,9 +178,11 @@ public:
 
         if (L"/_rels/.rels" == file)
         {
-            long nLength;
-            oRels.CheckOriginSigs(pData, nLength);
-            m_pZipFolder->write(m_sFolder + file, pData, nLength);
+            BYTE* pDataNew = new BYTE[dwLen];
+            memcpy(pDataNew, pData, dwLen);
+            long nLength = dwLen;
+            oRels.CheckOriginSigs(pDataNew, nLength);
+            m_pZipFolder->write(m_sFolder + file, pDataNew, nLength);
 
             // удалим все лишнее
             std::vector<COOXMLRelationship>::iterator i = oRels.rels.begin();

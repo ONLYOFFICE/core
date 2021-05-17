@@ -2,7 +2,7 @@
 #include "ZipUtilsCP.h"
 #include "zlib-1.2.11/contrib/minizip/ioapibuf.h"
 
-#include <algorithm> // для std::min в get_file_in_archive
+#include <algorithm>
 
 unzFile unzOpenHelp(BUFFER_IO* buffer)
 {
@@ -122,7 +122,7 @@ std::vector<std::string> CZipBuffer::getPaths()
         oRes.push_back(oFile.m_sPath);
     return oRes;
 }
-std::pair<DWORD, BYTE*> CZipBuffer::save()
+std::pair<DWORD, BYTE*>  CZipBuffer::save()
 {
     BUFFER_IO* buf = new BUFFER_IO;
     buf->bGrow = 1;
@@ -145,17 +145,27 @@ std::pair<DWORD, BYTE*> CZipBuffer::save()
     m_sizeZip = buf->nSize;
     return make_pair(m_sizeZip, m_zipFile);
 }
-std::pair<DWORD, BYTE*> CZipBuffer::getFile(const std::string& sPath)
+std::pair<DWORD, BYTE*>  CZipBuffer::getFile(const std::string& sPath)
 {
+    BYTE* file = NULL;
+    DWORD nFileSize = 0;
+    std::vector<CFile>::iterator it = std::find_if(m_arrFiles.begin(), m_arrFiles.end(), [sPath] (const CFile& oFile) { return oFile.m_sPath == sPath; });
+    if (it == m_arrFiles.end())
+        return make_pair(nFileSize, file);
+    if (it->m_nLength)
+        return make_pair(it->m_nLength, it->m_pData);
+
     BUFFER_IO* buf = new BUFFER_IO;
     buf->buffer = m_zipFile;
     buf->nSize  = m_sizeZip;
     unzFile uf  = unzOpenHelp(buf);
 
-    BYTE* file = new BYTE;
-    DWORD nFileSize = 0;
+    file = new BYTE;
     get_file_in_archive(uf, sPath.c_str(), &file, nFileSize);
     unzClose(uf);
+
+    it->m_nLength = nFileSize;
+    it->m_pData   = file;
     return make_pair(nFileSize, file);
 }
 void CZipBuffer::addFile   (const std::string& sPath, BYTE* data, DWORD length)
@@ -166,7 +176,7 @@ void CZipBuffer::addFile   (const std::string& sPath, BYTE* data, DWORD length)
         if (oFile.m_sPath == sPath)
         {
             RELEASEARRAYOBJECTS(oFile.m_pData);
-            oFile.m_pData = data;
+            oFile.m_pData   = data;
             oFile.m_nLength = length;
             bExists = true;
             break;
@@ -181,6 +191,7 @@ bool CZipBuffer::removeFile(const std::string& sPath)
     {
         if (i->m_sPath == sPath)
         {
+            RELEASEARRAYOBJECTS(i->m_pData);
             m_arrFiles.erase(i);
             return true;
         }

@@ -160,14 +160,119 @@ namespace NSNetwork
 
         int uploaddata_external(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
         {
-            //stub
-            return -1;
+            int nReturnCode = -1;
+            NSFile::CFileBinary oFileData;
+            std::wstring tempFileName = NSFile::CFileBinary::GetTempPath() + L"/tmpFileForUpload";
+            oFileData.CreateFileW(tempFileName);
+            oFileData.WriteFile(cData, nSize);
+            oFileData.CloseFile();
+
+            std::string sUploadUrlA = U_TO_UTF8(sUploadUrl);
+
+
+            if (0 != nReturnCode && NSFile::CFileBinary::Exists(L"/usr/bin/curl"))
+            {
+                pid_t pid = fork(); // create child process
+                int status;
+
+                switch (pid)
+                {
+                case -1: // error
+                    break;
+
+                case 0: // child process
+                {
+                    //curl --request POST --data-binary "@template_entry.xml" $URL
+                    auto pathTofile(std::string("@") + std::string(tempFileName.begin(), tempFileName.end()));
+                    const char* nargs[9];
+                    nargs[0] = "/usr/bin/curl";
+                    nargs[1] = "--request";
+                    nargs[2] = "POST";
+                    nargs[3] = "--data-binary";
+                    nargs[4] = pathTofile.c_str();
+                    nargs[5] = sUploadUrlA.c_str();
+                    nargs[6] = "--connect-timeout";
+                    nargs[7] = "10";
+                    nargs[8] = NULL;
+
+                    const char* nenv[3];
+                    nenv[0] = "LD_PRELOAD=";
+                    nenv[1] = "LD_LIBRARY_PATH=";
+                    nenv[2] = NULL;
+
+                    execve("/usr/bin/curl", (char * const *)nargs, (char * const *)nenv);
+                    exit(EXIT_SUCCESS);
+                    break;
+                }
+                default: // parent process, pid now contains the child pid
+                    while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
+                    if (WIFEXITED(status))
+                    {
+                        nReturnCode =  WEXITSTATUS(status);
+                    }
+                    break;
+                }
+            }
+            NSFile::CFileBinary::Remove(tempFileName);
+
+            return nReturnCode;
         }
 
         int uploadfile_external(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
         {
-            //stub
-            return -1;
+            int nReturnCode = -1;
+
+            std::string sUploadUrlA = U_TO_UTF8(sUploadUrl);
+            std::string sUploadFilePathA = U_TO_UTF8(sUploadFilePath);
+            std::string sUploadFileNameA = U_TO_UTF8(NSFile::GetFileName(sUploadFilePath));
+
+            if (0 != nReturnCode && NSFile::CFileBinary::Exists(L"/usr/bin/curl"))
+            {
+                pid_t pid = fork(); // create child process
+                int status;
+
+                switch (pid)
+                {
+                case -1: // error
+                    break;
+
+                case 0: // child process
+                {
+                    //curl -v -F filename=image.jpg -F upload=@/home/vladimir/Pictures/Test.png $URL
+                    auto filename(std::string("filename=") + sUploadFileNameA);
+                    auto upload(std::string("upload=@") + sUploadFilePathA);
+                    const char* nargs[10];
+                    nargs[0] = "/usr/bin/curl";
+                    nargs[1] = "-v";
+                    nargs[2] = "-F";
+                    nargs[3] = filename.c_str();
+                    nargs[4] = "-F";
+                    nargs[5] = upload.c_str();
+                    nargs[6] = sUploadUrlA.c_str();
+                    nargs[7] = "--connect-timeout";
+                    nargs[8] = "10";
+                    nargs[9] = NULL;
+
+                    const char* nenv[3];
+                    nenv[0] = "LD_PRELOAD=";
+                    nenv[1] = "LD_LIBRARY_PATH=";
+                    nenv[2] = NULL;
+
+                    execve("/usr/bin/curl", (char * const *)nargs, (char * const *)nenv);
+                    exit(EXIT_SUCCESS);
+                    break;
+                }
+                default: // parent process, pid now contains the child pid
+                    while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
+                    if (WIFEXITED(status))
+                    {
+                        nReturnCode =  WEXITSTATUS(status);
+                    }
+                    break;
+                }
+            }
+
+            return nReturnCode;
         }
     }
 }

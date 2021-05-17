@@ -201,12 +201,6 @@ namespace NSNetwork
                 return m_bComplete ? 0 : 1;
             }
 
-            virtual int UploadData() override
-            {
-                //stub
-                return -1;
-            }
-
             virtual int UploadFile() override
             {
                 //stub

@@ -88,35 +88,33 @@ public:
     virtual bool read  (const std::wstring& path, BYTE*& data, DWORD& length)
     {
         std::string sPath = normalPath(path);
-        std::pair<DWORD, BYTE*> oRes = m_zlib->getFile(sPath);
-        if (oRes.first)
-        {
-            length = oRes.first;
-            data = oRes.second;
+        m_zlib->getFile(sPath, data, length);
+        if (length)
             return true;
-        }
         return false;
     }
     virtual void write (const std::wstring& path, BYTE*  data, DWORD  length)
     {
         std::string sPath = normalPath(path);
-        m_zlib->addFile(sPath, data, length);
+        BYTE* copyData = new BYTE[length];
+        memcpy(copyData, data, length);
+        m_zlib->addFile(sPath, copyData, length);
     }
     virtual void move  (const std::wstring& sSrc,   const std::wstring& sDst)
     {
         std::string sSrcPath = normalPath(sSrc);
-        std::pair<DWORD, BYTE*> oFile = m_zlib->getFile(sSrcPath);
+        BYTE* data; DWORD length;
+        m_zlib->getFile(sSrcPath, data, length);
+        BYTE* copyData = new BYTE[length];
+        memcpy(copyData, data, length);
         m_zlib->removeFile(sSrcPath);
-        m_zlib->addFile(normalPath(sDst), oFile.second, oFile.first);
+        m_zlib->addFile(normalPath(sDst), copyData, length);
     }
     virtual bool exists(const std::wstring& path)
     {
         std::string sPath = normalPath(path);
         std::vector<std::string> sPaths = m_zlib->getPaths();
-        for (std::string& i : sPaths)
-            if (i == sPath)
-                return true;
-        return false;
+        return std::find(sPaths.begin(), sPaths.end(), sPath) != sPaths.end();
     }
     virtual void remove(const std::wstring& path)
     {
@@ -128,18 +126,13 @@ public:
     }
     virtual void writeZipFolder(BYTE*& data, DWORD& length)
     {
-        std::pair<DWORD, BYTE*> oRes = m_zlib->save();
-        length = oRes.first;
-        data = new BYTE[length];
-        memcpy(data, oRes.second, length);
+        m_zlib->save(data, length);
         m_zlib->close();
     }
     virtual void writeXml(const std::wstring& path, const std::wstring& xml)
     {
-        BYTE* pData = NULL;
-        LONG   nLen = 0;
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(xml.c_str(), xml.length(), pData, nLen);
-        write(path, pData, nLen);
+        std::string sXmlUtf8 = U_TO_UTF8(xml);
+        write(path, (BYTE*)sXmlUtf8.c_str(), (DWORD)sXmlUtf8.length());
     }
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)
     {

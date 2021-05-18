@@ -16,10 +16,6 @@ zipFile zipOpenHelp(BUFFER_IO* buffer)
     fill_buffer_filefunc(&ffunc, buffer);
     return zipOpen2(NULL, APPEND_STATUS_CREATE, NULL, &ffunc);
 }
-unsigned int GetLength(BYTE* x)
-{
-    return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
-}
 
 // begin from (ZipUtilsCP.cpp)
 bool current_file_is_find(unzFile uf, const char* filename)
@@ -108,10 +104,12 @@ void CZipBuffer::open(BYTE* buffer, DWORD size)
         if (file_info.uncompressed_size != 0)
             m_arrFiles.push_back(CFile(get_filename_from_unzfile(uf), NULL, 0));
     } while (UNZ_OK == unzGoToNextFile(uf));
+    RELEASEOBJECT(buf);
 }
 void CZipBuffer::close()
 {
-    RELEASEARRAYOBJECTS(m_zipFile);
+    for (CFile& oFile : m_arrFiles)
+        RELEASEARRAYOBJECTS(oFile.m_pData);
     m_arrFiles.clear();
 }
 
@@ -122,7 +120,7 @@ std::vector<std::string> CZipBuffer::getPaths()
         oRes.push_back(oFile.m_sPath);
     return oRes;
 }
-std::pair<DWORD, BYTE*>  CZipBuffer::save()
+void CZipBuffer::save(BYTE*& data, DWORD& length)
 {
     BUFFER_IO* buf = new BUFFER_IO;
     buf->bGrow = 1;
@@ -130,61 +128,70 @@ std::pair<DWORD, BYTE*>  CZipBuffer::save()
     zipFile zip_file_handle = zipOpenHelp(buf);
 
     for (CFile& oFile : m_arrFiles)
+        if (!oFile.m_nLength)
+            getFile(oFile.m_sPath, oFile.m_pData, oFile.m_nLength);
+
+    for (CFile& oFile : m_arrFiles)
     {
-        getFile(oFile.m_sPath);
         if (ZIP_OK != zipOpenNewFileInZip( zip_file_handle, oFile.m_sPath.c_str(), NULL, NULL, 0, NULL, 0, NULL, Z_DEFLATED, -1 ) ||
             ZIP_OK != zipWriteInFileInZip(zip_file_handle, oFile.m_pData, oFile.m_nLength) ||
             ZIP_OK != zipCloseFileInZip(zip_file_handle))
         {
             zipClose(zip_file_handle, NULL);
-            return make_pair(m_sizeZip, m_zipFile);
+            data   = NULL;
+            length = 0;
+            return;
         }
     }
     zipClose(zip_file_handle, NULL);
 
-    m_zipFile = buf->buffer;
-    m_sizeZip = buf->nSize;
-    return make_pair(m_sizeZip, m_zipFile);
+    data   = m_zipFile = buf->buffer;
+    length = m_sizeZip = buf->nCurrentPos;
+    RELEASEOBJECT(buf);
 }
-std::pair<DWORD, BYTE*>  CZipBuffer::getFile(const std::string& sPath)
+void CZipBuffer::getFile(const std::string& sPath, BYTE*& data, DWORD& length)
 {
-    BYTE* file = NULL;
-    DWORD nFileSize = 0;
-    std::vector<CFile>::iterator it = std::find_if(m_arrFiles.begin(), m_arrFiles.end(), [sPath] (const CFile& oFile) { return oFile.m_sPath == sPath; });
+    std::vector<CFile>::iterator it =
+            std::find_if(m_arrFiles.begin(), m_arrFiles.end(), [&sPath] (const CFile& oFile) { return oFile.m_sPath == sPath; });
     if (it == m_arrFiles.end())
-        return make_pair(nFileSize, file);
+    {
+        data   = NULL;
+        length = 0;
+        return;
+    }
     if (it->m_nLength)
-        return make_pair(it->m_nLength, it->m_pData);
+    {
+        data   = it->m_pData;
+        length = it->m_nLength;
+        return;
+    }
 
     BUFFER_IO* buf = new BUFFER_IO;
     buf->buffer = m_zipFile;
     buf->nSize  = m_sizeZip;
     unzFile uf  = unzOpenHelp(buf);
 
-    file = new BYTE;
-    get_file_in_archive(uf, sPath.c_str(), &file, nFileSize);
+    data   = new BYTE;
+    length = 0;
+    get_file_in_archive(uf, sPath.c_str(), &data, length);
     unzClose(uf);
 
-    it->m_nLength = nFileSize;
-    it->m_pData   = file;
-    return make_pair(nFileSize, file);
+    it->m_nLength = length;
+    it->m_pData   = data;
+    RELEASEOBJECT(buf);
 }
 void CZipBuffer::addFile   (const std::string& sPath, BYTE* data, DWORD length)
 {
-    bool bExists = false;
-    for (CFile& oFile : m_arrFiles)
-    {
-        if (oFile.m_sPath == sPath)
-        {
-            RELEASEARRAYOBJECTS(oFile.m_pData);
-            oFile.m_pData   = data;
-            oFile.m_nLength = length;
-            bExists = true;
-            break;
-        }
-    }
-    if (!bExists)
+    std::vector<CFile>::iterator it =
+            std::find_if(m_arrFiles.begin(), m_arrFiles.end(), [&sPath] (const CFile& oFile) { return oFile.m_sPath == sPath; });
+    if (it == m_arrFiles.end())
         m_arrFiles.push_back(CFile(sPath, data, length));
+    else
+    {
+        RELEASEARRAYOBJECTS(it->m_pData);
+        it->m_pData   = data;
+        it->m_nLength = length;
+    }
 }
 bool CZipBuffer::removeFile(const std::string& sPath)
 {

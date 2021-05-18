@@ -188,23 +188,27 @@ unsigned char* Zlib_GetFile (CZipBuffer* p, const char* path)
 {
     if (!p)
         return NULL;
-    std::pair<unsigned long, unsigned char*> oRes = p->getFile(path);
-    if (oRes.first == 0)
+    unsigned char* data;
+    unsigned long length;
+    p->getFile(path, data, length);
+    if (length == 0)
         return NULL;
 
     CData* oData = new CData();
-    oData->WriteString(oRes.second, oRes.first);
+    oData->WriteString(data, length);
     return oData->GetBuffer();
 }
 unsigned char* Zlib_Save    (CZipBuffer* p)
 {
     if (!p)
         return NULL;
-    std::pair<unsigned long, unsigned char*> oRes = p->save();
-    if (oRes.first == 0)
+    unsigned char* data;
+    unsigned long length;
+    p->save(data, length);
+    if (length == 0)
         return NULL;
 
     CData* oData = new CData();
-    oData->WriteString(oRes.second, oRes.first);
+    oData->WriteString(data, length);
     return oData->GetBuffer();
 }

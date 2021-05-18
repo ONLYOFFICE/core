@@ -40,8 +40,8 @@ public:
     void close();
 
     std::vector<std::string> getPaths();
-    std::pair<DWORD, BYTE*> save();
-    std::pair<DWORD, BYTE*> getFile(const std::string& sPath);
+    void save(BYTE*& data, DWORD& length);
+    void getFile(const std::string& sPath, BYTE*& data, DWORD& length);
     void addFile   (const std::string& sPath, BYTE* data, DWORD length);
     bool removeFile(const std::string& sPath);
 };

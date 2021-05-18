@@ -183,6 +183,7 @@ public:
             long nLength = dwLen;
             oRels.CheckOriginSigs(pDataNew, nLength);
             m_pZipFolder->write(m_sFolder + file, pDataNew, nLength);
+            RELEASEARRAYOBJECTS(pDataNew);
 
             // удалим все лишнее
             std::vector<COOXMLRelationship>::iterator i = oRels.rels.begin();

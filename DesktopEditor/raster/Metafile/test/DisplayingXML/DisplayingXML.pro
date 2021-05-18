@@ -11,10 +11,12 @@ CONFIG += c++11
 
 SOURCES += \
     MainWindow.cpp \
+    CCustomView.cpp \
     main.cpp
 
 HEADERS += \
-    MainWindow.h
+    MainWindow.h \
+    CCustomView.h
 
 FORMS += \
     MainWindow.ui

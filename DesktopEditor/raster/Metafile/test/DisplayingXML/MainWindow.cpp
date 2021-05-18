@@ -15,8 +15,6 @@
 #include "../../../../raster/BgraFrame.h"
 #include "../../../../common/Directory.h"
 
-#include "../../../../common/Directory.h"
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -210,6 +208,7 @@ void MainWindow::on_SaveButton_clicked()
 void MainWindow::on_ChangeButton_clicked()
 {
     m_wsPathToFile = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Metafile (*.emf *.wmf)")).toStdWString();
+    ui->customView->DrawMetafile(m_wsPathToFile);
     ConvertToRaster();
     ReadFile();
 }

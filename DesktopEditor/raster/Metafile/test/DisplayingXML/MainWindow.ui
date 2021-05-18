@@ -27,6 +27,9 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
+        <widget class="CCustomView" name="customView"/>
+       </item>
+       <item>
         <widget class="QGraphicsView" name="graphicsView"/>
        </item>
        <item>
@@ -66,6 +69,13 @@
    </property>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CCustomView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">CCustomView.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

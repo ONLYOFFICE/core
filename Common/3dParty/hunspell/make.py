@@ -8,9 +8,9 @@ def get_hunspell(last_stable_commit):
     base.cmd("git", ["clone", repo_path])
     os.chdir("hunspell")
     base.cmd("git", ["checkout", last_stable_commit])
-    base.replaceInFile("./src/hunspell/filemgr.hxx", "FileMgr& operator=(const FileMgr&);", "FileMgr& operator=(const FileMgr&); \n" 
-         +" #ifdef HUNSPELL_WASM_MODULE \n std::istrstream* memin; \n #endif") #custon filemgr support watch filemgr_wrapper_new.cxx
-    base.replaceInFile("./src/hunspell/filemgr.hxx", "#include <fstream>", "#include <fstream> \n #include <strstream>\n")
+    base.replaceInFile("./src/hunspell/filemgr.hxx", "FileMgr& operator=(const FileMgr&);", "FileMgr& operator=(const FileMgr&);\n" 
+         +"#ifdef HUNSPELL_WASM_MODULE\nstring_buffer_stream memin;\n#endif") #custon filemgr support watch filemgr_wrapper_new.cxx
+    base.replaceInFile("./src/hunspell/filemgr.hxx", "#include <fstream>", "#include <fstream>\n#ifdef HUNSPELL_WASM_MODULE\n#include \"string_buffer_stream.h\"\n#endif\n")
     base.replaceInFile("./src/hunspell/csutil.cxx", "void free_utf_tbl() {", "void free_utf_tbl() { \n return;\n")
 	# bug fix, we need to keep this utf table 
     # free_utf_tbl doesnt delete anything so we can destroy huspell object
@@ -41,7 +41,7 @@ last_stable_commit = HEAD.read().split('\n')[0] # workaround to delete \n in the
 HEAD.close()
 
 if not base.is_dir("hunspell"):
-    get_hunspell(last_stable_commit)
+  get_hunspell(last_stable_commit)
 
 # version check
 
@@ -50,8 +50,8 @@ current_commit = git_head.read().split('\n')[0]
 git_head.close()
 
 if current_commit != last_stable_commit:
-    base.delete_dir("hunspell")
-    get_hunspell(last_stable_commit)
+  base.delete_dir("hunspell")
+  get_hunspell(last_stable_commit)
 
 # compile
 compiler_flags = ["-o spell.js",
@@ -104,6 +104,7 @@ else:
 sources.append("./wasm/src/base.cpp")
 
 compiler_flags.append("-I" + libhunspell_src_path)
+compiler_flags.append("-I./wasm/src")
 compiler_flags.append("-DWIN32 -DNDEBUG -DHUNSPELL_STATIC -DBUILDING_LIBHUNSPELL -DHUNSPELL_WASM_MODULE")
 
 # arguments
@@ -138,7 +139,7 @@ base.replaceInFile("./spell.js", "function getBinaryPromise(){", "function getBi
 
 spell_js_content = base.readFile("./spell.js")
 engine_base_js_content = base.readFile("./wasm/js/spell.js")
-engine_js_content = engine_base_js_content.replace("//module", spell_js_content)
+engine_js_content = base.readFile("./../../license/header.license") + "\n" + engine_base_js_content.replace("//module", spell_js_content)
 
 # write new version
 base.writeFile("./deploy/spell/spell.js", engine_js_content)
@@ -165,7 +166,7 @@ base.replaceInFile("./spell.js", "function getBinaryPromise(){", "function getBi
 spell_js_content = base.readFile("./spell.js")
 engine_base_js_content = base.readFile("./wasm/js/spell.js")
 engine_base_js_polyfill = base.readFile("./wasm/js/polyfill.js")
-engine_js_content = engine_base_js_polyfill + "\n\n" + engine_base_js_content.replace("//module", spell_js_content)
+engine_js_content = base.readFile("./../../license/header.license") + "\n" + engine_base_js_polyfill + "\n\n" + engine_base_js_content.replace("//module", spell_js_content)
 
 # write new version
 base.writeFile("./deploy/spell/spell_ie.js", engine_js_content)

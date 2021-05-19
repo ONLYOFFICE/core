@@ -147,7 +147,7 @@ function Dictionary()
         {
         	xhr.sender.status = 2;
         	self.spellchecker.onLoadDictionary(this.sender);
-        }
+        };
 
         xhr.send(null);
 	};

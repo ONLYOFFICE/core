@@ -49,12 +49,13 @@ if not base.is_file(base_dir + "/openssl/libcrypto.a"):
 # compile wasm module with bindings
 compiler_flags = ["-o openssl.js",
                   "-O3",
-                  "-fno-exceptions",
+                  #"-fno-exceptions", because xml/src/xmldom.cpp:691:17
                   "-fno-rtti",
                   "-s WASM=1",
                   "-s ALLOW_MEMORY_GROWTH=1",
                   "-s FILESYSTEM=0",
                   "-s ENVIRONMENT='web'"]
+                  #"-s LLD_REPORT_UNDEFINED"]
 
 exported_functions = ["_malloc",
                       "_free",
@@ -91,17 +92,24 @@ libMinizip_src_parh = "../../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizi
 input_minizip_sources = ["ioapi.c", "miniunz.c", "minizip.c", "mztools.c", "unzip.c", "zip.c", "ioapibuf.c"]
 
 libZlib_src_parh = "../../../../../OfficeUtils/src/zlib-1.2.11/"
-input_zlib_sources = ["adler32.c", "compress.c", "crc32.c", "deflate.c", "gzclose.c", "gzlib.c", "gzread.c", "gzwrite.c", "infback.c", "inffast.c", "inflate.c", "inftrees.c", "trees.c", "uncompr.c", "zutil.c"]
+input_zlib_sources = ["adler32.c", "crc32.c", "deflate.c", "infback.c", "inffast.c", "inflate.c", "inftrees.c", "trees.c", "zutil.c"]
 
 # SIGN
 libSign_src_parh = "../../../../xmlsec/src/src/"
 input_sign_sources = ["XmlTransform.cpp", "XmlCertificate.cpp", "OOXMLSigner.cpp", "OOXMLVerifier.cpp", "XmlSigner_openssl.cpp"]
 
 # OPENSSL
+compiler_flags.append("-I../../../../../Common/3dParty/openssl/build/linux_64/include -I../../../../../Common/3dParty/openssl/openssl/include")
+
+libCrypto_src_parh = "../../../../../Common/3dParty/openssl/openssl/crypto/"
+input_crypto_sources = ["x509/x509_cmp.c", "asn1/a_int.c", "bn/bn_print.c", "bn/bn_lib.c", "sha/sha256.c", "bio/bss_mem.c"]
+
+#compiler_flags.append("-I../../../../../Common/3dParty/openssl/build/win_64/include") for windows
 #sources = ["./openssl/libcrypto.a", "./openssl/apps/openssl.c"]
 
 #compiler_flags.append("-Iopenssl/include -Iopenssl -Iemsdk/node/14.15.5_64bit/include/node/openssl/archs/linux-x86_64/no-asm/include")
 
+compiler_flags.append("-D__linux__ -D_LINUX")
 # sources
 print("sources")
 sources = []
@@ -113,6 +121,12 @@ for item in input_officeutils_sources:
   sources.append(libOfficeUtils_src_parh + item)
 for item in input_minizip_sources:
   sources.append(libMinizip_src_parh + item)
+for item in input_zlib_sources:
+  sources.append(libZlib_src_parh + item)
+for item in input_sign_sources:
+  sources.append(libSign_src_parh + item)
+for item in input_crypto_sources:
+  sources.append(libCrypto_src_parh + item)
 sources.append("../main.cpp")
 
 # arguments

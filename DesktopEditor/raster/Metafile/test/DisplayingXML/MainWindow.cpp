@@ -57,6 +57,7 @@ MainWindow::~MainWindow()
 
 bool MainWindow::ReadFile()
 {
+    ui->DataEdit->clear();
     XmlUtils::CXmlNode oXmlNode;
     oXmlNode.FromXmlFile(m_wsPathToXmlFile);
 
@@ -181,7 +182,8 @@ void MainWindow::ConvertToRaster()
     pMetafile->LoadFromFile(m_wsPathToFile.c_str());
     std::wstring wsPathToRasterFile = NSFile::GetProcessDirectory() + L"/test.png";
     m_wsPathToXmlFile = NSFile::GetProcessDirectory() + L"/test.xml";
-    pMetafile->ConvertToRaster(wsPathToRasterFile.c_str(), 4, 1000);
+
+    pMetafile->ConvertToRaster(wsPathToRasterFile.c_str(), 4, ui->customView->GetWidthMetafile(),  ui->customView->GetHeightMetafile());
 
     pMetafile->Release();
     pFonts->Release();

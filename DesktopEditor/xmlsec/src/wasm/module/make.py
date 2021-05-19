@@ -58,12 +58,62 @@ compiler_flags = ["-o openssl.js",
 
 exported_functions = ["_malloc",
                       "_free",
-                      "_ASC_Generate_Param",
-                      "_ASC_GetHash"]
+                      "_XmlSirnature_Malloc",
+                      "_XmlSirnature_Free",
+                      "_XmlSignature_CreateCertificate",
+                      "_XmlSignature_LoadCert",
+                      "_XmlSignature_LoadKey",
+                      "_XmlSignature_DestroyCertificate",
+                      "_XmlSignature_CreateFile",
+                      "_XmlSignature_DestroyFile",
+                      "_XmlSignature_Sign"]
 
-sources = ["./openssl/libcrypto.a", "./openssl.c"]
+# XML
+compiler_flags.append("-DHAVE_VA_COPY -DLIBXML_READER_ENABLED -DLIBXML_PUSH_ENABLED -DLIBXML_HTML_ENABLED -DLIBXML_XPATH_ENABLED -DLIBXML_OUTPUT_ENABLED -DLIBXML_C14N_ENABLED -DLIBXML_SAX1_ENABLED -DLIBXML_TREE_ENABLED -DLIBXML_XPTR_ENABLED -DIN_LIBXML -DLIBXML_STATIC")
 
-compiler_flags.append("-Iopenssl/include")
+compiler_flags.append("-I../../../../xml/libxml2/include -I../../../../xml/libxml2/include/libxml -I../../../../xml/build/qt")
+
+input_xml_sources = ["../../../../xml/build/qt/libxml2_all.c", "../../../../xml/build/qt/libxml2_all2.c", "../../../../xml/src/xmllight.cpp", "../../../../xml/src/xmldom.cpp"]
+
+# KERNEL
+libKernel_src_parh = "../../../../common/"
+input_kernel_sources = ["StringBuilder.cpp", "Base64.cpp", "Path.cpp", "File.cpp", "Directory.cpp"]
+
+# ZIP
+compiler_flags.append("-DBUILD_ZLIB_AS_SOURCES")
+
+compiler_flags.append("-I../../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip -I../../../../../OfficeUtils/src/zlib-1.2.11")
+
+libOfficeUtils_src_parh = "../../../../../OfficeUtils/src/"
+input_officeutils_sources = ["OfficeUtils.cpp", "ZipBuffer.cpp", "ZipUtilsCP.cpp"]
+
+libMinizip_src_parh = "../../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/"
+input_minizip_sources = ["ioapi.c", "miniunz.c", "minizip.c", "mztools.c", "unzip.c", "zip.c", "ioapibuf.c"]
+
+libZlib_src_parh = "../../../../../OfficeUtils/src/zlib-1.2.11/"
+input_zlib_sources = ["adler32.c", "compress.c", "crc32.c", "deflate.c", "gzclose.c", "gzlib.c", "gzread.c", "gzwrite.c", "infback.c", "inffast.c", "inflate.c", "inftrees.c", "trees.c", "uncompr.c", "zutil.c"]
+
+# SIGN
+libSign_src_parh = "../../../../xmlsec/src/src/"
+input_sign_sources = ["XmlTransform.cpp", "XmlCertificate.cpp", "OOXMLSigner.cpp", "OOXMLVerifier.cpp", "XmlSigner_openssl.cpp"]
+
+# OPENSSL
+#sources = ["./openssl/libcrypto.a", "./openssl/apps/openssl.c"]
+
+#compiler_flags.append("-Iopenssl/include -Iopenssl -Iemsdk/node/14.15.5_64bit/include/node/openssl/archs/linux-x86_64/no-asm/include")
+
+# sources
+print("sources")
+sources = []
+for item in input_xml_sources:
+  sources.append(item)
+for item in input_kernel_sources:
+  sources.append(libKernel_src_parh + item)
+for item in input_officeutils_sources:
+  sources.append(libOfficeUtils_src_parh + item)
+for item in input_minizip_sources:
+  sources.append(libMinizip_src_parh + item)
+sources.append("../main.cpp")
 
 # arguments
 arguments = ""
@@ -82,7 +132,7 @@ for item in sources:
 run_as_bash("./compile_module.sh", ["source ./emsdk/emsdk_env.sh", "emcc " + arguments])
 
 # finalize
-base.replaceInFile("./openssl.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){window.AscCrypto.onLoadModule();}];")
+base.replaceInFile("./openssl.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
 base.replaceInFile("./openssl.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
 
 openssl_js_content = base.readFile("./openssl.js")
@@ -101,3 +151,6 @@ if base.is_file("./deploy/openssl.wasm"):
 # write new version
 base.writeFile("./deploy/openssl.js", engine_js_content)
 base.copy_file("./openssl.wasm", "./deploy/openssl.wasm")
+
+base.delete_file("./openssl.js")
+base.delete_file("./openssl.wasm")

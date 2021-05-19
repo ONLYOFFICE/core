@@ -8,7 +8,8 @@
 #include <set>
 #include <vector>
 
-static std::vector<std::wstring> brackets;
+static std::vector<std::vector<std::wstring>> brackets;
+static int lvl_of_me = 0;
 static std::vector<int> end_counter;
 
 namespace Oox2Odf
@@ -28,6 +29,8 @@ namespace Oox2Odf
 	void DocxConverter::convert(OOX::Logic::COMath *oox_math)
 	{
 		if (!oox_math) return;
+		
+		brackets.resize(1);
 
 		bool bStart = odf_context()->start_math(); //может быть отдельно от COMathPara 
 
@@ -270,7 +273,7 @@ namespace Oox2Odf
 		if (!oox_beg_chr) return;
 
 		std::wstring s_val = oox_beg_chr->m_val->GetValue();
-		brackets.push_back(s_val);
+		brackets[lvl_of_me].push_back(s_val);
 	}
 
 	void DocxConverter::convert(OOX::Logic::CEndChr * oox_end_chr)
@@ -278,7 +281,7 @@ namespace Oox2Odf
 		if (!oox_end_chr) return;
 
 		std::wstring s_val = oox_end_chr->m_val->GetValue();
-		brackets.push_back(s_val);
+		brackets[lvl_of_me].push_back(s_val);
 	}
 
 	void DocxConverter::convert(OOX::Logic::CEqArr *oox_eq_arr)
@@ -803,6 +806,8 @@ namespace Oox2Odf
 		odf_writer::create_element(L"math", L"mroot", elm, odf_context());
 		odf_context()->math_context()->start_element(elm);
 
+		lvl_of_me++;
+		brackets.resize(brackets.size() + 1);
 		convert(oox_elm);
 
 		mrow();
@@ -852,6 +857,9 @@ namespace Oox2Odf
 		odf_writer::office_element_ptr elm;
 		odf_writer::create_element(L"math", L"msup", elm, odf_context());
 		odf_context()->math_context()->start_element(elm);
+
+		lvl_of_me++;
+		brackets.resize(brackets.size() + 1);
 
 		convert(oox_elm);
 
@@ -932,6 +940,7 @@ namespace Oox2Odf
 		
 		convert(oox_ssup->m_oSSupPr.GetPointer());
 		//convert(oox_ssup->m_oElement.GetPointer());
+
 		convert(oox_ssup->m_oSup.GetPointer(), oox_ssup->m_oElement.GetPointer());
 
 		//odf_context()->math_context()->end_element();
@@ -954,35 +963,46 @@ namespace Oox2Odf
 	{
 		if (!oox_elm) return;
 
-		if (!brackets.empty())
+		if (!brackets[lvl_of_me].empty())
 		{
-			for (size_t i = 0; i < brackets.size() / 2; ++i)
+			for (size_t i = 0; i < brackets[lvl_of_me].size() / 2; ++i)
 			{
 				odf_writer::office_element_ptr elm;
 				odf_writer::create_element(L"math", L"mo", elm, odf_context());
-				elm->add_text(brackets[i]);
+				elm->add_text(brackets[lvl_of_me][i]);
 				odf_context()->math_context()->start_element(elm);
-				odf_context()->math_context()->end_element();
+				odf_context()->math_context()->end_element();				
 			}
 		}
 
 		for (size_t i = 0; i < oox_elm->m_arrItems.size(); ++i)
 		{
+			if (oox_elm->m_arrItems[i]->getType() == OOX::et_m_e)
+			{
+				lvl_of_me++;
+				brackets.resize(brackets.size() + 1);
+			}
 			convert(oox_elm->m_arrItems[i]);
 		}
 
-		if (!brackets.empty())
+		if (!brackets[lvl_of_me].empty())
 		{
-			for (size_t i = brackets.size() / 2; i < brackets.size(); ++i)
+			for (size_t i = brackets[lvl_of_me].size() / 2; i < brackets[lvl_of_me].size(); ++i)
 			{
 				odf_writer::office_element_ptr elm;
 				odf_writer::create_element(L"math", L"mo", elm, odf_context());
-				elm->add_text(brackets[i]);
+				elm->add_text(brackets[lvl_of_me][i]);
 				odf_context()->math_context()->start_element(elm);
 				odf_context()->math_context()->end_element();
 			}
 		}
-		brackets.clear();
+		brackets[lvl_of_me].clear();
+
+		if (lvl_of_me != 0)
+		{
+			lvl_of_me--;
+			brackets.pop_back();
+		}
 
 		if (!end_counter.empty())
 		{

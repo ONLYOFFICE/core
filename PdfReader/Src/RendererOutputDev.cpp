@@ -51,7 +51,7 @@
 
 #include "../../PdfWriter/PdfRenderer.h"
 
-// TODO: 1. Реализовать по-нормальному градиентные заливки (Axial и Radial) 
+// TODO: 1. Реализовать по-нормальному градиентные заливки (Axial и Radial)
 //       2. m_pRenderer->SetAdditionalParam(L"TilingHtmlPattern", oWriter.GetXmlString());
 //       3. Подбор шрифтов необходимо перенести в GlobalParams->FindFontFile
 //       4. В идентефикацию шрифта к путю добавить номер шрифта в файле
@@ -107,7 +107,7 @@ namespace PdfReader
         //                oRef.nGen = XmlUtils::GetInteger( sValue );
         //            }
 
-        //            if ( oFont.GetNode( _T("FilePath"), oNode ) ) 
+        //            if ( oFont.GetNode( _T("FilePath"), oNode ) )
         //            {
         //                sFilePath = oNode.GetAttribute( _T("value") );
         //            }
@@ -379,7 +379,7 @@ namespace PdfReader
 
         //double pNewTm[6], arrMatrix[6];
         //double dAscent  = 0.905;
-        //double dDescent = -0.211; 
+        //double dDescent = -0.211;
         //double dKoef = ( dAscent - fabs( dDescent ) ) * 1;
 
         //double pCTM[6] = { 10, 0, 0, 10, 50, 50};
@@ -397,7 +397,7 @@ namespace PdfReader
         //arrMatrix[4] =   pNewTm[4] * pCTM[0] + pNewTm[5] * pCTM[2] + pCTM[4];
         //arrMatrix[5] = -(pNewTm[4] * pCTM[1] + pNewTm[5] * pCTM[3] + pCTM[5]) + 100;
 
-        //double  dAcsentFactor = ( ( fabs(-0.324) + fabs(1.005) ) - ( dAscent + fabs( dDescent ) ) ) / 2 + dAscent;  
+        //double  dAcsentFactor = ( ( fabs(-0.324) + fabs(1.005) ) - ( dAscent + fabs( dDescent ) ) ) / 2 + dAscent;
         //double dAscentShiftX = -arrMatrix[2] * dAcsentFactor;
         //double dAscentShiftY = -arrMatrix[3] * dAcsentFactor;
 
@@ -621,7 +621,7 @@ namespace PdfReader
             bool bFontSubstitution = false;
             // 1. Если шрифт внедренный, тогда скидываем его в темповый файл.
             // 2. Если шрифт лежит вне пдф, а в самом пдф есть ссылка на него, тогда используем эту ссылку.
-            // 3. В противном случае подбираем шрифт.            
+            // 3. В противном случае подбираем шрифт.
             if (pFont->GetEmbeddedFontFileRef(&oEmbRef))
             {
                 std::wstring wsExt;
@@ -682,7 +682,7 @@ namespace PdfReader
                     std::wstring wsSplitFileName, wsSplitFileExt;
                     SpitPathExt(wsFileName, &wsSplitFileName, &wsSplitFileExt);
                     std::wstring wsAfmPath = wsSplitFileName + L".afm";
-                    
+
                     FILE* pFile = NSFile::CFileBinary::OpenFileNative(wsAfmPath, L"wb");
                     if (pFile)
                     {
@@ -1069,7 +1069,7 @@ namespace PdfReader
                     }
 
                     if (L"" != wsTempFileName)
-                    {                        
+                    {
                         std::wstring wsSplitFileName, wsSplitFileExt;
                         SpitPathExt(wsFileName, &wsSplitFileName, &wsSplitFileExt);
                         std::wstring wsEncodingPath = wsSplitFileName + L".enc";
@@ -1355,7 +1355,7 @@ namespace PdfReader
                 }
             }
 
-            // Составляем таблицу Code -> Unicode 
+            // Составляем таблицу Code -> Unicode
             int nToUnicodeLen = 0;
             if (pFont->IsCIDFont())
             {
@@ -1406,7 +1406,7 @@ namespace PdfReader
 
             // Записываем файл с настройками шрифта (Специально для перезаписи в PDF)
             if (L"" != wsFileName && c_nPDFWriter == m_lRendererType)
-            {            
+            {
                 std::wstring wsSplitFileName, wsSplitFileExt;
                 SpitPathExt(wsFileName, &wsSplitFileName, &wsSplitFileExt);
                 std::wstring wsEncodingPath = wsSplitFileName + L".enc";
@@ -1793,7 +1793,7 @@ namespace PdfReader
                 else if (fontCIDType0 == eFontType || fontCIDType0C == eFontType || fontCIDType0COT == eFontType || fontCIDType2 == eFontType || fontCIDType2OT == eFontType)
                 {
                     // Пишем файл с кодировкой CMap
-                    std::wstring wsCMapPath = wsSplitFileName + L".cmap";                    
+                    std::wstring wsCMapPath = wsSplitFileName + L".cmap";
                     if (pFont->IsCIDFont())
                     {
                         GrCIDFont *pCIDFont = (GrCIDFont *)pFont;
@@ -1843,7 +1843,7 @@ namespace PdfReader
                             oBase64.Encode((unsigned char *)seBuffer->GetBuffer(), seBuffer->GetLength());
                             oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
                             oXmlWriter.WriteNodeEnd(L"ToUnicode");
-                            
+
                             delete seBuffer;
                         }
                         oDictItem.Free();
@@ -1948,7 +1948,7 @@ namespace PdfReader
                                     oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
 
                                     oXmlWriter.WriteNodeEnd(L"UseCMap");
-                                    
+
                                     delete seBuffer;
                                 }
                                 oEncItem.Free();
@@ -1968,7 +1968,7 @@ namespace PdfReader
                             oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
                             oXmlWriter.WriteNodeEnd(L"Stream");
                             oXmlWriter.WriteNodeEnd(L"Encoding");
-                            
+
                             delete seBuffer;
                         }
                         oDictItem.Free();
@@ -2380,7 +2380,7 @@ namespace PdfReader
                                             oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
 
                                             oXmlWriter.WriteNodeEnd(L"CIDToGIDMap");
-                                            
+
                                             delete seBuffer;
                                         }
                                         oFontItem.Free();
@@ -2932,7 +2932,7 @@ namespace PdfReader
         if (NULL == m_pFontList)
             return;
 
-        // Проверяем наличие текущего шрифта 
+        // Проверяем наличие текущего шрифта
         TFontEntry oEntry;
         if (!m_pFontList->GetFont(pGState->GetFont()->GetID(), &oEntry))
             return;
@@ -2981,7 +2981,7 @@ namespace PdfReader
         if (NULL == m_pFontList)
             return;
 
-        // Проверяем наличие текущего шрифта 
+        // Проверяем наличие текущего шрифта
         TFontEntry oEntry;
         if (!m_pFontList->GetFont(pGState->GetFont()->GetID(), &oEntry))
             return;
@@ -3243,7 +3243,7 @@ namespace PdfReader
         double *pCTM = pGState->GetCTM();
 
         //  Исходное предобразование
-        //              |1  0  0|   |pCTM[0] pCTM[1] 0| 
+        //              |1  0  0|   |pCTM[0] pCTM[1] 0|
         // arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
         //              |0  1  1|   |pCTM[4] pCTM[5] 1|
 
@@ -3281,7 +3281,7 @@ namespace PdfReader
         // Пишем данные в pBufferPtr
         ImageStream *pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->GetBitsPerComponent());
 
-        pImageStream->Reset();        
+        pImageStream->Reset();
 
         unsigned char unAlpha = m_bTransparentGroup ? 255.0 * pGState->GetFillOpacity() : 255;
 
@@ -3323,7 +3323,7 @@ namespace PdfReader
         double arrMatrix[6];
         double *pCTM = pGState->GetCTM();
         //  Исходное предобразование
-        //             |1  0  0|   |pCTM[0] pCTM[1] 0| 
+        //             |1  0  0|   |pCTM[0] pCTM[1] 0|
         // arrMatrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
         //             |0  1  1|   |pCTM[4] pCTM[5] 1|
         arrMatrix[0] =     pCTM[0];
@@ -3669,7 +3669,7 @@ namespace PdfReader
         double arrMatrix[6];
         double *pCTM = pGState->GetCTM();
         //  Исходное предобразование
-        //              |1  0  0|   |pCTM[0] pCTM[1] 0| 
+        //              |1  0  0|   |pCTM[0] pCTM[1] 0|
         // arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
         //              |0  1  1|   |pCTM[4] pCTM[5] 1|
         arrMatrix[0] =     pCTM[0];
@@ -3920,24 +3920,51 @@ namespace PdfReader
         m_pRenderer->get_DpiX(&xdpi);
         m_pRenderer->get_DpiY(&ydpi);
 
+
+        double arrMatrix[6];
+        double *pCTM = pGState->GetCTM();
+
+        bool some_cond_TBD = true; //todo what condition?
+
+        if (some_cond_TBD)
+        {
+            arrMatrix[0] =     pCTM[0];
+            arrMatrix[1] =  -pCTM[1];
+            arrMatrix[2] =    -pCTM[2];
+            arrMatrix[3] =  -(-pCTM[3]);
+            arrMatrix[4] =     pCTM[2] + pCTM[4];
+            arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + pGState->GetPageHeight();
+        }
+        else
+        {
+            arrMatrix[0] =  pCTM[0];
+            arrMatrix[1] = -pCTM[1];
+            arrMatrix[2] =  pCTM[2];
+            arrMatrix[3] = -pCTM[3];
+            arrMatrix[4] =  pCTM[4];
+            arrMatrix[5] = -pCTM[5] + pGState->GetPageHeight();
+        }
+
         double xcoef = xdpi / pGState->GetHorDPI();
         double ycoef = ydpi / pGState->GetVerDPI();
 
-        double newx = m_arrMatrix[0] * x * xcoef +  m_arrMatrix[1] * y * ycoef;    
-        double newy = m_arrMatrix[2] * x * xcoef +  m_arrMatrix[3] * y * ycoef;
-        newx += m_arrMatrix[4] * xcoef;    
-        newy += m_arrMatrix[5] * ycoef;
+        // x *= xcoef;
+        // y *= ycoef;
+       double newx = arrMatrix[0] * x * xcoef +  arrMatrix[1] * y * ycoef;
+       double newy = arrMatrix[2] * x * xcoef +  arrMatrix[3] * y * ycoef;
+       newx += arrMatrix[4] * xcoef;
+       newy += arrMatrix[5] * ycoef;
 
-        // double width, height;
-        // m_pRenderer->get_Height(&height);
-        // m_pRenderer->get_Width(&width);
+        double width, height;
+        m_pRenderer->get_Height(&height);
+        m_pRenderer->get_Width(&width);
 
-        
+
 
         x = newx ;
-        y = newy ;    
+        y = newy ;
     }
-    
+
     void RendererOutputDev::FillStrokeGradientPatch(GrState *pGState, PdfReader::GrPatch *patch)
         {
             if (m_bDrawOnlyText)
@@ -3960,7 +3987,7 @@ namespace PdfReader
                 {
                     double x = patch->arrX[i][j];
                     double y = patch->arrY[i][j];
-                    
+
                     TransformToPixels(pGState, x, y);
                     points[i][j].x = x;
                     points[i][j].y = y;
@@ -3976,18 +4003,18 @@ namespace PdfReader
                     colors[j][i] = {(unsigned)((dcolor >> 16)  & 0xFF), (unsigned)((dcolor >> 8) & 0xFF), (unsigned)((dcolor >> 0) & 0xFF), (unsigned)alpha};
                  }
             }
-            auto info = NSStructures::GInfoConstructor::get_tensor_curve(points, 
+            auto info = NSStructures::GInfoConstructor::get_tensor_curve(points,
             {},
              colors,
              false
             );
-        
+
         if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
         {
             GRenderer->put_BrushGradInfo(info);
             m_pRenderer->DrawPath(c_nWindingFillMode);
-        }  
-            
+        }
+
             m_pRenderer->EndCommand(c_nPathType);
             m_pRenderer->put_BrushType(brush);
         }
@@ -4020,9 +4047,9 @@ namespace PdfReader
         TransformToPixels(pGState, x1, y1);
         TransformToPixels(pGState, x2, y2);
 
-        auto info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y2}, r1 * r_coef, r2 * r_coef, 
+        auto info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y2}, r1 * r_coef, r2 * r_coef,
         t0, t1, pShading->GetExtendFirst(), pShading->GetExtendSecond());
-        
+
         GrColorSpace *ColorSpace = pShading->GetColorSpace();;
         float delta = (t1 - t0) / info.shading.function.get_resolution();
         float t = t0;
@@ -4031,7 +4058,7 @@ namespace PdfReader
             PdfReader::GrColor c;
             pShading->GetColor(t, &c);
             DWORD dword_color = ColorSpace->GetDwordColor(&c);
-            info.shading.function.set_color(i, (dword_color >> 16) % 0x100, 
+            info.shading.function.set_color(i, (dword_color >> 16) % 0x100,
                 (dword_color >> 8) % 0x100, (dword_color >> 0) % 0x100, alpha);
         }
 
@@ -4039,10 +4066,10 @@ namespace PdfReader
         {
             GRenderer->put_BrushGradInfo(info);
             m_pRenderer->DrawPath(c_nWindingFillMode);
-        }           
+        }
         m_pRenderer->EndCommand(c_nPathType);
         m_pRenderer->put_BrushType(brush);
-    }    
+    }
 
     void RendererOutputDev::FillStrokeGradientAxial(GrState *pGState, GrAxialShading *pShading)
     {
@@ -4065,14 +4092,14 @@ namespace PdfReader
         t0 = pShading->GetDomain0();
         t1 = pShading->GetDomain1();
 
-        
+
 
         TransformToPixels(pGState, x1, y1);
         TransformToPixels(pGState, x2, y2);
 
         auto info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
             pShading->GetExtendStart(), pShading->GetExtendEnd());
-        
+
         GrColorSpace *ColorSpace = pShading->GetColorSpace();;
         float delta = (t1 - t0) / info.shading.function.get_resolution();
         float t = t0;
@@ -4082,7 +4109,7 @@ namespace PdfReader
             pShading->GetColor(t, &c);
             t+=delta;
             DWORD dword_color = ColorSpace->GetDwordColor(&c);
-            info.shading.function.set_color(i, (dword_color >> 16) % 0x100, 
+            info.shading.function.set_color(i, (dword_color >> 16) % 0x100,
                 (dword_color >> 8) % 0x100, (dword_color >> 0) % 0x100, alpha);
         }
 
@@ -4090,8 +4117,8 @@ namespace PdfReader
         {
             GRenderer->put_BrushGradInfo(info);
             m_pRenderer->DrawPath(c_nWindingFillMode);
-        }  
-            
+        }
+
         m_pRenderer->EndCommand(c_nPathType);
         m_pRenderer->put_BrushType(brush);
     }
@@ -4104,7 +4131,7 @@ namespace PdfReader
             return;
 
         DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
-        
+
         long brush;
         int alpha = pGState->GetFillOpacity() * 255;
         m_pRenderer->get_BrushType(&brush);
@@ -4112,7 +4139,7 @@ namespace PdfReader
 
         std::vector<NSStructures::Point> pixel_points;
         std::vector<agg::rgba8> rgba8_colors;
-        GrCalRGBColorSpace ColorSpace; 
+        GrCalRGBColorSpace ColorSpace;
         for (int i = 0;i < 3; i++)
         {
             GrColor c = *colors[i];
@@ -4122,17 +4149,17 @@ namespace PdfReader
             double y = point[i].y;
             TransformToPixels(pGState, x, y);
             pixel_points.push_back({x, y});
-            
+
         }
 
         auto info = NSStructures::GInfoConstructor::get_triangle(pixel_points, rgba8_colors, {}, false);
-        
+
         if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
         {
             GRenderer->put_BrushGradInfo(info);
             m_pRenderer->DrawPath(c_nWindingFillMode);
-        }  
-            
+        }
+
         m_pRenderer->EndCommand(c_nPathType);
         m_pRenderer->put_BrushType(brush);
     }
@@ -4159,8 +4186,8 @@ namespace PdfReader
         {
             GRenderer->put_BrushGradInfo(info);
             m_pRenderer->DrawPath(c_nWindingFillMode);
-        }  
-            
+        }
+
         m_pRenderer->EndCommand(c_nPathType);
         m_pRenderer->put_BrushType(brush);
     }

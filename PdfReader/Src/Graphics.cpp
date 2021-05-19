@@ -672,7 +672,7 @@ namespace PdfReader
 		Operator *pOperator = NULL;
 		// Ищем оператор
 		char* sName = pCommand->GetCommand();
-
+		std::cout << sName << std::endl;
 		if (!(pOperator = FindOperator(sName)))
 		{
 			if (m_nIgnoreUndef == 0) // Проверяем наличие незакрытого оператора BX
@@ -2498,6 +2498,13 @@ namespace PdfReader
 		double dDy = dY1 - dY0;
 		bool bDxZero = fabs(dDx) < 0.01;
 		bool bDyZero = fabs(dDy) < 0.01;
+
+//		m_pGState->MoveTo(dX0, dY0);
+//		m_pGState->LineTo(dX1, dY1);
+//		m_pGState->ClosePath();
+//		m_pOut->Fill(m_pGState);
+//		m_pGState->ClearPath();
+//		return;
 		if (1) // Графический тип рендера todo
 		{
 			double xmin, ymin, xmax, ymax;
@@ -2511,7 +2518,7 @@ namespace PdfReader
 
 			m_pOut->FillStrokeGradientAxial(m_pGState, pShading);
 
-			m_pGState->ClearPath();	
+			m_pGState->ClearPath();
 			return;
 		}
 		if (bDxZero && bDyZero)

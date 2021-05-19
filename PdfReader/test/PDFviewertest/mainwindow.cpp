@@ -31,9 +31,9 @@ MainWindow::MainWindow(QWidget *parent)
     m_pImageCache = NSImages::NSFilesCache::Create(m_pFonts);
 
 #ifdef QT_DEBUG
-    ui->PageLineEdit->setText("750");
-    ui->FileNameLineEdit->setText("./test.pdf");
-    m_sFile = "./test.pdf";
+    ui->PageLineEdit->setText("1");
+    ui->FileNameLineEdit->setText("/home/danya/Downloads/Telegram Desktop/PDF 1-7 (756p)-750.pdf");
+    m_sFile = "/home/danya/Downloads/Telegram Desktop/PDF 1-7 (756p)-750.pdf";
     OpenFile();
 #endif
 }

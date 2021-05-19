@@ -38,13 +38,16 @@
 
 namespace PdfWriter
 {
-
+	class CDocument;
 	class CPage;
+	class CAnnotAppearance;
+	class CAnnotAppearanceObject;
+	class CResourceDict;
 
 	class CFieldBase : public CDictObject
 	{
 	public:
-		CFieldBase(CXref* pXref);
+		CFieldBase(CXref* pXref, CDocument* pDocument);
 
 		void SetReadOnlyFlag(bool isReadOnly);
 		void SetRequiredFlag(bool isRequired);
@@ -52,19 +55,24 @@ namespace PdfWriter
 		void AddPageRect(CPage* pPage, const TRect& oRect);
 		void SetFieldName(const std::wstring& wsName);
 		void SetFieldHint(const std::wstring& wsHint);
-	
+		TRect& GetRect();
+		CResourceDict* GetResourcesDict();
+
 	protected:
 
-		void SetFlag(bool isFlag, int nBitPosition);
+		void SetFlag(bool isFlag, int nBitPosition);		
 
-	private:
+	protected:
 
+		CXref*     m_pXref;
+		TRect      m_oRect;
+		CDocument* m_pDocument;
 	};
 
 	class CTextField : public CFieldBase
 	{
 	public:
-		CTextField(CXref* pXRef);
+		CTextField(CXref* pXRef, CDocument* pDocument);
 
 		void SetMultilineFlag(bool isMultiLine);
 		void SetPasswordFlag(bool isPassword);
@@ -77,9 +85,42 @@ namespace PdfWriter
 		void SetMaxLen(int nMaxLen);
 
 		void SetValue(const std::wstring& wsValue);
+		
 
 	private:
 	};
+
+	class CAnnotAppearance : public CDictObject
+	{
+	public:
+		CAnnotAppearance(CXref* pXRef, CFieldBase* pField);
+
+		CAnnotAppearanceObject* GetNormal();
+		CAnnotAppearanceObject* GetRollover();
+		CAnnotAppearanceObject* GetDown();
+
+	private:
+
+		CXref*                  m_pXref;
+		CAnnotAppearanceObject* m_pNormal;
+		CAnnotAppearanceObject* m_pRollover;
+		CAnnotAppearanceObject* m_pDown;
+		CFieldBase*             m_pField;
+	};
+
+	class CAnnotAppearanceObject : public CDictObject
+	{
+	public:
+		CAnnotAppearanceObject(CXref* pXRef, CFieldBase* pField);
+		void DrawSimpleText(const std::wstring& wsText);
+
+
+	private:
+
+		CXref*   m_pXref;
+		CStream* m_pStream;
+	};
+
 }
 
 #endif // _PDF_WRITER_SRC_FIELD_H

@@ -31,6 +31,8 @@
 */
 #include "Field.h"
 #include "Pages.h"
+#include "Streams.h"
+#include "Document.h"
 
 #include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../DesktopEditor/common/File.h"
@@ -40,10 +42,13 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CFieldBase
 	//----------------------------------------------------------------------------------------
-	CFieldBase::CFieldBase(CXref* pXref)
+	CFieldBase::CFieldBase(CXref* pXref, CDocument* pDocument)
 	{
 		pXref->Add(this);
 		Add("Ff", (unsigned int)0);
+
+		m_pXref     = pXref;
+		m_pDocument = pDocument;
 	}
 	void CFieldBase::SetReadOnlyFlag(bool isReadOnly)
 	{
@@ -96,6 +101,11 @@ namespace PdfWriter
 			pArray->Add(oRect.fTop);
 			pArray->Add(oRect.fRight);
 			pArray->Add(oRect.fBottom);
+
+			m_oRect.fLeft = oRect.fLeft;
+			m_oRect.fTop = oRect.fTop;
+			m_oRect.fRight = oRect.fRight;
+			m_oRect.fBottom = oRect.fBottom;
 		}
 		else
 		{
@@ -103,6 +113,11 @@ namespace PdfWriter
 			pArray->Add(oRect.fBottom);
 			pArray->Add(oRect.fRight);
 			pArray->Add(oRect.fTop);
+
+			m_oRect.fLeft = oRect.fLeft;
+			m_oRect.fTop = oRect.fBottom;
+			m_oRect.fRight = oRect.fRight;
+			m_oRect.fBottom = oRect.fTop;
 		}
 
 		Add("F", 4);		
@@ -117,10 +132,14 @@ namespace PdfWriter
 		std::string sHint = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsHint);
 		Add("TU", new CStringObject(sHint.c_str(), true));
 	}
+	TRect& CFieldBase::GetRect()
+	{
+		return m_oRect;
+	}
 	//----------------------------------------------------------------------------------------
 	// CTextField
 	//----------------------------------------------------------------------------------------
-	CTextField::CTextField(CXref* pXref) : CFieldBase(pXref)
+	CTextField::CTextField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
 	{
 		Add("FT", "Tx");
 	}
@@ -160,5 +179,100 @@ namespace PdfWriter
 	{
 		std::string sValue = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsValue);
 		Add("V", new CStringObject(sValue.c_str(), true));
+
+		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
+		Add("AP", pAppearance);
+		//Add("DR", m_pDocument->GetRes);
+
+		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
+		pNormal->DrawSimpleText(wsValue);
 	}
+
+
+	CAnnotAppearance::CAnnotAppearance(CXref* pXref, CFieldBase* pField)
+	{
+		m_pXref  = pXref;
+		m_pField = pField;
+
+		m_pNormal   = new CAnnotAppearanceObject(pXref, pField);
+		m_pRollover = NULL;
+		m_pDown     = NULL;
+
+		Add("N", m_pNormal);
+	}
+	CAnnotAppearanceObject* CAnnotAppearance::GetNormal()
+	{
+		return m_pNormal;
+	}
+	CAnnotAppearanceObject* CAnnotAppearance::GetRollover()
+	{
+		if (!m_pRollover)
+		{
+			m_pRollover = new CAnnotAppearanceObject(m_pXref, m_pField);
+			Add("R", m_pRollover);
+		}
+
+		return m_pRollover;
+	}
+	CAnnotAppearanceObject* CAnnotAppearance::GetDown()
+	{
+		if (!m_pDown)
+		{
+			m_pDown = new CAnnotAppearanceObject(m_pXref, m_pField);
+			Add("D", m_pDown);
+		}
+
+		return m_pDown;
+	}
+	
+	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXref, CFieldBase* pField)
+	{
+		m_pXref   = pXref;
+		m_pStream = new CMemoryStream();
+
+		SetStream(m_pXref, m_pStream);
+
+		Add("Type", "XObject");
+		Add("Subtype", "Form");
+
+		TRect oRect = pField->GetRect();
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		Add("BBox", pArray);
+		pArray->Add(0);
+		pArray->Add(0);
+		pArray->Add(oRect.fBottom - oRect.fTop);
+		pArray->Add(oRect.fRight - oRect.fLeft);
+
+		// TODO: Add Resources
+		//Add("Resources");
+	}
+	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText)
+	{
+		if (!m_pStream)
+			return;
+
+		double dX = 1.0;
+		double dY = 1.0;
+
+
+		m_pStream->WriteStr("BT\012");
+
+		m_pStream->WriteReal(dX);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteStr(" Td\012");
+
+		std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsText);
+		m_pStream->WriteEscapeText((BYTE*)(sText.c_str()), sText.length(), true);
+
+		m_pStream->WriteStr(" Tj\012");
+
+		m_pStream->WriteStr("ET\012");
+	}
+
+
 }

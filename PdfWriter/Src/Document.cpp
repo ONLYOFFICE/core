@@ -81,6 +81,7 @@ namespace PdfWriter
 		m_pTransparencyGroup = NULL;
 		m_pFreeTypeLibrary  = NULL;
 		m_pAcroForm         = NULL;
+		m_pFieldsResources  = NULL;
 
 		m_bPDFAConformance	= false;
 	}
@@ -169,6 +170,7 @@ namespace PdfWriter
 		m_pJbig2            = NULL;
 		m_pTransparencyGroup= NULL;
 		m_pAcroForm         = NULL;
+		m_pFieldsResources  = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
 
 		m_vPages.clear();
@@ -819,12 +821,22 @@ namespace PdfWriter
 		double pPattern[] ={ dX0, dY0, dR0, dX1, dY1, dR1 };
 		return CreateShading(pPage, pPattern, false, pColors, pAlphas, pPoints, nCount, pExtGrState);
 	}
+	CDictObject* CDocument::GetFieldsResources()
+	{
+		if (!m_pFieldsResources)
+		{
+			m_pFieldsResources = new CDictObject();
+			m_pXref->Add(m_pFieldsResources);
+		}
+
+		return m_pFieldsResources;
+	}
 	CTextField* CDocument::CreateTextField()
 	{
 		if (!CheckAcroForm())
 			return NULL;
 
-		CTextField* pField = new CTextField(m_pXref);
+		CTextField* pField = new CTextField(m_pXref, this);
 		if (!pField)
 			return NULL;
 

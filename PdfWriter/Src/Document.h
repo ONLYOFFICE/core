@@ -128,7 +128,8 @@ namespace PdfWriter
 		CShading*         CreateAxialShading(CPage* pPage, double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);
 		CShading*         CreateRadialShading(CPage* pPage, double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);
 
-		CTextField*       CreateTextField();
+		CDictObject*      GetFieldsResources();
+		CTextField*       CreateTextField();		
 					  
 	private:		  
 					  
@@ -186,6 +187,7 @@ namespace PdfWriter
 		bool                           m_bPDFAConformance;
 		std::wstring				   m_wsDocumentID;
 		CAcroForm*                     m_pAcroForm;
+		CDictObject*                   m_pFieldsResources;
 
 		friend class CFontCidTrueType;
 	};

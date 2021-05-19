@@ -766,6 +766,8 @@ namespace Oox2Odf
 	{
 		if (!oox_rad) return;
 
+		lvl_of_me++;
+		brackets.resize(brackets.size() + 1);
 		convert(oox_rad->m_oRadPr.GetPointer());
 
 		if (oox_rad->m_oDeg.GetPointer()->m_arrItems.size() == 0)

@@ -41,6 +41,10 @@
 
 #if defined(WIN32) || defined(_WIN32)
 #include <windows.h>
+#include "io.h"
+#endif
+#if defined(__linux__)
+#include "unistd.h"
 #endif
 
 #if defined(_WIN32_WCE)

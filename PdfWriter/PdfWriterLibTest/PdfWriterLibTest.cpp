@@ -61,26 +61,28 @@ void TestField()
 	oPdf.CreateNew();
 	CPage* pPage = oPdf.AddPage();
 
-	CTextField* pField1 = oPdf.CreateTextField();
-	pField1->SetRequiredFlag(true);
-	pField1->AddPageRect(pPage, TRect(0, 100, 100, 0));
-	pField1->SetFieldName(L"Test");
-	pField1->SetFieldHint(L"Подсказка");
+	CFontDict* pFont = oPdf.CreateFont14(standard14fonts_Courier);
 
-	CTextField* pField2 = oPdf.CreateTextField();
-	pField2->SetRequiredFlag(false);
-	pField2->SetCombFlag(true);
-	pField2->AddPageRect(pPage, TRect(200, 300, 300, 250));
-	pField2->SetFieldName(L"Test");
-	pField2->SetFieldHint(L"Hint");
+	//CTextField* pField1 = oPdf.CreateTextField();
+	//pField1->SetRequiredFlag(true);
+	//pField1->AddPageRect(pPage, TRect(0, 100, 100, 0));
+	//pField1->SetFieldName(L"Test");
+	//pField1->SetFieldHint(L"Подсказка");
 
-	CTextField* pField3 = oPdf.CreateTextField();
-	pField3->SetRequiredFlag(false);
-	pField3->SetCombFlag(true);
-	pField3->AddPageRect(pPage, TRect(200, 500, 300, 450));
-	pField3->SetFieldName(L"Test123");
-	pField3->SetFieldHint(L"Hint123");
-	pField3->SetMaxLen(10);
+	//CTextField* pField2 = oPdf.CreateTextField();
+	//pField2->SetRequiredFlag(false);
+	//pField2->SetCombFlag(true);
+	//pField2->AddPageRect(pPage, TRect(200, 300, 300, 250));
+	//pField2->SetFieldName(L"Test");
+	//pField2->SetFieldHint(L"Hint");
+
+	//CTextField* pField3 = oPdf.CreateTextField();
+	//pField3->SetRequiredFlag(false);
+	//pField3->SetCombFlag(true);
+	//pField3->AddPageRect(pPage, TRect(200, 500, 300, 450));
+	//pField3->SetFieldName(L"Test123");
+	//pField3->SetFieldHint(L"Hint123");
+	//pField3->SetMaxLen(10);
 
 	CTextField* pField4 = oPdf.CreateTextField();
 	pField4->SetRequiredFlag(false);
@@ -88,7 +90,7 @@ void TestField()
 	pField4->SetFieldName(L"Test1234");
 	pField4->SetFieldHint(L"Hint1234");
 	pField4->SetMaxLen(10);
-	pField4->SetValue(L"Илья");
+	pField4->SetValue(L"Ilya", pFont, 40, 1, 14.3);
 
 
 

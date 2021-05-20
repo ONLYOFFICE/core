@@ -29,34 +29,38 @@
 * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
 *
 */
-#include "ResourceDictionary.h"
+#include "ResourcesDictionary.h"
 #include "Font.h"
 #include "Utils.h"
 
 namespace PdfWriter
 {
 	//----------------------------------------------------------------------------------------
-	// CResourceDict
+	// CResourcesDict
 	//----------------------------------------------------------------------------------------
-	CResourceDict::CResourceDict(CXref* pXref)
+	CResourcesDict::CResourcesDict(CXref* pXref, bool bInline, bool bProcSet)
 	{
 		m_unFontsCount = 0;
 		m_pFonts       = NULL;
 		
-		pXref->Add(this);
+		if (!bInline)
+			pXref->Add(this);
 
-		CArrayObject* pProcset = new CArrayObject();
-		if (!pProcset)
-			return;
+		if (bProcSet)
+		{
+			CArrayObject* pProcset = new CArrayObject();
+			if (!pProcset)
+				return;
 
-		Add("ProcSet", pProcset);
-		pProcset->Add(new CNameObject("PDF"));
-		pProcset->Add(new CNameObject("Text"));
-		pProcset->Add(new CNameObject("ImageB"));
-		pProcset->Add(new CNameObject("ImageC"));
-		pProcset->Add(new CNameObject("ImageI"));
+			Add("ProcSet", pProcset);
+			pProcset->Add(new CNameObject("PDF"));
+			pProcset->Add(new CNameObject("Text"));
+			pProcset->Add(new CNameObject("ImageB"));
+			pProcset->Add(new CNameObject("ImageC"));
+			pProcset->Add(new CNameObject("ImageI"));
+		}
 	}
-	const char* CResourceDict::GetFontName(CFontDict* pFont)
+	const char* CResourcesDict::GetFontName(CFontDict* pFont)
 	{
 		if (!m_pFonts)
 		{

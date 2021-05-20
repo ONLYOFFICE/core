@@ -47,6 +47,7 @@
 #include "Pattern.h"
 #include "AcroForm.h"
 #include "Field.h"
+#include "ResourcesDictionary.h"
 
 #include "../../DesktopEditor/agg-2.4/include/agg_span_hatch.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
@@ -821,13 +822,10 @@ namespace PdfWriter
 		double pPattern[] ={ dX0, dY0, dR0, dX1, dY1, dR1 };
 		return CreateShading(pPage, pPattern, false, pColors, pAlphas, pPoints, nCount, pExtGrState);
 	}
-	CDictObject* CDocument::GetFieldsResources()
+	CResourcesDict* CDocument::GetFieldsResources()
 	{
 		if (!m_pFieldsResources)
-		{
-			m_pFieldsResources = new CDictObject();
-			m_pXref->Add(m_pFieldsResources);
-		}
+			m_pFieldsResources = new CResourcesDict(m_pXref, false, true);
 
 		return m_pFieldsResources;
 	}

@@ -33,6 +33,11 @@
 #include "Pages.h"
 #include "Streams.h"
 #include "Document.h"
+#include "ResourcesDictionary.h"
+#include "Types.h"
+
+#include <algorithm>
+#include <math.h>
 
 #include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../DesktopEditor/common/File.h"
@@ -136,6 +141,10 @@ namespace PdfWriter
 	{
 		return m_oRect;
 	}
+	CResourcesDict* CFieldBase::GetResourcesDict()
+	{
+		return m_pDocument->GetFieldsResources();
+	}
 	//----------------------------------------------------------------------------------------
 	// CTextField
 	//----------------------------------------------------------------------------------------
@@ -175,17 +184,35 @@ namespace PdfWriter
 	{
 		Add("MaxLen", nMaxLen);
 	}
-	void CTextField::SetValue(const std::wstring &wsValue)
+	void CTextField::SetValue(const std::wstring &wsValue, CFontDict* pFont, double dFontSize, double dX, double dY)
 	{
 		std::string sValue = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsValue);
 		Add("V", new CStringObject(sValue.c_str(), true));
 
 		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
 		Add("AP", pAppearance);
-		//Add("DR", m_pDocument->GetRes);
+		
 
 		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
-		pNormal->DrawSimpleText(wsValue);
+
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+
+		CResourcesDict* pResources = new CResourcesDict(m_pXref, true, false);
+		const char* sFontName = pResources->GetFontName(pFont);
+		if (!sFontName)
+			return;
+
+		Add("DR", pResources);
+
+		pNormal->DrawSimpleText(wsValue, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY);
+
+		std::string sDA = "0 0 0 rg /";
+		sDA.append(sFontName);
+		sDA.append(" ");
+		sDA.append(std::to_string(dFontSize));
+		sDA.append(" Tf");
+
+		Add("DA", new CStringObject(sDA.c_str()));
 	}
 
 
@@ -244,22 +271,30 @@ namespace PdfWriter
 		Add("BBox", pArray);
 		pArray->Add(0);
 		pArray->Add(0);
-		pArray->Add(oRect.fBottom - oRect.fTop);
 		pArray->Add(oRect.fRight - oRect.fLeft);
+		pArray->Add(oRect.fBottom - oRect.fTop);
 
-		// TODO: Add Resources
-		//Add("Resources");
+		Add("Resources", pField->GetResourcesDict());
 	}
-	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText)
+	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, const char* sFontName, double dFontSize, double dX, double dY)
 	{
-		if (!m_pStream)
+		if (!m_pStream || !sFontName)
 			return;
 
-		double dX = 1.0;
-		double dY = 1.0;
+		m_pStream->WriteEscapeName("Tx");
+		m_pStream->WriteStr(" BMC\012q\012");
+
+		m_pStream->WriteStr("1 1 98 100 re\012W\012n\012");
 
 
 		m_pStream->WriteStr("BT\012");
+
+		dFontSize = std::min(1000.0, std::max(0.0, dFontSize));
+
+		m_pStream->WriteEscapeName(sFontName);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dFontSize);
+		m_pStream->WriteStr(" Tf\012");
 
 		m_pStream->WriteReal(dX);
 		m_pStream->WriteChar(' ');
@@ -272,6 +307,8 @@ namespace PdfWriter
 		m_pStream->WriteStr(" Tj\012");
 
 		m_pStream->WriteStr("ET\012");
+		
+		m_pStream->WriteStr("Q\012EMC\012");
 	}
 
 

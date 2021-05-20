@@ -42,7 +42,8 @@ namespace PdfWriter
 	class CPage;
 	class CAnnotAppearance;
 	class CAnnotAppearanceObject;
-	class CResourceDict;
+	class CResourcesDict;
+	class CFontDict;
 
 	class CFieldBase : public CDictObject
 	{
@@ -56,7 +57,7 @@ namespace PdfWriter
 		void SetFieldName(const std::wstring& wsName);
 		void SetFieldHint(const std::wstring& wsHint);
 		TRect& GetRect();
-		CResourceDict* GetResourcesDict();
+		CResourcesDict* GetResourcesDict();
 
 	protected:
 
@@ -84,7 +85,7 @@ namespace PdfWriter
 
 		void SetMaxLen(int nMaxLen);
 
-		void SetValue(const std::wstring& wsValue);
+		void SetValue(const std::wstring& wsValue, CFontDict* pDict, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0);
 		
 
 	private:
@@ -112,7 +113,7 @@ namespace PdfWriter
 	{
 	public:
 		CAnnotAppearanceObject(CXref* pXRef, CFieldBase* pField);
-		void DrawSimpleText(const std::wstring& wsText);
+		void DrawSimpleText(const std::wstring& wsText, const char* sFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0);
 
 
 	private:

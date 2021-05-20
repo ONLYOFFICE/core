@@ -176,6 +176,7 @@
     <ClInclude Include="..\Src\Outline.h" />
     <ClInclude Include="..\Src\Pages.h" />
     <ClInclude Include="..\Src\Pattern.h" />
+    <ClInclude Include="..\Src\ResourcesDictionary.h" />
     <ClInclude Include="..\Src\Shading.h" />
     <ClInclude Include="..\Src\Streams.h" />
     <ClInclude Include="..\Src\Types.h" />
@@ -256,6 +257,7 @@
     <ClCompile Include="..\Src\Outline.cpp" />
     <ClCompile Include="..\Src\Pages.cpp" />
     <ClCompile Include="..\Src\Pattern.cpp" />
+    <ClCompile Include="..\Src\ResourcesDictionary.cpp" />
     <ClCompile Include="..\Src\Shading.cpp" />
     <ClCompile Include="..\Src\Streams.cpp" />
     <ClCompile Include="..\Src\Utils.cpp" />

@@ -8,29 +8,35 @@
 #include <set>
 #include <vector>
 
-static std::vector<std::vector<std::wstring>> brackets;
-static int lvl_of_me = 0;
-static std::vector<int> end_counter;
+static std::vector<std::vector<std::wstring>> brackets; // контейнер для скобочек
+static int lvl_of_me = 0; // уровень вложенности <m:e>
+static std::vector<int> end_counter; // не помню зачем сделал массив вместо переменной, сделал на будущее
 
 namespace Oox2Odf
 {
-	void DocxConverter::mrow()
+	void DocxConverter::mrow() // обертка для тега <mrow>
 	{
 		odf_writer::office_element_ptr elm;
 		odf_writer::create_element(L"math", L"mrow", elm, odf_context());
 		odf_context()->math_context()->start_element(elm);
 	}
 
-	void DocxConverter::endOfMrow()
+	void DocxConverter::endOfMrow() // закрывашка тега <mrow>
 	{
 		odf_context()->math_context()->end_element();
+	}
+
+	void DocxConverter::resizeBrackets()
+	{
+		lvl_of_me++;
+		brackets.resize(brackets.size() + 1);
 	}
 
 	void DocxConverter::convert(OOX::Logic::COMath *oox_math)
 	{
 		if (!oox_math) return;
 		
-		brackets.resize(1);
+		brackets.resize(1); // lvl_of_me == 0 - need resize
 
 		bool bStart = odf_context()->start_math(); //может быть отдельно от COMathPara 
 
@@ -601,12 +607,7 @@ namespace Oox2Odf
 
 	void DocxConverter::convert(OOX::Logic::CMRun *oox_mrun)
 	{
-		if (!oox_mrun) return;
-		// TODO <mi/mo/mn>
-
-		/*odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"m", L"mathRun", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);*/
+		if (!oox_mrun) return;	
 
 		convert(oox_mrun->m_oAnnotationRef.GetPointer());
 		convert(oox_mrun->m_oARPr.GetPointer());
@@ -638,7 +639,7 @@ namespace Oox2Odf
 		convert(oox_mrun->m_oObject.GetPointer());
 		convert(oox_mrun->m_oPgNum.GetPointer());
 		convert(oox_mrun->m_oPtab.GetPointer());
-		//convert(oox_mrun->m_oRPr.GetPointer());
+		//convert(oox_mrun->m_oRPr.GetPointer()); // тут падает
 		convert(oox_mrun->m_oRuby.GetPointer());
 		convert(oox_mrun->m_oSeparator.GetPointer());
 		convert(oox_mrun->m_oSoftHyphen.GetPointer());
@@ -648,7 +649,6 @@ namespace Oox2Odf
 		convert(oox_mrun->m_oYearLong.GetPointer());
 		convert(oox_mrun->m_oYearShort.GetPointer());
 
-		//odf_context()->math_context()->end_element();
 	}
 
 
@@ -766,8 +766,7 @@ namespace Oox2Odf
 	{
 		if (!oox_rad) return;
 
-		lvl_of_me++;
-		brackets.resize(brackets.size() + 1);
+		resizeBrackets();
 		convert(oox_rad->m_oRadPr.GetPointer());
 
 		if (oox_rad->m_oDeg.GetPointer()->m_arrItems.size() == 0)
@@ -808,8 +807,7 @@ namespace Oox2Odf
 		odf_writer::create_element(L"math", L"mroot", elm, odf_context());
 		odf_context()->math_context()->start_element(elm);
 
-		lvl_of_me++;
-		brackets.resize(brackets.size() + 1);
+		resizeBrackets();
 		convert(oox_elm);
 
 		mrow();
@@ -860,8 +858,7 @@ namespace Oox2Odf
 		odf_writer::create_element(L"math", L"msup", elm, odf_context());
 		odf_context()->math_context()->start_element(elm);
 
-		lvl_of_me++;
-		brackets.resize(brackets.size() + 1);
+		resizeBrackets();
 
 		convert(oox_elm);
 
@@ -979,11 +976,9 @@ namespace Oox2Odf
 
 		for (size_t i = 0; i < oox_elm->m_arrItems.size(); ++i)
 		{
-			if (oox_elm->m_arrItems[i]->getType() == OOX::et_m_e)
-			{
-				lvl_of_me++;
-				brackets.resize(brackets.size() + 1);
-			}
+			if (oox_elm->m_arrItems[i]->getType() == OOX::et_m_e)			
+				resizeBrackets();
+			
 			convert(oox_elm->m_arrItems[i]);
 		}
 

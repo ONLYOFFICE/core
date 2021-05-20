@@ -341,6 +341,7 @@ namespace Oox2Odf
 		//------------------------------------------------------------------------
 		void mrow();
 		void endOfMrow();
+		void resizeBrackets();
 		void convert(OOX::Logic::COMath					*oox_math);
 		void convert(OOX::Logic::CMathPr				*oox_math_pr);
 		void convert(OOX::Logic::CCtrlPr				*oox_ctrl_pr);

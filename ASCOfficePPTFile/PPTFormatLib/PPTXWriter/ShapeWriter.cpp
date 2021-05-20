@@ -1692,9 +1692,17 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
     auto& actions = pShapeElement->m_arrActions;
     for (unsigned i = 0; i < actions.size(); i++)
     {
+        if (actions[i].m_lType == CInteractiveInfo::over
+                && actions[i].m_strAudioFileName.empty()
+                && actions[i].m_lType == II_NoAction)
+            continue;
+
         PPTX::Logic::Hyperlink hlink;
         if (actions[i].m_strHyperlink.size() && m_pRels)
-            hlink.id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);
+        {
+            std::wstring id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);
+            hlink.id = id;
+        }
 
         if (actions[i].m_strAudioFileName.size() && m_pRels)
         {
@@ -1724,36 +1732,37 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
             {
             case II_NextSlide:
             {
-                strJump = L"nextslide";
+                strJump += L"nextslide";
                 break;
             }
             case II_PreviousSlide:
             {
-                strJump = L"previousslide";
+                strJump += L"previousslide";
                 break;
             }
             case II_FirstSlide:
             {
-                strJump = L"firstslide";
+                strJump += L"firstslide";
                 break;
             }
             case II_LastSlide:
             {
-                strJump = L"lastslide";
+                strJump += L"lastslide";
                 break;
             }
             case II_LastSlideViewed:
             {
-                strJump = L"lastslideviewed";
+                strJump += L"lastslideviewed";
                 break;
             }
             case II_EndShow:
             {
-                strJump = L"endshow";
+                strJump += L"endshow";
                 break;
             }
             }
             hlink.action = strJump;
+            hlink.id = L"";
             break;
         }
         case II_HyperlinkAction:

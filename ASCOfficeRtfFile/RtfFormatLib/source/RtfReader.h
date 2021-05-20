@@ -53,7 +53,6 @@ public:
             RtfRowProperty          m_oRowProperty;
             RtfCellProperty         m_oCellProperty;
             RtfOldList              m_oCurOldList;
-		//	RtfSectionProperty		m_oSectionProp;
 			ReaderStatePtr			m_pSaveState;
             std::string             m_sCurText;
 			bool					m_bControlPresent;
@@ -70,7 +69,6 @@ public:
 			}
 	};
 
-//---------------------------------TextParser----------------------------------
     ReaderStatePtr      m_oState;
     RtfSectionProperty  m_oCurSectionProp;
     RtfLex              m_oLex;
@@ -114,77 +112,7 @@ public:
 
 		m_bUseGlobalCodepage = false;
 	}
-	bool Parse(RtfDocument& oDocument, RtfReader& oReader )
-	{
-		NFileWriter::CBufferedFileWriter* poOldWriter = oReader.m_oLex.m_oFileWriter;
-		oReader.m_oLex.m_oFileWriter = m_oFileWriter;
-
-		int res = 0;
-		m_oTok = oReader.m_oLex.NextCurToken();
-		if( m_oTok.Type == m_oTok.None )
-			m_oTok = oReader.m_oLex.NextToken();
-	
-		while (m_oTok.Type != RtfToken::Eof && false == m_bStopReader)
-		{
-			switch (m_oTok.Type)
-			{
-				case RtfToken::GroupStart:
-				{
-					ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
-					PushState(oReader);
-				}break;
-				case RtfToken::GroupEnd:
-				{
-					ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
-
-					PopState(oDocument, oReader);
-				}break;
-				case RtfToken::Keyword:
-				{
-						ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
-                        if( m_oTok.Key == "u")
-						{
-							ExecuteText( oDocument, oReader, ExecuteTextInternal( oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter, m_nSkipChars) );
-							break;
-						}
-						else
-						{
-							if( true == m_bSkip )
-							{
-                                if( false ==  ExecuteCommand( oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter ) )
-									Skip( oDocument, oReader );
-								m_bSkip = false;
-							}
-							else
-                                ExecuteCommand( oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter );
-						}
-						if( true == m_bCanStartNewReader )
-							m_bCanStartNewReader = false;
-				}break;
-				case RtfToken::Control:
-				{
-                        if( m_oTok.Key == "42" )
-							m_bSkip = true;
-                        if( m_oTok.Key == "39" && true == m_oTok.HasParameter )
-						{
-                            oReader.m_oState->m_sCurText += m_oTok.Parameter ;
-							oReader.m_oState->m_bControlPresent = true;
-						}
-				}break;
-				case RtfToken::Text:
-				{
-					oReader.m_oState->m_sCurText += m_oTok.Key;
-				}break;
-						
-			}
-			if( false == m_bStopReader)
-				m_oTok = oReader.m_oLex.NextToken();
-		}
-
-		oReader.m_oLex.m_oFileWriter = poOldWriter;
-
-		return true;
-	}
+	bool Parse(RtfDocument& oDocument, RtfReader& oReader);
 	virtual void PushState(RtfReader& oReader)
 	{
 		oReader.PushState();
@@ -196,7 +124,7 @@ public:
 		if( m_nCurGroups > 0 )
 			m_nCurGroups--;
 		else
-			;//ATLASSERT(false);
+			;//ASSERT(false);
 		if( m_nCurGroups == 0 )
 		{
 			m_bStopReader = true;
@@ -212,7 +140,7 @@ public:
 		{
 			m_bCanStartNewReader = false;
 			m_nCurGroups--;
-			//poNewReader.PushState( oReader );
+
 			poNewReader.m_bSkip = m_bSkip;
 			return poNewReader.Parse(oDocument, oReader);
 		}
@@ -246,72 +174,12 @@ public:
 	virtual void ExitReader2( RtfDocument& oDocument, RtfReader& oReader )
 	{
 	}
-    /*static */std::wstring ExecuteTextInternal( RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, bool bHasPar, int nPar, int& nSkipChars)
-	{
-        std::wstring sResult;
+	std::wstring ExecuteTextInternal(RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, bool bHasPar, int nPar, int& nSkipChars);
 
-        if( "u" == sKey )
-		{
-			if( true == bHasPar )
-                sResult += wchar_t( nPar );
-		}
-		else
-		{
-            std::string sCharString;
-            if( "39" == sKey )
-			{
-				if( true == bHasPar )
-                    sCharString += (char)nPar ;
-			}
-			else
-				sCharString = sKey;
-
-			sResult = ExecuteTextInternalCodePage(sCharString, oDocument, oReader);
-		}
-		ExecuteTextInternalSkipChars(sResult, oReader, sKey, nSkipChars);
-		return sResult;
-	}
-
-    virtual void ExecuteTextInternal2( RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, int& nSkipChars)
-	{
-        if(oReader.m_oState->m_sCurText.length() > 0)
-		{
-            std::wstring sResult = ExecuteTextInternalCodePage(oReader.m_oState->m_sCurText, oDocument, oReader);
-            oReader.m_oState->m_sCurText.erase();
-			oReader.m_oState->m_bControlPresent = false;
-            if(false == sResult.empty())
-			{
-                std::string str;
-				ExecuteTextInternalSkipChars (sResult, oReader, str, nSkipChars);
-				ExecuteText					 ( oDocument, oReader, sResult);
-			}
-		}
-	}
-    /*static */void ExecuteTextInternalSkipChars(std::wstring & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars)
-	{
-		//удаляем символы вслед за юникодом
-		if( nSkipChars > 0 )
-		{
-            int nLength = (int)sResult.length();
-			if( nSkipChars >= nLength )
-			{
-				nSkipChars = 0;				//vedomost.rtf
-				//nSkipChars -= nLength;
-				sResult.clear();
-			}
-			else
-			{
-                sResult = sResult.substr( nSkipChars );
-				nSkipChars = 0;
-			}
-		}
-        if( "u" == sKey )
-		{
-			//надо правильно установить m_nSkipChars по значению \ucN
-			nSkipChars = oReader.m_oState->m_nUnicodeClean;
-		}
-	}
-    /*static */std::wstring ExecuteTextInternalCodePage( std::string & sCharString, RtfDocument & oDocument, RtfReader & oReader);
+	virtual void ExecuteTextInternal2(RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, int& nSkipChars);
+	void ExecuteTextInternalSkipChars(std::wstring & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars);
+	void ExecuteTextInternalSkipChars(std::string & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars);
+	std::wstring ExecuteTextInternalCodePage( std::string & sCharString, RtfDocument & oDocument, RtfReader & oReader);
 	
 	bool		m_bUseGlobalCodepage;
 	bool		m_bStopReader;

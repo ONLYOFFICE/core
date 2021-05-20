@@ -287,8 +287,7 @@ namespace PPTX
 					}
 					case 5:
 					{
-						attrType = new Limit::SlideLayoutType();
-						attrType->SetBYTECode(pReader->GetUChar());
+						attrType = pReader->GetUChar();
 						break;
 					}
 					default:

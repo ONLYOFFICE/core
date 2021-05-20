@@ -377,9 +377,8 @@ public:
 		
 		bool write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID);
 		
-		OoxConverter()
+		OoxConverter() : output_document(NULL), oox_current_child_document(NULL)
 		{
-			oox_current_child_document = NULL; 
 		}
 		virtual ~OoxConverter(){}
 
@@ -575,8 +574,11 @@ public:
 		void convert(OOX::Vml::CVmlCommonElements		*vml_attr);
 		void convert(OOX::Vml::CFormulas				*vml_formulas);
 
-		void convert(OOX::Drawing::COfficeArtExtensionList		*ext_list);
-		void convert(OOX::Drawing::COfficeArtExtension			*art_ext);
+		void convert(OOX::Drawing::COfficeArtExtensionList *ext_list);
+		void convert(OOX::Drawing::COfficeArtExtension *art_ext);
+//-----------------------------------
+		void RGB2HSL(DWORD argb, double& dH, double& dS, double& dL);
+		DWORD HSL2RGB(double dH, double dS, double dL);
 	};
 
 } // namespace Oox2Odf

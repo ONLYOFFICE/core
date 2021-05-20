@@ -136,7 +136,7 @@ namespace BinDocxRW
 		void WriteShd(const ComplexTypes::Word::CShading& Shd);
 		void WritePaddings(const nullable<SimpleTypes::CTwipsMeasure>& left, const nullable<SimpleTypes::CTwipsMeasure>& top,
 			const nullable<SimpleTypes::CTwipsMeasure>& right, const nullable<SimpleTypes::CTwipsMeasure>& bottom);
-		void WriteFont(std::wstring& sFontName, BYTE bType, DocWrapper::FontProcessor& m_oFontProcessor);
+		void WriteFont(std::wstring sFontName, BYTE bType, DocWrapper::FontProcessor& m_oFontProcessor);
 		void WriteBytesArray(BYTE* pData, long nDataSize);
 		template<typename T> void WriteTrackRevision(const T& elem);
 	};
@@ -498,6 +498,15 @@ namespace BinDocxRW
 		void WriteSdtFormPr(const ComplexTypes::Word::CFormPr& oFormPr);
 		void WriteSdtTextFormPr(const OOX::Logic::CTextFormPr& oTextFormPr);
 		void WriteSdtTextFormPrComb(const ComplexTypes::Word::CComb& oComb);
+	};
+	class BinaryCustomsTableWriter
+	{
+	private:
+		ParamsWriter&			m_oParamsWriter;
+		BinaryCommonWriter		m_oBcw;
+	public:
+		BinaryCustomsTableWriter(ParamsWriter& oParamsWriter);
+		void Write(OOX::CDocument* poDocument);
 	};
 	class BinaryCommentsTableWriter
 	{

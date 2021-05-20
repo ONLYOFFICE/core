@@ -188,6 +188,7 @@ namespace NSBinPptxRW
 		_INT32										m_lIndexNextImage;
 		_INT32										m_lIndexCounter;
 		
+		std::wstring								m_strDstCharts;
 		std::wstring								m_strDstMedia;
 		std::wstring								m_strDstEmbed;
 		std::wstring								m_strDstFolder;
@@ -204,6 +205,9 @@ namespace NSBinPptxRW
 		
 		void			SetDstEmbed(const std::wstring& strDst);
 		std::wstring	GetDstEmbed();
+
+		void			SetDstCharts(const std::wstring& strDst);
+		std::wstring	GetDstCharts();
 		
 		void			SetDstFolder(const std::wstring& strDst);
 		std::wstring	GetDstFolder();
@@ -313,7 +317,6 @@ namespace NSBinPptxRW
 		void WriteStringUtf8(const std::wstring& sBuffer);
 		// --------------------------------------------------------
 		void WriteLONG64	(const _INT64& lValue);
-		void WriteDouble64	(const double& dValue);
 		// --------------------------------------------------------
 
 		CBinaryFileWriter();
@@ -483,7 +486,6 @@ namespace NSBinPptxRW
 		void WriteSlideComments	(int nComment);
 		void WritePresentationComments	(int nComment);
 		
-		unsigned int WriteChart (int nChartNumber, _INT32 lDocType);
 		unsigned int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		unsigned int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		
 	
@@ -512,7 +514,8 @@ namespace NSBinPptxRW
 		std::wstring					m_strFolderThemes;
 		std::wstring					m_strFolderExternalThemes;
 
-		_INT32							m_lChartNumber;
+		_INT32							m_nCountEmbedded = 1;
+		_INT32							m_nCountCharts = 1;
 
 		BinDocxRW::CDocxSerializer*		m_pMainDocument;
 		int								m_nDocumentType;
@@ -553,7 +556,6 @@ namespace NSBinPptxRW
 		double GetDouble();
 		// 8 byte
 		_INT64 GetLong64();
-		double GetDouble64();
 		double GetDoubleReal();
 		//String
 		std::wstring GetString(_INT32 len, bool bDeleteZero = false);

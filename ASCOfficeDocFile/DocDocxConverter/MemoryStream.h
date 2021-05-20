@@ -162,29 +162,17 @@ public:
 
 	virtual unsigned char* ReadBytes (unsigned int count, bool isResultNeeded)
 	{
-		unsigned char* pBytes = NULL;
+		if (!m_Data) return NULL;
 
-		unsigned int size = 0;
+		unsigned int size = ( count <= (m_Size - m_Position) ) ? (count) : (m_Size - m_Position);
 
-		size = ( count <= (m_Size - m_Position) ) ? (count) : (m_Size - m_Position);
+		unsigned char* pBytes = (isResultNeeded && count > 0) ? new unsigned char[count] : NULL;
 
-		if ( ( m_Data != NULL ) && ( size != 0 ) )
+		if (pBytes)
 		{
-			pBytes = new unsigned char[size];
-
-			if (pBytes)
-			{
-                memcpy(pBytes,  (m_Data + m_Position), size);
-				m_Position += sizeof(unsigned char)*size;
-
-				//------------------------------------------------------------------------------------------------------
-
-				if ( !isResultNeeded )
-				{
-					RELEASEARRAYOBJECTS (pBytes);
-				}
-			}
+			memcpy(pBytes, (m_Data + m_Position), size);
 		}
+		m_Position += size;
 
 		return pBytes;
 	}

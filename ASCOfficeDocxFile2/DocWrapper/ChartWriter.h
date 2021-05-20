@@ -60,8 +60,8 @@ namespace BinXlsxRW {
 	class ChartWriter
 	{
 	public:
-        std::map<std::wstring, std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*>  m_mapSheets;
-        boost::unordered_map<std::wstring, int>                                           m_mapFormats;
+        std::map<std::wstring, std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*>	m_mapSheets;
+        boost::unordered_map<std::wstring, unsigned int>									m_mapFormats;
 
         std::vector<OOX::Spreadsheet::CXfs*>    m_aXfs;
         std::vector<std::wstring>               m_aTableNames;

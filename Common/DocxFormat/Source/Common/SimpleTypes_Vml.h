@@ -3254,12 +3254,12 @@ namespace SimpleTypes
 				if ( nLen <= 0 )
 					return 0;
 
-                int nPos = (int)sValue.find( _T(",") );
+                size_t nPos = sValue.find( _T(",") );
 
 				std::wstring strX, strY;
-				if ( -1 == nPos )
+				if (std::wstring::npos == nPos)
 				{
-					strX = sValue.substr( 0, nPos );
+					strX = sValue;// .substr(0, nPos);
 				}
 				else
 				{
@@ -5275,10 +5275,10 @@ namespace SimpleTypes
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
-					{
-					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dPy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
-					}
+				{
+					std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
+                    m_dPy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+				}
 
 				nStartPos = nEndPos + 1;		
 				return 0;
@@ -5325,16 +5325,15 @@ namespace SimpleTypes
 			{
 				return m_dY;
 			}
-			double IsXinPoints() const
+			bool IsXinPoints() const
 			{
 				return m_bUnitsX;
 			}
-			double IsYinPoints() const
+			bool IsYinPoints() const
 			{
 				return m_bUnitsY;
 			}
-
-			void   SetValue_Points(double dX, double dY)
+			void SetValue_Points(double dX, double dY)
 			{
 				m_dX = dX;
 				m_dY = dY;

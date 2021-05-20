@@ -125,6 +125,7 @@ namespace OOX {
 					OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
 					if(OOX::CSettingsCustom::GetSchemaUrl() == pCustomXml->GetSchemaUrl())
 					{
+						pCustomXml->bUsed = true;
 						return pCustomXml->m_sXml;
 					}
 				}

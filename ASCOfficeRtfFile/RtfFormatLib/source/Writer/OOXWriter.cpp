@@ -141,6 +141,10 @@ bool OOXWriter::SaveByItemEnd()
     NSDirectory::CreateDirectory(pathTheme.GetPath()) ;
 	Writers::DefaultThemeWriter themeWriter;
 
+	if (false == m_oDocument.m_sThemeXml.empty())
+	{
+		themeWriter.m_sContent = m_oDocument.m_sThemeXml;
+	}
 	themeWriter.Write(pathTheme.GetPath() + FILE_SEPARATOR_STR + L"theme1.xml");
 	m_oDocRels.AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme", L"theme/theme1.xml" );
 	m_oContentTypes.AddContent( L"application/vnd.openxmlformats-officedocument.theme+xml", L"/word/theme/theme1.xml" );

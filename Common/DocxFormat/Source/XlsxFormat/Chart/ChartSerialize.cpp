@@ -1060,9 +1060,8 @@ namespace OOX{
 				}
 				else if(_T("style") == sName)
 				{
-					CT_Style1* pNewElem = new CT_Style1;
-					pNewElem->fromXML(oReader);
-					m_style = pNewElem;
+					m_style = new CT_Style;
+					m_style->fromXML(oReader);
 				}
 				else if(_T("clrMapOvr") == sName)
 				{
@@ -1155,8 +1154,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			}
 			if(NULL != m_style)
 			{
-                std::wstring sNodeName = _T("c:style");
-                m_style->toXML(sNodeName, writer);
+                m_style->toXML(writer);
 			}
 			if(m_oClrMapOvr.IsInit())
 			{
@@ -1174,8 +1172,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			}
 			if(NULL != m_chart)
 			{
-                std::wstring sNodeName = _T("c:chart");
-                m_chart->toXML(sNodeName, writer);
+                m_chart->toXML(writer);
 			}
 			if (m_oSpPr.IsInit())
 			{
@@ -13986,7 +13983,8 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_pivotFmts::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_pivotFmts::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
@@ -14136,10 +14134,10 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_Chart::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
-			writer.WriteString(L"<");
-			writer.WriteString(sNodeName);
-			writer.WriteString(L">");
+		void CT_Chart::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(L"<c:chart>");
+
 			if(NULL != m_title)
 			{
                 std::wstring sNodeName = _T("c:title");
@@ -14205,9 +14203,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
                 std::wstring sNodeName = _T("c:extLst");
                 m_extLst->toXML(sNodeName, writer);
 			}
-			writer.WriteString(L"</");
-			writer.WriteString(sNodeName);
-			writer.WriteString(L">");
+			writer.WriteString(L"</c:chart>");
 		}
 		EElementType CT_Chart::getType(){return et_ct_Chart;}
 		CT_Protection::CT_Protection()
@@ -14379,62 +14375,25 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			writer.WriteString(L">");
 		}
 		EElementType CT_PivotSource::getType(){return et_ct_pivotsource;}
-		CT_Style1::CT_Style1()
+		CT_Style::CT_Style() : m_val(NULL), m_namespace(L"c")
 		{
-			m_val = NULL;
-		}
-		CT_Style1::~CT_Style1()
-		{
-			if(NULL != m_val)
-				delete m_val;
-		}
-		void CT_Style1::fromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			ReadAttributes(oReader);
-
-			if(!oReader.IsEmptyNode())
-				oReader.ReadTillEnd();
-		}
-		void CT_Style1::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
-			writer.WriteString(L"<");
-			writer.WriteString(sNodeName);
-			if(NULL != m_val)
-			{
-				WritingStringAttrInt(L"val", *m_val);
-			}
-			writer.WriteString(L"/>");
-		}
-		EElementType CT_Style1::getType(){return et_ct_style1;}
-		void CT_Style1::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					unsigned char* pNewElem = new unsigned char;
-                    std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
-					m_val = pNewElem;
-				}
-			WritingElement_ReadAttributes_End_No_NS( oReader )
-		}
-		CT_Style::CT_Style()
-		{
-			m_val = NULL;
 		}
 		CT_Style::~CT_Style()
 		{
 			if(NULL != m_val)
 				delete m_val;
 		}
-		void CT_Style::fromXML(XmlUtils::CXmlLiteReader& oReader){
-				ReadAttributes(oReader);
+		void CT_Style::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			ReadAttributes(oReader);
 
-				if(!oReader.IsEmptyNode())
-					oReader.ReadTillEnd();
+			if(!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
-		void CT_Style::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
-			writer.WriteString(L"<");
-			writer.WriteString(sNodeName);
+		void CT_Style::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(L"<" + m_namespace + L":style");
 			if(NULL != m_val)
 			{
 				WritingStringAttrInt(L"val", *m_val);
@@ -14452,7 +14411,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
                     *pNewElem = _ttoi(sVal.c_str());
 					m_val = pNewElem;
 				}
-				WritingElement_ReadAttributes_End_No_NS( oReader )
+			WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		CT_TextLanguageID::CT_TextLanguageID()
 		{
@@ -14577,9 +14536,8 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if(_T("style") == sName)
 					{
-						CT_Style* pNewElem = new CT_Style;
-						pNewElem->fromXML(oReader);
-						m_style = pNewElem;
+						m_style = new CT_Style;
+						m_style->fromXML(oReader);
 					}
 				}
 		}
@@ -14594,8 +14552,8 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			writer.WriteString(L">");
 			if(NULL != m_style)
 			{
-                std::wstring sNodeName = _T("c14:style");
-                m_style->toXML(sNodeName, writer);
+				m_style->m_namespace = L"c14";
+                m_style->toXML(writer);
 			}
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
@@ -14615,7 +14573,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 					*pNewElem = sVal;
 					m_Requires = pNewElem;
 				}
-				WritingElement_ReadAttributes_End_No_NS( oReader )
+			WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		AlternateContentFallback::AlternateContentFallback()
 		{
@@ -14636,9 +14594,8 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("style") == sName)
 				{
-					CT_Style1* pNewElem = new CT_Style1;
-					pNewElem->fromXML(oReader);
-					m_style = pNewElem;
+					m_style = new CT_Style;
+					m_style->fromXML(oReader);
 				}
 			}
 		}
@@ -14649,8 +14606,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			writer.WriteString(L">");
 			if(NULL != m_style)
 			{
-                std::wstring sNodeName = _T("c:style");
-                m_style->toXML(sNodeName, writer);
+                m_style->toXML(writer);
 			}
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);

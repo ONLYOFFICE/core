@@ -171,7 +171,7 @@ namespace PPTX
 					{
 						case 0:	dir		= pReader->GetLong(); break;
 						case 1:	dist	= pReader->GetLong(); break;
-						case 2:	prst.SetBYTECode( pReader->GetChar()); break;
+						case 2:	prst.SetBYTECode( pReader->GetUChar()); break;
 					}
 
 				}

@@ -329,7 +329,7 @@ void ods_conversion_context::set_comment_rect(double l, double t, double w, doub
 	current_table()->set_comment_rect(l,t,w,h);
 }
 /////////////////////////////
-void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::wstring & link, const std::wstring & display, bool bLocation)
+void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::wstring & link, const std::wstring & display, const std::wstring & location)
 {
 //////////////////////////////////////////////////////////////////
  	std::vector<std::wstring> ref_cells;
@@ -347,7 +347,7 @@ void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::
 		{ 
 			for (long row = start_row; row <= end_row; row++)
 			{
-				current_table()->add_hyperlink(ref, col, row, link, bLocation);
+				current_table()->add_hyperlink(ref, col, row, link, location);
 				//ссылка одна, а вот отображаемый текст - разный
 			}
 		}
@@ -356,7 +356,7 @@ void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::
 	{
 		int col = -1, row = -1;
 		utils::parsing_ref (ref_cells[0], col, row);
-		current_table()->add_hyperlink(ref, col, row, link, bLocation);
+		current_table()->add_hyperlink(ref, col, row, link, location);
 	}
 }
 void ods_conversion_context::start_pivot_table(const std::wstring &name)

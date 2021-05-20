@@ -167,14 +167,12 @@ namespace PPTX
 						}
 						case 4:
 						{
-							algn = new Limit::RectAlign();
-							algn->SetBYTECode(pReader->GetUChar());
+							algn = pReader->GetUChar();
 							break;
 						}
 						case 5:
 						{
-							flip = new Limit::Flip();
-							flip->SetBYTECode(pReader->GetUChar());
+							flip = pReader->GetUChar();
 							break;
 						}
 						default:

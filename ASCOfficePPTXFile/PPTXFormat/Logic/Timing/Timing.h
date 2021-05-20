@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_TIMING_INCLUDE_H_
-#define PPTX_LOGIC_TIMING_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "TnLst.h"
@@ -48,8 +46,8 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				tnLst	= node.ReadNode(_T("p:tnLst"));
-				bldLst	= node.ReadNode(_T("p:bldLst"));
+				tnLst	= node.ReadNode(L"p:tnLst");
+				bldLst	= node.ReadNode(L"p:bldLst");
 				FillParentPointersForChilds();
 			}
 
@@ -59,22 +57,71 @@ namespace PPTX
 				oValue.WriteNullable(tnLst);
 				oValue.WriteNullable(bldLst);
 
-				return XmlUtils::CreateNode(_T("p:timing"), oValue);
+				return XmlUtils::CreateNode(L"p:timing", oValue);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-				// TODO:
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->WriteRecord2(0, tnLst);
+				pWriter->WriteRecord2(1, bldLst);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+				}
+
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							tnLst = new Logic::TnLst();
+							tnLst->fromPPTY(pReader);						
+						}break;
+						case 1:
+						{
+							bldLst = new Logic::BldLst();
+							bldLst->fromPPTY(pReader);						
+						}break;
+						default:
+						{
+							pReader->SkipRecord();						
+						}break;
+					}
+				}
+
+				pReader->Seek(end);
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				return;
-				// TODO:
-				pWriter->StartNode(_T("p:timing"));
+				pWriter->StartNode(L"p:timing");
 				pWriter->EndAttributes();
-				pWriter->EndNode(_T("p:timing"));
-			}
+					
+				if ((tnLst.IsInit()) && (false == tnLst->list.empty()))
+				{
+					tnLst->toXmlWriter(pWriter);
+				}
+					
+				if ((bldLst.IsInit()) && (false == bldLst->list.empty()))
+				{
+					bldLst->toXmlWriter(pWriter);
+				}
 
+				pWriter->EndNode(L"p:timing");
+			}
 			nullable<TnLst>		tnLst;
 			nullable<BldLst>	bldLst;
 		protected:
@@ -88,5 +135,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_TIMING_INCLUDE_H_

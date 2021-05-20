@@ -155,6 +155,14 @@ namespace NSBinPptxRW
 	{
 		return m_strDstMedia;
 	}
+	void CImageManager2::SetDstCharts(const std::wstring& strDst)
+	{
+		m_strDstCharts = strDst;
+	}
+	std::wstring CImageManager2::GetDstCharts()
+	{
+		return m_strDstCharts;
+	}
 	void CImageManager2::SetDstEmbed(const std::wstring& strDst)
 	{
 		m_strDstEmbed = strDst;
@@ -805,11 +813,6 @@ namespace NSBinPptxRW
 		m_lPosition += INT32_SIZEOF;
 		m_pStreamCur += INT32_SIZEOF;
 	}
-	void CBinaryFileWriter::WriteDouble64(const double& dValue)
-	{
-		_INT64 _val = (_INT64)(dValue * 100000);
-		WriteLONG64(_val);
-	}
 	void CBinaryFileWriter::WriteDouble(const double& dValue)
 	{
 		_INT64 _val = (_INT64)(dValue * 100000);
@@ -824,7 +827,7 @@ namespace NSBinPptxRW
 		}		
 		else
 		{
-			WriteLONG((long)_val);
+			WriteLONG((int)_val);
 		}
 	}
 	void CBinaryFileWriter::WriteDoubleReal(const double& dValue)
@@ -1044,8 +1047,20 @@ namespace NSBinPptxRW
 	}
 	void CBinaryFileWriter::WriteDouble1(int type, const double& val)
 	{
-		int _val = (int)(val * 10000);
-		WriteInt1(type, _val);
+		_INT64 _val = (_INT64)(val * 100000);
+
+		if (_val > 0x7fffffff)
+		{
+			WriteInt1(type, 0x7fffffff);
+		}
+		else if (_val < -0x7fffffff)
+		{
+			WriteInt1(type, -0x7fffffff);
+		}
+		else
+		{
+			WriteInt1(type, (int)_val);
+		}
 	}
 	void CBinaryFileWriter::WriteDouble2(int type, const NSCommon::nullable_double& val)
 	{
@@ -1637,24 +1652,6 @@ namespace NSBinPptxRW
 		m_mapImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strImageRelsPath, oRelsGeneratorInfo));
 		return oRelsGeneratorInfo;
 	}
-	unsigned int CRelsGenerator::WriteChart(int nChartNumber, _INT32 lDocType = XMLWRITER_DOC_TYPE_PPTX)
-	{
-		std::wstring strChart = L"charts/chart" + std::to_wstring(nChartNumber) + L".xml";
-
-		if (lDocType != XMLWRITER_DOC_TYPE_DOCX)
-		{
-			strChart = L"../" + strChart;
-		}
-
-		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
-
-        std::wstring strRels = L"<Relationship Id=\"" + strRid +
-                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"" +
-                strChart + L"\"/>";
-		m_pWriter->WriteString(strRels);
-
-		return m_lNextRelsID - 1;
-	}	
 
 	unsigned int CRelsGenerator::WriteRels(const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode)
 	{
@@ -1711,7 +1708,6 @@ namespace NSBinPptxRW
 	{
 		m_pMainDocument		= NULL;
 		m_lNextId			= 0;
-		m_lChartNumber		= 1;
 		m_nDocumentType		= XMLWRITER_DOC_TYPE_PPTX;
 
 		m_pRels				= new CRelsGenerator();
@@ -1917,12 +1913,9 @@ namespace NSBinPptxRW
 	}
 	double CBinaryFileReader::GetDouble()
 	{
-		return 1.0 * GetLong() / 100000;
+		return 1.0 * GetLong() / 100000.;
 	}
-	double CBinaryFileReader::GetDouble64()
-	{
-		return 1.0 * GetLong64() / 100000;
-	}	// 8 byte
+// 8 byte
 	double CBinaryFileReader::GetDoubleReal()
 	{
         if (m_lPos + (int)DOUBLE_SIZEOF > m_lSize)
@@ -2071,7 +2064,7 @@ namespace NSBinPptxRW
 
 	void CBinaryFileReader::SkipRecord()
 	{
-		_INT32 _len = GetULong();
+		_INT32 _len = GetRecordSize();
 		Skip(_len);
 	}
 

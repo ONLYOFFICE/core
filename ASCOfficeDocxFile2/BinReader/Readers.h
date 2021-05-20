@@ -221,7 +221,16 @@ public:
     Binary_OtherTableReader(std::wstring sFileInDir, NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
 	int Read();
 	int ReadOtherContent(BYTE type, long length, void* poResult);
-	int ReadImageMapContent(BYTE type, long length, void* poResult);
+//	int ReadImageMapContent(BYTE type, long length, void* poResult); not using now
+};
+class Binary_CustomsTableReader : public Binary_CommonReader
+{
+	Writers::FileWriter& m_oFileWriter;
+public:
+	Binary_CustomsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
+	int Read();
+	int ReadCustom(BYTE type, long length, void* poResult);
+	int ReadCustomContent(BYTE type, long length, void* poResult);
 };
 class Binary_CommentsTableReader : public Binary_CommonReader
 {

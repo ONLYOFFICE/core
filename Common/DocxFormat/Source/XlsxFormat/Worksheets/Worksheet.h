@@ -167,6 +167,8 @@ namespace OOX
 			CThreadedComments	*m_pThreadedComments;
 
 			std::map<std::wstring, CConditionalFormattingRule*> m_mapConditionalFormattingEx;
+//--------------------------------------------------------------------------------------------
+			std::map<std::wstring, unsigned int> m_mapStyleMerges2003;
 		};
 	} //Spreadsheet
 } // namespace OOX

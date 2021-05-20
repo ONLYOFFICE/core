@@ -47,7 +47,7 @@ namespace OOX
 	namespace Spreadsheet
 	{
 		class CPersonList;
-		//необработанные child:
+	//необработанные child:
 		//<customWorkbookViews>
 		//<extLst>
 		//<fileRecoveryPr>
@@ -60,8 +60,6 @@ namespace OOX
 		//<smartTagTypes>
 		//<webPublishing>
 		//<webPublishObjects>
-		//<workbookPr>
-		//<workbookProtection>
 		class CWorkbook : public OOX::File, public OOX::IFileContainer, public WritingElement
 		{
 		public:
@@ -139,6 +137,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 
 				if(m_oWorkbookPr.IsInit())
 					m_oWorkbookPr->toXML(writer);
+				if (m_oWorkbookProtection.IsInit())
+					m_oWorkbookProtection->toXML(writer);
 				if(m_oBookViews.IsInit())
 					m_oBookViews->toXML(writer);
 				if(m_oSheets.IsInit())
@@ -174,6 +174,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 							m_oSheets = oReader;
 						else if ( L"workbookPr" == sName )
 							m_oWorkbookPr = oReader;
+						else if (L"workbookProtection" == sName)
+							m_oWorkbookProtection = oReader;
 						else if ( L"externalReferences" == sName )
 							m_oExternalReferences = oReader;
 						else if ( L"extLst" == sName )
@@ -281,6 +283,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 			}
 			CPath											m_oReadPath;
 
+			nullable<OOX::Spreadsheet::CWorkbookProtection>	m_oWorkbookProtection;
 			nullable<OOX::Spreadsheet::CBookViews>			m_oBookViews;
 			nullable<OOX::Spreadsheet::CDefinedNames>		m_oDefinedNames;
 			nullable<OOX::Spreadsheet::CSheets>				m_oSheets;

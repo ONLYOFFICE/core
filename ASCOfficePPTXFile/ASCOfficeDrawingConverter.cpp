@@ -5020,7 +5020,7 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 	++m_nCurrentIndexObject;
 
 	BYTE typeRec1 = m_pReader->GetUChar(); // must be 0;
-	LONG szRec1 = m_pReader->GetLong();
+	LONG szRec1 = m_pReader->GetRecordSize();
 	LONG _e = m_pReader->GetPos() + szRec1 + 4;
 
 	if (typeRec1 == 0 && szRec1 > 0)
@@ -5248,7 +5248,7 @@ std::wstring CDrawingConverter::SaveObjectBackground(LONG lStart, LONG lLength)
 
 	++m_nCurrentIndexObject;
 	BYTE typeRec1 = m_pReader->GetUChar(); // must be 0;
-	LONG _e = m_pReader->GetPos() + m_pReader->GetLong() + 4;
+	LONG _e = m_pReader->GetPos() + m_pReader->GetRecordSize() + 4;
 	
 	PPTX::Logic::SpTreeElem oElem;
 	try
@@ -5969,15 +5969,6 @@ HRESULT CDrawingConverter::GetAdditionalParam(const std::wstring& ParamName, BYT
     //    return oWriter.Serialize(m_pImageManager, pArray, szCount) ? S_OK : S_FALSE;
     //}
     return S_OK;
-}
-
-void CDrawingConverter::SetDocumentChartsCount (int val)
-{
-    m_pReader->m_lChartNumber = val + 1;
-}
-int CDrawingConverter::GetDocumentChartsCount ()
-{
-    return m_pReader->m_lChartNumber - 1;
 }
 
 OOX::CContentTypes* CDrawingConverter::GetContentTypes()

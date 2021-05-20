@@ -71,16 +71,26 @@ typedef boost::shared_ptr<RtfOldList> RtfOldListPtr;
 
 class RtfParagraph : public ITextItem, public ItemContainer< IDocumentElementPtr >
 {
+private:
+	bool m_IsValid = false;
 public: 
 	RtfParagraphProperty	m_oProperty;
 	RtfOldListPtr			m_oOldList;
 	
+	virtual bool IsValid()
+	{
+		return m_IsValid;
+	}	
 	int GetType( )
 	{
 		return TYPE_RTF_PARAGRAPH;
 	}
 	RtfParagraph()
 	{
+	}
+	void SetValid(bool val)
+	{
+		m_IsValid = val;
 	}
 	int AddItem( IDocumentElementPtr piRend );	
     std::wstring RenderToRtf(RenderParameter oRenderParameter);

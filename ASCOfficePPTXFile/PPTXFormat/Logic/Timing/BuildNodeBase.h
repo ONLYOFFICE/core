@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_BUILDNODEBASE_INCLUDE_H_
-#define PPTX_LOGIC_BUILDNODEBASE_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 
@@ -47,7 +45,6 @@ namespace PPTX
 			explicit BuildNodeBase(XmlUtils::CXmlNode& node);
 			const BuildNodeBase& operator =(XmlUtils::CXmlNode& node);
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void GetBuildNodeFrom(XmlUtils::CXmlNode& element);
 			virtual bool is_init()const{return (m_node.IsInit());};
@@ -57,19 +54,21 @@ namespace PPTX
 			template<class T> const T& as() const {return static_cast<const T&>(*m_node);}
 
 			virtual std::wstring toXML() const;
-		//public:
-		private:
-			smart_ptr<WrapperWritingElement> m_node;
-		protected:
-			virtual void FillParentPointersForChilds(){};
-		public:
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+
 			virtual void SetParentPointer(const WrapperWritingElement* pParent)
 			{
 				if(is_init())
 					m_node->SetParentPointer(pParent);
-			}
+			}			
+			
+			smart_ptr<WrapperWritingElement> m_node;
+		protected:
+			virtual void FillParentPointersForChilds(){};
 		};
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_BUILDNODEBASE_INCLUDE_H_

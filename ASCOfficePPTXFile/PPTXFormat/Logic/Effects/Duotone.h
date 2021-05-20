@@ -100,7 +100,7 @@ namespace PPTX
 			{
 				pReader->Skip(4); // len
 				BYTE _type = pReader->GetUChar();
-				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				ULONG count = pReader->GetULong();
 				for (ULONG i = 0; i < count; ++i)

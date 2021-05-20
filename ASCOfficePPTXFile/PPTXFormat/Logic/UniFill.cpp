@@ -186,7 +186,7 @@ namespace PPTX
 			if (pReader->GetPos() < read_end)
 			{
 				BYTE _type = pReader->GetUChar();
-				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				switch (_type)
 				{
@@ -468,8 +468,7 @@ namespace PPTX
 							switch (_at)
 							{
 								case 0:
-									pFill->flip = new PPTX::Limit::Flip();
-									pFill->flip->SetBYTECode(pReader->GetUChar());
+									pFill->flip = pReader->GetUChar();
 									break;
 								case 1:
 									pFill->rotWithShape = pReader->GetBool();
@@ -560,8 +559,7 @@ namespace PPTX
 							switch (_at)
 							{
 								case 0:
-									pFill->prst = new PPTX::Limit::PattFillVal();
-									pFill->prst->SetBYTECode(pReader->GetUChar());
+									pFill->prst = pReader->GetUChar();
 									break;									
 								default:
 									break;

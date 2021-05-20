@@ -132,7 +132,7 @@ namespace PPTX
 						break;
 
 					if (_at == 0)
-						blend.SetBYTECode(pReader->GetChar());
+						blend.SetBYTECode(pReader->GetUChar());
 					else break;
 				}
 				while (pReader->GetPos() < _end_rec)

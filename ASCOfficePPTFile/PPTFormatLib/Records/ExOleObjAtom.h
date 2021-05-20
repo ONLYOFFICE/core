@@ -83,20 +83,22 @@ public:
 
 		ULONG decompressedSize = m_oHeader.RecLen, compressedSize = m_oHeader.RecLen;
 		
-		BYTE* pData = new BYTE[m_oHeader.RecLen];
-
-		if (!pData) return;
 		if (m_oHeader.RecInstance == 0x01)
 		{
-			decompressedSize = StreamUtils::ReadDWORD(pStream);
 			compressedSize = m_oHeader.RecLen - 4;
+			decompressedSize = StreamUtils::ReadDWORD(pStream);
 		}
-		pStream->read(pData, compressedSize); 
+
+		BYTE* pData = (compressedSize > 0 && compressedSize < 0xffffff ) ? new BYTE[compressedSize] : NULL;
+
+		if (!pData) return;		
+		
+		compressedSize = pStream->read(pData, compressedSize);
 
 		if (m_oHeader.RecInstance == 0x01)
 		{
-			BYTE* pDataUncompress = new BYTE[decompressedSize + 64];
-            if (NSZip::Decompress(pData, compressedSize, pDataUncompress, decompressedSize))
+			BYTE* pDataUncompress = (compressedSize > 0 && compressedSize < 0xffffff) ?  new BYTE[decompressedSize + 64] : NULL;
+            if ((pDataUncompress) && (NSZip::Decompress(pData, compressedSize, pDataUncompress, decompressedSize)))
 			{
 				delete []pData;
 				pData = pDataUncompress;

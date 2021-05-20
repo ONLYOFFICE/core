@@ -652,7 +652,7 @@ void odf_text_context::add_text_style(office_element_ptr & style_elm, std::wstri
 	}
 }
 
-void odf_text_context::add_hyperlink (std::wstring ref, std::wstring display_text)
+void odf_text_context::add_hyperlink (const std::wstring & link, const std::wstring & display, const std::wstring & location)
 {
 	office_element_ptr elm;
 	create_element(L"text", L"a", elm, odf_context_);
@@ -660,14 +660,14 @@ void odf_text_context::add_hyperlink (std::wstring ref, std::wstring display_tex
 	text_a* hyperlink = dynamic_cast<text_a*>(elm.get());
 	if (!hyperlink)return;
 
-	if (!display_text.empty())
-		hyperlink->add_text(display_text);
+	if (!display.empty())
+		hyperlink->add_text(display);
 ////////////////////////////
 
-	hyperlink->common_xlink_attlist_.href_	= ref;
+	hyperlink->common_xlink_attlist_.href_	= link + (location.empty() ? L"" : (L"#" + location));
 	hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 	
-	if (current_level_.size() > 0)
+	if (false == current_level_.empty())
 		current_level_.back().elm->add_child_element(elm);
 }
 

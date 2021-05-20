@@ -659,6 +659,7 @@
     <ClInclude Include="..\PPTXFormat\Logic\Timing\BldSub.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\BuildNodeBase.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\CBhvr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Timing\ChildTnLst.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\Cmd.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\CMediaNode.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\Cond.h" />

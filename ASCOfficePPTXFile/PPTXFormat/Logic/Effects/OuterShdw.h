@@ -192,11 +192,7 @@ namespace PPTX
 
 					switch (_at)
 					{
-						case 0:	
-						{
-							algn = new Limit::RectAlign();
-							algn->SetBYTECode( pReader->GetChar()); 
-						}break;
+						case 0:	algn	= pReader->GetUChar(); break;
 						case 1:	blurRad = pReader->GetLong(); break;
 						case 2:	dir		= pReader->GetLong(); break;
 						case 3:	dist	= pReader->GetLong(); break;

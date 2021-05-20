@@ -108,7 +108,8 @@ namespace BinXlsxRW
 					unsigned char ucR;
 					unsigned char ucG;
 					unsigned char ucB;
-					if(OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(nIndex, ucR, ucG, ucB, ucA))
+					//64 is auto color
+					if(64 != nIndex && OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(nIndex, ucR, ucG, ucB, ucA))
 					{
 						bEmpty = false;
 						oRgbColor.Set_A(ucA);

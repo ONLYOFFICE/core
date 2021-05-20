@@ -315,7 +315,16 @@ namespace PPTX
 			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
 				m_elem.reset(new Logic::SpTree(node));
 			else if (name == L"graphicFrame")
+			{
 				m_elem.reset(new Logic::GraphicFrame(node));
+
+				Logic::GraphicFrame *graphic_frame = dynamic_cast<Logic::GraphicFrame*>(m_elem.GetPointer());
+				if (graphic_frame)
+				{
+					if (graphic_frame->IsEmpty())
+						m_elem.reset();
+				}
+			}
 			else if (name == L"AlternateContent")
 			{
 				bool isEmpty = true;
@@ -326,22 +335,33 @@ namespace PPTX
 					XmlUtils::CXmlNodes oNodesC;
 					std::wstring sRequires;
 					//todo better check (a14 can be math, slicer)
-					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
+					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && (L"a14" == sRequires || L"cx1" == sRequires))
 					{
 						oNodeChoice.GetNodes(L"*", oNodesC);
+
+						if (1 == oNodesC.GetCount())
+						{
+							XmlUtils::CXmlNode oNodeC;
+							oNodesC.GetAt(0, oNodeC);
+
+							fromXML(oNodeC);
+				
+							isEmpty = (false == m_elem.IsInit());
+						}
 					}
-					else if (node.GetNode(L"mc:Fallback", oNodeFall))
+					if (isEmpty && node.GetNode(L"mc:Fallback", oNodeFall))
 					{
 						oNodeFall.GetNodes(L"*", oNodesC);
-					}
-					if (1 == oNodesC.GetCount())
-					{
-						XmlUtils::CXmlNode oNodeC;
-						oNodesC.GetAt(0, oNodeC);
 
-						fromXML(oNodeC);
-						isEmpty = false;
-					}
+						if (1 == oNodesC.GetCount())
+						{
+							XmlUtils::CXmlNode oNodeC;
+							oNodesC.GetAt(0, oNodeC);
+
+							fromXML(oNodeC);
+							isEmpty = false;
+						}
+					}	
 				}
 				if(isEmpty)
 				{

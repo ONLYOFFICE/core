@@ -45,7 +45,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(AnimScale)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				cBhvr = node.ReadNode(_T("p:cBhvr"));
@@ -109,8 +108,66 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:animScale"), oAttr, oValue);
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_animScale;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteInt2(0, byX);
+					pWriter->WriteInt2(1, byY);
+					pWriter->WriteInt2(2, fromX);
+					pWriter->WriteInt2(3, fromY);
+					pWriter->WriteInt2(4, toX);
+					pWriter->WriteInt2(5, toY);
+					pWriter->WriteBool2(6, zoomContents);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-		public:
+				pWriter->WriteRecord1(0, cBhvr);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	byX = pReader->GetLong();
+					else if (1 == _at)	byY = pReader->GetLong();
+					else if (2 == _at)	fromX = pReader->GetLong();
+					else if (3 == _at)	fromY = pReader->GetLong();
+					else if (4 == _at)	toX = pReader->GetLong();
+					else if (5 == _at)	toY = pReader->GetLong();
+					else if (6 == _at)	zoomContents = pReader->GetBool();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					case 0:
+					{
+						cBhvr.fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+					}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
 			CBhvr				cBhvr;
 
 			nullable_int		byX;

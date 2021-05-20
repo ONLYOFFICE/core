@@ -96,6 +96,7 @@ namespace NSBinPptxRW
 #define COLOR_TYPE_PRST		2
 #define COLOR_TYPE_SCHEME	3
 #define COLOR_TYPE_SYS		4
+#define COLOR_TYPE_STYLE	5
 
 #define FILL_TYPE_NONE		0
 #define FILL_TYPE_BLIP		1

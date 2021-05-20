@@ -46,7 +46,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(TgtEl)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;
@@ -54,7 +53,7 @@ namespace PPTX
 					inkTgt = oNode.ReadAttributeBase(L"spid");
 				else if(node.GetNode(_T("p:sndTgt"), oNode))
 				{
-                    XmlMacroReadAttributeBase(oNode, L"embed", embed);
+                    XmlMacroReadAttributeBase(oNode, L"r:embed", embed);
                     XmlMacroReadAttributeBase(oNode, L"name", name);
                     XmlMacroReadAttributeBase(oNode, L"builtIn", builtIn);
 				}
@@ -76,7 +75,7 @@ namespace PPTX
 				if (embed.IsInit())
 				{
 					XmlUtils::CAttribute oAttr;
-					oAttr.Write(_T("embed"), embed->ToString());
+					oAttr.Write(_T("r:embed"), embed->ToString());
 					oAttr.Write(_T("name"), name);
 					oAttr.Write(_T("builtIn"), builtIn);
 
@@ -86,9 +85,100 @@ namespace PPTX
 				{
 					return XmlUtils::CreateNode(_T("p:tgtEl"), spTgt->toXML());
 				}
-				return _T("<p:tgtEl><p:sldTgt></p:tgtEl>");
+                return _T("<p:tgtEl><p:sldTgt/></p:tgtEl>");
 			}
-		public:
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				if (!pWriter) return;
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				if (!pWriter) return;
+
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteString2(0, inkTgt);
+					
+					pWriter->WriteString2(1, name);
+					pWriter->WriteBool2(2, builtIn);
+
+					if (embed.IsInit())
+					{
+						OOX::IFileContainer* pRels = dynamic_cast<OOX::IFileContainer*>(const_cast<PPTX::WrapperFile*>(parentFile));
+
+						if (!pRels && (pWriter) && (pWriter->m_pCurrentContainer))
+						{
+							if (pWriter->m_pCurrentContainer->is_init())
+								pRels = pWriter->m_pCurrentContainer->operator ->();
+						}
+
+						smart_ptr<OOX::Media> pMedia;
+
+						if (pRels != NULL)
+							pMedia = pRels->Get<OOX::Media>(embed.get());
+
+						if (pMedia.IsInit())
+						{
+							NSShapeImageGen::CMediaInfo oId = pWriter->m_pCommon->m_pMediaManager->WriteMedia(pMedia->filename().GetPath());
+							std::wstring s = oId.GetPath2();
+
+							pWriter->WriteString1(3, s);
+						}
+					}
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->WriteRecord2(0, spTgt);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+
+				std::wstring file_name_embed;
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	inkTgt = pReader->GetString2();
+					else if (1 == _at)	name = pReader->GetString2();
+					else if (2 == _at)	builtIn = pReader->GetBool();
+					else if (3 == _at)	file_name_embed = pReader->GetString2();
+
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							spTgt.Init();
+							spTgt->fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
+
+				if (false == file_name_embed.empty())
+				{
+					std::wstring strPath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + file_name_embed;
+
+					NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteMedia(strPath, 1);
+
+					if (oRelsGeneratorInfo.nImageRId > 0)
+					{
+						embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
+					}
+				}
+			}
 			nullable_string		inkTgt;
 
 			//sndTgt

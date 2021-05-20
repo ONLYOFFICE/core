@@ -222,8 +222,7 @@ namespace PPTX
 
 					if (0 == _at)
 					{
-						bwMode = new Limit::BWMode();
-						bwMode->SetBYTECode(pReader->GetUChar());
+						bwMode = pReader->GetUChar();
 					}
 					else
 						break;

@@ -372,6 +372,7 @@ namespace OOX
 		et_a_scene3d, // <a:scene3d>
 		et_a_schemeClr, // <a:schemeClr>
 		et_a_scrgbClr, // <a:scrgbClr>
+		et_a_styleClr,
 		et_a_shade, // <a:shade>
 		et_a_snd, // <a:snd>
 		et_a_softEdge, // <a:softEdge>
@@ -453,6 +454,25 @@ namespace OOX
 		et_p_SplitTransition,
 		et_p_ZoomTransition,
 
+		et_p_par,
+		et_p_seq,
+		et_p_audio,
+		et_p_video,
+		et_p_excl,
+		et_p_anim,
+		et_p_animClr,
+		et_p_animEffect,
+		et_p_animMotion,
+		et_p_animRot,
+		et_p_animScale,
+		et_p_cmd,
+		et_p_set,
+
+		et_p_bldP,
+		et_p_bldDgm,
+		et_p_bldGraphic,
+		et_p_bldOleChart,
+
         et_a_textFit,
         et_a_hyperlink,
         et_a_fld,
@@ -481,6 +501,7 @@ namespace OOX
         et_a_buSzPts,
         et_a_buSzTx,
 
+		et_ds_customXmlProps,
 		et_ds_schemaRefs, // <ds:shemeRefs>
         et_ds_schemaRef, // <ds:shemeRef>	
 		
@@ -1103,7 +1124,14 @@ namespace OOX
 		et_ct_StrDimension,
 		et_ct_NumDimension,
 		et_ct_ChartData,
+		et_ct_ExternalData,
 
+		et_cs_ChartStyle,
+		et_cs_StyleEntry,
+		et_cs_MarkerLayout,
+		et_cs_ColorStyle,
+		et_cs_SchemeClr,
+		et_cs_Variation,
 
 		et_cdr_FromTo,
 		et_cdr_Ext,
@@ -1115,6 +1143,7 @@ namespace OOX
 		et_x_BookViews, // <bookViews>
 		et_x_Workbook,
 		et_x_WorkbookPr,
+		et_x_WorkbookProtection,
 		et_x_WorkbookView, // <workbookView>
 		et_x_DefinedNames, // <definedNames>
 		et_x_DefinedName, // <definedName>

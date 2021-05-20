@@ -49,6 +49,7 @@
 #include "embed/NativeBuilderEmbed.h"
 #include "embed/NativeControlEmbed.h"
 #include "embed/MemoryStreamEmbed.h"
+#include "embed/GraphicsEmbed.h"
 #ifdef LINUX
 #include <unistd.h>
 #include <sys/wait.h>
@@ -105,8 +106,8 @@ public:
     std::string GetGlobalVariable();
     std::wstring GetJSVariable(std::wstring sParam);
 
-    bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath);
-    bool SaveFileWithChanges(int type, const std::wstring& _path);
+    bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams = NULL);
+    bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"");
 };
 
 namespace NSDoctRenderer
@@ -122,13 +123,16 @@ namespace NSDoctRenderer
     class CDocBuilderParams
     {
     public:
-        CDocBuilderParams() : m_bCheckFonts(false), m_sWorkDir(L""), m_bSaveWithDoctrendererMode(false), m_sArgumentJSON("") {}
+        CDocBuilderParams() : m_bCheckFonts(false), m_sWorkDir(L""), m_bSaveWithDoctrendererMode(false), m_sArgumentJSON(""), m_bIsSystemFonts(true) {}
 
     public:
         bool m_bCheckFonts;
         std::wstring m_sWorkDir;
         bool m_bSaveWithDoctrendererMode;
         std::string m_sArgumentJSON;
+
+        bool m_bIsSystemFonts;
+        std::vector<std::wstring> m_arFontDirs;
     };
 
     class CDocBuilder_Private
@@ -306,16 +310,17 @@ namespace NSDoctRenderer
             }
         }
 
-        void CheckFonts(bool bIsCheckSystemFonts)
+        void CheckFonts(bool bIsCheckFonts)
         {
             std::wstring sDirectory = NSCommon::GetDirectoryName(m_strAllFonts);
             std::wstring strFontsSelectionBin = sDirectory + L"/font_selection.bin";
 
-            if (!bIsCheckSystemFonts && NSFile::CFileBinary::Exists(strFontsSelectionBin))
+            if (!bIsCheckFonts && NSFile::CFileBinary::Exists(strFontsSelectionBin))
                 return;
 
             CApplicationFontsWorker oWorker;
-            oWorker.m_bIsUseSystemFonts = bIsCheckSystemFonts;
+            oWorker.m_bIsUseSystemFonts = m_oParams.m_bIsSystemFonts;
+            oWorker.m_arAdditionalFolders = m_oParams.m_arFontDirs;
             oWorker.m_bIsNeedThumbnails = false;
             oWorker.m_sDirectory = sDirectory;
             NSFonts::IApplicationFonts* pFonts = oWorker.Check();
@@ -719,11 +724,34 @@ namespace NSDoctRenderer
 
             LOGGER_SPEED_START
 
+            std::wstring sConvertionParams = L"";
+            if (NULL != params)
+            {
+                sConvertionParams = std::wstring(params);
+                NSStringUtils::string_replace(sConvertionParams, L"\'", L"&quot;");
+            }
+
             std::wstring sFileBin = L"/Editor.bin";
 
             if (!m_oParams.m_bSaveWithDoctrendererMode && m_pWorker)
             {
-                this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin");
+                std::wstring sJsonParams = sConvertionParams;
+                if (!sJsonParams.empty())
+                {
+                    std::wstring::size_type pos1 = sJsonParams.find(L">");
+                    std::wstring::size_type pos2 = sJsonParams.find(L"</");
+                    if (std::wstring::npos != pos1 && std::wstring::npos != pos2)
+                    {
+                        sJsonParams = sJsonParams.substr(pos1 + 1, pos2 - pos1 - 1);
+                        NSStringUtils::string_replace(sJsonParams, L"&quot;", L"\"");
+                    }
+                    else
+                    {
+                        sJsonParams = L"";
+                    }
+                }
+
+                this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin", sJsonParams);
                 sFileBin = L"/Editor2.bin";
             }
 
@@ -762,9 +790,8 @@ namespace NSDoctRenderer
                 oBuilder.WriteString(L"</m_sAllFontsPath>");
             }
 
-            if (NULL != params)
+            if (!sConvertionParams.empty())
             {
-                std::wstring sConvertionParams(params);
                 oBuilder.WriteString(sConvertionParams);
             }
 
@@ -918,7 +945,11 @@ namespace NSDoctRenderer
                 if (m_bIsCacheScript)
                     sCachePath = GetScriptCache();
 
-                bool bOpen = m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript(), sCachePath);
+                CV8Params oParams;
+                oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
+                oParams.DocumentDirectory = m_sFileDir;
+
+                bool bOpen = m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetScript(), sCachePath, &oParams);
                 if (!bOpen)
                     return false;
             }

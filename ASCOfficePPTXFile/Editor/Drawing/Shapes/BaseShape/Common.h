@@ -209,42 +209,42 @@ namespace NSStringUtils
         if (std::wstring::npos != strPath.find(wchar_t('h')))
 		{
             wchar_t* pBuff = new wchar_t[nLength + 1];
-			int nCur = 0;
-			for (size_t i = 1; i < nLength; ++i)
-			{
-                wchar_t _c = strPath[i - 1];
-                if (_c != wchar_t('h'))
+			if (pBuff)
+			{ 
+				int nCur = 0;
+				for (size_t i = 1; i < nLength; ++i)
 				{
-					pBuff[nCur++] = _c;
-				}
-				else
-				{
-                    wchar_t _c1 = strPath[i];
-                    if (_c1 == wchar_t('a') ||
-                        _c1 == wchar_t('b') ||
-                        _c1 == wchar_t('c') ||
-                        _c1 == wchar_t('d') ||
-                        _c1 == wchar_t('e') ||
-                        _c1 == wchar_t('f') ||
-                        _c1 == wchar_t('g') ||
-                        _c1 == wchar_t('h') ||
-                        _c1 == wchar_t('i'))
+					wchar_t _c = strPath[i - 1];
+					if (_c != wchar_t('h'))
 					{
-						++i;
+						pBuff[nCur++] = _c;
+					}
+					else
+					{
+						wchar_t _c1 = strPath[i];
+						if (_c1 == wchar_t('a') ||
+							_c1 == wchar_t('b') ||
+							_c1 == wchar_t('c') ||
+							_c1 == wchar_t('d') ||
+							_c1 == wchar_t('e') ||
+							_c1 == wchar_t('f') ||
+							_c1 == wchar_t('g') ||
+							_c1 == wchar_t('h') ||
+							_c1 == wchar_t('i'))
+						{
+							++i;
+						}
 					}
 				}
-			}
 
-			if (nLength > 0)
-				pBuff[nCur++] = strPath[nLength - 1];
+				if (nLength > 0)
+					pBuff[nCur++] = strPath[nLength - 1];
 
-			pBuff[nCur] = 0;
+				pBuff[nCur] = 0;
 
-			strPath = std::wstring(pBuff, nCur);
-			nLength = strPath.length();
+				strPath = std::wstring(pBuff, nCur);
+				nLength = strPath.length();
 
-			if (NULL != pBuff)
-			{
 				delete []pBuff;
 				pBuff = NULL;
 			}

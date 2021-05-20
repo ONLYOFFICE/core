@@ -32,39 +32,46 @@
 #pragma once
 
 #include "PPTFileDefines.h"
+#include "../Enums/RecordType.h"
 #include "../Reader/ReadStructures.h"
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
 #include "../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStream.h"
 #include "../../../Common/3dParty/pole/pole.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
+#include "../../../Common/DocxFormat/Source/Base/Nullable.h"
+
 
 #include <boost/smart_ptr/shared_array.hpp>
 
-using namespace PPT_FORMAT;
+//using namespace PPT_FORMAT;
 using namespace XLS;
+
+using NSCommon::nullable;
+
+std::string GetRecordName(PPT_FORMAT::RecordType dwType);
 
 class SRecordHeader 
 { 
 public:
-	unsigned char	RecVersion;                
-	unsigned short	RecInstance;  
-	unsigned short	RecType; 
-	_UINT32	        RecLen; 
+    unsigned char           RecVersion;
+    unsigned short          RecInstance;
+    PPT_FORMAT::RecordType	RecType;
+    _UINT32                 RecLen;
 	
 	void Clear()
 	{
 		RecVersion = 0;
 		RecInstance = 0;
-		RecType = 0;
+        RecType = RT_NONE;
 		RecLen = 0;
 	}
 	SRecordHeader()
 	{
 		Clear();
 	}
-	bool ReadFromStream(const CFStreamPtr &pStream)
+    bool ReadFromStream(const CFStreamPtr &pStream)
 	{
-		Clear();
+        Clear();
 
 		if (pStream->isEOF()) return FALSE;
 		POLE::uint64 nRd = 0; 
@@ -149,7 +156,7 @@ public:
 	SRecordHeader m_oHeader;
 
 	virtual ~IRecord(){}
-	virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream) = 0;
+    virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream) = 0;
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) = 0;
 };
 
@@ -166,7 +173,7 @@ public:
 	~CUnknownRecord()
 	{
 	}
-	virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
+    virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
 	{
 		m_oHeader = oHeader;
 		
@@ -179,8 +186,8 @@ public:
 		StreamUtils::StreamSkip((long)m_oHeader.RecLen, pStream);
 	}
 
-	std::wstring ReadStringW(const CFStreamPtr &pStream, int size);
-	std::string	 ReadStringA(const CFStreamPtr &pStream, int size);
+    std::wstring ReadStringW(const CFStreamPtr &pStream, int size);
+    std::string	 ReadStringA(const CFStreamPtr &pStream, int size);
 };
 
 IRecord* CreateByType(SRecordHeader oHeader);
@@ -204,9 +211,11 @@ public:
 		size_t nCount = m_arRecords.size();
 		while(0 != nCount) 
 		{ 
-			if (NULL != m_arRecords[nCount-1])
-				delete m_arRecords[nCount-1]; 
-			
+            if (NULL != m_arRecords[nCount-1])
+            {
+                delete m_arRecords[nCount-1];
+                m_arRecords[nCount-1] = NULL;
+            }
 			m_arRecords.pop_back();
 			--nCount;
 		} 
@@ -305,5 +314,5 @@ class CRecordVBAInfo					: public CRecordsContainer {};
 
 //-------------------------------------------------------------------------------
 #define CREATE_BY_TYPE(RECORD_TYPE, CLASS_RECORD_NAME)							\
-	case RECORD_TYPE: { pRecord = new CLASS_RECORD_NAME(); break; }				\
+    case RECORD_TYPE: { pRecord = new CLASS_RECORD_NAME(); break; }				\
 //-------------------------------------------------------------------------------

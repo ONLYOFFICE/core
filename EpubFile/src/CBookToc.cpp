@@ -39,13 +39,12 @@ std::wstring CBookToc::GetAttributeValue(XmlUtils::CXmlLiteReader& oXmlLiteReade
 {
     while(oXmlLiteReader.MoveToNextAttribute())
     {
-        std::wstring _sAttributeName = oXmlLiteReader.GetName();
-        if(_sAttributeName == sAttributeName)
+        if (oXmlLiteReader.GetName() == sAttributeName)
         {
             std::wstring sText = oXmlLiteReader.GetText();
             size_t posLastSlash = sText.rfind(L'/');
             if (posLastSlash != std::wstring::npos)
-                sText = sText.substr(posLastSlash + 1);
+                sText.erase(0, posLastSlash + 1);
             oXmlLiteReader.MoveToElement();
             return sText;
         }
@@ -79,7 +78,7 @@ void CBookToc::ReadMap(XmlUtils::CXmlLiteReader& oXmlLiteReader)
             structData.sRef = GetAttributeValue(oXmlLiteReader, L"src");
         }
 
-        if(structData.Full())
+        if (structData.Full())
         {
             m_arData.push_back(structData);
             structData.Clear();

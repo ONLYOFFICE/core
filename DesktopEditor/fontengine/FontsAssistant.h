@@ -38,9 +38,11 @@
 
 #include "../../../core/DesktopEditor/graphics/pro/Fonts.h"
 
+#include "../../Common/kernel_config.h"
+
 namespace ASC
 {
-    class CFontsAssistant
+    class KERNEL_DECL CFontsAssistant
     {
     public:
         CFontsAssistant(const std::vector<std::wstring>& arFontsPaths, const std::wstring& sDataFontsPath);

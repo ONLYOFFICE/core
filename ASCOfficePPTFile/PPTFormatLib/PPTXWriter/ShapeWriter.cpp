@@ -1536,7 +1536,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 				m_oWriter.WriteString(ConvertBrush(pShapeElement->m_oBrush));
 				m_oWriter.WriteString(ConvertShadow(pShapeElement->m_oShadow));
 			}
-		else
+            else
 			{
 				if (pCF->Color.is_init())
 				{
@@ -1585,7 +1585,10 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 			{
 				m_oWriter.WriteString(std::wstring(L"<a:sym typeface=\"") + pCF->font.sym->Name + _T("\"/>"));
 			}
-			m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
+
+            WriteButton(nIndexPar);
+
+            m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
 
 			if (pParagraph->m_arSpans[nSpan].m_bBreak)
 			{
@@ -1684,13 +1687,10 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertGroup()
 	return m_oWriter.GetData();
 }
 
-void PPT_FORMAT::CShapeWriter::WriteButton()
+void PPT_FORMAT::CShapeWriter::WriteButton(int paragraphNum)
 {
-    CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
-    if (!pShapeElement) return;
-
-    auto& actions = pShapeElement->m_arrActions;
-    for (unsigned i = 0; i < actions.size() && actions.size() < 3; i++)
+    auto actions = getActionsByNum(paragraphNum);
+    for (unsigned i = 0; i < actions.size(); i++)
     {
         if (actions[i].m_lType == CInteractiveInfo::over
                 && actions[i].m_strAudioFileName.empty()
@@ -1779,6 +1779,43 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
 
         m_oWriter.WriteString(hlink.toXML());
     }
+}
+
+std::vector<CInteractiveInfo> CShapeWriter::getActionsByNum(const int num)
+{
+    CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
+    if (!pShapeElement) return {};
+
+    auto& actions = pShapeElement->m_arrActions;
+
+    // Need to check paragraph or button
+    if (num == -1 && actions.size() > 2) // paragraph inside shape
+        return {};
+    else if (num == -1) // button inside shape
+        return actions;
+
+    bool wasClick = false;
+    int currentNum = 0;
+    std::vector<CInteractiveInfo> actionsForOneParagraph;
+    for (const auto& act : actions)
+    {
+        if (act.m_eActivation == CInteractiveInfo::click)
+            wasClick = true;
+        else if (act.m_eActivation == CInteractiveInfo::over && wasClick == true)
+        {
+            currentNum--;
+            wasClick = false;
+        }
+
+        if (currentNum == num)
+            actionsForOneParagraph.push_back(act);
+
+        currentNum++;
+        if (currentNum > num)
+            break;
+    }
+
+    return actionsForOneParagraph;
 }
 
 // TODO! Not work correct

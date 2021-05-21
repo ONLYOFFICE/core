@@ -325,6 +325,11 @@ public:
     void RemoveEngine(const char* id) 
     {
         m_oDictionariesEngines.RemoveEngine(id);
+		if (m_sCurrentDictionaryId == id)
+		{
+			m_sCurrentDictionaryId = "";
+			m_pCurrentDictionary = NULL;
+		}
     }
 protected:
     Hunhandle* SetLanguage(const std::string& aff_id, const std::string& dic_id)

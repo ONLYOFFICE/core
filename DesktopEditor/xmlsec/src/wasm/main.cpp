@@ -64,7 +64,7 @@ public:
     int LoadCert(unsigned char* data, unsigned int len, char* pass)
     {
         m_cert = NULL; m_certLen = 0; m_certPass = "";
-        int nRes = NSOpenSSL::LoadCertRaw(data, len, pass);
+        int nRes = NSOpenSSL::LoadCertRaw(data, len, (NULL != pass) ? std::string(pass) : "");
 
         if (OPEN_SSL_WARNING_ALL_OK == nRes || OPEN_SSL_WARNING_OK == nRes)
         {
@@ -84,7 +84,7 @@ public:
     int LoadKey(unsigned char* data, unsigned int len, char* pass)
     {
         m_key = NULL; m_keyLen = 0; m_keyPass = "";
-        int nRes = NSOpenSSL::LoadKeyRaw(data, len, pass);
+        int nRes = NSOpenSSL::LoadKeyRaw(data, len, (NULL != pass) ? std::string(pass) : "");
 
         if (OPEN_SSL_WARNING_ALL_OK == nRes || OPEN_SSL_WARNING_OK == nRes)
         {
@@ -117,13 +117,15 @@ WASM_EXPORT void* XmlSignature_CreateCertificate()
 {
     return new CCertificate();
 }
-WASM_EXPORT int XmlSignature_LoadCert(CCertificate* cert, unsigned char* data, unsigned int len, char* pass)
+WASM_EXPORT int XmlSignature_LoadCert(void* cert, unsigned char* data, unsigned int len, char* pass)
 {
-    return cert->LoadCert(data, len, pass);
+    CCertificate* pCert = (CCertificate*)cert;
+    return pCert->LoadCert(data, len, pass);
 }
-WASM_EXPORT int XmlSignature_LoadKey(CCertificate* cert, unsigned char* data, unsigned int len, char* pass)
+WASM_EXPORT int XmlSignature_LoadKey(void* cert, unsigned char* data, unsigned int len, char* pass)
 {
-    return cert->LoadKey(data, len, pass);
+    CCertificate* pCert = (CCertificate*)cert;
+    return pCert->LoadKey(data, len, pass);
 }
 WASM_EXPORT void XmlSignature_DestroyCertificate(void* cert)
 {
@@ -141,10 +143,13 @@ WASM_EXPORT void XmlSignature_DestroyFile(void* file)
     delete pZipFile;
 }
 
-WASM_EXPORT void* XmlSignature_Sign(CMemoryFile* file, CCertificate* cert)
+WASM_EXPORT void* XmlSignature_Sign(void* file, void* cert)
 {
-    cert->Load();
-    COOXMLSigner oSigner(file->Data, file->Length, cert->GetCertificate());
+    CCertificate* pCert   = (CCertificate*)cert;
+    CMemoryFile* pZipFile = (CMemoryFile*)file;
+
+    pCert->Load();
+    COOXMLSigner oSigner(pZipFile->Data, pZipFile->Length, pCert->GetCertificate());
 
     BYTE* pDataDst = NULL;
     unsigned long lDataDstLen = 0;
@@ -162,6 +167,35 @@ WASM_EXPORT void* XmlSignature_Sign(CMemoryFile* file, CCertificate* cert)
 #ifdef TEST_AS_EXECUTABLE
 int main()
 {
+    std::wstring sTestDir = NSFile::GetProcessDirectory() + L"/../../../../test/";
+    void* cert = XmlSignature_CreateCertificate();
+
+    BYTE* pCertData = NULL;
+    DWORD nCertLen  = 0;
+    NSFile::CFileBinary::ReadAllBytes(sTestDir + L"keys/cert.crt", &pCertData, nCertLen);
+    XmlSignature_LoadCert(cert, pCertData, nCertLen, NULL);
+
+    BYTE* pKeyData = NULL;
+    DWORD nKeyLen  = 0;
+    NSFile::CFileBinary::ReadAllBytes(sTestDir + L"keys/key.key", &pKeyData, nKeyLen);
+    XmlSignature_LoadKey(cert, pKeyData, nKeyLen, NULL);
+
+    BYTE* pData = NULL;
+    DWORD nLen  = 0;
+    NSFile::CFileBinary::ReadAllBytes(sTestDir + L"file.docx", &pData, nLen);
+    void* file = XmlSignature_CreateFile(pData, nLen);
+    void* res  = XmlSignature_Sign(file, cert);
+    CMemoryFile* pRes = (CMemoryFile*)res;
+
+    NSFile::CFileBinary oFileDst;
+    oFileDst.CreateFileW(sTestDir + L"/file2.docx");
+    oFileDst.WriteFile(pRes->Data, pRes->Length);
+    oFileDst.CloseFile();
+
+    XmlSignature_DestroyFile(file);
+    XmlSignature_DestroyFile(res);
+    XmlSignature_DestroyCertificate(cert);
+
     return 0;
 }
 #endif

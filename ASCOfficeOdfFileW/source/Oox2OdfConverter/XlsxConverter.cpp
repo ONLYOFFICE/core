@@ -2279,24 +2279,36 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 			cell_properties->content_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);
 
 	}
+	_CP_OPT(odf_types::length) indent;
+	if (aligment->m_oIndent.IsInit())
+	{
+		indent = odf_types::length(ods_context->convert_symbol_width(*aligment->m_oIndent), odf_types::length::pt);
+	}
 	if(aligment->m_oHorizontal.IsInit())
 	{
-		switch(aligment->m_oHorizontal->GetValue())
+		switch (aligment->m_oHorizontal->GetValue())
 		{
-		case SimpleTypes::Spreadsheet::horizontalalignmentCenter:	
-			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Center); break;
-		case SimpleTypes::Spreadsheet::horizontalalignmentFill:	
-			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Start); break;
-		case SimpleTypes::Spreadsheet::horizontalalignmentJustify:	
-			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify); break;
-		case SimpleTypes::Spreadsheet::horizontalalignmentRight:	
-			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::End); break;
-		
-		case SimpleTypes::Spreadsheet::horizontalalignmentLeft:	
-		default:
-			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Start); break;		
+			case SimpleTypes::Spreadsheet::horizontalalignmentCenter:
+			{
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Center);
+			}break;
+			case SimpleTypes::Spreadsheet::horizontalalignmentJustify:
+			{
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify);
+			}break;
+			case SimpleTypes::Spreadsheet::horizontalalignmentRight:
+			{
+				paragraph_properties->content_.fo_margin_right_ = indent;
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::End);
+			}break;
+			case SimpleTypes::Spreadsheet::horizontalalignmentFill:
+			case SimpleTypes::Spreadsheet::horizontalalignmentLeft:
+			default:
+			{
+				paragraph_properties->content_.fo_margin_left_ = indent;
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Start); 
+			}break;
 		}
-		
 		cell_properties->content_.style_text_align_source_ = odf_types::text_align_source(odf_types::text_align_source::Fix);
 	}
 
@@ -2309,9 +2321,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 	{
 		cell_properties->content_.style_shrink_to_fit_ = aligment->m_oShrinkToFit->ToBool();
 	}
-	if (aligment->m_oIndent.IsInit())
-	{
-	}
+
 		//nullable<SimpleTypes::COnOff<>>									m_oJustifyLastLine;
 		//nullable<SimpleTypes::CDecimalNumber<>>							m_oRelativeIndent;
 

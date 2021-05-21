@@ -59,7 +59,7 @@ namespace NSCSS
                 /* Red tones */
                 {L"indianeed",          L"CD5C5C"}, {L"lightcoral",            L"F08080"}, {L"salmon",        L"FA8072"},
                 {L"darksalmon",         L"E9967A"}, {L"lightsalmon",           L"FFA07A"}, {L"crimson",       L"DC143C"},
-                {L"red",                L"FF0000"}, {L"firebrick",             L"B22222"}, {L"darkeed",       L"8B0000"},
+                {L"red",                L"FF0000"}, {L"firebrick",             L"B22222"}, {L"darkred",       L"8B0000"},
                 /* Pink tones */
                 {L"pink",               L"FFC0CB"}, {L"lightpink",             L"FFB6C1"}, {L"hotpink",       L"FF69B4"},
                 {L"deeppink",           L"FF1493"}, {L"mediumvioletred",       L"C71585"}, {L"palevioleteed", L"DB7093"},
@@ -164,7 +164,7 @@ namespace NSCSS
                 R_I = 3,
                 R_Color = 4,
                 R_U = 5,
-                R_Shd = 6,
+                R_Highlight = 6,
                 R_SmallCaps = 7
             } RunnerProperties;
 
@@ -999,7 +999,7 @@ namespace NSCSS
                         if (oFirstMargin.arLevels[0] < oSecondMargin.arLevels[0])
                             oFirstMargin.fTopSide = fNoneValue;
                         else
-                            oSecondMargin.fTopSide = fNoneValue;
+                            oSecondMargin.fTopSide += oFirstMargin.fTopSide;
                     }
 
                     if (oFirstMargin.bImportants[1] && !oSecondMargin.bImportants[1] && oFirstMargin.fRightSide != fNoneValue)
@@ -1011,7 +1011,7 @@ namespace NSCSS
                         if (oFirstMargin.arLevels[1] < oSecondMargin.arLevels[1])
                             oFirstMargin.fRightSide = fNoneValue;
                         else
-                            oSecondMargin.fRightSide = fNoneValue;
+                            oSecondMargin.fRightSide += oFirstMargin.fRightSide;
                     }
 
                     if (oFirstMargin.bImportants[2] && !oSecondMargin.bImportants[2] && oFirstMargin.fBottomSide != fNoneValue)
@@ -1023,7 +1023,7 @@ namespace NSCSS
                         if (oFirstMargin.arLevels[2] < oSecondMargin.arLevels[2])
                             oFirstMargin.fBottomSide = fNoneValue;
                         else
-                            oSecondMargin.fBottomSide = fNoneValue;
+                            oSecondMargin.fBottomSide += oFirstMargin.fBottomSide;
                     }
 
                     if (oFirstMargin.bImportants[3] && !oSecondMargin.bImportants[3] && oFirstMargin.fLeftSide != fNoneValue)
@@ -1035,7 +1035,7 @@ namespace NSCSS
                         if (oFirstMargin.arLevels[3] < oSecondMargin.arLevels[3])
                             oFirstMargin.fLeftSide = fNoneValue;
                         else
-                            oSecondMargin.fLeftSide = fNoneValue;
+                            oSecondMargin.fLeftSide += oFirstMargin.fLeftSide;
                     }
                 }
 
@@ -1612,20 +1612,33 @@ namespace NSCSS
                 std::vector<bool> bImportants;
                 std::vector<unsigned int> arLevels;
 
+                bool bBlock;
+
             public:
 
                 BorderSide() : fWidth(fNoneValue),
                                sStyle(L"auto"),
                                sColor(L"auto"),
                                bImportants({false, false, false}),
-                               arLevels({0, 0, 0}){}
+                               arLevels({0, 0, 0}),
+                               bBlock(false){}
 
                 void ClearImportants()
                 {
                     bImportants = {false, false, false};
                 }
 
-                BorderSide operator+=(const BorderSide& oBorderSide)
+                void Block()
+                {
+                    bBlock = true;
+                }
+
+                void Unlock()
+                {
+                    bBlock = false;
+                }
+
+                BorderSide operator=(const BorderSide& oBorderSide)
                 {
                     if (oBorderSide.Empty())
                         return *this;
@@ -1876,12 +1889,12 @@ namespace NSCSS
 
                 std::wstring GetStyle() const
                 {
-                    return sStyle;
+                    return (bBlock) ? L"auto" : sStyle;
                 }
 
                 std::wstring GetColor() const
                 {
-                    return sColor;
+                    return (bBlock) ? L"auto" : sColor;
                 }
 
                 std::wstring GetWidthW() const
@@ -1889,7 +1902,7 @@ namespace NSCSS
                     if (fWidth < 0)
                         return L"0";
 
-                    return std::to_wstring(static_cast<unsigned short>(fWidth + 0.5f));
+                    return (bBlock) ? L"0" : std::to_wstring(static_cast<unsigned short>(fWidth + 0.5f));
                 }
 
                 float GetWidth() const
@@ -1989,12 +2002,12 @@ namespace NSCSS
                     oLeft.ClearImportants();
                 }
 
-                Border operator+=(const Border& oBorder)
-                {
-                    oTop    += oBorder.oTop;
-                    oRight  += oBorder.oRight;
-                    oBottom += oBorder.oBottom;
-                    oLeft   += oBorder.oLeft;
+                Border operator=(const Border& oBorder)
+                { 
+                    oTop    = oBorder.oTop;
+                    oRight  = oBorder.oRight;
+                    oBottom = oBorder.oBottom;
+                    oLeft   = oBorder.oLeft;
 
                     return *this;
                 }
@@ -2005,6 +2018,22 @@ namespace NSCSS
                     BorderSide::BorderSideEquation(oFirstBorder.oRight, oSecondBorder.oRight);
                     BorderSide::BorderSideEquation(oFirstBorder.oBottom, oSecondBorder.oBottom);
                     BorderSide::BorderSideEquation(oFirstBorder.oLeft, oSecondBorder.oLeft);
+                }
+
+                void Block()
+                {
+                    oTop.Block();
+                    oRight.Block();
+                    oBottom.Block();
+                    oLeft.Block();
+                }
+
+                void Unlock()
+                {
+                    oTop.Unlock();
+                    oRight.Unlock();
+                    oBottom.Unlock();
+                    oLeft.Unlock();
                 }
 
                 bool operator==(const Border& oBorder) const
@@ -2390,18 +2419,28 @@ namespace NSCSS
             class Background
             {
                 std::wstring sColor;
+                bool bInBorder;
 
                 std::vector<bool> bImportants;
                 std::vector<unsigned int> arLevels;
             public:
 
-                Background() : bImportants({false}), arLevels({0}){}
+                Background() : bImportants({false}), arLevels({0}), bInBorder(false){}
 
                 void ClearImportants()
                 {
                     bImportants = {false};
                 }
 
+                void InBorder()
+                {
+                    bInBorder = true;
+                }
+
+                bool IsInBorder() const
+                {
+                    return bInBorder;
+                }
 
                 Background operator+=(const Background& oBackground)
                 {
@@ -2514,9 +2553,38 @@ namespace NSCSS
                     bImportants[0] = bImportant;
                 }
 
-                std::wstring GetColor() const
+                std::wstring GetColorHex() const
                 {
                     return sColor;
+                }
+
+                std::wstring GetColor() const
+                {
+                    std::wstring wsUpperColor = sColor;
+                    std::transform(wsUpperColor.begin(), wsUpperColor.end(), wsUpperColor.begin(), ::toupper);
+
+                    std::map<std::wstring, std::wstring>::const_iterator oIter = std::find_if(NSMaps::mColors.begin(), NSMaps::mColors.end(),
+                                                                                              [&wsUpperColor](const std::pair<std::wstring, std::wstring> oValue)
+                                                                                              { return oValue.second == wsUpperColor;});
+
+                    if (oIter != NSMaps::mColors.end() &&
+                       (oIter->first == L"yellow" ||
+                        oIter->first == L"green" ||
+                        oIter->first == L"cyan" ||
+                        oIter->first == L"magenta" ||
+                        oIter->first == L"blue" ||
+                        oIter->first == L"red" ||
+                        oIter->first == L"darkBlue" ||
+                        oIter->first == L"darkCyan" ||
+                        oIter->first == L"darkGreen" ||
+                        oIter->first == L"darkMagenta" ||
+                        oIter->first == L"darkRed" ||
+                        oIter->first == L"darkYellow" ||
+                        oIter->first == L"darkGray" ||
+                        oIter->first == L"lightGray"))
+                            return oIter->first;
+
+                    return L"";
                 }
             };
         }

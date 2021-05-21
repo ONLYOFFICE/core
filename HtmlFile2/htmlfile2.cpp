@@ -1119,11 +1119,43 @@ private:
 
         // borders
         oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
-        std::wstring sColor = oStyle.m_pBorder.GetColorBottomSide();
-        std::wstring sSz    = oStyle.m_pBorder.GetWidthBottomSideW();
-        if (sSz != L"0")
-            sBorders = L"<w:left w:val=\"single\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>";
 
+        oStyle.m_pBorder.Unlock();
+        if (oStyle.m_pBorder.Empty())
+        {
+            sBorders = L"<w:left w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/>";
+        }
+        else
+        {
+            if (oStyle.m_pBorder.EqualSides())
+            {
+                std::wstring sColor = oStyle.m_pBorder.GetColorBottomSide();
+                std::wstring sSz    = oStyle.m_pBorder.GetWidthBottomSideW();
+                sBorders =  L"<w:top w:val=\"single\" w:color=\""       + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:left w:val=\"single\" w:color=\""      + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:bottom w:val=\"single\" w:color=\""    + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:right w:val=\"single\" w:color=\""     + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:insideH w:val=\"single\" w:color=\""   + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:insideV w:val=\"single\" w:color=\""   + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>";
+            }
+            else
+            {
+                    std::wstring sColorLeftSide     = oStyle.m_pBorder.GetColorLeftSide();
+                    std::wstring sSzLeftSide        = oStyle.m_pBorder.GetWidthLeftSideW();
+                    std::wstring sColorTopSide      = oStyle.m_pBorder.GetColorTopSide();
+                    std::wstring sSzTopSide         = oStyle.m_pBorder.GetWidthTopSideW();
+                    std::wstring sColorRightSide    = oStyle.m_pBorder.GetColorRightSide();
+                    std::wstring sSzRightSide       = oStyle.m_pBorder.GetWidthRightSideW();
+                    std::wstring sColorBottomSide   = oStyle.m_pBorder.GetColorBottomSide();
+                    std::wstring sSzBottomSide      = oStyle.m_pBorder.GetWidthBottomSideW();
+
+                    sBorders =  L"<w:left w:val=\"single\" w:color=\""  + sColorLeftSide    + L"\" w:sz=\"" + sSzLeftSide   + L"\" w:space=\"0\"/>" +
+                                L"<w:top w:val=\"single\" w:color=\""   + sColorTopSide     + L"\" w:sz=\"" + sSzTopSide    + L"\" w:space=\"0\"/>" +
+                                L"<w:right w:val=\"single\" w:color=\"" + sColorRightSide   + L"\" w:sz=\"" + sSzRightSide  + L"\" w:space=\"0\"/>" +
+                                L"<w:bottom w:val=\"single\" w:color=\""+ sColorBottomSide  + L"\" w:sz=\"" + sSzBottomSide + L"\" w:space=\"0\"/>";
+
+            }
+        }
         /*
         NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
         oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
@@ -1616,7 +1648,7 @@ private:
         else
         {
             int nH = nHy * 9525;
-            nH = (nH > 9000000 ? 9000000 : nH);
+            nH = (nH > 8500000 ? 8500000 : nH);
             int nW = (int)((double)nWx * (double)nH / (double)nHy);
             if(nW > 7000000)
             {
@@ -1820,6 +1852,7 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
 {
     m_internal->m_sDst = sDst;
     m_internal->CreateDocxEmpty(oParams);
+    bool bFirst = true;
 
     for(const std::wstring& sS : sSrc)
     {
@@ -1837,8 +1870,9 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
         // Переходим в начало
         if(m_internal->m_oLightReader.MoveToStart())
         {
-            if(oParams && oParams->m_bNeedPageBreakBefore)
+            if(oParams && oParams->m_bNeedPageBreakBefore && !bFirst)
                 m_internal->PageBreakBefore();
+            bFirst = false;
             m_internal->readSrc();
             m_internal->m_oLightReader.Clear();
             m_internal->m_sBase.clear();

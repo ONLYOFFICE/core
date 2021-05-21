@@ -149,8 +149,8 @@ base.replaceInFile("./openssl.js", "function getBinaryPromise(){", "function get
 
 openssl_js_content     = base.readFile("./openssl.js")
 engine_base_js_content = base.readFile("./engine.js")
-desktop_fetch_content  = base.readFile("./../../Common/js/desktop_fetch.js")
-string_utf8_content    = base.readFile("./../../Common/js/string_utf8.js")
+desktop_fetch_content  = base.readFile("./../../../../../Common/js/desktop_fetch.js")
+string_utf8_content    = base.readFile("./../../../../../Common/js/string_utf8.js")
 engine_js_content = engine_base_js_content.replace("//desktop_fetch", desktop_fetch_content)
 engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
 engine_js_content = engine_js_content.replace("//module", openssl_js_content)

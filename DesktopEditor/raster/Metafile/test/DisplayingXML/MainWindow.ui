@@ -10,8 +10,17 @@
     <height>683</height>
    </rect>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::DefaultContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
+  </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
+  <property name="inputMethodHints">
+   <set>Qt::ImhHiddenText|Qt::ImhNoAutoUppercase|Qt::ImhPreferLowercase|Qt::ImhPreferNumbers|Qt::ImhPreferUppercase|Qt::ImhSensitiveData</set>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="horizontalLayoutWidget">
@@ -44,12 +53,43 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QTextEdit" name="DataEdit"/>
+        <widget class="CMetafileTreeView" name="treeView">
+         <property name="inputMethodHints">
+          <set>Qt::ImhNone</set>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectItems</enum>
+         </property>
+         <property name="autoExpandDelay">
+          <number>-1</number>
+         </property>
+         <property name="rootIsDecorated">
+          <bool>true</bool>
+         </property>
+         <property name="animated">
+          <bool>true</bool>
+         </property>
+         <attribute name="headerCascadingSectionResizes">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="headerHighlightSections">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="headerShowSortIndicator" stdset="0">
+          <bool>false</bool>
+         </attribute>
+         <attribute name="headerStretchLastSection">
+          <bool>true</bool>
+         </attribute>
+        </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="SaveButton">
+        <widget class="QPushButton" name="expandButton">
          <property name="text">
-          <string>Save</string>
+          <string>Expand All</string>
          </property>
         </widget>
        </item>
@@ -74,6 +114,11 @@
    <class>CCustomView</class>
    <extends>QGraphicsView</extends>
    <header location="global">CCustomView.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CMetafileTreeView</class>
+   <extends>QTreeView</extends>
+   <header>CMetafileTreeView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

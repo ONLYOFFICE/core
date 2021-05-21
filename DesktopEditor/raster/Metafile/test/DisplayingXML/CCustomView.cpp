@@ -23,7 +23,7 @@ unsigned int CCustomView::GetWidthMetafile() const
     return m_pBitmap->GetWidth();
 }
 
-void CCustomView::DrawMetafile(std::wstring wsFilePath)
+void CCustomView::DrawMetafile(const std::wstring& wsFilePath)
 {
 
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;

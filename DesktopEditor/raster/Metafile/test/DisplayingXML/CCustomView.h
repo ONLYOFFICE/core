@@ -18,7 +18,7 @@ public:
     unsigned int GetHeightMetafile() const;
     unsigned int GetWidthMetafile() const;
 
-    void DrawMetafile(std::wstring wsFilePath);
+    void DrawMetafile(const std::wstring& wsFilePath);
 private:
     Gdiplus::Bitmap *m_pBitmap;
     void Clear();

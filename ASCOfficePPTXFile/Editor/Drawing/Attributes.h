@@ -80,10 +80,13 @@ namespace PPT_FORMAT
             eftVideo	= 1,
             eftAudio	= 2,
             eftHyperlink= 3,
-            eftObject	= 4
+            eftObject	= 4,
+            eftSlide    // Not used yet
         };
-        _UINT32			m_dwID;
+        _UINT32		m_dwID;
         std::wstring	m_strFilePath;
+        std::wstring    m_strLocation;
+        std::wstring    m_name;
 
         // clip
         double			m_dStartTime;
@@ -96,6 +99,7 @@ namespace PPT_FORMAT
         {
             m_dwID			= 0;
             m_strFilePath	= _T("");
+            m_strLocation       = _T("");
 
             m_dStartTime	= 0.0;
             m_dEndTime		= -1.0;
@@ -110,6 +114,8 @@ namespace PPT_FORMAT
         {
             m_dwID			= oSrc.m_dwID;
             m_strFilePath	= oSrc.m_strFilePath;
+            m_strLocation       = oSrc.m_strLocation;
+            m_name              = oSrc.m_name;
 
             m_dStartTime	= oSrc.m_dStartTime;
             m_dEndTime		= oSrc.m_dEndTime;

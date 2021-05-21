@@ -36,30 +36,30 @@
 
 namespace PPT_FORMAT
 {
-        class CTextRange
-        {
-        public:
-                int m_lStart;
-                int m_lEnd;
+	class CTextRange
+	{
+	public:
+		int m_lStart;
+		int m_lEnd;
+	
+	public:
+		CTextRange()
+		{
+			m_lStart	= 0;
+			m_lEnd		= 0;
+		}
+		CTextRange& operator=(const CTextRange& oSrc)
+		{
+			m_lStart	= oSrc.m_lStart;
+			m_lEnd		= oSrc.m_lEnd;
 
-        public:
-                CTextRange()
-                {
-                        m_lStart	= 0;
-                        m_lEnd		= 0;
-                }
-                CTextRange& operator=(const CTextRange& oSrc)
-                {
-                        m_lStart	= oSrc.m_lStart;
-                        m_lEnd		= oSrc.m_lEnd;
-
-                        return *this;
-                }
-                CTextRange(const CTextRange& oSrc)
-                {
-                        *this = oSrc;
-                }
-        };
+			return *this;
+		}
+		CTextRange(const CTextRange& oSrc)
+		{
+			*this = oSrc;
+		}
+	};
         class CInteractiveInfo
         {
         public:
@@ -88,6 +88,7 @@ namespace PPT_FORMAT
 
                 m_strAudioFileName	= oSrc.m_strAudioFileName;
                 m_strHyperlink		= oSrc.m_strHyperlink;
+                m_strAudioName          = oSrc.m_strAudioName;
                 m_eActivation           = oSrc.m_eActivation;
                 return *this;
             }
@@ -110,40 +111,41 @@ namespace PPT_FORMAT
 
             std::wstring	m_strAudioFileName;
             std::wstring	m_strHyperlink;
+            std::wstring        m_strAudioName;
         };
-        class CTextInteractiveInfo
-        {
-        private:
+	class CTextInteractiveInfo
+	{
+	private:
         long        m_lType;
         ASC_VARIANT m_varParameter;
+		
+	public:
+		bool	m_bPresent;
 
-        public:
-                bool	m_bPresent;
+		std::vector<CTextRange> m_arRanges;
 
-                std::vector<CTextRange> m_arRanges;
+		CTextInteractiveInfo()
+		{
+			m_bPresent = false;
+		}
+		~CTextInteractiveInfo()
+		{
+		}
 
-                CTextInteractiveInfo()
-                {
-                        m_bPresent = false;
-                }
-                ~CTextInteractiveInfo()
-                {
-                }
+		CTextInteractiveInfo& operator=(const CTextInteractiveInfo& oSrc)
+		{
+			m_lType			= oSrc.m_lType;
+			m_varParameter	= oSrc.m_varParameter;
 
-                CTextInteractiveInfo& operator=(const CTextInteractiveInfo& oSrc)
-                {
-                        m_lType			= oSrc.m_lType;
-                        m_varParameter	= oSrc.m_varParameter;
+			m_bPresent		= oSrc.m_bPresent;
 
-                        m_bPresent		= oSrc.m_bPresent;
+			m_arRanges.insert(m_arRanges.end(), oSrc.m_arRanges.begin(), oSrc.m_arRanges.end());
 
-                        m_arRanges.insert(m_arRanges.end(), oSrc.m_arRanges.begin(), oSrc.m_arRanges.end());
-
-                        return *this;
-                }
-                CTextInteractiveInfo(const CTextInteractiveInfo& oSrc)
-                {
-                        *this = oSrc;
-                }
-        };
+			return *this;
+		}
+		CTextInteractiveInfo(const CTextInteractiveInfo& oSrc)
+		{
+			*this = oSrc;
+		}
+	};
 }

@@ -34,15 +34,13 @@
 #ifndef DISABLE_FILE_DOWNLOADER
 #include "../../../Common/FileDownloader/FileDownloader.h"
 #endif
-#include "ridmanager.h"
+#include <boost/algorithm/string.hpp>
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Attributes.h"
 
 namespace PPT_FORMAT
 {
 	class CMediaManager
 	{
-    public:
-        RIDManager                              m_ridManager;
-
     private:
 		std::map<std::wstring, std::wstring>	m_mapMedia;
 
@@ -150,7 +148,6 @@ namespace PPT_FORMAT
             for (auto& audio : audioCont)
             {
                 auto pathAudio = GenerateAudio(audio.m_strFilePath);
-                m_ridManager.addSoundPath(pathAudio);
             }
 
         }
@@ -368,6 +365,16 @@ namespace PPT_FORMAT
 			if (strImage.empty())	return WriteHyperlinkImage(CorrectXmlString3(strImagePath), true);			
 									return WriteHyperlinkImage(strImage, false);
 		}
+        std::wstring WriteSlideRef(const std::wstring& strLocation)
+        {
+            std::wstring strSlide(L"slide");
+            std::vector<std::wstring> strs;
+            boost::split(strs, strLocation, boost::is_any_of(L","));
+            if (strs.size() == 3)
+                strSlide += strs[1];
+            strSlide += L".xml";
+            return WriteHyperlinkMedia(strSlide, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide");
+        }
         inline std::wstring WriteAudio(const std::wstring& strAudioPath, bool & bExternal)
 		{
 			std::wstring strAudio = m_pManager->GenerateAudio(strAudioPath);

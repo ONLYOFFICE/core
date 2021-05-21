@@ -124,9 +124,9 @@ namespace PPTX
 
                 oValue.WriteNullable(stCondLst);
                 oValue.WriteNullable(iterate);
-                oValue.WriteNullable(childTnLst);
                 oValue.WriteNullable(endCondLst);
                 oValue.WriteNullable(endSync);
+                oValue.WriteNullable(childTnLst);
                 oValue.WriteNullable(subTnLst);
 
 				return XmlUtils::CreateNode(L"p:cTn", oAttr, oValue);

@@ -32,7 +32,6 @@
 #pragma once
 
 #include "ImageManager.h"
-#include "ridmanager.h"
 
 
 class CStylesWriter;
@@ -89,6 +88,7 @@ namespace PPT_FORMAT
 		void WriteBackground	(CStringWriter& oWriter, CRelsGenerator& oRels, CBrush& oBackground);
 		void WriteElement		(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
 		void WriteGroup			(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
+        void WriteTable			(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
 		
 
 	};

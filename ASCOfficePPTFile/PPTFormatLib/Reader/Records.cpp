@@ -639,6 +639,8 @@ IRecord* CreateByType(SRecordHeader oHeader)
         }break;
     };
 
+//    std::cout << GetRecordName(oHeader.RecType) << ": " << oHeader.RecLen << "\n";
+
 	if (NULL == pRecord)
 	{
 

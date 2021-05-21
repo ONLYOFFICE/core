@@ -30,6 +30,7 @@
  *
  */
 #include <boost/make_shared.hpp>
+#include <iostream>
 
 #include "PPTDocumentInfo.h"
 
@@ -2291,6 +2292,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 
                 oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + oArrayStrings[0]->m_strText + _T(".audio");
                 oInfo.m_dwID		= (_UINT32)XmlUtils::GetInteger(oArrayStrings[2]->m_strText.c_str());
+                oInfo.m_name        = oArrayStrings[0]->m_strText;
 
                 m_oExMedia.m_arAudioCollection.push_back(oInfo);
                 oArrayData[0]->SaveToFile(oInfo.m_strFilePath);
@@ -2384,8 +2386,12 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
             oInfo.m_dwID = oArrayHyperlink[0]->m_nHyperlinkID;
             for (size_t i = 0 ; i < oArrayCString.size(); i++)
             {
+                // Target atom. It's for eigher local and external files.
                 if (oArrayCString[i]->m_oHeader.RecInstance == 1)
                     oInfo.m_strFilePath		= oArrayCString[i]->m_strText;
+                // Location atom. It's for slides or other local pp objects.
+                if (oArrayCString[i]->m_oHeader.RecInstance == 3)
+                    oInfo.m_strLocation		= oArrayCString[i]->m_strText;
             }
             m_oExMedia.m_arHyperlinks.push_back(oInfo);
         }

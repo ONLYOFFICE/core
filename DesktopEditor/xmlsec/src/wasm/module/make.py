@@ -147,9 +147,13 @@ run_as_bash("./compile_module.sh", ["source ./emsdk/emsdk_env.sh", "emcc " + arg
 base.replaceInFile("./openssl.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
 base.replaceInFile("./openssl.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
 
-openssl_js_content = base.readFile("./openssl.js")
+openssl_js_content     = base.readFile("./openssl.js")
 engine_base_js_content = base.readFile("./engine.js")
-engine_js_content = engine_base_js_content.replace("//module", openssl_js_content)
+desktop_fetch_content  = base.readFile("./../../Common/js/desktop_fetch.js")
+string_utf8_content    = base.readFile("./../../Common/js/string_utf8.js")
+engine_js_content = engine_base_js_content.replace("//desktop_fetch", desktop_fetch_content)
+engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
+engine_js_content = engine_js_content.replace("//module", openssl_js_content)
 
 if not base.is_dir("./deploy"):
   base.create_dir("./deploy")
@@ -162,6 +166,8 @@ if base.is_file("./deploy/openssl.wasm"):
 
 # write new version
 base.writeFile("./deploy/openssl.js", engine_js_content)
+base.copy_file("./index.html",   "./deploy/index.html")
+base.copy_file("./code.js",      "./deploy/code.js")
 base.copy_file("./openssl.wasm", "./deploy/openssl.wasm")
 
 base.delete_file("./openssl.js")

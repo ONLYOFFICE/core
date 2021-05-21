@@ -335,9 +335,14 @@ public:
                     m_arrRgBeginTimeCondition.push_back(pTimeCondition);
 
                 else if (recInst == TL_CT_End || recInst == TL_CT_Previous)
+                {
                     m_arrRgEndTimeCondition.push_back(pTimeCondition);
+                }
                 else
+                {
+                    m_haveTimeEndSyncTime = true;
                     m_pTimeEndSyncTimeCondition = pTimeCondition;
+                }
 
 
                 break; // A lot of records. Look at instance

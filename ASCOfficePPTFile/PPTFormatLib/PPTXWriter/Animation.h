@@ -109,6 +109,8 @@ private:
     void FillCTn(
             CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::CTn &oCTn);
+    void FillStCondLst(const std::vector<CRecordTimeConditionContainer*>& timeCondCont,
+                       PPTX::Logic::CondLst& stCondLst);
     void FillTnChild(
             CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::TimeNodeBase &oChild);
@@ -154,8 +156,7 @@ private:
             PPTX::Logic::CBhvr &oBhvr);
     void FillCBhvr(PPTX::Logic::CBhvr &oBhvr,
             int dur, UINT spid, std::wstring attrname, int delay);
-    void FillCond(
-            PPT_FORMAT::CRecordTimeConditionContainer *oldCond,
+    void FillCond(PPT_FORMAT::CRecordTimeConditionContainer *oldCond,
             PPTX::Logic::Cond &cond);
     void FillBldLst(
             PPT_FORMAT::CRecordBuildListContainer *pBLC,

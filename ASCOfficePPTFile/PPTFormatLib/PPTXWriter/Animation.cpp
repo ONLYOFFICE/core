@@ -706,14 +706,19 @@ void Animation::FillCond(
         PPTX::Logic::Cond &cond)
 {
     if (oldCond->m_oTimeConditionAtom.m_nTimeDelay != -1)
-        cond.delay = std::to_wstring(oldCond->m_oTimeConditionAtom.m_nTimeDelay);
+        cond.delay = std::to_wstring(oldCond->m_oTimeConditionAtom.m_nTimeDelay * 1000);
     else
         cond.delay = L"indefinite";
 
-    if (oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_RuntimeNodeRef ||
-            oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_TimeNode)
+//    if (oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_RuntimeNodeRef ||
+//            oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_TimeNode)
+//    {
+//        cond.tn = oldCond->m_oTimeConditionAtom.m_nID;
+//    }
+    if (oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_RuntimeNodeRef)
     {
-        cond.tn = oldCond->m_oTimeConditionAtom.m_nID;
+        cond.rtn = new PPTX::Limit::TLRuntimeTrigger;
+        cond.rtn->SetBYTECode(0);
     }
 
     std::wstring str;
@@ -733,14 +738,12 @@ void Animation::FillCond(
 
     if (!str.empty()) cond.evt = str;
 
-    // TODO
-    //    if (oldCond->m_oVisualElement.)
-    //    cond.tgtEl = new PPTX::Logic::TgtEl();
-
-    if (oldCond->m_oVisualElement.m_bVisualPageAtom &&
-            oldCond->m_oVisualElement.m_oVisualPageAtom.m_eType == TL_TVET_Page)
+    if (oldCond->m_oVisualElement.m_bVisualShapeAtom)
     {
         cond.tgtEl = new PPTX::Logic::TgtEl;
+        cond.tgtEl->spTgt = new PPTX::Logic::SpTgt;
+        cond.tgtEl->spTgt->spid = std::to_wstring(
+                    oldCond->m_oVisualElement.m_oVisualShapeAtom.m_nObjectIdRef);
     }
 }
 
@@ -801,8 +804,8 @@ void Animation::FillCTn(
         {
             oCTn.endCondLst = new PPTX::Logic::CondLst;
             oCTn.endCondLst->node_name = L"endCondLst";
+            FillCondLst(pETNC->m_arrRgEndTimeCondition, oCTn.endCondLst.get2());
         }
-        FillCondLst(pETNC->m_arrRgEndTimeCondition, oCTn.endCondLst.get2());
     }
 
 
@@ -927,6 +930,30 @@ void Animation::FillCTn(
             }
         }
 
+    }
+
+    // Write stCondLst
+    if (pETNC->m_arrRgBeginTimeCondition.empty() == false)
+    {
+        oCTn.stCondLst = new PPTX::Logic::CondLst;
+        oCTn.stCondLst->node_name = L"stCondLst";
+        FillStCondLst(pETNC->m_arrRgBeginTimeCondition, oCTn.stCondLst.get2());
+    }
+}
+
+void Animation::FillStCondLst(const std::vector<CRecordTimeConditionContainer *> &timeCondCont,
+                              PPTX::Logic::CondLst &stCondLst)
+{
+    for (const auto& pCond : timeCondCont)
+    {
+        int target = -1;
+        if (pCond->m_oVisualElement.m_bVisualShapeAtom)
+            target = pCond->m_oVisualElement.m_oVisualShapeAtom.m_nObjectIdRef;
+
+        PPTX::Logic::Cond cond;
+        FillCond(pCond, cond);
+
+        stCondLst.list.push_back(cond);
     }
 }
 

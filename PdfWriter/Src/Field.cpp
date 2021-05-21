@@ -184,10 +184,13 @@ namespace PdfWriter
 	{
 		Add("MaxLen", nMaxLen);
 	}
-	void CTextField::SetValue(const std::wstring &wsValue, CFontDict* pFont, double dFontSize, double dX, double dY)
+	void CTextField::SetValue(const std::wstring &wsValue, CFontDict* pFont, const TRgb& oColor, double dFontSize, double dX, double dY, bool isPlaceholder)
 	{
-		std::string sValue = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsValue);
-		Add("V", new CStringObject(sValue.c_str(), true));
+		if (!isPlaceholder)
+		{
+			std::string sValue = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsValue);
+			Add("V", new CStringObject(sValue.c_str(), true));
+		}
 
 		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
 		Add("AP", pAppearance);
@@ -203,10 +206,16 @@ namespace PdfWriter
 			return;
 
 		Add("DR", pResources);
+		
+		pNormal->DrawSimpleText(wsValue, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
 
-		pNormal->DrawSimpleText(wsValue, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY);
-
-		std::string sDA = "0 0 0 rg /";
+		std::string sDA;
+		sDA.append(std::to_string(oColor.r));
+		sDA.append(" ");
+		sDA.append(std::to_string(oColor.g));
+		sDA.append(" ");
+		sDA.append(std::to_string(oColor.b));
+		sDA.append(" rg /");
 		sDA.append(sFontName);
 		sDA.append(" ");
 		sDA.append(std::to_string(dFontSize));
@@ -276,7 +285,7 @@ namespace PdfWriter
 
 		Add("Resources", pField->GetResourcesDict());
 	}
-	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, const char* sFontName, double dFontSize, double dX, double dY)
+	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, const char* sFontName, double dFontSize, double dX, double dY, double dR, double dG, double dB, double dWidth, double dHeight)
 	{
 		if (!m_pStream || !sFontName)
 			return;
@@ -284,10 +293,19 @@ namespace PdfWriter
 		m_pStream->WriteEscapeName("Tx");
 		m_pStream->WriteStr(" BMC\012q\012");
 
-		m_pStream->WriteStr("1 1 98 100 re\012W\012n\012");
-
-
+		m_pStream->WriteStr("1 1 ");
+		m_pStream->WriteReal(std::max(dWidth - 2, 1.0));
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::max(dHeight - 2, 1.0));
+		m_pStream->WriteStr(" re\012W\012n\012");
 		m_pStream->WriteStr("BT\012");
+
+		m_pStream->WriteReal(dR);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dG);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dB);
+		m_pStream->WriteStr(" rg\012");
 
 		dFontSize = std::min(1000.0, std::max(0.0, dFontSize));
 
@@ -302,7 +320,7 @@ namespace PdfWriter
 		m_pStream->WriteStr(" Td\012");
 
 		std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsText);
-		m_pStream->WriteEscapeText((BYTE*)(sText.c_str()), sText.length(), true);
+		m_pStream->WriteEscapeText((BYTE*)(sText.c_str()), sText.length());
 
 		m_pStream->WriteStr(" Tj\012");
 
@@ -310,6 +328,5 @@ namespace PdfWriter
 		
 		m_pStream->WriteStr("Q\012EMC\012");
 	}
-
 
 }

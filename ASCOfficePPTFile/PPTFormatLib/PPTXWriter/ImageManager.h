@@ -36,7 +36,7 @@
 #endif
 #include <boost/algorithm/string.hpp>
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Attributes.h"
-
+#include "../../../DesktopEditor/common/File.h"
 namespace PPT_FORMAT
 {
 	class CMediaManager
@@ -132,8 +132,8 @@ namespace PPT_FORMAT
 
 			// теперь нужно скопировать
 			if (strOutput != strInput)
-			{
-                if (CDirectory::CopyFile(strInput, strOutput) == false)
+            {
+                if (NSFile::CFileBinary::Copy(strInput, strOutput) == false)
 				{
 					return L"";
 				}
@@ -282,8 +282,8 @@ namespace PPT_FORMAT
 		}
         inline void SaveRels(const std::wstring& strFile)
 		{
-			CFile oFile;
-			oFile.CreateFile(strFile);
+            NSFile::CFileBinary oFile;
+            oFile.CreateFileW(strFile);
             std::wstring strMem = m_oWriter.GetData();
 			oFile.WriteStringUTF8(strMem);
 			oFile.CloseFile();

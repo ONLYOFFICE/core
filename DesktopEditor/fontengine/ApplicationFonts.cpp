@@ -266,12 +266,12 @@ namespace NSFonts
         memcpy( (void *)pBuffer, (const void *)pInfo->m_aPanose, lLen );
         pBuffer += lLen;
 
-        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulUnicodeRange1);
-        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulUnicodeRange2);
-        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulUnicodeRange3);
-        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulUnicodeRange4);
-        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulCodePageRange1);
-        NSBinarySerialize::Write<UINT>(pBuffer, (UINT)pInfo->m_ulCodePageRange2);
+        NSBinarySerialize::Write<UINT>(pBuffer, pInfo->m_ulUnicodeRange1);
+        NSBinarySerialize::Write<UINT>(pBuffer, pInfo->m_ulUnicodeRange2);
+        NSBinarySerialize::Write<UINT>(pBuffer, pInfo->m_ulUnicodeRange3);
+        NSBinarySerialize::Write<UINT>(pBuffer, pInfo->m_ulUnicodeRange4);
+        NSBinarySerialize::Write<UINT>(pBuffer, pInfo->m_ulCodePageRange1);
+        NSBinarySerialize::Write<UINT>(pBuffer, pInfo->m_ulCodePageRange2);
 
         NSBinarySerialize::Write<USHORT>(pBuffer, pInfo->m_usWeigth);
         NSBinarySerialize::Write<USHORT>(pBuffer, pInfo->m_usWidth);
@@ -445,7 +445,7 @@ namespace NSCharsets
         return 0;
     }
 
-    static void GetCodePageByCharset(unsigned char unCharset, unsigned long *pulBit, unsigned int *punLongIndex)
+    static void GetCodePageByCharset(unsigned char unCharset, unsigned int *pulBit, unsigned int *punLongIndex)
     {
         // Данная функция возвращает параметры, которые нужно посылать на вход
         // функции AVSFontManager::IsUnicodeRangeAvailable
@@ -561,19 +561,19 @@ std::wstring CFontList::GetFontBySymbol(int symbol)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-int CFontList::GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset)
+int CFontList::GetCharsetPenalty(UINT ulCandRanges[6], unsigned char unReqCharset)
 {
 	// Penalty = 65000 (это самый весомый параметр)
 
 	if ( UNKNOWN_CHARSET == unReqCharset )
 		return 0;
 
-	unsigned long ulBit = 0;
+    unsigned int ulBit = 0;
 	unsigned int unLongIndex = 0;
 	NSCharsets::GetCodePageByCharset( unReqCharset, &ulBit, &unLongIndex );
 
-	int nMult = 1;
-	for ( int nIndex = 0; nIndex < (int)ulBit; nIndex++ )
+    unsigned int nMult = 1;
+    for ( unsigned int nIndex = 0; nIndex < ulBit; nIndex++ )
 		nMult <<= 1;
 
 	if ( !(ulCandRanges[unLongIndex] & nMult) )
@@ -581,56 +581,41 @@ int CFontList::GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqChars
 
 	return 0;
 }
-int CFontList::GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double dRangeWeight, double dRangeWeightSuferflouous)
+int CFontList::GetSigPenalty(UINT ulCandRanges[6], UINT ulReqRanges[6], double dRangeWeight, double dRangeWeightSuferflouous)
 {
 	double dPenalty = 0;
 
 	// Для начала просматриваем сколько вообще различных пространств надо.
 	// Исходя из их общего количества, находим вес 1 пропущеного пространства.
 
-	unsigned char arrCandidate[192], arrRequest[192];
-	memset( arrCandidate, 0x00, 192 );
-	memset( arrRequest, 0x00, 192 );
+    bool isSuferflouous = (dRangeWeightSuferflouous < 1) ? false : true;
+    int nRangesCount = 0;
+    for ( int nIndex = 0; nIndex < 6; nIndex++ )
+    {
+        UINT nBit = 1;
+        UINT first = ulReqRanges[nIndex];
+        UINT second = ulReqRanges[nIndex];
+        for ( int bit = 0; bit < 32; ++bit, nBit <<= 1 )
+        {
+            if (first & nBit)
+            {
+                ++nRangesCount;
+                if (!(second & nBit))
+                    dPenalty += dRangeWeight;
+            }
 
-	int nRangesCount = 0; // Количество необходимых пространств
-	int nAddCount    = 0; // количество дополнительных(ненужных) пространств у кандидата
+            if (isSuferflouous)
+            {
+                if (!(first & nBit) && (second & nBit))
+                    dPenalty += dRangeWeightSuferflouous;
+            }
+        }
+    }
 
-	for ( int nIndex = 0; nIndex < 6; nIndex++ )
-	{
-		for ( unsigned long nBitCount = 0, nBit = 1; nBitCount < 32; nBitCount++, nBit *= 2 )
-		{
-            INT bReqAdd = FALSE;
+    if (!nRangesCount)
+        return 0;
 
-			if ( ulReqRanges[nIndex] & nBit )
-			{
-				arrRequest[ nIndex * 32 + nBitCount ] = 1;
-				nRangesCount++;
-				bReqAdd = TRUE;
-			}
-
-			if ( ulCandRanges[nIndex] & nBit )
-			{
-				arrCandidate[ nIndex * 32 + nBitCount ] = 1;
-				if ( !bReqAdd )
-					nAddCount++;
-			}
-		}
-	}
-
-	if ( 0 == nRangesCount )
-		return 0;
-
-	//double dRangeWeight = 1;//1000.0 / nRangesCount;
-
-	for ( int nIndex = 0; nIndex < 192; nIndex++ )
-	{
-		if ( 1 == arrRequest[nIndex] && 0 == arrCandidate[nIndex] )
-			dPenalty += dRangeWeight;
-		else if ( dRangeWeightSuferflouous != 0 && 0 == arrRequest[nIndex] && 1 == arrCandidate[nIndex] )
-			dPenalty += dRangeWeightSuferflouous; 
-	}
-
-	return (int)dPenalty;
+    return (int)dPenalty;
 }
 int CFontList::GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed)
 {
@@ -658,10 +643,11 @@ int CFontList::GetFaceNamePenalty(const std::wstring& sCandName, const std::wstr
 	if ( sReqName == sCandName )
 		return 0;
 
-    if (CFontListNamePicker::IsEqualsFontsAdvanced(sCandName, sReqName))
+    bool bIsOneInAnother = false;
+    if (CFontListNamePicker::IsEqualsFontsAdvanced(sCandName, sReqName, &bIsOneInAnother))
         return 100;
 
-    if ( std::wstring::npos != sReqName.find( sCandName ) || std::wstring::npos != sCandName.find( sReqName ) )
+    if (bIsOneInAnother)
     {
         if (m_oPicker.IsLikeFonts(sCandName, sReqName))
             return 700;
@@ -1019,7 +1005,7 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
                 nCurPenalty += GetPanosePenalty( pInfo->m_aPanose, oSelect.pPanose );
             }
 
-            ULONG arrCandRanges[6] = { pInfo->m_ulUnicodeRange1, pInfo->m_ulUnicodeRange2, pInfo->m_ulUnicodeRange3, pInfo->m_ulUnicodeRange4, pInfo->m_ulCodePageRange1, pInfo->m_ulCodePageRange2 };
+            UINT arrCandRanges[6] = { pInfo->m_ulUnicodeRange1, pInfo->m_ulUnicodeRange2, pInfo->m_ulUnicodeRange3, pInfo->m_ulUnicodeRange4, pInfo->m_ulCodePageRange1, pInfo->m_ulCodePageRange2 };
 
             if (true)
             {
@@ -1030,7 +1016,7 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
                     NULL != oSelect.ulCodeRange1 &&
                     NULL != oSelect.ulCodeRange2)
                 {
-                    ULONG arrReqRanges[6]  = { *oSelect.ulRange1, *oSelect.ulRange2, *oSelect.ulRange3, *oSelect.ulRange4, *oSelect.ulCodeRange1, *oSelect.ulCodeRange2 };
+                    UINT arrReqRanges[6]  = { *oSelect.ulRange1, *oSelect.ulRange2, *oSelect.ulRange3, *oSelect.ulRange4, *oSelect.ulCodeRange1, *oSelect.ulCodeRange2 };
                     nCurPenalty += GetSigPenalty( arrCandRanges, arrReqRanges, nCurPenalty >= 1000 ? 50 : 10, 10 );
                 }
             }

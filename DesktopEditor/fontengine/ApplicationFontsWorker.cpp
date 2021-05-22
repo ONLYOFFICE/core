@@ -52,6 +52,8 @@ public:
     {
         m_pMain = pMain;
         m_pBreaker = NULL;
+
+        m_bIsCheckThumbnailsMode = false;
     }
     ~CApplicationFontsWorker_private()
     {
@@ -92,7 +94,9 @@ public:
 public:
     CApplicationFontsWorker* m_pMain;
     CApplicationFontsWorkerBreaker* m_pBreaker;
+
     std::vector<CFontThumbnail> m_arFonts;
+    bool m_bIsCheckThumbnailsMode;
 
     class CFontInfoJS
     {
@@ -513,7 +517,8 @@ public:
         }
 
         std::wstring strFontSelectionBin = L"";
-        if (-1 == nVersion)
+        // нужно ли скидывать font_selection.bin
+        if (-1 == nVersion && !m_bIsCheckThumbnailsMode)
         {
             strFontSelectionBin = m_pMain->m_sDirectory + L"/font_selection.bin";
         }
@@ -532,7 +537,10 @@ public:
         if (nVersion != -1)
             sAllFontsPath += (L"." + std::to_wstring((int)(nVersion + 1)));
 
-        if (true)
+        if (m_bIsCheckThumbnailsMode)
+            sAllFontsPath = L"";
+
+        if (!sAllFontsPath.empty())
         {
             NSStringUtils::CStringBuilder oWriterJS;
             int nAllFontsVersion = nVersion;
@@ -992,8 +1000,47 @@ public:
         }
     }
 
+    void PrepareForThumbnails(NSFonts::IApplicationFonts* applicationFonts)
+    {
+        if (m_arFonts.empty())
+        {
+            m_bIsCheckThumbnailsMode = true;
+            SaveAllFontsJS(applicationFonts, -1);
+            m_bIsCheckThumbnailsMode = false;
+        }
+    }
+
     void SaveThumbnails(NSFonts::IApplicationFonts* applicationFonts)
     {
+        std::vector<std::wstring> arrFiles;
+        bool bIsNeedCheck = false;
+
+        int nCountScales = m_pMain->m_arThumbnailsScales.size();
+        for (int iX = 0; iX < nCountScales; ++iX)
+        {
+            if (CheckBreak()) return;
+
+            double dScale = m_pMain->m_arThumbnailsScales[iX];
+
+            std::wstring strThumbnailPath = m_pMain->m_sDirectory + L"/fonts_thumbnail";
+            int nScaleOut = (int)(dScale * 10 + 0.5);
+
+            if (nScaleOut == 10)
+                strThumbnailPath += L".png";
+            else if ((nScaleOut % 10) == 0)
+                strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"x.png";
+            else
+                strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"." + std::to_wstring((int)(nScaleOut % 10)) + L"x.png";
+
+            arrFiles.push_back(strThumbnailPath);
+
+            if (!NSFile::CFileBinary::Exists(strThumbnailPath))
+                bIsNeedCheck = true;
+        }
+
+        if (!bIsNeedCheck)
+            return;
+
         NSFonts::IApplicationFonts* applicationFontsGood = applicationFonts;
         if (NULL == applicationFontsGood)
         {
@@ -1006,13 +1053,18 @@ public:
         pCache->SetStreams(applicationFontsGood->GetStreams());
         pManager->SetOwnerCache(pCache);
 
-        int nCountScales = m_pMain->m_arThumbnailsScales.size();
+        PrepareForThumbnails(applicationFontsGood);
+
         int nCountFonts = (int)m_arFonts.size();
         for (int iX = 0; iX < nCountScales; ++iX)
         {
             if (CheckBreak()) return;
 
             double dScale = m_pMain->m_arThumbnailsScales[iX];
+            std::wstring strThumbnailPath = arrFiles[iX];
+
+            if (NSFile::CFileBinary::Exists(strThumbnailPath))
+                continue;
 
             // создаем картинку для табнейлов
             double dDpi = 96 * dScale;
@@ -1125,20 +1177,10 @@ public:
 
                 pRenderer->CloseFont();
                 pCache->Clear();
-                applicationFonts->GetStreams()->Clear();
+                applicationFontsGood->GetStreams()->Clear();
             }
 
-            RELEASEOBJECT(pRenderer);
-
-            std::wstring strThumbnailPath = m_pMain->m_sDirectory + L"/fonts_thumbnail";
-            int nScaleOut = (int)(dScale * 10 + 0.5);
-
-            if (nScaleOut == 10)
-                strThumbnailPath += L".png";
-            else if ((nScaleOut % 10) == 0)
-                strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"x.png";
-            else
-                strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"." + std::to_wstring((int)(nScaleOut % 10)) + L"x.png";
+            RELEASEOBJECT(pRenderer);            
 
             oFrame.SaveFile(strThumbnailPath, 4);
         }

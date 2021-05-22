@@ -16,145 +16,14 @@
 extern "C" {
 #endif
 
-WASM_EXPORT void* XmlSirnature_Malloc(unsigned int size)
+WASM_EXPORT void* XmlSignature_Malloc(unsigned int size)
 {
     return ::malloc(size);
 }
-WASM_EXPORT void XmlSirnature_Free(void* p)
+WASM_EXPORT void XmlSignature_Free(void* p)
 {
     if (p) ::free(p);
 }
-
-class CData
-{
-protected:
-    unsigned char* m_pData;
-    size_t m_lSize;
-
-    unsigned char* m_pDataCur;
-    size_t m_lSizeCur;
-
-public:
-    CData()
-    {
-        m_pData = NULL;
-        m_lSize = 0;
-
-        m_pDataCur = m_pData;
-        m_lSizeCur = m_lSize;
-    }
-    CData(size_t nLen)
-    {
-        m_lSize = nLen;
-        m_pData = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
-
-        m_lSizeCur = 0;
-        m_pDataCur = m_pData;
-    }
-    CData(unsigned char* value, unsigned int len)
-    {
-        m_lSize = len;
-        m_pData = value;
-
-        m_lSizeCur = m_lSize;
-        m_pDataCur = m_pData + m_lSizeCur;
-    }
-    virtual ~CData()
-    {
-        Clear();
-    }
-
-    inline void AddSize(size_t nSize)
-    {
-        if (NULL == m_pData)
-        {
-            m_lSize = 1000;
-            if (nSize > m_lSize)
-                m_lSize = nSize;
-
-            m_pData = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
-
-            m_lSizeCur = 0;
-            m_pDataCur = m_pData;
-            return;
-        }
-
-        if ((m_lSizeCur + nSize) > m_lSize)
-        {
-            while ((m_lSizeCur + nSize) > m_lSize)
-                m_lSize *= 2;
-
-            unsigned char* pRealloc = (unsigned char*)realloc(m_pData, m_lSize * sizeof(unsigned char));
-            if (NULL != pRealloc)
-            {
-                m_pData    = pRealloc;
-                m_pDataCur = m_pData + m_lSizeCur;
-            }
-            else
-            {
-                unsigned char* pMalloc = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
-                memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(unsigned char));
-
-                free(m_pData);
-                m_pData    = pMalloc;
-                m_pDataCur = m_pData + m_lSizeCur;
-            }
-        }
-    }
-
-public:
-    void AddInt(unsigned int value)
-    {
-        AddSize(4);
-        memcpy(m_pDataCur, &value, sizeof(unsigned int));
-        m_pDataCur += 4;
-        m_lSizeCur += 4;
-    }
-    void WriteString(unsigned char* value, unsigned int len)
-    {
-        AddSize(len + 4);
-        memcpy(m_pDataCur, &len, sizeof(unsigned int));
-        m_pDataCur += 4;
-        m_lSizeCur += 4;
-        memcpy(m_pDataCur, value, len);
-        m_pDataCur += len;
-        m_lSizeCur += len;
-    }
-    unsigned char* GetBuffer()
-    {
-        return m_pData;
-    }
-
-    void Clear()
-    {
-        if (m_pData) free(m_pData);
-
-        m_pData = NULL;
-        m_lSize = 0;
-
-        m_pDataCur = m_pData;
-        m_lSizeCur = 0;
-    }
-    void ClearNoAttack()
-    {
-        m_pDataCur = m_pData;
-        m_lSizeCur = 0;
-    }
-    unsigned int GetSize()
-    {
-        return (unsigned int)m_lSizeCur;
-    }
-
-    void SkipLen()
-    {
-        AddInt(0);
-    }
-    void WriteLen()
-    {
-        unsigned int len = (unsigned int)m_lSizeCur;
-        memcpy(m_pData, &len, sizeof(unsigned int));
-    }
-};
 
 class CMemoryFile
 {
@@ -268,6 +137,16 @@ WASM_EXPORT void* XmlSignature_CreateFile(unsigned char* file, unsigned int len)
 {
     return new CMemoryFile(file, len);
 }
+WASM_EXPORT unsigned int XmlSignature_GetFileSize(void* file)
+{
+    CMemoryFile* pZipFile = (CMemoryFile*)file;
+    return pZipFile->Length;
+}
+WASM_EXPORT void* XmlSignature_GetFileRaw(void* file)
+{
+    CMemoryFile* pZipFile = (CMemoryFile*)file;
+    return pZipFile->Data;
+}
 WASM_EXPORT void XmlSignature_DestroyFile(void* file)
 {
     CMemoryFile* pZipFile = (CMemoryFile*)file;
@@ -282,14 +161,13 @@ WASM_EXPORT void* XmlSignature_Sign(void* file, void* cert)
     pCert->Load();
     COOXMLSigner oSigner(pZipFile->Data, pZipFile->Length, pCert->GetCertificate());
 
-    BYTE* pDataDst = NULL;
+    CMemoryFile* pFile = new CMemoryFile();
     unsigned long lDataDstLen = 0;
 
-    oSigner.Sign(pDataDst, lDataDstLen);
+    oSigner.Sign(pFile->Data, lDataDstLen);
+    pFile->Length = (unsigned int)lDataDstLen;
 
-    CData* oData = new CData();
-    oData->WriteString(pDataDst, lDataDstLen);
-    return oData->GetBuffer();
+    return pFile;
 }
 
 #ifdef __cplusplus
@@ -315,20 +193,18 @@ int main()
     BYTE* pData = NULL;
     DWORD nLen  = 0;
     NSFile::CFileBinary::ReadAllBytes(sTestDir + L"file.docx", &pData, nLen);
-    void* file = XmlSignature_CreateFile(pData, nLen);
-    void* res  = XmlSignature_Sign(file, cert);
-    BYTE* pRes = (BYTE*)res;
+    CMemoryFile* file = (CMemoryFile*)XmlSignature_CreateFile(pData, nLen);
+    CMemoryFile* res  = (CMemoryFile*)XmlSignature_Sign(file, cert);
 
     NSFile::CFileBinary oFileDst;
     oFileDst.CreateFileW(sTestDir + L"/file2.docx");
-    oFileDst.WriteFile(pRes + 4, pRes[0] | pRes[1] << 8 | pRes[2] << 16 | pRes[3] << 24);
+    oFileDst.WriteFile(res->Data, (DWORD)res->Length);
     oFileDst.CloseFile();
 
     XmlSignature_DestroyFile(file);
-    XmlSirnature_Free(res);
+    XmlSignature_DestroyFile(res);
     XmlSignature_DestroyCertificate(cert);
 
     return 0;
 }
 #endif
-

@@ -1,69 +1,134 @@
 window.onload = function()
 {
-	var holder = document.body;
-	var i = 0;
-	holder.ondragover = function(e) 
-	{
-		var isFile = false;
-		if (e.dataTransfer.types)
-		{
-			for (var i = 0, length = e.dataTransfer.types.length; i < length; ++i)
-			{
-				var type = e.dataTransfer.types[i].toLowerCase();
-				if (type == "files" && e.dataTransfer.items && e.dataTransfer.items.length == 1)
-				{
-					var item = e.dataTransfer.items[0];
-					if (item.kind && "file" == item.kind.toLowerCase())
-					{
-						isFile = true;
-						break;
-					}
-				}
-			}
-		}
-		e.dataTransfer.dropEffect = isFile ? "copy" : "none";
-		e.preventDefault();
-		return false; 
-	};
-	holder.ondrop = function(e) 
-	{ 
-		var file = e.dataTransfer.files ? e.dataTransfer.files[0] : null;
-		if (!file)
-		{
-			e.preventDefault();
-			return false;
-		}
-		
-		var reader = new FileReader();
-		reader.onload = function(e) {
-			if (i == 0)
-			{
-				if (!window.nativeXmlSignatureEngine.create()) return;
-				window.nativeXmlSignatureEngine.loadCert(e.target.result);
-				i++;
-			}
-			else if (i == 1)
-			{
-				window.nativeXmlSignatureEngine.loadKey(e.target.result);
-				i++;
-			}
-			else if (i == 2)
-			{
-				var res = window.nativeXmlSignatureEngine.sign(e.target.result);
-				window.nativeXmlSignatureEngine.close();
-				window.writeFile(res);
-				i++;
-			}
-		};
-		reader.readAsArrayBuffer(file);
-	
-		return false; 
-	};
-};
+	var xmlCertificate = new window.XmlSignature();
+	var XmlError = window.XmlSignatureError;
 
-window.writeFile = function(file)
-{
-	if (!file) return;
-	var dst = document.getElementById("main");
-	dst.innerHTML += file.length + '\n';
+	function loadCert(data, password)
+	{
+		window.certFileData = data;
+		var err = xmlCertificate.loadCert(window.certFileData, password);
+		switch (err)
+		{
+			case XmlError.OPEN_SSL_WARNING_ERR:
+			{
+				alert("error");
+				break;				
+			}
+			case XmlError.OPEN_SSL_WARNING_ALL_OK:
+			{
+				document.getElementById("key").style.display = "none";
+				document.getElementById("password").style.display = "none";
+				break;
+			}
+			case XmlError.OPEN_SSL_WARNING_OK:
+			{
+				document.getElementById("key").style.display = "";
+				document.getElementById("password").style.display = "none";
+				break;				
+			}
+			case XmlError.OPEN_SSL_WARNING_PASS:
+			{
+				document.getElementById("key").style.display = "none";
+				document.getElementById("password").style.display = "";
+				break;
+			}
+			default:
+				break;
+		}
+	}
+
+	function loadKey(data, password)
+	{
+		window.keyFileData = data;
+		var err = xmlCertificate.loadKey(window.keyFileData, password);
+		switch (err)
+		{
+			case XmlError.OPEN_SSL_WARNING_ERR:
+			{
+				alert("error");
+				break;				
+			}
+			case XmlError.OPEN_SSL_WARNING_ALL_OK:
+			case XmlError.OPEN_SSL_WARNING_OK:
+			{
+				document.getElementById("password").style.display = "none";
+				break;				
+			}
+			case XmlError.OPEN_SSL_WARNING_PASS:
+			{
+				document.getElementById("password").style.display = "";
+				break;
+			}
+			default:
+				break;
+		}
+	}	
+
+	document.getElementById('button_certificate').onchange = function() {
+		var reader = new FileReader();
+		reader.onload = function() {
+			loadCert(this.result);
+		};			
+		reader.readAsArrayBuffer(this.files[0]);
+	};
+
+	document.getElementById('button_key').onchange = function() {
+		var reader = new FileReader();
+		reader.onload = function() {
+			loadKey(this.result);
+		};			
+		reader.readAsArrayBuffer(this.files[0]);
+	};
+
+	document.getElementById('file_select').onchange = function() {
+		var reader = new FileReader();
+		reader.onload = function() {
+			window.fileFileData = this.result;
+		};			
+		reader.readAsArrayBuffer(this.files[0]);
+	};
+
+	document.getElementById('button_password').onclick = function() {
+		if (document.getElementById("key").style.display == "none")
+			loadCert(window.certFileData, document.getElementById("area_password").value);
+		else
+			loadKey(window.keyFileData, document.getElementById("area_password").value);
+	};
+
+	document.getElementById('button_sign').onclick = function() {
+		
+		if (!window.fileFileData)
+		{
+			alert("Please select file");
+			return;
+		}
+
+		function downloadBlob(data, fileName, mimeType) {
+			var blob, url;
+			blob = new Blob([data], {
+			  type: mimeType
+			});
+			url = window.URL.createObjectURL(blob);
+			downloadURL(url, fileName);
+			setTimeout(function() {
+			  return window.URL.revokeObjectURL(url);
+			}, 1000);
+		};
+		  
+		function downloadURL(data, fileName) {
+			var a;
+			a = document.createElement('a');
+			a.href = data;
+			a.download = fileName;
+			document.body.appendChild(a);
+			a.style = 'display: none';
+			a.click();
+			a.remove();
+		};
+		
+		var result = xmlCertificate.sign(window.fileFileData);
+		downloadBlob(result, 'sign_file.docx', 'application/octet-stream');
+
+	};
+	
 };

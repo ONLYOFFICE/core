@@ -243,6 +243,10 @@ public:
     {
         m_zlib = new CZipBuffer(data, length);
     }
+    ~CZipFolderMemory(BYTE* data, DWORD length)
+    {
+        delete m_zlib;
+    }
 
     virtual std::wstring getFullFilePath(const std::wstring& path)
     {

@@ -67,6 +67,8 @@ exported_functions = ["_malloc",
                       "_XmlSignature_DestroyCertificate",
                       "_XmlSignature_CreateFile",
                       "_XmlSignature_DestroyFile",
+                      "_XmlSignature_GetFileSize",
+                      "_XmlSignature_GetFileRaw",
                       "_XmlSignature_Sign"]
 
 # XML

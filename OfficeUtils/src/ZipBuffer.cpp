@@ -112,8 +112,6 @@ void CZipBuffer::close()
     for (CFile& oFile : m_arrFiles)
         RELEASEARRAYOBJECTS(oFile.m_pData);
     m_arrFiles.clear();
-
-    RELEASEARRAYOBJECTS(m_zipFile);
 }
 
 std::vector<std::string> CZipBuffer::getPaths()

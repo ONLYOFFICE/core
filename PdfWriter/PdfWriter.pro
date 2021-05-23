@@ -73,6 +73,7 @@ HEADERS += \
     Src/Outline.h \
     Src/Pages.h \
     Src/Pattern.h \
+    Src/ResourcesDictionary.h \
     Src/Shading.h \
     Src/Streams.h \
     Src/Types.h \
@@ -102,6 +103,7 @@ SOURCES += \
     Src/Outline.cpp \
     Src/Pages.cpp \
     Src/Pattern.cpp \
+    Src/ResourcesDictionary.cpp \
     Src/Shading.cpp \
     Src/Streams.cpp \
     Src/Utils.cpp \

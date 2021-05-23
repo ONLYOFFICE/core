@@ -300,7 +300,18 @@ public:
 	}
 	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) {return S_OK;};
 	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) {return S_OK;};
-	virtual HRESULT AddTextForm(const double& dX, const double& dY, const double& dW, const double &dH) {return S_OK;};
+	virtual HRESULT AddTextForm(const double& dX,
+								const double& dY,
+								const double& dW,
+								const double& dH,
+								const double& dBaseLineOffset,
+								const std::wstring& wsKey,
+								const std::wstring& wsHelpText,
+								const unsigned char& isRequired,
+								const unsigned char& isPlaceHolder,
+								const unsigned char& isComb,
+								const LONG& nMaxCharacters,
+								const std::wstring& wsValue) {return S_OK;};
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)			\

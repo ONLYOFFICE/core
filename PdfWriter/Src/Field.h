@@ -85,7 +85,7 @@ namespace PdfWriter
 
 		void SetMaxLen(int nMaxLen);
 
-		void SetValue(const std::wstring& wsValue, CFontDict* pDict, const TRgb& oColor, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, bool isPlaceholder = false);
+		void SetValue(const std::wstring& wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pDict, const TRgb& oColor, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, bool isPlaceholder = false);
 		
 
 	private:
@@ -113,7 +113,7 @@ namespace PdfWriter
 	{
 	public:
 		CAnnotAppearanceObject(CXref* pXRef, CFieldBase* pField);
-		void DrawSimpleText(const std::wstring& wsText, const char* sFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double dR = 0.0, double dG = 0.0, double dB = 0.0, double dW = 1.0, double dH = 1.0);
+		void DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double dR = 0.0, double dG = 0.0, double dB = 0.0, double dW = 1.0, double dH = 1.0);
 
 	private:
 

@@ -192,6 +192,17 @@ void IMetafileToRenderter::InitPicker(NSFonts::IApplicationFonts* pFonts)
 
 namespace NSOnlineOfficeBinToPdf
 {
+	inline BYTE ReadByte(BYTE*& pData, int& nOffset)
+	{
+		BYTE ret = *(pData);
+		pData++;
+		nOffset++;
+		return ret;
+	}
+	inline bool ReadBool(BYTE*& pData, int& nOffset)
+	{
+		return ReadByte(pData, nOffset);
+	}
     inline INT32 ReadInt(BYTE*& pData, int& nOffset)
 	{
 	#ifdef _ARM_ALIGN_
@@ -865,17 +876,70 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctFormField:
 			{
+				double	dX = 0.0,
+						dY = 0.0,
+						dW = 0.0,
+						dH = 0.0,
+						dBaseLineOffset = 0.0;
+
+				std::wstring wsKey, wsHelpText, wsValue;
+
+				bool	isRequired    = false,
+						isPlaceHolder = false,
+						isComb        = false;
+
+				int nMaxCharaters = 0;
+
 				BYTE* nStartPos   = current;
 				int   nStartIndex = curindex;
 
 				int nLen = ReadInt(current, curindex);
 
-				double dX = ReadDouble(current, curindex);
-				double dY = ReadDouble(current, curindex);
-				double dW = ReadDouble(current, curindex);
-				double dH = ReadDouble(current, curindex);
+				dX = ReadDouble(current, curindex);
+				dY = ReadDouble(current, curindex);
+				dW = ReadDouble(current, curindex);
+				dH = ReadDouble(current, curindex);
+				dBaseLineOffset = ReadDouble(current, curindex);
 
-				pRenderer->AddTextForm(dX, dY, dW, dH);
+				int nFlags = ReadInt(current, curindex);
+
+				if (nFlags & 1)
+					wsKey = ReadString(current, curindex);
+
+				if (nFlags & 2)
+					wsHelpText = ReadString(current, curindex);
+
+				if (nFlags & 4)
+					isRequired = true;
+
+				if (nFlags & 8)
+					isPlaceHolder = true;
+
+				int nType = ReadInt(current, curindex);
+				if (1 == nType)
+				{
+					if (nFlags & (1 << 20))
+						isComb = true;
+
+					if (nFlags & (1 << 21))
+						nMaxCharaters = ReadInt(current, curindex);
+
+					if (nFlags & (1 << 22))
+						wsValue = ReadString(current, curindex);
+
+					pRenderer->AddTextForm(dX,
+										   dY,
+										   dW,
+										   dH,
+										   dBaseLineOffset,
+										   wsKey,
+										   wsHelpText,
+										   isRequired,
+										   isPlaceHolder,
+										   isComb,
+										   nMaxCharaters,
+										   wsValue);
+				}
 
 				current  = nStartPos + nLen;
 				curindex = nStartIndex + nLen;

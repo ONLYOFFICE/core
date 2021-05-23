@@ -94,7 +94,6 @@ void TestField()
 	pField4->SetValue(L"Ilya", pFont, TRgb(255, 0, 0), 40, 1, 14.3);
 
 
-
 	oPdf.SaveToFile(L"D:/Test/PDF/TestField1.pdf");
 	oPdf.Close();
 }

@@ -1504,16 +1504,52 @@ HRESULT CPdfRenderer::AddLink(const double& dX, const double& dY, const double& 
 
 	return S_OK;
 }
-HRESULT CPdfRenderer::AddTextForm(const double &dX, const double &dY, const double &dW, const double &dH)
+HRESULT CPdfRenderer::AddTextForm(const double& dX,
+								  const double& dY,
+								  const double& dW,
+								  const double& dH,
+								  const double& dBaseLineOffset,
+								  const std::wstring& wsKey,
+								  const std::wstring& wsHelpText,
+								  const unsigned char& isRequired,
+								  const unsigned char& isPlaceHolder,
+								  const unsigned char& isComb,
+								  const LONG& nMaxCharacters,
+								  const std::wstring& wsValue)
 {
 	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
 	if (!m_pDocument || 0 == unPagesCount)
 		return S_OK;
 
+	if (m_bNeedUpdateTextFont)
+		UpdateFont();
+
+	if (!m_pFont)
+		return S_OK;
+
+	unsigned int unLen;
+	unsigned int* pUnicodes = WStringToUtf32(wsValue, unLen);
+	if (!pUnicodes)
+		return S_FALSE;
+
+	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
+
 	CTextField* pField = m_pDocument->CreateTextField();
 	pField->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
-	pField->SetFieldName(m_oFieldsManager.GetNewFieldName());
 
+	if (L"" != wsKey)
+		pField->SetFieldName(wsKey);
+	else
+		pField->SetFieldName(m_oFieldsManager.GetNewFieldName());
+
+	pField->SetRequiredFlag(isRequired);
+	pField->SetMaxLen(nMaxCharacters);
+	pField->SetCombFlag(isComb);
+
+	TColor oColor = m_oBrush.GetTColor1();
+	pField->SetValue(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), m_oFont.GetSize(), 0, MM_2_PT(dH - dBaseLineOffset), isPlaceHolder);
+
+	delete[] pCodes;
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------

@@ -83,7 +83,7 @@ void TestField()
 	pField3->SetFieldName(L"Test123");
 	pField3->SetFieldHint(L"Hint123");
 	pField3->SetMaxLen(10);
-	pField3->SetValue(L"Enter text", pFont, TRgb(0, 255, 0), 40, 1, 14.3, true);
+	pField3->SetValue(L"Enter text", NULL, 0, pFont, TRgb(0, 255, 0), 40, 1, 14.3, true);
 
 	CTextField* pField4 = oPdf.CreateTextField();
 	pField4->SetRequiredFlag(false);
@@ -91,7 +91,7 @@ void TestField()
 	pField4->SetFieldName(L"Test1234");
 	pField4->SetFieldHint(L"Hint1234");
 	pField4->SetMaxLen(10);
-	pField4->SetValue(L"Ilya", pFont, TRgb(255, 0, 0), 40, 1, 14.3);
+	pField4->SetValue(L"Ilya", NULL, 0, pFont, TRgb(255, 0, 0), 40, 1, 14.3);
 
 
 	oPdf.SaveToFile(L"D:/Test/PDF/TestField1.pdf");

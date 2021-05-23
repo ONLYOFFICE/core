@@ -32,6 +32,7 @@
 #include "ResourcesDictionary.h"
 #include "Font.h"
 #include "Utils.h"
+#include "GState.h"
 
 namespace PdfWriter
 {
@@ -40,8 +41,10 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CResourcesDict::CResourcesDict(CXref* pXref, bool bInline, bool bProcSet)
 	{
-		m_unFontsCount = 0;
-		m_pFonts       = NULL;
+		m_unFontsCount      = 0;
+		m_pFonts            = NULL;
+		m_unExtGStatesCount = 0;
+		m_pExtGStates       = NULL;
 		
 		if (!bInline)
 			pXref->Add(this);
@@ -84,6 +87,34 @@ namespace PdfWriter
 			m_unFontsCount++;
 			m_pFonts->Add(sFontName, pFont);
 			sKey = m_pFonts->GetKey(pFont);
+		}
+
+		return sKey;
+	}
+	const char* CResourcesDict::GetExtGrStateName(CExtGrState* pState)
+	{
+		if (!m_pExtGStates)
+		{
+			m_pExtGStates = new CDictObject();
+			if (!m_pExtGStates)
+				return NULL;
+
+			Add("ExtGState", m_pExtGStates);
+		}
+
+		const char* sKey = m_pExtGStates->GetKey(pState);
+		if (!sKey)
+		{
+			// ≈сли ExtGState не зарегистрирован в Resource, регистрируем
+			char sExtGrStateName[LIMIT_MAX_NAME_LEN + 1];
+			char *pPointer;
+			char *pEndPointer = sExtGrStateName + LIMIT_MAX_NAME_LEN;
+
+			pPointer = (char*)StrCpy(sExtGrStateName, "E", pEndPointer);
+			ItoA(pPointer, m_unExtGStatesCount + 1, pEndPointer);
+			m_unExtGStatesCount++;
+			m_pExtGStates->Add(sExtGrStateName, pState);
+			sKey = m_pExtGStates->GetKey(pState);
 		}
 
 		return sKey;

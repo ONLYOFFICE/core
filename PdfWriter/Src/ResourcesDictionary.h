@@ -39,6 +39,7 @@
 namespace PdfWriter
 {
 	class CFontDict;
+	class CExtGrState;
 
 	class CResourcesDict : public CDictObject
 	{
@@ -46,10 +47,14 @@ namespace PdfWriter
 		CResourcesDict(CXref* pXref, bool bInline, bool bProcSet);
 
 		const char* GetFontName(CFontDict* pFont);
+		const char* GetExtGrStateName(CExtGrState* pState);
+
 	private:
 
 		CDictObject* m_pFonts;
 		unsigned int m_unFontsCount;
+		CDictObject* m_pExtGStates;
+		unsigned int m_unExtGStatesCount;
 	};
 }
 

@@ -207,8 +207,6 @@ namespace PdfWriter
 
 		Add("DR", pResources);
 		
-		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
-
 		std::string sDA;
 		sDA.append(std::to_string(oColor.r));
 		sDA.append(" ");
@@ -221,7 +219,16 @@ namespace PdfWriter
 		sDA.append(std::to_string(dFontSize));
 		sDA.append(" Tf");
 
+		const char* sExtGrStateName = NULL;
+		if (isPlaceholder)
+		{
+			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(0.5);
+			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
+		}
+
 		Add("DA", new CStringObject(sDA.c_str()));
+
+		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
 	}
 
 
@@ -285,7 +292,7 @@ namespace PdfWriter
 
 		Add("Resources", pField->GetResourcesDict());
 	}
-	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFontName, double dFontSize, double dX, double dY, double dR, double dG, double dB, double dWidth, double dHeight)
+	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFontName, double dFontSize, double dX, double dY, double dR, double dG, double dB, const char* sExtGStateName, double dWidth, double dHeight)
 	{
 		if (!m_pStream || !sFontName)
 			return;
@@ -306,6 +313,12 @@ namespace PdfWriter
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(dB);
 		m_pStream->WriteStr(" rg\012");
+
+		if (sExtGStateName)
+		{
+			m_pStream->WriteEscapeName(sExtGStateName);
+			m_pStream->WriteStr(" gs\012");
+		}
 
 		dFontSize = std::min(1000.0, std::max(0.0, dFontSize));
 

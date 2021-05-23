@@ -7,6 +7,9 @@
 //#define USE_MS_CRYPTO
 #endif
 
+#define USE_SIGN
+//#define USE_VERIFY
+
 int main()
 {
     std::wstring sTestDir = NSFile::GetProcessDirectory() + L"/../../";
@@ -25,6 +28,7 @@ int main()
     BYTE* pDataDst = NULL;
     unsigned long nLenDst = 0;
 
+#ifdef USE_SIGN
 #if 0
     COOXMLSigner oSigner(sTestDir + L"file", pCertificate);
     oSigner.Sign(pDataDst, nLenDst);
@@ -42,8 +46,21 @@ int main()
     oFileDst.WriteFile(pDataDst, nLenDst);
     oFileDst.CloseFile();
 #endif
+#endif
 
     RELEASEARRAYOBJECTS(pDataDst);
+
+#ifdef USE_VERIFY
+#if 1
+    COOXMLVerifier oVerifier(sTestDir + L"file");
+    int nCount = oVerifier.GetSignatureCount();
+    for (int i = 0; i < nCount; i++)
+    {
+        COOXMLSignature* pSign = oVerifier.GetSignature(i);
+        pSign->Check();
+    }
+#endif
+#endif
 
     delete pCertificate;
     return 0;

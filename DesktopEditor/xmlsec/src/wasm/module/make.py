@@ -59,14 +59,16 @@ compiler_flags = ["-o openssl.js",
 
 exported_functions = ["_malloc",
                       "_free",
-                      "_XmlSirnature_Malloc",
-                      "_XmlSirnature_Free",
+                      "_XmlSignature_Malloc",
+                      "_XmlSignature_Free",
                       "_XmlSignature_CreateCertificate",
                       "_XmlSignature_LoadCert",
                       "_XmlSignature_LoadKey",
                       "_XmlSignature_DestroyCertificate",
                       "_XmlSignature_CreateFile",
                       "_XmlSignature_DestroyFile",
+                      "_XmlSignature_GetFileSize",
+                      "_XmlSignature_GetFileRaw",
                       "_XmlSignature_Sign"]
 
 # XML

@@ -243,7 +243,7 @@ public:
     {
         m_zlib = new CZipBuffer(data, length);
     }
-    ~CZipFolderMemory(BYTE* data, DWORD length)
+    ~CZipFolderMemory()
     {
         delete m_zlib;
     }

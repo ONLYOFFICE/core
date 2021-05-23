@@ -291,6 +291,10 @@ namespace PdfWriter
 		pArray->Add(oRect.fBottom - oRect.fTop);
 
 		Add("Resources", pField->GetResourcesDict());
+
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
 	}
 	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFontName, double dFontSize, double dX, double dY, double dR, double dG, double dB, const char* sExtGStateName, double dWidth, double dHeight)
 	{

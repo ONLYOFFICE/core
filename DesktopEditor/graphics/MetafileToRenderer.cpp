@@ -876,70 +876,45 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctFormField:
 			{
-				double	dX = 0.0,
-						dY = 0.0,
-						dW = 0.0,
-						dH = 0.0,
-						dBaseLineOffset = 0.0;
-
-				std::wstring wsKey, wsHelpText, wsValue;
-
-				bool	isRequired    = false,
-						isPlaceHolder = false,
-						isComb        = false;
-
-				int nMaxCharaters = 0;
-
 				BYTE* nStartPos   = current;
 				int   nStartIndex = curindex;
 
 				int nLen = ReadInt(current, curindex);
 
-				dX = ReadDouble(current, curindex);
-				dY = ReadDouble(current, curindex);
-				dW = ReadDouble(current, curindex);
-				dH = ReadDouble(current, curindex);
-				dBaseLineOffset = ReadDouble(current, curindex);
+				double dX = ReadDouble(current, curindex);
+				double dY = ReadDouble(current, curindex);
+				double dW = ReadDouble(current, curindex);
+				double dH = ReadDouble(current, curindex);
+
+				CFormFieldInfo oInfo;
+				oInfo.SetBounds(dX, dY, dW, dH);
+				oInfo.SetBaseLineOffset(ReadDouble(current, curindex));
 
 				int nFlags = ReadInt(current, curindex);
 
 				if (nFlags & 1)
-					wsKey = ReadString(current, curindex);
+					oInfo.SetKey(ReadString(current, curindex));
 
 				if (nFlags & 2)
-					wsHelpText = ReadString(current, curindex);
+					oInfo.SetHelpText(ReadString(current, curindex));
 
-				if (nFlags & 4)
-					isRequired = true;
+				oInfo.SetRequired(nFlags & 4);
+				oInfo.SetPlaceHolder(nFlags & 8);
 
-				if (nFlags & 8)
-					isPlaceHolder = true;
-
-				int nType = ReadInt(current, curindex);
-				if (1 == nType)
+				oInfo.SetType(ReadInt(current, curindex));
+				if (oInfo.IsTextField())
 				{
-					if (nFlags & (1 << 20))
-						isComb = true;
+					oInfo.SetComb(nFlags & (1 << 20));
 
 					if (nFlags & (1 << 21))
-						nMaxCharaters = ReadInt(current, curindex);
+						oInfo.SetMaxCharacters(ReadInt(current, curindex));
 
 					if (nFlags & (1 << 22))
-						wsValue = ReadString(current, curindex);
-
-					pRenderer->AddTextForm(dX,
-										   dY,
-										   dW,
-										   dH,
-										   dBaseLineOffset,
-										   wsKey,
-										   wsHelpText,
-										   isRequired,
-										   isPlaceHolder,
-										   isComb,
-										   nMaxCharaters,
-										   wsValue);
+						oInfo.SetTextValue(ReadString(current, curindex));
 				}
+
+				if (oInfo.IsValid())
+					pRenderer->AddFormField(oInfo);
 
 				current  = nStartPos + nLen;
 				curindex = nStartIndex + nLen;

@@ -1504,18 +1504,7 @@ HRESULT CPdfRenderer::AddLink(const double& dX, const double& dY, const double& 
 
 	return S_OK;
 }
-HRESULT CPdfRenderer::AddTextForm(const double& dX,
-								  const double& dY,
-								  const double& dW,
-								  const double& dH,
-								  const double& dBaseLineOffset,
-								  const std::wstring& wsKey,
-								  const std::wstring& wsHelpText,
-								  const unsigned char& isRequired,
-								  const unsigned char& isPlaceHolder,
-								  const unsigned char& isComb,
-								  const LONG& nMaxCharacters,
-								  const std::wstring& wsValue)
+HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 {
 	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
 	if (!m_pDocument || 0 == unPagesCount)
@@ -1527,29 +1516,37 @@ HRESULT CPdfRenderer::AddTextForm(const double& dX,
 	if (!m_pFont)
 		return S_OK;
 
-	unsigned int unLen;
-	unsigned int* pUnicodes = WStringToUtf32(wsValue, unLen);
-	if (!pUnicodes)
-		return S_FALSE;
+	if (oInfo.IsTextField())
+	{
+		std::wstring wsValue = oInfo.GetTextValue();
 
-	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
+		unsigned int unLen;
+		unsigned int* pUnicodes = WStringToUtf32(wsValue, unLen);
+		if (!pUnicodes)
+			return S_FALSE;
 
-	CTextField* pField = m_pDocument->CreateTextField();
-	pField->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+		unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
 
-	if (L"" != wsKey)
-		pField->SetFieldName(wsKey);
-	else
-		pField->SetFieldName(m_oFieldsManager.GetNewFieldName());
+		double dX, dY, dW, dH;
+		oInfo.GetBounds(dX, dY, dW, dH);
+		CTextField* pField = m_pDocument->CreateTextField();
+		pField->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
 
-	pField->SetRequiredFlag(isRequired);
-	pField->SetMaxLen(nMaxCharacters);
-	pField->SetCombFlag(isComb);
+		std::wstring wsKey = oInfo.GetKey();
+		if (L"" != wsKey)
+			pField->SetFieldName(wsKey);
+		else
+			pField->SetFieldName(m_oFieldsManager.GetNewFieldName());
 
-	TColor oColor = m_oBrush.GetTColor1();
-	pField->SetValue(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), m_oFont.GetSize(), 0, MM_2_PT(dH - dBaseLineOffset), isPlaceHolder);
+		pField->SetRequiredFlag(oInfo.IsRequired());
+		pField->SetMaxLen(oInfo.GetMaxCharacters());
+		pField->SetCombFlag(oInfo.IsComb());
 
-	delete[] pCodes;
+		TColor oColor = m_oBrush.GetTColor1();
+		pField->SetValue(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()), oInfo.IsPlaceHolder());
+
+		delete[] pCodes;
+	}
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------

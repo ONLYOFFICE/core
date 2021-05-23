@@ -333,6 +333,7 @@ namespace PdfWriter
 	}
     void CPage::AddResource()
 	{
+		// TODO: Переделать на ResourcesDict
 		CDictObject* pResource = new CDictObject();
 		if (!pResource)
 			return;

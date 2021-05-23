@@ -118,6 +118,7 @@ const long c_nVifFormat			= 0x0009;
 const long c_nGrRenderer		= 0x0010;
 const long c_nHtmlRendrerer3            = 0x0011;
 
+class CFormFieldInfo;
 
 // IRenderer
 class IRenderer : public IGrObject
@@ -300,18 +301,141 @@ public:
 	}
 	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) {return S_OK;};
 	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) {return S_OK;};
-	virtual HRESULT AddTextForm(const double& dX,
-								const double& dY,
-								const double& dW,
-								const double& dH,
-								const double& dBaseLineOffset,
-								const std::wstring& wsKey,
-								const std::wstring& wsHelpText,
-								const unsigned char& isRequired,
-								const unsigned char& isPlaceHolder,
-								const unsigned char& isComb,
-								const LONG& nMaxCharacters,
-								const std::wstring& wsValue) {return S_OK;};
+	virtual HRESULT AddFormField(const CFormFieldInfo& oInfo) {return S_OK;};
+};
+
+class CFormFieldInfo
+{
+public:
+	CFormFieldInfo()
+	{
+		m_nType = 0;
+
+		m_dX = 0;
+		m_dY = 0;
+		m_dW = 0;
+		m_dH = 0;
+
+		m_dBaseLineOffset = 0;
+
+		m_bRequired    = false;
+		m_bPlaceHolder = false;
+	}
+
+	void SetType(int nType)
+	{
+		m_nType = nType;
+	}
+	bool IsValid() const
+	{
+		return 0 != m_nType;
+	}
+
+	// Common
+	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH)
+	{
+		m_dX = dX;
+		m_dY = dY;
+		m_dW = dW;
+		m_dH = dH;
+	}
+	void GetBounds(double& dX, double& dY, double& dW, double& dH) const
+	{
+		dX = m_dX;
+		dY = m_dY;
+		dW = m_dW;
+		dH = m_dH;
+	}
+	void SetBaseLineOffset(const double& dOffset)
+	{
+		m_dBaseLineOffset = dOffset;
+	}
+	double GetBaseLineOffset() const
+	{
+		return m_dBaseLineOffset;
+	}
+	void SetKey(const std::wstring& wsKey)
+	{
+		m_wsKey = wsKey;
+	}
+	const std::wstring& GetKey() const
+	{
+		return m_wsKey;
+	}
+	void SetHelpText(const std::wstring& wsHelpText)
+	{
+		m_wsHelpText = wsHelpText;
+	}
+	const std::wstring& GetHelpText() const
+	{
+		return m_wsHelpText;
+	}
+	void SetRequired(const bool& bRequired)
+	{
+		m_bRequired = bRequired;
+	}
+	bool IsRequired() const
+	{
+		return m_bRequired;
+	}
+	void SetPlaceHolder(const bool& bPlaceHolder)
+	{
+		m_bPlaceHolder = bPlaceHolder;
+	}
+	bool IsPlaceHolder() const
+	{
+		return m_bPlaceHolder;
+	}
+
+	// TextFields
+	bool IsTextField() const
+	{
+		return (m_nType == 1);
+	}
+	void SetTextValue(const std::wstring& wsValue)
+	{
+		m_wsTextValue = wsValue;
+	}
+	const std::wstring& GetTextValue() const
+	{
+		return m_wsTextValue;
+	}
+	void SetMaxCharacters(const unsigned int unMax)
+	{
+		m_unMaxCharacters = unMax;
+	}
+	unsigned int GetMaxCharacters() const
+	{
+		return m_unMaxCharacters;
+	}
+	void SetComb(const bool& bComb)
+	{
+		m_bComb = bComb;
+	}
+	bool IsComb() const
+	{
+		return m_bComb;
+	}
+
+
+private:
+
+	int          m_nType;
+	double       m_dX;
+	double       m_dY;
+	double       m_dW;
+	double       m_dH;
+	double       m_dBaseLineOffset;
+	std::wstring m_wsKey;
+	std::wstring m_wsHelpText;
+	bool         m_bRequired;
+	bool         m_bPlaceHolder;
+
+	// Поля для текстовых форм
+	std::wstring m_wsTextValue;
+	unsigned int m_unMaxCharacters;
+	bool         m_bComb;
+
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)			\

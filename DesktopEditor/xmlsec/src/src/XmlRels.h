@@ -1,10 +1,10 @@
 #ifndef _XML_RELS_H_
 #define _XML_RELS_H_
 
-#include "../../../xml/include/xmlutils.h"
 #include "../../../common/StringBuilder.h"
 #include "../../../common/File.h"
 #include "../../../common/Directory.h"
+#include "./ZipFolder.h"
 
 class COOXMLRelationship
 {
@@ -67,11 +67,13 @@ class COOXMLRelationships
 {
 public:
     std::vector<COOXMLRelationship> rels;
+    IFolder* m_pFolder;
 
 public:
 
     COOXMLRelationships()
     {
+        m_pFolder = NULL;
     }
 
     COOXMLRelationships(const std::string& xml, std::map<std::wstring, bool>* check_need = NULL)
@@ -83,18 +85,20 @@ public:
         FromXmlNode(oNode, check_need);
     }
 
-    COOXMLRelationships(const std::wstring& xml, const bool& is_file, std::map<std::wstring, bool>* check_need = NULL)
+    COOXMLRelationships(const std::wstring& xml, IFolder* pFolder, std::map<std::wstring, bool>* check_need = NULL)
     {
         XmlUtils::CXmlNode oNode;
 
-        if (!is_file)
+        if (NULL == pFolder)
         {
             if (!oNode.FromXmlString(xml))
                 return;
         }
         else
         {
-            if (!oNode.FromXmlFile(xml))
+            m_pFolder = pFolder;
+            oNode = pFolder->getNodeFromFile(xml);
+            if (!oNode.IsValid())
                 return;
         }
 
@@ -161,16 +165,16 @@ public:
         return builder.GetData();
     }
 
-    void CheckOriginSigs(BYTE*& pData, LONG& nSize)
+    void CheckOriginSigs(const std::wstring& file)
     {
         int rId = 0;
-        std::wstring sReplace = L"";
+        std::string sReplace = "";
         std::vector<COOXMLRelationship>::iterator i = rels.begin();
         while (i != rels.end())
         {
             if (0 == i->target.find(L"_xmlsignatures/"))
             {
-                sReplace = i->target;
+                sReplace = U_TO_UTF8(i->target);
                 break;
             }
 
@@ -187,31 +191,27 @@ public:
 
         if (!sReplace.empty())
         {
-            if (sReplace == L"_xmlsignatures/origin.sigs")
+            if (sReplace == "_xmlsignatures/origin.sigs")
                 return;
 
-            std::wstring sXml = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, nSize);
-            NSStringUtils::string_replace(sXml, sReplace, L"_xmlsignatures/origin.sigs");
-
-            RELEASEARRAYOBJECTS(pData);
-            NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.c_str(), sXml.length(), pData, nSize);
+            std::string sXmlA = m_pFolder->readXml(file);
+            NSStringUtils::string_replaceA(sXmlA, sReplace, "_xmlsignatures/origin.sigs");
+            m_pFolder->writeXmlA(file, sXmlA);
             return;
         }
 
-        std::wstring sXml = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, nSize);
+        std::string sXmlA = m_pFolder->readXml(file);
 
-        std::wstring::size_type pos = sXml.rfind(L"</Relationships>");
-        if (pos == std::wstring::npos)
+        std::string::size_type pos = sXmlA.rfind("</Relationships>");
+        if (pos == std::string::npos)
             return;
 
         rId++;
-        std::wstring sRet = sXml.substr(0, pos);
-        sRet += (L"<Relationship Id=\"rId" + std::to_wstring(rId) + L"\" \
+        std::string sRet = sXmlA.substr(0, pos);
+        sRet += ("<Relationship Id=\"rId" + std::to_string(rId) + "\" \
 Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/origin\" Target=\"_xmlsignatures/origin.sigs\"/>\
 </Relationships>");
-
-        RELEASEARRAYOBJECTS(pData);
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sRet.c_str(), sRet.length(), pData, nSize);
+        m_pFolder->writeXmlA(file, sRet);
     }
 };
 

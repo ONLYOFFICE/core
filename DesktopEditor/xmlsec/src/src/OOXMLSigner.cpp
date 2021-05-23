@@ -1,6 +1,6 @@
 #include "./../include/OOXMLSigner.h"
-#include "./../include/ZipFolder.h"
-#include "./../src/XmlTransform.h"
+#include "./ZipFolder.h"
+#include "./XmlTransform.h"
 #include <cstdio>
 #include <ctime>
 #include <time.h>
@@ -9,8 +9,7 @@ class COOXMLSigner_private
 {
 public:
     ICertificate*                           m_certificate;
-    IZipFolder*                             m_pZipFolder;
-    std::wstring                            m_sFolder;
+    IFolder*                                m_pFolder;
 
     std::wstring                            m_date;
 
@@ -28,37 +27,21 @@ public:
 public:
     COOXMLSigner_private(const std::wstring& sFolder, ICertificate* pContext)
     {
-        m_sFolder = sFolder;
-        m_pZipFolder = new CZipFolder(sFolder);
+        m_pFolder = new CFolderSystem(sFolder);
         m_certificate = pContext;
 
-        m_date = L"2017-04-21T08:30:21Z";
-
-        std::time_t rawtime;
-        std::tm* timeinfo;
-        char buffer1[100];
-        char buffer2[100];
-
-        std::time(&rawtime);
-        timeinfo = std::gmtime(&rawtime);
-
-        std::strftime(buffer1, 100, "%Y-%m-%d", timeinfo);
-        std::strftime(buffer2, 100, "%H:%M:%S", timeinfo);
-
-        std::string date = (std::string(buffer1) + "T" + std::string(buffer2) + "Z");
-        m_date = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(date);
-
-        m_signed_info.WriteString("<CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/>");
-        m_signed_info.WriteString("<SignatureMethod Algorithm=\"");
-        m_signed_info.WriteString(ICertificate::GetSignatureMethodA(m_certificate->GetHashAlg()));
-        m_signed_info.WriteString("\"/>");
+        OpenFolder();
     }
     COOXMLSigner_private(BYTE* data, DWORD length, ICertificate* pContext)
     {
-        m_sFolder = L"";
-        m_pZipFolder = new CZipFolderMemory(data, length);
+        m_pFolder = new CZipFolderMemory(data, length);
         m_certificate = pContext;
 
+        OpenFolder();
+    }
+
+    void OpenFolder()
+    {
         m_date = L"2017-04-21T08:30:21Z";
 
         std::time_t rawtime;
@@ -80,22 +63,18 @@ public:
         m_signed_info.WriteString(ICertificate::GetSignatureMethodA(m_certificate->GetHashAlg()));
         m_signed_info.WriteString("\"/>");
     }
+
     ~COOXMLSigner_private()
     {
+        RELEASEOBJECT(m_pFolder);
     }
 
     std::wstring GetReference(const std::wstring& file, const std::wstring& content_type)
     {
-        std::wstring sXml = L"<Reference URI=\"" + file + L"?ContentType=" + content_type + L"\">";
+        std::wstring sXml = L"<Reference URI=\"/" + file + L"?ContentType=" + content_type + L"\">";
         sXml += (L"<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/>");
         sXml += L"<DigestValue>";
-
-        BYTE* pData = NULL;
-        DWORD dwLen = 0;
-        m_pZipFolder->read(m_sFolder + file, pData, dwLen);
-        std::string sTmp = m_certificate->GetHash(pData, dwLen, m_certificate->GetHashAlg());
-
-        sXml += UTF8_TO_U(sTmp);
+        sXml += m_pFolder->getFileHashW(file, m_certificate);
         sXml += L"</DigestValue>";
         sXml += L"</Reference>";
         return sXml;
@@ -136,21 +115,8 @@ public:
             return file.substr(file.find(L",") + 1);
         }
 
-        BYTE* pData = NULL;
-        DWORD dwLen = 0;
-        if (!m_pZipFolder->read(file, pData, dwLen))
-            return L"";
-
-        char* pDataC = NULL;
-        int nLen = 0;
-        NSFile::CBase64Converter::Encode(pData, (int)dwLen, pDataC, nLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
-
-        std::wstring sReturn = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pDataC, (LONG)nLen, FALSE);
-
-        RELEASEARRAYOBJECTS(pData);
-        RELEASEARRAYOBJECTS(pDataC);
-
-        return sReturn;
+        std::string sRet = m_pFolder->getFileBase64(file);
+        return UTF8_TO_U(sRet);
     }
     std::wstring GetImageBase64(BYTE* data, DWORD length)
     {
@@ -167,23 +133,13 @@ public:
 
     std::wstring GetRelsReference(const std::wstring& file)
     {
-        BYTE* pData = NULL;
-        DWORD dwLen = 0;
-        if (!m_pZipFolder->read(m_sFolder + file, pData, dwLen))
-            return L"";
-
-        COOXMLRelationships oRels(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, dwLen), false);
+        COOXMLRelationships oRels(file, m_pFolder);
         if (oRels.rels.size() == 0)
             return L"";
 
-        if (L"/_rels/.rels" == file)
+        if (L"_rels/.rels" == file)
         {
-            BYTE* pDataNew = new BYTE[dwLen];
-            memcpy(pDataNew, pData, dwLen);
-            long nLength = dwLen;
-            oRels.CheckOriginSigs(pDataNew, nLength);
-            m_pZipFolder->write(m_sFolder + file, pDataNew, nLength);
-            RELEASEARRAYOBJECTS(pDataNew);
+            oRels.CheckOriginSigs(file);
 
             // удалим все лишнее
             std::vector<COOXMLRelationship>::iterator i = oRels.rels.begin();
@@ -199,7 +155,7 @@ public:
         }
 
         NSStringUtils::CStringBuilder builder;
-        builder.WriteString(L"<Reference URI=\"");
+        builder.WriteString(L"<Reference URI=\"/");
         builder.WriteString(file);
         builder.WriteString(L"?ContentType=application/vnd.openxmlformats-package.relationships+xml\">");
         builder.WriteString(oRels.GetTransforms());
@@ -220,17 +176,13 @@ public:
     {
         std::wstring sRelsFolder = folder + L"/_rels";
 
-        std::vector<std::wstring> arFiles = m_pZipFolder->getFiles(sRelsFolder, false);
+        std::vector<std::wstring> arFiles = m_pFolder->getFiles(sRelsFolder, false);
         std::map<std::wstring, bool> arSigFiles;
 
         for (std::vector<std::wstring>::iterator iter = arFiles.begin(); iter != arFiles.end(); iter++)
         {
-            BYTE* pData = NULL;
-            DWORD dwLen = 0;
-            m_pZipFolder->read(*iter, pData, dwLen);
-
-            XmlUtils::CXmlNode oNodeRels;
-            if (!oNodeRels.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, dwLen)))
+            XmlUtils::CXmlNode oNodeRels = m_pFolder->getNodeFromFile(*iter);
+            if (!oNodeRels.IsValid())
                 continue;
             XmlUtils::CXmlNodes oNodesRels = oNodeRels.GetNodes(L"Relationship");
             int nCount = oNodesRels.GetCount();
@@ -240,10 +192,10 @@ public:
                 oNodesRels.GetAt(nIndex, oNodeRel);
 
                 std::wstring sTarget = oNodeRel.GetAttribute(L"Target");
-                if (!sTarget.empty() && arSigFiles.find(sTarget) == arSigFiles.end() && m_pZipFolder->exists(folder + L"/" + sTarget))
+                if (!sTarget.empty() && arSigFiles.find(sTarget) == arSigFiles.end() && m_pFolder->exists(folder + L"/" + sTarget))
                     arSigFiles.insert(std::pair<std::wstring, bool>(sTarget, true));
             }
-            m_pZipFolder->remove(*iter);
+            m_pFolder->remove(*iter);
         }
 
         int nCountSigs = (int)arSigFiles.size();
@@ -263,13 +215,13 @@ public:
 
         oBuilder.WriteString(L"</Relationships>");
 
-        m_pZipFolder->writeXml(sFile, oBuilder.GetData());
+        m_pFolder->writeXml(sFile, oBuilder.GetData());
 
         // теперь перебьем все имена файлов
 
         std::vector<std::wstring> arSigs;
 
-        std::vector<std::wstring> arFilesXml = m_pZipFolder->getFiles(folder, false);
+        std::vector<std::wstring> arFilesXml = m_pFolder->getFiles(folder, false);
         for (std::vector<std::wstring>::iterator iter = arFilesXml.begin(); iter != arFilesXml.end(); iter++)
         {
             std::wstring sXmlFileName = NSFile::GetFileName(*iter);
@@ -280,7 +232,7 @@ public:
             if (find == arSigFiles.end())
             {
                 // ненужная xml
-                m_pZipFolder->remove(*iter);
+                m_pFolder->remove(*iter);
                 continue;
             }
 
@@ -290,12 +242,12 @@ public:
         std::sort(arSigs.begin(), arSigs.end());
         for (std::vector<std::wstring>::iterator iter = arSigs.begin(); iter != arSigs.end(); iter++)
         {
-            m_pZipFolder->move(folder + L"/" + *iter, folder + L"/onlyoffice_" + *iter);
+            m_pFolder->move(folder + L"/" + *iter, folder + L"/onlyoffice_" + *iter);
         }
         int nSigNumber = 1;
         for (std::vector<std::wstring>::iterator iter = arSigs.begin(); iter != arSigs.end(); iter++)
         {
-            m_pZipFolder->move(folder + L"/onlyoffice_" + *iter, folder + L"/sig" + std::to_wstring(nSigNumber++) + L".xml");
+            m_pFolder->move(folder + L"/onlyoffice_" + *iter, folder + L"/sig" + std::to_wstring(nSigNumber++) + L".xml");
         }
 
         return (int)arSigs.size();
@@ -303,14 +255,7 @@ public:
 
     void ParseContentTypes()
     {
-        std::wstring file = m_sFolder + L"/[Content_Types].xml";
-
-        BYTE* pData = NULL;
-        DWORD dwLen = 0;
-        m_pZipFolder->read(file, pData, dwLen);
-
-        XmlUtils::CXmlNode oNode;
-        oNode.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, dwLen));
+        XmlUtils::CXmlNode oNode = m_pFolder->getNodeFromFile(L"/[Content_Types].xml");
 
         XmlUtils::CXmlNodes nodesDefaults;
         oNode.GetNodes(L"Default", nodesDefaults);
@@ -343,27 +288,22 @@ public:
         ParseContentTypes();
 
         // 2) Parse files in directory
-        std::vector<std::wstring> files = m_pZipFolder->getFiles(m_sFolder, true);
+        std::vector<std::wstring> files = m_pFolder->getFiles(L"", true);
 
         // 3) Check each file
-        std::wstring sFolder = m_sFolder;
-        NSStringUtils::string_replace(sFolder, L"\\", L"/");
+        std::wstring sFolder = L"";
         for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
         {
             std::wstring sCheckFile = *i;
-            NSStringUtils::string_replace(sCheckFile, L"\\", L"/");
-
-            if (0 != sCheckFile.find(sFolder))
-                continue;
 
             // make cool filename
-            sCheckFile = sCheckFile.substr(sFolder.length());
+            sCheckFile = m_pFolder->getLocalFilePath(sCheckFile);
 
             // check needed file
-            if (0 == sCheckFile.find(L"/_xmlsignatures") ||
-                0 == sCheckFile.find(L"/docProps") ||
-                0 == sCheckFile.find(L"/[Content_Types].xml") ||
-                0 == sCheckFile.find(L"/[trash]"))
+            if (0 == sCheckFile.find(L"_xmlsignatures") ||
+                0 == sCheckFile.find(L"docProps") ||
+                0 == sCheckFile.find(L"[Content_Types].xml") ||
+                0 == sCheckFile.find(L"[trash]"))
                 continue;
 
             // check rels and add to needed array
@@ -429,14 +369,8 @@ public:
 
     void CorrectContentTypes(int nCountSignatures)
     {
-        std::wstring file = m_sFolder + L"/[Content_Types].xml";
-
-        BYTE* pData = NULL;
-        DWORD dwLen = 0;
-        m_pZipFolder->read(file, pData, dwLen);
-
-        XmlUtils::CXmlNode oNode;
-        oNode.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, dwLen));
+        std::wstring file = L"[Content_Types].xml";
+        XmlUtils::CXmlNode oNode = m_pFolder->getNodeFromFile(file);
 
         NSStringUtils::CStringBuilder oBuilder;
         oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
@@ -483,7 +417,7 @@ public:
 
         oBuilder.WriteNodeEnd(oNode.GetName());
 
-        m_pZipFolder->writeXml(file, oBuilder.GetData());
+        m_pFolder->writeXml(file, oBuilder.GetData());
     }
 
     void SetGuid(const std::wstring& guid)
@@ -654,25 +588,25 @@ public:
 
     int AddSignatureReference()
     {
-        std::wstring sDirectory = m_sFolder + L"/_xmlsignatures";
+        std::wstring sDirectory = L"/_xmlsignatures";
 
-        m_pZipFolder->createDirectory(sDirectory);
+        m_pFolder->createDirectory(sDirectory);
 
         // remove old .sig file
-        std::vector<std::wstring> arFiles = m_pZipFolder->getFiles(sDirectory, false);
+        std::vector<std::wstring> arFiles = m_pFolder->getFiles(sDirectory, false);
         for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
         {
             if (NSFile::GetFileExtention(*i) == L"sigs")
             {
-                m_pZipFolder->remove(*i);
+                m_pFolder->remove(*i);
             }
         }
 
         std::wstring sOriginName = L"origin.sigs";
-        if (!m_pZipFolder->exists(sDirectory + L"/" + sOriginName))
-            m_pZipFolder->write(sDirectory + L"/" + sOriginName, NULL, 0);
+        if (!m_pFolder->exists(sDirectory + L"/" + sOriginName))
+            m_pFolder->write(sDirectory + L"/" + sOriginName, NULL, 0);
 
-        m_pZipFolder->createDirectory(sDirectory + L"/_rels");
+        m_pFolder->createDirectory(sDirectory + L"/_rels");
 
         int nSignNum = GetCountSigns(sDirectory);
 
@@ -714,9 +648,17 @@ public:
 
         int nSignNum = AddSignatureReference();
 
-        m_pZipFolder->writeXml(m_sFolder + L"/_xmlsignatures/sig" + std::to_wstring(nSignNum + 1) + L".xml", builderResult.GetData());
+        m_pFolder->writeXml(L"_xmlsignatures/sig" + std::to_wstring(nSignNum + 1) + L".xml", builderResult.GetData());
 
-        m_pZipFolder->writeZipFolder(pFiletoWrite, dwLenFiletoWrite);
+        IFolder::CBuffer* buffer = m_pFolder->finalize();
+        if (buffer)
+        {
+            pFiletoWrite = buffer->Buffer;
+            dwLenFiletoWrite = buffer->Size;
+            buffer->UnsetDestroy();
+            delete buffer;
+        }
+
         return (sSignedXml.empty()) ? 1 : 0;
     }
 };

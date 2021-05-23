@@ -1,6 +1,6 @@
 #include "./XmlTransform.h"
 #include "./../include/OOXMLVerifier.h"
-#include "./../include/ZipFolder.h"
+#include "./ZipFolder.h"
 
 class COOXMLSignature_private
 {
@@ -13,7 +13,7 @@ public:
     std::string     m_sImageInvalidBase64;
 
     std::wstring    m_sFolder;
-    IZipFolder*     m_pZipFolder;
+    IFolder*        m_pFolder;
 
     std::wstring    m_sFile;
     std::string     m_sDate;
@@ -401,7 +401,7 @@ public:
         sFile = sFile.substr(0, nPos);
         sFile = m_sFolder + sFile;
 
-        if (!m_pZipFolder->exists(sFile))
+        if (!m_pFolder->exists(sFile))
             return OOXML_SIGNATURE_INVALID;
 
         XmlUtils::CXmlNode nodeMethod = node.ReadNode(L"DigestMethod");
@@ -422,11 +422,7 @@ public:
         if (!nodeTransform.IsValid())
         {
             // simple hash
-            BYTE* pData = NULL;
-            DWORD dwLen = 0;
-            m_pZipFolder->read(sFile, pData, dwLen);
-
-            sCalcValue = m_cert->GetHash(pData, dwLen, nAlg);
+            sCalcValue = m_pFolder->getFileHash(sFile, m_cert, nAlg);
             sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
             MakeBase64_NOCRLF(sValue);
         }
@@ -437,10 +433,8 @@ public:
             if (!oTransforms.GetValid())
                 return OOXML_SIGNATURE_NOTSUPPORTED;
 
-            BYTE* pData = NULL;
-            DWORD dwLen = 0;
-            m_pZipFolder->read(sFile, pData, dwLen);
-            std::string sXml = oTransforms.Transform(std::string((char*)pData, dwLen));
+            std::string sXml = m_pFolder->readXml(sFile);
+            sXml = oTransforms.Transform(sXml);
 
             sCalcValue = m_cert->GetHash(sXml, nAlg);
             sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
@@ -565,81 +559,26 @@ void COOXMLSignature::Check()
 class COOXMLVerifier_private
 {
 public:
-    std::wstring                            m_sFolder;
-    IZipFolder*                             m_pZipFolder;
+    IFolder*                                m_pFolder;
     std::vector<COOXMLSignature*>           m_arSignatures;
     std::vector<std::wstring>               m_arSignaturesFiles;
 
 public:
     COOXMLVerifier_private(const std::wstring& sFolder)
     {
-        m_sFolder = sFolder;
-        m_pZipFolder = new CZipFolder(sFolder);
-
-        // check .sig file
-        std::vector<std::wstring> arFiles = m_pZipFolder->getFiles(m_sFolder + L"/_xmlsignatures", false);
-        bool bIsFound = false;
-        for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
-        {
-            if (NSFile::GetFileExtention(*i) == L"sigs")
-            {
-                bIsFound = true;
-                break;
-            }
-        }
-
-        if (!bIsFound)
-            return;
-
-        BYTE* pData = NULL;
-        DWORD dwLen = 0;
-        m_pZipFolder->read(m_sFolder + L"/[Content_Types].xml", pData, dwLen);
-
-        XmlUtils::CXmlNode oContentTypes;
-        if (!oContentTypes.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, dwLen)))
-            return;
-
-        XmlUtils::CXmlNodes oOverrides = oContentTypes.GetNodes(L"Override");
-        int nCount = oOverrides.GetCount();
-
-        for (int i = 0; i < nCount; i++)
-        {
-            XmlUtils::CXmlNode node;
-            oOverrides.GetAt(i, node);
-
-            if (node.GetAttributeA("ContentType") != "application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml")
-                continue;
-
-            std::wstring sFile = m_sFolder + node.GetAttribute("PartName");
-            BYTE* pData = NULL;
-            DWORD dwLen = 0;
-            m_pZipFolder->read(sFile, pData, dwLen);
-
-            XmlUtils::CXmlNode nodeSig;
-            if (!nodeSig.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, dwLen)))
-                continue;
-
-            if (nodeSig.GetName() != L"Signature")
-                continue;
-
-            COOXMLSignature* pSignature = new COOXMLSignature();
-            pSignature->m_internal->m_sFile = sFile;
-            pSignature->m_internal->m_node = nodeSig;
-            pSignature->m_internal->m_sFolder = m_sFolder;
-            pSignature->m_internal->m_pZipFolder = m_pZipFolder;
-            pSignature->Check();
-
-            m_arSignatures.push_back(pSignature);
-            m_arSignaturesFiles.push_back(sFile);
-        }
+        m_pFolder = new CFolderSystem(sFolder);
+        OpenFolder();
     }
     COOXMLVerifier_private(BYTE* data, DWORD length)
     {
-        m_sFolder = L"";
-        m_pZipFolder = new CZipFolderMemory(data, length);
+        m_pFolder = new CZipFolderMemory(data, length);
+        OpenFolder();
+    }
 
+    void OpenFolder()
+    {
         // check .sig file
-        std::vector<std::wstring> arFiles = m_pZipFolder->getFiles(m_sFolder + L"/_xmlsignatures", false);
+        std::vector<std::wstring> arFiles = m_pFolder->getFiles(L"_xmlsignatures", false);
         bool bIsFound = false;
         for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
         {
@@ -653,12 +592,8 @@ public:
         if (!bIsFound)
             return;
 
-        BYTE* pData = NULL;
-        DWORD dwLen = 0;
-        m_pZipFolder->read(m_sFolder + L"/[Content_Types].xml", pData, dwLen);
-
-        XmlUtils::CXmlNode oContentTypes;
-        if (!oContentTypes.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, dwLen)))
+        XmlUtils::CXmlNode oContentTypes = m_pFolder->getNodeFromFile(L"[Content_Types].xml");
+        if (!oContentTypes.IsValid())
             return;
 
         XmlUtils::CXmlNodes oOverrides = oContentTypes.GetNodes(L"Override");
@@ -672,13 +607,9 @@ public:
             if (node.GetAttributeA("ContentType") != "application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml")
                 continue;
 
-            std::wstring sFile = m_sFolder + node.GetAttribute("PartName");
-            BYTE* pData = NULL;
-            DWORD dwLen = 0;
-            m_pZipFolder->read(sFile, pData, dwLen);
-
-            XmlUtils::CXmlNode nodeSig;
-            if (!nodeSig.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, dwLen)))
+            std::wstring sFile = node.GetAttribute("PartName");
+            XmlUtils::CXmlNode nodeSig = m_pFolder->getNodeFromFile(sFile);
+            if (!nodeSig.IsValid())
                 continue;
 
             if (nodeSig.GetName() != L"Signature")
@@ -687,14 +618,14 @@ public:
             COOXMLSignature* pSignature = new COOXMLSignature();
             pSignature->m_internal->m_sFile = sFile;
             pSignature->m_internal->m_node = nodeSig;
-            pSignature->m_internal->m_sFolder = m_sFolder;
-            pSignature->m_internal->m_pZipFolder = m_pZipFolder;
+            pSignature->m_internal->m_pFolder = m_pFolder;
             pSignature->Check();
 
             m_arSignatures.push_back(pSignature);
             m_arSignaturesFiles.push_back(sFile);
         }
     }
+
     ~COOXMLVerifier_private()
     {
         for (std::vector<COOXMLSignature*>::iterator i = m_arSignatures.begin(); i != m_arSignatures.end(); i++)
@@ -703,6 +634,7 @@ public:
             RELEASEOBJECT(v);
         }
         m_arSignatures.clear();
+        RELEASEOBJECT(m_pFolder);
     }
 
     void RemoveSignature(const std::string& sGuid)
@@ -733,19 +665,12 @@ public:
         }
 
         if (!sFile.empty())
-            m_pZipFolder->remove(sFile);
+            m_pFolder->remove(sFile);
 
         if (!bIsRemoveAll && sFile.empty())
             return;
 
-        BYTE* pData = NULL;
-        DWORD dwLen = 0;
-        m_pZipFolder->read(m_sFolder + L"/[Content_Types].xml", pData, dwLen);
-
-        XmlUtils::CXmlNode oContentTypes;
-        if (!oContentTypes.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, dwLen)))
-            return;
-
+        XmlUtils::CXmlNode oContentTypes = m_pFolder->getNodeFromFile(L"[Content_Types].xml");
         std::wstring sXml = L"<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">";
         XmlUtils::CXmlNodes oNodes;
         if (oContentTypes.GetNodes(L"*", oNodes))
@@ -768,7 +693,7 @@ public:
                 }
                 else
                 {
-                    std::wstring sFileFound = sFile.substr(m_sFolder.length());
+                    std::wstring sFileFound = m_pFolder->getLocalFilePath(sFile);
                     if (L"Override" == oNode.GetName() &&
                         L"application/vnd.openxmlformats-package.digital-signature-xmlsignature+xml" == oNode.GetAttribute(L"ContentType") &&
                         sFileFound == oNode.GetAttribute(L"PartName"))
@@ -780,20 +705,16 @@ public:
         }
         sXml += L"</Types>";
 
-        m_pZipFolder->writeXml(m_sFolder + L"/[Content_Types].xml", sXml);
+        m_pFolder->writeXml(L"[Content_Types].xml", sXml);
 
         if (bIsRemoveAll)
         {
-            std::vector<std::wstring> arrDeleteFiles = m_pZipFolder->getFiles(m_sFolder + L"/_xmlsignatures", true);
+            std::vector<std::wstring> arrDeleteFiles = m_pFolder->getFiles(L"_xmlsignatures", true);
             for (const std::wstring& sPath : arrDeleteFiles)
-                m_pZipFolder->remove(sPath);
+                m_pFolder->remove(sPath);
 
-            BYTE* pData = NULL;
-            DWORD dwLen = 0;
-            m_pZipFolder->read(m_sFolder + L"/_rels/.rels", pData, dwLen);
-
-            XmlUtils::CXmlNode oRels;
-            if (!oRels.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, dwLen)))
+            XmlUtils::CXmlNode oRels = m_pFolder->getNodeFromFile(L"_rels/.rels");
+            if (!oRels.IsValid())
                 return;
 
             sXml = L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
@@ -816,23 +737,18 @@ public:
             }
             sXml += L"</Relationships>";
 
-            m_pZipFolder->writeXml(m_sFolder + L"/_rels/.rels", sXml);
+            m_pFolder->writeXml(L"_rels/.rels", sXml);
         }
         else
         {
-            std::wstring sFileFound = sFile.substr(m_sFolder.length());
-            std::wstring::size_type posRemove = sFileFound.find(L"/_xmlsignatures/");
+            std::wstring sFileFound = m_pFolder->getLocalFilePath(sFile);
+            std::wstring::size_type posRemove = sFileFound.find(L"_xmlsignatures/");
             if (std::wstring::npos != posRemove)
-                sFileFound = sFileFound.substr(posRemove + 16);
+                sFileFound = sFileFound.substr(posRemove + 15);
 
-            std::wstring sOriginRels = m_sFolder + L"/_xmlsignatures/_rels/origin.sigs.rels";
-
-            BYTE* pData = NULL;
-            DWORD dwLen = 0;
-            m_pZipFolder->read(sOriginRels, pData, dwLen);
-
-            XmlUtils::CXmlNode oRels;
-            if (!oRels.FromXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, dwLen)))
+            std::wstring sOriginRels = L"_xmlsignatures/_rels/origin.sigs.rels";
+            XmlUtils::CXmlNode oRels = m_pFolder->getNodeFromFile(sOriginRels);
+            if (!oRels.IsValid())
                 return;
 
             sXml = L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
@@ -856,7 +772,7 @@ public:
             }
             sXml += L"</Relationships>";
 
-            m_pZipFolder->writeXml(sOriginRels, sXml);
+            m_pFolder->writeXml(sOriginRels, sXml);
         }
     }
 };
@@ -890,16 +806,20 @@ COOXMLSignature* COOXMLVerifier::GetSignature(const int& index)
 
 void COOXMLVerifier::RemoveSignature(const std::string& sGuid)
 {
-    BYTE* pData = NULL;
-    DWORD dwLen = 0;
-    std::wstring sFolder = m_internal->m_sFolder;
-    if (sFolder.empty())
-        m_internal->m_pZipFolder->writeZipFolder(pData, dwLen);
-
     m_internal->RemoveSignature(sGuid);
+
+    IFolder::CBuffer* buffer = m_internal->m_pFolder->finalize();
+    std::wstring folder = m_internal->m_pFolder->getFullFilePath(L"");
     RELEASEOBJECT(m_internal);
-    if (sFolder.empty())
-        m_internal = new COOXMLVerifier_private(pData, dwLen);
+
+    if (buffer)
+    {
+        m_internal = new COOXMLVerifier_private(buffer->Buffer, buffer->Size);
+        buffer->UnsetDestroy();
+        delete buffer;
+    }
     else
-        m_internal = new COOXMLVerifier_private(sFolder);
+    {
+        m_internal = new COOXMLVerifier_private(folder);
+    }
 }

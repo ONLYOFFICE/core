@@ -104,6 +104,7 @@ void CZipBuffer::open(BYTE* buffer, DWORD size)
         if (file_info.uncompressed_size != 0)
             m_arrFiles.push_back(CFile(get_filename_from_unzfile(uf), NULL, 0));
     } while (UNZ_OK == unzGoToNextFile(uf));
+    unzClose(uf);
     RELEASEOBJECT(buf);
 }
 void CZipBuffer::close()
@@ -111,6 +112,8 @@ void CZipBuffer::close()
     for (CFile& oFile : m_arrFiles)
         RELEASEARRAYOBJECTS(oFile.m_pData);
     m_arrFiles.clear();
+
+    RELEASEARRAYOBJECTS(m_zipFile);
 }
 
 std::vector<std::string> CZipBuffer::getPaths()
@@ -171,7 +174,7 @@ void CZipBuffer::getFile(const std::string& sPath, BYTE*& data, DWORD& length)
     buf->nSize  = m_sizeZip;
     unzFile uf  = unzOpenHelp(buf);
 
-    data   = new BYTE;
+    data   = NULL;
     length = 0;
     get_file_in_archive(uf, sPath.c_str(), &data, length);
     unzClose(uf);

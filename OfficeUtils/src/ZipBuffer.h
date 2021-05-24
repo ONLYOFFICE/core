@@ -7,42 +7,62 @@
 #include "../../Common/kernel_config.h"
 #include "../../DesktopEditor/common/Types.h"
 
+// Работает с архивом в памяти
 class KERNEL_DECL CZipBuffer
 {
 private:
+    // Архивированные данные
     BYTE* m_zipFile;
+    // Длина архивированных данных
     DWORD m_sizeZip;
-
+    // Файл
     struct CFile
     {
+        // Относительный путь файла в архиве
         std::string m_sPath;
+        // Данные файла
         BYTE* m_pData;
+        // Длина файла
         DWORD m_nLength;
         CFile(const std::string& sPath, BYTE* pData, DWORD nLength) : m_sPath(sPath), m_pData(pData), m_nLength(nLength) {}
     };
+    // Вектор файлов в архиве
     std::vector<CFile> m_arrFiles;
 public:
+    // Создает архив в памяти
     CZipBuffer()
     {
         create();
     }
+    // Открывает архив в память
     CZipBuffer(BYTE* buffer, DWORD size)
     {
         open(buffer, size);
     }
+    // Закрывает архив, т.е. очищает память
     ~CZipBuffer()
     {
         close();
     }
 
+    // Создает архив в памяти
     void create();
+    // Открывает архив в память
     void open(BYTE* buffer, DWORD size);
+    // Закрывает архив, т.е. очищает память
     void close();
+    // Перемещает файл в архиве, просто меняет путь файла
+    void move(const std::string& sSrc, const std::string& sDst);
 
+    // Возвращает ввектор путей в архиве
     std::vector<std::string> getPaths();
+    // Сохраняет архив в переданную память
     void save(BYTE*& data, DWORD& length);
+    // По относительно пути в архиве возвращает файл
     void getFile(const std::string& sPath, BYTE*& data, DWORD& length);
+    // По относительно пути в архиве добавляет файл
     void addFile   (const std::string& sPath, BYTE* data, DWORD length);
+    // По относительно пути в архиве удаляет файл
     bool removeFile(const std::string& sPath);
 };
 

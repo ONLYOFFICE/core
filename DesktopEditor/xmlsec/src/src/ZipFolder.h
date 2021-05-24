@@ -226,11 +226,13 @@ public:
     }
 };
 
+// Работает с архивом в памяти
 class CZipFolderMemory : public IFolder
 {
     CZipBuffer* m_zlib;
 
 protected:
+    // Конвертирует wstring -> string и убирает '/' в начале, т.к. пути относительные архива
     std::string getLocalFilePathA(const std::wstring& path)
     {
         if (!path.empty() && path[0] == L'/')
@@ -239,19 +241,23 @@ protected:
     }
 
 public:
+    // Открывает архив
     CZipFolderMemory(BYTE* data, DWORD length)
     {
         m_zlib = new CZipBuffer(data, length);
     }
+    // Закрывает архив и очищает память
     ~CZipFolderMemory()
     {
         delete m_zlib;
     }
 
+    // Относительный путь до файла в архиве
     virtual std::wstring getFullFilePath(const std::wstring& path)
     {
         return path;
     }
+    // Относительный путь до файла в архиве без '/' в начале
     virtual std::wstring getLocalFilePath(const std::wstring& path)
     {
         if (!path.empty() && path[0] == L'/')
@@ -259,6 +265,7 @@ public:
         return path;
     }
 
+    // Читает файл по относительному пути в архиве
     virtual bool read(const std::wstring& path, CBuffer*& buffer)
     {
         buffer = NULL;
@@ -273,6 +280,7 @@ public:
         }
         return false;
     }
+    // Пишет файл по относительному пути в архиве
     virtual void write(const std::wstring& path, BYTE* data, DWORD length)
     {
         std::string sPath = getLocalFilePathA(path);
@@ -280,31 +288,29 @@ public:
         memcpy(copyData, data, length);
         m_zlib->addFile(sPath, copyData, length);
     }
+    // Перемещает файл в архиве
     virtual void move(const std::wstring& sSrc, const std::wstring& sDst)
     {
-        // TODO: убрать копирование памяти
-        std::string sSrcPath = getLocalFilePathA(sSrc);
-        BYTE* data; DWORD length;
-        m_zlib->getFile(sSrcPath, data, length);
-        BYTE* copyData = new BYTE[length];
-        memcpy(copyData, data, length);
-        m_zlib->removeFile(sSrcPath);
-        m_zlib->addFile(getLocalFilePathA(sDst), copyData, length);
+        m_zlib->move(getLocalFilePathA(sSrc), getLocalFilePathA(sDst));
     }
+    // Содержится ли файл в архиве
     virtual bool exists(const std::wstring& path)
     {
         std::string sPath = getLocalFilePathA(path);
         std::vector<std::string> sPaths = m_zlib->getPaths();
         return std::find(sPaths.begin(), sPaths.end(), sPath) != sPaths.end();
     }
+    // Удаляет файл по относительному пути в архиве
     virtual void remove(const std::wstring& path)
     {
         std::string sPath = getLocalFilePathA(path);
         m_zlib->removeFile(sPath);
     }
+    // Создавать директорию в архиве не требуется
     virtual void createDirectory(const std::wstring& path)
     {
     }    
+    // Возвращает вектор путей в архиве до файлов расположенной в папке
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)
     {
         std::string sPath = getLocalFilePathA(path);
@@ -331,6 +337,7 @@ public:
         }
         return sRes;
     }
+    // Возвращает архивированные данные и закрывает архив
     virtual CBuffer* finalize()
     {
         BYTE* data = NULL;
@@ -339,6 +346,7 @@ public:
         m_zlib->close();
         return new CBuffer(data, length, true);
     }
+    // Читает файл по относительному пути в архиве и формирует из него CXmlNode
     virtual XmlUtils::CXmlNode getNodeFromFile(const std::wstring& path)
     {
         CBuffer* buffer = NULL;

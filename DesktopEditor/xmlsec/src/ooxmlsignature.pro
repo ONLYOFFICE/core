@@ -23,7 +23,7 @@ HEADERS += \
     include/XmlCertificate.h \
     include/OOXMLSigner.h \
     include/OOXMLVerifier.h \
-    include/ZipFolder.h
+    src/ZipFolder.h
 
 HEADERS += \
     src/XmlCanonicalizator.h \

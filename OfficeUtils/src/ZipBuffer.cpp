@@ -113,6 +113,13 @@ void CZipBuffer::close()
         RELEASEARRAYOBJECTS(oFile.m_pData);
     m_arrFiles.clear();
 }
+void CZipBuffer::move(const std::string& sSrc, const std::string& sDst)
+{
+    std::vector<CFile>::iterator it =
+            std::find_if(m_arrFiles.begin(), m_arrFiles.end(), [&sSrc] (const CFile& oFile) { return oFile.m_sPath == sSrc; });
+    if (it != m_arrFiles.end())
+        it->m_sPath = sDst;
+}
 
 std::vector<std::string> CZipBuffer::getPaths()
 {

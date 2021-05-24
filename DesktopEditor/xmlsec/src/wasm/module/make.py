@@ -101,16 +101,10 @@ libSign_src_parh = "../../../../xmlsec/src/src/"
 input_sign_sources = ["XmlTransform.cpp", "XmlCertificate.cpp", "OOXMLSigner.cpp", "OOXMLVerifier.cpp", "XmlSigner_openssl.cpp"]
 
 # OPENSSL
-#compiler_flags.append("-I../../../../../Common/3dParty/openssl/build/linux_64/include -I../../../../../Common/3dParty/openssl/openssl/include")
-
 compiler_flags.append("-Iopenssl/include -Iopenssl -Iemsdk/node/14.15.5_64bit/include/node/openssl/archs/linux-x86_64/no-asm/include")
-
-#libCrypto_src_parh = "../../../../../Common/3dParty/openssl/openssl/crypto/"
-#input_crypto_sources = ["x509/x509_cmp.c", "x509/x509_set.c", "x509/x_x509.c", "x509/x_x509a.c", "x509/x_all.c", "x509/x509_obj.c", "x509/t_x509.c", "x509/x_pubkey.c", "x509v3/v3_genn.c", "x509v3/v3_akeya.c", "x509v3/v3_crld.c", "x509v3/pcy_cache.c", "x509v3/v3_ncons.c", "x509v3/v3_asid.c", "asn1/a_int.c", "asn1/tasn_typ.c", "bn/bn_print.c", "bn/bn_lib.c", "bn/bn_add.c", "sha/sha256.c", "sha/sha512.c", "sha/sha1_one.c", "bio/bss_mem.c", "bio/bio_lib.c", "evp/m_sha1.c", "evp/digest.c", "evp/p_sign.c", "evp/p_verify.c", "evp/p_lib.c", "pem/pem_x509.c", "pem/pem_pkey.c", "pem/pem_pk8.c", "pem/pem_xaux.c", "pkcs12/p12_utl.c", "pkcs12/p12_asn.c", "pkcs12/p12_kiss.c", "err/err_prn.c", "err/err.c", "stack/stack.c", "objects/obj_dat.c", "mem.c", "ex_data.c"]
 
 compiler_flags.append("-D__linux__ -D_LINUX")
 # sources
-print("sources")
 sources = []
 for item in input_xml_sources:
   sources.append(item)
@@ -124,8 +118,6 @@ for item in input_zlib_sources:
   sources.append(libZlib_src_parh + item)
 for item in input_sign_sources:
   sources.append(libSign_src_parh + item)
-#for item in input_crypto_sources:
-#  sources.append(libCrypto_src_parh + item)
 sources.append("./openssl/libcrypto.a ./openssl/apps/openssl.c")
 sources.append("../main.cpp")
 
@@ -146,8 +138,12 @@ for item in sources:
 run_as_bash("./compile_module.sh", ["source ./emsdk/emsdk_env.sh", "emcc " + arguments])
 
 # finalize
-base.replaceInFile("./openssl.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
-base.replaceInFile("./openssl.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
+if "-O3" in compiler_flags:
+  base.replaceInFile("./openssl.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+  base.replaceInFile("./openssl.js", "function getBinaryPromise() {", "function getBinaryPromise2() {")
+elif "-g3" in compiler_flags:
+  base.replaceInFile("./openssl.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__ = [function(){window.onEngineInit();}];")
+  base.replaceInFile("./openssl.js", "function getBinaryPromise() {", "function getBinaryPromise2() {")
 
 openssl_js_content     = base.readFile("./openssl.js")
 engine_base_js_content = base.readFile("./engine.js")

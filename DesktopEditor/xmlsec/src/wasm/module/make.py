@@ -8,12 +8,13 @@ import codecs
 
 def apply_patch(file, patch):
   file_content = base.readFile(file)
-  index1 = file_content.find("<<<<<<<")
-  index2 = file_content.find("=======")
-  index3 = file_content.find(">>>>>>>")
-  file_content_new = "#if 0\n" + file_content[index1 + 1:index2] + "\n#else\n" + file_content[index2 + 1:index3] + "\n#endif"
-  base.delete_file(file)
-  base.writeFile(file, file_content_new)
+  patch_content = base.readFile(patch)
+  index1 = patch_content.find("<<<<<<<")
+  index2 = patch_content.find("=======")
+  index3 = patch_content.find(">>>>>>>")
+  file_content_old = patch_content[index1 + 7:index2]
+  file_content_new = "#if 0" + file_content_old + "#else" + patch_content[index2 + 7:index3] + "#endif"
+  base.replaceInFile(file, file_content_old, file_content_new)
   return
 
 def run_as_bash(file, commands):

@@ -109,6 +109,14 @@ namespace PdfReader
 		{
 			return false;
 		}
+		virtual bool UseGouraundTriangleFills()
+		{
+			return false;
+		}
+		virtual bool UsePatchMeshFills()
+		{
+			return false;
+		}
 
 		// Поддерживается ли DrawForm()?
 		virtual bool UseDrawForm()
@@ -223,12 +231,6 @@ namespace PdfReader
 		virtual void UpdateTextShift(GrState *pGState, double dShift) {}
 
 		//----- Рисование Path
-		virtual void FillStrokeGradientPatch(GrState *pGState, GrPatch *patch) {}
-		virtual void FillStrokeGradientFunctional(GrState *pGState, GrFunctionShading *pShading){}
-		virtual void FillStrokeGradientAxial(GrState *pGState, GrAxialShading *pShading) {}
-		virtual void FillStrokeGradientRadial(GrState *pGState, GrRadialShading *pShading) {}
-		virtual void FillStrokeGradientTriangle(GrState *pGState, const std::vector<GrColor*> &colors, const std::vector<NSStructures::Point> &points) {}
-
 		virtual void Stroke(GrState *pGState) {}
 		virtual void Fill(GrState *pGState) {}
 		virtual void EoFill(GrState *pGState) {}
@@ -249,6 +251,15 @@ namespace PdfReader
 		{
 			return false;
 		}
+		virtual bool GouraundTriangleFill(GrState *pGState, const std::vector<GrColor*> &colors, const std::vector<NSStructures::Point> &points)
+		{
+			return false;
+		}
+		virtual bool PatchMeshFill(GrState *pGState, GrPatch *patch)
+		{
+			return false;
+		}
+
 
 		virtual void StartTilingFillIteration() {}
 		virtual void EndTilingFillIteration() {}

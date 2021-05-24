@@ -319,9 +319,6 @@ namespace PdfReader
         m_lRendererType = c_nUnknownRenderer;
         m_pRenderer     = pRenderer;
 
-        m_bUseAxialShaded  = false;
-        m_bUseRadialShaded = false;
-
         if (NULL != m_pRenderer)
         {
             m_pRenderer->put_PenColor(0);
@@ -333,11 +330,6 @@ namespace PdfReader
             m_pRenderer->put_FontSize(10.0);
 
             m_pRenderer->get_Type(&m_lRendererType);
-            //if (c_nSWFRenderer == m_lRendererType)
-            //{
-            //    m_bUseAxialShaded  = true;
-            //    m_bUseRadialShaded = true;
-            //}
         }
 
         m_pbBreak                   = NULL;
@@ -2534,188 +2526,238 @@ namespace PdfReader
         m_pRenderer->EndCommand(c_nComplexFigureType);
         m_bTiling = false;
     }
-    bool RendererOutputDev::FunctionShadedFill(GrState *pGState, GrFunctionShading *pShading)
-    {
-        return false;
-    }
-    bool RendererOutputDev::AxialShadedFill(GrState *pGState, GrAxialShading    *pShading)
-    {
-        // TODO: Реализовать линейный градиент
-        return false;
-        //m_pRenderer->BeginCommand(c_nPDFGradientType);
+	bool RendererOutputDev::FunctionShadedFill(GrState *pGState, GrFunctionShading *pShading)
+	{
+		if (m_bDrawOnlyText)
+			return true;
 
-        //double arrMatrix[6];
-        //double *pCTM = pGState->GetCTM();
-        //arrMatrix[0] =  pCTM[0];
-        //arrMatrix[1] = -pCTM[1];
-        //arrMatrix[2] =  pCTM[2];
-        //arrMatrix[3] = -pCTM[3];
-        //arrMatrix[4] =  pCTM[4];
-        //arrMatrix[5] = -pCTM[5] + pGState->GetPageHeight();
+		if (m_bTransparentGroupSoftMask)
+			return true;
+		long brush;
+		int alpha = pGState->GetFillOpacity() * 255;
+		m_pRenderer->get_BrushType(&brush);
+		m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
+		double x1,x2,y1,y2;
+		pShading->GetDomain(&x1, &y1, &x2, &y2);
+		std::vector<float> mapping(6);
+		for (int i = 0; i < 6; i++)
+		{
+			mapping[i] = pShading->GetMatrix()[i];
+		}
+		auto info = NSStructures::GInfoConstructor::get_functional(x1, x2, y1, y2, mapping);
+		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		{
+			GRenderer->put_BrushGradInfo(info);
+			m_pRenderer->DrawPath(c_nWindingFillMode);
+		}
 
-        //double dShiftX = 0, dShiftY = 0;
-        //DoTransform(arrMatrix, &dShiftX, &dShiftY);
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->put_BrushType(brush);
 
-        //double dFirstX, dFirstY, dSecondX, dSecondY;
-        //pShading->GetCoords(&dFirstX, &dFirstY, &dSecondX, &dSecondY);
+		return true;
+	}
+	bool RendererOutputDev::AxialShadedFill(GrState *pGState, GrAxialShading *pShading)
+	{
+		if (m_bDrawOnlyText)
+			return true;
 
-        //bool bExtendFirst  = pShading->GetExtendStart();
-        //bool bExtendSecond = pShading->GetExtendEnd();
+		if (m_bTransparentGroupSoftMask)
+			return true;
 
-        //GrColorSpace *pColorSpace = pGState->GetFillColorSpace();
+		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
 
-        //LONG lOldType;
-        //m_pRenderer->get_BrushType(&lOldType);
+		long brush;
+		int alpha = pGState->GetFillOpacity() * 255;
+		m_pRenderer->get_BrushType(&brush);
+		m_pRenderer->put_BrushType(c_BrushTypePathNewLinearGradient);
 
-        ////m_pRenderer->put_B
-        //NSStructures::CBrush oBrush;
-        //oBrush.Rect.X      = PDFCoordsToMM(dFirstX + dShiftX);
-        //oBrush.Rect.Y      = PDFCoordsToMM(dFirstY + dShiftY);
-        //oBrush.Rect.Width  = PDFCoordsToMM(dSecondX - dFirstX);
-        //oBrush.Rect.Height = PDFCoordsToMM(dSecondY - dFirstY);
-        //oBrush.Type        = 2;
-        //oBrush.TextureMode = bExtendFirst ? 1 : 0 + bExtendSecond ? 2 : 0;
+		double x1, x2, y1, y2;
+		double t0, t1;
+		pShading->GetCoords(&x1, &y1, &x2, &y2);
+		t0 = pShading->GetDomain0();
+		t1 = pShading->GetDomain1();
 
-        //BSTR bsXml = oBrush.ToXmlString().AllocSysString();
-        //m_pRenderer->SetBrush(bsXml);
-        //::SysFreeString(bsXml);
+		TransformToPixels(pGState, x1, y1);
+		TransformToPixels(pGState, x2, y2);
 
-        //double dXMin, dYMin, dXMax, dYMax;
-        //pGState->GetUserClipBBox(&dXMin, &dYMin, &dXMax, &dYMax);
+		auto info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
+															   pShading->GetExtendStart(), pShading->GetExtendEnd());
 
-        //oBrush.Type        = 2;
-        //oBrush.TextureMode = 5;
+		GrColorSpace *ColorSpace = pShading->GetColorSpace();
+		float delta = (t1 - t0) / info.shading.function.get_resolution();
+		float t = t0;
+		for (size_t i = 0; i < info.shading.function.get_resolution(); i++)
+		{
+			PdfReader::GrColor c;
+			pShading->GetColor(t, &c);
+			t+=delta;
+			DWORD dword_color = ColorSpace->GetDwordColor(&c);
+			info.shading.function.set_color(i, (dword_color >> 16) & 0xFF,
+											(dword_color >> 8) & 0xFF, (dword_color >> 0) & 0xFF, alpha);
+		}
 
-        //m_pRenderer->BrushBounds(PDFCoordsToMM(dXMin + dShiftX), PDFCoordsToMM(dYMin + dShiftY), PDFCoordsToMM(dXMax - dXMin), PDFCoordsToMM(dYMax - dYMin));
-        //Aggplus::BrushType::
-        //m_pRenderer->put_BrushType(2);
-        //m_pRenderer->put_BrushTextureMode(Aggplus::);
+		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		{
+			GRenderer->put_BrushGradInfo(info);
+			m_pRenderer->DrawPath(c_nWindingFillMode);
+		}
 
-        //bsXml = oBrush.ToXmlString().AllocSysString();
-        //m_pRenderer->SetBrush(bsXml);
-        //::SysFreeString(bsXml);
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->put_BrushType(brush);
 
-        //// Присылаем 16 цветов
-        //double dT0 = pShading->GetDomain0();
-        //double dT1 = pShading->GetDomain1();
-        //GrColor oColor;
-        //for (int nIndex = 0; nIndex < 16; nIndex++)
-        //{
-        //    double dT = dT0 + nIndex * (dT1 - dT0) / 15;
-        //    pShading->GetColor(dT, &oColor);
+		return true;
+	}
+	bool RendererOutputDev::RadialShadedFill(GrState *pGState, GrRadialShading *pShading)
+	{
+		if (m_bDrawOnlyText)
+			return true;
 
-        //    oBrush.Color1      = pColorSpace->GetDwordColor(&oColor);
-        //    oBrush.Type        = 2;
-        //    oBrush.TextureMode = 10;
+		if (m_bTransparentGroupSoftMask)
+			return true;
 
-        //    bsXml = oBrush.ToXmlString().AllocSysString();
-        //    m_pRenderer->SetBrush(bsXml);
-        //    ::SysFreeString(bsXml);
-        //}
+		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
 
-        //m_pRenderer->EndCommand(c_nPDFGradientType);
+		long brush;
+		int alpha = pGState->GetFillOpacity() * 255;
+		m_pRenderer->get_BrushType(&brush);
+		m_pRenderer->put_BrushType(c_BrushTypePathRadialGradient);
 
-        //UpdateFillColor(pGState);
-        //UpdateFillOpacity(pGState);
+		double x1, x2, y1, y2, r1, r2;
+		double t0, t1;
+		pShading->GetCoords(&x1, &y1, &r1, &x2, &y2, &r2);
+		t0 = pShading->GetDomain0();
+		t1 = pShading->GetDomain1();
 
-        //m_pRenderer->put_BrushType(lOldType);
+		double xdpi;
+		m_pRenderer->get_DpiX(&xdpi);
+		double r_coef = xdpi / pGState->GetHorDPI() * sqrt(fabs(pGState->GetCTM()[0] * pGState->GetCTM()[3] - pGState->GetCTM()[1] * pGState->GetCTM()[2]));
 
-        //return true;
-    }
-    bool RendererOutputDev::RadialShadedFill(GrState *pGState, GrRadialShading   *pShading)
-    {
-        // TODO: Реализовать радиальный градиент
-        return false;
+		TransformToPixels(pGState, x1, y1);
+		TransformToPixels(pGState, x2, y2);
 
-        //m_pRenderer->BeginCommand(c_nPDFGradientType);
+		auto info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y2}, r1 * r_coef, r2 * r_coef,
+															   t0, t1, pShading->GetExtendFirst(), pShading->GetExtendSecond());
 
-        //double arrMatrix[6];
-        //double *pCTM = pGState->GetCTM();
-        //arrMatrix[0] =  pCTM[0];
-        //arrMatrix[1] = -pCTM[1];
-        //arrMatrix[2] =  pCTM[2];
-        //arrMatrix[3] = -pCTM[3];
-        //arrMatrix[4] =  pCTM[4];
-        //arrMatrix[5] = -pCTM[5] + pGState->GetPageHeight();
+		GrColorSpace *ColorSpace = pShading->GetColorSpace();;
+		float delta = (t1 - t0) / info.shading.function.get_resolution();
+		float t = t0;
+		for (size_t i = 0; i < info.shading.function.get_resolution(); i++, t += delta)
+		{
+			PdfReader::GrColor c;
+			pShading->GetColor(t, &c);
+			DWORD dword_color = ColorSpace->GetDwordColor(&c);
+			info.shading.function.set_color(i, (dword_color >> 16) & 0xFF,
+											(dword_color >> 8) & 0xFF, (dword_color >> 0) & 0xFF, alpha);
+		}
 
-        //double dShiftX = 0, dShiftY = 0;
-        //DoTransform(arrMatrix, &dShiftX, &dShiftY);
+		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		{
+			GRenderer->put_BrushGradInfo(info);
+			m_pRenderer->DrawPath(c_nWindingFillMode);
+		}
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->put_BrushType(brush);
 
-        //double dFirstX, dFirstY, dFirstRad, dSecondX, dSecondY, dSecondRad;
-        //pShading->GetCoords(&dFirstX, &dFirstY, &dFirstRad, &dSecondX, &dSecondY, &dSecondRad);
+		return true;
+	}
+	bool RendererOutputDev::GouraundTriangleFill(GrState *pGState, const std::vector<GrColor*> &colors, const std::vector<NSStructures::Point> &points)
+	{
+		if (m_bDrawOnlyText)
+			return true;
 
-        //bool bExtendFirst  = pShading->GetExtendFirst();
-        //bool bExtendSecond = pShading->GetExtendSecond();
+		if (m_bTransparentGroupSoftMask)
+			return true;
 
-        //LONG lOldType;
-        //m_pRenderer->get_BrushType(&lOldType);
+		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
 
-        //NSStructures::CBrush oBrush;
-        //oBrush.Rect.X      = PDFCoordsToMM(dFirstX + dShiftX);
-        //oBrush.Rect.Y      = PDFCoordsToMM(dFirstY + dShiftY);
-        //oBrush.Rect.Width  = PDFCoordsToMM(dFirstRad);
-        //oBrush.Rect.Height = PDFCoordsToMM(dFirstRad);
-        //oBrush.Type        = 1;
-        //oBrush.TextureMode = bExtendFirst ? 1 : 0;
+		long brush;
+		int alpha = pGState->GetFillOpacity() * 255;
+		m_pRenderer->get_BrushType(&brush);
+		m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
 
-        //BSTR bsXml = oBrush.ToXmlString().AllocSysString();
-        //m_pRenderer->SetBrush(bsXml);
-        //::SysFreeString(bsXml);
+		std::vector<NSStructures::Point> pixel_points;
+		std::vector<agg::rgba8> rgba8_colors;
+		GrCalRGBColorSpace ColorSpace;
+		for (int i = 0;i < 3; i++)
+		{
+			GrColor c = *colors[i];
+			DWORD dword_color = ColorSpace.GetDwordColor(&c);
+			rgba8_colors.push_back({dword_color % 0x100, (dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, (unsigned)alpha});
+			double x = points[i].x;
+			double y = points[i].y;
+			TransformToPixels(pGState, x, y);
+			pixel_points.push_back({x, y});
 
-        //oBrush.Rect.X      = PDFCoordsToMM(dSecondX + dShiftX);
-        //oBrush.Rect.Y      = PDFCoordsToMM(dSecondY + dShiftY);
-        //oBrush.Rect.Width  = PDFCoordsToMM(dSecondRad);
-        //oBrush.Rect.Height = PDFCoordsToMM(dSecondRad);
-        //oBrush.Type        = 1;
-        //oBrush.TextureMode = bExtendSecond ? 1 : 0;
+		}
 
-        //bsXml = oBrush.ToXmlString().AllocSysString();
-        //m_pRenderer->SetBrush(bsXml);
-        //::SysFreeString(bsXml);
+		auto info = NSStructures::GInfoConstructor::get_triangle(pixel_points, rgba8_colors, {}, false);
 
-        //double dXMin, dYMin, dXMax, dYMax;
-        //pGState->GetUserClipBBox(&dXMin, &dYMin, &dXMax, &dYMax);
+		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		{
+			GRenderer->put_BrushGradInfo(info);
+			m_pRenderer->DrawPath(c_nWindingFillMode);
+		}
 
-        //oBrush.Rect.X      = PDFCoordsToMM(dXMin + dShiftX);
-        //oBrush.Rect.Y      = PDFCoordsToMM(dYMin + dShiftY);
-        //oBrush.Rect.Width  = PDFCoordsToMM(dXMax - dXMin);
-        //oBrush.Rect.Height = PDFCoordsToMM(dYMax - dYMin);
-        //oBrush.Type        = 1;
-        //oBrush.TextureMode = 5;
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->put_BrushType(brush);
+		return true;
+	}
+	bool RendererOutputDev::PatchMeshFill(GrState *pGState, PdfReader::GrPatch *patch)
+	{
+		if (m_bDrawOnlyText)
+			return true;
 
-        //bsXml = oBrush.ToXmlString().AllocSysString();
-        //m_pRenderer->SetBrush(bsXml);
-        //::SysFreeString(bsXml);
+		if (m_bTransparentGroupSoftMask)
+			return true;
 
-        //// Присылаем 15 цветов
-        //double dT0 = pShading->GetDomain0();
-        //double dT1 = pShading->GetDomain1();
-        //GrColor oColor;
-        //GrColorSpace *pColorSpace = pGState->GetFillColorSpace();
-        //for (int nIndex = 0; nIndex < 15; nIndex++)
-        //{
-        //    double dT = dT0 + nIndex * (dT1 - dT0) / 14;
-        //    pShading->GetColor(dT, &oColor);
+		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
 
-        //    oBrush.Color1      = pColorSpace->GetDwordColor(&oColor);
-        //    oBrush.Type        = 1;
-        //    oBrush.TextureMode = 10;
+		long brush;
+		int alpha = pGState->GetFillOpacity() * 255;
+		m_pRenderer->get_BrushType(&brush);
+		m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
 
-        //    bsXml = oBrush.ToXmlString().AllocSysString();
-        //    m_pRenderer->SetBrush(bsXml);
-        //    ::SysFreeString(bsXml);
-        //}
+		std::vector<std::vector<NSStructures::Point>> points(4, std::vector<NSStructures::Point>(4));
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				double x = patch->arrX[i][j];
+				double y = patch->arrY[i][j];
 
-        //m_pRenderer->EndCommand(c_nPDFGradientType);
+				TransformToPixels(pGState, x, y);
+				points[i][j].x = x;
+				points[i][j].y = y;
+			}
+		}
+		std::vector<std::vector<agg::rgba8>> colors(2, std::vector<agg::rgba8>(2));
+		GrDeviceRGBColorSpace ColorSpace;
+		for (int i = 0; i < 2; i ++)
+		{
+			for (int j = 0; j < 2; j++)
+			{
+				DWORD dcolor = ColorSpace.GetDwordColor(&patch->arrColor[i][j]);
+				colors[j][i] = {(unsigned)((dcolor >> 16)  & 0xFF), (unsigned)((dcolor >> 8) & 0xFF), (unsigned)((dcolor >> 0) & 0xFF), (unsigned)alpha};
+			}
+		}
+		auto info = NSStructures::GInfoConstructor::get_tensor_curve(points,
+		{},
+																	 colors,
+																	 false
+																	 );
 
-        //UpdateFillColor(pGState);
-        //UpdateFillOpacity(pGState);
+		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		{
+			GRenderer->put_BrushGradInfo(info);
+			m_pRenderer->DrawPath(c_nWindingFillMode);
+		}
 
-        //m_pRenderer->put_BrushType(lOldType);
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->put_BrushType(brush);
 
-        //return true;
-    }
-    void RendererOutputDev::StartShadedFill(GrState *pGState)
+		return true;
+	}
+	void RendererOutputDev::StartShadedFill(GrState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
@@ -3939,229 +3981,4 @@ namespace PdfReader
 		x = newx;
 		y = newy;
 	}
-
-    void RendererOutputDev::FillStrokeGradientPatch(GrState *pGState, PdfReader::GrPatch *patch)
-        {
-            if (m_bDrawOnlyText)
-                return;
-
-            if (m_bTransparentGroupSoftMask)
-                return;
-
-            DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
-
-            long brush;
-            int alpha = pGState->GetFillOpacity() * 255;
-            m_pRenderer->get_BrushType(&brush);
-            m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
-
-            std::vector<std::vector<NSStructures::Point>> points(4, std::vector<NSStructures::Point>(4));
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    double x = patch->arrX[i][j];
-                    double y = patch->arrY[i][j];
-
-                    TransformToPixels(pGState, x, y);
-                    points[i][j].x = x;
-                    points[i][j].y = y;
-                }
-            }
-            std::vector<std::vector<agg::rgba8>> colors(2, std::vector<agg::rgba8>(2));
-            GrDeviceRGBColorSpace ColorSpace;
-            for (int i = 0; i < 2; i ++)
-            {
-                for (int j = 0; j < 2; j++)
-                {
-                    DWORD dcolor = ColorSpace.GetDwordColor(&patch->arrColor[i][j]);
-                    colors[j][i] = {(unsigned)((dcolor >> 16)  & 0xFF), (unsigned)((dcolor >> 8) & 0xFF), (unsigned)((dcolor >> 0) & 0xFF), (unsigned)alpha};
-                 }
-            }
-            auto info = NSStructures::GInfoConstructor::get_tensor_curve(points,
-            {},
-             colors,
-             false
-            );
-
-        if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-        {
-            GRenderer->put_BrushGradInfo(info);
-            m_pRenderer->DrawPath(c_nWindingFillMode);
-        }
-
-            m_pRenderer->EndCommand(c_nPathType);
-            m_pRenderer->put_BrushType(brush);
-        }
-
-    void RendererOutputDev::FillStrokeGradientRadial(GrState *pGState, GrRadialShading *pShading)
-    {
-        if (m_bDrawOnlyText)
-                return;
-
-        if (m_bTransparentGroupSoftMask)
-                return;
-
-		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
-
-        long brush;
-        int alpha = pGState->GetFillOpacity() * 255;
-        m_pRenderer->get_BrushType(&brush);
-        m_pRenderer->put_BrushType(c_BrushTypePathRadialGradient);
-
-        double x1, x2, y1, y2, r1, r2;
-        double t0, t1;
-        pShading->GetCoords(&x1, &y1, &r1, &x2, &y2, &r2);
-        t0 = pShading->GetDomain0();
-        t1 = pShading->GetDomain1();
-
-        double xdpi;
-        m_pRenderer->get_DpiX(&xdpi);
-        double r_coef = xdpi / pGState->GetHorDPI() * sqrt(fabs(pGState->GetCTM()[0] * pGState->GetCTM()[3] - pGState->GetCTM()[1] * pGState->GetCTM()[2]));
-
-        TransformToPixels(pGState, x1, y1);
-        TransformToPixels(pGState, x2, y2);
-
-        auto info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y2}, r1 * r_coef, r2 * r_coef,
-        t0, t1, pShading->GetExtendFirst(), pShading->GetExtendSecond());
-
-        GrColorSpace *ColorSpace = pShading->GetColorSpace();;
-        float delta = (t1 - t0) / info.shading.function.get_resolution();
-        float t = t0;
-        for (size_t i = 0; i < info.shading.function.get_resolution(); i++, t += delta)
-        {
-            PdfReader::GrColor c;
-            pShading->GetColor(t, &c);
-            DWORD dword_color = ColorSpace->GetDwordColor(&c);
-            info.shading.function.set_color(i, (dword_color >> 16) % 0x100,
-                (dword_color >> 8) % 0x100, (dword_color >> 0) % 0x100, alpha);
-        }
-
-		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			GRenderer->put_BrushGradInfo(info);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
-		m_pRenderer->EndCommand(c_nPathType);
-		m_pRenderer->put_BrushType(brush);
-    }
-
-    void RendererOutputDev::FillStrokeGradientAxial(GrState *pGState, GrAxialShading *pShading)
-    {
-        if (m_bDrawOnlyText)
-                return;
-
-        if (m_bTransparentGroupSoftMask)
-                return;
-
-        DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
-
-        long brush;
-        int alpha = pGState->GetFillOpacity() * 255;
-        m_pRenderer->get_BrushType(&brush);
-        m_pRenderer->put_BrushType(c_BrushTypePathNewLinearGradient);
-
-        double x1, x2, y1, y2;
-        double t0, t1;
-        pShading->GetCoords(&x1, &y1, &x2, &y2);
-        t0 = pShading->GetDomain0();
-        t1 = pShading->GetDomain1();
-
-		TransformToPixels(pGState, x1, y1);
-		TransformToPixels(pGState, x2, y2);
-
-        auto info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
-            pShading->GetExtendStart(), pShading->GetExtendEnd());
-
-		GrColorSpace *ColorSpace = pShading->GetColorSpace();
-        float delta = (t1 - t0) / info.shading.function.get_resolution();
-        float t = t0;
-        for (size_t i = 0; i < info.shading.function.get_resolution(); i++)
-        {
-            PdfReader::GrColor c;
-            pShading->GetColor(t, &c);
-            t+=delta;
-            DWORD dword_color = ColorSpace->GetDwordColor(&c);
-			info.shading.function.set_color(i, (dword_color >> 16) & 0xFF,
-				(dword_color >> 8) & 0xFF, (dword_color >> 0) & 0xFF, alpha);
-        }
-
-		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			GRenderer->put_BrushGradInfo(info);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
-
-		m_pRenderer->EndCommand(c_nPathType);
-		m_pRenderer->put_BrushType(brush);
-    }
-    void RendererOutputDev::FillStrokeGradientTriangle(GrState *pGState, const std::vector<GrColor*> &colors, const std::vector<NSStructures::Point> &point)
-    {
-        if (m_bDrawOnlyText)
-                return;
-
-        if (m_bTransparentGroupSoftMask)
-            return;
-
-        DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
-
-        long brush;
-        int alpha = pGState->GetFillOpacity() * 255;
-        m_pRenderer->get_BrushType(&brush);
-        m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
-
-        std::vector<NSStructures::Point> pixel_points;
-        std::vector<agg::rgba8> rgba8_colors;
-        GrCalRGBColorSpace ColorSpace;
-        for (int i = 0;i < 3; i++)
-        {
-            GrColor c = *colors[i];
-            DWORD dword_color = ColorSpace.GetDwordColor(&c);
-            rgba8_colors.push_back({dword_color % 0x100, (dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, (unsigned)alpha});
-            double x = point[i].x;
-            double y = point[i].y;
-            TransformToPixels(pGState, x, y);
-            pixel_points.push_back({x, y});
-
-        }
-
-        auto info = NSStructures::GInfoConstructor::get_triangle(pixel_points, rgba8_colors, {}, false);
-
-        if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-        {
-            GRenderer->put_BrushGradInfo(info);
-            m_pRenderer->DrawPath(c_nWindingFillMode);
-        }
-
-        m_pRenderer->EndCommand(c_nPathType);
-        m_pRenderer->put_BrushType(brush);
-    }
-    void RendererOutputDev::FillStrokeGradientFunctional(GrState *pGState, GrFunctionShading *pShading)
-    {
-        if (m_bDrawOnlyText)
-                return;
-
-        if (m_bTransparentGroupSoftMask)
-            return;
-        long brush;
-        int alpha = pGState->GetFillOpacity() * 255;
-        m_pRenderer->get_BrushType(&brush);
-        m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
-        double x1,x2,y1,y2;
-        pShading->GetDomain(&x1, &y1, &x2, &y2);
-        std::vector<float> mapping(6);
-        for (int i = 0; i < 6; i++)
-        {
-            mapping[i] = pShading->GetMatrix()[i];
-        }
-        auto info = NSStructures::GInfoConstructor::get_functional(x1, x2, y1, y2, mapping);
-        if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-        {
-            GRenderer->put_BrushGradInfo(info);
-            m_pRenderer->DrawPath(c_nWindingFillMode);
-        }
-
-        m_pRenderer->EndCommand(c_nPathType);
-        m_pRenderer->put_BrushType(brush);
-    }
 }

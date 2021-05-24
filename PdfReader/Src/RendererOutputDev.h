@@ -133,31 +133,30 @@ namespace PdfReader
 		}
 		virtual bool UseTilingPatternFill()
         {
-            if (m_bDrawOnlyText)
-                return true;
+			if (m_bDrawOnlyText)
+				return true;
 
 			return false;
 		}
 		virtual bool UseFunctionalShadedFills()
 		{
-            if (m_bDrawOnlyText)
-                return true;
-
-            return false;
+			return true;
 		}
 		virtual bool UseAxialShadedFills()
 		{
-            if (m_bDrawOnlyText)
-                return true;
-
-			return m_bUseAxialShaded;
+			return true;
 		}
 		virtual bool UseRadialShadedFills()
 		{
-            if (m_bDrawOnlyText)
-                return true;
-
-			return m_bUseRadialShaded;
+			return true;
+		}
+		virtual bool UseGouraundTriangleFills()
+		{
+			return true;
+		}
+		virtual bool UsePatchMeshFills()
+		{
+			return true;
 		}
 		virtual bool UseClipTo()
 		{
@@ -224,9 +223,11 @@ namespace PdfReader
 		virtual void TilingPatternFill(GrState *pGState, Object *pStream, int nPaintType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep);
 		virtual void StartTilingFill(GrState *pGState);
 		virtual void EndTilingFill();
-		virtual bool FunctionShadedFill(GrState *pGState, GrFunctionShading *pShading);
-		virtual bool AxialShadedFill(GrState *pGState, GrAxialShading    *pShading);
-		virtual bool RadialShadedFill(GrState *pGState, GrRadialShading   *pShading);
+		virtual bool FunctionShadedFill(GrState *pGState, GrFunctionShading *pShading) override;
+		virtual bool AxialShadedFill(GrState *pGState, GrAxialShading    *pShading) override;
+		virtual bool RadialShadedFill(GrState *pGState, GrRadialShading   *pShading) override;
+		virtual bool GouraundTriangleFill(GrState *pGState, const std::vector<GrColor*> &colors, const std::vector<NSStructures::Point> &points) override;
+		virtual bool PatchMeshFill(GrState *pGState, GrPatch* pPatch) override;
 		virtual void StartShadedFill(GrState *pGState);
 		virtual void EndShadedFill();
 		virtual void StartTilingFillIteration();
@@ -271,12 +272,8 @@ namespace PdfReader
 		}
 
 		//------ Отрисовка градиента через графическую либу
-		virtual void FillStrokeGradientPatch(GrState *pGState, GrPatch *patch) override;
 		virtual void TransformToPixels(GrState *pGState, double &x, double &y);
-		virtual void FillStrokeGradientFunctional(GrState *pGState, GrFunctionShading *pShading) override;
-		virtual void FillStrokeGradientAxial(GrState *pGState, GrAxialShading *pShading) override;
-		virtual void FillStrokeGradientRadial(GrState *pGState, GrRadialShading *pShading) override;
-		virtual void FillStrokeGradientTriangle(GrState *pGState, const std::vector<GrColor*> &colors, const std::vector<NSStructures::Point> &point) override;
+
 	private:
 
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
@@ -298,9 +295,6 @@ namespace PdfReader
 		CFontList                    *m_pFontList;
 
 		bool                         *m_pbBreak;         // Внешняя остановка рендерера
-
-		bool                          m_bUseAxialShaded;
-		bool                          m_bUseRadialShaded;
 
 		GrClip                       *m_pClip;
 		bool                          m_bTiling;

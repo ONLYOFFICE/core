@@ -386,7 +386,12 @@ bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
 
 bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter )
  {
-    if ( "colortbl" == sCommand )
+	if ("rtf" == sCommand) //open-rtf-document-image-error.rtf
+	{
+		RtfNormalReader oRtfReader(oDocument, oReader);
+		return StartSubReader(oRtfReader, oDocument, oReader);
+	}
+	else if ( "colortbl" == sCommand )
 	{
 		RtfColorTableReader oColorTableReader;
 		return StartSubReader( oColorTableReader, oDocument, oReader );
@@ -464,10 +469,10 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 
 		}
 	}
-	else if ("qqq" == sCommand)
-	{
-		oDocument.m_oMathProp.m_bHeader = false;
-	}
+	//else if ("qqq" == sCommand)//test
+	//{
+	//	oDocument.m_oMathProp.m_bHeader = false;
+	//}
 	//else if ( "defchp" == sCommand )
 	//{
 	//	RtfDefCharPropReader oDefCharPropReader( oDocument.m_oDefaultCharProp );
@@ -2604,7 +2609,7 @@ void RtfParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr 
 		AddItem( m_oCurParagraph, oReader, false, false );
 		m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());
 	}
-	else if (true == m_bPar)
+	else// if (true == m_bPar) // bug 50434
 	{
 		if (false == aRows.empty() || false == aCells.empty()) // bug 39172
 		{

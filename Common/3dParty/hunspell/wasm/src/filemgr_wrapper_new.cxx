@@ -28,7 +28,7 @@ FileMgr::FileMgr(const char *file, const char *key)
     }
     else
     {
-        memin = new std::istrstream((char *)file_memory->data, file_memory->len);
+        memin.from_buffer((char *)file_memory->data, file_memory->len);
     }
 }
 
@@ -36,18 +36,13 @@ FileMgr::~FileMgr()
 {
     if (hin)
         delete hin;
-    if (memin)
-        delete memin;
 }
 
 bool FileMgr::getline(std::string &dest)
 {
-    ++linenum;
-    bool ret = static_cast<bool>(std::getline(*memin, dest));
-    if (!ret)
-    {
-        --linenum;
-    }
+	bool ret = memin.get_line(dest);
+	if (ret)
+		++linenum;	
     return ret;
 }
 

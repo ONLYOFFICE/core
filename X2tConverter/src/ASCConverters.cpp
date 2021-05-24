@@ -329,19 +329,7 @@ namespace NExtractTools
 		}
 		if(SUCCEEDED_X2T(nRes))
 		{
-			if(params.hasSavePassword())
-			{
-				std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.docx");
-				nRes = dir2zip(sResultDocxDir, sToMscrypt);
-				if(SUCCEEDED_X2T(nRes))
-				{
-					nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
-				}
-			}
-			else
-			{
-				nRes = dir2zip(sResultDocxDir, sTo, true);
-			}
+			nRes = dir2zipMscrypt(sResultDocxDir, sTo, sTemp, params);
 		}
 
         return nRes;
@@ -780,19 +768,7 @@ namespace NExtractTools
 		}
 		if(SUCCEEDED_X2T(nRes))
 		{
-			if(params.hasSavePassword())
-			{
-				std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.xlsx");
-				nRes = dir2zip(sResultXlsxDir, sToMscrypt);
-				if(SUCCEEDED_X2T(nRes))
-				{
-					nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
-				}
-			}
-			else
-			{
-				nRes = dir2zip(sResultXlsxDir, sTo, true);
-			}
+			nRes = dir2zipMscrypt(sResultXlsxDir, sTo, sTemp, params);
 		}
         return nRes;
     }
@@ -1154,19 +1130,7 @@ namespace NExtractTools
 		}
 		if(SUCCEEDED_X2T(nRes))
 		{
-			if(params.hasSavePassword())
-			{
-				std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.pptx");
-				nRes = dir2zip(sResultPptxDir, sToMscrypt);
-				if(SUCCEEDED_X2T(nRes))
-				{
-					nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
-				}
-			}
-			else
-			{
-				nRes = dir2zip(sResultPptxDir, sTo, true);
-			}
+			nRes = dir2zipMscrypt(sResultPptxDir, sTo, sTemp, params);
 		}
         return nRes;
 	}
@@ -1220,6 +1184,24 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         return (S_OK == oCOfficeUtils.CompressFileOrDirectory(sFrom, sTo, bSorted, method, level, bDateTime)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
     }
+	_UINT32 dir2zipMscrypt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		_UINT32 nRes = S_OK;
+		if(params.hasSavePassword())
+		{
+			std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.docx");
+			nRes = dir2zip(sFrom, sToMscrypt);
+			if(SUCCEEDED_X2T(nRes))
+			{
+				nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+			}
+		}
+		else
+		{
+			nRes = dir2zip(sFrom, sTo, true);
+		}
+		return nRes;
+	}
 
     // unzip dir
     _UINT32 zip2dir (const std::wstring &sFrom, const std::wstring &sTo)
@@ -3186,8 +3168,10 @@ namespace NExtractTools
                                nRes = m_oCDocxSerializer.loadFromFile (sFilePathIn, sTempDocx, sXmlOptions, sThemePath, sMediaPath, sEmbedPath) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
                                if(SUCCEEDED_X2T(nRes))
                                {
-                                   COfficeUtils oCOfficeUtils(NULL);
-                                   nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempDocx, sFilePathOut, true)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+									std::wstring sTempUnencrypted = sTemp + FILE_SEPARATOR_STR + wsFilePathInFilename + L"_unencrypted";
+									NSDirectory::CreateDirectory(sTempUnencrypted);
+
+									nRes = dir2zipMscrypt(sTempDocx, sFilePathOut, sTempUnencrypted, params);
                                }
                            }
                            else if (NSDoctRenderer::DoctRendererFormat::FormatFile::PDF == eTypeTo)
@@ -3199,6 +3183,15 @@ namespace NExtractTools
 							   CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
                                pdfWriter.SetTempFolder(sTemp);
                                pdfWriter.SetThemesPlace(sThemeDir);
+
+								std::wstring documentID = params.getDocumentID();
+								if (false == documentID.empty())
+									pdfWriter.SetDocumentID(documentID);
+
+								std::wstring password = params.getSavePassword();
+								if (false == password.empty())
+									pdfWriter.SetPassword(password);
+
                                int nReg = (bPaid == false) ? 0 : 1;
                                nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sFilePathIn, sFilePathOut)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
                                RELEASEOBJECT(pApplicationFonts);
@@ -3466,19 +3459,7 @@ namespace NExtractTools
 				}
 				if(SUCCEEDED_X2T(nRes))
 				{
-					if(params.hasSavePassword())
-					{
-						std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.docx");
-						nRes = dir2zip(sFrom, sToMscrypt);
-						if(SUCCEEDED_X2T(nRes))
-						{
-							nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
-						}
-					}
-					else
-					{
-						nRes = dir2zip(sFrom, sTo, true);
-					}
+					nRes = dir2zipMscrypt(sFrom, sTo, sTemp, params);
 				}
 			}
 			else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC == nFormatTo)
@@ -3732,19 +3713,7 @@ namespace NExtractTools
 				}
 				if(SUCCEEDED_X2T(nRes))
 				{
-					if(params.hasSavePassword())
-					{
-						std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.xlsx");
-						nRes = dir2zip(sFrom, sToMscrypt);
-						if(SUCCEEDED_X2T(nRes))
-						{
-							nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
-						}
-					}
-					else
-					{
-						nRes = dir2zip(sFrom, sTo, true);
-					}
+					nRes = dir2zipMscrypt(sFrom, sTo, sTemp, params);
 				}
            }
            //else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatTo)
@@ -3986,19 +3955,7 @@ namespace NExtractTools
 				}
 				if(SUCCEEDED_X2T(nRes))
 				{
-					if(params.hasSavePassword())
-					{
-						std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.pptx");
-						nRes = dir2zip(sFrom, sToMscrypt);
-						if(SUCCEEDED_X2T(nRes))
-						{
-							nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
-						}
-					}
-					else
-					{
-						nRes = dir2zip(sFrom, sTo, true);
-					}
+					nRes = dir2zipMscrypt(sFrom, sTo, sTemp, params);
 				}
 			}
 			//else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT == nFormatTo)
@@ -4196,6 +4153,14 @@ namespace NExtractTools
 				CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
 				pdfWriter.SetTempFolder(sTemp);
 				pdfWriter.SetTempFolder(sTemp);
+
+				std::wstring documentID = params.getDocumentID();
+				if (false == documentID.empty())
+					pdfWriter.SetDocumentID(documentID);
+
+				std::wstring password = params.getSavePassword();
+				if (false == password.empty())
+					pdfWriter.SetPassword(password);
               
 				IOfficeDrawingFile* pReader = NULL;
 				nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);

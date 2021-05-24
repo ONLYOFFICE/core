@@ -206,12 +206,6 @@ namespace PPT_FORMAT
 			m_mapHyperlinks.clear();
 		}
 
-        inline int getNextRId()const
-        {
-            return m_lNextRelsID;
-        }
-
-
         inline void StartMaster(int nIndexTheme, int nStartLayoutIndex, int nCountLayouts)
 		{
             std::wstring str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\

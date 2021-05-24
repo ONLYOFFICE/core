@@ -4,8 +4,6 @@
 #include <QMessageBox>
 #include <QStandardItem>
 
-#include "XMLHighlighter.h"
-
 #ifdef _DEBUG
     #include <QDebug>
 #endif

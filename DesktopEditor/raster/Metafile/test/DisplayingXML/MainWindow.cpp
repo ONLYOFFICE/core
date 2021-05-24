@@ -15,7 +15,6 @@
 #include "../../../../raster/BgraFrame.h"
 #include "../../../../common/Directory.h"
 
-#include "XMLHighlighter.h"
 #include "CMetafileTreeView.h"
 
 #include <QStandardItemModel>

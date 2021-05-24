@@ -130,15 +130,17 @@
 		if (0 == result)
 			return null;
 
-		var resultSize = Module["_XmlSignature_GetFileSize"](_file);
-		var resultRaw = Module["_XmlSignature_GetFileRaw"](_file);
-		var fileData = new Uint8Array(Module["HEAP8"].buffer, resultRaw, resultSize);
-
-		var dst = new Uint8Array(resultSize);
-		dst.set(fileData);
+		var dst= null;
+		var resultSize = Module["_XmlSignature_GetFileSize"](result);
+		if (0 != resultSize)
+		{
+			var resultRaw = Module["_XmlSignature_GetFileRaw"](result);
+			var fileData = new Uint8Array(Module["HEAP8"].buffer, resultRaw, resultSize);
+			dst = new Uint8Array(resultSize);
+			dst.set(fileData);
+		}
 		Module["_XmlSignature_DestroyFile"](result);
-
-    	return dst;
+		return dst;
 	};
 
 	XmlSignature.prototype.create = function()

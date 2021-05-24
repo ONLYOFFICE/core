@@ -6,6 +6,16 @@ import base
 import os
 import codecs
 
+def apply_patch(file, patch):
+  file_content = base.readFile(file)
+  index1 = file_content.find("<<<<<<<")
+  index2 = file_content.find("=======")
+  index3 = file_content.find(">>>>>>>")
+  file_content_new = "#if 0\n" + file_content[index1 + 1:index2] + "\n#else\n" + file_content[index2 + 1:index3] + "\n#endif"
+  base.delete_file(file)
+  base.writeFile(file, file_content_new)
+  return
+
 def run_as_bash(file, commands):
   if base.is_file(file):
     base.delete_file(file)
@@ -37,6 +47,8 @@ if not base.is_dir("emsdk"):
 if not base.is_dir("openssl"):
   base.print_info("Fetching openssl...")
   base.cmd("git", ["clone",  "--depth=1", "--branch", "OpenSSL_1_1_1f", "https://github.com/openssl/openssl.git"])
+  # correct for wasm builds
+  apply_patch("./openssl/crypto/rand/rand_lib.c", "./patches/openssl1.patch")
 
 # compile openssl
 if not base.is_file(base_dir + "/openssl/libcrypto.a"):  
@@ -147,7 +159,8 @@ run_as_bash("./compile_module.sh", ["source ./emsdk/emsdk_env.sh", "emcc " + arg
 
 # finalize
 base.replaceInFile("./openssl.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
-base.replaceInFile("./openssl.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
+base.replaceInFile("./openssl.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+base.replaceInFile("./openssl.js", "function getBinaryPromise()", "function getBinaryPromise2()")
 
 openssl_js_content     = base.readFile("./openssl.js")
 engine_base_js_content = base.readFile("./engine.js")

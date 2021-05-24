@@ -81,11 +81,13 @@ bool get_file_in_archive(unzFile unzip_file_handle, const char* filePathInZip, B
 }
 // end from (ZipUtilsCP.cpp)
 
+// Создает архив в памяти
 void CZipBuffer::create()
 {
     m_zipFile = NULL;
     m_sizeZip = 0;
 }
+// Открывает архив в память
 void CZipBuffer::open(BYTE* buffer, DWORD size)
 {
     m_zipFile = buffer;
@@ -107,12 +109,14 @@ void CZipBuffer::open(BYTE* buffer, DWORD size)
     unzClose(uf);
     RELEASEOBJECT(buf);
 }
+// Закрывает архив и очищает память
 void CZipBuffer::close()
 {
     for (CFile& oFile : m_arrFiles)
         RELEASEARRAYOBJECTS(oFile.m_pData);
     m_arrFiles.clear();
 }
+// Перемещает файл в архиве
 void CZipBuffer::move(const std::string& sSrc, const std::string& sDst)
 {
     std::vector<CFile>::iterator it =
@@ -120,7 +124,7 @@ void CZipBuffer::move(const std::string& sSrc, const std::string& sDst)
     if (it != m_arrFiles.end())
         it->m_sPath = sDst;
 }
-
+// Возвращает вектор путей в архиве
 std::vector<std::string> CZipBuffer::getPaths()
 {
     std::vector<std::string> oRes;
@@ -128,6 +132,7 @@ std::vector<std::string> CZipBuffer::getPaths()
         oRes.push_back(oFile.m_sPath);
     return oRes;
 }
+// Сохраняет архив в переданную память
 void CZipBuffer::save(BYTE*& data, DWORD& length)
 {
     BUFFER_IO* buf = new BUFFER_IO;
@@ -157,6 +162,7 @@ void CZipBuffer::save(BYTE*& data, DWORD& length)
     length = m_sizeZip = buf->nCurrentPos;
     RELEASEOBJECT(buf);
 }
+// По относительно пути в архиве возвращает файл
 void CZipBuffer::getFile(const std::string& sPath, BYTE*& data, DWORD& length)
 {
     std::vector<CFile>::iterator it =
@@ -188,6 +194,7 @@ void CZipBuffer::getFile(const std::string& sPath, BYTE*& data, DWORD& length)
     it->m_pData   = data;
     RELEASEOBJECT(buf);
 }
+// По относительно пути в архиве добавляет файл
 void CZipBuffer::addFile   (const std::string& sPath, BYTE* data, DWORD length)
 {
     std::vector<CFile>::iterator it =
@@ -201,6 +208,7 @@ void CZipBuffer::addFile   (const std::string& sPath, BYTE* data, DWORD length)
         it->m_nLength = length;
     }
 }
+// По относительно пути в архиве удаляет файл
 bool CZipBuffer::removeFile(const std::string& sPath)
 {
     for (std::vector<CFile>::iterator i = m_arrFiles.begin(); i != m_arrFiles.end(); i++)

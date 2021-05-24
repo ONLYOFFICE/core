@@ -39,7 +39,7 @@ public:
     {
         open(buffer, size);
     }
-    // Закрывает архив, т.е. очищает память
+    // Закрывает архив и очищает память
     ~CZipBuffer()
     {
         close();
@@ -49,12 +49,12 @@ public:
     void create();
     // Открывает архив в память
     void open(BYTE* buffer, DWORD size);
-    // Закрывает архив, т.е. очищает память
+    // Закрывает архив и очищает память
     void close();
-    // Перемещает файл в архиве, просто меняет путь файла
+    // Перемещает файл в архиве
     void move(const std::string& sSrc, const std::string& sDst);
 
-    // Возвращает ввектор путей в архиве
+    // Возвращает вектор путей в архиве
     std::vector<std::string> getPaths();
     // Сохраняет архив в переданную память
     void save(BYTE*& data, DWORD& length);

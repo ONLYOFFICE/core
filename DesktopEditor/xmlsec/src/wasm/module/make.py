@@ -6,6 +6,17 @@ import base
 import os
 import codecs
 
+def apply_patch(file, patch):
+  file_content = base.readFile(file)
+  patch_content = base.readFile(patch)
+  index1 = patch_content.find("<<<<<<<")
+  index2 = patch_content.find("=======")
+  index3 = patch_content.find(">>>>>>>")
+  file_content_old = patch_content[index1 + 7:index2]
+  file_content_new = "#if 0" + file_content_old + "#else" + patch_content[index2 + 7:index3] + "#endif"
+  base.replaceInFile(file, file_content_old, file_content_new)
+  return
+
 def run_as_bash(file, commands):
   if base.is_file(file):
     base.delete_file(file)
@@ -37,6 +48,8 @@ if not base.is_dir("emsdk"):
 if not base.is_dir("openssl"):
   base.print_info("Fetching openssl...")
   base.cmd("git", ["clone",  "--depth=1", "--branch", "OpenSSL_1_1_1f", "https://github.com/openssl/openssl.git"])
+  # correct for wasm builds
+  apply_patch("./openssl/crypto/rand/rand_lib.c", "./patches/openssl1.patch")
 
 # compile openssl
 if not base.is_file(base_dir + "/openssl/libcrypto.a"):  
@@ -138,12 +151,9 @@ for item in sources:
 run_as_bash("./compile_module.sh", ["source ./emsdk/emsdk_env.sh", "emcc " + arguments])
 
 # finalize
-if "-O3" in compiler_flags:
-  base.replaceInFile("./openssl.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
-  base.replaceInFile("./openssl.js", "function getBinaryPromise() {", "function getBinaryPromise2() {")
-elif "-g3" in compiler_flags:
-  base.replaceInFile("./openssl.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__ = [function(){window.onEngineInit();}];")
-  base.replaceInFile("./openssl.js", "function getBinaryPromise() {", "function getBinaryPromise2() {")
+base.replaceInFile("./openssl.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+base.replaceInFile("./openssl.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+base.replaceInFile("./openssl.js", "function getBinaryPromise()", "function getBinaryPromise2()")
 
 openssl_js_content     = base.readFile("./openssl.js")
 engine_base_js_content = base.readFile("./engine.js")

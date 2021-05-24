@@ -44,12 +44,20 @@ if not base.is_dir("emsdk"):
   base.cmd("./emsdk", ["activate", "latest"])
   os.chdir(base_dir)
 
-# fetch freetype
+# fetch openssl
 if not base.is_dir("openssl"):
   base.print_info("Fetching openssl...")
   base.cmd("git", ["clone",  "--depth=1", "--branch", "OpenSSL_1_1_1f", "https://github.com/openssl/openssl.git"])
   # correct for wasm builds
   apply_patch("./openssl/crypto/rand/rand_lib.c", "./patches/openssl1.patch")
+
+if not base.is_dir("xml"):
+  base.print_info("Copy xml...")
+  base.copy_dir("./../../../../xml", "./xml")
+  base.replaceInFile("./xml/libxml2/libxml.h", "xmlNop(void)", "xmlNop(void* context, char* buffer, int len)")
+  base.replaceInFile("./xml/libxml2/xmlIO.c", "xmlNop(void)", "xmlNop(void* context, char* buffer, int len)")
+  base.replaceInFile("./xml/src/xmllight_private.h", "#include \"../../common/", "#include \"../../../../../../common/")
+  base.replaceInFile("./xml/include/xmlutils.h", "#include \"../../common/", "#include \"../../../../../../common/")
 
 # compile openssl
 if not base.is_file(base_dir + "/openssl/libcrypto.a"):  
@@ -87,9 +95,9 @@ exported_functions = ["_malloc",
 # XML
 compiler_flags.append("-DHAVE_VA_COPY -DLIBXML_READER_ENABLED -DLIBXML_PUSH_ENABLED -DLIBXML_HTML_ENABLED -DLIBXML_XPATH_ENABLED -DLIBXML_OUTPUT_ENABLED -DLIBXML_C14N_ENABLED -DLIBXML_SAX1_ENABLED -DLIBXML_TREE_ENABLED -DLIBXML_XPTR_ENABLED -DIN_LIBXML -DLIBXML_STATIC")
 
-compiler_flags.append("-I../../../../xml/libxml2/include -I../../../../xml/libxml2/include/libxml -I../../../../xml/build/qt")
+compiler_flags.append("-I./xml/libxml2/include -I./xml/libxml2/include/libxml -I./xml/build/qt")
 
-input_xml_sources = ["../../../../xml/build/qt/libxml2_all.c", "../../../../xml/build/qt/libxml2_all2.c", "../../../../xml/src/xmllight.cpp", "../../../../xml/src/xmldom.cpp"]
+input_xml_sources = ["./xml/build/qt/libxml2_all.c", "./xml/build/qt/libxml2_all2.c", "./xml/src/xmllight.cpp", "./xml/src/xmldom.cpp"]
 
 # KERNEL
 libKernel_src_parh = "../../../../common/"

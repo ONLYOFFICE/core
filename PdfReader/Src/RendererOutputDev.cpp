@@ -2682,7 +2682,7 @@ namespace PdfReader
 		{
 			GrColor c = *colors[i];
 			DWORD dword_color = ColorSpace.GetDwordColor(&c);
-			rgba8_colors.push_back({dword_color % 0x100, (dword_color >> 8) % 0x100, (dword_color >> 16) % 0x100, (unsigned)alpha});
+			rgba8_colors.push_back({dword_color & 0xFF, (dword_color >> 8) & 0xFF, (dword_color >> 16) & 0xFF, (unsigned)alpha});
 			double x = points[i].x;
 			double y = points[i].y;
 			TransformToPixels(pGState, x, y);

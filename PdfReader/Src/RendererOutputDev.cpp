@@ -3915,55 +3915,30 @@ namespace PdfReader
     }
 
     void RendererOutputDev::TransformToPixels(GrState *pGState, double &x, double &y)
-    {
-        double xdpi, ydpi;
-        m_pRenderer->get_DpiX(&xdpi);
-        m_pRenderer->get_DpiY(&ydpi);
+	{
+		double xdpi, ydpi;
+		m_pRenderer->get_DpiX(&xdpi);
+		m_pRenderer->get_DpiY(&ydpi);
 
+		double arrMatrix[6];
+		double *pCTM = pGState->GetCTM();
 
-        double arrMatrix[6];
-        double *pCTM = pGState->GetCTM();
+		arrMatrix[0] =  pCTM[0];
+		arrMatrix[1] = -pCTM[1];
+		arrMatrix[2] =  pCTM[2];
+		arrMatrix[3] = -pCTM[3];
+		arrMatrix[4] =  pCTM[4];
+		arrMatrix[5] = -pCTM[5] + pGState->GetPageHeight();
 
-        bool some_cond_TBD = true; //todo what condition?
+		double xcoef = xdpi / pGState->GetHorDPI();
+		double ycoef = ydpi / pGState->GetVerDPI();
 
-        if (some_cond_TBD)
-        {
-            arrMatrix[0] =     pCTM[0];
-            arrMatrix[1] =  -pCTM[1];
-            arrMatrix[2] =    -pCTM[2];
-            arrMatrix[3] =  -(-pCTM[3]);
-            arrMatrix[4] =     pCTM[2] + pCTM[4];
-            arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + pGState->GetPageHeight();
-        }
-        else
-        {
-            arrMatrix[0] =  pCTM[0];
-            arrMatrix[1] = -pCTM[1];
-            arrMatrix[2] =  pCTM[2];
-            arrMatrix[3] = -pCTM[3];
-            arrMatrix[4] =  pCTM[4];
-            arrMatrix[5] = -pCTM[5] + pGState->GetPageHeight();
-        }
+		double newx = arrMatrix[0] * x * xcoef +  arrMatrix[2] * y * ycoef + arrMatrix[4] * xcoef;
+		double newy = arrMatrix[1] * x * xcoef +  arrMatrix[3] * y * ycoef + arrMatrix[5] * ycoef;
 
-        double xcoef = xdpi / pGState->GetHorDPI();
-        double ycoef = ydpi / pGState->GetVerDPI();
-
-        // x *= xcoef;
-        // y *= ycoef;
-       double newx = arrMatrix[0] * x * xcoef +  arrMatrix[1] * y * ycoef;
-       double newy = arrMatrix[2] * x * xcoef +  arrMatrix[3] * y * ycoef;
-       newx += arrMatrix[4] * xcoef;
-       newy += arrMatrix[5] * ycoef;
-
-        double width, height;
-        m_pRenderer->get_Height(&height);
-        m_pRenderer->get_Width(&width);
-
-
-
-        x = newx ;
-        y = newy ;
-    }
+		x = newx;
+		y = newy;
+	}
 
     void RendererOutputDev::FillStrokeGradientPatch(GrState *pGState, PdfReader::GrPatch *patch)
         {
@@ -4027,7 +4002,7 @@ namespace PdfReader
         if (m_bTransparentGroupSoftMask)
                 return;
 
-        DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
+		DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
 
         long brush;
         int alpha = pGState->GetFillOpacity() * 255;
@@ -4062,13 +4037,13 @@ namespace PdfReader
                 (dword_color >> 8) % 0x100, (dword_color >> 0) % 0x100, alpha);
         }
 
-        if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-        {
-            GRenderer->put_BrushGradInfo(info);
-            m_pRenderer->DrawPath(c_nWindingFillMode);
-        }
-        m_pRenderer->EndCommand(c_nPathType);
-        m_pRenderer->put_BrushType(brush);
+		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		{
+			GRenderer->put_BrushGradInfo(info);
+			m_pRenderer->DrawPath(c_nWindingFillMode);
+		}
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->put_BrushType(brush);
     }
 
     void RendererOutputDev::FillStrokeGradientAxial(GrState *pGState, GrAxialShading *pShading)
@@ -4092,15 +4067,13 @@ namespace PdfReader
         t0 = pShading->GetDomain0();
         t1 = pShading->GetDomain1();
 
-
-
-        TransformToPixels(pGState, x1, y1);
-        TransformToPixels(pGState, x2, y2);
+		TransformToPixels(pGState, x1, y1);
+		TransformToPixels(pGState, x2, y2);
 
         auto info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
             pShading->GetExtendStart(), pShading->GetExtendEnd());
 
-        GrColorSpace *ColorSpace = pShading->GetColorSpace();;
+		GrColorSpace *ColorSpace = pShading->GetColorSpace();
         float delta = (t1 - t0) / info.shading.function.get_resolution();
         float t = t0;
         for (size_t i = 0; i < info.shading.function.get_resolution(); i++)
@@ -4109,18 +4082,18 @@ namespace PdfReader
             pShading->GetColor(t, &c);
             t+=delta;
             DWORD dword_color = ColorSpace->GetDwordColor(&c);
-            info.shading.function.set_color(i, (dword_color >> 16) % 0x100,
-                (dword_color >> 8) % 0x100, (dword_color >> 0) % 0x100, alpha);
+			info.shading.function.set_color(i, (dword_color >> 16) & 0xFF,
+				(dword_color >> 8) & 0xFF, (dword_color >> 0) & 0xFF, alpha);
         }
 
-        if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-        {
-            GRenderer->put_BrushGradInfo(info);
-            m_pRenderer->DrawPath(c_nWindingFillMode);
-        }
+		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		{
+			GRenderer->put_BrushGradInfo(info);
+			m_pRenderer->DrawPath(c_nWindingFillMode);
+		}
 
-        m_pRenderer->EndCommand(c_nPathType);
-        m_pRenderer->put_BrushType(brush);
+		m_pRenderer->EndCommand(c_nPathType);
+		m_pRenderer->put_BrushType(brush);
     }
     void RendererOutputDev::FillStrokeGradientTriangle(GrState *pGState, const std::vector<GrColor*> &colors, const std::vector<NSStructures::Point> &point)
     {

@@ -63,7 +63,7 @@ int RAND_bytes(unsigned char *buf, int num)
 #include "emscripten.h"
 EM_JS(int, js_random, (unsigned char* buf, int num), {
     var byteArray = new Uint8Array(num);
-    var engine = window.crypto || window.msCrypto;
+    var engine = self.crypto || self.msCrypto;
     engine.getRandomValues(byteArray);
     Module["HEAP8"].set(byteArray, buf);
     return 1;

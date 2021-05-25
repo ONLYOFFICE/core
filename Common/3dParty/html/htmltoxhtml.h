@@ -72,6 +72,13 @@ static std::wstring htmlToXhtml(std::string& sFileContent)
             sFileContent.replace(nEnd, 2, "></a>");
         posA = sFileContent.find("<a ", nBegin);
     }
+    // Избавление от <title/>
+    posA = sFileContent.find("<title/>");
+    while (posA != std::string::npos)
+    {
+        sFileContent.replace(posA, 8, "<title></title>");
+        posA = sFileContent.find("<title/>", posA);
+    }
 
     // Gumbo
     GumboOptions options = kGumboDefaultOptions;
@@ -458,11 +465,11 @@ static std::string handle_unknown_tag(GumboStringPiece* text)
     GumboStringPiece gsp = *text;
     gumbo_tag_from_original_text(&gsp);
     std::string sAtr = std::string(gsp.data, gsp.length);
-    size_t found = sAtr.find_first_of("-'+,./:=?;!*#@$_%<>&;\"\'()[]{}");
+    size_t found = sAtr.find_first_of("-'+,./=?;!*#@$_%<>&;\"\'()[]{}");
     while(found != std::string::npos)
     {
         sAtr.erase(found, 1);
-        found = sAtr.find_first_of("-'+,./:=?;!*#@$_%<>&;\"\'()[]{}", found);
+        found = sAtr.find_first_of("-'+,./=?;!*#@$_%<>&;\"\'()[]{}", found);
     }
     return sAtr;
 }
@@ -505,11 +512,11 @@ static void build_attributes(const GumboVector* attribs, bool no_entities, NSStr
         atts.WriteString(" ");
 
         bool bCheck = false;
-        size_t nBad = sName.find_first_of("+,.:=?#%<>&;\"\'()[]{}");
+        size_t nBad = sName.find_first_of("+,.=?#%<>&;\"\'()[]{}");
         while(nBad != std::string::npos)
         {
             sName.erase(nBad, 1);
-            nBad = sName.find_first_of("+,.:=?#%<>&;\"\'()[]{}", nBad);
+            nBad = sName.find_first_of("+,.=?#%<>&;\"\'()[]{}", nBad);
             if(sName.empty())
                 break;
             bCheck = true;

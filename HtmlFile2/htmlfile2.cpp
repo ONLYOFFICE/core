@@ -392,21 +392,16 @@ public:
             if(nFindEnd != std::string::npos)
                 sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
         }
-
-        if(NSFile::GetFileExtention(sSrc) != L"xhtml")
+        /*
+        std::wstring sRes = htmlToXhtml(sFileContent);
+        NSFile::CFileBinary oWriter;
+        if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
         {
-            /*
-            std::wstring sRes = htmlToXhtml(sFileContent);
-            NSFile::CFileBinary oWriter;
-            if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
-            {
-                oWriter.WriteStringUTF8(sRes);
-                oWriter.CloseFile();
-            }
-            */
-            return m_oLightReader.FromString(htmlToXhtml(sFileContent));
+            oWriter.WriteStringUTF8(sRes);
+            oWriter.CloseFile();
         }
-        return m_oLightReader.FromStringA(sFileContent);
+        */
+        return m_oLightReader.FromString(htmlToXhtml(sFileContent));
     }
 
     // Конвертирует mht в xhtml
@@ -850,7 +845,7 @@ private:
             readStream(oXml, sSelectors, oTSR, bWasP);
         }
         // Векторная картинка
-        else if(sName == L"svg")
+        else if(sName == L"svg" || (sName.length() > 3 && sName.compare(sName.length() - 3, 3, L"svg") == 0))
         {
             readSVG(oXml);
             bWasP = false;
@@ -1648,7 +1643,7 @@ private:
         else
         {
             int nH = nHy * 9525;
-            nH = (nH > 8500000 ? 8500000 : nH);
+            nH = (nH > 8000000 ? 8000000 : nH);
             int nW = (int)((double)nWx * (double)nH / (double)nHy);
             if(nW > 7000000)
             {
@@ -1701,7 +1696,7 @@ private:
         while(m_oLightReader.MoveToNextAttribute())
         {
             std::wstring sName = m_oLightReader.GetName();
-            if(sName == L"xmlns")
+            if(sName.find(L"xmlns") != std::wstring::npos)
                 continue;
             oSVG.WriteString(sName);
             oSVG.WriteString(L"=\"");

@@ -2577,8 +2577,10 @@ namespace PdfReader
 		t0 = pShading->GetDomain0();
 		t1 = pShading->GetDomain1();
 
-		TransformToPixels(pGState, x1, y1);
-		TransformToPixels(pGState, x2, y2);
+        x1 = PDFCoordsToMM(x1);
+        x2 = PDFCoordsToMM(x2);
+        y1 = PDFCoordsToMM(y1);
+        y2 = PDFCoordsToMM(y2);
 
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
 															   pShading->GetExtendStart(), pShading->GetExtendEnd());
@@ -2632,8 +2634,10 @@ namespace PdfReader
 		m_pRenderer->get_DpiX(&xdpi);
 		double r_coef = xdpi / pGState->GetHorDPI() * sqrt(fabs(pGState->GetCTM()[0] * pGState->GetCTM()[3] - pGState->GetCTM()[1] * pGState->GetCTM()[2]));
 
-		TransformToPixels(pGState, x1, y1);
-		TransformToPixels(pGState, x2, y2);
+		x1 = PDFCoordsToMM(x1);
+        x2 = PDFCoordsToMM(x2);
+        y1 = PDFCoordsToMM(y1);
+        y2 = PDFCoordsToMM(y2);
 
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y2}, r1 * r_coef, r2 * r_coef,
 															   t0, t1, pShading->GetExtendFirst(), pShading->GetExtendSecond());
@@ -2678,16 +2682,17 @@ namespace PdfReader
 		std::vector<NSStructures::Point> pixel_points;
 		std::vector<agg::rgba8> rgba8_colors;
 		GrCalRGBColorSpace ColorSpace;
-		for (int i = 0;i < 3; i++)
+
+		for (int i = 0; i < 3; i++)
 		{
 			GrColor c = *colors[i];
 			DWORD dword_color = ColorSpace.GetDwordColor(&c);
-			rgba8_colors.push_back({(dword_color >> 16) & 0xFF, (dword_color >> 8) & 0xFF, (dword_color >> 0) & 0xFF, (unsigned)alpha});
+			rgba8_colors.push_back({dword_color & 0xFF, (dword_color >> 8) & 0xFF, (dword_color >> 16) & 0xFF, (unsigned)alpha});
 			double x = points[i].x;
 			double y = points[i].y;
-			TransformToPixels(pGState, x, y);
+			x = PDFCoordsToMM(x);
+            y = PDFCoordsToMM(y);
 			pixel_points.push_back({x, y});
-
 		}
 
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_triangle(pixel_points, rgba8_colors, {}, false);
@@ -2725,7 +2730,8 @@ namespace PdfReader
 				double x = patch->arrX[i][j];
 				double y = patch->arrY[i][j];
 
-				TransformToPixels(pGState, x, y);
+				x = PDFCoordsToMM(x);
+                y = PDFCoordsToMM(y);
 				points[i][j].x = x;
 				points[i][j].y = y;
 			}
@@ -3955,30 +3961,4 @@ namespace PdfReader
         }
         return;
     }
-
-    void RendererOutputDev::TransformToPixels(GrState *pGState, double &x, double &y)
-	{
-		double xdpi, ydpi;
-		m_pRenderer->get_DpiX(&xdpi);
-		m_pRenderer->get_DpiY(&ydpi);
-
-		double arrMatrix[6];
-		double *pCTM = pGState->GetCTM();
-
-		arrMatrix[0] =  pCTM[0];
-		arrMatrix[1] = -pCTM[1];
-		arrMatrix[2] =  pCTM[2];
-		arrMatrix[3] = -pCTM[3];
-		arrMatrix[4] =  pCTM[4];
-		arrMatrix[5] = -pCTM[5] + pGState->GetPageHeight();
-
-		double xcoef = xdpi / pGState->GetHorDPI();
-		double ycoef = ydpi / pGState->GetVerDPI();
-
-		double newx = arrMatrix[0] * x +  arrMatrix[2] * y + arrMatrix[4];
-		double newy = arrMatrix[1] * x +  arrMatrix[3] * y + arrMatrix[5];
-
-		x = newx;
-		y = newy;
-	}
 }

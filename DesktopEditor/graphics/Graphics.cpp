@@ -2157,11 +2157,12 @@ namespace Aggplus
 	void CGraphics::ScaleCoords(float &x, float &y)
 	{
 		float m[6];
-        m_oCoordTransform.GetElements(m);
-        float newx = m[0] * x + m[2] * y + m[4];
-        float newy = m[1] * x + m[3] * y + m[5];
-
-        x = newx * 25.4 / 72;
-        y = newy * 25.4 / 72;
+        m_oFullTransform.GetElements(m);
+		double newx = x;
+		double newy = y;
+		m_oFullTransform.TransformPoint(newx, newy);
+		x = newx;
+		y = newy;
+		return;
 	}
 }

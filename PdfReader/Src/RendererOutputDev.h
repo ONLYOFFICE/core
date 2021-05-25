@@ -271,8 +271,6 @@ namespace PdfReader
 			m_pbBreak = pbBreak;
 		}
 
-		//------ Отрисовка градиента через графическую либу
-		virtual void TransformToPixels(GrState *pGState, double &x, double &y);
 
 	private:
 

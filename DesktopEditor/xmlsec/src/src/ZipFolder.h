@@ -241,7 +241,7 @@ protected:
     }
 
 public:
-    // Открывает архив
+    // Открывает архив, переданные данные необходимо освободить после использования класса
     CZipFolderMemory(BYTE* data, DWORD length)
     {
         m_zlib = new CZipBuffer(data, length);
@@ -265,7 +265,7 @@ public:
         return path;
     }
 
-    // Читает файл по относительному пути в архиве
+    // Читает файл по относительному пути в архиве, полученные данные необходимо освободить
     virtual bool read(const std::wstring& path, CBuffer*& buffer)
     {
         buffer = NULL;
@@ -280,7 +280,7 @@ public:
         }
         return false;
     }
-    // Пишет файл по относительному пути в архиве
+    // Пишет файл по относительному пути в архиве, переданные данные необходимо освободить
     virtual void write(const std::wstring& path, BYTE* data, DWORD length)
     {
         std::string sPath = getLocalFilePathA(path);
@@ -337,7 +337,7 @@ public:
         }
         return sRes;
     }
-    // Возвращает архивированные данные и закрывает архив
+    // Возвращает архивированные данные и закрывает архив, полученные данные необходимо освободить
     virtual CBuffer* finalize()
     {
         BYTE* data = NULL;

@@ -201,9 +201,12 @@ int main()
     oFileDst.WriteFile(res->Data, (DWORD)res->Length);
     oFileDst.CloseFile();
 
-    XmlSignature_DestroyFile(file);
+    XmlSignature_DestroyFile(file); // RELEASEARRAYOBJECTS(pData);
     XmlSignature_DestroyFile(res);
     XmlSignature_DestroyCertificate(cert);
+
+    RELEASEARRAYOBJECTS(pCertData);
+    RELEASEARRAYOBJECTS(pKeyData);
 
     return 0;
 }

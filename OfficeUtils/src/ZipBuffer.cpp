@@ -87,7 +87,7 @@ void CZipBuffer::create()
     m_zipFile = NULL;
     m_sizeZip = 0;
 }
-// Открывает архив в память
+// Открывает архив в память, переданные данные необходимо освободить после использования класса
 void CZipBuffer::open(BYTE* buffer, DWORD size)
 {
     m_zipFile = buffer;
@@ -132,7 +132,7 @@ std::vector<std::string> CZipBuffer::getPaths()
         oRes.push_back(oFile.m_sPath);
     return oRes;
 }
-// Сохраняет архив в переданную память
+// Сохраняет архив в переданную память, полученные данные необходимо освободить
 void CZipBuffer::save(BYTE*& data, DWORD& length)
 {
     BUFFER_IO* buf = new BUFFER_IO;
@@ -162,7 +162,7 @@ void CZipBuffer::save(BYTE*& data, DWORD& length)
     length = m_sizeZip = buf->nCurrentPos;
     RELEASEOBJECT(buf);
 }
-// По относительно пути в архиве возвращает файл
+// По относительно пути в архиве возвращает файл, полученные данные будут освобождены после использования класса
 void CZipBuffer::getFile(const std::string& sPath, BYTE*& data, DWORD& length)
 {
     std::vector<CFile>::iterator it =
@@ -194,7 +194,7 @@ void CZipBuffer::getFile(const std::string& sPath, BYTE*& data, DWORD& length)
     it->m_pData   = data;
     RELEASEOBJECT(buf);
 }
-// По относительно пути в архиве добавляет файл
+// По относительно пути в архиве добавляет файл, переданные данные будут освобождены после использования класса
 void CZipBuffer::addFile   (const std::string& sPath, BYTE* data, DWORD length)
 {
     std::vector<CFile>::iterator it =

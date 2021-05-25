@@ -672,7 +672,6 @@ namespace PdfReader
 		Operator *pOperator = NULL;
 		// Ищем оператор
 		char* sName = pCommand->GetCommand();
-		std::cout << sName << std::endl;
 		if (!(pOperator = FindOperator(sName)))
 		{
 			if (m_nIgnoreUndef == 0) // Проверяем наличие незакрытого оператора BX

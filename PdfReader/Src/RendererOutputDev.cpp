@@ -2544,8 +2544,8 @@ namespace PdfReader
 		{
 			mapping[i] = pShading->GetMatrix()[i];
 		}
-		auto info = NSStructures::GInfoConstructor::get_functional(x1, x2, y1, y2, mapping);
-		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_functional(x1, x2, y1, y2, mapping);
+		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
 		{
 			GRenderer->put_BrushGradInfo(info);
 			m_pRenderer->DrawPath(c_nWindingFillMode);
@@ -2580,7 +2580,7 @@ namespace PdfReader
 		TransformToPixels(pGState, x1, y1);
 		TransformToPixels(pGState, x2, y2);
 
-		auto info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
+		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
 															   pShading->GetExtendStart(), pShading->GetExtendEnd());
 
 		GrColorSpace *ColorSpace = pShading->GetColorSpace();
@@ -2596,7 +2596,7 @@ namespace PdfReader
 											(dword_color >> 8) & 0xFF, (dword_color >> 0) & 0xFF, alpha);
 		}
 
-		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
 		{
 			GRenderer->put_BrushGradInfo(info);
 			m_pRenderer->DrawPath(c_nWindingFillMode);
@@ -2635,7 +2635,7 @@ namespace PdfReader
 		TransformToPixels(pGState, x1, y1);
 		TransformToPixels(pGState, x2, y2);
 
-		auto info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y2}, r1 * r_coef, r2 * r_coef,
+		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y2}, r1 * r_coef, r2 * r_coef,
 															   t0, t1, pShading->GetExtendFirst(), pShading->GetExtendSecond());
 
 		GrColorSpace *ColorSpace = pShading->GetColorSpace();;
@@ -2650,7 +2650,7 @@ namespace PdfReader
 											(dword_color >> 8) & 0xFF, (dword_color >> 0) & 0xFF, alpha);
 		}
 
-		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
 		{
 			GRenderer->put_BrushGradInfo(info);
 			m_pRenderer->DrawPath(c_nWindingFillMode);
@@ -2673,7 +2673,7 @@ namespace PdfReader
 		long brush;
 		int alpha = pGState->GetFillOpacity() * 255;
 		m_pRenderer->get_BrushType(&brush);
-		m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
+		m_pRenderer->put_BrushType(c_BrushTypeTriagnleMeshGradient);
 
 		std::vector<NSStructures::Point> pixel_points;
 		std::vector<agg::rgba8> rgba8_colors;
@@ -2690,9 +2690,9 @@ namespace PdfReader
 
 		}
 
-		auto info = NSStructures::GInfoConstructor::get_triangle(pixel_points, rgba8_colors, {}, false);
+		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_triangle(pixel_points, rgba8_colors, {}, false);
 
-		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
 		{
 			GRenderer->put_BrushGradInfo(info);
 			m_pRenderer->DrawPath(c_nWindingFillMode);
@@ -2715,7 +2715,7 @@ namespace PdfReader
 		long brush;
 		int alpha = pGState->GetFillOpacity() * 255;
 		m_pRenderer->get_BrushType(&brush);
-		m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
+		m_pRenderer->put_BrushType(c_BrushTypeTensorCurveGradient);
 
 		std::vector<std::vector<NSStructures::Point>> points(4, std::vector<NSStructures::Point>(4));
 		for (int i = 0; i < 4; i++)
@@ -2740,13 +2740,13 @@ namespace PdfReader
 				colors[j][i] = {(unsigned)((dcolor >> 16)  & 0xFF), (unsigned)((dcolor >> 8) & 0xFF), (unsigned)((dcolor >> 0) & 0xFF), (unsigned)alpha};
 			}
 		}
-		auto info = NSStructures::GInfoConstructor::get_tensor_curve(points,
+		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_tensor_curve(points,
 		{},
 																	 colors,
 																	 false
 																	 );
 
-		if (auto GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
+		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
 		{
 			GRenderer->put_BrushGradInfo(info);
 			m_pRenderer->DrawPath(c_nWindingFillMode);
@@ -3975,8 +3975,8 @@ namespace PdfReader
 		double xcoef = xdpi / pGState->GetHorDPI();
 		double ycoef = ydpi / pGState->GetVerDPI();
 
-		double newx = arrMatrix[0] * x * xcoef +  arrMatrix[2] * y * ycoef + arrMatrix[4] * xcoef;
-		double newy = arrMatrix[1] * x * xcoef +  arrMatrix[3] * y * ycoef + arrMatrix[5] * ycoef;
+		double newx = arrMatrix[0] * x +  arrMatrix[2] * y + arrMatrix[4];
+		double newy = arrMatrix[1] * x +  arrMatrix[3] * y + arrMatrix[5];
 
 		x = newx;
 		y = newy;

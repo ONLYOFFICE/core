@@ -1744,11 +1744,18 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         }
         else if (sName == L"a")
         {
-            oIndexHtml.MoveToNextAttribute();
-            oXml.WriteString(L"<a l:href=\"");
-            oXml.WriteEncodeXmlString(oIndexHtml.GetText());
-            oXml.WriteString(L"\">");
+            while (oIndexHtml.MoveToNextAttribute())
+            {
+                std::wstring sName = oIndexHtml.GetName();
+                if (sName == L"name")
+                    sName = L"id";
+                oXml.WriteString(L"<a ");
+                oXml.WriteString(sName + L"=\"");
+                oXml.WriteString(oIndexHtml.GetText());
+                oXml.WriteString(L"\">");
+            }
             oIndexHtml.MoveToElement();
+
             readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</a>");
         }

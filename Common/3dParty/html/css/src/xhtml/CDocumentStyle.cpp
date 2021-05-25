@@ -293,7 +293,7 @@ namespace NSCSS
             oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_ContextualSpacing, L"true");
         }
 
-        if (oStyle.m_pBackground.IsInBorder())
+        if (!oStyle.m_pBackground.Empty())
         {
             const std::wstring wsColor = oStyle.m_pBackground.GetColorHex();
             if (wsColor != L"ffffff")

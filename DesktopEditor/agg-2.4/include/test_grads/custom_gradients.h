@@ -595,6 +595,10 @@ namespace agg
             if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::CurveInterpolation)
                 initialise_curve();
 
+            if (m_oGradientInfo.shading.shading_type != NSStructures::ShadingInfo::Parametric)
+            {
+                return;
+            }
             switch (bType)
             {
             case Aggplus::BrushTypeRadialGradient:
@@ -865,7 +869,7 @@ namespace agg
                 }
             }
 
-            RES = std::max(1.0f, std::max(maxxres - minxres, maxyres - minyres));
+            RES = std::max(1.0f, std::max(maxxres - minxres, maxyres - minyres) / 3);
             float delta = 1.0 / RES;
             float u = 0, v = 0;
             auto start_p = get_p_curve(u, v);

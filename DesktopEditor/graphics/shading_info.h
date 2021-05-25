@@ -206,21 +206,21 @@ namespace NSStructures
 
         unsigned int hex2a(uint32_t c)
         {
-            unsigned int a = (c >> 24) % 0x100;
+            unsigned int a = (c >> 24) & 0xFF;
             return a;
         }
 
         unsigned int hex2r(uint32_t c)
         {
-            return (c >> 16) % 0x100;
+            return (c >> 16) & 0xFF;
         }
         unsigned int hex2g(uint32_t c)
         {
-            return (c >> 8) % 0x100;
+            return (c >> 8) & 0xFF;
         }
         unsigned int hex2b(uint32_t c)
         {
-            return c % 0x100;
+            return c & 0xFF;
         }
     };
 
@@ -380,7 +380,7 @@ namespace NSStructures
                                             std::vector<float> mapping)
         {
             GradientInfo ginfo;
-            ginfo.shading.function = ColorFunction<agg::rgba8>(512, xmin, xmax, ymin, ymax);
+            ginfo.shading.function = ColorFunction<agg::rgba8>(256, xmin, xmax, ymin, ymax);
             ginfo.shading.f_type = ShadingInfo::UseNew;
             ginfo.shading.shading_type = ShadingInfo::FunctionOnly;
 
@@ -405,7 +405,7 @@ namespace NSStructures
             ginfo.continue_shading_f = continue_shading_f;
             ginfo.continue_shading_b = continue_shading_b;
 
-            ginfo.shading.function = ColorFunction<agg::rgba8>(512, t0, t1);
+            ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
 
             ginfo.shading.set_two_points = true;
             ginfo.shading.point1 = p1;
@@ -423,7 +423,7 @@ namespace NSStructures
             ginfo.shading.shading_type = ShadingInfo::Parametric;
             ginfo.continue_shading_f = continue_shading_f;
             ginfo.continue_shading_b = continue_shading_b;
-            ginfo.shading.function = ColorFunction<agg::rgba8>(512, t0, t1);
+            ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
             ginfo.p0 = c0;
             ginfo.p1 = c1;
             ginfo.r0 = r0;
@@ -444,7 +444,7 @@ namespace NSStructures
             {
                 ginfo.shading.triangle_parameters = params;
                 ginfo.shading.f_type = ShadingInfo::UseNew;
-                ginfo.shading.function = ColorFunction<agg::rgba8>(512, t0, t1);
+                ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
                 ginfo.shading.shading_type = ShadingInfo::Parametric;
                 ginfo.continue_shading_f = false;
                 ginfo.continue_shading_b = false;
@@ -495,7 +495,7 @@ namespace NSStructures
                 ginfo.shading.patch_parameters[1][0] = curve_parametrs[3];
                 ginfo.shading.patch_parameters[1][1] = curve_parametrs[2];
                 ginfo.shading.f_type = ShadingInfo::UseNew;
-                ginfo.shading.function = ColorFunction<agg::rgba8>(512, t0, t1);
+                ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
                 ginfo.shading.shading_type = ShadingInfo::Parametric;
                 ginfo.continue_shading_f = false;
                 ginfo.continue_shading_b = false;
@@ -525,7 +525,7 @@ namespace NSStructures
             {
                 ginfo.shading.patch_parameters = curve_parametrs;
                 ginfo.shading.f_type = ShadingInfo::UseNew;
-                ginfo.shading.function = ColorFunction<agg::rgba8>(512, t0, t1);
+                ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
                 ginfo.shading.shading_type = ShadingInfo::Parametric;
                 ginfo.continue_shading_f = false;
                 ginfo.continue_shading_b = false;

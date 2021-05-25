@@ -426,6 +426,8 @@ protected:
 
     //test 
     
+	void ScaleGranientInfo(long Type, NSStructures::GradientInfo &ginfo);
+	void ScaleCoords(float &x, float &y);
 };
 }
 

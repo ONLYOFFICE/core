@@ -2066,6 +2066,8 @@ namespace Aggplus
 			rect.y2 = y + height;
 		}
 
+		ScaleGranientInfo(pBrush->GetType(), pBrush->m_oGradientInfo);
+
 		typedef agg::gradient_base<agg::rgba8> gradient_span_gen;
 		gradient_span_gen span_gen;
 
@@ -2112,5 +2114,54 @@ namespace Aggplus
 
 		if( pSubColors ) delete [] pSubColors;
 		if( pSubBlends ) delete [] pSubBlends;
+	}
+
+    void CGraphics::ScaleGranientInfo(long type, NSStructures::GradientInfo &ginfo)
+	{
+		if (type == BrushTypeMyTestGradient)
+		{
+			return;
+		}
+		if (type == BrushTypeNewLinearGradient)
+		{
+            ScaleCoords(ginfo.shading.point1.x, ginfo.shading.point1.y);
+            ScaleCoords(ginfo.shading.point2.x, ginfo.shading.point2.y);
+			return;
+		}
+		if (type == BrushTypeRadialGradient)
+		{
+            ScaleCoords(ginfo.p0.x, ginfo.p0.y);
+            ScaleCoords(ginfo.p1.x, ginfo.p1.y);
+			return;
+		}
+		if (type == BrushTypeTriagnleMeshGradient)
+		{
+            for (int i = 0; i < 3; i++)
+            {
+               ScaleCoords(ginfo.shading.triangle[i].x, ginfo.shading.triangle[i].y);
+            }
+			return;
+		}
+		if (type == BrushTypeCurveGradient || type == BrushTypeTensorCurveGradient)
+		{
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    ScaleCoords(ginfo.shading.patch[i][j].x, ginfo.shading.patch[i][j].y);
+                }
+            }
+			return;
+		}
+	}
+	void CGraphics::ScaleCoords(float &x, float &y)
+	{
+		float m[6];
+        m_oCoordTransform.GetElements(m);
+        float newx = m[0] * x + m[2] * y + m[4];
+        float newy = m[1] * x + m[3] * y + m[5];
+
+        x = newx * 25.4 / 72;
+        y = newy * 25.4 / 72;
 	}
 }

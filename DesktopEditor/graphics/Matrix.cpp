@@ -253,6 +253,11 @@ namespace Aggplus
         m_internal->m_agg_mtx.reset();
 	}
 
+	double CMatrix::Determinant() const
+	{
+        return m_internal->m_agg_mtx.determinant();
+    }
+
 	const CMatrix& CMatrix::operator=(const CMatrix& Src)
 	{
         m_internal->m_agg_mtx = Src.m_internal->m_agg_mtx;

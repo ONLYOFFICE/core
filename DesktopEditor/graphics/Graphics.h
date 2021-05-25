@@ -266,6 +266,7 @@ protected:
 
 	Aggplus::CMatrix	m_oFullTransform;
 
+
 	double m_dClipLeft;
 	double m_dClipTop;
 	double m_dClipWidth;

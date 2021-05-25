@@ -2130,6 +2130,8 @@ namespace Aggplus
 		}
 		if (type == BrushTypeRadialGradient)
 		{
+			ginfo.r0 = ginfo.r0 * sqrt(fabs(m_oFullTransform.Determinant()));
+            ginfo.r1 = ginfo.r1 * sqrt(fabs(m_oFullTransform.Determinant()));
             ScaleCoords(ginfo.p0.x, ginfo.p0.y);
             ScaleCoords(ginfo.p1.x, ginfo.p1.y);
 			return;
@@ -2156,8 +2158,6 @@ namespace Aggplus
 	}
 	void CGraphics::ScaleCoords(float &x, float &y)
 	{
-		float m[6];
-        m_oFullTransform.GetElements(m);
 		double newx = x;
 		double newy = y;
 		m_oFullTransform.TransformPoint(newx, newy);

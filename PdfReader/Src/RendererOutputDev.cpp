@@ -2632,14 +2632,15 @@ namespace PdfReader
 
 		double xdpi;
 		m_pRenderer->get_DpiX(&xdpi);
-		double r_coef = xdpi / pGState->GetHorDPI() * sqrt(fabs(pGState->GetCTM()[0] * pGState->GetCTM()[3] - pGState->GetCTM()[1] * pGState->GetCTM()[2]));
 
 		x1 = PDFCoordsToMM(x1);
         x2 = PDFCoordsToMM(x2);
         y1 = PDFCoordsToMM(y1);
         y2 = PDFCoordsToMM(y2);
+        r1 = PDFCoordsToMM(r1);
+        r2 = PDFCoordsToMM(r2);
 
-		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y2}, r1 * r_coef, r2 * r_coef,
+		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y2}, r1, r2,
 															   t0, t1, pShading->GetExtendFirst(), pShading->GetExtendSecond());
 
 		GrColorSpace *ColorSpace = pShading->GetColorSpace();;

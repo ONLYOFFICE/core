@@ -3247,9 +3247,19 @@ namespace PdfReader
 		int nIndex;
 		if (m_pOut->UseGouraundTriangleFills())
 		{
-			m_pGState->MoveTo(dAx, dAy);
-			m_pGState->LineTo(dBx, dBy);
-			m_pGState->LineTo(dCx, dCy);
+			double xmin = std::min(dAx, std::min(dBx, dCx)) - 1;
+			double ymin = std::min(dAy, std::min(dBy, dCy)) - 1;
+			double xmax = std::max(dAx, std::max(dBx, dCx)) + 1;
+			double ymax = std::max(dAy, std::max(dBy, dCy)) + 1;
+
+			// m_pGState->MoveTo(dAx, dAy);
+			// m_pGState->LineTo(dBx, dBy);
+			// m_pGState->LineTo(dCx, dCy);
+			m_pGState->MoveTo(xmin, ymin);
+			m_pGState->LineTo(xmin, ymax);
+			m_pGState->LineTo(xmax, ymax);
+			m_pGState->LineTo(xmax, ymin);
+			m_pGState->LineTo(xmin, ymin);
 			m_pGState->ClosePath();
 			m_pOut->GouraundTriangleFill(m_pGState, {pColorA, pColorB, pColorC}, {{dAx, dAy}, {dBx, dBy}, {dCx, dCy}});
 			m_pGState->ClearPath();
@@ -3334,11 +3344,47 @@ namespace PdfReader
 		{
 			//m_pGState->SetFillColor(&pPatch->arrColor[0][0]);
 			//m_pGState->SetStrokeColor(&pPatch->arrColor[0][0]);
-			m_pGState->MoveTo(pPatch->arrX[0][0], pPatch->arrY[0][0]);
-			m_pGState->CurveTo(pPatch->arrX[0][1], pPatch->arrY[0][1], pPatch->arrX[0][2], pPatch->arrY[0][2], pPatch->arrX[0][3], pPatch->arrY[0][3]);
-			m_pGState->CurveTo(pPatch->arrX[1][3], pPatch->arrY[1][3], pPatch->arrX[2][3], pPatch->arrY[2][3], pPatch->arrX[3][3], pPatch->arrY[3][3]);
-			m_pGState->CurveTo(pPatch->arrX[3][2], pPatch->arrY[3][2], pPatch->arrX[3][1], pPatch->arrY[3][1], pPatch->arrX[3][0], pPatch->arrY[3][0]);
-			m_pGState->CurveTo(pPatch->arrX[2][0], pPatch->arrY[2][0], pPatch->arrX[1][0], pPatch->arrY[1][0], pPatch->arrX[0][0], pPatch->arrY[0][0]);
+			float xmin = pPatch->arrX[0][0], ymin = pPatch->arrY[0][0], xmax = pPatch->arrX[0][0], ymax = pPatch->arrY[0][0];
+
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					if (pPatch->arrX[i][j] > xmax)
+					{
+						xmax = pPatch->arrX[i][j];
+					}
+					if (pPatch->arrX[i][j] < xmin)
+					{
+						xmin = pPatch->arrX[i][j];
+					}
+					if (pPatch->arrY[i][j] > ymax)
+					{
+						ymax = pPatch->arrY[i][j];
+					}
+					if (pPatch->arrY[i][j] < ymin)
+					{
+						ymin = pPatch->arrY[i][j];
+					}
+				}
+			}
+			// m_pGState->MoveTo(pPatch->arrX[0][0], pPatch->arrY[0][0]);
+			// m_pGState->CurveTo(pPatch->arrX[0][1], pPatch->arrY[0][1], pPatch->arrX[0][2], pPatch->arrY[0][2], pPatch->arrX[0][3], pPatch->arrY[0][3]);
+			// m_pGState->CurveTo(pPatch->arrX[1][3], pPatch->arrY[1][3], pPatch->arrX[2][3], pPatch->arrY[2][3], pPatch->arrX[3][3], pPatch->arrY[3][3]);
+			// m_pGState->CurveTo(pPatch->arrX[3][2], pPatch->arrY[3][2], pPatch->arrX[3][1], pPatch->arrY[3][1], pPatch->arrX[3][0], pPatch->arrY[3][0]);
+			// m_pGState->CurveTo(pPatch->arrX[2][0], pPatch->arrY[2][0], pPatch->arrX[1][0], pPatch->arrY[1][0], pPatch->arrX[0][0], pPatch->arrY[0][0]);
+			xmax +=0.1;
+			ymax +=0.1;
+			xmin -=0.1;
+			ymin -=0.1;
+
+
+			m_pGState->MoveTo(xmin, ymin);
+			m_pGState->LineTo(xmin, ymax);
+			m_pGState->LineTo(xmax, ymax);
+			m_pGState->LineTo(xmax, ymin);
+			m_pGState->LineTo(xmin, ymin);
+
 			m_pGState->ClosePath();
 
 			m_pOut->PatchMeshFill(m_pGState, pPatch);

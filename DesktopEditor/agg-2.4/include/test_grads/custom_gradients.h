@@ -788,7 +788,7 @@ namespace agg
         {
             if (a < 0)
                 return 0;
-            if (a >= 0x100)
+            if (a > 0xFF)
                 return 0xFF;
             return a;
         }
@@ -813,6 +813,10 @@ namespace agg
         ColorT triangle(float x, float y)
         {
             auto w = calcTriangle::baricentric_weights({x, y}, m_oGradientInfo.shading.triangle);
+            if (w[0] < 0 || w[1] < 0 || w[2] < 0)
+            {
+                return {0,0,0,0};
+            }
             ColorT c1 = mul(m_oGradientInfo.shading.triangle_colors[0], fabs(w[0]));
             ColorT c2 = mul(m_oGradientInfo.shading.triangle_colors[1], fabs(w[1]));
             ColorT c3 = mul(m_oGradientInfo.shading.triangle_colors[2], fabs(w[2]));

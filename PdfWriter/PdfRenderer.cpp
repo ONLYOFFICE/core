@@ -41,6 +41,7 @@
 #include "Src/FontCidTT.h"
 #include "Src/Annotation.h"
 #include "Src/Destination.h"
+#include "Src/Field.h"
 
 #include "../DesktopEditor/graphics/Image.h"
 #include "../DesktopEditor/graphics/structures.h"
@@ -1501,6 +1502,51 @@ HRESULT CPdfRenderer::AddLink(const double& dX, const double& dY, const double& 
 		AddLink(unPagesCount - 1, dX, dY, dW, dH, dDestX, dDestY, nPage);
 	}
 
+	return S_OK;
+}
+HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
+{
+	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
+	if (!m_pDocument || 0 == unPagesCount)
+		return S_OK;
+
+	if (m_bNeedUpdateTextFont)
+		UpdateFont();
+
+	if (!m_pFont)
+		return S_OK;
+
+	if (oInfo.IsTextField())
+	{
+		std::wstring wsValue = oInfo.GetTextValue();
+
+		unsigned int unLen;
+		unsigned int* pUnicodes = WStringToUtf32(wsValue, unLen);
+		if (!pUnicodes)
+			return S_FALSE;
+
+		unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
+
+		double dX, dY, dW, dH;
+		oInfo.GetBounds(dX, dY, dW, dH);
+		CTextField* pField = m_pDocument->CreateTextField();
+		pField->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+
+		std::wstring wsKey = oInfo.GetKey();
+		if (L"" != wsKey)
+			pField->SetFieldName(wsKey);
+		else
+			pField->SetFieldName(m_oFieldsManager.GetNewFieldName());
+
+		pField->SetRequiredFlag(oInfo.IsRequired());
+		pField->SetMaxLen(oInfo.GetMaxCharacters());
+		pField->SetCombFlag(oInfo.IsComb());
+
+		TColor oColor = m_oBrush.GetTColor1();
+		pField->SetValue(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()), oInfo.IsPlaceHolder());
+
+		delete[] pCodes;
+	}
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------

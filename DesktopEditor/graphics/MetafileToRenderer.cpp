@@ -192,6 +192,17 @@ void IMetafileToRenderter::InitPicker(NSFonts::IApplicationFonts* pFonts)
 
 namespace NSOnlineOfficeBinToPdf
 {
+	inline BYTE ReadByte(BYTE*& pData, int& nOffset)
+	{
+		BYTE ret = *(pData);
+		pData++;
+		nOffset++;
+		return ret;
+	}
+	inline bool ReadBool(BYTE*& pData, int& nOffset)
+	{
+		return ReadByte(pData, nOffset);
+	}
     inline INT32 ReadInt(BYTE*& pData, int& nOffset)
 	{
 	#ifdef _ARM_ALIGN_
@@ -863,6 +874,53 @@ namespace NSOnlineOfficeBinToPdf
 				pRenderer->AddLink(dX, dY, dW, dH, dDestX, dDestY, nPage);
 				break;
 			}
+			case ctFormField:
+			{
+				BYTE* nStartPos   = current;
+				int   nStartIndex = curindex;
+
+				int nLen = ReadInt(current, curindex);
+
+				double dX = ReadDouble(current, curindex);
+				double dY = ReadDouble(current, curindex);
+				double dW = ReadDouble(current, curindex);
+				double dH = ReadDouble(current, curindex);
+
+				CFormFieldInfo oInfo;
+				oInfo.SetBounds(dX, dY, dW, dH);
+				oInfo.SetBaseLineOffset(ReadDouble(current, curindex));
+
+				int nFlags = ReadInt(current, curindex);
+
+				if (nFlags & 1)
+					oInfo.SetKey(ReadString(current, curindex));
+
+				if (nFlags & 2)
+					oInfo.SetHelpText(ReadString(current, curindex));
+
+				oInfo.SetRequired(nFlags & 4);
+				oInfo.SetPlaceHolder(nFlags & 8);
+
+				oInfo.SetType(ReadInt(current, curindex));
+				if (oInfo.IsTextField())
+				{
+					oInfo.SetComb(nFlags & (1 << 20));
+
+					if (nFlags & (1 << 21))
+						oInfo.SetMaxCharacters(ReadInt(current, curindex));
+
+					if (nFlags & (1 << 22))
+						oInfo.SetTextValue(ReadString(current, curindex));
+				}
+
+				if (oInfo.IsValid())
+					pRenderer->AddFormField(oInfo);
+
+				current  = nStartPos + nLen;
+				curindex = nStartIndex + nLen;
+
+				break;
+			}
 			default:
 			{
 				break;
@@ -1153,6 +1211,17 @@ namespace NSOnlineOfficeBinToPdf
 			{
 				SkipDouble(current, curindex, 6);
 				SkipInt(current, curindex);
+				break;
+			}
+			case ctFormField:
+			{
+				BYTE* nStartPos   = current;
+				int   nStartIndex = curindex;
+
+				int nLen = ReadInt(current, curindex);
+
+				current  = nStartPos + nLen;
+				curindex = nStartIndex + nLen;
 				break;
 			}
             default:

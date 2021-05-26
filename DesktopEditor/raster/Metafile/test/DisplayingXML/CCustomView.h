@@ -12,8 +12,8 @@ class CCustomView : public QGraphicsView
 {
     Q_OBJECT
 public:
-    CCustomView(QWidget *parent);
-    ~CCustomView();
+    explicit CCustomView(QWidget *parent);
+    virtual ~CCustomView();
 
     unsigned int GetHeightMetafile() const;
     unsigned int GetWidthMetafile() const;

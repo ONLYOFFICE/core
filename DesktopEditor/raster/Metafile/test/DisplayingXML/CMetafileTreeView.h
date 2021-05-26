@@ -11,7 +11,7 @@
 class CMetafileTreeView : public QTreeView
 {
 public:
-    CMetafileTreeView(QWidget *parent);
+    explicit CMetafileTreeView(QWidget *parent);
     virtual ~CMetafileTreeView();
 
     void SetMetafile(const std::wstring& wsXmlFilePath);
@@ -19,9 +19,6 @@ public:
 
 private:
     void ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem& oStandartItem, unsigned int unLevel = 0);
-
-    bool bClear;
-    QFont m_pFontBold;
 };
 
 #endif // CMETAFILETREEVIEW_H

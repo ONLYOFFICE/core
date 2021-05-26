@@ -11,12 +11,16 @@ CONFIG += c++11
 
 SOURCES += \
     CMetafileTreeView.cpp \
+    CTextEditDelegate.cpp \
+    CXMLHighlighter.cpp \
     MainWindow.cpp \
     CCustomView.cpp \
     main.cpp
 
 HEADERS += \
     CMetafileTreeView.h \
+    CTextEditDelegate.h \
+    CXMLHighlighter.h \
     MainWindow.h \
     CCustomView.h
 

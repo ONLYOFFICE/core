@@ -16,6 +16,7 @@
 #include "../../../../common/Directory.h"
 
 #include "CMetafileTreeView.h"
+#include "CTextEditDelegate.h"
 
 #include <QStandardItemModel>
 
@@ -24,6 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    CTextEditDelegate *pTextEditDelegate = new CTextEditDelegate(this);
+    ui->treeView->setItemDelegate(pTextEditDelegate);
 }
 
 MainWindow::~MainWindow()

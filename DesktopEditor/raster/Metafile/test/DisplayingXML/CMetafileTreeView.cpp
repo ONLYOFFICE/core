@@ -10,10 +10,7 @@
 
 CMetafileTreeView::CMetafileTreeView(QWidget *parent) :
     QTreeView(parent)
-{
-    m_pFontBold.setBold(true);
-    bClear = true;
-}
+{}
 
 CMetafileTreeView::~CMetafileTreeView()
 {
@@ -48,19 +45,10 @@ void CMetafileTreeView::SetMetafile(const std::wstring &wsXmlFilePath)
     QStandardItemModel *oStandardItemModel = new QStandardItemModel;
     QStandardItem *oStandardItem = new QStandardItem(QString::fromStdWString(L'<' + oXmlRootNode.GetName() + L'>'));
 
-    oStandardItem->setFont(m_pFontBold);
-    oStandardItem->setForeground(Qt::darkRed);
-
     ReadXmlNode(oXmlRootNode, *oStandardItem, 1);
-
-    QFont oMainFont;
-    oMainFont.setPointSize(10);
-    setFont(oMainFont);
 
     oStandardItemModel->appendRow(oStandardItem);
     setModel(oStandardItemModel);
-
-    bClear = false;
 }
 
 bool CMetafileTreeView::IsClear()
@@ -90,12 +78,6 @@ void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem&
                     }
 
                     QStandardItem *pStandardItem = new QStandardItem(QString("<%1%2>").arg(QString::fromStdWString(oXmlChild.GetName()), qsArguments));
-
-                    if (unLevel == 1)
-                    {
-                        pStandardItem->setFont(m_pFontBold);
-                        pStandardItem->setForeground(Qt::blue);
-                    }
 
                     ReadXmlNode(oXmlChild, *pStandardItem, unLevel + 1);
                     oStandartItem.appendRow(pStandardItem);

@@ -3481,18 +3481,21 @@ void BinaryCommentReader::parseCommentData(SerializeCommon::CommentData* pCommen
 {
 	if(NULL != pCommentData && false == pCommentData->sText.empty())
 	{
+		int nLimit = OOX::Spreadsheet::SpreadsheetCommon::MAX_STRING_LEN;
 		if (pCommentData->sUserName.empty())
 		{
-			addCommentRun(oSi, pCommentData->sText, false);
+			nLimit = addCommentRun(oSi, pCommentData->sText, false, nLimit);
 		}
 		else
 		{
-			addCommentRun(oSi, pCommentData->sUserName + _T(":"), true);
-			addCommentRun(oSi, _T("\n") + pCommentData->sText, false);
+			nLimit = addCommentRun(oSi, pCommentData->sUserName + _T(":"), true, nLimit);
+			if (nLimit <= 0)
+				return;
+			nLimit = addCommentRun(oSi, _T("\n") + pCommentData->sText, false, nLimit);
 		}
 	}
 }
-void BinaryCommentReader::addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::wstring& text, bool isBold)
+int BinaryCommentReader::addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::wstring& text, bool isBold, int nLimit)
 {
 	OOX::Spreadsheet::CRun* pRun = new OOX::Spreadsheet::CRun();
 	pRun->m_oRPr.Init();
@@ -3509,36 +3512,55 @@ void BinaryCommentReader::addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::w
 	pRPr.m_oSz->m_oVal->SetValue(9);
 
 	OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
-	pText->m_sText.append(text);
+	//Fix Excel recovery error; Fix bug 42968
+	pText->m_sText.append(text, 0, nLimit);
+	nLimit -= text.length();
 
 	pRun->m_arrItems.push_back(pText);
 	oSi.m_arrItems.push_back(pRun);
+	return nLimit;
 }
-void BinaryCommentReader::addThreadedComment(OOX::Spreadsheet::CSi& oSi, OOX::Spreadsheet::CThreadedComment* pThreadedComment)
+void BinaryCommentReader::addThreadedComment(OOX::Spreadsheet::CSi& oSi, OOX::Spreadsheet::CThreadedComment* pThreadedComment, nullable<std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>>& mapPersonList)
 {
-	OOX::Spreadsheet::CText* pText = new OOX::Spreadsheet::CText();
-	pText->m_sText.append(L"[Threaded comment]\n\nYour version of Excel allows you to read this threaded comment; however, any edits to it will get removed if the file is opened in a newer version of Excel. Learn more: https://go.microsoft.com/fwlink/?linkid=870924\n\n");
+	int nLimit = OOX::Spreadsheet::SpreadsheetCommon::MAX_STRING_LEN;
 	if(pThreadedComment->m_oText.IsInit())
 	{
-		pText->m_sText.append(L"Comment:\n    ");
-		pText->m_sText.append(pThreadedComment->m_oText->ToString());
-		pText->m_sText.append(L"\n\n");
+		std::wstring displayName = getThreadedCommentAuthor(mapPersonList, pThreadedComment->personId, L"Comment");
+		nLimit = addCommentRun(oSi, displayName + L":", true, nLimit);
+		if (nLimit <= 0)
+			return;
+		nLimit = addCommentRun(oSi, L"\n" + pThreadedComment->m_oText->ToString() + L"\n", false, nLimit);
+		if (nLimit <= 0)
+			return;
 	}
 	for(size_t i = 0; i < pThreadedComment->m_arrReplies.size(); ++i)
 	{
 		if(pThreadedComment->m_arrReplies[i]->m_oText.IsInit())
 		{
-			pText->m_sText.append(L"Reply:\n    ");
-			pText->m_sText.append(pThreadedComment->m_arrReplies[i]->m_oText->ToString());
-			pText->m_sText.append(L"\n\n");
+			std::wstring displayName = getThreadedCommentAuthor(mapPersonList, pThreadedComment->m_arrReplies[i]->personId, L"Reply");
+			nLimit = addCommentRun(oSi, displayName + L":", true, nLimit);
+			if (nLimit <= 0)
+				return;
+			nLimit = addCommentRun(oSi, L"\n" + pThreadedComment->m_arrReplies[i]->m_oText->ToString() + L"\n", false, nLimit);
+			if (nLimit <= 0)
+				return;
 		}
 	}
-	//Fix Excel recovery error
-	if (pText->m_sText.length() > OOX::Spreadsheet::SpreadsheetCommon::MAX_STRING_LEN)
+}
+std::wstring BinaryCommentReader::getThreadedCommentAuthor(nullable<std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>>& mapPersonList, nullable<SimpleTypes::CGuid>& personId, const std::wstring& sDefault)
+{
+	if (mapPersonList.IsInit() && personId.IsInit())
 	{
-		pText->m_sText.erase(OOX::Spreadsheet::SpreadsheetCommon::MAX_STRING_LEN);
+		std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>::iterator it = mapPersonList->find(personId->ToString());
+		if (it != mapPersonList->end())
+		{
+			if (it->second->displayName.IsInit())
+			{
+				return it->second->displayName.get();
+			}
+		}
 	}
-	oSi.m_arrItems.push_back(pText);
+	return sDefault;
 }
 
 BinaryWorksheetsTableReader::BinaryWorksheetsTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook,
@@ -4067,7 +4089,12 @@ void BinaryWorksheetsTableReader::WriteComments()
 					pCommentItem->m_sAuthor = L"tc=" + pThreadedComment->id->ToString();
 
 					pCommentItem->m_oText.Init();
-					BinaryCommentReader::addThreadedComment(pCommentItem->m_oText.get2(), pThreadedComment);
+					nullable<std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>> mapPersonList;
+					if (m_oWorkbook.m_pPersonList)
+					{
+						mapPersonList = m_oWorkbook.m_pPersonList->GetPersonList();
+					}
+					BinaryCommentReader::addThreadedComment(pCommentItem->m_oText.get2(), pThreadedComment, mapPersonList);
 
 					pThreadedComments->m_arrItems.push_back(pThreadedComment);
 					for(size_t i = 0; i < pThreadedComment->m_arrReplies.size(); ++i)
@@ -7025,6 +7052,7 @@ int BinaryPersonReader::Read()
 	READ_TABLE_DEF(res, this->ReadPersonList, pPersonList);
 	smart_ptr<OOX::File> oFilePersonListFile(pPersonList);
 	m_oWorkbook.Add(oFilePersonListFile);
+	m_oWorkbook.m_pPersonList = pPersonList;
 	return res;
 }
 int BinaryPersonReader::ReadPersonList(BYTE type, long length, void* poResult)
@@ -7247,6 +7275,7 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 	long nOtherOffBits = -1;
 	long nSharedStringsOffBits = -1;
 	long nWorkbookOffBits = -1;
+	long nPersonListOffBits = -1;
 	BYTE mtLen = oBufferedStream.GetUChar();
 	
 	for(int i = 0; i < mtLen; ++i)
@@ -7267,6 +7296,8 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 			nSharedStringsOffBits = mtiOffBits;
 		else if(c_oSerTableTypes::Workbook == mtiType)
 			nWorkbookOffBits = mtiOffBits;
+		else if(c_oSerTableTypes::PersonList == mtiType)
+			nPersonListOffBits = mtiOffBits;
 		else
 		{
 			aTypes.push_back(mtiType);
@@ -7301,6 +7332,13 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 	{
 		oBufferedStream.Seek(nWorkbookOffBits);
 		res = BinaryWorkbookTableReader(oBufferedStream, *oXlsx.m_pWorkbook, m_mapPivotCacheDefinitions, sOutDir, pOfficeDrawingConverter).Read();
+		if(c_oSerConstants::ReadOk != res)
+			return res;
+	}
+	if(-1 != nPersonListOffBits)
+	{
+		oBufferedStream.Seek(nPersonListOffBits);
+		res = BinaryPersonReader(oBufferedStream, *oXlsx.m_pWorkbook).Read();
 		if(c_oSerConstants::ReadOk != res)
 			return res;
 	}
@@ -7343,11 +7381,6 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 				oCustomProperties->fromPPTY(&oBufferedStream);
 				smart_ptr<OOX::File> oCurFile(oCustomProperties);
 				oXlsx.Add(oCurFile);
-			}
-			break;
-		case c_oSerTableTypes::PersonList:
-			{
-				res = BinaryPersonReader(oBufferedStream, *oXlsx.m_pWorkbook).Read();
 			}
 			break;
 		case c_oSerTableTypes::Styles:

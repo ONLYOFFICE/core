@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+#include <unordered_map>
 
 #include "../../DesktopEditor/common/StreamWriter.h"
 
@@ -50,6 +51,7 @@ namespace OOX
 	namespace Spreadsheet
 	{
 		class CPersonList;
+		class CPerson;
 		class CThreadedComment;
 		class CDxf;
 		class CSortCondition;
@@ -251,8 +253,9 @@ namespace BinXlsxRW
 		int ReadThreadedComment(BYTE type, long length, void* poResult);
 		int ReadThreadedCommentMention(BYTE type, long length, void* poResult);
 		void parseCommentData(SerializeCommon::CommentData* pCommentData, OOX::Spreadsheet::CSi& oSi);
-		void addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::wstring& text, bool isBold);
-		static void addThreadedComment(OOX::Spreadsheet::CSi& oSi, OOX::Spreadsheet::CThreadedComment* pThreadedComment);
+		static int addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::wstring& text, bool isBold, int nLimit);
+		static void addThreadedComment(OOX::Spreadsheet::CSi& oSi, OOX::Spreadsheet::CThreadedComment* pThreadedComment, nullable<std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>>& mapPersonList);
+		static std::wstring getThreadedCommentAuthor(nullable<std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>>& mapPersonList, nullable<SimpleTypes::CGuid>& personId, const std::wstring& sDefault);
 	};
 	class BinaryWorksheetsTableReader : public Binary_CommonReader
 	{

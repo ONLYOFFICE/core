@@ -670,13 +670,13 @@ namespace agg
             {
                 if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::FunctionOnly)
                 {
-                    float _x = x;
-                    float _y = y;
+                    float _x = x ;
+                    float _y = y ;
                     _x += m_oGradientInfo.shading.inv_map[4];
                     _y += m_oGradientInfo.shading.inv_map[5];
 
-                    _x = _x * m_oGradientInfo.shading.inv_map[0] + _y * m_oGradientInfo.shading.inv_map[1];
-                    _y = _x * m_oGradientInfo.shading.inv_map[2] + _y * m_oGradientInfo.shading.inv_map[3];
+                    _x = _x * m_oGradientInfo.shading.inv_map[0] + _y * m_oGradientInfo.shading.inv_map[2];
+                    _y = _x * m_oGradientInfo.shading.inv_map[1] + _y * m_oGradientInfo.shading.inv_map[3];
 
                     *span++ = m_oGradientInfo.shading.function.get_color(_x, _y); //m_color_table[index];
                 }

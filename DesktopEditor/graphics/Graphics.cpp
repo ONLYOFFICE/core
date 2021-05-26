@@ -2120,6 +2120,29 @@ namespace Aggplus
 	{
 		if (type == BrushTypeMyTestGradient)
 		{
+		    std::vector<float> new_map(6);
+		    float M[6];
+		    std::vector<float> G = ginfo.shading.mapping;
+		    m_oFullTransform.GetElements(M);
+
+		    new_map[0] = M[0] * G[0] + M[2] * G[1];
+		    new_map[1] = M[1] * G[0] + M[3] * G[1];
+		    new_map[2] = M[0] * G[2] + M[2] * G[3];
+		    new_map[3] = M[1] * G[2] + M[3] * G[3];
+
+		    new_map[4] = M[0] * G[4] + M[2] * G[5] + M[4];
+		    new_map[5] = M[1] * G[4] + M[3] * G[5] + M[5];
+            ginfo.shading.mapping = new_map;
+
+            float D = new_map[0] * new_map[3] - new_map[1] * new_map[2];
+
+            ginfo.shading.inv_map[0] = new_map[3] / D;
+            ginfo.shading.inv_map[1] = -new_map[1] / D;
+            ginfo.shading.inv_map[2] = -new_map[2] / D;
+            ginfo.shading.inv_map[3] = new_map[0] / D;
+
+            ginfo.shading.inv_map[4] = -new_map[4];
+            ginfo.shading.inv_map[5] = -new_map[5];
 			return;
 		}
 		if (type == BrushTypeNewLinearGradient)

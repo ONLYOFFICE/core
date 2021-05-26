@@ -2533,6 +2533,8 @@ namespace PdfReader
 
 		if (m_bTransparentGroupSoftMask)
 			return true;
+
+        DoPath(pGState, pGState->GetPath(), pGState->GetPageHeight(), pGState->GetCTM());
 		long brush;
 		int alpha = pGState->GetFillOpacity() * 255;
 		m_pRenderer->get_BrushType(&brush);
@@ -2542,9 +2544,30 @@ namespace PdfReader
 		std::vector<float> mapping(6);
 		for (int i = 0; i < 6; i++)
 		{
-			mapping[i] = pShading->GetMatrix()[i];
+			mapping[i] = PDFCoordsToMM(pShading->GetMatrix()[i]);
 		}
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_functional(x1, x2, y1, y2, mapping);
+
+		float cur_x = 0, cur_y = 0;
+		float delta_x = (x2 - x1) / info.shading.function.get_resolution();
+		float delta_y = (y2 - y1) / info.shading.function.get_resolution();
+        GrColorSpace *ColorSpace = pShading->GetColorSpace();
+
+		for (size_t i = 0; i < info.shading.function.get_resolution(); i++)
+        {
+		    cur_x = 0;
+            for (size_t j = 0; j < info.shading.function.get_resolution(); j++)
+            {
+                PdfReader::GrColor c;
+                pShading->GetColor(cur_x, cur_y, &c);
+                DWORD dword_color = ColorSpace->GetDwordColor(&c);
+                info.shading.function.set_color(j, i, (dword_color >> 16) & 0xFF,
+                                                (dword_color >> 8) & 0xFF, (dword_color >> 0) & 0xFF, alpha);
+                cur_x += delta_x;
+            }
+            cur_y += delta_y;
+        }
+
 		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
 		{
 			GRenderer->put_BrushGradInfo(info);

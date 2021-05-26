@@ -62,7 +62,7 @@ namespace NSStructures
                 for (int j = 0; j < RESOLUTION; j++)
                 {
                     unsigned int value = 255 * sin(i * j * M_PI / RESOLUTION);
-                    values[j][i] = ColorT(value, value, 0);
+                    values[j][i] = ColorT(255, 0, 0, 255);
                 }
             }
         }
@@ -94,7 +94,7 @@ namespace NSStructures
         {
             int xi = get_x_index(x);
             int yi = get_y_index(y);
-
+            //std::cout << x << ' ' << y << std::endl;
             return values[yi][xi];
         }
 
@@ -297,6 +297,7 @@ namespace NSStructures
         ColorFunction<agg::rgba8> function;
         
         // Обратное преобразование из картинки в цветовую функцию
+        std::vector<float> mapping;
         std::vector<float> inv_map;
 
         // Линейный градиент задается в pdf 2 точками
@@ -384,15 +385,7 @@ namespace NSStructures
             ginfo.shading.f_type = ShadingInfo::UseNew;
             ginfo.shading.shading_type = ShadingInfo::FunctionOnly;
 
-            ginfo.shading.inv_map[4] = -mapping[4];
-            ginfo.shading.inv_map[5] = -mapping[5];
-
-            float D = mapping[0] * mapping[3] - mapping[1] * mapping[2];
-            
-            ginfo.shading.inv_map[0] = mapping[3] / D;
-            ginfo.shading.inv_map[1] = mapping[1] / D;
-            ginfo.shading.inv_map[2] = mapping[2] / D;
-            ginfo.shading.inv_map[3] = mapping[0] / D;
+            ginfo.shading.mapping = mapping;
 
             return ginfo;
         }

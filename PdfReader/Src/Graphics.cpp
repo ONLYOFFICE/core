@@ -2356,11 +2356,13 @@ namespace PdfReader
 			m_pGState->LineTo(dMaxX * pMatrix[0] + dMinY * pMatrix[2] + pMatrix[4], dMaxX * pMatrix[1] + dMinY * pMatrix[3] + pMatrix[5]);
 			m_pGState->LineTo(dMaxX * pMatrix[0] + dMaxY * pMatrix[2] + pMatrix[4], dMaxX * pMatrix[1] + dMaxY * pMatrix[3] + pMatrix[5]);
 			m_pGState->LineTo(dMinX * pMatrix[0] + dMaxY * pMatrix[2] + pMatrix[4], dMinX * pMatrix[1] + dMaxY * pMatrix[3] + pMatrix[5]);
+            m_pGState->LineTo(dMinX * pMatrix[0] + dMinY * pMatrix[2] + pMatrix[4], dMinX * pMatrix[1] + dMinY * pMatrix[3] + pMatrix[5]);
 			m_pGState->ClosePath();
 			
 			m_pOut->FunctionShadedFill(m_pGState, pShading);
 
 			m_pGState->ClearPath();
+            return;
 		}
 
 		DoFunctionShadingFill(pShading, dMinX, dMinY, dMaxX, dMaxY, arrColors, 0);

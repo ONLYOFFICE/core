@@ -109,6 +109,19 @@ namespace PdfWriter
 
 	};
 
+	class CCheckBoxField : public CFieldBase
+	{
+	public:
+		CCheckBoxField(CXref* pXref, CDocument* pDocument);
+
+		void SetAppearance(const std::wstring& wsYesValue, unsigned char* pYesCodes, unsigned int unYesCount,
+						   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount,
+						   CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0);
+		void SetValue(const bool& isYes);
+
+	private:
+	};
+
 	class CAnnotAppearance : public CDictObject
 	{
 	public:
@@ -125,6 +138,23 @@ namespace PdfWriter
 		CAnnotAppearanceObject* m_pRollover;
 		CAnnotAppearanceObject* m_pDown;
 		CFieldBase*             m_pField;
+	};
+
+	class CCheckBoxAnnotAppearance : public CDictObject
+	{
+	public:
+		CCheckBoxAnnotAppearance(CXref* pXref, CFieldBase* pField);
+		
+		CAnnotAppearanceObject* GetYes();
+		CAnnotAppearanceObject* GetOff();
+
+	private:
+
+		CXref*                  m_pXref;
+		CFieldBase*             m_pField;
+		CAnnotAppearanceObject* m_pYes;
+		CAnnotAppearanceObject* m_pOff;
+
 	};
 
 	class CAnnotAppearanceObject : public CDictObject

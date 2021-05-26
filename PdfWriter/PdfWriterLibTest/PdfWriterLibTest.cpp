@@ -100,7 +100,7 @@ void TestField()
 	pComboBox->AddPageRect(pPage, TRect(200, 600, 500, 550));
 	pComboBox->SetFieldName(L"ComboBox1");
 	pComboBox->SetFieldHint(L"Комбо бокс");
-	//pComboBox->SetTextValue(L"Ilya");
+	pComboBox->SetTextValue(L"Ilya");
 	pComboBox->SetTextAppearance(L"Ilya", NULL, 0, pFont, TRgb(255, 0, 0), 0.5, 40, 1, 14.3);
 	pComboBox->AddOption(L"Синий");
 	pComboBox->AddOption(L"Green");
@@ -108,6 +108,13 @@ void TestField()
 	pComboBox->SetComboFlag(true);
 	pComboBox->SetEditFlag(false);
 	pComboBox->SetMultiSelectFlag(false);
+
+	CCheckBoxField* pCheckBox = oPdf.CreateCheckBoxField();
+	pCheckBox->SetFieldName(L"CheckBox");
+	pCheckBox->SetRequiredFlag(false);
+	pCheckBox->AddPageRect(pPage, TRect(50, 600, 100, 550));
+	pCheckBox->SetValue(true);
+	pCheckBox->SetAppearance(L"1", NULL, 0, L"2", NULL, 0, pFont, TRgb(0, 0, 0), 1, 40, 0, 0);
 
 
 	oPdf.SaveToFile(L"D:/Test/PDF/TestField1.pdf");

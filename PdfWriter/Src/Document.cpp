@@ -857,6 +857,20 @@ namespace PdfWriter
 
 		return pField;
 	}
+	CCheckBoxField* CDocument::CreateCheckBoxField()
+	{
+		if (!CheckAcroForm())
+			return NULL;
+
+		CCheckBoxField* pField = new CCheckBoxField(m_pXref, this);
+		if (!pField)
+			return NULL;
+
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pField);
+
+		return pField;
+	}
 	bool CDocument::CheckAcroForm()
 	{
 		if (!m_pXref || !m_pCatalog)

@@ -273,6 +273,66 @@ namespace PdfWriter
 		m_pOpt->Add(new CStringObject(sOption.c_str(), true));
 	}
 	//----------------------------------------------------------------------------------------
+	// CChoiceField
+	//----------------------------------------------------------------------------------------
+	CCheckBoxField::CCheckBoxField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
+	{
+		Add("FT", "Btn");
+	}
+	void CCheckBoxField::SetAppearance(const std::wstring& wsYesValue, unsigned char* pYesCodes, unsigned int unYesCount, 
+									   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount, 
+									   CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY)
+	{
+		if (!Get("AS"))
+			Add("AS", "Yes");
+
+		CCheckBoxAnnotAppearance* pAppearance = new CCheckBoxAnnotAppearance(m_pXref, this);
+		Add("AP", pAppearance);
+
+
+		CAnnotAppearanceObject* pYes = pAppearance->GetYes();
+		CAnnotAppearanceObject* pOff = pAppearance->GetOff();
+
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+
+		CResourcesDict* pResources = new CResourcesDict(m_pXref, true, false);
+		const char* sFontName = pResources->GetFontName(pFont);
+		if (!sFontName)
+			return;
+
+		Add("DR", pResources);
+
+		std::string sDA;
+		sDA.append(std::to_string(oColor.r));
+		sDA.append(" ");
+		sDA.append(std::to_string(oColor.g));
+		sDA.append(" ");
+		sDA.append(std::to_string(oColor.b));
+		sDA.append(" rg /");
+		sDA.append(sFontName);
+		sDA.append(" ");
+		sDA.append(std::to_string(dFontSize));
+		sDA.append(" Tf");
+
+		const char* sExtGrStateName = NULL;
+		if (std::fabs(dAlpha - 1.0) > 0.001)
+		{
+			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(dAlpha);
+			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
+		}
+
+		Add("DA", new CStringObject(sDA.c_str()));
+
+		const char* sAppearanceFontName = pFieldsResources->GetFontName(pFont);
+		pYes->DrawSimpleText(wsYesValue, pYesCodes, unYesCount, sAppearanceFontName, dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
+		pOff->DrawSimpleText(wsOffValue, pOffCodes, unOffCount, sAppearanceFontName, dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
+	}
+	void CCheckBoxField::SetValue(const bool& isYes)
+	{
+		Add("AS", isYes ? "Yes" : "Off");
+		Add("V", isYes ? "Yes" : "Off");
+	}
+	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance
 	//----------------------------------------------------------------------------------------
 	CAnnotAppearance::CAnnotAppearance(CXref* pXref, CFieldBase* pField)
@@ -310,7 +370,33 @@ namespace PdfWriter
 
 		return m_pDown;
 	}
-	
+	//----------------------------------------------------------------------------------------
+	// CAnnotAppearance
+	//----------------------------------------------------------------------------------------
+	CCheckBoxAnnotAppearance::CCheckBoxAnnotAppearance(CXref* pXref, CFieldBase* pField)
+	{
+		m_pXref  = pXref;
+		m_pField = pField;
+
+		m_pYes = new CAnnotAppearanceObject(pXref, pField);
+		m_pOff = new CAnnotAppearanceObject(pXref, pField);
+
+		CDictObject* pDict = new CDictObject();
+		Add("N", pDict);
+		pDict->Add("Yes", m_pYes);
+		pDict->Add("Off", m_pOff);
+	}
+	CAnnotAppearanceObject* CCheckBoxAnnotAppearance::GetYes()
+	{
+		return m_pYes;
+	}
+	CAnnotAppearanceObject* CCheckBoxAnnotAppearance::GetOff()
+	{
+		return m_pOff;
+	}
+	//----------------------------------------------------------------------------------------
+	// CAnnotAppearanceObject
+	//----------------------------------------------------------------------------------------
 	CAnnotAppearanceObject::CAnnotAppearanceObject(CXref* pXref, CFieldBase* pField)
 	{
 		m_pXref   = pXref;
@@ -336,7 +422,7 @@ namespace PdfWriter
 		Add("Resources", pField->GetResourcesDict());
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
-		SetFilter(STREAM_FILTER_FLATE_DECODE);
+		//SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
 	}
 	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFontName, double dFontSize, double dX, double dY, double dR, double dG, double dB, const char* sExtGStateName, double dWidth, double dHeight)

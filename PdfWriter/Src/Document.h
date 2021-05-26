@@ -80,6 +80,7 @@ namespace PdfWriter
 	class CTextField;
 	class CResourcesDict;
 	class CChoiceField;
+	class CCheckBoxField;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -133,6 +134,7 @@ namespace PdfWriter
 		CResourcesDict*   GetFieldsResources();
 		CTextField*       CreateTextField();	
 		CChoiceField*     CreateChoiceField();
+		CCheckBoxField*   CreateCheckBoxField();
 					  
 	private:		  
 					  

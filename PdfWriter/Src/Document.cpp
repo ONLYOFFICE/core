@@ -843,6 +843,20 @@ namespace PdfWriter
 
 		return pField;
 	}
+	CChoiceField* CDocument::CreateChoiceField()
+	{
+		if (!CheckAcroForm())
+			return NULL;
+
+		CChoiceField* pField = new CChoiceField(m_pXref, this);
+		if (!pField)
+			return NULL;
+
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pField);
+
+		return pField;
+	}
 	bool CDocument::CheckAcroForm()
 	{
 		if (!m_pXref || !m_pCatalog)

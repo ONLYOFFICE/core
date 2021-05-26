@@ -1543,7 +1543,15 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		pField->SetCombFlag(oInfo.IsComb());
 
 		TColor oColor = m_oBrush.GetTColor1();
-		pField->SetValue(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()), oInfo.IsPlaceHolder());
+		if (oInfo.IsPlaceHolder())
+		{
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 0.5, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
+		}
+		else
+		{
+			pField->SetTextValue(wsValue);
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
+		}
 
 		delete[] pCodes;
 	}

@@ -58,6 +58,8 @@ namespace PdfWriter
 		void SetFieldHint(const std::wstring& wsHint);
 		TRect& GetRect();
 		CResourcesDict* GetResourcesDict();
+		void SetTextAppearance(const std::wstring& wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0);
+		void SetTextValue(const std::wstring& wsValue);
 
 	protected:
 
@@ -83,12 +85,28 @@ namespace PdfWriter
 		void SetCombFlag(bool isFlag);
 		void SetRichTextFlag(bool isRichText);
 
-		void SetMaxLen(int nMaxLen);
-
-		void SetValue(const std::wstring& wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pDict, const TRgb& oColor, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, bool isPlaceholder = false);
-		
+		void SetMaxLen(int nMaxLen);	
 
 	private:
+	};
+
+	class CChoiceField : public CFieldBase
+	{
+	public:
+		CChoiceField(CXref* pXref, CDocument* pDocument);
+
+		void SetComboFlag(const bool& isCombo);
+		void SetEditFlag(const bool& isEdit);
+		void SetSortFlag(const bool& isSort);
+		void SetMultiSelectFlag(const bool& isMultiSelect);
+		void SetDoNotSpellCheck(const bool& isDoNotSpellCheck);
+
+		void AddOption(const std::wstring& wsOption);
+
+	private:
+
+		CArrayObject* m_pOpt;
+
 	};
 
 	class CAnnotAppearance : public CDictObject

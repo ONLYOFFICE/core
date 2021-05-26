@@ -145,6 +145,51 @@ namespace PdfWriter
 	{
 		return m_pDocument->GetFieldsResources();
 	}
+	void CFieldBase::SetTextAppearance(const std::wstring& wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY)
+	{
+		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
+		Add("AP", pAppearance);
+
+
+		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
+
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+
+		CResourcesDict* pResources = new CResourcesDict(m_pXref, true, false);
+		const char* sFontName = pResources->GetFontName(pFont);
+		if (!sFontName)
+			return;
+
+		Add("DR", pResources);
+
+		std::string sDA;
+		sDA.append(std::to_string(oColor.r));
+		sDA.append(" ");
+		sDA.append(std::to_string(oColor.g));
+		sDA.append(" ");
+		sDA.append(std::to_string(oColor.b));
+		sDA.append(" rg /");
+		sDA.append(sFontName);
+		sDA.append(" ");
+		sDA.append(std::to_string(dFontSize));
+		sDA.append(" Tf");
+
+		const char* sExtGrStateName = NULL;
+		if (std::fabs(dAlpha - 1.0) > 0.001)
+		{
+			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(dAlpha);
+			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
+		}
+
+		Add("DA", new CStringObject(sDA.c_str()));
+
+		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
+	}
+	void CFieldBase::SetTextValue(const std::wstring &wsValue)
+	{
+		std::string sValue = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsValue);
+		Add("V", new CStringObject(sValue.c_str(), true));
+	}
 	//----------------------------------------------------------------------------------------
 	// CTextField
 	//----------------------------------------------------------------------------------------
@@ -184,54 +229,52 @@ namespace PdfWriter
 	{
 		Add("MaxLen", nMaxLen);
 	}
-	void CTextField::SetValue(const std::wstring &wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, double dFontSize, double dX, double dY, bool isPlaceholder)
+	//----------------------------------------------------------------------------------------
+	// CChoiceField
+	//----------------------------------------------------------------------------------------
+	CChoiceField::CChoiceField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
 	{
-		if (!isPlaceholder)
+		m_pOpt = NULL;
+
+		Add("FT", "Ch");
+	}
+	void CChoiceField::SetComboFlag(const bool& isCombo)
+	{
+		SetFlag(isCombo, 1 << 17);
+	}
+	void CChoiceField::SetEditFlag(const bool& isEdit)
+	{
+		SetFlag(isEdit, 1 << 18);
+	}
+	void CChoiceField::SetSortFlag(const bool& isSort)
+	{
+		SetFlag(isSort, 1 << 19);
+	}
+	void CChoiceField::SetMultiSelectFlag(const bool& isMultiSelect)
+	{
+		SetFlag(isMultiSelect, 1 << 21);
+	}
+	void CChoiceField::SetDoNotSpellCheck(const bool& isDoNotSpellCheck)
+	{
+		SetFlag(isDoNotSpellCheck, 1 << 22);
+	}
+	void CChoiceField::AddOption(const std::wstring& wsOption)
+	{
+		if (!m_pOpt)
 		{
-			std::string sValue = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsValue);
-			Add("V", new CStringObject(sValue.c_str(), true));
+			m_pOpt = new CArrayObject();
+			Add("Opt", m_pOpt);
 		}
 
-		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
-		Add("AP", pAppearance);
-		
-
-		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
-
-		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
-
-		CResourcesDict* pResources = new CResourcesDict(m_pXref, true, false);
-		const char* sFontName = pResources->GetFontName(pFont);
-		if (!sFontName)
+		if (!m_pOpt)
 			return;
 
-		Add("DR", pResources);
-		
-		std::string sDA;
-		sDA.append(std::to_string(oColor.r));
-		sDA.append(" ");
-		sDA.append(std::to_string(oColor.g));
-		sDA.append(" ");
-		sDA.append(std::to_string(oColor.b));
-		sDA.append(" rg /");
-		sDA.append(sFontName);
-		sDA.append(" ");
-		sDA.append(std::to_string(dFontSize));
-		sDA.append(" Tf");
-
-		const char* sExtGrStateName = NULL;
-		if (isPlaceholder)
-		{
-			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(0.5);
-			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
-		}
-
-		Add("DA", new CStringObject(sDA.c_str()));
-
-		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
+		std::string sOption = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsOption);
+		m_pOpt->Add(new CStringObject(sOption.c_str(), true));
 	}
-
-
+	//----------------------------------------------------------------------------------------
+	// CAnnotAppearance
+	//----------------------------------------------------------------------------------------
 	CAnnotAppearance::CAnnotAppearance(CXref* pXref, CFieldBase* pField)
 	{
 		m_pXref  = pXref;

@@ -83,7 +83,8 @@ void TestField()
 	pField3->SetFieldName(L"Test123");
 	pField3->SetFieldHint(L"Hint123");
 	pField3->SetMaxLen(10);
-	pField3->SetValue(L"Enter text", NULL, 0, pFont, TRgb(0, 255, 0), 40, 1, 14.3, true);
+	pField3->SetTextValue(L"Enter text");
+	pField3->SetTextAppearance(L"Enter text", NULL, 0, pFont, TRgb(0, 255, 0), 0.5, 40, 1, 14.3);
 
 	CTextField* pField4 = oPdf.CreateTextField();
 	pField4->SetRequiredFlag(false);
@@ -91,7 +92,22 @@ void TestField()
 	pField4->SetFieldName(L"Test1234");
 	pField4->SetFieldHint(L"Hint1234");
 	pField4->SetMaxLen(10);
-	pField4->SetValue(L"Ilya", NULL, 0, pFont, TRgb(255, 0, 0), 40, 1, 14.3);
+	pField4->SetTextValue(L"Ilya");
+	pField4->SetTextAppearance(L"Ilya", NULL, 0, pFont, TRgb(255, 0, 0), 1, 40, 1, 14.3);
+
+	CChoiceField* pComboBox = oPdf.CreateChoiceField();
+	pComboBox->SetRequiredFlag(false);
+	pComboBox->AddPageRect(pPage, TRect(200, 600, 500, 550));
+	pComboBox->SetFieldName(L"ComboBox1");
+	pComboBox->SetFieldHint(L"Комбо бокс");
+	//pComboBox->SetTextValue(L"Ilya");
+	pComboBox->SetTextAppearance(L"Ilya", NULL, 0, pFont, TRgb(255, 0, 0), 0.5, 40, 1, 14.3);
+	pComboBox->AddOption(L"Синий");
+	pComboBox->AddOption(L"Green");
+	pComboBox->AddOption(L"Красный");
+	pComboBox->SetComboFlag(true);
+	pComboBox->SetEditFlag(false);
+	pComboBox->SetMultiSelectFlag(false);
 
 
 	oPdf.SaveToFile(L"D:/Test/PDF/TestField1.pdf");

@@ -1710,11 +1710,21 @@ private:
         size_t nRef = sSVG.find(L"image");
         while(nRef != std::wstring::npos)
         {
+            size_t nRefBegin = sSVG.rfind(L'<', nRef);
+            if (nRefBegin != std::wstring::npos)
+            {
+                if (sSVG[nRefBegin + 1] == L'/')
+                    nRefBegin++;
+                sSVG.erase(nRefBegin + 1, nRef - nRefBegin - 1);
+                nRef = nRefBegin + 1;
+            }
+
+            size_t nRefEnd = sSVG.find(L'>', nRef);
             size_t nHRef = sSVG.find(L"href", nRef);
-            if(nHRef == std::wstring::npos)
+            if(nHRef == std::wstring::npos || nRefEnd == std::wstring::npos)
                 break;
             nHRef += 6;
-            if(sSVG.compare(nHRef, 4, L"http") == 0)
+            if(nHRef > nRefEnd || sSVG.compare(nHRef, 4, L"http") == 0)
             {
                 nRef = sSVG.find(L"image", nRef + 5);
                 continue;

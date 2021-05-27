@@ -81,6 +81,7 @@ namespace PdfWriter
 	class CResourcesDict;
 	class CChoiceField;
 	class CCheckBoxField;
+	class CRadioGroupField;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -135,6 +136,7 @@ namespace PdfWriter
 		CTextField*       CreateTextField();	
 		CChoiceField*     CreateChoiceField();
 		CCheckBoxField*   CreateCheckBoxField();
+		CRadioGroupField* GetRadioGroupField(const std::wstring& wsGroupName);
 					  
 	private:		  
 					  
@@ -149,6 +151,7 @@ namespace PdfWriter
 		CShading*         CreateAxialShading(double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, double* pPoints, int nCount);
 		CShading*         CreateRadialShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount);
 		bool              CheckAcroForm();
+		CRadioGroupField* FindRadioGroupField(const std::wstring& wsGroupName);
 
 	private:
 
@@ -193,6 +196,7 @@ namespace PdfWriter
 		std::wstring				   m_wsDocumentID;
 		CAcroForm*                     m_pAcroForm;
 		CResourcesDict*                m_pFieldsResources;
+		std::vector<CRadioGroupField*> m_vRadioGroups;
 
 		friend class CFontCidTrueType;
 	};

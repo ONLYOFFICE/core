@@ -275,16 +275,27 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CChoiceField
 	//----------------------------------------------------------------------------------------
-	CCheckBoxField::CCheckBoxField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
+	CCheckBoxField::CCheckBoxField(CXref* pXref, CDocument* pDocument, CRadioGroupField* pGroup) : CFieldBase(pXref, pDocument)
 	{
 		Add("FT", "Btn");
+
+		m_pGroup = pGroup;
+
+		if (pGroup)
+			Add("Parent", pGroup);
 	}
 	void CCheckBoxField::SetAppearance(const std::wstring& wsYesValue, unsigned char* pYesCodes, unsigned int unYesCount, 
 									   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount, 
 									   CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY)
 	{
 		if (!Get("AS"))
-			Add("AS", "Yes");
+		{
+			if (m_pGroup)
+				Add("AS", m_pGroup->GetGroupName().c_str());
+			else
+				Add("AS", "Yes");
+		}
+
 
 		CCheckBoxAnnotAppearance* pAppearance = new CCheckBoxAnnotAppearance(m_pXref, this);
 		Add("AP", pAppearance);
@@ -329,8 +340,51 @@ namespace PdfWriter
 	}
 	void CCheckBoxField::SetValue(const bool& isYes)
 	{
-		Add("AS", isYes ? "Yes" : "Off");
-		Add("V", isYes ? "Yes" : "Off");
+		const char* sValue = (isYes ? (m_pGroup ? m_pGroup->GetGroupName().c_str() : "Yes") : "Off");
+		Add("AS", sValue);
+		Add("V", sValue);
+	}
+	//----------------------------------------------------------------------------------------
+	// CAnnotAppearance
+	//----------------------------------------------------------------------------------------
+	CRadioGroupField::CRadioGroupField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
+	{
+		Add("FT", "Btn");
+		SetFlag(true, 1 << 14);
+		SetFlag(true, 1 << 15);
+
+		m_pKids = new CArrayObject();
+
+		if (m_pKids)
+			Add("Kids", m_pKids);
+
+		m_sGroupName = "Yes";
+	}
+	const std::string& CRadioGroupField::GetGroupName() const
+	{
+		return m_sGroupName;
+	}
+	void CRadioGroupField::SetGroupName(const std::string& sGroupName)
+	{
+		m_sGroupName = sGroupName;
+	}
+	CCheckBoxField* CRadioGroupField::CreateKid()
+	{
+		if (!m_pKids)
+			return NULL;
+
+		CCheckBoxField* pKid = new CCheckBoxField(m_pXref, m_pDocument, this);
+		m_pKids->Add(pKid);
+		return pKid;
+	}
+	void CRadioGroupField::SetFieldName(const std::wstring& wsFieldName)
+	{
+		m_wsFieldName = wsFieldName;
+		CFieldBase::SetFieldName(wsFieldName);
+	}
+	const std::wstring& CRadioGroupField::GetFieldName() const
+	{
+		return m_wsFieldName;
 	}
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance

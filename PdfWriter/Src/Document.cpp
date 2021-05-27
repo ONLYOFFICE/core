@@ -147,6 +147,7 @@ namespace PdfWriter
 		m_vExtGrStates.clear();
 		m_vFillAlpha.clear();
 		m_vStrokeAlpha.clear();
+		m_vRadioGroups.clear();
 
 		m_pTransparencyGroup = NULL;
 
@@ -870,6 +871,40 @@ namespace PdfWriter
 		ppFields->Add(pField);
 
 		return pField;
+	}
+	CRadioGroupField* CDocument::GetRadioGroupField(const std::wstring& wsGroupName)
+	{
+		CRadioGroupField* pField = FindRadioGroupField(wsGroupName);
+		if (!pField)
+		{
+			if (!CheckAcroForm())
+				return NULL;
+
+			pField = new CRadioGroupField(m_pXref, this);
+			if (!pField)
+				return NULL;
+
+			m_vRadioGroups.push_back(pField);
+
+			pField->SetFieldName(wsGroupName);
+			CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+			ppFields->Add(pField);
+		}
+
+		return pField;
+	}
+	CRadioGroupField* CDocument::FindRadioGroupField(const std::wstring& wsGroupName)
+	{
+		CRadioGroupField* pField = NULL;
+		for (unsigned int unIndex = 0, unCount = m_vRadioGroups.size(); unIndex < unCount; ++unIndex)
+		{
+			pField = m_vRadioGroups.at(unIndex);
+
+			if (pField->GetFieldName() == wsGroupName)
+				return pField;
+		}
+
+		return NULL;
 	}
 	bool CDocument::CheckAcroForm()
 	{

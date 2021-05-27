@@ -44,6 +44,7 @@ namespace PdfWriter
 	class CAnnotAppearanceObject;
 	class CResourcesDict;
 	class CFontDict;
+	class CRadioGroupField;
 
 	class CFieldBase : public CDictObject
 	{
@@ -54,7 +55,7 @@ namespace PdfWriter
 		void SetRequiredFlag(bool isRequired);
 		void SetNoExportFlag(bool isNoExport);
 		void AddPageRect(CPage* pPage, const TRect& oRect);
-		void SetFieldName(const std::wstring& wsName);
+		virtual void SetFieldName(const std::wstring& wsName);
 		void SetFieldHint(const std::wstring& wsHint);
 		TRect& GetRect();
 		CResourcesDict* GetResourcesDict();
@@ -112,7 +113,7 @@ namespace PdfWriter
 	class CCheckBoxField : public CFieldBase
 	{
 	public:
-		CCheckBoxField(CXref* pXref, CDocument* pDocument);
+		CCheckBoxField(CXref* pXref, CDocument* pDocument, CRadioGroupField* pGroup = NULL);
 
 		void SetAppearance(const std::wstring& wsYesValue, unsigned char* pYesCodes, unsigned int unYesCount,
 						   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount,
@@ -120,6 +121,26 @@ namespace PdfWriter
 		void SetValue(const bool& isYes);
 
 	private:
+
+		CRadioGroupField* m_pGroup;
+	};
+
+	class CRadioGroupField : public CFieldBase
+	{
+	public:
+		CRadioGroupField(CXref* pXref, CDocument* pDocument);
+
+		const std::string& GetGroupName() const;
+		void SetGroupName(const std::string& sGroupName);
+		CCheckBoxField* CreateKid();
+		virtual void SetFieldName(const std::wstring& wsName) override;
+		const std::wstring& GetFieldName() const;
+
+	private:
+
+		std::string   m_sGroupName;
+		CArrayObject* m_pKids;
+		std::wstring  m_wsFieldName;
 	};
 
 	class CAnnotAppearance : public CDictObject

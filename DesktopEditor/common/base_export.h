@@ -59,4 +59,9 @@
 
 #endif
 
+#ifdef DISABLE_Q_DECL_EXPORT
+#undef Q_DECL_EXPORT
+#define Q_DECL_EXPORT
+#endif
+
 #endif // _BUILD_BASE_EXPORTIMPORT_H

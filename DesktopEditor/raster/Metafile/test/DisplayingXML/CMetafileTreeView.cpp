@@ -29,17 +29,21 @@ void CMetafileTreeView::SetMetafile(const std::wstring &wsXmlFilePath)
     if (!oXmlFile->open(QIODevice::ReadOnly | QIODevice::Text))
     {
         QMessageBox::warning(this, "Warning", "Couldn't open XML file");
+        oXmlFile->close();
+        delete oXmlFile;
         return;
     }
 
     XmlUtils::CXmlNode oXmlRootNode;
 
-    if (!oXmlRootNode.FromXmlFile(wsXmlFilePath))
+    if (!oXmlRootNode.FromXmlFile(wsXmlFilePath) ||
+       (oXmlRootNode.GetName() != L"EMF" &&
+        oXmlRootNode.GetName() != L"WMF"))
+    {
+        oXmlFile->close();
+        delete oXmlFile;
         return;
-
-    if (oXmlRootNode.GetName() != L"EMF" &&
-        oXmlRootNode.GetName() != L"WMF")
-        return;
+    }
 
     setHeaderHidden(true);
 
@@ -50,6 +54,9 @@ void CMetafileTreeView::SetMetafile(const std::wstring &wsXmlFilePath)
 
     oStandardItemModel->appendRow(oStandardItem);
     setModel(oStandardItemModel);
+
+    oXmlFile->close();
+    delete oXmlFile;
 }
 
 bool CMetafileTreeView::IsClear()

@@ -1516,6 +1516,12 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	if (!m_pFont)
 		return S_OK;
 
+	double dX, dY, dW, dH;
+	oInfo.GetBounds(dX, dY, dW, dH);
+
+	CFieldBase* pFieldBase = NULL;
+
+	bool bRadioButton = false;
 	if (oInfo.IsTextField())
 	{
 		std::wstring wsValue = oInfo.GetTextValue();
@@ -1527,18 +1533,11 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
 
-		double dX, dY, dW, dH;
-		oInfo.GetBounds(dX, dY, dW, dH);
 		CTextField* pField = m_pDocument->CreateTextField();
-		pField->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+		pFieldBase = static_cast<CFieldBase*>(pField);
 
-		std::wstring wsKey = oInfo.GetKey();
-		if (L"" != wsKey)
-			pField->SetFieldName(wsKey);
-		else
-			pField->SetFieldName(m_oFieldsManager.GetNewFieldName());
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
 
-		pField->SetRequiredFlag(oInfo.IsRequired());
 		pField->SetMaxLen(oInfo.GetMaxCharacters());
 		pField->SetCombFlag(oInfo.IsComb());
 
@@ -1555,6 +1554,106 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		delete[] pCodes;
 	}
+	else if (oInfo.IsComboBox())
+	{
+		// Во всех PDF-ридерах кнопка выпадающего списка рисуется внутри поля, поэтому под неё немного места выделяем
+		dW += 5;
+
+		std::wstring wsValue = oInfo.GetTextValue();
+
+		unsigned int unLen;
+		unsigned int* pUnicodes = WStringToUtf32(wsValue, unLen);
+		if (!pUnicodes)
+			return S_FALSE;
+
+		unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
+
+		CChoiceField* pField = m_pDocument->CreateChoiceField();
+		pFieldBase = static_cast<CFieldBase*>(pField);
+
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+
+		TColor oColor = m_oBrush.GetTColor1();
+		if (oInfo.IsPlaceHolder())
+		{
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 0.5, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
+		}
+		else
+		{
+			pField->SetTextValue(wsValue);
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
+		}
+		delete[] pCodes;
+
+		for (unsigned int unIndex = 0, unItemsCount = oInfo.GetComboBoxItemsCount(); unIndex < unItemsCount; ++unIndex)
+		{
+			pField->AddOption(oInfo.GetComboBoxItem(unIndex));
+		}
+
+		pField->SetComboFlag(true);
+		pField->SetEditFlag(!oInfo.IsEditComboBox());
+	}
+	else if (oInfo.IsCheckBox())
+	{
+		CCheckBoxField* pField = NULL;
+		std::wstring wsGroupName = oInfo.GetGroupKey();
+		if (L"" != wsGroupName)
+		{
+			bRadioButton = true;
+			CRadioGroupField* pRadioGroup = m_pDocument->GetRadioGroupField(wsGroupName);
+			if (pRadioGroup)
+				pField = pRadioGroup->CreateKid();
+		}
+		else
+		{
+			pField = m_pDocument->CreateCheckBoxField();
+		}
+
+		if (pField)
+		{
+			pFieldBase = static_cast<CFieldBase*>(pField);
+
+			pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+			pField->SetValue(oInfo.IsChecked());
+
+			CFontCidTrueType* pCheckedFont   = GetFont(oInfo.GetCheckedFontName(), false, false);
+			CFontCidTrueType* pUncheckedFont = GetFont(oInfo.GetUncheckedFontName(), false, false);
+			if (!pCheckedFont)
+				pCheckedFont = m_pFont;
+
+			if (!pUncheckedFont)
+				pUncheckedFont = m_pFont;
+
+			unsigned int unCheckedSymbol   = oInfo.GetCheckedSymbol();
+			unsigned int unUncheckedSymbol = oInfo.GetUncheckedSymbol();
+
+			unsigned char* pCheckedCodes   = pCheckedFont->EncodeString(&unCheckedSymbol, 1);
+			unsigned char* pUncheckedCodes = pUncheckedFont->EncodeString(&unUncheckedSymbol, 1);
+
+			TColor oColor = m_oBrush.GetTColor1();
+			pField->SetAppearance(L"", pCheckedCodes, 2, pCheckedFont, L"", pUncheckedCodes, 2, pUncheckedFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
+
+		}
+	}
+	else if (oInfo.IsPicture())
+	{
+		// TODO: Реализовать картиночную форму
+	}
+
+	if (pFieldBase)
+	{
+		if (!bRadioButton)
+		{
+			std::wstring wsKey = oInfo.GetKey();
+			if (L"" != wsKey)
+				pFieldBase->SetFieldName(wsKey);
+			else
+				pFieldBase->SetFieldName(m_oFieldsManager.GetNewFieldName());
+		}
+
+		pFieldBase->SetRequiredFlag(oInfo.IsRequired());
+	}
+
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
@@ -1772,39 +1871,9 @@ void CPdfRenderer::UpdateFont()
 {
 	m_bNeedUpdateTextFont = false;
     std::wstring wsFontPath = m_oFont.GetPath();
-	LONG lFaceIndex = m_oFont.GetFaceIndex();
+	LONG lFaceIndex         = m_oFont.GetFaceIndex();
 	if (L"" == wsFontPath)
-	{
-        std::wstring wsFontName = m_oFont.GetName();
-		bool bBold   = m_oFont.IsBold();
-		bool bItalic = m_oFont.IsItalic();
-		bool bFind = false;
-		for (int nIndex = 0, nCount = m_vFonts.size(); nIndex < nCount; nIndex++)
-		{
-			TFontInfo& oInfo = m_vFonts.at(nIndex);
-			if (oInfo.wsFontName == wsFontName && oInfo.bBold == bBold && oInfo.bItalic == bItalic)
-			{
-				wsFontPath = oInfo.wsFontPath;
-				lFaceIndex = oInfo.lFaceIndex;
-				bFind = true;
-				break;
-			}
-		}
-
-		if (!bFind)
-		{
-            NSFonts::CFontSelectFormat oFontSelect;
-			oFontSelect.wsName = new std::wstring(m_oFont.GetName());
-			oFontSelect.bItalic = new INT(m_oFont.IsItalic() ? 1 : 0);
-			oFontSelect.bBold   = new INT(m_oFont.IsBold() ? 1 : 0);
-            NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
-
-			wsFontPath = pFontInfo->m_wsFontPath;
-			lFaceIndex = pFontInfo->m_lIndex;
-
-			m_vFonts.push_back(TFontInfo(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex));
-		}
-	}
+		GetFontPath(m_oFont.GetName(), m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex);
 
 	m_oFont.SetNeedDoBold(false);
 	m_oFont.SetNeedDoItalic(false);
@@ -1812,16 +1881,7 @@ void CPdfRenderer::UpdateFont()
 	m_pFont = NULL;
 	if (L"" != wsFontPath)
 	{
-		// TODO: Пока мы здесь предполагаем, что шрифты только либо TrueType, либо OpenType
-		if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72))
-		{
-			std::wcout << L"PDF Writer: Can't load fontfile " << wsFontPath.c_str() << "\n";
-			return;
-		}
-
-		std::wstring wsFontType = m_pFontManager->GetFontType();
-		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
-			m_pFont = m_pDocument->CreateTrueTypeFont(wsFontPath, lFaceIndex);
+		m_pFont = GetFont(wsFontPath, lFaceIndex);
 
         NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
 		if (pFontFile)
@@ -1833,6 +1893,62 @@ void CPdfRenderer::UpdateFont()
 				m_oFont.SetNeedDoBold(true);
 		}
 	}
+}
+void CPdfRenderer::GetFontPath(const std::wstring &wsFontName, const bool &bBold, const bool &bItalic, std::wstring& wsFontPath, LONG& lFaceIndex)
+{
+	bool bFind = false;
+	for (int nIndex = 0, nCount = m_vFonts.size(); nIndex < nCount; nIndex++)
+	{
+		TFontInfo& oInfo = m_vFonts.at(nIndex);
+		if (oInfo.wsFontName == wsFontName && oInfo.bBold == bBold && oInfo.bItalic == bItalic)
+		{
+			wsFontPath = oInfo.wsFontPath;
+			lFaceIndex = oInfo.lFaceIndex;
+			bFind = true;
+			break;
+		}
+	}
+
+	if (!bFind)
+	{
+		NSFonts::CFontSelectFormat oFontSelect;
+		oFontSelect.wsName  = new std::wstring(wsFontName);
+		oFontSelect.bItalic = new INT(bItalic ? 1 : 0);
+		oFontSelect.bBold   = new INT(bBold ? 1 : 0);
+		NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
+
+		wsFontPath = pFontInfo->m_wsFontPath;
+		lFaceIndex = pFontInfo->m_lIndex;
+
+		m_vFonts.push_back(TFontInfo(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex));
+	}
+}
+PdfWriter::CFontCidTrueType* CPdfRenderer::GetFont(const std::wstring& wsFontPath, const LONG& lFaceIndex)
+{
+	PdfWriter::CFontCidTrueType* pFont = NULL;
+	if (L"" != wsFontPath)
+	{
+		// TODO: Пока мы здесь предполагаем, что шрифты только либо TrueType, либо OpenType
+		if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72))
+		{
+			std::wcout << L"PDF Writer: Can't load fontfile " << wsFontPath.c_str() << "\n";
+			return NULL;
+		}
+
+		std::wstring wsFontType = m_pFontManager->GetFontType();
+		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
+			pFont = m_pDocument->CreateTrueTypeFont(wsFontPath, lFaceIndex);
+	}
+
+	return pFont;
+}
+PdfWriter::CFontCidTrueType* CPdfRenderer::GetFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic)
+{
+	std::wstring wsFontPath;
+	LONG lFaceIndex;
+
+	GetFontPath(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex);
+	return GetFont(wsFontPath, lFaceIndex);
 }
 void CPdfRenderer::UpdateTransform()
 {

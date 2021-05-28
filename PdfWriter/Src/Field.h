@@ -55,6 +55,7 @@ namespace PdfWriter
 		void SetRequiredFlag(bool isRequired);
 		void SetNoExportFlag(bool isNoExport);
 		void AddPageRect(CPage* pPage, const TRect& oRect);
+		virtual void SetFieldName(const std::string& sName);
 		virtual void SetFieldName(const std::wstring& wsName);
 		void SetFieldHint(const std::wstring& wsHint);
 		TRect& GetRect();
@@ -115,9 +116,9 @@ namespace PdfWriter
 	public:
 		CCheckBoxField(CXref* pXref, CDocument* pDocument, CRadioGroupField* pGroup = NULL);
 
-		void SetAppearance(const std::wstring& wsYesValue, unsigned char* pYesCodes, unsigned int unYesCount,
-						   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount,
-						   CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0);
+		void SetAppearance(const std::wstring& wsYesValue, unsigned char* pYesCodes, unsigned int unYesCount, CFontDict* pYesFont,
+						   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount, CFontDict* pOffFont,
+						   const TRgb& oColor, const double& dAlpha, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0);
 		void SetValue(const bool& isYes);
 
 	private:

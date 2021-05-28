@@ -235,6 +235,9 @@ private:
 	bool DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
 	bool PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
 	void UpdateFont();
+	void GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);
+	PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontPath, const LONG& lFontIndex);
+	PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic);
 	void UpdateTransform();
 	void UpdatePen();
 	void UpdateBrush();
@@ -1573,11 +1576,11 @@ private:
 			m_unCounter = 0;
 		}
 
-		std::wstring GetNewFieldName()
+		std::string GetNewFieldName()
 		{
-			std::wstring wsName(L"F");
-			wsName.append(std::to_wstring(++m_unCounter));
-			return wsName;
+			std::string sName("F");
+			sName.append(std::to_string(++m_unCounter));
+			return sName;
 		}
 
 	private:

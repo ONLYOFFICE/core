@@ -127,6 +127,10 @@ namespace PdfWriter
 
 		Add("F", 4);		
 	}
+	void CFieldBase::SetFieldName(const std::string& sName)
+	{
+		Add("T", new CStringObject(sName.c_str()));
+	}
 	void CFieldBase::SetFieldName(const std::wstring& wsName) 
 	{
 		std::string sName = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsName);
@@ -227,7 +231,8 @@ namespace PdfWriter
 	}
 	void CTextField::SetMaxLen(int nMaxLen)
 	{
-		Add("MaxLen", nMaxLen);
+		if (nMaxLen > 0)
+			Add("MaxLen", nMaxLen);
 	}
 	//----------------------------------------------------------------------------------------
 	// CChoiceField
@@ -284,9 +289,9 @@ namespace PdfWriter
 		if (pGroup)
 			Add("Parent", pGroup);
 	}
-	void CCheckBoxField::SetAppearance(const std::wstring& wsYesValue, unsigned char* pYesCodes, unsigned int unYesCount, 
-									   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount, 
-									   CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY)
+	void CCheckBoxField::SetAppearance(const std::wstring& wsYesValue, unsigned char* pYesCodes, unsigned int unYesCount, CFontDict* pYesFont,
+									   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount, CFontDict* pOffFont,
+									   const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY)
 	{
 		if (!Get("AS"))
 		{
@@ -307,7 +312,7 @@ namespace PdfWriter
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 
 		CResourcesDict* pResources = new CResourcesDict(m_pXref, true, false);
-		const char* sFontName = pResources->GetFontName(pFont);
+		const char* sFontName = pResources->GetFontName(pYesFont);
 		if (!sFontName)
 			return;
 
@@ -334,9 +339,8 @@ namespace PdfWriter
 
 		Add("DA", new CStringObject(sDA.c_str()));
 
-		const char* sAppearanceFontName = pFieldsResources->GetFontName(pFont);
-		pYes->DrawSimpleText(wsYesValue, pYesCodes, unYesCount, sAppearanceFontName, dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
-		pOff->DrawSimpleText(wsOffValue, pOffCodes, unOffCount, sAppearanceFontName, dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
+		pYes->DrawSimpleText(wsYesValue, pYesCodes, unYesCount, pFieldsResources->GetFontName(pYesFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
+		pOff->DrawSimpleText(wsOffValue, pOffCodes, unOffCount, pFieldsResources->GetFontName(pOffFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
 	}
 	void CCheckBoxField::SetValue(const bool& isYes)
 	{

@@ -23,6 +23,8 @@ private slots:
 
     void on_expandButton_clicked();
 
+    void on_ModButton_clicked();
+
 private:
     Ui::MainWindow      *ui;
     std::wstring        m_wsPathToFile;

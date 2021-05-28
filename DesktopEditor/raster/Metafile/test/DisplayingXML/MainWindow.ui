@@ -70,7 +70,7 @@
           <bool>true</bool>
          </property>
          <property name="animated">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <attribute name="headerCascadingSectionResizes">
           <bool>false</bool>
@@ -87,11 +87,28 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="expandButton">
-         <property name="text">
-          <string>Expand All</string>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
+          <number>2</number>
          </property>
-        </widget>
+         <item>
+          <widget class="QPushButton" name="expandButton">
+           <property name="text">
+            <string>Expand All</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="ModButton">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="text">
+            <string>Use a light Mod</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>

@@ -8,15 +8,38 @@
 #include <QDebug>
 
 CTextEditDelegate::CTextEditDelegate(QWidget *parent) :
-    QStyledItemDelegate(parent)
+    QStyledItemDelegate(parent),
+    pFont(NULL)
 {
+    bLightMode = false;
+}
+
+CTextEditDelegate::~CTextEditDelegate()
+{
+    ClearFont();
+}
+
+void CTextEditDelegate::SetFont(QFont *pFont)
+{
+    ClearFont();
+    this->pFont = pFont;
+}
+
+void CTextEditDelegate::SetMode(bool bIsLightMode)
+{
+    bLightMode = bIsLightMode;
 }
 
 QWidget *CTextEditDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QTextEdit *pTextEditor = new QTextEdit(parent);
+    pTextEditor->setReadOnly(true);
+
     pTextEditor->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     pTextEditor->document()->setDocumentMargin(0);
+
+    if (NULL != pFont)
+        pTextEditor->setFont(*pFont);
 
     CXMLHighlighter *pXMLHighlighter = new CXMLHighlighter(pTextEditor->document());
     return pTextEditor;
@@ -44,14 +67,18 @@ void CTextEditDelegate::updateEditorGeometry(QWidget *editor, const QStyleOption
 
 void CTextEditDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    //TODO: видимо нужно вручную парсить строку и разделять на блоки и затем отрисовывать со своим стилем
-    painter->drawText(option.rect, index.data().toString());
+    if (bLightMode)
+        painter->drawText(option.rect, index.data().toString());
+    else
+    {
+        QTextDocument oEmptyDocument;
+        CXMLHighlighter oXMLHighlighter(&oEmptyDocument);
+        oXMLHighlighter.PaintByRegex(index.data().toString(), painter, option.rect, pFont);
+    }
+}
 
-//    QStyleOptionViewItem itemOption(option);
-
-//    initStyleOption(&itemOption, index);
-//    itemOption.text = qsValue;  // override text
-
-//    QApplication::style()->drawControl(QStyle::CE_ItemViewItem, &itemOption, painter, nullptr);
-
+void CTextEditDelegate::ClearFont()
+{
+    if (NULL != pFont)
+        delete pFont;
 }

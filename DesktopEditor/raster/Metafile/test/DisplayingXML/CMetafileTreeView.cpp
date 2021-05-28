@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QMessageBox>
 #include <QStandardItem>
+#include <CTextEditDelegate.h>
 
 #ifdef _DEBUG
     #include <QDebug>
@@ -54,6 +55,16 @@ void CMetafileTreeView::SetMetafile(const std::wstring &wsXmlFilePath)
 bool CMetafileTreeView::IsClear()
 {
     return NULL == model();
+}
+
+void CMetafileTreeView::SetMode(bool bLightMode)
+{
+    if (dynamic_cast<CTextEditDelegate*>(itemDelegate()) != nullptr)
+    {
+        CTextEditDelegate *pTextEditDelegate = static_cast<CTextEditDelegate*>(itemDelegate());
+        pTextEditDelegate->SetMode(bLightMode);
+        pTextEditDelegate->updateEditorGeometry(this, QStyleOptionViewItem(), QModelIndex());
+    }
 }
 
 void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem& oStandartItem, unsigned int unLevel)

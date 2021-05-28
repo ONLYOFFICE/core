@@ -16,6 +16,7 @@ public:
 
     void SetMetafile(const std::wstring& wsXmlFilePath);
     bool IsClear();
+    void SetMode(bool bLightMode);
 
 private:
     void ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem& oStandartItem, unsigned int unLevel = 0);

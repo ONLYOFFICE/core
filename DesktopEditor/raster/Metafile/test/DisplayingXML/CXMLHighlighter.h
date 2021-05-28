@@ -13,15 +13,26 @@ public:
     CXMLHighlighter(QTextDocument * parent);
     CXMLHighlighter(QTextEdit * parent);
 
+    void PaintByRegex(const QString&    qsText,
+                            QPainter*   pPainter,
+                      const QRect&      oRect,
+                            QFont*      pFont = NULL);
+
 protected:
     virtual void highlightBlock(const QString & text);
 
 private:
-    void highlightByRegex(const QTextCharFormat & format,
-                          const QRegExp & regex, const QString & text);
+    void        highlightByRegex(const QTextCharFormat & format,
+                                 const QRegExp & regex,
+                                 const QString & text);
 
-    void setRegexes();
-    void setFormats();
+    QStringList GetStringByRegex(const QString& qsText,
+                                 const QTextCharFormat & format,
+                                 const QRegExp & regex);
+
+    void setPointSize(QFont *pFont);
+    void SetRegexes();
+    void SetFormats();
 
 private:
     QTextCharFormat     m_xmlKeywordFormat;

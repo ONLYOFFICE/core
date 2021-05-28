@@ -2,11 +2,8 @@
 #include "ui_MainWindow.h"
 
 #include <QResizeEvent>
-#include <QMessageBox>
 #include <QFileDialog>
 #include <QTextEdit>
-#include <QDebug>
-#include <QFile>
 
 #include "../../../../graphics/pro/Fonts.h"
 #include "../../../../graphics/pro/Graphics.h"
@@ -27,6 +24,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     CTextEditDelegate *pTextEditDelegate = new CTextEditDelegate(this);
     ui->treeView->setItemDelegate(pTextEditDelegate);
+
+    QFont *pFont = new QFont;
+    pFont->setPointSize(13);
+
+    pTextEditDelegate->SetFont(pFont);
+    ui->treeView->setFont(*pFont);
 }
 
 MainWindow::~MainWindow()
@@ -104,4 +107,21 @@ void MainWindow::on_expandButton_clicked()
             ui->expandButton->setText("Expand All");
     }
 }
+
+
+void MainWindow::on_ModButton_clicked()
+{
+    if (ui->treeView->IsClear())
+        return;
+
+    if (ui->ModButton->text() == "Use a light Mod")
+    {
+            ui->treeView->SetMode(true);
+            ui->ModButton->setText("Use a hard Mod");
+    }
+    else if (ui->ModButton->text() == "Use a hard Mod")
+    {
+            ui->treeView->SetMode(false);
+            ui->ModButton->setText("Use a light Mod");
+    }}
 

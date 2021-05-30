@@ -901,7 +901,20 @@ namespace NSOnlineOfficeBinToPdf
 				oInfo.SetRequired(nFlags & 4);
 				oInfo.SetPlaceHolder(nFlags & 8);
 
+				if (nFlags & (1 << 6))
+				{
+					int nBorderType = ReadInt(current, curindex);
+					double dBorderSize = ReadDouble(current, curindex);
+					unsigned char unR = ReadByte(current, curindex);
+					unsigned char unG = ReadByte(current, curindex);
+					unsigned char unB = ReadByte(current, curindex);
+					unsigned char unA = ReadByte(current, curindex);
+
+					oInfo.SetBorder(nBorderType, dBorderSize, unR, unG, unB, unA);
+				}
+
 				oInfo.SetType(ReadInt(current, curindex));
+
 				if (oInfo.IsTextField())
 				{
 					oInfo.SetComb(nFlags & (1 << 20));
@@ -911,6 +924,36 @@ namespace NSOnlineOfficeBinToPdf
 
 					if (nFlags & (1 << 22))
 						oInfo.SetTextValue(ReadString(current, curindex));
+				}
+				else if (oInfo.IsComboBox())
+				{
+					oInfo.SetEditComboBox(nFlags & (1 << 20));
+
+					int nItemsCount = ReadInt(current, curindex);
+					for (int nIndex = 0; nIndex < nItemsCount; ++nIndex)
+					{
+						oInfo.AddComboBoxItem(ReadString(current, curindex));
+					}
+
+					int nSelectedIndex = ReadInt(current, curindex);
+
+					if (nFlags & (1 << 22))
+						oInfo.SetTextValue(ReadString(current, curindex));
+				}
+				else if (oInfo.IsCheckBox())
+				{
+					oInfo.SetChecked(nFlags & (1 << 20));
+					oInfo.SetCheckedSymbol(ReadInt(current, curindex));
+					oInfo.SetCheckedFont(ReadString(current, curindex));
+					oInfo.SetUncheckedSymbol(ReadInt(current, curindex));
+					oInfo.SetUncheckedFont(ReadString(current, curindex));
+
+					if (nFlags & (1 << 21))
+						oInfo.SetGroupKey(ReadString(current, curindex));
+				}
+				else if (oInfo.IsPicture())
+				{
+
 				}
 
 				if (oInfo.IsValid())

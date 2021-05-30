@@ -1541,18 +1541,56 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		pField->SetMaxLen(oInfo.GetMaxCharacters());
 		pField->SetCombFlag(oInfo.IsComb());
 
+		if (oInfo.HaveBorder())
+		{
+			unsigned char unR, unG, unB, unA;
+			oInfo.GetBorderColor(unR, unG, unB, unA);
+
+			pFieldBase->SetFieldBorder(EBorderSubtype::border_subtype_Solid, TRgb(unR, unG, unB), MM_2_PT(oInfo.GetBorderSize()), 0, 0, 0);
+		}
+
+		double* pShifts = NULL;
+		unsigned int unShiftsCount = 0;
+		if (oInfo.IsComb())
+		{
+			unShiftsCount = unLen;
+			pShifts = new double[unShiftsCount];
+			if (pShifts && unShiftsCount)
+			{
+				double dShift = 0;
+				double dPrevW = 0;
+				double dCellW = MM_2_PT(dW) / unShiftsCount;
+				for (unsigned int unIndex = 0; unIndex < unShiftsCount; ++unIndex)
+				{
+					unsigned short ushCode = (static_cast<unsigned short>((pCodes[unIndex * 2] << 8) & 0xFFFF) | static_cast<unsigned short>((pCodes[unIndex * 2 + 1])));
+					double dLetterWidth = m_pFont->GetWidth(ushCode) / 1000.0 * m_oFont.GetSize();
+
+					double dTempShift = (dCellW - dLetterWidth) / 2;
+					pShifts[unIndex] = dPrevW + dTempShift;
+					dPrevW = dLetterWidth + dTempShift;
+				}
+			}
+			else
+			{
+				unShiftsCount = 0;
+			}
+		}
+
 		TColor oColor = m_oBrush.GetTColor1();
 		if (oInfo.IsPlaceHolder())
 		{
-			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 0.5, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 0.5, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()), pShifts, unShiftsCount);
 		}
 		else
 		{
 			pField->SetTextValue(wsValue);
-			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()), pShifts, unShiftsCount);
 		}
 
-		delete[] pCodes;
+		if (pShifts)
+			delete[] pShifts;
+
+		delete[] pCodes;				
 	}
 	else if (oInfo.IsComboBox())
 	{

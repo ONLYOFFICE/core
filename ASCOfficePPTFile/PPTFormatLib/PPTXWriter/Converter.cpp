@@ -934,8 +934,10 @@ void PPT_FORMAT::CPPTXWriter::WriteGroup(CStringWriter& oWriter, CRelsGenerator&
 }
 void PPT_FORMAT::CPPTXWriter::WriteTable(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {
-    CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
+    CTableElement *pTableElement = dynamic_cast<CTableElement*>(pElement.get());
 
+    if (!pTableElement)
+        return;
     m_pShapeWriter->SetElement(pElement);
     oWriter.WriteString(m_pShapeWriter->ConvertTable());
 
@@ -951,9 +953,12 @@ void PPT_FORMAT::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerato
     if (!pElement) return;
 
     CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
+    CTableElement *pTableElement = dynamic_cast<CTableElement*>(pElement.get());
 
-    if (pGroupElement && pGroupElement->m_sName.find(L"Table") != -1)
+    if (pTableElement)
+    {
         return WriteTable(oWriter, oRels, pElement, pLayout);
+    }
     if (pGroupElement)
     {
         return WriteGroup(oWriter, oRels, pElement, pLayout);

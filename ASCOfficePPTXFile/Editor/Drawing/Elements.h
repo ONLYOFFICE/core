@@ -731,7 +731,8 @@ namespace PPT_FORMAT
 			return pElement;
 		}
 	};
-	class CVideoElement : public CImageElement
+
+        class CVideoElement : public CImageElement
 	{
 	public:
 		std::wstring	m_strVideoFileName;
@@ -780,33 +781,58 @@ namespace PPT_FORMAT
 		}
 	};
 
-	class CGroupElement : public CElement
-	{
-	public:
-		CGroupElement() : CElement()
-		{
-			m_etType = etGroup;
-		}
-		virtual ~CGroupElement()
-		{
-		}
-		virtual CElementPtr CreateDublicate()
-		{
-			CGroupElement* pGroupElement = new CGroupElement();
+        class CGroupElement : public CElement
+        {
+        public:
+            CGroupElement() : CElement()
+            {
+                m_etType = etGroup;
+            }
+            virtual ~CGroupElement()
+            {
+            }
+            virtual CElementPtr CreateDublicate()
+            {
+                CGroupElement* pGroupElement = new CGroupElement();
 
-			CElementPtr	pElement = CElementPtr(	pGroupElement );
-			
-			SetProperiesToDublicate(pElement);
+                CElementPtr	pElement = CElementPtr(	pGroupElement );
 
-			return pElement;
-		}
-        AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
-		{
+                SetProperiesToDublicate(pElement);
 
-			return L"";		
-		}
-	};
+                return pElement;
+            }
+            AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
+            {
 
+                return L"";
+            }
+        };
 
+        class CTableElement : public CElement
+        {
+        public:
+            CTableElement() : CElement()
+            {
+                m_etType = etTable;
+            }
+            virtual ~CTableElement()
+            {
+            }
+            virtual CElementPtr CreateDublicate()
+            {
+                CTableElement* pTableElement = new CTableElement();
+
+                CElementPtr	pElement = CElementPtr(	pTableElement );
+
+                SetProperiesToDublicate(pElement);
+
+                return pElement;
+            }
+            AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
+            {
+
+                return L"";
+            }
+        };
 }
 

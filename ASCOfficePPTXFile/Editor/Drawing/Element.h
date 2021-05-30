@@ -45,7 +45,8 @@ namespace PPT_FORMAT
 		etAudio		 = 2,
 		etPicture    = 3,
 		etShape      = 4,
-		etText		 = 5
+        etText		 = 5,
+        etTable      = 6
 	};
 
 	class CTheme;
@@ -72,7 +73,7 @@ namespace PPT_FORMAT
 		double				m_dEndTime;
 
 		CTextInteractiveInfo m_oTextActions;
-                std::vector<CInteractiveInfo>	m_arrActions;
+        std::vector<CInteractiveInfo>	m_arrActions;
 
 		CAnimationInfo		m_oAnimations;
 		CEffects			m_oEffects;

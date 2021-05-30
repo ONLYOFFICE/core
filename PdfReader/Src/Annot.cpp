@@ -174,7 +174,6 @@ namespace PdfReader
 		oDictItem.Free();
 
 		//Border style
-
 		AnnotBorderType eBorderType = annotBorderSolid;
 		double dBorderWidth = 1;
 		double *pBorderDash = NULL;

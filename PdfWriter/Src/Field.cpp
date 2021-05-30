@@ -35,12 +35,17 @@
 #include "Document.h"
 #include "ResourcesDictionary.h"
 #include "Types.h"
+#include "Annotation.h"
 
 #include <algorithm>
 #include <math.h>
 
 #include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../DesktopEditor/common/File.h"
+
+#ifndef BS_DEF_WIDTH
+#define BS_DEF_WIDTH 1
+#endif
 
 namespace PdfWriter
 {
@@ -54,6 +59,9 @@ namespace PdfWriter
 
 		m_pXref     = pXref;
 		m_pDocument = pDocument;
+
+		m_nBorderType = 0;
+		m_dBorderSize = 0;
 	}
 	void CFieldBase::SetReadOnlyFlag(bool isReadOnly)
 	{
@@ -149,7 +157,7 @@ namespace PdfWriter
 	{
 		return m_pDocument->GetFieldsResources();
 	}
-	void CFieldBase::SetTextAppearance(const std::wstring& wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY)
+	void CFieldBase::SetTextAppearance(const std::wstring& wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY, double* pShifts, unsigned int unShiftsCount)
 	{
 		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
 		Add("AP", pAppearance);
@@ -187,12 +195,78 @@ namespace PdfWriter
 
 		Add("DA", new CStringObject(sDA.c_str()));
 
-		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
+		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop), pShifts, unShiftsCount);
 	}
 	void CFieldBase::SetTextValue(const std::wstring &wsValue)
 	{
 		std::string sValue = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsValue);
 		Add("V", new CStringObject(sValue.c_str(), true));
+	}
+	void CFieldBase::SetFieldBorder(const EBorderSubtype& eSubtype, const TRgb& oColor, const double& dWidth, const unsigned short& nDashOn, const unsigned short& nDashOff, const unsigned short& nDashPhase)
+	{		
+		CDictObject* pBorderStyleDict = new CDictObject();
+		if (!pBorderStyleDict)
+			return;
+
+		Add("BS", pBorderStyleDict);
+
+		// Почему то некоторые PDF-ридеры плохо воспринимают значения от 0 до 1, поэтому ставим 1
+		if (dWidth < 0.01)
+			pBorderStyleDict->Add("W", 0);
+		else if (dWidth < 1.01)
+			pBorderStyleDict->Add("W", 1);
+		else
+			pBorderStyleDict->Add("W", dWidth);
+		if (dWidth < 0.01)
+			return;
+
+		if (border_subtype_Dashed == eSubtype)
+		{
+			CArrayObject* pDash = new CArrayObject();
+			if (!pDash)
+				return;
+
+			pBorderStyleDict->Add("D", pDash);
+			pBorderStyleDict->Add("Type", "Border");
+			pDash->Add(nDashOn);
+			pDash->Add(nDashOff);
+
+			if (0 != nDashPhase)
+				pDash->Add(nDashOff);
+		}
+
+		switch (eSubtype)
+		{
+			case border_subtype_Solid:      pBorderStyleDict->Add("S", "S"); break;
+			case border_subtype_Dashed:     pBorderStyleDict->Add("S", "D"); break;
+			case border_subtype_Beveled:    pBorderStyleDict->Add("S", "B"); break;
+			case border_subtype_Inset:      pBorderStyleDict->Add("S", "I"); break;
+			case border_subtype_Underlined: pBorderStyleDict->Add("S", "U"); break;
+		}
+
+		CDictObject* pMK = new CDictObject();
+		CArrayObject* pColor = new CArrayObject();
+		pColor->Add(oColor.r);
+		pColor->Add(oColor.g);
+		pColor->Add(oColor.b);
+		Add("MK", pMK);
+		pMK->Add("BC", pColor);
+
+		m_nBorderType  = 1;
+		m_dBorderSize  = dWidth;
+		m_oBorderColor = oColor;
+	}
+	bool CFieldBase::HaveBorder() const
+	{
+		return m_nBorderType == 1;
+	}
+	const double& CFieldBase::GetBorderSize() const
+	{
+		return m_dBorderSize;
+	}
+	const TRgb& CFieldBase::GetBorderColor() const
+	{
+		return m_oBorderColor;
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextField
@@ -234,6 +308,20 @@ namespace PdfWriter
 		if (nMaxLen > 0)
 			Add("MaxLen", nMaxLen);
 	}
+	int CTextField::GetMaxLen() const
+	{
+		CNumberObject* oMaxLen = (CNumberObject*)Get("MaxLen");
+		if (oMaxLen)
+			return oMaxLen->Get();
+
+		return 0;
+	}
+	bool CTextField::IsCombFlag() const
+	{
+		int nFlags = ((CNumberObject*)this->Get("Ff"))->Get();
+		return (nFlags & (1 << 24));
+	}
+
 	//----------------------------------------------------------------------------------------
 	// CChoiceField
 	//----------------------------------------------------------------------------------------
@@ -459,6 +547,7 @@ namespace PdfWriter
 	{
 		m_pXref   = pXref;
 		m_pStream = new CMemoryStream();
+		m_pField  = pField;
 
 		SetStream(m_pXref, m_pStream);
 
@@ -483,7 +572,7 @@ namespace PdfWriter
 		//SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
 	}
-	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFontName, double dFontSize, double dX, double dY, double dR, double dG, double dB, const char* sExtGStateName, double dWidth, double dHeight)
+	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFontName, double dFontSize, double dX, double dY, double dR, double dG, double dB, const char* sExtGStateName, double dWidth, double dHeight, double* pShifts, unsigned int unShiftsCount)
 	{
 		if (!m_pStream || !sFontName)
 			return;
@@ -496,6 +585,63 @@ namespace PdfWriter
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(std::max(dHeight, 0.0));
 		m_pStream->WriteStr(" re\012W\012n\012");
+
+
+		if (m_pField && m_pField->HaveBorder())
+		{
+			TRgb oColor = m_pField->GetBorderColor();
+			m_pStream->WriteStr("q\012");
+
+			m_pStream->WriteReal(oColor.r);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(oColor.g);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(oColor.b);
+			m_pStream->WriteStr(" RG\012");
+
+			double dBorderSize = m_pField->GetBorderSize();
+			double dBorderSize_2 = dBorderSize / 2;
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteStr(" W\0120 j\0120 J\012");
+
+			m_pStream->WriteReal(dBorderSize_2);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize_2);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dWidth - dBorderSize, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dHeight - dBorderSize, 0.0));
+			m_pStream->WriteStr(" re\012S\012");
+
+			CTextField* pTextField = dynamic_cast<CTextField*>(m_pField);
+			if (pTextField && pTextField->IsCombFlag())
+			{
+				int nMaxLen = pTextField->GetMaxLen();
+				if (nMaxLen > 1)
+				{
+					double dStep = dWidth / nMaxLen;
+					double dX = dStep;
+					for (int nIndex = 0; nIndex < nMaxLen - 1; ++nIndex)
+					{
+						m_pStream->WriteReal(dX);
+						m_pStream->WriteChar(' ');
+						m_pStream->WriteInt(0);
+						m_pStream->WriteChar(' ');
+						m_pStream->WriteStr(" m\012");
+						m_pStream->WriteReal(dX);
+						m_pStream->WriteChar(' ');
+						m_pStream->WriteReal(dHeight);
+						m_pStream->WriteChar(' ');
+						m_pStream->WriteStr(" l\012S\012");
+
+						dX += dStep;
+					}
+				}
+			}
+
+			m_pStream->WriteStr("Q\012");
+		}
+
 		m_pStream->WriteStr("BT\012");
 
 		m_pStream->WriteReal(dR);
@@ -518,24 +664,51 @@ namespace PdfWriter
 		m_pStream->WriteReal(dFontSize);
 		m_pStream->WriteStr(" Tf\012");
 
-		m_pStream->WriteReal(dX);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dY);
-		m_pStream->WriteStr(" Td\012");
-
-		if (pCodes)
+		if (pCodes && pShifts && unShiftsCount > 0 && unShiftsCount == unCount / 2)
 		{
-			m_pStream->WriteChar('<');
-			m_pStream->WriteBinary(pCodes, unCount, NULL);
-			m_pStream->WriteChar('>');
+			m_pStream->WriteReal(dX + pShifts[0]);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dY);
+			m_pStream->WriteStr(" Td\012");
+
+			for (unsigned int unIndex = 0; unIndex < unShiftsCount; ++unIndex)
+			{
+				m_pStream->WriteChar('[');
+				m_pStream->WriteChar('<');
+				m_pStream->WriteBinary(pCodes + 2 * unIndex, 2, NULL);
+				m_pStream->WriteChar('>');
+				m_pStream->WriteStr("]TJ\012");
+
+				if (unIndex != unShiftsCount - 1)
+				{
+					m_pStream->WriteReal(pShifts[unIndex + 1]);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(0.0);
+					m_pStream->WriteStr(" Td\012");
+				}
+			}
 		}
 		else
 		{
-			std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsText);
-			m_pStream->WriteEscapeText((BYTE*)(sText.c_str()), sText.length());
-		}
+			m_pStream->WriteReal(dX);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dY);
+			m_pStream->WriteStr(" Td\012");
 
-		m_pStream->WriteStr(" Tj\012");
+			if (pCodes)
+			{
+				m_pStream->WriteChar('<');
+				m_pStream->WriteBinary(pCodes, unCount, NULL);
+				m_pStream->WriteChar('>');
+			}
+			else
+			{
+				std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsText);
+				m_pStream->WriteEscapeText((BYTE*)(sText.c_str()), sText.length());
+			}
+
+			m_pStream->WriteStr(" Tj\012");
+		}
 
 		m_pStream->WriteStr("ET\012");
 		

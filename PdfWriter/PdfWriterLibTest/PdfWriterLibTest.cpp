@@ -92,7 +92,9 @@ void TestField()
 	pField4->SetFieldName(L"Test1234");
 	pField4->SetFieldHint(L"Hint1234");
 	pField4->SetMaxLen(10);
+	pField4->SetCombFlag(true);
 	pField4->SetTextValue(L"Ilya");
+	pField4->SetFieldBorder(border_subtype_Solid, TRgb(255, 0, 0), 1, 0, 0, 0);
 	pField4->SetTextAppearance(L"Ilya", NULL, 0, pFont, TRgb(255, 0, 0), 1, 40, 1, 14.3);
 
 	CChoiceField* pComboBox = oPdf.CreateChoiceField();
@@ -101,13 +103,14 @@ void TestField()
 	pComboBox->SetFieldName(L"ComboBox1");
 	pComboBox->SetFieldHint(L"Комбо бокс");
 	pComboBox->SetTextValue(L"Ilya");
-	pComboBox->SetTextAppearance(L"Ilya", NULL, 0, pFont, TRgb(255, 0, 0), 0.5, 40, 1, 14.3);
 	pComboBox->AddOption(L"Синий");
 	pComboBox->AddOption(L"Green");
 	pComboBox->AddOption(L"Красный");
 	pComboBox->SetComboFlag(true);
 	pComboBox->SetEditFlag(false);
+	pComboBox->SetFieldBorder(border_subtype_Solid, TRgb(0, 255, 0), 1, 0, 0, 0);
 	pComboBox->SetMultiSelectFlag(false);
+	pComboBox->SetTextAppearance(L"Ilya", NULL, 0, pFont, TRgb(255, 0, 0), 0.5, 40, 1, 14.3);
 
 	CCheckBoxField* pCheckBox = oPdf.CreateCheckBoxField();
 	pCheckBox->SetFieldName(L"CheckBox");

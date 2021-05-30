@@ -45,6 +45,7 @@ namespace PdfWriter
 	class CResourcesDict;
 	class CFontDict;
 	class CRadioGroupField;
+	enum EBorderSubtype;
 
 	class CFieldBase : public CDictObject
 	{
@@ -60,8 +61,12 @@ namespace PdfWriter
 		void SetFieldHint(const std::wstring& wsHint);
 		TRect& GetRect();
 		CResourcesDict* GetResourcesDict();
-		void SetTextAppearance(const std::wstring& wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0);
+		void SetTextAppearance(const std::wstring& wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double* pShifts = NULL, unsigned int unShiftsCount = 0);
 		void SetTextValue(const std::wstring& wsValue);
+		void SetFieldBorder(const EBorderSubtype& eSubtype, const TRgb& oColor, const double& fWidth, const unsigned short& nDashOn, const unsigned short& nDashOff, const unsigned short& nDashPhase);
+		bool HaveBorder() const;
+		const double& GetBorderSize() const;
+		const TRgb& GetBorderColor() const;
 
 	protected:
 
@@ -72,6 +77,9 @@ namespace PdfWriter
 		CXref*     m_pXref;
 		TRect      m_oRect;
 		CDocument* m_pDocument;
+		int        m_nBorderType;
+		double     m_dBorderSize;
+		TRgb       m_oBorderColor;
 	};
 
 	class CTextField : public CFieldBase
@@ -88,6 +96,9 @@ namespace PdfWriter
 		void SetRichTextFlag(bool isRichText);
 
 		void SetMaxLen(int nMaxLen);	
+
+		int  GetMaxLen() const;
+		bool IsCombFlag() const;
 
 	private:
 	};
@@ -183,12 +194,13 @@ namespace PdfWriter
 	{
 	public:
 		CAnnotAppearanceObject(CXref* pXRef, CFieldBase* pField);
-		void DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double dR = 0.0, double dG = 0.0, double dB = 0.0, const char* sExtGrStateName = NULL, double dW = 1.0, double dH = 1.0);
+		void DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double dR = 0.0, double dG = 0.0, double dB = 0.0, const char* sExtGrStateName = NULL, double dW = 1.0, double dH = 1.0, double* pShifts = NULL, unsigned int unShiftsCount = 0);
 
 	private:
 
-		CXref*   m_pXref;
-		CStream* m_pStream;
+		CXref*      m_pXref;
+		CStream*    m_pStream;
+		CFieldBase* m_pField;
 	};
 
 }

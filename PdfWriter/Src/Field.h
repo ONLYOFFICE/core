@@ -35,6 +35,7 @@
 
 #include "Objects.h"
 #include "Types.h"
+#include "Annotation.h"
 
 namespace PdfWriter
 {
@@ -45,7 +46,6 @@ namespace PdfWriter
 	class CResourcesDict;
 	class CFontDict;
 	class CRadioGroupField;
-	enum EBorderSubtype;
 
 	class CFieldBase : public CDictObject
 	{

@@ -35,7 +35,6 @@
 #include "Document.h"
 #include "ResourcesDictionary.h"
 #include "Types.h"
-#include "Annotation.h"
 
 #include <algorithm>
 #include <math.h>

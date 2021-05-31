@@ -1646,7 +1646,9 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
             if (isTable())
             {
                 CTableElement* pTableElem = new CTableElement();
+                pTableElem->m_etType = etGroup;
                 pElement = CElementPtr(pTableElem);
+
             }
             else if (bGroupShape)
             {

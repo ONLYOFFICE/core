@@ -40,6 +40,7 @@
 #include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
+#include "TableWriter.h"
 
 #include "../Reader/PPTDocumentInfo.h"
 
@@ -938,16 +939,10 @@ void PPT_FORMAT::CPPTXWriter::WriteTable(CStringWriter& oWriter, CRelsGenerator&
 
     if (!pTableElement)
         return;
-    m_pShapeWriter->SetElement(pElement);
-//    PPTX::Logic::GraphicFrame
-    oWriter.WriteString(m_pShapeWriter->ConvertTable());
 
-    oWriter.WriteString(m_pShapeWriter->ConvertTableCells());
-//    for (size_t i = 0; i < pGroupElement->m_pChildElements.size(); i++)
-//    {
-//        WriteElement(oWriter, oRels, pGroupElement->m_pChildElements[i], pLayout);
-//    }
-    oWriter.WriteString(L"</a:tbl></a:graphicData></a:graphic></p:graphicFrame>");
+    PPTX::Logic::GraphicFrame gf;
+    TableWriter(pTableElement).Convert(gf);
+    oWriter.WriteString(gf.toXML());
 }
 void PPT_FORMAT::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {

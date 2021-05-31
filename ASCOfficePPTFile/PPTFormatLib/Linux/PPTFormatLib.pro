@@ -360,6 +360,7 @@ HEADERS += \
     ../Enums/enums.h \
     ../PPTFormatLib.h \
     ../PPTXWriter/Animation.h \
+    ../PPTXWriter/TableWriter.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \
     ../Reader/PPTDocumentInfo.h \
@@ -651,5 +652,6 @@ SOURCES += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp \
     ../PPTXWriter/Animation.cpp \
+    ../PPTXWriter/TableWriter.cpp \
     ../Records/Animations/TimeVariant.cpp
 

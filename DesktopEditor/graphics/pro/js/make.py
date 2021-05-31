@@ -144,7 +144,7 @@ for item in input_psd_sources:
     sources.append(libPsd_src_path + '/' + item)
 for item in input_raw_sources:
     sources.append(libRaw_src_path + '/' + item)
-sources.append("wasm/src/base.cpp")
+sources.append("wasm/src/raster.cpp")
 
 compiler_flags.append("-I../../../../OfficeUtils/src/zlib-1.2.11")
 compiler_flags.append("-I" + libJasper_src_path + "/include")

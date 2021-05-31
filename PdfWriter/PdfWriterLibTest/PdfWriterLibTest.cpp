@@ -135,6 +135,12 @@ void TestField()
 	pRadio3->SetValue(false);
 	pRadio3->SetAppearance(L"3", NULL, 0, pFont, L"4", NULL, 0, pFont, TRgb(0, 0, 0), 1, 40, 0, 0);
 
+	CPictureField* pPictureField = oPdf.CreatePictureField();
+	pPictureField->SetRequiredFlag(false);
+	pPictureField->AddPageRect(pPage, TRect(100, 500, 200, 450));
+	pPictureField->SetFieldName(L"Pic");
+	pPictureField->SetFieldHint(L"Картинка");
+
 
 	oPdf.SaveToFile(L"D:/Test/PDF/TestField1.pdf");
 	oPdf.Close();

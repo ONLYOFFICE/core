@@ -906,6 +906,20 @@ namespace PdfWriter
 
 		return NULL;
 	}
+	CPictureField* CDocument::CreatePictureField()
+	{
+		if (!CheckAcroForm())
+			return NULL;
+
+		CPictureField* pField = new CPictureField(m_pXref, this);
+		if (!pField)
+			return NULL;
+
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pField);
+
+		return pField;
+	}
 	bool CDocument::CheckAcroForm()
 	{
 		if (!m_pXref || !m_pCatalog)

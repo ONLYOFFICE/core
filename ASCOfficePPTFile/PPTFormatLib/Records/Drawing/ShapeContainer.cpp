@@ -1643,7 +1643,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         }break;
         default:
         {
-            if (bGroupShape && 0)
+            if (isTable())
             {
                 CTableElement* pTableElem = new CTableElement();
                 pElement = CElementPtr(pTableElem);
@@ -2039,6 +2039,24 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     }
 
     return pElement;
+}
+
+bool CRecordShapeContainer::isTable() const
+{
+    std::vector<CRecordShapeProperties*> oArrayOptions;
+    GetRecordsByType(&oArrayOptions, true, false);
+
+    for (const auto* option : oArrayOptions)
+    {
+        for (const auto& prop : option->m_oProperties.m_arProperties)
+        {
+            if ((prop.m_ePID == tableProperties ||
+                 prop.m_ePID == tableRowProperties) &&
+                bGroupShape)
+                return true;
+        }
+    }
+    return false;
 }
 
 void CRecordShapeContainer::ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels)

@@ -140,7 +140,9 @@ public:
 
 protected:
 
+    bool isTable()const;
     void ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels);
     void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels);
     void ApplyHyperlink(CShapeElement* pShape, CColor& oColor);
 };
+

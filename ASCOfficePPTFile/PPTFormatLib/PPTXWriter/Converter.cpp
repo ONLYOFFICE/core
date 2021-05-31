@@ -939,6 +939,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTable(CStringWriter& oWriter, CRelsGenerator&
     if (!pTableElement)
         return;
     m_pShapeWriter->SetElement(pElement);
+//    PPTX::Logic::GraphicFrame
     oWriter.WriteString(m_pShapeWriter->ConvertTable());
 
     oWriter.WriteString(m_pShapeWriter->ConvertTableCells());

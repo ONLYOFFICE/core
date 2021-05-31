@@ -703,6 +703,14 @@ void COOXMLSigner::SetImageInvalid(BYTE* data, DWORD length)
     m_internal->SetImageInvalid(data, length);
 }
 
+int COOXMLSigner::Sign()
+{
+    BYTE* pData = NULL; unsigned long lLen = 0;
+    int nResult = m_internal->Sign(pData, lLen);
+    RELEASEARRAYOBJECTS(pData);
+    return nResult;
+}
+
 int COOXMLSigner::Sign(BYTE*& pFiletoWrite, DWORD& dwLenFiletoWrite)
 {
     return m_internal->Sign(pFiletoWrite, dwLenFiletoWrite);

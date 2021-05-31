@@ -155,6 +155,14 @@ namespace PdfWriter
 		std::wstring  m_wsFieldName;
 	};
 
+	class CPictureField : public CFieldBase
+	{
+	public:
+		CPictureField(CXref* pXref, CDocument* pDocument);
+
+	private:
+	};
+
 	class CAnnotAppearance : public CDictObject
 	{
 	public:

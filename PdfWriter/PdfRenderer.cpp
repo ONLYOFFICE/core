@@ -1690,6 +1690,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		}
 
 		pFieldBase->SetRequiredFlag(oInfo.IsRequired());
+		pFieldBase->SetFieldHint(oInfo.GetHelpText());
 	}
 
 	return S_OK;

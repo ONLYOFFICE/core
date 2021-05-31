@@ -146,8 +146,15 @@ namespace PdfWriter
 	}
 	void CFieldBase::SetFieldHint(const std::wstring& wsHint)
 	{
-		std::string sHint = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsHint);
-		Add("TU", new CStringObject(sHint.c_str(), true));
+		if (wsHint != L"")
+		{
+			std::string sHint = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsHint);
+			Add("TU", new CStringObject(sHint.c_str(), true));
+		}
+		else
+		{
+			Remove("TU");
+		}
 	}
 	TRect& CFieldBase::GetRect()
 	{
@@ -477,6 +484,25 @@ namespace PdfWriter
 	const std::wstring& CRadioGroupField::GetFieldName() const
 	{
 		return m_wsFieldName;
+	}
+	//----------------------------------------------------------------------------------------
+	// CAnnotAppearance
+	//----------------------------------------------------------------------------------------
+	CPictureField::CPictureField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
+	{
+		Add("FT", "Btn");
+		SetFlag(true, 1 << 16);
+		Add("H", "I");
+
+		CDictObject* pAction = new CDictObject(pXref);
+		if (pAction)
+		{
+			Add("A", pAction);
+
+			pAction->Add("Type", "Action");
+			pAction->Add("S", "JavaScript");
+			pAction->Add("JS", new CStringObject("event.target.buttonImportIcon();"));
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance

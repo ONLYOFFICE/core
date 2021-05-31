@@ -102,7 +102,7 @@ namespace PdfReader
 		m_oRef = *pRef;
 		m_seType = NULL;
 		m_seAppBuffer = NULL;
-		m_pBorderStyle = NULL;
+		m_pBorderStyle = NULL;				
 
 		// SubType
 		Object oDictItem;

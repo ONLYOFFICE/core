@@ -19,6 +19,9 @@ public:
 
     int Sign(unsigned char*& pFiletoWrite, unsigned long& dwLenFiletoWrite);
 
+    // Simle alias to Sign(data, len) for folder realization
+    int Sign();
+
 private:
     COOXMLSigner_private* m_internal;
 };

@@ -159,6 +159,7 @@ namespace PdfWriter
 	{
 	public:
 		CPictureField(CXref* pXref, CDocument* pDocument);
+		void SetAppearance();
 
 	private:
 	};
@@ -203,6 +204,7 @@ namespace PdfWriter
 	public:
 		CAnnotAppearanceObject(CXref* pXRef, CFieldBase* pField);
 		void DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double dR = 0.0, double dG = 0.0, double dB = 0.0, const char* sExtGrStateName = NULL, double dW = 1.0, double dH = 1.0, double* pShifts = NULL, unsigned int unShiftsCount = 0);
+		void DrawPicturePlaceholder();
 
 	private:
 

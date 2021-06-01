@@ -76,6 +76,8 @@ namespace PdfReader
 
         void         SetCMapFolder(const wchar_t* wsCMapFolder);
         NSFonts::IFontManager* GetFontManager();
+
+		std::wstring ToXml(const std::wstring& wsXmlPath);
 				     
 	private:
         CPdfReader_Private* m_pInternal;

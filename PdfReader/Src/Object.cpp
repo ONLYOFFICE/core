@@ -234,6 +234,89 @@ namespace PdfReader
 			break;
 		}
 	}
+	void Object::ToXml(std::wstring& wsXml)
+	{
+		Object oTemp;
+		switch (m_eType)
+		{
+			case objBool:
+				wsXml += m_uBool ? L"true" : L"false";
+				break;
+			case objInt:
+				wsXml += std::to_wstring(m_uInt);
+				break;
+			case objReal:
+				wsXml += std::to_wstring(m_uReal);
+				break;
+			case objString:
+				wsXml += L"(";
+				wsXml += m_uStringExt->GetWString();
+				wsXml += L")";
+				break;
+			case objName:
+				wsXml += L"/";
+				AppendStringToXml(wsXml, m_uName);
+				break;
+			case objNull:
+				wsXml += L"null";
+				break;
+			case objArray:
+				wsXml += L"[";
+				for (int nIndex = 0; nIndex < ArrayGetLength(); ++nIndex)
+				{
+					if (nIndex > 0)
+						wsXml += L" ";
+
+					ArrayGetCopy(nIndex, &oTemp);
+					oTemp.ToXml(wsXml);
+					oTemp.Free();
+				}
+				wsXml += L"]";
+				break;
+			case objDict:
+				for (int nIndex = 0; nIndex < DictGetLength(); ++nIndex)
+				{
+					char* sKey = DictGetKey(nIndex);
+					wsXml += L"<";
+					AppendStringToXml(wsXml, sKey);
+					wsXml += L">";
+					DictGetValueCopy(nIndex, &oTemp);
+					oTemp.ToXml(wsXml);
+					oTemp.Free();
+					wsXml += L"</";
+					AppendStringToXml(wsXml, sKey);
+					wsXml += L">";
+				}
+				break;
+			case objStream:
+				wsXml += L"<stream/>";
+				// TODO: Запись стрима
+				break;
+			case objRef:
+				wsXml += std::to_wstring(m_uRef.nNum);
+				wsXml += L" ";
+				wsXml += std::to_wstring(m_uRef.nGen);
+				wsXml += L" R";
+				break;
+			case objCommand:
+				AppendStringToXml(wsXml, m_uCommand);
+				break;
+			case objError:
+				wsXml += L"error";
+				break;
+			case objEOF:
+				wsXml += L"EOF";
+				break;
+			case objNone:
+				wsXml += L"none";
+				break;
+		}
+	}
+	void Object::AppendStringToXml(std::wstring& wsXml, const std::string& sString)
+	{
+		std::wstring wsTmp(sString.begin(), sString.end());
+		wsXml += wsTmp;
+	}
 
 	//------------------------------------------------------------------------
 	// Array accessors.

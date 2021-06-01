@@ -348,4 +348,14 @@ namespace PdfReader
 		delete pParser;
 		return bLinearized;
 	}
+	std::wstring PDFDoc::ToXml()
+	{
+		std::wstring wsXml;
+
+		wsXml = L"<PDF>";
+		m_pXref->AllObjectsToXml(wsXml, true);
+		wsXml += L"</PDF>";
+
+		return wsXml;
+	}
 }

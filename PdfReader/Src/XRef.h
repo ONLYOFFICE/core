@@ -146,6 +146,7 @@ namespace PdfReader
 		{
 			return m_unRefGenCounter++;
 		}
+		void AllObjectsToXml(std::wstring& wsXml, bool bParseStreams);
 
 	private:
 

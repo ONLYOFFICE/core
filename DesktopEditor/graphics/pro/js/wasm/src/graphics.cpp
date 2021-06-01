@@ -24,7 +24,7 @@ WASM_EXPORT void* Graphics_Create()
 {
     return new CGraphicsRenderer();
 }
-WASM_EXPORT void* Graphics_Destroy(void* p)
+WASM_EXPORT void Graphics_Destroy(void* p)
 {
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)p;
     delete pGraphics;

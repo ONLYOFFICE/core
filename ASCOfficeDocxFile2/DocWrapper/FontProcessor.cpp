@@ -187,37 +187,37 @@ namespace DocWrapper {
 			else
 				*oFontSelectFormat.bFixedWidth = 0;
 		}
-		ULONG ulRange1 = 0;
-		ULONG ulRange2 = 0;
-		ULONG ulRange3 = 0;
-		ULONG ulRange4 = 0;
-		ULONG ulCodeRange1 = 0;
-		ULONG ulCodeRange2 = 0;
+        UINT ulRange1 = 0;
+        UINT ulRange2 = 0;
+        UINT ulRange3 = 0;
+        UINT ulRange4 = 0;
+        UINT ulCodeRange1 = 0;
+        UINT ulCodeRange2 = 0;
 		if (font.m_oUsb0.IsInit())
-			ulRange1 = font.m_oUsb0->GetValue();
+            ulRange1 = (UINT)font.m_oUsb0->GetValue();
 		if (font.m_oUsb1.IsInit())
-			ulRange2 = font.m_oUsb1->GetValue();
+            ulRange2 = (UINT)font.m_oUsb1->GetValue();
 		if (font.m_oUsb2.IsInit())
-			ulRange3 = font.m_oUsb2->GetValue();
+            ulRange3 = (UINT)font.m_oUsb2->GetValue();
 		if (font.m_oUsb3.IsInit())
-			ulRange4 = font.m_oUsb3->GetValue();
+            ulRange4 = (UINT)font.m_oUsb3->GetValue();
 		if (font.m_oCsb0.IsInit())
-			ulCodeRange1 = font.m_oCsb0->GetValue();
+            ulCodeRange1 = (UINT)font.m_oCsb0->GetValue();
 		if (font.m_oCsb1.IsInit())
-			ulCodeRange2 = font.m_oCsb1->GetValue();
+            ulCodeRange2 = (UINT)font.m_oCsb1->GetValue();
 		if ( !(0 == ulRange1 && 0 == ulRange2 && 0 == ulRange3 && 0 == ulRange4 && 0 == ulCodeRange1 && 0 == ulCodeRange2) )
 		{
-			oFontSelectFormat.ulRange1 = new ULONG;
+            oFontSelectFormat.ulRange1 = new UINT;
 			*oFontSelectFormat.ulRange1 = ulRange1;
-			oFontSelectFormat.ulRange2 = new ULONG;
+            oFontSelectFormat.ulRange2 = new UINT;
 			*oFontSelectFormat.ulRange2 = ulRange2;
-			oFontSelectFormat.ulRange3 = new ULONG;
+            oFontSelectFormat.ulRange3 = new UINT;
 			*oFontSelectFormat.ulRange3 = ulRange3;
-			oFontSelectFormat.ulRange4 = new ULONG;
+            oFontSelectFormat.ulRange4 = new UINT;
 			*oFontSelectFormat.ulRange4 = ulRange4;
-			oFontSelectFormat.ulCodeRange1 = new ULONG;
+            oFontSelectFormat.ulCodeRange1 = new UINT;
 			*oFontSelectFormat.ulCodeRange1 = ulCodeRange1;
-			oFontSelectFormat.ulCodeRange2 = new ULONG;
+            oFontSelectFormat.ulCodeRange2 = new UINT;
 			*oFontSelectFormat.ulCodeRange2 = ulCodeRange2;
 		}
 

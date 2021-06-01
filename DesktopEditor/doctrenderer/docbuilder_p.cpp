@@ -118,7 +118,7 @@ std::string CV8RealTimeWorker::GetGlobalVariable()
 std::wstring CV8RealTimeWorker::GetJSVariable(std::wstring sParam)
 {
     std::string sParamA = U_TO_UTF8(sParam);
-    NSCommon::string_replaceA(sParamA, "\\\"", "\"");
+    NSStringUtils::string_replaceA(sParamA, "\\\"", "\"");
     std::string commandA = "(function(){ return (" + sParamA + "); })()";
 
     JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
@@ -152,8 +152,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         std::string sArg = m_sUtf8ArgumentJSON;
         if (sArg.empty())
             sArg = "{}";
-        NSCommon::string_replaceA(sArg, "\\", "\\\\");
-        NSCommon::string_replaceA(sArg, "\"", "\\\"");
+        NSStringUtils::string_replaceA(sArg, "\\", "\\\\");
+        NSStringUtils::string_replaceA(sArg, "\"", "\\\"");
         std::string sArgument = "var Argument = JSON.parse(\"" + sArg + "\");";
 
         m_context->runScript(sArgument, try_catch);
@@ -166,8 +166,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         std::string sArg = m_sGlobalVariable;
         if (sArg.empty())
             sArg = "{}";
-        NSCommon::string_replaceA(sArg, "\\", "\\\\");
-        NSCommon::string_replaceA(sArg, "\"", "\\\"");
+        NSStringUtils::string_replaceA(sArg, "\\", "\\\\");
+        NSStringUtils::string_replaceA(sArg, "\"", "\\\"");
 
         std::string sScriptVar = "var GlobalVariable = JSON.parse(\"" + sArg + "\");";
 
@@ -231,7 +231,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         JSSmart<CJSValue> args_open[3];
         args_open[0] = oWorkerLoader.GetDataFull()->toObject()->toValue();
         args_open[1] = CJSContext::createInt(nVersion);
-        std::wstring sXlsx = NSCommon::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
+        std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
         args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
 
         global_js->call_func("NativeOpenFileData", 3, args_open);

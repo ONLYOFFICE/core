@@ -193,7 +193,7 @@ namespace PdfWriter
 		sDA.append(" Tf");
 
 		const char* sExtGrStateName = NULL;
-		if (std::fabs(dAlpha - 1.0) > 0.001)
+		if (fabs(dAlpha - 1.0) > 0.001)
 		{
 			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(dAlpha);
 			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
@@ -201,7 +201,7 @@ namespace PdfWriter
 
 		Add("DA", new CStringObject(sDA.c_str()));
 
-		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop), pShifts, unShiftsCount);
+		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), pShifts, unShiftsCount);
 	}
 	void CFieldBase::SetTextValue(const std::wstring &wsValue)
 	{
@@ -425,7 +425,7 @@ namespace PdfWriter
 		sDA.append(" Tf");
 
 		const char* sExtGrStateName = NULL;
-		if (std::fabs(dAlpha - 1.0) > 0.001)
+		if (fabs(dAlpha - 1.0) > 0.001)
 		{
 			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(dAlpha);
 			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
@@ -433,8 +433,8 @@ namespace PdfWriter
 
 		Add("DA", new CStringObject(sDA.c_str()));
 
-		pYes->DrawSimpleText(wsYesValue, pYesCodes, unYesCount, pFieldsResources->GetFontName(pYesFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
-		pOff->DrawSimpleText(wsOffValue, pOffCodes, unOffCount, pFieldsResources->GetFontName(pOffFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, std::fabs(m_oRect.fRight - m_oRect.fLeft), std::fabs(m_oRect.fBottom - m_oRect.fTop));
+		pYes->DrawSimpleText(wsYesValue, pYesCodes, unYesCount, pFieldsResources->GetFontName(pYesFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+		pOff->DrawSimpleText(wsOffValue, pOffCodes, unOffCount, pFieldsResources->GetFontName(pOffFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
 	}
 	void CCheckBoxField::SetValue(const bool& isYes)
 	{
@@ -493,15 +493,36 @@ namespace PdfWriter
 		SetFlag(true, 1 << 16);
 		Add("H", "I");
 
-		CDictObject* pAction = new CDictObject(pXref);
+		CDictObject* pAction = new CDictObject();		
 		if (pAction)
 		{
+			pXref->Add(pAction);
+
 			Add("A", pAction);
 
 			pAction->Add("Type", "Action");
 			pAction->Add("S", "JavaScript");
 			pAction->Add("JS", new CStringObject("event.target.buttonImportIcon();"));
 		}
+	}
+	void CPictureField::SetAppearance()
+	{
+		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
+		Add("AP", pAppearance);
+
+
+		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
+
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+
+		CResourcesDict* pResources = new CResourcesDict(m_pXref, true, false);
+
+		//Add("DR", pResources);
+
+		std::string sDA = "0.5 0.5 0.5 rg";
+		Add("DA", new CStringObject(sDA.c_str()));
+
+		pNormal->DrawPicturePlaceholder();
 	}
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance
@@ -739,5 +760,24 @@ namespace PdfWriter
 		
 		m_pStream->WriteStr("Q\012EMC\012");
 	}
+	void CAnnotAppearanceObject::DrawPicturePlaceholder()
+	{
+		if (!m_pStream)
+			return;
 
+		double dW = 0, dH = 0;
+		if (m_pField)
+		{
+			TRect oRect = m_pField->GetRect();
+			dW = fabs(oRect.fRight - oRect.fLeft);
+			dH = fabs(oRect.fBottom - oRect.fTop);
+		}
+
+		m_pStream->WriteStr("Q\0120.909 0.941 0.992 rg\0121 0 0 1 0 0 cm\012");
+		m_pStream->WriteStr("0 0 ");
+		m_pStream->WriteReal(std::max(dW, 0.0));
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::max(dH, 0.0));
+		m_pStream->WriteStr(" re\012f\012q");
+	}
 }

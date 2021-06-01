@@ -124,4 +124,23 @@ namespace PdfReader
 	{
 		return m_arrEntries[nIndex].oValue.Copy(pObj);
 	}
+
+	void Dict::ToXml(std::wstring &wsXml)
+	{
+		Object oTemp;
+		for (int nIndex = 0; nIndex < GetEntryCount(); ++nIndex)
+		{
+			char* sKey = GetKey(nIndex);
+			wsXml += L"<";
+			Object::AppendStringToXml(wsXml, sKey);
+			wsXml += L">";
+			GetValueCopy(nIndex, &oTemp);
+			oTemp.ToXml(wsXml);
+			oTemp.Free();
+			wsXml += L"</";
+			Object::AppendStringToXml(wsXml, sKey);
+			wsXml += L">";
+		}
+	}
+
 }

@@ -93,6 +93,8 @@ namespace PdfReader
 			m_pXref = pXref;
 		}
 
+		void ToXml(std::wstring& wsXml);
+
 	private:
 
 		DictEntry *Find(char *sKey);

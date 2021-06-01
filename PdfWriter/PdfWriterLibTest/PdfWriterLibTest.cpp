@@ -140,6 +140,8 @@ void TestField()
 	pPictureField->AddPageRect(pPage, TRect(100, 500, 200, 450));
 	pPictureField->SetFieldName(L"Pic");
 	pPictureField->SetFieldHint(L"Картинка");
+	pPictureField->SetAppearance();
+	
 
 
 	oPdf.SaveToFile(L"D:/Test/PDF/TestField1.pdf");

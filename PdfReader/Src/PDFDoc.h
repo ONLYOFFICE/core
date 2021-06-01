@@ -219,6 +219,8 @@ namespace PdfReader
 			return m_dPDFVersion;
 		}
 
+		std::wstring ToXml();
+
 	private:
 
 		bool Setup(const std::wstring &ownerPassword, const std::wstring &userPasswordd);

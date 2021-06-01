@@ -360,4 +360,20 @@ namespace PdfReader
 	{
         return m_pInternal->m_pFontManager;
 	}
+	std::wstring CPdfReader::ToXml(const std::wstring& wsFilePath)
+	{
+		std::wstring wsXml = m_pInternal->m_pPDFDocument->ToXml();
+
+		if (wsFilePath != L"")
+		{
+			NSFile::CFileBinary oFile;
+			if (!oFile.CreateFileW(wsFilePath))
+				return wsXml;
+
+			oFile.WriteStringUTF8(wsXml);
+			oFile.CloseFile();
+		}
+
+		return wsXml;
+	}
 }

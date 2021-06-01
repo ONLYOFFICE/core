@@ -380,6 +380,8 @@ namespace PdfReader
 		// Для записи
 		char *GetTypeName();
 		void Print(FILE *pFile = stdout);
+		void ToXml(std::wstring& wsXml);
+		static void AppendStringToXml(std::wstring& wsXml, const std::string& sString);
 
 	private:
 

@@ -168,7 +168,7 @@ namespace OOX
 		class CSSubSup;
 		class CSSubSupPr;
 		class CSSup;
-		class CSSupPr;		
+		class CSSupPr;
 	}
 	namespace Numbering
 	{
@@ -381,7 +381,7 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CMRun					*oox_run);
 		void convert(OOX::Logic::CMText					*oox_text);
 		void convert(OOX::Logic::CNary					*oox_nary);
-		void convert(OOX::Logic::CNaryPr				*oox_nary_pr);
+		std::pair<bool,bool> convert(OOX::Logic::CNaryPr *oox_nary_pr);
 		void convert(OOX::Logic::COMathPara				*oox_math_para);
 		void convert(OOX::Logic::COMathParaPr			*oox_math_para_pr);
 		void convert(OOX::Logic::CPhant					*oox_phant);
@@ -404,6 +404,15 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CDegHide				*oox_deg_hide);
 		void convert(OOX::Logic::CDeg *oox_deg, OOX::Logic::CElement *oox_elm);
 		void convert(OOX::Logic::CSup *oox_sup, OOX::Logic::CElement *oox_elm);
+		void convert(OOX::Logic::CSub *oox_sub, OOX::Logic::CElement *oox_elm);
+		void convert(OOX::Logic::CFName					*oox_fname);
+		void convert(OOX::Logic::CLim					*oox_lim);
+		void convert(OOX::Logic::CChr					*oox_chr);
+		void convert(OOX::Logic::CSup					*oox_csup);
+		void convert(OOX::Logic::CSub					*oox_csub);
+		bool convert(OOX::Logic::CSubHide				*oox_subHide);
+		bool convert(OOX::Logic::CSupHide				*oox_supHide);
+		void convert(OOX::Logic::CType					*oox_type);
 //--------------------------------------------------------------------------------
 	};
 }

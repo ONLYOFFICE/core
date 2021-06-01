@@ -88,18 +88,13 @@ namespace Oox2Odf
 
 	void DocxConverter::convert(OOX::Logic::CCtrlPr *oox_ctrl_pr)
 	{
-		if (!oox_ctrl_pr) return;
-
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathCtrlPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		if (!oox_ctrl_pr) return;		
 
 		convert(oox_ctrl_pr->m_oARPr.GetPointer());
 		convert(oox_ctrl_pr->m_oDel.GetPointer());
 		convert(oox_ctrl_pr->m_oIns.GetPointer());
-		convert(oox_ctrl_pr->m_oRPr.GetPointer());
-
-		odf_context()->math_context()->end_element();
+		//convert(oox_ctrl_pr->m_oRPr.GetPointer()); // TODO <w:rPr>
+		
 	}
 
 	void DocxConverter::convert(OOX::Logic::CAcc *oox_acc)
@@ -190,9 +185,6 @@ namespace Oox2Odf
 	{
 		if (!oox_border_box_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathBorderBoxPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
 
 		convert(oox_border_box_pr->m_oCtrlPr.GetPointer());
 		convert(oox_border_box_pr->m_oHideBot.GetPointer());
@@ -203,31 +195,23 @@ namespace Oox2Odf
 		convert(oox_border_box_pr->m_oStrikeH.GetPointer());
 		convert(oox_border_box_pr->m_oStrikeTLBR.GetPointer());
 		convert(oox_border_box_pr->m_oStrikeV.GetPointer());
-
-		odf_context()->math_context()->end_element();
+		
 	}
 
 	void DocxConverter::convert(OOX::Logic::CBox *oox_box)
 	{
 		if (!oox_box) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathBox", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
 
 		convert(oox_box->m_oBoxPr.GetPointer());
 		convert(oox_box->m_oElement.GetPointer());
 
-		odf_context()->math_context()->end_element();
 	}
 
 	void DocxConverter::convert(OOX::Logic::CBoxPr *oox_box_pr)
 	{
 		if (!oox_box_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathBoxPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
 
 		convert(oox_box_pr->m_oAln.GetPointer());
 		convert(oox_box_pr->m_oBrk.GetPointer());
@@ -235,31 +219,36 @@ namespace Oox2Odf
 		convert(oox_box_pr->m_oDiff.GetPointer());
 		convert(oox_box_pr->m_oNoBreak.GetPointer());
 		convert(oox_box_pr->m_oOpEmu.GetPointer());
-
-		odf_context()->math_context()->end_element();
 	}
 
 	void DocxConverter::convert(OOX::Logic::CBrk *oox_brk)
 	{
 		if (!oox_brk) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathBrk", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
 
 		//convert(oox_brk->m_alnAt.GetPointer());
 
-		odf_context()->math_context()->end_element();
 	}
 
 	void DocxConverter::convert(OOX::Logic::CDelimiter *oox_del)
 	{
 		if (!oox_del) return;
 
+		odf_writer::office_element_ptr elm;
+		odf_writer::create_element(L"math", L"mi", elm, odf_context());
+		elm->add_text(L"(");
+		odf_context()->math_context()->start_element(elm);
+		odf_context()->math_context()->end_element();
+	
 		for (size_t i = 0; i < oox_del->m_arrItems.size(); ++i)
 		{
 			convert(oox_del->m_arrItems[i]);
 		}
+		odf_writer::office_element_ptr elm2;
+		odf_writer::create_element(L"math", L"mi", elm2, odf_context());
+		elm2->add_text(L")");
+		odf_context()->math_context()->start_element(elm2);
+		odf_context()->math_context()->end_element();
 	}
 
 	void DocxConverter::convert(OOX::Logic::CDelimiterPr *oox_del_pr)
@@ -304,10 +293,6 @@ namespace Oox2Odf
 	{
 		if (!oox_eq_arr_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathEqArrPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
-
 		convert(oox_eq_arr_pr->m_oBaseJc.GetPointer());
 		convert(oox_eq_arr_pr->m_oCtrlPr.GetPointer());
 		convert(oox_eq_arr_pr->m_oMaxDist.GetPointer());
@@ -315,13 +300,13 @@ namespace Oox2Odf
 		convert(oox_eq_arr_pr->m_oRSp.GetPointer());
 		convert(oox_eq_arr_pr->m_oRSpRule.GetPointer());
 
-		odf_context()->math_context()->end_element();
 	}
 
 	void DocxConverter::convert(OOX::Logic::CFraction *oox_fraction)
 	{
 		if (!oox_fraction) return;		
 
+		convert(oox_fraction->m_oFPr.GetPointer());
 		convert(oox_fraction->m_oNum.GetPointer());
 		convert(oox_fraction->m_oDen.GetPointer());
 		// TODO m_oFr			
@@ -330,15 +315,14 @@ namespace Oox2Odf
 	void DocxConverter::convert(OOX::Logic::CFPr *oox_f_pr)
 	{
 		if (!oox_f_pr) return;
-
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathFPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
-
+		
 		convert(oox_f_pr->m_oCtrlPr.GetPointer());
 		convert(oox_f_pr->m_oType.GetPointer());
+	}
 
-		odf_context()->math_context()->end_element();
+	void DocxConverter::convert(OOX::Logic::CType *oox_type)
+	{
+		std::wstring val  = oox_type->m_val->ToString();
 	}
 
 	void DocxConverter::convert(OOX::Logic::CNum *oox_num)
@@ -371,28 +355,27 @@ namespace Oox2Odf
 	{
 		if (!oox_func) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathFunc", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
-
-		convert(oox_func->m_oElement.GetPointer());
-		convert(oox_func->m_oFName.GetPointer());
 		convert(oox_func->m_oFuncPr.GetPointer());
+		convert(oox_func->m_oFName.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		resizeBrackets();
+		convert(oox_func->m_oElement.GetPointer());	
 	}
 
 	void DocxConverter::convert(OOX::Logic::CFuncPr *oox_func_pr)
 	{
 		if (!oox_func_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathFuncPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
-
 		convert(oox_func_pr->m_oCtrlPr.GetPointer());
+	}
 
-		odf_context()->math_context()->end_element();
+	void DocxConverter::convert(OOX::Logic::CFName *oox_fname)
+	{
+		if (!oox_fname) return;
+
+		for (size_t i = 0; i < oox_fname->m_arrItems.size(); ++i)
+			convert(oox_fname->m_arrItems[i]);
+
 	}
 
 	void DocxConverter::convert(OOX::Logic::CGroupChr *oox_group_ch)
@@ -429,28 +412,39 @@ namespace Oox2Odf
 	{
 		if (!oox_lim_low) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathLimLow", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		mrow();
 
-		convert(oox_lim_low->m_oElement.GetPointer());
-		convert(oox_lim_low->m_oLim.GetPointer());
-		convert(oox_lim_low->m_oLimLowPr.GetPointer());
+			odf_writer::office_element_ptr elm;
+			odf_writer::create_element(L"math", L"munder", elm, odf_context());
+			odf_context()->math_context()->start_element(elm);
 
-		odf_context()->math_context()->end_element();
+			resizeBrackets();
+			convert(oox_lim_low->m_oElement.GetPointer());
+			convert(oox_lim_low->m_oLimLowPr.GetPointer());
+			convert(oox_lim_low->m_oLim.GetPointer());
+
+			odf_context()->math_context()->end_element();
+
+		endOfMrow();
+	}
+
+	void DocxConverter::convert(OOX::Logic::CLim *oox_lim)
+	{
+		if (!oox_lim) return;
+
+		mrow();
+
+		for (size_t i = 0; i < oox_lim->m_arrItems.size(); ++i)
+			convert(oox_lim->m_arrItems[i]);
+
+		endOfMrow();
 	}
 
 	void DocxConverter::convert(OOX::Logic::CLimLowPr *oox_lim_low_pr)
 	{
 		if (!oox_lim_low_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathLimLowPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
-
 		convert(oox_lim_low_pr->m_oCtrlPr.GetPointer());
-
-		odf_context()->math_context()->end_element();
 	}
 
 	void DocxConverter::convert(OOX::Logic::CLimUpp *oox_lim_upp)
@@ -458,12 +452,13 @@ namespace Oox2Odf
 		if (!oox_lim_upp) return;
 
 		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathLimUpp", elm, odf_context());
+		odf_writer::create_element(L"math", L"mover", elm, odf_context());
 		odf_context()->math_context()->start_element(elm);
 
+		resizeBrackets();
 		convert(oox_lim_upp->m_oElement.GetPointer());
-		convert(oox_lim_upp->m_oLim.GetPointer());
 		convert(oox_lim_upp->m_oLimUppPr.GetPointer());
+		convert(oox_lim_upp->m_oLim.GetPointer());
 
 		odf_context()->math_context()->end_element();
 	}
@@ -633,7 +628,7 @@ namespace Oox2Odf
 		convert(oox_mrun->m_oLastRenderedPageBreak.GetPointer());
 		convert(oox_mrun->m_oMonthLong.GetPointer());
 		convert(oox_mrun->m_oMonthShort.GetPointer());
-		convert(oox_mrun->m_oMRPr.GetPointer());
+		//convert(oox_mrun->m_oMRPr.GetPointer());
 		convert(oox_mrun->m_oMText.GetPointer());
 		convert(oox_mrun->m_oNoBreakHyphen.GetPointer());
 		convert(oox_mrun->m_oObject.GetPointer());
@@ -662,70 +657,145 @@ namespace Oox2Odf
 								 L'⊶', L'≝', L'⇐', L'⇔', L'⇒', L'≺', L'≻',  L'≼', L'≽', L'≾', L'≿',  L'⊀', L'⊁',										// relationships over sets
 								 L'∈', L'∉', L'∋', L'∩', L'∪', L'//', L'/', L'⊂', L'⊆', L'⊃', L'⊇', L'⊄', L'⊈', L'⊅', L'⊉',						//
 								 L'∞', L'∂', L'∇', L'∃', L'∄', L'∀', L'ħ', L'ƛ', L'ℜ', L'ℑ', L'℘', L'ℒ', L'ℱ', L'←', L'→', L'↑', L'↓',					// others
-								 L'…', L'⋯', L'⋮', L'⋰', L'⋱'
+								 L'…', L'⋯', L'⋮', L'⋰', L'⋱',
+								 L'∫'
 		};
 
-		std::set<std::wstring> mi = { L"ln", L"exp", L"log", L"sin", L"cos", L"tan", L"cot", L"sinh", L"cosh", L"tanh", L"coth", L"arcsin", L"arccos", L"arctan", L"arccot",
-									  L"arsinh", L"arcosh", L"artanh", L"arcoth",  L"func"
-		};
+		
+		
 
 		std::wstring s_val = oox_text->m_sText;
-
-		std::wstringstream ws;
-		ws << s_val;
-		wchar_t w_val;
-		ws >> w_val;
-		odf_writer::office_element_ptr elm;
-
-		if (w_val <= 57 && w_val >= 48)
+		std::wstring sub_s_val = L"";
+		
+		for (size_t i = 0; i < s_val.size(); i++)
 		{
-			odf_writer::create_element(L"math", L"mn", elm, odf_context());
-		}
-		else if (mo.find(w_val) != mo.end())
-		{
-			odf_writer::create_element(L"math", L"mo", elm, odf_context());
-		}
-		else
-		{
-			odf_writer::create_element(L"math", L"mi", elm, odf_context());
-		}
-		elm->add_text(s_val);
-		odf_context()->math_context()->start_element(elm);
-		odf_context()->math_context()->end_element();
+			wchar_t w_val = s_val[i];			
 
-		//convert(oox_text->m_oSpace.GetPointer());	
+			if (w_val <= 57 && w_val >= 48)
+			{
+				if (sub_s_val.size() != 0)
+				{
+					odf_writer::office_element_ptr elm_mi;
+					odf_writer::create_element(L"math", L"mi", elm_mi, odf_context());
+					elm_mi->add_text(sub_s_val);
+					odf_context()->math_context()->start_element(elm_mi);
+					odf_context()->math_context()->end_element();
+					sub_s_val.clear();
+				}
+
+				odf_writer::office_element_ptr elm;
+				odf_writer::create_element(L"math", L"mn", elm, odf_context());
+
+				elm->add_text(std::wstring(1, s_val[i]));
+
+				odf_context()->math_context()->start_element(elm);
+				odf_context()->math_context()->end_element();
+			}
+			else if (mo.find(w_val) != mo.end())
+			{
+				if (sub_s_val.size() != 0)
+				{
+					odf_writer::office_element_ptr elm_mi;
+					odf_writer::create_element(L"math", L"mi", elm_mi, odf_context());
+					elm_mi->add_text(sub_s_val);
+					odf_context()->math_context()->start_element(elm_mi);
+					odf_context()->math_context()->end_element();
+					sub_s_val.clear();
+				}
+
+				odf_writer::office_element_ptr elm;
+				odf_writer::create_element(L"math", L"mo", elm, odf_context());
+
+				elm->add_text(std::wstring(1, s_val[i]));
+
+				odf_context()->math_context()->start_element(elm);
+				odf_context()->math_context()->end_element();
+			}
+			else // <mi>
+			{				
+				sub_s_val += s_val[i];
+			}		
+
+			if ((i == s_val.size() - 1) && (sub_s_val.size() != 0))
+			{				
+				odf_writer::office_element_ptr elm_mi;
+				odf_writer::create_element(L"math", L"mi", elm_mi, odf_context());
+				elm_mi->add_text(sub_s_val);
+				odf_context()->math_context()->start_element(elm_mi);
+				odf_context()->math_context()->end_element();
+				
+			}
+		}	
 	}
 
 	void DocxConverter::convert(OOX::Logic::CNary *oox_nary)
 	{
 		if (!oox_nary) return;
 
+		mrow();
+
 		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathNary", elm, odf_context());
+		odf_writer::create_element(L"math", L"munderover", elm, odf_context());
 		odf_context()->math_context()->start_element(elm);
 
-		convert(oox_nary->m_oElement.GetPointer());
-		convert(oox_nary->m_oNaryPr.GetPointer());
-		convert(oox_nary->m_oSub.GetPointer());
-		convert(oox_nary->m_oSup.GetPointer());
+
+		std::pair<bool, bool> flags;
+
+		flags = convert(oox_nary->m_oNaryPr.GetPointer());
+		if(!flags.first)
+			convert(oox_nary->m_oSub.GetPointer());
+		if(!flags.second)
+			convert(oox_nary->m_oSup.GetPointer());
 
 		odf_context()->math_context()->end_element();
+
+		resizeBrackets();
+		convert(oox_nary->m_oElement.GetPointer());
+
+		endOfMrow();
 	}
 
-	void DocxConverter::convert(OOX::Logic::CNaryPr *oox_nary_pr)
+	std::pair<bool, bool> DocxConverter::convert(OOX::Logic::CNaryPr *oox_nary_pr)
 	{
-		if (!oox_nary_pr) return;
+		std::pair<bool, bool> result(false, false);
+		if (!oox_nary_pr) return result;		
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathNaryPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
 
 		convert(oox_nary_pr->m_oChr.GetPointer());
 		convert(oox_nary_pr->m_oCtrlPr.GetPointer());
 		convert(oox_nary_pr->m_oGrow.GetPointer());
-		convert(oox_nary_pr->m_oLimLoc.GetPointer());
-		convert(oox_nary_pr->m_oSubHide.GetPointer());
-		convert(oox_nary_pr->m_oSupHide.GetPointer());
+		//convert(oox_nary_pr->m_oLimLoc.GetPointer());
+		result.first = convert(oox_nary_pr->m_oSubHide.GetPointer());
+		result.second = convert(oox_nary_pr->m_oSupHide.GetPointer());
+
+		return result;
+		
+	}
+
+	bool DocxConverter::convert(OOX::Logic::CSubHide *oox_subHide)
+	{
+		if (!oox_subHide) return false;
+
+		bool result = oox_subHide->m_val->ToBool();
+		return result;
+
+	}
+
+	bool DocxConverter::convert(OOX::Logic::CSupHide *oox_supHide)
+	{
+		if (!oox_supHide) return false;
+		bool result = oox_supHide->m_val->ToBool();
+		return result;
+	}
+
+	void DocxConverter::convert(OOX::Logic::CChr * oox_chr)
+	{
+		if (!oox_chr) return;
+		odf_writer::office_element_ptr elm;
+		odf_writer::create_element(L"math", L"mo", elm, odf_context());
+		odf_context()->math_context()->start_element(elm);
+
+		elm->add_text(oox_chr->m_val->GetValue());
 
 		odf_context()->math_context()->end_element();
 	}
@@ -871,32 +941,57 @@ namespace Oox2Odf
 		odf_context()->math_context()->end_element();
 	}
 
-	void DocxConverter::convert(OOX::Logic::CSSub *oox_ssub)
+	void DocxConverter::convert(OOX::Logic::CSub *oox_sub, OOX::Logic::CElement *oox_elm)
 	{
-		if (!oox_ssub) return;
+		if (!oox_sub) return;
 
 		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathSSub", elm, odf_context());
+		odf_writer::create_element(L"math", L"msub", elm, odf_context());
 		odf_context()->math_context()->start_element(elm);
 
-		convert(oox_ssub->m_oElement.GetPointer());
-		convert(oox_ssub->m_oSSubPr.GetPointer());
-		convert(oox_ssub->m_oSub.GetPointer());
+		resizeBrackets();
+
+		convert(oox_elm);
+
+		for (size_t i = 0; i < oox_sub->m_arrItems.size(); ++i)
+		{
+			convert(oox_sub->m_arrItems[i]);
+
+		}
 
 		odf_context()->math_context()->end_element();
 	}
 
+	void DocxConverter::convert(OOX::Logic::CSub *oox_csub)
+	{
+		for (size_t i = 0; i < oox_csub->m_arrItems.size(); ++i)
+		{
+			convert(oox_csub->m_arrItems[i]);
+		}
+	}
+
+	void DocxConverter::convert(OOX::Logic::CSup *oox_csup)
+	{
+		for (size_t i = 0; i < oox_csup->m_arrItems.size(); ++i)
+		{
+			convert(oox_csup->m_arrItems[i]);
+		}	
+	}
+
+	void DocxConverter::convert(OOX::Logic::CSSub *oox_ssub)
+	{
+		if (!oox_ssub) return;		
+
+		convert(oox_ssub->m_oSSubPr.GetPointer());
+		convert(oox_ssub->m_oSub.GetPointer(), oox_ssub->m_oElement.GetPointer());		
+	}
+
 	void DocxConverter::convert(OOX::Logic::CSSubPr*oox_ssub_pr)
 	{
-		if (!oox_ssub_pr) return;
-
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathSSubPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		if (!oox_ssub_pr) return;		
 
 		convert(oox_ssub_pr->m_oCtrlPr.GetPointer());
-
-		odf_context()->math_context()->end_element();
+		
 	}
 
 	void DocxConverter::convert(OOX::Logic::CSSubSup *oox_ssub_sup)
@@ -919,14 +1014,10 @@ namespace Oox2Odf
 	{
 		if (!oox_ssub_sup_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathSSubSupPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
 
 		convert(oox_ssub_sup_pr->m_oAlnScr.GetPointer());
 		convert(oox_ssub_sup_pr->m_oCtrlPr.GetPointer());
 
-		odf_context()->math_context()->end_element();
 	}
 
 	void DocxConverter::convert(OOX::Logic::CSSup *oox_ssup)
@@ -949,13 +1040,8 @@ namespace Oox2Odf
 	{
 		if (!oox_ssup_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathSSupPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
-
 		convert(oox_ssup_pr->m_oCtrlPr.GetPointer());
 
-		odf_context()->math_context()->end_element();
 	}
 
 	void DocxConverter::convert(OOX::Logic::CElement *oox_elm)

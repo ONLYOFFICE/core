@@ -5,10 +5,6 @@
 #include <QStandardItem>
 #include <CTextEditDelegate.h>
 
-#ifdef _DEBUG
-    #include <QDebug>
-#endif
-
 CMetafileTreeView::CMetafileTreeView(QWidget *parent) :
     QTreeView(parent)
 {}
@@ -47,13 +43,13 @@ void CMetafileTreeView::SetMetafile(const std::wstring &wsXmlFilePath)
 
     setHeaderHidden(true);
 
-    QStandardItemModel *oStandardItemModel = new QStandardItemModel;
-    QStandardItem *oStandardItem = new QStandardItem(QString::fromStdWString(L'<' + oXmlRootNode.GetName() + L'>'));
+    QStandardItemModel *pStandardItemModel = new QStandardItemModel;
+    QStandardItem *pStandardItem = new QStandardItem(QString::fromStdWString(L'<' + oXmlRootNode.GetName() + L'>'));
 
-    ReadXmlNode(oXmlRootNode, *oStandardItem, 1);
+    ReadXmlNode(oXmlRootNode, *pStandardItem, 1);
 
-    oStandardItemModel->appendRow(oStandardItem);
-    setModel(oStandardItemModel);
+    pStandardItemModel->appendRow(pStandardItem);
+    setModel(pStandardItemModel);
 
     oXmlFile->close();
     delete oXmlFile;
@@ -74,12 +70,32 @@ void CMetafileTreeView::SetMode(bool bLightMode)
     }
 }
 
+void CMetafileTreeView::Clear()
+{
+    QAbstractItemModel *pModel = model();
+    if (NULL != pModel)
+    {
+        delete pModel;
+        setModel(NULL);
+    }
+
+    m_mStatistics.clear();
+}
+
+QMap<QString, unsigned int>* CMetafileTreeView::GetStatistics()
+{
+    return &m_mStatistics;
+}
+
 void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem& oStandartItem, unsigned int unLevel)
 {
     XmlUtils::CXmlNodes oXmlChilds;
 
     if (oXmlNode.GetChilds(oXmlChilds))
     {
+        if (unLevel == 2)
+            ++m_mStatistics[QString::fromStdWString(oXmlNode.GetName())];
+
         for (unsigned int i = 0; i < oXmlChilds.GetCount(); ++i)
         {
             XmlUtils::CXmlNode oXmlChild;

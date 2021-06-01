@@ -23,9 +23,8 @@ unsigned int CCustomView::GetWidthMetafile() const
     return m_pBitmap->GetWidth();
 }
 
-void CCustomView::DrawMetafile(const std::wstring& wsFilePath)
+bool CCustomView::DrawMetafile(const std::wstring& wsFilePath)
 {
-
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     ULONG_PTR gdiplusToken;
 
@@ -36,6 +35,10 @@ void CCustomView::DrawMetafile(const std::wstring& wsFilePath)
 
     HBITMAP handleToSliceRet = NULL;
     m_pBitmap->GetHBITMAP(Gdiplus::Color::Transparent, &handleToSliceRet);
+
+    if (NULL == handleToSliceRet)
+        return false;
+
     QPixmap oPixmap = qt_pixmapFromWinHBITMAP(handleToSliceRet);
 
     QGraphicsScene *pScene = new QGraphicsScene();
@@ -43,10 +46,22 @@ void CCustomView::DrawMetafile(const std::wstring& wsFilePath)
     pScene->addPixmap(oPixmap);
 
     setScene(pScene);
+
+    return true;
 }
 
 void CCustomView::Clear()
 {
     if (NULL != m_pBitmap)
+    {
         delete m_pBitmap;
+        m_pBitmap = NULL;
+    }
+
+    QGraphicsScene *pScene = scene();
+    if (NULL != pScene)
+    {
+        delete pScene;
+        setScene(NULL);
+    }
 }

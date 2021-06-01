@@ -19,11 +19,15 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_ChangeButton_clicked();
-
     void on_expandButton_clicked();
 
     void on_ModButton_clicked();
+
+    void on_actionExit_triggered();
+
+    void on_actionChange_File_triggered();
+
+    void on_actionStatistics_triggered();
 
 private:
     Ui::MainWindow      *ui;
@@ -31,7 +35,8 @@ private:
     std::wstring        m_wsPathToXmlFile;
 
     bool ReadFile();
-    void ConvertToRaster();
+    bool ConvertToRaster();
+    void Clear();
 protected:
     virtual void resizeEvent(QResizeEvent *);
 

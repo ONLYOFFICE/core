@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1139</width>
-    <height>683</height>
+    <height>656</height>
    </rect>
   </property>
   <property name="contextMenuPolicy">
@@ -40,13 +40,6 @@
        </item>
        <item>
         <widget class="QGraphicsView" name="graphicsView"/>
-       </item>
-       <item>
-        <widget class="QPushButton" name="ChangeButton">
-         <property name="text">
-          <string>Change File</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>
@@ -124,7 +117,35 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionChange_File"/>
+    <addaction name="actionStatistics"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuFile"/>
   </widget>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionChange_File">
+   <property name="text">
+    <string>Change File</string>
+   </property>
+  </action>
+  <action name="actionStatistics">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Statistics</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

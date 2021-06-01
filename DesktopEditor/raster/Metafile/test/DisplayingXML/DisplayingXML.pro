@@ -10,7 +10,9 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    CMapModel.cpp \
     CMetafileTreeView.cpp \
+    CStatisticsWidget.cpp \
     CTextEditDelegate.cpp \
     CXMLHighlighter.cpp \
     MainWindow.cpp \
@@ -18,14 +20,17 @@ SOURCES += \
     main.cpp
 
 HEADERS += \
+    CMapModel.h \
     CMetafileTreeView.h \
+    CStatisticsWidget.h \
     CTextEditDelegate.h \
     CXMLHighlighter.h \
     MainWindow.h \
     CCustomView.h
 
 FORMS += \
-    MainWindow.ui
+    MainWindow.ui \
+    Statistics.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

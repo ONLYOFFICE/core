@@ -12,10 +12,13 @@
 #include "../../../../raster/BgraFrame.h"
 #include "../../../../common/Directory.h"
 
+#include "CStatisticsWidget.h"
+
 #include "CMetafileTreeView.h"
 #include "CTextEditDelegate.h"
 
 #include <QStandardItemModel>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -44,10 +47,10 @@ bool MainWindow::ReadFile()
     return true;
 }
 
-void MainWindow::ConvertToRaster()
+bool MainWindow::ConvertToRaster()
 {
     if (m_wsPathToFile.empty())
-        return;
+        return false;
 
     CApplicationFontsWorker oWorker;
     oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
@@ -59,7 +62,9 @@ void MainWindow::ConvertToRaster()
     NSFonts::IApplicationFonts* pFonts = oWorker.Check();
 
     MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
-    pMetafile->LoadFromFile(m_wsPathToFile.c_str());
+    if (!pMetafile->LoadFromFile(m_wsPathToFile.c_str()))
+        return false;
+
     std::wstring wsPathToRasterFile = NSFile::GetProcessDirectory() + L"/test.png";
     m_wsPathToXmlFile = NSFile::GetProcessDirectory() + L"/test.xml";
 
@@ -72,24 +77,36 @@ void MainWindow::ConvertToRaster()
     QGraphicsScene *pGraphicsScene = new QGraphicsScene;
     pGraphicsScene->addPixmap(QPixmap::fromImage(QImage(oImage)));
     ui->graphicsView->setScene(pGraphicsScene);
+
+    return true;
+}
+
+void MainWindow::Clear()
+{
+    m_wsPathToFile.clear();
+    m_wsPathToXmlFile.clear();
+
+    ui->actionStatistics->setEnabled(false);
+    ui->customView->Clear();
+
+    QGraphicsScene *pGVScene = ui->graphicsView->scene();
+    if (NULL != pGVScene)
+    {
+        delete pGVScene;
+        ui->graphicsView->setScene(NULL);
+    }
+
+    ui->treeView->Clear();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *pResizeEvent)
 {
-    int h = pResizeEvent->size().height();
-    int w = pResizeEvent->size().width();
+    unsigned int unManubarHeight        = ui->menubar->height();
+    unsigned int unWorkingPartHeight    = pResizeEvent->size().height();
+    unsigned int unWorkingPartWidth     = pResizeEvent->size().width();
 
-    ui->horizontalLayoutWidget->setGeometry(QRect(0, 0, w, h));
+    ui->horizontalLayoutWidget->setGeometry(QRect(0, 0, unWorkingPartWidth, unWorkingPartHeight - unManubarHeight));
 }
-
-void MainWindow::on_ChangeButton_clicked()
-{
-    m_wsPathToFile = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Metafile (*.emf *.wmf)")).toStdWString();
-    ui->customView->DrawMetafile(m_wsPathToFile);
-    ConvertToRaster();
-    ReadFile();
-}
-
 
 void MainWindow::on_expandButton_clicked()
 {
@@ -123,5 +140,46 @@ void MainWindow::on_ModButton_clicked()
     {
             ui->treeView->SetMode(false);
             ui->ModButton->setText("Use a light Mod");
-    }}
+    }
+}
+
+
+
+void MainWindow::on_actionExit_triggered()
+{
+    QApplication::quit();
+}
+
+
+void MainWindow::on_actionChange_File_triggered()
+{
+    Clear();
+    m_wsPathToFile = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Metafile (*.emf *.wmf)")).toStdWString();
+    if (!ui->customView->DrawMetafile(m_wsPathToFile))
+    {
+        Clear();
+        QMessageBox::warning(this, "Warning", "Couldn't open EMF file");
+        return;
+    }
+
+    if (!ConvertToRaster())
+    {
+        Clear();
+        QMessageBox::warning(this, "Warning", "Couldn't open EMF file");
+        return;
+    }
+
+    ReadFile();
+
+    ui->actionStatistics->setEnabled(true);
+}
+
+
+void MainWindow::on_actionStatistics_triggered()
+{
+    CStatisticsWidget *pStaticsWidget = new CStatisticsWidget;
+    pStaticsWidget->SetMainWindow(this);
+    pStaticsWidget->SetStatistics(ui->treeView->GetStatistics());
+    pStaticsWidget->show();
+}
 

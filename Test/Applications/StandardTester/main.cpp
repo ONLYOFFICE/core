@@ -8,16 +8,18 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
+#include "../../../DesktopEditor/raster/BgraFrame.h"
+#include "../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
-
-#include "../../../DesktopEditor/fontengine/application_generate_fonts.h"
 
 #ifdef LINUX
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>
 #endif
+
+#include <map>
 
 class CConverter;
 class CInternalWorker
@@ -111,7 +113,7 @@ namespace NSX2T
         std::wstring sConverterExe = sConverterPath;
 
 #ifdef WIN32
-        NSCommon::string_replace(sConverterExe, L"/", L"\\");
+        NSStringUtils::string_replace(sConverterExe, L"/", L"\\");
 
         sConverterExe += L".exe";
         std::wstring sApp = L"x2t ";
@@ -289,14 +291,14 @@ public:
 
         std::wstring sProcess = NSFile::GetProcessDirectory();
 
-        NSCommon::string_replace(sProcess, L"\\", L"/");
-        NSCommon::string_replace(m_file, L"\\", L"/");
+        NSStringUtils::string_replace(sProcess, L"\\", L"/");
+        NSStringUtils::string_replace(m_file, L"\\", L"/");
 
         std::wstring sDirectoryDst = m_folder_dst;
-        NSCommon::string_replace(sDirectoryDst, L"\\", L"/");
+        NSStringUtils::string_replace(sDirectoryDst, L"\\", L"/");
 
 #ifdef WIN32
-        NSCommon::string_replace(m_file, L"//", L"\\\\");
+        NSStringUtils::string_replace(m_file, L"//", L"\\\\");
 #endif
 
         NSDirectory::CreateDirectory(sDirectoryDst);
@@ -645,133 +647,19 @@ void CInternalWorker::Cancel()
     m_nCount = m_nCurrent;
 }
 
-#define ONLYOFFICE_FONTS_VERSION_ 1
 void CheckFonts(const bool& bIsUseSystemFonts, std::vector<std::wstring>& arDirs)
 {
-    std::vector<std::string> strFonts;
-    std::wstring strDirectory = NSFile::GetProcessDirectory() + L"/fonts";
-
-    if (!NSDirectory::Exists(strDirectory))
-        NSDirectory::CreateDirectory(strDirectory);
-
-    std::wstring strAllFontsJSPath = strDirectory + L"/AllFonts.js";
-    std::wstring strThumbnailsFolder = strDirectory;
-    std::wstring strFontsSelectionBin = strDirectory + L"/font_selection.bin";
-
-    if (true)
-    {
-        NSFile::CFileBinary oFile;
-        if (oFile.OpenFile(strDirectory + L"/fonts.log"))
-        {
-            int nSize = oFile.GetFileSize();
-            char* pBuffer = new char[nSize];
-            DWORD dwReaden = 0;
-            oFile.ReadFile((BYTE*)pBuffer, nSize, dwReaden);
-            oFile.CloseFile();
-
-            int nStart = 0;
-            int nCur = nStart;
-            for (; nCur < nSize; ++nCur)
-            {
-                if (pBuffer[nCur] == '\n')
-                {
-                    int nEnd = nCur - 1;
-                    if (nEnd > nStart)
-                    {
-                        std::string s(pBuffer + nStart, nEnd - nStart + 1);
-                        strFonts.push_back(s);
-                    }
-                    nStart = nCur + 1;
-                }
-            }
-
-            delete[] pBuffer;
-        }
-
-        if (0 != strFonts.size())
-        {
-            // check version!!!
-            std::string sOO_Version = strFonts[0];
-            if (0 != sOO_Version.find("ONLYOFFICE_FONTS_VERSION_"))
-            {
-                strFonts.clear();
-            }
-            else
-            {
-                std::string sVersion = sOO_Version.substr(25);
-                int nVersion = std::stoi(sVersion);
-                if (nVersion != ONLYOFFICE_FONTS_VERSION_)
-                    strFonts.clear();
-                else
-                    strFonts.erase(strFonts.begin());
-            }
-        }
-    }
-
-    NSFonts::IApplicationFonts* oApplicationF = NSFonts::NSApplication::Create();
-    std::vector<std::wstring> strFontsW_Cur;
-
-    if (bIsUseSystemFonts)
-        strFontsW_Cur = oApplicationF->GetSetupFontFiles();
+    CApplicationFontsWorker oWorker;
+    oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts";
+    oWorker.m_bIsUseSystemFonts = bIsUseSystemFonts;
 
     for (std::vector<std::wstring>::iterator i = arDirs.begin(); i != arDirs.end(); i++)
-    {
-        NSDirectory::GetFiles2(*i, strFontsW_Cur, true);
-    }
+        oWorker.m_arAdditionalFolders.push_back(*i);
 
-    bool bIsEqual = true;
-    if (strFonts.size() != strFontsW_Cur.size())
-        bIsEqual = false;
-
-    if (bIsEqual)
-    {
-        int nCount = (int)strFonts.size();
-        for (int i = 0; i < nCount; ++i)
-        {
-            if (strFonts[i] != NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(strFontsW_Cur[i].c_str(), strFontsW_Cur[i].length()))
-            {
-                bIsEqual = false;
-                break;
-            }
-        }
-    }
-
-    if (bIsEqual)
-    {
-        if (!NSFile::CFileBinary::Exists(strFontsSelectionBin))
-            bIsEqual = false;
-    }
-
-    if (!bIsEqual)
-    {
-        if (NSFile::CFileBinary::Exists(strAllFontsJSPath))
-            NSFile::CFileBinary::Remove(strAllFontsJSPath);
-        if (NSFile::CFileBinary::Exists(strFontsSelectionBin))
-            NSFile::CFileBinary::Remove(strFontsSelectionBin);
-
-        if (strFonts.size() != 0)
-            NSFile::CFileBinary::Remove(strDirectory + L"/fonts.log");
-
-        NSFile::CFileBinary oFile;
-        oFile.CreateFileW(strDirectory + L"/fonts.log");
-        oFile.WriteStringUTF8(L"ONLYOFFICE_FONTS_VERSION_");
-        oFile.WriteStringUTF8(std::to_wstring(ONLYOFFICE_FONTS_VERSION_));
-        oFile.WriteFile((BYTE*)"\n", 1);
-        int nCount = (int)strFontsW_Cur.size();
-        for (int i = 0; i < nCount; ++i)
-        {
-            oFile.WriteStringUTF8(strFontsW_Cur[i]);
-            oFile.WriteFile((BYTE*)"\n", 1);
-        }
-        oFile.CloseFile();
-
-        int nFlag = 3;
-        oApplicationF->InitializeFromArrayFiles(strFontsW_Cur, nFlag);
-
-        NSCommon::SaveAllFontsJS(oApplicationF, strAllFontsJSPath, strThumbnailsFolder, strFontsSelectionBin);
-    }
-
-    oApplicationF->Release();
+    oWorker.m_bIsNeedThumbnails = false;
+    NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+    if (pFonts)
+        pFonts->Release();
 }
 
 std::wstring CorrectDir(const std::wstring& sDir)

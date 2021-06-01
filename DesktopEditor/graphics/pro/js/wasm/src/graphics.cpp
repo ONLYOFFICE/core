@@ -1,6 +1,7 @@
 #include <malloc.h>
 
 #include "../../../../GraphicsRenderer.h"
+#include "../../../../pro/Graphics.h"
 
 #ifdef _WIN32
 #define WASM_EXPORT __declspec(dllexport)
@@ -22,7 +23,7 @@ WASM_EXPORT void  Graphics_Free(void* p)
 }
 WASM_EXPORT void* Graphics_Create()
 {
-    return new CGraphicsRenderer();
+    return NSGraphics::Create();
 }
 WASM_EXPORT void Graphics_Destroy(void* p)
 {

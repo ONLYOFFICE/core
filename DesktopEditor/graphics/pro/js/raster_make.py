@@ -179,6 +179,7 @@ if base.host_platform() == "windows":
         arguments += (item + " ")
     
     windows_bat.append("call emcc -o raster.js " + arguments + jpeg + tiff)
+    # windows_bat.append("call emcc -o raster.o -c " + arguments + jpeg + tiff)
 else:
     windows_bat.append("#!/bin/bash")
     windows_bat.append("source ./emsdk/emsdk_env.sh")

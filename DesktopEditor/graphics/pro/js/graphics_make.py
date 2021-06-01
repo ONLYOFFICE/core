@@ -5,14 +5,6 @@ import os
 
 base.configure_common_apps()
 
-# remove previous version
-if base.is_dir("./deploy"):
-    base.delete_dir("./deploy")
-base.create_dir("./deploy")
-if base.is_dir("./temp"):
-    base.delete_dir("./temp")
-base.create_dir("./temp")
-
 # fetch emsdk
 command_prefix = "" if ("windows" == base.host_platform()) else "./"
 if not base.is_dir("emsdk"):
@@ -42,9 +34,23 @@ exported_functions = ["_malloc",
                       "_Graphics_SetFontManager",
                       "_Graphics_drawHorLine"]
 
+libGraphics_src_path = "../../"
+input_graphics_sources = ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "Graphics.cpp", "Brush.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp"]
+
+libFontEngine_src_path = "../../../fontengine/"
+input_fontengine_sources = ["GlyphString.cpp"]
+
 # sources
 sources = []
-sources.append("wasm/src/raster.cpp")
+for item in input_graphics_sources:
+    sources.append(libGraphics_src_path + item)
+for item in input_fontengine_sources:
+    sources.append(libFontEngine_src_path + item)
+sources.append("wasm/src/graphics.cpp")
+
+compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg")
+compiler_flags.append("-I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype")
+compiler_flags.append("-D__linux__ -D_LINUX")
 
 # arguments
 arguments = ""

@@ -1,5 +1,8 @@
+#ifndef _WASM_GRAPHICS_
+#define _WASM_GRAPHICS_
+
 #include <malloc.h>
-#include "raster.h"
+//#include "raster.h"
 
 #include "../../../../GraphicsRenderer.h"
 #include "../../../../pro/Graphics.h"
@@ -92,3 +95,5 @@ int main()
     return 0;
 }
 #endif
+
+#endif // _WASM_GRAPHICS_

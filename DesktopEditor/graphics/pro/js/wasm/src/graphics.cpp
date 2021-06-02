@@ -2,7 +2,7 @@
 #define _WASM_GRAPHICS_
 
 #include <malloc.h>
-//#include "raster.h"
+#include "raster.h"
 
 #include "../../../../GraphicsRenderer.h"
 #include "../../../../pro/Graphics.h"
@@ -39,6 +39,26 @@ WASM_EXPORT void Graphics_CreateFromBgraFrame(void* graphics, CBgraFrame* pFrame
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)graphics;
     pGraphics->CreateFromBgraFrame(pFrame);
 }
+WASM_EXPORT void* Graphics_CreateFromEmptyFrame(double width, double height, CBgraFrame* pFrame)
+{
+    int nRasterW = (int)width;
+    int nRasterH = (int)height;
+    BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
+
+    unsigned int back = 0xffffff;
+    unsigned int* pData32 = (unsigned int*)pData;
+    unsigned int* pData32End = pData32 + nRasterW * nRasterH;
+    while (pData32 < pData32End)
+        *pData32++ = back;
+
+    pFrame->put_Data(pData);
+    pFrame->put_Width(nRasterW);
+    pFrame->put_Height(nRasterH);
+
+    CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)NSGraphics::Create();
+    Graphics_CreateFromBgraFrame(pGraphics, pFrame);
+    return pGraphics;
+}
 WASM_EXPORT void Graphics_SetFontManager(void* graphics, NSFonts::IFontManager* pManager = NULL)
 {
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)graphics;
@@ -58,10 +78,12 @@ WASM_EXPORT void Graphics_drawHorLine(void* graphics, BYTE align, double y, doub
 #ifdef TEST_AS_EXECUTABLE
 int main()
 {
-    void* testGraphics = Graphics_Create();
+    CBgraFrame* testFrame = Raster_Create();
+    void* testGraphics = Graphics_CreateFromEmptyFrame(50, 50, testFrame);
 
     Graphics_SetFontManager(testGraphics);
 
+    /*
     BYTE* pData = NULL;
     DWORD nBytesCount;
     NSFile::CFileBinary oFile;
@@ -69,29 +91,13 @@ int main()
         return 1;
     oFile.CloseFile();
     CBgraFrame* testFrame = Raster_Load(pData, nBytesCount);
-    /*
-    int nRasterW = (int)50;
-    int nRasterH = (int)50;
-    BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
-
-    unsigned int back = 0xffffff;
-    unsigned int* pData32 = (unsigned int*)pData;
-    unsigned int* pData32End = pData32 + nRasterW * nRasterH;
-    while (pData32 < pData32End)
-        *pData32++ = back;
-
-    testFrame->put_Data(pData);
-    testFrame->put_Width(nRasterW);
-    testFrame->put_Height(nRasterH);
-    */
     Graphics_CreateFromBgraFrame(testGraphics, testFrame);
-
+    */
     Graphics_drawHorLine(testGraphics, 1, 50, 50, 50, 5);
 
     testFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.jpg", 3);
     Raster_Destroy(testFrame);
     Graphics_Destroy(testGraphics);
-    RELEASEARRAYOBJECTS(pData);
     return 0;
 }
 #endif

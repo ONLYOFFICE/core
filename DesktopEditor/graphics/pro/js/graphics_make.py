@@ -3,6 +3,10 @@ sys.path.append("../../../../../build_tools/scripts")
 import base
 import os
 
+if not base.is_file("raster.o"):
+  print("Please use raste_make.py previously")
+  exit(0)
+
 base.configure_common_apps()
 
 # fetch emsdk
@@ -46,6 +50,7 @@ for item in input_graphics_sources:
     sources.append(libGraphics_src_path + item)
 for item in input_fontengine_sources:
     sources.append(libFontEngine_src_path + item)
+sources.append("raster.o")
 sources.append("wasm/src/graphics.cpp")
 
 compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg")
@@ -97,3 +102,4 @@ base.copy_file("./wasm/js/code.js", "./deploy/code.js")
 
 base.delete_file("graphics.js")
 base.delete_file("graphics.wasm")
+base.delete_file("raster.o")

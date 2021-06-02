@@ -170,16 +170,18 @@ if base.host_platform() == "windows":
         windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libTiff_src_path + '/' + item)
         tiff += ("temp/" + item + ".o ")
     
+    arguments2 = arguments
+    for item in sources:
+        arguments2 += (item + " ")
+    windows_bat.append("call emcc -r -o raster.o " + arguments2 + jpeg + tiff)
+    
     arguments += "-s EXPORTED_FUNCTIONS=\"["
     for item in exported_functions:
         arguments += ("'" + item + "',")
     arguments = arguments[:-1]
     arguments += "]\" "
-    for item in sources:
-        arguments += (item + " ")
     
-    windows_bat.append("call emcc -o raster.js " + arguments + jpeg + tiff)
-    # windows_bat.append("call emcc -o raster.o -c " + arguments + jpeg + tiff)
+    windows_bat.append("call emcc -o raster.js " + arguments + " raster.o")
 else:
     windows_bat.append("#!/bin/bash")
     windows_bat.append("source ./emsdk/emsdk_env.sh")
@@ -193,16 +195,19 @@ else:
     for item in input_tiff_sources:
         windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libTiff_src_path + '/' + item)
         tiff += ("temp/" + item + ".o ")
+        
+    arguments2 = arguments
+    for item in sources:
+        arguments2 += (item + " ")
+    windows_bat.append("emcc -r -o raster.o " + arguments2 + jpeg + tiff)
     
     arguments += "-s EXPORTED_FUNCTIONS=\"["
     for item in exported_functions:
         arguments += ("'" + item + "',")
     arguments = arguments[:-1]
     arguments += "]\" "
-    for item in sources:
-        arguments += (item + " ")
     
-    windows_bat.append("emcc -o raster.js " + arguments + jpeg + tiff)
+    windows_bat.append("emcc -o raster.js " + arguments + " raster.o")
 base.run_as_bat(windows_bat)
 
 # finalize

@@ -504,6 +504,44 @@ namespace PdfWriter
 			pAction->Add("S", "JavaScript");
 			pAction->Add("JS", new CStringObject("event.target.buttonImportIcon();"));
 		}
+
+		CDictObject* pMK = new CDictObject();
+		if (pMK)
+		{
+			pXref->Add(pMK);
+			Add("MK", pMK);
+
+			pMK->Add("R", 0);
+
+			CArrayObject* pBG = new CArrayObject();
+			if (pBG)
+			{
+				pBG->Add(0.909);
+				pBG->Add(0.941);
+				pBG->Add(0.992);
+				pMK->Add("BG", pBG);
+			}
+
+			pMK->Add("TP", 1);
+
+			CDictObject* pIF = new CDictObject();
+			if (pIF)
+			{
+				pMK->Add("IF", pIF);
+
+				pMK->Add("SW", "A");
+				pMK->Add("S", "P");
+				pMK->Add("FB", false);
+
+				CArrayObject* pA = new CArrayObject();
+				if (pA)
+				{
+					pMK->Add("A", pA);
+					pA->Add(0.5);
+					pA->Add(0.5);
+				}
+			}
+		}
 	}
 	void CPictureField::SetAppearance()
 	{
@@ -517,12 +555,12 @@ namespace PdfWriter
 
 		CResourcesDict* pResources = new CResourcesDict(m_pXref, true, false);
 
-		//Add("DR", pResources);
-
-		std::string sDA = "0.5 0.5 0.5 rg";
+		std::string sDA = "0.909 0.941 0.992 rg";
 		Add("DA", new CStringObject(sDA.c_str()));
 
 		pNormal->DrawPicturePlaceholder();
+
+
 	}
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance
@@ -615,7 +653,7 @@ namespace PdfWriter
 		Add("Resources", pField->GetResourcesDict());
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
-		//SetFilter(STREAM_FILTER_FLATE_DECODE);
+		SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
 	}
 	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFontName, double dFontSize, double dX, double dY, double dR, double dG, double dB, const char* sExtGStateName, double dWidth, double dHeight, double* pShifts, unsigned int unShiftsCount)

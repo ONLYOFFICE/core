@@ -39,10 +39,19 @@ exported_functions = ["_malloc",
                       "_Graphics_drawHorLine"]
 
 libGraphics_src_path = "../../"
-input_graphics_sources = ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "Graphics.cpp", "Brush.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp"]
+input_graphics_sources = ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "Graphics.cpp", "Brush.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp"]
 
 libFontEngine_src_path = "../../../fontengine/"
-input_fontengine_sources = ["GlyphString.cpp"]
+input_fontengine_sources = ["GlyphString.cpp", "FontManager.cpp", "FontFile.cpp", "FontPath.cpp", "ApplicationFonts.cpp"]
+
+libAgg_src_path = "../../../agg-2.4/src/"
+input_agg_sources = ["agg_arc.cpp", "agg_vcgen_stroke.cpp", "agg_vcgen_dash.cpp", "agg_trans_affine.cpp", "agg_curves.cpp"]
+
+libFreetype_src_path = "../../../freetype-2.10.4/src/base/"
+input_freetype_sources = ["ftinit.c", "ftlcdfil.c", "ftobjs.c", "ftglyph.c", "ftoutln.c", "ftutil.c", "../bdf/bdfdrivr.c", "../smooth/ftsmooth.c", "../../builds/unix/ftsystem.c", "../autofit/afmodule.c", "../truetype/ttdriver.c", "../type1/t1driver.c", "../cff/cffdrivr.c"]
+
+libCommon_src_path = "../../../common/"
+input_common_sources = ["File.cpp"]
 
 # sources
 sources = []
@@ -50,12 +59,18 @@ for item in input_graphics_sources:
     sources.append(libGraphics_src_path + item)
 for item in input_fontengine_sources:
     sources.append(libFontEngine_src_path + item)
+for item in input_agg_sources:
+    sources.append(libAgg_src_path + item)
+for item in input_freetype_sources:
+    sources.append(libFreetype_src_path + item)
+for item in input_common_sources:
+    sources.append(libCommon_src_path + item)
 sources.append("raster.o")
 sources.append("wasm/src/graphics.cpp")
 
 compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg")
 compiler_flags.append("-I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype")
-compiler_flags.append("-D__linux__ -D_LINUX")
+compiler_flags.append("-D__linux__ -D_LINUX -DFT_ERR_PREFIX=FT_Err_ -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H")
 
 # arguments
 arguments = ""

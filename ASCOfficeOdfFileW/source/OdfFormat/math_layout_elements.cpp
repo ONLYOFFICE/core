@@ -102,13 +102,13 @@ void math_mfrac::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
+			CP_XML_ATTR_OPT(L"math:linethickness", linethickness);
+			CP_XML_ATTR_OPT(L"bevelled", bevelled);
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
 				content_[i]->serialize(CP_XML_STREAM());
 			}
-			CP_XML_ATTR_OPT(L"math:linethickness", linethickness);
-			CP_XML_ATTR_OPT(L"bevelled", bevelled);
 		}
 	}
 }

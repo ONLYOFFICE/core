@@ -12,16 +12,20 @@
 static std::vector<std::vector<std::wstring>> brackets; // контейнер для скобочек
 static int lvl_of_me = 0; // уровень вложенности <m:e>
 static std::vector<int> end_counter; // не помню зачем сделал массив вместо переменной, сделал на будущее
+static int counter = 0;
+
 
 #define CREATE_MATH_TAG(tag)\
 	odf_writer::office_element_ptr elm;\
 	odf_writer::create_element(L"math", tag, elm, odf_context());
 
 #define OPEN_MATH_TAG(elm)\
-	odf_context()->math_context()->start_element(elm);
+	odf_context()->math_context()->start_element(elm); \
+	counter++;
 
 #define CLOSE_MATH_TAG\
-	odf_context()->math_context()->end_element();
+	odf_context()->math_context()->end_element();\
+	counter--;
 
 
 namespace Oox2Odf
@@ -138,12 +142,19 @@ namespace Oox2Odf
 	{
 		if (!oox_arg_pr) return;
 		
-		CREATE_MATH_TAG(L"mathArgPr")
-		OPEN_MATH_TAG(elm)
+		/*CREATE_MATH_TAG(L"mathArgPr")
+		OPEN_MATH_TAG(elm)*/
 
 		convert(oox_arg_pr->m_oArgSz.GetPointer());
 
-		CLOSE_MATH_TAG
+		//CLOSE_MATH_TAG
+
+	}
+
+
+	void DocxConverter::convert(OOX::Logic::CArgSz *oox_arg_sz)
+	{
+		if (!oox_arg_sz) return;
 	}
 
 	void DocxConverter::convert(OOX::Logic::CBar *oox_bar)
@@ -224,6 +235,11 @@ namespace Oox2Odf
 		convert(oox_box_pr->m_oDiff.GetPointer());
 		convert(oox_box_pr->m_oNoBreak.GetPointer());
 		convert(oox_box_pr->m_oOpEmu.GetPointer());
+	}
+
+	void DocxConverter::convert(OOX::Logic::CDiff *oox_diff)
+	{
+		if (!oox_diff) return;
 	}
 
 	void DocxConverter::convert(OOX::Logic::CBrk *oox_brk)
@@ -318,27 +334,34 @@ namespace Oox2Odf
 		if (val == L"lin")
 		{
 			convert(oox_fraction->m_oNum.GetPointer());
+			CREATE_MATH_TAG(L"mo");
+			OPEN_MATH_TAG(elm);
+			elm->add_text(L"/");
+			CLOSE_MATH_TAG;
 			convert(oox_fraction->m_oDen.GetPointer());
 		}
 		else
 		{
 			CREATE_MATH_TAG(L"mfrac");
-			OPEN_MATH_TAG(elm);
 
-			odf_writer::math_mfrac* tmp = dynamic_cast<odf_writer::math_mfrac*>(elm.get());
-			Bool flag;
+			typedef odf_writer::math_mfrac* T;			
+
+			T tmp = dynamic_cast<T>(elm.get());
+			//Bool flag;
 
 			if (tmp)
 			{
 				if (val == L"skw")
 				{
-					flag = true;
-					tmp->bevelled = flag;
+					//flag = true;
+					tmp->bevelled = true;
 				}
 			}
+
+			OPEN_MATH_TAG(elm);
 			convert(oox_fraction->m_oNum.GetPointer());
 			convert(oox_fraction->m_oDen.GetPointer());
-			CLOSE_MATH_TAG
+			CLOSE_MATH_TAG;
 		}	
 	}
 
@@ -686,7 +709,7 @@ namespace Oox2Odf
 								 L'∈', L'∉', L'∋', L'∩', L'∪', L'//', L'/', L'⊂', L'⊆', L'⊃', L'⊇', L'⊄', L'⊈', L'⊅', L'⊉',						//
 								 L'∞', L'∂', L'∇', L'∃', L'∄', L'∀', L'ħ', L'ƛ', L'ℜ', L'ℑ', L'℘', L'ℒ', L'ℱ', L'←', L'→', L'↑', L'↓',					// others
 								 L'…', L'⋯', L'⋮', L'⋰', L'⋱',
-								 L'∫'
+								 L'∫', L'∬', 'L∭', L'∮', L'∯', L'∰'
 		};
 		
 
@@ -812,14 +835,16 @@ namespace Oox2Odf
 
 	void DocxConverter::convert(OOX::Logic::CChr * oox_chr)
 	{
-		if (!oox_chr) return;
 		
 		CREATE_MATH_TAG(L"mo")
 		OPEN_MATH_TAG(elm)
 
-		elm->add_text(oox_chr->m_val->GetValue());
+		if (!oox_chr)		
+			elm->add_text(L"∫");		
+		else
+			elm->add_text(oox_chr->m_val->GetValue());
 
-		CLOSE_MATH_TAG
+		CLOSE_MATH_TAG;
 	}
 
 	void DocxConverter::convert(OOX::Logic::CPhant *oox_phant)

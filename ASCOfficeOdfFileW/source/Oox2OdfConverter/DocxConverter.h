@@ -413,6 +413,8 @@ namespace Oox2Odf
 		bool convert(OOX::Logic::CSubHide				*oox_subHide);
 		bool convert(OOX::Logic::CSupHide				*oox_supHide);
 		std::wstring convert(OOX::Logic::CType			*oox_type);
+		void convert(OOX::Logic::CDiff					*oox_diff);
+		void convert(OOX::Logic::CArgSz					*oox_arg_sz);
 //--------------------------------------------------------------------------------
 	};
 }

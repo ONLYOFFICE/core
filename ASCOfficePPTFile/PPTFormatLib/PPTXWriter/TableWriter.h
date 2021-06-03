@@ -48,6 +48,18 @@ private:
     void FillXfrm(PPTX::Logic::Xfrm& oXFRM);
     void FillTable(PPTX::Logic::Table &oTable);
 
+    std::vector<int> getWidth();
+    std::vector<int> getHeight(std::vector<CElement*> &arrCells);
+
+    void FillTblPr(PPTX::Logic::TableProperties& oTblPr);
+    void FillTblGrid(std::vector<PPTX::Logic::TableCol>& tblGrid);
+    void prepareShapes(std::vector<CElement*> &arrCells,
+                       std::vector<CElement*>& arrSpliters);
+    std::vector< std::list<CElement*> >
+        prepareRows(std::vector<CElement*> &arrCells);
+
+    void FillRows(std::vector<PPTX::Logic::TableRow>& TableRows);
+
 private:
     CTableElement *m_pTableElement;
 };

@@ -41,10 +41,26 @@ void TableWriter::FillXfrm(PPTX::Logic::Xfrm &oXFRM)
 
     oXFRM.extX = int(m_pTableElement->m_rcAnchor.right * 983);
     oXFRM.extY = int(m_pTableElement->m_rcAnchor.bottom * 1398);
-
 }
 
 void TableWriter::FillTable(PPTX::Logic::Table &oTable)
 {
 
+}
+
+void TableWriter::prepareShapes(std::vector<CElement*> &arrCells, std::vector<CElement *> &arrSpliters)
+{
+    for (const auto& ptrShape : m_pTableElement->m_pChildElements)
+    {
+        auto pShapeEl = dynamic_cast<CShapeElement*>(ptrShape.get());
+        switch (pShapeEl->m_lShapeType)
+        {
+        case 1:
+            arrCells.push_back(pShapeEl);
+            break;
+        case 20:
+            arrSpliters.push_back(pShapeEl);
+            break;
+        }
+    }
 }

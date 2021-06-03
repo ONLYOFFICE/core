@@ -119,37 +119,48 @@ namespace MetaFile
         bool ReadFromFile(const std::wstring wsPathToFile);
         void ReadArguments(unsigned int &unType,
                            unsigned int &unSize);
-        void ReadNextRecord();
+        bool ReadNextRecord();
+        bool ReadNextNode();
 
         void operator>>(TEmfHeader&     oTEmfHeader);
         void operator>>(TEmfAlphaBlend& oTEmfAlphaBlend);
         void operator>>(CEmfLogBrushEx& oCEmfLogBrushEx);
         void operator>>(TEmfBitBlt&     oTEmfBitBlt);
+        void operator>>(TEmfStretchDIBITS& oTEmfStretchDIBITS);
+        void operator>>(TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice);
+        void operator>>(TEmfStretchBLT &oTEmfStretchBLT);
         void operator>>(CEmfLogFont&    oCEmfLogFont);
         void operator>>(TEmfExtTextoutW&oTEmfExtTextoutW);
+        void operator>>(TEmfExtTextoutA&oTEmfExtTextoutA);
+        void operator>>(TEmfSmallTextout&oTEmfSmallTextout);
         void operator>>(TEmfEmrText&    oTEmfEmrText);
+        void operator>>(TEmfDibPatternBrush& oTEmfDibPatternBrush);
+        void operator>>(CEmfLogPalette& oCEmfLogPalette);
         void operator>>(CDataStream&    oCDataStream);
 
         void operator>>(TXForm&         oTXForm);
         void operator>>(TEmfColor&      oTEmfColor);
+        void operator>>(TEmfPointL&     oTEmfPointL);
+        void operator>>(TEmfPointS&     oTEmfPointS);
+        void operator>>(TEmfSizeL&      oTEmfSizeL);
+        void operator>>(TEmfRectL&      oTEmfRectL);
 
+        void operator>>(unsigned char&  ucValue);
         void operator>>(unsigned int&   unValue);
+        void operator>>(double&         dValue);
+        void operator>>(int&            nValue);
 
     private:
         XmlUtils::CXmlLiteReader    *m_pXmlLiteReader;
 
-        void operator>>(TEmfRectL&          oTEmfRectL);
-        void operator>>(TEmfSizeL&          oTEmfSizeL);
         void operator>>(TRect&              oTRect);
         void operator>>(TEmfLogFontEx&      oTEmfLogFontEx);
         void operator>>(TEmfLogFont&        oTEmfLogFont);
         void operator>>(TEmfDesignVector&   oTEmfDesignVector);
-        void operator>>(TEmfPointL&         oTEmfPointL);
+        void operator>>(TEmfLogPaletteEntry&oTEmfLogPaletteEntry);
 
-        void operator>>(int&            nValue);
-        void operator>>(double&         dValue);
+        void operator>>(short&          shValue);
         void operator>>(unsigned short& ushValue);
-        void operator>>(unsigned char&  ucValue);
         void operator>>(unsigned short  arushValue[]);
         void operator>>(std::wstring&   wsValue);
         void operator>>(std::string&    sValue);

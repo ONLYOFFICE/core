@@ -827,13 +827,18 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_ALPHABLEND()
 	{
 		TEmfAlphaBlend oBitmap;
-		m_oStream >> oBitmap;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
 		{
-			TEmfAlphaBlend oTest;
-			*m_pOutputXml >> oTest;
+			*m_pOutputXml >> oBitmap;
+			CDataStream oBuffer;
+			if (oBitmap.cbBitsSrc > 0)
+				*m_pOutputXml >> oBuffer;
+
+			m_oStream.Skip(100);
 		}
+		else
+			m_oStream >> oBitmap;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{	
@@ -890,7 +895,18 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_STRETCHDIBITS()
 	{
 		TEmfStretchDIBITS oBitmap;
-		m_oStream >> oBitmap;
+
+		if (m_pOutput && m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBitmap;
+			CDataStream oBuffer;
+			if (oBitmap.cbBitsSrc > 0)
+				*m_pOutputXml >> oBuffer;
+
+			m_oStream.Skip(72);
+		}
+		else
+			m_oStream >> oBitmap;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -923,14 +939,18 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_BITBLT()
 	{
 		TEmfBitBlt oBitmap;
-		m_oStream >> oBitmap;
 
-		if (m_pOutput && m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
 		{
-			TEmfBitBlt oTestBitmap;
-			*m_pOutputXml >> oTestBitmap;
+			*m_pOutputXml >> oBitmap;
 			CDataStream oBuffer;
+			if (oBitmap.cbBitsSrc > 0)
+				*m_pOutputXml >> oBuffer;
+
+			m_oStream.Skip(92);
 		}
+		else
+			m_oStream >> oBitmap;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1035,16 +1055,24 @@ static const struct ActionNamesEmf
 				DrawImage(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);				
 		}
 
-//		if (m_pOutput && m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		    m_oStream = oTemp;
-
 		if (pBgraBuffer)
 			delete[] pBgraBuffer;
 	}
 	void CEmfFile::Read_EMR_SETDIBITSTODEVICE()
 	{
 		TEmfSetDiBitsToDevice oBitmap;
-		m_oStream >> oBitmap;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBitmap;
+			CDataStream oBuffer;
+			if (oBitmap.cbBitsSrc > 0)
+				*m_pOutputXml >> oBuffer;
+
+                        m_oStream.Skip(68);
+                }
+                else
+                        m_oStream >> oBitmap;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1073,7 +1101,18 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_STRETCHBLT()
 	{
 		TEmfStretchBLT oBitmap;
-		m_oStream >> oBitmap;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBitmap;
+			CDataStream oBuffer;
+			if (oBitmap.cbBitsSrc > 0)
+				*m_pOutputXml >> oBuffer;
+
+                        m_oStream.Skip(100);
+                }
+                else
+                        m_oStream >> oBitmap;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1114,13 +1153,15 @@ static const struct ActionNamesEmf
 			*m_pOutputXml >> ulOffset;
 			*m_pOutputXml >> ulSizeLast;
 		}
+		else
+		{
+			m_oStream >> ulCount;
+			m_oStream >> ulOffset;
 
-		m_oStream >> ulCount;
-		m_oStream >> ulOffset;
+			m_oStream.Skip(m_ulRecordSize - 8 - 4);
 
-		m_oStream.Skip(m_ulRecordSize - 8 - 4);
-
-		m_oStream >> ulSizeLast;
+			m_oStream >> ulSizeLast;
+		 }
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1152,7 +1193,10 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_RESTOREDC()
 	{
 		int lSavedDC;
-		m_oStream >> lSavedDC;
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml>>lSavedDC;
+		else
+			m_oStream >> lSavedDC;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1180,8 +1224,16 @@ static const struct ActionNamesEmf
 		TEmfXForm oXForm;
 		unsigned int ulMode;
 
-		m_oStream >> oXForm;
-		m_oStream >> ulMode;
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oXForm;
+			*m_pOutputXml >> ulMode;
+		}
+		else
+		{
+			m_oStream >> oXForm;
+			m_oStream >> ulMode;
+		}
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1199,7 +1251,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfXForm oXForm;
 
-		m_oStream >> oXForm;
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oXForm;
+		else
+			m_oStream >> oXForm;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1230,7 +1285,6 @@ static const struct ActionNamesEmf
 			m_oStream >> *pBrush;
 		}
 
-
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
 			m_pOutputXml->WriteNodeBegin(L"EMR_CREATEBRUSHINDIRECT", {XmlArgument(L"Id", EMR_CREATEBRUSHINDIRECT),
@@ -1246,7 +1300,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETTEXTCOLOR()
 	{
 		TEmfColor oColor;
-		m_oStream >> oColor;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oColor;
+		else
+			m_oStream >> oColor;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1289,8 +1347,6 @@ static const struct ActionNamesEmf
 		if (!pFont)
 			return SetError();
 
-
-
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
 		{
 			*m_pOutputXml >> ulIndex;
@@ -1317,7 +1373,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETTEXTALIGN()
 	{
 		unsigned int ulAlign;
-		m_oStream >> ulAlign;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> ulAlign;
+		else
+			m_oStream >> ulAlign;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1335,9 +1395,9 @@ static const struct ActionNamesEmf
 		unsigned int ulBgMode;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		    *m_pOutputXml >> ulBgMode;
+			*m_pOutputXml >> ulBgMode;
 		else
-		    m_oStream >> ulBgMode;
+			m_oStream >> ulBgMode;
 
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
@@ -1374,7 +1434,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETMITERLIMIT()
 	{
 		unsigned int ulMiterLimit;
-		m_oStream >> ulMiterLimit;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> ulMiterLimit;
+		else
+			m_oStream >> ulMiterLimit;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1390,7 +1454,17 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_EXTCREATEPEN()
 	{
 		unsigned int ulPenIndex;
-		m_oStream >> ulPenIndex;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> ulPenIndex;
+			m_pOutputXml->ReadNextNode();
+			m_pOutputXml->ReadNextNode();
+			m_pOutputXml->ReadNextNode();
+			m_pOutputXml->ReadNextNode();
+		}
+		else
+			m_oStream >> ulPenIndex;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1417,8 +1491,20 @@ static const struct ActionNamesEmf
 			return SetError();
 
 		// LogPenEx
-		m_oStream >> pPen->PenStyle;
-		m_oStream >> pPen->Width;
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			m_pOutputXml->ReadNextNode();
+
+			*m_pOutputXml >> pPen->PenStyle;
+			*m_pOutputXml >> pPen->Width;
+
+			m_pOutputXml->ReadNextNode();
+		}
+		else
+		{
+			m_oStream >> pPen->PenStyle;
+			m_oStream >> pPen->Width;
+		}
 
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
@@ -1433,7 +1519,10 @@ static const struct ActionNamesEmf
 		else
 		    m_oStream.Skip(4); // BrushStyle
 
-		m_oStream >> pPen->Color;
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> pPen->Color;
+		else
+			m_oStream >> pPen->Color;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1452,7 +1541,14 @@ static const struct ActionNamesEmf
 		else
 		    m_oStream.Skip(4); // BrushHatch
 
-		m_oStream >> pPen->NumStyleEntries;
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			m_pOutputXml->ReadNextNode();
+			*m_pOutputXml >> pPen->NumStyleEntries;
+		}
+		else
+			m_oStream >> pPen->NumStyleEntries;
+
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 			m_pOutputXml->WriteNode(L"NumStyleEntries", pPen->NumStyleEntries);
@@ -1470,7 +1566,11 @@ static const struct ActionNamesEmf
 
 			for (unsigned int ulIndex = 0; ulIndex < pPen->NumStyleEntries; ulIndex++)
 			{
-				m_oStream >> pPen->StyleEntry[ulIndex];
+				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+					*m_pOutputXml >> pPen->StyleEntry[ulIndex];
+				else
+					m_oStream >> pPen->StyleEntry[ulIndex];
+
 				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 					m_pOutputXml->WriteNode(L"StyleEntry" + std::to_wstring(ulIndex + 1),  pPen->StyleEntry[ulIndex]);
 			}
@@ -1498,15 +1598,35 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_CREATEPEN()
 	{
 		unsigned int ulPenIndex;
-		m_oStream >> ulPenIndex;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> ulPenIndex;
+		else
+			m_oStream >> ulPenIndex;
+
 		CEmfLogPen* pPen = new CEmfLogPen();
 		if (!pPen)
 			return SetError();
 
-		m_oStream >> pPen->PenStyle;
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			m_pOutputXml->ReadNextNode();
+			*m_pOutputXml >> pPen->PenStyle;
+		}
+		else
+			m_oStream >> pPen->PenStyle;
 
 		unsigned int widthX, widthY;
-		m_oStream >> widthX >> widthY;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			m_pOutputXml->ReadNextNode();
+
+			*m_pOutputXml >> widthX;
+			*m_pOutputXml >> widthY;
+		}
+		else
+			m_oStream >> widthX >> widthY;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1528,7 +1648,10 @@ static const struct ActionNamesEmf
 		}
 		pPen->Width = widthX;
 
-		m_oStream >> pPen->Color;
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> pPen->Color;
+		else
+			m_oStream >> pPen->Color;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1541,7 +1664,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETPOLYFILLMODE()
 	{
 		unsigned int ulFillMode;
-		m_oStream >> ulFillMode;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> ulFillMode;
+		else
+			m_oStream >> ulFillMode;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1634,7 +1761,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_MOVETOEX()
 	{
 		TEmfPointL oPoint;
-		m_oStream >> oPoint;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oPoint;
+		else
+			m_oStream >> oPoint;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{	
@@ -1649,7 +1780,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETARCDIRECTION()
 	{
 		unsigned int unDirection;
-		m_oStream >> unDirection;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> unDirection;
+		else
+			m_oStream >> unDirection;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1665,7 +1800,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_FILLPATH()
 	{
 		TEmfRectL oBounds;
-		m_oStream >> oBounds;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oBounds;
+		else
+			m_oStream >> oBounds;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1684,7 +1823,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETMAPMODE()
 	{
 		unsigned int ulMapMode;
-		m_oStream >> ulMapMode;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> ulMapMode;
+		else
+			m_oStream >> ulMapMode;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1700,7 +1843,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETWINDOWORGEX()
 	{
 		TEmfPointL oOrigin;
-		m_oStream >> oOrigin;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oOrigin;
+		else
+			m_oStream >> oOrigin;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1715,7 +1862,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETWINDOWEXTEX()
 	{
 		TEmfSizeL oExtent;
-		m_oStream >> oExtent;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oExtent;
+		else
+			m_oStream >> oExtent;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1730,7 +1881,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETVIEWPORTORGEX()
 	{
 		TEmfPointL oOrigin;
-		m_oStream >> oOrigin;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oOrigin;
+		else
+			m_oStream >> oOrigin;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1745,7 +1900,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETVIEWPORTEXTEX()
 	{
 		TEmfSizeL oExtent;
-		m_oStream >> oExtent;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oExtent;
+		else
+			m_oStream >> oExtent;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1760,7 +1919,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETSTRETCHBLTMODE()
 	{
 		unsigned int ulStretchMode;
-		m_oStream >> ulStretchMode;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> ulStretchMode;
+		else
+			m_oStream >> ulStretchMode;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1775,7 +1938,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETICMMODE()
 	{
 		unsigned int ulICMMode;
-		m_oStream >> ulICMMode;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> ulICMMode;
+		else
+			m_oStream >> ulICMMode;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1790,8 +1957,21 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulBrushIndex;
 		TEmfDibPatternBrush oDibBrush;
-		m_oStream >> ulBrushIndex;
-		m_oStream >> oDibBrush;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> ulBrushIndex;
+			*m_pOutputXml >> oDibBrush;
+
+			CDataStream oBuffer;
+			*m_pOutputXml >> oBuffer;
+			m_oStream.Skip(24);
+		}
+		else
+		{
+			m_oStream >> ulBrushIndex;
+			m_oStream >> oDibBrush;
+		}
 
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
@@ -1803,7 +1983,7 @@ static const struct ActionNamesEmf
 				m_pOutputXml->WriteNode(L"ihBrush", ulBrushIndex);
 				m_pOutputXml->WriteNode(L"", oDibBrush);
 
-				unsigned int unSize = m_ulRecordSize - 24;
+				unsigned int unSize = m_ulRecordSize - sizeof(TEmfDibPatternBrush) - 12;
 
 				if (unSize > 0)
 					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
@@ -1825,7 +2005,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SELECTCLIPPATH()
 	{
 		unsigned int unRegionMode;
-		m_oStream >> unRegionMode;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> unRegionMode;
+		else
+			m_oStream >> unRegionMode;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1847,7 +2031,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETBKCOLOR()
 	{
 		TEmfColor oColor;
-		m_oStream >> oColor;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oColor;
+		else
+			m_oStream >> oColor;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1862,7 +2050,11 @@ static const struct ActionNamesEmf
 	{
 		// TODO: Проверить как найдется файл
 		TEmfRectL oClip;
-		m_oStream >> oClip;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oClip;
+		else
+			m_oStream >> oClip;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1909,7 +2101,14 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_EXTSELECTCLIPRGN()
 	{
 		unsigned int ulRgnDataSize, ulRegionMode;
-		m_oStream >> ulRgnDataSize >> ulRegionMode;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> ulRgnDataSize;
+			*m_pOutputXml >> ulRegionMode;
+		}
+		else
+		    m_oStream >> ulRgnDataSize >> ulRegionMode;
 
                 if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
                 {
@@ -1946,7 +2145,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETROP2()
 	{
 		unsigned int ulRop2Mode;
-		m_oStream >> ulRop2Mode;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> ulRop2Mode;
+		else
+			m_oStream >> ulRop2Mode;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1966,8 +2169,16 @@ static const struct ActionNamesEmf
 		if (!pPalette)
 			return SetError();
 
-		m_oStream >> ulPaletteIndex;
-		m_oStream >> *pPalette;
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> ulPaletteIndex;
+			*m_pOutputXml >> *pPalette;
+		}
+		else
+		{
+			m_oStream >> ulPaletteIndex;
+			m_oStream >> *pPalette;
+		}
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1984,7 +2195,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SELECTPALETTE()
 	{
 		unsigned int ulIndex;
-		m_oStream >> ulIndex;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> ulIndex;
+		else
+			m_oStream >> ulIndex;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2008,7 +2223,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_INTERSECTCLIPRECT()
 	{
 		TEmfRectL oClip;
-		m_oStream >> oClip;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oClip;
+		else
+			m_oStream >> oClip;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2026,7 +2245,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETLAYOUT()
 	{
 		unsigned int ulLayoutMode;
-		m_oStream >> ulLayoutMode;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> ulLayoutMode;
+		else
+			m_oStream >> ulLayoutMode;
 
                 if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
                 {
@@ -2041,7 +2264,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SETBRUSHORGEX()
 	{
 		TEmfPointL oOrigin;
-		m_oStream >> oOrigin;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oOrigin;
+		else
+			m_oStream >> oOrigin;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2059,7 +2286,17 @@ static const struct ActionNamesEmf
 		TEmfPointL oCenter;
 		unsigned int unRadius;
 		double dStartAngle, dSweepAngle;
-		m_oStream >> oCenter >> unRadius >> dStartAngle >> dSweepAngle;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oCenter;
+			*m_pOutputXml >> unRadius;
+
+			*m_pOutputXml >> dStartAngle;
+			*m_pOutputXml >> dSweepAngle;
+		}
+		else
+			m_oStream >> oCenter >> unRadius >> dStartAngle >> dSweepAngle;
 
                 if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
                 {
@@ -2077,7 +2314,14 @@ static const struct ActionNamesEmf
 	}
 	void CEmfFile::Read_EMR_ARC_BASE(TEmfRectL& oBox, TEmfPointL& oStart, TEmfPointL& oEnd, double& dStartAngle, double& dSweepAngle)
 	{
-		m_oStream >> oBox >> oStart >> oEnd;
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBox;
+			*m_pOutputXml >> oStart;
+			*m_pOutputXml >> oEnd;
+		}
+		else
+			m_oStream >> oBox >> oStart >> oEnd;
 
 		dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
 		dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
@@ -2159,7 +2403,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_ELLIPSE()
 	{
 		TEmfRectL oBox;
-		m_oStream >> oBox;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oBox;
+		else
+			m_oStream >> oBox;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2181,7 +2429,11 @@ static const struct ActionNamesEmf
 	{
 		// TODO: Как найдутся файлы проверить данную запись.
 		TEmfExtTextoutA oText;
-		m_oStream >> oText;	
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oText;
+		else
+			m_oStream >> oText;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2211,7 +2463,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_LINETO()
 	{
 		TEmfPointL oPoint;
-		m_oStream >> oPoint;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oPoint;
+		else
+			m_oStream >> oPoint;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2255,16 +2511,29 @@ static const struct ActionNamesEmf
 	template<typename T>void CEmfFile::Read_EMR_POLYBEZIER_BASE()
 	{
 		TEmfRectL oBounds;
-		m_oStream >> oBounds;
-
 		unsigned int ulCount;
-		m_oStream >> ulCount;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBounds;
+			*m_pOutputXml >> ulCount;
+		}
+		else
+		{
+			m_oStream >> oBounds;
+			m_oStream >> ulCount;
+		}
 
 		if (0 == ulCount)
 			return;
 
 		T oStartPoint;
-		m_oStream >> oStartPoint;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oStartPoint;
+		else
+			m_oStream >> oStartPoint;
+
 		MoveTo(oStartPoint);
 
 		std::wstring wsRecordName;
@@ -2293,7 +2562,14 @@ static const struct ActionNamesEmf
 		T oPoint1, oPoint2, oPointE;
 		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex += 3)
 		{
-			m_oStream >> oPoint1 >> oPoint2 >> oPointE;
+			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			{
+				*m_pOutputXml >> oPoint1;
+				*m_pOutputXml >> oPoint2;
+				*m_pOutputXml >> oPointE;
+			}
+			else
+				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 			{
@@ -2323,10 +2599,19 @@ static const struct ActionNamesEmf
 	template<typename T>void CEmfFile::Read_EMR_POLYBEZIERTO_BASE()
 	{
 		TEmfRectL oBounds;
-		m_oStream >> oBounds;
-
 		unsigned int ulCount;
-		m_oStream >> ulCount;
+
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBounds;
+			*m_pOutputXml >> ulCount;
+		}
+		else
+		{
+			m_oStream >> oBounds;
+			m_oStream >> ulCount;
+		}
 
 		std::wstring wsRecordName;
 		unsigned int unRecordId;
@@ -2356,7 +2641,15 @@ static const struct ActionNamesEmf
 				return SetError();
 
 			T oPoint1, oPoint2, oPointE;
-			m_oStream >> oPoint1 >> oPoint2 >> oPointE;
+
+			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			{
+				*m_pOutputXml >> oPoint1;
+				*m_pOutputXml >> oPoint2;
+				*m_pOutputXml >> oPointE;
+			}
+			else
+				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 			{
@@ -2387,10 +2680,19 @@ static const struct ActionNamesEmf
 		//bug #35006 - не прочитывается весь рекорд ... выравнивание?
 
 		TEmfRectL oBounds;
-		m_oStream >> oBounds;
-
 		unsigned int unCount;
-		m_oStream >> unCount;
+
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBounds;
+			*m_pOutputXml >> unCount;
+		}
+		else
+		{
+			m_oStream >> oBounds;
+			m_oStream >> unCount;
+		}
 
 		if (0 == unCount)
 			return;
@@ -2423,7 +2725,11 @@ static const struct ActionNamesEmf
 
 		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
 		{
-			m_oStream >> pPoints[unIndex];
+			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+				*m_pOutputXml >> pPoints[unIndex];
+			else
+				m_oStream >> pPoints[unIndex];
+
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 			{
 				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), pPoints[unIndex]);
@@ -2439,7 +2745,10 @@ static const struct ActionNamesEmf
 
 		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
 		{
-			m_oStream >> pAbTypes[unIndex];
+			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+				*m_pOutputXml >> pAbTypes[unIndex];
+			else
+				m_oStream >> pAbTypes[unIndex];
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 				m_pOutputXml->WriteNode(L"abTypes" + std::to_wstring(unIndex + 1), pAbTypes[unIndex]);
@@ -2510,15 +2819,27 @@ static const struct ActionNamesEmf
 	template<typename T>void CEmfFile::Read_EMR_POLYGON_BASE()
 	{
 		TEmfRectL oBounds;
-		m_oStream >> oBounds;
 		unsigned int ulCount;
-		m_oStream >> ulCount;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBounds;
+			*m_pOutputXml >> ulCount;
+		}
+		else
+		{
+			m_oStream >> oBounds;
+			m_oStream >> ulCount;
+		}
 
 		if (ulCount <= 0)
 			return;
 
 		T oPoint;
-		m_oStream >> oPoint;
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oPoint;
+		else
+			m_oStream >> oPoint;
 
 		std::wstring wsRecordName;
 		unsigned int unRecordId;
@@ -2548,7 +2869,11 @@ static const struct ActionNamesEmf
 
 		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
 		{
-			m_oStream >> oPoint;
+			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+				*m_pOutputXml >> oPoint;
+			else
+				m_oStream >> oPoint;
+
 			LineTo(oPoint);
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
@@ -2576,15 +2901,29 @@ static const struct ActionNamesEmf
 	template<typename T>void CEmfFile::Read_EMR_POLYLINE_BASE()
 	{
 		TEmfRectL oBounds;
-		m_oStream >> oBounds;
 		unsigned int ulCount;
-		m_oStream >> ulCount;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBounds;
+			*m_pOutputXml >> ulCount;
+		}
+		else
+		{
+			m_oStream >> oBounds;
+			m_oStream >> ulCount;
+		}
 
 		if (0 == ulCount)
 			return;
 
 		T oPoint;
-		m_oStream >> oPoint;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oPoint;
+		else
+			m_oStream >> oPoint;
+
 		MoveTo(oPoint);
 
 		std::wstring wsRecordName;
@@ -2612,7 +2951,11 @@ static const struct ActionNamesEmf
 
 		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
 		{
-			m_oStream >> oPoint;
+			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+				*m_pOutputXml >> oPoint;
+			else
+				m_oStream >> oPoint;
+
 			LineTo(oPoint);
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
@@ -2639,10 +2982,18 @@ static const struct ActionNamesEmf
 	template<typename T>void CEmfFile::Read_EMR_POLYLINETO_BASE()
 	{
 		TEmfRectL oBounds;
-		m_oStream >> oBounds;
-
 		unsigned int ulCount;
-		m_oStream >> ulCount;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBounds;
+			*m_pOutputXml >> ulCount;
+		}
+		else
+		{
+			m_oStream >> oBounds;
+			m_oStream >> ulCount;
+		}
 
 		std::wstring wsRecordName;
 		unsigned int unRecordId;
@@ -2669,7 +3020,11 @@ static const struct ActionNamesEmf
 		for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
 		{
 			T oPoint;
-			m_oStream >> oPoint;
+			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+				*m_pOutputXml >> oPoint;
+			else
+				m_oStream >> oPoint;
+
 			LineTo(oPoint);
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
@@ -2694,11 +3049,21 @@ static const struct ActionNamesEmf
 	template<typename T>void CEmfFile::Read_EMR_POLYPOLYGON_BASE()
 	{
 		TEmfRectL oBounds;
-		m_oStream >> oBounds;
 		unsigned int ulNumberOfPolygons;
-		m_oStream >> ulNumberOfPolygons;
 		unsigned int ulTotalPointsCount;
-		m_oStream >> ulTotalPointsCount;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBounds;
+			*m_pOutputXml >> ulNumberOfPolygons;
+			*m_pOutputXml >> ulTotalPointsCount;
+		}
+		else
+		{
+			m_oStream >> oBounds;
+			m_oStream >> ulNumberOfPolygons;
+			m_oStream >> ulTotalPointsCount;
+		}
 
 		unsigned int* pPolygonPointCount = new unsigned int[ulNumberOfPolygons];
 		if (!pPolygonPointCount)
@@ -2730,7 +3095,10 @@ static const struct ActionNamesEmf
 
 		for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolygons; ulIndex++)
 		{
-			m_oStream >> pPolygonPointCount[ulIndex];
+			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+				*m_pOutputXml >> pPolygonPointCount[ulIndex];
+			else
+				m_oStream >> pPolygonPointCount[ulIndex];
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 				m_pOutputXml->WriteNode(L"PolygonPointCount" + std::to_wstring(ulIndex + 1), pPolygonPointCount[ulIndex]);
@@ -2745,7 +3113,11 @@ static const struct ActionNamesEmf
 				continue;
 
 			T oPoint;
-			m_oStream >> oPoint;
+
+			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+				*m_pOutputXml >> oPoint;
+			else
+				m_oStream >> oPoint;
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 			{
@@ -2764,7 +3136,10 @@ static const struct ActionNamesEmf
 					return SetError();
 				}
 
-				m_oStream >> oPoint;
+				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+					*m_pOutputXml >> oPoint;
+				else
+					m_oStream >> oPoint;
 
 				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 				{
@@ -2798,13 +3173,21 @@ static const struct ActionNamesEmf
 	template<typename T>void CEmfFile::Read_EMR_POLYPOLYLINE_BASE()
 	{
 		TEmfRectL oBounds;
-		m_oStream >> oBounds;
-
 		unsigned int ulNumberOfPolylines;
-		m_oStream >> ulNumberOfPolylines;
-
 		unsigned int ulTotalPointsCount;
-		m_oStream >> ulTotalPointsCount;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBounds;
+			*m_pOutputXml >> ulNumberOfPolylines;
+			*m_pOutputXml >> ulTotalPointsCount;
+		}
+		else
+		{
+			m_oStream >> oBounds;
+			m_oStream >> ulNumberOfPolylines;
+			m_oStream >> ulTotalPointsCount;
+		}
 
 		if (0 == ulNumberOfPolylines && 0 == ulTotalPointsCount)
 			return;
@@ -2839,7 +3222,10 @@ static const struct ActionNamesEmf
 		unsigned int* pPolylinePointCount = new unsigned int[ulNumberOfPolylines];
 		for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolylines; ulIndex++)
 		{
-			m_oStream >> pPolylinePointCount[ulIndex];
+			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+				*m_pOutputXml >> pPolylinePointCount[ulIndex];
+			else
+				m_oStream >> pPolylinePointCount[ulIndex];
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 				m_pOutputXml->WriteNode(L"PolylinePointCount" + std::to_wstring(ulIndex + 1), pPolylinePointCount[ulIndex]);
@@ -2854,7 +3240,11 @@ static const struct ActionNamesEmf
 				continue;
 
 			T oPoint;
-			m_oStream >> oPoint;
+
+			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+				*m_pOutputXml >> oPoint;
+			else
+				m_oStream >> oPoint;
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 			{
@@ -2873,7 +3263,10 @@ static const struct ActionNamesEmf
 					return SetError();
 				}
 
-				m_oStream >> oPoint;
+				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+					*m_pOutputXml >> oPoint;
+				else
+					m_oStream >> oPoint;
 
 				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 				{
@@ -2931,7 +3324,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_RECTANGLE()
 	{
 		TEmfRectL oBox;
-		m_oStream >> oBox;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oBox;
+		else
+			m_oStream >> oBox;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2962,7 +3359,14 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oBox;
 		TEmfSizeL oCorner;
-		m_oStream >> oBox >> oCorner;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oBox;
+			*m_pOutputXml >> oCorner;
+		}
+		else
+			m_oStream >> oBox >> oCorner;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -3012,8 +3416,16 @@ static const struct ActionNamesEmf
 		TEmfPointL oPoint;
 		TEmfColor oColor;
 
-		m_oStream >> oPoint;
-		m_oStream >> oColor;
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		{
+			*m_pOutputXml >> oPoint;
+			*m_pOutputXml >> oColor;
+		}
+		else
+		{
+			m_oStream >> oPoint;
+			m_oStream >> oColor;
+		}
 
                 if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
                 {
@@ -3036,7 +3448,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_SMALLTEXTOUT()
 	{
 		TEmfSmallTextout oText;
-		m_oStream >> oText;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oText; //TODO: при возможности проверить чтение из XML
+		else
+			m_oStream >> oText;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -3071,7 +3487,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_STROKEANDFILLPATH()
 	{
 		TEmfRectL oBounds;
-		m_oStream >> oBounds;
+
+		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+			*m_pOutputXml >> oBounds;
+		else
+			m_oStream >> oBounds;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -3090,7 +3510,11 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_STROKEPATH()
 	{
 		TEmfRectL oBounds;
-		m_oStream >> oBounds;
+
+                if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+                        *m_pOutputXml >> oBounds;
+                else
+                        m_oStream >> oBounds;
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{

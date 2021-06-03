@@ -255,7 +255,9 @@ namespace MetaFile
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfPointL &oNodeValue, std::vector<XmlArgument> arArguments)
     {
         WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(L"Point");
         WriteTEmfPointL(oNodeValue);
+        WriteNodeEnd(L"Point");
         WriteNodeEnd(wsNameNode);
     }
 
@@ -588,14 +590,14 @@ namespace MetaFile
 		WriteNode(L"Green",	oEmfLogPalette.PaletteEntries[i].Green);
 		WriteNode(L"Red",	oEmfLogPalette.PaletteEntries[i].Red);
 		WriteNodeEnd(L"LogPaletteEntry" + std::to_wstring(i + 1));
-	    }
+	}
     }
 
     bool CXmlOutput::ReadFromFile(const std::wstring wsPathToFile)
     {
         if (m_pXmlLiteReader->FromFile(wsPathToFile))
         {
-            m_pXmlLiteReader->ReadNextNode();
+            if (!m_pXmlLiteReader->ReadNextNode())
 
             if (m_pXmlLiteReader->GetName() != L"EMF")
                 return false;
@@ -621,9 +623,14 @@ namespace MetaFile
         }
     }
 
-    void CXmlOutput::ReadNextRecord()
+    bool CXmlOutput::ReadNextRecord()
     {
-        m_pXmlLiteReader->ReadNextSiblingNode(0);
+        return m_pXmlLiteReader->ReadNextSiblingNode(0);
+    }
+
+    bool CXmlOutput::ReadNextNode()
+    {
+        return m_pXmlLiteReader->ReadNextNode();
     }
 
     void CXmlOutput::operator>>(TEmfHeader &oTEmfHeader)
@@ -675,6 +682,64 @@ namespace MetaFile
         *this >> oTEmfBitBlt.cbBitsSrc;
     }
 
+    void CXmlOutput::operator>>(TEmfStretchDIBITS &oTEmfStretchDIBITS)
+    {
+        *this >> oTEmfStretchDIBITS.Bounds;
+        *this >> oTEmfStretchDIBITS.xDest;
+        *this >> oTEmfStretchDIBITS.yDest;
+        *this >> oTEmfStretchDIBITS.xSrc;
+        *this >> oTEmfStretchDIBITS.ySrc;
+        *this >> oTEmfStretchDIBITS.cxSrc;
+        *this >> oTEmfStretchDIBITS.cySrc;
+        *this >> oTEmfStretchDIBITS.offBmiSrc;
+        *this >> oTEmfStretchDIBITS.cbBmiSrc;
+        *this >> oTEmfStretchDIBITS.offBitsSrc;
+        *this >> oTEmfStretchDIBITS.cbBitsSrc;
+        *this >> oTEmfStretchDIBITS.UsageSrc;
+        *this >> oTEmfStretchDIBITS.BitBltRasterOperation;
+        *this >> oTEmfStretchDIBITS.cxDest;
+        *this >> oTEmfStretchDIBITS.cyDest;
+    }
+
+    void CXmlOutput::operator>>(TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice)
+    {
+        *this >> oTEmfSetDiBitsToDevice.Bounds;
+        *this >> oTEmfSetDiBitsToDevice.xDest;
+        *this >> oTEmfSetDiBitsToDevice.yDest;
+        *this >> oTEmfSetDiBitsToDevice.xSrc;
+        *this >> oTEmfSetDiBitsToDevice.ySrc;
+        *this >> oTEmfSetDiBitsToDevice.cxSrc;
+        *this >> oTEmfSetDiBitsToDevice.cySrc;
+        *this >> oTEmfSetDiBitsToDevice.offBmiSrc;
+        *this >> oTEmfSetDiBitsToDevice.cbBmiSrc;
+        *this >> oTEmfSetDiBitsToDevice.offBitsSrc;
+        *this >> oTEmfSetDiBitsToDevice.cbBitsSrc;
+        *this >> oTEmfSetDiBitsToDevice.UsageSrc;
+        *this >> oTEmfSetDiBitsToDevice.iStartScan;
+        *this >> oTEmfSetDiBitsToDevice.cScans;
+    }
+
+    void CXmlOutput::operator>>(TEmfStretchBLT &oTEmfStretchBLT)
+    {
+        *this >> oTEmfStretchBLT.Bounds;
+        *this >> oTEmfStretchBLT.xDest;
+        *this >> oTEmfStretchBLT.yDest;
+        *this >> oTEmfStretchBLT.cxDest;
+        *this >> oTEmfStretchBLT.cyDest;
+        *this >> oTEmfStretchBLT.BitBltRasterOperation;
+        *this >> oTEmfStretchBLT.xSrc;
+        *this >> oTEmfStretchBLT.ySrc;
+        *this >> oTEmfStretchBLT.XformSrc;
+        *this >> oTEmfStretchBLT.BkColorSrc;
+        *this >> oTEmfStretchBLT.UsageSrc;
+        *this >> oTEmfStretchBLT.offBmiSrc;
+        *this >> oTEmfStretchBLT.cbBmiSrc;
+        *this >> oTEmfStretchBLT.offBitsSrc;
+        *this >> oTEmfStretchBLT.cbBitsSrc;
+        *this >> oTEmfStretchBLT.cxSrc;
+        *this >> oTEmfStretchBLT.cySrc;
+    }
+
     void CXmlOutput::operator>>(CEmfLogFont &oCEmfLogFont)
     {
         if (!oCEmfLogFont.IsFixedLength())
@@ -688,7 +753,8 @@ namespace MetaFile
 
     void CXmlOutput::operator>>(TEmfLogFontEx&  oTEmfLogFontEx)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
 
         *this >> oTEmfLogFontEx.LogFont;
         *this >> oTEmfLogFontEx.FullName;
@@ -716,7 +782,8 @@ namespace MetaFile
 
     void CXmlOutput::operator>>(TEmfDesignVector&  oTEmfDesignVector)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
 
         *this >> oTEmfDesignVector.Signature;
         *this >> oTEmfDesignVector.NumAxes;
@@ -733,6 +800,17 @@ namespace MetaFile
         }
     }
 
+    void CXmlOutput::operator>>(TEmfLogPaletteEntry &oTEmfLogPaletteEntry)
+    {
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
+        *this >> oTEmfLogPaletteEntry.Reserved;
+        *this >> oTEmfLogPaletteEntry.Blue;
+        *this >> oTEmfLogPaletteEntry.Green;
+        *this >> oTEmfLogPaletteEntry.Red;
+    }
+
     void CXmlOutput::operator>>(TEmfExtTextoutW &oTEmfExtTextoutW)
     {
         *this >> oTEmfExtTextoutW.Bounds;
@@ -742,9 +820,34 @@ namespace MetaFile
         *this >> oTEmfExtTextoutW.wEmrText;
     }
 
+    void CXmlOutput::operator>>(TEmfExtTextoutA &oTEmfExtTextoutA)
+    {
+        *this >> oTEmfExtTextoutA.Bounds;
+        *this >> oTEmfExtTextoutA.iGraphicsMode;
+        *this >> oTEmfExtTextoutA.exScale;
+        *this >> oTEmfExtTextoutA.eyScale;
+        *this >> oTEmfExtTextoutA.aEmrText;
+    }
+
+    void CXmlOutput::operator>>(TEmfSmallTextout &oTEmfSmallTextout)
+    {
+        *this >> oTEmfSmallTextout.x;
+        *this >> oTEmfSmallTextout.y;
+        *this >> oTEmfSmallTextout.cChars;
+        *this >> oTEmfSmallTextout.fuOptions;
+        *this >> oTEmfSmallTextout.iGraphicsMode;
+        *this >> oTEmfSmallTextout.exScale;
+        *this >> oTEmfSmallTextout.eyScale;
+        *this >> oTEmfSmallTextout.Bounds;
+
+        oTEmfSmallTextout.TextString = new unsigned short[oTEmfSmallTextout.cChars];
+        *this >> (unsigned short*)oTEmfSmallTextout.TextString;
+    }
+
     void CXmlOutput::operator>>(TEmfEmrText &oTEmfEmrText)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
 
         *this >> oTEmfEmrText.Reference;
         *this >> oTEmfEmrText.Chars;
@@ -754,6 +857,29 @@ namespace MetaFile
         *this >> oTEmfEmrText.offDx;
         oTEmfEmrText.OutputString = new unsigned short[oTEmfEmrText.Chars];
         *this >> (unsigned short*)oTEmfEmrText.OutputString;
+    }
+
+    void CXmlOutput::operator>>(TEmfDibPatternBrush &oTEmfDibPatternBrush)
+    {
+        *this >> oTEmfDibPatternBrush.Usage;
+        *this >> oTEmfDibPatternBrush.offBmi;
+        *this >> oTEmfDibPatternBrush.cbBmi;
+        *this >> oTEmfDibPatternBrush.offBits;
+        *this >> oTEmfDibPatternBrush.cbBits;
+    }
+
+    void CXmlOutput::operator>>(CEmfLogPalette &oCEmfLogPalette)
+    {
+        unsigned int unVersion;
+        *this >> unVersion;
+        *this >> oCEmfLogPalette.NumberOfEntries;
+        if (oCEmfLogPalette.NumberOfEntries > 0)
+        {
+            oCEmfLogPalette.PaletteEntries = new TEmfLogPaletteEntry[oCEmfLogPalette.NumberOfEntries];
+
+            for (unsigned int i = 0; i < oCEmfLogPalette.NumberOfEntries; ++i)
+                *this >> oCEmfLogPalette.PaletteEntries[i];
+        }
     }
 
     void CXmlOutput::operator>>(CDataStream &oCDataStream)
@@ -773,7 +899,8 @@ namespace MetaFile
 
     void CXmlOutput::operator>>(TXForm &oTXForm)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
 
         *this >> oTXForm.M11;
         *this >> oTXForm.M12;
@@ -785,7 +912,8 @@ namespace MetaFile
 
     void CXmlOutput::operator>>(TEmfColor &oTEmfColor)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
 
         *this >> oTEmfColor.r;
         *this >> oTEmfColor.g;
@@ -796,7 +924,8 @@ namespace MetaFile
 
     void CXmlOutput::operator>>(CEmfLogBrushEx &oCEmfLogBrushEx)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
 
         *this >> oCEmfLogBrushEx.BrushStyle;
         *this >> oCEmfLogBrushEx.Color;
@@ -805,7 +934,9 @@ namespace MetaFile
 
     void CXmlOutput::operator>>(TEmfRectL &oTEmfRectL)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
         *this >> oTEmfRectL.lLeft;
         *this >> oTEmfRectL.lTop;
         *this >> oTEmfRectL.lRight;
@@ -814,21 +945,36 @@ namespace MetaFile
 
     void CXmlOutput::operator>>(TEmfSizeL &oTEmfSizeL)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
         *this >> oTEmfSizeL.cx;
         *this >> oTEmfSizeL.cy;
     }
 
     void CXmlOutput::operator>>(TEmfPointL &oTEmfPointL)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
         *this >> oTEmfPointL.x;
         *this >> oTEmfPointL.y;
     }
 
+    void CXmlOutput::operator>>(TEmfPointS &oTEmfPointS)
+    {
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
+        *this >> oTEmfPointS.x;
+        *this >> oTEmfPointS.y;
+    }
+
     void CXmlOutput::operator>>(TRect &oTRect)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
         *this >> oTRect.nLeft;
         *this >> oTRect.nTop;
         *this >> oTRect.nRight;
@@ -837,14 +983,18 @@ namespace MetaFile
 
     void CXmlOutput::operator>>(int &nValue)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
         nValue = (wsValue.empty()) ? 0 : stoi(wsValue);
     }
 
     void CXmlOutput::operator>>(double &dValue)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
         dValue = (wsValue.empty()) ? 0.0 : stod(wsValue);
     }
@@ -852,28 +1002,45 @@ namespace MetaFile
 
     void CXmlOutput::operator>>(unsigned int &unValue)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
         unValue = (wsValue.empty()) ? 0 : (unsigned int)stoul(wsValue);
     }
 
+    void CXmlOutput::operator>>(short &shValue)
+    {
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
+        const std::wstring wsValue = m_pXmlLiteReader->GetText2();
+        shValue = (wsValue.empty()) ? 0 : (short)stoi(wsValue);
+    }
+
     void CXmlOutput::operator>>(unsigned short &ushValue)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
         ushValue = (wsValue.empty()) ? 0 : (unsigned short)stoul(wsValue);
     }
 
     void CXmlOutput::operator>>(unsigned char &ucValue)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
         ucValue = (wsValue.empty()) ? 0 : (unsigned char)stoul(wsValue);
     }
 
     void CXmlOutput::operator>>(unsigned short arushValue[])
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
 
         unsigned int unSize;
@@ -885,13 +1052,18 @@ namespace MetaFile
 
     void CXmlOutput::operator>>(std::wstring& wsValue)
     {
-        m_pXmlLiteReader->ReadNextNode();
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
         wsValue = m_pXmlLiteReader->GetText2();
     }
 
     void CXmlOutput::operator>>(std::string& sValue)
     {
-        m_pXmlLiteReader->ReadNextNode();
-        sValue = U_TO_UTF8(m_pXmlLiteReader->GetText2());
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
+        const std::wstring wsValue = m_pXmlLiteReader->GetText2();
+        sValue = U_TO_UTF8(wsValue);
     }
 }

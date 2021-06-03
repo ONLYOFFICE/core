@@ -651,6 +651,9 @@ void CheckFonts(const bool& bIsUseSystemFonts, std::vector<std::wstring>& arDirs
 {
     CApplicationFontsWorker oWorker;
     oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts";
+    if (!NSDirectory::Exists(oWorker.m_sDirectory))
+        NSDirectory::CreateDirectory(oWorker.m_sDirectory);
+
     oWorker.m_bIsUseSystemFonts = bIsUseSystemFonts;
 
     for (std::vector<std::wstring>::iterator i = arDirs.begin(); i != arDirs.end(); i++)

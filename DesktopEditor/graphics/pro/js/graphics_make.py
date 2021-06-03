@@ -47,8 +47,8 @@ input_fontengine_sources = ["GlyphString.cpp", "FontManager.cpp", "FontFile.cpp"
 libAgg_src_path = "../../../agg-2.4/src/"
 input_agg_sources = ["agg_arc.cpp", "agg_vcgen_stroke.cpp", "agg_vcgen_dash.cpp", "agg_trans_affine.cpp", "agg_curves.cpp"]
 
-libFreetype_src_path = "../../../freetype-2.10.4/src/base/"
-input_freetype_sources = ["ftinit.c", "ftlcdfil.c", "ftobjs.c", "ftglyph.c", "ftoutln.c", "ftutil.c", "../bdf/bdfdrivr.c", "../smooth/ftsmooth.c", "../../builds/unix/ftsystem.c", "../autofit/afmodule.c", "../truetype/ttdriver.c", "../type1/t1driver.c", "../cff/cffdrivr.c"]
+libFreetype_src_path = "../../../freetype-2.10.4/src/"
+input_freetype_sources = ["base/ftinit.c", "base/ftlcdfil.c", "base/ftobjs.c", "base/ftglyph.c", "base/ftoutln.c", "base/ftutil.c", "base/ftgloadr.c", "base/ftfntfmt.c", "base/ftcalc.c", "base/ftbitmap.c", "base/ftstream.c", "base/fthash.c", "base/ftdebug.c", "base/fttrigon.c", "base/ftadvanc.c", "base/ftpsprop.c", "base/ftrfork.c", "bdf/bdfdrivr.c", "bdf/bdflib.c", "smooth/ftsmooth.c", "smooth/ftgrays.c", "../builds/unix/ftsystem.c", "autofit/afmodule.c", "autofit/afhints.c", "autofit/afloader.c", "autofit/afglobal.c", "autofit/afshaper.c", "autofit/afranges.c", "autofit/afdummy.c", "autofit/aflatin.c", "autofit/afcjk.c", "autofit/afindic.c", "autofit/afangles.c", "autofit/afblue.c", "autofit/afwarp.c", "truetype/ttdriver.c", "truetype/ttgload.c", "truetype/ttpload.c", "truetype/ttobjs.c", "truetype/ttgxvar.c", "truetype/ttinterp.c", "type1/t1driver.c", "type1/t1afm.c", "type1/t1load.c", "type1/t1gload.c", "type1/t1objs.c", "type1/t1parse.c", "cff/cffdrivr.c", "cff/cffgload.c", "cff/cffload.c", "cff/cffcmap.c", "cff/cffparse.c", "cff/cffobjs.c", "cid/cidriver.c", "cid/cidobjs.c", "cid/cidgload.c", "cid/cidload.c", "cid/cidparse.c", "pfr/pfrdrivr.c", "pfr/pfrobjs.c", "pfr/pfrload.c", "pfr/pfrgload.c", "pfr/pfrcmap.c", "pfr/pfrsbit.c", "type42/t42drivr.c", "type42/t42objs.c", "type42/t42parse.c", "winfonts/winfnt.c", "pcf/pcfdrivr.c", "pcf/pcfread.c", "pcf/pcfutil.c", "psaux/psauxmod.c", "psaux/psobjs.c", "psaux/t1decode.c", "psaux/psft.c", "psaux/afmparse.c", "psaux/t1cmap.c", "psaux/cffdecode.c", "psaux/psconv.c", "psaux/psfont.c", "psaux/psblues.c", "psaux/psintrp.c", "psaux/pserror.c", "psaux/psstack.c", "psaux/pshints.c", "psaux/psarrst.c", "psaux/psread.c", "psnames/psmodule.c", "pshinter/pshmod.c", "pshinter/pshrec.c", "pshinter/pshglob.c", "pshinter/pshalgo.c", "raster/ftrend1.c", "raster/ftraster.c", "sfnt/sfdriver.c", "sfnt/ttpost.c", "sfnt/sfobjs.c", "sfnt/ttload.c", "sfnt/ttbdf.c", "sfnt/ttmtx.c", "sfnt/ttkern.c", "sfnt/sfwoff.c", "sfnt/ttcmap.c", "sfnt/ttsbit.c", "sfnt/sfwoff2.c", "sfnt/ttcolr.c", "sfnt/woff2tags.c", "sfnt/ttcpal.c", "gzip/ftgzip.c", "lzw/ftlzw.c"]
 
 libCommon_src_path = "../../../common/"
 input_common_sources = ["File.cpp"]
@@ -68,9 +68,8 @@ for item in input_common_sources:
 sources.append("raster.o")
 sources.append("wasm/src/graphics.cpp")
 
-compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg")
-compiler_flags.append("-I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype")
-compiler_flags.append("-D__linux__ -D_LINUX -DFT_ERR_PREFIX=FT_Err_ -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H")
+compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11")
+compiler_flags.append("-D__linux__ -D_LINUX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_USE_ZLIB -DFT_CONFIG_OPTION_SYSTEM_ZLIB")
 
 # arguments
 arguments = ""
@@ -117,4 +116,4 @@ base.copy_file("./wasm/js/code.js", "./deploy/code.js")
 
 base.delete_file("graphics.js")
 base.delete_file("graphics.wasm")
-base.delete_file("raster.o")
+# base.delete_file("raster.o")

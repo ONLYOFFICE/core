@@ -359,7 +359,7 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CDelimiterPr			*oox_del_pr);
 		void convert(OOX::Logic::CEqArr					*oox_eq_arr);
 		void convert(OOX::Logic::CEqArrPr				*oox_eq_arr_pr);
-		void convert(OOX::Logic::CFPr					*oox_f_pr);
+		std::wstring convert(OOX::Logic::CFPr			*oox_f_pr);
 		void convert(OOX::Logic::CFraction				*oox_fraction);
 		void convert(OOX::Logic::CFunc					*oox_func);
 		void convert(OOX::Logic::CFuncPr				*oox_func_pr);
@@ -412,7 +412,7 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CSub					*oox_csub);
 		bool convert(OOX::Logic::CSubHide				*oox_subHide);
 		bool convert(OOX::Logic::CSupHide				*oox_supHide);
-		void convert(OOX::Logic::CType					*oox_type);
+		std::wstring convert(OOX::Logic::CType			*oox_type);
 //--------------------------------------------------------------------------------
 	};
 }

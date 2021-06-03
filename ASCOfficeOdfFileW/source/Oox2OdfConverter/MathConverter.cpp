@@ -5,6 +5,7 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/DocxFlat.h"
 
 #include "../OdfFormat/odf_conversion_context.h"
+#include "../../ASCOfficeOdfFileW/source/OdfFormat/math_layout_elements.h"
 #include <set>
 #include <vector>
 
@@ -12,18 +13,28 @@ static std::vector<std::vector<std::wstring>> brackets; // контейнер д
 static int lvl_of_me = 0; // уровень вложенности <m:e>
 static std::vector<int> end_counter; // не помню зачем сделал массив вместо переменной, сделал на будущее
 
+#define CREATE_MATH_TAG(tag)\
+	odf_writer::office_element_ptr elm;\
+	odf_writer::create_element(L"math", tag, elm, odf_context());
+
+#define OPEN_MATH_TAG(elm)\
+	odf_context()->math_context()->start_element(elm);
+
+#define CLOSE_MATH_TAG\
+	odf_context()->math_context()->end_element();
+
+
 namespace Oox2Odf
 {
 	void DocxConverter::mrow() // обертка для тега <mrow>
 	{
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mrow", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		CREATE_MATH_TAG(L"mrow")
+		OPEN_MATH_TAG(elm)
 	}
 
 	void DocxConverter::endOfMrow() // закрывашка тега <mrow>
 	{
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::resizeBrackets()
@@ -76,14 +87,14 @@ namespace Oox2Odf
 	{
 		if (!oox_math_para_pr) return;
 
-		/*odf_writer::office_element_ptr elm;
+		/*
 
-		odf_writer::create_element(L"math", L"mathParaPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		CREATE_MATH_TAG(L"mathParaPr")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_math_para_pr->m_oMJc.GetPointer());
 
-		odf_context()->math_context()->end_element();*/
+		CLOSE_MATH_TAG*/
 	}
 
 	void DocxConverter::convert(OOX::Logic::CCtrlPr *oox_ctrl_pr)
@@ -101,84 +112,78 @@ namespace Oox2Odf
 	{
 		if (!oox_acc) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathAcc", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		CREATE_MATH_TAG(L"mathAcc")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_acc->m_oAccPr.GetPointer());
 		convert(oox_acc->m_oElement.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CAccPr	*oox_acc_pr)
 	{
 		if (!oox_acc_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathAccPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		CREATE_MATH_TAG(L"mathAccPr")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_acc_pr->m_oChr.GetPointer());
 		convert(oox_acc_pr->m_oCtrlPr.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
-	void DocxConverter::convert(OOX::Logic::CArgPr	*oox_arg_pr)
+	void DocxConverter::convert(OOX::Logic::CArgPr *oox_arg_pr)
 	{
 		if (!oox_arg_pr) return;
-
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathArgPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mathArgPr")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_arg_pr->m_oArgSz.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
-	void DocxConverter::convert(OOX::Logic::CBar	*oox_bar)
+	void DocxConverter::convert(OOX::Logic::CBar *oox_bar)
 	{
 		if (!oox_bar) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathBar", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		CREATE_MATH_TAG(L"mathBar")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_bar->m_oBarPr.GetPointer());
 		convert(oox_bar->m_oElement.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CBarPr	*oox_bar_pr)
 	{
 		if (!oox_bar_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathBarPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		CREATE_MATH_TAG(L"mathBarPr")		
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_bar_pr->m_oCtrlPr.GetPointer());
 		convert(oox_bar_pr->m_oPos.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CBorderBox *oox_border_box)
 	{
 		if (!oox_border_box) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathBorderBox", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		CREATE_MATH_TAG(L"mathBorderBox")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_border_box->m_oBorderBoxPr.GetPointer());
 		convert(oox_border_box->m_oElement.GetPointer());
 
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CBorderBoxPr *oox_border_box_pr)
@@ -234,21 +239,22 @@ namespace Oox2Odf
 	{
 		if (!oox_del) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mi", elm, odf_context());
+		CREATE_MATH_TAG(L"mi")		
 		elm->add_text(L"(");
-		odf_context()->math_context()->start_element(elm);
-		odf_context()->math_context()->end_element();
+		OPEN_MATH_TAG(elm)
+		CLOSE_MATH_TAG
 	
 		for (size_t i = 0; i < oox_del->m_arrItems.size(); ++i)
 		{
 			convert(oox_del->m_arrItems[i]);
 		}
-		odf_writer::office_element_ptr elm2;
-		odf_writer::create_element(L"math", L"mi", elm2, odf_context());
-		elm2->add_text(L")");
-		odf_context()->math_context()->start_element(elm2);
-		odf_context()->math_context()->end_element();
+
+		{
+			CREATE_MATH_TAG(L"mi")
+			elm->add_text(L")");
+			OPEN_MATH_TAG(elm)
+			CLOSE_MATH_TAG
+		}	
 	}
 
 	void DocxConverter::convert(OOX::Logic::CDelimiterPr *oox_del_pr)
@@ -306,23 +312,52 @@ namespace Oox2Odf
 	{
 		if (!oox_fraction) return;		
 
-		convert(oox_fraction->m_oFPr.GetPointer());
-		convert(oox_fraction->m_oNum.GetPointer());
-		convert(oox_fraction->m_oDen.GetPointer());
-		// TODO m_oFr			
+
+		std::wstring val = convert(oox_fraction->m_oFPr.GetPointer());
+
+		if (val == L"lin")
+		{
+			convert(oox_fraction->m_oNum.GetPointer());
+			convert(oox_fraction->m_oDen.GetPointer());
+		}
+		else
+		{
+			CREATE_MATH_TAG(L"mfrac");
+			OPEN_MATH_TAG(elm);
+
+			odf_writer::math_mfrac* tmp = dynamic_cast<odf_writer::math_mfrac*>(elm.get());
+			Bool flag;
+
+			if (tmp)
+			{
+				if (val == L"skw")
+				{
+					flag = true;
+					tmp->bevelled = flag;
+				}
+			}
+			convert(oox_fraction->m_oNum.GetPointer());
+			convert(oox_fraction->m_oDen.GetPointer());
+			CLOSE_MATH_TAG
+		}	
 	}
 
-	void DocxConverter::convert(OOX::Logic::CFPr *oox_f_pr)
+	std::wstring DocxConverter::convert(OOX::Logic::CFPr *oox_f_pr)
 	{
-		if (!oox_f_pr) return;
+		if (!oox_f_pr) return L"";
 		
+		std::wstring result = convert(oox_f_pr->m_oType.GetPointer());
 		convert(oox_f_pr->m_oCtrlPr.GetPointer());
-		convert(oox_f_pr->m_oType.GetPointer());
+		return result;
 	}
 
-	void DocxConverter::convert(OOX::Logic::CType *oox_type)
+	std::wstring DocxConverter::convert(OOX::Logic::CType *oox_type)
 	{
+		if (!oox_type) return L"";
+
 		std::wstring val  = oox_type->m_val->ToString();
+
+		return val;
 	}
 
 	void DocxConverter::convert(OOX::Logic::CNum *oox_num)
@@ -337,13 +372,7 @@ namespace Oox2Odf
 
 	void DocxConverter::convert(OOX::Logic::CDen *oox_den)
 	{
-		if (!oox_den) return;
-
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mo", elm, odf_context());
-		elm->add_text(L"/");
-		odf_context()->math_context()->start_element(elm);
-		odf_context()->math_context()->end_element();
+		if (!oox_den) return;	
 
 		for (size_t i = 0; i < oox_den->m_arrItems.size(); ++i)
 		{
@@ -358,7 +387,7 @@ namespace Oox2Odf
 		convert(oox_func->m_oFuncPr.GetPointer());
 		convert(oox_func->m_oFName.GetPointer());
 
-		resizeBrackets();
+		
 		convert(oox_func->m_oElement.GetPointer());	
 	}
 
@@ -382,30 +411,29 @@ namespace Oox2Odf
 	{
 		if (!oox_group_ch) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathGroupCh", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		CREATE_MATH_TAG(L"mathGroupCh")		
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_group_ch->m_oElement.GetPointer());
 		convert(oox_group_ch->m_oGroupChrPr.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CGroupChrPr	*oox_group_ch_pr)
 	{
 		if (!oox_group_ch_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathGroupChPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mathGroupChPr")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_group_ch_pr->m_oChr.GetPointer());
 		convert(oox_group_ch_pr->m_oCtrlPr.GetPointer());
 		convert(oox_group_ch_pr->m_oPos.GetPointer());
 		convert(oox_group_ch_pr->m_oVertJc.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CLimLow *oox_lim_low)
@@ -414,16 +442,16 @@ namespace Oox2Odf
 
 		mrow();
 
-			odf_writer::office_element_ptr elm;
-			odf_writer::create_element(L"math", L"munder", elm, odf_context());
-			odf_context()->math_context()->start_element(elm);
+			
+			CREATE_MATH_TAG(L"munder")
+			OPEN_MATH_TAG(elm)
 
-			resizeBrackets();
+			
 			convert(oox_lim_low->m_oElement.GetPointer());
 			convert(oox_lim_low->m_oLimLowPr.GetPointer());
 			convert(oox_lim_low->m_oLim.GetPointer());
 
-			odf_context()->math_context()->end_element();
+			CLOSE_MATH_TAG
 
 		endOfMrow();
 	}
@@ -451,42 +479,42 @@ namespace Oox2Odf
 	{
 		if (!oox_lim_upp) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mover", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mover")
+		OPEN_MATH_TAG(elm)
 
-		resizeBrackets();
+		
 		convert(oox_lim_upp->m_oElement.GetPointer());
 		convert(oox_lim_upp->m_oLimUppPr.GetPointer());
 		convert(oox_lim_upp->m_oLim.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CLimUppPr *oox_lim_upp_pr)
 	{
 		if (!oox_lim_upp_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathLimUppPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mathLimUppPr")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_lim_upp_pr->m_oCtrlPr.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CMathFont *oox_math_font)
 	{
 		if (!oox_math_font) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathFont", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mathFont")
+		OPEN_MATH_TAG(elm)
 
 		//convert(oox_math_font->m_val.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CMatrix *oox_matrix)
@@ -503,27 +531,27 @@ namespace Oox2Odf
 	{
 		if (!oox_mc) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathMc", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mathMc")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_mc->m_oMcPr.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CMcPr *oox_mc_pr)
 	{
 		if (!oox_mc_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathMcPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mathMcPr")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_mc_pr->m_oCount.GetPointer());
 		convert(oox_mc_pr->m_oMcJc.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CMcs *oox_mcs)
@@ -540,41 +568,41 @@ namespace Oox2Odf
 	{
 		if (!oox_m_del) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathMDel", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mathMDel")
+		OPEN_MATH_TAG(elm)
 
 		//convert(oox_m_del->m_oDate.GetPointer());
 		//convert(oox_m_del->m_oId.GetPointer());
 		convert(oox_m_del->m_oRun.GetPointer());
 
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CMIns *oox_m_ins)
 	{
 		if (!oox_m_ins) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathMIns", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mathMIns")
+		OPEN_MATH_TAG(elm)
 
 		//convert(oox_m_ins->m_oDate.GetPointer());
 		//convert(oox_m_ins->m_oId.GetPointer());
 		convert(oox_m_ins->m_oRun.GetPointer());
 
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CMPr *oox_m_pr)
 	{
 		if (!oox_m_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathMPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mathMPr")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_m_pr->m_oBaseJc.GetPointer());
 		convert(oox_m_pr->m_oCGp.GetPointer());
@@ -587,7 +615,7 @@ namespace Oox2Odf
 		convert(oox_m_pr->m_oRSp.GetPointer());
 		convert(oox_m_pr->m_oRSpRule.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CMr	*oox_mr)
@@ -660,8 +688,6 @@ namespace Oox2Odf
 								 L'…', L'⋯', L'⋮', L'⋰', L'⋱',
 								 L'∫'
 		};
-
-		
 		
 
 		std::wstring s_val = oox_text->m_sText;
@@ -675,41 +701,39 @@ namespace Oox2Odf
 			{
 				if (sub_s_val.size() != 0)
 				{
-					odf_writer::office_element_ptr elm_mi;
-					odf_writer::create_element(L"math", L"mi", elm_mi, odf_context());
-					elm_mi->add_text(sub_s_val);
-					odf_context()->math_context()->start_element(elm_mi);
-					odf_context()->math_context()->end_element();
+					//odf_writer::office_element_ptr elm_mi;
+					CREATE_MATH_TAG(L"mi")
+					elm->add_text(sub_s_val);
+					OPEN_MATH_TAG(elm)
+					CLOSE_MATH_TAG
 					sub_s_val.clear();
 				}
-
-				odf_writer::office_element_ptr elm;
-				odf_writer::create_element(L"math", L"mn", elm, odf_context());
+				
+				CREATE_MATH_TAG(L"mn")
 
 				elm->add_text(std::wstring(1, s_val[i]));
 
-				odf_context()->math_context()->start_element(elm);
-				odf_context()->math_context()->end_element();
+				OPEN_MATH_TAG(elm)
+				CLOSE_MATH_TAG
 			}
 			else if (mo.find(w_val) != mo.end())
 			{
 				if (sub_s_val.size() != 0)
 				{
-					odf_writer::office_element_ptr elm_mi;
-					odf_writer::create_element(L"math", L"mi", elm_mi, odf_context());
-					elm_mi->add_text(sub_s_val);
-					odf_context()->math_context()->start_element(elm_mi);
-					odf_context()->math_context()->end_element();
+					CREATE_MATH_TAG(L"mi")
+					elm->add_text(sub_s_val);
+					OPEN_MATH_TAG(elm)
+					CLOSE_MATH_TAG
 					sub_s_val.clear();
 				}
 
-				odf_writer::office_element_ptr elm;
-				odf_writer::create_element(L"math", L"mo", elm, odf_context());
+				
+				CREATE_MATH_TAG(L"mo")
 
 				elm->add_text(std::wstring(1, s_val[i]));
 
-				odf_context()->math_context()->start_element(elm);
-				odf_context()->math_context()->end_element();
+				OPEN_MATH_TAG(elm)
+				CLOSE_MATH_TAG
 			}
 			else // <mi>
 			{				
@@ -718,12 +742,10 @@ namespace Oox2Odf
 
 			if ((i == s_val.size() - 1) && (sub_s_val.size() != 0))
 			{				
-				odf_writer::office_element_ptr elm_mi;
-				odf_writer::create_element(L"math", L"mi", elm_mi, odf_context());
-				elm_mi->add_text(sub_s_val);
-				odf_context()->math_context()->start_element(elm_mi);
-				odf_context()->math_context()->end_element();
-				
+				CREATE_MATH_TAG(L"mi")
+				elm->add_text(sub_s_val);
+				OPEN_MATH_TAG(elm)
+				CLOSE_MATH_TAG				
 			}
 		}	
 	}
@@ -734,9 +756,9 @@ namespace Oox2Odf
 
 		mrow();
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"munderover", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"munderover")
+		OPEN_MATH_TAG(elm)
 
 
 		std::pair<bool, bool> flags;
@@ -747,9 +769,9 @@ namespace Oox2Odf
 		if(!flags.second)
 			convert(oox_nary->m_oSup.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 
-		resizeBrackets();
+		
 		convert(oox_nary->m_oElement.GetPointer());
 
 		endOfMrow();
@@ -791,36 +813,36 @@ namespace Oox2Odf
 	void DocxConverter::convert(OOX::Logic::CChr * oox_chr)
 	{
 		if (!oox_chr) return;
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mo", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mo")
+		OPEN_MATH_TAG(elm)
 
 		elm->add_text(oox_chr->m_val->GetValue());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CPhant *oox_phant)
 	{
 		if (!oox_phant) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathPhant", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mathPhant")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_phant->m_oElement.GetPointer());
 		convert(oox_phant->m_oPhantPr.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CPhantPr *oox_phant_pr)
 	{
 		if (!oox_phant_pr) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathPhantPr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"mathPhantPr")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_phant_pr->m_oCtrlPr.GetPointer());
 		convert(oox_phant_pr->m_oShow.GetPointer());
@@ -829,14 +851,14 @@ namespace Oox2Odf
 		convert(oox_phant_pr->m_oZeroDesc.GetPointer());
 		convert(oox_phant_pr->m_oZeroWid.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CRad *oox_rad)
 	{
 		if (!oox_rad) return;
 
-		resizeBrackets();
+		
 		convert(oox_rad->m_oRadPr.GetPointer());
 
 		if (oox_rad->m_oDeg.GetPointer()->m_arrItems.size() == 0)
@@ -861,9 +883,9 @@ namespace Oox2Odf
 	{
 		if (!oox_deg_hide) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"msqrt", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"msqrt")
+		OPEN_MATH_TAG(elm)
 
 		end_counter.push_back(1);
 	}
@@ -873,11 +895,9 @@ namespace Oox2Odf
 		if (!oox_deg) return;
 		if (oox_deg->m_arrItems.size() == 0) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mroot", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
-
-		resizeBrackets();
+		
+		CREATE_MATH_TAG(L"mroot")
+		OPEN_MATH_TAG(elm)		
 		convert(oox_elm);
 
 		mrow();
@@ -887,48 +907,48 @@ namespace Oox2Odf
 
 		endOfMrow();
 
-		//end_counter.push_back(1); bug?
-		odf_context()->math_context()->end_element();
+		
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CSPre *oox_s_pre)
 	{
 		if (!oox_s_pre) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathSPre", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		convert(oox_s_pre->m_oSPrePr.GetPointer());
+		
+		CREATE_MATH_TAG(L"mmultiscripts")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_s_pre->m_oElement.GetPointer());
-		convert(oox_s_pre->m_oSPrePr.GetPointer());
-		convert(oox_s_pre->m_oSub.GetPointer());
-		convert(oox_s_pre->m_oSup.GetPointer());
+		{
+			CREATE_MATH_TAG(L"mprescripts")
+			OPEN_MATH_TAG(elm)
+			CLOSE_MATH_TAG
+			convert(oox_s_pre->m_oSub.GetPointer());
+			convert(oox_s_pre->m_oSup.GetPointer());
+		}
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CSPrePr *oox_s_pre_pr)
 	{
 		if (!oox_s_pre_pr) return;
-
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathSPrePr", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
-
+	
 		convert(oox_s_pre_pr->m_oCtrlPr.GetPointer());
-
-		odf_context()->math_context()->end_element();
+		
 	}
 
 	void DocxConverter::convert(OOX::Logic::CSup *oox_sup, OOX::Logic::CElement *oox_elm)
 	{
 		if (!oox_sup) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"msup", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"msup")
+		OPEN_MATH_TAG(elm)
 
-		resizeBrackets();
+		
 
 		convert(oox_elm);
 
@@ -938,18 +958,18 @@ namespace Oox2Odf
 
 		}
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CSub *oox_sub, OOX::Logic::CElement *oox_elm)
 	{
 		if (!oox_sub) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"msub", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		
+		CREATE_MATH_TAG(L"msub")
+		OPEN_MATH_TAG(elm)
 
-		resizeBrackets();
+		
 
 		convert(oox_elm);
 
@@ -959,7 +979,7 @@ namespace Oox2Odf
 
 		}
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CSub *oox_csub)
@@ -998,16 +1018,16 @@ namespace Oox2Odf
 	{
 		if (!oox_ssub_sup) return;
 
-		odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathSSubSup", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);
+		convert(oox_ssub_sup->m_oSSubSupPr.GetPointer());
+		
+		CREATE_MATH_TAG(L"msubsup")
+		OPEN_MATH_TAG(elm)
 
 		convert(oox_ssub_sup->m_oElement.GetPointer());
-		convert(oox_ssub_sup->m_oSSubSupPr.GetPointer());
 		convert(oox_ssub_sup->m_oSub.GetPointer());
 		convert(oox_ssub_sup->m_oSup.GetPointer());
 
-		odf_context()->math_context()->end_element();
+		CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CSSubSupPr *oox_ssub_sup_pr)
@@ -1024,16 +1044,16 @@ namespace Oox2Odf
 	{
 		if (!oox_ssup) return;
 
-		/*odf_writer::office_element_ptr elm;
-		odf_writer::create_element(L"math", L"mathSSup", elm, odf_context());
-		odf_context()->math_context()->start_element(elm);*/
+		/*
+		CREATE_MATH_TAG(L"mathSSup")
+		OPEN_MATH_TAG(elm)*/
 		
 		convert(oox_ssup->m_oSSupPr.GetPointer());
 		//convert(oox_ssup->m_oElement.GetPointer());
 
 		convert(oox_ssup->m_oSup.GetPointer(), oox_ssup->m_oElement.GetPointer());
 
-		//odf_context()->math_context()->end_element();
+		//CLOSE_MATH_TAG
 	}
 
 	void DocxConverter::convert(OOX::Logic::CSSupPr *oox_ssup_pr)
@@ -1048,22 +1068,24 @@ namespace Oox2Odf
 	{
 		if (!oox_elm) return;
 
+		resizeBrackets();
+
 		if (!brackets[lvl_of_me].empty())
 		{
 			for (size_t i = 0; i < brackets[lvl_of_me].size() / 2; ++i)
 			{
-				odf_writer::office_element_ptr elm;
-				odf_writer::create_element(L"math", L"mo", elm, odf_context());
+				
+				CREATE_MATH_TAG(L"mo")
 				elm->add_text(brackets[lvl_of_me][i]);
-				odf_context()->math_context()->start_element(elm);
-				odf_context()->math_context()->end_element();				
+				OPEN_MATH_TAG(elm)
+				CLOSE_MATH_TAG				
 			}
 		}
 
 		for (size_t i = 0; i < oox_elm->m_arrItems.size(); ++i)
 		{
-			if (oox_elm->m_arrItems[i]->getType() == OOX::et_m_e)			
-				resizeBrackets();
+			//if (oox_elm->m_arrItems[i]->getType() == OOX::et_m_e)			
+				
 			
 			convert(oox_elm->m_arrItems[i]);
 		}
@@ -1072,11 +1094,11 @@ namespace Oox2Odf
 		{
 			for (size_t i = brackets[lvl_of_me].size() / 2; i < brackets[lvl_of_me].size(); ++i)
 			{
-				odf_writer::office_element_ptr elm;
-				odf_writer::create_element(L"math", L"mo", elm, odf_context());
+				
+				CREATE_MATH_TAG(L"mo")
 				elm->add_text(brackets[lvl_of_me][i]);
-				odf_context()->math_context()->start_element(elm);
-				odf_context()->math_context()->end_element();
+				OPEN_MATH_TAG(elm)
+				CLOSE_MATH_TAG
 			}
 		}
 		brackets[lvl_of_me].clear();
@@ -1090,7 +1112,7 @@ namespace Oox2Odf
 		if (!end_counter.empty())
 		{
 			for (size_t i = 0; i < end_counter[end_counter.size() - 1]; ++i)
-				odf_context()->math_context()->end_element();
+				CLOSE_MATH_TAG
 
 			end_counter.pop_back();
 		}

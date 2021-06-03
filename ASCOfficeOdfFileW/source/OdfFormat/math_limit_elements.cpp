@@ -205,7 +205,7 @@ void math_mmultiscripts::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
-			for (size_t i = 0; i < content_.size(); i++)
+			for (size_t i = 0; i < pre_content_.size(); i++)
 			{
 				if (!pre_content_[i]) continue;
 				pre_content_[i]->serialize(CP_XML_STREAM());

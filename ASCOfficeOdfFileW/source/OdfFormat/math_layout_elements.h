@@ -76,8 +76,7 @@ namespace cpdoccore {
 			static const xml::NodeType xml_type = xml::typeElement;
 			static const ElementType type = typeMFrac;
 
-
-
+			_CP_OPT(Bool)				bevelled;
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 			virtual void add_child_element(const office_element_ptr & child_element);
@@ -89,7 +88,6 @@ namespace cpdoccore {
 			_CP_OPT(length)				linethickness;
 			//numalign left, central,right
 			//denomalign
-			_CP_OPT(Bool)				bevelled;
 		};
 
 		CP_REGISTER_OFFICE_ELEMENT2(math_mfrac);

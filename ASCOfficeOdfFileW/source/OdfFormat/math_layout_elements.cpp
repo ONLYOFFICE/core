@@ -85,6 +85,7 @@ const wchar_t * math_mfrac::ns = L"math";
 const wchar_t * math_mfrac::name = L"mfrac";
 //----------------------------------------------------------------------------------------------------
 
+
 void math_mfrac::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
@@ -107,7 +108,7 @@ void math_mfrac::serialize(std::wostream & _Wostream)
 				content_[i]->serialize(CP_XML_STREAM());
 			}
 			CP_XML_ATTR_OPT(L"math:linethickness", linethickness);
-			CP_XML_ATTR_OPT(L"math:bevelled", bevelled);
+			CP_XML_ATTR_OPT(L"bevelled", bevelled);
 		}
 	}
 }

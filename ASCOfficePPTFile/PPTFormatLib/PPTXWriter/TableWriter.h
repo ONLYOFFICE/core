@@ -58,8 +58,8 @@ private:
                      std::vector<CShapeElement *> &arrCells);
     void prepareShapes(std::vector<CShapeElement*> &arrCells,
                        std::vector<CShapeElement*>& arrSpliters);
-    std::vector< std::list<CElement*> >
-        prepareRows(std::vector<CElement*> &arrCells);
+    std::vector<std::vector<CElement*> >
+        createProtoTable(std::vector<CShapeElement *> &arrCells);
 
     void FillRow(PPTX::Logic::TableRow& oRow, std::vector<CShapeElement*>& arrCells);
 

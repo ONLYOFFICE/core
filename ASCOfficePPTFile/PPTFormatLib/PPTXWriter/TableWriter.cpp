@@ -156,6 +156,26 @@ void TableWriter::prepareShapes(std::vector<CShapeElement *> &arrCells, std::vec
     }
 }
 
+std::vector<std::vector<CElement *> > TableWriter::createProtoTable(std::vector<CShapeElement *> &arrCells)
+{
+    auto gridWidth = getWidth(arrCells);
+    auto arrRows = getRows(arrCells);
+    const unsigned countRows = arrRows.size();
+    const unsigned countCols = gridWidth.size();
+
+    std::vector<std::vector<CElement *> > protoTable(countRows);
+    for (unsigned cRow = 0; cRow < countRows; cRow++)
+    {
+        std::vector<CElement *> row(countCols);
+        int top = arrRows[cRow].front()->m_rcChildAnchor.top;
+        for (unsigned cCol = 0; cCol < countCols; cCol++)
+        {
+
+        }
+        protoTable.push_back(row);
+    }
+}
+
 void TableWriter::FillRow(PPTX::Logic::TableRow &oRow, std::vector<CShapeElement*>& arrCells)
 {
     if (arrCells.empty()) return;

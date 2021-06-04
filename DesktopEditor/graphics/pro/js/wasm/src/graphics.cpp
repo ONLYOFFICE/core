@@ -3,6 +3,7 @@
 
 #include <malloc.h>
 #include "raster.h"
+#include <iostream>
 
 #include "../../../../GraphicsRenderer.h"
 #include "../../../../pro/Graphics.h"
@@ -39,22 +40,8 @@ WASM_EXPORT void  Graphics_CreateFromBgraFrame(void* graphics, CBgraFrame* pFram
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)graphics;
     pGraphics->CreateFromBgraFrame(pFrame);
 }
-WASM_EXPORT void* Graphics_Init(CBgraFrame* pFrame, double width_px, double height_px, double width_mm, double height_mm)
+WASM_EXPORT void* Graphics_Init(CBgraFrame* pFrame, double width_mm, double height_mm)
 {
-    int nRasterW = (int)width_px;
-    int nRasterH = (int)height_px;
-    BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
-
-    unsigned int back = 0xffffff;
-    unsigned int* pData32 = (unsigned int*)pData;
-    unsigned int* pData32End = pData32 + nRasterW * nRasterH;
-    while (pData32 < pData32End)
-        *pData32++ = back;
-
-    pFrame->put_Data(pData);
-    pFrame->put_Width(nRasterW);
-    pFrame->put_Height(nRasterH);
-
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)NSGraphics::Create();
     pGraphics->CreateFromBgraFrame(pFrame);
     pGraphics->SetSwapRGB(false);
@@ -189,8 +176,8 @@ WASM_EXPORT void  Graphics_drawHorLine(void* graphics, BYTE align, double y, dou
 #ifdef TEST_AS_EXECUTABLE
 int main()
 {
-    CBgraFrame* testFrame = Raster_Create();
-    void* testGraphics = Graphics_Init(testFrame, 412, 151, 109.008, 39.9521);
+    CBgraFrame* testFrame = Raster_Init(412, 151);
+    void* testGraphics = Graphics_Init(testFrame, 109.008, 39.9521);
     Graphics_CoordTransformOffset(testGraphics, -160.294, -109.826);
     Graphics_transform(testGraphics, 1, 0, 0, 1, 0, 0);
     Graphics_SetIntegerGrid(testGraphics, false);
@@ -215,6 +202,10 @@ int main()
     CBgraFrame* testFrame = Raster_Load(pData, nBytesCount);
     Graphics_CreateFromBgraFrame(testGraphics, testFrame);
     */
+
+    BYTE* res = Raster_GetRGBA(testFrame);
+    for (int i = 0; i < 100; i++)
+        std::cout << (int)res[i] << " ";
 
     testFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     Raster_Destroy(testFrame);

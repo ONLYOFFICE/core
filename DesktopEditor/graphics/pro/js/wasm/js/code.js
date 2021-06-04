@@ -35,12 +35,17 @@ window.onload = function()
 		}
 		
 		var reader = new FileReader();
-		reader.onload = function(e) {
-			window.loadedImage = window.nativeRasterEngine.openImage(e.target.result);
+		reader.onload = function(e)
+		{
+			var pFrame = window.nativeRasterEngine.create(412, 151);
+			window.nativeGraphics.testImage(pFrame, 109.008, 39.9521);
+			window.loadedImage = window.nativeRasterEngine.getImage();
 			if (!window.loadedImage)
 				return;
 
 			window.onresize();
+			window.nativeRasterEngine.close();
+			window.nativeGraphics.close();
 		};
 		reader.readAsArrayBuffer(file);
 	

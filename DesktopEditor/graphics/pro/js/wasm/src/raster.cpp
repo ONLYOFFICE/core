@@ -19,6 +19,24 @@ CBgraFrame* Raster_Load(unsigned char* buffer, int size)
     oRes->Decode(buffer, size);
     return oRes;
 }
+CBgraFrame* Raster_Init(double width_px, double height_px)
+{
+    int nRasterW = (int)width_px;
+    int nRasterH = (int)height_px;
+    BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
+
+    unsigned int back = 0xffffff;
+    unsigned int* pData32 = (unsigned int*)pData;
+    unsigned int* pData32End = pData32 + nRasterW * nRasterH;
+    while (pData32 < pData32End)
+        *pData32++ = back;
+
+    CBgraFrame* oRes = new CBgraFrame();
+    oRes->put_Data(pData);
+    oRes->put_Width(nRasterW);
+    oRes->put_Height(nRasterH);
+    return oRes;
+}
 void Raster_Destroy(CBgraFrame* p)
 {
     if (p) delete p;

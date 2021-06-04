@@ -20,6 +20,7 @@ RASTER_DECL_EXPORT void Raster_Free(void* p);
 
 RASTER_DECL_EXPORT CBgraFrame* Raster_Create();
 RASTER_DECL_EXPORT CBgraFrame* Raster_Load(unsigned char* buffer, int size);
+RASTER_DECL_EXPORT CBgraFrame* Raster_Init(double width_px, double height_px);
 RASTER_DECL_EXPORT void Raster_Destroy(CBgraFrame* p);
 
 RASTER_DECL_EXPORT int Raster_GetHeight(CBgraFrame* p);

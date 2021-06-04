@@ -40,6 +40,60 @@ else
 function Raster()
 {
     this.isInit = false;
+	this.engine = 0;
+	
+	this.create = function(width, height)
+	{
+		if (!this.isInit)
+			return null;
+		
+		if (this.engine)
+			this.close();
+		
+		this.engine = Module["_Raster_Init"](width, height);
+		return this.engine;
+	}
+	
+	this.close = function()
+	{
+		if (!this.isInit || !this.engine)
+			return;
+		
+		if (this.engine)
+			Module["_Raster_Destroy"](this.engine);
+		this.engine = 0;
+	}
+	
+	this.getImage = function()
+	{
+		if (!this.isInit || !this.engine)
+            return null;
+		
+		// получаем данные картинки
+        var imageW = Module["_Raster_GetWidth"](this.engine);
+        var imageH = Module["_Raster_GetHeight"](this.engine);
+        var imageRGBA = Module["_Raster_GetRGBA"](this.engine);
+		
+		if (imageW <= 0 || imageH <= 0 || 0 === imageRGBA)
+        {
+            Module["_Raster_Destroy"](this.engine);
+            return null;
+        }
+		
+		// быстро копируем память в канву
+        var canvas = document.createElement("canvas");
+        canvas.width = imageW;
+        canvas.height = imageH;
+
+        var canvasCtx = canvas.getContext("2d");
+        var imageRGBAClampedArray = new Uint8ClampedArray(Module["HEAP8"].buffer, imageRGBA, 4 * imageW * imageH);
+        var canvasData = new ImageData(imageRGBAClampedArray, imageW, imageH);
+		
+        canvasCtx.putImageData(canvasData, 0, 0);
+
+        this.close();
+        return canvas;
+	}
 
     this.openImage = function(dataBuffer)
     {

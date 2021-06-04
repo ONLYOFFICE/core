@@ -115,7 +115,7 @@ else:
 base.run_as_bat(windows_bat)
 
 # finalize
-base.replaceInFile("./graphics.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+base.replaceInFile("./graphics.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineGraphicsInit();}];")
 base.replaceInFile("./graphics.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
 
 graphics_js_content = base.readFile("./graphics.js")

@@ -47,15 +47,21 @@ private:
     void FillNvGraphicFramePr(PPTX::Logic::NvGraphicFramePr& oNvGFPr);
     void FillXfrm(PPTX::Logic::Xfrm& oXFRM);
     void FillTable(PPTX::Logic::Table &oTable);
+    
+    std::vector<int> getWidth(std::vector<CShapeElement *> &arrCells);
+    std::vector<std::vector<CShapeElement *> >
+        getRows(std::vector<CShapeElement *> &arrCells);
+    int getCellHeight(const CShapeElement * pCell)const;
 
     void FillTblPr(PPTX::Logic::TableProperties& oTblPr);
-    void FillTblGrid(std::vector<PPTX::Logic::TableCol>& tblGrid);
-    void prepareShapes(std::vector<CElement*> &arrCells,
-                       std::vector<CElement*>& arrSpliters);
+    void FillTblGrid(std::vector<PPTX::Logic::TableCol>& tblGrid,
+                     std::vector<CShapeElement *> &arrCells);
+    void prepareShapes(std::vector<CShapeElement*> &arrCells,
+                       std::vector<CShapeElement*>& arrSpliters);
     std::vector< std::list<CElement*> >
         prepareRows(std::vector<CElement*> &arrCells);
 
-    void FillRows(std::vector<PPTX::Logic::TableRow>& TableRows);
+    void FillRow(PPTX::Logic::TableRow& oRow, std::vector<CShapeElement*>& arrCells);
 
 private:
     CTableElement *m_pTableElement;

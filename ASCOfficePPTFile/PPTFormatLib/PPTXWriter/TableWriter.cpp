@@ -63,7 +63,7 @@ void TableWriter::FillTable(PPTX::Logic::Table &oTable)
     }
 }
 
-std::vector<int> TableWriter::getWidth(std::vector<CShapeElement*>& arrCells, bool isWidth)
+std::vector<int> ProtoTable::getWidth(std::vector<CShapeElement*>& arrCells, bool isWidth)
 {
     std::map<double, double> mapLeftWidth;
     for (const auto* pCell : arrCells)
@@ -97,7 +97,15 @@ std::vector<int> TableWriter::getWidth(std::vector<CShapeElement*>& arrCells, bo
     return gridWidth;
 }
 
-std::vector<std::vector<CShapeElement*> > TableWriter::getRows(std::vector<CShapeElement *> &arrCells)
+std::vector<int> ProtoTable::getHeight(std::vector<std::vector<CShapeElement *> > &oRows, bool isTop)
+{
+    for (auto& row : oRows)
+    {
+
+    }
+}
+
+std::vector<std::vector<CShapeElement*> > ProtoTable::getRows(std::vector<CShapeElement *> &arrCells)
 {
     std::vector<std::vector<CShapeElement*> > arrRows;
     int rowTop = -1;
@@ -105,8 +113,7 @@ std::vector<std::vector<CShapeElement*> > TableWriter::getRows(std::vector<CShap
     {
         if (!pCell) continue;
 
-        double multip = m_pTableElement->m_bAnchorEnabled ? 1587.6 : 1;
-        int top = int(pCell->m_rcChildAnchor.top * multip);
+        int top = int(pCell->m_rcChildAnchor.top);
         if (top != rowTop)
         {
             rowTop = top;
@@ -155,76 +162,8 @@ void TableWriter::prepareShapes(std::vector<CShapeElement *> &arrCells, std::vec
 
 ptrProtoTable TableWriter::createProtoTable(std::vector<CShapeElement*> &arrCells)
 {
-    auto gridWidth = getWidth(arrCells, false);
-    auto arrRows = getRows(arrCells);
-    auto cellIter = arrCells.begin();
-
-    const unsigned countRows = arrRows.size();
-    const unsigned countCols = gridWidth.size();
-
-    ptrProtoTable pProtoTable(new ProtoTable);
-    for (unsigned cRow = 0; cRow < countRows; cRow++)
-    {
-        pProtoTable->push_back(std::vector<TCell>());
-        std::vector<TCell>& row = pProtoTable->back();
-
-        int top = arrRows[cRow].front()->m_rcChildAnchor.top;
-        for (unsigned cCol = 0; cCol < countCols; cCol++)
-        {
-            int left = gridWidth[cCol];
-
-            CShapeElement* current = (*cellIter);
-            if (current &&
-                    current->m_rcChildAnchor.top == top &&
-                    current->m_rcChildAnchor.left == left)
-            {
-                row.push_back(TCell(current, cRow, cCol));
-                cellIter++;
-            } else
-            {
-                TCell* pParent = FindCellParent(pProtoTable, cRow, cCol);
-                row.push_back(TCell(nullptr, cRow, cCol, pParent));
-            }
-
-        }
-    }
 
     return  pProtoTable;
-}
-
-TCell *TableWriter::FindCellParent(ptrProtoTable pPT, int row, int col)
-{
-    if (!pPT || pPT->empty() || row < 0 || col < 1)
-        return nullptr;
-
-    TCell::eMergeDirection curDir = row > 0 ?
-                (*pPT)[--row][col].parentDirection() : (*pPT)[row][--col].parentDirection();
-
-    // go up
-    while (curDir == TCell::vert && row >= 0)
-    {
-        if (curDir == TCell::none)
-            return &(*pPT)[row][col];
-        curDir = (*pPT)[--row][col].parentDirection();
-    }
-
-    // go up and left
-    while (curDir == TCell::hove && row >= 0 && col >= 0)
-    {
-        if (curDir == TCell::none)
-            return &(*pPT)[row][col];
-        curDir = (*pPT)[--row][--col].parentDirection();
-    }
-
-    // go left
-    while (curDir == TCell::horz && col >= 0)
-    {
-        if (curDir == TCell::none)
-            return &(*pPT)[row][col];
-        curDir = (*pPT)[row][--col].parentDirection();
-    }
-
-    return &(*pPT)[(row >= 0 ? row : 0)][(col >= 0 ? col : 0)];
 }
 
 int TableWriter::getTRHeight(const ProtoTableRow& row)
@@ -303,3 +242,41 @@ void TCell::FillMergeDirection(PPTX::Logic::TableCell &oTc)
 }
 
 
+
+ProtoTable::ProtoTable(std::vector<CShapeElement *> &arrCells)
+{
+    auto arrRows = getRows(arrCells);
+    m_arrLeft = getWidth(arrCells, false);
+    m_arrTop
+    auto cellIter = arrCells.begin();
+
+    const unsigned countRows = arrRows.size();
+    const unsigned countCols = gridWidth.size();
+
+    for (unsigned cRow = 0; cRow < countRows; cRow++)
+    {
+        m_table.push_back(std::vector<TCell>());
+        std::vector<TCell>& row = m_table.back();
+
+        int top = arrRows[cRow].front()->m_rcChildAnchor.top;
+        for (unsigned cCol = 0; cCol < countCols; cCol++)
+        {
+            int left = gridWidth[cCol];
+
+            CShapeElement* current = (*cellIter);
+            if (current &&
+                    current->m_rcChildAnchor.top == top &&
+                    current->m_rcChildAnchor.left == left)
+            {
+                row.push_back(TCell(current, cRow, cCol));
+                cellIter++;
+            } else
+            {
+                TCell* pParent = FindCellParent(pProtoTable, cRow, cCol);
+                row.push_back(TCell(nullptr, cRow, cCol, pParent));
+            }
+
+        }
+    }
+
+}

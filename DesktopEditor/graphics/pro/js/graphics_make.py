@@ -25,8 +25,8 @@ compiler_flags = ["-o graphics.js",
                   "-s WASM=1",
                   "-s ALLOW_MEMORY_GROWTH=1",
                   "-s FILESYSTEM=0",
-                  "-s ENVIRONMENT='web,worker'"]
-                  #"-s LLD_REPORT_UNDEFINED"]
+                  "-s ENVIRONMENT='web,worker'",
+                  "-s LLD_REPORT_UNDEFINED"]
 
 exported_functions = ["_malloc",
                       "_free",
@@ -34,27 +34,52 @@ exported_functions = ["_malloc",
                       "_Graphics_Free",
                       "_Graphics_Create",
                       "_Graphics_Destroy",
+                      "_Graphics_DestroyFrame",
                       "_Graphics_CreateFromBgraFrame",
                       "_Graphics_Init",
-                      "_Graphics_SetFontManager",
-                      "_Graphics_CoordTransformOffset",
-                      "_Graphics_transform",
-                      "_Graphics_SetIntegerGrid",
-                      "_Graphics_put_PenSize",
+                      "_Graphics_InitFrame",
+                      "_Graphics_put_GlobalAlpha",
+                      "_Graphics_b_color1",
+                      "_Graphics_b_color2",
+                      "_Graphics_End_GlobalAlpha",
+                      "_Graphics_p_color",
                       "_Graphics_p_width",
+                      "_Graphics_p_dash",
+                      "_Graphics_transform",
+                      "_Graphics_CalculateFullTransform",
                       "_Graphics_s",
                       "_Graphics_e",
-                      "_Graphics_PathCommandMoveTo",
+                      "_Graphics_z",
                       "_Graphics_m",
-                      "_Graphics_PathCommandLineTo",
                       "_Graphics_l",
-                      "_Graphics_put_PenColor",
-                      "_Graphics_put_PenAlpha",
-                      "_Graphics_p_color",
-                      "_Graphics_DrawPath",
-                      "_Graphics_p_dash",
+                      "_Graphics_c",
+                      "_Graphics_c2",
+                      "_Graphics_ds",
+                      "_Graphics_df",
+                      "_Graphics_GetRGBA",
+                      "_Graphics_restore",
+                      "_Graphics_clip",
                       "_Graphics_reset",
-                      "_Graphics_drawHorLine"]
+                      "_Graphics_FreeFont",
+                      "_Graphics_ClearLastFont",
+                      "_Graphics_drawImage",
+                      "_Graphics_SetFont",
+                      "_Graphics_FillText",
+                      "_Graphics_tg",
+                      "_Graphics_SetIntegerGrid",
+                      "_Graphics_GetIntegerGrid",
+                      "_Graphics_rect",
+                      "_Graphics_StartClipPath",
+                      "_Graphics_EndClipPath",
+                      #"_Graphics_put_brushTexture",
+                      "_Graphics_put_brushTextureMode",
+                      "_Graphics_put_BrushTextureAlpha",
+                      "_Graphics_put_BrushGradient",
+                      "_Graphics_put_TextureBounds",
+                      "_Graphics_DrawPath",
+                      "_Graphics_CoordTransformOffset",
+                      "_Graphics_GetFrameHeight",
+                      "_Graphics_GetFrameWidth"]
 
 libGraphics_src_path = "../../"
 input_graphics_sources = ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "Graphics.cpp", "Brush.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp"]
@@ -87,7 +112,7 @@ sources.append("raster.o")
 sources.append("wasm/src/graphics.cpp")
 
 compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11")
-compiler_flags.append("-D__linux__ -D_LINUX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_USE_ZLIB -DFT_CONFIG_OPTION_SYSTEM_ZLIB")
+compiler_flags.append("-D__linux__ -D_LINUX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_USE_ZLIB -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE")
 
 # arguments
 arguments = ""
@@ -130,7 +155,7 @@ engine_js_content = engine_js_content.replace("//module", graphics_js_content)
 base.writeFile("./deploy/graphics.js", engine_js_content)
 base.copy_file("./graphics.wasm", "./deploy/graphics.wasm")
 base.copy_file("./wasm/js/index.html", "./deploy/index.html")
-base.copy_file("./wasm/js/code.js", "./deploy/code.js")
+base.copy_file("./wasm/js/code_graphics.js", "./deploy/code_graphics.js")
 
 base.delete_file("graphics.js")
 base.delete_file("graphics.wasm")

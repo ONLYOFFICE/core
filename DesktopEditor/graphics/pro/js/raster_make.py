@@ -223,7 +223,7 @@ engine_js_content = engine_base_js_content.replace("//module", raster_js_content
 base.writeFile("./deploy/raster.js", engine_js_content)
 base.copy_file("./raster.wasm", "./deploy/raster.wasm")
 base.copy_file("./wasm/js/index.html", "./deploy/index.html")
-base.copy_file("./wasm/js/code.js", "./deploy/code.js")
+base.copy_file("./wasm/js/code_raster.js", "./deploy/code_raster.js")
 
 base.delete_file("raster.js")
 base.delete_file("raster.wasm")

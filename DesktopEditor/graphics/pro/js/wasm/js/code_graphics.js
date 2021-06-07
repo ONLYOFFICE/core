@@ -2,6 +2,10 @@ window.loadedImage = null;
 window.onload = function()
 {
 	var holder = document.body;
+	holder.onclick = function(e)
+	{
+		window.testGraphics();
+	};
 	holder.ondragover = function(e) 
 	{
 		var isFile = false;
@@ -37,20 +41,22 @@ window.onload = function()
 		var reader = new FileReader();
 		reader.onload = function(e)
 		{
-			var pFrame = window.nativeRasterEngine.create(412, 151);
-			window.nativeGraphics.testImage(pFrame, 109.008, 39.9521);
-			window.loadedImage = window.nativeRasterEngine.getImage();
-			if (!window.loadedImage)
-				return;
-
-			window.onresize();
-			window.nativeRasterEngine.close();
-			window.nativeGraphics.close();
+			
 		};
 		reader.readAsArrayBuffer(file);
 	
 		return false; 
 	};
+};
+
+window.testGraphics = function()
+{
+	window.loadedImage = window.nativeGraphics.testImage(412, 151, 109.008, 39.9521);
+	if (!window.loadedImage)
+		return;
+
+	window.onresize();
+	window.nativeGraphics.close();
 };
 
 window.onresize = function()

@@ -2,7 +2,6 @@
 #define _WASM_GRAPHICS_
 
 #include <malloc.h>
-#include "raster.h"
 #include <iostream>
 
 #include "../../../../GraphicsRenderer.h"
@@ -33,7 +32,11 @@ WASM_EXPORT void* Graphics_Create()
 WASM_EXPORT void  Graphics_Destroy(void* graphics)
 {
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)graphics;
-    delete pGraphics;
+    if (pGraphics) delete pGraphics;
+}
+WASM_EXPORT void  Graphics_DestroyFrame(CBgraFrame* p)
+{
+    if (p) delete p;
 }
 WASM_EXPORT void  Graphics_CreateFromBgraFrame(void* graphics, CBgraFrame* pFrame)
 {
@@ -44,10 +47,29 @@ WASM_EXPORT void* Graphics_Init(CBgraFrame* pFrame, double width_mm, double heig
 {
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)NSGraphics::Create();
     pGraphics->CreateFromBgraFrame(pFrame);
-    pGraphics->SetSwapRGB(false);
+    pGraphics->SetSwapRGB(true);
     pGraphics->put_Width(width_mm);
     pGraphics->put_Height(height_mm);
     return pGraphics;
+}
+WASM_EXPORT CBgraFrame* Graphics_InitFrame(double width_px, double height_px)
+{
+    int nRasterW = (int)width_px;
+    int nRasterH = (int)height_px;
+    BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
+
+    unsigned int back = 0xffffff;
+    unsigned int* pData32 = (unsigned int*)pData;
+    unsigned int* pData32End = pData32 + nRasterW * nRasterH;
+    while (pData32 < pData32End)
+        *pData32++ = back;
+
+    CBgraFrame* oRes = new CBgraFrame();
+    oRes->put_IsRGBA(true);
+    oRes->put_Data(pData);
+    oRes->put_Width(nRasterW);
+    oRes->put_Height(nRasterH);
+    return oRes;
 }
 WASM_EXPORT void  Graphics_put_GlobalAlpha(void* graphics, bool enable, double alpha)
 {
@@ -228,6 +250,7 @@ WASM_EXPORT void  Graphics_drawImage(void* graphics, BYTE* img, int size, double
 {
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)graphics;
     CBgraFrame* pimg = new CBgraFrame();
+    pimg->put_IsRGBA(true);
     pimg->Decode(img, size);
     Aggplus::CImage* pImg = new Aggplus::CImage();
     pImg->Create(pimg->get_Data(), pimg->get_Width(), pimg->get_Height(), pimg->get_Stride());
@@ -307,59 +330,7 @@ WASM_EXPORT void  Graphics_EndClipPath(void* graphics)
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)graphics;
     pGraphics->EndCommand(c_nClipType);
 }
-WASM_EXPORT void  Graphics_put_brushTexture(void* graphics, const char* sSrc, int type)
-{
-    // TO DO: From memory
-    CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)graphics;
-    std::wstring src = UTF8_TO_U(std::string(sSrc));
-    if (src.find(L"data:") == 0)
-    {
-        std::wstring strImage = L"/texture.png";
-        bool bIsOnlyOfficeHatch = false;
-        if(src.find(L"onlyoffice_hatch") != std::wstring::npos)
-            bIsOnlyOfficeHatch = true;
 
-        src.erase(0, src.find(L',') + 1);
-
-        std::string sBase64MultyByte(src.begin(), src.end());
-        int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(sBase64MultyByte.length());
-        if(nDecodeLen == 0)
-            return;
-        BYTE* pImageData = new BYTE[nDecodeLen + 64];
-        if (TRUE == NSBase64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), pImageData, &nDecodeLen))
-        {
-            if (!bIsOnlyOfficeHatch)
-            {
-                NSFile::CFileBinary oImageWriter;
-                if (oImageWriter.CreateFileW(strImage))
-                {
-                    oImageWriter.WriteFile(pImageData, (DWORD)nDecodeLen);
-                    oImageWriter.CloseFile();
-                }
-            }
-            else
-            {
-                int nSize = (int)sqrt(nDecodeLen >> 2);
-                CBgraFrame oFrame;
-                oFrame.put_Data(pImageData);
-                oFrame.put_Width(nSize);
-                oFrame.put_Height(nSize);
-                oFrame.put_Stride(4 * nSize);
-                oFrame.put_IsRGBA(true);
-                oFrame.SaveFile(strImage, 4);
-            }
-            pGraphics->put_BrushType(c_BrushTypeTexture);
-            pGraphics->put_BrushTexturePath(strImage);
-            pGraphics->put_BrushTextureMode(type);
-        }
-    }
-    else
-    {
-        pGraphics->put_BrushType(c_BrushTypeTexture);
-        pGraphics->put_BrushTexturePath(src);
-        pGraphics->put_BrushTextureMode(type);
-    }
-}
 WASM_EXPORT void  Graphics_put_brushTextureMode(void* graphics, int mode)
 {
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)graphics;
@@ -414,7 +385,16 @@ WASM_EXPORT void  Graphics_CoordTransformOffset(void* graphics, double dOffsetX,
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)graphics;
     pGraphics->SetCoordTransformOffset(dOffsetX, dOffsetY);
 }
-
+WASM_EXPORT int   Graphics_GetFrameHeight(CBgraFrame* p)
+{
+    if (p) return p->get_Height();
+    return -1;
+}
+WASM_EXPORT int   Graphics_GetFrameWidth (CBgraFrame* p)
+{
+    if (p) return p->get_Width();
+    return -1;
+}
 
 WASM_EXPORT void  Graphics_SetFontManager(void* graphics, NSFonts::IFontManager* pManager = NULL)
 {
@@ -459,6 +439,7 @@ WASM_EXPORT void  Graphics_drawHorLine(void* graphics, BYTE align, double y, dou
 #ifdef TEST_AS_EXECUTABLE
 int main()
 {
+    /*
     CBgraFrame* testFrame = Raster_Init(1024, 1024);
     void* testGraphics = Graphics_Init(testFrame, 256, 256);
     Graphics_transform(testGraphics, 1, 0, 0, 1, 0, 0);
@@ -473,8 +454,8 @@ int main()
 
     Graphics_DrawPath(testGraphics, 256);
     Graphics_reset(testGraphics);
-    /*
-    CBgraFrame* testFrame = Raster_Init(412, 151);
+    */
+    CBgraFrame* testFrame = Graphics_InitFrame(412, 151);
     void* testGraphics = Graphics_Init(testFrame, 109.008, 39.9521);
     Graphics_CoordTransformOffset(testGraphics, -160.294, -109.826);
     Graphics_transform(testGraphics, 1, 0, 0, 1, 0, 0);
@@ -490,7 +471,6 @@ int main()
     Graphics_p_dash(testGraphics, 0, NULL);
     Graphics_SetIntegerGrid(testGraphics, true);
     Graphics_reset(testGraphics);
-    */
     /*
     BYTE* pData = NULL;
     DWORD nBytesCount;
@@ -507,7 +487,7 @@ int main()
         std::cout << (int)res[i] << " ";
 
     testFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
-    Raster_Destroy(testFrame);
+    Graphics_DestroyFrame(testFrame);
     Graphics_Destroy(testGraphics);
     return 0;
 }

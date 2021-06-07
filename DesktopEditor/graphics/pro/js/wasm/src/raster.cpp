@@ -32,6 +32,7 @@ CBgraFrame* Raster_Init(double width_px, double height_px)
         *pData32++ = back;
 
     CBgraFrame* oRes = new CBgraFrame();
+    oRes->put_IsRGBA(true);
     oRes->put_Data(pData);
     oRes->put_Width(nRasterW);
     oRes->put_Height(nRasterH);

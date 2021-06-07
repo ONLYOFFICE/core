@@ -54,8 +54,8 @@ void TableWriter::FillTable(PPTX::Logic::Table &oTable)
     prepareShapes(arrCells, arrSpliters);
     FillTblGrid(oTable.TableCols , arrCells);
 
-    auto arrRows = getRows(arrCells);
-    for (auto row : arrRows)
+    auto arrRows = createProtoTable(arrCells);
+    for (auto& row : *arrRows)
     {
         PPTX::Logic::TableRow tr;
         FillRow(tr, row);
@@ -63,7 +63,7 @@ void TableWriter::FillTable(PPTX::Logic::Table &oTable)
     }
 }
 
-std::vector<int> TableWriter::getWidth(std::vector<CShapeElement*>& arrCells)
+std::vector<int> TableWriter::getWidth(std::vector<CShapeElement*>& arrCells, bool isWidth)
 {
     std::map<double, double> mapLeftWidth;
     for (const auto* pCell : arrCells)
@@ -87,8 +87,12 @@ std::vector<int> TableWriter::getWidth(std::vector<CShapeElement*>& arrCells)
     }
 
     std::vector<int> gridWidth;
+    double multip = isWidth ? 1587.6 : 1.0;
     for (const auto& w : mapLeftWidth)
-        gridWidth.push_back(int(w.second * 1587.6));
+    {
+        double value = isWidth ? w.second : w.first;
+        gridWidth.push_back(int(value * multip));
+    }
 
     return gridWidth;
 }
@@ -112,13 +116,6 @@ std::vector<std::vector<CShapeElement*> > TableWriter::getRows(std::vector<CShap
     }
 
     return arrRows;
-}
-
-int TableWriter::getCellHeight(const CShapeElement *pCell) const
-{
-    double multip = m_pTableElement->m_bAnchorEnabled ? 1587.6 : 1;
-    double height = pCell->m_rcChildAnchor.bottom - pCell->m_rcChildAnchor.top;
-    return int(height * multip);
 }
 
 void TableWriter::FillTblPr(PPTX::Logic::TableProperties &oTblPr)
@@ -156,29 +153,153 @@ void TableWriter::prepareShapes(std::vector<CShapeElement *> &arrCells, std::vec
     }
 }
 
-std::vector<std::vector<CElement *> > TableWriter::createProtoTable(std::vector<CShapeElement *> &arrCells)
+ptrProtoTable TableWriter::createProtoTable(std::vector<CShapeElement*> &arrCells)
 {
-    auto gridWidth = getWidth(arrCells);
+    auto gridWidth = getWidth(arrCells, false);
     auto arrRows = getRows(arrCells);
+    auto cellIter = arrCells.begin();
+
     const unsigned countRows = arrRows.size();
     const unsigned countCols = gridWidth.size();
 
-    std::vector<std::vector<CElement *> > protoTable(countRows);
+    ptrProtoTable pProtoTable(new ProtoTable);
     for (unsigned cRow = 0; cRow < countRows; cRow++)
     {
-        std::vector<CElement *> row(countCols);
+        pProtoTable->push_back(std::vector<TCell>());
+        std::vector<TCell>& row = pProtoTable->back();
+
         int top = arrRows[cRow].front()->m_rcChildAnchor.top;
         for (unsigned cCol = 0; cCol < countCols; cCol++)
         {
+            int left = gridWidth[cCol];
+
+            CShapeElement* current = (*cellIter);
+            if (current &&
+                    current->m_rcChildAnchor.top == top &&
+                    current->m_rcChildAnchor.left == left)
+            {
+                row.push_back(TCell(current, cRow, cCol));
+                cellIter++;
+            } else
+            {
+                TCell* pParent = FindCellParent(pProtoTable, cRow, cCol);
+                row.push_back(TCell(nullptr, cRow, cCol, pParent));
+            }
 
         }
-        protoTable.push_back(row);
     }
+
+    return  pProtoTable;
 }
 
-void TableWriter::FillRow(PPTX::Logic::TableRow &oRow, std::vector<CShapeElement*>& arrCells)
+TCell *TableWriter::FindCellParent(ptrProtoTable pPT, int row, int col)
+{
+    if (!pPT || pPT->empty() || row < 0 || col < 1)
+        return nullptr;
+
+    TCell::eMergeDirection curDir = row > 0 ?
+                (*pPT)[--row][col].parentDirection() : (*pPT)[row][--col].parentDirection();
+
+    // go up
+    while (curDir == TCell::vert && row >= 0)
+    {
+        if (curDir == TCell::none)
+            return &(*pPT)[row][col];
+        curDir = (*pPT)[--row][col].parentDirection();
+    }
+
+    // go up and left
+    while (curDir == TCell::hove && row >= 0 && col >= 0)
+    {
+        if (curDir == TCell::none)
+            return &(*pPT)[row][col];
+        curDir = (*pPT)[--row][--col].parentDirection();
+    }
+
+    // go left
+    while (curDir == TCell::horz && col >= 0)
+    {
+        if (curDir == TCell::none)
+            return &(*pPT)[row][col];
+        curDir = (*pPT)[row][--col].parentDirection();
+    }
+
+    return &(*pPT)[(row >= 0 ? row : 0)][(col >= 0 ? col : 0)];
+}
+
+int TableWriter::getTRHeight(const ProtoTableRow& row)
+{
+    const TCell* pCell = nullptr;
+    for (const auto& cell : row)
+        if (cell.parentDirection() == TCell::none)
+        {
+            pCell = &cell;
+            break;
+        }
+
+    return pCell ? pCell->getHeight() : 0;
+}
+
+void TableWriter::FillRow(PPTX::Logic::TableRow &oRow, ProtoTableRow& arrCells)
 {
     if (arrCells.empty()) return;
 
-    oRow.Height = getCellHeight(arrCells.front());
+    oRow.Height = getTRHeight(arrCells);
+    for (auto& protoCell : arrCells)
+    {
+        PPTX::Logic::TableCell cell;
+        protoCell.FillTc(cell);
+        oRow.Cells.push_back(cell);
+    }
 }
+
+TCell::TCell(CShapeElement *pShape, int row, int col, TCell *pParent) :
+    m_pShape(pShape), m_row(row), m_col(col), m_pParent(pParent), m_parentDirection(none)
+{
+    if (m_pParent)
+    {
+        if (m_pParent->m_col == m_col && m_pParent->m_row != m_row)
+            m_parentDirection = vert;
+        else if (m_pParent->m_col != m_col && m_pParent->m_row == m_row)
+            m_parentDirection = horz;
+        else
+            m_parentDirection = hove;
+    }
+}
+
+void TCell::setArrBorders(const std::vector<CShapeElement *> &arrBorders)
+{
+    m_arrBorders = arrBorders;
+}
+
+void TCell::FillTc(PPTX::Logic::TableCell &oTc)
+{
+    if (m_pParent)
+    {
+        FillMergeDirection(oTc);
+        return;
+    }
+
+}
+
+TCell::eMergeDirection TCell::parentDirection() const
+{
+    return m_parentDirection;
+}
+
+int TCell::getHeight() const
+{
+    auto pShape = m_pParent ? m_pParent->m_pShape : m_pShape;
+    double multip = pShape->m_bAnchorEnabled ? 1587.6 : 1;
+    double height = pShape->m_rcChildAnchor.bottom - pShape->m_rcChildAnchor.top;
+
+    return int(height * multip);
+}
+
+void TCell::FillMergeDirection(PPTX::Logic::TableCell &oTc)
+{
+    oTc.HMerge = parentDirection() & horz;
+    oTc.VMerge = parentDirection() & vert;
+}
+
+

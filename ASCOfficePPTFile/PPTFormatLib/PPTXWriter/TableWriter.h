@@ -36,6 +36,47 @@
 
 namespace PPT_FORMAT
 {
+class TCell
+{
+public:
+    TCell(CShapeElement *pShape, int row, int col, TCell* pParent = nullptr);
+    void setArrBorders(const std::vector<CShapeElement *> &arrBorders);
+
+    void FillTc(PPTX::Logic::TableCell &oTc);
+
+    enum eMergeDirection {
+        none = 0b00,
+        vert = 0b01,
+        horz = 0b10,
+        hove = (horz | vert)
+    };
+
+    eMergeDirection parentDirection() const;
+    int getHeight()const;
+
+private:
+    void FillMergeDirection(PPTX::Logic::TableCell& oTc);
+
+private:
+    CShapeElement* m_pShape;
+
+    // 0 - left, 1 - top, 2 - right, 3 - bottom,
+    // 4 - lnTlToBr, 5 - lnBlToTr
+    std::vector<CShapeElement*> m_arrBorders;
+
+    // Proto table's coord
+    int m_row, m_col;
+
+    // Parent
+    TCell* m_pParent;
+    eMergeDirection m_parentDirection;
+};
+
+
+typedef std::vector<TCell> ProtoTableRow;
+typedef std::vector<ProtoTableRow> ProtoTable;
+typedef boost::shared_ptr<ProtoTable> ptrProtoTable;
+
 class TableWriter
 {
 public:
@@ -48,20 +89,20 @@ private:
     void FillXfrm(PPTX::Logic::Xfrm& oXFRM);
     void FillTable(PPTX::Logic::Table &oTable);
     
-    std::vector<int> getWidth(std::vector<CShapeElement *> &arrCells);
+    std::vector<int> getWidth(std::vector<CShapeElement *> &arrCells, bool isWidth = true);
     std::vector<std::vector<CShapeElement *> >
-        getRows(std::vector<CShapeElement *> &arrCells);
-    int getCellHeight(const CShapeElement * pCell)const;
+    getRows(std::vector<CShapeElement *> &arrCells);
 
     void FillTblPr(PPTX::Logic::TableProperties& oTblPr);
     void FillTblGrid(std::vector<PPTX::Logic::TableCol>& tblGrid,
                      std::vector<CShapeElement *> &arrCells);
     void prepareShapes(std::vector<CShapeElement*> &arrCells,
                        std::vector<CShapeElement*>& arrSpliters);
-    std::vector<std::vector<CElement*> >
-        createProtoTable(std::vector<CShapeElement *> &arrCells);
+    ptrProtoTable createProtoTable(std::vector<CShapeElement *> &arrCells);
+    TCell* FindCellParent(ptrProtoTable pPT, int row, int col);
+    int getTRHeight(const ProtoTableRow& row);
 
-    void FillRow(PPTX::Logic::TableRow& oRow, std::vector<CShapeElement*>& arrCells);
+    void FillRow(PPTX::Logic::TableRow& oRow, ProtoTableRow &arrCells);
 
 private:
     CTableElement *m_pTableElement;

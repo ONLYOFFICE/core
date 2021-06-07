@@ -45,6 +45,7 @@ void CMetafileTreeView::SetMetafile(const std::wstring &wsXmlFilePath)
 
     QStandardItemModel *pStandardItemModel = new QStandardItemModel;
     QStandardItem *pStandardItem = new QStandardItem(QString::fromStdWString(L'<' + oXmlRootNode.GetName() + L'>'));
+    pStandardItem->setEditable(false);
 
     ReadXmlNode(oXmlRootNode, *pStandardItem, 1);
 

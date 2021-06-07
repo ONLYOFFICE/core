@@ -1,11 +1,13 @@
 #include "CTextEditDelegate.h"
 #include "CXMLHighlighter.h"
+#include "CItemWidget.h"
 
 #include <QAbstractTextDocumentLayout>
 #include <QApplication>
+#include <QPushButton>
+#include <QHBoxLayout>
 #include <QTextEdit>
 #include <QPainter>
-#include <QDebug>
 
 CTextEditDelegate::CTextEditDelegate(QWidget *parent) :
     QStyledItemDelegate(parent),
@@ -32,32 +34,25 @@ void CTextEditDelegate::SetMode(bool bIsLightMode)
 
 QWidget *CTextEditDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QTextEdit *pTextEditor = new QTextEdit(parent);
-    pTextEditor->setReadOnly(true);
-
-    pTextEditor->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    pTextEditor->document()->setDocumentMargin(0);
+    CItemWidget *pItemWidget = new CItemWidget(parent);
 
     if (NULL != pFont)
-        pTextEditor->setFont(*pFont);
+        pItemWidget->SetFont(*pFont);
 
-    CXMLHighlighter *pXMLHighlighter = new CXMLHighlighter(pTextEditor->document());
-    return pTextEditor;
+    return pItemWidget;
 }
 
 void CTextEditDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
     QString qsValue = index.model()->data(index, Qt::EditRole).toString();
-
-    QTextEdit* pTextEditor = static_cast<QTextEdit*>(editor);
-    pTextEditor->setText(qsValue);
+    CItemWidget* pItemWidget = static_cast<CItemWidget*>(editor);
+    pItemWidget->SetText(qsValue);
 }
 
 void CTextEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-    QTextEdit* pTextEditor = static_cast<QTextEdit*>(editor);
-    QString qsValue = pTextEditor->toPlainText();
-    model->setData(index, qsValue, Qt::EditRole);
+    CItemWidget* pItemWidget = static_cast<CItemWidget*>(editor);
+    model->setData(index, pItemWidget->GetText(), Qt::EditRole);
 }
 
 void CTextEditDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const

@@ -45,13 +45,15 @@ WASM_EXPORT void  Graphics_CreateFromBgraFrame(void* graphics, CBgraFrame* pFram
 }
 WASM_EXPORT void* Graphics_Init(CBgraFrame* pFrame, double width_mm, double height_mm)
 {
+    /*
     NSFonts::IApplicationFonts* m_pApplicationFonts = NSFonts::NSApplication::Create();
-    //m_pApplicationFonts->InitializeFromArrayFiles();
-    //m_pApplicationFonts->InitializeFromFolder(L"C:/Users/Kulik/AppData/Local/ONLYOFFICE/DesktopEditors/data/fonts");
+    std::vector<std::wstring> test;
+    m_pApplicationFonts->InitializeFromArrayFiles(test, 0);
     NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
+    */
 
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)NSGraphics::Create();
-    pGraphics->SetFontManager(pManager);
+    //pGraphics->SetFontManager(pManager);
     pGraphics->CreateFromBgraFrame(pFrame);
     pGraphics->SetSwapRGB(true);
     pGraphics->put_Width(width_mm);

@@ -1475,7 +1475,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator
             oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
         }
 
-        animation.setNextRId(oRels.getNextRId());
+        animation.setNextRId(oRels.getRId());
     }
 
     animation.Convert(oTiming);

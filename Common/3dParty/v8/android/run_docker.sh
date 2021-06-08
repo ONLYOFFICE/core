@@ -10,6 +10,6 @@ for image in $(docker images --format "{{.ID}}"); do
 done
 
 docker rm v8docker
-docker build . -t v8_docker --build-arg CACHEBUST=1
+docker build . -t v8_docker --build-arg CACHEBUST=0 --no-cache=true
 docker run -d --name v8docker v8_docker:latest
 docker cp v8docker:/home/docker/v8/build.zip .

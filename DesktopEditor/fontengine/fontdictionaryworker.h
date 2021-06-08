@@ -281,12 +281,12 @@ namespace NSFontDictionary
 		memcpy(oFormat.pPanose, pFont->m_aPanose, 10);
 
 		// ranges
-		oFormat.ulRange1 = new ULONG(pFont->m_ulUnicodeRange1);
-		oFormat.ulRange2 = new ULONG(pFont->m_ulUnicodeRange2);
-		oFormat.ulRange3 = new ULONG(pFont->m_ulUnicodeRange3);
-		oFormat.ulRange4 = new ULONG(pFont->m_ulUnicodeRange4);
-		oFormat.ulCodeRange1 = new ULONG(pFont->m_ulCodePageRange1);
-		oFormat.ulCodeRange2 = new ULONG(pFont->m_ulCodePageRange2);
+		oFormat.ulRange1 = new UINT(pFont->m_ulUnicodeRange1);
+		oFormat.ulRange2 = new UINT(pFont->m_ulUnicodeRange2);
+		oFormat.ulRange3 = new UINT(pFont->m_ulUnicodeRange3);
+		oFormat.ulRange4 = new UINT(pFont->m_ulUnicodeRange4);
+		oFormat.ulCodeRange1 = new UINT(pFont->m_ulCodePageRange1);
+		oFormat.ulCodeRange2 = new UINT(pFont->m_ulCodePageRange2);
 		
 		oFormat.usWeight = new USHORT(pFont->m_usWeigth);
 		oFormat.usWidth = new USHORT(pFont->m_usWidth);

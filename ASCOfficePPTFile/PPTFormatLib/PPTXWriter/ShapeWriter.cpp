@@ -1690,73 +1690,94 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
     if (!pShapeElement) return;
 
     auto& actions = pShapeElement->m_arrActions;
-    for (unsigned i = 0; i < actions.size(); i++)
+    for (unsigned i = 0; i < actions.size() && actions.size() < 3; i++)
     {
-        if (actions[i].m_eActivation == CInteractiveInfo::click)
-            m_oWriter.WriteString(std::wstring(L"<a:hlinkClick r:id=\"\" action=\"ppaction://"));
+        if (actions[i].m_lType == CInteractiveInfo::over
+                && actions[i].m_strAudioFileName.empty()
+                && actions[i].m_lType == II_NoAction)
+            continue;
+
+        PPTX::Logic::Hyperlink hlink;
+        if (actions[i].m_strHyperlink.size() && m_pRels)
+        {
+            std::wstring id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);
+            hlink.id = id;
+        }
+
+        if (actions[i].m_strAudioFileName.size() && m_pRels)
+        {
+            hlink.snd = new PPTX::Logic::WavAudioFile;
+            bool bExternal = false;
+            hlink.snd->embed = m_pRels->WriteAudio(actions[i].m_strAudioFileName, bExternal);
+            hlink.snd->m_name = L"snd";
+            hlink.snd->name = actions[i].m_strAudioName;
+        }
+
+        if (actions[i].m_eActivation == CInteractiveInfo::over)
+            hlink.m_name = L"hlinkHover";
         else
-            m_oWriter.WriteString(std::wstring(L"<a:hlinkHover r:id=\"\" action=\"ppaction://"));
+            hlink.highlightClick = true;
 
         switch (actions[i].m_lType)
         {
         case II_NoAction:
         {
-            m_oWriter.WriteString(std::wstring(L"noaction\""));
+            hlink.action = L"ppaction://noaction";
             break;
         }
         case II_JumpAction:
         {
-            m_oWriter.WriteString(std::wstring(L"hlinkshowjump?jump="));
-            std::wstring strJump;
+            std::wstring strJump(L"ppaction://hlinkshowjump?jump=");
             switch (actions[i].m_lJump)
             {
             case II_NextSlide:
             {
-                strJump = L"nextslide";
+                strJump += L"nextslide";
                 break;
             }
             case II_PreviousSlide:
             {
-                strJump = L"previousslide";
+                strJump += L"previousslide";
                 break;
             }
             case II_FirstSlide:
             {
-                strJump = L"firstslide";
+                strJump += L"firstslide";
                 break;
             }
             case II_LastSlide:
             {
-                strJump = L"lastslide";
+                strJump += L"lastslide";
                 break;
             }
             case II_LastSlideViewed:
             {
-                strJump = L"lastslideviewed";
+                strJump += L"lastslideviewed";
                 break;
             }
             case II_EndShow:
             {
-                strJump = L"endshow";
+                strJump += L"endshow";
                 break;
             }
             }
-            strJump += L"\"";
-            m_oWriter.WriteString(strJump);
+            hlink.action = strJump;
+            hlink.id = L"";
             break;
         }
-//        case II_HyperlinkAction:
-//        {
-
-//            break;
-//        }
-        default:
-            m_oWriter.WriteString(std::wstring(L"noaction\""));
+        case II_HyperlinkAction:
+        {
+            if (hlink.id.is_init())
+                hlink.action = L"ppaction://hlinksldjump";
+            else
+                hlink.action = L"ppaction://noaction";
+            break;
         }
-        if (actions[i].m_eActivation == CInteractiveInfo::click)
-            m_oWriter.WriteString(std::wstring(L" highlightClick=\"1\"/>"));
-        else
-            m_oWriter.WriteString(std::wstring(L"/>"));
+        default:
+            hlink.action = L"ppaction://noaction";
+    }
+
+        m_oWriter.WriteString(hlink.toXML());
     }
 }
 

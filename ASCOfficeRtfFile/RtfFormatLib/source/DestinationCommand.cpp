@@ -2604,7 +2604,7 @@ void RtfParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr 
 		AddItem( m_oCurParagraph, oReader, false, false );
 		m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());
 	}
-	else if (true == m_bPar)
+	else// if (true == m_bPar) // bug 50434
 	{
 		if (false == aRows.empty() || false == aCells.empty()) // bug 39172
 		{

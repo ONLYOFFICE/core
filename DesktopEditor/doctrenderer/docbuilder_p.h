@@ -312,7 +312,7 @@ namespace NSDoctRenderer
 
         void CheckFonts(bool bIsCheckFonts)
         {
-            std::wstring sDirectory = NSCommon::GetDirectoryName(m_strAllFonts);
+            std::wstring sDirectory = NSFile::GetDirectoryName(m_strAllFonts);
             std::wstring strFontsSelectionBin = sDirectory + L"/font_selection.bin";
 
             if (!bIsCheckFonts && NSFile::CFileBinary::Exists(strFontsSelectionBin))
@@ -334,7 +334,7 @@ namespace NSDoctRenderer
             if (NSFile::CFileBinary::Exists(m_sFileDir))
                 NSFile::CFileBinary::Remove(m_sFileDir);
 
-            NSCommon::string_replace(m_sFileDir, L"\\", L"/");
+            NSStringUtils::string_replace(m_sFileDir, L"\\", L"/");
 
             std::wstring::size_type nPosPoint = m_sFileDir.rfind('.');
             if (nPosPoint != std::wstring::npos && nPosPoint > m_sTmpFolder.length())
@@ -472,7 +472,7 @@ namespace NSDoctRenderer
             else
             {
                 oBuilder.WriteString(L"<m_sFontDir>");
-                oBuilder.WriteEncodeXmlString(NSCommon::GetDirectoryName(m_strAllFonts));
+                oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
                 oBuilder.WriteString(L"</m_sFontDir>");
 
                 oBuilder.WriteString(L"<m_sAllFontsPath>");
@@ -604,7 +604,7 @@ namespace NSDoctRenderer
 
         std::wstring GetFileCopyExt(const std::wstring& path)
         {
-            std::wstring sExtCopy = NSCommon::GetFileExtention(path);
+            std::wstring sExtCopy = NSFile::GetFileExtention(path);
 
             if (true)
             {
@@ -702,10 +702,10 @@ namespace NSDoctRenderer
                 wchar_t last = m_sFolderForSaveOnlyUseNames.c_str()[m_sFolderForSaveOnlyUseNames.length() - 1];
                 if (last != '/' && last != '\\')
                     _path += L"/";
-                _path += NSCommon::GetFileName(path);
+                _path += NSFile::GetFileName(path);
             }
 
-            std::wstring sDstFileDir = NSCommon::GetDirectoryName(_path);
+            std::wstring sDstFileDir = NSFile::GetDirectoryName(_path);
             if ((sDstFileDir != _path) && !NSDirectory::Exists(sDstFileDir))
                 NSDirectory::CreateDirectories(sDstFileDir);
 
@@ -782,7 +782,7 @@ namespace NSDoctRenderer
             else
             {
                 oBuilder.WriteString(L"<m_sFontDir>");
-                oBuilder.WriteEncodeXmlString(NSCommon::GetDirectoryName(m_strAllFonts));
+                oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
                 oBuilder.WriteString(L"</m_sFontDir>");
 
                 oBuilder.WriteString(L"<m_sAllFontsPath>");
@@ -1030,7 +1030,7 @@ namespace NSDoctRenderer
 
             if (0 < arSdkFiles->size())
             {
-                return NSCommon::GetDirectoryName(*arSdkFiles->begin()) + L"/sdk-all.cache";
+                return NSFile::GetDirectoryName(*arSdkFiles->begin()) + L"/sdk-all.cache";
             }
             return L"";
         }
@@ -1066,7 +1066,7 @@ namespace NSDoctRenderer
         {
             std::wstring sValue(value);
             std::string sValueA = U_TO_UTF8(sValue);
-            NSCommon::string_replaceA(sValueA, "%", "%%");
+            NSStringUtils::string_replaceA(sValueA, "%", "%%");
 
             std::wstring _sFile(path);
             std::wstring sFile = GetSaveFilePath(_sFile);

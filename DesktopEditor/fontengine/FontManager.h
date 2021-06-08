@@ -49,6 +49,7 @@ public:
 
 public:
     virtual int CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse = NULL);
+    virtual int CreateFromMemory(BYTE* pData, LONG lSize, BYTE* pDataUse = NULL);
 };
 
 class CApplicationFontStreams : public NSFonts::IApplicationFontStreams
@@ -63,6 +64,7 @@ public:
 
 public:
     NSFonts::IFontStream* GetStream(const std::wstring& strFile);
+    NSFonts::IFontStream* GetStream(const std::wstring& sName, BYTE* pData, LONG lSize);
 	void CheckStreams(std::map<std::wstring, bool>& mapFiles);
 	void Clear();
 };
@@ -112,6 +114,7 @@ public:
 public:
     virtual void SetStreams(NSFonts::IApplicationFontStreams* pStreams) { m_pApplicationFontStreams = pStreams; }
     virtual NSFonts::IFontFile* LockFont(NSFonts::CLibrary& library, const std::wstring& strFileName, const int& lFaceIndex, const double& dSize);
+    virtual NSFonts::IFontFile* LockFont(NSFonts::CLibrary& library, const std::wstring& sName, BYTE* pData, LONG lSize, const int& lFaceIndex, const double& dSize);
 };
 
 class CApplicationFonts;
@@ -198,7 +201,9 @@ public:
     virtual NSFonts::CFontInfo* GetFontInfoByParams(NSFonts::CFontSelectFormat& oFormat, bool bIsDictionaryUse = true);
     virtual std::vector<NSFonts::CFontInfo*> GetAllStylesByFontName(const std::wstring& strName);
     virtual INT LoadFontByName(const std::wstring& sName, const double& dSize, const int& lStyle, const double& dDpiX, const double& dDpiY);
+    virtual INT LoadFontByName(const std::wstring& sName, BYTE* pData, LONG lSize, const double& dSize, const int& lStyle, const double& dDpiX, const double& dDpiY);
     virtual INT LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
+    virtual INT LoadFontFromMemory(const std::wstring& sName, BYTE* pData, LONG lSize, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
     virtual INT LoadFontFromFile2(NSFonts::IFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
     virtual void CloseFont();
 

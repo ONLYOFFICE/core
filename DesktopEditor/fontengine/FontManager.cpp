@@ -81,6 +81,31 @@ int CFontStream::CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse)
 	return true;
 }
 
+int CFontStream::CreateFromMemory(BYTE* pData, LONG lSize, BYTE* pDataUse)
+{
+    m_lSize = lSize;
+
+    if (NULL == pDataUse)
+        m_pData = new BYTE[m_lSize];
+    else
+    {
+        m_bIsAttach = true;
+        m_pData = pDataUse;
+    }
+
+    memcpy(m_pData, pData, m_lSize);
+
+    if (!m_pData)
+    {
+        if (!m_bIsAttach)
+        RELEASEARRAYOBJECTS(m_pData);
+
+        m_lSize = 0;
+        return FALSE;
+    }
+    return TRUE;
+}
+
 CApplicationFontStreams::CApplicationFontStreams() : NSFonts::IApplicationFontStreams()
 {
 }
@@ -101,6 +126,19 @@ NSFonts::IFontStream* CApplicationFontStreams::GetStream(const std::wstring &str
 
 	m_mapStreams[strFile] = pStream;
 	return pStream;
+}
+NSFonts::IFontStream* CApplicationFontStreams::GetStream(const std::wstring& sName, BYTE* pData, LONG lSize)
+{
+    CFontStream* pStream = m_mapStreams[sName];
+
+    if (NULL != pStream)
+        return pStream;
+
+    pStream = new CFontStream();
+    pStream->CreateFromMemory(pData, lSize);
+
+    m_mapStreams[sName] = pStream;
+    return pStream;
 }
 void CApplicationFontStreams::CheckStreams(std::map<std::wstring,bool> &mapFiles)
 {
@@ -229,6 +267,54 @@ NSFonts::IFontFile* CFontsCache::LockFont(NSFonts::CLibrary& library, const std:
 	m_mapFiles[sLock] = pFile;	
 
 	return pFile;
+}
+
+NSFonts::IFontFile* CFontsCache::LockFont(NSFonts::CLibrary& library, const std::wstring& sName, BYTE* pData, LONG lSize, const int& lFaceIndex, const double& dSize)
+{
+    if (NULL == m_pApplicationFontStreams)
+        return NULL;
+
+    std::string sLock = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.c_str(), sName.length(), false);
+
+    char buffer[50];
+    sprintf(buffer, "%d_%.2lf", lFaceIndex, dSize);
+    std::string s(buffer);
+
+    sLock += s;
+
+    CFontFile* pFile = m_mapFiles[sLock];
+
+    if (NULL != pFile)
+        return pFile;
+
+    CFontStream* pStream = (CFontStream*)m_pApplicationFontStreams->GetStream(sName, pData, lSize);
+    pFile = (CFontFile*)CFontManager::LoadFontFile(library, pStream, lFaceIndex);
+    if (NULL == pFile)
+        return NULL;
+
+    if (-1 != m_lCacheSize)
+    {
+        m_arFiles.push_back(sLock);
+        if ((int)m_arFiles.size() > m_lCacheSize)
+        {
+            std::string sPop = *m_arFiles.begin();
+            m_arFiles.pop_front();
+
+            std::map<std::string, CFontFile*>::iterator _find = m_mapFiles.find(sPop);
+            if (m_mapFiles.end() != _find)
+            {
+                CFontFile* pFontRemove = _find->second;
+                RELEASEOBJECT(pFontRemove);
+                m_mapFiles.erase(_find);
+            }
+        }
+    }
+
+    pFile->m_pStream = pStream;
+    pFile->m_pStream->AddRef();
+    m_mapFiles[sLock] = pFile;
+
+    return pFile;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -681,6 +767,39 @@ INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize,
     return bLoad;
 }
 
+INT CFontManager::LoadFontByName(const std::wstring& sName, BYTE* pData, LONG lSize, const double& dSize, const int& lStyle, const double& dDpiX, const double& dDpiY)
+{
+    if (NULL == m_pApplication)
+        return FALSE;
+
+    NSFonts::CFontSelectFormat oFormat;
+    oFormat.wsName = new std::wstring(sName);
+
+    oFormat.bBold = new INT(FALSE);
+    oFormat.bItalic = new INT(FALSE);
+
+    if (lStyle & 0x01)
+        *oFormat.bBold = TRUE;
+    if (lStyle & 0x02)
+        *oFormat.bItalic = TRUE;
+
+    INT bLoad = LoadFontFromMemory(sName, pData, lSize, 0, dSize, dDpiX, dDpiY);
+
+    if (bLoad == TRUE)
+    {
+        bool bIsNeedBold = false;
+        if (NULL != oFormat.bBold && (*oFormat.bBold) == TRUE)
+            bIsNeedBold = true;
+        bool bIsNeedItalic = false;
+        if (NULL != oFormat.bItalic && (*oFormat.bItalic) == TRUE)
+            bIsNeedItalic = true;
+
+        m_pFont->SetNeedBold(bIsNeedBold);
+        m_pFont->SetItalic(bIsNeedItalic);
+    }
+    return bLoad;
+}
+
 INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY)
 {
 	if (NULL == m_pApplication)
@@ -705,6 +824,32 @@ INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIn
     }
 
 	return TRUE;
+}
+
+INT CFontManager::LoadFontFromMemory(const std::wstring& sName, BYTE* pData, LONG lSize, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY)
+{
+    if (NULL == m_pApplication)
+        return FALSE;
+
+    CFontsCache* pCache		= (CFontsCache*)((m_pOwnerCache != NULL) ? m_pOwnerCache : m_pApplication->GetCache());
+
+    NSFonts::CLibrary library;
+    library.m_internal->m_library = m_pLibrary;
+    m_pFont = (CFontFile*)pCache->LockFont(library, sName, pData, lSize, lFaceIndex, dSize);
+    if (NULL == m_pFont)
+        return FALSE;
+
+    m_pFont->m_pFontManager = this;
+    m_pFont->SetSizeAndDpi(dSize, (UINT)dDpiX, (UINT)dDpiY);
+
+    m_sName = L"";
+    if (m_pFont->m_pFace)
+    {
+        m_pFont->m_sName = GetCorrectSfntName(m_pFont->m_pFace->family_name);
+        m_sName = m_pFont->m_sName;
+    }
+
+    return TRUE;
 }
 
 INT CFontManager::LoadFontFromFile2(NSFonts::IFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY)

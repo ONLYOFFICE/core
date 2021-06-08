@@ -45,7 +45,13 @@ WASM_EXPORT void  Graphics_CreateFromBgraFrame(void* graphics, CBgraFrame* pFram
 }
 WASM_EXPORT void* Graphics_Init(CBgraFrame* pFrame, double width_mm, double height_mm)
 {
+    NSFonts::IApplicationFonts* m_pApplicationFonts = NSFonts::NSApplication::Create();
+    //m_pApplicationFonts->InitializeFromArrayFiles();
+    //m_pApplicationFonts->InitializeFromFolder(L"C:/Users/Kulik/AppData/Local/ONLYOFFICE/DesktopEditors/data/fonts");
+    NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
+
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)NSGraphics::Create();
+    pGraphics->SetFontManager(pManager);
     pGraphics->CreateFromBgraFrame(pFrame);
     pGraphics->SetSwapRGB(true);
     pGraphics->put_Width(width_mm);
@@ -260,15 +266,15 @@ WASM_EXPORT void  Graphics_drawImage(void* graphics, BYTE* img, int size, double
     RELEASEOBJECT(pimg);
 }
 
-WASM_EXPORT void  Graphics_SetFont(void* graphics, const char* name, int face, double size, int style)
+WASM_EXPORT void  Graphics_SetFont(void* graphics, BYTE* pData, LONG lSize, const char* name, int face, double size, int style)
 {
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)graphics;
     std::wstring sName = UTF8_TO_U(std::string(name));
     double DpiX, DpiY;
     pGraphics->get_DpiX(&DpiX);
     pGraphics->get_DpiY(&DpiY);
-    // TO DO: From memory
-    pGraphics->GetFontManager()->LoadFontByName(sName, size, style, DpiX, DpiY);
+    pGraphics->GetFontManager()->LoadFontByName(sName, pData, lSize, size, style, DpiX, DpiY);
+    //pGraphics->GetFontManager()->LoadFontByName(sName, size, style, DpiX, DpiY);
 
     pGraphics->put_FontName     (sName);
     pGraphics->put_FontFaceIndex(face);
@@ -439,6 +445,33 @@ WASM_EXPORT void  Graphics_drawHorLine(void* graphics, BYTE align, double y, dou
 #ifdef TEST_AS_EXECUTABLE
 int main()
 {
+    CBgraFrame* testFrame = Graphics_InitFrame(211, 119);
+    void* testGraphics = Graphics_Init(testFrame, 55.8251, 31.2208);
+    Graphics_CoordTransformOffset(testGraphics, -210.583, -111.159);
+    Graphics_transform(testGraphics, 1, 0, 0, 1, 0, 0);
+    Graphics_SetIntegerGrid(testGraphics, false);
+    Graphics_transform(testGraphics, 1, 0, 0, 1, 58.4824, 30.8707);
+    Graphics_b_color1(testGraphics, 0, 0, 0, 255);
+
+    BYTE* pData = NULL;
+    DWORD nBytesCount;
+    NSFile::CFileBinary oFile;
+    if (!oFile.ReadAllBytes(L"C:/Windows/Fonts/arial.ttf", &pData, nBytesCount))
+        return 1;
+    oFile.CloseFile();
+
+    Graphics_SetFont(testGraphics, pData, nBytesCount, "Arial", -1, 11, 0);
+    Graphics_FillText(testGraphics, 0, 3.63992, 't');
+    Graphics_SetFont(testGraphics, pData, nBytesCount, "Arial", -1, 11, 0);
+    Graphics_FillText(testGraphics, 1.07813, 3.63992, 'e');
+    Graphics_SetFont(testGraphics, pData, nBytesCount, "Arial", -1, 11, 0);
+    Graphics_FillText(testGraphics, 3.23627, 3.63992, 's');
+    Graphics_SetFont(testGraphics, pData, nBytesCount, "Arial", -1, 11, 0);
+    Graphics_FillText(testGraphics, 5.17651, 3.63992, 't');
+
+    RELEASEARRAYOBJECTS(pData);
+    Graphics_SetIntegerGrid(testGraphics, true);
+    Graphics_reset(testGraphics);
     /*
     CBgraFrame* testFrame = Raster_Init(1024, 1024);
     void* testGraphics = Graphics_Init(testFrame, 256, 256);
@@ -455,6 +488,7 @@ int main()
     Graphics_DrawPath(testGraphics, 256);
     Graphics_reset(testGraphics);
     */
+    /*
     CBgraFrame* testFrame = Graphics_InitFrame(412, 151);
     void* testGraphics = Graphics_Init(testFrame, 109.008, 39.9521);
     Graphics_CoordTransformOffset(testGraphics, -160.294, -109.826);
@@ -471,6 +505,7 @@ int main()
     Graphics_p_dash(testGraphics, 0, NULL);
     Graphics_SetIntegerGrid(testGraphics, true);
     Graphics_reset(testGraphics);
+    */
     /*
     BYTE* pData = NULL;
     DWORD nBytesCount;

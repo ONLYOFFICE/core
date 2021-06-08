@@ -1,4 +1,4 @@
-/*
+﻿/*
 * (c) Copyright Ascensio System SIA 2010-2019
 *
 * This program is a free software product. You can redistribute it and/or
@@ -90,8 +90,8 @@ namespace odf_writer
 		
 			style_paragraph_properties			*current_paragraph_properties;
 			style_text_properties				*current_text_properties;
-			std::vector<odf_math_level_state>	current_level_;	//��������� ���������� ������ ������� ������������
-			std::vector<odf_math_state>			math_list_;		//��� �������� .. ��� �������� ���������� �� "�����"
+			std::vector<odf_math_level_state>	current_level_;	//постоянно меняющийся список уровней наследования
+			std::vector<odf_math_state>			math_list_;		//все элементы .. для удобства разделение по "топам"
 			odf_conversion_context				*odf_context_;
 			office_math							*root_element_;
 			
@@ -106,8 +106,17 @@ namespace odf_writer
 	static formulasconvert::oox2odf_converter formulas_converter_math;
 
 	odf_math_context::odf_math_context(odf_conversion_context *odf_context)
-		: impl_(new  odf_math_context::Impl(odf_context))
+		: impl_(new  odf_math_context::Impl(odf_context)), lvl_of_me(0), counter(0)
 	{
+		std::set<wchar_t> mo = { L'+', L'-', L'±', L'∓', L'∙', L'×', L'∗', L'÷', L'/', L'≂', L'⊕', L'⊖', L'⊙', L'⊗', L'⊘', L'∘', L'¬', L'∧', L'∨',		// un/bi operators
+								 L'=', L'≠', L'<', L'≤', L'>', L'≥', L'≪', L'≫', L'≈', L'~', L'≃', L'≡', L'∝', L'∥', L'⟂', L'|', L'∤', L'→', L'⊷',	// relations
+								 L'⊶', L'≝', L'⇐', L'⇔', L'⇒', L'≺', L'≻',  L'≼', L'≽', L'≾', L'≿',  L'⊀', L'⊁',										// relationships over sets
+								 L'∈', L'∉', L'∋', L'∩', L'∪', L'//', L'/', L'⊂', L'⊆', L'⊃', L'⊇', L'⊄', L'⊈', L'⊅', L'⊉',						//
+								 L'∞', L'∂', L'∇', L'∃', L'∄', L'∀', L'ħ', L'ƛ', L'ℜ', L'ℑ', L'℘', L'ℒ', L'ℱ', L'←', L'→', L'↑', L'↓',					// others
+								 L'…', L'⋯', L'⋮', L'⋰', L'⋱',
+								 L'∫', L'∬', 'L∭', L'∮', L'∯', L'∰',
+								 L'∑', L'∏', L'∐', L'⋃', L'⋂', L'⋀', L'⋁'
+		};
 	}
 
 	odf_math_context::~odf_math_context()

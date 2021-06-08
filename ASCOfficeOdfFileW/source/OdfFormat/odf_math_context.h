@@ -33,11 +33,23 @@
 
 #include <string>
 #include <vector>
-
+#include <set>
 #include <CPOptional.h>
 
 #include "office_elements_create.h"
 //#include "../../../ASCOfficeOdfFile/src/odf/datatypes/mathclass.h"
+
+#define CREATE_MATH_TAG(tag)\
+	odf_writer::office_element_ptr elm;\
+	odf_writer::create_element(L"math", tag, elm, odf_context());
+
+#define OPEN_MATH_TAG(elm)\
+	odf_context()->math_context()->start_element(elm); \
+	odf_context()->math_context()->counter++;
+
+#define CLOSE_MATH_TAG\
+	odf_context()->math_context()->end_element();\
+	odf_context()->math_context()->counter--;
 
 namespace cpdoccore {
 	namespace odf_writer
@@ -69,7 +81,11 @@ namespace cpdoccore {
 			void end_element();
 			//void end_group_series();
 
-			
+			std::vector<std::vector<std::wstring>> brackets; // контейнер для скобочек
+			int lvl_of_me; // уровень вложенности <m:e>
+			std::vector<int> end_counter; // не помню зачем сделал массив вместо переменной, сделал на будущее
+			int counter; // счетчик в define OPEN и CLOSE. 
+			std::set<wchar_t> mo;
 
 			void end_math();
 

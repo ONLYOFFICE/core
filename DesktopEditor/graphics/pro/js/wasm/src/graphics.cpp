@@ -1,11 +1,9 @@
-#ifndef _WASM_GRAPHICS_
-#define _WASM_GRAPHICS_
-
 #include <malloc.h>
 #include <iostream>
 
 #include "../../../../GraphicsRenderer.h"
 #include "../../../../pro/Graphics.h"
+#include "graphics.h"
 
 #ifdef _WIN32
 #define WASM_EXPORT __declspec(dllexport)
@@ -25,6 +23,60 @@ WASM_EXPORT void  Graphics_Free(void* p)
 {
     if (p) ::free(p);
 }
+WASM_EXPORT void* Graphics_Create(double width_px, double height_px, double width_mm, double height_mm)
+{
+    return new CGraphicsFileDrawing(width_px, height_px, width_mm, height_mm);
+}
+WASM_EXPORT void  Graphics_Destroy(void* graphics)
+{
+    CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
+    if (pGraphics) delete pGraphics;
+}
+WASM_EXPORT int   Graphics_GetPagesCount(void* graphics)
+{
+    CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
+    return pGraphics->GetPagesCount();
+}
+WASM_EXPORT int   Graphics_GetPageHeight(void* graphics, int nPageIndex)
+{
+    CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
+    return pGraphics->GetPageHeight(nPageIndex);
+}
+WASM_EXPORT int   Graphics_GetPageWidth(void* graphics, int nPageIndex)
+{
+    CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
+    return pGraphics->GetPageWidth(nPageIndex);
+}
+WASM_EXPORT BYTE* Graphics_GetPage(void* graphics, int nPageIndex, int nRasterW, int nRasterH)
+{
+    CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
+    return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH);
+}
+WASM_EXPORT bool  Graphics_TEST(void* graphics)
+{
+    CGraphicsFileDrawing* ptGraphics = (CGraphicsFileDrawing*)graphics;
+
+    // красная линия
+    CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
+    pGraphics->SetCoordTransformOffset(-160.294, -109.826);
+    pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
+    pGraphics->put_IntegerGrid(false);
+    pGraphics->SetTransform(1, 0, 0, -1, 42.625, 68.6708);
+    pGraphics->put_PenSize(352.75 / 1000.0);
+    pGraphics->PathCommandEnd();
+    pGraphics->PathCommandMoveTo(0, 0);
+    pGraphics->PathCommandLineTo(108.744, 39.4229);
+    pGraphics->put_PenColor(255 | (0 << 8) | (0 << 16));
+    pGraphics->put_PenAlpha(255);
+    pGraphics->DrawPath(1);
+    pGraphics->PathCommandEnd();
+    pGraphics->put_PenDashStyle(Aggplus::DashStyleSolid);
+    pGraphics->put_IntegerGrid(true);
+    pGraphics->ResetTransform();
+
+    return true;
+}
+/*
 WASM_EXPORT void* Graphics_Create()
 {
     return NSGraphics::Create();
@@ -45,12 +97,10 @@ WASM_EXPORT void  Graphics_CreateFromBgraFrame(void* graphics, CBgraFrame* pFram
 }
 WASM_EXPORT void* Graphics_Init(CBgraFrame* pFrame, double width_mm, double height_mm)
 {
-    /*
     NSFonts::IApplicationFonts* m_pApplicationFonts = NSFonts::NSApplication::Create();
     std::vector<std::wstring> test;
     m_pApplicationFonts->InitializeFromArrayFiles(test, 0);
     NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
-    */
 
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)NSGraphics::Create();
     //pGraphics->SetFontManager(pManager);
@@ -439,7 +489,7 @@ WASM_EXPORT void  Graphics_drawHorLine(void* graphics, BYTE align, double y, dou
     CGraphicsRenderer* pGraphics = (CGraphicsRenderer*)graphics;
     pGraphics->drawHorLine(align, y, x, r, penW);
 }
-
+*/
 #ifdef __cplusplus
 }
 #endif
@@ -447,6 +497,7 @@ WASM_EXPORT void  Graphics_drawHorLine(void* graphics, BYTE align, double y, dou
 #ifdef TEST_AS_EXECUTABLE
 int main()
 {
+    /*
     CBgraFrame* testFrame = Graphics_InitFrame(211, 119);
     void* testGraphics = Graphics_Init(testFrame, 55.8251, 31.2208);
     Graphics_CoordTransformOffset(testGraphics, -210.583, -111.159);
@@ -474,6 +525,7 @@ int main()
     RELEASEARRAYOBJECTS(pData);
     Graphics_SetIntegerGrid(testGraphics, true);
     Graphics_reset(testGraphics);
+    */
     /*
     CBgraFrame* testFrame = Raster_Init(1024, 1024);
     void* testGraphics = Graphics_Init(testFrame, 256, 256);
@@ -508,26 +560,19 @@ int main()
     Graphics_SetIntegerGrid(testGraphics, true);
     Graphics_reset(testGraphics);
     */
-    /*
-    BYTE* pData = NULL;
-    DWORD nBytesCount;
-    NSFile::CFileBinary oFile;
-    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.png", &pData, nBytesCount))
-        return 1;
-    oFile.CloseFile();
-    CBgraFrame* testFrame = Raster_Load(pData, nBytesCount);
-    Graphics_CreateFromBgraFrame(testGraphics, testFrame);
-    */
+    void* test = Graphics_Create(412, 151, 109.008, 39.9521);
+    Graphics_TEST(test);
+    int nHeight = Graphics_GetPageHeight(test, 1);
+    int nWidth = Graphics_GetPageWidth(test, 1);
+    BYTE* res = Graphics_GetPage(test, 1, nWidth, nHeight);
 
-    BYTE* res = Graphics_GetRGBA(testFrame);
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";
 
-    testFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
-    Graphics_DestroyFrame(testFrame);
-    Graphics_Destroy(testGraphics);
+    CBgraFrame* resFrame = ((CGraphicsFileDrawing*)test)->GetFrameForTest();
+
+    resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
+    Graphics_Destroy(test);
     return 0;
 }
 #endif
-
-#endif // _WASM_GRAPHICS_

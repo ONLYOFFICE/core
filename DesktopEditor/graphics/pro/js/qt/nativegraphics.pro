@@ -31,4 +31,6 @@ LIBS += -lgdi32 \
         -lshell32
 }
 
+HEADERS += ../wasm/src/graphics.h
+
 SOURCES += ../wasm/src/graphics.cpp

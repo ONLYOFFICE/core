@@ -523,6 +523,8 @@ namespace NSOpenSSL
         unsigned char* ciphertext_ptr = tag_ptr + GCM_TAG_LENGHT;
         int ciphertext_len = input_ptr_len - (GCM_IV_LENGTH + GCM_TAG_LENGHT);
         unsigned char* output_ptr = NULL;
+        int output_len = 0;
+        int final_len = 0;
 
         bool bResult = false;
 
@@ -540,14 +542,12 @@ namespace NSOpenSSL
             goto end;
 
         output_ptr = openssl_alloc(ciphertext_len);
-        int output_len = 0;
         if (!EVP_DecryptUpdate(ctx, output_ptr, &output_len, ciphertext_ptr, ciphertext_len))
             goto end;
 
         if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, GCM_TAG_LENGHT, tag_ptr))
             goto end;
 
-        int final_len = 0;
         if (EVP_DecryptFinal_ex(ctx, output_ptr + output_len, &final_len))
         {
             output_len += final_len;
@@ -577,6 +577,11 @@ namespace NSOpenSSL
         int output_buffer_all_offset = GCM_IV_LENGTH + GCM_TAG_LENGHT;
         int output_buffer_len = input_len + output_buffer_all_offset;
         unsigned char* output_ptr = NULL;
+        unsigned char* iv_ptr = NULL;
+        unsigned char* tag_ptr = NULL;
+        unsigned char* ciphertext_ptr = NULL;
+        int ciphertext_len = 0;
+        int final_len = 0;
 
         bool bResult = false;
 
@@ -592,10 +597,9 @@ namespace NSOpenSSL
 
         output_ptr = openssl_alloc(output_buffer_len);
 
-        unsigned char* iv_ptr = output_ptr;
-        unsigned char* tag_ptr = iv_ptr + GCM_IV_LENGTH;
-        unsigned char* ciphertext_ptr = tag_ptr + GCM_TAG_LENGHT;
-        int ciphertext_len = 0;
+        iv_ptr = output_ptr;
+        tag_ptr = iv_ptr + GCM_IV_LENGTH;
+        ciphertext_ptr = tag_ptr + GCM_TAG_LENGHT;
 
         if (1 != RAND_bytes(iv_ptr, GCM_IV_LENGTH))
             goto end;
@@ -606,7 +610,6 @@ namespace NSOpenSSL
         if (1 != EVP_EncryptUpdate(ctx, ciphertext_ptr, &ciphertext_len, input_ptr, input_len))
             goto end;
 
-        int final_len = 0;
         if (1 != EVP_EncryptFinal_ex(ctx, ciphertext_ptr + ciphertext_len, &final_len))
             goto end;
         ciphertext_len += final_len;

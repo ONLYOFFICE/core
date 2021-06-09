@@ -57,6 +57,7 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
     CGraphicsFileDrawing* ptGraphics = (CGraphicsFileDrawing*)graphics;
 
     // красная линия
+    /*
     CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
     pGraphics->SetCoordTransformOffset(-160.294, -109.826);
     pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
@@ -68,6 +69,45 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
     pGraphics->PathCommandLineTo(108.744, 39.4229);
     pGraphics->put_PenColor(255 | (0 << 8) | (0 << 16));
     pGraphics->put_PenAlpha(255);
+    pGraphics->DrawPath(1);
+    pGraphics->PathCommandEnd();
+    pGraphics->put_PenDashStyle(Aggplus::DashStyleSolid);
+    pGraphics->put_IntegerGrid(true);
+    pGraphics->ResetTransform();
+    */
+
+    // круг с градиентной заливкой
+    CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
+    pGraphics->SetCoordTransformOffset(-161.293, -94.833);
+    pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
+    pGraphics->put_IntegerGrid(false);
+    pGraphics->SetTransform(1, 0, 0, 1, 42.8896, 25.2792);
+    pGraphics->put_PenSize(352.75 / 1000.0);
+    pGraphics->BrushBounds(-2.13163e-14, -9.33201e-15, 55.0333, 55.0333);
+    pGraphics->PathCommandEnd();
+    pGraphics->PathCommandMoveTo(0, 27.5167);
+    pGraphics->PathCommandCurveTo(-1.84863e-15, 12.4215, 12.4215, 2.9041e-14, 27.5167, -3.55271e-15);
+    pGraphics->PathCommandCurveTo(42.6119, -9.33201e-15, 55.0333, 12.4215, 55.0333, 27.5167);
+    pGraphics->PathCommandCurveTo(55.0333, 27.5167, 55.0333, 27.5167, 55.0333, 27.5167);
+    pGraphics->PathCommandCurveTo(55.0333, 27.5167, 55.0333, 27.5167, 55.0333, 27.5167);
+    pGraphics->PathCommandCurveTo(55.0333, 42.6119, 42.6119, 55.0333, 27.5167, 55.0333);
+    pGraphics->PathCommandCurveTo(27.5167, 55.0333, 27.5167, 55.0333, 27.5167, 55.0333);
+    pGraphics->PathCommandCurveTo(12.4215, 55.0333, -1.94677e-14, 42.6119, -2.13163e-14, 27.5167);
+    pGraphics->PathCommandCurveTo(-2.13163e-14, 27.5167, -2.13163e-14, 27.5167, -2.13163e-14, 27.5167);
+    pGraphics->PathCommandClose();
+    pGraphics->put_PenColor(67 | (115 << 8) | (158 << 16));
+    pGraphics->put_PenAlpha(255);
+
+    double dAngle = 0;
+    if (fabs(0.000550333 - (-2.13163e-19)) >= FLT_EPSILON || fabs(-9.33201e-20 - (-9.33201e-20)) >= FLT_EPSILON)
+        dAngle = atan2(-9.33201e-20 - (-9.33201e-20), 0.000550333 - (-2.13163e-19)) * 180 / 3.14159265358979323846;
+    pGraphics->put_BrushType(c_BrushTypePathGradient1);
+    LONG   testmas1[2] = {-2778277, -1};
+    double testmas2[2] = {0, 1};
+    pGraphics->put_BrushGradientColors(testmas1, testmas2, 2);
+    pGraphics->put_BrushLinearAngle(dAngle);
+
+    pGraphics->DrawPath(256);
     pGraphics->DrawPath(1);
     pGraphics->PathCommandEnd();
     pGraphics->put_PenDashStyle(Aggplus::DashStyleSolid);
@@ -542,25 +582,8 @@ int main()
     Graphics_DrawPath(testGraphics, 256);
     Graphics_reset(testGraphics);
     */
-    /*
-    CBgraFrame* testFrame = Graphics_InitFrame(412, 151);
-    void* testGraphics = Graphics_Init(testFrame, 109.008, 39.9521);
-    Graphics_CoordTransformOffset(testGraphics, -160.294, -109.826);
-    Graphics_transform(testGraphics, 1, 0, 0, 1, 0, 0);
-    Graphics_SetIntegerGrid(testGraphics, false);
-    Graphics_transform(testGraphics, 1, 0, 0, -1, 42.625, 68.6708);
-    Graphics_p_width(testGraphics, 352.75);
-    Graphics_s(testGraphics);
-    Graphics_m(testGraphics, 0, 0);
-    Graphics_l(testGraphics, 108.744, 39.4229);
-    Graphics_p_color(testGraphics, 255, 0, 0, 255);
-    Graphics_DrawPath(testGraphics, 1);
-    Graphics_e(testGraphics);
-    Graphics_p_dash(testGraphics, 0, NULL);
-    Graphics_SetIntegerGrid(testGraphics, true);
-    Graphics_reset(testGraphics);
-    */
-    void* test = Graphics_Create(412, 151, 109.008, 39.9521);
+    //void* test = Graphics_Create(412, 151, 109.008, 39.9521);
+    void* test = Graphics_Create(210, 210, 55.5625, 55.5625);
     Graphics_TEST(test);
     int nHeight = Graphics_GetPageHeight(test, 1);
     int nWidth = Graphics_GetPageWidth(test, 1);

@@ -1,4 +1,5 @@
 #include "TableWriter.h"
+#include "TxBodyConverter.h"
 
 TableWriter::TableWriter(CTableElement *pTableElement) :
     m_pTableElement(pTableElement)
@@ -304,6 +305,8 @@ void TCell::FillTc(PPTX::Logic::TableCell &oTc)
 
     oTc.txBody = new PPTX::Logic::TxBody(L"a:txBody");
     FillTxBody(oTc.txBody.get2());
+    oTc.CellProperties = new PPTX::Logic::TableCellProperties;
+    // ToDo FillTableCellProperties(oTc.CellProperties.get2())
 
     if (m_pParent)
     {
@@ -361,17 +364,8 @@ void TCell::setGridSpan(int gridSpan)
 
 void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 {
-    oTxBody.bodyPr = new PPTX::Logic::BodyPr;
-    oTxBody.lstStyle = new PPTX::Logic::TextListStyle;
-//    if (m_pShape == nullptr)
-//    {
-        PPTX::Logic::Paragraph p;
-        p.endParaRPr = new PPTX::Logic::RunProperties;
-        p.endParaRPr->m_name = L"a:endParaRPr";
-        p.endParaRPr->lang = L"en-US";
-
-        oTxBody.Paragrs.push_back(p);
-//    }
+    TxBodyConverter txBodyConverter(&m_pShape->m_pShape->m_oText, TxBodyConverter::table);
+    txBodyConverter.FillTxBody(oTxBody);
 }
 
 void TCell::setRowSpan(int rowSpan)

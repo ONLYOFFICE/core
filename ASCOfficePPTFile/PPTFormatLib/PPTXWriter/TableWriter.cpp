@@ -27,15 +27,16 @@ void TableWriter::FillNvGraphicFramePr(PPTX::Logic::NvGraphicFramePr& oNvGFPr)
     oNvGFPr.cNvPr.name = m_pTableElement->m_sName;
 
     // not works in full
-    // graphicFrameLocks
+    oNvGFPr.cNvGraphicFramePr.noGrp = true;
 
     PPTX::Logic::Ext ext;
-    ext.uri = L"{D42A27DB-BD31-4B8C-83A1-F6EECF244321}";
+    ext.uri = L"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}";
     oNvGFPr.nvPr.extLst.push_back(ext);
 }
 
 void TableWriter::FillXfrm(PPTX::Logic::Xfrm &oXFRM)
 {
+    oXFRM.m_ns = L"p";
     double multip1 = m_pTableElement->m_bAnchorEnabled ? 1587.6 : 1;
     double multip2 = m_pTableElement->m_bAnchorEnabled ? 1273.0 : 1;
     oXFRM.offX = int(m_pTableElement->m_rcAnchor.left * multip1);
@@ -301,6 +302,9 @@ void TCell::FillTc(PPTX::Logic::TableCell &oTc)
     if (m_rowSpan > 1)
         oTc.RowSpan = m_rowSpan;
 
+    oTc.txBody = new PPTX::Logic::TxBody(L"a:txBody");
+    FillTxBody(oTc.txBody.get2());
+
     if (m_pParent)
     {
         FillMergeDirection(oTc);
@@ -353,6 +357,21 @@ void TCell::setParentDirection()
 void TCell::setGridSpan(int gridSpan)
 {
     m_gridSpan = gridSpan;
+}
+
+void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
+{
+    oTxBody.bodyPr = new PPTX::Logic::BodyPr;
+    oTxBody.lstStyle = new PPTX::Logic::TextListStyle;
+//    if (m_pShape == nullptr)
+//    {
+        PPTX::Logic::Paragraph p;
+        p.endParaRPr = new PPTX::Logic::RunProperties;
+        p.endParaRPr->m_name = L"a:endParaRPr";
+        p.endParaRPr->lang = L"en-US";
+
+        oTxBody.Paragrs.push_back(p);
+//    }
 }
 
 void TCell::setRowSpan(int rowSpan)

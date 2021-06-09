@@ -62,6 +62,8 @@ public:
     void setGridSpan(int gridSpan);
 
 private:
+    void FillTxBody(PPTX::Logic::TxBody &oTxBody);
+
     void FillMergeDirection(PPTX::Logic::TableCell& oTc);
     void setParentDirection();
 

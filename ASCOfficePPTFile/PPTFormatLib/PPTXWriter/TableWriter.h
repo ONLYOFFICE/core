@@ -54,8 +54,12 @@ public:
     eMergeDirection parentDirection() const;
     int getHeight()const;
 
+    void setPParent(TCell *pParent);
+    void setPShape(CShapeElement *pShape);
+
 private:
     void FillMergeDirection(PPTX::Logic::TableCell& oTc);
+    void setParentDirection();
 
 private:
     CShapeElement* m_pShape;
@@ -74,24 +78,33 @@ private:
 
 
 typedef std::vector<TCell> ProtoTableRow;
+typedef std::vector<ProtoTableRow> MProtoTable;
+
 
 class ProtoTable
 {
 public:
-    ProtoTable(std::vector<CShapeElement *> &arrCells);
-    static int getRowHight(ProtoTableRow& oTR);
+    ProtoTable(std::vector<CShapeElement *> &arrCells,
+               std::vector<CShapeElement*>& arrSpliters);
 
-    std::vector<ProtoTableRow> m_table;
+
+    static int getRowHight(ProtoTableRow& oTR);
+    static std::vector<int> getWidth(std::vector<CShapeElement *> &arrCells, bool isWidth = true);
+    static std::vector<int> getHeight(std::vector<CShapeElement *> &arrCells, bool isHeight = true);
+    MProtoTable getTable() const;
 
 private:
-    std::vector<int> getWidth(std::vector<CShapeElement *> &arrCells, bool isWidth = true);
-    std::vector<int> getHeight(std::vector<std::vector<CShapeElement*> >& oRows, bool isTop = true);
+    void initProtoTable();
+    bool fillProtoTable(std::vector<CShapeElement *> &arrCells, std::vector<CShapeElement *> &arrSpliters);
+    bool fillCells(std::vector<CShapeElement *> &arrCells);
+    void fillBorders(std::vector<CShapeElement *> &arrSpliters);
     std::vector<std::vector<CShapeElement *> >
-    getRows(std::vector<CShapeElement *> &arrCells);
+        getRows(std::vector<CShapeElement *> &arrCells);
 
 private:
     std::vector<int> m_arrLeft;
     std::vector<int> m_arrTop;
+    MProtoTable m_table;
 };
 
 class TableWriter
@@ -116,5 +129,6 @@ private:
 
 private:
     CTableElement *m_pTableElement;
+    nullable<ProtoTable> m_nPTable;
 };
 }

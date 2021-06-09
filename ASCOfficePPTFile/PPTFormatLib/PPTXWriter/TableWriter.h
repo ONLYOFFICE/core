@@ -57,6 +57,10 @@ public:
     void setPParent(TCell *pParent);
     void setPShape(CShapeElement *pShape);
 
+    void setRowSpan(int rowSpan);
+
+    void setGridSpan(int gridSpan);
+
 private:
     void FillMergeDirection(PPTX::Logic::TableCell& oTc);
     void setParentDirection();
@@ -70,6 +74,9 @@ private:
 
     // Proto table's coord
     int m_row, m_col;
+
+    int m_rowSpan;
+    int m_gridSpan;
 
     // Parent
     TCell* m_pParent;
@@ -87,8 +94,6 @@ public:
     ProtoTable(std::vector<CShapeElement *> &arrCells,
                std::vector<CShapeElement*>& arrSpliters);
 
-
-    static int getRowHight(ProtoTableRow& oTR);
     static std::vector<int> getWidth(std::vector<CShapeElement *> &arrCells, bool isWidth = true);
     static std::vector<int> getHeight(std::vector<CShapeElement *> &arrCells, bool isHeight = true);
     MProtoTable getTable() const;

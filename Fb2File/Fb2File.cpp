@@ -1589,7 +1589,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     return S_OK;
 }
 
-void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasTable);
+void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasP, bool bWasTable);
 void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bWasP, bool bWasTable)
 {
     int nDeath = oIndexHtml.GetDepth();
@@ -1760,9 +1760,9 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
             oXml.WriteString(L"</a>");
         }
         else if (sName == L"ul")
-            readLi(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            readLi(oXml, oIndexHtml, arrBinary, true, bWasP, bWasTable);
         else if (sName == L"ol")
-            readLi(oXml, oIndexHtml, arrBinary, false, bWasTable);
+            readLi(oXml, oIndexHtml, arrBinary, false, bWasP, bWasTable);
         else if (sName == L"img")
         {
             std::wstring sBinary;
@@ -1823,7 +1823,7 @@ std::wstring ToLowerRoman(int number)
     return L"";
 }
 
-void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasTable)
+void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasP, bool bWasTable)
 {
     int nNum = 1;
     while (oIndexHtml.MoveToNextAttribute())
@@ -1837,7 +1837,8 @@ void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oInde
     {
         if (oIndexHtml.GetName() == L"li")
         {
-            oXml.WriteString(L"<p>");
+            if (!bWasP)
+                oXml.WriteString(L"<p>");
             if (bUl)
                 oXml.AddCharSafe(183);
             else
@@ -1875,7 +1876,8 @@ void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oInde
             }
             oXml.WriteString(L" ");
             readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
-            oXml.WriteString(L"</p>");
+            if (!bWasP)
+                oXml.WriteString(L"</p>");
         }
     } while (oIndexHtml.ReadNextSiblingNode2(nDeath));
 }

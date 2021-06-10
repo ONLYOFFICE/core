@@ -77,6 +77,7 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
     */
 
     // круг с градиентной заливкой
+    /*
     CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
     pGraphics->SetCoordTransformOffset(-161.293, -94.833);
     pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
@@ -106,6 +107,35 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
     double testmas2[2] = {0, 1};
     pGraphics->put_BrushGradientColors(testmas1, testmas2, 2);
     pGraphics->put_BrushLinearAngle(dAngle);
+
+    pGraphics->DrawPath(256);
+    pGraphics->DrawPath(1);
+    pGraphics->PathCommandEnd();
+    pGraphics->put_PenDashStyle(Aggplus::DashStyleSolid);
+    pGraphics->put_IntegerGrid(true);
+    pGraphics->ResetTransform();
+    */
+
+    // треугольник с текстурной заливкой
+    CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
+    pGraphics->SetCoordTransformOffset(-149.304, -101.83);
+    pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
+    pGraphics->put_IntegerGrid(false);
+    pGraphics->SetTransform(1, 0, 0, 1, 39.7146, 27.1312);
+    pGraphics->put_PenSize(352.75 / 1000.0);
+    pGraphics->BrushBounds(0, 0, 53.1813, 48.9479);
+    pGraphics->PathCommandEnd();
+    pGraphics->PathCommandMoveTo(0, 48.9479);
+    pGraphics->PathCommandLineTo(26.5906, 0);
+    pGraphics->PathCommandLineTo(53.1813, 48.9479);
+    pGraphics->PathCommandClose();
+    pGraphics->put_PenColor(0 | (0 << 8) | (0 << 16));
+    pGraphics->put_PenAlpha(255);
+
+    pGraphics->put_BrushType(c_BrushTypeTexture);
+    pGraphics->put_BrushTexturePath(L"data:onlyoffice_hatch,AAAA/wAAAP8AAAD/AAAA//////////////////////8AAAD/AAAA/wAAAP8AAAD//////////////////////wAAAP8AAAD/AAAA/wAAAP//////////////////////AAAA/wAAAP8AAAD/AAAA////////////////////////////////////////////AAAA/wAAAP8AAAD/AAAA//////////////////////8AAAD/AAAA/wAAAP8AAAD//////////////////////wAAAP8AAAD/AAAA/wAAAP//////////////////////AAAA/wAAAP8AAAD/AAAA/w==");
+    pGraphics->put_BrushTextureMode(1);
+    pGraphics->put_BrushTextureAlpha(255);
 
     pGraphics->DrawPath(256);
     pGraphics->DrawPath(1);
@@ -583,7 +613,8 @@ int main()
     Graphics_reset(testGraphics);
     */
     //void* test = Graphics_Create(412, 151, 109.008, 39.9521);
-    void* test = Graphics_Create(210, 210, 55.5625, 55.5625);
+    //void* test = Graphics_Create(210, 210, 55.5625, 55.5625);
+    void* test = Graphics_Create(203, 187, 53.7104, 49.4771);
     Graphics_TEST(test);
     int nHeight = Graphics_GetPageHeight(test, 1);
     int nWidth = Graphics_GetPageWidth(test, 1);

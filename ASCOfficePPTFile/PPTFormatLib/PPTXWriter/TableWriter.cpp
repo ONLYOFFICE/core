@@ -239,7 +239,7 @@ MProtoTable ProtoTable::getTable() const
 
 void TableWriter::FillTblPr(PPTX::Logic::TableProperties &oTblPr)
 {
-    oTblPr.TableStyleId = L"{F5AB1C69-6EDB-4FF4-983F-18BD219EF322}";
+    oTblPr.TableStyleId = L"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}";
     oTblPr.FirstRow = true;
     oTblPr.BandRow = true;
 }
@@ -364,6 +364,9 @@ void TCell::setGridSpan(int gridSpan)
 
 void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 {
+    if (m_pShape == nullptr)
+        return;
+
     TxBodyConverter txBodyConverter(&m_pShape->m_pShape->m_oText, TxBodyConverter::table);
     txBodyConverter.FillTxBody(oTxBody);
 }

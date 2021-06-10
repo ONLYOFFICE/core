@@ -52,6 +52,14 @@ private:
     void ConvertShapeTxBody(PPTX::Logic::TxBody& oTxBody);
 
 private:
+    void FillParagraphs(std::vector<PPTX::Logic::Paragraph>& arrP, std::vector<CParagraph>& arrParagraphs);
+    void FillParagraph(PPTX::Logic::Paragraph& p, CParagraph& paragraph);
+    void FillRun(PPTX::Logic::Run& oRun, CSpan &oSpan);
+    void FillEndParaRPr(PPTX::Logic::RunProperties& oEndPr, CTextPFRun& oPFRun);
+    void FillPPr(PPTX::Logic::TextParagraphPr& oPPr, CTextPFRun& oPFRun);
+    void FillRPr(PPTX::Logic::RunProperties& oRPr, CTextCFRun& oCFRun);
+
+private:
     CTextAttributesEx* m_pText;
     eTxType m_txType;
 };

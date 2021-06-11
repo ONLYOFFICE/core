@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,37 +29,19 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#include "WritingElement.h"
+#include "../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
 
-#include "../Reader/Records.h"
-#include "TextCFException10.h"
-
-
-namespace PPT_FORMAT
+namespace OOX
 {
-class CRecordStyleTextProp10Atom : public CUnknownRecord
-{
-public:
-    std::vector<STextCFException10> rgStyleTextProp10;
-
-    virtual void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
-    {
-        m_oHeader			=	oHeader;
-        LONG lPos			=	0;
-        StreamUtils::StreamPosition ( lPos, pStream );
-
-        LONG lCurPos		=	0;
-        StreamUtils::StreamPosition ( lCurPos, pStream );
-
-        while ( lPos + (LONG)m_oHeader.RecLen > lCurPos)
-        {
-            STextCFException10 style;
-            style.ReadFromStream(pStream);
-            rgStyleTextProp10.push_back(style);
-
-            StreamUtils::StreamPosition ( lCurPos, pStream );
-        }
-        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
-    }
-};
+	void WritingElement::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		pReader->SkipRecord();
+	}
+	void WritingElement::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+	}
+	void WritingElement::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+	}
 }

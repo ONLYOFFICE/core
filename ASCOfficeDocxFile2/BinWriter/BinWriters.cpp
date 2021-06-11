@@ -6375,14 +6375,18 @@ void BinaryDocumentTableWriter::WriteDrawing(std::wstring* pXml, OOX::Logic::CDr
 			{
 				pGraphic->olePic->toPPTY(&m_oBcw.m_oStream);
 			}
-			else if (pGraphic->smartArt.is_init())
-			{
-				pGraphic->smartArt->LoadDrawing(&m_oBcw.m_oStream);
-				pGraphic->smartArt->toPPTY(&m_oBcw.m_oStream);
-			}
+			//else if (pGraphic->smartArt.is_init())
+			//{
+			//	pGraphic->smartArt->LoadDrawing(&m_oBcw.m_oStream);
+			//	pGraphic->smartArt->toPPTY(&m_oBcw.m_oStream);
+			//}
 			else if (pGraphic->element.is_init())
 			{
 				pGraphic->element.toPPTY(&m_oBcw.m_oStream);
+			}
+			else
+			{
+				pGraphic->toPPTY(&m_oBcw.m_oStream);
 			}
 			m_oBcw.m_oStream.EndRecord();
 			m_oBcw.m_oStream.EndRecord();

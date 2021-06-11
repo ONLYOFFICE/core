@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_SLIDES_SLIDE_SHAPETREE_INCLUDE_H_
-#define PPTX_SLIDES_SLIDE_SHAPETREE_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Logic/NvGrpSpPr.h"
@@ -204,6 +202,7 @@ namespace PPTX
 				}
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:grpSp";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:grpSp";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			name_ = L"dgm:grpSp";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:grpSp";
 				else
 				{
@@ -500,4 +499,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_SLIDES_SLIDE_SHAPETREE_INCLUDE_H_

@@ -343,7 +343,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\Namespaces.h" />
     <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\Unit.h" />
-    <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\WritingVector.h" />
     <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\File.h" />
     <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\SystemUtility.h" />
     <ClInclude Include="..\..\DesktopEditor\raster\exif.h" />
@@ -744,7 +743,6 @@
     <ClInclude Include="..\PPTXFormat\ViewProps\SlideViewPr.h" />
     <ClInclude Include="..\PPTXFormat\ViewProps\SorterViewPr.h" />
     <ClInclude Include="..\PPTXFormat\WrapperFile.h" />
-    <ClInclude Include="..\PPTXFormat\WrapperWritingElement.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

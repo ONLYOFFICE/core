@@ -358,12 +358,12 @@ void docx_serialize_shape_child(std::wostream & strm, _docx_drawing & val)
 }
 void docx_serialize_group_child(std::wostream & strm, _docx_drawing & val)
 {
-	std::wstring	name_node = L"wpg:wgp";
-	if (val.inGroup)name_node = L"wpg:grpSp";
+	std::wstring	node_name = L"wpg:wgp";
+	if (val.inGroup)node_name = L"wpg:grpSp";
 	
 	CP_XML_WRITER(strm)    
     {
-		CP_XML_NODE(name_node)
+		CP_XML_NODE(node_name)
 		{
 			CP_XML_NODE(L"wpg:cNvGrpSpPr")
 			{

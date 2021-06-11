@@ -145,7 +145,12 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("a:sp3d"));
+				std::wstring name_ = L"a:sp3d";
+
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:sp3d";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)		name_ = L"dgm:sp3d";
+
+				pWriter->StartNode(name_);
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("macro"), macro);
@@ -173,7 +178,7 @@ namespace PPTX
 					pWriter->EndNode(_T("a:contourClr"));	
 				}
 
-				pWriter->EndNode(_T("a:sp3d"));
+				pWriter->EndNode(name_);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

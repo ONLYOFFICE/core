@@ -382,7 +382,7 @@ void CSlicerCache::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
 			WritingElement_ReadAttributes_Read_ifChar( oReader, "id", m_oRId)
-			WritingElement_ReadAttributes_EndChar_No_NS( oReader )
+	WritingElement_ReadAttributes_EndChar_No_NS( oReader )
 }
 void CSlicerCache::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -398,6 +398,14 @@ void CSlicerCache::toXML(NSStringUtils::CStringBuilder& writer, const std::wstri
 	WritingNullable(m_oRId, writer.WriteAttribute(L"r:id", m_oRId->ToString()););
 	writer.EndAttributes();
 	writer.EndNode(sName);
+}
+void CSlicerCache::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+{
+
+}
+void CSlicerCache::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+{
+	pReader->SkipRecord();
 }
 void CSlicerRef::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -419,6 +427,14 @@ void CSlicerRef::toXML(NSStringUtils::CStringBuilder& writer, const std::wstring
 	WritingNullable(m_oRId, writer.WriteAttributeEncodeXml(L"r:id", m_oRId->ToString()););
 	writer.EndAttributes();
 	writer.EndNode(sName);
+}
+void CSlicerRef::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+{
+
+}
+void CSlicerRef::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+{
+	pReader->SkipRecord();
 }
 void CSlicerStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {

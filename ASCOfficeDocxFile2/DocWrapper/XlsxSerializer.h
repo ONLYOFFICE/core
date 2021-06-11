@@ -64,7 +64,7 @@ namespace BinXlsxRW {
         _UINT32 loadFromFile	(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedPath);
         _UINT32 saveToFile		(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
 		
-        bool saveChart          (NSBinPptxRW::CBinaryFileReader* pReader, long lLength, NSCommon::smart_ptr<OOX::File> &file, const int& nChartNumber);
+        bool saveChart          (NSBinPptxRW::CBinaryFileReader* pReader, long lLength, NSCommon::smart_ptr<OOX::File> &file);
 		
         void setFontDir			(const std::wstring& sFontDir);
         void setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir);

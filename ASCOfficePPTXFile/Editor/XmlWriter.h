@@ -630,6 +630,11 @@ namespace NSBinPptxRW
             if (value.IsInit())
                 WriteAttribute(strName, *value);
         }
+		AVSINLINE void WriteAttribute2(const std::wstring& strName, const nullable_uint& value)
+		{
+			if (value.IsInit())
+				WriteAttribute(strName, *value);
+		}
 		AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_sizet& value)
         {
             if (value.IsInit())

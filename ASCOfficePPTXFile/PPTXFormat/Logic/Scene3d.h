@@ -145,7 +145,12 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(L"a:scene3d");
+				std::wstring name_ = L"a:scene3d";
+
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:scene3d";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)		name_ = L"dgm:scene3d";
+				
+				pWriter->StartNode(name_);
 				
 				pWriter->StartAttributes();
 				pWriter->EndAttributes();
@@ -154,7 +159,7 @@ namespace PPTX
 				pWriter->Write(lightRig);
 				pWriter->Write(backdrop);
 
-				pWriter->EndNode(L"a:scene3d");	
+				pWriter->EndNode(name_);
 			}
 
 			nullable<Camera>	camera;

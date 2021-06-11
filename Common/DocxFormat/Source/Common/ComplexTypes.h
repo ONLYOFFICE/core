@@ -2149,8 +2149,6 @@ namespace ComplexTypes
 			virtual ~CPoint2D()
 			{
 			}
-
-		public:
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("x"), m_oX );
@@ -2173,7 +2171,6 @@ namespace ComplexTypes
 				return sResult;
 			}
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -2181,7 +2178,6 @@ namespace ComplexTypes
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("y"), m_oY )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
 			SimpleTypes::CCoordinate m_oX;
 			SimpleTypes::CCoordinate m_oY;
@@ -2199,9 +2195,6 @@ namespace ComplexTypes
 			virtual ~CPositiveSize2D()
 			{
 			}
-
-		public:
-
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("cx"), m_oCx );
@@ -2236,6 +2229,6 @@ namespace ComplexTypes
 		public:			
 			SimpleTypes::CPositiveCoordinate<> m_oCx;
 			SimpleTypes::CPositiveCoordinate<> m_oCy;
-		}; // Drawing
-    }
+		};
+    } // Drawing
 } // ComplexTypes

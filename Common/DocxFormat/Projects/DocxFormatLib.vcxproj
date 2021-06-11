@@ -260,8 +260,11 @@
     <ClInclude Include="..\Source\DocxFormat\ContentTypes.h" />
     <ClInclude Include="..\Source\DocxFormat\Core.h" />
     <ClInclude Include="..\Source\DocxFormat\CustomXml.h" />
+    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramColors.h" />
     <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramData.h" />
     <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramDrawing.h" />
+    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramLayout.h" />
+    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramQuickStyle.h" />
     <ClInclude Include="..\Source\DocxFormat\Document.h" />
     <ClInclude Include="..\Source\DocxFormat\Docx.h" />
     <ClInclude Include="..\Source\DocxFormat\DocxFlat.h" />
@@ -441,6 +444,11 @@
     <ClCompile Include="..\Source\DocxFormat\App.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Comments.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Core.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramColors.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramData.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramDrawing.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramLayout.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramQuickStyle.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Document.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Docx.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -578,6 +586,7 @@
     <ClCompile Include="..\Source\DocxFormat\Media\JsaProject.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Media\VbaProject.cpp" />
     <ClCompile Include="..\Source\DocxFormat\VmlDrawing.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\WritingElement.cpp" />
     <ClCompile Include="..\Source\MathEquation\MathEquation.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>

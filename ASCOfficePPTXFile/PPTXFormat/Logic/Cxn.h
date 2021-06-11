@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_CXN_INCLUDE_H_
-#define PPTX_LOGIC_CXN_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 
@@ -39,7 +37,6 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class Cxn : public WrapperWritingElement
 		{
 		public:
@@ -149,5 +146,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_CXN_INCLUDE_H_

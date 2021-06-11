@@ -76,6 +76,11 @@ SOURCES += \
     ../Source/DocxFormat/Document.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
     ../Source/DocxFormat/Drawing/DrawingExt.cpp \
+    ../Source/DocxFormat/ Diagram/DiagramColors.cpp \
+    ../Source/DocxFormat/Diagram/DiagramData.cpp \
+    ../Source/DocxFormat/Diagram/DiagramDrawing.cpp \
+    ../Source/DocxFormat/Diagram/DiagramLayout.cpp \
+    ../Source/DocxFormat/Diagram/DiagramQuickStyle.cpp \
     ../Source/Common/Align.cpp \
     ../Source/Common/Color.cpp \
     ../Source/Common/Index.cpp \
@@ -270,8 +275,11 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/ExternalLinks/ExternalLinks.h \
     ../Source/XlsxFormat/Worksheets/Sparkline.h \
     ../Source/XlsxFormat/Ole/OleObjects.h \
+    ../Source/DocxFormat/ Diagram/DiagramColors.h \
     ../Source/DocxFormat/Diagram/DiagramData.h \
     ../Source/DocxFormat/Diagram/DiagramDrawing.h \
+    ../Source/DocxFormat/Diagram/DiagramLayout.h \
+    ../Source/DocxFormat/Diagram/DiagramQuickStyle.h \
     ../Source/XlsxFormat/Pivot/PivotTable.h \
     ../Source/XlsxFormat/Pivot/PivotCacheDefinition.h \
     ../Source/XlsxFormat/Pivot/PivotCacheRecords.h \

@@ -76,7 +76,7 @@ public:
 	{
 		m_oHeader = oHeader;
 
-		for (int i = 0; i < m_oHeader.RecLen / 4; i++)
+		for (unsigned int i = 0; i < m_oHeader.RecLen / 4; i++)
 		{
 			SColorAtom color;
 			NSStreamReader::Read(pStream, color);

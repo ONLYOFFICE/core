@@ -1152,50 +1152,6 @@ namespace SimpleTypes
 	};
 
 	//--------------------------------------------------------------------------------
-	// DecimalNumber 17.18.10 (Part 1)
-	//--------------------------------------------------------------------------------		
-
-	template<int nDefValue = 0>
-	class CDecimalNumber : public CSimpleType<int, nDefValue>
-	{
-	public:
-		CDecimalNumber() {}
-
-        virtual int FromString(std::wstring &sValue)
-		{
-            try
-            {
-                this->m_eValue =  _wtoi( sValue.c_str() );
-                return this->m_eValue;
-            }
-            catch(...)
-            {
-            }
-
-            try
-            {
-                this->m_eValue = static_cast<int>(_wtoi64(sValue.c_str()));
-            }
-            catch(...)
-            {
-                this->m_eValue = 0;
-            }
-
-            return this->m_eValue;
-		}
-
-        virtual std::wstring ToString  () const
-		{
-            return std::to_wstring( this->m_eValue);
-		}
-
-
-		SimpleType_FromString           (int)
-		SimpleType_Operator_Equal       (CDecimalNumber)
-		SimpleTypes_AdditionalOpearators(CDecimalNumber)
-	};
-
-	//--------------------------------------------------------------------------------
 	// DecimalNumberOrPercent 17.18.11 (Part 1)
 	//--------------------------------------------------------------------------------		
 

@@ -171,6 +171,14 @@ namespace NSBinPptxRW
 	{
 		return m_strDstEmbed;
 	}
+	std::wstring CImageManager2::GetDstDiagram()
+	{
+		return m_strDstDiagram;
+	}
+	void CImageManager2::SetDstDiagram(const std::wstring& strDst)
+	{
+		m_strDstDiagram = strDst;
+	}	
 	int CImageManager2::IsDisplayedImage(const std::wstring& strInput)
 	{
 		int nRes = 0;
@@ -947,7 +955,15 @@ namespace NSBinPptxRW
 		m_arMainTables.push_back(oEntry);
 		//StartRecord(lType);
 	}
-
+	void CBinaryFileWriter::WriteRecord2(int type, OOX::WritingElement* pVal)
+	{
+		if (pVal)
+		{
+			StartRecord(type);
+			pVal->toPPTY(this);
+			EndRecord();
+		}
+	}
 	void CBinaryFileWriter::WriteReserved(size_t lCount)
 	{
 		CheckBufferSize((_UINT32)lCount);
@@ -2123,5 +2139,48 @@ namespace NSBinPptxRW
 			}
 		}
 		return nValue;
+	}
+
+	void CBinaryFileReader::SetDstContentRels()
+	{
+		++m_nCurrentRelsStack;
+
+		//чистить текущий m_pRels хорошо при последовательной записи автофигур в word.
+		//плохо в случае записи перезентаций, с момента перехода на единственный обьект m_pReader.
+		//пример: презетации записали несколько Rels, записываем chart, вызывается SetDstContentRels и трутся Rels презентаций
+		//if (0 == m_pReader->m_nCurrentRelsStack)
+		//{
+		//	m_pReader->m_pRels->Clear();
+		//	m_pReader->m_pRels->StartRels();
+		//}
+		//else
+		{
+			m_stackRels.push_back(m_pRels);
+
+			m_pRels = new NSBinPptxRW::CRelsGenerator(m_pRels->m_pManager);
+			m_pRels->StartRels();
+		}
+	}
+	void CBinaryFileReader::SaveDstContentRels(const std::wstring& bsRelsPath)
+	{
+		m_pRels->CloseRels();
+		m_pRels->SaveRels(bsRelsPath);
+
+		--m_nCurrentRelsStack;
+		if (-1 > m_nCurrentRelsStack)
+			m_nCurrentRelsStack = -1;
+
+		//if (-1 != m_pReader->m_nCurrentRelsStack)
+		{
+			int nIndex = (int)m_stackRels.size() - 1;
+
+			if (0 <= nIndex)
+			{
+				NSBinPptxRW::CRelsGenerator* pCur = m_pRels;
+				m_pRels = m_stackRels[nIndex];
+				m_stackRels.erase(m_stackRels.begin() + nIndex);
+				RELEASEOBJECT(pCur);
+			}
+		}
 	}
 }

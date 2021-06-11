@@ -281,7 +281,7 @@ public:
         LONG lCurLen(0);
         SRecordHeader ReadHeader;
 
-        while (lCurLen < m_oHeader.RecLen)
+        while (lCurLen < (LONG)m_oHeader.RecLen)
         {
             if ( ReadHeader.ReadFromStream(pStream) == false)
                 break;

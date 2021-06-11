@@ -1303,7 +1303,7 @@ void Animation::InitTimingTags(PPTX::Logic::Timing &oTiming)
         PPTX::Logic::BldP *pBldP = new PPTX::Logic::BldP();
         pBldP->spid = std::to_wstring(oldAnim.shapeId);
         pBldP->grpId = false;
-        pBldP->animBg = (bool)(oldAnim.anim->m_AnimationAtom.m_fAnimateBg);
+        pBldP->animBg = (bool)(oldAnim.anim->m_AnimationAtom.m_fAnimateBg != 0);
 
         oBuildNodeBase.m_node = pBldP;
         oTiming.bldLst->list.push_back(oBuildNodeBase);

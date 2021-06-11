@@ -212,7 +212,8 @@ namespace PPTX
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:sp";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:sp";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:sp";
-				
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			name_ = L"dgm:sp";
+
 			pWriter->StartNode(name_);
 
 			pWriter->StartAttributes();
@@ -249,6 +250,7 @@ namespace PPTX
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			style->m_namespace = L"xdr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		style->m_namespace = L"a";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	style->m_namespace = L"cdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			style->m_namespace = L"dgm:sp";
 
                 pWriter->Write(style);
             }
@@ -297,8 +299,10 @@ namespace PPTX
 				{
 					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	
 						txBody->m_name = L"xdr:txBody";
-					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	
+					else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	
 						txBody->m_name = L"cdr:txBody";
+					else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)
+						txBody->m_name = L"dgm:txBody";
 				}
 				pWriter->Write(txBody);
 			}

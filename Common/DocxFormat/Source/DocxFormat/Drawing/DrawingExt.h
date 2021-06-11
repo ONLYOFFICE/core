@@ -139,7 +139,7 @@ namespace OOX
 
 		public:
 
-            nullable<std::wstring> m_oRelId;
+            nullable<OOX::RId> m_oRelId;
 		};
 
 

@@ -1642,7 +1642,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 	if (!result) return;
 
 	nullable<OOX::RId>		id_data;
-	nullable<std::wstring>	id_drawing;
+	nullable<OOX::RId>		id_drawing;
 
 	smart_ptr<OOX::File>	oFileData;
 	smart_ptr<OOX::File>	oFileDrawing;
@@ -1659,13 +1659,13 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 		if (oFileData.is_init())
 		{
 			pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.GetPointer());										
-			if (pDiagramData)
+			if ((pDiagramData) && (pDiagramData->m_oDataModel.IsInit()))
 			{
-				for (size_t i = 0; (pDiagramData->m_oExtLst.IsInit()) && i < pDiagramData->m_oExtLst->m_arrExt.size(); i++)
+				for (size_t i = 0; (pDiagramData->m_oDataModel->m_oExtLst.IsInit()) && i < pDiagramData->m_oDataModel->m_oExtLst->m_arrExt.size(); i++)
 				{
-					if (pDiagramData->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
+					if (pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
 					{
-						id_drawing = pDiagramData->m_oExtLst->m_arrExt[i]->m_oDataModelExt->m_oRelId;
+						id_drawing = pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[i]->m_oDataModelExt->m_oRelId;
 						break;
 					}
 				}
@@ -1778,11 +1778,11 @@ void CDrawingConverter::doc_LoadDrawing(PPTX::Logic::SpTreeElem *elem, XmlUtils:
 				XmlUtils::CXmlNode oNodeContent;
 				oChilds.GetAt(0, oNodeContent);
 
-				if (L"dgm:relIds" == oNodeContent.GetName() && m_pBinaryWriter->m_pCurrentContainer->is_init())
+/*				if (L"dgm:relIds" == oNodeContent.GetName() && m_pBinaryWriter->m_pCurrentContainer->is_init())
 				{
 					doc_LoadDiagram(elem, oNodeContent, pMainProps, true);
 				}
-				else if (L"wpc:wpc" == oNodeContent.GetName())
+				else */if (L"wpc:wpc" == oNodeContent.GetName())
 				{
 					PPTX::Logic::SpTree* pTree = new PPTX::Logic::SpTree();
 
@@ -5103,23 +5103,29 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 				oXmlWriter.WriteString(L"<w:drawing>");
 				oXmlWriter.WriteString(strMainProps);
 
+				bool bAddGraphicData = false;
 				if (oElem.is<PPTX::Logic::SpTree>())
 				{
+					bAddGraphicData = true;
 					oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
 		<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\">");
 				}
 				else if (oElem.is<PPTX::Logic::Pic>())
 				{
+					bAddGraphicData = true;
 					oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
 		<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
 				}
-				else
+				else if (oElem.is<PPTX::Logic::Shape>())
 				{
+					bAddGraphicData = true;
 					oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
 		<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
 				}
-				oElem.toXmlWriter(&oXmlWriter);
-				oXmlWriter.WriteString(L"</a:graphicData></a:graphic>");
+				oElem.toXmlWriter(&oXmlWriter); 
+				
+				if (bAddGraphicData)
+					oXmlWriter.WriteString(L"</a:graphicData></a:graphic>");
 
 				oXmlWriter.WriteString(strMainPropsTail);
 				oXmlWriter.WriteString(bIsInline ? L"</wp:inline>" : L"</wp:anchor>");
@@ -5873,51 +5879,13 @@ HRESULT CDrawingConverter::GetRecordXml(LONG lStart, LONG lLength, LONG lRecType
 	return S_OK;
 }
 
-HRESULT CDrawingConverter::SetDstContentRels()
+void CDrawingConverter::SetDstContentRels()
 {
-	++m_pReader->m_nCurrentRelsStack;
-
-	//чистить текущий m_pRels хорошо при последовательной записи автофигур в word.
-	//плохо в случае записи перезентаций, с момента перехода на единственный обьект m_pReader.
-	//пример: презетации записали несколько Rels, записываем chart, вызывается SetDstContentRels и трутся Rels презентаций
-	//if (0 == m_pReader->m_nCurrentRelsStack)
-	//{
-	//	m_pReader->m_pRels->Clear();
-	//	m_pReader->m_pRels->StartRels();
-	//}
-	//else
-	{
-		m_pReader->m_stackRels.push_back(m_pReader->m_pRels);
-		
-		NSBinPptxRW::CRelsGenerator* pGenerator = new NSBinPptxRW::CRelsGenerator(m_pReader->m_pRels->m_pManager);
-		m_pReader->m_pRels = pGenerator;
-		m_pReader->m_pRels->StartRels();
-	}
-	return S_OK;
+	 m_pReader->SetDstContentRels();
 }
-HRESULT CDrawingConverter::SaveDstContentRels(const std::wstring& bsRelsPath)
+void CDrawingConverter::SaveDstContentRels(const std::wstring& bsRelsPath)
 {
-	m_pReader->m_pRels->CloseRels();
-	m_pReader->m_pRels->SaveRels(bsRelsPath);
-
-	--m_pReader->m_nCurrentRelsStack;
-	if (-1 > m_pReader->m_nCurrentRelsStack)
-		m_pReader->m_nCurrentRelsStack = -1;
-
-	//if (-1 != m_pReader->m_nCurrentRelsStack)
-	{
-		int nIndex = (int)m_pReader->m_stackRels.size() - 1;
-
-		if (0 <= nIndex)
-		{
-			NSBinPptxRW::CRelsGenerator* pCur = m_pReader->m_pRels;
-			m_pReader->m_pRels = m_pReader->m_stackRels[nIndex];
-			m_pReader->m_stackRels.erase(m_pReader->m_stackRels.begin() + nIndex);
-			RELEASEOBJECT(pCur);								
-		}
-	}
-
-	return S_OK;
+	m_pReader->SaveDstContentRels(bsRelsPath);
 }
 void CDrawingConverter::WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode, unsigned int* lId)
 {

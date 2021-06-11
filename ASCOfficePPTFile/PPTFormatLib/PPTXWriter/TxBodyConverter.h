@@ -58,7 +58,10 @@ private:
     void FillEndParaRPr(PPTX::Logic::RunProperties& oEndPr, CTextPFRun& oPFRun);
     void FillPPr(PPTX::Logic::TextParagraphPr& oPPr, CTextPFRun& oPFRun);
     void FillRPr(PPTX::Logic::RunProperties& oRPr, CTextCFRun& oCFRun);
-
+    void FillLatin(PPTX::Logic::TextFont& oLatin, CFontProperty &font);
+    void FillCS(PPTX::Logic::TextFont& oCs, CFontProperties& font);
+    void FillEffectLst(PPTX::Logic::EffectProperties &oEList, CTextCFRun& oCFRun);
+    void FillSolidFill(PPTX::Logic::UniFill& oUF, CColor& oColor);
 private:
     CTextAttributesEx* m_pText;
     eTxType m_txType;

@@ -90,36 +90,36 @@ void TxBodyConverter::FillEndParaRPr(PPTX::Logic::RunProperties &oEndPr, CTextPF
     oEndPr.lang = L"en-US";
     oEndPr.dirty = true;
 
-//    if ((oPFRun.Size.is_init()) && (oPFRun.Size.get() > 0) && (oCFRun.Size.get() < 4001))
-//    {
-//        oEndPr.sz = int(100 * oPFRun.Size.get());
-//    } else
-//    {
-//        oEndPr.sz = 18;
-//    }
-//    if (oCFRun.BaseLineOffset.is_init())
-//    {
-//        oEndPr.baseline = int(1000 * oCFRun.BaseLineOffset.get());
-//    }
-//    if (oCFRun.FontBold.is_init())
-//    {
-//        oEndPr.b = oCFRun.FontBold.get();
-//    }
-//    if (oCFRun.FontItalic.is_init())
-//    {
-//        oEndPr.i = oCFRun.FontItalic.get();
-//    }
-//    if (oCFRun.FontUnderline.is_init())
-//    {
-//        oEndPr.u = new PPTX::Limit::TextUnderline;
-//        oEndPr.u->set(oCFRun.FontUnderline.get() ? L"sng" : L"none");
-//    }
-//    if (oCFRun.Language.is_init())
-//    {
-//        std::wstring str_lang = msLCID2wstring(oCFRun.Language.get());
+    //    if ((oPFRun.Size.is_init()) && (oPFRun.Size.get() > 0) && (oCFRun.Size.get() < 4001))
+    //    {
+    //        oEndPr.sz = int(100 * oPFRun.Size.get());
+    //    } else
+    //    {
+    //        oEndPr.sz = 18;
+    //    }
+    //    if (oCFRun.BaseLineOffset.is_init())
+    //    {
+    //        oEndPr.baseline = int(1000 * oCFRun.BaseLineOffset.get());
+    //    }
+    //    if (oCFRun.FontBold.is_init())
+    //    {
+    //        oEndPr.b = oCFRun.FontBold.get();
+    //    }
+    //    if (oCFRun.FontItalic.is_init())
+    //    {
+    //        oEndPr.i = oCFRun.FontItalic.get();
+    //    }
+    //    if (oCFRun.FontUnderline.is_init())
+    //    {
+    //        oEndPr.u = new PPTX::Limit::TextUnderline;
+    //        oEndPr.u->set(oCFRun.FontUnderline.get() ? L"sng" : L"none");
+    //    }
+    //    if (oCFRun.Language.is_init())
+    //    {
+    //        std::wstring str_lang = msLCID2wstring(oCFRun.Language.get());
 
-//        if (str_lang.length() > 0)
-//            oEndPr.lang = msLCID2wstring(oCFRun.Language.get());
+    //        if (str_lang.length() > 0)
+    //            oEndPr.lang = msLCID2wstring(oCFRun.Language.get());
     //    }
 }
 
@@ -201,4 +201,52 @@ void TxBodyConverter::FillRPr(PPTX::Logic::RunProperties &oRPr, CTextCFRun &oCFR
         if (str_lang.length() > 0)
             oRPr.lang = msLCID2wstring(oCFRun.Language.get());
     }
+
+    FillEffectLst(oRPr.EffectList, oCFRun);
+    if (oCFRun.Color.is_init())
+        FillSolidFill(oRPr.Fill, oCFRun.Color.get());
+
+
+    if (oCFRun.font.font.is_init())
+    {
+        oRPr.latin = new PPTX::Logic::TextFont;
+        FillLatin(oRPr.latin.get2(), oCFRun.font.font.get());
+    }
+}
+
+void TxBodyConverter::FillLatin(PPTX::Logic::TextFont &oLatin, CFontProperty &font)
+{
+    oLatin.typeface = font.Name;
+    oLatin.charset = std::to_wstring(font.Charset);
+    oLatin.pitchFamily = std::to_wstring(font.PitchFamily);
+    oLatin.m_name = L"a:latin";
+}
+
+void TxBodyConverter::FillCS(PPTX::Logic::TextFont &oCs, CFontProperties &font)
+{
+    //    FillLatin(oCs, font);
+    oCs.m_name = L"a:cs";
+}
+
+void TxBodyConverter::FillEffectLst(PPTX::Logic::EffectProperties &oEList, CTextCFRun &oCFRun)
+{
+    if (oCFRun.FontShadow.is_init() && oCFRun.FontShadow.get())
+    {
+        auto pELst = new PPTX::Logic::EffectLst;
+        pELst->outerShdw = new PPTX::Logic::OuterShdw;
+        pELst->outerShdw->blurRad = 38100;
+        pELst->outerShdw->dist = 38100;
+        pELst->outerShdw->dir = 2700000;
+        pELst->outerShdw->algn = new PPTX::Limit::RectAlign;
+        pELst->outerShdw->algn->set(L"tl");
+        pELst->outerShdw->Color.SetRGBColor(0, 0, 0);
+        oEList.List.reset(pELst);
+    }
+}
+
+void TxBodyConverter::FillSolidFill(PPTX::Logic::UniFill &oUF, CColor &oColor)
+{
+    auto pSolidFill = new PPTX::Logic::SolidFill;
+    pSolidFill->Color.SetRGBColor(oColor.GetR(), oColor.GetG(), oColor.GetB());
+    oUF.Fill.reset(pSolidFill);
 }

@@ -148,6 +148,7 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics, BYTE* texture, int length)
     */
 
     // изображение
+    /*
     CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
     pGraphics->SetCoordTransformOffset(-113.3, -75.565);
     pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
@@ -175,6 +176,37 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics, BYTE* texture, int length)
     pGraphics->DrawPath(256);
     pGraphics->PathCommandEnd();
     pGraphics->put_PenDashStyle(Aggplus::DashStyleSolid);
+    pGraphics->put_IntegerGrid(true);
+    pGraphics->ResetTransform();
+    */
+
+    // текст
+    CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
+    pGraphics->SetCoordTransformOffset(-210.583, -111.159);
+    pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
+    pGraphics->put_IntegerGrid(false);
+    pGraphics->SetTransform(1, 0, 0, 1, 58.4824, 30.8707);
+    pGraphics->put_BrushType(c_BrushTypeSolid);
+    pGraphics->put_BrushColor1(0 | (0 << 8) | (0 << 16));
+    pGraphics->put_BrushAlpha1(255);
+
+    double DpiX, DpiY;
+    pGraphics->get_DpiX(&DpiX);
+    pGraphics->get_DpiY(&DpiY);
+    NSFonts::IApplicationFonts* m_pApplicationFonts = NSFonts::NSApplication::Create();
+    NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
+    pGraphics->SetFontManager(pManager);
+    pGraphics->GetFontManager()->LoadFontByName(L"Arial", texture, length, 11, 0, DpiX, DpiY);
+    pGraphics->put_FontName     (L"Arial");
+    pGraphics->put_FontFaceIndex(-1);
+    pGraphics->put_FontSize     (11);
+    pGraphics->put_FontStyle    (0);
+
+    pGraphics->CommandDrawTextCHAR('t', 0, 3.63992, 0, 0);
+    pGraphics->CommandDrawTextCHAR('e', 1.07813, 3.63992, 0, 0);
+    pGraphics->CommandDrawTextCHAR('s', 3.23627, 3.63992, 0, 0);
+    pGraphics->CommandDrawTextCHAR('t', 5.17651, 3.63992, 0, 0);
+
     pGraphics->put_IntegerGrid(true);
     pGraphics->ResetTransform();
 
@@ -601,60 +633,17 @@ WASM_EXPORT void  Graphics_drawHorLine(void* graphics, BYTE align, double y, dou
 #ifdef TEST_AS_EXECUTABLE
 int main()
 {
-    /*
-    CBgraFrame* testFrame = Graphics_InitFrame(211, 119);
-    void* testGraphics = Graphics_Init(testFrame, 55.8251, 31.2208);
-    Graphics_CoordTransformOffset(testGraphics, -210.583, -111.159);
-    Graphics_transform(testGraphics, 1, 0, 0, 1, 0, 0);
-    Graphics_SetIntegerGrid(testGraphics, false);
-    Graphics_transform(testGraphics, 1, 0, 0, 1, 58.4824, 30.8707);
-    Graphics_b_color1(testGraphics, 0, 0, 0, 255);
-
-    BYTE* pData = NULL;
-    DWORD nBytesCount;
-    NSFile::CFileBinary oFile;
-    if (!oFile.ReadAllBytes(L"C:/Windows/Fonts/arial.ttf", &pData, nBytesCount))
-        return 1;
-    oFile.CloseFile();
-
-    Graphics_SetFont(testGraphics, pData, nBytesCount, "Arial", -1, 11, 0);
-    Graphics_FillText(testGraphics, 0, 3.63992, 't');
-    Graphics_SetFont(testGraphics, pData, nBytesCount, "Arial", -1, 11, 0);
-    Graphics_FillText(testGraphics, 1.07813, 3.63992, 'e');
-    Graphics_SetFont(testGraphics, pData, nBytesCount, "Arial", -1, 11, 0);
-    Graphics_FillText(testGraphics, 3.23627, 3.63992, 's');
-    Graphics_SetFont(testGraphics, pData, nBytesCount, "Arial", -1, 11, 0);
-    Graphics_FillText(testGraphics, 5.17651, 3.63992, 't');
-
-    RELEASEARRAYOBJECTS(pData);
-    Graphics_SetIntegerGrid(testGraphics, true);
-    Graphics_reset(testGraphics);
-    */
-    /*
-    CBgraFrame* testFrame = Raster_Init(1024, 1024);
-    void* testGraphics = Graphics_Init(testFrame, 256, 256);
-    Graphics_transform(testGraphics, 1, 0, 0, 1, 0, 0);
-
-    BYTE* pData = NULL;
-    DWORD nBytesCount;
-    NSFile::CFileBinary oFile;
-    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.png", &pData, nBytesCount))
-        return 1;
-    oFile.CloseFile();
-    Graphics_drawImage(testGraphics, pData, nBytesCount, 0, 0, 256, 256);
-
-    Graphics_DrawPath(testGraphics, 256);
-    Graphics_reset(testGraphics);
-    */
     //void* test = Graphics_Create(412, 151, 109.008, 39.9521);
     //void* test = Graphics_Create(210, 210, 55.5625, 55.5625);
     //void* test = Graphics_Create(203, 187, 53.7104, 49.4771);
-    void* test = Graphics_Create(265, 265, 70.1146, 70.1146);
+    //void* test = Graphics_Create(265, 265, 70.1146, 70.1146);
+    void* test = Graphics_Create(211, 119, 55.8251, 31.2208);
 
     BYTE* pData = NULL;
     DWORD nBytesCount;
     NSFile::CFileBinary oFile;
-    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.png", &pData, nBytesCount))
+    //if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.png", &pData, nBytesCount))
+    if (!oFile.ReadAllBytes(L"C:/Windows/Fonts/arial.ttf", &pData, nBytesCount))
         return 1;
     oFile.CloseFile();
 

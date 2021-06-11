@@ -9,6 +9,10 @@ if not base.is_file("raster.o"):
 
 base.configure_common_apps()
 
+if base.is_dir("./temp"):
+    base.delete_dir("./temp")
+base.create_dir("./temp")
+
 # fetch emsdk
 command_prefix = "" if ("windows" == base.host_platform()) else "./"
 if not base.is_dir("emsdk"):
@@ -19,8 +23,7 @@ if not base.is_dir("emsdk"):
     os.chdir("../")
 
 # compile
-compiler_flags = ["-o graphics.js",
-                  "-O3",
+compiler_flags = ["-O3",
                   "-fno-rtti",
                   "-s WASM=1",
                   "-s ALLOW_MEMORY_GROWTH=1",
@@ -55,11 +58,11 @@ input_freetype_sources = ["base/ftinit.c", "base/ftlcdfil.c", "base/ftobjs.c", "
 libCommon_src_path = "../../../common/"
 input_common_sources = ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp"]
 
-#libUnicodeConverter_src_path = "../../../../UnicodeConverter/"
-#input_unicodeconverter_sources = ["UnicodeConverter.cpp"]
+libUnicodeConverter_src_path = "../../../../UnicodeConverter/"
+input_unicodeconverter_sources = ["UnicodeConverter.cpp"]
 
-#libIcu_src_path = "../../../../Common/3dParty/icu/icu/source/common/"
-#input_icu_sources = ["ucnv.c", "ustr_wcs.cpp"]
+libIcu_src_path = "../../../../Common/3dParty/icu/icu/source/common/"
+input_icu_sources = ["ucnv.c", "ustr_wcs.cpp", "ucnv_err.c", "ucnv_bld.cpp", "ustrtrns.cpp", "ucnv_cb.c", "udata.cpp", "ucnv_io.cpp", "uhash.c", "udatamem.c", "cmemory.c", "ustring.cpp", "umutex.cpp", "putil.cpp", "ustr_cnv.cpp", "ucnvmbcs.cpp", "ucnvlat1.c", "ucnv_u16.c", "ucnv_u8.c", "ucnv_u32.c", "ucnv_u7.c", "ucln_cmn.cpp", "ucnv2022.cpp", "ucnv_lmb.c", "ucnvhz.c", "ucnvscsu.c", "ucnvisci.c", "ucnvbocu.cpp", "ucnv_ct.c", "ucnv_cnv.c", "stringpiece.cpp", "charstr.cpp", "umapfile.c", "ucmndata.c", "ucnv_ext.cpp", "uobject.cpp", "umath.c"]
 
 # sources
 sources = []
@@ -73,39 +76,61 @@ for item in input_freetype_sources:
     sources.append(libFreetype_src_path + item)
 for item in input_common_sources:
     sources.append(libCommon_src_path + item)
-#for item in input_unicodeconverter_sources:
-#    sources.append(libUnicodeConverter_src_path + item)
-#for item in input_icu_sources:
-#    sources.append(libIcu_src_path + item)
+for item in input_unicodeconverter_sources:
+    sources.append(libUnicodeConverter_src_path + item)
+# icu
 sources.append("raster.o")
 sources.append("wasm/src/graphics.cpp")
 
 compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/include")
-compiler_flags.append("-D__linux__ -D_LINUX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_USE_ZLIB -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE")
+compiler_flags.append("-D__linux__ -D_LINUX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_USE_ZLIB -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE -DU_COMMON_IMPLEMENTATION -DMAP_IMPLEMENTATION=MAP_390DLL")
 
 # arguments
 arguments = ""
 for item in compiler_flags:
     arguments += (item + " ")
 
-arguments += "-s EXPORTED_FUNCTIONS=\"["
-for item in exported_functions:
-    arguments += ("'" + item + "',")
-arguments = arguments[:-1]
-arguments += "]\" "
 
-for item in sources:
-    arguments += (item + " ")
 
 # command
 windows_bat = []
 if base.host_platform() == "windows":
-    windows_bat.append("call emsdk/emsdk_env.bat")    
-    windows_bat.append("call emcc " + arguments)
+    windows_bat.append("call emsdk/emsdk_env.bat") 
+
+    icu = ""
+    for item in input_icu_sources:
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libIcu_src_path + item) 
+        icu += ("temp/" + item + ".o ")
+
+    arguments += "-s EXPORTED_FUNCTIONS=\"["
+    for item in exported_functions:
+        arguments += ("'" + item + "',")
+    arguments = arguments[:-1]
+    arguments += "]\" "
+
+    for item in sources:
+        arguments += (item + " ")
+
+    windows_bat.append("call emcc -o graphics.js " + arguments + icu)
 else:
     windows_bat.append("#!/bin/bash")
     windows_bat.append("source ./emsdk/emsdk_env.sh")
-    windows_bat.append("emcc " + arguments)
+
+    icu = ""
+    for item in input_icu_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libIcu_src_path + item) 
+        icu += ("temp/" + item + ".o ")
+
+    arguments += "-s EXPORTED_FUNCTIONS=\"["
+    for item in exported_functions:
+        arguments += ("'" + item + "',")
+    arguments = arguments[:-1]
+    arguments += "]\" "
+
+    for item in sources:
+        arguments += (item + " ")
+    
+    windows_bat.append("emcc -o graphics.js " + arguments + icu)
 base.run_as_bat(windows_bat)
 
 # finalize
@@ -128,4 +153,5 @@ base.copy_file("./wasm/js/code_graphics.js", "./deploy/code_graphics.js")
 
 base.delete_file("graphics.js")
 base.delete_file("graphics.wasm")
+base.delete_dir("./temp")
 # base.delete_file("raster.o")

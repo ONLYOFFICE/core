@@ -63,6 +63,7 @@ public:
 
 private:
     void FillTxBody(PPTX::Logic::TxBody &oTxBody);
+    void FillTcPr(PPTX::Logic::TableCellProperties& oTcPr);
 
     void FillMergeDirection(PPTX::Logic::TableCell& oTc);
     void setParentDirection();

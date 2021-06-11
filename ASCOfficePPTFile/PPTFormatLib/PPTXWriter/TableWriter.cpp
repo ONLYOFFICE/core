@@ -305,14 +305,15 @@ void TCell::FillTc(PPTX::Logic::TableCell &oTc)
 
     oTc.txBody = new PPTX::Logic::TxBody(L"a:txBody");
     FillTxBody(oTc.txBody.get2());
-    oTc.CellProperties = new PPTX::Logic::TableCellProperties;
-    // ToDo FillTableCellProperties(oTc.CellProperties.get2())
 
     if (m_pParent)
     {
         FillMergeDirection(oTc);
         return;
     }
+
+    oTc.CellProperties = new PPTX::Logic::TableCellProperties;
+    FillTcPr(oTc.CellProperties.get2());
 }
 
 TCell::eMergeDirection TCell::parentDirection() const
@@ -369,6 +370,15 @@ void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 
     TxBodyConverter txBodyConverter(&m_pShape->m_pShape->m_oText, TxBodyConverter::table);
     txBodyConverter.FillTxBody(oTxBody);
+}
+
+void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
+{
+    auto pSolidFill = new PPTX::Logic::SolidFill;
+    auto& clr = m_pShape->m_oBrush.Color1;
+
+    pSolidFill->Color.SetRGBColor(clr.GetR(), clr.GetG(), clr.GetB());
+    oTcPr.Fill.Fill.reset(pSolidFill);
 }
 
 void TCell::setRowSpan(int rowSpan)

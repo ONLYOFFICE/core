@@ -76,7 +76,7 @@ SOURCES += \
     ../Source/DocxFormat/Document.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
     ../Source/DocxFormat/Drawing/DrawingExt.cpp \
-    ../Source/DocxFormat/ Diagram/DiagramColors.cpp \
+    ../Source/DocxFormat/Diagram/DiagramColors.cpp \
     ../Source/DocxFormat/Diagram/DiagramData.cpp \
     ../Source/DocxFormat/Diagram/DiagramDrawing.cpp \
     ../Source/DocxFormat/Diagram/DiagramLayout.cpp \

@@ -3,6 +3,7 @@
 
 #include "../../../../GraphicsRenderer.h"
 #include "../../../../pro/Graphics.h"
+#include "../../../../../common/Base64.h"
 #include "graphics.h"
 
 #ifdef _WIN32
@@ -52,7 +53,7 @@ WASM_EXPORT BYTE* Graphics_GetPage(void* graphics, int nPageIndex, int nRasterW,
     CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
     return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH);
 }
-WASM_EXPORT bool  Graphics_TEST(void* graphics)
+WASM_EXPORT bool  Graphics_TEST(void* graphics, BYTE* texture, int length)
 {
     CGraphicsFileDrawing* ptGraphics = (CGraphicsFileDrawing*)graphics;
 
@@ -117,6 +118,7 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
     */
 
     // треугольник с текстурной заливкой
+    /*
     CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
     pGraphics->SetCoordTransformOffset(-149.304, -101.83);
     pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
@@ -139,6 +141,38 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
 
     pGraphics->DrawPath(256);
     pGraphics->DrawPath(1);
+    pGraphics->PathCommandEnd();
+    pGraphics->put_PenDashStyle(Aggplus::DashStyleSolid);
+    pGraphics->put_IntegerGrid(true);
+    pGraphics->ResetTransform();
+    */
+
+    // изображение
+    CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
+    pGraphics->SetCoordTransformOffset(-113.3, -75.565);
+    pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
+    pGraphics->put_IntegerGrid(false);
+    pGraphics->SetTransform(1, 0, 0, 1, 30.0038, 20.0025);
+    pGraphics->BrushBounds(0, 0, 70.0358, 70.0358);
+    pGraphics->PathCommandEnd();
+    pGraphics->PathCommandMoveTo(0, 0);
+    pGraphics->PathCommandLineTo(70.0358, 0);
+    pGraphics->PathCommandLineTo(70.0358, 70.0358);
+    pGraphics->PathCommandLineTo(0, 70.0358);
+    pGraphics->PathCommandClose();
+
+    int nBase64BufferLen = NSBase64::Base64EncodeGetRequiredLength(length);
+    BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen + 64];
+    if (true == NSBase64::Base64Encode(texture, length, pbBase64Buffer, &nBase64BufferLen))
+    {
+        pGraphics->put_BrushType(c_BrushTypeTexture);
+        pGraphics->put_BrushTexturePath(L"data:," + NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pbBase64Buffer, nBase64BufferLen));
+        pGraphics->put_BrushTextureMode(0);
+        pGraphics->put_BrushTextureAlpha(255);
+    }
+    RELEASEARRAYOBJECTS(pbBase64Buffer);
+
+    pGraphics->DrawPath(256);
     pGraphics->PathCommandEnd();
     pGraphics->put_PenDashStyle(Aggplus::DashStyleSolid);
     pGraphics->put_IntegerGrid(true);
@@ -614,8 +648,17 @@ int main()
     */
     //void* test = Graphics_Create(412, 151, 109.008, 39.9521);
     //void* test = Graphics_Create(210, 210, 55.5625, 55.5625);
-    void* test = Graphics_Create(203, 187, 53.7104, 49.4771);
-    Graphics_TEST(test);
+    //void* test = Graphics_Create(203, 187, 53.7104, 49.4771);
+    void* test = Graphics_Create(265, 265, 70.1146, 70.1146);
+
+    BYTE* pData = NULL;
+    DWORD nBytesCount;
+    NSFile::CFileBinary oFile;
+    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.png", &pData, nBytesCount))
+        return 1;
+    oFile.CloseFile();
+
+    Graphics_TEST(test, pData, nBytesCount);
     int nHeight = Graphics_GetPageHeight(test, 1);
     int nWidth = Graphics_GetPageWidth(test, 1);
     BYTE* res = Graphics_GetPage(test, 1, nWidth, nHeight);
@@ -627,6 +670,7 @@ int main()
 
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     Graphics_Destroy(test);
+    RELEASEARRAYOBJECTS(pData);
     return 0;
 }
 #endif

@@ -10,7 +10,7 @@
         this.isInit = false;
 		this.engine = 0;
     
-        this.testImage = function(wF, hF, width, height)
+        this.testImage = function(wF, hF, width, height, dataBuffer)
         {
             if (!this.isInit)
                 return null;
@@ -22,7 +22,17 @@
 			if (0 === this.engine)
 				return null;
 				
-			Module["_Graphics_TEST"](this.engine);
+			var imageFileRawDataSize = dataBuffer.byteLength;
+			var imageFileRawData = Module["_Graphics_Malloc"](imageFileRawDataSize);
+			if (0 === imageFileRawData)
+				return null;
+			
+			var uint8DataBuffer = new Uint8Array(dataBuffer);
+			Module["HEAP8"].set(uint8DataBuffer, imageFileRawData);
+				
+			Module["_Graphics_TEST"](this.engine, imageFileRawData, imageFileRawDataSize);
+			
+			Module["_Graphics_Free"](imageFileRawData);
 			
 			var imageW = Module["_Graphics_GetPageWidth"](this.engine, 1);
 			var imageH = Module["_Graphics_GetPageHeight"](this.engine, 1);

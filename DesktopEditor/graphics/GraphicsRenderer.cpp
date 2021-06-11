@@ -868,17 +868,20 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
                         if (TRUE == NSBase64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), pImageData, &nDecodeLen))
                         {
                             CBgraFrame oFrame;
-                            oFrame.put_IsRGBA(true);
                             if (bIsOnlyOfficeHatch)
                             {
                                 int nSize = (int)sqrt(nDecodeLen >> 2);
+                                oFrame.put_IsRGBA(true);
                                 oFrame.put_Data(pImageData);
                                 oFrame.put_Width(nSize);
                                 oFrame.put_Height(nSize);
                                 oFrame.put_Stride(4 * nSize);
                             }
                             else
+                            {
+                                oFrame.put_IsRGBA(false);
                                 oFrame.Decode(pImageData, nDecodeLen);
+                            }
                             Aggplus::CImage* pImage = new Aggplus::CImage();
                             pImage->Create(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height(), oFrame.get_Stride());
                             oFrame.ClearNoAttack();

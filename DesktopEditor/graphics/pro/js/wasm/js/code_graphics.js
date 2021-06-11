@@ -41,7 +41,7 @@ window.onload = function()
 		var reader = new FileReader();
 		reader.onload = function(e)
 		{
-			
+			window.testGraphics(e.target.result);
 		};
 		reader.readAsArrayBuffer(file);
 	
@@ -49,9 +49,9 @@ window.onload = function()
 	};
 };
 
-window.testGraphics = function()
+window.testGraphics = function(data)
 {
-	window.loadedImage = window.nativeGraphics.testImage(412, 151, 109.008, 39.9521);
+	window.loadedImage = window.nativeGraphics.testImage(265, 265, 70.1146, 70.1146, data);
 	if (!window.loadedImage)
 		return;
 

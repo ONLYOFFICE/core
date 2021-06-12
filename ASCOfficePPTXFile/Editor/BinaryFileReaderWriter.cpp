@@ -931,7 +931,19 @@ namespace NSBinPptxRW
 		RELEASEOBJECT		(m_pTheme);
 		RELEASEOBJECT		(m_pClrMap);
 	}
-
+	void CBinaryFileWriter::SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container)
+	{
+		*m_pCurrentContainer = container;
+	}
+	void CBinaryFileWriter::SetRels(OOX::IFileContainer *container)
+	{
+		*m_pCurrentContainer = NSCommon::smart_ptr<OOX::IFileContainer>(container);
+		m_pCurrentContainer->AddRef();
+	}
+	NSCommon::smart_ptr<OOX::IFileContainer> CBinaryFileWriter::GetRels()
+	{
+		return *m_pCurrentContainer;
+	}
 	void CBinaryFileWriter::StartRecord(_INT32 lType)
 	{
 		m_arStack[m_lStackPosition] = m_lPosition + 5; // sizeof(BYTE) + sizeof(_UINT32)

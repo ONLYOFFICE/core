@@ -250,12 +250,18 @@ namespace NSBinPptxRW
 		CCommonWriter*								m_pCommon;
 		std::wstring								m_strMainFolder;
 
-		NSCommon::smart_ptr<OOX::IFileContainer>*	m_pCurrentContainer;
 		BinDocxRW::CDocxSerializer *				m_pMainDocument;
 
 		NSCommon::smart_ptr<PPTX::Theme>*			m_pTheme;
 		NSCommon::smart_ptr<PPTX::Logic::ClrMap>*	m_pClrMap;
+		
+		void SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container);
+		void SetRels(OOX::IFileContainer *container);
+		NSCommon::smart_ptr<OOX::IFileContainer> GetRels();
+
 	protected:
+		NSCommon::smart_ptr<OOX::IFileContainer>*	m_pCurrentContainer;
+		
 		BYTE*		m_pStreamData;
 		BYTE*		m_pStreamCur;
 		_UINT32		m_lSize;

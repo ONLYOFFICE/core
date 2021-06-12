@@ -455,22 +455,32 @@ namespace PPTX
 		}
 		void GraphicFrame::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			std::wstring namespace_ = m_namespace;
-			
-			if ((pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
-				 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) && pWriter->m_lGroupIndex >= 0)		namespace_ = L"wpg";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)				namespace_ = L"xdr";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)										namespace_ = L"a";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)									namespace_ = L"cdr";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)											namespace_ = L"dgm";
+			if (smartArt.is_init())
+			{
+				pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\">");
+				smartArt->toXmlWriter(pWriter);
+				pWriter->WriteString(L"</a:graphicData></a:graphic>");
 
-			pWriter->StartNode(namespace_ + L":graphicFrame");
-			pWriter->WriteAttribute(L"macro", macro);
-			pWriter->EndAttributes();
-			
-			toXmlWriter2(pWriter);
+			}
+			else
+			{
+				std::wstring namespace_ = m_namespace;
 
-			pWriter->EndNode(namespace_ + L":graphicFrame");
+				if ((pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) && pWriter->m_lGroupIndex >= 0)		namespace_ = L"wpg";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)				namespace_ = L"xdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)										namespace_ = L"a";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)									namespace_ = L"cdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)											namespace_ = L"dgm";
+
+				pWriter->StartNode(namespace_ + L":graphicFrame");
+				pWriter->WriteAttribute(L"macro", macro);
+				pWriter->EndAttributes();
+
+				toXmlWriter2(pWriter);
+
+				pWriter->EndNode(namespace_ + L":graphicFrame");
+			}
 		}
 
 		bool GraphicFrame::IsEmpty() const

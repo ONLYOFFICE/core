@@ -90,8 +90,7 @@ std::wstring ParamsWriter::AddEmbeddedStyle(const std::wstring & sStyleId)
 BinaryCommonWriter::BinaryCommonWriter(ParamsWriter& oParamsWriter) :	m_oStream(*oParamsWriter.m_pCBufferedStream),
 													m_pEmbeddedFontsManager(oParamsWriter.m_pEmbeddedFontsManager)
 {
-	*m_oStream.m_pCurrentContainer = oParamsWriter.m_pCurRels;
-	m_oStream.m_pCurrentContainer->AddRef();
+	m_oStream.SetRels(oParamsWriter.m_pCurRels);
 }
 int BinaryCommonWriter::WriteItemStart(BYTE type)
 {

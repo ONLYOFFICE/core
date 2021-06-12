@@ -7834,9 +7834,8 @@ namespace BinXlsxRW
 					m_oBcw.m_oStream.WriteLONG(pDrawing->m_arrItems.size());
 				m_oBcw.WriteItemEnd(nCurPos1);
 				
-				smart_ptr<OOX::IFileContainer> oldRelsStream = *m_oBcw.m_oStream.m_pCurrentContainer;
-				*m_oBcw.m_oStream.m_pCurrentContainer = pDrawing;
-				m_oBcw.m_oStream.m_pCurrentContainer->AddRef();
+				smart_ptr<OOX::IFileContainer> oldRelsStream = m_oBcw.m_oStream.GetRels();
+				m_oBcw.m_oStream.SetRels(pDrawing);
 
 				for (size_t i = 0; i < pDrawing->m_arrItems.size(); i++)
 				{
@@ -7850,7 +7849,7 @@ namespace BinXlsxRW
 				
 				m_oBcw.WriteItemEnd(nCurPos);
 				
-				*m_oBcw.m_oStream.m_pCurrentContainer = oldRelsStream;				
+				m_oBcw.m_oStream.SetRels(oldRelsStream);
 				m_pOfficeDrawingConverter->SetRels(oldRels);
 			}
 		}	

@@ -5298,9 +5298,8 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 	}
 	else if (pCellAnchor->m_oElement.IsInit())
 	{
-		smart_ptr<OOX::IFileContainer> oldRels = *m_oBcw.m_oStream.m_pCurrentContainer;
-		*m_oBcw.m_oStream.m_pCurrentContainer = pDrawing;
-		m_oBcw.m_oStream.m_pCurrentContainer->AddRef();
+		smart_ptr<OOX::IFileContainer> oldRels = m_oBcw.m_oStream.GetRels();
+		m_oBcw.m_oStream.SetRels(pDrawing);
 
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
 		int nCurPos = m_oBcw.WriteItemWithLengthStart();
@@ -5309,7 +5308,7 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 			m_oBcw.m_oStream.EndRecord();
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
-		*m_oBcw.m_oStream.m_pCurrentContainer = oldRels;
+		m_oBcw.m_oStream.SetRels(oldRels);
 	}
 }
 void BinaryWorksheetTableWriter::WriteLegacyDrawingHF(const OOX::Spreadsheet::CWorksheet& oWorksheet)

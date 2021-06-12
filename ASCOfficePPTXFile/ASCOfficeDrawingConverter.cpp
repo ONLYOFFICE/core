@@ -1654,7 +1654,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 	
 	if (id_data.IsInit())
 	{
-		oFileData = (*m_pBinaryWriter->m_pCurrentContainer)->Find(*id_data);
+		oFileData = m_pBinaryWriter->GetRels()->Find(*id_data);
 		
 		if (oFileData.is_init())
 		{
@@ -1673,7 +1673,7 @@ void CDrawingConverter::doc_LoadDiagram(PPTX::Logic::SpTreeElem *result, XmlUtil
 		}
 		if (id_drawing.is_init())
 		{
-			oFileDrawing = (*m_pBinaryWriter->m_pCurrentContainer)->Find(*id_drawing);
+			oFileDrawing = m_pBinaryWriter->GetRels()->Find(*id_drawing);
 			pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
 		}
 		if (!pDiagramDrawing && pDiagramData)
@@ -2903,10 +2903,10 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			{
 				std::wstring sId = oNodeTextData.GetAttribute(L"id");
 
-				if (sId.length() > 0 && m_pBinaryWriter->m_pCurrentContainer->IsInit())
+				if (sId.length() > 0 && m_pBinaryWriter->GetRels().IsInit())
 				{
 					OOX::RId rId(sId);
-					smart_ptr<PPTX::LegacyDiagramText> pExt = (*m_pBinaryWriter->m_pCurrentContainer)->Get<PPTX::LegacyDiagramText>(rId);
+					smart_ptr<PPTX::LegacyDiagramText> pExt = m_pBinaryWriter->GetRels()->Get<PPTX::LegacyDiagramText>(rId);
 
 					if (pExt.IsInit())
 					{
@@ -5950,16 +5950,15 @@ void CDrawingConverter::Clear()
 }
 void CDrawingConverter::SetRels(smart_ptr<OOX::IFileContainer> container)
 {
-	*m_pBinaryWriter->m_pCurrentContainer = container;
+	m_pBinaryWriter->SetRels(container);
 }
 void CDrawingConverter::SetRels(OOX::IFileContainer *container)
 {
-	*m_pBinaryWriter->m_pCurrentContainer = smart_ptr<OOX::IFileContainer>(container);
-	m_pBinaryWriter->m_pCurrentContainer->AddRef();
+	m_pBinaryWriter->SetRels(container);
 }
 smart_ptr<OOX::IFileContainer> CDrawingConverter::GetRels()
 {
-	return *m_pBinaryWriter->m_pCurrentContainer;
+	return m_pBinaryWriter->GetRels();
 }
 void CDrawingConverter::SetFontManager(NSFonts::IFontManager* pFontManager)
 {

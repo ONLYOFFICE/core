@@ -88,6 +88,7 @@ SOURCES += \
     ../Source/Common/Position.cpp \
     ../Source/Common/Wrap.cpp \
     ../Source/Common/ZIndex.cpp \
+    ../Source/DocxFormat/WritingElement.cpp \
     ../Source/Common/SimpleTypes_Word.cpp \
     ../Source/SystemUtility/SystemUtility.cpp \
     ../Source/XlsxFormat/Styles/rPr.cpp \

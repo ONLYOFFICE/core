@@ -72,3 +72,4 @@
 #include "../Source/DocxFormat/Diagram/DiagramQuickStyle.cpp"
 #include "../Source/MathEquation/MathEquation.cpp"
 #include "../Source/DocxFormat/Logic/DocParts.cpp"
+#include "../Source/DocxFormat/WritingElement.cpp"

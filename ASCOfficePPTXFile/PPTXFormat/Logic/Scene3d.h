@@ -149,7 +149,8 @@ namespace PPTX
 
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:scene3d";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)		name_ = L"dgm:scene3d";
-				
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)	name_ = L"dspscene3d";
+
 				pWriter->StartNode(name_);
 				
 				pWriter->StartAttributes();

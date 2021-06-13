@@ -296,8 +296,9 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if( oReader, _T("useBgFill"),	attrUseBgFill)
+					WritingElement_ReadAttributes_Read_if( oReader, _T("useBgFill"), attrUseBgFill)
 					WritingElement_ReadAttributes_Read_else_if(oReader, _T("macro"), attrMacro)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("modelId"), attrModelId)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 			std::wstring GetText()const{if(txBody.IsInit()) return txBody->GetText(); return _T(""); };
@@ -333,6 +334,7 @@ namespace PPTX
 
 			nullable_bool						attrUseBgFill;
 			nullable_string						attrMacro;
+			nullable_string						attrModelId;
 //-------------------------------------------------------------------------------------------------
 			nullable<OOX::VmlOffice::CSignatureLine> signatureLine;
 			std::wstring						m_sClientDataXml;

@@ -42,7 +42,7 @@ namespace PPTX
 		public:
 			Xfrm()	
 			{
-				m_ns = L"a";
+				node_name = L"a:xfrm";
 			}
 			virtual ~Xfrm() {}
 			explicit Xfrm(XmlUtils::CXmlNode& node)			{ fromXML(node); }
@@ -60,7 +60,7 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				m_ns = XmlUtils::GetNamespace(oReader.GetName());
+				node_name = oReader.GetName();
 				
 				ReadAttributes(oReader);
 
@@ -108,7 +108,7 @@ namespace PPTX
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_ns = XmlUtils::GetNamespace(node.GetName());
+				node_name = node.GetName();
 
 				XmlMacroReadAttributeBase(node, L"flipH", flipH);
 				XmlMacroReadAttributeBase(node, L"flipV", flipV);
@@ -177,12 +177,12 @@ namespace PPTX
 				if (_T("") != oAttr4.m_strValue)
 					strValue += XmlUtils::CreateNode(_T("a:chExt"), oAttr4);
 				
-				return XmlUtils::CreateNode(m_ns + _T(":xfrm"), oAttr, strValue);
+				return XmlUtils::CreateNode(node_name, oAttr, strValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(m_ns + L":xfrm");
+				pWriter->StartNode(node_name);
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("rot"), rot);
@@ -230,7 +230,7 @@ namespace PPTX
 					pWriter->EndNode(_T("a:chExt"));
 				}
 
-				pWriter->EndNode(m_ns + _T(":xfrm"));
+				pWriter->EndNode(node_name);
 			}
 
 			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
@@ -379,7 +379,6 @@ namespace PPTX
 
 				pReader->Seek(_end_rec);
 			}
-
 			void Merge(nullable<Xfrm>& xfrm)const
 			{
 				if(!xfrm.IsInit())
@@ -407,8 +406,6 @@ namespace PPTX
 				if(rot.IsInit())
 					xfrm->rot = *rot;
 			}
-
-		public:
 			nullable_int		offX;
 			nullable_int		offY;
 			nullable_int		extX;
@@ -421,8 +418,8 @@ namespace PPTX
 			nullable_bool		flipH;
 			nullable_bool		flipV;
 			nullable_int		rot;
-		public:
-			std::wstring m_ns;
+
+			std::wstring		node_name;
 		protected:
 			virtual void FillParentPointersForChilds(){};
 

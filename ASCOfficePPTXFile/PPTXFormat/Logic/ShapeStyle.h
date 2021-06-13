@@ -142,6 +142,7 @@ namespace PPTX
 
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:style";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)		name_ = L"dgm:style";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)	name_ = L"dsp:style";
 				else name_ = m_namespace + L":style";
 
 				pWriter->StartNode(name_);

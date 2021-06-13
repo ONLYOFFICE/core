@@ -290,7 +290,8 @@ namespace OOX
 		pWriter->StartAttributes();
 			pWriter->WriteAttribute(L"xmlns:dgm", L"http://schemas.openxmlformats.org/drawingml/2006/diagram");
 			pWriter->WriteAttribute(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
-			
+			pWriter->WriteAttribute(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+
 			pWriter->WriteAttribute(L"uniqueId", m_sUniqueId);
 			pWriter->WriteAttribute(L"minVer", m_sMinVer);
 			pWriter->WriteAttribute(L"defStyle", m_sDefStyle);
@@ -594,12 +595,12 @@ namespace OOX
 	{
 		pWriter->StartNode(L"dgm:if");
 			pWriter->WriteAttribute(L"name", m_sName);
-			if (m_oFunc.IsInit()) pWriter->WriteAttribute(L"func", m_oFunc->ToString());
 			pWriter->WriteAttribute(L"arg", m_sArg);
-			if (m_oOp.IsInit()) pWriter->WriteAttribute(L"op", m_oOp->ToString());
 			if (m_oAxis.IsInit()) pWriter->WriteAttribute(L"axis", m_oAxis->ToString());
 			pWriter->WriteAttribute2(L"cnt", m_nCnt);
 			if (m_oPtType.IsInit()) pWriter->WriteAttribute(L"ptType", m_oPtType->ToString());
+			if (m_oFunc.IsInit()) pWriter->WriteAttribute(L"func", m_oFunc->ToString());
+			if (m_oOp.IsInit()) pWriter->WriteAttribute(L"op", m_oOp->ToString());
 			pWriter->WriteAttribute(L"hideLastTrans", m_bHideLastTrans);
 			pWriter->WriteAttribute(L"ref", m_sRef);
 			pWriter->WriteAttribute(L"st", m_sSt);
@@ -1486,13 +1487,13 @@ namespace OOX
 	void Diagram::CShape::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
 		pWriter->StartNode(L"dgm:shape");
-		pWriter->WriteAttribute(L"blip", m_sBlip);
+			pWriter->WriteAttribute(L"type", m_oType);
+			pWriter->WriteAttribute(L"blip", m_sBlip.get_value_or(L""));
 			pWriter->WriteAttribute(L"blipPhldr", m_bBlipPhldr);
-			pWriter->WriteAttribute(L"hideGeom", m_bHideGeom);
 			pWriter->WriteAttribute(L"lkTxEntry", m_bLkTxEntry);
 			pWriter->WriteAttribute(L"rot", m_dRot);
 			pWriter->WriteAttribute(L"zOrderOff", m_nZOrderOff);
-			pWriter->WriteAttribute(L"type", m_oType);
+			pWriter->WriteAttribute(L"hideGeom", m_bHideGeom);
 		pWriter->EndAttributes();
 
 		if (m_oAdjLst.IsInit()) m_oAdjLst->toXmlWriter(pWriter);

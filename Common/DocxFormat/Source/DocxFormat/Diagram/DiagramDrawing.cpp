@@ -52,7 +52,7 @@ namespace OOX
 		NSBinPptxRW::CXmlWriter oXmlWriter;
 		oXmlWriter.WriteString((L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
 		
-		oXmlWriter.m_lDocType = XMLWRITER_DOC_TYPE_DIAGRAM;
+		oXmlWriter.m_lDocType = XMLWRITER_DOC_TYPE_DSP_DRAWING;
 		toXmlWriter(&oXmlWriter);
 
 		NSFile::CFileBinary::SaveToFile(oFilePath.GetPath(), oXmlWriter.GetXmlString());
@@ -90,5 +90,18 @@ namespace OOX
 	}
 	void CDiagramDrawing::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
+		pWriter->StartNode(L"dsp:drawing");
+
+		pWriter->StartAttributes();
+			pWriter->WriteAttribute(L"xmlns:dsp", L"http://schemas.microsoft.com/office/drawing/2008/diagram");
+			pWriter->WriteAttribute(L"xmlns:dgm", L"http://schemas.openxmlformats.org/drawingml/2006/diagram");
+			pWriter->WriteAttribute(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
+			pWriter->WriteAttribute(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+		pWriter->EndAttributes();
+
+		if (m_oShapeTree.IsInit())
+			m_oShapeTree->toXmlWriter(pWriter);
+
+		pWriter->WriteNodeEnd(L"dsp:drawing");
 	}
 } // namespace OOX

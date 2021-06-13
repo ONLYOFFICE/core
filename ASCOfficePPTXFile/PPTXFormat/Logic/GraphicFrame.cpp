@@ -411,12 +411,13 @@ namespace PPTX
 			if (xfrm.IsInit() && (!(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
 									pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) || pWriter->m_lGroupIndex >= 0))
 			{				
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)	xfrm->m_ns = L"xdr";
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)	xfrm->node_name = L"xdr:xfrm";
 				else if ((pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
-					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) && pWriter->m_lGroupIndex >= 0) xfrm->m_ns = L"wpg";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) xfrm->m_ns = L"a";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING) xfrm->m_ns = L"cdr";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM) xfrm->m_ns = L"dgm";
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) && pWriter->m_lGroupIndex >= 0) xfrm->node_name = L"wpg:xfrm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) xfrm->node_name = L"a:xfrm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING) xfrm->node_name = L"cdr:xfrm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM) xfrm->node_name = L"dgm:xfrm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING) xfrm->node_name = L"dsp:xfrm";
 
 				xfrm->toXmlWriter(pWriter);
 			}
@@ -472,6 +473,7 @@ namespace PPTX
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)										namespace_ = L"a";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)									namespace_ = L"cdr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)											namespace_ = L"dgm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)										namespace_ = L"dsp";
 
 				pWriter->StartNode(namespace_ + L":graphicFrame");
 				pWriter->WriteAttribute(L"macro", macro);
@@ -677,8 +679,8 @@ namespace PPTX
 					case 1:
 					{
 						xfrm = new Logic::Xfrm();
+						xfrm->node_name = L"p:xfrm";						
 						xfrm->fromPPTY(pReader);
-						xfrm->m_ns = L"p";						
 					}break;
 					case 2:
 					{

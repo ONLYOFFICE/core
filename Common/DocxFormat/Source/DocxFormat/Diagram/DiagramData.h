@@ -214,7 +214,7 @@ namespace OOX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				return Diagram::ComplexType<SimpleTypes::CDecimalNumber<>>::toXmlWriter(L"dgm:CchPref", pWriter);
+				return Diagram::ComplexType<SimpleTypes::CDecimalNumber<>>::toXmlWriter(L"dgm:chPref", pWriter);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{

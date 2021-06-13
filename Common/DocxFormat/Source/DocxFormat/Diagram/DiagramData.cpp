@@ -390,9 +390,9 @@ namespace OOX
 			pWriter->WriteAttribute(L"custT", m_custT);
 			pWriter->WriteAttribute(L"presAssocID", m_presAssocID);
 			pWriter->WriteAttribute(L"presName", m_presName);
-			pWriter->WriteAttribute(L"presStyleCnt", m_presStyleCnt);
-			pWriter->WriteAttribute(L"presStyleIdx", m_presStyleIdx);
 			pWriter->WriteAttribute(L"presStyleLbl", m_presStyleLbl);
+			pWriter->WriteAttribute(L"presStyleIdx", m_presStyleIdx);
+			pWriter->WriteAttribute(L"presStyleCnt", m_presStyleCnt);
 		pWriter->EndAttributes();
 		
 		if (m_oPresLayoutVars.IsInit()) m_oPresLayoutVars->toXmlWriter(pWriter);
@@ -950,6 +950,7 @@ namespace OOX
 		{
 			pWriter->WriteAttribute(L"xmlns:dgm", L"http://schemas.openxmlformats.org/drawingml/2006/diagram");
 			pWriter->WriteAttribute(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
+			pWriter->WriteAttribute(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 		}
 		pWriter->EndAttributes();
 		
@@ -962,6 +963,9 @@ namespace OOX
 		if (m_oWhole.IsInit())
 			m_oWhole->toXmlWriter(pWriter);
 		
+		if (m_oExtLst.IsInit())
+			m_oExtLst->toXmlWriter(pWriter);
+
 		pWriter->WriteNodeEnd(L"dgm:dataModel");
 	}
 //-------------------------------------------------------------------------------	

@@ -162,6 +162,8 @@ namespace PPTX
 			NSCommon::smart_ptr<OOX::IFileContainer> documentContainer = pWriter->GetRels();
 			OOX::IFileContainer* pDocumentRels = documentContainer.is_init() ? documentContainer.GetPointer() : NULL;
 
+			BinDocxRW::CDocxSerializer *main_document = pWriter->m_pMainDocument;
+			pWriter->m_pMainDocument = NULL;
 			if (id_data.IsInit())
 			{
 				smart_ptr<OOX::File> oFileData;
@@ -260,6 +262,7 @@ namespace PPTX
 				}
 			}
 			pWriter->SetRels(documentContainer);
+			pWriter->m_pMainDocument = main_document;
 		}
 		void SmartArt::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -323,6 +326,7 @@ namespace PPTX
 							pDiagramData->m_oDataModel->m_oExtLst->m_arrExt.push_back(new OOX::Drawing::COfficeArtExtension());
 							pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[0]->m_oDataModelExt.Init();
 
+							pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[0]->m_sUri = L"http://schemas.microsoft.com/office/drawing/2008/diagram";
 							pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[0]->m_oDataModelExt->m_oRelId = id_drawing->ToString();
 						}
 						pDiagramData->write(strDstDiagram + FILE_SEPARATOR_STR + pDiagramData->m_sOutputFilename, contenttype_override_path, *pReader->m_pRels->m_pManager->m_pContentTypes);

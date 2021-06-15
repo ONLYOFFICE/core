@@ -45,8 +45,8 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(Sp3d)
-			PPTX_LOGIC_BASE2(Sp3d)
 
+			Sp3d() : m_namespace(L"a") {}
 			Sp3d& operator=(const Sp3d& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -145,11 +145,7 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				std::wstring name_ = L"a:sp3d";
-
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:sp3d";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)		name_ = L"dgm:sp3d";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)	name_ = L"dsp:sp3d";
+				std::wstring name_ = m_namespace + L":sp3d";
 
 				pWriter->StartNode(name_);
 
@@ -263,6 +259,8 @@ namespace PPTX
 			nullable<Bevel>					bevelB;
 			UniColor						extrusionClr;
 			UniColor						contourClr;
+
+			std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

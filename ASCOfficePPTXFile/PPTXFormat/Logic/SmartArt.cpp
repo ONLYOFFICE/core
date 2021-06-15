@@ -61,40 +61,22 @@ namespace PPTX
 			if (m_oDrawing.IsInit())
 				return true;
 
-			if (false == id_drawing.IsInit())
-			{
-				if (id_data.IsInit() == false) return false;
-				if (pRels == NULL) return false;
+			if (id_data.IsInit() == false) return false;
+			if (pRels == NULL) return false;
 
-				bool result = false;
+			smart_ptr<OOX::File> oFileData = pRels->Find(*id_data);
+			OOX::CDiagramData* pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.GetPointer());
 
-				smart_ptr<OOX::File> oFileData = pRels->Find(*id_data);
-				OOX::CDiagramData* pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.GetPointer());
+			if (!pDiagramData) return false;
 
-				if (pDiagramData)
-				{
-					result = true; // это smart art ..есть у него drawing или нет - неважно
-
-					if ((pDiagramData->m_oDataModel.IsInit()) & (pDiagramData->m_oDataModel->m_oExtLst.IsInit()))
-					{
-						for (size_t i = 0; i < pDiagramData->m_oDataModel->m_oExtLst->m_arrExt.size(); i++)
-						{
-							if (pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
-							{
-								id_drawing = pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[i]->m_oDataModelExt->m_oRelId;
-								break;
-							}
-						}
-					}
-				}
-			}
+			// это smart art ..есть у него drawing или нет - неважно
 			smart_ptr<OOX::File> oFileDrawing;
 			OOX::CDiagramDrawing* pDiagramDrawing = NULL;
 
-			if (id_drawing.IsInit())
+			if (pDiagramData->id_drawing.IsInit())
 			{
-				if (parentFileIs<OOX::IFileContainer>()) oFileDrawing = parentFileAs<OOX::IFileContainer>().Find(*id_drawing);
-				else if (pRels != NULL) oFileDrawing = pRels->Find(*id_drawing);
+				if (parentFileIs<OOX::IFileContainer>()) oFileDrawing = parentFileAs<OOX::IFileContainer>().Find(*pDiagramData->id_drawing);
+				else if (pRels != NULL) oFileDrawing = pRels->Find(*pDiagramData->id_drawing);
 			}
 			else
 			{
@@ -175,20 +157,11 @@ namespace PPTX
 
 				if (pDiagramData)
 				{
-					if (false == id_drawing.IsInit())
+					if (pDiagramData->id_drawing.IsInit())
 					{
-						for (size_t i = 0; ((pDiagramData->m_oDataModel.IsInit()) && (pDiagramData->m_oDataModel->m_oExtLst.IsInit())) && (i < pDiagramData->m_oDataModel->m_oExtLst->m_arrExt.size()); i++)
-						{
-							if (pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
-							{
-								id_drawing = pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[i]->m_oDataModelExt->m_oRelId;
-								break;
-							}
-						}
-
 						smart_ptr<OOX::File> oFileDrawing;
-						if (parentFileIs<OOX::IFileContainer>()) oFileDrawing = parentFileAs<OOX::IFileContainer>().Find(*id_drawing);
-						else if (pDocumentRels != NULL) oFileDrawing = pDocumentRels->Find(*id_drawing);
+						if (parentFileIs<OOX::IFileContainer>()) oFileDrawing = parentFileAs<OOX::IFileContainer>().Find(*pDiagramData->id_drawing);
+						else if (pDocumentRels != NULL) oFileDrawing = pDocumentRels->Find(*pDiagramData->id_drawing);
 
 						OOX::CDiagramDrawing* pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
 						if (pDiagramDrawing)
@@ -266,7 +239,7 @@ namespace PPTX
 		}
 		void SmartArt::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			int oldDocumentType = pReader->m_nDocumentType;
+			int mainDocumentType = pReader->m_nDocumentType;
 			pReader->m_nDocumentType = pReader->m_pRels->m_pManager->m_nDocumentType = XMLWRITER_DOC_TYPE_DIAGRAM;
 
 			int nCountDiagram = pReader->m_nCountDiagram;
@@ -274,9 +247,11 @@ namespace PPTX
 			
 			std::wstring strDstDiagram = pReader->m_pRels->m_pManager->GetDstDiagram();
 
-			std::wstring contenttype_override_path = (oldDocumentType == XMLWRITER_DOC_TYPE_DOCX) ? L"/word/diagrams" :
-													((oldDocumentType == XMLWRITER_DOC_TYPE_XLSX) ? L"/xl/diagrams" : L"/ppt/diagrams");
-
+			std::wstring contenttype_override_path = (mainDocumentType == XMLWRITER_DOC_TYPE_DOCX) ? L"/word/diagrams" :
+													((mainDocumentType == XMLWRITER_DOC_TYPE_XLSX) ? L"/xl/diagrams" : L"/ppt/diagrams");
+			
+			std::wstring rels_path = (mainDocumentType == XMLWRITER_DOC_TYPE_DOCX) ? L"diagrams/" : L"../diagrams/";
+			
 			if (strDstDiagram.empty())
 			{
 				strDstDiagram = pReader->m_pRels->m_pManager->GetDstFolder() + FILE_SEPARATOR_STR + L"diagrams";
@@ -306,7 +281,7 @@ namespace PPTX
 						pDiagramDrawing->write(strDstDiagram + FILE_SEPARATOR_STR + pDiagramDrawing->m_sOutputFilename, contenttype_override_path, *pReader->m_pRels->m_pManager->m_pContentTypes);
 						pReader->SaveDstContentRels(strDstDiagram + FILE_SEPARATOR_STR + L"_rels" + FILE_SEPARATOR_STR + L"drawing" + std::to_wstring(nCountDiagram) + L".xml.rels");
 
-						pDiagramDrawing->m_sOutputFilename = std::wstring(L"diagrams/") + pDiagramDrawing->m_sOutputFilename;
+						pDiagramDrawing->m_sOutputFilename = rels_path + pDiagramDrawing->m_sOutputFilename;
 					}break;
 					case 1:
 					{
@@ -320,22 +295,27 @@ namespace PPTX
 						if (pDiagramDrawing.IsInit())
 						{
 							unsigned int nRId = pReader->m_pRels->WriteRels(pDiagramDrawing->type().RelationType(), pDiagramDrawing->m_sOutputFilename, L"");
-							id_drawing = new OOX::RId(nRId);
+							pDiagramData->id_drawing = new OOX::RId(nRId);
 							
 							pDiagramData->m_oDataModel->m_oExtLst.Init();
 							pDiagramData->m_oDataModel->m_oExtLst->m_arrExt.push_back(new OOX::Drawing::COfficeArtExtension());
 							pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[0]->m_oDataModelExt.Init();
 
 							pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[0]->m_sUri = L"http://schemas.microsoft.com/office/drawing/2008/diagram";
-							pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[0]->m_oDataModelExt->m_oRelId = id_drawing->ToString();
+							pDiagramData->m_oDataModel->m_oExtLst->m_arrExt[0]->m_oDataModelExt->m_oRelId = pDiagramData->id_drawing->ToString();
 						}
 						pDiagramData->write(strDstDiagram + FILE_SEPARATOR_STR + pDiagramData->m_sOutputFilename, contenttype_override_path, *pReader->m_pRels->m_pManager->m_pContentTypes);
 
 						pReader->SaveDstContentRels(strDstDiagram + FILE_SEPARATOR_STR + L"_rels" + FILE_SEPARATOR_STR + pDiagramData->m_sOutputFilename + L".rels");
-						pDiagramData->m_sOutputFilename = std::wstring(L"diagrams/") + pDiagramData->m_sOutputFilename;
+						pDiagramData->m_sOutputFilename = rels_path + pDiagramData->m_sOutputFilename;
 
 						unsigned int nRId = pReader->m_pRels->WriteRels(pDiagramData->type().RelationType(), pDiagramData->m_sOutputFilename, L"");
-						id_data = new OOX::RId(nRId);						
+						id_data = new OOX::RId(nRId);		
+
+						if (pDiagramDrawing.IsInit())
+						{
+							nRId = pReader->m_pRels->WriteRels(pDiagramDrawing->type().RelationType(), pDiagramDrawing->m_sOutputFilename, L"");
+						}
 					}break;
 					case 2:
 					{
@@ -345,7 +325,7 @@ namespace PPTX
 						
 						pDiagramColors->write(strDstDiagram + FILE_SEPARATOR_STR + pDiagramColors->m_sOutputFilename, contenttype_override_path, *pReader->m_pRels->m_pManager->m_pContentTypes);
 
-						pDiagramColors->m_sOutputFilename = std::wstring(L"diagrams/") + pDiagramColors->m_sOutputFilename;
+						pDiagramColors->m_sOutputFilename = rels_path + pDiagramColors->m_sOutputFilename;
 
 						unsigned int nRId = pReader->m_pRels->WriteRels(pDiagramColors->type().RelationType(), pDiagramColors->m_sOutputFilename, L"");
 						id_color = new OOX::RId(nRId);
@@ -358,7 +338,7 @@ namespace PPTX
 
 						pDiagramLayout->write(strDstDiagram + FILE_SEPARATOR_STR + pDiagramLayout->m_sOutputFilename, contenttype_override_path, *pReader->m_pRels->m_pManager->m_pContentTypes);
 
-						pDiagramLayout->m_sOutputFilename = std::wstring(L"diagrams/") + pDiagramLayout->m_sOutputFilename;
+						pDiagramLayout->m_sOutputFilename = rels_path + pDiagramLayout->m_sOutputFilename;
 
 						unsigned int nRId = pReader->m_pRels->WriteRels(pDiagramLayout->type().RelationType(), pDiagramLayout->m_sOutputFilename, L"");
 						id_layout = new OOX::RId(nRId);
@@ -371,7 +351,7 @@ namespace PPTX
 						
 						pDiagramStyle->write(strDstDiagram + FILE_SEPARATOR_STR + pDiagramStyle->m_sOutputFilename, contenttype_override_path, *pReader->m_pRels->m_pManager->m_pContentTypes);
 
-						pDiagramStyle->m_sOutputFilename = std::wstring(L"diagrams/")  + pDiagramStyle->m_sOutputFilename;
+						pDiagramStyle->m_sOutputFilename = rels_path + pDiagramStyle->m_sOutputFilename;
 
 						unsigned int nRId = pReader->m_pRels->WriteRels(pDiagramStyle->type().RelationType(), pDiagramStyle->m_sOutputFilename, L"");
 						id_style = new OOX::RId(nRId);
@@ -385,7 +365,7 @@ namespace PPTX
 			}
 			pReader->Seek(end);
 
-			pReader->m_nDocumentType = pReader->m_pRels->m_pManager->m_nDocumentType = oldDocumentType;
+			pReader->m_nDocumentType = pReader->m_pRels->m_pManager->m_nDocumentType = mainDocumentType;
 		}
 		std::wstring SmartArt::toXML() const
 		{
@@ -395,9 +375,9 @@ namespace PPTX
 			std::wstring strData = L"<dgm:relIds xmlns:dgm=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\"";
 			strData += L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"";
 			strData += L" r:dm=\"" + id_data->ToString() + L"\"";
-			if (id_color.IsInit()) strData += L" r:cs=\"" + id_color->ToString() + L"\"";
 			if (id_layout.IsInit()) strData += L" r:lo=\"" + id_layout->ToString() + L"\"";
 			if (id_style.IsInit()) strData += L" r:qs=\"" + id_style->ToString() + L"\"";
+			if (id_color.IsInit()) strData += L" r:cs=\"" + id_color->ToString() + L"\"";
 			strData += L"/>";
 
 			return strData;

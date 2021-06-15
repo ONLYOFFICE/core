@@ -147,7 +147,7 @@ namespace OOX
 
 			case 3:
 			{
-				m_oScene3d.Init(); 
+				m_oScene3d.Init();  m_oScene3d->m_namespace = L"dgm";
 				m_oScene3d->fromPPTY(pReader);
 			}break;
 			case 4:
@@ -257,11 +257,13 @@ namespace OOX
 			{
 				case 0:
 				{
-					m_oScene3d.Init(); m_oScene3d->fromPPTY(pReader);
+					m_oScene3d.Init(); m_oScene3d->m_namespace = L"dgm";
+					m_oScene3d->fromPPTY(pReader);
 				}break;
 				case 1:
 				{
-					m_oSp3d.Init(); m_oSp3d->fromPPTY(pReader);
+					m_oSp3d.Init(); m_oSp3d->m_namespace = L"dgm";
+					m_oSp3d->fromPPTY(pReader);
 				}break;
 				case 2:
 				{
@@ -300,10 +302,10 @@ namespace OOX
 			m_oScene3d->toXmlWriter(pWriter);
 		if (m_oSp3d.IsInit())
 			m_oSp3d->toXmlWriter(pWriter);
-		if (m_oStyle.IsInit())
-			m_oStyle->toXmlWriter(pWriter);
 		if (m_oTxPr.IsInit())
 			m_oTxPr->toXmlWriter(pWriter);
+		if (m_oStyle.IsInit())
+			m_oStyle->toXmlWriter(pWriter);
 		pWriter->WriteNodeEnd(L"dgm:styleLbl");
 	}
 } // namespace OOX

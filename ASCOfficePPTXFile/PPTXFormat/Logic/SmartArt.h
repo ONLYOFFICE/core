@@ -92,7 +92,6 @@ namespace PPTX
 			nullable<OOX::RId> id_color;
 			nullable<OOX::RId> id_layout;
 			nullable<OOX::RId> id_style;
-			mutable nullable<OOX::RId> id_drawing;
 
 			nullable<PPTX::Logic::SpTree> m_oDrawing;
 			smart_ptr<OOX::IFileContainer> m_pDrawingContainer;

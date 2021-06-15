@@ -229,12 +229,12 @@ namespace OOX
 	{
 		pWriter->StartNode(node_name);
 		pWriter->EndAttributes();
+		if (m_oChMax.IsInit())			m_oChMax->toXmlWriter(pWriter);
 		if (m_oChPref.IsInit())			m_oChPref->toXmlWriter(pWriter);
+		if (m_oDir.IsInit())			m_oDir->toXmlWriter(pWriter);
 		if (m_oAnimOne.IsInit())		m_oAnimOne->toXmlWriter(pWriter);
 		if (m_oAnimLvl.IsInit())		m_oAnimLvl->toXmlWriter(pWriter);
 		if (m_oBulletEnabled.IsInit())	m_oBulletEnabled->toXmlWriter(pWriter);
-		if (m_oChMax.IsInit())			m_oChMax->toXmlWriter(pWriter);
-		if (m_oDir.IsInit())			m_oDir->toXmlWriter(pWriter);
 		if (m_oHierBranch.IsInit())		m_oHierBranch->toXmlWriter(pWriter);
 		if (m_oResizeHandles.IsInit())	m_oResizeHandles->toXmlWriter(pWriter);
 		pWriter->WriteNodeEnd(node_name);
@@ -868,7 +868,7 @@ namespace OOX
 	{
 		if (oReader.IsEmptyNode())
 			return;
-		
+
 		int nParentDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nParentDepth))
 		{
@@ -1134,6 +1134,17 @@ namespace OOX
 		if (L"dgm:dataModel" == sName && !oReader.IsEmptyNode())
 		{
 			m_oDataModel = oReader;
+		}
+		if (false == id_drawing.IsInit() && m_oDataModel.IsInit())
+		{
+			for (size_t i = 0; m_oDataModel->m_oExtLst.IsInit() && (i < m_oDataModel->m_oExtLst->m_arrExt.size()); i++)
+			{
+				if (m_oDataModel->m_oExtLst->m_arrExt[i]->m_oDataModelExt.IsInit())
+				{
+					id_drawing = m_oDataModel->m_oExtLst->m_arrExt[i]->m_oDataModelExt->m_oRelId;
+					break;
+				}
+			}
 		}
 	}
 	void CDiagramData::write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const

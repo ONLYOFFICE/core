@@ -91,8 +91,8 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("dir"), dir.get());
 				oAttr.Write(_T("rig"), rig.get());
+				oAttr.Write(_T("dir"), dir.get());
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(rot);

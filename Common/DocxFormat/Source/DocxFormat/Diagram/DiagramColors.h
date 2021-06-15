@@ -38,7 +38,7 @@ namespace OOX
 {
 	namespace Diagram
 	{
-		class CClrLst : public WritingElement
+		class CClrLst : public WritingElementWithChilds<PPTX::Logic::UniColor>
 		{
 		public:
 			WritingElement_AdditionConstructors(CClrLst)
@@ -70,7 +70,6 @@ namespace OOX
 
 			nullable<SimpleTypes::CHueDirType<>> m_oHueDir;
 			nullable<SimpleTypes::CColorMethod<>> m_oMeth;
-			PPTX::Logic::UniColor m_oColor;
 		};
 
 		class CColorStyleLbl : public WritingElement

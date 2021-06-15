@@ -476,7 +476,7 @@ namespace SimpleTypes
 		CDouble() {}
         virtual ~CDouble() {}
 
-        virtual double  FromString(std::wstring &sValue)
+        virtual double FromString(std::wstring &sValue)
 		{
             m_dValue = _wtof( sValue.c_str() );
 			return m_dValue;
@@ -484,7 +484,8 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-			return boost::lexical_cast<std::wstring>(m_dValue);
+			if (std::isnan(m_dValue)) return L"NaN";
+			else return boost::lexical_cast<std::wstring>(m_dValue);
 		}
 		virtual std::wstring ToString2() const
 		{

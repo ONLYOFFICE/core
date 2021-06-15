@@ -209,8 +209,8 @@ namespace OOX
 		{
 			std::wstring sName = oReader.GetName();
 
-			m_oColor.fromXML(oReader);
-			break;
+			m_arrItems.push_back(new PPTX::Logic::UniColor()); 
+			m_arrItems.back()->fromXML(oReader);
 		}
 	}
 	void Diagram::CClrLst::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -242,7 +242,8 @@ namespace OOX
 			{
 				case 0:
 				{
-					m_oColor.fromPPTY(pReader);
+					m_arrItems.push_back(new PPTX::Logic::UniColor());
+					m_arrItems.back()->fromPPTY(pReader);
 				}break;
 				default:
 				{
@@ -259,7 +260,8 @@ namespace OOX
 			if (m_oMeth.IsInit()) pWriter->WriteByte1(1, m_oMeth->GetValue());
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 		
-		pWriter->WriteRecord1(0, m_oColor);
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+			pWriter->WriteRecord2(0, dynamic_cast<OOX::WritingElement*>(m_arrItems[i]));
 	}
 	void Diagram::CClrLst::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
@@ -268,8 +270,11 @@ namespace OOX
 			if (m_oMeth.IsInit()) pWriter->WriteAttribute(L"meth", m_oMeth->ToString());
 		pWriter->EndAttributes();
 
-		if (m_oColor.is_init())
-			m_oColor.toXmlWriter(pWriter);
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+		{
+			if (m_arrItems[i])
+				m_arrItems[i]->toXmlWriter(pWriter);
+		}
 
 		pWriter->WriteNodeEnd(node_name);
 	}

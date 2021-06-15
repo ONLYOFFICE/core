@@ -284,7 +284,7 @@ namespace OOX
 					return smart_ptr<OOX::File>(new OOX::OleObject( pMain, oFileName ));
 				}
 			}
-			else if (pRelation->Type() == OOX::FileTypes::DiagramColors)
+			else if (pRelation->Type() == OOX::FileTypes::DiagramData)
 				return smart_ptr<OOX::File>(new OOX::CDiagramData( pMain, oRootPath, oFileName ));
 			else if (pRelation->Type() == OOX::FileTypes::DiagramDrawing)
 				return smart_ptr<OOX::File>(new OOX::CDiagramDrawing( pMain, oRootPath, oFileName )); 

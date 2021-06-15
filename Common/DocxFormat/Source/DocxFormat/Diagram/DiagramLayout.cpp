@@ -330,6 +330,16 @@ namespace OOX
 	{
 		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
+		pReader->Skip(1); // attribute start
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+
+			else if (0 == _at)	m_bUseDef = pReader->GetBool();
+		}
+
 		while (pReader->GetPos() < end)
 		{
 			BYTE _rec = pReader->GetUChar();
@@ -352,11 +362,16 @@ namespace OOX
 	}
 	void Diagram::CDiferentData::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteBool2(0, m_bUseDef);
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
 		pWriter->WriteRecord2(0, m_oDataModel);
 	}
 	void Diagram::CDiferentData::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
 		pWriter->StartNode(node_name);
+			pWriter->WriteAttribute(L"useDef", m_bUseDef);
 		pWriter->EndAttributes();
 		if (m_oDataModel.IsInit())
 			m_oDataModel->toXmlWriter(pWriter);
@@ -452,21 +467,21 @@ namespace OOX
 				break;
 
 			else if (0 == _at)	m_sName = pReader->GetString2();
-			else if (1 == _at)	m_sRef = pReader->GetString2();
-			else if (2 == _at)	m_sSt = pReader->GetString2();
-			else if (3 == _at)	m_sStep = pReader->GetString2();
-			else if (4 == _at)	m_bHideLastTrans = pReader->GetBool();
-			else if (5 == _at)	m_nCnt = pReader->GetULong();
+			else if (1 == _at)	m_arSt.push_back(pReader->GetLong());
+			else if (2 == _at)	m_arStep.push_back(pReader->GetLong());
+			else if (3 == _at)	m_arHideLastTrans.push_back(pReader->GetBool());
+			else if (4 == _at)	m_arCnt.push_back(pReader->GetLong());
+			else if (5 == _at)
+			{
+				SimpleTypes::CAxisTypes<> axis; axis.SetValueFromByte(pReader->GetUChar());
+				m_arAxis.push_back(axis);
+			}
 			else if (6 == _at)
 			{
-				m_oAxis.Init();
-				m_oAxis->SetValueFromByte(pReader->GetUChar());
+				SimpleTypes::CElementTypes<> ptType; ptType.SetValueFromByte(pReader->GetUChar());
+				m_arPtType.push_back(ptType);
 			}
-			else if (7 == _at)
-			{
-				m_oPtType.Init();
-				m_oPtType->SetValueFromByte(pReader->GetUChar());
-			}
+			else if (7 == _at)	m_sRef = pReader->GetString2();
 		}
 		
 		Diagram_Layout_From_PPTY()
@@ -477,13 +492,19 @@ namespace OOX
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 			pWriter->WriteString2(0, m_sName);
-			pWriter->WriteString2(1, m_sRef);
-			pWriter->WriteString2(2, m_sSt);
-			pWriter->WriteString2(3, m_sStep);
-			pWriter->WriteBool2(4, m_bHideLastTrans);
-			pWriter->WriteUInt2(5, m_nCnt);
-			if (m_oAxis.IsInit()) pWriter->WriteByte1(6, m_oAxis->GetValue());
-			if (m_oPtType.IsInit()) pWriter->WriteByte1(7, m_oPtType->GetValue());
+			for (size_t i = 0; i < m_arSt.size(); ++i)
+				pWriter->WriteInt1(1, m_arSt[i]);
+			for (size_t i = 0; i < m_arStep.size(); ++i)
+				pWriter->WriteInt1(2, m_arStep[i]);
+			for (size_t i = 0; i < m_arHideLastTrans.size(); ++i)
+				pWriter->WriteBool1(3, m_arHideLastTrans[i]);
+			for (size_t i = 0; i < m_arCnt.size(); ++i)
+				pWriter->WriteInt1(4, m_arCnt[i]);
+			for (size_t i = 0; i < m_arAxis.size(); ++i)
+				pWriter->WriteByte1(5, m_arAxis[i].GetValue());
+			for (size_t i = 0; i < m_arPtType.size(); ++i)
+				pWriter->WriteByte1(6, m_arPtType[i].GetValue());
+			pWriter->WriteString2(7, m_sRef);
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 		Diagram_Layout_To_PPTY()
@@ -492,13 +513,43 @@ namespace OOX
 	{
 		pWriter->StartNode(L"dgm:forEach");
 			pWriter->WriteAttribute(L"name", m_sName);
-			if (m_oAxis.IsInit()) pWriter->WriteAttribute(L"axis", m_oAxis->ToString());
-			pWriter->WriteAttribute2(L"cnt", m_nCnt);
-			if (m_oPtType.IsInit()) pWriter->WriteAttribute(L"ptType", m_oPtType->ToString());
-			pWriter->WriteAttribute(L"hideLastTrans", m_bHideLastTrans);
+			if (false == m_arAxis.empty())
+			{
+				std::wstring sAxis;
+				for (size_t i = 0; i < m_arAxis.size(); ++i) sAxis += L" " + m_arAxis[i].ToString();
+				pWriter->WriteAttribute(L"axis", sAxis.substr(1));
+			}
+			if (false == m_arPtType.empty())
+			{
+				std::wstring sPtType;
+				for (size_t i = 0; i < m_arPtType.size(); ++i) sPtType += L" " + m_arPtType[i].ToString();
+				pWriter->WriteAttribute(L"ptType", sPtType.substr(1));
+			}
+			if (false == m_arSt.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arSt.size(); ++i) sRes += L" " + std::to_wstring(m_arSt[i]);
+				pWriter->WriteAttribute(L"st", sRes.substr(1));
+			}
+			if (false == m_arCnt.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arCnt.size(); ++i) sRes += L" " + std::to_wstring(m_arCnt[i]);
+				pWriter->WriteAttribute(L"cnt", sRes.substr(1));
+			}
+			if (false == m_arStep.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arStep.size(); ++i) sRes += L" " + std::to_wstring(m_arStep[i]);
+				pWriter->WriteAttribute(L"step", sRes.substr(1));
+			}
+			if (false == m_arHideLastTrans.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arHideLastTrans.size(); ++i) sRes += (m_arHideLastTrans[i] ? L" 1" : L" 0");
+				pWriter->WriteAttribute(L"hideLastTrans", sRes.substr(1));
+			}
 			pWriter->WriteAttribute(L"ref", m_sRef);
-			pWriter->WriteAttribute(L"st", m_sSt);
-			pWriter->WriteAttribute(L"step", m_sStep);
 		pWriter->EndAttributes();
 
 		for (size_t i = 0; i < m_arrItems.size(); ++i)
@@ -512,16 +563,60 @@ namespace OOX
 	}
 	void Diagram::CForEach::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
+		nullable_string sPtTypes, sAxis, sCnt, sStep, sHideLastTrans, sSt;
 		WritingElement_ReadAttributes_Start(oReader)
 			WritingElement_ReadAttributes_Read_if(oReader, L"name", m_sName)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"axis", m_oAxis)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"cnt", m_nCnt)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"hideLastTrans", m_bHideLastTrans)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"ptType", m_oPtType)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"axis", sAxis)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"cnt", sCnt)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"hideLastTrans", sHideLastTrans)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"ptType", sPtTypes)
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"ref", m_sRef)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"st", m_sSt)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"step", m_sStep)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"st", sSt)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"step", sStep)
 		WritingElement_ReadAttributes_End(oReader)
+
+		if (sAxis.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sAxis, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arAxis.push_back(SimpleTypes::CAxisTypes<>(arStr[i]));
+		}
+		if (sPtTypes.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sPtTypes, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arPtType.push_back(SimpleTypes::CElementTypes<>(arStr[i]));
+		}
+		if (sSt.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sSt, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arSt.push_back(XmlUtils::GetInteger(arStr[i]));
+		}
+		if (sCnt.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sCnt, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arCnt.push_back(XmlUtils::GetInteger(arStr[i]));
+		}
+		if (sStep.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sStep, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arStep.push_back(XmlUtils::GetInteger(arStr[i]));
+		}
+		if (sHideLastTrans.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sHideLastTrans, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arHideLastTrans.push_back(SimpleTypes::COnOff<>(arStr[i]).ToBool());
+		}
 	}
 //-------------------------------------------------------------------------------------------
 	void Diagram::CIf::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -540,21 +635,21 @@ namespace OOX
 				break;
 
 			else if (0 == _at)	m_sName = pReader->GetString2();
-			else if (1 == _at)	m_sRef = pReader->GetString2();
-			else if (2 == _at)	m_sSt = pReader->GetString2();
-			else if (3 == _at)	m_sStep = pReader->GetString2();
-			else if (4 == _at)	m_bHideLastTrans = pReader->GetBool();
-			else if (5 == _at)	m_nCnt = pReader->GetULong();
+			else if (1 == _at)	m_arSt.push_back(pReader->GetLong());
+			else if (2 == _at)	m_arStep.push_back(pReader->GetLong());
+			else if (3 == _at)	m_arHideLastTrans.push_back(pReader->GetBool());
+			else if (4 == _at)	m_arCnt.push_back(pReader->GetLong());
+			else if (5 == _at)
+			{
+				SimpleTypes::CAxisTypes<> axis; axis.SetValueFromByte(pReader->GetUChar());
+				m_arAxis.push_back(axis);
+			}
 			else if (6 == _at)
 			{
-				m_oAxis.Init();
-				m_oAxis->SetValueFromByte(pReader->GetUChar());
+				SimpleTypes::CElementTypes<> ptType; ptType.SetValueFromByte(pReader->GetUChar());
+				m_arPtType.push_back(ptType);
 			}
-			else if (7 == _at)
-			{
-				m_oPtType.Init();
-				m_oPtType->SetValueFromByte(pReader->GetUChar());
-			}
+			else if (7 == _at)	m_sRef = pReader->GetString2();
 			else if (8 == _at)
 			{
 				m_oOp.Init();
@@ -576,13 +671,19 @@ namespace OOX
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 			pWriter->WriteString2(0, m_sName);
-			pWriter->WriteString2(1, m_sRef);
-			pWriter->WriteString2(2, m_sSt);
-			pWriter->WriteString2(3, m_sStep);
-			pWriter->WriteBool2(4, m_bHideLastTrans);
-			pWriter->WriteUInt2(5, m_nCnt);
-			if (m_oAxis.IsInit()) pWriter->WriteByte1(6, m_oAxis->GetValue());
-			if (m_oPtType.IsInit()) pWriter->WriteByte1(7, m_oPtType->GetValue());
+			for (size_t i = 0; i < m_arSt.size(); ++i)
+				pWriter->WriteInt1(1, m_arSt[i]);
+			for (size_t i = 0; i < m_arStep.size(); ++i)
+				pWriter->WriteInt1(2, m_arStep[i]);
+			for (size_t i = 0; i < m_arHideLastTrans.size(); ++i)
+				pWriter->WriteBool1(3, m_arHideLastTrans[i]);
+			for (size_t i = 0; i < m_arCnt.size(); ++i)
+				pWriter->WriteInt1(4, m_arCnt[i]);
+			for (size_t i = 0; i < m_arAxis.size(); ++i)
+				pWriter->WriteByte1(5, m_arAxis[i].GetValue());
+			for (size_t i = 0; i < m_arPtType.size(); ++i)
+				pWriter->WriteByte1(6, m_arPtType[i].GetValue());
+			pWriter->WriteString2(7, m_sRef);
 			if (m_oOp.IsInit()) pWriter->WriteByte1(8, m_oOp->GetValue());
 			if (m_oFunc.IsInit()) pWriter->WriteByte1(9, m_oFunc->GetValue());
 			pWriter->WriteString2(10, m_sVal);
@@ -595,16 +696,47 @@ namespace OOX
 	{
 		pWriter->StartNode(L"dgm:if");
 			pWriter->WriteAttribute(L"name", m_sName);
-			pWriter->WriteAttribute(L"arg", m_sArg);
-			if (m_oAxis.IsInit()) pWriter->WriteAttribute(L"axis", m_oAxis->ToString());
-			pWriter->WriteAttribute2(L"cnt", m_nCnt);
-			if (m_oPtType.IsInit()) pWriter->WriteAttribute(L"ptType", m_oPtType->ToString());
 			if (m_oFunc.IsInit()) pWriter->WriteAttribute(L"func", m_oFunc->ToString());
+			pWriter->WriteAttribute(L"arg", m_sArg);
+			if (false == m_arAxis.empty())
+			{
+				std::wstring sAxis;
+				for (size_t i = 0; i < m_arAxis.size(); ++i) sAxis += L" " + m_arAxis[i].ToString();
+				pWriter->WriteAttribute(L"axis", sAxis.substr(1));
+			}
+			if (false == m_arPtType.empty())
+			{
+				std::wstring sPtType;
+				for (size_t i = 0; i < m_arPtType.size(); ++i) sPtType += L" " + m_arPtType[i].ToString();
+				pWriter->WriteAttribute(L"ptType", sPtType.substr(1));
+			}
+			if (false == m_arSt.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arSt.size(); ++i) sRes += L" " + std::to_wstring(m_arSt[i]);
+				pWriter->WriteAttribute(L"st", sRes.substr(1));
+			}
+			if (false == m_arCnt.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arCnt.size(); ++i) sRes += L" " + std::to_wstring(m_arCnt[i]);
+				pWriter->WriteAttribute(L"cnt", sRes.substr(1));
+			}
+			if (false == m_arStep.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arStep.size(); ++i) sRes += L" " + std::to_wstring(m_arStep[i]);
+				pWriter->WriteAttribute(L"step", sRes.substr(1));
+			}
+			if (false == m_arHideLastTrans.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arHideLastTrans.size(); ++i) sRes += (m_arHideLastTrans[i] ? L" 1" : L" 0");
+				pWriter->WriteAttribute(L"hideLastTrans", sRes.substr(1));
+			}
+
 			if (m_oOp.IsInit()) pWriter->WriteAttribute(L"op", m_oOp->ToString());
-			pWriter->WriteAttribute(L"hideLastTrans", m_bHideLastTrans);
 			pWriter->WriteAttribute(L"ref", m_sRef);
-			pWriter->WriteAttribute(L"st", m_sSt);
-			pWriter->WriteAttribute(L"step", m_sStep);
 			pWriter->WriteAttribute(L"val", m_sVal);
 		pWriter->EndAttributes();
 
@@ -619,20 +751,63 @@ namespace OOX
 	}
 	void Diagram::CIf::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
+		nullable_string sPtTypes, sAxis, sCnt, sStep, sHideLastTrans, sSt;
 		WritingElement_ReadAttributes_Start(oReader)
 			WritingElement_ReadAttributes_Read_if(oReader, L"name", m_sName)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"axis", m_oAxis)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"cnt", m_nCnt)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"hideLastTrans", m_bHideLastTrans)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"ptType", m_oPtType)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"axis", sAxis)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"cnt", sCnt)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"hideLastTrans", sHideLastTrans)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"ptType", sPtTypes)
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"ref", m_sRef)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"st", m_sSt)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"step", m_sStep)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"st", sSt)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"step", sStep)
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"arg", m_sArg)
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"func", m_oFunc)
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"op", m_oOp)
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"val", m_sVal)
 		WritingElement_ReadAttributes_End(oReader)
+		if (sAxis.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sAxis, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arAxis.push_back(SimpleTypes::CAxisTypes<>(arStr[i]));
+		}
+		if (sPtTypes.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sPtTypes, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arPtType.push_back(SimpleTypes::CElementTypes<>(arStr[i]));
+		}
+		if (sSt.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sSt, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arSt.push_back(XmlUtils::GetInteger(arStr[i]));
+		}
+		if (sCnt.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sCnt, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arCnt.push_back(XmlUtils::GetInteger(arStr[i]));
+		}
+		if (sStep.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sStep, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arStep.push_back(XmlUtils::GetInteger(arStr[i]));
+		}
+		if (sHideLastTrans.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sHideLastTrans, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arHideLastTrans.push_back(SimpleTypes::COnOff<>(arStr[i]).ToBool());
+		}
 	}
 //-------------------------------------------------------------------------------------------
 	void Diagram::CElse::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1118,8 +1293,8 @@ namespace OOX
 			if (m_oRefFor.IsInit()) pWriter->WriteAttribute(L"refFor", m_oRefFor->ToString());
 			pWriter->WriteAttribute(L"refForName", m_oRefForName);
 			if (m_oRefPtType.IsInit()) pWriter->WriteAttribute(L"refPtType", m_oRefPtType->ToString());
-			if (m_oOp.IsInit()) pWriter->WriteAttribute(L"op", m_oOp->ToString());
 			if (m_oPtType.IsInit()) pWriter->WriteAttribute(L"ptType", m_oPtType->ToString());
+			if (m_oOp.IsInit()) pWriter->WriteAttribute(L"op", m_oOp->ToString());
 			pWriter->WriteAttribute(L"fact", m_oFact);
 			pWriter->WriteAttribute(L"val", m_oVal);
 		pWriter->EndAttributes();
@@ -1168,7 +1343,11 @@ namespace OOX
 			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 				break;
 
-			else if (0 == _at)	m_oFact = pReader->GetDoubleReal();
+			else if (0 == _at)
+			{
+				m_oFact.Init();
+				m_oFact->SetValue(pReader->GetDoubleReal());
+			}
 			else if (1 == _at)
 			{
 				m_oFor.Init();
@@ -1185,21 +1364,29 @@ namespace OOX
 				m_oType.Init();
 				m_oType->SetValueFromByte(pReader->GetUChar());
 			}
-			else if (5 == _at)	m_oVal = pReader->GetDoubleReal();
-			else if (6 == _at)	m_oMax = pReader->GetDoubleReal();
+			else if (5 == _at)
+			{
+				m_oVal.Init();
+				m_oVal->SetValue(pReader->GetDoubleReal());
+			}
+			else if (6 == _at)
+			{
+				m_oMax.Init();
+				m_oMax->SetValue(pReader->GetDoubleReal());
+			}
 		}
 		pReader->Seek(end);
 	}
 	void Diagram::CRule::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteDoubleReal2(0, m_oFact);
+			if (m_oFact.IsInit())pWriter->WriteDoubleReal1(0, m_oFact->GetValue());
 			if (m_oFor.IsInit()) pWriter->WriteByte1(1, m_oFor->GetValue());
 			pWriter->WriteString2(2, m_oForName);
 			if (m_oPtType.IsInit()) pWriter->WriteByte1(3, m_oPtType->GetValue());
 			if (m_oType.IsInit()) pWriter->WriteByte1(4, m_oType->GetValue());
-			pWriter->WriteDoubleReal2(5, m_oVal);
-			pWriter->WriteDoubleReal2(6, m_oMax);
+			if (m_oVal.IsInit()) pWriter->WriteDoubleReal1(5, m_oVal->GetValue());
+			if (m_oMax.IsInit()) pWriter->WriteDoubleReal1(6, m_oMax->GetValue());
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 	}
 	void Diagram::CRule::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -1211,9 +1398,9 @@ namespace OOX
 			if (m_oFor.IsInit()) pWriter->WriteAttribute(L"for", m_oFor->ToString());
 			pWriter->WriteAttribute(L"forName", m_oForName);
 			if (m_oPtType.IsInit()) pWriter->WriteAttribute(L"ptType", m_oPtType->ToString());
-			pWriter->WriteAttribute(L"val", m_oVal);
-			pWriter->WriteAttribute(L"fact", m_oFact);
-			pWriter->WriteAttribute(L"max", m_oMax);
+			if (m_oVal.IsInit()) pWriter->WriteAttribute(L"val", m_oVal->ToString());
+			if (m_oFact.IsInit()) pWriter->WriteAttribute(L"fact", m_oFact->ToString());
+			if (m_oMax.IsInit()) pWriter->WriteAttribute(L"max", m_oMax->ToString());
 		pWriter->EndAttributes();
 		pWriter->WriteNodeEnd(L"dgm:rule");
 	}
@@ -1311,19 +1498,19 @@ namespace OOX
 				break;
 
 			else if (0 == _at)	m_sName = pReader->GetString2();
-			else if (1 == _at)	m_sSt = pReader->GetString2();
-			else if (2 == _at)	m_sStep = pReader->GetString2();
-			else if (3 == _at)	m_bHideLastTrans = pReader->GetBool();
-			else if (4 == _at)	m_nCnt = pReader->GetULong();
+			else if (1 == _at)	m_arSt.push_back(pReader->GetLong());
+			else if (2 == _at)	m_arStep.push_back(pReader->GetLong());
+			else if (3 == _at)	m_arHideLastTrans.push_back(pReader->GetBool());
+			else if (4 == _at)	m_arCnt.push_back(pReader->GetLong());
 			else if (5 == _at)
 			{
-				m_oAxis.Init();
-				m_oAxis->SetValueFromByte(pReader->GetUChar());
+				SimpleTypes::CAxisTypes<> axis; axis.SetValueFromByte(pReader->GetUChar());
+				m_arAxis.push_back(axis);
 			}
 			else if (6 == _at)
 			{
-				m_oPtType.Init();
-				m_oPtType->SetValueFromByte(pReader->GetUChar());
+				SimpleTypes::CElementTypes<> ptType; ptType.SetValueFromByte(pReader->GetUChar());
+				m_arPtType.push_back(ptType);
 			}
 		}
 		pReader->Seek(end);
@@ -1332,38 +1519,118 @@ namespace OOX
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 			pWriter->WriteString2(0, m_sName);
-			pWriter->WriteString2(1, m_sSt);
-			pWriter->WriteString2(2, m_sStep);
-			pWriter->WriteBool2(3, m_bHideLastTrans);
-			pWriter->WriteUInt2(4, m_nCnt);
-			if (m_oAxis.IsInit()) pWriter->WriteByte1(5, m_oAxis->GetValue());
-			if (m_oPtType.IsInit()) pWriter->WriteByte1(6, m_oPtType->GetValue());
-		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			for (size_t i = 0; i < m_arSt.size(); ++i)
+				pWriter->WriteInt1(1, m_arSt[i]);
+			for (size_t i = 0; i < m_arStep.size(); ++i)
+				pWriter->WriteInt1(2, m_arStep[i]);
+			for (size_t i = 0; i < m_arHideLastTrans.size(); ++i)
+				pWriter->WriteBool1(3, m_arHideLastTrans[i]);
+			for (size_t i = 0; i < m_arCnt.size(); ++i)
+				pWriter->WriteInt1(4, m_arCnt[i]);
+			for (size_t i = 0; i < m_arAxis.size(); ++i)
+				pWriter->WriteByte1(5, m_arAxis[i].GetValue());
+			for (size_t i = 0; i < m_arPtType.size(); ++i)
+				pWriter->WriteByte1(6, m_arPtType[i].GetValue());
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 	}
 	void Diagram::CPresOf::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
 		pWriter->StartNode(L"dgm:presOf");
 			pWriter->WriteAttribute(L"name", m_sName);
-			if (m_oAxis.IsInit()) pWriter->WriteAttribute(L"axis", m_oAxis->ToString());
-			if (m_oPtType.IsInit()) pWriter->WriteAttribute(L"ptType", m_oPtType->ToString());
-			pWriter->WriteAttribute2(L"cnt", m_nCnt);
-			pWriter->WriteAttribute(L"st", m_sSt);
-			pWriter->WriteAttribute(L"step", m_sStep);
-			pWriter->WriteAttribute(L"hideLastTrans", m_bHideLastTrans);
+			if (false == m_arAxis.empty())
+			{
+				std::wstring sAxis;
+				for (size_t i = 0; i < m_arAxis.size(); ++i) sAxis += L" " + m_arAxis[i].ToString();
+				pWriter->WriteAttribute(L"axis", sAxis.substr(1));
+			}
+			if (false == m_arPtType.empty())
+			{
+				std::wstring sPtType;
+				for (size_t i = 0; i < m_arPtType.size(); ++i) sPtType += L" " + m_arPtType[i].ToString();
+				pWriter->WriteAttribute(L"ptType", sPtType.substr(1));
+			}
+			if (false == m_arSt.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arSt.size(); ++i) sRes += L" " + std::to_wstring(m_arSt[i]);
+				pWriter->WriteAttribute(L"st", sRes.substr(1));
+			}
+			if (false == m_arCnt.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arCnt.size(); ++i) sRes += L" " + std::to_wstring(m_arCnt[i]);
+				pWriter->WriteAttribute(L"cnt", sRes.substr(1));
+			}
+			if (false == m_arStep.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arStep.size(); ++i) sRes += L" " + std::to_wstring(m_arStep[i]);
+				pWriter->WriteAttribute(L"step", sRes.substr(1));
+			}
+			if (false == m_arHideLastTrans.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arHideLastTrans.size(); ++i) sRes += (m_arHideLastTrans[i] ? L" 1" : L" 0");
+				pWriter->WriteAttribute(L"hideLastTrans", sRes.substr(1));
+			}
 		pWriter->EndAttributes();
 		pWriter->WriteNodeEnd(L"dgm:presOf");
 	}
 	void Diagram::CPresOf::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
+		nullable_string sPtTypes, sAxis, sCnt, sStep, sHideLastTrans, sSt;
 		WritingElement_ReadAttributes_Start(oReader)
-			WritingElement_ReadAttributes_Read_if(oReader, L"axis", m_oAxis)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"cnt", m_nCnt)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"hideLastTrans", m_bHideLastTrans)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"ptType", m_oPtType)
+			WritingElement_ReadAttributes_Read_if(oReader, L"axis", sAxis)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"cnt", sCnt)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"hideLastTrans", sHideLastTrans)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"ptType", sPtTypes)
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"name", m_sName)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"st", m_sSt)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"step", m_sStep)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"st", sSt)
+			WritingElement_ReadAttributes_Read_else_if(oReader, L"step", sStep)
 		WritingElement_ReadAttributes_End(oReader)
+
+		if (sAxis.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sAxis, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arAxis.push_back(SimpleTypes::CAxisTypes<>(arStr[i]));
+		}
+		if (sPtTypes.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sPtTypes, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arPtType.push_back(SimpleTypes::CElementTypes<>(arStr[i]));
+		}
+		if (sSt.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sSt, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arSt.push_back(XmlUtils::GetInteger(arStr[i]));
+		}
+		if (sCnt.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sCnt, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arCnt.push_back(XmlUtils::GetInteger(arStr[i]));
+		}
+		if (sStep.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sStep, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arStep.push_back(XmlUtils::GetInteger(arStr[i]));
+		}
+		if (sHideLastTrans.IsInit())
+		{
+			std::vector<std::wstring> arStr;
+			boost::algorithm::split(arStr, *sHideLastTrans, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < arStr.size(); ++i)
+				m_arHideLastTrans.push_back(SimpleTypes::COnOff<>(arStr[i]).ToBool());
+		}
 	}
 //-------------------------------------------------------------------------------------------
 	void Diagram::CShapeAdjust::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1487,11 +1754,11 @@ namespace OOX
 	void Diagram::CShape::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
 		pWriter->StartNode(L"dgm:shape");
+			pWriter->WriteAttribute(L"rot", m_dRot);
 			pWriter->WriteAttribute(L"type", m_oType);
-			pWriter->WriteAttribute(L"blip", m_sBlip.get_value_or(L""));
+			pWriter->WriteAttribute(L"r:blip", m_sBlip.get_value_or(L""));
 			pWriter->WriteAttribute(L"blipPhldr", m_bBlipPhldr);
 			pWriter->WriteAttribute(L"lkTxEntry", m_bLkTxEntry);
-			pWriter->WriteAttribute(L"rot", m_dRot);
 			pWriter->WriteAttribute(L"zOrderOff", m_nZOrderOff);
 			pWriter->WriteAttribute(L"hideGeom", m_bHideGeom);
 		pWriter->EndAttributes();

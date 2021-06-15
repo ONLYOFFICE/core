@@ -803,5 +803,6 @@ namespace OOX
 
 		nullable<Diagram::CDataModel> m_oDataModel;
 	
+		nullable<OOX::RId> id_drawing;
 	};
 } // namespace OOX

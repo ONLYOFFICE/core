@@ -131,14 +131,14 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::CAxisTypes<>> m_oAxis;
-			nullable_uint m_nCnt;
-			nullable_bool m_bHideLastTrans;
+			std::vector<SimpleTypes::CAxisTypes<>> m_arAxis;
+			std::vector<SimpleTypes::CElementTypes<>> m_arPtType;
+			std::vector<int> m_arCnt;
+			std::vector<int> m_arSt;
+			std::vector<int> m_arStep;
+			std::vector<bool> m_arHideLastTrans;
 			nullable_string m_sName;
-			nullable<SimpleTypes::CElementTypes<>> m_oPtType;
 			nullable_string m_sRef;
-			nullable_string m_sSt; // todooo ints list
-			nullable_string m_sStep;
 		};
 		class CRule : public WritingElement
 		{
@@ -168,13 +168,13 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable_double m_oFact;
+			nullable<SimpleTypes::CDouble> m_oFact;
 			nullable<SimpleTypes::CConstraintRelationship<>> m_oFor;
 			nullable_string m_oForName;
-			nullable_double m_oMax;
+			nullable<SimpleTypes::CDouble> m_oMax;
 			nullable<SimpleTypes::CElementTypes<>> m_oPtType;
 			nullable<SimpleTypes::CConstraintType<>> m_oType;
-			nullable_double m_oVal;
+			nullable<SimpleTypes::CDouble> m_oVal;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};
@@ -365,14 +365,15 @@ namespace OOX
 			nullable_string m_sArg; //union of types
 			nullable<SimpleTypes::CFunctionType<>> m_oFunc;
 			nullable<SimpleTypes::CFunctionOperator<>> m_oOp;
-			nullable<SimpleTypes::CAxisTypes<>> m_oAxis;
-			nullable_uint m_nCnt;
-			nullable_bool m_bHideLastTrans;
+			std::vector<SimpleTypes::CAxisTypes<>> m_arAxis;
+			std::vector<SimpleTypes::CElementTypes<>> m_arPtType;
+			std::vector<int> m_arCnt;
+			std::vector<int> m_arSt;
+			std::vector<int> m_arStep;		
+			std::vector<bool> m_arHideLastTrans;
 			nullable_string m_sName;
-			nullable<SimpleTypes::CElementTypes<>> m_oPtType;
 			nullable_string m_sRef;
-			nullable_string m_sSt; // todooo ints list
-			nullable_string m_sStep;
+
 			nullable_string m_sVal;
 		};
 		class CElse : public WritingElementWithChilds<>
@@ -465,13 +466,13 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::CAxisTypes<>> m_oAxis;
-			nullable_uint m_nCnt;
-			nullable_bool m_bHideLastTrans;
+			std::vector<SimpleTypes::CAxisTypes<>> m_arAxis;
+			std::vector<SimpleTypes::CElementTypes<>> m_arPtType;
+			std::vector<int> m_arCnt;
+			std::vector<int> m_arSt;
+			std::vector<int> m_arStep;
+			std::vector<bool> m_arHideLastTrans;
 			nullable_string m_sName;
-			nullable<SimpleTypes::CElementTypes<>> m_oPtType;
-			nullable_string m_sSt; // todooo ints list
-			nullable_string m_sStep;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};

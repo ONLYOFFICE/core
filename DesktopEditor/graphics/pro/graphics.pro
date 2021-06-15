@@ -71,6 +71,12 @@ INCLUDEPATH += \
 
 HEADERS += \
     ../../raster/Metafile/CXmlOutput.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretarorRender.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretarorXml.h \
+    ../../raster/Metafile/Emf/EmfParser/CEmfParser.h \
+    ../../raster/Metafile/Emf/EmfParser/CEmfParserBase.h \
+    ../../raster/Metafile/Emf/EmfParser/CEmfxParser.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretarorBase.h \
     ./../config.h \
     \
     ./../Matrix.h \
@@ -112,6 +118,10 @@ HEADERS += \
 
 SOURCES += \
     ../../raster/Metafile/CXmlOutput.cpp \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretarorRender.cpp \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretarorXml.cpp \
+    ../../raster/Metafile/Emf/EmfParser/CEmfParser.cpp \
+    ../../raster/Metafile/Emf/EmfParser/CEmfxParser.cpp \
     ./../Matrix.cpp \
     ./../GraphicsPath.cpp \
     ./../../raster/BgraFrame.cpp \

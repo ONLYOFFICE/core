@@ -33,6 +33,9 @@
 #define _METAFILE_EMF_EMFFILE_H
 
 #include "../Common/MetaFile.h"
+#include "EmfParser/CEmfParser.h"
+#include "EmfParser/CEmfxParser.h"
+#include "EmfInterpretator/CEmfInterpretarorXml.h"
 #include "../CXmlOutput.h"
 
 #include "EmfTypes.h"
@@ -53,8 +56,9 @@ namespace MetaFile
 		{
 			m_pPath = NULL;
 			m_pDC   = m_oPlayer.GetDC();
-
 			m_pOutputXml = NULL;
+			m_pParser    = new CEmfParser;
+			m_pInterpretator = new CEmfInterpretarorXml();
 		}
 
 		~CEmfFile()
@@ -62,6 +66,8 @@ namespace MetaFile
 			ClearFile();
 			if (NULL != m_pOutputXml)
 				delete m_pOutputXml;
+			if (NULL != m_pInterpretator)
+				delete m_pInterpretator;
 		}
 
 		void CreateOutputXml(TypeXmlOutput oTypeXmlOutput)
@@ -346,7 +352,9 @@ namespace MetaFile
 		friend class CEmfPlayer;
 		friend class CEmfClip;
 
+		CEmfInterpretarorXml* m_pInterpretator;
 		CXmlOutput *m_pOutputXml;
+		CEmfParserBase *m_pParser;
 	};
 }
 

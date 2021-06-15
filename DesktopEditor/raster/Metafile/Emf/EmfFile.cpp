@@ -179,11 +179,14 @@ static const struct ActionNamesEmf
 };
 	void CEmfFile::PlayMetaFile()
 	{
-		if (!m_oStream.IsValid())
+		m_pParser->SetStream(m_oStream);
+
+//		if (!m_oStream.IsValid())
+		if (!m_pParser->IsValid())
 			SetError();
 
 		unsigned int ulSize, ulType;
-		unsigned int ulNumber = 0;
+//		unsigned int ulNumber = 0;
 
 		bool bEof = false;
 
@@ -210,28 +213,36 @@ static const struct ActionNamesEmf
 
 		do
 		{			
-            if (m_oStream.IsEof())
-                break;
-            if (m_oStream.CanRead() < 8)
+//	    if (m_oStream.IsEof())
+//		break;
+//	    if (m_oStream.CanRead() < 8)
+//				return SetError();
+
+			if (m_pParser->IsEof())
+				break;
+
+			if (m_pParser->CanRead() < 8)
 				return SetError();
 
+//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			{
+//				m_pOutputXml->ReadArguments(ulType, ulSize);
+//				m_oStream.Skip(8);
+//			}
+//			else
+//			{
+//				m_oStream >> ulType;
+//				m_oStream >> ulSize;
+//			}
 
-
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			{
-				m_pOutputXml->ReadArguments(ulType, ulSize);
-				m_oStream.Skip(8);
-			}
-			else
-			{
-				m_oStream >> ulType;
-				m_oStream >> ulSize;
-			}
+                        m_pParser->ReadValue(ulType);
+                        m_pParser->ReadValue(ulSize);
 
             if (ulSize < 1)
 				continue;
 
-			m_ulRecordPos	= m_oStream.Tell();
+//			m_ulRecordPos	= m_oStream.Tell();
+			m_ulRecordPos	= m_pParser->Tell();
 			m_ulRecordSize	= ulSize - 8;
 
 			if (ulType < EMR_MIN || ulType > EMR_MAX)
@@ -375,8 +386,10 @@ static const struct ActionNamesEmf
 			if (bEof)
 				break;
 
-			int need_skip = m_ulRecordSize - (m_oStream.Tell() - m_ulRecordPos);
-			m_oStream.Skip(need_skip);
+//			int need_skip = m_ulRecordSize - (m_oStream.Tell() - m_ulRecordPos);
+//			m_oStream.Skip(need_skip);
+			int need_skip = m_ulRecordSize - (m_pParser->Tell() - m_ulRecordPos);
+			m_pParser->Skip(need_skip);
 			
 #ifdef _DEBUG
 			if ( need_skip != 0 && !m_pOutput)
@@ -394,7 +407,8 @@ static const struct ActionNamesEmf
 		} while (!CheckError());
 
 		if (!CheckError())
-			m_oStream.SeekToStart();
+//			m_oStream.SeekToStart();
+			m_pParser->SeekToStart();
 
 		if (m_pOutput)
 		{
@@ -749,26 +763,42 @@ static const struct ActionNamesEmf
 
 	void CEmfFile::Read_EMR_HEADER()
 	{
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> m_oHeader;
-		}
-		else
-		{
-			m_oStream >> m_oHeader.oBounds;
-			m_oStream >> m_oHeader.oFrame;
-			m_oStream >> m_oHeader.ulSignature;
-			m_oStream >> m_oHeader.ulVersion;
-			m_oStream >> m_oHeader.ulSize;
-			m_oStream >> m_oHeader.ulRecords;
-			m_oStream >> m_oHeader.ushObjects;
-			m_oStream >> m_oHeader.ushReserved;
-			m_oStream >> m_oHeader.ulSizeDescription;
-			m_oStream >> m_oHeader.ulOffsetDescription;
-			m_oStream >> m_oHeader.ulPalEntries;
-			m_oStream >> m_oHeader.oDevice;
-			m_oStream >> m_oHeader.oMillimeters;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> m_oHeader;
+//		}
+//		else
+//		{
+//			m_oStream >> m_oHeader.oBounds;
+//			m_oStream >> m_oHeader.oFrame;
+//			m_oStream >> m_oHeader.ulSignature;
+//			m_oStream >> m_oHeader.ulVersion;
+//			m_oStream >> m_oHeader.ulSize;
+//			m_oStream >> m_oHeader.ulRecords;
+//			m_oStream >> m_oHeader.ushObjects;
+//			m_oStream >> m_oHeader.ushReserved;
+//			m_oStream >> m_oHeader.ulSizeDescription;
+//			m_oStream >> m_oHeader.ulOffsetDescription;
+//			m_oStream >> m_oHeader.ulPalEntries;
+//			m_oStream >> m_oHeader.oDevice;
+//			m_oStream >> m_oHeader.oMillimeters;
+//		}
+
+		m_pParser->ReadValue(m_oHeader.oBounds);
+		m_pParser->ReadValue(m_oHeader.oFrame);
+		m_pParser->ReadValue(m_oHeader.ulSignature);
+		m_pParser->ReadValue(m_oHeader.ulVersion);
+		m_pParser->ReadValue(m_oHeader.ulSize);
+		m_pParser->ReadValue(m_oHeader.ulRecords);
+		m_pParser->ReadValue(m_oHeader.ushObjects);
+		m_pParser->ReadValue(m_oHeader.ushReserved);
+		m_pParser->ReadValue(m_oHeader.ulSizeDescription);
+		m_pParser->ReadValue(m_oHeader.ulOffsetDescription);
+		m_pParser->ReadValue(m_oHeader.ulPalEntries);
+		m_pParser->ReadValue(m_oHeader.oDevice);
+		m_pParser->ReadValue(m_oHeader.oMillimeters);
+
+		m_pInterpretator->Save_EMR_HEADER(m_oHeader, m_ulRecordSize, *m_pParser->GetDataStream());
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -828,17 +858,19 @@ static const struct ActionNamesEmf
 	{
 		TEmfAlphaBlend oBitmap;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBitmap;
-			CDataStream oBuffer;
-			if (oBitmap.cbBitsSrc > 0)
-				*m_pOutputXml >> oBuffer;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBitmap;
+//			CDataStream oBuffer;
+//			if (oBitmap.cbBitsSrc > 0)
+//				*m_pOutputXml >> oBuffer;
 
-			m_oStream.Skip(100);
-		}
-		else
-			m_oStream >> oBitmap;
+//			m_oStream.Skip(100);
+//		}
+//		else
+//			m_oStream >> oBitmap;
+
+		m_pParser->ReadValue(oBitmap);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{	
@@ -896,17 +928,19 @@ static const struct ActionNamesEmf
 	{
 		TEmfStretchDIBITS oBitmap;
 
-		if (m_pOutput && m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBitmap;
-			CDataStream oBuffer;
-			if (oBitmap.cbBitsSrc > 0)
-				*m_pOutputXml >> oBuffer;
+//		if (m_pOutput && m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBitmap;
+//			CDataStream oBuffer;
+//			if (oBitmap.cbBitsSrc > 0)
+//				*m_pOutputXml >> oBuffer;
 
-			m_oStream.Skip(72);
-		}
-		else
-			m_oStream >> oBitmap;
+//			m_oStream.Skip(72);
+//		}
+//		else
+//			m_oStream >> oBitmap;
+
+		m_pParser->ReadValue(oBitmap);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -940,17 +974,19 @@ static const struct ActionNamesEmf
 	{
 		TEmfBitBlt oBitmap;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBitmap;
-			CDataStream oBuffer;
-			if (oBitmap.cbBitsSrc > 0)
-				*m_pOutputXml >> oBuffer;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBitmap;
+//			CDataStream oBuffer;
+//			if (oBitmap.cbBitsSrc > 0)
+//				*m_pOutputXml >> oBuffer;
 
-			m_oStream.Skip(92);
-		}
-		else
-			m_oStream >> oBitmap;
+//			m_oStream.Skip(92);
+//		}
+//		else
+//			m_oStream >> oBitmap;
+
+		m_pParser->ReadValue(oBitmap);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1062,17 +1098,19 @@ static const struct ActionNamesEmf
 	{
 		TEmfSetDiBitsToDevice oBitmap;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBitmap;
-			CDataStream oBuffer;
-			if (oBitmap.cbBitsSrc > 0)
-				*m_pOutputXml >> oBuffer;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBitmap;
+//			CDataStream oBuffer;
+//			if (oBitmap.cbBitsSrc > 0)
+//				*m_pOutputXml >> oBuffer;
 
-                        m_oStream.Skip(68);
-                }
-                else
-                        m_oStream >> oBitmap;
+//                        m_oStream.Skip(68);
+//                }
+//                else
+//                        m_oStream >> oBitmap;
+
+		m_pParser->ReadValue(oBitmap);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1102,17 +1140,19 @@ static const struct ActionNamesEmf
 	{
 		TEmfStretchBLT oBitmap;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBitmap;
-			CDataStream oBuffer;
-			if (oBitmap.cbBitsSrc > 0)
-				*m_pOutputXml >> oBuffer;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBitmap;
+//			CDataStream oBuffer;
+//			if (oBitmap.cbBitsSrc > 0)
+//				*m_pOutputXml >> oBuffer;
 
-                        m_oStream.Skip(100);
-                }
-                else
-                        m_oStream >> oBitmap;
+//                        m_oStream.Skip(100);
+//                }
+//                else
+//                        m_oStream >> oBitmap;
+
+		m_pParser->ReadValue(oBitmap);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1147,21 +1187,28 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulCount, ulOffset, ulSizeLast;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> ulCount;
-			*m_pOutputXml >> ulOffset;
-			*m_pOutputXml >> ulSizeLast;
-		}
-		else
-		{
-			m_oStream >> ulCount;
-			m_oStream >> ulOffset;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> ulCount;
+//			*m_pOutputXml >> ulOffset;
+//			*m_pOutputXml >> ulSizeLast;
+//		}
+//		else
+//		{
+//			m_oStream >> ulCount;
+//			m_oStream >> ulOffset;
 
-			m_oStream.Skip(m_ulRecordSize - 8 - 4);
+//			m_oStream.Skip(m_ulRecordSize - 8 - 4);
 
-			m_oStream >> ulSizeLast;
-		 }
+//			m_oStream >> ulSizeLast;
+//		 }
+
+		m_pParser->ReadValue(ulCount);
+		m_pParser->ReadValue(ulOffset);
+
+		m_oStream.Skip(m_ulRecordSize - 8 - 4);
+
+		m_pParser->ReadValue(ulSizeLast);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1193,10 +1240,12 @@ static const struct ActionNamesEmf
 	void CEmfFile::Read_EMR_RESTOREDC()
 	{
 		int lSavedDC;
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml>>lSavedDC;
-		else
-			m_oStream >> lSavedDC;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml>>lSavedDC;
+//		else
+//			m_oStream >> lSavedDC;
+
+		m_pParser->ReadValue(lSavedDC);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1224,16 +1273,19 @@ static const struct ActionNamesEmf
 		TEmfXForm oXForm;
 		unsigned int ulMode;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oXForm;
-			*m_pOutputXml >> ulMode;
-		}
-		else
-		{
-			m_oStream >> oXForm;
-			m_oStream >> ulMode;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oXForm;
+//			*m_pOutputXml >> ulMode;
+//		}
+//		else
+//		{
+//			m_oStream >> oXForm;
+//			m_oStream >> ulMode;
+//		}
+
+		m_pParser->ReadValue(oXForm);
+		m_pParser->ReadValue(ulMode);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1251,10 +1303,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfXForm oXForm;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oXForm;
-		else
-			m_oStream >> oXForm;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oXForm;
+//		else
+//			m_oStream >> oXForm;
+
+		m_pParser->ReadValue(oXForm);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1274,16 +1328,19 @@ static const struct ActionNamesEmf
 		if (!pBrush)
 			return SetError();
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> ulBrushIndex;
-			*m_pOutputXml >> *pBrush;
-		}
-		else
-		{
-			m_oStream >> ulBrushIndex;
-			m_oStream >> *pBrush;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> ulBrushIndex;
+//			*m_pOutputXml >> *pBrush;
+//		}
+//		else
+//		{
+//			m_oStream >> ulBrushIndex;
+//			m_oStream >> *pBrush;
+//		}
+
+		m_pParser->ReadValue(ulBrushIndex);
+		m_pParser->ReadValue(*pBrush);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1301,10 +1358,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfColor oColor;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oColor;
-		else
-			m_oStream >> oColor;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oColor;
+//		else
+//			m_oStream >> oColor;
+
+		m_pParser->ReadValue(oColor);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1321,10 +1380,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulObjectIndex;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulObjectIndex;
-		else
-			m_oStream >> ulObjectIndex;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulObjectIndex;
+//		else
+//			m_oStream >> ulObjectIndex;
+
+		m_pParser->ReadValue(ulObjectIndex);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1347,16 +1408,19 @@ static const struct ActionNamesEmf
 		if (!pFont)
 			return SetError();
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> ulIndex;
-			*m_pOutputXml >> *pFont;
-		}
-		else
-		{
-			m_oStream >> ulIndex;
-			m_oStream >> *pFont;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> ulIndex;
+//			*m_pOutputXml >> *pFont;
+//		}
+//		else
+//		{
+//			m_oStream >> ulIndex;
+//			m_oStream >> *pFont;
+//		}
+
+		m_pParser->ReadValue(ulIndex);
+		m_pParser->ReadValue(*pFont);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1374,10 +1438,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulAlign;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulAlign;
-		else
-			m_oStream >> ulAlign;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulAlign;
+//		else
+//			m_oStream >> ulAlign;
+
+		m_pParser->ReadValue(ulAlign);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1394,11 +1460,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulBgMode;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulBgMode;
-		else
-			m_oStream >> ulBgMode;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulBgMode;
+//		else
+//			m_oStream >> ulBgMode;
 
+		m_pParser->ReadValue(ulBgMode);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1415,10 +1482,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulIndex;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulIndex;
-		else
-			m_oStream >> ulIndex;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulIndex;
+//		else
+//			m_oStream >> ulIndex;
+
+		m_pParser->ReadValue(ulIndex);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1435,10 +1504,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulMiterLimit;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulMiterLimit;
-		else
-			m_oStream >> ulMiterLimit;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulMiterLimit;
+//		else
+//			m_oStream >> ulMiterLimit;
+
+		m_pParser->ReadValue(ulMiterLimit);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1455,16 +1526,18 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulPenIndex;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> ulPenIndex;
-			m_pOutputXml->ReadNextNode();
-			m_pOutputXml->ReadNextNode();
-			m_pOutputXml->ReadNextNode();
-			m_pOutputXml->ReadNextNode();
-		}
-		else
-			m_oStream >> ulPenIndex;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> ulPenIndex;
+//			m_pOutputXml->ReadNextNode();
+//			m_pOutputXml->ReadNextNode();
+//			m_pOutputXml->ReadNextNode();
+//			m_pOutputXml->ReadNextNode();
+//		}
+//		else
+//			m_oStream >> ulPenIndex;
+
+		m_pParser->ReadValue(ulPenIndex);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1491,21 +1564,22 @@ static const struct ActionNamesEmf
 			return SetError();
 
 		// LogPenEx
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			m_pOutputXml->ReadNextNode();
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			m_pOutputXml->ReadNextNode();
 
-			*m_pOutputXml >> pPen->PenStyle;
-			*m_pOutputXml >> pPen->Width;
+//			*m_pOutputXml >> pPen->PenStyle;
+//			*m_pOutputXml >> pPen->Width;
 
-			m_pOutputXml->ReadNextNode();
-		}
-		else
-		{
-			m_oStream >> pPen->PenStyle;
-			m_oStream >> pPen->Width;
-		}
-
+//			m_pOutputXml->ReadNextNode();
+//		}
+//		else
+//		{
+//			m_oStream >> pPen->PenStyle;
+//			m_oStream >> pPen->Width;
+//		}
+		m_pParser->ReadValue(pPen->PenStyle);
+		m_pParser->ReadValue(pPen->Width);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1519,10 +1593,12 @@ static const struct ActionNamesEmf
 		else
 		    m_oStream.Skip(4); // BrushStyle
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> pPen->Color;
-		else
-			m_oStream >> pPen->Color;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> pPen->Color;
+//		else
+//			m_oStream >> pPen->Color;
+
+		m_pParser->ReadValue(pPen->Color);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1541,14 +1617,15 @@ static const struct ActionNamesEmf
 		else
 		    m_oStream.Skip(4); // BrushHatch
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			m_pOutputXml->ReadNextNode();
-			*m_pOutputXml >> pPen->NumStyleEntries;
-		}
-		else
-			m_oStream >> pPen->NumStyleEntries;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			m_pOutputXml->ReadNextNode();
+//			*m_pOutputXml >> pPen->NumStyleEntries;
+//		}
+//		else
+//			m_oStream >> pPen->NumStyleEntries;
 
+		m_pParser->ReadValue(pPen->NumStyleEntries);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 			m_pOutputXml->WriteNode(L"NumStyleEntries", pPen->NumStyleEntries);
@@ -1566,10 +1643,12 @@ static const struct ActionNamesEmf
 
 			for (unsigned int ulIndex = 0; ulIndex < pPen->NumStyleEntries; ulIndex++)
 			{
-				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-					*m_pOutputXml >> pPen->StyleEntry[ulIndex];
-				else
-					m_oStream >> pPen->StyleEntry[ulIndex];
+//				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//					*m_pOutputXml >> pPen->StyleEntry[ulIndex];
+//				else
+//					m_oStream >> pPen->StyleEntry[ulIndex];
+
+				m_pParser->ReadValue(pPen->StyleEntry[ulIndex]);
 
 				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 					m_pOutputXml->WriteNode(L"StyleEntry" + std::to_wstring(ulIndex + 1),  pPen->StyleEntry[ulIndex]);
@@ -1599,34 +1678,41 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulPenIndex;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulPenIndex;
-		else
-			m_oStream >> ulPenIndex;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulPenIndex;
+//		else
+//			m_oStream >> ulPenIndex;
+
+		m_pParser->ReadValue(ulPenIndex);
 
 		CEmfLogPen* pPen = new CEmfLogPen();
 		if (!pPen)
 			return SetError();
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			m_pOutputXml->ReadNextNode();
-			*m_pOutputXml >> pPen->PenStyle;
-		}
-		else
-			m_oStream >> pPen->PenStyle;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			m_pOutputXml->ReadNextNode();
+//			*m_pOutputXml >> pPen->PenStyle;
+//		}
+//		else
+//			m_oStream >> pPen->PenStyle;
+
+		m_pParser->ReadValue(pPen->PenStyle);
 
 		unsigned int widthX, widthY;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			m_pOutputXml->ReadNextNode();
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			m_pOutputXml->ReadNextNode();
 
-			*m_pOutputXml >> widthX;
-			*m_pOutputXml >> widthY;
-		}
-		else
-			m_oStream >> widthX >> widthY;
+//			*m_pOutputXml >> widthX;
+//			*m_pOutputXml >> widthY;
+//		}
+//		else
+//			m_oStream >> widthX >> widthY;
+
+		m_pParser->ReadValue(widthX);
+		m_pParser->ReadValue(widthY);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1648,10 +1734,12 @@ static const struct ActionNamesEmf
 		}
 		pPen->Width = widthX;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> pPen->Color;
-		else
-			m_oStream >> pPen->Color;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> pPen->Color;
+//		else
+//			m_oStream >> pPen->Color;
+
+		m_pParser->ReadValue(pPen->Color);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1665,10 +1753,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulFillMode;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulFillMode;
-		else
-			m_oStream >> ulFillMode;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulFillMode;
+//		else
+//			m_oStream >> ulFillMode;
+
+		m_pParser->ReadValue(ulFillMode);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1762,10 +1852,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfPointL oPoint;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oPoint;
-		else
-			m_oStream >> oPoint;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oPoint;
+//		else
+//			m_oStream >> oPoint;
+
+		m_pParser->ReadValue(oPoint);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{	
@@ -1781,10 +1873,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int unDirection;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> unDirection;
-		else
-			m_oStream >> unDirection;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> unDirection;
+//		else
+//			m_oStream >> unDirection;
+
+		m_pParser->ReadValue(unDirection);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1801,10 +1895,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oBounds;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oBounds;
-		else
-			m_oStream >> oBounds;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oBounds;
+//		else
+//			m_oStream >> oBounds;
+
+		m_pParser->ReadValue(oBounds);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1824,10 +1920,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulMapMode;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulMapMode;
-		else
-			m_oStream >> ulMapMode;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulMapMode;
+//		else
+//			m_oStream >> ulMapMode;
+
+		m_pParser->ReadValue(ulMapMode);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1844,10 +1942,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfPointL oOrigin;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oOrigin;
-		else
-			m_oStream >> oOrigin;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oOrigin;
+//		else
+//			m_oStream >> oOrigin;
+
+		m_pParser->ReadValue(oOrigin);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1863,10 +1963,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfSizeL oExtent;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oExtent;
-		else
-			m_oStream >> oExtent;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oExtent;
+//		else
+//			m_oStream >> oExtent;
+
+		m_pParser->ReadValue(oExtent);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1882,10 +1984,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfPointL oOrigin;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oOrigin;
-		else
-			m_oStream >> oOrigin;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oOrigin;
+//		else
+//			m_oStream >> oOrigin;
+
+		m_pParser->ReadValue(oOrigin);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1901,10 +2005,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfSizeL oExtent;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oExtent;
-		else
-			m_oStream >> oExtent;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oExtent;
+//		else
+//			m_oStream >> oExtent;
+
+		m_pParser->ReadValue(oExtent);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1920,10 +2026,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulStretchMode;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulStretchMode;
-		else
-			m_oStream >> ulStretchMode;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulStretchMode;
+//		else
+//			m_oStream >> ulStretchMode;
+
+		m_pParser->ReadValue(ulStretchMode);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1939,10 +2047,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulICMMode;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulICMMode;
-		else
-			m_oStream >> ulICMMode;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulICMMode;
+//		else
+//			m_oStream >> ulICMMode;
+
+		m_pParser->ReadValue(ulICMMode);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -1958,20 +2068,23 @@ static const struct ActionNamesEmf
 		unsigned int ulBrushIndex;
 		TEmfDibPatternBrush oDibBrush;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> ulBrushIndex;
-			*m_pOutputXml >> oDibBrush;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> ulBrushIndex;
+//			*m_pOutputXml >> oDibBrush;
 
-			CDataStream oBuffer;
-			*m_pOutputXml >> oBuffer;
-			m_oStream.Skip(24);
-		}
-		else
-		{
-			m_oStream >> ulBrushIndex;
-			m_oStream >> oDibBrush;
-		}
+//			CDataStream oBuffer;
+//			*m_pOutputXml >> oBuffer;
+//			m_oStream.Skip(24);
+//		}
+//		else
+//		{
+//			m_oStream >> ulBrushIndex;
+//			m_oStream >> oDibBrush;
+//		}
+
+		m_pParser->ReadValue(ulBrushIndex);
+		m_pParser->ReadValue(oDibBrush);
 
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
@@ -2006,10 +2119,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int unRegionMode;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> unRegionMode;
-		else
-			m_oStream >> unRegionMode;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> unRegionMode;
+//		else
+//			m_oStream >> unRegionMode;
+
+		m_pParser->ReadValue(unRegionMode);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2032,10 +2147,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfColor oColor;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oColor;
-		else
-			m_oStream >> oColor;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oColor;
+//		else
+//			m_oStream >> oColor;
+
+		m_pParser->ReadValue(oColor);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2051,10 +2168,12 @@ static const struct ActionNamesEmf
 		// TODO: Проверить как найдется файл
 		TEmfRectL oClip;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oClip;
-		else
-			m_oStream >> oClip;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oClip;
+//		else
+//			m_oStream >> oClip;
+
+		m_pParser->ReadValue(oClip);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2102,13 +2221,16 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulRgnDataSize, ulRegionMode;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> ulRgnDataSize;
-			*m_pOutputXml >> ulRegionMode;
-		}
-		else
-		    m_oStream >> ulRgnDataSize >> ulRegionMode;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> ulRgnDataSize;
+//			*m_pOutputXml >> ulRegionMode;
+//		}
+//		else
+//		    m_oStream >> ulRgnDataSize >> ulRegionMode;
+
+                m_pParser->ReadValue(ulRgnDataSize);
+                m_pParser->ReadValue(ulRegionMode);
 
                 if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
                 {
@@ -2146,10 +2268,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulRop2Mode;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulRop2Mode;
-		else
-			m_oStream >> ulRop2Mode;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulRop2Mode;
+//		else
+//			m_oStream >> ulRop2Mode;
+
+		m_pParser->ReadValue(ulRop2Mode);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2169,16 +2293,19 @@ static const struct ActionNamesEmf
 		if (!pPalette)
 			return SetError();
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> ulPaletteIndex;
-			*m_pOutputXml >> *pPalette;
-		}
-		else
-		{
-			m_oStream >> ulPaletteIndex;
-			m_oStream >> *pPalette;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> ulPaletteIndex;
+//			*m_pOutputXml >> *pPalette;
+//		}
+//		else
+//		{
+//			m_oStream >> ulPaletteIndex;
+//			m_oStream >> *pPalette;
+//		}
+
+		m_pParser->ReadValue(ulPaletteIndex);
+		m_pParser->ReadValue(*pPalette);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2196,10 +2323,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulIndex;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulIndex;
-		else
-			m_oStream >> ulIndex;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulIndex;
+//		else
+//			m_oStream >> ulIndex;
+
+		m_pParser->ReadValue(ulIndex);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2224,10 +2353,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oClip;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oClip;
-		else
-			m_oStream >> oClip;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oClip;
+//		else
+//			m_oStream >> oClip;
+
+		m_pParser->ReadValue(oClip);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2246,10 +2377,12 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulLayoutMode;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> ulLayoutMode;
-		else
-			m_oStream >> ulLayoutMode;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> ulLayoutMode;
+//		else
+//			m_oStream >> ulLayoutMode;
+
+                m_pParser->ReadValue(ulLayoutMode);
 
                 if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
                 {
@@ -2265,10 +2398,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfPointL oOrigin;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oOrigin;
-		else
-			m_oStream >> oOrigin;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oOrigin;
+//		else
+//			m_oStream >> oOrigin;
+
+		m_pParser->ReadValue(oOrigin);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2287,16 +2422,22 @@ static const struct ActionNamesEmf
 		unsigned int unRadius;
 		double dStartAngle, dSweepAngle;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oCenter;
-			*m_pOutputXml >> unRadius;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oCenter;
+//			*m_pOutputXml >> unRadius;
 
-			*m_pOutputXml >> dStartAngle;
-			*m_pOutputXml >> dSweepAngle;
-		}
-		else
-			m_oStream >> oCenter >> unRadius >> dStartAngle >> dSweepAngle;
+//			*m_pOutputXml >> dStartAngle;
+//			*m_pOutputXml >> dSweepAngle;
+//		}
+//		else
+//			m_oStream >> oCenter >> unRadius >> dStartAngle >> dSweepAngle;
+
+                m_pParser->ReadValue(oCenter);
+                m_pParser->ReadValue(unRadius);
+
+                m_pParser->ReadValue(dStartAngle);
+                m_pParser->ReadValue(dSweepAngle);
 
                 if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
                 {
@@ -2314,14 +2455,18 @@ static const struct ActionNamesEmf
 	}
 	void CEmfFile::Read_EMR_ARC_BASE(TEmfRectL& oBox, TEmfPointL& oStart, TEmfPointL& oEnd, double& dStartAngle, double& dSweepAngle)
 	{
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBox;
-			*m_pOutputXml >> oStart;
-			*m_pOutputXml >> oEnd;
-		}
-		else
-			m_oStream >> oBox >> oStart >> oEnd;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBox;
+//			*m_pOutputXml >> oStart;
+//			*m_pOutputXml >> oEnd;
+//		}
+//		else
+//			m_oStream >> oBox >> oStart >> oEnd;
+
+		m_pParser->ReadValue(oBox);
+		m_pParser->ReadValue(oStart);
+		m_pParser->ReadValue(oEnd);
 
 		dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
 		dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
@@ -2404,10 +2549,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oBox;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oBox;
-		else
-			m_oStream >> oBox;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oBox;
+//		else
+//			m_oStream >> oBox;
+
+		m_pParser->ReadValue(oBox);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2430,10 +2577,12 @@ static const struct ActionNamesEmf
 		// TODO: Как найдутся файлы проверить данную запись.
 		TEmfExtTextoutA oText;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oText;
-		else
-			m_oStream >> oText;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oText;
+//		else
+//			m_oStream >> oText;
+
+		m_pParser->ReadValue(oText);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2447,10 +2596,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfExtTextoutW oText;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oText;
-		else
-			m_oStream >> oText;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oText;
+//		else
+//			m_oStream >> oText;
+
+		m_pParser->ReadValue(oText);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2464,10 +2615,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfPointL oPoint;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oPoint;
-		else
-			m_oStream >> oPoint;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oPoint;
+//		else
+//			m_oStream >> oPoint;
+
+		m_pParser->ReadValue(oPoint);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -2513,26 +2666,31 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		unsigned int ulCount;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBounds;
-			*m_pOutputXml >> ulCount;
-		}
-		else
-		{
-			m_oStream >> oBounds;
-			m_oStream >> ulCount;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBounds;
+//			*m_pOutputXml >> ulCount;
+//		}
+//		else
+//		{
+//			m_oStream >> oBounds;
+//			m_oStream >> ulCount;
+//		}
+
+		m_pParser->ReadValue(oBounds);
+		m_pParser->ReadValue(ulCount);
 
 		if (0 == ulCount)
 			return;
 
 		T oStartPoint;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oStartPoint;
-		else
-			m_oStream >> oStartPoint;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oStartPoint;
+//		else
+//			m_oStream >> oStartPoint;
+
+		m_pParser->ReadValue(oStartPoint);
 
 		MoveTo(oStartPoint);
 
@@ -2562,14 +2720,18 @@ static const struct ActionNamesEmf
 		T oPoint1, oPoint2, oPointE;
 		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex += 3)
 		{
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			{
-				*m_pOutputXml >> oPoint1;
-				*m_pOutputXml >> oPoint2;
-				*m_pOutputXml >> oPointE;
-			}
-			else
-				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
+//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			{
+//				*m_pOutputXml >> oPoint1;
+//				*m_pOutputXml >> oPoint2;
+//				*m_pOutputXml >> oPointE;
+//			}
+//			else
+//				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
+
+			m_pParser->ReadValue(oPoint1);
+			m_pParser->ReadValue(oPoint2);
+			m_pParser->ReadValue(oPointE);
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 			{
@@ -2602,16 +2764,19 @@ static const struct ActionNamesEmf
 		unsigned int ulCount;
 
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBounds;
-			*m_pOutputXml >> ulCount;
-		}
-		else
-		{
-			m_oStream >> oBounds;
-			m_oStream >> ulCount;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBounds;
+//			*m_pOutputXml >> ulCount;
+//		}
+//		else
+//		{
+//			m_oStream >> oBounds;
+//			m_oStream >> ulCount;
+//		}
+
+		m_pParser->ReadValue(oBounds);
+		m_pParser->ReadValue(ulCount);
 
 		std::wstring wsRecordName;
 		unsigned int unRecordId;
@@ -2642,14 +2807,18 @@ static const struct ActionNamesEmf
 
 			T oPoint1, oPoint2, oPointE;
 
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			{
-				*m_pOutputXml >> oPoint1;
-				*m_pOutputXml >> oPoint2;
-				*m_pOutputXml >> oPointE;
-			}
-			else
-				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
+//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			{
+//				*m_pOutputXml >> oPoint1;
+//				*m_pOutputXml >> oPoint2;
+//				*m_pOutputXml >> oPointE;
+//			}
+//			else
+//				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
+
+			m_pParser->ReadValue(oPoint1);
+			m_pParser->ReadValue(oPoint2);
+			m_pParser->ReadValue(oPointE);
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 			{
@@ -2683,16 +2852,19 @@ static const struct ActionNamesEmf
 		unsigned int unCount;
 
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBounds;
-			*m_pOutputXml >> unCount;
-		}
-		else
-		{
-			m_oStream >> oBounds;
-			m_oStream >> unCount;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBounds;
+//			*m_pOutputXml >> unCount;
+//		}
+//		else
+//		{
+//			m_oStream >> oBounds;
+//			m_oStream >> unCount;
+//		}
+
+		m_pParser->ReadValue(oBounds);
+		m_pParser->ReadValue(unCount);
 
 		if (0 == unCount)
 			return;
@@ -2725,10 +2897,12 @@ static const struct ActionNamesEmf
 
 		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
 		{
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-				*m_pOutputXml >> pPoints[unIndex];
-			else
-				m_oStream >> pPoints[unIndex];
+//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//				*m_pOutputXml >> pPoints[unIndex];
+//			else
+//				m_oStream >> pPoints[unIndex];
+
+			m_pParser->ReadValue(pPoints[unIndex]);
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 			{
@@ -2745,10 +2919,12 @@ static const struct ActionNamesEmf
 
 		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
 		{
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-				*m_pOutputXml >> pAbTypes[unIndex];
-			else
-				m_oStream >> pAbTypes[unIndex];
+//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//				*m_pOutputXml >> pAbTypes[unIndex];
+//			else
+//				m_oStream >> pAbTypes[unIndex];
+
+			m_pParser->ReadValue(pAbTypes[unIndex]);
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 				m_pOutputXml->WriteNode(L"abTypes" + std::to_wstring(unIndex + 1), pAbTypes[unIndex]);
@@ -2821,25 +2997,30 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		unsigned int ulCount;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBounds;
-			*m_pOutputXml >> ulCount;
-		}
-		else
-		{
-			m_oStream >> oBounds;
-			m_oStream >> ulCount;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBounds;
+//			*m_pOutputXml >> ulCount;
+//		}
+//		else
+//		{
+//			m_oStream >> oBounds;
+//			m_oStream >> ulCount;
+//		}
+
+		m_pParser->ReadValue(oBounds);
+		m_pParser->ReadValue(ulCount);
 
 		if (ulCount <= 0)
 			return;
 
 		T oPoint;
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oPoint;
-		else
-			m_oStream >> oPoint;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oPoint;
+//		else
+//			m_oStream >> oPoint;
+
+		m_pParser->ReadValue(oPoint);
 
 		std::wstring wsRecordName;
 		unsigned int unRecordId;
@@ -2869,10 +3050,12 @@ static const struct ActionNamesEmf
 
 		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
 		{
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-				*m_pOutputXml >> oPoint;
-			else
-				m_oStream >> oPoint;
+//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//				*m_pOutputXml >> oPoint;
+//			else
+//				m_oStream >> oPoint;
+
+			m_pParser->ReadValue(oPoint);
 
 			LineTo(oPoint);
 
@@ -2903,26 +3086,31 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		unsigned int ulCount;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBounds;
-			*m_pOutputXml >> ulCount;
-		}
-		else
-		{
-			m_oStream >> oBounds;
-			m_oStream >> ulCount;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBounds;
+//			*m_pOutputXml >> ulCount;
+//		}
+//		else
+//		{
+//			m_oStream >> oBounds;
+//			m_oStream >> ulCount;
+//		}
+
+		m_pParser->ReadValue(oBounds);
+		m_pParser->ReadValue(ulCount);
 
 		if (0 == ulCount)
 			return;
 
 		T oPoint;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oPoint;
-		else
-			m_oStream >> oPoint;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oPoint;
+//		else
+//			m_oStream >> oPoint;
+
+		m_pParser->ReadValue(oPoint);
 
 		MoveTo(oPoint);
 
@@ -2951,10 +3139,12 @@ static const struct ActionNamesEmf
 
 		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
 		{
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-				*m_pOutputXml >> oPoint;
-			else
-				m_oStream >> oPoint;
+//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//				*m_pOutputXml >> oPoint;
+//			else
+//				m_oStream >> oPoint;
+
+			m_pParser->ReadValue(oPoint);
 
 			LineTo(oPoint);
 
@@ -2984,16 +3174,19 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		unsigned int ulCount;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBounds;
-			*m_pOutputXml >> ulCount;
-		}
-		else
-		{
-			m_oStream >> oBounds;
-			m_oStream >> ulCount;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBounds;
+//			*m_pOutputXml >> ulCount;
+//		}
+//		else
+//		{
+//			m_oStream >> oBounds;
+//			m_oStream >> ulCount;
+//		}
+
+		m_pParser->ReadValue(oBounds);
+		m_pParser->ReadValue(ulCount);
 
 		std::wstring wsRecordName;
 		unsigned int unRecordId;
@@ -3020,10 +3213,12 @@ static const struct ActionNamesEmf
 		for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
 		{
 			T oPoint;
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-				*m_pOutputXml >> oPoint;
-			else
-				m_oStream >> oPoint;
+//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//				*m_pOutputXml >> oPoint;
+//			else
+//				m_oStream >> oPoint;
+
+			m_pParser->ReadValue(oPoint);
 
 			LineTo(oPoint);
 
@@ -3052,18 +3247,22 @@ static const struct ActionNamesEmf
 		unsigned int ulNumberOfPolygons;
 		unsigned int ulTotalPointsCount;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBounds;
-			*m_pOutputXml >> ulNumberOfPolygons;
-			*m_pOutputXml >> ulTotalPointsCount;
-		}
-		else
-		{
-			m_oStream >> oBounds;
-			m_oStream >> ulNumberOfPolygons;
-			m_oStream >> ulTotalPointsCount;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBounds;
+//			*m_pOutputXml >> ulNumberOfPolygons;
+//			*m_pOutputXml >> ulTotalPointsCount;
+//		}
+//		else
+//		{
+//			m_oStream >> oBounds;
+//			m_oStream >> ulNumberOfPolygons;
+//			m_oStream >> ulTotalPointsCount;
+//		}
+
+		m_pParser->ReadValue(oBounds);
+		m_pParser->ReadValue(ulNumberOfPolygons);
+		m_pParser->ReadValue(ulTotalPointsCount);
 
 		unsigned int* pPolygonPointCount = new unsigned int[ulNumberOfPolygons];
 		if (!pPolygonPointCount)
@@ -3095,10 +3294,12 @@ static const struct ActionNamesEmf
 
 		for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolygons; ulIndex++)
 		{
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-				*m_pOutputXml >> pPolygonPointCount[ulIndex];
-			else
-				m_oStream >> pPolygonPointCount[ulIndex];
+//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//				*m_pOutputXml >> pPolygonPointCount[ulIndex];
+//			else
+//				m_oStream >> pPolygonPointCount[ulIndex];
+
+			m_pParser->ReadValue(pPolygonPointCount[ulIndex]);
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 				m_pOutputXml->WriteNode(L"PolygonPointCount" + std::to_wstring(ulIndex + 1), pPolygonPointCount[ulIndex]);
@@ -3114,10 +3315,12 @@ static const struct ActionNamesEmf
 
 			T oPoint;
 
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-				*m_pOutputXml >> oPoint;
-			else
-				m_oStream >> oPoint;
+//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//				*m_pOutputXml >> oPoint;
+//			else
+//				m_oStream >> oPoint;
+
+			m_pParser->ReadValue(oPoint);
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 			{
@@ -3136,10 +3339,12 @@ static const struct ActionNamesEmf
 					return SetError();
 				}
 
-				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-					*m_pOutputXml >> oPoint;
-				else
-					m_oStream >> oPoint;
+//				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//					*m_pOutputXml >> oPoint;
+//				else
+//					m_oStream >> oPoint;
+
+				m_pParser->ReadValue(oPoint);
 
 				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 				{
@@ -3176,18 +3381,22 @@ static const struct ActionNamesEmf
 		unsigned int ulNumberOfPolylines;
 		unsigned int ulTotalPointsCount;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBounds;
-			*m_pOutputXml >> ulNumberOfPolylines;
-			*m_pOutputXml >> ulTotalPointsCount;
-		}
-		else
-		{
-			m_oStream >> oBounds;
-			m_oStream >> ulNumberOfPolylines;
-			m_oStream >> ulTotalPointsCount;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBounds;
+//			*m_pOutputXml >> ulNumberOfPolylines;
+//			*m_pOutputXml >> ulTotalPointsCount;
+//		}
+//		else
+//		{
+//			m_oStream >> oBounds;
+//			m_oStream >> ulNumberOfPolylines;
+//			m_oStream >> ulTotalPointsCount;
+//		}
+
+		m_pParser->ReadValue(oBounds);
+		m_pParser->ReadValue(ulNumberOfPolylines);
+		m_pParser->ReadValue(ulTotalPointsCount);
 
 		if (0 == ulNumberOfPolylines && 0 == ulTotalPointsCount)
 			return;
@@ -3222,10 +3431,12 @@ static const struct ActionNamesEmf
 		unsigned int* pPolylinePointCount = new unsigned int[ulNumberOfPolylines];
 		for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolylines; ulIndex++)
 		{
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-				*m_pOutputXml >> pPolylinePointCount[ulIndex];
-			else
-				m_oStream >> pPolylinePointCount[ulIndex];
+//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//				*m_pOutputXml >> pPolylinePointCount[ulIndex];
+//			else
+//				m_oStream >> pPolylinePointCount[ulIndex];
+
+			m_pParser->ReadValue(pPolylinePointCount[ulIndex]);
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 				m_pOutputXml->WriteNode(L"PolylinePointCount" + std::to_wstring(ulIndex + 1), pPolylinePointCount[ulIndex]);
@@ -3241,10 +3452,12 @@ static const struct ActionNamesEmf
 
 			T oPoint;
 
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-				*m_pOutputXml >> oPoint;
-			else
-				m_oStream >> oPoint;
+//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//				*m_pOutputXml >> oPoint;
+//			else
+//				m_oStream >> oPoint;
+
+			m_pParser->ReadValue(oPoint);
 
 			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 			{
@@ -3263,10 +3476,12 @@ static const struct ActionNamesEmf
 					return SetError();
 				}
 
-				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-					*m_pOutputXml >> oPoint;
-				else
-					m_oStream >> oPoint;
+//				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//					*m_pOutputXml >> oPoint;
+//				else
+//					m_oStream >> oPoint;
+
+				m_pParser->ReadValue(oPoint);
 
 				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 				{
@@ -3291,8 +3506,10 @@ static const struct ActionNamesEmf
 	{
 		// TODO: Как найдутся файлы проверить данную запись.
 		TEmfPolyTextoutA oText;
-		m_oStream >> oText;
-		
+//		m_oStream >> oText;
+
+		m_pParser->ReadValue(oText);
+
 		if (0 == oText.cStrings)
 			return;
 
@@ -3308,7 +3525,9 @@ static const struct ActionNamesEmf
 	{
 		// TODO: Как найдутся файлы проверить данную запись.
 		TEmfPolyTextoutW oText;
-		m_oStream >> oText;
+//		m_oStream >> oText;
+
+		m_pParser->ReadValue(oText);
 
 		if (0 == oText.cStrings)
 			return;
@@ -3325,10 +3544,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oBox;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oBox;
-		else
-			m_oStream >> oBox;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oBox;
+//		else
+//			m_oStream >> oBox;
+
+		m_pParser->ReadValue(oBox);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -3360,13 +3581,16 @@ static const struct ActionNamesEmf
 		TEmfRectL oBox;
 		TEmfSizeL oCorner;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oBox;
-			*m_pOutputXml >> oCorner;
-		}
-		else
-			m_oStream >> oBox >> oCorner;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oBox;
+//			*m_pOutputXml >> oCorner;
+//		}
+//		else
+//			m_oStream >> oBox >> oCorner;
+
+		m_pParser->ReadValue(oBox);
+		m_pParser->ReadValue(oCorner);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -3416,16 +3640,19 @@ static const struct ActionNamesEmf
 		TEmfPointL oPoint;
 		TEmfColor oColor;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-		{
-			*m_pOutputXml >> oPoint;
-			*m_pOutputXml >> oColor;
-		}
-		else
-		{
-			m_oStream >> oPoint;
-			m_oStream >> oColor;
-		}
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//		{
+//			*m_pOutputXml >> oPoint;
+//			*m_pOutputXml >> oColor;
+//		}
+//		else
+//		{
+//			m_oStream >> oPoint;
+//			m_oStream >> oColor;
+//		}
+
+                m_pParser->ReadValue(oPoint);
+                m_pParser->ReadValue(oColor);
 
                 if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
                 {
@@ -3449,10 +3676,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfSmallTextout oText;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oText; //TODO: при возможности проверить чтение из XML
-		else
-			m_oStream >> oText;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oText; //TODO: при возможности проверить чтение из XML
+//		else
+//			m_oStream >> oText;
+
+		m_pParser->ReadValue(oText);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -3488,10 +3717,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oBounds;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-			*m_pOutputXml >> oBounds;
-		else
-			m_oStream >> oBounds;
+//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//			*m_pOutputXml >> oBounds;
+//		else
+//			m_oStream >> oBounds;
+
+		m_pParser->ReadValue(oBounds);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{
@@ -3511,10 +3742,12 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oBounds;
 
-                if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-                        *m_pOutputXml >> oBounds;
-                else
-                        m_oStream >> oBounds;
+//                if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+//                        *m_pOutputXml >> oBounds;
+//                else
+//                        m_oStream >> oBounds;
+
+		m_pParser->ReadValue(oBounds);
 
 		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
 		{

@@ -339,6 +339,34 @@ namespace Oox2Odf
 			CLOSE_MATH_TAG;
 			convert(oox_fraction->m_oDen.GetPointer());
 		}
+		else if (val == L"noBar")
+		{
+			CREATE_MATH_TAG(L"mtable");
+			OPEN_MATH_TAG(elm);
+			{
+				CREATE_MATH_TAG(L"mtr");
+				OPEN_MATH_TAG(elm);
+				{
+					CREATE_MATH_TAG(L"mtd");
+					OPEN_MATH_TAG(elm);
+					convert(oox_fraction->m_oNum.GetPointer());
+					CLOSE_MATH_TAG;
+				}
+				CLOSE_MATH_TAG;
+			}
+			{
+				CREATE_MATH_TAG(L"mtr");
+				OPEN_MATH_TAG(elm);
+				{
+					CREATE_MATH_TAG(L"mtd");
+					OPEN_MATH_TAG(elm);
+					convert(oox_fraction->m_oDen.GetPointer());
+					CLOSE_MATH_TAG;
+				}
+				CLOSE_MATH_TAG;
+			}
+			CLOSE_MATH_TAG;
+		}
 		else
 		{
 			CREATE_MATH_TAG(L"mfrac");
@@ -346,13 +374,13 @@ namespace Oox2Odf
 			typedef odf_writer::math_mfrac* T;			
 
 			T tmp = dynamic_cast<T>(elm.get());
-			//Bool flag;
+			
 
 			if (tmp)
 			{
 				if (val == L"skw")
 				{
-					//flag = true;
+					
 					tmp->bevelled = true;
 				}
 			}

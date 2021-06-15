@@ -49,6 +49,7 @@
 
 #include "math_elements.h"
 #include "math_layout_elements.h"
+#include "math_table_elements.h"
 
 
 

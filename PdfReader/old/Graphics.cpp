@@ -672,7 +672,6 @@ namespace PdfReader
 		Operator *pOperator = NULL;
 		// Ищем оператор
 		char* sName = pCommand->GetCommand();
-
 		if (!(pOperator = FindOperator(sName)))
 		{
 			if (m_nIgnoreUndef == 0) // Проверяем наличие незакрытого оператора BX
@@ -1935,7 +1934,7 @@ namespace PdfReader
 	}
 
 	void Graphics::DoTilingPatternFill(GrTilingPattern  *pPattern, bool bStroke, bool bEOFill)
-	{
+        {
 		// Color space
 		GrPatternColorSpace *pPatternCS = (GrPatternColorSpace *)(bStroke ? m_pGState->GetStrokeColorSpace() : m_pGState->GetFillColorSpace());
 
@@ -2338,22 +2337,34 @@ namespace PdfReader
 
 	void Graphics::DoFunctionShadingFill(GrFunctionShading *pShading)
 	{
-		// Сначала предоставляем возможность OuputDevice самому сделать Shading
-		if (m_pOut->UseFunctionalShadedFills() && m_pOut->FunctionShadedFill(m_pGState, pShading))
-		{
-			return;
-		}
-
 		// Если Output Device не поддерживает данный ShadingType, тогда делаем его сами
 		// с помощью GrPath.
 		double dMinX, dMinY, dMaxX, dMaxY;
 		GrColor arrColors[4];
-
+				
 		pShading->GetDomain(&dMinX, &dMinY, &dMaxX, &dMaxY);
 		pShading->GetColor(dMinX, dMinY, &arrColors[0]);
 		pShading->GetColor(dMinX, dMaxY, &arrColors[1]);
 		pShading->GetColor(dMaxX, dMinY, &arrColors[2]);
 		pShading->GetColor(dMaxX, dMaxY, &arrColors[3]);
+
+		// Сначала предоставляем возможность OuputDevice самому сделать Shading
+		if (m_pOut->UseFunctionalShadedFills())
+		{
+			double *pMatrix = pShading->GetMatrix();
+			m_pGState->MoveTo(dMinX * pMatrix[0] + dMinY * pMatrix[2] + pMatrix[4], dMinX * pMatrix[1] + dMinY * pMatrix[3] + pMatrix[5]);
+			m_pGState->LineTo(dMaxX * pMatrix[0] + dMinY * pMatrix[2] + pMatrix[4], dMaxX * pMatrix[1] + dMinY * pMatrix[3] + pMatrix[5]);
+			m_pGState->LineTo(dMaxX * pMatrix[0] + dMaxY * pMatrix[2] + pMatrix[4], dMaxX * pMatrix[1] + dMaxY * pMatrix[3] + pMatrix[5]);
+			m_pGState->LineTo(dMinX * pMatrix[0] + dMaxY * pMatrix[2] + pMatrix[4], dMinX * pMatrix[1] + dMaxY * pMatrix[3] + pMatrix[5]);
+            m_pGState->LineTo(dMinX * pMatrix[0] + dMinY * pMatrix[2] + pMatrix[4], dMinX * pMatrix[1] + dMinY * pMatrix[3] + pMatrix[5]);
+			m_pGState->ClosePath();
+			
+			m_pOut->FunctionShadedFill(m_pGState, pShading);
+
+			m_pGState->ClearPath();
+            return;
+		}
+
 		DoFunctionShadingFill(pShading, dMinX, dMinY, dMaxX, dMaxY, arrColors, 0);
 	}
 
@@ -2463,10 +2474,21 @@ namespace PdfReader
 	void Graphics::DoAxialShadingFill(GrAxialShading *pShading)
 	{
 		int nJ, nK, nKK;
-
 		// Сначала предоставляем возможность OuputDevice самому сделать Shading
-		if (m_pOut->UseAxialShadedFills() && m_pOut->AxialShadedFill(m_pGState, pShading))
+		if (m_pOut->UseAxialShadedFills())
 		{
+			double xmin, ymin, xmax, ymax;
+			m_pGState->GetUserClipBBox(&xmin, &ymin, &xmax, &ymax);
+			m_pGState->MoveTo(xmin, ymin);
+			m_pGState->LineTo(xmin, ymax);
+			m_pGState->LineTo(xmax, ymax);
+			m_pGState->LineTo(xmax, ymin);
+			m_pGState->LineTo(xmin, ymin);
+			m_pGState->ClosePath();
+
+			m_pOut->AxialShadedFill(m_pGState, pShading);
+
+			m_pGState->ClearPath();
 			return;
 		}
 
@@ -2482,6 +2504,7 @@ namespace PdfReader
 		double dDy = dY1 - dY0;
 		bool bDxZero = fabs(dDx) < 0.01;
 		bool bDyZero = fabs(dDy) < 0.01;
+
 		if (bDxZero && bDyZero)
 		{
 			dTmin = dTmax = 0;
@@ -2776,11 +2799,23 @@ namespace PdfReader
 		}
 	}
 
-	void Graphics::DoRadialShadingFill(GrRadialShading *pShading)
+    void Graphics::DoRadialShadingFill(GrRadialShading *pShading)
 	{
 		// Сначала предоставляем возможность OuputDevice самому сделать Shading
-		if (m_pOut->UseRadialShadedFills() && m_pOut->RadialShadedFill(m_pGState, pShading))
+		if (m_pOut->UseRadialShadedFills())
 		{
+			double xmin, ymin, xmax, ymax;
+			m_pGState->GetUserClipBBox(&xmin, &ymin, &xmax, &ymax);
+			m_pGState->MoveTo(xmin, ymin);
+			m_pGState->LineTo(xmin, ymax);
+			m_pGState->LineTo(xmax, ymax);
+			m_pGState->LineTo(xmax, ymin);
+			m_pGState->LineTo(xmin, ymin);
+			m_pGState->ClosePath();
+
+			m_pOut->RadialShadedFill(m_pGState, pShading);
+
+			m_pGState->ClearPath();
 			return;
 		}
 		// Если Output Device не поддерживает данный ShadingType, тогда делаем его сами
@@ -3212,6 +3247,26 @@ namespace PdfReader
 		double dABx, dABy, dBCx, dBCy, dACx, dACy;
 		GrColor oColorAB, oColorBC, oColorAC;
 		int nIndex;
+		if (m_pOut->UseGouraundTriangleFills())
+		{
+			double xmin = std::min(dAx, std::min(dBx, dCx)) - 1;
+			double ymin = std::min(dAy, std::min(dBy, dCy)) - 1;
+			double xmax = std::max(dAx, std::max(dBx, dCx)) + 1;
+			double ymax = std::max(dAy, std::max(dBy, dCy)) + 1;
+
+			// m_pGState->MoveTo(dAx, dAy);
+			// m_pGState->LineTo(dBx, dBy);
+			// m_pGState->LineTo(dCx, dCy);
+			m_pGState->MoveTo(xmin, ymin);
+			m_pGState->LineTo(xmin, ymax);
+			m_pGState->LineTo(xmax, ymax);
+			m_pGState->LineTo(xmax, ymin);
+			m_pGState->LineTo(xmin, ymin);
+			m_pGState->ClosePath();
+			m_pOut->GouraundTriangleFill(m_pGState, {pColorA, pColorB, pColorC}, {{dAx, dAy}, {dBx, dBy}, {dCx, dCy}});
+			m_pGState->ClearPath();
+			return;
+		}
 
 		for (nIndex = 0; nIndex < nComponentsCount; ++nIndex)
 		{
@@ -3286,6 +3341,59 @@ namespace PdfReader
 	{
 		if (m_pOut->IsStopped())
 			return;
+
+		if (m_pOut->UsePatchMeshFills())
+		{
+			//m_pGState->SetFillColor(&pPatch->arrColor[0][0]);
+			//m_pGState->SetStrokeColor(&pPatch->arrColor[0][0]);
+			float xmin = pPatch->arrX[0][0], ymin = pPatch->arrY[0][0], xmax = pPatch->arrX[0][0], ymax = pPatch->arrY[0][0];
+
+			for (int i = 0; i < 4; i++)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					if (pPatch->arrX[i][j] > xmax)
+					{
+						xmax = pPatch->arrX[i][j];
+					}
+					if (pPatch->arrX[i][j] < xmin)
+					{
+						xmin = pPatch->arrX[i][j];
+					}
+					if (pPatch->arrY[i][j] > ymax)
+					{
+						ymax = pPatch->arrY[i][j];
+					}
+					if (pPatch->arrY[i][j] < ymin)
+					{
+						ymin = pPatch->arrY[i][j];
+					}
+				}
+			}
+			// m_pGState->MoveTo(pPatch->arrX[0][0], pPatch->arrY[0][0]);
+			// m_pGState->CurveTo(pPatch->arrX[0][1], pPatch->arrY[0][1], pPatch->arrX[0][2], pPatch->arrY[0][2], pPatch->arrX[0][3], pPatch->arrY[0][3]);
+			// m_pGState->CurveTo(pPatch->arrX[1][3], pPatch->arrY[1][3], pPatch->arrX[2][3], pPatch->arrY[2][3], pPatch->arrX[3][3], pPatch->arrY[3][3]);
+			// m_pGState->CurveTo(pPatch->arrX[3][2], pPatch->arrY[3][2], pPatch->arrX[3][1], pPatch->arrY[3][1], pPatch->arrX[3][0], pPatch->arrY[3][0]);
+			// m_pGState->CurveTo(pPatch->arrX[2][0], pPatch->arrY[2][0], pPatch->arrX[1][0], pPatch->arrY[1][0], pPatch->arrX[0][0], pPatch->arrY[0][0]);
+			xmax +=0.1;
+			ymax +=0.1;
+			xmin -=0.1;
+			ymin -=0.1;
+
+
+			m_pGState->MoveTo(xmin, ymin);
+			m_pGState->LineTo(xmin, ymax);
+			m_pGState->LineTo(xmax, ymax);
+			m_pGState->LineTo(xmax, ymin);
+			m_pGState->LineTo(xmin, ymin);
+
+			m_pGState->ClosePath();
+
+			m_pOut->PatchMeshFill(m_pGState, pPatch);
+
+			m_pGState->ClearPath() ;
+			return;
+		}
 
 		GrPatch oPatch00, oPatch01, oPatch10, oPatch11;
 		double arrX[4][8], arrY[4][8];

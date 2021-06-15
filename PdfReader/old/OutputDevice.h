@@ -34,7 +34,9 @@
 
 #include "CharTypes.h"
 #include "GlobalParams.h"
-
+#include "Graphics.h"
+#include "../PdfReader.h"
+#include "../../DesktopEditor/graphics/structures.h"
 namespace PdfReader
 {
 	class StringExt;
@@ -104,6 +106,14 @@ namespace PdfReader
 		// Поддерживает ли данное устройство RadialShadedFill? Если нет, тогда данные
 		// Shaded fills будут заменены комбинацией более простых графических примитивов.
 		virtual bool UseRadialShadedFills()
+		{
+			return false;
+		}
+		virtual bool UseGouraundTriangleFills()
+		{
+			return false;
+		}
+		virtual bool UsePatchMeshFills()
 		{
 			return false;
 		}
@@ -241,6 +251,15 @@ namespace PdfReader
 		{
 			return false;
 		}
+		virtual bool GouraundTriangleFill(GrState *pGState, const std::vector<GrColor*> &colors, const std::vector<NSStructures::Point> &points)
+		{
+			return false;
+		}
+		virtual bool PatchMeshFill(GrState *pGState, GrPatch *patch)
+		{
+			return false;
+		}
+
 
 		virtual void StartTilingFillIteration() {}
 		virtual void EndTilingFillIteration() {}

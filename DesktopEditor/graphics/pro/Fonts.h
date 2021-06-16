@@ -99,12 +99,12 @@ namespace NSFonts
 
         BYTE*			pPanose;
 
-        ULONG*			ulRange1;
-        ULONG*			ulRange2;
-        ULONG*			ulRange3;
-        ULONG*			ulRange4;
-        ULONG*			ulCodeRange1;
-        ULONG*			ulCodeRange2;
+        UINT*			ulRange1;
+        UINT*			ulRange2;
+        UINT*			ulRange3;
+        UINT*			ulRange4;
+        UINT*			ulCodeRange1;
+        UINT*			ulCodeRange2;
 
         USHORT*			usWeight;
         USHORT*			usWidth;
@@ -190,17 +190,17 @@ namespace NSFonts
             }
 
             if (NULL != ulRange1)
-                oFormat.ulRange1 = new ULONG(*ulRange1);
+                oFormat.ulRange1 = new UINT(*ulRange1);
             if (NULL != ulRange2)
-                oFormat.ulRange2 = new ULONG(*ulRange2);
+                oFormat.ulRange2 = new UINT(*ulRange2);
             if (NULL != ulRange3)
-                oFormat.ulRange3 = new ULONG(*ulRange3);
+                oFormat.ulRange3 = new UINT(*ulRange3);
             if (NULL != ulRange4)
-                oFormat.ulRange4 = new ULONG(*ulRange4);
+                oFormat.ulRange4 = new UINT(*ulRange4);
             if (NULL != ulCodeRange1)
-                oFormat.ulCodeRange1 = new ULONG(*ulCodeRange1);
+                oFormat.ulCodeRange1 = new UINT(*ulCodeRange1);
             if (NULL != ulCodeRange2)
-                oFormat.ulCodeRange2 = new ULONG(*ulCodeRange2);
+                oFormat.ulCodeRange2 = new UINT(*ulCodeRange2);
 
             if (NULL != usWeight)
                 oFormat.usWeight = new USHORT(*usWeight);
@@ -277,12 +277,12 @@ namespace NSFonts
             INT bItalic,
             INT bFixedWidth,
             BYTE *pPanose,
-            ULONG ulRange1,
-            ULONG ulRange2,
-            ULONG ulRange3,
-            ULONG ulRange4,
-            ULONG ulCodeRange1,
-            ULONG ulCodeRange2,
+            UINT ulRange1,
+            UINT ulRange2,
+            UINT ulRange3,
+            UINT ulRange4,
+            UINT ulCodeRange1,
+            UINT ulCodeRange2,
             USHORT usWeigth,
             USHORT usWidth,
             SHORT sFamilyClass,
@@ -353,14 +353,14 @@ namespace NSFonts
         INT         m_bItalic;          // Italic text
         INT         m_bIsFixed;         // Моноширинный шрифт?
 
-        BYTE         m_aPanose[10];
-        ULONG	     m_ulUnicodeRange1;  // Bits 0-31
-        ULONG        m_ulUnicodeRange2;  // Bits 32-63
-        ULONG        m_ulUnicodeRange3;  // Bits 64-95
-        ULONG        m_ulUnicodeRange4;  // Bits 96-127
+        BYTE        m_aPanose[10];
+        UINT	    m_ulUnicodeRange1;  // Bits 0-31
+        UINT        m_ulUnicodeRange2;  // Bits 32-63
+        UINT        m_ulUnicodeRange3;  // Bits 64-95
+        UINT        m_ulUnicodeRange4;  // Bits 96-127
 
-        ULONG        m_ulCodePageRange1; // Bits 0-31
-        ULONG        m_ulCodePageRange2; // Bits 32-63
+        UINT        m_ulCodePageRange1; // Bits 0-31
+        UINT        m_ulCodePageRange2; // Bits 32-63
 
         USHORT       m_usWeigth;
         USHORT       m_usWidth;

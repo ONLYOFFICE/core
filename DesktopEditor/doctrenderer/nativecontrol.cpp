@@ -59,7 +59,7 @@ std::wstring CImagesWorker::GetImage(const std::wstring& sUrl)
         if (sUrlFile.find(L"localhost") == 0)
             sUrlFile = sUrlFile.substr(9);
 
-        NSCommon::string_replace(sUrlFile, L"%20", L" ");
+        NSStringUtils::string_replace(sUrlFile, L"%20", L" ");
 
         if (!NSFile::CFileBinary::Exists(sUrlFile))
             sUrlFile = sUrlFile.substr(1);

@@ -2,7 +2,6 @@
 #include "./../docbuilder_p.h"
 
 #include "../../common/Directory.h"
-#include "../../fontengine/application_generate_fonts_common.h"
 
 JSSmart<CJSValue> CBuilderEmbed::builder_OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams)
 {
@@ -66,7 +65,7 @@ JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_GetImageMap()
     for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
     {
         std::wstring sFile = *i;
-        NSCommon::string_replace(sFile, L"\\", L"/");
+        NSStringUtils::string_replace(sFile, L"\\", L"/");
         std::wstring sName = L"media/" + NSFile::GetFileName(sFile);
 
         obj->set(U_TO_UTF8(sName).c_str(), CJSContext::createString(sFile));
@@ -85,7 +84,7 @@ void CBuilderDocumentEmbed::OpenFile(const std::wstring& sFile, const std::wstri
     if (NSFile::CFileBinary::Exists(m_sFolder))
         NSFile::CFileBinary::Remove(m_sFolder);
 
-    NSCommon::string_replace(m_sFolder, L"\\", L"/");
+    NSStringUtils::string_replace(m_sFolder, L"\\", L"/");
 
     std::wstring::size_type nPosPoint = m_sFolder.rfind('.');
     if (nPosPoint != std::wstring::npos && nPosPoint > sTmpDir.length())

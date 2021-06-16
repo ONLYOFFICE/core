@@ -724,7 +724,7 @@ namespace NSDoctRenderer
                     JSSmart<CJSValue> args_open[4];
                     args_open[0] = oWorkerLoader.GetDataFull()->toValue();
                     args_open[1] = CJSContext::createInt(nVersion);
-                    std::wstring sXlsx = NSCommon::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
+                    std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
                     args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
                     JSSmart<CJSObject> globalParams = CJSContext::createObject();
                     if (0 < m_oParams.m_nLcid)

@@ -160,7 +160,8 @@ bool ProtoTable::fillProtoTable(std::vector<CShapeElement *> &arrCells,
     if (m_table.empty() || m_arrTop.empty() || m_arrLeft.empty())
         return false;
 
-    bool wasCellsFilled = fillCells(arrCells);
+    bool wasCellsFilled  = fillCells(arrCells);
+    fillBorders(arrSpliters);
 
     return wasCellsFilled;
 }
@@ -210,6 +211,95 @@ bool ProtoTable::fillCells(std::vector<CShapeElement *> &arrCells)
     }
 
     return true;
+}
+
+void ProtoTable::fillBorders(std::vector<CShapeElement *> &arrSpliters)
+{
+    for (auto* pBorder : arrSpliters)
+    {
+        int left = pBorder->m_rcChildAnchor.left;
+        int top = pBorder->m_rcChildAnchor.top;
+        int right = pBorder->m_rcChildAnchor.right;
+        int bottom = pBorder->m_rcChildAnchor.bottom;
+
+        UINT posFirstTop, posFirstLeft;
+        UINT posLastTop, posLastLeft;
+
+        findCellPos(top, left, posFirstTop, posFirstLeft);
+        findCellPos(bottom, right, posLastTop, posLastLeft);
+        if (!isDefaultBoard(pBorder))
+        {
+            setBorders(posFirstTop, posFirstLeft, posLastTop, posLastLeft, pBorder);
+        }
+    }
+}
+
+bool ProtoTable::findCellPos(const int top, const int left, UINT &posRow, UINT &posCol)
+{
+    const UINT countRow = m_arrTop.size();
+    const UINT countCol = m_arrLeft.size();
+
+    for (posRow = 0; posRow < countRow; posRow++)
+        if (top == m_arrTop[posRow]) break;
+    for (posCol = 0; posCol < countCol; posCol++)
+        if (left == m_arrLeft[posCol]) break;
+
+    return !(posRow == countRow || posCol == countCol);
+}
+
+void ProtoTable::setBorders(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol, CShapeElement* pBorder)
+{
+
+    const UINT countRow = m_arrTop.size();
+    const UINT countCol = m_arrLeft.size();
+
+    // lnTlToBr or lnBlToTr
+    if ((posFRow != posLRow) && (posFCol != posLCol))
+    {
+        auto borPos = posFRow > posLRow ? TCell::lnTlToBr : TCell::lnBlToTr;
+        m_table[posFRow][posFCol].setBorder(borPos, pBorder);
+        return;
+    }
+
+    // lnT or(and) lnB
+    if (posFCol != posLCol)
+    {
+        for (UINT i = posFCol; i < posLCol; i++)
+        {
+            if (posFRow < countRow)
+                m_table[posFRow][i].setBorder(TCell::lnT, pBorder);
+            if (posFRow > 0)
+                m_table[posFRow-1][i].setBorder(TCell::lnB, pBorder);
+        }
+
+        return;
+    }
+
+    // lnL or(and) lnR
+    if (posFRow != posLRow)
+    {
+        for (UINT i = posFRow; i < posLRow; i++)
+        {
+            if (posFCol < countCol)
+                m_table[i][posFCol].setBorder(TCell::lnL, pBorder);
+            if (posFCol > 0)
+                m_table[i][posFCol-1].setBorder(TCell::lnR, pBorder);
+        }
+
+        return;
+    }
+
+    return;
+}
+
+bool ProtoTable::isDefaultBoard(const CShapeElement *pBorder)
+{
+    if (pBorder == nullptr)
+        return false;
+
+    auto& color = pBorder->m_oPen.Color;
+
+    return color.m_lSchemeIndex == 13;
 }
 
 std::vector<std::vector<CShapeElement*> > ProtoTable::getRows(std::vector<CShapeElement *> &arrCells)
@@ -291,11 +381,6 @@ TCell::TCell(CShapeElement *pShape, int row, int col, TCell *pParent) :
     setParentDirection();
 }
 
-void TCell::setArrBorders(const std::vector<CShapeElement *> &arrBorders)
-{
-    m_arrBorders = arrBorders;
-}
-
 void TCell::FillTc(PPTX::Logic::TableCell &oTc)
 {
     if (m_gridSpan > 1)
@@ -314,6 +399,14 @@ void TCell::FillTc(PPTX::Logic::TableCell &oTc)
 
     oTc.CellProperties = new PPTX::Logic::TableCellProperties;
     FillTcPr(oTc.CellProperties.get2());
+}
+
+void TCell::setBorder(TCell::eBorderPossition borderPos, CShapeElement *pBorder)
+{
+    if (m_pShape)
+        m_mapBorders[borderPos] = pBorder;
+    else if (m_pParent)
+        m_pParent->setBorder(borderPos, pBorder);
 }
 
 TCell::eMergeDirection TCell::parentDirection() const

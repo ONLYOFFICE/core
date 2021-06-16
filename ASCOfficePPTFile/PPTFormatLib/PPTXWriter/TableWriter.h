@@ -40,7 +40,6 @@ class TCell
 {
 public:
     TCell(CShapeElement *pShape, int row, int col, TCell* pParent = nullptr);
-    void setArrBorders(const std::vector<CShapeElement *> &arrBorders);
 
     void FillTc(PPTX::Logic::TableCell &oTc);
 
@@ -50,6 +49,17 @@ public:
         horz = 0b10,
         hove = (horz | vert)
     };
+
+    enum eBorderPossition
+    {
+        lnL,
+        lnR,
+        lnT,
+        lnB,
+        lnTlToBr,
+        lnBlToTr
+    };
+    void setBorder(eBorderPossition borderPos, CShapeElement *pBorder);
 
     eMergeDirection parentDirection() const;
     int getHeight()const;
@@ -71,9 +81,7 @@ private:
 private:
     CShapeElement* m_pShape;
 
-    // 0 - left, 1 - top, 2 - right, 3 - bottom,
-    // 4 - lnTlToBr, 5 - lnBlToTr
-    std::vector<CShapeElement*> m_arrBorders;
+    std::map<UINT, CShapeElement*> m_mapBorders;
 
     // Proto table's coord
     int m_row, m_col;
@@ -106,6 +114,12 @@ private:
     bool fillProtoTable(std::vector<CShapeElement *> &arrCells, std::vector<CShapeElement *> &arrSpliters);
     bool fillCells(std::vector<CShapeElement *> &arrCells);
     void fillBorders(std::vector<CShapeElement *> &arrSpliters);
+    bool findCellPos(const int top, const int left, UINT& posRow, UINT& posCol);
+    std::list<TCell *> getParentCellFromTable(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol);
+    void setBorders(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol, CShapeElement *pBorder);
+
+    bool isDefaultBoard(const CShapeElement *pBorder);
+
     std::vector<std::vector<CShapeElement *> >
         getRows(std::vector<CShapeElement *> &arrCells);
 

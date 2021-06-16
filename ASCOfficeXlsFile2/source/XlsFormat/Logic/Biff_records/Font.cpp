@@ -378,7 +378,7 @@ int Font::serialize_properties(std::wostream & stream, bool isRPr)
         {
             CP_XML_NODE(L"sz")
             {
-                CP_XML_ATTR(L"val", dyHeight/20);
+                CP_XML_ATTR(L"val", dyHeight/20.f);
             }
         }
 

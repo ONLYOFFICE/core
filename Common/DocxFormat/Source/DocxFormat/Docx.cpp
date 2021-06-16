@@ -57,6 +57,8 @@ namespace OOX {
 	
     bool CDocx::Read(const CPath& oFilePath)
     {
+		m_sDocumentPath = oFilePath.GetPath();
+
         // Ищем "/_rels/.rels" и читаем все файлы по рельсам
         OOX::CRels oRels( oFilePath / FILE_SEPARATOR_STR );
         IFileContainer::Read( oRels, oFilePath, oFilePath );

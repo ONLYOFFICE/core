@@ -51,7 +51,7 @@ window.onload = function()
 
 window.testGraphics = function(data)
 {
-	window.loadedImage = window.nativeGraphics.testImage(265, 265, 70.1146, 70.1146, data);
+	window.loadedImage = window.nativeGraphics.testImage(211, 119, 55.8251, 31.2208, data);
 	if (!window.loadedImage)
 		return;
 

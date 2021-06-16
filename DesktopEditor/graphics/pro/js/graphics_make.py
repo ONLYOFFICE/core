@@ -83,14 +83,12 @@ sources.append("raster.o")
 sources.append("wasm/src/graphics.cpp")
 
 compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/include")
-compiler_flags.append("-D__linux__ -D_LINUX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_USE_ZLIB -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE -DU_COMMON_IMPLEMENTATION -DMAP_IMPLEMENTATION=MAP_390DLL")
+compiler_flags.append("-D__linux__ -D_LINUX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE -DU_COMMON_IMPLEMENTATION")
 
 # arguments
 arguments = ""
 for item in compiler_flags:
     arguments += (item + " ")
-
-
 
 # command
 windows_bat = []
@@ -99,7 +97,7 @@ if base.host_platform() == "windows":
 
     icu = ""
     for item in input_icu_sources:
-        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libIcu_src_path + item) 
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libIcu_src_path + item)
         icu += ("temp/" + item + ".o ")
 
     arguments += "-s EXPORTED_FUNCTIONS=\"["

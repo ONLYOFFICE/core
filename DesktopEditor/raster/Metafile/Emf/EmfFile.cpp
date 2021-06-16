@@ -181,12 +181,10 @@ static const struct ActionNamesEmf
 	{
 		m_pParser->SetStream(m_oStream);
 
-//		if (!m_oStream.IsValid())
 		if (!m_pParser->IsValid())
 			SetError();
 
 		unsigned int ulSize, ulType;
-//		unsigned int ulNumber = 0;
 
 		bool bEof = false;
 
@@ -213,27 +211,11 @@ static const struct ActionNamesEmf
 
 		do
 		{			
-//	    if (m_oStream.IsEof())
-//		break;
-//	    if (m_oStream.CanRead() < 8)
-//				return SetError();
-
 			if (m_pParser->IsEof())
 				break;
 
 			if (m_pParser->CanRead() < 8)
 				return SetError();
-
-//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			{
-//				m_pOutputXml->ReadArguments(ulType, ulSize);
-//				m_oStream.Skip(8);
-//			}
-//			else
-//			{
-//				m_oStream >> ulType;
-//				m_oStream >> ulSize;
-//			}
 
                         m_pParser->ReadValue(ulType);
                         m_pParser->ReadValue(ulSize);
@@ -241,7 +223,6 @@ static const struct ActionNamesEmf
             if (ulSize < 1)
 				continue;
 
-//			m_ulRecordPos	= m_oStream.Tell();
 			m_ulRecordPos	= m_pParser->Tell();
 			m_ulRecordSize	= ulSize - 8;
 
@@ -386,8 +367,6 @@ static const struct ActionNamesEmf
 			if (bEof)
 				break;
 
-//			int need_skip = m_ulRecordSize - (m_oStream.Tell() - m_ulRecordPos);
-//			m_oStream.Skip(need_skip);
 			int need_skip = m_ulRecordSize - (m_pParser->Tell() - m_ulRecordPos);
 			m_pParser->Skip(need_skip);
 			
@@ -407,7 +386,6 @@ static const struct ActionNamesEmf
 		} while (!CheckError());
 
 		if (!CheckError())
-//			m_oStream.SeekToStart();
 			m_pParser->SeekToStart();
 
 		if (m_pOutput)
@@ -763,27 +741,6 @@ static const struct ActionNamesEmf
 
 	void CEmfFile::Read_EMR_HEADER()
 	{
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> m_oHeader;
-//		}
-//		else
-//		{
-//			m_oStream >> m_oHeader.oBounds;
-//			m_oStream >> m_oHeader.oFrame;
-//			m_oStream >> m_oHeader.ulSignature;
-//			m_oStream >> m_oHeader.ulVersion;
-//			m_oStream >> m_oHeader.ulSize;
-//			m_oStream >> m_oHeader.ulRecords;
-//			m_oStream >> m_oHeader.ushObjects;
-//			m_oStream >> m_oHeader.ushReserved;
-//			m_oStream >> m_oHeader.ulSizeDescription;
-//			m_oStream >> m_oHeader.ulOffsetDescription;
-//			m_oStream >> m_oHeader.ulPalEntries;
-//			m_oStream >> m_oHeader.oDevice;
-//			m_oStream >> m_oHeader.oMillimeters;
-//		}
-
 		m_pParser->ReadValue(m_oHeader.oBounds);
 		m_pParser->ReadValue(m_oHeader.oFrame);
 		m_pParser->ReadValue(m_oHeader.ulSignature);
@@ -798,33 +755,8 @@ static const struct ActionNamesEmf
 		m_pParser->ReadValue(m_oHeader.oDevice);
 		m_pParser->ReadValue(m_oHeader.oMillimeters);
 
-		m_pInterpretator->Save_EMR_HEADER(m_oHeader, m_ulRecordSize, *m_pParser->GetDataStream());
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_HEADER", {XmlArgument(L"Id", EMR_HEADER),
-								     XmlArgument(L"Size", m_ulRecordSize + 8)});
-
-				m_pOutputXml->WriteNode(L"Bounds",		m_oHeader.oBounds);
-				m_pOutputXml->WriteNode(L"Frame",		m_oHeader.oFrame);
-				m_pOutputXml->WriteNode(L"Signature",		m_oHeader.ulSignature);
-				m_pOutputXml->WriteNode(L"Version",		m_oHeader.ulVersion);
-				m_pOutputXml->WriteNode(L"Size",		m_oHeader.ulSize);
-				m_pOutputXml->WriteNode(L"Records",		m_oHeader.ulRecords);
-				m_pOutputXml->WriteNode(L"CountObjects",	m_oHeader.ushObjects);
-				m_pOutputXml->WriteNode(L"Reserved",		m_oHeader.ushReserved);
-				m_pOutputXml->WriteNode(L"SizeDescription",	m_oHeader.ulSizeDescription);
-				m_pOutputXml->WriteNode(L"OffsetDescription",	m_oHeader.ulOffsetDescription);
-				m_pOutputXml->WriteNode(L"PalletEntries",	m_oHeader.ulPalEntries);
-				m_pOutputXml->WriteNode(L"Device",		m_oHeader.oDevice);
-				m_pOutputXml->WriteNode(L"Millimeters",		m_oHeader.oMillimeters);
-
-				unsigned int unSize = m_ulRecordSize - 80;
-				if (unSize > 0)
-					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
-
-				m_pOutputXml->WriteNodeEnd(L"EMR_HEADER");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_HEADER(m_oHeader, *m_pParser->GetDataStream(), m_ulRecordSize);
 
 		if (ENHMETA_SIGNATURE != m_oHeader.ulSignature || 0x00010000 != m_oHeader.ulVersion)
 			return SetError();
@@ -858,32 +790,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfAlphaBlend oBitmap;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBitmap;
-//			CDataStream oBuffer;
-//			if (oBitmap.cbBitsSrc > 0)
-//				*m_pOutputXml >> oBuffer;
-
-//			m_oStream.Skip(100);
-//		}
-//		else
-//			m_oStream >> oBitmap;
-
 		m_pParser->ReadValue(oBitmap);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{	
-			m_pOutputXml->WriteNodeBegin(L"EMR_ALPHABLEND", {XmlArgument(L"Id", EMR_ALPHABLEND),
-									 XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"", oBitmap);
-
-				unsigned int unSize = m_ulRecordSize - sizeof (TEmfAlphaBlend);
-				if (unSize > 0)
-					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
-
-				m_pOutputXml->WriteNodeEnd(L"EMR_ALPHABLEND");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_ALPHABLEND(oBitmap, *m_pParser->GetDataStream(), m_ulRecordSize);
 
 		BYTE* pBgraBuffer = NULL;
 		unsigned int unWidth, unHeight;
@@ -928,32 +838,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfStretchDIBITS oBitmap;
 
-//		if (m_pOutput && m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBitmap;
-//			CDataStream oBuffer;
-//			if (oBitmap.cbBitsSrc > 0)
-//				*m_pOutputXml >> oBuffer;
-
-//			m_oStream.Skip(72);
-//		}
-//		else
-//			m_oStream >> oBitmap;
-
 		m_pParser->ReadValue(oBitmap);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_STRETCHDIBITS", {XmlArgument(L"Id", EMR_STRETCHDIBITS),
-									    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"", oBitmap);
-
-				unsigned int unSize = m_ulRecordSize - sizeof (TEmfStretchDIBITS);
-				if (unSize > 0)
-					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
-
-				m_pOutputXml->WriteNodeEnd(L"EMR_STRETCHDIBITS");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_STRETCHDIBITS(oBitmap, *m_pParser->GetDataStream(), m_ulRecordSize);
 
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
@@ -974,32 +862,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfBitBlt oBitmap;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBitmap;
-//			CDataStream oBuffer;
-//			if (oBitmap.cbBitsSrc > 0)
-//				*m_pOutputXml >> oBuffer;
-
-//			m_oStream.Skip(92);
-//		}
-//		else
-//			m_oStream >> oBitmap;
-
 		m_pParser->ReadValue(oBitmap);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_BITBLT", {XmlArgument(L"Id", EMR_BITBLT),
-								     XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"", oBitmap);
-
-				unsigned int unSize = m_ulRecordSize - 92;
-				if (unSize > 0)
-					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
-
-				m_pOutputXml->WriteNodeEnd(L"EMR_BITBLT");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_BITBLT(oBitmap, *m_pParser->GetDataStream(), m_ulRecordSize);
 
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
@@ -1098,32 +964,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfSetDiBitsToDevice oBitmap;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBitmap;
-//			CDataStream oBuffer;
-//			if (oBitmap.cbBitsSrc > 0)
-//				*m_pOutputXml >> oBuffer;
-
-//                        m_oStream.Skip(68);
-//                }
-//                else
-//                        m_oStream >> oBitmap;
-
 		m_pParser->ReadValue(oBitmap);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETDIBITSTODEVICE", {XmlArgument(L"Id", EMR_SETDIBITSTODEVICE),
-										XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"", oBitmap);
-
-				unsigned int unSize = m_ulRecordSize - sizeof (TEmfSetDiBitsToDevice);
-				if (unSize > 0)
-					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
-
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETDIBITSTODEVICE");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETDIBITSTODEVICE(oBitmap, *m_pParser->GetDataStream(), m_ulRecordSize);
 
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
@@ -1140,32 +984,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfStretchBLT oBitmap;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBitmap;
-//			CDataStream oBuffer;
-//			if (oBitmap.cbBitsSrc > 0)
-//				*m_pOutputXml >> oBuffer;
-
-//                        m_oStream.Skip(100);
-//                }
-//                else
-//                        m_oStream >> oBitmap;
-
 		m_pParser->ReadValue(oBitmap);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_STRETCHBLT", {XmlArgument(L"Id", EMR_STRETCHBLT),
-									 XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"", oBitmap);
-
-				unsigned int unSize = m_ulRecordSize - 100;
-				if (unSize > 0)
-					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
-
-				m_pOutputXml->WriteNodeEnd(L"EMR_STRETCHBLT");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_STRETCHBLT(oBitmap, *m_pParser->GetDataStream(), m_ulRecordSize);
 
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
@@ -1187,22 +1009,6 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulCount, ulOffset, ulSizeLast;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> ulCount;
-//			*m_pOutputXml >> ulOffset;
-//			*m_pOutputXml >> ulSizeLast;
-//		}
-//		else
-//		{
-//			m_oStream >> ulCount;
-//			m_oStream >> ulOffset;
-
-//			m_oStream.Skip(m_ulRecordSize - 8 - 4);
-
-//			m_oStream >> ulSizeLast;
-//		 }
-
 		m_pParser->ReadValue(ulCount);
 		m_pParser->ReadValue(ulOffset);
 
@@ -1210,16 +1016,8 @@ static const struct ActionNamesEmf
 
 		m_pParser->ReadValue(ulSizeLast);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_EOF", {XmlArgument(L"Id", EMR_EOF),
-								  XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"nPalEntries",	    ulCount);
-				m_pOutputXml->WriteNode(L"offPalEntries",   ulOffset);
-				m_pOutputXml->WriteNode(L"SizeLast",	    ulSizeLast);
-				m_pOutputXml->WriteNodeEnd(L"EMR_EOF");
-
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_EOF(ulCount, ulOffset, ulSizeLast);
 
 	}
 	void CEmfFile::Read_EMR_UNKNOWN()
@@ -1231,29 +1029,17 @@ static const struct ActionNamesEmf
 	{
 		m_pDC = m_oPlayer.SaveDC();
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_SAVEDC", {XmlArgument(L"Id", EMR_SAVEDC),
-								XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SAVEDC();
 	}
 	void CEmfFile::Read_EMR_RESTOREDC()
 	{
 		int lSavedDC;
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml>>lSavedDC;
-//		else
-//			m_oStream >> lSavedDC;
 
 		m_pParser->ReadValue(lSavedDC);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_RESTOREDC", {XmlArgument(L"Id", EMR_RESTOREDC),
-									XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"SavedDC", lSavedDC);
-				m_pOutputXml->WriteNodeEnd(L"EMR_RESTOREDC");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_RESTOREDC(lSavedDC);
 
 		if (lSavedDC >= 0)
 		{
@@ -1273,28 +1059,11 @@ static const struct ActionNamesEmf
 		TEmfXForm oXForm;
 		unsigned int ulMode;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oXForm;
-//			*m_pOutputXml >> ulMode;
-//		}
-//		else
-//		{
-//			m_oStream >> oXForm;
-//			m_oStream >> ulMode;
-//		}
-
 		m_pParser->ReadValue(oXForm);
 		m_pParser->ReadValue(ulMode);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_MODIFYWORLDTRANSFORM", {XmlArgument(L"Id", EMR_MODIFYWORLDTRANSFORM),
-										   XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"XForm",			oXForm);
-				m_pOutputXml->WriteNode(L"ModifyWorldTransformMode",	ulMode);
-				m_pOutputXml->WriteNodeEnd(L"EMR_MODIFYWORLDTRANSFORM");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_MODIFYWORLDTRANSFORM(oXForm, ulMode);
 
 		m_pDC->MultiplyTransform(oXForm, ulMode);
 		UpdateOutputDC();
@@ -1303,20 +1072,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfXForm oXForm;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oXForm;
-//		else
-//			m_oStream >> oXForm;
-
 		m_pParser->ReadValue(oXForm);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETWORLDTRANSFORM", {XmlArgument(L"Id", EMR_SETWORLDTRANSFORM),
-										XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"XForm", oXForm);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETWORLDTRANSFORM");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETWORLDTRANSFORM(oXForm);
 
 		m_pDC->MultiplyTransform(oXForm, MWT_SET);
 		UpdateOutputDC();
@@ -1328,29 +1087,11 @@ static const struct ActionNamesEmf
 		if (!pBrush)
 			return SetError();
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> ulBrushIndex;
-//			*m_pOutputXml >> *pBrush;
-//		}
-//		else
-//		{
-//			m_oStream >> ulBrushIndex;
-//			m_oStream >> *pBrush;
-//		}
-
 		m_pParser->ReadValue(ulBrushIndex);
 		m_pParser->ReadValue(*pBrush);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_CREATEBRUSHINDIRECT", {XmlArgument(L"Id", EMR_CREATEBRUSHINDIRECT),
-										  XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"ihBrush",	ulBrushIndex);
-				m_pOutputXml->WriteNode(L"LogBrush ",   *pBrush);
-				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEBRUSHINDIRECT");
-
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_CREATEBRUSHINDIRECT(ulBrushIndex, pBrush);
 
 		m_oPlayer.RegisterObject(ulBrushIndex, (CEmfObjectBase*)pBrush);
 	}
@@ -1358,20 +1099,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfColor oColor;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oColor;
-//		else
-//			m_oStream >> oColor;
-
 		m_pParser->ReadValue(oColor);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETTEXTCOLOR", {XmlArgument(L"Id", EMR_SETTEXTCOLOR),
-									   XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Color", oColor);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETTEXTCOLOR");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETTEXTCOLOR(oColor);
 
 		m_pDC->SetTextColor(oColor);
 		UpdateOutputDC();
@@ -1380,20 +1111,10 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulObjectIndex;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulObjectIndex;
-//		else
-//			m_oStream >> ulObjectIndex;
-
 		m_pParser->ReadValue(ulObjectIndex);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SELECTOBJECT", {XmlArgument(L"Id", EMR_SELECTOBJECT),
-									   XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Index", ulObjectIndex);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SELECTOBJECT");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SELECTOBJECT(ulObjectIndex);
 
 		m_oPlayer.SelectObject(ulObjectIndex);
 		UpdateOutputDC();
@@ -1408,29 +1129,11 @@ static const struct ActionNamesEmf
 		if (!pFont)
 			return SetError();
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> ulIndex;
-//			*m_pOutputXml >> *pFont;
-//		}
-//		else
-//		{
-//			m_oStream >> ulIndex;
-//			m_oStream >> *pFont;
-//		}
-
 		m_pParser->ReadValue(ulIndex);
 		m_pParser->ReadValue(*pFont);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_EXTCREATEFONTINDIRECTW", {XmlArgument(L"Id", EMR_EXTCREATEFONTINDIRECTW),
-										     XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"ihFonts", ulIndex);
-				m_pOutputXml->WriteNode(L"",	    *pFont);
-				m_pOutputXml->WriteNodeEnd(L"EMR_EXTCREATEFONTINDIRECTW");
-
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_EXTCREATEFONTINDIRECTW(ulIndex, pFont, m_ulRecordSize);
 
 		m_oPlayer.RegisterObject(ulIndex, (CEmfObjectBase*)pFont);
 	}
@@ -1438,20 +1141,10 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulAlign;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulAlign;
-//		else
-//			m_oStream >> ulAlign;
-
 		m_pParser->ReadValue(ulAlign);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETTEXTALIGN", {XmlArgument(L"Id", EMR_SETTEXTALIGN),
-									   XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"TextAlign", ulAlign);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETTEXTALIGN");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETTEXTALIGN(ulAlign);
 
 		m_pDC->SetTextAlign(ulAlign);
 		UpdateOutputDC();
@@ -1460,20 +1153,10 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulBgMode;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulBgMode;
-//		else
-//			m_oStream >> ulBgMode;
-
 		m_pParser->ReadValue(ulBgMode);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETBKMODE", {XmlArgument(L"Id", EMR_SETBKMODE),
-									XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"BgMode", ulBgMode);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETBKMODE");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETBKMODE(ulBgMode);
 
 		m_pDC->SetBgMode(ulBgMode);
 		UpdateOutputDC();
@@ -1482,20 +1165,10 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulIndex;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulIndex;
-//		else
-//			m_oStream >> ulIndex;
-
 		m_pParser->ReadValue(ulIndex);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_DELETEOBJECT", {XmlArgument(L"Id", EMR_DELETEOBJECT),
-									   XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Index", ulIndex);
-				m_pOutputXml->WriteNodeEnd(L"EMR_DELETEOBJECT");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_DELETEOBJECT(ulIndex);
 
 		m_oPlayer.DeleteObject(ulIndex);
 		UpdateOutputDC();
@@ -1504,20 +1177,10 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulMiterLimit;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulMiterLimit;
-//		else
-//			m_oStream >> ulMiterLimit;
-
 		m_pParser->ReadValue(ulMiterLimit);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETMITERLIMIT", {XmlArgument(L"Id", EMR_SETMITERLIMIT),
-									    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"MiterLimit", ulMiterLimit);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETMITERLIMIT");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETMITERLIMIT(ulMiterLimit);
 
 		m_pDC->SetMiterLimit(ulMiterLimit);
 		UpdateOutputDC();
@@ -1526,36 +1189,11 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulPenIndex;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> ulPenIndex;
-//			m_pOutputXml->ReadNextNode();
-//			m_pOutputXml->ReadNextNode();
-//			m_pOutputXml->ReadNextNode();
-//			m_pOutputXml->ReadNextNode();
-//		}
-//		else
-//			m_oStream >> ulPenIndex;
-
 		m_pParser->ReadValue(ulPenIndex);
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_EXTCREATEPEN", {XmlArgument(L"Id", EMR_EXTCREATEPEN),
-									   XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"ihPen",   ulPenIndex);
-				m_pOutputXml->WriteNode(L"offBmi",  m_oStream.ReadULong());
-				m_pOutputXml->WriteNode(L"cbBmi",   m_oStream.ReadULong());
-				m_pOutputXml->WriteNode(L"offBits", m_oStream.ReadULong());
-				m_pOutputXml->WriteNode(L"cbBits",  m_oStream.ReadULong());
-		}
-		else
-		{
-			m_oStream.Skip(4); // offBmi
-			m_oStream.Skip(4); // cbBmi
-			m_oStream.Skip(4); // offBits
-			m_oStream.Skip(4); // cbBits
-		}
+		m_pParser->Skip(4); // offBmi
+		m_pParser->Skip(4); // cbBmi
+		m_pParser->Skip(4); // offBits
+		m_pParser->Skip(4); // cbBits
 
 		unsigned int current_size = m_ulRecordSize - 20;
 
@@ -1563,72 +1201,13 @@ static const struct ActionNamesEmf
 		if (!pPen)
 			return SetError();
 
-		// LogPenEx
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			m_pOutputXml->ReadNextNode();
-
-//			*m_pOutputXml >> pPen->PenStyle;
-//			*m_pOutputXml >> pPen->Width;
-
-//			m_pOutputXml->ReadNextNode();
-//		}
-//		else
-//		{
-//			m_oStream >> pPen->PenStyle;
-//			m_oStream >> pPen->Width;
-//		}
 		m_pParser->ReadValue(pPen->PenStyle);
 		m_pParser->ReadValue(pPen->Width);
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			unsigned int unBrushStyle;
-			m_oStream >> unBrushStyle;
-			m_pOutputXml->WriteNodeBegin(L"LogPenEx");
-				m_pOutputXml->WriteNode(L"PenStyle",	pPen->PenStyle);
-				m_pOutputXml->WriteNode(L"Width",	pPen->Width);
-				m_pOutputXml->WriteNode(L"BrushStyle",	unBrushStyle);
-		}
-		else
-		    m_oStream.Skip(4); // BrushStyle
-
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> pPen->Color;
-//		else
-//			m_oStream >> pPen->Color;
-
+		m_pParser->Skip(4);// BrushStyle
 		m_pParser->ReadValue(pPen->Color);
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			unsigned int unBrushHatch;
-			m_oStream >> unBrushHatch;
-
-				m_pOutputXml->WriteNodeBegin(L"ColorRef");
-					m_pOutputXml->WriteNode(L"Red",	    pPen->Color.r);
-					m_pOutputXml->WriteNode(L"Green",   pPen->Color.g);
-					m_pOutputXml->WriteNode(L"Blue",    pPen->Color.b);
-					m_pOutputXml->WriteNode(L"Reserved",pPen->Color.a);
-					m_pOutputXml->WriteNodeEnd(L"ColorRef");
-
-				m_pOutputXml->WriteNode(L"BrushHatch",	    unBrushHatch);
-		}
-		else
-		    m_oStream.Skip(4); // BrushHatch
-
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			m_pOutputXml->ReadNextNode();
-//			*m_pOutputXml >> pPen->NumStyleEntries;
-//		}
-//		else
-//			m_oStream >> pPen->NumStyleEntries;
+		m_pParser->Skip(4); // BrushHatch
 
 		m_pParser->ReadValue(pPen->NumStyleEntries);
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-			m_pOutputXml->WriteNode(L"NumStyleEntries", pPen->NumStyleEntries);
 
 		current_size -= 24;
 		if (pPen->NumStyleEntries > 0)
@@ -1642,35 +1221,18 @@ static const struct ActionNamesEmf
 			}
 
 			for (unsigned int ulIndex = 0; ulIndex < pPen->NumStyleEntries; ulIndex++)
-			{
-//				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//					*m_pOutputXml >> pPen->StyleEntry[ulIndex];
-//				else
-//					m_oStream >> pPen->StyleEntry[ulIndex];
-
 				m_pParser->ReadValue(pPen->StyleEntry[ulIndex]);
-
-				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-					m_pOutputXml->WriteNode(L"StyleEntry" + std::to_wstring(ulIndex + 1),  pPen->StyleEntry[ulIndex]);
-			}
 		}
 		else
 		{
 			pPen->StyleEntry = NULL;
 		}
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-					m_pOutputXml->WriteNodeEnd(L"LogPenEx");
-
-				if (current_size > 0 && current_size < INT_MAX)
-					m_pOutputXml->WriteNode(L"Buffer", m_oStream, current_size);
-
-				m_pOutputXml->WriteNodeEnd(L"EMR_EXTCREATEPEN");
-		}
-
 		// Пропускаем часть с картинкой, если она была
-		m_oStream.Skip(current_size);
+		m_pParser->Skip(current_size);
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_EXTCREATEPEN(ulPenIndex, pPen, m_ulRecordSize);
 
 		m_oPlayer.RegisterObject(ulPenIndex, (CEmfObjectBase*)pPen);
 	}
@@ -1678,55 +1240,22 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulPenIndex;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulPenIndex;
-//		else
-//			m_oStream >> ulPenIndex;
-
 		m_pParser->ReadValue(ulPenIndex);
 
 		CEmfLogPen* pPen = new CEmfLogPen();
 		if (!pPen)
 			return SetError();
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			m_pOutputXml->ReadNextNode();
-//			*m_pOutputXml >> pPen->PenStyle;
-//		}
-//		else
-//			m_oStream >> pPen->PenStyle;
-
 		m_pParser->ReadValue(pPen->PenStyle);
 
 		unsigned int widthX, widthY;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			m_pOutputXml->ReadNextNode();
-
-//			*m_pOutputXml >> widthX;
-//			*m_pOutputXml >> widthY;
-//		}
-//		else
-//			m_oStream >> widthX >> widthY;
-
 		m_pParser->ReadValue(widthX);
 		m_pParser->ReadValue(widthY);
+		m_pParser->ReadValue(pPen->Color);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_CREATEPEN", {XmlArgument(L"Id", EMR_CREATEPEN),
-									XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"ihPen", ulPenIndex);
-				m_pOutputXml->WriteNodeBegin(L"LogPen");
-					m_pOutputXml->WriteNode(L"PenStyle", pPen->PenStyle);
-					m_pOutputXml->WriteNodeBegin(L"Width");
-						m_pOutputXml->WriteNode(L"X", widthX);
-						m_pOutputXml->WriteNode(L"Y", widthY);
-						m_pOutputXml->WriteNodeEnd(L"Width");
-					m_pOutputXml->WriteNodeEnd(L"LogPen");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_CREATEPEN(ulPenIndex, widthX, pPen);
 
 		if (!widthX)	
 		{//emf from Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx
@@ -1734,39 +1263,16 @@ static const struct ActionNamesEmf
 		}
 		pPen->Width = widthX;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> pPen->Color;
-//		else
-//			m_oStream >> pPen->Color;
-
-		m_pParser->ReadValue(pPen->Color);
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-				m_pOutputXml->WriteNode(L"COLORREF", (*pPen).Color);
-				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEPEN");
-		}
-
 		m_oPlayer.RegisterObject(ulPenIndex, (CEmfObjectBase*)pPen);
 	}
 	void CEmfFile::Read_EMR_SETPOLYFILLMODE()
 	{
 		unsigned int ulFillMode;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulFillMode;
-//		else
-//			m_oStream >> ulFillMode;
-
 		m_pParser->ReadValue(ulFillMode);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETPOLYFILLMODE", {XmlArgument(L"Id", EMR_SETPOLYFILLMODE),
-									      XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"PolygonFillMode", ulFillMode);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETPOLYFILLMODE");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETPOLYFILLMODE(ulFillMode);
 
 		m_pDC->SetFillMode(ulFillMode);
 		UpdateOutputDC();
@@ -1776,11 +1282,8 @@ static const struct ActionNamesEmf
 		if (m_pPath)
 			delete m_pPath;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_BEGINPATH", {XmlArgument(L"Id", EMR_BEGINPATH),
-								   XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_BEGINPATH();
 
 		m_pPath = new CEmfPath();
 		if (!m_pPath)
@@ -1794,20 +1297,14 @@ static const struct ActionNamesEmf
 	}
 	void CEmfFile::Read_EMR_ENDPATH()
 	{
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_ENDPATH", {XmlArgument(L"Id", EMR_ENDPATH),
-								 XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_ENDPATH();
 		// Ничего не делаем
 	}
 	void CEmfFile::Read_EMR_CLOSEFIGURE()
 	{
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_CLOSEFIGURE", {XmlArgument(L"Id", EMR_CLOSEFIGURE),
-								     XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_CLOSEFIGURE();
 
 		if (m_pPath)
 		{
@@ -1817,30 +1314,20 @@ static const struct ActionNamesEmf
 	}
 	void CEmfFile::Read_EMR_FLATTENPATH()
 	{
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_FLATTENPATH", {XmlArgument(L"Id", EMR_FLATTENPATH),
-								     XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_FLATTENPATH();
 		// Ничего не делаем
 	}
 	void CEmfFile::Read_EMR_WIDENPATH()
 	{
 		// TODO: реализовать
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_WIDENPATH", {XmlArgument(L"Id", EMR_WIDENPATH),
-								   XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_WIDENPATH();
 	}
 	void CEmfFile::Read_EMR_ABORTPATH()
 	{
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_ABORTPATH", {XmlArgument(L"Id", EMR_ABORTPATH),
-								   XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_ABORTPATH();
 
 		if (m_pPath)
 		{
@@ -1852,41 +1339,21 @@ static const struct ActionNamesEmf
 	{
 		TEmfPointL oPoint;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oPoint;
-//		else
-//			m_oStream >> oPoint;
-
 		m_pParser->ReadValue(oPoint);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{	
-			m_pOutputXml->WriteNodeBegin(L"EMR_MOVETOEX", {XmlArgument(L"Id", EMR_MOVETOEX),
-								       XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Offset", oPoint);
-				m_pOutputXml->WriteNodeEnd(L"EMR_MOVETOEX");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_MOVETOEX(oPoint);
 
 		MoveTo(oPoint);
 	}	
 	void CEmfFile::Read_EMR_SETARCDIRECTION()
 	{
-		unsigned int unDirection;
-
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> unDirection;
-//		else
-//			m_oStream >> unDirection;
+		unsigned int unDirection
 
 		m_pParser->ReadValue(unDirection);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETARCDIRECTION", {XmlArgument(L"Id", EMR_SETARCDIRECTION),
-									      XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"arcDirection", unDirection);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETARCDIRECTION");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETARCDIRECTION(unDirection);
 
 		m_pDC->SetArcDirection(unDirection);
 		// Здесь не обновляем DC у Output, т.к. этот параметр разруливается внутри данного класса.
@@ -1895,20 +1362,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oBounds;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oBounds;
-//		else
-//			m_oStream >> oBounds;
-
 		m_pParser->ReadValue(oBounds);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_FILLPATH", {XmlArgument(L"Id", EMR_FILLPATH),
-								       XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Bounds", oBounds);
-				m_pOutputXml->WriteNodeEnd(L"EMR_FILLPATH");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_FILLPATH(oBounds);
 
 		if (m_pPath)
 		{
@@ -1920,21 +1377,10 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulMapMode;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulMapMode;
-//		else
-//			m_oStream >> ulMapMode;
-
 		m_pParser->ReadValue(ulMapMode);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETMAPMODE", {XmlArgument(L"Id", EMR_SETMAPMODE),
-									 XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"MapMode", ulMapMode);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETMAPMODE");
-
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETMAPMODE(ulMapMode);
 
 		m_pDC->SetMapMode(ulMapMode);
 	}
@@ -1942,20 +1388,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfPointL oOrigin;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oOrigin;
-//		else
-//			m_oStream >> oOrigin;
-
 		m_pParser->ReadValue(oOrigin);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETWINDOWORGEX", {XmlArgument(L"Id", EMR_SETWINDOWORGEX),
-									     XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Origin", oOrigin);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETWINDOWORGEX");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETWINDOWORGEX(oOrigin);
 
 		m_pDC->SetWindowOrigin(oOrigin);
 	}
@@ -1963,20 +1399,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfSizeL oExtent;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oExtent;
-//		else
-//			m_oStream >> oExtent;
-
 		m_pParser->ReadValue(oExtent);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETWINDOWEXTEX", {XmlArgument(L"Id", EMR_SETWINDOWEXTEX),
-									     XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Extent", oExtent);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETWINDOWEXTEX");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETWINDOWEXTEX(oExtent);
 
 		m_pDC->SetWindowExtents(oExtent);
 	}
@@ -1984,20 +1410,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfPointL oOrigin;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oOrigin;
-//		else
-//			m_oStream >> oOrigin;
-
 		m_pParser->ReadValue(oOrigin);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETVIEWPORTORGEX", {XmlArgument(L"Id", EMR_SETVIEWPORTORGEX),
-									       XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Origin", oOrigin);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETVIEWPORTORGEX");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETVIEWPORTORGEX(oOrigin);
 
 		m_pDC->SetViewportOrigin(oOrigin);
 	}
@@ -2005,20 +1421,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfSizeL oExtent;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oExtent;
-//		else
-//			m_oStream >> oExtent;
-
 		m_pParser->ReadValue(oExtent);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETVIEWPORTEXTEX", {XmlArgument(L"Id", EMR_SETVIEWPORTEXTEX),
-									       XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Extent", oExtent);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETVIEWPORTEXTEX");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETVIEWPORTEXTEX(oExtent);
 
 		m_pDC->SetViewportExtents(oExtent);
 	}
@@ -2026,20 +1432,10 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulStretchMode;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulStretchMode;
-//		else
-//			m_oStream >> ulStretchMode;
-
 		m_pParser->ReadValue(ulStretchMode);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETSTRETCHBLTMODE", {XmlArgument(L"Id", EMR_SETSTRETCHBLTMODE),
-										XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"StretchMode", ulStretchMode);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETSTRETCHBLTMODE");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETSTRETCHBLTMODE(ulStretchMode);
 
 		m_pDC->SetStretchMode(ulStretchMode);
 	}
@@ -2047,20 +1443,10 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulICMMode;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulICMMode;
-//		else
-//			m_oStream >> ulICMMode;
-
 		m_pParser->ReadValue(ulICMMode);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETICMMODE", {XmlArgument(L"Id", EMR_SETICMMODE),
-									 XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"ICMMode", ulICMMode);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETICMMODE");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETICMMODE(ulICMMode);
 
 	}
 	void CEmfFile::Read_EMR_CREATEDIBPATTERNBRUSHPT()
@@ -2068,41 +1454,16 @@ static const struct ActionNamesEmf
 		unsigned int ulBrushIndex;
 		TEmfDibPatternBrush oDibBrush;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> ulBrushIndex;
-//			*m_pOutputXml >> oDibBrush;
-
-//			CDataStream oBuffer;
-//			*m_pOutputXml >> oBuffer;
-//			m_oStream.Skip(24);
-//		}
-//		else
-//		{
-//			m_oStream >> ulBrushIndex;
-//			m_oStream >> oDibBrush;
-//		}
-
 		m_pParser->ReadValue(ulBrushIndex);
 		m_pParser->ReadValue(oDibBrush);
 
 		BYTE* pBgraBuffer = NULL;
 		unsigned int ulWidth, ulHeight;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_CREATEDIBPATTERNBRUSHPT", {XmlArgument(L"Id", EMR_CREATEDIBPATTERNBRUSHPT),
-										      XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"ihBrush", ulBrushIndex);
-				m_pOutputXml->WriteNode(L"", oDibBrush);
-
-				unsigned int unSize = m_ulRecordSize - sizeof(TEmfDibPatternBrush) - 12;
-
-				if (unSize > 0)
-					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
-
-				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEDIBPATTERNBRUSHPT");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_CREATEDIBPATTERNBRUSHPT(ulBrushIndex, oDibBrush,
+									   *m_pParser->GetDataStream(),
+									   m_ulRecordSize);
 
 		if (ReadImage(oDibBrush.offBmi, oDibBrush.cbBmi, oDibBrush.offBits, oDibBrush.cbBits, sizeof(TEmfDibPatternBrush) + 12, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
@@ -2119,21 +1480,10 @@ static const struct ActionNamesEmf
 	{
 		unsigned int unRegionMode;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> unRegionMode;
-//		else
-//			m_oStream >> unRegionMode;
-
 		m_pParser->ReadValue(unRegionMode);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SELECTCLIPPATH", {XmlArgument(L"Id", EMR_SELECTCLIPPATH),
-									     XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"RegionMode", unRegionMode);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SELECTCLIPPATH", true);
-		}
-
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SELECTCLIPPATH(unRegionMode);
 
 		if (m_pPath)
 		{
@@ -2147,18 +1497,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfColor oColor;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oColor;
-//		else
-//			m_oStream >> oColor;
-
 		m_pParser->ReadValue(oColor);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_SETBKCOLOR", oColor, {XmlArgument(L"Id", EMR_SETBKCOLOR),
-									    XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETBKCOLOR(oColor);
 
 		m_pDC->SetBgColor(oColor);
 		UpdateOutputDC();
@@ -2168,18 +1510,10 @@ static const struct ActionNamesEmf
 		// TODO: Проверить как найдется файл
 		TEmfRectL oClip;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oClip;
-//		else
-//			m_oStream >> oClip;
-
 		m_pParser->ReadValue(oClip);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_EXCLUDECLIPRECT", oClip, {XmlArgument(L"Id", EMR_EXCLUDECLIPRECT),
-										XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_EXCLUDECLIPRECT(oClip);
 
 		TRectD oClipRect, oBB;
 
@@ -2221,33 +1555,14 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulRgnDataSize, ulRegionMode;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> ulRgnDataSize;
-//			*m_pOutputXml >> ulRegionMode;
-//		}
-//		else
-//		    m_oStream >> ulRgnDataSize >> ulRegionMode;
-
                 m_pParser->ReadValue(ulRgnDataSize);
                 m_pParser->ReadValue(ulRegionMode);
 
-                if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-                {
-                        m_pOutputXml->WriteNodeBegin(L"EMR_EXTSELECTCLIPRGN", {XmlArgument(L"Id", EMR_EXTSELECTCLIPRGN),
-                                                                               XmlArgument(L"Size", m_ulRecordSize + 8)});
-                                m_pOutputXml->WriteNode(L"RgnDataSize", ulRgnDataSize);
-                                m_pOutputXml->WriteNode(L"RegionMode",  ulRegionMode);
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_EXTSELECTCLIPRGN(ulRgnDataSize, ulRegionMode,
+								    *m_pParser->GetDataStream(), m_ulRecordSize);
 
-                                unsigned int unSize = m_ulRecordSize - 8;
-
-				if (unSize > 0)
-					m_pOutputXml->WriteNode(L"Buffer", m_oStream, unSize);
-
-                                m_pOutputXml->WriteNodeEnd(L"EMR_EXTSELECTCLIPRGN");
-                }
-
-		m_oStream.Skip(m_ulRecordSize - 8);
+		m_pParser->Skip(m_ulRecordSize - 8);
 
 		// Тут просто сбрасываем текущий клип. Ничего не добавляем в клип, т.е. реализовать регионы с
 	    // текущим интерфейсом рендерера невозможно.
@@ -2258,30 +1573,17 @@ static const struct ActionNamesEmf
 		m_pDC->GetClip()->Reset();
 		UpdateOutputDC();
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_SETMETARGN", {XmlArgument(L"Id", EMR_SETMETARGN),
-								    XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETMETARGN();
 	}		
 	void CEmfFile::Read_EMR_SETROP2()
 	{
 		unsigned int ulRop2Mode;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulRop2Mode;
-//		else
-//			m_oStream >> ulRop2Mode;
-
 		m_pParser->ReadValue(ulRop2Mode);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETROP2", {XmlArgument(L"Id", EMR_SETROP2),
-								      XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Rop2Mode", ulRop2Mode);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETROP2");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETROP2(ulRop2Mode);
 
 		m_pDC->SetRop2Mode(ulRop2Mode);
 		UpdateOutputDC();
@@ -2293,29 +1595,11 @@ static const struct ActionNamesEmf
 		if (!pPalette)
 			return SetError();
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> ulPaletteIndex;
-//			*m_pOutputXml >> *pPalette;
-//		}
-//		else
-//		{
-//			m_oStream >> ulPaletteIndex;
-//			m_oStream >> *pPalette;
-//		}
-
 		m_pParser->ReadValue(ulPaletteIndex);
 		m_pParser->ReadValue(*pPalette);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_CREATEPALETTE", {XmlArgument(L"Id", EMR_CREATEPALETTE),
-									    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"ihPal", ulPaletteIndex);
-				m_pOutputXml->WriteNode(L"LogPalette", *pPalette);
-				m_pOutputXml->WriteNodeEnd(L"EMR_CREATEPALETTE");
-
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_CREATEPALETTE(ulPaletteIndex, pPalette, m_ulRecordSize);
 
 		m_oPlayer.RegisterObject(ulPaletteIndex, (CEmfObjectBase*)pPalette);
 	}
@@ -2323,50 +1607,28 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulIndex;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulIndex;
-//		else
-//			m_oStream >> ulIndex;
-
 		m_pParser->ReadValue(ulIndex);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SELECTPALETTE", {XmlArgument(L"Id", EMR_SELECTPALETTE),
-									    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"ihPal", ulIndex);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SELECTPALETTE");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SELECTPALETTE(ulIndex);
 
 		m_oPlayer.SelectPalette(ulIndex);
 	}
 	void CEmfFile::Read_EMR_REALIZEPALETTE()
 	{
 		// TODO: Реализовать
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_REALIZEPALETTE", {XmlArgument(L"Id", EMR_REALIZEPALETTE),
-									XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_REALIZEPALETTE();
 	}
 	void CEmfFile::Read_EMR_INTERSECTCLIPRECT()
 	{
 		TEmfRectL oClip;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oClip;
-//		else
-//			m_oStream >> oClip;
-
 		m_pParser->ReadValue(oClip);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_INTERSECTCLIPRECT", {XmlArgument(L"Id", EMR_INTERSECTCLIPRECT),
-										XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Clip", oClip);
-				m_pOutputXml->WriteNodeEnd(L"EMR_INTERSECTCLIPRECT");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_INTERSECTCLIPRECT(oClip);
 
 		TRectD oClipRect;
 		TranslatePoint(oClip.lLeft, oClip.lTop, oClipRect.dLeft, oClipRect.dTop);
@@ -2377,20 +1639,10 @@ static const struct ActionNamesEmf
 	{
 		unsigned int ulLayoutMode;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> ulLayoutMode;
-//		else
-//			m_oStream >> ulLayoutMode;
-
                 m_pParser->ReadValue(ulLayoutMode);
 
-                if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-                {
-                        m_pOutputXml->WriteNodeBegin(L"EMR_SETLAYOUT", {XmlArgument(L"Id", EMR_SETLAYOUT),
-                                                                        XmlArgument(L"Size", m_ulRecordSize + 8)});
-                                m_pOutputXml->WriteNode(L"LayoutMode", ulLayoutMode);
-                                m_pOutputXml->WriteNodeEnd(L"EMR_SETLAYOUT");
-                }
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETLAYOUT(ulLayoutMode);
 
 		// TODO: реализовать
 	}
@@ -2398,20 +1650,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfPointL oOrigin;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oOrigin;
-//		else
-//			m_oStream >> oOrigin;
-
 		m_pParser->ReadValue(oOrigin);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_SETBRUSHORGEX", {XmlArgument(L"Id", EMR_SETBRUSHORGEX),
-									    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Origin", oOrigin);
-				m_pOutputXml->WriteNodeEnd(L"EMR_SETBRUSHORGEX");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_SETBRUSHORGEX(oOrigin);
 
 		// TODO: реализовать
 	}		
@@ -2422,48 +1664,20 @@ static const struct ActionNamesEmf
 		unsigned int unRadius;
 		double dStartAngle, dSweepAngle;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oCenter;
-//			*m_pOutputXml >> unRadius;
-
-//			*m_pOutputXml >> dStartAngle;
-//			*m_pOutputXml >> dSweepAngle;
-//		}
-//		else
-//			m_oStream >> oCenter >> unRadius >> dStartAngle >> dSweepAngle;
-
                 m_pParser->ReadValue(oCenter);
                 m_pParser->ReadValue(unRadius);
 
                 m_pParser->ReadValue(dStartAngle);
                 m_pParser->ReadValue(dSweepAngle);
 
-                if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-                {
-                        m_pOutputXml->WriteNodeBegin(L"EMR_ANGLEARC", {XmlArgument(L"Id", EMR_ANGLEARC),
-                                                                       XmlArgument(L"Size", m_ulRecordSize + 8)});
-                                m_pOutputXml->WriteNode(L"Center",     oCenter);
-                                m_pOutputXml->WriteNode(L"Radius",     unRadius);
-                                m_pOutputXml->WriteNode(L"StartAngle", dStartAngle);
-                                m_pOutputXml->WriteNode(L"SweepAngle", dSweepAngle);
-                                m_pOutputXml->WriteNodeEnd(L"EMR_ANGLEARC");
-                }
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_ANGLEARC(oCenter, unRadius, dStartAngle, dSweepAngle);
 
 		ArcTo(oCenter.x - unRadius, oCenter.y - unRadius, oCenter.x + unRadius, oCenter.y + unRadius, dStartAngle, dSweepAngle);
 		DrawPath(true, false);
 	}
 	void CEmfFile::Read_EMR_ARC_BASE(TEmfRectL& oBox, TEmfPointL& oStart, TEmfPointL& oEnd, double& dStartAngle, double& dSweepAngle)
 	{
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBox;
-//			*m_pOutputXml >> oStart;
-//			*m_pOutputXml >> oEnd;
-//		}
-//		else
-//			m_oStream >> oBox >> oStart >> oEnd;
-
 		m_pParser->ReadValue(oBox);
 		m_pParser->ReadValue(oStart);
 		m_pParser->ReadValue(oEnd);
@@ -2488,15 +1702,8 @@ static const struct ActionNamesEmf
 		double dStartAngle, dSweep;
 		Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-                if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-                {        
-                       m_pOutputXml->WriteNodeBegin(L"EMR_ARC", {XmlArgument(L"Id", EMR_ARC),
-                                                                 XmlArgument(L"Size", m_ulRecordSize + 8)});
-                                m_pOutputXml->WriteNode(L"Rectangle", oBox);
-                                m_pOutputXml->WriteNode(L"StartPoint", oStart);
-                                m_pOutputXml->WriteNode(L"EndPoint", oEnd);
-                                m_pOutputXml->WriteNodeEnd(L"EMR_ARC");
-                }
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_ARC(oBox, oStart, oEnd);
 
 		MoveTo(oStart);
 		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
@@ -2510,15 +1717,8 @@ static const struct ActionNamesEmf
 		double dStartAngle, dSweep;
 		Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_ARCTO", {XmlArgument(L"Id", EMR_ARCTO),
-								    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Rectangle", oBox);
-				m_pOutputXml->WriteNode(L"StartPoint", oStart);
-				m_pOutputXml->WriteNode(L"EndPoint", oEnd);
-				m_pOutputXml->WriteNodeEnd(L"EMR_ARCTO");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_ARCTO(oBox, oStart, oEnd);
 
 		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
 	}
@@ -2530,15 +1730,8 @@ static const struct ActionNamesEmf
 		double dStartAngle, dSweep;
 		Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-                if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-                {
-                        m_pOutputXml->WriteNodeBegin(L"EMR_CHORD", {XmlArgument(L"Id", EMR_CHORD),
-                                                                    XmlArgument(L"Size", m_ulRecordSize + 8)});
-                                m_pOutputXml->WriteNode(L"Rectangle", oBox);
-                                m_pOutputXml->WriteNode(L"StartPoint", oStart);
-                                m_pOutputXml->WriteNode(L"EndPoint", oEnd);
-                                m_pOutputXml->WriteNodeEnd(L"EMR_CHORD");
-                }
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_CHORD(oBox, oStart, oEnd);
 
 		MoveTo(oStart);
 		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
@@ -2549,20 +1742,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oBox;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oBox;
-//		else
-//			m_oStream >> oBox;
-
 		m_pParser->ReadValue(oBox);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_ELLIPSE", {XmlArgument(L"Id", EMR_ELLIPSE),
-								      XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Rectangle", oBox);
-				m_pOutputXml->WriteNodeEnd(L"EMR_ELLIPSE");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_ELLIPSE(oBox);
 
 		if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
 		    ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);

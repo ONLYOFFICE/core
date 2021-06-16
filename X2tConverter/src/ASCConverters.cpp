@@ -191,6 +191,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
 					nRes = xlsx_dir2xlst_bin(sResultOoxmlDir, sTo, params, true, sTo); break;
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM:
@@ -2911,6 +2912,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
 				{
 					const std::wstring & sXmlOptions = params.getXmlOptions();
 					return xlsx2xlst_bin(sResultDecryptFile, sTo, sTemp, params);
@@ -2993,6 +2995,7 @@ namespace NExtractTools
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
                 {
                     return fromSpreadsheet(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX, sTemp, params);
                 }break;
@@ -3697,7 +3700,8 @@ namespace NExtractTools
        if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV != nFormatTo)
        {
 			if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatTo ||
-				AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo)
+				AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo || 
+				AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == nFormatTo)
 			{
 				if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo)
 				{

@@ -74,6 +74,7 @@ public:
 private:
     void FillTxBody(PPTX::Logic::TxBody &oTxBody);
     void FillTcPr(PPTX::Logic::TableCellProperties& oTcPr);
+    void FillLn(PPTX::Logic::Ln& Ln, eBorderPossition eBP, CShapeElement* pBorder);
 
     void FillMergeDirection(PPTX::Logic::TableCell& oTc);
     void setParentDirection();
@@ -81,7 +82,7 @@ private:
 private:
     CShapeElement* m_pShape;
 
-    std::map<UINT, CShapeElement*> m_mapBorders;
+    std::map<eBorderPossition, CShapeElement*> m_mapBorders;
 
     // Proto table's coord
     int m_row, m_col;

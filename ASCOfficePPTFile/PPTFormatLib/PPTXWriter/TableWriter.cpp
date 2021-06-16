@@ -288,8 +288,6 @@ void ProtoTable::setBorders(const UINT posFRow, const UINT posFCol, const UINT p
 
         return;
     }
-
-    return;
 }
 
 bool ProtoTable::isDefaultBoard(const CShapeElement *pBorder)
@@ -459,7 +457,18 @@ void TCell::setGridSpan(int gridSpan)
 void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 {
     if (m_pShape == nullptr)
+    {
+        PPTX::Logic::Paragraph p;
+        auto RPr = new PPTX::Logic::RunProperties;
+        RPr->lang = L"en-US";
+        RPr->sz = 1800;
+        RPr->dirty = false;
+        RPr->m_name = L"a:endParaRPr";
+        p.endParaRPr = RPr;
+        oTxBody.Paragrs.push_back(p);
+
         return;
+    }
 
     TxBodyConverter txBodyConverter(&m_pShape->m_pShape->m_oText, TxBodyConverter::table);
     txBodyConverter.FillTxBody(oTxBody);
@@ -472,6 +481,72 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
 
     pSolidFill->Color.SetRGBColor(clr.GetR(), clr.GetG(), clr.GetB());
     oTcPr.Fill.Fill.reset(pSolidFill);
+
+    for (auto IterBorder : m_mapBorders)
+    {
+        auto pLn = new PPTX::Logic::Ln;
+        FillLn(*pLn, IterBorder.first, IterBorder.second);
+        switch (IterBorder.first)
+        {
+        case lnL: oTcPr.LnL = pLn; break;
+        case lnR: oTcPr.LnR = pLn; break;
+        case lnT: oTcPr.LnT = pLn; break;
+        case lnB: oTcPr.LnB = pLn; break;
+        case lnBlToTr: oTcPr.LnBlToTr = pLn; break;
+        case lnTlToBr: oTcPr.LnTlToBr = pLn; break;
+        }
+    }
+}
+
+void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeElement *pBorder)
+{
+    if (pBorder == nullptr)
+        return;
+    switch (eBP)
+    {
+    case lnL: Ln.m_name = L"lnL"; break;
+    case lnR: Ln.m_name = L"lnR"; break;
+    case lnT: Ln.m_name = L"lnT"; break;
+    case lnB: Ln.m_name = L"lnB"; break;
+    case lnBlToTr: Ln.m_name = L"lnBlToTr"; break;
+    case lnTlToBr: Ln.m_name = L"lnTlToBr"; break;
+    }
+
+    auto& pen = pBorder->m_oPen;
+    Ln.w = pen.Size;
+
+    auto pSolidFill = new PPTX::Logic::SolidFill;
+    auto& clr = pen.Color;
+    pSolidFill->Color.SetRGBColor(clr.GetR(), clr.GetG(), clr.GetB());
+    pSolidFill->Color.Color->alpha = (unsigned char)pen.Alpha;
+    Ln.Fill.Fill.reset(pSolidFill);
+
+    Ln.prstDash = new PPTX::Logic::PrstDash;
+    Ln.prstDash->val = new PPTX::Limit::PrstDashVal;
+    BYTE dash[] = {6,7,10,1,3,4,5};
+    if (sizeof (dash) > pen.DashStyle)
+        Ln.prstDash->val->SetBYTECode(dash[pen.DashStyle]);
+
+    // TODO?
+    Ln.cap = new PPTX::Limit::LineCap;
+    Ln.cmpd = new PPTX::Limit::CompoundLine;
+    Ln.algn = new PPTX::Limit::PenAlign;
+
+    auto* pLineEnd = new PPTX::Logic::LineEnd;
+    pLineEnd->m_name = L"a:headEnd";
+    pLineEnd->type = new PPTX::Limit::LineEndType;
+    pLineEnd->w = new PPTX::Limit::LineEndSize;
+    pLineEnd->len = new PPTX::Limit::LineEndSize;
+    Ln.headEnd = pLineEnd;
+
+    pLineEnd = new PPTX::Logic::LineEnd;
+    pLineEnd->m_name = L"a:tailEnd";
+    pLineEnd->type = new PPTX::Limit::LineEndType;
+    pLineEnd->w = new PPTX::Limit::LineEndSize;
+    pLineEnd->len = new PPTX::Limit::LineEndSize;
+    Ln.tailEnd = pLineEnd;
+
+    Ln.Join.type = PPTX::Logic::eJoin::JoinRound;
 }
 
 void TCell::setRowSpan(int rowSpan)

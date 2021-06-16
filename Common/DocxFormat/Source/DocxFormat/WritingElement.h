@@ -1414,6 +1414,8 @@ namespace OOX
 	public:
 		Document() {}
 		virtual ~Document() {}
+
+		std::wstring m_sDocumentPath;
 	};
 
 	class WritingElement

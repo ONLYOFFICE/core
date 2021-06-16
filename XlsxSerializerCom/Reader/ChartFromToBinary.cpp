@@ -12635,9 +12635,12 @@ namespace BinXlsxRW
 			WriteCT_StyleEntry(*oVal.m_oChartStyle.m_arStyleEntries[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartstyleMARKERLAYOUT);
-		WriteCT_MarkerLayout(*oVal.m_oChartStyle.m_dataPointMarkerLayout);
-		m_oBcw.WriteItemEnd(nCurPos);
+		if (oVal.m_oChartStyle.m_dataPointMarkerLayout.IsInit())
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartstyleMARKERLAYOUT);
+			WriteCT_MarkerLayout(*oVal.m_oChartStyle.m_dataPointMarkerLayout);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
 	}
 	void BinaryChartWriter::WriteCT_StyleEntry(OOX::Spreadsheet::ChartEx::CStyleEntry & oVal)
 	{

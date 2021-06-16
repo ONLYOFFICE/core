@@ -31,9 +31,9 @@
  */
 
 
-#include "FileContainer.h"
-#include "FileTypes.h"
+#include "Folder.h"
 
+#include "FileTypes.h"
 #include "FileFactory.h"
 #include "WrapperFile.h"
 
@@ -327,6 +327,17 @@ namespace PPTX
 		
 		if ( NSFile::CFileBinary::Exists(filename.GetPath()) == true ) return filename;
 		
+		//tf22977542_win32.potx
+
+		PPTX::Document *pPptxDocument = dynamic_cast<PPTX::Document *>(m_pMainDocument);
+
+		if (m_pMainDocument)
+		{
+			OOX::CPath main_path(m_pMainDocument->m_sDocumentPath);
+			filename = main_path / relation->Target();
+			
+			if (NSFile::CFileBinary::Exists(filename.GetPath()) == true) return filename;
+		}
 		//file_1_ (1).pptx			
 		std::wstring strDefDirectory;
 		for (int i = 0; i < 9; i++)
@@ -338,7 +349,16 @@ namespace PPTX
 			}
 		}
 
-		if (strDefDirectory.empty()) return OOX::CPath();
+		if (strDefDirectory.empty())
+		{
+			if (std::wstring::npos != relation->Type().find(L"image") ||
+				std::wstring::npos != relation->Type().find(L"audio") ||
+				std::wstring::npos != relation->Type().find(L"media"))
+			{
+				strDefDirectory = L"media";
+			}
+			else return OOX::CPath();
+		}
 		
 		OOX::CPath new_filename = strDefDirectory + FILE_SEPARATOR_STR + relation->Filename().GetFilename();
 		

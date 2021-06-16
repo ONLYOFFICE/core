@@ -266,7 +266,6 @@
     <ClInclude Include="..\PPTXWriter\Animation.h" />
     <ClInclude Include="..\PPTXWriter\Converter.h" />
     <ClInclude Include="..\PPTXWriter\ImageManager.h" />
-    <ClInclude Include="..\PPTXWriter\ridmanager.h" />
     <ClInclude Include="..\PPTXWriter\ShapeWriter.h" />
     <ClInclude Include="..\PPTXWriter\StylesWriter.h" />
     <ClInclude Include="..\Reader\ClassesAtom.h" />
@@ -476,7 +475,6 @@
     <ClCompile Include="..\PPTFormatLib.cpp" />
     <ClCompile Include="..\PPTXWriter\Animation.cpp" />
     <ClCompile Include="..\PPTXWriter\Converter.cpp" />
-    <ClCompile Include="..\PPTXWriter\ridmanager.cpp" />
     <ClCompile Include="..\PPTXWriter\ShapeWriter.cpp" />
     <ClCompile Include="..\Reader\PPTDocumentInfoOneUser.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>

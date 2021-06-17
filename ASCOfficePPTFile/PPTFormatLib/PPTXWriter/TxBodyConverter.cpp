@@ -11,14 +11,11 @@ TxBodyConverter::TxBodyConverter(CTextAttributesEx *pText, TxBodyConverter::eTxT
 
 void TxBodyConverter::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 {
-    if (m_pText == nullptr)
-        return;
     switch (m_txType)
     {
     case shape: ConvertShapeTxBody(oTxBody); break;
     case table: ConvertTableTxBody(oTxBody); break;
     }
-
 }
 
 void TxBodyConverter::ConvertTableTxBody(PPTX::Logic::TxBody &oTxBody)
@@ -28,7 +25,6 @@ void TxBodyConverter::ConvertTableTxBody(PPTX::Logic::TxBody &oTxBody)
     oTxBody.m_name = L"a:txBody";
 
     FillParagraphs(oTxBody.Paragrs, m_pText->m_arParagraphs);
-
 }
 
 void TxBodyConverter::ConvertShapeTxBody(PPTX::Logic::TxBody &oTxBody)
@@ -38,12 +34,14 @@ void TxBodyConverter::ConvertShapeTxBody(PPTX::Logic::TxBody &oTxBody)
 
 void TxBodyConverter::FillParagraphs(std::vector<PPTX::Logic::Paragraph> &arrP, std::vector<CParagraph> &arrParagraphs)
 {
-    if (m_pText == nullptr)
+    if (m_pText == nullptr || m_pText->m_arParagraphs.empty())
     {
         PPTX::Logic::Paragraph p;
         p.endParaRPr = new PPTX::Logic::RunProperties;
         p.endParaRPr->m_name = L"a:endParaRPr";
         p.endParaRPr->lang = L"en-US";
+        p.endParaRPr->sz = 1800;
+        p.endParaRPr->dirty = false;
 
         arrP.push_back(p);
         return;

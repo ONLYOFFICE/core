@@ -62,6 +62,7 @@ private:
     void FillCS(PPTX::Logic::TextFont& oCs, CFontProperties& font);
     void FillEffectLst(PPTX::Logic::EffectProperties &oEList, CTextCFRun& oCFRun);
     void FillSolidFill(PPTX::Logic::UniFill& oUF, CColor& oColor);
+
 private:
     CTextAttributesEx* m_pText;
     eTxType m_txType;

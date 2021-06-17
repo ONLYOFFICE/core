@@ -458,20 +458,14 @@ void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 {
     if (m_pShape == nullptr)
     {
-        PPTX::Logic::Paragraph p;
-        auto RPr = new PPTX::Logic::RunProperties;
-        RPr->lang = L"en-US";
-        RPr->sz = 1800;
-        RPr->dirty = false;
-        RPr->m_name = L"a:endParaRPr";
-        p.endParaRPr = RPr;
-        oTxBody.Paragrs.push_back(p);
-
-        return;
+        TxBodyConverter txBodyConverter(nullptr, TxBodyConverter::table);
+        txBodyConverter.FillTxBody(oTxBody);
+    } else
+    {
+        TxBodyConverter txBodyConverter(&m_pShape->m_pShape->m_oText, TxBodyConverter::table);
+        txBodyConverter.FillTxBody(oTxBody);
     }
 
-    TxBodyConverter txBodyConverter(&m_pShape->m_pShape->m_oText, TxBodyConverter::table);
-    txBodyConverter.FillTxBody(oTxBody);
 }
 
 void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
@@ -504,12 +498,12 @@ void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeEleme
         return;
     switch (eBP)
     {
-    case lnL: Ln.m_name = L"lnL"; break;
-    case lnR: Ln.m_name = L"lnR"; break;
-    case lnT: Ln.m_name = L"lnT"; break;
-    case lnB: Ln.m_name = L"lnB"; break;
-    case lnBlToTr: Ln.m_name = L"lnBlToTr"; break;
-    case lnTlToBr: Ln.m_name = L"lnTlToBr"; break;
+    case lnL: Ln.m_name = L"a:lnL"; break;
+    case lnR: Ln.m_name = L"a:lnR"; break;
+    case lnT: Ln.m_name = L"a:lnT"; break;
+    case lnB: Ln.m_name = L"a:lnB"; break;
+    case lnBlToTr: Ln.m_name = L"a:lnBlToTr"; break;
+    case lnTlToBr: Ln.m_name = L"a:lnTlToBr"; break;
     }
 
     auto& pen = pBorder->m_oPen;
@@ -523,9 +517,10 @@ void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeEleme
 
     Ln.prstDash = new PPTX::Logic::PrstDash;
     Ln.prstDash->val = new PPTX::Limit::PrstDashVal;
-    BYTE dash[] = {6,7,10,1,3,4,5};
-    if (sizeof (dash) > pen.DashStyle)
-        Ln.prstDash->val->SetBYTECode(dash[pen.DashStyle]);
+    auto oldDash = pen.DashStyle;
+    BYTE dash[] = {6,7,10,8,9,2,0,3,1,4};
+    if (sizeof (dash) > oldDash)
+        Ln.prstDash->val->SetBYTECode(dash[oldDash]);
 
     // TODO?
     Ln.cap = new PPTX::Limit::LineCap;

@@ -256,7 +256,7 @@ void ProtoTable::setBorders(const UINT posFRow, const UINT posFCol, const UINT p
     // lnTlToBr or lnBlToTr
     if ((posFRow != posLRow) && (posFCol != posLCol))
     {
-        auto borPos = posFRow > posLRow ? TCell::lnTlToBr : TCell::lnBlToTr;
+        auto borPos = posFRow > posLRow ? TCell::lnBlToTr : TCell::lnTlToBr;
         m_table[posFRow][posFCol].setBorder(borPos, pBorder);
         return;
     }
@@ -512,7 +512,13 @@ void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeEleme
     auto pSolidFill = new PPTX::Logic::SolidFill;
     auto& clr = pen.Color;
     pSolidFill->Color.SetRGBColor(clr.GetR(), clr.GetG(), clr.GetB());
-    pSolidFill->Color.Color->alpha = (unsigned char)pen.Alpha;
+    if (pen.Alpha)
+    {
+        PPTX::Logic::ColorModifier alpha;
+        alpha.name = L"a:alpha";
+        alpha.val = pen.Alpha * 394;
+        pSolidFill->Color.Color->Modifiers.push_back(alpha);
+    }
     Ln.Fill.Fill.reset(pSolidFill);
 
     Ln.prstDash = new PPTX::Logic::PrstDash;

@@ -3,39 +3,101 @@
 
 #include "../EmfTypes.h"
 #include "../EmfObjects.h"
+#include "../../CXmlOutput.h"
 #include "../../Common/IOutputDevice.h"
 
 namespace MetaFile
 {
+    enum InterpretaotrType
+    {
+        Render,
+        XML
+    };
+
     class CEmfInterpretarorBase : public IOutputDevice
     {
     public:
-        virtual void SaveValue (TEmfAlphaBlend&)        = 0;
-        virtual void SaveValue (TEmfStretchDIBITS&)     = 0;
-        virtual void SaveValue (TEmfBitBlt&)            = 0;
-        virtual void SaveValue (TEmfSetDiBitsToDevice&) = 0;
-        virtual void SaveValue (TEmfStretchBLT&)        = 0;
-        virtual void SaveValue (TXForm&)                = 0;
-        virtual void SaveValue (CEmfLogBrushEx&)        = 0;
-        virtual void SaveValue (TEmfColor&)             = 0;
-        virtual void SaveValue (CEmfLogFont&)           = 0;
-        virtual void SaveValue (TEmfPointL&)            = 0;
-        virtual void SaveValue (TEmfPointS&)            = 0;
-        virtual void SaveValue (TEmfRectL&)             = 0;
-        virtual void SaveValue (TEmfSizeL&)             = 0;
-        virtual void SaveValue (TEmfDibPatternBrush&)   = 0;
-        virtual void SaveValue (CEmfLogPalette&)        = 0;
-        virtual void SaveValue (TEmfExtTextoutA&)       = 0;
-        virtual void SaveValue (TEmfExtTextoutW&)       = 0;
-        virtual void SaveValue (TEmfPolyTextoutA&)      = 0;
-        virtual void SaveValue (TEmfPolyTextoutW&)      = 0;
-        virtual void SaveValue (TEmfSmallTextout&)      = 0;
+        virtual void SetOutputDevice(IOutputDevice*) = 0;
 
-        virtual void SaveValue (unsigned short&)   = 0;
-        virtual void SaveValue (unsigned char&)    = 0;
-        virtual void SaveValue (unsigned int&)     = 0;
-        virtual void SaveValue (double&)           = 0;
-        virtual void SaveValue (int&)              = 0;
+        virtual void Save_EMR_HEADER(const TEmfHeader&, CDataStream&, const unsigned int&) = 0;
+        virtual void Save_EMR_ALPHABLEND(const TEmfAlphaBlend&, CDataStream&, const unsigned int&) = 0;
+        virtual void Save_EMR_STRETCHDIBITS(const TEmfStretchDIBITS&, CDataStream&, const unsigned int&) = 0;
+        virtual void Save_EMR_BITBLT(const TEmfBitBlt&, CDataStream&, const unsigned int&) = 0;
+        virtual void Save_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice&, CDataStream&, const unsigned int&) = 0;
+        virtual void Save_EMR_STRETCHBLT(const TEmfStretchBLT& oTEmfStretchBLT, CDataStream &oDataStream, const unsigned int&) = 0;
+        virtual void Save_EMR_EOF(const unsigned int&, const unsigned int&, const unsigned int&) = 0;
+        virtual void Save_EMR_SAVEDC() = 0;
+        virtual void Save_EMR_RESTOREDC(const int&) = 0;
+        virtual void Save_EMR_MODIFYWORLDTRANSFORM(const TEmfXForm&, const unsigned int&) = 0;
+        virtual void Save_EMR_SETWORLDTRANSFORM(const TEmfXForm&) = 0;
+        virtual void Save_EMR_CREATEBRUSHINDIRECT(const unsigned int&, const CEmfLogBrushEx*) = 0;
+        virtual void Save_EMR_SETTEXTCOLOR(const TEmfColor&) = 0;
+        virtual void Save_EMR_SELECTOBJECT(const unsigned int&) = 0;
+        virtual void Save_EMR_EXTCREATEFONTINDIRECTW(const unsigned int&, CEmfLogFont*, const unsigned int) = 0;
+        virtual void Save_EMR_SETTEXTALIGN(const unsigned int&) = 0;
+        virtual void Save_EMR_SETBKMODE(const unsigned int&) = 0;
+        virtual void Save_EMR_DELETEOBJECT(const unsigned int&) = 0;
+        virtual void Save_EMR_SETMITERLIMIT(const unsigned int&) = 0;
+        virtual void Save_EMR_EXTCREATEPEN(const unsigned int&, CEmfLogPen*, const unsigned int&) = 0;
+        virtual void Save_EMR_CREATEPEN(const unsigned int&, const unsigned int&, const CEmfLogPen*) = 0;
+        virtual void Save_EMR_SETPOLYFILLMODE(const unsigned int&) = 0;
+        virtual void Save_EMR_BEGINPATH() = 0;
+        virtual void Save_EMR_ENDPATH() = 0;
+        virtual void Save_EMR_CLOSEFIGURE() = 0;
+        virtual void Save_EMR_FLATTENPATH() = 0;
+        virtual void Save_EMR_WIDENPATH() = 0;
+        virtual void Save_EMR_ABORTPATH() = 0;
+        virtual void Save_EMR_MOVETOEX(const TEmfPointL&) = 0;
+        virtual void Save_EMR_SETARCDIRECTION(const unsigned int&) = 0;
+        virtual void Save_EMR_FILLPATH(const TEmfRectL&) = 0;
+        virtual void Save_EMR_SETMAPMODE(const unsigned int&) = 0;
+        virtual void Save_EMR_SETWINDOWORGEX(const TEmfPointL&) = 0;
+        virtual void Save_EMR_SETWINDOWEXTEX(const TEmfSizeL&) = 0;
+        virtual void Save_EMR_SETVIEWPORTORGEX(const TEmfPointL&) = 0;
+        virtual void Save_EMR_SETVIEWPORTEXTEX(const TEmfSizeL&) = 0;
+        virtual void Save_EMR_SETSTRETCHBLTMODE(const unsigned int&) = 0;
+        virtual void Save_EMR_SETICMMODE(const unsigned int&) = 0;
+        virtual void Save_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int&, const TEmfDibPatternBrush&, CDataStream&, const unsigned int&) = 0;
+        virtual void Save_EMR_SELECTCLIPPATH(const unsigned int&) = 0;
+        virtual void Save_EMR_SETBKCOLOR(const TEmfColor&) = 0;
+        virtual void Save_EMR_EXCLUDECLIPRECT(const TEmfRectL&) = 0;
+        virtual void Save_EMR_EXTSELECTCLIPRGN(const unsigned int&, const unsigned int&, CDataStream&, const unsigned int&) = 0;
+        virtual void Save_EMR_SETMETARGN() = 0;
+        virtual void Save_EMR_SETROP2(const unsigned int&) = 0;
+        virtual void Save_EMR_CREATEPALETTE(const unsigned int&, const CEmfLogPalette*, const unsigned int&) = 0;
+        virtual void Save_EMR_SELECTPALETTE(const unsigned int&) = 0;
+        virtual void Save_EMR_REALIZEPALETTE() = 0;
+        virtual void Save_EMR_INTERSECTCLIPRECT(const TEmfRectL&) = 0;
+        virtual void Save_EMR_SETLAYOUT(const unsigned int&) = 0;
+        virtual void Save_EMR_SETBRUSHORGEX(const TEmfPointL&) = 0;
+        virtual void Save_EMR_ANGLEARC(const TEmfPointL&, const unsigned int&, const double&, const double&) = 0;
+        virtual void Save_EMR_ARC(const TEmfRectL&, const TEmfPointL&, const TEmfPointL&) = 0;
+        virtual void Save_EMR_ARCTO(const TEmfRectL&, const TEmfPointL&, const TEmfPointL&) = 0;
+        virtual void Save_EMR_CHORD(const TEmfRectL&, const TEmfPointL&, const TEmfPointL&) = 0;
+        virtual void Save_EMR_ELLIPSE(const TEmfRectL&) = 0;
+        virtual void Save_EMR_EXTTEXTOUTA(const TEmfExtTextoutA&, const unsigned int&) = 0;
+        virtual void Save_EMR_EXTTEXTOUTW(const TEmfExtTextoutW&, const unsigned int&) = 0;
+        virtual void Save_EMR_LINETO(const TEmfPointL&) = 0;
+        virtual void Save_EMR_PIE(const TEmfRectL&, const TEmfPointL&, const TEmfPointL&) = 0;
+        virtual void Save_EMR_POLYBEZIER(const TEmfRectL&, const std::vector<TEmfPointL>&) = 0;
+        virtual void Save_EMR_POLYBEZIER(const TEmfRectL&, const std::vector<TEmfPointS>&) = 0;
+        virtual void Save_EMR_POLYBEZIERTO(const TEmfRectL&, const std::vector<TEmfPointL>&) = 0;
+        virtual void Save_EMR_POLYBEZIERTO(const TEmfRectL&, const std::vector<TEmfPointS>&) = 0;
+        virtual void Save_EMR_POLYDRAW(const TEmfRectL&, TEmfPointL*, const unsigned int&, const unsigned char*) = 0;
+        virtual void Save_EMR_POLYDRAW(const TEmfRectL&, TEmfPointS*, const unsigned int&, const unsigned char*) = 0;
+        virtual void Save_EMR_POLYGON(const TEmfRectL&, const std::vector<TEmfPointL>&) = 0;
+        virtual void Save_EMR_POLYGON(const TEmfRectL&, const std::vector<TEmfPointS>&) = 0;
+        virtual void Save_EMR_POLYLINE(const TEmfRectL&, const std::vector<TEmfPointL>&) = 0;
+        virtual void Save_EMR_POLYLINE(const TEmfRectL&, const std::vector<TEmfPointS>&) = 0;
+        virtual void Save_EMR_POLYLINETO(const TEmfRectL&, const std::vector<TEmfPointL>&) = 0;
+        virtual void Save_EMR_POLYLINETO(const TEmfRectL&, const std::vector<TEmfPointS>&) = 0;
+        //TODO: реализовать сохранение полигонов в полигоне
+        virtual void Save_EMR_RECTANGLE(const TEmfRectL&) = 0;
+        virtual void Save_EMR_ROUNDRECT(const TEmfRectL&, const TEmfSizeL&) = 0;
+        virtual void Save_EMR_SETPIXELV(const TEmfPointL&, const TEmfColor&) = 0;
+        virtual void Save_EMR_SMALLTEXTOUT(const TEmfSmallTextout&, const unsigned int&) = 0;
+        virtual void Save_EMR_STROKEANDFILLPATH(const TEmfRectL&) = 0;
+        virtual void Save_EMR_STROKEPATH(const TEmfRectL&) = 0;
     };
 }
 

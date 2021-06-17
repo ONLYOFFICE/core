@@ -181,6 +181,9 @@ static const struct ActionNamesEmf
 	{
 		m_pParser->SetStream(m_oStream);
 
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->SetOutputDevice(m_pOutput);
+
 		if (!m_pParser->IsValid())
 			SetError();
 
@@ -191,22 +194,22 @@ static const struct ActionNamesEmf
 		unsigned int ulRecordIndex	= 0;
 		unsigned int m_ulRecordPos	= 0;
 
-		if (m_pOutput)
+		if (m_pInterpretator)
 		{
-			m_pOutput->Begin();
-			if (NULL != m_pOutputXml)
-			{
-				if (m_pOutputXml->IsWriter())
-				{
-				    m_pOutputXml->WriteString(L"<?xml version=\"1.0\"?>\n");
-				    m_pOutputXml->WriteNodeBegin(L"EMF");
-				}
-				else if (m_pOutputXml->IsReader())
-				{
-					if (!m_pOutputXml->ReadFromFile(NSFile::GetProcessDirectory() + L"\\test.xml"))
-					    m_pOutputXml->Clear();
-				}
-			}
+			m_pInterpretator->Begin();
+//			if (NULL != m_pInterpretatorXml)
+//			{
+//				if (m_pInterpretatorXml->IsWriter())
+//				{
+//				    m_pInterpretatorXml->WriteString(L"<?xml version=\"1.0\"?>\n");
+//				    m_pInterpretatorXml->WriteNodeBegin(L"EMF");
+//				}
+//				else if (m_pInterpretatorXml->IsReader())
+//				{
+//					if (!m_pInterpretatorXml->ReadFromFile(NSFile::GetProcessDirectory() + L"\\test.xml"))
+//					    m_pInterpretatorXml->Clear();
+//				}
+//			}
 		}
 
 		do
@@ -371,7 +374,7 @@ static const struct ActionNamesEmf
 			m_pParser->Skip(need_skip);
 			
 #ifdef _DEBUG
-			if ( need_skip != 0 && !m_pOutput)
+			if ( need_skip != 0 && !m_pInterpretator)
 			{
 				std::wstring name = actionNamesEmf[ulType].actionName;
 
@@ -380,23 +383,23 @@ static const struct ActionNamesEmf
 #endif   
 			ulRecordIndex++;
 
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-				m_pOutputXml->ReadNextRecord();
+//			if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsReader())
+//				m_pInterpretatorXml->ReadNextRecord();
 
 		} while (!CheckError());
 
 		if (!CheckError())
 			m_pParser->SeekToStart();
 
-		if (m_pOutput)
+		if (m_pInterpretator)
 		{
-			m_pOutput->End();
+			m_pInterpretator->End();
 
-			if (NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-			{
-				m_pOutputXml->WriteNodeEnd(L"EMF");
-				m_pOutputXml->SaveToFile(NSFile::GetProcessDirectory() + L"/test.xml");
-			}
+//			if (NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsWriter())
+//			{
+//				m_pInterpretatorXml->WriteNodeEnd(L"EMF");
+//				m_pInterpretatorXml->SaveToFile(NSFile::GetProcessDirectory() + L"/test.xml");
+//			}
 		}
 	}
 	void CEmfFile::TranslatePoint(TEmfPointL& oPoint, double& dX, double& dY)
@@ -445,12 +448,12 @@ static const struct ActionNamesEmf
 	}
 	void CEmfFile::DrawImage(int nX, int nY, int nW, int nH, BYTE* pImageBuffer, unsigned int unImageW, unsigned int unImageH)
 	{
-		if (m_pOutput)
+		if (m_pInterpretator)
 		{
 			double dX, dY, dR, dB;
 			TranslatePoint(nX, nY, dX, dY);
 			TranslatePoint(nX + nW, nY + nH, dR, dB);
-			m_pOutput->DrawBitmap(dX, dY, dR - dX, dB - dY, pImageBuffer, unImageW, unImageH);
+			m_pInterpretator->DrawBitmap(dX, dY, dR - dX, dB - dY, pImageBuffer, unImageW, unImageH);
 		}
 	}
 	void CEmfFile::MoveTo(int nX, int nY)
@@ -463,9 +466,9 @@ static const struct ActionNamesEmf
 			if (!m_pPath->MoveTo(dX, dY))
 				return SetError();
 		}
-		else if (m_pOutput)
+		else if (m_pInterpretator)
 		{
-			m_pOutput->MoveTo(dX, dY);
+			m_pInterpretator->MoveTo(dX, dY);
 		}
 
 		m_pDC->SetCurPos(nX, nY);
@@ -480,9 +483,9 @@ static const struct ActionNamesEmf
 			if (!m_pPath->LineTo(dX, dY))
 				return SetError();
 		}
-		else if (m_pOutput)
+		else if (m_pInterpretator)
 		{
-			m_pOutput->LineTo(dX, dY);
+			m_pInterpretator->LineTo(dX, dY);
 		}
 
 		m_pDC->SetCurPos(nX, nY);
@@ -499,9 +502,9 @@ static const struct ActionNamesEmf
 			if (!m_pPath->CurveTo(dX1, dY1, dX2, dY2, dXe, dYe))
 				return SetError();
 		}
-		else if (m_pOutput)
+		else if (m_pInterpretator)
 		{
-			m_pOutput->CurveTo(dX1, dY1, dX2, dY2, dXe, dYe);
+			m_pInterpretator->CurveTo(dX1, dY1, dX2, dY2, dXe, dYe);
 		}
 
 		m_pDC->SetCurPos(nXe, nYe);
@@ -513,8 +516,8 @@ static const struct ActionNamesEmf
 			if (!m_pPath->Close())
 				return SetError();
 		}
-		else if (m_pOutput)
-			m_pOutput->ClosePath();
+		else if (m_pInterpretator)
+			m_pInterpretator->ClosePath();
 	}
 	void CEmfFile::ArcTo(int nL, int nT, int nR, int nB, double dStart, double dSweep)
 	{
@@ -527,23 +530,23 @@ static const struct ActionNamesEmf
 			if (!m_pPath->ArcTo(dL, dT, dR, dB, dStart, dSweep))
 				return SetError();
 		}
-		else if (m_pOutput)
+		else if (m_pInterpretator)
 		{
-			m_pOutput->ArcTo(dL, dT, dR, dB, dStart, dSweep);
+			m_pInterpretator->ArcTo(dL, dT, dR, dB, dStart, dSweep);
 		}
 
 		// Пересчет текущей позиции делается в каждой функции отдельно после вызова данной
 	}
 	void CEmfFile::DrawPath(bool bStroke, bool bFill)
 	{
-		if (m_pPath && m_pOutput)
+		if (m_pPath && m_pInterpretator)
 		{				
 		}
-		else if (m_pOutput)
+		else if (m_pInterpretator)
 		{
 			int lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
-			m_pOutput->DrawPath(lType);
-			m_pOutput->EndPath();
+			m_pInterpretator->DrawPath(lType);
+			m_pInterpretator->EndPath();
 		}
 	}
 	void CEmfFile::DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int* pnDx, int iGraphicsMode)
@@ -557,7 +560,7 @@ static const struct ActionNamesEmf
 			nY = m_pDC->GetCurPos().y;
 		}
 
-		if (m_pOutput)
+		if (m_pInterpretator)
 		{
 			double dX, dY;
 			TranslatePoint(nX, nY, dX, dY);
@@ -583,7 +586,7 @@ static const struct ActionNamesEmf
 				}
 			}
 
-			m_pOutput->DrawString(wsString, unCharsCount, dX, dY, pdDx, iGraphicsMode);
+			m_pInterpretator->DrawString(wsString, unCharsCount, dX, dY, pdDx, iGraphicsMode);
 
 			if (pdDx)
 				delete[] pdDx;
@@ -800,7 +803,7 @@ static const struct ActionNamesEmf
 
 		if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, c_nTEmfAlphaBlendSize + 8, &pBgraBuffer, &unWidth, &unHeight))
 		{
-			if (m_pOutput)
+			if (m_pInterpretator)
 			{
 				if (0x00 == oBitmap.AlphaFormat)
 				{
@@ -848,7 +851,7 @@ static const struct ActionNamesEmf
 
 		if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfStretchDIBITS) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
-			if (m_pOutput)
+			if (m_pInterpretator)
 			{
 				ProcessRasterOperation(oBitmap.BitBltRasterOperation, &pBgraBuffer, ulWidth, ulHeight);
 				DrawImage(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
@@ -878,7 +881,7 @@ static const struct ActionNamesEmf
 			DrawImage(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
 		}
 
-		if (m_pOutput)
+		if (m_pInterpretator)
 		{
 			if (0x00000042 == oBitmap.BitBltRasterOperation) // BLACKNESS
 			{
@@ -995,7 +998,7 @@ static const struct ActionNamesEmf
 		unsigned int unSkip = 108; // sizeof(TEmfStretchBLT) + 8 неправильно считает, из-з TXForm, там double, а в Emf они по 4 байта
 		if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, unSkip, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
-			if (m_pOutput)
+			if (m_pInterpretator)
 			{
 				ProcessRasterOperation(oBitmap.BitBltRasterOperation, &pBgraBuffer, ulWidth, ulHeight);
 				DrawImage(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
@@ -1348,7 +1351,7 @@ static const struct ActionNamesEmf
 	}	
 	void CEmfFile::Read_EMR_SETARCDIRECTION()
 	{
-		unsigned int unDirection
+		unsigned int unDirection;
 
 		m_pParser->ReadValue(unDirection);
 
@@ -1369,7 +1372,7 @@ static const struct ActionNamesEmf
 
 		if (m_pPath)
 		{
-			m_pPath->Draw(m_pOutput, false, true);
+			m_pPath->Draw(m_pInterpretator, false, true);
 			RELEASEOBJECT(m_pPath);
 		}
 	}
@@ -1760,18 +1763,10 @@ static const struct ActionNamesEmf
 		// TODO: Как найдутся файлы проверить данную запись.
 		TEmfExtTextoutA oText;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oText;
-//		else
-//			m_oStream >> oText;
-
 		m_pParser->ReadValue(oText);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_EXTTEXTOUTA", oText, {XmlArgument(L"Id", EMR_EXTTEXTOUTA),
-									    XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_EXTTEXTOUTA(oText, m_ulRecordSize);
 
 		DrawTextA(oText.aEmrText, oText.iGraphicsMode);
 	}
@@ -1779,18 +1774,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfExtTextoutW oText;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oText;
-//		else
-//			m_oStream >> oText;
-
 		m_pParser->ReadValue(oText);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_EXTTEXTOUTW", oText, {XmlArgument(L"Id", EMR_EXTTEXTOUTW),
-									    XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_EXTTEXTOUTW(oText, m_ulRecordSize);
 
 		DrawTextW(oText.wEmrText, oText.iGraphicsMode);
 	}
@@ -1798,18 +1785,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfPointL oPoint;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oPoint;
-//		else
-//			m_oStream >> oPoint;
-
 		m_pParser->ReadValue(oPoint);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_LINETO", oPoint, {XmlArgument(L"Id", EMR_LINETO),
-									XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_LINETO(oPoint);
 
 		LineTo(oPoint);
 	}
@@ -1821,15 +1800,8 @@ static const struct ActionNamesEmf
 		double dStartAngle, dSweep;
 		Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_PIE", {XmlArgument(L"Id", EMR_PIE),
-								  XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Rectangle",	oBox);
-				m_pOutputXml->WriteNode(L"StartPoint",	oStart);
-				m_pOutputXml->WriteNode(L"EndPoint",	oEnd);
-				m_pOutputXml->WriteNodeEnd(L"EMR_PIE");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_PIE(oBox, oStart, oEnd);
 
 		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
 		LineTo((oBox.lLeft + oBox.lRight) / 2, (oBox.lTop + oBox.lBottom) / 2);
@@ -1849,87 +1821,29 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		unsigned int ulCount;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBounds;
-//			*m_pOutputXml >> ulCount;
-//		}
-//		else
-//		{
-//			m_oStream >> oBounds;
-//			m_oStream >> ulCount;
-//		}
-
 		m_pParser->ReadValue(oBounds);
 		m_pParser->ReadValue(ulCount);
 
 		if (0 == ulCount)
 			return;
 
-		T oStartPoint;
+		std::vector<T> arPoints(ulCount);
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oStartPoint;
-//		else
-//			m_oStream >> oStartPoint;
+		m_pParser->ReadValue(arPoints[0]);
 
-		m_pParser->ReadValue(oStartPoint);
+		MoveTo(arPoints[0]);
 
-		MoveTo(oStartPoint);
-
-		std::wstring wsRecordName;
-		unsigned int unRecordId;
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			if (typeid (T).name() == "TEmfPointL")
-			{
-				wsRecordName = L"EMR_POLYBEZIER";
-				unRecordId = EMR_POLYBEZIER;
-			}
-			else
-			{
-				wsRecordName = L"EMR_POLYBEZIER16";
-				unRecordId = EMR_POLYBEZIER16;
-			}
-
-			m_pOutputXml->WriteNodeBegin(wsRecordName, {XmlArgument(L"Id", unRecordId),
-								    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Bounds",	    oBounds);
-				m_pOutputXml->WriteNode(L"NumberPoints",    ulCount);
-				m_pOutputXml->WriteNode(L"Point1",	    oStartPoint);
-		}
-
-		T oPoint1, oPoint2, oPointE;
 		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex += 3)
 		{
-//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			{
-//				*m_pOutputXml >> oPoint1;
-//				*m_pOutputXml >> oPoint2;
-//				*m_pOutputXml >> oPointE;
-//			}
-//			else
-//				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
+			m_pParser->ReadValue(arPoints[ulIndex]);
+			m_pParser->ReadValue(arPoints[ulIndex + 1]);
+			m_pParser->ReadValue(arPoints[ulIndex + 2]);
 
-			m_pParser->ReadValue(oPoint1);
-			m_pParser->ReadValue(oPoint2);
-			m_pParser->ReadValue(oPointE);
-
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-			{
-				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(ulIndex + 1), oPoint1);
-				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(ulIndex + 2), oPoint2);
-				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(ulIndex + 3), oPointE);
-			}
-
-			CurveTo(oPoint1, oPoint2, oPointE);
+			CurveTo(arPoints[ulIndex], arPoints[ulIndex + 1], arPoints[ulIndex + 2]);
 		}
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeEnd(wsRecordName);
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_POLYBEZIER(oBounds, arPoints);
 
 		DrawPath(true, false);
 	}
@@ -1946,77 +1860,26 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		unsigned int ulCount;
 
-
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBounds;
-//			*m_pOutputXml >> ulCount;
-//		}
-//		else
-//		{
-//			m_oStream >> oBounds;
-//			m_oStream >> ulCount;
-//		}
-
 		m_pParser->ReadValue(oBounds);
 		m_pParser->ReadValue(ulCount);
 
-		std::wstring wsRecordName;
-		unsigned int unRecordId;
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			if (typeid (T).name() == "TEmfPointL")
-			{
-				wsRecordName = L"EMR_POLYBEZIERTO";
-				unRecordId = EMR_POLYBEZIERTO;
-			}
-			else
-			{
-				wsRecordName = L"EMR_POLYBEZIERTO16";
-				unRecordId = EMR_POLYBEZIERTO16;
-			}
-
-			m_pOutputXml->WriteNodeBegin(wsRecordName, {XmlArgument(L"Id", unRecordId),
-								    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Bounds",	    oBounds);
-				m_pOutputXml->WriteNode(L"NumberPoints",    ulCount);
-		}
+		std::vector<T> arPoints(ulCount);
 
 		for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex += 3)
 		{
 			if (ulCount - ulIndex < 2)
 				return SetError();
 
-			T oPoint1, oPoint2, oPointE;
+			m_pParser->ReadValue(arPoints[ulIndex]);
+			m_pParser->ReadValue(arPoints[ulIndex + 1]);
+			m_pParser->ReadValue(arPoints[ulIndex + 2]);
 
-//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			{
-//				*m_pOutputXml >> oPoint1;
-//				*m_pOutputXml >> oPoint2;
-//				*m_pOutputXml >> oPointE;
-//			}
-//			else
-//				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
-
-			m_pParser->ReadValue(oPoint1);
-			m_pParser->ReadValue(oPoint2);
-			m_pParser->ReadValue(oPointE);
-
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-			{
-				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(ulIndex + 1), oPoint1);
-				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(ulIndex + 2), oPoint2);
-				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(ulIndex + 3), oPointE);
-			}
-
-			CurveTo(oPoint1, oPoint2, oPointE);
+			CurveTo(arPoints[ulIndex], arPoints[ulIndex + 1], arPoints[ulIndex + 2]);
 		}
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeEnd(wsRecordName);
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_POLYBEZIERTO(oBounds, arPoints);
+
 	}
 	void CEmfFile::Read_EMR_POLYDRAW()
 	{
@@ -2034,18 +1897,6 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		unsigned int unCount;
 
-
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBounds;
-//			*m_pOutputXml >> unCount;
-//		}
-//		else
-//		{
-//			m_oStream >> oBounds;
-//			m_oStream >> unCount;
-//		}
-
 		m_pParser->ReadValue(oBounds);
 		m_pParser->ReadValue(unCount);
 
@@ -2056,42 +1907,8 @@ static const struct ActionNamesEmf
 		if (!pPoints)
 			return SetError();
 
-		std::wstring wsRecordName;
-		unsigned int unRecordId;
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			if (typeid (T).name() == "TEmfPointL")
-			{
-				wsRecordName = L"EMR_POLYDRAW";
-				unRecordId = EMR_POLYDRAW;
-			}
-			else
-			{
-				wsRecordName = L"EMR_POLYDRAW16";
-				unRecordId = EMR_POLYDRAW16;
-			}
-
-			m_pOutputXml->WriteNodeBegin(wsRecordName, {XmlArgument(L"Id", unRecordId),
-								    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Bounds",	    oBounds);
-				m_pOutputXml->WriteNode(L"NumberPoints",    unCount);
-		}
-
 		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
-		{
-//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//				*m_pOutputXml >> pPoints[unIndex];
-//			else
-//				m_oStream >> pPoints[unIndex];
-
 			m_pParser->ReadValue(pPoints[unIndex]);
-
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-			{
-				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), pPoints[unIndex]);
-			}
-		}
 
 		unsigned char* pAbTypes = new unsigned char[unCount];
 		if (!pAbTypes)
@@ -2101,17 +1918,7 @@ static const struct ActionNamesEmf
 		}
 
 		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
-		{
-//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//				*m_pOutputXml >> pAbTypes[unIndex];
-//			else
-//				m_oStream >> pAbTypes[unIndex];
-
 			m_pParser->ReadValue(pAbTypes[unIndex]);
-
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-				m_pOutputXml->WriteNode(L"abTypes" + std::to_wstring(unIndex + 1), pAbTypes[unIndex]);
-		}
 
 		T* pPoint1 = NULL, *pPoint2 = NULL;
 		for (unsigned int unIndex = 0, unPointIndex = 0; unIndex < unCount; unIndex++)
@@ -2156,13 +1963,10 @@ static const struct ActionNamesEmf
 					break;
 				}
 			}
-
 		}
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeEnd(wsRecordName);
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_POLYDRAW(oBounds, pPoints, unCount, pAbTypes);
 
 		delete[] pPoints;
 		delete[] pAbTypes;
@@ -2180,78 +1984,27 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		unsigned int ulCount;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBounds;
-//			*m_pOutputXml >> ulCount;
-//		}
-//		else
-//		{
-//			m_oStream >> oBounds;
-//			m_oStream >> ulCount;
-//		}
-
 		m_pParser->ReadValue(oBounds);
 		m_pParser->ReadValue(ulCount);
 
 		if (ulCount <= 0)
 			return;
 
-		T oPoint;
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oPoint;
-//		else
-//			m_oStream >> oPoint;
+		std::vector<T> arPoints(ulCount);
 
-		m_pParser->ReadValue(oPoint);
+		m_pParser->ReadValue(arPoints[0]);
 
-		std::wstring wsRecordName;
-		unsigned int unRecordId;
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			if (typeid (T).name() == "TEmfPointL")
-			{
-				wsRecordName = L"EMR_POLYGON";
-				unRecordId = EMR_POLYGON;
-			}
-			else
-			{
-				wsRecordName = L"EMR_POLYGON16";
-				unRecordId = EMR_POLYGON16;
-			}
-
-			m_pOutputXml->WriteNodeBegin(wsRecordName, {XmlArgument(L"Id", unRecordId),
-								    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Bounds",	    oBounds);
-				m_pOutputXml->WriteNode(L"NumberPoints",    ulCount);
-				m_pOutputXml->WriteNode(L"Point1",	    oPoint);
-		}
-
-		MoveTo(oPoint);
-
+		MoveTo(arPoints[0]);
 
 		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
 		{
-//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//				*m_pOutputXml >> oPoint;
-//			else
-//				m_oStream >> oPoint;
+			m_pParser->ReadValue(arPoints[ulIndex]);
 
-			m_pParser->ReadValue(oPoint);
-
-			LineTo(oPoint);
-
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-			{
-				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(ulIndex + 1), oPoint);
-			}
+			LineTo(arPoints[ulIndex]);
 		}
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeEnd(wsRecordName);
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_POLYGON(oBounds, arPoints);
 
 		ClosePath();
 		DrawPath(true, true);
@@ -2269,78 +2022,27 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		unsigned int ulCount;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBounds;
-//			*m_pOutputXml >> ulCount;
-//		}
-//		else
-//		{
-//			m_oStream >> oBounds;
-//			m_oStream >> ulCount;
-//		}
-
 		m_pParser->ReadValue(oBounds);
 		m_pParser->ReadValue(ulCount);
 
 		if (0 == ulCount)
 			return;
 
-		T oPoint;
+		std::vector<T> arPoints(ulCount);
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oPoint;
-//		else
-//			m_oStream >> oPoint;
+		m_pParser->ReadValue(arPoints[0]);
 
-		m_pParser->ReadValue(oPoint);
-
-		MoveTo(oPoint);
-
-		std::wstring wsRecordName;
-		unsigned int unRecordId;
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			if (typeid (T).name() == "TEmfPointL")
-			{
-				wsRecordName = L"EMR_POLYLINE";
-				unRecordId = EMR_POLYLINE;
-			}
-			else
-			{
-				wsRecordName = L"EMR_POLYLINE16";
-				unRecordId = EMR_POLYLINE16;
-			}
-
-			m_pOutputXml->WriteNodeBegin(wsRecordName, {XmlArgument(L"Id", unRecordId),
-								    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Bounds",	    oBounds);
-				m_pOutputXml->WriteNode(L"NumberPoints",    ulCount);
-				m_pOutputXml->WriteNode(L"Point1",	    oPoint);
-		}
+		MoveTo(arPoints[0]);
 
 		for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
 		{
-//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//				*m_pOutputXml >> oPoint;
-//			else
-//				m_oStream >> oPoint;
+			m_pParser->ReadValue(arPoints[ulIndex]);
 
-			m_pParser->ReadValue(oPoint);
-
-			LineTo(oPoint);
-
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-			{
-				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(ulIndex + 1), oPoint);
-			}
+			LineTo(arPoints[ulIndex]);
 		}
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeEnd(wsRecordName);
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_POLYLINE(oBounds, arPoints);
 
 		DrawPath(true, false);
 	}
@@ -2357,64 +2059,21 @@ static const struct ActionNamesEmf
 		TEmfRectL oBounds;
 		unsigned int ulCount;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBounds;
-//			*m_pOutputXml >> ulCount;
-//		}
-//		else
-//		{
-//			m_oStream >> oBounds;
-//			m_oStream >> ulCount;
-//		}
-
 		m_pParser->ReadValue(oBounds);
 		m_pParser->ReadValue(ulCount);
 
-		std::wstring wsRecordName;
-		unsigned int unRecordId;
-
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			if (typeid (T).name() == "TEmfPointL")
-			{
-				wsRecordName = L"EMR_POLYLINETO";
-				unRecordId = EMR_POLYLINETO;
-			}
-			else
-			{
-				wsRecordName = L"EMR_POLYLINETO16";
-				unRecordId = EMR_POLYLINETO16;
-			}
-
-			m_pOutputXml->WriteNodeBegin(wsRecordName, {XmlArgument(L"Id", unRecordId),
-								    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Bounds",	    oBounds);
-				m_pOutputXml->WriteNode(L"NumberPoints",    ulCount);
-		}
+		std::vector<T> arPoints(ulCount);
 
 		for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
 		{
-			T oPoint;
-//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//				*m_pOutputXml >> oPoint;
-//			else
-//				m_oStream >> oPoint;
+			m_pParser->ReadValue(arPoints[ulIndex]);
 
-			m_pParser->ReadValue(oPoint);
-
-			LineTo(oPoint);
-
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-			{
-				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(ulIndex + 1), oPoint);
-			}
+			LineTo(arPoints[ulIndex]);
 		}
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeEnd(wsRecordName);
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_POLYLINETO(oBounds, arPoints);
+
 	}
 	void CEmfFile::Read_EMR_POLYPOLYGON()
 	{
@@ -2430,11 +2089,13 @@ static const struct ActionNamesEmf
 		unsigned int ulNumberOfPolygons;
 		unsigned int ulTotalPointsCount;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		//TODO: сделать сохранение в XML
+
+//		if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsReader())
 //		{
-//			*m_pOutputXml >> oBounds;
-//			*m_pOutputXml >> ulNumberOfPolygons;
-//			*m_pOutputXml >> ulTotalPointsCount;
+//			*m_pInterpretatorXml >> oBounds;
+//			*m_pInterpretatorXml >> ulNumberOfPolygons;
+//			*m_pInterpretatorXml >> ulTotalPointsCount;
 //		}
 //		else
 //		{
@@ -2451,41 +2112,41 @@ static const struct ActionNamesEmf
 		if (!pPolygonPointCount)
 			return SetError();
 
-		std::wstring wsRecordName;
-		unsigned int unRecordId;
+//		std::wstring wsRecordName;
+//		unsigned int unRecordId;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			if (typeid (T).name() == "TEmfPointL")
-			{
-				wsRecordName = L"EMR_POLYPOLYGON";
-				unRecordId = EMR_POLYPOLYGON;
-			}
-			else
-			{
-				wsRecordName = L"EMR_POLYPOLYGON16";
-				unRecordId = EMR_POLYPOLYGON16;
-			}
+//		if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsWriter())
+//		{
+//			if (typeid (T).name() == "TEmfPointL")
+//			{
+//				wsRecordName = L"EMR_POLYPOLYGON";
+//				unRecordId = EMR_POLYPOLYGON;
+//			}
+//			else
+//			{
+//				wsRecordName = L"EMR_POLYPOLYGON16";
+//				unRecordId = EMR_POLYPOLYGON16;
+//			}
 
-			m_pOutputXml->WriteNodeBegin(wsRecordName, {XmlArgument(L"Id", unRecordId),
-								    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Bounds",		oBounds);
-				m_pOutputXml->WriteNode(L"NumberOfPolygons",	ulNumberOfPolygons);
-				m_pOutputXml->WriteNode(L"Count",		ulTotalPointsCount);
+//			m_pInterpretatorXml->WriteNodeBegin(wsRecordName, {XmlArgument(L"Id", unRecordId),
+//								    XmlArgument(L"Size", m_ulRecordSize + 8)});
+//				m_pInterpretatorXml->WriteNode(L"Bounds",		oBounds);
+//				m_pInterpretatorXml->WriteNode(L"NumberOfPolygons",	ulNumberOfPolygons);
+//				m_pInterpretatorXml->WriteNode(L"Count",		ulTotalPointsCount);
 
-		}
+//		}
 
 		for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolygons; ulIndex++)
 		{
-//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//				*m_pOutputXml >> pPolygonPointCount[ulIndex];
+//			if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsReader())
+//				*m_pInterpretatorXml >> pPolygonPointCount[ulIndex];
 //			else
 //				m_oStream >> pPolygonPointCount[ulIndex];
 
 			m_pParser->ReadValue(pPolygonPointCount[ulIndex]);
 
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-				m_pOutputXml->WriteNode(L"PolygonPointCount" + std::to_wstring(ulIndex + 1), pPolygonPointCount[ulIndex]);
+//			if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsWriter())
+//				m_pInterpretatorXml->WriteNode(L"PolygonPointCount" + std::to_wstring(ulIndex + 1), pPolygonPointCount[ulIndex]);
 		}
 
 		unsigned int unIndexPoint = 0;
@@ -2498,18 +2159,18 @@ static const struct ActionNamesEmf
 
 			T oPoint;
 
-//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//				*m_pOutputXml >> oPoint;
+//			if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsReader())
+//				*m_pInterpretatorXml >> oPoint;
 //			else
 //				m_oStream >> oPoint;
 
 			m_pParser->ReadValue(oPoint);
 
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-			{
-				++unIndexPoint;
-				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndexPoint), oPoint);
-			}
+//			if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsWriter())
+//			{
+//				++unIndexPoint;
+//				m_pInterpretatorXml->WriteNode(L"Point" + std::to_wstring(unIndexPoint), oPoint);
+//			}
 
 			MoveTo(oPoint);
 
@@ -2522,18 +2183,18 @@ static const struct ActionNamesEmf
 					return SetError();
 				}
 
-//				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//					*m_pOutputXml >> oPoint;
+//				if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsReader())
+//					*m_pInterpretatorXml >> oPoint;
 //				else
 //					m_oStream >> oPoint;
 
 				m_pParser->ReadValue(oPoint);
 
-				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-				{
-					++unIndexPoint;
-					m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndexPoint), oPoint);
-				}
+//				if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsWriter())
+//				{
+//					++unIndexPoint;
+//					m_pInterpretatorXml->WriteNode(L"Point" + std::to_wstring(unIndexPoint), oPoint);
+//				}
 
 				LineTo(oPoint);
 			}
@@ -2541,10 +2202,10 @@ static const struct ActionNamesEmf
 			ClosePath();
 		}
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeEnd(wsRecordName);
-		}
+//		if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsWriter())
+//		{
+//			m_pInterpretatorXml->WriteNodeEnd(wsRecordName);
+//		}
 
 		DrawPath(true, true);
 
@@ -2564,11 +2225,13 @@ static const struct ActionNamesEmf
 		unsigned int ulNumberOfPolylines;
 		unsigned int ulTotalPointsCount;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
+		//TODO: сделать сохранение в XML
+
+//		if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsReader())
 //		{
-//			*m_pOutputXml >> oBounds;
-//			*m_pOutputXml >> ulNumberOfPolylines;
-//			*m_pOutputXml >> ulTotalPointsCount;
+//			*m_pInterpretatorXml >> oBounds;
+//			*m_pInterpretatorXml >> ulNumberOfPolylines;
+//			*m_pInterpretatorXml >> ulTotalPointsCount;
 //		}
 //		else
 //		{
@@ -2587,42 +2250,42 @@ static const struct ActionNamesEmf
 			return SetError();
 
 
-		std::wstring wsRecordName;
-		unsigned int unRecordId;
+//		std::wstring wsRecordName;
+//		unsigned int unRecordId;
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			if (typeid (T).name() == "TEmfPointL")
-			{
-				wsRecordName = L"EMR_POLYPOLYLINE";
-				unRecordId = EMR_POLYPOLYLINE;
-			}
-			else
-			{
-				wsRecordName = L"EMR_POLYPOLYLINE16";
-				unRecordId = EMR_POLYPOLYLINE16;
-			}
+//		if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsWriter())
+//		{
+//			if (typeid (T).name() == "TEmfPointL")
+//			{
+//				wsRecordName = L"EMR_POLYPOLYLINE";
+//				unRecordId = EMR_POLYPOLYLINE;
+//			}
+//			else
+//			{
+//				wsRecordName = L"EMR_POLYPOLYLINE16";
+//				unRecordId = EMR_POLYPOLYLINE16;
+//			}
 
-			m_pOutputXml->WriteNodeBegin(wsRecordName, {XmlArgument(L"Id", unRecordId),
-								    XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Bounds",		oBounds);
-                                m_pOutputXml->WriteNode(L"NumberOfPolylines",   ulNumberOfPolylines);
-                                m_pOutputXml->WriteNode(L"Count",               ulTotalPointsCount);
+//			m_pInterpretatorXml->WriteNodeBegin(wsRecordName, {XmlArgument(L"Id", unRecordId),
+//								    XmlArgument(L"Size", m_ulRecordSize + 8)});
+//				m_pInterpretatorXml->WriteNode(L"Bounds",		oBounds);
+//                                m_pInterpretatorXml->WriteNode(L"NumberOfPolylines",   ulNumberOfPolylines);
+//                                m_pInterpretatorXml->WriteNode(L"Count",               ulTotalPointsCount);
 
-                }
+//                }
 
 		unsigned int* pPolylinePointCount = new unsigned int[ulNumberOfPolylines];
 		for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolylines; ulIndex++)
 		{
-//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//				*m_pOutputXml >> pPolylinePointCount[ulIndex];
+//			if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsReader())
+//				*m_pInterpretatorXml >> pPolylinePointCount[ulIndex];
 //			else
 //				m_oStream >> pPolylinePointCount[ulIndex];
 
 			m_pParser->ReadValue(pPolylinePointCount[ulIndex]);
 
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-				m_pOutputXml->WriteNode(L"PolylinePointCount" + std::to_wstring(ulIndex + 1), pPolylinePointCount[ulIndex]);
+//			if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsWriter())
+//				m_pInterpretatorXml->WriteNode(L"PolylinePointCount" + std::to_wstring(ulIndex + 1), pPolylinePointCount[ulIndex]);
 		}
 
 		unsigned int unIndexPoint = 0;
@@ -2635,18 +2298,18 @@ static const struct ActionNamesEmf
 
 			T oPoint;
 
-//			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//				*m_pOutputXml >> oPoint;
+//			if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsReader())
+//				*m_pInterpretatorXml >> oPoint;
 //			else
 //				m_oStream >> oPoint;
 
 			m_pParser->ReadValue(oPoint);
 
-			if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-			{
-				++unIndexPoint;
-				m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndexPoint), oPoint);
-			}
+//			if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsWriter())
+//			{
+//				++unIndexPoint;
+//				m_pInterpretatorXml->WriteNode(L"Point" + std::to_wstring(unIndexPoint), oPoint);
+//			}
 
 			MoveTo(oPoint);
 
@@ -2659,27 +2322,27 @@ static const struct ActionNamesEmf
 					return SetError();
 				}
 
-//				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//					*m_pOutputXml >> oPoint;
+//				if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsReader())
+//					*m_pInterpretatorXml >> oPoint;
 //				else
 //					m_oStream >> oPoint;
 
 				m_pParser->ReadValue(oPoint);
 
-				if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-				{
-					++unIndexPoint;
-					m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndexPoint), oPoint);
-				}
+//				if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsWriter())
+//				{
+//					++unIndexPoint;
+//					m_pInterpretatorXml->WriteNode(L"Point" + std::to_wstring(unIndexPoint), oPoint);
+//				}
 
 				LineTo(oPoint);
 			}				
 		}
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeEnd(wsRecordName);
-		}
+//		if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsWriter())
+//		{
+//			m_pInterpretatorXml->WriteNodeEnd(wsRecordName);
+//		}
 
 		DrawPath(true, false);
 
@@ -2689,7 +2352,8 @@ static const struct ActionNamesEmf
 	{
 		// TODO: Как найдутся файлы проверить данную запись.
 		TEmfPolyTextoutA oText;
-//		m_oStream >> oText;
+
+		//TODO: сделать сохранение в XML
 
 		m_pParser->ReadValue(oText);
 
@@ -2708,8 +2372,8 @@ static const struct ActionNamesEmf
 	{
 		// TODO: Как найдутся файлы проверить данную запись.
 		TEmfPolyTextoutW oText;
-//		m_oStream >> oText;
 
+		//TODO: сделать сохранение в XML
 		m_pParser->ReadValue(oText);
 
 		if (0 == oText.cStrings)
@@ -2727,20 +2391,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oBox;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oBox;
-//		else
-//			m_oStream >> oBox;
-
 		m_pParser->ReadValue(oBox);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_RECTANGLE", {XmlArgument(L"Id", EMR_RECTANGLE),
-									XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Rectangle", oBox);
-				m_pOutputXml->WriteNodeEnd(L"EMR_RECTANGLE");
-		}
+		if (NULL != m_pInterpretator)
+		    m_pInterpretator->Save_EMR_RECTANGLE(oBox);
 
 		if (AD_COUNTERCLOCKWISE == m_pDC->GetArcDirection())
 		{
@@ -2764,25 +2418,11 @@ static const struct ActionNamesEmf
 		TEmfRectL oBox;
 		TEmfSizeL oCorner;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oBox;
-//			*m_pOutputXml >> oCorner;
-//		}
-//		else
-//			m_oStream >> oBox >> oCorner;
-
 		m_pParser->ReadValue(oBox);
 		m_pParser->ReadValue(oCorner);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_ROUNDRECT", {XmlArgument(L"Id", EMR_ROUNDRECT),
-									XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Rectangle",	oBox);
-				m_pOutputXml->WriteNode(L"Corner",	oCorner);
-				m_pOutputXml->WriteNodeEnd(L"EMR_ROUNDRECT");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_ROUNDRECT(oBox, oCorner);
 
 		int lBoxW = oBox.lRight - oBox.lLeft;
 		int lBoxH = oBox.lBottom - oBox.lTop;
@@ -2823,28 +2463,11 @@ static const struct ActionNamesEmf
 		TEmfPointL oPoint;
 		TEmfColor oColor;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//		{
-//			*m_pOutputXml >> oPoint;
-//			*m_pOutputXml >> oColor;
-//		}
-//		else
-//		{
-//			m_oStream >> oPoint;
-//			m_oStream >> oColor;
-//		}
-
                 m_pParser->ReadValue(oPoint);
                 m_pParser->ReadValue(oColor);
 
-                if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-                {
-                        m_pOutputXml->WriteNodeBegin(L"EMR_SETPIXELV", {XmlArgument(L"Id", EMR_SETPIXELV),
-                                                                        XmlArgument(L"Size", m_ulRecordSize + 8)});
-                                m_pOutputXml->WriteNode(L"Pixel", oPoint);
-                                m_pOutputXml->WriteNode(L"Color", oColor);
-                                m_pOutputXml->WriteNodeEnd(L"EMR_SETPIXELV");
-                }
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->Save_EMR_SETPIXELV(oPoint, oColor);
 
 		// Делаем цветом кисти
 		BYTE pBgraBuffer[4];
@@ -2859,18 +2482,10 @@ static const struct ActionNamesEmf
 	{
 		TEmfSmallTextout oText;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oText; //TODO: при возможности проверить чтение из XML
-//		else
-//			m_oStream >> oText;
-
 		m_pParser->ReadValue(oText);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNode(L"EMR_SMALLTEXTOUT", oText, {XmlArgument(L"Id", EMR_SMALLTEXTOUT),
-									     XmlArgument(L"Size", m_ulRecordSize + 8)});
-		}
+		if (NULL != m_pInterpretator)
+		    m_pInterpretator->Save_EMR_SMALLTEXTOUT(oText, m_ulRecordSize);
 
 		// Переводим oText в TEmfEmrText
 		TEmfEmrText oEmrText;
@@ -2900,24 +2515,14 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oBounds;
 
-//		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//			*m_pOutputXml >> oBounds;
-//		else
-//			m_oStream >> oBounds;
-
 		m_pParser->ReadValue(oBounds);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_STROKEANDFILLPATH", {XmlArgument(L"Id", EMR_STROKEANDFILLPATH),
-										XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Bounds", oBounds);
-				m_pOutputXml->WriteNodeEnd(L"EMR_STROKEANDFILLPATH");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_STROKEANDFILLPATH(oBounds);
 
-		if (m_pOutput && m_pPath)
+		if (m_pInterpretator && m_pPath)
 		{
-			m_pPath->Draw(m_pOutput, true, true);
+			m_pPath->Draw(m_pInterpretator, true, true);
 			RELEASEOBJECT(m_pPath);
 		}
 	}
@@ -2925,24 +2530,14 @@ static const struct ActionNamesEmf
 	{
 		TEmfRectL oBounds;
 
-//                if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsReader())
-//                        *m_pOutputXml >> oBounds;
-//                else
-//                        m_oStream >> oBounds;
-
 		m_pParser->ReadValue(oBounds);
 
-		if (m_pOutput && NULL != m_pOutputXml && m_pOutputXml->IsWriter())
-		{
-			m_pOutputXml->WriteNodeBegin(L"EMR_STROKEPATH", {XmlArgument(L"Id", EMR_STROKEPATH),
-									 XmlArgument(L"Size", m_ulRecordSize + 8)});
-				m_pOutputXml->WriteNode(L"Bounds", oBounds);
-				m_pOutputXml->WriteNodeEnd(L"EMR_STROKEPATH");
-		}
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Save_EMR_STROKEPATH(oBounds);
 
-		if (m_pOutput && m_pPath)
+		if (m_pInterpretator && m_pPath)
 		{
-			m_pPath->Draw(m_pOutput, true, false);
+			m_pPath->Draw(m_pInterpretator, true, false);
 			RELEASEOBJECT(m_pPath);
 		}
 	}

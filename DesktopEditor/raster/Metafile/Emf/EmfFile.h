@@ -35,6 +35,7 @@
 #include "../Common/MetaFile.h"
 #include "EmfParser/CEmfParser.h"
 #include "EmfParser/CEmfxParser.h"
+#include "EmfInterpretator/CEmfInterpretarorRender.h"
 #include "EmfInterpretator/CEmfInterpretarorXml.h"
 #include "../CXmlOutput.h"
 
@@ -56,23 +57,23 @@ namespace MetaFile
 		{
 			m_pPath = NULL;
 			m_pDC   = m_oPlayer.GetDC();
-			m_pOutputXml = NULL;
+			m_pInterpretator = NULL;
 			m_pParser    = new CEmfParser;
-			m_pInterpretator = new CEmfInterpretarorXml();
 		}
 
 		~CEmfFile()
 		{
 			ClearFile();
-			if (NULL != m_pOutputXml)
-				delete m_pOutputXml;
 			if (NULL != m_pInterpretator)
 				delete m_pInterpretator;
 		}
 
-		void CreateOutputXml(TypeXmlOutput oTypeXmlOutput)
+		void SetInterpretatorType(const InterpretaotrType& oType)
 		{
-			m_pOutputXml = new CXmlOutput(oTypeXmlOutput);
+		    if (oType == InterpretaotrType::Render)
+			m_pInterpretator = new CEmfInterpretarorRender();
+		    else if (oType == InterpretaotrType::XML)
+			m_pInterpretator = new CEmfInterpretarorXml();
 		}
 
 		TEmfRectL* GetBounds()
@@ -352,9 +353,8 @@ namespace MetaFile
 		friend class CEmfPlayer;
 		friend class CEmfClip;
 
-		CEmfInterpretarorXml* m_pInterpretator;
-		CXmlOutput *m_pOutputXml;
-		CEmfParserBase *m_pParser;
+		CEmfInterpretarorBase   *m_pInterpretator;
+		CEmfParserBase		*m_pParser;
 	};
 }
 

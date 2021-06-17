@@ -559,4 +559,197 @@ namespace MetaFile
             m_pOutputXml->WriteNode(L"Rectangle", oBox);
             m_pOutputXml->WriteNodeEnd(L"EMR_ELLIPSE");
     }
+
+    void CEmfInterpretarorXml::Save_EMR_EXTTEXTOUTA(const TEmfExtTextoutA &oTEmfExtTextoutA, const unsigned int &unRecordSize)
+    {
+        m_pOutputXml->WriteNode(L"EMR_EXTTEXTOUTA", oTEmfExtTextoutA, {XmlArgument(L"Id", EMR_EXTTEXTOUTA),
+                                                                       XmlArgument(L"Size", unRecordSize + 8)});
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_EXTTEXTOUTW(const TEmfExtTextoutW &oTEmfExtTextoutW, const unsigned int &unRecordSize)
+    {
+        m_pOutputXml->WriteNode(L"EMR_EXTTEXTOUTW", oTEmfExtTextoutW, {XmlArgument(L"Id", EMR_EXTTEXTOUTW),
+                                                                       XmlArgument(L"Size", unRecordSize + 8)});
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_LINETO(const TEmfPointL &oPoint)
+    {
+        m_pOutputXml->WriteNode(L"EMR_LINETO", oPoint, {XmlArgument(L"Id", EMR_LINETO),
+                                                        XmlArgument(L"Size", 16)});
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_PIE(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+    {
+        m_pOutputXml->WriteNodeBegin(L"EMR_PIE", {XmlArgument(L"Id", EMR_PIE),
+                                                  XmlArgument(L"Size", 40)});
+                m_pOutputXml->WriteNode(L"Rectangle",	oBox);
+                m_pOutputXml->WriteNode(L"StartPoint",	oStart);
+                m_pOutputXml->WriteNode(L"EndPoint",	oEnd);
+                m_pOutputXml->WriteNodeEnd(L"EMR_PIE");
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointL>& arPoints)
+    {
+        Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYBEZIER", EMR_POLYBEZIER, oBounds), arPoints);
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointS>& arPoints)
+    {
+        Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYBEZIER16", EMR_POLYBEZIER16, oBounds), arPoints);
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointL>& arPoints)
+    {
+        Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYBEZIERTO", EMR_POLYBEZIERTO, oBounds), arPoints);
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointS>& arPoints)
+    {
+        Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYBEZIERTO16", EMR_POLYBEZIERTO16, oBounds), arPoints);
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointL *arPoints,
+                                                 const unsigned int &unCount, const unsigned char *pAbTypes)
+    {
+        Save_EMR_POLYDRAW_BASE<TEmfPointL>(oBounds, arPoints, unCount, pAbTypes);
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointS *arPoints,
+                                                 const unsigned int &unCount, const unsigned char *pAbTypes)
+    {
+        Save_EMR_POLYDRAW_BASE<TEmfPointS>(oBounds, arPoints, unCount, pAbTypes);
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+    {
+        Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYGON", EMR_POLYGON, oBounds), arPoints);
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+    {
+        Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYGON16", EMR_POLYGON16, oBounds), arPoints);
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+    {
+        Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYLINE", EMR_POLYLINE, oBounds), arPoints);
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+    {
+        Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYLINE16", EMR_POLYLINE16, oBounds), arPoints);
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+    {
+        Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYLINETO", EMR_POLYLINETO, oBounds), arPoints);
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+    {
+        Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYLINETO16", EMR_POLYLINETO16, oBounds), arPoints);
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_RECTANGLE(const TEmfRectL& oBox)
+    {
+        m_pOutputXml->WriteNodeBegin(L"EMR_RECTANGLE", {XmlArgument(L"Id", EMR_RECTANGLE),
+                                                        XmlArgument(L"Size", 24)});
+            m_pOutputXml->WriteNode(L"Rectangle", oBox);
+            m_pOutputXml->WriteNodeEnd(L"EMR_RECTANGLE");
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_ROUNDRECT(const TEmfRectL &oBox, const TEmfSizeL &oCorner)
+    {
+        m_pOutputXml->WriteNodeBegin(L"EMR_ROUNDRECT", {XmlArgument(L"Id", EMR_ROUNDRECT),
+                                                        XmlArgument(L"Size", 32)});
+            m_pOutputXml->WriteNode(L"Rectangle",   oBox);
+            m_pOutputXml->WriteNode(L"Corner",      oCorner);
+            m_pOutputXml->WriteNodeEnd(L"EMR_ROUNDRECT");
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_SETPIXELV(const TEmfPointL &oPoint, const TEmfColor &oColor)
+    {
+        m_pOutputXml->WriteNodeBegin(L"EMR_SETPIXELV", {XmlArgument(L"Id", EMR_SETPIXELV),
+                                                        XmlArgument(L"Size", 20)});
+            m_pOutputXml->WriteNode(L"Pixel", oPoint);
+            m_pOutputXml->WriteNode(L"Color", oColor);
+            m_pOutputXml->WriteNodeEnd(L"EMR_SETPIXELV");
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_SMALLTEXTOUT(const TEmfSmallTextout &oText, const unsigned int& unRecordSize)
+    {
+        m_pOutputXml->WriteNode(L"EMR_SMALLTEXTOUT", oText, {XmlArgument(L"Id", EMR_SMALLTEXTOUT),
+                                                             XmlArgument(L"Size", unRecordSize + 8)});
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_STROKEANDFILLPATH(const TEmfRectL &oBounds)
+    {
+        m_pOutputXml->WriteNodeBegin(L"EMR_STROKEANDFILLPATH", {XmlArgument(L"Id", EMR_STROKEANDFILLPATH),
+                                                                XmlArgument(L"Size", 24)});
+            m_pOutputXml->WriteNode(L"Bounds", oBounds);
+            m_pOutputXml->WriteNodeEnd(L"EMR_STROKEANDFILLPATH");
+    }
+
+    void CEmfInterpretarorXml::Save_EMR_STROKEPATH(const TEmfRectL &oBounds)
+    {
+        m_pOutputXml->WriteNodeBegin(L"EMR_STROKEPATH", {XmlArgument(L"Id", EMR_STROKEPATH),
+                                                         XmlArgument(L"Size", 24)});
+            m_pOutputXml->WriteNode(L"Bounds", oBounds);
+            m_pOutputXml->WriteNodeEnd(L"EMR_STROKEPATH");
+    }
+
+    template<typename T>
+    void CEmfInterpretarorXml::Save_EMR_POLY_BASE(const RecordData &oRecordData, const std::vector<T> &arPoints)
+    {
+        if (arPoints.empty())
+            return;
+
+        unsigned int unNumberPoints = arPoints.size();
+
+	m_pOutputXml->WriteNodeBegin(oRecordData.m_wsName, {XmlArgument(L"Id", oRecordData.m_unId),
+						    XmlArgument(L"Size", (unsigned int)(28 + unNumberPoints * sizeof (T)))});
+	    m_pOutputXml->WriteNode(L"Bounds",		oRecordData.m_oBounds);
+	    m_pOutputXml->WriteNode(L"NumberPoints",    unNumberPoints);
+
+	    for (unsigned int unIndex = 0; unIndex < unNumberPoints; ++unIndex)
+		m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), arPoints[unIndex]);
+
+            m_pOutputXml->WriteNodeEnd(oRecordData.m_wsName);
+    }
+
+    template<typename T>
+    void CEmfInterpretarorXml::Save_EMR_POLYDRAW_BASE(const TEmfRectL &oBounds, T *arPoints,
+                                                         const unsigned int &unCount, const unsigned char *pAbTypes)
+    {
+        if (NULL == arPoints || NULL == pAbTypes)
+            return;
+
+        std::wstring wsRecordName;
+        unsigned int unRecordId;
+
+	if (typeid (T).name() == "TEmfPointL")
+	{
+		wsRecordName = L"EMR_POLYDRAW";
+		unRecordId = EMR_POLYDRAW;
+	}
+	else if(typeid (T).name() == "TEmfPointS")
+	{
+		wsRecordName = L"EMR_POLYDRAW16";
+		unRecordId = EMR_POLYDRAW16;
+	}
+
+
+	m_pOutputXml->WriteNodeBegin(wsRecordName, {XmlArgument(L"Id", unRecordId),
+						    XmlArgument(L"Size", (unsigned int)(28 + unCount * sizeof (T) + unCount * 1))});
+	    m_pOutputXml->WriteNode(L"Bounds",	    oBounds);
+	    m_pOutputXml->WriteNode(L"NumberPoints",    unCount);
+
+	    for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
+		m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), arPoints[unIndex]);
+
+	    for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
+		m_pOutputXml->WriteNode(L"abTypes" + std::to_wstring(unIndex + 1), pAbTypes[unIndex]);
+
+            m_pOutputXml->WriteNodeEnd(wsRecordName);
+    }
 }

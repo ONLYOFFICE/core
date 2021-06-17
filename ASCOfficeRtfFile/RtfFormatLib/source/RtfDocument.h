@@ -84,11 +84,11 @@ public:
 	
 	NSFonts::IApplicationFonts* m_pAppFonts;
 	int							m_nUserLCID;
+	bool						m_bStartRead;
 
 private: 
 	std::vector<int>	m_aShapeId;
 	int					m_nZIndexLast;
-
 public: 
 	int GetZIndex()
 	{

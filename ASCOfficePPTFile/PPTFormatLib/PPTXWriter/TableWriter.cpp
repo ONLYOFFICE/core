@@ -470,6 +470,23 @@ void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 
 void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
 {
+    //anchor
+    auto& attr = m_pShape->m_pShape->m_oText.m_oAttributes;
+    if (attr.m_nTextAlignVertical != -1)
+    {
+        auto pAnchor = new PPTX::Limit::TextAnchor;
+        BYTE anchor[] = {4,1,0};
+        if (sizeof (anchor) > (UINT)attr.m_nTextAlignVertical)
+            pAnchor->SetBYTECode(anchor[attr.m_nTextAlignVertical]);
+
+        oTcPr.Anchor = pAnchor;
+    }
+    if (attr.m_nTextAlignHorizontal == 1)
+    {
+        oTcPr.AnchorCtr = true;
+    }
+
+
     auto pSolidFill = new PPTX::Logic::SolidFill;
     auto& clr = m_pShape->m_oBrush.Color1;
 

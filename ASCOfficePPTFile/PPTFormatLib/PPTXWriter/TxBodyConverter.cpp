@@ -166,7 +166,7 @@ void TxBodyConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CParagraph &pa
     {
         auto pAlgn = new PPTX::Limit::TextAlign;
         auto old_algn = *(oPFRun.textAlignment);
-        BYTE algn[] = {4,0,5,2};
+        BYTE algn[] = {4,0,5,2,1};
         if (sizeof (algn) > old_algn)
             pAlgn->SetBYTECode(algn[old_algn]);
 
@@ -184,6 +184,23 @@ void TxBodyConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CParagraph &pa
         pLnSpc->m_name = L"a:lnSpc";
         pLnSpc->spcPct = *(oPFRun.lineSpacing) * -1000;
         oPPr.lnSpc = pLnSpc;
+    }
+
+    if (oPFRun.spaceAfter.is_init())
+    {
+        auto pSpcAft = new PPTX::Logic::TextSpacing;
+        pSpcAft->m_name = L"a:spcAft";
+        pSpcAft->spcPts = (int)(12.5 * oPFRun.spaceAfter.get());
+
+        oPPr.spcAft = pSpcAft;
+    }
+    if (oPFRun.spaceBefore.is_init())
+    {
+        auto pSpcBef = new PPTX::Logic::TextSpacing;
+        pSpcBef->m_name = L"a:spcBef";
+        pSpcBef->spcPts = (int)(12.5 * oPFRun.spaceBefore.get());
+
+        oPPr.spcBef = pSpcBef;
     }
 }
 

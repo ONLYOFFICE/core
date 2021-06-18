@@ -56,7 +56,7 @@ private:
     void FillParagraph(PPTX::Logic::Paragraph& p, CParagraph& paragraph);
     void FillRun(PPTX::Logic::Run& oRun, CSpan &oSpan);
     void FillEndParaRPr(PPTX::Logic::RunProperties& oEndPr, CTextPFRun& oPFRun);
-    void FillPPr(PPTX::Logic::TextParagraphPr& oPPr, CTextPFRun& oPFRun);
+    void FillPPr(PPTX::Logic::TextParagraphPr& oPPr, CParagraph &paragraph);
     void FillRPr(PPTX::Logic::RunProperties& oRPr, CTextCFRun& oCFRun);
     void FillLatin(PPTX::Logic::TextFont& oLatin, CFontProperty &font);
     void FillCS(PPTX::Logic::TextFont& oCs, CFontProperties& font);

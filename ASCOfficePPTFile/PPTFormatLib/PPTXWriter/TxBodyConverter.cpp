@@ -68,7 +68,7 @@ void TxBodyConverter::FillParagraph(PPTX::Logic::Paragraph &p, CParagraph &parag
     }
 
     p.pPr = new PPTX::Logic::TextParagraphPr;
-    FillPPr(p.pPr.get2(), paragraph.m_oPFRun);
+    FillPPr(p.pPr.get2(), paragraph);
 
     p.endParaRPr = new PPTX::Logic::RunProperties;
     FillEndParaRPr(p.endParaRPr.get2(), paragraph.m_oPFRun);
@@ -121,8 +121,9 @@ void TxBodyConverter::FillEndParaRPr(PPTX::Logic::RunProperties &oEndPr, CTextPF
     //    }
 }
 
-void TxBodyConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun &oPFRun)
+void TxBodyConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CParagraph &paragraph)
 {
+    CTextPFRun &oPFRun = paragraph.m_oPFRun;
     int leftMargin = 0;
     if (oPFRun.leftMargin.is_init())
     {
@@ -170,6 +171,19 @@ void TxBodyConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun &oP
             pAlgn->SetBYTECode(algn[old_algn]);
 
         oPPr.algn = pAlgn;
+    }
+
+    if (paragraph.m_lTextLevel != 0)
+    {
+        oPPr.lvl = paragraph.m_lTextLevel;
+    }
+
+    if (oPFRun.lineSpacing.is_init())
+    {
+        auto pLnSpc = new PPTX::Logic::TextSpacing;
+        pLnSpc->m_name = L"a:lnSpc";
+        pLnSpc->spcPct = *(oPFRun.lineSpacing) * -1000;
+        oPPr.lnSpc = pLnSpc;
     }
 }
 

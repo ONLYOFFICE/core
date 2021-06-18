@@ -160,6 +160,17 @@ void TxBodyConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun &oP
         if (oPFRun.bulletAutoNum->type.is_init())
             pBuAutoNum->type = oPFRun.bulletAutoNum->type.get();
     }
+
+    if (oPFRun.textAlignment.is_init())
+    {
+        auto pAlgn = new PPTX::Limit::TextAlign;
+        auto old_algn = *(oPFRun.textAlignment);
+        BYTE algn[] = {4,0,5,2};
+        if (sizeof (algn) > old_algn)
+            pAlgn->SetBYTECode(algn[old_algn]);
+
+        oPPr.algn = pAlgn;
+    }
 }
 
 void TxBodyConverter::FillRPr(PPTX::Logic::RunProperties &oRPr, CTextCFRun &oCFRun)

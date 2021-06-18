@@ -116,22 +116,24 @@ namespace PPTX
 						spcBef = oReader;
 					else if ( _T("a:tabLst") == sName )
 					{
-						int nParentDepth1 = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						if (false == oReader.IsEmptyNode())
 						{
-							std::wstring sName1 = oReader.GetName();
-							if ( _T("a:tab") == sName1 )
+							int nParentDepth1 = oReader.GetDepth();
+							while (oReader.ReadNextSiblingNode(nParentDepth1))
 							{
-								Tab tab(oReader);
-								tabLst.push_back(tab);
+								std::wstring sName1 = oReader.GetName();
+								if (_T("a:tab") == sName1)
+								{
+									Tab tab(oReader);
+									tabLst.push_back(tab);
+								}
 							}
 						}
-
 					}
 					//else if ( _T("a:extLst") == sName )
 					//	extLst = oReader;
 
-					else if ( _T("a:buBlip") == sName || _T("a:buChar") == sName || _T("a:buAutoNum") == sName || sName == _T("buNone"))
+					else if ( _T("a:buBlip") == sName || _T("a:buChar") == sName || _T("a:buAutoNum") == sName || sName == _T("a:buNone"))
 						ParagraphBullet.fromXML(oReader);
 					else if ( _T("a:buClr") == sName || sName == _T("a:buClrTx"))
 						buColor.fromXML(oReader);

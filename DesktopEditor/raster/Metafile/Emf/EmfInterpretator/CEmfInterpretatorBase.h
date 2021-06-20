@@ -1,5 +1,5 @@
-#ifndef CEMFINTERPRETARORBASE_H
-#define CEMFINTERPRETARORBASE_H
+#ifndef CEMFINTERPRETATORBASE_H
+#define CEMFINTERPRETATORBASE_H
 
 #include "../EmfTypes.h"
 #include "../EmfObjects.h"
@@ -8,13 +8,14 @@
 
 namespace MetaFile
 {
-    enum InterpretaotrType
+    enum InterpretatorType
     {
         Render,
-        XML
+        XML,
+        RenderAndXml
     };
 
-    class CEmfInterpretarorBase : public IOutputDevice
+    class CEmfInterpretatorBase : public IOutputDevice
     {
     public:
         virtual void SetOutputDevice(IOutputDevice*) = 0;
@@ -91,7 +92,7 @@ namespace MetaFile
         virtual void Save_EMR_POLYLINE(const TEmfRectL&, const std::vector<TEmfPointS>&) = 0;
         virtual void Save_EMR_POLYLINETO(const TEmfRectL&, const std::vector<TEmfPointL>&) = 0;
         virtual void Save_EMR_POLYLINETO(const TEmfRectL&, const std::vector<TEmfPointS>&) = 0;
-        //TODO: реализовать сохранение полигонов в полигоне
+        //TODO: Реализовать сохранение полигонов в полигоне
         virtual void Save_EMR_RECTANGLE(const TEmfRectL&) = 0;
         virtual void Save_EMR_ROUNDRECT(const TEmfRectL&, const TEmfSizeL&) = 0;
         virtual void Save_EMR_SETPIXELV(const TEmfPointL&, const TEmfColor&) = 0;
@@ -101,4 +102,4 @@ namespace MetaFile
     };
 }
 
-#endif // CEMFINTERPRETARORBASE_H
+#endif // CEMFINTERPRETATORBASE_H

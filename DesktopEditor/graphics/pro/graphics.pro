@@ -71,13 +71,13 @@ INCLUDEPATH += \
 
 HEADERS += \
     ../../raster/Metafile/CXmlOutput.h \
-    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretarorRender.h \
-    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretarorXml.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorAll.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorBase.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.h \
     ../../raster/Metafile/Emf/EmfParser/CEmfParser.h \
     ../../raster/Metafile/Emf/EmfParser/CEmfParserBase.h \
     ../../raster/Metafile/Emf/EmfParser/CEmfxParser.h \
-    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretarorBase.h \
     ./../config.h \
     \
     ./../Matrix.h \
@@ -119,9 +119,9 @@ HEADERS += \
 
 SOURCES += \
     ../../raster/Metafile/CXmlOutput.cpp \
-    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretarorRender.cpp \
-    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretarorXml.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorAll.cpp \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.cpp \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.cpp \
     ../../raster/Metafile/Emf/EmfParser/CEmfParser.cpp \
     ../../raster/Metafile/Emf/EmfParser/CEmfxParser.cpp \
     ./../Matrix.cpp \

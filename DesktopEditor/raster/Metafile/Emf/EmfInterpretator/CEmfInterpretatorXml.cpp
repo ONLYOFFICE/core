@@ -1,15 +1,15 @@
-#include "CEmfInterpretarorXml.h"
+#include "CEmfInterpretatorXml.h"
 
 namespace MetaFile
 {
-    CEmfInterpretarorXml::CEmfInterpretarorXml() :
+    CEmfInterpretatorXml::CEmfInterpretatorXml() :
         m_pOutputXml(new CXmlOutput(TypeXmlOutput::IsWriter))
     {
         m_pOutputXml->WriteString(L"<?xml version=\"1.0\"?>\n");
         m_pOutputXml->WriteNodeBegin(L"EMF");
     }
 
-    CEmfInterpretarorXml::~CEmfInterpretarorXml()
+    CEmfInterpretatorXml::~CEmfInterpretatorXml()
     {
         if (NULL != m_pOutputXml)
         {
@@ -19,7 +19,7 @@ namespace MetaFile
         }
     }
 
-    void CEmfInterpretarorXml::Save_EMR_HEADER(const TEmfHeader &oTEmfHeader, CDataStream &oDataStream,
+    void CEmfInterpretatorXml::Save_EMR_HEADER(const TEmfHeader &oTEmfHeader, CDataStream &oDataStream,
                                                const unsigned int &unRecordSize)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_HEADER", {XmlArgument(L"Id", EMR_HEADER),
@@ -46,7 +46,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_HEADER");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_ALPHABLEND(const TEmfAlphaBlend &oTEmfAlphaBlend, CDataStream &oDataStream,
+    void CEmfInterpretatorXml::Save_EMR_ALPHABLEND(const TEmfAlphaBlend &oTEmfAlphaBlend, CDataStream &oDataStream,
                                                    const unsigned int &unRecordSize)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_ALPHABLEND", {XmlArgument(L"Id", EMR_ALPHABLEND),
@@ -60,7 +60,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_ALPHABLEND");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_STRETCHDIBITS(const TEmfStretchDIBITS &oTEmfStretchDIBITS, CDataStream &oDataStream,
+    void CEmfInterpretatorXml::Save_EMR_STRETCHDIBITS(const TEmfStretchDIBITS &oTEmfStretchDIBITS, CDataStream &oDataStream,
                                                       const unsigned int &unRecordSize)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_STRETCHDIBITS", {XmlArgument(L"Id", EMR_STRETCHDIBITS),
@@ -74,7 +74,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_STRETCHDIBITS");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_BITBLT(const TEmfBitBlt &oTEmfBitBlt, CDataStream &oDataStream,
+    void CEmfInterpretatorXml::Save_EMR_BITBLT(const TEmfBitBlt &oTEmfBitBlt, CDataStream &oDataStream,
                                                const unsigned int &unRecordSize)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_BITBLT", {XmlArgument(L"Id", EMR_BITBLT),
@@ -88,7 +88,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_BITBLT");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice, CDataStream &oDataStream,
+    void CEmfInterpretatorXml::Save_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice, CDataStream &oDataStream,
                                                           const unsigned int &unRecordSize)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETDIBITSTODEVICE", {XmlArgument(L"Id", EMR_SETDIBITSTODEVICE),
@@ -102,7 +102,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETDIBITSTODEVICE");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_STRETCHBLT(const TEmfStretchBLT &oTEmfStretchBLT, CDataStream &oDataStream,
+    void CEmfInterpretatorXml::Save_EMR_STRETCHBLT(const TEmfStretchBLT &oTEmfStretchBLT, CDataStream &oDataStream,
                                                    const unsigned int &unRecordSize)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_STRETCHBLT", {XmlArgument(L"Id", EMR_STRETCHBLT),
@@ -116,7 +116,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_STRETCHBLT");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_EOF(const unsigned int &unCount,    const unsigned int &unOffset,
+    void CEmfInterpretatorXml::Save_EMR_EOF(const unsigned int &unCount,    const unsigned int &unOffset,
                                             const unsigned int &unSizeLast)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_EOF", {XmlArgument(L"Id", EMR_EOF),
@@ -127,13 +127,13 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_EOF");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SAVEDC()
+    void CEmfInterpretatorXml::Save_EMR_SAVEDC()
     {
         m_pOutputXml->WriteNode(L"EMR_SAVEDC", {XmlArgument(L"Id", EMR_SAVEDC),
                                                 XmlArgument(L"Size", 8)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_RESTOREDC(const int &nIndexDC)
+    void CEmfInterpretatorXml::Save_EMR_RESTOREDC(const int &nIndexDC)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_RESTOREDC", {XmlArgument(L"Id", EMR_RESTOREDC),
                                                         XmlArgument(L"Size", 12)});
@@ -141,7 +141,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_RESTOREDC");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_MODIFYWORLDTRANSFORM(const TXForm &oXForm, const unsigned int &unMode)
+    void CEmfInterpretatorXml::Save_EMR_MODIFYWORLDTRANSFORM(const TXForm &oXForm, const unsigned int &unMode)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_MODIFYWORLDTRANSFORM", {XmlArgument(L"Id", EMR_MODIFYWORLDTRANSFORM),
                                                                    XmlArgument(L"Size", 36)});
@@ -150,7 +150,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_MODIFYWORLDTRANSFORM");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETWORLDTRANSFORM(const TXForm &oXForm)
+    void CEmfInterpretatorXml::Save_EMR_SETWORLDTRANSFORM(const TXForm &oXForm)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETWORLDTRANSFORM", {XmlArgument(L"Id", EMR_SETWORLDTRANSFORM),
                                                                 XmlArgument(L"Size", 32)});
@@ -158,7 +158,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETWORLDTRANSFORM");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_CREATEBRUSHINDIRECT(const unsigned int &unBrushIndex, const CEmfLogBrushEx *pBrush)
+    void CEmfInterpretatorXml::Save_EMR_CREATEBRUSHINDIRECT(const unsigned int &unBrushIndex, const CEmfLogBrushEx *pBrush)
     {
         if (NULL == pBrush)
             return;
@@ -170,7 +170,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_CREATEBRUSHINDIRECT");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETTEXTCOLOR(const TEmfColor &oColor)
+    void CEmfInterpretatorXml::Save_EMR_SETTEXTCOLOR(const TEmfColor &oColor)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETTEXTCOLOR", {XmlArgument(L"Id", EMR_SETTEXTCOLOR),
                                                            XmlArgument(L"Size", 12)});
@@ -178,7 +178,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETTEXTCOLOR");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SELECTOBJECT(const unsigned int &unObjectIndex)
+    void CEmfInterpretatorXml::Save_EMR_SELECTOBJECT(const unsigned int &unObjectIndex)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SELECTOBJECT", {XmlArgument(L"Id", EMR_SELECTOBJECT),
                                                            XmlArgument(L"Size", 12)});
@@ -186,7 +186,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SELECTOBJECT");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_EXTCREATEFONTINDIRECTW(const unsigned int &unIndex, CEmfLogFont *oLogFont,
+    void CEmfInterpretatorXml::Save_EMR_EXTCREATEFONTINDIRECTW(const unsigned int &unIndex, CEmfLogFont *oLogFont,
                                                                const unsigned int unRecordSize)
     {
         if (NULL == oLogFont)
@@ -199,7 +199,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_EXTCREATEFONTINDIRECTW");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETTEXTALIGN(const unsigned int &unAlign)
+    void CEmfInterpretatorXml::Save_EMR_SETTEXTALIGN(const unsigned int &unAlign)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETTEXTALIGN", {XmlArgument(L"Id", EMR_SETTEXTALIGN),
                                                            XmlArgument(L"Size", 12)});
@@ -207,7 +207,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETTEXTALIGN");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETBKMODE(const unsigned int &unBgMode)
+    void CEmfInterpretatorXml::Save_EMR_SETBKMODE(const unsigned int &unBgMode)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETBKMODE", {XmlArgument(L"Id", EMR_SETBKMODE),
                                                         XmlArgument(L"Size", 12)});
@@ -215,7 +215,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETBKMODE");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_DELETEOBJECT(const unsigned int &unObjectIndex)
+    void CEmfInterpretatorXml::Save_EMR_DELETEOBJECT(const unsigned int &unObjectIndex)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_DELETEOBJECT", {XmlArgument(L"Id", EMR_DELETEOBJECT),
                                                            XmlArgument(L"Size",12)});
@@ -223,7 +223,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_DELETEOBJECT");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETMITERLIMIT(const unsigned int &unMeterLimit)
+    void CEmfInterpretatorXml::Save_EMR_SETMITERLIMIT(const unsigned int &unMeterLimit)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETMITERLIMIT", {XmlArgument(L"Id", EMR_SETMITERLIMIT),
                                                             XmlArgument(L"Size", 12)});
@@ -231,7 +231,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETMITERLIMIT");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen,
+    void CEmfInterpretatorXml::Save_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen,
                                                      const unsigned int &unRecordSize)
     {
         if (NULL != pPen)
@@ -254,7 +254,7 @@ namespace MetaFile
 
     }
 
-    void CEmfInterpretarorXml::Save_EMR_CREATEPEN(const unsigned int &unPenIndex, const unsigned int &unWidthX, const CEmfLogPen *pPen)
+    void CEmfInterpretatorXml::Save_EMR_CREATEPEN(const unsigned int &unPenIndex, const unsigned int &unWidthX, const CEmfLogPen *pPen)
     {
         if (NULL == pPen)
             return;
@@ -270,7 +270,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_CREATEPEN");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETPOLYFILLMODE(const unsigned int &unFillMode)
+    void CEmfInterpretatorXml::Save_EMR_SETPOLYFILLMODE(const unsigned int &unFillMode)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETPOLYFILLMODE", {XmlArgument(L"Id", EMR_SETPOLYFILLMODE),
                                                               XmlArgument(L"Size", 12)});
@@ -278,43 +278,43 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETPOLYFILLMODE");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_BEGINPATH()
+    void CEmfInterpretatorXml::Save_EMR_BEGINPATH()
     {
         m_pOutputXml->WriteNode(L"EMR_BEGINPATH", {XmlArgument(L"Id", EMR_BEGINPATH),
                                                    XmlArgument(L"Size", 8)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_ENDPATH()
+    void CEmfInterpretatorXml::Save_EMR_ENDPATH()
     {
         m_pOutputXml->WriteNode(L"EMR_ENDPATH", {XmlArgument(L"Id", EMR_ENDPATH),
                                                  XmlArgument(L"Size", 8)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_CLOSEFIGURE()
+    void CEmfInterpretatorXml::Save_EMR_CLOSEFIGURE()
     {
         m_pOutputXml->WriteNode(L"EMR_CLOSEFIGURE", {XmlArgument(L"Id", EMR_CLOSEFIGURE),
                                                      XmlArgument(L"Size", 8)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_FLATTENPATH()
+    void CEmfInterpretatorXml::Save_EMR_FLATTENPATH()
     {
         m_pOutputXml->WriteNode(L"EMR_FLATTENPATH", {XmlArgument(L"Id", EMR_FLATTENPATH),
                                                      XmlArgument(L"Size", 8)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_WIDENPATH()
+    void CEmfInterpretatorXml::Save_EMR_WIDENPATH()
     {
         m_pOutputXml->WriteNode(L"EMR_WIDENPATH", {XmlArgument(L"Id", EMR_WIDENPATH),
                                                    XmlArgument(L"Size", 8)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_ABORTPATH()
+    void CEmfInterpretatorXml::Save_EMR_ABORTPATH()
     {
         m_pOutputXml->WriteNode(L"EMR_ABORTPATH", {XmlArgument(L"Id", EMR_ABORTPATH),
                                                    XmlArgument(L"Size", 8)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_MOVETOEX(const TEmfPointL &oPoint)
+    void CEmfInterpretatorXml::Save_EMR_MOVETOEX(const TEmfPointL &oPoint)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_MOVETOEX", {XmlArgument(L"Id", EMR_MOVETOEX),
                                                        XmlArgument(L"Size", 16)});
@@ -322,7 +322,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_MOVETOEX");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETARCDIRECTION(const unsigned int &unDirection)
+    void CEmfInterpretatorXml::Save_EMR_SETARCDIRECTION(const unsigned int &unDirection)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETARCDIRECTION", {XmlArgument(L"Id", EMR_SETARCDIRECTION),
                                                               XmlArgument(L"Size", 12)});
@@ -330,7 +330,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETARCDIRECTION");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_FILLPATH(const TEmfRectL &oBounds)
+    void CEmfInterpretatorXml::Save_EMR_FILLPATH(const TEmfRectL &oBounds)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_FILLPATH", {XmlArgument(L"Id", EMR_FILLPATH),
                                                        XmlArgument(L"Size", 24)});
@@ -338,7 +338,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_FILLPATH");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETMAPMODE(const unsigned int &unMapMode)
+    void CEmfInterpretatorXml::Save_EMR_SETMAPMODE(const unsigned int &unMapMode)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETMAPMODE", {XmlArgument(L"Id", EMR_SETMAPMODE),
                                                          XmlArgument(L"Size", 12)});
@@ -346,7 +346,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETMAPMODE");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETWINDOWORGEX(const TEmfPointL &oOrigin)
+    void CEmfInterpretatorXml::Save_EMR_SETWINDOWORGEX(const TEmfPointL &oOrigin)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETWINDOWORGEX", {XmlArgument(L"Id", EMR_SETWINDOWORGEX),
                                                              XmlArgument(L"Size", 16)});
@@ -354,7 +354,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETWINDOWORGEX");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETWINDOWEXTEX(const TEmfSizeL &oExtent)
+    void CEmfInterpretatorXml::Save_EMR_SETWINDOWEXTEX(const TEmfSizeL &oExtent)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETWINDOWEXTEX", {XmlArgument(L"Id", EMR_SETWINDOWEXTEX),
                                                              XmlArgument(L"Size", 16)});
@@ -362,7 +362,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETWINDOWEXTEX");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETVIEWPORTORGEX(const TEmfPointL &oOrigin)
+    void CEmfInterpretatorXml::Save_EMR_SETVIEWPORTORGEX(const TEmfPointL &oOrigin)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETVIEWPORTORGEX", {XmlArgument(L"Id", EMR_SETVIEWPORTORGEX),
                                                                XmlArgument(L"Size", 16)});
@@ -370,7 +370,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETVIEWPORTORGEX");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETVIEWPORTEXTEX(const TEmfSizeL &oExtent)
+    void CEmfInterpretatorXml::Save_EMR_SETVIEWPORTEXTEX(const TEmfSizeL &oExtent)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETVIEWPORTEXTEX", {XmlArgument(L"Id", EMR_SETVIEWPORTEXTEX),
                                                                XmlArgument(L"Size", 16)});
@@ -378,7 +378,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETVIEWPORTEXTEX");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETSTRETCHBLTMODE(const unsigned int &unStretchMode)
+    void CEmfInterpretatorXml::Save_EMR_SETSTRETCHBLTMODE(const unsigned int &unStretchMode)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETSTRETCHBLTMODE", {XmlArgument(L"Id", EMR_SETSTRETCHBLTMODE),
                                                                 XmlArgument(L"Size", 12)});
@@ -386,7 +386,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETSTRETCHBLTMODE");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETICMMODE(const unsigned int &unICMMode)
+    void CEmfInterpretatorXml::Save_EMR_SETICMMODE(const unsigned int &unICMMode)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETICMMODE", {XmlArgument(L"Id", EMR_SETICMMODE),
                                                          XmlArgument(L"Size", 12)});
@@ -394,7 +394,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETICMMODE");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush,
+    void CEmfInterpretatorXml::Save_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush,
                                                                 CDataStream &oDataStream, const unsigned int &unRecordSize)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_CREATEDIBPATTERNBRUSHPT", {XmlArgument(L"Id", EMR_CREATEDIBPATTERNBRUSHPT),
@@ -410,7 +410,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_CREATEDIBPATTERNBRUSHPT");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
+    void CEmfInterpretatorXml::Save_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SELECTCLIPPATH", {XmlArgument(L"Id", EMR_SELECTCLIPPATH),
                                                              XmlArgument(L"Size", 12)});
@@ -418,19 +418,19 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SELECTCLIPPATH", true);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETBKCOLOR(const TEmfColor &oColor)
+    void CEmfInterpretatorXml::Save_EMR_SETBKCOLOR(const TEmfColor &oColor)
     {
         m_pOutputXml->WriteNode(L"EMR_SETBKCOLOR", oColor, {XmlArgument(L"Id", EMR_SETBKCOLOR),
                                                             XmlArgument(L"Size", 12)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_EXCLUDECLIPRECT(const TEmfRectL &oClip)
+    void CEmfInterpretatorXml::Save_EMR_EXCLUDECLIPRECT(const TEmfRectL &oClip)
     {
         m_pOutputXml->WriteNode(L"EMR_EXCLUDECLIPRECT", oClip, {XmlArgument(L"Id", EMR_EXCLUDECLIPRECT),
                                                                 XmlArgument(L"Size", 20)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode,
+    void CEmfInterpretatorXml::Save_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode,
                                                          CDataStream &oDataStream, const unsigned int &unRecordSize)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_EXTSELECTCLIPRGN", {XmlArgument(L"Id", EMR_EXTSELECTCLIPRGN),
@@ -446,13 +446,13 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_EXTSELECTCLIPRGN");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETMETARGN()
+    void CEmfInterpretatorXml::Save_EMR_SETMETARGN()
     {
         m_pOutputXml->WriteNode(L"EMR_SETMETARGN", {XmlArgument(L"Id", EMR_SETMETARGN),
                                                     XmlArgument(L"Size", 8)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETROP2(const unsigned int &unRop2Mode)
+    void CEmfInterpretatorXml::Save_EMR_SETROP2(const unsigned int &unRop2Mode)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETROP2", {XmlArgument(L"Id", EMR_SETROP2),
                                                       XmlArgument(L"Size", 12)});
@@ -460,7 +460,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETROP2");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_CREATEPALETTE(const unsigned int &unPaletteIndex, const CEmfLogPalette *oEmfLogPalette, const unsigned int &unRecordSize)
+    void CEmfInterpretatorXml::Save_EMR_CREATEPALETTE(const unsigned int &unPaletteIndex, const CEmfLogPalette *oEmfLogPalette, const unsigned int &unRecordSize)
     {
         if (NULL == oEmfLogPalette)
             return;
@@ -472,7 +472,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_CREATEPALETTE");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SELECTPALETTE(const unsigned int &unPaletteIndex)
+    void CEmfInterpretatorXml::Save_EMR_SELECTPALETTE(const unsigned int &unPaletteIndex)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SELECTPALETTE", {XmlArgument(L"Id", EMR_SELECTPALETTE),
                                                             XmlArgument(L"Size", 12)});
@@ -480,13 +480,13 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SELECTPALETTE");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_REALIZEPALETTE()
+    void CEmfInterpretatorXml::Save_EMR_REALIZEPALETTE()
     {
         m_pOutputXml->WriteNode(L"EMR_REALIZEPALETTE", {XmlArgument(L"Id", EMR_REALIZEPALETTE),
                                                         XmlArgument(L"Size", 8)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_INTERSECTCLIPRECT(const TEmfRectL &oClip)
+    void CEmfInterpretatorXml::Save_EMR_INTERSECTCLIPRECT(const TEmfRectL &oClip)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_INTERSECTCLIPRECT", {XmlArgument(L"Id", EMR_INTERSECTCLIPRECT),
                                                                 XmlArgument(L"Size", 20)});
@@ -494,7 +494,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_INTERSECTCLIPRECT");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETLAYOUT(const unsigned int &unLayoutMode)
+    void CEmfInterpretatorXml::Save_EMR_SETLAYOUT(const unsigned int &unLayoutMode)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETLAYOUT", {XmlArgument(L"Id", EMR_SETLAYOUT),
                                                         XmlArgument(L"Size", 12)});
@@ -502,7 +502,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETLAYOUT");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETBRUSHORGEX(const TEmfPointL &oOrigin)
+    void CEmfInterpretatorXml::Save_EMR_SETBRUSHORGEX(const TEmfPointL &oOrigin)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETBRUSHORGEX", {XmlArgument(L"Id", EMR_SETBRUSHORGEX),
                                                             XmlArgument(L"Size",16)});
@@ -510,7 +510,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETBRUSHORGEX");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_ANGLEARC(const TEmfPointL &oCenter, const unsigned int &unRadius,
+    void CEmfInterpretatorXml::Save_EMR_ANGLEARC(const TEmfPointL &oCenter, const unsigned int &unRadius,
                                                  const double &dStartAngle, const double &dSweepAngle)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_ANGLEARC", {XmlArgument(L"Id", EMR_ANGLEARC),
@@ -522,7 +522,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_ANGLEARC");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_ARC(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+    void CEmfInterpretatorXml::Save_EMR_ARC(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_ARC", {XmlArgument(L"Id", EMR_ARC),
                                                   XmlArgument(L"Size", 40)});
@@ -532,7 +532,7 @@ namespace MetaFile
              m_pOutputXml->WriteNodeEnd(L"EMR_ARC");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_ARCTO(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+    void CEmfInterpretatorXml::Save_EMR_ARCTO(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_ARCTO", {XmlArgument(L"Id", EMR_ARCTO),
                                                     XmlArgument(L"Size", 40)});
@@ -542,7 +542,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_ARCTO");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_CHORD(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+    void CEmfInterpretatorXml::Save_EMR_CHORD(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_CHORD", {XmlArgument(L"Id", EMR_CHORD),
                                                     XmlArgument(L"Size", 40)});
@@ -552,7 +552,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_CHORD");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_ELLIPSE(const TEmfRectL &oBox)
+    void CEmfInterpretatorXml::Save_EMR_ELLIPSE(const TEmfRectL &oBox)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_ELLIPSE", {XmlArgument(L"Id", EMR_ELLIPSE),
                                                       XmlArgument(L"Size", 24)});
@@ -560,25 +560,25 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_ELLIPSE");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_EXTTEXTOUTA(const TEmfExtTextoutA &oTEmfExtTextoutA, const unsigned int &unRecordSize)
+    void CEmfInterpretatorXml::Save_EMR_EXTTEXTOUTA(const TEmfExtTextoutA &oTEmfExtTextoutA, const unsigned int &unRecordSize)
     {
         m_pOutputXml->WriteNode(L"EMR_EXTTEXTOUTA", oTEmfExtTextoutA, {XmlArgument(L"Id", EMR_EXTTEXTOUTA),
                                                                        XmlArgument(L"Size", unRecordSize + 8)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_EXTTEXTOUTW(const TEmfExtTextoutW &oTEmfExtTextoutW, const unsigned int &unRecordSize)
+    void CEmfInterpretatorXml::Save_EMR_EXTTEXTOUTW(const TEmfExtTextoutW &oTEmfExtTextoutW, const unsigned int &unRecordSize)
     {
         m_pOutputXml->WriteNode(L"EMR_EXTTEXTOUTW", oTEmfExtTextoutW, {XmlArgument(L"Id", EMR_EXTTEXTOUTW),
                                                                        XmlArgument(L"Size", unRecordSize + 8)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_LINETO(const TEmfPointL &oPoint)
+    void CEmfInterpretatorXml::Save_EMR_LINETO(const TEmfPointL &oPoint)
     {
         m_pOutputXml->WriteNode(L"EMR_LINETO", oPoint, {XmlArgument(L"Id", EMR_LINETO),
                                                         XmlArgument(L"Size", 16)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_PIE(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
+    void CEmfInterpretatorXml::Save_EMR_PIE(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_PIE", {XmlArgument(L"Id", EMR_PIE),
                                                   XmlArgument(L"Size", 40)});
@@ -588,69 +588,69 @@ namespace MetaFile
                 m_pOutputXml->WriteNodeEnd(L"EMR_PIE");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointL>& arPoints)
+    void CEmfInterpretatorXml::Save_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointL>& arPoints)
     {
         Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYBEZIER", EMR_POLYBEZIER, oBounds), arPoints);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointS>& arPoints)
+    void CEmfInterpretatorXml::Save_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointS>& arPoints)
     {
         Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYBEZIER16", EMR_POLYBEZIER16, oBounds), arPoints);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointL>& arPoints)
+    void CEmfInterpretatorXml::Save_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointL>& arPoints)
     {
         Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYBEZIERTO", EMR_POLYBEZIERTO, oBounds), arPoints);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointS>& arPoints)
+    void CEmfInterpretatorXml::Save_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointS>& arPoints)
     {
         Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYBEZIERTO16", EMR_POLYBEZIERTO16, oBounds), arPoints);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointL *arPoints,
+    void CEmfInterpretatorXml::Save_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointL *arPoints,
                                                  const unsigned int &unCount, const unsigned char *pAbTypes)
     {
         Save_EMR_POLYDRAW_BASE<TEmfPointL>(oBounds, arPoints, unCount, pAbTypes);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointS *arPoints,
+    void CEmfInterpretatorXml::Save_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointS *arPoints,
                                                  const unsigned int &unCount, const unsigned char *pAbTypes)
     {
         Save_EMR_POLYDRAW_BASE<TEmfPointS>(oBounds, arPoints, unCount, pAbTypes);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+    void CEmfInterpretatorXml::Save_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
     {
         Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYGON", EMR_POLYGON, oBounds), arPoints);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+    void CEmfInterpretatorXml::Save_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
     {
         Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYGON16", EMR_POLYGON16, oBounds), arPoints);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+    void CEmfInterpretatorXml::Save_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
     {
         Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYLINE", EMR_POLYLINE, oBounds), arPoints);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+    void CEmfInterpretatorXml::Save_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
     {
         Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYLINE16", EMR_POLYLINE16, oBounds), arPoints);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
+    void CEmfInterpretatorXml::Save_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
     {
         Save_EMR_POLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYLINETO", EMR_POLYLINETO, oBounds), arPoints);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
+    void CEmfInterpretatorXml::Save_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
     {
         Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYLINETO16", EMR_POLYLINETO16, oBounds), arPoints);
     }
 
-    void CEmfInterpretarorXml::Save_EMR_RECTANGLE(const TEmfRectL& oBox)
+    void CEmfInterpretatorXml::Save_EMR_RECTANGLE(const TEmfRectL& oBox)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_RECTANGLE", {XmlArgument(L"Id", EMR_RECTANGLE),
                                                         XmlArgument(L"Size", 24)});
@@ -658,7 +658,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_RECTANGLE");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_ROUNDRECT(const TEmfRectL &oBox, const TEmfSizeL &oCorner)
+    void CEmfInterpretatorXml::Save_EMR_ROUNDRECT(const TEmfRectL &oBox, const TEmfSizeL &oCorner)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_ROUNDRECT", {XmlArgument(L"Id", EMR_ROUNDRECT),
                                                         XmlArgument(L"Size", 32)});
@@ -667,7 +667,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_ROUNDRECT");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SETPIXELV(const TEmfPointL &oPoint, const TEmfColor &oColor)
+    void CEmfInterpretatorXml::Save_EMR_SETPIXELV(const TEmfPointL &oPoint, const TEmfColor &oColor)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_SETPIXELV", {XmlArgument(L"Id", EMR_SETPIXELV),
                                                         XmlArgument(L"Size", 20)});
@@ -676,13 +676,13 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_SETPIXELV");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_SMALLTEXTOUT(const TEmfSmallTextout &oText, const unsigned int& unRecordSize)
+    void CEmfInterpretatorXml::Save_EMR_SMALLTEXTOUT(const TEmfSmallTextout &oText, const unsigned int& unRecordSize)
     {
         m_pOutputXml->WriteNode(L"EMR_SMALLTEXTOUT", oText, {XmlArgument(L"Id", EMR_SMALLTEXTOUT),
                                                              XmlArgument(L"Size", unRecordSize + 8)});
     }
 
-    void CEmfInterpretarorXml::Save_EMR_STROKEANDFILLPATH(const TEmfRectL &oBounds)
+    void CEmfInterpretatorXml::Save_EMR_STROKEANDFILLPATH(const TEmfRectL &oBounds)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_STROKEANDFILLPATH", {XmlArgument(L"Id", EMR_STROKEANDFILLPATH),
                                                                 XmlArgument(L"Size", 24)});
@@ -690,7 +690,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeEnd(L"EMR_STROKEANDFILLPATH");
     }
 
-    void CEmfInterpretarorXml::Save_EMR_STROKEPATH(const TEmfRectL &oBounds)
+    void CEmfInterpretatorXml::Save_EMR_STROKEPATH(const TEmfRectL &oBounds)
     {
         m_pOutputXml->WriteNodeBegin(L"EMR_STROKEPATH", {XmlArgument(L"Id", EMR_STROKEPATH),
                                                          XmlArgument(L"Size", 24)});
@@ -699,7 +699,7 @@ namespace MetaFile
     }
 
     template<typename T>
-    void CEmfInterpretarorXml::Save_EMR_POLY_BASE(const RecordData &oRecordData, const std::vector<T> &arPoints)
+    void CEmfInterpretatorXml::Save_EMR_POLY_BASE(const RecordData &oRecordData, const std::vector<T> &arPoints)
     {
         if (arPoints.empty())
             return;
@@ -718,7 +718,7 @@ namespace MetaFile
     }
 
     template<typename T>
-    void CEmfInterpretarorXml::Save_EMR_POLYDRAW_BASE(const TEmfRectL &oBounds, T *arPoints,
+    void CEmfInterpretatorXml::Save_EMR_POLYDRAW_BASE(const TEmfRectL &oBounds, T *arPoints,
                                                          const unsigned int &unCount, const unsigned char *pAbTypes)
     {
         if (NULL == arPoints || NULL == pAbTypes)

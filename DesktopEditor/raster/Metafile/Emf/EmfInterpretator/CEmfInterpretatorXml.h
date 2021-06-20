@@ -1,11 +1,11 @@
-#ifndef CEMFINTERPRETARORXML_H
-#define CEMFINTERPRETARORXML_H
+#ifndef CEMFINTERPRETATORXML_H
+#define CEMFINTERPRETATORXML_H
 
-#include "CEmfInterpretarorBase.h"
+#include "CEmfInterpretatorBase.h"
 
 namespace MetaFile
 {
-    class CEmfInterpretarorXml : public CEmfInterpretarorBase
+    class CEmfInterpretatorXml : public virtual CEmfInterpretatorBase
     {
         struct RecordData
         {
@@ -22,8 +22,8 @@ namespace MetaFile
         };
 
     public:
-        CEmfInterpretarorXml();
-        virtual ~CEmfInterpretarorXml();
+        CEmfInterpretatorXml();
+        virtual ~CEmfInterpretatorXml();
 
         void Save_EMR_HEADER(const TEmfHeader& oTEmfHeader, CDataStream &oDataStream, const unsigned int &unRecordSize) override ;
         void Save_EMR_ALPHABLEND(const TEmfAlphaBlend& oTEmfAlphaBlend, CDataStream &oDataStream, const unsigned int &unRecordSize) override ;
@@ -97,7 +97,7 @@ namespace MetaFile
         void Save_EMR_POLYLINE(const TEmfRectL& oBounds, const std::vector<TEmfPointS>& arPoints) override ;
         void Save_EMR_POLYLINETO(const TEmfRectL& oBounds, const std::vector<TEmfPointL>& arPoints) override ;
         void Save_EMR_POLYLINETO(const TEmfRectL& oBounds, const std::vector<TEmfPointS>& arPoints) override ;
-        //TODO: реализовать сохранение полигонов в полигоне
+        //TODO: Реализовать сохранение полигонов в полигоне
         void Save_EMR_RECTANGLE(const TEmfRectL& oBox) override ;
         void Save_EMR_ROUNDRECT(const TEmfRectL& oBox, const TEmfSizeL& oCorner) override ;
         void Save_EMR_SETPIXELV(const TEmfPointL& oPoint, const TEmfColor& oColor) override ;
@@ -111,33 +111,33 @@ namespace MetaFile
 
     public:
         //Следующие методы ничего не делают
-        void SetOutputDevice(IOutputDevice* pIOutputDevice) override {};
+        virtual void SetOutputDevice(IOutputDevice* pIOutputDevice) override {};
 
-        void Begin() override {};
-        void End() override {};
+        virtual void Begin() override {};
+        virtual void End() override {};
 
-        void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override {};
+        virtual void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override {};
 
-        void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx, int iGraphicsMode = 1) override {};
+        virtual void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx, int iGraphicsMode = 1) override {};
 
-	void StartPath() override {};
-	void MoveTo(double dX, double dY) override {};
-	void LineTo(double dX, double dY) override {};
-	void CurveTo(double dX1, double dY1, double dX2, double dY2, double dXe, double dYe) override {};
-	void ArcTo(double dLeft, double dTop, double dRight, double dBottom, double dStartAngle, double dSweepAngle) override {};
-	void ClosePath() override {};
-	void DrawPath(int nType = 0) override {};
-	void EndPath() override {};
+	virtual void StartPath() override {};
+	virtual void MoveTo(double dX, double dY) override {};
+	virtual void LineTo(double dX, double dY) override {};
+	virtual void CurveTo(double dX1, double dY1, double dX2, double dY2, double dXe, double dYe) override {};
+	virtual void ArcTo(double dLeft, double dTop, double dRight, double dBottom, double dStartAngle, double dSweepAngle) override {};
+	virtual void ClosePath() override {};
+	virtual void DrawPath(int nType = 0) override {};
+	virtual void EndPath() override {};
 
-	void ResetClip() override {};
-	void IntersectClip(double dLeft, double dTop, double dRight, double dBottom) override {};
-	void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
-	void EndClipPath(unsigned int unMode) override {};
+	virtual void ResetClip() override {};
+	virtual void IntersectClip(double dLeft, double dTop, double dRight, double dBottom) override {};
+	virtual void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
+	virtual void EndClipPath(unsigned int unMode) override {};
 
-	void UpdateDC() override {};
-	void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};
-	void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};
+	virtual void UpdateDC() override {};
+	virtual void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};
+	virtual void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};
     };
 }
 
-#endif // CEMFINTERPRETARORXML_H
+#endif // CEMFINTERPRETATORXML_H

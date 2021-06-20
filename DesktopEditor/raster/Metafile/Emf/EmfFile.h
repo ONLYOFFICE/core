@@ -35,8 +35,7 @@
 #include "../Common/MetaFile.h"
 #include "EmfParser/CEmfParser.h"
 #include "EmfParser/CEmfxParser.h"
-#include "EmfInterpretator/CEmfInterpretarorRender.h"
-#include "EmfInterpretator/CEmfInterpretarorXml.h"
+#include "EmfInterpretator/CEmfInterpretatorAll.h"
 #include "../CXmlOutput.h"
 
 #include "EmfTypes.h"
@@ -68,12 +67,14 @@ namespace MetaFile
 				delete m_pInterpretator;
 		}
 
-		void SetInterpretatorType(const InterpretaotrType& oType)
+		void SetInterpretatorType(const InterpretatorType& oType)
 		{
-		    if (oType == InterpretaotrType::Render)
-			m_pInterpretator = new CEmfInterpretarorRender();
-		    else if (oType == InterpretaotrType::XML)
-			m_pInterpretator = new CEmfInterpretarorXml();
+		    if (oType == InterpretatorType::Render)
+			m_pInterpretator = new CEmfInterpretatorRender();
+		    else if (oType == InterpretatorType::XML)
+			m_pInterpretator = new CEmfInterpretatorXml();
+		    else if (oType == InterpretatorType::RenderAndXml)
+			m_pInterpretator = new CEmfInterpretatorAll();
 		}
 
 		TEmfRectL* GetBounds()
@@ -353,7 +354,7 @@ namespace MetaFile
 		friend class CEmfPlayer;
 		friend class CEmfClip;
 
-		CEmfInterpretarorBase   *m_pInterpretator;
+		CEmfInterpretatorBase   *m_pInterpretator;
 		CEmfParserBase		*m_pParser;
 	};
 }

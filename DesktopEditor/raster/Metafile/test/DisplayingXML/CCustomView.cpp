@@ -3,6 +3,8 @@
 #include <QPixmap>
 Q_GUI_EXPORT QPixmap qt_pixmapFromWinHBITMAP(HBITMAP bitmap, int hbitmapFormat=0);
 
+#include <QWheelEvent>
+
 CCustomView::CCustomView(QWidget *parent)
     : QGraphicsView(parent),
       m_pBitmap(NULL)
@@ -64,4 +66,11 @@ void CCustomView::Clear()
         delete pScene;
         setScene(NULL);
     }
+}
+
+void CCustomView::wheelEvent(QWheelEvent *event)
+{
+    double delta = event->delta();
+    double sf = 1.0 + delta / 1000;
+    scale(sf, sf);
 }

@@ -39,7 +39,7 @@
         <widget class="CCustomView" name="customView"/>
        </item>
        <item>
-        <widget class="QGraphicsView" name="graphicsView"/>
+        <widget class="CCustomView" name="graphicsView"/>
        </item>
       </layout>
      </item>

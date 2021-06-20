@@ -20,6 +20,8 @@ public:
 
     bool DrawMetafile(const std::wstring& wsFilePath);
     void Clear();
+
+    void wheelEvent(QWheelEvent * event) override;
 private:
     Gdiplus::Bitmap *m_pBitmap;
 

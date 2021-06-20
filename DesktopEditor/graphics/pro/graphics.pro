@@ -462,12 +462,10 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/skew.cpp
 
 HEADERS += \
-    ./../../fontengine/ApplicationFontsWorker.h \
-    ./../../fontengine/FontsAssistant.h
+    ./../../fontengine/ApplicationFontsWorker.h
 
 SOURCES += \
-    ./../../fontengine/ApplicationFontsWorker.cpp \
-    ./../../fontengine/FontsAssistant.cpp
+    ./../../fontengine/ApplicationFontsWorker.cpp
 
 core_ios {
 

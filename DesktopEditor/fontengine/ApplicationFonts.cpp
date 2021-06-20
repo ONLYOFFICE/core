@@ -1620,6 +1620,10 @@ void CApplicationFonts::Initialize(bool bIsCheckSelection)
     m_oList.LoadFromFolder(L"/system/fonts");
 #endif
 
+#if defined(_IOS)
+    m_oList.LoadFromFolder(L"/System/Library/Fonts");
+#endif
+
 	m_oCache.m_pApplicationFontStreams = &m_oStreams;
 }
 

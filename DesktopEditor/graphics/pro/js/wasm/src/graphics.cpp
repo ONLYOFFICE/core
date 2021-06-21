@@ -43,7 +43,7 @@ WASM_EXPORT int   Graphics_GetPageHeight(void* graphics, int nPageIndex)
     CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
     return pGraphics->GetPageHeight(nPageIndex);
 }
-WASM_EXPORT int   Graphics_GetPageWidth(void* graphics, int nPageIndex)
+WASM_EXPORT int   Graphics_GetPageWidth (void* graphics, int nPageIndex)
 {
     CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
     return pGraphics->GetPageWidth(nPageIndex);
@@ -202,10 +202,10 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics, BYTE* texture, int length)
     pGraphics->put_FontSize     (11);
     pGraphics->put_FontStyle    (0);
 
-    pGraphics->CommandDrawTextCHAR('t', 0, 3.63992, 0, 0);
-    pGraphics->CommandDrawTextCHAR('e', 1.07813, 3.63992, 0, 0);
-    pGraphics->CommandDrawTextCHAR('s', 3.23627, 3.63992, 0, 0);
-    pGraphics->CommandDrawTextCHAR('t', 5.17651, 3.63992, 0, 0);
+    pGraphics->CommandDrawTextCHAR(1090, 0, 3.63992, 0, 0);
+    pGraphics->CommandDrawTextCHAR(1077, 1.07813, 3.63992, 0, 0);
+    pGraphics->CommandDrawTextCHAR(1089, 3.23627, 3.63992, 0, 0);
+    pGraphics->CommandDrawTextCHAR(1090, 5.17651, 3.63992, 0, 0);
 
     pGraphics->put_IntegerGrid(true);
     pGraphics->ResetTransform();
@@ -644,7 +644,11 @@ int main()
     NSFile::CFileBinary oFile;
     //if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.png", &pData, nBytesCount))
     if (!oFile.ReadAllBytes(L"C:/Windows/Fonts/arial.ttf", &pData, nBytesCount))
+    {
+        Graphics_Destroy(test);
+        RELEASEARRAYOBJECTS(pData);
         return 1;
+    }
     oFile.CloseFile();
 
     Graphics_TEST(test, pData, nBytesCount);

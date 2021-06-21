@@ -48,11 +48,11 @@ public:
     {
         return m_pFrame->get_Height();
     }
-    int GetPageWidth(int nPageIndex)
+    int GetPageWidth (int nPageIndex)
     {
         return m_pFrame->get_Width();
     }
-    BYTE* GetPage(int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* GetPage    (int nPageIndex, int nRasterW, int nRasterH)
     {
         return m_pFrame->get_Data();
     }
@@ -61,7 +61,7 @@ public:
     {
         return m_pGraphics;
     }
-    CBgraFrame* GetFrameForTest()
+    CBgraFrame*        GetFrameForTest()
     {
         return m_pFrame;
     }

@@ -881,11 +881,14 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
                             {
                                 oFrame.put_IsRGBA(false);
                                 oFrame.Decode(pImageData, nDecodeLen);
+                                RELEASEARRAYOBJECTS(pImageData);
                             }
+                            // pImage отдается pTextureBrush и освобождается вместе с pBrush
                             Aggplus::CImage* pImage = new Aggplus::CImage();
                             pImage->Create(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height(), oFrame.get_Stride());
                             oFrame.ClearNoAttack();
                             pTextureBrush = new Aggplus::CBrushTexture(pImage, oMode);
+                            pTextureBrush->m_bReleaseImage = TRUE;
                         }
                     }
                 #else

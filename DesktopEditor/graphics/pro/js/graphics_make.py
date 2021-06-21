@@ -82,7 +82,7 @@ for item in input_unicodeconverter_sources:
 sources.append("raster.o")
 sources.append("wasm/src/graphics.cpp")
 
-compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/include")
+compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common")
 compiler_flags.append("-D__linux__ -D_LINUX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE -DU_COMMON_IMPLEMENTATION")
 
 # arguments
@@ -152,4 +152,4 @@ base.copy_file("./wasm/js/code_graphics.js", "./deploy/code_graphics.js")
 base.delete_file("graphics.js")
 base.delete_file("graphics.wasm")
 base.delete_dir("./temp")
-# base.delete_file("raster.o")
+base.delete_file("raster.o")

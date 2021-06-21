@@ -674,7 +674,7 @@ public:
 		void convert(OOX::Logic::CBoxPr					*oox_box_pr);
 		void convert(OOX::Logic::CBrk					*oox_brk);
 		void convert(OOX::Logic::CDelimiter				*oox_del);
-		void convert(OOX::Logic::CDelimiterPr			*oox_del_pr);
+		std::pair<std::wstring, std::wstring> convert(OOX::Logic::CDelimiterPr			*oox_del_pr);
 		void convert(OOX::Logic::CEqArr					*oox_eq_arr);
 		void convert(OOX::Logic::CEqArrPr				*oox_eq_arr_pr);
 		std::wstring convert(OOX::Logic::CFPr			*oox_f_pr);
@@ -716,8 +716,8 @@ public:
 		void convert(OOX::Logic::CSSupPr				*oox_ssup_pr);
 		void convert(OOX::Logic::CNum					*oox_num);
 		void convert(OOX::Logic::CDen					*oox_den);
-		void convert(OOX::Logic::CBegChr				*oox_beg_chr);
-		void convert(OOX::Logic::CEndChr				*oox_beg_chr);
+		std::wstring convert(OOX::Logic::CBegChr				*oox_beg_chr);
+		std::wstring convert(OOX::Logic::CEndChr				*oox_end_chr);
 		void convert(OOX::Logic::CElement				*oox_elm);
 		void convert(OOX::Logic::CDegHide				*oox_deg_hide);
 		void convert(OOX::Logic::CDeg *oox_deg, OOX::Logic::CElement *oox_elm);

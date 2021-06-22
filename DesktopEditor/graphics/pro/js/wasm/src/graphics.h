@@ -33,6 +33,10 @@ public:
         m_pGraphics->SetSwapRGB(true);
         m_pGraphics->put_Width(width_mm);
         m_pGraphics->put_Height(height_mm);
+
+        NSFonts::IApplicationFonts* m_pApplicationFonts = NSFonts::NSApplication::Create();
+        NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
+        m_pGraphics->SetFontManager(pManager);
     }
     ~CGraphicsFileDrawing()
     {

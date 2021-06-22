@@ -52,19 +52,56 @@ public:
     virtual int CreateFromMemory(BYTE* pData, LONG lSize, BYTE* pDataUse = NULL);
 };
 
+class CGlobalFontsMemoryStorage
+{
+private:
+    std::map<std::string, CFontStream*> m_mapStreams;
+public:
+    CGlobalFontsMemoryStorage(){}
+    ~CGlobalFontsMemoryStorage()
+    {
+        for (std::map<std::string, CFontStream*>::iterator it = m_mapStreams.begin(); it != m_mapStreams.end(); it++)
+            RELEASEOBJECT(it->second);
+        m_mapStreams.clear();
+    }
+
+    void Add(const std::string& id, BYTE* data, LONG size)
+    {
+        CFontStream* pStream = (CFontStream*)NSFonts::NSStream::Create();
+        pStream->CreateFromMemory(data, size);
+        m_mapStreams.insert({id, pStream});
+    }
+    void Remove(const std::string& id)
+    {
+        std::map<std::string, CFontStream*>::iterator it = m_mapStreams.find(id);
+        if (it != m_mapStreams.end())
+        {
+            RELEASEOBJECT(it->second);
+            m_mapStreams.erase(it);
+        }
+    }
+
+    CFontStream* Get(const std::wstring& sFile)
+    {
+        std::string sFileA = U_TO_UTF8(sFile);
+        std::map<std::string, CFontStream*>::iterator it = m_mapStreams.find(sFileA);
+        return it != m_mapStreams.end() ? it->second : NULL;
+    }
+};
+
 class CApplicationFontStreams : public NSFonts::IApplicationFontStreams
 {
 private:
 	// этот мап нужно периодически опрашивать и удалять неиспользуемые стримы
 	std::map<std::wstring, CFontStream*> m_mapStreams;
 public:
+    CGlobalFontsMemoryStorage* m_pMemoryStorage;
 
 	CApplicationFontStreams();
     virtual ~CApplicationFontStreams();
 
 public:
     NSFonts::IFontStream* GetStream(const std::wstring& strFile);
-    NSFonts::IFontStream* GetStream(const std::wstring& sName, BYTE* pData, LONG lSize);
 	void CheckStreams(std::map<std::wstring, bool>& mapFiles);
 	void Clear();
 };
@@ -114,7 +151,6 @@ public:
 public:
     virtual void SetStreams(NSFonts::IApplicationFontStreams* pStreams) { m_pApplicationFontStreams = pStreams; }
     virtual NSFonts::IFontFile* LockFont(NSFonts::CLibrary& library, const std::wstring& strFileName, const int& lFaceIndex, const double& dSize);
-    virtual NSFonts::IFontFile* LockFont(NSFonts::CLibrary& library, const std::wstring& sName, BYTE* pData, LONG lSize, const int& lFaceIndex, const double& dSize);
 };
 
 class CApplicationFonts;
@@ -201,9 +237,7 @@ public:
     virtual NSFonts::CFontInfo* GetFontInfoByParams(NSFonts::CFontSelectFormat& oFormat, bool bIsDictionaryUse = true);
     virtual std::vector<NSFonts::CFontInfo*> GetAllStylesByFontName(const std::wstring& strName);
     virtual INT LoadFontByName(const std::wstring& sName, const double& dSize, const int& lStyle, const double& dDpiX, const double& dDpiY);
-    virtual INT LoadFontByName(const std::wstring& sName, BYTE* pData, LONG lSize, const double& dSize, const int& lStyle, const double& dDpiX, const double& dDpiY);
     virtual INT LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
-    virtual INT LoadFontFromMemory(const std::wstring& sName, BYTE* pData, LONG lSize, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
     virtual INT LoadFontFromFile2(NSFonts::IFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
     virtual void CloseFont();
 

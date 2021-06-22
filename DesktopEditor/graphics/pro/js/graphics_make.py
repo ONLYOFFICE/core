@@ -4,7 +4,7 @@ import base
 import os
 
 if not base.is_file("raster.o"):
-  print("Please use raste_make.py previously")
+  print("Please use raster_make.py previously")
   exit(0)
 
 base.configure_common_apps()
@@ -41,7 +41,11 @@ exported_functions = ["_malloc",
                       "_Graphics_GetPageHeight",
                       "_Graphics_GetPageWidth",
                       "_Graphics_GetPage",
-                      "_Graphics_TEST"]
+                      "_Graphics_TEST",
+                      "_Fonts_Get",
+                      "_Fonts_Destroy",
+                      "_Fonts_Add",
+                      "_Fonts_Remove"]
 
 libGraphics_src_path = "../../"
 input_graphics_sources = ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "Graphics.cpp", "Brush.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp"]

@@ -16,6 +16,29 @@
 extern "C" {
 #endif
 
+WASM_EXPORT void* Fonts_Get(void* graphics)
+{
+    CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
+    CGlobalFontsMemoryStorage* pRes = new CGlobalFontsMemoryStorage();
+    ((CApplicationFontStreams*)pGraphics->GetGraphicsForTest()->GetFontManager()->GetApplication()->GetStreams())->m_pMemoryStorage = pRes;
+    return pRes;
+}
+WASM_EXPORT void  Fonts_Destroy(void* graphics)
+{
+    CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
+    RELEASEOBJECT(((CApplicationFontStreams*)pGraphics->GetGraphicsForTest()->GetFontManager()->GetApplication()->GetStreams())->m_pMemoryStorage);
+}
+WASM_EXPORT void Fonts_Add(void* fonts, const char* id, BYTE* data, LONG size)
+{
+    CGlobalFontsMemoryStorage* pFonts = (CGlobalFontsMemoryStorage*)fonts;
+    pFonts->Add(id, data, size);
+}
+WASM_EXPORT void Fonts_Remove(void* fonts, const char* id)
+{
+    CGlobalFontsMemoryStorage* pFonts = (CGlobalFontsMemoryStorage*)fonts;
+    pFonts->Remove(id);
+}
+
 WASM_EXPORT void* Graphics_Malloc(unsigned int size)
 {
     return ::malloc(size);
@@ -53,7 +76,7 @@ WASM_EXPORT BYTE* Graphics_GetPage(void* graphics, int nPageIndex, int nRasterW,
     CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
     return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH);
 }
-WASM_EXPORT bool  Graphics_TEST(void* graphics, BYTE* texture, int length)
+WASM_EXPORT bool  Graphics_TEST(void* graphics)
 {
     CGraphicsFileDrawing* ptGraphics = (CGraphicsFileDrawing*)graphics;
 
@@ -193,10 +216,8 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics, BYTE* texture, int length)
     double DpiX, DpiY;
     pGraphics->get_DpiX(&DpiX);
     pGraphics->get_DpiY(&DpiY);
-    NSFonts::IApplicationFonts* m_pApplicationFonts = NSFonts::NSApplication::Create();
-    NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
-    pGraphics->SetFontManager(pManager);
-    pGraphics->GetFontManager()->LoadFontByName(L"Arial", texture, length, 11, 0, DpiX, DpiY);
+
+    pGraphics->GetFontManager()->LoadFontByName(L"Arial", 11, 0, DpiX, DpiY);
     pGraphics->put_FontName     (L"Arial");
     pGraphics->put_FontFaceIndex(-1);
     pGraphics->put_FontSize     (11);
@@ -638,6 +659,7 @@ int main()
     //void* test = Graphics_Create(203, 187, 53.7104, 49.4771);
     //void* test = Graphics_Create(265, 265, 70.1146, 70.1146);
     void* test = Graphics_Create(211, 119, 55.8251, 31.2208);
+    void* fonts = Fonts_Get(test);
 
     BYTE* pData = NULL;
     DWORD nBytesCount;
@@ -651,7 +673,9 @@ int main()
     }
     oFile.CloseFile();
 
-    Graphics_TEST(test, pData, nBytesCount);
+    Fonts_Add(fonts, "Arial", pData, nBytesCount);
+
+    Graphics_TEST(test);
     int nHeight = Graphics_GetPageHeight(test, 1);
     int nWidth = Graphics_GetPageWidth(test, 1);
     BYTE* res = Graphics_GetPage(test, 1, nWidth, nHeight);
@@ -662,6 +686,7 @@ int main()
     CBgraFrame* resFrame = ((CGraphicsFileDrawing*)test)->GetFrameForTest();
 
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
+    Fonts_Destroy(test);
     Graphics_Destroy(test);
     RELEASEARRAYOBJECTS(pData);
     return 0;

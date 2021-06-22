@@ -21,6 +21,9 @@
 			this.engine = Module["_Graphics_Create"](wF, hF, width, height);
 			if (0 === this.engine)
 				return null;
+			var fonts = Module["_Fonts_Get"](this.engine);
+			if (0 === fonts)
+				return null;
 				
 			var imageFileRawDataSize = dataBuffer.byteLength;
 			var imageFileRawData = Module["_Graphics_Malloc"](imageFileRawDataSize);
@@ -29,9 +32,17 @@
 			
 			var uint8DataBuffer = new Uint8Array(dataBuffer);
 			Module["HEAP8"].set(uint8DataBuffer, imageFileRawData);
-				
-			Module["_Graphics_TEST"](this.engine, imageFileRawData, imageFileRawDataSize);
 			
+			var tmp = "Arial".toUtf8();
+			var pointer = Module["_Graphics_Malloc"](tmp.length);
+			if (0 === pointer)
+				return null;
+			Module["HEAP8"].set(tmp, pointer);
+
+			Module["_Fonts_Add"](fonts, pointer, imageFileRawData, imageFileRawDataSize);	
+			Module["_Graphics_TEST"](this.engine);
+			
+			Module["_Graphics_Free"](pointer);
 			Module["_Graphics_Free"](imageFileRawData);
 			
 			var imageW = Module["_Graphics_GetPageWidth"](this.engine, 1);
@@ -54,6 +65,7 @@
 			
 			canvasCtx.putImageData(canvasData, 0, 0);
 	
+			Module["_Fonts_Destroy"](this.engine);
 			this.close();
 			return canvas;
         }

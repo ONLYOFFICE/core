@@ -67,9 +67,13 @@ public:
 
     void Add(const std::string& id, BYTE* data, LONG size)
     {
-        CFontStream* pStream = (CFontStream*)NSFonts::NSStream::Create();
-        pStream->CreateFromMemory(data, size);
-        m_mapStreams.insert({id, pStream});
+        std::map<std::string, CFontStream*>::iterator it = m_mapStreams.find(id);
+        if (it == m_mapStreams.end())
+        {
+            CFontStream* pStream = (CFontStream*)NSFonts::NSStream::Create();
+            pStream->CreateFromMemory(data, size);
+            m_mapStreams.insert({id, pStream});
+        }
     }
     void Remove(const std::string& id)
     {

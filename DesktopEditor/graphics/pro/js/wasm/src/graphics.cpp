@@ -20,8 +20,8 @@ extern "C" {
 
 WASM_EXPORT void* Fonts_Create()
 {
-    RELEASEOBJECT(CApplicationFontStreams::m_pMemoryStorage);
-    CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
+    if (!CApplicationFontStreams::m_pMemoryStorage)
+        CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
     return CApplicationFontStreams::m_pMemoryStorage;
 }
 WASM_EXPORT void  Fonts_Destroy()

@@ -21,7 +21,7 @@
 			this.engine = Module["_Graphics_Create"](wF, hF, width, height);
 			if (0 === this.engine)
 				return null;
-			var fonts = Module["_Fonts_Get"](this.engine);
+			var fonts = Module["_Fonts_Create"]();
 			if (0 === fonts)
 				return null;
 				
@@ -65,7 +65,7 @@
 			
 			canvasCtx.putImageData(canvasData, 0, 0);
 	
-			Module["_Fonts_Destroy"](this.engine);
+			Module["_Fonts_Destroy"]();
 			this.close();
 			return canvas;
         }

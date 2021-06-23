@@ -95,7 +95,7 @@ private:
 	// этот мап нужно периодически опрашивать и удалять неиспользуемые стримы
 	std::map<std::wstring, CFontStream*> m_mapStreams;
 public:
-    CGlobalFontsMemoryStorage* m_pMemoryStorage;
+    static CGlobalFontsMemoryStorage* m_pMemoryStorage;
 
 	CApplicationFontStreams();
     virtual ~CApplicationFontStreams();

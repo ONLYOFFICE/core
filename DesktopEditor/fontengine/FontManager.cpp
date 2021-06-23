@@ -106,6 +106,9 @@ int CFontStream::CreateFromMemory(BYTE* pData, LONG lSize, BYTE* pDataUse)
     return TRUE;
 }
 
+#ifndef BUILDING_WASM_MODULE
+CGlobalFontsMemoryStorage* CApplicationFontStreams::m_pMemoryStorage = NULL;
+#endif
 CApplicationFontStreams::CApplicationFontStreams() : NSFonts::IApplicationFontStreams()
 {
 }

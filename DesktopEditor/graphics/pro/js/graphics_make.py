@@ -42,7 +42,7 @@ exported_functions = ["_malloc",
                       "_Graphics_GetPageWidth",
                       "_Graphics_GetPage",
                       "_Graphics_TEST",
-                      "_Fonts_Get",
+                      "_Fonts_Create",
                       "_Fonts_Destroy",
                       "_Fonts_Add",
                       "_Fonts_Remove"]

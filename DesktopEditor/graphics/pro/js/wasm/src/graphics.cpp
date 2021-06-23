@@ -12,21 +12,21 @@
 #define WASM_EXPORT __attribute__((visibility("default")))
 #endif
 
+CGlobalFontsMemoryStorage* CApplicationFontStreams::m_pMemoryStorage = NULL;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-WASM_EXPORT void* Fonts_Get(void* graphics)
+WASM_EXPORT void* Fonts_Create()
 {
-    CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
-    CGlobalFontsMemoryStorage* pRes = new CGlobalFontsMemoryStorage();
-    ((CApplicationFontStreams*)pGraphics->GetGraphicsForTest()->GetFontManager()->GetApplication()->GetStreams())->m_pMemoryStorage = pRes;
-    return pRes;
+    RELEASEOBJECT(CApplicationFontStreams::m_pMemoryStorage);
+    CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
+    return CApplicationFontStreams::m_pMemoryStorage;
 }
-WASM_EXPORT void  Fonts_Destroy(void* graphics)
+WASM_EXPORT void  Fonts_Destroy()
 {
-    CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
-    RELEASEOBJECT(((CApplicationFontStreams*)pGraphics->GetGraphicsForTest()->GetFontManager()->GetApplication()->GetStreams())->m_pMemoryStorage);
+    RELEASEOBJECT(CApplicationFontStreams::m_pMemoryStorage);
 }
 WASM_EXPORT void Fonts_Add(void* fonts, const char* id, BYTE* data, LONG size)
 {
@@ -659,7 +659,7 @@ int main()
     //void* test = Graphics_Create(203, 187, 53.7104, 49.4771);
     //void* test = Graphics_Create(265, 265, 70.1146, 70.1146);
     void* test = Graphics_Create(211, 119, 55.8251, 31.2208);
-    void* fonts = Fonts_Get(test);
+    void* fonts = Fonts_Create();
 
     BYTE* pData = NULL;
     DWORD nBytesCount;
@@ -686,7 +686,7 @@ int main()
     CBgraFrame* resFrame = ((CGraphicsFileDrawing*)test)->GetFrameForTest();
 
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
-    Fonts_Destroy(test);
+    Fonts_Destroy();
     Graphics_Destroy(test);
     RELEASEARRAYOBJECTS(pData);
     return 0;

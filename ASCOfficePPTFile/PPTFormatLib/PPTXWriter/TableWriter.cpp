@@ -1,4 +1,5 @@
 #include "TableWriter.h"
+#include "TxBodyConverter.h"
 
 TableWriter::TableWriter(CTableElement *pTableElement) :
     m_pTableElement(pTableElement)
@@ -27,44 +28,322 @@ void TableWriter::FillNvGraphicFramePr(PPTX::Logic::NvGraphicFramePr& oNvGFPr)
     oNvGFPr.cNvPr.name = m_pTableElement->m_sName;
 
     // not works in full
-    // graphicFrameLocks
+    oNvGFPr.cNvGraphicFramePr.noGrp = true;
 
     PPTX::Logic::Ext ext;
-    ext.uri = L"{D42A27DB-BD31-4B8C-83A1-F6EECF244321}";
+    ext.uri = L"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}";
     oNvGFPr.nvPr.extLst.push_back(ext);
 }
 
 void TableWriter::FillXfrm(PPTX::Logic::Xfrm &oXFRM)
 {
-    oXFRM.offX = int(m_pTableElement->m_rcAnchor.left * 1588);
-    oXFRM.offY = int(m_pTableElement->m_rcAnchor.top * 1588);
+    oXFRM.m_ns = L"p";
+    double multip1 = m_pTableElement->m_bAnchorEnabled ? 1587.6 : 1;
+    double multip2 = m_pTableElement->m_bAnchorEnabled ? 1273.0 : 1;
+    oXFRM.offX = int(m_pTableElement->m_rcAnchor.left * multip1);
+    oXFRM.offY = int(m_pTableElement->m_rcAnchor.top  * multip1);
 
-    oXFRM.extX = int(m_pTableElement->m_rcAnchor.right * 983);
-    oXFRM.extY = int(m_pTableElement->m_rcAnchor.bottom * 1398);
+    oXFRM.extX = int(m_pTableElement->m_rcAnchor.right  * multip2);
+    oXFRM.extY = int(m_pTableElement->m_rcAnchor.bottom * multip2);
 }
 
 void TableWriter::FillTable(PPTX::Logic::Table &oTable)
 {
-    std::vector<CElement*> arrCells, arrSpliters;
-    prepareShapes(arrCells, arrSpliters);
+    oTable.tableProperties = new PPTX::Logic::TableProperties;
+    FillTblPr(oTable.tableProperties.get2());
 
-    auto height = getHeight(arrCells);
+    std::vector<CShapeElement*> arrCells, arrSpliters;
+    prepareShapes(arrCells, arrSpliters);
+    m_nPTable = new ProtoTable(arrCells, arrSpliters);
+    FillTblGrid(oTable.TableCols , arrCells);
+
+
+    auto protoTable = m_nPTable->getTable();
+    auto arrHeight = ProtoTable::getHeight(arrCells);
+    for (UINT cRow = 0; cRow < protoTable.size(); cRow++)
+    {
+        PPTX::Logic::TableRow tr;
+        FillRow(tr, protoTable[cRow]);
+        tr.Height = arrHeight[cRow];
+        oTable.TableRows.push_back(tr);
+    }
 }
 
-std::vector<int> TableWriter::getHeight(std::vector<CElement*> &arrCells)
+std::vector<int> ProtoTable::getWidth(std::vector<CShapeElement*>& arrCells, bool isWidth)
 {
-    std::vector<int> height;
-    int currentHeight = 0;
-    for (auto* cell : arrCells)
+    std::map<double, double> mapLeftWidth;
+    for (const auto* pCell : arrCells)
     {
-        auto pShapeEl = dynamic_cast<CShapeElement*>(cell);
-//        if (pShapeEl->)
+        if (!pCell) continue;
+        double left = pCell->m_rcChildAnchor.left;
+        double width = pCell->m_rcChildAnchor.right - left;
+
+        // Here we search uniq left to answer: is it new colum?
+        auto iter = mapLeftWidth.find(left);
+        if (iter == mapLeftWidth.end())
+        {
+            mapLeftWidth.insert(std::make_pair(left, width));
+        }
+        // Here we check qestion: was it merged cell and now is it true width of colum?
+        else if (iter->second > width)
+        {
+            mapLeftWidth.erase(iter);
+            mapLeftWidth.insert(std::make_pair(left, width));
+        }
     }
 
-    return height;
+    std::vector<int> gridWidth;
+    double multip = isWidth ? 1587.6 : 1.0;
+    for (const auto& w : mapLeftWidth)
+    {
+        double value = isWidth ? w.second : w.first;
+        gridWidth.push_back(int(value * multip));
+    }
+
+    return gridWidth;
 }
 
-void TableWriter::prepareShapes(std::vector<CElement*> &arrCells, std::vector<CElement *> &arrSpliters)
+std::vector<int> ProtoTable::getHeight(std::vector<CShapeElement*>& arrCells, bool isHeight)
+{
+    std::map<double, double> mapTopHeight;
+    for (auto* pCell : arrCells)
+    {
+        if (!pCell) continue;
+        double top = pCell->m_rcChildAnchor.top;
+        double height = pCell->m_rcChildAnchor.bottom - top;
+
+        // Here we search uniq top to answer: is it new row?
+        auto iter = mapTopHeight.find(top);
+        if (iter == mapTopHeight.end())
+        {
+            mapTopHeight.insert(std::make_pair(top, height));
+        }
+        // Here we check qestion: was it merged cell and now is it true height of row?
+        else if (iter->second > height)
+        {
+            mapTopHeight.erase(iter);
+            mapTopHeight.insert(std::make_pair(top, height));
+        }
+
+    }
+
+    std::vector<int> gridHeight;
+    double multip = isHeight ? 1587.6 : 1.0;
+    for (const auto& h : mapTopHeight)
+    {
+        double value = isHeight ? h.second : h.first;
+        gridHeight.push_back(int(value * multip));
+    }
+
+    return gridHeight;
+}
+
+void ProtoTable::initProtoTable()
+{
+    const UINT countRow = m_arrTop.size();
+    const UINT countCol = m_arrLeft.size();
+
+    m_table.clear();
+    for (UINT cRow = 0; cRow < countRow; cRow++)
+    {
+        ProtoTableRow protoRow;
+        for (UINT cCol = 0; cCol < countCol; cCol++)
+            protoRow.push_back(TCell(nullptr, cRow, cCol, nullptr));
+
+        m_table.push_back(protoRow);
+    }
+}
+
+bool ProtoTable::fillProtoTable(std::vector<CShapeElement *> &arrCells,
+                                std::vector<CShapeElement*>& arrSpliters)
+{
+    if (m_table.empty() || m_arrTop.empty() || m_arrLeft.empty())
+        return false;
+
+    bool wasCellsFilled  = fillCells(arrCells);
+    fillBorders(arrSpliters);
+
+    return wasCellsFilled;
+}
+
+bool ProtoTable::fillCells(std::vector<CShapeElement *> &arrCells)
+{
+    const UINT countRow = m_arrTop.size();
+    const UINT countCol = m_arrLeft.size();
+
+    for (auto* pCell : arrCells)
+    {
+        int left = pCell->m_rcChildAnchor.left;
+        int top = pCell->m_rcChildAnchor.top;
+        int right = pCell->m_rcChildAnchor.right;
+        int bottom = pCell->m_rcChildAnchor.bottom;
+
+        UINT posRow = 0, posCol = 0;
+        for (; posRow < countRow; posRow++)
+            if (top == m_arrTop[posRow]) break;
+        for (; posCol < countCol; posCol++)
+            if (left == m_arrLeft[posCol]) break;
+        TCell* pParent = &m_table[posRow][posCol];
+
+        UINT posRightCol = 0, posBottomRow = 0;
+        for (; posBottomRow < countRow; posBottomRow++)
+            if (bottom == m_arrTop[posBottomRow]) break;
+        for (; posRightCol < countCol; posRightCol++)
+            if (right == m_arrLeft[posRightCol]) break;
+
+        for (UINT cRow = posRow; cRow < posBottomRow; cRow++)
+            for (UINT cCol = posCol; cCol < posRightCol; cCol++)
+            {
+                auto& tCell = m_table[cRow][cCol];
+                tCell.setPParent(pParent);
+
+                if (posCol == cCol)
+                    tCell.setGridSpan(posRightCol - cCol);
+
+                if (posRow == cRow)
+                    tCell.setRowSpan(posBottomRow - cRow);
+            }
+        pParent->setPParent(nullptr);
+        pParent->setPShape(pCell);
+
+//        pParent->setGridSpan(posRightCol - posCol);
+//        pParent->setRowSpan(posBottomRow - posRow);
+    }
+
+    return true;
+}
+
+void ProtoTable::fillBorders(std::vector<CShapeElement *> &arrSpliters)
+{
+    for (auto* pBorder : arrSpliters)
+    {
+        int left = pBorder->m_rcChildAnchor.left;
+        int top = pBorder->m_rcChildAnchor.top;
+        int right = pBorder->m_rcChildAnchor.right;
+        int bottom = pBorder->m_rcChildAnchor.bottom;
+
+        UINT posFirstTop, posFirstLeft;
+        UINT posLastTop, posLastLeft;
+
+        findCellPos(top, left, posFirstTop, posFirstLeft);
+        findCellPos(bottom, right, posLastTop, posLastLeft);
+        if (!isDefaultBoard(pBorder))
+        {
+            setBorders(posFirstTop, posFirstLeft, posLastTop, posLastLeft, pBorder);
+        }
+    }
+}
+
+bool ProtoTable::findCellPos(const int top, const int left, UINT &posRow, UINT &posCol)
+{
+    const UINT countRow = m_arrTop.size();
+    const UINT countCol = m_arrLeft.size();
+
+    for (posRow = 0; posRow < countRow; posRow++)
+        if (top == m_arrTop[posRow]) break;
+    for (posCol = 0; posCol < countCol; posCol++)
+        if (left == m_arrLeft[posCol]) break;
+
+    return !(posRow == countRow || posCol == countCol);
+}
+
+void ProtoTable::setBorders(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol, CShapeElement* pBorder)
+{
+
+    const UINT countRow = m_arrTop.size();
+    const UINT countCol = m_arrLeft.size();
+
+    // lnTlToBr or lnBlToTr
+    if ((posFRow != posLRow) && (posFCol != posLCol))
+    {
+        auto borPos = posFRow > posLRow ? TCell::lnBlToTr : TCell::lnTlToBr;
+        m_table[posFRow][posFCol].setBorder(borPos, pBorder);
+        return;
+    }
+
+    // lnT or(and) lnB
+    if (posFCol != posLCol)
+    {
+        for (UINT i = posFCol; i < posLCol; i++)
+        {
+            if (posFRow < countRow)
+                m_table[posFRow][i].setBorder(TCell::lnT, pBorder);
+            if (posFRow > 0)
+                m_table[posFRow-1][i].setBorder(TCell::lnB, pBorder);
+        }
+
+        return;
+    }
+
+    // lnL or(and) lnR
+    if (posFRow != posLRow)
+    {
+        for (UINT i = posFRow; i < posLRow; i++)
+        {
+            if (posFCol < countCol)
+                m_table[i][posFCol].setBorder(TCell::lnL, pBorder);
+            if (posFCol > 0)
+                m_table[i][posFCol-1].setBorder(TCell::lnR, pBorder);
+        }
+
+        return;
+    }
+}
+
+bool ProtoTable::isDefaultBoard(const CShapeElement *pBorder)
+{
+    if (pBorder == nullptr)
+        return false;
+
+    auto& color = pBorder->m_oPen.Color;
+
+    return color.m_lSchemeIndex == 13;
+}
+
+std::vector<std::vector<CShapeElement*> > ProtoTable::getRows(std::vector<CShapeElement *> &arrCells)
+{
+    std::vector<std::vector<CShapeElement*> > arrRows;
+    int rowTop = -1;
+    for (auto* pCell : arrCells)
+    {
+        if (!pCell) continue;
+
+        int top = int(pCell->m_rcChildAnchor.top);
+        if (top != rowTop)
+        {
+            rowTop = top;
+            arrRows.push_back(std::vector<CShapeElement*>());
+        }
+        arrRows.back().push_back(pCell);
+    }
+
+    return arrRows;
+}
+
+MProtoTable ProtoTable::getTable() const
+{
+    return m_table;
+}
+
+void TableWriter::FillTblPr(PPTX::Logic::TableProperties &oTblPr)
+{
+    oTblPr.TableStyleId = L"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}";
+    oTblPr.FirstRow = true;
+    oTblPr.BandRow = true;
+}
+
+void TableWriter::FillTblGrid(std::vector<PPTX::Logic::TableCol> &tblGrid, std::vector<CShapeElement*>& arrCells)
+{
+    auto grid = ProtoTable::getWidth(arrCells);
+    for (const auto& w : grid)
+    {
+        PPTX::Logic::TableCol tc;
+        tc.Width = w;
+        tblGrid.push_back(tc);
+    }
+}
+
+void TableWriter::prepareShapes(std::vector<CShapeElement *> &arrCells, std::vector<CShapeElement *> &arrSpliters)
 {
     for (const auto& ptrShape : m_pTableElement->m_pChildElements)
     {
@@ -79,4 +358,233 @@ void TableWriter::prepareShapes(std::vector<CElement*> &arrCells, std::vector<CE
             break;
         }
     }
+}
+
+void TableWriter::FillRow(PPTX::Logic::TableRow &oRow, ProtoTableRow& arrCells)
+{
+    if (arrCells.empty()) return;
+
+    for (auto& protoCell : arrCells)
+    {
+        PPTX::Logic::TableCell cell;
+        protoCell.FillTc(cell);
+        oRow.Cells.push_back(cell);
+    }
+}
+
+TCell::TCell(CShapeElement *pShape, int row, int col, TCell *pParent) :
+    m_pShape(pShape), m_row(row), m_col(col), m_rowSpan(1), m_gridSpan(1),
+    m_pParent(pParent), m_parentDirection(none)
+{
+    setParentDirection();
+}
+
+void TCell::FillTc(PPTX::Logic::TableCell &oTc)
+{
+    if (m_gridSpan > 1)
+        oTc.GridSpan = m_gridSpan;
+    if (m_rowSpan > 1)
+        oTc.RowSpan = m_rowSpan;
+
+    oTc.txBody = new PPTX::Logic::TxBody(L"a:txBody");
+    FillTxBody(oTc.txBody.get2());
+
+    if (m_pParent)
+    {
+        FillMergeDirection(oTc);
+        return;
+    }
+
+    oTc.CellProperties = new PPTX::Logic::TableCellProperties;
+    FillTcPr(oTc.CellProperties.get2());
+}
+
+void TCell::setBorder(TCell::eBorderPossition borderPos, CShapeElement *pBorder)
+{
+    if (m_pShape)
+        m_mapBorders[borderPos] = pBorder;
+    else if (m_pParent)
+        m_pParent->setBorder(borderPos, pBorder);
+}
+
+TCell::eMergeDirection TCell::parentDirection() const
+{
+    return m_parentDirection;
+}
+
+int TCell::getHeight() const
+{
+    auto pShape = m_pParent ? m_pParent->m_pShape : m_pShape;
+    double multip = pShape->m_bAnchorEnabled ? 1587.6 : 1;
+    double height = pShape->m_rcChildAnchor.bottom - pShape->m_rcChildAnchor.top;
+
+    return int(height * multip);
+}
+
+void TCell::setPParent(TCell *pParent)
+{
+    m_pParent = pParent;
+    setParentDirection();
+}
+
+void TCell::FillMergeDirection(PPTX::Logic::TableCell &oTc)
+{
+    if (parentDirection() & horz)
+        oTc.HMerge = true;
+    if (parentDirection() & vert)
+        oTc.VMerge = true;
+}
+
+void TCell::setParentDirection()
+{
+    if (m_pParent)
+    {
+        // Todo rewrite it
+        if (m_pParent->m_col == m_col && m_pParent->m_row != m_row)
+            m_parentDirection = vert;
+        else if (m_pParent->m_col != m_col && m_pParent->m_row == m_row)
+            m_parentDirection = horz;
+        else
+            m_parentDirection = hove;
+    }
+}
+
+void TCell::setGridSpan(int gridSpan)
+{
+    m_gridSpan = gridSpan;
+}
+
+void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
+{
+    if (m_pShape == nullptr)
+    {
+        TxBodyConverter txBodyConverter(nullptr, TxBodyConverter::table);
+        txBodyConverter.FillTxBody(oTxBody);
+    } else
+    {
+        TxBodyConverter txBodyConverter(&m_pShape->m_pShape->m_oText, TxBodyConverter::table);
+        txBodyConverter.FillTxBody(oTxBody);
+    }
+
+}
+
+void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
+{
+    //anchor
+    auto& attr = m_pShape->m_pShape->m_oText.m_oAttributes;
+    if (attr.m_nTextAlignVertical != -1)
+    {
+        auto pAnchor = new PPTX::Limit::TextAnchor;
+        BYTE anchor[] = {4,1,0};
+        if (sizeof (anchor) > (UINT)attr.m_nTextAlignVertical)
+            pAnchor->SetBYTECode(anchor[attr.m_nTextAlignVertical]);
+
+        oTcPr.Anchor = pAnchor;
+    }
+    if (attr.m_nTextAlignHorizontal == 1)
+    {
+        oTcPr.AnchorCtr = true;
+    }
+
+
+    auto pSolidFill = new PPTX::Logic::SolidFill;
+    auto& clr = m_pShape->m_oBrush.Color1;
+
+    pSolidFill->Color.SetRGBColor(clr.GetR(), clr.GetG(), clr.GetB());
+    oTcPr.Fill.Fill.reset(pSolidFill);
+
+    for (auto IterBorder : m_mapBorders)
+    {
+        auto pLn = new PPTX::Logic::Ln;
+        FillLn(*pLn, IterBorder.first, IterBorder.second);
+        switch (IterBorder.first)
+        {
+        case lnL: oTcPr.LnL = pLn; break;
+        case lnR: oTcPr.LnR = pLn; break;
+        case lnT: oTcPr.LnT = pLn; break;
+        case lnB: oTcPr.LnB = pLn; break;
+        case lnBlToTr: oTcPr.LnBlToTr = pLn; break;
+        case lnTlToBr: oTcPr.LnTlToBr = pLn; break;
+        }
+    }
+}
+
+void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeElement *pBorder)
+{
+    if (pBorder == nullptr)
+        return;
+    switch (eBP)
+    {
+    case lnL: Ln.m_name = L"a:lnL"; break;
+    case lnR: Ln.m_name = L"a:lnR"; break;
+    case lnT: Ln.m_name = L"a:lnT"; break;
+    case lnB: Ln.m_name = L"a:lnB"; break;
+    case lnBlToTr: Ln.m_name = L"a:lnBlToTr"; break;
+    case lnTlToBr: Ln.m_name = L"a:lnTlToBr"; break;
+    }
+
+    auto& pen = pBorder->m_oPen;
+    Ln.w = pen.Size;
+
+    auto pSolidFill = new PPTX::Logic::SolidFill;
+    auto& clr = pen.Color;
+    pSolidFill->Color.SetRGBColor(clr.GetR(), clr.GetG(), clr.GetB());
+    if (pen.Alpha)
+    {
+        PPTX::Logic::ColorModifier alpha;
+        alpha.name = L"a:alpha";
+        alpha.val = pen.Alpha * 394;
+        pSolidFill->Color.Color->Modifiers.push_back(alpha);
+    }
+    Ln.Fill.Fill.reset(pSolidFill);
+
+    Ln.prstDash = new PPTX::Logic::PrstDash;
+    Ln.prstDash->val = new PPTX::Limit::PrstDashVal;
+    auto oldDash = pen.DashStyle;
+    BYTE dash[] = {6,7,10,8,9,2,0,3,1,4};
+    if (sizeof (dash) > oldDash)
+        Ln.prstDash->val->SetBYTECode(dash[oldDash]);
+
+    // TODO?
+    Ln.cap = new PPTX::Limit::LineCap;
+    Ln.cmpd = new PPTX::Limit::CompoundLine;
+    Ln.algn = new PPTX::Limit::PenAlign;
+
+    auto* pLineEnd = new PPTX::Logic::LineEnd;
+    pLineEnd->m_name = L"a:headEnd";
+    pLineEnd->type = new PPTX::Limit::LineEndType;
+    pLineEnd->w = new PPTX::Limit::LineEndSize;
+    pLineEnd->len = new PPTX::Limit::LineEndSize;
+    Ln.headEnd = pLineEnd;
+
+    pLineEnd = new PPTX::Logic::LineEnd;
+    pLineEnd->m_name = L"a:tailEnd";
+    pLineEnd->type = new PPTX::Limit::LineEndType;
+    pLineEnd->w = new PPTX::Limit::LineEndSize;
+    pLineEnd->len = new PPTX::Limit::LineEndSize;
+    Ln.tailEnd = pLineEnd;
+
+    Ln.Join.type = PPTX::Logic::eJoin::JoinRound;
+}
+
+void TCell::setRowSpan(int rowSpan)
+{
+    m_rowSpan = rowSpan;
+}
+
+void TCell::setPShape(CShapeElement *pShape)
+{
+    m_pShape = pShape;
+    m_parentDirection = none;
+}
+
+
+
+ProtoTable::ProtoTable(std::vector<CShapeElement *> &arrCells,
+                       std::vector<CShapeElement*>& arrSpliters)
+{
+    m_arrLeft = getWidth(arrCells, false);
+    m_arrTop = getHeight(arrCells, false);
+    initProtoTable();
+    fillProtoTable(arrCells, arrSpliters);
 }

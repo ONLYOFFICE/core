@@ -361,6 +361,7 @@ HEADERS += \
     ../PPTFormatLib.h \
     ../PPTXWriter/Animation.h \
     ../PPTXWriter/TableWriter.h \
+    ../PPTXWriter/TxBodyConverter.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \
     ../Reader/PPTDocumentInfo.h \
@@ -653,5 +654,6 @@ SOURCES += \
     ../../../Common/3dParty/pole/pole.cpp \
     ../PPTXWriter/Animation.cpp \
     ../PPTXWriter/TableWriter.cpp \
+    ../PPTXWriter/TxBodyConverter.cpp \
     ../Records/Animations/TimeVariant.cpp
 

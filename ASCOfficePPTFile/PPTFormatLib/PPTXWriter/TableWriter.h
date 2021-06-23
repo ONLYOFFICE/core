@@ -36,6 +36,100 @@
 
 namespace PPT_FORMAT
 {
+class TCell
+{
+public:
+    TCell(CShapeElement *pShape, int row, int col, TCell* pParent = nullptr);
+
+    void FillTc(PPTX::Logic::TableCell &oTc);
+
+    enum eMergeDirection {
+        none = 0b00,
+        vert = 0b01,
+        horz = 0b10,
+        hove = (horz | vert)
+    };
+
+    enum eBorderPossition
+    {
+        lnL,
+        lnR,
+        lnT,
+        lnB,
+        lnTlToBr,
+        lnBlToTr
+    };
+    void setBorder(eBorderPossition borderPos, CShapeElement *pBorder);
+
+    eMergeDirection parentDirection() const;
+    int getHeight()const;
+
+    void setPParent(TCell *pParent);
+    void setPShape(CShapeElement *pShape);
+
+    void setRowSpan(int rowSpan);
+
+    void setGridSpan(int gridSpan);
+
+private:
+    void FillTxBody(PPTX::Logic::TxBody &oTxBody);
+    void FillTcPr(PPTX::Logic::TableCellProperties& oTcPr);
+    void FillLn(PPTX::Logic::Ln& Ln, eBorderPossition eBP, CShapeElement* pBorder);
+
+    void FillMergeDirection(PPTX::Logic::TableCell& oTc);
+    void setParentDirection();
+
+private:
+    CShapeElement* m_pShape;
+
+    std::map<eBorderPossition, CShapeElement*> m_mapBorders;
+
+    // Proto table's coord
+    int m_row, m_col;
+
+    int m_rowSpan;
+    int m_gridSpan;
+
+    // Parent
+    TCell* m_pParent;
+    eMergeDirection m_parentDirection;
+};
+
+
+typedef std::vector<TCell> ProtoTableRow;
+typedef std::vector<ProtoTableRow> MProtoTable;
+
+
+class ProtoTable
+{
+public:
+    ProtoTable(std::vector<CShapeElement *> &arrCells,
+               std::vector<CShapeElement*>& arrSpliters);
+
+    static std::vector<int> getWidth(std::vector<CShapeElement *> &arrCells, bool isWidth = true);
+    static std::vector<int> getHeight(std::vector<CShapeElement *> &arrCells, bool isHeight = true);
+    MProtoTable getTable() const;
+
+private:
+    void initProtoTable();
+    bool fillProtoTable(std::vector<CShapeElement *> &arrCells, std::vector<CShapeElement *> &arrSpliters);
+    bool fillCells(std::vector<CShapeElement *> &arrCells);
+    void fillBorders(std::vector<CShapeElement *> &arrSpliters);
+    bool findCellPos(const int top, const int left, UINT& posRow, UINT& posCol);
+    std::list<TCell *> getParentCellFromTable(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol);
+    void setBorders(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol, CShapeElement *pBorder);
+
+    bool isDefaultBoard(const CShapeElement *pBorder);
+
+    std::vector<std::vector<CShapeElement *> >
+        getRows(std::vector<CShapeElement *> &arrCells);
+
+private:
+    std::vector<int> m_arrLeft;
+    std::vector<int> m_arrTop;
+    MProtoTable m_table;
+};
+
 class TableWriter
 {
 public:
@@ -48,19 +142,16 @@ private:
     void FillXfrm(PPTX::Logic::Xfrm& oXFRM);
     void FillTable(PPTX::Logic::Table &oTable);
 
-    std::vector<int> getWidth();
-    std::vector<int> getHeight(std::vector<CElement*> &arrCells);
-
     void FillTblPr(PPTX::Logic::TableProperties& oTblPr);
-    void FillTblGrid(std::vector<PPTX::Logic::TableCol>& tblGrid);
-    void prepareShapes(std::vector<CElement*> &arrCells,
-                       std::vector<CElement*>& arrSpliters);
-    std::vector< std::list<CElement*> >
-        prepareRows(std::vector<CElement*> &arrCells);
+    void FillTblGrid(std::vector<PPTX::Logic::TableCol>& tblGrid,
+                     std::vector<CShapeElement *> &arrCells);
+    void prepareShapes(std::vector<CShapeElement*> &arrCells,
+                       std::vector<CShapeElement*>& arrSpliters);
 
-    void FillRows(std::vector<PPTX::Logic::TableRow>& TableRows);
+    void FillRow(PPTX::Logic::TableRow& oRow, ProtoTableRow &arrCells);
 
 private:
     CTableElement *m_pTableElement;
+    nullable<ProtoTable> m_nPTable;
 };
 }

@@ -32,8 +32,8 @@ WebFont::WebFont(GfxFont *gfxFontA, XRef *xref) {
 
   if (gfxFont->getEmbeddedFontID(&id)) {
     type = gfxFont->getType();
-    if (type == fontTrueType ||
-	type == fontTrueTypeOT ||
+    if (type == fontTrueTypeTempName ||
+	type == fontTrueTypeTempNameOT ||
 	type == fontCIDType2 ||
 	type == fontCIDType2OT) {
       if ((fontBuf = gfxFont->readEmbFontFile(xref, &fontLength))) {

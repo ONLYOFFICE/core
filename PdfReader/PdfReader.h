@@ -39,7 +39,7 @@
 #define PDFREADER_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
-#include "Src/ErrorConstants.h"
+#include "lib/xpdf/ErrorCodes.h"
 #include "../DesktopEditor/common/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 
@@ -66,7 +66,7 @@ namespace PdfReader
         virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
         virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1);
 
-        EError       GetError();
+        int          GetError();
         double       GetVersion();
         int          GetPermissions();
 		std::wstring GetPageLabel(int nPageIndex);
@@ -81,7 +81,7 @@ namespace PdfReader
 				     
 	private:
         CPdfReader_Private* m_pInternal;
-        EError              m_eError;
+        int              m_eError;
 	};
 }
 

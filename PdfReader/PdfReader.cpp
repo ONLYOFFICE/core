@@ -36,13 +36,13 @@
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/common/Directory.h"
 
-#include "Src/StringExt.h"
-#include "Src/PDFDoc.h"
-#include "Src/GlobalParams.h"
-#include "Src/ErrorConstants.h"
-#include "Src/ExtractImageOutputDev.h"
+//#include "Src/StringExt.h"
+#include "lib/xpdf/PDFDoc.h"
+#include "lib/xpdf/GlobalParams.h"
+#include "lib/xpdf/ErrorCodes.h"
+//#include "Src/ExtractImageOutputDev.h"
 #include "Src/RendererOutputDev.h"
-#include "Src/PageLabels.h"
+//#include "Src/PageLabels.h"
 
 namespace PdfReader
 {
@@ -68,7 +68,7 @@ namespace PdfReader
         m_pInternal->m_pPDFDocument = NULL;
         m_pInternal->m_pFontManager = NULL;
 
-        m_pInternal->m_pGlobalParams = new GlobalParams();
+        m_pInternal->m_pGlobalParams = new GlobalParams(NULL);
         m_pInternal->m_pFontList = new CFontList();
 
         m_pInternal->m_pAppFonts = pAppFonts;
@@ -81,7 +81,7 @@ namespace PdfReader
         pMeasurerCache->SetCacheSize(1);
         m_pInternal->m_pGlobalParams->SetFontManager(m_pInternal->m_pFontManager);
 
-        m_eError = errorNone;
+        m_eError = errNone;
 	}
 	CPdfReader::~CPdfReader()
 	{
@@ -115,21 +115,21 @@ namespace PdfReader
         pMeasurerCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
         m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(1);
-        m_pInternal->m_pGlobalParams->SetFontManager(m_pInternal->m_pFontManager);
+        //todo m_pInternal->m_pGlobalParams->SetFontManager(m_pInternal->m_pFontManager);
 //------------------------------------------------------
 
         if (m_pInternal->m_pPDFDocument)
             delete m_pInternal->m_pPDFDocument;
 
-        m_eError = errorNone;
+        m_eError = errNone;
         m_pInternal->m_pPDFDocument = new PDFDoc(m_pInternal->m_pGlobalParams, wsSrcPath, wsOwnerPassword, wsUserPassword);
 
         if (m_pInternal->m_pPDFDocument)
-            m_eError = m_pInternal->m_pPDFDocument->GetErrorCode();
+            m_eError = m_pInternal->m_pPDFDocument->getErrorCode();
         else
-            m_eError = errorMemory;
+            m_eError = errMemory;
 
-        if (!m_pInternal->m_pPDFDocument || !m_pInternal->m_pPDFDocument->CheckValidation())
+        if (!m_pInternal->m_pPDFDocument || !m_pInternal->m_pPDFDocument->isOk())
 		{
             RELEASEOBJECT(m_pInternal->m_pPDFDocument);
 			return false;
@@ -137,32 +137,32 @@ namespace PdfReader
 
         m_pInternal->m_pFontList->Clear();
 
-        return (errorNone == m_eError);
+        return (errNone == m_eError);
 	}
     void CPdfReader::Close()
 	{
         RELEASEOBJECT((m_pInternal->m_pPDFDocument));
 	}
-    EError CPdfReader::GetError()
+    int CPdfReader::GetError()
 	{
         if (!m_pInternal->m_pPDFDocument)
             return m_eError;
 
-        return m_pInternal->m_pPDFDocument->GetErrorCode();
+        return m_pInternal->m_pPDFDocument->getErrorCode();
 	}
     int CPdfReader::GetPagesCount()
 	{
         if (!m_pInternal->m_pPDFDocument)
 			return 0;
 
-        return m_pInternal->m_pPDFDocument->GetPagesCount();
+        return m_pInternal->m_pPDFDocument->getNumPages();
 	}
     double CPdfReader::GetVersion()
 	{
         if (!m_pInternal->m_pPDFDocument)
 			return 0;
 
-        return m_pInternal->m_pPDFDocument->GetPDFVersion();
+        return m_pInternal->m_pPDFDocument->getPDFVersion();
 	}
     int CPdfReader::GetPermissions()
 	{
@@ -171,11 +171,11 @@ namespace PdfReader
 
 		int nPermissions = 0;
 
-        if (m_pInternal->m_pPDFDocument->CheckPrint())
+        if (m_pInternal->m_pPDFDocument->okToPrint())
 			nPermissions += PERMISSION_PRINT;
-        if (m_pInternal->m_pPDFDocument->CheckCopy())
+        if (m_pInternal->m_pPDFDocument->okToCopy())
 			nPermissions += PERMISSION_COPY;
-        if (m_pInternal->m_pPDFDocument->CheckChange())
+        if (m_pInternal->m_pPDFDocument->okToChange())
 			nPermissions += PERMISSION_CHANGE;
 
 		return nPermissions;
@@ -184,33 +184,34 @@ namespace PdfReader
 	{
 		if (!m_pInternal->m_pPDFDocument)
 			return std::wstring();
-
-		StringExt* seLabel = m_pInternal->m_pPDFDocument->GetPageLabels()->GetLabel(nPageIndex);
-		if (seLabel)
-		{
-			std::wstring wsResult(seLabel->GetWString());
-			delete seLabel;
-			return wsResult;
-		}
+// todo label
+//		StringExt* seLabel = m_pInternal->m_pPDFDocument->GetPageLabels()->GetLabel(nPageIndex);
+//		if (seLabel)
+//		{
+//			std::wstring wsResult(seLabel->GetWString());
+//			delete seLabel;
+//			return wsResult;
+//		}
 
 		return std::wstring();
 	}
     bool CPdfReader::ExtractAllImages(const wchar_t* wsDstPath, const wchar_t* wsPrefix)
 	{
-		StringExt seString(wsDstPath);
-        ExtractImageOutputDev *pOutputDev = new ExtractImageOutputDev(m_pInternal->m_pGlobalParams, seString.GetBuffer(), true);
-		if (!pOutputDev)
-			return false;
-
-        int nPagesCount = GetPagesCount();
-        for (int nIndex = 1; nIndex <= nPagesCount; nIndex++)
-		{
-            m_pInternal->m_pPDFDocument->DisplayPage(pOutputDev, nIndex, 72, 72, 0, false, false, false);
-		}
-
-		delete pOutputDev;
-
-		return true;
+        // todo extractimg
+//		StringExt seString(wsDstPath);
+//        ExtractImageOutputDev *pOutputDev = new ExtractImageOutputDev(m_pInternal->m_pGlobalParams, seString.GetBuffer(), true);
+//		if (!pOutputDev)
+//			return false;
+//
+//        int nPagesCount = GetPagesCount();
+//        for (int nIndex = 1; nIndex <= nPagesCount; nIndex++)
+//		{
+//            m_pInternal->m_pPDFDocument->DisplayPage(pOutputDev, nIndex, 72, 72, 0, false, false, false);
+//		}
+//
+//		delete pOutputDev;
+//
+//		return true;
 	}
     void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
 	{
@@ -226,7 +227,7 @@ namespace PdfReader
 		double dKoefX = c_dInch / c_dXResolution;
 		double dKoefY = c_dInch / c_dYResolution;
 
-        int nRotate = m_pInternal->m_pPDFDocument->GetPageRotate(nPageIndex);
+        int nRotate = m_pInternal->m_pPDFDocument->getPageRotate(nPageIndex);
 
 		while (nRotate >= 360)
 			nRotate -= 360;
@@ -236,13 +237,13 @@ namespace PdfReader
 
 		if (0 != nRotate && 180 != nRotate)
 		{
-            *pdHeight = m_pInternal->m_pPDFDocument->GetPageCropWidth(nPageIndex);
-            *pdWidth  = m_pInternal->m_pPDFDocument->GetPageCropHeight(nPageIndex);
+            *pdHeight = m_pInternal->m_pPDFDocument->getPageCropWidth(nPageIndex);
+            *pdWidth  = m_pInternal->m_pPDFDocument->getPageCropHeight(nPageIndex);
 		}
 		else
 		{
-            *pdWidth  = m_pInternal->m_pPDFDocument->GetPageCropWidth(nPageIndex);
-            *pdHeight = m_pInternal->m_pPDFDocument->GetPageCropHeight(nPageIndex);
+            *pdWidth  = m_pInternal->m_pPDFDocument->getPageCropWidth(nPageIndex);
+            *pdHeight = m_pInternal->m_pPDFDocument->getPageCropHeight(nPageIndex);
 		}
 
 		*pdDpiX   = 72;
@@ -255,9 +256,9 @@ namespace PdfReader
         if (m_pInternal->m_pPDFDocument && pRenderer)
 		{
             RendererOutputDev oRendererOut(m_pInternal->m_pGlobalParams, pRenderer, m_pInternal->m_pFontManager, m_pInternal->m_pFontList);
-            oRendererOut.NewPDF(m_pInternal->m_pPDFDocument->GetXRef());
+            oRendererOut.NewPDF(m_pInternal->m_pPDFDocument->getXRef());
 			oRendererOut.SetBreak(pbBreak);
-            m_pInternal->m_pPDFDocument->DisplayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, false, true, false);
+            m_pInternal->m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, false, true, false);
 		}
 	}
     void CPdfReader::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
@@ -306,16 +307,17 @@ namespace PdfReader
 	}
     int CPdfReader::GetImagesCount()
 	{
-        ExtractImageOutputDev *pOutputDev = new ExtractImageOutputDev(m_pInternal->m_pGlobalParams, NULL, true, true);
-		if (!pOutputDev)
-			return 0;
-
-        for (int nIndex = 1; nIndex <= m_pInternal->m_pPDFDocument->GetPagesCount(); nIndex++)
-		{
-            m_pInternal->m_pPDFDocument->DisplayPage(pOutputDev, nIndex, 72, 72, 0, false, false, false);
-		}
-
-		return pOutputDev->GetImagesCount();
+        // todo
+//        ExtractImageOutputDev *pOutputDev = new ExtractImageOutputDev(m_pInternal->m_pGlobalParams, NULL, true, true);
+//		if (!pOutputDev)
+//			return 0;
+//
+//        for (int nIndex = 1; nIndex <= m_pInternal->m_pPDFDocument->GetPagesCount(); nIndex++)
+//		{
+//            m_pInternal->m_pPDFDocument->DisplayPage(pOutputDev, nIndex, 72, 72, 0, false, false, false);
+//		}
+//
+//		return pOutputDev->GetImagesCount();
 	}	
     void CPdfReader::SetTempDirectory(const std::wstring& wsTempFolder)
 	{		
@@ -341,8 +343,8 @@ namespace PdfReader
 		else
             m_pInternal->m_wsTempFolder = L"";
 
-        if (m_pInternal->m_pGlobalParams)
-            m_pInternal->m_pGlobalParams->SetTempFolder(m_pInternal->m_wsTempFolder.c_str());
+//        if (m_pInternal->m_pGlobalParams) todo
+//            m_pInternal->m_pGlobalParams->SetTempFolder(m_pInternal->m_wsTempFolder.c_str());
 	}
     std::wstring CPdfReader::GetTempDirectory()
     {
@@ -351,10 +353,10 @@ namespace PdfReader
 
     void CPdfReader::SetCMapFolder(const wchar_t* wsCMapFolder)
 	{
-        m_pInternal->m_wsCMapFolder = std::wstring(wsCMapFolder);
-
-        if (m_pInternal->m_pGlobalParams)
-            m_pInternal->m_pGlobalParams->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
+//        m_pInternal->m_wsCMapFolder = std::wstring(wsCMapFolder); todo
+//
+//        if (m_pInternal->m_pGlobalParams)
+//            m_pInternal->m_pGlobalParams->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
 	}
     NSFonts::IFontManager* CPdfReader::GetFontManager()
 	{
@@ -362,18 +364,19 @@ namespace PdfReader
 	}
 	std::wstring CPdfReader::ToXml(const std::wstring& wsFilePath)
 	{
-		std::wstring wsXml = m_pInternal->m_pPDFDocument->ToXml();
-
-		if (wsFilePath != L"")
-		{
-			NSFile::CFileBinary oFile;
-			if (!oFile.CreateFileW(wsFilePath))
-				return wsXml;
-
-			oFile.WriteStringUTF8(wsXml);
-			oFile.CloseFile();
-		}
-
-		return wsXml;
+        //todo
+//		std::wstring wsXml = m_pInternal->m_pPDFDocument->ToXml();
+//
+//		if (wsFilePath != L"")
+//		{
+//			NSFile::CFileBinary oFile;
+//			if (!oFile.CreateFileW(wsFilePath))
+//				return wsXml;
+//
+//			oFile.WriteStringUTF8(wsXml);
+//			oFile.CloseFile();
+//		}
+//
+//		return wsXml;
 	}
 }

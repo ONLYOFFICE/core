@@ -122,8 +122,8 @@ void PreScanOutputDev::beginStringOp(GfxState *state) {
               fabs(m12) < 0.01 &&
               fabs(m21) < 0.01 &&
               fabs(state->getHorizScaling() - 1) < 0.001 &&
-              (font->getType() == fontTrueType ||
-	       font->getType() == fontTrueTypeOT);
+              (font->getType() == fontTrueTypeTempName ||
+	       font->getType() == fontTrueTypeTempNameOT);
   if (simpleTTF) {
     //~ need to create a FoFiTrueType object, and check for a Unicode cmap
   }

@@ -33,4 +33,7 @@
 
 #define errFileIO          10   // file I/O error
 
+// todo new
+#define errMemory 11
+
 #endif

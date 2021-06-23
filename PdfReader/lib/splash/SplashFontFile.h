@@ -37,7 +37,7 @@ enum SplashFontType {
   splashFontOpenTypeT1C,	// GfxFontType.fontType1COT
   splashFontCID,		// GfxFontType.fontCIDType0/fontCIDType0C
   splashFontOpenTypeCFF,	// GfxFontType.fontCIDType0COT
-  splashFontTrueType		// GfxFontType.fontTrueType/fontTrueTypeOT/
+  splashfontTrueTypeTempName		// GfxFontType.fontTrueTypeTempName/fontTrueTypeTempNameOT/
 				//             fontCIDType2/fontCIDType2OT
 };
 

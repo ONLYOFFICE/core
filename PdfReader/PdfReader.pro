@@ -6,6 +6,7 @@ TEMPLATE = lib
 
 CONFIG += shared
 CONFIG += plugin
+CONFIG += warn_off
 
 CONFIG += core_static_link_libstd
 

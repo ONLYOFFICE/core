@@ -62,6 +62,8 @@ private:
     void FillCS(PPTX::Logic::TextFont& oCs, CFontProperties& font);
     void FillEffectLst(PPTX::Logic::EffectProperties &oEList, CTextCFRun& oCFRun);
     void FillSolidFill(PPTX::Logic::UniFill& oUF, CColor& oColor);
+    void FillBuClr(PPTX::Logic::BulletColor& oBuClr, CColor& oColor);
+    void FillBuChar(PPTX::Logic::Bullet& oBullet, WCHAR symbol);
 
 private:
     CTextAttributesEx* m_pText;

@@ -151,17 +151,6 @@ void TxBodyConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CParagraph &pa
         oPPr.buTypeface.SetParentPointer(pBuFont);
     }
 
-
-    if (oPFRun.bulletAutoNum.is_init())
-    {
-        auto pBuAutoNum = new PPTX::Logic::BuAutoNum;
-        oPPr.ParagraphBullet.m_Bullet.reset(pBuAutoNum);
-        if (oPFRun.bulletAutoNum->startAt.is_init() && oPFRun.bulletAutoNum->startAt.get() != 1)
-            pBuAutoNum->startAt = oPFRun.bulletAutoNum->startAt.get();
-        if (oPFRun.bulletAutoNum->type.is_init())
-            pBuAutoNum->type = oPFRun.bulletAutoNum->type.get();
-    }
-
     if (oPFRun.textAlignment.is_init())
     {
         auto pAlgn = new PPTX::Limit::TextAlign;
@@ -201,6 +190,45 @@ void TxBodyConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CParagraph &pa
         pSpcBef->spcPts = (int)(12.5 * oPFRun.spaceBefore.get());
 
         oPPr.spcBef = pSpcBef;
+    }
+
+    if (oPFRun.bulletColor.is_init())
+    {
+        FillBuClr(oPPr.buColor, oPFRun.bulletColor.get());
+    }
+
+    if (oPFRun.hasBullet.is_init() && *(oPFRun.hasBullet) == true)
+    {
+        if (oPFRun.bulletChar.is_init())
+        {
+            FillBuChar(oPPr.ParagraphBullet, oPFRun.bulletChar.get());
+        } else
+        {
+            FillBuChar(oPPr.ParagraphBullet, L'•');
+        }
+    }
+
+    if (oPFRun.bulletFontProperties.is_init())
+    {
+        auto pTypeface = new PPTX::Logic::BulletTypeface();
+        auto pFont = new PPTX::Logic::TextFont();
+        pFont->m_name = _T("a:buFont");
+        pFont->typeface = oPFRun.bulletFontProperties->Name;
+        pFont->pitchFamily = std::to_wstring(oPFRun.bulletFontProperties->PitchFamily);
+        pFont->charset = std::to_wstring(oPFRun.bulletFontProperties->PitchFamily);
+
+        pTypeface->m_Typeface.reset(pFont);
+        oPPr.buTypeface.m_Typeface.reset(pTypeface);
+    }
+
+    if (oPFRun.bulletAutoNum.is_init() && oPFRun.bulletFontProperties.is_init() && oPFRun.bulletFontProperties->Charset == 0)
+    {
+        auto pBuAutoNum = new PPTX::Logic::BuAutoNum;
+        oPPr.ParagraphBullet.m_Bullet.reset(pBuAutoNum);
+        if (oPFRun.bulletAutoNum->startAt.is_init() && oPFRun.bulletAutoNum->startAt.get() != 1)
+            pBuAutoNum->startAt = oPFRun.bulletAutoNum->startAt.get();
+        if (oPFRun.bulletAutoNum->type.is_init())
+            pBuAutoNum->type = oPFRun.bulletAutoNum->type.get();
     }
 }
 
@@ -289,4 +317,19 @@ void TxBodyConverter::FillSolidFill(PPTX::Logic::UniFill &oUF, CColor &oColor)
     auto pSolidFill = new PPTX::Logic::SolidFill;
     pSolidFill->Color.SetRGBColor(oColor.GetR(), oColor.GetG(), oColor.GetB());
     oUF.Fill.reset(pSolidFill);
+}
+
+void TxBodyConverter::FillBuClr(PPTX::Logic::BulletColor &oBuClr, CColor &oColor)
+{
+    auto pBuClr = new PPTX::Logic::BuClr;
+    pBuClr->Color.SetRGBColor(oColor.GetR(), oColor.GetG(), oColor.GetB());
+    oBuClr.m_Color.reset(pBuClr);
+}
+
+void TxBodyConverter::FillBuChar(PPTX::Logic::Bullet &oBullet, WCHAR symbol)
+{
+    auto pBuChar = new PPTX::Logic::BuChar;
+    pBuChar->Char.clear();
+    pBuChar->Char.push_back(symbol);
+    oBullet.m_Bullet.reset(pBuChar);
 }

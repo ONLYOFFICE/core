@@ -195,22 +195,7 @@ static const struct ActionNamesEmf
 		unsigned int m_ulRecordPos	= 0;
 
 		if (m_pInterpretator)
-		{
 			m_pInterpretator->Begin();
-//			if (NULL != m_pInterpretatorXml)
-//			{
-//				if (m_pInterpretatorXml->IsWriter())
-//				{
-//				    m_pInterpretatorXml->WriteString(L"<?xml version=\"1.0\"?>\n");
-//				    m_pInterpretatorXml->WriteNodeBegin(L"EMF");
-//				}
-//				else if (m_pInterpretatorXml->IsReader())
-//				{
-//					if (!m_pInterpretatorXml->ReadFromFile(NSFile::GetProcessDirectory() + L"\\test.xml"))
-//					    m_pInterpretatorXml->Clear();
-//				}
-//			}
-		}
 
 		do
 		{			
@@ -220,8 +205,9 @@ static const struct ActionNamesEmf
 			if (m_pParser->CanRead() < 8)
 				return SetError();
 
-                        m_pParser->ReadValue(ulType);
-                        m_pParser->ReadValue(ulSize);
+			m_pParser->ReadValue(ulType, ulSize);
+//                        m_pParser->ReadValue(ulType);
+//                        m_pParser->ReadValue(ulSize);
 
             if (ulSize < 1)
 				continue;
@@ -382,25 +368,13 @@ static const struct ActionNamesEmf
 			}			
 #endif   
 			ulRecordIndex++;
-
-//			if (m_pInterpretator && NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsReader())
-//				m_pInterpretatorXml->ReadNextRecord();
-
 		} while (!CheckError());
 
 		if (!CheckError())
 			m_pParser->SeekToStart();
 
 		if (m_pInterpretator)
-		{
 			m_pInterpretator->End();
-
-//			if (NULL != m_pInterpretatorXml && m_pInterpretatorXml->IsWriter())
-//			{
-//				m_pInterpretatorXml->WriteNodeEnd(L"EMF");
-//				m_pInterpretatorXml->SaveToFile(NSFile::GetProcessDirectory() + L"/test.xml");
-//			}
-		}
 	}
 	void CEmfFile::TranslatePoint(TEmfPointL& oPoint, double& dX, double& dY)
 	{

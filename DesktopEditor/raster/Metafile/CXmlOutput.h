@@ -36,8 +36,9 @@ namespace MetaFile
 
         void Clear();
 
-        bool IsWriter();
-        bool IsReader();
+        bool IsWriter() const;
+        bool IsReader() const;
+        bool IsValid()  const;
 
         // Запись в Xml файл
 
@@ -116,11 +117,15 @@ namespace MetaFile
         // Чтение из Xml файла
 
     public:
-        bool ReadFromFile(const std::wstring wsPathToFile);
+        bool ReadFromFile(const std::wstring &wsPathToFile);
         void ReadArguments(unsigned int &unType,
                            unsigned int &unSize);
         bool ReadNextRecord();
         bool ReadNextNode();
+
+        bool IsRecord() const;
+
+        std::wstring GetName() const;
 
         void operator>>(TEmfHeader&     oTEmfHeader);
         void operator>>(TEmfAlphaBlend& oTEmfAlphaBlend);
@@ -145,6 +150,7 @@ namespace MetaFile
         void operator>>(TEmfSizeL&      oTEmfSizeL);
         void operator>>(TEmfRectL&      oTEmfRectL);
 
+        void operator>>(unsigned short& ushValue);
         void operator>>(unsigned char&  ucValue);
         void operator>>(unsigned int&   unValue);
         void operator>>(double&         dValue);
@@ -160,7 +166,6 @@ namespace MetaFile
         void operator>>(TEmfLogPaletteEntry&oTEmfLogPaletteEntry);
 
         void operator>>(short&          shValue);
-        void operator>>(unsigned short& ushValue);
         void operator>>(unsigned short  arushValue[]);
         void operator>>(std::wstring&   wsValue);
         void operator>>(std::string&    sValue);

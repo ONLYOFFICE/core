@@ -2,9 +2,13 @@
 
 namespace MetaFile
 {
-    CEmfParser::CEmfParser()
+    CEmfParser::CEmfParser():
+        m_pStream(new CDataStream)
+    {}
+
+    CEmfParser::~CEmfParser()
     {
-        m_pStream = new CDataStream;
+        m_pStream = NULL;
     }
 
     bool CEmfParser::IsValid() const
@@ -45,6 +49,11 @@ namespace MetaFile
     CDataStream *CEmfParser::GetDataStream() const
     {
         return m_pStream;
+    }
+
+    EmfParserType CEmfParser::GetParserType() const
+    {
+        return EmfParserType::EmfParser;
     }
 
     void CEmfParser::ReadValue(TEmfAlphaBlend &oTEmfAlphaBlend)
@@ -171,5 +180,11 @@ namespace MetaFile
     void CEmfParser::ReadValue(int &nValue)
     {
         *m_pStream >> nValue;
+    }
+
+    void CEmfParser::ReadValue(unsigned int &unValue1, unsigned int &unValue2)
+    {
+        *m_pStream >> unValue1;
+        *m_pStream >> unValue2;
     }
 }

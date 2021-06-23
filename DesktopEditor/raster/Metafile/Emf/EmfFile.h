@@ -65,6 +65,8 @@ namespace MetaFile
 			ClearFile();
 			if (NULL != m_pInterpretator)
 				delete m_pInterpretator;
+			if (NULL != m_pParser)
+				delete  m_pParser;
 		}
 
 		void SetInterpretatorType(const InterpretatorType& oType)

@@ -9,42 +9,49 @@ namespace MetaFile
     class CEmfxParser : public CEmfParserBase
     {
     public:
-        virtual bool            IsValid()                 const = 0;
-        virtual bool            IsEof()                   const = 0;
-        virtual unsigned int    CanRead()                       = 0;
-        virtual void            Skip(unsigned int)              = 0;
-        virtual unsigned int    Tell()                          = 0;
-        virtual void            SeekToStart()                   = 0;
-        virtual void            SetStream (CDataStream&)        = 0;
+        CEmfxParser();
+        virtual ~CEmfxParser();
 
-        virtual void ReadValue (TEmfAlphaBlend&)        = 0;
-        virtual void ReadValue (TEmfStretchDIBITS&)     = 0;
-        virtual void ReadValue (TEmfBitBlt&)            = 0;
-        virtual void ReadValue (TEmfSetDiBitsToDevice&) = 0;
-        virtual void ReadValue (TEmfStretchBLT&)        = 0;
-        virtual void ReadValue (TXForm&)                = 0;
-        virtual void ReadValue (CEmfLogBrushEx&)        = 0;
-        virtual void ReadValue (TEmfColor&)             = 0;
-        virtual void ReadValue (CEmfLogFont&)           = 0;
-        virtual void ReadValue (TEmfPointL&)            = 0;
-        virtual void ReadValue (TEmfPointS&)            = 0;
-        virtual void ReadValue (TEmfRectL&)             = 0;
-        virtual void ReadValue (TEmfSizeL&)             = 0;
-        virtual void ReadValue (TEmfDibPatternBrush&)   = 0;
-        virtual void ReadValue (CEmfLogPalette&)        = 0;
-        virtual void ReadValue (TEmfExtTextoutA&)       = 0;
-        virtual void ReadValue (TEmfExtTextoutW&)       = 0;
-        virtual void ReadValue (TEmfPolyTextoutA&)      = 0;
-        virtual void ReadValue (TEmfPolyTextoutW&)      = 0;
-        virtual void ReadValue (TEmfSmallTextout&)      = 0;
+        bool            IsValid()                             const override;
+        bool            IsEof()                               const override;
+        unsigned int    CanRead()                                   override;
+        void            Skip(unsigned int unSkip)                   override;
+        unsigned int    Tell()                                      override;
+        void            SeekToStart()                               override;
+        void            SetStream (CDataStream& pDataStream)        override;
+        CDataStream*    GetDataStream()                       const override;
+        EmfParserType   GetParserType()                       const override;
 
-        virtual void ReadValue (unsigned short&)   = 0;
-        virtual void ReadValue (unsigned char&)    = 0;
-        virtual void ReadValue (unsigned int&)     = 0;
-        virtual void ReadValue (double&)           = 0;
-        virtual void ReadValue (int&)              = 0;
+        void ReadValue (TEmfAlphaBlend& oTEmfAlphaBlend)               override;
+        void ReadValue (TEmfStretchDIBITS& oTEmfStretchDIBITS)         override;
+        void ReadValue (TEmfBitBlt& oTEmfBitBlt)                       override;
+        void ReadValue (TEmfSetDiBitsToDevice& oTEmfSetDiBitsToDevice) override;
+        void ReadValue (TEmfStretchBLT& oTEmfStretchBLT)               override;
+        void ReadValue (TXForm& oTXForm)                               override;
+        void ReadValue (CEmfLogBrushEx& oCEmfLogBrushEx)               override;
+        void ReadValue (TEmfColor& oTEmfColor)                         override;
+        void ReadValue (CEmfLogFont& oCEmfLogFont)                     override;
+        void ReadValue (TEmfPointL& oTEmfPointL)                       override;
+        void ReadValue (TEmfPointS& oTEmfPointS)                       override;
+        void ReadValue (TEmfRectL& oTEmfRectL)                         override;
+        void ReadValue (TEmfSizeL& oTEmfSizeL)                         override;
+        void ReadValue (TEmfDibPatternBrush& oTEmfDibPatternBrush)     override;
+        void ReadValue (CEmfLogPalette& oCEmfLogPalette)               override;
+        void ReadValue (TEmfExtTextoutA& oTEmfExtTextoutA)             override;
+        void ReadValue (TEmfExtTextoutW& oTEmfExtTextoutW)             override;
+        void ReadValue (TEmfPolyTextoutA& oTEmfPolyTextoutA)           override;
+        void ReadValue (TEmfPolyTextoutW& oTEmfPolyTextoutW)           override;
+        void ReadValue (TEmfSmallTextout& oTEmfSmallTextout)           override;
 
+        void ReadValue (unsigned short& ushValue)  override;
+        void ReadValue (unsigned char& ucValue)    override;
+        void ReadValue (unsigned int&   unValue)   override;
+        void ReadValue (double& dValue)            override;
+        void ReadValue (int& nValue)               override;
+
+        void ReadValue (unsigned int& unValue1, unsigned int& unValue2) override;
     private:
+        CXmlOutput  *m_pOutput;
     };
 }
 

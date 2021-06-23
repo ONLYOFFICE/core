@@ -9,6 +9,7 @@ namespace MetaFile
     {
     public:
         CEmfParser();
+        virtual ~CEmfParser();
 
         bool            IsValid()                             const override;
         bool            IsEof()                               const override;
@@ -18,6 +19,7 @@ namespace MetaFile
         void            SeekToStart()                               override;
         void            SetStream (CDataStream& pDataStream)        override;
         CDataStream*    GetDataStream()                       const override;
+        EmfParserType   GetParserType()                       const override;
 
         void ReadValue (TEmfAlphaBlend& oTEmfAlphaBlend)               override;
         void ReadValue (TEmfStretchDIBITS& oTEmfStretchDIBITS)         override;
@@ -46,6 +48,7 @@ namespace MetaFile
         void ReadValue (double& dValue)            override;
         void ReadValue (int& nValue)               override;
 
+        void ReadValue (unsigned int& unValue1, unsigned int& unValue2) override;
     private:
         CDataStream *m_pStream;
     };

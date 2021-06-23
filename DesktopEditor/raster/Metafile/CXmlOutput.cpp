@@ -50,14 +50,19 @@ namespace MetaFile
             delete m_pXmlLiteReader;
     }
 
-    bool CXmlOutput::IsWriter()
+    bool CXmlOutput::IsWriter() const
     {
         return NULL != m_pXmlWriter;
     }
 
-    bool CXmlOutput::IsReader()
+    bool CXmlOutput::IsReader() const
     {
         return NULL != m_pXmlLiteReader;
+    }
+
+    bool CXmlOutput::IsValid() const
+    {
+        return (IsReader()) ? m_pXmlLiteReader->IsValid() : m_pXmlLiteReader->IsValid();
     }
 
     void CXmlOutput::WriteString(const std::wstring &wsValue)
@@ -593,7 +598,7 @@ namespace MetaFile
 	}
     }
 
-    bool CXmlOutput::ReadFromFile(const std::wstring wsPathToFile)
+    bool CXmlOutput::ReadFromFile(const std::wstring &wsPathToFile)
     {
         if (m_pXmlLiteReader->FromFile(wsPathToFile))
         {
@@ -631,6 +636,16 @@ namespace MetaFile
     bool CXmlOutput::ReadNextNode()
     {
         return m_pXmlLiteReader->ReadNextNode();
+    }
+
+    bool CXmlOutput::IsRecord() const
+    {
+        return (IsReader() && m_pXmlLiteReader->GetDepth() == 1) ? true : false;
+    }
+
+    std::wstring CXmlOutput::GetName() const
+    {
+        return (IsReader()) ? m_pXmlLiteReader->GetName() : L"";
     }
 
     void CXmlOutput::operator>>(TEmfHeader &oTEmfHeader)

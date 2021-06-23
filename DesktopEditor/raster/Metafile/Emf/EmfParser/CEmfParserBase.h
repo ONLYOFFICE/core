@@ -7,6 +7,12 @@
 
 namespace MetaFile
 {
+    enum EmfParserType
+    {
+        EmfParser,
+        EmfxParser
+    };
+
     class CEmfParserBase
     {
     public:
@@ -18,6 +24,7 @@ namespace MetaFile
         virtual void            SeekToStart()                   = 0;
         virtual void            SetStream (CDataStream&)        = 0;
         virtual CDataStream*    GetDataStream()           const = 0;
+        virtual EmfParserType   GetParserType()           const = 0;
 
         virtual void ReadValue (TEmfAlphaBlend&)        = 0;
         virtual void ReadValue (TEmfStretchDIBITS&)     = 0;
@@ -45,6 +52,8 @@ namespace MetaFile
         virtual void ReadValue (unsigned int&)     = 0;
         virtual void ReadValue (double&)           = 0;
         virtual void ReadValue (int&)              = 0;
+
+        virtual void ReadValue (unsigned int&, unsigned int&)     = 0;
     };
 }
 #endif // CEMFPARSERBASE_H

@@ -38,7 +38,7 @@
 #include "../DesktopEditor/common/base_export.h"
 #define PDFREADER_DECL_EXPORT Q_DECL_EXPORT
 #endif
-
+#include "Src/Adaptors.h"
 #include "lib/xpdf/ErrorCodes.h"
 #include "../DesktopEditor/common/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"

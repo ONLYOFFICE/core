@@ -52,6 +52,7 @@ SOURCES -= \
 
 SOURCES += \
     Src/RendererOutputDev.cpp \
+    Src/Adaptors.cpp \
     PdfReader.cpp
 
 HEADERS +=\
@@ -70,4 +71,5 @@ HEADERS +=\
     Resources/Fontn022024l.h \
     Resources/Fonts050000l.h \
     Src/RendererOutputDev.h \
+    Src/Adaptors.h
     PdfReader.h

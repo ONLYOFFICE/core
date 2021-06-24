@@ -42,13 +42,13 @@
 
 #include "../lib/xpdf/OutputDev.h"
 #include "../lib/xpdf/Object.h"
+#include "../lib/xpdf/GlobalParams.h"
 #include "XmlUtils.h"
+#include "Adaptors.h"
 
 namespace PdfReader
 {
-	class GfxPath;
-	class GfxTextClip;
-	class GfxClip;
+
 
 	//-------------------------------------------------------------------------------------------------------------------------------
 	struct TFontEntry
@@ -120,11 +120,15 @@ namespace PdfReader
 	public:
         RendererOutputDev(GlobalParams *pGlobalParams, IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList = NULL);
 		virtual ~RendererOutputDev();
-		virtual bool UpSideDown()
+
+        virtual GBool interpretType3Chars()
+        {
+        }
+		virtual GBool upsideDown()
 		{
 			return false;
 		}
-		virtual bool UseDrawChar()
+		virtual GBool useDrawChar()
 		{
 			return true;
 		}

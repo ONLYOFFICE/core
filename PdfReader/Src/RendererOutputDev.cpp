@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+
 #include "../lib/xpdf/GfxState.h"
 #include "../lib/xpdf/GfxFont.h"
 //#include "../lib/xpdf/File.h"
@@ -571,7 +573,7 @@ namespace PdfReader
         UpdateStrokeAdjust(pGState);
         updateFillColorSpace(pGState);
         UpdateFillColor(pGState);
-        UpdateStrokeColorSpace(pGState);
+        updateStrokeColorSpace(pGState);
         UpdateStrokeColor(pGState);
         UpdateBlendMode(pGState);
         UpdateFillOpacity(pGState);
@@ -614,21 +616,21 @@ namespace PdfReader
             // 1. Если шрифт внедренный, тогда скидываем его в темповый файл.
             // 2. Если шрифт лежит вне пдф, а в самом пдф есть ссылка на него, тогда используем эту ссылку.
             // 3. В противном случае подбираем шрифт.
-            if (pFont->GetEmbeddedFontFileRef(&oEmbRef))
+            if (pFont->getEmbeddedFontFileRef(&oEmbRef))
             {
                 std::wstring wsExt;
                 switch (pFont->getType())
                 {
-                    case fontType1:       wsExt = L".pfb_t1";    break;
-                    case fontType1C:      wsExt = L".pfb_t1c";   break;
-                    case fontType1COT:    wsExt = L".pfb_t1cot"; break;
-                    case fontTrueType:    wsExt = L".ttf";       break;
-                    case fontTrueTypeOT:  wsExt = L".otf";       break;
-                    case fontCIDType0:    wsExt = L".cid_0";     break;
-                    case fontCIDType0C:   wsExt = L".cid_0c";    break;
-                    case fontCIDType0COT: wsExt = L".cid_0cot";  break;
-                    case fontCIDType2:    wsExt = L".cid_2";     break;
-                    case fontCIDType2OT:  wsExt = L".cid_2ot";   break;
+//                    case fontType1:       wsExt = L".pfb_t1";    break;
+//                    case fontType1C:      wsExt = L".pfb_t1c";   break;
+//                    case fontType1COT:    wsExt = L".pfb_t1cot"; break;
+//                    case fontTrueType:    wsExt = L".ttf";       break;
+//                    case fontTrueTypeOT:  wsExt = L".otf";       break;
+//                    case fontCIDType0:    wsExt = L".cid_0";     break;
+//                    case fontCIDType0C:   wsExt = L".cid_0c";    break;
+//                    case fontCIDType0COT: wsExt = L".cid_0cot";  break;
+//                    case fontCIDType2:    wsExt = L".cid_2";     break;
+//                    case fontCIDType2OT:  wsExt = L".cid_2ot";   break; todo fonts
                 }
 
                 FILE* pTempFile = NULL;
@@ -694,7 +696,7 @@ namespace PdfReader
 
                             Dict *pFontDict = oFontObject.getDict();
                             Object oFontDescriptor;
-                            if (pFontDict->Search("FontDescriptor", &oFontDescriptor)->IsDict())
+                            if (pFontDict->lookup("FontDescriptor", &oFontDescriptor)->isDict())
                             {
                                 Object oDictItem;
                                 // FontName
@@ -720,7 +722,7 @@ namespace PdfReader
                                 // FontBBox
                                 oFontDescriptor.dictLookup("FontBBox", &oDictItem);
                                 if (oDictItem.isArray()) pBBox = oDictItem.getArray();
-                                if (4 == pBBox->GetCount())
+                                if (4 == pBBox->getLength())
                                 {
                                     for (int nIndex = 0; nIndex < 4; nIndex++)
                                     {
@@ -810,17 +812,17 @@ namespace PdfReader
 
                             int nFirstChar = 0;
                             Object oDictItem;
-                            pFontDict->Search("FirstChar", &oDictItem);
+                            pFontDict->lookup("FirstChar", &oDictItem);
                             if (oDictItem.isInt()) nFirstChar = oDictItem.getInt();
                             oDictItem.free();
 
                             int nLastChar = nFirstChar;
-                            pFontDict->Search("LastChar", &oDictItem);
+                            pFontDict->lookup("LastChar", &oDictItem);
                             if (oDictItem.isInt()) nLastChar = oDictItem.getInt();
                             oDictItem.free();
 
                             Array *pWidths = NULL;
-                            pFontDict->Search("Widths", &oDictItem);
+                            pFontDict->lookup("Widths", &oDictItem);
                             if (oDictItem.isArray()) pWidths = oDictItem.getArray();
 
                             int nCount = nLastChar - nFirstChar + 1;
@@ -828,7 +830,7 @@ namespace PdfReader
 
                             if (NULL != pWidths)
                             {
-                                int nWidthsCount = pWidths->GetCount();
+                                int nWidthsCount = pWidths->getLength();
                                 fprintf(pFile, "StartCharMetrics %d\n", nWidthsCount);
                                 for (int nIndex = 0; nIndex < nWidthsCount; nIndex++)
                                 {
@@ -838,7 +840,7 @@ namespace PdfReader
                                     if (oArrayItem.isInt()) nWidth = oArrayItem.getInt();
                                     oArrayItem.free();
 
-                                    char **ppEncoding = pT1Font->GetEncoding();
+                                    char **ppEncoding = pT1Font->getEncoding();
 
 
                                     if (NULL != ppEncoding && NULL != ppEncoding[nIndex])
@@ -923,7 +925,7 @@ namespace PdfReader
                     {
                         Dict *pFontDict = oFontObject.getDict();
                         Object oFontDescriptor;
-                        if (pFontDict->Search("FontDescriptor", &oFontDescriptor)->IsDict())
+                        if (pFontDict->lookup("FontDescriptor", &oFontDescriptor)->isDict())
                         {
                             Object oDictItem;
                             // FontName
@@ -1082,7 +1084,7 @@ namespace PdfReader
                             int nBaseEncoding = -1;
 
                             Object oDictItem;
-                            pFontDict->Search("Encoding", &oDictItem);
+                            pFontDict->lookup("Encoding", &oDictItem);
                             if (oDictItem.isDict())
                             {
                                 nEncodingType = 1; // Encoding - идет отдельным объектом
@@ -1131,7 +1133,7 @@ namespace PdfReader
                                 oDictItem.dictLookup("Differences", &oDifferences);
                                 if (oDifferences.isArray())
                                 {
-                                    int nArrayLen = oDifferences.ArrayGetLength();
+                                    int nArrayLen = oDifferences.arrayGetLength();
                                     oXmlWriter.WriteNodeBegin(L"Differences", true);
                                     oXmlWriter.WriteAttribute(L"count", nArrayLen);
                                     oXmlWriter.WriteNodeEnd(L"Differences", true, false);
@@ -1187,7 +1189,7 @@ namespace PdfReader
                 {
                     if (L"" != wsFileName)
                     {
-                        char **ppEncoding = ((Gfx8BitFont *)pFont)->GetEncoding();
+                        char **ppEncoding = ((Gfx8BitFont *)pFont)->getEncoding();
                         if (!ppEncoding)
                             break;
 
@@ -1218,7 +1220,7 @@ namespace PdfReader
                 {
                     if ((pTTFontFile = CFontFileTrueType::LoadFromFile((wchar_t*)wsFileName.c_str())))
                     {
-                        pCodeToGID = ((Gfx8BitFont *)pFont)->GetCodeToGIDMap(pTTFontFile);
+                        pCodeToGID = ((Gfx8BitFont *)pFont)->getCodeToGIDMap(pTTFontFile);
                         nLen = 256;
 
                         delete pTTFontFile;
@@ -1281,7 +1283,7 @@ namespace PdfReader
                     if (L"" != wsFileName && bFontSubstitution)
                     {
                         CharCodeToUnicode *pCodeToUnicode = NULL;
-                        if ((pCodeToUnicode = ((GfxCIDFont *)pFont)->GetToUnicode()))
+                        if ((pCodeToUnicode = ((GfxCIDFont *)pFont)->getToUnicode()))
                         {
                             if ((pTTFontFile = CFontFileTrueType::LoadFromFile((wchar_t*)wsFileName.c_str())))
                             {
@@ -1352,7 +1354,7 @@ namespace PdfReader
             if (pFont->isCIDFont())
             {
                 GfxCIDFont *pCIDFont = (GfxCIDFont *)pFont;
-                CharCodeToUnicode *pToUnicode = pCIDFont->GetToUnicode();
+                CharCodeToUnicode *pToUnicode = pCIDFont->getToUnicode();
                 if (NULL != pToUnicode)
                 {
                     nToUnicodeLen = pToUnicode->getLength();
@@ -1375,7 +1377,7 @@ namespace PdfReader
             }
             else
             {
-                CharCodeToUnicode *pToUnicode = ((Gfx8BitFont *)pFont)->GetToUnicode();
+                CharCodeToUnicode *pToUnicode = ((Gfx8BitFont *)pFont)->getToUnicode();
                 if (NULL != pToUnicode)
                 {
                     nToUnicodeLen = pToUnicode->getLength();
@@ -1423,7 +1425,7 @@ namespace PdfReader
                         int nBaseEncoding = -1;
 
                         Object oDictItem;
-                        pFontDict->Search("Encoding", &oDictItem);
+                        pFontDict->lookup("Encoding", &oDictItem);
                         if (oDictItem.isDict())
                         {
                             nEncodingType = 1; // Encoding - идет отдельным объектом
@@ -1473,7 +1475,7 @@ namespace PdfReader
                             oDictItem.dictLookup("Differences", &oDifferences);
                             if (oDifferences.isArray())
                             {
-                                int nArrayLen = oDifferences.ArrayGetLength();
+                                int nArrayLen = oDifferences.arrayGetLength();
                                 oXmlWriter.WriteNodeBegin(L"Differences", true);
                                 oXmlWriter.WriteAttribute(L"count", nArrayLen);
                                 oXmlWriter.WriteNodeEnd(L"Differences", true, false);
@@ -1510,7 +1512,7 @@ namespace PdfReader
                         oDictItem.free();
                         oXmlWriter.WriteNodeEnd(L"Encoding");
 
-                        pFontDict->Search("BaseFont", &oDictItem);
+                        pFontDict->lookup("BaseFont", &oDictItem);
                         if (oDictItem.isName())
                         {
                             oXmlWriter.WriteNodeBegin(L"FontBase", true);
@@ -1519,7 +1521,7 @@ namespace PdfReader
                         }
                         oDictItem.free();
 
-                        pFontDict->Search("ToUnicode", &oDictItem);
+                        pFontDict->lookup("ToUnicode", &oDictItem);
                         if (oDictItem.isStream())
                         {
                             oXmlWriter.WriteNodeBegin(L"ToUnicode");
@@ -1550,7 +1552,7 @@ namespace PdfReader
                         oXmlWriter.WriteNodeBegin(L"FontDescriptor");
 
                         Object oFontDescriptor;
-                        if (pFontDict->Search("FontDescriptor", &oFontDescriptor)->IsDict())
+                        if (pFontDict->lookup("FontDescriptor", &oFontDescriptor)->isDict())
                         {
                             // FontName
                             oFontDescriptor.dictLookup("FontName", &oDictItem);
@@ -1607,7 +1609,7 @@ namespace PdfReader
                             if (oDictItem.isArray())
                             {
                                 Array *pBBox = oDictItem.getArray();
-                                if (NULL != pBBox && 4 == pBBox->GetCount())
+                                if (NULL != pBBox && 4 == pBBox->getLength())
                                 {
                                     oXmlWriter.WriteNodeBegin(L"FontBBox", true);
                                     for (int nIndex = 0; nIndex < 4; nIndex++)
@@ -1742,17 +1744,17 @@ namespace PdfReader
                         oXmlWriter.WriteNodeEnd(L"FontDescriptor");
 
                         int nFirstChar = 0;
-                        pFontDict->Search("FirstChar", &oDictItem);
+                        pFontDict->lookup("FirstChar", &oDictItem);
                         if (oDictItem.isInt()) nFirstChar = oDictItem.getInt();
                         oDictItem.free();
 
                         int nLastChar = 0;
-                        pFontDict->Search("LastChar", &oDictItem);
+                        pFontDict->lookup("LastChar", &oDictItem);
                         if (oDictItem.isInt()) nLastChar = oDictItem.getInt();
                         oDictItem.free();
 
                         Array *pWidths = NULL;
-                        pFontDict->Search("Widths", &oDictItem);
+                        pFontDict->lookup("Widths", &oDictItem);
                         if (oDictItem.isArray())
                         {
                             oXmlWriter.WriteNodeBegin(L"Widths", true);
@@ -1761,7 +1763,7 @@ namespace PdfReader
                             oXmlWriter.WriteNodeEnd(L"Widths", true, false);
 
                             Array *pWidths = oDictItem.getArray();
-                            int nWidthsCount = pWidths->GetCount();
+                            int nWidthsCount = pWidths->getLength();
                             for (int nIndex = 0; nIndex < nWidthsCount; nIndex++)
                             {
                                 Object oArrayItem;
@@ -1804,7 +1806,7 @@ namespace PdfReader
                         Dict *pFontDict = oFontObject.getDict();
                         oXmlWriter.WriteNodeBegin(L"PDF-resources");
                         Object oDictItem;
-                        pFontDict->Search("BaseFont", &oDictItem);
+                        pFontDict->lookup("BaseFont", &oDictItem);
                         if (oDictItem.isName())
                         {
                             oXmlWriter.WriteNodeBegin(L"Type0", true);
@@ -1817,7 +1819,7 @@ namespace PdfReader
                         }
                         oDictItem.free();
 
-                        pFontDict->Search("ToUnicode", &oDictItem);
+                        pFontDict->lookup("ToUnicode", &oDictItem);
                         if (oDictItem.isStream())
                         {
                             oXmlWriter.WriteNodeBegin(L"ToUnicode");
@@ -1840,7 +1842,7 @@ namespace PdfReader
                         }
                         oDictItem.free();
 
-                        pFontDict->Search("Encoding", &oDictItem);
+                        pFontDict->lookup("Encoding", &oDictItem);
                         if (oDictItem.isName())
                         {
                             oXmlWriter.WriteNodeBegin(L"Encoding", true);
@@ -1851,11 +1853,11 @@ namespace PdfReader
                         {
                             oXmlWriter.WriteNodeBegin(L"Encoding");
 
-                            Dict *pEncodingDict = oDictItem.StreamGetDict();
+                            Dict *pEncodingDict = oDictItem.streamGetDict();
                             if (NULL != pEncodingDict)
                             {
                                 Object oEncItem;
-                                pEncodingDict->Search("CMapName", &oEncItem);
+                                pEncodingDict->lookup("CMapName", &oEncItem);
                                 if (oEncItem.isName())
                                 {
                                     oXmlWriter.WriteNodeBegin(L"CMapName", true);
@@ -1864,7 +1866,7 @@ namespace PdfReader
                                 }
                                 oEncItem.free();
 
-                                pEncodingDict->Search("CIDSystemInfo", &oEncItem);
+                                pEncodingDict->lookup("CIDSystemInfo", &oEncItem);
                                 if (oEncItem.isDict())
                                 {
                                     Dict *pCIDInfo = oEncItem.getDict();
@@ -1874,25 +1876,25 @@ namespace PdfReader
                                         oXmlWriter.WriteNodeBegin(L"CIDSystemInfo");
 
                                         Object oCIDInfoItem;
-                                        pCIDInfo->Search("Registry", &oCIDInfoItem);
-                                        if (oCIDInfoItem.IsString())
+                                        pCIDInfo->lookup("Registry", &oCIDInfoItem);
+                                        if (oCIDInfoItem.isString())
                                         {
                                             oXmlWriter.WriteNodeBegin(L"Registry", true);
-                                            oXmlWriter.WriteAttribute(L"string", AStringToWString(oCIDInfoItem.GetString()->GetBuffer()));
+                                            oXmlWriter.WriteAttribute(L"string", AStringToWString(oCIDInfoItem.getString()->GetBuffer()));
                                             oXmlWriter.WriteNodeEnd(L"Registry", true, true);
                                         }
                                         oCIDInfoItem.free();
 
-                                        pCIDInfo->Search("Ordering", &oCIDInfoItem);
-                                        if (oCIDInfoItem.IsString())
+                                        pCIDInfo->lookup("Ordering", &oCIDInfoItem);
+                                        if (oCIDInfoItem.isString())
                                         {
                                             oXmlWriter.WriteNodeBegin(L"Ordering", true);
-                                            oXmlWriter.WriteAttribute(L"string", AStringToWString(oCIDInfoItem.GetString()->GetBuffer()));
+                                            oXmlWriter.WriteAttribute(L"string", AStringToWString(oCIDInfoItem.getString()->GetBuffer()));
                                             oXmlWriter.WriteNodeEnd(L"Ordering", true, true);
                                         }
                                         oCIDInfoItem.free();
 
-                                        pCIDInfo->Search("Supplement", &oCIDInfoItem);
+                                        pCIDInfo->lookup("Supplement", &oCIDInfoItem);
                                         if (oCIDInfoItem.isInt())
                                         {
                                             oXmlWriter.WriteNodeBegin(L"Supplement", true);
@@ -1906,7 +1908,7 @@ namespace PdfReader
                                 }
                                 oEncItem.free();
 
-                                pEncodingDict->Search("WMode", &oEncItem);
+                                pEncodingDict->lookup("WMode", &oEncItem);
                                 if (oEncItem.isInt())
                                 {
                                     oXmlWriter.WriteNodeBegin(L"WMode", true);
@@ -1915,7 +1917,7 @@ namespace PdfReader
                                 }
                                 oEncItem.free();
 
-                                pEncodingDict->Search("UseCMap", &oEncItem);
+                                pEncodingDict->lookup("UseCMap", &oEncItem);
                                 if (oEncItem.isName())
                                 {
                                     oXmlWriter.WriteNodeBegin(L"UseCMap", true);
@@ -1965,11 +1967,11 @@ namespace PdfReader
                         }
                         oDictItem.free();
 
-                        pFontDict->Search("DescendantFonts", &oDictItem);
+                        pFontDict->lookup("DescendantFonts", &oDictItem);
                         if (oDictItem.isArray())
                         {
                             Array *pArray =  oDictItem.getArray();
-                            if (1 == pArray->GetCount())
+                            if (1 == pArray->getLength())
                             {
                                 Object oDescFont;
                                 pArray->get(0, &oDescFont);
@@ -1982,7 +1984,7 @@ namespace PdfReader
                                         oXmlWriter.WriteNodeBegin(L"DescendantFonts");
 
                                         Object oFontItem;
-                                        pDescFont->Search("Subtype", &oFontItem);
+                                        pDescFont->lookup("Subtype", &oFontItem);
                                         if (oFontItem.isName())
                                         {
                                             oXmlWriter.WriteNodeBegin(L"Subtype", true);
@@ -1991,7 +1993,7 @@ namespace PdfReader
                                         }
                                         oFontItem.free();
 
-                                        pDescFont->Search("BaseFont", &oFontItem);
+                                        pDescFont->lookup("BaseFont", &oFontItem);
                                         if (oFontItem.isName())
                                         {
                                             oXmlWriter.WriteNodeBegin(L"BaseFont", true);
@@ -2000,7 +2002,7 @@ namespace PdfReader
                                         }
                                         oFontItem.free();
 
-                                        pDescFont->Search("CIDSystemInfo", &oFontItem);
+                                        pDescFont->lookup("CIDSystemInfo", &oFontItem);
                                         if (oFontItem.isDict())
                                         {
                                             Dict *pCIDInfo = oFontItem.getDict();
@@ -2009,25 +2011,25 @@ namespace PdfReader
                                                 oXmlWriter.WriteNodeBegin(L"CIDSystemInfo");
 
                                                 Object oCIDInfoItem;
-                                                pCIDInfo->Search("Registry", &oCIDInfoItem);
-                                                if (oCIDInfoItem.IsString())
+                                                pCIDInfo->lookup("Registry", &oCIDInfoItem);
+                                                if (oCIDInfoItem.isString())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"Registry", true);
-                                                    oXmlWriter.WriteAttribute(L"string", AStringToWString(oCIDInfoItem.GetString()->GetBuffer()));
+                                                    oXmlWriter.WriteAttribute(L"string", AStringToWString(oCIDInfoItem.getString()->GetBuffer()));
                                                     oXmlWriter.WriteNodeEnd(L"Registry", true, true);
                                                 }
                                                 oCIDInfoItem.free();
 
-                                                pCIDInfo->Search("Ordering", &oCIDInfoItem);
-                                                if (oCIDInfoItem.IsString())
+                                                pCIDInfo->lookup("Ordering", &oCIDInfoItem);
+                                                if (oCIDInfoItem.isString())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"Ordering", true);
-                                                    oXmlWriter.WriteAttribute(L"string", AStringToWString(oCIDInfoItem.GetString()->GetBuffer()));
+                                                    oXmlWriter.WriteAttribute(L"string", AStringToWString(oCIDInfoItem.getString()->GetBuffer()));
                                                     oXmlWriter.WriteNodeEnd(L"Ordering", true, true);
                                                 }
                                                 oCIDInfoItem.free();
 
-                                                pCIDInfo->Search("Supplement", &oCIDInfoItem);
+                                                pCIDInfo->lookup("Supplement", &oCIDInfoItem);
                                                 if (oCIDInfoItem.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"Supplement", true);
@@ -2041,7 +2043,7 @@ namespace PdfReader
                                         }
                                         oFontItem.free();
 
-                                        pDescFont->Search("FontDescriptor", &oFontItem);
+                                        pDescFont->lookup("FontDescriptor", &oFontItem);
                                         if (oFontItem.isDict())
                                         {
                                             Dict *pFontDescriptor = oFontItem.getDict();
@@ -2050,7 +2052,7 @@ namespace PdfReader
                                                 oXmlWriter.WriteNodeBegin(L"FontDescriptor");
                                                 Object oItemFD;
 
-                                                pFontDescriptor->Search("FontName", &oItemFD);
+                                                pFontDescriptor->lookup("FontName", &oItemFD);
                                                 if (oItemFD.isName())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"FontName", true);
@@ -2059,7 +2061,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("FontStretch", &oItemFD);
+                                                pFontDescriptor->lookup("FontStretch", &oItemFD);
                                                 if (oItemFD.isName())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"FontStretch", true);
@@ -2068,7 +2070,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("FontWeight", &oItemFD);
+                                                pFontDescriptor->lookup("FontWeight", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"FontWeight", true);
@@ -2077,7 +2079,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("Flags", &oItemFD);
+                                                pFontDescriptor->lookup("Flags", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"Flags", true);
@@ -2086,11 +2088,11 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("FontBBox", &oItemFD);
+                                                pFontDescriptor->lookup("FontBBox", &oItemFD);
                                                 if (oItemFD.isArray())
                                                 {
                                                     Array *pBBox = oItemFD.getArray();
-                                                    if (NULL != pBBox && 4 == pBBox->GetCount())
+                                                    if (NULL != pBBox && 4 == pBBox->getLength())
                                                     {
                                                         oXmlWriter.WriteNodeBegin(L"FontBBox", true);
                                                         for (int nIndex = 0; nIndex < 4; nIndex++)
@@ -2110,7 +2112,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("ItalicAngle", &oItemFD);
+                                                pFontDescriptor->lookup("ItalicAngle", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"ItalicAngle", true);
@@ -2119,7 +2121,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("Ascent", &oItemFD);
+                                                pFontDescriptor->lookup("Ascent", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"Ascent", true);
@@ -2128,7 +2130,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("Descent", &oItemFD);
+                                                pFontDescriptor->lookup("Descent", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"Descent", true);
@@ -2137,7 +2139,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("Leading", &oItemFD);
+                                                pFontDescriptor->lookup("Leading", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"Leading", true);
@@ -2146,7 +2148,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("CapHeight", &oItemFD);
+                                                pFontDescriptor->lookup("CapHeight", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"CapHeight", true);
@@ -2155,7 +2157,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("XHeight", &oItemFD);
+                                                pFontDescriptor->lookup("XHeight", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"XHeight", true);
@@ -2164,7 +2166,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("StemV", &oItemFD);
+                                                pFontDescriptor->lookup("StemV", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"StemV", true);
@@ -2173,7 +2175,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("StemH", &oItemFD);
+                                                pFontDescriptor->lookup("StemH", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"StemH", true);
@@ -2182,7 +2184,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("AvgWidth", &oItemFD);
+                                                pFontDescriptor->lookup("AvgWidth", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"AvgWidth", true);
@@ -2191,7 +2193,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("MaxWidth", &oItemFD);
+                                                pFontDescriptor->lookup("MaxWidth", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"MaxWidth", true);
@@ -2200,7 +2202,7 @@ namespace PdfReader
                                                 }
                                                 oItemFD.free();
 
-                                                pFontDescriptor->Search("MissingWidth", &oItemFD);
+                                                pFontDescriptor->lookup("MissingWidth", &oItemFD);
                                                 if (oItemFD.isInt())
                                                 {
                                                     oXmlWriter.WriteNodeBegin(L"MissingWidth", true);
@@ -2216,7 +2218,7 @@ namespace PdfReader
                                         }
                                         oFontItem.free();
 
-                                        pDescFont->Search("DW", &oFontItem);
+                                        pDescFont->lookup("DW", &oFontItem);
                                         if (oFontItem.isInt())
                                         {
                                             oXmlWriter.WriteNodeBegin(L"DW", true);
@@ -2225,7 +2227,7 @@ namespace PdfReader
                                         }
                                         oFontItem.free();
 
-                                        pDescFont->Search("W", &oFontItem);
+                                        pDescFont->lookup("W", &oFontItem);
                                         if (oFontItem.isArray())
                                         {
                                             Array *pArray = oFontItem.getArray();
@@ -2233,7 +2235,7 @@ namespace PdfReader
                                             {
                                                 oXmlWriter.WriteNodeBegin(L"W");
 
-                                                for (int nIndex = 0; nIndex < pArray->GetCount(); nIndex++)
+                                                for (int nIndex = 0; nIndex < pArray->getLength(); nIndex++)
                                                 {
                                                     Object oArrayItem;
                                                     pArray->get(nIndex, &oArrayItem);
@@ -2249,7 +2251,7 @@ namespace PdfReader
                                                         if (NULL != pWArray)
                                                         {
                                                             oXmlWriter.WriteNodeBegin(L"Array");
-                                                            for (int nWIndex = 0; nWIndex < pWArray->GetCount(); nWIndex++)
+                                                            for (int nWIndex = 0; nWIndex < pWArray->getLength(); nWIndex++)
                                                             {
                                                                 Object oWArrayItem;
                                                                 pWArray->get(nWIndex, &oWArrayItem);
@@ -2272,11 +2274,11 @@ namespace PdfReader
                                         }
                                         oFontItem.free();
 
-                                        pDescFont->Search("DW2", &oFontItem);
+                                        pDescFont->lookup("DW2", &oFontItem);
                                         if (oFontItem.isArray())
                                         {
                                             Array *pArray = oFontItem.getArray();
-                                            if (NULL != pArray && 2 == pArray->GetCount())
+                                            if (NULL != pArray && 2 == pArray->getLength())
                                             {
                                                 oXmlWriter.WriteNodeBegin(L"DW2", true);
 
@@ -2300,7 +2302,7 @@ namespace PdfReader
                                         }
                                         oFontItem.free();
 
-                                        pDescFont->Search("W2", &oFontItem);
+                                        pDescFont->lookup("W2", &oFontItem);
                                         if (oFontItem.isArray())
                                         {
                                             Array *pArray = oFontItem.getArray();
@@ -2308,7 +2310,7 @@ namespace PdfReader
                                             {
                                                 oXmlWriter.WriteNodeBegin(L"W2");
 
-                                                for (int nIndex = 0; nIndex < pArray->GetCount(); nIndex++)
+                                                for (int nIndex = 0; nIndex < pArray->getLength(); nIndex++)
                                                 {
                                                     Object oArrayItem;
                                                     pArray->get(nIndex, &oArrayItem);
@@ -2324,7 +2326,7 @@ namespace PdfReader
                                                         if (NULL != pWArray)
                                                         {
                                                             oXmlWriter.WriteNodeBegin(L"Array");
-                                                            for (int nWIndex = 0; nWIndex < pWArray->GetCount(); nWIndex++)
+                                                            for (int nWIndex = 0; nWIndex < pWArray->getLength(); nWIndex++)
                                                             {
                                                                 Object oWArrayItem;
                                                                 pWArray->get(nWIndex, &oWArrayItem);
@@ -2347,7 +2349,7 @@ namespace PdfReader
                                         }
                                         oFontItem.free();
 
-                                        pDescFont->Search("CIDToGIDMap", &oFontItem);
+                                        pDescFont->lookup("CIDToGIDMap", &oFontItem);
                                         if (oFontItem.isName())
                                         {
                                             oXmlWriter.WriteNodeBegin(L"CIDToGIDMap", true);
@@ -2540,11 +2542,11 @@ namespace PdfReader
 		m_pRenderer->get_BrushType(&brush);
 		m_pRenderer->put_BrushType(c_BrushTypeMyTestGradient);
 		double x1,x2,y1,y2;
-		pShading->GetDomain(&x1, &y1, &x2, &y2);
+		pShading->getDomain(&x1, &y1, &x2, &y2);
 		std::vector<float> mapping(6);
 		for (int i = 0; i < 6; i++)
 		{
-			mapping[i] = PDFCoordsToMM(pShading->GetMatrix()[i]);
+			mapping[i] = PDFCoordsToMM(pShading->getMatrix()[i]);
 		}
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_functional(x1, x2, y1, y2, mapping);
 
@@ -2558,7 +2560,7 @@ namespace PdfReader
 		    cur_x = 0;
             for (size_t j = 0; j < info.shading.function.get_resolution(); j++)
             {
-                PdfReader::GfxColor c;
+                GfxColor c;
                 pShading->getColor(cur_x, cur_y, &c);
                 DWORD dword_color = ColorSpace->GetDwordColor(&c);
                 info.shading.function.set_color(j, i, (dword_color >> 16) & 0xFF,
@@ -2596,9 +2598,9 @@ namespace PdfReader
 
 		double x1, x2, y1, y2;
 		double t0, t1;
-		pShading->GetCoords(&x1, &y1, &x2, &y2);
+		pShading->getCoords(&x1, &y1, &x2, &y2);
 		t0 = pShading->getDomain0();
-		t1 = pShading->GetDomain1();
+		t1 = pShading->getDomain1();
 
         x1 = PDFCoordsToMM(x1);
         x2 = PDFCoordsToMM(x2);
@@ -2606,14 +2608,14 @@ namespace PdfReader
         y2 = PDFCoordsToMM(y2);
 
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
-															   pShading->GetExtendStart(), pShading->GetExtendEnd());
+															   pShading->getExtend0(), pShading-->getExtend1());
 
 		GfxColorSpace *ColorSpace = pShading->getColorSpace();
 		float delta = (t1 - t0) / info.shading.function.get_resolution();
 		float t = t0;
 		for (size_t i = 0; i < info.shading.function.get_resolution(); i++)
 		{
-			PdfReader::GfxColor c;
+			GfxColor c;
 			pShading->getColor(t, &c);
 			t+=delta;
 			DWORD dword_color = ColorSpace->GetDwordColor(&c);
@@ -2649,7 +2651,7 @@ namespace PdfReader
 
 		double x1, x2, y1, y2, r1, r2;
 		double t0, t1;
-		pShading->GetCoords(&x1, &y1, &r1, &x2, &y2, &r2);
+		pShading->getCoords(&x1, &y1, &r1, &x2, &y2, &r2);
 		t0 = pShading->getDomain0();
 		t1 = pShading->GetDomain1();
 
@@ -2664,14 +2666,15 @@ namespace PdfReader
         r2 = PDFCoordsToMM(r2);
 
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_radial({x1, y1}, {x2, y2}, r1, r2,
-															   t0, t1, pShading->GetExtendFirst(), pShading->GetExtendSecond());
+															   t0, t1, pShading->getExtend0(), pShading->getExtend1());
 
 		GfxColorSpace *ColorSpace = pShading->getColorSpace();;
 		float delta = (t1 - t0) / info.shading.function.get_resolution();
 		float t = t0;
 		for (size_t i = 0; i < info.shading.function.get_resolution(); i++, t += delta)
 		{
-			PdfReader::GfxColor c;
+			GfxColor c;
+			pShading->getColor(t, &c);
 			pShading->getColor(t, &c);
 			DWORD dword_color = ColorSpace->GetDwordColor(&c);
 			info.shading.function.set_color(i, (dword_color >> 16) & 0xFF,
@@ -3872,7 +3875,7 @@ namespace PdfReader
         {
             GfxPath *pPath   = pClip->getPath(nIndex);
             int     nFlag   = pClip->GetFlag(nIndex);
-            double *pMatrix = pClip->GetMatrix(nIndex);
+            double *pMatrix = pClip->getMatrix(nIndex);
 
             int     nClipFlag = GrClipEOFlag == nFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
             nClipFlag |= c_nClipRegionIntersect;
@@ -3985,4 +3988,5 @@ namespace PdfReader
         }
         return;
     }
+
 }

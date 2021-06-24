@@ -1,5 +1,5 @@
 #include "./../include/OOXMLSigner.h"
-#include "./ZipFolder.h"
+#include "../../../../OfficeUtils/src/ZipFolder.h"
 #include "./XmlTransform.h"
 #include <cstdio>
 #include <ctime>
@@ -74,7 +74,10 @@ public:
         std::wstring sXml = L"<Reference URI=\"/" + file + L"?ContentType=" + content_type + L"\">";
         sXml += (L"<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/>");
         sXml += L"<DigestValue>";
-        sXml += m_pFolder->getFileHashW(file, m_certificate);
+        IFolder::CBuffer* buffer = NULL;
+        if (m_pFolder->read(file, buffer))
+            sXml += UTF8_TO_U(m_certificate->GetHash(buffer->Buffer, buffer->Size, m_certificate->GetHashAlg()));
+        RELEASEOBJECT(buffer);
         sXml += L"</DigestValue>";
         sXml += L"</Reference>";
         return sXml;

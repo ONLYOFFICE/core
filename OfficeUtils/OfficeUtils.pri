@@ -52,6 +52,7 @@ HEADERS +=  \
     $$PWD/src/OfficeUtilsCommon.h \
     $$PWD/src/OfficeUtils.h \
     $$PWD/src/ZipBuffer.h \
+    $$PWD/src/ZipFolder.h \
     $$PWD/src/ZipUtilsCP.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/crypt.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/ioapi.h \

@@ -1,11 +1,10 @@
 #ifndef _ZIPFOLDER_H_
 #define _ZIPFOLDER_H_
 
-#include "./../../../../OfficeUtils/src/ZipBuffer.h"
-#include "./../../../common/File.h"
-#include "./../../../common/Directory.h"
-#include "../../../xml/include/xmlutils.h"
-#include "./../include/XmlCertificate.h"
+#include "ZipBuffer.h"
+#include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 class IFolder
 {
@@ -99,21 +98,6 @@ public:
         delete buffer;
 
         return sRet;
-    }
-    std::string getFileHash(const std::wstring& path, ICertificate* certificate, int nAlg = -1)
-    {
-        CBuffer* buffer = NULL;
-        if (!read(path, buffer))
-            return "";
-
-        std::string sRet = certificate->GetHash(buffer->Buffer, buffer->Size, (nAlg == -1) ? certificate->GetHashAlg() : nAlg);
-        delete buffer;
-        return sRet;
-    }
-    std::wstring getFileHashW(const std::wstring& path, ICertificate* certificate, int nAlg = -1)
-    {
-        std::string sTmp = getFileHash(path, certificate, nAlg);
-        return UTF8_TO_U(sTmp);
     }
 };
 

@@ -467,6 +467,11 @@ HEADERS += \
 SOURCES += \
     ./../../fontengine/ApplicationFontsWorker.cpp
 
+# deprecated!!! remove after 6.5 ------------------
+HEADERS += ./../../fontengine/FontsAssistant.h
+SOURCES += ./../../fontengine/FontsAssistant.cpp
+# -------------------------------------------------
+
 core_ios {
 
     OBJECTIVE_SOURCES += \

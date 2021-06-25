@@ -363,7 +363,7 @@ SplashFontFile *SplashFTFontEngine::loadTrueTypeFont(SplashFontFileID *idA,
   fclose(tmpFile);
 #endif
   delete ff;
-  ret = SplashFTFontFile::loadTrueTypeFont(this, idA, splashfontTrueTypeTempName,
+  ret = SplashFTFontFile::loadTrueTypeFont(this, idA, splashfontTrueType,
 #if LOAD_FONTS_FROM_MEM
 					   fontBuf2,
 #else

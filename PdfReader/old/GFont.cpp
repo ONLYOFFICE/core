@@ -150,7 +150,7 @@ namespace PdfReader
 		}
 		else if (oTemp.IsName("TrueType"))
 		{
-			pFont = new Gr8BitFont(pXref, sTag, oID, seName, fontTrueType, pFontDict, pGlobalParams);
+			pFont = new Gr8BitFont(pXref, sTag, oID, seName, fontTrueTypeLN, pFontDict, pGlobalParams);
 		}
 		else if (oTemp.IsName("Type0"))
 		{
@@ -243,10 +243,10 @@ namespace PdfReader
 			if (m_oEmbFontFileRef.nNum == -1 && oFontDescriptor.DictLookupAndCopy("FontFile2", &oDictItem)->IsRef())
 			{
 				m_oEmbFontFileRef = oDictItem.GetRef();
-				if (m_eType != fontTrueType && m_eType != fontCIDType2)
+				if (m_eType != fontTrueTypeLN && m_eType != fontCIDType2)
 				{
 					// TO DO: Error "Mismatch between font type and embedded font file"
-					m_eType = (m_eType == fontCIDType0 ? fontCIDType2 : fontTrueType);
+					m_eType = (m_eType == fontCIDType0 ? fontCIDType2 : fontTrueTypeLN);
 				}
 			}
 			oDictItem.Free();
@@ -279,10 +279,10 @@ namespace PdfReader
 					else if (oTemp.IsName("TrueType"))
 					{
 						m_oEmbFontFileRef = oDictItem.GetRef();
-						if (m_eType != fontTrueType)
+						if (m_eType != fontTrueTypeLN)
 						{
 							// TO DO: Error "Mismatch between font type and embedded font file"
-							m_eType = fontTrueType;
+							m_eType = fontTrueTypeLN;
 						}
 					}
 					else if (oTemp.IsName("CIDFontType0C"))
@@ -297,9 +297,9 @@ namespace PdfReader
 					else if (oTemp.IsName("OpenType"))
 					{
 						m_oEmbFontFileRef = oDictItem.GetRef();
-						if (m_eType == fontTrueType)
+						if (m_eType == fontTrueTypeLN)
 						{
-							m_eType = fontTrueTypeOT;
+							m_eType = fontTrueTypeLNOT;
 						}
 						else if (m_eType == fontType1)
 						{
@@ -437,7 +437,7 @@ namespace PdfReader
 				{
 					m_wsExternalFontFilePath = m_pGlobalParams->FindFontFile(m_seName, c_wsType1Ext);
 				}
-				else if (m_eType == fontTrueType)
+				else if (m_eType == fontTrueTypeLN)
 				{
 					m_wsExternalFontFilePath = m_pGlobalParams->FindFontFile(m_seName, c_wsTTFExts);
 				}
@@ -782,7 +782,7 @@ namespace PdfReader
 				ppBaseEncoding = pBuiltinFont->ppDefaultBaseEncoding;
 				m_bHasEncoding = true;
 			}
-			else if (m_eType == fontTrueType)
+			else if (m_eType == fontTrueTypeLN)
 			{
 				ppBaseEncoding = c_arrWinAnsiEncoding;
 			}

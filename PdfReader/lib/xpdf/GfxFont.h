@@ -42,8 +42,8 @@ enum GfxFontType {
   fontType1C,
   fontType1COT,
   fontType3,
-  fontTrueTypeTempName,
-  fontTrueTypeTempNameOT,
+  fontTrueType,
+  fontTrueTypeOT,
   //----- GfxCIDFont
   fontCIDType0,
   fontCIDType0C,

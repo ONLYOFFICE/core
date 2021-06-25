@@ -118,7 +118,7 @@ namespace PdfReader
 	class RendererOutputDev : public OutputDev
 	{
 	public:
-        RendererOutputDev(GlobalParams *pGlobalParams, IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList = NULL);
+        RendererOutputDev(GlobalParamsAdaptor *pGlobalParams, IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList = NULL);
 		virtual ~RendererOutputDev();
 
         virtual GBool interpretType3Chars()
@@ -304,6 +304,7 @@ namespace PdfReader
 		unsigned char*                m_pTransparentGroupSoftMask;
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer
+        GlobalParamsAdaptor           *m_pGlobalParams;
 	};
 }
 

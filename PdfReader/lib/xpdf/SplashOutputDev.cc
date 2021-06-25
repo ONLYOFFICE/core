@@ -1400,8 +1400,8 @@ void SplashOutputDev::doUpdateFont(GfxState *state) {
 	goto err1;
       }
       break;
-    case fontTrueTypeTempName:
-    case fontTrueTypeTempNameOT:
+    case fontTrueType:
+    case fontTrueTypeOT:
 #if LOAD_FONTS_FROM_MEM
       if ((ff = FoFiTrueType::make(fontBuf->getCString(), fontBuf->getLength(),
 				   fontNum))) {
@@ -1414,8 +1414,8 @@ void SplashOutputDev::doUpdateFont(GfxState *state) {
 	// if we're substituting for a non-TrueType font, we need to mark
 	// all notdef codes as "do not draw" (rather than drawing TrueType
 	// notdef glyphs)
-	if (gfxFont->getType() != fontTrueTypeTempName &&
-	    gfxFont->getType() != fontTrueTypeTempNameOT) {
+	if (gfxFont->getType() != fontTrueType &&
+	    gfxFont->getType() != fontTrueTypeOT) {
 	  for (i = 0; i < 256; ++i) {
 	    if (codeToGID[i] == 0) {
 	      codeToGID[i] = -1;
@@ -4377,7 +4377,7 @@ SplashFont *SplashOutputDev::getFont(GString *name, SplashCoord *textMatA) {
 #if LOAD_FONTS_FROM_MEM
     fontBuf = NULL;
     if (fontLoc->fontType == fontType1 ||
-	fontLoc->fontType == fontTrueTypeTempName) {
+	fontLoc->fontType == fontTrueType) {
       if (!(extFontFile = fopen(fontLoc->path->getCString(), "rb"))) {
 	delete fontLoc;
 	delete id;
@@ -4399,7 +4399,7 @@ SplashFont *SplashOutputDev::getFont(GString *name, SplashCoord *textMatA) {
 					   gFalse,
 #endif
 					   winAnsiEncoding);
-    } else if (fontLoc->fontType == fontTrueTypeTempName) {
+    } else if (fontLoc->fontType == fontTrueType) {
 #if LOAD_FONTS_FROM_MEM
       if (!(ff = FoFiTrueType::make(fontBuf->getCString(),
 				    fontBuf->getLength(),

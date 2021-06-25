@@ -2118,8 +2118,8 @@ void PSOutputDev::setupFont(GfxFont *font, Dict *parentResDict) {
 	case fontType1COT:
 	  fi->ff = setupEmbeddedOpenTypeT1CFont(font, &fontLoc->embFontID);
 	  break;
-	case fontTrueTypeTempName:
-	case fontTrueTypeTempNameOT:
+	case fontTrueType:
+	case fontTrueTypeOT:
 	  fi->ff = setupEmbeddedTrueTypeFont(font, &fontLoc->embFontID);
 	  break;
 	case fontCIDType0C:
@@ -2144,8 +2144,8 @@ void PSOutputDev::setupFont(GfxFont *font, Dict *parentResDict) {
 	case fontType1:
 	  fi->ff = setupExternalType1Font(font, fontLoc->path);
 	  break;
-	case fontTrueTypeTempName:
-	case fontTrueTypeTempNameOT:
+	case fontTrueType:
+	case fontTrueTypeOT:
 	  fi->ff = setupExternalTrueTypeFont(font, fontLoc->path,
 					     fontLoc->fontNum);
 	  break;
@@ -2250,7 +2250,7 @@ void PSOutputDev::setupFont(GfxFont *font, Dict *parentResDict) {
     for (i = 0; i < 256; i += 8) {
       writePS((char *)((i == 0) ? "[ " : "  "));
       for (j = 0; j < 8; ++j) {
-	if (font->getType() == fontTrueTypeTempName &&
+	if (font->getType() == fontTrueType &&
 	    !subst &&
 	    !((Gfx8BitFont *)font)->getHasEncoding()) {
 	  snprintf(buf, sizeof(buf), "c%02x", i+j);

@@ -235,7 +235,7 @@ namespace PdfReader
 	}
     void               GlobalParams::SetFontManager(NSFonts::IFontManager* pFontManager)
 	{
-		m_pFontManager = pFontManager;
+        m_pFontManager = pFontManager;
 	}
     NSFonts::IFontManager*      GlobalParams::GetFontManager() const
 	{

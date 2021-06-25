@@ -50,7 +50,7 @@ namespace PdfReader
     {
     public:
         PDFDoc*            m_pPDFDocument;
-        GlobalParams*      m_pGlobalParams;
+        GlobalParamsAdaptor*      m_pGlobalParams;
         std::wstring       m_wsTempFolder;
         std::wstring       m_wsCMapFolder;
         NSFonts::IApplicationFonts* m_pAppFonts;
@@ -68,7 +68,7 @@ namespace PdfReader
         m_pInternal->m_pPDFDocument = NULL;
         m_pInternal->m_pFontManager = NULL;
 
-        m_pInternal->m_pGlobalParams = new GlobalParams(NULL);
+        m_pInternal->m_pGlobalParams = new GlobalParamsAdaptor(NULL);
         m_pInternal->m_pFontList = new CFontList();
 
         m_pInternal->m_pAppFonts = pAppFonts;
@@ -115,7 +115,7 @@ namespace PdfReader
         pMeasurerCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
         m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(1);
-        //todo m_pInternal->m_pGlobalParams->SetFontManager(m_pInternal->m_pFontManager);
+        m_pInternal->m_pGlobalParams->SetFontManager(m_pInternal->m_pFontManager);
 //------------------------------------------------------
 
         if (m_pInternal->m_pPDFDocument)

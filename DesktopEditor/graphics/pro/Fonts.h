@@ -42,7 +42,7 @@
 enum EFontFormat
 {
     fontWindowsFNT = 0, // *.fon
-    fontTrueType   = 1, // *.ttf
+    fontTrueTypeLN   = 1, // *.ttf
     fontOpenType   = 2, // *.ttf, *.otf (CFF формат)
     fontUnknown    = 3
 };

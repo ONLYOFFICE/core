@@ -252,7 +252,7 @@ GBool SplashFTFont::makeGlyph(int c, int xFrac, int yFrac,
   } else {
     gid = c;
   }
-  if (ff->fontType == splashfontTrueTypeTempName && gid < 0) {
+  if (ff->fontType == splashfontTrueType && gid < 0) {
     // skip the TrueType notdef glyph
     return gFalse;
   }
@@ -355,7 +355,7 @@ SplashPath *SplashFTFont::getGlyphPath(int c) {
   } else {
     gid = c;
   }
-  if (ff->fontType == splashfontTrueTypeTempName && gid < 0) {
+  if (ff->fontType == splashfontTrueType && gid < 0) {
     // skip the TrueType notdef glyph
     return NULL;
   }

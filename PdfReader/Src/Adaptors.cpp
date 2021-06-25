@@ -3,3 +3,8 @@
 //
 
 #include "Adaptors.h"
+
+void GlobalParamsAdaptor::SetFontManager(NSFonts::IFontManager* pFontManager)
+{
+    m_pFontManager = pFontManager;
+}

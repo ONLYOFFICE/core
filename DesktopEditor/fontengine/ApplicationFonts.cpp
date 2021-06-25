@@ -777,7 +777,7 @@ int CFontList::GetFontFormatPenalty(EFontFormat eCandFormat, EFontFormat eReqFor
 	if ( eReqFormat == fontUnknown )
 	{
 		// Считаем, что когда формат не известен, значит это 100% не TrueType.
-		if ( eCandFormat == fontTrueType )
+		if ( eCandFormat == fontTrueTypeLN )
 			return 4;
 		else
 			return 0;
@@ -865,7 +865,7 @@ EFontFormat CFontList::GetFontFormat(FT_Face pFace)
 	if ( "Windows FNT" == wsFormat )
         return fontWindowsFNT;
 	else if ( "TrueType" == wsFormat ) 
-        return fontTrueType;
+        return fontTrueTypeLN;
 	else if ( "CFF" == wsFormat )
         return fontOpenType;
 
@@ -1072,7 +1072,7 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
             else if (NULL != oSelect.sFamilyClass)
                 nCurPenalty += GetFamilyUnlikelyPenalty( pInfo->m_sFamilyClass, *oSelect.sFamilyClass );
 
-            //nCurPenalty += GetFontFormatPenalty( pInfo->m_eFontFormat, fontTrueType );
+            //nCurPenalty += GetFontFormatPenalty( pInfo->m_eFontFormat, fontTrueTypeLN );
             nCurPenalty += GetCharsetPenalty( arrCandRanges, unCharset );
 
             if ( NULL != oSelect.shAvgCharWidth )
@@ -1327,7 +1327,7 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
 
 			EFontFormat eFormat = GetFontFormat( pFace );
 
-            bool bSupportFont = ((eFormat == fontTrueType) || ((nFlag & 1) && (eFormat == fontOpenType)));
+            bool bSupportFont = ((eFormat == fontTrueTypeLN) || ((nFlag & 1) && (eFormat == fontOpenType)));
             if (!bSupportFont)
             {
                 FT_Done_Face( pFace );

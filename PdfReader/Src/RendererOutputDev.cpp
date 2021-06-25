@@ -33,6 +33,7 @@
 
 #include "../lib/xpdf/GfxState.h"
 #include "../lib/xpdf/GfxFont.h"
+#include "../lib/fofi/FoFiTrueType.h"
 //#include "../lib/xpdf/File.h"
 #include "../lib/xpdf/CMap.h"
 #include "../lib/xpdf/Dict.h"
@@ -307,7 +308,7 @@ namespace PdfReader
     //--------------------------------------------------------------------------------------
     // RendererOutputDev
     //--------------------------------------------------------------------------------------
-    RendererOutputDev::RendererOutputDev(GlobalParams *pGlobalParams, IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+    RendererOutputDev::RendererOutputDev(GlobalParamsAdaptor  *pGlobalParams, IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
     {
         m_pFontManager  = pFontManager;
         m_pGlobalParams = pGlobalParams;
@@ -621,16 +622,16 @@ namespace PdfReader
                 std::wstring wsExt;
                 switch (pFont->getType())
                 {
-//                    case fontType1:       wsExt = L".pfb_t1";    break;
-//                    case fontType1C:      wsExt = L".pfb_t1c";   break;
-//                    case fontType1COT:    wsExt = L".pfb_t1cot"; break;
-//                    case fontTrueType:    wsExt = L".ttf";       break;
-//                    case fontTrueTypeOT:  wsExt = L".otf";       break;
-//                    case fontCIDType0:    wsExt = L".cid_0";     break;
-//                    case fontCIDType0C:   wsExt = L".cid_0c";    break;
-//                    case fontCIDType0COT: wsExt = L".cid_0cot";  break;
-//                    case fontCIDType2:    wsExt = L".cid_2";     break;
-//                    case fontCIDType2OT:  wsExt = L".cid_2ot";   break; todo fonts
+                    case fontType1:       wsExt = L".pfb_t1";    break;
+                    case fontType1C:      wsExt = L".pfb_t1c";   break;
+                    case fontType1COT:    wsExt = L".pfb_t1cot"; break;
+                    case fontTrueType:    wsExt = L".ttf";       break;
+                    case fontTrueTypeOT:  wsExt = L".otf";       break;
+                    case fontCIDType0:    wsExt = L".cid_0";     break;
+                    case fontCIDType0C:   wsExt = L".cid_0c";    break;
+                    case fontCIDType0COT: wsExt = L".cid_0cot";  break;
+                    case fontCIDType2:    wsExt = L".cid_2";     break;
+                    case fontCIDType2OT:  wsExt = L".cid_2ot";   break;
                 }
 
                 FILE* pTempFile = NULL;
@@ -1141,7 +1142,7 @@ namespace PdfReader
                                     for (int nIndex = 0; nIndex < nArrayLen; ++nIndex)
                                     {
                                         Object oTemp;
-                                        oDifferences.ArrayGet(nIndex, &oTemp);
+                                        oDifferences.arrayGet(nIndex, &oTemp);
                                         if (oTemp.isInt())
                                         {
                                             int nCode = oTemp.getInt();
@@ -1179,8 +1180,8 @@ namespace PdfReader
             // Здесь мы грузим кодировки
             unsigned short *pCodeToGID = NULL, *pCodeToUnicode = NULL;
             int nLen = 0;
-            CFontFileTrueType *pTTFontFile  = NULL;
-            CFontFileType1C   *pT1CFontFile = NULL;
+            FoFiTrueType *pTTFontFile  = NULL;
+            FoFiType1C   *pT1CFontFile = NULL;
             switch (eFontType)
             {
                 case fontType1:
@@ -1218,7 +1219,8 @@ namespace PdfReader
                 case fontTrueType:
                 case fontTrueTypeOT:
                 {
-                    if ((pTTFontFile = CFontFileTrueType::LoadFromFile((wchar_t*)wsFileName.c_str())))
+                    //todo correct fontNum
+                    if ((pTTFontFile = FoFiTrueType::load(wsFileName.c_str(), 0)))
                     {
                         pCodeToGID = ((Gfx8BitFont *)pFont)->getCodeToGIDMap(pTTFontFile);
                         nLen = 256;
@@ -1239,7 +1241,7 @@ namespace PdfReader
                     //// TODO: Проверить, почему получение данной кодировки было отключено
                     //if ((pT1CFontFile = CFontFileType1C::LoadFromFile((wchar_t*)wsFileName.c_str())))
                     //{
-                    //    pCodeToGID = pT1CFontFile->GetCIDToGIDMap(&nLen);
+                    //    pCodeToGID = pT1CFontFile->getCIDToGIDMap(&nLen);
                     //    delete pT1CFontFile;
                     //}
                     //else
@@ -1251,11 +1253,12 @@ namespace PdfReader
                 }
                 case fontCIDType0COT:
                 {
-                    if ((pTTFontFile = CFontFileTrueType::LoadFromFile((wchar_t*)wsFileName.c_str())))
+                    // todo correct fontNum
+                    if ((pTTFontFile = FoFiTrueType::load(wsFileName.c_str(), 0)))
                     {
-                        if (pTTFontFile->IsOpenTypeCFF())
+                        if (pTTFontFile->isOpenTypeCFF())
                         {
-                            pCodeToGID = pTTFontFile->GetCIDToGIDMap(&nLen);
+                            pCodeToGID = pTTFontFile->getCIDToGIDMap(&nLen);
                         }
                         else
                         {
@@ -1285,13 +1288,14 @@ namespace PdfReader
                         CharCodeToUnicode *pCodeToUnicode = NULL;
                         if ((pCodeToUnicode = ((GfxCIDFont *)pFont)->getToUnicode()))
                         {
-                            if ((pTTFontFile = CFontFileTrueType::LoadFromFile((wchar_t*)wsFileName.c_str())))
+                            //todo correct fontNum
+                            if ((pTTFontFile = FoFiTrueType::load(wsFileName.c_str(), 0)))
                             {
                                 // Ищем Unicode Cmap
                                 std::vector<int> arrCMapIndex;
-                                for (int nCMapIndex = 0; nCMapIndex < pTTFontFile->GetCmapsCount(); ++nCMapIndex)
+                                for (int nCMapIndex = 0; nCMapIndex < pTTFontFile->getCmapsCount(); ++nCMapIndex)
                                 {
-                                    if ((pTTFontFile->GetCmapPlatform(nCMapIndex) == 3 && pTTFontFile->GetCmapEncoding(nCMapIndex) == 1) || pTTFontFile->GetCmapPlatform(nCMapIndex) == 0)
+                                    if ((pTTFontFile->getCmapPlatform(nCMapIndex) == 3 && pTTFontFile->getCmapEncoding(nCMapIndex) == 1) || pTTFontFile->getCmapPlatform(nCMapIndex) == 0)
                                     {
                                         arrCMapIndex.push_back(nCMapIndex);
                                     }
@@ -1306,11 +1310,11 @@ namespace PdfReader
                                         Unicode arrUnicodeBuffer[8];
                                         if (pCodeToUnicode->mapToUnicode(nCode, arrUnicodeBuffer, 8) > 0)
                                         {
-                                            pCodeToGID[nCode] = pTTFontFile->MapCodeToGID(arrCMapIndex[0], arrUnicodeBuffer[0]);
+                                            pCodeToGID[nCode] = pTTFontFile->mapCodeToGID(arrCMapIndex[0], arrUnicodeBuffer[0]);
                                             for (size_t nIndex = 1; nIndex < arrCMapIndex.size(); nIndex++)
                                             {
                                                 if (0 == pCodeToGID[nCode])
-                                                    pCodeToGID[nCode] = pTTFontFile->MapCodeToGID(arrCMapIndex[nIndex], arrUnicodeBuffer[0]);
+                                                    pCodeToGID[nCode] = pTTFontFile->mapCodeToGID(arrCMapIndex[nIndex], arrUnicodeBuffer[0]);
                                                 else
                                                     break;
                                             }
@@ -1327,14 +1331,14 @@ namespace PdfReader
                             pCodeToUnicode->Release();
                         }
                     }
-                    else if (((GfxCIDFont *)pFont)->GetCIDToGID())
+                    else if (((GfxCIDFont *)pFont)->getCIDToGID())
                     {
-                        nLen = ((GfxCIDFont *)pFont)->GetCIDToGIDLen();
+                        nLen = ((GfxCIDFont *)pFont)->getCIDToGIDLen();
                         pCodeToGID = (unsigned short *)MemUtilsMallocArray(nLen, sizeof(unsigned short));
                         if (!pCodeToGID)
                             break;
 
-                        memcpy(pCodeToGID, ((GfxCIDFont *)pFont)->GetCIDToGID(), nLen * sizeof(unsigned short));
+                        memcpy(pCodeToGID, ((GfxCIDFont *)pFont)->getCIDToGID(), nLen * sizeof(unsigned short));
                     }
 
                     break;
@@ -1483,7 +1487,7 @@ namespace PdfReader
                                 for (int nIndex = 0; nIndex < nArrayLen; ++nIndex)
                                 {
                                     Object oTemp;
-                                    oDifferences.ArrayGet(nIndex, &oTemp);
+                                    oDifferences.arrayGet(nIndex, &oTemp);
                                     if (oTemp.isInt())
                                     {
                                         int nCode = oTemp.getInt();
@@ -2653,7 +2657,7 @@ namespace PdfReader
 		double t0, t1;
 		pShading->getCoords(&x1, &y1, &r1, &x2, &y2, &r2);
 		t0 = pShading->getDomain0();
-		t1 = pShading->GetDomain1();
+		t1 = pShading->getDomain1();
 
 		double xdpi;
 		m_pRenderer->get_DpiX(&xdpi);
@@ -3009,7 +3013,7 @@ namespace PdfReader
 
         // Проверяем наличие текущего шрифта
         TFontEntry oEntry;
-        if (!m_pFontList->getFont(pGState->getFont()->getID(), &oEntry))
+        if (!m_pFontList->GetFont(pGState->getFont()->getID(), &oEntry))
             return;
 
         int nRendererMode = pGState->GetRenderMode();
@@ -3058,7 +3062,7 @@ namespace PdfReader
 
         // Проверяем наличие текущего шрифта
         TFontEntry oEntry;
-        if (!m_pFontList->getFont(pGState->getFont()->getID(), &oEntry))
+        if (!m_pFontList->GetFont(pGState->getFont()->getID(), &oEntry))
             return;
 
         int   nRenderMode = pGState->GetRenderMode();
@@ -3814,11 +3818,11 @@ namespace PdfReader
         m_pRenderer->BeginCommand(c_nPathType);
         m_pRenderer->PathCommandEnd();
 
-        int nSubPathCount = pPath->GetSubpathsCount();
+        int nSubPathCount = pPath->getSubpathsCount();
 
         for (int nSubPathIndex = 0; nSubPathIndex < nSubPathCount; ++nSubPathIndex)
         {
-            GfxSubpath *pSubpath = pPath->GetSubpath(nSubPathIndex);
+            GfxSubpath *pSubpath = pPath->getSubpath(nSubPathIndex);
             int nPointsCount = pSubpath->GetPointsCount();
 
             m_pRenderer->PathCommandMoveTo(PDFCoordsToMM(pSubpath->getX(0) + dShiftX), PDFCoordsToMM(pSubpath->getY(0) + dShiftY));

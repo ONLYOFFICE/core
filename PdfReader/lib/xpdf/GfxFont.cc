@@ -251,7 +251,7 @@ GfxFontType GfxFont::getFontType(XRef *xref, Dict *fontDict, Ref *embID) {
   } else if (subtype.isName("Type3")) {
     expectedType = fontType3;
   } else if (subtype.isName("TrueType")) {
-    expectedType = fontTrueTypeTempName;
+    expectedType = fontTrueType;
   } else if (subtype.isName("Type0")) {
     isType0 = gTrue;
   } else {
@@ -299,7 +299,7 @@ GfxFontType GfxFont::getFontType(XRef *xref, Dict *fontDict, Ref *embID) {
       *embID = obj3.getRef();
       if (isType0) {
 	expectedType = fontCIDType2;
-      } else if (expectedType != fontTrueTypeTempName) {
+      } else if (expectedType != fontTrueType) {
 	err = gTrue;
       }
     }
@@ -322,9 +322,9 @@ GfxFontType GfxFont::getFontType(XRef *xref, Dict *fontDict, Ref *embID) {
 	    expectedType = isType0 ? fontCIDType0C : fontType1C;
 	  }
 	} else if (subtype.isName("TrueType")) {
-	  if (expectedType != fontTrueTypeTempName) {
+	  if (expectedType != fontTrueType) {
 	    err = gTrue;
-	    expectedType = isType0 ? fontCIDType2 : fontTrueTypeTempName;
+	    expectedType = isType0 ? fontCIDType2 : fontTrueType;
 	  }
 	} else if (subtype.isName("CIDFontType0C")) {
 	  if (expectedType == fontCIDType0) {
@@ -334,8 +334,8 @@ GfxFontType GfxFont::getFontType(XRef *xref, Dict *fontDict, Ref *embID) {
 	    expectedType = isType0 ? fontCIDType0C : fontType1C;
 	  }
 	} else if (subtype.isName("OpenType")) {
-	  if (expectedType == fontTrueTypeTempName) {
-	    expectedType = fontTrueTypeTempNameOT;
+	  if (expectedType == fontTrueType) {
+	    expectedType = fontTrueTypeOT;
 	  } else if (expectedType == fontType1) {
 	    expectedType = fontType1COT;
 	  } else if (expectedType == fontCIDType0) {
@@ -378,7 +378,7 @@ GfxFontType GfxFont::getFontType(XRef *xref, Dict *fontDict, Ref *embID) {
 	break;
       case fofiIdTrueType:
       case fofiIdTrueTypeCollection:
-	t = isType0 ? fontCIDType2 : fontTrueTypeTempName;
+	t = isType0 ? fontCIDType2 : fontTrueType;
 	break;
       case fofiIdOpenTypeCFF8Bit:
 	t = isType0 ? fontCIDType0COT : fontType1COT;
@@ -576,8 +576,8 @@ GfxFontLoc *GfxFont::locateFont(XRef *xref, GBool ps) {
 	case fontType1COT:
 	  embed = globalParams->getPSEmbedType1();
 	  break;
-	case fontTrueTypeTempName:
-	case fontTrueTypeTempNameOT:
+	case fontTrueType:
+	case fontTrueTypeOT:
 	  embed = globalParams->getPSEmbedTrueType();
 	  break;
 	case fontCIDType0C:
@@ -660,7 +660,7 @@ GfxFontLoc *GfxFont::locateFont(XRef *xref, GBool ps) {
       }
     } else {
       if (sysFontType == sysFontTTF || sysFontType == sysFontTTC) {
-	fontLoc->fontType = fontTrueTypeTempName;
+	fontLoc->fontType = fontTrueType;
 	return fontLoc;
       } else if (sysFontType == sysFontPFA || sysFontType == sysFontPFB) {
 	fontLoc->fontType = fontType1;
@@ -671,7 +671,7 @@ GfxFontLoc *GfxFont::locateFont(XRef *xref, GBool ps) {
 	  fontLoc->fontType = fontType1COT;
 	  return fontLoc;
 	} else if (fft == fofiIdTrueType) {
-	  fontLoc->fontType = fontTrueTypeTempNameOT;
+	  fontLoc->fontType = fontTrueTypeOT;
 	  return fontLoc;
 	}
       }
@@ -805,7 +805,7 @@ GfxFontLoc *GfxFont::getExternalFont(GString *path, int fontNum,
     break;
   case fofiIdTrueType:
   case fofiIdTrueTypeCollection:
-    fontType = cid ? fontCIDType2 : fontTrueTypeTempName;
+    fontType = cid ? fontCIDType2 : fontTrueType;
     break;
   case fofiIdOpenTypeCFF8Bit:
     fontType = fontType1COT;
@@ -814,7 +814,7 @@ GfxFontLoc *GfxFont::getExternalFont(GString *path, int fontNum,
     fontType = fontCIDType0COT;
     break;
   case fofiIdDfont:
-    fontType = cid ? fontCIDType2 : fontTrueTypeTempName;
+    fontType = cid ? fontCIDType2 : fontTrueType;
     break;
   case fofiIdUnknown:
   case fofiIdError:
@@ -1106,7 +1106,7 @@ Gfx8BitFont::Gfx8BitFont(XRef *xref, const char *tagA, Ref idA, GString *nameA,
     if (builtinFont && embFontID.num < 0) {
       baseEnc = builtinFont->defaultBaseEnc;
       hasEncoding = gTrue;
-    } else if (type == fontTrueTypeTempName) {
+    } else if (type == fontTrueType) {
       baseEnc = winAnsiEncoding;
     } else {
       baseEnc = standardEncoding;
@@ -1611,8 +1611,8 @@ GBool Gfx8BitFont::problematicForUnicode() {
     case fontType3:
       return !hasToUnicode && !hasEncoding;
 
-    case fontTrueTypeTempName:
-    case fontTrueTypeTempNameOT:
+    case fontTrueType:
+    case fontTrueTypeOT:
       return !hasToUnicode && !hasEncoding;
 
     default:

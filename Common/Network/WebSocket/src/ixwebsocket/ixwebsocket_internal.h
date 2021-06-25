@@ -33,7 +33,7 @@
 #ifndef _IX_WEB_SOCKET_H_
 #define _IX_WEB_SOCKET_H_
 
-#include "../base/WebWorkerBase.h"
+#include "../websocketbase.h"
 #include <ixwebsocket/IXNetSystem.h>
 #include <ixwebsocket/IXWebSocket.h>
 

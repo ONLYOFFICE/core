@@ -38,155 +38,141 @@ namespace NSNetwork
 {
     namespace NSFileTransport
     {
-        CFileTransporter::CFileTransporter(const std::wstring &sDownloadFileUrl, bool bDelete)
-        {
-            m_pInternal = new CFileTransporter_private(sDownloadFileUrl, bDelete);
-        }
+#ifdef _MAC
+        bool m_bIsARCEnabled = false;
 
-        CFileTransporter::CFileTransporter(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
+        void SetARCEnabled(const bool& enabled)
         {
-            m_pInternal = new CFileTransporter_private(sUploadUrl, cData, nSize);
+            m_bIsARCEnabled = enabled;
         }
-
-        CFileTransporter::CFileTransporter(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+        bool GetARCEnabled()
         {
-            m_pInternal = new CFileTransporter_private(sUploadUrl, sUploadFilePath);
+            return m_bIsARCEnabled;
         }
+#endif
+    }
+}
 
-        CFileTransporter::~CFileTransporter()
+namespace NSNetwork
+{
+    namespace NSFileTransport
+    {
+        // DOWNLOADER
+        CFileDownloader::CFileDownloader(std::wstring sFileUrl, bool bDelete)
+        {
+            m_pInternal = new CFileTransporter_private(sFileUrl, bDelete);
+        }
+        CFileDownloader::~CFileDownloader()
         {
             Stop();
-            if (NULL != m_pInternal)
-                delete m_pInternal;
+            delete m_pInternal;
         }
 
-        void CFileTransporter::SetDownloadFilePath(const std::wstring& sDownloadFilePath)
+        void CFileDownloader::SetFilePath(const std::wstring &sFilePath)
         {
-            return m_pInternal->SetDownloadFilePath(sDownloadFilePath);
+            m_pInternal->SetDownloadFilePath(sFilePath);
         }
-
-        std::wstring CFileTransporter::GetDownloadFilePath()
+        std::wstring CFileDownloader::GetFilePath()
         {
             return m_pInternal->GetDownloadFilePath();
         }
 
-        bool CFileTransporter::IsFileDownloaded()
+        bool CFileDownloader::IsFileDownloaded()
         {
             return m_pInternal->IsFileDownloaded();
         }
 
-        void CFileTransporter::SetDownloadFileUrl(const std::wstring &sDownloadFileUrl, bool bDelete)
+        void CFileDownloader::SetFileUrl(const std::wstring &sFileUrl, bool bDelete)
         {
-            m_pInternal->SetDownloadFileUrl(sDownloadFileUrl, bDelete);
+            m_pInternal->SetDownloadFileUrl(sFileUrl, bDelete);
         }
 
-        bool CFileTransporter::DownloadSync()
+        bool CFileDownloader::DownloadSync()
         {
             return m_pInternal->TransferSync();
         }
-
-        void CFileTransporter::DownloadAsync()
+        void CFileDownloader::DownloadAsync()
         {
             m_pInternal->TransferAsync();
         }
 
-        void CFileTransporter::SetUploadUrl(const std::wstring &sUploadUrl)
+        void CFileDownloader::Start(int lPriority) { m_pInternal->Start(lPriority); }
+        int CFileDownloader::GetPriority() { return m_pInternal->GetPriority(); }
+        void CFileDownloader::Suspend() { m_pInternal->Suspend(); }
+        void CFileDownloader::Resume() { m_pInternal->Resume(); }
+        void CFileDownloader::Stop() { m_pInternal->Stop(); }
+        int CFileDownloader::IsRunned() { return m_pInternal->IsRunned(); }
+
+        void CFileDownloader::SetEvent_OnProgress(CFileTransporter_OnProgress func)
         {
-            m_pInternal->SetUploadUrl(sUploadUrl);
+            m_pInternal->GetInternal()->m_func_onProgress = func;
+        }
+        void CFileDownloader::SetEvent_OnComplete(CFileTransporter_OnComplete func)
+        {
+            m_pInternal->GetInternal()->m_func_onComplete = func;
+        }
+    }
+}
+
+namespace NSNetwork
+{
+    namespace NSFileTransport
+    {
+        CFileUploader::CFileUploader(std::wstring sUrl, const unsigned char* cData, const int nSize)
+        {
+            m_pInternal = new CFileTransporter_private(sUrl, cData, nSize);
+        }
+        CFileUploader::CFileUploader(std::wstring sUrl, std::wstring sFilePath)
+        {
+            m_pInternal = new CFileTransporter_private(sUrl, sFilePath);
+        }
+        CFileUploader::~CFileUploader()
+        {
+            Stop();
+            delete m_pInternal;
         }
 
-        void CFileTransporter::SetUploadBinaryData(const unsigned char* cData, const int nSize)
+        void CFileUploader::SetUrl(const std::wstring& sUrl)
         {
-            m_pInternal->SetUploadBinaryDara(cData, nSize);
+            m_pInternal->SetUploadUrl(sUrl);
+        }
+        void CFileUploader::SetBinaryData(const unsigned char* data, const int size)
+        {
+            m_pInternal->SetUploadBinaryDara(data, size);
+        }
+        void CFileUploader::SetFilePath(const std::wstring &sFilePath)
+        {
+            m_pInternal->SetUploadFilePath(sFilePath);
         }
 
-        void CFileTransporter::SetUploadFilePath(const std::wstring &sUploadFilePath)
-        {
-            m_pInternal->SetUploadFilePath(sUploadFilePath);
-        }
-
-        bool CFileTransporter::UploadSync()
+        bool CFileUploader::UploadSync()
         {
             return m_pInternal->TransferSync();
         }
-
-        void CFileTransporter::UploadAsync()
+        void CFileUploader::UploadAsync()
         {
             m_pInternal->TransferAsync();
         }
 
-        std::wstring& CFileTransporter::GetResponse()
+        std::wstring CFileUploader::GetResponse()
         {
             return m_pInternal->GetResponse();
         }
 
-        void CFileTransporter::Start(int lPriority)
-        {
-            return m_pInternal->Start(lPriority);
-        }
+        void CFileUploader::Start(int lPriority) { m_pInternal->Start(lPriority); }
+        int CFileUploader::GetPriority() { return m_pInternal->GetPriority(); }
+        void CFileUploader::Suspend() { m_pInternal->Suspend(); }
+        void CFileUploader::Resume() { m_pInternal->Resume(); }
+        void CFileUploader::Stop() { m_pInternal->Stop(); }
+        int CFileUploader::IsRunned() { return m_pInternal->IsRunned(); }
 
-        void CFileTransporter::Suspend()
-        {
-            return m_pInternal->Suspend();
-        }
-
-        void CFileTransporter::Resume()
-        {
-            return m_pInternal->Resume();
-        }
-
-        void CFileTransporter::Stop()
-        {
-            return m_pInternal->Stop();
-        }
-
-        int CFileTransporter::IsSuspended()
-        {
-            return m_pInternal->IsSuspended();
-        }
-
-        int CFileTransporter::IsRunned()
-        {
-            return m_pInternal->IsRunned();
-        }
-
-        int CFileTransporter::GetError()
-        {
-            return m_pInternal->GetError();
-        }
-
-        int CFileTransporter::GetPriority()
-        {
-            return m_pInternal->GetPriority();
-        }
-
-        void CFileTransporter::CheckSuspend()
-        {
-            return m_pInternal->CheckSuspend();
-        }
-
-        void CFileTransporter::SetEvent_OnProgress(CFileTransporter_OnProgress func)
+        void CFileUploader::SetEvent_OnProgress(CFileTransporter_OnProgress func)
         {
             m_pInternal->GetInternal()->m_func_onProgress = func;
         }
-
-        void CFileTransporter::SetEvent_OnComplete(CFileTransporter_OnComplete func)
+        void CFileUploader::SetEvent_OnComplete(CFileTransporter_OnComplete func)
         {
             m_pInternal->GetInternal()->m_func_onComplete = func;
         }
-
-        #ifdef _MAC
-        bool CFileTransporter::m_bIsARCEnabled = false;
-
-        void CFileTransporter::SetARCEnabled(const bool& enabled)
-        {
-            m_bIsARCEnabled = enabled;
-        }
-
-        bool CFileTransporter::GetARCEnabled()
-        {
-            return m_bIsARCEnabled;
-        }
-        #endif
     }
 }

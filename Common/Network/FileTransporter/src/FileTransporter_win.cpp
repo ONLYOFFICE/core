@@ -90,11 +90,11 @@ namespace NSNetwork
                 CoInitialize ( NULL );
                 if ( /*S_OK != _DownloadFile ( m_sFileUrl )*/TRUE )
                 {
-                    HRESULT hrResultAll = DownloadFileAll(m_sDownloadFileUrl, m_sFilePath);
+                    HRESULT hrResultAll = DownloadFileAll(m_sDownloadFileUrl, m_sDownloadFilePath);
 
                     if (S_OK != hrResultAll)
                     {
-                        hrResultAll = (true == DownloadFilePS(m_sDownloadFileUrl, m_sFilePath)) ? S_OK : S_FALSE;
+                        hrResultAll = (true == DownloadFilePS(m_sDownloadFileUrl, m_sDownloadFilePath)) ? S_OK : S_FALSE;
                         CoUninitialize ();
                         return hrResultAll;
                     }
@@ -136,7 +136,7 @@ namespace NSNetwork
                 if ( !m_pFile )
                     return S_FALSE;
 
-                m_sFilePath = std::wstring( sTempFile );
+                m_sDownloadFilePath = std::wstring( sTempFile );
 
                 // Открываем сессию
                 HINTERNET hInternetSession = InternetOpenW ( L"Mozilla/4.0 (compatible; MSIE 5.0; Windows 98)", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0 );

@@ -30,33 +30,35 @@
  *
  */
 
-#ifndef _WEB_WORKER_BASE_H_
-#define _WEB_WORKER_BASE_H_
+#include "./../include/websocket.h"
 
-#include "../../include/websocket.h"
+#ifdef USE_IXWEBSOCKET
+#include "./ixwebsocket/ixwebsocket_internal.h"
+#endif
+
+#ifdef USE_SOCKETROCKET
+#include "./socketrocket/socketRocket_internal.h"
+#endif
 
 namespace NSNetwork
 {
-    namespace NSWebSocket
-    {
-        class CWebWorkerBase: public IWebSocket
-        {
-            protected:
-                std::shared_ptr<IListener> listener;
-                std::string url;
-
-            public:
-                CWebWorkerBase(const std::string& url, std::shared_ptr<IListener> listener)
-                {
-                    this->url = url;
-                    this->listener = listener;
-                }
-                virtual void open() override {}
-                virtual void send(const std::string& message) override {}
-                virtual void close() override {}
-                virtual void setUrl(const std::string& url) override {this->url = url;}
-        };
-    }
+	namespace NSWebSocket
+	{
+	    std::shared_ptr<IWebSocket> createWebsocket(const std::string& type, std::shared_ptr<IListener> listener, const std::string& url)
+	    {
+#ifdef USE_IXWEBSOCKET
+            if (type == "ixwebsocket")
+		    {
+                return std::make_shared<CIXWebSocket>(url, listener);
+		    }
+#endif
+#ifdef USE_SOCKETROCKET
+            if (type == "socketRocket")
+            {
+                return std::make_shared<CSocketRocket>(url, listener);
+            }
+#endif
+            return nullptr;
+	    }
+	}
 }
-
-#endif /* _WEB_WORKER_BASE_H_ */

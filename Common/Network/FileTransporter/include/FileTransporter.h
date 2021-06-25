@@ -42,153 +42,91 @@ namespace NSNetwork
         // <return> cancel: 1, else 0
         typedef int (*CFileTransporter_OnProgress)(int percent);
 
-        class CFileTransporter_private;
-        class KERNEL_DECL CFileTransporter
+        class KERNEL_DECL IFileTransporter
         {
-        protected:
-            // создаем в зависимости от платформы
-            CFileTransporter_private* m_pInternal;
-
-        #ifdef _MAC
-            static bool m_bIsARCEnabled;
-        #endif
+        public:
+            IFileTransporter() {}
+            virtual ~IFileTransporter() {}
 
         public:
-            CFileTransporter(const std::wstring &sDownloadFileUrl, bool bDelete = true); //download constructor
-            CFileTransporter(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize); //upload data constructor
-            CFileTransporter(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath); //upload file constructor
-            virtual ~CFileTransporter();
+            // thread
+            virtual void Start(int lPriority) = 0;
+            virtual int GetPriority() = 0;
+            virtual void Suspend() = 0;
+            virtual void Resume() = 0;
+            virtual void Stop() = 0;
+            virtual int IsRunned() = 0;
 
-            void SetDownloadFilePath(const std::wstring& sDownloadFilePath);
-            std::wstring GetDownloadFilePath();
+            //events
+            virtual void SetEvent_OnProgress(CFileTransporter_OnProgress) = 0;
+            virtual void SetEvent_OnComplete(CFileTransporter_OnComplete) = 0;
+        };
+
+#ifdef _MAC
+        KERNEL_DECL void SetARCEnabled(const bool& enabled);
+        KERNEL_DECL bool GetARCEnabled();
+#endif
+
+        class CFileTransporter_private;
+
+        class KERNEL_DECL CFileDownloader: public IFileTransporter
+        {
+        public:
+            CFileDownloader(std::wstring sFileUrl, bool bDelete = true);
+            virtual ~CFileDownloader();
+
+            void SetFilePath(const std::wstring& sFilePath);
+            std::wstring GetFilePath();
+
             bool IsFileDownloaded();
-            void SetDownloadFileUrl(const std::wstring &sDownloadFileUrl, bool bDelete = true);
+
+            void SetFileUrl(const std::wstring &sFileUrl, bool bDelete = true);
+
             bool DownloadSync();
             void DownloadAsync();
 
-            void SetUploadUrl(const std::wstring &sUploadUrl);
-            void SetUploadBinaryData(const unsigned char* data, const int size);
-            void SetUploadFilePath(const std::wstring &sUploadFilePath);
+        public:
+            virtual void Start(int lPriority);
+            virtual int GetPriority();
+            virtual void Suspend();
+            virtual void Resume();
+            virtual void Stop();
+            virtual int IsRunned();
+            virtual void SetEvent_OnProgress(CFileTransporter_OnProgress);
+            virtual void SetEvent_OnComplete(CFileTransporter_OnComplete);
+
+        private:
+            CFileTransporter_private* m_pInternal;
+        };
+
+        class KERNEL_DECL CFileUploader: public IFileTransporter
+        {
+        public:
+            CFileUploader(std::wstring sUrl, const unsigned char* cData, const int nSize);
+            CFileUploader(std::wstring sUrl, std::wstring sFilePath);
+            virtual ~CFileUploader();
+
+            void SetUrl(const std::wstring& sUrl);
+            void SetBinaryData(const unsigned char* data, const int size);
+            void SetFilePath(const std::wstring &sFilePath);
+
             bool UploadSync();
             void UploadAsync();
 
+            std::wstring GetResponse();
+
         public:
-            std::wstring& GetResponse();
+            virtual void Start(int lPriority);
+            virtual int GetPriority();
+            virtual void Suspend();
+            virtual void Resume();
+            virtual void Stop();
+            virtual int IsRunned();
+            virtual void SetEvent_OnProgress(CFileTransporter_OnProgress);
+            virtual void SetEvent_OnComplete(CFileTransporter_OnComplete);
 
-            void Start(int lPriority);
-            void Suspend();
-            void Resume();
-            void Stop();
-
-            int IsSuspended();
-            int IsRunned();
-            int GetError();
-
-            int GetPriority();
-
-            void CheckSuspend();
-
-            //events
-            void SetEvent_OnProgress(CFileTransporter_OnProgress);
-            void SetEvent_OnComplete(CFileTransporter_OnComplete);
-
-        #ifdef _MAC
-            static void SetARCEnabled(const bool& enabled);
-            static bool GetARCEnabled();
-        #endif
-        };
-
-        class KERNEL_DECL CFileDownloader: public CFileTransporter
-        {
-        public:
-
-            CFileDownloader(std::wstring sDownloadFileUrl, bool bDelete) :
-            CFileTransporter(sDownloadFileUrl, bDelete)
-            {
-
-            }
-
-            virtual ~CFileDownloader()
-            {
-
-            }
-
-            void SetFilePath(const std::wstring& sDownloadFilePath)
-            {
-                CFileTransporter::SetDownloadFilePath(sDownloadFilePath);
-            }
-
-            std::wstring GetFilePath()
-            {
-            	return CFileTransporter::GetDownloadFilePath();
-            }
-
-            bool IsFileDownloaded()
-            {
-            	return CFileTransporter::IsFileDownloaded();
-            }
-
-            void SetDownloadFileUrl(const std::wstring &sDownloadFileUrl, bool bDelete = true)
-            { 
-            	CFileTransporter::SetDownloadFileUrl(sDownloadFileUrl, bDelete);
-            }
-
-            bool DownloadSync()
-            {
-            	return CFileTransporter::DownloadSync();
-            }
-
-            void DownloadAsync()
-            {
-            	CFileTransporter::DownloadAsync();
-            }
-        };
-
-        class KERNEL_DECL CFileUploader: public CFileTransporter
-        {
-        public:
-
-            CFileUploader(std::wstring sUploadUrl, const unsigned char* cData, const int nSize) :
-            CFileTransporter(sUploadUrl, cData, nSize)
-            {
-
-            }
-
-            CFileUploader(std::wstring sUploadUrl, std::wstring sUploadFilePath) :
-            CFileTransporter(sUploadUrl, sUploadFilePath)
-            {
-
-            }
-
-            virtual ~CFileUploader()
-            {
-
-            }
-
-            void SetUploadUrl(const std::wstring& sUploadUrl)
-            {
-                CFileTransporter::SetUploadUrl(sUploadUrl);
-            }
-
-            std::wstring SetUploadBinaryData(const unsigned char* data, const int size)
-            {
-            	CFileTransporter::SetUploadBinaryData(data, size);
-            }
-
-            void SetUploadFilePath(const std::wstring &sUploadFilePath)
-            {
-            	CFileTransporter::SetUploadFilePath(sUploadFilePath);
-            }
-
-            bool UploadSync()
-            {
-            	return CFileTransporter::UploadSync();
-            }
-
-            void UploadAsync()
-            {
-            	CFileTransporter::UploadAsync();
-            }
+        private:
+            CFileTransporter_private* m_pInternal;
         };
     }
 }

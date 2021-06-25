@@ -30,8 +30,8 @@
  *
  */
 
-//#ifndef _SOCKET_ROCKET_OBJC_H_
-//#define _SOCKET_ROCKET_OBJC_H_
+#ifndef _SOCKET_ROCKET_OBJC_H_
+#define _SOCKET_ROCKET_OBJC_H_
 
 #import <SocketRocket/SRWebSocket.h>
 #include "../../include/websocket.h"
@@ -55,4 +55,4 @@
 @end
 
 
- /* _SOCKET_ROCKET_OBJC_H_ */
+#endif /* _SOCKET_ROCKET_OBJC_H_ */

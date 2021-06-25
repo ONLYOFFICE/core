@@ -25,105 +25,6 @@ include(../OfficeUtils/OfficeUtils.pri)
 CONFIG += core_static_link_xml_full
 include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
-# WEBSOCKET
-include(../Common/WebSocket/websocket.pri)
-
-ixwebsocket {
-
-    DEFINES += USE_IXWEBSOCKET    
-	
-	include(../Common/3dParty/ixwebsocket/ixwebsocket.pri)
-	
-    HEADERS += \
-        ./WebSocket/websocket.h \
-        ./WebSocket/WebWorkerBase.h \
-        ./WebSocket/ixwebsocket_internal.h \
-
-    SOURCES += \
-        ./WebSocket/ixwebsocket_internal.cpp \
-        ./WebSocket/managerWebSocket.cpp \
-        
-}
-
-socketrocket {
-
-    DEFINES += USE_SOCKETROCKET
-
-    include(../Common/3dParty/socketrocket/socketrocket.pri)
-
-    HEADERS += \
-        ./WebSocket/websocket.h \
-        ./WebSocket/WebWorkerBase.h \
-        ./WebSocket/socketRocket_objc.h \
-        ./WebSocket/socketRocket_internal.h \
-
-    OBJECTIVE_SOURCES += \
-        ./WebSocket/socketRocket_objc.mm \
-        ./WebSocket/socketRocket_internal.mm \
-        ./WebSocket/managerWebSocket.cpp \
-
-}
-
-
-# DOWNLOADER
-HEADERS += \
-    ./FileDownloader/FileDownloader.h \
-    ./FileDownloader/FileDownloader_private.h \
-    ./FileDownloader/download_external.h
-
-SOURCES += ./FileDownloader/FileDownloader.cpp
-
-core_windows {
-    SOURCES += \
-        ./FileDownloader/FileDownloader_win.cpp
-
-    LIBS += -lAdvapi32
-    LIBS += -lurlmon
-    LIBS += -lRpcrt4
-    LIBS += -lShell32
-}
-core_linux {
-    CONFIG += use_external_download
-
-    use_external_download {
-        DEFINES += USE_EXTERNAL_DOWNLOAD
-    } else {
-        include(../Common/3dParty/curl/curl.pri)
-    }
-
-    SOURCES += \
-        ./FileDownloader/FileDownloader_curl.cpp
-}
-core_mac {
-    DEFINES += USE_EXTERNAL_DOWNLOAD
-    OBJECTIVE_SOURCES += \
-        ./FileDownloader/FileDownloader_mac.mm
-
-    LIBS += -framework AppKit
-}
-
-core_ios {
-    OBJECTIVE_SOURCES += \
-        ./FileDownloader/FileDownloader_mac.mm \
-        ./../DesktopEditor/common/File_ios.mm
-
-    LIBS += -framework Foundation
-
-}
-
-core_android {
-    DEFINES += USE_FILE32API
-    SOURCES += ./FileDownloader/FileDownloader_curl.cpp
-
-    use_external_download {
-        DEFINES += USE_EXTERNAL_DOWNLOAD
-    } else {
-        include(../Common/3dParty/curl/curl.pri)
-    }
-
-    DEFINES += NOT_USE_PTHREAD_CANCEL
-}
-
 # CONFIG
 HEADERS += ./kernel_config.h
 
@@ -181,3 +82,8 @@ SOURCES += ./../DesktopEditor/common/Directory.cpp
 # SYSTEM
 HEADERS += ./../DesktopEditor/common/SystemUtils.h
 SOURCES += ./../DesktopEditor/common/SystemUtils.cpp
+
+core_windows {
+    LIBS += -lRpcrt4
+    LIBS += -lShell32
+}

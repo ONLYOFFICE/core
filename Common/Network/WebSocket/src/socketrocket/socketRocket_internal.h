@@ -33,7 +33,7 @@
 #ifndef _SOCKET_ROCKET_H_
 #define _SOCKET_ROCKET_H_
 
-#include "../base/WebWorkerBase.h"
+#include "../websocketbase.h"
 
 namespace NSNetwork
 {

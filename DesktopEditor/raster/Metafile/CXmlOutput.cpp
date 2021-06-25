@@ -65,6 +65,11 @@ namespace MetaFile
         return (IsReader()) ? m_pXmlLiteReader->IsValid() : m_pXmlLiteReader->IsValid();
     }
 
+    bool CXmlOutput::IsEmptyNode() const
+    {
+        return (IsReader() ? m_pXmlLiteReader->IsEmptyNode() : false);
+    }
+
     void CXmlOutput::WriteString(const std::wstring &wsValue)
     {
         m_pXmlWriter->WriteString(wsValue);
@@ -260,9 +265,7 @@ namespace MetaFile
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfPointL &oNodeValue, std::vector<XmlArgument> arArguments)
     {
         WriteNodeBegin(wsNameNode, arArguments);
-        WriteNodeBegin(L"Point");
         WriteTEmfPointL(oNodeValue);
-        WriteNodeEnd(L"Point");
         WriteNodeEnd(wsNameNode);
     }
 

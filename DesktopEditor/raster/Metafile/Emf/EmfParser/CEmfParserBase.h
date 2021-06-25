@@ -46,6 +46,7 @@ namespace MetaFile
         virtual void ReadValue (TEmfPolyTextoutA&)      = 0;
         virtual void ReadValue (TEmfPolyTextoutW&)      = 0;
         virtual void ReadValue (TEmfSmallTextout&)      = 0;
+        virtual void ReadValue (CDataStream&)           = 0;
 
         virtual void ReadValue (unsigned short&)   = 0;
         virtual void ReadValue (unsigned char&)    = 0;

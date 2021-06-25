@@ -36,9 +36,10 @@ namespace MetaFile
 
         void Clear();
 
-        bool IsWriter() const;
-        bool IsReader() const;
-        bool IsValid()  const;
+        bool IsWriter()     const;
+        bool IsReader()     const;
+        bool IsValid()      const;
+        bool IsEmptyNode()  const;
 
         // Запись в Xml файл
 

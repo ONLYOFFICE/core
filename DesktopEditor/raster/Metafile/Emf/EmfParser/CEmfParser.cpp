@@ -157,6 +157,11 @@ namespace MetaFile
         *m_pStream >> oTEmfSmallTextout;
     }
 
+    void CEmfParser::ReadValue(CDataStream &oDataStream)
+    {
+        //Ничего не делаем
+    }
+
     void CEmfParser::ReadValue(unsigned short &ushValue)
     {
         *m_pStream >> ushValue;

@@ -41,6 +41,7 @@ namespace MetaFile
         void ReadValue (TEmfPolyTextoutA& oTEmfPolyTextoutA)           override;
         void ReadValue (TEmfPolyTextoutW& oTEmfPolyTextoutW)           override;
         void ReadValue (TEmfSmallTextout& oTEmfSmallTextout)           override;
+        void ReadValue (CDataStream& oDataStream)                      override;
 
         void ReadValue (unsigned short& ushValue)  override;
         void ReadValue (unsigned char& ucValue)    override;

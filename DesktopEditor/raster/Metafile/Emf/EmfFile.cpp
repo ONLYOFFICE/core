@@ -391,6 +391,10 @@ static const struct ActionNamesEmf
 		unsigned int ulHeaderSize = cbBmi;
 		int lBitsOffset           = offBits - offBmi - cbBmi;
 		unsigned int ulBitsSize   = cbBits;
+
+		if (m_pParser->GetParserType() == EmfParserType::EmfxParser && ulBitsSize != 0)
+			m_pParser->ReadValue(m_oStream);
+
 		if (ulHeaderSize <= 0 || ulBitsSize <= 0 || lHeaderOffset < 0 || lBitsOffset < 0)
 		{
 			// TODO: Если попали сюда, значит надо смотреть BitBltRasterOperation

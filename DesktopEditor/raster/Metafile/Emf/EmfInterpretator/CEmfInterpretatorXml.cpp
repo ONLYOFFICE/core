@@ -265,6 +265,7 @@ namespace MetaFile
             m_pOutputXml->WriteNodeBegin(L"LogPen");
                 m_pOutputXml->WriteNode(L"PenStyle", pPen->PenStyle);
                 m_pOutputXml->WriteNode(L"Width", unWidthX);
+                m_pOutputXml->WriteNode(L"Height", unWidthX);
                 m_pOutputXml->WriteNodeEnd(L"LogPen");
             m_pOutputXml->WriteNode(L"COLORREF", pPen->Color);
             m_pOutputXml->WriteNodeEnd(L"EMR_CREATEPEN");
@@ -574,8 +575,10 @@ namespace MetaFile
 
     void CEmfInterpretatorXml::Save_EMR_LINETO(const TEmfPointL &oPoint)
     {
-        m_pOutputXml->WriteNode(L"EMR_LINETO", oPoint, {XmlArgument(L"Id", EMR_LINETO),
-                                                        XmlArgument(L"Size", 16)});
+        m_pOutputXml->WriteNodeBegin(L"EMR_LINETO", {XmlArgument(L"Id", EMR_LINETO),
+                                                     XmlArgument(L"Size",16)});
+            m_pOutputXml->WriteNode(L"Point", oPoint);
+            m_pOutputXml->WriteNodeEnd(L"EMR_LINETO");
     }
 
     void CEmfInterpretatorXml::Save_EMR_PIE(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)

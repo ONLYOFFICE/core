@@ -180,6 +180,12 @@ namespace MetaFile
             *m_pOutput >> oTEmfSmallTextout;
     }
 
+    void CEmfxParser::ReadValue(CDataStream &oDataStream)
+    {
+        if (NULL != m_pOutput)
+            *m_pOutput >> oDataStream;
+    }
+
     void CEmfxParser::ReadValue(unsigned short &ushValue)
     {
         if (NULL != m_pOutput)
@@ -217,6 +223,9 @@ namespace MetaFile
 
         if (NULL != m_pOutput)
                 m_pOutput->ReadArguments(unValue1, unValue2);
+
+        if (m_pOutput->IsEmptyNode())
+            m_pOutput->ReadNextNode();
     }
 
 }

@@ -98,7 +98,8 @@ SOURCES += \
     ../Source/XlsxFormat/Slicer/SlicerCache.cpp \
     ../Source/XlsxFormat/Slicer/SlicerCacheExt.cpp \
     ../Source/XlsxFormat/Slicer/Slicer.cpp \
-    ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp
+    ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
+    ../Source/XlsbFormat/Biff12RecordFactory.cpp
 }
 
 
@@ -287,4 +288,18 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Slicer/SlicerCache.h \
     ../Source/XlsxFormat/Slicer/SlicerCacheExt.h \
     ../Source/XlsxFormat/Slicer/Slicer.h \
-    ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.h
+    ../Source/XlsbFormat/NamedSheetViews/NamedSheetViews.h \
+    ../Source/XlsbFormat/BaseRecord.h \
+    ../Source/XlsbFormat/BIFF12Reader.h \
+    ../Source/XlsbFormat/SharedStrings.h \
+    ../Source/XlsbFormat/Comments.h \
+    ../Source/XlsbFormat/Connections.h \
+    ../Source/XlsbFormat/QueryTable.h \
+    ../Source/XlsbFormat/Styles.h \
+    ../Source/XlsbFormat/Tables.h \
+    ../Source/XlsbFormat/Workbook.h \
+    ../Source/XlsbFormat/Worksheet.h \
+    ../Source/XlsbFormat/QueryTable.h \
+    ../Source/XlsbFormat/Biff12RecordFactory.h \
+    ../Source/XlsbFormat/RecordTypes.h \
+    ../Source/Utility/SafeQueue.h

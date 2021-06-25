@@ -36,6 +36,9 @@
 
 #include "Si.h"
 #include <map>
+#include "../../XlsbFormat/BIFF12Reader.h"
+#include <thread>
+#include <algorithm>
 
 namespace OOX
 {
@@ -68,6 +71,61 @@ namespace OOX
 			{
 				ClearItems();
 			}
+
+            void readBin(const CPath& oPath)
+            {
+                NSFile::CFileBinary oFile;
+                if (oFile.OpenFile(m_oReadPath.GetPath()) == false)
+                    return;
+
+                auto m_lStreamLen = (LONG)oFile.GetFileSize();
+                auto m_pStream = new BYTE[m_lStreamLen];
+                DWORD dwRead = 0;
+                oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
+                oFile.CloseFile();
+
+                XLSB::CBIFF12Reader oReaderBin;
+
+                XLSB::CBIFF12Reader::Buffer buf;
+                buf._ptr = m_pStream;
+                buf._len = m_lStreamLen;
+
+                //std::thread t([&]() mutable {
+                //        oReaderBin.readRecord(buf);
+                //});
+                oReaderBin.readRecord(buf);
+                std::shared_ptr<XLSB::BaseRecord> rec = nullptr;
+                while(!oReaderBin.records.empty())
+                //while((rec = oReaderBin.records.dequeue()) != nullptr)
+                {
+                    rec = oReaderBin.records.front();
+                    oReaderBin.records.pop();
+                    if (("si") == rec->GetTag() )
+                    {
+                       CSi* pItem = new CSi();
+                       auto textItem = new CText();
+                       textItem->m_sText = std::dynamic_pointer_cast<XLSB::SIRecord>(rec)->GetText();
+                       pItem->m_arrItems.push_back(textItem);
+                       m_arrItems.push_back(pItem);
+                       m_nCount++;
+                    }
+
+                    else if (("sst") == rec->GetTag() )
+                    {
+                        m_oCount = std::dynamic_pointer_cast<XLSB::SSTRecord>(rec)->GetTotal();
+                        m_oUniqueCount = std::dynamic_pointer_cast<XLSB::SSTRecord>(rec)->GetUnique();
+                        m_nCount = 0;
+
+                    }
+
+                    else if (("/sst") == rec->GetTag() )
+                    {
+                       break;
+                    }
+                }
+                //t.join();
+            }
+
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -78,6 +136,12 @@ namespace OOX
 			{
 				m_oReadPath = oPath;
 				IFileContainer::Read( oRootPath, oPath );
+
+                if( m_oReadPath.GetExtention() == _T(".bin"))
+                {
+                    readBin(m_oReadPath);
+                    return;
+                }
 
 				XmlUtils::CXmlLiteReader oReader;
 
@@ -90,8 +154,8 @@ namespace OOX
 						return;
 				}
 
-				if ( !oReader.ReadNextNode() )
-					return;
+                if ( !oReader.ReadNextNode() )
+                    return;
 
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("sst") == sName )

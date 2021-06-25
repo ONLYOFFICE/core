@@ -1675,7 +1675,10 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	}
 	else if (oInfo.IsPicture())
 	{
-		// TODO: Реализовать картиночную форму
+		CPictureField* pField = m_pDocument->CreatePictureField();
+		pFieldBase = static_cast<CFieldBase*>(pField);
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+		pField->SetAppearance();
 	}
 
 	if (pFieldBase)
@@ -1690,7 +1693,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		}
 
 		pFieldBase->SetRequiredFlag(oInfo.IsRequired());
-		pFieldBase->SetFieldHint(oInfo.GetHelpText());
+		pFieldBase->SetFieldHint(oInfo.GetHelpText());		
 	}
 
 	return S_OK;

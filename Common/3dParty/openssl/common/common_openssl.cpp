@@ -37,6 +37,7 @@
 #include <openssl/pem.h>
 #include <openssl/err.h>
 #include <openssl/aes.h>
+#include <openssl/rand.h>
 
 namespace NSOpenSSL
 {
@@ -482,5 +483,177 @@ namespace NSOpenSSL
                 break;
         }
         return "";
+    }
+
+    // AES GCM for private rooms
+    #define GCM_IV_LENGTH   12
+    #define GCM_TAG_LENGHT  16
+
+    // для того, чтобы мы могли менять алгоритмы, в зависимости от версии
+    // на шифровке - дописываем хедер. сделано на этом уровне, чтобы лишний раз не выделять/копировать память
+    std::string g_aes_header = "VER2;";
+
+    unsigned char* PBKDF2_desktop_GCM(const std::string& pass, const std::string& salt)
+    {
+        unsigned char* key = NULL;
+        if (salt.empty())
+        {
+            unsigned int pass_salt_len = 0;
+            unsigned char* pass_salt = NSOpenSSL::GetHash((unsigned char*)pass.c_str(), (unsigned int)pass.length(), OPENSSL_HASH_ALG_SHA512, pass_salt_len);
+            key = PBKDF2(pass.c_str(), (int)pass.length(), pass_salt, pass_salt_len, OPENSSL_HASH_ALG_SHA256, 32);
+            openssl_free(pass_salt);
+        }
+        else
+        {
+            key = PBKDF2(pass.c_str(), (int)pass.length(), (const unsigned char*)salt.c_str(), (unsigned int)salt.length(), OPENSSL_HASH_ALG_SHA256, 32);
+        }
+        return key;
+    }
+
+    bool AES_Decrypt_desktop_GCM(const unsigned char* key, const std::string& input, std::string& output, const int header_offset)
+    {
+        unsigned char* input_ptr = NULL;
+        int input_ptr_len = 0;
+        bool bBase64 = NSFile::CBase64Converter::Decode(input.c_str() + header_offset, (int)input.length() - header_offset, input_ptr, input_ptr_len);
+        if (!bBase64)
+            return false;
+
+        unsigned char* iv_ptr = input_ptr;
+        unsigned char* tag_ptr = input_ptr + GCM_IV_LENGTH;
+        unsigned char* ciphertext_ptr = tag_ptr + GCM_TAG_LENGHT;
+        int ciphertext_len = input_ptr_len - (GCM_IV_LENGTH + GCM_TAG_LENGHT);
+        unsigned char* output_ptr = NULL;
+        int output_len = 0;
+        int final_len = 0;
+
+        bool bResult = false;
+
+        EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+        if (!ctx)
+            goto end;
+
+        if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
+            goto end;
+
+        if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, GCM_IV_LENGTH, NULL))
+            goto end;
+
+        if (!EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv_ptr))
+            goto end;
+
+        output_ptr = openssl_alloc(ciphertext_len);
+        if (!EVP_DecryptUpdate(ctx, output_ptr, &output_len, ciphertext_ptr, ciphertext_len))
+            goto end;
+
+        if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, GCM_TAG_LENGHT, tag_ptr))
+            goto end;
+
+        if (EVP_DecryptFinal_ex(ctx, output_ptr + output_len, &final_len))
+        {
+            output_len += final_len;
+            bResult = true;
+        }
+
+    end:
+        RELEASEARRAYOBJECTS(input_ptr);
+        if (ctx)
+            EVP_CIPHER_CTX_free(ctx);
+
+        if (bResult)
+        {
+            output = std::string((char*)output_ptr, output_len);
+        }
+
+        if (output_ptr)
+            openssl_free(output_ptr);
+
+        return bResult;
+    }
+    bool AES_Encrypt_desktop_GCM(const unsigned char* key, const std::string& input, std::string& output)
+    {
+        const unsigned char* input_ptr = (const unsigned char*)input.c_str();
+        int input_len = (int)input.length();
+
+        int output_buffer_all_offset = GCM_IV_LENGTH + GCM_TAG_LENGHT;
+        int output_buffer_len = input_len + output_buffer_all_offset;
+        unsigned char* output_ptr = NULL;
+        unsigned char* iv_ptr = NULL;
+        unsigned char* tag_ptr = NULL;
+        unsigned char* ciphertext_ptr = NULL;
+        int ciphertext_len = 0;
+        int final_len = 0;
+
+        bool bResult = false;
+
+        EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+        if (!ctx)
+            goto end;
+
+        if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
+            goto end;
+
+        if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, GCM_IV_LENGTH, NULL))
+            goto end;
+
+        output_ptr = openssl_alloc(output_buffer_len);
+
+        iv_ptr = output_ptr;
+        tag_ptr = iv_ptr + GCM_IV_LENGTH;
+        ciphertext_ptr = tag_ptr + GCM_TAG_LENGHT;
+
+        if (1 != RAND_bytes(iv_ptr, GCM_IV_LENGTH))
+            goto end;
+
+        if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv_ptr))
+            goto end;
+
+        if (1 != EVP_EncryptUpdate(ctx, ciphertext_ptr, &ciphertext_len, input_ptr, input_len))
+            goto end;
+
+        if (1 != EVP_EncryptFinal_ex(ctx, ciphertext_ptr + ciphertext_len, &final_len))
+            goto end;
+        ciphertext_len += final_len;
+
+        if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, GCM_TAG_LENGHT, tag_ptr))
+            goto end;
+
+        bResult = true;
+
+    end:
+        if (ctx)
+            EVP_CIPHER_CTX_free(ctx);
+
+        if (bResult)
+        {
+            // header + base64
+            char* pDataDst = NULL;
+            int nDataDst = 0;
+            NSFile::CBase64Converter::Encode(output_ptr, ciphertext_len + output_buffer_all_offset, pDataDst, nDataDst, NSBase64::B64_BASE64_FLAG_NOCRLF);
+            output = "";
+            output.reserve(g_aes_header.length() + (size_t)nDataDst + 1);
+            output.append(g_aes_header);
+            output.append((char*)pDataDst, nDataDst);
+            RELEASEARRAYOBJECTS(pDataDst);
+        }
+
+        if (output_ptr)
+            openssl_free(output_ptr);
+
+        return bResult;
+    }
+
+    bool AES_Encrypt_desktop_GCM(const std::string& pass, const std::string& input, std::string& output, const std::string& salt)
+    {
+        unsigned char* key = PBKDF2_desktop_GCM(pass, salt);
+        bool bRes = AES_Encrypt_desktop_GCM(key, input, output);
+        openssl_free(key);
+        return bRes;
+    }
+    bool AES_Decrypt_desktop_GCM(const std::string& pass, const std::string& input, std::string& output, const std::string& salt, const int header_offset)
+    {
+        unsigned char* key = PBKDF2_desktop_GCM(pass, salt);
+        bool bRes = AES_Decrypt_desktop_GCM(key, input, output, header_offset);
+        openssl_free(key);
+        return bRes;
     }
 }

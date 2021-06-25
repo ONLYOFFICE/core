@@ -353,7 +353,7 @@ namespace PdfReader
 		std::wstring wsXml;
 
 		wsXml = L"<PDF>";
-		m_pXref->AllObjectsToXml(wsXml, true);
+		m_pXref->AllObjectsToXml(wsXml, false);
 		wsXml += L"</PDF>";
 
 		return wsXml;

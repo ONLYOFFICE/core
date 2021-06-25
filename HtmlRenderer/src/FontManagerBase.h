@@ -53,7 +53,7 @@ namespace NSHtmlRenderer
             std::wstring    				m_strFamilyName;
             BYTE                            m_strPANOSE[10];
             LONG							m_lStyle;
-            std::vector<DWORD>				m_arSignature;
+            std::vector<UINT>				m_arSignature;
             bool							m_bIsFixedWidth;
             LONG							m_lAvgWidth;
 
@@ -456,7 +456,7 @@ namespace NSHtmlRenderer
 
                 for ( unsigned int i = 0; i < 6; i++ )
                 {
-                    DWORD value = 0;
+                    UINT value = 0;
 
                     for ( unsigned long bit = 0; bit < 32; bit++ )
                     {
@@ -476,7 +476,7 @@ namespace NSHtmlRenderer
                     std::wstring sExt;
                     std::wstring sEncodingPath;
 
-                    int nFindExt = m_oFont.m_oFont.Path.find_last_of((wchar_t)'.');
+                    std::wstring::size_type nFindExt = m_oFont.m_oFont.Path.find_last_of((wchar_t)'.');
                     if (nFindExt == std::wstring::npos)
                     {
                         sEncodingPath = m_oFont.m_oFont.Path + L".enc";
@@ -1435,7 +1435,7 @@ namespace NSHtmlRenderer
                     }
                 }
             }
-            inline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, BYTE& lRangeNum, BYTE& lRange)
+            inline void CheckRanges(UINT& lRange1, UINT& lRange2, UINT& lRange3, UINT& lRange4, BYTE& lRangeNum, BYTE& lRange)
             {
                 if (0 == lRangeNum)
                     lRange1 |= 1 << lRange;
@@ -1524,16 +1524,16 @@ namespace NSHtmlRenderer
                 oPick.m_lPickStyle	= m_oFont.m_oProperties.m_lStyle;
 
                 LONG lCountSigs = (LONG)m_oFont.m_oProperties.m_arSignature.size();
-                DWORD dwR1 = 0;
+                UINT dwR1 = 0;
                 if (0 < lCountSigs)
                     dwR1 = m_oFont.m_oProperties.m_arSignature[0];
-                DWORD dwR2 = 0;
+                UINT dwR2 = 0;
                 if (1 < lCountSigs)
                     dwR2 = m_oFont.m_oProperties.m_arSignature[1];
-                DWORD dwR3 = 0;
+                UINT dwR3 = 0;
                 if (2 < lCountSigs)
                     dwR3 = m_oFont.m_oProperties.m_arSignature[2];
-                DWORD dwR4 = 0;
+                UINT dwR4 = 0;
                 if (3 < lCountSigs)
                     dwR4 = m_oFont.m_oProperties.m_arSignature[3];
 
@@ -1566,17 +1566,17 @@ namespace NSHtmlRenderer
                 oFormat.bFixedWidth = new INT(m_oFont.m_oProperties.m_bIsFixedWidth ? 1 : 0);
 
                 if (0 != dwR1)
-                    oFormat.ulRange1 = new ULONG(dwR1);
+                    oFormat.ulRange1 = new UINT(dwR1);
                 if (0 != dwR2)
-                    oFormat.ulRange2 = new ULONG(dwR2);
+                    oFormat.ulRange2 = new UINT(dwR2);
                 if (0 != dwR3)
-                    oFormat.ulRange3 = new ULONG(dwR3);
+                    oFormat.ulRange3 = new UINT(dwR3);
                 if (0 != dwR4)
-                    oFormat.ulRange4 = new ULONG(dwR4);
+                    oFormat.ulRange4 = new UINT(dwR4);
                 if (0 != dwCodePage1)
-                    oFormat.ulCodeRange1 = new ULONG(dwCodePage1);
+                    oFormat.ulCodeRange1 = new UINT(dwCodePage1);
                 if (0 != dwCodePage2)
-                    oFormat.ulCodeRange2 = new ULONG(dwCodePage2);
+                    oFormat.ulCodeRange2 = new UINT(dwCodePage2);
 
                 NSFonts::CFontInfo* pInfo = m_pManager->GetFontInfoByParams(oFormat);
                 oPick.m_strPickFont = pInfo->m_wsFontName;

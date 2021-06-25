@@ -67,6 +67,8 @@ OOX::Spreadsheet::CXlsx::~CXlsx()
 
 bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 {
+	m_sDocumentPath = oFilePath.GetPath();
+
 	OOX::CRels oRels( oFilePath / FILE_SEPARATOR_STR );
 	IFileContainer::Read( oRels, oFilePath, oFilePath );
 

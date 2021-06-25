@@ -70,6 +70,12 @@ public :
         return written;
     }
 
+    static size_t write_data_to_string(char *contents, size_t size, size_t nmemb, void *userp)
+    {
+        ((std::string*)userp)->append((char*)contents, size * nmemb);
+        return size * nmemb;
+    }
+
     virtual int DownloadFile()
     {
         CURL *curl;
@@ -110,6 +116,73 @@ public :
         }
         //int nRes = execl("/usr/bin/wget", stringWstingToUtf8String (m_sFileUrl).c_str(), "-P", stringWstingToUtf8String (m_sFilePath).c_str(), (char *)NULL);
         //m_bComplete = nRes >= 0;
+
+        return m_bComplete ? 0 : 1;
+    }
+
+    virtual int UploadFile()
+    {
+        CURL *curl;
+        CURLcode res;
+        std::string sUrl = U_TO_UTF8(m_sUploadUrl);
+        const char *url = sUrl.c_str();
+        struct curl_slist *headerlist = NULL;
+        std::string readBuffer;
+
+        /* get a curl handle */
+        curl = curl_easy_init();
+        if(curl) {
+
+            headerlist = curl_slist_append(headerlist, "Content-Type: application/octet-stream");
+
+            curl_easy_setopt(curl, CURLOPT_POST, true);
+            curl_easy_setopt(curl, CURLOPT_HEADER, true);
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerlist);
+            /* First set the URL that is about to receive our POST. This URL can
+               just as well be a https:// URL if that is what should receive the
+               data. */
+            curl_easy_setopt(curl, CURLOPT_URL, url);
+            /* Now specify the POST data */
+            /* size of the POST data */
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, m_nSize);
+            /* binary data */
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, m_cData);
+
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data_to_string);
+            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+
+#if defined(__linux__)
+            //в linux нет встроенных в систему корневых сертификатов, поэтому отключаем проверку
+           //http://curl.haxx.se/docs/sslcerts.html
+           curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+#endif
+
+            /* Perform the request, res will get the return code */
+            res = curl_easy_perform(curl);
+
+            long http_code = 0;
+            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
+
+            if (res == CURLE_OK)
+            {
+                if (http_code == 200 || http_code == 1223)
+                {
+                    size_t startLenghtPos = readBuffer.find("Content-Length:") + sizeof("Content-Length:");
+                    size_t endLenghtPos = readBuffer.substr(startLenghtPos, readBuffer.length()).find("\r");
+                    std::string dataSize = readBuffer.substr(startLenghtPos, endLenghtPos);
+                    readBuffer = readBuffer.substr(readBuffer.length() - std::stoi(dataSize));
+                    NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)readBuffer.c_str(), (LONG)readBuffer.length(), m_sResponse);
+                }
+                else
+                {
+                    res = CURLE_HTTP_RETURNED_ERROR;
+                }
+            }
+
+            /* always cleanup */
+            curl_easy_cleanup(curl);
+        }
+        m_bComplete = (CURLE_OK == res);
 
         return m_bComplete ? 0 : 1;
     }

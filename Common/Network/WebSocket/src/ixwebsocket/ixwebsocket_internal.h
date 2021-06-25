@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+/*
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,58 +29,41 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <string>
-#include "../kernel_config.h"
+#ifndef _IX_WEB_SOCKET_H_
+#define _IX_WEB_SOCKET_H_
 
-typedef void (*CFileDownloader_OnComplete)(int error);
-// <return> cancel: 1, else 0
-typedef int (*CFileDownloader_OnProgress)(int percent);
+#include "../base/WebWorkerBase.h"
+#include <ixwebsocket/IXNetSystem.h>
+#include <ixwebsocket/IXWebSocket.h>
 
-class CFileDownloader_private;
-class KERNEL_DECL CFileDownloader
+namespace NSNetwork
 {
-protected:
-    // создаем в зависимости от платформы
-    CFileDownloader_private* m_pInternal;
+    namespace NSWebSocket
+    {
+        class CIXWebSocket: public CWebWorkerBase
+        {
 
-#ifdef _MAC
-    static bool m_bIsARCEnabled;
-#endif
+        private:
 
-public:
-    CFileDownloader(std::wstring sFileUrl, bool bDelete = true);
-    virtual ~CFileDownloader();
+            ix::WebSocket webSocket;
+           
+        public:
 
-    void SetFilePath(const std::wstring& sPath);
-    std::wstring GetFilePath();
-    bool IsFileDownloaded();
+            CIXWebSocket(const std::string& url, std::shared_ptr<IListener> listener): CWebWorkerBase(url, listener)
+            {
+                ix::initNetSystem();
+            }
+            
+        public:
+            
+            virtual void open() override;
+            virtual void send(const std::string& message) override;
+            virtual void close() override;
+            void receive(const ix::WebSocketMessagePtr& msg);
 
-    bool DownloadSync();
-    bool UploadSync();
-    void SetUploadProp(std::wstring &url, unsigned char* data, const int size);
-    std::wstring& GetResponse();
+        };
+    }
+}
 
-    void Start(int lPriority);
-    void Suspend();
-    void Resume();
-    void Stop();
-
-    int IsSuspended();
-    int IsRunned();
-    int GetError();
-
-    int GetPriority();
-
-    void CheckSuspend();
-
-    //events
-    void SetEvent_OnProgress(CFileDownloader_OnProgress);
-    void SetEvent_OnComplete(CFileDownloader_OnComplete);
-
-#ifdef _MAC
-    static void SetARCEnabled(const bool& enabled);
-    static bool GetARCEnabled();
-#endif
-};
+#endif /* _IX_WEB_SOCKET_H_ */

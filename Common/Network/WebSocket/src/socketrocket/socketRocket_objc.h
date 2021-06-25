@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+/*
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,58 +29,30 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <string>
-#include "../kernel_config.h"
+//#ifndef _SOCKET_ROCKET_OBJC_H_
+//#define _SOCKET_ROCKET_OBJC_H_
 
-typedef void (*CFileDownloader_OnComplete)(int error);
-// <return> cancel: 1, else 0
-typedef int (*CFileDownloader_OnProgress)(int percent);
+#import <SocketRocket/SRWebSocket.h>
+#include "../../include/websocket.h"
 
-class CFileDownloader_private;
-class KERNEL_DECL CFileDownloader
+
+@interface SocketRocketObjC: NSObject<SRWebSocketDelegate>
 {
-protected:
-    // создаем в зависимости от платформы
-    CFileDownloader_private* m_pInternal;
+    NSNetwork::NSWebSocket::IListener* m_listener;
+    NSString* m_url;
+}
 
-#ifdef _MAC
-    static bool m_bIsARCEnabled;
-#endif
+@property (strong, nonatomic) SRWebSocket *socket;
 
-public:
-    CFileDownloader(std::wstring sFileUrl, bool bDelete = true);
-    virtual ~CFileDownloader();
 
-    void SetFilePath(const std::wstring& sPath);
-    std::wstring GetFilePath();
-    bool IsFileDownloaded();
+- (void) open;
+- (void) send: (NSString *)name;
+- (void) close;
+- (void) setListener: (NSNetwork::NSWebSocket::IListener *)listener;
+- (void) setUrl: (NSString *)url;
 
-    bool DownloadSync();
-    bool UploadSync();
-    void SetUploadProp(std::wstring &url, unsigned char* data, const int size);
-    std::wstring& GetResponse();
+@end
 
-    void Start(int lPriority);
-    void Suspend();
-    void Resume();
-    void Stop();
 
-    int IsSuspended();
-    int IsRunned();
-    int GetError();
-
-    int GetPriority();
-
-    void CheckSuspend();
-
-    //events
-    void SetEvent_OnProgress(CFileDownloader_OnProgress);
-    void SetEvent_OnComplete(CFileDownloader_OnComplete);
-
-#ifdef _MAC
-    static void SetARCEnabled(const bool& enabled);
-    static bool GetARCEnabled();
-#endif
-};
+ /* _SOCKET_ROCKET_OBJC_H_ */

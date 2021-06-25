@@ -44,6 +44,13 @@ public :
         m_sFileUrl  = sFileUrl;
         m_bComplete = false;
         m_bDelete   = bDelete;
+        m_bIsUpload = false;
+
+        m_sUploadUrl = L"";
+        m_cData = NULL;
+        m_nSize = 0;
+        m_sResponse = L"";
+
 
         m_func_onComplete = NULL;
         m_func_onProgress = NULL;
@@ -58,6 +65,7 @@ public :
     }
 
     virtual int DownloadFile() = 0;
+    virtual int UploadFile(){ return 0;}
 
 public:
     std::wstring    m_sFilePath;       // Путь к сохраненному файлу на диске
@@ -65,6 +73,12 @@ public:
 
     bool            m_bComplete;       // Закачался файл или нет
     bool            m_bDelete;         // Удалять ли файл в деструкторе
+    bool            m_bIsUpload;       // Если хотим выгрузку данных
+
+    std::wstring    m_sUploadUrl;      // URL для выгрузки данных
+    unsigned char*  m_cData;           // Данные в сыром виде
+    int             m_nSize;           // Размер данных
+    std::wstring    m_sResponse;       // Ответ сервера
 
     CFileDownloader_OnComplete m_func_onComplete;
     CFileDownloader_OnProgress m_func_onProgress;
@@ -103,6 +117,18 @@ public:
     {
         return m_pInternal->m_bComplete;
     }
+    void SetUploadProp(std::wstring &url, unsigned char* data, const int size)
+    {
+        m_pInternal->m_sUploadUrl = url;
+        m_pInternal->m_cData = data;
+        m_pInternal->m_nSize = size;
+        m_pInternal->m_bIsUpload = true;
+    }
+
+    std::wstring& GetResponse()
+    {
+        return m_pInternal->m_sResponse;
+    }
 
     bool DownloadSync()
     {
@@ -120,7 +146,7 @@ protected :
     {
         m_pInternal->m_bComplete = false;
 
-        int hrResultAll = m_pInternal->DownloadFile();
+        int hrResultAll = m_pInternal->m_bIsUpload?m_pInternal->UploadFile():m_pInternal->DownloadFile();
         if (0 == hrResultAll)
             m_pInternal->m_bComplete = true;
 

@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+/*
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,58 +29,35 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <string>
-#include "../kernel_config.h"
+#ifndef _SOCKET_ROCKET_H_
+#define _SOCKET_ROCKET_H_
 
-typedef void (*CFileDownloader_OnComplete)(int error);
-// <return> cancel: 1, else 0
-typedef int (*CFileDownloader_OnProgress)(int percent);
+#include "../base/WebWorkerBase.h"
 
-class CFileDownloader_private;
-class KERNEL_DECL CFileDownloader
+namespace NSNetwork
 {
-protected:
-    // создаем в зависимости от платформы
-    CFileDownloader_private* m_pInternal;
+    namespace NSWebSocket
+    {
+        struct SocketRocketImpl;
+        class CSocketRocket: public CWebWorkerBase
+        {
+    	    
+        private:
 
-#ifdef _MAC
-    static bool m_bIsARCEnabled;
-#endif
+             SocketRocketImpl* impl;
+           
+        public:
 
-public:
-    CFileDownloader(std::wstring sFileUrl, bool bDelete = true);
-    virtual ~CFileDownloader();
+            CSocketRocket(const std::string& url, std::shared_ptr<IListener> listener);
+            ~CSocketRocket();
+            virtual void open() override;
+            virtual void send(const std::string& message) override;
+            virtual void close() override;
+            virtual void setUrl(const std::string& url) override;
 
-    void SetFilePath(const std::wstring& sPath);
-    std::wstring GetFilePath();
-    bool IsFileDownloaded();
+        };
+    }
+}
 
-    bool DownloadSync();
-    bool UploadSync();
-    void SetUploadProp(std::wstring &url, unsigned char* data, const int size);
-    std::wstring& GetResponse();
-
-    void Start(int lPriority);
-    void Suspend();
-    void Resume();
-    void Stop();
-
-    int IsSuspended();
-    int IsRunned();
-    int GetError();
-
-    int GetPriority();
-
-    void CheckSuspend();
-
-    //events
-    void SetEvent_OnProgress(CFileDownloader_OnProgress);
-    void SetEvent_OnComplete(CFileDownloader_OnComplete);
-
-#ifdef _MAC
-    static void SetARCEnabled(const bool& enabled);
-    static bool GetARCEnabled();
-#endif
-};
+#endif /* _SOCKET_ROCKET_H_ */

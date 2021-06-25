@@ -46,19 +46,18 @@ namespace XPS
 	{		
 		Close();
 	}
-	bool CDocument::ReadFromPath(const std::wstring& wsPath)
+    bool CDocument::Read(IFolder* pFolder)
 	{
 		Close();
 
-		m_wsPath = wsPath;
+        m_wsPath = pFolder;
 
-		XmlUtils::CXmlLiteReader oReader;
+        XmlUtils::CXmlLiteReader oReader;
 
-		std::wstring wsRelsPath = NormalizePath(wsPath + L"_rels/.rels");
-		if (!oReader.FromFile(wsRelsPath))
+        if (!oReader.FromStringA(m_wsPath->readXml(L"_rels/.rels")))
 			return false;
 
-		if (!oReader.ReadNextNode())
+        if (!oReader.ReadNextNode())
 			return false;
 
 		std::wstring wsName = oReader.GetName();
@@ -87,15 +86,15 @@ namespace XPS
 
 		oReader.Clear();
 
-		std::wstring wsTargerFullPath = m_wsPath + wsTargetFile;
-		if (!NSFile::CFileBinary::Exists(wsTargerFullPath))
+        std::wstring wsTargerFullPath = wsTargetFile;
+        if (!m_wsPath->exists(wsTargerFullPath))
 		{
-			wsTargerFullPath = GetPath(wsRelsPath) + wsTargetFile;
-			if (!NSFile::CFileBinary::Exists(wsTargerFullPath))
+            wsTargerFullPath = GetPath(L"_rels/.rels") + wsTargetFile;
+            if (!m_wsPath->exists(wsTargerFullPath))
 				return false;
 		}
-		
-		if (!oReader.FromFile(wsTargerFullPath))
+
+        if (!oReader.FromStringA(m_wsPath->readXml(wsTargerFullPath)))
 			return false;
 
 		if (!oReader.ReadNextNode())
@@ -122,15 +121,15 @@ namespace XPS
 		oReader.Clear();
 
 
-		std::wstring wsSourceFullPath = m_wsPath + wsSourceFile;
-		if (!NSFile::CFileBinary::Exists(wsSourceFullPath))
+        std::wstring wsSourceFullPath = wsSourceFile;
+        if (!m_wsPath->exists(wsSourceFullPath))
 		{
 			wsSourceFullPath = GetPath(wsTargerFullPath) + wsSourceFile;
-			if (!NSFile::CFileBinary::Exists(wsSourceFullPath))
+            if (!m_wsPath->exists(wsSourceFullPath))
 				return false;
 		}
 
-		if (!oReader.FromFile(wsSourceFullPath))
+        if (!oReader.FromStringA(m_wsPath->readXml(wsSourceFullPath)))
 			return false;
 
 		if (!oReader.ReadNextNode())
@@ -153,15 +152,15 @@ namespace XPS
 			{
 				ReadAttribute(oReader, L"Source", wsSource);
 
-				std::wstring wsPagePath = m_wsPath + wsSource;
-				if (!NSFile::CFileBinary::Exists(wsPagePath))
+                std::wstring wsPagePath = wsSource;
+                if (!m_wsPath->exists(wsPagePath))
 				{
 					wsPagePath = wsFilePath + wsSource;
-					if (!NSFile::CFileBinary::Exists(wsPagePath))
+                    if (!m_wsPath->exists(wsPagePath))
 						continue;
 				}
 
-				m_mPages.insert(std::pair<int, XPS::Page*>(nIndex++, new XPS::Page(wsPagePath, wsPath, &m_oFontList, m_pFontManager, this)));
+                m_mPages.insert(std::pair<int, XPS::Page*>(nIndex++, new XPS::Page(wsPagePath, m_wsPath, &m_oFontList, m_pFontManager, this)));
 			}
 
 		}
@@ -200,6 +199,7 @@ namespace XPS
 				delete oIter->second;
 		}
 		m_mStaticResources.clear();
+        RELEASEOBJECT(m_wsPath);
 	}
 	CStaticResource* CDocument::GetStaticResource(const wchar_t* wsPath)
 	{
@@ -209,7 +209,7 @@ namespace XPS
 				return oIt.second;
 		}
 
-		CStaticResource* pStaticResource = new CStaticResource(wsPath);
+        CStaticResource* pStaticResource = new CStaticResource(m_wsPath->readXml(wsPath));
 		m_mStaticResources.insert(std::pair<std::wstring, CStaticResource*>(wsPath, pStaticResource));
 		return pStaticResource;
 	}

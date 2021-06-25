@@ -39,6 +39,7 @@
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/TemporaryCS.h"
+#include "../../OfficeUtils/src/ZipFolder.h"
 
 namespace XPS
 {
@@ -50,7 +51,7 @@ namespace XPS
         CDocument(NSFonts::IFontManager* pFontManager);
 		~CDocument();
 
-		bool ReadFromPath(const std::wstring& wsPath);
+        bool Read(IFolder* pFolder);
 		int  GetPageCount() const;
 		void GetPageSize(int nPageIndex, int& nW, int& nH);
 		void DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak);
@@ -59,7 +60,7 @@ namespace XPS
 
 	private:
 									        
-		std::wstring                             m_wsPath;					      
+        IFolder*                                 m_wsPath;
 		std::map<int, XPS::Page*>                m_mPages;
 		CFontList                                m_oFontList;
         NSFonts::IFontManager*                   m_pFontManager;

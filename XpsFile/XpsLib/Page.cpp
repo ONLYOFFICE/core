@@ -76,7 +76,7 @@ namespace XPS
             return pFontManager->MeasureChar2(unUnicode).fAdvanceY;
 		}
 	}	
-    Page::Page(const std::wstring& wsPagePath, const std::wstring& wsRootPath, CFontList* pFontList, NSFonts::IFontManager* pFontManager, CDocument* pDocument)
+    Page::Page(const std::wstring& wsPagePath, IFolder* wsRootPath, CFontList* pFontList, NSFonts::IFontManager* pFontManager, CDocument* pDocument)
 	{
 		m_wsPagePath   = wsPagePath;
 		m_wsRootPath   = wsRootPath;
@@ -358,7 +358,7 @@ namespace XPS
 				ReadAttribute(oReader, L"Source", wsSource);
 				if (!wsSource.empty())
 				{
-                    std::wstring wsPath = m_wsRootPath + wsSource.c_stdstr();
+                    std::wstring wsPath = wsSource.c_stdstr();
 					pState->PushResource(m_pDocument->GetStaticResource(wsPath.c_str()), false);
 				}
 				else
@@ -447,11 +447,6 @@ namespace XPS
 						std::wstring wsRelativePath = (std::wstring::npos == nSlashPos) ? m_wsPagePath : m_wsPagePath.substr(0, nSlashPos + 1);
 						wsFontPath = wsRelativePath + wsFontPath;
 					}
-					else
-					{
-						wsFontPath = m_wsRootPath + L"/" + wsFontPath;
-					}
-
 
 					std::wstring wsExt = GetFileExtension(wsFontPath);
 					NSStringExt::ToLower(wsExt);
@@ -964,7 +959,7 @@ namespace XPS
 		if (pBrush)
 		{
 			if (pBrush->IsImageBrush())
-				((CImageBrush*)pBrush)->SetPaths(m_wsRootPath.c_str(), GetPath(m_wsPagePath).c_str());
+                ((CImageBrush*)pBrush)->SetPaths(m_wsRootPath->getFullFilePath(L"").c_str(), GetPath(m_wsPagePath).c_str());
 
 			bFill = pBrush->SetToRenderer(pRenderer);
 			if (bDeleteBrush)

@@ -41,6 +41,8 @@ public:
 
     virtual bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",
                                 const std::wstring& owner_password = L"", const std::wstring& user_password = L"") = 0;
+    virtual bool LoadFromMemory(unsigned char* data, unsigned long length, const std::wstring& options = L"",
+                                const std::wstring& owner_password = L"", const std::wstring& user_password = L"") = 0;
 
     virtual void Close() = 0;
 

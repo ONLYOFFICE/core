@@ -51,7 +51,7 @@ namespace XPS
 	class CStaticResource
 	{
 	public:
-		CStaticResource(const wchar_t* wsPath);
+        CStaticResource(const std::string& wsPath);
 		CStaticResource(XmlUtils::CXmlLiteReader& oReader);
 		~CStaticResource();
 		bool    GetFigure(CWString& wsKey, CWString& wsFigure);

@@ -3,15 +3,23 @@
 
 #include "../../../../GraphicsRenderer.h"
 #include "../../../../pro/Graphics.h"
+#include "../../../../../common/officedrawingfile.h"
+#include "../../../../../../XpsFile/XpsFile.h"
 
 class CGraphicsFileDrawing
 {
 private:
     CBgraFrame* m_pFrame;
     CGraphicsRenderer* m_pGraphics;
+    IOfficeDrawingFile* pReader;
+    NSFonts::IApplicationFonts* pApplicationFonts;
 public:
     CGraphicsFileDrawing(double width_px, double height_px, double width_mm, double height_mm)
     {
+        pApplicationFonts = NSFonts::NSApplication::Create();
+        pApplicationFonts->Initialize();
+        pReader = new CXpsFile(pApplicationFonts);
+
         int nRasterW = (int)width_px;
         int nRasterH = (int)height_px;
         BYTE* pData = new BYTE[4 * nRasterW * nRasterH];

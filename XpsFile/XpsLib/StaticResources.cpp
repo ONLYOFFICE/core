@@ -47,11 +47,11 @@
 
 namespace XPS
 {
-	CStaticResource::CStaticResource(const wchar_t* wsPath)
+    CStaticResource::CStaticResource(const std::string& wsPath)
 	{
 		XmlUtils::CXmlLiteReader oReader;
 
-		if (!oReader.FromFile(wsPath))
+        if (!oReader.FromStringA(wsPath))
 			return;
 
 		Parse(oReader);

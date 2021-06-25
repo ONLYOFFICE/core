@@ -39,6 +39,7 @@
 #include "../PdfWriter/PdfRenderer.h"
 
 #include "../OfficeUtils/src/OfficeUtils.h"
+#include "../OfficeUtils/src/ZipFolder.h"
 
 using namespace XPS;
 
@@ -47,7 +48,7 @@ class CXpsFile_Private
 public:
     NSFonts::IApplicationFonts* m_pAppFonts;
     NSFonts::IFontManager*      m_pFontManager;
-    std::wstring       m_wsTempFolder;
+    IFolder*           m_wsTempFolder;
     XPS::CDocument*    m_pDocument;
 
 public:
@@ -64,7 +65,7 @@ public:
         m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(16);
 
-        m_wsTempFolder = L"";
+        m_wsTempFolder = NULL;
     }
     ~CXpsFile_Private()
     {
@@ -78,29 +79,27 @@ CXpsFile::CXpsFile(NSFonts::IApplicationFonts* pAppFonts)
 }
 CXpsFile::~CXpsFile()
 {
-    if (L"" != m_pInternal->m_wsTempFolder)
-        NSDirectory::DeleteDirectory(m_pInternal->m_wsTempFolder);
-
+    RELEASEOBJECT(m_pInternal->m_wsTempFolder);
 	Close();
     RELEASEINTERFACE((m_pInternal->m_pFontManager));
 }
 std::wstring CXpsFile::GetTempDirectory()
 {
-    return m_pInternal->m_wsTempFolder;
+    return m_pInternal->m_wsTempFolder->getFullFilePath(L"");
 }
 void CXpsFile::SetTempDirectory(const std::wstring& wsPath)
 {
-    if (L"" != m_pInternal->m_wsTempFolder)
-        NSDirectory::DeleteDirectory(m_pInternal->m_wsTempFolder);
+    RELEASEOBJECT(m_pInternal->m_wsTempFolder);
 
 	int nCounter = 0;
-    m_pInternal->m_wsTempFolder = wsPath + L"/XPS/";
-    while (NSDirectory::Exists(m_pInternal->m_wsTempFolder))
+    std::wstring wsTempFolder = wsPath + L"/XPS/";
+    while (NSDirectory::Exists(wsTempFolder))
 	{
-        m_pInternal->m_wsTempFolder = wsPath + L"/XPS" + std::to_wstring(nCounter) + L"/";
+        wsTempFolder = wsPath + L"/XPS" + std::to_wstring(nCounter) + L"/";
 		nCounter++;
 	}
-    NSDirectory::CreateDirectory(m_pInternal->m_wsTempFolder);
+    NSDirectory::CreateDirectory(wsTempFolder);
+    m_pInternal->m_wsTempFolder = new CFolderSystem(wsTempFolder);
 }
 bool CXpsFile::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXmlOptions,
                             const std::wstring& owner_password, const std::wstring& user_password)
@@ -109,17 +108,30 @@ bool CXpsFile::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstrin
 
 	// Распаковываем Zip-архив в темповую папку
 	COfficeUtils oUtils(NULL);
-    if (S_OK != oUtils.ExtractToDirectory(wsSrcFileName, m_pInternal->m_wsTempFolder, NULL, 0))
+    if (S_OK != oUtils.ExtractToDirectory(wsSrcFileName, m_pInternal->m_wsTempFolder->getFullFilePath(L""), NULL, 0))
 		return false;
 
     m_pInternal->m_pDocument = new XPS::CDocument(m_pInternal->m_pFontManager);
     if (!m_pInternal->m_pDocument)
 		return false;
 
-    std::wstring wsPath = m_pInternal->m_wsTempFolder + L"/";
-    m_pInternal->m_pDocument->ReadFromPath(wsPath);
+    m_pInternal->m_pDocument->Read(m_pInternal->m_wsTempFolder);
 
 	return true;
+}
+bool CXpsFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options,
+                              const std::wstring& owner_password, const std::wstring& user_password)
+{
+    Close();
+
+    m_pInternal->m_wsTempFolder = new CZipFolderMemory(data, length);
+
+    m_pInternal->m_pDocument = new XPS::CDocument(m_pInternal->m_pFontManager);
+    if (!m_pInternal->m_pDocument)
+        return false;
+
+    m_pInternal->m_pDocument->Read(m_pInternal->m_wsTempFolder);
+    return true;
 }
 void CXpsFile::Close()
 {

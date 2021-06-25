@@ -42,6 +42,7 @@ public:
 
 
 public:
+    virtual ~IFolder() {}
     // полный путь по локальному
     virtual std::wstring getFullFilePath(const std::wstring& path) = 0;
     // локальный путь по полному (без первого '/')
@@ -62,6 +63,7 @@ public:
     virtual CBuffer* finalize() { return NULL; }
     // чтение ноды
     virtual XmlUtils::CXmlNode getNodeFromFile(const std::wstring& path) = 0;
+    virtual XmlUtils::CXmlLiteReader getReaderFromFile(const std::wstring& path) = 0;
 
     // вспомогательные функции
     void writeXml(const std::wstring& path, const std::wstring& xml)
@@ -208,6 +210,12 @@ public:
         node.FromXmlFile(getFullFilePath(path));
         return node;
     }
+    virtual XmlUtils::CXmlLiteReader getReaderFromFile(const std::wstring& path)
+    {
+        XmlUtils::CXmlLiteReader oReader;
+        oReader.FromFile(getFullFilePath(path));
+        return oReader;
+    }
 };
 
 // Работает с архивом в памяти
@@ -342,6 +350,18 @@ public:
         node.FromXmlStringA(sUtf8);
         delete buffer;
         return node;
+    }
+    virtual XmlUtils::CXmlLiteReader getReaderFromFile(const std::wstring& path)
+    {
+        CBuffer* buffer = NULL;
+        XmlUtils::CXmlLiteReader oReader;
+        if (!read(path, buffer))
+            return oReader;
+
+        std::string sUtf8((char*)buffer->Buffer, (size_t)buffer->Size);
+        oReader.FromStringA(sUtf8);
+        delete buffer;
+        return oReader;
     }
 };
 

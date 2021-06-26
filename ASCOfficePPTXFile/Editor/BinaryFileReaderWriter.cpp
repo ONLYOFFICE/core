@@ -57,7 +57,7 @@
 #include <iostream>
 
 #ifndef DISABLE_FILE_DOWNLOADER
-#include "../../Common/FileDownloader/FileDownloader.h"
+#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
 #endif 
 
 #define BYTE_SIZEOF		sizeof(BYTE)
@@ -591,7 +591,7 @@ namespace NSBinPptxRW
 	std::wstring CImageManager2::DownloadImageExec(const std::wstring& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-        CFileDownloader oDownloader(strFile, false);
+        NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFile, false);
 
 		if ( oDownloader.DownloadSync() )
 		{

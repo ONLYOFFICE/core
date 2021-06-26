@@ -39,7 +39,7 @@
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 #ifndef DISABLE_FILE_DOWNLOADER
-	#include "../../Common/FileDownloader/FileDownloader.h"
+    #include "../../Common/Network/FileTransporter/include/FileTransporter.h"
 #endif
 #include "../../DesktopEditor/common/File.h"
 
@@ -50,7 +50,7 @@ namespace SerializeCommon
 #ifndef DISABLE_FILE_DOWNLOADER
         std::wstring strFileName;
 		
-        CFileDownloader oDownloader(strFile, false);
+        NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFile, false);
 		if ( oDownloader.DownloadSync() )
 		{
 			strFileName = oDownloader.GetFilePath();

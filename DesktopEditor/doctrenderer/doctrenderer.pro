@@ -16,7 +16,7 @@ CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include(../../Common/base.pri)
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, network)
 
 #CONFIG += build_xp
 

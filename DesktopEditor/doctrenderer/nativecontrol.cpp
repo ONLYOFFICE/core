@@ -32,7 +32,7 @@
 #include "nativecontrol.h"
 #include "../../../core/DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../../core/DesktopEditor/raster/BgraFrame.h"
-#include "../../../core/Common/FileDownloader/FileDownloader.h"
+#include "../../../core/Common/Network/FileTransporter/include/FileTransporter.h"
 
 CImagesWorker::CImagesWorker(const std::wstring& sFolder)
 {
@@ -87,7 +87,7 @@ std::wstring CImagesWorker::GetImage(const std::wstring& sUrl)
 
     if (bIsNeedDownload)
     {
-        CFileDownloader oDownloader(sUrl, false);
+        NSNetwork::NSFileTransport::CFileDownloader oDownloader(sUrl, false);
 
         std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"IMG");
         if (NSFile::CFileBinary::Exists(sTmpFile))

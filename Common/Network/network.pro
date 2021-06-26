@@ -11,8 +11,10 @@ include(../base.pri)
 
 DEFINES += KERNEL_USE_DYNAMIC_LIBRARY_BUILDING
 
-# WEBSOCKET
-include(./WebSocket/websocket.pri)
+support_web_socket {
+    # WEBSOCKET
+    include(./WebSocket/websocket.pri)
+}
 
 # DOWNLOAD/UPLOAD
 include(./FileTransporter/filetransporter.pri)

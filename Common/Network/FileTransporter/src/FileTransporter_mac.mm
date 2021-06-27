@@ -31,7 +31,7 @@
  */
 
 #include "FileTransporter_private.h"
-#include "FileTransporter.h"
+#include "../include/FileTransporter.h"
 
 #ifdef USE_EXTERNAL_TRANSPORT
 #include "transport_external.h"
@@ -77,20 +77,20 @@ namespace NSNetwork
 
             virtual int DownloadFile() override
             {
-                if (m_sFilePath.empty())
+                if (m_sDownloadFilePath.empty())
                 {
-                    m_sFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"DWD");
-                    if (NSFile::CFileBinary::Exists(m_sFilePath))
-                        NSFile::CFileBinary::Remove(m_sFilePath);
+                    m_sDownloadFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"DWD");
+                    if (NSFile::CFileBinary::Exists(m_sDownloadFilePath))
+                        NSFile::CFileBinary::Remove(m_sDownloadFilePath);
                 }
 
         #ifdef USE_EXTERNAL_TRANSPORT
-                int nExternalTransport = download_external(m_sFileUrl, m_sFilePath);
+                int nExternalTransport = download_external(m_sDownloadFileUrl, m_sDownloadFilePath);
                 if (0 == nExternalTransport)
                     return 0;
         #endif
 
-                NSString* stringURL = StringWToNSString(m_sFileUrl);
+                NSString* stringURL = StringWToNSString(m_sDownloadFileUrl);
                 NSString *escapedURL = [stringURL stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
                 NSURL  *url = [NSURL URLWithString:escapedURL];
                 NSData *urlData = [NSData dataWithContentsOfURL:url];
@@ -99,14 +99,14 @@ namespace NSNetwork
                     NSArray       *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
                     NSString  *documentsDirectory = [paths objectAtIndex:0];
 
-                    NSString  *filePath = StringWToNSString ( m_sFilePath );
+                    NSString  *filePath = StringWToNSString ( m_sDownloadFilePath );
                     [urlData writeToFile:filePath atomically:YES];
 
         #if defined(_IOS)
                     return 0;
         #else
         #ifndef _ASC_USE_ARC_
-                    if (!CFileTransporter::GetARCEnabled())
+                    if (!GetARCEnabled())
                     {
                         [stringURL release];
                         //[url release];
@@ -121,7 +121,7 @@ namespace NSNetwork
                 return 1;
         #else
         #ifndef _ASC_USE_ARC_
-                if (!CFileTransporter::GetARCEnabled())
+                if (!GetARCEnabled())
                 {
                     [stringURL release];
                     //[url release];
@@ -134,7 +134,7 @@ namespace NSNetwork
             virtual int UploadData() override
             {
         #ifdef USE_EXTERNAL_TRANSPORT
-                int nExternalTransport = uploaddata_external(m_sFileUrl, m_cData, m_nSize);
+                int nExternalTransport = uploaddata_external(m_sUploadUrl, m_cData, m_nSize);
                 if (0 == nExternalTransport)
                     return 0;
         #endif
@@ -145,7 +145,7 @@ namespace NSNetwork
             virtual int UploadFile() override
             {
         #ifdef USE_EXTERNAL_TRANSPORT
-                int nExternalTransport = uploadfile_external(m_sFileUrl, m_sFilePath);
+                int nExternalTransport = uploadfile_external(m_sUploadUrl, m_sUploadFilePath);
                 if (0 == nExternalTransport)
                     return 0;
         #endif

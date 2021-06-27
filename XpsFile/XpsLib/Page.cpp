@@ -91,7 +91,7 @@ namespace XPS
 	{
 		XmlUtils::CXmlLiteReader oReader;
 
-		if (!oReader.FromFile(m_wsPagePath))
+        if (!oReader.FromStringA(m_wsRootPath->readXml(m_wsPagePath)))
 			return;
 
 		if (!oReader.ReadNextNode())
@@ -169,7 +169,7 @@ namespace XPS
 	{
 		XmlUtils::CXmlLiteReader oReader;
 
-		if (!oReader.FromFile(m_wsPagePath.c_str()))
+        if (!oReader.FromStringA(m_wsRootPath->readXml(m_wsPagePath)))
 			return;
 
 		if (!oReader.ReadNextNode())
@@ -453,7 +453,11 @@ namespace XPS
 					if (L"odttf" == wsExt)
 					{
 						NSStringExt::ToLower(wsFontName);
-						m_pFontList->Check(wsFontName, wsFontPath);
+                        IFolder::CBuffer* buffer = NULL;
+                        m_wsRootPath->read(wsFontPath, buffer);
+                        m_pFontList->Check(wsFontName, buffer->Buffer, buffer->Size);
+                        m_wsRootPath->write(wsFontPath, buffer->Buffer, buffer->Size);
+                        delete buffer;
 					}
 					wsFontPath = NormalizePath(wsFontPath);
 					pRenderer->put_FontPath(wsFontPath);

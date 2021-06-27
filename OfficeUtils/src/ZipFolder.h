@@ -131,7 +131,9 @@ public:
 #endif
         if (0 == full_path.find(m_sFolder))
             return full_path;
-        if (!full_path.empty() && full_path[0] == L'/')
+        if (full_path.empty())
+            return m_sFolder;
+        if (full_path[0] == L'/')
             return m_sFolder + full_path;
         return m_sFolder + L"/" + full_path;
     }

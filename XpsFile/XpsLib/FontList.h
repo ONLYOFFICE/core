@@ -58,7 +58,7 @@ namespace XPS
 		{
 			m_mList.clear();
 		}
-		void Check(const std::wstring& wsName, const std::wstring& wsFontPath)
+        void Check(const std::wstring& wsName, BYTE* data, DWORD length)
 		{
 			m_oCS.Enter();
 			if (!Find(wsName))
@@ -68,24 +68,9 @@ namespace XPS
 				unsigned char sKey[16];
 				GetFontKey(wsName, sKey);
 
-				NSFile::CFileBinary oFile;
-				oFile.OpenFile(wsFontPath, true);
-
-				unsigned char sFontData[32];
-				DWORD dwBytesRead;
-				oFile.ReadFile(sFontData, 32, dwBytesRead);
-
-				for (int nIndex = 0; nIndex < 32; nIndex++)
-					sFontData[nIndex] ^= sKey[nIndex % 16];
-
-				FILE* pFile = oFile.GetFileNative();
-				if (pFile)
-				{
-					fseek(pFile, 0, SEEK_SET);
-					fwrite(sFontData, 1, 32, pFile);
-				}
-
-				oFile.CloseFile();
+                if (length >= 32)
+                    for (int nIndex = 0; nIndex < 32; nIndex++)
+                        data[nIndex] ^= sKey[nIndex % 16];
 			}
 			m_oCS.Leave();
 		}

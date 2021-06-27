@@ -75,12 +75,11 @@ public:
 CXpsFile::CXpsFile(NSFonts::IApplicationFonts* pAppFonts)
 {
     m_pInternal = new CXpsFile_Private(pAppFonts);
-    SetTempDirectory(NSFile::CFileBinary::GetTempPath());
 }
 CXpsFile::~CXpsFile()
 {
-    RELEASEOBJECT(m_pInternal->m_wsTempFolder);
 	Close();
+    RELEASEOBJECT(m_pInternal->m_wsTempFolder);
     RELEASEINTERFACE((m_pInternal->m_pFontManager));
 }
 std::wstring CXpsFile::GetTempDirectory()
@@ -140,6 +139,7 @@ void CXpsFile::Close()
         m_pInternal->m_pDocument->Close();
         delete m_pInternal->m_pDocument;
         m_pInternal->m_pDocument = NULL;
+        m_pInternal->m_wsTempFolder = NULL;
 	}
 }
 int CXpsFile::GetPagesCount()

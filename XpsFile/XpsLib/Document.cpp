@@ -41,6 +41,7 @@ namespace XPS
 	{		
 		m_pFontManager = pFontManager;
 		m_mPages.clear();
+        m_wsPath = NULL;
 	}
 	CDocument::~CDocument()
 	{		

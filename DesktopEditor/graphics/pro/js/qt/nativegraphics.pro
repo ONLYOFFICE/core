@@ -14,7 +14,7 @@ PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
-ADD_DEPENDENCY(kernel, graphics, UnicodeConverter, Raster)
+ADD_DEPENDENCY(kernel, graphics, UnicodeConverter, Raster, XpsFile)
 
 INCLUDEPATH += \
     $$CORE_ROOT_DIR/DesktopEditor/agg-2.4/include \

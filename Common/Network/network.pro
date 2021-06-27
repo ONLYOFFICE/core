@@ -1,4 +1,4 @@
-TARGET = network
+TARGET = kernel_network
 TEMPLATE = lib
 
 CONFIG -= qt

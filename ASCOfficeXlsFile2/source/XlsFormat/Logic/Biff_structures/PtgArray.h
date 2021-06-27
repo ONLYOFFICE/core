@@ -42,7 +42,7 @@ class PtgArray: public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgArray)
 public:
-	PtgArray();
+	PtgArray(const unsigned short full_ptg_id);
 	PtgArray(const PtgDataType data_type);
 	BiffStructurePtr clone();
 

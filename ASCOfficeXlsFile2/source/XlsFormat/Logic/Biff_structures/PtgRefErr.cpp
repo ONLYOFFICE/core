@@ -37,7 +37,7 @@ namespace XLS
 {
 
 
-PtgRefErr::PtgRefErr()
+PtgRefErr::PtgRefErr(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
 {
 }
 

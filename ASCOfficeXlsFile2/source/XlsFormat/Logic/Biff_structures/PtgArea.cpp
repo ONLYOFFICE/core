@@ -39,7 +39,7 @@ namespace XLS
 {
 
 
-PtgArea::PtgArea()
+PtgArea::PtgArea(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
 {
 }
 

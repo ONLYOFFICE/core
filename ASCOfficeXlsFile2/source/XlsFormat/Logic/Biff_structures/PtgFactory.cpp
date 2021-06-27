@@ -179,89 +179,89 @@ PtgPtr PtgFactory::createPtg(const unsigned short type, const CellRef& cell_base
 			return PtgPtr(new PtgMissArg); // *
 
 		case PtgStr::fixed_id:
-			return PtgPtr(new PtgStr); // *
+			return PtgPtr(new PtgStr(type)); // *
 
 		case PtgErr::fixed_id:
 			return PtgPtr(new PtgErr); // *
 
 		case PtgBool::fixed_id:
-			return PtgPtr(new PtgBool); // *
+			return PtgPtr(new PtgBool(type)); // *
 
 		case PtgInt::fixed_id:
 			return PtgPtr(new PtgInt); // *
 
 		case PtgNum::fixed_id:
-			return PtgPtr(new PtgNum); // *
+			return PtgPtr(new PtgNum(type)); // *
 
 		case 0x0020: // type = REFERENCE
 		case 0x0040: // type = VALUE
 		case 0x0060: // type = ARRAY
-			return PtgPtr(new PtgArray); // *
+			return PtgPtr(new PtgArray(type)); // *
 
 		case 0x0021:
 		case 0x0041:
 		case 0x0061:
-			return PtgPtr(new PtgFunc); // *
+			return PtgPtr(new PtgFunc(type)); // *
 
 		case 0x0022:
 		case 0x0042:
 		case 0x0062:
-			return PtgPtr(new PtgFuncVar); // *
+			return PtgPtr(new PtgFuncVar(type)); // *
 
 		case 0x0023:
 		case 0x0043:
 		case 0x0063:
-			return PtgPtr(new PtgName); // *
+			return PtgPtr(new PtgName(type)); // *
 
 		case 0x0024:
 		case 0x0044:
 		case 0x0064:
-			return PtgPtr(new PtgRef); // *
+			return PtgPtr(new PtgRef(type)); // *
 
 		case 0x0025:
 		case 0x0045:
 		case 0x0065:
-			return PtgPtr(new PtgArea); // *
+			return PtgPtr(new PtgArea(type)); // *
 
 		case 0x0026:
 		case 0x0046:
 		case 0x0066:
-			return PtgPtr(new PtgMemArea); // *
+			return PtgPtr(new PtgMemArea(type)); // *
 
 		case 0x0027: // type = REFERENCE
 		case 0x0047: // type = VALUE
 		case 0x0067: // type = ARRAY
-			return PtgPtr(new PtgMemErr); // *
+			return PtgPtr(new PtgMemErr(type)); // *
 
 		case 0x0028:
 		case 0x0048:
 		case 0x0068:
-			return PtgPtr(new PtgMemNoMem); // *
+			return PtgPtr(new PtgMemNoMem(type)); // *
 
 		case 0x0029:
 		case 0x0049:
 		case 0x0069:
-			return PtgPtr(new PtgMemFunc); // *
+			return PtgPtr(new PtgMemFunc(type)); // *
 
 		case 0x002A:
 		case 0x004A:
 		case 0x006A:
-			return PtgPtr(new PtgRefErr); // *
+			return PtgPtr(new PtgRefErr(type)); // *
 
 		case 0x002B:
 		case 0x004B:
 		case 0x006B:
-			return PtgPtr(new PtgAreaErr); // *
+			return PtgPtr(new PtgAreaErr(type)); // *
 
 		case 0x002C:
 		case 0x004C:
 		case 0x006C:
-			return PtgPtr(new PtgRefN(cell_base_ref)); // *
+			return PtgPtr(new PtgRefN(type, cell_base_ref)); // *
 
 		case 0x002D:
 		case 0x004D:
 		case 0x006D:
-			return PtgPtr(new PtgAreaN(cell_base_ref)); // *
+			return PtgPtr(new PtgAreaN(type, cell_base_ref)); // *
 
 /*
 		case 0x002E:
@@ -278,27 +278,27 @@ PtgPtr PtgFactory::createPtg(const unsigned short type, const CellRef& cell_base
 		case 0x0039:
 		case 0x0059:
 		case 0x0079:
-			return PtgPtr(new PtgNameX); // -   // Points to Extern Workbook
+			return PtgPtr(new PtgNameX(type)); // -   // Points to Extern Workbook
 
 		case 0x003A: // type = REFERENCE
 		case 0x005A: // type = VALUE
 		case 0x007A: // type = ARRAY
-			return PtgPtr(new PtgRef3d(cell_base_ref)); // *
+			return PtgPtr(new PtgRef3d(type, cell_base_ref)); // *
 
 		case 0x003B:
 		case 0x005B:
 		case 0x007B:
-			return PtgPtr(new PtgArea3d(cell_base_ref)); // *
+			return PtgPtr(new PtgArea3d(type, cell_base_ref)); // *
 
 		case 0x003C:
 		case 0x005C:
 		case 0x007C:
-			return PtgPtr(new PtgRefErr3d); // *
+			return PtgPtr(new PtgRefErr3d(type)); // *
 
 		case 0x003D:
 		case 0x005D:
 		case 0x007D:
-			return PtgPtr(new PtgAreaErr3d); // *
+			return PtgPtr(new PtgAreaErr3d(type)); // *
 
 
 

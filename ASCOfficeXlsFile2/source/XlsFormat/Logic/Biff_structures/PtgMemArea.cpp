@@ -37,12 +37,14 @@
 namespace XLS
 {
 
+PtgMemArea::PtgMemArea(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
+{
+}
 
 BiffStructurePtr PtgMemArea::clone()
 {
 	return BiffStructurePtr(new PtgMemArea(*this));
 }
-
 
 void PtgMemArea::loadFields(CFRecord& record)
 {

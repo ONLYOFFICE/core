@@ -140,6 +140,12 @@ int Dv::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"error", Error.value());
 			}
+			if (formula1.IsVolatile())
+				formula1.set_base_ref(sqref.getLocationFirstCell());
+			
+			if (formula2.IsVolatile())
+				formula2.set_base_ref(sqref.getLocationFirstCell());
+
 			std::wstring sFormula1 = formula1.getAssembledFormula();
 			std::wstring sFormula2 = formula2.getAssembledFormula();
 

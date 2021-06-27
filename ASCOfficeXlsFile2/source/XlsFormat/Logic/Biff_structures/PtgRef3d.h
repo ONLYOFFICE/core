@@ -43,7 +43,7 @@ class PtgRef3d: public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgRef3d)
 public:
-	PtgRef3d(const CellRef& cell_base_ref_init);
+	PtgRef3d(const unsigned short full_ptg_id, const CellRef& cell_base_ref_init);
 	PtgRef3d(const unsigned short ixti, const std::wstring& word, const PtgDataType data_type, const CellRef& cell_base_ref_init);
 
 	void set_base_ref(const CellRef& cell_base_ref);

@@ -43,14 +43,12 @@ class PtgRef: public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgRef)
 public:
-	PtgRef();
+	PtgRef(const unsigned short full_ptg_id);
 	PtgRef(const std::wstring& word, const PtgDataType data_type);
 	BiffStructurePtr clone();
-
-	
+		
 	virtual void loadFields(CFRecord& record);
 	
-
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 
 	static const unsigned short fixed_id = 0x04;

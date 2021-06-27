@@ -42,7 +42,7 @@ class PtgRefErr: public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgRefErr)
 public:
-	PtgRefErr();
+	PtgRefErr(const unsigned short full_ptg_id);
 	PtgRefErr(const PtgDataType data_type_init);
 	BiffStructurePtr clone();
 

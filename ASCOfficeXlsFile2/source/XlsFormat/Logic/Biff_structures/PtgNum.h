@@ -42,7 +42,7 @@ class PtgNum: public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgNum)
 public:
-	PtgNum();
+	PtgNum(const unsigned short full_ptg_id);
 	PtgNum(const std::wstring& word);
 	BiffStructurePtr clone();
 

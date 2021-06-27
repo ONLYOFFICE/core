@@ -31,26 +31,24 @@
  */
 #pragma once
 
-#include "Ptg.h"
+#include "OperandPtg.h"
 
 namespace XLS
 {
 
 class CFRecord;
 
-class PtgMemNoMem : public Ptg
+class PtgMemNoMem : public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgMemNoMem)
 public:
+	PtgMemNoMem(const unsigned short full_ptg_id);
 	BiffStructurePtr clone();
-
 	
 	virtual void loadFields(CFRecord& record);
-	
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 
-private:
 	unsigned short cce;
 };
 

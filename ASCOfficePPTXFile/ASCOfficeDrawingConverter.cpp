@@ -2749,6 +2749,9 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			else
 			{
 				strXmlPPTX = oShapeElem.ConvertPPTShapeToPPTX(true);
+
+				// в старых шейпах текст крутится отдельно
+				pShape->oTextBoxBodyPr->upright = true;
 			}
 
 			XmlUtils::CXmlNode oNodeTextBox;

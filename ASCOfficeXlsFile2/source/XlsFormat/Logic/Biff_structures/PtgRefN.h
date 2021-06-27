@@ -42,7 +42,7 @@ class PtgRefN: public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgRefN)
 public:
-	PtgRefN(const CellRef& cell_base_ref_init);
+	PtgRefN(const unsigned short full_ptg_id, const CellRef& cell_base_ref_init);
 	PtgRefN(const std::wstring& word, const PtgDataType data_type, const CellRef& cell_base_ref);
 	
 	void set_base_ref(const CellRef& cell_base_ref);

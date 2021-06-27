@@ -44,7 +44,7 @@ class PtgArea3d: public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgArea3d)
 public:
-	PtgArea3d(const CellRef& cell_base_ref_init);
+	PtgArea3d(const unsigned short full_ptg_id, const CellRef& cell_base_ref_init);
 	PtgArea3d(const unsigned short ixti, const std::wstring& word, const PtgDataType data_type, const CellRef& cell_base_ref_init);
 	
 	void set_base_ref(const CellRef& cell_base_ref);

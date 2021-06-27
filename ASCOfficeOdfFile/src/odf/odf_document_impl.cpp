@@ -605,7 +605,7 @@ void odf_document::Impl::parse_manifests(office_element *element)
 			office_mime_type_ = GetMimetype(entry->media_type_);
 		}
 	}
-	if (!office_mime_type_ && !document->office_mimetype_)
+	if (!office_mime_type_ && document->office_mimetype_)
 	{
 		office_mime_type_ = GetMimetype(*document->office_mimetype_);
 	}

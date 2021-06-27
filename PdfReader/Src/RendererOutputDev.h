@@ -45,6 +45,8 @@
 #include "../lib/xpdf/GlobalParams.h"
 #include "XmlUtils.h"
 #include "Adaptors.h"
+#include "MemoryUtils.h"
+#include "StringExt.h"
 
 namespace PdfReader
 {

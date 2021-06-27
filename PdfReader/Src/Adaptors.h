@@ -8,6 +8,7 @@
 #include "../lib/xpdf/GlobalParams.h"
 #include "../lib/xpdf/Object.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../DesktopEditor/common/StringExt.h"
 
 class GlobalParamsAdaptor : public GlobalParams
 {
@@ -47,6 +48,19 @@ bool operator>(const Ref &a, const Ref &b)
 {
     return !(a <= b);
 }
+
+
+// String functions
+
+
+//static std::wstring* AStringToPWString(const char* sString)
+//{
+//    return new std::wstring(NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)sString, (long)strlen(sString)));
+//}
+//static std::wstring AStringToWString(const char* sString)
+//{
+//    return std::wstring(NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)sString, (long)strlen(sString)));
+//}
 
 
 

@@ -29,6 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#define errMemory 12
+
 #include "../DesktopEditor/graphics/pro/Graphics.h"
 #include "PdfReader.h"
 #include "../Common/OfficeDefines.h"
@@ -122,7 +125,11 @@ namespace PdfReader
             delete m_pInternal->m_pPDFDocument;
 
         m_eError = errNone;
-        m_pInternal->m_pPDFDocument = new PDFDoc(m_pInternal->m_pGlobalParams, wsSrcPath, wsOwnerPassword, wsUserPassword);
+        GString owner_pswd(StringAdaptor(wsOwnerPassword).get_gstring());
+        GString user_pswd(StringAdaptor(wsUserPassword).get_gstring());
+        m_pInternal->m_pPDFDocument = new PDFDoc(StringAdaptor(wsSrcPath).get_char_string(),
+                                                 &owner_pswd,
+                                                  &user_pswd);
 
         if (m_pInternal->m_pPDFDocument)
             m_eError = m_pInternal->m_pPDFDocument->getErrorCode();

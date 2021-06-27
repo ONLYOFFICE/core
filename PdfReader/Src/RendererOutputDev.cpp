@@ -1254,7 +1254,7 @@ namespace PdfReader
                 case fontCIDType0COT:
                 {
                     // todo correct fontNum
-                    if ((pTTFontFile = FoFiTrueType::load(wsFileName.c_str(), 0)))
+                    if ((pTTFontFile = FoFiTrueType::load(StringAdaptor(wsFileName.c_str()).get_char_string(), 0)))
                     {
                         if (pTTFontFile->isOpenTypeCFF())
                         {
@@ -1289,7 +1289,7 @@ namespace PdfReader
                         if ((pCodeToUnicode = ((GfxCIDFont *)pFont)->getToUnicode()))
                         {
                             //todo correct fontNum
-                            if ((pTTFontFile = FoFiTrueType::load(wsFileName.c_str(), 0)))
+                            if ((pTTFontFile = FoFiTrueType::load(StringAdaptor(wsFileName.c_str()).get_char_string(), 0)))
                             {
                                 // Ищем Unicode Cmap
                                 std::vector<int> arrCMapIndex;
@@ -1542,7 +1542,7 @@ namespace PdfReader
                                 oDictItem.streamClose();
 
                                 CBase64 oBase64;
-                                oBase64.Encode((unsigned char *)seBuffer->GetBuffer(), seBuffer->getLength());
+                                oBase64.Encode((unsigned char *)seBuffer->GetBuffer(), seBuffer->GetLength());
                                 oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
 
                                 delete seBuffer;
@@ -1838,7 +1838,7 @@ namespace PdfReader
                             oDictItem.streamClose();
 
                             CBase64 oBase64;
-                            oBase64.Encode((unsigned char *)seBuffer->GetBuffer(), seBuffer->getLength());
+                            oBase64.Encode((unsigned char *)seBuffer->GetBuffer(), seBuffer->GetLength());
                             oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
                             oXmlWriter.WriteNodeEnd(L"ToUnicode");
 
@@ -1942,7 +1942,7 @@ namespace PdfReader
                                     oEncItem.streamClose();
 
                                     CBase64 oBase64;
-                                    oBase64.Encode((unsigned char *)seBuffer->GetBuffer(), seBuffer->getLength());
+                                    oBase64.Encode((unsigned char *)seBuffer->GetBuffer(), seBuffer->GetLength());
                                     oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
 
                                     oXmlWriter.WriteNodeEnd(L"UseCMap");
@@ -1962,7 +1962,7 @@ namespace PdfReader
                             }
                             oDictItem.streamClose();
                             CBase64 oBase64;
-                            oBase64.Encode((unsigned char *)seBuffer->GetBuffer(), seBuffer->getLength());
+                            oBase64.Encode((unsigned char *)seBuffer->GetBuffer(), seBuffer->GetLength());
                             oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
                             oXmlWriter.WriteNodeEnd(L"Stream");
                             oXmlWriter.WriteNodeEnd(L"Encoding");
@@ -2374,7 +2374,7 @@ namespace PdfReader
                                             oFontItem.streamClose();
 
                                             CBase64 oBase64;
-                                            oBase64.Encode((unsigned char *)seBuffer->GetBuffer(), seBuffer->getLength());
+                                            oBase64.Encode((unsigned char *)seBuffer->GetBuffer(), seBuffer->GetLength());
                                             oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
 
                                             oXmlWriter.WriteNodeEnd(L"CIDToGIDMap");

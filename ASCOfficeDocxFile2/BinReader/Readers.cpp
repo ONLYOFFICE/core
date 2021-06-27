@@ -8662,6 +8662,10 @@ int Binary_DocumentTableReader::ReadDocPr(BYTE type, long length, void* poResult
 	{
         pNonVisualDrawingProps->descr = m_oBufferedStream.GetString3(length);
 	}
+	else if (c_oSerDocPr::Form == type)
+	{
+		pNonVisualDrawingProps->form = m_oBufferedStream.GetBool();
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

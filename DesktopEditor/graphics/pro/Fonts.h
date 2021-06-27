@@ -41,10 +41,10 @@
 
 enum EFontFormat
 {
-    fontWindowsFNT = 0, // *.fon
-    fontTrueTypeLN   = 1, // *.ttf
-    fontOpenType   = 2, // *.ttf, *.otf (CFF формат)
-    fontUnknown    = 3
+    ffWindowsFNT = 0, // *.fon
+    ffTrueType   = 1, // *.ttf
+    ffOpenType   = 2, // *.ttf, *.otf (CFF формат)
+    ffUnknown    = 3
 };
 
 struct TBBox

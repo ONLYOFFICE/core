@@ -774,10 +774,10 @@ int CFontList::GetFontFormatPenalty(EFontFormat eCandFormat, EFontFormat eReqFor
 	// все типы форматов и при несовпадении даем вес = 4. Если формат не задан
 	// то по умолчанию считаем его TrueType.
 
-	if ( eReqFormat == fontUnknown )
+    if ( eReqFormat == ffUnknown )
 	{
 		// Считаем, что когда формат не известен, значит это 100% не TrueType.
-		if ( eCandFormat == fontTrueTypeLN )
+        if ( eCandFormat == ffTrueType )
 			return 4;
 		else
 			return 0;
@@ -863,13 +863,13 @@ EFontFormat CFontList::GetFontFormat(FT_Face pFace)
 	std::string wsFormat( FT_Get_X11_Font_Format( pFace ) );
 
 	if ( "Windows FNT" == wsFormat )
-        return fontWindowsFNT;
+        return ffWindowsFNT;
 	else if ( "TrueType" == wsFormat ) 
-        return fontTrueTypeLN;
+        return ffTrueType;
 	else if ( "CFF" == wsFormat )
-        return fontOpenType;
+        return ffOpenType;
 
-    return fontUnknown;
+    return ffUnknown;
 }
 
 void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory, bool bIsOnlyFileName, int nVersion)
@@ -1327,7 +1327,7 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
 
 			EFontFormat eFormat = GetFontFormat( pFace );
 
-            bool bSupportFont = ((eFormat == fontTrueTypeLN) || ((nFlag & 1) && (eFormat == fontOpenType)));
+            bool bSupportFont = ((eFormat == ffTrueType) || ((nFlag & 1) && (eFormat == ffOpenType)));
             if (!bSupportFont)
             {
                 FT_Done_Face( pFace );

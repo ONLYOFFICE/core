@@ -36,7 +36,7 @@ class Stream;
 
 struct Ref {
   int num;			// object number
-  int gen;			// generation numberzz
+  int gen;			// generation number
 };
 
 //------------------------------------------------------------------------

@@ -416,19 +416,23 @@ namespace MetaFile
         m_pOutputXml->WriteNodeBegin(L"EMR_SELECTCLIPPATH", {XmlArgument(L"Id", EMR_SELECTCLIPPATH),
                                                              XmlArgument(L"Size", 12)});
             m_pOutputXml->WriteNode(L"RegionMode", unRegionMode);
-            m_pOutputXml->WriteNodeEnd(L"EMR_SELECTCLIPPATH", true);
+            m_pOutputXml->WriteNodeEnd(L"EMR_SELECTCLIPPATH");
     }
 
     void CEmfInterpretatorXml::Save_EMR_SETBKCOLOR(const TEmfColor &oColor)
     {
-        m_pOutputXml->WriteNode(L"EMR_SETBKCOLOR", oColor, {XmlArgument(L"Id", EMR_SETBKCOLOR),
-                                                            XmlArgument(L"Size", 12)});
+        m_pOutputXml->WriteNodeBegin(L"EMR_SETBKCOLOR", {XmlArgument(L"Id", EMR_SETBKCOLOR),
+                                                         XmlArgument(L"Size", 12)});
+            m_pOutputXml->WriteNode(L"Color", oColor);
+            m_pOutputXml->WriteNodeEnd(L"EMR_SETBKCOLOR");
     }
 
     void CEmfInterpretatorXml::Save_EMR_EXCLUDECLIPRECT(const TEmfRectL &oClip)
     {
-        m_pOutputXml->WriteNode(L"EMR_EXCLUDECLIPRECT", oClip, {XmlArgument(L"Id", EMR_EXCLUDECLIPRECT),
-                                                                XmlArgument(L"Size", 20)});
+        m_pOutputXml->WriteNodeBegin(L"EMR_EXCLUDECLIPRECT", {XmlArgument(L"Id", EMR_EXCLUDECLIPRECT),
+                                                             XmlArgument(L"Size", 20)});
+            m_pOutputXml->WriteNode(L"Clip", oClip);
+            m_pOutputXml->WriteNodeEnd(L"EMR_EXCLUDECLIPRECT");
     }
 
     void CEmfInterpretatorXml::Save_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode,

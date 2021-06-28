@@ -21,6 +21,10 @@ StringAdaptor StringAdaptor::FromGString(GString &s) {
     return StringAdaptor(s.getCString());
 }
 
+StringAdaptor StringAdaptor::FromGString(GString *s) {
+    return StringAdaptor(s->getCString());
+}
+
 GString StringAdaptor::get_gstring() {
     return GString(str);
 }
@@ -31,6 +35,10 @@ char* StringAdaptor::get_char_string() {
 
 wchar_t * StringAdaptor::get_wchar_string() {
     return w_str;
+}
+
+std::wstring StringAdaptor::get_wstring() {
+    return std::wstring (w_str);
 }
 
 void StringAdaptor::update_wstr() {

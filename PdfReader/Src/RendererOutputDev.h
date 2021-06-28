@@ -58,8 +58,8 @@ namespace PdfReader
 		Ref             oRef;             // Ссылка на объект-шрифт
 		std::wstring    wsFilePath;       // Путь к шрифту на диске
 		std::wstring    wsFontName;       // Имя шрифта, которое записано в PDF(ветка для случаев, когда имя шрифта в самом шрифте не указано)
-		unsigned short *pCodeToGID;       // Таблица код - номер глифа в шрифте
-		unsigned short *pCodeToUnicode;   // Таблица код - юникодное значение
+		int *pCodeToGID;       // Таблица код - номер глифа в шрифте
+		int *pCodeToUnicode;   // Таблица код - юникодное значение
 		unsigned int    unLenGID;         // Количество элементов в таблицах
 		unsigned int    unLenUnicode;     //
 		bool            bAvailable;       // Доступен ли шрифт. Сделано для многопотоковости
@@ -76,7 +76,7 @@ namespace PdfReader
 		void SaveToFile(std::wstring wsDirPath);
 		bool Find(Ref oRef, TFontEntry *pEntry);
 		bool Find2(Ref oRef, TFontEntry **ppEntry);
-		TFontEntry *Add(Ref oRef, std::wstring wsFileName, unsigned short *pCodeToGID, unsigned short *pCodeToUnicode, unsigned int nLenGID, unsigned int nLenUnicode);
+		TFontEntry *Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int nLenGID, unsigned int nLenUnicode);
 		void Clear();
 		bool GetFont(Ref *pRef, TFontEntry *pEntry);
 	private:
@@ -291,7 +291,7 @@ namespace PdfReader
 		double                        m_arrMatrix[6];
         NSFonts::IFontManager*        m_pFontManager;
 
-		GfxTextClip                   *m_pBufferTextClip;
+		//GfxTextClip                   *m_pBufferTextClip;
 
 		XRef                         *m_pXref;           // Таблица Xref для данного PDF-документа
 		CFontList                    *m_pFontList;

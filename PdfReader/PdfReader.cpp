@@ -350,8 +350,8 @@ namespace PdfReader
 		else
             m_pInternal->m_wsTempFolder = L"";
 
-//        if (m_pInternal->m_pGlobalParams) todo
-//            m_pInternal->m_pGlobalParams->SetTempFolder(m_pInternal->m_wsTempFolder.c_str());
+        if (m_pInternal->m_pGlobalParams)
+            m_pInternal->m_pGlobalParams->SetTempFolder(m_pInternal->m_wsTempFolder.c_str());
 	}
     std::wstring CPdfReader::GetTempDirectory()
     {

@@ -19,6 +19,7 @@ public:
     explicit StringAdaptor(const std::string &s);
     explicit StringAdaptor(const std::wstring &s);
     static StringAdaptor FromGString(GString &s);
+    static StringAdaptor FromGString(GString *s);
     ~StringAdaptor();
 
     char* get_char_string();

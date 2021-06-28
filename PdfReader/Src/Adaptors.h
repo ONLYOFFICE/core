@@ -9,47 +9,48 @@
 #include "../lib/xpdf/Object.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/StringExt.h"
+#include "../../DesktopEditor/common/File.h"
+#include <string>
+
+#define GrClipEOFlag 0x01
 
 class GlobalParamsAdaptor : public GlobalParams
 {
+    std::wstring temp_folder;
 public:
     NSFonts::IFontManager *m_pFontManager;
     GlobalParamsAdaptor(const char *filename) : GlobalParams(filename) {}
 
     void SetFontManager(NSFonts::IFontManager* pFontManager);
 
+    std::wstring GetTempFolder()
+    {
+        return temp_folder;
+    }
+    void SetTempFolder(const std::wstring &folder)
+    {
+        temp_folder = folder;
+    }
+
 
 };
 
+#ifndef CORE_REF_OPERATORS
+#define CORE_REF_OPERATORS
+
 // Ref operators
 
-bool operator==(const Ref &a, const Ref &b)
-{
-    return a.gen == b.gen && a.num == b.gen;
-}
-bool operator<(const Ref &a, const Ref &b)
-{
-    if (a.num < b.num)
-        return true;
-    else if (a.num == b.num)
-        return a.gen < b.gen;
-    else
-        return false;
-}
-bool operator<=(const Ref &a, const Ref &b)
-{
-    return (a < b) || (a == b);
-}
-bool operator>=(const Ref &a, const Ref &b)
-{
-    return !(a < b);
-}
-bool operator>(const Ref &a, const Ref &b)
-{
-    return !(a <= b);
-}
+bool operator==(const Ref &a, const Ref &b);
+
+bool operator<(const Ref &a, const Ref &b);
+
+bool operator<=(const Ref &a, const Ref &b);
+
+bool operator>=(const Ref &a, const Ref &b);
+bool operator>(const Ref &a, const Ref &b);
 
 
+#endif
 // String functions
 
 
@@ -63,5 +64,52 @@ bool operator>(const Ref &a, const Ref &b)
 //}
 
 
+namespace PdfReader
+{
+    static void SpitPathExt(std::wstring& wsFullPath, std::wstring* pwsFilePath, std::wstring* pwsExt)
+    {
+        // Ищем '.' начиная с конца пути, и разделяем путь на расширение и остальную часть
+        unsigned int nPos = wsFullPath.find_last_of(L".");
+        *pwsFilePath = wsFullPath.substr(0, nPos);
+        *pwsExt      = wsFullPath.substr(nPos + 1);
+    }
+    static bool OpenTempFile(std::wstring* pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder, wchar_t *wsName = NULL)
+    {
+        return NSFile::CFileBinary::OpenTempFile(pwsName, ppFile, wsMode, wsExt, wsFolder, wsName);
+    }
+    static char*GetLine(char *sBuffer, int nSize, FILE *pFile)
+    {
+        int nChar, nCurIndex = 0;
+
+        while (nCurIndex < nSize - 1)
+        {
+            if ((nChar = fgetc(pFile)) == EOF)
+                break;
+
+            sBuffer[nCurIndex++] = (char)nChar;
+            if ('\x0a' == nChar)
+            {
+                break;
+            }
+            if ('\x0d' == nChar)
+            {
+                nChar = fgetc(pFile);
+                if ('\x0a' == nChar && nCurIndex < nSize - 1)
+                {
+                    sBuffer[nCurIndex++] = (char)nChar;
+                }
+                else if (EOF != nChar)
+                {
+                    ungetc(nChar, pFile);
+                }
+                break;
+            }
+        }
+        sBuffer[nCurIndex] = '\0';
+        if (0 == nCurIndex)
+            return NULL;
+        return sBuffer;
+    }
+}
 
 #endif //CORE_ADAPTORS_H

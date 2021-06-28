@@ -48,7 +48,11 @@ SOURCES -= \
     $$PWD/lib/xpdf/pdftopng.cc \
     $$PWD/lib/xpdf/pdftoppm.cc \
     $$PWD/lib/xpdf/pdftops.cc \
-    $$PWD/lib/xpdf/pdftotext.cc
+    $$PWD/lib/xpdf/pdftotext.cc \
+    $$PWD/lib/xpdf/pdfdetach.cc \
+    $$PWD/lib/xpdf/pdffonts.cc \
+    $$PWD/lib/xpdf/pdfimages.cc \
+    $$PWD/lib/xpdf/pdfinfo.cc
 
 SOURCES += \
     Src/RendererOutputDev.cpp \

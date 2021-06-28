@@ -28,12 +28,12 @@ WASM_EXPORT void  Fonts_Destroy()
 {
     RELEASEOBJECT(CApplicationFontStreams::m_pMemoryStorage);
 }
-WASM_EXPORT void Fonts_Add(void* fonts, const char* id, BYTE* data, LONG size)
+WASM_EXPORT void  Fonts_Add(void* fonts, const char* id, BYTE* data, LONG size)
 {
     CGlobalFontsMemoryStorage* pFonts = (CGlobalFontsMemoryStorage*)fonts;
     pFonts->Add(id, data, size);
 }
-WASM_EXPORT void Fonts_Remove(void* fonts, const char* id)
+WASM_EXPORT void  Fonts_Remove(void* fonts, const char* id)
 {
     CGlobalFontsMemoryStorage* pFonts = (CGlobalFontsMemoryStorage*)fonts;
     pFonts->Remove(id);
@@ -47,14 +47,19 @@ WASM_EXPORT void  Graphics_Free(void* p)
 {
     if (p) ::free(p);
 }
-WASM_EXPORT void* Graphics_Create(double width_px, double height_px, double width_mm, double height_mm)
+WASM_EXPORT void* Graphics_Create()
 {
-    return new CGraphicsFileDrawing(width_px, height_px, width_mm, height_mm);
+    return new CGraphicsFileDrawing();
 }
 WASM_EXPORT void  Graphics_Destroy(void* graphics)
 {
     CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
     if (pGraphics) delete pGraphics;
+}
+WASM_EXPORT bool  Graphics_Load(void* graphics, BYTE* data, LONG size)
+{
+    CGraphicsFileDrawing* pGraphics = (CGraphicsFileDrawing*)graphics;
+    return pGraphics->LoadFromMemory(data, size);
 }
 WASM_EXPORT int   Graphics_GetPagesCount(void* graphics)
 {
@@ -204,6 +209,7 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
     */
 
     // текст
+    /*
     CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
     pGraphics->SetCoordTransformOffset(-210.583, -111.159);
     pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
@@ -230,6 +236,7 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
 
     pGraphics->put_IntegerGrid(true);
     pGraphics->ResetTransform();
+    */
 
     return true;
 }
@@ -658,7 +665,8 @@ int main()
     //void* test = Graphics_Create(210, 210, 55.5625, 55.5625);
     //void* test = Graphics_Create(203, 187, 53.7104, 49.4771);
     //void* test = Graphics_Create(265, 265, 70.1146, 70.1146);
-    void* test = Graphics_Create(211, 119, 55.8251, 31.2208);
+    //void* test = Graphics_Create(211, 119, 55.8251, 31.2208);
+    void* test = Graphics_Create();
     void* fonts = Fonts_Create();
 
     BYTE* pData = NULL;
@@ -667,6 +675,7 @@ int main()
     //if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.png", &pData, nBytesCount))
     if (!oFile.ReadAllBytes(L"C:/Windows/Fonts/arial.ttf", &pData, nBytesCount))
     {
+        Fonts_Destroy();
         Graphics_Destroy(test);
         RELEASEARRAYOBJECTS(pData);
         return 1;
@@ -675,7 +684,19 @@ int main()
 
     Fonts_Add(fonts, "Arial", pData, nBytesCount);
 
-    Graphics_TEST(test);
+    BYTE* pXpsData = NULL;
+    DWORD nXpsBytesCount;
+    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.xps", &pXpsData, nXpsBytesCount))
+    {
+        Fonts_Destroy();
+        Graphics_Destroy(test);
+        RELEASEARRAYOBJECTS(pData);
+        RELEASEARRAYOBJECTS(pXpsData);
+        return 1;
+    }
+    oFile.CloseFile();
+
+    Graphics_Load(test, pXpsData, nXpsBytesCount);
     int nHeight = Graphics_GetPageHeight(test, 1);
     int nWidth = Graphics_GetPageWidth(test, 1);
     BYTE* res = Graphics_GetPage(test, 1, nWidth, nHeight);
@@ -683,7 +704,11 @@ int main()
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";
 
-    CBgraFrame* resFrame = ((CGraphicsFileDrawing*)test)->GetFrameForTest();
+    CBgraFrame* resFrame = new CBgraFrame();
+    resFrame->put_Data(res);
+    resFrame->put_Width(nWidth);
+    resFrame->put_Height(nHeight);
+    resFrame->put_Stride(-4 * nWidth);
 
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     Fonts_Destroy();

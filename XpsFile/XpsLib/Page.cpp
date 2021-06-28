@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/graphics/structures.h"
+#include "../../DesktopEditor/fontengine/FontManager.h"
 #include "../../PdfWriter/PdfRenderer.h"
 
 #include "Document.h"
@@ -47,6 +48,9 @@
 #endif
 
 #define IsFromResource(String) (!String.empty() && '{' == String[0])
+#ifndef BUILDING_WASM_MODULE
+CGlobalFontsMemoryStorage* CApplicationFontStreams::m_pMemoryStorage = NULL;
+#endif
 
 namespace XPS
 {
@@ -447,6 +451,10 @@ namespace XPS
 						std::wstring wsRelativePath = (std::wstring::npos == nSlashPos) ? m_wsPagePath : m_wsPagePath.substr(0, nSlashPos + 1);
 						wsFontPath = wsRelativePath + wsFontPath;
 					}
+                    else
+                    {
+                        wsFontPath = m_wsRootPath->getFullFilePath(wsFontPath);
+                    }
 
 					std::wstring wsExt = GetFileExtension(wsFontPath);
 					NSStringExt::ToLower(wsExt);
@@ -456,6 +464,8 @@ namespace XPS
                         IFolder::CBuffer* buffer = NULL;
                         m_wsRootPath->read(wsFontPath, buffer);
                         m_pFontList->Check(wsFontName, buffer->Buffer, buffer->Size);
+                        if (CApplicationFontStreams::m_pMemoryStorage)
+                            CApplicationFontStreams::m_pMemoryStorage->Add(U_TO_UTF8(wsFontPath), buffer->Buffer, buffer->Size);
                         m_wsRootPath->write(wsFontPath, buffer->Buffer, buffer->Size);
                         delete buffer;
 					}
@@ -628,7 +638,7 @@ namespace XPS
 		int nIndicesPos = 0, nIndicesLen = wsIndices.size();
 		int nUtf16Pos = 0;
 		bool bRtoL = (nBidiLevel % 2 ? true : false);
-		m_pFontManager->LoadFontFromFile(wsFontPath, 0, (float)(dFontSize * 0.75), 96, 96);
+        m_pFontManager->LoadFontFromFile(m_wsRootPath->getFullFilePath(wsFontPath), 0, (float)(dFontSize * 0.75), 96, 96);
 		double dFontKoef = dFontSize / 100.0;
 
 		bool bNeedItalic = false, bNeedBold = false;
@@ -963,7 +973,7 @@ namespace XPS
 		if (pBrush)
 		{
 			if (pBrush->IsImageBrush())
-                ((CImageBrush*)pBrush)->SetPaths(m_wsRootPath->getFullFilePath(L"").c_str(), GetPath(m_wsPagePath).c_str());
+                ((CImageBrush*)pBrush)->SetPaths(m_wsRootPath, GetPath(m_wsPagePath).c_str());
 
 			bFill = pBrush->SetToRenderer(pRenderer);
 			if (bDeleteBrush)

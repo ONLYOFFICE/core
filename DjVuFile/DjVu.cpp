@@ -87,6 +87,10 @@ void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* p
 	if (m_pImplementation)
 		m_pImplementation->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
 }
+BYTE* CDjVuFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH)
+{
+    return NULL;
+}
 void CDjVuFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
 {
 	if (m_pImplementation)

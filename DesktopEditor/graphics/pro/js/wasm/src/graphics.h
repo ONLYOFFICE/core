@@ -9,73 +9,46 @@
 class CGraphicsFileDrawing
 {
 private:
-    CBgraFrame* m_pFrame;
-    CGraphicsRenderer* m_pGraphics;
     IOfficeDrawingFile* pReader;
     NSFonts::IApplicationFonts* pApplicationFonts;
 public:
-    CGraphicsFileDrawing(double width_px, double height_px, double width_mm, double height_mm)
+    CGraphicsFileDrawing()
     {
         pApplicationFonts = NSFonts::NSApplication::Create();
         pApplicationFonts->Initialize();
         pReader = new CXpsFile(pApplicationFonts);
-
-        int nRasterW = (int)width_px;
-        int nRasterH = (int)height_px;
-        BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
-
-        unsigned int back = 0xffffff;
-        unsigned int* pData32 = (unsigned int*)pData;
-        unsigned int* pData32End = pData32 + nRasterW * nRasterH;
-        while (pData32 < pData32End)
-            *pData32++ = back;
-
-        m_pFrame = new CBgraFrame();
-        m_pFrame->put_IsRGBA(true);
-        m_pFrame->put_Data(pData);
-        m_pFrame->put_Width(nRasterW);
-        m_pFrame->put_Height(nRasterH);
-
-        m_pGraphics = (CGraphicsRenderer*)NSGraphics::Create();
-        m_pGraphics->CreateFromBgraFrame(m_pFrame);
-        m_pGraphics->SetSwapRGB(true);
-        m_pGraphics->put_Width(width_mm);
-        m_pGraphics->put_Height(height_mm);
-
-        NSFonts::IApplicationFonts* m_pApplicationFonts = NSFonts::NSApplication::Create();
-        NSFonts::IFontManager* pManager = m_pApplicationFonts->GenerateFontManager();
-        m_pGraphics->SetFontManager(pManager);
     }
     ~CGraphicsFileDrawing()
     {
-        RELEASEOBJECT(m_pGraphics);
-        RELEASEOBJECT(m_pFrame);
+        RELEASEOBJECT(pReader);
+        RELEASEOBJECT(pApplicationFonts);
     }
 
+    bool LoadFromMemory(BYTE* data, DWORD length)
+    {
+        return pReader->LoadFromMemory(data, length);
+    }
     int GetPagesCount()
     {
-        return 1;
+        return pReader->GetPagesCount();
     }
     int GetPageHeight(int nPageIndex)
     {
-        return m_pFrame->get_Height();
+        double dPageDpiX, dPageDpiY;
+        double dWidth, dHeight;
+        pReader->GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+        return dHeight;
     }
     int GetPageWidth (int nPageIndex)
     {
-        return m_pFrame->get_Width();
+        double dPageDpiX, dPageDpiY;
+        double dWidth, dHeight;
+        pReader->GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+        return dWidth;
     }
     BYTE* GetPage    (int nPageIndex, int nRasterW, int nRasterH)
     {
-        return m_pFrame->get_Data();
-    }
-
-    CGraphicsRenderer* GetGraphicsForTest()
-    {
-        return m_pGraphics;
-    }
-    CBgraFrame*        GetFrameForTest()
-    {
-        return m_pFrame;
+        return pReader->ConvertToPixels(nPageIndex, nRasterW, nRasterH);
     }
 };
 

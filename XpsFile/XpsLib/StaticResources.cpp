@@ -152,24 +152,21 @@ namespace XPS
 	}
 	bool CImageBrush::SetToRenderer(IRenderer* pRenderer)
 	{
-        std::wstring wsPath = m_wsRoot.c_stdstr();
-        wsPath += m_wsPath.c_stdstr();
-
-		if (!NSFile::CFileBinary::Exists(wsPath))
+        std::wstring wsPath = m_wsPath.c_stdstr();
+        if (!m_wsRoot->exists(wsPath))
 		{
-            wsPath = m_wsPage.c_stdstr();
-            wsPath += m_wsPath.c_stdstr();
-			if (!NSFile::CFileBinary::Exists(wsPath))
+            wsPath = m_wsPage.c_stdstr() + m_wsPath.c_stdstr();
+            if (!m_wsRoot->exists(wsPath))
 				return false;
 		}
 
 		pRenderer->put_BrushType(c_BrushTypeTexture);
-		pRenderer->put_BrushTexturePath(wsPath);
+        pRenderer->put_BrushTexturePath(m_wsRoot->getFullFilePath(wsPath));
 		return true;
 	}
-	void CImageBrush::SetPaths(const wchar_t* wsRoot, const wchar_t* wsPage)
+    void CImageBrush::SetPaths(IFolder* wsRoot, const wchar_t* wsPage)
 	{
-		m_wsRoot.create(wsRoot, true);
+        m_wsRoot = wsRoot;
 		m_wsPage.create(wsPage, true);
 	}
 	bool CLinearGradientBrush::SetToRenderer(IRenderer* pRenderer)

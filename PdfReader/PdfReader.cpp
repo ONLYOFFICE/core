@@ -72,6 +72,7 @@ namespace PdfReader
         m_pInternal->m_pFontManager = NULL;
 
         m_pInternal->m_pGlobalParams = new GlobalParamsAdaptor(NULL);
+        globalParams = m_pInternal->m_pGlobalParams;
         m_pInternal->m_pFontList = new CFontList();
 
         m_pInternal->m_pAppFonts = pAppFonts;

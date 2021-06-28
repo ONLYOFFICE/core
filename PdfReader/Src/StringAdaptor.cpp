@@ -6,12 +6,14 @@
 #include <codecvt>
 
 StringAdaptor::StringAdaptor(const std::string &s) {
+    w_str = nullptr;
     str = new char[s.length() + 1];
     std::strcpy(str, s.c_str());
     update_wstr();
 }
 
 StringAdaptor::StringAdaptor(const std::wstring &s) {
+    str = nullptr;
     w_str = new wchar_t[s.length() + 1];
     std::wcscpy(w_str, s.c_str());
     update_str();

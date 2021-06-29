@@ -234,7 +234,7 @@ namespace MetaFile
     void CEmfInterpretatorXml::Save_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen,
                                                      const unsigned int &unRecordSize)
     {
-        if (NULL != pPen)
+        if (NULL == pPen)
             return;
 
         m_pOutputXml->WriteNodeBegin(L"EMR_EXTCREATEPEN", {XmlArgument(L"Id", EMR_EXTCREATEPEN),

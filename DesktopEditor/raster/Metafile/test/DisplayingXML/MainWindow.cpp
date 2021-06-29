@@ -153,8 +153,11 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionChange_File_triggered()
 {
-    Clear();
     m_wsPathToFile = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Metafile (*.emf *.wmf)")).toStdWString();
+
+    if (m_wsPathToFile.empty())
+        return;
+
     if (!ui->customView->DrawMetafile(m_wsPathToFile))
     {
         Clear();

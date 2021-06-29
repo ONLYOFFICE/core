@@ -6,6 +6,7 @@
 
 #include "../OdfFormat/odf_conversion_context.h"
 #include "../../ASCOfficeOdfFileW/source/OdfFormat/math_layout_elements.h"
+#include "../../ASCOfficeOdfFileW/source/OdfFormat/math_limit_elements.h"
 #include <set>
 #include <vector>
 
@@ -116,6 +117,11 @@ namespace Oox2Odf
 		if (!oox_acc) return;		
 
 		CREATE_MATH_TAG(L"mover");
+
+		/*typedef odf_writer::math_mover* T;
+		T tmp = dynamic_cast<T>(elm.get());
+		tmp->accent = true;*/
+
 		OPEN_MATH_TAG(elm);
 
 		convert(oox_acc->m_oElement.GetPointer());
@@ -151,26 +157,20 @@ namespace Oox2Odf
 	{
 		if (!oox_bar) return;
 
-		CREATE_MATH_TAG(L"mathBar")
-		OPEN_MATH_TAG(elm)
+
 
 		convert(oox_bar->m_oBarPr.GetPointer());
 		convert(oox_bar->m_oElement.GetPointer());
 
-		CLOSE_MATH_TAG
 	}
 
 	void OoxConverter::convert(OOX::Logic::CBarPr	*oox_bar_pr)
 	{
-		if (!oox_bar_pr) return;
-
-		CREATE_MATH_TAG(L"mathBarPr")		
-		OPEN_MATH_TAG(elm)
+		if (!oox_bar_pr) return;	
 
 		convert(oox_bar_pr->m_oCtrlPr.GetPointer());
 		convert(oox_bar_pr->m_oPos.GetPointer());
 
-		CLOSE_MATH_TAG
 	}
 
 	void OoxConverter::convert(OOX::Logic::CBorderBox *oox_border_box)
@@ -925,35 +925,37 @@ namespace Oox2Odf
 		if (!oox_rad) return;
 
 		
-		convert(oox_rad->m_oRadPr.GetPointer());
+		bool flag = convert(oox_rad->m_oRadPr.GetPointer());
 
-		if (oox_rad->m_oDeg.GetPointer()->m_arrItems.size() == 0)
+		if (flag)
 		{
-			convert(oox_rad->m_oElement.GetPointer());
+			CREATE_MATH_TAG(L"msqrt");
+			OPEN_MATH_TAG(elm);
+			mrow();
+				convert(oox_rad->m_oElement.GetPointer());
+			endOfMrow();
+			CLOSE_MATH_TAG;
 		}
 		else
 			convert(oox_rad->m_oDeg.GetPointer(), oox_rad->m_oElement.GetPointer());
 
 	}
 
-	void OoxConverter::convert(OOX::Logic::CRadPr *oox_rad_pr)
+	bool OoxConverter::convert(OOX::Logic::CRadPr *oox_rad_pr)
 	{
-		if (!oox_rad_pr) return;
+		if (!oox_rad_pr) return false;
 
-		convert(oox_rad_pr->m_oDegHide.GetPointer());
+		bool flag = convert(oox_rad_pr->m_oDegHide.GetPointer());
 		convert(oox_rad_pr->m_oCtrlPr.GetPointer());
+		return flag;
 
 	}
 
-	void OoxConverter::convert(OOX::Logic::CDegHide *oox_deg_hide)
+	bool OoxConverter::convert(OOX::Logic::CDegHide *oox_deg_hide)
 	{
-		if (!oox_deg_hide) return;
-
+		if (!oox_deg_hide) return false;	
 		
-		CREATE_MATH_TAG(L"msqrt")
-		OPEN_MATH_TAG(elm)
-
-		end_counter().push_back(1);
+		return oox_deg_hide->m_val->ToBool();
 	}
 
 	void OoxConverter::convert(OOX::Logic::CDeg *oox_deg, OOX::Logic::CElement *oox_elm)
@@ -1014,7 +1016,9 @@ namespace Oox2Odf
 		CREATE_MATH_TAG(L"msup");
 		OPEN_MATH_TAG(elm);		
 		
+		mrow();
 		convert(oox_elm);	
+		endOfMrow();
 
 		mrow();
 		for (size_t i = 0; i < oox_sup->m_arrItems.size(); ++i)

@@ -705,7 +705,7 @@ public:
 		void convert(OOX::Logic::CPhant					*oox_phant);
 		void convert(OOX::Logic::CPhantPr				*oox_phant_pr);
 		void convert(OOX::Logic::CRad					*oox_rad);
-		void convert(OOX::Logic::CRadPr					*oox_rad_pr);
+		bool convert(OOX::Logic::CRadPr					*oox_rad_pr);
 		void convert(OOX::Logic::CSPre					*oox_s_pre);
 		void convert(OOX::Logic::CSPrePr				*oox_s_pre_pr);
 		void convert(OOX::Logic::CSSub					*oox_ssub);
@@ -719,7 +719,7 @@ public:
 		std::wstring convert(OOX::Logic::CBegChr				*oox_beg_chr);
 		std::wstring convert(OOX::Logic::CEndChr				*oox_end_chr);
 		void convert(OOX::Logic::CElement				*oox_elm);
-		void convert(OOX::Logic::CDegHide				*oox_deg_hide);
+		bool convert(OOX::Logic::CDegHide				*oox_deg_hide);
 		void convert(OOX::Logic::CDeg *oox_deg, OOX::Logic::CElement *oox_elm);
 		void convert(OOX::Logic::CSup *oox_sup, OOX::Logic::CElement *oox_elm);
 		void convert(OOX::Logic::CSub *oox_sub, OOX::Logic::CElement *oox_elm);

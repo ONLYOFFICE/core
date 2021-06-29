@@ -266,6 +266,7 @@ void math_mover::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
+			CP_XML_ATTR_OPT(L"accent", accent);
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;

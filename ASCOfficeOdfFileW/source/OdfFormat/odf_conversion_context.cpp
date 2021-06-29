@@ -331,7 +331,7 @@ void odf_conversion_context::end_math()
 	_CP_OPT(double)width = convert_symbol_width(count_symbol_width);
 	_CP_OPT(double)height = convert_symbol_width(count_symbol_height);
 
-	drawing_context()->set_size(width, height);
+	//drawing_context()->set_size(width, height);
 	
 	drawing_context()->end_object();
 	drawing_context()->end_drawing();

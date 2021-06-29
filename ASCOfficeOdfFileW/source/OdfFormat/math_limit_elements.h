@@ -32,205 +32,207 @@
 #pragma once
 
 #include "math_elements.h"
+#include "../datatypes/common_attlists.h"
 
 namespace cpdoccore { 
-namespace odf_writer {
+	using namespace odf_types;
+	namespace odf_writer {
 
-class math_msub : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMSub;
+	class math_msub : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMSub;
 	
 
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
 
-	virtual void serialize(std::wostream & _Wostream);
+		virtual void serialize(std::wostream & _Wostream);
 
-    office_element_ptr_array    content_;
-};
+		office_element_ptr_array    content_;
+	};
 
-CP_REGISTER_OFFICE_ELEMENT2(math_msub);
-//CP_REGISTER_OFFICE_ELEMENT3(math_msub);
-//--------------------------------------------------------------------
-class math_msup : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMSup;
-
-
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
-
-	virtual void serialize(std::wostream & _Wostream);
-
-    office_element_ptr_array    content_;
-};
-
-CP_REGISTER_OFFICE_ELEMENT2(math_msup);
-//CP_REGISTER_OFFICE_ELEMENT3(math_msup);
-
-//--------------------------------------------------------------------
-class math_msubsup : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMSubSup;
+	CP_REGISTER_OFFICE_ELEMENT2(math_msub);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_msub);
+	//--------------------------------------------------------------------
+	class math_msup : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMSup;
 
 
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
 
-	virtual void serialize(std::wostream & _Wostream);
+		virtual void serialize(std::wostream & _Wostream);
 
-    office_element_ptr_array    content_;
-};
+		office_element_ptr_array    content_;
+	};
 
-CP_REGISTER_OFFICE_ELEMENT2(math_msubsup);
-//CP_REGISTER_OFFICE_ELEMENT3(math_msubsup);
+	CP_REGISTER_OFFICE_ELEMENT2(math_msup);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_msup);
 
-//--------------------------------------------------------------------
-class math_none : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMNone;
-
-
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
-
-	virtual void serialize(std::wostream & _Wostream);
-
-    office_element_ptr_array    content_;
-};
-
-CP_REGISTER_OFFICE_ELEMENT2(math_none);
-//CP_REGISTER_OFFICE_ELEMENT3(math_none);
-
-//--------------------------------------------------------------------
-class math_mprescripts : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMPreScripts;
+	//--------------------------------------------------------------------
+	class math_msubsup : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMSubSup;
 
 
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
 
-	virtual void serialize(std::wostream & _Wostream);
-};
+		virtual void serialize(std::wostream & _Wostream);
 
-CP_REGISTER_OFFICE_ELEMENT2(math_mprescripts);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mprescripts);
+		office_element_ptr_array    content_;
+	};
 
-//--------------------------------------------------------------------
-class math_mmultiscripts : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMMultiScripts;
+	CP_REGISTER_OFFICE_ELEMENT2(math_msubsup);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_msubsup);
 
-
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
-
-	virtual void serialize(std::wostream & _Wostream);
-
-    office_element_ptr_array content_;
-	office_element_ptr_array pre_content_;
-	bool bSeparate = false;
-};
-
-CP_REGISTER_OFFICE_ELEMENT2(math_mmultiscripts);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mmultiscripts);
-
-//--------------------------------------------------------------------
-class math_munderover : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMUnderOver;
+	//--------------------------------------------------------------------
+	class math_none : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMNone;
 
 
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
 
-	virtual void serialize(std::wostream & _Wostream);
+		virtual void serialize(std::wostream & _Wostream);
 
-    office_element_ptr_array    content_; //3 exact - base, under, over
-};
+		office_element_ptr_array    content_;
+	};
 
-CP_REGISTER_OFFICE_ELEMENT2(math_munderover);
-//CP_REGISTER_OFFICE_ELEMENT3(math_munderover);
+	CP_REGISTER_OFFICE_ELEMENT2(math_none);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_none);
 
-//--------------------------------------------------------------------
-class math_mover : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMOver;
-
-
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
-
-	virtual void serialize(std::wostream & _Wostream);
-
-    office_element_ptr_array    content_;
-};
-
-CP_REGISTER_OFFICE_ELEMENT2(math_mover);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mover);
-
-//--------------------------------------------------------------------
-class math_munder : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMUnder;
+	//--------------------------------------------------------------------
+	class math_mprescripts : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMPreScripts;
 
 
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
 
-	virtual void serialize(std::wostream & _Wostream);
+		virtual void serialize(std::wostream & _Wostream);
+	};
 
-    office_element_ptr_array    content_;
-};
+	CP_REGISTER_OFFICE_ELEMENT2(math_mprescripts);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_mprescripts);
 
-CP_REGISTER_OFFICE_ELEMENT2(math_munder);
-//CP_REGISTER_OFFICE_ELEMENT3(math_munder);
-//--------------------------------------------------------------------
-}
+	//--------------------------------------------------------------------
+	class math_mmultiscripts : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMMultiScripts;
+
+
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
+
+		virtual void serialize(std::wostream & _Wostream);
+
+		office_element_ptr_array content_;
+		office_element_ptr_array pre_content_;
+		bool bSeparate = false;
+	};
+
+	CP_REGISTER_OFFICE_ELEMENT2(math_mmultiscripts);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_mmultiscripts);
+
+	//--------------------------------------------------------------------
+	class math_munderover : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMUnderOver;
+
+
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
+
+		virtual void serialize(std::wostream & _Wostream);
+
+		office_element_ptr_array    content_; //3 exact - base, under, over
+	};
+
+	CP_REGISTER_OFFICE_ELEMENT2(math_munderover);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_munderover);
+
+	//--------------------------------------------------------------------
+	class math_mover : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMOver;
+
+		_CP_OPT(Bool)	accent;
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
+
+		virtual void serialize(std::wostream & _Wostream);
+
+		office_element_ptr_array    content_;
+	};
+
+	CP_REGISTER_OFFICE_ELEMENT2(math_mover);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_mover);
+
+	//--------------------------------------------------------------------
+	class math_munder : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMUnder;
+
+
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
+
+		virtual void serialize(std::wostream & _Wostream);
+
+		office_element_ptr_array    content_;
+	};
+
+	CP_REGISTER_OFFICE_ELEMENT2(math_munder);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_munder);
+	//--------------------------------------------------------------------
+	}
 }

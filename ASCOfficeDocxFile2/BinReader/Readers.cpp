@@ -3562,7 +3562,7 @@ int Binary_CustomsTableReader::ReadCustom(BYTE type, long length, void* poResult
 		int res = c_oSerConstants::ReadOk;
 		READ1_DEF(length, res, this->ReadCustomContent, &oCustomXmlProps);
 
-		m_oFileWriter.m_oCustomXmlWriter.WriteCustom(oCustomXmlProps.toXML(), oCustomXmlProps.m_oCustomXmlContent);
+		m_oFileWriter.m_oCustomXmlWriter.WriteCustom(oCustomXmlProps.toXML(), oCustomXmlProps.m_oCustomXmlContent, m_oFileWriter.m_bGlossaryMode);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -9613,7 +9613,7 @@ int BinaryFileReader::ReadMainTable()
 		
 		if (!oSettingsCustom.IsEmpty())
 		{
-			m_oFileWriter.m_oCustomXmlWriter.WriteCustomSettings(oSettingsCustom.GetSchemaUrl(), oSettingsCustom.ToXml());
+			m_oFileWriter.m_oCustomXmlWriter.WriteCustomSettings(oSettingsCustom.GetSchemaUrl(), oSettingsCustom.ToXml(), m_oFileWriter.m_bGlossaryMode);
 		}
 	}
 	else
@@ -9841,9 +9841,11 @@ int BinaryFileReader::ReadMainTable()
 					L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(L"/glossary") : L""), pFooter->m_sFilename);
 			}
 		}
-		for (size_t i = 0; (false == m_oFileWriter.m_bGlossaryMode) && (i < m_oFileWriter.m_oCustomXmlWriter.arItems.size()); ++i)
+		for (size_t i = 0; i < m_oFileWriter.m_oCustomXmlWriter.arItems.size(); ++i)
 		{
-			std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + m_oFileWriter.m_oCustomXmlWriter.arItems[i];
+			if (m_oFileWriter.m_oCustomXmlWriter.arItems[i].second != m_oFileWriter.m_bGlossaryMode) continue;
+
+			std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + m_oFileWriter.m_oCustomXmlWriter.arItems[i].first;
 			unsigned int rId;
 			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXml.RelationType(), sRelsPath, L"", &rId);
 		}

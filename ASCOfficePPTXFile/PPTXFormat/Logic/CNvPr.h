@@ -217,7 +217,7 @@ namespace PPTX
 				}
 									pWriter->WriteAttribute (L"hidden", hidden);
 				if (title.IsInit()) pWriter->WriteAttribute (L"title",   XmlUtils::EncodeXmlString(title.get()));
-									pWriter->WriteAttribute (L"form", form.get());
+									pWriter->WriteAttribute (L"form", form);
 
 				pWriter->EndAttributes();
 

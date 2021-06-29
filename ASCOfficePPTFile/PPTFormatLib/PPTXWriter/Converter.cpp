@@ -40,6 +40,9 @@
 #include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "boost/smart_ptr.hpp"
+#include <fstream>
 #include "TableWriter.h"
 
 #include "../Reader/PPTDocumentInfo.h"
@@ -420,11 +423,22 @@ void PPT_FORMAT::CPPTXWriter::WritePresInfo()
     CFile oFile;
 
 // tableStyles.xml
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("tableStyles.xml"));
+    std::wstring zipPath = m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("tableStyles.zip");
+    oFile.CreateFile(zipPath);
 
-    oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-                          <a:tblStyleLst xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" def=\"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}\"/>");
+    std::vector<CRecordRoundTripCustomTableStyles12Atom*> vecTableStyles;
+    ((CPPTUserInfo*)(m_pDocument))->m_oDocument.GetRecordsByType(&vecTableStyles, false);
+    // Source
+    BYTE* tableStylesData = vecTableStyles[0]->data.first.get();
+    ULONG tableStylesLen = vecTableStyles[0]->data.second;
+    oFile.WriteFile(tableStylesData, tableStylesLen);
     oFile.CloseFile();
+
+    COfficeUtils officeUtils;
+    officeUtils.ExtractToDirectory(zipPath, m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt"), NULL, 1);
+
+
+
 
 // presProps.xml
     oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("presProps.xml"));

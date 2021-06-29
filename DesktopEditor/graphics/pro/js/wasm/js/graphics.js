@@ -10,7 +10,7 @@
         this.isInit = false;
 		this.engine = 0;
     
-        this.testImage = function(wF, hF, width, height, dataBuffer)
+        this.testImage = function(dataBuffer)
         {
             if (!this.isInit)
                 return null;
@@ -18,11 +18,8 @@
             if (this.engine)
 				this.close();
 			
-			this.engine = Module["_Graphics_Create"](wF, hF, width, height);
+			this.engine = Module["_Graphics_Create"]();
 			if (0 === this.engine)
-				return null;
-			var fonts = Module["_Fonts_Create"]();
-			if (0 === fonts)
 				return null;
 				
 			var imageFileRawDataSize = dataBuffer.byteLength;
@@ -32,22 +29,11 @@
 			
 			var uint8DataBuffer = new Uint8Array(dataBuffer);
 			Module["HEAP8"].set(uint8DataBuffer, imageFileRawData);
+			Module["_Graphics_Load"](this.engine, imageFileRawData, imageFileRawDataSize);
 			
-			var tmp = "Arial".toUtf8();
-			var pointer = Module["_Graphics_Malloc"](tmp.length);
-			if (0 === pointer)
-				return null;
-			Module["HEAP8"].set(tmp, pointer);
-
-			Module["_Fonts_Add"](fonts, pointer, imageFileRawData, imageFileRawDataSize);	
-			Module["_Graphics_TEST"](this.engine);
-			
-			Module["_Graphics_Free"](pointer);
-			Module["_Graphics_Free"](imageFileRawData);
-			
-			var imageW = Module["_Graphics_GetPageWidth"](this.engine, 1);
-			var imageH = Module["_Graphics_GetPageHeight"](this.engine, 1);
-			var imageRGBA = Module["_Graphics_GetPage"](this.engine, imageW, imageH);
+			var imageW = Module["_Graphics_GetPageWidth"](this.engine, 0);
+			var imageH = Module["_Graphics_GetPageHeight"](this.engine, 0);
+			var imageRGBA = Module["_Graphics_GetPage"](this.engine, 0, imageW, imageH);
 			
 			if (imageW <= 0 || imageH <= 0 || 0 === imageRGBA)
 			{
@@ -65,7 +51,7 @@
 			
 			canvasCtx.putImageData(canvasData, 0, 0);
 	
-			Module["_Fonts_Destroy"]();
+			Module["_Graphics_Free"](imageFileRawData);
 			this.close();
 			return canvas;
         }

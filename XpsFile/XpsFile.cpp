@@ -206,6 +206,7 @@ BYTE* CXpsFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH)
 
     RELEASEINTERFACE(pFontManager);
     RELEASEOBJECT(pRenderer);
+    oFrame.ClearNoAttack();
     return pBgraData;
 }
 void CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)

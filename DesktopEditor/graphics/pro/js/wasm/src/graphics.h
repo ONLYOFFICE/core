@@ -15,7 +15,7 @@ public:
     CGraphicsFileDrawing()
     {
         pApplicationFonts = NSFonts::NSApplication::Create();
-        pApplicationFonts->Initialize();
+        //pApplicationFonts->Initialize();
         pReader = new CXpsFile(pApplicationFonts);
     }
     ~CGraphicsFileDrawing()
@@ -37,14 +37,14 @@ public:
         double dPageDpiX, dPageDpiY;
         double dWidth, dHeight;
         pReader->GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-        return dHeight;
+        return dHeight * 96 / dPageDpiX;
     }
     int GetPageWidth (int nPageIndex)
     {
         double dPageDpiX, dPageDpiY;
         double dWidth, dHeight;
         pReader->GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-        return dWidth;
+        return dWidth * 96 / dPageDpiX;
     }
     BYTE* GetPage    (int nPageIndex, int nRasterW, int nRasterH)
     {

@@ -667,8 +667,9 @@ int main()
     //void* test = Graphics_Create(265, 265, 70.1146, 70.1146);
     //void* test = Graphics_Create(211, 119, 55.8251, 31.2208);
     void* test = Graphics_Create();
-    void* fonts = Fonts_Create();
+    //void* fonts = Fonts_Create();
 
+    /*
     BYTE* pData = NULL;
     DWORD nBytesCount;
     NSFile::CFileBinary oFile;
@@ -681,25 +682,26 @@ int main()
         return 1;
     }
     oFile.CloseFile();
+    */
 
-    Fonts_Add(fonts, "Arial", pData, nBytesCount);
+    //Fonts_Add(fonts, "Arial", pData, nBytesCount);
 
     BYTE* pXpsData = NULL;
     DWORD nXpsBytesCount;
+    NSFile::CFileBinary oFile;
     if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.xps", &pXpsData, nXpsBytesCount))
     {
         Fonts_Destroy();
         Graphics_Destroy(test);
-        RELEASEARRAYOBJECTS(pData);
         RELEASEARRAYOBJECTS(pXpsData);
         return 1;
     }
     oFile.CloseFile();
 
     Graphics_Load(test, pXpsData, nXpsBytesCount);
-    int nHeight = Graphics_GetPageHeight(test, 1);
-    int nWidth = Graphics_GetPageWidth(test, 1);
-    BYTE* res = Graphics_GetPage(test, 1, nWidth, nHeight);
+    int nHeight = Graphics_GetPageHeight(test, 0);
+    int nWidth  = Graphics_GetPageWidth(test,  0);
+    BYTE* res   = Graphics_GetPage(test, 0, nWidth, nHeight);
 
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";
@@ -711,9 +713,10 @@ int main()
     resFrame->put_Stride(-4 * nWidth);
 
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
-    Fonts_Destroy();
+    //Fonts_Destroy();
     Graphics_Destroy(test);
-    RELEASEARRAYOBJECTS(pData);
+    RELEASEARRAYOBJECTS(pXpsData);
+    RELEASEARRAYOBJECTS(res);
     return 0;
 }
 #endif

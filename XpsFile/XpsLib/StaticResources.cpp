@@ -160,9 +160,21 @@ namespace XPS
 				return false;
 		}
 
-		pRenderer->put_BrushType(c_BrushTypeTexture);
-        pRenderer->put_BrushTexturePath(m_wsRoot->getFullFilePath(wsPath));
-		return true;
+        IFolder::CBuffer* buffer = NULL;
+        m_wsRoot->read(wsPath, buffer);
+        int nBase64BufferLen = NSBase64::Base64EncodeGetRequiredLength(buffer->Size);
+        BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen + 64];
+        if (true == NSBase64::Base64Encode(buffer->Buffer, buffer->Size, pbBase64Buffer, &nBase64BufferLen))
+        {
+            pRenderer->put_BrushType(c_BrushTypeTexture);
+            pRenderer->put_BrushTexturePath(L"data:," + NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pbBase64Buffer, nBase64BufferLen));
+            RELEASEARRAYOBJECTS(pbBase64Buffer);
+            RELEASEOBJECT(buffer);
+            return true;
+        }
+        RELEASEARRAYOBJECTS(pbBase64Buffer);
+        RELEASEOBJECT(buffer);
+        return false;
 	}
     void CImageBrush::SetPaths(IFolder* wsRoot, const wchar_t* wsPage)
 	{

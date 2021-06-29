@@ -22,6 +22,13 @@ if not base.is_dir("emsdk"):
     base.cmd(command_prefix + "emsdk", ["activate", "latest"])
     os.chdir("../")
 
+if not base.is_dir("xml"):
+   base.copy_dir("../../../xml", "./xml")
+   base.replaceInFile("./xml/libxml2/libxml.h", "xmlNop(void)", "xmlNop(void* context, char* buffer, int len)")
+   base.replaceInFile("./xml/libxml2/xmlIO.c", "xmlNop(void)", "xmlNop(void* context, char* buffer, int len)")
+   base.replaceInFile("./xml/src/xmllight_private.h", "#include \"../../common/", "#include \"../../../../../common/")
+   base.replaceInFile("./xml/include/xmlutils.h", "#include \"../../common/", "#include \"../../../../../common/")
+
 # compile
 compiler_flags = ["-O3",
                   "-fno-rtti",
@@ -41,14 +48,14 @@ exported_functions = ["_malloc",
                       "_Graphics_GetPageHeight",
                       "_Graphics_GetPageWidth",
                       "_Graphics_GetPage",
-                      "_Graphics_TEST",
+                      "_Graphics_Load",
                       "_Fonts_Create",
                       "_Fonts_Destroy",
                       "_Fonts_Add",
                       "_Fonts_Remove"]
 
 libGraphics_src_path = "../../"
-input_graphics_sources = ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "Graphics.cpp", "Brush.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp"]
+input_graphics_sources = ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "Graphics.cpp", "Brush.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp"]
 
 libFontEngine_src_path = "../../../fontengine/"
 input_fontengine_sources = ["GlyphString.cpp", "FontManager.cpp", "FontFile.cpp", "FontPath.cpp", "ApplicationFonts.cpp"]
@@ -68,6 +75,14 @@ input_unicodeconverter_sources = ["UnicodeConverter.cpp"]
 libIcu_src_path = "../../../../Common/3dParty/icu/icu/source/common/"
 input_icu_sources = ["ucnv.c", "ustr_wcs.cpp", "ucnv_err.c", "ucnv_bld.cpp", "ustrtrns.cpp", "ucnv_cb.c", "udata.cpp", "ucnv_io.cpp", "uhash.c", "udatamem.c", "cmemory.c", "ustring.cpp", "umutex.cpp", "putil.cpp", "ustr_cnv.cpp", "ucnvmbcs.cpp", "ucnvlat1.c", "ucnv_u16.c", "ucnv_u8.c", "ucnv_u32.c", "ucnv_u7.c", "ucln_cmn.cpp", "ucnv2022.cpp", "ucnv_lmb.c", "ucnvhz.c", "ucnvscsu.c", "ucnvisci.c", "ucnvbocu.cpp", "ucnv_ct.c", "ucnv_cnv.c", "stringpiece.cpp", "charstr.cpp", "umapfile.c", "ucmndata.c", "ucnv_ext.cpp", "uobject.cpp", "umath.c"]
 
+libXps_src_path = "../../../../XpsFile/"
+input_xps_sources = ["XpsFile.cpp", "XpsLib/Document.cpp"]
+
+libOfficeUtils_src_parh = "../../../../OfficeUtils/src/"
+input_officeutils_sources = ["OfficeUtils.cpp", "ZipBuffer.cpp"]
+
+input_xml_sources = ["xml/src/xmllight.cpp", "xml/src/xmldom.cpp", "xml/build/qt/libxml2_all.c", "xml/build/qt/libxml2_all2.c"]
+
 # sources
 sources = []
 for item in input_graphics_sources:
@@ -83,11 +98,18 @@ for item in input_common_sources:
 for item in input_unicodeconverter_sources:
     sources.append(libUnicodeConverter_src_path + item)
 # icu
+for item in input_xps_sources:
+    sources.append(libXps_src_path + item)
+for item in input_officeutils_sources:
+    sources.append(libOfficeUtils_src_parh + item)
+for item in input_xml_sources:
+    sources.append(item)
 sources.append("raster.o")
 sources.append("wasm/src/graphics.cpp")
 
-compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common")
+compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common -I../../../xml/libxml2/include -I../../../xml/build/qt")
 compiler_flags.append("-D__linux__ -D_LINUX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE -DU_COMMON_IMPLEMENTATION")
+compiler_flags.append("-DHAVE_VA_COPY -DLIBXML_READER_ENABLED -DLIBXML_PUSH_ENABLED -DLIBXML_HTML_ENABLED -DLIBXML_XPATH_ENABLED -DLIBXML_OUTPUT_ENABLED -DLIBXML_C14N_ENABLED -DLIBXML_SAX1_ENABLED -DLIBXML_TREE_ENABLED -DLIBXML_XPTR_ENABLED -DIN_LIBXML -DLIBXML_STATIC")
 
 # arguments
 arguments = ""
@@ -156,4 +178,5 @@ base.copy_file("./wasm/js/code_graphics.js", "./deploy/code_graphics.js")
 base.delete_file("graphics.js")
 base.delete_file("graphics.wasm")
 base.delete_dir("./temp")
-base.delete_file("raster.o")
+base.delete_dir("./xml")
+#base.delete_file("raster.o")

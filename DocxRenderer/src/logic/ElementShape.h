@@ -355,8 +355,8 @@ namespace NSDocxRenderer
             oWriter.AddDouble(m_oPen.Size, 2);
             oWriter.WriteString(L"mm\">");
 
-            static CString g_string_fill_opacity		= _T("<v:fill opacity=\"%.2lf\"/>");
-            static CString g_string_stroke_opacity		= _T("<v:stroke opacity=\"%.2lf\"/>");
+            std::wstring g_string_fill_opacity = L"<v:fill opacity=\"%.2lf\"/>";
+            std::wstring g_string_stroke_opacity = L"<v:stroke opacity=\"%.2lf\"/>";
 
             if (c_BrushTypeTexture == m_oBrush.Type)
 			{

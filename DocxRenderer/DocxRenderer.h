@@ -33,6 +33,7 @@
 #define _PDF_WRITER_PDFRENDERER_H
 
 #include "../DesktopEditor/graphics/IRenderer.h"
+#include "../DesktopEditor/common/officedrawingfile.h"
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -58,6 +59,7 @@ namespace NSDocxRenderer
     };
 }
 
+class CDocxRenderer_Private;
 class DOCXRENDERER_DECL_EXPORT CDocxRenderer : public IRenderer
 {
 public:
@@ -67,9 +69,7 @@ public:
     void         CreateFile(const std::wstring& wsPath);
     void         Close();
 
-    void         SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType);
-
-	void         SetTempFolder(const std::wstring& wsPath);
+    void         SetTempFolder(const std::wstring& wsPath);
 	//----------------------------------------------------------------------------------------
 	// Тип рендерера
 	//----------------------------------------------------------------------------------------
@@ -201,6 +201,10 @@ public:
 	virtual HRESULT CommandLong(const LONG& lType, const LONG& lCommand);
 	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand);
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
+
+    // методы, которыми будет пользоваться конвертер
+    void SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType);
+    int Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile);
 
 private:
     CDocxRenderer_Private* m_pInternal;

@@ -169,13 +169,13 @@ namespace NSDocxRenderer
 
             std::map<DWORD, CImageInfo>::iterator find = m_mapImageData.find(dwSum);
             if (find != m_mapImageData.end())
-                return *find;
+                return find->second;
 
             ++m_lNextIDImage;
             CImageInfo oInfo;
-            oInfo.m_lID = m_lNextIDImage;
+            oInfo.m_nId = m_lNextIDImage;
             SaveImage(pImage, oInfo);
-            m_mapImageData.insert(std::pair<std::DWORD, CImageInfo>(dwSum, oInfo);
+            m_mapImageData.insert(std::pair<DWORD, CImageInfo>(dwSum, oInfo));
 
             return oInfo;
 		}
@@ -184,13 +184,13 @@ namespace NSDocxRenderer
 		{
             std::map<std::wstring, CImageInfo>::iterator find = m_mapImagesFile.find(strFileName);
             if (find != m_mapImagesFile.end())
-                return *find;
+                return find->second;
 
             ++m_lNextIDImage;
             CImageInfo oInfo;
-            oInfo.m_lID = m_lNextIDImage;
+            oInfo.m_nId = m_lNextIDImage;
             SaveImage(strFileName, oInfo);
-            m_mapImagesFile.insert(std::pair<std::wstring, CImageInfo>(strFileName, oInfo);
+            m_mapImagesFile.insert(std::pair<std::wstring, CImageInfo>(strFileName, oInfo));
 
 			return oInfo;
 		}
@@ -202,7 +202,7 @@ namespace NSDocxRenderer
             BYTE* pBuffer = pFrame->get_Data();
 
 			BYTE* pBufferMem = pBuffer + 3;
-			LONG lCountPix = lWidth * lHeight;
+            LONG lCountPix = w * h;
 
 			for (LONG i = 0; i < lCountPix; ++i, pBufferMem += 4)
 			{

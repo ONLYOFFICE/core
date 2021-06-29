@@ -41,20 +41,21 @@ namespace NSNetwork
     {
         class CWebWorkerBase: public IWebSocket
         {
-            protected:
-                std::shared_ptr<IListener> listener;
-                std::string url;
+        protected:
+            std::shared_ptr<IListener> listener;
+            std::string url;
 
-            public:
-                CWebWorkerBase(const std::string& url, std::shared_ptr<IListener> listener)
-                {
-                    this->url = url;
-                    this->listener = listener;
-                }
-                virtual void open() override {}
-                virtual void send(const std::string& message) override {}
-                virtual void close() override {}
-                virtual void setUrl(const std::string& url) override {this->url = url;}
+        public:
+            CWebWorkerBase(const std::string& url, std::shared_ptr<IListener> listener)
+            {
+                this->url = url;
+                this->listener = listener;
+            }
+            virtual ~CWebWorkerBase() { close(); }
+            virtual void open() override {}
+            virtual void send(const std::string& message) override {}
+            virtual void close() override {}
+            virtual void setUrl(const std::string& url) override {this->url = url;}
         };
     }
 }

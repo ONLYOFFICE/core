@@ -43,9 +43,7 @@ namespace NSNetwork
     {
         class CIXWebSocket: public CWebWorkerBase
         {
-
         private:
-
             ix::WebSocket webSocket;
            
         public:

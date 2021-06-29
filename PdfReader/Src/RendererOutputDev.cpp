@@ -912,8 +912,7 @@ namespace PdfReader
                     }
                 }
             }
-            //else if (L"" == (wsFileName = pFont->GetExternalFontFilePath())) todo filepath
-            else if (false)
+            else if (L"" == (wsFileName = StringAdaptor::FromGString(pFont->locateFont(m_pXref, false)->path).get_wstring()))
             {
                 // TODO: Сначала тут мы должны проверить, если ищется один из 14 стандартных шрифтов,
                 //       тогда мы должны вернуть путь к стандартному шрифту.

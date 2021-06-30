@@ -269,7 +269,6 @@ namespace OOX
 			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 				break;
 
-			else if (0 == _at)	m_coherent3DOff = pReader->GetBool();
 			else if (1 == _at)	m_coherent3DOff = pReader->GetBool();
 			else if (2 == _at)	m_csCatId = pReader->GetString2();
 			else if (3 == _at)	m_csTypeId = pReader->GetString2();
@@ -326,7 +325,6 @@ namespace OOX
 	void Diagram::CPropertySet::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteBool2(0, m_coherent3DOff);
 			pWriter->WriteBool2(1, m_coherent3DOff);
 			pWriter->WriteString2(2, m_csCatId);
 			pWriter->WriteString2(3, m_csTypeId);

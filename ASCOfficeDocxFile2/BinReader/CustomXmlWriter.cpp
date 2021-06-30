@@ -53,6 +53,8 @@ namespace Writers
 		sCustomXMLPropsFilename += std::to_wstring(m_nCount) + OOX::FileTypes::CustomXmlProps.DefaultFileName().GetExtention();
 
 		NSFile::CFileBinary::SaveToFile(sCustomXmlDir + FILE_SEPARATOR_STR + sCustomXMLPropsFilename, sCustomXmlPropertiesContent);
+		OOX::CContentTypes& oContentTypes = *m_pDrawingConverter->GetContentTypes();
+		oContentTypes.Registration( OOX::FileTypes::CustomXmlProps.OverrideType(), OOX::FileTypes::CustomXmlProps.DefaultDirectory(), sCustomXMLPropsFilename );
 
 		std::wstring sCustomXmlFilename;
 		sCustomXmlFilename = OOX::FileTypes::CustomXml.DefaultFileName().GetBasename() + std::to_wstring(m_nCount);

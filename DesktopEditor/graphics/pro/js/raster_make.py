@@ -48,8 +48,7 @@ libRaster_src_path = "../../../raster"
 input_raster_sources = ["BgraFrame.cpp", "ImageFileFormatChecker.cpp"]
 
 libZlib_src_path = "../../../../OfficeUtils/src/zlib-1.2.11"
-input_zlib_sources = ["inflate.c", "zutil.c", "crc32.c", "adler32.c", "inftrees.c", "inffast.c",
-                      "deflate.c", "trees.c"]
+input_zlib_sources = ["inflate.c", "zutil.c", "crc32.c", "adler32.c", "inftrees.c", "inffast.c", "deflate.c", "trees.c"]
 
 libCxImage_src_path = "../../../cximage/CxImage"
 input_cximage_sources = ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.cpp",
@@ -71,8 +70,7 @@ input_jpeg_sources = ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jda
                       "jfdctfst.c", "jfdctflt.c"]
 
 libPng_src_path = "../../../cximage/png"
-input_png_sources = ["pngread.c", "pngmem.c", "pngerror.c", "png.c", "pngrio.c", "pngtrans.c",
-                     "pngget.c", "pngrutil.c", "pngrtran.c", "pngset.c"]
+input_png_sources = ["pngread.c", "pngmem.c", "pngerror.c", "png.c", "pngrio.c", "pngtrans.c", "pngget.c", "pngrutil.c", "pngrtran.c", "pngset.c", "pngwrite.c", "pngwio.c", "pngwutil.c", "pngwtran.c"]
 
 libTiff_src_path = "../../../cximage/tiff"
 input_tiff_sources = ["tif_close.c", "tif_dir.c", "tif_aux.c", "tif_getimage.c", "tif_strip.c",
@@ -103,53 +101,40 @@ libJ2kFile_src_path = "../../../raster/Jp2"
 input_j2k_sources = ["J2kFile.cpp", "Reader.cpp"]
 
 libMng_src_path = "../../../cximage/mng"
-input_mng_sources = ["libmng_hlapi.c", "libmng_callback_xs.c", "libmng_prop_xs.c",
-                     "libmng_object_prc.c", "libmng_zlib.c", "libmng_jpeg.c", "libmng_pixels.c",
-                     "libmng_read.c", "libmng_error.c", "libmng_display.c", "libmng_write.c",
-                     "libmng_chunk_io.c", "libmng_cms.c", "libmng_filter.c",
-                     "libmng_chunk_prc.c"]
+input_mng_sources = ["libmng_hlapi.c", "libmng_callback_xs.c", "libmng_prop_xs.c", "libmng_object_prc.c", "libmng_zlib.c", "libmng_jpeg.c", "libmng_pixels.c", "libmng_read.c", "libmng_error.c", "libmng_display.c", "libmng_write.c", "libmng_chunk_io.c", "libmng_cms.c", "libmng_filter.c", "libmng_chunk_prc.c", "libmng_chunk_xs.c"]
 
 libPsd_src_path = "../../../cximage/libpsd"
-input_psd_sources = ["psd.c", "file_header.c", "color_mode.c", "image_resource.c", "blend.c",
-                     "layer_mask.c", "image_data.c", "stream.c", "psd_system.c", "color.c",
-                     "pattern_fill.c", "color_balance.c", "channel_image.c", "gradient_fill.c",
-                     "invert.c", "posterize.c", "brightness_contrast.c", "solid_color.c",
-                     "threshold.c", "effects.c", "selective_color.c", "channel_mixer.c",
-                     "photo_filter.c", "type_tool.c", "gradient_map.c", "hue_saturation.c",
-                     "levels.c", "curves.c", "pattern.c", "psd_zip.c", "descriptor.c",
-                     "drop_shadow.c", "inner_shadow.c", "color_overlay.c", "outer_glow.c",
-                     "inner_glow.c", "bevel_emboss.c", "satin.c", "gradient_overlay.c",
-                     "stroke.c", "pattern_overlay.c"]
+input_psd_sources = ["psd.c", "file_header.c", "color_mode.c", "image_resource.c", "blend.c", "layer_mask.c", "image_data.c", "stream.c", "psd_system.c", "color.c", "pattern_fill.c", "color_balance.c", "channel_image.c", "gradient_fill.c", "invert.c", "posterize.c", "brightness_contrast.c", "solid_color.c", "threshold.c", "effects.c", "selective_color.c", "channel_mixer.c", "photo_filter.c", "type_tool.c", "gradient_map.c", "hue_saturation.c", "levels.c", "curves.c", "pattern.c", "psd_zip.c", "descriptor.c", "drop_shadow.c", "inner_shadow.c", "color_overlay.c", "outer_glow.c", "inner_glow.c", "bevel_emboss.c", "satin.c", "gradient_overlay.c", "stroke.c", "pattern_overlay.c"]
 
 libRaw_src_path = "../../../cximage/raw"
 input_raw_sources = ["libdcr.c"]
 
+libJBig2_src_path = "../../../raster/JBig2/source"
+input_jbig2_sources = ["JBig2File.cpp", "Encoder/jbig2enc.cpp", "Encoder/jbig2arith.cpp", "Encoder/jbig2sym.cpp", "LeptonLib/pixconv.cpp", "LeptonLib/writefile.cpp", "LeptonLib/scale.cpp", "LeptonLib/pix1.cpp", "LeptonLib/pix2.cpp", "LeptonLib/pix3.cpp", "LeptonLib/pix5.cpp", "LeptonLib/grayquant.cpp", "LeptonLib/grayquantlow.cpp", "LeptonLib/seedfill.cpp", "LeptonLib/jbclass.cpp", "LeptonLib/pixabasic.cpp", "LeptonLib/numabasic.cpp", "LeptonLib/morphseq.cpp", "LeptonLib/binexpandlow.cpp", "LeptonLib/ptabasic.cpp", "LeptonLib/rop.cpp", "LeptonLib/colormap.cpp", "LeptonLib/pngiostub.cpp", "LeptonLib/lepton_utils.cpp", "LeptonLib/scalelow.cpp", "LeptonLib/enhance.cpp", "LeptonLib/jpegio.cpp", "LeptonLib/jpegiostub.cpp", "LeptonLib/spixio.cpp", "LeptonLib/webpio.cpp", "LeptonLib/webpiostub.cpp", "LeptonLib/psio2.cpp", "LeptonLib/gifio.cpp", "LeptonLib/gifiostub.cpp", "LeptonLib/pnmio.cpp", "LeptonLib/tiffio.cpp", "LeptonLib/tiffiostub.cpp", "LeptonLib/bmpio.cpp", "LeptonLib/binexpand.cpp", "LeptonLib/compare.cpp", "LeptonLib/boxbasic.cpp", "LeptonLib/conncomp.cpp", "LeptonLib/pixafunc1.cpp", "LeptonLib/boxfunc1.cpp", "LeptonLib/ptafunc1.cpp", "LeptonLib/binreduce.cpp", "LeptonLib/seedfilllow.cpp", "LeptonLib/sel1.cpp", "LeptonLib/morphapp.cpp", "LeptonLib/correlscore.cpp", "LeptonLib/sarray.cpp", "LeptonLib/morph.cpp"]
+
 sources = []
 for item in input_raster_sources:
     sources.append(libRaster_src_path + '/' + item)
-for item in input_zlib_sources:
-    sources.append(libZlib_src_path + '/' + item)
-for item in input_cximage_sources:
-    sources.append(libCxImage_src_path + '/' + item)
+# zlib
+# cximage
 # jpeg
-for item in input_png_sources:
-    sources.append(libPng_src_path + '/' + item)
+# png
 # tiff
 for item in input_jasper_sources:
     sources.append(libJasper_src_path + '/' + item)
 for item in input_j2k_sources:
     sources.append(libJ2kFile_src_path + '/' + item)
-for item in input_mng_sources:
-    sources.append(libMng_src_path + '/' + item)
-for item in input_psd_sources:
-    sources.append(libPsd_src_path + '/' + item)
+# mng
+# psd
 for item in input_raw_sources:
     sources.append(libRaw_src_path + '/' + item)
+for item in input_jbig2_sources:
+    sources.append(libJBig2_src_path + '/' + item)
 sources.append("wasm/src/raster.cpp")
 
 compiler_flags.append("-I../../../../OfficeUtils/src/zlib-1.2.11")
 compiler_flags.append("-I" + libJasper_src_path + "/include")
-compiler_flags.append("-D__linux__ -DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp -D_lseek=lseek -D_getcwd=getcwd")
+compiler_flags.append("-D__linux__ -DBUILDING_WASM_MODULE -D_tcsnicmp=strncmp -D_lseek=lseek -D_getcwd=getcwd -DNO_CONSOLE_IO")
 
 # arguments
 arguments = ""
@@ -161,20 +146,40 @@ windows_bat = []
 if base.host_platform() == "windows":
     windows_bat.append("call emsdk/emsdk_env.bat")
     
-    jpeg = ""
+    libs = ""
+    for item in input_cximage_sources:
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libCxImage_src_path + '/' + item)
+        libs += ("temp/" + item + ".o ")
+    
     for item in input_jpeg_sources:
         windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libJpeg_src_path + '/' + item)
-        jpeg += ("temp/" + item + ".o ")
+        libs += ("temp/" + item + ".o ")
     
-    tiff = ""
+    for item in input_png_sources:
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libPng_src_path + '/' + item)
+        libs += ("temp/" + item + ".o ")
+    
     for item in input_tiff_sources:
         windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libTiff_src_path + '/' + item)
-        tiff += ("temp/" + item + ".o ")
+        libs += ("temp/" + item + ".o ")
+    
+    for item in input_psd_sources:
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libPsd_src_path + '/' + item)
+        libs += ("temp/" + item + ".o ")
+    
+    for item in input_mng_sources:
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libMng_src_path + '/' + item)
+        libs += ("temp/" + item + ".o ")
     
     arguments2 = arguments
     for item in sources:
         arguments2 += (item + " ")
-    windows_bat.append("call emcc -r -o raster.o " + arguments2 + jpeg + tiff)
+    windows_bat.append("call emcc -r -o raster.o " + arguments2 + libs)
+    
+    zlib = ""
+    for item in input_zlib_sources:
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libZlib_src_path + '/' + item)
+        zlib += ("temp/" + item + ".o ")
     
     arguments += "-s EXPORTED_FUNCTIONS=\"["
     for item in exported_functions:
@@ -182,25 +187,45 @@ if base.host_platform() == "windows":
     arguments = arguments[:-1]
     arguments += "]\" "
     
-    windows_bat.append("call emcc -o raster.js " + arguments + " raster.o")
+    windows_bat.append("call emcc -o raster.js " + arguments + " raster.o " + zlib)
 else:
     windows_bat.append("#!/bin/bash")
     windows_bat.append("source ./emsdk/emsdk_env.sh")
     
-    jpeg = ""
+    libs = ""
+    for item in input_cximage_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libCxImage_src_path + '/' + item)
+        libs += ("temp/" + item + ".o ")
+    
     for item in input_jpeg_sources:
         windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libJpeg_src_path + '/' + item)
-        jpeg += ("temp/" + item + ".o ")
+        libs += ("temp/" + item + ".o ")
     
-    tiff = ""
+    for item in input_png_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libPng_src_path + '/' + item)
+        libs += ("temp/" + item + ".o ")
+    
     for item in input_tiff_sources:
         windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libTiff_src_path + '/' + item)
-        tiff += ("temp/" + item + ".o ")
-        
+        libs += ("temp/" + item + ".o ")
+    
+    for item in input_psd_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libPsd_src_path + '/' + item)
+        libs += ("temp/" + item + ".o ")
+    
+    for item in input_mng_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libMng_src_path + '/' + item)
+        libs += ("temp/" + item + ".o ")
+    
     arguments2 = arguments
     for item in sources:
         arguments2 += (item + " ")
-    windows_bat.append("emcc -r -o raster.o " + arguments2 + jpeg + tiff)
+    windows_bat.append("emcc -r -o raster.o " + arguments2 + libs)
+    
+    zlib = ""
+    for item in input_zlib_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libZlib_src_path + '/' + item)
+        zlib += ("temp/" + item + ".o ")
     
     arguments += "-s EXPORTED_FUNCTIONS=\"["
     for item in exported_functions:
@@ -208,7 +233,7 @@ else:
     arguments = arguments[:-1]
     arguments += "]\" "
     
-    windows_bat.append("emcc -o raster.js " + arguments + " raster.o")
+    windows_bat.append("emcc -o raster.js " + arguments + " raster.o " + zlib)
 base.run_as_bat(windows_bat)
 
 # finalize

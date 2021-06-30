@@ -75,11 +75,17 @@ input_unicodeconverter_sources = ["UnicodeConverter.cpp"]
 libIcu_src_path = "../../../../Common/3dParty/icu/icu/source/common/"
 input_icu_sources = ["ucnv.c", "ustr_wcs.cpp", "ucnv_err.c", "ucnv_bld.cpp", "ustrtrns.cpp", "ucnv_cb.c", "udata.cpp", "ucnv_io.cpp", "uhash.c", "udatamem.c", "cmemory.c", "ustring.cpp", "umutex.cpp", "putil.cpp", "ustr_cnv.cpp", "ucnvmbcs.cpp", "ucnvlat1.c", "ucnv_u16.c", "ucnv_u8.c", "ucnv_u32.c", "ucnv_u7.c", "ucln_cmn.cpp", "ucnv2022.cpp", "ucnv_lmb.c", "ucnvhz.c", "ucnvscsu.c", "ucnvisci.c", "ucnvbocu.cpp", "ucnv_ct.c", "ucnv_cnv.c", "stringpiece.cpp", "charstr.cpp", "umapfile.c", "ucmndata.c", "ucnv_ext.cpp", "uobject.cpp", "umath.c"]
 
-libXps_src_path = "../../../../XpsFile/"
-input_xps_sources = ["XpsFile.cpp", "XpsLib/Document.cpp"]
+libXps_src_path = "../../../../XpsFile/XpsLib/"
+input_xps_sources = ["Document.cpp", "Page.cpp", "StaticResources.cpp", "Utils.cpp"]
 
 libOfficeUtils_src_parh = "../../../../OfficeUtils/src/"
 input_officeutils_sources = ["OfficeUtils.cpp", "ZipBuffer.cpp"]
+
+libMinizip_src_parh = "../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/"
+input_minizip_sources = ["ioapi.c", "miniunz.c", "minizip.c", "mztools.c", "unzip.c", "zip.c", "ioapibuf.c"]
+
+libZlib_src_parh = "../../../../OfficeUtils/src/zlib-1.2.11/"
+input_zlib_sources = ["adler32.c", "crc32.c", "deflate.c", "infback.c", "inffast.c", "inflate.c", "inftrees.c", "trees.c", "zutil.c", "compress.c"]
 
 input_xml_sources = ["xml/src/xmllight.cpp", "xml/src/xmldom.cpp", "xml/build/qt/libxml2_all.c", "xml/build/qt/libxml2_all2.c"]
 
@@ -91,25 +97,26 @@ for item in input_fontengine_sources:
     sources.append(libFontEngine_src_path + item)
 for item in input_agg_sources:
     sources.append(libAgg_src_path + item)
-for item in input_freetype_sources:
-    sources.append(libFreetype_src_path + item)
+# freetype
 for item in input_common_sources:
     sources.append(libCommon_src_path + item)
 for item in input_unicodeconverter_sources:
     sources.append(libUnicodeConverter_src_path + item)
 # icu
-for item in input_xps_sources:
-    sources.append(libXps_src_path + item)
+sources.append("../../../../XpsFile/XpsFile.cpp")
+# xps
 for item in input_officeutils_sources:
     sources.append(libOfficeUtils_src_parh + item)
+# minizip
+# zlib
 for item in input_xml_sources:
     sources.append(item)
 sources.append("raster.o")
 sources.append("wasm/src/graphics.cpp")
 
-compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common -I../../../xml/libxml2/include -I../../../xml/build/qt")
+compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common -I../../../xml/libxml2/include -I../../../xml/build/qt -I../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip -I../../../../OfficeUtils/src/zlib-1.2.11")
 compiler_flags.append("-D__linux__ -D_LINUX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE -DU_COMMON_IMPLEMENTATION")
-compiler_flags.append("-DHAVE_VA_COPY -DLIBXML_READER_ENABLED -DLIBXML_PUSH_ENABLED -DLIBXML_HTML_ENABLED -DLIBXML_XPATH_ENABLED -DLIBXML_OUTPUT_ENABLED -DLIBXML_C14N_ENABLED -DLIBXML_SAX1_ENABLED -DLIBXML_TREE_ENABLED -DLIBXML_XPTR_ENABLED -DIN_LIBXML -DLIBXML_STATIC")
+compiler_flags.append("-DHAVE_VA_COPY -DLIBXML_READER_ENABLED -DLIBXML_PUSH_ENABLED -DLIBXML_HTML_ENABLED -DLIBXML_XPATH_ENABLED -DLIBXML_OUTPUT_ENABLED -DLIBXML_C14N_ENABLED -DLIBXML_SAX1_ENABLED -DLIBXML_TREE_ENABLED -DLIBXML_XPTR_ENABLED -DIN_LIBXML -DLIBXML_STATIC -DBUILD_ZLIB_AS_SOURCES")
 
 # arguments
 arguments = ""
@@ -121,10 +128,26 @@ windows_bat = []
 if base.host_platform() == "windows":
     windows_bat.append("call emsdk/emsdk_env.bat") 
 
-    icu = ""
+    libs = ""
+    for item in input_freetype_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + libFreetype_src_path + item)
+        libs += ("temp/" + os.path.basename(item) + ".o ")
+    
     for item in input_icu_sources:
         windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libIcu_src_path + item)
-        icu += ("temp/" + item + ".o ")
+        libs += ("temp/" + item + ".o ")
+    
+    for item in input_xps_sources:
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libXps_src_path + item)
+        libs += ("temp/" + item + ".o ")
+    
+    for item in input_minizip_sources:
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libMinizip_src_parh + item)
+        libs += ("temp/" + item + ".o ")
+    
+    for item in input_zlib_sources:
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libZlib_src_parh + item)
+        libs += ("temp/" + item + ".o ")
 
     arguments += "-s EXPORTED_FUNCTIONS=\"["
     for item in exported_functions:
@@ -135,16 +158,32 @@ if base.host_platform() == "windows":
     for item in sources:
         arguments += (item + " ")
 
-    windows_bat.append("call emcc -o graphics.js " + arguments + icu)
+    windows_bat.append("call emcc -o graphics.js " + arguments + libs)
 else:
     windows_bat.append("#!/bin/bash")
     windows_bat.append("source ./emsdk/emsdk_env.sh")
 
-    icu = ""
+    libs = ""
+    for item in input_freetype_sources:
+        windows_bat.append("emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + libFreetype_src_path + item)
+        libs += ("temp/" + os.path.basename(item) + ".o ")
+    
     for item in input_icu_sources:
-        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libIcu_src_path + item) 
-        icu += ("temp/" + item + ".o ")
-
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libIcu_src_path + item)
+        libs += ("temp/" + item + ".o ")
+    
+    for item in input_xps_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libXps_src_path + item)
+        libs += ("temp/" + item + ".o ")
+    
+    for item in input_minizip_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libMinizip_src_parh + item)
+        libs += ("temp/" + item + ".o ")
+    
+    for item in input_zlib_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libZlib_src_parh + item)
+        libs += ("temp/" + item + ".o ")
+    
     arguments += "-s EXPORTED_FUNCTIONS=\"["
     for item in exported_functions:
         arguments += ("'" + item + "',")
@@ -154,7 +193,7 @@ else:
     for item in sources:
         arguments += (item + " ")
     
-    windows_bat.append("emcc -o graphics.js " + arguments + icu)
+    windows_bat.append("emcc -o graphics.js " + arguments + libs)
 base.run_as_bat(windows_bat)
 
 # finalize

@@ -1,5 +1,6 @@
 #include "TableWriter.h"
 #include "TxBodyConverter.h"
+#include <iostream>
 
 TableWriter::TableWriter(CTableElement *pTableElement) :
     m_pTableElement(pTableElement)
@@ -12,14 +13,21 @@ void TableWriter::Convert(PPTX::Logic::GraphicFrame &oGraphicFrame)
     if (!m_pTableElement)
         return;
 
-    oGraphicFrame.nvGraphicFramePr = new PPTX::Logic::NvGraphicFramePr;
-    FillNvGraphicFramePr(oGraphicFrame.nvGraphicFramePr.get2());
+    if (m_pTableElement->m_xmlRawData.empty())
+    {
+        oGraphicFrame.nvGraphicFramePr = new PPTX::Logic::NvGraphicFramePr;
+        FillNvGraphicFramePr(oGraphicFrame.nvGraphicFramePr.get2());
 
-    oGraphicFrame.xfrm = new PPTX::Logic::Xfrm;
-    FillXfrm(oGraphicFrame.xfrm.get2());
+        oGraphicFrame.xfrm = new PPTX::Logic::Xfrm;
+        FillXfrm(oGraphicFrame.xfrm.get2());
 
-    oGraphicFrame.table = new PPTX::Logic::Table;
-    FillTable(oGraphicFrame.table.get2());
+        oGraphicFrame.table = new PPTX::Logic::Table;
+        FillTable(oGraphicFrame.table.get2());
+    }
+    else
+    {
+        oGraphicFrame.fromXMLString(getXmlForGraphicFrame());
+    }
 }
 
 void TableWriter::FillNvGraphicFramePr(PPTX::Logic::NvGraphicFramePr& oNvGFPr)
@@ -370,6 +378,19 @@ void TableWriter::FillRow(PPTX::Logic::TableRow &oRow, ProtoTableRow& arrCells)
         protoCell.FillTc(cell);
         oRow.Cells.push_back(cell);
     }
+}
+
+std::wstring TableWriter::getXmlForGraphicFrame() const
+{
+    auto& rXml = m_pTableElement->m_xmlRawData;
+
+    auto startIter = rXml.find(L"<p:nvGraphicFramePr>");
+    auto endIter = rXml.find(L"</p:E2oFrame>");
+    std::wstring xml = L"<p:graphicFrame>";
+    xml += std::wstring(rXml.begin() + startIter, rXml.begin() + endIter);
+    xml += L"</p:graphicFrame>";
+
+    return xml;
 }
 
 TCell::TCell(CShapeElement *pShape, int row, int col, TCell *pParent) :

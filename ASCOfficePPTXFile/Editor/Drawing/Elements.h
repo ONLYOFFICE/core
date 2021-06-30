@@ -812,6 +812,8 @@ namespace PPT_FORMAT
         class CTableElement : public CElement
         {
         public:
+            std::wstring m_xmlRawData;
+        public:
             CTableElement() : CElement()
             {
                 m_etType = etTable;

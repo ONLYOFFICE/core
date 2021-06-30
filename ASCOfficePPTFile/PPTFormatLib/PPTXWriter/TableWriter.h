@@ -151,6 +151,9 @@ private:
     void FillRow(PPTX::Logic::TableRow& oRow, ProtoTableRow &arrCells);
 
 private:
+    std::wstring getXmlForGraphicFrame()const;
+
+private:
     CTableElement *m_pTableElement;
     nullable<ProtoTable> m_nPTable;
 };

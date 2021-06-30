@@ -39,9 +39,12 @@
 #include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
+#include <fstream>
 #include "../../Enums/_includer.h"
 
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
+
+ULONG xmlName = 1;
 
 bool CPPTElement::ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2)
 {
@@ -927,20 +930,6 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 
             delete []utf8Data;
         }
-
-        utf8Data = NULL;
-        utf8DataSize = 0;
-        if (S_OK != officeUtils.LoadFileFromArchive(tempFileName, L"drs/e2oDoc.xml", &utf8Data, utf8DataSize))
-        {
-            officeUtils.LoadFileFromArchive(tempFileName, L"drs/diagrams/drawing1.xml", &utf8Data, utf8DataSize);
-        }
-
-        if (utf8Data && utf8DataSize > 0)
-        {
-            std::wstring tableXmlStr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
-
-            delete []utf8Data;
-        }
         NSFile::CFileBinary::Remove(tempFileName);
     }break;
     case ODRAW::geoRight:
@@ -1658,6 +1647,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
             if (isTable())
             {
                 CTableElement* pTableElem = new CTableElement();
+                pTableElem->m_xmlRawData = getTableXmlStr();
                 pTableElem->m_etType = etGroup;
                 pElement = CElementPtr(pTableElem);
             }
@@ -2070,6 +2060,43 @@ bool CRecordShapeContainer::isTable() const
         }
     }
     return false;
+}
+
+std::wstring CRecordShapeContainer::getTableXmlStr() const
+{
+    std::vector<CRecordShapeProperties*> oArrayOptions;
+    GetRecordsByType(&oArrayOptions, true, false);
+    std::wstring xmlStr = L"";
+
+    if (oArrayOptions.size() >= 2 &&
+            oArrayOptions[1]->m_oProperties.m_arProperties.size() >= 3)
+    {
+        COfficeUtils officeUtils(NULL);
+        BYTE *utf8Data = NULL;
+        ULONG utf8DataSize = 0;
+        auto& xmlProp = oArrayOptions[1]->m_oProperties.m_arProperties[2];
+        NSFile::CFileBinary file;
+
+        std::wstring temp = NSDirectory::GetTempPath();
+
+        std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
+
+        if (file.CreateFileW(tempFileName))
+        {
+            file.WriteFile(xmlProp.m_pOptions, xmlProp.m_lValue);
+            file.CloseFile();
+        }
+
+        if (S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"drs/e2oDoc.xml", &utf8Data, utf8DataSize))
+        {
+            xmlStr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+        }
+
+        delete [] utf8Data;
+        NSFile::CFileBinary::Remove(tempFileName);
+    }
+
+    return xmlStr;
 }
 
 void CRecordShapeContainer::ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels)

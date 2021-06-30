@@ -423,23 +423,37 @@ void PPT_FORMAT::CPPTXWriter::WritePresInfo()
     CFile oFile;
 
 // tableStyles.xml
-    std::wstring zipPath = m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("tableStyles.zip");
-    oFile.CreateFile(zipPath);
+    std::wstring tableStylesPath = m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("tableStyles.xml");
+    oFile.CreateFile(tableStylesPath);
 
     std::vector<CRecordRoundTripCustomTableStyles12Atom*> vecTableStyles;
     ((CPPTUserInfo*)(m_pDocument))->m_oDocument.GetRecordsByType(&vecTableStyles, false);
-    // Source
+
     if (vecTableStyles.size())
     {
         BYTE* tableStylesData = vecTableStyles[0]->data.first.get();
         ULONG tableStylesLen = vecTableStyles[0]->data.second;
-        oFile.WriteFile(tableStylesData, tableStylesLen);
-        oFile.CloseFile();
+        NSFile::CFileBinary binFile;
 
-        COfficeUtils officeUtils;
-        officeUtils.ExtractToDirectory(zipPath, m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt"), NULL, 1);
-        oFile.RemoveFile(zipPath);
+        std::wstring temp = NSDirectory::GetTempPath();
+
+        std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempTableStyles.zip";
+        if (binFile.CreateFileW(tempFileName))
+        {
+            binFile.WriteFile(tableStylesData, tableStylesLen);
+            binFile.CloseFile();
+        }
+
+        COfficeUtils officeUtils(NULL);
+        BYTE *utf8Data = NULL;
+        ULONG utf8DataSize = 0;
+        if(S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"tableStyles.xml", &utf8Data, utf8DataSize))
+            oFile.WriteFile(utf8Data, utf8DataSize);
+
+        NSFile::CFileBinary::Remove(tempFileName);
+        delete [] utf8Data;
     }
+    oFile.CloseFile();
 
 
 

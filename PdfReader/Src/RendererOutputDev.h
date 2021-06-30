@@ -123,9 +123,6 @@ namespace PdfReader
         RendererOutputDev(GlobalParamsAdaptor *pGlobalParams, IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList = NULL);
 		virtual ~RendererOutputDev();
 
-        virtual GBool interpretType3Chars()
-        {
-        }
 		virtual GBool upsideDown()
 		{
 			return false;
@@ -134,50 +131,50 @@ namespace PdfReader
 		{
 			return true;
 		}
-		virtual bool UseTilingPatternFill()
+		virtual GBool useTilingPatternFill()
         {
 			if (m_bDrawOnlyText)
 				return true;
 
 			return false;
 		}
-		virtual bool UseFunctionalShadedFills()
+		virtual GBool useFunctionalShadedFills()
 		{
 			return true;
 		}
-		virtual bool UseAxialShadedFills()
+		virtual GBool useAxialShadedFills()
 		{
 			return true;
 		}
-		virtual bool UseRadialShadedFills()
+		virtual GBool useRadialShadedFills()
 		{
 			return true;
 		}
-		virtual bool UseGouraundTriangleFills()
+		virtual GBool useGouraundTriangleFills()
 		{
 			return true;
 		}
-		virtual bool UsePatchMeshFills()
+		virtual  GBool usePatchMeshFills()
 		{
 			return true;
 		}
-		virtual bool UseClipTo()
+		virtual GBool useClipTo()
 		{
 			return false;//true;
 		}
-		virtual bool InterpretType3Chars()
+		virtual GBool interpretType3Chars()
 		{
 			return true;
 		}
-		virtual bool UseFillAndStroke()
+		virtual GBool useFillAndStroke()
 		{
 			return true;
 		}
-		virtual bool UseSimpleTransparentGroup()
+		virtual GBool  useSimpleTransparentGroup()
 		{
 			return true;
 		}
-		virtual bool UseSimpleTilingPatternFill()
+		virtual GBool useSimpleTilingPatternFill()
 		{
 			if (NULL == m_pRenderer)
 				return false;
@@ -186,7 +183,7 @@ namespace PdfReader
 
 			return false;
 		}
-		virtual bool IsStopped()
+		virtual GBool isStopped()
 		{
 			if (NULL != m_pbBreak)
 				return *m_pbBreak;
@@ -194,33 +191,33 @@ namespace PdfReader
 				return false;
 		}
 		//---------------------------------------------------------------------------------------------------------------------------
-		virtual void StartPage(int nPageIndex, GfxState *pGState);
-		virtual void EndPage();
+		virtual void startPage(int nPageIndex, GfxState *pGState);
+		virtual void endPage();
 		//----- Save/Restore GState
-		virtual void SaveGState(GfxState *pGState);
-		virtual void RestoreGState(GfxState *pGState);
+		virtual void saveGState(GfxState *pGState);
+		virtual void restoreGState(GfxState *pGState);
 		//----- Изменение параметров в GState
-		virtual void UpdateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32);
-		virtual void UpdateLineDash(GfxState *pGState);
-		virtual void UpdateFlatness(GfxState *pGState);
-		virtual void UpdateLineJoin(GfxState *pGState);
-		virtual void UpdateLineCap(GfxState *pGState);
-		virtual void UpdateMiterLimit(GfxState *pGState);
-		virtual void UpdateLineWidth(GfxState *pGState);
-		virtual void UpdateStrokeAdjust(GfxState *pGState);
-		virtual void UpdateFillColor(GfxState *pGState);
-		virtual void UpdateStrokeColor(GfxState *pGState);
-		virtual void UpdateBlendMode(GfxState *pGState);
-		virtual void UpdateFillOpacity(GfxState *pGState);
-		virtual void UpdateStrokeOpacity(GfxState *pGState);
-		virtual void UpdateAll(GfxState *pGState);
-		virtual void UpdateRender(GfxState *pGState);
+		virtual void updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32);
+		virtual void updateLineDash(GfxState *pGState);
+		virtual void updateFlatness(GfxState *pGState);
+		virtual void updateLineJoin(GfxState *pGState);
+		virtual void updateLineCap(GfxState *pGState);
+		virtual void updateMiterLimit(GfxState *pGState);
+		virtual void updateLineWidth(GfxState *pGState);
+		virtual void updateStrokeAdjust(GfxState *pGState);
+		virtual void updateFillColor(GfxState *pGState);
+		virtual void updateStrokeColor(GfxState *pGState);
+		virtual void updateBlendMode(GfxState *pGState);
+		virtual void updateFillOpacity(GfxState *pGState);
+		virtual void updateStrokeOpacity(GfxState *pGState);
+		virtual void updateAll(GfxState *pGState);
+		virtual void updateRender(GfxState *pGState);
 		//----- Изменение текстовых параметров
-		virtual void UpdateFont(GfxState *pGState);
+		virtual void updateFont(GfxState *pGState);
 		//----- Рисование Path
-		virtual void Stroke(GfxState *pGState);
-		virtual void Fill(GfxState *pGState);
-		virtual void EoFill(GfxState *pGState);
+		virtual void stroke(GfxState *pGState);
+		virtual void fill(GfxState *pGState);
+		virtual void eoFill(GfxState *pGState);
 		virtual void FillStroke(GfxState *pGState);
 		virtual void EoFillStroke(GfxState *pGState);
 		virtual void TilingPatternFill(GfxState *pGState, Object *pStream, int nPaintType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep);
@@ -239,14 +236,14 @@ namespace PdfReader
 		virtual void StartSimpleTilingFill(GfxState *pGState, int  nX0, int nY0, int nX1, int nY1, double dStepX, double dStepY, double dXMin, double dYMin, double dXMax, double dYMax, double* pMatrix);
 		virtual void EndSimpleTilingFill();
 		//----- Path clipping
-		virtual void Clip(GfxState *pGState);
-		virtual void ClipAttack(GfxState *pGState)
+		virtual void clip(GfxState *pGState);
+		virtual void clipAttack(GfxState *pGState)
 		{
-			UpdateClipAttack(pGState);
+			updateClipAttack(pGState);
 		}
-		virtual void EoClip(GfxState *pGState);
-		virtual void ClipToStrokePath(GfxState *pGState);
-		virtual void ClipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO);
+		virtual void eoClip(GfxState *pGState);
+		virtual void clipToStrokePath(GfxState *pGState);
+		virtual void clipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO);
 		//----- Вывод текста
         virtual void EndTextObject(GfxState *pGState);
 		virtual void BeginStringOperator(GfxState *pGState);
@@ -258,16 +255,16 @@ namespace PdfReader
 		void Type3D0(GfxState *pGState, double dWx, double dWy);
 		void Type3D1(GfxState *pGState, double dWx, double dWy, double dBLx, double dBLy, double dTRx, double dTRy);
 		//----- Вывод картинок
-		virtual void DrawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, bool bInvert, bool bInlineImage);
-		virtual void DrawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, bool bInlineImg);
-		virtual void DrawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, bool bMaskInvert);
-		virtual void DrawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, unsigned char *pMatte);
+		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, bool bInvert, bool bInlineImage);
+		virtual void drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, bool bInlineImg);
+		virtual void drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, bool bMaskInvert);
+		virtual void drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, unsigned char *pMatte);
 		//----- Transparency groups и SMasks
-		virtual void BeginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bForSoftMask);
-		virtual void EndTransparencyGroup(GfxState *pGState);
-		virtual void PaintTransparencyGroup(GfxState *pGState, double *pBBox);
-		virtual void SetSoftMask(GfxState *pGState, double *pBBox, bool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor);
-		virtual void ClearSoftMask(GfxState *pGState);
+		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bForSoftMask);
+		virtual void endTransparencyGroup(GfxState *pGState);
+		virtual void paintTransparencyGroup(GfxState *pGState, double *pBBox);
+		virtual void setSoftMask(GfxState *pGState, double *pBBox, bool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor);
+		virtual void clearSoftMask(GfxState *pGState);
 		//----- Дополнительные функции для данного устройства
 		void NewPDF(XRef *pXref);
 		void SetBreak(bool* pbBreak)
@@ -281,8 +278,8 @@ namespace PdfReader
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
 		void DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM);
 		void ClipToText(const std::wstring& wsFontName, const std::wstring& wsFontPath, double dFontSize, int nFontStyle, double* pMatrix, const std::wstring& wsText, double dX, double dY, double dWidth = 0, double dHeight = 0, double dBaseLineOffset = 0);
-		void UpdateClip(GfxState *pGState);
-		void UpdateClipAttack(GfxState *pGState);
+		void updateClip(GfxState *pGState);
+		void updateClipAttack(GfxState *pGState);
 		void DoTransform(double *pMatrix, double *pdShiftX, double *pdShiftY, bool bText = false);
 	private:
 

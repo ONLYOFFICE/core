@@ -437,7 +437,7 @@ namespace PdfReader
         if (m_pTransparentGroupSoftMask)
             delete[]m_pTransparentGroupSoftMask;
     }
-    void RendererOutputDev::StartPage(int nPageIndex, GfxState *pGState)
+    void RendererOutputDev::startPage(int nPageIndex, GfxState *pGState)
     {
         m_pRenderer->BeginCommand(c_nPageType);
 
@@ -458,22 +458,22 @@ namespace PdfReader
         else
             m_bDrawOnlyText = false;
     }
-    void RendererOutputDev::EndPage()
+    void RendererOutputDev::endPage()
     {
         m_pRenderer->EndCommand(c_nPageType);
     }
-    void RendererOutputDev::SaveGState(GfxState *pGState)
+    void RendererOutputDev::saveGState(GfxState *pGState)
     {
-        UpdateAll(pGState);
+        updateAll(pGState);
     }
-    void RendererOutputDev::RestoreGState(GfxState *pGState)
+    void RendererOutputDev::restoreGState(GfxState *pGState)
     {
-        UpdateAll(pGState);
+        updateAll(pGState);
     }
-    void RendererOutputDev::UpdateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
+    void RendererOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
     {
     }
-    void RendererOutputDev::UpdateLineDash(GfxState *pGState)
+    void RendererOutputDev::updateLineDash(GfxState *pGState)
     {
         double *pDash  = NULL;
         int     nSize  = 0;
@@ -497,10 +497,10 @@ namespace PdfReader
             m_pRenderer->put_PenDashOffset(PDFCoordsToMM(dStart));
         }
     }
-    void RendererOutputDev::UpdateFlatness(GfxState *pGState)
+    void RendererOutputDev::updateFlatness(GfxState *pGState)
     {
     }
-    void RendererOutputDev::UpdateLineJoin(GfxState *pGState)
+    void RendererOutputDev::updateLineJoin(GfxState *pGState)
     {
         int nJoinStyle = pGState->getLineJoin();
         if (1 == nJoinStyle)
@@ -510,7 +510,7 @@ namespace PdfReader
 
         m_pRenderer->put_PenLineJoin(nJoinStyle);
     }
-    void RendererOutputDev::UpdateLineCap(GfxState *pGState)
+    void RendererOutputDev::updateLineCap(GfxState *pGState)
     {
         int nCapStyle = pGState->getLineCap();
         if (1 == nCapStyle)
@@ -521,17 +521,17 @@ namespace PdfReader
         m_pRenderer->put_PenLineStartCap(nCapStyle);
         m_pRenderer->put_PenLineEndCap(nCapStyle);
     }
-    void RendererOutputDev::UpdateMiterLimit(GfxState *pGState)
+    void RendererOutputDev::updateMiterLimit(GfxState *pGState)
     {
     }
-    void RendererOutputDev::UpdateLineWidth(GfxState *pGState)
+    void RendererOutputDev::updateLineWidth(GfxState *pGState)
     {
         m_pRenderer->put_PenSize(PDFCoordsToMM(pGState->getLineWidth()));
     }
-    void RendererOutputDev::UpdateStrokeAdjust(GfxState *pGState)
+    void RendererOutputDev::updateStrokeAdjust(GfxState *pGState)
     {
     }
-    void RendererOutputDev::UpdateFillColor(GfxState *pGState)
+    void RendererOutputDev::updateFillColor(GfxState *pGState)
     {
         GfxColor *pColor = pGState->getFillColor();
         GfxColorSpace *pColorSpace = pGState->getFillColorSpace();
@@ -543,7 +543,7 @@ namespace PdfReader
         m_pRenderer->put_BrushColor1(dwColor);
         m_pRenderer->put_BrushColor2(dwColor);
     }
-    void RendererOutputDev::UpdateStrokeColor(GfxState *pGState)
+    void RendererOutputDev::updateStrokeColor(GfxState *pGState)
     {
         GfxColor *pColor = pGState->getStrokeColor();
         GfxColorSpace *pColorSpace = pGState->getStrokeColorSpace();
@@ -555,43 +555,43 @@ namespace PdfReader
 
         m_pRenderer->put_PenColor(dwColor);
     }
-    void RendererOutputDev::UpdateBlendMode(GfxState *pGState)
+    void RendererOutputDev::updateBlendMode(GfxState *pGState)
     {
     }
-    void RendererOutputDev::UpdateFillOpacity(GfxState *pGState)
+    void RendererOutputDev::updateFillOpacity(GfxState *pGState)
     {
         m_pRenderer->put_BrushAlpha1(std::min(255, std::max(0, int(pGState->getFillOpacity() * 255))));
         m_pRenderer->put_BrushAlpha2(std::min(255, std::max(0, int(pGState->getFillOpacity() * 255))));
     }
-    void RendererOutputDev::UpdateStrokeOpacity(GfxState *pGState)
+    void RendererOutputDev::updateStrokeOpacity(GfxState *pGState)
     {
         m_pRenderer->put_PenAlpha(std::min(255, std::max(0, int(pGState->getStrokeOpacity() * 255))));
     }
-    void RendererOutputDev::UpdateAll(GfxState *pGState)
+    void RendererOutputDev::updateAll(GfxState *pGState)
     {
-        UpdateCTM(pGState, pGState->getCTM()[0], pGState->getCTM()[1], pGState->getCTM()[2], pGState->getCTM()[3], pGState->getCTM()[4], pGState->getCTM()[5]);
-        UpdateLineDash(pGState);
-        UpdateFlatness(pGState);
-        UpdateLineJoin(pGState);
-        UpdateLineCap(pGState);
-        UpdateMiterLimit(pGState);
-        UpdateLineWidth(pGState);
-        UpdateStrokeAdjust(pGState);
+        updateCTM(pGState, pGState->getCTM()[0], pGState->getCTM()[1], pGState->getCTM()[2], pGState->getCTM()[3], pGState->getCTM()[4], pGState->getCTM()[5]);
+        updateLineDash(pGState);
+        updateFlatness(pGState);
+        updateLineJoin(pGState);
+        updateLineCap(pGState);
+        updateMiterLimit(pGState);
+        updateLineWidth(pGState);
+        updateStrokeAdjust(pGState);
         updateFillColorSpace(pGState);
-        UpdateFillColor(pGState);
+        updateFillColor(pGState);
         updateStrokeColorSpace(pGState);
-        UpdateStrokeColor(pGState);
-        UpdateBlendMode(pGState);
-        UpdateFillOpacity(pGState);
-        UpdateStrokeOpacity(pGState);
-        UpdateFont(pGState);
-        UpdateClip(pGState);
+        updateStrokeColor(pGState);
+        updateBlendMode(pGState);
+        updateFillOpacity(pGState);
+        updateStrokeOpacity(pGState);
+        updateFont(pGState);
+        updateClip(pGState);
     }
-    void RendererOutputDev::UpdateRender(GfxState *pGState)
+    void RendererOutputDev::updateRender(GfxState *pGState)
     {
 
     }
-    void RendererOutputDev::UpdateFont(GfxState *pGState)
+    void RendererOutputDev::updateFont(GfxState *pGState)
     {
         // Проверяем наличие списка со шрифтами
         if (NULL == m_pFontList)
@@ -623,7 +623,7 @@ namespace PdfReader
             // 2. Если шрифт лежит вне пдф, а в самом пдф есть ссылка на него, тогда используем эту ссылку.
             // 3. В противном случае подбираем шрифт.
             // if (pFont->getEmbeddedFontFileRef(&oEmbRef)) todo font file ref
-            if (false)
+            if (pFont->getEmbeddedFontID(&oEmbRef))
             {
                 std::wstring wsExt;
                 switch (pFont->getType())
@@ -912,7 +912,8 @@ namespace PdfReader
                     }
                 }
             }
-            else if (L"" == (wsFileName = StringAdaptor::FromGString(pFont->locateFont(m_pXref, false)->path).get_wstring()))
+            //else if (L"" == (wsFileName = StringAdaptor::FromGString(pFont->locateFont(m_pXref, false)->path).get_wstring()))
+            else if (0)
             {
                 // TODO: Сначала тут мы должны проверить, если ищется один из 14 стандартных шрифтов,
                 //       тогда мы должны вернуть путь к стандартному шрифту.
@@ -2453,7 +2454,7 @@ namespace PdfReader
             m_pRenderer->put_FontName(wsFontName);
         }
     }
-    void RendererOutputDev::Stroke(GfxState *pGState)
+    void RendererOutputDev::stroke(GfxState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
@@ -2466,7 +2467,7 @@ namespace PdfReader
 
         m_pRenderer->EndCommand(c_nPathType);
     }
-    void RendererOutputDev::Fill(GfxState *pGState)
+    void RendererOutputDev::fill(GfxState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
@@ -2479,7 +2480,7 @@ namespace PdfReader
 
         m_pRenderer->EndCommand(c_nPathType);
     }
-    void RendererOutputDev::EoFill(GfxState *pGState)
+    void RendererOutputDev::eoFill(GfxState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
@@ -2849,7 +2850,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        this->ClipAttack(pGState);
+        this->clipAttack(pGState);
 
         m_pRenderer->BeginCommand(c_nPDFTilingFill);
 
@@ -2889,28 +2890,28 @@ namespace PdfReader
 
         m_pRenderer->EndCommand(c_nPDFTilingFill);
     }
-    void RendererOutputDev::Clip(GfxState *pGState)
+    void RendererOutputDev::clip(GfxState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
 
-        UpdateClip(pGState);
+        updateClip(pGState);
     }
-    void RendererOutputDev::EoClip(GfxState *pGState)
+    void RendererOutputDev::eoClip(GfxState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
 
-        UpdateClip(pGState);
+        updateClip(pGState);
     }
-    void RendererOutputDev::ClipToStrokePath(GfxState *pGState)
+    void RendererOutputDev::clipToStrokePath(GfxState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
 
-        UpdateClip(pGState);
+        updateClip(pGState);
     }
-    void RendererOutputDev::ClipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO)
+    void RendererOutputDev::clipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO)
     {
         if (m_bDrawOnlyText)
             return;
@@ -2963,7 +2964,7 @@ namespace PdfReader
     {
 //        if (NULL != m_pBufferTextClip) tmpchange
 //        {
-//            UpdateClip(pGState);
+//            updateClip(pGState);
 //
 //            RELEASEOBJECT(m_pBufferTextClip);
 //        }
@@ -3011,7 +3012,7 @@ namespace PdfReader
 //            if (m_pBufferTextClip) tmpchange
 //                pGState->GetClip()->AppendTextClip(m_pBufferTextClip);
 
-            UpdateFont(pGState);
+            updateFont(pGState);
         }
 
         // Возвращаем параметры для Stroke
@@ -3285,7 +3286,7 @@ namespace PdfReader
     {
         return;
     }
-    void RendererOutputDev::DrawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, bool bInvert, bool bInlineImage)
+    void RendererOutputDev::drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, bool bInvert, bool bInlineImage)
     {
         if (m_bDrawOnlyText)
             return;
@@ -3360,7 +3361,7 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
-    void RendererOutputDev::DrawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, bool bInlineImg)
+    void RendererOutputDev::drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, bool bInlineImg)
     {
         if (m_bDrawOnlyText)
             return;
@@ -3439,13 +3440,13 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
-    void RendererOutputDev::DrawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, bool bMaskInvert)
+    void RendererOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, bool bMaskInvert)
     {
         if (m_bDrawOnlyText)
             return;
 
         if (nMaskWidth <= 0 || nMaskHeight <= 0)
-            DrawImage(pGState, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false);
+            drawImage(pGState, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false);
 
         double dPageHeight = pGState->getPageHeight();
 
@@ -3563,7 +3564,7 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
-    void RendererOutputDev::DrawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, unsigned char *pMatteColor)
+    void RendererOutputDev::drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, unsigned char *pMatteColor)
     {
         if (m_bDrawOnlyText)
             return;
@@ -3785,12 +3786,12 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
-    void RendererOutputDev::BeginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bForSoftMask)
+    void RendererOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bForSoftMask)
     {
         m_bTransparentGroup = true;
         m_bTransparentGroupSoftMask = bForSoftMask;
     }
-    void RendererOutputDev::EndTransparencyGroup(GfxState *pGState)
+    void RendererOutputDev::endTransparencyGroup(GfxState *pGState)
     {
         m_bTransparentGroup = false;
         m_bTransparentGroupSoftMask = false;
@@ -3800,13 +3801,13 @@ namespace PdfReader
 
         m_pTransparentGroupSoftMask = NULL;
     }
-    void RendererOutputDev::PaintTransparencyGroup(GfxState *pGState, double *pBBox)
+    void RendererOutputDev::paintTransparencyGroup(GfxState *pGState, double *pBBox)
     {
     }
-    void RendererOutputDev::SetSoftMask(GfxState *pGState, double *pBBox, bool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
+    void RendererOutputDev::setSoftMask(GfxState *pGState, double *pBBox, bool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
     {
     }
-    void RendererOutputDev::ClearSoftMask(GfxState *pGState)
+    void RendererOutputDev::clearSoftMask(GfxState *pGState)
     {
     }
     void RendererOutputDev::NewPDF(XRef *pXref)
@@ -3870,7 +3871,7 @@ namespace PdfReader
             }
         }
     }
-    void RendererOutputDev::UpdateClip(GfxState *pGState)
+    void RendererOutputDev::updateClip(GfxState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
@@ -3881,9 +3882,9 @@ namespace PdfReader
         if (m_bTiling)
             return;
 
-        UpdateClipAttack(pGState);
+        updateClipAttack(pGState);
     }
-    void RendererOutputDev::UpdateClipAttack(GfxState *pGState)
+    void RendererOutputDev::updateClipAttack(GfxState *pGState)
     {
         // todo clip
 //        GrClip *pClip = pGState->GetClip();
@@ -3976,7 +3977,7 @@ namespace PdfReader
 ////
 ////        m_pClip = pClip->Copy(); tmpchange
 //
-//        UpdateFont(pGState);
+//        updateFont(pGState);
     }
     void RendererOutputDev::DoTransform(double *pMatrix, double *pdShiftX, double *pdShiftY, bool bText)
     {

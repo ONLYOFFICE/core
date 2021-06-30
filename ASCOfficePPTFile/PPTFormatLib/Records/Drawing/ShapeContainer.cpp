@@ -41,8 +41,6 @@
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
 #include "../../Enums/_includer.h"
 
-
-
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
 bool CPPTElement::ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2)
@@ -929,6 +927,20 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 
             delete []utf8Data;
         }
+
+        utf8Data = NULL;
+        utf8DataSize = 0;
+        if (S_OK != officeUtils.LoadFileFromArchive(tempFileName, L"drs/e2oDoc.xml", &utf8Data, utf8DataSize))
+        {
+            officeUtils.LoadFileFromArchive(tempFileName, L"drs/diagrams/drawing1.xml", &utf8Data, utf8DataSize);
+        }
+
+        if (utf8Data && utf8DataSize > 0)
+        {
+            std::wstring tableXmlStr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+
+            delete []utf8Data;
+        }
         NSFile::CFileBinary::Remove(tempFileName);
     }break;
     case ODRAW::geoRight:
@@ -1648,7 +1660,6 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
                 CTableElement* pTableElem = new CTableElement();
                 pTableElem->m_etType = etGroup;
                 pElement = CElementPtr(pTableElem);
-
             }
             else if (bGroupShape)
             {

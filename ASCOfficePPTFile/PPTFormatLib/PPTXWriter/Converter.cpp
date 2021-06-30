@@ -429,14 +429,17 @@ void PPT_FORMAT::CPPTXWriter::WritePresInfo()
     std::vector<CRecordRoundTripCustomTableStyles12Atom*> vecTableStyles;
     ((CPPTUserInfo*)(m_pDocument))->m_oDocument.GetRecordsByType(&vecTableStyles, false);
     // Source
-    BYTE* tableStylesData = vecTableStyles[0]->data.first.get();
-    ULONG tableStylesLen = vecTableStyles[0]->data.second;
-    oFile.WriteFile(tableStylesData, tableStylesLen);
-    oFile.CloseFile();
+    if (vecTableStyles.size())
+    {
+        BYTE* tableStylesData = vecTableStyles[0]->data.first.get();
+        ULONG tableStylesLen = vecTableStyles[0]->data.second;
+        oFile.WriteFile(tableStylesData, tableStylesLen);
+        oFile.CloseFile();
 
-    COfficeUtils officeUtils;
-    officeUtils.ExtractToDirectory(zipPath, m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt"), NULL, 1);
-
+        COfficeUtils officeUtils;
+        officeUtils.ExtractToDirectory(zipPath, m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt"), NULL, 1);
+        oFile.RemoveFile(zipPath);
+    }
 
 
 

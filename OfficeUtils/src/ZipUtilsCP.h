@@ -52,8 +52,6 @@ using namespace std;
 #if defined(_WIN32) || defined (_WIN64)
 	#include "zlib-1.2.11/contrib/minizip/iowin32.h"
 #endif
-// for debian to solve use
-// # apt install zlib1g-dev
 #include <zlib.h>
 
 namespace ZLibZipUtils

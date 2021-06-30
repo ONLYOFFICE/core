@@ -32,7 +32,6 @@
 #pragma once
 #include "Theme.h"
 #include "Shapes/Shape.h"
-
 #include "Shapes/BaseShape/PPTShape/Ppt2PptxShapeConverter.h"
 
 namespace PPTX2EditorAdvanced
@@ -783,6 +782,8 @@ namespace PPT_FORMAT
 
         class CGroupElement : public CElement
         {
+        public:
+
         public:
             CGroupElement() : CElement()
             {

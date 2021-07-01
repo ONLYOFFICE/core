@@ -279,7 +279,9 @@ namespace NSJSBase
         }
         else
         {
-            _script = v8::Script::Compile(V8ContextFirstArg _source).ToLocalChecked();
+            v8::MaybeLocal<v8::Script> _scriptRetValue = v8::Script::Compile(V8ContextFirstArg _source);
+            if (!_scriptRetValue.IsEmpty())
+                _script = _scriptRetValue.ToLocalChecked();
         }
         
         CJSValueV8* _return = new CJSValueV8();

@@ -152,6 +152,8 @@ private:
 
 private:
     std::wstring getXmlForGraphicFrame()const;
+    void CorrectGraphicFrame(PPTX::Logic::GraphicFrame& oGraphicFrame);
+    void FillnvPr(PPTX::Logic::NvPr& oNvPr);
 
 private:
     CTableElement *m_pTableElement;

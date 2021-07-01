@@ -27,6 +27,7 @@ void TableWriter::Convert(PPTX::Logic::GraphicFrame &oGraphicFrame)
     else
     {
         oGraphicFrame.fromXMLString(getXmlForGraphicFrame());
+        CorrectGraphicFrame(oGraphicFrame);
     }
 }
 
@@ -391,6 +392,19 @@ std::wstring TableWriter::getXmlForGraphicFrame() const
     xml += L"</p:graphicFrame>";
 
     return xml;
+}
+
+void TableWriter::CorrectGraphicFrame(PPTX::Logic::GraphicFrame &oGraphicFrame)
+{
+    FillnvPr(oGraphicFrame.nvGraphicFramePr->nvPr);
+}
+
+void TableWriter::FillnvPr(PPTX::Logic::NvPr &oNvPr)
+{
+    PPTX::Logic::Ext ext;
+    ext.uri = L"{D42A27DB-BD31-4B8C-83A1-F6EECF244321}";
+
+    oNvPr.extLst.push_back(ext);
 }
 
 TCell::TCell(CShapeElement *pShape, int row, int col, TCell *pParent) :

@@ -46,14 +46,21 @@ namespace NSNetwork
 	{
 	    std::shared_ptr<IWebSocket> createWebsocket(const std::string& type, std::shared_ptr<IListener> listener, const std::string& url)
 	    {
+            std::string sType = type;
+            if (sType.empty())
+            {
+                // TODO: default engine for platform
+                sType = "ixwebsocket";
+            }
+
 #ifdef USE_IXWEBSOCKET
-            if (type == "ixwebsocket")
+            if (sType == "ixwebsocket")
 		    {
                 return std::make_shared<CIXWebSocket>(url, listener);
 		    }
 #endif
 #ifdef USE_SOCKETROCKET
-            if (type == "socketRocket")
+            if (sType == "socketRocket")
             {
                 return std::make_shared<CSocketRocket>(url, listener);
             }

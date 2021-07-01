@@ -10,12 +10,35 @@ SOURCES += $$PWD/src/managerwebsocket.cpp
 
 ixwebsocket {
 
-	DEFINES += USE_IXWEBSOCKET
-	include($$PWD/../../3dParty/ixwebsocket/ixwebsocket.pri)
+    DEFINES += USE_IXWEBSOCKET
+    include($$PWD/../../3dParty/ixwebsocket/ixwebsocket.pri)
 
-	HEADERS += $$PWD/src/ixwebsocket/ixwebsocket_internal.h
-	SOURCES += $$PWD/src/ixwebsocket/ixwebsocket_internal.cpp
+    HEADERS += $$PWD/src/ixwebsocket/ixwebsocket_internal.h
+    SOURCES += $$PWD/src/ixwebsocket/ixwebsocket_internal.cpp
 
+    CONFIG += use_zlib
+
+}
+
+use_zlib {
+    ZLIB_SOURCES = $$PWD/../../../OfficeUtils/src/zlib-1.2.11
+    INCLUDEPATH += $$ZLIB_SOURCES
+    SOURCES += \
+        $$ZLIB_SOURCES/adler32.c \
+        $$ZLIB_SOURCES/compress.c \
+        $$ZLIB_SOURCES/crc32.c \
+        $$ZLIB_SOURCES/deflate.c \
+        $$ZLIB_SOURCES/gzclose.c \
+        $$ZLIB_SOURCES/gzlib.c \
+        $$ZLIB_SOURCES/gzread.c \
+        $$ZLIB_SOURCES/gzwrite.c \
+        $$ZLIB_SOURCES/infback.c \
+        $$ZLIB_SOURCES/inffast.c \
+        $$ZLIB_SOURCES/inflate.c \
+        $$ZLIB_SOURCES/inftrees.c \
+        $$ZLIB_SOURCES/trees.c \
+        $$ZLIB_SOURCES/uncompr.c \
+        $$ZLIB_SOURCES/zutil.c
 }
 
 socketrocket {

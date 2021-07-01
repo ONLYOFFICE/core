@@ -32,7 +32,7 @@
 
 
 #import "socketRocket_objc.h"
-#import "../../../../../DesktopEditor/Common/Mac/NSString+StringUtils.h"
+#import "../../../../../DesktopEditor/common/Mac/NSString+StringUtils.h"
 
 @implementation SocketRocketObjC
 
@@ -87,7 +87,7 @@
     }
 }
 
-- (void)setListener: (NSWebSocket::IListener*)listener
+- (void)setListener: (NSNetwork::NSWebSocket::IListener*)listener
 {
     m_listener = listener;
 }

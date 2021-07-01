@@ -194,8 +194,8 @@ namespace PdfReader
 		virtual void startPage(int nPageIndex, GfxState *pGState);
 		virtual void endPage();
 		//----- Save/Restore GState
-		virtual void saveGState(GfxState *pGState);
-		virtual void restoreGState(GfxState *pGState);
+		virtual void saveState(GfxState *pGState);
+		virtual void restoreState(GfxState *pGState);
 		//----- Изменение параметров в GState
 		virtual void updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32);
 		virtual void updateLineDash(GfxState *pGState);

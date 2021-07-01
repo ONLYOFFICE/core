@@ -462,11 +462,11 @@ namespace PdfReader
     {
         m_pRenderer->EndCommand(c_nPageType);
     }
-    void RendererOutputDev::saveGState(GfxState *pGState)
+    void RendererOutputDev::saveState(GfxState *pGState)
     {
         updateAll(pGState);
     }
-    void RendererOutputDev::restoreGState(GfxState *pGState)
+    void RendererOutputDev::restoreState(GfxState *pGState)
     {
         updateAll(pGState);
     }
@@ -912,8 +912,9 @@ namespace PdfReader
                     }
                 }
             }
-            //else if (L"" == (wsFileName = StringAdaptor::FromGString(pFont->locateFont(m_pXref, false)->path).get_wstring()))
-            else if (0)
+            else if (pFont->locateFont(m_pXref, false) &&
+                (wsFileName = StringAdaptor::FromGString(pFont->locateFont(m_pXref, false)->path).get_wstring()).length() == 0)
+            //else if (0)
             {
                 // TODO: Сначала тут мы должны проверить, если ищется один из 14 стандартных шрифтов,
                 //       тогда мы должны вернуть путь к стандартному шрифту.

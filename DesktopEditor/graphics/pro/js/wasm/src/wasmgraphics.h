@@ -15,7 +15,6 @@ public:
     CGraphicsFileDrawing()
     {
         pApplicationFonts = NSFonts::NSApplication::Create();
-        //pApplicationFonts->Initialize();
         pReader = new CXpsFile(pApplicationFonts);
     }
     ~CGraphicsFileDrawing()

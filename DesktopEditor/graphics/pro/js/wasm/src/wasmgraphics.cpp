@@ -4,7 +4,7 @@
 #include "../../../../GraphicsRenderer.h"
 #include "../../../../pro/Graphics.h"
 #include "../../../../../common/Base64.h"
-#include "graphics.h"
+#include "wasmgraphics.h"
 
 #ifdef _WIN32
 #define WASM_EXPORT __declspec(dllexport)
@@ -691,7 +691,7 @@ int main()
     NSFile::CFileBinary oFile;
     if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.xps", &pXpsData, nXpsBytesCount))
     {
-        Fonts_Destroy();
+        //Fonts_Destroy();
         Graphics_Destroy(test);
         RELEASEARRAYOBJECTS(pXpsData);
         return 1;
@@ -701,6 +701,7 @@ int main()
     Graphics_Load(test, pXpsData, nXpsBytesCount);
     int nHeight = Graphics_GetPageHeight(test, 0);
     int nWidth  = Graphics_GetPageWidth(test,  0);
+
     BYTE* res   = Graphics_GetPage(test, 0, nWidth, nHeight);
 
     for (int i = 0; i < 100; i++)
@@ -711,12 +712,14 @@ int main()
     resFrame->put_Width(nWidth);
     resFrame->put_Height(nHeight);
     resFrame->put_Stride(-4 * nWidth);
-
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
+    resFrame->ClearNoAttack();
+
     //Fonts_Destroy();
     Graphics_Destroy(test);
     RELEASEARRAYOBJECTS(pXpsData);
     RELEASEARRAYOBJECTS(res);
+    RELEASEOBJECT(resFrame);
     return 0;
 }
 #endif

@@ -110,7 +110,7 @@ libRaw_src_path = "../../../cximage/raw"
 input_raw_sources = ["libdcr.c"]
 
 libJBig2_src_path = "../../../raster/JBig2/source"
-input_jbig2_sources = ["JBig2File.cpp", "Encoder/jbig2enc.cpp", "Encoder/jbig2arith.cpp", "Encoder/jbig2sym.cpp", "LeptonLib/pixconv.cpp", "LeptonLib/writefile.cpp", "LeptonLib/scale.cpp", "LeptonLib/pix1.cpp", "LeptonLib/pix2.cpp", "LeptonLib/pix3.cpp", "LeptonLib/pix5.cpp", "LeptonLib/grayquant.cpp", "LeptonLib/grayquantlow.cpp", "LeptonLib/seedfill.cpp", "LeptonLib/jbclass.cpp", "LeptonLib/pixabasic.cpp", "LeptonLib/numabasic.cpp", "LeptonLib/morphseq.cpp", "LeptonLib/binexpandlow.cpp", "LeptonLib/ptabasic.cpp", "LeptonLib/rop.cpp", "LeptonLib/colormap.cpp", "LeptonLib/pngiostub.cpp", "LeptonLib/lepton_utils.cpp", "LeptonLib/scalelow.cpp", "LeptonLib/enhance.cpp", "LeptonLib/jpegio.cpp", "LeptonLib/jpegiostub.cpp", "LeptonLib/spixio.cpp", "LeptonLib/webpio.cpp", "LeptonLib/webpiostub.cpp", "LeptonLib/psio2.cpp", "LeptonLib/gifio.cpp", "LeptonLib/gifiostub.cpp", "LeptonLib/pnmio.cpp", "LeptonLib/tiffio.cpp", "LeptonLib/tiffiostub.cpp", "LeptonLib/bmpio.cpp", "LeptonLib/binexpand.cpp", "LeptonLib/compare.cpp", "LeptonLib/boxbasic.cpp", "LeptonLib/conncomp.cpp", "LeptonLib/pixafunc1.cpp", "LeptonLib/boxfunc1.cpp", "LeptonLib/ptafunc1.cpp", "LeptonLib/binreduce.cpp", "LeptonLib/seedfilllow.cpp", "LeptonLib/sel1.cpp", "LeptonLib/morphapp.cpp", "LeptonLib/correlscore.cpp", "LeptonLib/sarray.cpp", "LeptonLib/morph.cpp"]
+input_jbig2_sources = ["JBig2File.cpp", "Encoder/jbig2enc.cpp", "Encoder/jbig2arith.cpp", "Encoder/jbig2sym.cpp", "LeptonLib/pixconv.cpp", "LeptonLib/writefile.cpp", "LeptonLib/scale.cpp", "LeptonLib/pix1.cpp", "LeptonLib/pix2.cpp", "LeptonLib/pix3.cpp", "LeptonLib/pix4.cpp", "LeptonLib/pix5.cpp", "LeptonLib/grayquant.cpp", "LeptonLib/grayquantlow.cpp", "LeptonLib/seedfill.cpp", "LeptonLib/jbclass.cpp", "LeptonLib/pixabasic.cpp", "LeptonLib/numabasic.cpp", "LeptonLib/morphseq.cpp", "LeptonLib/binexpandlow.cpp", "LeptonLib/ptabasic.cpp", "LeptonLib/rop.cpp", "LeptonLib/colormap.cpp", "LeptonLib/pngiostub.cpp", "LeptonLib/lepton_utils.cpp", "LeptonLib/scalelow.cpp", "LeptonLib/enhance.cpp", "LeptonLib/jpegio.cpp", "LeptonLib/jpegiostub.cpp", "LeptonLib/spixio.cpp", "LeptonLib/webpio.cpp", "LeptonLib/webpiostub.cpp", "LeptonLib/psio2.cpp", "LeptonLib/gifio.cpp", "LeptonLib/gifiostub.cpp", "LeptonLib/pnmio.cpp", "LeptonLib/tiffio.cpp", "LeptonLib/tiffiostub.cpp", "LeptonLib/bmpio.cpp", "LeptonLib/binexpand.cpp", "LeptonLib/compare.cpp", "LeptonLib/boxbasic.cpp", "LeptonLib/conncomp.cpp", "LeptonLib/pixafunc1.cpp", "LeptonLib/boxfunc1.cpp", "LeptonLib/ptafunc1.cpp", "LeptonLib/binreduce.cpp", "LeptonLib/seedfilllow.cpp", "LeptonLib/sel1.cpp", "LeptonLib/morphapp.cpp", "LeptonLib/correlscore.cpp", "LeptonLib/sarray.cpp", "LeptonLib/morph.cpp", "LeptonLib/roplow.cpp", "LeptonLib/fpix1.cpp", "LeptonLib/stack.cpp", "LeptonLib/pixacc.cpp", "LeptonLib/pixarith.cpp", "LeptonLib/convolve.cpp", "LeptonLib/binreducelow.cpp", "LeptonLib/convolvelow.cpp", "LeptonLib/arithlow.cpp"]
 
 sources = []
 for item in input_raster_sources:
@@ -128,8 +128,7 @@ for item in input_j2k_sources:
 # psd
 for item in input_raw_sources:
     sources.append(libRaw_src_path + '/' + item)
-for item in input_jbig2_sources:
-    sources.append(libJBig2_src_path + '/' + item)
+# jbig2
 sources.append("wasm/src/raster.cpp")
 
 compiler_flags.append("-I../../../../OfficeUtils/src/zlib-1.2.11")
@@ -170,6 +169,10 @@ if base.host_platform() == "windows":
     for item in input_mng_sources:
         windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libMng_src_path + '/' + item)
         libs += ("temp/" + item + ".o ")
+    
+    for item in input_jbig2_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + libJBig2_src_path + '/' + item)
+        libs += ("temp/" + os.path.basename(item) + ".o ")
     
     arguments2 = arguments
     for item in sources:
@@ -216,6 +219,10 @@ else:
     for item in input_mng_sources:
         windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libMng_src_path + '/' + item)
         libs += ("temp/" + item + ".o ")
+    
+    for item in input_jbig2_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + libJBig2_src_path + '/' + item)
+        libs += ("temp/" + os.path.basename(item) + ".o ")
     
     arguments2 = arguments
     for item in sources:

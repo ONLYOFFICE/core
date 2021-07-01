@@ -21,6 +21,10 @@
 			this.engine = Module["_Graphics_Create"]();
 			if (0 === this.engine)
 				return null;
+			
+			var fonts = Module["_Fonts_Create"]();
+			if (0 === fonts)
+				return null;
 				
 			var imageFileRawDataSize = dataBuffer.byteLength;
 			var imageFileRawData = Module["_Graphics_Malloc"](imageFileRawDataSize);
@@ -52,6 +56,7 @@
 			canvasCtx.putImageData(canvasData, 0, 0);
 	
 			Module["_Graphics_Free"](imageFileRawData);
+			Module["_Fonts_Destroy"]();
 			this.close();
 			return canvas;
         }

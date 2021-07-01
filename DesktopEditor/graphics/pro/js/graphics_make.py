@@ -67,7 +67,7 @@ libFreetype_src_path = "../../../freetype-2.10.4/src/"
 input_freetype_sources = ["base/ftinit.c", "base/ftlcdfil.c", "base/ftobjs.c", "base/ftglyph.c", "base/ftoutln.c", "base/ftutil.c", "base/ftgloadr.c", "base/ftfntfmt.c", "base/ftcalc.c", "base/ftbitmap.c", "base/ftstream.c", "base/fthash.c", "base/ftdebug.c", "base/fttrigon.c", "base/ftadvanc.c", "base/ftpsprop.c", "base/ftrfork.c", "bdf/bdfdrivr.c", "bdf/bdflib.c", "smooth/ftsmooth.c", "smooth/ftgrays.c", "../builds/unix/ftsystem.c", "autofit/afmodule.c", "autofit/afhints.c", "autofit/afloader.c", "autofit/afglobal.c", "autofit/afshaper.c", "autofit/afranges.c", "autofit/afdummy.c", "autofit/aflatin.c", "autofit/afcjk.c", "autofit/afindic.c", "autofit/afangles.c", "autofit/afblue.c", "autofit/afwarp.c", "truetype/ttdriver.c", "truetype/ttgload.c", "truetype/ttpload.c", "truetype/ttobjs.c", "truetype/ttgxvar.c", "truetype/ttinterp.c", "type1/t1driver.c", "type1/t1afm.c", "type1/t1load.c", "type1/t1gload.c", "type1/t1objs.c", "type1/t1parse.c", "cff/cffdrivr.c", "cff/cffgload.c", "cff/cffload.c", "cff/cffcmap.c", "cff/cffparse.c", "cff/cffobjs.c", "cid/cidriver.c", "cid/cidobjs.c", "cid/cidgload.c", "cid/cidload.c", "cid/cidparse.c", "pfr/pfrdrivr.c", "pfr/pfrobjs.c", "pfr/pfrload.c", "pfr/pfrgload.c", "pfr/pfrcmap.c", "pfr/pfrsbit.c", "type42/t42drivr.c", "type42/t42objs.c", "type42/t42parse.c", "winfonts/winfnt.c", "pcf/pcfdrivr.c", "pcf/pcfread.c", "pcf/pcfutil.c", "psaux/psauxmod.c", "psaux/psobjs.c", "psaux/t1decode.c", "psaux/psft.c", "psaux/afmparse.c", "psaux/t1cmap.c", "psaux/cffdecode.c", "psaux/psconv.c", "psaux/psfont.c", "psaux/psblues.c", "psaux/psintrp.c", "psaux/pserror.c", "psaux/psstack.c", "psaux/pshints.c", "psaux/psarrst.c", "psaux/psread.c", "psnames/psmodule.c", "pshinter/pshmod.c", "pshinter/pshrec.c", "pshinter/pshglob.c", "pshinter/pshalgo.c", "raster/ftrend1.c", "raster/ftraster.c", "sfnt/sfdriver.c", "sfnt/ttpost.c", "sfnt/sfobjs.c", "sfnt/ttload.c", "sfnt/ttbdf.c", "sfnt/ttmtx.c", "sfnt/ttkern.c", "sfnt/sfwoff.c", "sfnt/ttcmap.c", "sfnt/ttsbit.c", "sfnt/sfwoff2.c", "sfnt/ttcolr.c", "sfnt/woff2tags.c", "sfnt/ttcpal.c", "gzip/ftgzip.c", "lzw/ftlzw.c"]
 
 libCommon_src_path = "../../../common/"
-input_common_sources = ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp"]
+input_common_sources = ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp", "StringExt.cpp"]
 
 libUnicodeConverter_src_path = "../../../../UnicodeConverter/"
 input_unicodeconverter_sources = ["UnicodeConverter.cpp"]
@@ -76,18 +76,21 @@ libIcu_src_path = "../../../../Common/3dParty/icu/icu/source/common/"
 input_icu_sources = ["ucnv.c", "ustr_wcs.cpp", "ucnv_err.c", "ucnv_bld.cpp", "ustrtrns.cpp", "ucnv_cb.c", "udata.cpp", "ucnv_io.cpp", "uhash.c", "udatamem.c", "cmemory.c", "ustring.cpp", "umutex.cpp", "putil.cpp", "ustr_cnv.cpp", "ucnvmbcs.cpp", "ucnvlat1.c", "ucnv_u16.c", "ucnv_u8.c", "ucnv_u32.c", "ucnv_u7.c", "ucln_cmn.cpp", "ucnv2022.cpp", "ucnv_lmb.c", "ucnvhz.c", "ucnvscsu.c", "ucnvisci.c", "ucnvbocu.cpp", "ucnv_ct.c", "ucnv_cnv.c", "stringpiece.cpp", "charstr.cpp", "umapfile.c", "ucmndata.c", "ucnv_ext.cpp", "uobject.cpp", "umath.c"]
 
 libXps_src_path = "../../../../XpsFile/XpsLib/"
-input_xps_sources = ["Document.cpp", "Page.cpp", "StaticResources.cpp", "Utils.cpp"]
+input_xps_sources = ["Document.cpp", "Page.cpp", "StaticResources.cpp", "Utils.cpp", "WString.cpp", "ContextState.cpp"]
 
-libOfficeUtils_src_parh = "../../../../OfficeUtils/src/"
-input_officeutils_sources = ["OfficeUtils.cpp", "ZipBuffer.cpp"]
+libOfficeUtils_src_path = "../../../../OfficeUtils/src/"
+input_officeutils_sources = ["OfficeUtils.cpp", "ZipBuffer.cpp", "ZipUtilsCP.cpp"]
 
-libMinizip_src_parh = "../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/"
+libMinizip_src_path = "../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip/"
 input_minizip_sources = ["ioapi.c", "miniunz.c", "minizip.c", "mztools.c", "unzip.c", "zip.c", "ioapibuf.c"]
 
-libZlib_src_parh = "../../../../OfficeUtils/src/zlib-1.2.11/"
+libZlib_src_path = "../../../../OfficeUtils/src/zlib-1.2.11/"
 input_zlib_sources = ["adler32.c", "crc32.c", "deflate.c", "infback.c", "inffast.c", "inflate.c", "inftrees.c", "trees.c", "zutil.c", "compress.c"]
 
 input_xml_sources = ["xml/src/xmllight.cpp", "xml/src/xmldom.cpp", "xml/build/qt/libxml2_all.c", "xml/build/qt/libxml2_all2.c"]
+
+libPdf_src_path = "../../../../PdfWriter/"
+input_pdf_sources = ["PdfRenderer.cpp"]
 
 # sources
 sources = []
@@ -106,11 +109,13 @@ for item in input_unicodeconverter_sources:
 sources.append("../../../../XpsFile/XpsFile.cpp")
 # xps
 for item in input_officeutils_sources:
-    sources.append(libOfficeUtils_src_parh + item)
+    sources.append(libOfficeUtils_src_path + item)
 # minizip
 # zlib
 for item in input_xml_sources:
     sources.append(item)
+for item in input_pdf_sources:
+    sources.append(libPdf_src_path + item)
 sources.append("raster.o")
 sources.append("wasm/src/graphics.cpp")
 
@@ -142,11 +147,11 @@ if base.host_platform() == "windows":
         libs += ("temp/" + item + ".o ")
     
     for item in input_minizip_sources:
-        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libMinizip_src_parh + item)
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libMinizip_src_path + item)
         libs += ("temp/" + item + ".o ")
     
     for item in input_zlib_sources:
-        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libZlib_src_parh + item)
+        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libZlib_src_path + item)
         libs += ("temp/" + item + ".o ")
 
     arguments += "-s EXPORTED_FUNCTIONS=\"["
@@ -177,11 +182,11 @@ else:
         libs += ("temp/" + item + ".o ")
     
     for item in input_minizip_sources:
-        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libMinizip_src_parh + item)
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libMinizip_src_path + item)
         libs += ("temp/" + item + ".o ")
     
     for item in input_zlib_sources:
-        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libZlib_src_parh + item)
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libZlib_src_path + item)
         libs += ("temp/" + item + ".o ")
     
     arguments += "-s EXPORTED_FUNCTIONS=\"["

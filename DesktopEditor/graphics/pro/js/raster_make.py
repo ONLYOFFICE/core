@@ -221,7 +221,7 @@ else:
         libs += ("temp/" + item + ".o ")
     
     for item in input_jbig2_sources:
-        windows_bat.append("call emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + libJBig2_src_path + '/' + item)
+        windows_bat.append("emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + libJBig2_src_path + '/' + item)
         libs += ("temp/" + os.path.basename(item) + ".o ")
     
     arguments2 = arguments

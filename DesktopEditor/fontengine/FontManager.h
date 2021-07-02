@@ -55,12 +55,12 @@ public:
 class CGlobalFontsMemoryStorage
 {
 private:
-    std::map<std::string, CFontStream*> m_mapStreams;
+    std::map<std::wstring, CFontStream*> m_mapStreams;
 
-    void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo)
+    void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
     {
         size_t posn = 0;
-        while (std::string::npos != (posn = text.find(replaceFrom, posn)))
+        while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
         {
             text.replace(posn, replaceFrom.length(), replaceTo);
             posn += replaceTo.length();
@@ -70,28 +70,28 @@ public:
     CGlobalFontsMemoryStorage(){}
     ~CGlobalFontsMemoryStorage()
     {
-        for (std::map<std::string, CFontStream*>::iterator it = m_mapStreams.begin(); it != m_mapStreams.end(); it++)
+        for (std::map<std::wstring, CFontStream*>::iterator it = m_mapStreams.begin(); it != m_mapStreams.end(); it++)
             RELEASEOBJECT(it->second);
         m_mapStreams.clear();
     }
 
-    void Add(const std::string& id, BYTE* data, LONG size)
+    void Add(const std::wstring& id, BYTE* data, LONG size)
     {
-        std::string sFileA = id;
-        string_replaceA(sFileA, "\\", "/");
-        std::map<std::string, CFontStream*>::iterator it = m_mapStreams.find(sFileA);
+        std::wstring sFile = id;
+        string_replace(sFile, L"\\", L"/");
+        std::map<std::wstring, CFontStream*>::iterator it = m_mapStreams.find(sFile);
         if (it == m_mapStreams.end())
         {
             CFontStream* pStream = (CFontStream*)NSFonts::NSStream::Create();
             pStream->CreateFromMemory(data, size);
-            m_mapStreams.insert({sFileA, pStream});
+            m_mapStreams.insert({sFile, pStream});
         }
     }
-    void Remove(const std::string& id)
+    void Remove(const std::wstring& id)
     {
-        std::string sFileA = id;
-        string_replaceA(sFileA, "\\", "/");
-        std::map<std::string, CFontStream*>::iterator it = m_mapStreams.find(sFileA);
+        std::wstring sFile = id;
+        string_replace(sFile, L"\\", L"/");
+        std::map<std::wstring, CFontStream*>::iterator it = m_mapStreams.find(sFile);
         if (it != m_mapStreams.end())
         {
             RELEASEOBJECT(it->second);
@@ -99,11 +99,11 @@ public:
         }
     }
 
-    CFontStream* Get(const std::wstring& sFile)
+    CFontStream* Get(const std::wstring& id)
     {
-        std::string sFileA = U_TO_UTF8(sFile);
-        string_replaceA(sFileA, "\\", "/");
-        std::map<std::string, CFontStream*>::iterator it = m_mapStreams.find(sFileA);
+        std::wstring sFile = id;
+        string_replace(sFile, L"\\", L"/");
+        std::map<std::wstring, CFontStream*>::iterator it = m_mapStreams.find(sFile);
         return it != m_mapStreams.end() ? it->second : NULL;
     }
 };

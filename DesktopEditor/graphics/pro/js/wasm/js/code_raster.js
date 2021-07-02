@@ -23,10 +23,10 @@ window.onload = function()
 		}
 		e.dataTransfer.dropEffect = isFile ? "copy" : "none";
 		e.preventDefault();
-		return false; 
+		return false;
 	};
-	holder.ondrop = function(e) 
-	{ 
+	holder.ondrop = function(e)
+	{
 		var file = e.dataTransfer.files ? e.dataTransfer.files[0] : null;
 		if (!file)
 		{
@@ -44,7 +44,7 @@ window.onload = function()
 		};
 		reader.readAsArrayBuffer(file);
 
-		return false; 
+		return false;
 	};
 };
 

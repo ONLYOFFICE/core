@@ -133,7 +133,7 @@ void CApplicationFontStreams::CheckStreams(std::map<std::wstring,bool> &mapFiles
         if (mapFiles.find(iter->first) != mapFiles.end())
         {
             if (m_pMemoryStorage)
-                m_pMemoryStorage->Remove(U_TO_UTF8(iter->first));
+                m_pMemoryStorage->Remove(iter->first);
             else
                 RELEASEINTERFACE(pFile);
             iter = m_mapStreams.erase(iter);
@@ -148,7 +148,7 @@ void CApplicationFontStreams::Clear()
     for (std::map<std::wstring, CFontStream*>::iterator iter = m_mapStreams.begin(); iter != m_mapStreams.end(); ++iter)
     {
         if (m_pMemoryStorage)
-            m_pMemoryStorage->Remove(U_TO_UTF8(iter->first));
+            m_pMemoryStorage->Remove(iter->first);
         else
         {
             CFontStream* pFile = iter->second;

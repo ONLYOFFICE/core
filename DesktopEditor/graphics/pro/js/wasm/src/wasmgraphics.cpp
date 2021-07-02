@@ -31,12 +31,12 @@ WASM_EXPORT void  Fonts_Destroy()
 WASM_EXPORT void  Fonts_Add(void* fonts, const char* id, BYTE* data, LONG size)
 {
     CGlobalFontsMemoryStorage* pFonts = (CGlobalFontsMemoryStorage*)fonts;
-    pFonts->Add(id, data, size);
+    pFonts->Add(UTF8_TO_U(std::string(id)), data, size);
 }
 WASM_EXPORT void  Fonts_Remove(void* fonts, const char* id)
 {
     CGlobalFontsMemoryStorage* pFonts = (CGlobalFontsMemoryStorage*)fonts;
-    pFonts->Remove(id);
+    pFonts->Remove(UTF8_TO_U(std::string(id)));
 }
 
 WASM_EXPORT void* Graphics_Malloc(unsigned int size)

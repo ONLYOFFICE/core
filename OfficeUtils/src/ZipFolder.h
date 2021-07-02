@@ -278,9 +278,7 @@ public:
     virtual void write(const std::wstring& path, BYTE* data, DWORD length)
     {
         std::string sPath = getLocalFilePathA(path);
-        BYTE* copyData = new BYTE[length];
-        memcpy(copyData, data, length);
-        m_zlib->addFile(sPath, copyData, length);
+        m_zlib->addFile(sPath, data, length);
     }
     // Перемещает файл в архиве
     virtual void move(const std::wstring& sSrc, const std::wstring& sDst)

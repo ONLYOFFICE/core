@@ -40,7 +40,7 @@ namespace Writers
 	{
 		m_nCount = 0;
 	}
-	void CustomXmlWriter::WriteCustom(const std::wstring& sCustomXmlPropertiesContent, const std::wstring& sCustomXmlContent)
+	void CustomXmlWriter::WriteCustom(const std::wstring& sCustomXmlPropertiesContent, const std::wstring& sCustomXmlContent, bool bGlossaryMode)
 	{
 		m_nCount++;
 
@@ -53,6 +53,8 @@ namespace Writers
 		sCustomXMLPropsFilename += std::to_wstring(m_nCount) + OOX::FileTypes::CustomXmlProps.DefaultFileName().GetExtention();
 
 		NSFile::CFileBinary::SaveToFile(sCustomXmlDir + FILE_SEPARATOR_STR + sCustomXMLPropsFilename, sCustomXmlPropertiesContent);
+		OOX::CContentTypes& oContentTypes = *m_pDrawingConverter->GetContentTypes();
+		oContentTypes.Registration( OOX::FileTypes::CustomXmlProps.OverrideType(), OOX::FileTypes::CustomXmlProps.DefaultDirectory(), sCustomXMLPropsFilename );
 
 		std::wstring sCustomXmlFilename;
 		sCustomXmlFilename = OOX::FileTypes::CustomXml.DefaultFileName().GetBasename() + std::to_wstring(m_nCount);
@@ -65,9 +67,9 @@ namespace Writers
 		m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXmlProps.RelationType(), sCustomXMLPropsFilename, L"", &lId);
 		m_pDrawingConverter->SaveDstContentRels(sCustomXmlRelsDir + FILE_SEPARATOR_STR + sCustomXmlFilename + L".rels");
 
-		arItems.push_back(sCustomXmlFilename);
+		arItems.push_back(std::make_pair(sCustomXmlFilename, bGlossaryMode));
 	}
-	void CustomXmlWriter::WriteCustomSettings(const std::wstring& sUrl, const std::wstring& sXml)
+	void CustomXmlWriter::WriteCustomSettings(const std::wstring& sUrl, const std::wstring& sXml, bool bGlossaryMode)
 	{
 		m_nCount++;
 		OOX::CCustomXMLProps oCustomXMLProps(NULL);
@@ -99,6 +101,6 @@ namespace Writers
 
 		NSFile::CFileBinary::SaveToFile(sCustomXmlDir + FILE_SEPARATOR_STR + sCustomXmlFilename, sXml);
 		
-		arItems.push_back(sCustomXmlFilename);
+		arItems.push_back(std::make_pair(sCustomXmlFilename, bGlossaryMode));
 	}
 }

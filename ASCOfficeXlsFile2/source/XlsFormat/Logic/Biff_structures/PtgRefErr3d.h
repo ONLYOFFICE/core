@@ -43,7 +43,7 @@ class PtgRefErr3d: public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgRefErr3d)
 public:
-	PtgRefErr3d();
+	PtgRefErr3d(const unsigned short full_ptg_id);
 	PtgRefErr3d(const unsigned short ixti, const PtgDataType data_type);
 	BiffStructurePtr clone();
 

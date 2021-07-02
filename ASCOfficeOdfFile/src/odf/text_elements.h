@@ -60,7 +60,7 @@ public:
     void add_text			(const std::wstring & Text);
 	void add_space			(const std::wstring & Text);
 
- 	_CP_OPT(std::wstring)	next_element_style_name; //for master page
+ 	//_CP_OPT(std::wstring)	next_element_style_name; //for master page
    
 	void set_next_section(bool Val) 
     {
@@ -72,7 +72,7 @@ public:
         next_end_section_ = Val;
     }
   
-	void docx_convert (oox::docx_conversion_context & Context) ;
+	void docx_convert (oox::docx_conversion_context & Context, _CP_OPT(std::wstring) next_element_style_name) ;
     void xlsx_convert (oox::xlsx_conversion_context & Context) ;
     void pptx_convert (oox::pptx_conversion_context & Context) ;
 
@@ -111,8 +111,6 @@ public:
     void xlsx_convert(oox::xlsx_conversion_context & Context) ;
     void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-    virtual void afterReadContent();
-     
 	virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     paragraph paragraph_;
@@ -148,8 +146,6 @@ public:
     void xlsx_convert(oox::xlsx_conversion_context & Context) ;
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
-	virtual void afterReadContent();
-    
 	virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     p(){};

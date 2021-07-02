@@ -45,10 +45,13 @@ public:
     document_context();
     virtual ~document_context();
 				
+	office_element* get_last_paragraph();
 	office_element* get_last_element();
 
-	std::vector<office_element*> levels;
 	std::wstring office_class_; //openoffice xml 1.0
+
+	std::vector<office_element*> levels;
+	office_element* last_paragraph;
 };
 
 }

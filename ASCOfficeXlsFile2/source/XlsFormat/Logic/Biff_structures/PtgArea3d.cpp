@@ -40,8 +40,7 @@
 namespace XLS
 {
 
-
-PtgArea3d::PtgArea3d(const CellRef& cell_base_ref_init) : cell_base_ref(cell_base_ref_init)
+PtgArea3d::PtgArea3d(const unsigned short full_ptg_id, const CellRef& cell_base_ref_init) : OperandPtg(full_ptg_id), cell_base_ref(cell_base_ref_init)
 {
 }
 

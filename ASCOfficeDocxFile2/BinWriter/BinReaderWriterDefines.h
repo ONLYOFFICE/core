@@ -1166,7 +1166,8 @@ extern int g_nCurFormatVersion;
 		Name = 1,
 		Hidden = 2,
 		Title	= 3,
-		Descr = 4
+		Descr = 4,
+		Form = 5
 	};}
 	namespace c_oSerEmbedded{enum c_oSerEmbedded
 	{

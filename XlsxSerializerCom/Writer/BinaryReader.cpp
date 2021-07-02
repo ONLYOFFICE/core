@@ -3710,6 +3710,11 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		}
 	SEEK_TO_POS_END2();
 //-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Protection);
+	OOX::Spreadsheet::CSheetProtection oProtection;
+	READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, &oProtection);
+	SEEK_TO_POS_END(oProtection);
+//-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Autofilter);
 		OOX::Spreadsheet::CAutofilter oAutofilter;
 		BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
@@ -3814,11 +3819,6 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		OOX::Spreadsheet::CHyperlinks oHyperlinks;
 		READ1_DEF(length, res, this->ReadHyperlinks, &oHyperlinks);
 	SEEK_TO_POS_END(oHyperlinks);
-//-------------------------------------------------------------------------------------------------------------
-	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Protection);
-	OOX::Spreadsheet::CSheetProtection oProtection;
-	READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, &oProtection);
-	SEEK_TO_POS_END(oProtection);
 //-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::ProtectedRanges);
 	OOX::Spreadsheet::CProtectedRanges oProtectedRanges;

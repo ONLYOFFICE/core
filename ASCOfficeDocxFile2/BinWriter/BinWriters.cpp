@@ -6697,6 +6697,12 @@ void BinaryDocumentTableWriter::WriteDocPr(const PPTX::Logic::CNvPr& oDocPr)
 		m_oBcw.m_oStream.WriteStringW3(oDocPr.descr.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+	if (oDocPr.form.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::Form);
+		m_oBcw.m_oStream.WriteBOOL(oDocPr.form.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteEffectExtent(const OOX::Drawing::CEffectExtent& oEffectExtent)
 {

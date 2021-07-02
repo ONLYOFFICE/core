@@ -46,12 +46,12 @@ namespace Writers
         std::wstring m_sDir;
 		NSBinPptxRW::CDrawingConverter* m_pDrawingConverter;
 	public:
-		std::vector<std::wstring> arItems;
+		std::vector<std::pair<std::wstring, bool>> arItems;
 
 		CustomXmlWriter(std::wstring sDir, NSBinPptxRW::CDrawingConverter* pDrawingConverter);
 		
-		void WriteCustomSettings(const std::wstring& sUrl, const std::wstring& sXml);
-		void WriteCustom(const std::wstring& sCustomXmlPropertiesContent, const std::wstring& sCustomXmlContents);
+		void WriteCustomSettings(const std::wstring& sUrl, const std::wstring& sXml, bool bGlossaryMode);
+		void WriteCustom(const std::wstring& sCustomXmlPropertiesContent, const std::wstring& sCustomXmlContents, bool bGlossaryMode);
 	};
 }
 

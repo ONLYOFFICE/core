@@ -40,7 +40,7 @@ namespace XLS
 {
 
 
-PtgBool::PtgBool()
+PtgBool::PtgBool(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
 {
 }
 

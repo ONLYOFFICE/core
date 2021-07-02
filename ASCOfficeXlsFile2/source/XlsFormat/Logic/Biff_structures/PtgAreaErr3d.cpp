@@ -36,7 +36,9 @@
 
 namespace XLS
 {
-
+PtgAreaErr3d::PtgAreaErr3d(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
+{
+}
 
 BiffStructurePtr PtgAreaErr3d::clone()
 {

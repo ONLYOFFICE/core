@@ -37,7 +37,7 @@
 namespace XLS
 {
 
-PtgRefN::PtgRefN(const CellRef& cell_base_ref_init) : cell_base_ref(cell_base_ref_init)
+PtgRefN::PtgRefN(const unsigned short full_ptg_id, const CellRef& cell_base_ref_init) : OperandPtg(full_ptg_id), cell_base_ref(cell_base_ref_init)
 {
 	bUseLocInit = false;
 }
@@ -80,7 +80,9 @@ void PtgRefN::loadFields(CFRecord& record)
 		loc.row		= GETBITS(rw, 0, 13);
 	}
 	else
+	{
 		record >> loc;
+	}
 }
 
 

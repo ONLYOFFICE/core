@@ -39,7 +39,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-class document_context;
+
 
 bool create_element_and_read(xml::sax * Reader,
                              const std::wstring & Ns,
@@ -86,8 +86,37 @@ bool create_element_and_read(xml::sax * Reader,
     }
     return false;
 }
+//----------------------------------------------------------------------------------------------------
 
+void office_element::afterCreate()
+{
+	if (!context_) return;
 
+	ElementType type_ = this->get_type();
+
+	context_->levels.push_back(this);
+}
+void office_element::afterReadContent()
+{
+	if (!context_) return;
+
+	ElementType type_ = this->get_type();
+
+	std::wstring style = element_style_name.get_value_or(L"");
+
+	if ((type_ == typeTextH || type_ == typeTextP) && element_style_name)
+	{
+		if ((context_->last_paragraph) && (!context_->last_paragraph->next_element_style_name))
+		{
+			context_->last_paragraph->next_element_style_name = element_style_name;
+		}
+
+		context_->last_paragraph = this;
+	}
+
+	if (false == context_->levels.empty())
+		context_->levels.pop_back();
+}
 
 }
 }

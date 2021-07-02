@@ -3,6 +3,8 @@
 
 #include "Common.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
+#include <list>
+#include <atlstr.h>
 
 namespace NSFontManager
 {
@@ -129,7 +131,7 @@ namespace NSFontManager
 
 	protected:
         CApplicationFonts*              m_pFonts;
-        CFontManager*                   m_pManager;
+        NSFonts::IFontManager*          m_pManager;
         std::wstring					m_strDefaultFont;
 
 	public:
@@ -150,7 +152,7 @@ namespace NSFontManager
 			m_pManager = NULL;
 			CoCreateInstance(AVSGraphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, AVSGraphics::IID_IASCFontManager, (void**)&m_pManager);
 
-			m_pManager->Initialize(L"");
+            m_pManager->Initialize();
 
 			SetDefaultFont(_T("Arial"));
 
@@ -166,8 +168,8 @@ namespace NSFontManager
 		}
 
 		__forceinline void ClearPickUps()
-		{
-			m_arListPicUps.RemoveAll();
+        {
+            m_arListPicUps.clear();
 			m_strCurrentPickFont = _T("");
 			m_lCurrentPictFontStyle = 0;
 		}
@@ -177,13 +179,13 @@ namespace NSFontManager
 		{
 			m_strDefaultFont = strName;
 
-			BSTR bsDefault = m_strDefaultFont.AllocSysString();
+            BSTR bsDefault = const_cast<BSTR>(m_strDefaultFont.c_str());
 			m_pManager->SetDefaultFont(bsDefault);
 			SysFreeString(bsDefault);
 		}
 		__forceinline CString GetDefaultFont()
 		{
-			return m_strDefaultFont;
+            return m_strDefaultFont.c_str();
 		}
 
 		virtual void LoadFont(long lFaceIndex = 0, bool bIsNeedAddToMap = true)
@@ -241,8 +243,10 @@ namespace NSFontManager
 								XmlUtils::CXmlNode oCurNode;
 								if ( oNode.GetNode( _T("AvgWidth"), oCurNode ) )
 								{
-									CString sValue = oCurNode.GetAttribute( _T("value") );
-									m_oFont.m_lAvgWidth = XmlUtils::GetInteger( sValue );
+                                    std::wstring sValue = oCurNode.GetAttribute(_T("value"));
+                                    try {
+                                        m_oFont.m_lAvgWidth = std::stol(sValue);
+                                    } catch (std::invalid_argument &) {}
 								}
 							}
 						}
@@ -256,8 +260,10 @@ namespace NSFontManager
 						XmlUtils::CXmlNode oCurNode;
 						if ( oNode.GetNode( _T("AvgWidth"), oCurNode ) )
 						{
-							CString sValue = oCurNode.GetAttribute( _T("value") );
-							m_oFont.m_lAvgWidth = XmlUtils::GetInteger( sValue );
+                            std::wstring sValue = oCurNode.GetAttribute(_T("value"));
+                            try {
+                                m_oFont.m_lAvgWidth = std::stol(sValue);
+                            } catch (std::invalid_argument &) {}
 						}
 					}
 				}
@@ -404,7 +410,7 @@ namespace NSFontManager
 					}
 				}
 
-				m_oFont.m_arSignature.push_bak(value);
+                m_oFont.m_arSignature.push_back(value);
 			}
 		}
 
@@ -1246,7 +1252,8 @@ namespace NSFontManager
         inline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, const std::wstring& strText)
 		{
             int lCount   = (int)strText.length();
-            WCHAR* pData = strText.c_str();
+            std::wstring strTextTemp = strText;
+            WCHAR* pData = const_cast<WCHAR *>(strTextTemp.c_str());
 
 			BYTE lRangeNum  = 0xFF;
 			BYTE lRange		= 0xFF;
@@ -1292,18 +1299,22 @@ namespace NSFontManager
 			BYTE lRange		= 0xFF;
 
 			GetRange(strText[0], lRangeNum, lRange);
-			POSITION posStart = m_arListPicUps.GetHeadPosition();
-			POSITION pos = posStart;
+            std::list<CFontPickUp>::iterator posStart, pos;
+            posStart = pos = m_arListPicUps.begin();
+            //POSITION posStart = m_arListPicUps.GetHeadPosition();
+            //POSITION pos = posStart;
 
-			while (NULL != pos)
+            while (m_arListPicUps.end() != pos)
 			{
-				POSITION posOld = pos;
-				CFontPickUp& oPick = m_arListPicUps.GetNext(pos);
-				if ((oPick.m_oFont.m_oFont.IsEqual3(&m_oFont.m_oFont)) && (lRangeNum == oPick.m_lRangeNum) && (lRange == oPick.m_lRange))
+                std::list<CFontPickUp>::iterator posOld = pos;
+                CFontPickUp& oPick = *(pos++); //m_arListPicUps.GetNext(pos);
+                if ((oPick.m_oFont.m_oFont.IsEqual(&m_oFont.m_oFont)) && (lRangeNum == oPick.m_lRangeNum) && (lRange == oPick.m_lRange))
 				{
 					// нашли! ничего подбирать не нужно
 					// нужно просто выкинуть этот шрифт наверх
-					m_arListPicUps.MoveToHead(posOld);
+                    m_arListPicUps.push_front(*posOld);
+                    m_arListPicUps.erase(posOld);
+                    //m_arListPicUps.MoveToHead(posOld);
 					m_strCurrentPickFont = oPick.m_strPickFont;
 					m_lCurrentPictFontStyle = oPick.m_lPickStyle;
 					return false;
@@ -1311,19 +1322,19 @@ namespace NSFontManager
 			}
 
 			// не нашли...
-			m_arListPicUps.AddHead();
-			CFontPickUp& oPick = m_arListPicUps.GetHead();
-
+            //m_arListPicUps.AddHead();
+            CFontPickUp oPick;// = m_arListPicUps.GetHead();
 			oPick.m_lRangeNum	= lRangeNum;
 			oPick.m_lRange		= lRange;
 			oPick.m_oFont		= m_oFont;
 			oPick.m_strPickFont	= m_oFont.m_strFamilyName;
-			oPick.m_lPickStyle	= m_oFont.m_lStyle;
+            oPick.m_lPickStyle	= m_oFont.m_lStyle;
 			
 			AVSGraphics::IASCFontManager2* pManager2 = NULL;
 			m_pManager->QueryInterface(AVSGraphics::IID_IASCFontManager2, (void**)&pManager2);
 
-			BSTR bsFontName = m_oFont.m_strFamilyName.AllocSysString();
+            std::wstring m_strFamilyNameTemp = m_oFont.m_strFamilyName;
+            BSTR bsFontName = const_cast<BSTR>(m_strFamilyNameTemp.c_str());
 			BSTR bsNewFontName = NULL;
 
 			DWORD dwR1 = m_oFont.m_arSignature[0];
@@ -1350,7 +1361,8 @@ namespace NSFontManager
 				CheckRanges(dwR1, dwR2, dwR3, dwR4, lRangeNum, lRange);
 			}
 
-			BSTR bsPanose = m_oFont.m_strPANOSE.AllocSysString();
+            std::wstring m_strPANOSETemp = m_oFont.m_strPANOSE;
+            BSTR bsPanose = const_cast<BSTR>(m_strPANOSETemp.c_str());
 
 			LONG lFontStyle = m_oFont.m_oFont.GetStyle();
 			pManager2->GetWinFontByParams2(&bsNewFontName, bsFontName, -1, NULL, &lFontStyle, m_oFont.m_bIsFixedWidth ? 1 : 0, bsPanose, 
@@ -1367,6 +1379,7 @@ namespace NSFontManager
 
 			RELEASEINTERFACE(pManager2);
 
+            m_arListPicUps.push_front(oPick);
 			return true;
 		}
 	};

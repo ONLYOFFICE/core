@@ -30,6 +30,7 @@
  *
  */
 
+#include "DocxRenderer.h"
 #include "src/logic/Document.h"
 
 class CDocxRenderer_Private
@@ -63,411 +64,411 @@ CDocxRenderer::~CDocxRenderer()
     RELEASEOBJECT(m_pInternal);
 }
 
-void CDocxRenderer::CreateFile(const std::wstring& wsPath)
+HRESULT CDocxRenderer::CreateNewFile(const std::wstring& wsPath)
 {
     return S_OK;
 }
-void CDocxRenderer::Close()
-{
-    return S_OK;
-}
-
-void CDocxRenderer::SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType)
+HRESULT CDocxRenderer::Close()
 {
     return S_OK;
 }
 
-void CDocxRenderer::SetTempFolder(const std::wstring& wsPath)
+HRESULT CDocxRenderer::SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType)
+{
+    return S_OK;
+}
+
+HRESULT CDocxRenderer::SetTempFolder(const std::wstring& wsPath)
 {
     return S_OK;
 }
 //----------------------------------------------------------------------------------------
 // Тип рендерера
 //----------------------------------------------------------------------------------------
-virtual HRESULT CDocxRenderer::get_Type(LONG* lType)
+HRESULT CDocxRenderer::get_Type(LONG* lType)
 {
     return S_OK;
 }
 //----------------------------------------------------------------------------------------
 // Функции для работы со страницей
 //----------------------------------------------------------------------------------------
-virtual HRESULT CDocxRenderer::NewPage()
+HRESULT CDocxRenderer::NewPage()
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_Height(double* dHeight)
+HRESULT CDocxRenderer::get_Height(double* dHeight)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_Height(const double& dHeight)
+HRESULT CDocxRenderer::put_Height(const double& dHeight)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_Width(double* dWidth)
+HRESULT CDocxRenderer::get_Width(double* dWidth)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_Width(const double& dWidth)
+HRESULT CDocxRenderer::put_Width(const double& dWidth)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_DpiX(double* dDpiX)
+HRESULT CDocxRenderer::get_DpiX(double* dDpiX)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_DpiY(double* dDpiY)
+HRESULT CDocxRenderer::get_DpiY(double* dDpiY)
 {
     return S_OK;
 }
 //----------------------------------------------------------------------------------------
 // Функции для работы с Pen
 //----------------------------------------------------------------------------------------
-virtual HRESULT CDocxRenderer::get_PenColor(LONG* lColor)
+HRESULT CDocxRenderer::get_PenColor(LONG* lColor)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_PenColor(const LONG& lColor)
+HRESULT CDocxRenderer::put_PenColor(const LONG& lColor)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_PenAlpha(LONG* lAlpha)
+HRESULT CDocxRenderer::get_PenAlpha(LONG* lAlpha)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_PenAlpha(const LONG& lAlpha)
+HRESULT CDocxRenderer::put_PenAlpha(const LONG& lAlpha)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_PenSize(double* dSize)
+HRESULT CDocxRenderer::get_PenSize(double* dSize)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_PenSize(const double& dSize)
+HRESULT CDocxRenderer::put_PenSize(const double& dSize)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_PenDashStyle(BYTE* nDashStyle)
+HRESULT CDocxRenderer::get_PenDashStyle(BYTE* nDashStyle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_PenDashStyle(const BYTE& nDashStyle)
+HRESULT CDocxRenderer::put_PenDashStyle(const BYTE& nDashStyle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_PenLineStartCap(BYTE* nCapStyle)
+HRESULT CDocxRenderer::get_PenLineStartCap(BYTE* nCapStyle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_PenLineStartCap(const BYTE& nCapStyle)
+HRESULT CDocxRenderer::put_PenLineStartCap(const BYTE& nCapStyle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_PenLineEndCap(BYTE* nCapStyle)
+HRESULT CDocxRenderer::get_PenLineEndCap(BYTE* nCapStyle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_PenLineEndCap(const BYTE& nCapStyle)
+HRESULT CDocxRenderer::put_PenLineEndCap(const BYTE& nCapStyle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_PenLineJoin(BYTE* nJoinStyle)
+HRESULT CDocxRenderer::get_PenLineJoin(BYTE* nJoinStyle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_PenLineJoin(const BYTE& nJoinStyle)
+HRESULT CDocxRenderer::put_PenLineJoin(const BYTE& nJoinStyle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_PenDashOffset(double* dOffset)
+HRESULT CDocxRenderer::get_PenDashOffset(double* dOffset)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_PenDashOffset(const double& dOffset)
+HRESULT CDocxRenderer::put_PenDashOffset(const double& dOffset)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_PenAlign(LONG* lAlign)
+HRESULT CDocxRenderer::get_PenAlign(LONG* lAlign)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_PenAlign(const LONG& lAlign)
+HRESULT CDocxRenderer::put_PenAlign(const LONG& lAlign)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_PenMiterLimit(double* dMiter)
+HRESULT CDocxRenderer::get_PenMiterLimit(double* dMiter)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_PenMiterLimit(const double& dMiter)
+HRESULT CDocxRenderer::put_PenMiterLimit(const double& dMiter)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PenDashPattern(double* pPattern, LONG lCount)
+HRESULT CDocxRenderer::PenDashPattern(double* pPattern, LONG lCount)
 {
     return S_OK;
 }
 //----------------------------------------------------------------------------------------
 // Функции для работы с Brush
 //----------------------------------------------------------------------------------------
-virtual HRESULT CDocxRenderer::get_BrushType(LONG* lType)
+HRESULT CDocxRenderer::get_BrushType(LONG* lType)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_BrushType(const LONG& lType)
+HRESULT CDocxRenderer::put_BrushType(const LONG& lType)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_BrushColor1(LONG* lColor)
+HRESULT CDocxRenderer::get_BrushColor1(LONG* lColor)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_BrushColor1(const LONG& lColor)
+HRESULT CDocxRenderer::put_BrushColor1(const LONG& lColor)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_BrushAlpha1(LONG* lAlpha)
+HRESULT CDocxRenderer::get_BrushAlpha1(LONG* lAlpha)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_BrushAlpha1(const LONG& lAlpha)
+HRESULT CDocxRenderer::put_BrushAlpha1(const LONG& lAlpha)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_BrushColor2(LONG* lColor)
+HRESULT CDocxRenderer::get_BrushColor2(LONG* lColor)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_BrushColor2(const LONG& lColor)
+HRESULT CDocxRenderer::put_BrushColor2(const LONG& lColor)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_BrushAlpha2(LONG* lAlpha)
+HRESULT CDocxRenderer::get_BrushAlpha2(LONG* lAlpha)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_BrushAlpha2(const LONG& lAlpha)
+HRESULT CDocxRenderer::put_BrushAlpha2(const LONG& lAlpha)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_BrushTexturePath(std::wstring* wsPath)
+HRESULT CDocxRenderer::get_BrushTexturePath(std::wstring* wsPath)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_BrushTexturePath(const std::wstring& wsPath)
+HRESULT CDocxRenderer::put_BrushTexturePath(const std::wstring& wsPath)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_BrushTextureMode(LONG* lMode)
+HRESULT CDocxRenderer::get_BrushTextureMode(LONG* lMode)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_BrushTextureMode(const LONG& lMode)
+HRESULT CDocxRenderer::put_BrushTextureMode(const LONG& lMode)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_BrushTextureAlpha(LONG* lAlpha)
+HRESULT CDocxRenderer::get_BrushTextureAlpha(LONG* lAlpha)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_BrushTextureAlpha(const LONG& lAlpha)
+HRESULT CDocxRenderer::put_BrushTextureAlpha(const LONG& lAlpha)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_BrushLinearAngle(double* dAngle)
+HRESULT CDocxRenderer::get_BrushLinearAngle(double* dAngle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_BrushLinearAngle(const double& dAngle)
+HRESULT CDocxRenderer::put_BrushLinearAngle(const double& dAngle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::BrushRect(const INT& nVal, const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
+HRESULT CDocxRenderer::BrushRect(const INT& nVal, const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
+HRESULT CDocxRenderer::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount)
+HRESULT CDocxRenderer::put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount)
 {
     return S_OK;
 }
 //----------------------------------------------------------------------------------------
 // Функции для работы со шрифтами
 //----------------------------------------------------------------------------------------
-virtual HRESULT CDocxRenderer::get_FontName(std::wstring* wsName)
+HRESULT CDocxRenderer::get_FontName(std::wstring* wsName)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_FontName(const std::wstring& wsName)
+HRESULT CDocxRenderer::put_FontName(const std::wstring& wsName)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_FontPath(std::wstring* wsPath)
+HRESULT CDocxRenderer::get_FontPath(std::wstring* wsPath)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_FontPath(const std::wstring& wsPath)
+HRESULT CDocxRenderer::put_FontPath(const std::wstring& wsPath)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_FontSize(double* dSize)
+HRESULT CDocxRenderer::get_FontSize(double* dSize)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_FontSize(const double& dSize)
+HRESULT CDocxRenderer::put_FontSize(const double& dSize)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_FontStyle(LONG* lStyle)
+HRESULT CDocxRenderer::get_FontStyle(LONG* lStyle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_FontStyle(const LONG& lStyle)
+HRESULT CDocxRenderer::put_FontStyle(const LONG& lStyle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_FontStringGID(INT* bGid)
+HRESULT CDocxRenderer::get_FontStringGID(INT* bGid)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_FontStringGID(const INT& bGid)
+HRESULT CDocxRenderer::put_FontStringGID(const INT& bGid)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_FontCharSpace(double* dSpace)
+HRESULT CDocxRenderer::get_FontCharSpace(double* dSpace)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_FontCharSpace(const double& dSpace)
+HRESULT CDocxRenderer::put_FontCharSpace(const double& dSpace)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::get_FontFaceIndex(int* lFaceIndex)
+HRESULT CDocxRenderer::get_FontFaceIndex(int* lFaceIndex)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_FontFaceIndex(const int& lFaceIndex)
+HRESULT CDocxRenderer::put_FontFaceIndex(const int& lFaceIndex)
 {
     return S_OK;
 }
 //----------------------------------------------------------------------------------------
 // Функции для вывода текста
 //----------------------------------------------------------------------------------------
-virtual HRESULT CDocxRenderer::CommandDrawTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CDocxRenderer::CommandDrawTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CDocxRenderer::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::CommandDrawText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CDocxRenderer::CommandDrawText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::CommandDrawTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CDocxRenderer::CommandDrawTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
 {
     return S_OK;
 }
 //----------------------------------------------------------------------------------------
 // Маркеры команд
 //----------------------------------------------------------------------------------------
-virtual HRESULT CDocxRenderer::BeginCommand(const DWORD& lType)
+HRESULT CDocxRenderer::BeginCommand(const DWORD& lType)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::EndCommand(const DWORD& lType)
+HRESULT CDocxRenderer::EndCommand(const DWORD& lType)
 {
     return S_OK;
 }
 //----------------------------------------------------------------------------------------
 // Функции для работы с патом
 //----------------------------------------------------------------------------------------
-virtual HRESULT CDocxRenderer::PathCommandMoveTo(const double& dX, const double& dY)
+HRESULT CDocxRenderer::PathCommandMoveTo(const double& dX, const double& dY)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandLineTo(const double& dX, const double& dY)
+HRESULT CDocxRenderer::PathCommandLineTo(const double& dX, const double& dY)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandLinesTo(double* pPoints, const int& nCount)
+HRESULT CDocxRenderer::PathCommandLinesTo(double* pPoints, const int& nCount)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandCurveTo(const double& dX1, const double& dY1, const double& dX2, const double& dY2, const double& dXe, const double& dYe)
+HRESULT CDocxRenderer::PathCommandCurveTo(const double& dX1, const double& dY1, const double& dX2, const double& dY2, const double& dXe, const double& dYe)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandCurvesTo(double* pPoints, const int& nCount)
+HRESULT CDocxRenderer::PathCommandCurvesTo(double* pPoints, const int& nCount)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandArcTo(const double& dX, const double& dY, const double& dW, const double& dH, const double& dStartAngle, const double& dSweepAngle)
+HRESULT CDocxRenderer::PathCommandArcTo(const double& dX, const double& dY, const double& dW, const double& dH, const double& dStartAngle, const double& dSweepAngle)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandClose()
+HRESULT CDocxRenderer::PathCommandClose()
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandEnd()
+HRESULT CDocxRenderer::PathCommandEnd()
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::DrawPath(const LONG& lType)
+HRESULT CDocxRenderer::DrawPath(const LONG& lType)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandStart()
+HRESULT CDocxRenderer::PathCommandStart()
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandGetCurrentPoint(double* dX, double* dY)
+HRESULT CDocxRenderer::PathCommandGetCurrentPoint(double* dX, double* dY)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CDocxRenderer::PathCommandTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CDocxRenderer::PathCommandTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CDocxRenderer::PathCommandText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::PathCommandTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CDocxRenderer::PathCommandTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
 {
     return S_OK;
 }
 //----------------------------------------------------------------------------------------
 // Функции для вывода изображений
 //----------------------------------------------------------------------------------------
-virtual HRESULT CDocxRenderer::DrawImage(IGrObject* pImage, const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CDocxRenderer::DrawImage(IGrObject* pImage, const double& dX, const double& dY, const double& dW, const double& dH)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha = 255)
+HRESULT CDocxRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha)
 {
     return S_OK;
 }
 //----------------------------------------------------------------------------------------
 // Функции для выставления преобразования
 //----------------------------------------------------------------------------------------
-virtual HRESULT CDocxRenderer::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
+HRESULT CDocxRenderer::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::GetTransform(double* dM11, double* dM12, double* dM21, double* dM22, double* dX, double* dY)
+HRESULT CDocxRenderer::GetTransform(double* dM11, double* dM12, double* dM21, double* dM22, double* dX, double* dY)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::ResetTransform()
+HRESULT CDocxRenderer::ResetTransform()
 {
     return S_OK;
 }
@@ -475,11 +476,11 @@ virtual HRESULT CDocxRenderer::ResetTransform()
 //----------------------------------------------------------------------------------------
 // Тип клипа
 //----------------------------------------------------------------------------------------
-virtual HRESULT CDocxRenderer::get_ClipMode(LONG* lMode)
+HRESULT CDocxRenderer::get_ClipMode(LONG* lMode)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::put_ClipMode(const LONG& lMode)
+HRESULT CDocxRenderer::put_ClipMode(const LONG& lMode)
 {
     return S_OK;
 }
@@ -487,15 +488,15 @@ virtual HRESULT CDocxRenderer::put_ClipMode(const LONG& lMode)
 //----------------------------------------------------------------------------------------
 // Дополнительные функции
 //----------------------------------------------------------------------------------------
-virtual HRESULT CDocxRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
+HRESULT CDocxRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::CommandDouble(const LONG& lType, const double& dCommand)
+HRESULT CDocxRenderer::CommandDouble(const LONG& lType, const double& dCommand)
 {
     return S_OK;
 }
-virtual HRESULT CDocxRenderer::CommandString(const LONG& lType, const std::wstring& sCommand)
+HRESULT CDocxRenderer::CommandString(const LONG& lType, const std::wstring& sCommand)
 {
     return S_OK;
 }

@@ -66,10 +66,10 @@ public:
     CDocxRenderer(CApplicationFonts* pAppFonts);
     ~CDocxRenderer();
 
-    void         CreateFile(const std::wstring& wsPath);
-    void         Close();
+    HRESULT      CreateNewFile(const std::wstring& wsPath);
+    HRESULT      Close();
 
-    void         SetTempFolder(const std::wstring& wsPath);
+    HRESULT      SetTempFolder(const std::wstring& wsPath);
 	//----------------------------------------------------------------------------------------
 	// Тип рендерера
 	//----------------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ public:
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 
     // методы, которыми будет пользоваться конвертер
-    void SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType);
+    HRESULT SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType);
     int Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile);
 
 private:

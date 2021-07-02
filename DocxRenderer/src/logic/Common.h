@@ -8,8 +8,12 @@
 #include "../DesktopEditor/graphics/TemporaryCS.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/common/Directory.h"
-
+#include "../DesktopEditor/xml/include/xmlutils.h"
 #include <map>
+
+#ifndef max
+#define max(x, y) x < y ? y : x
+#endif
 
 namespace NSDocxRenderer
 {

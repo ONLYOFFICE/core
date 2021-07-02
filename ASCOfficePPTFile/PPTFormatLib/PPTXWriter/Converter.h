@@ -76,7 +76,8 @@ namespace PPT_FORMAT
 		void WriteAll			();
 		void WriteThemes		();
 		void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
-		void WriteSlides		();
+        void WriteTheme         (CRecordRoundTripThemeAtom *pTheme, int &nIndexTheme);
+        void WriteSlides		();
 		void WriteNotes			();
 		void WriteLayout		(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);
 		void WriteSlide			(int nIndexSlide);

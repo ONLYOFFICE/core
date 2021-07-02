@@ -622,15 +622,31 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
     int nStartLayout = 0, nIndexTheme = 0;
 
-    for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
-    {
-        m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i].get();
-            WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
-        m_pShapeWriter->m_pTheme = NULL;
-    }
+    std::vector<CRecordRoundTripThemeAtom*> arrThemes;
+    for (auto& oMaster : m_pUserInfo->m_mapMasters)
+        oMaster.second->GetRecordsByType(&arrThemes, false);
+    for (auto& oNoteMaster : m_pUserInfo->m_mapNotesMasters)
+        oNoteMaster.second->GetRecordsByType(&arrThemes, false);
+    for (auto& oHandoutMaster : m_pUserInfo->m_mapHandoutMasters)
+        oHandoutMaster.second->GetRecordsByType(&arrThemes, false);
 
-    WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
-    WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
+    if (arrThemes.size())
+    {
+        for (auto* pTheme : arrThemes)
+            WriteTheme(pTheme, nIndexTheme);
+    }
+    else
+    {
+        for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
+        {
+            m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i].get();
+            WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
+            m_pShapeWriter->m_pTheme = NULL;
+        }
+
+        WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
+        WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
+    }
 }
 
 void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout)
@@ -887,6 +903,44 @@ void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, in
     nIndexTheme++;
 }
 
+// there maybe not only one theme in zip data
+void CPPTXWriter::WriteTheme(CRecordRoundTripThemeAtom* pTheme, int & nIndexTheme)
+{
+    nIndexTheme++;
+    if (!pTheme)
+        return;
+
+    CFile oFile;
+    // ppt/theme/theme1.xml
+    std::wstring tableStylesPath = m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("theme")
+            + FILE_SEPARATOR_STR + _T("theme") + std::to_wstring(nIndexTheme) + _T(".xml");
+    oFile.CreateFile(tableStylesPath);
+
+    BYTE* themeData = pTheme->data.first.get();
+    ULONG themeLen = pTheme->data.second;
+    NSFile::CFileBinary binFile;
+
+    std::wstring temp = NSDirectory::GetTempPath();
+
+    std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempTheme.zip";
+    if (binFile.CreateFileW(tempFileName))
+    {
+        binFile.WriteFile(themeData, themeLen);
+        binFile.CloseFile();
+    }
+
+    COfficeUtils officeUtils(NULL);
+    BYTE *utf8Data = NULL;
+    ULONG utf8DataSize = 0;
+    // here need to check second theme and etc
+    if(S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"theme/theme/theme1.xml", &utf8Data, utf8DataSize))
+        oFile.WriteFile(utf8Data, utf8DataSize);
+
+    NSFile::CFileBinary::Remove(tempFileName);
+    delete [] utf8Data;
+    oFile.CloseFile();
+}
+
 void PPT_FORMAT::CPPTXWriter::WriteColorScheme(CStringWriter& oStringWriter, const std::wstring & name, const std::vector<CColor> & colors, bool extra)
 {
     if (colors.size() < 1)
@@ -968,8 +1022,6 @@ void PPT_FORMAT::CPPTXWriter::WriteTable(CStringWriter& oWriter, CRelsGenerator&
 {
     CTableElement *pTableElement = dynamic_cast<CTableElement*>(pElement.get());
 
-    if (!pTableElement)
-        return;
 
     PPTX::Logic::GraphicFrame gf;
     TableWriter(pTableElement).Convert(gf);
@@ -979,13 +1031,14 @@ void PPT_FORMAT::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerato
 {
     if (!pElement) return;
 
-    CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
-    CTableElement *pTableElement = dynamic_cast<CTableElement*>(pElement.get());
 
+    CTableElement *pTableElement = dynamic_cast<CTableElement*>(pElement.get());
     if (pTableElement)
     {
         return WriteTable(oWriter, oRels, pElement, pLayout);
     }
+
+    CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
     if (pGroupElement)
     {
         return WriteGroup(oWriter, oRels, pElement, pLayout);

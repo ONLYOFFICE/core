@@ -197,7 +197,7 @@ BYTE* CXpsFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH)
     oFrame.put_Stride(-4 * nWidth);
 
     pRenderer->CreateFromBgraFrame(&oFrame);
-    pRenderer->SetSwapRGB(false);
+    pRenderer->SetSwapRGB(true);
     pRenderer->put_Width(dWidth);
     pRenderer->put_Height(dHeight);
 

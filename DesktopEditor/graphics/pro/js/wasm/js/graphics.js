@@ -56,8 +56,8 @@
 			canvasCtx.putImageData(canvasData, 0, 0);
 	
 			Module["_Graphics_Free"](imageFileRawData);
-			Module["_Fonts_Destroy"]();
 			this.close();
+			Module["_Fonts_Destroy"]();
 			return canvas;
         }
 		

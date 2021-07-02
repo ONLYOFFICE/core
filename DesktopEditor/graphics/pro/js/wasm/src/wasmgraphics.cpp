@@ -667,7 +667,7 @@ int main()
     //void* test = Graphics_Create(265, 265, 70.1146, 70.1146);
     //void* test = Graphics_Create(211, 119, 55.8251, 31.2208);
     void* test = Graphics_Create();
-    //void* fonts = Fonts_Create();
+    void* fonts = Fonts_Create();
 
     /*
     BYTE* pData = NULL;
@@ -682,16 +682,15 @@ int main()
         return 1;
     }
     oFile.CloseFile();
-    */
-
     //Fonts_Add(fonts, "Arial", pData, nBytesCount);
+    */
 
     BYTE* pXpsData = NULL;
     DWORD nXpsBytesCount;
     NSFile::CFileBinary oFile;
     if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.xps", &pXpsData, nXpsBytesCount))
     {
-        //Fonts_Destroy();
+        Fonts_Destroy();
         Graphics_Destroy(test);
         RELEASEARRAYOBJECTS(pXpsData);
         return 1;
@@ -712,11 +711,12 @@ int main()
     resFrame->put_Width(nWidth);
     resFrame->put_Height(nHeight);
     resFrame->put_Stride(-4 * nWidth);
+    resFrame->put_IsRGBA(true);
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
-    //Fonts_Destroy();
     Graphics_Destroy(test);
+    Fonts_Destroy();
     RELEASEARRAYOBJECTS(pXpsData);
     RELEASEARRAYOBJECTS(res);
     RELEASEOBJECT(resFrame);

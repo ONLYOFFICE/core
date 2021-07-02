@@ -81,25 +81,14 @@ int CFontStream::CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse)
 	return true;
 }
 
-int CFontStream::CreateFromMemory(BYTE* pData, LONG lSize, BYTE* pDataUse)
+int CFontStream::CreateFromMemory(BYTE* pData, LONG lSize)
 {
+    m_pData = pData;
     m_lSize = lSize;
-
-    if (NULL == pDataUse)
-        m_pData = new BYTE[m_lSize];
-    else
-    {
-        m_bIsAttach = true;
-        m_pData = pDataUse;
-    }
-
-    memcpy(m_pData, pData, m_lSize);
+    m_bIsAttach = true;
 
     if (!m_pData)
     {
-        if (!m_bIsAttach)
-        RELEASEARRAYOBJECTS(m_pData);
-
         m_lSize = 0;
         return FALSE;
     }
@@ -143,8 +132,11 @@ void CApplicationFontStreams::CheckStreams(std::map<std::wstring,bool> &mapFiles
 
         if (mapFiles.find(iter->first) != mapFiles.end())
         {
+            if (m_pMemoryStorage)
+                m_pMemoryStorage->Remove(U_TO_UTF8(iter->first));
+            else
+                RELEASEINTERFACE(pFile);
             iter = m_mapStreams.erase(iter);
-            RELEASEINTERFACE(pFile);
         }
         else
             iter++;
@@ -155,8 +147,13 @@ void CApplicationFontStreams::Clear()
 {
     for (std::map<std::wstring, CFontStream*>::iterator iter = m_mapStreams.begin(); iter != m_mapStreams.end(); ++iter)
     {
-        CFontStream* pFile = iter->second;
-        RELEASEINTERFACE(pFile);
+        if (m_pMemoryStorage)
+            m_pMemoryStorage->Remove(U_TO_UTF8(iter->first));
+        else
+        {
+            CFontStream* pFile = iter->second;
+            RELEASEINTERFACE(pFile);
+        }
     }
     m_mapStreams.clear();
 }

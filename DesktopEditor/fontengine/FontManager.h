@@ -49,13 +49,23 @@ public:
 
 public:
     virtual int CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse = NULL);
-    virtual int CreateFromMemory(BYTE* pData, LONG lSize, BYTE* pDataUse = NULL);
+    virtual int CreateFromMemory(BYTE* pData, LONG lSize);
 };
 
 class CGlobalFontsMemoryStorage
 {
 private:
     std::map<std::string, CFontStream*> m_mapStreams;
+
+    void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo)
+    {
+        size_t posn = 0;
+        while (std::string::npos != (posn = text.find(replaceFrom, posn)))
+        {
+            text.replace(posn, replaceFrom.length(), replaceTo);
+            posn += replaceTo.length();
+        }
+    }
 public:
     CGlobalFontsMemoryStorage(){}
     ~CGlobalFontsMemoryStorage()
@@ -67,17 +77,21 @@ public:
 
     void Add(const std::string& id, BYTE* data, LONG size)
     {
-        std::map<std::string, CFontStream*>::iterator it = m_mapStreams.find(id);
+        std::string sFileA = id;
+        string_replaceA(sFileA, "\\", "/");
+        std::map<std::string, CFontStream*>::iterator it = m_mapStreams.find(sFileA);
         if (it == m_mapStreams.end())
         {
             CFontStream* pStream = (CFontStream*)NSFonts::NSStream::Create();
             pStream->CreateFromMemory(data, size);
-            m_mapStreams.insert({id, pStream});
+            m_mapStreams.insert({sFileA, pStream});
         }
     }
     void Remove(const std::string& id)
     {
-        std::map<std::string, CFontStream*>::iterator it = m_mapStreams.find(id);
+        std::string sFileA = id;
+        string_replaceA(sFileA, "\\", "/");
+        std::map<std::string, CFontStream*>::iterator it = m_mapStreams.find(sFileA);
         if (it != m_mapStreams.end())
         {
             RELEASEOBJECT(it->second);
@@ -88,6 +102,7 @@ public:
     CFontStream* Get(const std::wstring& sFile)
     {
         std::string sFileA = U_TO_UTF8(sFile);
+        string_replaceA(sFileA, "\\", "/");
         std::map<std::string, CFontStream*>::iterator it = m_mapStreams.find(sFileA);
         return it != m_mapStreams.end() ? it->second : NULL;
     }
@@ -96,8 +111,8 @@ public:
 class CApplicationFontStreams : public NSFonts::IApplicationFontStreams
 {
 private:
-	// этот мап нужно периодически опрашивать и удалять неиспользуемые стримы
-	std::map<std::wstring, CFontStream*> m_mapStreams;
+    // этот мап нужно периодически опрашивать и удалять неиспользуемые стримы
+    std::map<std::wstring, CFontStream*> m_mapStreams;
 public:
     static CGlobalFontsMemoryStorage* m_pMemoryStorage;
 

@@ -464,10 +464,14 @@ namespace XPS
                         IFolder::CBuffer* buffer = NULL;
                         m_wsRootPath->read(wsFontPath, buffer);
                         m_pFontList->Check(wsFontName, buffer->Buffer, buffer->Size);
-                        if (CApplicationFontStreams::m_pMemoryStorage)
-                            CApplicationFontStreams::m_pMemoryStorage->Add(U_TO_UTF8(wsFontPath), buffer->Buffer, buffer->Size);
                         m_wsRootPath->write(wsFontPath, buffer->Buffer, buffer->Size);
-                        delete buffer;
+                        RELEASEOBJECT(buffer);
+                        if (CApplicationFontStreams::m_pMemoryStorage)
+                        {
+                            m_wsRootPath->read(wsFontPath, buffer);
+                            CApplicationFontStreams::m_pMemoryStorage->Add(U_TO_UTF8(wsFontPath), buffer->Buffer, buffer->Size);
+                            RELEASEOBJECT(buffer);
+                        }
 					}
 					wsFontPath = NormalizePath(wsFontPath);
 					pRenderer->put_FontPath(wsFontPath);

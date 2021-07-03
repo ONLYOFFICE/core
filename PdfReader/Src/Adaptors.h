@@ -63,6 +63,14 @@ bool operator>(const Ref &a, const Ref &b);
 //    return std::wstring(NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)sString, (long)strlen(sString)));
 //}
 
+namespace NSStrings
+{
+    GString* CreateString(const std::wstring& str);
+    GString* CreateString(const std::string& str);
+
+    std::wstring GetString(GString* str);
+    std::string GetStringA(GString* str);
+}
 
 namespace PdfReader
 {

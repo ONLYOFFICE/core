@@ -30,7 +30,8 @@
  *
  */
 
-
+#include "../Src/Adaptors.h"
+#include "../lib/xpdf/ErrorCodes.h"
 #include "../lib/xpdf/GfxState.h"
 #include "../lib/xpdf/GfxFont.h"
 #include "../lib/fofi/FoFiTrueType.h"
@@ -913,7 +914,7 @@ namespace PdfReader
                 }
             }
             else if (pFont->locateFont(m_pXref, false) &&
-                (wsFileName = StringAdaptor::FromGString(pFont->locateFont(m_pXref, false)->path).get_wstring()).length() == 0)
+                (wsFileName = NSStrings::GetString(pFont->locateFont(m_pXref, false)->path)).length() == 0)
             //else if (0)
             {
                 // TODO: Сначала тут мы должны проверить, если ищется один из 14 стандартных шрифтов,
@@ -929,7 +930,7 @@ namespace PdfReader
                     oRefObject.free();
 
                     NSFonts::CFontSelectFormat oFontSelect;
-                    std::wstring wsFontBaseName = StringAdaptor::FromGString(pFont->getName()).get_wstring();
+                    std::wstring wsFontBaseName = NSStrings::GetString(pFont->getName());
                     if (oFontObject.isDict())
                     {
                         Dict *pFontDict = oFontObject.getDict();
@@ -1228,7 +1229,7 @@ namespace PdfReader
                 case fontTrueTypeOT:
                 {
                     //todo correct fontNum
-                    if ((pTTFontFile = FoFiTrueType::load(StringAdaptor(wsFileName.c_str()).get_char_string(), 0)))
+                    if ((pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0)))
                     {
                         pCodeToGID = ((Gfx8BitFont *)pFont)->getCodeToGIDMap(pTTFontFile);
                         nLen = 256;
@@ -1262,7 +1263,7 @@ namespace PdfReader
                 case fontCIDType0COT:
                 {
                     // todo correct fontNum
-                    if ((pTTFontFile = FoFiTrueType::load(StringAdaptor(wsFileName.c_str()).get_char_string(), 0)))
+                    if ((pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0)))
                     {
                         if (pTTFontFile->isOpenTypeCFF())
                         {
@@ -1297,7 +1298,7 @@ namespace PdfReader
                         if ((pCodeToUnicode = ((GfxCIDFont *)pFont)->getToUnicode()))
                         {
                             //todo correct fontNum
-                            if ((pTTFontFile = FoFiTrueType::load(StringAdaptor(wsFileName.c_str()).get_char_string(), 0)))
+                            if ((pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0)))
                             {
                                 // Ищем Unicode Cmap
                                 std::vector<int> arrCMapIndex;

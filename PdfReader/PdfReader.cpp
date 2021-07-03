@@ -34,6 +34,10 @@
 
 #include "../DesktopEditor/graphics/pro/Graphics.h"
 #include "PdfReader.h"
+
+#include "Src/Adaptors.h"
+#include "lib/xpdf/ErrorCodes.h"
+
 #include "../Common/OfficeDefines.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/IRenderer.h"
@@ -126,11 +130,15 @@ namespace PdfReader
             delete m_pInternal->m_pPDFDocument;
 
         m_eError = errNone;
-        GString owner_pswd(StringAdaptor(wsOwnerPassword).get_gstring());
-        GString user_pswd(StringAdaptor(wsUserPassword).get_gstring());
-        m_pInternal->m_pPDFDocument = new PDFDoc(StringAdaptor(wsSrcPath).get_char_string(),
-                                                 &owner_pswd,
-                                                  &user_pswd);
+        GString* owner_pswd = NSStrings::CreateString(wsOwnerPassword);
+        GString* user_pswd = NSStrings::CreateString(wsUserPassword);
+
+        // конвертим путь в utf8 - под виндой они сконвертят в юникод, а на остальных - так и надо
+        std::string sPathUtf8 = U_TO_UTF8(wsSrcPath);
+        m_pInternal->m_pPDFDocument = new PDFDoc((char*)sPathUtf8.c_str(), owner_pswd, user_pswd);
+
+        delete owner_pswd;
+        delete user_pswd;
 
         if (m_pInternal->m_pPDFDocument)
             m_eError = m_pInternal->m_pPDFDocument->getErrorCode();
@@ -219,7 +227,7 @@ namespace PdfReader
 //
 //		delete pOutputDev;
 //
-//		return true;
+        return true;
 	}
     void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
 	{
@@ -326,6 +334,7 @@ namespace PdfReader
 //		}
 //
 //		return pOutputDev->GetImagesCount();
+        return 0;
 	}	
     void CPdfReader::SetTempDirectory(const std::wstring& wsTempFolder)
 	{		
@@ -386,5 +395,6 @@ namespace PdfReader
 //		}
 //
 //		return wsXml;
+        return L"";
 	}
 }

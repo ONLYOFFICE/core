@@ -78,7 +78,9 @@
 #include "DjVuMessage.h"
 #include <fcntl.h>
 #if defined(WIN32) || defined(__CYGWIN32__)
+#ifndef WASM_MODE
 # include <io.h>
+#endif
 #endif
 
 #ifdef UNIX
@@ -125,6 +127,7 @@ namespace DJVU {
 
 const char *ByteStream::EndOfFile=ERR_MSG("EOF");
 
+#ifndef WASM_MODE
 /** ByteStream interface for stdio files. 
     The virtual member functions #read#, #write#, #tell# and #seek# are mapped
     to the well known stdio functions #fread#, #fwrite#, #ftell# and #fseek#.
@@ -181,6 +184,7 @@ ByteStream::Stdio::init(FILE * const f,const char mode[],const bool closeme)
   must_close=closeme;
   return init(mode);
 }
+#endif
 
 
 /** ByteStream interface managing a memory buffer.  
@@ -580,7 +584,7 @@ ByteStream::read32()
 }
 
 
-
+#ifndef WASM_MODE
 //// CLASS ByteStream::Stdio
 
 ByteStream::Stdio::Stdio(void)
@@ -782,7 +786,7 @@ ByteStream::Stdio::seek(long offset, int whence, bool nothrow)
     }
   return tell();
 }
-
+#endif
 
 
 
@@ -1001,6 +1005,7 @@ ByteStream::create(void const * const buffer, const size_t size)
   return retval;
 }
 
+#ifndef WASM_MODE
 GP<ByteStream>
 ByteStream::create(const GURL &url,char const * const xmode)
 {
@@ -1161,6 +1166,31 @@ ByteStream::create(FILE * const f,char const * const mode,const bool closeme)
   }
   return retval;
 }
+#else
+GP<ByteStream>
+ByteStream::create(const GURL &url,char const * const xmode)
+{
+  return NULL;
+}
+
+GP<ByteStream>
+ByteStream::create(char const * const mode)
+{
+  return NULL;
+}
+
+GP<ByteStream>
+ByteStream::create(const int fd,char const * const mode,const bool closeme)
+{
+  return NULL;
+}
+
+GP<ByteStream>
+ByteStream::create(FILE * const f,char const * const mode,const bool closeme)
+{
+  return NULL;
+}
+#endif
 
 GP<ByteStream>
 ByteStream::create_static(const void * buffer, size_t sz)

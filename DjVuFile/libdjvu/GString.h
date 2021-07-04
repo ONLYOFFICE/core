@@ -115,7 +115,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #ifdef WIN32
-# include <windows.h>
 # define HAS_WCHAR 1
 # define HAS_MBSTATE 1
 #endif

@@ -78,11 +78,6 @@
 #include <string.h>
 #include <stdlib.h>
 // #include <stdio.h>
-#ifdef WIN32
-#include <tchar.h>
-#include <windows.h>
-#include <winreg.h>
-#endif
 #ifdef UNIX
 #include <unistd.h>
 #include <pwd.h>

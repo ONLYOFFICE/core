@@ -75,8 +75,10 @@ inline void * operator new(size_t, void * ptr) { return ptr; }
 # include <new>
 #endif
 
+#ifndef WASM_MODE
 #ifdef WIN32
 #include <new.h>
+#endif
 #endif
 
 //#ifdef WIN32

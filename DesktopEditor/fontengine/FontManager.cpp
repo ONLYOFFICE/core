@@ -81,6 +81,23 @@ int CFontStream::CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse)
 	return true;
 }
 
+int CFontStream::CreateFromMemory(BYTE* pData, LONG lSize)
+{
+    m_pData = pData;
+    m_lSize = lSize;
+    m_bIsAttach = true;
+
+    if (!m_pData)
+    {
+        m_lSize = 0;
+        return FALSE;
+    }
+    return TRUE;
+}
+
+#ifndef BUILDING_WASM_MODULE
+CGlobalFontsMemoryStorage* CApplicationFontStreams::m_pMemoryStorage = NULL;
+#endif
 CApplicationFontStreams::CApplicationFontStreams() : NSFonts::IApplicationFontStreams()
 {
 }
@@ -95,9 +112,13 @@ NSFonts::IFontStream* CApplicationFontStreams::GetStream(const std::wstring &str
 
 	if (NULL != pStream)
 		return pStream;
-
-	pStream = new CFontStream();
-	pStream->CreateFromFile(strFile);
+    if (m_pMemoryStorage)
+        pStream = m_pMemoryStorage->Get(strFile);
+    else
+    {
+        pStream = new CFontStream();
+        pStream->CreateFromFile(strFile);
+    }
 
 	m_mapStreams[strFile] = pStream;
 	return pStream;
@@ -111,8 +132,11 @@ void CApplicationFontStreams::CheckStreams(std::map<std::wstring,bool> &mapFiles
 
         if (mapFiles.find(iter->first) != mapFiles.end())
         {
+            if (m_pMemoryStorage)
+                m_pMemoryStorage->Remove(iter->first);
+            else
+                RELEASEINTERFACE(pFile);
             iter = m_mapStreams.erase(iter);
-            RELEASEINTERFACE(pFile);
         }
         else
             iter++;
@@ -123,8 +147,13 @@ void CApplicationFontStreams::Clear()
 {
     for (std::map<std::wstring, CFontStream*>::iterator iter = m_mapStreams.begin(); iter != m_mapStreams.end(); ++iter)
     {
-        CFontStream* pFile = iter->second;
-        RELEASEINTERFACE(pFile);
+        if (m_pMemoryStorage)
+            m_pMemoryStorage->Remove(iter->first);
+        else
+        {
+            CFontStream* pFile = iter->second;
+            RELEASEINTERFACE(pFile);
+        }
     }
     m_mapStreams.clear();
 }
@@ -661,10 +690,13 @@ INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize,
 		*oFormat.bItalic = TRUE;
 
     NSFonts::CFontInfo* pInfo = m_pApplication->GetList()->GetByParams(oFormat);
-	if (NULL == pInfo)
-		return FALSE;
+    if (NULL == pInfo && !((CApplicationFontStreams*)m_pApplication->GetStreams())->m_pMemoryStorage)
+        return FALSE;
 
-    INT bLoad = LoadFontFromFile(pInfo->m_wsFontPath, pInfo->m_lIndex, dSize, dDpiX, dDpiY);
+
+    INT bLoad = ((CApplicationFontStreams*)m_pApplication->GetStreams())->m_pMemoryStorage ?
+                    LoadFontFromFile(sName, 0, dSize, dDpiX, dDpiY) :
+                    LoadFontFromFile(pInfo->m_wsFontPath, pInfo->m_lIndex, dSize, dDpiX, dDpiY);
 
     if (bLoad == TRUE)
     {

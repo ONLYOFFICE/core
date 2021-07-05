@@ -2,6 +2,10 @@ window.loadedImage = null;
 window.onload = function()
 {
 	var holder = document.body;
+	holder.onclick = function(e)
+	{
+		window.testGraphics();
+	};
 	holder.ondragover = function(e) 
 	{
 		var isFile = false;
@@ -35,17 +39,24 @@ window.onload = function()
 		}
 		
 		var reader = new FileReader();
-		reader.onload = function(e) {
-			window.loadedImage = window.nativeRasterEngine.openImage(e.target.result);
-			if (!window.loadedImage)
-				return;
-
-			window.onresize();
+		reader.onload = function(e)
+		{
+			window.testGraphics(e.target.result);
 		};
 		reader.readAsArrayBuffer(file);
 	
 		return false; 
 	};
+};
+
+window.testGraphics = function(data)
+{
+	window.loadedImage = window.nativeGraphics.testImage(data);
+	if (!window.loadedImage)
+		return;
+
+	window.onresize();
+	window.nativeGraphics.close();
 };
 
 window.onresize = function()

@@ -139,6 +139,11 @@ namespace PdfReader
 
         return (errorNone == m_eError);
 	}
+    bool CPdfReader::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options,
+                                    const std::wstring& owner_password, const std::wstring& user_password)
+    {
+        return false;
+    }
     void CPdfReader::Close()
 	{
         RELEASEOBJECT((m_pInternal->m_pPDFDocument));
@@ -260,6 +265,10 @@ namespace PdfReader
             m_pInternal->m_pPDFDocument->DisplayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, false, true, false);
 		}
 	}
+    BYTE* CPdfReader::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH)
+    {
+        return NULL;
+    }
     void CPdfReader::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
 	{
         NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();

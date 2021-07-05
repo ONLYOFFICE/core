@@ -1,11 +1,10 @@
 #ifndef _ZIPFOLDER_H_
 #define _ZIPFOLDER_H_
 
-#include "./../../../../OfficeUtils/src/ZipBuffer.h"
-#include "./../../../common/File.h"
-#include "./../../../common/Directory.h"
-#include "../../../xml/include/xmlutils.h"
-#include "./../include/XmlCertificate.h"
+#include "ZipBuffer.h"
+#include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 class IFolder
 {
@@ -43,6 +42,7 @@ public:
 
 
 public:
+    virtual ~IFolder() {}
     // полный путь по локальному
     virtual std::wstring getFullFilePath(const std::wstring& path) = 0;
     // локальный путь по полному (без первого '/')
@@ -63,6 +63,7 @@ public:
     virtual CBuffer* finalize() { return NULL; }
     // чтение ноды
     virtual XmlUtils::CXmlNode getNodeFromFile(const std::wstring& path) = 0;
+    virtual XmlUtils::CXmlLiteReader getReaderFromFile(const std::wstring& path) = 0;
 
     // вспомогательные функции
     void writeXml(const std::wstring& path, const std::wstring& xml)
@@ -100,21 +101,6 @@ public:
 
         return sRet;
     }
-    std::string getFileHash(const std::wstring& path, ICertificate* certificate, int nAlg = -1)
-    {
-        CBuffer* buffer = NULL;
-        if (!read(path, buffer))
-            return "";
-
-        std::string sRet = certificate->GetHash(buffer->Buffer, buffer->Size, (nAlg == -1) ? certificate->GetHashAlg() : nAlg);
-        delete buffer;
-        return sRet;
-    }
-    std::wstring getFileHashW(const std::wstring& path, ICertificate* certificate, int nAlg = -1)
-    {
-        std::string sTmp = getFileHash(path, certificate, nAlg);
-        return UTF8_TO_U(sTmp);
-    }
 };
 
 class CFolderSystem : public IFolder
@@ -145,7 +131,9 @@ public:
 #endif
         if (0 == full_path.find(m_sFolder))
             return full_path;
-        if (!full_path.empty() && full_path[0] == L'/')
+        if (full_path.empty())
+            return m_sFolder;
+        if (full_path[0] == L'/')
             return m_sFolder + full_path;
         return m_sFolder + L"/" + full_path;
     }
@@ -224,6 +212,12 @@ public:
         node.FromXmlFile(getFullFilePath(path));
         return node;
     }
+    virtual XmlUtils::CXmlLiteReader getReaderFromFile(const std::wstring& path)
+    {
+        XmlUtils::CXmlLiteReader oReader;
+        oReader.FromFile(getFullFilePath(path));
+        return oReader;
+    }
 };
 
 // Работает с архивом в памяти
@@ -284,9 +278,7 @@ public:
     virtual void write(const std::wstring& path, BYTE* data, DWORD length)
     {
         std::string sPath = getLocalFilePathA(path);
-        BYTE* copyData = new BYTE[length];
-        memcpy(copyData, data, length);
-        m_zlib->addFile(sPath, copyData, length);
+        m_zlib->addFile(sPath, data, length);
     }
     // Перемещает файл в архиве
     virtual void move(const std::wstring& sSrc, const std::wstring& sDst)
@@ -358,6 +350,18 @@ public:
         node.FromXmlStringA(sUtf8);
         delete buffer;
         return node;
+    }
+    virtual XmlUtils::CXmlLiteReader getReaderFromFile(const std::wstring& path)
+    {
+        CBuffer* buffer = NULL;
+        XmlUtils::CXmlLiteReader oReader;
+        if (!read(path, buffer))
+            return oReader;
+
+        std::string sUtf8((char*)buffer->Buffer, (size_t)buffer->Size);
+        oReader.FromStringA(sUtf8);
+        delete buffer;
+        return oReader;
     }
 };
 

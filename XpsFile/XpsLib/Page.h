@@ -35,6 +35,7 @@
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../OfficeUtils/src/ZipFolder.h"
 
 #include "FontList.h"
 #include "Utils.h"
@@ -48,7 +49,7 @@ namespace XPS
 	class Page
 	{
 	public:
-        Page(const std::wstring& wsFile, const std::wstring& Path, CFontList* pFontList, NSFonts::IFontManager* pFontManager, CDocument* pDocument);
+        Page(const std::wstring& wsFile, IFolder* Path, CFontList* pFontList, NSFonts::IFontManager* pFontManager, CDocument* pDocument);
 		~Page();
 
 		void GetSize(int& nW, int& nH) const;
@@ -69,7 +70,7 @@ namespace XPS
 	private:
 
         std::wstring            m_wsPagePath;
-        std::wstring            m_wsRootPath;
+        IFolder*                m_wsRootPath;
         CFontList*              m_pFontList;
         NSFonts::IFontManager*  m_pFontManager;
         CDocument*              m_pDocument;

@@ -51,6 +51,8 @@ public:
 
     virtual bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",
                                     const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
+    virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"",
+                        const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 
     virtual void Close();
 
@@ -60,6 +62,7 @@ public:
     virtual int GetPagesCount();
     virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
     virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
+    virtual BYTE* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH);
     virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1);
 
 	void         ConvertToPdf(const std::wstring& wsDstPath);

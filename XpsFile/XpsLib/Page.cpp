@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/graphics/structures.h"
+#include "../../DesktopEditor/fontengine/FontManager.h"
 #include "../../PdfWriter/PdfRenderer.h"
 
 #include "Document.h"
@@ -47,6 +48,9 @@
 #endif
 
 #define IsFromResource(String) (!String.empty() && '{' == String[0])
+#ifndef BUILDING_WASM_MODULE
+CGlobalFontsMemoryStorage* CApplicationFontStreams::m_pMemoryStorage = NULL;
+#endif
 
 namespace XPS
 {
@@ -76,7 +80,7 @@ namespace XPS
             return pFontManager->MeasureChar2(unUnicode).fAdvanceY;
 		}
 	}	
-    Page::Page(const std::wstring& wsPagePath, const std::wstring& wsRootPath, CFontList* pFontList, NSFonts::IFontManager* pFontManager, CDocument* pDocument)
+    Page::Page(const std::wstring& wsPagePath, IFolder* wsRootPath, CFontList* pFontList, NSFonts::IFontManager* pFontManager, CDocument* pDocument)
 	{
 		m_wsPagePath   = wsPagePath;
 		m_wsRootPath   = wsRootPath;
@@ -91,7 +95,7 @@ namespace XPS
 	{
 		XmlUtils::CXmlLiteReader oReader;
 
-		if (!oReader.FromFile(m_wsPagePath))
+        if (!oReader.FromStringA(m_wsRootPath->readXml(m_wsPagePath)))
 			return;
 
 		if (!oReader.ReadNextNode())
@@ -169,7 +173,7 @@ namespace XPS
 	{
 		XmlUtils::CXmlLiteReader oReader;
 
-		if (!oReader.FromFile(m_wsPagePath.c_str()))
+        if (!oReader.FromStringA(m_wsRootPath->readXml(m_wsPagePath)))
 			return;
 
 		if (!oReader.ReadNextNode())
@@ -358,7 +362,7 @@ namespace XPS
 				ReadAttribute(oReader, L"Source", wsSource);
 				if (!wsSource.empty())
 				{
-                    std::wstring wsPath = m_wsRootPath + wsSource.c_stdstr();
+                    std::wstring wsPath = wsSource.c_stdstr();
 					pState->PushResource(m_pDocument->GetStaticResource(wsPath.c_str()), false);
 				}
 				else
@@ -447,18 +451,23 @@ namespace XPS
 						std::wstring wsRelativePath = (std::wstring::npos == nSlashPos) ? m_wsPagePath : m_wsPagePath.substr(0, nSlashPos + 1);
 						wsFontPath = wsRelativePath + wsFontPath;
 					}
-					else
-					{
-						wsFontPath = m_wsRootPath + L"/" + wsFontPath;
-					}
-
+                    else
+                    {
+                        wsFontPath = m_wsRootPath->getFullFilePath(wsFontPath);
+                    }
 
 					std::wstring wsExt = GetFileExtension(wsFontPath);
 					NSStringExt::ToLower(wsExt);
 					if (L"odttf" == wsExt)
 					{
 						NSStringExt::ToLower(wsFontName);
-						m_pFontList->Check(wsFontName, wsFontPath);
+                        IFolder::CBuffer* buffer = NULL;
+                        m_wsRootPath->read(wsFontPath, buffer);
+                        m_pFontList->Check(wsFontName, buffer->Buffer, buffer->Size);
+                        if (CApplicationFontStreams::m_pMemoryStorage)
+                            CApplicationFontStreams::m_pMemoryStorage->Add(wsFontPath, buffer->Buffer, buffer->Size);
+                        m_wsRootPath->write(wsFontPath, buffer->Buffer, buffer->Size);
+                        RELEASEOBJECT(buffer);
 					}
 					wsFontPath = NormalizePath(wsFontPath);
 					pRenderer->put_FontPath(wsFontPath);
@@ -629,7 +638,7 @@ namespace XPS
 		int nIndicesPos = 0, nIndicesLen = wsIndices.size();
 		int nUtf16Pos = 0;
 		bool bRtoL = (nBidiLevel % 2 ? true : false);
-		m_pFontManager->LoadFontFromFile(wsFontPath, 0, (float)(dFontSize * 0.75), 96, 96);
+        m_pFontManager->LoadFontFromFile(m_wsRootPath->getFullFilePath(wsFontPath), 0, (float)(dFontSize * 0.75), 96, 96);
 		double dFontKoef = dFontSize / 100.0;
 
 		bool bNeedItalic = false, bNeedBold = false;
@@ -964,7 +973,7 @@ namespace XPS
 		if (pBrush)
 		{
 			if (pBrush->IsImageBrush())
-				((CImageBrush*)pBrush)->SetPaths(m_wsRootPath.c_str(), GetPath(m_wsPagePath).c_str());
+                ((CImageBrush*)pBrush)->SetPaths(m_wsRootPath, GetPath(m_wsPagePath).c_str());
 
 			bFill = pBrush->SetToRenderer(pRenderer);
 			if (bDeleteBrush)

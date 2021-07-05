@@ -3,22 +3,22 @@
 
 namespace NSDocxRenderer
 {
-	static CString g_string_imageRID_png = _T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image%d.png\"/>");
-	static CString g_string_imageRID_jpg = _T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image%d.jpg\"/>");
+    static std::wstring g_string_imageRID_png = L"<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image%d.png\"/>";
+    static std::wstring g_string_imageRID_jpg = L"<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image%d.jpg\"/>";
 
-	static _bstr_t g_bstr_FontNameStart		= L"<w:font w:name=\"";
-	static _bstr_t g_bstr_FontPanoseStart	= L"<w:panose1 w:val=\"";
-	static _bstr_t g_bstr_FontCharsetStart	= L"<w:charset w:val=\"";
-	static _bstr_t g_bstr_FontFamilyStart	= L"<w:family w:val=\"";
-	static _bstr_t g_bstr_FontPitchTrue		= L"<w:pitch w:val=\"fixed\" />";
-	static _bstr_t g_bstr_FontPitchFalse	= L"<w:pitch w:val=\"variable\" />";
+    static std::wstring g_bstr_FontNameStart	= L"<w:font w:name=\"";
+    static std::wstring g_bstr_FontPanoseStart	= L"<w:panose1 w:val=\"";
+    static std::wstring g_bstr_FontCharsetStart	= L"<w:charset w:val=\"";
+    static std::wstring g_bstr_FontFamilyStart	= L"<w:family w:val=\"";
+    static std::wstring g_bstr_FontPitchTrue	= L"<w:pitch w:val=\"fixed\" />";
+    static std::wstring g_bstr_FontPitchFalse	= L"<w:pitch w:val=\"variable\" />";
 
-	static CString g_string_SIG				= _T("<w:sig w:usb0=\"%08x\" w:usb1=\"%08x\" w:usb2=\"%08x\" w:usb3=\"%08x\" w:csb0=\"%08x\" w:csb1=\"%08x\"/>");
-	static _bstr_t g_bstr_end				= L"\"/>";
-	static _bstr_t g_bstr_end2				= L"\">";
-	static _bstr_t g_bstr_FontNameEnd		= L"</w:font>";
+    static std::wstring g_string_SIG			= L"<w:sig w:usb0=\"%08x\" w:usb1=\"%08x\" w:usb2=\"%08x\" w:usb3=\"%08x\" w:csb0=\"%08x\" w:csb1=\"%08x\"/>";
+    static std::wstring g_bstr_end				= L"\"/>";
+    static std::wstring g_bstr_end2				= L"\">";
+    static std::wstring g_bstr_FontNameEnd		= L"</w:font>";
 
-	static CString g_string_DocumentStart	= L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+    static std::wstring g_string_DocumentStart	= L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 <w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
 xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
 xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
@@ -28,7 +28,7 @@ xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\">\
 <w:body>";
 
-	static CString g_string_DocumentEnd		= L"</w:body></w:document>";
+    static std::wstring g_string_DocumentEnd	= L"</w:body></w:document>";
 
 	class CDocument
 	{
@@ -61,12 +61,12 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 		double							m_dDpiX;
 		double							m_dDpiY;
 
-		CString							m_strTempDirectory;
+        std::wstring					m_strTempDirectory;
 
-		CFile							m_oDocumentStream;
+        NSFile::CFileBinary				m_oDocumentStream;
 		LONG							m_lPagesCount;
 
-		NSDocxRenderer::CStringWriter	m_oWriter;
+        NSStringUtils::CStringBuilder	m_oWriter;
 		bool							m_bIsNeedPDFTextAnalyzer;
 
 	public:
@@ -106,7 +106,7 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 
 	public:
 
-		AVSINLINE HRESULT NewPage()
+        HRESULT NewPage()
 		{
 			if (0 != m_lPagesCount)
 			{

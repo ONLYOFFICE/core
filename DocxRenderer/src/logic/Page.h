@@ -8,19 +8,19 @@ namespace NSDocxRenderer
 	const double STANDART_STRING_HEIGHT_MM		= 4.2333333333333334;
 	const double THE_SAME_STRING_Y_PRECISION_MM = 0.01;
 
-	static _bstr_t g_bstr_sectStart			= L"<w:p><w:pPr><w:sectPr>";
-	static _bstr_t g_bstr_lastSect			= L"<w:type w:val=\"continuous\"/>";
-	static _bstr_t g_bstr_sectEnd			= L"<w:pgMar w:top=\"0\" w:right=\"0\" w:bottom=\"0\" w:left=\"0\"/></w:sectPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr></w:p>";
-	static CString g_string_sectSizeVer		= _T("<w:pgSz w:w=\"%d\" w:h=\"%d\" w:orient=\"portrait\"/>");
-	static CString g_string_sectSizeHor		= _T("<w:pgSz w:w=\"%d\" w:h=\"%d\" w:orient=\"landscape\"/>");
+    static std::wstring g_bstr_sectStart		= L"<w:p><w:pPr><w:sectPr>";
+    static std::wstring g_bstr_lastSect			= L"<w:type w:val=\"continuous\"/>";
+    static std::wstring g_bstr_sectEnd			= L"<w:pgMar w:top=\"0\" w:right=\"0\" w:bottom=\"0\" w:left=\"0\"/></w:sectPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr></w:p>";
+    static std::wstring g_string_sectSizeVer	= L"<w:pgSz w:w=\"%d\" w:h=\"%d\" w:orient=\"portrait\"/>";
+    static std::wstring g_string_sectSizeHor	= L"<w:pgSz w:w=\"%d\" w:h=\"%d\" w:orient=\"landscape\"/>";
 
-	static _bstr_t g_bstr_drawingParStart	= L"<w:p><w:pPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr>";
-	static _bstr_t g_bstr_ParEnd			= L"</w:p>";
+    static std::wstring g_bstr_drawingParStart	= L"<w:p><w:pPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr>";
+    static std::wstring g_bstr_ParEnd			= L"</w:p>";
 
-	static CString g_bstr_lastsection1		= L"<w:sectPr>";
-	static CString g_bstr_lastsection2		= L"<w:pgMar w:top=\"0\" w:right=\"0\" w:bottom=\"0\" w:left=\"0\" w:header=\"0\" w:footer=\"0\" w:gutter=\"0\"/></w:sectPr>";
+    static std::wstring g_bstr_lastsection1		= L"<w:sectPr>";
+    static std::wstring g_bstr_lastsection2		= L"<w:pgMar w:top=\"0\" w:right=\"0\" w:bottom=\"0\" w:left=\"0\" w:header=\"0\" w:footer=\"0\" w:gutter=\"0\"/></w:sectPr>";
 
-	AVSINLINE bool IsUnicodeSymbol( WCHAR symbol )
+    inline bool IsUnicodeSymbol( wchar_t symbol )
 	{
 		bool result = false;
 
@@ -53,10 +53,10 @@ namespace NSDocxRenderer
 
 		LONG						m_lCurrentCommand;
 
-		CAtlArray<CBaseItem*>	m_arGraphicItems;
-		CAtlArray<CParagraph*>	m_arParagraphs;
+        std::vector<CBaseItem*>	m_arGraphicItems;
+        std::vector<CParagraph*> m_arParagraphs;
 
-		CAtlArray<CTextLine*> m_arTextLine;
+        std::vector<CTextLine*> m_arTextLine;
 		CTextLine* m_pCurrentLine;
 
 		CFontManager		m_oManager;
@@ -64,7 +64,7 @@ namespace NSDocxRenderer
 
 		TextAssociationType m_eTextAssociationType;
 
-		NSDocxRenderer::CStringWriter m_oWriterVML;
+        NSStringUtils::CStringBuilder m_oWriterVML;
 
 		bool m_bIsDeleteTextClipPage;
 
@@ -90,7 +90,7 @@ namespace NSDocxRenderer
 		}
 
 	public:
-		AVSINLINE void Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
+        void Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
 			NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, NSDocxRenderer::CMatrix* pMatrix, AVSGraphics::IASCGraphicSimpleComverter* pSimple)
 		{
 			m_pFont		= pFont;
@@ -110,7 +110,7 @@ namespace NSDocxRenderer
 			m_oWriterVML.AddSize(1000, 1000);
 		}
 
-		AVSINLINE void Clear()
+        void Clear()
 		{
 			size_t nCount = 0;
 
@@ -148,7 +148,7 @@ namespace NSDocxRenderer
 			Clear();
 		}
 
-		AVSINLINE void SetCurrentLineByBaseline(const double& dBaseLinePos)
+        void SetCurrentLineByBaseline(const double& dBaseLinePos)
 		{
 			if ((NULL == m_pCurrentLine) || (TextAssociationTypeDefault == m_eTextAssociationType))
 			{
@@ -181,7 +181,7 @@ namespace NSDocxRenderer
 		}
 
 		// image commands
-		AVSINLINE void WriteImage(CImageInfo& oInfo, double& fX, double& fY, double& fWidth, double& fHeight)
+        void WriteImage(CImageInfo& oInfo, double& fX, double& fY, double& fWidth, double& fHeight)
 		{
 			CImage* pImage = new CImage(oInfo, _T(""));
 
@@ -267,18 +267,18 @@ namespace NSDocxRenderer
 		}
 
 		// path commands
-		AVSINLINE void MoveTo(double& dX, double& dY)
+        void MoveTo(double& dX, double& dY)
 		{
 			m_pTransform->TransformPoint(dX, dY);
 			m_oVector.MoveTo(dX, dY);
 
 		}
-		AVSINLINE void LineTo(double& dX, double& dY)
+        void LineTo(double& dX, double& dY)
 		{
 			m_pTransform->TransformPoint(dX, dY);
 			m_oVector.LineTo(dX, dY);
 		}
-		AVSINLINE void CurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3)
+        void CurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3)
 		{
 			m_pTransform->TransformPoint(x1, y1);
 			m_pTransform->TransformPoint(x2, y2);
@@ -286,19 +286,19 @@ namespace NSDocxRenderer
 
 			m_oVector.CurveTo(x1, y1, x2, y2, x3, y3);
 		}
-		AVSINLINE void Start()
+        void Start()
 		{			
 		}
-		AVSINLINE void End()
+        void End()
 		{
 			m_oVector.End();
 			m_oWriterVML.ClearNoAttack();
 		}
-		AVSINLINE void Close()
+        void Close()
 		{
 			m_oVector.Close();
 		}
-		AVSINLINE void DrawPath(LONG lType, LONG lTxId)
+        void DrawPath(LONG lType, LONG lTxId)
 		{
 			if ((m_oVector.m_dLeft <= m_oVector.m_dRight) && (m_oVector.m_dTop <= m_oVector.m_dBottom))
 			{
@@ -326,11 +326,11 @@ namespace NSDocxRenderer
 				}
 
 				pShape->CreateFromVectorData(&m_oVector, m_oWriterVML, 100000, lType);
-				m_arGraphicItems.Add(pShape);
+                m_arGraphicItems.push_back(pShape);
 			}
 		}
 
-		AVSINLINE void WriteText(BSTR bsText, BSTR bsGid, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, bool bIsPDFAnalyzer)
+        void WriteText(int* pUnicodes, int* pGids, int nCount, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, bool bIsPDFAnalyzer)
 		{
 			double dTextX = fX;
 			double dTextY = fY;
@@ -343,20 +343,20 @@ namespace NSDocxRenderer
 			double dTextW = dTextR - dTextX;
 			double dTextH = dTextB - dTextY;
 
-			CString strText = _T("");
+            std::wstring strText = L"";
 
-			if ((bsText != NULL) && (bsGid != NULL))
+            if ((pUnicodes != NULL) && (pGids != NULL))
 			{
-				UINT lLen = SysStringLen(bsText);
-				for (unsigned int i = 0; i < lLen; ++i)
+                for (unsigned int i = 0; i < nCount; ++i)
 				{
-					if ( IsUnicodeSymbol( bsText[i] ) )
+                    wchar_t c = pUnicodes[i];
+                    if ( IsUnicodeSymbol( c ) )
 					{
-						strText += bsText[i];
+                        strText += c;
 					}
 					else
 					{
-						strText += _T(" ");
+                        strText += L" ";
 					}
 				}
 			}
@@ -365,7 +365,7 @@ namespace NSDocxRenderer
 				strText = (CString)bsText;
 			}
 
-			bool bIsPath = ((NULL == bsGid) && !bIsPDFAnalyzer) ? false : true;
+            bool bIsPath = ((NULL == pGids) && !bIsPDFAnalyzer) ? false : true;
 
 			m_oManager.LoadFont(0, !bIsPath);
 			
@@ -401,7 +401,7 @@ namespace NSDocxRenderer
 			SetCurrentLineByBaseline(dBaseLinePos);
 
 			CContText* pLastCont = NULL;
-			size_t nCountConts = m_pCurrentLine->m_arConts.GetCount();
+            size_t nCountConts = m_pCurrentLine->m_arConts.size();
 			if (nCountConts != 0)
 				pLastCont = m_pCurrentLine->m_arConts[nCountConts - 1];
 
@@ -416,7 +416,7 @@ namespace NSDocxRenderer
 				pCont->m_dWidth		= dTextW;
 				pCont->m_dHeight	= dTextH;
 
-				if (_T(" ") == strText)
+                if (L" " == strText)
 				{
 					pCont->m_dWidthWithoutSpaces	= 0;
 					pCont->m_dLeftWithoutSpaces		= dTextX + dTextW;
@@ -464,7 +464,7 @@ namespace NSDocxRenderer
 					pLastCont->m_strText += strText;
 					pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
 
-					if (_T(" ") != strText)
+                    if (L" " != strText)
 					{
 						if (0 == pLastCont->m_dWidthWithoutSpaces)
 							pLastCont->m_dLeftWithoutSpaces = dTextX;
@@ -481,7 +481,7 @@ namespace NSDocxRenderer
 				else if ((dRight < dTextX) && ((dTextX - dRight) < m_oManager.m_dSpaceWidthMM))
 				{
 					// продолжаем слово с пробелом
-					pLastCont->m_strText += (_T(" ") + strText);
+                    pLastCont->m_strText += (L" " + strText);
 					pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
 
 					if (_T(" ") != strText)
@@ -510,7 +510,7 @@ namespace NSDocxRenderer
 			pCont->m_dWidth		= dTextW;
 			pCont->m_dHeight	= dTextH;
 
-			if (_T(" ") == strText)
+            if (L" " == strText)
 			{
 				pCont->m_dWidthWithoutSpaces	= 0;
 				pCont->m_dLeftWithoutSpaces		= dTextX + dTextW;
@@ -542,7 +542,7 @@ namespace NSDocxRenderer
 			if (m_bIsDeleteTextClipPage)
 			{
 				// удалим все линии, которые выход¤т за границы страницы
-				size_t nCount = m_arTextLine.GetCount();
+                size_t nCount = m_arTextLine.size();
 				for (size_t i = 0; i < nCount; ++i)
 				{
 					CTextLine* pTextLine = m_arTextLine[i];
@@ -552,7 +552,7 @@ namespace NSDocxRenderer
 
 					if (_top >= m_dHeight || _bottom <= 0)
 					{
-						m_arTextLine.RemoveAt(i);
+                        m_arTextLine.erase(m_arTextLine.begin() + i);
 						--i;
 						--nCount;
 					}
@@ -564,7 +564,7 @@ namespace NSDocxRenderer
 			case TextAssociationTypeDefault:
 			case TextAssociationTypeLine:
 				{
-					size_t nCount = m_arTextLine.GetCount();
+                    size_t nCount = m_arTextLine.size();
 					for (size_t i = 0; i < nCount; ++i)
 					{
 						CTextLine* pTextLine = m_arTextLine[i];
@@ -576,18 +576,18 @@ namespace NSDocxRenderer
 						pParagraph->m_dLeft	= pTextLine->m_dX;
 						pParagraph->m_dTop	= pTextLine->m_dBaselinePos - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
 
-						pParagraph->m_arLines.Add(pTextLine);
+                        pParagraph->m_arLines.push_back(pTextLine);
 
-						m_arParagraphs.Add(pParagraph);
+                        m_arParagraphs.push_back(pParagraph);
 					}
 
 					// удалим все линии
-					m_arTextLine.RemoveAll();
+                    m_arTextLine.clear();
 					break;
 				}
 			case TextAssociationTypeBlock:
 				{
-					size_t nCount = m_arTextLine.GetCount();
+                    size_t nCount = m_arTextLine.size();
 
 					if (0 == nCount)
 						break;
@@ -601,9 +601,9 @@ namespace NSDocxRenderer
 					pParagraph->m_dLeft	= pFirstLine->m_dX;
 					pParagraph->m_dTop	= pFirstLine->m_dBaselinePos - pFirstLine->m_dHeight + pFirstLine->m_dBaselineOffset;
 
-					pParagraph->m_arLines.Add(pFirstLine);
+                    pParagraph->m_arLines.push_back(pFirstLine);
 
-					m_arParagraphs.Add(pParagraph);
+                    m_arParagraphs.push_back(pParagraph);
 					
 					for (size_t i = 1; i < nCount; ++i)
 					{
@@ -627,12 +627,12 @@ namespace NSDocxRenderer
 
 						pFirstLine = pTextLine;
 
-						pParagraph->m_arLines.Add(pTextLine);
-						m_arParagraphs.Add(pParagraph);
+                        pParagraph->m_arLines.push_back(pTextLine);
+                        m_arParagraphs.push_back(pParagraph);
 					}
 
 					// удалим все линии
-					m_arTextLine.RemoveAll();
+                    m_arTextLine.clear();
 					break;
 				}
 			case TextAssociationTypeNoFrames:
@@ -641,7 +641,7 @@ namespace NSDocxRenderer
 					Merge(STANDART_STRING_HEIGHT_MM / 3);
 
 					double previousStringOffset = 0;
-					size_t nCount = m_arTextLine.GetCount();
+                    size_t nCount = m_arTextLine.size();
 					for (size_t i = 0; i < nCount; ++i)
 					{
 						CTextLine* pTextLine = m_arTextLine[i];
@@ -669,11 +669,11 @@ namespace NSDocxRenderer
 
 						previousStringOffset = pTextLine->m_dBaselinePos + pTextLine->m_dBaselineOffset;
 
-						pParagraph->m_arLines.Add(pTextLine);
-						m_arParagraphs.Add(pParagraph);
+                        pParagraph->m_arLines.push_back(pTextLine);
+                        m_arParagraphs.push_back(pParagraph);
 					}
 
-					m_arTextLine.RemoveAll();
+                    m_arTextLine.clear();
 					break;
 				}
 			}
@@ -681,7 +681,7 @@ namespace NSDocxRenderer
 
 		void Merge(double dAffinity)
 		{
-			size_t nCount = m_arTextLine.GetCount();
+            size_t nCount = m_arTextLine.size();
 			if (1 < nCount)
 			{
 				CTextLine* pPrev = m_arTextLine[0];
@@ -693,10 +693,10 @@ namespace NSDocxRenderer
 					{
 						pPrev->Merge(pNext);
 
-						pNext->m_arConts.RemoveAll();
+                        pNext->m_arConts.clear();
 						RELEASEOBJECT(pNext);
 
-						m_arTextLine.RemoveAt(i);
+                        m_arTextLine.erase(m_arTextLine.begin() + i);
 						--i;
 						--nCount;
 						continue;
@@ -706,10 +706,10 @@ namespace NSDocxRenderer
 			}
 		}
 
-		void Write(NSDocxRenderer::CStringWriter& oWriter)
+        void Write(NSStringUtils::CStringBuilder& oWriter)
 		{
 			// drawings
-			size_t nCountDrawings = m_arGraphicItems.GetCount();
+            size_t nCountDrawings = m_arGraphicItems.size();
 			if (0 != nCountDrawings)
 			{
 				oWriter.WriteString(g_bstr_drawingParStart);
@@ -722,14 +722,14 @@ namespace NSDocxRenderer
 				oWriter.WriteString(g_bstr_ParEnd);
 			}
 
-			size_t nCountParagraphs = m_arParagraphs.GetCount();
+            size_t nCountParagraphs = m_arParagraphs.size();
 			for (size_t i = 0; i < nCountParagraphs; ++i)
 			{
 				m_arParagraphs[i]->ToXml(oWriter);
 			}
 		}
 
-		AVSINLINE void WriteSectionToFile(bool bLastPage, NSDocxRenderer::CStringWriter& oWriter)
+        void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter)
 		{
 			// section
 			LONG lWidthDx  = (LONG)(m_dWidth * c_dMMToDx);
@@ -742,15 +742,11 @@ namespace NSDocxRenderer
 				
 			if (lWidthDx >= lHeightDx)
 			{
-				CString strSize = _T("");
-				strSize.Format(g_string_sectSizeHor, lWidthDx, lHeightDx);
-				oWriter.WriteString(strSize);
+                oWriter.WriteString(StringFormat(g_string_sectSizeHor, lWidthDx, lHeightDx));
 			}
 			else
 			{
-				CString strSize = _T("");
-				strSize.Format(g_string_sectSizeVer, lWidthDx, lHeightDx);
-				oWriter.WriteString(strSize);
+                oWriter.WriteString(StringFormat(g_string_sectSizeVer, lWidthDx, lHeightDx));
 			}
 
 			if (!bLastPage)

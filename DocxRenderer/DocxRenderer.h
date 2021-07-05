@@ -29,11 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _PDF_WRITER_PDFRENDERER_H
-#define _PDF_WRITER_PDFRENDERER_H
+#ifndef _DOCX_RENDERER_H
+#define _DOCX_RENDERER_H
 
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/common/officedrawingfile.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -44,9 +45,6 @@
 #include "../DesktopEditor/common/base_export.h"
 #define DOCXRENDERER_DECL_EXPORT Q_DECL_EXPORT
 #endif
-
-class CFontManager;
-class CApplicationFonts;
 
 namespace NSDocxRenderer
 {
@@ -210,4 +208,4 @@ private:
     CDocxRenderer_Private* m_pInternal;
 };
 
-#endif // _PDF_WRITER_PDFRENDERER_H
+#endif // _DOCX_RENDERER_H

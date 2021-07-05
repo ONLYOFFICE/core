@@ -22,6 +22,16 @@ namespace NSDocxRenderer
 		return (0x00FFFFFF & (((lBGR & 0xFF) << 16) | (lBGR & 0x0000FF00) | ((lBGR >> 16) & 0xFF)));
     }
 
+    std::wstring StringFormat(const std::wstring& format, ...)
+    {
+        // TODO: уйти от формата вообще
+        wchar_t buffer[1000];
+        va_list args;
+        va_start(args, format);
+        vswprintf(buffer, 1000, format.c_str(), args);
+        va_end (args);
+    }
+
 	class CBaseItem
 	{
 	public:
@@ -38,6 +48,7 @@ namespace NSDocxRenderer
 		{
 			m_eType = etShape;
 		}
+        virtual ~CBaseItem() {}
 
         virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) = 0;
 	};
@@ -273,7 +284,7 @@ namespace NSDocxRenderer
             for (LONG lIndexV = 0; lIndexV < h; ++lIndexV)
 			{
 				DWORD* pMem1 = pBufferDWORD;
-				DWORD* pMem2 = pBufferDWORD + lWidth - 1;
+                DWORD* pMem2 = pBufferDWORD + w - 1;
 				
 				LONG lI = 0;
 				while (lI < lW2)

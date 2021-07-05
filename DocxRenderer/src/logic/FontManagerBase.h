@@ -4,7 +4,6 @@
 #include "Common.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include <list>
-#include <atlstr.h>
 
 namespace NSFontManager
 {
@@ -32,9 +31,9 @@ namespace NSFontManager
         std::wstring					m_strFamilyName;
         std::wstring					m_strPANOSE;
 		LONG							m_lStyle;
-        std::vector<DWORD>   			m_arSignature;
+        std::vector<UINT>   			m_arSignature;
 		bool							m_bIsFixedWidth;
-		LONG							m_lAvgWidth;
+        SHORT							m_lAvgWidth;
 
 	public:
 		CFontAdvanced()
@@ -130,7 +129,6 @@ namespace NSFontManager
 		};
 
 	protected:
-        CApplicationFonts*              m_pFonts;
         NSFonts::IFontManager*          m_pManager;
         std::wstring					m_strDefaultFont;
 
@@ -147,19 +145,14 @@ namespace NSFontManager
 		LONG							m_lCurrentPictFontStyle;
 
 	public:
-		CFontManagerBase() : m_oFont()
+        CFontManagerBase(NSFonts::IApplicationFonts* pFonts) : m_oFont()
 		{
-			m_pManager = NULL;
-			CoCreateInstance(AVSGraphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, AVSGraphics::IID_IASCFontManager, (void**)&m_pManager);
+            m_pManager = pFonts->GenerateFontManager();
 
-            m_pManager->Initialize();
-
-			SetDefaultFont(_T("Arial"));
+            SetDefaultFont(L"Arial");
 
 			ClearPickUps();
-
 			InitializeRanges();
-
 			ClearPickUps();
 		}
 		virtual ~CFontManagerBase()
@@ -167,36 +160,30 @@ namespace NSFontManager
 			RELEASEINTERFACE(m_pManager);
 		}
 
-		__forceinline void ClearPickUps()
+        void ClearPickUps()
         {
             m_arListPicUps.clear();
-			m_strCurrentPickFont = _T("");
+            m_strCurrentPickFont = L"";
 			m_lCurrentPictFontStyle = 0;
 		}
 
 	public:
-		__forceinline void SetDefaultFont(const CString& strName)
+        void SetDefaultFont(const std::wstring& strName)
 		{
 			m_strDefaultFont = strName;
-
-            BSTR bsDefault = const_cast<BSTR>(m_strDefaultFont.c_str());
-			m_pManager->SetDefaultFont(bsDefault);
-			SysFreeString(bsDefault);
 		}
-		__forceinline CString GetDefaultFont()
+        std::wstring GetDefaultFont()
 		{
-            return m_strDefaultFont.c_str();
+            return m_strDefaultFont;
 		}
 
 		virtual void LoadFont(long lFaceIndex = 0, bool bIsNeedAddToMap = true)
 		{
 		}
 
-		void LoadFontByName(CString& strName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY)
+        void LoadFontByName(const std::wstring& strName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY)
 		{
-			BSTR bsName = strName.AllocSysString();
-			m_pManager->LoadFontByName(bsName, (float)dSize, lStyle, dDpiX, dDpiY);
-			SysFreeString(bsName);
+            m_pManager->LoadFontByName(strName, (float)dSize, lStyle, dDpiX, dDpiY);
 
 			LoadFontMetrics();
 			LoadFontParams();
@@ -204,11 +191,9 @@ namespace NSFontManager
 			m_oFont.m_lAvgWidth = -1;
 		}
 
-		void LoadFontByFile(CString& strPath, const double& dSize, const double& dDpiX, const double& dDpiY, const LONG& lFaceIndex)
+        void LoadFontByFile(const std::wstring& strPath, const double& dSize, const double& dDpiX, const double& dDpiY, const LONG& lFaceIndex)
 		{
-			BSTR bsPath = strPath.AllocSysString();
-			m_pManager->LoadFontFromFile(bsPath, (float)dSize, dDpiX, dDpiY, lFaceIndex);
-			SysFreeString(bsPath);
+            m_pManager->LoadFontFromFile(strPath, (float)dSize, dDpiX, dDpiY, lFaceIndex);
 
 			LoadFontMetrics();
 			LoadFontParams();
@@ -232,18 +217,18 @@ namespace NSFontManager
 				if (bIsCID)
 				{
 					XmlUtils::CXmlNode oType0Node;
-					if ( oMainNode.GetNode( _T("Type0"), oType0Node ) )
+                    if ( oMainNode.GetNode( L"Type0", oType0Node ) )
 					{
 						XmlUtils::CXmlNode oNode;
-						if ( oType0Node.GetNode( _T("DescendantFonts"), oNode ) )
+                        if ( oType0Node.GetNode( L"DescendantFonts", oNode ) )
 						{
 							XmlUtils::CXmlNode oDescNode;
-							if ( oNode.GetNode( _T("FontDescriptor"), oDescNode ) )
+                            if ( oNode.GetNode( L"FontDescriptor", oDescNode ) )
 							{
 								XmlUtils::CXmlNode oCurNode;
-								if ( oNode.GetNode( _T("AvgWidth"), oCurNode ) )
+                                if ( oNode.GetNode( L"AvgWidth", oCurNode ) )
 								{
-                                    std::wstring sValue = oCurNode.GetAttribute(_T("value"));
+                                    std::wstring sValue = oCurNode.GetAttribute(L"value");
                                     try {
                                         m_oFont.m_lAvgWidth = std::stol(sValue);
                                     } catch (std::invalid_argument &) {}
@@ -255,10 +240,10 @@ namespace NSFontManager
 				else
 				{
 					XmlUtils::CXmlNode oNode;
-					if ( oMainNode.GetNode( _T("FontDescriptor"), oNode ) )
+                    if ( oMainNode.GetNode( L"FontDescriptor", oNode ) )
 					{
 						XmlUtils::CXmlNode oCurNode;
-						if ( oNode.GetNode( _T("AvgWidth"), oCurNode ) )
+                        if ( oNode.GetNode( L"AvgWidth", oCurNode ) )
 						{
                             std::wstring sValue = oCurNode.GetAttribute(_T("value"));
                             try {
@@ -272,19 +257,19 @@ namespace NSFontManager
 
 	public:
 	
-		__forceinline void MeasureString(const CString& strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
+        void MeasureString(const CString& strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
 		{
 			BSTR bsText = strText.AllocSysString();
 			MeasureString(bsText, x, y, dBoxX, dBoxY, dBoxWidth, dBoxHeight, measureType);
 			SysFreeString(bsText);
 		}
-		__forceinline void MeasureStringUNICODE(const CString& strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
+        void MeasureStringUNICODE(const CString& strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
 		{
 			m_pManager->SetStringGID(FALSE);
 			MeasureString(strText, x, y, dBoxX, dBoxY, dBoxWidth, dBoxHeight, measureType);
 			m_pManager->SetStringGID(TRUE);
 		}
-		__forceinline void MeasureStringUNICODE(BSTR strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
+        void MeasureStringUNICODE(BSTR strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
 		{
 			m_pManager->SetStringGID(FALSE);
 			MeasureString(strText, x, y, dBoxX, dBoxY, dBoxWidth, dBoxHeight, measureType);
@@ -307,33 +292,26 @@ namespace NSFontManager
 	public:
 		void LoadFontMetrics()
 		{
-			unsigned short iTemp = 0;
-            m_pManager->GetCellAscent(&iTemp);
-			m_oFont.m_dAscent = iTemp;
-			m_pManager->GetCellDescent(&iTemp);
-			m_oFont.m_dDescent = iTemp;
-			m_pManager->GetLineSpacing(&iTemp);
-			m_oFont.m_dLineSpacing = iTemp;
-			m_pManager->GetEmHeight(&iTemp);
-			m_oFont.m_dEmHeight = iTemp;
+            m_oFont.m_dAscent = m_pManager->GetAscender();
+            m_oFont.m_dDescent = m_pManager->GetDescender();
+            m_oFont.m_dLineSpacing = m_pManager->GetLineHeight();
+            m_oFont.m_dEmHeight = m_pManager->GetUnitsPerEm();
 
 			m_oFont.m_dBaselineOffset = (c_dPtToMM * m_oFont.m_dDescent * m_oFont.m_oFont.Size / m_oFont.m_dEmHeight);
 		}
 
-		__forceinline CString ToHexString( BYTE uc )
+        std::wstring ToHexString( BYTE uc )
 		{
-			CString strRes = _T("");
-			strRes.Format(_T("%02X"), uc);
-			return strRes;
+            return StringFormat(L"%02X", uc);
 		}
 
-		void LoadFontParams(BOOL bIsPath = TRUE)
+        void LoadFontParams(bool bIsPath = true)
 		{
 			// читаем и выставляем все настройки шрифта
 			if (NULL == m_pManager)
 				return;
 
-			if (_T("") == m_oFont.m_oFont.Name)
+            if (m_oFont.m_oFont.Name.empty())
 			{
 				// FamilyName
 				BSTR bsFamilyName = NULL;
@@ -346,65 +324,37 @@ namespace NSFontManager
 				m_oFont.m_strFamilyName = m_oFont.m_oFont.Name;
 			}
 
-			// StyleName
-			BSTR bsStyleName = NULL;
-			m_pManager->GetStyleName(&bsStyleName);
-			CString strStyle = (CString)bsStyleName;
-			SysFreeString(bsStyleName);
-
-			if (_T("Bold") == strStyle)
+            m_oFont.m_lStyle = 0x00;
+            if (m_pManager->GetFile()->IsBold())
 			{
-				m_oFont.m_lStyle = 0x01;
+                m_oFont.m_lStyle |= 0x01;
 			}
-			else if (_T("Italic") == strStyle)
+            if (m_pManager->GetFile()->IsItalic())
 			{
-				m_oFont.m_lStyle = 0x02;
-			}
-			else if (_T("Bold Italic") == strStyle)
-			{
-				m_oFont.m_lStyle = 0x03;				
-			}
-			else
-			{
-				m_oFont.m_lStyle = 0x00;
+                m_oFont.m_lStyle |= 0x02;
 			}
 
 			// PANOSE
-			SAFEARRAY* panoseSafeArray = NULL;
-			m_oFont.m_strPANOSE = _T("");
-			m_pManager->GetPanose(&panoseSafeArray);
-
-			if (NULL != panoseSafeArray)
-			{
-				LONG lCount = panoseSafeArray->rgsabound[0].cElements;
-				BYTE* pData = (BYTE*)(panoseSafeArray->pvData);
-
-				for ( LONG i = 0; i < (LONG)( lCount ); i++ )
-				{
-					m_oFont.m_strPANOSE += ToHexString(pData[i]);
-				}
-
-				SafeArrayDestroy(panoseSafeArray);
-			}
+            BYTE pPanose[10];
+            m_pManager->GetFile()->GetPanose(pPanose);
+            for ( int i = 0; i < 10; i++ )
+            {
+                m_oFont.m_strPANOSE += ToHexString(pPanose[i]);
+            }
 
 			// IsFixed
-			LONG lIsFixedWidthLong = 0;
-			m_pManager->IsFixedWidth(&lIsFixedWidthLong);
-			m_oFont.m_bIsFixedWidth = (lIsFixedWidthLong != 0) ? true : false;
+            m_oFont.m_bIsFixedWidth = m_pManager->GetFile()->IsFixedWidth();
 
 			// Signature
-			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
 			m_oFont.m_arSignature.clear();
 
-			for ( unsigned int i = 0; i < 6; i++ )
+            for ( unsigned int i = 0; i < 6; i++ )
 			{
 				DWORD value = 0;
 
 				for ( unsigned long bit = 0; bit < 32; bit++ )
 				{
-					m_pManager->IsUnicodeRangeAvailable( bit, i, &vbSuccess );
-
-					if( VARIANT_TRUE == vbSuccess )
+                    if (m_pManager->GetFile()->IsUnicodeRangeAvailable(bit, i))
 					{
 						value |= ( 1 << bit );
 					}
@@ -1272,7 +1222,7 @@ namespace NSFontManager
 				}
 			}
 		}
-        inline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, BYTE& lRangeNum, BYTE& lRange)
+        inline void CheckRanges(UINT& lRange1, UINT& lRange2, UINT& lRange3, UINT& lRange4, BYTE& lRangeNum, BYTE& lRange)
 		{
 			if (0 == lRangeNum)
 				lRange1 |= 1 << lRange;
@@ -1286,9 +1236,9 @@ namespace NSFontManager
 
 		
 	public:		
-		__forceinline bool GenerateFontName(CString& strText)
+        bool GenerateFontName(std::wstring& strText)
 		{
-			if (_T("") == m_oFont.m_oFont.Path || (0 == strText.GetLength()))
+            if (m_oFont.m_oFont.Path.empty() || strText.empty())
 			{
 				m_strCurrentPickFont = m_oFont.m_strFamilyName;
 				m_lCurrentPictFontStyle = m_oFont.m_lStyle;
@@ -1329,20 +1279,13 @@ namespace NSFontManager
 			oPick.m_oFont		= m_oFont;
 			oPick.m_strPickFont	= m_oFont.m_strFamilyName;
             oPick.m_lPickStyle	= m_oFont.m_lStyle;
-			
-			AVSGraphics::IASCFontManager2* pManager2 = NULL;
-			m_pManager->QueryInterface(AVSGraphics::IID_IASCFontManager2, (void**)&pManager2);
 
-            std::wstring m_strFamilyNameTemp = m_oFont.m_strFamilyName;
-            BSTR bsFontName = const_cast<BSTR>(m_strFamilyNameTemp.c_str());
-			BSTR bsNewFontName = NULL;
-
-			DWORD dwR1 = m_oFont.m_arSignature[0];
-			DWORD dwR2 = m_oFont.m_arSignature[1];
-			DWORD dwR3 = m_oFont.m_arSignature[2];
-			DWORD dwR4 = m_oFont.m_arSignature[3];
-			DWORD dwCodePage1	= 0;
-			DWORD dwCodePage2	= 0;
+            UINT dwR1 = m_oFont.m_arSignature[0];
+            UINT dwR2 = m_oFont.m_arSignature[1];
+            UINT dwR3 = m_oFont.m_arSignature[2];
+            UINT dwR4 = m_oFont.m_arSignature[3];
+            UINT dwCodePage1	= 0;
+            UINT dwCodePage2	= 0;
 
 			if ((lRangeNum == 1) && (lRange == 28))
 			{
@@ -1351,7 +1294,7 @@ namespace NSFontManager
 			}
 			else if (((lRangeNum == 2) && (lRange == 3)) || ((lRangeNum == 1) && (lRange == 31)) || ((lRangeNum == 0) && (lRange == 13)))
 			{
-				// ебаный арабский язык!!!
+                // арабский язык!!!
 				dwR1 = 1 << 13;
 				dwR2 = 1 << 31;
 				dwR3 = 1 << 3;
@@ -1361,23 +1304,36 @@ namespace NSFontManager
 				CheckRanges(dwR1, dwR2, dwR3, dwR4, lRangeNum, lRange);
 			}
 
-            std::wstring m_strPANOSETemp = m_oFont.m_strPANOSE;
-            BSTR bsPanose = const_cast<BSTR>(m_strPANOSETemp.c_str());
+            NSFonts::CFontSelectFormat oFormat;
+            oFormat.wsName = new std::wstring(m_oFont.m_strFamilyName);
 
-			LONG lFontStyle = m_oFont.m_oFont.GetStyle();
-			pManager2->GetWinFontByParams2(&bsNewFontName, bsFontName, -1, NULL, &lFontStyle, m_oFont.m_bIsFixedWidth ? 1 : 0, bsPanose, 
-				dwR1, dwR2, dwR3, dwR4, dwCodePage1, dwCodePage2, m_oFont.m_lAvgWidth);
+            if (!m_oFont.m_strPANOSE.empty())
+            {
+                oFormat.pPanose = new BYTE[10];
+                // TODO: CONVERT!!!
+            }
+            oFormat.bBold = new INT(((m_oFont.m_lStyle & 0x01) == 0x01) ? 1 : 0);
+            oFormat.bItalic = new INT(((m_oFont.m_lStyle & 0x02) == 0x02) ? 1 : 0);
+            oFormat.bFixedWidth = new INT(m_oFont.m_bIsFixedWidth ? 1 : 0);
+            oFormat.shAvgCharWidth = new SHORT((SHORT)m_oFont.m_lAvgWidth);
+            oFormat.ulRange1 = new UINT(dwR1);
+            oFormat.ulRange2 = new UINT(dwR2);
+            oFormat.ulRange3 = new UINT(dwR3);
+            oFormat.ulRange4 = new UINT(dwR4);
+            oFormat.ulCodeRange1 = new UINT(dwCodePage1);
+            oFormat.ulCodeRange2 = new UINT(dwCodePage2);
 
-			oPick.m_strPickFont = (CString)bsNewFontName;
-			oPick.m_lPickStyle	= lFontStyle;
+            NSFonts::CFontInfo* pInfo = m_pManager->GetFontInfoByParams(oFormat);
+
+            oPick.m_strPickFont = pInfo->m_wsFontName;
+            oPick.m_lPickStyle = 0;
+            if (pInfo->m_bBold)
+                oPick.m_lPickStyle |= 0x01;
+            if (pInfo->m_bItalic)
+                oPick.m_lPickStyle |= 0x02;
+
 			m_strCurrentPickFont = oPick.m_strPickFont;
 			m_lCurrentPictFontStyle = oPick.m_lPickStyle;
-
-			SysFreeString(bsFontName);
-			SysFreeString(bsPanose);
-			SysFreeString(bsNewFontName);
-
-			RELEASEINTERFACE(pManager2);
 
             m_arListPicUps.push_front(oPick);
 			return true;

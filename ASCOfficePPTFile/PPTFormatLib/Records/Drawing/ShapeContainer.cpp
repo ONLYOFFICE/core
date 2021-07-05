@@ -2056,7 +2056,9 @@ bool CRecordShapeContainer::isTable() const
             if ((prop.m_ePID == tableProperties ||
                  prop.m_ePID == tableRowProperties) &&
                 bGroupShape)
+            {
                 return true;
+            }
         }
     }
     return false;

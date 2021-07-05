@@ -523,9 +523,25 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
 
 
     auto pSolidFill = new PPTX::Logic::SolidFill;
-    auto& clr = m_pShape->m_oBrush.Color1;
+    auto& brush = m_pShape->m_oBrush;
 
+    auto& clr = brush.Color1;
     pSolidFill->Color.SetRGBColor(clr.GetR(), clr.GetG(), clr.GetB());
+    if (brush.Alpha1 != 255)
+    {
+        PPTX::Logic::ColorModifier alpha;
+        alpha.name = L"a:alpha";
+        alpha.val = brush.Alpha1 * 392;
+        pSolidFill->Color.Color->Modifiers.push_back(alpha);
+    }
+    if (brush.Type == 5000)
+    {
+        PPTX::Logic::ColorModifier alpha;
+        alpha.name = L"a:alpha";
+        alpha.val = 0;
+        pSolidFill->Color.Color->Modifiers.push_back(alpha);
+    }
+
     oTcPr.Fill.Fill.reset(pSolidFill);
 
     for (auto IterBorder : m_mapBorders)
@@ -568,7 +584,7 @@ void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeEleme
     {
         PPTX::Logic::ColorModifier alpha;
         alpha.name = L"a:alpha";
-        alpha.val = pen.Alpha * 394;
+        alpha.val = pen.Alpha * 392;
         pSolidFill->Color.Color->Modifiers.push_back(alpha);
     }
     Ln.Fill.Fill.reset(pSolidFill);

@@ -1356,7 +1356,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
         bool bExternal = false;
         std::wstring rId = m_pShapeWriter->m_pRels->WriteAudio(transition.m_oAudio.m_strAudioFileName, bExternal);
         oWriter.WriteString(std::wstring(L"<p:sndAc><p:stSnd>"));
-        oWriter.WriteString(L"<p:snd r:embed=\"" + rId + L"\" name=\"" + transition.m_oAudio.m_sImageName + L"\"/>");
+        oWriter.WriteString(L"<p:snd r:embed=\"" + rId + L"\" name=\"" + XmlUtils::EncodeXmlString(transition.m_oAudio.m_sImageName) + L"\"/>");
         oWriter.WriteString(std::wstring(L"</p:stSnd></p:sndAc>"));
     }
     oWriter.WriteString(std::wstring(L"</p:transition>"));

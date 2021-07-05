@@ -412,7 +412,7 @@ void Animation::FillAudio(CRecordClientVisualElementContainer *pCVEC,
             bool bExternal(false);
             oAudio.cMediaNode.tgtEl.embed =
                     new OOX::RId(m_pRels->WriteAudio(pInfo1->m_strFilePath, bExternal));
-             oAudio.cMediaNode.tgtEl.name = pInfo1->m_name;
+             oAudio.cMediaNode.tgtEl.name = XmlUtils::EncodeXmlString(pInfo1->m_name);
         }
     }
 }

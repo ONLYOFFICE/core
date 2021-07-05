@@ -90,7 +90,7 @@
     CFile.prototype = Object.create(AscViewer.IFile.prototype);
     CFile.prototype.constructor = CFile;
 
-    CFile.prototype.load = function(arrayBuffer)
+    CFile.prototype.loadFromData = function(arrayBuffer)
     {
         var data = new Uint8Array(arrayBuffer);
         var _stream = Module["_malloc"](data.length);

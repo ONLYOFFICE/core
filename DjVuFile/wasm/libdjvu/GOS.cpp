@@ -63,7 +63,7 @@
 # pragma implementation
 #endif
 
-#include "./../libdjvu/GOS.h"
+#include "./../../libdjvu/GOS.h"
 
 // basename(filename[, suffix])
 // -- returns the last component of filename and removes suffix

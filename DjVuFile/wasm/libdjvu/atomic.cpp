@@ -28,7 +28,7 @@
 # include "config.h"
 #endif
 
-#include "../libdjvu/atomic.h"
+#include "../../libdjvu/atomic.h"
 
 int
 atomicAcquire(int volatile *lock)

@@ -66,12 +66,12 @@
 // From: Leon Bottou, 1/31/2002
 // All these XML messages are Lizardtech innovations.
 
-#include "./../libdjvu/DjVuMessage.h"
-#include "./../libdjvu/GOS.h"
-#include "./../libdjvu/XMLTags.h"
-#include "./../libdjvu/ByteStream.h"
-#include "./../libdjvu/GURL.h"
-#include "./../libdjvu/debug.h"
+#include "./../../libdjvu/DjVuMessage.h"
+#include "./../../libdjvu/GOS.h"
+#include "./../../libdjvu/XMLTags.h"
+#include "./../../libdjvu/ByteStream.h"
+#include "./../../libdjvu/GURL.h"
+#include "./../../libdjvu/debug.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>

@@ -70,10 +70,10 @@
 // mixture of code for syntactically parsing the urls (which it was)
 // and file status code (only for local file: urls).
 
-#include "./../libdjvu/GException.h"
-#include "./../libdjvu/GOS.h"
-#include "./../libdjvu/GURL.h"
-#include "./../libdjvu/debug.h"
+#include "./../../libdjvu/GException.h"
+#include "./../../libdjvu/GOS.h"
+#include "./../../libdjvu/GURL.h"
+#include "./../../libdjvu/debug.h"
 
 #include <stdlib.h>
 #include <stdio.h>

@@ -87,9 +87,9 @@ unsigned char* DJVU_GetPixmap(CDjvuFile* file, int page_index, int w, int h)
 
             for (int i = 0; i < w; ++i, pixmap_cur += 4, ++pLine)
             {
-                pixmap_cur[0] = pLine->b;
+                pixmap_cur[0] = pLine->r;
                 pixmap_cur[1] = pLine->g;
-                pixmap_cur[2] = pLine->r;
+                pixmap_cur[2] = pLine->b;
                 pixmap_cur[3] = 255;
             }
         }
@@ -146,9 +146,9 @@ unsigned char* DJVU_GetPixmap(CDjvuFile* file, int page_index, int w, int h)
 
                 for (int i = 0; i < w; ++i, pixmap_cur += 4, ++pLine)
                 {
-                    pixmap_cur[0] = pLine->b;
+                    pixmap_cur[0] = pLine->r;
                     pixmap_cur[1] = pLine->g;
-                    pixmap_cur[2] = pLine->r;
+                    pixmap_cur[2] = pLine->b;
                     pixmap_cur[3] = 255;
                 }
             }

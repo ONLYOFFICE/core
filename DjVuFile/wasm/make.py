@@ -97,6 +97,7 @@ if base.is_dir("./../../DesktopEditor/graphics/pro/js/deploy"):
     base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/xps.wasm", "./deploy/xps/xps.wasm")
 else:
     print("xps_make.py not used. core/DesktopEditor/graphics/pro/js/xps_make.py")
+    base.copy_dir("./all_files_test/xps", "./deploy/xps")
 
 base.delete_file("djvu.js")
 base.delete_file("djvu.wasm")

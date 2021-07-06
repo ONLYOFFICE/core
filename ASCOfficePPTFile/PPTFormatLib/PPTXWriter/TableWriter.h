@@ -71,6 +71,8 @@ public:
 
     void setGridSpan(int gridSpan);
 
+    bool isRealCell()const;
+
 private:
     void FillTxBody(PPTX::Logic::TxBody &oTxBody);
     void FillTcPr(PPTX::Logic::TableCellProperties& oTcPr);
@@ -108,6 +110,7 @@ public:
 
     static std::vector<int> getWidth(std::vector<CShapeElement *> &arrCells, bool isWidth = true);
     static std::vector<int> getHeight(std::vector<CShapeElement *> &arrCells, bool isHeight = true);
+    static bool checkRowForZeroHeight(const ProtoTableRow& oRow);
     MProtoTable getTable() const;
 
 private:

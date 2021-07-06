@@ -13,7 +13,7 @@ void TableWriter::Convert(PPTX::Logic::GraphicFrame &oGraphicFrame)
     if (!m_pTableElement)
         return;
 
-    if (m_pTableElement->m_xmlRawData.empty())
+    if (m_pTableElement->m_xmlRawData.empty()/* || true*/)
     {
         oGraphicFrame.nvGraphicFramePr = new PPTX::Logic::NvGraphicFramePr;
         FillNvGraphicFramePr(oGraphicFrame.nvGraphicFramePr.get2());
@@ -48,12 +48,13 @@ void TableWriter::FillXfrm(PPTX::Logic::Xfrm &oXFRM)
 {
     oXFRM.m_ns = L"p";
     double multip1 = m_pTableElement->m_bAnchorEnabled ? 1587.6 : 1;
-    double multip2 = m_pTableElement->m_bAnchorEnabled ? 1273.0 : 1;
+    double multip2 = m_pTableElement->m_bAnchorEnabled ? 1575.864 : 1;
+    double multip3 = m_pTableElement->m_bAnchorEnabled ? 1232.137 : 1;
     oXFRM.offX = int(m_pTableElement->m_rcAnchor.left * multip1);
     oXFRM.offY = int(m_pTableElement->m_rcAnchor.top  * multip1);
 
     oXFRM.extX = int(m_pTableElement->m_rcAnchor.right  * multip2);
-    oXFRM.extY = int(m_pTableElement->m_rcAnchor.bottom * multip2);
+    oXFRM.extY = int(m_pTableElement->m_rcAnchor.bottom * multip3);
 }
 
 void TableWriter::FillTable(PPTX::Logic::Table &oTable)
@@ -73,7 +74,7 @@ void TableWriter::FillTable(PPTX::Logic::Table &oTable)
     {
         PPTX::Logic::TableRow tr;
         FillRow(tr, protoTable[cRow]);
-        tr.Height = arrHeight[cRow];
+        tr.Height = ProtoTable::checkRowForZeroHeight(protoTable[cRow]) ? 0 : arrHeight[cRow];
         oTable.TableRows.push_back(tr);
     }
 }
@@ -137,14 +138,25 @@ std::vector<int> ProtoTable::getHeight(std::vector<CShapeElement*>& arrCells, bo
     }
 
     std::vector<int> gridHeight;
-    double multip = isHeight ? 1587.6 : 1.0;
+    double multip = isHeight ? 1587.5 : 1.0;
     for (const auto& h : mapTopHeight)
     {
         double value = isHeight ? h.second : h.first;
-        gridHeight.push_back(int(value * multip));
+        gridHeight.push_back(round(value * multip));
     }
 
     return gridHeight;
+}
+
+bool ProtoTable::checkRowForZeroHeight(const ProtoTableRow &oRow)
+{
+    for (const auto& cell : oRow)
+    {
+        if (cell.isRealCell())
+            return false;
+    }
+
+    return true;
 }
 
 void ProtoTable::initProtoTable()
@@ -487,6 +499,13 @@ void TCell::setParentDirection()
 void TCell::setGridSpan(int gridSpan)
 {
     m_gridSpan = gridSpan;
+}
+
+bool TCell::isRealCell() const
+{
+    if (m_rowSpan > 1 || m_gridSpan > 1 || m_parentDirection != TCell::none)
+        return false;
+    return true;
 }
 
 void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)

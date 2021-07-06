@@ -40,19 +40,11 @@ compiler_flags = ["-O3",
 
 exported_functions = ["_malloc",
                       "_free",
-                      "_Graphics_Malloc",
-                      "_Graphics_Free",
-                      "_Graphics_Create",
-                      "_Graphics_Destroy",
-                      "_Graphics_GetPagesCount",
-                      "_Graphics_GetPageHeight",
-                      "_Graphics_GetPageWidth",
-                      "_Graphics_GetPage",
-                      "_Graphics_Load",
-                      "_Fonts_Create",
-                      "_Fonts_Destroy",
-                      "_Fonts_Add",
-                      "_Fonts_Remove"]
+                      "_XPS_Load",
+                      "_XPS_Close",
+                      "_XPS_GetInfo",
+                      "_XPS_GetPixmap",
+                      "_XPS_Delete"]
 
 libGraphics_src_path = "../../"
 input_graphics_sources = ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "Graphics.cpp", "Brush.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp"]
@@ -163,7 +155,7 @@ if base.host_platform() == "windows":
     for item in sources:
         arguments += (item + " ")
 
-    windows_bat.append("call emcc -o graphics.js " + arguments + libs)
+    windows_bat.append("call emcc -o xps.js " + arguments + libs)
 else:
     windows_bat.append("#!/bin/bash")
     windows_bat.append("source ./emsdk/emsdk_env.sh")
@@ -198,29 +190,29 @@ else:
     for item in sources:
         arguments += (item + " ")
     
-    windows_bat.append("emcc -o graphics.js " + arguments + libs)
+    windows_bat.append("emcc -o xps.js " + arguments + libs)
 base.run_as_bat(windows_bat)
 
 # finalize
-base.replaceInFile("./graphics.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineGraphicsInit();}];")
-base.replaceInFile("./graphics.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
+base.replaceInFile("./xps.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
+graphics_js_content = base.readFile("./xps.js")
+engine_base_js_content = base.readFile("./wasm/js/xps_base.js")
+engine_js_content = engine_base_js_content.replace("//module", graphics_js_content)
 
-graphics_js_content = base.readFile("./graphics.js")
-desktop_fetch_content = base.readFile("./../../../../Common/js/desktop_fetch.js")
-string_utf8_content   = base.readFile("./../../../../Common/js/string_utf8.js")
+base.replaceInFile("./xps.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineGraphicsInit();}];")
+graphics_js_content = base.readFile("./xps.js")
 engine_base_js_content = base.readFile("./wasm/js/graphics.js")
-engine_js_content = engine_base_js_content.replace("//desktop_fetch", desktop_fetch_content)
-engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
-engine_js_content = engine_js_content.replace("//module", graphics_js_content)
+engine_graphics_js_content = engine_base_js_content.replace("//module", graphics_js_content)
 
 # write new version
-base.writeFile("./deploy/graphics.js", engine_js_content)
-base.copy_file("./graphics.wasm", "./deploy/graphics.wasm")
+base.writeFile("./deploy/xps.js", engine_js_content)
+base.writeFile("./deploy/graphics.js", engine_graphics_js_content)
+base.copy_file("./xps.wasm", "./deploy/xps.wasm")
 base.copy_file("./wasm/js/index.html", "./deploy/index.html")
 base.copy_file("./wasm/js/code_graphics.js", "./deploy/code_graphics.js")
 
-base.delete_file("graphics.js")
-base.delete_file("graphics.wasm")
+base.delete_file("xps.js")
+base.delete_file("xps.wasm")
 base.delete_dir("./temp")
 base.delete_dir("./xml")
 base.delete_file("raster.o")

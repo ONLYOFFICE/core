@@ -91,6 +91,12 @@ base.copy_file("./all_files_test/index.html", "./deploy/index.html")
 base.copy_file("./all_files_test/code.js", "./deploy/code.js")
 base.copy_file("./all_files_test/file.js", "./deploy/file.js")
 base.copy_dir("./all_files_test/pdf", "./deploy/pdf")
+if base.is_dir("./../../DesktopEditor/graphics/pro/js/deploy"):
+    base.create_dir("./deploy/xps")
+    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/xps.js", "./deploy/xps/xps.js")
+    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/xps.wasm", "./deploy/xps/xps.wasm")
+else:
+    print("xps_make.py not used. core/DesktopEditor/graphics/pro/js/xps_make.py")
 
 base.delete_file("djvu.js")
 base.delete_file("djvu.wasm")

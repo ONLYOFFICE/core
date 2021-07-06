@@ -18,6 +18,47 @@ CGlobalFontsMemoryStorage* CApplicationFontStreams::m_pMemoryStorage = NULL;
 extern "C" {
 #endif
 
+WASM_EXPORT CGraphicsFileDrawing* XPS_Load(BYTE* data, LONG size)
+{
+    CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing();
+    if (!CApplicationFontStreams::m_pMemoryStorage)
+        CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
+    pGraphics->LoadFromMemory(data, size);
+    return pGraphics;
+}
+WASM_EXPORT void  XPS_Close(CGraphicsFileDrawing* file)
+{
+    delete file;
+    RELEASEOBJECT(CApplicationFontStreams::m_pMemoryStorage);
+}
+WASM_EXPORT int*  XPS_GetInfo(CGraphicsFileDrawing* pGraphics)
+{
+    int pages_count = pGraphics->GetPagesCount();
+    int* buffer = new int[pages_count * 3 + 1];
+    int buffer_index = 0;
+    buffer[buffer_index++] = pages_count;
+    for (int page = 0; page < pages_count; ++page)
+    {
+        int nW = 0;
+        int nH = 0;
+        int nDpi = 0;
+        pGraphics->GetPageInfo(page, nW, nH, nDpi);
+        buffer[buffer_index++] = nW;
+        buffer[buffer_index++] = nH;
+        buffer[buffer_index++] = nDpi;
+    }
+    return buffer;
+}
+WASM_EXPORT BYTE* XPS_GetPixmap(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+{
+    return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH);
+}
+WASM_EXPORT void  XPS_Delete(unsigned char* pData)
+{
+    delete[] pData;
+}
+
+/*
 WASM_EXPORT void* Fonts_Create()
 {
     if (!CApplicationFontStreams::m_pMemoryStorage)
@@ -86,7 +127,6 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
     CGraphicsFileDrawing* ptGraphics = (CGraphicsFileDrawing*)graphics;
 
     // красная линия
-    /*
     CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
     pGraphics->SetCoordTransformOffset(-160.294, -109.826);
     pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
@@ -103,10 +143,8 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
     pGraphics->put_PenDashStyle(Aggplus::DashStyleSolid);
     pGraphics->put_IntegerGrid(true);
     pGraphics->ResetTransform();
-    */
 
     // круг с градиентной заливкой
-    /*
     CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
     pGraphics->SetCoordTransformOffset(-161.293, -94.833);
     pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
@@ -143,10 +181,8 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
     pGraphics->put_PenDashStyle(Aggplus::DashStyleSolid);
     pGraphics->put_IntegerGrid(true);
     pGraphics->ResetTransform();
-    */
 
     // треугольник с текстурной заливкой
-    /*
     CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
     pGraphics->SetCoordTransformOffset(-149.304, -101.83);
     pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
@@ -173,10 +209,8 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
     pGraphics->put_PenDashStyle(Aggplus::DashStyleSolid);
     pGraphics->put_IntegerGrid(true);
     pGraphics->ResetTransform();
-    */
 
     // изображение
-    /*
     CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
     pGraphics->SetCoordTransformOffset(-113.3, -75.565);
     pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
@@ -206,10 +240,8 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
     pGraphics->put_PenDashStyle(Aggplus::DashStyleSolid);
     pGraphics->put_IntegerGrid(true);
     pGraphics->ResetTransform();
-    */
 
     // текст
-    /*
     CGraphicsRenderer* pGraphics = ptGraphics->GetGraphicsForTest();
     pGraphics->SetCoordTransformOffset(-210.583, -111.159);
     pGraphics->SetTransform(1, 0, 0, 1, 0, 0);
@@ -236,10 +268,10 @@ WASM_EXPORT bool  Graphics_TEST(void* graphics)
 
     pGraphics->put_IntegerGrid(true);
     pGraphics->ResetTransform();
-    */
 
     return true;
 }
+*/
 /*
 WASM_EXPORT void* Graphics_Create()
 {
@@ -666,8 +698,8 @@ int main()
     //void* test = Graphics_Create(203, 187, 53.7104, 49.4771);
     //void* test = Graphics_Create(265, 265, 70.1146, 70.1146);
     //void* test = Graphics_Create(211, 119, 55.8251, 31.2208);
-    void* test = Graphics_Create();
-    void* fonts = Fonts_Create();
+    //void* test = Graphics_Create();
+    //void* fonts = Fonts_Create();
 
     /*
     BYTE* pData = NULL;
@@ -690,34 +722,32 @@ int main()
     NSFile::CFileBinary oFile;
     if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.xps", &pXpsData, nXpsBytesCount))
     {
-        Fonts_Destroy();
-        Graphics_Destroy(test);
         RELEASEARRAYOBJECTS(pXpsData);
         return 1;
     }
     oFile.CloseFile();
 
-    Graphics_Load(test, pXpsData, nXpsBytesCount);
-    int nHeight = Graphics_GetPageHeight(test, 0);
-    int nWidth  = Graphics_GetPageWidth(test,  0);
-
-    BYTE* res   = Graphics_GetPage(test, 0, nWidth, nHeight);
+    CGraphicsFileDrawing* test = XPS_Load(pXpsData, nXpsBytesCount);
+    XPS_Delete(pXpsData);
+    int* info = XPS_GetInfo(test);
+    int pages_count = *info;
+    BYTE* res = NULL;
+    if (pages_count > 0)
+        res = XPS_GetPixmap(test, 0, info[1], info[2]);
 
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";
 
     CBgraFrame* resFrame = new CBgraFrame();
     resFrame->put_Data(res);
-    resFrame->put_Width(nWidth);
-    resFrame->put_Height(nHeight);
-    resFrame->put_Stride(-4 * nWidth);
+    resFrame->put_Width(info[1]);
+    resFrame->put_Height(info[2]);
+    resFrame->put_Stride(-4 * info[1]);
     resFrame->put_IsRGBA(true);
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
-    Graphics_Destroy(test);
-    Fonts_Destroy();
-    RELEASEARRAYOBJECTS(pXpsData);
+    XPS_Close(test);
     RELEASEARRAYOBJECTS(res);
     RELEASEOBJECT(resFrame);
     return 0;

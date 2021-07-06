@@ -66,6 +66,5 @@ window.onresize = function()
 		return;
 	dst.height = window.loadedImage.height > 1000 ? 1000 : window.loadedImage.height;
 	dst.width  = dst.height == 1000 ? 1000 * window.loadedImage.width / window.loadedImage.height : window.loadedImage.width;
-	dst.getContext("2d").transform(1, 0, 0, -1, 0, dst.height);
 	dst.getContext("2d").drawImage(window.loadedImage, 0, 0, dst.width, dst.height);
 };

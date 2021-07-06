@@ -265,6 +265,11 @@ void main() {\n\
 
         if (!file)
         {
+            file = new window["AscViewer"].XpsFile();
+        }
+		
+		if (!file)
+        {
             file = new window["AscViewer"].PdfFile();
             file.type = 1;
         }

@@ -47,14 +47,13 @@ void TableWriter::FillNvGraphicFramePr(PPTX::Logic::NvGraphicFramePr& oNvGFPr)
 void TableWriter::FillXfrm(PPTX::Logic::Xfrm &oXFRM)
 {
     oXFRM.m_ns = L"p";
-    double multip1 = m_pTableElement->m_bAnchorEnabled ? 1587.6 : 1;
-    double multip2 = m_pTableElement->m_bAnchorEnabled ? 1575.864 : 1;
-    double multip3 = m_pTableElement->m_bAnchorEnabled ? 1232.137 : 1;
-    oXFRM.offX = int(m_pTableElement->m_rcAnchor.left * multip1);
-    oXFRM.offY = int(m_pTableElement->m_rcAnchor.top  * multip1);
+    double multip1 = m_pTableElement->m_bAnchorEnabled ? 1587.5 : 1;
 
-    oXFRM.extX = int(m_pTableElement->m_rcAnchor.right  * multip2);
-    oXFRM.extY = int(m_pTableElement->m_rcAnchor.bottom * multip3);
+    oXFRM.offX = round(m_pTableElement->m_rcAnchor.left * multip1);
+    oXFRM.offY = round(m_pTableElement->m_rcAnchor.top  * multip1);
+
+    oXFRM.extX = round(m_pTableElement->m_rcAnchor.GetWidth()  * multip1);
+    oXFRM.extY = round(m_pTableElement->m_rcAnchor.GetHeight() * multip1);
 }
 
 void TableWriter::FillTable(PPTX::Logic::Table &oTable)
@@ -103,11 +102,11 @@ std::vector<int> ProtoTable::getWidth(std::vector<CShapeElement*>& arrCells, boo
     }
 
     std::vector<int> gridWidth;
-    double multip = isWidth ? 1587.6 : 1.0;
+    double multip = isWidth ? 1587.5 : 1.0;
     for (const auto& w : mapLeftWidth)
     {
         double value = isWidth ? w.second : w.first;
-        gridWidth.push_back(int(value * multip));
+        gridWidth.push_back(round(value * multip));
     }
 
     return gridWidth;
@@ -348,9 +347,9 @@ MProtoTable ProtoTable::getTable() const
 
 void TableWriter::FillTblPr(PPTX::Logic::TableProperties &oTblPr)
 {
-    oTblPr.TableStyleId = L"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}";
-    oTblPr.FirstRow = true;
-    oTblPr.BandRow = true;
+//    oTblPr.TableStyleId = L"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}";
+//    oTblPr.FirstRow = true;
+//    oTblPr.BandRow = true;
 }
 
 void TableWriter::FillTblGrid(std::vector<PPTX::Logic::TableCol> &tblGrid, std::vector<CShapeElement*>& arrCells)
@@ -462,10 +461,10 @@ TCell::eMergeDirection TCell::parentDirection() const
 int TCell::getHeight() const
 {
     auto pShape = m_pParent ? m_pParent->m_pShape : m_pShape;
-    double multip = pShape->m_bAnchorEnabled ? 1587.6 : 1;
+    double multip = pShape->m_bAnchorEnabled ? 1587.5 : 1;
     double height = pShape->m_rcChildAnchor.bottom - pShape->m_rcChildAnchor.top;
 
-    return int(height * multip);
+    return round(height * multip);
 }
 
 void TCell::setPParent(TCell *pParent)
@@ -503,7 +502,7 @@ void TCell::setGridSpan(int gridSpan)
 
 bool TCell::isRealCell() const
 {
-    if (m_rowSpan > 1 || m_gridSpan > 1 || m_parentDirection != TCell::none)
+    if (m_rowSpan == 2 || m_gridSpan == 2 || m_parentDirection != TCell::none)
         return false;
     return true;
 }

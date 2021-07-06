@@ -61,21 +61,8 @@ public:
         for (int j = nRasterH - 1; j >= nRasterH / 2; --j)
         {
             BYTE* pLine = flipped + (j * nRasterW * 4);
-            for (int i = 0; i < nRasterW; ++i, pixmap_cur += 4, pLine += 4)
-            {
-                BYTE r = pixmap_cur[0];
-                BYTE g = pixmap_cur[1];
-                BYTE b = pixmap_cur[2];
-                BYTE a = pixmap_cur[3];
-                pixmap_cur[0] = pLine[0];
-                pixmap_cur[1] = pLine[1];
-                pixmap_cur[2] = pLine[2];
-                pixmap_cur[3] = pLine[3];
-                pLine[0] = r;
-                pLine[1] = g;
-                pLine[2] = b;
-                pLine[3] = a;
-            }
+            std::swap_ranges(pixmap_cur, pixmap_cur + nRasterW * 4, pLine);
+            pixmap_cur += nRasterW * 4;
         }
         return flipped;
     }

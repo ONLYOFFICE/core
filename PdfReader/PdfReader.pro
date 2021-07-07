@@ -57,7 +57,6 @@ SOURCES -= \
 SOURCES += \
     Src/RendererOutputDev.cpp \
     Src/Adaptors.cpp \
-    Src/StringExt.cpp \
     PdfReader.cpp
 
 HEADERS +=\
@@ -77,7 +76,6 @@ HEADERS +=\
     Resources/Fonts050000l.h \
     Src/RendererOutputDev.h \
     Src/Adaptors.h \
-    Src/StringExt.h \
     Src/MemoryUtils.h \
     PdfReader.h
 

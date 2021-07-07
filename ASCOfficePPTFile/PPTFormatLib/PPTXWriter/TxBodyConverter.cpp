@@ -1,5 +1,6 @@
 #include "TxBodyConverter.h"
 #include "../../../Common/MS-LCID.h"
+#include "StylesWriter.h"
 
 using namespace PPT_FORMAT;
 
@@ -22,8 +23,10 @@ void TxBodyConverter::ConvertTableTxBody(PPTX::Logic::TxBody &oTxBody)
 {
     oTxBody.bodyPr = new PPTX::Logic::BodyPr;
     oTxBody.lstStyle = new PPTX::Logic::TextListStyle;
+
     oTxBody.m_name = L"a:txBody";
 
+    FillLstStyles(oTxBody.lstStyle.get2(), m_pText->m_oStyles);
     FillParagraphs(oTxBody.Paragrs, m_pText->m_arParagraphs);
 }
 
@@ -72,6 +75,33 @@ void TxBodyConverter::FillParagraph(PPTX::Logic::Paragraph &p, CParagraph &parag
 
     p.endParaRPr = new PPTX::Logic::RunProperties;
     FillEndParaRPr(p.endParaRPr.get2(), paragraph.m_oPFRun);
+}
+
+void TxBodyConverter::FillLstStyles(PPTX::Logic::TextListStyle &oTLS, CTextStyles &oStyles)
+{
+    auto* pLevels = oStyles.m_pLevels;
+    for (int i = 0; i < 10; i++)
+    {
+        if (pLevels[i].is_init())
+        {
+            PPTX::Logic::TextParagraphPr level;
+            ConvertStyleLevel(level, pLevels[i].get(), i);
+            oTLS.levels[i] = std::move(level);
+        }
+    }
+
+}
+
+void TxBodyConverter::ConvertStyleLevel(PPTX::Logic::TextParagraphPr &oLevel, CTextStyleLevel& oOldLevel, const int &nLevel)
+{
+    if (nLevel == 9)
+        oLevel.m_name = _T("a:defPPr");
+    else
+    {
+        oLevel.m_name = L"a:lvl" + std::to_wstring(nLevel + 1) + L"pPr";
+    }
+
+    ConverpPFRun(oLevel, &oOldLevel.m_oPFRun);
 }
 
 void TxBodyConverter::FillRun(PPTX::Logic::Run &oRun, CSpan& oSpan)
@@ -187,7 +217,7 @@ void TxBodyConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CParagraph &pa
     {
         auto pSpcBef = new PPTX::Logic::TextSpacing;
         pSpcBef->m_name = L"a:spcBef";
-        pSpcBef->spcPts = (int)(12.5 * oPFRun.spaceBefore.get());
+        pSpcBef->spcPts = round(12.5 * oPFRun.spaceBefore.get());
 
         oPPr.spcBef = pSpcBef;
     }
@@ -332,4 +362,126 @@ void TxBodyConverter::FillBuChar(PPTX::Logic::Bullet &oBullet, WCHAR symbol)
     pBuChar->Char.clear();
     pBuChar->Char.push_back(symbol);
     oBullet.m_Bullet.reset(pBuChar);
+}
+
+void TxBodyConverter::ConverpPFRun(PPTX::Logic::TextParagraphPr &oLevel, CTextPFRun *pPF)
+{
+    if (pPF->textDirection.is_init())
+    {
+        if (pPF->textDirection.get() == 1)	oLevel.rtl = true;
+        else								oLevel.rtl = false;
+    }
+    if (pPF->fontAlign.is_init())
+    {
+        oLevel.fontAlgn = new PPTX::Limit::FontAlign;
+        oLevel.fontAlgn->set(CStylesWriter::GetFontAlign(pPF->fontAlign.get()));
+    }
+
+    int leftMargin = 0;
+    if (pPF->leftMargin.is_init())
+    {
+        leftMargin = pPF->leftMargin.get();
+        oLevel.marL = leftMargin;
+    }
+    if (pPF->indent.is_init())
+    {
+        oLevel.indent = pPF->indent.get() - leftMargin;
+    }
+    if (pPF->textAlignment.is_init())
+    {
+        oLevel.algn = new PPTX::Limit::TextAlign;
+        oLevel.algn->set(CStylesWriter::GetTextAlign(pPF->textAlignment.get()));
+    }
+    if (pPF->defaultTabSize.is_init())
+    {
+        oLevel.defTabSz = pPF->defaultTabSize.get();
+    }
+
+    ConvertTabStops(oLevel.tabLst, pPF->tabStops);
+
+    if (pPF->lineSpacing.is_init())
+    {
+        auto pLnSpc = new PPTX::Logic::TextSpacing;
+        pLnSpc->m_name = L"a:lnSpc";
+        pLnSpc->spcPct = *(pPF->lineSpacing) * -1000;
+        oLevel.lnSpc = pLnSpc;
+    }
+
+    if (pPF->spaceAfter.is_init())
+    {
+        auto pSpcAft = new PPTX::Logic::TextSpacing;
+        pSpcAft->m_name = L"a:spcAft";
+        pSpcAft->spcPts = (int)(12.5 * pPF->spaceAfter.get());
+
+        oLevel.spcAft = pSpcAft;
+    }
+    if (pPF->spaceBefore.is_init())
+    {
+        auto pSpcBef = new PPTX::Logic::TextSpacing;
+        pSpcBef->m_name = L"a:spcBef";
+        pSpcBef->spcPts = round(12.5 * pPF->spaceBefore.get());
+
+        oLevel.spcBef = pSpcBef;
+    }
+
+    if (pPF->bulletColor.is_init())
+    {
+        FillBuClr(oLevel.buColor, pPF->bulletColor.get());
+    }
+
+    if (pPF->hasBullet.is_init() && *(pPF->hasBullet) == true)
+    {
+        if (pPF->bulletChar.is_init())
+        {
+            FillBuChar(oLevel.ParagraphBullet, pPF->bulletChar.get());
+        } else
+        {
+            FillBuChar(oLevel.ParagraphBullet, L'•');
+        }
+    }
+
+    if (pPF->bulletFontProperties.is_init())
+    {
+        auto pTypeface = new PPTX::Logic::BulletTypeface();
+        auto pFont = new PPTX::Logic::TextFont();
+        pFont->m_name = _T("a:buFont");
+        pFont->typeface = pPF->bulletFontProperties->Name;
+        pFont->pitchFamily = std::to_wstring(pPF->bulletFontProperties->PitchFamily);
+        pFont->charset = std::to_wstring(pPF->bulletFontProperties->PitchFamily);
+
+        pTypeface->m_Typeface.reset(pFont);
+        oLevel.buTypeface.m_Typeface.reset(pTypeface);
+    }
+
+    if (pPF->bulletAutoNum.is_init() && pPF->bulletFontProperties.is_init() && pPF->bulletFontProperties->Charset == 0)
+    {
+        auto pBuAutoNum = new PPTX::Logic::BuAutoNum;
+        oLevel.ParagraphBullet.m_Bullet.reset(pBuAutoNum);
+        if (pPF->bulletAutoNum->startAt.is_init() && pPF->bulletAutoNum->startAt.get() != 1)
+            pBuAutoNum->startAt = pPF->bulletAutoNum->startAt.get();
+        if (pPF->bulletAutoNum->type.is_init())
+            pBuAutoNum->type = pPF->bulletAutoNum->type.get();
+    }
+
+}
+
+void TxBodyConverter::ConvertTabStops(std::vector<PPTX::Logic::Tab> &arrTabs, std::vector<std::pair<int, int> > &arrTabStops)
+{
+    for (size_t t = 0 ; t < arrTabStops.size(); t++)
+    {
+        PPTX::Logic::Tab tab;
+        tab.pos = arrTabStops[t].first;
+        auto pAlgn = new PPTX::Limit::TextTabAlignType;
+
+        switch (arrTabStops[t].second)
+        {
+        case 1: pAlgn->set(L"ctr"); break;
+        case 2: pAlgn->set(L"r"); break;
+        case 3: pAlgn->set(L"dec"); break;
+        default: pAlgn->set(L"l");
+        }
+        tab.algn = pAlgn;
+
+        arrTabs.push_back(tab);
+    }
 }

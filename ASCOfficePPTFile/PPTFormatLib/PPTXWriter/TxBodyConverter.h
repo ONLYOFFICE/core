@@ -54,6 +54,10 @@ private:
 private:
     void FillParagraphs(std::vector<PPTX::Logic::Paragraph>& arrP, std::vector<CParagraph>& arrParagraphs);
     void FillParagraph(PPTX::Logic::Paragraph& p, CParagraph& paragraph);
+    void FillLstStyles(PPTX::Logic::TextListStyle& oTLS, CTextStyles& oStyles);
+    void ConvertStyleLevel(PPTX::Logic::TextParagraphPr &oLevel, CTextStyleLevel& oOldLevel, const int& nLevel);
+    void ConverpPFRun(PPTX::Logic::TextParagraphPr &oLevel, PPT_FORMAT::CTextPFRun* pPF);
+    void ConvertTabStops(std::vector<PPTX::Logic::Tab>& arrTabs, std::vector<std::pair<int, int>>& arrTabStops);
     void FillRun(PPTX::Logic::Run& oRun, CSpan &oSpan);
     void FillEndParaRPr(PPTX::Logic::RunProperties& oEndPr, CTextPFRun& oPFRun);
     void FillPPr(PPTX::Logic::TextParagraphPr& oPPr, CParagraph &paragraph);

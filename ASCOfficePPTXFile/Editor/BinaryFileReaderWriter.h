@@ -512,7 +512,7 @@ namespace NSBinPptxRW
 
 	class CBinaryFileReader
 	{
-	private:
+	protected:
 		BYTE*	m_pData;
 		LONG	m_lSize;
 		LONG	m_lPos;

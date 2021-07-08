@@ -13,7 +13,7 @@ void TableWriter::Convert(PPTX::Logic::GraphicFrame &oGraphicFrame)
     if (!m_pTableElement)
         return;
 
-    if (m_pTableElement->m_xmlRawData.empty() /*|| true*/)
+    if (m_pTableElement->m_xmlRawData.empty() || true)
     {
         oGraphicFrame.nvGraphicFramePr = new PPTX::Logic::NvGraphicFramePr;
         FillNvGraphicFramePr(oGraphicFrame.nvGraphicFramePr.get2());
@@ -539,6 +539,13 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
         oTcPr.AnchorCtr = true;
     }
 
+    oTcPr.MarB = round(m_pShape->m_pShape->m_dTextMarginBottom); // 0
+    oTcPr.MarT = round(m_pShape->m_pShape->m_dTextMarginY); // 12512
+    oTcPr.MarL = round(m_pShape->m_pShape->m_dTextMarginX);
+    oTcPr.MarR = round(m_pShape->m_pShape->m_dTextMarginRight);
+
+    oTcPr.HorzOverflow = new PPTX::Limit::HorzOverflow;
+    oTcPr.HorzOverflow->set(L"overflow");
 
     auto pSolidFill = new PPTX::Logic::SolidFill;
     auto& brush = m_pShape->m_oBrush;

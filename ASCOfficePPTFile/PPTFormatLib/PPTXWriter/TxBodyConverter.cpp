@@ -26,8 +26,11 @@ void TxBodyConverter::ConvertTableTxBody(PPTX::Logic::TxBody &oTxBody)
 
     oTxBody.m_name = L"a:txBody";
 
-    FillLstStyles(oTxBody.lstStyle.get2(), m_pText->m_oStyles);
-    FillParagraphs(oTxBody.Paragrs, m_pText->m_arParagraphs);
+    if (m_pText)
+    {
+        FillLstStyles(oTxBody.lstStyle.get2(), m_pText->m_oStyles);
+        FillParagraphs(oTxBody.Paragrs, m_pText->m_arParagraphs);
+    }
 }
 
 void TxBodyConverter::ConvertShapeTxBody(PPTX::Logic::TxBody &oTxBody)
@@ -82,7 +85,7 @@ void TxBodyConverter::FillLstStyles(PPTX::Logic::TextListStyle &oTLS, CTextStyle
     auto* pLevels = oStyles.m_pLevels;
     for (int i = 0; i < 10; i++)
     {
-        if (pLevels[i].is_init())
+        if (pLevels[i].is_init() && false)
         {
             PPTX::Logic::TextParagraphPr level;
             ConvertStyleLevel(level, pLevels[i].get(), i);
@@ -116,7 +119,7 @@ void TxBodyConverter::FillEndParaRPr(PPTX::Logic::RunProperties &oEndPr, CTextPF
 {
     oEndPr.m_name = L"a:endParaRPr";
     oEndPr.lang = L"en-US";
-    oEndPr.dirty = true;
+//    oEndPr.dirty = true;
 
     //    if ((oPFRun.Size.is_init()) && (oPFRun.Size.get() > 0) && (oCFRun.Size.get() < 4001))
     //    {
@@ -209,7 +212,7 @@ void TxBodyConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CParagraph &pa
     {
         auto pSpcAft = new PPTX::Logic::TextSpacing;
         pSpcAft->m_name = L"a:spcAft";
-        pSpcAft->spcPts = (int)(12.5 * oPFRun.spaceAfter.get());
+        pSpcAft->spcPts = round(12.5 * oPFRun.spaceAfter.get());
 
         oPPr.spcAft = pSpcAft;
     }
@@ -377,15 +380,17 @@ void TxBodyConverter::ConverpPFRun(PPTX::Logic::TextParagraphPr &oLevel, CTextPF
         oLevel.fontAlgn->set(CStylesWriter::GetFontAlign(pPF->fontAlign.get()));
     }
 
+    int indent = 0;
     int leftMargin = 0;
+    if (pPF->indent.is_init())
+    {
+        indent = pPF->indent.get();
+//        oLevel.indent = pPF->indent.get() - leftMargin;
+    }
     if (pPF->leftMargin.is_init())
     {
         leftMargin = pPF->leftMargin.get();
-        oLevel.marL = leftMargin;
-    }
-    if (pPF->indent.is_init())
-    {
-        oLevel.indent = pPF->indent.get() - leftMargin;
+        oLevel.marL = leftMargin - indent;
     }
     if (pPF->textAlignment.is_init())
     {
@@ -411,7 +416,7 @@ void TxBodyConverter::ConverpPFRun(PPTX::Logic::TextParagraphPr &oLevel, CTextPF
     {
         auto pSpcAft = new PPTX::Logic::TextSpacing;
         pSpcAft->m_name = L"a:spcAft";
-        pSpcAft->spcPts = (int)(12.5 * pPF->spaceAfter.get());
+        pSpcAft->spcPts = round(12.5 * pPF->spaceAfter.get());
 
         oLevel.spcAft = pSpcAft;
     }

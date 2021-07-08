@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Elements.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/TxBody.h"
 
 namespace PPT_FORMAT
@@ -44,7 +44,7 @@ public:
         shape,
         table
     };
-    TxBodyConverter(CTextAttributesEx* pText, eTxType txType);
+    TxBodyConverter(CShapeElement* pShapeElement, eTxType txType);
 
     void FillTxBody(PPTX::Logic::TxBody& oTxBody);
 private:
@@ -52,6 +52,10 @@ private:
     void ConvertShapeTxBody(PPTX::Logic::TxBody& oTxBody);
 
 private:
+    void FillBodyPr(PPTX::Logic::BodyPr& oBodyPr);
+
+
+
     void FillParagraphs(std::vector<PPTX::Logic::Paragraph>& arrP, std::vector<CParagraph>& arrParagraphs);
     void FillParagraph(PPTX::Logic::Paragraph& p, CParagraph& paragraph);
     void FillLstStyles(PPTX::Logic::TextListStyle& oTLS, CTextStyles& oStyles);
@@ -70,7 +74,9 @@ private:
     void FillBuChar(PPTX::Logic::Bullet& oBullet, WCHAR symbol);
 
 private:
-    CTextAttributesEx* m_pText;
+    CShapeElement* m_pShapeElement;
+    CTextAttributesEx& oText;
+
     eTxType m_txType;
 };
 }

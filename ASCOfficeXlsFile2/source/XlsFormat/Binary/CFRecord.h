@@ -41,7 +41,6 @@
 #include "../../../../ASCOfficeDocFile/DocDocxConverter/OfficeDrawing/Record.h"
 #include "../../../../DesktopEditor/common/File.h"
 #include "../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
-#include "../../../Common/DocxFormat/Source/XlsbFormat/RecordTypes.h"
 namespace XLS
 {
 

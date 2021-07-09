@@ -40,7 +40,6 @@
 #include <string>
 #include <memory.h>
 #include <iostream>
-#include "RecordTypes.h"
 #include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 typedef BYTE *LPBYTE;
 using namespace XLS;

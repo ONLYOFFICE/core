@@ -2,8 +2,8 @@
 #include "TxBodyConverter.h"
 #include <iostream>
 
-TableWriter::TableWriter(CTableElement *pTableElement) :
-    m_pTableElement(pTableElement)
+TableWriter::TableWriter(CTableElement *pTableElement, CRelsGenerator* pRels) :
+    m_pTableElement(pTableElement), m_pRels(pRels)
 {
 
 }

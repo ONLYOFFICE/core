@@ -33,6 +33,7 @@
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Elements.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/TxBody.h"
+#include "ImageManager.h"
 
 namespace PPT_FORMAT
 {
@@ -44,7 +45,7 @@ public:
         shape,
         table
     };
-    TxBodyConverter(CShapeElement* pShapeElement, eTxType txType);
+    TxBodyConverter(CShapeElement* pShapeElement, CRelsGenerator* pRels,  eTxType txType);
 
     void FillTxBody(PPTX::Logic::TxBody& oTxBody);
 private:
@@ -53,30 +54,37 @@ private:
 
 private:
     void FillBodyPr(PPTX::Logic::BodyPr& oBodyPr);
+    void FillLstStyles(PPTX::Logic::TextListStyle& oTLS, CTextStyles& oStyles);
+    void FillParagraph(PPTX::Logic::Paragraph& p, CParagraph& paragraph);
+    void FillPPr(PPTX::Logic::TextParagraphPr& oPPr, CParagraph &paragraph);
+    void ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, PPT_FORMAT::CTextPFRun* pPF);
+    void ConvertTabStops(std::vector<PPTX::Logic::Tab>& arrTabs, std::vector<std::pair<int, int>>& arrTabStops);
+    void FillBuChar(PPTX::Logic::Bullet& oBullet, WCHAR symbol);
+    void ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF);
+    void FillBuClr(PPTX::Logic::BulletColor& oBuClr, CColor& oColor);
+    void FillRun(PPTX::Logic::Run& oRun, CSpan &oSpan);
+    PPTX::Logic::RunProperties* getNewEndParaRPr(const int dirty = -1, const int sz = -1, const std::wstring& lang = L"");
+    void FillRPr(PPTX::Logic::RunProperties& oRPr, CTextCFRun& oCFRun);
+    void ConvertLine(PPTX::Logic::Ln& oLn);
+    void ConvertLineEnd(PPTX::Logic::LineEnd& oLine, unsigned char cap, unsigned char length, unsigned char width, bool isHead);
+    void ConvertBrush(PPTX::Logic::RunProperties& oRPr);
+    void FillSolidFill(PPTX::Logic::UniFill& oUF, CColor& oColor);
 
 
 
     void FillParagraphs(std::vector<PPTX::Logic::Paragraph>& arrP, std::vector<CParagraph>& arrParagraphs);
-    void FillParagraph(PPTX::Logic::Paragraph& p, CParagraph& paragraph);
-    void FillLstStyles(PPTX::Logic::TextListStyle& oTLS, CTextStyles& oStyles);
     void ConvertStyleLevel(PPTX::Logic::TextParagraphPr &oLevel, CTextStyleLevel& oOldLevel, const int& nLevel);
-    void ConverpPFRun(PPTX::Logic::TextParagraphPr &oLevel, PPT_FORMAT::CTextPFRun* pPF);
-    void ConvertTabStops(std::vector<PPTX::Logic::Tab>& arrTabs, std::vector<std::pair<int, int>>& arrTabStops);
-    void FillRun(PPTX::Logic::Run& oRun, CSpan &oSpan);
     void FillEndParaRPr(PPTX::Logic::RunProperties& oEndPr, CTextPFRun& oPFRun);
-    void FillPPr(PPTX::Logic::TextParagraphPr& oPPr, CParagraph &paragraph);
-    void FillRPr(PPTX::Logic::RunProperties& oRPr, CTextCFRun& oCFRun);
     void FillLatin(PPTX::Logic::TextFont& oLatin, CFontProperty &font);
     void FillCS(PPTX::Logic::TextFont& oCs, CFontProperties& font);
     void FillEffectLst(PPTX::Logic::EffectProperties &oEList, CTextCFRun& oCFRun);
-    void FillSolidFill(PPTX::Logic::UniFill& oUF, CColor& oColor);
-    void FillBuClr(PPTX::Logic::BulletColor& oBuClr, CColor& oColor);
-    void FillBuChar(PPTX::Logic::Bullet& oBullet, WCHAR symbol);
 
 private:
     CShapeElement* m_pShapeElement;
+    CRelsGenerator* m_pRels;
     CTextAttributesEx& oText;
 
     eTxType m_txType;
+    bool m_bWordArt;
 };
 }

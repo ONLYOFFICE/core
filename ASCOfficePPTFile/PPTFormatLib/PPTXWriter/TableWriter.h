@@ -33,6 +33,7 @@
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/GraphicFrame.h"
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Elements.h"
+#include "ImageManager.h"
 
 namespace PPT_FORMAT
 {
@@ -136,7 +137,7 @@ private:
 class TableWriter
 {
 public:
-    TableWriter(CTableElement *pTableElement);
+    TableWriter(CTableElement *pTableElement, CRelsGenerator* pRels);
 
     void Convert(PPTX::Logic::GraphicFrame& oGraphicFrame);
 
@@ -159,7 +160,8 @@ private:
     void FillnvPr(PPTX::Logic::NvPr& oNvPr);
 
 private:
-    CTableElement *m_pTableElement;
+    CTableElement* m_pTableElement;
+    CRelsGenerator* m_pRels;
     nullable<ProtoTable> m_nPTable;
 };
 }

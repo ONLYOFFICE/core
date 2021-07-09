@@ -7,8 +7,8 @@ namespace XLSB {
         return &factory;
     }
 
-    std::shared_ptr<BaseRecord> CBiff12RecordFactory::Create(int typeRecord) {
-        BaseRecord* instance = nullptr;
+    std::shared_ptr<CBiff12RecordBase> CBiff12RecordFactory::Create(int typeRecord) {
+        CBiff12RecordBase* instance = nullptr;
 
         // find name in the registry and call factory method.
         auto it = factoryFunctionRegistry.find(typeRecord);
@@ -20,7 +20,7 @@ namespace XLSB {
         // wrap instance in a shared ptr and return
         if (instance != nullptr)
         {
-            return std::shared_ptr<BaseRecord>(instance);
+            return std::shared_ptr<CBiff12RecordBase>(instance);
         }
         else
         {
@@ -28,7 +28,7 @@ namespace XLSB {
         }
     }
 
-    void CBiff12RecordFactory::RegisterFactoryFunction(int typeRecord, std::function<BaseRecord*(void)> classFactoryFunction)
+    void CBiff12RecordFactory::RegisterFactoryFunction(int typeRecord, std::function<CBiff12RecordBase*(void)> classFactoryFunction)
     {
         // register the class factory function
         factoryFunctionRegistry.insert(std::make_pair(typeRecord, classFactoryFunction));

@@ -32,20 +32,20 @@
 #ifndef QUERYTABLE_H
 #define QUERYTABLE_H
 
-#include "BaseRecord.h"
+#include "Biff12RecordBase.h"
 namespace XLSB {
 
-    class QueryTableRecord : public BaseRecord
+    class QueryTableRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
             if (reclen >= 14)
             {
-                DWORD connectionId = GetDword(p + 6);
+                DWORD connectionId = CBinaryBiff12StreamReader::GetDword(p + 6);
 
-                DWORD lenName = GetDword(p + 10);
+                DWORD lenName = CBinaryBiff12StreamReader::GetDword(p + 10);
 
-                std::wstring s = GetString(p + 10 + 4, lenName);
+                std::wstring s = CBinaryBiff12StreamReader::GetString(p + 10 + 4, lenName);
 
                 WCHAR tmp[256];
                 swprintf(tmp, sizeof(tmp), L"\tinfo : connectionId=%d, name=%s lenName=%d\r\n",
@@ -67,7 +67,7 @@ namespace XLSB {
         }
     };
 
-    class QueryTableEndRecord : public BaseRecord
+    class QueryTableEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -79,7 +79,7 @@ namespace XLSB {
         }
     };
 
-    class QueryTableRefreshRecord : public BaseRecord
+    class QueryTableRefreshRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -91,7 +91,7 @@ namespace XLSB {
         }
     };
 
-    class QueryTableRefreshEndRecord : public BaseRecord
+    class QueryTableRefreshEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -103,7 +103,7 @@ namespace XLSB {
         }
     };
 
-    class QueryTableFieldsRecord : public BaseRecord
+    class QueryTableFieldsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -115,7 +115,7 @@ namespace XLSB {
         }
     };
 
-    class QueryTableFieldsEndRecord : public BaseRecord
+    class QueryTableFieldsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -127,18 +127,18 @@ namespace XLSB {
         }
     };
 
-    class QueryTableFieldRecord : public BaseRecord
+    class QueryTableFieldRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
             if (reclen >= 16)
             {
-                DWORD fieldId = GetDword(p + 4);
-                DWORD tableColumnId = GetDword(p + 8);
+                DWORD fieldId = CBinaryBiff12StreamReader::GetDword(p + 4);
+                DWORD tableColumnId = CBinaryBiff12StreamReader::GetDword(p + 8);
 
-                DWORD lenfieldName = GetDword(p + 12);
+                DWORD lenfieldName = CBinaryBiff12StreamReader::GetDword(p + 12);
 
-                std::wstring s = GetString(p + 12 + 4, lenfieldName);
+                std::wstring s = CBinaryBiff12StreamReader::GetString(p + 12 + 4, lenfieldName);
 
                 WCHAR tmp[256];
                 swprintf(tmp, sizeof(tmp), L"\tinfo : fieldId=%d, fieldName=%s lenfieldName=%d, tableColumnId=%d\r\n",
@@ -160,7 +160,7 @@ namespace XLSB {
         }
     };
 
-    class QueryTableFieldEndRecord : public BaseRecord
+    class QueryTableFieldEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {

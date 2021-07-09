@@ -42,6 +42,14 @@
 #include "WorkbookPr.h"
 #include "ExternalReferences.h"
 
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalsSubstream.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
+
+#include "../../XlsbFormat/WorkBookStream.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -91,7 +99,30 @@ namespace OOX
 			virtual ~CWorkbook()
 			{
 			}
+            void readBin(const CPath& oPath)
+            {
+                auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
+                XLS::GlobalWorkbookInfoPtr xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
 
+                NSFile::CFileBinary oFile;
+                if (oFile.OpenFile(oPath.GetPath()) == false)
+                    return;
+
+                auto m_lStreamLen = (LONG)oFile.GetFileSize();
+                auto m_pStream = new BYTE[m_lStreamLen];
+                DWORD dwRead = 0;
+                oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
+                oFile.CloseFile();
+                std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
+                binaryReader->Init(m_pStream, 0, dwRead);
+
+                XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
+                //auto xls_document = std::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
+                XLSB::WorkBookStreamPtr workBookStream(new XLSB::WorkBookStream(workbook_code_page));
+                XLS::BinReaderProcessor proc(reader, workBookStream.get(), true);
+
+                proc.mandatory(*workBookStream.get());
+            }
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -102,6 +133,12 @@ namespace OOX
 			{
 				m_oReadPath = oPath;
 				IFileContainer::Read( oRootPath, oPath );
+
+                if( m_oReadPath.GetExtention() == _T(".bin"))
+                {
+                    readBin(m_oReadPath);
+                    return;
+                }
 
   				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
 				if ( (xlsx ) && (xlsx->m_pVbaProject) )

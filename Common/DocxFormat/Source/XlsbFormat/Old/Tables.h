@@ -32,10 +32,10 @@
 #ifndef TABLES_H
 #define TABLES_H
 
-#include "BaseRecord.h"
+#include "Biff12RecordBase.h"
 namespace XLSB {
 
-    class AutoFilterRecord : public BaseRecord
+    class AutoFilterRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -45,10 +45,10 @@ namespace XLSB {
                 return;
             }
 
-            DWORD r1 = GetDword(p + 0);
-            DWORD r2 = GetDword(p + 4);
-            DWORD c1 = GetDword(p + 8);
-            DWORD c2 = GetDword(p + 12);
+            DWORD r1 = CBinaryBiff12StreamReader::GetDword(p + 0);
+            DWORD r2 = CBinaryBiff12StreamReader::GetDword(p + 4);
+            DWORD c1 = CBinaryBiff12StreamReader::GetDword(p + 8);
+            DWORD c2 = CBinaryBiff12StreamReader::GetDword(p + 12);
 
             CHAR s[256];
             sprintf(s, "\tinfo : r1=%d, c1=%d, r2=%d, c2=%d\r\n", r1, c1, r2, c2);
@@ -61,7 +61,7 @@ namespace XLSB {
         }
     };
 
-    class AutoFilterEndRecord : public BaseRecord
+    class AutoFilterEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -73,7 +73,7 @@ namespace XLSB {
         }
     };
 
-    class FilterColumnRecord : public BaseRecord
+    class FilterColumnRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -85,7 +85,7 @@ namespace XLSB {
         }
     };
 
-    class FilterColumnEndRecord : public BaseRecord
+    class FilterColumnEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -97,7 +97,7 @@ namespace XLSB {
         }
     };
 
-    class FiltersRecord : public BaseRecord
+    class FiltersRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -109,7 +109,7 @@ namespace XLSB {
         }
     };
 
-    class FiltersEndRecord : public BaseRecord
+    class FiltersEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -121,7 +121,7 @@ namespace XLSB {
         }
     };
 
-    class FilterRecord : public BaseRecord
+    class FilterRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -133,7 +133,7 @@ namespace XLSB {
         }
     };
 
-    class TableRecord : public BaseRecord
+    class TableRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -143,10 +143,10 @@ namespace XLSB {
                 return;
             }
 
-            DWORD r1 = GetDword(p + 0);
-            DWORD r2 = GetDword(p + 4);
-            DWORD c1 = GetDword(p + 8);
-            DWORD c2 = GetDword(p + 12);
+            DWORD r1 = CBinaryBiff12StreamReader::GetDword(p + 0);
+            DWORD r2 = CBinaryBiff12StreamReader::GetDword(p + 4);
+            DWORD c1 = CBinaryBiff12StreamReader::GetDword(p + 8);
+            DWORD c2 = CBinaryBiff12StreamReader::GetDword(p + 12);
 
             CHAR s[256];
             sprintf(s, "\tinfo : r1=%d, c1=%d, r2=%d, c2=%d\r\n", r1, c1, r2, c2);
@@ -160,7 +160,7 @@ namespace XLSB {
         }
     };
 
-    class TableEndRecord : public BaseRecord
+    class TableEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -172,7 +172,7 @@ namespace XLSB {
         }
     };
 
-    class TableColumnsRecord : public BaseRecord
+    class TableColumnsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -182,7 +182,7 @@ namespace XLSB {
                 return;
             }
 
-            DWORD columns = GetDword(p + 0);
+            DWORD columns = CBinaryBiff12StreamReader::GetDword(p + 0);
 
             CHAR s[256];
             sprintf(s, "\tinfo : columns=%d\r\n", columns);
@@ -195,7 +195,7 @@ namespace XLSB {
         }
     };
 
-    class TableColumnsEndRecord : public BaseRecord
+    class TableColumnsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -207,7 +207,7 @@ namespace XLSB {
         }
     };
 
-    class TableColumnRecord : public BaseRecord
+    class TableColumnRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -217,10 +217,10 @@ namespace XLSB {
                 return;
             }
 
-            DWORD columnId = GetDword(p + 0);
+            DWORD columnId = CBinaryBiff12StreamReader::GetDword(p + 0);
 
-            DWORD lenColumnName = GetDword(p + 28);
-            std::wstring sColumnName = GetString(p + 32, lenColumnName);
+            DWORD lenColumnName = CBinaryBiff12StreamReader::GetDword(p + 28);
+            std::wstring sColumnName = CBinaryBiff12StreamReader::GetString(p + 32, lenColumnName);
 
             WCHAR s[256];
            swprintf(s, sizeof(s), L"\tinfo : columnId=%d columnName=%s lenName=%d\r\n",
@@ -236,7 +236,7 @@ namespace XLSB {
         }
     };
 
-    class TableColumnEndRecord : public BaseRecord
+    class TableColumnEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -248,7 +248,7 @@ namespace XLSB {
         }
     };
 
-    class TableStyleInfoRecord : public BaseRecord
+    class TableStyleInfoRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -258,10 +258,10 @@ namespace XLSB {
                 return;
             }
 
-            WORD grbits = GetWord(p + 0);
+            WORD grbits = CBinaryBiff12StreamReader::GetWord(p + 0);
 
-            DWORD lenStyleName = GetDword(p + 2);
-            std::wstring sStyleName = GetString(p + 6, lenStyleName);
+            DWORD lenStyleName = CBinaryBiff12StreamReader::GetDword(p + 2);
+            std::wstring sStyleName = CBinaryBiff12StreamReader::GetString(p + 6, lenStyleName);
 
             WCHAR s[256];
            swprintf(s, sizeof(s), L"\tinfo : grbits=%04X styleName=%s lenStyleName=%d\r\n",
@@ -277,7 +277,7 @@ namespace XLSB {
         }
     };
 
-    class SortStateRecord : public BaseRecord
+    class SortStateRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -289,7 +289,7 @@ namespace XLSB {
         }
     };
 
-    class SortConditionRecord : public BaseRecord
+    class SortConditionRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -301,7 +301,7 @@ namespace XLSB {
         }
     };
 
-    class SortStateEndRecord : public BaseRecord
+    class SortStateEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {

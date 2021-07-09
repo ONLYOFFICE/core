@@ -1,6 +1,12 @@
 #ifndef RECORDTYPES_H
 #define RECORDTYPES_H
 
+#include <unordered_map>
+#include "../XlsxFormat/WritingElement.h"
+
+namespace XLSB
+{
+
 // Workbook records
 #define BIFF12_DEFINEDNAME            0x27
 #define BIFF12_FILEVERSION            0x0180
@@ -153,4 +159,12 @@
 #define BIFF12_DBPR               0x01CB
 #define BIFF12_DBPR_END           0x01CC
 
+static std::unordered_map<DWORD, CF_RECORD_TYPE> biff12TypeRecord =
+{
+    {BIFF12_SI, rt_SST_ITEM},
+    {BIFF12_SST, rt_BEGIN_SST},
+    {BIFF12_SST_END, rt_END_SST}
+};
+
+}
 #endif // RECORDTYPES_H

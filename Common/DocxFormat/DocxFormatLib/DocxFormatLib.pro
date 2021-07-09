@@ -21,7 +21,8 @@ DEFINES +=  UNICODE _UNICODE \
 
 #BOOST
 include($$PWD/../../3dParty/boost/boost.pri)
-
+INCLUDEPATH += ../../../ASCOfficeXlsFile2/source/XlsFormat
+INCLUDEPATH += ../../../ASCOfficeXlsFile2/source/Common
 core_release {
 SOURCES += \
     docxformatlib_logic.cpp
@@ -99,7 +100,12 @@ SOURCES += \
     ../Source/XlsxFormat/Slicer/SlicerCacheExt.cpp \
     ../Source/XlsxFormat/Slicer/Slicer.cpp \
     ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
-    ../Source/XlsbFormat/Biff12RecordFactory.cpp
+   # ../Source/XlsbFormat/Biff12RecordFactory.cpp \
+   # ../Source/XlsbFormat/Common/BinaryBiff12StreamReader.cpp \
+    #../Source/XlsbFormat/Common/Biff12RecordContinuedBase.cpp
+    ../Source/XlsbFormat/WorkBookStream.cpp \
+    ../Source/XlsbFormat/Biff12_records/BEGIN_BOOK.cpp \
+    ../Source/XlsbFormat/Biff12_records/FILE_VERSION.cpp
 }
 
 
@@ -210,12 +216,18 @@ HEADERS += docxformatlib.h \
     ../Source/Utility/TxtFile.h \
     ../Source/Utility/Unit.h \
     ../Source/Utility/Utility.h \
+    ../Source/XlsbFormat/Biff12RecordBase.h \
+    ../Source/XlsbFormat/Biff12StreamReader.h \
+    ../Source/XlsbFormat/Biff12Structures/Biff12StructType.h \
+    ../Source/XlsbFormat/Biff12Structures/Biff12StructureBase.h \
+    ../Source/XlsbFormat/Biff12_records/BEGIN_BOOK.h \
+    ../Source/XlsbFormat/WorkBookStream.h \
     ../Source/XlsxFormat/CalcChain/CalcChain.h \
     ../Source/XlsxFormat/Chart/Chart.h \
     ../Source/XlsxFormat/Chart/ChartSerialize.h \
     ../Source/XlsxFormat/Chart/ChartSerializeEx.h \
     ../Source/XlsxFormat/Comments/Comments.h \
-	../Source/XlsxFormat/Comments/ThreadedComments.h \
+    ../Source/XlsxFormat/Comments/ThreadedComments.h \
     ../Source/XlsxFormat/Drawing/CellAnchor.h \
     ../Source/XlsxFormat/Drawing/Drawing.h \
     ../Source/XlsxFormat/Drawing/FromTo.h \
@@ -288,18 +300,25 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Slicer/SlicerCache.h \
     ../Source/XlsxFormat/Slicer/SlicerCacheExt.h \
     ../Source/XlsxFormat/Slicer/Slicer.h \
-    ../Source/XlsbFormat/NamedSheetViews/NamedSheetViews.h \
-    ../Source/XlsbFormat/BaseRecord.h \
-    ../Source/XlsbFormat/BIFF12Reader.h \
-    ../Source/XlsbFormat/SharedStrings.h \
-    ../Source/XlsbFormat/Comments.h \
-    ../Source/XlsbFormat/Connections.h \
-    ../Source/XlsbFormat/QueryTable.h \
-    ../Source/XlsbFormat/Styles.h \
-    ../Source/XlsbFormat/Tables.h \
-    ../Source/XlsbFormat/Workbook.h \
-    ../Source/XlsbFormat/Worksheet.h \
-    ../Source/XlsbFormat/QueryTable.h \
-    ../Source/XlsbFormat/Biff12RecordFactory.h \
-    ../Source/XlsbFormat/RecordTypes.h \
-    ../Source/Utility/SafeQueue.h
+    ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.h \
+    #../Source/XlsbFormat/Biff12RecordBase.h \
+    #../Source/XlsbFormat/SharedStrings.h \
+    #../Source/XlsbFormat/Comments.h \
+    #../Source/XlsbFormat/Connections.h \
+    #../Source/XlsbFormat/QueryTable.h \
+   # ../Source/XlsbFormat/Styles.h \
+    #../Source/XlsbFormat/Tables.h \
+   # ../Source/XlsbFormat/Workbook.h \
+    #../Source/XlsbFormat/Worksheet.h \
+    #../Source/XlsbFormat/QueryTable.h \
+    #../Source/XlsbFormat/Biff12RecordFactory.h \
+    #../Source/XlsbFormat/RecordTypes.h \
+    #../Source/XlsbFormat/Common/BinaryBiff12StreamReader.h \
+    ../Source/XlsbFormat/WorkBookStream.h \
+    ../Source/XlsbFormat/Biff12_records/BEGIN_BOOK.h \
+    ../Source/XlsbFormat/Biff12_records/FILE_VERSION.h \
+    #../Source/XlsbFormat/Biff12RecordContinuedBase.h \
+    #../Source/XlsbFormat/Biff12Structures/Biff12StructType.h \
+    #../Source/XlsbFormat/Biff12Structures/Biff12StructureBase.h \
+    #../Source/XlsbFormat/Biff12Structures/RichStr.h \
+    ../Source/XlsbFormat/Biff12_structures/XLWideString.h

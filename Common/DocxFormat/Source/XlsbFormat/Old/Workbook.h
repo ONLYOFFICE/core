@@ -32,24 +32,24 @@
 #ifndef WORKBOOK_H
 #define WORKBOOK_H
 
-#include "BaseRecord.h"
+#include "Biff12RecordBase.h"
 #include <vector>
 namespace XLSB {
 
-    class DefinedNameRecord : public BaseRecord
+    class DefinedNameRecord : public CBiff12RecordBase
     {
 
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
             if (reclen >= 17)
             {
-                WORD grbits    = GetWord(p + 0);
-                DWORD nametype = GetDword(p + 5);
-                DWORD lenName  = GetDword(p + 9);
+                WORD grbits    = CBinaryBiff12StreamReader::GetWord(p + 0);
+                DWORD nametype = CBinaryBiff12StreamReader::GetDword(p + 5);
+                DWORD lenName  = CBinaryBiff12StreamReader::GetDword(p + 9);
 
-                std::wstring wszName = GetString(p + 13, lenName);
+                std::wstring wszName = CBinaryBiff12StreamReader::GetString(p + 13, lenName);
 
-                DWORD lenFormula = GetDword(p + 13 + 2 * lenName);
+                DWORD lenFormula = CBinaryBiff12StreamReader::GetDword(p + 13 + 2 * lenName);
                 // formula ptg tokens follow between
                 //  p + 13 + 2 * lenName + 4
                 //   and
@@ -94,7 +94,7 @@ namespace XLSB {
         }
     };
 
-    class FileVersionRecord : public BaseRecord
+    class FileVersionRecord : public CBiff12RecordBase
     {
 
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
@@ -107,7 +107,7 @@ namespace XLSB {
         }
     };
 
-    class WorkbookRecord : public BaseRecord
+    class WorkbookRecord : public CBiff12RecordBase
     {
     public:
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
@@ -121,7 +121,7 @@ namespace XLSB {
 
     };
 
-    class WorkbookEndRecord : public BaseRecord
+    class WorkbookEndRecord : public CBiff12RecordBase
     {
     public:
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
@@ -135,7 +135,7 @@ namespace XLSB {
 
     };
 
-    class BookViewsRecord : public BaseRecord
+    class BookViewsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -148,7 +148,7 @@ namespace XLSB {
 
     };
 
-    class BookViewsEndRecord : public BaseRecord
+    class BookViewsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -161,7 +161,7 @@ namespace XLSB {
 
     };
 
-    class SheetsRecord : public BaseRecord
+    class SheetsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -174,7 +174,7 @@ namespace XLSB {
 
     };
 
-    class SheetsEndRecord : public BaseRecord
+    class SheetsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -187,7 +187,7 @@ namespace XLSB {
 
     };
 
-    class WorkbookPRRecord : public BaseRecord
+    class WorkbookPRRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -200,19 +200,19 @@ namespace XLSB {
 
     };
 
-    class SheetRecord : public BaseRecord
+    class SheetRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
-            DWORD sheet_id = GetDword(p + 8);
+            DWORD sheet_id = CBinaryBiff12StreamReader::GetDword(p + 8);
 
-            DWORD sheet_opc_ref_len = GetDword(p + 12);
+            DWORD sheet_opc_ref_len = CBinaryBiff12StreamReader::GetDword(p + 12);
 
-            std::wstring sheet_opc_ref = GetString(p + 16, sheet_opc_ref_len);
+            std::wstring sheet_opc_ref = CBinaryBiff12StreamReader::GetString(p + 16, sheet_opc_ref_len);
 
-            DWORD sheet_name_len = GetDword( p + 16 + 2 * sheet_opc_ref_len);
+            DWORD sheet_name_len = CBinaryBiff12StreamReader::GetDword( p + 16 + 2 * sheet_opc_ref_len);
 
-            std::wstring sheet_name = GetString(p + 16 + 2 * sheet_opc_ref_len + 4, sheet_name_len);
+            std::wstring sheet_name = CBinaryBiff12StreamReader::GetString(p + 16 + 2 * sheet_opc_ref_len + 4, sheet_name_len);
 
             WCHAR s[300];
            swprintf(s, sizeof(s), L"\tinfo : id=%d, r:id=%s, name=%s\r\n",
@@ -229,7 +229,7 @@ namespace XLSB {
 
     };
 
-    class CalcPRRecord : public BaseRecord
+    class CalcPRRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -242,7 +242,7 @@ namespace XLSB {
 
     };
 
-    class WorkbookViewRecord : public BaseRecord
+    class WorkbookViewRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -255,7 +255,7 @@ namespace XLSB {
 
     };
 
-    class WebPublishingRecord : public BaseRecord
+    class WebPublishingRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -268,7 +268,7 @@ namespace XLSB {
 
     };
 
-    class ExternalReferencesRecord : public BaseRecord
+    class ExternalReferencesRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -281,7 +281,7 @@ namespace XLSB {
 
     };
 
-    class ExternalReferenceRecord : public BaseRecord
+    class ExternalReferenceRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -291,8 +291,8 @@ namespace XLSB {
                 return;
             }
 
-            DWORD lenStr = GetDword(p + 0);
-            std::wstring sRId = GetString(p + 4, lenStr);
+            DWORD lenStr = CBinaryBiff12StreamReader::GetDword(p + 0);
+            std::wstring sRId = CBinaryBiff12StreamReader::GetString(p + 4, lenStr);
 
             WCHAR s[256];
            swprintf(s, sizeof(s), L"\tinfo : r:id=%s r:id:lenStr=%d\r\n",
@@ -308,7 +308,7 @@ namespace XLSB {
 
     };
 
-    class ExternalReferencesEndRecord : public BaseRecord
+    class ExternalReferencesEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {

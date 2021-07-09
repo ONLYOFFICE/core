@@ -32,10 +32,10 @@
 #ifndef COMMENTS_H
 #define COMMENTS_H
 
-#include "BaseRecord.h"
+#include "Biff12RecordBase.h"
 namespace XLSB {
 
-    class CommentsRecord : public BaseRecord
+    class CommentsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -47,7 +47,7 @@ namespace XLSB {
         }
     };
 
-    class CommentsEndRecord : public BaseRecord
+    class CommentsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -59,7 +59,7 @@ namespace XLSB {
         }
     };
 
-    class AuthorsRecord : public BaseRecord
+    class AuthorsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -71,7 +71,7 @@ namespace XLSB {
         }
     };
 
-    class AuthorsEndRecord : public BaseRecord
+    class AuthorsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -83,7 +83,7 @@ namespace XLSB {
         }
     };
 
-    class AuthorRecord : public BaseRecord
+    class AuthorRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -95,7 +95,7 @@ namespace XLSB {
         }
     };
 
-    class CommentListRecord : public BaseRecord
+    class CommentListRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -107,7 +107,7 @@ namespace XLSB {
         }
     };
 
-    class CommentListEndRecord : public BaseRecord
+    class CommentListEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -119,7 +119,7 @@ namespace XLSB {
         }
     };
 
-    class CommentRecord : public BaseRecord
+    class CommentRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -131,7 +131,7 @@ namespace XLSB {
         }
     };
 
-    class CommentEndRecord : public BaseRecord
+    class CommentEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -143,7 +143,7 @@ namespace XLSB {
         }
     };
 
-    class TextRecord : public BaseRecord
+    class TextRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {

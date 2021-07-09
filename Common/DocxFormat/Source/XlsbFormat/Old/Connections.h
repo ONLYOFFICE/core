@@ -32,10 +32,10 @@
 #ifndef CONNECTIONS_H
 #define CONNECTIONS_H
 
-#include "BaseRecord.h"
+#include "Biff12RecordBase.h"
 namespace XLSB {
 
-    class ConnectionsRecord : public BaseRecord
+    class ConnectionsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -47,7 +47,7 @@ namespace XLSB {
         }
     };
 
-    class ConnectionsEndRecord : public BaseRecord
+    class ConnectionsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -59,17 +59,17 @@ namespace XLSB {
         }
     };
 
-    class ConnectionRecord : public BaseRecord
+    class ConnectionRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
             if (reclen >= 16)
             {
-                DWORD lensourceFile = GetDword(p + 23);
-                std::wstring wszSourceFile = GetString(p + 23 + 4, lensourceFile);
+                DWORD lensourceFile = CBinaryBiff12StreamReader::GetDword(p + 23);
+                std::wstring wszSourceFile = CBinaryBiff12StreamReader::GetString(p + 23 + 4, lensourceFile);
 
-                DWORD lenName = GetDword(p + 23 + 4 + 2 * lensourceFile);
-                std::wstring wszName = GetString(p + 23 + 4 + 2 * lensourceFile + 4, lenName);
+                DWORD lenName = CBinaryBiff12StreamReader::GetDword(p + 23 + 4 + 2 * lensourceFile);
+                std::wstring wszName = CBinaryBiff12StreamReader::GetString(p + 23 + 4 + 2 * lensourceFile + 4, lenName);
 
                 WCHAR tmp[256];
                 swprintf(tmp, sizeof(tmp), L"\tinfo : sourceFile=%s lensourceFile=%d, name=%s lenName=%d\r\n",
@@ -91,7 +91,7 @@ namespace XLSB {
         }
     };
 
-    class ConnectionEndRecord : public BaseRecord
+    class ConnectionEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -103,14 +103,14 @@ namespace XLSB {
         }
     };
 
-    class DBPRRecord : public BaseRecord
+    class DBPRRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
             if (reclen >= 16)
             {
-                DWORD lenConnection = GetDword(p + 5);
-                std::wstring wszConnection = GetString(p + 5 + 4, lenConnection);
+                DWORD lenConnection = CBinaryBiff12StreamReader::GetDword(p + 5);
+                std::wstring wszConnection = CBinaryBiff12StreamReader::GetString(p + 5 + 4, lenConnection);
 
                 WCHAR tmp[256];
                 swprintf(tmp, sizeof(tmp), L"\tinfo : connection=%s lenConnection=%d\r\n",
@@ -130,7 +130,7 @@ namespace XLSB {
         }
     };
 
-    class DBPREndRecord : public BaseRecord
+    class DBPREndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {

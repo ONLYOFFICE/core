@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,55 +30,38 @@
  *
  */
 
-#ifndef BASERECORD_H
-#define BASERECORD_H
+#include "FILE_VERSION.h"
+
+namespace XLSB
+{
 
 
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-//#include "../../../mnt/HDD_DATA/Work/core/DesktopEditor/common/File.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "RecordTypes.h"
-#include "Common/BinaryBiff12StreamReader.h"
-typedef BYTE *LPBYTE;
+FILE_VERSION::FILE_VERSION()
+{
+}
 
-namespace XLSB {
 
-    class CBiff12RecordBase
-    {
-        //DWORD m_nReclen;
-        //BYTE* m_pData;
-        //CF_RECORD_TYPE m_eRecordType;
+FILE_VERSION::~FILE_VERSION()
+{
+}
 
-    public:
-        virtual void Read(LPBYTE p, DWORD recid, DWORD reclen) {
-           /* m_pData = p;
-            m_nReclen = reclen;
-            m_eRecordType = biff12TypeRecord.find(recid) != biff12TypeRecord.end()?
-                        biff12TypeRecord.find(recid)->second : rt_UNKNOWN;*/
-        }
 
-        virtual std::string GetTag() {
-            return "OVERRIDETHIS";
-        }
+BaseObjectPtr FILE_VERSION::clone()
+{
+        return BaseObjectPtr(new FILE_VERSION(*this));
+}
 
-        virtual CF_RECORD_TYPE GetRecordType() {
-            return rt_UNKNOWN;
-        }
 
-        //DWORD getLengthRecord()
-        //{
-        //    return m_nReclen;
-        //}
-
-        virtual ~CBiff12RecordBase() {}
-
-    };
+void FILE_VERSION::readFields(CFRecord& record)
+{
+    record >> guidCodeName;
+    record >> stAppName;
+    record >> stLastEdited;
+    record >> stLowestEdited;
+    record >> stRupBuild;
 
 }
 
-#endif // BASERECORD_H
+
+} // namespace XLSB
 

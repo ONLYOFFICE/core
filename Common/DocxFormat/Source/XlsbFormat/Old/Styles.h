@@ -32,10 +32,10 @@
 #ifndef STYLES_H
 #define STYLES_H
 
-#include "BaseRecord.h"
+#include "Biff12RecordBase.h"
 namespace XLSB {
 
-    class FontRecord : public BaseRecord
+    class FontRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -48,7 +48,7 @@ namespace XLSB {
         }
     };
 
-    class FillRecord : public BaseRecord
+    class FillRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -61,7 +61,7 @@ namespace XLSB {
         }
     };
 
-    class BorderRecord : public BaseRecord
+    class BorderRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -74,7 +74,7 @@ namespace XLSB {
         }
     };
 
-    class XFRecord : public BaseRecord
+    class XFRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -87,7 +87,7 @@ namespace XLSB {
         }
     };
 
-    class CellStyleRecord : public BaseRecord
+    class CellStyleRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -100,7 +100,7 @@ namespace XLSB {
         }
     };
 
-    class StyleSheetRecord : public BaseRecord
+    class StyleSheetRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -112,7 +112,7 @@ namespace XLSB {
         }
     };
 
-    class StyleSheetEndRecord : public BaseRecord
+    class StyleSheetEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -124,7 +124,7 @@ namespace XLSB {
         }
     };
 
-    class ColorsRecord : public BaseRecord
+    class ColorsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -136,7 +136,7 @@ namespace XLSB {
         }
     };
 
-    class ColorsEndRecord : public BaseRecord
+    class ColorsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -148,7 +148,7 @@ namespace XLSB {
         }
     };
 
-    class DXFsRecord : public BaseRecord
+    class DXFsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -160,7 +160,7 @@ namespace XLSB {
         }
     };
 
-    class DXFsEndRecord : public BaseRecord
+    class DXFsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -172,7 +172,7 @@ namespace XLSB {
         }
     };
 
-    class TableStylesRecord : public BaseRecord
+    class TableStylesRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -184,7 +184,7 @@ namespace XLSB {
         }
     };
 
-    class TableStylesEndRecord : public BaseRecord
+    class TableStylesEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -196,7 +196,7 @@ namespace XLSB {
         }
     };
 
-    class FillsRecord : public BaseRecord
+    class FillsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -208,7 +208,7 @@ namespace XLSB {
         }
     };
 
-    class FillsEndRecord : public BaseRecord
+    class FillsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -220,7 +220,7 @@ namespace XLSB {
         }
     };
 
-    class FontsRecord : public BaseRecord
+    class FontsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -232,7 +232,7 @@ namespace XLSB {
         }
     };
 
-    class FontsEndRecord : public BaseRecord
+    class FontsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -244,7 +244,7 @@ namespace XLSB {
         }
     };
 
-    class BordersRecord : public BaseRecord
+    class BordersRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -256,7 +256,7 @@ namespace XLSB {
         }
     };
 
-    class BordersEndRecord : public BaseRecord
+    class BordersEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -268,7 +268,7 @@ namespace XLSB {
         }
     };
 
-    class CellXFsRecord : public BaseRecord
+    class CellXFsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -280,7 +280,7 @@ namespace XLSB {
         }
     };
 
-    class CellXFsEndRecord : public BaseRecord
+    class CellXFsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -292,7 +292,7 @@ namespace XLSB {
         }
     };
 
-    class CellStylesRecord : public BaseRecord
+    class CellStylesRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -304,7 +304,7 @@ namespace XLSB {
         }
     };
 
-    class CellStylesEndRecord : public BaseRecord
+    class CellStylesEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -316,7 +316,7 @@ namespace XLSB {
         }
     };
 
-    class CellStyleXFsRecord : public BaseRecord
+    class CellStyleXFsRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -328,7 +328,7 @@ namespace XLSB {
         }
     };
 
-    class CellStyleXFsEndRecord : public BaseRecord
+    class CellStyleXFsEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {

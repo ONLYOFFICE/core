@@ -36,9 +36,13 @@
 
 #include "Si.h"
 #include <map>
-#include "../../XlsbFormat/BIFF12Reader.h"
+//#include "../../XlsbFormat/Biff12StreamReader.h"
 #include <thread>
 #include <algorithm>
+
+#include "../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
+
+#include "../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
 
 namespace OOX
 {
@@ -74,31 +78,46 @@ namespace OOX
 
             void readBin(const CPath& oPath)
             {
-                NSFile::CFileBinary oFile;
-                if (oFile.OpenFile(m_oReadPath.GetPath()) == false)
-                    return;
 
-                auto m_lStreamLen = (LONG)oFile.GetFileSize();
-                auto m_pStream = new BYTE[m_lStreamLen];
-                DWORD dwRead = 0;
-                oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
-                oFile.CloseFile();
+                /* XLSB::CBiff12StreamReader oReaderBin(oPath.GetPath());
 
-                XLSB::CBIFF12Reader oReaderBin;
-
-                XLSB::CBIFF12Reader::Buffer buf;
-                buf._ptr = m_pStream;
-                buf._len = m_lStreamLen;
-
-                //std::thread t([&]() mutable {
-                //        oReaderBin.readRecord(buf);
-                //});
-                oReaderBin.readRecord(buf);
-                std::shared_ptr<XLSB::BaseRecord> rec = nullptr;
-                while(!oReaderBin.records.empty())
-                //while((rec = oReaderBin.records.dequeue()) != nullptr)
+                if (oReaderBin.getNextRecordType() == XLSB::rt_BEGIN_SST)
                 {
-                    rec = oReaderBin.records.front();
+                    auto nextRecord = oReaderBin.getNextRecord();
+                    if (nextRecord == nullptr)
+                        return;
+                   // ReadAttributes(nextRecord);
+
+                    m_nCount = 0;
+
+                    while ((nextRecord = oReaderBin.getNextRecord()) != nullptr)
+                    {
+                        if (nextRecord->GetRecordType() == XLSB::rt_SST_ITEM)
+                        {
+                           // CSi* pItem = new CSi(nextRecord);
+                            m_arrItems.push_back(pItem );
+                            m_nCount++;
+                        }
+                    }
+                }
+
+*/
+
+
+                //XLSB::CBIFF12Reader oReaderBin;
+
+               // XLSB::CBIFF12Reader::Buffer buf;
+               // buf._ptr = m_pStream;
+                //buf._len = m_lStreamLen;
+
+
+               // oReaderBin.readRecord(buf);
+                //std::shared_ptr<XLSB::BaseRecord> rec = nullptr;
+              //  while(!oReaderBin.records.empty())
+
+               // {
+
+                    /*rec = oReaderBin.records.front();
                     oReaderBin.records.pop();
                     if (("si") == rec->GetTag() )
                     {
@@ -121,9 +140,8 @@ namespace OOX
                     else if (("/sst") == rec->GetTag() )
                     {
                        break;
-                    }
-                }
-                //t.join();
+                    }*/
+               // }
             }
 
 			virtual void read(const CPath& oPath)
@@ -240,9 +258,16 @@ namespace OOX
 			{
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_Read_if ( oReader, _T("count"),		m_oCount )
-					WritingElement_ReadAttributes_Read_if ( oReader, _T("uniqueCount"),	m_oUniqueCount )
+                    WritingElement_ReadAttributes_Read_if ( oReader, _T("uniqueCount"),	m_oUniqueCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            /*void ReadAttributes(std::shared_ptr<XLSB::BaseRecord> pRecord)
+            {
+                auto oSSTRecord = std::dynamic_pointer_cast<XLSB::SSTRecord>(pRecord);
+                m_oCount = oSSTRecord->GetTotal();
+                m_oUniqueCount = oSSTRecord->GetUnique();
+            }*/
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;

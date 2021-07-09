@@ -33,34 +33,20 @@
 #define SHAREDSTRINGS_H
 
 #include "Biff12RecordFactory.h"
+#include "Biff12Structures/RichStr.h"
+
 namespace XLSB {
 
-    class SIRecord : public BaseRecord
+    class SIRecord : public CBiff12RecordBase
     {
-        std::wstring text;
-
+        RichStr m_RichStr;
         public:
             void Read(LPBYTE p, DWORD recid, DWORD reclen)
             {
                 if (reclen >= 5)
                 {
-                    BYTE nbFormattingRuns = GetByte(p); // = 0 if regular string
+                    m_RichStr.Read(p);
 
-                    DWORD lenStr = GetDword(p + 1);
-
-                    text = GetString(p + 1 + 4, lenStr);
-                    int indexString = 0;
-                    //int indexString = w._vecSharedStrings.size();
-
-                    //w._vecSharedStrings.push_back(s);
-
-                    WCHAR tmp[256];
-                    swprintf(tmp, sizeof(tmp), L"\tinfo : index=%d, v:string=%s v:lenStr=%d v:formattingRuns=%s\r\n",
-                        indexString,
-                        text.c_str(),
-                        lenStr,
-                        ((nbFormattingRuns & 0x01) == 0) ? L"no" : L"yes");
-                    std::cout << (tmp);
                 }
                 else
                 {
@@ -74,13 +60,17 @@ namespace XLSB {
                 return "si";
             }
 
-            std::wstring& GetText()
+            RecordType GetRecordType() {
+                return rt_SST_ITEM;
+            }
+
+            RichStr& GetRichStr()
             {
-                return text;
+                return m_RichStr;
             }
     };
 
-    class SSTRecord : public BaseRecord
+    class SSTRecord : public CBiff12RecordBase
     {
         _INT32	cstTotal;
         _INT32	cstUnique;
@@ -89,13 +79,17 @@ namespace XLSB {
 
             void Read(LPBYTE p, DWORD recid, DWORD reclen)
             {
-                cstTotal = GetDword(p);
-                cstUnique = GetDword(p + 4);
+                cstTotal = CBinaryBiff12StreamReader::GetDword(p);
+                cstUnique = CBinaryBiff12StreamReader::GetDword(p + 4);
             }
 
             std::string GetTag()
             {
                 return "sst";
+            }
+
+            RecordType GetRecordType() {
+                return rt_BEGIN_SST;
             }
 
             _INT32 GetTotal()
@@ -109,7 +103,7 @@ namespace XLSB {
             }
     };
 
-    class SSTEndRecord : public BaseRecord
+    class SSTEndRecord : public CBiff12RecordBase
     {
         void Read(LPBYTE p, DWORD recid, DWORD reclen)
         {
@@ -118,6 +112,10 @@ namespace XLSB {
         std::string GetTag()
         {
             return "/sst";
+        }
+
+        RecordType GetRecordType() {
+            return rt_END_SST;
         }
     };
 

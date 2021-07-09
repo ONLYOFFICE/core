@@ -51,7 +51,7 @@ namespace XPS
         CDocument(NSFonts::IFontManager* pFontManager);
 		~CDocument();
 
-        bool Read(IFolder* pFolder);
+		bool Read(IFolder* pFolder);
 		int  GetPageCount() const;
 		void GetPageSize(int nPageIndex, int& nW, int& nH);
 		void DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak);
@@ -60,7 +60,7 @@ namespace XPS
 
 	private:
 									        
-        IFolder*                                 m_wsPath;
+		IFolder*                                 m_wsPath;
 		std::map<int, XPS::Page*>                m_mPages;
 		CFontList                                m_oFontList;
         NSFonts::IFontManager*                   m_pFontManager;

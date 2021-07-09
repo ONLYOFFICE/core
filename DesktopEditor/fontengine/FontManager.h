@@ -111,10 +111,10 @@ public:
 class CApplicationFontStreams : public NSFonts::IApplicationFontStreams
 {
 private:
-    // этот мап нужно периодически опрашивать и удалять неиспользуемые стримы
-    std::map<std::wstring, CFontStream*> m_mapStreams;
+	// этот мап нужно периодически опрашивать и удалять неиспользуемые стримы
+	std::map<std::wstring, CFontStream*> m_mapStreams;
 public:
-    static CGlobalFontsMemoryStorage* m_pMemoryStorage;
+	static CGlobalFontsMemoryStorage* m_pMemoryStorage;
 
 	CApplicationFontStreams();
     virtual ~CApplicationFontStreams();

@@ -52,7 +52,7 @@ namespace XPS
 	class CStaticResource
 	{
 	public:
-        CStaticResource(const std::string& wsPath);
+		CStaticResource(const std::string& wsPath);
 		CStaticResource(XmlUtils::CXmlLiteReader& oReader);
 		~CStaticResource();
 		bool    GetFigure(CWString& wsKey, CWString& wsFigure);
@@ -101,11 +101,11 @@ namespace XPS
 		}
 		bool SetToRenderer(IRenderer* pRenderer);
 		bool IsImageBrush() { return true; }
-        void SetPaths(IFolder* wsRoot, const wchar_t* wsPage);
+		void SetPaths(IFolder* wsRoot, const wchar_t* wsPage);
 	private:
 
 		CWString m_wsPath;
-        IFolder* m_wsRoot;
+		IFolder* m_wsRoot;
 		CWString m_wsPage;
 	};
 	class CGradientBrush : public CBrush

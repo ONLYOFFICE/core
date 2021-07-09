@@ -95,7 +95,7 @@ namespace XPS
 	{
 		XmlUtils::CXmlLiteReader oReader;
 
-        if (!oReader.FromStringA(m_wsRootPath->readXml(m_wsPagePath)))
+		if (!oReader.FromStringA(m_wsRootPath->readXml(m_wsPagePath)))
 			return;
 
 		if (!oReader.ReadNextNode())
@@ -173,7 +173,7 @@ namespace XPS
 	{
 		XmlUtils::CXmlLiteReader oReader;
 
-        if (!oReader.FromStringA(m_wsRootPath->readXml(m_wsPagePath)))
+		if (!oReader.FromStringA(m_wsRootPath->readXml(m_wsPagePath)))
 			return;
 
 		if (!oReader.ReadNextNode())
@@ -451,23 +451,23 @@ namespace XPS
 						std::wstring wsRelativePath = (std::wstring::npos == nSlashPos) ? m_wsPagePath : m_wsPagePath.substr(0, nSlashPos + 1);
 						wsFontPath = wsRelativePath + wsFontPath;
 					}
-                    else
-                    {
-                        wsFontPath = m_wsRootPath->getFullFilePath(wsFontPath);
-                    }
+					else
+					{
+						wsFontPath = m_wsRootPath->getFullFilePath(wsFontPath);
+					}
 
 					std::wstring wsExt = GetFileExtension(wsFontPath);
 					NSStringExt::ToLower(wsExt);
 					if (L"odttf" == wsExt)
 					{
 						NSStringExt::ToLower(wsFontName);
-                        IFolder::CBuffer* buffer = NULL;
-                        m_wsRootPath->read(wsFontPath, buffer);
-                        m_pFontList->Check(wsFontName, buffer->Buffer, buffer->Size);
-                        if (CApplicationFontStreams::m_pMemoryStorage)
-                            CApplicationFontStreams::m_pMemoryStorage->Add(wsFontPath, buffer->Buffer, buffer->Size);
-                        m_wsRootPath->write(wsFontPath, buffer->Buffer, buffer->Size);
-                        RELEASEOBJECT(buffer);
+						IFolder::CBuffer* buffer = NULL;
+						m_wsRootPath->read(wsFontPath, buffer);
+						m_pFontList->Check(wsFontName, buffer->Buffer, buffer->Size);
+						if (CApplicationFontStreams::m_pMemoryStorage)
+							CApplicationFontStreams::m_pMemoryStorage->Add(wsFontPath, buffer->Buffer, buffer->Size);
+						m_wsRootPath->write(wsFontPath, buffer->Buffer, buffer->Size);
+						RELEASEOBJECT(buffer);
 					}
 					wsFontPath = NormalizePath(wsFontPath);
 					pRenderer->put_FontPath(wsFontPath);
@@ -638,7 +638,7 @@ namespace XPS
 		int nIndicesPos = 0, nIndicesLen = wsIndices.size();
 		int nUtf16Pos = 0;
 		bool bRtoL = (nBidiLevel % 2 ? true : false);
-        m_pFontManager->LoadFontFromFile(m_wsRootPath->getFullFilePath(wsFontPath), 0, (float)(dFontSize * 0.75), 96, 96);
+		m_pFontManager->LoadFontFromFile(m_wsRootPath->getFullFilePath(wsFontPath), 0, (float)(dFontSize * 0.75), 96, 96);
 		double dFontKoef = dFontSize / 100.0;
 
 		bool bNeedItalic = false, bNeedBold = false;
@@ -973,7 +973,7 @@ namespace XPS
 		if (pBrush)
 		{
 			if (pBrush->IsImageBrush())
-                ((CImageBrush*)pBrush)->SetPaths(m_wsRootPath, GetPath(m_wsPagePath).c_str());
+				((CImageBrush*)pBrush)->SetPaths(m_wsRootPath, GetPath(m_wsPagePath).c_str());
 
 			bFill = pBrush->SetToRenderer(pRenderer);
 			if (bDeleteBrush)

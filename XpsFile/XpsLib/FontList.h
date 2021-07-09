@@ -58,7 +58,7 @@ namespace XPS
 		{
 			m_mList.clear();
 		}
-        void Check(const std::wstring& wsName, BYTE* data, DWORD length)
+		void Check(const std::wstring& wsName, BYTE* data, DWORD length)
 		{
 			m_oCS.Enter();
 			if (!Find(wsName))
@@ -68,9 +68,9 @@ namespace XPS
 				unsigned char sKey[16];
 				GetFontKey(wsName, sKey);
 
-                if (length >= 32)
-                    for (int nIndex = 0; nIndex < 32; nIndex++)
-                        data[nIndex] ^= sKey[nIndex % 16];
+				if (length >= 32)
+					for (int nIndex = 0; nIndex < 32; nIndex++)
+						data[nIndex] ^= sKey[nIndex % 16];
 			}
 			m_oCS.Leave();
 		}

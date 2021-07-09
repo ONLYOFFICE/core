@@ -160,7 +160,10 @@ window.onload = function()
 			//console.log(message);
 		};
 
-		window.onscroll = function(e) { if (window.Viewer) window.Viewer.scroll(e); };
+		window.onscroll    = function(e) { if (window.Viewer) window.Viewer.scroll(e); };
+		window.onmousedown = function(e) { if (window.Viewer) window.Viewer.OnMouseDown(e); };
+		window.onmousemove = function(e) { if (window.Viewer) window.Viewer.OnMouseMove(e); };
+		window.onmouseup   = function(e) { if (window.Viewer) window.Viewer.OnMouseUp(e); };
 
 		this.timerAnimation = function()
 		{
@@ -317,6 +320,18 @@ window.onload = function()
 		{
 			this.log("scroll: [" + document.scrollingElement.scrollLeft + ", " + document.scrollingElement.scrollTop + "]");
 			this.paint();
+		};
+		
+		this.OnMouseDown = function(e)
+		{
+		};
+		
+		this.OnMouseMove = function(e)
+		{
+		};
+		
+		this.OnMouseUp = function(e)
+		{
 		};
 
 		this.paint = function()

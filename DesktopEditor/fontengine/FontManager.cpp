@@ -112,13 +112,13 @@ NSFonts::IFontStream* CApplicationFontStreams::GetStream(const std::wstring &str
 
 	if (NULL != pStream)
 		return pStream;
-    if (m_pMemoryStorage)
-        pStream = m_pMemoryStorage->Get(strFile);
-    else
-    {
-        pStream = new CFontStream();
-        pStream->CreateFromFile(strFile);
-    }
+	if (m_pMemoryStorage)
+		pStream = m_pMemoryStorage->Get(strFile);
+	else
+	{
+		pStream = new CFontStream();
+		pStream->CreateFromFile(strFile);
+	}
 
 	m_mapStreams[strFile] = pStream;
 	return pStream;

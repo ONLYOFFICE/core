@@ -472,7 +472,6 @@ namespace OOX
 			std::vector<int> m_arSt;
 			std::vector<int> m_arStep;
 			std::vector<bool> m_arHideLastTrans;
-			nullable_string m_sName;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};

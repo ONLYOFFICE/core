@@ -331,7 +331,6 @@ namespace NSCommon
 		nullable_int() : nullable_base<int>()
 		{
 		}
-
         void normalize(const int& min, const int& max)
 		{
 			if (IsInit())
@@ -369,7 +368,10 @@ namespace NSCommon
             RELEASEOBJECT(this->m_pPointer);
             this->m_pPointer = new int(value);
 		}
-
+		std::wstring ToString()  const
+		{
+			return std::to_wstring(*m_pPointer);
+		}
 		nullable_int& operator=(const nullable_int& oSrc)
 		{
 			RELEASEOBJECT(m_pPointer);
@@ -401,7 +403,15 @@ namespace NSCommon
 			}
 			return *m_pPointer;
 		}
-        int& operator*()  { return *m_pPointer; }
+		std::wstring ToAttribute(const std::wstring & name)  const
+		{
+			if (m_pPointer)
+			{
+				return name + L"=\"" + std::to_wstring(*m_pPointer) + L"\" ";
+			}
+			return L"";
+		}
+		int& operator*()  { return *m_pPointer; }
         int* operator->() { return  m_pPointer; }
 
         int& operator*() const  { return *m_pPointer; }
@@ -486,7 +496,6 @@ namespace NSCommon
         nullable_int64() : nullable_base<_INT64>()
 		{
 		}
-
         void normalize(const _INT64& min, const _INT64& max)
 		{
 			if (IsInit())
@@ -533,7 +542,14 @@ namespace NSCommon
                 m_pPointer = new _INT64(*oSrc);
 			return *this;
 		}
-
+		std::wstring ToAttribute(const std::wstring & name)  const
+		{
+			if (m_pPointer)
+			{
+				return name + L"=\"" + std::to_wstring(*m_pPointer) + L"\" ";
+			}
+			return L"";
+		}
         _INT64 get_value_or(const _INT64& value) const
 		{
 			if (NULL == m_pPointer)
@@ -575,13 +591,11 @@ namespace NSCommon
 
 			return *this;
 		}
-
         void operator=(const size_t& value)
 		{
 			RELEASEOBJECT(m_pPointer);
 			m_pPointer = new size_t(value);
 		}
-
 		nullable_sizet& operator=(const nullable_sizet& oSrc)
 		{
 			RELEASEOBJECT(m_pPointer);
@@ -591,7 +605,6 @@ namespace NSCommon
 
 			return *this;
 		}
-
         size_t get_value_or(const size_t& value) const
 		{
 			if (NULL == m_pPointer)
@@ -601,7 +614,15 @@ namespace NSCommon
 			}
 			return *m_pPointer;
 		}
-        size_t& operator*()  { return *m_pPointer; }
+		std::wstring ToAttribute(const std::wstring & name)  const
+		{
+			if (m_pPointer)
+			{
+				return name + L"=\"" + std::to_wstring(*m_pPointer) + L"\" ";
+			}
+			return L"";
+		}
+		size_t& operator*()  { return *m_pPointer; }
         size_t* operator->() { return  m_pPointer; }
 
         size_t& operator*() const  { return *m_pPointer; }
@@ -615,7 +636,6 @@ namespace NSCommon
 		nullable_double() : nullable_base<double>()
 		{
 		}
-
         void normalize(const double& min, const double& max)
 		{
 			if (IsInit())
@@ -640,7 +660,14 @@ namespace NSCommon
 			RELEASEOBJECT(m_pPointer);
 			m_pPointer = new double(value);
 		}
-
+		std::wstring ToAttribute(const std::wstring & name)  const
+		{
+			if (m_pPointer)
+			{
+				return name + L"=\"" + std::to_wstring(*m_pPointer) + L"\" ";
+			}
+			return L"";
+		}
 		nullable_double& operator=(const nullable_double& oSrc)
 		{
 			RELEASEOBJECT(m_pPointer);
@@ -650,7 +677,6 @@ namespace NSCommon
 
 			return *this;
 		}
-
         double get_value_or(const double& value) const
 		{
 			if (NULL == m_pPointer)
@@ -660,8 +686,6 @@ namespace NSCommon
 			}
 			return *m_pPointer;
 		}
-
-	public:
         double& operator*()  { return *m_pPointer; }
         double* operator->() { return  m_pPointer; }
 
@@ -717,7 +741,14 @@ namespace NSCommon
 
 			return *this;
 		}
-
+		std::wstring ToAttribute(const std::wstring & name)  const
+		{
+			if (m_pPointer)
+			{
+				return name + L"=\"" + (*m_pPointer ? L"1" : L"0") + L"\" ";
+			}
+			return L"";
+		}
         bool get_value_or(const bool& value) const
 		{
 			if (NULL == m_pPointer)
@@ -737,26 +768,26 @@ namespace NSCommon
         const bool& get()const { return  *m_pPointer; }
 
 	};
-    class nullable_string : public nullable_base<std::wstring>
+	class nullable_string : public nullable_base<std::wstring>
 	{
 	public:
-        nullable_string() : nullable_base<std::wstring>()
+		nullable_string() : nullable_base<std::wstring>()
 		{
 		}
 		nullable_string(const nullable_string& oOther)
 		{
-			if ( NULL == oOther.m_pPointer )
+			if (NULL == oOther.m_pPointer)
 				m_pPointer = NULL;
 			else
-                m_pPointer	= new std::wstring( *oOther.m_pPointer );
+				m_pPointer = new std::wstring(*oOther.m_pPointer);
 		}
-        void operator=(const std::wstring& value)
+		void operator=(const std::wstring& value)
 		{
 			RELEASEOBJECT(m_pPointer);
-            m_pPointer = new std::wstring(value);
-			
+			m_pPointer = new std::wstring(value);
+
 		}
-        void operator=(std::wstring* value)
+		void operator=(std::wstring* value)
 		{
 			RELEASEOBJECT(m_pPointer);
 			m_pPointer = value;
@@ -765,32 +796,40 @@ namespace NSCommon
 		{
 			RELEASEOBJECT(m_pPointer);
 
-			if ( NULL != oSrc.m_pPointer )
-                m_pPointer = new std::wstring(*oSrc);
+			if (NULL != oSrc.m_pPointer)
+				m_pPointer = new std::wstring(*oSrc);
 			return *this;
 		}
 		const bool operator==(const nullable_string& oOther) const
 		{
-            if ( !this->m_pPointer )
+			if (!this->m_pPointer)
 				return false;
 
-            return (*this->m_pPointer) == *oOther;
+			return (*this->m_pPointer) == *oOther;
 		}
 		const bool operator==(const std::wstring& oOther) const
 		{
-            if ( !this->m_pPointer )
+			if (!this->m_pPointer)
 				return false;
 
-            return (*this->m_pPointer) == oOther;
+			return (*this->m_pPointer) == oOther;
 		}
-        std::wstring get_value_or(const std::wstring& value) const
+		std::wstring get_value_or(const std::wstring& value) const
 		{
 			if (NULL == m_pPointer)
 			{
-                std::wstring ret = value;
+				std::wstring ret = value;
 				return ret;
 			}
 			return *m_pPointer;
+		}
+		std::wstring ToAttribute(const std::wstring & name)  const
+		{
+			if (m_pPointer)
+			{
+				return name + L"=\"" + (*m_pPointer) + L"\" ";
+			}
+			return L"";
 		}
         std::wstring& operator*()  { return *m_pPointer; }
         std::wstring* operator->() { return  m_pPointer; }

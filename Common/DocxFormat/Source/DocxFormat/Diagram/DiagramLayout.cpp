@@ -1497,7 +1497,6 @@ namespace OOX
 			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 				break;
 
-			else if (0 == _at)	m_sName = pReader->GetString2();
 			else if (1 == _at)	m_arSt.push_back(pReader->GetLong());
 			else if (2 == _at)	m_arStep.push_back(pReader->GetLong());
 			else if (3 == _at)	m_arHideLastTrans.push_back(pReader->GetBool());
@@ -1518,7 +1517,6 @@ namespace OOX
 	void Diagram::CPresOf::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteString2(0, m_sName);
 			for (size_t i = 0; i < m_arSt.size(); ++i)
 				pWriter->WriteInt1(1, m_arSt[i]);
 			for (size_t i = 0; i < m_arStep.size(); ++i)
@@ -1536,7 +1534,6 @@ namespace OOX
 	void Diagram::CPresOf::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
 		pWriter->StartNode(L"dgm:presOf");
-			pWriter->WriteAttribute(L"name", m_sName);
 			if (false == m_arAxis.empty())
 			{
 				std::wstring sAxis;
@@ -1584,7 +1581,6 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"cnt", sCnt)
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"hideLastTrans", sHideLastTrans)
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"ptType", sPtTypes)
-			WritingElement_ReadAttributes_Read_else_if(oReader, L"name", m_sName)
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"st", sSt)
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"step", sStep)
 		WritingElement_ReadAttributes_End(oReader)

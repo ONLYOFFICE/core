@@ -256,7 +256,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:color"),      m_oColor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:frame"),      m_oFrame )

@@ -6698,7 +6698,6 @@ namespace SimpleTypes
 	{
 	public:
 		CXmlSpace() {}
-
         virtual EXmlSpace FromString(std::wstring &sValue)
 		{
             if       ( (L"default")  == sValue ) this->m_eValue = xmlspaceDefault;
@@ -6715,7 +6714,6 @@ namespace SimpleTypes
 
 			return this->m_eValue;
 		}
-
         virtual std::wstring   ToString  () const
 		{
             switch(this->m_eValue)
@@ -6725,15 +6723,142 @@ namespace SimpleTypes
 			default               : return (L"default");
 			}
 		}
-
 		SimpleType_FromString     (EXmlSpace)
 		SimpleType_Operator_Equal (CXmlSpace)
 	};
 
+//---------------------------------------------------------------------------------------------
+	enum ECryptAlgClass
+	{
+		AlgClassCustom = 0,
+		AlgClassHash = 1
+	};
 
-	//--------------------------------------------------------------------------------
-	// CryptAlgoritmName
-	//--------------------------------------------------------------------------------		
+	template<ECryptAlgClass eDefValue = AlgClassCustom>
+	class CCryptAlgClass : public CSimpleType<ECryptAlgClass, eDefValue>
+	{
+	public:
+		CCryptAlgClass() {}
+
+		virtual ECryptAlgClass FromString(std::wstring &sValue)
+		{
+			if (L"custom" == sValue) this->m_eValue = AlgClassCustom;
+			else if (L"hash" == sValue) this->m_eValue = AlgClassHash;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		ECryptAlgClass FromStringA(const char* pValue)
+		{
+			if (strcmp("custom", pValue) == 0) this->m_eValue = AlgClassCustom;
+			else if (strcmp("hash", pValue) == 0) this->m_eValue = AlgClassHash;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case AlgClassCustom: return (L"custom");
+			case AlgClassHash: return (L"hash");
+			default: return (L"custom");
+			}
+		}
+		SimpleType_FromString(ECryptAlgClass)
+		SimpleType_Operator_Equal(CCryptAlgClass)
+	};	
+//---------------------------------------------------------------------------------------------
+	enum ECryptAlgType
+	{
+		AlgTypeCustom = 0,
+		AlgTypeTypeAny = 1
+	};
+
+	template<ECryptAlgType eDefValue = AlgTypeCustom>
+	class CCryptAlgType : public CSimpleType<ECryptAlgType, eDefValue>
+	{
+	public:
+		CCryptAlgType() {}
+
+		virtual ECryptAlgType FromString(std::wstring &sValue)
+		{
+			if (L"custom" == sValue) this->m_eValue = AlgTypeCustom;
+			else if (L"typeAny" == sValue) this->m_eValue = AlgTypeTypeAny;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		ECryptAlgType FromStringA(const char* pValue)
+		{
+			if (strcmp("custom", pValue) == 0) this->m_eValue = AlgTypeCustom;
+			else if (strcmp("typeAny", pValue) == 0) this->m_eValue = AlgTypeTypeAny;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case AlgTypeCustom: return (L"custom");
+			case AlgTypeTypeAny: return (L"typeAny");
+			default: return (L"custom");
+			}
+		}
+		SimpleType_FromString(ECryptAlgType)
+		SimpleType_Operator_Equal(CCryptAlgType)
+	};	
+//---------------------------------------------------------------------------------------------
+	enum ECryptProv
+	{
+		CryptProvCustom = 0,
+		CryptProvRsaAES = 1,
+		CryptProvRsaFull = 2
+	};
+
+	template<ECryptProv eDefValue = CryptProvCustom>
+	class CCryptProv : public CSimpleType<ECryptProv, eDefValue>
+	{
+	public:
+		CCryptProv() {}
+
+		virtual ECryptProv FromString(std::wstring &sValue)
+		{
+			if (L"custom" == sValue) this->m_eValue = CryptProvCustom;
+			else if (L"rsaAES" == sValue) this->m_eValue = CryptProvRsaAES;
+			else if (L"rsaFull" == sValue) this->m_eValue = CryptProvRsaFull;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		ECryptProv FromStringA(const char* pValue)
+		{
+			if (strcmp("custom", pValue) == 0) this->m_eValue = CryptProvCustom;
+			else if (strcmp("rsaAES", pValue) == 0) this->m_eValue = CryptProvRsaAES;
+			else if (strcmp("rsaFull", pValue) == 0) this->m_eValue = CryptProvRsaFull;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case CryptProvCustom: return (L"custom");
+			case CryptProvRsaAES: return (L"rsaAES");
+			case CryptProvRsaFull: return (L"rsaFull");
+			default: return (L"custom");
+			}
+		}
+
+		SimpleType_FromString(ECryptProv)
+		SimpleType_Operator_Equal(CCryptProv)
+	};
+//--------------------------------------------------------------------------------
+// CryptAlgoritmName
+//--------------------------------------------------------------------------------		
 	enum ECryptAlgoritmName
 	{
 		cryptalgoritmnameUnknown    = 0,

@@ -3936,6 +3936,18 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 		READ1_DEF(length, res, this->ReadCompat, &oCompat);
 		m_oSettingWriter.AddSetting(oCompat.toXML());
 	}
+	else if (c_oSer_SettingsType::DocumentProtection == type)
+	{
+		OOX::Settings::CDocProtect oDocProtect;
+		READ1_DEF(length, res, this->ReadDocProtect , &oDocProtect);
+		m_oSettingWriter.AddSetting(oDocProtect.toXML());
+	}
+	else if (c_oSer_SettingsType::WriteProtection == type)
+	{
+		OOX::Settings::CWriteProtection oWriteProtect;
+		READ1_DEF(length, res, this->ReadWriteProtect, &oWriteProtect);
+		m_oSettingWriter.AddSetting(oWriteProtect.toXML());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -4050,6 +4062,155 @@ int Binary_SettingsTableReader::ReadCompatSetting(BYTE type, long length, void* 
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
+}
+int Binary_SettingsTableReader::ReadDocProtect(BYTE type, long length, void* poResult)
+{
+	OOX::Settings::CDocProtect* pDocProtect = static_cast<OOX::Settings::CDocProtect*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	
+	if (c_oDocProtect::AlgIdExt == type)
+	{
+		pDocProtect->m_oAlgIdExt = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oDocProtect::AlgIdExtSource == type)
+	{
+		pDocProtect->m_oAlgIdExtSource = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oDocProtect::AlgorithmName == type)
+	{
+		pDocProtect->m_oAlgorithmName.Init();  
+		pDocProtect->m_oAlgorithmName->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oDocProtect::CryptAlgorithmClass == type)
+	{
+		pDocProtect->m_oCryptAlgorithmClass.Init();
+		pDocProtect->m_oCryptAlgorithmClass->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oDocProtect::CryptAlgorithmSid == type)
+	{
+		pDocProtect->m_oCryptAlgorithmSid = m_oBufferedStream.GetLong();
+	}
+	else if (c_oDocProtect::CryptAlgorithmType == type)
+	{
+		pDocProtect->m_oCryptAlgorithmType.Init();
+		pDocProtect->m_oCryptAlgorithmType->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oDocProtect::CryptProvider == type)
+	{
+		pDocProtect->m_oCryptProvider = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oDocProtect::CryptProviderType == type)
+	{
+		pDocProtect->m_oCryptProviderType.Init();
+		pDocProtect->m_oCryptProviderType->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oDocProtect::CryptProviderTypeExt == type)
+	{
+		pDocProtect->m_oCryptProviderTypeExt = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oDocProtect::CryptProviderTypeExtSource == type)
+	{
+		pDocProtect->m_oCryptProviderTypeExtSource = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oDocProtect::Edit == type)
+	{
+		pDocProtect->m_oEdit.Init();
+		pDocProtect->m_oEdit->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oDocProtect::Enforcment == type)
+	{
+		pDocProtect->m_oEnforcment = m_oBufferedStream.GetUChar() != 0;
+	}
+	else if (c_oDocProtect::Formatting == type)
+	{
+		pDocProtect->m_oFormatting = m_oBufferedStream.GetUChar() != 0;
+	}
+	else if (c_oDocProtect::HashValue == type)
+	{
+		pDocProtect->m_sHashValue = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oDocProtect::SaltValue == type)
+	{
+		pDocProtect->m_sSaltValue = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oDocProtect::SpinCount == type)
+	{
+		pDocProtect->m_oSpinCount = m_oBufferedStream.GetLong();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+
+}
+int Binary_SettingsTableReader::ReadWriteProtect(BYTE type, long length, void* poResult)
+{
+	OOX::Settings::CWriteProtection* pWriteProtect = static_cast<OOX::Settings::CWriteProtection*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+
+	if (c_oWriteProtect::AlgIdExt == type)
+	{
+		pWriteProtect->m_oAlgIdExt = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oWriteProtect::AlgIdExtSource == type)
+	{
+		pWriteProtect->m_oAlgIdExtSource = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oWriteProtect::AlgorithmName == type)
+	{
+		pWriteProtect->m_oAlgorithmName.Init();
+		pWriteProtect->m_oAlgorithmName->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oWriteProtect::CryptAlgorithmClass == type)
+	{
+		pWriteProtect->m_oCryptAlgorithmClass.Init();
+		pWriteProtect->m_oCryptAlgorithmClass->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oWriteProtect::CryptAlgorithmSid == type)
+	{
+		pWriteProtect->m_oCryptAlgorithmSid = m_oBufferedStream.GetLong();
+	}
+	else if (c_oWriteProtect::CryptAlgorithmType == type)
+	{
+		pWriteProtect->m_oCryptAlgorithmType.Init();
+		pWriteProtect->m_oCryptAlgorithmType->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oWriteProtect::CryptProvider == type)
+	{
+		pWriteProtect->m_oCryptProvider = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oWriteProtect::CryptProviderType == type)
+	{
+		pWriteProtect->m_oCryptProviderType.Init();
+		pWriteProtect->m_oCryptProviderType->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oWriteProtect::CryptProviderTypeExt == type)
+	{
+		pWriteProtect->m_oCryptProviderTypeExt = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oWriteProtect::CryptProviderTypeExtSource == type)
+	{
+		pWriteProtect->m_oCryptProviderTypeExtSource = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oWriteProtect::Recommended == type)
+	{
+		pWriteProtect->m_oRecommended = m_oBufferedStream.GetUChar() != 0;
+	}
+	else if (c_oWriteProtect::HashValue == type)
+	{
+		pWriteProtect->m_sHashValue = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oWriteProtect::SaltValue == type)
+	{
+		pWriteProtect->m_sSaltValue = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oWriteProtect::SpinCount == type)
+	{
+		pWriteProtect->m_oSpinCount = m_oBufferedStream.GetLong();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+
 }
 int Binary_SettingsTableReader::ReadFootnotePr(BYTE type, long length, void* poResult)
 {

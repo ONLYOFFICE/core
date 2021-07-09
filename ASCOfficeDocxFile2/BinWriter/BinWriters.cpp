@@ -8301,6 +8301,18 @@ void BinarySettingsTableWriter::WriteSettingsContent(OOX::CSettings& oSettings, 
 		brPrs.Write_rPr(&oRPr);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oSettings.m_oDocumentProtection.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::DocumentProtection);
+		WriteDocumentProtection(oSettings.m_oDocumentProtection.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSettings.m_oWriteProtection.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_SettingsType::WriteProtection);
+		WriteWriteProtection(oSettings.m_oWriteProtection.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 };
 void BinarySettingsTableWriter::WriteMathPr(const OOX::Logic::CMathPr &pMathPr)
 {
@@ -8726,6 +8738,198 @@ void BinarySettingsTableWriter::WriteCompatSetting(const OOX::Settings::CCompatS
 		m_oBcw.m_oStream.WriteStringW3(oCompatSetting.m_sVal.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+}
+void BinarySettingsTableWriter::WriteDocumentProtection(const OOX::Settings::CDocProtect& oDocProtect)
+{
+	int nCurPos = 0;
+
+	if (oDocProtect.m_oAlgorithmName.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::AlgorithmName);
+		m_oBcw.m_oStream.WriteBYTE(oDocProtect.m_oAlgorithmName->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_oEdit.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::Edit);
+		m_oBcw.m_oStream.WriteBYTE(oDocProtect.m_oEdit->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_oEnforcment.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::Enforcment);
+		m_oBcw.m_oStream.WriteBOOL(oDocProtect.m_oEnforcment.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_oFormatting.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::Formatting);
+		m_oBcw.m_oStream.WriteBOOL(oDocProtect.m_oFormatting.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_sHashValue.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::HashValue);
+		m_oBcw.m_oStream.WriteStringW3(oDocProtect.m_sHashValue.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_sSaltValue.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::SaltValue);
+		m_oBcw.m_oStream.WriteStringW3(oDocProtect.m_sSaltValue.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_oSpinCount.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::SpinCount);
+		m_oBcw.m_oStream.WriteLONG(oDocProtect.m_oSpinCount.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+//ext
+	if (oDocProtect.m_oAlgIdExt.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::AlgIdExt);
+		m_oBcw.m_oStream.WriteStringW3(oDocProtect.m_oAlgIdExt.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_oAlgIdExtSource.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::AlgIdExtSource);
+		m_oBcw.m_oStream.WriteStringW3(oDocProtect.m_oAlgIdExtSource.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_oCryptAlgorithmClass.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::CryptAlgorithmClass);
+		m_oBcw.m_oStream.WriteBYTE(oDocProtect.m_oCryptAlgorithmClass->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_oCryptAlgorithmSid.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::CryptAlgorithmSid);
+		m_oBcw.m_oStream.WriteLONG(oDocProtect.m_oCryptAlgorithmSid.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_oCryptAlgorithmType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::CryptAlgorithmType);
+		m_oBcw.m_oStream.WriteBYTE(oDocProtect.m_oCryptAlgorithmType->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_oCryptProvider.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::CryptProvider);
+		m_oBcw.m_oStream.WriteStringW3(oDocProtect.m_oCryptProvider.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_oCryptProviderType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::CryptProviderType);
+		m_oBcw.m_oStream.WriteBYTE(oDocProtect.m_oCryptProviderType->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_oCryptProviderTypeExt.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::CryptProviderTypeExt);
+		m_oBcw.m_oStream.WriteStringW3(oDocProtect.m_oCryptProviderTypeExt.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oDocProtect.m_oCryptProviderTypeExtSource.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oDocProtect::CryptProviderTypeExtSource);
+		m_oBcw.m_oStream.WriteStringW3(oDocProtect.m_oCryptProviderTypeExtSource.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinarySettingsTableWriter::WriteWriteProtection(const OOX::Settings::CWriteProtection& oWriteProtect)
+{
+	int nCurPos = 0;
+	if (oWriteProtect.m_oAlgorithmName.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::AlgorithmName);
+		m_oBcw.m_oStream.WriteBYTE(oWriteProtect.m_oAlgorithmName->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oWriteProtect.m_oRecommended.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::Recommended);
+		m_oBcw.m_oStream.WriteBOOL(oWriteProtect.m_oRecommended.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oWriteProtect.m_sHashValue.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::HashValue);
+		m_oBcw.m_oStream.WriteStringW3(oWriteProtect.m_sHashValue.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oWriteProtect.m_sSaltValue.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::SaltValue);
+		m_oBcw.m_oStream.WriteStringW3(oWriteProtect.m_sSaltValue.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oWriteProtect.m_oSpinCount.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::SpinCount);
+		m_oBcw.m_oStream.WriteLONG(oWriteProtect.m_oSpinCount.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+//ext
+	if (oWriteProtect.m_oAlgIdExt.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::AlgIdExt);
+		m_oBcw.m_oStream.WriteStringW3(oWriteProtect.m_oAlgIdExt.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oWriteProtect.m_oAlgIdExtSource.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::AlgIdExtSource);
+		m_oBcw.m_oStream.WriteStringW3(oWriteProtect.m_oAlgIdExtSource.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oWriteProtect.m_oCryptAlgorithmClass.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::CryptAlgorithmClass);
+		m_oBcw.m_oStream.WriteBYTE(oWriteProtect.m_oCryptAlgorithmClass->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oWriteProtect.m_oCryptAlgorithmSid.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::CryptAlgorithmSid);
+		m_oBcw.m_oStream.WriteLONG(oWriteProtect.m_oCryptAlgorithmSid.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oWriteProtect.m_oCryptAlgorithmType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::CryptAlgorithmType);
+		m_oBcw.m_oStream.WriteBYTE(oWriteProtect.m_oCryptAlgorithmType->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oWriteProtect.m_oCryptProvider.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::CryptProvider);
+		m_oBcw.m_oStream.WriteStringW3(oWriteProtect.m_oCryptProvider.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oWriteProtect.m_oCryptProviderType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::CryptProviderType);
+		m_oBcw.m_oStream.WriteBYTE(oWriteProtect.m_oCryptProviderType->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oWriteProtect.m_oCryptProviderTypeExt.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::CryptProviderTypeExt);
+		m_oBcw.m_oStream.WriteStringW3(oWriteProtect.m_oCryptProviderTypeExt.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oWriteProtect.m_oCryptProviderTypeExtSource.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oWriteProtect::CryptProviderTypeExtSource);
+		m_oBcw.m_oStream.WriteStringW3(oWriteProtect.m_oCryptProviderTypeExtSource.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+
 }
 
 BinaryNotesTableWriter::BinaryNotesTableWriter(ParamsWriter& oParamsWriter):

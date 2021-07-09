@@ -32,15 +32,16 @@
 #pragma once
 
 #include <string>
+#include <functional>
 #include "../../../kernel_config.h"
 
 namespace NSNetwork 
 {
     namespace NSFileTransport
     {
-        typedef void (*CFileTransporter_OnComplete)(int error);
+        //typedef void (*CFileTransporter_OnComplete)(int error);
         // <return> cancel: 1, else 0
-        typedef int (*CFileTransporter_OnProgress)(int percent);
+        //typedef int (*CFileTransporter_OnProgress)(int percent);
 
         class KERNEL_DECL IFileTransporter
         {
@@ -58,8 +59,8 @@ namespace NSNetwork
             virtual int IsRunned() = 0;
 
             //events
-            virtual void SetEvent_OnProgress(CFileTransporter_OnProgress) = 0;
-            virtual void SetEvent_OnComplete(CFileTransporter_OnComplete) = 0;
+            virtual void SetEvent_OnProgress(std::function<void(int)>) = 0;
+            virtual void SetEvent_OnComplete(std::function<void(int)>) = 0;
         };
 
 #ifdef _MAC
@@ -92,8 +93,8 @@ namespace NSNetwork
             virtual void Resume();
             virtual void Stop();
             virtual int IsRunned();
-            virtual void SetEvent_OnProgress(CFileTransporter_OnProgress);
-            virtual void SetEvent_OnComplete(CFileTransporter_OnComplete);
+            virtual void SetEvent_OnProgress(std::function<void(int)>);
+            virtual void SetEvent_OnComplete(std::function<void(int)>);
 
         private:
             CFileTransporter_private* m_pInternal;
@@ -122,8 +123,8 @@ namespace NSNetwork
             virtual void Resume();
             virtual void Stop();
             virtual int IsRunned();
-            virtual void SetEvent_OnProgress(CFileTransporter_OnProgress);
-            virtual void SetEvent_OnComplete(CFileTransporter_OnComplete);
+            virtual void SetEvent_OnProgress(std::function<void(int)>);
+            virtual void SetEvent_OnComplete(std::function<void(int)>);
 
         private:
             CFileTransporter_private* m_pInternal;

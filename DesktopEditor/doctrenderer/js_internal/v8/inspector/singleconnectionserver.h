@@ -6,6 +6,7 @@
 #include <boost/asio/strand.hpp>
 
 #include <functional>
+#include <atomic>
 
 
 class SingleConnectionServer
@@ -14,6 +15,8 @@ public:
     using onMessageCallback = std::function<void(const std::string &message)>;
 
 private:
+    //reading error when disconnecting cdt
+    static constexpr int cdtDisconnectErrCode = 995;
     //tcp is a class
     using tcp = boost::asio::ip::tcp;
     //
@@ -38,6 +41,9 @@ private:
     //message handler
     onMessageCallback m_fOnMessage;
 
+    //
+    std::atomic<bool> m_bCdtDisconnected{false};
+
 
 
     //private api
@@ -53,7 +59,7 @@ public:
     bool listen();
     void run();//start and wait
     void sendData(const std::string &data);
-    void waitAndProcessMessage();
+    bool waitAndProcessMessage();
 };
 
 #endif // SINGLECONNECTIONSERVER_H

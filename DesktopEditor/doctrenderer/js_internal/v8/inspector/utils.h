@@ -8,6 +8,11 @@
 std::string getContents(std::istream &in);
 std::string getFileData(const std::string &filename);
 
+//logging
+void logWithPrefix(std::ostream &out, const std::string &prefix, const std::string &message);
+void logCdtMessage(std::ostream &out, const std::string &message);
+void logOutgoingMessage(std::ostream &out, const std::string &message);
+
 //for sending and acquiring frontend messages
 v8_inspector::StringView strToView(const std::string &str);
 std::string viewToStr(v8::Isolate *isolate

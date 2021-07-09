@@ -162,7 +162,6 @@ v8::Local<v8::Script> getFileScript(v8::Local<v8::Context> context
 {
     //
     std::string raw = getFileData(filename);
-    std::cout << "script: " << raw << std::endl;
 
     //
     v8::Isolate *isolate = context->GetIsolate();
@@ -177,4 +176,19 @@ v8::Local<v8::Script> getFileScript(v8::Local<v8::Context> context
     //
     v8::Local<v8::Script> script = v8::Script::Compile(context, source, &origin).ToLocalChecked();
     return script;
+}
+
+void logWithPrefix(std::ostream &out, const std::string &prefix, const std::string &message)
+{
+    out << prefix << message << std::endl;
+}
+
+void logCdtMessage(std::ostream &out, const std::string &message)
+{
+    logWithPrefix(out, "frontend: ", message);
+}
+
+void logOutgoingMessage(std::ostream &out, const std::string &message)
+{
+    logWithPrefix(out, "responce: ", message);
 }

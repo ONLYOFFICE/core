@@ -11,12 +11,18 @@ std::string SingleConnectionServer::getData()
         return std::string();
     }
     beast::multi_buffer buffer;
-    //check err
+    //to check for err
     beast::error_code errCode;
     //read into buffer; blocks here
     m_pWebsocketStream->read(buffer, errCode);
     if (errCode) {
-        reportError(errCode, "err on reading");
+        if (
+                errCode == boost::asio::error::operation_aborted
+                ) {
+            m_bCdtDisconnected = true;
+            return std::string();
+        }
+        reportError(errCode, errCode.message().c_str());
         return std::string();
     }
     //set mode equal to incoming message mode
@@ -111,8 +117,8 @@ bool SingleConnectionServer::listen()
 //blocks
 void SingleConnectionServer::run()
 {
-    while (true) {
-        waitAndProcessMessage();
+    while (waitAndProcessMessage()) {
+        //
     }
 }
 
@@ -135,7 +141,12 @@ void SingleConnectionServer::sendData(const std::string &data)
     }
 }
 
-void SingleConnectionServer::waitAndProcessMessage()
+bool SingleConnectionServer::waitAndProcessMessage()
 {
-    m_fOnMessage(getData());
+    std::string data = getData();
+    if (m_bCdtDisconnected) {
+        return false;
+    }
+    m_fOnMessage(data);
+    return true;
 }

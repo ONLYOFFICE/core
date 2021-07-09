@@ -2,6 +2,7 @@
 #include <v8.h>//context
 #include <libplatform/libplatform.h>//for v8 stuff
 #include "ninspector.h"
+#include "utils.h"
 
 int main(int argc, char *argv[])
 {
@@ -29,6 +30,8 @@ int main(int argc, char *argv[])
     v8::Isolate *isolate = v8::Isolate::New(createParams);
 
 
+
+
     {
         //all in current isolate
         v8::Isolate::Scope isolateScope(isolate);
@@ -41,29 +44,44 @@ int main(int argc, char *argv[])
 
         //enter the context
         v8::Context::Scope contextScope(context);
+        //make inspector
+        NInspector inspector(context
+                             , platform.get()
+                             , getFileScript(
+                                                 context
+                                                 ,"D:/111/work/v8-debug/v8-debug/scripts/sample.js"
+                                            )
+                             , true
+                             );
 
 
 
 
         //string with script
-//        const char *rawString = getFileData("D:/js_sample.js").c_str();
-//        const char rawString[] = "function a()\
-//                                        {\
-//                                        return 2 + 3;\
-//                                        }\
-//                                        a();";
-//        v8::Local<v8::String> string =
-//                v8::String::NewFromUtf8(
-//                    isolate
-//                    , rawString
-//                    , v8::NewStringType::kNormal
-//                    ).ToLocalChecked();
+        const char rawString[] = "function a()\
+                                        {\
+                                        return 2 + 3;\
+                                        }\
+                                        a();";
+        v8::Local<v8::String> string =
+                v8::String::NewFromUtf8(
+                    isolate
+                    , rawString
+                    , v8::NewStringType::kNormal
+                    ).ToLocalChecked();
 
-//        //compiled script; it can be casted to string - surprising
-//        v8::Local<v8::Script> script = v8::Script::Compile(context, string).ToLocalChecked();
+        //compiled script; it can be casted to string - surprising
+        v8::Local<v8::Script> script = v8::Script::Compile(context, string).ToLocalChecked();
 
-        //make inspector
-        NInspector inspector(context, platform.get());
+//        //make inspector
+//        NInspector inspector(context
+//                             , platform.get()
+//                             , getFileScript(
+//                                                 context
+//                                                 ,"D:/111/work/v8-debug/v8-debug/scripts/sample.js"
+//                                            )
+//                             , true
+//                             );
         inspector.run();
 
     }

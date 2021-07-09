@@ -22,13 +22,13 @@ namespace {
     };
 }
 
-void NClient::setUpDebuggingSession(NChannel::sendDataCallback channelCallback)
+void NClient::setUpDebuggingSession(NChannel::sendDataCallback sendDataCallback)
 {
     //client instance is this
 
     //channel
     m_pChannel = std::make_unique<NChannel>(
-                std::move(channelCallback)
+                std::move(sendDataCallback)
                 );
 
     //inspector
@@ -40,7 +40,7 @@ void NClient::setUpDebuggingSession(NChannel::sendDataCallback channelCallback)
     v8_inspector::StringView state{};
 
     //session
-    m_pSession = m_pInspector->connect(this->m_iContextGroupId, m_pChannel.get(), state);
+    m_pSession = m_pInspector->connect(m_iContextGroupId, m_pChannel.get(), state);
 
     //context name as string view
     v8_inspector::StringView viewContextName = strToView(m_sContextName);
@@ -66,8 +66,10 @@ void NClient::pumpPlatform()
 NClient::NClient(v8::Local<v8::Context> context//for some stuff
         , const std::string &contextName//why not
         , v8::Platform *platform
+        , v8::Local<v8::Script> script
         , NChannel::sendDataCallback sendDataFunc//for channel
         , waitMessageCallback waitIncomingMessage//to deal with incoming messages
+        , setScriptRetValCallback setScriptRetVal
         )
     //set isolate
     : m_pIsolate(context->GetIsolate())
@@ -80,6 +82,8 @@ NClient::NClient(v8::Local<v8::Context> context//for some stuff
 //          m_pIsolate,
           context)
 
+    , m_Script(script)
+
 //    , contextScope(m_Context)
 
     //set context name
@@ -87,6 +91,9 @@ NClient::NClient(v8::Local<v8::Context> context//for some stuff
 
     //set message callback
     , m_WaitForFrontendMessage(std::move(waitIncomingMessage))
+
+    //
+    , m_SetRetVal(std::move(setScriptRetVal))
 {
     setUpDebuggingSession(sendDataFunc);
 }
@@ -100,8 +107,10 @@ void NClient::runMessageLoopOnPause(int contextGroupId) {
 
     TrueSetter f(m_bPause);
 
-    while (m_bPause ) {
-        m_WaitForFrontendMessage();
+    while (m_bPause) {
+        if (!m_WaitForFrontendMessage()) {
+            break;
+        }
         pumpPlatform();
     }
 }
@@ -111,22 +120,46 @@ void NClient::quitMessageLoopOnPause() {
 }
 
 
-void NClient::startDebugging(v8::Local<v8::Script> script)
+void NClient::startDebugging()
 {
-    m_pSession->schedulePauseOnNextStatement(strToView(""), strToView(""));
-    getFileScript(
-                m_Context
-                ,"D:/111/work/v8-debug/v8-debug/scripts/sample.js")
-            ->Run(m_Context).ToLocalChecked();
+    std::cout << "to start dbg" << std::endl;
+    v8::Context::Scope contextScope(m_Context);
+    m_pSession->schedulePauseOnNextStatement(strToView("debugging"), strToView(""));
+
+    //string with script
+    const char rawString[] = "function a()\
+                                    {\
+                                    return 2 + 3;\
+                                    }\
+                                    a();";
+    v8::Local<v8::String> string =
+            v8::String::NewFromUtf8(
+                m_Context->GetIsolate()
+                , rawString
+                , v8::NewStringType::kNormal
+                ).ToLocalChecked();
+
+    //compiled script; it can be casted to string - surprising
+//    v8::Local<v8::Script> script = v8::Script::Compile(m_Context, string).ToLocalChecked();
+
+    v8::MaybeLocal<v8::Value> result =
+//            script//1
+            m_Script//2
+//                getFileScript(//3
+//                            m_Context
+//                            ,"D:/111/work/v8-debug/v8-debug/scripts/sample.js")
+
+                        ->Run(m_Context)
+            ;
+
+    m_SetRetVal(result);
 }
 
 void NClient::processMessageFromFrontend(const std::string &message)
 {
     m_pSession->dispatchProtocolMessage(strToView(message));
     if (checkForStartDebugging(message)) {
-        std::cout << "TO START DEBUGGING" << std::endl;
-        startDebugging(makeTrialScript(m_Context
-                                                  ));
+        startDebugging();
     }
 }
 

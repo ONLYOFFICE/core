@@ -576,7 +576,7 @@ namespace NSBinPptxRW
 		std::wstring GetString3(_INT32 len, bool bDeleteZero = false);
 		std::wstring GetString4(_INT32 len);
 
-        bool GetArray(BYTE **pBuffer, _INT32 len);
+        bool GetArray(BYTE *pBuffer, _INT32 len);
 
 		std::string GetString2A();
 		void SkipRecord();

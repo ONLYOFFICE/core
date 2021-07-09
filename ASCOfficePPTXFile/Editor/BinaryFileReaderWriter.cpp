@@ -2049,14 +2049,14 @@ namespace NSBinPptxRW
         return res;
 	}
 
-    bool CBinaryFileReader::GetArray(BYTE **pBuffer, _INT32 len)
+    bool CBinaryFileReader::GetArray(BYTE *pBuffer, _INT32 len)
 	{
 		if (0 == len)
             return false;
 		if (m_lPos + len > m_lSize)
             return false;
 
-        *pBuffer = new BYTE [len];
+        //*pBuffer = new BYTE [len];
 
         memcpy(pBuffer, m_pDataCur, len);
 

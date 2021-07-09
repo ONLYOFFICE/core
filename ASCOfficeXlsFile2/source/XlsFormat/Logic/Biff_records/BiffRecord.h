@@ -31,8 +31,8 @@
  */
 #pragma once
 
-#include <Logic/BaseObject.h> 
-#include <Logic/Biff_structures/BitMarkedStructs.h> 
+#include <Logic/BaseObject.h>
+#include <Logic/Biff_structures/BitMarkedStructs.h>
 #include <Logic/BinProcessor.h>
 
 namespace XLS

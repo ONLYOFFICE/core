@@ -50,7 +50,7 @@ class CFRecord
 public:
 	CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info); // Create a record an read its data from the stream
 	CFRecord(NSFile::CFileBinary &file, GlobalWorkbookInfoPtr global_info); // Create a record an read its data from the data stream
-    CFRecord(NSBinPptxRW::CBinaryFileReader &reader, GlobalWorkbookInfoPtr global_info); // Create a record an read its data from the data stream
+        CFRecord(NSBinPptxRW::CBinaryFileReader &reader, GlobalWorkbookInfoPtr global_info); // Create a record an read its data from the data stream
 	CFRecord(CFRecordType::TypeId type_id, GlobalWorkbookInfoPtr global_info); // Create an empty record
 	
 	~CFRecord();

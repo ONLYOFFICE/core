@@ -177,7 +177,7 @@ CFRecord::CFRecord(NSBinPptxRW::CBinaryFileReader &reader, GlobalWorkbookInfoPtr
         size_ = size;
         data_ = new char[size_];
 
-        reader.GetArray(reinterpret_cast<BYTE**>(&data_), size_);
+        reader.GetArray(reinterpret_cast<BYTE*>(data_), size_);
     }
 }
 

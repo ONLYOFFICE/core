@@ -44,14 +44,14 @@
 namespace MetaFile
 {
 	class CEmfFile;
+	class CEmfParserBase;
 	class CEmfDC;
 	class CEmfPath;
 
 	class CEmfPlayer
 	{
 	public:
-
-		CEmfPlayer(CEmfFile* pFile);
+		CEmfPlayer(CEmfParserBase* pParser);
 		~CEmfPlayer();
 		void Clear();
 		CEmfDC* SaveDC();
@@ -74,7 +74,7 @@ namespace MetaFile
 
 		CEmfDC*              m_pDC;
 		std::vector<CEmfDC*> m_vDCStack;
-		CEmfFile*            m_pEmfFile;		
+		CEmfParserBase*	     m_pParser;
 		CEmfObjectMap        m_mObjects;
 	};
 

@@ -30,20 +30,20 @@
  *
  */
 #include "EmfPlayer.h"
-#include "EmfFile.h"
+#include "EmfParser/CEmfParserBase.h"
 
 namespace MetaFile
 {
-	CEmfPlayer::CEmfPlayer(CEmfFile* pFile)
+	CEmfPlayer::CEmfPlayer(CEmfParserBase* pParser)
 	{
 		CEmfDC* pDC = new CEmfDC(this);
 		if (!pDC)
 		{
-			pFile->SetError();
+			pParser->SetError();
 			return;
 		}
 
-		m_pEmfFile = pFile;
+		m_pParser = pParser;
 		m_pDC = pDC;
 		m_vDCStack.push_back(pDC);
 
@@ -84,7 +84,7 @@ namespace MetaFile
 		CEmfDC* pDC = new CEmfDC(this);
 		if (!pDC)
 		{
-			m_pEmfFile->SetError();
+			m_pParser->SetError();
 			return;
 		}
 
@@ -99,14 +99,14 @@ namespace MetaFile
 	{
 		if (!m_pDC)
 		{
-			m_pEmfFile->SetError();
+			m_pParser->SetError();
 			return NULL;
 		}
 
 		CEmfDC* pNewDC = m_pDC->Copy();
 		if (!pNewDC)
 		{
-			m_pEmfFile->SetError();
+			m_pParser->SetError();
 			return NULL;
 		}
 
@@ -118,7 +118,7 @@ namespace MetaFile
 	{
 		if (m_vDCStack.size() <= 1)
 		{
-			m_pEmfFile->SetError();
+			m_pParser->SetError();
 			return m_pDC;
 		}
 
@@ -259,7 +259,7 @@ namespace MetaFile
 		m_oInverseTransform.Init();
 		m_oTextColor.Init();
 		m_oFinalTransform.Init();
-		m_oBgColor.InitWhite();
+		m_oBgColor.Init();
 		m_ulTextAlign   = TA_TOP | TA_LEFT | TA_NOUPDATECP;
 		m_ulBgMode      = TRANSPARENT;
 		m_ulMiterLimit  = 0;

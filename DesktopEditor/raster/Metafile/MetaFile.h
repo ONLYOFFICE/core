@@ -57,6 +57,10 @@ namespace MetaFile
 		void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
 		NSFonts::IFontManager* get_FontManager();
 
+		//Для тестов
+		void ConvertToXml(const wchar_t *wsFilePath);
+		void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
+		bool DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 	private:
 
 		CApplicationFonts* m_pAppFonts;

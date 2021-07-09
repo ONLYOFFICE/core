@@ -75,6 +75,109 @@ namespace MetaFile
 	{
 		return m_pFontManager;
 	}
+
+	void CMetaFile::ConvertToXml(const wchar_t *wsFilePath)
+	{
+	    if (NULL == wsFilePath)
+		return;
+
+	    m_oEmfFile.SetOutputDevice(wsFilePath);
+	    m_oEmfFile.PlayMetaFile();
+	}
+
+	void CMetaFile::ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t *wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
+	{
+	    if (NULL == wsXmlFilePath || NULL == wsOutFilePath)
+		return;
+
+	    m_oEmfFile.SetOutputDevice(NULL, wsXmlFilePath);
+	    CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
+	    CFontsCache* pFontCache = new CFontsCache();
+	    pFontCache->SetStreams(m_pAppFonts->GetStreams());
+	    pFontManager->SetOwnerCache(pFontCache);
+
+	    CGraphicsRenderer oRenderer;
+	    oRenderer.SetFontManager(pFontManager);
+
+	    if (-1 == nHeight)
+	    {
+		    double dX, dY, dW, dH;
+		    GetBounds(&dX, &dY, &dW, &dH);
+
+		    if (dW < 0)
+			    dW = -dW;
+		    if (dH < 0)
+			    dH = -dH;
+
+		    if (nWidth < 0) nWidth = (int)(dW * 96 / 25.4);
+			    nHeight = (int)((double)nWidth * dH / dW);
+	    }
+
+            double dWidth  = 25.4 * nWidth / 96;
+            double dHeight = 25.4 * nHeight / 96;
+
+	    BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+	    if (!pBgraData)
+		    return;
+
+	    _UINT32 alfa = 0xffffff;
+	    //дефолтный тон должен быть прозрачным, а не белым
+	    //memset(pBgraData, 0xff, nWidth * nHeight * 4);
+	    for (int i = 0; i < nWidth * nHeight; i++)
+	    {
+		    ((_UINT32*)pBgraData)[i] = alfa;
+	    }
+	    CBgraFrame oFrame;
+	    oFrame.put_Data(pBgraData);
+	    oFrame.put_Width(nWidth);
+	    oFrame.put_Height(nHeight);
+	    oFrame.put_Stride(-4 * nWidth);
+
+	    oRenderer.CreateFromBgraFrame(&oFrame);
+	    oRenderer.SetSwapRGB(false);
+	    oRenderer.put_Width(dWidth);
+	    oRenderer.put_Height(dHeight);
+
+	    DrawOnRenderer(wsXmlFilePath, &oRenderer, 0, 0, dWidth, dHeight);
+
+	    oFrame.SaveFile(wsOutFilePath, unFileType);
+	    RELEASEINTERFACE(pFontManager);
+	}
+
+	bool CMetaFile::DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
+	{
+	    if (NULL == wsXmlFilePath || NULL == pRenderer)
+		    return false;
+
+	    pRenderer->BeginCommand(c_nImageType);
+
+	    if (c_lMetaWmf == m_lType)
+	    {
+		    CMetaFileRenderer oWmfOut(&m_oWmfFile, pRenderer, dX, dY, dWidth, dHeight);
+		    m_oWmfFile.SetOutputDevice((IOutputDevice*)&oWmfOut);
+		    m_oWmfFile.PlayMetaFile();
+	    }
+	    else if (c_lMetaEmf == m_lType)
+	    {
+		    CMetaFileRenderer oEmfOut(m_oEmfFile.GetEmfParser(), pRenderer, dX, dY, dWidth, dHeight);
+		    m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut, wsXmlFilePath);
+		    m_oEmfFile.PlayMetaFile();
+	    }
+	    else if (c_lMetaSvm == m_lType)
+	    {
+		    CMetaFileRenderer oSvmOut(&m_oSvmFile, pRenderer, dX, dY, dWidth, dHeight);
+		    m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
+		    m_oSvmFile.PlayMetaFile();
+	    }
+	    else if (c_lMetaSvg == m_lType)
+	    {
+		m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
+	    }
+
+	    pRenderer->EndCommand(c_nImageType);
+	    return true;
+	}
+
 	bool CMetaFile::LoadFromFile(const wchar_t *wsFilePath)
 	{
 		// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем 
@@ -160,7 +263,7 @@ namespace MetaFile
 		}
 		else if (c_lMetaEmf == m_lType)
 		{
-			CMetaFileRenderer oEmfOut(&m_oEmfFile, pRenderer, dX, dY, dWidth, dHeight);
+			CMetaFileRenderer oEmfOut(m_oEmfFile.GetEmfParser(), pRenderer, dX, dY, dWidth, dHeight);
 			m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut);
 			m_oEmfFile.SetInterpretatorType(InterpretatorType::Render);
 			m_oEmfFile.PlayMetaFile();

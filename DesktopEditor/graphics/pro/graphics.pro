@@ -123,6 +123,7 @@ SOURCES += \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.cpp \
     ../../raster/Metafile/Emf/EmfParser/CEmfParser.cpp \
+    ../../raster/Metafile/Emf/EmfParser/CEmfParserBase.cpp \
     ../../raster/Metafile/Emf/EmfParser/CEmfxParser.cpp \
     ./../Matrix.cpp \
     ./../GraphicsPath.cpp \

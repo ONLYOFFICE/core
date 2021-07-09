@@ -2,12 +2,18 @@
 
 namespace MetaFile
 {
-    CEmfInterpretatorRender::CEmfInterpretatorRender()
+    CEmfInterpretatorRender::CEmfInterpretatorRender(IOutputDevice* pIOutputDevice) :
+        m_pMetaFileRenderer(static_cast<CMetaFileRenderer*>(pIOutputDevice))
     {}
 
     void CEmfInterpretatorRender::SetOutputDevice(IOutputDevice *pIOutputDevice)
     {
-        m_pMetaFileRenderer = static_cast<CMetaFileRenderer*>(pIOutputDevice);
+         m_pMetaFileRenderer = static_cast<CMetaFileRenderer*>(pIOutputDevice);
+    }
+
+    InterpretatorType CEmfInterpretatorRender::GetType()
+    {
+        return InterpretatorType::Render;
     }
 
     void CEmfInterpretatorRender::Begin()

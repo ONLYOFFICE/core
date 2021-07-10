@@ -693,8 +693,14 @@ namespace NSJSBase
 
 namespace NSJSBase
 {
+    namespace v8_debug {
+        namespace internal {
+            class CInspectorClient;
+        }
+    }
     class CJSContextPrivate
     {
+        friend class v8_debug::internal::CInspectorClient;
     public:
         CV8Worker m_oWorker;
         v8::Isolate* m_isolate;

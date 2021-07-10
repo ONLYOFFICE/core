@@ -7,6 +7,10 @@
 #include "nchannel.h"
 
 namespace NSJSBase {
+    class CJSContextPrivate;
+}
+
+namespace NSJSBase {
 namespace v8_debug {
 namespace internal {
 

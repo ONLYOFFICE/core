@@ -4,6 +4,7 @@
 #include <libplatform/libplatform.h>
 #include <iostream>
 #include <thread>
+#include "../../v8/v8_base.h"
 
 namespace {
     //

@@ -268,39 +268,8 @@ namespace NSJSBase
 
     JSSmart<CJSValue> CJSContext::runScript(const std::string& script, JSSmart<CJSTryCatch> exception, const std::wstring& scriptPath)
     {
-        v8::Local<v8::String> _source = CreateV8String(CV8Worker::GetCurrent(), script.c_str());
-        
-        v8::Local<v8::Script> _script;
-        if(!scriptPath.empty())
-        {
-            std::wstring sCachePath = scriptPath.substr(0, scriptPath.rfind(L".")) + L".cache";
-            CCacheDataScript oCachedScript(sCachePath);
-            _script = oCachedScript.Compile(m_internal->m_context, _source);
-        }
-        else
-        {
-            v8::MaybeLocal<v8::Script> _scriptRetValue = v8::Script::Compile(V8ContextFirstArg _source);
-            if (!_scriptRetValue.IsEmpty())
-                _script = _scriptRetValue.ToLocalChecked();
-        }
-        
-        CJSValueV8* _return = new CJSValueV8();
-        
-        v8::MaybeLocal<v8::Value> retValue;
-        if (exception.is_init())
-        {
-            if (!exception->Check())
-                retValue = _script->Run(V8ContextOneArg);
-        }
-        else
-        {
-            retValue = _script->Run(V8ContextOneArg);
-        }
-
-        if (!retValue.IsEmpty())
-            _return->value = retValue.ToLocalChecked();
-        
-        return _return;
+        int addInspector;
+        return m_internal->runScriptImpl(script, exception, scriptPath);
     }
 
     CJSContext* CJSContext::GetCurrent()
@@ -337,4 +306,75 @@ namespace NSJSBase
     {
         return true;
     }
+
+    v8::Local<v8::Script> CJSContextPrivate::compileOnlyScript(v8::Local<v8::String> source)
+    {
+        v8::MaybeLocal<v8::Script> maybeScript = v8::Script::Compile(m_context, source);
+        if (maybeScript.IsEmpty()) {
+            return v8::Local<v8::Script>();
+        } else {
+            return maybeScript.ToLocalChecked();
+        }
+    }
+
+    v8::Local<v8::Script> CJSContextPrivate::compileScriptWithPath(v8::Local<v8::String> source
+                                                                   , const std::wstring &scriptPath)
+    {
+        //создаём путь к файлу в той же директории с тем же названием, но с расширением .cache
+        std::size_t dotPos = scriptPath.rfind(L".");
+        std::wstring sCachePath = scriptPath.substr(0, dotPos) + L".cache";
+        CCacheDataScript oCachedScript(sCachePath);
+        return oCachedScript.Compile(m_context, source);
+    }
+
+    v8::MaybeLocal<v8::Value> CJSContextPrivate::runScriptWithException(v8::Local<v8::Script> script
+                                                                        , JSSmart<CJSTryCatch>
+                                                                        pException)
+    {
+        if (pException.is_init()//если TryCatch есть
+                &&
+                pException->Check()//и он поймал исключение
+                ) {
+            //не запускаем скрипт, возвращаем дефолтное значение
+            return v8::MaybeLocal<v8::Value>();
+        }
+        //если всё ок, запускаем скрипт
+        return script->Run(m_context);
+    }
+
+    JSSmart<CJSValue> CJSContextPrivate::runScriptImpl(const std::string &script
+                                                       , JSSmart<CJSTryCatch> pException
+                                                       , const std::wstring &scriptPath)
+    {
+        //make v8 source string
+        v8::Local<v8::String> source = CreateV8String(CV8Worker::GetCurrent()//isolate
+                                                      , script);
+
+        //compile script
+        v8::Local<v8::Script> v8script =
+                scriptPath.empty()
+                ?
+                    compileOnlyScript(source)
+                  :
+                    compileScriptWithPath(source, scriptPath);
+
+        //run
+        v8::MaybeLocal<v8::Value> maybeResult = runScriptWithException(v8script, pException);
+
+        //ptr to subclass of CJSValue
+        CJSValueV8 *result = new CJSValueV8();
+
+        //if there's a result, set it
+        if (!maybeResult.IsEmpty()) {
+            result->value = maybeResult.ToLocalChecked();
+        }
+
+        return result;
+    }
+
+    v8::Platform *CJSContextPrivate::getPlatform()
+    {
+        return m_oWorker.getInitializer()->getPlatform();
+    }
+
 }

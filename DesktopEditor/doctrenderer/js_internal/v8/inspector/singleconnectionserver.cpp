@@ -82,6 +82,8 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::waitForConnection()
     if (errCode) {
         return false;
     }
+    //connection established
+    m_bCdtDisconnected = false;
     return true;
 }
 
@@ -110,7 +112,7 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::listen()
     if (errCode) {
         return false;
     }
-
+    m_bListening = true;
     return true;
 }
 
@@ -149,4 +151,14 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::waitAndProcessMessage
     }
     m_fOnMessage(data);
     return true;
+}
+
+bool NSJSBase::v8_debug::internal::SingleConnectionServer::connected() const
+{
+    return !m_bCdtDisconnected;
+}
+
+bool NSJSBase::v8_debug::internal::SingleConnectionServer::listening() const
+{
+    return m_bListening;
 }

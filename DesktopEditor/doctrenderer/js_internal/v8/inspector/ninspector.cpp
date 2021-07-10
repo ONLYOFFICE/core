@@ -2,6 +2,7 @@
 #include "nclient.h"
 #include <iostream>
 #include "singlethreadutils.h"
+#include "../../v8/v8_base.h"
 
 bool NSJSBase::v8_debug::CInspector::initServer()
 {
@@ -16,10 +17,10 @@ bool NSJSBase::v8_debug::CInspector::initServer()
     m_Server.setOnMessageCallback(messageCallback);
 
     //callback is set. now listen
-    m_bListening = m_Server.listen();
+    m_Server.listen();
 
 
-    if (!m_bListening) {
+    if (!m_Server.listening()) {
         std::cerr << "server can't listen to CDT connection" << std::endl;
         return false;
     }
@@ -132,7 +133,7 @@ NSJSBase::v8_debug::CInspector::CInspector(v8::Local<v8::Context> context
 
 v8::MaybeLocal<v8::Value> NSJSBase::v8_debug::CInspector::run()
 {
-    if (!m_bListening) {
+    if (!m_Server.listening()) {
         return v8::MaybeLocal<v8::Value>();
     }
     m_Server.waitForConnection();

@@ -42,8 +42,9 @@ private:
     //message handler
     onMessageCallback m_fOnMessage;
 
-    //
-    std::atomic<bool> m_bCdtDisconnected{false};
+    //flags
+    std::atomic<bool> m_bCdtDisconnected{true};
+    std::atomic<bool> m_bListening{false};
 
 
 
@@ -61,6 +62,8 @@ public:
     void run();//start and wait
     void sendData(const std::string &data);
     bool waitAndProcessMessage();
+    bool connected() const;
+    bool listening() const;
 };
 
 }//namespace internal

@@ -109,6 +109,16 @@ public:
         return m_pAllocator;
     }
 
+    //need for inspector
+    v8::Platform* getPlatform() {
+        return
+                m_platform
+#ifdef V8_VERSION_87_PLUS
+            .get()
+#endif
+                ;
+    }
+
     v8::Isolate* CreateNew()
     {
         v8::Isolate::CreateParams create_params;
@@ -694,6 +704,7 @@ namespace NSJSBase
 namespace NSJSBase
 {
     namespace v8_debug {
+        class CInspector;
         namespace internal {
             class CInspectorClient;
         }
@@ -701,6 +712,26 @@ namespace NSJSBase
     class CJSContextPrivate
     {
         friend class v8_debug::internal::CInspectorClient;
+        friend class v8_debug::CInspector;
+        friend class CJSContext;
+
+        //compile
+        v8::Local<v8::Script> compileOnlyScript(v8::Local<v8::String> source);
+        v8::Local<v8::Script> compileScriptWithPath(v8::Local<v8::String> source
+                                                    , const std::wstring &scriptPath);
+
+        //run
+        v8::MaybeLocal<v8::Value> runScriptWithException(v8::Local<v8::Script> script
+                                                         , JSSmart<CJSTryCatch> pException);
+
+        //must be done inside of inspector
+        JSSmart<CJSValue> runScriptImpl(const std::string &script
+                                        , JSSmart<CJSTryCatch> pException
+                                        , const std::wstring &scriptPath);
+
+        //need for inspector client
+        v8::Platform* getPlatform();
+
     public:
         CV8Worker m_oWorker;
         v8::Isolate* m_isolate;

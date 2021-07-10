@@ -14,9 +14,6 @@ class CInspector
     //server
     internal::SingleConnectionServer m_Server{};
 
-    //is server listening
-    bool m_bListening{false};
-
     //v8 stuff
     v8::Isolate *m_pIsolate{nullptr};
     //stored on client

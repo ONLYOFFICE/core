@@ -1,7 +1,7 @@
 #include "ninspector.h"
 #include "nclient.h"
 #include <iostream>
-#include "utils.h"
+#include "singlethreadutils.h"
 
 bool NInspector::initServer()
 {

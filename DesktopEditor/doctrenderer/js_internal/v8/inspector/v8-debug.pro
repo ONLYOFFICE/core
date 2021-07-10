@@ -43,7 +43,7 @@ HEADERS += \
     nclient.h \
     ninspector.h \
     singleconnectionserver.h \
-    utils.h
+    singlethreadutils.h
 
 SOURCES += \
         main.cpp \
@@ -51,7 +51,7 @@ SOURCES += \
         nclient.cpp \
         ninspector.cpp \
         singleconnectionserver.cpp \
-        utils.cpp
+        singlethreadutils.cpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "singlethreadutils.h"
 #include <iostream>
 #include <fstream>//get file data
 #include <sstream>//string stream in getContents
@@ -25,9 +25,6 @@ v8_inspector::StringView strToView(const std::string &str) {
 std::string viewToStr(v8::Isolate *isolate
                       , const v8_inspector::StringView &view)
 {
-    v8::Isolate::Scope isolateScope(isolate);
-    v8::HandleScope handleScope(isolate);
-
     v8::Local<v8::String> v8str = viewTov8str(isolate, view);
     v8::String::Utf8Value utf8(v8str);
     return std::string(*utf8);
@@ -36,14 +33,10 @@ std::string viewToStr(v8::Isolate *isolate
 v8::Local<v8::Object> parseJsonImpl(v8::Local<v8::Context> context
                                    , v8::Local<v8::String> v8str)
 {
-    v8::Isolate *isolate = context->GetIsolate();
-    v8::Isolate::Scope isolateScope(isolate);
-    v8::EscapableHandleScope handleScope(isolate);
-
     v8::Local<v8::Value> value = v8::JSON::Parse(context, v8str).ToLocalChecked();
     v8::Local<v8::Object> obj = value->ToObject(context).ToLocalChecked();
     return
-            handleScope.Escape(obj)
+                obj
             ;
 }
 
@@ -58,10 +51,6 @@ v8::Local<v8::String> tov8str(v8::Isolate *isolate, const std::string &str)
 
 std::string getJsonProperty(v8::Local<v8::Context> context, v8::Local<v8::Object> jsonObject, const std::string &property)
 {
-    v8::Isolate *isolate = context->GetIsolate();
-    v8::Isolate::Scope isolateScope(isolate);
-    v8::HandleScope handleScope(isolate);
-
     v8::Local<v8::Value> name = v8::String::NewFromUtf8(
                 context->GetIsolate()
                 , property.c_str()
@@ -133,10 +122,6 @@ v8::Local<v8::Object> parseJson(v8::Local<v8::Context> context
 
 v8::Local<v8::Script> makeTrialScript(v8::Local<v8::Context> context)
 {
-    v8::Isolate *isolate = context->GetIsolate();
-    v8::Isolate::Scope isolateScope(isolate);
-    v8::EscapableHandleScope handleScope(isolate);
-
     std::cout << "called make trial script" << std::endl;
     const char rawString[] = "function a()\
                                     {\
@@ -153,7 +138,7 @@ v8::Local<v8::Script> makeTrialScript(v8::Local<v8::Context> context)
     v8::Local<v8::Script> script = v8::Script::Compile(context, string).ToLocalChecked();
 
     return
-            handleScope.Escape(script)
+                script
             ;
 }
 

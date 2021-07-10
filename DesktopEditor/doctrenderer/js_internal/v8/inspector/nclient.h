@@ -48,6 +48,8 @@ private:
     void setUpDebuggingSession(NChannel::sendDataCallback sendDataCallback);
     //
     void pumpPlatform();
+    //
+    bool checkForStartDebugging(const std::string &json);
 
 public:
     NClient(
@@ -69,7 +71,7 @@ public:
     void startDebugging();
     //
     void processMessageFromFrontend(const std::string &message);
-    bool checkForStartDebugging(const std::string &json);
+
 
     ~NClient();
 };

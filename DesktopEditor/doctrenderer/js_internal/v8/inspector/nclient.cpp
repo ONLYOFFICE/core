@@ -1,6 +1,6 @@
 #include "nclient.h"
 #include "nchannel.h"
-#include "utils.h"
+#include "singlethreadutils.h"
 #include <libplatform/libplatform.h>
 #include <iostream>
 #include <thread>
@@ -144,10 +144,10 @@ void NClient::startDebugging()
 
     v8::MaybeLocal<v8::Value> result =
 //            script//1
-            m_Script//2
-//                getFileScript(//3
-//                            m_Context
-//                            ,"D:/111/work/v8-debug/v8-debug/scripts/sample.js")
+//            m_Script//2
+                getFileScript(//3
+                            m_Context
+                            ,"D:/111/work/v8-debug/v8-debug/scripts/sample.js")
 
                         ->Run(m_Context)
             ;

@@ -2,7 +2,8 @@
 #include <v8.h>//context
 #include <libplatform/libplatform.h>//for v8 stuff
 #include "ninspector.h"
-#include "utils.h"
+#include "singlethreadutils.h"
+//#include "../../js_base.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,7 +20,6 @@ int main(int argc, char *argv[])
     v8::V8::InitializePlatform(platform.get());
     //init v8
     v8::V8::Initialize();
-
     //ISOLATE
     //create params for isolate
     v8::Isolate::CreateParams createParams;
@@ -33,6 +33,8 @@ int main(int argc, char *argv[])
 
 
     {
+        //own isolate by this thread
+        v8::Locker lock(isolate);
         //all in current isolate
         v8::Isolate::Scope isolateScope(isolate);
 

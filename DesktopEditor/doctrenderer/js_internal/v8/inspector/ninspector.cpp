@@ -3,7 +3,7 @@
 #include <iostream>
 #include "singlethreadutils.h"
 
-bool NInspector::initServer()
+bool NSJSBase::v8_debug::CInspector::initServer()
 {
     auto messageCallback = [this](const std::string &message) {
         if (message.empty()) {
@@ -27,37 +27,37 @@ bool NInspector::initServer()
     return true;
 }
 
-void NInspector::initClient(v8::Local<v8::Context> context
+void NSJSBase::v8_debug::CInspector::initClient(v8::Local<v8::Context> context
                             , const std::string &contextName
                             , v8::Platform *platform
                             , v8::Local<v8::Script> script)
 {
     //send message to frontend (for channel)
-    NChannel::sendDataCallback sendDataCallback = [this](
+    internal::CInspectorChannel::sendDataCallback sendDataCallback = [this](
             const v8_inspector::StringView &message
             ) {
         if (message.length() == 0) {
             return;
         }
-        std::string str = viewToStr(m_pIsolate, message);
+        std::string str = internal::viewToStr(m_pIsolate, message);
         maybeLog(str, msgType::outgoing);
         this->m_Server.sendData(str);
     };
 
     //wait for message (for client in runMessageLoopOnPause)
-    NClient::waitMessageCallback waitForMessage = [this]() {
+    internal::CInspectorClient::waitMessageCallback waitForMessage = [this]() {
         return m_Server.waitAndProcessMessage();
     };
 
     //set script result
-    NClient::setScriptRetValCallback setScriptRetVal = [this](
+    internal::CInspectorClient::setScriptRetValCallback setScriptRetVal = [this](
             v8::MaybeLocal<v8::Value> result
             ) {
         this->m_ScriptReturnValue = result;
     };
 
     //make client
-    this->m_pClient = std::make_unique<NClient>(
+    this->m_pClient = std::make_unique<internal::CInspectorClient>(
                                                     context
                                                     , contextName
                                                     , platform
@@ -71,7 +71,7 @@ void NInspector::initClient(v8::Local<v8::Context> context
                 );
 }
 
-void NInspector::maybeLog(const std::string &message, msgType type) const
+void NSJSBase::v8_debug::CInspector::maybeLog(const std::string &message, msgType type) const
 {
     if (!m_bLog) {
         return;
@@ -79,17 +79,17 @@ void NInspector::maybeLog(const std::string &message, msgType type) const
 
     switch (type) {
     case msgType::incoming: {
-        logCdtMessage(std::clog, message);
+        internal::logCdtMessage(std::clog, message);
         return;
     }
     case msgType::outgoing: {
-        logOutgoingMessage(std::clog, message);
+        internal::logOutgoingMessage(std::clog, message);
         return;
     }
     }
 }
 
-void NInspector::printChromeLaunchHint(std::ostream &out, uint16_t port)
+void NSJSBase::v8_debug::CInspector::printChromeLaunchHint(std::ostream &out, uint16_t port)
 {
     out << "open chrome dev tools with the following command" << std::endl;
     out << "chrome "
@@ -101,7 +101,7 @@ void NInspector::printChromeLaunchHint(std::ostream &out, uint16_t port)
 
 
 
-NInspector::NInspector(v8::Local<v8::Context> context
+NSJSBase::v8_debug::CInspector::CInspector(v8::Local<v8::Context> context
                        , v8::Platform *platform
                        , v8::Local<v8::Script> script
                        , bool log
@@ -130,7 +130,7 @@ NInspector::NInspector(v8::Local<v8::Context> context
     printChromeLaunchHint(std::cout, port);
 }
 
-v8::MaybeLocal<v8::Value> NInspector::run()
+v8::MaybeLocal<v8::Value> NSJSBase::v8_debug::CInspector::run()
 {
     if (!m_bListening) {
         return v8::MaybeLocal<v8::Value>();
@@ -140,7 +140,7 @@ v8::MaybeLocal<v8::Value> NInspector::run()
     return m_ScriptReturnValue;
 }
 
-NInspector::~NInspector()
+NSJSBase::v8_debug::CInspector::~CInspector()
 {
     //
 }

@@ -6,7 +6,11 @@
 #include <atomic>
 #include "nchannel.h"
 
-class NClient : public v8_inspector::V8InspectorClient
+namespace NSJSBase {
+namespace v8_debug {
+namespace internal {
+
+class CInspectorClient : public v8_inspector::V8InspectorClient
 {
 public:
     using waitMessageCallback = std::function<bool(void)>;
@@ -45,19 +49,19 @@ private:
 
 
     //sets up a debugging session
-    void setUpDebuggingSession(NChannel::sendDataCallback sendDataCallback);
+    void setUpDebuggingSession(CInspectorChannel::sendDataCallback sendDataCallback);
     //
     void pumpPlatform();
     //
     bool checkForStartDebugging(const std::string &json);
 
 public:
-    NClient(
+    CInspectorClient(
             v8::Local<v8::Context> context//for some stuff
             , const std::string &contextName//why not
             , v8::Platform *platform
             , v8::Local<v8::Script> script
-            , NChannel::sendDataCallback sendDataFunc//for channel
+            , CInspectorChannel::sendDataCallback sendDataFunc//for channel
             , waitMessageCallback waitIncomingMessage//to synchronously consume incoming messages
             , setScriptRetValCallback setScriptRetVal//to set script result to inspector
             );
@@ -73,7 +77,11 @@ public:
     void processMessageFromFrontend(const std::string &message);
 
 
-    ~NClient();
+    ~CInspectorClient();
 };
+
+}//namespace internal
+}//namespace v8_debug
+}//namespace NSJSBase
 
 #endif // NCLIENT_H

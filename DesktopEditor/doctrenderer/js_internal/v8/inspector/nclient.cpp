@@ -22,12 +22,13 @@ namespace {
     };
 }
 
-void NClient::setUpDebuggingSession(NChannel::sendDataCallback sendDataCallback)
+void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
+        CInspectorChannel::sendDataCallback sendDataCallback)
 {
     //client instance is this
 
     //channel
-    m_pChannel = std::make_unique<NChannel>(
+    m_pChannel = std::make_unique<CInspectorChannel>(
                 std::move(sendDataCallback)
                 );
 
@@ -56,18 +57,18 @@ void NClient::setUpDebuggingSession(NChannel::sendDataCallback sendDataCallback)
     m_pInspector->contextCreated(info);
 }
 
-void NClient::pumpPlatform()
+void NSJSBase::v8_debug::internal::CInspectorClient::pumpPlatform()
 {
     while (v8::platform::PumpMessageLoop(m_pPlatform, m_pIsolate)) {
         //just pump until pumped
     }
 }
 
-NClient::NClient(v8::Local<v8::Context> context//for some stuff
+NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(v8::Local<v8::Context> context//for some stuff
         , const std::string &contextName//why not
         , v8::Platform *platform
         , v8::Local<v8::Script> script
-        , NChannel::sendDataCallback sendDataFunc//for channel
+        , CInspectorChannel::sendDataCallback sendDataFunc//for channel
         , waitMessageCallback waitIncomingMessage//to deal with incoming messages
         , setScriptRetValCallback setScriptRetVal
         )
@@ -100,7 +101,7 @@ NClient::NClient(v8::Local<v8::Context> context//for some stuff
 
 
 
-void NClient::runMessageLoopOnPause(int contextGroupId) {
+void NSJSBase::v8_debug::internal::CInspectorClient::runMessageLoopOnPause(int contextGroupId) {
     if (m_bPause) {
         return;
     }
@@ -115,12 +116,12 @@ void NClient::runMessageLoopOnPause(int contextGroupId) {
     }
 }
 
-void NClient::quitMessageLoopOnPause() {
+void NSJSBase::v8_debug::internal::CInspectorClient::quitMessageLoopOnPause() {
     m_bPause = false;
 }
 
 
-void NClient::startDebugging()
+void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 {
     std::cout << "to start dbg" << std::endl;
     v8::Context::Scope contextScope(m_Context);
@@ -155,7 +156,8 @@ void NClient::startDebugging()
     m_SetRetVal(result);
 }
 
-void NClient::processMessageFromFrontend(const std::string &message)
+void NSJSBase::v8_debug::internal::CInspectorClient::processMessageFromFrontend(
+        const std::string &message)
 {
     m_pSession->dispatchProtocolMessage(strToView(message));
     if (checkForStartDebugging(message)) {
@@ -163,12 +165,13 @@ void NClient::processMessageFromFrontend(const std::string &message)
     }
 }
 
-bool NClient::checkForStartDebugging(const std::string &json)
+bool NSJSBase::v8_debug::internal::CInspectorClient::checkForStartDebugging(
+        const std::string &json)
 {
     return getMethod(m_Context, json) == debugStartMarker;
 }
 
-NClient::~NClient()
+NSJSBase::v8_debug::internal::CInspectorClient::~CInspectorClient()
 {
     //
 }

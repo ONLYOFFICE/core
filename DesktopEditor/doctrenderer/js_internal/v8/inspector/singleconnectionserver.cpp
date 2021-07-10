@@ -4,7 +4,7 @@
 namespace ip = boost::asio::ip;
 namespace beast = boost::beast;
 
-std::string SingleConnectionServer::getData()
+std::string NSJSBase::v8_debug::internal::SingleConnectionServer::getData()
 {
     if (!m_pWebsocketStream) {
         std::cerr << "no stream" << std::endl;
@@ -33,12 +33,12 @@ std::string SingleConnectionServer::getData()
     return boost::beast::buffers_to_string(buffer.data());
 }
 
-void SingleConnectionServer::reportError(boost::beast::error_code code, const char *what) const
+void NSJSBase::v8_debug::internal::SingleConnectionServer::reportError(boost::beast::error_code code, const char *what) const
 {
     std::cerr << "error with code " << code << ": " << what << std::endl;
 }
 
-SingleConnectionServer::SingleConnectionServer(uint16_t port, std::string host)
+NSJSBase::v8_debug::internal::SingleConnectionServer::SingleConnectionServer(uint16_t port, std::string host)
 //    : m_ConnectionAcceptor(m_io_context)
 //    , m_Socket(m_io_context)
 
@@ -56,12 +56,12 @@ SingleConnectionServer::SingleConnectionServer(uint16_t port, std::string host)
     //
 }
 
-void SingleConnectionServer::setOnMessageCallback(onMessageCallback callback)
+void NSJSBase::v8_debug::internal::SingleConnectionServer::setOnMessageCallback(onMessageCallback callback)
 {
     m_fOnMessage = std::move(callback);
 }
 
-bool SingleConnectionServer::waitForConnection()
+bool NSJSBase::v8_debug::internal::SingleConnectionServer::waitForConnection()
 {
     boost::beast::error_code errCode;
     //make socket on io context
@@ -85,7 +85,7 @@ bool SingleConnectionServer::waitForConnection()
     return true;
 }
 
-bool SingleConnectionServer::listen()
+bool NSJSBase::v8_debug::internal::SingleConnectionServer::listen()
 {
     boost::beast::error_code errCode;
     //open acceptor with endpoint's protocol
@@ -115,14 +115,14 @@ bool SingleConnectionServer::listen()
 }
 
 //blocks
-void SingleConnectionServer::run()
+void NSJSBase::v8_debug::internal::SingleConnectionServer::run()
 {
     while (waitAndProcessMessage()) {
         //
     }
 }
 
-void SingleConnectionServer::sendData(const std::string &data)
+void NSJSBase::v8_debug::internal::SingleConnectionServer::sendData(const std::string &data)
 {
     if (!m_pWebsocketStream) {
         std::cerr << "no stream" << std::endl;
@@ -141,7 +141,7 @@ void SingleConnectionServer::sendData(const std::string &data)
     }
 }
 
-bool SingleConnectionServer::waitAndProcessMessage()
+bool NSJSBase::v8_debug::internal::SingleConnectionServer::waitAndProcessMessage()
 {
     std::string data = getData();
     if (m_bCdtDisconnected) {

@@ -6,11 +6,13 @@
 #include "nclient.h"
 #include "singleconnectionserver.h"
 
-class NInspector
-{
+namespace NSJSBase {
+namespace v8_debug {
 
+class CInspector
+{
     //server
-    SingleConnectionServer m_Server{};
+    internal::SingleConnectionServer m_Server{};
 
     //is server listening
     bool m_bListening{false};
@@ -33,7 +35,7 @@ class NInspector
 
 
     //inspector client
-    std::unique_ptr<NClient> m_pClient{nullptr};
+    std::unique_ptr<internal::CInspectorClient> m_pClient{nullptr};
 
     //
     bool initServer();
@@ -57,7 +59,7 @@ class NInspector
                                , uint16_t port);
 
 public:
-    NInspector(v8::Local<v8::Context> context
+    CInspector(v8::Local<v8::Context> context
                , v8::Platform *platform
                , v8::Local<v8::Script> script
                , bool log = false
@@ -66,7 +68,10 @@ public:
 
     v8::MaybeLocal<v8::Value> run();
 
-    ~NInspector();
+    ~CInspector();
 };
+
+}//namespace v8_debug
+}//namespace NSJSBase
 
 #endif // NINSPECTOR_H

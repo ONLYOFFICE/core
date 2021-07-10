@@ -8,6 +8,9 @@
 #include <functional>
 #include <atomic>
 
+namespace NSJSBase {
+namespace v8_debug {
+namespace internal {
 
 class SingleConnectionServer
 {
@@ -15,8 +18,6 @@ public:
     using onMessageCallback = std::function<void(const std::string &message)>;
 
 private:
-    //reading error when disconnecting cdt
-    static constexpr int cdtDisconnectErrCode = 995;
     //tcp is a class
     using tcp = boost::asio::ip::tcp;
     //
@@ -61,5 +62,9 @@ public:
     void sendData(const std::string &data);
     bool waitAndProcessMessage();
 };
+
+}//namespace internal
+}//namespace v8_debug
+}//namespace NSJSBase
 
 #endif // SINGLECONNECTIONSERVER_H

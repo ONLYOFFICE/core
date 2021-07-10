@@ -46,15 +46,7 @@ int main(int argc, char *argv[])
 
         //enter the context
         v8::Context::Scope contextScope(context);
-        //make inspector
-        NInspector inspector(context
-                             , platform.get()
-                             , getFileScript(
-                                                 context
-                                                 ,"D:/111/work/v8-debug/v8-debug/scripts/sample.js"
-                                            )
-                             , true
-                             );
+
 
 
 
@@ -75,15 +67,15 @@ int main(int argc, char *argv[])
         //compiled script; it can be casted to string - surprising
         v8::Local<v8::Script> script = v8::Script::Compile(context, string).ToLocalChecked();
 
-//        //make inspector
-//        NInspector inspector(context
-//                             , platform.get()
-//                             , getFileScript(
-//                                                 context
-//                                                 ,"D:/111/work/v8-debug/v8-debug/scripts/sample.js"
-//                                            )
-//                             , true
-//                             );
+        //make inspector
+        NSJSBase::v8_debug::CInspector inspector(context
+                             , platform.get()
+                             , NSJSBase::v8_debug::internal::getFileScript(
+                                                 context
+                                                 ,"D:/111/work/v8-debug/v8-debug/scripts/sample.js"
+                                            )
+                             , true
+                             );
         inspector.run();
 
     }

@@ -4,7 +4,11 @@
 #include <v8-inspector.h>//v8_inspector namespace
 #include <functional>//std::function
 
-class NChannel : public v8_inspector::V8Inspector::Channel
+namespace NSJSBase {
+namespace v8_debug {
+namespace internal {
+
+class CInspectorChannel : public v8_inspector::V8Inspector::Channel
 {
 public:
     using sendDataCallback = std::function<void(const v8_inspector::StringView&)>;
@@ -13,7 +17,7 @@ private:
     sendDataCallback m_SendData{};
 
 public:
-    NChannel(sendDataCallback sendData);
+    CInspectorChannel(sendDataCallback sendData);
 
     //send message to frontend through socket
     virtual void sendResponse(int callId,
@@ -23,5 +27,9 @@ public:
     //may do nothing
     virtual void flushProtocolNotifications() override;
 };
+
+}//namespace internal
+}//namespace v8_debug
+}//namespace NSJSBase
 
 #endif // NCHANNEL_H

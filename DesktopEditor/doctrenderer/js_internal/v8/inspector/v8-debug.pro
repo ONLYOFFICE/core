@@ -39,17 +39,17 @@ LIBS += -lShlwapi
 
 
 HEADERS += \
-    nchannel.h \
-    nclient.h \
-    ninspector.h \
+    channel.h \
+    client.h \
+    inspector.h \
     singleconnectionserver.h \
     singlethreadutils.h
 
 SOURCES += \
+        channel.cpp \
+        client.cpp \
+        inspector.cpp \
         main.cpp \
-        nchannel.cpp \
-        nclient.cpp \
-        ninspector.cpp \
         singleconnectionserver.cpp \
         singlethreadutils.cpp
 

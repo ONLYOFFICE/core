@@ -1,4 +1,4 @@
-#include "nchannel.h"
+#include "channel.h"
 
 NSJSBase::v8_debug::internal::CInspectorChannel::CInspectorChannel(sendDataCallback sendData)
     : m_SendData(std::move(sendData))

@@ -1,4 +1,6 @@
 #include "v8_base.h"
+#include "inspector/inspector.h"//v8 inspector debugging stuff
+#define V8_INSPECTOR//for testing purpose
 
 v8::Local<v8::String> CreateV8String(v8::Isolate* i, const char* str, const int& len)
 {
@@ -268,8 +270,12 @@ namespace NSJSBase
 
     JSSmart<CJSValue> CJSContext::runScript(const std::string& script, JSSmart<CJSTryCatch> exception, const std::wstring& scriptPath)
     {
-        int addInspector;
+#ifdef V8_INSPECTOR
+        v8_debug::CInspector inspector(m_internal, script, exception, scriptPath);
+        return inspector.run();
+#else
         return m_internal->runScriptImpl(script, exception, scriptPath);
+#endif
     }
 
     CJSContext* CJSContext::GetCurrent()

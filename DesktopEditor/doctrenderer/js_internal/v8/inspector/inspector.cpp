@@ -1,7 +1,8 @@
-#include "ninspector.h"
-#include "nclient.h"
+#include "inspector.h"
+#include "client.h"
 #include <iostream>
 #include "singlethreadutils.h"
+#include "singleconnectionserver.h"
 #include "../../v8/v8_base.h"
 
 bool NSJSBase::v8_debug::CInspector::initServer()
@@ -14,13 +15,13 @@ bool NSJSBase::v8_debug::CInspector::initServer()
         m_pClient->processMessageFromFrontend(message);
     };
 
-    m_Server.setOnMessageCallback(messageCallback);
+    m_pServer->setOnMessageCallback(messageCallback);
 
     //callback is set. now listen
-    m_Server.listen();
+    m_pServer->listen();
 
 
-    if (!m_Server.listening()) {
+    if (!m_pServer->listening()) {
         std::cerr << "server can't listen to CDT connection" << std::endl;
         return false;
     }
@@ -28,10 +29,12 @@ bool NSJSBase::v8_debug::CInspector::initServer()
     return true;
 }
 
-void NSJSBase::v8_debug::CInspector::initClient(v8::Local<v8::Context> context
+void NSJSBase::v8_debug::CInspector::initClient(
+                            CJSContextPrivate *pContextPrivate
                             , const std::string &contextName
-                            , v8::Platform *platform
-                            , v8::Local<v8::Script> script)
+                            , const std::string &scriptStr
+                            , NSCommon::smart_ptr<CJSTryCatch> &pException
+                            , const std::wstring &scriptPath)
 {
     //send message to frontend (for channel)
     internal::CInspectorChannel::sendDataCallback sendDataCallback = [this](
@@ -42,27 +45,32 @@ void NSJSBase::v8_debug::CInspector::initClient(v8::Local<v8::Context> context
         }
         std::string str = internal::viewToStr(m_pIsolate, message);
         maybeLog(str, msgType::outgoing);
-        this->m_Server.sendData(str);
+        this->m_pServer->sendData(str);
     };
 
     //wait for message (for client in runMessageLoopOnPause)
     internal::CInspectorClient::waitMessageCallback waitForMessage = [this]() {
-        return m_Server.waitAndProcessMessage();
+        return m_pServer->waitAndProcessMessage();
     };
 
     //set script result
     internal::CInspectorClient::setScriptRetValCallback setScriptRetVal = [this](
-            v8::MaybeLocal<v8::Value> result
+            JSSmart<CJSValue> result
             ) {
-        this->m_ScriptReturnValue = result;
+        this->m_pScriptResult =
+                std::make_unique<JSSmart<CJSValue> >(result);
     };
 
     //make client
     this->m_pClient = std::make_unique<internal::CInspectorClient>(
-                                                    context
+                                                //for all v8 stuff
+                                                    pContextPrivate
+                                                //context name for cdt
                                                     , contextName
-                                                    , platform
-                                                    , script
+                                                //script running trio
+                                                    , scriptStr
+                                                    , pException
+                                                    , scriptPath
                                                 //for channel to send data
                                                     , sendDataCallback
                                                 //for client to receive data
@@ -100,45 +108,65 @@ void NSJSBase::v8_debug::CInspector::printChromeLaunchHint(std::ostream &out, ui
          << std::endl;
 }
 
-
-
-NSJSBase::v8_debug::CInspector::CInspector(v8::Local<v8::Context> context
-                       , v8::Platform *platform
-                       , v8::Local<v8::Script> script
-                       , bool log
-                       , uint16_t port
-                       , std::string contextName)
-    //server
-    : m_Server(port)
-
-    //v8 stuff
-    , m_pIsolate(context->GetIsolate())
-//    , m_Context(
-////          m_pIsolate,
-//          context)
-//    , m_pPlatform(platform)
-//    , m_sContextName(std::move(contextName))
-
-//    , m_Script(script)
-    , m_bLog(log)
-
+NSJSBase::v8_debug::CInspector::CInspector(CJSContextPrivate *pContextPrivate
+        , const std::string &scriptStr
+        , NSCommon::smart_ptr<CJSTryCatch> &pException
+        , const std::wstring &scriptPath
+        , bool log
+        , uint16_t port
+        , const std::string &contextName
+        )
+    : m_pServer(std::make_unique<internal::SingleConnectionServer>())
 {
-    //
     if (!initServer()) {
         return;
     }
-    initClient(context, contextName, platform, script);
+    initClient(pContextPrivate, contextName, scriptStr, pException, scriptPath);
     printChromeLaunchHint(std::cout, port);
 }
 
-v8::MaybeLocal<v8::Value> NSJSBase::v8_debug::CInspector::run()
+
+
+//NSJSBase::v8_debug::CInspector::CInspector(v8::Local<v8::Context> context
+//                       , v8::Platform *platform
+//                       , v8::Local<v8::Script> script
+//                       , bool log
+//                       , uint16_t port
+//                       , std::string contextName)
+//    //server
+//    : m_Server(port)
+
+//    //v8 stuff
+//    , m_pIsolate(context->GetIsolate())
+////    , m_Context(
+//////          m_pIsolate,
+////          context)
+////    , m_pPlatform(platform)
+////    , m_sContextName(std::move(contextName))
+
+////    , m_Script(script)
+//    , m_bLog(log)
+
+//{
+//    //
+//    if (!initServer()) {
+//        return;
+//    }
+//    initClient(context, contextName, platform, script);
+//    printChromeLaunchHint(std::cout, port);
+//}
+
+JSSmart<NSJSBase::CJSValue> NSJSBase::v8_debug::CInspector::run()
 {
-    if (!m_Server.listening()) {
-        return v8::MaybeLocal<v8::Value>();
+    if (!m_pServer->listening()) {
+        return JSSmart<CJSValue>();
     }
-    m_Server.waitForConnection();
-    m_Server.run();
-    return m_ScriptReturnValue;
+    m_pServer->waitForConnection();
+    m_pServer->run();
+    if (m_pScriptResult) {
+        return *(m_pScriptResult.get());
+    }
+    return JSSmart<CJSValue>();
 }
 
 NSJSBase::v8_debug::CInspector::~CInspector()

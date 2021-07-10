@@ -1,33 +1,37 @@
 #include <v8-inspector.h>//V8InspectorClient
 #include <v8.h>//context
 #include <libplatform/libplatform.h>//for v8 stuff
-#include "ninspector.h"
+#include "inspector.h"
 #include "singlethreadutils.h"
-//#include "../../js_base.h"
+
+#include "../../js_base.h"
+#include "../v8_base.h"
 
 int main(int argc, char *argv[])
 {
     //V8 INIT
+    CV8Initializer *init = CV8Worker::getInitializer();
+    v8::Isolate *isolate = init->CreateNew();
 
-    //init ICU in current program's location
-    const char *execLocation = argv[0];
-    v8::V8::InitializeICUDefaultLocation(execLocation);
-    //some external startup data is build in (what exactly?)
-    v8::V8::InitializeExternalStartupData(execLocation);
-    //
-    std::unique_ptr<v8::Platform> platform(v8::platform::CreateDefaultPlatform());
-    //init platform
-    v8::V8::InitializePlatform(platform.get());
-    //init v8
-    v8::V8::Initialize();
-    //ISOLATE
-    //create params for isolate
-    v8::Isolate::CreateParams createParams;
-    //
-    createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+//    //init ICU in current program's location
+//    const char *execLocation = argv[0];
+//    v8::V8::InitializeICUDefaultLocation(execLocation);
+//    //some external startup data is build in (what exactly?)
+//    v8::V8::InitializeExternalStartupData(execLocation);
+//    //
+//    std::unique_ptr<v8::Platform> platform(v8::platform::CreateDefaultPlatform());
+//    //init platform
+//    v8::V8::InitializePlatform(platform.get());
+//    //init v8
+//    v8::V8::Initialize();
+//    //ISOLATE
+//    //create params for isolate
+//    v8::Isolate::CreateParams createParams;
+//    //
+//    createParams.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
 
-    //isolate itself
-    v8::Isolate *isolate = v8::Isolate::New(createParams);
+//    //isolate itself
+//    v8::Isolate *isolate = v8::Isolate::New(createParams);
 
 
 
@@ -67,25 +71,32 @@ int main(int argc, char *argv[])
         //compiled script; it can be casted to string - surprising
         v8::Local<v8::Script> script = v8::Script::Compile(context, string).ToLocalChecked();
 
+        //make js context
+        NSJSBase::CJSContext ctx;
+        ctx.m_internal->m_isolate = isolate;
+        ctx.m_internal->m_context = context;
+        JSSmart<NSJSBase::CJSTryCatch> tc(new NSJSBase::CV8TryCatch);
+
         //make inspector
-        NSJSBase::v8_debug::CInspector inspector(context
-                             , platform.get()
-                             , NSJSBase::v8_debug::internal::getFileScript(
-                                                 context
-                                                 ,"D:/111/work/v8-debug/v8-debug/scripts/sample.js"
-                                            )
+        NSJSBase::v8_debug::CInspector inspector(ctx.m_internal
+                             , NSJSBase::v8_debug::internal::getFileData
+                                                 (
+                                       "D:/111/work/v8-debug/v8-debug/scripts/sample.js"
+                                                     )
+                             , tc
+                             , L""
                              , true
                              );
         inspector.run();
 
     }
 
-    isolate->Dispose();
-    v8::V8::Dispose();
-    v8::V8::ShutdownPlatform();
+    //clear the shit up
+//    isolate->Dispose();
+//    v8::V8::Dispose();
+//    v8::V8::ShutdownPlatform();
+//    //
+//    delete createParams.array_buffer_allocator;
 
-
-    //
-    delete createParams.array_buffer_allocator;
     return 0;
 }

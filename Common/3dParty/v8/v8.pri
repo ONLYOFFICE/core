@@ -83,9 +83,7 @@ v8_use_inspector {
             $$V8_INSPECTOR_PATH/singlethreadutils.cpp
 
     #inspector lib
-    use_v8_monolith {
-        #nothing
-    } else {
+    !use_v8_monolith {
         LIBS += -L$$CORE_V8_PATH_LIBS/src/inspector -linspector
     }
 

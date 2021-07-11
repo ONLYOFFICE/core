@@ -79,7 +79,6 @@ v8_use_inspector {
             $$V8_INSPECTOR_PATH/channel.cpp \
             $$V8_INSPECTOR_PATH/client.cpp \
             $$V8_INSPECTOR_PATH/inspector.cpp \
-            $$V8_INSPECTOR_PATH/main.cpp \
             $$V8_INSPECTOR_PATH/singleconnectionserver.cpp \
             $$V8_INSPECTOR_PATH/singlethreadutils.cpp
 

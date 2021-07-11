@@ -37,10 +37,10 @@ namespace NSNetwork
 {
     namespace NSWebSocket
     {
-    CIXWebSocket::CIXWebSocket(const std::string &url, std::shared_ptr<IListener> listener): CWebWorkerBase(url, listener)
-    {
-        //
-    }
+        CIXWebSocket::CIXWebSocket(const std::string &url, std::shared_ptr<IListener> listener): CWebWorkerBase(url, listener)
+        {
+            //
+        }
 
         void CIXWebSocket::open()
         {

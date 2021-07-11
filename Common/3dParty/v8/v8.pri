@@ -74,7 +74,6 @@ v8_use_inspector {
             $$V8_INSPECTOR_PATH/inspector.h \
             $$V8_INSPECTOR_PATH/singleconnectionserver.h \
             $$V8_INSPECTOR_PATH/singlethreadutils.h
-
     SOURCES += \
             $$V8_INSPECTOR_PATH/channel.cpp \
             $$V8_INSPECTOR_PATH/client.cpp \
@@ -82,12 +81,31 @@ v8_use_inspector {
             $$V8_INSPECTOR_PATH/singleconnectionserver.cpp \
             $$V8_INSPECTOR_PATH/singlethreadutils.cpp
 
+    #js base files for inspector
+    HEADERS += \
+        $$V8_INSPECTOR_PATH/../../js_base.h \
+        $$V8_INSPECTOR_PATH/../v8_base.h
+    SOURCES += \
+        $$V8_INSPECTOR_PATH/../v8_base.cpp
+
+    #to include inspector files
+    INCLUDEPATH += \
+        $$V8_INSPECTOR_PATH
+
     #inspector lib
     !use_v8_monolith {
         LIBS += -L$$CORE_V8_PATH_LIBS/src/inspector -linspector
     }
 
     #boost lib
-    BOOST_LIB_PATH = $$CORE_DIR_PATH/Common/3dParty/boost/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
+    BOOST_PATH = $$CORE_DIR_PATH/Common/3dParty/boost/build/$$CORE_BUILDS_PLATFORM_PREFIX
+    BOOST_LIB_PATH = $$BOOST_PATH/lib
     LIBS += -L$$BOOST_LIB_PATH -llibboost_date_time-vc140-mt-gd-x64-1_72
+
+    #unicode converter
+    ADD_DEPENDENCY(UnicodeConverter, kernel)
+
+    #boost headers
+    INCLUDEPATH += \
+        $$BOOST_PATH/include
 }

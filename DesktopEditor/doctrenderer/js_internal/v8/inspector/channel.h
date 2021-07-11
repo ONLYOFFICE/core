@@ -1,7 +1,7 @@
 #ifndef CHANNEL_H
 #define CHANNEL_H
 
-#include <v8-inspector.h>//v8_inspector namespace
+#include <v8-inspector.h>//v8_inspector stuff
 #include <functional>//std::function
 
 namespace NSJSBase {

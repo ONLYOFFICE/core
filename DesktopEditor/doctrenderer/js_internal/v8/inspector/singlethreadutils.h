@@ -59,13 +59,6 @@ namespace internal {
             v8::Local<v8::Context> context
             , const v8_inspector::StringView &view
             );
-
-    //
-//    v8::Local<v8::Script> makeTrialScript(v8::Local<v8::Context> context);
-
-    //
-//    v8::Local<v8::Script> getFileScript(v8::Local<v8::Context> context
-//                                        , const std::string &filename);
 }//namespace internal
 }//namespace v8_debug
 }//namespace NSJSBase

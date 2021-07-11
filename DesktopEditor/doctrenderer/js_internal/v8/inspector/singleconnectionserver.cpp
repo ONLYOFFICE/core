@@ -1,5 +1,5 @@
 #include "singleconnectionserver.h"
-#include <iostream>
+#include <iostream>//reporting errors
 
 namespace ip = boost::asio::ip;
 namespace beast = boost::beast;

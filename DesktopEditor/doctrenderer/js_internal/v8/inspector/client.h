@@ -1,10 +1,10 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include <v8-inspector.h>
-#include <functional>
-#include <atomic>
-#include "channel.h"
+#include <v8-inspector.h>//v8_inspector stuff
+#include <functional>//std::function for callbacks
+#include <atomic>//std::atomic for flags
+#include "channel.h"//CChannel for debug session
 
 //forward declarations
 namespace NSJSBase {
@@ -74,15 +74,6 @@ private:
     bool checkForStartDebugging(const std::string &json);
 
 public:
-//    CInspectorClient(
-//            v8::Local<v8::Context> context//for some stuff
-//            , const std::string &contextName//why not
-//            , v8::Platform *platform
-//            , v8::Local<v8::Script> script
-//            , CInspectorChannel::sendDataCallback sendDataFunc//for channel
-//            , waitMessageCallback waitIncomingMessage//to synchronously consume incoming messages
-//            , setScriptRetValCallback setScriptRetVal//to set script result to inspector
-//            );
     CInspectorClient(
             //script executor
             CJSContextPrivate *pContextPrivate

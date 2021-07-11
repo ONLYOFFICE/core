@@ -1,9 +1,8 @@
 #include "inspector.h"
-#include "client.h"
-#include <iostream>
-#include "singlethreadutils.h"
-#include "singleconnectionserver.h"
-#include "../../v8/v8_base.h"
+#include <iostream>//std::cout
+#include "singlethreadutils.h"//string conversion
+#include "singleconnectionserver.h"//server implementation
+#include "../../v8/v8_base.h"//v8 wrappers and other stuff
 
 bool NSJSBase::v8_debug::CInspector::initServer()
 {
@@ -124,37 +123,6 @@ NSJSBase::v8_debug::CInspector::CInspector(CJSContextPrivate *pContextPrivate
     initClient(pContextPrivate, contextName, scriptStr, pException, scriptPath);
     printChromeLaunchHint(std::cout, port);
 }
-
-
-
-//NSJSBase::v8_debug::CInspector::CInspector(v8::Local<v8::Context> context
-//                       , v8::Platform *platform
-//                       , v8::Local<v8::Script> script
-//                       , bool log
-//                       , uint16_t port
-//                       , std::string contextName)
-//    //server
-//    : m_Server(port)
-
-//    //v8 stuff
-//    , m_pIsolate(context->GetIsolate())
-////    , m_Context(
-//////          m_pIsolate,
-////          context)
-////    , m_pPlatform(platform)
-////    , m_sContextName(std::move(contextName))
-
-////    , m_Script(script)
-//    , m_bLog(log)
-
-//{
-//    //
-//    if (!initServer()) {
-//        return;
-//    }
-//    initClient(context, contextName, platform, script);
-//    printChromeLaunchHint(std::cout, port);
-//}
 
 JSSmart<NSJSBase::CJSValue> NSJSBase::v8_debug::CInspector::run()
 {

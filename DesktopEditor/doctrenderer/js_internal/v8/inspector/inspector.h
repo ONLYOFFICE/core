@@ -1,9 +1,9 @@
 #ifndef INSPECTOR_H
 #define INSPECTOR_H
 
-#include <stdint.h>
-#include <v8.h>
-#include "client.h"
+#include <stdint.h>//uintxx_t
+#include <v8.h>//v8 stuff
+#include "client.h"//inspector is what holds client
 
 namespace NSJSBase {
 namespace v8_debug {
@@ -15,7 +15,7 @@ namespace internal {
 
 class CInspector
 {
-    //server
+    //pointer to keep boost stuff in .cpp file
     std::unique_ptr<internal::SingleConnectionServer> m_pServer{};
 
     //to convert v8 string view to string
@@ -60,12 +60,6 @@ class CInspector
                                , uint16_t port);
 
 public:
-//    CInspector(v8::Local<v8::Context> context
-//               , v8::Platform *platform
-//               , v8::Local<v8::Script> script
-//               , bool log = false
-//               , uint16_t port = 8080
-//            , std::string contextName = "");
     CInspector(
             //stript executor
             NSJSBase::CJSContextPrivate *pContextPrivate

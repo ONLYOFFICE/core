@@ -1,10 +1,8 @@
 #include "client.h"
-#include "channel.h"
-#include "singlethreadutils.h"
-#include <libplatform/libplatform.h>
-#include <iostream>
-#include <thread>
-#include "../../v8/v8_base.h"
+#include "channel.h"//client holds channel
+#include "singlethreadutils.h"//converting strings
+#include <libplatform/libplatform.h>//v8::Platform
+#include "../../v8/v8_base.h"//CJSContextPrivate
 
 namespace {
     //
@@ -65,43 +63,6 @@ void NSJSBase::v8_debug::internal::CInspectorClient::pumpPlatform()
     }
 }
 
-//NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(v8::Local<v8::Context> context//for some stuff
-//        , const std::string &contextName//why not
-//        , v8::Platform *platform
-//        , v8::Local<v8::Script> script
-//        , CInspectorChannel::sendDataCallback sendDataFunc//for channel
-//        , waitMessageCallback waitIncomingMessage//to deal with incoming messages
-//        , setScriptRetValCallback setScriptRetVal
-//        )
-//    //set isolate
-//    : m_pIsolate(context->GetIsolate())
-
-//    //set platform
-//    , m_pPlatform(platform)
-
-//    //set context in v8::Global
-//    , m_Context(
-////          m_pIsolate,
-//          context)
-
-//    , m_Script(script)
-
-////    , contextScope(m_Context)
-
-//    //set context name
-//    , m_sContextName(contextName)
-
-//    //set message callback
-//    , m_WaitForFrontendMessage(std::move(waitIncomingMessage))
-
-//    //
-//    , m_SetRetVal(std::move(setScriptRetVal))
-//{
-//    setUpDebuggingSession(sendDataFunc);
-//}
-
-
-
 void NSJSBase::v8_debug::internal::CInspectorClient::runMessageLoopOnPause(int contextGroupId) {
     if (m_bPause) {
         return;
@@ -131,35 +92,6 @@ void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
             m_pContextPrivate->runScriptImpl(m_sScriptStr
                                              , m_pException
                                              , m_sScriptPath);
-//    std::cout << "to start dbg" << std::endl;
-//    v8::Context::Scope contextScope(m_Context);
-//    m_pSession->schedulePauseOnNextStatement(strToView("debugging"), strToView(""));
-
-//    //string with script
-//    const char rawString[] = "function a()\
-//                                    {\
-//                                    return 2 + 3;\
-//                                    }\
-//                                    a();";
-//    v8::Local<v8::String> string =
-//            v8::String::NewFromUtf8(
-//                m_Context->GetIsolate()
-//                , rawString
-//                , v8::NewStringType::kNormal
-//                ).ToLocalChecked();
-
-//    //compiled script; it can be casted to string - surprising
-////    v8::Local<v8::Script> script = v8::Script::Compile(m_Context, string).ToLocalChecked();
-
-//    v8::MaybeLocal<v8::Value> result =
-////            script//1
-////            m_Script//2
-//                getFileScript(//3
-//                            m_Context
-//                            ,"D:/111/work/v8-debug/v8-debug/scripts/sample.js")
-
-//                        ->Run(m_Context)
-//            ;
 
     m_SetRetVal(scriptResult);
 }

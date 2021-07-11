@@ -58,3 +58,39 @@ core_mac {
     QMAKE_CXXFLAGS += -Wall -Wno-inconsistent-missing-override
     QMAKE_CFLAGS += -Wall -Wno-inconsistent-missing-override
 }
+
+v8_use_inspector {
+    #define
+    DEFINES += V8_INSPECTOR
+
+    #paths
+    CORE_DIR_PATH = $$PWD/../../..
+    V8_INSPECTOR_PATH = $$CORE_DIR_PATH/DesktopEditor/doctrenderer/js_internal/v8/inspector
+
+    #inspector files
+    HEADERS += \
+            $$V8_INSPECTOR_PATH/channel.h \
+            $$V8_INSPECTOR_PATH/client.h \
+            $$V8_INSPECTOR_PATH/inspector.h \
+            $$V8_INSPECTOR_PATH/singleconnectionserver.h \
+            $$V8_INSPECTOR_PATH/singlethreadutils.h
+
+    SOURCES += \
+            $$V8_INSPECTOR_PATH/channel.cpp \
+            $$V8_INSPECTOR_PATH/client.cpp \
+            $$V8_INSPECTOR_PATH/inspector.cpp \
+            $$V8_INSPECTOR_PATH/main.cpp \
+            $$V8_INSPECTOR_PATH/singleconnectionserver.cpp \
+            $$V8_INSPECTOR_PATH/singlethreadutils.cpp
+
+    #inspector lib
+    use_v8_monolith {
+        #nothing
+    } else {
+        LIBS += -L$$CORE_V8_PATH_LIBS/src/inspector -linspector
+    }
+
+    #boost lib
+    BOOST_LIB_PATH = $$CORE_DIR_PATH/Common/3dParty/boost/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
+    LIBS += -L$$BOOST_LIB_PATH -llibboost_date_time-vc140-mt-gd-x64-1_72
+}

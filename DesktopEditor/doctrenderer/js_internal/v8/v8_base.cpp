@@ -1,6 +1,11 @@
 #include "v8_base.h"
-#include "inspector/inspector.h"//v8 inspector debugging stuff
+
 #define V8_INSPECTOR//for testing purpose
+
+#ifdef V8_INSPECTOR
+#include "inspector/inspector.h"//v8 inspector debugging stuff
+#endif
+
 
 v8::Local<v8::String> CreateV8String(v8::Isolate* i, const char* str, const int& len)
 {

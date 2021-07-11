@@ -7,6 +7,7 @@
 
 bool NSJSBase::v8_debug::CInspector::initServer()
 {
+    //
     auto messageCallback = [this](const std::string &message) {
         if (message.empty()) {
             return;
@@ -14,13 +15,12 @@ bool NSJSBase::v8_debug::CInspector::initServer()
         maybeLog(message, msgType::incoming);
         m_pClient->processMessageFromFrontend(message);
     };
-
     m_pServer->setOnMessageCallback(messageCallback);
 
     //callback is set. now listen
     m_pServer->listen();
 
-
+    //
     if (!m_pServer->listening()) {
         std::cerr << "server can't listen to CDT connection" << std::endl;
         return false;
@@ -53,7 +53,7 @@ void NSJSBase::v8_debug::CInspector::initClient(
         return m_pServer->waitAndProcessMessage();
     };
 
-    //set script result
+    //set script result from client
     internal::CInspectorClient::setScriptRetValCallback setScriptRetVal = [this](
             JSSmart<CJSValue> result
             ) {
@@ -158,11 +158,15 @@ NSJSBase::v8_debug::CInspector::CInspector(CJSContextPrivate *pContextPrivate
 
 JSSmart<NSJSBase::CJSValue> NSJSBase::v8_debug::CInspector::run()
 {
+    //check for listening
     if (!m_pServer->listening()) {
         return JSSmart<CJSValue>();
     }
+    //wait for cdt
     m_pServer->waitForConnection();
+    //blocks
     m_pServer->run();
+    //check for script result
     if (m_pScriptResult) {
         return *(m_pScriptResult.get());
     }

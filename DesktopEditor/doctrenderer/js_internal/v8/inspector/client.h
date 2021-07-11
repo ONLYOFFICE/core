@@ -21,7 +21,8 @@ namespace NSCommon {
 namespace NSJSBase {
 namespace v8_debug {
 namespace internal {
-
+//class that is intended to synchronously consume frontend messages on pause
+//it also sets up the debugging session
 class CInspectorClient : public v8_inspector::V8InspectorClient
 {
 public:
@@ -37,16 +38,16 @@ private:
     v8::Platform *m_pPlatform = nullptr;//to pump it
 
     //script execution data
-    std::string m_sScriptStr{};
-    NSCommon::smart_ptr<CJSTryCatch> &m_pException;
-    std::wstring m_sScriptPath{};
+    std::string m_sScriptStr{};//source
+    NSCommon::smart_ptr<CJSTryCatch> &m_pException;//v8::TryCatch wrapper
+    std::wstring m_sScriptPath{};//to cache script, if path provided
 
     //script executor
     CJSContextPrivate *m_pContextPrivate = nullptr;
 
     //context data
-    std::string m_sContextName{};
-    const int m_iContextGroupId = 1;
+    std::string m_sContextName{};//
+    const int m_iContextGroupId = 1;//something
 
     //debug session data
     std::unique_ptr<v8_inspector::V8Inspector> m_pInspector = nullptr;
@@ -66,9 +67,10 @@ private:
 
     //sets up a debugging session
     void setUpDebuggingSession(CInspectorChannel::sendDataCallback sendDataCallback);
-    //
+    //pump platform on pause
     void pumpPlatform();
-    //
+    //check json for Runtime.runIfWaitingForDebugger method
+    //that designates start of debugging session
     bool checkForStartDebugging(const std::string &json);
 
 public:
@@ -102,9 +104,9 @@ public:
     //quit waiting
     virtual void quitMessageLoopOnPause() override;
 
-    //start debugging
+    //start debugging itself
     void startDebugging();
-    //
+    //dispatch message by session and check it for Runtime.runIfWaitingForDebugger
     void processMessageFromFrontend(const std::string &message);
 
 

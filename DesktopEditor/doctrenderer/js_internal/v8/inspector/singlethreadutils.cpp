@@ -157,53 +157,53 @@ v8::Local<v8::Object> NSJSBase::v8_debug::internal::parseJson(v8::Local<v8::Cont
 
 
 
-v8::Local<v8::Script> NSJSBase::v8_debug::internal::makeTrialScript(v8::Local<v8::Context> context)
-{
-    LOCK_AND_ENTER_ISOLATE_BY_CONTEXT(context);
+//v8::Local<v8::Script> NSJSBase::v8_debug::internal::makeTrialScript(v8::Local<v8::Context> context)
+//{
+//    LOCK_AND_ENTER_ISOLATE_BY_CONTEXT(context);
 
-    std::cout << "called make trial script" << std::endl;
-    const char rawString[] = "function a()\
-                                    {\
-                                    return 2 + 3;\
-                                    }\
-                                    a();";
-    v8::Local<v8::String> string =
-            v8::String::NewFromUtf8(
-                context->GetIsolate()
-                , rawString
-                , v8::NewStringType::kNormal
-                ).ToLocalChecked();
+//    std::cout << "called make trial script" << std::endl;
+//    const char rawString[] = "function a()\
+//                                    {\
+//                                    return 2 + 3;\
+//                                    }\
+//                                    a();";
+//    v8::Local<v8::String> string =
+//            v8::String::NewFromUtf8(
+//                context->GetIsolate()
+//                , rawString
+//                , v8::NewStringType::kNormal
+//                ).ToLocalChecked();
 
-    v8::Local<v8::Script> script = v8::Script::Compile(context, string).ToLocalChecked();
+//    v8::Local<v8::Script> script = v8::Script::Compile(context, string).ToLocalChecked();
 
-    return
-                script
-            ;
-}
+//    return
+//                script
+//            ;
+//}
 
-v8::Local<v8::Script> NSJSBase::v8_debug::internal::getFileScript(v8::Local<v8::Context> context
-                                    , const std::string &filename)
-{
-    //
-    std::string raw = getFileData(filename);
+//v8::Local<v8::Script> NSJSBase::v8_debug::internal::getFileScript(v8::Local<v8::Context> context
+//                                    , const std::string &filename)
+//{
+//    //
+//    std::string raw = getFileData(filename);
 
-    //
-    v8::Isolate *isolate = context->GetIsolate();
+//    //
+//    v8::Isolate *isolate = context->GetIsolate();
 
-    LOCK_AND_ENTER_ISOLATE(isolate);
+//    LOCK_AND_ENTER_ISOLATE(isolate);
 
-    v8::Local<v8::String> source = tov8str(isolate, raw);
+//    v8::Local<v8::String> source = tov8str(isolate, raw);
 
-    //
-    v8::Local<v8::String> v8filename = tov8str(isolate, "file:///" + filename);
+//    //
+//    v8::Local<v8::String> v8filename = tov8str(isolate, "file:///" + filename);
 
-    //
-    v8::ScriptOrigin origin(v8filename);
+//    //
+//    v8::ScriptOrigin origin(v8filename);
 
-    //
-    v8::Local<v8::Script> script = v8::Script::Compile(context, source, &origin).ToLocalChecked();
-    return script;
-}
+//    //
+//    v8::Local<v8::Script> script = v8::Script::Compile(context, source, &origin).ToLocalChecked();
+//    return script;
+//}
 
 void NSJSBase::v8_debug::internal::logWithPrefix(std::ostream &out
                                                  , const std::string &prefix

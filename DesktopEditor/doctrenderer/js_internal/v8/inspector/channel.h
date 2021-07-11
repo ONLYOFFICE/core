@@ -7,7 +7,7 @@
 namespace NSJSBase {
 namespace v8_debug {
 namespace internal {
-
+//class that sends messages to frontend
 class CInspectorChannel : public v8_inspector::V8Inspector::Channel
 {
 public:

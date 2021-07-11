@@ -6,23 +6,26 @@ namespace beast = boost::beast;
 
 std::string NSJSBase::v8_debug::internal::SingleConnectionServer::getData()
 {
-    if (!m_pWebsocketStream) {
-        std::cerr << "no stream" << std::endl;
+    //check stream
+    if (!checkStream()) {
         return std::string();
     }
+
+    //set up buffer
     beast::multi_buffer buffer;
     //to check for err
     beast::error_code errCode;
     //read into buffer; blocks here
     m_pWebsocketStream->read(buffer, errCode);
+    //check for error
     if (errCode) {
-        if (
+        if (//cdt disconnection
                 errCode == boost::asio::error::operation_aborted
                 ) {
-            m_bCdtDisconnected = true;
+            setDisconnected();
             return std::string();
         }
-        reportError(errCode, errCode.message().c_str());
+        reportError(errCode, "while reading");
         return std::string();
     }
     //set mode equal to incoming message mode
@@ -30,18 +33,39 @@ std::string NSJSBase::v8_debug::internal::SingleConnectionServer::getData()
                 //returns true if socket got text message, false on binary
                 m_pWebsocketStream->got_text()
                 );
+    //return value read
     return boost::beast::buffers_to_string(buffer.data());
 }
 
-void NSJSBase::v8_debug::internal::SingleConnectionServer::reportError(boost::beast::error_code code, const char *what) const
+void NSJSBase::v8_debug::internal::SingleConnectionServer::reportError(
+        const beast::error_code &code
+        , const char *context) const
 {
-    std::cerr << "error with code " << code << ": " << what << std::endl;
+    std::cerr << context << ": error with code " << code << ": " << code.message() << std::endl;
 }
 
-NSJSBase::v8_debug::internal::SingleConnectionServer::SingleConnectionServer(uint16_t port, std::string host)
-//    : m_ConnectionAcceptor(m_io_context)
-//    , m_Socket(m_io_context)
+void NSJSBase::v8_debug::internal::SingleConnectionServer::setConnected()
+{
+    m_bCdtConnected = true;
+}
 
+void NSJSBase::v8_debug::internal::SingleConnectionServer::setDisconnected()
+{
+    m_bCdtConnected = false;
+}
+
+bool NSJSBase::v8_debug::internal::SingleConnectionServer::checkStream() const
+{
+    if (!m_pWebsocketStream) {
+        std::cerr << "no websocket stream when requested one" << std::endl;
+        return false;
+    }
+    return true;
+}
+
+NSJSBase::v8_debug::internal::SingleConnectionServer::SingleConnectionServer(uint16_t port
+                                                                             , std::string host)
+    //set up endpoint
     : m_Endpoint(
           ip::make_address(host)
           , port
@@ -56,13 +80,15 @@ NSJSBase::v8_debug::internal::SingleConnectionServer::SingleConnectionServer(uin
     //
 }
 
-void NSJSBase::v8_debug::internal::SingleConnectionServer::setOnMessageCallback(onMessageCallback callback)
+void NSJSBase::v8_debug::internal::SingleConnectionServer::setOnMessageCallback(
+        onMessageCallback callback)
 {
     m_fOnMessage = std::move(callback);
 }
 
 bool NSJSBase::v8_debug::internal::SingleConnectionServer::waitForConnection()
 {
+    //to check errors
     boost::beast::error_code errCode;
     //make socket on io context
     tcp::socket socket{m_io_context};
@@ -70,6 +96,7 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::waitForConnection()
     m_ConnectionAcceptor.accept(socket, errCode);
     //check for error
     if (errCode) {
+        reportError(errCode, "while accepting connection");
         return false;
     }
     //set up websocket stream
@@ -79,21 +106,26 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::waitForConnection()
                 );
     //accept client handshake
     m_pWebsocketStream->accept(errCode);
+    //check error
     if (errCode) {
+        reportError(errCode, "while accepting client handshake");
         return false;
     }
     //connection established
-    m_bCdtDisconnected = false;
+    setConnected();
     return true;
 }
 
 bool NSJSBase::v8_debug::internal::SingleConnectionServer::listen()
 {
+    //
     boost::beast::error_code errCode;
+
     //open acceptor with endpoint's protocol
     m_ConnectionAcceptor.open(m_Endpoint.protocol(), errCode);
     //check for error
     if (errCode) {
+        reportError(errCode, "while opening acceptor");
         return false;
     }
 
@@ -101,6 +133,7 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::listen()
     m_ConnectionAcceptor.bind(m_Endpoint, errCode);
     //check for error
     if (errCode) {
+        reportError(errCode, "while binding acceptor to endpoint");
         return false;
     }
 
@@ -110,8 +143,10 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::listen()
                 , errCode);
     //check for error
     if (errCode) {
+        reportError(errCode, "while attempting to listen");
         return false;
     }
+
     m_bListening = true;
     return true;
 }
@@ -126,27 +161,28 @@ void NSJSBase::v8_debug::internal::SingleConnectionServer::run()
 
 void NSJSBase::v8_debug::internal::SingleConnectionServer::sendData(const std::string &data)
 {
-    if (!m_pWebsocketStream) {
-        std::cerr << "no stream" << std::endl;
+    //check stream
+    if (!checkStream()) {
         return;
     }
+
     //write data to buffer
     beast::multi_buffer buffer;
     beast::ostream(buffer) << data;
 
     //text or binary mode as already set
-    //
     boost::beast::error_code errCode;
     m_pWebsocketStream->write(buffer.data(), errCode);
     if (errCode) {
-        //report error
+        reportError(errCode, "while sending data");
+        return;
     }
 }
 
 bool NSJSBase::v8_debug::internal::SingleConnectionServer::waitAndProcessMessage()
 {
     std::string data = getData();
-    if (m_bCdtDisconnected) {
+    if (!connected()) {
         return false;
     }
     m_fOnMessage(data);
@@ -155,7 +191,7 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::waitAndProcessMessage
 
 bool NSJSBase::v8_debug::internal::SingleConnectionServer::connected() const
 {
-    return !m_bCdtDisconnected;
+    return m_bCdtConnected;
 }
 
 bool NSJSBase::v8_debug::internal::SingleConnectionServer::listening() const

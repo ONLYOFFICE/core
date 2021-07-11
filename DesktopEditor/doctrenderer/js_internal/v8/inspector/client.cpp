@@ -110,9 +110,11 @@ void NSJSBase::v8_debug::internal::CInspectorClient::runMessageLoopOnPause(int c
     TrueSetter f(m_bPause);
 
     while (m_bPause) {
+        //while not paused by cdt or cdt disconnected
         if (!m_WaitForFrontendMessage()) {
             break;
         }
+        //
         pumpPlatform();
     }
 }
@@ -124,6 +126,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::quitMessageLoopOnPause() {
 
 void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 {
+    //contextPrivate implements script execution
     JSSmart<CJSValue> scriptResult =
             m_pContextPrivate->runScriptImpl(m_sScriptStr
                                              , m_pException
@@ -164,7 +167,9 @@ void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 void NSJSBase::v8_debug::internal::CInspectorClient::processMessageFromFrontend(
         const std::string &message)
 {
+    //send message to V8 internals
     m_pSession->dispatchProtocolMessage(strToView(message));
+    //check message for Runtime.runIfWaitingForDebugger
     if (checkForStartDebugging(message)) {
         startDebugging();
     }

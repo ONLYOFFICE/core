@@ -37,13 +37,11 @@ private:
     //using pointer to create stream on connection, not in ctor
     std::unique_ptr<stream_t> m_pWebsocketStream{nullptr};
 
-
-
     //message handler
     onMessageCallback m_fOnMessage;
 
     //flags
-    std::atomic<bool> m_bCdtDisconnected{true};
+    std::atomic<bool> m_bCdtConnected{false};//cdt for chrome developer tools
     std::atomic<bool> m_bListening{false};
 
 
@@ -52,7 +50,12 @@ private:
     //read data(blocks)
     std::string getData();
     //report error
-    void reportError(boost::beast::error_code code, const char *what) const;
+    void reportError(const boost::beast::error_code &code, const char *context) const;
+    //
+    void setConnected();
+    void setDisconnected();
+    //
+    bool checkStream() const;
 
 public:
     SingleConnectionServer(uint16_t port = 8080, std::string host = "127.0.0.1");

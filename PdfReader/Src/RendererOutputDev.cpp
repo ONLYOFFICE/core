@@ -141,7 +141,7 @@ namespace PdfReader
         //            {
         //                sValue = oNode.GetAttribute( _T("length") );
         //                nLength = XmlUtils::GetInteger( sValue );
-        //                pCodeToUnicode = (unsigned short *)MemUtilsMalloc( sizeof(unsigned short) * nLength );
+        //                pCodeToUnicode = (int *)MemUtilsMalloc( sizeof(int) * nLength );
         //                if ( !pCodeToUnicode )
         //                    return;
 
@@ -594,6 +594,8 @@ namespace PdfReader
     }
     void RendererOutputDev::updateFont(GfxState *pGState)
     {
+
+
                 // Проверяем наличие списка со шрифтами
         if (NULL == m_pFontList)
             return;
@@ -627,6 +629,7 @@ namespace PdfReader
             // 2. Если шрифт лежит вне пдф, а в самом пдф есть ссылка на него, тогда используем эту ссылку.
             // 3. В противном случае подбираем шрифт.
             // if (pFont->getEmbeddedFontFileRef(&oEmbRef)) todo font file ref
+
             if (pFont->getEmbeddedFontID(&oEmbRef))
             {
                 std::wstring wsExt;
@@ -1188,7 +1191,6 @@ namespace PdfReader
                     }
                 }
             }
-
             // Здесь мы грузим кодировки
             int *pCodeToGID = NULL, *pCodeToUnicode = NULL;
             int nLen = 0;
@@ -1210,7 +1212,7 @@ namespace PdfReader
                             break;
 
                         m_pFontManager->LoadFontFromFile(wsFileName, 0, 1, 72, 72);
-                        pCodeToGID = (int *)MemUtilsMallocArray(256, sizeof(unsigned short));
+                        pCodeToGID = (int *)MemUtilsMallocArray(256, sizeof(int));
                         if (!pCodeToGID)
                             break;
 
@@ -1316,7 +1318,7 @@ namespace PdfReader
                                 {
                                     // CID -> Unicode -> GID
                                     nLen = pCodeToUnicode->getLength();
-                                    pCodeToGID = (int *)MemUtilsMallocArray(nLen, sizeof(unsigned short));
+                                    pCodeToGID = (int *)MemUtilsMallocArray(nLen, sizeof(int));
                                     for (int nCode = 0; nCode < nLen; ++nCode)
                                     {
                                         Unicode arrUnicodeBuffer[8];
@@ -1346,11 +1348,11 @@ namespace PdfReader
                     else if (((GfxCIDFont *)pFont)->getCIDToGID())
                     {
                         nLen = ((GfxCIDFont *)pFont)->getCIDToGIDLen();
-                        pCodeToGID = (int *)MemUtilsMallocArray(nLen, sizeof(unsigned short));
+                        pCodeToGID = (int *)MemUtilsMallocArray(nLen, sizeof(int));
                         if (!pCodeToGID)
                             break;
 
-                        memcpy(pCodeToGID, ((GfxCIDFont *)pFont)->getCIDToGID(), nLen * sizeof(unsigned short));
+                        memcpy(pCodeToGID, ((GfxCIDFont *)pFont)->getCIDToGID(), nLen * sizeof(int));
                     }
 
                     break;
@@ -1364,7 +1366,6 @@ namespace PdfReader
                     break;
                 }
             }
-
             // Составляем таблицу Code -> Unicode
             int nToUnicodeLen = 0;
             if (pFont->isCIDFont())
@@ -1374,7 +1375,7 @@ namespace PdfReader
                 if (NULL != pToUnicode)
                 {
                     nToUnicodeLen = pToUnicode->getLength();
-                    pCodeToUnicode = (int *)MemUtilsMallocArray(nToUnicodeLen, sizeof(unsigned short));
+                    pCodeToUnicode = (int *)MemUtilsMallocArray(nToUnicodeLen, sizeof(int));
 
                     if (pCodeToUnicode)
                     {
@@ -1393,11 +1394,13 @@ namespace PdfReader
             }
             else
             {
+                // memory troubles here
+
                 CharCodeToUnicode *pToUnicode = ((Gfx8BitFont *)pFont)->getToUnicode();
                 if (NULL != pToUnicode)
                 {
                     nToUnicodeLen = pToUnicode->getLength();
-                    pCodeToUnicode = (int *)MemUtilsMallocArray(nToUnicodeLen, sizeof(unsigned short));
+                    pCodeToUnicode = (int *)MemUtilsMallocArray(nToUnicodeLen, sizeof(int));//literally here
 
                     if (pCodeToUnicode)
                     {
@@ -1556,7 +1559,7 @@ namespace PdfReader
 
                                 CBase64 oBase64;
                                 unsigned char* tmp_buffer = new unsigned char[sBuffer.length() + 1];
-                                std::strncmp((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
+                                strncpy((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
                                 oBase64.Encode(tmp_buffer, sBuffer.length());
                                 sBuffer = std::string((char*)tmp_buffer);
                                 delete[] tmp_buffer;
@@ -1854,7 +1857,7 @@ namespace PdfReader
 
                             CBase64 oBase64;
                             unsigned char* tmp_buffer = new unsigned char[sBuffer.length() + 1];
-                            std::strncmp((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
+                            strncpy((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
 
                             oBase64.Encode(tmp_buffer, sBuffer.length());
 
@@ -1964,7 +1967,7 @@ namespace PdfReader
                                     CBase64 oBase64;
 
                                     unsigned char* tmp_buffer = new unsigned char[sBuffer.length() + 1];
-                                    std::strncmp((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
+                                    strncpy((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
 
                                     oBase64.Encode(tmp_buffer, sBuffer.length());
                                     sBuffer = std::string((char*)tmp_buffer);
@@ -1989,7 +1992,7 @@ namespace PdfReader
                             CBase64 oBase64;
 
                             unsigned char* tmp_buffer = new unsigned char[sBuffer.length() + 1];
-                            std::strncmp((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
+                            strncpy((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
 
                             oBase64.Encode(tmp_buffer, sBuffer.length());
                             sBuffer = std::string((char*)tmp_buffer);
@@ -2408,7 +2411,7 @@ namespace PdfReader
                                             CBase64 oBase64;
 
                                             unsigned char* tmp_buffer = new unsigned char[sBuffer.length() + 1];
-                                            std::strncmp((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
+                                            strncpy((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
 
                                             oBase64.Encode(tmp_buffer, sBuffer.length());
                                             sBuffer = std::string((char*)tmp_buffer);
@@ -2464,13 +2467,13 @@ namespace PdfReader
                 }
             }
 
-//            pEntry->wsFilePath     = wsFileName;
-//            pEntry->wsFontName     = wsFontName;
-//            pEntry->pCodeToGID     = pCodeToGID;
-//            pEntry->pCodeToUnicode = pCodeToUnicode;
-//            pEntry->unLenGID       = (unsigned int)nLen;
-//            pEntry->unLenUnicode   = (unsigned int)nToUnicodeLen;
-//            pEntry->bAvailable     = true;
+            pEntry->wsFilePath     = wsFileName;
+            pEntry->wsFontName     = wsFontName;
+            pEntry->pCodeToGID     = pCodeToGID;
+            pEntry->pCodeToUnicode = pCodeToUnicode;
+            pEntry->unLenGID       = (unsigned int)nLen;
+            pEntry->unLenUnicode   = (unsigned int)nToUnicodeLen;
+            pEntry->bAvailable     = true;
         }
         else if (NULL != pEntry)
         {
@@ -2483,7 +2486,6 @@ namespace PdfReader
             m_pRenderer->put_FontPath(wsFileName);
             m_pRenderer->put_FontName(wsFontName);
         }
-        pEntry = new TFontEntry;
     }
     void RendererOutputDev::stroke(GfxState *pGState)
     {

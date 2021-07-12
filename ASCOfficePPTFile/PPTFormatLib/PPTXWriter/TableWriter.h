@@ -40,7 +40,7 @@ namespace PPT_FORMAT
 class TCell
 {
 public:
-    TCell(CShapeElement *pShape, int row, int col, TCell* pParent = nullptr);
+    TCell(CShapeElement *pShape, int row, int col, CRelsGenerator* pRels, TCell* pParent = nullptr);
 
     void FillTc(PPTX::Logic::TableCell &oTc);
 
@@ -96,6 +96,9 @@ private:
     // Parent
     TCell* m_pParent;
     eMergeDirection m_parentDirection;
+
+    // Common
+     CRelsGenerator* m_pRels;
 };
 
 
@@ -107,7 +110,8 @@ class ProtoTable
 {
 public:
     ProtoTable(std::vector<CShapeElement *> &arrCells,
-               std::vector<CShapeElement*>& arrSpliters);
+               std::vector<CShapeElement*>& arrSpliters,
+               CRelsGenerator* pRels);
 
     static std::vector<int> getWidth(std::vector<CShapeElement *> &arrCells, bool isWidth = true);
     static std::vector<int> getHeight(std::vector<CShapeElement *> &arrCells, bool isHeight = true);
@@ -132,6 +136,7 @@ private:
     std::vector<int> m_arrLeft;
     std::vector<int> m_arrTop;
     MProtoTable m_table;
+    CRelsGenerator* m_pRels;
 };
 
 class TableWriter

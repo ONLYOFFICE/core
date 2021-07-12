@@ -51,6 +51,7 @@ public:
 private:
     void ConvertTableTxBody(PPTX::Logic::TxBody& oTxBody);
     void ConvertShapeTxBody(PPTX::Logic::TxBody& oTxBody);
+    void FillMergedTxBody(PPTX::Logic::TxBody& oTxBody);
 
 private:
     void FillBodyPr(PPTX::Logic::BodyPr& oBodyPr);
@@ -69,20 +70,20 @@ private:
     void ConvertLineEnd(PPTX::Logic::LineEnd& oLine, unsigned char cap, unsigned char length, unsigned char width, bool isHead);
     void ConvertBrush(PPTX::Logic::RunProperties& oRPr);
     void FillSolidFill(PPTX::Logic::UniFill& oUF, CColor& oColor);
+    void FillSchemeClr(PPTX::Logic::UniFill& oUF, CColor& oColor);
+    void FillEffectLst(PPTX::Logic::EffectProperties &oEList, CTextCFRun& oCFRun);
 
 
 
     void FillParagraphs(std::vector<PPTX::Logic::Paragraph>& arrP, std::vector<CParagraph>& arrParagraphs);
     void ConvertStyleLevel(PPTX::Logic::TextParagraphPr &oLevel, CTextStyleLevel& oOldLevel, const int& nLevel);
     void FillEndParaRPr(PPTX::Logic::RunProperties& oEndPr, CTextPFRun& oPFRun);
-    void FillLatin(PPTX::Logic::TextFont& oLatin, CFontProperty &font);
     void FillCS(PPTX::Logic::TextFont& oCs, CFontProperties& font);
-    void FillEffectLst(PPTX::Logic::EffectProperties &oEList, CTextCFRun& oCFRun);
 
 private:
     CShapeElement* m_pShapeElement;
     CRelsGenerator* m_pRels;
-    CTextAttributesEx& oText;
+    CTextAttributesEx* pText;
 
     eTxType m_txType;
     bool m_bWordArt;

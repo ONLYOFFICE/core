@@ -1038,7 +1038,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTable(CStringWriter& oWriter, CRelsGenerator&
 
 
     PPTX::Logic::GraphicFrame gf;
-    TableWriter(pTableElement).Convert(gf);
+    TableWriter(pTableElement, &oRels).Convert(gf);
     oWriter.WriteString(gf.toXML());
 }
 void PPT_FORMAT::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)

@@ -1,20 +1,28 @@
 #include "TxBodyConverter.h"
 #include "../../../Common/MS-LCID.h"
 #include "../../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ShapeType.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SchemeClr.h"
 #include "StylesWriter.h"
 
 using namespace PPT_FORMAT;
 
 TxBodyConverter::TxBodyConverter(CShapeElement *pShapeElement, CRelsGenerator* pRels, TxBodyConverter::eTxType txType) :
-    m_pShapeElement(pShapeElement), m_pRels(pRels), oText(pShapeElement->m_pShape->m_oText), m_txType(txType),
+    m_pShapeElement(pShapeElement), m_pRels(pRels), m_txType(txType),
     m_bWordArt(false)
 {
+    if (pShapeElement && pShapeElement->m_pShape)
+        pText = &pShapeElement->m_pShape->m_oText;
+    else
+        pText = nullptr;
 }
 
 void TxBodyConverter::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 {
     if (m_pShapeElement == nullptr)
+    {
+        FillMergedTxBody(oTxBody);
         return;
+    }
 
     switch (m_txType)
     {
@@ -32,28 +40,33 @@ void TxBodyConverter::ConvertTableTxBody(PPTX::Logic::TxBody &oTxBody)
     FillBodyPr(oTxBody.bodyPr.get2());
 
 
-    size_t nCount = oText.m_arParagraphs.size();
+    size_t nCount = pText->m_arParagraphs.size();
     if (nCount == 0)
     {
         oTxBody.lstStyle = new PPTX::Logic::TextListStyle;
         PPTX::Logic::Paragraph paragraph;
-
-        paragraph.endParaRPr = getNewEndParaRPr(false);
+        unsigned sz = m_pShapeElement->m_rcChildAnchor.GetHeight() * 10;
+        paragraph.endParaRPr = getNewEndParaRPr(false, sz > 2000 ? 2000 : sz);
         oTxBody.Paragrs.push_back(paragraph);
 
         return;
     }
 
+
+    if (pText == nullptr)
+        return;
+
+
     // todo
     oTxBody.lstStyle = new PPTX::Logic::TextListStyle;
     if (!m_bWordArt)
-        FillLstStyles(oTxBody.lstStyle.get2(), oText.m_oStyles);
+        FillLstStyles(oTxBody.lstStyle.get2(), pText->m_oStyles);
 
 
     for (size_t nIndexPar = 0; nIndexPar < nCount; ++nIndexPar)
     {
         PPTX::Logic::Paragraph p;
-        FillParagraph(p,oText.m_arParagraphs[nIndexPar]);
+        FillParagraph(p,pText->m_arParagraphs[nIndexPar]);
         oTxBody.Paragrs.push_back(std::move(p));
     }
     //    if (m_pText)
@@ -68,6 +81,17 @@ void TxBodyConverter::ConvertShapeTxBody(PPTX::Logic::TxBody &oTxBody)
 
 }
 
+void TxBodyConverter::FillMergedTxBody(PPTX::Logic::TxBody &oTxBody)
+{
+    oTxBody.lstStyle = new PPTX::Logic::TextListStyle;
+    oTxBody.bodyPr = new PPTX::Logic::BodyPr;
+    oTxBody.lstStyle = new PPTX::Logic::TextListStyle;
+
+    PPTX::Logic::Paragraph paragraph;
+    paragraph.endParaRPr = getNewEndParaRPr();
+    oTxBody.Paragrs.push_back(paragraph);
+}
+
 void TxBodyConverter::FillBodyPr(PPTX::Logic::BodyPr &oBodyPr)
 {
     CDoubleRect oTextRect;
@@ -80,7 +104,7 @@ void TxBodyConverter::FillBodyPr(PPTX::Logic::BodyPr &oBodyPr)
 
 
     auto pAnchor = new PPTX::Limit::TextAnchor;
-    switch (oText.m_oAttributes.m_nTextAlignVertical)
+    switch (pText->m_oAttributes.m_nTextAlignVertical)
     {
     case 0: pAnchor->set(L"t"); break;
     case 2: pAnchor->set(L"b"); break;
@@ -95,14 +119,14 @@ void TxBodyConverter::FillBodyPr(PPTX::Logic::BodyPr &oBodyPr)
         oBodyPr.Fit.type = PPTX::Logic::TextFit::FitSpAuto;
 
 
-    if (oText.m_oAttributes.m_dTextRotate > 0)
-        oBodyPr.rot = round(oText.m_oAttributes.m_dTextRotate * 60000);
+    if (pText->m_oAttributes.m_dTextRotate > 0)
+        oBodyPr.rot = round(pText->m_oAttributes.m_dTextRotate * 60000);
 
 
-    if (oText.m_nTextFlow >= 0)
+    if (pText->m_nTextFlow >= 0)
     {
         auto *pVert = new PPTX::Limit::TextVerticalType;
-        switch(oText.m_nTextFlow)
+        switch(pText->m_nTextFlow)
         {
         case 1:
         case 3: pVert->set(L"vert"); break;
@@ -111,7 +135,7 @@ void TxBodyConverter::FillBodyPr(PPTX::Logic::BodyPr &oBodyPr)
         }
         oBodyPr.vert = pVert;
     }
-    else if (oText.m_bVertical)
+    else if (pText->m_bVertical)
     {
         auto *pVert = new PPTX::Limit::TextVerticalType;
         pVert->set(L"eaVert");
@@ -191,7 +215,8 @@ void TxBodyConverter::FillParagraph(PPTX::Logic::Paragraph &p, CParagraph &parag
         if (paragraph.m_arSpans[nSpan].m_bBreak)
         {
             auto pBr = new PPTX::Logic::Br;
-            FillRPr(pBr->rPr.get2(), paragraph.m_arSpans[nSpan].m_oRun, true);
+            pBr->rPr = new PPTX::Logic::RunProperties;
+            FillRPr(pBr->rPr.get2(), paragraph.m_arSpans[nSpan].m_oRun);
             runElem.InitRun(pBr);
         } else
         {
@@ -379,6 +404,7 @@ void TxBodyConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTex
 
                 oPPr.buTypeface.m_Typeface.reset(pBuFont);
             }
+            bool set = true;
             if (pPF->bulletAutoNum.is_init())
             {
                 auto pBuAutoNum = new PPTX::Logic::BuAutoNum;
@@ -387,9 +413,9 @@ void TxBodyConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTex
                     pBuAutoNum->startAt = pPF->bulletAutoNum->startAt.get();
                 if (pPF->bulletAutoNum->type.is_init())
                     pBuAutoNum->type = pPF->bulletAutoNum->type.get();
+                set = false;
             }
 
-            bool set = true;
             if (pPF->bulletFontProperties.is_init() == false && pPF->bulletSize.is_init() == false)
             {
                 auto pBuFont = new PPTX::Logic::BuFontTx;
@@ -429,6 +455,7 @@ void TxBodyConverter::FillRun(PPTX::Logic::Run &oRun, CSpan &oSpan)
 {
     oRun.SetText(oSpan.m_strText);
 
+    oRun.rPr = new PPTX::Logic::RunProperties;
     FillRPr(oRun.rPr.get2(), oSpan.m_oRun);
 }
 
@@ -449,6 +476,7 @@ PPTX::Logic::RunProperties *TxBodyConverter::getNewEndParaRPr(const int dirty, c
 
 void TxBodyConverter::FillRPr(PPTX::Logic::RunProperties &oRPr, CTextCFRun &oCFRun)
 {
+    oRPr.normalizeH = false;
     if ((oCFRun.Size.is_init()) && (oCFRun.Size.get() > 0) && (oCFRun.Size.get() < 4001))
     {
         oRPr.sz = int(100 * oCFRun.Size.get());
@@ -493,23 +521,21 @@ void TxBodyConverter::FillRPr(PPTX::Logic::RunProperties &oRPr, CTextCFRun &oCFR
             oRPr.ln = new PPTX::Logic::Ln;
             ConvertLine(oRPr.ln.get2());
         }
-        m_oWriter.WriteString(ConvertBrush(pShapeElement->m_oBrush));
-        m_oWriter.WriteString(ConvertShadow(pShapeElement->m_oShadow));
+        // I don't know todo or not
+//        m_oWriter.WriteString(ConvertBrush(pShapeElement->m_oBrush));
+//        m_oWriter.WriteString(ConvertShadow(pShapeElement->m_oShadow));
     }
     else
     {
-        if (pCF->Color.is_init())
+        if (oCFRun.Color.is_init())
         {
-            if (pCF->Color->m_lSchemeIndex != -1)
+            if (oCFRun.Color->m_lSchemeIndex != -1)
             {
-                std::wstring strProp = _T("<a:solidFill><a:schemeClr val=")) + CStylesWriter::GetColorInScheme(pCF->Color->m_lSchemeIndex) + _T("</a:solidFill>");
-                m_oWriter.WriteString(strProp);
+                FillSchemeClr(oRPr.Fill, oCFRun.Color.get());
             }
             else
             {
-                std::wstring strColor = XmlUtils::IntToString(pCF->Color->GetLONG_RGB(), L"%06x");
-
-                m_oWriter.WriteString(L"<a:solidFill><a:srgbClr val=") + strColor + L"</a:solidFill>");
+                FillSolidFill(oRPr.Fill, oCFRun.Color.get());
             }
         }
     }
@@ -522,7 +548,25 @@ void TxBodyConverter::FillRPr(PPTX::Logic::RunProperties &oRPr, CTextCFRun &oCFR
     if (oCFRun.font.font.is_init())
     {
         oRPr.latin = new PPTX::Logic::TextFont;
-        FillLatin(oRPr.latin.get2(), oCFRun.font.font.get());
+        oRPr.latin->m_name = L"a:latin";
+        oRPr.latin->typeface = oCFRun.font.font->Name;
+        oRPr.latin->charset = std::to_wstring(oCFRun.font.font->Charset);
+        oRPr.latin->pitchFamily = std::to_wstring(oCFRun.font.font->PitchFamily + 2);
+    } // todo else for fontRef.is_init() // it's theme
+
+    if (oCFRun.font.ea.is_init())
+    {
+        oRPr.ea = new PPTX::Logic::TextFont;
+        oRPr.ea->m_name = L"a:ea";
+        oRPr.ea->typeface = oCFRun.font.ea->Name;
+        oRPr.ea->charset = std::to_wstring(oCFRun.font.ea->Charset);
+    }
+    if (oCFRun.font.sym.is_init())
+    {
+        oRPr.sym = new PPTX::Logic::TextFont;
+        oRPr.sym->m_name = L"a:sym";
+        oRPr.sym->typeface = oCFRun.font.sym->Name;
+        oRPr.sym->charset = std::to_wstring(oCFRun.font.sym->Charset);
     }
 }
 
@@ -613,9 +657,39 @@ void TxBodyConverter::ConvertLineEnd(PPTX::Logic::LineEnd &oLine, unsigned char 
     }
 }
 
+void TxBodyConverter::ConvertBrush(PPTX::Logic::RunProperties &oRPr)
+{
+    CBrush& brush = m_pShapeElement->m_oBrush;
+}
+
 void TxBodyConverter::FillSolidFill(PPTX::Logic::UniFill &oUF, CColor &oColor)
 {
     auto pSolidFill = new PPTX::Logic::SolidFill;
     pSolidFill->Color.SetRGBColor(oColor.GetR(), oColor.GetG(), oColor.GetB());
     oUF.Fill.reset(pSolidFill);
+}
+
+void TxBodyConverter::FillSchemeClr(PPTX::Logic::UniFill &oUF, CColor &oColor)
+{
+    auto pSolidFill = new PPTX::Logic::SolidFill;
+    auto pScheme = new PPTX::Logic::SchemeClr;
+    pScheme->val.set(CStylesWriter::GetColorInScheme(oColor.m_lSchemeIndex));
+    pSolidFill->Color.Color.reset(pScheme);
+    oUF.Fill.reset(pSolidFill);
+}
+
+void TxBodyConverter::FillEffectLst(PPTX::Logic::EffectProperties &oEList, CTextCFRun &oCFRun)
+{
+    auto pELst = new PPTX::Logic::EffectLst;
+    if (oCFRun.FontShadow.is_init() && oCFRun.FontShadow.get())
+    {
+        pELst->outerShdw = new PPTX::Logic::OuterShdw;
+        pELst->outerShdw->blurRad = 38100;
+        pELst->outerShdw->dist = 38100;
+        pELst->outerShdw->dir = 2700000;
+        pELst->outerShdw->algn = new PPTX::Limit::RectAlign;
+        pELst->outerShdw->algn->set(L"tl");
+        pELst->outerShdw->Color.SetRGBColor(0, 0, 0);
+    }
+    oEList.List.reset(pELst);
 }

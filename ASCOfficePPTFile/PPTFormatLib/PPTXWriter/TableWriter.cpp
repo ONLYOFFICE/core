@@ -13,7 +13,7 @@ void TableWriter::Convert(PPTX::Logic::GraphicFrame &oGraphicFrame)
     if (!m_pTableElement)
         return;
 
-    if (m_pTableElement->m_xmlRawData.empty() || true)
+    if (m_pTableElement->m_xmlRawData.empty()/* || true*/)
     {
         oGraphicFrame.nvGraphicFramePr = new PPTX::Logic::NvGraphicFramePr;
         FillNvGraphicFramePr(oGraphicFrame.nvGraphicFramePr.get2());
@@ -27,7 +27,7 @@ void TableWriter::Convert(PPTX::Logic::GraphicFrame &oGraphicFrame)
     else
     {
         oGraphicFrame.fromXMLString(getXmlForGraphicFrame());
-        CorrectGraphicFrame(oGraphicFrame);
+//        CorrectGraphicFrame(oGraphicFrame);
     }
 }
 
@@ -63,7 +63,7 @@ void TableWriter::FillTable(PPTX::Logic::Table &oTable)
 
     std::vector<CShapeElement*> arrCells, arrSpliters;
     prepareShapes(arrCells, arrSpliters);
-    m_nPTable = new ProtoTable(arrCells, arrSpliters);
+    m_nPTable = new ProtoTable(arrCells, arrSpliters, m_pRels);
     FillTblGrid(oTable.TableCols , arrCells);
 
 
@@ -168,7 +168,7 @@ void ProtoTable::initProtoTable()
     {
         ProtoTableRow protoRow;
         for (UINT cCol = 0; cCol < countCol; cCol++)
-            protoRow.push_back(TCell(nullptr, cRow, cCol, nullptr));
+            protoRow.push_back(TCell(nullptr, cRow, cCol, m_pRels, nullptr));
 
         m_table.push_back(protoRow);
     }
@@ -226,8 +226,8 @@ bool ProtoTable::fillCells(std::vector<CShapeElement *> &arrCells)
         pParent->setPParent(nullptr);
         pParent->setPShape(pCell);
 
-//        pParent->setGridSpan(posRightCol - posCol);
-//        pParent->setRowSpan(posBottomRow - posRow);
+        //        pParent->setGridSpan(posRightCol - posCol);
+        //        pParent->setRowSpan(posBottomRow - posRow);
     }
 
     return true;
@@ -347,9 +347,9 @@ MProtoTable ProtoTable::getTable() const
 
 void TableWriter::FillTblPr(PPTX::Logic::TableProperties &oTblPr)
 {
-//    oTblPr.TableStyleId = L"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}";
-//    oTblPr.FirstRow = true;
-//    oTblPr.BandRow = true;
+    //    oTblPr.TableStyleId = L"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}";
+    //    oTblPr.FirstRow = true;
+    //    oTblPr.BandRow = true;
 }
 
 void TableWriter::FillTblGrid(std::vector<PPTX::Logic::TableCol> &tblGrid, std::vector<CShapeElement*>& arrCells)
@@ -418,9 +418,9 @@ void TableWriter::FillnvPr(PPTX::Logic::NvPr &oNvPr)
     oNvPr.extLst.push_back(ext);
 }
 
-TCell::TCell(CShapeElement *pShape, int row, int col, TCell *pParent) :
+TCell::TCell(CShapeElement *pShape, int row, int col, CRelsGenerator* pRels, TCell *pParent) :
     m_pShape(pShape), m_row(row), m_col(col), m_rowSpan(1), m_gridSpan(1),
-    m_pParent(pParent), m_parentDirection(none)
+    m_pParent(pParent), m_parentDirection(none), m_pRels(pRels)
 {
     setParentDirection();
 }
@@ -511,11 +511,11 @@ void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 {
     if (m_pShape == nullptr)
     {
-        TxBodyConverter txBodyConverter(nullptr, TxBodyConverter::table);
+        TxBodyConverter txBodyConverter(nullptr, m_pRels, TxBodyConverter::table);
         txBodyConverter.FillTxBody(oTxBody);
     } else
     {
-        TxBodyConverter txBodyConverter(&m_pShape->m_pShape->m_oText, TxBodyConverter::table);
+        TxBodyConverter txBodyConverter(m_pShape, m_pRels, TxBodyConverter::table);
         txBodyConverter.FillTxBody(oTxBody);
     }
 
@@ -544,8 +544,11 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
     oTcPr.MarL = round(m_pShape->m_pShape->m_dTextMarginX);
     oTcPr.MarR = round(m_pShape->m_pShape->m_dTextMarginRight);
 
-    oTcPr.HorzOverflow = new PPTX::Limit::HorzOverflow;
-    oTcPr.HorzOverflow->set(L"overflow");
+    if (true)
+    {
+        oTcPr.HorzOverflow = new PPTX::Limit::HorzOverflow;
+        oTcPr.HorzOverflow->set(L"overflow");
+    }
 
     auto pSolidFill = new PPTX::Logic::SolidFill;
     auto& brush = m_pShape->m_oBrush;
@@ -605,7 +608,7 @@ void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeEleme
     auto pSolidFill = new PPTX::Logic::SolidFill;
     auto& clr = pen.Color;
     pSolidFill->Color.SetRGBColor(clr.GetR(), clr.GetG(), clr.GetB());
-    if (pen.Alpha)
+    if (pen.Alpha && pen.Alpha != 255)
     {
         PPTX::Logic::ColorModifier alpha;
         alpha.name = L"a:alpha";
@@ -657,7 +660,8 @@ void TCell::setPShape(CShapeElement *pShape)
 
 
 ProtoTable::ProtoTable(std::vector<CShapeElement *> &arrCells,
-                       std::vector<CShapeElement*>& arrSpliters)
+                       std::vector<CShapeElement*>& arrSpliters,
+                       CRelsGenerator *pRels) : m_pRels(pRels)
 {
     m_arrLeft = getWidth(arrCells, false);
     m_arrTop = getHeight(arrCells, false);

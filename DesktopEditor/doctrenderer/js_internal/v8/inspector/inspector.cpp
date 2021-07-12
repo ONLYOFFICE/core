@@ -42,7 +42,10 @@ void NSJSBase::v8_debug::CInspector::initClient(
         if (message.length() == 0) {
             return;
         }
-        std::string str = internal::viewToStr(m_pIsolate, message);
+        std::string str = internal::viewToStr(
+                    m_pIsolate
+                    , message);
+        //
         maybeLog(str, msgType::outgoing);
         this->m_pServer->sendData(str);
     };
@@ -115,7 +118,9 @@ NSJSBase::v8_debug::CInspector::CInspector(CJSContextPrivate *pContextPrivate
         , uint16_t port
         , const std::string &contextName
         )
-    : m_pServer(std::make_unique<internal::SingleConnectionServer>())
+    : m_pServer(std::make_unique<internal::SingleConnectionServer>(port))
+    , m_pIsolate(pContextPrivate->m_isolate)
+    , m_bLog(log)
 {
     if (!initServer()) {
         return;

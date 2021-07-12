@@ -155,7 +155,7 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::listen()
 void NSJSBase::v8_debug::internal::SingleConnectionServer::run()
 {
     while (waitAndProcessMessage()) {
-        //
+        //just run in loop
     }
 }
 

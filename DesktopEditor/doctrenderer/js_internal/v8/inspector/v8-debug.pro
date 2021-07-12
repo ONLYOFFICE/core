@@ -37,7 +37,7 @@ LIBS += -lDbgHelp
 LIBS += -lShlwapi
 
 
-
+#inspector stuff
 HEADERS += \
     channel.h \
     client.h \
@@ -53,7 +53,14 @@ SOURCES += \
         singleconnectionserver.cpp \
         singlethreadutils.cpp
 
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+#v8 base stuff
+HEADERS += \
+    ../v8_base.h \
+    ../../js_base.h
+
+SOURCES += \
+    ../v8_base.cpp
+
+include($$CORE_ROOT_DIR/Common/base.pri)
+ADD_DEPENDENCY(kernel, UnicodeConverter)
+DEFINES += V8_INSPECTOR

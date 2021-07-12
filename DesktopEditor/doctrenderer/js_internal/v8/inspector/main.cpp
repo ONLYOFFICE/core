@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
     {
         //own isolate by this thread
-        v8::Locker lock(isolate);
+//        v8::Locker lock(isolate);
         //all in current isolate
         v8::Isolate::Scope isolateScope(isolate);
 
@@ -36,6 +36,8 @@ int main(int argc, char *argv[])
                                         }\n\
                                         a();";
 
+        std::string rawString1 = "(function(){return 2 + 3;})();";
+
         //make js context
         NSJSBase::CJSContext ctx;
         ctx.m_internal->m_isolate = isolate;
@@ -43,7 +45,7 @@ int main(int argc, char *argv[])
 //        JSSmart<NSJSBase::CJSTryCatch> tc(new NSJSBase::CV8TryCatch);
 
         //run
-        ctx.runScript(rawString);//calls inspector inside
+        ctx.runScript(rawString1);//calls inspector inside
     }
 
     return 0;

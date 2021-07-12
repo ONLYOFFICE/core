@@ -87,12 +87,14 @@ void NSJSBase::v8_debug::internal::CInspectorClient::quitMessageLoopOnPause() {
 
 void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 {
+    //set pause at the start of script
+    m_pSession->schedulePauseOnNextStatement(strToView("debug"),{});
     //contextPrivate implements script execution
     JSSmart<CJSValue> scriptResult =
             m_pContextPrivate->runScriptImpl(m_sScriptStr
                                              , m_pException
                                              , m_sScriptPath);
-
+    //save result
     m_SetRetVal(scriptResult);
 }
 

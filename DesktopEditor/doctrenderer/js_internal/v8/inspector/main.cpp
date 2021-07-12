@@ -1,8 +1,6 @@
 #include <v8-inspector.h>//V8InspectorClient
 #include <v8.h>//context
 #include <libplatform/libplatform.h>//for v8 stuff
-#include "inspector.h"
-#include "singlethreadutils.h"
 
 #include "../../js_base.h"
 #include "../v8_base.h"
@@ -10,11 +8,11 @@
 int main(int argc, char *argv[])
 {
     //V8 INIT
-    CV8Initializer *init = CV8Worker::getInitializer();//here throws an exception
+    CV8Initializer *init = CV8Worker::getInitializer();
     v8::Isolate *isolate = init->CreateNew();
 
     {
-        //own isolate by this thread
+        //possibly own isolate by this thread
 //        v8::Locker lock(isolate);
         //all in current isolate
         v8::Isolate::Scope isolateScope(isolate);
@@ -36,8 +34,6 @@ int main(int argc, char *argv[])
                                         }\n\
                                         a();";
 
-        std::string rawString1 = "(function(){return 2 + 3;})();";
-
         //make js context
         NSJSBase::CJSContext ctx;
         ctx.m_internal->m_isolate = isolate;
@@ -45,7 +41,7 @@ int main(int argc, char *argv[])
 //        JSSmart<NSJSBase::CJSTryCatch> tc(new NSJSBase::CV8TryCatch);
 
         //run
-        ctx.runScript(rawString1);//calls inspector inside
+        ctx.runScript(rawString);//calls inspector inside
     }
 
     return 0;

@@ -274,7 +274,7 @@ namespace NSJSBase
     JSSmart<CJSValue> CJSContext::runScript(const std::string& script, JSSmart<CJSTryCatch> exception, const std::wstring& scriptPath)
     {
 #ifdef V8_INSPECTOR
-        v8_debug::CInspector inspector(m_internal, script, exception, scriptPath, true);
+        v8_debug::CInspector inspector(m_internal, script, exception, scriptPath);
         return inspector.run();
 #else
         return m_internal->runScriptImpl(script, exception, scriptPath);

@@ -70,6 +70,11 @@ namespace MetaFile
         return (IsReader() ? m_pXmlLiteReader->IsEmptyNode() : false);
     }
 
+    bool CXmlOutput::MoveToStart()
+    {
+        return (IsReader() ? m_pXmlLiteReader->MoveToStart() : false);
+    }
+
     void CXmlOutput::WriteString(const std::wstring &wsValue)
     {
         m_pXmlWriter->WriteString(wsValue);
@@ -150,7 +155,9 @@ namespace MetaFile
 
         NSBase64::Base64Encode(pData, unSizeValue, ucValue, &nSize);
         std::wstring wsValue(ucValue, ucValue + nSize);
-        m_pXmlWriter->WriteNode(wsNameNode, wsValue);
+
+        if (!wsValue.empty())
+            m_pXmlWriter->WriteNode(wsNameNode, wsValue);
 
         delete[] pData;
         delete[] ucValue;
@@ -603,21 +610,14 @@ namespace MetaFile
 
     bool CXmlOutput::ReadFromFile(const std::wstring &wsPathToFile)
     {
-        if (m_pXmlLiteReader->FromFile(wsPathToFile))
-        {
-            if (!m_pXmlLiteReader->ReadNextNode())
-
-            if (m_pXmlLiteReader->GetName() != L"EMF")
-                return false;
-
-            m_pXmlLiteReader->ReadNextSiblingNode(0);
-            return true;
-        }
-        return false;
+        return m_pXmlLiteReader->FromFile(wsPathToFile);
     }
 
     void CXmlOutput::ReadArguments(unsigned int &unType, unsigned int &unSize)
     {
+        while(!IsRecord())
+            m_pXmlLiteReader->ReadNextNode();
+
         if (m_pXmlLiteReader->GetAttributesCount() == 2)
         {
             m_pXmlLiteReader->MoveToFirstAttribute();

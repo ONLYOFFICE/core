@@ -744,11 +744,6 @@ namespace MetaFile
         return (pWindow->ulW < 0);
     }
 
-    void CEmfParserBase::Close()
-    {
-
-    }
-
     void CEmfParserBase::SetInterpretator(IOutputDevice *pOutput)
     {
         if (NULL != m_pInterpretator)

@@ -40,6 +40,7 @@ namespace MetaFile
         bool IsReader()     const;
         bool IsValid()      const;
         bool IsEmptyNode()  const;
+        bool MoveToStart();
 
         // Запись в Xml файл
 
@@ -128,21 +129,21 @@ namespace MetaFile
 
         std::wstring GetName() const;
 
-        void operator>>(TEmfHeader&     oTEmfHeader);
-        void operator>>(TEmfAlphaBlend& oTEmfAlphaBlend);
-        void operator>>(CEmfLogBrushEx& oCEmfLogBrushEx);
-        void operator>>(TEmfBitBlt&     oTEmfBitBlt);
-        void operator>>(TEmfStretchDIBITS& oTEmfStretchDIBITS);
-        void operator>>(TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice);
-        void operator>>(TEmfStretchBLT &oTEmfStretchBLT);
-        void operator>>(CEmfLogFont&    oCEmfLogFont);
-        void operator>>(TEmfExtTextoutW&oTEmfExtTextoutW);
-        void operator>>(TEmfExtTextoutA&oTEmfExtTextoutA);
-        void operator>>(TEmfSmallTextout&oTEmfSmallTextout);
-        void operator>>(TEmfEmrText&    oTEmfEmrText);
-        void operator>>(TEmfDibPatternBrush& oTEmfDibPatternBrush);
-        void operator>>(CEmfLogPalette& oCEmfLogPalette);
-        void operator>>(CDataStream&    oCDataStream);
+        void operator>>(TEmfHeader&             oTEmfHeader);
+        void operator>>(TEmfAlphaBlend&         oTEmfAlphaBlend);
+        void operator>>(CEmfLogBrushEx&         oCEmfLogBrushEx);
+        void operator>>(TEmfBitBlt&             oTEmfBitBlt);
+        void operator>>(TEmfStretchDIBITS&      oTEmfStretchDIBITS);
+        void operator>>(TEmfSetDiBitsToDevice&  oTEmfSetDiBitsToDevice);
+        void operator>>(TEmfStretchBLT&         oTEmfStretchBLT);
+        void operator>>(CEmfLogFont&            oCEmfLogFont);
+        void operator>>(TEmfExtTextoutW&        oTEmfExtTextoutW);
+        void operator>>(TEmfExtTextoutA&        oTEmfExtTextoutA);
+        void operator>>(TEmfSmallTextout&       oTEmfSmallTextout);
+        void operator>>(TEmfEmrText&            oTEmfEmrText);
+        void operator>>(TEmfDibPatternBrush&    oTEmfDibPatternBrush);
+        void operator>>(CEmfLogPalette&         oCEmfLogPalette);
+        void operator>>(CDataStream&            oCDataStream);
 
         void operator>>(TXForm&         oTXForm);
         void operator>>(TEmfColor&      oTEmfColor);

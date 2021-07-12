@@ -66,9 +66,11 @@ bool MainWindow::ConvertToRaster()
         return false;
 
     std::wstring wsPathToRasterFile = NSFile::GetProcessDirectory() + L"/test.png";
+    std::wstring wsPathToXmlFile    = NSFile::GetProcessDirectory() + L"/test.xml";
+
     m_wsPathToXmlFile = NSFile::GetProcessDirectory() + L"/test.xml";
 
-    pMetafile->ConvertToRaster(wsPathToRasterFile.c_str(), 4, ui->customView->GetWidthMetafile(),  ui->customView->GetHeightMetafile());
+    pMetafile->ConvertToXmlAndRaster(wsPathToXmlFile.c_str(), wsPathToRasterFile.c_str(), 4, ui->customView->GetWidthMetafile(),  ui->customView->GetHeightMetafile());
 
     pMetafile->Release();
     pFonts->Release();

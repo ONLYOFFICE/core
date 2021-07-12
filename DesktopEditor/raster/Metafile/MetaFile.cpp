@@ -178,6 +178,46 @@ namespace MetaFile
 	    return true;
 	}
 
+	bool CMetaFile::LoadFromXmlFile(const wchar_t *wsFilePath)
+	{
+		RELEASEINTERFACE(m_pFontManager);
+
+                if (m_pAppFonts)
+                {
+                        m_pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
+                        CFontsCache* pMeasurerCache = new CFontsCache();
+                        pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
+                        m_pFontManager->SetOwnerCache(pMeasurerCache);
+                }
+
+                m_oWmfFile.SetFontManager(m_pFontManager);
+                m_oEmfFile.SetFontManager(m_pFontManager);
+                m_oSvmFile.SetFontManager(m_pFontManager);
+                m_oSvgFile.SetFontManager(m_pFontManager);
+
+		if (m_oEmfFile.OpenFromXmlFile(wsFilePath) == true)
+		{
+			m_oEmfFile.Scan();
+
+                        if (!m_oEmfFile.CheckError())
+                        {
+                                m_lType = c_lMetaEmf;
+                                return true;
+                        }
+                        m_oEmfFile.Close();
+                }
+
+                return false;
+        }
+
+        void CMetaFile::ConvertToEmf(const wchar_t *wsFilePath)
+        {
+            if (m_lType != c_lMetaEmf || m_oEmfFile.GetEmfParser()->GetType() != EmfParserType::EmfxParser)
+                return;
+
+	    //TODO:: сохранение в *.emf файл
+	}
+
 	bool CMetaFile::LoadFromFile(const wchar_t *wsFilePath)
 	{
 		// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем 
@@ -214,7 +254,7 @@ namespace MetaFile
 			m_oWmfFile.Close();
 		}
 		// Это не Wmf
-		if (m_oEmfFile.OpenFromFile(wsFilePath) == true)
+		if (m_oEmfFile.OpenFromEmfFile(wsFilePath) == true)
 		{
 			m_oEmfFile.Scan();
 
@@ -265,7 +305,6 @@ namespace MetaFile
 		{
 			CMetaFileRenderer oEmfOut(m_oEmfFile.GetEmfParser(), pRenderer, dX, dY, dWidth, dHeight);
 			m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut);
-			m_oEmfFile.SetInterpretatorType(InterpretatorType::Render);
 			m_oEmfFile.PlayMetaFile();
 		}
 		else if (c_lMetaSvm == m_lType)

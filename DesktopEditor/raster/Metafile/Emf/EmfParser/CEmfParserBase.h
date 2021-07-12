@@ -40,11 +40,8 @@ namespace MetaFile
         ~CEmfParserBase();
 
         virtual bool            OpenFromFile(const wchar_t*)    = 0;
-        virtual void            SetError()                      = 0;
         virtual void            PlayFile()                      = 0;
         virtual void            Scan()                          = 0;
-        virtual bool            CheckError()                    = 0;
-        virtual void            SetFontManager(CFontManager*)   = 0;
 
         virtual EmfParserType   GetType()                       = 0;
 
@@ -70,8 +67,6 @@ namespace MetaFile
 	int		GetCharSpace()				override;
 	bool		IsWindowFlippedY()			override;
 	bool		IsWindowFlippedX()			override;
-
-	void		Close();
 
 	void SetInterpretator(IOutputDevice* pOutput);
 	void SetInterpretator(const wchar_t *wsFilePath);

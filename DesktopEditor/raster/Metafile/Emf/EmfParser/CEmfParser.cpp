@@ -15,11 +15,6 @@ namespace MetaFile
         return IMetaFileBase::OpenFromFile(wsFilePath);
     }
 
-    void CEmfParser::SetError()
-    {
-        IMetaFileBase::SetError();
-    }
-
     void CEmfParser::PlayFile()
     {
         if (!m_oStream.IsValid())
@@ -218,16 +213,6 @@ namespace MetaFile
     {
         PlayFile();
         this->ClearFile();
-    }
-
-    bool CEmfParser::CheckError()
-    {
-        return IMetaFileBase::CheckError();
-    }
-
-    void CEmfParser::SetFontManager(CFontManager *pFontManager)
-    {
-        IMetaFileBase::SetFontManager(pFontManager);
     }
 
     EmfParserType CEmfParser::GetType()

@@ -74,8 +74,15 @@ namespace MetaFile
 
 		bool OpenFromXmlFile(const wchar_t* wsFilePath)
 		{
-		    m_pParser = new CEmfxParser;
-		    return true;
+		    if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfParser)
+		    {
+			CFontManager *pFont = m_pParser->GetFontManager();
+			delete m_pParser;
+			m_pParser = new CEmfxParser();
+			m_pParser->SetFontManager(pFont);
+		    }
+
+		    return m_pParser->OpenFromFile(wsFilePath);
 		}
 
 		CEmfParserBase* GetEmfParser()

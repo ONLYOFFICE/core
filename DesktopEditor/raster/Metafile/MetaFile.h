@@ -61,6 +61,10 @@ namespace MetaFile
 		void ConvertToXml(const wchar_t *wsFilePath);
 		void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
 		bool DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
+
+		bool LoadFromXmlFile(const wchar_t* wsFilePath);
+
+		void ConvertToEmf(const wchar_t* wsFilePath);
 	private:
 
 		CApplicationFonts* m_pAppFonts;

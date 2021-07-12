@@ -12,11 +12,8 @@ namespace MetaFile
         virtual ~CEmfParser();
 
         bool            OpenFromFile(const wchar_t* wsFilePath)     override;
-        void            SetError()                                  override;
         void            PlayFile()                                  override;
         void            Scan()                                      override;
-        bool            CheckError()                                override;
-        void            SetFontManager(CFontManager* pFontManager)  override;
 
         EmfParserType   GetType()				    override;
     private:

@@ -1233,7 +1233,15 @@ extern int g_nCurFormatVersion;
 		TextFormPrCombSym = 53,
 		TextFormPrCombFont = 54,
 		TextFormPrMaxCharacters = 55,
-		TextFormPrCombBorder = 56
+		TextFormPrCombBorder = 56,
+		TextFormPrAutoFit = 57,
+		TextFormPrMultiLine = 58,
+		PictureFormPr = 60,
+		PictureFormPrScaleFlag = 61,
+		PictureFormPrLockProportions = 62,
+		PictureFormPrRespectBorders = 63,
+		PictureFormPrShiftX = 64,
+		PictureFormPrShiftY = 65
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

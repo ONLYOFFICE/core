@@ -7637,6 +7637,46 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 		WriteSdtTextFormPr(oStdPr.m_oTextFormPr.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oStdPr.m_oPicture.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPr);
+		WriteSdtPicture(oStdPr.m_oPicture.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}	
+}
+void BinaryDocumentTableWriter::WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture)
+{
+	int nCurPos = 0;
+	if (oSdtPicture.m_oScaleFlag.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrScaleFlag);
+		m_oBcw.m_oStream.WriteLONG(*oSdtPicture.m_oScaleFlag);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSdtPicture.m_oLockProportions.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrLockProportions);
+		m_oBcw.m_oStream.WriteBOOL(*oSdtPicture.m_oLockProportions);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSdtPicture.m_oRespectBorders.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrRespectBorders);
+		m_oBcw.m_oStream.WriteBOOL(*oSdtPicture.m_oRespectBorders);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSdtPicture.m_oShiftX.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrShiftX);
+		m_oBcw.m_oStream.WriteDoubleReal(*oSdtPicture.m_oShiftX);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSdtPicture.m_oShiftY.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrShiftY);
+		m_oBcw.m_oStream.WriteDoubleReal(*oSdtPicture.m_oShiftY);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtCheckBox(const OOX::Logic::CSdtCheckBox& oSdtCheckBox)
 {
@@ -7857,6 +7897,18 @@ void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombBorder);
 		m_oBcw.WriteBorder(oTextFormPr.m_oCombBorder.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oTextFormPr.m_oAutoFit.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrAutoFit);
+		m_oBcw.m_oStream.WriteBOOL(oTextFormPr.m_oAutoFit.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oTextFormPr.m_oMultiLine.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrMultiLine);
+		m_oBcw.m_oStream.WriteBOOL(oTextFormPr.m_oMultiLine.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }

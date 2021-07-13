@@ -81,7 +81,7 @@ namespace MetaFile
 	    if (NULL == wsFilePath)
 		return;
 
-	    m_oEmfFile.SetOutputDevice(wsFilePath);
+	    m_oEmfFile.SetOutputDevice(wsFilePath, InterpretatorType::XML);
 	    m_oEmfFile.PlayMetaFile();
 	}
 
@@ -214,6 +214,9 @@ namespace MetaFile
         {
             if (m_lType != c_lMetaEmf || m_oEmfFile.GetEmfParser()->GetType() != EmfParserType::EmfxParser)
                 return;
+
+            m_oEmfFile.SetOutputDevice(wsFilePath, InterpretatorType::Emf);
+            m_oEmfFile.PlayMetaFile();
 
 	    //TODO:: сохранение в *.emf файл
 	}

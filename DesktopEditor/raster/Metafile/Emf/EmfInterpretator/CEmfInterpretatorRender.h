@@ -11,8 +11,6 @@ namespace MetaFile
     public:
         CEmfInterpretatorRender(IOutputDevice* pIOutputDevice);
 
-        void SetOutputDevice(IOutputDevice *pIOutputDevice);
-
         InterpretatorType   GetType()   override;
 
         void Begin() override;

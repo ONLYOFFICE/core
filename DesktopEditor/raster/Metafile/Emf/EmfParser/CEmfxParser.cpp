@@ -237,8 +237,6 @@ namespace MetaFile
         if (ulHeaderSize <= 0 || ulBitsSize <= 0 || lHeaderOffset < 0 || lBitsOffset < 0)
             return false;
 
-        *m_pOutput >> m_oStream;
-
         m_oStream.Skip(lHeaderOffset);
 
         BYTE* pHeaderBuffer = m_oStream.GetCurPtr();
@@ -249,8 +247,6 @@ namespace MetaFile
         m_oStream.Skip(ulBitsSizeSkip);
 
         MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight);
-
-        m_oStream.SetStream(NULL, 0);
 
         return true;
     }
@@ -293,6 +289,9 @@ namespace MetaFile
 
         *m_pOutput >> oBitmap;
 
+        if (oBitmap.cbBitsSrc > 0)
+            *m_pOutput >> m_oStream;
+
 	if (NULL != m_pInterpretator)
 		m_pInterpretator->HANDLER_EMR_ALPHABLEND(oBitmap, m_oStream, m_ulRecordSize);
 
@@ -305,6 +304,9 @@ namespace MetaFile
 
         *m_pOutput >> oBitmap;
 
+        if (oBitmap.cbBitsSrc > 0)
+            *m_pOutput >> m_oStream;
+
 	if (NULL != m_pInterpretator)
 		m_pInterpretator->HANDLER_EMR_STRETCHDIBITS(oBitmap, m_oStream, m_ulRecordSize);
 
@@ -316,6 +318,9 @@ namespace MetaFile
         TEmfBitBlt oBitmap;
 
         *m_pOutput >> oBitmap;
+
+        if (oBitmap.cbBitsSrc > 0)
+            *m_pOutput >> m_oStream;
 
 	if (NULL != m_pInterpretator)
 		m_pInterpretator->HANDLER_EMR_BITBLT(oBitmap, m_oStream, m_ulRecordSize);
@@ -340,6 +345,9 @@ namespace MetaFile
         TEmfStretchBLT oBitmap;
 
         *m_pOutput >> oBitmap;
+
+        if (oBitmap.cbBitsSrc > 0)
+            *m_pOutput >> m_oStream;
 
 	if (NULL != m_pInterpretator)
 		m_pInterpretator->HANDLER_EMR_STRETCHBLT(oBitmap, m_oStream, m_ulRecordSize);

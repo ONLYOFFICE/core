@@ -7,11 +7,6 @@ namespace MetaFile
         CEmfInterpretatorXml(wsFilePath)
     {}
 
-    void CEmfInterpretatorAll::SetOutputDevice(IOutputDevice *pIOutputDevice)
-    {
-        CEmfInterpretatorRender::SetOutputDevice(pIOutputDevice);
-    }
-
     InterpretatorType CEmfInterpretatorAll::GetType()
     {
         return InterpretatorType::RenderAndXml;

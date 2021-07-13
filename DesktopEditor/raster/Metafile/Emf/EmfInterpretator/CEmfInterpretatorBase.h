@@ -10,6 +10,7 @@ namespace MetaFile
 {
     enum InterpretatorType
     {
+        Emf,
         Render,
         XML,
         RenderAndXml

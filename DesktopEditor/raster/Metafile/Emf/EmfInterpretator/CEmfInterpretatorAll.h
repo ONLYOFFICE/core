@@ -11,8 +11,6 @@ namespace MetaFile
     public:
         CEmfInterpretatorAll(IOutputDevice* pIOutputDevice, const wchar_t *wsFilePath);
 
-        void SetOutputDevice(IOutputDevice* pIOutputDevice);
-
         InterpretatorType   GetType()   override;
 
         //CEmfInterpretatorRender

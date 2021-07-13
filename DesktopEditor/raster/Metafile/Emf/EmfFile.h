@@ -120,9 +120,9 @@ namespace MetaFile
 		    m_pParser->SetInterpretator(pOutput);
 		}
 
-		void SetOutputDevice(const wchar_t *wsFilePath)
+		void SetOutputDevice(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType)
 		{
-		    m_pParser->SetInterpretator(wsFilePath);
+		    m_pParser->SetInterpretator(wsFilePath, oInterpretatorType);
 		}
 
 		void SetOutputDevice(IOutputDevice* pOutput, const wchar_t *wsFilePath)

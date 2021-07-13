@@ -1,5 +1,7 @@
 #include "CEmfParserBase.h"
 
+#include "../EmfInterpretator/CEmfInterpretator.h"
+
 namespace MetaFile
 {
     void CEmfParserBase::ImageProcessing(const TEmfAlphaBlend &oTEmfAlphaBlend)
@@ -752,12 +754,15 @@ namespace MetaFile
         m_pInterpretator = new CEmfInterpretatorRender(pOutput);
     }
 
-    void CEmfParserBase::SetInterpretator(const wchar_t *wsFilePath)
+    void CEmfParserBase::SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType)
     {
         if (NULL != m_pInterpretator)
             delete m_pInterpretator;
 
-        m_pInterpretator = new CEmfInterpretatorXml(wsFilePath);
+        if(oInterpretatorType == InterpretatorType::XML)
+            m_pInterpretator = new CEmfInterpretatorXml(wsFilePath);
+        else if (oInterpretatorType == InterpretatorType::Emf)
+            m_pInterpretator = new CEmfInterpretator(wsFilePath);
     }
 
     void CEmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)

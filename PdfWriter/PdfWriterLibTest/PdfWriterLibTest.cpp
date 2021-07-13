@@ -79,12 +79,25 @@ void TestField()
 	CTextField* pField3 = oPdf.CreateTextField();
 	pField3->SetRequiredFlag(false);
 	pField3->SetCombFlag(true);
-	pField3->AddPageRect(pPage, TRect(200, 500, 300, 450));
+	pField3->AddPageRect(pPage, TRect(000, 500, 300, 450));
 	pField3->SetFieldName(L"Test123");
 	pField3->SetFieldHint(L"Hint123");
-	pField3->SetMaxLen(10);
+	//pField3->SetMaxLen(100);
 	pField3->SetTextValue(L"Enter text");
 	pField3->SetTextAppearance(L"Enter text", NULL, 0, pFont, TRgb(0, 255, 0), 0.5, 40, 1, 14.3);
+
+
+	CTextField* pField33 = oPdf.CreateTextField();
+	pField33->SetRequiredFlag(false);
+	pField33->SetCombFlag(true);
+	pField33->AddPageRect(pPage, TRect(000, 400, 300, 350));
+	pField33->SetFieldName(L"Test123");
+	pField33->SetFieldHint(L"Hint123");
+	//pField33->SetMaxLen(100);
+	pField33->SetAutoFit(true);
+	pField33->SetTextValue(L"Enter text");
+	pField33->SetTextAppearance(L"Enter text", NULL, 0, pFont, TRgb(0, 255, 0), 0.5, 40, 1, 14.3);
+
 
 	CTextField* pField4 = oPdf.CreateTextField();
 	pField4->SetRequiredFlag(false);

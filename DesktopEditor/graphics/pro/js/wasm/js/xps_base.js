@@ -74,6 +74,8 @@
         }
     }
 
+    //string_utf8
+
     //module
 
     /**
@@ -122,7 +124,39 @@
     };
     CFile.prototype.getPagePixmap = function(pageIndex, width, height)
     {
-        return Module["_XPS_GetPixmap"](this.nativeFile, pageIndex, width, height);
+        var res = Module["_XPS_GetPixmap"](this.nativeFile, pageIndex, width, height);
+
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, res + 4 * width * height, 4);
+        var len = lenArray[0];
+        len -= 4;
+        if (len)
+            this.pages[pageIndex].Glyphs = [];
+
+        var buffer = new Uint8Array(Module["HEAP8"].buffer, res + 4 * width * height + 4, len);
+        var index = 0;
+        while (index < len)
+        {
+            var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _fontName = "".fromUtf8(buffer, index, lenRec);
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _fontSize = "".fromUtf8(buffer, index, lenRec);
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _X = "".fromUtf8(buffer, index, lenRec);
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _Y = "".fromUtf8(buffer, index, lenRec);
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            this.pages[pageIndex].Glyphs.push({ fontName : _fontName, fontSize : _fontSize, X : _X, Y : _Y, UChar : lenRec});
+        }
+        return res;
     };
     CFile.prototype.close = function()
     {

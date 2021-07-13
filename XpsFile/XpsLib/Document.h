@@ -54,6 +54,9 @@ namespace XPS
 		bool Read(IFolder* pFolder);
 		int  GetPageCount() const;
 		void GetPageSize(int nPageIndex, int& nW, int& nH);
+		#ifdef BUILDING_WASM_MODULE
+		void GetPageGlyphs(int nPageIndex, BYTE*& pGlyphs, DWORD& length);
+		#endif
 		void DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak);
 		void Close();
 		CStaticResource* GetStaticResource(const wchar_t* wsPath);

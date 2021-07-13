@@ -87,9 +87,15 @@ namespace XPS
 		m_pFontList    = pFontList;
 		m_pFontManager = pFontManager;
 		m_pDocument    = pDocument;
+		#ifdef BUILDING_WASM_MODULE
+		m_pGlyphs      = NULL;
+		#endif
 	}
 	Page::~Page()
 	{
+		#ifdef BUILDING_WASM_MODULE
+		RELEASEOBJECT(m_pGlyphs);
+		#endif
 	}
 	void Page::GetSize(int& nW, int& nH) const
 	{
@@ -169,6 +175,16 @@ namespace XPS
             nH = wsAttrName.tointeger();
 		}
 	}
+	#ifdef BUILDING_WASM_MODULE
+	void Page::GetGlyphs(BYTE*& pGlyphs, DWORD& length)
+	{
+		if (m_pGlyphs)
+		{
+			pGlyphs = m_pGlyphs->GetBuffer();
+			length  = m_pGlyphs->GetSize();
+		}
+	}
+	#endif
 	void Page::Draw(IRenderer* pRenderer, bool* pbBreak)
 	{
 		XmlUtils::CXmlLiteReader oReader;
@@ -692,6 +708,26 @@ namespace XPS
 					double pTransform[] ={ 1, 0, dAlpha, 1, -dAlpha * dYorigin, 0 };
 					pState->PushTransform(pTransform);
 				}
+
+				#ifdef BUILDING_WASM_MODULE
+				if (!m_pGlyphs)
+				{
+					m_pGlyphs = new CData();
+					m_pGlyphs->SkipLen();
+				}
+				std::wstring wsFontName;
+				pRenderer->get_FontName(&wsFontName);
+				std::string sFontName = U_TO_UTF8(wsFontName);
+				m_pGlyphs->WriteString((BYTE*)sFontName.c_str(), sFontName.length());
+				std::string sFontSize = std::to_string(dFontSize * 0.75);
+				m_pGlyphs->WriteString((BYTE*)sFontSize.c_str(), sFontSize.length());
+				std::string sX = std::to_string(xpsUnitToMM(dXorigin));
+				m_pGlyphs->WriteString((BYTE*)sX.c_str(), sX.length());
+				std::string sY = std::to_string(xpsUnitToMM(dYorigin));
+				m_pGlyphs->WriteString((BYTE*)sY.c_str(), sY.length());
+				m_pGlyphs->AddInt(oEntry.nUnicode);
+				m_pGlyphs->WriteLen();
+				#endif
 
 				if (oEntry.bGid)
 					pRenderer->CommandDrawTextExCHAR(oEntry.nUnicode, oEntry.nGid, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0);

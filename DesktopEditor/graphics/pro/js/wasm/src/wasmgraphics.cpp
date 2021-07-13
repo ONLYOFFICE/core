@@ -53,9 +53,9 @@ WASM_EXPORT BYTE* XPS_GetPixmap(CGraphicsFileDrawing* pGraphics, int nPageIndex,
 {
     return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH);
 }
-WASM_EXPORT void  XPS_Delete(unsigned char* pData)
+WASM_EXPORT void  XPS_Delete(BYTE* pData)
 {
-    delete[] pData;
+    RELEASEARRAYOBJECTS(pData);
 }
 
 /*
@@ -691,6 +691,11 @@ WASM_EXPORT void  Graphics_drawHorLine(void* graphics, BYTE align, double y, dou
 #endif
 
 #ifdef TEST_AS_EXECUTABLE
+static DWORD GetLength(BYTE* x)
+{
+    return x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
+}
+
 int main()
 {
     //void* test = Graphics_Create(412, 151, 109.008, 39.9521);
@@ -746,6 +751,32 @@ int main()
     resFrame->put_IsRGBA(true);
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
+
+    DWORD nLength = GetLength(res + info[1] * info[2] * 4);
+    DWORD i = 4;
+    nLength -= 4;
+    while (i < nLength)
+    {
+        DWORD nPathLength = GetLength(res + info[1] * info[2] * 4 + i);
+        i += 4;
+        std::cout << std::string((char*)(res + info[1] * info[2] * 4 + i), nPathLength) << " ";
+        i += nPathLength;
+        nPathLength = GetLength(res + info[1] * info[2] * 4 + i);
+        i += 4;
+        std::cout << std::string((char*)(res + info[1] * info[2] * 4 + i), nPathLength) << " ";
+        i += nPathLength;
+        nPathLength = GetLength(res + info[1] * info[2] * 4 + i);
+        i += 4;
+        std::cout << std::string((char*)(res + info[1] * info[2] * 4 + i), nPathLength) << " ";
+        i += nPathLength;
+        nPathLength = GetLength(res + info[1] * info[2] * 4 + i);
+        i += 4;
+        std::cout << std::string((char*)(res + info[1] * info[2] * 4 + i), nPathLength) << " ";
+        i += nPathLength;
+        nPathLength = GetLength(res + info[1] * info[2] * 4 + i);
+        i += 4;
+        std::cout << nPathLength << std::endl;
+    }
 
     XPS_Close(test);
     RELEASEARRAYOBJECTS(res);

@@ -178,6 +178,14 @@ namespace XPS
 		if (oIter != m_mPages.end())
 			oIter->second->GetSize(nW, nH);
 	}
+	#ifdef BUILDING_WASM_MODULE
+	void CDocument::GetPageGlyphs(int nPageIndex, BYTE*& pGlyphs, DWORD& length)
+	{
+		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
+		if (oIter != m_mPages.end())
+			oIter->second->GetGlyphs(pGlyphs, length);
+	}
+	#endif
 	void CDocument::DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak)
 	{
 		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);

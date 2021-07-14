@@ -73,14 +73,14 @@ namespace ComplexTypes
 				if ( m_sDisplayText.IsInit() )
 				{
 					sResult += L"w:displayText=\"";
-                    sResult += *m_sDisplayText;
+                    sResult += XmlUtils::EncodeXmlString(*m_sDisplayText);
 					sResult += L"\" ";
 				}
 
 				if ( m_sValue.IsInit() )
 				{
 					sResult += L"w:value=\"";
-                    sResult += *m_sValue;
+                    sResult += XmlUtils::EncodeXmlString(*m_sValue);
 					sResult += L"\" ";
 				}
 

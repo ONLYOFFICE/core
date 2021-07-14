@@ -61,78 +61,78 @@ namespace MetaFile
 
 		bool OpenFromEmfFile(const wchar_t* wsFilePath)
 		{
-		    if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfxParser)
-		    {
-			CFontManager *pFont = m_pParser->GetFontManager();
-			delete m_pParser;
-			m_pParser = new CEmfParser();
-			m_pParser->SetFontManager(pFont);
-		    }
+			if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfxParser)
+			{
+				CFontManager *pFont = m_pParser->GetFontManager();
+				delete m_pParser;
+				m_pParser = new CEmfParser();
+				m_pParser->SetFontManager(pFont);
+			}
 
-		    return m_pParser->OpenFromFile(wsFilePath);
+			return m_pParser->OpenFromFile(wsFilePath);
 		}
 
 		bool OpenFromXmlFile(const wchar_t* wsFilePath)
 		{
-		    if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfParser)
-		    {
-			CFontManager *pFont = m_pParser->GetFontManager();
-			delete m_pParser;
-			m_pParser = new CEmfxParser();
-			m_pParser->SetFontManager(pFont);
-		    }
+			if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfParser)
+			{
+				CFontManager *pFont = m_pParser->GetFontManager();
+				delete m_pParser;
+				m_pParser = new CEmfxParser();
+				m_pParser->SetFontManager(pFont);
+			}
 
-		    return m_pParser->OpenFromFile(wsFilePath);
+			return m_pParser->OpenFromFile(wsFilePath);
 		}
 
 		CEmfParserBase* GetEmfParser()
 		{
-		    return m_pParser;
+			return m_pParser;
 		}
 
 		void Scan()
 		{
-		    m_pParser->Scan();
+			m_pParser->Scan();
 		}
 
 		void PlayMetaFile()
 		{
-		    m_pParser->PlayFile();
+			m_pParser->PlayFile();
 		}
 
 		void Close()
 		{
-		    m_pParser->Close();
+			m_pParser->Close();
 		}
 
 		void SetFontManager(CFontManager* pFontManager)
 		{
-		    m_pParser->SetFontManager(pFontManager);
+			m_pParser->SetFontManager(pFontManager);
 		}
 
 		bool CheckError()
 		{
-		    return m_pParser->CheckError();
+			return m_pParser->CheckError();
 		}
 
 		void SetOutputDevice(IOutputDevice* pOutput)
 		{
-		    m_pParser->SetInterpretator(pOutput);
+			m_pParser->SetInterpretator(pOutput);
 		}
 
 		void SetOutputDevice(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType)
 		{
-		    m_pParser->SetInterpretator(wsFilePath, oInterpretatorType);
+			m_pParser->SetInterpretator(wsFilePath, oInterpretatorType);
 		}
 
 		void SetOutputDevice(IOutputDevice* pOutput, const wchar_t *wsFilePath)
 		{
-		    m_pParser->SetInterpretator(pOutput, wsFilePath);
+			m_pParser->SetInterpretator(pOutput, wsFilePath);
 		}
 
 		TEmfRectL* GetBounds()
 		{
-		    return m_pParser->GetBounds();
+			return m_pParser->GetBounds();
 		}
 	private:
 

@@ -72,7 +72,7 @@ namespace MetaFile
 		CWmfFile           m_oWmfFile;
 		CEmfFile           m_oEmfFile;
 		CSvmFile           m_oSvmFile;
-        CSVGTransformer    m_oSvgFile;
+		CSVGTransformer    m_oSvgFile;
 
 		int                m_lType;
 	};

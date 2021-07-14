@@ -78,104 +78,104 @@ namespace MetaFile
 
 	void CMetaFile::ConvertToXml(const wchar_t *wsFilePath)
 	{
-	    if (NULL == wsFilePath)
-		return;
+		if (NULL == wsFilePath)
+			return;
 
-	    m_oEmfFile.SetOutputDevice(wsFilePath, InterpretatorType::XML);
-	    m_oEmfFile.PlayMetaFile();
+                m_oEmfFile.SetOutputDevice(wsFilePath, InterpretatorType::XML);
+                m_oEmfFile.PlayMetaFile();
 	}
 
 	void CMetaFile::ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t *wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
 	{
-	    if (NULL == wsXmlFilePath || NULL == wsOutFilePath)
-		return;
+		if (NULL == wsXmlFilePath || NULL == wsOutFilePath)
+			return;
 
-	    m_oEmfFile.SetOutputDevice(NULL, wsXmlFilePath);
-	    CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
-	    CFontsCache* pFontCache = new CFontsCache();
-	    pFontCache->SetStreams(m_pAppFonts->GetStreams());
-	    pFontManager->SetOwnerCache(pFontCache);
+                m_oEmfFile.SetOutputDevice(NULL, wsXmlFilePath);
+                CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
+                CFontsCache* pFontCache = new CFontsCache();
+                pFontCache->SetStreams(m_pAppFonts->GetStreams());
+                pFontManager->SetOwnerCache(pFontCache);
 
-	    CGraphicsRenderer oRenderer;
-	    oRenderer.SetFontManager(pFontManager);
+                CGraphicsRenderer oRenderer;
+                oRenderer.SetFontManager(pFontManager);
 
-	    if (-1 == nHeight)
-	    {
-		    double dX, dY, dW, dH;
-		    GetBounds(&dX, &dY, &dW, &dH);
+                if (-1 == nHeight)
+                {
+                        double dX, dY, dW, dH;
+                        GetBounds(&dX, &dY, &dW, &dH);
 
-		    if (dW < 0)
-			    dW = -dW;
-		    if (dH < 0)
-			    dH = -dH;
+                        if (dW < 0)
+                                dW = -dW;
+                        if (dH < 0)
+                                dH = -dH;
 
-		    if (nWidth < 0) nWidth = (int)(dW * 96 / 25.4);
-			    nHeight = (int)((double)nWidth * dH / dW);
-	    }
+                        if (nWidth < 0) nWidth = (int)(dW * 96 / 25.4);
+                                nHeight = (int)((double)nWidth * dH / dW);
+                }
 
-            double dWidth  = 25.4 * nWidth / 96;
-            double dHeight = 25.4 * nHeight / 96;
+                double dWidth  = 25.4 * nWidth / 96;
+                double dHeight = 25.4 * nHeight / 96;
 
-	    BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-	    if (!pBgraData)
-		    return;
+                BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+                if (!pBgraData)
+                        return;
 
-	    _UINT32 alfa = 0xffffff;
-	    //дефолтный тон должен быть прозрачным, а не белым
-	    //memset(pBgraData, 0xff, nWidth * nHeight * 4);
-	    for (int i = 0; i < nWidth * nHeight; i++)
-	    {
-		    ((_UINT32*)pBgraData)[i] = alfa;
-	    }
-	    CBgraFrame oFrame;
-	    oFrame.put_Data(pBgraData);
-	    oFrame.put_Width(nWidth);
-	    oFrame.put_Height(nHeight);
-	    oFrame.put_Stride(-4 * nWidth);
+                _UINT32 alfa = 0xffffff;
+                //дефолтный тон должен быть прозрачным, а не белым
+                //memset(pBgraData, 0xff, nWidth * nHeight * 4);
+                for (int i = 0; i < nWidth * nHeight; i++)
+                {
+                        ((_UINT32*)pBgraData)[i] = alfa;
+                }
+                CBgraFrame oFrame;
+                oFrame.put_Data(pBgraData);
+                oFrame.put_Width(nWidth);
+                oFrame.put_Height(nHeight);
+                oFrame.put_Stride(-4 * nWidth);
 
-	    oRenderer.CreateFromBgraFrame(&oFrame);
-	    oRenderer.SetSwapRGB(false);
-	    oRenderer.put_Width(dWidth);
-	    oRenderer.put_Height(dHeight);
+                oRenderer.CreateFromBgraFrame(&oFrame);
+                oRenderer.SetSwapRGB(false);
+                oRenderer.put_Width(dWidth);
+                oRenderer.put_Height(dHeight);
 
-	    DrawOnRenderer(wsXmlFilePath, &oRenderer, 0, 0, dWidth, dHeight);
+                DrawOnRenderer(wsXmlFilePath, &oRenderer, 0, 0, dWidth, dHeight);
 
-	    oFrame.SaveFile(wsOutFilePath, unFileType);
-	    RELEASEINTERFACE(pFontManager);
+                oFrame.SaveFile(wsOutFilePath, unFileType);
+                RELEASEINTERFACE(pFontManager);
 	}
 
 	bool CMetaFile::DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
 	{
-	    if (NULL == wsXmlFilePath || NULL == pRenderer)
-		    return false;
+		if (NULL == wsXmlFilePath || NULL == pRenderer)
+			return false;
 
-	    pRenderer->BeginCommand(c_nImageType);
+                pRenderer->BeginCommand(c_nImageType);
 
-	    if (c_lMetaWmf == m_lType)
-	    {
-		    CMetaFileRenderer oWmfOut(&m_oWmfFile, pRenderer, dX, dY, dWidth, dHeight);
-		    m_oWmfFile.SetOutputDevice((IOutputDevice*)&oWmfOut);
-		    m_oWmfFile.PlayMetaFile();
-	    }
-	    else if (c_lMetaEmf == m_lType)
-	    {
-		    CMetaFileRenderer oEmfOut(m_oEmfFile.GetEmfParser(), pRenderer, dX, dY, dWidth, dHeight);
-		    m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut, wsXmlFilePath);
-		    m_oEmfFile.PlayMetaFile();
-	    }
-	    else if (c_lMetaSvm == m_lType)
-	    {
-		    CMetaFileRenderer oSvmOut(&m_oSvmFile, pRenderer, dX, dY, dWidth, dHeight);
-		    m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
-		    m_oSvmFile.PlayMetaFile();
-	    }
-	    else if (c_lMetaSvg == m_lType)
-	    {
-		m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
-	    }
+                if (c_lMetaWmf == m_lType)
+                {
+                        CMetaFileRenderer oWmfOut(&m_oWmfFile, pRenderer, dX, dY, dWidth, dHeight);
+                        m_oWmfFile.SetOutputDevice((IOutputDevice*)&oWmfOut);
+                        m_oWmfFile.PlayMetaFile();
+                }
+                else if (c_lMetaEmf == m_lType)
+                {
+                        CMetaFileRenderer oEmfOut(m_oEmfFile.GetEmfParser(), pRenderer, dX, dY, dWidth, dHeight);
+                        m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut, wsXmlFilePath);
+                        m_oEmfFile.PlayMetaFile();
+                }
+                else if (c_lMetaSvm == m_lType)
+                {
+                        CMetaFileRenderer oSvmOut(&m_oSvmFile, pRenderer, dX, dY, dWidth, dHeight);
+                        m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
+                        m_oSvmFile.PlayMetaFile();
+                }
+                else if (c_lMetaSvg == m_lType)
+                {
+                        m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
+                }
 
-	    pRenderer->EndCommand(c_nImageType);
-	    return true;
+                pRenderer->EndCommand(c_nImageType);
+                return true;
 	}
 
 	bool CMetaFile::LoadFromXmlFile(const wchar_t *wsFilePath)
@@ -212,13 +212,13 @@ namespace MetaFile
 
         void CMetaFile::ConvertToEmf(const wchar_t *wsFilePath)
         {
-            if (m_lType != c_lMetaEmf || m_oEmfFile.GetEmfParser()->GetType() != EmfParserType::EmfxParser)
-                return;
+                if (m_lType != c_lMetaEmf || m_oEmfFile.GetEmfParser()->GetType() != EmfParserType::EmfxParser)
+                    return;
 
-            m_oEmfFile.SetOutputDevice(wsFilePath, InterpretatorType::Emf);
-            m_oEmfFile.PlayMetaFile();
+                m_oEmfFile.SetOutputDevice(wsFilePath, InterpretatorType::Emf);
+                m_oEmfFile.PlayMetaFile();
 
-	    //TODO:: сохранение в *.emf файл
+		//TODO:: сохранение в *.emf файл
 	}
 
 	bool CMetaFile::LoadFromFile(const wchar_t *wsFilePath)
@@ -239,7 +239,7 @@ namespace MetaFile
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
 		m_oSvmFile.SetFontManager(m_pFontManager);
-        m_oSvgFile.SetFontManager(m_pFontManager);
+		m_oSvgFile.SetFontManager(m_pFontManager);
 
 		//------------------------------------------------------
 
@@ -261,13 +261,12 @@ namespace MetaFile
 		{
 			m_oEmfFile.Scan();
 
-			if (!m_oEmfFile.CheckError())
-			{
-				m_lType = c_lMetaEmf;
-				return true;
-			}
-
-			m_oEmfFile.Close();
+                        if (!m_oEmfFile.CheckError())
+                        {
+                                m_lType = c_lMetaEmf;
+                                return true;
+                        }
+                        m_oEmfFile.Close();
 		}
 		// Это не Emf
 		if (m_oSvmFile.OpenFromFile(wsFilePath) == true)
@@ -282,15 +281,16 @@ namespace MetaFile
 
 			m_oSvmFile.Close();
 		}
-        // Это не svm
-        if (m_oSvgFile.OpenFromFile(wsFilePath) == true)
-        {
-            m_lType = c_lMetaSvg;
-            return true;
-        }
+		// Это не svm
+		if (m_oSvgFile.OpenFromFile(wsFilePath) == true)
+		{
+		    m_lType = c_lMetaSvg;
+		    return true;
+		}
 
 		return false;
-    }
+	}
+
 	bool CMetaFile::DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight)
 	{
 		if (NULL == pRenderer)
@@ -316,127 +316,132 @@ namespace MetaFile
 			m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
 			m_oSvmFile.PlayMetaFile();
 		}
-        else if (c_lMetaSvg == m_lType)
-        {
-            m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
-        }
+		else if (c_lMetaSvg == m_lType)
+		{
+			m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
+		}
+
 		pRenderer->EndCommand(c_nImageType);
 		return true;
-    }
-	void CMetaFile::Close()
-	{
-		m_oWmfFile.Close();
-		m_oEmfFile.Close();
-		m_oSvmFile.Close();
-        m_oSvgFile.Close();
-
-		m_lType  = 0;
-    }
-	int  CMetaFile::GetType()
-	{
-		return m_lType;
 	}
-    void CMetaFile::GetBounds(double* pdX, double* pdY, double* pdW, double* pdH)
-    {
-        if (c_lMetaWmf == m_lType)
+
+        void CMetaFile::Close()
         {
-            const TRectD& oRect = m_oWmfFile.GetBounds();
-            *pdX = oRect.dLeft;
-            *pdY = oRect.dTop;
-            *pdW = oRect.dRight - oRect.dLeft;
-            *pdH = oRect.dBottom - oRect.dTop;
+                m_oWmfFile.Close();
+                m_oEmfFile.Close();
+                m_oSvmFile.Close();
+                m_oSvgFile.Close();
+
+                m_lType  = 0;
         }
-        else if (c_lMetaEmf == m_lType)
+
+        int  CMetaFile::GetType()
         {
-            TEmfRectL* pRect = m_oEmfFile.GetBounds();
-            *pdX = pRect->lLeft;
-            *pdY = pRect->lTop;
-            *pdW = pRect->lRight - pRect->lLeft;
-            *pdH = pRect->lBottom - pRect->lTop;
+                return m_lType;
         }
-        else if (c_lMetaSvm == m_lType)
+
+        void CMetaFile::GetBounds(double* pdX, double* pdY, double* pdW, double* pdH)
         {
-            TRect* pRect = m_oSvmFile.GetBounds();
-            *pdX = pRect->nLeft;
-            *pdY = pRect->nTop;
-            *pdW = pRect->nRight - pRect->nLeft;
-            *pdH = pRect->nBottom - pRect->nTop;
+                if (c_lMetaWmf == m_lType)
+                {
+                        const TRectD& oRect = m_oWmfFile.GetBounds();
+                        *pdX = oRect.dLeft;
+                        *pdY = oRect.dTop;
+                        *pdW = oRect.dRight - oRect.dLeft;
+                        *pdH = oRect.dBottom - oRect.dTop;
+                }
+                else if (c_lMetaEmf == m_lType)
+                {
+                        TEmfRectL* pRect = m_oEmfFile.GetBounds();
+                        *pdX = pRect->lLeft;
+                        *pdY = pRect->lTop;
+                        *pdW = pRect->lRight - pRect->lLeft;
+                        *pdH = pRect->lBottom - pRect->lTop;
+                }
+                else if (c_lMetaSvm == m_lType)
+                {
+                        TRect* pRect = m_oSvmFile.GetBounds();
+                        *pdX = pRect->nLeft;
+                        *pdY = pRect->nTop;
+                        *pdW = pRect->nRight - pRect->nLeft;
+                        *pdH = pRect->nBottom - pRect->nTop;
 
-            if (*pdW > 10000 || *pdH > 10000)
-            {
-                *pdW /= 10;
-                *pdH /= 10;
-            }
+                        if (*pdW > 10000 || *pdH > 10000)
+                        {
+                                *pdW /= 10;
+                                *pdH /= 10;
+                        }
+                }
+                else if (c_lMetaSvg == m_lType)
+                {
+                        *pdX = 0;
+                        *pdY = 0;
+                        *pdW = m_oSvgFile.get_Width();
+                        *pdH = m_oSvgFile.get_Height();
+                }
+                else
+                {
+                        *pdX = 0;
+                        *pdY = 0;
+                        *pdW = 0;
+                        *pdH = 0;
+                }
+                if (*pdW < 0) *pdW = -*pdW;
+                if (*pdH < 0) *pdH = -*pdH;
         }
-        else if (c_lMetaSvg == m_lType)
+
+        void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
         {
-            *pdX = 0;
-            *pdY = 0;
-            *pdW = m_oSvgFile.get_Width();
-            *pdH = m_oSvgFile.get_Height();
+                CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
+                CFontsCache* pFontCache = new CFontsCache();
+                pFontCache->SetStreams(m_pAppFonts->GetStreams());
+                pFontManager->SetOwnerCache(pFontCache);
+
+                CGraphicsRenderer oRenderer;
+                oRenderer.SetFontManager(pFontManager);
+
+                if (-1 == nHeight)
+                {
+                        double dX, dY, dW, dH;
+                        GetBounds(&dX, &dY, &dW, &dH);
+
+                        if (dW < 0)
+                                dW = -dW;
+                        if (dH < 0)
+                                dH = -dH;
+
+                        if (nWidth < 0) nWidth = (int)(dW * 96 / 25.4);
+                                nHeight = (int)((double)nWidth * dH / dW);
+                }
+
+                double dWidth  = 25.4 * nWidth / 96;
+                double dHeight = 25.4 * nHeight / 96;
+
+                BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+                if (!pBgraData)
+                        return;
+
+                _UINT32 alfa = 0xffffff;
+                //дефолтный тон должен быть прозрачным, а не белым
+                //memset(pBgraData, 0xff, nWidth * nHeight * 4);
+                for (int i = 0; i < nWidth * nHeight; i++)
+                {
+                        ((_UINT32*)pBgraData)[i] = alfa;
+                }
+                CBgraFrame oFrame;
+                oFrame.put_Data(pBgraData);
+                oFrame.put_Width(nWidth);
+                oFrame.put_Height(nHeight);
+                oFrame.put_Stride(-4 * nWidth);
+
+                oRenderer.CreateFromBgraFrame(&oFrame);
+                oRenderer.SetSwapRGB(false);
+                oRenderer.put_Width(dWidth);
+                oRenderer.put_Height(dHeight);
+
+                DrawOnRenderer(&oRenderer, 0, 0, dWidth, dHeight);
+
+                oFrame.SaveFile(wsOutFilePath, unFileType);
+                RELEASEINTERFACE(pFontManager);
         }
-        else
-        {
-            *pdX = 0;
-            *pdY = 0;
-            *pdW = 0;
-            *pdH = 0;
-        }
-        if (*pdW < 0) *pdW = -*pdW;
-        if (*pdH < 0) *pdH = -*pdH;
-    };
-    void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
-	{
-		CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
-		CFontsCache* pFontCache = new CFontsCache();
-		pFontCache->SetStreams(m_pAppFonts->GetStreams());
-		pFontManager->SetOwnerCache(pFontCache);
-
-		CGraphicsRenderer oRenderer;	
-		oRenderer.SetFontManager(pFontManager);
-
-		if (-1 == nHeight)
-		{
-			double dX, dY, dW, dH;
-			GetBounds(&dX, &dY, &dW, &dH);
-
-			if (dW < 0)
-				dW = -dW;
-			if (dH < 0)
-				dH = -dH;
-
-            if (nWidth < 0) nWidth = (int)(dW * 96 / 25.4);
-			nHeight = (int)((double)nWidth * dH / dW);
-		}
-
-        double dWidth  = 25.4 * nWidth / 96;
-        double dHeight = 25.4 * nHeight / 96;
-
-		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-		if (!pBgraData)
-			return;
-
-        _UINT32 alfa = 0xffffff;
-		//дефолтный тон должен быть прозрачным, а не белым 
-		//memset(pBgraData, 0xff, nWidth * nHeight * 4);
-		for (int i = 0; i < nWidth * nHeight; i++)
-		{
-            ((_UINT32*)pBgraData)[i] = alfa;
-		}
-		CBgraFrame oFrame;
-		oFrame.put_Data(pBgraData);
-        oFrame.put_Width(nWidth);
-		oFrame.put_Height(nHeight);
-		oFrame.put_Stride(-4 * nWidth);
-
-		oRenderer.CreateFromBgraFrame(&oFrame);
-		oRenderer.SetSwapRGB(false);
-		oRenderer.put_Width(dWidth);
-		oRenderer.put_Height(dHeight);
-
-		DrawOnRenderer(&oRenderer, 0, 0, dWidth, dHeight);
-
-		oFrame.SaveFile(wsOutFilePath, unFileType);
-		RELEASEINTERFACE(pFontManager);
-	}
 }

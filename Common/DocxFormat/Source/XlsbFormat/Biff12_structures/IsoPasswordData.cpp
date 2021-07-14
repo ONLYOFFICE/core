@@ -30,15 +30,29 @@
  *
  */
 
-#pragma once
+#include "IsoPasswordData.h"
 
-#include <Logic/Biff_structures/BiffString.h>
-
-using namespace XLS;
 namespace XLSB
 {
-   typedef XLUnicodeString_T<unsigned int,	aw_NAME_WIDE,               cch_READ_FROM_RECORD>		XLNameWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_NULLABLE_WIDE,			cch_READ_FROM_RECORD>		XLNullableWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_WIDE,					cch_READ_FROM_RECORD>		XLWideString;
+    IsoPasswordData::IsoPasswordData()
+    {
+    }
 
-}   // namespace XLSB
+    IsoPasswordData::IsoPasswordData(CFRecord& record)
+    {
+        load(record);
+    }
+
+    BiffStructurePtr IsoPasswordData::clone()
+    {
+        return BiffStructurePtr(new IsoPasswordData(*this));
+    }
+
+    void IsoPasswordData::load(CFRecord& record)
+    {
+        record >> rgbHash;
+        record >> rgbSalt;
+        record >> szAlgName;
+    }
+} // namespace XLSB
+

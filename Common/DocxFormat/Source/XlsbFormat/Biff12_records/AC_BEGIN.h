@@ -34,24 +34,26 @@
 #include <Logic/Biff_records/BiffRecord.h>
 #include "../Source/XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
+#include "../Biff12_structures/CodeName.h"
 using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BEGIN_BOOK record in BIFF12
-    class BEGIN_BOOK: public BiffRecord
+    // Logical representation of AC_BEGIN record in BIFF12
+    class AC_BEGIN: public BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BEGIN_BOOK)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BEGIN_BOOK)
+            BIFF_RECORD_DEFINE_TYPE_INFO(AC_BEGIN)
+            BASE_OBJECT_DEFINE_CLASS_NAME(AC_BEGIN)
         public:
-            BEGIN_BOOK();
-            virtual ~BEGIN_BOOK();
+            AC_BEGIN();
+            virtual ~AC_BEGIN();
 
             BaseObjectPtr clone();
 
             void readFields(CFRecord& record);
 
-            //static const ElementType	type = typeBeginBook;
+            _UINT16                   cver;
+            BiffStructurePtrVector    RgACVer;
     };
 
 } // namespace XLSB

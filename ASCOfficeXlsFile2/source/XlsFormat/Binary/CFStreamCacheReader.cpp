@@ -458,7 +458,7 @@ CFRecordPtr BinaryStreamCacheReader::getNextRecord(const CFRecordType::TypeId de
             }
         }
 
-        if(0 == rec_name.length())
+        /*if(0 == rec_name.length())
         {
             Log::warning(L"The extracted record has obsoleted or unknown type(0x" + STR::int2hex_wstr(records_cache.front()->getTypeId(), sizeof(CFRecordType::TypeId)) + L")");
             records_cache.pop_front();
@@ -469,7 +469,7 @@ CFRecordPtr BinaryStreamCacheReader::getNextRecord(const CFRecordType::TypeId de
             //Log::warning("The extracted record has been skipped (" + rec_name + ")");
             records_cache.pop_front();
             continue;
-        }
+        }*/
         break;
     }
 

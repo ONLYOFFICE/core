@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(FILE_VERSION)
         public:
             FILE_VERSION();
-            ~FILE_VERSION();
+            virtual ~FILE_VERSION();
 
             BaseObjectPtr clone();
 

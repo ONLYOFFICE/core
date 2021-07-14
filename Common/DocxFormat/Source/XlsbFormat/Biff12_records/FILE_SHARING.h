@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,27 +31,31 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include <Logic/Biff_records/FileSharing.h>
 #include "../Source/XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
+#include "../Biff12_structures/XLWideString.h"
 using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BEGIN_BOOK record in BIFF12
-    class BEGIN_BOOK: public BiffRecord
+
+    class FILE_SHARING: public FileSharing
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BEGIN_BOOK)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BEGIN_BOOK)
+            BIFF_RECORD_DEFINE_TYPE_INFO(FILE_SHARING)
+            BASE_OBJECT_DEFINE_CLASS_NAME(FILE_SHARING)
         public:
-            BEGIN_BOOK();
-            virtual ~BEGIN_BOOK();
+            FILE_SHARING();
+            virtual ~FILE_SHARING();
 
             BaseObjectPtr clone();
 
             void readFields(CFRecord& record);
 
-            //static const ElementType	type = typeBeginBook;
+            static const ElementType	type = typeFileSharing;
+
+            XLNullableWideString			stUserName;
+
     };
 
 } // namespace XLSB

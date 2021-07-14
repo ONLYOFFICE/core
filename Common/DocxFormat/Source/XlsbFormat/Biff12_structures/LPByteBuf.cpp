@@ -30,15 +30,37 @@
  *
  */
 
-#pragma once
+#include "LPByteBuf.h"
 
-#include <Logic/Biff_structures/BiffString.h>
-
-using namespace XLS;
 namespace XLSB
 {
-   typedef XLUnicodeString_T<unsigned int,	aw_NAME_WIDE,               cch_READ_FROM_RECORD>		XLNameWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_NULLABLE_WIDE,			cch_READ_FROM_RECORD>		XLNullableWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_WIDE,					cch_READ_FROM_RECORD>		XLWideString;
+    LPByteBuf::LPByteBuf()
+    {
+    }
 
-}   // namespace XLSB
+    LPByteBuf::LPByteBuf(CFRecord& record)
+    {
+        load(record);
+    }
+
+    LPByteBuf::~LPByteBuf()
+    {
+        delete[] rgbData;
+    }
+
+    BiffStructurePtr LPByteBuf::clone()
+    {
+        return BiffStructurePtr(new LPByteBuf(*this));
+    }
+
+    void LPByteBuf::load(CFRecord& record)
+    {
+        record >> cbLength;
+        if(cbLength > 0)
+            rgbData = new BYTE[cbLength];
+
+        for(int i = 0; i < cbLength; ++i)
+            record >> rgbData[i];
+    }
+} // namespace XLSB
+

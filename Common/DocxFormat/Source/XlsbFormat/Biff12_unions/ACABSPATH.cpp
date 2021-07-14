@@ -29,30 +29,49 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../Source/XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-using namespace XLS;
+#include "ACABSPATH.h"
+#include "../Biff12_records/AC_BEGIN.h"
+#include "../Biff12_records/ABS_PATH15.h"
+#include "../Biff12_records/AC_END.h"
 
 namespace XLSB
 {
-    // Logical representation of BEGIN_BOOK record in BIFF12
-    class BEGIN_BOOK: public BiffRecord
+
+    ACABSPATH::ACABSPATH()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BEGIN_BOOK)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BEGIN_BOOK)
-        public:
-            BEGIN_BOOK();
-            virtual ~BEGIN_BOOK();
+    }
 
-            BaseObjectPtr clone();
+    ACABSPATH::~ACABSPATH()
+    {
+    }
 
-            void readFields(CFRecord& record);
+    BaseObjectPtr ACABSPATH::clone()
+    {
+        return BaseObjectPtr(new ACABSPATH(*this));
+    }
 
-            //static const ElementType	type = typeBeginBook;
-    };
+    // ACABSPATH = BrtACBegin BrtAbsPath15 BrtACEnd
+    const bool ACABSPATH::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<AC_BEGIN>())
+        {
+            m_BrtACBegin = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<ABS_PATH15>())
+        {
+            m_BrtAbsPath15 = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<AC_END>())
+        {
+            m_BrtACEnd = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtACBegin || m_BrtAbsPath15 || m_BrtACEnd;
+    }
 
 } // namespace XLSB
 

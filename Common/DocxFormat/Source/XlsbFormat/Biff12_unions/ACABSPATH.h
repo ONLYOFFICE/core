@@ -31,27 +31,27 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../Source/XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
+#include <Logic/CompositeObject.h>
+
 using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BEGIN_BOOK record in BIFF12
-    class BEGIN_BOOK: public BiffRecord
+
+    class ACABSPATH: public CompositeObject
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BEGIN_BOOK)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BEGIN_BOOK)
-        public:
-            BEGIN_BOOK();
-            virtual ~BEGIN_BOOK();
+        BASE_OBJECT_DEFINE_CLASS_NAME(ACABSPATH)
+    public:
+        ACABSPATH();
+        virtual ~ACABSPATH();
 
-            BaseObjectPtr clone();
+        BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+        virtual const bool loadContent(BinProcessor& proc);
 
-            //static const ElementType	type = typeBeginBook;
+        BaseObjectPtr	m_BrtACBegin;
+        BaseObjectPtr	m_BrtAbsPath15;
+        BaseObjectPtr	m_BrtACEnd;
     };
 
 } // namespace XLSB

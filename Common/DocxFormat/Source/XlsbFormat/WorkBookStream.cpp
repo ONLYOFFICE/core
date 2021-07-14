@@ -36,8 +36,10 @@
 
 #include "Biff12_records/BEGIN_BOOK.h"
 #include "Biff12_records/FILE_VERSION.h"
-
-
+#include "Biff12_records/FILE_SHARING_ISO.h"
+#include "Biff12_records/FILE_SHARING.h"
+#include "Biff12_records/WB_PROP.h"
+#include "Biff12_unions/ACABSPATH.h"
 
 namespace XLSB
 {
@@ -111,7 +113,7 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
             {
                 if (proc.optional<BEGIN_BOOK>())
                 {
-                    m_BEGIN_BOOK = elements_.back();
+                    m_BrtBeginBook = elements_.back();
                     elements_.pop_back();
                 }
             }break;
@@ -120,7 +122,43 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
             {
                 if (proc.optional<FILE_VERSION>())
                 {
-                    m_FILE_VERSION = elements_.back();
+                    m_BrtFileVersion = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_FILE_SHARING_ISO:
+            {
+                if (proc.optional<FILE_SHARING_ISO>())
+                {
+                    m_BrtFileSharingIso = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_FILE_SHARING:
+            {
+                if (proc.optional<FILE_SHARING>())
+                {
+                    m_BrtFileSharing = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_WB_PROP:
+            {
+                if (proc.optional<WB_PROP>())
+                {
+                    m_BrtWbProp = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_AC_BEGIN:
+            {
+                if (proc.optional<ACABSPATH>())
+                {
+                    m_ACABSPATH = elements_.back();
                     elements_.pop_back();
                 }
             }break;

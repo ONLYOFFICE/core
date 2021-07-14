@@ -31,27 +31,32 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include "../Biff12_records/FILE_SHARING.h"
 #include "../Source/XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
+#include "../Biff12_structures/XLWideString.h"
+#include "../Biff12_structures/LPByteBuf.h"
 using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BEGIN_BOOK record in BIFF12
-    class BEGIN_BOOK: public BiffRecord
+    // Logical representation of FILE_SHARING_ISO record in BIFF12
+    class FILE_SHARING_ISO: public FILE_SHARING
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BEGIN_BOOK)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BEGIN_BOOK)
+            BIFF_RECORD_DEFINE_TYPE_INFO(FILE_SHARING_ISO)
+            BASE_OBJECT_DEFINE_CLASS_NAME(FILE_SHARING_ISO)
         public:
-            BEGIN_BOOK();
-            virtual ~BEGIN_BOOK();
+            FILE_SHARING_ISO();
+            virtual ~FILE_SHARING_ISO();
 
             BaseObjectPtr clone();
 
             void readFields(CFRecord& record);
 
-            //static const ElementType	type = typeBeginBook;
+            static const ElementType	type = typeFileSharing;
+
+            _UINT32                 dwSpinCount;
+            LPByteBuf               ipdPasswordData;
     };
 
 } // namespace XLSB

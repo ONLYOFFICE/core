@@ -100,12 +100,24 @@ SOURCES += \
     ../Source/XlsxFormat/Slicer/SlicerCacheExt.cpp \
     ../Source/XlsxFormat/Slicer/Slicer.cpp \
     ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
-   # ../Source/XlsbFormat/Biff12RecordFactory.cpp \
-   # ../Source/XlsbFormat/Common/BinaryBiff12StreamReader.cpp \
-    #../Source/XlsbFormat/Common/Biff12RecordContinuedBase.cpp
+### XLSB
     ../Source/XlsbFormat/WorkBookStream.cpp \
+### Biff12_records
     ../Source/XlsbFormat/Biff12_records/BEGIN_BOOK.cpp \
-    ../Source/XlsbFormat/Biff12_records/FILE_VERSION.cpp
+    ../Source/XlsbFormat/Biff12_records/FILE_VERSION.cpp \
+    ../Source/XlsbFormat/Biff12_records/FILE_SHARING.cpp \
+    ../Source/XlsbFormat/Biff12_records/FILE_SHARING_ISO.cpp \
+    ../Source/XlsbFormat/Biff12_records/WB_PROP.cpp \
+    ../Source/XlsbFormat/Biff12_records/AC_BEGIN.cpp \
+    ../Source/XlsbFormat/Biff12_records/ABS_PATH15.cpp \
+    ../Source/XlsbFormat/Biff12_records/AC_END.cpp \
+### Biff12_structures
+    ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
+    ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
+    ../Source/XlsbFormat/Biff12_structures/CodeName.cpp \
+    ../Source/XlsbFormat/Biff12_structures/ACProductVersion.cpp \
+### Biff12_unions
+    ../Source/XlsbFormat/Biff12_unions/ACABSPATH.cpp \
 }
 
 
@@ -114,7 +126,8 @@ SOURCES += docxformatlib.cpp \
     ../Source/Utility/DateTime.cpp \
     ../Source/Utility/TxtFile.cpp \
     ../Source/Base/unicode_util.cpp \
-    ../../3dParty/pole/pole.cpp
+    ../../3dParty/pole/pole.cpp \
+    ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp
 
 HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \
@@ -301,24 +314,22 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Slicer/SlicerCacheExt.h \
     ../Source/XlsxFormat/Slicer/Slicer.h \
     ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.h \
-    #../Source/XlsbFormat/Biff12RecordBase.h \
-    #../Source/XlsbFormat/SharedStrings.h \
-    #../Source/XlsbFormat/Comments.h \
-    #../Source/XlsbFormat/Connections.h \
-    #../Source/XlsbFormat/QueryTable.h \
-   # ../Source/XlsbFormat/Styles.h \
-    #../Source/XlsbFormat/Tables.h \
-   # ../Source/XlsbFormat/Workbook.h \
-    #../Source/XlsbFormat/Worksheet.h \
-    #../Source/XlsbFormat/QueryTable.h \
-    #../Source/XlsbFormat/Biff12RecordFactory.h \
-    #../Source/XlsbFormat/RecordTypes.h \
-    #../Source/XlsbFormat/Common/BinaryBiff12StreamReader.h \
+### XLSB
     ../Source/XlsbFormat/WorkBookStream.h \
+### Biff12_records
     ../Source/XlsbFormat/Biff12_records/BEGIN_BOOK.h \
     ../Source/XlsbFormat/Biff12_records/FILE_VERSION.h \
-    #../Source/XlsbFormat/Biff12RecordContinuedBase.h \
-    #../Source/XlsbFormat/Biff12Structures/Biff12StructType.h \
-    #../Source/XlsbFormat/Biff12Structures/Biff12StructureBase.h \
-    #../Source/XlsbFormat/Biff12Structures/RichStr.h \
-    ../Source/XlsbFormat/Biff12_structures/XLWideString.h
+    ../Source/XlsbFormat/Biff12_records/FILE_SHARING.h \
+    ../Source/XlsbFormat/Biff12_records/FILE_SHARING_ISO.h \
+    ../Source/XlsbFormat/Biff12_records/WB_PROP.h \
+    ../Source/XlsbFormat/Biff12_records/AC_BEGIN.h \
+    ../Source/XlsbFormat/Biff12_records/ABS_PATH15.h \
+    ../Source/XlsbFormat/Biff12_records/AC_END.h \
+### Biff12_structures
+    ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
+    ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
+    ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.h \
+    ../Source/XlsbFormat/Biff12_structures/CodeName.h \
+    ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
+### Biff12_unions
+    ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \

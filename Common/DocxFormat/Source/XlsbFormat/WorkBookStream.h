@@ -55,7 +55,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
     public:
         WorkBookStream(const unsigned short code_page);
-        ~WorkBookStream();
+        virtual ~WorkBookStream();
 
         BaseObjectPtr clone();
 
@@ -66,11 +66,15 @@ namespace XLSB
         int serialize_format(std::wostream & _stream);
         int serialize_protection(std::wostream & _stream);
 
-        BaseObjectPtr					m_BEGIN_BOOK;
-        BaseObjectPtr					m_FILE_VERSION;
+        BaseObjectPtr			m_BrtBeginBook;
+        BaseObjectPtr			m_BrtFileVersion;
+        BaseObjectPtr			m_BrtFileSharingIso;
+        BaseObjectPtr			m_BrtFileSharing;
+        BaseObjectPtr           m_BrtWbProp;
+        BaseObjectPtr           m_ACABSPATH;
 
-        unsigned short					code_page_;
-        GlobalWorkbookInfoPtr			global_info_;
+        unsigned short			code_page_;
+        GlobalWorkbookInfoPtr		global_info_;
 
 
     };

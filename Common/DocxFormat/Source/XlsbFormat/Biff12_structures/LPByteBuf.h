@@ -32,13 +32,28 @@
 
 #pragma once
 
-#include <Logic/Biff_structures/BiffString.h>
+#include <Logic/Biff_structures/BiffStructure.h>
+#include <Logic/Biff_records/BiffRecord.h>
 
 using namespace XLS;
 namespace XLSB
 {
-   typedef XLUnicodeString_T<unsigned int,	aw_NAME_WIDE,               cch_READ_FROM_RECORD>		XLNameWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_NULLABLE_WIDE,			cch_READ_FROM_RECORD>		XLNullableWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_WIDE,					cch_READ_FROM_RECORD>		XLWideString;
+    class LPByteBuf : public BiffStructure
+    {
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(LPByteBuf)
+    public:
+        LPByteBuf();
+        LPByteBuf(CFRecord& record);
+        virtual ~LPByteBuf();
+        BiffStructurePtr clone();
+
+        static const ElementType	type = typeBiffStructure;
+
+        virtual void load(CFRecord& record);
+
+        _UINT32     cbLength;
+        BYTE*       rgbData;
+
+    };
 
 }   // namespace XLSB

@@ -30,15 +30,33 @@
  *
  */
 
-#pragma once
+#include "CodeName.h"
 
-#include <Logic/Biff_structures/BiffString.h>
-
-using namespace XLS;
 namespace XLSB
 {
-   typedef XLUnicodeString_T<unsigned int,	aw_NAME_WIDE,               cch_READ_FROM_RECORD>		XLNameWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_NULLABLE_WIDE,			cch_READ_FROM_RECORD>		XLNullableWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_WIDE,					cch_READ_FROM_RECORD>		XLWideString;
 
-}   // namespace XLSB
+    CodeName::CodeName()
+    {
+    }
+
+    CodeName::CodeName(CFRecord& record)
+    {
+        load(record);
+    }
+
+    CodeName::~CodeName()
+    {
+    }
+
+    BiffStructurePtr CodeName::clone()
+    {
+        return BiffStructurePtr(new CodeName(*this));
+    }
+
+    void CodeName::load(CFRecord& record)
+    {
+        record >> value;
+    }
+
+} // namespace XLSB
+

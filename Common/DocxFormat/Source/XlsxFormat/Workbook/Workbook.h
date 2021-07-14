@@ -103,7 +103,7 @@ namespace OOX
             {
                 auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
                 XLS::GlobalWorkbookInfoPtr xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
-
+                xls_global_info->Version = 0x0800;
                 NSFile::CFileBinary oFile;
                 if (oFile.OpenFile(oPath.GetPath()) == false)
                     return;

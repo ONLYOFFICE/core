@@ -34,24 +34,42 @@
 #include <Logic/Biff_records/BiffRecord.h>
 #include "../Source/XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
+#include "../Biff12_structures/CodeName.h"
 using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BEGIN_BOOK record in BIFF12
-    class BEGIN_BOOK: public BiffRecord
+    // Logical representation of WB_PROP record in BIFF12
+    class WB_PROP: public BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BEGIN_BOOK)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BEGIN_BOOK)
+            BIFF_RECORD_DEFINE_TYPE_INFO(WB_PROP)
+            BASE_OBJECT_DEFINE_CLASS_NAME(WB_PROP)
         public:
-            BEGIN_BOOK();
-            virtual ~BEGIN_BOOK();
+            WB_PROP();
+            virtual ~WB_PROP();
 
             BaseObjectPtr clone();
 
             void readFields(CFRecord& record);
 
-            //static const ElementType	type = typeBeginBook;
+            bool        f1904;
+            bool        fHideBorderUnselLists;
+            bool        fFilterPrivacy;
+            bool        fBuggedUserAboutSolution;
+            bool        fShowInkAnnotation;
+            bool        fBackup;
+            bool        fNoSaveSup;
+            BYTE        grbitUpdateLinks;
+            bool        fHidePivotTableFList;
+            bool        fPublishedBookItems;
+            bool        fCheckCompat;
+            BYTE        mdDspObj;
+            bool        fShowPivotChartFilter;
+            bool        fAutoCompressPictures;
+            bool        fRefreshAll;
+            _UINT32		dwThemeVersion;
+            CodeName    strName;
+
     };
 
 } // namespace XLSB

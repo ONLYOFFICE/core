@@ -32,13 +32,30 @@
 
 #pragma once
 
-#include <Logic/Biff_structures/BiffString.h>
+#include <Logic/Biff_structures/BiffStructure.h>
+#include <Logic/Biff_records/BiffRecord.h>
 
 using namespace XLS;
 namespace XLSB
 {
-   typedef XLUnicodeString_T<unsigned int,	aw_NAME_WIDE,               cch_READ_FROM_RECORD>		XLNameWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_NULLABLE_WIDE,			cch_READ_FROM_RECORD>		XLNullableWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_WIDE,					cch_READ_FROM_RECORD>		XLWideString;
+    class ACProductVersion : public BiffStructure
+    {
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(ACProductVersion)
+    public:
+        ACProductVersion();
+        ACProductVersion(CFRecord& record);
+        virtual ~ACProductVersion();
+        BiffStructurePtr clone();
+
+        static const ElementType	type = typeBiffStructure;
+
+        virtual void load(CFRecord& record);
+
+        _UINT16     fileVersion;
+        _UINT16     fileProduct;
+        bool        fileExtension;
+    };
+
+typedef boost::shared_ptr<ACProductVersion> ACProductVersionPtr;
 
 }   // namespace XLSB

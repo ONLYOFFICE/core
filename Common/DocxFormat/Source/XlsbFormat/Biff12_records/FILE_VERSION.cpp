@@ -35,33 +35,27 @@
 namespace XLSB
 {
 
+    FILE_VERSION::FILE_VERSION()
+    {
+    }
 
-FILE_VERSION::FILE_VERSION()
-{
-}
+    FILE_VERSION::~FILE_VERSION()
+    {
+    }
 
-
-FILE_VERSION::~FILE_VERSION()
-{
-}
-
-
-BaseObjectPtr FILE_VERSION::clone()
-{
+    BaseObjectPtr FILE_VERSION::clone()
+    {
         return BaseObjectPtr(new FILE_VERSION(*this));
-}
+    }
 
-
-void FILE_VERSION::readFields(CFRecord& record)
-{
-    record >> guidCodeName;
-    record >> stAppName;
-    record >> stLastEdited;
-    record >> stLowestEdited;
-    record >> stRupBuild;
-
-}
-
+    void FILE_VERSION::readFields(CFRecord& record)
+    {
+        record >> guidCodeName;
+        record >> stAppName;
+        record >> stLastEdited;
+        record >> stLowestEdited;
+        record >> stRupBuild;
+    }
 
 } // namespace XLSB
 

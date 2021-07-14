@@ -35,28 +35,23 @@
 namespace XLSB
 {
 
+    BEGIN_BOOK::BEGIN_BOOK()
+    {
+    }
 
-BEGIN_BOOK::BEGIN_BOOK()
-{
-}
+    BEGIN_BOOK::~BEGIN_BOOK()
+    {
+    }
 
-
-BEGIN_BOOK::~BEGIN_BOOK()
-{
-}
-
-
-BaseObjectPtr BEGIN_BOOK::clone()
-{
+    BaseObjectPtr BEGIN_BOOK::clone()
+    {
         return BaseObjectPtr(new BEGIN_BOOK(*this));
-}
+    }
 
-
-void BEGIN_BOOK::readFields(CFRecord& record)
-{
-	// No data in this record
-}
-
+    void BEGIN_BOOK::readFields(CFRecord& record)
+    {
+        // No data in this record
+    }
 
 } // namespace XLSB
 

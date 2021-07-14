@@ -309,10 +309,10 @@ namespace PdfReader
     //--------------------------------------------------------------------------------------
     // RendererOutputDev
     //--------------------------------------------------------------------------------------
-    RendererOutputDev::RendererOutputDev(GlobalParamsAdaptor  *pGlobalParams, IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
+    RendererOutputDev::RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList)
     {
         m_pFontManager  = pFontManager;
-        m_pGlobalParams = pGlobalParams;
+        m_pFontManager  = pFontManager;
         m_pFontList     = pFontList;
 
         m_bTiling       = false;
@@ -343,7 +343,7 @@ namespace PdfReader
 
         m_bDrawOnlyText = false;
 
-        //m_oFontList.LoadFromFile( m_pGlobalParams->GetTempFolder() );
+        //m_oFontList.LoadFromFile( (GlobalParamsAdaptor*)globalParams->GetTempFolder() );
         //// Тестовый пример
         //m_pRenderer->NewPage();
         //m_pRenderer->BeginCommand( c_nPageType );
@@ -596,7 +596,7 @@ namespace PdfReader
     {
 
 
-                // Проверяем наличие списка со шрифтами
+        // Проверяем наличие списка со шрифтами
         if (NULL == m_pFontList)
             return;
 
@@ -648,7 +648,8 @@ namespace PdfReader
                 }
 
                 FILE* pTempFile = NULL;
-                if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
+                if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(),
+                                                       (wchar_t*)((GlobalParamsAdaptor *)globalParams)->GetTempFolder().c_str(), NULL))
                 {
                     if (L"" != wsTempFileName)
                         NSFile::CFileBinary::Remove(wsTempFileName);
@@ -1057,7 +1058,8 @@ namespace PdfReader
                     }
 
                     FILE* pTempFile = NULL;
-                    if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
+                    if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(),
+                                                           (wchar_t*)((GlobalParamsAdaptor*)globalParams)->GetTempFolder().c_str(), NULL))
                     {
                         if (L"" != wsTempFileName)
                             NSFile::CFileBinary::Remove(wsTempFileName);
@@ -2552,7 +2554,7 @@ namespace PdfReader
 
         m_pRenderer->EndCommand(c_nPathType);
     }
-    void RendererOutputDev::TilingPatternFill(GfxState *pGState, Object *pStream, int nPaintType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
+    void RendererOutputDev::tilingPatternFill(GfxState *pGState, Object *pStream, int nPaintType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
     {
 
     }
@@ -3002,7 +3004,7 @@ namespace PdfReader
 //            RELEASEOBJECT(m_pBufferTextClip);
 //        }
     }
-    void RendererOutputDev::BeginStringOperator(GfxState *pGState)
+    void RendererOutputDev::beginStringOp(GfxState *pGState)
     {
         if (m_bTransparentGroupSoftMask)
             return;
@@ -3032,7 +3034,7 @@ namespace PdfReader
             //::SysFreeString( bsPen );
         }
     }
-    void RendererOutputDev::EndStringOperator(GfxState *pGState)
+    void RendererOutputDev::endStringOp(GfxState *pGState)
     {
         if (m_bTransparentGroupSoftMask)
             return;
@@ -3058,7 +3060,7 @@ namespace PdfReader
 
         m_pRenderer->EndCommand(c_nTextType);
     }
-    void RendererOutputDev::DrawString(GfxState *pGState, GString *seString)
+    void RendererOutputDev::drawString(GfxState *pGState, GString *seString)
     {
         if (m_bTransparentGroupSoftMask)
             return;
@@ -3107,7 +3109,7 @@ namespace PdfReader
         m_pRenderer->CommandDrawTextEx(wsUnicodeText, pGids, unGidsCount, PDFCoordsToMM(100), PDFCoordsToMM(100), 0, PDFCoordsToMM(0));
         RELEASEARRAYOBJECTS(pGids);
     }
-    void RendererOutputDev::DrawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
+    void RendererOutputDev::drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
     {
         if (m_bTransparentGroupSoftMask)
             return;
@@ -3303,11 +3305,8 @@ namespace PdfReader
 
         m_pRenderer->put_FontSize(dOldSize);
     }
-    bool RendererOutputDev::BeginType3Char(GfxState *pGState, double dX, double dY, double dDx, double dDy, CharCode nCode, Unicode *pUnicode, int nUnicodeLen)
-    {
-        return false;
-    }
-    void RendererOutputDev::EndType3Char(GfxState *pGState)
+
+    void RendererOutputDev::endType3Char(GfxState *pGState)
     {
         return;
     }
@@ -3319,7 +3318,7 @@ namespace PdfReader
     {
         return;
     }
-    void RendererOutputDev::drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, bool bInvert, bool bInlineImage)
+    void RendererOutputDev::drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight,GBool bInvert, GBool bInlineImage, GBool interpolate)
     {
         if (m_bDrawOnlyText)
             return;
@@ -3394,7 +3393,7 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
-    void RendererOutputDev::drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, bool bInlineImg)
+    void RendererOutputDev::drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
     {
         if (m_bDrawOnlyText)
             return;
@@ -3473,13 +3472,13 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
-    void RendererOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, bool bMaskInvert)
+    void RendererOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
     {
         if (m_bDrawOnlyText)
             return;
 
         if (nMaskWidth <= 0 || nMaskHeight <= 0)
-            drawImage(pGState, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false);
+            drawImage(pGState, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false, interpolate);
 
         double dPageHeight = pGState->getPageHeight();
 
@@ -3597,7 +3596,7 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
-    void RendererOutputDev::drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, unsigned char *pMatteColor)
+    void RendererOutputDev::drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, unsigned char *pMatteColor, GBool interpolate)
     {
         if (m_bDrawOnlyText)
             return;

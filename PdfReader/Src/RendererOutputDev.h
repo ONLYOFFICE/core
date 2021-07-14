@@ -119,7 +119,7 @@ namespace PdfReader
 	class RendererOutputDev : public OutputDev
 	{
 	public:
-        RendererOutputDev(GlobalParamsAdaptor *pGlobalParams, IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList = NULL);
+        RendererOutputDev(IRenderer *pRenderer, NSFonts::IFontManager* pFontManager, CFontList *pFontList = NULL);
 		virtual ~RendererOutputDev();
 
 		virtual GBool upsideDown()
@@ -219,7 +219,7 @@ namespace PdfReader
 		virtual void eoFill(GfxState *pGState);
 		virtual void FillStroke(GfxState *pGState);
 		virtual void EoFillStroke(GfxState *pGState);
-		virtual void TilingPatternFill(GfxState *pGState, Object *pStream, int nPaintType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep);
+		virtual void tilingPatternFill(GfxState *pGState, Object *pStream, int nPaintType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep);
 		virtual void StartTilingFill(GfxState *pGState);
 		virtual void EndTilingFill();
 		//todo overide
@@ -245,19 +245,23 @@ namespace PdfReader
 		virtual void clipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO);
 		//----- Вывод текста
         virtual void EndTextObject(GfxState *pGState);
-		virtual void BeginStringOperator(GfxState *pGState);
-		virtual void EndStringOperator(GfxState *pGState);
-		virtual void DrawString(GfxState *pGState, GString *seString);
-		virtual void DrawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen);
-		bool BeginType3Char(GfxState *pGState, double dX, double dY, double dDx, double dDy, CharCode nCode, Unicode *pUnicode, int nUnicodeLen);
-		void EndType3Char(GfxState *pGState);
+		virtual void beginStringOp(GfxState *pGState);
+		virtual void endStringOp(GfxState *pGState);
+		virtual void drawString(GfxState *pGState, GString *seString);
+		virtual void drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen);
+        GBool beginType3Char(GfxState *state, double x, double y,
+                             double dx, double dy,
+                             CharCode code, Unicode *u, int uLen) {
+            return false;
+        }
+		void endType3Char(GfxState *pGState);
 		void Type3D0(GfxState *pGState, double dWx, double dWy);
 		void Type3D1(GfxState *pGState, double dWx, double dWy, double dBLx, double dBLy, double dTRx, double dTRy);
 		//----- Вывод картинок
-		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, bool bInvert, bool bInlineImage);
-		virtual void drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, bool bInlineImg);
-		virtual void drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, bool bMaskInvert);
-		virtual void drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, unsigned char *pMatte);
+		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate);
+		virtual void drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate);
+		virtual void drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate);
+		virtual void drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, unsigned char *pMatte, GBool interpolate);
 		//----- Transparency groups и SMasks
 		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bForSoftMask);
 		virtual void endTransparencyGroup(GfxState *pGState);
@@ -302,7 +306,7 @@ namespace PdfReader
 		unsigned char*                m_pTransparentGroupSoftMask;
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer
-        GlobalParamsAdaptor           *m_pGlobalParams;
+
 	};
 }
 

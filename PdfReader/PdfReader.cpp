@@ -57,7 +57,6 @@ namespace PdfReader
     {
     public:
         PDFDoc*            m_pPDFDocument;
-        GlobalParamsAdaptor*      m_pGlobalParams;
         std::wstring       m_wsTempFolder;
         std::wstring       m_wsCMapFolder;
         NSFonts::IApplicationFonts* m_pAppFonts;
@@ -75,8 +74,7 @@ namespace PdfReader
         m_pInternal->m_pPDFDocument = NULL;
         m_pInternal->m_pFontManager = NULL;
 
-        m_pInternal->m_pGlobalParams = new GlobalParamsAdaptor(NULL);
-        globalParams = m_pInternal->m_pGlobalParams;
+        globalParams  = new GlobalParamsAdaptor(NULL);
         m_pInternal->m_pFontList = new CFontList();
 
         m_pInternal->m_pAppFonts = pAppFonts;
@@ -87,7 +85,7 @@ namespace PdfReader
 		pMeasurerCache->SetStreams(pAppFonts->GetStreams());
         m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(1);
-        m_pInternal->m_pGlobalParams->SetFontManager(m_pInternal->m_pFontManager);
+        ((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pInternal->m_pFontManager);
 
         m_eError = errNone;
 	}
@@ -108,7 +106,7 @@ namespace PdfReader
 		}
 
         RELEASEOBJECT((m_pInternal->m_pPDFDocument));
-        RELEASEOBJECT((m_pInternal->m_pGlobalParams));
+        RELEASEOBJECT((globalParams));
         RELEASEINTERFACE((m_pInternal->m_pFontManager));
 	}
     bool CPdfReader::LoadFromFile(const std::wstring& wsSrcPath, const std::wstring& wsOptions,
@@ -123,7 +121,7 @@ namespace PdfReader
         pMeasurerCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
         m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(1);
-        m_pInternal->m_pGlobalParams->SetFontManager(m_pInternal->m_pFontManager);
+        ((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pInternal->m_pFontManager);
 //------------------------------------------------------
 
         if (m_pInternal->m_pPDFDocument)
@@ -215,7 +213,7 @@ namespace PdfReader
 	{
         // todo extractimg
 //		StringExt seString(wsDstPath);
-//        ExtractImageOutputDev *pOutputDev = new ExtractImageOutputDev(m_pInternal->m_pGlobalParams, seString.GetBuffer(), true);
+//        ExtractImageOutputDev *pOutputDev = new ExtractImageOutputDev(globalParams, seString.GetBuffer(), true);
 //		if (!pOutputDev)
 //			return false;
 //
@@ -271,7 +269,7 @@ namespace PdfReader
 
         if (m_pInternal->m_pPDFDocument && pRenderer)
 		{
-            RendererOutputDev oRendererOut(m_pInternal->m_pGlobalParams, pRenderer, m_pInternal->m_pFontManager, m_pInternal->m_pFontList);
+            RendererOutputDev oRendererOut(pRenderer, m_pInternal->m_pFontManager, m_pInternal->m_pFontList);
             oRendererOut.NewPDF(m_pInternal->m_pPDFDocument->getXRef());
 			oRendererOut.SetBreak(pbBreak);
             m_pInternal->m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, false, true, false);
@@ -324,7 +322,7 @@ namespace PdfReader
     int CPdfReader::GetImagesCount()
 	{
         // todo
-//        ExtractImageOutputDev *pOutputDev = new ExtractImageOutputDev(m_pInternal->m_pGlobalParams, NULL, true, true);
+//        ExtractImageOutputDev *pOutputDev = new ExtractImageOutputDev((GlobalParamsAdaptor*)globalParams, NULL, true, true);
 //		if (!pOutputDev)
 //			return 0;
 //
@@ -360,8 +358,8 @@ namespace PdfReader
 		else
             m_pInternal->m_wsTempFolder = L"";
 
-        if (m_pInternal->m_pGlobalParams)
-            m_pInternal->m_pGlobalParams->SetTempFolder(m_pInternal->m_wsTempFolder.c_str());
+        if (globalParams)
+            ((GlobalParamsAdaptor*)globalParams)->SetTempFolder(m_pInternal->m_wsTempFolder.c_str());
 	}
     std::wstring CPdfReader::GetTempDirectory()
     {
@@ -372,8 +370,8 @@ namespace PdfReader
 	{
 //        m_pInternal->m_wsCMapFolder = std::wstring(wsCMapFolder); todo
 //
-//        if (m_pInternal->m_pGlobalParams)
-//            m_pInternal->m_pGlobalParams->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
+//        if (globalParams)
+//            ((GlobalParamsAdaptor*)globalParams)->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
 	}
     NSFonts::IFontManager* CPdfReader::GetFontManager()
 	{

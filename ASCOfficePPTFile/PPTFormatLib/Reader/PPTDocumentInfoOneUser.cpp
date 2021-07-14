@@ -813,11 +813,12 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
         pTransition->m_bLoopSound		= pAtom->m_bLoopSound;
         pTransition->m_bStopSound		= pAtom->m_bStopSound;
         pTransition->m_nEffectDirection = pAtom->m_nEffectDirection;
-        pTransition->m_nEffectType		= pAtom->m_nEffectType;  // тут нужно сконвертить тип
+        pTransition->m_nEffectType		= pAtom->m_nEffectType;  // тут нужно сконвертить тип // конвертится в Converter.cpp
         pTransition->m_nSpeed           = pAtom->m_nSpeed;
 
         pSlide->m_oSlideShow.m_dSlideDuration   = pAtom->m_nSlideTime;
-        pSlide->m_oSlideShow.m_bOnlyClick       = ! (pAtom->m_bAutoAdvance);
+        pSlide->m_oSlideShow.m_bManulClick      = pAtom->m_bManualAdvance;
+        pSlide->m_oSlideShow.m_bAdvClick        = pAtom->m_bAutoAdvance;
     }
 
     CSlideShowSlideInfoAtom* pAtom	= &pRecordSlide->m_oSlideShowSlideInfoAtom;

@@ -324,14 +324,63 @@ window.onload = function()
 		
 		this.OnMouseDown = function(e)
 		{
+			if (!this.file.isValid())
+				return;
+
+			let yPos = e.clientY;
+			let yMax = yPos + this.height;
+			let lCurrentPage = -1;
+
+			let lPagesCount = this.drawingPages.length;
+			for (let i = 0; i < lPagesCount; i++)
+			{
+				let page = this.drawingPages[i];
+				let pageT = page.Y;
+				let pageB = page.Y + page.H;
+
+				if (yPos > pageT && yPos < pageB)
+				{
+					lCurrentPage = i;
+					break;
+				}
+			}
+
+			// TODO: координаты относительно страницы
+			if (lCurrentPage >= 0)
+				this.file.OnMouseDown(lCurrentPage, e.clientX, e.clientY);
 		};
 		
 		this.OnMouseMove = function(e)
 		{
+			if (!this.file.isValid())
+				return;
+
+			let yPos = e.clientY;
+			let yMax = yPos + this.height;
+			let lCurrentPage = -1;
+
+			let lPagesCount = this.drawingPages.length;
+			for (let i = 0; i < lPagesCount; i++)
+			{
+				let page = this.drawingPages[i];
+				let pageT = page.Y;
+				let pageB = page.Y + page.H;
+
+				if (yPos > pageT && yPos < pageB)
+				{
+					lCurrentPage = i;
+					break;
+				}
+			}
+
+			// TODO: координаты относительно страницы
+			if (lCurrentPage >= 0)
+				this.file.OnMouseMove(lCurrentPage, e.clientX, e.clientY);
 		};
 		
 		this.OnMouseUp = function(e)
 		{
+			this.file.OnMouseUp();
 		};
 
 		this.paint = function()

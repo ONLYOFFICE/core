@@ -1,5 +1,18 @@
 (function(window, undefined) {
 
+    function CDocMetaSelection()
+    {
+        this.Page1 = 0;
+        this.Line1 = 0;
+        this.Glyph1 = 0;
+
+        this.Page2 = 0;
+        this.Line2 = 0;
+        this.Glyph2 = 0;
+
+        this.IsSelection = false;
+    }
+
     function CFile()
     {
     	this.nativeFile = 0;
@@ -8,6 +21,7 @@
     	this.isUse3d = false;
     	this.cacheManager = null;
     	this.logging = true;
+    	this.Selection = new CDocMetaSelection();
     }
 
     // interface
@@ -45,10 +59,124 @@
 			var t2 = performance.now();
 			//console.log("time: " + (t1 - t0) + ", " + (t2 - t1));
 		}
-
+        /*
+        if (this.pages[pageIndex].Lines)
+        {
+            var ctx = image.getContext("2d");
+            for (let i = 0; i < this.pages[pageIndex].Lines.length; i++)
+            {
+                for (let j = 0; j < this.pages[pageIndex].Lines[i].Glyphs.length; j++)
+                {
+                    let glyph = this.pages[pageIndex].Lines[i].Glyphs[j];
+                    ctx.font = glyph.fontSize + 'px ' + glyph.fontName;
+                    ctx.fillText(glyph.UChar, glyph.X, glyph.Y);
+                }
+            }
+        }
+        */
         this.free(pixels);
         return image;
 	};
+
+    CFile.prototype.GetNearestPos = function(pageIndex, x, y)
+    {
+        var _line = -1;
+        var _glyph = -1;
+        var minDist = Number.MAX_SAFE_INTEGER;
+
+        // TODO: оптимизировать по горизонтальной линии
+        for (let i = 0; i < this.pages[pageIndex].Lines.length; i++)
+        {
+            for (let j = 0; j < this.pages[pageIndex].Lines[i].Glyphs.length; j++)
+            {
+                let glyph = this.pages[pageIndex].Lines[i].Glyphs[j];
+                let d = Math.sqrt(Math.pow(glyph.X - x, 2) + Math.pow(glyph.Y - y, 2));
+                if (d < minDist)
+                {
+                    minDist = d;
+                    _line   = i;
+                    _glyph  = j;
+                }
+            }
+        }
+
+        return { Line : _line, Glyph : _glyph };
+    }
+
+    CFile.prototype.OnUpdateSelection = function()
+    {
+        // TODO: выделять не после OnMouseUp
+        if (this.Selection.IsSelection)
+            return;
+
+        var sel = this.Selection;
+        var page1  = sel.Page1  < sel.Page2  ? sel.Page1  : sel.Page2;
+        var page2  = sel.Page1  > sel.Page2  ? sel.Page1  : sel.Page2;
+        var line1  = sel.Line1  < sel.Line2  ? sel.Line1  : sel.Line2;
+        var line2  = sel.Line1  > sel.Line2  ? sel.Line1  : sel.Line2;
+        var glyph1 = sel.Glyph1 < sel.Glyph2 ? sel.Glyph1 : sel.Glyph2;
+        var glyph2 = sel.Glyph1 > sel.Glyph2 ? sel.Glyph1 : sel.Glyph2;
+
+        for (let page = page1; page <= page2; page++)
+        {
+            // TODO: если страница не последняя, то выделить целиком
+            for (let line = line1; line <= line2; line++)
+            {
+                let Glyphs = this.pages[page].Lines[line].Glyphs;
+                let x = Glyphs[0].X;
+                let y = Glyphs[0].Y;
+                let w = Glyphs[Glyphs.length - 1].X;
+                let h = x + Glyphs[0].fontSize;
+                // если последняя строка
+                if (line == line2)
+                    w = Glyphs[glyph2].X;
+                // TODO: поступить аналогично _pixelsToCanvas2d
+                let canvas = document.getElementById("main");
+                let ctx = canvas.getContext("2d");
+                ctx.globalAlpha = 0.5;
+                ctx.fillStyle = "#0000FF";
+                ctx.fillRect(x, y, w, h);
+                ctx.globalAlpha = 1;
+            }
+        }
+    }
+
+	CFile.prototype.OnMouseDown = function(pageIndex, x, y)
+    {
+        var ret = this.GetNearestPos(pageIndex, x, y);
+
+        var sel = this.Selection;
+        sel.Page1 = pageIndex;
+        sel.Line1 = ret.Line;
+        sel.Glyph1 = ret.Glyph;
+
+        sel.Page2 = pageIndex;
+        sel.Line2 = ret.Line;
+        sel.Glyph2 = ret.Glyph;
+
+        sel.IsSelection = true;
+        //this.OnUpdateSelection();
+    }
+
+    CFile.prototype.OnMouseMove = function(pageIndex, x, y)
+    {
+        if (false === this.Selection.IsSelection)
+            return;
+        var ret = this.GetNearestPos(pageIndex, x, y);
+
+        var sel = this.Selection;
+        sel.Page2 = pageIndex;
+        sel.Line2 = ret.Line;
+        sel.Glyph2 = ret.Glyph;
+
+        //this.OnUpdateSelection();
+    }
+
+    CFile.prototype.OnMouseUp = function()
+    {
+        this.Selection.IsSelection = false;
+        this.OnUpdateSelection();
+    }
 
     CFile.prototype.getPageBase64 = function(pageIndex, width, height)
 	{

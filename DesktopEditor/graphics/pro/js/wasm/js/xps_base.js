@@ -130,10 +130,12 @@
         var len = lenArray[0];
         len -= 4;
         if (len)
-            this.pages[pageIndex].Glyphs = [];
+            this.pages[pageIndex].Lines = [];
 
         var buffer = new Uint8Array(Module["HEAP8"].buffer, res + 4 * width * height + 4, len);
         var index = 0;
+        var Line = -1;
+        var prevY = -1;
         while (index < len)
         {
             var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
@@ -142,20 +144,37 @@
             index += lenRec;
             lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
             index += 4;
-            var _fontSize = "".fromUtf8(buffer, index, lenRec);
+            var _fontSize = parseFloat("".fromUtf8(buffer, index, lenRec));
             index += lenRec;
             lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
             index += 4;
-            var _X = "".fromUtf8(buffer, index, lenRec);
+            var _X = parseFloat("".fromUtf8(buffer, index, lenRec));
             index += lenRec;
             lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
             index += 4;
-            var _Y = "".fromUtf8(buffer, index, lenRec);
+            var _Y = parseFloat("".fromUtf8(buffer, index, lenRec));
+            // TODO: близость
+            if (_Y != prevY)
+            {
+                if (Line >= 0)
+                    this.pages[pageIndex].Lines[Line].Glyphs.sort((prev, next) => prev.X - next.X);
+                Line++;
+                this.pages[pageIndex].Lines.push({ Glyphs : [] });
+                prevY = _Y;
+            }
             index += lenRec;
             lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
             index += 4;
-            this.pages[pageIndex].Glyphs.push({ fontName : _fontName, fontSize : _fontSize, X : _X, Y : _Y, UChar : lenRec});
+            this.pages[pageIndex].Lines[Line].Glyphs.push({
+                fontName : _fontName,
+                fontSize : _fontSize,
+                X : _X * 1.015,
+                Y : _Y * 1.015,
+                UChar : String.fromCharCode(lenRec)
+            });
         }
+        if (len > 0)
+            this.pages[pageIndex].Lines.sort((prev, next) => prev.Glyphs[0].Y - next.Glyphs[0].Y);
         return res;
     };
     CFile.prototype.close = function()

@@ -736,44 +736,46 @@ int main()
     XPS_Delete(pXpsData);
     int* info = XPS_GetInfo(test);
     int pages_count = *info;
+    int width  = info[1] * 96 / info[3];
+    int height = info[2] * 96 / info[3];
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = XPS_GetPixmap(test, 0, info[1], info[2]);
+        res = XPS_GetPixmap(test, 0, width, height);
 
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";
 
     CBgraFrame* resFrame = new CBgraFrame();
     resFrame->put_Data(res);
-    resFrame->put_Width(info[1]);
-    resFrame->put_Height(info[2]);
-    resFrame->put_Stride(-4 * info[1]);
+    resFrame->put_Width(width);
+    resFrame->put_Height(height);
+    resFrame->put_Stride(-4 * width);
     resFrame->put_IsRGBA(true);
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
-    DWORD nLength = GetLength(res + info[1] * info[2] * 4);
+    DWORD nLength = GetLength(res + width * height * 4);
     DWORD i = 4;
     nLength -= 4;
     while (i < nLength)
     {
-        DWORD nPathLength = GetLength(res + info[1] * info[2] * 4 + i);
+        DWORD nPathLength = GetLength(res + width * height * 4 + i);
         i += 4;
-        std::cout << std::string((char*)(res + info[1] * info[2] * 4 + i), nPathLength) << " ";
+        std::cout << std::string((char*)(res + width * height * 4 + i), nPathLength) << " ";
         i += nPathLength;
-        nPathLength = GetLength(res + info[1] * info[2] * 4 + i);
+        nPathLength = GetLength(res + width * height * 4 + i);
         i += 4;
-        std::cout << std::string((char*)(res + info[1] * info[2] * 4 + i), nPathLength) << " ";
+        std::cout << std::string((char*)(res + width * height * 4 + i), nPathLength) << " ";
         i += nPathLength;
-        nPathLength = GetLength(res + info[1] * info[2] * 4 + i);
+        nPathLength = GetLength(res + width * height * 4 + i);
         i += 4;
-        std::cout << std::string((char*)(res + info[1] * info[2] * 4 + i), nPathLength) << " ";
+        std::cout << std::string((char*)(res + width * height * 4 + i), nPathLength) << " ";
         i += nPathLength;
-        nPathLength = GetLength(res + info[1] * info[2] * 4 + i);
+        nPathLength = GetLength(res + width * height * 4 + i);
         i += 4;
-        std::cout << std::string((char*)(res + info[1] * info[2] * 4 + i), nPathLength) << " ";
+        std::cout << std::string((char*)(res + width * height * 4 + i), nPathLength) << " ";
         i += nPathLength;
-        nPathLength = GetLength(res + info[1] * info[2] * 4 + i);
+        nPathLength = GetLength(res + width * height * 4 + i);
         i += 4;
         std::cout << nPathLength << std::endl;
     }

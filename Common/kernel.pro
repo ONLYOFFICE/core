@@ -13,7 +13,8 @@ CONFIG += core_static_link_libstd
 DEFINES += KERNEL_USE_DYNAMIC_LIBRARY_BUILDING
 
 # CONFIG
-HEADERS += ./kernel_config.h
+HEADERS += ./kernel_config.h \
+    ../DesktopEditor/common/StringUTF32.hpp
 
 CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
@@ -33,6 +34,7 @@ HEADERS += \
     ./../DesktopEditor/graphics/TemporaryCS.h
 
 SOURCES += \
+    ../DesktopEditor/common/StringUTF32.cpp \
     ./../DesktopEditor/graphics/TemporaryCS.cpp
 
 # THREAD

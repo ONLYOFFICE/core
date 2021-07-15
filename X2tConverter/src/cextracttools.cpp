@@ -130,7 +130,9 @@ namespace NExtractTools
                         else if (0 == sExt2.compare(_T(".docm")))	res = TCD_DOTM2DOCM;
 						else if (0 == sExt2.compare(_T(".txt")))		res = TCD_DOCX2TXT;
 				}break;
-				case AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE:
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_PACKAGE:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_PACKAGE:
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX_PACKAGE:
 					{
 							 if (0 == sExt2.compare(_T(".doct")))		res = TCD_PKG2BIN_T;
 						else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_PKG2BIN_T;

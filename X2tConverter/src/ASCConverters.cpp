@@ -2933,7 +2933,9 @@ namespace NExtractTools
 					const std::wstring & sXmlOptions = params.getXmlOptions();
 					return xlsxflat2xlst_bin(sResultDecryptFile, sTo, sTemp, params);
 				}break;
-				case AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE:
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_PACKAGE:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_PACKAGE:
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX_PACKAGE:
 				{
 					return package2bin(sResultDecryptFile, sTo, sTemp, params);
 				}break;
@@ -2979,7 +2981,7 @@ namespace NExtractTools
 
             if (OfficeFileFormatChecker.isOfficeFile(sResultDecryptFile))
             {
-                params.changeFormatFrom(OfficeFileFormatChecker.nFileType);
+                params.changeFormatFrom(OfficeFileFormatChecker.nFileType, OfficeFileFormatChecker.bMacroEnabled);
                 switch (OfficeFileFormatChecker.nFileType)
                 {
                 case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
@@ -3673,7 +3675,7 @@ namespace NExtractTools
            {
                nRes = html_zip2docx_dir(sFrom, sDocxDir, sTemp, params);
            }
-           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE == nFormatFrom)
+           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_PACKAGE == nFormatFrom)
            {
                nRes = package2ooxml_dir(sFrom, sDocxDir, sTemp, params);
            }
@@ -3920,7 +3922,11 @@ namespace NExtractTools
            {
                nRes = odf_flat2oox_dir(sFrom, sXlsxDir, sTemp, params);
            }
-		   else
+           else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_PACKAGE == nFormatFrom)
+           {
+               nRes = package2ooxml_dir(sFrom, sXlsxDir, sTemp, params);
+           }
+           else
                nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            if(SUCCEEDED_X2T(nRes))
            {
@@ -4099,6 +4105,10 @@ namespace NExtractTools
 		   {
 			   nRes = potm2pptm_dir(sFrom, sPptxDir, params);
 		   }
+       }
+       else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX_PACKAGE == nFormatFrom)
+       {
+           nRes = package2ooxml_dir(sFrom, sPptxDir, sTemp, params);
        }
 	   else
            nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;

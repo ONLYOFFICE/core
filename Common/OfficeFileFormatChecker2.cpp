@@ -804,6 +804,9 @@ bool COfficeFileFormatChecker::isOOXFlatFormatFile(unsigned char* pBuffer,int dw
 
     const char *docxFormatLine = "xmlns:w=\"http://schemas.microsoft.com/office/word/2003/wordml\"";
     const char *xlsxFormatLine = "xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\"";
+	const char *docxPackage = "progid=\"Word.Document\"";
+	const char *xlsxPackage = "progid=\"Excel.Sheet\"";
+	const char *pptxPackage = "progid=\"PowerPoint.Show\"";
 	const char *packageFormatLine = "xmlns:pkg=\"http://schemas.microsoft.com/office/2006/xmlPackage\"";
 
 	if (std::string::npos != xml_string.find(docxFormatLine))
@@ -816,11 +819,21 @@ bool COfficeFileFormatChecker::isOOXFlatFormatFile(unsigned char* pBuffer,int dw
 	}
 	else if (std::string::npos != xml_string.find(packageFormatLine))
 	{
-		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE;
+		if (std::string::npos != xml_string.find(docxPackage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_PACKAGE;
+		}
+		else if (std::string::npos != xml_string.find(xlsxPackage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_PACKAGE;
+		}
+		else if (std::string::npos != xml_string.find(pptxPackage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX_PACKAGE;
+		}
 	}
-	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
 
-	return false;
+	return nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN;
 }
 std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 {

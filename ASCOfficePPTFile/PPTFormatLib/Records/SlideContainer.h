@@ -95,10 +95,6 @@ public:
 			{
 				m_bExistsTransition	=	true;
 				m_oSlideShowSlideInfoAtom.ReadFromStream ( oRec, pStream );
-
-				// TODO : временно
-				if ( 0 == m_oSlideShowSlideInfoAtom.m_nEffectType )
-					m_bExistsTransition	=	false;
 				
 				lCurLen += (8 + oRec.RecLen);
 				continue;

@@ -936,12 +936,12 @@ void Animation::FillCTn(
     }
 
     // Write stCondLst
-//    if (pETNC->m_arrRgBeginTimeCondition.empty() == false)
-//    {
-//        oCTn.stCondLst = new PPTX::Logic::CondLst;
-//        oCTn.stCondLst->node_name = L"stCondLst";
-//        FillStCondLst(pETNC->m_arrRgBeginTimeCondition, oCTn.stCondLst.get2());
-//    }
+    if (pETNC->m_arrRgBeginTimeCondition.empty() == false)
+    {
+        oCTn.stCondLst = new PPTX::Logic::CondLst;
+        oCTn.stCondLst->node_name = L"stCondLst";
+        FillStCondLst(pETNC->m_arrRgBeginTimeCondition, oCTn.stCondLst.get2());
+    }
 }
 
 void Animation::FillStCondLst(const std::vector<CRecordTimeConditionContainer *> &timeCondCont,
@@ -996,19 +996,18 @@ void Animation::FillSeq(
         oSec.prevCondLst->list.push_back(cond);
     }
 
-    if (!pETNC->m_arrRgBeginTimeCondition.empty())
+    if (!pETNC->m_arrRgNextTimeCondition.empty())
     {
         oSec.nextCondLst = new PPTX::Logic::CondLst();
         oSec.nextCondLst->node_name = L"nextCondLst";
     }
-    for (auto oldCond : pETNC->m_arrRgBeginTimeCondition)
+    for (auto oldCond : pETNC->m_arrRgNextTimeCondition)
     {
         PPTX::Logic::Cond cond;
         cond.node_name = L"cond";
         FillCond(oldCond, cond);
         oSec.nextCondLst->list.push_back(cond);
     }
-
 
 }
 

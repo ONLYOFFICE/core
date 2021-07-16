@@ -18,9 +18,9 @@ namespace MetaFile
                         RecordData(const std::wstring&  wsName,
                                    const unsigned int&  unId,
                                    const TEmfRectL&     oBounds):
-                            m_wsName(wsName),
-                            m_unId(unId),
-                            m_oBounds(oBounds){}
+                                m_wsName(wsName),
+                                m_unId(unId),
+                                m_oBounds(oBounds){}
                 };
 
         public:

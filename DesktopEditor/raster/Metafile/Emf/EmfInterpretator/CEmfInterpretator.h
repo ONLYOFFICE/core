@@ -101,6 +101,7 @@ namespace MetaFile
                 void WriteColor     (const TEmfColor&   oColor);
                 void WriteForm      (const TEmfXForm&   oForm);
                 void WritePoint     (const TEmfPointL&  oPoint);
+                void WritePoint     (const TEmfPointS&  oPoint);
         public:
                 //Следующие методы ничего не делают
                 void Begin() override {};

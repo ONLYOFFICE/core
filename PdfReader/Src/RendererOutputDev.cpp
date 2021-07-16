@@ -3918,50 +3918,44 @@ namespace PdfReader
     }
     void RendererOutputDev::updateClipAttack(GfxState *pGState)
     {
-        // todo clip
-//        GrClip *pClip = pGState->GetClip();
+
+        int nPathIndex = -1;
+        //if ( m_pClip && m_pClip->IsEqual( pClip, nPathIndex ) )
+        //{
+        //    return;
+        //}
+
+        int nPathIndexStart = (-1 == nPathIndex) ? 0 : nPathIndex;
+
+        m_pRenderer->BeginCommand(c_nResetClipType);
+        m_pRenderer->EndCommand(c_nResetClipType);
+        //todo update clip
+            GfxPath *pPath   = pGState->getPath();
+            double *pMatrix;
+            if (GfxCalRGBColorSpace *a = dynamic_cast<GfxCalRGBColorSpace *>(pGState->getFillColorSpace()))
+            {
+                pMatrix = a->getMatrix();
+            }
+            else {
+                return;
+            }
+
+
+
+            m_pRenderer->BeginCommand(c_nClipType);
+            DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);
+            m_pRenderer->EndCommand(c_nPathType);
+            m_pRenderer->EndCommand(c_nClipType);
+            m_pRenderer->PathCommandEnd();
+
+            m_pRenderer->BeginCommand(c_nClipType);
+            m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
+            m_pRenderer->StartConvertCoordsToIdentity();
 //
-//        int nPathIndex = -1;
-//        //if ( m_pClip && m_pClip->IsEqual( pClip, nPathIndex ) )
-//        //{
-//        //    return;
-//        //}
-//
-//        int nPathIndexStart = (-1 == nPathIndex) ? 0 : nPathIndex;
-//
-//        m_pRenderer->BeginCommand(c_nResetClipType);
-//        m_pRenderer->EndCommand(c_nResetClipType);
-//
-//        for (int nIndex = nPathIndexStart; nIndex < pClip->getPathsCount(); nIndex++)
-//        {
-//            GfxPath *pPath   = pClip->getPath(nIndex);
-//            int     nFlag   = pClip->GetFlag(nIndex);
-//            double *pMatrix = pClip->getMatrix(nIndex);
-//
-//            int     nClipFlag = GrClipEOFlag == nFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
-//            nClipFlag |= c_nClipRegionIntersect;
-//
-//            m_pRenderer->BeginCommand(c_nClipType);
-//            m_pRenderer->put_ClipMode(nClipFlag);
-//            DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);
-//            m_pRenderer->EndCommand(c_nPathType);
-//            m_pRenderer->EndCommand(c_nClipType);
-//            m_pRenderer->PathCommandEnd();
-//        }
-//
-//        int nTextClipCount = pClip->GetTextsCount();
-//        if (-1 == nPathIndex && nTextClipCount > 0)
-//        {
-//            m_pRenderer->BeginCommand(c_nClipType);
-//            m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
-//            m_pRenderer->StartConvertCoordsToIdentity();
-//
-//            for (int nIndex = 0; nIndex < nTextClipCount; nIndex++)
-//            {
 //                WString wsFontName, wsFontPath;
 //                int lFontStyle;
 //                double dFontSize = 10, dX = 0, dY = 0, dWidth = 0, dHeight = 0, dBaseLineOffset = 0;
-//                WString wsText = pClip->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
+//                WString wsText = pGState->text(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
 //                int     nFlag   = pClip->GetFlag(nIndex);
 //
 //                m_pRenderer->put_FontName(wsFontName);
@@ -3996,20 +3990,18 @@ namespace PdfReader
 //                    RELEASEARRAYOBJECTS(pGids);
 //                }
 //
-//            }
-//
 //            m_pRenderer->EndCommand(c_nPathType);
 //            m_pRenderer->EndCommand(c_nClipType);
 //            m_pRenderer->PathCommandEnd();
 //            m_pRenderer->EndConvertCoordsToIdentity();
 //        }
 //
-////        if (m_pClip)
-////            delete m_pClip;
-////
-////        m_pClip = pClip->Copy(); tmpchange
+//        if (m_pClip)
+//            delete m_pClip;
 //
-//        updateFont(pGState);
+//        m_pClip = pClip->Copy(); tmpchange
+
+        updateFont(pGState);
     }
     void RendererOutputDev::DoTransform(double *pMatrix, double *pdShiftX, double *pdShiftY, bool bText)
     {

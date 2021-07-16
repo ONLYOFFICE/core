@@ -84,98 +84,143 @@
         var _glyph = -1;
         var minDist = Number.MAX_SAFE_INTEGER;
 
-        // TODO: оптимизировать по горизонтальной линии
         for (let i = 0; i < this.pages[pageIndex].Lines.length; i++)
         {
-            for (let j = 0; j < this.pages[pageIndex].Lines[i].Glyphs.length; j++)
+            let Y = this.pages[pageIndex].Lines[i].Glyphs[0].Y;
+            if (Math.abs(Y - y) < minDist)
             {
-                let glyph = this.pages[pageIndex].Lines[i].Glyphs[j];
-                let d = Math.sqrt(Math.pow(glyph.X - x, 2) + Math.pow(glyph.Y - y, 2));
-                if (d < minDist)
-                {
-                    minDist = d;
-                    _line   = i;
-                    _glyph  = j;
-                }
+                minDist = Math.abs(Y - y);
+                _line   = i;
+            }
+        }
+        minDist = Number.MAX_SAFE_INTEGER;
+        for (let j = 0; j < this.pages[pageIndex].Lines[_line].Glyphs.length; j++)
+        {
+            let X = this.pages[pageIndex].Lines[_line].Glyphs[j].X;
+            if (Math.abs(X - x) < minDist)
+            {
+                minDist = Math.abs(X - x);
+                _glyph  = j;
             }
         }
 
         return { Line : _line, Glyph : _glyph };
     }
 
-    CFile.prototype.OnUpdateSelection = function()
+    CFile.prototype.OnUpdateSelection = function(Selection, width, height)
     {
-        // TODO: выделять не после OnMouseUp
-        if (this.Selection.IsSelection)
+        if (!this.Selection.IsSelection)
             return;
 
         var sel = this.Selection;
-        var page1  = sel.Page1  < sel.Page2  ? sel.Page1  : sel.Page2;
-        var page2  = sel.Page1  > sel.Page2  ? sel.Page1  : sel.Page2;
-        var line1  = sel.Line1  < sel.Line2  ? sel.Line1  : sel.Line2;
-        var line2  = sel.Line1  > sel.Line2  ? sel.Line1  : sel.Line2;
-        var glyph1 = sel.Glyph1 < sel.Glyph2 ? sel.Glyph1 : sel.Glyph2;
-        var glyph2 = sel.Glyph1 > sel.Glyph2 ? sel.Glyph1 : sel.Glyph2;
+        var page1  = sel.Page1;
+        var page2  = sel.Page2;
+        var line1  = sel.Line1;
+        var line2  = sel.Line2;
+        var glyph1 = sel.Glyph1;
+        var glyph2 = sel.Glyph2;
+        if (page1 == page2 && line1 == line2 && glyph1 == glyph2)
+        {
+            Selection.IsSelection = false;
+            return;
+        }
+        else if (page1 == page2 && line1 == line2)
+        {
+            glyph1 = Math.min(sel.Glyph1, sel.Glyph2);
+            glyph2 = Math.max(sel.Glyph1, sel.Glyph2);
+        }
+        else if (page1 == page2)
+        {
+            if (line1 > line2)
+            {
+                line1  = sel.Line2;
+                line2  = sel.Line1;
+                glyph1 = sel.Glyph2;
+                glyph2 = sel.Glyph1;
+            }
+        }
+
+        if (this.cacheManager)
+        {
+            this.cacheManager.unlock(Selection.Image);
+            Selection.Image = this.cacheManager.lock(width, height);
+        }
+        else
+        {
+            delete Selection.Image;
+            Selection.Image = document.createElement("canvas");
+            Selection.Image.width = width;
+            Selection.Image.height = height;
+        }
+        let ctx = Selection.Image.getContext("2d");
+        // TODO: После изменения размера экрана наложение областей выделения
+        ctx.clearRect(0, 0, Selection.Image.width, Selection.Image.height);
+        ctx.globalAlpha = 0.4;
+        ctx.fillStyle = "#7070FF";
 
         for (let page = page1; page <= page2; page++)
         {
-            // TODO: если страница не последняя, то выделить целиком
-            for (let line = line1; line <= line2; line++)
+            let start = 0;
+            let end   = this.pages[page].Lines.length;
+            if (page == page1)
+                start = line1;
+            if (page == page2)
+                end = line2;
+            for (let line = start; line <= end; line++)
             {
                 let Glyphs = this.pages[page].Lines[line].Glyphs;
                 let x = Glyphs[0].X;
-                let y = Glyphs[0].Y;
-                let w = Glyphs[Glyphs.length - 1].X;
-                let h = x + Glyphs[0].fontSize;
-                // если последняя строка
-                if (line == line2)
-                    w = Glyphs[glyph2].X;
-                // TODO: поступить аналогично _pixelsToCanvas2d
-                let canvas = document.getElementById("main");
-                let ctx = canvas.getContext("2d");
-                ctx.globalAlpha = 0.5;
-                ctx.fillStyle = "#0000FF";
+                let y = Glyphs[0].Y - Glyphs[0].fontSize;
+                // первая строка на первой странице
+                if (page == page1 && line == start)
+                    x = Glyphs[glyph1].X;
+                let w = Glyphs[Glyphs.length - 1].X - x;
+                let h = Glyphs[0].fontSize;
+                // последняя строка на последней странице
+                if (page == page2 && line == end)
+                    w = Glyphs[glyph2].X - x;
+
                 ctx.fillRect(x, y, w, h);
-                ctx.globalAlpha = 1;
             }
         }
+        ctx.globalAlpha = 1;
+        Selection.IsSelection = true;
     }
 
-	CFile.prototype.OnMouseDown = function(pageIndex, x, y)
+	CFile.prototype.OnMouseDown = function(pageIndex, Selection, x, y, w, h)
     {
         var ret = this.GetNearestPos(pageIndex, x, y);
 
         var sel = this.Selection;
-        sel.Page1 = pageIndex;
-        sel.Line1 = ret.Line;
+        sel.Page1  = pageIndex;
+        sel.Line1  = ret.Line;
         sel.Glyph1 = ret.Glyph;
 
-        sel.Page2 = pageIndex;
-        sel.Line2 = ret.Line;
+        sel.Page2  = pageIndex;
+        sel.Line2  = ret.Line;
         sel.Glyph2 = ret.Glyph;
 
         sel.IsSelection = true;
-        //this.OnUpdateSelection();
+        this.OnUpdateSelection(Selection, w, h);
     }
 
-    CFile.prototype.OnMouseMove = function(pageIndex, x, y)
+    CFile.prototype.OnMouseMove = function(pageIndex, Selection, x, y, w, h)
     {
         if (false === this.Selection.IsSelection)
             return;
         var ret = this.GetNearestPos(pageIndex, x, y);
 
         var sel = this.Selection;
-        sel.Page2 = pageIndex;
-        sel.Line2 = ret.Line;
+        sel.Page2  = pageIndex;
+        sel.Line2  = ret.Line;
         sel.Glyph2 = ret.Glyph;
 
-        //this.OnUpdateSelection();
+        this.OnUpdateSelection(Selection, w, h);
     }
 
     CFile.prototype.OnMouseUp = function()
     {
         this.Selection.IsSelection = false;
-        this.OnUpdateSelection();
     }
 
     CFile.prototype.getPageBase64 = function(pageIndex, width, height)
@@ -222,7 +267,9 @@
         return canvas;
     };
 
-	var vs_source = "\
+	CFile.prototype._pixelsToCanvas3d = function(pixels, width, height) 
+    {
+        var vs_source = "\
 attribute vec2 aVertex;\n\
 attribute vec2 aTex;\n\
 varying vec2 vTex;\n\
@@ -231,16 +278,13 @@ void main() {\n\
 	vTex = aTex;\n\
 }";
 
-    var fs_source = "\
+        var fs_source = "\
 precision mediump float;\n\
 uniform sampler2D uTexture;\n\
 varying vec2 vTex;\n\
 void main() {\n\
 	gl_FragColor = texture2D(uTexture, vTex);\n\
 }";
-
-	CFile.prototype._pixelsToCanvas3d = function(pixels, width, height) 
-    {
         var canvas = null;
         if (this.cacheManager)
         {
@@ -403,6 +447,7 @@ void main() {\n\
         }
 
         file.loadFromData(data);
+        file.cacheManager = new window.CCacheManager();
         return file;
     };
 

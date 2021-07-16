@@ -108,13 +108,13 @@ window.onload = function()
 		this.zoom 	= 1;
 		this.drawingPages = [];
 		this.isRepaint = false;
-		this.canvas = document.getElementById("main");
+		this.canvas   = document.getElementById("main");
 		this.scroller = document.getElementById("pos");
-		this.documentWidth = 0;
+		this.documentWidth  = 0;
 		this.documentHeight = 0;
+		this.Selection = { IsSelection : false, Image : null, page : -1 };
 
 		this.file = new AscViewer.DjVuFile();
-		this.file.cacheManager = new CCacheManager();
 
 		/*
 			[TIMER START]
@@ -161,8 +161,8 @@ window.onload = function()
 		};
 
 		window.onscroll    = function(e) { if (window.Viewer) window.Viewer.scroll(e); };
-		window.onmousedown = function(e) { if (window.Viewer) window.Viewer.OnMouseDown(e); };
-		window.onmousemove = function(e) { if (window.Viewer) window.Viewer.OnMouseMove(e); };
+		window.onmousedown = function(e) { if (window.Viewer) window.Viewer.OnMouse(e, true); };
+		window.onmousemove = function(e) { if (window.Viewer) window.Viewer.OnMouse(e, false); };
 		window.onmouseup   = function(e) { if (window.Viewer) window.Viewer.OnMouseUp(e); };
 
 		this.timerAnimation = function()
@@ -249,6 +249,7 @@ window.onload = function()
 			if (this.file)
 				this.file.close();
 			this.file = window["AscViewer"].createFile(data);
+			this.Selection.Image = this.cacheManager ? this.cacheManager.lock(0, 0) : document.createElement("canvas");
 
 			document.scrollingElement.scrollLeft = 0;
 			document.scrollingElement.scrollTop = 0;
@@ -322,60 +323,40 @@ window.onload = function()
 			this.paint();
 		};
 		
-		this.OnMouseDown = function(e)
+		this.OnMouse = function(e, down)
 		{
 			if (!this.file.isValid())
 				return;
 
-			let yPos = e.clientY;
-			let yMax = yPos + this.height;
 			let lCurrentPage = -1;
-
-			let lPagesCount = this.drawingPages.length;
-			for (let i = 0; i < lPagesCount; i++)
+			for (let i = 0; i < this.drawingPages.length; i++)
 			{
 				let page = this.drawingPages[i];
 				let pageT = page.Y;
 				let pageB = page.Y + page.H;
 
-				if (yPos > pageT && yPos < pageB)
+				if (e.pageY > pageT && e.pageY < pageB)
 				{
 					lCurrentPage = i;
 					break;
 				}
 			}
 
-			// TODO: координаты относительно страницы
 			if (lCurrentPage >= 0)
-				this.file.OnMouseDown(lCurrentPage, e.clientX, e.clientY);
-		};
-		
-		this.OnMouseMove = function(e)
-		{
-			if (!this.file.isValid())
-				return;
-
-			let yPos = e.clientY;
-			let yMax = yPos + this.height;
-			let lCurrentPage = -1;
-
-			let lPagesCount = this.drawingPages.length;
-			for (let i = 0; i < lPagesCount; i++)
 			{
-				let page = this.drawingPages[i];
-				let pageT = page.Y;
-				let pageB = page.Y + page.H;
-
-				if (yPos > pageT && yPos < pageB)
-				{
-					lCurrentPage = i;
-					break;
-				}
+				let yPos = (document.scrollingElement.scrollTop * this.zoom) >> 0;
+				let page = this.drawingPages[lCurrentPage];
+				let w = (page.W * this.retinaPixelRatio) >> 0;
+				let h = (page.H * this.retinaPixelRatio) >> 0;
+				let x = e.pageX - (Math.max(0, (this.width - this.documentWidth) >> 1) * this.retinaPixelRatio) >> 0;
+				let y = e.pageY - (page.Y * this.retinaPixelRatio) >> 0;
+				this.Selection.page = lCurrentPage;
+				if (down)
+					this.file.OnMouseDown(lCurrentPage, this.Selection, x, y, w, h);
+				else
+					this.file.OnMouseMove(lCurrentPage, this.Selection, x, y, w, h);
+				this.paint();
 			}
-
-			// TODO: координаты относительно страницы
-			if (lCurrentPage >= 0)
-				this.file.OnMouseMove(lCurrentPage, e.clientX, e.clientY);
 		};
 		
 		this.OnMouseUp = function(e)
@@ -395,8 +376,7 @@ window.onload = function()
 
 			if (!this.file.isValid())
 				return;
-				
-			this.canvas.width = this.canvas.width;
+
 			let ctx = this.canvas.getContext("2d");
 			ctx.strokeStyle = "#000000";
 			let lineW = this.retinaPixelRatio >> 0;
@@ -472,6 +452,8 @@ window.onload = function()
 				let y = ((page.Y - yPos) * this.retinaPixelRatio) >> 0;
 
 				ctx.drawImage(page.Image, 0, 0, w, h, x, y, w, h);
+				if (this.Selection.page == i && this.Selection.IsSelection)
+					ctx.drawImage(this.Selection.Image, 0, 0, w, h, x, y, w, h);
 
 				ctx.strokeRect(x + lineW / 2, y + lineW / 2, w - lineW, h - lineW);
 			}
@@ -481,6 +463,7 @@ window.onload = function()
 	window.Viewer = new CHtmlPage();
 	window.Viewer.resize();
 	window.Viewer.startTimer();
+	window.CCacheManager = CCacheManager;
 };
 
 window.onresize = function(e)

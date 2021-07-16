@@ -84,6 +84,9 @@
         var _glyph = -1;
         var minDist = Number.MAX_SAFE_INTEGER;
 
+        if (!this.pages[pageIndex].Lines)
+            return { Line : _line, Glyph : _glyph };
+
         for (let i = 0; i < this.pages[pageIndex].Lines.length; i++)
         {
             let Y = this.pages[pageIndex].Lines[i].Glyphs[0].Y;

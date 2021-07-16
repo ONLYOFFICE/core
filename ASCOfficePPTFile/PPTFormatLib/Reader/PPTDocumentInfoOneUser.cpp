@@ -2391,13 +2391,16 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
                 if (oArrayCString[i]->m_oHeader.RecInstance == 1)
                     oInfo.m_strFilePath		= oArrayCString[i]->m_strText;
                 // Location atom. It's for slides or other local pp objects.
-                if (oArrayCString[i]->m_oHeader.RecInstance == 3)
+                if (oArrayCString[i]->m_oHeader.RecInstance == 3 && oInfo.GetSlideNumber(oArrayCString[i]->m_strText) != -1)
                     oInfo.m_strLocation		= oArrayCString[i]->m_strText;
             }
             m_oExMedia.m_arHyperlinks.push_back(oInfo);
+
         }
     }
 }
+
+
 
 void CPPTUserInfo::LoadExVideo(CRecordsContainer* pExObject)
 {

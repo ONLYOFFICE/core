@@ -1772,6 +1772,10 @@ void PPT_FORMAT::CShapeWriter::WriteButton(int paragraphNum)
             else
                 hlink.action = L"ppaction://noaction";
             break;
+        }case 8:
+        {
+            hlink.action = L"ppaction://noaction";
+            break;
         }
         default:
             hlink.action = L"ppaction://noaction";

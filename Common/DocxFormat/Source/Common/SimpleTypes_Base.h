@@ -151,8 +151,9 @@ namespace SimpleTypes
 		CUniversalMeasure() {}
         virtual ~CUniversalMeasure() {}
 
-        virtual double  FromString(std::wstring &sValue)     = 0;
-        virtual std::wstring ToString  () const              = 0;
+        virtual double  FromString(std::wstring &sValue)	= 0;
+        virtual std::wstring ToString  () const				= 0;
+		virtual void SetValue(double val)					= 0;
 
 		double GetValue() const
 		{
@@ -293,7 +294,12 @@ namespace SimpleTypes
 
 		CUniversalMeasureOrPercent() {}
         virtual ~CUniversalMeasureOrPercent() {}
-
+		
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = dValue;
+		}
 		virtual double  FromString(std::wstring &sValue)
 		{
 			m_bUnit = false;
@@ -348,8 +354,12 @@ namespace SimpleTypes
 			Parse(sValue, 1);
 			return m_dValue;
 		}
-
-        virtual std::wstring ToString  () const
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = dValue;
+		}
+        virtual std::wstring ToString () const
 		{
             return boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
 		}
@@ -363,13 +373,7 @@ namespace SimpleTypes
 		{
 			m_dValue = dValue * 72;
 			return m_dValue;
-		}
-
-  
-		void SetValue(double dValue)
-		{
-			m_dValue = dValue;
-		}
+		}  
 		double GetValue () const
 		{
 			return m_dValue;
@@ -389,7 +393,11 @@ namespace SimpleTypes
 			Parse(sValue, 1.0 / 72);
 			return m_dValue;
 		}
-
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = FromInches(dValue);
+		}
         virtual std::wstring ToString  () const
 		{
             return boost::lexical_cast<std::wstring>(ToInches()) + L"in";
@@ -414,7 +422,11 @@ namespace SimpleTypes
 			Parse(sValue, 12700);
 			return m_dValue;
 		}
-
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = FromEmu(dValue);
+		}
         virtual std::wstring ToString  () const
 		{
             return boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
@@ -453,16 +465,12 @@ namespace SimpleTypes
 		{
 			return  (long)Pt_To_Px(m_dValue);
 		}
-		void SetValue(double dValue)
-		{
-			m_dValue = dValue;
-		}
 		double GetValue () const
 		{
 			return m_dValue;
 		}
-		SimpleType_FromString          (double)
-		SimpleType_Operator_Equal      (CEmu)
+		SimpleType_FromString (double)
+		SimpleType_Operator_Equal (CEmu)
 		UniversalMeasure_AdditionalOpearators(CEmu)
 	};
 

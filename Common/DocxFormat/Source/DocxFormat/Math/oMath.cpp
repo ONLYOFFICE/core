@@ -44,27 +44,27 @@ namespace OOX
 		}
 		void CMathArgNodes::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-            sNodeName = oNode.GetName();
-			if(sNodeName == _T("m:deg"))
-				eType = et_m_deg;
-			else if (sNodeName == _T("m:den"))
-				eType = et_m_den;
-			else if (sNodeName == _T("m:e"))
-				eType = et_m_e;
-			else if (sNodeName == _T("m:fName"))
-				eType = et_m_fName;
-			else if (sNodeName == _T("m:lim"))
-				eType = et_m_lim;
-			else if (sNodeName == _T("m:num"))
-				eType = et_m_num;
-			else if (sNodeName == _T("m:oMath"))
-				eType = et_m_oMath;
-			else if (sNodeName == _T("m:sub"))
-				eType = et_m_sub;
-			else if (sNodeName == _T("m:sup"))
-				eType = et_m_sup;
+            m_sNodeName = oNode.GetName();
+			if(m_sNodeName == _T("m:deg"))
+				m_eType = et_m_deg;
+			else if (m_sNodeName == _T("m:den"))
+				m_eType = et_m_den;
+			else if (m_sNodeName == _T("m:e"))
+				m_eType = et_m_e;
+			else if (m_sNodeName == _T("m:fName"))
+				m_eType = et_m_fName;
+			else if (m_sNodeName == _T("m:lim"))
+				m_eType = et_m_lim;
+			else if (m_sNodeName == _T("m:num"))
+				m_eType = et_m_num;
+			else if (m_sNodeName == _T("m:oMath"))
+				m_eType = et_m_oMath;
+			else if (m_sNodeName == _T("m:sub"))
+				m_eType = et_m_sub;
+			else if (m_sNodeName == _T("m:sup"))
+				m_eType = et_m_sup;
 			else
-				eType = et_Unknown;
+				m_eType = et_Unknown;
 
 			XmlUtils::CXmlNodes oChilds;
 			if ( oNode.GetNodes( _T("*"), oChilds ) )
@@ -181,27 +181,27 @@ namespace OOX
 		}
 		void CMathArgNodes::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-            sNodeName = std::wstring(oReader.GetName().c_str());
-			if(sNodeName == _T("m:deg"))
-				eType = et_m_deg;
-			else if (sNodeName == _T("m:den"))
-				eType = et_m_den;
-			else if (sNodeName == _T("m:e"))
-				eType = et_m_e;
-			else if (sNodeName == _T("m:fName"))
-				eType = et_m_fName;
-			else if (sNodeName == _T("m:lim"))
-				eType = et_m_lim;
-			else if (sNodeName == _T("m:num"))
-				eType = et_m_num;
-			else if (sNodeName == _T("m:oMath"))
-				eType = et_m_oMath;
-			else if (sNodeName == _T("m:sub"))
-				eType = et_m_sub;
-			else if (sNodeName == _T("m:sup"))
-				eType = et_m_sup;
+            m_sNodeName = oReader.GetName();
+			if(m_sNodeName == _T("m:deg"))
+				m_eType = et_m_deg;
+			else if (m_sNodeName == _T("m:den"))
+				m_eType = et_m_den;
+			else if (m_sNodeName == _T("m:e"))
+				m_eType = et_m_e;
+			else if (m_sNodeName == _T("m:fName"))
+				m_eType = et_m_fName;
+			else if (m_sNodeName == _T("m:lim"))
+				m_eType = et_m_lim;
+			else if (m_sNodeName == _T("m:num"))
+				m_eType = et_m_num;
+			else if (m_sNodeName == _T("m:oMath"))
+				m_eType = et_m_oMath;
+			else if (m_sNodeName == _T("m:sub"))
+				m_eType = et_m_sub;
+			else if (m_sNodeName == _T("m:sup"))
+				m_eType = et_m_sup;
 			else
-				eType = et_Unknown;
+				m_eType = et_Unknown;
 
 			if ( oReader.IsEmptyNode())
 				return;

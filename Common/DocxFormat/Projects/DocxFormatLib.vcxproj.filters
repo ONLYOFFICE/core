@@ -916,5 +916,8 @@
     <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramColors.cpp">
       <Filter>Diagram</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\Settings.cpp">
+      <Filter>Settings\DocumentSettings</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

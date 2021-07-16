@@ -3022,7 +3022,11 @@ namespace SimpleTypes
 
 			return m_dValue;
 		}
-
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = dValue;
+		}
         virtual std::wstring ToString  () const
 		{
             std::wstring sResult;
@@ -5077,7 +5081,11 @@ namespace SimpleTypes
 
 			return m_dValue;
 		}
-
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = dValue;
+		}
         virtual std::wstring ToString  () const
 		{
 			return boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
@@ -5096,7 +5104,11 @@ namespace SimpleTypes
 	{
 	public:
 		CSignedTwipsMeasure() {}
-
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = FromTwips(dValue);
+		}
         virtual double  FromString(std::wstring &sValue)
 		{
 			Parse(sValue, 20); 

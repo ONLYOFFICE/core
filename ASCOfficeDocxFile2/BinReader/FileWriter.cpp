@@ -53,7 +53,8 @@ FileWriter::FileWriter(std::wstring sDirOutput,std::wstring sFontDir, bool bNoFo
 	m_pComments			(NULL),
 	m_pApp				(NULL),
 	m_pCore				(NULL),
-	m_pCustomProperties	(NULL)
+	m_pCustomProperties	(NULL),
+	m_pCurrentSettings	(NULL)
 {
 }
 FileWriter::~FileWriter()
@@ -61,6 +62,8 @@ FileWriter::~FileWriter()
     RELEASEOBJECT(m_pApp);
     RELEASEOBJECT(m_pCore);
 	RELEASEOBJECT(m_pCustomProperties);
+
+	m_pCurrentSettings = NULL;
 }
 void FileWriter::Write()
 {

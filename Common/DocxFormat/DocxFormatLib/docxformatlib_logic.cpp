@@ -61,6 +61,7 @@
 #include "../Source/DocxFormat/VmlDrawing.cpp"
 #include "../Source/DocxFormat/App.cpp"
 #include "../Source/DocxFormat/Core.cpp"
+#include "../Source/DocxFormat/Settings/Settings.cpp"
 #include "../Source/DocxFormat/FileFactory.cpp"
 #include "../Source/DocxFormat/IFileContainer.cpp"
 #include "../Source/DocxFormat/Document.cpp"

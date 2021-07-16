@@ -162,17 +162,14 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cx"),      m_oCx )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cy"),      m_oCy )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if( oReader, _T("cx"), m_oCx )
+					WritingElement_ReadAttributes_Read_if( oReader, _T("cy"), m_oCy )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CEmu>			m_oCx;
-			nullable<SimpleTypes::CEmu>			m_oCy;
+			nullable<SimpleTypes::CEmu> m_oCx;
+			nullable<SimpleTypes::CEmu> m_oCy;
 		};
 	} //Spreadsheet
 } // namespace OOX

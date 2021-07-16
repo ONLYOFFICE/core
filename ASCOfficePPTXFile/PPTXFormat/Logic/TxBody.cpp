@@ -33,7 +33,6 @@
 
 #include "TxBody.h"
 #include "ClrMap.h"
-
 #include "../Theme.h"
 
 namespace PPTX

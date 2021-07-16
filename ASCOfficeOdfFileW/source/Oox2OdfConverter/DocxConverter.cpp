@@ -2888,7 +2888,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	{
 		if (oox_run_pr->m_oLang->m_oVal.IsInit())
 		{
-			std::wstring lang = oox_run_pr->m_oLang->m_oVal->GetValue();
+			std::wstring lang = *oox_run_pr->m_oLang->m_oVal;
 			size_t split = lang.find(L"-");
 			if (split != std::wstring::npos)
 			{

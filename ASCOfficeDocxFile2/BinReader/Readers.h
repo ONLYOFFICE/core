@@ -38,8 +38,8 @@
 
 namespace OOX
 {
-	class CComments;
 	class CSettingsCustom;
+	class CSettings;
 }
 namespace BinDocxRW {
 
@@ -77,14 +77,13 @@ public:
 class Binary_HdrFtrTableReader : public Binary_CommonReader
 {
 	Writers::FileWriter&	m_oFileWriter;
-	CComments*				m_pComments;
 
 	int						nCurType;
 	int						nCurHeaderType;
 public:
 	Writers::HeaderFooterWriter& m_oHeaderFooterWriter;
 	
-	Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments);
+	Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
     int Read();
     int ReadHdrFtrContent	(BYTE type, long length, void* poResult);
     int ReadHdrFtrFEO		(BYTE type, long length, void* poResult);
@@ -251,9 +250,10 @@ class Binary_SettingsTableReader : public Binary_CommonReader
 	Binary_rPrReader m_oBinary_rPrReader;
 	Writers::SettingWriter& m_oSettingWriter;
 	Writers::FileWriter& m_oFileWriter;
-	OOX::CSettingsCustom& m_oSettingsCustom;
+	
+	OOX::CSettingsCustom* m_pSettingsCustom;
 public:
-	Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CSettingsCustom& oSettingsCustom);
+	Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CSettingsCustom* pSettingsCustom);
 	int Read();
 	int ReadDocProtect(BYTE type, long length, void* poResult);
 	int ReadWriteProtect(BYTE type, long length, void* poResult);
@@ -298,13 +298,12 @@ private:
 	NSStringUtils::CStringBuilder	m_oCur_pPr;
     BYTE                            m_byteLastElemType;
 public:
-    CComments*                      m_pComments;
     Writers::ContentWriter&         m_oDocumentWriter;
     Writers::MediaWriter&           m_oMediaWriter;
 
 	bool							m_bUsedParaIdCounter;
 
-    Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, CComments* pComments);
+    Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter);
 	~Binary_DocumentTableReader();
 	
 	int Read();
@@ -491,12 +490,11 @@ public:
 class Binary_NotesTableReader : public Binary_CommonReader
 {
 	Writers::FileWriter&					m_oFileWriter;
-	CComments*								m_pComments;
 	bool									m_bIsFootnote;
 	nullable<SimpleTypes::CDecimalNumber<>>	m_oId;
 	nullable<SimpleTypes::CFtnEdn<>>		m_oType;
 public:
-	Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments, bool bIsFootnote);
+	Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, bool bIsFootnote);
 	int Read();
 	int ReadNotes(BYTE type, long length, void* poResult);
 	int ReadNote(BYTE type, long length, void* poResult);

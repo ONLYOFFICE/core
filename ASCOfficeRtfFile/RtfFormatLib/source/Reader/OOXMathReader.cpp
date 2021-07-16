@@ -155,6 +155,29 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 					rtfMath->AddItem(oSubMath);			
 			}
 		}break;
+		case OOX::et_m_mathPr:
+		{
+			OOX::Logic::CMathPr *ooxSubMath = dynamic_cast<OOX::Logic::CMathPr *>(ooxMath);
+			if (ooxSubMath)
+			{
+				ParseElement(oParam, ooxSubMath->m_oBrkBin.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oBrkBinSub.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oDefJc.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oDispDef.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oInterSp.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oIntLim.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oIntraSp.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oLMargin.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oMathFont.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oNaryLim.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oPostSp.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oPreSp.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oRMargin.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oSmallFrac.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oWrapIndent.GetPointer(), rtfMath);
+				ParseElement(oParam, ooxSubMath->m_oWrapRight.GetPointer(), rtfMath);
+			}
+		}break;
 		case OOX::et_m_accPr:
 		{
 			OOX::Logic::CAccPr *ooxSubMath = dynamic_cast<OOX::Logic::CAccPr *>(ooxMath);
@@ -452,7 +475,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			if (ooxSubMath)
 			{
 				RtfFont oFont;
-				if (( ooxSubMath && ooxSubMath->m_val.IsInit()) && (true == oParam.oRtf->m_oFontTable.GetFont(ooxSubMath->m_val.get2(), oFont)))
+				if (( ooxSubMath && ooxSubMath->m_val.IsInit()) && (true == oParam.oRtf->m_oFontTable.GetFont(*ooxSubMath->m_val, oFont)))
 				{
 					rtfMath->m_bIsVal = true;
 					RtfCharPtr oChar = RtfCharPtr(new RtfChar);
@@ -951,5 +974,19 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 	}
 	return true;
 }
+bool OOXMathReader::Parse(ReaderParameter oParam, RtfMath& oOutput)
+{
+	if (m_ooxElem == NULL) return false;
 
+	for (std::vector<OOX::WritingElement*>::iterator it = m_ooxElem->m_arrItems.begin(); it != m_ooxElem->m_arrItems.end(); ++it)
+	{
+		RtfMathPtr pNewMath;
+
+		if (ParseElement(oParam, *it, pNewMath))
+		{
+			oOutput.AddItem(pNewMath);
+		}
+	}
+	return true;
+}
 

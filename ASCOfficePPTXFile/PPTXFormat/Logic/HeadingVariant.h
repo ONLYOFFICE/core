@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_HEADING_VARIANT_INCLUDE_H_
-#define PPTX_LOGIC_HEADING_VARIANT_INCLUDE_H_
 
 #include "./../WrapperFile.h"
 #include "./../FileContainer.h"
@@ -231,9 +229,7 @@ namespace PPTX
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-		public:
-			std::vector<PPTX::Logic::CustomProperty>	arrProperties;
+
+		std::vector<PPTX::Logic::CustomProperty>	m_arProperties;
 	};
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_HEADING_VARIANT_INCLUDE_H_

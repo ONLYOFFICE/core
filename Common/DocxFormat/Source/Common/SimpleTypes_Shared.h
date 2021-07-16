@@ -487,41 +487,41 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------		
 
 	// TO DO: сделать парсер языка по спецификации RFC 4646/BCP 47
-	class CLang
-	{
-	public:
-		CLang() {}
+	//class CLang
+	//{
+	//public:
+	//	CLang() {}
 
-        std::wstring GetValue() const
-		{
-			return m_sValue;
-		}
+ //       std::wstring GetValue() const
+	//	{
+	//		return m_sValue;
+	//	}
 
-        void    SetValue(std::wstring &sValue)
-		{
-			m_sValue = sValue;
-		}
+ //       void    SetValue(std::wstring &sValue)
+	//	{
+	//		m_sValue = sValue;
+	//	}
 
 
-        std::wstring FromString(std::wstring &sValue)
-		{
-			m_sValue = sValue;
+ //       std::wstring FromString(std::wstring &sValue)
+	//	{
+	//		m_sValue = sValue;
 
-			return m_sValue;
-		}
+	//		return m_sValue;
+	//	}
 
-        std::wstring ToString  () const
-		{
-			return m_sValue;
-		}
+ //       std::wstring ToString  () const
+	//	{
+	//		return m_sValue;
+	//	}
 
-        SimpleType_FromString2    (std::wstring)
-		SimpleType_Operator_Equal (CLang)
+ //       SimpleType_FromString2    (std::wstring)
+	//	SimpleType_Operator_Equal (CLang)
 
-	private:
+	//private:
 
-        std::wstring m_sValue;
-	};
+ //       std::wstring m_sValue;
+	//};
 
 
 	//--------------------------------------------------------------------------------
@@ -778,8 +778,12 @@ namespace SimpleTypes
 
 			return m_dValue;
 		}
-
-        virtual std::wstring ToString  () const
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = FromTwips(dValue);
+		}
+        virtual std::wstring ToString() const
 		{
             std::wstring sResult;
 

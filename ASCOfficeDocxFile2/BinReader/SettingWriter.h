@@ -36,55 +36,28 @@
 namespace Writers
 {
     static std::wstring g_string_set_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><w:settings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\">");
-	static std::wstring g_string_set_Default = _T("<w:zoom w:percent=\"100\"/><w:characterSpacingControl w:val=\"doNotCompress\"/><w:themeFontLang w:val=\"en-US\" w:eastAsia=\"zh-CN\"/><w:shapeDefaults><o:shapedefaults v:ext=\"edit\" spidmax=\"1026\"/><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout></w:shapeDefaults>");
     static std::wstring g_string_set_End = _T("</w:settings>");
 
 	class SettingWriter
 	{
         std::wstring					m_sDir;
 		NSStringUtils::CStringBuilder	m_oSettingWriter;
-		HeaderFooterWriter&				m_oHeaderFooterWriter;
 	public:
-        SettingWriter(std::wstring sDir, HeaderFooterWriter& oHeaderFooterWriter):m_sDir(sDir),m_oHeaderFooterWriter(oHeaderFooterWriter)
+        SettingWriter(std::wstring sDir) : m_sDir(sDir)
 		{
 		}
 		void Write(bool bGlossary = false)
 		{
-			Prepare();
             OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + L"settings.xml";
 
 			NSFile::CFileBinary oFile;
 			oFile.CreateFileW(filePath.GetPath());
-			oFile.WriteStringUTF8(g_string_set_Start);
 			oFile.WriteStringUTF8(m_oSettingWriter.GetData());
-			oFile.WriteStringUTF8(g_string_set_Default);
-			oFile.WriteStringUTF8(g_string_set_End);
 			oFile.CloseFile();
 		}
         void AddSetting(std::wstring sSetting)
 		{
 			m_oSettingWriter.WriteString(sSetting);
-		}
-		void Prepare()
-		{
-			if(BinDocxRW::g_nCurFormatVersion < 5)
-			{
-				bool bevenAndOddHeaders = false;
-				for(size_t i = 0, length = m_oHeaderFooterWriter.m_aHeaders.size(); i < length; ++i)
-				{
-					HdrFtrItem* pHeader = m_oHeaderFooterWriter.m_aHeaders[i];
-					if(SimpleTypes::hdrftrEven == pHeader->eType)
-						bevenAndOddHeaders = true;
-				}
-				for(size_t i = 0, length = m_oHeaderFooterWriter.m_aFooters.size(); i < length; ++i)
-				{
-					HdrFtrItem* pFooter = m_oHeaderFooterWriter.m_aFooters[i];
-					if(SimpleTypes::hdrftrEven == pFooter->eType)
-						bevenAndOddHeaders = true;
-				}
-				if(bevenAndOddHeaders)
-					AddSetting(L"<w:evenAndOddHeaders/>");
-			}
 		}
 	};
 }

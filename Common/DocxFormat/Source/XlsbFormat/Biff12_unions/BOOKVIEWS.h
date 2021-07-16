@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,59 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#ifndef BIFF12RECORDBASE_H
-#define BIFF12RECORDBASE_H
+#include <Logic/CompositeObject.h>
 
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-typedef BYTE *LPBYTE;
 using namespace XLS;
+
 namespace XLSB
 {
-    class StreamCacheReader;
 
-    class WorkBookStream;
-    typedef std::shared_ptr<WorkBookStream>		WorkBookStreamPtr;
-
-    class WorkBookStream: public CompositeObject
+    class BOOKVIEWS: public CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
+        BASE_OBJECT_DEFINE_CLASS_NAME(BOOKVIEWS)
     public:
-        WorkBookStream(const unsigned short code_page);
-        virtual ~WorkBookStream();
+        BOOKVIEWS();
+        virtual ~BOOKVIEWS();
 
         BaseObjectPtr clone();
 
         virtual const bool loadContent(BinProcessor& proc);
 
-        static const ElementType type = typeWorkbookStreamObject;
-
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
-
-        BaseObjectPtr			m_BrtBeginBook;
-        BaseObjectPtr			m_BrtFileVersion;
-        BaseObjectPtr			m_BrtFileSharingIso;
-        BaseObjectPtr			m_BrtFileSharing;
-        BaseObjectPtr           m_BrtWbProp;
-        BaseObjectPtr           m_ACABSPATH;
-        BaseObjectPtr           m_BOOKVIEWS;
-        BaseObjectPtr           m_BUNDLESHS;
-
-        unsigned short			code_page_;
-        GlobalWorkbookInfoPtr		global_info_;
-
+        BaseObjectPtr               BrtBeginBookViews;
+        std::vector<BaseObjectPtr>	arrBrtBookView;
+        BaseObjectPtr               BrtEndBookViews;
 
     };
 
-}
-
-#endif // BIFF12RECORDBASE_H
+} // namespace XLSB
 

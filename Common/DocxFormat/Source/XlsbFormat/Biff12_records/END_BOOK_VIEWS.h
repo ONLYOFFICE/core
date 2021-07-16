@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,59 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#ifndef BIFF12RECORDBASE_H
-#define BIFF12RECORDBASE_H
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../Source/XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
 
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-typedef BYTE *LPBYTE;
 using namespace XLS;
+
 namespace XLSB
 {
-    class StreamCacheReader;
-
-    class WorkBookStream;
-    typedef std::shared_ptr<WorkBookStream>		WorkBookStreamPtr;
-
-    class WorkBookStream: public CompositeObject
+    // Logical representation of END_BOOK_VIEWS record in BIFF12
+    class END_BOOK_VIEWS: public BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
-    public:
-        WorkBookStream(const unsigned short code_page);
-        virtual ~WorkBookStream();
+            BIFF_RECORD_DEFINE_TYPE_INFO(END_BOOK_VIEWS)
+            BASE_OBJECT_DEFINE_CLASS_NAME(END_BOOK_VIEWS)
+        public:
+            END_BOOK_VIEWS();
+            virtual ~END_BOOK_VIEWS();
 
-        BaseObjectPtr clone();
+            BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
-
-        static const ElementType type = typeWorkbookStreamObject;
-
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
-
-        BaseObjectPtr			m_BrtBeginBook;
-        BaseObjectPtr			m_BrtFileVersion;
-        BaseObjectPtr			m_BrtFileSharingIso;
-        BaseObjectPtr			m_BrtFileSharing;
-        BaseObjectPtr           m_BrtWbProp;
-        BaseObjectPtr           m_ACABSPATH;
-        BaseObjectPtr           m_BOOKVIEWS;
-        BaseObjectPtr           m_BUNDLESHS;
-
-        unsigned short			code_page_;
-        GlobalWorkbookInfoPtr		global_info_;
-
-
+            void readFields(CFRecord& record);
     };
 
-}
-
-#endif // BIFF12RECORDBASE_H
+} // namespace XLSB
 

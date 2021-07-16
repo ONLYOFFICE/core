@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,59 +29,43 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#ifndef BIFF12RECORDBASE_H
-#define BIFF12RECORDBASE_H
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../Source/XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
+#include "../Biff12_structures/XLWideString.h"
+#include "../Biff12_structures/RelID.h"
 
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-typedef BYTE *LPBYTE;
 using namespace XLS;
+
 namespace XLSB
 {
-    class StreamCacheReader;
-
-    class WorkBookStream;
-    typedef std::shared_ptr<WorkBookStream>		WorkBookStreamPtr;
-
-    class WorkBookStream: public CompositeObject
+    // Logical representation of BUNDLE_SH record in BIFF12
+    class BUNDLE_SH: public BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
-    public:
-        WorkBookStream(const unsigned short code_page);
-        virtual ~WorkBookStream();
+            BIFF_RECORD_DEFINE_TYPE_INFO(BUNDLE_SH)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BUNDLE_SH)
+        public:
+            BUNDLE_SH();
+            virtual ~BUNDLE_SH();
 
-        BaseObjectPtr clone();
+            BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+            void readFields(CFRecord& record);
 
-        static const ElementType type = typeWorkbookStreamObject;
+            enum ST_SheetState {
+                VISIBLE     = 0x00000000,
+                HIDDEN      = 0x00000001,
+                VERYHIDDEN  = 0x00000002
+            };
 
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
-
-        BaseObjectPtr			m_BrtBeginBook;
-        BaseObjectPtr			m_BrtFileVersion;
-        BaseObjectPtr			m_BrtFileSharingIso;
-        BaseObjectPtr			m_BrtFileSharing;
-        BaseObjectPtr           m_BrtWbProp;
-        BaseObjectPtr           m_ACABSPATH;
-        BaseObjectPtr           m_BOOKVIEWS;
-        BaseObjectPtr           m_BUNDLESHS;
-
-        unsigned short			code_page_;
-        GlobalWorkbookInfoPtr		global_info_;
-
+            _UINT32       hsState; //ST_SheetState
+            _UINT32       iTabID;
+            RelID         strRelID;
+            XLWideString  strName;
 
     };
 
-}
-
-#endif // BIFF12RECORDBASE_H
+} // namespace XLSB
 

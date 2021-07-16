@@ -111,13 +111,22 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/AC_BEGIN.cpp \
     ../Source/XlsbFormat/Biff12_records/ABS_PATH15.cpp \
     ../Source/XlsbFormat/Biff12_records/AC_END.cpp \
+    ../Source/XlsbFormat/Biff12_records/BEGIN_BOOK_VIEWS.cpp \
+    ../Source/XlsbFormat/Biff12_records/BOOK_VIEW.cpp \
+    ../Source/XlsbFormat/Biff12_records/END_BOOK_VIEWS.cpp \
+    ../Source/XlsbFormat/Biff12_records/BEGIN_BUNDLE_SHS.cpp \
+    ../Source/XlsbFormat/Biff12_records/BUNDLE_SH.cpp \
+    ../Source/XlsbFormat/Biff12_records/END_BUNDLE_SHS.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
     ../Source/XlsbFormat/Biff12_structures/CodeName.cpp \
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.cpp \
+    ../Source/XlsbFormat/Biff12_structures/RelID.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.cpp \
+    ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/BUNDLESHS.cpp \
 }
 
 
@@ -325,11 +334,20 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/AC_BEGIN.h \
     ../Source/XlsbFormat/Biff12_records/ABS_PATH15.h \
     ../Source/XlsbFormat/Biff12_records/AC_END.h \
+    ../Source/XlsbFormat/Biff12_records/BEGIN_BOOK_VIEWS.h \
+    ../Source/XlsbFormat/Biff12_records/BOOK_VIEW.h \
+    ../Source/XlsbFormat/Biff12_records/END_BOOK_VIEWS.h \
+    ../Source/XlsbFormat/Biff12_records/BEGIN_BUNDLE_SHS.h \
+    ../Source/XlsbFormat/Biff12_records/BUNDLE_SH.h \
+    ../Source/XlsbFormat/Biff12_records/END_BUNDLE_SHS.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.h \
     ../Source/XlsbFormat/Biff12_structures/CodeName.h \
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
+    ../Source/XlsbFormat/Biff12_structures/RelID.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
+    ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.h \
+    ../Source/XlsbFormat/Biff12_unions/BUNDLESHS.h \

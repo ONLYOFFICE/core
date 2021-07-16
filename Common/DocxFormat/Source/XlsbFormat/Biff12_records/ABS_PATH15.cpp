@@ -31,7 +31,6 @@
  */
 
 #include "ABS_PATH15.h"
-#include "../Biff12_structures/ACProductVersion.h"
 
 namespace XLSB
 {

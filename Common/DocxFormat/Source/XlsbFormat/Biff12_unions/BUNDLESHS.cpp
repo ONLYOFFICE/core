@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,58 +30,50 @@
  *
  */
 
-#ifndef BIFF12RECORDBASE_H
-#define BIFF12RECORDBASE_H
+#include "BUNDLESHS.h"
+#include "../Biff12_records/BEGIN_BUNDLE_SHS.h"
+#include "../Biff12_records/BUNDLE_SH.h"
+#include "../Biff12_records/END_BUNDLE_SHS.h"
 
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-typedef BYTE *LPBYTE;
-using namespace XLS;
 namespace XLSB
 {
-    class StreamCacheReader;
 
-    class WorkBookStream;
-    typedef std::shared_ptr<WorkBookStream>		WorkBookStreamPtr;
-
-    class WorkBookStream: public CompositeObject
+    BUNDLESHS::BUNDLESHS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
-    public:
-        WorkBookStream(const unsigned short code_page);
-        virtual ~WorkBookStream();
+    }
 
-        BaseObjectPtr clone();
+    BUNDLESHS::~BUNDLESHS()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr BUNDLESHS::clone()
+    {
+        return BaseObjectPtr(new BUNDLESHS(*this));
+    }
 
-        static const ElementType type = typeWorkbookStreamObject;
+    // BUNDLESHS = BrtBeginBUNDLESHS ...
+    const bool BUNDLESHS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BEGIN_BUNDLE_SHS>())
+        {
+            BrtBeginBundleShs = elements_.back();
+            elements_.pop_back();
+        }
 
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
+        while (proc.optional<BUNDLE_SH>())
+        {
+            arrBrtBundleSh.push_back(elements_.back());
+            elements_.pop_back();
+        }
 
-        BaseObjectPtr			m_BrtBeginBook;
-        BaseObjectPtr			m_BrtFileVersion;
-        BaseObjectPtr			m_BrtFileSharingIso;
-        BaseObjectPtr			m_BrtFileSharing;
-        BaseObjectPtr           m_BrtWbProp;
-        BaseObjectPtr           m_ACABSPATH;
-        BaseObjectPtr           m_BOOKVIEWS;
-        BaseObjectPtr           m_BUNDLESHS;
+        if (proc.optional<END_BUNDLE_SHS>())
+        {
+            BrtEndBundleShs = elements_.back();
+            elements_.pop_back();
+        }
 
-        unsigned short			code_page_;
-        GlobalWorkbookInfoPtr		global_info_;
+        return BrtBeginBundleShs || !arrBrtBundleSh.empty() || BrtEndBundleShs;
+    }
 
-
-    };
-
-}
-
-#endif // BIFF12RECORDBASE_H
+} // namespace XLSB
 

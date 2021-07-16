@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,58 +30,28 @@
  *
  */
 
-#ifndef BIFF12RECORDBASE_H
-#define BIFF12RECORDBASE_H
+#include "BEGIN_BOOK_VIEWS.h"
 
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-typedef BYTE *LPBYTE;
-using namespace XLS;
 namespace XLSB
 {
-    class StreamCacheReader;
 
-    class WorkBookStream;
-    typedef std::shared_ptr<WorkBookStream>		WorkBookStreamPtr;
-
-    class WorkBookStream: public CompositeObject
+    BEGIN_BOOK_VIEWS::BEGIN_BOOK_VIEWS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
-    public:
-        WorkBookStream(const unsigned short code_page);
-        virtual ~WorkBookStream();
+    }
 
-        BaseObjectPtr clone();
+    BEGIN_BOOK_VIEWS::~BEGIN_BOOK_VIEWS()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr BEGIN_BOOK_VIEWS::clone()
+    {
+        return BaseObjectPtr(new BEGIN_BOOK_VIEWS(*this));
+    }
 
-        static const ElementType type = typeWorkbookStreamObject;
+    void BEGIN_BOOK_VIEWS::readFields(CFRecord& record)
+    {
+        //empty data
+    }
 
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
-
-        BaseObjectPtr			m_BrtBeginBook;
-        BaseObjectPtr			m_BrtFileVersion;
-        BaseObjectPtr			m_BrtFileSharingIso;
-        BaseObjectPtr			m_BrtFileSharing;
-        BaseObjectPtr           m_BrtWbProp;
-        BaseObjectPtr           m_ACABSPATH;
-        BaseObjectPtr           m_BOOKVIEWS;
-        BaseObjectPtr           m_BUNDLESHS;
-
-        unsigned short			code_page_;
-        GlobalWorkbookInfoPtr		global_info_;
-
-
-    };
-
-}
-
-#endif // BIFF12RECORDBASE_H
+} // namespace XLSB
 

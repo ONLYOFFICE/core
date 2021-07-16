@@ -40,6 +40,8 @@
 #include "Biff12_records/FILE_SHARING.h"
 #include "Biff12_records/WB_PROP.h"
 #include "Biff12_unions/ACABSPATH.h"
+#include "Biff12_unions/BOOKVIEWS.h"
+#include "Biff12_unions/BUNDLESHS.h"
 
 namespace XLSB
 {
@@ -159,6 +161,24 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                 if (proc.optional<ACABSPATH>())
                 {
                     m_ACABSPATH = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BEGIN_BOOK_VIEWS:
+            {
+                if (proc.optional<BOOKVIEWS>())
+                {
+                    m_BOOKVIEWS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BEGIN_BUNDLE_SHS:
+            {
+                if (proc.optional<BUNDLESHS>())
+                {
+                    m_BUNDLESHS = elements_.back();
                     elements_.pop_back();
                 }
             }break;

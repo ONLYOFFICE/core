@@ -9217,6 +9217,11 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 		pSdtPr->m_oTextFormPr.Init();
 		READ1_DEF(length, res, this->ReadSdtTextFormPr, pSdtPr->m_oTextFormPr.GetPointer());
 	}
+	else if (c_oSerSdt::PictureFormPr == type)
+	{
+		pSdtPr->m_oPicture.Init();
+		READ1_DEF(length, res, this->ReadSdtPicture, pSdtPr->m_oPicture.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -9400,6 +9405,35 @@ int Binary_DocumentTableReader::ReadDropDownList(BYTE type, long length, void* p
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int Binary_DocumentTableReader::ReadSdtPicture(BYTE type, long length, void* poResult)
+{
+	OOX::Logic::CSdtPicture* pPicture = static_cast<OOX::Logic::CSdtPicture*>(poResult);
+
+	int res = 0;
+	if (c_oSerSdt::PictureFormPrScaleFlag == type)
+	{
+		pPicture->m_oScaleFlag = m_oBufferedStream.GetLong();
+	}
+	else if (c_oSerSdt::PictureFormPrLockProportions == type)
+	{
+		pPicture->m_oLockProportions = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerSdt::PictureFormPrRespectBorders == type)
+	{
+		pPicture->m_oRespectBorders = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerSdt::PictureFormPrShiftX == type)
+	{
+		pPicture->m_oShiftX = m_oBufferedStream.GetDoubleReal();
+	}
+	else if (c_oSerSdt::PictureFormPrShiftY == type)
+	{
+		pPicture->m_oShiftY = m_oBufferedStream.GetDoubleReal();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poResult)
 {
 	int res = 0;
@@ -9442,6 +9476,14 @@ int Binary_DocumentTableReader::ReadSdtTextFormPr(BYTE type, long length, void* 
 	{
 		pTextFormPr->m_oCombBorder.Init();
 		READ2_DEF(length, res, oBinary_pPrReader.ReadBorder2, pTextFormPr->m_oCombBorder.GetPointer());
+	}
+	else if (c_oSerSdt::TextFormPrAutoFit == type)
+	{
+		pTextFormPr->m_oAutoFit = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerSdt::TextFormPrMultiLine == type)
+	{
+		pTextFormPr->m_oMultiLine = m_oBufferedStream.GetBool();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

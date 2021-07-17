@@ -335,7 +335,7 @@ namespace OOX
 		public:
 			CMathBottomNodesEx()
 			{
-				m_eType = type;
+				CMathBottomNodes<TMathBottomType>::m_eType = type;
 			}
 			CMathBottomNodesEx(XmlUtils::CXmlNode& oNode)
 			{
@@ -347,7 +347,7 @@ namespace OOX
 			}
 			virtual EElementType getType() const
 			{
-				return m_eType;
+				return CMathBottomNodes<TMathBottomType>::m_eType;
 			}
 		};
 

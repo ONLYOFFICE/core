@@ -47,11 +47,12 @@ using namespace OOX::Spreadsheet;
 
 namespace BinXlsxRW
 {
-	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter::CCSVWriter* _pCSVWriter)
+	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter::CCSVWriter* _pCSVWriter, bool bMacro)
 	{
-		pContentTypes	= _pContentTypes;
-        sThemePath		= _sThemePath;
-		sDrawingsPath	= _sDrawingsPath;
+		bMacroEnabled = bMacro;
+		pContentTypes = _pContentTypes;
+        sThemePath = _sThemePath;
+		sDrawingsPath = _sDrawingsPath;
 		sEmbeddingsPath = _sEmbeddingsPath;
 
 		nThemeOverrideCount = 1;

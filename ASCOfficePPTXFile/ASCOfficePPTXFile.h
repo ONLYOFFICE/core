@@ -29,26 +29,17 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef ASC_OFFICE_PPTX_FILE
-#define ASC_OFFICE_PPTX_FILE
+#pragma once
 
 #include "../DesktopEditor/common/ASCVariant.h"
-
 #include "../Common/DocxFormat/Source/Base/Base.h"
-#include "PPTXFormat/PPTXEvent.h"
-
-
-typedef void (*load_from_resource)		(void*, int, std::wstring&);
-typedef bool (*extract_to_directory)	(void*, std::wstring&, std::wstring&);
-typedef bool (*compress_from_directory)	(void*, std::wstring&, std::wstring&);
-typedef bool (*progress_operation)		(void*, long, long);
 
 namespace PPTX
 {
 	class Document;
 }
 
-class CPPTXFile : public PPTX::IPPTXEvent
+class CPPTXFile
 {
 private:
 	PPTX::Document*		m_pPptxDocument;
@@ -62,43 +53,31 @@ private:
 	std::wstring		m_strEmbeddedFontsDirectory;
 
 	std::wstring		m_strFolderThemes;
+	
 	bool				m_bIsNoBase64;
-
-    extract_to_directory    m_fCallbackExtract;
-	compress_from_directory m_fCallbackCompress;
-    progress_operation      m_fCallbackProgress;
-    void*                   m_pCallbackArg;
+	bool				m_bIsMacro;
 public:
-
-	CPPTXFile(extract_to_directory fCallbackExtract, compress_from_directory fCallbackCompress, progress_operation fCallbackProgress, void* pCallbackArg);
-
+	CPPTXFile();
 	~CPPTXFile();
 
 	_UINT32 LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath, std::wstring sXMLOptions);
 
 	_UINT32 SaveToFile(std::wstring sDstFileName, std::wstring sSrcPath, std::wstring sXMLOptions);
 
-    HRESULT get_TempDirectory(std::wstring* pVal);
+    void get_TempDirectory(std::wstring* pVal);
     HRESULT put_TempDirectory(std::wstring newVal);
-
-    HRESULT GetDVDXml       (std::wstring* pbstrPTTXml);
-    HRESULT GetBluRayXml    (std::wstring* pbstrDVDXml);
-
-    HRESULT get_DrawingXml  (std::wstring* pVal);
-
-    virtual bool Progress   (long ID, long Percent);
 
     void SetEmbeddedFontsDirectory(std::wstring val);
 
-    // to PPTY
-	HRESULT SetMediaDir			(std::wstring bsMediaDir);
-    HRESULT SetFontDir			(std::wstring bsFontDir);
-    HRESULT SetThemesDir		(std::wstring bsDir);
-    HRESULT SetUseSystemFonts	(bool useSystemFonts);
-    void SetIsNoBase64			(bool bIsNoBase64);
-    
+	void SetMediaDir		(std::wstring bsMediaDir);
+	void SetFontDir			(std::wstring bsFontDir);
+	void SetThemesDir		(std::wstring bsDir);
+	void SetUseSystemFonts	(bool useSystemFonts);
+	
+	void SetIsNoBase64			(bool val);
+    void SetMacroEnabled		(bool val);
+	
 	_UINT32 OpenFileToPPTY		(std::wstring bsInput, std::wstring bsOutput);
     _UINT32 OpenDirectoryToPPTY	(std::wstring bsInput, std::wstring bsOutput);
     _UINT32 ConvertPPTYToPPTX	(std::wstring bsInput, std::wstring bsOutput, std::wstring bsThemesFolder);
 };
-#endif //ASC_OFFICE_PPTX_FILE

@@ -3090,13 +3090,6 @@ BinaryDocumentTableWriter::BinaryDocumentTableWriter(ParamsWriter& oParamsWriter
 	pJsaProject		= NULL;
 	m_bWriteSectPr	= false;
 }
-void BinaryDocumentTableWriter::WriteVbaProject(OOX::VbaProject& oVbaProject)
-{
-	m_oBcw.m_oStream.StartRecord(0);
-	oVbaProject.toPPTY(&m_oBcw.m_oStream);
-	m_oBcw.m_oStream.EndRecord();
-
-}
 void BinaryDocumentTableWriter::Write(OOX::Logic::CDocPartPr* pDocPartPr)
 {
 	if (!pDocPartPr) return;
@@ -9128,7 +9121,11 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		if ((pDocx) && (pDocx->m_pVbaProject))
 		{
 			nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::VbaProject);
-			oBinaryDocumentTableWriter.WriteVbaProject(*pDocx->m_pVbaProject);
+
+			m_oBcw.m_oStream.StartRecord(0);
+			pDocx->m_pVbaProject->toPPTY(&m_oBcw.m_oStream);
+			m_oBcw.m_oStream.EndRecord();
+
 			this->WriteTableEnd(nCurPos);
 		}
 	}

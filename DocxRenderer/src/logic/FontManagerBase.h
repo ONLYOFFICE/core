@@ -292,6 +292,14 @@ namespace NSFontManager
             sRet += (wchar_t)((c2 < 10) ? ('0' + c2) : ('A' + c2 - 10));
             return sRet;
 		}
+        BYTE FromHexString( wchar_t c1, wchar_t c2 )
+        {
+            BYTE res = 0;
+            res |= ((c1 >= 'A') ? (c1 - 'A' + 10) : (c1 - '0'));
+            res <<= 4;
+            res |= ((c2 >= 'A') ? (c2 - 'A' + 10) : (c2 - '0'));
+            return res;
+        }
 
         void LoadFontParams(bool bIsPath = true)
 		{
@@ -1176,17 +1184,15 @@ namespace NSFontManager
 			return (0xFF != lRangeNum);
 		}
 
-        inline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, const std::wstring& strText)
+        inline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, NSStringUtils::CStringUTF32& oText)
 		{
-            int lCount   = (int)strText.length();
-            std::wstring strTextTemp = strText;
-            WCHAR* pData = const_cast<WCHAR *>(strTextTemp.c_str());
+            size_t lCount   = oText.length();
 
 			BYTE lRangeNum  = 0xFF;
 			BYTE lRange		= 0xFF;
-			for (int i = 0; i < lCount; ++i, ++pData)
+            for (size_t i = 0; i < lCount; ++i)
 			{
-				if (GetRange(*pData, lRangeNum, lRange))
+                if (GetRange(oText[i], lRangeNum, lRange))
 				{
 					if (0 == lRangeNum)
 						lRange1 |= 1 << lRange;
@@ -1287,7 +1293,13 @@ namespace NSFontManager
             if (!m_oFont.m_strPANOSE.empty())
             {
                 oFormat.pPanose = new BYTE[10];
-                // TODO: CONVERT!!!
+
+                const wchar_t* pPanoseStr = m_oFont.m_strPANOSE.c_str();
+                for (int i = 0; i < 10; ++i)
+                {
+                    oFormat.pPanose[i] = FromHexString(pPanoseStr[0], pPanoseStr[1]);
+                    pPanoseStr += 2;
+                }
             }
             oFormat.bBold = new INT(((m_oFont.m_lStyle & 0x01) == 0x01) ? 1 : 0);
             oFormat.bItalic = new INT(((m_oFont.m_lStyle & 0x02) == 0x02) ? 1 : 0);

@@ -64,7 +64,7 @@ namespace NSDocxRenderer
 		bool m_bIsDeleteTextClipPage;
 
 	public:
-		CPage(NSFonts::IApplicationFonts* pFonts) : m_oManager(pFonts), m_oManagerLight()
+        CPage(NSFonts::IApplicationFonts* pFonts) : m_oManager(pFonts), m_oManagerLight(pFonts)
 		{
 			m_pFont			= NULL;
 			m_pBrush		= NULL;

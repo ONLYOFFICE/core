@@ -284,14 +284,14 @@ namespace NSDocxRenderer
         NSFonts::IFontManager*	m_pManager;
 	
 	public:
-		CFontManagerLight()
+        CFontManagerLight(NSFonts::IApplicationFonts* pFonts)
 		{
             m_strFontName	= L"";
 			m_lFontStyle	= 0;
 			m_dSize			= 0;
             m_dSpaceWidth	= 0;
 
-            // TODO: создать менеджер
+            m_pManager = pFonts->GenerateFontManager();
 		}
 		~CFontManagerLight()
 		{

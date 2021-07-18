@@ -3,7 +3,6 @@
 
 #ifdef V8_INSPECTOR
 #include "inspector/inspector.h"//v8 inspector debugging stuff
-//#include "inspector/inspector_impl.h"//tmp
 #endif
 
 #include "../js_base.h"
@@ -434,22 +433,6 @@ namespace NSJSBase
                         , argc
                         , argv
                         );
-//            v8_debug::internal::CInspectorImpl inspector(
-//                        CV8Worker::GetCurrentContext()
-//                        , CV8Worker::getInitializer()->getPlatform()
-//                        , true
-//                        , 8080
-//                        , 1
-//                        , ""
-//                        );
-//            return inspector.callFunc(
-//                        {
-//                        this->value
-//                        , name
-//                        , argc
-//                        , argv
-//                        }
-//                        );
 #else
             return callFuncImpl(this->value
                                 , CV8Worker::GetCurrentContext()
@@ -457,39 +440,6 @@ namespace NSJSBase
                                 , argc
                                 , argv);
 #endif
-
-
-//            v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
-//            v8::Handle<v8::Value> _func = value->Get(V8ContextFirstArg _name).ToLocalChecked();
-
-//            CJSValueV8* _return = new CJSValueV8();
-//            if (_func->IsFunction())
-//            {
-//                v8::Handle<v8::Function> _funcN = v8::Handle<v8::Function>::Cast(_func);
-
-//                if (0 == argc)
-//                {
-//                    v8::MaybeLocal<v8::Value> retValue = _funcN->Call(V8ContextFirstArg value, 0, NULL);
-//                    if (!retValue.IsEmpty())
-//                        _return->value = retValue.ToLocalChecked();
-//                }
-//                else
-//                {
-//                    v8::Local<v8::Value>* args = new v8::Local<v8::Value>[argc];
-//                    for (int i = 0; i < argc; ++i)
-//                    {
-//                        CJSValueV8* _value_arg = static_cast<CJSValueV8*>(argv[i].operator ->());
-//                        args[i] = _value_arg->value;
-//                    }
-//                    v8::MaybeLocal<v8::Value> retValue = _funcN->Call(V8ContextFirstArg value, argc, args);
-//                    if (!retValue.IsEmpty())
-//                        _return->value = retValue.ToLocalChecked();
-//                    RELEASEARRAYOBJECTS(args);
-//                }
-//            }
-
-//            JSSmart<CJSValue> _ret = _return;
-//            return _ret;
         }
 
         virtual JSSmart<CJSValue> toValue()
@@ -752,11 +702,6 @@ namespace NSJSBase
 
 namespace NSJSBase
 {
-//    namespace v8_debug {
-//        namespace internal {
-//            class CInspectorClient;
-//        }
-//    }
     JSSmart<CJSValue> runScriptImpl(v8::Local<v8::Context> context
                                     , const std::string &script
                                     , JSSmart<CJSTryCatch> pException
@@ -768,25 +713,7 @@ namespace NSJSBase
 
     class CJSContextPrivate
     {
-//        friend class v8_debug::internal::CInspectorClient;
         friend class CJSContext;
-
-        //compile
-//        v8::Local<v8::Script> compileOnlyScript(v8::Local<v8::String> source);
-//        v8::Local<v8::Script> compileScriptWithPath(v8::Local<v8::String> source
-//                                                    , const std::wstring &scriptPath);
-
-//        //run
-//        v8::MaybeLocal<v8::Value> runScriptWithException(v8::Local<v8::Script> script
-//                                                         , JSSmart<CJSTryCatch> pException);
-
-//        //must be done inside of inspector
-//        JSSmart<CJSValue> runScriptImpl(const std::string &script
-//                                        , JSSmart<CJSTryCatch> pException
-//                                        , const std::wstring &scriptPath);
-
-        //need for inspector client
-        v8::Platform* getPlatform();
 
     public:
         CV8Worker m_oWorker;

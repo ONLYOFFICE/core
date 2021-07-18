@@ -1,6 +1,5 @@
 #include "inspector.h"
 #include "inspectormanager.h"//for getting inspector
-//#include "../../../../../Common/DocxFormat/Source/Base/SmartPtr.h"//smart_ptr
 #include "../v8_base.h"//v8 wrappers and smart_ptr
 #include "inspector_impl.h"//inspector implementation
 
@@ -42,7 +41,5 @@ NSJSBase::v8_debug::CInspector::callFunc(
                            });
 }
 
-NSJSBase::v8_debug::CInspector::~CInspector()
-{
-    //must move dtor here, because here CInspectorImpl is complete class
-}
+//must move dtor here, because here CInspectorImpl is complete class
+NSJSBase::v8_debug::CInspector::~CInspector() = default;

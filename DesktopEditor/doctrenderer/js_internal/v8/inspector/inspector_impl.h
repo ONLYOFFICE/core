@@ -16,7 +16,7 @@ class SingleConnectionServer;
 class CInspectorImpl
 {
     //pointer to keep boost stuff in .cpp file
-    std::unique_ptr<internal::SingleConnectionServer> m_pServer{};
+    std::unique_ptr<SingleConnectionServer> m_pServer{};
 
     //to convert v8 string view to string
     v8::Isolate *m_pIsolate{nullptr};
@@ -30,7 +30,7 @@ class CInspectorImpl
     > m_pScriptResult{nullptr};
 
     //using pointer to initialize client out of constructor
-    std::unique_ptr<internal::CInspectorClient> m_pClient{nullptr};
+    std::unique_ptr<CInspectorClient> m_pClient{nullptr};
 
 
 
@@ -39,12 +39,12 @@ class CInspectorImpl
     //
     bool initServer();
     void initClient(
-            //
+            //for general purpose
             v8::Local<v8::Context> context
             //for cdt
             , int contextGroupId
             , const std::string &contextName
-            //
+            //platform to pump it
             , v8::Platform *platform
             );
 
@@ -54,16 +54,19 @@ class CInspectorImpl
     void printChromeLaunchHint(std::ostream &out
                                , uint16_t port);
 
-    //running stuff
+    //server and run stuff stuff
     bool checkServer() const;
     void waitAndRunServer();
     NSCommon::smart_ptr<CJSValue> getReturnValue();
 
 public:
+    //explicitly delete all the stuff
     CInspectorImpl(const CInspectorImpl&) = delete;
     CInspectorImpl(CInspectorImpl&&) = delete;
     CInspectorImpl& operator=(const CInspectorImpl&) = delete;
     CInspectorImpl& operator=(CInspectorImpl&&) = delete;
+
+    //only allowed ctor
     CInspectorImpl(
             //stript executor
             v8::Local<v8::Context> context
@@ -73,6 +76,7 @@ public:
             , CInspectorInfo info
     );
 
+    //running stuff
     NSCommon::smart_ptr<CJSValue> runScript(
             const CScriptExecData &execData
             );

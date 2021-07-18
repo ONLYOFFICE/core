@@ -20,10 +20,11 @@ namespace internal {
 
 //script execution data
 struct CScriptExecData {
+    //data
     std::string scriptSource{};
     NSCommon::smart_ptr<CJSTryCatch> *pException = nullptr;
     std::wstring scriptPath{};
-    //
+    //methods
     CScriptExecData() = default;
     CScriptExecData(
             const std::string &script
@@ -35,11 +36,12 @@ struct CScriptExecData {
 
 //function call data
 struct CFCallData {
+    //data
     v8::Local<v8::Object> value{};
     const char *name = nullptr;
     int argc{0};
     NSCommon::smart_ptr<CJSValue> *argv = nullptr;
-    //
+    //methods
     CFCallData() = default;
     CFCallData(
             v8::Local<v8::Object> val

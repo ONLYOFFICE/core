@@ -18,7 +18,7 @@ NSJSBase::v8_debug::internal::CInspectorHolder::makeNewInspectorInfo(
                 threadId
                 , CInspectorInfo{
                     //logging
-                    true
+                    true//should be false on prod
                     //port
                     , uint16_t(startPort + m_Inspectors.size())
                     //context group id
@@ -66,7 +66,9 @@ NSJSBase::v8_debug::internal::CInspectorHolder::getInspector(
 
 std::unique_ptr<NSJSBase::v8_debug::internal::CInspectorImpl>
 NSJSBase::v8_debug::internal::CInspectorManager::getInspector(
-        v8::Local<v8::Context> context, v8::Platform *platform)
+        v8::Local<v8::Context> context
+        , v8::Platform *platform
+        )
 {
     return m_Holder.getInspector(context, platform);
 }

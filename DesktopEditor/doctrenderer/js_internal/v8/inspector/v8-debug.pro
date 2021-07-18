@@ -71,13 +71,16 @@ SOURCES += \
     ../v8_base.cpp
 
 #kernel stuff: for thread id
-#DESKTOP_EDITOR_PATH = $$PWD/../../../..
-#HEADERS += \
-#    $$DESKTOP_EDITOR_PATH/graphics/BaseThread.h
-#SOURCES += \
-#    $$DESKTOP_EDITOR_PATH/graphics/BaseThread.cpp
+compile_kernel {
+    DESKTOP_EDITOR_PATH = $$PWD/../../../..
+    HEADERS += \
+        $$DESKTOP_EDITOR_PATH/graphics/BaseThread.h
+    SOURCES += \
+        $$DESKTOP_EDITOR_PATH/graphics/BaseThread.cpp
+}
+!compile_kernel {
+    include($$CORE_ROOT_DIR/Common/base.pri)
+    ADD_DEPENDENCY(kernel, UnicodeConverter)
+}
 
-
-include($$CORE_ROOT_DIR/Common/base.pri)
-ADD_DEPENDENCY(kernel, UnicodeConverter)
 DEFINES += V8_INSPECTOR

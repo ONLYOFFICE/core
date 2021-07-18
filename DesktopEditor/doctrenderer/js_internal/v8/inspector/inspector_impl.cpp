@@ -64,7 +64,7 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::initClient(
     };
 
     //make client
-    this->m_pClient = std::make_unique<internal::CInspectorClient>(
+    this->m_pClient = std::make_unique<CInspectorClient>(
                 //for all v8 stuff
                 context
                 //context name for cdt
@@ -89,14 +89,13 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::maybeLogOutgoing(
     if (!m_bLog) {
         return;
     }
-    internal::logOutgoingMessage(std::clog, message);
+    logOutgoingMessage(std::clog, message);
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::printChromeLaunchHint(
         std::ostream &out
         , uint16_t port)
 {
-//    out << "open chrome dev tools with the following command" << std::endl;
     out << "chrome "
          << "--remote-debugging-port=9222 "
          << "http://localhost:9222/devtools/inspector.html?ws=localhost:"
@@ -106,7 +105,11 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::printChromeLaunchHint(
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::checkServer() const
 {
-    return m_pServer->listening();
+    if (!m_pServer->listening()) {
+        std::cerr << "no server for inspector" << std::endl;
+        return false;
+    }
+    return true;
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::waitAndRunServer()
@@ -135,13 +138,13 @@ NSJSBase::v8_debug::internal::CInspectorImpl::getReturnValue()
     return result;
 }
 
-NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//stript executor
+NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(
+        //for client
         v8::Local<v8::Context> context
         //platform to pump
         , v8::Platform *platform
-        //to log communication between app and cdt
+        //other info
         , CInspectorInfo info
-        //
         )
     : m_pServer(std::make_unique<internal::SingleConnectionServer>(info.port))
     , m_pIsolate(context->GetIsolate())

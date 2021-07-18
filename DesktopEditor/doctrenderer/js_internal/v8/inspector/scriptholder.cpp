@@ -5,7 +5,7 @@
 NSJSBase::v8_debug::internal::CPerThreadScriptHolder
 NSJSBase::v8_debug::internal::CScriptHoldersManager::m_Holder{};
 
-//separated
+//holds scripts separately
 namespace {
     class CScriptHolderSeparated : public NSJSBase::v8_debug::internal::CScriptHolder {
         std::vector<std::string> m_Scripts{};
@@ -31,7 +31,7 @@ namespace {
     }
 }//namespace anonymous
 
-//joint
+//holds scripts as one joint
 namespace {
     class CScriptHolderJoint : public NSJSBase::v8_debug::internal::CScriptHolder {
         std::string m_Scripts{};
@@ -63,19 +63,17 @@ namespace {
     }
 }//namespace anonymous
 
-
+//different holders
 std::unique_ptr<NSJSBase::v8_debug::internal::CScriptHolder>
 NSJSBase::v8_debug::internal::CScriptHolder::getSeparated()
 {
     return std::make_unique<CScriptHolderSeparated>();
 }
-
 std::unique_ptr<NSJSBase::v8_debug::internal::CScriptHolder>
 NSJSBase::v8_debug::internal::CScriptHolder::getJoint()
 {
     return std::make_unique<CScriptHolderJoint>();
 }
-
 std::unique_ptr<NSJSBase::v8_debug::internal::CScriptHolder>
 NSJSBase::v8_debug::internal::CScriptHolder::getDoingNothing()
 {
@@ -89,8 +87,13 @@ NSJSBase::v8_debug::internal::CPerThreadScriptHolder::addHolder(ASC_THREAD_ID th
     auto insertionResult = m_Holders.emplace(
                 threadId
                 , CScriptHolder::
-//                getSeparated()
-                getDoingNothing()
+
+                //different types
+//                getSeparated
+                getDoingNothing
+//                getJoint
+                ()
+
                 );
     return insertionResult//pair
             .first//iterator

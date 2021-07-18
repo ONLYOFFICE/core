@@ -67,7 +67,7 @@ private:
     //log
     bool m_bLog{false};
 
-    //script holder; owned by external static container, doesn't need deletion
+    //script holder; owned by external static container, doesn't need to be deleted
     CScriptHolder *m_pPreviousScripts{nullptr};
 
 
@@ -87,7 +87,10 @@ private:
     void pauseOnNextStatement();
     //
     void compilePreviousScripts();
-
+    //start debugging itself
+    void startDebugging();
+    //
+    void dispatchProtocolMessage(const std::string &message);
 
 public:
     CInspectorClient(
@@ -114,19 +117,16 @@ public:
     //quit waiting
     virtual void quitMessageLoopOnPause() override;
 
-    //start debugging itself
-    void startDebugging();
+
     //dispatch message by session and check it for Runtime.runIfWaitingForDebugger
     void processMessageFromFrontend(const std::string &message);
 
-    //
-    void dispatchProtocolMessage(const std::string &message);
-
+    //set data for execution of script or function
     void setScriptExecData(const CScriptExecData &data);
     void setFuncCallData(const CFCallData &data);
 
 
-    ~CInspectorClient() = default;
+    ~CInspectorClient();
 };
 
 }//namespace internal

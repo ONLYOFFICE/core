@@ -6,14 +6,13 @@
 #include "scriptholder.h"//CScriptHolder for saving scripts
 
 namespace {
-    //
+    //use them in loop
     class FalseSetter {
         std::atomic<bool> &m_bool;
     public:
         FalseSetter(std::atomic<bool> &b) : m_bool(b) {m_bool = false;}
         ~FalseSetter() {m_bool = true;}
     };
-    //
     class TrueSetter {
         std::atomic<bool> &m_bool;
     public:
@@ -37,21 +36,18 @@ void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
     //inspector
     m_pInspector = v8_inspector::V8Inspector::create(m_pIsolate, this);
 
-
-
     //state for session
     v8_inspector::StringView state{};
-    contextGroupId = 1;
+
     //session
     m_pSession = m_pInspector->connect(contextGroupId, m_pChannel.get(), state);
-
 
     //context name as string view
     v8_inspector::StringView viewContextName = strToView(contextName);
 
     //context info
     v8_inspector::V8ContextInfo info{
-        m_Context
+                m_Context
                 , contextGroupId
                 , viewContextName
     };
@@ -93,65 +89,19 @@ void NSJSBase::v8_debug::internal::CInspectorClient::quitMessageLoopOnPause() {
 
 void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 {
-    //CRAP 1
-//    m_PreviousScripts.push_back()
-    //set pause at the start of script
-//    m_pSession->schedulePauseOnNextStatement(strToView("debugCommand"),{});
-//    std::string kk =
-//    R"({"id":0,"method":"Debugger.resume","params":{"terminateOnResume":false}})";
-//    dispatchProtocolMessage(kk);
-//    m_pSession->resume();
-//    auto sr = m_pContextPrivate->runScriptImpl("(function(){return 2 + 3;})();", NULL, L"");
-//    m_pSession->resume();
+    //previous scripts
+    compilePreviousScripts();
 
-
-    //set pause at the start of script
-//    m_pSession->schedulePauseOnNextStatement(strToView("debugCommand"),{});
-
-//    //contextPrivate implements script execution
-//    JSSmart<CJSValue> scriptResult =
-//            m_pContextPrivate->runScriptImpl(m_sScriptStr
-//                                             , m_pException
-//                                             , m_sScriptPath);
-
-
-    //CRAP 2
-//    v8::Local<v8::Object> global = m_Context->Global();
-//    v8::Local<v8::String> name = tov8str(m_pIsolate, "a");
-//    v8::Local<v8::Value> funcval = global->Get(m_Context, name).ToLocalChecked();
-//    if (!funcval->IsFunction()) {
-//        std::cout << "not func\n";
-//        return;
-//    }
-//    v8::Local<v8::Function> func = v8::Local<v8::Function>::Cast(funcval);
-//    v8::MaybeLocal<v8::Value> result = func->Call(m_Context, global, 0, nullptr);
-//    if (result.IsEmpty()) {
-//        std::cout << "no result\n";
-//        return;
-//    }
-//    v8::Local<v8::Value> lresult = result.ToLocalChecked();
-//    if (!lresult->IsInt32()) {
-//        std::cout << "result is not int\n";
-//        return;
-//    }
-//    std::cout
-//            << lresult
-//               ->ToInt32(m_Context).ToLocalChecked()
-//               ->Int32Value(m_Context).FromJust()
-//            << std::endl;
-
-    //previous ones
-//    compilePrevScripts();
-    //pause before current
+    //pause before current one
     pauseOnNextStatement();
-    pauseOnNextStatement();
+
     //prepare result
     JSSmart<CJSValue> result;
 
     switch (m_Mode) {
     case mode::kScriptExec: {
         //save script
-//        m_pPreviousScripts->addScript(m_ScriptExecData.scriptSource);
+        m_pPreviousScripts->addScript(m_ScriptExecData.scriptSource);
         //run script
         result = NSJSBase::runScriptImpl(
                     m_Context
@@ -177,7 +127,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
     }
     }
 
-    //save result
+    //save result on inspector
     m_SetRetVal(result);
 }
 
@@ -188,9 +138,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::processMessageFromFrontend(
     dispatchProtocolMessage(message);
     //check message for Runtime.runIfWaitingForDebugger
     if (checkForStartDebugging(message)) {
-        //
         startDebugging();
-        return;
     }
 }
 
@@ -213,6 +161,8 @@ void NSJSBase::v8_debug::internal::CInspectorClient::setFuncCallData(
     m_Mode = mode::kFuncCall;
     m_FunctionCallData = data;
 }
+
+NSJSBase::v8_debug::internal::CInspectorClient::~CInspectorClient() = default;
 
 void NSJSBase::v8_debug::internal::CInspectorClient::maybeLogIncoming(
         const std::string &message) const

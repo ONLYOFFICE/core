@@ -23,6 +23,7 @@ namespace internal {
     class CInspectorImpl;
 }
 
+//just a wrap around inspector implementation
 class CInspector
 {
     std::unique_ptr<internal::CInspectorImpl> pImpl;

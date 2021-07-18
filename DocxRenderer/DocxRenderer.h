@@ -61,7 +61,7 @@ class CDocxRenderer_Private;
 class DOCXRENDERER_DECL_EXPORT CDocxRenderer : public IRenderer
 {
 public:
-    CDocxRenderer(CApplicationFonts* pAppFonts);
+    CDocxRenderer(NSFonts::IApplicationFonts* pAppFonts);
     ~CDocxRenderer();
 
     HRESULT      CreateNewFile(const std::wstring& wsPath);

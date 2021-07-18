@@ -34,40 +34,42 @@
 
 #include <string>
 #include <vector>
+#include <stdint.h>
 #include "StringExt.h"
 
-namespace NSStringUtils {
-    class KERNEL_DECL StringUTF32 {
-        std::vector<uint32_t> _vec;
-
+namespace NSStringUtils
+{
+    class KERNEL_DECL CStringUTF32
+    {
+        std::vector<uint32_t> m_vec;
     public:
-        StringUTF32();
-        StringUTF32(const StringUTF32 &other);
-        StringUTF32(const wchar_t *other);
-        StringUTF32(const std::wstring &other);
-        StringUTF32(const std::vector<uint32_t> &other);
-        virtual ~StringUTF32();
+        CStringUTF32();
+        CStringUTF32(const CStringUTF32 &other);
+        CStringUTF32(const wchar_t *other);
+        CStringUTF32(const std::wstring &other);
+        CStringUTF32(const std::vector<uint32_t> &other);
+        CStringUTF32(const uint32_t* data, const size_t& count);
+        virtual ~CStringUTF32();
 
-        virtual size_t Length() const;
-        virtual void Swap(StringUTF32 &other);
+        bool empty() const;
+        size_t length() const;
 
-        virtual std::wstring ToUTF16() const;
+        std::wstring ToStdWString() const;
 
-        virtual bool Equals(const StringUTF32 &other) const;
-        virtual uint32_t &GetCharAt(size_t index);
-        virtual StringUTF32 &Concatenate(const StringUTF32 &other);
+        bool        operator  == (const CStringUTF32 &right) const;
+        bool        operator  != (const CStringUTF32 &right) const;
+        uint32_t    &operator [] (size_t index);
 
-        virtual bool        operator  == (const StringUTF32 &right) const;
-        virtual bool        operator  != (const StringUTF32 &right) const;
-        virtual uint32_t    &operator [] (size_t index);
+        CStringUTF32 &operator  = (const CStringUTF32 &right);
+        CStringUTF32 &operator  = (const wchar_t *right);
+        CStringUTF32 &operator  = (const std::wstring &right);
+        CStringUTF32 &operator  = (const std::vector<uint32_t> &right);
 
-        virtual StringUTF32 &operator  = (const StringUTF32 &right);
-        virtual StringUTF32 &operator  = (const wchar_t *right);
-        virtual StringUTF32 &operator  = (const std::wstring &right);
-        virtual StringUTF32 &operator  = (const std::vector<uint32_t> &right);
+        CStringUTF32 operator   + (const CStringUTF32 &right) const;
+        CStringUTF32 &operator += (const CStringUTF32 &right);
+        CStringUTF32 &operator += (const uint32_t& symbol);
 
-        virtual StringUTF32 operator   + (const StringUTF32 &right) const;
-        virtual StringUTF32 &operator += (const StringUTF32 &right);
+        CStringUTF32 substr(size_t start, size_t count) const;
     };
 }
 

@@ -26,20 +26,20 @@ LIBS += -lgdi32 \
 }
 
 HEADERS += \
-    src/resources/resources.h
-
-HEADERS += \
+    src/resources/resources.h \
+    \
     src/logic/Common.h \
+    src/logic/Page.h \
     src/logic/Document.h \
     src/logic/ElementImage.h \
     src/logic/ElementParagraph.h \
     src/logic/ElementShape.h \
     src/logic/FontManager.h \
     src/logic/FontManagerBase.h \
-    src/logic/Page.h
-
-HEADERS += \
+    \
     DocxRenderer.h
 
 SOURCES += \
+    src/resources/resources.cpp \
+    \
     DocxRenderer.cpp

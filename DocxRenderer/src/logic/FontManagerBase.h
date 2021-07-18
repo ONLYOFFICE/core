@@ -200,19 +200,21 @@ namespace NSFontManager
 
 			m_oFont.m_lAvgWidth = -1;
 
-			wchar_t wsDrive[MAX_PATH], wsDir[MAX_PATH], wsFilename[MAX_PATH], wsExt[MAX_PATH];
-			_wsplitpath( strPath.GetBuffer(), wsDrive, wsDir, wsFilename, wsExt );
-			CString wsEncodingPath = CString(wsDrive) + CString(wsDir) + CString(wsFilename) + CString(_T(".enc"));
+            bool bIsCID = false;
+            std::wstring sFileExt = NSFile::GetFileExtention(strPath);
+            if (std::wstring::npos != sFileExt.find(L"cid"))
+                bIsCID = true;
 
-			bool bIsCID = false;
-			CString strExt(wsExt);
-			if (-1 != strExt.Find(_T("cid")))
-				bIsCID = true;
+            std::wstring sFileName = NSFile::GetFileName(strPath);
+            std::wstring::size_type pos = sFileName.rfind('.');
+            if (std::wstring::npos != pos)
+                sFileName = sFileName.substr(0, pos);
+            std::wstring sEncFilePath = NSFile::GetDirectoryName(strPath) + L"/" + sFileName + L".enc";
 
 			XmlUtils::CXmlNode oMainNode;
-			oMainNode.FromXmlFile(wsEncodingPath);
+            oMainNode.FromXmlFile(sEncFilePath);
 
-			if (_T("PDF-resources") == oMainNode.GetName())
+            if (L"PDF-resources" == oMainNode.GetName())
 			{
 				if (bIsCID)
 				{
@@ -245,7 +247,7 @@ namespace NSFontManager
 						XmlUtils::CXmlNode oCurNode;
                         if ( oNode.GetNode( L"AvgWidth", oCurNode ) )
 						{
-                            std::wstring sValue = oCurNode.GetAttribute(_T("value"));
+                            std::wstring sValue = oCurNode.GetAttribute(L"value");
                             try {
                                 m_oFont.m_lAvgWidth = std::stol(sValue);
                             } catch (std::invalid_argument &) {}
@@ -256,26 +258,7 @@ namespace NSFontManager
 		}
 
 	public:
-	
-        void MeasureString(const CString& strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
-		{
-			BSTR bsText = strText.AllocSysString();
-			MeasureString(bsText, x, y, dBoxX, dBoxY, dBoxWidth, dBoxHeight, measureType);
-			SysFreeString(bsText);
-		}
-        void MeasureStringUNICODE(const CString& strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
-		{
-			m_pManager->SetStringGID(FALSE);
-			MeasureString(strText, x, y, dBoxX, dBoxY, dBoxWidth, dBoxHeight, measureType);
-			m_pManager->SetStringGID(TRUE);
-		}
-        void MeasureStringUNICODE(BSTR strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
-		{
-			m_pManager->SetStringGID(FALSE);
-			MeasureString(strText, x, y, dBoxX, dBoxY, dBoxWidth, dBoxHeight, measureType);
-			m_pManager->SetStringGID(TRUE);
-		}
-		virtual void MeasureString(BSTR bsText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
+        virtual void MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
 		{
 		}
 		virtual void CalculateBaselineOffset()
@@ -302,7 +285,12 @@ namespace NSFontManager
 
         std::wstring ToHexString( BYTE uc )
 		{
-            return StringFormat(L"%02X", uc);
+            std::wstring sRet = L"";
+            char c1 = (char)(uc >> 4);
+            char c2 = (char)(uc & 0x0F);
+            sRet += (wchar_t)((c1 < 10) ? ('0' + c1) : ('A' + c1 - 10));
+            sRet += (wchar_t)((c2 < 10) ? ('0' + c2) : ('A' + c2 - 10));
+            return sRet;
 		}
 
         void LoadFontParams(bool bIsPath = true)
@@ -311,18 +299,7 @@ namespace NSFontManager
 			if (NULL == m_pManager)
 				return;
 
-            if (m_oFont.m_oFont.Name.empty())
-			{
-				// FamilyName
-				BSTR bsFamilyName = NULL;
-				m_pManager->GetFamilyNameEx(_bstr_t("<DeletePDFPrefix/>"), &bsFamilyName);
-				m_oFont.m_strFamilyName = (CString)bsFamilyName;
-				SysFreeString(bsFamilyName);
-			}
-			else
-			{
-				m_oFont.m_strFamilyName = m_oFont.m_oFont.Name;
-			}
+            m_oFont.m_strFamilyName = m_oFont.m_oFont.Name;
 
             m_oFont.m_lStyle = 0x00;
             if (m_pManager->GetFile()->IsBold())
@@ -1191,7 +1168,7 @@ namespace NSFontManager
             //case 31: sUCRName = "Reserved for process-internal usage"; break;
 		}
 
-        inline bool GetRange(const WCHAR& symbol, BYTE& lRangeNum, BYTE& lRange)
+        inline bool GetRange(const int& symbol, BYTE& lRangeNum, BYTE& lRange)
 		{
 			lRangeNum	= m_pRangesNums[symbol];
 			lRange		= m_pRanges[symbol];
@@ -1236,9 +1213,9 @@ namespace NSFontManager
 
 		
 	public:		
-        bool GenerateFontName(std::wstring& strText)
+        bool GenerateFontName(NSStringUtils::CStringUTF32& oText)
 		{
-            if (m_oFont.m_oFont.Path.empty() || strText.empty())
+            if (m_oFont.m_oFont.Path.empty() || oText.empty())
 			{
 				m_strCurrentPickFont = m_oFont.m_strFamilyName;
 				m_lCurrentPictFontStyle = m_oFont.m_lStyle;
@@ -1248,7 +1225,7 @@ namespace NSFontManager
 			BYTE lRangeNum	= 0xFF;
 			BYTE lRange		= 0xFF;
 
-			GetRange(strText[0], lRangeNum, lRange);
+            GetRange(oText[0], lRangeNum, lRange);
             std::list<CFontPickUp>::iterator posStart, pos;
             posStart = pos = m_arListPicUps.begin();
             //POSITION posStart = m_arListPicUps.GetHeadPosition();
@@ -1339,6 +1316,6 @@ namespace NSFontManager
 			return true;
 		}
 	};
-};
+}
 
 #endif // DOCX_RENDERER_FMB_H

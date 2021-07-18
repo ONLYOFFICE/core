@@ -40,7 +40,7 @@ namespace NSDocxRenderer
 		{
 			if (NULL == m_pData)
 			{
-				m_lSize = max(nSize, 500);				
+                m_lSize = std::max(nSize, (size_t)500);
 				m_pData = (double*)malloc(m_lSize * sizeof(double));
 				
 				m_lSizeCur = 0;

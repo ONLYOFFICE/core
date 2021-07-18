@@ -37,16 +37,14 @@ class CDocxRenderer_Private
 {
 public:
     NSDocxRenderer::CDocument m_oDocument;
-    CApplicationFonts* m_pApplicationFonts;
 
     std::wstring m_strDstFilePath;
     std::wstring m_strTempFileDir;
     std::wstring m_strTempFileName;
 
 public:
-    CDocxRenderer_Private(CApplicationFonts* pFonts)
+    CDocxRenderer_Private(NSFonts::IApplicationFonts* pFonts, IRenderer* pRenderer) : m_oDocument(pRenderer, pFonts)
     {
-        m_pApplicationFonts = pFonts;
     }
     ~CDocxRenderer_Private()
     {
@@ -54,9 +52,9 @@ public:
     }
 };
 
-CDocxRenderer::CDocxRenderer(CApplicationFonts* pAppFonts)
+CDocxRenderer::CDocxRenderer(NSFonts::IApplicationFonts* pAppFonts)
 {
-    m_pInternal = new CDocxRenderer_Private(pAppFonts);
+    m_pInternal = new CDocxRenderer_Private(pAppFonts, this);
 }
 
 CDocxRenderer::~CDocxRenderer()

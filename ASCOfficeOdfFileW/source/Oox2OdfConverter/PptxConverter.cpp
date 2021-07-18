@@ -92,7 +92,7 @@ PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate)
 		return;
 	}
 
-	pptx_document->read(oox_path.GetPath() + FILE_SEPARATOR_STR, NULL);
+	pptx_document->read(oox_path.GetPath() + FILE_SEPARATOR_STR);
 
 	smart_ptr<PPTX::Presentation> presentation_ptr = pptx_document->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 	if (!presentation_ptr.is_init())

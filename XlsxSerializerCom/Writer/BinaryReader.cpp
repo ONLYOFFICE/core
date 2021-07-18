@@ -2097,14 +2097,19 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	}
 	else if(c_oSerWorkbookTypes::VbaProject == type)
 	{
-        smart_ptr<OOX::VbaProject> oFileVbaProject(new OOX::VbaProject(NULL));
+		if (m_oWorkbook.m_bMacroEnabled)
+		{
+			smart_ptr<OOX::VbaProject> oFileVbaProject(new OOX::VbaProject(NULL));
 
-        oFileVbaProject->fromPPTY(&m_oBufferedStream);
+			oFileVbaProject->fromPPTY(&m_oBufferedStream);
 
-        smart_ptr<OOX::File> oFile = oFileVbaProject.smart_dynamic_cast<OOX::File>();
-        const OOX::RId oRId = m_oWorkbook.Add(oFile);
-
-        m_oWorkbook.m_bMacroEnabled = true;
+			smart_ptr<OOX::File> oFile = oFileVbaProject.smart_dynamic_cast<OOX::File>();
+			const OOX::RId oRId = m_oWorkbook.Add(oFile);
+		}
+		else
+		{
+			m_oBufferedStream.SkipRecord();
+		}
     }
 	else if(c_oSerWorkbookTypes::JsaProject == type)
 	{
@@ -7098,7 +7103,7 @@ int BinaryPersonReader::ReadPerson(BYTE type, long length, void* poResult)
 BinaryFileReader::BinaryFileReader()
 {
 }
-int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions)
+int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bMacro)
 {
 	bool bResultOk = false;
 	
@@ -7217,7 +7222,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			
 			if(BinXlsxRW::c_oFileTypes::XLSX == fileType)
 			{
-				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), NULL);
+				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), NULL, bMacro);
 				
 				try
 				{
@@ -7330,6 +7335,8 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 	boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>> m_mapPivotCacheDefinitions;
 	if(-1 != nWorkbookOffBits)
 	{
+		oXlsx.m_pWorkbook->m_bMacroEnabled = oSaveParams.bMacroEnabled;
+
 		oBufferedStream.Seek(nWorkbookOffBits);
 		res = BinaryWorkbookTableReader(oBufferedStream, *oXlsx.m_pWorkbook, m_mapPivotCacheDefinitions, sOutDir, pOfficeDrawingConverter).Read();
 		if(c_oSerConstants::ReadOk != res)

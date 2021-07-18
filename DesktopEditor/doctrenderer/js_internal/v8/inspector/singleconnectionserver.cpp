@@ -198,3 +198,8 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::listening() const
 {
     return m_bListening;
 }
+
+uint16_t NSJSBase::v8_debug::internal::SingleConnectionServer::port() const
+{
+    return m_Endpoint.port();
+}

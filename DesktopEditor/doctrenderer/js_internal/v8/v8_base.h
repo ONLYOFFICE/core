@@ -1,6 +1,11 @@
 ﻿#ifndef _BUILD_NATIVE_CONTROL_V8_BASE_H_
 #define _BUILD_NATIVE_CONTROL_V8_BASE_H_
 
+#ifdef V8_INSPECTOR
+#include "inspector/inspector.h"//v8 inspector debugging stuff
+//#include "inspector/inspector_impl.h"//tmp
+#endif
+
 #include "../js_base.h"
 #include <iostream>
 
@@ -361,6 +366,12 @@ namespace NSJSBase
 
     typedef CJSValueV8TemplatePrimitive CJSValueV8;
 
+    JSSmart<CJSValue> callFuncImpl(v8::Local<v8::Object> value
+                                        , v8::Local<v8::Context> context
+                                        , const char *name
+                                        , const int argc
+                                        , JSSmart<CJSValue> argv[]);
+
     class CJSObjectV8 : public CJSValueV8Template<v8::Object, CJSObject>
     {
     public:
@@ -408,39 +419,77 @@ namespace NSJSBase
             return (CJSEmbedObject*)field->Value();
         }
 
-        virtual JSSmart<CJSValue> call_func(const char* name, const int argc = 0, JSSmart<CJSValue> argv[] = NULL)
+        virtual JSSmart<CJSValue> call_func(const char* name
+                                            , const int argc = 0
+                , JSSmart<CJSValue> argv[] = NULL)
         {
-            v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
-            v8::Handle<v8::Value> _func = value->Get(V8ContextFirstArg _name).ToLocalChecked();
+#ifdef V8_INSPECTOR
+            v8_debug::CInspector inspector(
+                        CV8Worker::GetCurrentContext()
+                        , CV8Worker::getInitializer()->getPlatform()
+                        );
+            return inspector.callFunc(
+                        this->value
+                        , name
+                        , argc
+                        , argv
+                        );
+//            v8_debug::internal::CInspectorImpl inspector(
+//                        CV8Worker::GetCurrentContext()
+//                        , CV8Worker::getInitializer()->getPlatform()
+//                        , true
+//                        , 8080
+//                        , 1
+//                        , ""
+//                        );
+//            return inspector.callFunc(
+//                        {
+//                        this->value
+//                        , name
+//                        , argc
+//                        , argv
+//                        }
+//                        );
+#else
+            return callFuncImpl(this->value
+                                , CV8Worker::GetCurrentContext()
+                                , name
+                                , argc
+                                , argv);
+#endif
 
-            CJSValueV8* _return = new CJSValueV8();
-            if (_func->IsFunction())
-            {
-                v8::Handle<v8::Function> _funcN = v8::Handle<v8::Function>::Cast(_func);
 
-                if (0 == argc)
-                {
-                    v8::MaybeLocal<v8::Value> retValue = _funcN->Call(V8ContextFirstArg value, 0, NULL);
-                    if (!retValue.IsEmpty())
-                        _return->value = retValue.ToLocalChecked();
-                }
-                else
-                {
-                    v8::Local<v8::Value>* args = new v8::Local<v8::Value>[argc];
-                    for (int i = 0; i < argc; ++i)
-                    {
-                        CJSValueV8* _value_arg = static_cast<CJSValueV8*>(argv[i].operator ->());
-                        args[i] = _value_arg->value;
-                    }
-                    v8::MaybeLocal<v8::Value> retValue = _funcN->Call(V8ContextFirstArg value, argc, args);
-                    if (!retValue.IsEmpty())
-                        _return->value = retValue.ToLocalChecked();
-                    RELEASEARRAYOBJECTS(args);
-                }
-            }
+//            v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
+//            v8::Handle<v8::Value> _func = value->Get(V8ContextFirstArg _name).ToLocalChecked();
 
-            JSSmart<CJSValue> _ret = _return;
-            return _ret;
+//            CJSValueV8* _return = new CJSValueV8();
+//            if (_func->IsFunction())
+//            {
+//                v8::Handle<v8::Function> _funcN = v8::Handle<v8::Function>::Cast(_func);
+
+//                if (0 == argc)
+//                {
+//                    v8::MaybeLocal<v8::Value> retValue = _funcN->Call(V8ContextFirstArg value, 0, NULL);
+//                    if (!retValue.IsEmpty())
+//                        _return->value = retValue.ToLocalChecked();
+//                }
+//                else
+//                {
+//                    v8::Local<v8::Value>* args = new v8::Local<v8::Value>[argc];
+//                    for (int i = 0; i < argc; ++i)
+//                    {
+//                        CJSValueV8* _value_arg = static_cast<CJSValueV8*>(argv[i].operator ->());
+//                        args[i] = _value_arg->value;
+//                    }
+//                    v8::MaybeLocal<v8::Value> retValue = _funcN->Call(V8ContextFirstArg value, argc, args);
+//                    if (!retValue.IsEmpty())
+//                        _return->value = retValue.ToLocalChecked();
+//                    RELEASEARRAYOBJECTS(args);
+//                }
+//            }
+
+//            JSSmart<CJSValue> _ret = _return;
+//            return _ret;
         }
 
         virtual JSSmart<CJSValue> toValue()
@@ -703,31 +752,38 @@ namespace NSJSBase
 
 namespace NSJSBase
 {
-    namespace v8_debug {
-        class CInspector;
-        namespace internal {
-            class CInspectorClient;
-        }
-    }
+//    namespace v8_debug {
+//        namespace internal {
+//            class CInspectorClient;
+//        }
+//    }
+    JSSmart<CJSValue> runScriptImpl(v8::Local<v8::Context> context
+                                    , const std::string &script
+                                    , JSSmart<CJSTryCatch> pException
+                                    , const std::wstring &scriptPath);
+
+    v8::Local<v8::Script> compileScript(v8::Local<v8::Context> context
+                                        , const std::string &script
+                                        , const std::wstring &scriptPath);
+
     class CJSContextPrivate
     {
-        friend class v8_debug::internal::CInspectorClient;
-        friend class v8_debug::CInspector;
+//        friend class v8_debug::internal::CInspectorClient;
         friend class CJSContext;
 
         //compile
-        v8::Local<v8::Script> compileOnlyScript(v8::Local<v8::String> source);
-        v8::Local<v8::Script> compileScriptWithPath(v8::Local<v8::String> source
-                                                    , const std::wstring &scriptPath);
+//        v8::Local<v8::Script> compileOnlyScript(v8::Local<v8::String> source);
+//        v8::Local<v8::Script> compileScriptWithPath(v8::Local<v8::String> source
+//                                                    , const std::wstring &scriptPath);
 
-        //run
-        v8::MaybeLocal<v8::Value> runScriptWithException(v8::Local<v8::Script> script
-                                                         , JSSmart<CJSTryCatch> pException);
+//        //run
+//        v8::MaybeLocal<v8::Value> runScriptWithException(v8::Local<v8::Script> script
+//                                                         , JSSmart<CJSTryCatch> pException);
 
-        //must be done inside of inspector
-        JSSmart<CJSValue> runScriptImpl(const std::string &script
-                                        , JSSmart<CJSTryCatch> pException
-                                        , const std::wstring &scriptPath);
+//        //must be done inside of inspector
+//        JSSmart<CJSValue> runScriptImpl(const std::string &script
+//                                        , JSSmart<CJSTryCatch> pException
+//                                        , const std::wstring &scriptPath);
 
         //need for inspector client
         v8::Platform* getPlatform();

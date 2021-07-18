@@ -28,7 +28,10 @@ namespace internal {
 
 
     //get value of property |property| from json object
-    std::string getJsonProperty(
+    std::string getJsonProperty(v8::Local<v8::Context> context
+                                , const std::string &json
+                                , const std::string &property);
+    std::string getJsonPropertyImpl(
             v8::Local<v8::Context> context
             , v8::Local<v8::Object> jsonObject
             , const std::string &property

@@ -2,7 +2,8 @@
 #include "channel.h"//client holds channel
 #include "singlethreadutils.h"//converting strings
 #include <libplatform/libplatform.h>//v8::Platform
-#include "../../v8/v8_base.h"//CJSContextPrivate
+#include "../../v8/v8_base.h"//runScript and callFunc impls
+#include "scriptholder.h"//CScriptHolder for saving scripts
 
 namespace {
     //
@@ -22,7 +23,9 @@ namespace {
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
-        CInspectorChannel::sendDataCallback sendDataCallback)
+        const std::string &contextName
+        , int contextGroupId
+        , CInspectorChannel::sendDataCallback sendDataCallback)
 {
     //client instance is this
 
@@ -38,17 +41,18 @@ void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
 
     //state for session
     v8_inspector::StringView state{};
-
+    contextGroupId = 1;
     //session
-    m_pSession = m_pInspector->connect(m_iContextGroupId, m_pChannel.get(), state);
+    m_pSession = m_pInspector->connect(contextGroupId, m_pChannel.get(), state);
+
 
     //context name as string view
-    v8_inspector::StringView viewContextName = strToView(m_sContextName);
+    v8_inspector::StringView viewContextName = strToView(contextName);
 
     //context info
     v8_inspector::V8ContextInfo info{
         m_Context
-                , m_iContextGroupId
+                , contextGroupId
                 , viewContextName
     };
 
@@ -63,7 +67,9 @@ void NSJSBase::v8_debug::internal::CInspectorClient::pumpPlatform()
     }
 }
 
-void NSJSBase::v8_debug::internal::CInspectorClient::runMessageLoopOnPause(int contextGroupId) {
+void NSJSBase::v8_debug::internal::CInspectorClient::runMessageLoopOnPause(
+        int contextGroupId
+        ) {
     if (m_bPause) {
         return;
     }
@@ -87,68 +93,190 @@ void NSJSBase::v8_debug::internal::CInspectorClient::quitMessageLoopOnPause() {
 
 void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 {
+    //CRAP 1
+//    m_PreviousScripts.push_back()
     //set pause at the start of script
-    m_pSession->schedulePauseOnNextStatement(strToView("debug"),{});
-    //contextPrivate implements script execution
-    JSSmart<CJSValue> scriptResult =
-            m_pContextPrivate->runScriptImpl(m_sScriptStr
-                                             , m_pException
-                                             , m_sScriptPath);
+//    m_pSession->schedulePauseOnNextStatement(strToView("debugCommand"),{});
+//    std::string kk =
+//    R"({"id":0,"method":"Debugger.resume","params":{"terminateOnResume":false}})";
+//    dispatchProtocolMessage(kk);
+//    m_pSession->resume();
+//    auto sr = m_pContextPrivate->runScriptImpl("(function(){return 2 + 3;})();", NULL, L"");
+//    m_pSession->resume();
+
+
+    //set pause at the start of script
+//    m_pSession->schedulePauseOnNextStatement(strToView("debugCommand"),{});
+
+//    //contextPrivate implements script execution
+//    JSSmart<CJSValue> scriptResult =
+//            m_pContextPrivate->runScriptImpl(m_sScriptStr
+//                                             , m_pException
+//                                             , m_sScriptPath);
+
+
+    //CRAP 2
+//    v8::Local<v8::Object> global = m_Context->Global();
+//    v8::Local<v8::String> name = tov8str(m_pIsolate, "a");
+//    v8::Local<v8::Value> funcval = global->Get(m_Context, name).ToLocalChecked();
+//    if (!funcval->IsFunction()) {
+//        std::cout << "not func\n";
+//        return;
+//    }
+//    v8::Local<v8::Function> func = v8::Local<v8::Function>::Cast(funcval);
+//    v8::MaybeLocal<v8::Value> result = func->Call(m_Context, global, 0, nullptr);
+//    if (result.IsEmpty()) {
+//        std::cout << "no result\n";
+//        return;
+//    }
+//    v8::Local<v8::Value> lresult = result.ToLocalChecked();
+//    if (!lresult->IsInt32()) {
+//        std::cout << "result is not int\n";
+//        return;
+//    }
+//    std::cout
+//            << lresult
+//               ->ToInt32(m_Context).ToLocalChecked()
+//               ->Int32Value(m_Context).FromJust()
+//            << std::endl;
+
+    //previous ones
+//    compilePrevScripts();
+    //pause before current
+    pauseOnNextStatement();
+    pauseOnNextStatement();
+    //prepare result
+    JSSmart<CJSValue> result;
+
+    switch (m_Mode) {
+    case mode::kScriptExec: {
+        //save script
+//        m_pPreviousScripts->addScript(m_ScriptExecData.scriptSource);
+        //run script
+        result = NSJSBase::runScriptImpl(
+                    m_Context
+                    , m_ScriptExecData.scriptSource
+                    , *m_ScriptExecData.pException
+                    , m_ScriptExecData.scriptPath);
+        //dispose script data
+        m_ScriptExecData.dispose();
+        break;
+    }
+    case mode::kFuncCall: {
+        //call function
+        result = NSJSBase::callFuncImpl(
+                    m_FunctionCallData.value
+                    , m_Context
+                    , m_FunctionCallData.name
+                    , m_FunctionCallData.argc
+                    , m_FunctionCallData.argv
+                    );
+        //dispose function data
+        m_FunctionCallData.dispose();
+        break;
+    }
+    }
+
     //save result
-    m_SetRetVal(scriptResult);
+    m_SetRetVal(result);
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::processMessageFromFrontend(
         const std::string &message)
 {
     //send message to V8 internals
-    m_pSession->dispatchProtocolMessage(strToView(message));
+    dispatchProtocolMessage(message);
     //check message for Runtime.runIfWaitingForDebugger
     if (checkForStartDebugging(message)) {
+        //
         startDebugging();
+        return;
     }
 }
 
 bool NSJSBase::v8_debug::internal::CInspectorClient::checkForStartDebugging(
-        const std::string &json)
+        const std::string &json) const
 {
     return getMethod(m_Context, json) == debugStartMarker;
 }
 
+void NSJSBase::v8_debug::internal::CInspectorClient::setScriptExecData(
+        const CScriptExecData &data)
+{
+    m_Mode = mode::kScriptExec;
+    m_ScriptExecData = data;
+}
+
+void NSJSBase::v8_debug::internal::CInspectorClient::setFuncCallData(
+        const CFCallData &data)
+{
+    m_Mode = mode::kFuncCall;
+    m_FunctionCallData = data;
+}
+
+void NSJSBase::v8_debug::internal::CInspectorClient::maybeLogIncoming(
+        const std::string &message) const
+{
+    if (!m_bLog) {
+        return;
+    }
+
+    //log incoming message
+    logCdtMessage(std::clog, message);
+}
+
+void NSJSBase::v8_debug::internal::CInspectorClient::pauseOnNextStatement()
+{
+    m_pSession->schedulePauseOnNextStatement(strToView("debugCommand"), {});
+}
+
+void NSJSBase::v8_debug::internal::CInspectorClient::compilePreviousScripts()
+{
+    pauseOnNextStatement();
+    m_pPreviousScripts->compileScripts(m_Context);
+}
+
+void NSJSBase::v8_debug::internal::CInspectorClient::dispatchProtocolMessage(
+        const std::string &message)
+{
+    maybeLogIncoming(message);
+    v8_inspector::StringView v8message = strToView(message);
+    m_pSession->dispatchProtocolMessage(v8message);
+}
+
 NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(
-        CJSContextPrivate *pContextPrivate
-        , const std::string &contextName
-        , const std::string &scriptStr
-        , NSCommon::smart_ptr<CJSTryCatch> &pException
-        , const std::wstring &scriptPath
+        //
+        v8::Local<v8::Context> context,
+        //for cdt
+        const std::string &contextName
+        //somewhat
+        , int contextGroupId
+        //to pump it
+        , v8::Platform *platform
+        //for channel
         , CInspectorChannel::sendDataCallback sendDataFunc
+        //to synchronously consume incoming messages
         , waitMessageCallback waitIncomingMessage
-        , setScriptRetValCallback setScriptRetVal)
+        //to set script result to inspector
+        , setRetValCallback setRetVal
+        //log
+        , bool log
+        )
 
     //v8 stuff
-    : m_Context(pContextPrivate->m_context)
+    : m_Context(context)
     , m_pIsolate(m_Context->GetIsolate())
-    , m_pPlatform(pContextPrivate->getPlatform())
-
-    //script exec data
-    , m_sScriptStr(scriptStr)
-    , m_pException(pException)
-    , m_sScriptPath(scriptPath)
-
-    //executor itself
-    , m_pContextPrivate(pContextPrivate)
-
-    //context name
-    , m_sContextName(contextName)
+    , m_pPlatform(platform)
 
     //callbacks
     , m_WaitForFrontendMessage(std::move(waitIncomingMessage))
-    , m_SetRetVal(std::move(setScriptRetVal))
-{
-    setUpDebuggingSession(std::move(sendDataFunc));
-}
+    , m_SetRetVal(std::move(setRetVal))
 
-NSJSBase::v8_debug::internal::CInspectorClient::~CInspectorClient()
-{
+    //logging
+    , m_bLog(log)
+
     //
+    , m_pPreviousScripts(CScriptHoldersManager::getHolder())
+{
+    setUpDebuggingSession(contextName, contextGroupId, std::move(sendDataFunc));
 }

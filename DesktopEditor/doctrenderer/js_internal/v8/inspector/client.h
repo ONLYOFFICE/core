@@ -5,10 +5,10 @@
 #include <functional>//std::function for callbacks
 #include <atomic>//std::atomic for flags
 #include "channel.h"//CChannel for debug session
+#include "execution_data.h"//data for execution of script and function
 
 //forward declarations
 namespace NSJSBase {
-    class CJSContextPrivate;
     class CJSTryCatch;
     class CJSValue;
 }
@@ -21,16 +21,21 @@ namespace NSCommon {
 namespace NSJSBase {
 namespace v8_debug {
 namespace internal {
+
+//script holder forward declaratioin
+class CScriptHolder;
+
 //class that is intended to synchronously consume frontend messages on pause
 //it also sets up the debugging session
 class CInspectorClient : public v8_inspector::V8InspectorClient
 {
 public:
     using waitMessageCallback = std::function<bool(void)>;
-    using setScriptRetValCallback = std::function<void(const NSCommon::smart_ptr<CJSValue>&)>;
+    using setRetValCallback = std::function<void(const NSCommon::smart_ptr<CJSValue>&)>;
 
 private:
-    const std::string debugStartMarker = "Runtime.runIfWaitingForDebugger";
+    //notable cdt messages
+    static constexpr char debugStartMarker[32] = "Runtime.runIfWaitingForDebugger";
 
     //v8 stuff
     v8::Local<v8::Context> m_Context{};//to register context in inspector
@@ -38,21 +43,18 @@ private:
     v8::Platform *m_pPlatform = nullptr;//to pump it
 
     //script execution data
-    std::string m_sScriptStr{};//source
-    NSCommon::smart_ptr<CJSTryCatch> &m_pException;//v8::TryCatch wrapper
-    std::wstring m_sScriptPath{};//to cache script, if path provided
-
-    //script executor
-    CJSContextPrivate *m_pContextPrivate = nullptr;
-
-    //context data
-    std::string m_sContextName{};//
-    const int m_iContextGroupId = 1;//something
+    enum class mode : bool {
+        kScriptExec
+        , kFuncCall
+    };
+    mode m_Mode{mode::kScriptExec};//need to execute script before call to any function
+    CScriptExecData m_ScriptExecData{};
+    CFCallData m_FunctionCallData{};
 
     //debug session data
-    std::unique_ptr<v8_inspector::V8Inspector> m_pInspector = nullptr;
-    std::unique_ptr<v8_inspector::V8Inspector::Channel> m_pChannel = nullptr;
-    std::unique_ptr<v8_inspector::V8InspectorSession> m_pSession = nullptr;
+    std::unique_ptr<v8_inspector::V8Inspector> m_pInspector{nullptr};
+    std::unique_ptr<v8_inspector::V8Inspector::Channel> m_pChannel{nullptr};
+    std::unique_ptr<v8_inspector::V8InspectorSession> m_pSession{nullptr};
 
     //message loop flag
     std::atomic<bool> m_bPause{false};
@@ -60,34 +62,51 @@ private:
     waitMessageCallback m_WaitForFrontendMessage{};
 
     //setting return value of the script to the inspector
-    setScriptRetValCallback m_SetRetVal{};
+    setRetValCallback m_SetRetVal{};
 
+    //log
+    bool m_bLog{false};
+
+    //script holder; owned by external static container, doesn't need deletion
+    CScriptHolder *m_pPreviousScripts{nullptr};
 
 
 
     //sets up a debugging session
-    void setUpDebuggingSession(CInspectorChannel::sendDataCallback sendDataCallback);
+    void setUpDebuggingSession(const std::string &contextName
+                               , int contextGroupId
+                               , CInspectorChannel::sendDataCallback sendDataCallback);
     //pump platform on pause
     void pumpPlatform();
     //check json for Runtime.runIfWaitingForDebugger method
     //that designates start of debugging session
-    bool checkForStartDebugging(const std::string &json);
+    bool checkForStartDebugging(const std::string &json) const;
+    //log incoming message
+    void maybeLogIncoming(const std::string &message) const;
+    //schedule pause on next statement
+    void pauseOnNextStatement();
+    //
+    void compilePreviousScripts();
+
 
 public:
     CInspectorClient(
-            //script executor
-            CJSContextPrivate *pContextPrivate
+            //
+            v8::Local<v8::Context> context
             //for cdt
             , const std::string &contextName
-            //script
-            , const std::string &scriptStr
-            //exception catcher
-            , NSCommon::smart_ptr<CJSTryCatch> &pException
-            //script origin
-            , const std::wstring &scriptPath
-            , CInspectorChannel::sendDataCallback sendDataFunc//for channel
-            , waitMessageCallback waitIncomingMessage//to synchronously consume incoming messages
-            , setScriptRetValCallback setScriptRetVal//to set script result to inspector
+            //somewhat
+            , int contextGroupId
+            //to pump it
+            , v8::Platform *platform
+            //for channel
+            , CInspectorChannel::sendDataCallback sendDataFunc
+            //to synchronously consume incoming messages
+            , waitMessageCallback waitIncomingMessage
+            //to set script result to inspector
+            , setRetValCallback setRetVal
+            //log
+            , bool log
             );
 
     //wait for incoming message
@@ -100,8 +119,14 @@ public:
     //dispatch message by session and check it for Runtime.runIfWaitingForDebugger
     void processMessageFromFrontend(const std::string &message);
 
+    //
+    void dispatchProtocolMessage(const std::string &message);
 
-    ~CInspectorClient();
+    void setScriptExecData(const CScriptExecData &data);
+    void setFuncCallData(const CFCallData &data);
+
+
+    ~CInspectorClient() = default;
 };
 
 }//namespace internal

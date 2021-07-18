@@ -67,6 +67,7 @@ public:
     bool waitAndProcessMessage();
     bool connected() const;
     bool listening() const;
+    uint16_t port() const;
 };
 
 }//namespace internal

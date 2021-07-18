@@ -1,9 +1,5 @@
 #include "v8_base.h"
 
-#ifdef V8_INSPECTOR
-#include "inspector/inspector.h"//v8 inspector debugging stuff
-#endif
-
 
 v8::Local<v8::String> CreateV8String(v8::Isolate* i, const char* str, const int& len)
 {
@@ -271,13 +267,43 @@ namespace NSJSBase
         return _value;
     }
 
-    JSSmart<CJSValue> CJSContext::runScript(const std::string& script, JSSmart<CJSTryCatch> exception, const std::wstring& scriptPath)
+    JSSmart<CJSValue> CJSContext::runScript(const std::string& script
+                                            , JSSmart<CJSTryCatch> exception
+                                            , const std::wstring& scriptPath)
     {
 #ifdef V8_INSPECTOR
-        v8_debug::CInspector inspector(m_internal, script, exception, scriptPath);
-        return inspector.run();
+        v8_debug::CInspector inspector(
+                    m_internal->m_context
+                    , CV8Worker::getInitializer()->getPlatform()
+                    );
+        return inspector.runScript(
+                    script
+                    , exception
+                    , scriptPath
+                    );
+        //test
+//        v8_debug::internal::CInspectorImpl inspector(
+//                    m_internal->m_context
+//                    , CV8Worker::getInitializer()->getPlatform()
+//                    , true
+//                    , 8080
+//                    , 1
+//                    , ""
+//                    );
+//        return inspector.runScript(
+//                    {
+//                            script
+//                            , &exception
+//                            , scriptPath
+//                    }
+//                            );
 #else
-        return m_internal->runScriptImpl(script, exception, scriptPath);
+        return runScriptImpl(
+                    m_internal->m_context
+                    , script
+                    , exception
+                    , scriptPath
+                    );
 #endif
     }
 
@@ -316,30 +342,151 @@ namespace NSJSBase
         return true;
     }
 
-    v8::Local<v8::Script> CJSContextPrivate::compileOnlyScript(v8::Local<v8::String> source)
+//    v8::Local<v8::Script> CJSContextPrivate::compileOnlyScript(v8::Local<v8::String> source)
+//    {
+//        v8::MaybeLocal<v8::Script> maybeScript = v8::Script::Compile(m_context, source);
+//        if (maybeScript.IsEmpty()) {
+//            return v8::Local<v8::Script>();
+//        } else {
+//            return maybeScript.ToLocalChecked();
+//        }
+//    }
+
+//    v8::Local<v8::Script> CJSContextPrivate::compileScriptWithPath(v8::Local<v8::String> source
+//                                                                   , const std::wstring &scriptPath)
+//    {
+//        //создаём путь к файлу в той же директории с тем же названием, но с расширением .cache
+//        std::size_t dotPos = scriptPath.rfind(L".");
+//        std::wstring sCachePath = scriptPath.substr(0, dotPos) + L".cache";
+//        CCacheDataScript oCachedScript(sCachePath);
+//        return oCachedScript.Compile(m_context, source);
+//    }
+
+//    v8::MaybeLocal<v8::Value> CJSContextPrivate::runScriptWithException(v8::Local<v8::Script> script
+//                                                                        , JSSmart<CJSTryCatch>
+//                                                                        pException)
+//    {
+//        if (pException.is_init()//если TryCatch есть
+//                &&
+//                pException->Check()//и он поймал исключение
+//                ) {
+//            //не запускаем скрипт, возвращаем дефолтное значение
+//            return v8::MaybeLocal<v8::Value>();
+//        }
+//        //если всё ок, запускаем скрипт
+//        return script->Run(m_context);
+//    }
+
+//    JSSmart<CJSValue> CJSContextPrivate::runScriptImpl(const std::string &script
+//                                                       , JSSmart<CJSTryCatch> pException
+//                                                       , const std::wstring &scriptPath)
+//    {
+//        //make v8 source string
+//        v8::Local<v8::String> source = CreateV8String(CV8Worker::GetCurrent()//isolate
+//                                                      , script);
+
+//        //compile script
+//        v8::Local<v8::Script> v8script =
+//                scriptPath.empty()
+//                ?
+//                    compileOnlyScript(source)
+//                  :
+//                    compileScriptWithPath(source, scriptPath);
+
+//        //run
+//        v8::MaybeLocal<v8::Value> maybeResult = runScriptWithException(v8script, pException);
+
+//        //ptr to subclass of CJSValue
+//        CJSValueV8 *result = new CJSValueV8();
+
+//        //if there's a result, set it
+//        if (!maybeResult.IsEmpty()) {
+//            result->value = maybeResult.ToLocalChecked();
+//        }
+
+//        return result;
+//    }
+
+    v8::Platform *CJSContextPrivate::getPlatform()
     {
-        v8::MaybeLocal<v8::Script> maybeScript = v8::Script::Compile(m_context, source);
+        return m_oWorker.getInitializer()->getPlatform();
+    }
+
+    JSSmart<CJSValue> callFuncImpl(
+            v8::Local<v8::Object> value
+            , v8::Local<v8::Context> context
+            , const char *name
+            , const int argc
+            , JSSmart<CJSValue> argv[])
+    {
+        //get function value
+        v8::Local<v8::String> v8name = CreateV8String(context->GetIsolate(), name);
+        v8::Local<v8::Value> funcval = value->Get(context, v8name).ToLocalChecked();
+
+        //check for function
+        if (!funcval->IsFunction()) {
+            return new CJSValueV8();
+        }
+
+        //make function
+        v8::Local<v8::Function> function = v8::Local<v8::Function>::Cast(funcval);
+
+        //check for zero arguments
+        if (0 == argc) {
+            v8::MaybeLocal<v8::Value> result = function->Call(context, value, 0, nullptr);
+            if (result.IsEmpty()) {
+                return new CJSValueV8();
+            }
+            return new CJSValueV8(result.ToLocalChecked());
+        }
+
+        //argv isn't empty
+
+        //fullfill v8-style argument array
+        std::unique_ptr<v8::Local<v8::Value>[]> v8argv(new v8::Local<v8::Value>[argc]);
+        for (int i = 0; i < argc; ++i)
+        {
+            CJSValueV8 *v8argument =
+                    static_cast<CJSValueV8*>(argv[i].GetPointer());
+            v8argv.get()[i] = v8argument->value;
+        }
+
+        //call function
+        v8::MaybeLocal<v8::Value> result =
+                function->Call(context, value, argc, v8argv.get());
+        if (result.IsEmpty()) {
+            return new CJSValueV8();
+        }
+        return new CJSValueV8(result.ToLocalChecked());
+    }
+
+}//namespace NSJSBase
+
+namespace {
+    //compile script
+    v8::Local<v8::Script> compileOnlyScript(v8::Local<v8::Context> context
+                                            , v8::Local<v8::String> source) {
+        v8::MaybeLocal<v8::Script> maybeScript = v8::Script::Compile(context, source);
         if (maybeScript.IsEmpty()) {
             return v8::Local<v8::Script>();
         } else {
             return maybeScript.ToLocalChecked();
         }
     }
-
-    v8::Local<v8::Script> CJSContextPrivate::compileScriptWithPath(v8::Local<v8::String> source
-                                                                   , const std::wstring &scriptPath)
-    {
+    v8::Local<v8::Script> compileScriptWithPath(v8::Local<v8::Context> context
+                                                , v8::Local<v8::String> source
+                                                , const std::wstring &scriptPath) {
         //создаём путь к файлу в той же директории с тем же названием, но с расширением .cache
         std::size_t dotPos = scriptPath.rfind(L".");
         std::wstring sCachePath = scriptPath.substr(0, dotPos) + L".cache";
-        CCacheDataScript oCachedScript(sCachePath);
-        return oCachedScript.Compile(m_context, source);
+        NSJSBase::CCacheDataScript oCachedScript(sCachePath);
+        return oCachedScript.Compile(context, source);
     }
 
-    v8::MaybeLocal<v8::Value> CJSContextPrivate::runScriptWithException(v8::Local<v8::Script> script
-                                                                        , JSSmart<CJSTryCatch>
-                                                                        pException)
-    {
+    //run
+    v8::MaybeLocal<v8::Value> runScriptWithException(v8::Local<v8::Context> context
+            , v8::Local<v8::Script> script
+            , JSSmart<NSJSBase::CJSTryCatch> pException) {
         if (pException.is_init()//если TryCatch есть
                 &&
                 pException->Check()//и он поймал исключение
@@ -348,27 +495,44 @@ namespace NSJSBase
             return v8::MaybeLocal<v8::Value>();
         }
         //если всё ок, запускаем скрипт
-        return script->Run(m_context);
+        return script->Run(context);
     }
+}
 
-    JSSmart<CJSValue> CJSContextPrivate::runScriptImpl(const std::string &script
-                                                       , JSSmart<CJSTryCatch> pException
-                                                       , const std::wstring &scriptPath)
+namespace NSJSBase {
+
+    v8::Local<v8::Script> compileScript(v8::Local<v8::Context> context
+                                        , const std::string &script
+                                        , const std::wstring &scriptPath)
     {
         //make v8 source string
-        v8::Local<v8::String> source = CreateV8String(CV8Worker::GetCurrent()//isolate
+        v8::Local<v8::String> source = CreateV8String(
+                    //so was in the original code
+                    //I think it is correct to get context's isolate
+                    CV8Worker::GetCurrent()//isolate
                                                       , script);
 
         //compile script
-        v8::Local<v8::Script> v8script =
+        return
                 scriptPath.empty()
                 ?
-                    compileOnlyScript(source)
+                    compileOnlyScript(context, source)
                   :
-                    compileScriptWithPath(source, scriptPath);
+                    compileScriptWithPath(context, source, scriptPath);
+    }
+
+    JSSmart<CJSValue> runScriptImpl(v8::Local<v8::Context> context
+                                    , const std::string &script
+                                    , JSSmart<CJSTryCatch> pException
+                                    , const std::wstring &scriptPath)
+    {
+        //compile script
+        v8::Local<v8::Script> v8script = compileScript(context, script, scriptPath);
 
         //run
-        v8::MaybeLocal<v8::Value> maybeResult = runScriptWithException(v8script, pException);
+        v8::MaybeLocal<v8::Value> maybeResult = runScriptWithException(context
+                                                                       , v8script
+                                                                       , pException);
 
         //ptr to subclass of CJSValue
         CJSValueV8 *result = new CJSValueV8();
@@ -381,9 +545,4 @@ namespace NSJSBase
         return result;
     }
 
-    v8::Platform *CJSContextPrivate::getPlatform()
-    {
-        return m_oWorker.getInitializer()->getPlatform();
-    }
-
-}
+}//namespace NSJSBase

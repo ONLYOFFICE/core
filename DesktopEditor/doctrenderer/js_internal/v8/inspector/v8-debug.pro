@@ -41,15 +41,24 @@ LIBS += -lShlwapi
 HEADERS += \
     channel.h \
     client.h \
+    execution_data.h \
     inspector.h \
+    inspector_impl.h \
+    inspectorinfo.h \
+    inspectormanager.h \
+    scriptholder.h \
     singleconnectionserver.h \
     singlethreadutils.h
 
 SOURCES += \
         channel.cpp \
         client.cpp \
+        execution_data.cpp \
         inspector.cpp \
+        inspector_impl.cpp \
+        inspectormanager.cpp \
         main.cpp \
+        scriptholder.cpp \
         singleconnectionserver.cpp \
         singlethreadutils.cpp
 
@@ -60,6 +69,14 @@ HEADERS += \
 
 SOURCES += \
     ../v8_base.cpp
+
+#kernel stuff: for thread id
+#DESKTOP_EDITOR_PATH = $$PWD/../../../..
+#HEADERS += \
+#    $$DESKTOP_EDITOR_PATH/graphics/BaseThread.h
+#SOURCES += \
+#    $$DESKTOP_EDITOR_PATH/graphics/BaseThread.cpp
+
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 ADD_DEPENDENCY(kernel, UnicodeConverter)

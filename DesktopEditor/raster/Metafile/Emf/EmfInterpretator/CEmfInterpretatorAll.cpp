@@ -108,34 +108,34 @@ namespace MetaFile
                 CEmfInterpretatorRender::GetTransform(pdM11, pdM12, pdM21, pdM22, pdX, pdY);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_HEADER(const TEmfHeader &oTEmfHeader, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_HEADER(const TEmfHeader &oTEmfHeader)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_HEADER(oTEmfHeader, oDataStream, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_HEADER(oTEmfHeader);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend &oTEmfAlphaBlend, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend &oTEmfAlphaBlend, CDataStream &oDataStream)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_ALPHABLEND(oTEmfAlphaBlend, oDataStream, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_ALPHABLEND(oTEmfAlphaBlend, oDataStream);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_STRETCHDIBITS(const TEmfStretchDIBITS &oTEmfStretchDIBITS, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_STRETCHDIBITS(const TEmfStretchDIBITS &oTEmfStretchDIBITS, CDataStream &oDataStream)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_STRETCHDIBITS(oTEmfStretchDIBITS, oDataStream, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_STRETCHDIBITS(oTEmfStretchDIBITS, oDataStream);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_BITBLT(const TEmfBitBlt &oTEmfBitBlt, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_BITBLT(const TEmfBitBlt &oTEmfBitBlt, CDataStream &oDataStream)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_BITBLT(oTEmfBitBlt, oDataStream, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_BITBLT(oTEmfBitBlt, oDataStream);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice, CDataStream &oDataStream)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_SETDIBITSTODEVICE(oTEmfSetDiBitsToDevice, oDataStream, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_SETDIBITSTODEVICE(oTEmfSetDiBitsToDevice, oDataStream);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT &oTEmfStretchBLT, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT &oTEmfStretchBLT, CDataStream &oDataStream)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_STRETCHBLT(oTEmfStretchBLT, oDataStream, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_STRETCHBLT(oTEmfStretchBLT, oDataStream);
         }
 
         void CEmfInterpretatorAll::HANDLE_EMR_EOF(const unsigned int &unCount, const unsigned int &unOffset, const unsigned int &unSizeLast)
@@ -178,9 +178,9 @@ namespace MetaFile
                 CEmfInterpretatorXml::HANDLE_EMR_SELECTOBJECT(unObjectIndex);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_EXTCREATEFONTINDIRECTW(const unsigned int &unIndex, CEmfLogFont *oLogFont, const unsigned int unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_EXTCREATEFONTINDIRECTW(const unsigned int &unIndex, CEmfLogFont *oLogFont)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_EXTCREATEFONTINDIRECTW(unIndex, oLogFont, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_EXTCREATEFONTINDIRECTW(unIndex, oLogFont);
         }
 
         void CEmfInterpretatorAll::HANDLE_EMR_SETTEXTALIGN(const unsigned int &unAlign)
@@ -203,9 +203,9 @@ namespace MetaFile
                 CEmfInterpretatorXml::HANDLE_EMR_SETMITERLIMIT(unMeterLimit);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_EXTCREATEPEN(unPenIndex, pPen, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_EXTCREATEPEN(unPenIndex, pPen);
         }
 
         void CEmfInterpretatorAll::HANDLE_EMR_CREATEPEN(const unsigned int &unPenIndex, const unsigned int &unWidthX, const CEmfLogPen *pPen)
@@ -298,9 +298,9 @@ namespace MetaFile
                 CEmfInterpretatorXml::HANDLE_EMR_SETICMMODE(unICMMode);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush, CDataStream &oDataStream)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(unBrushIndex, oDibBrush, oDataStream, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(unBrushIndex, oDibBrush, oDataStream);
         }
 
         void CEmfInterpretatorAll::HANDLE_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
@@ -318,9 +318,9 @@ namespace MetaFile
                 CEmfInterpretatorXml::HANDLE_EMR_EXCLUDECLIPRECT(oClip);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode, CDataStream &oDataStream)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_EXTSELECTCLIPRGN(unRgnDataSize, unRegionMode, oDataStream, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_EXTSELECTCLIPRGN(unRgnDataSize, unRegionMode, oDataStream);
         }
 
         void CEmfInterpretatorAll::HANDLE_EMR_SETMETARGN()
@@ -333,9 +333,9 @@ namespace MetaFile
                 CEmfInterpretatorXml::HANDLE_EMR_SETROP2(unRop2Mode);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_CREATEPALETTE(const unsigned int &unPaletteIndex, const CEmfLogPalette *oEmfLogPalette, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_CREATEPALETTE(const unsigned int &unPaletteIndex, const CEmfLogPalette *oEmfLogPalette)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_CREATEPALETTE(unPaletteIndex, oEmfLogPalette, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_CREATEPALETTE(unPaletteIndex, oEmfLogPalette);
         }
 
         void CEmfInterpretatorAll::HANDLE_EMR_SELECTPALETTE(const unsigned int &unPaletteIndex)
@@ -388,14 +388,14 @@ namespace MetaFile
                 CEmfInterpretatorXml::HANDLE_EMR_ELLIPSE(oBox);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_EXTTEXTOUTA(const TEmfExtTextoutA &oTEmfExtTextoutA, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_EXTTEXTOUTA(const TEmfExtTextoutA &oTEmfExtTextoutA)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_EXTTEXTOUTA(oTEmfExtTextoutA, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_EXTTEXTOUTA(oTEmfExtTextoutA);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_EXTTEXTOUTW(const TEmfExtTextoutW &oTEmfExtTextoutW, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_EXTTEXTOUTW(const TEmfExtTextoutW &oTEmfExtTextoutW)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_EXTTEXTOUTW(oTEmfExtTextoutW, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_EXTTEXTOUTW(oTEmfExtTextoutW);
         }
 
         void CEmfInterpretatorAll::HANDLE_EMR_LINETO(const TEmfPointL &oPoint)
@@ -483,9 +483,9 @@ namespace MetaFile
                 CEmfInterpretatorXml::HANDLE_EMR_SETPIXELV(oPoint, oColor);
         }
 
-        void CEmfInterpretatorAll::HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout &oText, const unsigned int &unRecordSize)
+        void CEmfInterpretatorAll::HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout &oText)
         {
-                CEmfInterpretatorXml::HANDLE_EMR_SMALLTEXTOUT(oText, unRecordSize);
+                CEmfInterpretatorXml::HANDLE_EMR_SMALLTEXTOUT(oText);
         }
 
         void CEmfInterpretatorAll::HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL &oBounds)

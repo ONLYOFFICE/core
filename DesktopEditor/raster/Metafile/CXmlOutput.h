@@ -14,20 +14,6 @@ namespace MetaFile
         IsReader = 1
     };
 
-    struct XmlArgument
-    {
-        std::wstring wsName;
-        std::wstring wsValue;
-
-        XmlArgument(const std::wstring& wsNameArgument, int nValue)
-            : wsName(wsNameArgument),
-              wsValue(std::to_wstring(nValue)){}
-
-        XmlArgument(const std::wstring& wsNameArgument, unsigned int nValue)
-            : wsName(wsNameArgument),
-              wsValue(std::to_wstring(nValue)){}
-    };
-
     class CXmlOutput
     {
     public:
@@ -48,7 +34,7 @@ namespace MetaFile
 
         void SaveToFile(const std::wstring& wsPathToFile);
 
-        void WriteNodeBegin(const std::wstring& wsNameNode, std::vector<XmlArgument> arArguments = {});
+        void WriteNodeBegin(const std::wstring& wsNameNode);
 
         void WriteAttribute(const std::wstring& wsNameAttribute, const std::wstring& wsValue);
         void WriteAttribute(const std::wstring& wsNameAttribute, unsigned int unValue);
@@ -65,30 +51,30 @@ namespace MetaFile
         void WriteNode(const std::wstring& wsNameNode,  short shValueNode);
         void WriteNode(const std::wstring& wsNameNode,  int nValueNode);
 
-        void WriteNode(const std::wstring& wsNameNode, std::vector<XmlArgument> arArguments = {});
+        void WriteNode(const std::wstring& wsNameNode);
 
-        void WriteNode(const std::wstring& wsNameNode,  const TXForm&                   oNodeValue, std::vector<XmlArgument> arArguments = {});
+        void WriteNode(const std::wstring& wsNameNode,  const TXForm&                   oNodeValue);
 
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfRectL&                oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfSizeL&                oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfAlphaBlend&           oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfColor&                oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfStretchDIBITS&        oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfBitBlt&               oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfSetDiBitsToDevice&    oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfStretchBLT&           oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfDibPatternBrush&      oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfExtTextoutA&          oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfPointL&               oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfPointS&               oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfEmrText&              oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfExtTextoutW&          oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const TEmfSmallTextout&         oNodeValue, std::vector<XmlArgument> arArguments = {});
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfRectL&                oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfSizeL&                oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfAlphaBlend&           oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfColor&                oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfStretchDIBITS&        oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfBitBlt&               oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfSetDiBitsToDevice&    oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfStretchBLT&           oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfDibPatternBrush&      oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfExtTextoutA&          oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfPointL&               oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfPointS&               oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfEmrText&              oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfExtTextoutW&          oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfSmallTextout&         oNodeValue);
 
-        void WriteNode(const std::wstring& wsNameNode,  const CEmfLogBrushEx&           oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,        CEmfLogFont&              oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const CEmfLogPen&               oNodeValue, std::vector<XmlArgument> arArguments = {});
-        void WriteNode(const std::wstring& wsNameNode,  const CEmfLogPalette&           oNodeValue, std::vector<XmlArgument> arArguments = {});
+        void WriteNode(const std::wstring& wsNameNode,  const CEmfLogBrushEx&           oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,        CEmfLogFont&              oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const CEmfLogPen&               oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const CEmfLogPalette&           oNodeValue);
 
     private:
         XmlUtils::CXmlWriter        *m_pXmlWriter;

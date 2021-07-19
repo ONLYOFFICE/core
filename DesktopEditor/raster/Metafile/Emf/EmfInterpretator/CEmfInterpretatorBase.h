@@ -21,12 +21,12 @@ namespace MetaFile
         public:
                 virtual InterpretatorType   GetType()   = 0;
 
-                virtual void HANDLE_EMR_HEADER(const TEmfHeader&, CDataStream&, const unsigned int&) = 0;
-                virtual void HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend&, CDataStream&, const unsigned int&) = 0;
-                virtual void HANDLE_EMR_STRETCHDIBITS(const TEmfStretchDIBITS&, CDataStream&, const unsigned int&) = 0;
-                virtual void HANDLE_EMR_BITBLT(const TEmfBitBlt&, CDataStream&, const unsigned int&) = 0;
-                virtual void HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice&, CDataStream&, const unsigned int&) = 0;
-                virtual void HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT& oTEmfStretchBLT, CDataStream &oDataStream, const unsigned int&) = 0;
+                virtual void HANDLE_EMR_HEADER(const TEmfHeader&) = 0;
+                virtual void HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend&, CDataStream&) = 0;
+                virtual void HANDLE_EMR_STRETCHDIBITS(const TEmfStretchDIBITS&, CDataStream&) = 0;
+                virtual void HANDLE_EMR_BITBLT(const TEmfBitBlt&, CDataStream&) = 0;
+                virtual void HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice&, CDataStream&) = 0;
+                virtual void HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT& oTEmfStretchBLT, CDataStream &oDataStream) = 0;
                 virtual void HANDLE_EMR_EOF(const unsigned int&, const unsigned int&, const unsigned int&) = 0;
                 virtual void HANDLE_EMR_SAVEDC() = 0;
                 virtual void HANDLE_EMR_RESTOREDC(const int&) = 0;
@@ -35,12 +35,12 @@ namespace MetaFile
                 virtual void HANDLE_EMR_CREATEBRUSHINDIRECT(const unsigned int&, const CEmfLogBrushEx*) = 0;
                 virtual void HANDLE_EMR_SETTEXTCOLOR(const TEmfColor&) = 0;
                 virtual void HANDLE_EMR_SELECTOBJECT(const unsigned int&) = 0;
-                virtual void HANDLE_EMR_EXTCREATEFONTINDIRECTW(const unsigned int&, CEmfLogFont*, const unsigned int) = 0;
+                virtual void HANDLE_EMR_EXTCREATEFONTINDIRECTW(const unsigned int&, CEmfLogFont*) = 0;
                 virtual void HANDLE_EMR_SETTEXTALIGN(const unsigned int&) = 0;
                 virtual void HANDLE_EMR_SETBKMODE(const unsigned int&) = 0;
                 virtual void HANDLE_EMR_DELETEOBJECT(const unsigned int&) = 0;
                 virtual void HANDLE_EMR_SETMITERLIMIT(const unsigned int&) = 0;
-                virtual void HANDLE_EMR_EXTCREATEPEN(const unsigned int&, CEmfLogPen*, const unsigned int&) = 0;
+                virtual void HANDLE_EMR_EXTCREATEPEN(const unsigned int&, CEmfLogPen*) = 0;
                 virtual void HANDLE_EMR_CREATEPEN(const unsigned int&, const unsigned int&, const CEmfLogPen*) = 0;
                 virtual void HANDLE_EMR_SETPOLYFILLMODE(const unsigned int&) = 0;
                 virtual void HANDLE_EMR_BEGINPATH() = 0;
@@ -59,14 +59,14 @@ namespace MetaFile
                 virtual void HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL&) = 0;
                 virtual void HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int&) = 0;
                 virtual void HANDLE_EMR_SETICMMODE(const unsigned int&) = 0;
-                virtual void HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int&, const TEmfDibPatternBrush&, CDataStream&, const unsigned int&) = 0;
+                virtual void HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int&, const TEmfDibPatternBrush&, CDataStream&) = 0;
                 virtual void HANDLE_EMR_SELECTCLIPPATH(const unsigned int&) = 0;
                 virtual void HANDLE_EMR_SETBKCOLOR(const TEmfColor&) = 0;
                 virtual void HANDLE_EMR_EXCLUDECLIPRECT(const TEmfRectL&) = 0;
-                virtual void HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int&, const unsigned int&, CDataStream&, const unsigned int&) = 0;
+                virtual void HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int&, const unsigned int&, CDataStream&) = 0;
                 virtual void HANDLE_EMR_SETMETARGN() = 0;
                 virtual void HANDLE_EMR_SETROP2(const unsigned int&) = 0;
-                virtual void HANDLE_EMR_CREATEPALETTE(const unsigned int&, const CEmfLogPalette*, const unsigned int&) = 0;
+                virtual void HANDLE_EMR_CREATEPALETTE(const unsigned int&, const CEmfLogPalette*) = 0;
                 virtual void HANDLE_EMR_SELECTPALETTE(const unsigned int&) = 0;
                 virtual void HANDLE_EMR_REALIZEPALETTE() = 0;
                 virtual void HANDLE_EMR_INTERSECTCLIPRECT(const TEmfRectL&) = 0;
@@ -77,8 +77,8 @@ namespace MetaFile
                 virtual void HANDLE_EMR_ARCTO(const TEmfRectL&, const TEmfPointL&, const TEmfPointL&) = 0;
                 virtual void HANDLE_EMR_CHORD(const TEmfRectL&, const TEmfPointL&, const TEmfPointL&) = 0;
                 virtual void HANDLE_EMR_ELLIPSE(const TEmfRectL&) = 0;
-                virtual void HANDLE_EMR_EXTTEXTOUTA(const TEmfExtTextoutA&, const unsigned int&) = 0;
-                virtual void HANDLE_EMR_EXTTEXTOUTW(const TEmfExtTextoutW&, const unsigned int&) = 0;
+                virtual void HANDLE_EMR_EXTTEXTOUTA(const TEmfExtTextoutA&) = 0;
+                virtual void HANDLE_EMR_EXTTEXTOUTW(const TEmfExtTextoutW&) = 0;
                 virtual void HANDLE_EMR_LINETO(const TEmfPointL&) = 0;
                 virtual void HANDLE_EMR_PIE(const TEmfRectL&, const TEmfPointL&, const TEmfPointL&) = 0;
                 virtual void HANDLE_EMR_POLYBEZIER(const TEmfRectL&, const std::vector<TEmfPointL>&) = 0;
@@ -97,7 +97,7 @@ namespace MetaFile
                 virtual void HANDLE_EMR_RECTANGLE(const TEmfRectL&) = 0;
                 virtual void HANDLE_EMR_ROUNDRECT(const TEmfRectL&, const TEmfSizeL&) = 0;
                 virtual void HANDLE_EMR_SETPIXELV(const TEmfPointL&, const TEmfColor&) = 0;
-                virtual void HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout&, const unsigned int&) = 0;
+                virtual void HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout&) = 0;
                 virtual void HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL&) = 0;
                 virtual void HANDLE_EMR_STROKEPATH(const TEmfRectL&) = 0;
         };

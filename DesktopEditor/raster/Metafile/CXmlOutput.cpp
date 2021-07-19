@@ -85,20 +85,12 @@ namespace MetaFile
         m_pXmlWriter->SaveToFile(wsPathToFile);
     }
 
-    void CXmlOutput::WriteNodeBegin(const std::wstring &wsNameNode, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNodeBegin(const std::wstring &wsNameNode)
     {        
         if (wsNameNode.empty())
             return;
 
-        m_pXmlWriter->WriteNodeBegin(wsNameNode, !arArguments.empty());
-
-        if (!arArguments.empty())
-        {
-            for (unsigned int i = 0; i < arArguments.size(); ++i)
-                WriteAttribute(arArguments[i].wsName, arArguments[i].wsValue);
-
-            m_pXmlWriter->WriteNodeEnd(wsNameNode, true, false);
-        }
+        m_pXmlWriter->WriteNodeBegin(wsNameNode);
     }
 
     void CXmlOutput::WriteAttribute(const std::wstring &wsNameAttribute, const std::wstring &wsValue)
@@ -178,156 +170,148 @@ namespace MetaFile
         m_pXmlWriter->WriteNode(wsNameNode, nValueNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode)
     {
-        m_pXmlWriter->WriteNodeBegin(wsNameNode, true);
-
-        if (!arArguments.empty())
-        {
-            for (unsigned int i = 0; i < arArguments.size(); ++i)
-                WriteAttribute(arArguments[i].wsName, arArguments[i].wsValue);
-        }
-
+        m_pXmlWriter->WriteNodeBegin(wsNameNode);
         m_pXmlWriter->WriteNodeEnd(wsNameNode, true, true);
-
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfRectL &oTEmfRectL, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfRectL &oTEmfRectL)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfRectL(oTEmfRectL);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfSizeL &oTEmfSizeL, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfSizeL &oTEmfSizeL)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfSizeL(oTEmfSizeL);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfAlphaBlend &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfAlphaBlend &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfAlphaBlend(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TXForm &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TXForm &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTXForm(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfColor &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfColor &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfColor(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfStretchDIBITS &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfStretchDIBITS &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfStretchDIBITS(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfBitBlt &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfBitBlt &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfBitBlt(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfSetDiBitsToDevice &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfSetDiBitsToDevice &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfSetDiBitsToDevice(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfStretchBLT &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfStretchBLT &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfStretchBLT(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfDibPatternBrush &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfDibPatternBrush &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfDibPatternBrush(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfExtTextoutA &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfExtTextoutA &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfExtTextoutA(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfPointL &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfPointL &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfPointL(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfPointS &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfPointS &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfPointS(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfEmrText &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfEmrText &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfEmrText(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfExtTextoutW &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfExtTextoutW &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfExtTextoutW(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfSmallTextout &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfSmallTextout &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteTEmfSmallTextout(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const CEmfLogBrushEx &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const CEmfLogBrushEx &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteEmfLogBrushEx(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, CEmfLogFont &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, CEmfLogFont &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteEmfLogFont(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const CEmfLogPen &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const CEmfLogPen &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteEmfLogPen(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }
 
-    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const CEmfLogPalette &oNodeValue, std::vector<XmlArgument> arArguments)
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const CEmfLogPalette &oNodeValue)
     {
-        WriteNodeBegin(wsNameNode, arArguments);
+        WriteNodeBegin(wsNameNode);
         WriteEmfLogPalette(oNodeValue);
         WriteNodeEnd(wsNameNode);
     }

@@ -21,7 +21,7 @@ namespace MetaFile
                 return InterpretatorType::Emf;
         }
 
-        void CEmfInterpretator::HANDLE_EMR_HEADER(const TEmfHeader &oTEmfHeader, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_HEADER(const TEmfHeader &oTEmfHeader)
         {
                 int unExplicitRecordSize    = 88;
                 int unType                  = EMR_HEADER;
@@ -48,7 +48,7 @@ namespace MetaFile
                 WriteSize(oTEmfHeader.oMillimeters);
         }
 
-        void CEmfInterpretator::HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend &oTEmfAlphaBlend, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend &oTEmfAlphaBlend, CDataStream &oDataStream)
         {
                 int unExplicitRecordSize    = 108 + oTEmfAlphaBlend.cbBitsSrc + oTEmfAlphaBlend.cbBmiSrc;
                 int unType                  = EMR_ALPHABLEND;
@@ -96,7 +96,7 @@ namespace MetaFile
                         m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfAlphaBlend.cbBitsSrc);
         }
 
-        void CEmfInterpretator::HANDLE_EMR_STRETCHDIBITS(const TEmfStretchDIBITS &oTEmfStretchDIBITS, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_STRETCHDIBITS(const TEmfStretchDIBITS &oTEmfStretchDIBITS, CDataStream &oDataStream)
         {
                 int unExplicitRecordSize    = 80 + oTEmfStretchDIBITS.cbBitsSrc + oTEmfStretchDIBITS.cbBmiSrc;
                 int unType                  = EMR_STRETCHDIBITS;
@@ -135,7 +135,7 @@ namespace MetaFile
                         m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfStretchDIBITS.cbBitsSrc);
         }
 
-        void CEmfInterpretator::HANDLE_EMR_BITBLT(const TEmfBitBlt &oTEmfBitBlt, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_BITBLT(const TEmfBitBlt &oTEmfBitBlt, CDataStream &oDataStream)
         {
                 int unExplicitRecordSize    = 100 + oTEmfBitBlt.cbBitsSrc + oTEmfBitBlt.cbBmiSrc;
                 int unType                  = EMR_BITBLT;
@@ -176,10 +176,10 @@ namespace MetaFile
                         m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfBitBlt.cbBitsSrc);
         }
 
-        void CEmfInterpretator::HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice, CDataStream &oDataStream)
         {
                 int unExplicitRecordSize    = 76 + oTEmfSetDiBitsToDevice.cbBitsSrc + oTEmfSetDiBitsToDevice.cbBmiSrc;
-                int unType                  = EMR_BITBLT;
+                int unType                  = EMR_SETDIBITSTODEVICE;
 
                 unFileSize += unExplicitRecordSize;
 
@@ -213,10 +213,10 @@ namespace MetaFile
                         m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfSetDiBitsToDevice.cbBitsSrc);
         }
 
-        void CEmfInterpretator::HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT &oTEmfStretchBLT, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT &oTEmfStretchBLT, CDataStream &oDataStream)
         {
                 int unExplicitRecordSize    = 84 + oTEmfStretchBLT.cbBitsSrc + oTEmfStretchBLT.cbBmiSrc;
-                int unType                  = EMR_BITBLT;
+                int unType                  = EMR_STRETCHBLT;
 
                 unFileSize += unExplicitRecordSize;
 
@@ -372,9 +372,15 @@ namespace MetaFile
                 m_pOutStream->write((char *)&unObjectIndex,  sizeof (unsigned int));
         }
 
-        void CEmfInterpretator::HANDLE_EMR_EXTCREATEFONTINDIRECTW(const unsigned int &unIndex, CEmfLogFont *oLogFont, const unsigned int unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_EXTCREATEFONTINDIRECTW(const unsigned int &unIndex, CEmfLogFont *oLogFont)
         {
-                int unExplicitRecordSize    = unRecordSize + 8;
+                if (NULL == oLogFont)
+                        return;
+
+
+                int unExplicitRecordSize = (oLogFont->IsFixedLength()) ? 348
+                                                                       : (100 + oLogFont->DesignVector.NumAxes * sizeof(int));
+
                 int unType                  = EMR_EXTCREATEFONTINDIRECTW;
 
                 unFileSize += unExplicitRecordSize;
@@ -464,19 +470,75 @@ namespace MetaFile
                 m_pOutStream->write((char *)&unMeterLimit,          sizeof (unsigned int));
         }
 
-        void CEmfInterpretator::HANDLE_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen)
         {
+                if(NULL == pPen)
+                        return;
 
+                int unExplicitRecordSize    = 52 + sizeof (unsigned int) * pPen->NumStyleEntries;
+                int unType                  = EMR_EXTCREATEPEN;
+
+                unFileSize += unExplicitRecordSize;
+
+                m_pOutStream->write((char *)&unType,                sizeof (int));
+                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+
+                m_pOutStream->write((char *)&unPenIndex,            sizeof (unsigned int));
+                //Заполняем нулями некоторые поля, так как не используем
+                unsigned int unZero = 0;
+                m_pOutStream->write((char *)&unZero,            sizeof (unsigned int)); // offBmi
+                m_pOutStream->write((char *)&unZero,            sizeof (unsigned int)); // cbBmi
+                m_pOutStream->write((char *)&unZero,            sizeof (unsigned int)); // offBits
+                m_pOutStream->write((char *)&unZero,            sizeof (unsigned int)); // cbBits
+
+                m_pOutStream->write((char *)&pPen->PenStyle,    sizeof (unsigned int));
+                m_pOutStream->write((char *)&pPen->Width,       sizeof (unsigned int));
+
+                m_pOutStream->write((char *)&unZero,       sizeof (unsigned int)); // BrushStyle
+
+                WriteColor(pPen->Color);
+
+                m_pOutStream->write((char *)&unZero,       sizeof (unsigned int)); // BrushHatch
+
+                m_pOutStream->write((char *)&pPen->NumStyleEntries, sizeof (unsigned int));
+
+                for (unsigned int i = 0; i < pPen->NumStyleEntries; ++i)
+                        m_pOutStream->write((char *)&pPen->StyleEntry[i], sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_CREATEPEN(const unsigned int &unPenIndex, const unsigned int &unWidthX, const CEmfLogPen *pPen)
         {
+                if (NULL == pPen)
+                        return;
 
+                int unExplicitRecordSize    = 28;
+                int unType                  = EMR_CREATEPEN;
+
+                unFileSize += unExplicitRecordSize;
+
+                m_pOutStream->write((char *)&unType,                sizeof (int));
+                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+
+                m_pOutStream->write((char *)&unPenIndex,  sizeof (unsigned int));
+
+                m_pOutStream->write((char *)&pPen->PenStyle,  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unWidthX,  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unWidthX,  sizeof (unsigned int));
+
+                WriteColor(pPen->Color);
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETPOLYFILLMODE(const unsigned int &unFillMode)
         {
+                int unExplicitRecordSize    = 12;
+                int unType                  = EMR_SETPOLYFILLMODE;
 
+                unFileSize += unExplicitRecordSize;
+
+                m_pOutStream->write((char *)&unType,                sizeof (int));
+                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+
+                m_pOutStream->write((char *)&unFillMode,            sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_BEGINPATH()
@@ -639,7 +701,7 @@ namespace MetaFile
         void CEmfInterpretator::HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL &oExtent)
         {
                 int unExplicitRecordSize    = 16;
-                int unType                  = EMR_SETVIEWPORTORGEX;
+                int unType                  = EMR_SETVIEWPORTEXTEX;
 
                 unFileSize += unExplicitRecordSize;
 
@@ -675,9 +737,33 @@ namespace MetaFile
                 m_pOutStream->write((char *)&unICMMode,             sizeof (unsigned int));
         }
 
-        void CEmfInterpretator::HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush, CDataStream &oDataStream)
         {
+            int unExplicitRecordSize    = 32 + oDibBrush.cbBmi + oDibBrush.cbBits;
+            int unType                  = EMR_CREATEDIBPATTERNBRUSHPT;
 
+            unFileSize += unExplicitRecordSize;
+
+            m_pOutStream->write((char *)&unType,                sizeof (int));
+            m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+
+            m_pOutStream->write((char *)&unBrushIndex,          sizeof (unsigned int));
+            m_pOutStream->write((char *)&oDibBrush.Usage,       sizeof (unsigned int));
+
+            m_pOutStream->write((char *)&oDibBrush.offBmi,       sizeof (unsigned int));
+            m_pOutStream->write((char *)&oDibBrush.cbBmi,       sizeof (unsigned int));
+            m_pOutStream->write((char *)&oDibBrush.offBits,       sizeof (unsigned int));
+            m_pOutStream->write((char *)&oDibBrush.cbBits,       sizeof (unsigned int));
+
+            if (oDibBrush.cbBmi > 0)
+            {
+                    unsigned int unZero = 0;
+                    for (unsigned int i = 0; i < oDibBrush.cbBmi; ++i)
+                        m_pOutStream->write((char *)&unZero, sizeof (BYTE));
+            }
+
+            if (oDibBrush.cbBits > 0)
+                    m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oDibBrush.cbBits);
         }
 
         void CEmfInterpretator::HANDLE_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
@@ -719,7 +805,7 @@ namespace MetaFile
                 WriteRectangle(oClip);
         }
 
-        void CEmfInterpretator::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode, CDataStream &oDataStream, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode, CDataStream &oDataStream)
         {
                 int unExplicitRecordSize    = 16 + unRgnDataSize;
                 int unType                  = EMR_EXTSELECTCLIPRGN;
@@ -732,8 +818,9 @@ namespace MetaFile
                 m_pOutStream->write((char *)&unRgnDataSize,         sizeof (unsigned int));
                 m_pOutStream->write((char *)&unRegionMode,          sizeof (unsigned int));
 
+                unsigned int unZero = 0;
                 if (unRgnDataSize > 0)
-                        m_pOutStream->write((char *)0, sizeof (BYTE) * unRgnDataSize);
+                        m_pOutStream->write((char *)&unZero, sizeof (BYTE) * unRgnDataSize);
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETMETARGN()
@@ -760,9 +847,27 @@ namespace MetaFile
                 m_pOutStream->write((char *)&unRop2Mode,            sizeof (unsigned int));
         }
 
-        void CEmfInterpretator::HANDLE_EMR_CREATEPALETTE(const unsigned int &unPaletteIndex, const CEmfLogPalette *oEmfLogPalette, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_CREATEPALETTE(const unsigned int &unPaletteIndex, const CEmfLogPalette *oEmfLogPalette)
         {
+                if (NULL == oEmfLogPalette)
+                        return;
 
+                int unExplicitRecordSize    = 16 + sizeof (TEmfLogPaletteEntry) * oEmfLogPalette->NumberOfEntries;
+                int unType                  = EMR_CREATEPALETTE;
+                short unVersion             = 0x0300;
+
+                unFileSize += unExplicitRecordSize;
+
+                m_pOutStream->write((char *)&unType,                sizeof (int));
+                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+
+                m_pOutStream->write((char *)&unPaletteIndex,        sizeof (unsigned int));
+
+                m_pOutStream->write((char *)&unVersion,                         sizeof (short));
+                m_pOutStream->write((char *)&oEmfLogPalette->NumberOfEntries,   sizeof (unsigned int));
+
+                for (unsigned int i = 0; i < oEmfLogPalette->NumberOfEntries; ++i)
+                        WriteRColor(oEmfLogPalette->PaletteEntries[i]);
         }
 
         void CEmfInterpretator::HANDLE_EMR_SELECTPALETTE(const unsigned int &unPaletteIndex)
@@ -903,11 +1008,40 @@ namespace MetaFile
                 WriteRectangle(oBox);
         }
 
-        void CEmfInterpretator::HANDLE_EMR_EXTTEXTOUTA(const TEmfExtTextoutA &oTEmfExtTextoutA, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_EXTTEXTOUTA(const TEmfExtTextoutA &oTEmfExtTextoutA)
         {
+                const unsigned int unDxCount = oTEmfExtTextoutA.aEmrText.Options & ETO_PDY ? 2 * oTEmfExtTextoutA.aEmrText.Chars : oTEmfExtTextoutA.aEmrText.Chars;
+
+                int unExplicitRecordSize    = 76 + oTEmfExtTextoutA.aEmrText.Chars * 1 + unDxCount * 4;
+                int unType                  = EMR_EXTTEXTOUTA;
+
+                unFileSize += unExplicitRecordSize;
+
+                m_pOutStream->write((char *)&unType,                sizeof (int));
+                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+
+                WriteRectangle(oTEmfExtTextoutA.Bounds);
+
+                m_pOutStream->write((char *)&oTEmfExtTextoutA.iGraphicsMode,    sizeof (unsigned int));
+                m_pOutStream->write((char *)&oTEmfExtTextoutA.exScale,          sizeof (float));
+                m_pOutStream->write((char *)&oTEmfExtTextoutA.eyScale,          sizeof (float));
+
+                WritePoint(oTEmfExtTextoutA.aEmrText.Reference);
+
+                m_pOutStream->write((char *)&oTEmfExtTextoutA.aEmrText.Chars,       sizeof (unsigned int));
+                m_pOutStream->write((char *)&oTEmfExtTextoutA.aEmrText.offString,   sizeof (unsigned int));
+                m_pOutStream->write((char *)&oTEmfExtTextoutA.aEmrText.Options,     sizeof (unsigned int));
+
+                WriteRectangle(oTEmfExtTextoutA.aEmrText.Rectangle);
+
+                m_pOutStream->write((char *)&oTEmfExtTextoutA.aEmrText.offDx,       sizeof (unsigned int));
+                m_pOutStream->write((char *)&oTEmfExtTextoutA.aEmrText.OutputString,sizeof (unsigned char) * oTEmfExtTextoutA.aEmrText.Chars);
+
+                if (unDxCount > 0)
+                        m_pOutStream->write((char *)&oTEmfExtTextoutA.aEmrText.OutputDx,sizeof (unsigned int) * unDxCount);
         }
 
-        void CEmfInterpretator::HANDLE_EMR_EXTTEXTOUTW(const TEmfExtTextoutW &oTEmfExtTextoutW, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_EXTTEXTOUTW(const TEmfExtTextoutW &oTEmfExtTextoutW)
         {
                 const unsigned int unDxCount = oTEmfExtTextoutW.wEmrText.Options & ETO_PDY ? 2 * oTEmfExtTextoutW.wEmrText.Chars : oTEmfExtTextoutW.wEmrText.Chars;
 
@@ -1237,9 +1371,36 @@ namespace MetaFile
                 WriteColor(oColor);
         }
 
-        void CEmfInterpretator::HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout &oText, const unsigned int &unRecordSize)
+        void CEmfInterpretator::HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout &oText)
         {
+            int unExplicitRecordSize    = 36 + ((oText.fuOptions & ETO_NO_RECT) ? 0 : 16) +
+                                                oText.cChars * ((oText.fuOptions & ETO_SMALL_CHARS) ? sizeof (unsigned char)
+                                                                                                    : sizeof (unsigned short));
+            int unType                  = EMR_SMALLTEXTOUT;
 
+            unFileSize += unExplicitRecordSize;
+
+            m_pOutStream->write((char *)&unType,                sizeof (int));
+            m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+
+            m_pOutStream->write((char *)&oText.x,               sizeof (int));
+            m_pOutStream->write((char *)&oText.y,               sizeof (int));
+            m_pOutStream->write((char *)&oText.cChars,          sizeof (unsigned int));
+            m_pOutStream->write((char *)&oText.fuOptions,       sizeof (unsigned int));
+            m_pOutStream->write((char *)&oText.iGraphicsMode,   sizeof (unsigned int));
+            m_pOutStream->write((char *)&oText.exScale,         sizeof (float));
+            m_pOutStream->write((char *)&oText.eyScale,         sizeof (float));
+
+            if (!(oText.fuOptions & ETO_NO_RECT))
+                WriteRectangle(oText.Bounds);
+
+            if (oText.cChars > 0)
+            {
+                if (oText.fuOptions & ETO_SMALL_CHARS)
+                    m_pOutStream->write((char *)&oText.TextString ,sizeof (unsigned char) * oText.cChars);
+                else
+                    m_pOutStream->write((char *)&oText.TextString ,sizeof (unsigned short) * oText.cChars);
+            }
         }
 
         void CEmfInterpretator::HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL &oBounds)
@@ -1288,6 +1449,14 @@ namespace MetaFile
                 m_pOutStream->write((char *)&oColor.g, sizeof (unsigned char));
                 m_pOutStream->write((char *)&oColor.b, sizeof (unsigned char));
                 m_pOutStream->write((char *)&oColor.a, sizeof (unsigned char));
+        }
+
+        void CEmfInterpretator::WriteRColor(const TEmfLogPaletteEntry &oRColor)
+        {
+            m_pOutStream->write((char *)&oRColor.Reserved,  sizeof (unsigned char));
+            m_pOutStream->write((char *)&oRColor.Blue,      sizeof (unsigned char));
+            m_pOutStream->write((char *)&oRColor.Green,     sizeof (unsigned char));
+            m_pOutStream->write((char *)&oRColor.Red,       sizeof (unsigned char));
         }
 
         void CEmfInterpretator::WriteForm(const TXForm &oForm)

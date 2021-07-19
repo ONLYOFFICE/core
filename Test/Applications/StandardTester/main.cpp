@@ -13,7 +13,7 @@
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
-#ifdef LINUX
+#if defined(LINUX) || defined(__FreeBSD__)
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>

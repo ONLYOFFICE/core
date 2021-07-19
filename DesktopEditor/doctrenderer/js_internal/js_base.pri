@@ -24,15 +24,25 @@ HEADERS += $$PWD/js_base.h
 
         #inspector files
         HEADERS += \
-                $$V8_INSPECTOR_PATH/channel.h \
-                $$V8_INSPECTOR_PATH/client.h \
-                $$V8_INSPECTOR_PATH/inspector.h \
-                $$V8_INSPECTOR_PATH/singleconnectionserver.h \
-                $$V8_INSPECTOR_PATH/singlethreadutils.h
+            $$V8_INSPECTOR_PATH/channel.h \
+            $$V8_INSPECTOR_PATH/client.h \
+            $$V8_INSPECTOR_PATH/execution_data.h \
+            $$V8_INSPECTOR_PATH/inspector.h \
+            $$V8_INSPECTOR_PATH/inspector_impl.h \
+            $$V8_INSPECTOR_PATH/inspectorinfo.h \
+            $$V8_INSPECTOR_PATH/inspectormanager.h \
+            $$V8_INSPECTOR_PATH/scriptholder.h \
+            $$V8_INSPECTOR_PATH/singleconnectionserver.h \
+            $$V8_INSPECTOR_PATH/singlethreadutils.h
+
         SOURCES += \
                 $$V8_INSPECTOR_PATH/channel.cpp \
                 $$V8_INSPECTOR_PATH/client.cpp \
+                $$V8_INSPECTOR_PATH/execution_data.cpp \
                 $$V8_INSPECTOR_PATH/inspector.cpp \
+                $$V8_INSPECTOR_PATH/inspector_impl.cpp \
+                $$V8_INSPECTOR_PATH/inspectormanager.cpp \
+                $$V8_INSPECTOR_PATH/scriptholder.cpp \
                 $$V8_INSPECTOR_PATH/singleconnectionserver.cpp \
                 $$V8_INSPECTOR_PATH/singlethreadutils.cpp
 
@@ -46,6 +56,7 @@ HEADERS += $$PWD/js_base.h
             LIBS += -L$$CORE_V8_PATH_LIBS/src/inspector -linspector
         }
 
+        #boost
         CONFIG += core_boost_date_time
         include($$PWD/../../../Common/3dParty/boost/boost.pri)
     }

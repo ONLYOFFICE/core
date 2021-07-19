@@ -87,15 +87,14 @@ namespace XPS
 
 		oReader.Clear();
 
-		std::wstring wsTargerFullPath = wsTargetFile;
-		if (!m_wsPath->exists(wsTargerFullPath))
+		if (!m_wsPath->exists(wsTargetFile))
 		{
-			wsTargerFullPath = GetPath(L"_rels/.rels") + wsTargetFile;
-			if (!m_wsPath->exists(wsTargerFullPath))
+			wsTargetFile = GetPath(L"_rels/.rels") + wsTargetFile;
+			if (!m_wsPath->exists(wsTargetFile))
 				return false;
 		}
 		
-		if (!oReader.FromStringA(m_wsPath->readXml(wsTargerFullPath)))
+		if (!oReader.FromStringA(m_wsPath->readXml(wsTargetFile)))
 			return false;
 
 		if (!oReader.ReadNextNode())
@@ -119,18 +118,99 @@ namespace XPS
 		if (wsSourceFile.empty())
 			return false;
 
-		oReader.Clear();
-
-
-		std::wstring wsSourceFullPath = wsSourceFile;
-		if (!m_wsPath->exists(wsSourceFullPath))
+		if (!m_wsPath->exists(wsSourceFile))
 		{
-			wsSourceFullPath = GetPath(wsTargerFullPath) + wsSourceFile;
-			if (!m_wsPath->exists(wsSourceFullPath))
+			wsSourceFile = GetPath(wsTargetFile) + wsSourceFile;
+			if (!m_wsPath->exists(wsSourceFile))
 				return false;
 		}
 
-		if (!oReader.FromStringA(m_wsPath->readXml(wsSourceFullPath)))
+		std::wstring wsFilePath = GetPath(wsSourceFile);
+
+		#ifdef BUILDING_WASM_MODULE
+		// Оглавление, содержание, structure
+		oReader.Clear();
+
+		std::wstring wsStructureTargetFile = wsFilePath + L"_rels/" + NSFile::GetFileName(wsSourceFile) + L".rels";
+		std::wstring wsStructureFile;
+		if (m_wsPath->exists(wsStructureTargetFile) && oReader.FromStringA(m_wsPath->readXml(wsStructureTargetFile))
+				&& oReader.ReadNextNode() && oReader.GetName() == L"Relationships")
+		{
+			while (oReader.ReadNextNode())
+			{
+				if (L"Relationship" == oReader.GetName())
+				{
+					std::wstring wsAttr;
+					ReadAttribute(oReader, L"Type", wsAttr);
+					if (L"http://schemas.microsoft.com/xps/2005/06/documentstructure" == wsAttr)
+					{
+						ReadAttribute(oReader, L"Target", wsStructureFile);
+						break;
+					}
+				}
+			}
+		}
+
+		std::wstring wsFullStructureFile;
+		if (!wsStructureFile.empty())
+		{
+			if (m_wsPath->exists(wsStructureFile))
+				wsFullStructureFile = wsStructureFile;
+			else if (m_wsPath->exists(wsFilePath + wsStructureFile))
+				wsFullStructureFile = wsFilePath + wsStructureFile;
+			else
+			{
+				wsStructureFile = GetPath(wsStructureTargetFile) + wsStructureFile;
+				if (m_wsPath->exists(wsStructureFile))
+					wsFullStructureFile = wsStructureFile;
+			}
+		}
+
+		if (!wsFullStructureFile.empty())
+		{
+			oReader.Clear();
+			if (oReader.FromStringA(m_wsPath->readXml(wsFullStructureFile)) && oReader.ReadNextNode() && oReader.GetName() == L"DocumentStructure")
+			{
+				while (oReader.ReadNextNode())
+				{
+					if (L"DocumentStructure.Outline" == oReader.GetName() && oReader.ReadNextNode() && oReader.GetName() == L"DocumentOutline")
+					{
+						while (oReader.ReadNextNode())
+						{
+							if (oReader.GetName() == L"OutlineEntry")
+							{
+								CDocumentStructure oStructure;
+								oStructure.nLevel = 1; // OutlineLevel по умолчанию имеет значение 1
+								oStructure.nPage  = 0;
+								oStructure.dY     = 0; // по умолчанию верхняя часть страницы (216)
+								while (oReader.MoveToNextAttribute())
+								{
+									std::wstring wsAttrName = oReader.GetName();
+									std::wstring wsAttrText = oReader.GetText();
+									if (wsAttrName == L"OutlineLevel")
+										oStructure.nLevel = GetInteger(wsAttrText);
+									else if (wsAttrName == L"Description")
+										oStructure.wsDescription = wsAttrText;
+									else if (wsAttrName == L"OutlineTarget")
+									{
+										size_t nSharp = wsAttrText.find(L'#');
+										if (nSharp != std::wstring::npos)
+											oStructure.wsTarget = wsAttrText.substr(nSharp + 1);
+									}
+								}
+								oReader.MoveToElement();
+								m_vStructure.push_back(oStructure);
+							}
+						}
+					}
+				}
+			}
+		}
+		#endif
+
+		oReader.Clear();
+
+		if (!oReader.FromStringA(m_wsPath->readXml(wsSourceFile)))
 			return false;
 
 		if (!oReader.ReadNextNode())
@@ -140,8 +220,6 @@ namespace XPS
 		if (L"FixedDocument" != wsName)
 			return false;
 
-		std::wstring wsFilePath = GetPath(wsSourceFullPath);
-		std::wstring wsPagePath;
 		std::wstring wsSource;
 
 		int nIndex = 0;
@@ -161,6 +239,31 @@ namespace XPS
 						continue;
 				}
 
+				#ifdef BUILDING_WASM_MODULE
+				int nDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nDepth))
+				{
+					if (oReader.GetName() == L"PageContent.LinkTargets")
+					{
+						int nLinkDepth = oReader.GetDepth();
+						while (oReader.ReadNextSiblingNode(nLinkDepth))
+						{
+							if (oReader.GetName() == L"LinkTarget")
+							{
+								std::wstring wsNameTarget;
+								ReadAttribute(oReader, L"Name", wsNameTarget);
+								if (!wsNameTarget.empty())
+								{
+									std::vector<CDocumentStructure>::iterator find = std::find_if(m_vStructure.begin(), m_vStructure.end(), [wsNameTarget](const CDocumentStructure& str){ return str.wsTarget == wsNameTarget; });
+									if (find != m_vStructure.end())
+										find->nPage = nIndex;
+								}
+							}
+						}
+					}
+				}
+				#endif
+
 				m_mPages.insert(std::pair<int, XPS::Page*>(nIndex++, new XPS::Page(wsPagePath, m_wsPath, &m_oFontList, m_pFontManager, this)));
 			}
 
@@ -179,6 +282,24 @@ namespace XPS
 			oIter->second->GetSize(nW, nH);
 	}
 	#ifdef BUILDING_WASM_MODULE
+	BYTE* CDocument::GetStructure()
+	{
+		XPS::Page::CData oRes;
+		oRes.SkipLen();
+		for (const CDocumentStructure& str : m_vStructure)
+		{
+			std::string sY = std::to_string(str.dY);
+			oRes.AddInt(str.nPage);
+			oRes.AddInt(str.nLevel);
+			oRes.WriteString((BYTE*)sY.c_str(), sY.length());
+			oRes.WriteString((BYTE*)str.wsDescription.c_str(), str.wsDescription.length());
+			oRes.WriteString((BYTE*)str.wsTarget.c_str(), str.wsTarget.length());
+		}
+		oRes.WriteLen();
+		BYTE* bRes = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+		return bRes;
+	}
 	void CDocument::GetPageGlyphs(int nPageIndex, BYTE*& pGlyphs, DWORD& length)
 	{
 		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);

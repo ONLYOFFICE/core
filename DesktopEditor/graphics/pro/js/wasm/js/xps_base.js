@@ -129,9 +129,10 @@
         var lenArray = new Int32Array(Module["HEAP8"].buffer, res + 4 * width * height, 4);
         var len = lenArray[0];
         len -= 4;
-        if (len)
-            this.pages[pageIndex].Lines = [];
+        if (len <= 0)
+            return res;
 
+        this.pages[pageIndex].Lines = [];
         var buffer = new Uint8Array(Module["HEAP8"].buffer, res + 4 * width * height + 4, len);
         var index = 0;
         var Line = -1;

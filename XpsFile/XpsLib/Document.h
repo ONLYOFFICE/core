@@ -54,13 +54,23 @@ namespace XPS
 		bool Read(IFolder* pFolder);
 		int  GetPageCount() const;
 		void GetPageSize(int nPageIndex, int& nW, int& nH);
-		#ifdef BUILDING_WASM_MODULE
-		void GetPageGlyphs(int nPageIndex, BYTE*& pGlyphs, DWORD& length);
-		#endif
 		void DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak);
 		void Close();
 		CStaticResource* GetStaticResource(const wchar_t* wsPath);
 
+		#ifdef BUILDING_WASM_MODULE
+		struct CDocumentStructure
+		{
+			int nLevel;
+			int nPage;
+			double dY;
+			std::wstring wsDescription;
+			std::wstring wsTarget;
+		};
+		BYTE* GetStructure();
+		void GetPageGlyphs(int nPageIndex, BYTE*& pGlyphs, DWORD& length);
+		std::vector<CDocumentStructure>          m_vStructure;
+		#endif
 	private:
 									        
 		IFolder*                                 m_wsPath;

@@ -863,6 +863,9 @@ namespace XPS
 		CWString wsFill;
 
 		CWString wsClip, wsTransform, wsPathData, wsPathTransform;
+		#ifdef BUILDING_WASM_MODULE
+		std::vector<CDocument::CDocumentStructure>::iterator find = m_pDocument->m_vStructure.end();
+		#endif
 		if (oReader.MoveToFirstAttribute())
 		{
 			std::wstring wsAttrName = oReader.GetName();
@@ -952,6 +955,13 @@ namespace XPS
 				{
 					wsPathData.create(oReader.GetText(), true);
 				}
+				#ifdef BUILDING_WASM_MODULE
+				else if (L"Name" == wsAttrName)
+				{
+					std::wstring wsNameTarget = oReader.GetText();
+					find = std::find_if(m_pDocument->m_vStructure.begin(), m_pDocument->m_vStructure.end(), [wsNameTarget](const CDocument::CDocumentStructure& str){ return str.wsTarget == wsNameTarget; });
+				}
+				#endif
 
 				if (!oReader.MoveToNextAttribute())
 					break;
@@ -960,6 +970,19 @@ namespace XPS
 			}
 		}
 		oReader.MoveToElement();
+		#ifdef BUILDING_WASM_MODULE
+		if (find != m_pDocument->m_vStructure.end())
+		{
+			std::wstring wsPath = wsPathData.c_stdstr();
+			size_t nFindY = wsPath.find(L',');
+			if (nFindY != std::wstring::npos)
+			{
+				size_t nFindEndY = wsPath.find(L' ', nFindY);
+				if (nFindEndY != std::wstring::npos)
+					find->dY = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+			}
+		}
+		#endif
 
 		CBrush* pBrush = NULL;
 		bool bDeleteBrush = false;

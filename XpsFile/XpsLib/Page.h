@@ -55,30 +55,6 @@ namespace XPS
 		void GetSize(int& nW, int& nH) const;
 		#ifdef BUILDING_WASM_MODULE
 		void GetGlyphs(BYTE*& pGlyphs, DWORD& length);
-		#endif
-		void Draw(IRenderer* pRenderer, bool* pbBreak);
-
-	private:
-
-		void DrawCanvas      (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState, bool* pbBreak);
-		bool ReadResource    (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
-		void DrawGlyph       (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
-		void DrawPath        (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
-		bool StrokeToRenderer(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
-		void ReadPathData    (XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTranform);
-		
-		bool ClipToRenderer     (const wchar_t* wsString, CContextState* pState);
-		bool TransformToRenderer(const wchar_t* wsString, CContextState* pState);
-
-	private:
-
-        std::wstring            m_wsPagePath;
-        IFolder*                m_wsRootPath;
-        CFontList*              m_pFontList;
-        NSFonts::IFontManager*  m_pFontManager;
-        CDocument*              m_pDocument;
-
-        #ifdef BUILDING_WASM_MODULE
         class CData
         {
         protected:
@@ -189,6 +165,14 @@ namespace XPS
                 m_pDataCur = m_pData;
                 m_lSizeCur = 0;
             }
+            void ClearWithoutAttack()
+            {
+                m_pData = NULL;
+                m_lSize = 0;
+
+                m_pDataCur = m_pData;
+                m_lSizeCur = 0;
+            }
             void ClearNoAttack()
             {
                 m_pDataCur = m_pData;
@@ -211,6 +195,27 @@ namespace XPS
         };
         CData* m_pGlyphs;
         #endif
+		void Draw(IRenderer* pRenderer, bool* pbBreak);
+
+	private:
+
+		void DrawCanvas      (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState, bool* pbBreak);
+		bool ReadResource    (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
+		void DrawGlyph       (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
+		void DrawPath        (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
+		bool StrokeToRenderer(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
+		void ReadPathData    (XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTranform);
+		
+		bool ClipToRenderer     (const wchar_t* wsString, CContextState* pState);
+		bool TransformToRenderer(const wchar_t* wsString, CContextState* pState);
+
+	private:
+
+        std::wstring            m_wsPagePath;
+        IFolder*                m_wsRootPath;
+        CFontList*              m_pFontList;
+        NSFonts::IFontManager*  m_pFontManager;
+        CDocument*              m_pDocument;
 	};
 }
 

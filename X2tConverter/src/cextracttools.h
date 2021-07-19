@@ -429,6 +429,7 @@ namespace NExtractTools
 		bool* m_bIsPDFA;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
+		mutable bool m_bMacro;
 	public:
 		InputParams()
 		{
@@ -459,6 +460,7 @@ namespace NExtractTools
 			m_bIsPDFA = NULL;
 
 			m_bOutputConvertCorrupted = false;
+			m_bMacro = false;
 		}
 		~InputParams()
 		{
@@ -781,6 +783,8 @@ namespace NExtractTools
             }
             sRes  = L"<xmlOptions><fileOptions fileType='" + std::to_wstring(nFileType);
             sRes += L"' codePage='" + std::to_wstring(nCsvEncoding);
+			if (m_bMacro)
+				sRes += L"' macro='1";
 			sRes += L"' delimiter='" + XmlUtils::EncodeXmlStringExtend(cDelimiter) + L"' " + sSaveType;
             sRes += L"/><TXTOptions><Encoding>" + std::to_wstring(nCsvEncoding) + L"</Encoding></TXTOptions></xmlOptions>";
 

@@ -346,6 +346,7 @@ namespace NExtractTools
 
         BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
+		m_oCDocxSerializer.setMacroEnabled(params.m_bMacro);
 		m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
 		m_oCDocxSerializer.setFontDir(params.getFontPath());
 
@@ -380,7 +381,7 @@ namespace NExtractTools
         if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedDOCT, NULL, 0))
             return AVS_FILEUTILS_ERROR_CONVERT;
 
-        return doct_bin2docx(sTempDoctFileEditor, sTo, sTemp, bFromChanges, sThemeDir, params);
+		return doct_bin2docx(sTempDoctFileEditor, sTo, sTemp, bFromChanges, sThemeDir, params);
     }
 	// dotx -> docx
 	_UINT32 dotx2docx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
@@ -784,6 +785,7 @@ namespace NExtractTools
 
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
+		m_oCXlsxSerializer.setMacroEnabled(params.m_bMacro);
 		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
 		m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
@@ -817,7 +819,7 @@ namespace NExtractTools
         if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLST, NULL, 0))
             return AVS_FILEUTILS_ERROR_CONVERT;
 
-        return xlst_bin2xlsx(sTempXlstFileEditor, sTo, sTemp, bFromChanges, sThemeDir, params);
+		return xlst_bin2xlsx(sTempXlstFileEditor, sTo, sTemp, bFromChanges, sThemeDir, params);
     }
 	// xltx -> xlsx
 	_UINT32 xltx2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
@@ -1068,7 +1070,7 @@ namespace NExtractTools
     _UINT32 pptx_dir2pptt_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         // convert unzipped pptx to unzipped pptt
-        CPPTXFile *pptx_file = new CPPTXFile(NULL, NULL, NULL, NULL);
+        CPPTXFile *pptx_file = new CPPTXFile();
 
         _UINT32 nRes = 0;
 
@@ -1144,12 +1146,13 @@ namespace NExtractTools
         else
             sTargetBin = sFrom;
 
-        CPPTXFile *pptx_file = new CPPTXFile(NULL, NULL, NULL, NULL);
+        CPPTXFile *pptx_file = new CPPTXFile();
 
         HRESULT hr = S_OK;
 
         if (pptx_file)
         {
+			pptx_file->SetMacroEnabled(params.m_bMacro);
 			pptx_file->SetIsNoBase64(params.getIsNoBase64());
             pptx_file->SetFontDir(params.getFontPath());
             nRes = (S_OK == pptx_file->ConvertPPTYToPPTX(sTargetBin, sTo, sThemeDir)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
@@ -2090,8 +2093,8 @@ namespace NExtractTools
 
 		pptFile.put_TempDirectory(sTemp);
 	   
-		bool bMacros = false;
-		long nRes = pptFile.LoadFromFile(sFrom, sTo, params.getPassword(), bMacros);
+		params.m_bMacro = false;
+		long nRes = pptFile.LoadFromFile(sFrom, sTo, params.getPassword(), params.m_bMacro);
 		nRes = processEncryptionError(nRes, sFrom, params);
 		return nRes;
 	}
@@ -2118,8 +2121,8 @@ namespace NExtractTools
 
        pptFile.put_TempDirectory(sTemp);
 	   
-		bool bMacros = true;
-		_UINT32 nRes = pptFile.LoadFromFile(sFrom, sTo, params.getPassword(), bMacros);
+	   params.m_bMacro = true;
+		_UINT32 nRes = pptFile.LoadFromFile(sFrom, sTo, params.getPassword(), params.m_bMacro);
 		nRes = processEncryptionError(nRes, sFrom, params);
 		return nRes;
 	}
@@ -2153,14 +2156,14 @@ namespace NExtractTools
 
        pptFile.put_TempDirectory(sTemp);
 
-	   bool bMacros = true;
-       _UINT32 nRes = pptFile.LoadFromFile(sFrom, sTempUnpackedPPTX, params.getPassword(), bMacros);
+	   params.m_bMacro = true;
+       _UINT32 nRes = pptFile.LoadFromFile(sFrom, sTempUnpackedPPTX, params.getPassword(), params.m_bMacro);
 		
 		nRes = processEncryptionError(nRes, sFrom, params);
 		if (SUCCEEDED_X2T(nRes))
         {
 		  // convert unzipped pptx to unzipped pptt
-		   CPPTXFile *pptx_file = new CPPTXFile(NULL, NULL, NULL, NULL);
+		   CPPTXFile *pptx_file = new CPPTXFile();
 
 		   if (pptx_file)
 		   {
@@ -2344,9 +2347,9 @@ namespace NExtractTools
 		docFile.m_sTempFolder = sTemp;		
 		docFile.m_nUserLCID = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
 	
-		bool bMacros = false;
+		params.m_bMacro = false;
 
-		_UINT32 hRes = docFile.LoadFromFile( sFrom, sTo, params.getPassword(), bMacros, NULL);
+		_UINT32 hRes = docFile.LoadFromFile( sFrom, sTo, params.getPassword(), params.m_bMacro, NULL);
 		if (AVS_ERROR_DRM == hRes)
 		{
 			if(!params.getDontSaveAdditional())
@@ -2395,9 +2398,9 @@ namespace NExtractTools
         COfficeDocFile docFile;
 		docFile.m_sTempFolder = sTemp;
 		
-		bool bMacros = true;
+		params.m_bMacro = true;
 
-		_UINT32 hRes = docFile.LoadFromFile( sFrom, sTo, params.getPassword(), bMacros, NULL);
+		_UINT32 hRes = docFile.LoadFromFile( sFrom, sTo, params.getPassword(), params.m_bMacro, NULL);
 		if (AVS_ERROR_DRM == hRes)
 		{
 			if(!params.getDontSaveAdditional())
@@ -2443,9 +2446,9 @@ namespace NExtractTools
         COfficeDocFile docFile;
 		docFile.m_sTempFolder = sTemp;
 
-		bool bMacros = true;
+		params.m_bMacro = true;
 
-		_UINT32 nRes = docFile.LoadFromFile( sFrom, sResultDocxDir, params.getPassword(), bMacros, NULL);
+		_UINT32 nRes = docFile.LoadFromFile( sFrom, sResultDocxDir, params.getPassword(), params.m_bMacro, NULL);
  		
 		nRes = processEncryptionError(nRes, sFrom, params);
         if (SUCCEEDED_X2T(nRes))
@@ -4242,11 +4245,11 @@ namespace NExtractTools
    }
 	_UINT32 xls2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
-		bool bMacros = false;
+		params.m_bMacro = false;
 
 		int lcid = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
 
-		_UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, lcid, bMacros);
+		_UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, lcid, params.m_bMacro);
 		
 		nRes = processEncryptionError(nRes, sFrom, params);
 		return nRes;
@@ -4270,9 +4273,9 @@ namespace NExtractTools
 	}
 	_UINT32 xls2xlsm_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
-		bool bMacros = true;
+		params.m_bMacro = true;
 		
-		_UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros);
+		_UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, NULL, params.m_bMacro);
 
 		nRes = processEncryptionError(nRes, sFrom, params);
 		return nRes;
@@ -4304,8 +4307,8 @@ namespace NExtractTools
 
 		NSDirectory::CreateDirectory(sResultXlsxDir);
 
-		bool bMacros = true;
-		_UINT32 nRes = ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), params.getFontPath(), sTemp, NULL, bMacros);
+		params.m_bMacro = true;
+		_UINT32 nRes = ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), params.getFontPath(), sTemp, NULL, params.m_bMacro);
 
 		nRes = processEncryptionError(nRes, sFrom, params);
 		if (SUCCEEDED_X2T(nRes))
@@ -4527,16 +4530,19 @@ namespace NExtractTools
 			}break;
 			case TCD_DOCT2DOCX:
 			{
+				oInputParams.m_bMacro = false;
 				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
 				result =  doct2docx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 			}break;
 			case TCD_DOCT2DOTX:
 			{
+				oInputParams.m_bMacro = false;
 				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX);
 				result =  doct2docx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 			}break;
 			case TCD_DOCT2DOCM:
 			{
+				oInputParams.m_bMacro = true;
 				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM);
 				result =  doct2docx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 			}break;
@@ -4554,16 +4560,19 @@ namespace NExtractTools
 			}break;
 			case TCD_XLST2XLSX:
 			{
+				oInputParams.m_bMacro = false;
 				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX);
 				result =  xlst2xlsx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 			}break;
 			case TCD_XLST2XLSM:
 			{
+				oInputParams.m_bMacro = true;
 				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM);
 				result =  xlst2xlsx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 			}break;
 			case TCD_XLST2XLTX:
 			{
+				oInputParams.m_bMacro = false;
 				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX);
 				result =  xlst2xlsx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 			}break;
@@ -4573,16 +4582,19 @@ namespace NExtractTools
 			}break;
 			case TCD_PPTT2PPTX:
 			{
+				oInputParams.m_bMacro = false;
 				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX);
 				result =  pptt2pptx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 			}break;	
 			case TCD_PPTT2PPTM:
 			{
+				oInputParams.m_bMacro = true;
 				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM);
 				result =  pptt2pptx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 			}break;	
 			case TCD_PPTT2POTX:
 			{
+				oInputParams.m_bMacro = false;
 				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX);
 				result =  pptt2pptx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 			}break;	

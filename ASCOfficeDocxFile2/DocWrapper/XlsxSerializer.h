@@ -55,6 +55,7 @@ namespace BinXlsxRW {
         std::wstring m_sEmbeddedFontsDir;
 		NSBinPptxRW::CDrawingConverter* m_pExternalDrawingConverter;
 		bool m_bIsNoBase64;
+		bool m_bIsMacro;
 	public:
 		CXlsxSerializer();
 		~CXlsxSerializer();
@@ -69,7 +70,8 @@ namespace BinXlsxRW {
         void setFontDir			(const std::wstring& sFontDir);
         void setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir);
 		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);
-		void setIsNoBase64		(bool bIsNoBase64);
+		void setIsNoBase64		(bool val);
+		void setMacroEnabled	(bool val);
 
 		bool writeChartXlsx     (const std::wstring& sDstFile, NSCommon::smart_ptr<OOX::File> &file);
 		bool hasPivot			(const std::wstring& sSrcPath);

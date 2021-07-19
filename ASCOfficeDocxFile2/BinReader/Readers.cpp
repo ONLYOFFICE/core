@@ -332,20 +332,7 @@ template<typename T> int Binary_CommonReader2::ReadTrackRevisionInner(BYTE type,
 	 res = c_oSerConstants::ReadUnknown;
 	return res;
 }
-
-Binary_VbaProjectTableReader::Binary_VbaProjectTableReader (NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
-		: Binary_CommonReader(poBufferedStream), m_oFileWriter(oFileWriter)
-{
-}
-int Binary_VbaProjectTableReader::Read()
-{
-	m_oBufferedStream.Skip(1); // type
-	m_oFileWriter.m_pVbaProject = new OOX::VbaProject(NULL);
-    m_oFileWriter.m_pVbaProject->fromPPTY(&m_oBufferedStream);
-
-    return c_oSerConstants::ReadOk;
-}
-Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
+Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments)
 	:
 	Binary_CommonReader(poBufferedStream),
 	m_oFileWriter(oFileWriter),
@@ -9621,8 +9608,12 @@ int Binary_NotesTableReader::ReadNoteContent(BYTE type, long length, void* poRes
 };
 
 
-BinaryFileReader::BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter) : 
-	m_sFileInDir(sFileInDir), m_oBufferedStream(oBufferedStream), m_oFileWriter(oFileWriter)
+BinaryFileReader::BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro)
+	: 
+	m_sFileInDir(sFileInDir), 
+	m_oBufferedStream(oBufferedStream), 
+	m_oFileWriter(oFileWriter),
+	m_bMacro(bMacro)
 {
 }
 int BinaryFileReader::ReadFile()
@@ -9827,7 +9818,14 @@ int BinaryFileReader::ReadMainTable()
 		}break;
 		case c_oSerTableTypes::VbaProject:
 		{
-			res = Binary_VbaProjectTableReader(m_oBufferedStream, m_oFileWriter).Read();
+			m_oBufferedStream.Skip(1); //skip type
+			if (m_bMacro)
+			{
+				m_oFileWriter.m_pVbaProject = new OOX::VbaProject(NULL);
+				m_oFileWriter.m_pVbaProject->fromPPTY(&m_oBufferedStream);
+			}
+			else
+				m_oBufferedStream.SkipRecord();
 		}break;
 		case c_oSerTableTypes::Glossary:
 		{

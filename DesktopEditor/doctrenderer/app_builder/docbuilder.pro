@@ -44,5 +44,8 @@ ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, doctrenderer)
 core_linux {
     LIBS += -ldl
 }
+core_freebsd {
+    LIBS += -liconv
+}
 
 SOURCES += main.cpp

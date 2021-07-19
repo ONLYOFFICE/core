@@ -39,4 +39,8 @@ core_linux {
     QMAKE_LFLAGS += -Wl,--rpath=./
 }
 
+core_freebsd {
+    LIBS += -liconv
+}
+
 SOURCES += main.cpp

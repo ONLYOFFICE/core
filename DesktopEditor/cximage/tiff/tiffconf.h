@@ -33,7 +33,7 @@
 #define TIFF_UINT64_T unsigned __int64
 #endif
 
-#ifdef _LINUX
+#if defined(_LINUX) || defined(__FreeBSD__)
 #include <inttypes.h>
 
 /* Signed 64-bit type */

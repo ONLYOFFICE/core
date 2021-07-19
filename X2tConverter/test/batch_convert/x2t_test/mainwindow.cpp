@@ -85,7 +85,7 @@ public:
         CApplicationFonts oApplication;
         std::vector<std::wstring> strFontsW_Cur = oApplication.GetSetupFontFiles();
 
-#if defined(_LINUX)
+#if defined(_LINUX) || defined(__FreeBSD__)
         std::wstring sHome = GetHomeDirectory();
         if (!sHome.empty())
         {
@@ -767,7 +767,7 @@ public:
 
 #endif
 
-#ifdef LINUX
+#if defined(LINUX) || defined(__FreeBSD__)
         pid_t pid = fork(); // create child process
         int status;
 

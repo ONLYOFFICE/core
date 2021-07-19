@@ -60,7 +60,7 @@ namespace Aggplus
 		m_dGlobalAlpha		= 1.0;
         m_bSwapRGB = false;
 
-#if defined (_LINUX) || defined (_QT)
+#if defined (_LINUX) || defined (_QT) || defined(__FreeBSD__)
         m_bSwapRGB = true;
 #endif
 
@@ -93,7 +93,7 @@ namespace Aggplus
 
         m_bSwapRGB = false;
 
-#if defined (_LINUX) || defined (_QT)
+#if defined (_LINUX) || defined (_QT) || defined(__FreeBSD__)
         m_bSwapRGB = true;
 #endif
 
@@ -131,7 +131,7 @@ namespace Aggplus
 
         m_bSwapRGB = false;
 
-#if defined (_LINUX) || defined (_QT)
+#if defined (_LINUX) || defined (_QT) || defined(_FreeBSD__)
         m_bSwapRGB = true;
 #endif
 

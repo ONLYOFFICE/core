@@ -46,7 +46,7 @@
 #include <algorithm>
 #include <math.h>
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__FreeBSD__)
 #include <string.h>
 #endif
 

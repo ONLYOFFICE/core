@@ -103,5 +103,8 @@ include($$PWD/../../../Common/3dParty/boost/boost.pri)
 core_windows {
     LIBS += -lAdvapi32
 }
+core_freebsd {
+    LIBS += -liconv
+}
 ########################################################
 

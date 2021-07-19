@@ -50,7 +50,7 @@
 #include "embed/NativeControlEmbed.h"
 #include "embed/MemoryStreamEmbed.h"
 #include "embed/GraphicsEmbed.h"
-#ifdef LINUX
+#if defined(LINUX) || defined(__FreeBSD__)
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>
@@ -539,7 +539,7 @@ namespace NSDoctRenderer
 
     #endif
 
-    #ifdef LINUX
+    #if defined(LINUX) || defined(__FreeBSD__)
             pid_t pid = fork(); // create child process
             int status;
 
@@ -851,7 +851,7 @@ namespace NSDoctRenderer
 
     #endif
 
-    #ifdef LINUX
+    #if defined(LINUX) || defined(__FreeBSD__)
             pid_t pid = fork(); // create child process
             int status;
 

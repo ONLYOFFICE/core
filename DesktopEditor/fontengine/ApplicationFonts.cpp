@@ -1594,7 +1594,7 @@ void CApplicationFonts::Initialize(bool bIsCheckSelection)
 	InitFromReg();
 #endif
 
-#if defined(_LINUX) && !defined(_MAC) && !defined(__ANDROID__)
+#if ( defined(_LINUX) || defined(__FreeBSD__) ) && !defined(_MAC) && !defined(__ANDROID__)
 	m_oList.LoadFromFolder(L"/usr/share/fonts");
 #endif
 

@@ -86,7 +86,7 @@ namespace NSGeneratePalette
 
                 if ( ( X + Width ) > SrcWidth || ( Y + Height ) > SrcHeigth || NULL == pSrc )
                 {
-                    return NULL;
+                    return false;
                 }
 
                 (*pImage)	=	new CImage8bit ();

@@ -99,7 +99,6 @@ int main(int argc, char *argv[])
     //taType = NSDocxRenderer::TextAssociationTypeNoFrames;
     oDocxRenderer.SetTextAssociationType(taType);
 
-
     oDocxRenderer.SetTempFolder(sTempDirOut);
     oDocxRenderer.Convert(pReader, sDestFile);
 

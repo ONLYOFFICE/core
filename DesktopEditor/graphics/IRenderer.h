@@ -300,9 +300,9 @@ public:
 		m_bUseTransformCoordsToIdentity = false;
 		return S_OK;
 	}
-	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) {return S_OK;};
-	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) {return S_OK;};
-	virtual HRESULT AddFormField(const CFormFieldInfo& oInfo) {return S_OK;};
+	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) {return S_OK;}
+	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) {return S_OK;}
+	virtual HRESULT AddFormField(const CFormFieldInfo& oInfo) {return S_OK;}
 };
 
 class CFormFieldInfo
@@ -456,7 +456,7 @@ public:
 	}
 	unsigned int GetComboBoxItemsCount() const
 	{
-		return m_vComboBoxItems.size();
+		return (int)m_vComboBoxItems.size();
 	}
 	const std::wstring& GetComboBoxItem(const unsigned int& unIndex) const
 	{

@@ -36,6 +36,7 @@ namespace NSDocxRenderer
 		double							m_dDpiY;
 
         std::wstring					m_strTempDirectory;
+        std::wstring                    m_strDstFilePath;
 
         NSFile::CFileBinary				m_oDocumentStream;
 		LONG							m_lPagesCount;
@@ -401,6 +402,16 @@ namespace NSDocxRenderer
 			m_oFont.CharSpace = dSpace;
 			return S_OK;
 		}
+        HRESULT get_FontFaceIndex(int* lFaceIndex)
+        {
+            *lFaceIndex = m_oFont.FaceIndex;
+            return S_OK;
+        }
+        HRESULT put_FontFaceIndex(const int& lFaceIndex)
+        {
+            m_oFont.FaceIndex = lFaceIndex;
+            return S_OK;
+        }
 		// shadow -----------------------------------------------------------------------------------
         HRESULT get_ShadowDistanceX(double* val)
 		{
@@ -831,7 +842,7 @@ namespace NSDocxRenderer
 			}
 			else
 			{
-                m_pFontManager->LoadFontFromFile(m_oFont.Path, (float)m_oFont.Size, m_dDpiX, m_dDpiY, 0);
+                m_pFontManager->LoadFontFromFile(m_oFont.Path, m_oFont.FaceIndex, (float)m_oFont.Size, m_dDpiX, m_dDpiY);
 			}
 
 			m_oInstalledFont = m_oFont;
@@ -839,9 +850,8 @@ namespace NSDocxRenderer
 
 	public:
 		
-        bool CreateDocument(std::wstring strTempDirectory)
+        bool CreateDocument()
 		{
-            m_strTempDirectory = strTempDirectory;
             CreateTemplate(m_strTempDirectory);
 
 			// Init

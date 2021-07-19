@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef FILE_WRITER
-#define FILE_WRITER
+#pragma once
 
 #include "../../DesktopEditor/common/Path.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
@@ -47,7 +46,7 @@
 #include "DocumentRelsWriter.h"
 #include "webSettingsWriter.h"
 #include "DefaultThemeWriter.h"
-#include "CustormXmlWriter.h"
+#include "CustomXmlWriter.h"
 
 namespace BinDocxRW 
 {
@@ -63,89 +62,113 @@ namespace OOX
 	class CApp;
 	class CCore;
 }
+namespace PPTX
+{
+	class CustomProperties;
+}
 
 namespace Writers
 {
+	struct _part_summary_writers
+	{
+		_part_summary_writers(std::wstring sDirOutput, std::wstring sFontDir, bool bNoFontDir, int nVersion)
+			:
+			font_table(sDirOutput, sFontDir, bNoFontDir),
+			headers_footers(sDirOutput),
+			document(sDirOutput, headers_footers),
+			styles(sDirOutput, nVersion),
+			numbering(sDirOutput),
+			footnotes(sDirOutput),
+			endnotes(sDirOutput),
+			settings(sDirOutput, headers_footers),
+			comments(sDirOutput),
+			web_settings(sDirOutput)
+		{}
+
+		void Write(bool bGlossary = false)
+		{
+			comments.Write(bGlossary);
+			styles.Write(bGlossary);
+			numbering.Write(bGlossary);
+			font_table.Write(bGlossary);
+			headers_footers.Write(bGlossary);
+			footnotes.Write(bGlossary);
+			endnotes.Write(bGlossary);
+			//Setting пишем после HeaderFooter, чтобы заполнить evenAndOddHeaders
+			settings.Write(bGlossary);
+			web_settings.Write(bGlossary);
+			//Document пишем после HeaderFooter, чтобы заполнить sectPr
+			document.Write(bGlossary);
+
+		}
+
+		DocumentWriter			document;
+		NumberingWriter			numbering;
+		StylesWriter			styles;
+		FootnotesWriter			footnotes;
+		EndnotesWriter			endnotes;
+		HeaderFooterWriter		headers_footers;
+		SettingWriter			settings;
+		WebSettingsWriter		web_settings;
+		FontTableWriter			font_table;
+		CommentsWriter			comments;
+	};
 	class FileWriter
 	{
-	public:		
-		FontTableWriter			m_oFontTableWriter;
-		DocumentWriter			m_oDocumentWriter;
-		MediaWriter				m_oMediaWriter;
-		StylesWriter			m_oStylesWriter;
-		NumberingWriter			m_oNumberingWriter;
-		HeaderFooterWriter		m_oHeaderFooterWriter;
-		FootnotesWriter			m_oFootnotesWriter;
-		EndnotesWriter			m_oEndnotesWriter;
-		SettingWriter			m_oSettingWriter;
-		CommentsWriter			m_oCommentsWriter;
-		ChartWriter				m_oChartWriter;
-		DocumentRelsWriter		m_oDocumentRelsWriter;
-		WebSettingsWriter		m_oWebSettingsWriter;
-		DefaultThemeWriter		m_oTheme;
-		CustomXmlWriter			m_oCustomXmlWriter;
-		
-		smart_ptr<OOX::VbaProject>		m_pVbaProject;
-	
- 		NSBinPptxRW::CDrawingConverter* m_pDrawingConverter;
-		bool							m_bSaveChartAsImg;
-		std::wstring					m_sThemePath;
-		int								m_nDocPrIndex;
-		BinDocxRW::CComments*			m_pComments;
-		OOX::CApp*						m_pApp;
-		OOX::CCore*						m_pCore;
+	private:
+		_part_summary_writers	m_oMain;
+		_part_summary_writers	m_oGlossary;
+	public:
 
-		FileWriter (std::wstring sDirOutput,std::wstring sFontDir, bool bNoFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, std::wstring sThemePath)
-									:	m_pDrawingConverter(pDrawingConverter), m_sThemePath(sThemePath), m_bSaveChartAsImg(bSaveChartAsImg),
-										m_oFontTableWriter		(sDirOutput, sFontDir, bNoFontDir),
-										m_oHeaderFooterWriter	(sDirOutput),
-										m_oFootnotesWriter		(sDirOutput),
-										m_oEndnotesWriter		(sDirOutput),
-										m_oMediaWriter			(sDirOutput),
-										m_oStylesWriter			(sDirOutput, nVersion),
-										m_oNumberingWriter		(sDirOutput),
-										m_oDocumentWriter		(sDirOutput, m_oHeaderFooterWriter),
-										m_oSettingWriter		(sDirOutput, m_oHeaderFooterWriter),
-										m_oCommentsWriter		(sDirOutput),
-										m_oChartWriter			(sDirOutput),
-										m_oDocumentRelsWriter	(sDirOutput),
-										m_oWebSettingsWriter	(sDirOutput),
-										m_nDocPrIndex(0),
-										m_pComments(NULL),
-										m_oCustomXmlWriter		(sDirOutput, pDrawingConverter),
-										m_pApp					(NULL),
-										m_pCore					(NULL)
-		{
-		}
-		~FileWriter()
-		{
-			RELEASEOBJECT(m_pApp);
-			RELEASEOBJECT(m_pCore);
-		}
+		FileWriter(std::wstring sDirOutput, std::wstring sFontDir, bool bNoFontDir, int nVersion, NSBinPptxRW::CDrawingConverter* pDrawingConverter, std::wstring sThemePath);
+		~FileWriter();
+
+		FontTableWriter&		get_font_table_writer()		{ return m_bGlossaryMode ? m_oGlossary.font_table : m_oMain.font_table; }
+		DocumentWriter&			get_document_writer()		{ return m_bGlossaryMode ? m_oGlossary.document : m_oMain.document; }
+		FootnotesWriter&		get_footnotes_writer()		{ return m_bGlossaryMode ? m_oGlossary.footnotes : m_oMain.footnotes; }
+		EndnotesWriter&			get_endnotes_writer()		{ return m_bGlossaryMode ? m_oGlossary.endnotes : m_oMain.endnotes; }
+		HeaderFooterWriter&		get_headers_footers_writer(){ return m_bGlossaryMode ? m_oGlossary.headers_footers : m_oMain.headers_footers; }
+		SettingWriter&			get_settings_writer()		{ return m_bGlossaryMode ? m_oGlossary.settings : m_oMain.settings; }
+		CommentsWriter&			get_comments_writer()		{ return m_bGlossaryMode ? m_oGlossary.comments : m_oMain.comments; }
+		NumberingWriter&		get_numbering_writer()		{ return m_bGlossaryMode ? m_oGlossary.numbering : m_oMain.numbering; }
+		StylesWriter&			get_style_writers()			{ return m_bGlossaryMode ? m_oGlossary.styles : m_oMain.styles; }
+		WebSettingsWriter&		get_web_settings_writer()	{ return m_bGlossaryMode ? m_oGlossary.web_settings : m_oMain.web_settings; }
+
 		int getNextDocPr()
 		{
 			m_nDocPrIndex++;
 			return m_nDocPrIndex;
 		}
-
-		void Write()
+		void AddSetting(std::wstring sSetting)
 		{
-			m_oCommentsWriter.Write();
-			m_oChartWriter.Write();
-			m_oStylesWriter.Write();
-			m_oNumberingWriter.Write();
-			m_oFontTableWriter.Write();
-			m_oHeaderFooterWriter.Write();
-			m_oFootnotesWriter.Write();
-			m_oEndnotesWriter.Write();
-	//Setting пишем после HeaderFooter, чтобы заполнить evenAndOddHeaders
-			m_oSettingWriter.Write();
-			m_oWebSettingsWriter.Write();
-	//Document пишем после HeaderFooter, чтобы заполнить sectPr
-			m_oDocumentWriter.Write();
-	//Rels и ContentTypes пишем в конце
-			m_oDocumentRelsWriter.Write();
+			if (m_bGlossaryMode) m_oGlossary.settings.AddSetting(sSetting);
+			else m_oMain.settings.AddSetting(sSetting);
 		}
+		void Write();
+		void WriteGlossary();
+
+		bool IsEmptyGlossary()
+		{
+			return m_oGlossary.document.m_oContent.GetSize() < 1;
+		}
+
+		MediaWriter				m_oMediaWriter;
+		ChartWriter				m_oChartWriter;
+		DefaultThemeWriter		m_oTheme;
+		CustomXmlWriter			m_oCustomXmlWriter;		
+		DocumentRelsWriter		m_oDocumentRelsWriter;
+
+		smart_ptr<OOX::VbaProject>		m_pVbaProject;
+	
+ 		NSBinPptxRW::CDrawingConverter* m_pDrawingConverter;
+
+		std::wstring					m_sThemePath;
+		int								m_nDocPrIndex;
+		BinDocxRW::CComments*			m_pComments;
+		OOX::CApp*						m_pApp;
+		OOX::CCore*						m_pCore;
+		PPTX::CustomProperties*			m_pCustomProperties;
+
+		bool m_bGlossaryMode = false;
 	};
 }
-#endif	// #ifndef FILE_WRITER

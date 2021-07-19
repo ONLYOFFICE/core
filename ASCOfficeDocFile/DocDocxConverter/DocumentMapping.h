@@ -79,6 +79,7 @@ namespace DocFileFormat
 //--------------------------------- 4571833.doc
 		std::wstring	m_shapeIdOwner;
 		std::wstring	getOLEObject() { return _lastOLEObject; }
+		bool m_bOleInPicture = false;
 	protected:
 
 		int getListNumCache		(int fc, int fc_end);
@@ -157,6 +158,7 @@ namespace DocFileFormat
 		bool							_writeWebHidden;
 		std::wstring					_writeAfterRun;
 		std::wstring					_lastOLEObject;
+		std::wstring					_writeNoteRef;
 		int								_cacheListNum;
 
 		std::wstring					_paraId;

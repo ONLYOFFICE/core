@@ -57,16 +57,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CStrokeChild)
-			CStrokeChild()
+			CStrokeChild(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 				m_eType = et_Unknown;
 			}
 			virtual ~CStrokeChild()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = et_Unknown;
@@ -77,15 +74,15 @@ namespace OOX
 				m_eType = et_Unknown;
 				std::wstring sName = oReader.GetName();
 
-				if ( _T("o:bottom") == sName )
+				if ( L"o:bottom" == sName )
 					m_eType = et_o_bottom;
-				else if ( _T("o:column") == sName )
+				else if ( L"o:column" == sName )
 					m_eType = et_o_column;
-				else if ( _T("o:left") == sName )
+				else if ( L"o:left" == sName )
 					m_eType = et_o_left;
-				else if ( _T("o:right") == sName )
+				else if ( L"o:right" == sName )
 					m_eType = et_o_right;
-				else if ( _T("o:top") == sName )
+				else if ( L"o:top" == sName )
 					m_eType = et_o_top;
 				else
 					return;
@@ -101,43 +98,43 @@ namespace OOX
 
 				switch( m_eType )
 				{
-				case et_o_bottom: sResult = _T("<o:bottom "); break;
-				case et_o_column: sResult = _T("<o:column "); break;
-				case et_o_left  : sResult = _T("<o:left ");   break;
-				case et_o_right : sResult = _T("<o:right ");  break;
-				case et_o_top   : sResult = _T("<o:top ");    break;
-				default: return _T("");
+				case et_o_bottom: sResult = L"<o:bottom "; break;
+				case et_o_column: sResult = L"<o:column "; break;
+				case et_o_left  : sResult = L"<o:left ";   break;
+				case et_o_right : sResult = L"<o:right ";  break;
+				case et_o_top   : sResult = L"<o:top ";    break;
+				default: return L"";
 				}
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""),            m_oExt );
-				ComplexTypes_WriteAttribute ( _T("on=\""),               m_oOn );
-				ComplexTypes_WriteAttribute2( _T("weight=\""),           m_sWeight )
-				ComplexTypes_WriteAttribute ( _T("color=\""),            m_oColor )
-				ComplexTypes_WriteAttribute ( _T("color2=\""),           m_oColor2 )
-				ComplexTypes_WriteAttribute2( _T("opacity=\""),          m_sOpacity )
-				ComplexTypes_WriteAttribute ( _T("linestyle=\""),        m_oLineStyle )
-				ComplexTypes_WriteAttribute ( _T("miterlimit=\""),       m_oMiterLimit )
-				ComplexTypes_WriteAttribute ( _T("joinstyle=\""),        m_oJoinStyle )
-				ComplexTypes_WriteAttribute ( _T("endcap=\""),           m_oEndCap )
-				ComplexTypes_WriteAttribute ( _T("dashstyle=\""),        m_oDashStyle )
-				ComplexTypes_WriteAttribute ( _T("insetpen=\""),         m_oInsetPen )
-				ComplexTypes_WriteAttribute ( _T("filltype=\""),         m_oFillType )
-				ComplexTypes_WriteAttribute2( _T("src=\""),              m_sSrc )
-				ComplexTypes_WriteAttribute ( _T("imageaspect=\""),      m_oImageAspect )
-				ComplexTypes_WriteAttribute2( _T("imagesize=\""),        m_sImageSize )
-				ComplexTypes_WriteAttribute ( _T("imagealignshape=\""),  m_oImageAlignShape )
-				ComplexTypes_WriteAttribute ( _T("startarrow=\""),       m_oStartArrow )
-				ComplexTypes_WriteAttribute ( _T("startarrowwidth=\""),  m_oStartArrowWidth )
-				ComplexTypes_WriteAttribute ( _T("startarrowlength=\""), m_oStartArrowLength )
-				ComplexTypes_WriteAttribute ( _T("endarrow=\""),         m_oEndArrow )
-				ComplexTypes_WriteAttribute ( _T("endarrowwidth=\""),    m_oEndArrowWidth )
-				ComplexTypes_WriteAttribute ( _T("endarrowlength=\""),   m_oEndArrowLength )
-				ComplexTypes_WriteAttribute2( _T("o:href=\""),           m_sHref )
-				ComplexTypes_WriteAttribute2( _T("althref=\""),          m_sAlthref )
-				ComplexTypes_WriteAttribute2( _T("o:title=\""),          m_sTitle )
-				ComplexTypes_WriteAttribute ( _T("o:forcedash=\""),      m_oForceDash )
+				ComplexTypes_WriteAttribute ( L"v:ext=\"",            m_oExt );
+				ComplexTypes_WriteAttribute ( L"on=\"",               m_oOn );
+				ComplexTypes_WriteAttribute2( L"weight=\"",           m_sWeight )
+				ComplexTypes_WriteAttribute ( L"color=\"",            m_oColor )
+				ComplexTypes_WriteAttribute ( L"color2=\"",           m_oColor2 )
+				ComplexTypes_WriteAttribute2( L"opacity=\"",          m_sOpacity )
+				ComplexTypes_WriteAttribute ( L"linestyle=\"",        m_oLineStyle )
+				ComplexTypes_WriteAttribute ( L"miterlimit=\"",       m_oMiterLimit )
+				ComplexTypes_WriteAttribute ( L"joinstyle=\"",        m_oJoinStyle )
+				ComplexTypes_WriteAttribute ( L"endcap=\"",           m_oEndCap )
+				ComplexTypes_WriteAttribute ( L"dashstyle=\"",        m_oDashStyle )
+				ComplexTypes_WriteAttribute ( L"insetpen=\"",         m_oInsetPen )
+				ComplexTypes_WriteAttribute ( L"filltype=\"",         m_oFillType )
+				ComplexTypes_WriteAttribute2( L"src=\"",              m_sSrc )
+				ComplexTypes_WriteAttribute ( L"imageaspect=\"",      m_oImageAspect )
+				ComplexTypes_WriteAttribute2( L"imagesize=\"",        m_sImageSize )
+				ComplexTypes_WriteAttribute ( L"imagealignshape=\"",  m_oImageAlignShape )
+				ComplexTypes_WriteAttribute ( L"startarrow=\"",       m_oStartArrow )
+				ComplexTypes_WriteAttribute ( L"startarrowwidth=\"",  m_oStartArrowWidth )
+				ComplexTypes_WriteAttribute ( L"startarrowlength=\"", m_oStartArrowLength )
+				ComplexTypes_WriteAttribute ( L"endarrow=\"",         m_oEndArrow )
+				ComplexTypes_WriteAttribute ( L"endarrowwidth=\"",    m_oEndArrowWidth )
+				ComplexTypes_WriteAttribute ( L"endarrowlength=\"",   m_oEndArrowLength )
+				ComplexTypes_WriteAttribute2( L"o:href=\"",           m_sHref )
+				ComplexTypes_WriteAttribute2( L"althref=\"",          m_sAlthref )
+				ComplexTypes_WriteAttribute2( L"o:title=\"",          m_sTitle )
+				ComplexTypes_WriteAttribute ( L"o:forcedash=\"",      m_oForceDash )
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -150,35 +147,34 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("althref"),          m_sAlthref )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("color"),            m_oColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("color2"),           m_oColor2 )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("dashstyle"),        m_oDashStyle )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("endarrow"),         m_oEndArrow )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("endarrowlength"),   m_oEndArrowLength )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("endarrowwidth"),    m_oEndArrowWidth )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("endcap"),           m_oEndCap )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("v:ext"),            m_oExt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("filltype"),         m_oFillType )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("o:forcedash"),      m_oForceDash )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("o:href"),           m_sHref )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("imagealignshape"),  m_oImageAlignShape )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("imageaspect"),      m_oImageAspect )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("imagesize"),        m_sImageSize )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("insetpen"),         m_oInsetPen )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("joinstyle"),        m_oJoinStyle )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("linestyle"),        m_oLineStyle )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("miterlimit"),       m_oMiterLimit )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("on"),               m_oOn )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("opacity"),          m_sOpacity )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("src"),              m_sSrc )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("startarrow"),       m_oStartArrow )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("startarrowlength"), m_oStartArrowLength )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("startarrowwidth"),  m_oStartArrowWidth )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("o:title"),          m_sTitle )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("weight"),           m_sWeight )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"althref",          m_sAlthref )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"color",            m_oColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"color2",           m_oColor2 )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"dashstyle",        m_oDashStyle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"endarrow",         m_oEndArrow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"endarrowlength",   m_oEndArrowLength )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"endarrowwidth",    m_oEndArrowWidth )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"endcap",           m_oEndCap )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"v:ext",            m_oExt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"filltype",         m_oFillType )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"o:forcedash",      m_oForceDash )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"o:href",           m_sHref )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"imagealignshape",  m_oImageAlignShape )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"imageaspect",      m_oImageAspect )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"imagesize",        m_sImageSize )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"insetpen",         m_oInsetPen )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"joinstyle",        m_oJoinStyle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"linestyle",        m_oLineStyle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"miterlimit",       m_oMiterLimit )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"on",               m_oOn )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"opacity",          m_sOpacity )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"src",              m_sSrc )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"startarrow",       m_oStartArrow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"startarrowlength", m_oStartArrowLength )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"startarrowwidth",  m_oStartArrowWidth )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"o:title",          m_sTitle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"weight",           m_sWeight )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -186,7 +182,6 @@ namespace OOX
 
 			EElementType                                m_eType;
 
-			// Attributes
 			nullable<std::wstring>						m_sAlthref;
 			nullable<SimpleTypes::CColorType<>>         m_oColor;
 			nullable<SimpleTypes::CColorType<>>         m_oColor2;
@@ -223,14 +218,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCallout)
-			CCallout()
+			CCallout(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCallout()
 			{
 			}
-
-		public:
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
@@ -245,24 +238,24 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:callout ");
+				std::wstring sResult = L"<o:callout ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""),           m_oExt )
-				ComplexTypes_WriteAttribute ( _T("on=\""),              m_oOn )
-				ComplexTypes_WriteAttribute ( _T("type=\""),            m_oType )
-				ComplexTypes_WriteAttribute ( _T("gap=\""),             m_oGap )
-				ComplexTypes_WriteAttribute ( _T("angle=\""),           m_oAngle )
-				ComplexTypes_WriteAttribute ( _T("dropauto=\""),        m_oDropAuto )
-				ComplexTypes_WriteAttribute ( _T("drop=\""),            m_oDrop )
-				ComplexTypes_WriteAttribute ( _T("distance=\""),        m_oDistance )
-				ComplexTypes_WriteAttribute ( _T("lengthspecified=\""), m_oLengthSpecified )
-				ComplexTypes_WriteAttribute ( _T("length=\""),          m_oLength )
-				ComplexTypes_WriteAttribute ( _T("accentbar=\""),       m_oAccentbar )
-				ComplexTypes_WriteAttribute ( _T("textborder=\""),      m_oTextBorder )
-				ComplexTypes_WriteAttribute ( _T("minusx=\""),          m_oMinusX )
-				ComplexTypes_WriteAttribute ( _T("minusy=\""),          m_oMinusY )
+				ComplexTypes_WriteAttribute ( L"v:ext=\"",           m_oExt )
+				ComplexTypes_WriteAttribute ( L"on=\"",              m_oOn )
+				ComplexTypes_WriteAttribute ( L"type=\"",            m_oType )
+				ComplexTypes_WriteAttribute ( L"gap=\"",             m_oGap )
+				ComplexTypes_WriteAttribute ( L"angle=\"",           m_oAngle )
+				ComplexTypes_WriteAttribute ( L"dropauto=\"",        m_oDropAuto )
+				ComplexTypes_WriteAttribute ( L"drop=\"",            m_oDrop )
+				ComplexTypes_WriteAttribute ( L"distance=\"",        m_oDistance )
+				ComplexTypes_WriteAttribute ( L"lengthspecified=\"", m_oLengthSpecified )
+				ComplexTypes_WriteAttribute ( L"length=\"",          m_oLength )
+				ComplexTypes_WriteAttribute ( L"accentbar=\"",       m_oAccentbar )
+				ComplexTypes_WriteAttribute ( L"textborder=\"",      m_oTextBorder )
+				ComplexTypes_WriteAttribute ( L"minusx=\"",          m_oMinusX )
+				ComplexTypes_WriteAttribute ( L"minusy=\"",          m_oMinusY )
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -275,28 +268,25 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("accentbar"),       m_oAccentbar )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("angle"),           m_oAngle )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("distance"),        m_oDistance )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("drop"),            m_oDrop )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("dropauto"),        m_oDropAuto )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("v:ext"),           m_oExt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("gap"),             m_oGap )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("length"),          m_oLength )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("lengthspecified"), m_oLengthSpecified )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("minusx"),          m_oMinusX )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("minusy"),          m_oMinusY )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("on"),              m_oOn )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("textborder"),      m_oTextBorder )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"),            m_oType )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"accentbar",       m_oAccentbar )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"angle",           m_oAngle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"distance",        m_oDistance )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"drop",            m_oDrop )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"dropauto",        m_oDropAuto )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"v:ext",           m_oExt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"gap",             m_oGap )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"length",          m_oLength )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"lengthspecified", m_oLengthSpecified )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"minusx",          m_oMinusX )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"minusy",          m_oMinusY )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"on",              m_oOn )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"textborder",      m_oTextBorder )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"type",            m_oType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-			// Attributes
 			nullable<SimpleTypes::CTrueFalse<>>           m_oAccentbar;
 			nullable<SimpleTypes::CVmlAngle<>>            m_oAngle;
 			nullable<SimpleTypes::CCoordinate>            m_oDistance;
@@ -319,15 +309,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CClipPath)
-			CClipPath()
+			CClipPath(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CClipPath()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CClipPath::fromXML(XmlUtils::CXmlNode& oNode)
@@ -341,7 +328,7 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:clippath o:v=\"") + m_oV.ToString() + _T("\"/>");
+				std::wstring sResult = L"<o:clippath o:v=\"" + m_oV.ToString() + L"\"/>";
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -353,15 +340,12 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("o:v"), m_oV )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"o:v", m_oV )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-			// Attributes
 			SimpleTypes::Vml::CVmlPath m_oV;
 		};
 		//--------------------------------------------------------------------------------
@@ -377,9 +361,6 @@ namespace OOX
 			virtual ~CColorMenu()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CColorMenu::fromXML(XmlUtils::CXmlNode& oNode)
@@ -393,14 +374,14 @@ namespace OOX
 			}
 			virtual std::wstring      toXML() const
 			{
-				std::wstring sResult = _T("<o:colormenu ");
+				std::wstring sResult = L"<o:colormenu ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""),           m_oExt );
+				ComplexTypes_WriteAttribute ( L"v:ext=\"",           m_oExt );
 
-				sResult += _T("extrusioncolor=\"") + m_oExtrusionColor.ToString() + _T("\" ");
-				sResult += _T("fillcolor=\"")      + m_oFillColor.ToString()      + _T("\" ");
-				sResult += _T("shadowcolor=\"")    + m_oShadowColor.ToString()    + _T("\" ");
-				sResult += _T("strokecolor=\"")    + m_oStrokeColor.ToString()    + _T("\"/>");
+				sResult += L"extrusioncolor=\"" + m_oExtrusionColor.ToString() + L"\" ";
+				sResult += L"fillcolor=\""      + m_oFillColor.ToString()      + L"\" ";
+				sResult += L"shadowcolor=\""    + m_oShadowColor.ToString()    + L"\" ";
+				sResult += L"strokecolor=\""    + m_oStrokeColor.ToString()    + L"\"/>";
 
 				return sResult;
 			}
@@ -414,24 +395,21 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Устанавливаем значения по умолчанию
-				m_oExtrusionColor = _T("#000000");
-				m_oFillColor      = _T("#0000FF");
-				m_oShadowColor    = _T("#80800C");
-				m_oStrokeColor    = _T("#FFFF00");
+				m_oExtrusionColor = L"#000000";
+				m_oFillColor      = L"#0000FF";
+				m_oShadowColor    = L"#80800C";
+				m_oStrokeColor    = L"#FFFF00";
 
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("v:ext"),          m_oExt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("extrusioncolor"), m_oExtrusionColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("fillcolor"),      m_oFillColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("shadowcolor"),    m_oShadowColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("strokecolor"),    m_oStrokeColor )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"v:ext",          m_oExt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"extrusioncolor", m_oExtrusionColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"fillcolor",      m_oFillColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"shadowcolor",    m_oShadowColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"strokecolor",    m_oStrokeColor )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-			// Attributes
 			nullable<SimpleTypes::CExt<>>                      m_oExt;
 			SimpleTypes::CColorType<SimpleTypes::colortypeRGB> m_oExtrusionColor;
 			SimpleTypes::CColorType<SimpleTypes::colortypeRGB> m_oFillColor;
@@ -445,7 +423,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CColorMru)
-			CColorMru()
+			CColorMru(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CColorMru()
@@ -457,9 +435,6 @@ namespace OOX
 				}
 				m_arrColors.clear();
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CColorMru::fromXML(XmlUtils::CXmlNode& oNode)
@@ -473,20 +448,20 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:colormru ");
+				std::wstring sResult = L"<o:colormru ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
-				sResult += _T("colors=\"");
+				ComplexTypes_WriteAttribute ( L"v:ext=\"", m_oExt );
+				sResult += L"colors=\"";
 
 				for (unsigned int nIndex = 0; nIndex < m_arrColors.size(); nIndex++ )
 				{
 					if (m_arrColors[nIndex])
 					{
-						sResult += m_arrColors[nIndex]->ToString() + _T(",");
+						sResult += m_arrColors[nIndex]->ToString() + L",";
 					}
 				}
 
-				sResult += _T("\"/>");
+				sResult += L"\"/>";
 
 				return sResult;
 			}
@@ -504,16 +479,16 @@ namespace OOX
 
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("v:ext"),  m_oExt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("colors"), sColors )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"v:ext",  m_oExt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"colors", sColors )
 				WritingElement_ReadAttributes_End( oReader )
 
-				if ( _T("") != sColors )
+				if ( L"" != sColors )
 				{
 					int nStartPos = 0;
 					int nEndPos = -1;
 					std::wstring sColor;
-                    while ( -1 != ( nEndPos =(int)sColors.find( _T(","), nStartPos )  ) )
+                    while ( -1 != ( nEndPos =(int)sColors.find( L",", nStartPos )  ) )
 					{
                         sColor = sColors.substr( nStartPos, nEndPos - nStartPos );
 						SimpleTypes::CColorType<SimpleTypes::colortypeNone>* oColor = new SimpleTypes::CColorType<SimpleTypes::colortypeNone>();
@@ -537,8 +512,6 @@ namespace OOX
 			}
 
 		public:
-
-			// Attributes
 			std::vector<SimpleTypes::CColorType<SimpleTypes::colortypeNone>*>	m_arrColors;
 			nullable<SimpleTypes::CExt<>>										m_oExt;
 		};
@@ -549,15 +522,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CComplex)
-			CComplex()
+			CComplex(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CComplex()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CComplex::fromXML(XmlUtils::CXmlNode& oNode)
@@ -571,9 +541,9 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:complex ");
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""),  m_oExt );
-				sResult += _T("\"/>");
+				std::wstring sResult = L"<o:complex ";
+				ComplexTypes_WriteAttribute ( L"v:ext=\"",  m_oExt );
+				sResult += L"\"/>";
 
 				return sResult;
 			}
@@ -586,15 +556,11 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("v:ext"),  m_oExt )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"v:ext",  m_oExt )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-
-			// Attributes
 			nullable<SimpleTypes::CExt<>> m_oExt;
 		};
 		//--------------------------------------------------------------------------------
@@ -610,9 +576,6 @@ namespace OOX
 			virtual ~CRelation()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CRelation::fromXML(XmlUtils::CXmlNode& oNode)
@@ -626,14 +589,14 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:rel ");
+				std::wstring sResult = L"<o:rel ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""),  m_oExt );
-				ComplexTypes_WriteAttribute2( _T("idcntr=\""), m_sIdCntr );
-				ComplexTypes_WriteAttribute2( _T("iddest=\""), m_sIdDest );
-				ComplexTypes_WriteAttribute2( _T("idsrc=\""),  m_sIdSrc );
+				ComplexTypes_WriteAttribute ( L"v:ext=\"",  m_oExt );
+				ComplexTypes_WriteAttribute2( L"idcntr=\"", m_sIdCntr );
+				ComplexTypes_WriteAttribute2( L"iddest=\"", m_sIdDest );
+				ComplexTypes_WriteAttribute2( L"idsrc=\"",  m_sIdSrc );
 
-				sResult += _T("\"/>");
+				sResult += L"\"/>";
 
 				return sResult;
 			}
@@ -648,16 +611,14 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("v:ext"),  m_oExt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("idcntr"), m_sIdCntr )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("iddest"), m_sIdDest )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("idsrc"),  m_sIdSrc )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"v:ext",  m_oExt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"idcntr", m_sIdCntr )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"iddest", m_sIdDest )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"idsrc",  m_sIdSrc )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-			// Attributes
 			nullable<SimpleTypes::CExt<>>		m_oExt;
 			nullable<std::wstring>				m_sIdCntr;
 			nullable<std::wstring>				m_sIdDest;
@@ -682,9 +643,6 @@ namespace OOX
 				}
 				m_arrRel.clear();
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CRelationTable::fromXML(XmlUtils::CXmlNode& oNode)
@@ -700,7 +658,7 @@ namespace OOX
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("o:rel") == sName )
+					if ( L"o:rel" == sName )
 					{
 						OOX::VmlOffice::CRelation *oRel = new OOX::VmlOffice::CRelation(oReader);
 						if (oRel) m_arrRel.push_back( oRel );
@@ -709,11 +667,11 @@ namespace OOX
 			}
 			virtual std::wstring      toXML() const
 			{
-				std::wstring sResult = _T("<o:relationtable ");
+				std::wstring sResult = L"<o:relationtable ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""),  m_oExt );
+				ComplexTypes_WriteAttribute ( L"v:ext=\"",  m_oExt );
 
-				sResult += _T("\">");
+				sResult += L"\">";
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrRel.size(); nIndex++ )
 				{
@@ -721,7 +679,7 @@ namespace OOX
 						sResult += m_arrRel[nIndex]->toXML();
 				}
 
-				sResult += _T("</o:relationtable>");
+				sResult += L"</o:relationtable>";
 
 				return sResult;
 			}
@@ -734,18 +692,13 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("v:ext"),  m_oExt )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"v:ext",  m_oExt )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-			// Attributes
 			nullable<SimpleTypes::CExt<>>     m_oExt;
-
-			// Childs
 			std::vector<OOX::VmlOffice::CRelation*> m_arrRel;
 		};
 
@@ -757,15 +710,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDiagram)
-			CDiagram()
+			CDiagram(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CDiagram()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CDiagram::fromXML(XmlUtils::CXmlNode& oNode)
@@ -781,31 +731,31 @@ namespace OOX
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("o:relationtable") == sName )
+					if ( L"o:relationtable" == sName )
 						m_oRelationTable = oReader;
 				}
 			}
 			virtual std::wstring      toXML() const
 			{
-				std::wstring sResult = _T("<o:diagram ");
+				std::wstring sResult = L"<o:diagram ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""),            m_oExt )
-				ComplexTypes_WriteAttribute ( _T("dgmstyle=\""),         m_oDmgStyle )
-				ComplexTypes_WriteAttribute ( _T("autoformat=\""),       m_oAutoFormat )
-				ComplexTypes_WriteAttribute ( _T("reverse=\""),          m_oReverse )
-				ComplexTypes_WriteAttribute ( _T("autolayout=\""),       m_oAutoLayout )
-				ComplexTypes_WriteAttribute ( _T("dgmscalex=\""),        m_oDmgScaleX )
-				ComplexTypes_WriteAttribute ( _T("dgmscaley=\""),        m_oDmgScaleY )
-				ComplexTypes_WriteAttribute ( _T("dgmfontsize=\""),      m_oDmgFontSize )
-				ComplexTypes_WriteAttribute2( _T("constrainbounds=\""),  m_sConstrainbounds )
-				ComplexTypes_WriteAttribute ( _T("dgmbasetextscale=\""), m_oDmgBaseTextScale )
+				ComplexTypes_WriteAttribute ( L"v:ext=\"",            m_oExt )
+				ComplexTypes_WriteAttribute ( L"dgmstyle=\"",         m_oDmgStyle )
+				ComplexTypes_WriteAttribute ( L"autoformat=\"",       m_oAutoFormat )
+				ComplexTypes_WriteAttribute ( L"reverse=\"",          m_oReverse )
+				ComplexTypes_WriteAttribute ( L"autolayout=\"",       m_oAutoLayout )
+				ComplexTypes_WriteAttribute ( L"dgmscalex=\"",        m_oDmgScaleX )
+				ComplexTypes_WriteAttribute ( L"dgmscaley=\"",        m_oDmgScaleY )
+				ComplexTypes_WriteAttribute ( L"dgmfontsize=\"",      m_oDmgFontSize )
+				ComplexTypes_WriteAttribute2( L"constrainbounds=\"",  m_sConstrainbounds )
+				ComplexTypes_WriteAttribute ( L"dgmbasetextscale=\"", m_oDmgBaseTextScale )
 
-				sResult += _T("\">");
+				sResult += L"\">";
 
 				if ( m_oRelationTable.IsInit() )
 					sResult += m_oRelationTable->toXML();
 
-				sResult += _T("</o:diagram>");
+				sResult += L"</o:diagram>";
 
 				return sResult;
 			}
@@ -818,24 +768,21 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("autoformat"),       m_oAutoFormat )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("autolayout"),       m_oAutoLayout )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("constrainbounds"),  m_sConstrainbounds )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("dgmbasetextscale"), m_oDmgBaseTextScale )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("dgmfontsize"),      m_oDmgFontSize )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("dgmscalex"),        m_oDmgScaleX )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("dgmscaley"),        m_oDmgScaleY )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("dgmstyle"),         m_oDmgStyle )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("v:ext"),            m_oExt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("reverse"),          m_oReverse )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"autoformat",       m_oAutoFormat )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"autolayout",       m_oAutoLayout )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"constrainbounds",  m_sConstrainbounds )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"dgmbasetextscale", m_oDmgBaseTextScale )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"dgmfontsize",      m_oDmgFontSize )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"dgmscalex",        m_oDmgScaleX )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"dgmscaley",        m_oDmgScaleY )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"dgmstyle",         m_oDmgStyle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"v:ext",            m_oExt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"reverse",          m_oReverse )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-			// Attributes
 			nullable<SimpleTypes::CTrueFalse<>>     m_oAutoFormat;
 			nullable<SimpleTypes::CTrueFalse<>>     m_oAutoLayout;
 			nullable<std::wstring>					m_sConstrainbounds;
@@ -847,7 +794,6 @@ namespace OOX
 			nullable<SimpleTypes::CExt<>>           m_oExt;
 			nullable<SimpleTypes::CTrueFalse<>>     m_oReverse;
 
-			// Childs
 			nullable<OOX::VmlOffice::CRelationTable>      m_oRelationTable;
 		};
 
@@ -865,9 +811,6 @@ namespace OOX
 			virtual ~CEntry()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CEntry::fromXML(XmlUtils::CXmlNode& oNode)
@@ -881,12 +824,12 @@ namespace OOX
 			}
 			virtual std::wstring      toXML() const
 			{
-				std::wstring sResult = _T("<o:entry ");
+				std::wstring sResult = L"<o:entry ";
 
-				ComplexTypes_WriteAttribute ( _T("new=\""), m_oNew );
-				ComplexTypes_WriteAttribute ( _T("old=\""), m_oOld );
+				ComplexTypes_WriteAttribute ( L"new=\"", m_oNew );
+				ComplexTypes_WriteAttribute ( L"old=\"", m_oOld );
 
-				sResult += _T("\"/>");
+				sResult += L"\"/>";
 
 				return sResult;
 			}
@@ -899,16 +842,13 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("new"), m_oNew )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("old"), m_oOld )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"new", m_oNew )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"old", m_oOld )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-			// Attributes
 			nullable<SimpleTypes::CDecimalNumber<>> m_oNew;
 			nullable<SimpleTypes::CDecimalNumber<>> m_oOld;
 		};
@@ -919,15 +859,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CEquationXml)
-			CEquationXml()
+			CEquationXml(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CEquationXml()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CEquationXml::fromXML(XmlUtils::CXmlNode& oNode)
@@ -949,11 +886,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:equationXml ");
-				ComplexTypes_WriteAttribute ( _T("contentType=\""), m_oContentType );
-				sResult += _T("\">");
+				std::wstring sResult = L"<o:equationXml ";
+				ComplexTypes_WriteAttribute ( L"contentType=\"", m_oContentType );
+				sResult += L"\">";
 
-				sResult += _T("</o:equationXml>");
+				sResult += L"</o:equationXml>";
 
 				return sResult;
 			}
@@ -966,15 +903,12 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("contentType"), m_oContentType )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"contentType", m_oContentType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-			// Attributes
 			nullable<SimpleTypes::CAlternateMathContentType<>> m_oContentType;
 		};
 		//--------------------------------------------------------------------------------
@@ -984,15 +918,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExtrusion)
-			CExtrusion()
+			CExtrusion(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CExtrusion()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CExtrusion::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1006,107 +937,107 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:extrusion ");
+				std::wstring sResult = L"<o:extrusion ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
+				ComplexTypes_WriteAttribute ( L"v:ext=\"", m_oExt );
 
 				if ( SimpleTypes::booleanFalse != m_oOn.GetValue() )
-					sResult += _T("on=\"") + m_oOn.ToString() + _T("\" ");
+					sResult += L"on=\"" + m_oOn.ToString() + L"\" ";
 
 				if ( SimpleTypes::extrusiontypeParallel != m_oType.GetValue() )
-					sResult += _T("type=\"") + m_oType.ToString() + _T("\" ");
+					sResult += L"type=\"" + m_oType.ToString() + L"\" ";
 
 				if ( SimpleTypes::extrusionrenderSolid != m_oRender.GetValue() )
-					sResult += _T("render=\"") + m_oRender.ToString() + _T("\" ");
+					sResult += L"render=\"" + m_oRender.ToString() + L"\" ";
 
 				if ( 0.5 != m_oViewPointOrigin.GetX() || -0.5 != m_oViewPointOrigin.GetY() )
-					sResult += _T("viewpointorigin=\"") + m_oRender.ToString() + _T("\" ");
+					sResult += L"viewpointorigin=\"" + m_oRender.ToString() + L"\" ";
 
 				if ( 0 != m_oViewPoint.GetX() || 0 != m_oViewPoint.GetY() || 0 != m_oViewPoint.GetZ() )
-					sResult += _T("viewpoint=\"") + m_oViewPoint.ToString() + _T("\" ");
+					sResult += L"viewpoint=\"" + m_oViewPoint.ToString() + L"\" ";
 
 				if ( SimpleTypes::extrusionplaneXY != m_oPlane.GetValue() )
-					sResult += _T("plane=\"") + m_oPlane.ToString() + _T("\" ");
+					sResult += L"plane=\"" + m_oPlane.ToString() + L"\" ";
 
 				if ( 225 != m_oSkewAngle.GetValue() )
-					sResult += _T("skewangle=\"") + m_oSkewAngle.ToString() + _T("\" ");
+					sResult += L"skewangle=\"" + m_oSkewAngle.ToString() + L"\" ";
 
 				if ( 50 != m_oSkewAmt.GetValue() )
-					sResult += _T("skewamt=\"") + m_oSkewAmt.ToString() + _T("\" ");
+					sResult += L"skewamt=\"" + m_oSkewAmt.ToString() + L"\" ";
 
 				if ( 0 != m_oForeDepth.GetValue() )
-					sResult += _T("foredepth=\"") + m_oForeDepth.ToString() + _T("\" ");
+					sResult += L"foredepth=\"" + m_oForeDepth.ToString() + L"\" ";
 
 				if ( 36 != m_oBackDepth.GetValue() )
-					sResult += _T("backdepth=\"") + m_oBackDepth.ToString() + _T("\" ");
+					sResult += L"backdepth=\"" + m_oBackDepth.ToString() + L"\" ";
 
 				if ( 100 != m_oOrientation.GetX() || 0 != m_oOrientation.GetY() || 0 != m_oOrientation.GetZ() )
-					sResult += _T("orientation=\"") + m_oOrientation.ToString() + _T("\" ");
+					sResult += L"orientation=\"" + m_oOrientation.ToString() + L"\" ";
 
 				if ( 0 != m_oOrientationAngle.GetValue() )
-					sResult += _T("orientationangle=\"") + m_oOrientationAngle.ToString() + _T("\" ");
+					sResult += L"orientationangle=\"" + m_oOrientationAngle.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanTrue != m_oLockRotationCenter.GetValue() )
-					sResult += _T("lockrotationcenter=\"") + m_oLockRotationCenter.ToString() + _T("\" ");
+					sResult += L"lockrotationcenter=\"" + m_oLockRotationCenter.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oAutoRotationCenter.GetValue() )
-					sResult += _T("autorotationcenter=\"") + m_oAutoRotationCenter.ToString() + _T("\" ");
+					sResult += L"autorotationcenter=\"" + m_oAutoRotationCenter.ToString() + L"\" ";
 
 				if ( 0 != m_oRotationCenter.GetX() || 0 != m_oRotationCenter.GetY() || 0 != m_oRotationCenter.GetZ() )
-					sResult += _T("rotationcenter=\"") + m_oRotationCenter.ToString() + _T("\" ");
+					sResult += L"rotationcenter=\"" + m_oRotationCenter.ToString() + L"\" ";
 
 				if ( 0 != m_oRotationAngle.GetX() || 0 != m_oRotationAngle.GetY() )
-					sResult += _T("rotationangle=\"") + m_oRotationAngle.ToString() + _T("\" ");
+					sResult += L"rotationangle=\"" + m_oRotationAngle.ToString() + L"\" ";
 
 				if ( SimpleTypes::colormodeAuto != m_oColorMode.GetValue() )
-					sResult += _T("colormode=\"") + m_oColorMode.ToString() + _T("\" ");
+					sResult += L"colormode=\"" + m_oColorMode.ToString() + L"\" ";
 
 				if ( m_oColor.IsInit() )
-					sResult += _T("color=\"") + m_oColor->ToString() + _T("\" ");
+					sResult += L"color=\"" + m_oColor->ToString() + L"\" ";
 
 				if ( 5 != m_oShininess.GetValue() )
-					sResult += _T("shininess=\"") + m_oShininess.ToString() + _T("\" ");
+					sResult += L"shininess=\"" + m_oShininess.ToString() + L"\" ";
 
 				if ( 0 != m_oSpecularity.GetValue() )
-					sResult += _T("specularity=\"") + m_oSpecularity.ToString() + _T("\" ");
+					sResult += L"specularity=\"" + m_oSpecularity.ToString() + L"\" ";
 
 				if ( 1 != m_oDiffusity.GetValue() )
-					sResult += _T("diffusity=\"") + m_oDiffusity.ToString() + _T("\" ");
+					sResult += L"diffusity=\"" + m_oDiffusity.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oMetal.GetValue() )
-					sResult += _T("metal=\"") + m_oMetal.ToString() + _T("\" ");
+					sResult += L"metal=\"" + m_oMetal.ToString() + L"\" ";
 
 				if ( 1 != m_oEdge.GetValue() )
-					sResult += _T("edge=\"") + m_oEdge.ToString() + _T("\" ");
+					sResult += L"edge=\"" + m_oEdge.ToString() + L"\" ";
 
 				if ( 30000 != m_oFacet.GetValue() )
-					sResult += _T("facet=\"") + m_oFacet.ToString() + _T("\" ");
+					sResult += L"facet=\"" + m_oFacet.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanTrue != m_oLightFace.GetValue() )
-					sResult += _T("lightface=\"") + m_oLightFace.ToString() + _T("\" ");
+					sResult += L"lightface=\"" + m_oLightFace.ToString() + L"\" ";
 
 				if ( 0.3 != m_oBrightness.GetValue() )
-					sResult += _T("brightness=\"") + m_oBrightness.ToString() + _T("\" ");
+					sResult += L"brightness=\"" + m_oBrightness.ToString() + L"\" ";
 
 				if ( 50000 != m_oLightPosition.GetX() || 0 != m_oLightPosition.GetY() || 10000 != m_oLightPosition.GetZ() )
-					sResult += _T("lightposition=\"") + m_oLightPosition.ToString() + _T("\" ");
+					sResult += L"lightposition=\"" + m_oLightPosition.ToString() + L"\" ";
 
 				if ( 0.6 != m_oLightLevel.GetValue() )
-					sResult += _T("lightlevel=\"") + m_oLightLevel.ToString() + _T("\" ");
+					sResult += L"lightlevel=\"" + m_oLightLevel.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanTrue != m_oLightHarsh.GetValue() )
-					sResult += _T("lightharsh=\"") + m_oLightHarsh.ToString() + _T("\" ");
+					sResult += L"lightharsh=\"" + m_oLightHarsh.ToString() + L"\" ";
 
 				if ( 50000 != m_oLightPosition2.GetX() || 0 != m_oLightPosition2.GetY() || 10000 != m_oLightPosition2.GetZ() )
-					sResult += _T("lightposition2=\"") + m_oLightPosition2.ToString() + _T("\" ");
+					sResult += L"lightposition2=\"" + m_oLightPosition2.ToString() + L"\" ";
 
 				if ( 0.6 != m_oLightLevel2.GetValue() )
-					sResult += _T("lightlevel2=\"") + m_oLightLevel2.ToString() + _T("\" ");
+					sResult += L"lightlevel2=\"" + m_oLightLevel2.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oLightHarsh2.GetValue() )
-					sResult += _T("lightharsh2=\"") + m_oLightHarsh2.ToString() + _T("\" ");
+					sResult += L"lightharsh2=\"" + m_oLightHarsh2.ToString() + L"\" ";
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -1137,47 +1068,44 @@ namespace OOX
 				m_oViewPoint.SetValue( 0, 0, 0 );
 				m_oViewPointOrigin.SetValue( 0.5, -0.5 );
 
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("autorotationcenter"), m_oAutoRotationCenter )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("backdepth"),          m_oBackDepth )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("brightness"),         m_oBrightness )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("color"),              m_oColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("colormode"),          m_oColorMode )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("diffusity"),          m_oDiffusity )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("edge"),               m_oEdge )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("v:ext"),              m_oExt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("facet"),              m_oFacet )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("foredepth"),          m_oForeDepth )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("lightface"),          m_oLightFace )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("lightharsh"),         m_oLightHarsh )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("lightharsh2"),        m_oLightHarsh2 )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("lightlevel"),         m_oLightLevel )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("lightlevel2"),        m_oLightLevel2 )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("lightposition"),      m_oLightPosition )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("lightposition2"),     m_oLightPosition2 )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("lockrotationcenter"), m_oLockRotationCenter )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("metal"),              m_oMetal )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("on"),                 m_oOn )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("orientation"),        m_oOrientation )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("orientationangle"),   m_oOrientationAngle )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("plane"),              m_oPlane )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("render"),             m_oRender )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("rotationangle"),      m_oRotationAngle )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("rotationcenter"),     m_oRotationCenter )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("shininess"),          m_oShininess )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("skewamt"),            m_oSkewAmt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("skewangle"),          m_oSkewAngle )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("specularity"),        m_oSpecularity )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"),               m_oType )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("viewpoint"),          m_oViewPoint )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("viewpointorigin"),    m_oViewPointOrigin )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"autorotationcenter", m_oAutoRotationCenter )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"backdepth",          m_oBackDepth )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"brightness",         m_oBrightness )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"color",              m_oColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"colormode",          m_oColorMode )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"diffusity",          m_oDiffusity )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"edge",               m_oEdge )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"v:ext",              m_oExt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"facet",              m_oFacet )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"foredepth",          m_oForeDepth )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"lightface",          m_oLightFace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"lightharsh",         m_oLightHarsh )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"lightharsh2",        m_oLightHarsh2 )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"lightlevel",         m_oLightLevel )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"lightlevel2",        m_oLightLevel2 )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"lightposition",      m_oLightPosition )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"lightposition2",     m_oLightPosition2 )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"lockrotationcenter", m_oLockRotationCenter )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"metal",              m_oMetal )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"on",                 m_oOn )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"orientation",        m_oOrientation )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"orientationangle",   m_oOrientationAngle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"plane",              m_oPlane )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"render",             m_oRender )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"rotationangle",      m_oRotationAngle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"rotationcenter",     m_oRotationCenter )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"shininess",          m_oShininess )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"skewamt",            m_oSkewAmt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"skewangle",          m_oSkewAngle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"specularity",        m_oSpecularity )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"type",               m_oType )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"viewpoint",          m_oViewPoint )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"viewpointorigin",    m_oViewPointOrigin )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-			// Attributes
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oAutoRotationCenter;
 			SimpleTypes::CPoint                                              m_oBackDepth;
 			SimpleTypes::Vml::CVml_1_65536                                   m_oBrightness;
@@ -1225,9 +1153,6 @@ namespace OOX
 			virtual ~CFieldCodes()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CFieldCodes::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1241,15 +1166,13 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:FieldCodes>") + m_sText + _T("</o:FieldCodes>");
+				std::wstring sResult = L"<o:FieldCodes>" + m_sText + L"</o:FieldCodes>";
 				return sResult;
 			}
 			virtual EElementType getType() const
 			{
 				return OOX::et_o_FieldCodes;
 			}
-
-		public:
 
 			// Text
 			std::wstring m_sText;
@@ -1261,34 +1184,31 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFill)
-			CFill()
+			CFill(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CFill()
 			{
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CFill::fromXML(XmlUtils::CXmlNode& oNode)
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:fill ");
+				std::wstring sResult = L"<o:fill ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
-				ComplexTypes_WriteAttribute ( _T("type=\""),  m_oType );
+				ComplexTypes_WriteAttribute ( L"v:ext=\"", m_oExt );
+				ComplexTypes_WriteAttribute ( L"type=\"",  m_oType );
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -1301,16 +1221,13 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("v:ext"), m_oExt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"),  m_oType )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"v:ext", m_oExt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"type",  m_oType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-			// Attributes
 			nullable<SimpleTypes::CExt<>>                                   m_oExt;
 			nullable<SimpleTypes::CFillType<SimpleTypes::filltypeSolid, 1>> m_oType;
 		};
@@ -1327,9 +1244,6 @@ namespace OOX
 			virtual ~CIdMap()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CIdMap::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1343,12 +1257,12 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:idmap ");
+				std::wstring sResult = L"<o:idmap ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
-				ComplexTypes_WriteAttribute2( _T("data=\""),  m_sData );
+				ComplexTypes_WriteAttribute ( L"v:ext=\"", m_oExt );
+				ComplexTypes_WriteAttribute2( L"data=\"",  m_sData );
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -1363,14 +1277,12 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("v:ext"), m_oExt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("data"),  m_sData )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"v:ext", m_oExt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"data",  m_sData )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-			// Attributes
 			nullable<std::wstring>			m_sData;
 			nullable<SimpleTypes::CExt<>>	m_oExt;
 		};
@@ -1381,15 +1293,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CInk)
-			CInk()
+			CInk(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CInk()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CInk::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1401,15 +1310,15 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:ink ");
+				std::wstring sResult = L"<o:ink ";
 
-				ComplexTypes_WriteAttribute2( _T("i=\""),           m_sI );
-				ComplexTypes_WriteAttribute ( _T("annotation=\""),  m_oAnnotation );
-				ComplexTypes_WriteAttribute ( _T("contentType=\""), m_oContentType );
+				ComplexTypes_WriteAttribute2( L"i=\"",           m_sI );
+				ComplexTypes_WriteAttribute ( L"annotation=\"",  m_oAnnotation );
+				ComplexTypes_WriteAttribute ( L"contentType=\"", m_oContentType );
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -1422,17 +1331,14 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("annotation"),  m_oAnnotation )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("contentType"), m_oContentType )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("i"),           m_sI )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"annotation",  m_oAnnotation )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"contentType", m_oContentType )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"i",           m_sI )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
-			// Attributes
 			nullable<SimpleTypes::CTrueFalse<>> m_oAnnotation;
 			nullable<SimpleTypes::CContentType> m_oContentType;
 			nullable<std::wstring>				m_sI;
@@ -1450,9 +1356,6 @@ namespace OOX
 			virtual ~CLinkType()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CLinkType::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1467,16 +1370,13 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:LinkType>") + m_oValue.ToString() + _T("</o:LinkType>");
+				std::wstring sResult = L"<o:LinkType>" + m_oValue.ToString() + L"</o:LinkType>";
 				return sResult;
 			}
 			virtual EElementType getType() const
 			{
 				return OOX::et_o_LinkType;
 			}
-
-		public:
-
 			// Text
 			SimpleTypes::COLELinkType<> m_oValue;
 		};
@@ -1487,15 +1387,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CLock)
-			CLock()
+			CLock(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CLock()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CLock::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1509,44 +1406,44 @@ namespace OOX
 			}
 			virtual std::wstring      toXML() const
 			{
-				std::wstring sResult = _T("<o:lock ");
+				std::wstring sResult = L"<o:lock ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
+				ComplexTypes_WriteAttribute ( L"v:ext=\"", m_oExt );
 
 				if ( SimpleTypes::booleanFalse != m_oPosition.GetValue() )
-					sResult += _T("position=\"") + m_oPosition.ToString() + _T("\" ");
+					sResult += L"position=\"" + m_oPosition.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oSelection.GetValue() )
-					sResult += _T("selection=\"") + m_oSelection.ToString() + _T("\" ");
+					sResult += L"selection=\"" + m_oSelection.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oGrouping.GetValue() )
-					sResult += _T("grouping=\"") + m_oGrouping.ToString() + _T("\" ");
+					sResult += L"grouping=\"" + m_oGrouping.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oUnGrouping.GetValue() )
-					sResult += _T("ungrouping=\"") + m_oUnGrouping.ToString() + _T("\" ");
+					sResult += L"ungrouping=\"" + m_oUnGrouping.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oRotation.GetValue() )
-					sResult += _T("rotation=\"") + m_oRotation.ToString() + _T("\" ");
+					sResult += L"rotation=\"" + m_oRotation.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oCropping.GetValue() )
-					sResult += _T("cropping=\"") + m_oCropping.ToString() + _T("\" ");
+					sResult += L"cropping=\"" + m_oCropping.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oVerticies.GetValue() )
-					sResult += _T("verticies=\"") + m_oVerticies.ToString() + _T("\" ");
+					sResult += L"verticies=\"" + m_oVerticies.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oAdjustHandles.GetValue() )
-					sResult += _T("adjusthandles=\"") + m_oAdjustHandles.ToString() + _T("\" ");
+					sResult += L"adjusthandles=\"" + m_oAdjustHandles.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oText.GetValue() )
-					sResult += _T("text=\"") + m_oText.ToString() + _T("\" ");
+					sResult += L"text=\"" + m_oText.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oAspectRatio.GetValue() )
-					sResult += _T("aspectratio=\"") + m_oAspectRatio.ToString() + _T("\" ");
+					sResult += L"aspectratio=\"" + m_oAspectRatio.ToString() + L"\" ";
 
 				if ( SimpleTypes::booleanFalse != m_oShapeType.GetValue() )
-					sResult += _T("shapetype=\"") + m_oShapeType.ToString() + _T("\" ");
+					sResult += L"shapetype=\"" + m_oShapeType.ToString() + L"\" ";
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -1559,20 +1456,19 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("adjusthandles"), m_oAdjustHandles )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("aspectratio"),   m_oAspectRatio )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("cropping"),      m_oCropping )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("v:ext"),         m_oExt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("grouping"),      m_oGrouping )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("position"),      m_oPosition )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("rotation"),      m_oRotation )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("selection"),     m_oSelection )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("shapetype"),     m_oShapeType )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("text"),          m_oText )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ungrouping"),    m_oUnGrouping )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("verticies"),     m_oVerticies )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"adjusthandles", m_oAdjustHandles )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"aspectratio",   m_oAspectRatio )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"cropping",      m_oCropping )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"v:ext",         m_oExt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"grouping",      m_oGrouping )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"position",      m_oPosition )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"rotation",      m_oRotation )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"selection",     m_oSelection )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"shapetype",     m_oShapeType )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"text",          m_oText )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"ungrouping",    m_oUnGrouping )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"verticies",     m_oVerticies )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1605,9 +1501,6 @@ namespace OOX
 			virtual ~CLockedField()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CLockedField::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1622,7 +1515,7 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:LockedField>") + m_oValue.ToString() + _T("</o:LockedField>");
+				std::wstring sResult = L"<o:LockedField>" + m_oValue.ToString() + L"</o:LockedField>";
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -1630,9 +1523,6 @@ namespace OOX
 				return OOX::et_o_LockedField;
 			}
 
-		public:
-
-			// Text
 			SimpleTypes::CTrueFalse<> m_oValue;
 		};
 
@@ -1643,28 +1533,29 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COLEObject)
-			COLEObject()
+			COLEObject(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~COLEObject()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("o:OLEObject") != oNode.GetName() )
+				if ( L"o:OLEObject" != oNode.GetName() )
 					return;
 
-				XmlMacroReadAttributeBase( oNode, _T("DrawAspect"), m_oDrawAspect );
-				XmlMacroReadAttributeBase( oNode, _T("r:id"), m_oId );
-				XmlMacroReadAttributeBase( oNode, _T("ObjectID"), m_sObjectId );
-				XmlMacroReadAttributeBase( oNode, _T("ProgID"), m_sProgId );
-				XmlMacroReadAttributeBase( oNode, _T("ShapeID"), m_sShapeId );
-				XmlMacroReadAttributeBase( oNode, _T("Type"), m_oType );
-				XmlMacroReadAttributeBase( oNode, _T("UpdateMode"), m_oUpdateMode );
+				XmlMacroReadAttributeBase( oNode, L"DrawAspect", m_oDrawAspect );
+				XmlMacroReadAttributeBase( oNode, L"r:id", m_oId );
+				XmlMacroReadAttributeBase( oNode, L"ObjectID", m_sObjectId );
+				XmlMacroReadAttributeBase( oNode, L"ProgID", m_sProgId );
+				XmlMacroReadAttributeBase( oNode, L"ShapeID", m_sShapeId );
+				XmlMacroReadAttributeBase( oNode, L"Type", m_oType );
+				XmlMacroReadAttributeBase( oNode, L"UpdateMode", m_oUpdateMode );
 
+				if (false == m_oId.IsInit())
+				{
+					XmlMacroReadAttributeBase( oNode, L"relationships:id", m_oId );
+				}
 				//todo FieldCodes, LinkType, LockedField
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1678,27 +1569,27 @@ namespace OOX
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("o:FieldCodes") == sName )
+					if ( L"o:FieldCodes" == sName )
 						m_oFieldCodes = oReader;
-					else if ( _T("o:LinkType") == sName )
+					else if ( L"o:LinkType" == sName )
 						m_oLinkType = oReader;
-					else if ( _T("o:LockedField") == sName )
+					else if ( L"o:LockedField" == sName )
 						m_oLockedField = oReader;
 				}
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:OLEObject ");
+				std::wstring sResult = L"<o:OLEObject ";
 
-				ComplexTypes_WriteAttribute ( _T("Type=\""),       m_oType )
-				ComplexTypes_WriteAttribute2( _T("ProgID=\""),     m_sProgId )
-				ComplexTypes_WriteAttribute2( _T("ShapeID=\""),    m_sShapeId )
-				ComplexTypes_WriteAttribute ( _T("DrawAspect=\""), m_oDrawAspect )
-				ComplexTypes_WriteAttribute2( _T("ObjectID=\""),   m_sObjectId )
-				ComplexTypes_WriteAttribute ( _T("r:id=\""),       m_oId )
-				ComplexTypes_WriteAttribute ( _T("UpdateMode=\""), m_oUpdateMode )
+				ComplexTypes_WriteAttribute ( L"Type=\"",       m_oType )
+				ComplexTypes_WriteAttribute3( L"ProgID=\"",     m_sProgId )
+				ComplexTypes_WriteAttribute3( L"ShapeID=\"",    m_sShapeId )
+				ComplexTypes_WriteAttribute ( L"DrawAspect=\"", m_oDrawAspect )
+				ComplexTypes_WriteAttribute3( L"ObjectID=\"",   m_sObjectId )
+				ComplexTypes_WriteAttribute ( L"r:id=\"",       m_oId )
+				ComplexTypes_WriteAttribute ( L"UpdateMode=\"", m_oUpdateMode )
 
-				sResult += _T(">");
+				sResult += L">";
 
 				if ( m_oLinkType.IsInit() )
 					sResult += m_oLinkType->toXML();
@@ -1709,7 +1600,7 @@ namespace OOX
 				if ( m_oFieldCodes.IsInit() )
 					sResult += m_oFieldCodes->toXML();
 
-				sResult += _T("</o:OLEObject>");
+				sResult += L"</o:OLEObject>";
 
 				return sResult;
 			}
@@ -1722,33 +1613,38 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("DrawAspect"), m_oDrawAspect )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),       m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ObjectID"),   m_sObjectId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ProgID"),     m_sProgId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("ShapeID"),    m_sShapeId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("Type"),       m_oType )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("UpdateMode"), m_oUpdateMode )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"DrawAspect", m_oDrawAspect )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"r:id",       m_oId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"relationships:id", m_oId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"ObjectID",   m_sObjectId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"ProgID",     m_sProgId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"ShapeID",    m_sShapeId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"Type",       m_oType )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"UpdateMode", m_oUpdateMode )
+				//w:objectEmbed
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:drawAspect", m_oDrawAspect)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:progID",	m_sProgId)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:shapeID",	m_sShapeId)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:fieldCodes", m_oFieldCodes2)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			// Attributes
-			nullable<SimpleTypes::COLEDrawAspect<>>		m_oDrawAspect;
-			nullable<SimpleTypes::CRelationshipId>		m_oId;
-			nullable<std::wstring>						m_sObjectId;
-			nullable<std::wstring>						m_sProgId;
-			nullable<std::wstring>						m_sShapeId;
-			nullable<SimpleTypes::COLEType<>>			m_oType;
-			nullable<SimpleTypes::COLEUpdateMode<>>		m_oUpdateMode;
+			nullable<SimpleTypes::COLEDrawAspect<>>	m_oDrawAspect;
+			nullable<SimpleTypes::CRelationshipId>	m_oId;
+			nullable_string							m_sObjectId;
+			nullable_string							m_sProgId;
+			nullable_string							m_sShapeId;
+			nullable<SimpleTypes::COLEType<>>		m_oType;
+			nullable<SimpleTypes::COLEUpdateMode<>>	m_oUpdateMode;
 
-			// Childs
-			nullable<OOX::VmlOffice::CFieldCodes>		m_oFieldCodes;
-			nullable<OOX::VmlOffice::CLinkType>			m_oLinkType;
-			nullable<OOX::VmlOffice::CLockedField>		m_oLockedField;
+			nullable_string							m_oFieldCodes2;
+			nullable<OOX::VmlOffice::CFieldCodes>	m_oFieldCodes;
+
+			nullable<OOX::VmlOffice::CLinkType>		m_oLinkType;
+			nullable<OOX::VmlOffice::CLockedField>	m_oLockedField;
 		};
 		//--------------------------------------------------------------------------------
 		// CProxy 14.2.2.21 (Part 4)
@@ -1763,9 +1659,6 @@ namespace OOX
 			virtual ~CProxy()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CProxy::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1779,12 +1672,12 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:proxy ");
+				std::wstring sResult = L"<o:proxy ";
 
-				sResult += _T("start=\"")      + m_oStart.ToString()      + _T("\" ");
-				sResult += _T("end=\"")        + m_oEnd.ToString()        + _T("\" ");
-				sResult += _T("idref=\"")      + m_sIdRef                 + _T("\" ");
-				sResult += _T("connectloc=\"") + m_oConnectLoc.ToString() + _T("\"/>");
+				sResult += L"start=\""      + m_oStart.ToString()      + L"\" ";
+				sResult += L"end=\""        + m_oEnd.ToString()        + L"\" ";
+				sResult += L"idref=\""      + m_sIdRef                 + L"\" ";
+				sResult += L"connectloc=\"" + m_oConnectLoc.ToString() + L"\"/>";
 
 				return sResult;
 			}
@@ -1797,18 +1690,16 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("connectloc"), m_oConnectLoc )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("end"),        m_oEnd )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("idref"),      m_sIdRef )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("start"),      m_oStart )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"connectloc", m_oConnectLoc )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"end",        m_oEnd )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"idref",      m_sIdRef )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"start",      m_oStart )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
 
-			// Attributes
 			SimpleTypes::CDecimalNumber<0>						m_oConnectLoc;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oEnd;
 			std::wstring										m_sIdRef;
@@ -1833,9 +1724,6 @@ namespace OOX
 				}
 				m_arrProxy.clear();
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CR::fromXML(XmlUtils::CXmlNode& oNode)
@@ -1851,7 +1739,7 @@ namespace OOX
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("o:proxy") == sName )
+					if ( L"o:proxy" == sName )
 					{
 						OOX::VmlOffice::CProxy *oProxy = new OOX::VmlOffice::CProxy(oReader);
 						if (oProxy )m_arrProxy.push_back( oProxy );
@@ -1860,13 +1748,13 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:r id=\"") + m_sId + _T("\" ");
+				std::wstring sResult = L"<o:r id=\"" + m_sId + L"\" ";
 
-				ComplexTypes_WriteAttribute ( _T("type=\""),  m_oType )
-				ComplexTypes_WriteAttribute ( _T("how=\""),   m_oHow )
-				ComplexTypes_WriteAttribute2( _T("idref=\""), m_sIdRef )
+				ComplexTypes_WriteAttribute ( L"type=\"",  m_oType )
+				ComplexTypes_WriteAttribute ( L"how=\"",   m_oHow )
+				ComplexTypes_WriteAttribute2( L"idref=\"", m_sIdRef )
 
-				sResult += _T(">");
+				sResult += L">";
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrProxy.size(); nIndex++ )
 				{
@@ -1874,7 +1762,7 @@ namespace OOX
 						sResult += m_arrProxy[nIndex]->toXML();
 				}
 
-				sResult += _T("</o:r>");
+				sResult += L"</o:r>";
 
 				return sResult;
 			}
@@ -1889,10 +1777,10 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("how"),   m_oHow )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("id"),    m_sId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("idref"), m_sIdRef )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"),  m_oType )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"how",   m_oHow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"id",    m_sId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"idref", m_sIdRef )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"type",  m_oType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1944,7 +1832,7 @@ namespace OOX
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("o:entry") == sName )
+					if ( L"o:entry" == sName )
 					{
 						OOX::VmlOffice::CEntry *oEntry = new OOX::VmlOffice::CEntry (oReader);
 						if (oEntry) m_arrEntry.push_back( oEntry );
@@ -1953,11 +1841,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:regrouptable ");
+				std::wstring sResult = L"<o:regrouptable ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
+				ComplexTypes_WriteAttribute ( L"v:ext=\"", m_oExt );
 
-				sResult += _T(">");
+				sResult += L">";
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrEntry.size(); nIndex++ )
 				{
@@ -1965,7 +1853,7 @@ namespace OOX
 						sResult += m_arrEntry[nIndex]->toXML();
 				}
 
-				sResult += _T("</o:regrouptable>");
+				sResult += L"</o:regrouptable>";
 
 				return sResult;
 			}
@@ -1980,7 +1868,7 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("v:ext"), m_oExt )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"v:ext", m_oExt )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -2029,7 +1917,7 @@ namespace OOX
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("o:r") == sName )
+					if ( L"o:r" == sName )
 					{
 						OOX::VmlOffice::CR  *oR = new OOX::VmlOffice::CR (oReader);
 						if ( oR) m_arrR.push_back( oR );
@@ -2038,11 +1926,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:rules ");
+				std::wstring sResult = L"<o:rules ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
+				ComplexTypes_WriteAttribute ( L"v:ext=\"", m_oExt );
 
-				sResult += _T(">");
+				sResult += L">";
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrR.size(); nIndex++ )
 				{
@@ -2050,7 +1938,7 @@ namespace OOX
 						sResult += m_arrR[nIndex]->toXML();
 				}
 
-				sResult += _T("</o:rules>");
+				sResult += L"</o:rules>";
 
 				return sResult;
 			}
@@ -2065,7 +1953,7 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("v:ext"), m_oExt )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"v:ext", m_oExt )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -2084,15 +1972,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CShapeLayout)
-			CShapeLayout()
+			CShapeLayout(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CShapeLayout()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CShapeLayout::fromXML(XmlUtils::CXmlNode& oNode)
@@ -2108,21 +1993,21 @@ namespace OOX
 				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("o:idmap") == sName )
+					if ( L"o:idmap" == sName )
 						m_oIdMap = oReader;
-					else if ( _T("o:regrouptable") == sName )
+					else if ( L"o:regrouptable" == sName )
 						m_oRegroupTable = oReader;
-					else if ( _T("o:rules") == sName )
+					else if ( L"o:rules" == sName )
 						m_oRules = oReader;
 				}
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:shapelayout ");
+				std::wstring sResult = L"<o:shapelayout ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
+				ComplexTypes_WriteAttribute ( L"v:ext=\"", m_oExt );
 
-				sResult += _T(">");
+				sResult += L">";
 
 				if ( m_oIdMap.IsInit() )
 					sResult += m_oIdMap->toXML();
@@ -2133,7 +2018,7 @@ namespace OOX
 				if ( m_oRules.IsInit() )
 					sResult += m_oRules->toXML();
 
-				sResult += _T("</o:shapelayout>");
+				sResult += L"</o:shapelayout>";
 
 				return sResult;
 			}
@@ -2148,7 +2033,7 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("v:ext"), m_oExt )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"v:ext", m_oExt )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -2169,15 +2054,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSignatureLine)
-			CSignatureLine()
+			CSignatureLine(OOX::Document *pMain = NULL) : PPTX::WrapperWritingElement(pMain)
 			{
 			}
 			virtual ~CSignatureLine()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase(oNode, L"o:addlxml", m_sAddXml);
@@ -2203,33 +2085,33 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:signatureline ");
+				std::wstring sResult = L"<o:signatureline ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
+				ComplexTypes_WriteAttribute ( L"v:ext=\"", m_oExt );
 
 				if ( m_oIsSignatureLine.IsInit() )
-					sResult += _T("issignatureline=\"") + m_oIsSignatureLine->ToString2(SimpleTypes::onofftostringT) + _T("\" ");
+					sResult += L"issignatureline=\"" + m_oIsSignatureLine->ToString2(SimpleTypes::onofftostringT) + L"\" ";
 
-				ComplexTypes_WriteAttribute ( _T("id=\""),     m_oId );
-				ComplexTypes_WriteAttribute ( _T("provid=\""), m_oProvId );
+				ComplexTypes_WriteAttribute ( L"id=\"",     m_oId );
+				ComplexTypes_WriteAttribute ( L"provid=\"", m_oProvId );
 
 				if ( m_oSigningInstructionsSet.IsInit() )
-					sResult += _T("signinginstructionsset=\"") + m_oSigningInstructionsSet->ToString2(SimpleTypes::onofftostringT) + _T("\" ");
+					sResult += L"signinginstructionsset=\"" + m_oSigningInstructionsSet->ToString2(SimpleTypes::onofftostringT) + L"\" ";
 
 				if ( m_oAllowComments.IsInit() )
-					sResult += _T("allowcomments=\"") + m_oAllowComments->ToString2(SimpleTypes::onofftostringT) + _T("\" ");
+					sResult += L"allowcomments=\"" + m_oAllowComments->ToString2(SimpleTypes::onofftostringT) + L"\" ";
 
 				if ( m_oShowSignDate.IsInit() )
-					sResult += _T("showsigndate=\"") + m_oShowSignDate->ToString2(SimpleTypes::onofftostringT) + _T("\" ");
+					sResult += L"showsigndate=\"" + m_oShowSignDate->ToString2(SimpleTypes::onofftostringT) + L"\" ";
 
-				ComplexTypes_WriteAttribute2Encode( _T("o:suggestedsigner=\""),      m_sSuggestedSigner );
-				ComplexTypes_WriteAttribute2Encode( _T("o:suggestedsigner2=\""),     m_sSuggestedSigner2 );
-				ComplexTypes_WriteAttribute2Encode( _T("o:suggestedsigneremail=\""), m_sSuggestedSignerEmail );
-				ComplexTypes_WriteAttribute2Encode( _T("o:signinginstructions=\""),  m_sSigningInstructions );
-				ComplexTypes_WriteAttribute2Encode( _T("o:addlxml=\""),              m_sAddXml );
-				ComplexTypes_WriteAttribute2Encode( _T("o:sigprovurl=\""),           m_sSigProvUrl );
+				ComplexTypes_WriteAttribute2Encode( L"o:suggestedsigner=\"",      m_sSuggestedSigner );
+				ComplexTypes_WriteAttribute2Encode( L"o:suggestedsigner2=\"",     m_sSuggestedSigner2 );
+				ComplexTypes_WriteAttribute2Encode( L"o:suggestedsigneremail=\"", m_sSuggestedSignerEmail );
+				ComplexTypes_WriteAttribute2Encode( L"o:signinginstructions=\"",  m_sSigningInstructions );
+				ComplexTypes_WriteAttribute2Encode( L"o:addlxml=\"",              m_sAddXml );
+				ComplexTypes_WriteAttribute2Encode( L"o:sigprovurl=\"",           m_sSigProvUrl );
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -2239,7 +2121,7 @@ namespace OOX
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1); // start attributes
 
@@ -2373,19 +2255,19 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("o:addlxml"),              m_sAddXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("allowcomments"),          m_oAllowComments )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("v:ext"),                  m_oExt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("id"),                     m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("issignatureline"),        m_oIsSignatureLine )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("provid"),                 m_oProvId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("showsigndate"),           m_oShowSignDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("o:signinginstructions"),  m_sSigningInstructions )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("signinginstructionsset"), m_oSigningInstructionsSet )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("o:sigprovurl"),           m_sSigProvUrl )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("o:suggestedsigner"),      m_sSuggestedSigner )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("o:suggestedsigner2"),     m_sSuggestedSigner2 )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("o:suggestedsigneremail"), m_sSuggestedSignerEmail )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"o:addlxml",              m_sAddXml )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"allowcomments",          m_oAllowComments )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"v:ext",                  m_oExt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"id",                     m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"issignatureline",        m_oIsSignatureLine )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"provid",                 m_oProvId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"showsigndate",           m_oShowSignDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"o:signinginstructions",  m_sSigningInstructions )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"signinginstructionsset", m_oSigningInstructionsSet )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"o:sigprovurl",           m_sSigProvUrl )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"o:suggestedsigner",      m_sSuggestedSigner )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"o:suggestedsigner2",     m_sSuggestedSigner2 )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"o:suggestedsigneremail", m_sSuggestedSignerEmail )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -2413,15 +2295,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSkew)
-			CSkew()
+			CSkew(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSkew()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				// TO DO: Реализовать CSkew::fromXML(XmlUtils::CXmlNode& oNode)
@@ -2435,19 +2314,19 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<o:skew ");
+				std::wstring sResult = L"<o:skew ";
 
-				ComplexTypes_WriteAttribute ( _T("v:ext=\""), m_oExt );
-				ComplexTypes_WriteAttribute2( _T("id=\""),    m_sId );
+				ComplexTypes_WriteAttribute ( L"v:ext=\"", m_oExt );
+				ComplexTypes_WriteAttribute2( L"id=\"",    m_sId );
 
 				if ( SimpleTypes::booleanFalse != m_oOn.GetValue() )
-					sResult += _T("on=\"") + m_oOn.ToString() + _T("\" ");
+					sResult += L"on=\"" + m_oOn.ToString() + L"\" ";
 
-				ComplexTypes_WriteAttribute2( _T("offset=\""), m_sOffset );
-				ComplexTypes_WriteAttribute2( _T("origin=\""), m_sOrigin );
-				ComplexTypes_WriteAttribute2( _T("matrix=\""), m_sMatrix );
+				ComplexTypes_WriteAttribute2( L"offset=\"", m_sOffset );
+				ComplexTypes_WriteAttribute2( L"origin=\"", m_sOrigin );
+				ComplexTypes_WriteAttribute2( L"matrix=\"", m_sMatrix );
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -2462,12 +2341,12 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("v:ext"),  m_oExt )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("id"),     m_sId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("matrix"), m_sMatrix )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("offset"), m_sOffset )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("on"),     m_oOn )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("origin"), m_sOrigin )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"v:ext",  m_oExt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"id",     m_sId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"matrix", m_sMatrix )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"offset", m_sOffset )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"on",     m_oOn )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"origin", m_sOrigin )
 				WritingElement_ReadAttributes_End( oReader )
 
 				// TO DO: OOX::Vml::CSkew сделать нормальный парсер параметров

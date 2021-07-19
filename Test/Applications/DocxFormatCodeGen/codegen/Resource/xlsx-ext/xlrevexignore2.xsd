@@ -1,0 +1,4 @@
+<xsd:schema targetNamespace="http://schemas.microsoft.com/office/spreadsheetml/2015/revision2" elementFormDefault="qualified" xmlns="http://schemas.microsoft.com/office/spreadsheetml/2015/revision2" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlbasictypes.xsd"/>
+   <xsd:attribute name="uid" type="x:ST_Guid"/>
+ </xsd:schema>

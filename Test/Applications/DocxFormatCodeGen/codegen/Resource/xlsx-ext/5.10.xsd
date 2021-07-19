@@ -1,0 +1,41 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns="http://schemas.microsoft.com/office/spreadsheetml/2014/11/main" xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main" targetNamespace="http://schemas.microsoft.com/office/spreadsheetml/2014/11/main" elementFormDefault="qualified">
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlbasictypes.xsd"/>
+   <xsd:import namespace="http://schemas.openxmlformats.org/officeDocument/2006/relationships" schemaLocation="orel.xsd"/>
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlworkbook.xsd"/>
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlsheet.xsd"/>
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlpivot.xsd"/>
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlextconns.xsd"/>
+   <xsd:complexType name="CT_ModelTimeGroupings">
+     <xsd:sequence>
+       <xsd:element name="modelTimeGrouping" minOccurs="1" maxOccurs="unbounded" type="CT_ModelTimeGrouping"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="modelTimeGroupings" type="CT_ModelTimeGroupings"/>
+   <xsd:complexType name="CT_ModelTimeGrouping">
+     <xsd:sequence>
+       <xsd:element name="calculatedTimeColumn" minOccurs="1" maxOccurs="unbounded" type="CT_CalculatedTimeColumn"/>
+     </xsd:sequence>
+     <xsd:attribute name="tableName" type="x:ST_Xstring" use="required"/>
+     <xsd:attribute name="columnName" type="x:ST_Xstring" use="required"/>
+     <xsd:attribute name="columnId" type="x:ST_Xstring" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_CalculatedTimeColumn">
+     <xsd:attribute name="columnName" type="x:ST_Xstring" use="required"/>
+     <xsd:attribute name="columnId" type="x:ST_Xstring" use="required"/>
+     <xsd:attribute name="contentType" type="ST_ModelTimeGroupingContentType" use="required"/>
+     <xsd:attribute name="isSelected" type="xsd:boolean" use="required"/>
+   </xsd:complexType>
+   <xsd:simpleType name="ST_ModelTimeGroupingContentType">
+     <xsd:restriction base="x:ST_Xstring">
+       <xsd:enumeration value="years"/>
+       <xsd:enumeration value="quarters"/>
+       <xsd:enumeration value="monthsindex"/>
+       <xsd:enumeration value="months"/>
+       <xsd:enumeration value="daysindex"/>
+       <xsd:enumeration value="days"/>
+       <xsd:enumeration value="hours"/>
+       <xsd:enumeration value="minutes"/>
+       <xsd:enumeration value="seconds"/>
+     </xsd:restriction>
+   </xsd:simpleType>
+ </xsd:schema>

@@ -47,6 +47,7 @@
 #include "datatypes/tablemode.h"
 #include "datatypes/common_attlists.h"
 #include "datatypes/tablevisibility.h"
+#include "datatypes/messagetype.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -180,8 +181,8 @@ public:
     CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
     const wchar_t * ns;
     const wchar_t * name;
-    xml::NodeType xml_type;
-    ElementType type;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTableTableColumnNoGroup;
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
@@ -338,7 +339,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    table_table_column_group_attlist	table_table_column_group_attlist_;
+    table_table_column_group_attlist	attlist_;
     table_columns_and_groups			table_columns_and_groups_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_column_group);
@@ -380,7 +381,7 @@ public:
     void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
     
     bool	docx_convert(oox::docx_conversion_context & Context) ;
-    int		xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content *text_properties) ;
+    int		xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content_ptr text_properties) ;
     bool	pptx_convert(oox::pptx_conversion_context & Context) ;
 
     office_element_ptr_array	elements_; 
@@ -399,7 +400,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-	table_table_cell() : last_cell_(false) { }
+	table_table_cell() : last_cell_(false), is_present_hyperlink_(false) { }
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
@@ -413,6 +414,7 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 public:
+	bool is_present_hyperlink_;
 	bool last_cell_;
 	bool empty(bool bWithStyle = true);
 
@@ -421,7 +423,6 @@ public:
     table_table_cell_content		content_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table_cell);
 
 class table_covered_table_cell : public office_element_impl<table_covered_table_cell>
@@ -569,7 +570,7 @@ public:
 class table_rows_and_groups
 {
 public:
-    table_rows_and_groups();
+	table_rows_and_groups() {}
     std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     
 	void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
@@ -579,10 +580,6 @@ public:
     void pptx_convert(oox::pptx_conversion_context & Context);
 
     office_element_ptr_array	content_;
-    //int type_;
-    //office_element_ptr		table_table_row_group_;
-    //table_rows_no_group		table_rows_no_group_;
-
 };
 
 class table_table_row_group_attlist
@@ -604,7 +601,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
     
-    table_table_row_group() 
+    table_table_row_group()
 	{
     }
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
@@ -615,7 +612,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    table_table_row_group_attlist	table_table_row_group_attlist_;
+    table_table_row_group_attlist	attlist_;
     table_rows_and_groups			table_rows_and_groups_;
 
 };
@@ -780,11 +777,11 @@ public:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    _CP_OPT(std::wstring)		table_title_;
-	_CP_OPT(odf_types::Bool)	table_display_;
-    _CP_OPT(std::wstring)		table_message_type_;
+    _CP_OPT(std::wstring) table_title_;
+	_CP_OPT(odf_types::Bool) table_display_;
+    _CP_OPT(odf_types::message_type) table_message_type_;
 
-    office_element_ptr_array	content_;
+    office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_error_message);
 
@@ -804,11 +801,10 @@ public:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    _CP_OPT(std::wstring)		table_title_;
-	_CP_OPT(odf_types::Bool)	table_display_;
-    _CP_OPT(std::wstring)		table_message_type_;
-
-    office_element_ptr_array	content_;
+	_CP_OPT(std::wstring) table_title_;
+	_CP_OPT(odf_types::Bool) table_display_;
+	
+	office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_help_message);
 

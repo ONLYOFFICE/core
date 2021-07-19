@@ -57,6 +57,7 @@ public:
 	std::wstringstream	conditionalFormatting_;
 	std::wstringstream  picture_background_;
 	std::wstringstream  dataValidations_;
+	std::wstringstream  dataValidationsX14_;
 	std::wstringstream	ole_objects_;
 	std::wstringstream	page_props_;
 	std::wstringstream	header_footer_;
@@ -163,6 +164,10 @@ std::wostream & xlsx_xml_worksheet::dataValidations()
 {
     return impl_->dataValidations_;
 }
+std::wostream & xlsx_xml_worksheet::dataValidationsX14()
+{
+	return impl_->dataValidationsX14_;
+}
 std::wostream & xlsx_xml_worksheet::protection()
 {
     return impl_->protection_;
@@ -227,6 +232,8 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 
 			CP_XML_STREAM() << impl_->header_footer_.str();
 			
+			CP_XML_STREAM() << impl_->breaks_.str();
+			
 			if (false == impl_->drawingId_.empty())
 			{
 				CP_XML_NODE(L"drawing")
@@ -264,9 +271,19 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			}
 			CP_XML_STREAM() << impl_->picture_background_.str();
 
-			//или тут ??? headerFooter
+			if (false == impl_->dataValidationsX14_.str().empty())
+			{
+				CP_XML_NODE(L"extLst")
+				{
+					CP_XML_NODE(L"ext")
+					{
+						CP_XML_ATTR(L"uri", L"{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}");
+						CP_XML_ATTR(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
 
-			CP_XML_STREAM() << impl_->breaks_.str();
+						CP_XML_STREAM() << impl_->dataValidationsX14_.str();
+					}
+				}
+			}
 		}
     }
 }

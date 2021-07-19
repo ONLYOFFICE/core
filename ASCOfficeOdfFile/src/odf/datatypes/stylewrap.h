@@ -29,17 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_ODF_STYLEWRAP_H_
-#define _CPDOCCORE_ODF_STYLEWRAP_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
 #include "odfattributes.h"
-
 
 namespace cpdoccore { namespace odf_types { 
 
@@ -81,5 +75,3 @@ std::wostream & operator << (std::wostream & _Wostream, const style_wrap & _Val)
 APPLY_PARSE_XML_ATTRIBUTES(odf_types::style_wrap);
 
 }
-
-#endif

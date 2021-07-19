@@ -18,6 +18,10 @@ core_windows:DEFINES -= UNICODE _UNICODE
 
 DEFINES += CRYPTOPP_DISABLE_ASM
 
+core_android {
+    INCLUDEPATH += $$(ANDROID_NDK_ROOT)/sources/android/cpufeatures
+}
+
 HEADERS += \
     ../3way.h \
     ../adler32.h \

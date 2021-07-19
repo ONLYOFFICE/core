@@ -143,7 +143,7 @@ namespace PPTX
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			pReader->Skip(1); // type
-			LONG end = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			while (pReader->GetPos() < end)
 			{

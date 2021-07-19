@@ -94,7 +94,7 @@ void odf_notes_context::start_note(office_element_ptr &elm, int oox_id, int type
 	impl_->notes_.push_back(state);
 	impl_->notes_.back().element = elm;
 	impl_->notes_.back().oox_id = oox_id;
-	impl_->notes_.back().odf_name = L"note_" + boost::lexical_cast<std::wstring>(oox_id);
+	impl_->notes_.back().odf_name = L"note_" + std::to_wstring(impl_->notes_.size());
 
 	impl_->notes_.back().is_started = false;
 	impl_->notes_.back().state		= 1;
@@ -112,7 +112,7 @@ void odf_notes_context::start_note(office_element_ptr &elm, int oox_id, int type
 	text_note_citation* note_citation = dynamic_cast<text_note_citation*>(note->text_note_citation_.get());
 	
 	if (note_citation)
-		note_citation->add_text(boost::lexical_cast<std::wstring>(oox_id));
+		note_citation->add_text(std::to_wstring(impl_->notes_.size()));
 
 }
 void odf_notes_context::end_note()

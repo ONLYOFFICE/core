@@ -56,7 +56,7 @@ protected:
 	bool ReadCurrentUser(POLE::Stream *pStm);
 	void ReadEncryptedSummary();
 	void ReadDocumentSummary();
-	void ReadPictures();
+    void ReadPictures();
  
 private: 
 	bool						m_bDualStorage;

@@ -102,9 +102,9 @@ void text_list_item::add_child_element( const office_element_ptr & child_element
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextNumber)
+    if (type_ == typeTextNumber)
     {
         text_number_ = child_element;
     }
@@ -150,9 +150,9 @@ void text_list_header::add_child_element( const office_element_ptr & child_eleme
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTextNumber)
+    if (type_ == typeTextNumber)
     {
         text_number_ = child_element;
     }

@@ -73,25 +73,25 @@ void office_spreadsheet::create_child_element(const std::wstring & Ns, const std
 
 void office_spreadsheet::add_child_element( const office_element_ptr & child_element)
 {
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-	if ( type == typeOfficeForms)
+	if ( type_ == typeOfficeForms)
     {
 		forms_ = child_element;
     }
-	else if ( type == typeTableContentValidations)
+	else if ( type_ == typeTableContentValidations)
     {
 		content_validations_ = child_element;
     }
-	else if ( type == typeTableDataPilotTables)
+	else if ( type_ == typeTableDataPilotTables)
     {
 		data_pilot_tables_ = child_element;
     }
-	else if ( type == typeTableDatabaseRanges)
+	else if ( type_ == typeTableDatabaseRanges)
     {
 		database_ranges_ = child_element;
     }
-	else if ( type == typeTableNamedExpressions)
+	else if ( type_ == typeTableNamedExpressions)
     {
 		named_expressions_ = child_element;
     }
@@ -116,15 +116,15 @@ void office_spreadsheet::serialize(std::wostream & _Wostream)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}
-
-			if (data_pilot_tables_)
-				data_pilot_tables_->serialize(CP_XML_STREAM());
-
+			
 			if (named_expressions_)
 				named_expressions_->serialize(CP_XML_STREAM());
 
 			if (database_ranges_)
-				database_ranges_->serialize(CP_XML_STREAM());			
+				database_ranges_->serialize(CP_XML_STREAM());		
+
+			if (data_pilot_tables_)
+				data_pilot_tables_->serialize(CP_XML_STREAM());
 		}
 	}
 }

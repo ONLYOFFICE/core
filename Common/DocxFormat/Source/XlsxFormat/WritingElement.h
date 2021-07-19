@@ -52,6 +52,24 @@ namespace Spreadsheet
 		writer.WriteString(XmlUtils::DoubleToString(val)); \
 		writer.WriteString(end);
 
+#define WritingValNode(ns, name, val) \
+		writer.StartNodeWithNS(ns, name); \
+		writer.StartAttributes(); \
+		writer.WriteAttribute(L"val", val); \
+		writer.EndAttributesAndNode();
+#define WritingValNodeEncodeXml(ns, name, val) \
+		writer.StartNodeWithNS(ns, name); \
+		writer.StartAttributes(); \
+		writer.WriteAttributeEncodeXml(L"val", val); \
+		writer.EndAttributesAndNode();
+#define WritingValNodeIf(ns, name, cond, val) \
+		writer.StartNodeWithNS(ns, name); \
+		writer.StartAttributes(); \
+		if (cond) \
+		{ \
+			writer.WriteAttribute(L"val", val); \
+		} \
+		writer.EndAttributesAndNode();
 
 #define WritingStringValAttr(name, func, val) \
 		WritingStringCommon(L"<" name L" val=\"", func, val, L"\"/>")
@@ -101,6 +119,8 @@ namespace Spreadsheet
 		WritingStringNullableAttr(name, WriteEncodeXmlStringHHHH, elem, val)
 #define WritingStringNullableAttrInt(name, elem, val) \
 		WritingStringNullableAttr(name, AddInt, elem, val)
+#define WritingStringNullableAttrUInt(name, elem, val) \
+		WritingStringNullableAttr(name, AddUInt, elem, val)
 #define WritingStringNullableAttrInt64(name, elem, val) \
 		WritingStringNullableAttr(name, AddInt64, elem, val)
 #define WritingStringNullableAttrDouble(name, elem, val) \
@@ -123,12 +143,19 @@ namespace Spreadsheet
 #define WritingStringNullableAttrEncodeXmlString2(name, elem) \
 		WritingStringNullableAttrEncodeXmlString(name, elem, *elem)
 
+#define WritingNullable(elem, action) \
+		if(elem.IsInit()) \
+		{ \
+			action \
+		}
+
 	const double c_ag_Inch_to_MM	= 25.4;
 	const double c_ag_1pxWidth		= 25.4 / 96;
 
 	class WritingElement : public OOX::WritingElement
 	{
 	public:
+		WritingElement(OOX::Document *pMain = NULL) : OOX::WritingElement(pMain) {}
         virtual EElementType    getType()   const
 		{
 			return OOX::et_x_Unknown;
@@ -140,9 +167,8 @@ namespace Spreadsheet
 	class WritingElementWithChilds : public WritingElement
 	{
 	public:
-        std::vector<ElemType *>  m_arrItems;
+		WritingElementWithChilds(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
 		
-		WritingElementWithChilds() {}
 		virtual ~WritingElementWithChilds() 
 		{
 			ClearItems();
@@ -155,6 +181,7 @@ namespace Spreadsheet
             }
 			m_arrItems.clear();
 		}
+        std::vector<ElemType *>  m_arrItems;
 	};
 }
 }

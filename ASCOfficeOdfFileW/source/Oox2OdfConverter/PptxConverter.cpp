@@ -78,7 +78,6 @@ PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate)
  	current_clrMap		= NULL;
 	current_slide		= NULL;
 	current_theme		= NULL;
-	current_tableStyles	= NULL;
 
 	presentation		= NULL;
 	output_document		= NULL;
@@ -89,7 +88,7 @@ PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate)
 	pptx_document = new PPTX::Document();
 	if (!pptx_document->isValid(oox_path.GetPath())) // true ???
 	{
-		delete pptx_document;
+		delete pptx_document; pptx_document = NULL;
 		return;
 	}
 
@@ -98,7 +97,7 @@ PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate)
 	smart_ptr<PPTX::Presentation> presentation_ptr = pptx_document->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 	if (!presentation_ptr.is_init())
 	{
-		delete pptx_document;
+		delete pptx_document;  pptx_document = NULL;
 		return;
 	}
 	presentation = presentation_ptr.GetPointer();
@@ -108,7 +107,6 @@ PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate)
 }
 PptxConverter::~PptxConverter()
 {
-	current_tableStyles	= NULL;
 	current_clrMap		= NULL;
 	current_slide		= NULL;
 	current_theme		= NULL;
@@ -175,10 +173,10 @@ std::wstring PptxConverter::find_link_by_id (const std::wstring & sId, int type)
 	return ref;
 }
 
-void PptxConverter::convertDocument()
+bool PptxConverter::convertDocument()
 {
-    if (!pptx_document) return;
-    if (!odp_context)   return;
+    if (!pptx_document) return false;
+    if (!odp_context)   return false;
 		
 	odp_context->start_document();
 
@@ -191,6 +189,8 @@ void PptxConverter::convertDocument()
 	delete pptx_document; pptx_document = NULL;
 
 	odp_context->end_document();
+
+	return true;
 }
 void PptxConverter::convert_styles()
 {
@@ -222,7 +222,7 @@ void PptxConverter::convert_styles()
 		OoxConverter::convert(presentation->defaultTextStyle->levels[0].GetPointer(), paragraph_properties, text_properties); //default text
 	}
 	//convert(presentation->defaultTextStyle.GetPointer()); //стили дефалтовых списков
-
+	
 ///////////////////////////////////////////////////////////////////////////
 
 	odp_context->styles_context()->create_default_style(odf_types::style_family::Table);					
@@ -236,7 +236,7 @@ void PptxConverter::convert_styles()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 	//зачемто ?! для OpenOffice для врезок/фреймов нужен базовый стиль - без него другой тип геометрии oO !!!
-	odp_context->styles_context()->create_style(L"Frame", odf_types::style_family::Graphic,false, true);		
+	odp_context->styles_context()->create_style(L"Frame", odf_types::style_family::Graphic, false, true);		
 	odf_writer::graphic_format_properties	* frame_graphic_properties	= odp_context->styles_context()->last_state()->get_graphic_properties();
 	odf_writer::style_text_properties		* frame_text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
 
@@ -252,7 +252,109 @@ void PptxConverter::convert_settings()
 {
 	OoxConverter::convert(presentation->m_pJsaProject.operator ->());
 }
+void PptxConverter::convert(PPTX::TableStyles *oox_table_styles)
+{
+	if (!oox_table_styles) return;
 
+	for (std::map<std::wstring, PPTX::Logic::TableStyle>::iterator it = oox_table_styles->Styles.begin(); it != oox_table_styles->Styles.end(); ++it)
+	{
+		convert(it->first, &it->second);
+	}
+}
+void PptxConverter::convert(const std::wstring &id, PPTX::Logic::TableStyle *oox_table_style)
+{
+	if (!oox_table_style) return;
+	if (id.empty()) return;
+
+	odf_writer::table_style_state state;
+
+	state.default_		= convert(oox_table_style->wholeTbl.GetPointer());
+	state.first_row_	= convert(oox_table_style->firstRow.GetPointer(), state.default_);
+	state.band_row_		= convert(oox_table_style->band1H.GetPointer(), state.default_);
+	state.last_row_		= convert(oox_table_style->lastRow.GetPointer(), state.default_);
+	
+	state.first_col_	= convert(oox_table_style->firstCol.GetPointer());
+	state.band_col_		= convert(oox_table_style->band1V.GetPointer());
+	state.last_col_		= convert(oox_table_style->lastCol.GetPointer());
+
+	odp_context->map_table_styles_.insert(std::make_pair(id, state));
+}
+
+std::wstring PptxConverter::convert(PPTX::Logic::TablePartStyle* style, const std::wstring &base)
+{
+	if (!style) return L"";
+	
+	odp_context->styles_context()->create_style(L"", odf_types::style_family::TableCell, true, false, -1);
+	odf_writer::odf_style_state_ptr style_state = odp_context->styles_context()->last_state(style_family::TableCell);
+	if (!style_state) return L"";
+
+	if (false == base.empty())
+	{
+		odf_writer::odf_style_state_ptr style_state_base;
+		if (odp_context->styles_context()->find_odf_style_state(base, style_family::TableCell, style_state_base))
+		{
+			odf_writer::graphic_format_properties *gr = style_state->get_graphic_properties();
+			odf_writer::graphic_format_properties *gr_base = style_state_base->get_graphic_properties();
+
+			if (gr && gr_base) gr->apply_from(*gr_base);
+
+			odf_writer::style_paragraph_properties *para = style_state->get_paragraph_properties();
+			odf_writer::style_paragraph_properties *para_base = style_state_base->get_paragraph_properties();
+			
+			if (para && para_base) para->apply_from(para_base);
+		}
+	}
+
+	if (style->tcStyle.IsInit())
+	{
+		odp_context->drawing_context()->start_area_properties();
+			convert(style->tcStyle.GetPointer(), style_state->get_graphic_properties());
+		odp_context->drawing_context()->end_area_properties();
+		
+		odp_context->drawing_context()->start_line_properties();
+			convert(style->tcStyle->tcBdr.GetPointer(), style_state->get_paragraph_properties());
+		odp_context->drawing_context()->end_line_properties();		
+	}
+	convert(style->tcTxStyle.GetPointer(), style_state->get_text_properties());
+
+	return style_state->get_name();
+}
+void PptxConverter::convert(PPTX::Logic::TcStyle* style, odf_writer::graphic_format_properties *properties)
+{
+	if (!style) return;
+	if (!properties) return;
+
+	odp_context->drawing_context()->set_no_fill();
+
+	if (style->fill.IsInit())
+	{
+		OoxConverter::convert(&style->fill->Fill);
+	}
+	else if (style->fillRef.IsInit())
+	{
+		OoxConverter::convert(style->fillRef.GetPointer());
+	}
+
+	if (style->cell3D.IsInit())
+	{
+	}
+	odf_writer::graphic_format_properties *temp_props = odp_context->drawing_context()->get_graphic_properties();
+	
+	if (temp_props)
+		properties->apply_from(*temp_props);
+
+}
+
+void PptxConverter::convert(PPTX::Logic::TcTxStyle* style, odf_writer::style_text_properties *text_properties)
+{
+	if (!style) return;
+	if (!text_properties) return;
+	
+//nullable_limit<Limit::OnOff> i;
+//nullable_limit<Limit::OnOff> b;
+//nullable<FontRef> fontRef;
+//UniColor Color;
+}
 void PptxConverter::convert_common()
 {
 	if (presentation->sldSz.IsInit())
@@ -276,6 +378,8 @@ void PptxConverter::convert_slides()
 {
 	for (size_t i = 0; i < presentation->sldIdLst.size(); ++i)
 	{
+		odp_context->map_table_styles_.clear();// todooo - для одинаковых тем не чистить
+
         std::wstring rId = presentation->sldIdLst[i].rid.get();
         smart_ptr<PPTX::Slide> slide = ((*presentation)[rId]).smart_dynamic_cast<PPTX::Slide>();
 		
@@ -378,7 +482,6 @@ void PptxConverter::convert_slides()
 		if (slide->clrMapOvr.IsInit() && slide->clrMapOvr->overrideClrMapping.IsInit())
 			current_clrMap	= slide->clrMapOvr->overrideClrMapping.GetPointer();
 
-		current_tableStyles	= slide->tableStyles_.GetPointer();
 		current_slide		= slide.GetPointer();
 
 		odp_context->start_slide();
@@ -410,8 +513,25 @@ void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 	current_clrMap	= &oox_notes->clrMap;
 	
 	current_slide	= dynamic_cast<OOX::IFileContainer*>(oox_notes);
-	//PPTX::Logic::TxStyles* current_txStyles = oox_notes->notesStyle.GetPointer();
-	
+
+	NSCommon::nullable<PPTX::Logic::TxStyles> current_txStyles;
+	if (oox_notes->notesStyle.IsInit())
+	{
+		current_txStyles.Init();
+		current_txStyles->otherStyle = oox_notes->notesStyle;
+		
+		_CP_OPT(int) inStyles = odf_context()->drawing_context()->get_presentation();
+
+		odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles > 0);
+		for (int i = 0; i < 10; i++)
+		{
+			if (oox_notes->notesStyle->levels[i].IsInit())
+			{
+				convert_list_level(oox_notes->notesStyle->levels[i].GetPointer(), i /*- 1*/);
+			}
+		}
+		odf_context()->styles_context()->lists_styles().end_style();
+	}
 	if (presentation->notesSz.IsInit())
 	{
 		_CP_OPT(odf_types::length) width	= odf_types::length(presentation->notesSz->cx / 12700., odf_types::length::pt);
@@ -419,7 +539,7 @@ void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 		
 		odf_context()->page_layout_context()->set_page_size(width, height);
 	}
-	convert_slide(&oox_notes->cSld, NULL, true, true, NotesMaster);
+	convert_slide(&oox_notes->cSld, current_txStyles.GetPointer(), true, true, NotesMaster);
 	
 	odp_context->end_note();
 
@@ -796,15 +916,26 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	//nullable<CondLst>			endCondLst;
 	//nullable<Cond>			endSync;
 	//nullable<Iterate>			iterate;
-	if (oox_time_common->childTnLst.IsInit())
-	{
-		for (size_t i = 0; i < oox_time_common->childTnLst->list.size(); i++)
-		{
-			if (oox_time_common->childTnLst->list[i].is_init() == false) continue;
 
-			convert(&oox_time_common->childTnLst->list[i]);
-		}
-	}
+    // TODO
+//    for (auto& child : oox_time_common->childTnLst)
+//    {
+//        for (size_t i = 0; i <child.m_node. .list.size(); i++)
+//        {
+//            if (tnLst.list[i].is_init() == false) continue;
+
+//            convert(&oox_time_common->childTnLst->list[i]);
+//        }
+//    }
+//	if (oox_time_common->childTnLst.IsInit())
+//	{
+//		for (size_t i = 0; i < oox_time_common->childTnLst->list.size(); i++)
+//		{
+//			if (oox_time_common->childTnLst->list[i].is_init() == false) continue;
+
+//			convert(&oox_time_common->childTnLst->list[i]);
+//		}
+//	}
 	//if (oox_time_common->subTnLst.IsInit())
 	//{
 	//	for (size_t i = 0; i < oox_time_common->subTnLst->list.size(); i++)
@@ -823,62 +954,77 @@ void PptxConverter::convert(PPTX::Logic::TableProperties *oox_table_pr)
 		odp_context->drawing_context()->set_no_fill();
 	odp_context->drawing_context()->end_area_properties();
 	
-	if (oox_table_pr->TableStyleId.IsInit() && current_tableStyles)
+	if (oox_table_pr->TableStyleId.IsInit())
 	{
-		std::map<std::wstring, PPTX::Logic::TableStyle>::iterator pFind;
-		pFind = current_tableStyles->Styles.find(oox_table_pr->TableStyleId.get());
+		std::map<std::wstring, odf_writer::table_style_state>::iterator pFind;
+		pFind = odp_context->map_table_styles_.find(oox_table_pr->TableStyleId.get());
 		
-		if (pFind != current_tableStyles->Styles.end())
+		if (pFind == odp_context->map_table_styles_.end())
 		{
-			PPTX::Logic::TableStyle & table_style = pFind->second;
+			smart_ptr<PPTX::TableStyles> table_styles_ptr = presentation->Get(OOX::Presentation::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
+			std::map<std::wstring, PPTX::Logic::TableStyle>::iterator pFind1 = table_styles_ptr->Styles.find(oox_table_pr->TableStyleId.get());		
+			
+			if (pFind1 != table_styles_ptr->Styles.end())
+				convert(pFind1->first, dynamic_cast<PPTX::Logic::TableStyle*>(&pFind1->second));
 
-			if (table_style.tblBg.IsInit())
+			pFind = odp_context->map_table_styles_.find(oox_table_pr->TableStyleId.get());
+		}
+		
+		if (pFind != odp_context->map_table_styles_.end())
+		{
+			odp_context->slide_context()->table_context()->set_table_styled(true);
+
+			odf_writer::table_style_state & table_style = pFind->second;
+
+			if (!table_style.default_.empty())
+				odp_context->slide_context()->table_context()->set_default_cell_properties(table_style.default_);
+			
+			if (oox_table_pr->FirstRow.is_init() && !table_style.first_row_.empty())
 			{
+				odp_context->slide_context()->table_context()->set_first_row_cell_properties(table_style.first_row_);
 			}
-
-			convert(table_style.wholeTbl.GetPointer());
+			if (oox_table_pr->FirstCol.is_init() && !table_style.first_col_.empty())
+			{
+				odp_context->slide_context()->table_context()->set_first_col_cell_properties(table_style.first_col_);
+			}
+			if (oox_table_pr->BandRow.is_init() && !table_style.band_row_.empty())
+			{
+				odp_context->slide_context()->table_context()->set_band_row_cell_properties(table_style.band_row_);
+			}
+			if (oox_table_pr->BandCol.is_init() && !table_style.band_col_.empty())
+			{
+				odp_context->slide_context()->table_context()->set_band_col_cell_properties(table_style.band_col_);
+			}
+			if (oox_table_pr->LastRow.is_init() && !table_style.last_row_.empty())
+			{
+				odp_context->slide_context()->table_context()->set_last_row_cell_properties(table_style.last_row_);
+			}
+			if (oox_table_pr->LastCol.is_init() && !table_style.last_col_.empty())
+			{
+				odp_context->slide_context()->table_context()->set_last_col_cell_properties(table_style.last_col_);
+			}
 		}
 	}
 
 	if (oox_table_pr->Fill.is_init())
 	{
-		odp_context->drawing_context()->start_area_properties();
-			OoxConverter::convert(&oox_table_pr->Fill);
-		odp_context->drawing_context()->end_area_properties();
+		odp_context->styles_context()->create_style(L"", odf_types::style_family::TableCell, true, false, -1);
+		odf_writer::odf_style_state_ptr style_state = odp_context->styles_context()->last_state(style_family::TableCell);
+		if (style_state)
+		{
+			odp_context->drawing_context()->start_area_properties();
+				OoxConverter::convert(&oox_table_pr->Fill);
+			odp_context->drawing_context()->end_area_properties();
+
+			odf_writer::graphic_format_properties *temp_props = odp_context->drawing_context()->get_graphic_properties();
+	
+			style_state->get_graphic_properties()->apply_from(*temp_props);
+		}
+		odp_context->slide_context()->table_context()->set_default_cell_properties(style_state->get_name());
 	}
 	//EffectProperties			Effects;
 	//nullable_bool				Rtl;
-	//nullable_bool				FirstRow;
-	//nullable_bool				FirstCol;
-	//nullable_bool				LastRow;
-	//nullable_bool				LastCol;
-	//nullable_bool				BandRow;
-	//nullable_bool				BandCol;
 }
-
-void PptxConverter::convert(PPTX::Logic::TablePartStyle *oox_table_part_style)
-{
-	if (!oox_table_part_style) return;
-
-	if (oox_table_part_style->tcStyle.IsInit())
-	{
-		odp_context->drawing_context()->start_area_properties();
-			if (oox_table_part_style->tcStyle->fill.IsInit())
-				OoxConverter::convert(&oox_table_part_style->tcStyle->fill->Fill);
-			else
-				OoxConverter::convert(oox_table_part_style->tcStyle->fillRef.GetPointer());
-		odp_context->drawing_context()->end_area_properties();
-		
-		odp_context->drawing_context()->start_line_properties();
-			convert(oox_table_part_style->tcStyle->tcBdr.GetPointer());
-		odp_context->drawing_context()->end_line_properties();
-	}
-
-	if (oox_table_part_style->tcTxStyle.IsInit())
-	{
-	}
-}
-
 
 void PptxConverter::convert(PPTX::Logic::Table *oox_table)
 {
@@ -902,6 +1048,8 @@ void PptxConverter::convert(PPTX::Logic::Table *oox_table)
 	}
 	odp_context->slide_context()->end_table_columns();	
 
+	odp_context->slide_context()->table_context()->set_table_size(oox_table->TableCols.size(), oox_table->TableRows.size());
+
 	for (size_t i = 0; i < oox_table->TableRows.size(); i++)
 	{
 		convert(&oox_table->TableRows[i]);
@@ -917,7 +1065,7 @@ void PptxConverter::convert(PPTX::Logic::TableRow *oox_table_row)
 
 	if (oox_table_row->Height.IsInit())
 	{
-		odf_writer::style_table_row_properties	* table_row_properties = odp_context->styles_context()->last_state()->get_table_row_properties();
+		odf_writer::style_table_row_properties	*table_row_properties = odp_context->styles_context()->last_state()->get_table_row_properties();
 		table_row_properties->style_table_row_properties_attlist_.style_row_height_ = odf_types::length(oox_table_row->Height.get() / 12700., odf_types::length::pt); 
 //		table_row_properties->style_table_row_properties_attlist_.style_min_row_height_
 	}
@@ -970,7 +1118,7 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr,
 
 	std::wstring parent_name = odp_context->slide_context()->table_context()->get_default_cell_properties();
 	
-	if (!parent_name.empty()) 
+	if (false == parent_name.empty()) 
 	{
 		odf_writer::style * style_ = NULL;		
 		if (odp_context->styles_context()->find_odf_style(parent_name, odf_types::style_family::TableCell, style_))
@@ -986,21 +1134,6 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr,
 
 	if (cell_properties == NULL) return false;
 
-	//if (is_base_styled)
-	//{
-	//	odf_writer::style_text_properties		* text_properties		= odp_context->styles_context()->last_state()->get_text_properties();
-	//	odf_writer::style_paragraph_properties	* paragraph_properties	= odp_context->styles_context()->last_state()->get_paragraph_properties();
-	//	odf_writer::style_graphic_properties	* graphic_properties	= odp_context->styles_context()->last_state()->get_graphic_properties();
-	//	
-	//	if (col < 0) 
-	//		col = odp_context->slide_context()->table_context()->current_column() + 1;
-	//	int row = odp_context->slide_context()->table_context()->current_row();
-	//	
-	//	odp_context->styles_context()->table_styles().get_table_cell_properties (col, row, cell_properties);
-	//	odp_context->styles_context()->table_styles().get_text_properties		(col, row, text_properties);
-	//	odp_context->styles_context()->table_styles().get_paragraph_properties	(col, row, paragraph_properties);
-	//	odp_context->styles_context()->table_styles().get_graphic_properties	(col, row, graphic_properties);
-	//}
 	cell_properties->apply_from(parent_cell_properties);
 
 //check for inside cell or not
@@ -1010,17 +1143,17 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr,
 	
 	if ((border_inside_v || border_inside_h))
 	{
-		if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_)//раскидаем по сторонам
+		if (cell_properties->content_.common_border_attlist_.fo_border_)//раскидаем по сторонам
 		{
-			if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_->is_none() == false)
+			if (cell_properties->content_.common_border_attlist_.fo_border_->is_none() == false)
 			{
-				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = 
-				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ =
-				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = 
-				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ =
-												cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_;
+				cell_properties->content_.common_border_attlist_.fo_border_left_ = 
+				cell_properties->content_.common_border_attlist_.fo_border_right_ =
+				cell_properties->content_.common_border_attlist_.fo_border_bottom_ = 
+				cell_properties->content_.common_border_attlist_.fo_border_top_ =
+												cell_properties->content_.common_border_attlist_.fo_border_;
 			}		
-			cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_ = boost::none;
+			cell_properties->content_.common_border_attlist_.fo_border_ = boost::none;
 		}	
 		//если нет убрать, если да - добавить
 		if (border_inside_h)
@@ -1028,19 +1161,19 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr,
 			bool del_border = (std::wstring::npos != border_inside_h->find(L"none"));
 			if (row != 1)
 			{
-				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ && del_border)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = boost::none;
+				if (cell_properties->content_.common_border_attlist_.fo_border_top_ && del_border)
+					cell_properties->content_.common_border_attlist_.fo_border_top_ = boost::none;
 
 				else if (border_inside_h && !del_border)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_top_ = *border_inside_h;
+					cell_properties->content_.common_border_attlist_.fo_border_top_ = *border_inside_h;
 			}
 			if (row != odp_context->slide_context()->table_context()->count_rows())
 			{
-				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ && del_border)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = boost::none;
+				if (cell_properties->content_.common_border_attlist_.fo_border_bottom_ && del_border)
+					cell_properties->content_.common_border_attlist_.fo_border_bottom_ = boost::none;
 
 				else if (border_inside_h && !del_border)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_bottom_ = *border_inside_h;
+					cell_properties->content_.common_border_attlist_.fo_border_bottom_ = *border_inside_h;
 			}
 		}
 		if (border_inside_v)
@@ -1048,19 +1181,19 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr,
 			bool del_border = (std::wstring::npos != border_inside_v->find(L"none"));
 			if (col != 1)
 			{
-				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ && del_border)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = boost::none;
+				if (cell_properties->content_.common_border_attlist_.fo_border_left_ && del_border)
+					cell_properties->content_.common_border_attlist_.fo_border_left_ = boost::none;
 
 				else if (border_inside_h && !del_border)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = *border_inside_h;
+					cell_properties->content_.common_border_attlist_.fo_border_left_ = *border_inside_h;
 			}
 			if (col != odp_context->slide_context()->table_context()->count_columns())
 			{
-				if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ && del_border)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = boost::none;
+				if (cell_properties->content_.common_border_attlist_.fo_border_right_ && del_border)
+					cell_properties->content_.common_border_attlist_.fo_border_right_ = boost::none;
 
 				else if (border_inside_h && !del_border)
-					cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ = *border_inside_h;
+					cell_properties->content_.common_border_attlist_.fo_border_right_ = *border_inside_h;
 			}
 		}
 	}
@@ -1109,7 +1242,6 @@ void PptxConverter::convert(PPTX::Logic::Ln *oox_border, std::wstring & odf_bord
 
 	odf_border_prop = border_style.str();
 }
-
 void PptxConverter::convert(PPTX::Logic::TcBdr *oox_table_borders)
 {
 	if (!oox_table_borders) return;
@@ -1118,7 +1250,17 @@ void PptxConverter::convert(PPTX::Logic::TcBdr *oox_table_borders)
 	//odf_writer::style_table_cell_properties *odf_cell_props = odp_context->styles_context()->last_state(odf_types::style_family::TableCell)->get_table_cell_properties();
 	odf_writer::style_paragraph_properties *odf_para_props = odp_context->styles_context()->last_state(odf_types::style_family::TableCell)->get_paragraph_properties();
 
+	convert(oox_table_borders, odf_para_props);
+}
+
+
+void PptxConverter::convert(PPTX::Logic::TcBdr *oox_table_borders, odf_writer::style_paragraph_properties *odf_para_props)
+{
+	if (!oox_table_borders) return;
+	if (!odf_para_props) return;
+
 	std::wstring left, right, top, bottom, other2BR, other2BL;
+	
 	if (oox_table_borders->left.IsInit())
 	{
 		convert(oox_table_borders->left->ln.GetPointer(), left);
@@ -1205,19 +1347,19 @@ bool PptxConverter::convert(PPTX::Logic::TableCellProperties *oox_table_cell_pr)
 	//}
 	if (oox_table_cell_pr->MarL.IsInit())
 	{
-		odf_cell_props->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_left_ = odf_types::length(oox_table_cell_pr->MarL.get() / 12700., odf_types::length::pt);
+		odf_cell_props->content_.common_padding_attlist_.fo_padding_left_ = odf_types::length(oox_table_cell_pr->MarL.get() / 12700., odf_types::length::pt);
 	}
 	if (oox_table_cell_pr->MarR.IsInit())
 	{
-		odf_cell_props->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_right_ = odf_types::length(oox_table_cell_pr->MarR.get() / 12700., odf_types::length::pt);
+		odf_cell_props->content_.common_padding_attlist_.fo_padding_right_ = odf_types::length(oox_table_cell_pr->MarR.get() / 12700., odf_types::length::pt);
 	}
 	if (oox_table_cell_pr->MarT.IsInit())
 	{
-		odf_cell_props->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_top_ = odf_types::length(oox_table_cell_pr->MarT.get() / 12700., odf_types::length::pt);
+		odf_cell_props->content_.common_padding_attlist_.fo_padding_top_ = odf_types::length(oox_table_cell_pr->MarT.get() / 12700., odf_types::length::pt);
 	}
 	if (oox_table_cell_pr->MarB.IsInit())
 	{
-		odf_cell_props->style_table_cell_properties_attlist_.common_padding_attlist_.fo_padding_bottom_ = odf_types::length(oox_table_cell_pr->MarB.get() / 12700., odf_types::length::pt);
+		odf_cell_props->content_.common_padding_attlist_.fo_padding_bottom_ = odf_types::length(oox_table_cell_pr->MarB.get() / 12700., odf_types::length::pt);
 	}
 	if (oox_table_cell_pr->Vert.IsInit())
 	{
@@ -1307,6 +1449,7 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 	//}
 
 	odp_context->drawing_context()->end_drawing_background(page_props->content_.common_draw_fill_attlist_);
+	odp_context->drawing_context()->set_background_state(false);
 
 	odp_context->end_drawings();
 }
@@ -1367,23 +1510,23 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 				if (pPic.IsInit())		pPic->FillLevelUp();
 			}
 			
+			int ph_type = 0;
 			if (pNvPr->ph->type.IsInit())
 			{
-				int ph_type = pNvPr->ph->type->GetBYTECode();
+				ph_type = pNvPr->ph->type->GetBYTECode();
 
 				if (type == Layout && (ph_type == 5 || ph_type == 6 || ph_type == 7 || ph_type == 12))
 					continue;
-
-				odf_context()->drawing_context()->set_placeholder_type(ph_type);
 			}
-			else
-				odf_context()->drawing_context()->set_placeholder_type(0);
-
-			if (pNvPr->ph->idx.IsInit())
-				odf_context()->drawing_context()->set_placeholder_id(pNvPr->ph->idx.get());
 
 			if (!bPlaceholders)
 				continue;
+
+			odf_context()->drawing_context()->set_placeholder_type(ph_type);
+			
+			if (pNvPr->ph->idx.IsInit())
+				odf_context()->drawing_context()->set_placeholder_id(pNvPr->ph->idx.get());
+
 
 			PPTX::Logic::TextListStyle * listMasterStyle = NULL;
 			

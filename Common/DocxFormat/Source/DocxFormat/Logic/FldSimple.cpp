@@ -57,7 +57,7 @@ namespace OOX
 		// CFldSimple 17.16.19 (Part 1)
 		//--------------------------------------------------------------------------------	
 
-		void    CFldSimple::fromXML(XmlUtils::CXmlNode& oNode)
+		void CFldSimple::fromXML(XmlUtils::CXmlNode& oNode)
 		{
             XmlMacroReadAttributeBase( oNode, _T("w:dirty"),   m_oDirty );
             XmlMacroReadAttributeBase( oNode, _T("w:fldLock"), m_oFldLock );
@@ -153,7 +153,7 @@ namespace OOX
 		}
 
 
-		void    CFldSimple::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		void CFldSimple::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
 

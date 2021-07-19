@@ -29,12 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_ODF_STYLELEADERCOLOR_H_
-#define _CPDOCCORE_ODF_STYLELEADERCOLOR_H_
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -86,5 +82,3 @@ std::wostream & operator << (std::wostream & _Wostream, const style_leader_color
 APPLY_PARSE_XML_ATTRIBUTES(odf_types::style_leader_color);
 
 }
-
-#endif

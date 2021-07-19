@@ -94,7 +94,6 @@ writing_mode writing_mode::parse(const std::wstring & Str)
         return writing_mode( Page );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return writing_mode( LrTb );
     }
 }

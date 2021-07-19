@@ -33,6 +33,8 @@
 
 #include "../../../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "../../../../DesktopEditor/common/File.h"
+#include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+
 namespace PPTX
 {
 	namespace Logic
@@ -172,7 +174,7 @@ namespace PPTX
 	{
 		pReader->Skip(4); // len
 		BYTE _type = pReader->GetUChar(); // FILL_TYPE_BLIP
-		LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+		LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 		pReader->Skip(1);
 
@@ -263,15 +265,19 @@ namespace PPTX
 								pReader->Skip(6); // len + start attributes + type
 
 								// -------------------
-								std::wstring strImagePath = pReader->GetString2();
+								std::wstring strImagePath = pReader->GetString2(true);
 
 								std::wstring strOrigBase64;
                                 std::wstring strTempFile ;
 
-								bool bIsUrl = false;
-								
+								bool bIsUrl = false;								
+
+								if (!blip.is_init())
+									blip = new PPTX::Logic::Blip();
+
 								if (0 == strImagePath.find(_T("data:")))
 								{
+									blip->dataFilepathImage = strImagePath;
 									bool bBase64 = false;
 									
 									strOrigBase64 = strImagePath;
@@ -314,22 +320,29 @@ namespace PPTX
 										pDstBuffer = (BYTE*) __s.c_str();
 										dstLen = len;
 									}
-									if (sImageExtension.length() < 1) 
-									{
-										CImageFileFormatChecker checker;
-										sImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);								
-									}
-                                    //папки media может не быть в случае, когда все картинки base64(поскольку файл временный, папку media не создаем)
-                                    std::wstring tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
-									
-									OOX::CPath pathTemp = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
+									CImageFileFormatChecker checker;
+									std::wstring detectImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);
 
-                                    CFile oTempFile;
-                                    oTempFile.CreateFile(pathTemp.GetPath());
-									oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
-									oTempFile.CloseFile();
-									
-									strImagePath = strTempFile =pathTemp.GetPath(); // strTempFile для удаления
+									if (false == detectImageExtension.empty())
+									{
+										sImageExtension = detectImageExtension;
+
+										//папки media может не быть в случае, когда все картинки base64(поскольку файл временный, папку media не создаем)
+										std::wstring tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
+										
+										OOX::CPath pathTemp = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
+
+										CFile oTempFile;
+										oTempFile.CreateFile(pathTemp.GetPath());
+										oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
+										oTempFile.CloseFile();
+										
+										strImagePath = strTempFile =pathTemp.GetPath(); // strTempFile для удаления
+									}
+									else
+									{// бяка
+										strImagePath.clear();
+									}
 									if (bBase64)
 									{
 										RELEASEARRAYOBJECTS(pDstBuffer);
@@ -363,20 +376,17 @@ namespace PPTX
 								}
 
 								NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, oleData, strOrigBase64);
-
+								
 								// -------------------
 								if (!strTempFile.empty())
 								{
                                     CDirectory::DeleteFile(strTempFile);
 								}
 								// -------------------
-
-								if (!blip.is_init())
-									blip = new PPTX::Logic::Blip();
-
 								if (oRelsGeneratorInfo.nImageRId > 0)
 								{
 									blip->embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
+									blip->imageFilepath = oRelsGeneratorInfo.sFilepathImage;
 								}
 								
 								if(oRelsGeneratorInfo.nOleRId > 0)

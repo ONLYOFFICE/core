@@ -54,6 +54,7 @@ namespace OOX
 			class name : public CMathArgNodes\
 			{\
 			public:\
+				name(OOX::Document *pMain = NULL) : CMathArgNodes(pMain) {}\
 				name(XmlUtils::CXmlNode& oNode)\
 				{\
 					fromXML( oNode );\
@@ -2550,6 +2551,8 @@ namespace OOX
 								pItem = new CMr( oItem );
 								m_lRow++;
 							}
+							if (pItem)
+								m_arrItems.push_back(pItem);
 						}
 					}
 				}

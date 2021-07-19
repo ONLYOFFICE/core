@@ -58,10 +58,9 @@ namespace NExtractTools
 			nSeparator2Pos = sFile2.rfind(_T('\\'));
 		}
 
-
 		// check for directory in name
-		bool bIsFile1Directory = ((std::wstring::npos != nSeparator1Pos) && (nExt1Pos < nSeparator1Pos));   // i.e: /root1/child1.lalala/folder
-		bool bIsFile2Directory = ((std::wstring::npos != nSeparator2Pos) && (nExt2Pos < nSeparator2Pos));
+		bool bIsFile1Directory = (std::wstring::npos != nExt1Pos) ? ((std::wstring::npos != nSeparator1Pos) && (nExt1Pos < nSeparator1Pos)) : (std::wstring::npos != nSeparator1Pos);   // i.e: /root1/child1.lalala/folder
+		bool bIsFile2Directory = (std::wstring::npos != nExt2Pos) ? ((std::wstring::npos != nSeparator2Pos) && (nExt2Pos < nSeparator2Pos)) : (std::wstring::npos != nSeparator2Pos);
 
 		// automatic zip/unzip task detection
 		if (bIsFile1Directory)
@@ -128,8 +127,29 @@ namespace NExtractTools
 							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM)
 								res = TCD_DOTM2DOCX;
 						}
-                        else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOTM2DOCM;
-                    }break;
+                        else if (0 == sExt2.compare(_T(".docm")))	res = TCD_DOTM2DOCM;
+						else if (0 == sExt2.compare(_T(".txt")))		res = TCD_DOCX2TXT;
+				}break;
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE:
+					{
+							 if (0 == sExt2.compare(_T(".doct")))		res = TCD_PKG2BIN_T;
+						else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_PKG2BIN_T;
+						else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_PKG2BIN_T;
+						else if (0 == sExt2.compare(_T(".docx")))		res = TCD_PKG2OOXML;
+						else if (0 == sExt2.compare(_T(".xlsx")))		res = TCD_PKG2OOXML;
+						else if (0 == sExt2.compare(_T(".pptx")))		res = TCD_PKG2OOXML;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_PKG2BIN;
+				}break;
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT:
+				{
+						 if (0 == sExt2.compare(_T(".doct")))		res = TCD_DOCXFLAT2DOCT;
+					else if (0 == sExt2.compare(_T(".bin")))		res = TCD_DOCXFLAT2DOCT_BIN;
+				}break;
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT:
+					{
+							 if (0 == sExt2.compare(_T(".xlst")))		res = TCD_XLSXFLAT2XLST;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_XLSXFLAT2XLST_BIN;
+					}break;
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:

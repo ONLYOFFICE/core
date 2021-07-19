@@ -127,7 +127,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	{
 		CFRecordType::TypeId type = proc.getNextRecordType();
 		
-		if (type == rt_NONE || type == rt_BOF) //следующий пошел??
+		if (type == rt_NONE || proc.isBOF(type)) //следующий пошел??
 			break;
 		if (type == rt_EOF) 
 		{
@@ -172,8 +172,11 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.optional<COLUMNS>())
 				{
-					if (!m_COLUMNS)//???
+					COLUMNS *columns = dynamic_cast<COLUMNS*>(m_COLUMNS.get());
+					if (!columns || (columns && columns->elements_.empty()))
+					{
 						m_COLUMNS = elements_.back();
+					}
 					elements_.pop_back();
 				}
 			}break;
@@ -232,6 +235,9 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_ScenMan:		proc.optional<SCENARIOS>();			break;	
 			case rt_Sort:
 			case rt_AutoFilterInfo:
+			case rt_FilterMode:
+			case rt_SortData:
+			case rt_DropDownObjIds:
 			{
 				if (proc.optional<SORTANDFILTER>())// Let it be optional
 				{

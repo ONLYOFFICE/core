@@ -245,7 +245,7 @@ void odf_number_styles_context::create(int oox_num_fmt, std::wstring formatCode)
 	number_format_state state;
 
 	state.oox_num_fmt = oox_num_fmt;
-	state.style_name = std::wstring(L"NF1000") + boost::lexical_cast<std::wstring>( number_format_array_.size()+1);
+	state.style_name = std::wstring(L"NF1000") + boost::lexical_cast<std::wstring>( number_format_array_.size() + 1);
 	state.ods_type = office_value_type::Custom;
 	state.language_code = 0;
 
@@ -253,7 +253,7 @@ void odf_number_styles_context::create(int oox_num_fmt, std::wstring formatCode)
 
 	boost::algorithm::split(state.format_code, formatCode, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 
-	if (state.format_code.size()>1 && state.format_code[state.format_code.size()-1].find(L"@")>=0)
+	if (state.format_code.size() > 1 && state.format_code[state.format_code.size() - 1].find(L"@") >= 0)
 	{
 		state.format_code.pop_back();
 	}
@@ -290,9 +290,9 @@ void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring for
 	case 9:		formatCode = L"0%";					state.ods_type =office_value_type::Percentage; break;
 	case 10:	formatCode = L"0.00%";				state.ods_type =office_value_type::Percentage; break;
 	
-	case 11:	formatCode = L"0.00E+00";			state.ods_type =office_value_type::Float; break;
-	case 12:	formatCode = L"# ?/?";				state.ods_type =office_value_type::Float; break;
-	case 13:	formatCode = L"# ??/??";			state.ods_type =office_value_type::Float; break;
+	case 11:	formatCode = L"0.00E+00";			state.ods_type =office_value_type::Scientific; break;
+	case 12:	formatCode = L"# ?/?";				state.ods_type =office_value_type::Fraction; break;
+	case 13:	formatCode = L"# ??/??";			state.ods_type =office_value_type::Fraction; break;
 	
 	case 14:	formatCode = L"mm-dd-yy";			state.ods_type =office_value_type::Date; break;
 	case 15:	formatCode = L"d-mmm-yy";			state.ods_type =office_value_type::Date; break;
@@ -310,6 +310,8 @@ void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring for
 	case 39:	formatCode = L"#,##0.00;(#,##0.00)"; state.ods_type =office_value_type::Float; break;
 	case 40:	formatCode = L"#,##0.00;[Red](#,##0.00)"; state.ods_type =office_value_type::Float; break;
 
+	case 41:	formatCode = L"";					state.ods_type =office_value_type::Currency; break;
+	case 42:	formatCode = L"";					state.ods_type =office_value_type::Currency; break;
 
 	case 45:	formatCode = L"mm:ss";			state.ods_type =office_value_type::Time; break;
 	case 46:	formatCode = L"[h]:mm:ss";		state.ods_type =office_value_type::Time; break;
@@ -355,7 +357,13 @@ void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring for
 }
 number_format_state & odf_number_styles_context::add_or_find(int oox_num_fmt, std::wstring formatCode)
 {
-    if (named_link_map_.count(oox_num_fmt) > 0)
+	if (oox_num_fmt < 0)
+	{
+		//not spreadsheet todooo - search by formatCode
+		oox_num_fmt = 0xffff + named_link_map_.size();
+	}	
+	
+	if (named_link_map_.count(oox_num_fmt) > 0)
 	{
         return number_format_array_[named_link_map_.at(oox_num_fmt)];
 	}
@@ -368,7 +376,7 @@ number_format_state & odf_number_styles_context::add_or_find(int oox_num_fmt, st
 
 void odf_number_styles_context::process_styles(office_element_ptr root )
 {
-	for (size_t i=0; i< number_format_array_.size(); i++)
+	for (size_t i = 0; i< number_format_array_.size(); i++)
 	{
 		create_style(number_format_array_[i]);
 
@@ -382,7 +390,9 @@ void odf_number_styles_context::create_style(number_format_state & state)
 
 	switch(state.ods_type)
 	{
-		case office_value_type::Float:		create_number_style		(state, elm);	break;
+		case office_value_type::Float:		
+		case office_value_type::Scientific:	
+		case office_value_type::Fraction:	create_number_style		(state, elm);	break;
 		case office_value_type::Currency:	create_currency_style	(state, elm);	break;
 		case office_value_type::Percentage:	create_percentage_style	(state, elm);	break;
 		case office_value_type::Date:		create_date_style		(state, elm);	break;
@@ -404,7 +414,7 @@ void odf_number_styles_context::create_number_style(number_format_state & state,
 {
 	create_element(L"number", L"number-style", root_elm, odf_context_);
 
-	if (state.format_code.size()>0)
+	if (false == state.format_code.empty())
 	{
 		office_element_ptr elm;
 	
@@ -413,13 +423,18 @@ void odf_number_styles_context::create_number_style(number_format_state & state,
 }
 void odf_number_styles_context::create_numbers(number_format_state & state, office_element_ptr & elm, office_element_ptr & root_elm)
 {
-	optional< int>::Type min_digit, min_decimal;
+	_CP_OPT(int) min_digit, min_decimal;
 
-	create_element(L"number", L"number", elm, odf_context_);
+	switch(state.ods_type)
+	{
+		case office_value_type::Currency:
+		case office_value_type::Percentage:
+		case office_value_type::Float:		create_element(L"number", L"number", elm, odf_context_); break;
+		case office_value_type::Scientific:	create_element(L"number", L"scientific-number", elm, odf_context_); break;
+		case office_value_type::Fraction:	create_element(L"number", L"fraction", elm, odf_context_); break;
+	}
+	
 	office_element_ptr elm_text;
-			
-	number_number* number_number_ = dynamic_cast<number_number*>(elm.get());
-	if (!number_number_) return;
 
 	bool bText = false;
 	int indText = -1;
@@ -428,7 +443,7 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 	if (state.format_code[0].empty())
 	{
 		//формат не определен .. дефолтный
-		min_digit =1;
+		min_digit = 1;
 	}
 	else
 	{
@@ -474,8 +489,8 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 		{
 			if (numbers[i].empty())continue;
 
-			if (ind == 1) min_digit= numbers[i].length();
-			if (ind == 2) min_decimal= numbers[i].length();
+			if (ind == 1) min_digit = numbers[i].length();
+			if (ind == 2) min_decimal = numbers[i].length();
 			ind++;
 		}
 
@@ -502,16 +517,42 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 			}
 		}
 	}
+			
+	number_number* number_ = dynamic_cast<number_number*>(elm.get());
+	if (number_)
+	{
+		number_->number_min_integer_digits_	= min_digit;
+		number_->number_decimal_places_		= min_decimal;
 
-	number_number_->number_min_integer_digits_	= min_digit;
-	number_number_->number_decimal_places_		= min_decimal;
-	
+		if (root_elm && bText)
+			number_->number_grouping_ = true;
+	}
+	number_scientific_number* scientific_ = dynamic_cast<number_scientific_number*>(elm.get());
+	if (scientific_)
+	{
+		scientific_->number_min_integer_digits_	= min_digit;
+		scientific_->number_decimal_places_		= min_decimal;
+		scientific_->number_min_exponent_digits_= min_digit;
+		scientific_->number_min_decimal_places_	= min_decimal;
+		scientific_->number_forced_exponent_sign_ = true;
+		
+		if (root_elm && bText)
+			scientific_->number_grouping_ = true;
+	}	
+	number_fraction* fraction_ = dynamic_cast<number_fraction*>(elm.get());
+	if (fraction_)
+	{
+		fraction_->number_min_integer_digits_ = 0;
+		fraction_->number_min_numerator_digits_ = min_digit;
+		fraction_->number_min_denominator_digits_ = min_digit;
+
+		if (root_elm && bText)
+			fraction_->number_grouping_ = true;
+	}
 	if (root_elm)
 	{
 		if (bText)
 		{
-			number_number_->number_grouping_ = true;
-
 			if (indText < indNumber)
 			{
 				root_elm->add_child_element(elm_text);
@@ -781,7 +822,7 @@ void odf_number_styles_context::create_text_style(number_format_state & state, o
 
 void odf_number_styles_context::detect_format(number_format_state & state)
 {
-	if (state.ods_type != office_value_type::Custom)return;
+	if (state.ods_type != office_value_type::Custom) return;
 	if (state.format_code.empty())return;
 
  	//find [$<Currency String>-<language info>].

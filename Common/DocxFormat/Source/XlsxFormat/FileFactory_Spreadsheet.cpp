@@ -53,6 +53,9 @@
 #include "Pivot/PivotTable.h"
 #include "Pivot/PivotCacheDefinition.h"
 #include "Pivot/PivotCacheRecords.h"
+#include "Slicer/SlicerCache.h"
+#include "Slicer/Slicer.h"
+#include "NamedSheetViews/NamedSheetViews.h"
 
 #include "Table/Table.h"
 #include "Table/QueryTable.h"
@@ -61,7 +64,7 @@
 #include "ExternalLinks/ExternalLinkPath.h"
 #include "../DocxFormat/Diagram/DiagramDrawing.h"
 #include "../DocxFormat/Diagram/DiagramData.h"
-#include "../DocxFormat/ChartDrawing.h"
+#include "Chart//ChartDrawing.h"
 
 #ifdef CreateFile
 #undef CreateFile
@@ -106,6 +109,12 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CPivotCacheDefinitionFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::PivotCacheRecords )
 				return smart_ptr<OOX::File>(new CPivotCacheRecordsFile( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == FileTypes::SlicerCache )
+				return smart_ptr<OOX::File>(new CSlicerCacheFile( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == FileTypes::Slicer )
+				return smart_ptr<OOX::File>(new CSlicerFile( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == FileTypes::NamedSheetView )
+				return smart_ptr<OOX::File>(new CNamedSheetViewFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::Comments )
 				return smart_ptr<OOX::File>(new CComments( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::ThreadedComments )
@@ -120,13 +129,13 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CConnectionsFile( pMain, oRootPath, oFileName ));
 			
 			else if ( oRelation.Type() == OOX::FileTypes::Chart )
-				return smart_ptr<OOX::File>(new CChartSpace( pMain, oRootPath, oFileName ));
+				return smart_ptr<OOX::File>(new CChartFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == OOX::FileTypes::ChartEx )
-				return smart_ptr<OOX::File>(new CChartSpaceEx( pMain, oRootPath, oFileName ));
+				return smart_ptr<OOX::File>(new CChartExFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == OOX::FileTypes::ChartStyle )
-				return smart_ptr<OOX::File>(new CChartStyle( pMain, oRootPath, oFileName ));
-			else if ( oRelation.Type() == OOX::FileTypes::ChartColorStyle )
-				return smart_ptr<OOX::File>(new CChartColorStyle( pMain, oRootPath, oFileName ));
+				return smart_ptr<OOX::File>(new CChartStyleFile( pMain, oRootPath, oFileName ));
+			else if ( oRelation.Type() == OOX::FileTypes::ChartColors )
+				return smart_ptr<OOX::File>(new CChartColorsFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == OOX::FileTypes::ExternalLinkPath || 
 					  oRelation.Type() == OOX::FileTypes::ExternalLinkPathMissing || 
 					  oRelation.Type() == OOX::FileTypes::ExternalLinkPathStartup || 
@@ -219,6 +228,12 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CPivotCacheDefinitionFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::PivotCacheRecords )
 				return smart_ptr<OOX::File>(new CPivotCacheRecordsFile( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == FileTypes::SlicerCache )
+				return smart_ptr<OOX::File>(new CSlicerCacheFile( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == FileTypes::Slicer )
+				return smart_ptr<OOX::File>(new CSlicerFile( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == FileTypes::NamedSheetView )
+				return smart_ptr<OOX::File>(new CNamedSheetViewFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::VmlDrawing )
 				return smart_ptr<OOX::File>(new CVmlDrawing( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::ChartDrawing)
@@ -230,13 +245,13 @@ namespace OOX
 			else if ( pRelation->Type() == FileTypes::Persons)
 				return smart_ptr<OOX::File>(new CPersonList( pMain, oRootPath, oFileName));			
 			else if ( pRelation->Type() == OOX::FileTypes::Chart )
-				return smart_ptr<OOX::File>(new CChartSpace( pMain, oRootPath, oFileName ));
+				return smart_ptr<OOX::File>(new CChartFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::ChartEx )
-				return smart_ptr<OOX::File>(new CChartSpaceEx( pMain, oRootPath, oFileName ));
+				return smart_ptr<OOX::File>(new CChartExFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == OOX::FileTypes::ChartStyle )
-				return smart_ptr<OOX::File>(new CChartStyle( pMain, oRootPath, oFileName ));
-			else if ( pRelation->Type() == OOX::FileTypes::ChartColorStyle )
-				return smart_ptr<OOX::File>(new CChartColorStyle( pMain, oRootPath, oFileName ));
+				return smart_ptr<OOX::File>(new CChartStyleFile( pMain, oRootPath, oFileName ));
+			else if ( pRelation->Type() == OOX::FileTypes::ChartColors )
+				return smart_ptr<OOX::File>(new CChartColorsFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::ExternalLinks )
 				return smart_ptr<OOX::File>(new CExternalLink( pMain, oRootPath, oFileName ));
 			else if (  pRelation->Type() == OOX::FileTypes::ExternalLinkPath || 

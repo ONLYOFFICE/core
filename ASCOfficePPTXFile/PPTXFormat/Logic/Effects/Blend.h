@@ -121,7 +121,7 @@ namespace PPTX
 			{
 				pReader->Skip(4); // len
 				BYTE _type = pReader->GetUChar(); 
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1);
 
@@ -132,7 +132,7 @@ namespace PPTX
 						break;
 
 					if (_at == 0)
-						blend.SetBYTECode(pReader->GetChar());
+						blend.SetBYTECode(pReader->GetUChar());
 					else break;
 				}
 				while (pReader->GetPos() < _end_rec)

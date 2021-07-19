@@ -65,6 +65,7 @@ namespace cpdoccore {
 		class office_element;
 		class style_columns;
 		class form_element;
+		class text_linenumbering_configuration;
 
 		namespace text
 		{
@@ -324,11 +325,10 @@ public:
     
 	struct _section 
 	{
-		_section() {is_dump_ = false;}
+		_section() : is_dump_(false){}
 		
-		_section(const std::wstring & SectionName, const std::wstring & Style, const std::wstring & PageProperties) 
+		_section(const std::wstring & SectionName, const std::wstring & Style, const std::wstring & PageProperties) : is_dump_(false)
 		{ 
-			is_dump_		= false;
 			name_			= SectionName;
 			style_			= Style;
 			page_properties_.push_back(PageProperties);
@@ -340,7 +340,7 @@ public:
 		
 		std::vector<std::wstring>	page_properties_;
 
-		bool						is_dump_;
+		bool						is_dump_ = false;
 	};
   
 	void add_section(const std::wstring & SectionName, const std::wstring & Style, const std::wstring & PageProperties);
@@ -349,27 +349,12 @@ public:
 	{ 
 		return sections_.empty(); 
 	}
-    _section & get()		
-	{ 
-		if (sections_.empty())
-			return main_section_;
-		else
-			return sections_[0]; 
-	}
-	void remove_section()	
-	{
-		if (sections_.empty()) return;
+    _section & get_first();
+    _section & get_last();
 
-		sections_.erase(sections_.begin(), sections_.begin() + 1);
-		if (sections_.empty())
-		{
-			//после оканчания разметки секциями и начале (возобновлении) основного раздела нужен разрыв (хотя настройки страницы могут и не поменяться)
-			//щас разрыв на текущей странице
-			//todooo проверить - может типо если следующий будет заголовок - разорвать
-			main_section_.is_dump_ = false;
-		}
-	}
-	std::wstring			dump_;
+	void remove_section();
+
+	std::wstring dump_;
   
 private:    
 	_section				main_section_;
@@ -734,6 +719,8 @@ public:
 	bool							bSeparators;
 	std::vector<_state>				current_template;
 
+	std::map<std::wstring, std::wstring> mapReferences;
+
 private:
 	std::vector<int>				current_content_template_;
 	int								current_content_template_index_;
@@ -798,10 +785,12 @@ public:
 
 	std::wstring		add_hyperlink	(const std::wstring & href, bool drawing);
     hyperlinks::_ref	last_hyperlink	();
-    void				dump_hyperlinks	(rels & Rels, hyperlinks::_type_place type);
+    void				dump_hyperlinks	(rels & Rels, _rels_type_place type);
 
     void dump_headers_footers	(rels & Rels) const;
     void dump_notes				(rels & Rels) const;
+
+	_rels_type_place get_type_place();
 	
 	void dump_bibliography();
 	std::wstring  dump_settings_document();
@@ -844,7 +833,7 @@ public:
     bool process_page_properties(std::wostream & strm);
 	void process_section		(std::wostream & strm, odf_reader::style_columns * columns = NULL);
 	
-	int process_paragraph_style (const std::wstring & style_name);
+	int process_paragraph_style (_CP_OPT(std::wstring) style_name_ptr);
 	int process_paragraph_attr	(odf_reader::text::paragraph_attrs *attr);
 	int process_text_attr		(odf_reader::text::paragraph_attrs *Attr);
 	void process_page_break_after(const odf_reader::style_instance *styleInst);
@@ -942,7 +931,16 @@ public:
 
 	void start_paragraph_style(const std::wstring& style_name) {paragraph_style_stack_.push_back(style_name);}
 	void end_paragraph_style() { if (!paragraph_style_stack_.empty()) paragraph_style_stack_.pop_back();}
-	std::wstring get_current_paragraph_style()	{return paragraph_style_stack_.empty() ? L"" : paragraph_style_stack_.back();}
+	
+	_CP_OPT(std::wstring) get_current_paragraph_style()	
+	{
+		_CP_OPT(std::wstring) result;
+		if (false == paragraph_style_stack_.empty())
+
+			result = paragraph_style_stack_.back();
+		
+		return result;
+	}
 	
 	oox_chart_context & current_chart();
     void start_chart(std::wstring name);
@@ -1076,7 +1074,6 @@ private:
 	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>> mapAlphabeticals;
 
 	std::vector<std::wstring>											arBibliography;
-
 };
 
 }

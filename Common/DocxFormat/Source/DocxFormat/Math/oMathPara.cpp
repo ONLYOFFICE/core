@@ -34,7 +34,10 @@ namespace OOX
 {	
 	namespace Logic
 	{
-        std::wstring      COMathPara::toXML() const
+		COMathPara::~COMathPara()
+		{
+		}
+        std::wstring COMathPara::toXML() const
 		{
             std::wstring sResult = _T("<m:oMathPara>");
 

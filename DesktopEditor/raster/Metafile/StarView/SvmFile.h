@@ -518,7 +518,7 @@ class CSvmFile : virtual public IMetaFileBase
 		}
 	}
 
-	void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int* pnDx = NULL)
+        void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int* pnDx = NULL, unsigned int nDxSize = 0)
 	{
 		int nX = _nX;
 		int nY = _nY;
@@ -549,7 +549,7 @@ class CSvmFile : virtual public IMetaFileBase
 
 					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount; unCharIndex++)
 					{
-						int nX1 = nCurXFirst + pnDx[unCharIndex];
+                                                int nX1 = nCurXFirst + (unCharIndex < nDxSize ? pnDx[unCharIndex] : 0);
 						double dX1 = nX1, dY1;
 						
 						TranslatePoint(nX1, nY, dX1, dY1);

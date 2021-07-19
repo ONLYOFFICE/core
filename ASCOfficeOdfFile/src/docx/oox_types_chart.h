@@ -31,11 +31,9 @@
  */
 #pragma once 
 
-#include <iosfwd>
 #include <boost/noncopyable.hpp>
 
-#include <CPScopedPtr.h>
-#include <CPSharedPtr.h>
+#include "oox_chart_shape.h"
 
 #include "xlsx_color.h"
 #include "oox_chart_series.h"
@@ -84,6 +82,9 @@ public:
 	void set_name			(const std::wstring& val);
 	void set_content_series	(odf_reader::chart::series & content);
 	
+	virtual void set_stock_gain_marke(odf_reader::chart::simple & obj){}
+	virtual void set_stock_loss_marker(odf_reader::chart::simple & obj){}
+	virtual void set_stock_range_line(odf_reader::chart::simple & obj){}
 	//void set_showBubbleSize(bool Val){data_labels_.set_showBubbleSize(Val);}
 	//void set_showCatName(bool Val){data_labels_.set_showCatName(Val);}
 	//void set_showLeaderLines(bool Val){data_labels_.set_showLeaderLines(Val);}
@@ -349,6 +350,9 @@ class oox_stock_chart: public oox_chart
 
 	static _CP_PTR(oox_chart) create();
 
+	virtual void set_stock_gain_marke(odf_reader::chart::simple & obj);
+	virtual void set_stock_loss_marker(odf_reader::chart::simple & obj);
+	virtual void set_stock_range_line(odf_reader::chart::simple & obj);
 
 	_CP_OPT(bool) bCandleStick;
 	
@@ -357,6 +361,7 @@ class oox_stock_chart: public oox_chart
 
 	_oox_fill					fill_;
 
+	oox_chart_shape range_line;
 	//dropLines (Drop Lines) §21.2.2.53
 	//hiLowLines (High Low Lines) §21.2.2.80
 	//ser (Line Chart Series) §21.2.2.171

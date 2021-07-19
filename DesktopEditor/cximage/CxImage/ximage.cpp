@@ -21,7 +21,7 @@
 void CxImage::Startup(uint32_t imagetype)
 {
 	//init pointers
-	pDib = pSelection = pAlpha = NULL;
+    pDib = pDibLimit = pSelection = pAlpha = NULL;
 	ppLayers = ppFrames = NULL;
 	//init structures
 	memset(&head,0,sizeof(BITMAPINFOHEADER));
@@ -232,6 +232,7 @@ void* CxImage::Create(uint32_t dwWidth, uint32_t dwHeight, uint32_t wBpp, uint32
 		strcpy(info.szLastError,"CxImage::Create can't allocate memory");
 		return NULL;
 	}
+    pDibLimit = (void*)((uint8_t*)pDib + GetSize());
 
 	//clear the palette
 	RGBQUAD* pal=GetPalette();
@@ -278,9 +279,12 @@ uint8_t* CxImage::GetBits(uint32_t row)
 /**
  * \return the size in bytes of the internal pDib object
  */
-int32_t CxImage::GetSize()
+uint32_t CxImage::GetSize()
 {
-	return head.biSize + head.biSizeImage + GetPaletteSize();
+    uint64_t size64 = head.biSize + head.biSizeImage + GetPaletteSize();
+    if (size64 > 0xFFFFFFFF)
+        return 0xFFFFFFFF;
+    return (uint32_t)size64;
 }
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -324,13 +328,14 @@ bool CxImage::Transfer(CxImage &from, bool bTransferFrames /*=true*/)
 	memcpy(&info,&from.info,sizeof(CXIMAGEINFO));
 
 	pDib = from.pDib;
+    pDibLimit = from.pDibLimit;
 	pSelection = from.pSelection;
 	pAlpha = from.pAlpha;
 	ppLayers = from.ppLayers;
 
 	memset(&from.head,0,sizeof(BITMAPINFOHEADER));
 	memset(&from.info,0,sizeof(CXIMAGEINFO));
-	from.pDib = from.pSelection = from.pAlpha = NULL;
+    from.pDib = from.pDibLimit = from.pSelection = from.pAlpha = NULL;
 	from.ppLayers = NULL;
 
 	if (bTransferFrames){
@@ -352,6 +357,7 @@ void CxImage::Ghost(const CxImage *from)
 		memcpy(&head,&from->head,sizeof(BITMAPINFOHEADER));
 		memcpy(&info,&from->info,sizeof(CXIMAGEINFO));
 		pDib = from->pDib;
+        pDibLimit = from->pDibLimit;
 		pSelection = from->pSelection;
 		pAlpha = from->pAlpha;
 		ppLayers = from->ppLayers;
@@ -437,7 +443,7 @@ void CxImage::Bitfield2RGB(uint8_t *src, uint32_t redmask, uint32_t greenmask, u
  * \param bFlipImage: tune this parameter if the image is upsidedown
  * \return true if everything is ok
  */
-bool CxImage::CreateFromArray(uint8_t* pArray,uint32_t dwWidth,uint32_t dwHeight,uint32_t dwBitsperpixel, uint32_t dwBytesperline, bool bFlipImage)
+bool CxImage::CreateFromArray(uint8_t* pArray,uint32_t dwWidth,uint32_t dwHeight,uint32_t dwBitsperpixel, uint32_t dwBytesperline, bool bFlipImage, bool isBGRA)
 {
 	if (pArray==NULL) return false;
 	if (!((dwBitsperpixel==1)||(dwBitsperpixel==4)||(dwBitsperpixel==8)||
@@ -453,14 +459,18 @@ bool CxImage::CreateFromArray(uint8_t* pArray,uint32_t dwWidth,uint32_t dwHeight
 
 	uint8_t *dst,*src;
 
+    unsigned char ShiftR = isBGRA ? 2 : 0;
+    unsigned char ShiftG = 1;
+    unsigned char ShiftB = isBGRA ? 0 : 2;
+
 	for (uint32_t y = 0; y<dwHeight; y++) {
 		dst = info.pImage + (bFlipImage?(dwHeight-1-y):y) * info.dwEffWidth;
 		src = pArray + y * dwBytesperline;
 		if (dwBitsperpixel==32){
 			for(uint32_t x=0;x<dwWidth;x++){
-				*dst++=src[0];
-				*dst++=src[1];
-				*dst++=src[2];
+                *dst++=src[ShiftB];
+                *dst++=src[ShiftG];
+                *dst++=src[ShiftR];
 #if CXIMAGE_SUPPORT_ALPHA
 				AlphaSet(x,(bFlipImage?(dwHeight-1-y):y),src[3]);
 #endif //CXIMAGE_SUPPORT_ALPHA

@@ -67,9 +67,9 @@ void style_columns::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 
-	switch(type)
+	switch(type_)
 	{
 	case typeStyleColumn:	
 		style_column_.push_back(child);
@@ -165,9 +165,9 @@ void style_section_properties::add_child_element( const office_element_ptr & chi
 {
  	if (!child)return;
 
-	ElementType type = child->get_type();
+	ElementType type_ = child->get_type();
 
-	switch(type)
+	switch(type_)
 	{
 	case typeStyleBackgroundImage:	
 		style_background_image_ = child;

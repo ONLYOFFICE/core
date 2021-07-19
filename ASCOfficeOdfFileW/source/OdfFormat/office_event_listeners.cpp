@@ -59,13 +59,13 @@ void office_event_listeners::add_child_element( const office_element_ptr & child
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typePresentationEventListener)
+    if (type_ == typePresentationEventListener)
 	{
 		presentation_event_listeners_.push_back(child_element);
 	}
-	else if (type == typeScriptEventListener)
+	else if (type_ == typeScriptEventListener)
 	{
 		script_event_listeners_.push_back(child_element);
 	}
@@ -112,9 +112,9 @@ void presentation_event_listener::add_child_element( const office_element_ptr & 
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeStylePresentationSound)
+    if (type_ == typeStylePresentationSound)
 	{
 		presentation_sound_ = child_element;
 	}

@@ -30,7 +30,7 @@
  *
  */
 
-#ifdef __ANDROID__
+#if defined(__ANDROID__) && !defined (NOT_USE_PTHREAD_CANCEL)
 #include <pthread_setcanceltype.h>
 #endif
 
@@ -111,9 +111,11 @@ namespace NSThreads
     };
 #else
     void* CBaseThread::__ThreadProc(void* pv)
-    {
+    {   
+#ifndef NOT_USE_PTHREAD_CANCEL
         int old_thread_type;
         pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &old_thread_type);
+#endif
 
         CBaseThread* pThis = (CBaseThread*)pv;
         pThis->ThreadProc();

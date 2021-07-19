@@ -278,7 +278,7 @@ public:
 	void	Clear(uint8_t bval=0);
 	void	Copy(const CxImage &src, bool copypixels = true, bool copyselection = true, bool copyalpha = true);
 	bool	Transfer(CxImage &from, bool bTransferFrames = true);
-	bool	CreateFromArray(uint8_t* pArray,uint32_t dwWidth,uint32_t dwHeight,uint32_t dwBitsperpixel, uint32_t dwBytesperline, bool bFlipImage);
+	bool	CreateFromArray(uint8_t* pArray,uint32_t dwWidth,uint32_t dwHeight,uint32_t dwBitsperpixel, uint32_t dwBytesperline, bool bFlipImage, bool isBGRA = true);
 	bool	CreateFromMatrix(uint8_t** ppMatrix,uint32_t dwWidth,uint32_t dwHeight,uint32_t dwBitsperpixel, uint32_t dwBytesperline, bool bFlipImage);
 	void	FreeMemory(void* memblock);
 
@@ -289,10 +289,11 @@ public:
 //@}
 
 /** \addtogroup Attributes */ //@{
-	int32_t	GetSize();
+	uint32_t	GetSize();
 	uint8_t*	GetBits(uint32_t row = 0);
 	uint8_t	GetColorType();
 	void*	GetDIB() const;
+	void*	GetDIBLimit() const;
 	uint32_t	GetHeight() const;
 	uint32_t	GetWidth() const;
 	uint32_t	GetEffWidth() const;
@@ -796,6 +797,8 @@ protected:
 	void bihtoh(BITMAPINFOHEADER* bih);
 
 	void*				pDib; //contains the header, the palette, the pixels
+	void*				pDibLimit;
+
     BITMAPINFOHEADER    head; //standard header
 	CXIMAGEINFO			info; //extended information
 	uint8_t*			pSelection;	//selected region

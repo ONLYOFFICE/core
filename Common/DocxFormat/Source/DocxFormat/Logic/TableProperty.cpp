@@ -38,19 +38,19 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// TblPrChange 
 		//--------------------------------------------------------------------------------	
-		CTblPrChange::CTblPrChange()
+		CTblPrChange::CTblPrChange(OOX::Document *pMain) : WritingElement(pMain)
 		{
-			m_pTblPr.Init();
+			m_pTblPr = new CTableProperty(pMain);
 			m_pTblPr->m_bTblPrChange = true;
 		}
-		CTblPrChange::CTblPrChange(XmlUtils::CXmlNode& oNode)
+		CTblPrChange::CTblPrChange(XmlUtils::CXmlNode& oNode) : WritingElement(NULL)
 		{
 			m_pTblPr.Init();
 			m_pTblPr->m_bTblPrChange = true;
 
 			fromXML( oNode );
 		}
-		CTblPrChange::CTblPrChange(XmlUtils::CXmlLiteReader& oReader)
+		CTblPrChange::CTblPrChange(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
 		{
 			m_pTblPr.Init();
 			m_pTblPr->m_bTblPrChange = true;
@@ -155,28 +155,23 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("oouserid"), m_sUserId )
 			WritingElement_ReadAttributes_End( oReader )
 		}
-	} // namespace Logic
-} // namespace OOX
-namespace OOX
-{
-	namespace Logic
-	{
+
 		//--------------------------------------------------------------------------------
 		// TrPrChange 
 		//--------------------------------------------------------------------------------	
-		CTrPrChange::CTrPrChange()
+		CTrPrChange::CTrPrChange(OOX::Document *pMain) : WritingElement(pMain)
 		{
 			m_pTrPr.Init();
 			m_pTrPr->m_bTrPrChange = true;
 		}
-		CTrPrChange::CTrPrChange(XmlUtils::CXmlNode& oNode)
+		CTrPrChange::CTrPrChange(XmlUtils::CXmlNode& oNode) : WritingElement(NULL)
 		{
 			m_pTrPr.Init();
 			m_pTrPr->m_bTrPrChange = true;
 
 			fromXML( oNode );
 		}
-		CTrPrChange::CTrPrChange(XmlUtils::CXmlLiteReader& oReader)
+		CTrPrChange::CTrPrChange(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
 		{
 			m_pTrPr.Init();
 			m_pTrPr->m_bTrPrChange = true;
@@ -282,29 +277,22 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
 			WritingElement_ReadAttributes_End( oReader )
 		}
-	} // namespace Logic
-} // namespace OOX
-
-namespace OOX
-{
-	namespace Logic
-	{
 		//--------------------------------------------------------------------------------
 		// TcPrChange 
 		//--------------------------------------------------------------------------------	
-		CTcPrChange::CTcPrChange()
+		CTcPrChange::CTcPrChange(OOX::Document *pMain) : WritingElement(pMain)
 		{
 			m_pTcPr.Init();
 			m_pTcPr->m_bTcPrChange = true;
 		}
-		CTcPrChange::CTcPrChange(XmlUtils::CXmlNode& oNode)
+		CTcPrChange::CTcPrChange(XmlUtils::CXmlNode& oNode) : WritingElement(NULL)
 		{
 			m_pTcPr.Init();
 			m_pTcPr->m_bTcPrChange = true;
 
 			fromXML( oNode );
 		}
-		CTcPrChange::CTcPrChange(XmlUtils::CXmlLiteReader& oReader)
+		CTcPrChange::CTcPrChange(XmlUtils::CXmlLiteReader& oReader) : WritingElement(NULL)
 		{
 			m_pTcPr.Init();
 			m_pTcPr->m_bTcPrChange = true;

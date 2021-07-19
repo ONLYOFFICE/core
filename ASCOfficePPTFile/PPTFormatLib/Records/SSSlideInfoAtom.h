@@ -37,6 +37,7 @@ class CSlideShowSlideInfoAtom : public CUnknownRecord
 public:
 
 	INT		m_nSlideTime;
+        // We need to take it for rels and correct
 	_UINT32	m_nSoundRef;
 
 	BYTE	m_nEffectDirection;

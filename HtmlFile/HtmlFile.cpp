@@ -499,7 +499,7 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
         std::string::size_type posLast = sProgramm.find_last_of('/');
         std::string sProgrammDir = sProgramm.substr(0, posLast);
         if (std::string::npos != posLast)
-            sLibraryDir = sProgrammDir + ":" + sProgrammDir + "/../";
+            sLibraryDir = sProgrammDir + ":" + sProgrammDir + "/../:" + sProgrammDir + "/converter/";
 
         if (!IsLinuxXVFB())
         {

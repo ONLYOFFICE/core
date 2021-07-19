@@ -90,7 +90,7 @@ namespace PdfWriter
 	{
 	public:
 		CAnnotation(CXref* pXref, EAnnotType eType, const TRect& oRect);
-		void SetBorderStyle(EBorderSubtype eSubtype, float fWidth, unsigned short nDashOn, unsigned short nDashOff, unsigned short nDashPhase);
+		void SetBorderStyle(EBorderSubtype eSubtype, float fWidth, unsigned short nDashOn = 0, unsigned short nDashOff = 0, unsigned short nDashPhase = 0);
 		EDictType GetDictType() const
 		{
 			return dict_type_ANNOTATION;

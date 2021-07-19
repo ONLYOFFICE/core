@@ -59,6 +59,7 @@ SOURCES += \
     Src/Outline.cpp \
     Src/OutputDevice.cpp \
     Src/Page.cpp \
+    Src/PageLabels.cpp \
     Src/Parser.cpp \
     Src/PDFDoc.cpp \
     Src/PSLexer.cpp \
@@ -125,6 +126,7 @@ HEADERS +=\
     Src/Outline.h \
     Src/OutputDevice.h \
     Src/Page.h \
+    Src/PageLabels.h \
     Src/Parser.h \
     Src/PDFDoc.h \
     Src/PDFDocEncoding.h \

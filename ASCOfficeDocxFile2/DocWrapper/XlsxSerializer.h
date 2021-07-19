@@ -29,18 +29,15 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef XLSX_SERIALIZER
-#define XLSX_SERIALIZER
+#pragma once
 
 #include <string>
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../Common/DocxFormat/Source/Base/SmartPtr.h"
 
 namespace OOX
 {
-namespace Spreadsheet
-{
-class CChartSpace;
-}
+	class File;
 }
 namespace NSBinPptxRW{
 	class CDrawingConverter;
@@ -51,7 +48,8 @@ namespace NSBinPptxRW{
 }
 namespace BinXlsxRW {
 
-	class CXlsxSerializer{
+	class CXlsxSerializer
+	{
 	private:
         std::wstring m_sFontDir;
         std::wstring m_sEmbeddedFontsDir;
@@ -66,15 +64,14 @@ namespace BinXlsxRW {
         _UINT32 loadFromFile	(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedPath);
         _UINT32 saveToFile		(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
 		
-        bool saveChart          (NSBinPptxRW::CBinaryFileReader* pReader, long lLength, const std::wstring& sFilename, const long& lChartNumber);
+        bool saveChart          (NSBinPptxRW::CBinaryFileReader* pReader, long lLength, NSCommon::smart_ptr<OOX::File> &file, const int& nChartNumber);
 		
         void setFontDir			(const std::wstring& sFontDir);
         void setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir);
 		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);
 		void setIsNoBase64		(bool bIsNoBase64);
 
-		bool writeChartXlsx     (const std::wstring& sDstFile ,const OOX::Spreadsheet::CChartSpace& oChart);
+		bool writeChartXlsx     (const std::wstring& sDstFile, NSCommon::smart_ptr<OOX::File> &file);
 		bool hasPivot			(const std::wstring& sSrcPath);
 	};
 }
-#endif	// #ifndef XLSX_SERIALIZER

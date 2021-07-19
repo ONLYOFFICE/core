@@ -48,7 +48,7 @@ public:
 
 
     size_t size() const;
-    size_t fontId(	const odf_reader::text_format_properties_content		* textProp,
+    size_t fontId(	const odf_reader::text_format_properties_content_ptr	textProp,
 					const odf_reader::paragraph_format_properties			* parProp,
 					const odf_reader::style_table_cell_properties_attlist	* cellProp);
 
@@ -99,7 +99,7 @@ void xlsx_fonts::Impl::serialize(std::wostream & _Wostream) const
 	}
 }
 
-size_t xlsx_fonts::Impl::fontId(const odf_reader::text_format_properties_content		* textProp,
+size_t xlsx_fonts::Impl::fontId(const odf_reader::text_format_properties_content_ptr	textProp,
 								const odf_reader::paragraph_format_properties			* parProp,
 								const odf_reader::style_table_cell_properties_attlist	* cellProp)
 {
@@ -123,7 +123,7 @@ size_t xlsx_fonts::Impl::fontId(const odf_reader::text_format_properties_content
 //}
 
 /*
-int xlsx_fonts::Impl::getIndex(const odf_reader::text_format_properties_content * textProp,
+int xlsx_fonts::Impl::getIndex(const odf_reader::text_format_properties_content_ptr textProp,
                          const odf_reader::paragraph_format_properties * parProp,
                          const odf_reader::style_table_cell_properties_attlist * cellProp) const
 {
@@ -160,7 +160,7 @@ void xlsx_fonts::serialize(std::wostream & _Wostream) const
     return impl_->serialize(_Wostream);
 }
 
-size_t xlsx_fonts::fontId(const odf_reader::text_format_properties_content * textProp,
+size_t xlsx_fonts::fontId(const odf_reader::text_format_properties_content_ptr textProp,
     const odf_reader::paragraph_format_properties * parProp,
     const odf_reader::style_table_cell_properties_attlist * cellProp)
 {

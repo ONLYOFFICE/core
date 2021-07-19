@@ -36,6 +36,7 @@
 #include "./../../SlideMaster.h"
 #include "./../../SlideLayout.h"
 #include "./../../Theme.h"
+#include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace PPTX
 {
@@ -230,7 +231,11 @@ namespace PPTX
 			}
 
 			std::wstring imagePath;
-			if(!oleFilepathImage.empty())
+			if(!dataFilepathImage.empty())
+			{
+				imagePath = dataFilepathImage;
+			}
+			else if(!oleFilepathImage.empty())
 			{
 				imagePath = oleFilepathImage;
 			}
@@ -307,32 +312,49 @@ namespace PPTX
 					{
 						pReader->Skip(6); // len + start attributes + type
 
-						std::wstring strImagePath = pReader->GetString2();
+						std::wstring strImagePath = pReader->GetString2(true);
 
 						if (0 != strImagePath.find(_T("http:")) &&
 							0 != strImagePath.find(_T("https:")) &&
 							0 != strImagePath.find(_T("ftp:")) &&
 							0 != strImagePath.find(_T("file:")))
 						{
+							OOX::CPath pathNormalizer;
+
 							if (0 == strImagePath.find(_T("theme")))
 							{
-                                strImagePath = pReader->m_strFolderExternalThemes + FILE_SEPARATOR_STR  + strImagePath;
+								pathNormalizer = pReader->m_strFolderExternalThemes;
 							}
 							else
 							{
-                                strImagePath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + strImagePath;
+								pathNormalizer = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media");
 							}
+							std::wstring strPath = pathNormalizer.GetPath();
 
-							OOX::CPath pathUrl = strImagePath;
-							strImagePath = pathUrl.GetPath();
-						}
-	
-						smart_ptr<OOX::File> additionalFile;
-						NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, L"", L"");
+							strImagePath = strPath  + FILE_SEPARATOR_STR + strImagePath;
 
-						if (oRelsGeneratorInfo.nImageRId > 0)
+							pathNormalizer = strImagePath;
+							strImagePath = pathNormalizer.GetPath();
+
+							if (std::wstring::npos != strImagePath.find(strPath))
+							{
+								CImageFileFormatChecker checker;
+								if (false == checker.isImageFile(strImagePath))
+								{
+									strImagePath.clear();
+								}				
+							}
+							else strImagePath.clear();
+						}	
+						if (false == strImagePath.empty())
 						{
-							embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
+							smart_ptr<OOX::File> additionalFile;
+							NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, L"", L"");
+
+							if (oRelsGeneratorInfo.nImageRId > 0)
+							{
+								embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
+							}
 						}
 						pReader->Skip(1); // end attribute						
 					}break;

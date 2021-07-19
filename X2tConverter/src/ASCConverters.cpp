@@ -56,7 +56,9 @@
 #include "../../DjVuFile/DjVu.h"
 #include "../../XpsFile/XpsFile.h"
 #include "../../HtmlRenderer/include/HTMLRenderer3.h"
-#include "../../HtmlFile/HtmlFile.h"
+#include "../../Fb2File/Fb2File.h"
+#include "../../HtmlFile2/htmlfile2.h"
+#include "../../EpubFile/CEpubFile.h"
 #include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
 #include "../../OfficeCryptReader/source/ECMACryptFile.h"
 
@@ -129,6 +131,103 @@ namespace NExtractTools
 		}
 		return hRes;
 	}
+	_UINT32 package2ooxml(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sResultOoxmlDir = sTemp + FILE_SEPARATOR_STR + _T("ooxml_unpacked");
+
+		NSDirectory::CreateDirectory(sResultOoxmlDir);
+
+		_UINT32 nRes = package2ooxml_dir(sFrom, sResultOoxmlDir, sTemp, params);
+
+		if (SUCCEEDED_X2T(nRes))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultOoxmlDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+
+		return nRes;
+	}
+	_UINT32 package2bin_t(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sResultBin_tDir = sTemp + FILE_SEPARATOR_STR + _T("bin_t_unpacked");
+		std::wstring sResultBin_tFileEditor = sResultBin_tDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+
+		NSDirectory::CreateDirectory(sResultBin_tDir);
+
+		_UINT32 nRes = package2bin(sFrom, sResultBin_tFileEditor, sTemp, params);
+
+		if (SUCCEEDED_X2T(nRes))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultBin_tDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+
+		return nRes;
+	}
+	_UINT32 package2bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sResultOoxmlDir = sTemp + FILE_SEPARATOR_STR + _T("ooxml_unpacked");
+
+		NSDirectory::CreateDirectory(sResultOoxmlDir);
+
+		_UINT32 nRes = package2ooxml_dir(sFrom, sResultOoxmlDir, sTemp, params);
+
+		if (SUCCEEDED_X2T(nRes))
+		{
+			nRes = AVS_FILEUTILS_ERROR_CONVERT;
+
+			COfficeFileFormatChecker OfficeFileFormatChecker;
+
+			if (OfficeFileFormatChecker.isOOXFormatFile(sResultOoxmlDir, true))
+			{
+				switch (OfficeFileFormatChecker.nFileType)
+				{
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
+					nRes = docx_dir2doct_bin(sResultOoxmlDir, sTo, sTemp, params); break;
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
+					nRes = xlsx_dir2xlst_bin(sResultOoxmlDir, sTo, params, true, sTo); break;
+                case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM:
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX:
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM:
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM:
+					nRes = pptx_dir2pptt_bin(sResultOoxmlDir, sTo, sTemp, params); break;
+				default: break;
+				}
+			}
+		}
+
+		return nRes;
+	}
+	_UINT32 package2ooxml_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		BinDocxRW::CDocxSerializer m_oCDocxSerializer;
+		
+		_UINT32 nRes = m_oCDocxSerializer.unpackageFile(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		
+		return nRes;
+	}
+	// docxflat -> bin
+    _UINT32 docxflat2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {
+        // Save to file (from temp dir)
+        BinDocxRW::CDocxSerializer m_oCDocxSerializer;
+
+		m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
+        m_oCDocxSerializer.setFontDir(params.getFontPath());
+
+        //bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
+        _UINT32 nRes =  m_oCDocxSerializer.saveToFile (sTo, sFrom, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+
+		return nRes;
+    }
 	// docx -> bin
     _UINT32 docx2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
@@ -152,9 +251,9 @@ namespace NExtractTools
 			else return AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
-        return docx_dir2doct_bin(sTempUnpackedDOCX, sTo, params);
+        return docx_dir2doct_bin(sTempUnpackedDOCX, sTo, sTemp, params);
     }
-    _UINT32 docx_dir2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params)
+    _UINT32 docx_dir2doct_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         // Save to file (from temp dir)
         BinDocxRW::CDocxSerializer m_oCDocxSerializer;
@@ -163,13 +262,28 @@ namespace NExtractTools
         m_oCDocxSerializer.setFontDir(params.getFontPath());
 
         //bool bRes = m_oCDocxSerializer.saveToFile (sResDoct, sSrcDocx, sTemp);
-        _UINT32 nRes =  m_oCDocxSerializer.saveToFile (sTo, sFrom, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-
-//        sleep(3*60);
+        _UINT32 nRes =  m_oCDocxSerializer.saveToFile (sTo, sFrom, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
         return nRes;
     }
+    // docxflat -> doct
+    _UINT32 docxflat2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {
+        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
+        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
+        NSDirectory::CreateDirectory(sResultDoctDir);
+
+        _UINT32 nRes = docxflat2doct_bin(sFrom, sResultDoctFileEditor, sTemp, params);
+
+        if (SUCCEEDED_X2T(nRes))
+        {
+            COfficeUtils oCOfficeUtils(NULL);
+            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+        }
+
+        return nRes;
+    }
     // docx -> doct
     _UINT32 docx2doct (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
@@ -215,19 +329,7 @@ namespace NExtractTools
 		}
 		if(SUCCEEDED_X2T(nRes))
 		{
-			if(params.hasSavePassword())
-			{
-				std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.docx");
-				nRes = dir2zip(sResultDocxDir, sToMscrypt);
-				if(SUCCEEDED_X2T(nRes))
-				{
-					nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
-				}
-			}
-			else
-			{
-				nRes = dir2zip(sResultDocxDir, sTo, true);
-			}
+			nRes = dir2zipMscrypt(sResultDocxDir, sTo, sTemp, params);
 		}
 
         return nRes;
@@ -565,9 +667,23 @@ namespace NExtractTools
 
 		return xlsx_dir2xlst_bin(sTempUnpackedXLSX, sTo, params, true, sFrom);
     }
+	// xlsxflat -> bin
+    _UINT32 xlsxflat2xlst_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {
+		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
+		
+		BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
+
+		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
+        m_oCXlsxSerializer.setFontDir(params.getFontPath());
+
+        return m_oCXlsxSerializer.saveToFile (sTo, sFrom, params.getXmlOptions());
+    }
+
 	_UINT32 xlsx_dir2xlst_bin (const std::wstring &sXlsxDir, const std::wstring &sTo, InputParams& params, bool bXmlOptions, const std::wstring &sXlsxFile)
     {
 		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
+		
 		BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 		if (m_oCXlsxSerializer.hasPivot(sXlsxDir))
 		{
@@ -608,7 +724,24 @@ namespace NExtractTools
 
         return nRes;
     }
+    // xlsxflat -> xlst
+    _UINT32 xlsxflat2xlst (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {
+        std::wstring sResultXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
+        std::wstring sResultXlstFileEditor = sResultXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
+        NSDirectory::CreateDirectory(sResultXlstDir);
+
+        _UINT32 nRes = xlsxflat2xlst_bin(sFrom, sResultXlstFileEditor, sTemp, params);
+
+        if (SUCCEEDED_X2T(nRes))
+        {
+            COfficeUtils oCOfficeUtils(NULL);
+            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultXlstDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+        }
+
+        return nRes;
+    }
     // bin -> xslx
     _UINT32 xlst_bin2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params)
     {
@@ -635,19 +768,7 @@ namespace NExtractTools
 		}
 		if(SUCCEEDED_X2T(nRes))
 		{
-			if(params.hasSavePassword())
-			{
-				std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.xlsx");
-				nRes = dir2zip(sResultXlsxDir, sToMscrypt);
-				if(SUCCEEDED_X2T(nRes))
-				{
-					nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
-				}
-			}
-			else
-			{
-				nRes = dir2zip(sResultXlsxDir, sTo, true);
-			}
+			nRes = dir2zipMscrypt(sResultXlsxDir, sTo, sTemp, params);
 		}
         return nRes;
     }
@@ -1009,19 +1130,7 @@ namespace NExtractTools
 		}
 		if(SUCCEEDED_X2T(nRes))
 		{
-			if(params.hasSavePassword())
-			{
-				std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.pptx");
-				nRes = dir2zip(sResultPptxDir, sToMscrypt);
-				if(SUCCEEDED_X2T(nRes))
-				{
-					nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
-				}
-			}
-			else
-			{
-				nRes = dir2zip(sResultPptxDir, sTo, true);
-			}
+			nRes = dir2zipMscrypt(sResultPptxDir, sTo, sTemp, params);
 		}
         return nRes;
 	}
@@ -1070,11 +1179,29 @@ namespace NExtractTools
         return pptt_bin2pptx(sTempPpttFileEditor, sTo, sTemp, bFromChanges, sThemeDir, params);
     }
     // zip dir
-    _UINT32 dir2zip (const std::wstring &sFrom, const std::wstring &sTo, bool bSorted, int method, short level)
+    _UINT32 dir2zip (const std::wstring &sFrom, const std::wstring &sTo, bool bSorted, int method, short level, bool bDateTime)
     {
         COfficeUtils oCOfficeUtils(NULL);
-        return (S_OK == oCOfficeUtils.CompressFileOrDirectory(sFrom, sTo, bSorted, method, level)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        return (S_OK == oCOfficeUtils.CompressFileOrDirectory(sFrom, sTo, bSorted, method, level, bDateTime)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
     }
+	_UINT32 dir2zipMscrypt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		_UINT32 nRes = S_OK;
+		if(params.hasSavePassword())
+		{
+			std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.docx");
+			nRes = dir2zip(sFrom, sToMscrypt);
+			if(SUCCEEDED_X2T(nRes))
+			{
+				nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
+			}
+		}
+		else
+		{
+			nRes = dir2zip(sFrom, sTo, true);
+		}
+		return nRes;
+	}
 
     // unzip dir
     _UINT32 zip2dir (const std::wstring &sFrom, const std::wstring &sTo)
@@ -1377,30 +1504,138 @@ namespace NExtractTools
 
 		return nRes;
 	}
-   //doct_bin -> pdf
+	// doct_bin -> epub
+	_UINT32 doct_bin2epub(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
+	{
+		_UINT32 nRes = 0;
+		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
+		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
+		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
+		std::wstring sHtmlFile        = sTemp        + FILE_SEPARATOR_STR + L"index.html";
+		if (!NSDirectory::Exists(sImagesDirectory))
+			NSDirectory::CreateDirectory(sImagesDirectory);
+		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
+		std::wstring sResult;
+		oDoctRenderer.Execute(sXml, sResult);
+		if (sResult.find(L"error") != std::wstring::npos)
+		{
+			std::wcerr << L"DoctRenderer:" << sResult << std::endl;
+			nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		else
+		{
+			CEpubFile oFile;
+			std::wstring sEpubTemp = sTemp + FILE_SEPARATOR_STR + L"tmp";
+			NSDirectory::CreateDirectory(sEpubTemp);
+			oFile.SetTempDirectory(sEpubTemp);
+			if (S_FALSE == oFile.FromHtml(sHtmlFile, sResult, sTo, params.m_sTitle ? *params.m_sTitle : L""))
+				nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		return nRes;
+	}
+	// doct_bin -> fb2
+	_UINT32 doct_bin2fb(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
+	{
+		_UINT32 nRes = 0;
+		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
+		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
+		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
+		std::wstring sHtmlFile        = sTemp        + FILE_SEPARATOR_STR + L"index.html";
+		if (!NSDirectory::Exists(sImagesDirectory))
+			NSDirectory::CreateDirectory(sImagesDirectory);
+		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
+		std::wstring sResult;
+		oDoctRenderer.Execute(sXml, sResult);
+		if (sResult.find(L"error") != std::wstring::npos)
+		{
+			std::wcerr << L"DoctRenderer:" << sResult << std::endl;
+			nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		else
+		{
+			CFb2File fb2File;
+			fb2File.SetTmpDirectory(sTemp);
+			if (S_FALSE == fb2File.FromHtml(sHtmlFile, sResult, sTo, params.m_sTitle ? *params.m_sTitle : L""))
+				nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		return nRes;
+	}
+	// doct_bin -> html
+	_UINT32 doct_bin2html(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
+	{
+		_UINT32 nRes = 0;
+		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
+		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
+		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
+		std::wstring sHtmlFile        = sTemp        + FILE_SEPARATOR_STR + L"index.html";
+		if (!NSDirectory::Exists(sImagesDirectory))
+			NSDirectory::CreateDirectory(sImagesDirectory);
+		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
+		std::wstring sResult;
+		oDoctRenderer.Execute(sXml, sResult);
+		if (sResult.find(L"error") != std::wstring::npos)
+		{
+			std::wcerr << L"DoctRenderer:" << sResult << std::endl;
+			nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		else if (!NSFile::CFileBinary::Copy(sHtmlFile, sTo))
+			nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		return nRes;
+	}
+	// doct_bin -> html_zip
+	_UINT32 doct_bin2html_zip(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
+	{
+		_UINT32 nRes = 0;
+		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::HTML;
+		std::wstring sFileFromDir = NSDirectory::GetFolderPath(sFrom);
+		std::wstring sImagesDirectory = sFileFromDir + FILE_SEPARATOR_STR + L"media";
+		std::wstring sHtmlFile        = sTemp        + FILE_SEPARATOR_STR + L"index.html";
+		if (!NSDirectory::Exists(sImagesDirectory))
+			NSDirectory::CreateDirectory(sImagesDirectory);
+		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
+		std::wstring sResult;
+		oDoctRenderer.Execute(sXml, sResult);
+		if (sResult.find(L"error") != std::wstring::npos)
+		{
+			std::wcerr << L"DoctRenderer:" << sResult << std::endl;
+			nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		else
+		{
+			COfficeUtils oZip;
+			if (S_FALSE == oZip.CompressFileOrDirectory(sHtmlFile, sTo))
+				nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		return nRes;
+	}
+	// doct_bin -> pdf
 	_UINT32 doct_bin2pdf(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
-   {
-       _UINT32 nRes = 0;
-       NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::PDF;
-       std::wstring sTFileDir = NSDirectory::GetFolderPath(sFrom);
-       std::wstring sImagesDirectory = sTFileDir + FILE_SEPARATOR_STR + _T("media");
-       std::wstring sPdfBinFile = sTFileDir + FILE_SEPARATOR_STR + _T("pdf.bin");
-	   NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
-       std::wstring sXml = getDoctXml(eFromType, eToType, sTFileDir, sPdfBinFile, sImagesDirectory, sThemeDir, -1, _T(""), params);
-       std::wstring sResult;
-       bool bRes = oDoctRenderer.Execute(sXml, sResult);
-       if (-1 != sResult.find(_T("error")))
-       {
-           std::wcerr << _T("DoctRenderer:") << sResult << std::endl;
-           nRes = AVS_FILEUTILS_ERROR_CONVERT;
-       }
-       else
-       {
-           NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
-           initApplicationFonts(pApplicationFonts, params);
-          
-		   CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
-           
+	{
+		_UINT32 nRes = 0;
+		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::PDF;
+		std::wstring sTFileDir = NSDirectory::GetFolderPath(sFrom);
+		std::wstring sImagesDirectory = sTFileDir + FILE_SEPARATOR_STR + _T("media");
+		std::wstring sPdfBinFile = sTFileDir + FILE_SEPARATOR_STR + _T("pdf.bin");
+		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
+		std::wstring sXml = getDoctXml(eFromType, eToType, sTFileDir, sPdfBinFile, sImagesDirectory, sThemeDir, -1, _T(""), params);
+		std::wstring sResult;
+		bool bRes = oDoctRenderer.Execute(sXml, sResult);
+		if (sResult.find(L"error") != std::wstring::npos)
+		{
+			std::wcerr << _T("DoctRenderer:") << sResult << std::endl;
+			nRes = AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		else
+		{
+			NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
+			initApplicationFonts(pApplicationFonts, params);
+
+			CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
+
 			pdfWriter.SetTempFolder(sTemp);
 			pdfWriter.SetThemesPlace(sThemeDir);
 			
@@ -1411,23 +1646,22 @@ namespace NExtractTools
 			std::wstring password = params.getSavePassword();
 			if (false == password.empty())
 				pdfWriter.SetPassword(password);
-          
-		   int nReg = (bPaid == false) ? 0 : 1;
-           nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-           RELEASEOBJECT(pApplicationFonts);
-       }
-       //удаляем sPdfBinFile, потому что он не в Temp
-       if (NSFile::CFileBinary::Exists(sPdfBinFile))
-           NSFile::CFileBinary::Remove(sPdfBinFile);
-       return nRes;
-   }
 
-	//doct_bin -> image
+			int nReg = (bPaid == false) ? 0 : 1;
+			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+			RELEASEOBJECT(pApplicationFonts);
+		}
+		//удаляем sPdfBinFile, потому что он не в Temp
+		if (NSFile::CFileBinary::Exists(sPdfBinFile))
+			NSFile::CFileBinary::Remove(sPdfBinFile);
+		return nRes;
+	}
+	// doct_bin -> image
 	_UINT32 doct_bin2image(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
 	{
 		_UINT32 nRes = 0;
 		NSDoctRenderer::DoctRendererFormat::FormatFile eToType = NSDoctRenderer::DoctRendererFormat::FormatFile::PDF;
-        std::wstring sTFileDir = NSDirectory::GetFolderPath(sFrom);
+		std::wstring sTFileDir = NSDirectory::GetFolderPath(sFrom);
 		std::wstring sImagesDirectory = sTFileDir + FILE_SEPARATOR_STR + _T("media");
 		std::wstring sPdfBinFile = sTFileDir + FILE_SEPARATOR_STR + _T("pdf.bin");
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
@@ -2042,7 +2276,7 @@ namespace NExtractTools
             m_oCDocxSerializer.setFontDir(params.getFontPath());
 
             std::wstring sXmlOptions;
-            _UINT32 res =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, sXmlOptions) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+            _UINT32 res =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, sXmlOptions, sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
             return res;
 
@@ -2222,7 +2456,7 @@ namespace NExtractTools
 
 			std::wstring xml_options = params.getXmlOptions();
 
-            _UINT32 res =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, xml_options) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+            _UINT32 res =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, xml_options, sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
             return res;
         }
@@ -2354,12 +2588,24 @@ namespace NExtractTools
 
             m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-            _UINT32 res =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+            _UINT32 res =  m_oCDocxSerializer.saveToFile (sTo, sResultDocxDir, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 
             return res;
 
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	_UINT32 docx2txt(const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sTempUnpackedDOCX = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+		NSDirectory::CreateDirectory(sTempUnpackedDOCX);
+
+		COfficeUtils oCOfficeUtils(NULL);
+		if (S_OK == oCOfficeUtils.ExtractToDirectory(sDocxDir, sTempUnpackedDOCX, NULL, 0))
+		{
+			return docx_dir2txt(sTempUnpackedDOCX, sTo, sTemp, params);
+		}
+		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	_UINT32 docx_dir2txt (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
@@ -2407,7 +2653,7 @@ namespace NExtractTools
 
            m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-           nRes =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+           nRes =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;
 	}
@@ -2488,7 +2734,7 @@ namespace NExtractTools
 
            m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-           nRes =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions()) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+           nRes =  m_oCDocxSerializer.saveToFile (sTo, sTempUnpackedOox, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 
        return nRes;
@@ -2678,6 +2924,19 @@ namespace NExtractTools
 				{
 					return pptx2pptt_bin(sResultDecryptFile, sTo, sTemp,params);
 				}break;
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT:
+				{
+					return docxflat2doct_bin(sResultDecryptFile, sTo, sTemp, params);
+				}break;
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT:
+				{
+					const std::wstring & sXmlOptions = params.getXmlOptions();
+					return xlsxflat2xlst_bin(sResultDecryptFile, sTo, sTemp, params);
+				}break;
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE:
+				{
+					return package2bin(sResultDecryptFile, sTo, sTemp, params);
+				}break;
 			}
 		}
 		return AVS_FILEUTILS_ERROR_CONVERT;
@@ -2751,17 +3010,21 @@ namespace NExtractTools
         }
         return nRes;
 	}
- 	//html
-	_UINT32 html2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
-       std::vector<std::wstring> arFiles;
-       arFiles.push_back(sFrom);
-
-       CHtmlFile oHtmlFile;
-       return 0 == oHtmlFile.Convert(arFiles, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-   }
- 	//html in container
-	_UINT32 html_zip2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	//html
+	_UINT32 html_array2docx_dir (const std::vector<std::wstring> &arFiles, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+        CHtmlFile2 oFile;
+        oFile.SetTmpDirectory(sTemp);
+        return (S_OK == oFile.OpenBatchHtml(arFiles, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	_UINT32 html2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::vector<std::wstring> arFiles;
+		arFiles.push_back(sFrom);
+		return html_array2docx_dir(arFiles, sTo, sTemp, params);
+	}
+	//html in container
+	_UINT32 html_zip2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
 		std::vector<std::wstring> arFiles;
 		
@@ -2792,28 +3055,42 @@ namespace NExtractTools
 		else //in zip
 		{
 		}				
-		CHtmlFile oHtmlFile;
-		return 0 == oHtmlFile.Convert(arFiles, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+		return 0 == html_array2docx_dir(arFiles, sTo, sTemp, params) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	//mht
-	_UINT32 mht2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	_UINT32 mht2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
-       CHtmlFile oHtmlFile;
-       return 0 == oHtmlFile.ConvertMht(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+        CHtmlFile2 oFile;
+        oFile.SetTmpDirectory(sTemp);
+        return (S_OK == oFile.OpenMht(sFrom, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 	}
-	_UINT32 epub2doct_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	//epub
+	_UINT32 epub2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
-       std::wstring sEpubDir = sTemp + FILE_SEPARATOR_STR + _T("epub_unpacked");
-       NSDirectory::CreateDirectory(sEpubDir);
-       _UINT32 nRes = zip2dir(sFrom, sEpubDir);
-       if(SUCCEEDED_X2T(nRes))
-       {
-           CHtmlFile oHtmlFile;
-           std::wstring sMetaInfo;
-           nRes = 0 == oHtmlFile.ConvertEpub(sEpubDir, sMetaInfo, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-       }
-       return nRes;
-   }
+        CEpubFile oFile;
+        oFile.SetTempDirectory(sTemp);
+        return (S_OK == oFile.Convert(sFrom, sTo, false)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	_UINT32 fb2docx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		CFb2File fb2File;
+		fb2File.SetTmpDirectory(sTemp);
+        return S_OK == fb2File.Open(sFrom, sTo) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	_UINT32 fb2docx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sTempUnpackedDOCX = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+		NSDirectory::CreateDirectory(sTempUnpackedDOCX);
+
+		_UINT32 nRes = fb2docx_dir(sFrom, sTempUnpackedDOCX, sTemp, params);
+		if(SUCCEEDED_X2T(nRes))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedDOCX, sTo, true))
+				return S_OK;
+		}
+		return AVS_FILEUTILS_ERROR_CONVERT;
+	}
 	// mailmerge
 	_UINT32 convertmailmerge (const InputParamsMailMerge& oMailMergeSend,const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params)
    {
@@ -2891,8 +3168,10 @@ namespace NExtractTools
                                nRes = m_oCDocxSerializer.loadFromFile (sFilePathIn, sTempDocx, sXmlOptions, sThemePath, sMediaPath, sEmbedPath) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
                                if(SUCCEEDED_X2T(nRes))
                                {
-                                   COfficeUtils oCOfficeUtils(NULL);
-                                   nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempDocx, sFilePathOut, true)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+									std::wstring sTempUnencrypted = sTemp + FILE_SEPARATOR_STR + wsFilePathInFilename + L"_unencrypted";
+									NSDirectory::CreateDirectory(sTempUnencrypted);
+
+									nRes = dir2zipMscrypt(sTempDocx, sFilePathOut, sTempUnencrypted, params);
                                }
                            }
                            else if (NSDoctRenderer::DoctRendererFormat::FormatFile::PDF == eTypeTo)
@@ -2904,6 +3183,15 @@ namespace NExtractTools
 							   CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
                                pdfWriter.SetTempFolder(sTemp);
                                pdfWriter.SetThemesPlace(sThemeDir);
+
+								std::wstring documentID = params.getDocumentID();
+								if (false == documentID.empty())
+									pdfWriter.SetDocumentID(documentID);
+
+								std::wstring password = params.getSavePassword();
+								if (false == password.empty())
+									pdfWriter.SetPassword(password);
+
                                int nReg = (bPaid == false) ? 0 : 1;
                                nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sFilePathIn, sFilePathOut)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
                                RELEASEOBJECT(pApplicationFonts);
@@ -3066,7 +3354,7 @@ namespace NExtractTools
 				if (!bIsOnlyFirst)
 				{
 					sThumbnailDir = sTemp + FILE_SEPARATOR_STR + _T("thumbnails");
-                    NSDirectory::CreateDirectory(sThumbnailDir);
+					NSDirectory::CreateDirectory(sThumbnailDir);
 					sFileToExt = getExtentionByRasterFormat(nRasterFormat);
 				}
 				int nPagesCount = pReader->GetPagesCount();
@@ -3137,10 +3425,23 @@ namespace NExtractTools
 	}
 
 	_UINT32 fromDocxDir(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
-   {
-       _UINT32 nRes = 0;
-       if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo))
-       {
+	{
+		_UINT32 nRes = 0;
+		bool bIsNeedDoct = false;
+		switch (nFormatTo)
+		{
+			// перечислить все "документные" форматы, которым нужна конвертация через doct
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER:
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2:
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB:
+				bIsNeedDoct = true;
+				break;
+			default:
+				break;
+		}
+		if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo) && !bIsNeedDoct)
+		{
 			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo ||
 					AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo)
 			{
@@ -3158,97 +3459,105 @@ namespace NExtractTools
 				}
 				if(SUCCEEDED_X2T(nRes))
 				{
-					if(params.hasSavePassword())
-					{
-						std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.docx");
-						nRes = dir2zip(sFrom, sToMscrypt);
-						if(SUCCEEDED_X2T(nRes))
-						{
-							nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
-						}
-					}
-					else
-					{
-						nRes = dir2zip(sFrom, sTo, true);
-					}
+					nRes = dir2zipMscrypt(sFrom, sTo, sTemp, params);
 				}
-           }
-           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC == nFormatTo)
-           {
-               nRes = docx_dir2doc(sFrom, sTo, sTemp, params);
-           }
-           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatTo)
-           {
-               nRes = docx_dir2odt(sFrom, sTo, sTemp, params, false);
-           }
-           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT == nFormatTo)
-           {
-               nRes = docx_dir2odt(sFrom, sTo, sTemp, params, true);
-           }
-		   else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF == nFormatTo)
-           {
-               nRes = docx_dir2rtf(sFrom, sTo, sTemp, params);
-           }
-           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatTo)
-           {
-               nRes = docx_dir2txt(sFrom, sTo, sTemp, params);
-           }
-           else
-               nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
-       }
-       else if(AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
-       {
-           nRes = docx_dir2doct_bin(sFrom, sTo, params);
-       }
-       else
-       {
-           std::wstring sDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
-           NSDirectory::CreateDirectory(sDoctDir);
-           std::wstring sTFile = sDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+			}
+			else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC == nFormatTo)
+			{
+				nRes = docx_dir2doc(sFrom, sTo, sTemp, params);
+			}
+			else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatTo)
+			{
+				nRes = docx_dir2odt(sFrom, sTo, sTemp, params, false);
+			}
+			else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT == nFormatTo)
+			{
+				nRes = docx_dir2odt(sFrom, sTo, sTemp, params, true);
+			}
+			else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF == nFormatTo)
+			{
+				nRes = docx_dir2rtf(sFrom, sTo, sTemp, params);
+			}
+			else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatTo)
+			{
+				nRes = docx_dir2txt(sFrom, sTo, sTemp, params);
+			}
+			else
+				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		}
+		else if(AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
+		{
+			nRes = docx_dir2doct_bin(sFrom, sTo, sTemp, params);
+		}
+		else
+		{
+			std::wstring sDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
+			NSDirectory::CreateDirectory(sDoctDir);
+			std::wstring sTFile = sDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
-		   nRes = docx_dir2doct_bin(sFrom, sTFile, params);
-          
-		   if(SUCCEEDED_X2T(nRes))
-           {
-               nRes = fromDoctBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
-           }
-       }
-       return nRes;
-   }
+			nRes = docx_dir2doct_bin(sFrom, sTFile, sTemp, params);
+
+			if(SUCCEEDED_X2T(nRes))
+			{
+				nRes = fromDoctBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
+			}
+		}
+		return nRes;
+	}
 	_UINT32 fromDoctBin(const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params)
-   {
-       _UINT32 nRes = 0;
-       if(AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == nFormatTo)
-       {
-           std::wstring sFromDir = NSDirectory::GetFolderPath(sFrom);
-           nRes = dir2zip(sFromDir, sTo);
-       }
-       else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
-       {
-           NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
-           nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
-       }
-       else if(0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
-       {
-           NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
-           nRes = doct_bin2image(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
-       }
-       else if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo))
-       {
-           std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
-           NSDirectory::CreateDirectory(sDocxDir);
-           nRes = doct_bin2docx_dir(sFrom, sTo, sDocxDir, bFromChanges, sThemeDir, params);
-           if(SUCCEEDED_X2T(nRes))
-           {
-                nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
-           }
-       }
-       else
-            nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
-       return nRes;
-   }
+	{
+		_UINT32 nRes = 0;
+		if(AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == nFormatTo)
+		{
+			std::wstring sFromDir = NSDirectory::GetFolderPath(sFrom);
+			nRes = dir2zip(sFromDir, sTo);
+		}
+		else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatTo)
+		{
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
+			nRes = doct_bin2epub(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
+		}
+		else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2 == nFormatTo)
+		{
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
+			nRes = doct_bin2fb(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
+		}
+		else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatTo)
+		{
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
+			nRes = doct_bin2html(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
+		}
+		else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER == nFormatTo)
+		{
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
+			nRes = doct_bin2html_zip(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
+		}
+		else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+		{
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
+			nRes = doct_bin2pdf(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
+		}
+		else if(0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
+		{
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
+			nRes = doct_bin2image(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
+		}
+		else if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo))
+		{
+			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+			NSDirectory::CreateDirectory(sDocxDir);
+			nRes = doct_bin2docx_dir(sFrom, sTo, sDocxDir, bFromChanges, sThemeDir, params);
+			if(SUCCEEDED_X2T(nRes))
+			{
+				nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
+			}
+		}
+		else
+			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		return nRes;
+	}
 	_UINT32 fromDocument(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params)
-   {
+	{
 		std::wstring sTo	= *params.m_sFileTo;
 		int nFormatTo = AVS_OFFICESTUDIO_FILE_UNKNOWN;
 		if(NULL != params.m_nFormatTo)
@@ -3267,18 +3576,12 @@ namespace NExtractTools
 			bPaid = *params.m_bPaid;
 
        _UINT32 nRes = 0;
-       if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT == nFormatFrom || AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom)
+       if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT == nFormatFrom)
        {
            if(AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
            {
-               std::wstring sDoctDir = NSDirectory::GetFolderPath(sTo);
-               
-			   if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatFrom)
-                   nRes = html2doct_dir(sFrom, sDoctDir, sTemp, params);
-               else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT == nFormatFrom)
-                   nRes = mht2doct_dir(sFrom, sDoctDir, sTemp, params);
-               else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom)
-                   nRes = epub2doct_dir(sFrom, sDoctDir, sTemp, params);
+               if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT == nFormatFrom)
+                   nRes = docxflat2doct_bin(sFrom, sTo, sTemp, params);
                else
                    nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            }
@@ -3288,12 +3591,8 @@ namespace NExtractTools
                NSDirectory::CreateDirectory(sDoctDir);
                std::wstring sTFile = sDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
                
-			   if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatFrom)
-                   nRes = html2doct_dir(sFrom, sDoctDir, sTemp, params);
-               else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT == nFormatFrom)
-                   nRes = mht2doct_dir(sFrom, sDoctDir, sTemp, params);
-               else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom)
-                   nRes = epub2doct_dir(sFrom, sDoctDir, sTemp, params);
+               if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT == nFormatFrom)
+                   nRes = docxflat2doct_bin(sFrom, sTFile, sTemp, params);
                else
                    nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
                
@@ -3358,7 +3657,31 @@ namespace NExtractTools
            {
                nRes = txt2docx_dir(sFrom, sDocxDir, sTemp, params);
            }
-           else
+           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2 == nFormatFrom)
+           {
+               nRes = fb2docx_dir(sFrom, sDocxDir, sTemp, params);
+           }
+           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatFrom)
+           {
+               nRes = epub2docx_dir(sFrom, sDocxDir, sTemp, params);
+           }
+           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatFrom)
+           {
+               nRes = html2docx_dir(sFrom, sDocxDir, sTemp, params);
+           }
+           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER == nFormatFrom)
+           {
+               nRes = html_zip2docx_dir(sFrom, sDocxDir, sTemp, params);
+           }
+           else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE == nFormatFrom)
+           {
+               nRes = package2ooxml_dir(sFrom, sDocxDir, sTemp, params);
+           }
+		   else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT == nFormatFrom)
+		   {
+			   nRes = mht2docx_dir(sFrom, sDocxDir, sTemp, params);
+		   }
+		   else
                nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            if(SUCCEEDED_X2T(nRes))
            {
@@ -3390,19 +3713,7 @@ namespace NExtractTools
 				}
 				if(SUCCEEDED_X2T(nRes))
 				{
-					if(params.hasSavePassword())
-					{
-						std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.xlsx");
-						nRes = dir2zip(sFrom, sToMscrypt);
-						if(SUCCEEDED_X2T(nRes))
-						{
-							nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
-						}
-					}
-					else
-					{
-						nRes = dir2zip(sFrom, sTo, true);
-					}
+					nRes = dir2zipMscrypt(sFrom, sTo, sTemp, params);
 				}
            }
            //else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS == nFormatTo)
@@ -3498,18 +3809,25 @@ namespace NExtractTools
 			bPaid = *params.m_bPaid;
 
        _UINT32 nRes = 0;
-       if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
+       if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT == nFormatFrom)
        {
            if(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo || AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
            {
-               nRes = csv2xlst_bin(sFrom, sTo, params);
+               if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
+                   nRes = csv2xlst_bin(sFrom, sTo, params);
+               else
+                   nRes = xlsxflat2xlst_bin(sFrom, sTo, sTemp, params);
            }
            else
            {
                std::wstring sXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
                NSDirectory::CreateDirectory(sXlstDir);
                std::wstring sTFile = sXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
-               nRes = csv2xlst_bin(sFrom, sTFile, params);
+               if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
+                   nRes = csv2xlst_bin(sFrom, sTFile, params);
+               else
+                   nRes = xlsxflat2xlst_bin(sFrom, sTFile, sTemp, params);
+
                if(SUCCEEDED_X2T(nRes))
                {
                    //зануляем sXmlOptions чтобы, при конвертации xlst bin -> xlsx не перепутать с csv
@@ -3637,19 +3955,7 @@ namespace NExtractTools
 				}
 				if(SUCCEEDED_X2T(nRes))
 				{
-					if(params.hasSavePassword())
-					{
-						std::wstring sToMscrypt = sTemp + FILE_SEPARATOR_STR + _T("tomscrypt.pptx");
-						nRes = dir2zip(sFrom, sToMscrypt);
-						if(SUCCEEDED_X2T(nRes))
-						{
-							nRes = oox2mscrypt(sToMscrypt, sTo, sTemp, params);
-						}
-					}
-					else
-					{
-						nRes = dir2zip(sFrom, sTo, true);
-					}
+					nRes = dir2zipMscrypt(sFrom, sTo, sTemp, params);
 				}
 			}
 			//else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT == nFormatTo)
@@ -3847,6 +4153,14 @@ namespace NExtractTools
 				CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
 				pdfWriter.SetTempFolder(sTemp);
 				pdfWriter.SetTempFolder(sTemp);
+
+				std::wstring documentID = params.getDocumentID();
+				if (false == documentID.empty())
+					pdfWriter.SetDocumentID(documentID);
+
+				std::wstring password = params.getSavePassword();
+				if (false == password.empty())
+					pdfWriter.SetPassword(password);
               
 				IOfficeDrawingFile* pReader = NULL;
 				nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);
@@ -3917,30 +4231,30 @@ namespace NExtractTools
        return AVS_FILEUTILS_ERROR_CONVERT;
    }
 	_UINT32 xls2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
-	   bool bMacros = false;
+	{
+		bool bMacros = false;
 
-	   int lcid = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
-       
-	   _UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, lcid, bMacros);
+		int lcid = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
+
+		_UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, lcid, bMacros);
 		
-	   nRes = processEncryptionError(nRes, sFrom, params);
-       return nRes;
-   }
+		nRes = processEncryptionError(nRes, sFrom, params);
+		return nRes;
+	}
 	// xls -> xlsm
 	_UINT32 xls2xlsm (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
-       std::wstring sResultXlsmDir = sTemp + FILE_SEPARATOR_STR + _T("xlsm_unpacked");
+		std::wstring sResultXlsmDir = sTemp + FILE_SEPARATOR_STR + _T("xlsm_unpacked");
 
-       NSDirectory::CreateDirectory(sResultXlsmDir);
+		NSDirectory::CreateDirectory(sResultXlsmDir);
 
-       _UINT32 nRes = xls2xlsm_dir(sFrom, sResultXlsmDir, sTemp, params);
+		_UINT32 nRes = xls2xlsm_dir(sFrom, sResultXlsmDir, sTemp, params);
 
 		if(SUCCEEDED_X2T(nRes))
 		{
-           COfficeUtils oCOfficeUtils(NULL);
-           if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultXlsmDir, sTo, true))
-               return 0;
+			COfficeUtils oCOfficeUtils(NULL);
+			if(S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultXlsmDir, sTo, true))
+				return 0;
 		}
 		return nRes;
 	}
@@ -3952,138 +4266,126 @@ namespace NExtractTools
 
 		nRes = processEncryptionError(nRes, sFrom, params);
 		return nRes;
-   }
+	}
 	// xls -> xlst
 	_UINT32 xls2xlst (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
-       // Extract xlsx to temp directory
-       std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
-       std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+	{
+		// Extract xlsx to temp directory
+		std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
+		std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
-       NSDirectory::CreateDirectory(sResultDoctDir);
+		NSDirectory::CreateDirectory(sResultDoctDir);
 
-	   _UINT32 nRes = xls2xlst_bin(sFrom, sResultDoctFileEditor, sTemp, params);
+		_UINT32 nRes = xls2xlst_bin(sFrom, sResultDoctFileEditor, sTemp, params);
 
-       if (SUCCEEDED_X2T(nRes))
-       {
-           COfficeUtils oCOfficeUtils(NULL);
-           nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-       }
+		if (SUCCEEDED_X2T(nRes))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
 
-       return nRes;
-   }
+		return nRes;
+	}
 
 	// xls -> xlst_bin
 	_UINT32 xls2xlst_bin (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-   {
-        std::wstring sResultXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
+	{
+		std::wstring sResultXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
 
-        NSDirectory::CreateDirectory(sResultXlsxDir);
+		NSDirectory::CreateDirectory(sResultXlsxDir);
 
 		bool bMacros = true;
 		_UINT32 nRes = ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), params.getFontPath(), sTemp, 0, bMacros);
 
 		nRes = processEncryptionError(nRes, sFrom, params);
 		if (SUCCEEDED_X2T(nRes))
-        {
-            BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
+		{
+			BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
-             m_oCXlsxSerializer.setFontDir(params.getFontPath());
+			m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
 			return m_oCXlsxSerializer.saveToFile (sTo, sResultXlsxDir, params.getXmlOptions());
-        }
-        return nRes;
-   }
+		}
+		return nRes;
+	}
 	_UINT32 html2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-		std::wstring sResultDoctDir = NSFile::GetDirectoryName(sTo);
-
-        _UINT32 nRes = html2doct_dir(sFrom, sResultDoctDir, sTemp, params);
-		
+		std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+		NSDirectory::CreateDirectory(sDocxDir);
+		_UINT32 nRes = html2docx_dir(sFrom, sDocxDir, sTemp, params);
+		if (SUCCEEDED_X2T(nRes))
+		{
+			nRes = (S_OK == docx_dir2doct_bin(sDocxDir, sTo, sTemp, params)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
 		return nRes;
 	}
 	_UINT32 html_zip2doct_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-		std::wstring sResultDoctDir = NSFile::GetDirectoryName(sTo);
-
-        _UINT32 nRes = html_zip2doct_dir(sFrom, sResultDoctDir, sTemp, params);
-		
+		std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+		NSDirectory::CreateDirectory(sDocxDir);
+		_UINT32 nRes = html_zip2docx_dir(sFrom, sDocxDir, sTemp, params);
+		if (SUCCEEDED_X2T(nRes))
+		{
+			nRes = (S_OK == docx_dir2doct_bin(sDocxDir, sTo, sTemp, params)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
 		return nRes;
 	}
 	_UINT32 html2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
-        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+		std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
+		std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
-        NSDirectory::CreateDirectory(sResultDoctDir);
+		NSDirectory::CreateDirectory(sResultDoctDir);
 
-        _UINT32 nRes = html2doct_dir(sFrom, sResultDoctDir, sTemp, params);
+		_UINT32 nRes = html2doct_bin(sFrom, sResultDoctFileEditor, sTemp, params);
 
-        if (SUCCEEDED_X2T(nRes))
-        {
-            COfficeUtils oCOfficeUtils(NULL);
-            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-        }
+		if (SUCCEEDED_X2T(nRes))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
 		return nRes;
 	}
 	_UINT32 html_zip2doct(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
-        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+		std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
+		std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
 
-        NSDirectory::CreateDirectory(sResultDoctDir);
+		NSDirectory::CreateDirectory(sResultDoctDir);
 
-        _UINT32 nRes = html_zip2doct_dir(sFrom, sResultDoctDir, sTemp, params);
+		_UINT32 nRes = html_zip2doct_bin(sFrom, sResultDoctFileEditor, sTemp, params);
 
-        if (SUCCEEDED_X2T(nRes))
-        {
-            COfficeUtils oCOfficeUtils(NULL);
-            nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-        }
+		if (SUCCEEDED_X2T(nRes))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultDoctDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
 		return nRes;
 	}
-    _UINT32 html2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	_UINT32 html2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
-        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+		std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+		NSDirectory::CreateDirectory(sDocxDir);
 
-        NSDirectory::CreateDirectory(sResultDoctDir);
-
-        _UINT32 nRes = html2doct_dir(sFrom, sResultDoctDir, sTemp, params);
-        if (SUCCEEDED_X2T(nRes))
+		_UINT32 nRes = html2docx_dir(sFrom, sDocxDir, sTemp, params);
+		if (SUCCEEDED_X2T(nRes))
 		{
-			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
-			NSDirectory::CreateDirectory(sDocxDir);
-
-			nRes = doct_bin2docx_dir(sResultDoctFileEditor, L"", sDocxDir, false, L"", params);
-			if (SUCCEEDED_X2T(nRes))
-			{
-				COfficeUtils oCOfficeUtils(NULL);
-				nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sDocxDir, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-			}
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sDocxDir, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;
 	}
 
-    _UINT32 html_zip2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	_UINT32 html_zip2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-        std::wstring sResultDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
-        std::wstring sResultDoctFileEditor = sResultDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+		std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
+		NSDirectory::CreateDirectory(sDocxDir);
 
-        NSDirectory::CreateDirectory(sResultDoctDir);
-
-        _UINT32 nRes = html_zip2doct_dir(sFrom, sResultDoctDir, sTemp, params);
-        if (SUCCEEDED_X2T(nRes))
+		_UINT32 nRes = html_zip2docx_dir(sFrom, sDocxDir, sTemp, params);
+		if (SUCCEEDED_X2T(nRes))
 		{
-			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
-			NSDirectory::CreateDirectory(sDocxDir);
-
-			nRes = doct_bin2docx_dir(sResultDoctFileEditor, L"", sDocxDir, false, L"", params);
-			if (SUCCEEDED_X2T(nRes))
-			{
-				COfficeUtils oCOfficeUtils(NULL);
-				nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sDocxDir, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-			}
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sDocxDir, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;
 	}
@@ -4091,17 +4393,17 @@ namespace NExtractTools
 //------------------------------------------------------------------------------------------------------------------
 	_UINT32 detectMacroInFile(InputParams& oInputParams)
 	{
-        _UINT32 nRes = 0;// no macro
+		_UINT32 nRes = 0;// no macro
 		std::wstring sFileFrom	= *oInputParams.m_sFileFrom;
 
 		COfficeFileFormatChecker OfficeFileFormatChecker;
 
 		if (OfficeFileFormatChecker.isOfficeFile(sFileFrom))
-        {
-           if (OfficeFileFormatChecker.bMacroEnabled)
-		   {
-			   nRes = AVS_ERROR_MACRO; 
-		   }
+		{
+			if (OfficeFileFormatChecker.bMacroEnabled)
+			{
+				nRes = AVS_ERROR_MACRO; 
+			}
 		}
 
 		return nRes;
@@ -4183,12 +4485,35 @@ namespace NExtractTools
 			return AVS_FILEUTILS_ERROR_CONVERT_LIMITS;
 		}
 
+		NSDoctRenderer::CDocBuilder::Initialize();
+
 		_UINT32 result = 0;
 		switch(conversion)
 		{
 			case TCD_DOCX2DOCT:
 			{
 				result = docx2doct (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_DOCXFLAT2DOCT:
+			{
+				result = docxflat2doct (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_DOCXFLAT2DOCT_BIN:
+			{
+				result = docxflat2doct_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_PKG2BIN_T:
+			{
+				result = package2bin_t(sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_PKG2BIN:
+			{
+				result = package2bin(sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;			
+			case TCD_PKG2OOXML:
+			{
+				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
+				result = package2ooxml(sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_DOCT2DOCX:
 			{
@@ -4208,6 +4533,14 @@ namespace NExtractTools
 			case TCD_XLSX2XLST:
 			{
 				result =  xlsx2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_XLSXFLAT2XLST:
+			{
+				result = xlsxflat2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_XLSXFLAT2XLST_BIN:
+			{
+				result = xlsxflat2xlst_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_XLST2XLSX:
 			{
@@ -4305,7 +4638,7 @@ namespace NExtractTools
 			}break;
 			case TCD_ZIPDIR:
 			{
-				result =  dir2zip (sFileFrom, sFileTo);
+				result =  dir2zip (sFileFrom, sFileTo, false, 8, -1, true);
 			}break;
 			case TCD_UNZIPDIR:
 			{
@@ -4357,20 +4690,20 @@ namespace NExtractTools
 			}break;
 			case TCD_BIN2T:
 			{
-                result =  dir2zip (NSDirectory::GetFolderPath(sFileFrom), sFileTo);
+				result =  dir2zip (NSDirectory::GetFolderPath(sFileFrom), sFileTo);
 			}break;
 			case TCD_T2BIN:
 			{
-                result =  zip2dir (sFileFrom, NSDirectory::GetFolderPath(sFileTo));
+				result =  zip2dir (sFileFrom, NSDirectory::GetFolderPath(sFileTo));
 			}break;
 			case TCD_PPT2PPTX:
 			{
 				result =  ppt2pptx (sFileFrom, sFileTo, sTempDir, oInputParams);
-            }break;
+			}break;
 			case TCD_PPT2PPTM:
 			{
 				result =  ppt2pptm (sFileFrom, sFileTo, sTempDir, oInputParams);
-            }break;
+			}break;
 			case TCD_PPT2PPTT:
 			{
 				result =  ppt2pptt (sFileFrom, sFileTo, sTempDir, oInputParams);
@@ -4394,6 +4727,10 @@ namespace NExtractTools
 			case TCD_DOCX2RTF:
 			{
 				result =  docx2rtf (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_DOCX2TXT:
+			{
+				result = docx2txt(sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_DOC2DOCX:
 			{
@@ -4454,7 +4791,7 @@ namespace NExtractTools
 			case TCD_ODF2OOT_BIN:
 			{
 				result = odf2oot_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
-            }break;
+			}break;
 			case TCD_ODF_FLAT2OOX:
 			{
 				result =  odf_flat2oox (sFileFrom, sFileTo, sTempDir, oInputParams);
@@ -4466,7 +4803,7 @@ namespace NExtractTools
 			case TCD_ODF_FLAT2OOT_BIN:
 			{
 				result = odf_flat2oot_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
-            }break;
+			}break;
 			case TCD_DOCX2ODT:
 			{
 				result =  docx2odt (sFileFrom, sFileTo, sTempDir, oInputParams);
@@ -4564,8 +4901,11 @@ namespace NExtractTools
 			case TCD_HTMLZIP2DOCT_BIN:
 			{
 				result = html_zip2doct_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
-			}break;			
-			//TCD_FB22DOCX,
+			}break;
+			case TCD_FB22DOCX:
+			{
+				result = fb2docx (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
 			//TCD_FB22DOCT,
 			//TCD_FB22DOCT_BIN,
 
@@ -4585,7 +4925,7 @@ namespace NExtractTools
 		}
 
 		//clean up v8
-		NSDoctRenderer::CDocBuilder::Dispose();
+        NSDoctRenderer::CDocBuilder::Dispose();
 		if (SUCCEEDED_X2T(result) && oInputParams.m_bOutputConvertCorrupted)
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;

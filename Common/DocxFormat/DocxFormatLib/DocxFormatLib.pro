@@ -38,12 +38,14 @@ SOURCES += \
     ../Source/DocxFormat/Logic/Paragraph.cpp \
     ../Source/DocxFormat/Logic/ParagraphProperty.cpp \
     ../Source/DocxFormat/Logic/RunProperty.cpp \
+    ../Source/DocxFormat/Logic/Run.cpp \
     ../Source/DocxFormat/Logic/Sdt.cpp \
     ../Source/DocxFormat/Logic/SectionProperty.cpp \
     ../Source/DocxFormat/Logic/SmartTag.cpp \
     ../Source/DocxFormat/Logic/Table.cpp \
     ../Source/DocxFormat/Logic/TableProperty.cpp \
     ../Source/DocxFormat/Logic/Vml.cpp \
+    ../Source/DocxFormat/Logic/DocParts.cpp \
     ../Source/DocxFormat/Media/VbaProject.cpp \
     ../Source/DocxFormat/Media/JsaProject.cpp \
     ../Source/DocxFormat/Media/ActiveX.cpp \
@@ -52,12 +54,15 @@ SOURCES += \
     ../Source/DocxFormat/Math/oMathPara.cpp \
     ../Source/MathEquation/MathEquation.cpp \
     ../Source/DocxFormat/Docx.cpp \
+    ../Source/DocxFormat/DocxFlat.cpp \
     ../Source/DocxFormat/Comments.cpp \
-    ../Source/DocxFormat/VmlDrawing.cpp \
+    ../Source/DocxFormat/Document.cpp \
+   ../Source/DocxFormat/VmlDrawing.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Chart/ChartSerializeEx.cpp \
     ../Source/XlsxFormat/Common.cpp \
     ../Source/XlsxFormat/Xlsx.cpp \
+    ../Source/XlsxFormat/XlsxFlat.cpp \
     ../Source/XlsxFormat/Worksheets/Worksheet.cpp \
     ../Source/XlsxFormat/Worksheets/SheetData.cpp \
     ../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp \
@@ -68,6 +73,7 @@ SOURCES += \
     ../Source/DocxFormat/Core.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
+    ../Source/DocxFormat/Document.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
     ../Source/DocxFormat/Drawing/DrawingExt.cpp \
     ../Source/Common/Align.cpp \
@@ -82,7 +88,11 @@ SOURCES += \
     ../Source/XlsxFormat/Styles/rPr.cpp \
     ../Source/XlsxFormat/SharedStrings/Si.cpp \
     ../Source/XlsxFormat/SharedStrings/Text.cpp \
-    ../Source/XlsxFormat/Pivot/Pivots.cpp
+    ../Source/XlsxFormat/Pivot/Pivots.cpp \
+    ../Source/XlsxFormat/Slicer/SlicerCache.cpp \
+    ../Source/XlsxFormat/Slicer/SlicerCacheExt.cpp \
+    ../Source/XlsxFormat/Slicer/Slicer.cpp \
+    ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp
 }
 
 
@@ -144,6 +154,7 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/Logic/Vml.h \
     ../Source/DocxFormat/Logic/VmlOfficeDrawing.h \
     ../Source/DocxFormat/Logic/VmlWord.h \
+    ../Source/DocxFormat/Logic/DocParts.h \
     ../Source/DocxFormat/Math/OMath.h \
     ../Source/DocxFormat/Math/oMathBottomNodes.h \
     ../Source/DocxFormat/Math/oMathContent.h \
@@ -164,6 +175,7 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/CustomXml.h \
     ../Source/DocxFormat/Document.h \
     ../Source/DocxFormat/Docx.h \
+    ../Source/DocxFormat/DocxFlat.h \
     ../Source/DocxFormat/Endnote.h \
     ../Source/DocxFormat/File.h \
     ../Source/DocxFormat/FileFactory.h \
@@ -221,7 +233,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Table/Autofilter.h \
     ../Source/XlsxFormat/Table/Table.h \
     ../Source/XlsxFormat/Workbook/BookViews.h \
-	../Source/XlsxFormat/Workbook/CalcPr.h \
+    ../Source/XlsxFormat/Workbook/CalcPr.h \
     ../Source/XlsxFormat/Workbook/DefinedNames.h \
     ../Source/XlsxFormat/Workbook/Sheets.h \
     ../Source/XlsxFormat/Workbook/Workbook.h \
@@ -234,17 +246,17 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Worksheets/SheetData.h \
     ../Source/XlsxFormat/Worksheets/Worksheet.h \
     ../Source/XlsxFormat/Worksheets/WorksheetChildOther.h \
-	../Source/XlsxFormat/Controls/Controls.h \
+    ../Source/XlsxFormat/Controls/Controls.h \
     ../Source/XlsxFormat/Common.h \
     ../Source/XlsxFormat/CommonInclude.h \
     ../Source/XlsxFormat/ComplexTypes_Spreadsheet.h \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.h \
     ../Source/XlsxFormat/FileTypes_Spreadsheet.h \
     ../Source/XlsxFormat/SimpleTypes_Spreadsheet.h \
-    ../Source/XlsxFormat/Workbook.h \
     ../Source/XlsxFormat/WritingElement.h \
     ../Source/DocxFormat/WorkbookComments.h \
     ../Source/XlsxFormat/Xlsx.h \
+    ../Source/XlsxFormat/XlsxFlat.h \
     ../Source/XML/Utils.h \
     ../Source/XML/XmlSimple.h \
     ../Source/MathEquation/LEStream.h \
@@ -262,4 +274,8 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/Diagram/DiagramDrawing.h \
     ../Source/XlsxFormat/Pivot/PivotTable.h \
     ../Source/XlsxFormat/Pivot/PivotCacheDefinition.h \
-    ../Source/XlsxFormat/Pivot/PivotCacheRecords.h
+    ../Source/XlsxFormat/Pivot/PivotCacheRecords.h \
+    ../Source/XlsxFormat/Slicer/SlicerCache.h \
+    ../Source/XlsxFormat/Slicer/SlicerCacheExt.h \
+    ../Source/XlsxFormat/Slicer/Slicer.h \
+    ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.h

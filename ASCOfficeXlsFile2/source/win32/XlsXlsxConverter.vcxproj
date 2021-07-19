@@ -1,0 +1,350 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CBEDD0D1-10A8-45C1-AF81-8492F40964CA}</ProjectGuid>
+    <RootNamespace>XlsXlsxConverter</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\XlsFormat; ..\Common;..\..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4311;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\XlsFormat; ..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <ProgramDataBaseFileName>$(IntDir)XlsXlsxConverter.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\XlsFormat; ..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\XlsFormat; ..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common\common.h" />
+    <ClInclude Include="..\common\simple_xml_writer.h" />
+    <ClInclude Include="..\common\utils.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\BaseShape.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\CustomGeomShape.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\CustomShape.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\CustomShapeConvert.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\FormulaShape.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\GraphicsPath.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\accentbordercallout1type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\AccentBorderCallout2Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\accentbordercallout3type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\accentbordercallout90type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\AccentCallout1Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\AccentCallout2Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\AccentCallout3Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\AccentCallout90Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonBack.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonBeginning.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonBlank.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonDocument.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonEnd.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonHelp.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonHome.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonInfo.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonMovie.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonNext.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonReturn.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ActionButtonSound.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\arctype.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BentArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BentConnector.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BentUpArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BevelType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BlockArcType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BorderCallout1Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BorderCallout2Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BorderCallout3Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BorderCallout90Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BracePairType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\BracketPairType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Callout1Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Callout2Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Callout3Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Callout90Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CanType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ChevronType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CircularArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CloudCalloutType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CubeType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CurvedConnector.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CurvedDownArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CurvedLeftArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CurvedRightArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\CurvedUpArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\DiamondType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\DonutType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\DownArrowCalloutType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\DownArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\EllipseRibbon2Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\EllipseRibbonType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\EllipseType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartAlternateProcessType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartCollateType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartConnectorType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartDecisionType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartDelayType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartDisplayType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartDocumentType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartExtractType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartInputOutputType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartInternalStorageType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartMagneticDiskType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartMagneticDrumType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartMagneticTapeType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartManualInputType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartManualOperationType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartMergeType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartMultidocumentType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartOffpageConnectorType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartOnlineStorageType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartOrType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartPredefinedProcessType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartPreparationType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartProcessType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartPunchedCardType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartPunchedTapeType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartSortType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartSummingJunctionType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FlowChartTerminatorType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\FoldedCornerType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\HeartType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\HexagonType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\HomePlateType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\HorisontalScrollType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\IrregularSealOneType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\IrregularSealTwo.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\IsoscelesTriangleType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftArrowCalloutType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftBraceType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftBracketType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftRightArrowCalloutType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftRightArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftRightUpArrow.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LeftUpArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LightningBoltType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\LineType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\MoonType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\NoSmokingType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\NotchedRightArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\OctagonType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\ParallelogramType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\PentagonType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\PlaqueType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\PlusType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\QuadArrowCalloutType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\QuadArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RectangleType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RibbonDownType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RibbonUpType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RightArrowCalloutType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RightArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RightBracetype.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RightBracketType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RightTriangleType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\RoundedRectangleType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Seal16Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Seal24Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Seal32Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Seal4Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Seal8Type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\SmileyFaceType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\Startype.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\StraightConnectorType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\StripedRightArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\SunType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\TextboxType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\TrapezoidType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\UpArrowCalloutType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\UpArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\UpDownArrowCalloutType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\UpDownArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\UturnArrowType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\VerticalScrollType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\WaveDoubleType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\WaveType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\WedgeEllipseCalloutType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\WedgeRectCalloutType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\WedgeRoundedRectCalloutType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\PathShape.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\PresetShapesHeader.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\ShapeUtils.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ConvertXls2Xlsx.h" />
+    <ClInclude Include="..\XlsXlsxConverter\external_items.h" />
+    <ClInclude Include="..\XlsXlsxConverter\namespaces.h" />
+    <ClInclude Include="..\XlsXlsxConverter\oox_content_type.h" />
+    <ClInclude Include="..\XlsXlsxConverter\oox_package.h" />
+    <ClInclude Include="..\XlsXlsxConverter\oox_rels.h" />
+    <ClInclude Include="..\XlsXlsxConverter\ShapeType.h" />
+    <ClInclude Include="..\XlsXlsxConverter\XlsConverter.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_activeX_context.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_chart_context.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_comments.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_comments_context.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_conversion_context.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_drawings.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_drawing_context.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_external_context.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_hyperlinks.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_output_xml.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_package.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_pivots_context.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_sheet_context.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_tablecontext.h" />
+    <ClInclude Include="..\XlsXlsxConverter\xlsx_textcontext.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Common\DocxFormat\Source\Base\unicode_util.cpp" />
+    <ClCompile Include="..\common\utils.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\ConvertShapes\CustomShape.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\ConvertShapes\FormulaShape.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\ConvertXls2Xlsx.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\external_items.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\mediaitems_utils.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\namespaces.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\oox_content_type.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\oox_package.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\oox_rels.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\XlsConverter.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_activeX_context.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_chart_context.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_comments.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_comments_context.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_conversion_context.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_drawings.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_drawing_context.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_external_context.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_hyperlinks.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_output_xml.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_package.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_pivots_context.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_sheet_context.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_tablecontext.cpp" />
+    <ClCompile Include="..\XlsXlsxConverter\xlsx_textcontext.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

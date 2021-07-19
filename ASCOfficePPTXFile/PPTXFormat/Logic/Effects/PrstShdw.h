@@ -157,7 +157,7 @@ namespace PPTX
 			{
 				pReader->Skip(4); // len
 				BYTE _type = pReader->GetUChar(); 
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1);
 
@@ -171,7 +171,7 @@ namespace PPTX
 					{
 						case 0:	dir		= pReader->GetLong(); break;
 						case 1:	dist	= pReader->GetLong(); break;
-						case 2:	prst.SetBYTECode( pReader->GetChar()); break;
+						case 2:	prst.SetBYTECode( pReader->GetUChar()); break;
 					}
 
 				}

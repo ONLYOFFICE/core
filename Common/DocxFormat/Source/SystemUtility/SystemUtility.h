@@ -167,7 +167,6 @@ namespace OOX
 	class CSystemUtility
 	{
 	public:
-        static bool			CreateFile			(const	std::wstring&	strFileName);
 		static bool			IsFileExist			(const	std::wstring&	strFileName);
 		static bool			IsFileExist			(const	CPath&			sPath);
 		static std::wstring GetDirectoryName	(const	std::wstring&	strFileName);

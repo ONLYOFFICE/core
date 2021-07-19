@@ -77,7 +77,6 @@ text_transform text_transform::parse(const std::wstring & Str)
         return text_transform(Underline);
 	else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return None;        
     }
 }

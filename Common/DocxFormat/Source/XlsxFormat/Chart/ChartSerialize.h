@@ -33,8 +33,13 @@
 
 #include "../CommonInclude.h"
 
-namespace OOX{
-	namespace Spreadsheet{
+#include "ChartStyle.h"
+#include "ChartColors.h"
+
+namespace OOX
+{
+	namespace Spreadsheet
+	{
 		enum ST_PageSetupOrientation
 		{
 			st_pagesetuporientationDEFAULT = 0,
@@ -471,7 +476,7 @@ namespace OOX{
 			CT_TextLanguageID*						m_lang;
 			CT_Boolean*								m_roundedCorners;
 			AlternateContent*						m_AlternateContent;
-			CT_Style1*								m_style;
+			CT_Style*								m_style;
 			CT_PivotSource*							m_pivotSource;
 			CT_Protection*							m_protection;
 			CT_Chart*								m_chart;
@@ -932,7 +937,7 @@ namespace OOX{
 		class CT_StrRef
 		{
 		public:
-			std::wstring			* m_f;
+			std::wstring	* m_f;
 			CT_StrData		* m_strCache;
 			CT_extLst		* m_extLst;
 		/*--------------------------------------------------------------*/
@@ -2733,7 +2738,7 @@ namespace OOX{
 			CT_Chart();
 			~CT_Chart();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 		class CT_Protection
@@ -2770,29 +2775,20 @@ namespace OOX{
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_Style1
-		{
-		public:
-			//Attribute
-			unsigned char* m_val;
-			CT_Style1();
-			~CT_Style1();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
 		class CT_Style
 		{
 		public:
-			//Attribute
+			std::wstring m_namespace;
+
 			unsigned char* m_val;
+
 			CT_Style();
 			~CT_Style();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		private: 
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class CT_TextLanguageID
 		{
@@ -2809,10 +2805,9 @@ namespace OOX{
 		class AlternateContent
 		{
 		public:
-			//Member
             std::vector<AlternateContentChoice*> m_Choice;
-			//Member
 			AlternateContentFallback* m_Fallback;
+
 			AlternateContent();
 			~AlternateContent();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -2822,22 +2817,22 @@ namespace OOX{
 		class AlternateContentChoice
 		{
 		public:
-			//Member
 			CT_Style* m_style;
-			//Attribute
 			std::wstring* m_Requires;
+
 			AlternateContentChoice();
 			~AlternateContentChoice();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		private: 
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 		class AlternateContentFallback
 		{
 		public:
-			//Member
-			CT_Style1* m_style;
+			CT_Style* m_style;
+
 			AlternateContentFallback();
 			~AlternateContentFallback();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);

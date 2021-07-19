@@ -36,23 +36,53 @@
 #include <vector>
 #include "../graphics/pro/Fonts.h"
 
+class CApplicationFontsWorkerBreaker
+{
+public:
+    virtual bool IsFontsWorkerRunned() { return true; }
+};
+
+class CApplicationFontsWorker_private;
 class CApplicationFontsWorker
 {
 public:
+    // использовать ли системные шрифты
     bool                        m_bIsUseSystemFonts;
+    // дополнительные папки с шрифтами
     std::vector<std::wstring>   m_arAdditionalFolders;
+
+    // рабоча директория (сюда скидываем все артефакты)
     std::wstring                m_sDirectory;
-    bool                        m_bIsNeedThumbnails;
+
+    // поддерживать ли opentype шрифты
     bool                        m_bIsUseOpenType;
-    
+
+    // поддерживать ли все версии AllFonts.js
+    bool                        m_bIsUseAllVersions;
+
+    // нужны ли табнейлы
+    bool                        m_bIsNeedThumbnails;
+    // генерим табнейлы отдельно
+    bool                        m_bSeparateThumbnails;
+    // какие масштабы нудны для табнейлов
+    std::vector<double>         m_arThumbnailsScales;
+
+private:
+    CApplicationFontsWorker_private* m_pInternal;
+
 public:
     CApplicationFontsWorker();
     ~CApplicationFontsWorker();
     
     NSFonts::IApplicationFonts* Check();
+    void CheckThumbnails();
+
+    void SetBreaker(CApplicationFontsWorkerBreaker* pChecker);
+
     std::string GetAllFonts();
 
     static std::vector<std::wstring> GetFontNames(NSFonts::IApplicationFonts* pFonts);
+    static std::vector<std::wstring> GetFontNamesWithExcludes(NSFonts::IApplicationFonts* pFonts, std::vector<std::wstring> arExcludes);
 };
 
 #endif // _BUILD_APPLICATIONFONTSWORKER_H_

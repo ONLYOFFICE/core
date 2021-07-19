@@ -25,7 +25,7 @@ core_linux {
 }
 
 core_mac {
-    INCLUDEPATH += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/usr/local/include
+    INCLUDEPATH += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/include
 
     LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicuuc.$${ICU_MAJOR_VER}.dylib
     LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicudata.$${ICU_MAJOR_VER}.dylib
@@ -37,4 +37,12 @@ core_ios {
     LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicudata.a
     LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicui18n.a
     LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicuuc.a
+}
+
+core_android {
+    INCLUDEPATH += $$PWD/android/build/include
+    ICU_LIBS_PATH = $$replace(CORE_BUILDS_PLATFORM_PREFIX, "android_", "")
+
+    LIBS        += $$PWD/android/build/$$ICU_LIBS_PATH/libicuuc.a
+    LIBS        += $$PWD/android/build/$$ICU_LIBS_PATH/libicudata.a
 }

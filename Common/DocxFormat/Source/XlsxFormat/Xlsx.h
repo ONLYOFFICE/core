@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_XLSX_INCLUDE_H_
-#define OOX_XLSX_INCLUDE_H_
 
 #include "../Base/SmartPtr.h"
 #include "../DocxFormat/IFileContainer.h"
@@ -150,4 +148,3 @@ namespace OOX
 	} //Spreadsheet
 } // OOX
 
-#endif // OOX_XLSX_INCLUDE_H_

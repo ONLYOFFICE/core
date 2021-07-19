@@ -187,7 +187,7 @@ namespace PPTX
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1); // start attributes
 
@@ -232,7 +232,7 @@ namespace PPTX
 				pWriter->StartNode(m_name);				
 				
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("typeface"), typeface);
+				pWriter->WriteAttribute(_T("typeface"), XmlUtils::EncodeXmlString(typeface));
 				pWriter->WriteAttribute(_T("pitchFamily"), pitchFamily);
 				pWriter->WriteAttribute(_T("charset"), charset);
 				pWriter->WriteAttribute(_T("panose"), panose);

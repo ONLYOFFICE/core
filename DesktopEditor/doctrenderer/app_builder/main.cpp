@@ -62,8 +62,7 @@ int main(int argc, char *argv[])
 #else
         std::string sParam(argv[i]);
 #endif
-        if (sParam == "-v" ||
-            sParam == "-version")
+        if (sParam == "-v" || sParam == "-version")
         {
             std::cout << "v" VALUE(INTVER) << std::endl;
             NSDoctRenderer::CDocBuilder oBuilder;
@@ -100,8 +99,6 @@ int main(int argc, char *argv[])
     std::string sBuildFileA(argv[argc - 1]);
     std::wstring sBuildFile = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sBuildFileA.c_str(), (LONG)sBuildFileA.length());
 #endif
-
-    NSDoctRenderer::CDocBuilder::Initialize();
 
     if (true)
     {
@@ -141,6 +138,5 @@ int main(int argc, char *argv[])
     }
 
     NSDoctRenderer::CDocBuilder::Dispose();
-
     return 0;
 }

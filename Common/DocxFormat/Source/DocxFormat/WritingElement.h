@@ -39,28 +39,34 @@ namespace OOX
 #define WritingElement_AdditionConstructors(Class) \
 	explicit Class(XmlUtils::CXmlNode& oNode)\
 	{\
+		m_pMainDocument = NULL;\
 		fromXML( oNode );\
 	}\
-    explicit Class(const XmlUtils::CXmlNode& node)\
+	explicit Class(const XmlUtils::CXmlNode& node)\
 	{\
+		m_pMainDocument = NULL;\
 		fromXML(const_cast<XmlUtils::CXmlNode&> (node));\
 	}\
 	Class(XmlUtils::CXmlLiteReader& oReader)\
 	{\
+		m_pMainDocument = NULL;\
 		fromXML( oReader );\
 	}\
 	const Class& operator =(const XmlUtils::CXmlNode &oNode)\
 	{\
+		m_pMainDocument = NULL;\
 		fromXML( (XmlUtils::CXmlNode &)oNode );\
 		return *this;\
 	}\
 	const Class& operator =(const XmlUtils::CXmlLiteReader& oReader)\
 	{\
+		m_pMainDocument = NULL;\
 		fromXML( (XmlUtils::CXmlLiteReader&)oReader );\
 		return *this;\
 	}\
     const Class& operator =(XmlUtils::CXmlNode& node)				\
 	{																\
+		m_pMainDocument = NULL;\
 		fromXML(node);												\
 		return *this;												\
 	}																\
@@ -80,7 +86,23 @@ namespace OOX
 #define WritingElement_WriteNode_2( oValue ) \
 	if ( oValue.IsInit() )\
 		sResult += oValue->toXML();
-
+//-----------------------------------------------------------------------------------------------
+#define WritingElement_ReadAttributes_ReadSingle2(Reader, AttrName, Value) \
+	if ( Reader.GetAttributesCount() > 0 ){\
+	if ( Reader.MoveToFirstAttribute() ){\
+	std::wstring wsName = Reader.GetName();\
+    while( !wsName.empty() )\
+	{\
+		if ( AttrName == wsName )\
+		{\
+            Value = Reader.GetText();\
+			break;\
+		}\
+		if ( !Reader.MoveToNextAttribute() ) \
+			break;\
+		wsName = Reader.GetName();\
+	}\
+	Reader.MoveToElement();}}
 // Следующие 3 define используются для чтения аттрибутов через CXmlLiteReader
 #define WritingElement_ReadAttributes_Start(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
@@ -97,6 +119,15 @@ namespace OOX
 	if ( !Reader.MoveToFirstAttribute() )\
 		return;\
 	const char* wsName = Reader.GetNameChar();\
+	while( strlen(wsName) != 0 )\
+	{
+
+#define WritingElement_ReadAttributes_StartChar_No_NS(Reader) \
+	if ( Reader.GetAttributesCount() <= 0 )\
+		return;\
+	if ( !Reader.MoveToFirstAttribute() )\
+		return;\
+	const char* wsName = XmlUtils::GetNameNoNS(Reader.GetNameChar());\
 	while( strlen(wsName) != 0 )\
 	{
 
@@ -147,6 +178,13 @@ namespace OOX
 		if ( !Reader.MoveToNextAttribute() ) \
 			break;\
 		wsName = Reader.GetNameChar();\
+	}\
+	Reader.MoveToElement();
+
+#define WritingElement_ReadAttributes_EndChar_No_NS(Reader) \
+		if ( !Reader.MoveToNextAttribute() ) \
+			break;\
+		wsName = XmlUtils::GetNameNoNS(Reader.GetNameChar());\
 	}\
 	Reader.MoveToElement();
 
@@ -334,6 +372,7 @@ namespace OOX
 		et_a_scene3d, // <a:scene3d>
 		et_a_schemeClr, // <a:schemeClr>
 		et_a_scrgbClr, // <a:scrgbClr>
+		et_a_styleClr,
 		et_a_shade, // <a:shade>
 		et_a_snd, // <a:snd>
 		et_a_softEdge, // <a:softEdge>
@@ -368,6 +407,7 @@ namespace OOX
 		et_a_GroupShapeNonVisual,	
 		et_a_ConnectionNonVisualShapeProps,
 		et_a_ShapeNonVisual,
+		et_a_Slicer,
 		
 		et_dgm_DiagrammParts,	// <dgm:relIds> 
 		et_dgm_ptLst,			// <dgm:ptLst> 
@@ -414,6 +454,25 @@ namespace OOX
 		et_p_SplitTransition,
 		et_p_ZoomTransition,
 
+		et_p_par,
+		et_p_seq,
+		et_p_audio,
+		et_p_video,
+		et_p_excl,
+		et_p_anim,
+		et_p_animClr,
+		et_p_animEffect,
+		et_p_animMotion,
+		et_p_animRot,
+		et_p_animScale,
+		et_p_cmd,
+		et_p_set,
+
+		et_p_bldP,
+		et_p_bldDgm,
+		et_p_bldGraphic,
+		et_p_bldOleChart,
+
         et_a_textFit,
         et_a_hyperlink,
         et_a_fld,
@@ -442,6 +501,7 @@ namespace OOX
         et_a_buSzPts,
         et_a_buSzTx,
 
+		et_ds_customXmlProps,
 		et_ds_schemaRefs, // <ds:shemeRefs>
         et_ds_schemaRef, // <ds:shemeRef>	
 		
@@ -656,6 +716,8 @@ namespace OOX
 		et_w_autoCaptions, // <w:autoCaptions>
 		et_w_background, // <w:background>
 		et_w_bdo, // <w:bdo>
+		et_w_binData, // <w:binData>
+		et_w_bgPict,  // <w:bgPict>
 		et_w_bookmarkEnd, // <w:bookmarkEnd>
 		et_w_bookmarkStart, // <w:bookmarkStart>
 		et_w_br, // <w:br>
@@ -666,13 +728,15 @@ namespace OOX
 		et_w_clrSchemeMapping, // <w:clrSchemeMapping>
 		et_w_cols, // <w:cols>
 		et_w_comboBox, // <w:comboBox>
+		et_w_textFormPr, // <w:textFormPr> custom!
 		et_w_comment, // <w:comment>
 		et_w_commentRangeEnd, // <w:commentRangeEnd>
 		et_w_commentRangeStart, // <w:commentRangeStart>
 		et_w_commentReference, // <w:commentReference>
 		et_w_compat, // <w:compat>
 		et_w_compatSetting, // <w:compatSetting>
-		et_w_contentPart, // <w:contentPart>
+		et_w_contentPart, // <w:contentPart> <w14:contentPart>
+		et_w_nvContentPartPr, // <w14:nvContentPartPr>
 		et_w_continuationSeparator, // <w:continuationSeparator>
 		et_w_control, // <w:control>
 		et_w_customXmlDelRangeEnd, // <w:customXmlDelRangeEnd>
@@ -706,6 +770,7 @@ namespace OOX
 		et_w_ffData, // <w:ffData>
 		et_w_fldChar, // <w:fldChar>
 		et_w_fldSimple, // <w:fldSimple>
+		et_w_fonts, // <w:fonts>
 		et_w_font, // <w:font>
 		et_w_footnote, // <w:footnote>
 		et_w_footnotePr, // <w:footnotePr>
@@ -732,6 +797,7 @@ namespace OOX
 		et_w_moveFromRangeStart, // <w:moveFromRangeStart>
 		et_w_moveToRangeEnd, // <w:moveToRangeEnd>
 		et_w_moveToRangeStart, // <w:moveToRangeStart>
+		et_w_numbering, // <w:numbering>
 		et_w_num, // <w:num>
 		et_w_numPicBullet, // <w:numPicBullet>
 		et_w_numPr, // <w:numPr>
@@ -774,7 +840,11 @@ namespace OOX
 		et_w_smartTag, // <w:smartTagType>
 		et_w_smartTagType, // <w:smartTagType>
 		et_w_softHyphen, // <w:softHyphen>
+		et_w_wordDocument, // <w:wordDocument>
+		et_w_document, // <w:document>
+		et_w_settings, // <w:settings>
 		et_w_style, // <w:style>
+		et_w_styles, // <w:styles>
 		et_w_stylePaneFormatFilter, // <w:stylePaneFormatFilter>
 		et_w_stylePaneSortMethod, // <w:stylePaneSortMethod>
 		et_w_sym, // <w:sym>
@@ -805,6 +875,13 @@ namespace OOX
 		et_w_yearLong, // <w:yearLong>
 		et_w_yearShort, // <w:yearShort>
 		et_w_zoom, // <w:zoom>
+		et_w_docParts,
+		et_w_docPart,
+		et_w_docPartBody,
+		et_w_docPartPr,
+		et_w_docPartCategory,
+		et_w_docPartTypes,
+		et_w_docPartBehaviors,
 
 		et_wd_anchorLock, // <wd:anchorLock>
 		et_wd_borderbottom, // <wd:borderbottom>
@@ -835,6 +912,7 @@ namespace OOX
 		et_w15_commentEx, // <w15:commentEx>
 
 		et_w16_commentId, // <w16cid:commentId>
+		et_w16_commentExtensible, // <w16cex:commentExtensible>
 
 		et_w_ShapeTextBody,		//<wps:txbx>
 		et_w_Shape,				//<wps:wsp>
@@ -1046,7 +1124,14 @@ namespace OOX
 		et_ct_StrDimension,
 		et_ct_NumDimension,
 		et_ct_ChartData,
+		et_ct_ExternalData,
 
+		et_cs_ChartStyle,
+		et_cs_StyleEntry,
+		et_cs_MarkerLayout,
+		et_cs_ColorStyle,
+		et_cs_SchemeClr,
+		et_cs_Variation,
 
 		et_cdr_FromTo,
 		et_cdr_Ext,
@@ -1054,8 +1139,11 @@ namespace OOX
 		et_cdr_AbsSizeAnchor,
 
 		et_x_Unknown,
+		et_x_SpreadsheetFlat,
 		et_x_BookViews, // <bookViews>
+		et_x_Workbook,
 		et_x_WorkbookPr,
+		et_x_WorkbookProtection,
 		et_x_WorkbookView, // <workbookView>
 		et_x_DefinedNames, // <definedNames>
 		et_x_DefinedName, // <definedName>
@@ -1105,6 +1193,7 @@ namespace OOX
 		et_x_Row,
 		et_x_Cell,
 		et_x_Formula,
+		et_x_Data,
 		et_x_Cols,
 		et_x_Col,
 		et_x_Hyperlinks,
@@ -1145,6 +1234,7 @@ namespace OOX
 		et_x_QueryTableDeletedField,
 		et_x_Connections,
 		et_x_Connection,
+		et_x_rangePr,
 		et_x_dbPr,
 		et_x_textPr,
 		et_x_olapPr,
@@ -1276,10 +1366,45 @@ namespace OOX
 		et_x_SharedItemsIndex,
 		et_x_MemberPropertyIndex,
 
+		et_x_SlicerCacheDefinition,
+		et_x_SlicerCachePivotTable,
+		et_x_SlicerCacheData,
+		et_x_OlapSlicerCache,
+		et_x_TabularSlicerCache,
+		et_x_OlapSlicerCacheLevelsData,
+		et_x_OlapSlicerCacheSelections,
+		et_x_TabularSlicerCacheItems,
+		et_x_OlapSlicerCacheLevelData,
+		et_x_OlapSlicerCacheSelection,
+		et_x_TabularSlicerCacheItem,
+		et_x_OlapSlicerCacheRange,
+		et_x_OlapSlicerCacheItemParent,
+		et_x_OlapSlicerCacheItem,
+		et_x_SlicerCacheOlapLevelName,
+		et_x_SlicerCacheHideNoData,
+		et_x_TableSlicerCache,
+		et_x_SlicerStyleElement,
+		et_x_Slicer,
+		et_x_SlicerCache,
+		et_x_SlicerRef,
+		et_x_SlicerStyle,
+		et_x_Slicers,
+		et_x_SlicerCaches,
+		et_x_SlicerRefs,
+		et_x_SlicerStyles,
+
+		et_x_SortRule,
+		et_x_SortRules,
+		et_x_ColumnFilter,
+		et_x_NsvFilter,
+		et_x_NamedSheetView,
+		et_x_NamedSheetViews,
+
 		et_x_SparklineGroups,
 		et_x_SparklineGroup,
 		et_x_Sparklines,
-		et_x_Sparkline
+		et_x_Sparkline,
+		et_x_Style2003
 	};
 
 	class Document
@@ -1312,7 +1437,7 @@ namespace OOX
 	public:
         std::vector<ElemType *>  m_arrItems;
 
-		WritingElementWithChilds() {}
+		WritingElementWithChilds(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 		virtual ~WritingElementWithChilds() 
 		{
 			ClearItems();

@@ -58,6 +58,21 @@ namespace PPTX
 					m_strValue = strValue;
 				}
 			}
+			virtual BYTE GetBYTECode() const
+			{
+				if (L"img" == m_strValue)	return 0;
+				if (L"pt" == m_strValue)	return 1;
+
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = L"img"; break;
+				case 1: m_strValue = L"pt"; break;
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX

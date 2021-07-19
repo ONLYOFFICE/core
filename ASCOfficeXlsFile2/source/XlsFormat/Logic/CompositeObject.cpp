@@ -47,7 +47,7 @@ CompositeObject::~CompositeObject()
 }
 
 
-const bool CompositeObject::read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory)
+const bool CompositeObject::read(StreamCacheReaderPtr reader, BaseObject* parent, const bool is_mandatory)
 {
 	BinReaderProcessor reader_proc(reader, this, is_mandatory);
 	if(loadContentRead(reader_proc))
@@ -69,7 +69,7 @@ const bool CompositeObject::loadContentRead(BinReaderProcessor& proc)
 
 
 
-const bool ABNFParenthesis::read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory)
+const bool ABNFParenthesis::read(StreamCacheReaderPtr reader, BaseObject* parent, const bool is_mandatory)
 {
 	BinReaderProcessor reader_proc(reader, parent, is_mandatory);
 	bool res = loadContentRead(reader_proc);

@@ -196,7 +196,8 @@ namespace PPTX
 			{
 				std::wstring name_;
 				
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 				{
 					if (pWriter->m_lGroupIndex == 0)	name_ = L"wpg:wgp";
 					else								name_ = L"wpg:grpSp";
@@ -213,7 +214,8 @@ namespace PPTX
 
 				pWriter->EndAttributes();
 
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 				{
 					nvGrpSpPr.cNvGrpSpPr.toXmlWriter2(L"wpg", pWriter);
 				}
@@ -267,7 +269,7 @@ namespace PPTX
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(5); //+ len
 
@@ -435,7 +437,7 @@ namespace PPTX
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(5); // type + len
 

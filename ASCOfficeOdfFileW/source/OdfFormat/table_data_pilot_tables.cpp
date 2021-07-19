@@ -78,13 +78,13 @@ void table_data_pilot_table::add_child_element( const office_element_ptr & child
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeTableDataPilotField) 
+    if (type_ == typeTableDataPilotField) 
 	{
 		fields_.push_back(child_element);
 	}
-    else if (type == typeTableDataPilotGrandTotal) 
+    else if (type_ == typeTableDataPilotGrandTotal) 
 	{
 		grand_total_ = child_element;
 	}
@@ -148,17 +148,17 @@ void table_data_pilot_field::add_child_element( const office_element_ptr & child
 {
 	if (!child_element) return;
 	
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
     
-	if (type == typeTableDataPilotFieldReference) 
+	if (type_ == typeTableDataPilotFieldReference) 
 	{
 		reference_ = child_element;
 	}
-    else if (type == typeTableDataPilotLevel)
+    else if (type_ == typeTableDataPilotLevel)
 	{
 		level_ = child_element;
 	}
-    else if (type == typeTableDataPilotGroups)
+    else if (type_ == typeTableDataPilotGroups)
 	{
 		groups_ = child_element;
 	}
@@ -334,24 +334,24 @@ void table_data_pilot_level::add_child_element( const office_element_ptr & child
 {
 	if (!child_element) return;
 	
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-	if (type == typeTableDataPilotMembers) 
+	if (type_ == typeTableDataPilotMembers) 
 	{
 		members_ = child_element;
 	}
-    else if (type == typeTableDataPilotSubtotals)
+    else if (type_ == typeTableDataPilotSubtotals)
 	{
 		subtotals_ = child_element;
 	}
-    else if (type == typeTableDataDisplayInfo)
+    else if (type_ == typeTableDataDisplayInfo)
 	{
 		display_info_ = child_element;
 	}
-    else if (type == typeTableDataLayoutInfo)
+    else if (type_ == typeTableDataLayoutInfo)
 	{
 		layout_info_ = child_element;
-	}    else if (type == typeTableDataSortInfo)
+	}    else if (type_ == typeTableDataSortInfo)
 	{
 		sort_info_ = child_element;
 	}

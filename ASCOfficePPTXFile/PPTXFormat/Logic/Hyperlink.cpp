@@ -101,7 +101,7 @@ namespace PPTX
 
 		void Hyperlink::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			pReader->Skip(1); // start attributes
 
@@ -118,13 +118,13 @@ namespace PPTX
 				{
 					case 0:
 					{
-						strUrl = pReader->GetString2();
+						strUrl = pReader->GetString2(true);
 						bIsPresentUrl = true;
 						break;
 					}
 					case 1:
 					{
-						invalidUrl = pReader->GetString2();
+						invalidUrl = pReader->GetString2(true);
 						break;
 					}
 					case 2:

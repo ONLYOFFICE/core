@@ -58,11 +58,12 @@
 #include "Diagram/DiagramDrawing.h"
 #include "Diagram/DiagramData.h"
 #include "VmlDrawing.h"
-#include "ChartDrawing.h"
 #include "CustomXml.h"
 
 #include "../XlsxFormat/Chart/Chart.h"
+#include "../XlsxFormat/Chart/ChartDrawing.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
 namespace OOX
 {
@@ -103,16 +104,24 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentCommentsExt )
 			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CommentsExtensible )
+			return smart_ptr<OOX::File>(new CCommentsExtensible( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::DocumentCommentsExtensible )
+			return smart_ptr<OOX::File>(new CDocumentCommentsExtensible( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::CommentsIds )
 			return smart_ptr<OOX::File>(new CCommentsIds( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentCommentsIds )
 			return smart_ptr<OOX::File>(new CDocumentCommentsIds( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CommentsUserData )
+			return smart_ptr<OOX::File>(new CCommentsUserData( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::DocumentPeople )
 			return smart_ptr<OOX::File>(new CDocumentPeople( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::ImportedExternalContent )
 			return smart_ptr<OOX::File>(new Media( pMain, oFileName, oRelation.IsExternal() ));
+		else if (oRelation.Type() == FileTypes::GlossaryDocument)
+			return smart_ptr<OOX::File>(new CDocument(pMain, oRootPath, oFileName));
 //common		
 		else if ( oRelation.Type() == FileTypes::Setting)
 			return smart_ptr<OOX::File>(new CSettings( pMain, oFileName ));
@@ -120,6 +129,11 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CApp( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Core)
 			return smart_ptr<OOX::File>(new CCore( pMain, oFileName ));
+		else if ( oRelation.Type() == FileTypes::CustomProperties)
+		{
+			PPTX::FileMap tmp;
+			return smart_ptr<OOX::File>(new PPTX::CustomProperties( pMain, oFileName, tmp));
+		}
 		else if ( oRelation.Type() == FileTypes::Theme)
 			return smart_ptr<OOX::File>(new PPTX::Theme( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::ThemeOverride)
@@ -145,13 +159,13 @@ namespace OOX
 		else if ( oRelation.Type() == OOX::FileTypes::ChartDrawing)
 			return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::Chart )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( pMain, oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartFile( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::ChartEx )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpaceEx( pMain, oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartExFile( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::ChartStyle )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyle( pMain, oRootPath, oFileName ));
-		else if ( oRelation.Type() == OOX::FileTypes::ChartColorStyle )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorStyle( pMain, oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyleFile( pMain, oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::ChartColors )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorsFile( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_xml)
 			return smart_ptr<OOX::File>(new OOX::ActiveX_xml( pMain, oRootPath, oFileName));
 		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_bin)
@@ -181,12 +195,22 @@ namespace OOX
 		else
 			oFileName = oPath / oRelationFilename;
 
-		if ( pRelation->Type() == FileTypes::App )
-			return smart_ptr<OOX::File>(new CApp( pMain, oFileName ));
-		else if ( pRelation->Type() == FileTypes::Core)
-			return smart_ptr<OOX::File>(new CCore( pMain, oFileName ));
-		else if ( pRelation->Type() == FileTypes::Document || pRelation->Type() == FileTypes::DocumentMacro)
-			return smart_ptr<OOX::File>(new CDocument( pMain, oRootPath, oFileName ));
+		if ( pRelation->Type() == FileTypes::Document)
+			return smart_ptr<OOX::File>(new CDocument( pMain, oRootPath, oFileName, FileTypes::Document));
+		else if (pRelation->Type() == FileTypes::DocumentMacro)
+			return smart_ptr<OOX::File>(new CDocument(pMain, oRootPath, oFileName, FileTypes::DocumentMacro));
+		else if (pRelation->Type() == FileTypes::GlossaryDocument)
+			return smart_ptr<OOX::File>(new CDocument(pMain, oRootPath, oFileName, FileTypes::GlossaryDocument));
+
+		else if (pRelation->Type() == FileTypes::App)
+			return smart_ptr<OOX::File>(new CApp(pMain, oFileName));
+		else if (pRelation->Type() == FileTypes::Core)
+			return smart_ptr<OOX::File>(new CCore(pMain, oFileName));
+		else if ( pRelation->Type() == FileTypes::CustomProperties)
+		{
+			PPTX::FileMap tmp;
+			return smart_ptr<OOX::File>(new PPTX::CustomProperties( pMain, oFileName, tmp ));
+		}
 		else if ( pRelation->Type() == FileTypes::Theme)
 		{
 			if(NSFile::CFileBinary::Exists(oFileName.GetPath()))
@@ -238,10 +262,16 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CCommentsExt( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentCommentsExt )
 			return smart_ptr<OOX::File>(new CDocumentCommentsExt( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::CommentsExtensible )
+			return smart_ptr<OOX::File>(new CCommentsExtensible( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::DocumentCommentsExtensible )
+			return smart_ptr<OOX::File>(new CDocumentCommentsExtensible( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::CommentsIds)
 			return smart_ptr<OOX::File>(new CCommentsIds( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentCommentsIds)
 			return smart_ptr<OOX::File>(new CDocumentCommentsIds( pMain, oFileName ));
+		else if ( pRelation->Type() == FileTypes::CommentsUserData)
+			return smart_ptr<OOX::File>(new CCommentsUserData( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::People )
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentPeople )
@@ -255,13 +285,13 @@ namespace OOX
 		else if (pRelation->Type() == FileTypes::MicrosoftOfficeUnknown) //ms package
 			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName, true ));
 		else if ( pRelation->Type() == OOX::FileTypes::Chart )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( pMain, oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartFile( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == OOX::FileTypes::ChartEx )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpaceEx( pMain, oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartExFile( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == OOX::FileTypes::ChartStyle )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyle( pMain, oRootPath, oFileName ));
-		else if ( pRelation->Type() == OOX::FileTypes::ChartColorStyle )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorStyle( pMain, oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyleFile( pMain, oRootPath, oFileName ));
+		else if ( pRelation->Type() == OOX::FileTypes::ChartColors)
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorsFile( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::ActiveX_xml)
 			return smart_ptr<OOX::File>(new ActiveX_xml( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::ActiveX_bin)

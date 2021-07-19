@@ -36,7 +36,7 @@
 namespace XLS
 {;
 
-class CFStreamCacheReader;
+class StreamCacheReader;
 
 // Logical representation of a record in BIFF8
 class AnyObject: public BiffRecord

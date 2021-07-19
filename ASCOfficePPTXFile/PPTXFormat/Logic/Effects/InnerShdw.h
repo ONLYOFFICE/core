@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_INNERSHDW_INCLUDE_H_
-#define PPTX_LOGIC_INNERSHDW_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "./../UniColor.h"
@@ -139,7 +137,7 @@ namespace PPTX
 			{
 				pReader->Skip(4); // len
 				BYTE _type = pReader->GetUChar(); 
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1);
 
@@ -196,4 +194,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_INNERSHDW_INCLUDE_H_

@@ -181,7 +181,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CCalendarType)
-			CCalendarType()
+			CCalendarType() 
 			{
 			}
 			virtual ~CCalendarType()
@@ -208,7 +208,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -270,7 +269,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CLock)
-			CLock()
+			CLock() 
 			{
 			}
 			virtual ~CLock()
@@ -405,6 +404,57 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CSdtAppearance<>> m_oVal;
 		};
 
+		//Not from specification
+		class CFormPr : public ComplexType
+		{
+		public:
+			ComplexTypes_AdditionConstructors(CFormPr)
+			CFormPr()
+			{
+			}
+			virtual ~CFormPr()
+			{
+			}
+
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+
+			nullable_string m_oKey;
+			nullable_string m_oLabel;
+			nullable_string m_oHelpText;
+			nullable_bool m_oRequired;
+		};
+		//Not from specification
+		class CComb : public ComplexType
+		{
+		public:
+			ComplexTypes_AdditionConstructors(CComb)
+			CComb()
+			{
+			}
+			virtual ~CComb()
+			{
+			}
+
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+
+			nullable_int m_oWidth;
+			nullable_string m_oSym;
+			nullable_string m_oFont;
+		};
 	} // Word
 } // ComplexTypes
 
@@ -412,6 +462,30 @@ namespace OOX
 {
 	namespace Logic
 	{
+		//Not from specification
+		class CTextFormPr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CTextFormPr)
+			CTextFormPr(OOX::Document *pMain = NULL) : WritingElement(pMain)
+			{
+			}
+			virtual ~CTextFormPr()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+			// Nodes
+			nullable<ComplexTypes::Word::CComb				> m_oComb;
+			nullable<ComplexTypes::Word::CDecimalNumber     > m_oMaxCharacters;
+			nullable<ComplexTypes::Word::CBorder			> m_oCombBorder;
+		};
 		//--------------------------------------------------------------------------------
 		// CSdtComboBox 17.5.2.5 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -419,7 +493,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtComboBox)
-			CSdtComboBox()
+			CSdtComboBox(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSdtComboBox()
@@ -530,15 +604,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDate)
-			CDate()
+			CDate(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CDate()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w:fullDate"), m_oFullDate );
@@ -627,15 +698,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtDocPart)
-			CSdtDocPart()
+			CSdtDocPart(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSdtDocPart()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
@@ -705,7 +773,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtDropDownList)
-			CSdtDropDownList()
+			CSdtDropDownList(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{ 
 			}
 			virtual ~CSdtDropDownList()
@@ -810,7 +878,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPlaceHolder)
-			CPlaceHolder()
+			CPlaceHolder(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CPlaceHolder()
@@ -865,15 +933,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtEndPr)
-			CSdtEndPr()
+			CSdtEndPr(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSdtEndPr()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
@@ -920,15 +985,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtCheckBoxSymbol)
-			CSdtCheckBoxSymbol()
+			CSdtCheckBoxSymbol(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSdtCheckBoxSymbol()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("w14:val"), m_oVal );
@@ -977,15 +1039,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtCheckBox)
-			CSdtCheckBox()
+			CSdtCheckBox(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSdtCheckBox()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
@@ -996,6 +1055,8 @@ namespace OOX
 					m_oCheckedState = oChild;
 				else if ( oNode.GetNode( _T("w14:uncheckedState"), oChild ) )
 					m_oUncheckedState = oChild;
+				else if ( oNode.GetNode( _T("w14:groupKey"), oChild ) )
+					m_oGroupKey = oChild;
 			}
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1013,6 +1074,8 @@ namespace OOX
 						m_oCheckedState = oReader;
 					else if ( _T("w14:uncheckedState") == sName )
 						m_oUncheckedState = oReader;
+					else if ( _T("w14:groupKey") == sName )
+						m_oGroupKey = oReader;
 				}
 			}
 			virtual std::wstring toXML() const
@@ -1027,6 +1090,12 @@ namespace OOX
 				}
 				WritingElement_WriteNode_1( _T("<w14:checkedState "), m_oCheckedState );
 				WritingElement_WriteNode_1( _T("<w14:uncheckedState "), m_oUncheckedState );
+				if (m_oGroupKey.IsInit())
+				{
+					sResult += L"<w14:groupKey ";
+					sResult += m_oGroupKey->ToStringWithNS(L"w14:");
+					sResult += L"/>";
+				}
 
 				sResult += _T("</w14:checkbox>");
 
@@ -1042,6 +1111,8 @@ namespace OOX
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oChecked;
 			nullable<CSdtCheckBoxSymbol> m_oCheckedState;
 			nullable<CSdtCheckBoxSymbol> m_oUncheckedState;
+
+			nullable<ComplexTypes::Word::String> m_oGroupKey;//Not from specification
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1069,16 +1140,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtPr)
-			CSdtPr()
+			CSdtPr(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 				m_eType = sdttypeUnknown;
 			}
 			virtual ~CSdtPr()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				m_eType = sdttypeUnknown;
@@ -1170,6 +1238,10 @@ namespace OOX
 
 				if ( oNode.GetNode( _T("w:temporary"), oChild ) )
 					m_oTemporary = oChild;
+				if ( oNode.GetNode( _T("w:formPr"), oChild ) )
+					m_oFormPr = oChild;
+				if ( oNode.GetNode( _T("w:textFormPr"), oChild ) )
+					m_oTextFormPr = oChild;
 
 				if ( sdttypeUnknown == m_eType && oNode.GetNode( _T("w:text"), oChild ) )
 				{
@@ -1227,6 +1299,12 @@ namespace OOX
 					{
 						m_oDocPartObj = oReader;
 						m_eType = sdttypeDocPartObj;
+
+						if (m_oDocPartObj.IsInit() && m_oDocPartObj->m_oDocPartGallery.IsInit())
+						{
+							if (m_oDocPartObj->m_oDocPartGallery->m_sVal == L"Bibliographies")
+								m_eType = sdttypeBibliography;
+						}
 					}
 					else if ( sdttypeUnknown == m_eType && _T("w:dropDownList") == sName )
 					{
@@ -1259,6 +1337,10 @@ namespace OOX
 						m_oTag = oReader;
 					else if ( _T("w:temporary") == sName )
 						m_oTemporary = oReader;
+					else if ( _T("w:formPr") == sName )
+						m_oFormPr = oReader;
+					else if ( _T("w:textFormPr") == sName )
+						m_oTextFormPr = oReader;
 					else if ( sdttypeUnknown == m_eType && _T("w:text") == sName )
 					{
 						m_oText = oReader;
@@ -1372,6 +1454,8 @@ namespace OOX
 						break;
 					}
 				}
+				WritingElement_WriteNode_1( L"<w:formPr ", m_oFormPr );
+				WritingElement_WriteNode_2( m_oTextFormPr );
 
 				return sResult;
 			}
@@ -1392,7 +1476,6 @@ namespace OOX
 
 			ESdtType                                                      m_eType;
 
-			// Nodes
 			nullable<ComplexTypes::Word::String                       > m_oAlias;
 			nullable<ComplexTypes::Word::CSdtAppearance					> m_oAppearance;
 			nullable<OOX::Logic::CSdtComboBox                           > m_oComboBox;
@@ -1413,6 +1496,9 @@ namespace OOX
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oTemporary;
 			nullable<ComplexTypes::Word::CSdtText                       > m_oText;
 			nullable<CSdtCheckBox										> m_oCheckbox;
+
+			nullable<ComplexTypes::Word::CFormPr						> m_oFormPr; //Not from specification
+			nullable<CTextFormPr										> m_oTextFormPr; //Not from specification
 		};
 		//--------------------------------------------------------------------------------
 		// SdtContent 17.5.2.38 (Part 1)
@@ -1421,7 +1507,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdtContent)
-			CSdtContent()
+			CSdtContent(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 			}
 
@@ -1432,8 +1518,6 @@ namespace OOX
 			{
 				return et_w_sdtContent;
 			}
-		public:
-
 			// Childs
 		};
 
@@ -1444,15 +1528,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSdt)
-			CSdt()
+			CSdt(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CSdt()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;

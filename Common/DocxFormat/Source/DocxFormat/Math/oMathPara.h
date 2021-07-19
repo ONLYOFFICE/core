@@ -46,12 +46,11 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COMathPara)
-			COMathPara()
+			COMathPara(OOX::Document *pMain = NULL) : WritingElementWithChilds<WritingElement>(pMain)
 			{
 			}
-			virtual ~COMathPara()
-			{
-			}
+			virtual ~COMathPara();
+
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNodes oChilds;
@@ -101,7 +100,7 @@ namespace OOX
 					
 				}
 			}
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			
 
 			virtual EElementType getType() const

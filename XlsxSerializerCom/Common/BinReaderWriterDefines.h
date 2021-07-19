@@ -82,7 +82,8 @@ namespace BinXlsxRW
 		CalcChain = 5,
 		App = 6,
 		Core = 7,
-		PersonList = 8
+		PersonList = 8,
+		CustomProperties = 9
 	};}
 
 	namespace c_oSerStylesTypes{enum c_oSerStylesTypes
@@ -102,7 +103,9 @@ namespace BinXlsxRW
 		TableStyles = 12,
 		CellStyleXfs = 14,
 		CellStyles = 15,
-		CellStyle = 16
+		CellStyle = 16,
+		SlicerStyles = 17,
+		ExtDxfs = 18
 	};}
 	namespace c_oSerBorderTypes{enum c_oSerBorderTypes
 	{
@@ -213,8 +216,19 @@ namespace BinXlsxRW
 		Comments = 14,
 		CalcPr = 15,
 		Connections = 16,
-		AppName = 17
+		AppName = 17,
+		SlicerCaches = 18,
+		SlicerCachesExt = 19,
+		SlicerCache = 20,
+		Protection = 21
 	};}	
+	namespace c_oSerWorkbookProtection{ enum c_oSerWorkbookProtection
+	{
+		AlgorithmName = 0,
+		SpinCount = 1,
+		HashValue = 2,
+		SaltValue = 3
+	}; }
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{
 		Connection = 0,
@@ -268,6 +282,10 @@ namespace BinXlsxRW
 		HtmlFormat = 11,
 		Tables = 12
 	};}
+	namespace c_oSerRangePrTypes{enum c_oSerRangePrTypes
+	{
+		SourceName = 0
+	};}
 	namespace c_oSerConnectionsTypes{enum c_oSerConnectionsTypes
 	{
 		Connection = 0,
@@ -294,7 +312,9 @@ namespace BinXlsxRW
 		DbPr = 21,
 		OlapPr = 22,
 		TextPr = 23,
-		WebPr = 24
+		WebPr = 24,
+		RangePr = 25,
+		IdExt = 26
 	};}
 	namespace c_oSerWorkbookVbaProjectTypes{enum c_oSerWorkbookVbaProjectTypes
 	{
@@ -373,7 +393,37 @@ namespace BinXlsxRW
 		QueryTable = 33,
 		Controls = 34,
 		XlsbPos = 35,
-		SortState = 36
+		SortState = 36,
+		Slicers = 37,
+		SlicersExt = 38,
+		Slicer = 39,
+		NamedSheetView = 40,
+		Protection = 41
+	};}
+	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
+	{
+		AlgorithmName = 0,
+		SpinCount = 1,
+		HashValue = 2,
+		SaltValue = 3,
+		Password = 4,
+		AutoFilter = 5,
+		Content = 6,
+		DeleteColumns = 7,
+		DeleteRows = 8,
+		FormatCells = 9,
+		FormatColumns = 10,
+		FormatRows = 11,
+		InsertColumns = 12,
+		InsertHyperlinks = 13,
+		InsertRows = 14,
+		Objects = 15,
+		PivotTables = 16,
+		Scenarios = 17,
+		SelectLockedCells = 18,
+		SelectUnlockedCell = 19,
+		Sheet = 20,
+		Sort = 21
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{
@@ -951,7 +1001,8 @@ namespace BinXlsxRW
 		Replies = 7,
 		Reply = 8,
 		OOTime = 9,
-		Guid = 10
+		Guid = 10,
+		UserData = 11
 	};}
 	namespace c_oSer_ThreadedComment{enum c_oSer_ThreadedComment
 	{

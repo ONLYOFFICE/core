@@ -8,7 +8,7 @@ class CJBig2File
 public:
 	CJBig2File();
 	
-	bool MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int nWidth, int nHeight, std::wstring sDstFileName);
+	bool MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int nWidth, int nHeight, std::wstring sDstFileName, bool isBGRA = true);
 
 	bool m_bDuplicateLineRemoval;
 	bool m_bPDFMode;

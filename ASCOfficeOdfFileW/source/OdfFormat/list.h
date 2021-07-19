@@ -69,10 +69,6 @@ CP_REGISTER_OFFICE_ELEMENT2(text_number);
 // text:list-item
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-class text_list_item;
-typedef shared_ptr<text_list_item>::Type text_list_item_ptr;
-typedef std::vector<text_list_item_ptr> text_list_item_ptr_array;
-
 class text_list_item : public office_element_impl<text_list_item>
 {
 public:
@@ -98,8 +94,10 @@ public:
     office_element_ptr_array    content_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_list_item);
+
+typedef shared_ptr<text_list_item>::Type	text_list_item_ptr;
+typedef std::vector<text_list_item_ptr>		text_list_item_ptr_array;
 
 // text:list-header
 //////////////////////////////////////////////////////////////////////////////////////////////////

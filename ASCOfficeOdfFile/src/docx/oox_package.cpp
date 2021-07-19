@@ -389,16 +389,18 @@ void media::write(const std::wstring & RootPath)
 															items[i].type == typeAudio ||
 															items[i].type == typeVideo ))
         {
-			std::wstring & file_name	= items[i].href;
+			std::wstring &file_name	= items[i].href;
 			std::wstring file_name_out	= RootPath + FILE_SEPARATOR_STR + items[i].outputName;
 			
+			if (file_name.empty()) continue;
+
 			CImageFileFormatChecker svmFileChecker;
 			if (svmFileChecker.isSvmFile(file_name))
 			{
 				ConvertSvmToImage(file_name, file_name_out, appFonts_);
 			}
 			else
-				NSFile::CFileBinary::Copy(items[i].href, file_name_out);
+				NSFile::CFileBinary::Copy(file_name, file_name_out);
         }
     }
 

@@ -399,16 +399,17 @@ namespace DocFileFormat
 
 			if (Deleted == rev.Type)
 			{
-				//If it's a deleted run
+				WideString* author = dynamic_cast<WideString*>(m_document->RevisionAuthorTable->operator[](rev.Isbt));
+
                 m_pXmlWriter->WriteNodeBegin(L"w:del", true);
-                m_pXmlWriter->WriteAttribute(L"w:author", L"[b2x: could not retrieve author]");
-                m_pXmlWriter->WriteAttribute(L"w:date", L"[b2x: could not retrieve date]");
-                m_pXmlWriter->WriteNodeEnd(L"", true, false);
+				m_pXmlWriter->WriteAttribute(L"w:author", FormatUtils::XmlEncode(*author));
+				m_pXmlWriter->WriteAttribute(L"w:date", FormatUtils::XmlEncode(rev.Dttm.getString()));
+				m_pXmlWriter->WriteNodeEnd(L"", true, false);
 			}
 			else if ( rev.Type == Inserted )
 			{
 				WideString* author = dynamic_cast<WideString*>(m_document->RevisionAuthorTable->operator[](rev.Isbt));
-				//if it's a inserted run
+
                 m_pXmlWriter->WriteNodeBegin(L"w:ins", true);
                 m_pXmlWriter->WriteAttribute(L"w:author", FormatUtils::XmlEncode(*author));
                 m_pXmlWriter->WriteAttribute(L"w:date", FormatUtils::XmlEncode(rev.Dttm.getString()));
@@ -666,7 +667,7 @@ namespace DocFileFormat
 				
 				VMLPictureMapping	oVmlMapper (m_context, &oleWriter, true, _caller);
 
-				if (!m_shapeIdOwner.empty())		//4571833.doc
+				if (false == m_shapeIdOwner.empty())		//4571833.doc
 					oVmlMapper.m_shapeId = m_shapeIdOwner;
 
 				if (m_document->nWordVersion > 0)
@@ -721,7 +722,11 @@ namespace DocFileFormat
 						RELEASEOBJECT( chpxs );
 					}
 				}
-				oleWriter.WriteString( _lastOLEObject ); _lastOLEObject.clear();
+				oleWriter.WriteString( _lastOLEObject );
+				
+				if (false == m_bOleInPicture)
+					_lastOLEObject.clear();
+
                 oleWriter.WriteNodeEnd( L"w:object" );
 
 				if (!oVmlMapper.m_isEmbedded && oVmlMapper.m_isEquation)
@@ -806,8 +811,9 @@ namespace DocFileFormat
 				}
 				XMLTools::XMLElement elem(L"w:br");
 				//СЗ в МРФ Техноград о предоставлении ТП 1 квартал 2019_MO_Q31.doc
-                //elem.AppendAttribute(L"w:type", L"textWrapping");
-                //elem.AppendAttribute(L"w:clear", L"all");
+				//Документ на бланке 2.doc
+                elem.AppendAttribute(L"w:type", L"textWrapping");
+                elem.AppendAttribute(L"w:clear", L"all");
 
 				m_pXmlWriter->WriteString(elem.GetXMLString());
 			}
@@ -842,6 +848,8 @@ namespace DocFileFormat
 			}
 			else if (TextMark::FieldBeginMark == code)
 			{
+				_embeddedObject = false;
+				
 				int cpFieldStart = initialCp + i;
 				int cpFieldEnd = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
 				
@@ -928,14 +936,17 @@ namespace DocFileFormat
 					PictureDescriptor pictDiscr(chpx, m_document->WordDocumentStream, 0x7fffffff, m_document->nWordVersion);
 					ShapeContainer* pShape = m_document->GetOfficeArt()->GetShapeContainer(pSpa->GetShapeID());
 
-					if ((pShape) /*&& (false == pShape->isLastIdentify())*/)
+					if (pShape) ///*&& (false == pShape->isLastIdentify())
 					{
 						VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, pSpa, &pictDiscr,  _caller);
 						
-						m_pXmlWriter->WriteNodeBegin (L"w:pict");
+						std::wstring strNode = pShape->m_bOLE ? L"w:object" : L"w:pict";
+
+						pShape->m_bOleInPicture = pShape->m_bOLE ? true : false;
+						m_pXmlWriter->WriteNodeBegin (strNode);
 							
 						pShape->Convert(&oVmlWriter);
-						m_pXmlWriter->WriteNodeEnd (L"w:pict");
+						m_pXmlWriter->WriteNodeEnd (strNode);
 
 						bPicture = true;
 					}
@@ -1026,21 +1037,14 @@ namespace DocFileFormat
 
 						if (!bFormula)
 						{
-							if (false == _fieldLevels.empty())
+							m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+							
+							if ((false == _fieldLevels.empty()) && (_fieldLevels.back().bSeparate && !_fieldLevels.back().bResult))	//ege15.doc
 							{
-								if (_fieldLevels.back().bSeparate && !_fieldLevels.back().bResult)	//ege15.doc
-								{
-									m_pXmlWriter->WriteString(pictWriter.GetXmlString());
-									_fieldLevels.back().bResult = true;
-								}
-							}
-							else
-							{
-								m_pXmlWriter->WriteString(pictWriter.GetXmlString());
-							}
+								_fieldLevels.back().bResult = true;
+							}//imrtemplate(endnotes).doc
 						}
 					}
-
 				}                   
 			}
 			else if ((TextMark::AutoNumberedFootnoteReference == code) && fSpec)
@@ -1090,9 +1094,20 @@ namespace DocFileFormat
 			}
 			else if (!FormatUtils::IsControlSymbol(c) && ((int)c != 0xFFFF))
 			{
-
-				writeNotesReferences(cp);//for word95 & non-automatic notes
                 text += FormatUtils::GetXMLSymbol(c);
+				
+				//non-automatic notes
+				if ((m_document->IndividualFootnotesPlex != NULL) && (m_document->IndividualFootnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpText)))
+				{
+					_writeNoteRef = L"<w:footnoteRef/>";
+				}
+				else if ((m_document->IndividualEndnotesPlex != NULL) &&
+					(m_document->IndividualEndnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpAtn - m_document->FIB->m_RgLw97.ccpHdr - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpText)))
+				{
+					_writeNoteRef = L"<w:endnoteRef/>";
+				}
+				else 
+					writeNotesReferences(cp);//for word95
 			}
 
 			cp++;
@@ -1344,7 +1359,7 @@ namespace DocFileFormat
 	{
 		ParagraphPropertyExceptions* backup = _lastValidPapx;
 
-		std::map<short, short> boundaries;
+		std::map<short, short> mapBoundaries;
 		
 		int cp = initialCp;
 		int fc = m_document->FindFileCharPos( cp );
@@ -1387,8 +1402,9 @@ namespace DocFileFormat
 				}
 			}
 			if (nestingLevel == iTap_current)
-			{
-				for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
+			{ 
+				bool bPresent = false; //118854.doc
+				for ( std::list<SinglePropertyModifier>::reverse_iterator iter = papx->grpprl->rbegin(); !bPresent && iter != papx->grpprl->rend(); iter++ )
 				{
 					//find the tDef SPRM
 					DWORD code = iter->OpCode;
@@ -1406,19 +1422,27 @@ namespace DocFileFormat
 								boundary1 = FormatUtils::BytesToInt16( iter->Arguments + 1, i * 2 , iter->argumentsSize );
 								boundary2 = FormatUtils::BytesToInt16( iter->Arguments + 1, ( i + 1 ) * 2, iter->argumentsSize );
 
-								AddBoundary(boundary1, boundary2, boundaries);
+								//if (boundary1 < 0) boundary1 = 0;
+								//if (boundary2 < 0) boundary2 = 0;
+
+								mapBoundaries.insert(std::make_pair(boundary1, 0));
+								mapBoundaries.insert(std::make_pair(boundary2, 0));
+								//AddBoundary(boundary1, boundary2, mapBoundaries);
 							}
 							if (max_boundary < boundary2)
 								max_boundary = boundary2;
 
-							AddBoundary(boundary2, max_boundary, boundaries);
+							mapBoundaries.insert(std::make_pair(boundary2, 0));
+							mapBoundaries.insert(std::make_pair(max_boundary, 0));
+							//AddBoundary(boundary2, max_boundary, mapBoundaries);
+							bPresent = true;
 						}break;
 						default:
 							break;
 					}
 				}
 			}
-			if (nestingLevel != iTap_current && fEndNestingLevel && !boundaries.empty())
+			if (nestingLevel != iTap_current && fEndNestingLevel && !mapBoundaries.empty())
 				break;
 			//get the next papx
 			papx = findValidPapx( fcRowEnd );
@@ -1431,11 +1455,16 @@ namespace DocFileFormat
 
 		}
 
-		if ( !boundaries.empty() )
+		if ( !mapBoundaries.empty() )
 		{
-			for ( std::map<short, short>::iterator it = boundaries.begin(); it != boundaries.end(); ++it)
+			std::map<short, short>::iterator it = mapBoundaries.begin(); 
+			std::map<short, short>::iterator it_next = it; it_next++;
+
+			for ( ; it_next != mapBoundaries.end(); ++it_next, ++it)
 			{
-				grid.push_back( it->second );
+				int sz = it_next->first - it->first;
+				if (sz > 2)
+					grid.push_back( it_next->first - it->first );
 			}
 		}
 		_lastValidPapx = backup;
@@ -1701,20 +1730,9 @@ namespace DocFileFormat
 			ParagraphPropertyExceptions* papx = findValidPapx( fc );
 			TableInfo tai( papx, m_document->nWordVersion );
 
-			//cp = writeParagraph(cp);
-
-			//!!!TODO: Inner Tables!!!
 			if ( tai.iTap > nestingLevel )
 			{
-				//write the inner table if this is not a inner table (endless loop)
 				cp = writeTable( cp, tai.iTap );
-
-				//after a inner table must be at least one paragraph
-				/*if ( cp >= cpCellEnd )
-				{
-                m_pXmlWriter->WriteNodeBegin( L"w:p" );
-                m_pXmlWriter->WriteNodeEnd( L"w:p" );
-				}*/
 			}
 			else
 			{
@@ -1806,6 +1824,11 @@ namespace DocFileFormat
 		{
             m_pXmlWriter->WriteNodeBegin( L"w:endnoteRef", true );
             m_pXmlWriter->WriteNodeEnd( L"", true );
+		}
+		else if (false == _writeNoteRef.empty())
+		{
+			m_pXmlWriter->WriteString(_writeNoteRef);
+			_writeNoteRef.clear();
 		}
 		return true;
 	}

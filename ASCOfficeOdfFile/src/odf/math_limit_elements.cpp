@@ -190,20 +190,9 @@ void math_none::oox_convert(oox::math_context & Context)
 //---------------------------------------------------------------
 const wchar_t * math_mprescripts::ns = L"math";
 const wchar_t * math_mprescripts::name = L"mprescripts";
-//----------------------------------------------------------------------------------------------------
-void math_mprescripts::add_attributes( const xml::attributes_wc_ptr & Attributes )
-{
-
-}
-
-void math_mprescripts::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-	CP_CREATE_ELEMENT(content_);
-}
 
 void math_mprescripts::oox_convert(oox::math_context & Context)
 {
-
 }
 //---------------------------------------------------------------
 const wchar_t * math_mmultiscripts::ns = L"math";
@@ -216,12 +205,39 @@ void math_mmultiscripts::add_attributes( const xml::attributes_wc_ptr & Attribut
 
 void math_mmultiscripts::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	CP_CREATE_ELEMENT(content_);
+	if (Name == L"mprescripts")
+	{
+		bSeparate = true;
+	}
+	else
+	{
+		if (bSeparate)
+			CP_CREATE_ELEMENT(pre_content_);
+		else
+			CP_CREATE_ELEMENT(content_);
+	}
 }
 
 void math_mmultiscripts::oox_convert(oox::math_context & Context)
 {//1* elements
+	std::wostream & strm = Context.output_stream();
 
+	strm << L"<m:sPre>";	
+		strm << L"<m:sup>";
+			for (size_t i = 0; i < pre_content_.size(); i++)
+			{
+				office_math_element* math_element = dynamic_cast<office_math_element*>(pre_content_[i].get());
+				math_element->oox_convert(Context);
+			}
+		strm << L"</m:sup>";
+		strm << L"<m:e>";
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
+				math_element->oox_convert(Context);
+			}
+		strm << L"</m:e>";
+	strm << L"</m:sPre>";
 }
 //---------------------------------------------------------------
 const wchar_t * math_munderover::ns = L"math";

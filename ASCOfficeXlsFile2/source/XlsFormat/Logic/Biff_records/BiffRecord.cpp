@@ -31,7 +31,7 @@
  */
 
 #include "BiffRecord.h"
-#include <Binary/CFStream.h>
+#include "Binary/CFStream.h"
 #include "Binary/CFStreamCacheReader.h"
 
 
@@ -48,12 +48,15 @@ BiffRecord::~BiffRecord()
 }
 
 
-const bool BiffRecord::read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory)
+const bool BiffRecord::read(StreamCacheReaderPtr reader, BaseObject* parent, const bool is_mandatory)
 {
 	parent_ = parent;		
 
+	if (!reader)
+		return false;
+
 	// Find and read the required record
-	CFRecordPtr record = reader.getNextRecord(getTypeId(), is_mandatory);
+	CFRecordPtr record = reader->getNextRecord(getTypeId(), is_mandatory);
 	if(!record)
 	{
 		return false; // Required record hasn't been found
@@ -82,7 +85,7 @@ const bool BiffRecord::read(CFStreamCacheReader& reader, BaseObject* parent, con
 	return true; // Record reading OK
 }
 
-void BiffRecord::readFollowingContinue(CFStreamCacheReader& reader)
+void BiffRecord::readFollowingContinue(StreamCacheReaderPtr reader)
 {
 }
 

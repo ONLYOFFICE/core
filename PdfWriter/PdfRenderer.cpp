@@ -39,6 +39,8 @@
 #include "Src/Image.h"
 #include "Src/Font.h"
 #include "Src/FontCidTT.h"
+#include "Src/Annotation.h"
+#include "Src/Destination.h"
 
 #include "../DesktopEditor/graphics/Image.h"
 #include "../DesktopEditor/graphics/structures.h"
@@ -47,7 +49,11 @@
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Image.h"
 
+#include "../UnicodeConverter/UnicodeConverter.h"
+
 #include "OnlineOfficeBinToPdf.h"
+
+#include <iostream>
 
 #if defined(GetTempPath)
 #undef GetTempPath
@@ -546,14 +552,18 @@ void CPdfRenderer::SetDocumentID(const std::wstring& wsDocumentID)
 
     m_pDocument->SetDocumentID(wsDocumentID);
 }
-void CPdfRenderer::SaveToFile(const std::wstring& wsPath)
+int CPdfRenderer::SaveToFile(const std::wstring& wsPath)
 {
+	// TODO: Переделать на код ошибки
 	if (!IsValid())
-		return;
+		return 1;
 
 	m_oCommandManager.Flush();
 
-	m_pDocument->SaveToFile(wsPath);
+	if (!m_pDocument->SaveToFile(wsPath))
+		return 1;
+
+	return 0;
 }
 void CPdfRenderer::SetTempFolder(const std::wstring& wsPath)
 {
@@ -1150,6 +1160,20 @@ HRESULT CPdfRenderer::EndCommand(const DWORD& dwType)
 			m_lClipDepth--;
 		}
 	}
+	else if (c_nPageType == dwType)
+	{
+		for (int nIndex = 0, nCount = m_vDestinations.size(); nIndex < nCount; ++nIndex)
+		{
+			TDestinationInfo& oInfo = m_vDestinations.at(nIndex);
+			if (m_nPagesCount > oInfo.unDestPage && m_nPagesCount > oInfo.unPage)
+			{
+				AddLink(oInfo.unPage, oInfo.dX, oInfo.dY, oInfo.dW, oInfo.dH, oInfo.dDestX, oInfo.dDestY, oInfo.unDestPage);
+				m_vDestinations.erase(m_vDestinations.begin() + nIndex);
+				nIndex--;
+				nCount--;
+			}
+		}
+	}
 
 	return S_OK;
 }
@@ -1455,6 +1479,30 @@ HRESULT CPdfRenderer::CommandString(const LONG& lType, const std::wstring& sComm
 {
 	return S_OK;
 }
+HRESULT CPdfRenderer::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip)
+{
+	NSUnicodeConverter::CUnicodeConverter conv;
+	CAnnotation* pAnnot = m_pDocument->CreateUriLinkAnnot(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), conv.SASLprepToUtf8(wsUrl).c_str());
+	pAnnot->SetBorderStyle(EBorderSubtype::border_subtype_Solid, 0);
+	return S_OK;
+}
+HRESULT CPdfRenderer::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage)
+{
+	unsigned int unPagesCount = m_pDocument->GetPagesCount();
+	if (unPagesCount == 0)
+		return S_OK;
+
+	if (!m_pDocument->GetPage(nPage))
+	{
+		m_vDestinations.push_back(TDestinationInfo(unPagesCount - 1, dX, dY, dW, dH, dDestX, dDestY, nPage));
+	}
+	else
+	{
+		AddLink(unPagesCount - 1, dX, dY, dW, dH, dDestX, dDestY, nPage);
+	}
+
+	return S_OK;
+}
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера
 //----------------------------------------------------------------------------------------
@@ -1577,12 +1625,12 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 		for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
 		{
             // making full-transparent pixels white
-            if (pDataMem[3] == 0)
-            {
-                pDataMem[0] = 255;
-                pDataMem[1] = 255;
-                pDataMem[2] = 255;
-            }
+			if (pDataMem[3] == 0)
+			{
+				pDataMem[0] = 255;
+				pDataMem[1] = 255;
+				pDataMem[2] = 255;
+			}
 
             if (!bAlpha && (pDataMem[3] < 255))
 			{
@@ -1711,7 +1759,12 @@ void CPdfRenderer::UpdateFont()
 	if (L"" != wsFontPath)
 	{
 		// TODO: Пока мы здесь предполагаем, что шрифты только либо TrueType, либо OpenType
-		m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72);
+		if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72))
+		{
+			std::wcout << L"PDF Writer: Can't load fontfile " << wsFontPath.c_str() << "\n";
+			return;
+		}
+
 		std::wstring wsFontType = m_pFontManager->GetFontType();
 		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
 			m_pFont = m_pDocument->CreateTrueTypeFont(wsFontPath, lFaceIndex);
@@ -2132,4 +2185,19 @@ void CPdfRenderer::CBrushState::Reset()
 	m_pShadingColors      = NULL;
 	m_pShadingPoints      = NULL;
 	m_lShadingPointsCount = 0;
+}
+void CPdfRenderer::AddLink(const unsigned int& unPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage)
+{
+	CPage* pCurPage  = m_pDocument->GetPage(unPage);
+	CPage* pDestPage = m_pDocument->GetPage(unDestPage);
+	if (!pCurPage || !pDestPage)
+		return;
+
+	CDestination* pDestination = m_pDocument->CreateDestination(unDestPage);
+	if (!pDestination)
+		return;
+
+	pDestination->SetXYZ(MM_2_PT(dDestX), pDestPage->GetHeight() - MM_2_PT(dDestY), 0);
+	CAnnotation* pAnnot = m_pDocument->CreateLinkAnnot(pCurPage, TRect(MM_2_PT(dX), pCurPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), pDestination);
+	pAnnot->SetBorderStyle(EBorderSubtype::border_subtype_Solid, 0);
 }

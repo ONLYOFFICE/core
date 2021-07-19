@@ -50,7 +50,7 @@ public:
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-		RelsType type)
+		_rels_type type)
     {
         pptx_drawings_.push_back(d);
 		
@@ -79,7 +79,7 @@ public:
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-		RelsType type)
+		_rels_type type)
     {
 	
 		bool present = false;
@@ -153,7 +153,7 @@ void pptx_drawings::add(_pptx_drawing const & d,
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-        RelsType type)
+        _rels_type type)
 {
     impl_->add(d, isInternal, rid, ref, type);
 }
@@ -161,7 +161,7 @@ void pptx_drawings::add(/**/
         bool isInternal,
         std::wstring const & rid,
         std::wstring const & ref,
-        RelsType type)
+        _rels_type type)
 {
     impl_->add(isInternal, rid, ref, type);
 }

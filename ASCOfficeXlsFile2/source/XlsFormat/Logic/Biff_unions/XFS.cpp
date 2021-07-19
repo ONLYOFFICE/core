@@ -183,10 +183,25 @@ int XFS::serialize(std::wostream & stream)
 		}
 		CP_XML_NODE(L"cellXfs")
 		{
-			CP_XML_ATTR(L"count", m_arCellXFs.size());
-            for (size_t i = 0; i < m_arCellXFs.size(); i++)
+			if (false == m_arCellXFs.empty())
 			{
-				m_arCellXFs[i]->serialize(CP_XML_STREAM());
+				CP_XML_ATTR(L"count", m_arCellXFs.size());
+				for (size_t i = 0; i < m_arCellXFs.size(); i++)
+				{
+					m_arCellXFs[i]->serialize(CP_XML_STREAM());
+				}
+			}
+			else
+			{
+				CP_XML_ATTR(L"count",1);
+				CP_XML_NODE(L"xf")
+				{
+					CP_XML_ATTR(L"xfId", 0);
+					CP_XML_ATTR(L"numFmtId", 0);
+					CP_XML_ATTR(L"fontId", 0);
+					CP_XML_ATTR(L"fillId", 0);
+					CP_XML_ATTR(L"borderId", 0);
+				}
 			}
 		}
 	}

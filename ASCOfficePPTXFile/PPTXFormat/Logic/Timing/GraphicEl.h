@@ -46,7 +46,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(GraphicEl)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				XmlUtils::CXmlNode oNode;
@@ -82,7 +81,52 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:graphicEl"), XmlUtils::CreateNode(_T("p:dgm"), oAttr));
 			}
-		public:
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteString2(0, dgmId);
+					pWriter->WriteLimit2(1, dgmBuildStep);
+					pWriter->WriteLimit2(2, chartBuildStep);
+					pWriter->WriteInt2(3, seriesIdx);
+					pWriter->WriteInt2(4, categoryIdx);
+					pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	dgmId = pReader->GetString2();
+					else if (1 == _at)	dgmBuildStep = pReader->GetUChar();
+					else if (2 == _at)	chartBuildStep = pReader->GetUChar();
+					else if (3 == _at)	seriesIdx = pReader->GetLong();
+					else if (4 == _at)	categoryIdx = pReader->GetLong();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
 			//Dgm
 			nullable_string						dgmId;
 			nullable_limit<Limit::DgmBuild>		dgmBuildStep;

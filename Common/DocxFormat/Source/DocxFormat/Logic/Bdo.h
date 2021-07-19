@@ -46,14 +46,14 @@ namespace OOX
 		class CBdo : public WritingElementWithChilds<>
 		{
 		public:
-			CBdo()
+			CBdo(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 			}
-			CBdo(XmlUtils::CXmlNode &oNode)
+			CBdo(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oNode );
 			}
-			CBdo(XmlUtils::CXmlLiteReader& oReader)
+			CBdo(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oReader );
 			}

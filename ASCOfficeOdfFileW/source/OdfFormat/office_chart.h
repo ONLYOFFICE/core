@@ -37,6 +37,8 @@
 #include <xml/nodetype.h>
 
 #include "common_attlists.h"
+#include "charttimeunit.h"
+#include "chartclass.h"
 
 #include "text_elements.h"
 
@@ -61,7 +63,6 @@ public:
     office_element_ptr_array content_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_chart);
 
 ///common-chart-attlis
@@ -81,7 +82,7 @@ public:
 
     odf_types::common_draw_size_attlist	common_draw_size_attlist_;
     common_chart_attlist		common_attlist_;
-    _CP_OPT(std::wstring)		chart_class_;
+	odf_types::chart_class		chart_class_;
     _CP_OPT(std::wstring)		chart_column_mapping_;
     _CP_OPT(std::wstring)		chart_row_mapping_;
 };
@@ -104,7 +105,6 @@ public:
     chart_chart_attlist				chart_chart_attlist_;
 	office_element_ptr_array		content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_chart);
 
 /// chart-title-attlist
@@ -136,7 +136,6 @@ public:
     chart_title_attlist chart_title_attlist_;
     office_element_ptr	text_p_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_title);
 
 ///  chart:subtitle
@@ -158,7 +157,6 @@ public:
     office_element_ptr text_p_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_subtitle);
 
 ///  chart:footer
@@ -180,7 +178,6 @@ public:
 	office_element_ptr			text_p_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_footer);
 
 class chart_legend_attlist
@@ -218,7 +215,6 @@ public:
     chart_legend_attlist chart_legend_attlist_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_legend);
 
 
@@ -256,7 +252,6 @@ public:
 
 	office_element_ptr_array content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_plot_area);
 
 class chart_wall_attlist
@@ -307,7 +302,6 @@ public:
     common_chart_attlist		common_attlist_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_floor);
 
 class chart_axis_attlist 
@@ -317,6 +311,7 @@ public:
 
     _CP_OPT(std::wstring)	chart_dimension_;
     _CP_OPT(std::wstring)	chart_name_;
+	_CP_OPT(std::wstring)	axis_type_;
 	common_chart_attlist	common_attlist_;
 };
 
@@ -339,7 +334,6 @@ public:
     office_element_ptr_array content_; 
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_axis);
 
 class chart_grid_attlist
@@ -370,7 +364,6 @@ public:
     chart_grid_attlist chart_grid_attlist_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_grid);
 
 ///  chart:categories
@@ -391,7 +384,6 @@ public:
     _CP_OPT(std::wstring) table_cell_range_address_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_categories);
 
 class chart_series_attlist
@@ -399,11 +391,11 @@ class chart_series_attlist
 public:
     void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(std::wstring) chart_values_cell_range_address_;
-    _CP_OPT(std::wstring) chart_label_cell_address_;
-    _CP_OPT(std::wstring) chart_class_;
-    _CP_OPT(std::wstring) chart_attached_axis_;
-    common_chart_attlist  common_attlist_;
+    _CP_OPT(std::wstring)			chart_values_cell_range_address_;
+    _CP_OPT(std::wstring)			chart_label_cell_address_;
+    _CP_OPT(odf_types::chart_class) chart_class_;
+    _CP_OPT(std::wstring)			chart_attached_axis_;
+    common_chart_attlist			common_attlist_;
 
 };
 
@@ -424,9 +416,7 @@ public:
 
     chart_series_attlist chart_series_attlist_;
 	office_element_ptr_array content_;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_series);
 
 ///  chart:domain
@@ -447,7 +437,6 @@ public:
 	_CP_OPT(std::wstring) table_cell_range_address_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_domain);
 
 class chart_data_point_attlist
@@ -477,7 +466,6 @@ public:
     chart_data_point_attlist chart_data_point_attlist_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_data_point);
 
 ///  chart:mean-value
@@ -496,9 +484,7 @@ public:
 	virtual void serialize(std::wostream & _Wostream);
 
     common_chart_attlist		common_attlist_;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_mean_value);
 
 ///  chart:error-indicator
@@ -517,9 +503,7 @@ public:
 	virtual void serialize(std::wostream & _Wostream);
 
     common_chart_attlist		common_attlist_;
-
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_error_indicator);
 
 class chart_equation : public office_element_impl<chart_equation>
@@ -537,10 +521,8 @@ public:
 	virtual void serialize(std::wostream & _Wostream);
 
     common_chart_attlist		common_attlist_;
-	_CP_OPT(odf_types::Bool)				display_r_square_;
-
+	_CP_OPT(odf_types::Bool)	display_r_square_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_equation);
 
 
@@ -624,9 +606,32 @@ public:
     common_chart_attlist		common_attlist_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(chart_stock_range_line);
 
+//chartooo:date-scale
+//////////////////////////////////////////////////////////////////////////////////////////////////
+class chart_date_scale : public office_element_impl<chart_date_scale>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeChartDateScale;
+    CPDOCCORE_DEFINE_VISITABLE();
 
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
+
+	virtual void serialize(std::wostream & _Wostream);
+
+	_CP_OPT(odf_types::chart_time_unit)	base_time_unit_;
+
+	_CP_OPT(unsigned int)				major_interval_value_;
+	_CP_OPT(odf_types::chart_time_unit)	major_interval_unit_;
+
+	_CP_OPT(unsigned int)				minor_interval_value_;
+ 	_CP_OPT(odf_types::chart_time_unit)	minor_interval_unit_;
+};
+CP_REGISTER_OFFICE_ELEMENT2(chart_date_scale);
 }
 }

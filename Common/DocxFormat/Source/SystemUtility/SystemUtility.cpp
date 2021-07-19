@@ -35,8 +35,8 @@
 	#include <windows.h>
 #endif
 
-#include "../../../DesktopEditor/common/File.h"
-#include "../../../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/common/File.h"
+#include "../../../../DesktopEditor/common/Directory.h"
 
 #include "../XML/Utils.h"
 
@@ -123,7 +123,18 @@ namespace OOX
         int nCurrentW       = 0;
         bool bIsUp          = false;
 
-#if !defined(_WIN32) && !defined (_WIN64)
+#if defined(_WIN32) || defined (_WIN64)
+		std::wstring prepending = std::wstring(FILE_SEPARATOR_STR) + FILE_SEPARATOR_STR + L"?";
+		if (0 == m_strFilename.find(prepending))
+		{
+			pDataNorm[nCurrentW++] = FILE_SEPARATOR_CHAR;
+			pDataNorm[nCurrentW++] = FILE_SEPARATOR_CHAR;
+			pDataNorm[nCurrentW++] = L'?';
+			pDataNorm[nCurrentW++] = FILE_SEPARATOR_CHAR;
+
+			nStart = nCurrent = 3;
+		}
+#else
         if (pData[nCurrent] == FILE_SEPARATOR_CHAR)
             pDataNorm[nCurrentW++] = pData[nCurrent];
 #endif
@@ -196,31 +207,6 @@ namespace OOX
 
 namespace OOX
 {
-    bool CSystemUtility::CreateFile(const std::wstring& strFileName)
-    {
-#if defined(_WIN32) || defined (_WIN64)
-        HANDLE hResult = ::CreateFileW(strFileName.c_str(), GENERIC_READ, 0, NULL,
-            CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-
-        if (hResult == INVALID_HANDLE_VALUE)
-            return false;
-        if (!CloseHandle(hResult))
-            return false;
-        
-        return true;
-#else
-        std::string path_string = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName);
-        FILE * pFile = fopen (path_string.c_str(), "wb");
-        if (NULL != pFile)
-        {
-            fclose (pFile);
-            return true;
-        }
-
-        return false;
-#endif
-    }
-
     bool CSystemUtility::IsFileExist(const std::wstring& strFileName)
     {
         return NSFile::CFileBinary::Exists(strFileName);

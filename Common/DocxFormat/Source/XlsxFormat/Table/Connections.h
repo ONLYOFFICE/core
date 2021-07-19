@@ -258,6 +258,45 @@ namespace OOX
 
 			nullable_int m_oCount;
 		};
+		class CRangePr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CRangePr)
+			CRangePr() {}
+			virtual ~CRangePr() {}
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+            virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<x15:rangePr");
+					WritingStringNullableAttrEncodeXmlString(L"sourceName",		m_oSourceName,		*m_oSourceName)
+				writer.WriteString(L"/>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
+
+				if ( oReader.IsEmptyNode() )
+					return;
+			}
+			virtual EElementType getType () const
+			{
+				return et_x_rangePr;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, L"sourceName",		m_oSourceName )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+			nullable_string		m_oSourceName;
+		};
 		class CDbPr : public WritingElement
 		{
 		public:
@@ -611,7 +650,18 @@ namespace OOX
 					if (m_oOlapPr.IsInit()) m_oOlapPr->toXML(writer);
 					if (m_oTextPr.IsInit()) m_oTextPr->toXML(writer);
 					if (m_oWebPr.IsInit())	m_oWebPr->toXML(writer);
-					//if (m_oExtLst.IsInit()) m_oExtLst->toXML(writer);
+					if (m_oRangePr.IsInit())
+					{
+						writer.WriteString(L"<extLst>");
+							writer.WriteString(L"<ext uri=\"{DE250136-89BD-433C-8126-D09CA5730AF9}\" xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\">");
+								writer.WriteString(L"<x15:connection");
+									WritingStringNullableAttrString(L"id", m_oIdExt, *m_oIdExt)
+								writer.WriteString(L">");
+									m_oRangePr->toXML(writer);
+								writer.WriteString(L"</x15:connection>");
+							writer.WriteString(L"</ext>");
+						writer.WriteString(L"</extLst>");
+					}
 				writer.WriteString(L"</connection>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -634,6 +684,8 @@ namespace OOX
 						m_oTextPr = oReader;
 					else if ( L"webPr" == sName )
 						m_oWebPr = oReader;
+					else if (L"rangePr" == sName) //x15
+						m_oRangePr = oReader;
 					else if (L"extLst" == sName)
 						m_oExtLst = oReader;
 				}
@@ -647,7 +699,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_Read_if		( oReader, L"type",	m_oType )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"name",	m_oName )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"id",	m_oId )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"id",	m_oIdExt )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"background",	m_oBackground )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"credentials",	m_oCredentials )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"deleted",		m_oDeleted )
@@ -666,15 +718,26 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"singleSignOnId", m_oSingleSignOnId )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, L"sourceFile", m_oSourceFile )
 				WritingElement_ReadAttributes_End( oReader )
+
+				if (m_oIdExt.IsInit())
+				{
+					m_oId = *m_oIdExt;
+					if (m_oId.IsInit() && m_oId->GetValue() > 0)
+					{
+						m_oIdExt.reset();
+					}
+				}
 			}
 			nullable_int		m_oType;	//EDatabaseSourceType
 			nullable_string		m_oName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oId;
+			nullable_string		m_oIdExt;
 
 			nullable<CDbPr>		m_oDbPr;
 			nullable<COlapPr>	m_oOlapPr;
 			nullable<CTextPr>	m_oTextPr;
 			nullable<CWebPr>	m_oWebPr;
+			nullable<CRangePr>	m_oRangePr;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
 			nullable<SimpleTypes::Spreadsheet::CCredMethod<>> m_oCredentials;

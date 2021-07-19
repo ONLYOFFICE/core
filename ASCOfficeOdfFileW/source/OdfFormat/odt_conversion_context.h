@@ -70,6 +70,7 @@ public:
 
 	virtual odf_drawing_context		* drawing_context();
 	virtual odf_text_context		* text_context();
+	virtual odf_controls_context	* controls_context();
 
 	virtual odf_style_context		* styles_context();
 		
@@ -87,7 +88,7 @@ public:
 
 	void add_paragraph_break(int type);
 
-	void start_hyperlink	(std::wstring ref);
+	void start_hyperlink	(const std::wstring& link, const std::wstring& location);
 	void end_hyperlink		();
 	
 	void start_bookmark		(int id, const std::wstring& name);
@@ -215,6 +216,8 @@ private:
 	
 	std::vector<odf_drawing_context_ptr>	drawing_context_;	
 	std::vector<odf_text_context_ptr>		text_context_;		//for embedded 
+	
+	odf_controls_context					controls_context_;	
 
 	std::vector<odf_element_state>		current_root_elements_; // for section, if needed
 	std::vector<odt_section_state>		sections_;

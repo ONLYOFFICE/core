@@ -63,7 +63,6 @@ hyphenation_keep hyphenation_keep::parse(const std::wstring & Str)
         return hyphenation_keep( Page );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return hyphenation_keep( Auto );
     }
 }

@@ -68,7 +68,7 @@ public:
 
 		if(m_ooxTableProps->m_oTblStyle.IsInit() && m_ooxTableProps->m_oTblStyle->m_sVal.IsInit())
 		{
-			std::wstring sStyle = m_ooxTableProps->m_oTblStyle->m_sVal.get2();
+			std::wstring sStyle = *m_ooxTableProps->m_oTblStyle->m_sVal;
 			RtfStylePtr oStyle;
 			if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyle, oStyle) )
 			{
@@ -181,10 +181,10 @@ public:
 			if ( oLook.bNoVBand )	oOutputProperty.m_bAutoNoColBand = 1;
 		}
 		if (m_ooxTableProps->m_oTblStyleRowBandSize.IsInit() && m_ooxTableProps->m_oTblStyleRowBandSize->m_oVal.IsInit())
-			oOutputProperty.m_nRowBandSize = m_ooxTableProps->m_oTblStyleRowBandSize->m_oVal->GetValue(); 
+			oOutputProperty.m_nRowBandSize = *m_ooxTableProps->m_oTblStyleRowBandSize->m_oVal; 
 
 		if (m_ooxTableProps->m_oTblStyleColBandSize.IsInit() && m_ooxTableProps->m_oTblStyleColBandSize->m_oVal.IsInit())
-			oOutputProperty.m_nColBandSize = m_ooxTableProps->m_oTblStyleColBandSize->m_oVal->GetValue(); 
+			oOutputProperty.m_nColBandSize = *m_ooxTableProps->m_oTblStyleColBandSize->m_oVal; 
 		
 		OOXtcPrReader::Parse(m_ooxTableProps->m_oTblW.GetPointer(), oOutputProperty.m_eWidthUnit, oOutputProperty.m_nWidth, true );
 		

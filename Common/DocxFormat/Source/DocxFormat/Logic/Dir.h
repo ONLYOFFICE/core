@@ -43,14 +43,14 @@ namespace OOX
 		class CDir : public WritingElementWithChilds<>
 		{
 		public:
-			CDir()
+			CDir(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 			}
-			CDir(XmlUtils::CXmlNode &oNode)
+			CDir(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oNode );
 			}
-			CDir(XmlUtils::CXmlLiteReader& oReader)
+			CDir(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oReader );
 			}

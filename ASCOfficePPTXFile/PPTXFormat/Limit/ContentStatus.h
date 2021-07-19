@@ -30,12 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_CONTENT_STATUS_INCLUDE_H_
-#define PPTX_LIMIT_CONTENT_STATUS_INCLUDE_H_
 
 #include "BaseLimit.h"
-
-
 
 namespace PPTX
 {
@@ -60,8 +56,19 @@ namespace PPTX
 					m_strValue = strValue;
 				}
 			}
+			virtual BYTE GetBYTECode() const
+			{
+				if (L"Draft" == m_strValue)		return 0;
+				if (L"Reviewed" == m_strValue)	return 1;
+				if (L"Final" == m_strValue)		return 2;
+				return 1;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				if (src == 0) m_strValue = L"Draft";
+				else if (src == 1) m_strValue = L"Reviewed";
+				else if (src == 2) m_strValue = L"Final";
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_CONTENT_STATUS_INCLUDE_H_

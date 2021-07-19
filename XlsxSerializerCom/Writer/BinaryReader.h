@@ -31,9 +31,6 @@
  */
 #pragma once
 
-#ifndef BINARY_READER
-#define BINARY_READER
-
 #include "../../DesktopEditor/common/StreamWriter.h"
 
 #include "../Common/BinReaderWriterDefines.h"
@@ -54,6 +51,9 @@ namespace OOX
 	{
 		class CPersonList;
 		class CThreadedComment;
+		class CDxf;
+		class CSortCondition;
+		class CFilterColumn;
 	}
 }
 
@@ -118,6 +118,7 @@ namespace BinXlsxRW
 		int ReadAutoFilter(BYTE type, long length, void* poResult);
 		int ReadFilterColumns(BYTE type, long length, void* poResult);
 		int ReadFilterColumn(BYTE type, long length, void* poResult);
+		int ReadFilterColumnExternal(OOX::Spreadsheet::CFilterColumn* pFilterColumn);
 		int ReadFilterFilters(BYTE type, long length, void* poResult);
 		int ReadFilterFilter(BYTE type, long length, void* poResult);
 		int ReadDateGroupItem(BYTE type, long length, void* poResult);
@@ -130,6 +131,7 @@ namespace BinXlsxRW
 		int ReadSortState(BYTE type, long length, void* poResult);
 		int ReadSortConditions(BYTE type, long length, void* poResult);
 		int ReadSortCondition(BYTE type, long length, void* poResult);
+		int ReadSortConditionExternal(OOX::Spreadsheet::CSortCondition* pSortCondition);
 		int ReadTableColumns(BYTE type, long length, void* poResult);
 		int ReadTableColumn(BYTE type, long length, void* poResult);
 		int ReadTableStyleInfo(BYTE type, long length, void* poResult);
@@ -180,6 +182,7 @@ namespace BinXlsxRW
 		int ReadAligment(BYTE type, long length, void* poResult);
 		int ReadDxfs(BYTE type, long length, void* poResult);
 		int ReadDxf(BYTE type, long length, void* poResult);
+		int ReadDxfExternal(OOX::Spreadsheet::CDxf* pDxf);
 		int ReadCellStyles(BYTE type, long length, void* poResult);
 		int ReadCellStyle(BYTE type, long length, void* poResult);
 		int ReadTableStyles(BYTE type, long length, void* poResult);
@@ -199,6 +202,7 @@ namespace BinXlsxRW
 		int Read();
 		int ReadWorkbookTableContent(BYTE type, long length, void* poResult);
 		int ReadWorkbookPr(BYTE type, long length, void* poResult);
+		int ReadProtection(BYTE type, long length, void* poResult);
 		int ReadBookViews(BYTE type, long length, void* poResult);
 		int ReadWorkbookView(BYTE type, long length, void* poResult);
 		int ReadExternalReferences(BYTE type, long length, void* poResult);
@@ -227,6 +231,8 @@ namespace BinXlsxRW
 		int ReadConnectionOlapPr(BYTE type, long length, void* poResult);
 		int ReadConnectionTextPr(BYTE type, long length, void* poResult);
 		int ReadConnectionWebPr(BYTE type, long length, void* poResult);
+		int ReadConnectionRangePr(BYTE type, long length, void* poResult);
+		int ReadSlicerCaches(BYTE type, long length, void* poResult);
 	};
 	class BinaryCommentReader : public Binary_CommonReader
 	{
@@ -300,6 +306,7 @@ namespace BinXlsxRW
 		int ReadPageMargins(BYTE type, long length, void* poResult);
 		int ReadPageSetup(BYTE type, long length, void* poResult);
 		int ReadHeaderFooter(BYTE type, long length, void* poResult);
+		int ReadProtection(BYTE type, long length, void* poResult);
 		int ReadRowColBreaks(BYTE type, long length, void* poResult);
 		int ReadBreak(BYTE type, long length, void* poResult);
 		int ReadPrintOptions(BYTE type, long length, void* poResult);
@@ -337,6 +344,7 @@ namespace BinXlsxRW
         int ReadDataValidations(BYTE type, long length, void* poResult);
 		int ReadDataValidationsContent(BYTE type, long length, void* poResult);
         int ReadDataValidation(BYTE type, long length, void* poResult);
+		int ReadSlicers(BYTE type, long length, void* poResult);
 		
 		void WriteComments();
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);
@@ -382,4 +390,3 @@ namespace BinXlsxRW
 		void initWorkbook(OOX::Spreadsheet::CWorkbook* pWorkbook);
 	};
 }
-#endif	// #ifndef BINARY_READER

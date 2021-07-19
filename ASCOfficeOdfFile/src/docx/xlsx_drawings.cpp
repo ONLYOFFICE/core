@@ -44,7 +44,7 @@ namespace oox {
 class xlsx_drawings::Impl
 {
 public:
-    void add(_xlsx_drawing & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel )//объект
+    void add(_xlsx_drawing & d, bool isInternal, std::wstring const & rid, std::wstring const & ref, _rels_type type, bool sheet_rel )//объект
     {
 		if ( type == typeControlProps || type == typeComment)
 		{
@@ -72,7 +72,7 @@ public:
  				drawing_rels_.push_back(_rel(false, d.action.hId, d.action.hRef, d.action.typeRels));	
 		}
     }
-    void add( bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel, bool vml_rel) //не объект
+    void add( bool isInternal, std::wstring const & rid, std::wstring const & ref, _rels_type type, bool sheet_rel, bool vml_rel) //не объект
     {
 		bool present = false;
 		
@@ -305,12 +305,12 @@ xlsx_drawings::~xlsx_drawings()
 }
 
 void xlsx_drawings::add(_xlsx_drawing & d, bool isInternal, std::wstring const & rid,
-															std::wstring const & ref, RelsType type, bool sheet_rel)
+															std::wstring const & ref, _rels_type type, bool sheet_rel)
 {
     impl_->add(d, isInternal, rid, ref, type, sheet_rel);
 }
 
-void xlsx_drawings::add( bool isInternal, std::wstring const & rid, std::wstring const & ref, RelsType type, bool sheet_rel, bool vml_rel)
+void xlsx_drawings::add( bool isInternal, std::wstring const & rid, std::wstring const & ref, _rels_type type, bool sheet_rel, bool vml_rel)
 {
     impl_->add(isInternal, rid, ref, type, sheet_rel, vml_rel);
 }

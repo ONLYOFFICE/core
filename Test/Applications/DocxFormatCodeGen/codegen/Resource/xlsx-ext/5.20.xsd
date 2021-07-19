@@ -1,0 +1,276 @@
+<xsd:schema targetNamespace="http://schemas.microsoft.com/office/spreadsheetml/2017/richdata2" elementFormDefault="qualified" xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:x2="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main" xmlns="http://schemas.microsoft.com/office/spreadsheetml/2017/richdata2" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlbasictypes.xsd"/>
+   <xsd:import namespace="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main" schemaLocation="xl14.xsd"/>
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlsheet.xsd"/>
+   <xsd:import namespace="http://schemas.microsoft.com/office/spreadsheetml/2020/richvaluerefresh" schemaLocation="xlrichvaluerefresh.xsd"/>
+   <xsd:element name="filterColumn" type="CT_RichFilterColumn"/>
+   <xsd:complexType name="CT_RichFilterColumn">
+     <xsd:choice minOccurs="0" maxOccurs="1">
+       <xsd:element name="filters" type="CT_RichFilters"/>
+       <xsd:element name="top10" type="CT_RichTop10"/>
+       <xsd:element name="customFilters" type="CT_CustomRichFilters"/>
+       <xsd:element name="dynamicFilter" type="CT_DynamicRichFilter"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList"/>
+     </xsd:choice>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichFilters">
+     <xsd:sequence>
+       <xsd:element name="filter" type="CT_RichFilter" minOccurs="0" maxOccurs="unbounded"/>
+       <xsd:element name="dateGroupItem" type="CT_RichDateGroupItem" minOccurs="0" maxOccurs="unbounded"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichFilter">
+     <xsd:attribute name="key" type="ST_RichFilterKey" use="optional"/>
+     <xsd:attribute name="val" type="x:ST_Xstring" use="optional"/>
+     <xsd:attribute name="blank" type="xsd:boolean" use="optional"/>
+     <xsd:attribute name="nodata" type="xsd:boolean" use="optional"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_CustomRichFilters">
+     <xsd:sequence>
+       <xsd:choice minOccurs="1" maxOccurs="2">
+         <xsd:element name="customFilter" minOccurs="0" maxOccurs="1" type="CT_CustomRichFilter"/>
+         <xsd:element name="extLst" minOccurs="0" maxOccurs="1" type="x:CT_ExtensionList"/>
+       </xsd:choice>
+     </xsd:sequence>
+     <xsd:attribute name="and" type="xsd:boolean" use="optional" default="false"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_CustomRichFilter">
+     <xsd:complexContent>
+       <xsd:extension base="x:CT_CustomFilter">
+         <xsd:attribute name="key" type="ST_RichFilterKey" use="optional"/>
+       </xsd:extension>
+     </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichTop10">
+     <xsd:complexContent>
+       <xsd:extension base="x:CT_Top10">
+         <xsd:attribute name="key" type="ST_RichFilterKey" use="optional"/>
+       </xsd:extension>
+     </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="CT_DynamicRichFilter">
+     <xsd:complexContent>
+       <xsd:extension base="x:CT_DynamicFilter">
+         <xsd:attribute name="key" type="ST_RichFilterKey" use="optional"/>
+       </xsd:extension>
+     </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichDateGroupItem">
+     <xsd:complexContent>
+       <xsd:extension base="x:CT_DateGroupItem">
+         <xsd:attribute name="key" type="ST_RichFilterKey" use="optional"/>
+       </xsd:extension>
+     </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:simpleType name="ST_RichFilterKey">
+     <xsd:restriction base="x:ST_Xstring"/>
+   </xsd:simpleType>
+   <xsd:element name="richSortCondition" type="CT_RichSortCondition"/>
+   <xsd:complexType name="CT_RichSortCondition">
+     <xsd:complexContent>
+       <xsd:extension base="x2:CT_SortCondition">
+         <xsd:attribute name="richSortKey" type="x:ST_Xstring" use="optional"/>
+       </xsd:extension>
+     </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="supportingPropertyBags" type="CT_SupportingPropertyBags"/>
+   <xsd:complexType name="CT_SupportingPropertyBags">
+     <xsd:sequence>
+       <xsd:element name="spbArrays" minOccurs="0" maxOccurs="1" type="CT_SupportingPropertyBagArrayData"/>
+       <xsd:element name="spbData" minOccurs="1" maxOccurs="1" type="CT_SupportingPropertyBagData"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_SupportingPropertyBagData">
+     <xsd:sequence>
+       <xsd:element name="spb" minOccurs="0" maxOccurs="unbounded" type="CT_SupportingPropertyBag"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+     <xsd:attribute name="count" type="xsd:unsignedInt" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_SupportingPropertyBag">
+     <xsd:sequence>
+       <xsd:element name="v" minOccurs="1" maxOccurs="unbounded" type="CT_SupportingPropertyBagValue"/>
+     </xsd:sequence>
+     <xsd:attribute name="s" type="xsd:unsignedInt" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_SupportingPropertyBagValue">
+     <xsd:simpleContent>
+       <xsd:extension base="x:ST_Xstring"/>
+     </xsd:simpleContent>
+   </xsd:complexType>
+   <xsd:element name="spbStructures" type="CT_SupportingPropertyBagStructures"/>
+   <xsd:complexType name="CT_SupportingPropertyBagStructures">
+     <xsd:sequence>
+       <xsd:element name="s" minOccurs="0" maxOccurs="unbounded" type="CT_SupportingPropertyBagStructure"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+     <xsd:attribute name="count" type="xsd:unsignedInt" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_SupportingPropertyBagStructure">
+     <xsd:sequence>
+       <xsd:element name="k" minOccurs="1" maxOccurs="unbounded" type="CT_SupportingPropertyBagKey"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_SupportingPropertyBagKey">
+     <xsd:attribute name="n" type="x:ST_Xstring" use="required"/>
+     <xsd:attribute name="t" type="ST_SupportingPropertyBagValueType" use="optional" default="d"/>
+   </xsd:complexType>
+   <xsd:simpleType name="ST_SupportingPropertyBagValueType">
+     <xsd:restriction base="x:ST_Xstring">
+       <xsd:enumeration value="d"/>
+       <xsd:enumeration value="i"/>
+       <xsd:enumeration value="b"/>
+       <xsd:enumeration value="s"/>
+       <xsd:enumeration value="spb"/>
+       <xsd:enumeration value="spba"/>
+     </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:complexType name="CT_SupportingPropertyBagArrayData">
+     <xsd:sequence>
+       <xsd:element name="a" minOccurs="0" maxOccurs="unbounded" type="CT_SupportingPropertyBagArray"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+     <xsd:attribute name="count" type="xsd:unsignedInt" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_SupportingPropertyBagArray">
+     <xsd:sequence>
+       <xsd:element name="v" minOccurs="1" maxOccurs="unbounded" type="CT_SupportingPropertyBagArrayValue"/>
+     </xsd:sequence>
+     <xsd:attribute name="count" type="xsd:unsignedInt" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_SupportingPropertyBagArrayValue">
+     <xsd:simpleContent>
+       <xsd:extension base="x:ST_Xstring">
+         <xsd:attribute name="t" type="ST_SupportingPropertyBagArrayValueType" use="optional" default="d"/>
+       </xsd:extension>
+     </xsd:simpleContent>
+   </xsd:complexType>
+   <xsd:simpleType name="ST_SupportingPropertyBagArrayValueType">
+     <xsd:restriction base="x:ST_Xstring">
+       <xsd:enumeration value="d"/>
+       <xsd:enumeration value="i"/>
+       <xsd:enumeration value="b"/>
+       <xsd:enumeration value="s"/>
+       <xsd:enumeration value="spb"/>
+     </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:element name="arrayData" type="CT_ArrayData"/>
+   <xsd:complexType name="CT_ArrayData">
+     <xsd:sequence>
+       <xsd:element name="a" minOccurs="0" maxOccurs="unbounded" type="CT_Array"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+     <xsd:attribute name="count" type="xsd:unsignedInt" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_Array">
+     <xsd:sequence>
+       <xsd:element name="v" minOccurs="1" maxOccurs="unbounded" type="CT_ArrayValue"/>
+     </xsd:sequence>
+     <xsd:attribute name="r" type="xsd:unsignedInt" use="required"/>
+     <xsd:attribute name="c" type="xsd:unsignedInt" use="optional" default="1"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_ArrayValue">
+     <xsd:simpleContent>
+       <xsd:extension base="x:ST_Xstring">
+         <xsd:attribute name="t" type="ST_ArrayValueType" use="optional" default="d"/>
+       </xsd:extension>
+     </xsd:simpleContent>
+   </xsd:complexType>
+   <xsd:simpleType name="ST_ArrayValueType">
+     <xsd:restriction base="x:ST_Xstring">
+       <xsd:enumeration value="d"/>
+       <xsd:enumeration value="i"/>
+       <xsd:enumeration value="b"/>
+       <xsd:enumeration value="e"/>
+       <xsd:enumeration value="s"/>
+       <xsd:enumeration value="r"/>
+       <xsd:enumeration value="a"/>
+     </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:element name="richStyleSheet" type="CT_RichStylesheet"/>
+   <xsd:complexType name="CT_RichStylesheet">
+     <xsd:sequence>
+       <xsd:element name="dxfs" type="x:CT_Dxfs" minOccurs="0" maxOccurs="1"/>
+       <xsd:element name="richProperties" type="CT_RichFormatProperties" minOccurs="0" maxOccurs="1"/>
+       <xsd:element name="richStyles" type="CT_RichStyles" minOccurs="0" maxOccurs="1"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichFormatProperties">
+     <xsd:sequence>
+       <xsd:element name="rPr" minOccurs="1" maxOccurs="unbounded" type="CT_RichFormatProperty"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichFormatProperty">
+     <xsd:attribute name="n" type="x:ST_Xstring" use="required"/>
+     <xsd:attribute name="t" type="ST_RichFormatPropertyType" use="required"/>
+   </xsd:complexType>
+   <xsd:simpleType name="ST_RichFormatPropertyType">
+     <xsd:restriction base="x:ST_Xstring">
+       <xsd:enumeration value="b"/>
+       <xsd:enumeration value="n"/>
+       <xsd:enumeration value="i"/>
+       <xsd:enumeration value="s"/>
+     </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:complexType name="CT_RichStyles">
+     <xsd:sequence>
+       <xsd:element name="rSty" minOccurs="1" maxOccurs="unbounded" type="CT_RichStyle"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichStyle">
+     <xsd:sequence>
+       <xsd:element name="rpv" minOccurs="0" maxOccurs="unbounded" type="CT_RichStylePropertyValue"/>
+     </xsd:sequence>
+     <xsd:attribute name="dxfid" type="x:ST_DxfId" use="optional"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichStylePropertyValue">
+     <xsd:simpleContent>
+       <xsd:extension base="xsd:string">
+         <xsd:attribute name="i" type="xsd:unsignedInt" use="required"/>
+       </xsd:extension>
+     </xsd:simpleContent>
+   </xsd:complexType>
+   <xsd:element name="rvTypesInfo" type="CT_RichValueTypesInfo"/>
+   <xsd:complexType name="CT_RichValueTypesInfo">
+     <xsd:sequence>
+       <xsd:element name="global" minOccurs="0" maxOccurs="1" type="CT_RichValueGlobalType"/>
+       <xsd:element name="types" minOccurs="0" maxOccurs="1" type="CT_RichValueTypes"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichValueTypes">
+     <xsd:sequence>
+       <xsd:element name="type" minOccurs="0" maxOccurs="unbounded" type="CT_RichValueType"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichValueGlobalType">
+     <xsd:sequence>
+       <xsd:element name="keyFlags" minOccurs="0" maxOccurs="1" type="CT_RichValueTypeKeyFlags"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichValueType">
+     <xsd:sequence>
+       <xsd:element name="keyFlags" minOccurs="0" maxOccurs="1" type="CT_RichValueTypeKeyFlags"/>
+       <xsd:element name="extLst" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+     <xsd:attribute name="name" type="xsd:string" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichValueTypeKeyFlags">
+     <xsd:sequence>
+       <xsd:element name="key" minOccurs="1" maxOccurs="unbounded" type="CT_RichValueTypeReservedKey"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichValueTypeReservedKey">
+     <xsd:sequence>
+       <xsd:element name="flag" minOccurs="1" maxOccurs="unbounded" type="CT_RichValueTypeReservedKeyFlag"/>
+     </xsd:sequence>
+     <xsd:attribute name="name" type="xsd:string" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_RichValueTypeReservedKeyFlag">
+     <xsd:attribute name="name" type="xsd:string" use="required"/>
+     <xsd:attribute name="value" type="xsd:boolean" use="required"/>
+   </xsd:complexType>
+ </xsd:schema>

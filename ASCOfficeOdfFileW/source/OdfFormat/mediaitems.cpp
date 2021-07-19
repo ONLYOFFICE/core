@@ -48,33 +48,33 @@ _mediaitems::item::item(const std::wstring & _oox_ref, Type _type, const std::ws
 {    
 }
 
-void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wstring & odf_ref)
+void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type_,  std::wstring & odf_ref)
 {
 	std::wstring output_sub_path;
 	std::wstring output_fileName;
     size_t number = 0;
 	
-	if (type == typeImage)
+	if (type_ == typeImage)
 	{
 		output_sub_path = L"Pictures/";
 		number = count_image + 1;
 	}
-	else if (type == typeMedia)
+	else if (type_ == typeMedia)
 	{
 		output_sub_path = L"Media/";
 		number = count_media + 1;
 	}
-	else if (type == typeOleObject)
+	else if (type_ == typeOleObject)
 	{
 		output_sub_path = L"";
 		number = count_object + 1;
 	}
-	else if (type == typeObjectReplacement)
+	else if (type_ == typeObjectReplacement)
 	{
 		output_sub_path = L"ObjectReplacements/";
 		number = count_image_object + 1;
 	}	
-	output_fileName = utils::media::create_file_name(oox_ref, type, number); //guid???
+	output_fileName = utils::media::create_file_name(oox_ref, type_, number); //guid???
 	
 	std::wstring input_path = oox_ref;
 
@@ -95,23 +95,23 @@ void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wst
 	if (output_path.empty())
 	{
 		output_path = ( output_sub_path + output_fileName) ;
-		if ( type == typeImage)
+		if ( type_ == typeImage)
 		{
 			count_image++;
 		}
-		else if ( type == typeMedia)
+		else if ( type_ == typeMedia)
 		{
 			count_media++;
 		}
-		else if ( type == typeOleObject)
+		else if ( type_ == typeOleObject)
 		{
 			count_object++;
 		}
-		else if ( type == typeObjectReplacement)
+		else if ( type_ == typeObjectReplacement)
 		{
 			count_image_object++;
 		}
-		item item_(input_path, type, xml::utils::replace_text_to_xml(output_path));
+		item item_(input_path, type_, xml::utils::replace_text_to_xml(output_path));
 		
 		items_.push_back(item_);
 	}

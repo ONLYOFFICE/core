@@ -30,6 +30,7 @@
  *
  */
 #include "SimpleTypes_Word.h"
+#include "SimpleTypes_Drawing.h"
 
 namespace SimpleTypes
 {	
@@ -45,15 +46,19 @@ namespace SimpleTypes
 			{
 				sValue = sValue.substr(0, split);
 			}
+			size_t s0 = sValue.find(L"#"); // ala #ff9
+			if (0 == s0)
+			{
+				sValue = sValue.substr(1);
+			}
             //В документации не написано, что цвет может приходить строкой, но в реальных докуентах встречается и word это разруливает.
-            //CHighlightColor<highlightcolorNone> oHighlightColor(sValue);
-            CHighlightColor<> oHighlightColor(sValue);
-            if(SimpleTypes::highlightcolorNone != oHighlightColor.GetValue())
+            CPresetColorVal<> oPresetColorVal;
+            if(oPresetColorVal.FromStringIgnoreCase(sValue))
             {
                 this->m_eValue = hexcolorRGB;
-                m_unR = oHighlightColor.Get_R();
-                m_unG = oHighlightColor.Get_G();
-                m_unB = oHighlightColor.Get_B();
+                m_unR = oPresetColorVal.Get_R();
+                m_unG = oPresetColorVal.Get_G();
+                m_unB = oPresetColorVal.Get_B();
             }
             else if ( 6 <= sValue.length() )
             {
@@ -82,13 +87,13 @@ namespace SimpleTypes
         {
             //В документации не написано, что цвет может приходить строкой, но в реальных докуентах встречается и word это разруливает.
             //CHighlightColor<highlightcolorNone> oHighlightColor(sValue);
-            CHighlightColor<> oHighlightColor(sValue);
-            if(SimpleTypes::highlightcolorNone != oHighlightColor.GetValue())
+            CPresetColorVal<> oPresetColorVal;
+            if(oPresetColorVal.FromStringIgnoreCase(sValue))
             {
                 this->m_eValue = hexcolorRGB;
-                m_unR = oHighlightColor.Get_R();
-                m_unG = oHighlightColor.Get_G();
-                m_unB = oHighlightColor.Get_B();
+                m_unR = oPresetColorVal.Get_R();
+                m_unG = oPresetColorVal.Get_G();
+                m_unB = oPresetColorVal.Get_B();
             }
             else if ( 6 <= sValue.length() )
             {

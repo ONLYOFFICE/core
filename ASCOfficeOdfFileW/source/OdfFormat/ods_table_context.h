@@ -68,7 +68,7 @@ public:
 
 	void add_autofilter(std::wstring ref);
 	
-	void start_table_part(std::wstring name, std::wstring ref);
+	void start_table_part(const std::wstring &name, std::wstring ref);
 		void set_table_part_autofilter(bool val);
 		void add_table_part_column(std::wstring name);
 	void end_table_part();
@@ -77,7 +77,7 @@ public:
 		void set_data_validation_operator(int val);
 		void set_data_validation_content(std::wstring val1, std::wstring val2);
 		void set_data_validation_allow_empty(bool val);
-		void set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display);
+		void set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display, int type);
 		void set_data_validation_promt(const std::wstring &title, const std::wstring &content, bool display);
 	void end_data_validation();
 

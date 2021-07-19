@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_SHAREDSTRINGS_FILE_INCLUDE_H_
-#define OOX_SHAREDSTRINGS_FILE_INCLUDE_H_
 
 #include "../Xlsx.h"
 #include "../CommonInclude.h"
@@ -192,4 +190,3 @@ namespace OOX
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_SHAREDSTRINGS_FILE_INCLUDE_H_

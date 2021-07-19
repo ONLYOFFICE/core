@@ -74,31 +74,31 @@ namespace PPTX
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
-			if(name == _T("seq"))
+			if(name == L"seq")
 				m_node.reset(new Logic::Seq(node));
-			else if(name == _T("par"))
+			else if(name == L"par")
 				m_node.reset(new Logic::Par(node));
-			else if(name == _T("audio"))
+			else if(name == L"audio")
 				m_node.reset(new Logic::Audio(node));
-			else if(name == _T("video"))
+			else if(name == L"video")
 				m_node.reset(new Logic::Video(node));
-			else if(name == _T("excl"))
+			else if(name == L"excl")
 				m_node.reset(new Logic::Excl(node));
-			else if(name == _T("anim"))
+			else if(name == L"anim")
 				m_node.reset(new Logic::Anim(node));
-			else if(name == _T("animClr"))
+			else if(name == L"animClr")
 				m_node.reset(new Logic::AnimClr(node));
-			else if(name == _T("animEffect"))
+			else if(name == L"animEffect")
 				m_node.reset(new Logic::AnimEffect(node));
-			else if(name == _T("animMotion"))
+			else if(name == L"animMotion")
 				m_node.reset(new Logic::AnimMotion(node));
-			else if(name == _T("animRot"))
+			else if(name == L"animRot")
 				m_node.reset(new Logic::AnimRot(node));
-			else if(name == _T("animScale"))
+			else if(name == L"animScale")
 				m_node.reset(new Logic::AnimScale(node));
-			else if(name == _T("cmd"))
+			else if(name == L"cmd")
 				m_node.reset(new Logic::Cmd(node));
-			else if(name == _T("set"))
+			else if(name == L"set")
 				m_node.reset(new Logic::Set(node));
 			else m_node.reset();
 		}
@@ -106,41 +106,99 @@ namespace PPTX
 		void TimeNodeBase::GetTimeNodeFrom(XmlUtils::CXmlNode& element)
 		{
 			XmlUtils::CXmlNode oNode;			
-			if(element.GetNode(_T("p:seq"), oNode))
+			if(element.GetNode(L"p:seq", oNode))
 				m_node.reset(new Logic::Seq(oNode));
-			else if(element.GetNode(_T("p:par"), oNode))
+			else if(element.GetNode(L"p:par", oNode))
 				m_node.reset(new Logic::Par(oNode));
-			else if(element.GetNode(_T("p:audio"), oNode))
+			else if(element.GetNode(L"p:audio", oNode))
 				m_node.reset(new Logic::Audio(oNode));
-			else if(element.GetNode(_T("p:video"), oNode))
+			else if(element.GetNode(L"p:video", oNode))
 				m_node.reset(new Logic::Video(oNode));
-			else if(element.GetNode(_T("p:excl"), oNode))
+			else if(element.GetNode(L"p:excl", oNode))
 				m_node.reset(new Logic::Excl(oNode));
-			else if(element.GetNode(_T("p:anim"), oNode))
+			else if(element.GetNode(L"p:anim", oNode))
 				m_node.reset(new Logic::Anim(oNode));
-			else if(element.GetNode(_T("p:animClr"), oNode))
+			else if(element.GetNode(L"p:animClr", oNode))
 				m_node.reset(new Logic::AnimClr(oNode));
-			else if(element.GetNode(_T("p:animEffect"), oNode))
+			else if(element.GetNode(L"p:animEffect", oNode))
 				m_node.reset(new Logic::AnimEffect(oNode));
-			else if(element.GetNode(_T("p:animMotion"), oNode))
+			else if(element.GetNode(L"p:animMotion", oNode))
 				m_node.reset(new Logic::AnimMotion(oNode));
-			else if(element.GetNode(_T("p:animRot"), oNode))
+			else if(element.GetNode(L"p:animRot", oNode))
 				m_node.reset(new Logic::AnimRot(oNode));
-			else if(element.GetNode(_T("p:animScale"), oNode))
+			else if(element.GetNode(L"p:animScale", oNode))
 				m_node.reset(new Logic::AnimScale(oNode));
-			else if(element.GetNode(_T("p:cmd"), oNode))
+			else if(element.GetNode(L"p:cmd", oNode))
 				m_node.reset(new Logic::Cmd(oNode));
-			else if(element.GetNode(_T("p:set"), oNode))
+			else if(element.GetNode(L"p:set", oNode))
 				m_node.reset(new Logic::Set(oNode));
 			else m_node.reset();
 		}
-
 		std::wstring TimeNodeBase::toXML() const
 		{
 			if (m_node.IsInit())
 				return m_node->toXML();
-			return _T("");
+			return L"";
 		}
+		void TimeNodeBase::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (false == m_node.IsInit()) return;
 
+			m_node->toXmlWriter(pWriter);
+		}
+		void TimeNodeBase::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			BYTE _type = pReader->GetUChar();
+			
+			switch (_type)
+			{
+				case 1:	m_node = new Logic::Par(); break;
+				case 2:	m_node = new Logic::Seq(); break;
+				case 3:	m_node = new Logic::Audio(); break;
+				case 4:	m_node = new Logic::Video(); break;
+				case 5:	m_node = new Logic::Excl(); break;
+				case 6:	m_node = new Logic::Anim(); break;
+				case 7:	m_node = new Logic::AnimClr(); break;
+				case 8:	m_node = new Logic::AnimEffect(); break;
+				case 9:	m_node = new Logic::AnimMotion(); break;
+				case 10: m_node = new Logic::AnimRot(); break;
+				case 11: m_node = new Logic::AnimScale(); break;
+				case 12: m_node = new Logic::Cmd(); break;
+				case 13: m_node = new Logic::Set(); break;
+				default:break;
+			}
+			if (m_node.IsInit())
+			{
+				m_node->fromPPTY(pReader);
+			}
+			else
+			{
+				pReader->SkipRecord();
+			}
+		}
+		void TimeNodeBase::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			switch (m_node->getType())
+			{
+				case OOX::et_p_par:			pWriter->StartRecord(1); break;
+				case OOX::et_p_seq:			pWriter->StartRecord(2); break;
+				case OOX::et_p_audio:		pWriter->StartRecord(3); break;
+				case OOX::et_p_video:		pWriter->StartRecord(4); break;
+				case OOX::et_p_excl:		pWriter->StartRecord(5); break;
+				case OOX::et_p_anim:		pWriter->StartRecord(6); break;
+				case OOX::et_p_animClr:		pWriter->StartRecord(7); break;
+				case OOX::et_p_animEffect:	pWriter->StartRecord(8); break;
+				case OOX::et_p_animMotion:	pWriter->StartRecord(9); break;
+				case OOX::et_p_animRot:		pWriter->StartRecord(10); break;
+				case OOX::et_p_animScale:	pWriter->StartRecord(11); break;
+				case OOX::et_p_cmd:			pWriter->StartRecord(12); break;
+				case OOX::et_p_set:			pWriter->StartRecord(13); break;
+				default:					pWriter->StartRecord(0); break;
+			}
+			if (m_node.IsInit())
+				m_node->toPPTY(pWriter);
+
+			pWriter->EndRecord();
+		}
 	} // namespace Logic
 } // namespace PPTX

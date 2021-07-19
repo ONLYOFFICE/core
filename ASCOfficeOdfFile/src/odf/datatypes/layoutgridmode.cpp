@@ -68,7 +68,6 @@ layout_grid_mode layout_grid_mode::parse(const std::wstring & Str)
         return layout_grid_mode( Both );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return layout_grid_mode( None );
     }
 }

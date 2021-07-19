@@ -213,28 +213,7 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 	{
 		int repeated_default = _start_row - current_table()->current_row() - 1;
 
-		while(true)
-		{
-			//делим на 3 - до, с комметом, после;
-			int comment_idx = current_table()->is_row_comment(current_table()->current_row() + 1, repeated_default);
-			
-			if (comment_idx < 0) break;
-			int rows = current_table()->comments_[comment_idx].row - current_table()->current_row() - 1;
-
-			start_row(current_table()->current_row() + 1, rows, 0, true);
-			end_row();
-			
-			start_row(current_table()->current_row() + 1, 1, 0, true);
-			end_row();
-
-			repeated_default -= (1 + rows);
-		}
-
-		if (repeated_default > 0)
-		{		
-			start_row(_start_row - repeated_default, repeated_default, 0, true);
-			end_row();
-		}
+		add_default_row(repeated_default);
 	}
 //-------------------------------------------------------------------------------------------
 	while (level < current_table()->current_level())
@@ -350,7 +329,7 @@ void ods_conversion_context::set_comment_rect(double l, double t, double w, doub
 	current_table()->set_comment_rect(l,t,w,h);
 }
 /////////////////////////////
-void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::wstring & link, const std::wstring & display, bool bLocation)
+void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::wstring & link, const std::wstring & display, const std::wstring & location)
 {
 //////////////////////////////////////////////////////////////////
  	std::vector<std::wstring> ref_cells;
@@ -368,7 +347,7 @@ void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::
 		{ 
 			for (long row = start_row; row <= end_row; row++)
 			{
-				current_table()->add_hyperlink(ref, col, row, link, bLocation);
+				current_table()->add_hyperlink(ref, col, row, link, location);
 				//ссылка одна, а вот отображаемый текст - разный
 			}
 		}
@@ -377,7 +356,7 @@ void ods_conversion_context::add_hyperlink(const std::wstring & ref, const std::
 	{
 		int col = -1, row = -1;
 		utils::parsing_ref (ref_cells[0], col, row);
-		current_table()->add_hyperlink(ref, col, row, link, bLocation);
+		current_table()->add_hyperlink(ref, col, row, link, location);
 	}
 }
 void ods_conversion_context::start_pivot_table(const std::wstring &name)
@@ -408,9 +387,9 @@ void ods_conversion_context::set_data_validation_operator(int val)
 {
 	table_context_.set_data_validation_operator(val);
 }
-void ods_conversion_context::set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display)
+void ods_conversion_context::set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display, int type)
 {
-	table_context_.set_data_validation_error(title, content, display);
+	table_context_.set_data_validation_error(title, content, display, type);
 }
 void ods_conversion_context::set_data_validation_promt(const std::wstring &title, const std::wstring &content, bool display)
 {
@@ -538,34 +517,51 @@ void ods_conversion_context::end_columns()
 void ods_conversion_context::start_rows()
 {
 }
+void ods_conversion_context::add_default_row(int repeated)
+{
+	if (repeated < 1) return;
+
+	if (repeated > 1)
+	{
+		int row_comment_repeated = 1;
+		int row_comment = current_table()->is_row_comment(current_table()->current_row() + 1, repeated);
+		int row_validation_repeated = repeated;
+		int row_validation = current_table()->is_row_validation(current_table()->current_row() + 1, row_validation_repeated);
+
+		int row_split = row_comment; int row_split_repeated = 1;
+		if (row_validation > 0)
+		{
+			if (row_split < 0 || row_validation < row_split)
+			{
+				row_split = row_validation;
+				row_split_repeated = row_validation_repeated;
+			}
+		}
+		if (row_split > current_table()->current_row() && row_split_repeated != repeated)
+		{//делим на 3 - до, с --, после;			
+			int r = current_table()->current_row();
+
+			add_default_row(row_split - r - 1);
+			add_default_row(row_split_repeated);
+			add_default_row(repeated + r + row_split_repeated - row_split - 1);
+
+			return;
+		}
+	}
+	
+	if (repeated > 0 && current_table()->get_last_row_repeated() < 1024)
+	{
+		start_row(current_table()->current_row() + 1, repeated, 0, true);
+		end_row();
+	}
+}
 void ods_conversion_context::end_rows()
 {
 	//add default last row
     int repeated = (std::max)(current_table()->dimension_row, 64) - current_table()->current_row();
 	if (repeated < 0) repeated = 1;
 
-	while(true)
-	{
-		//делим на 3 - до, с комметом, после;
-		int comment_idx = current_table()->is_row_comment(current_table()->current_row() + 1, repeated);
-		
-		if (comment_idx < 0) break;
-		int rows = current_table()->comments_[comment_idx].row - current_table()->current_row() - 1;
-
-		start_row(current_table()->current_row() + 1, rows, 0, true);
-		end_row();
-		
-		start_row(current_table()->current_row() + 1, 1, 0, true);
-		end_row();
-
-		repeated -= (1 + rows);
-	}
-
-	if (repeated > 0 && current_table()->get_last_row_repeated() < 1024)
-	{
-		start_row(current_table()->current_row() + 1, repeated, 0, true);
-		end_row();
-	}
+	add_default_row(repeated);
 }
 void ods_conversion_context::add_column(int start_column, int repeated, int level, bool _default)
 {
@@ -680,7 +676,7 @@ void ods_conversion_context::start_cell_text()
 	start_text_context();
 ////////////
 	office_element_ptr paragr_elm;
-	create_element(L"text", L"p",paragr_elm,this);
+	create_element(L"text", L"p", paragr_elm, this);
 	
 	current_text_context_->start_paragraph(paragr_elm);
 
@@ -698,6 +694,9 @@ void ods_conversion_context::start_cell_text()
 		text_a_->common_xlink_attlist_.href_ = state.link;
 		
 		current_text_context_->start_element(text_a_elm); // может быть стоит сделать собственый???
+		// libra дурит если в табличках будет вложенный span в гиперлинк ... оО (хотя это разрешено в спецификации!!!)
+
+		current_text_context_->single_paragraph_ = true;
 	}
 }
 

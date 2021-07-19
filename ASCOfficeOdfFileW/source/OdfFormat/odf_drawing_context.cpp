@@ -556,7 +556,9 @@ void odf_drawing_context::end_drawing()
 				if (impl_->current_drawing_state_.presentation_class_)
 				{
 					draw_layer = L"layout";
-					draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_placeholder_ = true;
+					
+					if (impl_->current_drawing_state_.oox_shape_preset_ != 3000)
+						draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_placeholder_ = true;
 				}
 			}
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_class_ = impl_->current_drawing_state_.presentation_class_;
@@ -789,7 +791,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 
 	current_level_.push_back(draw_elm);
 
-	odf_element_state state={draw_elm, style_name, style_shape_elm, level};
+	odf_element_state state(draw_elm, style_name, style_shape_elm, level);
 
 	if (current_drawing_state_.index_base < 0)
 	{
@@ -1268,7 +1270,7 @@ void odf_drawing_context::start_element(office_element_ptr elm, office_element_p
 		}
 	}
 
-	odf_element_state state = {elm, style_name, style_elm, level};
+	odf_element_state state(elm, style_name, style_elm, level);
 	impl_->current_drawing_state_.elements_.push_back(state);
 
 	impl_->current_level_.push_back(elm);
@@ -1328,11 +1330,16 @@ void odf_drawing_context::set_opacity(double percent_)
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
-		impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_ = percent(percent_);
-		break;
+	{
+		if (impl_->current_drawing_state_.oox_shape_preset_  == 3000)
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_image_opacity_ = percent(percent_);
+		else
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_ = percent(percent_);
+	}break;
 	case Line:
+	{
 		impl_->current_graphic_properties->svg_stroke_opacity_ = percent(percent_);
-		break;
+	}break;
 	}
 }
 void odf_drawing_context::set_grayscale()
@@ -2143,7 +2150,7 @@ void odf_drawing_context::get_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 		height_pt	= impl_->anchor_settings_.svg_height_->get_value_unit(length::pt);
 	}
 }
-void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
+void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt, bool reset_always)
 {
 	impl_->current_drawing_state_.cx_ = width_pt;
 	impl_->current_drawing_state_.cy_ = height_pt;
@@ -2167,18 +2174,20 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 			}
 			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);	
 		}
-	}else
+	}
+	else
 	{
-        if (!impl_->current_drawing_state_.svg_width_   && width_pt) 
+        if ((!impl_->current_drawing_state_.svg_width_ || reset_always) && width_pt) 
 			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
 
-        if (!impl_->current_drawing_state_.svg_height_  && height_pt) 
+        if ((!impl_->current_drawing_state_.svg_height_ || reset_always) && height_pt) 
 			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);
 	}
 }
 void odf_drawing_context::set_line_width(double pt)
 {
-	if (!impl_->current_graphic_properties)return;
+	if (!impl_->current_graphic_properties) return;
+
 	impl_->current_graphic_properties->svg_stroke_width_ = length(length(pt,length::pt).get_value_unit(length::cm), length::cm);
 }
 
@@ -2262,7 +2271,7 @@ std::wstring odf_drawing_context::add_marker_style(int type)
 	odf_writer::office_element_ptr marker_element;
 
 	odf_writer::create_element(L"draw",L"marker", marker_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(marker_element,false,true, style_family::Marker);
+	impl_->styles_context_->add_style(marker_element, false, true, style_family::Marker);
 	impl_->styles_context_->last_state()->set_name(str_types[type]);
 
 	draw_marker * marker = dynamic_cast<draw_marker *>(marker_element.get());
@@ -2325,6 +2334,36 @@ void odf_drawing_context::set_line_dash_preset(int style)
 			impl_->current_graphic_properties->draw_stroke_=line_style(line_style::Solid);		break;
 	}
 }
+void odf_drawing_context::set_text_properties(style_text_properties *text_properties)
+{
+	if (impl_->current_drawing_state_.elements_.empty()) return;
+
+	if (!impl_->current_text_properties)
+	{
+		draw_base* draw = dynamic_cast<draw_base*>(impl_->current_drawing_state_.elements_[0].elm.get());
+		if (draw)
+		{
+			if(!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_)
+			{
+				impl_->styles_context_->create_style(L"", style_family::Paragraph, true, false, -1);		
+			
+				office_element_ptr & style_shape_elm = impl_->styles_context_->last_state()->get_office_element();
+				style* style_ = dynamic_cast<style*>(style_shape_elm.get());
+				if (style_)
+				{
+					impl_->current_text_properties = style_->content_.get_style_text_properties();
+					draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_ = style_->style_name_;
+				}
+			}
+			else
+			{
+				//??? find by name
+			}
+		}
+	}
+	if (impl_->current_text_properties)
+		impl_->current_text_properties ->apply_from(text_properties);
+}
 void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *paragraph_properties)
 {
 	if (impl_->current_drawing_state_.elements_.empty()) return;
@@ -2354,6 +2393,15 @@ void odf_drawing_context::set_paragraph_properties(style_paragraph_properties *p
 	}
 	if (impl_->current_paragraph_properties)
 		impl_->current_paragraph_properties ->apply_from(paragraph_properties);
+}
+void odf_drawing_context::set_graphic_properties(style_graphic_properties *graphic_properties)
+{
+	if (impl_->current_graphic_properties && graphic_properties)
+		impl_->current_graphic_properties->apply_from(graphic_properties->content_);
+}
+graphic_format_properties* odf_drawing_context::get_graphic_properties()
+{
+	return impl_->current_graphic_properties;
 }
 
 void odf_drawing_context::set_textarea_vertical_align(int align)
@@ -2415,9 +2463,9 @@ void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring &
 
 	if (!impl_->current_text_properties) return;
 
-	if (!ea.empty())	impl_->current_text_properties->content_.fo_font_family_			= ea;
+	if (!ea.empty())	impl_->current_text_properties->content_.fo_font_family_			= latin;
 	if (!cs.empty())	impl_->current_text_properties->content_.style_font_family_complex_	= cs;
-	if (!latin.empty())	impl_->current_text_properties->content_.style_font_family_asian_	= latin;
+	if (!latin.empty())	impl_->current_text_properties->content_.style_font_family_asian_	= ea;
 
 }
 void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
@@ -2618,6 +2666,8 @@ void odf_drawing_context::start_control(const std::wstring& id)
 	draw_control* control = dynamic_cast<draw_control*>(control_elm.get());
 	if (control == NULL)return;
 
+	if (impl_->root_element_ == NULL) impl_->root_element_ = control_elm;
+	
 	control->control_id_ = id;
 //--------------------	
 	impl_->styles_context_->create_style(L"", style_family::Graphic, true, false, -1);		
@@ -2797,7 +2847,7 @@ void odf_drawing_context::start_link_object(std::wstring href)
 
 	impl_->current_level_.push_back(element);
 
-	odf_element_state state={element, L"", style, level};
+	odf_element_state state(element, L"", style, level);
 	impl_->current_drawing_state_.elements_.push_back(state);
 
 	if (impl_->root_element_ == NULL)
@@ -3119,7 +3169,6 @@ void odf_drawing_context::start_gradient_style()
 	odf_writer::office_element_ptr gradient_element;
 
 	odf_writer::create_element(L"draw",L"gradient", gradient_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(gradient_element,false,true, style_family::Gradient);
 
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(gradient_element.get());
 	if (!gradient) return;
@@ -3145,6 +3194,7 @@ void odf_drawing_context::start_gradient_style()
 				impl_->current_graphic_properties->svg_stroke_width_ = length(length(1, length::pt).get_value_unit(length::cm), length::cm);//default
 			break;
 	}
+	impl_->styles_context_->add_style(gradient_element, false, true, style_family::Gradient);
 }
 void odf_drawing_context::set_gradient_type(gradient_style::type style)
 {
@@ -3185,7 +3235,7 @@ void odf_drawing_context::set_gradient_angle(double angle)
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	gradient->draw_angle_ = (int)((270 - angle) * 10);//(int)((360 - angle)/180. * 3.14159265358979323846);
+	gradient->draw_angle_ = 270 - angle;//(360 - angle)/180. * 3.14159265358979323846;
 }
 void odf_drawing_context::set_gradient_rect(double l, double t, double r, double b)
 {
@@ -3220,7 +3270,6 @@ void odf_drawing_context::start_opacity_style()
 
 	odf_writer::office_element_ptr opacity_element;
 	odf_writer::create_element(L"draw",L"opacity", opacity_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(opacity_element,false,true, style_family::Opacity);
 
 	draw_opacity * opacity = dynamic_cast<draw_opacity *>(opacity_element.get());
 	if (!opacity) return;
@@ -3229,6 +3278,8 @@ void odf_drawing_context::start_opacity_style()
 	opacity->draw_display_name_ = std::wstring(L"User") + opacity->draw_name_.get() ;
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_name_ = opacity->draw_name_;
+	
+	impl_->styles_context_->add_style(opacity_element, false, true, style_family::Opacity);
 }
 void odf_drawing_context::set_opacity_start(double val)
 {
@@ -3242,7 +3293,7 @@ void odf_drawing_context::set_opacity_angle(double angle)
 	draw_opacity * opacity = dynamic_cast<draw_opacity *>(impl_->styles_context_->last_state(style_family::Opacity)->get_office_element().get());
 	if (!opacity) return;
 
-	opacity->draw_angle_ = (int)((270-angle)*10);//(int)((360 - angle)/180. * 3.14159265358979323846);
+	opacity->draw_angle_ = 270 - angle;//(360 - angle)/180. * 3.14159265358979323846;
 }
 void odf_drawing_context::set_opacity_type(gradient_style style)
 {
@@ -3277,7 +3328,6 @@ void odf_drawing_context::start_hatch_style()
 	odf_writer::office_element_ptr hatch_element;
 
 	odf_writer::create_element(L"draw",L"hatch", hatch_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(hatch_element,false,true, style_family::Hatch);
 
 	draw_hatch * hatch = dynamic_cast<draw_hatch *>(hatch_element.get());
 	if (!hatch) return;
@@ -3287,6 +3337,8 @@ void odf_drawing_context::start_hatch_style()
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_hatch_name_ = hatch->draw_name_;
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::hatch);
+	
+	impl_->styles_context_->add_style(hatch_element, false, true, style_family::Hatch);
 }
 void odf_drawing_context::set_hatch_line_color(std::wstring hexColor)
 {
@@ -3605,7 +3657,6 @@ void odf_drawing_context::start_bitmap_style()
 	odf_writer::office_element_ptr fill_image_element;
 
 	odf_writer::create_element(L"draw", L"fill-image", fill_image_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(fill_image_element, false, true, style_family::FillImage);
 
 	draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(fill_image_element.get());
 	if (!fill_image) return;
@@ -3618,6 +3669,8 @@ void odf_drawing_context::start_bitmap_style()
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_name_ = fill_image->draw_name_;
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::bitmap);
+	
+	impl_->styles_context_->add_style(fill_image_element, false, true, style_family::FillImage);
 	
 	set_image_style_repeat(0);
 

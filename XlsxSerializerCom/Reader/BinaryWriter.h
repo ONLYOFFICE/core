@@ -31,9 +31,6 @@
  */
 #pragma once
 
-#ifndef BINARY_WRITER
-#define BINARY_WRITER
-
 #include "../Reader/CSVReader.h"
 #include "CommonWriter.h"
 #include "ChartFromToBinary.h"
@@ -47,7 +44,6 @@
 
 #include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 
-#include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/WorkbookComments.h"
@@ -62,6 +58,8 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CXlsx;
+		class CXlsxFlat;
 		class CPerson;
 		class CPersonList;
 		class CThreadedComment;
@@ -153,12 +151,15 @@ namespace BinXlsxRW
 	class BinaryWorkbookTableWriter
 	{
 		BinaryCommonWriter		m_oBcw;
-		OOX::Spreadsheet::CXlsx &m_oXlsx;
+		OOX::Spreadsheet::CXlsx *m_pXlsx;
+		OOX::Spreadsheet::CXlsxFlat *m_pXlsxFlat;
 	public:
-		BinaryWorkbookTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, OOX::Spreadsheet::CXlsx &oXlsx);
+		BinaryWorkbookTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, OOX::Document *pDocument);
+		
 		void Write(OOX::Spreadsheet::CWorkbook& workbook);
 		void WriteWorkbook(OOX::Spreadsheet::CWorkbook& workbook);
 		void WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr);
+		void WriteProtection(const OOX::Spreadsheet::CWorkbookProtection& protection);
 		void WriteBookViews(const OOX::Spreadsheet::CBookViews& bookViews);
 		void WriteWorkbookView(const OOX::Spreadsheet::CWorkbookView& workbookView);
 		void WriteDefinedNames(const OOX::Spreadsheet::CDefinedNames& definedNames);
@@ -169,6 +170,7 @@ namespace BinXlsxRW
 		void WriteConnectionOlapPr(const OOX::Spreadsheet::COlapPr& olapPr);
 		void WriteConnectionTextPr(const OOX::Spreadsheet::CTextPr& textPr);
 		void WriteConnectionWebPr(const OOX::Spreadsheet::CWebPr& webPr);
+		void WriteConnectionRangePr(const OOX::Spreadsheet::CRangePr& rangePr);
 		void WriteExternalReferences(const OOX::Spreadsheet::CExternalReferences& externalReferences, OOX::Spreadsheet::CWorkbook& workbook);
 		void WriteExternalBook(const OOX::Spreadsheet::CExternalBook& externalBook, const std::wstring& sLink);
 		void WriteExternalSheetNames(const OOX::Spreadsheet::CExternalSheetNames& sheetNames);
@@ -185,6 +187,7 @@ namespace BinXlsxRW
 		void WriteDdeValues(const OOX::Spreadsheet::CDdeValues& ddeValues);
 		void WriteDdeValue(const OOX::Spreadsheet::CDdeValue& ddeValue);
 		void WriteDefinedName(const OOX::Spreadsheet::CDefinedName& definedName);
+		void WriteSlicerCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CSlicerCaches& oSlicerCaches);
 	};
 	class BinaryPersonTableWriter
 	{
@@ -205,10 +208,16 @@ namespace BinXlsxRW
 		NSBinPptxRW::CDrawingConverter*			m_pOfficeDrawingConverter;
 	public:
 		BinaryWorksheetTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, OOX::Spreadsheet::CIndexedColors* pIndexedColors, PPTX::Theme* pTheme, DocWrapper::FontProcessor& oFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
-		void Write(OOX::Spreadsheet::CWorkbook& workbook,  std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets);
+		
+		void Write(OOX::Spreadsheet::CWorkbook& workbook, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets);
+		void Write(OOX::Spreadsheet::CWorkbook& workbook, std::vector<OOX::Spreadsheet::CWorksheet*>& arWorksheets);
+		
 		void WriteWorksheets(OOX::Spreadsheet::CWorkbook& workbook, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets);
-		void WriteWorksheet(OOX::Spreadsheet::CSheet& oSheet, OOX::Spreadsheet::CWorksheet& oWorksheet);
+	
+		void WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet, OOX::Spreadsheet::CWorksheet& oWorksheet);
+		
 		void WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet);
+		void WriteProtection(const OOX::Spreadsheet::CSheetProtection& protection);
 		void WriteCols(const OOX::Spreadsheet::CCols& oCols);
 		void WriteCol(const OOX::Spreadsheet::CCol& oCol);
 		void WriteSheetViews(const OOX::Spreadsheet::CSheetViews& oSheetViews);
@@ -274,6 +283,7 @@ namespace BinXlsxRW
 		void WriteDataValidations(const OOX::Spreadsheet::CDataValidations& oDataValidations);
 		void WriteDataValidationsContent(const OOX::Spreadsheet::CDataValidations& oDataValidations);
 		void WriteDataValidation(const OOX::Spreadsheet::CDataValidation& oDataValidation);
+		void WriteSlicers(OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CSlicerRefs& oSlicers);
 	};
 	class BinaryCalcChainTableWriter
 	{
@@ -314,11 +324,11 @@ namespace BinXlsxRW
 		void Write();
 		void WriteOtherTableContent();
 	};
-	class BinaryFileWriter {
+	class BinaryFileWriter 
+	{
 	private:
 		BinaryCommonWriter* m_oBcw;
 		int m_nLastFilePos;
-		int m_nLastFilePosOffset;
 		int m_nRealTableCount;
 		int m_nMainTableStart;
 		DocWrapper::FontProcessor& m_oFontProcessor;
@@ -327,15 +337,17 @@ namespace BinXlsxRW
 		~BinaryFileWriter();
         _UINT32 Open(const std::wstring& sInputDir, const std::wstring& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
             NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bIsNoBase64);
-		void intoBindoc(OOX::Spreadsheet::CXlsx &oXlsx, NSBinPptxRW::CBinaryFileWriter &oBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
- 	private:
-       std::wstring WriteFileHeader(int nDataSize, int version);
+		
+		void intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinaryFileWriter &oBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
+       
+		std::wstring WriteFileHeader(int nDataSize, int version);
+		int GetMainTableSize();
+	
+		int m_nLastFilePosOffset;
+	private:
 		void WriteMainTableStart();
 		void WriteMainTableEnd();
-		int GetMainTableSize();
 		int WriteTableStart(BYTE type, int nStartPos = -1);
 		void WriteTableEnd(int nCurPos);
 	};
 }
-
-#endif	// #ifndef BINARY_WRITER

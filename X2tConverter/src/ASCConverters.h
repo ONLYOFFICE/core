@@ -50,13 +50,21 @@ class InputParamsMailMerge;
 namespace NExtractTools
 {
     _UINT32 docx2doct_bin		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
-    _UINT32 docx_dir2doct_bin	(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
+    _UINT32 docx_dir2doct_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 docx2doct			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 doct_bin2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
     _UINT32 doct_bin2docx_dir	(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
 	_UINT32 doct2docx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
 
-    _UINT32 dotm2docm			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+    _UINT32 docxflat2doct		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 docxflat2doct_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	
+	_UINT32 package2ooxml		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 package2ooxml_dir	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 package2bin_t		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 package2bin			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+
+	_UINT32 dotm2docm			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 dotm2docm_dir		(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
 	_UINT32 dotx2docx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 dotx2docx_dir		(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
@@ -65,9 +73,11 @@ namespace NExtractTools
     _UINT32 dotm2docx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 dotm2docx_dir		(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
 
-	_UINT32 xlsx2xlst_bin		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
-	_UINT32 xlsx_dir2xlst_bin	(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params, bool bXmlOptions, const std::wstring &sXlsxFile);
     _UINT32 xlsx2xlst			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 xlsx2xlst_bin		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+    _UINT32 xlsxflat2xlst		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 xlsxflat2xlst_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 xlsx_dir2xlst_bin	(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params, bool bXmlOptions, const std::wstring &sXlsxFile);
 	_UINT32 xlst_bin2xlsx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
     _UINT32 xlst_bin2xlsx_dir	(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
 	_UINT32 xlst2xlsx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
@@ -178,7 +188,8 @@ namespace NExtractTools
     _UINT32 html2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-    _UINT32 dir2zip			(const std::wstring &sFrom, const std::wstring &sTo, bool bSorted = false, int method = 8/*Z_DEFLATED*/, short level = -1);
+    _UINT32 dir2zip			(const std::wstring &sFrom, const std::wstring &sTo, bool bSorted = false, int method = 8/*Z_DEFLATED*/, short level = -1, bool bDateTime = false);
+	_UINT32 dir2zipMscrypt  (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 zip2dir			(const std::wstring &sFrom, const std::wstring &sTo);
 
     _UINT32 convertmailmerge (const InputParamsMailMerge& oMailMergeSend,const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params);

@@ -108,7 +108,7 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
 
 _UINT32 CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions)
 {
-    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(sDstPath, L"", true, 1, false, NULL, L"");
+    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(sDstPath, L"", true, 1, NULL, L"");
 	if (pDocxWriter == NULL) return AVS_FILEUTILS_ERROR_CONVERT;
 
     CreateDocxEmpty(sDstPath, pDocxWriter);
@@ -122,7 +122,7 @@ _UINT32 CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
         converter.read(sSrcFileName);
 		Progress(0, 100000);
 		converter.convert(*this);
-		converter.write(pDocxWriter->m_oDocumentWriter.m_oContent);
+		converter.write(pDocxWriter->get_document_writer().m_oContent);
 		Progress(0, 1000000);
 	}
 	catch(...)
@@ -130,7 +130,7 @@ _UINT32 CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
 		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 
-	pDocxWriter->m_oDocumentWriter.Write(); //overwrite document.xml
+	pDocxWriter->get_document_writer().Write(); //overwrite document.xml
 
 	delete pDocxWriter;
 	pDocxWriter = NULL;
@@ -245,13 +245,13 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 	} 
 /////////////////////////////////////////////////////////////////////////////////////
 	pDocxWriter->m_oTheme.Write(strDirectory);
-	pDocxWriter->m_oStylesWriter.Write();
-	pDocxWriter->m_oFontTableWriter.Write();
+	pDocxWriter->get_style_writers().Write();
+	pDocxWriter->get_font_table_writer().Write();
 	
-	pDocxWriter->m_oSettingWriter.Write();
-	pDocxWriter->m_oWebSettingsWriter.Write();
+	pDocxWriter->get_settings_writer().Write();
+	pDocxWriter->get_web_settings_writer().Write();
 	
-	pDocxWriter->m_oDocumentWriter.Write();
+	pDocxWriter->get_document_writer().Write();
 	
 	pDocxWriter->m_oDocumentRelsWriter.Write();
 

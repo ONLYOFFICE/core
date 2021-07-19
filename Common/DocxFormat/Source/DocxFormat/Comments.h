@@ -30,10 +30,9 @@
  *
  */
 #pragma once
-#ifndef OOX_COMMENTS_FILE_INCLUDE_H_
-#define OOX_COMMENTS_FILE_INCLUDE_H_
 
 #include "File.h"
+#include "IFileContainer.h"
 #include "../Base/Nullable.h"
 #include "FileTypes.h"
 #include "WritingElement.h"
@@ -43,12 +42,20 @@
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+}
+
+namespace OOX
+{
 	class CComment : public WritingElementWithChilds<>
 	{
 	public:
 		WritingElement_AdditionConstructors(CComment)
 			
-		CComment()
+		CComment(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 		{
 		}
 		virtual ~CComment()
@@ -58,6 +65,7 @@ namespace OOX
 		{
 		}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+				void fromXML2(XmlUtils::CXmlLiteReader& oReader);
 		virtual std::wstring toXML() const
 		{
 			return L"";
@@ -83,13 +91,19 @@ namespace OOX
 
 	};
 
-	class CComments : public OOX::File
+	class CComments : public OOX::File , public OOX::IFileContainer
 	{
 	public:
 		CComments(OOX::Document *pMain);
 		CComments(OOX::Document *pMain, const CPath& oPath);
 		virtual ~CComments();
-		virtual void read(const CPath& oFilePath);
+		virtual void read(const CPath& oPath)
+		{
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 		}
@@ -160,13 +174,19 @@ namespace OOX
 		nullable<SimpleTypes::COnOff<> >			m_oDone;
 	};
 
-	class CCommentsExt : public OOX::File
+	class CCommentsExt : public OOX::File//, public OOX::IFileContainer
 	{
 	public:
 		CCommentsExt(OOX::Document *pMain);
 		CCommentsExt(OOX::Document *pMain, const CPath& oPath);
 		virtual ~CCommentsExt();
-		virtual void read(const CPath& oFilePath);
+		virtual void read(const CPath& oPath)
+		{
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
 		}
@@ -183,8 +203,8 @@ namespace OOX
 			return type().DefaultFileName();
 		}
 
-		std::vector<CCommentExt*>	m_arrComments;
-		std::map<unsigned int, int>			m_mapComments; //paraId, index
+		std::vector<CCommentExt*>		m_arrComments;
+		std::map<unsigned int, int>		m_mapComments; //paraId, index
 	};
 	class CDocumentCommentsExt : public CCommentsExt
 	{
@@ -196,6 +216,93 @@ namespace OOX
 			return FileTypes::DocumentCommentsExt;
 		}
 	};
+
+	class CCommentExtensible : public WritingElement
+	{
+	public:
+		WritingElement_AdditionConstructors(CCommentExtensible)
+			CCommentExtensible()
+		{
+		}
+		virtual ~CCommentExtensible()
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+		virtual std::wstring toXML() const
+		{
+			return L"";
+		}
+
+		virtual EElementType getType() const
+		{
+			return et_w16_commentExtensible;
+		}
+	private:
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+	public:
+		nullable<SimpleTypes::CLongHexNumber<> >	m_oDurableId;
+		nullable<SimpleTypes::CDateTime >			m_oDateUtc;
+		nullable<SimpleTypes::COnOff<> >			m_oIntelligentPlaceholder;
+
+		nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
+	};
+
+	class CCommentsExtensible : public OOX::File//, public OOX::IFileContainer
+	{
+	public:
+		CCommentsExtensible(OOX::Document *pMain);
+		CCommentsExtensible(OOX::Document *pMain, const CPath& oPath);
+		virtual ~CCommentsExtensible();
+		virtual void read(const CPath& oPath)
+		{
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
+		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+		{
+		}
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::CommentsExtensible;
+		}
+		virtual const CPath DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		virtual const CPath DefaultFileName() const
+		{
+			return type().DefaultFileName();
+		}
+
+		std::vector<CCommentExtensible*>		m_arrComments;
+	};
+	class CDocumentCommentsExtensible : public CCommentsExtensible
+	{
+	public:
+		CDocumentCommentsExtensible(OOX::Document *pMain);
+		CDocumentCommentsExtensible(OOX::Document *pMain, const CPath& oPath);
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::DocumentCommentsExtensible;
+		}
+	};
+	class CCommentsUserData : public CCommentsExtensible
+	{
+	public:
+		CCommentsUserData(OOX::Document *pMain);
+		CCommentsUserData(OOX::Document *pMain, const CPath& oPath);
+		virtual const OOX::FileType type() const
+		{
+			return FileTypes::CommentsUserData;
+		}
+	};
+
 
 	class CCommentId : public WritingElement
 	{
@@ -268,7 +375,8 @@ namespace OOX
 	{
 	public:
 		WritingElement_AdditionConstructors(CPresenceInfo)
-			CPresenceInfo()
+			
+		CPresenceInfo()
 		{
 		}
 		virtual ~CPresenceInfo()
@@ -363,5 +471,3 @@ namespace OOX
 	};
 
 } // namespace OOX
-
-#endif // OOX_COMMENTS_FILE_INCLUDE_H_

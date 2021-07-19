@@ -51,6 +51,104 @@
 //        <w:subDoc>
 
 
+namespace ComplexTypes
+{
+	namespace Word
+	{
+		void CFormPr::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, _T("w:key"), m_oKey );
+			XmlMacroReadAttributeBase( oNode, _T("w:label"), m_oLabel );
+			XmlMacroReadAttributeBase( oNode, _T("w:helpText"), m_oHelpText );
+			XmlMacroReadAttributeBase( oNode, _T("w:required"), m_oRequired );
+		}
+		void CFormPr::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CFormPr::ToString() const
+		{
+			std::wstring sResult;
+			if(m_oKey.IsInit())
+			{
+				sResult += _T("w:key=\"") + XmlUtils::EncodeXmlString(m_oKey.get()) + _T("\" ");
+			}
+			if(m_oLabel.IsInit())
+			{
+				sResult += _T("w:label=\"") + XmlUtils::EncodeXmlString(m_oLabel.get()) + _T("\" ");
+			}
+			if(m_oHelpText.IsInit())
+			{
+				sResult += _T("w:helpText=\"") + XmlUtils::EncodeXmlString(m_oHelpText.get()) + _T("\" ");
+			}
+			if(m_oRequired.IsInit())
+			{
+				if(*m_oRequired)
+				{
+					sResult += _T("w:required=\"1\" ");
+				}
+				else
+				{
+					sResult += _T("w:required=\"0\" ");
+				}
+
+			}
+
+			return sResult;
+		}
+		void CFormPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if( oReader, _T("key"), m_oKey )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("label"), m_oLabel )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("helpText"), m_oHelpText )
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("required"), m_oRequired )
+					WritingElement_ReadAttributes_End_No_NS( oReader )
+		}
+		void CComb::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, _T("w:width"), m_oWidth );
+			XmlMacroReadAttributeBase( oNode, _T("w:sym"), m_oSym );
+			XmlMacroReadAttributeBase( oNode, _T("w:font"), m_oFont );
+		}
+		void CComb::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CComb::ToString() const
+		{
+			std::wstring sResult;
+			if(m_oWidth.IsInit())
+			{
+				sResult += _T("w:width=\"") + std::to_wstring(m_oWidth.get()) + _T("\" ");
+			}
+			if(m_oSym.IsInit())
+			{
+				sResult += _T("w:sym=\"") + XmlUtils::EncodeXmlString(m_oSym.get()) + _T("\" ");
+			}
+			if(m_oFont.IsInit())
+			{
+				sResult += _T("w:font=\"") + XmlUtils::EncodeXmlString(m_oFont.get()) + _T("\" ");
+			}
+
+			return sResult;
+		}
+		void CComb::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if( oReader, _T("w:width"), m_oWidth )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:sym"), m_oSym )
+			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:font"), m_oFont )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+	}
+}
 namespace OOX
 {
 	namespace Logic
@@ -156,8 +254,6 @@ namespace OOX
 				}
 			}
 		}
-
-
 		void CSdtContent::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ClearItems();
@@ -251,8 +347,6 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
-
-
 		std::wstring CSdtContent::toXML() const
 		{
 				std::wstring sResult = _T("<w:sdtContent>");
@@ -268,6 +362,53 @@ namespace OOX
 				sResult += _T("</w:sdtContent>");
 
 				return sResult;
+		}
+		void CTextFormPr::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNode oChild;
+
+			WritingElement_ReadNode( oNode, oChild, _T("w:comb"),          m_oComb );
+			WritingElement_ReadNode( oNode, oChild, _T("w:maxCharacters"),        m_oMaxCharacters );
+			WritingElement_ReadNode( oNode, oChild, _T("w:combBorder"),          m_oCombBorder );
+		}
+
+		void CTextFormPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( _T("w:comb") == sName )
+					m_oComb = oReader;
+				else if ( _T("w:maxCharacters") == sName )
+					m_oMaxCharacters = oReader;
+				else if ( _T("w:combBorder") == sName )
+					m_oCombBorder = oReader;
+			}
+		}
+		std::wstring CTextFormPr::toXML() const
+		{
+			std::wstring sResult= _T("<w:textFormPr>");
+
+			WritingElement_WriteNode_1( _T("<w:comb "),          m_oComb );
+			WritingElement_WriteNode_1( _T("<w:maxCharacters "),        m_oMaxCharacters );
+			WritingElement_WriteNode_1( _T("<w:combBorder "),        m_oCombBorder );
+
+			sResult += _T("</w:textFormPr>");
+
+			return sResult;
+		}
+		EElementType CTextFormPr::getType() const
+		{
+			return et_w_textFormPr;
+		}
+		void CTextFormPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
 		}
 
 	} // namespace Logic

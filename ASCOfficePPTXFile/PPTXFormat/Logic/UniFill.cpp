@@ -32,6 +32,7 @@
 #include "UniFill.h"
 #include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace PPTX
 {
@@ -185,7 +186,7 @@ namespace PPTX
 			if (pReader->GetPos() < read_end)
 			{
 				BYTE _type = pReader->GetUChar();
-				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				switch (_type)
 				{
@@ -283,7 +284,7 @@ namespace PPTX
 												pReader->Skip(6); // len + start attributes + type
 
 												// -------------------
-												std::wstring strUrl		= pReader->GetString2();
+												std::wstring strUrl = pReader->GetString2(true);
 												std::wstring strTempFile;
 												std::wstring strOrigBase64;
 
@@ -332,25 +333,32 @@ namespace PPTX
 														pDstBuffer = (BYTE*) __s.c_str();
 														dstLen = len;
 													}
-													if (sImageExtension.length() < 1) 
-													{
-														CImageFileFormatChecker checker;
-														sImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);								
-													}
-                                                    //папки media может не быть в случае, когда все картинки base64(поскольку файл временный, папку media не создаем)
-                                                    std::wstring tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
-													
-													OOX::CPath pathTemp = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
+													CImageFileFormatChecker checker;
+													std::wstring detectImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);
 
-                                                    CFile oTempFile;
-                                                    oTempFile.CreateFile(pathTemp.GetPath());
-													oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
-													oTempFile.CloseFile();
-													
-													strUrl = strTempFile =pathTemp.GetPath(); // strTempFile для удаления
-													if (bBase64)
+													if (false == detectImageExtension.empty())
 													{
-														RELEASEARRAYOBJECTS(pDstBuffer);
+														sImageExtension = detectImageExtension;
+
+														//папки media может не быть в случае, когда все картинки base64(поскольку файл временный, папку media не создаем)
+														std::wstring tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
+														
+														OOX::CPath pathTemp = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
+
+														CFile oTempFile;
+														oTempFile.CreateFile(pathTemp.GetPath());
+														oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
+														oTempFile.CloseFile();
+														
+														strUrl = strTempFile =pathTemp.GetPath(); // strTempFile для удаления
+														if (bBase64)
+														{
+															RELEASEARRAYOBJECTS(pDstBuffer);
+														}
+													}
+													else
+													{// бяка
+														strUrl.clear();
 													}
 												}
 												else
@@ -385,6 +393,8 @@ namespace PPTX
 													pFill->blip = new PPTX::Logic::Blip();
 
 												pFill->blip->embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
+												pFill->blip->imageFilepath = oRelsGeneratorInfo.sFilepathImage;
+												
 												if (pFill->blip.is_init())
 													pFill->blip->m_namespace = _T("a");
 
@@ -458,8 +468,7 @@ namespace PPTX
 							switch (_at)
 							{
 								case 0:
-									pFill->flip = new PPTX::Limit::Flip();
-									pFill->flip->SetBYTECode(pReader->GetUChar());
+									pFill->flip = pReader->GetUChar();
 									break;
 								case 1:
 									pFill->rotWithShape = pReader->GetBool();
@@ -521,6 +530,7 @@ namespace PPTX
 									pFill->tileRect = new PPTX::Logic::Rect();
 									pFill->tileRect->fromPPTY(pReader);
 									pFill->tileRect->m_name = _T("a:tileRect");
+									break;
 								}
 								default:
 								{
@@ -549,8 +559,7 @@ namespace PPTX
 							switch (_at)
 							{
 								case 0:
-									pFill->prst = new PPTX::Limit::PattFillVal();
-									pFill->prst->SetBYTECode(pReader->GetUChar());
+									pFill->prst = pReader->GetUChar();
 									break;									
 								default:
 									break;

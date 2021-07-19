@@ -96,35 +96,20 @@ void process_paragraph_drop_cap_attr(const paragraph_attrs & Attr, oox::docx_con
 
 	//font size пощитаем здесь .. так как его значение нужо в стиле параграфа (межстрочный интервал) - в (pt*20)
 	
-	text_format_properties_content text_properties = calc_text_properties_content (styleInst);
+	text_format_properties_content_ptr text_properties = calc_text_properties_content (styleInst);
 
-	if (!text_properties.fo_font_size_)
+	if ((text_properties) && (!text_properties->fo_font_size_))
 	{		//default
 		styleInst = Context.root()->odf_context().styleContainer().style_default_by_type(style_family::Paragraph);
 		text_properties = calc_text_properties_content (styleInst);
 	}
-	if (text_properties.fo_font_size_)
+	if ((text_properties) && (text_properties->fo_font_size_))
 	{
-		Context.get_drop_cap_context().FontSize = text_properties.process_font_size(
-				text_properties.fo_font_size_, Context.get_styles_context().get_current_processed_style(), false, //1.);
+		Context.get_drop_cap_context().FontSize = text_properties->process_font_size(
+				text_properties->fo_font_size_, Context.get_styles_context().get_current_processed_style(), false, //1.);
 		7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));//формула ачуметь !! - подбор вручную
 	}
 }
-
-void process_paragraph_index(const paragraph_attrs & Attr, oox::docx_conversion_context & Context)
-{
-	if (false == Context.is_table_content()) return;
-
-    if (Attr.text_style_name_.empty())return;
-
-	style_instance * styleInst 
-            = Context.root()->odf_context().styleContainer().style_by_name(Attr.text_style_name_, style_family::Paragraph, Context.process_headers_footers_);
-    if ((!styleInst) || (styleInst->is_automatic() == false))return;
-
-	if (L"index" != styleInst->style_class()) return;
-
-
-}								
 
 }
 
@@ -158,8 +143,13 @@ void paragraph::add_child_element( xml::sax * Reader, const std::wstring & Ns, c
 		}
 		content_.push_back(sequence_);
     }
-	else
+	else		
+	{
+		if CP_CHECK_NAME(L"text", L"a")
+			is_present_hyperlink_ = true;
+
 		CP_CREATE_ELEMENT_SIMPLE(content_);
+	}
 }
 
 void paragraph::add_text(const std::wstring & Text)
@@ -240,17 +230,17 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 			{
 				styleInst = Context.root()->odf_context().styleContainer().style_by_name(attrs_.text_style_name_, style_family::Paragraph, Context.process_headers_footers_);
 			}
-			text_format_properties_content text_properties = calc_text_properties_content (styleInst);
+			text_format_properties_content_ptr text_properties = calc_text_properties_content (styleInst);
 
-			if (!text_properties.fo_font_size_)
+			if ((text_properties) && (!text_properties->fo_font_size_))
 			{		//default
 				styleInst = Context.root()->odf_context().styleContainer().style_default_by_type(style_family::Text);
 				text_properties = calc_text_properties_content (styleInst);
 			}
-			if (text_properties.fo_font_size_)
+			if ((text_properties) && (text_properties->fo_font_size_))
 			{
-				Context.get_drop_cap_context().FontSize = text_properties.process_font_size(
-					text_properties.fo_font_size_, Context.get_styles_context().get_current_processed_style(),  false, //1);
+				Context.get_drop_cap_context().FontSize = text_properties->process_font_size(
+					text_properties->fo_font_size_, Context.get_styles_context().get_current_processed_style(),  false, //1);
 							 7.25 * (Context.get_drop_cap_context().Scale + (Context.get_drop_cap_context().Scale-1) * 0.7));
 			}
 		}
@@ -265,7 +255,7 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 }
 void paragraph::docx_convert(oox::docx_conversion_context & Context)
 {
-    const std::wstring & styleName = attrs_.text_style_name_;
+    std::wstring styleName = attrs_.text_style_name_;
 	
 	bool in_drawing	= false;
 
@@ -331,7 +321,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
     } 
 	if (next_section_/* || next_end_section_*/)//remove in text::section 
 	{
-		Context.get_section_context().get().is_dump_ = true;
+		Context.get_section_context().get_last().is_dump_ = true;
 		is_empty = false;
 	}
 	std::wstringstream strm;
@@ -495,7 +485,27 @@ void h::afterReadContent()
 
 void h::docx_convert(oox::docx_conversion_context & Context) 
 {
+	std::wstring bookmark;
+	if (false == Context.get_table_content_context().mapReferences.empty())
+	{//когда заголовки находятся выше таблицы контента - херово
+		std::wstringstream strm;
+		text_to_stream(strm, false);
+		std::wstring outline = strm.str();
+		
+		std::map<std::wstring, std::wstring>::iterator pFind = Context.get_table_content_context().mapReferences.find(outline);
+
+		if (pFind != Context.get_table_content_context().mapReferences.end())
+		{
+			bookmark = pFind->second;
+			Context.start_bookmark(bookmark);
+		}
+	}
     paragraph_.docx_convert(Context);
+
+	if (false == bookmark.empty())
+	{
+		Context.end_bookmark(bookmark);
+	}
 }
 
 void h::xlsx_convert(oox::xlsx_conversion_context & Context) 
@@ -759,7 +769,7 @@ void section::docx_convert(oox::docx_conversion_context & Context)
     }
 	if (bAddSection)
 	{
-		Context.get_section_context().get().is_dump_ = true;
+		Context.get_section_context().get_last().is_dump_ = true;
 		Context.last_dump_page_properties(false);
 	}
 }
@@ -915,11 +925,13 @@ void table_of_content::add_child_element( xml::sax * Reader, const std::wstring 
 }
 void table_of_content::docx_convert(oox::docx_conversion_context & Context)
 {
-	std::wstring current_page_properties = Context.get_page_properties();
-   
-	Context.get_section_context().add_section (section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
-	
-	Context.add_page_properties(current_page_properties);
+	if (section_attr_.style_name_ && false == section_attr_.name_.empty()) // ??? ||
+	{
+		std::wstring current_page_properties = Context.get_page_properties();
+		Context.get_section_context().add_section(section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
+		Context.add_page_properties(current_page_properties);
+	}
+
 	if (index_body_)
 	{
 		Context.start_sdt(1);
@@ -1124,22 +1136,22 @@ const wchar_t * table_index_entry_template::name = L"table-index-entry-template"
 const wchar_t * illustration_index::ns = L"text";
 const wchar_t * illustration_index::name = L"illustration-index";
 
-void illustration_index::afterCreate()
-{
- 	office_element::afterCreate();
-
-	if (document_context * context = getContext())
-    {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_section(true);        
-        }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_section(true);        
-        }
-    }
-}
+//void illustration_index::afterCreate()
+//{
+// 	office_element::afterCreate();
+//
+//	if (document_context * context = getContext())
+//    {
+//        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+//        {
+//            lastPar->paragraph_.set_next_section(true);        
+//        }
+//		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+//        {
+//            lastPar->paragraph_.set_next_section(true);        
+//        }
+//    }
+//}
 
 void illustration_index::afterReadContent()
 {
@@ -1158,9 +1170,12 @@ void illustration_index::afterReadContent()
 }
 void illustration_index::docx_convert(oox::docx_conversion_context & Context)
 {
-	std::wstring current_page_properties = Context.get_page_properties();
-	Context.get_section_context().add_section (section_attr_.name_,section_attr_.style_name_.get_value_or(L""), current_page_properties);
-	Context.add_page_properties(current_page_properties);
+	if (section_attr_.style_name_ && false == section_attr_.name_.empty()) // ??? ||
+	{
+		std::wstring current_page_properties = Context.get_page_properties();
+		Context.get_section_context().add_section(section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
+		Context.add_page_properties(current_page_properties);
+	}
 
 	if (index_body_)
 	{
@@ -1278,22 +1293,22 @@ void alphabetical_index::add_child_element( xml::sax * Reader, const std::wstrin
         CP_CREATE_ELEMENT(alphabetical_index_source_);
 	}
 }
-void alphabetical_index::afterCreate()
-{
-	office_element::afterCreate();
-	
-	if (document_context * context = getContext())
-    {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_section(true);        
-        }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_section(true);        
-        }
-    }
-}
+//void alphabetical_index::afterCreate()
+//{
+//	office_element::afterCreate();
+//	
+//	if (document_context * context = getContext())
+//    {
+//        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+//        {
+//            lastPar->paragraph_.set_next_section(true);        
+//        }
+//		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+//        {
+//            lastPar->paragraph_.set_next_section(true);        
+//        }
+//    }
+//}
 void alphabetical_index::afterReadContent()
 {
     if (document_context * context = getContext())
@@ -1311,9 +1326,12 @@ void alphabetical_index::afterReadContent()
 }
 void alphabetical_index::docx_convert(oox::docx_conversion_context & Context)
 {
-	std::wstring current_page_properties = Context.get_page_properties();   
-	Context.get_section_context().add_section (section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
-	Context.add_page_properties(current_page_properties);
+	if (section_attr_.style_name_ && false == section_attr_.name_.empty()) // ??? ||
+	{
+		std::wstring current_page_properties = Context.get_page_properties();
+		Context.get_section_context().add_section(section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
+		Context.add_page_properties(current_page_properties);
+	}
 
 	if (index_body_)
 	{
@@ -1394,22 +1412,22 @@ void alphabetical_index_entry_template::docx_convert(oox::docx_conversion_contex
 const wchar_t * object_index::ns = L"text";
 const wchar_t * object_index::name = L"object-index";
 
-void object_index::afterCreate()
-{
-	office_element::afterCreate();
-
-	if (document_context * context = getContext())
-    {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_section(true);        
-        }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_section(true);        
-        }
-    }
-}
+//void object_index::afterCreate()
+//{
+//	office_element::afterCreate();
+//
+//	if (document_context * context = getContext())
+//    {
+//        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+//        {
+//            lastPar->paragraph_.set_next_section(true);        
+//        }
+//		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+//        {
+//            lastPar->paragraph_.set_next_section(true);        
+//        }
+//    }
+//}
 void object_index::afterReadContent()
 {
     if (document_context * context = getContext())
@@ -1693,9 +1711,12 @@ void bibliography::afterReadContent()
 }
 void bibliography::docx_convert(oox::docx_conversion_context & Context)
 {
-	std::wstring current_page_properties = Context.get_page_properties();   
-	Context.get_section_context().add_section (section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
-	Context.add_page_properties(current_page_properties);
+	if (section_attr_.style_name_ && false == section_attr_.name_.empty()) // ??? ||
+	{
+		std::wstring current_page_properties = Context.get_page_properties();
+		Context.get_section_context().add_section(section_attr_.name_, section_attr_.style_name_.get_value_or(L""), current_page_properties);
+		Context.add_page_properties(current_page_properties);
+	}
 
 	if (index_body_)
 	{

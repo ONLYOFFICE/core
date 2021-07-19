@@ -36,6 +36,7 @@
 #include "../../Common/DocxFormat/Source/Common/SimpleTypes_Shared.h"
 #include "../../Common/Base64.h"
 #include "../../DesktopEditor/common/Types.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 #ifndef DISABLE_FILE_DOWNLOADER
 	#include "../../Common/FileDownloader/FileDownloader.h"
@@ -47,11 +48,18 @@ namespace SerializeCommon
     std::wstring DownloadImage(const std::wstring& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-        CFileDownloader oDownloader(strFile, false);
         std::wstring strFileName;
+		
+        CFileDownloader oDownloader(strFile, false);
 		if ( oDownloader.DownloadSync() )
 		{
 			strFileName = oDownloader.GetFilePath();
+			
+			CImageFileFormatChecker checker;
+			if (false == checker.isImageFile(strFileName))
+			{
+				strFileName.clear();
+			}  
 		}
 		return strFileName;
 #else
@@ -80,8 +88,13 @@ namespace SerializeCommon
 		memset(pBuffer, 0, lFileSize);
         Base64::Base64Decode (sUnicode.c_str() + nShift, lFileSize, pBuffer, &nDstLength);
 
-		// Пишем в файл
-		oFile.WriteFile(pBuffer, nDstLength);
+		CImageFileFormatChecker checker;
+		std::wstring detectImageExtension = checker.DetectFormatByData(pBuffer, nDstLength);
+
+		if (false == detectImageExtension.empty())
+		{
+			oFile.WriteFile(pBuffer, nDstLength);
+		}
 
 		RELEASEARRAYOBJECTS (pBuffer);
 	}

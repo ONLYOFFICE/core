@@ -57,7 +57,7 @@ namespace cpdoccore
 			_property(std::wstring n, double d)			 {name_	=	n;val_	=	d;}
 		
 			std::wstring name_;
-			boost::variant<bool,std::wstring,double,int> val_;
+			boost::variant<bool, std::wstring, double, int> val_;
 		};
 
 		template <class T>

@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef CSV_WRITER
-#define CSV_WRITER
+#pragma once
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
@@ -50,20 +49,26 @@ namespace CSVWriter
 	protected:
 		NSFile::CFileBinary m_oFile;
 		OOX::Spreadsheet::CXlsx& m_oXlsx;
-		UINT m_nCodePage;
+		unsigned int m_nCodePage;
 		const std::wstring& m_sDelimiter;
 		bool m_bJSON;
 
-		WCHAR* m_pWriteBuffer;
-		INT m_nCurrentIndex;
+		wchar_t* m_pWriteBuffer;
+		int m_nCurrentIndex;
 		std::wstring m_sEscape;
-		INT m_nRowCurrent;
-		INT m_nColCurrent;
+		int m_nRowCurrent;
+		int m_nColCurrent;
+		
+		int m_nColDimension;
+
 		bool m_bIsWriteCell; // Нужно только для записи JSON-а
 		bool m_bStartRow;
 		bool m_bStartCell;
+
+		void GetDefaultFormatCode(int numFmt, std::wstring & format_code, int & format_type);
+		std::wstring ConvertValueCellToString(const std::wstring &Value, int format_type, const std::wstring & format_code);
 	public:
-		CCSVWriter(OOX::Spreadsheet::CXlsx &oXlsx, UINT m_nCodePage, const std::wstring& sDelimiter, bool m_bJSON);
+		CCSVWriter(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int m_nCodePage, const std::wstring& sDelimiter, bool m_bJSON);
 		~CCSVWriter();
 		void Start(const std::wstring &sFileDst);
 		void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
@@ -74,7 +79,6 @@ namespace CSVWriter
 		void End();
 		void Close();
 	};
-	void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& wcDelimiter, bool bJSON);
+	void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& wcDelimiter, bool bJSON);
 }
 
-#endif //CSV_WRITER

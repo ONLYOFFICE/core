@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_RPR_FILE_INCLUDE_H_
-#define OOX_RPR_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -70,7 +68,7 @@ namespace OOX
 				return et_x_RgbColor;
 			}
 		private:
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -79,12 +77,9 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rgb"),      m_oRgb )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CHexColor> m_oRgb;
@@ -373,9 +368,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CColor)
-			CColor()
-			{
-			}
+			CColor(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CColor()
 			{
 			}
@@ -393,8 +386,12 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 			{
-				writer.WriteString(_T("<"));
-				writer.WriteString(sName);
+				toXMLWithNS(writer, L"", sName, L"");
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
 				WritingStringNullableAttrBool(L"auto", m_oAuto);
 				WritingStringNullableAttrInt(L"indexed", m_oIndexed, m_oIndexed->GetValue());
 				if(m_oRgb.IsInit() && !m_oIndexed.IsInit())
@@ -412,7 +409,7 @@ namespace OOX
 				WritingStringNullableAttrInt(L"theme", m_oThemeColor, m_oThemeColor->GetValue());
 				WritingStringNullableAttrDouble(L"tint", m_oTint, m_oTint->GetValue());
 
-				writer.WriteString(_T("/>"));
+				writer.EndAttributesAndNode();
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -428,16 +425,13 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("auto"),    m_oAuto )
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("indexed"), m_oIndexed )
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("rgb"),     m_oRgb )
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("theme"),   m_oThemeColor )
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("tint"),    m_oTint )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::COnOff<>>						m_oAuto;
@@ -494,13 +488,11 @@ namespace OOX
 			{
 			}
 		};
-		class CCharset
+		class CCharset : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CCharset)
-			CCharset()
-			{
-			}
+			CCharset(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CCharset()
 			{
 			}
@@ -514,26 +506,28 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oCharset )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CFontCharset<>>	m_oCharset;
 		};
-		class CVerticalAlign
+		class CVerticalAlign : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CVerticalAlign)
-			CVerticalAlign()
-			{
-			}
+			CVerticalAlign(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CVerticalAlign()
 			{
 			}
@@ -547,26 +541,28 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oVerticalAlign )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CVerticalAlignRun<>>	m_oVerticalAlign;
 		};
-		class CFontFamily
+		class CFontFamily : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CFontFamily)
-			CFontFamily()
-			{
-			}
+			CFontFamily(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CFontFamily()
 			{
 			}
@@ -580,20 +576,24 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oFontFamily )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CFontFamily<>>	m_oFontFamily;
 		};
-		class CFontScheme
+		class CFontScheme : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CFontScheme)
@@ -613,26 +613,28 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oFontScheme )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if( oReader, _T("val"), m_oFontScheme )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CFontScheme<>>	m_oFontScheme;
 		};
-		class CUnderline
+		class CUnderline : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CUnderline)
-			CUnderline()
-			{
-			}
+			CUnderline(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CUnderline()
 			{
 			}
@@ -646,15 +648,19 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+			virtual std::wstring toXML() const
+			{
+				return _T("");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oUnderline )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), m_oUnderline )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CUnderline<>>	m_oUnderline;
@@ -664,9 +670,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRPr)
-			CRPr()
-			{
-			}
+			CRPr(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CRPr()
 			{
 			}
@@ -851,4 +855,3 @@ namespace OOX
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_RPR_FILE_INCLUDE_H_

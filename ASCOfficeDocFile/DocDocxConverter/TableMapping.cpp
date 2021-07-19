@@ -225,8 +225,11 @@ namespace DocFileFormat
 											documentMapping->m_document->nWordVersion);
 			
 			std::list<CharacterPropertyExceptions*>* chpxs = documentMapping->m_document->GetCharacterPropertyExceptions( fcRowEnd, fcRowEnd + 1 );
-			TableRowPropertiesMapping trpMapping( documentMapping->GetXMLWriter(), *(chpxs->begin()) );
-			tapx.Convert( &trpMapping );
+			if (chpxs)
+			{
+				TableRowPropertiesMapping trpMapping( documentMapping->GetXMLWriter(), *(chpxs->begin()) );
+				tapx.Convert( &trpMapping );
+			}
 
 			documentMapping->_lastValidPapx = papxBackup;
 			documentMapping->_lastValidSepx = sepxBackup;
@@ -323,7 +326,6 @@ namespace DocFileFormat
 		papx = documentMapping->findValidPapx(fc);
 
 		TableInfo tai( papx, documentMapping->m_document->nWordVersion );
-
 
 		return ( ( tai.fInTable ) && ( ( ( documentMapping->m_document->Text->at( _cp ) == 0x0007 ) && ( tai.iTap <= 1 ) && 
 			( !tai.fTtp ) ) ||

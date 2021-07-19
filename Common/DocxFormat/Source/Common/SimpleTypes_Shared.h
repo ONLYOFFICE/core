@@ -885,7 +885,7 @@ namespace SimpleTypes
 	public:
 		CVerticalAlignRun() {}
 
-        virtual EVerticalAlignRun    FromString(std::wstring &sValue)
+        virtual EVerticalAlignRun FromString(std::wstring &sValue)
 		{
             if      ( L"baseline"    == sValue ) this->m_eValue = verticalalignrunBaseline;
             else if ( L"subscript"   == sValue ) this->m_eValue = verticalalignrunSubscript;
@@ -895,7 +895,7 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-        virtual std::wstring              ToString  () const
+        virtual std::wstring ToString  () const
 		{
             switch(this->m_eValue)
 			{

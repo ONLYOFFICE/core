@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_XLSXCOMMENTS_FILE_INCLUDE_H_
-#define OOX_XLSXCOMMENTS_FILE_INCLUDE_H_
 
 #include "../Xlsx.h"
 #include "../Worksheets/Worksheet.h"
@@ -423,14 +421,12 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if ( oReader, L"r:id", m_oId )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oId )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oId;
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_XLSXCOMMENTS_FILE_INCLUDE_H_

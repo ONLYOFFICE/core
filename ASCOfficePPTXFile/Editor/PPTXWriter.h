@@ -71,6 +71,7 @@ namespace NSBinPptxRW
 		OOX::CVmlDrawing				m_oVmlDrawing;
 		PPTX::App						m_oApp;
 		PPTX::Core						m_oCore;
+		nullable<PPTX::CustomProperties>m_oCustomProperties;
 		PPTX::ViewProps					m_oViewProps;
 		PPTX::PresProps					m_oPresProps;
 		PPTX::NotesSlide				m_oDefaultNote;
@@ -106,14 +107,14 @@ namespace NSBinPptxRW
 			m_oImageManager.SetDstFolder(pathPPT.GetPath());
 			
 			OOX::CPath pathMedia = pathPPT / _T("media");
+            m_oImageManager.SetDstMedia(pathMedia.GetPath());
             NSDirectory::CreateDirectory(pathMedia.GetPath());
 
-            m_oImageManager.SetDstMedia(pathMedia.GetPath());
+            OOX::CPath pathCharts = pathPPT / _T("charts");
+            m_oImageManager.SetDstCharts(pathCharts.GetPath());
 
-            OOX::CPath pathEmbeddings = pathPPT / _T("embeddings");
-            NSDirectory::CreateDirectory(pathEmbeddings.GetPath());
-
-            m_oImageManager.SetDstEmbed(pathEmbeddings.GetPath());
+			OOX::CPath pathEmbeddings = pathPPT / _T("embeddings");
+			m_oImageManager.SetDstEmbed(pathEmbeddings.GetPath());
 
 			m_oReader.m_pRels->m_pManager = &m_oImageManager;
 
@@ -192,10 +193,14 @@ namespace NSBinPptxRW
 			
 			for (LONG i = 0; i < 30/*main tables max*/; ++i)
 			{
-				BYTE _type = m_oReader.GetUChar();
-				if (0 == _type)
-					break; 
+				BYTE _type = 0;
+ 
+				if (false == m_oReader.GetUCharWithResult(&_type))
+					break;
 
+				if (0 == _type)
+					break;		
+				
 				m_mainTables.insert(std::pair<BYTE, LONG>(_type, m_oReader.GetLong()));				
 			}
 
@@ -407,7 +412,13 @@ namespace NSBinPptxRW
 
 					m_oReader.m_pRels->Clear();
 					m_oReader.m_pRels->StartTheme();
-					m_arThemes[i].fromPPTY(&m_oReader);
+					try
+					{
+						m_arThemes[i].fromPPTY(&m_oReader);
+					}
+					catch(...)
+					{
+					}
 
                     std::wstring strMasterXml = L"theme" + std::to_wstring(i + 1) + L".xml";
 					oXmlWriter.ClearNoAttack();
@@ -446,7 +457,13 @@ namespace NSBinPptxRW
 
 					m_oReader.m_pRels->Clear();
 					m_oReader.m_pRels->StartMaster(i, m_arSlideMasters_Theme[i]);
-					m_arSlideMasters[i].fromPPTY(&m_oReader);
+					try
+					{
+						m_arSlideMasters[i].fromPPTY(&m_oReader);
+					}
+					catch(...)
+					{
+					}
 					
 					std::vector<PPTX::Logic::XmlId>& arrLays = m_arSlideMasters[i].sldLayoutIdLst;
 					LONG lLayouts = (LONG)m_arSlideMasters_Theme[i].m_arLayouts.size();
@@ -496,7 +513,14 @@ namespace NSBinPptxRW
 
 					m_oReader.m_pRels->Clear();
 					m_oReader.m_pRels->StartLayout(m_arSlideLayouts_Master[i]);
-					m_arSlideLayouts[i].fromPPTY(&m_oReader);
+					
+					try
+					{
+						m_arSlideLayouts[i].fromPPTY(&m_oReader);
+					}
+					catch(...)
+					{
+					}
 					m_oReader.m_pRels->CloseRels();
 
                     std::wstring strMasterXml = L"slideLayout" + std::to_wstring(i + 1) + L".xml";
@@ -543,7 +567,13 @@ namespace NSBinPptxRW
 						}
 						m_oReader.m_pRels->StartNotes((int)indexSlide);
 						
-						m_arNotesSlides[i].fromPPTY(&m_oReader);
+						try
+						{
+							m_arNotesSlides[i].fromPPTY(&m_oReader);
+						}
+						catch(...)
+						{
+						}
 
 						m_oReader.m_pRels->CloseRels();
 
@@ -584,7 +614,13 @@ namespace NSBinPptxRW
 					bNotesMasterPresent = true;
 					if (lCount > 0)
 					{
-						m_arNotesMasters.back().fromPPTY(&m_oReader);
+						try
+						{
+							m_arNotesMasters.back().fromPPTY(&m_oReader);
+						}
+						catch(...)
+						{
+						}
 						m_oReader.m_pRels->CloseRels();
 						
 						std::wstring strMasterNotesXml = L"notesMaster1.xml";
@@ -625,7 +661,14 @@ namespace NSBinPptxRW
 
 					m_oReader.m_pRels->Clear();
 					m_oReader.m_pRels->StartSlide(i, m_arSlides_Layout[i], m_arSlides_Notes[i]);
-					m_arSlides[i].fromPPTY(&m_oReader);
+					
+					try
+					{
+						m_arSlides[i].fromPPTY(&m_oReader);
+					}
+					catch(...)
+					{
+					}
 
 					if (m_arSlides[i].comments.is_init())
 					{
@@ -667,7 +710,13 @@ namespace NSBinPptxRW
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
-				m_oApp.fromPPTY(&m_oReader);
+				try
+				{
+					m_oApp.fromPPTY(&m_oReader);
+				}
+				catch(...)
+				{
+				}
 				SetRequiredDefaultsApp();
 			}
 
@@ -677,8 +726,28 @@ namespace NSBinPptxRW
 			if (m_mainTables.end()  != pPair)
 			{
 				m_oReader.Seek(pPair->second);
-				m_oCore.fromPPTY(&m_oReader);
+				try
+				{
+					m_oCore.fromPPTY(&m_oReader);
+				}
+				catch(...)
+				{
+				}
 				SetRequiredDefaultsCore();
+			}
+
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::CustomProperties);
+			if (m_mainTables.end()  != pPair)
+			{
+				m_oReader.Seek(pPair->second);
+				try
+				{
+					m_oCustomProperties = new PPTX::CustomProperties(&m_oDocument);
+					m_oCustomProperties->fromPPTY(&m_oReader);
+				}
+				catch(...)
+				{
+				}
 			}
             if (false)
 			{
@@ -687,7 +756,13 @@ namespace NSBinPptxRW
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
-					m_oTableStyles.fromPPTY(&m_oReader);
+					try
+					{
+						m_oTableStyles.fromPPTY(&m_oReader);
+					}
+					catch(...)
+					{
+					}
 				}
 
 				// presProps
@@ -695,7 +770,14 @@ namespace NSBinPptxRW
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
-					m_oPresProps.fromPPTY(&m_oReader);
+					try
+					{
+						m_oPresProps.fromPPTY(&m_oReader);
+					}
+					catch(...)
+					{
+						//todooo сделать в отдельный лог
+					}
 				}
 
 				// viewProps
@@ -703,7 +785,13 @@ namespace NSBinPptxRW
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
-					m_oViewProps.fromPPTY(&m_oReader);
+					try
+					{
+						m_oViewProps.fromPPTY(&m_oReader);
+					}
+					catch(...)
+					{
+					}
 				}
 
 			}
@@ -717,7 +805,13 @@ namespace NSBinPptxRW
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
-					m_oPresProps.fromPPTY(&m_oReader);
+					try
+					{
+						m_oPresProps.fromPPTY(&m_oReader);
+					}
+					catch(...)
+					{
+					}
 				}
 				else
 				{
@@ -728,7 +822,13 @@ namespace NSBinPptxRW
 				if (m_mainTables.end()  != pPair)
 				{
 					m_oReader.Seek(pPair->second);
-					m_oTableStyles.fromPPTY(&m_oReader);
+					try
+					{
+						m_oTableStyles.fromPPTY(&m_oReader);
+					}
+					catch(...)
+					{
+					}
 				}
 
 				if (m_oTableStyles.Styles.empty())
@@ -750,6 +850,16 @@ namespace NSBinPptxRW
 
             OOX::CPath pathCore = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml");
 			oXmlWriter.SaveToFile(pathCore.GetPath());
+
+	// customProperies
+			if(m_oCustomProperties.IsInit())
+			{
+				oXmlWriter.ClearNoAttack();
+				m_oCustomProperties->toXmlWriter(&oXmlWriter);
+
+				OOX::CPath pathCore = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + OOX::FileTypes::CustomProperties.DefaultFileName().GetPath();
+				oXmlWriter.SaveToFile(pathCore.GetPath());
+			}
 
 	// presProps
 			oXmlWriter.ClearNoAttack();
@@ -786,7 +896,13 @@ namespace NSBinPptxRW
                 NSDirectory::CreateDirectory (pathFolderRels.GetPath());
 
 				m_oReader.Seek(pPair->second);
-				m_oPresentation.fromPPTY(&m_oReader);
+				try
+				{
+					m_oPresentation.fromPPTY(&m_oReader);
+				}
+				catch(...)
+				{
+				}
 
 				m_oPresentation.sldMasterIdLst.clear();
 				LONG nCountLayouts = 0;
@@ -794,7 +910,7 @@ namespace NSBinPptxRW
 				{
 					m_oPresentation.sldMasterIdLst.push_back(PPTX::Logic::XmlId(L"p:sldMasterId"));
 
-                    std::wstring sId = std::to_wstring((_UINT64)(0x80000000 + nCountLayouts));
+                    std::wstring sId = std::to_wstring((_UINT64)(0x80000000 + (_UINT64)nCountLayouts));
 
 					m_oPresentation.sldMasterIdLst[i].id = sId;
 					m_oPresentation.sldMasterIdLst[i].rid = (size_t)(i + 1);
@@ -893,6 +1009,10 @@ namespace NSBinPptxRW
 
 			pContentTypes->Registration(L"application/vnd.openxmlformats-package.core-properties+xml",				L"/docProps", L"core.xml");
 			pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.extended-properties+xml",	L"/docProps", L"app.xml");
+			if(m_oCustomProperties.IsInit())
+			{
+				pContentTypes->Registration(OOX::FileTypes::CustomProperties.OverrideType(),	L"/docProps", OOX::FileTypes::CustomProperties.DefaultFileName().GetPath());
+			}
 
 	// themes
 			for (size_t i = 0; i < m_arThemes.size(); ++i)
@@ -947,8 +1067,12 @@ namespace NSBinPptxRW
 <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
 <Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/>\
 <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"ppt/presentation.xml\"/>\
-<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>\
-</Relationships>");
+<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>");
+			if(m_oCustomProperties.IsInit())
+			{
+				strRELS += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties\" Target=\"docProps/custom.xml\"/>";
+			}
+			strRELS += L"</Relationships>";
 
             OOX::CPath filePathRels = m_strDstFolder + FILE_SEPARATOR_STR + _T("_rels");
             NSDirectory::CreateDirectory (filePathRels.GetPath());
@@ -967,7 +1091,7 @@ namespace NSBinPptxRW
 		void ReadMasterInfo(LONG nIndexMaster)
 		{
 			LONG _rec_start = m_oReader.GetPos();
-			LONG _end_rec = _rec_start + m_oReader.GetLong() + 4;
+			LONG _end_rec = _rec_start + m_oReader.GetRecordSize() + 4;
 
 			_slideMasterInfo& oMaster = m_arSlideMasters_Theme[nIndexMaster];			
 			

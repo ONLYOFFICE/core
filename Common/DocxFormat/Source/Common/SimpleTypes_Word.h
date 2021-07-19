@@ -1204,6 +1204,7 @@ namespace SimpleTypes
 	public:
 		CDecimalNumberOrPercent() 
 		{
+			m_dValue = 0;
 			m_bTrailingPercentSign = false;
 		}
 
@@ -2031,7 +2032,10 @@ namespace SimpleTypes
 		{
 			return m_sValue;
 		}
-
+		std::wstring ToXmlString() const
+		{
+			return XmlUtils::EncodeXmlString(m_sValue);
+		}
         SimpleType_FromString2    (std::wstring)
 		SimpleType_Operator_Equal (CFFHelpTextVal)
 	private:
@@ -2076,7 +2080,11 @@ namespace SimpleTypes
 		{
 			return m_sValue;
 		}
-
+		std::wstring ToXmlString() const
+		{
+			return XmlUtils::EncodeXmlString(m_sValue);
+		}
+		
         SimpleType_FromString2    (std::wstring)
 		SimpleType_Operator_Equal (CFFName)
 	private:
@@ -2098,7 +2106,7 @@ namespace SimpleTypes
 			return m_sValue;
 		}
 
-        void    SetValue(std::wstring &sValue)
+        void SetValue(std::wstring &sValue)
 		{
             if ( sValue.length() <= 140 )
 				m_sValue = sValue;
@@ -2117,11 +2125,14 @@ namespace SimpleTypes
 			return m_sValue;
 		}
 
-        std::wstring ToString  () const
+        std::wstring ToString () const
 		{
 			return m_sValue;
 		}
-
+		std::wstring ToXmlString() const
+		{
+			return XmlUtils::EncodeXmlString(m_sValue);
+		}
         SimpleType_FromString2    (std::wstring)
 		SimpleType_Operator_Equal (CFFStatusTextVal)
 	private:
@@ -2512,22 +2523,23 @@ namespace SimpleTypes
 
         virtual EHdrFtr FromString(std::wstring &sValue)
 		{
-            if      ( (L"default") == sValue ) this->m_eValue = hdrftrDefault;
-            else if ( (L"even")    == sValue ) this->m_eValue = hdrftrEven;
-            else if ( (L"first")   == sValue ) this->m_eValue = hdrftrFirst;
-            else                                this->m_eValue = eDefValue;
+            if      ( L"default" == sValue ||
+					  L"odd"	 == sValue ) this->m_eValue = hdrftrDefault;
+            else if ( L"even"    == sValue ) this->m_eValue = hdrftrEven;
+            else if ( L"first"   == sValue ) this->m_eValue = hdrftrFirst;
+            else							 this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
 
-        virtual std::wstring ToString  () const
+        virtual std::wstring ToString() const
 		{
             switch(this->m_eValue)
 			{
-			case hdrftrDefault : return (L"default");
-			case hdrftrEven    : return (L"even");
-			case hdrftrFirst   : return (L"first");
-			default            : return (L"default");
+			case hdrftrDefault : return L"default";
+			case hdrftrEven    : return L"even";
+			case hdrftrFirst   : return L"first";
+			default            : return L"default";
 			}
 		}
 
@@ -3299,9 +3311,9 @@ namespace SimpleTypes
 
 	enum ELineNumberRestart
 	{
-		linenumberrestartContinious = 0,
-		linenumberrestartNewPage    = 1,
-		linenumberrestartNewSection = 2
+		linenumberrestartContinious = 1,
+		linenumberrestartNewPage    = 2,
+		linenumberrestartNewSection = 3
 	};
 
 	template<ELineNumberRestart eDefValue = linenumberrestartNewPage>
@@ -3850,10 +3862,13 @@ namespace SimpleTypes
 
         virtual EMultiLevelType FromString(std::wstring &sValue)
 		{
-            if      ( (L"hybridMultilevel") == sValue ) this->m_eValue = emultileveltypeHybridMultilevel;
-            else if ( (L"multilevel")       == sValue ) this->m_eValue = emultileveltypeMultilevel;
-            else if ( (L"singleLevel")      == sValue ) this->m_eValue = emultileveltypeSingleLevel;
-            else                                         this->m_eValue = eDefValue;
+            if      (	L"hybridMultilevel" == sValue ||
+						L"HybridMultilevel" == sValue)	this->m_eValue = emultileveltypeHybridMultilevel;
+            else if (	L"multilevel"       == sValue ||
+						L"Multilevel"       == sValue )	this->m_eValue = emultileveltypeMultilevel;
+            else if (	L"singleLevel"      == sValue ||
+						L"SingleLevel"      == sValue)	this->m_eValue = emultileveltypeSingleLevel;
+            else										this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}

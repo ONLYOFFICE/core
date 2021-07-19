@@ -30,11 +30,7 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_COLORSCHEMEINDEX_INCLUDE_H_
-#define PPTX_LIMIT_COLORSCHEMEINDEX_INCLUDE_H_
-
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -124,7 +120,7 @@ namespace PPTX
 				return 0;
 			}
 
-			void SetStringCode(const BYTE& val)
+			virtual void SetBYTECode(const BYTE& val)
 			{
 				switch (val)
 				{
@@ -173,5 +169,3 @@ namespace PPTX
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_COLORSCHEMEINDEX_INCLUDE_H_

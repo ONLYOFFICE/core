@@ -75,7 +75,7 @@ double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name
 }
 odt_conversion_context::odt_conversion_context(package::odf_document * outputDocument) 
 	:	odf_conversion_context (TextDocument, outputDocument),
-		comment_context_(this), notes_context_(this), main_text_context_(NULL), table_context_(this)	
+		comment_context_(this), notes_context_(this), main_text_context_(NULL), table_context_(this), controls_context_(this)
 {
 
 	is_hyperlink_				= false;
@@ -133,7 +133,15 @@ void odt_conversion_context::end_document()
 		}
 		root_document_->add_child_element(seq_decls);
 	}
+	if (controls_context()->is_exist_content())
+	{
+		office_element_ptr forms_root_elm;
+		create_element(L"office", L"forms", forms_root_elm, this);
 
+		controls_context()->finalize(forms_root_elm);
+		
+		root_document_->add_child_element(forms_root_elm);
+	}
 	//add sections to root
 	for (size_t i = 0; i < sections_.size(); i++)
 	{
@@ -150,6 +158,10 @@ void odt_conversion_context::end_document()
 	
 	odf_conversion_context::end_document();
 } 
+odf_controls_context* odt_conversion_context::controls_context()
+{
+	return  &controls_context_;
+}
 
 odf_drawing_context* odt_conversion_context::drawing_context()	
 {
@@ -552,8 +564,7 @@ void odt_conversion_context::start_bookmark (int id, const std::wstring& name)
 		{
 			mapBookmarks.insert(std::make_pair(id, name));
 		}
-		text_context()->start_element(bookmark_elm);
-		text_context()->end_element();	
+		text_context()->add_element_in_span_or_par(bookmark_elm);
 	}
 }
 void odt_conversion_context::end_bookmark (int id)
@@ -568,20 +579,24 @@ void odt_conversion_context::end_bookmark (int id)
 	if (bookmark)
 	{
 		bookmark->text_name_ = pFind->second;
-		
-		text_context()->start_element(bookmark_elm);
-		text_context()->end_element();	
+
+		text_context()->add_element_in_span_or_par(bookmark_elm);
 	}
 }
-void odt_conversion_context::start_hyperlink(std::wstring ref)
+void odt_conversion_context::start_hyperlink(const std::wstring& link, const std::wstring& location)
 {
+	if (false == current_fields.empty() && current_fields.back().status == 1 && false == current_fields.back().in_span)
+	{
+		end_paragraph();
+		start_paragraph(true);
+	}
 	office_element_ptr hyperlink_elm;
 	create_element(L"text", L"a", hyperlink_elm, this);
 
 	text_a* hyperlink = dynamic_cast<text_a*>(hyperlink_elm.get());
 	if (hyperlink)
 	{
-		hyperlink->common_xlink_attlist_.href_	= ref;
+		hyperlink->common_xlink_attlist_.href_	= link + (location.empty() ? L"" : (L"#" + location));
 		hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 		
 		text_context()->start_element(hyperlink_elm);
@@ -657,6 +672,7 @@ void odt_conversion_context::start_sequence()
 }	
 void odt_conversion_context::end_sequence()
 {
+	text_context()->end_span();
 	text_context()->end_element();
 }
 std::map<std::wstring, std::wstring> odt_conversion_context::parse_instr_options(const std::wstring& value)
@@ -742,7 +758,12 @@ void odt_conversion_context::set_field_instr()
 	res1 = instr.find(L"TIME");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
 	{
-		current_fields.back().type = fieldDateTime;
+		current_fields.back().type = fieldTime;
+	}
+	res1 = instr.find(L"DATE");
+	if (std::wstring::npos != res1 && current_fields.back().type == 0)
+	{
+		current_fields.back().type = fieldDate;
 	}
 	res1 = instr.find(L"FORMTEXT");
 	if (std::wstring::npos != res1 && current_fields.back().type == 0)
@@ -822,7 +843,8 @@ void odt_conversion_context::set_field_instr()
 			boost::algorithm::split(arLevels, pFind->second, boost::algorithm::is_any_of(L"-"), boost::algorithm::token_compress_on);
 			if (arLevels.size() > 1)
 			{
-				current_fields.back().type = fieldToc;  
+				if (current_fields.back().captionSEQ.empty()) 
+					current_fields.back().type = fieldToc;
 				current_fields.back().outline_levels = XmlUtils::GetInteger(arLevels[1]);
 			}
 		}
@@ -845,25 +867,30 @@ void odt_conversion_context::set_field_instr()
 			}
 		}
 		pFind = options.find(L"z");
-		if ( pFind != options.end())//table of content outline levels style
+		if ( pFind != options.end())
 		{
 			current_fields.back().bHidePageNumbers = true; 
 		}
 	}
 	////////////////////////////////////////// 
-	res1 = instr.find(L"@");
+	res1 = instr.find(L" ");
 	if (std::wstring::npos != res1)
 	{
-		current_fields.back().format = instr.substr(res1 + 1, instr.length());
-	}
+		if (current_fields.back().format.empty())
+		{
+			std::map<std::wstring, std::wstring> options = parse_instr_options(instr.substr(res1 + 1));
 
-	if (current_fields.back().type == 0)
-	{
-		res1 = instr.find(L" ");
-		if (std::wstring::npos != res1)
+			std::map<std::wstring, std::wstring>::iterator pFind = options.find(L"@");
+			if (pFind != options.end())
+			{
+				current_fields.back().format = pFind->second;
+			}
+		}
+
+		if (current_fields.back().type == 0)
 		{
 			current_fields.back().name = instr.substr(0, res1);
-		}		
+		}
 	}
 }
 void odt_conversion_context::set_field_date_time(const std::wstring &date_time)
@@ -1067,8 +1094,21 @@ void odt_conversion_context::end_field()
 	{
 		set_field_instr();
 	}
+	if (current_fields.back().status == 1 && false == current_fields.back().in_span && current_fields.back().type < 0xff)
+	{
+		current_fields.back().status = 2;
 
-	if (current_fields.back().status == 2)	
+		if (current_fields.back().type == fieldHyperlink)
+		{
+			std::wstring location;
+			start_hyperlink(current_fields.back().value, location);
+		}
+		else if (current_fields.back().type == fieldSeq)		start_sequence();
+		else if (current_fields.back().type == fieldDropDown)	start_drop_down();
+		else
+			text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
+	}
+	if (current_fields.back().status == 2)
 	{
 		current_fields.back().status = 3;//prepare for delete
 		
@@ -1086,6 +1126,14 @@ void odt_conversion_context::end_field()
 	{
 		current_fields.pop_back();
 	}
+	if (false == current_fields.empty())
+	{
+		if (current_fields.back().type < 0xff	&& current_fields.back().type != fieldHyperlink 
+												&& current_fields.back().type != fieldSeq
+												&& current_fields.back().type != fieldDropDown)
+			text_context()->in_field_ = true;
+	}
+
 }
 void odt_conversion_context::end_paragraph()
 {
@@ -1211,11 +1259,15 @@ void odt_conversion_context::start_run(bool styled)
 	{
 		current_fields.back().status = 2;
 
-		if (current_fields.back().type == fieldHyperlink)		start_hyperlink(current_fields.back().value);
+		if (current_fields.back().type == fieldHyperlink)
+		{
+			std::wstring location;
+			start_hyperlink(current_fields.back().value, location);
+		}
 		else if (current_fields.back().type == fieldSeq)		start_sequence();
 		else if (current_fields.back().type == fieldDropDown)	start_drop_down();
 		else												
-			text_context()->start_field(current_fields.back().type, current_fields.back().value);
+			text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
 	}	
 	
 	text_context()->start_span(styled);
@@ -1230,7 +1282,7 @@ void odt_conversion_context::start_run(bool styled)
 	if (!current_fields.empty() && current_fields.back().status == 1 && current_fields.back().in_span)//поле стартуется в span - нужно для сохранения стиля
 	{
 		current_fields.back().status = 2;
-		text_context()->start_field(current_fields.back().type, current_fields.back().value);
+		text_context()->start_field(current_fields.back().type, current_fields.back().value, current_fields.back().format);
 	}	
 }
 void odt_conversion_context::end_run()
@@ -1265,7 +1317,7 @@ bool odt_conversion_context::start_comment(int oox_comm_id)
 		if (text_context()->current_level_.size() > 0)
 			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 
-		odf_element_state state={comm_elm, L"", office_element_ptr(), text_context()->current_level_.size()};
+		odf_element_state state(comm_elm, L"", office_element_ptr(), text_context()->current_level_.size());
 		text_context()->current_level_.push_back(state);
 
 		return false; //типо новый
@@ -1318,7 +1370,7 @@ void odt_conversion_context::start_note(int oox_ref_id, int type)
 	if (text_context()->current_level_.size() > 0)
 		text_context()->current_level_.back().elm->add_child_element(note_elm);
 
-	odf_element_state state = {note_elm, L"", office_element_ptr(), text_context()->current_level_.size()};
+	odf_element_state state(note_elm, L"", office_element_ptr(), text_context()->current_level_.size());
 	text_context()->current_level_.push_back(state);
 }
 void odt_conversion_context::start_note_content()
@@ -1327,7 +1379,7 @@ void odt_conversion_context::start_note_content()
 
     office_element_ptr note_content_element = notes_context_.get_note_content();
 
-	odf_element_state state = {note_content_element, L"", office_element_ptr(), text_context()->current_level_.size()};
+	odf_element_state state(note_content_element, L"", office_element_ptr(), text_context()->current_level_.size());
 	text_context()->current_level_.push_back(state);
 
 	start_text_context();
@@ -1571,7 +1623,7 @@ void odt_conversion_context::start_table_columns()
 void odt_conversion_context::add_table_column(double width)
 {
 	office_element_ptr elm;
-	create_element(L"table", L"table-column",elm,this);
+	create_element(L"table", L"table-column", elm, this);
 
 	styles_context()->create_style(L"", style_family::TableColumn, true, false, -1);
 

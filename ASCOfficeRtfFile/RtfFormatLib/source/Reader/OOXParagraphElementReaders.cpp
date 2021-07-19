@@ -250,7 +250,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 
 			if( pHyperlink->m_oId.IsInit() )
 			{
-				std::wstring sTarget;
+				std::wstring sTarget, sLocation;
 				
 				if (oParam.oReader->m_currentContainer)
 				{ 
@@ -261,8 +261,13 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 						sTarget = pH->Uri().GetPath();
 					}
 				}
+
 				if( !sTarget.empty() )
 				{
+					if (pHyperlink->m_sAnchor.IsInit())
+					{
+						sTarget += L"#" + *pHyperlink->m_sAnchor;
+					}
 					//заменяем пробелы на %20
                     XmlUtils::replace_all(sTarget, L" ", L"%20" );
 
@@ -320,7 +325,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 					oOutputParagraph.AddItem( oCurField );
 				}
 			}
-			if( pHyperlink->m_sAnchor.IsInit() )
+			else if( pHyperlink->m_sAnchor.IsInit() )
 			{
 				RtfFieldPtr oCurField( new RtfField() );
 				
@@ -496,13 +501,13 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 				oOutputParagraph.AddItem( oNewAnnotElem );
 			
 				//find comment and add info
-				std::map<int, int>::iterator pFindComment = oParam.oDocx->m_pComments->m_mapComments.find(nId);
+				std::map<int, int>::iterator pFindComment = oParam.oDocx->m_oMain.comments->m_mapComments.find(nId);
 
-				if (pFindComment != oParam.oDocx->m_pComments->m_mapComments.end())
+				if (pFindComment != oParam.oDocx->m_oMain.comments->m_mapComments.end())
 				{
-					if ( pFindComment->second < (int)oParam.oDocx->m_pComments->m_arrComments.size() && pFindComment->second >= 0)
+					if ( pFindComment->second < (int)oParam.oDocx->m_oMain.comments->m_arrComments.size() && pFindComment->second >= 0)
 					{
-						OOX::CComment* oox_comment = oParam.oDocx->m_pComments->m_arrComments[pFindComment->second];
+						OOX::CComment* oox_comment = oParam.oDocx->m_oMain.comments->m_arrComments[pFindComment->second];
 						if (oox_comment)
 						{
 							if (oox_comment->m_oAuthor.IsInit())
@@ -1076,7 +1081,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam, RtfParagraphProperty& oOutputP
 	//применяем все остальные свойчтва direct formating
 	if( m_ooxParaProps->m_oPStyle.IsInit() && m_ooxParaProps->m_oPStyle->m_sVal.IsInit())
 	{
-		std::wstring sStyleName = m_ooxParaProps->m_oPStyle->m_sVal.get2();
+		std::wstring sStyleName = *m_ooxParaProps->m_oPStyle->m_sVal;
 		RtfStylePtr oCurStyle;
 		if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyleName, oCurStyle) )
 		{
@@ -1115,7 +1120,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam, RtfParagraphProperty& oOutputP
 		oOutputProperty.m_bKeepNext = m_ooxParaProps->m_oKeepNext->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxParaProps->m_oOutlineLvl.IsInit() && m_ooxParaProps->m_oOutlineLvl->m_oVal.IsInit())
-		oOutputProperty.m_nOutlinelevel = m_ooxParaProps->m_oOutlineLvl->m_oVal->GetValue();
+		oOutputProperty.m_nOutlinelevel = *m_ooxParaProps->m_oOutlineLvl->m_oVal;
 
 	if (m_ooxParaProps->m_oPageBreakBefore.IsInit())
 		oOutputProperty.m_bPageBB = m_ooxParaProps->m_oPageBreakBefore->m_oVal.ToBool() ? 1 : 0;
@@ -1249,11 +1254,11 @@ bool OOXpPrReader::Parse( ReaderParameter oParam, RtfParagraphProperty& oOutputP
 	{
 		if( m_ooxParaProps->m_oNumPr->m_oIlvl.IsInit() && m_ooxParaProps->m_oNumPr->m_oIlvl->m_oVal.IsInit())
 		{
-			oOutputProperty.m_nListLevel = m_ooxParaProps->m_oNumPr->m_oIlvl->m_oVal->GetValue();
+			oOutputProperty.m_nListLevel = *m_ooxParaProps->m_oNumPr->m_oIlvl->m_oVal;
 		}
 		if( m_ooxParaProps->m_oNumPr->m_oNumID.IsInit() && m_ooxParaProps->m_oNumPr->m_oNumID->m_oVal.IsInit())
 		{
-			oOutputProperty.m_nListId = m_ooxParaProps->m_oNumPr->m_oNumID->m_oVal->GetValue();
+			oOutputProperty.m_nListId = *m_ooxParaProps->m_oNumPr->m_oNumID->m_oVal;
 			if( PROP_DEF == oOutputProperty.m_nListLevel )
 				oOutputProperty.m_nListLevel = 0;
 		}
@@ -1418,7 +1423,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 	}
 	if (m_ooxRunProps->m_oRStyle.IsInit() && m_ooxRunProps->m_oRStyle->m_sVal.IsInit())
 	{
-		std::wstring sStyleID = m_ooxRunProps->m_oRStyle->m_sVal.get2();
+		std::wstring sStyleID = *m_ooxRunProps->m_oRStyle->m_sVal;
 		RtfStylePtr oCurStyle;
 		if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyleID, oCurStyle)) 
 		{
@@ -1527,12 +1532,12 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 	}
 	if( m_ooxRunProps->m_oHighlight.IsInit() && m_ooxRunProps->m_oHighlight->m_oVal.IsInit() )
 	{
-		//switch(m_ooxRunProps->m_oHighlight->m_oVal->GetValue())
-		//{//незачем
-		//}
-		oOutputProperty.m_nHightlited = oParam.oRtf->m_oColorTable.AddItem(RtfColor(m_ooxRunProps->m_oHighlight->m_oVal->Get_R(),
-																					m_ooxRunProps->m_oHighlight->m_oVal->Get_G(),
-																					m_ooxRunProps->m_oHighlight->m_oVal->Get_B()));
+		if (m_ooxRunProps->m_oHighlight->m_oVal->GetValue() != SimpleTypes::highlightcolorNone)
+		{ 
+			oOutputProperty.m_nHightlited = oParam.oRtf->m_oColorTable.AddItem(RtfColor(m_ooxRunProps->m_oHighlight->m_oVal->Get_R(),
+																						m_ooxRunProps->m_oHighlight->m_oVal->Get_G(),
+																						m_ooxRunProps->m_oHighlight->m_oVal->Get_B()));
+		}
 	}
 	if ( m_ooxRunProps->m_oTextOutline.IsInit())
 	{
@@ -1760,7 +1765,7 @@ bool OOXpPrReader::ParseDrawing( ReaderParameter oParam, RtfParagraphProperty& o
 
 	return true;
 }
-bool OOXrPrReader::ParseDrawing( ReaderParameter oParam, RtfCharProperty& oOutputProperty)
+bool OOXrPrReader::ParseDrawing(ReaderParameter oParam, RtfCharProperty& oOutputProperty)
 {
 	if (m_drawingRunProps == NULL) return false;
 
@@ -1771,18 +1776,18 @@ bool OOXrPrReader::ParseDrawing( ReaderParameter oParam, RtfCharProperty& oOutpu
 	//if (m_drawingRunProps->m_oCaps.IsInit())
 	//	oOutputProperty.m_bCaps = m_drawingRunProps->m_oCaps->ToBool() ? 1 : 0;
 
-	if( m_drawingRunProps->sz.IsInit())
+	if (m_drawingRunProps->sz.IsInit())
 		oOutputProperty.m_nFontSize = m_drawingRunProps->sz.get() / 50;
 
 	if (m_drawingRunProps->i.IsInit())
 		oOutputProperty.m_bItalic = m_drawingRunProps->i.get() ? 1 : 0;
 
-	if( m_drawingRunProps->latin.IsInit() || m_drawingRunProps->cs.IsInit() || m_drawingRunProps->ea.IsInit())
+	if (m_drawingRunProps->latin.IsInit() || m_drawingRunProps->cs.IsInit() || m_drawingRunProps->ea.IsInit())
 	{
-		OOXFontReader3 oFontReader3(m_drawingRunProps->latin.GetPointer(), 
-									m_drawingRunProps->ea.GetPointer(),
-									m_drawingRunProps->cs.GetPointer());
-		oFontReader3.Parse( oParam, oOutputProperty.m_nFont);
+		OOXFontReader3 oFontReader3(m_drawingRunProps->latin.GetPointer(),
+			m_drawingRunProps->ea.GetPointer(),
+			m_drawingRunProps->cs.GetPointer());
+		oFontReader3.Parse(oParam, oOutputProperty.m_nFont);
 	}
 	//if (m_drawingRunProps->m_oComplexFont.IsInit() && m_drawingRunProps->m_oComplexFont->m_oTypeFace.IsInit())
 	//	oOutputProperty.m_nComplexScript = m_drawingRunProps->m_oCs->m_oVal.ToBool() ? 1 : 0;;
@@ -1803,7 +1808,7 @@ bool OOXrPrReader::ParseDrawing( ReaderParameter oParam, RtfCharProperty& oOutpu
 
 	//if (m_drawingRunProps->m_oDStrike.IsInit())
 	//	oOutputProperty.m_nStriked = m_drawingRunProps->m_oDStrike->m_oVal.ToBool() ? 1 : 0;
-	
+
 	//if( m_drawingRunProps->m_oVertAlign.IsInit() && m_drawingRunProps->m_oVertAlign->m_oVal.IsInit())
 	//{
 	//	switch(m_drawingRunProps->m_oVertAlign->m_oVal->GetValue())
@@ -1816,12 +1821,12 @@ bool OOXrPrReader::ParseDrawing( ReaderParameter oParam, RtfCharProperty& oOutpu
 	//}
 	//if( m_drawingRunProps->m_oHighlight.IsInit() && m_drawingRunProps->m_oHighlight->m_oVal.IsInit() )
 	//{
-	//	//switch(m_drawingRunProps->m_oHighlight->m_oVal->GetValue())
-	//	//{//незачем
-	//	//}
-	//	oOutputProperty.m_nHightlited = oParam.oRtf->m_oColorTable.AddItem(RtfColor(m_drawingRunProps->m_oHighlight->m_oVal->Get_R(),
+		//if (m_drawingRunProps->m_oHighlight->m_oVal->GetValue() != SimpleTypes::highlightcolorNone)
+		//{ 	
+			//	oOutputProperty.m_nHightlited = oParam.oRtf->m_oColorTable.AddItem(RtfColor(m_drawingRunProps->m_oHighlight->m_oVal->Get_R(),
 	//																				m_drawingRunProps->m_oHighlight->m_oVal->Get_G(),
 	//																				m_drawingRunProps->m_oHighlight->m_oVal->Get_B()));
+		//}
 	//}
 	if( m_drawingRunProps->Fill.is_init() )
 	{
@@ -2050,7 +2055,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 		}
 		if (m_ooxSectionProperty->m_oEndnotePr->m_oNumStart.IsInit() && 
 							m_ooxSectionProperty->m_oEndnotePr->m_oNumStart->m_oVal.IsInit())
-			oOutput.m_nEndnotesStart = m_ooxSectionProperty->m_oEndnotePr->m_oNumStart->m_oVal->GetValue();
+			oOutput.m_nEndnotesStart = *m_ooxSectionProperty->m_oEndnotePr->m_oNumStart->m_oVal;
 
 		if (m_ooxSectionProperty->m_oEndnotePr->m_oNumFmt.IsInit())
 		{
@@ -2078,7 +2083,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 		}
 		if (m_ooxSectionProperty->m_oFootnotePr->m_oNumStart.IsInit() && 
 					m_ooxSectionProperty->m_oFootnotePr->m_oNumStart->m_oVal.IsInit())
-			oOutput.m_nFootnotesStart = m_ooxSectionProperty->m_oFootnotePr->m_oNumStart->m_oVal->GetValue();
+			oOutput.m_nFootnotesStart = *m_ooxSectionProperty->m_oFootnotePr->m_oNumStart->m_oVal;
 		
 		if(m_ooxSectionProperty->m_oFootnotePr->m_oNumRestart.IsInit() &&
 			m_ooxSectionProperty->m_oFootnotePr->m_oNumRestart->m_oVal.IsInit())

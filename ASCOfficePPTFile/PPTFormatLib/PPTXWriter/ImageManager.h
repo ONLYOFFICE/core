@@ -34,12 +34,16 @@
 #ifndef DISABLE_FILE_DOWNLOADER
 #include "../../../Common/FileDownloader/FileDownloader.h"
 #endif
+#include "ridmanager.h"
 
 namespace PPT_FORMAT
 {
 	class CMediaManager
 	{
-	private:
+    public:
+        RIDManager                              m_ridManager;
+
+    private:
 		std::map<std::wstring, std::wstring>	m_mapMedia;
 
 		long									m_lIndexNextAudio;
@@ -102,7 +106,10 @@ namespace PPT_FORMAT
 				CFileDownloader oDownloader(strInput, TRUE);
 				if ( oDownloader.DownloadSync() )
 				{
-					return GenerateMedia( oDownloader.GetFilePath(), Template, Indexer, strDefaultExt);
+					std::wstring file_name = oDownloader.GetFilePath();
+					
+					//todooo - check media file
+					return GenerateMedia(file_name , Template, Indexer, strDefaultExt);
 				}
 #endif
 			}
@@ -136,7 +143,17 @@ namespace PPT_FORMAT
 			m_mapMedia[strInput] = strMediaName;
 			return strMediaName;
 		}
+        inline void WriteAudioCollection(const std::vector<CExFilesInfo>& audioCont)
+        {
+            if (audioCont.empty()) return;
 
+            for (auto& audio : audioCont)
+            {
+                auto pathAudio = GenerateAudio(audio.m_strFilePath);
+                m_ridManager.addSoundPath(pathAudio);
+            }
+
+        }
         inline bool IsNeedDownload(const std::wstring& strFile)
 		{
 			int n1 = strFile.find(L"www");
@@ -169,11 +186,11 @@ namespace PPT_FORMAT
 	}
 	class CRelsGenerator
 	{
-	private:
-		PPT_FORMAT::CStringWriter		m_oWriter;
+    private:
+        PPT_FORMAT::CStringWriter               m_oWriter;
 		int										m_lNextRelsID;
 		std::map<std::wstring, int>				m_mapMediaRelsID;
-		CMediaManager*							m_pManager;
+        CMediaManager*							m_pManager;
 		std::map<std::wstring, std::wstring>	m_mapHyperlinks;
 
 	public:
@@ -336,7 +353,7 @@ namespace PPT_FORMAT
 			std::wstring strMedia = m_pManager->FindMedia(strMediaPath);
 
 			if (strMedia.empty())	return WriteHyperlinkMedia(CorrectXmlString3(strMediaPath), true, true);			
-									return WriteHyperlinkMedia(strMedia, false, true);
+                                    return WriteHyperlinkMedia(strMedia, false, false); // changed
 		}
 		inline std::wstring WriteImage(const std::wstring& strImagePath)
 		{
@@ -345,6 +362,16 @@ namespace PPT_FORMAT
 			if (strImage.empty())	return WriteHyperlinkImage(CorrectXmlString3(strImagePath), true);			
 									return WriteHyperlinkImage(strImage, false);
 		}
+        std::wstring WriteSlideRef(const std::wstring& strLocation)
+        {
+            std::wstring strSlide(L"slide");
+            std::vector<std::wstring> strs;
+            boost::split(strs, strLocation, boost::is_any_of(L","));
+            if (strs.size() == 3)
+                strSlide += strs[1];
+            strSlide += L".xml";
+            return WriteHyperlinkMedia(strSlide, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide");
+        }
         inline std::wstring WriteAudio(const std::wstring& strAudioPath, bool & bExternal)
 		{
 			std::wstring strAudio = m_pManager->GenerateAudio(strAudioPath);
@@ -373,5 +400,7 @@ namespace PPT_FORMAT
 				return WriteHyperlinkVideo(strVideo, false);
 			}
 		}
-	};
+
+        inline int getRId()const{return m_lNextRelsID;}
+    };
 }

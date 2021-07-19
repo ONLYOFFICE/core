@@ -63,7 +63,6 @@ direction direction::parse(const std::wstring & Str)
         return direction( Ttb );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return direction( Ltr );
     }
 }

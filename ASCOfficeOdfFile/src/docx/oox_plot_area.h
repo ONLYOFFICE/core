@@ -45,7 +45,7 @@ namespace oox {
 class oox_plot_area: boost::noncopyable
 {
 public:
-	oox_plot_area(){}
+	oox_plot_area();
 	~oox_plot_area(){}
  
     std::vector<oox_chart_ptr>			charts_;
@@ -65,22 +65,14 @@ public:
 	void add_chart	(int type);
 	void add_axis	(int type,	odf_reader::chart::axis & content);
 
- 	//void set_content_series	(odf_reader::chart::series & content);
+	void set_no_local_table (bool val); //whithout embedded tables
+	//void set_content_series	(odf_reader::chart::series & content);
 
 private:
-	void reset_cross_axis();//обязательно после всех добавлений
+	void reset_cross_axis(); //обязательно после всех добавлений
+ 	bool no_used_local_tables_;
 
-
-//variable charts 
-//catAx (Category Axis Data) §21.2.2.25
-//dateAx (Date Axis) §21.2.2.39
-//serAx (Series Axis) §21.2.2.175
-//valAx (Value Axis) §21.2.2.226
-
-//extLst (Chart Extensibility) §21.2.2.64
-//layout (Layout) §21.2.2.88
-//spPr (Shape Properties) §21.2.2.197
-//dTable (Data Table) §21.2.2.54
+	unsigned int axis_id_ = 0xf2905;
 
 };
 

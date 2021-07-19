@@ -49,7 +49,7 @@ namespace cpdoccore {
 
 namespace odf_writer {
 
-static int style_family_counts_[26]={};//согласно количеству разных стилей
+static int style_family_counts_[1024]={};//согласно количеству разных стилей
 
 
 void calc_paragraph_properties_content(std::vector<style_paragraph_properties*> & parProps, paragraph_format_properties * result)
@@ -391,6 +391,7 @@ std::wstring odf_style_context::get_name_family(style_family::type family)
 		case style_family::HandoutMaster:			return L"Handout";
 		case style_family::LayerSet:				return L"";//нету
 		case style_family::PresentationPageLayout:	return L"AL";
+		case style_family::LineNumbering:			return L"Line_20_numbering";
 
 	}
 	return L"UnknownStyle";

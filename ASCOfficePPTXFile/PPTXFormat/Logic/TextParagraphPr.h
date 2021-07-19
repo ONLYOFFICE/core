@@ -235,9 +235,10 @@ namespace PPTX
 				buSize.toXmlWriter(pWriter);
 				buTypeface.toXmlWriter(pWriter);
 				ParagraphBullet.toXmlWriter(pWriter);
-				pWriter->Write(defRPr);
-
+				
 				pWriter->WriteArray(_T("a:tabLst"), tabLst);
+				
+				pWriter->Write(defRPr);
 				
 				pWriter->EndNode(m_name);
 			}
@@ -319,7 +320,7 @@ namespace PPTX
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1); // start attributes
 
@@ -333,8 +334,7 @@ namespace PPTX
 					{
 						case 0:
 						{
-							algn = new Limit::TextAlign();
-							algn->SetBYTECode(pReader->GetUChar());							
+							algn = pReader->GetUChar();							
 							break;
 						}
 						case 1:
@@ -349,8 +349,7 @@ namespace PPTX
 						}
 						case 3:
 						{
-							fontAlgn = new Limit::FontAlign();
-							fontAlgn->SetBYTECode(pReader->GetUChar());
+							fontAlgn = pReader->GetUChar();
 							break;
 						}
 						case 4:
@@ -463,8 +462,7 @@ namespace PPTX
 										{
 											case 0:
 											{
-												tabLst[nIndex].algn = new PPTX::Limit::TextTabAlignType();
-												tabLst[nIndex].algn->SetBYTECode(pReader->GetUChar());
+												tabLst[nIndex].algn = pReader->GetUChar();
 												break;
 											}
 											case 1:
@@ -485,6 +483,7 @@ namespace PPTX
 							defRPr = new Logic::RunProperties();
 							defRPr->m_name = _T("a:defRPr");
 							defRPr->fromPPTY(pReader);
+							break;
 						}
 						default:
 						{

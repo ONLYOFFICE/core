@@ -60,65 +60,50 @@ namespace DocFileFormat
 		{
 			switch ( iter->OpCode)
 			{
-				//revision data
-			case 0xCA89:
+				case sprmCPropRMark2:
 				{
-					//revision mark
 					collectRevisionData = false;
-					//author 
 					this->Isbt = FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
-					//date
 					this->Dttm = DateAndTime( ( iter->Arguments + 3 ), 4 );
-				}
-				break;
-
-			case 0x0801:
+				}break;		
+				case sprmCFRMark:
 				{
-					//revision mark
 					collectRevisionData = false;
-				}
-				break;
-
-			case 0x4804:
+				}break;
+				case sprmCIbstRMark:
 				{
-					//author
 					this->Isbt = FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize );
-				}
-				break;
-
-			case 0x6805:
+				}break;		
+				case sprmCIbstRMarkDel:
 				{
-					//date
+					this->Isbt = FormatUtils::BytesToInt16(iter->Arguments, 0, iter->argumentsSize);
+				}break;
+				case sprmCDttmRMark:
+				{
 					this->Dttm = DateAndTime( iter->Arguments, 4 );
-				}
-				break;
-
-			case 0x0800:
+				}break;	
+				case sprmCDttmRMarkDel:
 				{
-					//delete mark
+					this->Dttm = DateAndTime(iter->Arguments, 4);
+				}break;
+				case sprmCFRMarkDel:
+				{
 					this->Type = Deleted;
-				}
-				break;
-
-			case 0x6815:
+				}break;	
+				case sprmCRsidProp:
 				{
 					this->RsidProp = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
-				}
-				break;
-
-			case 0x6816:
+				}break;
+				case sprmCRsidText:
 				{
 					this->Rsid = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
-				}
-				break;
-
-			case 0x6817:
+				}break;
+				case sprmCRsidRMDel:
 				{
 					this->RsidDel = FormatUtils::BytesToInt32( iter->Arguments, 0, iter->argumentsSize );
-				}
-				break;
-			default:
-				break;
+				}break;				
+				default:
+					break;
 			}
 
 			//put the sprm on the revision stack

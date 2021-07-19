@@ -276,11 +276,11 @@ void calcext_condition::xlsx_convert(oox::xlsx_conversion_context & Context)
 		instStyle = Context.root()->odf_context().styleContainer().style_by_display_name(style_name, style_family::TableCell, false);
 	if (instStyle)
 	{
-		text_format_properties_content		textFormats		= calc_text_properties_content		(instStyle);
+		text_format_properties_content_ptr	textFormats		= calc_text_properties_content		(instStyle);
 		graphic_format_properties			graphicFormats	= calc_graphic_properties_content	(instStyle);
 		style_table_cell_properties_attlist	cellFormats		= calc_table_cell_properties		(instStyle);
 	
-		int dxfId = Context.get_style_manager().dxfId(&textFormats, &graphicFormats, &cellFormats);
+		int dxfId = Context.get_style_manager().dxfId(textFormats, &graphicFormats, &cellFormats);
 		Context.set_conditional_format_dxf(dxfId);
 	}
 	Context.end_conditional_format_rule();

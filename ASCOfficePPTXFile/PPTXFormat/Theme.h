@@ -57,7 +57,8 @@ namespace PPTX
 		Theme(OOX::Document *pMain) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 		{
 			isThemeOverride = false;
-			
+			m_map = NULL;
+
 			OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(File::m_pMainDocument);
 			if (docx) docx->m_pTheme = this;
 		}
@@ -255,7 +256,7 @@ namespace PPTX
 			BYTE type = pReader->GetUChar();
 
 			LONG _rec_start = pReader->GetPos();
-			LONG _end_rec = _rec_start + pReader->GetULong() + 4;
+			LONG _end_rec = _rec_start + pReader->GetRecordSize() + 4;
 
 			pReader->Skip(1); // start attributes
 

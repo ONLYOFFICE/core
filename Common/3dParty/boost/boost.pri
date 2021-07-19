@@ -7,6 +7,11 @@ core_freebsd {
     CORE_BOOST_LIBS = /usr/local/lib
 }
 
+core_android {
+    INCLUDEPATH += $$PWD/build/android/include
+    CORE_BOOST_LIBS = $$PWD/build/android/lib/$$CORE_BUILDS_PLATFORM_PREFIX
+}
+
 core_windows {
     core_win_64:BOOST_POSTFIX = -vc140-mt-x64-1_72
     core_win_32:BOOST_POSTFIX = -vc140-mt-x32-1_72

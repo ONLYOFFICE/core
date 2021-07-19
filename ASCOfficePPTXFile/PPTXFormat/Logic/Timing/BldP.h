@@ -62,10 +62,12 @@ namespace PPTX
                 XmlMacroReadAttributeBase(node, L"advAuto", advAuto);
 
 				Normalize();
-
 				FillParentPointersForChilds();
 			}
-
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_bldP;
+			}
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
@@ -78,19 +80,77 @@ namespace PPTX
 				oAttr.Write(_T("autoUpdateAnimBg"), autoUpdateAnimBg);
 				oAttr.Write(_T("rev"), rev);
 				oAttr.Write(_T("advAuto"), advAuto);
-				oAttr.Write(_T("spid"), spid);
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(tmplLst);
 
 				return XmlUtils::CreateNode(_T("p:bldP"), oAttr, oValue);
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteLimit2(0, build);
+					pWriter->WriteBool2(1, uiExpand);
+					pWriter->WriteString1(2, spid);
+					pWriter->WriteInt1(3, grpId);
+					pWriter->WriteInt2(4, bldLvl);
+					pWriter->WriteBool2(5, animBg);
+					pWriter->WriteBool2(6, autoUpdateAnimBg);
+					pWriter->WriteBool2(7, rev);
+					pWriter->WriteString2(8, advAuto);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+				
+				pWriter->WriteRecord2(0, tmplLst);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
-		public:
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	build = pReader->GetUChar();
+					else if (1 == _at)	uiExpand = pReader->GetBool();
+					else if (2 == _at)	spid = pReader->GetString2();
+					else if (3 == _at)	grpId = pReader->GetLong();
+					else if (4 == _at)	bldLvl = pReader->GetLong();
+					else if (5 == _at)	animBg = pReader->GetBool();
+					else if (6 == _at)	autoUpdateAnimBg = pReader->GetBool();
+					else if (7 == _at)	rev = pReader->GetBool();
+					else if (8 == _at)	advAuto = pReader->GetString2();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							tmplLst = new Logic::TmplLst();
+							tmplLst->fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
 			nullable<TmplLst>						tmplLst;
 
-			std::wstring									spid;
-			int										grpId;
+			std::wstring							spid;
+            int										grpId;
 			nullable_bool							uiExpand;
 			nullable_limit<Limit::ParaBuildType>	build;
 			nullable_int							bldLvl;

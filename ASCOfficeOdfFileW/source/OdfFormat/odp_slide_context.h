@@ -46,6 +46,35 @@ class odp_conversion_context;
 class office_element;
 typedef shared_ptr<office_element>::Type office_element_ptr;
 
+//class odp_table_context : public odf_table_context
+//{
+//public:
+//	void clear()
+//	{
+//		first_row = false;
+//		first_col = false;
+//		band_row = false;
+//		band_col = false;
+//		last_row = false;
+//		last_col = false;
+//	}
+//
+//	void set_first_row(bool val)	{first_row = val;}
+//	void set_first_col(bool val)	{first_col = val;}
+//	void set_band_row(bool val)		{band_row = val;}
+//	void set_band_col(bool val)		{band_col = val;}
+//	void set_last_row(bool val)		{last_row = val;}
+//	void set_last_col(bool val)		{last_col = val;}
+//
+//private:
+//	bool first_row = false;
+//	bool first_col = false;
+//	bool band_row = false;
+//	bool band_col = false;
+//	bool last_row = false;
+//	bool last_col = false;
+//};
+
 class odp_slide_context
 {
 public:
@@ -58,10 +87,7 @@ public:
 
 	void				set_styles_context(odf_style_context*  styles_context);
 	odf_style_context*	get_styles_context();
-
-    odp_page_state & state();
-
-	odf_table_context				* table_context();
+	odf_table_context*	table_context();
 
 	void start_table				();
 		void start_table_columns	();
@@ -70,11 +96,14 @@ public:
 		void start_table_header_rows();
 		void end_table_header_rows	();
 		void start_table_row		(bool styled = false);
-			void add_default_cell	();
+			void add_default_cell	(int col);
 			void start_table_cell	(int col, bool covered, bool styled = true);
 			void end_table_cell		();
 		void end_table_row			();
-	void end_table					();
+	void end_table					();    
+	
+	odp_page_state & state();
+
 private:
 
     odp_conversion_context&		context_;

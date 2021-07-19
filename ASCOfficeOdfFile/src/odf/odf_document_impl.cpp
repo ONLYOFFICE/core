@@ -702,6 +702,7 @@ void odf_document::Impl::parse_meta(office_element *element)
 void odf_document::Impl::parse_styles(office_element *element)
 {
 	text_outline_style *outlineStyle = NULL;
+	text_linenumbering_configuration *linenumberingStyle = NULL;
     
 	do
     {
@@ -759,6 +760,7 @@ void odf_document::Impl::parse_styles(office_element *element)
 						styleInst->style_parent_style_name_.get_value_or(L""),
 						styleInst->style_next_style_name_.get_value_or(L""),
 						styleInst->style_data_style_name_.get_value_or(L""),
+						styleInst->style_percentage_data_style_name_.get_value_or(L""),
 						styleInst->style_class_.get_value_or(L""),
 						styleInst->style_list_style_name_,
 						styleInst->style_list_level_,
@@ -840,6 +842,7 @@ void odf_document::Impl::parse_styles(office_element *element)
                     true,
                     L"",
                     L"",
+					L"",
                     L"",
 					L"");                                            
             }
@@ -879,6 +882,7 @@ void odf_document::Impl::parse_styles(office_element *element)
                     styleInst->style_parent_style_name_.get_value_or(L""),
                     styleInst->style_next_style_name_.get_value_or(L""),
                     styleInst->style_data_style_name_.get_value_or(L""),
+					styleInst->style_percentage_data_style_name_.get_value_or(L""),
 					styleInst->style_class_.get_value_or(L""),
 					styleInst->style_list_style_name_,
 					styleInst->style_list_level_,
@@ -897,9 +901,14 @@ void odf_document::Impl::parse_styles(office_element *element)
 
 			if (docStyles->text_outline_style_)
 			{
-                outlineStyle = dynamic_cast<text_outline_style *>(docStyles->text_outline_style_.get());                
+                outlineStyle = dynamic_cast<text_outline_style *>(docStyles->text_outline_style_.get());   
+				context_->listStyleContainer().add_outline_style(outlineStyle);
 			}
-
+			if (docStyles->text_linenumbering_configuration_)
+			{
+				linenumberingStyle = dynamic_cast<text_linenumbering_configuration *>(docStyles->text_linenumbering_configuration_.get());
+				context_->pageLayoutContainer().add_linenumbering(linenumberingStyle);
+			}
 			for (size_t i = 0; i < docStyles->text_notes_configuration_.size(); i++)
 			{	
 				office_element_ptr & elm = docStyles->text_notes_configuration_[i];
@@ -1054,6 +1063,7 @@ void odf_document::Impl::parse_styles(office_element *element)
                     styleInst->style_parent_style_name_.get_value_or(L""),
                     styleInst->style_next_style_name_.get_value_or(L""),
                     styleInst->style_data_style_name_.get_value_or(L""),
+					styleInst->style_percentage_data_style_name_.get_value_or(L""),
 					styleInst->style_class_.get_value_or(L""),
 					styleInst->style_list_style_name_,
 					styleInst->style_list_level_,
@@ -1092,7 +1102,6 @@ void odf_document::Impl::parse_styles(office_element *element)
     while (false);
 
 	context_->listStyleContainer().add_outline_style(outlineStyle);
-
 }
 
 bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)

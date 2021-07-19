@@ -104,7 +104,7 @@ namespace PPTX
 						LnB = oReader;
 					else if (_T("a:cell3D") == strName)
 						cell3D = oReader;
-					else if (_T("a:lnBlToTr") == strName)
+					else if (_T("a:lnBlToBr") == strName)
 						LnTlToBr = oReader;
 					else if (_T("a:lnBlToTr") == strName)
 						LnBlToTr = oReader;
@@ -209,7 +209,7 @@ namespace PPTX
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 				pReader->Skip(1); // start attributes
 
 				while (true)
@@ -247,20 +247,17 @@ namespace PPTX
 						}
 						case 5:
 						{
-							Vert = new Limit::TextVerticalType();
-							Vert->SetBYTECode(pReader->GetUChar());
+							Vert = pReader->GetUChar();
 							break;
 						}
 						case 6:
 						{
-							Anchor = new Limit::TextAnchor();
-							Anchor->SetBYTECode(pReader->GetUChar());
+							Anchor = pReader->GetUChar();
 							break;
 						}
 						case 7:
 						{
-							HorzOverflow = new Limit::HorzOverflow();
-							HorzOverflow->SetBYTECode(pReader->GetUChar());
+							HorzOverflow = pReader->GetUChar();
 							break;
 						}
 						default:

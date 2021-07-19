@@ -30,11 +30,7 @@
  *
  */
 #pragma once
-#ifndef OOX_HYPERLINKS_FILE_INCLUDE_H_
-#define OOX_HYPERLINKS_FILE_INCLUDE_H_
-
 #include "../CommonInclude.h"
-
 
 namespace OOX
 {
@@ -46,7 +42,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CHyperlink)
-			CHyperlink()
+			CHyperlink(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CHyperlink()
@@ -57,17 +53,17 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<hyperlink"));
+				writer.WriteString((L"<hyperlink"));
 				WritingStringNullableAttrEncodeXmlString(L"display", m_oDisplay, m_oDisplay.get());
 				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
 				WritingStringNullableAttrEncodeXmlString(L"location", m_oLocation, m_oLocation.get());
 				WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef.get());
 				WritingStringNullableAttrEncodeXmlString(L"tooltip", m_oTooltip, m_oTooltip.get());
-				writer.WriteString(_T("/>"));
+				writer.WriteString((L"/>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -86,31 +82,31 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("display"),      m_oDisplay)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),      m_oRid )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("location"),      m_oLocation )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tooltip"),      m_oTooltip )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if		( oReader, (L"display"),	m_oDisplay)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"r:id"),		m_oRid )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"relationships:id"), m_oRid )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"location"),	m_oLocation )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"ref"),		m_oRef )
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"tooltip"),	m_oTooltip )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-				nullable<std::wstring>						m_oDisplay;
+				nullable_string							m_oDisplay;
 				nullable<SimpleTypes::CRelationshipId>	m_oRid;
-				nullable<std::wstring>						m_oLocation;
-				nullable<std::wstring>						m_oRef;
-				nullable<std::wstring>						m_oTooltip;
+				nullable_string							m_oLocation;
+				nullable_string							m_oRef;
+				nullable_string							m_oTooltip;
+				
+				nullable_string							m_oLink;
 		};
 
 		class CHyperlinks  : public WritingElementWithChilds<CHyperlink>
 		{
 		public:
 			WritingElement_AdditionConstructors(CHyperlinks)
-			CHyperlinks()
+			CHyperlinks(OOX::Document *pMain = NULL) : WritingElementWithChilds<CHyperlink>(pMain)
 			{
 			}
 			virtual ~CHyperlinks()
@@ -121,13 +117,13 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				if(m_arrItems.empty()) return;
 
-				writer.WriteString(_T("<hyperlinks>"));
+				writer.WriteString((L"<hyperlinks>"));
 					
                 for ( size_t i = 0; i < m_arrItems.size(); ++i)
                 {
@@ -137,12 +133,10 @@ namespace OOX
                     }
                 }
 				
-				writer.WriteString(_T("</hyperlinks>"));
+				writer.WriteString((L"</hyperlinks>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
-
 				if ( oReader.IsEmptyNode() )
 					return;
 
@@ -151,8 +145,13 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("hyperlink") == sName )
-						m_arrItems.push_back( new CHyperlink( oReader ));
+					if ( (L"hyperlink") == sName )
+					{
+						CHyperlink *pHyperlink = new CHyperlink();
+						m_arrItems.push_back(pHyperlink);
+
+						pHyperlink->fromXML(oReader);
+					}
 				}
 			}
 
@@ -160,13 +159,6 @@ namespace OOX
 			{
 				return et_x_Hyperlinks;
 			}
-		
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_HYPERLINKS_FILE_INCLUDE_H_

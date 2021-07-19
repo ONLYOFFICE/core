@@ -48,6 +48,10 @@ namespace OOX
 												L"application/vnd.openxmlformats-package.core-properties+xml",
 												L"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties");
 
+		const FileType CustomProperties	(L"docProps", L"custom.xml",
+												L"application/vnd.openxmlformats-officedocument.custom-properties+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties");
+
 		const FileType Document			(L"word", L"document.xml",
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
@@ -56,11 +60,13 @@ namespace OOX
 												L"application/vnd.ms-word.document.macroEnabled.main+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
 
+		const FileType DocumentFlat		(L"", L"", L"", L"");
+
 		const FileType Theme			(L"theme", L"theme.xml",
 												L"application/vnd.openxmlformats-officedocument.theme+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme", 
 												L"theme", true);
-
+		 
 		const FileType ThemeOverride	(L"themeOverride", L"themeOverride.xml",
 												L"application/vnd.openxmlformats-officedocument.theme+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/themeOverride", 
@@ -122,6 +128,14 @@ namespace OOX
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtended+xml",
 												L"http://schemas.onlyoffice.com/commentsExtendedDocument");
 
+		const FileType CommentsExtensible		(L"", L"commentsExtensible.xml",
+												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtensible+xml",
+												L"http://schemas.microsoft.com/office/2018/08/relationships/commentsExtensible");
+
+		const FileType DocumentCommentsExtensible (L"", L"commentsExtensibleDocument.xml",
+												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtensible+xml",
+												L"http://schemas.onlyoffice.com/commentsExtensibleDocument");
+
 		const FileType CommentsIds		(L"", L"commentsIds.xml",
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsIds+xml",
 												L"http://schemas.microsoft.com/office/2016/09/relationships/commentsIds");
@@ -129,6 +143,10 @@ namespace OOX
 		const FileType DocumentCommentsIds		(L"", L"commentsIdsDocument.xml",
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsIds+xml",
 												L"http://schemas.onlyoffice.com/commentsIdsDocument");
+
+		const FileType CommentsUserData		(L"", L"commentsUserData.xml",
+												L"application/vnd.openxmlformats-officedocument.wordprocessingml.commentsExtensible+xml",
+												L"http://schemas.onlyoffice.com/commentsUserData");
 
 		const FileType People			(L"", L"people.xml", 
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.people+xml",
@@ -206,12 +224,12 @@ namespace OOX
 												L"http://schemas.microsoft.com/office/2014/relationships/chartEx", 
 												L"charts/chartEx", true, true);
 
-		const FileType ChartStyle			(L"charts", L"style.xml",
+		const FileType ChartStyle			(L"", L"style.xml",
 												L"application/vnd.ms-office.chartstyle+xml",
 												L"http://schemas.microsoft.com/office/2011/relationships/chartStyle", 
 												L"charts/style", true, true);
 
-		const FileType ChartColorStyle		(L"charts", L"colors.xml",
+		const FileType ChartColors			(L"", L"colors.xml",
 												L"application/vnd.ms-office.chartcolorstyle+xml",
 												L"http://schemas.microsoft.com/office/2011/relationships/chartColorStyle", 
 												L"charts/colors", true, true);
@@ -311,10 +329,6 @@ namespace OOX
 												L"",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject");
 		
-		const FileType Glossary				(L"glossary", L"document.xml",
-												L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument");
-
 		const FileType VmlDrawing			(L"drawings", L"vmlDrawing.vml",
 												L"application/vnd.openxmlformats-officedocument.vmlDrawing",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/vmlDrawing", 
@@ -343,6 +357,10 @@ namespace OOX
 		const FileType LegacyDiagramText	(L"", L"legacyDiagramText.bin",
 												L"",
 												L"http://schemas.microsoft.com/office/2006/relationships/legacyDiagramText");
+
+		const FileType GlossaryDocument		(L"glossary", L"document.xml",
+												L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument");
 
 		const FileType Unknow				(L"", L"", L"", L"");
 

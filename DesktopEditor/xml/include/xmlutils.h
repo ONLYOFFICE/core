@@ -37,6 +37,10 @@
 #include <map>
 #include <string>
 
+#ifdef _MSC_VER
+   #pragma warning (disable: 4100 4189)
+#endif
+
 #include "../../common/StringBuilder.h"
 
 #ifndef XML_UNUSED
@@ -94,6 +98,8 @@ namespace XmlUtils
 		bool FromString	(const wchar_t* sXml);
 		bool FromString	(const std::wstring& sXml);
 		bool FromStringA(const std::string& sXml);
+
+		bool MoveToStart();
 
 		bool Read(XmlNodeType &oNodeType);
 		bool ReadNextNode();

@@ -37,6 +37,7 @@
 
 #if !defined(_WIN32) && !defined (_WIN64)
 #include <unistd.h>
+#include <sys/stat.h>
 #endif
 
 #define WRITEBUFFERSIZE 8192
@@ -589,19 +590,33 @@ namespace ZLibZipUtils
 
 /*========================================================================================================*/
 
-int oneZipFile(zipFile & zf, zip_fileinfo* zi, std::wstring & file_name, std::wstring & zip_file_name, int method, int compressionLevel)
+int oneZipFile(zipFile & zf, zip_fileinfo* zi, std::wstring & file_name, std::wstring & zip_file_name, int method, int compressionLevel, bool bDateTime)
 {
 	int err = -1;
 
-	NSFile::CFileBinary oFile;
+    NSFile::CFileBinary oFile;
+
+    zip_fileinfo zinfo;
+    zinfo.dosDate = zinfo.external_fa = zinfo.internal_fa = 0;
+    zinfo.tmz_date.tm_sec = zinfo.tmz_date.tm_min = zinfo.tmz_date.tm_hour = 0;
+    zinfo.tmz_date.tm_mday = 1;
+    zinfo.tmz_date.tm_mon = 0;
+    zinfo.tmz_date.tm_year = 1980;
+
+    zip_fileinfo* zi_new = zi ? zi : &zinfo;
+    if (bDateTime )
+    {
+        zi_new->dosDate = oFile.GetDateTime(file_name);
+    }
 	if(oFile.OpenFile(file_name))
-	{
-		DWORD dwSizeRead;
+    {
+        DWORD dwSizeRead;
 		BYTE* pData = new BYTE[oFile.GetFileSize()];
 		if(oFile.ReadFile(pData, oFile.GetFileSize(), dwSizeRead))
 		{
 			std::string zipFileNameA = codepage_issue_fixToOEM(zip_file_name);
-			err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), zi, NULL, 0, NULL, 0, NULL, method, compressionLevel );
+
+            err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), zi_new, NULL, 0, NULL, 0, NULL, method, compressionLevel );
 			err = zipWriteInFileInZip( zf, pData, dwSizeRead );
 			err = zipCloseFileInZip( zf );
 		}
@@ -609,7 +624,7 @@ int oneZipFile(zipFile & zf, zip_fileinfo* zi, std::wstring & file_name, std::ws
 	}
 	return 0;
 }
-int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted, int method, int compressionLevel )
+int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, bool sorted, int method, int compressionLevel, bool bDateTime )
 { 
 	if ( ( dir != NULL ) && ( outputFile != NULL ) )
 	{
@@ -623,6 +638,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 		wstring szText;
 
 		zipFile zf = zipOpenHelp(outputFile);
+        if (!zf) return -1;
 
 		unsigned int filesCount = get_files_count( dir );
 		unsigned int currentFileIndex = 0;
@@ -684,7 +700,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 					file = NSSystemPath::Combine(szText, cFileName);
 					zipFileName = zipDir + cFileName;
 					
-					oneZipFile(zf, NULL, file, zipFileName, 0, compressionLevel);
+                    oneZipFile(zf, NULL, file, zipFileName, 0, compressionLevel, bDateTime);
 
 					aCurFiles.erase(aCurFiles.begin() + i, aCurFiles.begin() + i + 1);
 					break;
@@ -697,7 +713,7 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 				file = NSSystemPath::Combine(szText, cFileName);
 				zipFileName = zipDir + cFileName;
 
-				oneZipFile(zf, NULL, file, zipFileName, method, compressionLevel);
+                oneZipFile(zf, NULL, file, zipFileName, method, compressionLevel, bDateTime);
 
 				if ( progress != NULL )
 				{
@@ -730,13 +746,18 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 
   /*========================================================================================================*/
 
-  int ZipFile( const WCHAR* inputFile, const WCHAR* outputFile, int method, int compressionLevel )
+  int ZipFile( const WCHAR* inputFile, const WCHAR* outputFile, int method, int compressionLevel, bool bDateTime )
   { 
 	int err = -1;
 
     if ( ( inputFile != NULL ) && ( outputFile != NULL ) )
     {
-		NSFile::CFileBinary oFile;
+        NSFile::CFileBinary oFile;
+
+        zip_fileinfo zinfo;
+        zinfo.external_fa = zinfo.internal_fa = 0;
+        zinfo.dosDate = bDateTime ? oFile.GetDateTime(inputFile) : 0;
+
 		if(oFile.OpenFile(inputFile))
 		{
 			DWORD dwSizeRead;
@@ -744,35 +765,38 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 			if(oFile.ReadFile(pData, oFile.GetFileSize(), dwSizeRead))
 			{
 				zipFile zf = zipOpenHelp(outputFile);
+                if (zf)
+                {
+                    wstring inputFileName( inputFile );
 
-				wstring inputFileName( inputFile );
+                    wstring::size_type pos = 0;
+                    static const wstring::size_type npos = -1;
 
-				wstring::size_type pos = 0;
-				static const wstring::size_type npos = -1;
+                    pos = inputFileName.find_last_of( L'\\' );
 
-				pos = inputFileName.find_last_of( L'\\' );
+                    wstring zipFileName;
 
-				wstring zipFileName;
+                    if ( pos != npos )
+                    {
+                        zipFileName = wstring( ( inputFileName.begin() + pos + 1 ), inputFileName.end() );
+                    }
+                    else
+                    {
+                        zipFileName = wstring( inputFileName.begin(), inputFileName.end() );
+                    }
+                    std::string zipFileNameA = codepage_issue_fixToOEM(zipFileName);
 
-				if ( pos != npos )
-				{
-					zipFileName = wstring( ( inputFileName.begin() + pos + 1 ), inputFileName.end() );
-				}
-				else
-				{
-					zipFileName = wstring( inputFileName.begin(), inputFileName.end() );
-				}
-				std::string zipFileNameA = codepage_issue_fixToOEM(zipFileName);
-				err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), NULL, NULL, 0, NULL, 0, NULL, method, compressionLevel );
-				err = zipWriteInFileInZip( zf, pData, dwSizeRead );
-				err = zipCloseFileInZip( zf );
-				err = zipClose( zf, NULL );
+                    err = zipOpenNewFileInZip( zf, zipFileNameA.c_str(), &zinfo, NULL, 0, NULL, 0, NULL, method, compressionLevel );
+                    err = zipWriteInFileInZip( zf, pData, dwSizeRead );
+                    err = zipCloseFileInZip( zf );
+                    err = zipClose( zf, NULL );
+                }
 			}
 			RELEASEARRAYOBJECTS(pData);
 		}
 	}
 
-    return false;
+    return err;
   }
 
   /*========================================================================================================*/

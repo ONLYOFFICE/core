@@ -83,7 +83,6 @@ font_family_generic font_family_generic::parse(const std::wstring & Str)
         return font_family_generic( System );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return font_family_generic( Roman );
     }
 }

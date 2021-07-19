@@ -47,11 +47,14 @@ public:
 	void add(const std::wstring & name, /*int col, int row*/const std::wstring & ref);
 	void add_formula(const std::wstring & name, const std::wstring & f);
 	void add_help_msg(const std::wstring & name, const std::wstring & title, const std::wstring & content, bool display);
-	void add_error_msg(const std::wstring & name, const std::wstring & title, const std::wstring & content, bool display);
+	void add_error_msg(const std::wstring & name, const std::wstring & title, const std::wstring & content, bool display, int type);
 
 	void activate(const std::wstring & name, int col, int row/*const std::wstring & ref*/);
 
     void serialize(std::wostream & _Wostream);
+	void serialize_x14(std::wostream & _Wostream);
+
+	void clear();
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

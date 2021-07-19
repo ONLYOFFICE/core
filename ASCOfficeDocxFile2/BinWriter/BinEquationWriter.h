@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef BINEQUATIONWRITER_H
-#define BINEQUATIONWRITER_H
+#pragma once
 
 #include "BinReaderWriterDefines.h"
 
@@ -475,7 +474,7 @@ namespace MathEquation
 						{
 							case specialsymAlignment:
 							{
-                                str =  0x0026;
+                                str = 0x200A;
 								if (oRManager.GetAlligment())
 									oRun.bNormal = true;
 								else
@@ -2432,4 +2431,3 @@ namespace MathEquation
 			std::stack<CBaseCommand*> m_aCommandStack;
 	};
 } 
-#endif //BINEQUATIONWRITER_H

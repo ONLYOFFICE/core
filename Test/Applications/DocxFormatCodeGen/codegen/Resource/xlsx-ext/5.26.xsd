@@ -1,0 +1,61 @@
+<xsd:schema targetNamespace="http://schemas.microsoft.com/office/spreadsheetml/2019/namedsheetviews" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:x="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:x14="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main" xmlns:xlrd2="http://schemas.microsoft.com/office/spreadsheetml/2017/richdata2" xmlns="http://schemas.microsoft.com/office/spreadsheetml/2019/namedsheetviews">
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="sml.xsd"/>
+   <xsd:import namespace="http://schemas.openxmlformats.org/spreadsheetml/2006/main" schemaLocation="xlbasictypes.xsd"/>
+   <xsd:import namespace="http://schemas.microsoft.com/office/spreadsheetml/2009/9/main" schemaLocation="xl14.xsd"/>
+   <xsd:import namespace="http://schemas.microsoft.com/office/spreadsheetml/2017/richdata2" schemaLocation="5.20.xsd"/>
+   <xsd:element name="namedSheetViews" type="CT_NamedSheetViews"/>
+   <xsd:complexType name="CT_NamedSheetViews">
+     <xsd:sequence>
+       <xsd:element name="namedSheetView" type="CT_NamedSheetView" minOccurs="0" maxOccurs="unbounded"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="CT_NamedSheetView">
+     <xsd:sequence>
+       <xsd:element name="nsvFilter" type="CT_NsvFilter" minOccurs="0" maxOccurs="unbounded"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+     <xsd:attribute name="name" type="xsd:string" use="required"/>
+     <xsd:attribute name="id" type="x:ST_Guid" use="required"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_NsvFilter">
+     <xsd:sequence>
+       <xsd:element name="columnFilter" minOccurs="0" maxOccurs="unbounded" type="CT_ColumnFilter"/>
+       <xsd:element name="sortRules" minOccurs="0" maxOccurs="1" type="CT_SortRules"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+     <xsd:attribute name="filterId" type="x:ST_Guid" use="required"/>
+     <xsd:attribute name="ref" type="x:ST_Ref" use="optional"/>
+     <xsd:attribute name="tableId" type="xsd:unsignedInt" use="optional"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_ColumnFilter">
+     <xsd:sequence>
+       <xsd:element name="dxf" type="x:CT_Dxf" minOccurs="0" maxOccurs="1"/>
+       <xsd:element name="filter" minOccurs="0" maxOccurs="unbounded" type="x:CT_FilterColumn"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+     <xsd:attributeGroup ref="AG_ColumnId"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_SortRules">
+     <xsd:sequence>
+       <xsd:element name="sortRule" minOccurs="0" maxOccurs="64" type="CT_SortRule"/>
+       <xsd:element name="extLst" type="x:CT_ExtensionList" minOccurs="0" maxOccurs="1"/>
+     </xsd:sequence>
+     <xsd:attribute name="sortMethod" type="x:ST_SortMethod" use="optional" default="none"/>
+     <xsd:attribute name="caseSensitive" type="xsd:boolean" use="optional" default="false"/>
+   </xsd:complexType>
+   <xsd:complexType name="CT_SortRule">
+     <xsd:sequence>
+       <xsd:element name="dxf" type="x:CT_Dxf" minOccurs="0" maxOccurs="1"/>
+       <xsd:choice minOccurs="0" maxOccurs="1">
+         <xsd:element name="sortCondition" minOccurs="0" maxOccurs="1" type="x14:CT_SortCondition"/>
+         <xsd:element name="richSortCondition" minOccurs="0" maxOccurs="1" type="xlrd2:CT_RichSortCondition"/>
+       </xsd:choice>
+     </xsd:sequence>
+     <xsd:attributeGroup ref="AG_ColumnId"/>
+   </xsd:complexType>
+   <xsd:attributeGroup name="AG_ColumnId">
+     <xsd:attribute name="colId" type="xsd:unsignedInt" use="required"/>
+     <xsd:attribute name="id" type="x:ST_Guid" use="optional"/>
+   </xsd:attributeGroup>
+ </xsd:schema>

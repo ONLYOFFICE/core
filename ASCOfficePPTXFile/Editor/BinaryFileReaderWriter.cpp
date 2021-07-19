@@ -51,7 +51,14 @@
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+
 #include "../PPTXFormat/FileContainer.h"
+#include <iostream>
+
+#ifndef DISABLE_FILE_DOWNLOADER
+#include "../../Common/FileDownloader/FileDownloader.h"
+#endif 
 
 #define BYTE_SIZEOF		sizeof(BYTE)
 #define UINT16_SIZEOF	sizeof(_UINT16)
@@ -148,6 +155,14 @@ namespace NSBinPptxRW
 	{
 		return m_strDstMedia;
 	}
+	void CImageManager2::SetDstCharts(const std::wstring& strDst)
+	{
+		m_strDstCharts = strDst;
+	}
+	std::wstring CImageManager2::GetDstCharts()
+	{
+		return m_strDstCharts;
+	}
 	void CImageManager2::SetDstEmbed(const std::wstring& strDst)
 	{
 		m_strDstEmbed = strDst;
@@ -221,23 +236,28 @@ namespace NSBinPptxRW
 		std::wstring strExts = _T(".jpg");
 		//use GetFileName to avoid defining '.' in the directory as extension
 		std::wstring strFileName = NSFile::GetFileName(strInput);
-		int nIndexExt = (int)strFileName.rfind(wchar_t('.'));
-		if (-1 != nIndexExt)
-			strExts = strFileName.substr(nIndexExt);
+		int sizeExt = (int)strFileName.rfind(wchar_t('.'));
+		if (-1 != sizeExt)
+		{
+			strExts = strFileName.substr(sizeExt);
+			sizeExt = (int)strFileName.length() - sizeExt;
+		}
+		else sizeExt = 0;
 
 		int	typeAdditional = 0;
 		std::wstring strAdditional;
 		std::wstring strImage = strInput;
 
 		int nDisplayType = IsDisplayedImage(strInput);
-		if (0 != nDisplayType)
+		size_t nFileNameLength = strFileName.length();
+		if (0 != nDisplayType && nFileNameLength > sizeExt)
 		{
 			OOX::CPath oPath = strInput;
 			
 			std::wstring strFolder		= oPath.GetDirectory();
 			std::wstring strFileName	= oPath.GetFilename();
 
-			strFileName.erase(strFileName.length() - 4, 4);
+			strFileName.erase(strFileName.length() - sizeExt, sizeExt);
 
 			if(0 != (nDisplayType & 1))
 			{
@@ -567,10 +587,16 @@ namespace NSBinPptxRW
 
 		if ( oDownloader.DownloadSync() )
 		{
-			return oDownloader.GetFilePath();
+			std::wstring file_name = oDownloader.GetFilePath();
+			
+			CImageFileFormatChecker checker;
+			if (checker.isImageFile(file_name))
+			{
+				return file_name;
+			}
 		}
 #endif
-		return _T("");
+		return L"";
 	}
 
 	CBinaryFileWriter::CSeekTableEntry::CSeekTableEntry()
@@ -668,7 +694,13 @@ namespace NSBinPptxRW
 			{
 				while (nNewSize >= m_lSize)
 				{
-					m_lSize *= 2;
+					unsigned int lSize = m_lSize * 2;
+					if (lSize < m_lSize)
+					{
+						m_lSize = nNewSize;
+						break;
+					}
+					m_lSize = lSize;
 				}
 
 				BYTE* pNew = new BYTE[m_lSize];
@@ -682,8 +714,8 @@ namespace NSBinPptxRW
 		}
 		else
 		{
-			m_lSize		= 1024 * 1024; // 1Mb
-			m_pStreamData	= new BYTE[m_lSize];
+			m_lSize = 1024 * 1024; // 1Mb
+			m_pStreamData = new BYTE[m_lSize];
 
 			m_lPosition = 0;
 			m_pStreamCur = m_pStreamData;
@@ -781,11 +813,6 @@ namespace NSBinPptxRW
 		m_lPosition += INT32_SIZEOF;
 		m_pStreamCur += INT32_SIZEOF;
 	}
-	void CBinaryFileWriter::WriteDouble64(const double& dValue)
-	{
-		_INT64 _val = (_INT64)(dValue * 100000);
-		WriteLONG64(_val);
-	}
 	void CBinaryFileWriter::WriteDouble(const double& dValue)
 	{
 		_INT64 _val = (_INT64)(dValue * 100000);
@@ -800,7 +827,7 @@ namespace NSBinPptxRW
 		}		
 		else
 		{
-			WriteLONG((long)_val);
+			WriteLONG((int)_val);
 		}
 	}
 	void CBinaryFileWriter::WriteDoubleReal(const double& dValue)
@@ -990,7 +1017,12 @@ namespace NSBinPptxRW
 		if (val.is_init())
 			WriteBool1(type, *val);
 	}
-
+	void CBinaryFileWriter::WriteByte1(int type, const BYTE& val)
+	{
+		BYTE bType = (BYTE)type;
+		WriteBYTE(bType);
+		WriteBYTE(val);
+	}
 	void CBinaryFileWriter::WriteInt1(int type, const int& val)
 	{
 		BYTE bType = (BYTE)type;
@@ -1002,18 +1034,50 @@ namespace NSBinPptxRW
 		if (val.is_init())
 			WriteInt1(type, *val);
 	}
-
+	void CBinaryFileWriter::WriteUInt1(int type, const unsigned int& val)
+	{
+		BYTE bType = (BYTE)type;
+		WriteBYTE(bType);
+		WriteULONG(val);
+	}
+	void CBinaryFileWriter::WriteUInt2(int type, const NSCommon::nullable_uint& val)
+	{
+		if (val.is_init())
+			WriteUInt1(type, *val);
+	}
 	void CBinaryFileWriter::WriteDouble1(int type, const double& val)
 	{
-		int _val = (int)(val * 10000);
-		WriteInt1(type, _val);
+		_INT64 _val = (_INT64)(val * 100000);
+
+		if (_val > 0x7fffffff)
+		{
+			WriteInt1(type, 0x7fffffff);
+		}
+		else if (_val < -0x7fffffff)
+		{
+			WriteInt1(type, -0x7fffffff);
+		}
+		else
+		{
+			WriteInt1(type, (int)_val);
+		}
 	}
 	void CBinaryFileWriter::WriteDouble2(int type, const NSCommon::nullable_double& val)
 	{
 		if (val.is_init())
 			WriteDouble1(type, *val);
 	}
-
+	void CBinaryFileWriter::WriteDoubleReal1(int type, const double& val)
+	{
+		BYTE bType = (BYTE)type;
+		WriteBYTE(bType);
+		WriteDoubleReal(val);
+	}
+	void CBinaryFileWriter::WriteDoubleReal2(int type, const NSCommon::nullable_double& val)
+	{
+		if (val.is_init())
+			WriteDoubleReal1(type, *val);
+	}
 	void CBinaryFileWriter::WriteSize_t1(int type, const size_t& val)
 	{
 		BYTE bType = (BYTE)type;
@@ -1531,7 +1595,7 @@ namespace NSBinPptxRW
 			
 			std::wstring strOleRelsPath;
 			
-			oRelsGeneratorInfo.nOleRId		= m_lNextRelsID++;
+			oRelsGeneratorInfo.nOleRId = m_lNextRelsID++;
 			oRelsGeneratorInfo.sFilepathOle	= oleFile->filename().GetPath();
 
 			if	(m_pManager->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX)
@@ -1561,8 +1625,8 @@ namespace NSBinPptxRW
 			
 			std::wstring strMediaRelsPath;
 			
-			oRelsGeneratorInfo.nMediaRId	= m_lNextRelsID++;
-			oRelsGeneratorInfo.sFilepathOle	= mediaFile->filename().GetPath();
+			oRelsGeneratorInfo.nMediaRId = m_lNextRelsID++;
+			oRelsGeneratorInfo.sFilepathMedia	= mediaFile->filename().GetPath();
 
 			if	(m_pManager->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX)
 			{
@@ -1588,24 +1652,6 @@ namespace NSBinPptxRW
 		m_mapImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strImageRelsPath, oRelsGeneratorInfo));
 		return oRelsGeneratorInfo;
 	}
-	unsigned int CRelsGenerator::WriteChart(int nChartNumber, _INT32 lDocType = XMLWRITER_DOC_TYPE_PPTX)
-	{
-		std::wstring strChart = L"charts/chart" + std::to_wstring(nChartNumber) + L".xml";
-
-		if (lDocType != XMLWRITER_DOC_TYPE_DOCX)
-		{
-			strChart = L"../" + strChart;
-		}
-
-		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
-
-        std::wstring strRels = L"<Relationship Id=\"" + strRid +
-                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"" +
-                strChart + L"\"/>";
-		m_pWriter->WriteString(strRels);
-
-		return m_lNextRelsID - 1;
-	}	
 
 	unsigned int CRelsGenerator::WriteRels(const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode)
 	{
@@ -1662,7 +1708,6 @@ namespace NSBinPptxRW
 	{
 		m_pMainDocument		= NULL;
 		m_lNextId			= 0;
-		m_lChartNumber		= 1;
 		m_nDocumentType		= XMLWRITER_DOC_TYPE_PPTX;
 
 		m_pRels				= new CRelsGenerator();
@@ -1702,7 +1747,14 @@ namespace NSBinPptxRW
 	int CBinaryFileReader::Seek(LONG _pos)
 	{
 		if (_pos > m_lSize)
-			return 1;
+		{
+			_pos = m_lSize;
+		}
+		if (_pos < 0 )
+		{
+			_pos = 0;
+			throw;
+		}
 		m_lPos = _pos;
 		m_pDataCur = m_pData + m_lPos;
 		return 0;
@@ -1719,10 +1771,24 @@ namespace NSBinPptxRW
 	}
 
 	// 1 bytes
+	bool CBinaryFileReader::GetUCharWithResult(BYTE *value_)
+	{
+		if (!value_ || m_lPos >= m_lSize)
+		{
+			return false;
+		}
+
+		*value_ = *m_pDataCur;
+		++m_lPos;
+		++m_pDataCur;
+		return true;
+	}
 	BYTE CBinaryFileReader::GetUChar()
 	{
-		if (m_lPos >= m_lSize)
-			return 0;
+		if (m_lPos >= m_lSize || m_lPos < 0)
+		{
+			throw;
+		}
 
 		BYTE res = *m_pDataCur;
 		++m_lPos;
@@ -1731,8 +1797,10 @@ namespace NSBinPptxRW
 	}
 	signed char CBinaryFileReader::GetChar()
 	{
-		if (m_lPos >= m_lSize)
-			return 0;
+		if (m_lPos >= m_lSize || m_lPos <0)
+		{
+			throw;
+		}
 
 		BYTE res = *m_pDataCur;
 		if (res > 127)
@@ -1763,7 +1831,9 @@ namespace NSBinPptxRW
 	_UINT16 CBinaryFileReader::GetUShort()
 	{
 		if (m_lPos + 1 >= m_lSize)
-			return 0;
+		{
+			throw;
+		}
 #if defined(_IOS) || defined(__ANDROID__)
         _UINT16 res = 0;
         memcpy(&res, m_pDataCur, sizeof(_UINT16));
@@ -1777,7 +1847,10 @@ namespace NSBinPptxRW
 	_INT16 CBinaryFileReader::GetShort()
 	{
 		if (m_lPos + 1 >= m_lSize)
-			return 0;
+		{
+			throw;
+		}
+
 #if defined(_IOS) || defined(__ANDROID__)
 		_INT16 res = 0;
 		memcpy(&res, m_pDataCur, sizeof(_INT16));
@@ -1793,7 +1866,10 @@ namespace NSBinPptxRW
 	_UINT32 CBinaryFileReader::GetULong()
 	{
 		if (m_lPos + 3 >= m_lSize)
-			return 0;
+		{
+			throw;
+		}
+
 #if defined(_IOS) || defined(__ANDROID__)
         _UINT32 res = 0;
         memcpy(&res, m_pDataCur, sizeof(_UINT32));
@@ -1807,7 +1883,10 @@ namespace NSBinPptxRW
 	_INT64 CBinaryFileReader::GetLong64()
 	{
 		if (m_lPos + 7 >= m_lSize)
-			return 0;
+		{
+			throw;
+		}
+
 #if defined(_IOS) || defined(__ANDROID__)
         _INT64 res = 0;
         memcpy(&res, m_pDataCur, sizeof(_INT64));
@@ -1818,22 +1897,32 @@ namespace NSBinPptxRW
 		m_pDataCur += 8;
         return res;			
 	}
+	_INT32 CBinaryFileReader::GetRecordSize()
+	{
+		_INT32 sz = (_INT32)GetULong();
+		if (m_lPos + sz > m_lSize)
+		{
+			//todooo - переделать
+			throw;
+		}
+		return sz;
+	}
 	_INT32 CBinaryFileReader::GetLong()
 	{
 		return (_INT32)GetULong();			
 	}
 	double CBinaryFileReader::GetDouble()
 	{
-		return 1.0 * GetLong() / 100000;
+		return 1.0 * GetLong() / 100000.;
 	}
-	double CBinaryFileReader::GetDouble64()
-	{
-		return 1.0 * GetLong64() / 100000;
-	}	// 8 byte
+// 8 byte
 	double CBinaryFileReader::GetDoubleReal()
 	{
         if (m_lPos + (int)DOUBLE_SIZEOF > m_lSize)
-            return 0;
+		{
+			throw;
+		}
+
 #if defined(_IOS) || defined(__ANDROID__)
         double res = 0.0;
         memcpy(&res, m_pDataCur, sizeof(double));
@@ -1846,39 +1935,56 @@ namespace NSBinPptxRW
 	}
 
 	//String
-	std::wstring CBinaryFileReader::GetString(_INT32 len)
+	std::wstring CBinaryFileReader::GetString(_INT32 len, bool bDeleteZero)
 	{
         len *= 2;
-		return GetString3(len);		
+		return GetString3(len, bDeleteZero);
 	}
 	std::string CBinaryFileReader::GetString1(_INT32 len)
 	{
         if (len < 1 )
             return "";
         if (m_lPos + len > m_lSize)
-			return "";
+		{
+			throw;
+		}
 
 		std::string res((CHAR*)m_pDataCur, len);
 		m_lPos += len;
 		m_pDataCur += len;
 		return res;
 	}
-	std::wstring CBinaryFileReader::GetString2()
+	std::wstring CBinaryFileReader::GetString2(bool bDeleteZero)
     {
         _INT32 len = GetLong();
-		return GetString(len);
+		return GetString(len, bDeleteZero);
 	}
-    std::wstring CBinaryFileReader::GetString3(_INT32 len)//len in byte for utf16
+    std::wstring CBinaryFileReader::GetString3(_INT32 len, bool bDeleteZero)//len in byte for utf16
 	{
         if (len < 1 )
-            return _T("");
-        if (m_lPos + len > m_lSize)
-            return _T("");
+			return L""; 
+        
+		if (m_lPos + len > m_lSize)
+		{
+			throw;
+		}
 
-        _UINT32 lSize = len >>1; //string in char
+        int lSize = len >> 1; //string in char
 
-        if (sizeof(wchar_t) == 4)
+		if (bDeleteZero)
+		{
+			while (lSize > 0)
+			{
+				if (((unsigned short*)m_pDataCur)[lSize - 1] == 0)
+					lSize--;
+				else
+					break;
+			}
+		}
+
+		if (sizeof(wchar_t) == 4)
         {
+
             std::wstring val = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)m_pDataCur, lSize);
             std::wstring res(val.c_str(), val.length());
 
@@ -1902,7 +2008,9 @@ namespace NSBinPptxRW
 		if (len < 1)
 			return _T("");
 		if (m_lPos + len > m_lSize)
-			return _T("");
+		{
+			throw;
+		}
 
 		_UINT32 lSize = len >> 1; //string in char
 
@@ -1956,7 +2064,7 @@ namespace NSBinPptxRW
 
 	void CBinaryFileReader::SkipRecord()
 	{
-		_INT32 _len = GetULong();
+		_INT32 _len = GetRecordSize();
 		Skip(_len);
 	}
 
@@ -1979,7 +2087,9 @@ namespace NSBinPptxRW
         if (nSize < 0) return 0;
 
 		if (m_lPos + nSize > m_lSize)
-			return 0;
+		{
+			throw;
+		}
 
 		BYTE* res = (BYTE*)m_pDataCur;
 		m_lPos += nSize;

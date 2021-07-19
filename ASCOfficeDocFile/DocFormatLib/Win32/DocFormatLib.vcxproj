@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -26,24 +26,24 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -63,12 +63,13 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>%(AdditionalIncludeDirectories);..\..\..\Common\DocxFormat\Source\XML\libxml2\XML\include\libxml;..\..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -77,7 +78,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>%(AdditionalIncludeDirectories);..\..\..\Common\DocxFormat\Source\XML\libxml2\XML\include\libxml;..\..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -86,13 +86,15 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;USE_ATL_CSTRINGS;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4311;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -101,7 +103,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_LIB;USE_ATL_CSTRINGS;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -112,7 +114,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;USE_ATL_CSTRINGS;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
@@ -140,9 +142,6 @@
     <ClInclude Include="..\..\Common\IOperand.h" />
     <ClInclude Include="..\..\Common\IVirtualConstructor.h" />
     <ClInclude Include="..\..\Common\LanguageCodes.h" />
-    <ClInclude Include="..\..\Common\MD4\global.h" />
-    <ClInclude Include="..\..\Common\MD4\md4.h" />
-    <ClInclude Include="..\..\Common\MD4\md4c.h" />
     <ClInclude Include="..\..\Common\Singleton.h" />
     <ClInclude Include="..\..\Common\SPRMCodes.h" />
     <ClInclude Include="..\..\Common\TargetOptions.h" />
@@ -168,7 +167,9 @@
     <ClInclude Include="..\..\DocDocxConverter\DocumentProperties.h" />
     <ClInclude Include="..\..\DocDocxConverter\DocumentTypographyInfo.h" />
     <ClInclude Include="..\..\DocDocxConverter\DrawingObjectGrid.h" />
+    <ClInclude Include="..\..\DocDocxConverter\DrawingPrimitives.h" />
     <ClInclude Include="..\..\DocDocxConverter\EmuValue.h" />
+    <ClInclude Include="..\..\DocDocxConverter\EncryptionHeader.h" />
     <ClInclude Include="..\..\DocDocxConverter\EndnoteDescriptor.h" />
     <ClInclude Include="..\..\DocDocxConverter\EndnotesMapping.h" />
     <ClInclude Include="..\..\DocDocxConverter\FieldCharacter.h" />
@@ -182,6 +183,8 @@
     <ClInclude Include="..\..\DocDocxConverter\FormattedDiskPage.h" />
     <ClInclude Include="..\..\DocDocxConverter\FormattedDiskPageCHPX.h" />
     <ClInclude Include="..\..\DocDocxConverter\FormattedDiskPagePAPX.h" />
+    <ClInclude Include="..\..\DocDocxConverter\FormFieldData.h" />
+    <ClInclude Include="..\..\DocDocxConverter\FormFieldDataMapping.h" />
     <ClInclude Include="..\..\DocDocxConverter\Global.h" />
     <ClInclude Include="..\..\DocDocxConverter\HeaderAndFooterTable.h" />
     <ClInclude Include="..\..\DocDocxConverter\HeaderMapping.h" />
@@ -207,27 +210,17 @@
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ChildAnchor.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ClientAnchor.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ClientData.h" />
-    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\DiagramBooleanProperties.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\DrawingContainer.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\DrawingGroup.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\DrawingGroupRecord.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\DrawingRecord.h" />
-    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\FillStyleBooleanProperties.h" />
-    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\GeometryBooleanProperties.h" />
-    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\GeometryTextBooleanProperties.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\GroupContainer.h" />
-    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\GroupShapeBooleanProperties.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\GroupShapeRecord.h" />
-    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\LineStyleBooleanProperties.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\MetafilePictBlip.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\OfficeArtClientTextbox.h" />
-    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\PathParser.h" />
-    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\PathSegment.h" />
-    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ProtectionBooleanProperties.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Record.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\RecordFactory.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\RegularContainer.h" />
-    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ShadowStyleBooleanProperties.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shape.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ShapeContainer.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\ShapeOptions.h" />
@@ -270,6 +263,7 @@
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\TrapezoidType.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\WordArtText.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\SplitMenuColorContainer.h" />
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\threeDBooleanProperties.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\UnknownRecord.h" />
     <ClInclude Include="..\..\DocDocxConverter\OleObject.h" />
     <ClInclude Include="..\..\DocDocxConverter\OleObjectMapping.h" />
@@ -320,17 +314,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Common\3dParty\pole\pole.cpp" />
-    <ClCompile Include="..\..\Common\MD4\md4c.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\AnnotationReferenceDescriptor.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\CharacterPropertiesMapping.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\Converter.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\DocumentMapping.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\DocumentProperties.cpp" />
+    <ClCompile Include="..\..\DocDocxConverter\DrawingPrimitives.cpp" />
+    <ClCompile Include="..\..\DocDocxConverter\EncryptionHeader.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\FontFamilyName.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\FontTableMapping.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\FooterMapping.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\FormattedDiskPageCHPX.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\FormattedDiskPagePAPX.cpp" />
+    <ClCompile Include="..\..\DocDocxConverter\FormFieldData.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\HeaderAndFooterTable.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\HeaderMapping.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\LanguageIdMapping.cpp" />
@@ -342,6 +338,7 @@
     <ClCompile Include="..\..\DocDocxConverter\OfficeDrawing\Record.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\OfficeDrawing\RecordFactory.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\OfficeDrawing\ShapeTypeFactory.cpp" />
+    <ClCompile Include="..\..\DocDocxConverter\OleObject.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\OpenXmlPackage.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\ParagraphHeight.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\ParagraphPropertiesMapping.cpp" />
@@ -354,6 +351,7 @@
     <ClCompile Include="..\..\DocDocxConverter\SectionPropertiesMapping.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\SettingsMapping.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\SinglePropertyModifier.cpp" />
+    <ClCompile Include="..\..\DocDocxConverter\Spa.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\StyleSheet.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\StyleSheetDescription.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\StyleSheetInformation.cpp" />
@@ -363,30 +361,14 @@
     <ClCompile Include="..\..\DocDocxConverter\TablePropertiesMapping.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\TableRowPropertiesMapping.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\TextboxMapping.cpp" />
-    <ClCompile Include="..\..\DocDocxConverter\VMLPictureMapping.cpp" />
+    <ClCompile Include="..\..\DocDocxConverter\VMLPictureMapping.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\..\DocDocxConverter\VMLShapeMapping.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\VMLShapeTypeMapping.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\WordDocument.cpp" />
     <ClCompile Include="..\..\DocDocxConverter\WordprocessingDocument.cpp" />
     <ClCompile Include="..\DocFormatLib.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\ASCOfficeUtils\ASCOfficeUtilsLib\Win\ASCOfficeUtilsLib.vcxproj">
-      <Project>{3f3cb5a1-bb01-49c1-9342-4a69e30f9ef6}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\DocxFormat\Projects\DocxFormat2005.vcxproj">
-      <Project>{a100103a-353e-45e8-a9b8-90b87cc5c0b0}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\DocxFormat\Source\XML\libxml2\win_build\libxml2.vcxproj">
-      <Project>{21663823-de45-479b-91d0-b4fef4916ef0}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\DesktopEditor\graphics\graphics_vs2005.vcxproj">
-      <Project>{37ca072a-5bde-498b-b3a7-5e404f5f9bf2}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

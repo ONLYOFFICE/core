@@ -50,12 +50,13 @@
 #include "NotesSlide.h"
 #include "NotesMaster.h"
 #include "LegacyDiagramText.h"
+#include "./Logic/HeadingVariant.h"
 
 #include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Chart/ChartDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/ChartDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
@@ -83,6 +84,8 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new PPTX::App(pMain, filename, map));
 		else if (relation.Type() == OOX::FileTypes::Core)
 			return smart_ptr<OOX::File>(new PPTX::Core(pMain, filename, map));
+		else if (relation.Type() == OOX::FileTypes::CustomProperties)
+			return smart_ptr<OOX::File>(new PPTX::CustomProperties(pMain, filename, map));
 		else if (relation.Type() == OOX::Presentation::FileTypes::Presentation || 
 				 relation.Type() == OOX::Presentation::FileTypes::PresentationMacro)
 			return smart_ptr<OOX::File>(new PPTX::Presentation(pMain, filename, map));
@@ -118,13 +121,13 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new PPTX::Comments(pMain, filename, map));
 
 		else if (relation.Type() == OOX::FileTypes::Chart)
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace(pMain, filename, filename));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartFile(pMain, filename, filename));
 		else if (relation.Type() == OOX::FileTypes::ChartEx)
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpaceEx(pMain, filename, filename));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartExFile(pMain, filename, filename));
 		else if (relation.Type() == OOX::FileTypes::ChartStyle)
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyle(pMain, filename, filename));
-		else if (relation.Type() == OOX::FileTypes::ChartColorStyle)
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorStyle(pMain, filename, filename));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyleFile(pMain, filename, filename));
+		else if (relation.Type() == OOX::FileTypes::ChartColors)
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorsFile(pMain, filename, filename));
 		else if (relation.Type() == OOX::FileTypes::HyperLink)
 			return smart_ptr<OOX::File>(new OOX::HyperLink(pMain, relation.Target()));
 		else if (relation.Type() == OOX::FileTypes::Image)

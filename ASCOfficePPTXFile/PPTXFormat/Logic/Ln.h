@@ -227,7 +227,7 @@ namespace PPTX
 			{
 				m_name = _T("a:ln");
 
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 				pReader->Skip(1); // start attributes
 
 				while (true)
@@ -240,20 +240,17 @@ namespace PPTX
 					{
 						case 0:
 						{
-							algn = new Limit::PenAlign();
-							algn->SetBYTECode(pReader->GetUChar());
+							algn = pReader->GetUChar();
 							break;
 						}
 						case 1:
 						{
-							cap = new Limit::LineCap();
-							cap->SetBYTECode(pReader->GetUChar());
+							cap = pReader->GetUChar();
 							break;
 						}
 						case 2:
 						{
-							cmpd = new Limit::CompoundLine();
-							cmpd->SetBYTECode(pReader->GetUChar());
+							cmpd = pReader->GetUChar();
 							break;
 						}
 						case 3:

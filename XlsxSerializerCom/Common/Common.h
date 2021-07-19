@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef SERIALIZER_COMMON
-#define SERIALIZER_COMMON
+#pragma once
 
 #include "../../Common/DocxFormat/Source/XML/Utils.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
@@ -54,6 +53,7 @@ namespace SerializeCommon
 		std::wstring sOOTime;
 		std::wstring sUserId;
 		std::wstring sUserName;
+		std::wstring sUserData;
 		std::wstring sQuoteText;
 		std::wstring sGuid;
 		bool Solved;
@@ -77,4 +77,3 @@ namespace SerializeCommon
 	void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, std::wstring& wcDelimiter, BYTE& saveFileType);
 }
 
-#endif //SERIALIZER_COMMON

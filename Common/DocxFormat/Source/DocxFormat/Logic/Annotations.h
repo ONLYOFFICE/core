@@ -54,10 +54,11 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCommentRangeEnd)
-			CCommentRangeEnd()
+
+			CCommentRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
-			CCommentRangeEnd(CCommentRangeEnd *pOther)
+			CCommentRangeEnd(CCommentRangeEnd *pOther) : WritingElement(NULL)
 			{
 				m_oDisplacedByCustomXml = pOther->m_oDisplacedByCustomXml;
 				m_oId                   = pOther->m_oId;
@@ -99,10 +100,10 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:id",					m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -119,7 +120,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCommentRangeStart)
-			CCommentRangeStart()
+
+			CCommentRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCommentRangeStart()
@@ -158,10 +160,10 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:id",					m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -171,10 +173,10 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber<>>			m_oId;
 		};
 
-	} // Logic
+
+	
 	// Revisisons 17.13.5
-	namespace Logic
-	{
+
 		//--------------------------------------------------------------------------------
 		// CCustomXmlDelRangeEnd 17.13.5.4 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -182,14 +184,14 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlDelRangeEnd)
-			CCustomXmlDelRangeEnd()
+
+			CCustomXmlDelRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCustomXmlDelRangeEnd()
 			{
 			}
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase(oNode, L"w:id", m_oId );
@@ -238,16 +240,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlDelRangeStart)
-			CCustomXmlDelRangeStart()
+			CCustomXmlDelRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCustomXmlDelRangeStart()
 			{
 			}
-
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
@@ -307,7 +305,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
@@ -317,7 +314,6 @@ namespace OOX
 			}
 
 		public:
-
             nullable<std::wstring>					m_sAuthor;
             nullable<SimpleTypes::CDateTime>		m_oDate;
             nullable<SimpleTypes::CDecimalNumber<>> m_oID;
@@ -331,14 +327,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlInsRangeEnd)
-			CCustomXmlInsRangeEnd()
+			CCustomXmlInsRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCustomXmlInsRangeEnd()
 			{
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, L"w:id", m_oId );
@@ -387,16 +381,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlInsRangeStart)
-			CCustomXmlInsRangeStart()
+			CCustomXmlInsRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCustomXmlInsRangeStart()
 			{
 			}
-
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
@@ -456,7 +446,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
@@ -466,7 +455,6 @@ namespace OOX
 			}
 
 		public:
-
             nullable<std::wstring>					m_sAuthor;
             nullable<SimpleTypes::CDateTime>		m_oDate;
             nullable<SimpleTypes::CDecimalNumber<>> m_oID;
@@ -479,14 +467,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlMoveFromRangeEnd)
-			CCustomXmlMoveFromRangeEnd()
+			CCustomXmlMoveFromRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCustomXmlMoveFromRangeEnd()
 			{
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, L"w:id", m_oId );
@@ -517,7 +503,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:id", m_oId )
 				WritingElement_ReadAttributes_End( oReader )
@@ -534,16 +519,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlMoveFromRangeStart)
-			CCustomXmlMoveFromRangeStart()
+			CCustomXmlMoveFromRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCustomXmlMoveFromRangeStart()
 			{
 			}
-
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
@@ -603,7 +584,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
                 WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author",    m_sAuthor )
                 WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",      m_oDate )
@@ -627,14 +607,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlMoveToRangeEnd)
-			CCustomXmlMoveToRangeEnd()
+			CCustomXmlMoveToRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCustomXmlMoveToRangeEnd()
 			{
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, L"w:id", m_oId );
@@ -665,7 +643,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:id", m_oId )
 				WritingElement_ReadAttributes_End( oReader )
@@ -682,16 +659,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlMoveToRangeStart)
-			CCustomXmlMoveToRangeStart()
+			CCustomXmlMoveToRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCustomXmlMoveToRangeStart()
 			{
 			}
-
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
@@ -775,14 +748,12 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMoveFromRangeEnd)
-			CMoveFromRangeEnd()
+			CMoveFromRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CMoveFromRangeEnd()
 			{
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
@@ -835,7 +806,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMoveFromRangeStart)
-			CMoveFromRangeStart()
+			CMoveFromRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CMoveFromRangeStart()
@@ -937,7 +908,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMoveToRangeEnd)
-			CMoveToRangeEnd()
+			CMoveToRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CMoveToRangeEnd()
@@ -977,7 +948,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
@@ -996,7 +966,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMoveToRangeStart)
-			CMoveToRangeStart()
+			CMoveToRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CMoveToRangeStart()
@@ -1093,7 +1063,7 @@ namespace OOX
 		class CMoveFrom : public WritingElementWithChilds<>
 		{
 		public:
-			CMoveFrom()
+			CMoveFrom(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 			}
 			CMoveFrom(XmlUtils::CXmlNode &oNode)
@@ -1128,20 +1098,16 @@ namespace OOX
 			}
 
 		public:
-
-			// Attributes
 			nullable<std::wstring>						m_sAuthor;
 			nullable<SimpleTypes::CDateTime>			m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<>>		m_oId;
 			nullable<std::wstring>						m_sUserId;
-
-			// Childs
 		};
 
 		class CMoveTo : public WritingElementWithChilds<>
 		{
 		public:
-			CMoveTo()
+			CMoveTo(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 			}
 			CMoveTo(XmlUtils::CXmlNode &oNode)
@@ -1167,7 +1133,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if( oReader, L"w:author", m_sAuthor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date", m_oDate )
@@ -1178,7 +1143,6 @@ namespace OOX
 
 		public:
 
-			// Attributes
 			nullable<std::wstring>					m_sAuthor;
 			nullable<SimpleTypes::CDateTime>		m_oDate;
 			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
@@ -1186,10 +1150,9 @@ namespace OOX
 
 			// Childs
 		};
-	} // Logic
-	// Bookmarks 17.13.6
-	namespace Logic
-	{
+	
+// Bookmarks 17.13.6
+
 		//--------------------------------------------------------------------------------
 		// CBookmarkEnd 17.13.6.1 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -1197,7 +1160,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CBookmarkEnd)
-			CBookmarkEnd()
+			CBookmarkEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			CBookmarkEnd(CBookmarkEnd* pOther)
@@ -1209,7 +1172,6 @@ namespace OOX
 			{
 			}
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase(oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
@@ -1242,15 +1204,14 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:id",					m_oId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
 			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber<>>			m_oId;
 		};
@@ -1262,7 +1223,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CBookmarkStart)
-			CBookmarkStart()
+			CBookmarkStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			CBookmarkStart(CBookmarkStart *pOther)
@@ -1277,7 +1238,6 @@ namespace OOX
 			{
 			}
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase(oNode, L"w:colFirst",             m_oColFirst );
@@ -1325,12 +1285,12 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colLast",              m_oColLast )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:id",					m_oId )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",                 m_sName )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-
 			nullable<SimpleTypes::CDecimalNumber<>>			m_oColFirst;
 			nullable<SimpleTypes::CDecimalNumber<>>			m_oColLast;
 			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
@@ -1338,10 +1298,9 @@ namespace OOX
             nullable<std::wstring>							m_sName;
 		};
 
-	} // Logic
+
 	// Range Permissions 17.13.7
-	namespace Logic
-	{
+
 		//--------------------------------------------------------------------------------
 		// CPermEnd 17.13.7.1 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -1349,7 +1308,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPermEnd)
-			CPermEnd()
+			CPermEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CPermEnd()
@@ -1414,7 +1373,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPermStart)
-			CPermStart()
+			CPermStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CPermStart()
@@ -1461,7 +1420,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:colFirst",             m_oColFirst )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colLast",              m_oColLast )
@@ -1482,10 +1440,9 @@ namespace OOX
             nullable<std::wstring>							m_sId;
 		};
 
-	} // Logic
+
 	// Spelling and Grammar 17.13.8
-	namespace Logic
-	{
+
 		//--------------------------------------------------------------------------------
 		// CProofErr 17.13.8.1 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -1493,7 +1450,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CProofErr)
-			CProofErr()
+			CProofErr(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CProofErr()
@@ -1544,13 +1501,11 @@ namespace OOX
 
 			nullable<SimpleTypes::CProofErr<>> m_oType;
 		};
-	} // Logic
-	namespace Logic
-	{
+
 		class CIns : public WritingElementWithChilds<>
 		{
 		public:
-			CIns()
+			CIns(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 			}
 			CIns(XmlUtils::CXmlNode &oNode)
@@ -1598,7 +1553,7 @@ namespace OOX
 		class CDel : public WritingElementWithChilds<>
 		{
 		public:
-			CDel()
+			CDel(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 			}
 			CDel(XmlUtils::CXmlNode &oNode)
@@ -1644,8 +1599,8 @@ namespace OOX
 
 			// Childs
 		};
-	} // Logic
 	// Revisions 17.13.5
+	} // Logic
 } // OOX
 
 #endif /* OOX_LOGIC_RANGE_MURKUP_ELEMENTS_INCLUDE_H_ */

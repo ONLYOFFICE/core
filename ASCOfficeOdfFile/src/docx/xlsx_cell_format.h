@@ -36,7 +36,7 @@ namespace oox {
 
 struct XlsxCellType
 {
-    enum type { null, b, n, e, s, str, inlineStr };    
+    enum type { null, b, n, e, s, str, inlineStr, d };    
 };
 
 int odf_string_to_build_in(const int value_type);

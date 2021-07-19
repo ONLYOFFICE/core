@@ -72,6 +72,16 @@ namespace NExtractTools
         TCD_DOTM2DOCX,
         TCD_DOTM2DOCM,
 
+		TCD_DOCXFLAT2DOCT,
+		TCD_DOCXFLAT2DOCT_BIN,
+
+		TCD_PKG2OOXML,
+		TCD_PKG2BIN,
+		TCD_PKG2BIN_T,
+
+		TCD_XLSXFLAT2XLST,
+		TCD_XLSXFLAT2XLST_BIN,
+
         TCD_XLSX2XLST,
         TCD_XLST2XLSX,
 		TCD_XLST2XLSM,
@@ -394,6 +404,7 @@ namespace NExtractTools
 		std::wstring* m_sKey;
 		std::wstring* m_sFileFrom;
 		std::wstring* m_sFileTo;
+		std::wstring* m_sTitle;
 		int* m_nFormatFrom;
 		int* m_nFormatTo;
 		int* m_nCsvTxtEncoding;
@@ -424,6 +435,7 @@ namespace NExtractTools
 			m_sKey = NULL;
 			m_sFileFrom = NULL;
 			m_sFileTo = NULL;
+			m_sTitle = NULL;
             m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_UNKNOWN);
 			m_nFormatTo = NULL;
 			m_nCsvTxtEncoding = NULL;
@@ -453,6 +465,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sKey);
 			RELEASEOBJECT(m_sFileFrom);
 			RELEASEOBJECT(m_sFileTo);
+			RELEASEOBJECT(m_sTitle);
 			RELEASEOBJECT(m_nFormatFrom);
 			RELEASEOBJECT(m_nFormatTo);
 			RELEASEOBJECT(m_nCsvTxtEncoding);
@@ -546,6 +559,11 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_sFileTo);
 									m_sFileTo = new std::wstring(sValue);
+								}
+								else if(_T("m_sTitle") == sName)
+								{
+									RELEASEOBJECT(m_sTitle);
+									m_sTitle = new std::wstring(sValue);
 								}
 								else if(_T("m_nFormatFrom") == sName)
 								{
@@ -827,7 +845,17 @@ namespace NExtractTools
 				eRes = TCD_ERROR;
 			return eRes;
 		}
-        TConversionDirection processDownloadFile()
+		TConversionDirection getConversionDirectionFromExt()
+		{
+			if (NULL != m_sFileTo)
+			{
+				COfficeFileFormatChecker FileFormatChecker;
+				RELEASEOBJECT(m_nFormatTo);
+				m_nFormatTo = new int(FileFormatChecker.GetFormatByExtension(L"." + NSFile::GetFileExtention(*m_sFileTo)));
+			}
+			return getConversionDirection();
+		}
+		TConversionDirection processDownloadFile()
         {
             TConversionDirection eRes = TCD_AUTO;
             int nFormatFrom	= *m_nFormatFrom;
@@ -842,28 +870,45 @@ namespace NExtractTools
                     }
                     eRes = TCD_ERROR;
                 }
+                else
+                {
+                    m_nCsvTxtEncoding = new int(nCodePage);
+                }
             }
 			else if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom && (NULL == m_nCsvTxtEncoding || (NULL == m_nCsvDelimiter && NULL == m_sCsvDelimiterChar)))
             {
-                if(!getDontSaveAdditional())
+                if(isEmptyFile())
                 {
-                    int nCodePage = getEncodingByContent();
-                    if(nCodePage < 0)
-                        nCodePage = 46;//65001 Unicode (UTF-8)
-                    int nDelimiter = getDelimiterByContent();
-                    NSStringUtils::CStringBuilder oBuilder;
-                    oBuilder.WriteString(_T("{\"codepage\":"));
-                    oBuilder.AddInt(nCodePage);
-                    oBuilder.WriteString(_T(",\"delimiter\":"));
-                    oBuilder.AddInt(nDelimiter);
-                    oBuilder.WriteString(_T("}"));
-                    std::wstring sFilePath = NSSystemPath::GetDirectoryName(*m_sFileTo) + FILE_SEPARATOR_STR + _T("settings.json");
-                    NSFile::CFileBinary::SaveToFile(sFilePath, oBuilder.GetData());
-                    copyOrigin(*m_sFileFrom, *m_sFileTo);
+                    m_nCsvTxtEncoding = new int(getEncodingByContent());
+                    m_sCsvDelimiterChar = new std::wstring(L",");
                 }
-                eRes = TCD_ERROR;
+                else
+                {
+                    if(!getDontSaveAdditional())
+                    {
+                        int nCodePage = getEncodingByContent();
+                        if(nCodePage < 0)
+                            nCodePage = 46;//65001 Unicode (UTF-8)
+                        int nDelimiter = getDelimiterByContent();
+                        NSStringUtils::CStringBuilder oBuilder;
+                        oBuilder.WriteString(_T("{\"codepage\":"));
+                        oBuilder.AddInt(nCodePage);
+                        oBuilder.WriteString(_T(",\"delimiter\":"));
+                        oBuilder.AddInt(nDelimiter);
+                        oBuilder.WriteString(_T("}"));
+                        std::wstring sFilePath = NSSystemPath::GetDirectoryName(*m_sFileTo) + FILE_SEPARATOR_STR + _T("settings.json");
+                        NSFile::CFileBinary::SaveToFile(sFilePath, oBuilder.GetData());
+                        copyOrigin(*m_sFileFrom, *m_sFileTo);
+                    }
+                    eRes = TCD_ERROR;
+                }
             }
             return eRes;
+        }
+        int isEmptyFile()
+        {
+            NSFile::CFileBinary file;
+            return file.OpenFile(*m_sFileFrom) && 0 == file.GetFileSize();
         }
         int getEncodingByContent()
         {
@@ -875,6 +920,11 @@ namespace NExtractTools
                 DWORD dwBytesRead = 0;
                 BYTE pBuffer[3];
                 file.ReadFile(pBuffer, 3, dwBytesRead);
+                if(dwBytesRead == 0)
+                {
+                    //empty file
+                    nRes = 46;//65001 Unicode (UTF-8)
+                }
                 if(dwBytesRead >= 2)
                 {
                     if (pBuffer[0] == 0xFF && pBuffer[1] == 0xFE)
@@ -1044,6 +1094,9 @@ namespace NExtractTools
         }
         else if (0 == sArg3.compare(_T("docx2doct"))) {
             res = TCD_DOCX2DOCT;
+        }
+        else if (0 == sArg3.compare(_T("docxflat2doct"))) {
+            res = TCD_DOCXFLAT2DOCT;
         }
         else if (0 == sArg3.compare(_T("doct2docx"))) {
             res = TCD_DOCT2DOCX;

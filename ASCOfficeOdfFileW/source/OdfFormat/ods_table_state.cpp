@@ -46,6 +46,7 @@
 #include "calcext_elements.h"
 #include "table_data_pilot_tables.h"
 #include "styles.h"
+#include "paragraph_elements.h"
 
 #include "style_table_properties.h"
 #include "style_text_properties.h"
@@ -507,7 +508,7 @@ bool ods_table_state::is_cell_comment()
 }
 bool ods_table_state::is_cell_data_validation()
 {
-	if ( cells_size_ < 1 )return false;
+	if ( cells_size_ < 1 ) return false;
 	return cells_.back().data_validation_name.empty() ? true : false;
 }
 int ods_table_state::is_cell_hyperlink(int col, int row)
@@ -521,16 +522,31 @@ int ods_table_state::is_cell_hyperlink(int col, int row)
 	}
 	return -1;
 }
-std::wstring ods_table_state::is_cell_data_validation(int col, int row)
+std::wstring ods_table_state::is_cell_data_validation(int col, int row, unsigned int repeate_col, data_validation_state::_ref & ref)
 {
-    for (size_t i = 0; i < data_validations_.size(); i++)
+	for (size_t i = 0; i < data_validations_.size(); i++)
 	{
-		if (data_validations_[i].in_ref(col, row))
+		if (data_validations_[i].in_ref(col, row, repeate_col, ref))
 		{
             return data_validations_[i].name;
 		}
 	}
 	return L"";
+}
+int ods_table_state::is_row_validation(int row, int & repeate_row)
+{
+	for (size_t i = 0; i < data_validations_.size(); i++)
+	{
+		data_validation_state::_ref ref;
+		if (data_validations_[i].in_row(row, repeate_row, ref))
+		{
+			repeate_row = (std::min)(ref.row_end, row + repeate_row - 1) - (std::max)(row, ref.row_start) + 1;
+			
+			if (ref.row_start > row) row = ref.row_start;
+			return  row;
+		}
+	}
+	return -1;
 }
 int ods_table_state::is_cell_comment(int col, int row, unsigned int repeate_col)
 {
@@ -549,7 +565,7 @@ int ods_table_state::is_row_comment(int row, int repeate_row)
 	{
 		if (comments_[i].row < row + repeate_row && comments_[i].row >= row && comments_[i].used == false)
 		{
-			return  (int)i;
+			return comments_[i].row;
 		}
 	}
 	return -1;
@@ -632,9 +648,12 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
     state.row = current_table_row_;  state.col = current_table_column_ + 1;
 
+	data_validation_state::_ref ref;
+	std::wstring validation_name = is_cell_data_validation(state.col, state.row, 1, ref);
+
 	state.hyperlink_idx			= is_cell_hyperlink(state.col, state.row);
 	state.comment_idx			= is_cell_comment(state.col, state.row);
-	state.data_validation_name	= is_cell_data_validation(state.col, state.row);
+	state.data_validation_name	= validation_name;
 
 	current_table_column_ +=  state.repeated;  
     cells_.push_back(state);
@@ -700,18 +719,21 @@ void ods_table_state::add_definded_expression(office_element_ptr & elm)
 	if (!table_defined_expressions_)return;
 	table_defined_expressions_->add_child_element(elm);
 }
-void ods_table_state::add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, bool bLocation)
+void ods_table_state::add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, const std::wstring & location)
 {
 	ods_hyperlink_state state;
-	state.row = row;  state.col = col; state.ref = ref; state.bLocation = bLocation;
+	state.row = row;  state.col = col; state.ref = ref; 
 
-	if (state.bLocation)
+	state.link = link;		
+	
+	if (link.empty())
 	{
-		state.link = L"#" + formulas_converter_table.convert_named_ref(link);
+		state.link += L"#" + formulas_converter_table.convert_named_ref(location);
+		state.bLocation = true;
 	}
 	else
 	{
-		state.link = link;		
+		state.link = link + (location.empty() ? L"" : (L"#" + location));
 	}
 
 	hyperlinks_.push_back(state);
@@ -1241,7 +1263,7 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 
 	//if (table_cell_properties && cash_value == false)
 	//{
-	//	table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf_writer::text_align_source(odf_writer::text_align_source::Fix);
+	//	table_cell_properties->content_.style_text_align_source_ = odf_writer::text_align_source(odf_writer::text_align_source::Fix);
 	//}	
 }
 void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
@@ -1278,6 +1300,8 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 		case office_value_type::Currency:
 		case office_value_type::Percentage:
 		case office_value_type::Float:
+		case office_value_type::Scientific:
+		case office_value_type::Fraction:
 		default:
 			cell->attlist_.common_value_and_type_attlist_->office_value_ = value;
 		}
@@ -1288,22 +1312,31 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 	}
 	
 	//кэшированные значения
-	if (value.length() >0)
+	if (false == value.empty())
 	{
+		if (is_cell_hyperlink())
+		{
+			need_cash = true;
+			cell->attlist_.common_value_and_type_attlist_->office_string_value_ = boost::none;
+		}
+
 		bool need_test_cach = false;
 
 		if (cell->attlist_.common_value_and_type_attlist_->office_value_type_)
 		{
-			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float) need_test_cach = true;
- 			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency) need_test_cach = true;
-			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Percentage) need_test_cach = true;
+			if (cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Float ||
+ 				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Currency ||  
+ 				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Scientific ||  
+ 				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Fraction ||  
+				cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type() == office_value_type::Percentage)
+					need_test_cach = true;
 		}
 		try
 		{
 			if (need_test_cach)
 			{
 				double test = boost::lexical_cast<double>(value);			
-				need_cash =true;
+				need_cash = true;
 			}
 		}
 		catch(...)
@@ -1314,19 +1347,71 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 				cell->attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(office_value_type::String);
 			}
 		}
+
 		if (need_cash)
 		{
-			context_->start_text_context();
-				context_->text_context()->start_paragraph();
-					context_->text_context()->add_text_content(value);
-				context_->text_context()->end_paragraph();
+			ods_conversion_context* ods_context = dynamic_cast<ods_conversion_context*>(context_);
 
-				set_cell_text(context_->text_context(), true);
-			context_->end_text_context();
+			if (ods_context)
+			{
+				ods_context->start_cell_text();
+					ods_context->text_context()->add_text_content(value);
+				ods_context->end_cell_text();
+					
+				set_cell_text( ods_context->text_context(), true);
+			}
+			else
+			{
+				context_->start_text_context();
+				
+				start_cell_text();
+					context_->text_context()->add_text_content(value);
+				end_cell_text();
+					
+				set_cell_text( context_->text_context(), true);
+				
+				context_->end_text_context();
+			}
 		}
 	}
 }
+void ods_table_state::start_cell_text()
+{
+////////////
+	office_element_ptr paragr_elm;
+	create_element(L"text", L"p", paragr_elm, context_);
+	
+	context_->text_context()->start_paragraph(paragr_elm);
 
+	if (is_cell_hyperlink())
+	{
+		ods_hyperlink_state & state = current_hyperlink();
+		
+		office_element_ptr text_a_elm;
+		create_element(L"text", L"a", text_a_elm, context_);
+
+		text_a* text_a_ = dynamic_cast<text_a*>(text_a_elm.get());
+		if (text_a_ == NULL)return;
+
+		text_a_->common_xlink_attlist_.type_ = xlink_type(xlink_type::Simple);
+		text_a_->common_xlink_attlist_.href_ = state.link;
+		
+		context_->text_context()->start_element(text_a_elm); // может быть стоит сделать собственый???
+		// libra дурит если в табличках будет вложенный span в гиперлинк ... оО (хотя это разрешено в спецификации!!!)
+
+		context_->text_context()->single_paragraph_ = true;
+	}
+}
+
+void ods_table_state::end_cell_text()
+{
+	if (context_->text_context())
+	{
+		if (is_cell_hyperlink())	context_->text_context()->end_element();
+		
+		context_->text_context()->end_paragraph();
+	}
+}
 void ods_table_state::end_cell()
 {
 	if ( cells_size_  < 1)return;
@@ -1349,7 +1434,7 @@ void ods_table_state::end_cell()
 	}
 }
 
-void ods_table_state::add_default_cell( unsigned int repeated)
+void ods_table_state::add_default_cell( int repeated)
 {
 	if (repeated < 1) return;
 
@@ -1361,12 +1446,11 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 
 		add_default_cell(comments_[comment_idx].col - c - 1);
 		add_default_cell(1);
-		add_default_cell(repeated + c + 1 - comments_[comment_idx].col);
+		add_default_cell(repeated + c - comments_[comment_idx].col);
 
 		return;
 	}
-
-//////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------------
 	std::map<int, std::map<int, _spanned_info>>::iterator pFindRow = map_merged_cells.find(current_table_row_);
 
 	bool bSpanned = false;
@@ -1383,7 +1467,7 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 
 					add_default_cell(it->first - c - 1);
 					add_default_cell(1);
-					add_default_cell(repeated + c + 1 - it->first);
+					add_default_cell(repeated + c - current_table_column_);
 
 					return;
 				}
@@ -1395,7 +1479,24 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 			}
 		}
 	}
+//-----------------------------------------------------------------------------------------
+	data_validation_state::_ref ref;
+	std::wstring validation_name = is_cell_data_validation(current_table_column_ + 1, current_table_row_, repeated, ref);
 
+	int repeated_validation = (std::min)(ref.col_end, current_table_column_ + (int)repeated) - (std::max)(ref.col_start, current_table_column_ + 1) + 1;
+
+	if (false == validation_name.empty() && repeated > 1 && repeated_validation != repeated)
+	{
+		//делим на 3 - до, с validation, после;
+		int c = current_table_column_;
+
+		add_default_cell(ref.col_start - c - 1);
+		add_default_cell(repeated_validation);
+		add_default_cell(repeated + c - current_table_column_);
+
+		return;
+	}
+//-----------------------------------------------------------------------------------------
 	bool bCovered = false;
 	if (!bSpanned)
 	{
@@ -1423,7 +1524,7 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 			}
 		}		
 	}
-
+//-----------------------------------------------------------------------------------------
 	office_element_ptr default_cell_elm;
 	if (bCovered)
 	{
@@ -1458,7 +1559,7 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 	state.col = current_table_column_ + 1;
 
 	state.hyperlink_idx			= is_cell_hyperlink(state.col, current_table_row_);
-	state.data_validation_name	= is_cell_data_validation(state.col, current_table_row_);
+	state.data_validation_name	= validation_name;
 	state.comment_idx			= comment_idx;
 	
 	cells_.push_back(state);
@@ -1559,7 +1660,13 @@ void ods_table_state::start_conditional_rule(int rule_type)
 				boost::algorithm::split(splitted, test, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 				cell = splitted[0];
 
-				condition->attr_.calcext_base_cell_address_ = table + cell;
+				std::wstring col, row;
+
+				utils::splitCellAddress(cell, col, row);
+				if (col.empty()) col = L".A";
+				if (row.empty()) row = L"1";
+
+				condition->attr_.calcext_base_cell_address_ = table + col + row;
 			}
 			switch(rule_type)
 			{

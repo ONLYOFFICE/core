@@ -45,8 +45,6 @@
 
 #include "visitor.h"
 
-#include "chart_objects.h"
-
 #include "office_document.h"
 #include "office_body.h"
 #include "office_chart.h"
@@ -56,45 +54,10 @@
 #include "table.h"
 #include "odfcontext.h"
 
+#include "chart_objects.h"
+
 namespace cpdoccore { 
-
 namespace odf_reader {
-
-namespace {
-
-struct class_type_pair
-{
-    chart::class_type	class_type_;
-    std::wstring		class_type_str_;
-};
-
-static const class_type_pair class_type_str[] = 
-{
-    {chart::chart_line		, L"chart:line"},
-    {chart::chart_area		, L"chart:area"},
-    {chart::chart_circle	, L"chart:circle"},
-    {chart::chart_ring		, L"chart:ring"},
-    {chart::chart_scatter	, L"chart:scatter"},
-    {chart::chart_radar		, L"chart:radar"},
-    {chart::chart_bar		, L"chart:bar"},
-    {chart::chart_stock		, L"chart:stock"},
-    {chart::chart_bubble	, L"chart:bubble"},
-    {chart::chart_surface	, L"chart:surface"},
-    {chart::chart_gantt		, L"chart:gantt"},
-	{chart::chart_filled_radar, L"chart:filled-radar"}
-};
-
-chart::class_type static get_series_class_type(std::wstring const & str)
-{
-    for (size_t i = 0; i < 12/*class_type_str.size()*/; i++)
-    {
-        if (class_type_str[i].class_type_str_ == str)
-            return class_type_str[i].class_type_;
-    }
-    return chart::chart_bar; //лучше хоть какой назначить чем никакой !!
-}
-
-}
 
 class object_odf_context 
 {
@@ -132,7 +95,7 @@ public:
 
     void set_height(double valPt);
 
-    void set_class(std::wstring const & val);
+    void set_class(odf_types::chart_class::type type);
 
     void set_style_name(std::wstring const & val);
 
@@ -142,10 +105,10 @@ public:
 
 	void add_categories(std::wstring const & cellRangeAddress);
 
-    void add_grid(std::wstring const & className, std::wstring const & styleName);
+    void add_grid(std::wstring const & gridClassName, std::wstring const & styleName);
     void add_series(std::wstring const & cellRangeAddress,
             std::wstring const & labelCell,
-			chart::class_type classType,
+			odf_types::chart_class::type classType,
             std::wstring const & attachedAxis,
             std::wstring const & styleName);
 
@@ -170,8 +133,7 @@ public:
 	int							baseFontHeight_;
 	std::wstring				baseRef_; 
 //---------------------------------------------------------------
-	std::wstring				str_class_;  
-	chart::class_type			class_;  
+	odf_types::chart_class::type class_;
 	std::wstring				style_name_;
  	std::wstring				name_;
   
@@ -187,7 +149,6 @@ public:
 	std::wstring domain_cell_range_adress2_;
 
 	chart::title				title_;
-	office_element_ptr_array	title_odf_context_;
 
 	chart::title				sub_title_;
 	chart::legend				legend_;
@@ -197,6 +158,10 @@ public:
 	chart::simple				floor_;
 	
 	chart::simple				footer_;
+
+	chart::simple				stock_gain_marker_;
+	chart::simple				stock_loss_marker_;
+	chart::simple				stock_range_line_;
 
 	std::vector<_property>		chart_properties_;
 	std::vector<_property>		chart_graphic_properties_;
@@ -249,6 +214,7 @@ class process_build_object
 	    
 		public visitor<chart_axis>,
 		public visitor<chart_categories>,
+		public visitor<chart_date_scale>,
 		public visitor<chart_grid>,
 
 		public visitor<chart_series>,
@@ -258,6 +224,9 @@ class process_build_object
 		public visitor<chart_regression_curve>,
 		public visitor<chart_equation>,
 		public visitor<chart_error_indicator>,
+		public visitor<chart_stock_range_line>,
+		public visitor<chart_stock_loss_marker>,
+		public visitor<chart_stock_gain_marker>,
 		public visitor<chart_wall>,
 		public visitor<chart_floor>,
 
@@ -284,9 +253,10 @@ public:
 
 private:
 	void ApplyChartProperties(std::wstring style, std::vector<_property> & propertiesOut);
-	void ApplyTextProperties(std::wstring style, std::vector<_property> & propertiesOut);
 	void ApplyGraphicProperties(std::wstring style, std::vector<_property> & propertiesOut, oox::_oox_fill & fill);
 
+	void ApplyTextProperties(std::wstring style, text_format_properties_content_ptr & propertiesOut);
+	
 	bool visit_table(std::wstring const & name);
     void visit_column(unsigned int repeated);
     bool visit_rows(unsigned int repeated);
@@ -309,7 +279,7 @@ public:
     virtual void visit(chart_subtitle		& val);
     virtual void visit(chart_footer			& val);
     virtual void visit(chart_legend			& val);
-    virtual void visit(chart_plot_area& val);
+    virtual void visit(chart_plot_area		& val);
     virtual void visit(chart_axis			& val);
 	virtual void visit(chart_series			& val);
     virtual void visit(chart_domain			& val);
@@ -317,11 +287,16 @@ public:
 	virtual void visit(chart_mean_value		& val);
 	virtual void visit(chart_error_indicator	& val);
 	virtual void visit(chart_regression_curve	& val);
+	virtual void visit(chart_stock_range_line	& val);
+	virtual void visit(chart_stock_loss_marker	& val);
+	virtual void visit(chart_stock_gain_marker	& val);
  	virtual void visit(chart_equation			& val);
 	virtual void visit(chart_categories		& val);
 	virtual void visit(chart_grid			& val);
     virtual void visit(chart_wall			& val);
     virtual void visit(chart_floor			& val);   
+	virtual void visit(chart_date_scale		& val);
+	
 	virtual void visit(table_table			& val);
 
 	virtual void visit(table_table_rows			& val);

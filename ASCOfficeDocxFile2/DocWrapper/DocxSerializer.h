@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef DOCX_SERIALIZER
-#define DOCX_SERIALIZER
+#pragma once
 
 #include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 
@@ -55,7 +54,6 @@ namespace BinDocxRW
         std::wstring			m_sEmbeddedFontsDir;
 		bool					m_bIsNoBase64Save;
 		bool					m_bIsNoBase64;
-		bool					m_bSaveChartAsImg;
 		ParamsWriter*			m_pParamsWriter;
 		Writers::FileWriter*	m_pCurFileWriter;
 
@@ -63,7 +61,9 @@ namespace BinDocxRW
 		virtual ~CDocxSerializer();
 
         bool loadFromFile   (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sThemePath, const std::wstring& sMediaPath, const std::wstring& sEmbedPath);
-        bool saveToFile     (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
+        bool saveToFile     (const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sTempPath);
+		
+		bool unpackageFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath);
 
         bool CreateDocxFolders(std::wstring strDirectory, std::wstring& sThemePath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
 		
@@ -80,4 +80,3 @@ namespace BinDocxRW
         void setSaveChartAsImg  (bool bSaveChartAsImg);
 	};
 }
-#endif	// #ifndef DOCX_SERIALIZER

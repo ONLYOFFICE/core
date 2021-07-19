@@ -71,10 +71,10 @@ public:
 
 		oNewStyle->m_nID = oParam.oRtf->m_oStyleTable.GetCount() + 1;
 
-		oNewStyle->m_sID = m_ooxStyle->m_sStyleId.IsInit() ? m_ooxStyle->m_sStyleId.get2() : L"";
+		oNewStyle->m_sID = m_ooxStyle->m_sStyleId.get_value_or(L"");
 
 		if(m_ooxStyle->m_oName.IsInit() && m_ooxStyle->m_oName->m_sVal.IsInit())
-			oNewStyle->m_sName = m_ooxStyle->m_oName->m_sVal.get2();
+			oNewStyle->m_sName = *m_ooxStyle->m_oName->m_sVal;
 
 		if (m_ooxStyle->m_oHidden.IsInit())
 			oNewStyle->m_bHidden = m_ooxStyle->m_oHidden->m_oVal.ToBool() ? 1 : 0;
@@ -101,7 +101,7 @@ public:
 			oNewStyle->m_bCompose = m_ooxStyle->m_oPersonalCompose->m_oVal.ToBool() ? 1 : 0;
 
 		if (m_ooxStyle->m_oUiPriority.IsInit())
-			oNewStyle->m_bCompose = m_ooxStyle->m_oUiPriority->m_oVal->GetValue();
+			oNewStyle->m_bCompose = *m_ooxStyle->m_oUiPriority->m_oVal;
 		
 		if (m_ooxStyle->m_oRunPr.IsInit() && ( RtfStyle::stCharacter == eStyleType || RtfStyle::stParagraph == eStyleType || RtfStyle::stTable == eStyleType ))//todo с rtf стилями
 		{
@@ -330,26 +330,26 @@ public:
 		if (m_ooxStyle->m_sStyleId.IsInit() == false) return false;
 
 		RtfStylePtr oCurStyle ;
-		std::wstring sStyleName = m_ooxStyle->m_sStyleId.get2();
+		std::wstring sStyleName = *m_ooxStyle->m_sStyleId;
 
 		if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyleName, oCurStyle) )
 		{
 			if (m_ooxStyle->m_oBasedOn.IsInit())
 			{
 				RtfStylePtr oBaseStyle;
-				if( true == oParam.oRtf->m_oStyleTable.GetStyle(m_ooxStyle->m_oBasedOn->m_sVal.get2(), oBaseStyle) )
+				if( true == oParam.oRtf->m_oStyleTable.GetStyle(*m_ooxStyle->m_oBasedOn->m_sVal, oBaseStyle) )
 					oCurStyle->m_nBasedOn = oBaseStyle->m_nID;
 			}
 			if (m_ooxStyle->m_oNext.IsInit())
 			{
 				RtfStylePtr oNextStyle;
-				if( true == oParam.oRtf->m_oStyleTable.GetStyle(m_ooxStyle->m_oNext->m_sVal.get2(), oNextStyle) )
+				if( true == oParam.oRtf->m_oStyleTable.GetStyle(*m_ooxStyle->m_oNext->m_sVal, oNextStyle) )
 					oCurStyle->m_nNext = oNextStyle->m_nID;
 			}
 			if (m_ooxStyle->m_oLink.IsInit())
 			{
 				RtfStylePtr oLinkStyle;
-				if( true == oParam.oRtf->m_oStyleTable.GetStyle(m_ooxStyle->m_oLink->m_sVal.get2(), oLinkStyle) )
+				if( true == oParam.oRtf->m_oStyleTable.GetStyle(*m_ooxStyle->m_oLink->m_sVal, oLinkStyle) )
 					oCurStyle->m_nLink = oLinkStyle->m_nID;
 			}
 		}

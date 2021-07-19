@@ -87,7 +87,7 @@ ods_table_state_ptr & ods_table_context::state()
     return table_state_list_.back();
 }
 
-void ods_table_context::start_table_part(std::wstring name, std::wstring ref)
+void ods_table_context::start_table_part(const std::wstring &name, std::wstring ref)
 {
 	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges",table_database_ranges_.root,&context_);
 
@@ -101,7 +101,9 @@ void ods_table_context::start_table_part(std::wstring name, std::wstring ref)
 
 	if (std::wstring::npos == ref.find(L"!") )
 	{
-		ref = table_state_list_.back()->office_table_name_ + L"!" + ref;
+		bool bQuotes = (std::wstring::npos != table_state_list_.back()->office_table_name_.find(L" "));
+
+		ref = (bQuotes ? L"'" : L"" ) + table_state_list_.back()->office_table_name_ + (bQuotes ? L"'" : L"" ) + L"!" + ref;
 	}
 	std::wstring odf_range = formulas_converter.convert_named_ref(ref);
 
@@ -133,7 +135,11 @@ void ods_table_context::add_table_part_column(std::wstring name)
 
 	std::wstring sCol = L"$" + utils::getColAddress(state()->table_parts_.back().col_start + column - 1);
 
-	std::wstring ref = L"$" + state()->office_table_name_ + L"." ;
+	bool bQuotes = (std::wstring::npos != table_state_list_.back()->office_table_name_.find(L" "));
+
+	std::wstring ref = L"$";
+	
+	ref += (bQuotes ? L"'" : L"") + table_state_list_.back()->office_table_name_ + (bQuotes ? L"'" : L"") + L".";
 
 	ref += sCol + std::to_wstring(state()->table_parts_.back().row_start);
 	ref += L":";
@@ -158,20 +164,30 @@ void ods_table_context::end_table_part()
 }
 void ods_table_context::add_autofilter(std::wstring ref)
 {
-	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges",table_database_ranges_.root,&context_);
+	if (ref.empty()) return;
+
+	if (!table_database_ranges_.root) create_element(L"table", L"database-ranges", table_database_ranges_.root, &context_);
 
 	office_element_ptr elm;
-	create_element(L"table", L"database-range",elm,&context_);
+	create_element(L"table", L"database-range", elm, &context_);
 	table_database_range * d_range = dynamic_cast<table_database_range*>(elm.get());
 
 	if (!d_range)return;
 
+	if (std::wstring::npos == ref.find(L"!") )
+	{
+		bool bQuotes = (std::wstring::npos != table_state_list_.back()->office_table_name_.find(L" "));
+
+		ref = (bQuotes ? L"'" : L"") + table_state_list_.back()->office_table_name_ + (bQuotes ? L"'" : L"") + L"!" + ref;
+	}
 	formulasconvert::oox2odf_converter formulas_converter;
 
 	std::wstring odf_range = formulas_converter.convert_named_ref(ref);
 
 	d_range->table_target_range_address_ = odf_range;
 	d_range->table_display_filter_buttons_= true;
+
+	d_range->table_name_ = L"__Anonymous_Sheet_DB__" + std::to_wstring(table_database_ranges_.elements.size() + 1);
 
 	table_database_ranges_.root->add_child_element(elm);
 	table_database_ranges_.elements.push_back(elm);
@@ -319,62 +335,71 @@ void ods_table_context::set_data_validation_content( std::wstring oox_formula1, 
 	table_content_validation *validation = dynamic_cast<table_content_validation*>(state()->data_validations_.back().elm.get());
 	
 	std::wstring odf_condition;
+
+	if (state()->data_validations_.back().type == 5) odf_condition = L"cell-content-text-length";
+	else odf_condition = L"cell-content";
+
 	switch(state()->data_validations_.back().operator_)
 	{
 		case 1: // SimpleTypes::spreadsheet::operatorNotBetween
-			odf_condition = L" and cell-content-is-not-between(" + odf_formula1 + L"," + odf_formula2 + L")"; break;
+			odf_condition += L"-is-not-between(" + odf_formula1 + L"," + odf_formula2 + L")"; break;
 		case 2: // SimpleTypes::spreadsheet::operatorEqual
-			odf_condition = L" and cell-content()==" + odf_formula1; break;
+			odf_condition += L"()==" + odf_formula1; break;
 		case 3: // SimpleTypes::spreadsheet::operatorNotEqual
-			odf_condition = L" and cell-content()<>" + odf_formula1; break;
+			odf_condition += L"()!=" + odf_formula1; break;
 		case 4: // SimpleTypes::spreadsheet::operatorLessThan
-			odf_condition = L" and cell-content()<" + odf_formula1; break;
+			odf_condition += L"()<" + odf_formula1; break;
 		case 5: // SimpleTypes::spreadsheet::operatorLessThanOrEqual
-			odf_condition = L" and cell-content()<=" + odf_formula1; break;
+			odf_condition += L"()<=" + odf_formula1; break;
 		case 6: // SimpleTypes::spreadsheet::operatorGreaterThan
-			odf_condition = L" and cell-content()>" + odf_formula1; break;
+			odf_condition += L"()>" + odf_formula1; break;
 		case 7: // SimpleTypes::spreadsheet::operatorGreaterThanOrEqual
-			odf_condition = L" and cell-content()>=" + odf_formula1; break;
+			odf_condition += L"()>=" + odf_formula1; break;
 		case 0: // SimpleTypes::spreadsheet::operatorBetween
 		default:
-			odf_condition = L" and cell-content-is-between(" + odf_formula1 + L"," + odf_formula2 + L")"; break;
+			odf_condition +=  + L"-is-between(" + odf_formula1 + L"," + odf_formula2 + L")"; break;
 	}
 	switch (state()->data_validations_.back().type)
 	{
-	case 0://SimpleTypes::spreadsheet::validationTypeNone:
-		odf_condition.clear();
-		break;
-	case 1://SimpleTypes::spreadsheet::validationTypeCustom:
-		odf_condition = L"of:is-true-formula(" + odf_formula1 + L")";
-		break;
-	case 2://SimpleTypes::spreadsheet::validationTypeDate:
+		case 0://SimpleTypes::spreadsheet::validationTypeNone:
 		{
-			odf_condition = L"of:cell-content-is-date()" + odf_condition;
+			odf_condition.clear();
 		}break;
-	case 3://SimpleTypes::spreadsheet::validationTypeDecimal:
+		case 1://SimpleTypes::spreadsheet::validationTypeCustom:
 		{
-			odf_condition = L"of:cell-content-is-decimal-number()" + odf_condition;
+			odf_condition = L"of:is-true-formula(" + odf_formula1 + L")";
 		}break;
-	case 4://SimpleTypes::spreadsheet::validationTypeList:	
+		case 2://SimpleTypes::spreadsheet::validationTypeDate:
+		{
+			odf_condition = L"of:cell-content-is-date() and " + odf_condition;
+		}break;
+		case 3://SimpleTypes::spreadsheet::validationTypeDecimal:
+		{
+			odf_condition = L"of:cell-content-is-decimal-number() and " + odf_condition;
+		}break;
+		case 4://SimpleTypes::spreadsheet::validationTypeList:	
 		{
 			odf_condition = L"of:cell-content-is-in-list(" + odf_formula1 + L")";
 		}break;
-	case 5://SimpleTypes::spreadsheet::validationTypeTextLength:
-		break;
-	case 6://SimpleTypes::spreadsheet::validationTypeTime:
+		case 6://SimpleTypes::spreadsheet::validationTypeTime:
 		{
-			odf_condition = L"of:cell-content-is-time()" + odf_condition;
+			odf_condition = L"of:cell-content-is-time() and " + odf_condition;
 		}break;
-	case 7://SimpleTypes::spreadsheet::validationTypeWhole:
+		case 7://SimpleTypes::spreadsheet::validationTypeWhole:
 		{
-			odf_condition = L"of:cell-content-is-whole-number()" + odf_condition;
+			odf_condition = L"of:cell-content-is-whole-number() and " + odf_condition;
 		}break;
+		case 5://SimpleTypes::spreadsheet::validationTypeTextLength:
+		default:
+		{
+			odf_condition = L"of:" + odf_condition;
+		}break;	
 	}
 	state()->data_validations_.back().condition = odf_condition;
 	
 	validation->table_condition_ = odf_condition;
 }
-void ods_table_context::set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display)
+void ods_table_context::set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display, int type)
 {
 	if (state()->data_validations_.empty()) return;
 
@@ -387,6 +412,7 @@ void ods_table_context::set_data_validation_error(const std::wstring &title, con
 
 	if (error_message)
 	{
+		error_message->table_message_type_ = (odf_types::message_type::type)type;
 		error_message->table_display_ = display;
 		if (false == title.empty()) error_message->table_title_ = title;
 

@@ -117,11 +117,14 @@ namespace NSBinPptxRW
 #endif
                 {
                     wchar_t* pMalloc = (wchar_t*)malloc(size_alloc );
-                    memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
+					if (pMalloc)
+					{
+						memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
 
-                    free(m_pData);
-                    m_pData		= pMalloc;
-                    m_pDataCur	= m_pData + m_lSizeCur;
+						free(m_pData);
+						m_pData = pMalloc;
+						m_pDataCur = m_pData + m_lSizeCur;
+					}
                 }
             }
         }
@@ -330,6 +333,10 @@ namespace NSBinPptxRW
             m_oWriter.WriteString(std::to_wstring(val));
         }
         AVSINLINE void WriteINT(const int& val)
+        {
+            m_oWriter.WriteString(std::to_wstring(val));
+        }
+        AVSINLINE void WriteUINT(const unsigned int& val)
         {
             m_oWriter.WriteString(std::to_wstring(val));
         }
@@ -567,6 +574,12 @@ namespace NSBinPptxRW
             WriteINT(val);
             WriteNodeEnd(strNodeName);
         }
+        AVSINLINE void WriteNodeValue(const std::wstring& strNodeName, const unsigned int& val)
+        {
+            WriteNodeBegin(strNodeName);
+            WriteUINT(val);
+            WriteNodeEnd(strNodeName);
+        }
         AVSINLINE void WriteNodeValue(const std::wstring& strNodeName, const DWORD& val)
         {
             WriteNodeBegin(strNodeName);
@@ -656,6 +669,11 @@ namespace NSBinPptxRW
         // -------------------------------------------------------------------------------------
         // NODES -------------------------------------------------------------------------------
         AVSINLINE void WriteNodeValue(const std::wstring& strName, const nullable_int& value)
+        {
+            if (value.IsInit())
+                WriteNodeValue(strName, *value);
+        }
+        AVSINLINE void WriteNodeValue(const std::wstring& strName, const nullable_uint& value)
         {
             if (value.IsInit())
                 WriteNodeValue(strName, *value);

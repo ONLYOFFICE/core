@@ -438,6 +438,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\datatypes\charttimeunit.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\datatypes\charttimeunit.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\datatypes\clockvalue.cpp"
 				>
 			</File>

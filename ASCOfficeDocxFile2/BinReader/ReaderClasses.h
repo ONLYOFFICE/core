@@ -31,8 +31,7 @@
  */
 #pragma once
 
-#ifndef READER_CLASSES
-#define READER_CLASSES
+#include "HeaderFooterWriter.h"
 
 #include "../../Common/DocxFormat/Source/XML/Utils.h"
 #include "../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
@@ -63,6 +62,7 @@ public:
     std::wstring pgBorders;
     std::wstring footnotePr;
     std::wstring endnotePr;
+	std::wstring lineNum;
 	bool RtlGutter;
 	long Gutter;
 
@@ -165,6 +165,9 @@ public:
 		}
         if(!pgBorders.empty())
             sRes += pgBorders;
+
+		if(!lineNum.empty())
+			sRes += lineNum;
 
         if(bPageNumStart)
             sRes += L"<w:pgNumType w:start=\"" + std::to_wstring(PageNumStart) + L"\"/>";
@@ -277,6 +280,33 @@ public:
 		}
 		return sRes;
 	}
+	void ToCThemeColor( nullable<SimpleTypes::CHexColor<>>& oColor,
+												nullable<SimpleTypes::CThemeColor<>>& oThemeColor,
+												nullable<SimpleTypes::CUcharHexNumber<>>& oThemeTint,
+												nullable<SimpleTypes::CUcharHexNumber<>>& oThemeShade)
+	{
+		if (Auto)
+		{
+			if(!oColor.IsInit())
+				oColor.Init();
+			oColor->SetValue(SimpleTypes::hexcolorAuto);
+		}
+		if (bColor)
+		{
+			oThemeColor.Init();
+			oThemeColor->SetValue((SimpleTypes::EThemeColor)Color);
+		}
+		if (bTint)
+		{
+			oThemeTint.Init();
+			oThemeTint->SetValue(Tint);
+		}
+		if (bShade)
+		{
+			oThemeShade.Init();
+			oThemeShade->SetValue(Shade);
+		}
+	}
 };
 class Spacing
 {
@@ -357,21 +387,22 @@ class Shd
 public:
     BYTE        Value;
     docRGB      Color;
-	CThemeColor ThemeColor; 
+	docRGB      Fill;
+	CThemeColor ThemeColor;
+	CThemeColor ThemeFill;
 
-	bool bValue;
-	bool bColor;
-	bool bThemeColor;
-	Shd()
-	{
-		bValue		= false;
-        bColor      = false;
-		bThemeColor = false;
-	}
+	bool bValue = false;
+	bool bColor = false;
+	bool bThemeColor = false;
+	bool bThemeFill = false;
+	bool bFill = false;
+	
+	Shd(){}
+
     std::wstring ToString()
 	{
         std::wstring sShd;
-		if(bValue || bColor || (bThemeColor && ThemeColor.IsNoEmpty()))
+		if(bValue || bColor || (bThemeColor && ThemeColor.IsNoEmpty()) || (bThemeFill && ThemeFill.IsNoEmpty()))
 		{
 			sShd += L"<w:shd";
 			if(bValue)
@@ -419,12 +450,15 @@ public:
 					default										: sShd += L" w:val=\"solid\"";					break;
 				}
 			}
-			sShd += L" w:color=\"auto\"";
-			if(bColor)
-                sShd += L" w:fill=\"" + Color.ToString() + L"\"";
+			if (bColor)
+				sShd += L" w:color=\"" + Color.ToString() + L"\"";
+
+			if (bFill)
+				sShd += L" w:fill=\"" + Fill.ToString() + L"\"";
+			
 			if(bThemeColor && ThemeColor.IsNoEmpty())
 			{
-				if(ThemeColor.Auto && !bColor)
+				if(ThemeColor.Auto && !bFill)
                     sShd += L" w:fill=\"auto\"";
 				if(ThemeColor.bColor)
                     sShd += L" w:themeFill=\"" + ThemeColor.ToStringColor() + L"\"";
@@ -432,6 +466,17 @@ public:
                     sShd += L" w:themeFillTint=\"" + ThemeColor.ToStringTint() + L"\"";
 				if(ThemeColor.bShade)
                     sShd += L" w:themeFillShade=\"" + ThemeColor.ToStringShade() + L"\"";
+			}
+			if(bThemeFill && ThemeFill.IsNoEmpty())
+			{
+				if(ThemeFill.Auto && !bColor)
+					sShd += L" w:color=\"auto\"";
+				if(ThemeFill.bColor)
+					sShd += L" w:themeColor=\"" + ThemeFill.ToStringColor() + L"\"";
+				if(ThemeFill.bTint)
+					sShd += L" w:themeTint=\"" + ThemeFill.ToStringTint() + L"\"";
+				if(ThemeFill.bShade)
+					sShd += L" w:themeShade=\"" + ThemeFill.ToStringShade() + L"\"";
 			}
             sShd += L"/>";
 		}
@@ -469,11 +514,16 @@ public:
     std::wstring FontHAnsi;
     std::wstring FontAE;
     std::wstring FontCS;
+	std::wstring FontAsciiTheme;
+	std::wstring FontHAnsiTheme;
+	std::wstring FontAETheme;
+	std::wstring FontCSTheme;
 	long FontSize;
 	docRGB Color;
 	BYTE VertAlign;
 	docRGB HighLight;
-    std::wstring Shd;
+	BYTE nHighLight;
+	std::wstring Shd;
     std::wstring RStyle;
 	long Spacing;
 	bool DStrikeout;
@@ -510,7 +560,6 @@ public:
 	bool bFontSize;
 	bool bColor;
 	bool bVertAlign;
-	bool bHighLight;
 	bool bShd;
 	bool bRStyle;
 	bool bSpacing;
@@ -559,7 +608,6 @@ public:
 		bFontSize = false;
 		bColor = false;
 		bVertAlign = false;
-		bHighLight = false;
 		bShd = false;
 		bRStyle = false;
 		bSpacing = false;
@@ -580,7 +628,8 @@ public:
 		ThemeColor.Reset();
 		bVanish = false;
 
-        Outline.clear();
+		nHighLight = 0; //not set
+		Outline.clear();
         Fill.clear();
         Del.clear();
         Ins.clear();
@@ -590,9 +639,9 @@ public:
 	}
 	bool IsNoEmpty()
 	{
-		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || bHighLight || bShd ||
+		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || nHighLight > 0 || bShd ||
 			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish ||
-			!Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !MoveFrom.empty() || !MoveTo.empty() || !rPrChange.empty();
+			!Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !MoveFrom.empty() || !MoveTo.empty() || !rPrChange.empty() || !FontAsciiTheme.empty() || !FontHAnsiTheme.empty() || !FontAETheme.empty() || !FontCSTheme.empty();
 	}
 	void Write(NSStringUtils::CStringBuilder*  pCStringWriter)
 	{
@@ -601,7 +650,7 @@ public:
 		{
             pCStringWriter->WriteString(L"<w:rStyle w:val=\"" + RStyle + L"\"/>");
 		}
-		if(bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontHint)
+		if(bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontHint || !FontAsciiTheme.empty() || !FontHAnsiTheme.empty() || !FontAETheme.empty() || !FontCSTheme.empty())
 		{
             std::wstring sFont = _T("<w:rFonts");
 			if(bFontAscii)
@@ -623,6 +672,22 @@ public:
 			{
                 sFont += L" w:eastAsia=\"" + FontAE + L"\"";
 				m_mapFonts[FontAE] = 1;
+			}
+			if(!FontAsciiTheme.empty())
+			{
+				sFont += L" w:asciiTheme=\"" + FontAsciiTheme + L"\"";
+			}
+			if(!FontHAnsiTheme.empty())
+			{
+				sFont += L" w:hAnsiTheme=\"" + FontHAnsiTheme + L"\"";
+			}
+			if(!FontAETheme.empty())
+			{
+				sFont += L" w:eastAsiaTheme=\"" + FontAETheme + L"\"";
+			}
+			if(!FontCSTheme.empty())
+			{
+				sFont += L" w:cstheme=\"" + FontCSTheme + L"\"";
 			}
 			if(bFontHint)
 			{
@@ -731,17 +796,19 @@ public:
 		{
             pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSize) + L"\"/>");
 		}
-        if(bFontSizeCs)
-        {
-            if(false == bFontSize)
-                pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
-            pCStringWriter->WriteString(L"<w:szCs w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
-        }
-		if(bHighLight)
+		if(bFontSizeCs)
+		{
+			if(false == bFontSize)
+				pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
+			pCStringWriter->WriteString(L"<w:szCs w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
+		}
+		if(nHighLight > 0)
 		{
 			docRGB& H = HighLight;
             std::wstring sColor;
-			if(0x00 == H.R && 0x00 == H.G && 0x00 == H.B )
+			if (nHighLight == 1)
+				sColor = L"none";
+			else if(0x00 == H.R && 0x00 == H.G && 0x00 == H.B )
 				sColor = _T("black");
 			else if(0x00 == H.R && 0x00 == H.G && 0xFF == H.B )
 				sColor = _T("blue");
@@ -1772,9 +1839,9 @@ public:
 		if(bGridAfter && nGridAfter > 0)
 		{
             writer.WriteString(L"<w:grid" + sName + L" w:val=\"" + std::to_wstring(nGridAfter) + L"\"/>");
-			if(oAfterWidth.bW)
-				oAfterWidth.Write(writer, _T("w:w") + sName);
 		}
+		if(oAfterWidth.bW)
+			oAfterWidth.Write(writer, _T("w:w") + sName);
 	}
 };
 class WriteHyperlink
@@ -1906,12 +1973,19 @@ public:
 		m_nId += nCount;
 		return nRes;
 	}
+	int getCurrentId()
+	{
+		return m_nId;
+	}
 };
-class CComment{
+class CComment
+{
 private:
 	IdCounter& m_oParaIdCounter;
 	IdCounter& m_oFormatIdCounter;
 public:
+	void *pBinary_DocumentTableReader;
+
 	int IdOpen;
 	int IdFormat;
     std::wstring UserName;
@@ -1920,11 +1994,15 @@ public:
 	std::wstring ProviderId;
     std::wstring Date;
 	std::wstring OOData;
+	std::wstring DateUtc;
+	std::wstring UserData;
 	bool Solved;
 	unsigned int DurableId;
     std::wstring Text;
-    std::wstring m_sParaId;
-    std::wstring m_sParaIdParent;
+	std::wstring sContent;
+    
+	std::wstring sParaId;
+    std::wstring sParaIdParent;
 	std::vector<CComment*> replies;
 
 	bool bIdOpen;
@@ -1995,8 +2073,8 @@ public:
 
         int nId = pComment->m_oParaIdCounter.getNextId();
 
-		pComment->m_sParaId = XmlUtils::IntToString(nId, L"%08X");
-		sRes += L"<w:p w14:paraId=\"" + pComment->m_sParaId + L"\" w14:textId=\"" + pComment->m_sParaId + L"\">";
+		pComment->sParaId = XmlUtils::IntToString(nId, L"%08X");
+		sRes += L"<w:p w14:paraId=\"" + pComment->sParaId + L"\" w14:textId=\"" + pComment->sParaId + L"\">";
         sRes += L"<w:pPr><w:spacing w:line=\"240\" w:after=\"0\" w:lineRule=\"auto\" w:before=\"0\"/><w:ind w:firstLine=\"0\" w:left=\"0\" w:right=\"0\"/><w:jc w:val=\"left\"/></w:pPr><w:r><w:rPr><w:rFonts w:eastAsia=\"Arial\" w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\"/><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">";
         sRes += sPart;
         sRes += L"</w:t></w:r></w:p>";
@@ -2024,13 +2102,6 @@ public:
 			sRes += sDate;
             sRes += L"\"";
 		}
-		if(false == pComment->OOData.empty())
-		{
-			std::wstring sData = XmlUtils::EncodeXmlString(pComment->OOData);
-			sRes += L" oodata=\"";
-			sRes += sData;
-			sRes += L"\"";
-		}
 		if(false == pComment->Initials.empty())
 		{
             sRes += L" w:initials=\"";
@@ -2038,49 +2109,79 @@ public:
             sRes += L"\"";
 		}
         sRes += L">";
-		std::wstring sText = pComment->Text;
 
-		XmlUtils::replace_all(sText, L"\r", L"");
-
-		int nPrevIndex = 0;
-		for (int i = 0; i < (int)sText.length(); i++)
+		if (false == pComment->sContent.empty())
 		{
-			wchar_t cToken = sText[i];
-			if('\n' == cToken)
-			{
-				writeContentWritePart(pComment, sText, nPrevIndex, i, sRes);
-				nPrevIndex = i + 1;
-			}
+			sRes += pComment->sContent;
 		}
-		writeContentWritePart(pComment, sText, nPrevIndex, (int)sText.length(), sRes);
-        sRes += L"</w:comment>";
+		else
+		{
+	//old comments
+			std::wstring sText = pComment->Text;
+
+			XmlUtils::replace_all(sText, L"\r", L"");
+
+			int nPrevIndex = 0;
+			for (int i = 0; i < (int)sText.length(); i++)
+			{
+				wchar_t cToken = sText[i];
+				if('\n' == cToken)
+				{
+					writeContentWritePart(pComment, sText, nPrevIndex, i, sRes);
+					nPrevIndex = i + 1;
+				}
+			}
+			writeContentWritePart(pComment, sText, nPrevIndex, (int)sText.length(), sRes);
+		}     
+		sRes += L"</w:comment>";
 		return sRes;
 	}
     static std::wstring writeContentExt(CComment* pComment)
 	{
         std::wstring sRes;
-        if(!pComment->m_sParaId.empty())
+        if(false == pComment->sParaId.empty())
 		{
             std::wstring sDone(L"0");
 			if(pComment->bSolved && pComment->Solved)
 				sDone = _T("1");
-            if(!pComment->m_sParaIdParent.empty())
-                sRes += L"<w15:commentEx w15:paraId=\"" + pComment->m_sParaId + L"\" \
-w15:paraIdParent=\"" + pComment->m_sParaIdParent + L"\" w15:done=\"" + sDone + L"\"/>";
+            if(!pComment->sParaIdParent.empty())
+                sRes += L"<w15:commentEx w15:paraId=\"" + pComment->sParaId + L"\" \
+w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\"/>";
 			else
-                sRes += L"<w15:commentEx w15:paraId=\"" + pComment->m_sParaId + L"\" w15:done=\"" + sDone + L"\"/>";
+                sRes += L"<w15:commentEx w15:paraId=\"" + pComment->sParaId + L"\" w15:done=\"" + sDone + L"\"/>";
 			//расставляем paraIdParent
 			for(size_t i = 0; i < pComment->replies.size(); i++)
-				pComment->replies[i]->m_sParaIdParent = pComment->m_sParaId;
+				pComment->replies[i]->sParaIdParent = pComment->sParaId;
+		}
+		return sRes;
+	}
+	static std::wstring writeContentExtensible(CComment* pComment)
+	{
+		std::wstring sRes;
+		if(pComment->bDurableId && !pComment->DateUtc.empty())
+		{
+			sRes += L"<w16cex:commentExtensible w16cex:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\" w16cex:dateUtc=\"" + pComment->DateUtc + L"\"/>";
+		}
+		return sRes;
+	}
+	static std::wstring writeContentUserData(CComment* pComment)
+	{
+		std::wstring sRes;
+		if(pComment->bDurableId && !pComment->UserData.empty())
+		{
+			sRes += L"<w16cex:commentExtensible w16cex:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\">";
+			sRes += L"<w16cex:extLst><w16cex:ext uri=\"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}\"><p15:presenceInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\" userId=\"";
+			sRes += XmlUtils::EncodeXmlStringExtend(pComment->UserData);
+			sRes += L"\" providerId=\"AD\"/></w16cex:ext></w16cex:extLst></w16cex:commentExtensible>";
 		}
 		return sRes;
 	}
 	static std::wstring writeContentsIds(CComment* pComment)
 	{
 		std::wstring sRes;
-		if(!pComment->m_sParaId.empty() && pComment->bDurableId)
+		if(!pComment->sParaId.empty() && pComment->bDurableId)
 		{
-			sRes += L"<w16cid:commentId w16cid:paraId=\"" + pComment->m_sParaId + L"\" w16cid:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\"/>";
+			sRes += L"<w16cid:commentId w16cid:paraId=\"" + pComment->sParaId + L"\" w16cid:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\"/>";
 		}
 		return sRes;
 	}
@@ -2112,8 +2213,8 @@ class CComments
 public:
 	IdCounter m_oFormatIdCounter;
 	IdCounter m_oParaIdCounter;
-public:
-	CComments():m_oParaIdCounter(1)
+
+	CComments() : m_oParaIdCounter(1)
 	{
 	}
 	~CComments()
@@ -2170,6 +2271,28 @@ public:
 			sRes += CComment::writeContentExt(it->second);
 			for(size_t i = 0; i < it->second->replies.size(); ++i)
 				sRes += CComment::writeContentExt(it->second->replies[i]);
+		}
+		return sRes;
+	}
+	std::wstring writeContentExtensible()
+	{
+		std::wstring sRes;
+		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		{
+			sRes += CComment::writeContentExtensible(it->second);
+			for(size_t i = 0; i < it->second->replies.size(); ++i)
+				sRes += CComment::writeContentExtensible(it->second->replies[i]);
+		}
+		return sRes;
+	}
+	std::wstring writeContentUserData()
+	{
+		std::wstring sRes;
+		for (boost::unordered_map<int, CComment*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+		{
+			sRes += CComment::writeContentUserData(it->second);
+			for(size_t i = 0; i < it->second->replies.size(); ++i)
+				sRes += CComment::writeContentUserData(it->second->replies[i]);
 		}
 		return sRes;
 	}
@@ -2242,40 +2365,41 @@ public:
     unsigned int	nObjectId;
     BYTE			nObjectType;
 	
-	long    DataPos;
-    long    DataLength;
-    BYTE    Type;
-    bool    BehindDoc;
-	__int64  DistL;
-	__int64  DistT;
-	__int64  DistR;
-	__int64  DistB;
-    bool    LayoutInCell;
+	long DataPos;
+    long DataLength;
+    BYTE Type;
+    bool BehindDoc;
+	__int64 DistL;
+	__int64 DistT;
+	__int64 DistR;
+	__int64 DistB;
+    bool LayoutInCell;
 	unsigned long RelativeHeight;
-    bool    BSimplePos;
-	__int64  EffectExtentL;
-	__int64  EffectExtentT;
-	__int64  EffectExtentR;
-	__int64  EffectExtentB;
-	__int64  Width;
-	__int64  Height;
-    BYTE    PositionHRelativeFrom;
-    BYTE    PositionHAlign;
-	__int64  PositionHPosOffset;
-	double  PositionHPctOffset;
-    BYTE    PositionVRelativeFrom;
-    BYTE    PositionVAlign;
-	__int64  PositionVPosOffset;
-    double  PositionVPctOffset;
-	__int64  SimplePosX;
-	__int64  SimplePosY;
-    std::wstring sChartRels;
+    bool BSimplePos;
+	__int64 EffectExtentL;
+	__int64 EffectExtentT;
+	__int64 EffectExtentR;
+	__int64 EffectExtentB;
+	__int64 Width;
+	__int64 Height;
+    BYTE PositionHRelativeFrom;
+    BYTE PositionHAlign;
+	__int64 PositionHPosOffset;
+	double PositionHPctOffset;
+    BYTE PositionVRelativeFrom;
+    BYTE PositionVAlign;
+	__int64 PositionVPosOffset;
+    double PositionVPctOffset;
+	__int64 SimplePosX;
+	__int64 SimplePosY;
     std::wstring sSizeRelH;
     std::wstring sSizeRelV;
-    int     m_nDocPr;
+    int m_nDocPr;
     std::wstring sGraphicFramePr;
     std::wstring sDocPr;
    
+    std::wstring sGraphicFrameContent;
+
 	CDrawingPropertyWrap DrawingPropertyWrap;
 
     bool bDataPos;
@@ -2343,9 +2467,9 @@ public:
         bSimplePosY         = false;
 		bDrawingPropertyWrap = false;
 	}
-	bool IsChart()
+	bool IsGraphicFrameContent()
 	{
-        return false == sChartRels.empty();
+        return false == sGraphicFrameContent.empty();
 	}
     std::wstring Write()
 	{
@@ -2353,17 +2477,22 @@ public:
 
         std::wstring sXml;
 
-        bool bChart = IsChart();
-        if(c_oAscWrapStyle::Inline == Type)
+        bool bGraphicFrameContent = IsGraphicFrameContent();
+       
+		if(c_oAscWrapStyle::Inline == Type)
         {
             if(bWidth && bHeight)
             {
-                if(false == bChart)
-                    sXml += L"<wp:inline xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+				if (bGraphicFrameContent)
+				{
+					sXml += L"<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">\
+<wp:extent cx=\"" + std::to_wstring(Width) + L"\" cy=\"" + std::to_wstring(Height) + L"\"/>";		
+				}
+				else
+				{
+					sXml += L"<wp:inline xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
 distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstring(Width) + L"\" cy=\"" + std::to_wstring(Height) + L"\"/>";
-                else
-                    sXml += L"<w:drawing><wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">\
-<wp:extent cx=\"" + std::to_wstring(Width) + L"\" cy=\"" + std::to_wstring(Height) + L"\"/>";
+				}
 
                 if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
                 {
@@ -2379,18 +2508,17 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                 {
                     sXml += L"<wp:docPr id=\"" + std::to_wstring(m_nDocPr) + L"\" name=\"\"/>";
                 }
-                if(!sGraphicFramePr.empty())
+                if (!sGraphicFramePr.empty())
                 {
-                    sXml += (sGraphicFramePr);
+                    sXml += sGraphicFramePr;
                 }
                 else
                 {
                     sXml += L"<wp:cNvGraphicFramePr/>";
                 }
-                if(bChart)
+                if (bGraphicFrameContent)
                 {
-                    sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\""
-                            + sChartRels + L"\"/></a:graphicData></a:graphic></wp:inline></w:drawing>";
+					sXml += sGraphicFrameContent + L"</wp:inline></w:drawing>";
                 }
                 else
                 {
@@ -2430,9 +2558,10 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                 if(bLayoutInCell && false == LayoutInCell)
                     nLayoutInCell = 0;
 
-                if(bChart)
-                    sXml += L"<w:drawing>";
-
+				if (bGraphicFrameContent)
+				{
+					sXml += L"<w:drawing>";
+				}
                 sXml += L"<wp:anchor xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\"\
                              distT=\""      + std::to_wstring(emuDistT) +
                         L"\" distB=\""      + std::to_wstring(emuDistB) +
@@ -2451,7 +2580,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
 					emuY = SimplePosY;
                 sXml += L"<wp:simplePos x=\"" + std::to_wstring(emuX) + L"\" y=\"" + std::to_wstring(emuY) + L"\"/>";
 
-                if(bPositionHRelativeFrom && (bPositionHAlign || bPositionHPosOffset || bPositionHPctOffset))
+                if (bPositionHRelativeFrom && (bPositionHAlign || bPositionHPosOffset || bPositionHPctOffset))
                 {
                     std::wstring sRelativeFrom;
                     switch(PositionHRelativeFrom)
@@ -2488,7 +2617,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                     }
                     sXml += L"<wp:positionH relativeFrom=\"" + sRelativeFrom + L"\">" + sContent + L"</wp:positionH>";
                 }
-                if(bPositionVRelativeFrom && (bPositionVAlign || bPositionVPosOffset || bPositionVPctOffset))
+                if (bPositionVRelativeFrom && (bPositionVAlign || bPositionVPosOffset || bPositionVPctOffset))
                 {
                     std::wstring sRelativeFrom;
                     switch(PositionVRelativeFrom)
@@ -2503,7 +2632,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                     case 7: sRelativeFrom = _T("topMargin");break;
                     }
                     std::wstring sContent;
-                    if(bPositionVAlign)
+                    if (bPositionVAlign)
                     {
                         switch(PositionVAlign)
                         {
@@ -2527,22 +2656,22 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                 }
 				sXml += L"<wp:extent cx=\"" + std::to_wstring(Width) + L"\" cy=\"" + std::to_wstring(Height)+ L"\"/>";
 
-                if(bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
+                if (bEffectExtentL && bEffectExtentT && bEffectExtentR && bEffectExtentB)
                 {
 					sXml += L"<wp:effectExtent l=\"" + std::to_wstring(EffectExtentL) +
 										  L"\" t=\"" + std::to_wstring(EffectExtentT) + L"\" r=\"" + std::to_wstring(EffectExtentR) +
 										  L"\" b=\"" + std::to_wstring(EffectExtentB) + L"\"/>";
                 }
-                if(bDrawingPropertyWrap && DrawingPropertyWrap.bWrappingType)
+                if (bDrawingPropertyWrap && DrawingPropertyWrap.bWrappingType)
                 {
                     std::wstring sTagName;
                     switch(DrawingPropertyWrap.WrappingType)
                     {
-                    case c_oSerImageType2::WrapNone:sTagName        = _T("wrapNone");           break;
-                    case c_oSerImageType2::WrapSquare:sTagName      = _T("wrapSquare");         break;
-                    case c_oSerImageType2::WrapThrough:sTagName     = _T("wrapThrough");        break;
-                    case c_oSerImageType2::WrapTight:sTagName       = _T("wrapTight");          break;
-                    case c_oSerImageType2::WrapTopAndBottom:sTagName = _T("wrapTopAndBottom");  break;
+						case c_oSerImageType2::WrapNone:sTagName        = _T("wrapNone");           break;
+						case c_oSerImageType2::WrapSquare:sTagName      = _T("wrapSquare");         break;
+						case c_oSerImageType2::WrapThrough:sTagName     = _T("wrapThrough");        break;
+						case c_oSerImageType2::WrapTight:sTagName       = _T("wrapTight");          break;
+						case c_oSerImageType2::WrapTopAndBottom:sTagName = _T("wrapTopAndBottom");  break;
                     }
                     if(DrawingPropertyWrap.bStart || DrawingPropertyWrap.Points.size() > 0)
                     {
@@ -2608,10 +2737,9 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
                 {
                     sXml += L"<wp:cNvGraphicFramePr/>";
                 }
-                if(bChart)
+                if (bGraphicFrameContent)
                 {
-                    sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"><c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\""
-                         + sChartRels + L"\"/></a:graphicData></a:graphic>";
+                    sXml += sGraphicFrameContent;
                 }
 
                 if(!sSizeRelH.empty())
@@ -2625,7 +2753,7 @@ distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\"><wp:extent cx=\"" + std::to_wstr
 
                 sXml += L"</wp:anchor>";
 
-                if(bChart)
+                if (bGraphicFrameContent)
                     sXml += L"</w:drawing>";
             }
         }
@@ -3130,4 +3258,3 @@ public:
 	}
 };
 }
-#endif	// #ifndef READER_CLASSES

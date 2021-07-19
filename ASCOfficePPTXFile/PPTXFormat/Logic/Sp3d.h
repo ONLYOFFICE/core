@@ -191,7 +191,7 @@ namespace PPTX
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1); // start attributes
 
@@ -201,15 +201,10 @@ namespace PPTX
 					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 						break;
 
-					if (0 == _at)		contourW	= pReader->GetLong();
-					else if (1 == _at)	extrusionH	= pReader->GetLong();
-					else if (2 == _at)
-					{
-						prstMaterial = new Limit::Material();
-						prstMaterial->SetBYTECode(pReader->GetUChar());
-					}
+					if (0 == _at)		contourW = pReader->GetLong();
+					else if (1 == _at)	extrusionH = pReader->GetLong();
+					else if (2 == _at)	prstMaterial = pReader->GetUChar();
 					else if (3 == _at)	z = pReader->GetLong();
-
 					else
 						break;
 				}

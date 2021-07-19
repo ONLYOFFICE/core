@@ -107,7 +107,7 @@ public:
 	boost::unordered_map<BorderInfo, int>	border_x_ids;
 	boost::unordered_map<FillInfo, int>		fill_x_ids;
 	boost::unordered_map<FontInfo, int>		font_x_ids;
-	
+
 	std::map<int, int>						fonts_charsets;
 	std::map<int,  std::wstring>			colors_palette;
 
@@ -166,7 +166,7 @@ public:
 
 	struct _sheet_info
 	{
-		std::wstring				state;
+		std::wstring				state = L"visible";
 		std::wstring				name;
 
 		std::map<int, double>		customColumnsWidth;

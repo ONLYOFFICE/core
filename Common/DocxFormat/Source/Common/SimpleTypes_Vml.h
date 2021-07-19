@@ -2996,15 +2996,15 @@ namespace SimpleTypes
 			void   SetValue(int nX, int nY, int nZ)
 			{
 				m_nX = nX;
-				m_nX = nY;
-				m_nX = nZ;
+				m_nY = nY;
+				m_nZ = nZ;
 			}
 
 			void   SetValue(double dX, double dY, double dZ)
 			{
 				m_nX = (int)(dX * 65536);
-				m_nX = (int)(dY * 65536);
-				m_nX = (int)(dZ * 65536);
+				m_nY = (int)(dY * 65536);
+				m_nZ = (int)(dZ * 65536);
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -3085,8 +3085,8 @@ namespace SimpleTypes
 			void   SetValue(int nX, int nY, int nZ)
 			{
 				m_nX = nX;
-				m_nX = nY;
-				m_nX = nZ;
+				m_nY = nY;
+				m_nZ = nZ;
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -3172,7 +3172,7 @@ namespace SimpleTypes
 			void   SetValue(int nX, int nY)
 			{
 				m_nX = nX;
-				m_nX = nY;
+				m_nY = nY;
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -3242,7 +3242,7 @@ namespace SimpleTypes
 			void   SetValue(double dX, double dY)
 			{
 				m_dX = dX;
-				m_dX = dY;
+				m_dY = dY;
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -3254,12 +3254,12 @@ namespace SimpleTypes
 				if ( nLen <= 0 )
 					return 0;
 
-                int nPos = (int)sValue.find( _T(",") );
+                size_t nPos = sValue.find( _T(",") );
 
 				std::wstring strX, strY;
-				if ( -1 == nPos )
+				if (std::wstring::npos == nPos)
 				{
-					strX = sValue.substr( 0, nPos );
+					strX = sValue;// .substr(0, nPos);
 				}
 				else
 				{
@@ -4398,7 +4398,7 @@ namespace SimpleTypes
 			void   SetValue(double dX, double dY)
 			{
 				m_dX = dX;
-				m_dX = dY;
+				m_dY = dY;
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -4464,7 +4464,7 @@ namespace SimpleTypes
 			void   SetValue(double dX, double dY)
 			{
 				m_dX = dX;
-				m_dX = dY;
+				m_dY = dY;
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -4530,7 +4530,7 @@ namespace SimpleTypes
 			void   SetValue(double dX, double dY)
 			{
 				m_dX = dX;
-				m_dX = dY;
+				m_dY = dY;
 			}
 
 			virtual double FromString(std::wstring &sValue)
@@ -5275,10 +5275,10 @@ namespace SimpleTypes
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
-					{
-					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dPy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
-					}
+				{
+					std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
+                    m_dPy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+				}
 
 				nStartPos = nEndPos + 1;		
 				return 0;
@@ -5325,19 +5325,18 @@ namespace SimpleTypes
 			{
 				return m_dY;
 			}
-			double IsXinPoints() const
+			bool IsXinPoints() const
 			{
 				return m_bUnitsX;
 			}
-			double IsYinPoints() const
+			bool IsYinPoints() const
 			{
 				return m_bUnitsY;
 			}
-
-			void   SetValue_Points(double dX, double dY)
+			void SetValue_Points(double dX, double dY)
 			{
 				m_dX = dX;
-				m_dX = dY;
+				m_dY = dY;
 
 				m_bUnitsX = true;
 				m_bUnitsY = true;

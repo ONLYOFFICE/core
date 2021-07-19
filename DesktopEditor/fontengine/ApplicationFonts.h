@@ -155,32 +155,24 @@ public:
         int lenName = (int)name.length();
         int lenReq = (int)req.length();
 
-        const wchar_t* pName = name.c_str();
-        const wchar_t* pReq = req.c_str();
-
         if (lenName == lenReq)
         {
+            const wchar_t* name_str = name.c_str();
+            const wchar_t* req_str = req.c_str();
+
             int i = 0;
+            wchar_t nameChar = 0;
+            wchar_t reqChar = 0;
             while (i < lenName)
             {
-                wchar_t mem1 = *pName++;
-                wchar_t mem2 = *pReq++;
-                if (mem1 == mem2)
-                {
-                    ++i;
-                    continue;
-                }
-                if (mem1 >= 'A' && mem1 <= 'Z' && (mem1 + 'a' - 'A') == mem2)
-                {
-                    ++i;
-                    continue;
-                }
-                if (mem2 >= 'A' && mem2 <= 'Z' && (mem2 + 'a' - 'A') == mem1)
-                {
-                    ++i;
-                    continue;
-                }
-                break;
+                nameChar = *name_str++;
+                reqChar = *req_str++;
+                if (nameChar >= 'A' && nameChar <= 'Z')
+                    nameChar += ('a' - 'A');
+                if (reqChar >= 'A' && reqChar <= 'Z')
+                    reqChar += ('a' - 'A');
+                if (nameChar != reqChar)
+                    break;
             }
             if (i == lenName)
                 return 1500;
@@ -189,61 +181,56 @@ public:
         return IsEqualsFontsAdvanced(name, req) ? 3000 : 10000;
     }
 
-    static bool IsEqualsFontsAdvanced(const std::wstring& name, const std::wstring& req)
+    // не учитываем регистр (латиница) и знаки /-/ /,/
+    static bool IsEqualsFontsAdvanced(const std::wstring& name, const std::wstring& req, bool* bIsOneInAnother = NULL)
     {
         int lenName = (int)name.length();
         int lenReq = (int)req.length();
 
-        const wchar_t* pName = name.c_str();
-        const wchar_t* pReq = req.c_str();
+        const wchar_t* name_str = name.c_str();
+        const wchar_t* req_str = req.c_str();
 
-        pName = name.c_str();
-        pReq = req.c_str();
+        int curName = 0;
+        int curReq = 0;
 
-        wchar_t* pNameD = new wchar_t[lenName]; int nLenName = 0;
-        wchar_t* pReqD = new wchar_t[lenReq]; int nLenReq = 0;
-
-        for (int i = 0; i < lenName; ++i)
+        wchar_t curNameChar = 0;
+        wchar_t curReqChar = 0;
+        while (true)
         {
-            wchar_t mem = *pName++;
-            if (mem == '-' || mem == ' ' || mem == ',')
-                continue;
-            if (mem >= 'A' && mem <= 'Z')
-                mem += ('a' - 'A');
-            pNameD[nLenName++] = mem;
-        }
-        for (int i = 0; i < lenReq; ++i)
-        {
-            wchar_t mem = *pReq++;
-            if (mem == '-' || mem == ' ' || mem == ',')
-                continue;
-            if (mem >= 'A' && mem <= 'Z')
-                mem += ('a' - 'A');
-            pReqD[nLenReq++] = mem;
-        }
-
-        wchar_t* pNameDCur = pNameD;
-        wchar_t* pReqDCur = pReqD;
-
-        bool bIsEq = false;
-        if (nLenName == nLenReq)
-        {
-            int i = 0;
-            while (i < nLenName)
+            while (curName < lenName)
             {
-                if (*pNameDCur++ != *pReqDCur++)
-                    break;
-                ++i;
+                curNameChar = *name_str++;
+                if (curNameChar == '-' || curNameChar == ' ' || curNameChar == ',')
+                    ++curName;
+
+                if (curNameChar >= 'A' && curNameChar <= 'Z')
+                    curNameChar += ('a' - 'A');
+                break;
             }
+            if (curName == lenName)
+                curNameChar = 0;
 
-            if (i == nLenName)
-                bIsEq = true;
+            while (curReq < lenReq)
+            {
+                curReqChar = *req_str++;
+                if (curReqChar == '-' || curReqChar == ' ' || curReqChar == ',')
+                    ++curReq;
+
+                if (curReqChar >= 'A' && curReqChar <= 'Z')
+                    curReqChar += ('a' - 'A');
+                break;
+            }
+            if (curReq == lenReq)
+                curReqChar = 0;
+
+            if (curNameChar != curReqChar)
+            {
+                if (bIsOneInAnother)
+                    *bIsOneInAnother = (0 == curNameChar || 0 == curReqChar) ? true : false;
+                return false;
+            }
         }
-
-        delete [] pNameD;
-        delete [] pReqD;
-
-        return bIsEq;
+        return true;
     }
 };
 
@@ -281,10 +268,11 @@ public:
     virtual std::vector<NSFonts::CFontInfo*>* GetFonts() { return &m_pList; }
 
 private:
-	int GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset);
-	int GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double dRangeWeight = 1, double dRangeWeightSuferflouous = 0);
+    int GetCharsetPenalty(UINT ulCandRanges[6], unsigned char unReqCharset);
+    int GetSigPenalty(UINT ulCandRanges[6], UINT ulReqRanges[6], double dRangeWeight = 1, double dRangeWeightSuferflouous = 0);
     int GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed);
     int GetFaceNamePenalty(const std::wstring& sCandName, const std::wstring& sReqName, bool bIsUseNamePicker = false);
+    int GetFaceNamePenalty2(NSFonts::CFontInfo* pInfo, const std::wstring& sReqName, bool bIsUseNamePicker = false);
 	int GetFamilyUnlikelyPenalty(SHORT nCandFamilyClass, SHORT nReqFamilyClass);
 	int GetFamilyUnlikelyPenalty(int nCandFamilyClass, std::wstring sReqFamilyClass);
 	int GetWidthPenalty(USHORT usCandWidth, USHORT usReqWidth);
@@ -302,7 +290,7 @@ private:
 
 public:
     static EFontFormat GetFontFormat(FT_Face pFace);
-    virtual void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false);
+    virtual void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false, int nVersion = -1);
 
 public:
 	void LoadFromArrayFiles (std::vector<std::wstring>& arrFiles, int nFlag = 0);

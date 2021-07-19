@@ -369,11 +369,11 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 		std::vector<::svg_path::_polyline> o_Polyline;
 	
 		bool res = false;
-		bool bClosed =false;
+		bool bClosed = false, bStroked = true;
 		
 		try
 		{
-			res = ::svg_path::parseSvgD(o_Polyline, odf_path_, true, bClosed);
+			res = ::svg_path::parseSvgD(o_Polyline, odf_path_, true, bClosed, bStroked);
 		}
 		catch(...)
 		{
@@ -389,7 +389,11 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 			Context.get_slide_context().set_property(odf_reader::_property(L"custom_path", output_.str()));
 
 			set_shape = true;
-			
+
+			if (false == bStroked)
+			{
+				Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_s", false));
+			}
 			if (attlist_.drawooo_sub_view_size_)
 			{
 				std::vector< std::wstring > splitted;			    
@@ -410,6 +414,20 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 					int r = boost::lexical_cast<int>(splitted[2]);
 					int b = boost::lexical_cast<int>(splitted[3]);
 
+				}
+			}
+			else if (svg_viewbox_)
+			{
+				std::vector< std::wstring > splitted;			    
+				boost::algorithm::split(splitted, *svg_viewbox_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+				
+				if (splitted.size() == 4)
+				{
+					int w = boost::lexical_cast<int>(splitted[2]);
+					int h = boost::lexical_cast<int>(splitted[3]);
+					
+					Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_w", w));
+					Context.get_slide_context().set_property(odf_reader::_property(L"custom_path_h", h));
 				}
 			}
 		}

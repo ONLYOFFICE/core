@@ -74,7 +74,6 @@ table_centering table_centering::parse(const std::wstring & Str)
         return table_centering( None );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return table_centering( Horizontal );
     }
 }

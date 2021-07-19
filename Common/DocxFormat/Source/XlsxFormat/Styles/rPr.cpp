@@ -228,8 +228,7 @@ namespace OOX
 				}
 			}
 			m_oRFont.Init();
-			m_oRFont->m_sVal.Init();
-			m_oRFont->m_sVal->append(oStream.GetString2());
+			m_oRFont->m_sVal = oStream.GetString2();
 
 			//oStream.Seek(nEnd);
 		}
@@ -339,7 +338,9 @@ namespace OOX
 					BYTE ucR;
 					BYTE ucG;
 					BYTE ucB;
-					if(OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(m_oColor->m_oIndexed->GetValue(), ucR, ucG, ucB, ucA))
+					int index = m_oColor->m_oIndexed->GetValue();
+					//64 is auto color
+					if(64 != index && OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(index, ucR, ucG, ucB, ucA))
 					{
 						xColorType |= 0x1;
 						xColorType |= 0x4;

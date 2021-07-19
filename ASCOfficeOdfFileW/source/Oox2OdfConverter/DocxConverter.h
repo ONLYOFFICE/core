@@ -41,9 +41,12 @@
 namespace OOX 
 {
 	class CDocx;
+	class CDocxFlat;
 	class CTheme;
 	class CDocDefaults;
 	class CStyle;
+	class CComment;
+	class CStyles;
 
 	namespace Logic
 	{
@@ -99,12 +102,14 @@ namespace OOX
 		class CLockedCanvas;
 		class CBookmarkStart;
 		class CBookmarkEnd;
+		class CBgPict;
 
 	}
 	namespace Numbering
 	{
 		class CAbstractNum;
 		class CLvl;
+		class CNumLvl;
 	}
 }
 namespace ComplexTypes
@@ -146,7 +151,7 @@ namespace Oox2Odf
 		DocxConverter(const std::wstring & path, bool bTemplate);
 		~DocxConverter();
 
-		virtual void convertDocument();
+		virtual bool convertDocument();
 		
 		virtual OOX::IFileContainer					*current_document();
 		virtual odf_writer::odf_conversion_context	*odf_context();
@@ -155,8 +160,8 @@ namespace Oox2Odf
         virtual std::wstring						find_link_by_id (const std::wstring & sId, int t);
 		virtual NSCommon::smart_ptr<OOX::File>		find_file_by_id (const std::wstring & sId);
 
-		void convert(OOX::WritingElement		*oox_unknown);
-		void convert(OOX::Logic::CSdtContent	*oox_sdt);
+		void			convert		(OOX::WritingElement *oox_unknown);		
+		std::wstring	dump_text	(OOX::WritingElement *oox_unknown);
     private:
 		struct _section
 		{
@@ -167,6 +172,7 @@ namespace Oox2Odf
 			bool							bContinue = false;
 		}												*current_section_properties;
 		OOX::CDocx										*docx_document;
+		OOX::CDocxFlat									*docx_flat_document;
 		
 		odf_writer::odt_conversion_context				*odt_context;
         OOX::Logic::CSectionProperty					*last_section_properties;
@@ -183,7 +189,9 @@ namespace Oox2Odf
 		void convert_comment		(int oox_comm_id);
         void convert_hdr_ftr		(std::wstring sId);
 
+		void convert(OOX::Logic::CSdtContent			*oox_sdt);
 		void convert(OOX::Logic::CBackground			*oox_background, int type);
+		void convert(OOX::Logic::CBgPict				*oox_background, int type);
 		void convert(OOX::Logic::CSdt					*oox_sdt);
 		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool bSection, const std::wstring & master_name = L"", bool bAlways = false);
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
@@ -240,15 +248,15 @@ namespace Oox2Odf
 		void convert(SimpleTypes::CHexColor<>			*color, SimpleTypes::CThemeColor<>	*theme_color, 
 														SimpleTypes::CUcharHexNumber<>* theme_tint,
 														SimpleTypes::CUcharHexNumber<>* theme_shade, _CP_OPT(odf_types::color) & odf_color);
-		void convert(OOX::CDocDefaults					*def_style);
+		void convert(OOX::CDocDefaults					*def_style, OOX::CStyles *styles);
 		void convert(OOX::CStyle						*style);
 		void convert_table_style(OOX::CStyle			*oox_style);
-		void convert(OOX::Numbering::CAbstractNum		*oox_num_style);
-		void convert(OOX::Numbering::CLvl				*oox_num_lvl);
+		void convert(OOX::Numbering::CLvl *oox_num_lvl, OOX::Numbering::CNumLvl *oox_num_lvl_over, int lvl);
 
 		void convert(OOX::Logic::CCommentRangeStart		*oox_comm_start);
 		void convert(OOX::Logic::CCommentRangeEnd		*oox_comm_end);
 		void convert(OOX::Logic::CCommentReference		*oox_comm_ref);
+		void convert(OOX::CComment						*oox_comm);
 
 		void convert(OOX::Logic::CFootnoteReference		*oox_note_ref);
 		void convert(OOX::Logic::CEndnoteReference		*oox_note_ref);

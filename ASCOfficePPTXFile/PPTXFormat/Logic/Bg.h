@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_SLIDE_BACKGROUND_INCLUDE_H_
-#define PPTX_LOGIC_SLIDE_BACKGROUND_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Limit/BWMode.h"
@@ -81,7 +79,7 @@ namespace PPTX
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1); // start attributes
 
@@ -93,8 +91,7 @@ namespace PPTX
 
 					if (0 == _at)
 					{
-						bwMode = new Limit::BWMode();
-						bwMode->SetBYTECode(pReader->GetUChar());
+						bwMode = pReader->GetUChar();
 					}
 					else
 						break;
@@ -137,5 +134,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_SLIDE_BACKGROUND_INCLUDE_H_

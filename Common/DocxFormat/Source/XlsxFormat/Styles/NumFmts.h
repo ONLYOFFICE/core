@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_NUMFMTS_FILE_INCLUDE_H_
-#define OOX_NUMFMTS_FILE_INCLUDE_H_
-
 #include "../CommonInclude.h"
 
 #include "rPr.h"
@@ -64,12 +61,16 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, const wchar_t* sHeader) const
 			{
-				writer.WriteString(L"<");
-				writer.WriteString(sHeader);
+				toXMLWithNS(writer, L"", sHeader, L"");
+			}
+			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
+			{
+				writer.StartNodeWithNS(node_ns, node_name);
+				writer.StartAttributes();
 				WritingStringNullableAttrInt(L"numFmtId", m_oNumFmtId, m_oNumFmtId->GetValue());
-				WritingStringNullableAttrEncodeXmlString(L"formatCode", m_oFormatCode, m_oFormatCode.get());
+				WritingStringNullableAttrEncodeXmlString(L"formatCode", m_oFormatCode, *m_oFormatCode);
 				WritingStringNullableAttrBool(L"sourceLinked", m_oSourceLinked);
-				writer.WriteString(_T("/>"));
+				writer.EndAttributesAndNode();
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -87,17 +88,16 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("formatCode"),		m_oFormatCode )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("numFmtId"),		m_oNumFmtId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sourceLinked"),	m_oSourceLinked )
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("formatCode"),      m_oFormatCode )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("numFmtId"),      m_oNumFmtId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sourceLinked"),      m_oSourceLinked )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Format"),		m_oFormatCode )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<std::wstring >							m_oFormatCode;
+			nullable_string									m_oFormatCode;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oNumFmtId;
 			nullable<SimpleTypes::COnOff<>>					m_oSourceLinked;
 		};
@@ -146,8 +146,15 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("numFmt") == sName )
-						m_arrItems.push_back( new CNumFmt( oReader ));
+					if (L"numFmt" == sName)
+					{
+						m_arrItems.push_back(new CNumFmt(oReader));
+
+						if (m_arrItems.back()->m_oNumFmtId.IsInit())
+						{
+							m_mapNumFmtIndex.insert(std::make_pair(m_arrItems.back()->m_oNumFmtId->GetValue(), m_arrItems.size() - 1));
+						}
+					}
 				}
 			}
 
@@ -159,17 +166,14 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
-
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"), m_oCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+
+			std::map<unsigned int, size_t> m_mapNumFmtIndex;
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_NUMFMTS_FILE_INCLUDE_H_

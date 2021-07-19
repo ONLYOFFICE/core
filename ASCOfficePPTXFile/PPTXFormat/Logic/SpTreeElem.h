@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_SLIDES_SLIDE_SHAPETREEELEM_INCLUDE_H_
-#define PPTX_SLIDES_SLIDE_SHAPETREEELEM_INCLUDE_H_
 
 #include "../WrapperWritingElement.h"
 #include "../Theme.h"
@@ -39,15 +37,17 @@
 #include "SpPr.h"
 #include "ShapeStyle.h"
 
+#include <boost/smart_ptr/shared_array.hpp>
+
 namespace PPTX
 {
 	namespace Logic
 	{
-        void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, smart_ptr<PPTX::Theme>& oTheme,
+        void CalculateFill(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, smart_ptr<PPTX::Theme>& oTheme,
 				smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle = false, bool bSignature = false);
 
-        void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle,
-				smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle = false, bool bSignature = false);
+        void CalculateLine(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle,
+				smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle = false);
 
 		class SpTreeElem : public WrapperWritingElement
 		{
@@ -74,6 +74,7 @@ namespace PPTX
 			}			
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributesRequires(XmlUtils::CXmlLiteReader& oReader);
 
 			virtual std::wstring toXML() const;
             virtual bool is_init() const {return (m_elem.IsInit());}
@@ -107,6 +108,10 @@ namespace PPTX
 				return m_elem;
 			}
 			virtual void SetParentPointer(const WrapperWritingElement* pParent) {if(is_init()) m_elem->SetParentPointer(pParent);};
+			std::wstring GetSlicerRequires();
+
+			nullable_string m_binaryData;
+			std::wstring m_sRequires;//from mc:Choice
 		private:
 			smart_ptr<WrapperWritingElement> m_elem;
 		protected:
@@ -114,5 +119,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_SLIDES_SLIDE_SHAPETREEELEM_INCLUDE_H_

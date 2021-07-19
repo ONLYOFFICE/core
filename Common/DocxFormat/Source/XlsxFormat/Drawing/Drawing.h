@@ -59,7 +59,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -87,9 +87,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"), m_oId )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start_No_NS ( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oId )
+				WritingElement_ReadAttributes_End_No_NS ( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oId;
@@ -130,7 +130,7 @@ namespace OOX
 					return;
 
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if ( _T("wsDr") == sName )
+				if ( (L"wsDr") == sName )
 				{
 					ReadAttributes( oReader );
 
@@ -143,52 +143,52 @@ namespace OOX
 
 							CCellAnchor *pItem = NULL;
 
-							if ( _T("absoluteAnchor") == sName )
+							if ( (L"absoluteAnchor") == sName )
 							{
 								pItem = new CCellAnchor( oReader );
 								pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
 							}
-							else if ( _T("oneCellAnchor") == sName )
+							else if ( (L"oneCellAnchor") == sName )
 							{
 								pItem = new CCellAnchor( oReader );
 								pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
 							}
-							else if ( _T("twoCellAnchor") == sName )
+							else if ( (L"twoCellAnchor") == sName )
 							{
 								pItem = new CCellAnchor( oReader );
 								pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 							}
-							else if ( _T("AlternateContent") == sName)
+							else if ( (L"AlternateContent") == sName)
 							{
 								nCurDepth++;
 								while( oReader.ReadNextSiblingNode( nCurDepth ) )
 								{
 									sName = XmlUtils::GetNameNoNS(oReader.GetName());
-									if ( _T("Choice") != sName  && _T("Fallback") != sName ) continue;
+									if ( (L"Choice") != sName  && (L"Fallback") != sName ) continue;
 		
                                     nullable<std::wstring> sRequires;
 									WritingElement_ReadAttributes_Start( oReader )
-										WritingElement_ReadAttributes_Read_if ( oReader, _T("Requires"), sRequires )
+										WritingElement_ReadAttributes_Read_if ( oReader, (L"Requires"), sRequires )
 									WritingElement_ReadAttributes_End( oReader )
 									
 									if (sRequires.IsInit() == false) continue;
-									if (*sRequires != _T("a14"))continue;									
+									if (*sRequires != (L"a14"))continue;									
 
 									nCurDepth++;
 									while( oReader.ReadNextSiblingNode( nCurDepth ) )
 									{
 										sName = XmlUtils::GetNameNoNS(oReader.GetName());
-										if ( _T("absoluteAnchor") == sName )
+										if ( (L"absoluteAnchor") == sName )
 										{
 											pItem = new CCellAnchor( oReader );
 											pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
 										}
-										else if ( _T("oneCellAnchor") == sName )
+										else if ( (L"oneCellAnchor") == sName )
 										{
 											pItem = new CCellAnchor( oReader );
 											pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
 										}
-										else if ( _T("twoCellAnchor") == sName )
+										else if ( (L"twoCellAnchor") == sName )
 										{
 											pItem = new CCellAnchor( oReader );
 											pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
@@ -208,10 +208,10 @@ namespace OOX
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
 				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><xdr:wsDr xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">"));
+				sXml.WriteString((L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><xdr:wsDr xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">"));
 				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
 					m_arrItems[i]->toXML(sXml);
-				sXml.WriteString(_T("</xdr:wsDr>"));				
+				sXml.WriteString((L"</xdr:wsDr>"));				
 
                 std::wstring sPath = oPath.GetPath();
                 NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());

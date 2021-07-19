@@ -170,7 +170,8 @@ void oox_serialize_effects(std::wostream & strm, const std::vector<odf_reader::_
 					double offsetY = dShadowOffsetY.get_value_or(0);
 
 					double dist = sqrt(offsetX * offsetX + offsetY * offsetY);
-					double dir = (offsetX > 0 ? atan(offsetY / offsetX) : 0) * 180. / 3.1415926;
+					double dir = atan(offsetY / offsetX) * 180. / 3.1415926; 
+					if (dir < 0) dir += 360;
 
 					CP_XML_ATTR(L"dist", (int)(dist)); 
 					CP_XML_ATTR(L"dir", (int)(dir * 60000)); 
@@ -192,7 +193,7 @@ void oox_serialize_effects(std::wostream & strm, const std::vector<odf_reader::_
 						{
 							CP_XML_NODE(L"a:alpha")
 							{
-								CP_XML_ATTR(L"val", *dShadowOpacity * 1000); 
+								CP_XML_ATTR(L"val", (int)(*dShadowOpacity * 1000)); 
 							}
 						}
 					}
@@ -623,8 +624,11 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 				}
 				//<a:rect b="b" l="0" r="r" t="0"/>
 				_CP_OPT(int) w, h;
+				_CP_OPT(bool) stroke;
 				odf_reader::GetProperty(additional, L"custom_path_w", w);
 				odf_reader::GetProperty(additional, L"custom_path_h", h);
+
+				odf_reader::GetProperty(additional, L"custom_path_s", stroke);
 					
 
 				CP_XML_NODE(L"a:pathLst")
@@ -639,6 +643,11 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 
 						CP_XML_ATTR(L"w", path_w);
 						CP_XML_ATTR(L"h", path_h);
+
+						if (stroke)
+						{
+							CP_XML_ATTR(L"stroke", *stroke ? 1 : 0);
+						}
 						
 						if (sCustomPath)
 						{	

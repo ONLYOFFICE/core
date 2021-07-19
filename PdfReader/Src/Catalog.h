@@ -113,6 +113,11 @@ namespace PdfReader
 			return &m_oAcroForm;
 		}
 
+		Object *GetPageLabels()
+		{
+			return &m_oPageLabels;
+		}
+
 	private:
 
 		int ReadPageTree(Dict *pPages, PageAttrs *pAttrs, int nStart, char *sAlreadyRead);
@@ -132,6 +137,7 @@ namespace PdfReader
 		Object     m_oStructTreeRoot; // Структура страниц
 		Object     m_oOutline;        // Outline
 		Object     m_oAcroForm;       // AcroForm
+		Object     m_oPageLabels;     // PageLabels
 
 		bool       m_bValid;          // True, если Сatalog - корретный
 

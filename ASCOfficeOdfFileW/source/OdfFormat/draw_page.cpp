@@ -74,8 +74,9 @@ void draw_page::add_child_element( const office_element_ptr & child_element)
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
-	if(type == typeAnimPar)
+	ElementType type_ = child_element->get_type();
+	
+	if(type_ == typeAnimPar)
 		animation_ = child_element;
 	else
 		content_.push_back(child_element);

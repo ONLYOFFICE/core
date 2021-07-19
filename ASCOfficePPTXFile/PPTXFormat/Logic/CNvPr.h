@@ -178,7 +178,8 @@ namespace PPTX
 			{
                 std::wstring namespace_ = m_namespace;
 				
-				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)			namespace_= L"pic";
+				if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+						 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	namespace_= L"pic";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_= L"xdr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_= L"a";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
@@ -198,7 +199,7 @@ namespace PPTX
 				}
 				else
 				{
-					if (pWriter->m_lObjectId <= _id)
+					if (pWriter->m_lObjectId <= (unsigned int)_id)
 					{
 						pWriter->m_lObjectId = _id + 1;
 					}
@@ -241,7 +242,7 @@ namespace PPTX
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1); // start attributes
 
@@ -313,7 +314,7 @@ namespace PPTX
 
 			std::wstring		m_namespace;
 
-			int					id;
+			int					id = -1;
 			std::wstring		name;
 			nullable_string		descr;
 			nullable_bool		hidden;

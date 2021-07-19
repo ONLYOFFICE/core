@@ -32,6 +32,8 @@
 #pragma once
 #include "TextFullSettings.h"
 #include "SlidePersistAtom.h"
+#include "../Enums/RecordType.h"
+
 
 class CRecordSlideListWithText : public CRecordsContainer
 {
@@ -82,11 +84,11 @@ public:
 				
 				IRecord* pRecord = CreateByType(oRec);
 
-				if (RECORD_TYPE_STYLE_TEXTPROP_ATOM == oRec.RecType)
+                if (RT_StyleTextPropAtom == oRec.RecType)
 				{
 					((CRecordStyleTextPropAtom*)(pRecord))->m_lCount = lSymbolCount;
 				}
-				else if (RECORD_TYPE_TEXTSPECINFO_ATOM == oRec.RecType)
+                else if (RT_TextSpecialInfoAtom == oRec.RecType)
 				{
 					((CRecordTextSpecInfoAtom*)(pRecord))->m_lCount = lSymbolCount;
 				}
@@ -94,7 +96,7 @@ public:
 				pRecord->ReadFromStream(oRec, pStream);
 				lCurLen += (8 + oRec.RecLen);
 
-				if (RECORD_TYPE_SLIDE_PERSIST_ATOM == oRec.RecType)
+                if (RT_SlidePersistAtom == oRec.RecType)
 				{
 					m_arSlides.push_back((CRecordSlidePersistAtom*)pRecord);
 
@@ -136,22 +138,22 @@ public:
 						lSymbolCount = (_UINT32)pBytes->m_strText.length();
 					}					
 					
-					if (RECORD_TYPE_STYLE_TEXTPROP_ATOM == oRec.RecType)
+                    if (RT_StyleTextPropAtom == oRec.RecType)
 					{
 						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_pTextStyleProp = 
 								dynamic_cast<CRecordStyleTextPropAtom*>(pRecord);
 					}
-					if (RECORD_TYPE_TEXTSPECINFO_ATOM == oRec.RecType)
+                    if (RT_TextSpecialInfoAtom == oRec.RecType)
 					{
 						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_pTextSpecInfo = 
 								dynamic_cast<CRecordTextSpecInfoAtom*>(pRecord);
 					}
-					if (RECORD_TYPE_TEXTRULER_ATOM == oRec.RecType)
+                    if (RT_TextRulerAtom == oRec.RecType)
 					{
 						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_pTextRuler = 
 								dynamic_cast<CRecordTextRulerAtom*>(pRecord);
 					}
-					if (RECORD_TYPE_TXINTERACTIVEINFO_ATOM == oRec.RecType)
+                    if (RT_TextInteractiveInfoAtom == oRec.RecType)
 					{
 						CRecordTextInteractiveInfoAtom* pTxRanges = dynamic_cast<CRecordTextInteractiveInfoAtom*>(pRecord);
 						PPT_FORMAT::CTextRange oRange;

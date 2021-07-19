@@ -204,7 +204,7 @@ namespace PPTX
 
 		void SpPr::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			pReader->Skip(1); // start attributes
 
@@ -216,8 +216,7 @@ namespace PPTX
 
 				if (0 == _at)
 				{
-					bwMode = new Limit::BWMode();
-					bwMode->SetBYTECode(pReader->GetUChar());
+					bwMode = pReader->GetUChar();
 				}
 				else
 					break;

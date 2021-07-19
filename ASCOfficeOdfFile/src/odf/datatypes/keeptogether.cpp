@@ -63,7 +63,6 @@ keep_together keep_together::parse(const std::wstring & Str)
         return keep_together( Always );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return keep_together( Auto );
     }
 }

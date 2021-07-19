@@ -25,7 +25,7 @@ CJBig2File::CJBig2File()
 	m_nBwTreshold			= 188;
 }
 
-bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int nWidth, int nHeight, std::wstring sDstFileName)
+bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int nWidth, int nHeight, std::wstring sDstFileName, bool isBGRA)
 {
 	// check for valid input parameters
 
@@ -38,11 +38,14 @@ bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int n
 	PIX  *pSource = pixCreate( nWidth, nHeight, 32 );
 	if ( !pSource )	return false;
 
+    unsigned char ShiftR = isBGRA ? 2 : 0;
+    unsigned char ShiftG = 1;
+    unsigned char ShiftB = isBGRA ? 0 : 2;
 	for ( int nY = 0; nY < nHeight; nY++ )
 	{
 		for ( int nX = 0; nX < nWidth; nX++, pSourceBuffer += 3 )//todooo сделать 3 ? 4
 		{
-			pixSetRGBPixel( pSource, nX, nY, pSourceBuffer[ 2 ], pSourceBuffer[ 1 ], pSourceBuffer[ 0 ] );
+            pixSetRGBPixel( pSource, nX, nY, pSourceBuffer[ ShiftR ], pSourceBuffer[ ShiftG ], pSourceBuffer[ ShiftB ] );
 		}
 	}
 

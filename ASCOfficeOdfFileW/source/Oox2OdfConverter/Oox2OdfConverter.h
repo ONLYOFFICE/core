@@ -43,9 +43,9 @@ namespace Oox2Odf
         Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath, bool bTemplate);
         virtual ~Converter();
 
-		void convert();
+		bool convert();
      
-        void write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID) const;
+        bool write(const std::wstring & out_path, const std::wstring & temp_path, const std::wstring & password, const std::wstring & documentID) const;
 
 		OoxConverter * get_ooxConverter() { return impl_; }
 

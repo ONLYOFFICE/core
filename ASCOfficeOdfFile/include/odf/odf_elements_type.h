@@ -260,6 +260,9 @@ enum ElementType
     typeStyleFooterLeft,
     typeStyleFootnoteSep,
 
+	typeLoextHeaderFirst,
+	typeLoextFooterFirst,
+
     typeStyleSectionProperties,
     typeStyleHeaderStyle,
     typeStyleFooterStyle,
@@ -290,6 +293,8 @@ enum ElementType
 	typeTextIndexTitleTemplate,
 
     typeTextNotesConfiguration,
+	typeTextLinenumberingConfiguration,
+	typeTextLinenumberingSeparator,
 
     typeStyleFontFace,
 
@@ -329,6 +334,7 @@ enum ElementType
     typeTableTableColumns,
     typeTableTableHeaderColumns,
     typeTableTableColumnGroup,
+	typeTableTableColumnNoGroup,
     typeTableTableRow,
     typeTableTableCell,
     typeTableCoveredTableCell,
@@ -598,6 +604,7 @@ enum ElementType
     typeChartStockRangeLine,
 	typeChartRegressionCurve,
 	typeChartEquation,
+	typeChartDateScale,
 
 	typeStyleChartProperties,
 

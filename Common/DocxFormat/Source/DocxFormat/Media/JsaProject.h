@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_ONLY_JSA_PROJECT_INCLUDE_H_
-#define OOX_ONLY_JSA_PROJECT_INCLUDE_H_
 
 #include "Media.h"
 #include "../../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
@@ -66,4 +64,3 @@ namespace OOX
 	};
 } // namespace OOX
 
-#endif // OOX_ONLY_JSA_PROJECT_INCLUDE_H_

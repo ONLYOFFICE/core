@@ -326,7 +326,7 @@ namespace PPTX
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 				pReader->Skip(1); // start attributes
 				while (true)
 				{
@@ -343,8 +343,7 @@ namespace PPTX
 						}
 						case 1:
 						{
-							anchor = new Limit::TextAnchor();
-							anchor->SetBYTECode(pReader->GetUChar());
+							anchor = pReader->GetUChar();
 							break;
 						}
 						case 2:
@@ -374,8 +373,7 @@ namespace PPTX
 						}
 						case 7:
 						{
-							horzOverflow = new Limit::HorzOverflow();
-							horzOverflow->SetBYTECode(pReader->GetUChar());
+							horzOverflow = pReader->GetUChar();
 							break;
 						}
 						case 8:
@@ -425,20 +423,17 @@ namespace PPTX
 						}
 						case 17:
 						{
-							vert = new Limit::TextVerticalType();
-							vert->SetBYTECode(pReader->GetUChar());
+							vert = pReader->GetUChar();
 							break;
 						}
 						case 18:
 						{
-							vertOverflow = new Limit::VertOverflow();
-							vertOverflow->SetBYTECode(pReader->GetUChar());
+							vertOverflow = pReader->GetUChar();
 							break;
 						}
 						case 19:
 						{
-							wrap = new Limit::TextWrap();
-							wrap->SetBYTECode(pReader->GetUChar());
+							wrap = pReader->GetUChar();
 							break;
 						}
 						default:

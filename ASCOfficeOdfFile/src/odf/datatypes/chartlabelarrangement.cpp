@@ -60,7 +60,6 @@ chart_label_arrangement chart_label_arrangement::parse(const std::wstring & Str)
         return chart_label_arrangement( stagger_odd );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return chart_label_arrangement( side_by_side );
     }
 }

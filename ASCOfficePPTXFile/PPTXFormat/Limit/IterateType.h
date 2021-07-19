@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_ITERATETYPE_INCLUDE_H_
-#define PPTX_LIMIT_ITERATETYPE_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -45,22 +42,36 @@ namespace PPTX
 		public:
 			IterateType()
 			{
-				m_strValue = _T("el");
+				m_strValue = L"el";
 			}
 
 			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue)
 			{
-				if ((_T("el") == strValue) ||
-					(_T("lt") == strValue) ||
-					(_T("wd") == strValue))
+				if ((L"el" == strValue) ||
+					(L"lt" == strValue) ||
+					(L"wd" == strValue))
 				{
 					m_strValue = strValue;
+				}
+			}
+			virtual BYTE GetBYTECode() const
+			{
+				if (L"el" == m_strValue)	return 0;
+				if (L"lt" == m_strValue)	return 1;
+				if (L"wd" == m_strValue)	return 2;
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = L"el"; break;
+				case 1: m_strValue = L"lt"; break;
+				case 2: m_strValue = L"wd"; break;
 				}
 			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_ITERATETYPE_INCLUDE_H_

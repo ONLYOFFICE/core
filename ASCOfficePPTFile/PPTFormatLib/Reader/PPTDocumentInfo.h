@@ -58,7 +58,7 @@ public:
 		while(0 != nCount) 
 		{ 
 			if (NULL != m_arUsers[nCount-1])
-				delete m_arUsers[nCount-1]; 
+                RELEASEOBJECT(m_arUsers[nCount-1])
 			
 			m_arUsers.pop_back();
 			--nCount;
@@ -99,7 +99,8 @@ public:
 			
 			if (bResult == false)
 			{
-				delete pInfo;
+                delete pInfo;
+                pInfo = NULL;   // may not work
 
 				if (m_oCurrentUser.m_bIsEncrypt)
 					return false;

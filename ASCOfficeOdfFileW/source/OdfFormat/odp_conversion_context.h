@@ -40,7 +40,16 @@ namespace odf_writer {
 class office_presentation;
 class odf_text_context;
 
-
+struct table_style_state
+{
+	std::wstring default_;
+	std::wstring first_row_;
+	std::wstring first_col_;
+	std::wstring band_row_;
+	std::wstring band_col_;
+	std::wstring last_row_;
+	std::wstring last_col_;
+};
 class odp_conversion_context : public odf_conversion_context
 {
 public:
@@ -67,6 +76,7 @@ public:
 	virtual void end_text_context();
 
 	virtual odf_drawing_context		* drawing_context();
+	virtual odf_controls_context	* controls_context();
 	virtual odf_text_context		* text_context();
 			odp_slide_context		* slide_context();
 			odf_comment_context		* comment_context();
@@ -84,9 +94,11 @@ public:
 	void start_note(bool bMaster = false);
 	void end_note();
 
+	std::map<std::wstring, table_style_state> map_table_styles_;
 private:
 	odp_slide_context			slide_context_;
-	
+	odf_drawing_context			drawing_context_;
+
 	odf_text_context*			text_context_;
 	office_presentation*		root_presentation_;
 };

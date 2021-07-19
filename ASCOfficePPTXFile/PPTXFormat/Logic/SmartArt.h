@@ -65,10 +65,10 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_Read_if	  ( oReader, _T("r:cs"), id_color)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:dm"), id_data)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:lo"), id_layout)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:qs"), id_style)
+					WritingElement_ReadAttributes_Read_if	  ( oReader, (L"r:cs"), id_color)
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:dm"), id_data)
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:lo"), id_layout)
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:qs"), id_style)
 				WritingElement_ReadAttributes_End	( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -86,7 +86,7 @@ namespace PPTX
 			}
 			virtual std::wstring toXML() const
 			{
-				return _T("");
+				return (L"");
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -123,7 +123,7 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(ChartRec)
 			
-			ChartRec() : m_bChartEx(false), m_bData(false), m_lChartNumber(0)
+			ChartRec()
 			{
 			}
 
@@ -140,25 +140,19 @@ namespace PPTX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("r:id"), id_data )
-				WritingElement_ReadAttributes_End	( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_ReadSingle ( oReader, L"id", id_data )
+				WritingElement_ReadAttributes_End_No_NS	( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				std::wstring ns = XmlUtils::GetNamespace(oReader.GetName());
 
-				m_bData = false;
 				m_bChartEx = false;
 				
 				ReadAttributes( oReader );
 				FillParentPointersForChilds();
 				
-				if (id_data.IsInit())
-				{
-					m_bData = true;
-				}
-
 				if (ns == L"cx")
 				{
 					m_bChartEx = true;
@@ -166,7 +160,6 @@ namespace PPTX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				m_bData = false;
 				m_bChartEx = false;
 
 				std::wstring ns = XmlUtils::GetNamespace(node.GetName());
@@ -174,10 +167,6 @@ namespace PPTX
 				XmlMacroReadAttributeBase(node, L"r:id", id_data);
 				FillParentPointersForChilds();
 
-				if (id_data.IsInit())
-				{
-					m_bData = true;
-				}
 				if (ns == L"cx")
 				{
 					m_bChartEx = true;
@@ -191,9 +180,8 @@ namespace PPTX
 
 			nullable<OOX::RId>	id_data;
 
-			LONG				m_lChartNumber;
-			bool				m_bData;
-			bool				m_bChartEx;
+			bool				m_bChartEx = false;
+			int					m_nCountCharts = 0;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{				

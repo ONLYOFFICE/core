@@ -69,7 +69,6 @@ table_visibility table_visibility::parse(const std::wstring & Str)
         return table_visibility( Filter );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return table_visibility( Visible );
     }
 }

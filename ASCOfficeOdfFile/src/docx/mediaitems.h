@@ -46,25 +46,28 @@ namespace oox {
 class mediaitems
 {
 public:
+
     mediaitems(const std::wstring & odfPacket);
 	virtual ~mediaitems();
 
     struct item 
     {
-        item(	std::wstring const &	_href,
-				RelsType				_type,
-				std::wstring const &	_outputName,
-				bool					_mediaInternal,
-				std::wstring const &	_Id);
+        item(	std::wstring const &	href,
+				_rels_type				type,
+				std::wstring const &	outputName,
+				bool					mediaInternal,
+				std::wstring const &	Id,
+				_rels_type_place		type_place);
 
-        std::wstring	href;
-        RelsType		type;
-        std::wstring	outputName;
-        bool			mediaInternal;
-        bool			valid;
-		std::wstring	Id;
-		int				count_used;
-		int				count_add;
+        std::wstring		href;
+        _rels_type			type;
+		_rels_type_place	type_place;
+        std::wstring		outputName;
+        bool				mediaInternal;
+        bool				valid;
+		std::wstring		Id;
+		int					count_used;
+		int					count_add;
     };
     typedef std::vector< item > items_array;
 	
@@ -83,15 +86,17 @@ public:
 	void set_font_directory(std::wstring pathFonts);
 	NSFonts::IApplicationFonts *applicationFonts() {return applicationFonts_;}
 
-    std::wstring add_or_find(const std::wstring & href, RelsType type, bool & isInternal);//возможны ссылки на один и тот же объект
-    std::wstring add_or_find(const std::wstring & href, RelsType type, bool & isInternal, std::wstring & ref);
+    std::wstring add_or_find(const std::wstring & href, _rels_type type, bool & isInternal, _rels_type_place type_place);//возможны ссылки на один и тот же объект
+    std::wstring add_or_find(const std::wstring & href, _rels_type type, bool & isInternal, std::wstring & ref, _rels_type_place type_place);
     
+	void add_rels(bool isInternal, std::wstring const & rid, std::wstring const & ref, _rels_type type, _rels_type_place type_place);
 	std::wstring add_control_props	(std::wstring & oox_target);
 
-	void dump_rels(rels & Rels);
-    items_array & items() { return items_; }
+	void dump_rels(rels & Rels, _rels_type_place type);
+    
+	items_array & items() { return items_; }
 
-	static std::wstring get_rel_type(RelsType type)
+	static std::wstring get_rel_type(_rels_type type)
 	{
 		switch (type)
 		{
@@ -111,7 +116,7 @@ public:
 				return L"";
 		}
 	}
-	static RelsType detectMediaType(const std::wstring & fileName)
+	static _rels_type detectMediaType(const std::wstring & fileName)
 	{
 		size_t pos = fileName.rfind(L".");
 
@@ -139,7 +144,7 @@ public:
 	}
 
 private:
-	std::wstring create_file_name			(const std::wstring & uri, RelsType type, bool & isInternal, size_t Num);
+	std::wstring create_file_name			(const std::wstring & uri, _rels_type type, bool & isInternal, size_t Num);
 	std::wstring detectImageFileExtension	(const std::wstring &fileName);
    
 	items_array		items_;

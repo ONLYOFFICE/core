@@ -36,7 +36,7 @@
 namespace XLS
 {;
 
-class CFStreamCacheReader;
+class StreamCacheReader;
 class BOF;
 
 class GlobalsSubstream;

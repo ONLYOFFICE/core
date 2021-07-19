@@ -38,7 +38,7 @@
 #include "IRenderer.h"
 
 #include "Matrix.h"
-#include "../graphics/pro/Fonts.h"
+#include "./pro/Fonts.h"
 
 namespace Aggplus
 {

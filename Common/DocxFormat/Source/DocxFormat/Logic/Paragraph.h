@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_PARAGRAPH_INCLUDE_H_
-#define OOX_LOGIC_PARAGRAPH_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
@@ -56,15 +54,15 @@ namespace OOX
 		class CParagraph : public WritingElementWithChilds<>
 		{
 		public:
-			CParagraph()
+			CParagraph(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) 
 			{
 				m_oParagraphProperty = NULL;
 			}
-			CParagraph(XmlUtils::CXmlNode &oNode)
+			CParagraph(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oNode );
 			}
-			CParagraph(XmlUtils::CXmlLiteReader& oReader)
+			CParagraph(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oReader );
 			}
@@ -112,9 +110,9 @@ namespace OOX
 			void AddBookmarkStart(int nId, std::wstring& sName);
 			void AddBookmarkEnd  (int nId);
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_p;
@@ -134,10 +132,8 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRDefault;
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
 
-			CParagraphProperty *					 m_oParagraphProperty; // копия того что в m_arrItems...  - для быстрого доступа/анализа
+			CParagraphProperty *m_oParagraphProperty; // копия того что в m_arrItems...  - для быстрого доступа/анализа
 			// по идее нужно сделать как в Drawing::Paragraph - то есть единственные подобъекты вынести отдельно
 		};
 	} // namespace Logic
 } // namespace OOX
-
-#endif // OOX_LOGIC_PARAGRAPH_INCLUDE_H_

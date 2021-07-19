@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_OUTERSHDW_INCLUDE_H_
-#define PPTX_LOGIC_OUTERSHDW_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "./../UniColor.h"
@@ -125,8 +123,8 @@ namespace PPTX
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("blurRad"), blurRad);
-				oAttr.Write(_T("dir"), dist);
-				oAttr.Write(_T("dist"), dir);
+				oAttr.Write(_T("dir"), dir);
+				oAttr.Write(_T("dist"), dist);
 				oAttr.Write(_T("sx"), sx);
 				oAttr.Write(_T("sy"), sy);
 				oAttr.Write(_T("kx"), kx);
@@ -182,7 +180,7 @@ namespace PPTX
 			{
 				pReader->Skip(4); // len
 				BYTE _type = pReader->GetUChar(); 
-				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1);
 
@@ -194,11 +192,7 @@ namespace PPTX
 
 					switch (_at)
 					{
-						case 0:	
-						{
-							algn = new Limit::RectAlign();
-							algn->SetBYTECode( pReader->GetChar()); 
-						}break;
+						case 0:	algn	= pReader->GetUChar(); break;
 						case 1:	blurRad = pReader->GetLong(); break;
 						case 2:	dir		= pReader->GetLong(); break;
 						case 3:	dist	= pReader->GetLong(); break;
@@ -256,5 +250,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_OUTERSHDW_INCLUDE_H_

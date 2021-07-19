@@ -43,6 +43,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/toVmlConvert.h"
+#include "../../../../DesktopEditor/graphics/pro/Image.h"
 
 #ifndef RGB
     #define RGB(r,g,b) ((_UINT32)(((BYTE)(r)|((_UINT16)((BYTE)(g))<<8))|(((_UINT32)(BYTE)(b))<<16)))
@@ -1515,7 +1516,7 @@ bool OOXShapeReader::ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& pOut
 	pOutput->m_pOleObject	= RtfOlePtr(new RtfOle());
 
 	if( vmlOLE->m_sProgId.IsInit() )
-		pOutput->m_pOleObject->m_sOleClass = vmlOLE->m_sProgId.get2();
+		pOutput->m_pOleObject->m_sOleClass = vmlOLE->m_sProgId.get();
 	
 	if(vmlOLE->m_oType.IsInit())
 	{

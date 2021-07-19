@@ -37,6 +37,7 @@
 #include <CPOptional.h>
 
 #include "office_elements_create.h"
+#include "../../../ASCOfficeOdfFile/src/odf/datatypes/chartclass.h"
 
 namespace cpdoccore {
 namespace odf_writer
@@ -59,7 +60,7 @@ public:
 	odf_text_context	*text_context();
 
 	void start_chart (office_element_ptr & root);
-		void set_chart_type			(const std::wstring & type);
+		void set_chart_type			(odf_types::chart_class::type type);
 		void set_chart_3D			(bool Val);
 		void set_chart_size			(_CP_OPT(double) width_pt, _CP_OPT(double) height_pt);		
 		void set_chart_colored		(bool val);
@@ -83,10 +84,10 @@ public:
 
 		void start_group_series();
 			void add_axis_group_series(unsigned int id);
-				void start_series (const std::wstring & type);
-					void set_series_value_formula	(const std::wstring & oox_formula);
-					void set_series_label_formula	(const std::wstring & oox_formula);
-					void set_category_axis_formula	(const std::wstring & oox_formula, int type);
+				void start_series (odf_types::chart_class::type type);
+					void set_series_value_formula	(const std::wstring & oox_ref, const std::wstring & format_code);
+					void set_series_label_formula	(const std::wstring & oox_ref);
+					void set_category_axis_formula	(const std::wstring & oox_ref, const std::wstring & format_code, int type);
 					void start_data_point_series	(int count);
 					long get_count_data_points_series();
 
@@ -95,7 +96,7 @@ public:
 				void end_series();
 		void end_group_series();
 		
-		void set_label_formula (const std::wstring & oox_formula);
+		void set_label_formula (const std::wstring & oox_ref);
 		void set_label_name (const std::wstring & name);
 		void set_label_delete (bool val);	
 		void set_label_show_bubble_size (bool val);	
@@ -141,14 +142,14 @@ public:
 		void add_text(const std::wstring & val);
 
 		void start_text();
-		void end_text();
+		void end_text(bool only_properties = false);
 
 		void set_textarea_vertical_align(int align);
 		void set_textarea_padding		(_CP_OPT(double) & left, _CP_OPT(double) & top, _CP_OPT(double) & right, _CP_OPT(double) & bottom);//in pt
 		void set_textarea_rotation		(double val);
 
-		void add_domain(const std::wstring & formula);
-		void add_categories(const std::wstring & formula, office_element_ptr & axis);
+		void add_domain(const std::wstring & odf_ref);
+		void add_categories(const std::wstring & odf_ref, const std::wstring & format_code, office_element_ptr & axis);
 
 		void set_layout_x(double *val,int mode);
 		void set_layout_y(double *val,int mode);

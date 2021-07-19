@@ -15,7 +15,7 @@
 void CxImagePNG::ima_png_error(png_struct *png_ptr, char *message)
 {
 	strcpy(info.szLastError,message);
-	longjmp(png_ptr->png_jmpbuf, 1);
+	longjmp(png_ptr->longjmp_buffer, 1);
 }
 ////////////////////////////////////////////////////////////////////////////////
 #if CXIMAGE_SUPPORT_DECODE
@@ -41,6 +41,8 @@ bool CxImagePNG::Decode(CxFile *hFile)
 	png_info *info_ptr;
 	uint8_t *row_pointers=NULL;
 	CImageIterator iter(this);
+    bool is_read_end_start = false;
+    bool is_read_end = false;
 
   cx_try
   {
@@ -62,7 +64,7 @@ bool CxImagePNG::Decode(CxFile *hFile)
     /* Set error handling if you are using the setjmp/longjmp method (this is
     * the normal method of doing things with libpng).  REQUIRED unless you
     * set up your own error handlers in the png_create_read_struct() earlier. */
-	if (setjmp(png_ptr->png_jmpbuf)) {
+	if (setjmp(png_ptr->longjmp_buffer)) {
 		/* Free all of the memory associated with the png_ptr and info_ptr */
 		delete [] row_pointers;
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
@@ -80,7 +82,7 @@ bool CxImagePNG::Decode(CxFile *hFile)
 		head.biWidth = info_ptr->width;
 		head.biHeight= info_ptr->height;
 		info.dwType = CXIMAGE_FORMAT_PNG;
-		longjmp(png_ptr->png_jmpbuf, 1);
+		longjmp(png_ptr->longjmp_buffer, 1);
 	}
 
 	/* calculate new number of channels */
@@ -101,7 +103,7 @@ bool CxImagePNG::Decode(CxFile *hFile)
 		break;
 	default:
 		strcpy(info.szLastError,"unknown PNG color type");
-		longjmp(png_ptr->png_jmpbuf, 1);
+		longjmp(png_ptr->longjmp_buffer, 1);
 	}
 
 	//find the right pixel depth used for cximage
@@ -111,7 +113,7 @@ bool CxImagePNG::Decode(CxFile *hFile)
 	if (channels >= 3) pixel_depth=24;
 
 	if (!Create(info_ptr->width, info_ptr->height, pixel_depth, CXIMAGE_FORMAT_PNG)){
-		longjmp(png_ptr->png_jmpbuf, 1);
+		longjmp(png_ptr->longjmp_buffer, 1);
 	}
 
 	/* get metrics */
@@ -189,7 +191,7 @@ bool CxImagePNG::Decode(CxFile *hFile)
 	}
 
 	// <vho> - handle cancel
-	if (info.nEscape) longjmp(png_ptr->png_jmpbuf, 1);
+	if (info.nEscape) longjmp(png_ptr->longjmp_buffer, 1);
 
 	// row_bytes is the width x number of channels x (bit-depth / 8)
 	row_pointers = new uint8_t[info_ptr->rowbytes + 8];
@@ -212,7 +214,7 @@ bool CxImagePNG::Decode(CxFile *hFile)
 		do	{
 
 			// <vho> - handle cancel
-			if (info.nEscape) longjmp(png_ptr->png_jmpbuf, 1);
+			if (info.nEscape) longjmp(png_ptr->longjmp_buffer, 1);
 
 #if CXIMAGE_SUPPORT_ALPHA	// <vho>
 			if (AlphaIsValid()) {
@@ -296,15 +298,23 @@ bool CxImagePNG::Decode(CxFile *hFile)
 	row_pointers = NULL;
 
 	/* read the rest of the file, getting any additional chunks in info_ptr - REQUIRED */
-	png_read_end(png_ptr, info_ptr);
+    is_read_end_start = true;
+    png_read_end(png_ptr, info_ptr);
+    is_read_end = true;
 
 	/* clean up after the read, and free any memory allocated - REQUIRED */
 	png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 
   } cx_catch {
-	if (strcmp(message,"")) strncpy(info.szLastError,message,255);
-	if (info.nEscape == -1 && info.dwType == CXIMAGE_FORMAT_PNG) return true;
-	return false;
+      if (!is_read_end_start || is_read_end) {
+        if (strcmp(message,"")) strncpy(info.szLastError,message,255);
+        if (info.nEscape == -1 && info.dwType == CXIMAGE_FORMAT_PNG) return true;
+        return false;
+      }
+      else {
+        /* clean up after the read, and free any memory allocated - REQUIRED */
+        png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
+      }
   }
 	/* that's it */
 	return true;
@@ -344,7 +354,7 @@ bool CxImagePNG::Encode(CxFile *hFile)
    /* Set error handling.  REQUIRED if you aren't supplying your own
     * error hadnling functions in the png_create_write_struct() call.
     */
-	if (setjmp(png_ptr->png_jmpbuf)){
+	if (setjmp(png_ptr->longjmp_buffer)){
 		/* If we get here, we had a problem reading the file */
 		if (info_ptr->palette) free(info_ptr->palette);
 		png_destroy_write_struct(&png_ptr,  (png_infopp)&info_ptr);

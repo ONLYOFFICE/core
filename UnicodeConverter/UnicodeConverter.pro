@@ -6,7 +6,6 @@ TEMPLATE = lib
 
 CONFIG += shared
 CONFIG += plugin
-
 CONFIG += core_static_link_libstd
 
 CORE_ROOT_DIR = $$PWD/..
@@ -14,6 +13,7 @@ PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)
 
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
+ADD_DEPENDENCY(kernel)
 
 core_linux {    
     QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"
@@ -21,17 +21,22 @@ core_linux {
 }
 
 core_ios {
-    CONFIG += core_disable_icu
-
+    CONFIG += bundle_dylibs
     OBJECTIVE_SOURCES += UnicodeConverter_internal_ios.mm
+
+    # SASLprepToUtf8 TODO: remove this dependence
+    CONFIG += core_disable_icu
+    include(../Common/3dParty/icu/icu.pri)
+
+    LIBS += -framework Foundation
 }
 
 !core_disable_icu {
     include(../Common/3dParty/icu/icu.pri)
 
-    SOURCES += \
-        UnicodeConverter.cpp
-}
+SOURCES += \
+    UnicodeConverter.cpp
 
 HEADERS +=\
     UnicodeConverter.h
+}

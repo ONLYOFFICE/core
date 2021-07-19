@@ -60,6 +60,7 @@ namespace NSCommon
 	class nullable_string;
 	class nullable_bool;
 	class nullable_int;
+	class nullable_uint;
 	class nullable_double;
 	class nullable_sizet;
 }
@@ -187,6 +188,7 @@ namespace NSBinPptxRW
 		_INT32										m_lIndexNextImage;
 		_INT32										m_lIndexCounter;
 		
+		std::wstring								m_strDstCharts;
 		std::wstring								m_strDstMedia;
 		std::wstring								m_strDstEmbed;
 		std::wstring								m_strDstFolder;
@@ -203,6 +205,9 @@ namespace NSBinPptxRW
 		
 		void			SetDstEmbed(const std::wstring& strDst);
 		std::wstring	GetDstEmbed();
+
+		void			SetDstCharts(const std::wstring& strDst);
+		std::wstring	GetDstCharts();
 		
 		void			SetDstFolder(const std::wstring& strDst);
 		std::wstring	GetDstFolder();
@@ -312,7 +317,6 @@ namespace NSBinPptxRW
 		void WriteStringUtf8(const std::wstring& sBuffer);
 		// --------------------------------------------------------
 		void WriteLONG64	(const _INT64& lValue);
-		void WriteDouble64	(const double& dValue);
 		// --------------------------------------------------------
 
 		CBinaryFileWriter();
@@ -336,11 +340,19 @@ namespace NSBinPptxRW
 		void WriteBool1(int type, const bool& val);
 		void WriteBool2(int type, const NSCommon::nullable_bool& val);
 
+		void WriteByte1(int type, const BYTE& val);
+
 		void WriteInt1(int type, const int& val);
 		void WriteInt2(int type, const NSCommon::nullable_int& val);
 
+		void WriteUInt1(int type, const unsigned int& val);
+		void WriteUInt2(int type, const NSCommon::nullable_uint& val);
+
 		void WriteDouble1(int type, const double& val);
 		void WriteDouble2(int type, const NSCommon::nullable_double& val);
+
+		void WriteDoubleReal1(int type, const double& val);
+		void WriteDoubleReal2(int type, const NSCommon::nullable_double& val);
 
 		void WriteSize_t1(int type, const size_t& val);
 		void WriteSize_t2(int type, const NSCommon::nullable_sizet& val);
@@ -387,6 +399,19 @@ namespace NSBinPptxRW
 
 			for (_UINT32 i = 0; i < len; ++i)
 				WriteRecord1(subtype, val[i]);
+
+			EndRecord();
+		}
+		template<typename T>
+		void WriteRecordArrayOfPointers(int type, int subtype, const std::vector<T*>& val)
+		{
+			StartRecord(type);
+
+			_UINT32 len = (_UINT32)val.size();
+			WriteULONG(len);
+
+			for (_UINT32 i = 0; i < len; ++i)
+				WriteRecord1(subtype, *val[i]);
 
 			EndRecord();
 		}
@@ -461,7 +486,6 @@ namespace NSBinPptxRW
 		void WriteSlideComments	(int nComment);
 		void WritePresentationComments	(int nComment);
 		
-		unsigned int WriteChart (int nChartNumber, _INT32 lDocType);
 		unsigned int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		unsigned int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		
 	
@@ -490,7 +514,8 @@ namespace NSBinPptxRW
 		std::wstring					m_strFolderThemes;
 		std::wstring					m_strFolderExternalThemes;
 
-		_INT32							m_lChartNumber;
+		_INT32							m_nCountEmbedded = 1;
+		_INT32							m_nCountCharts = 1;
 
 		BinDocxRW::CDocxSerializer*		m_pMainDocument;
 		int								m_nDocumentType;
@@ -512,11 +537,14 @@ namespace NSBinPptxRW
 		bool Peek	(LONG nSizeToRead);
 		
 		// 1 bytes
+		bool GetUCharWithResult(BYTE *value_);
 		BYTE GetUChar();
 		signed char GetChar();
 		bool GetBool();
 		BYTE GetUChar_TypeNode();
 
+		_INT32 GetRecordSize();
+		
 		// 2 byte
 		_UINT16 GetUShort();
 		_INT16 GetShort();
@@ -528,13 +556,12 @@ namespace NSBinPptxRW
 		double GetDouble();
 		// 8 byte
 		_INT64 GetLong64();
-		double GetDouble64();
 		double GetDoubleReal();
 		//String
-		std::wstring GetString(_INT32 len);
+		std::wstring GetString(_INT32 len, bool bDeleteZero = false);
 		std::string GetString1(_INT32 len);
-		std::wstring GetString2();
-		std::wstring GetString3(_INT32 len);
+		std::wstring GetString2(bool bDeleteZero = false);
+		std::wstring GetString3(_INT32 len, bool bDeleteZero = false);
 		std::wstring GetString4(_INT32 len);
 
         bool GetArray(BYTE **pBuffer, _INT32 len);

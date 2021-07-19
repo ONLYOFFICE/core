@@ -116,7 +116,7 @@ namespace PPTX
 		{
 			pReader->Skip(4); // len
 			BYTE _type = pReader->GetUChar(); 
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			pReader->Skip(1);
 
@@ -131,10 +131,7 @@ namespace PPTX
 					case 0:
 						name = pReader->GetString2(); break;
 					case 1:
-					{
-						type = new Limit::EffectContainerType();
-						type->SetBYTECode(pReader->GetChar()); 
-					}break;
+						type = pReader->GetUChar(); break; 
 				}
 			}
 			while (pReader->GetPos() < _end_rec)

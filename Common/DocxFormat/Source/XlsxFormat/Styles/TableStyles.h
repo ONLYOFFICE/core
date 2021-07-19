@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_TABLESTYLES_FILE_INCLUDE_H_
-#define OOX_TABLESTYLES_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -164,7 +162,6 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-								// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
@@ -173,14 +170,14 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("table"),      m_oTable )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("displayName"),m_oDisplayName )
 
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
-			nullable<std::wstring>									m_oName;
-			nullable<SimpleTypes::COnOff<>>						m_oPivot;
-			nullable<SimpleTypes::COnOff<>>						m_oTable;
-			nullable<std::wstring>									m_oDisplayName; // Используется только для дефалтовых стилей
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<std::wstring>							m_oName;
+			nullable<SimpleTypes::COnOff<>>					m_oPivot;
+			nullable<SimpleTypes::COnOff<>>					m_oTable;
+			nullable<std::wstring>							m_oDisplayName; // Используется только для дефалтовых стилей
 		};
 		class CTableStyles : public WritingElementWithChilds<CTableStyle>
 		{
@@ -264,5 +261,3 @@ namespace OOX
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_TABLESTYLES_FILE_INCLUDE_H_

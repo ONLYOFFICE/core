@@ -84,6 +84,7 @@ public:
 		void end_cell();
 
 		void add_row_repeated();
+		void add_default_row(int repeated);
 	void end_rows();
 
 	void start_cell_text();
@@ -93,7 +94,7 @@ public:
 	void add_external_reference(const std::wstring & ref);
 
     void add_merge_cells(const std::wstring & ref);
-	void add_hyperlink(const std::wstring & ref, const std::wstring & link, const std::wstring & display, bool external = true);
+	void add_hyperlink(const std::wstring & ref, const std::wstring & link, const std::wstring & display, const std::wstring & location);
 
 	void start_comment		(int col, int row, std::wstring & author);
 	void set_comment_rect	(double l, double t, double w, double h);
@@ -105,7 +106,7 @@ public:
 		void set_data_validation_operator(int val);
 		void set_data_validation_content(const std::wstring &val1, const std::wstring &val2);
 		void set_data_validation_allow_empty(bool val);
-		void set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display);
+		void set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display, int type);
 		void set_data_validation_promt(const std::wstring &title, const std::wstring &content, bool display);
 	void end_data_validation();
 
@@ -117,6 +118,7 @@ public:
 
 	virtual odf_drawing_context		* drawing_context()	{return current_table()->drawing_context();}
 	virtual odf_text_context		* text_context()	{return current_text_context_;}
+	virtual odf_controls_context	* controls_context(){return current_table()->controls_context();}
 	
 	void start_drawings();
 	void end_drawings();

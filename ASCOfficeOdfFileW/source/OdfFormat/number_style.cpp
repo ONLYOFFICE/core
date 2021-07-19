@@ -122,13 +122,13 @@ void number_style_base::add_child_element( const office_element_ptr & child_elem
 {
 	if (!child_element) return;
 
-	ElementType type = child_element->get_type();
+	ElementType type_ = child_element->get_type();
 
-    if (type == typeStyleTextProperties)
+    if (type_ == typeStyleTextProperties)
 	{
 		style_text_properties_ = child_element;
 	}
-	else if (type == typeStyleMap)
+	else if (type_ == typeStyleMap)
 	{
 		style_map_.push_back(child_element);
 	}
@@ -245,9 +245,9 @@ void number_number::create_child_element( const std::wstring & Ns, const std::ws
 }
 void number_number::add_child_element( const office_element_ptr & child)
 {
- 	ElementType type = child->get_type();
+ 	ElementType type_ = child->get_type();
 
-    if (type == typeNumberEmbeddedText)
+    if (type_ == typeNumberEmbeddedText)
 	{
         number_embedded_text_.push_back(child);
     }
@@ -270,9 +270,13 @@ void number_scientific_number::serialize(std::wostream & strm)
         {  
 			CP_XML_ATTR_OPT(L"number:min-exponent-digits", number_min_exponent_digits_);
 			CP_XML_ATTR_OPT(L"number:decimal-places", number_decimal_places_);
+			CP_XML_ATTR_OPT(L"number:min-decimal-places", number_min_decimal_places_);
+
+			CP_XML_ATTR_OPT(L"number:exponent-interval", number_exponent_interval_);
 
 			CP_XML_ATTR_OPT(L"number:min-integer-digits", number_min_integer_digits_);
 			CP_XML_ATTR_OPT(L"number:grouping", number_grouping_);
+ 			CP_XML_ATTR_OPT(L"number:forced-exponent-sign", number_forced_exponent_sign_);
 		}
 	}
 }

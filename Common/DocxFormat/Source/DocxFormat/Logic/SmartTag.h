@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_SMARTTAG_INCLUDE_H_
-#define OOX_LOGIC_SMARTTAG_INCLUDE_H_
-
 #include "../../Base/Nullable.h"
 
 #include "../WritingElement.h"
@@ -49,23 +46,20 @@ namespace OOX
 		class CSmartTag : public WritingElementWithChilds<>
 		{
 		public:
-			CSmartTag()
+			CSmartTag(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
 			{
 			}
-			CSmartTag(XmlUtils::CXmlNode &oNode)
+			CSmartTag(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oNode );
 			}
-			CSmartTag(XmlUtils::CXmlLiteReader& oReader)
+			CSmartTag(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
 			{
 				fromXML( oReader );
 			}
 			virtual ~CSmartTag()
 			{
 			}
-
-		public:
-
 			const CSmartTag &operator =(const XmlUtils::CXmlNode& oNode)
 			{
 				ClearItems();
@@ -81,9 +75,9 @@ namespace OOX
 
 		public:
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_smartTag;
@@ -93,7 +87,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -116,7 +109,6 @@ namespace OOX
 
 		public:
 
-			// Attributes
 			nullable<std::wstring> m_sElement;
 			nullable<std::wstring> m_sUri;
 
@@ -124,5 +116,3 @@ namespace OOX
 		};
 	} // namespace Logic
 } // namespace OOX
-
-#endif // OOX_LOGIC_SMARTTAG_INCLUDE_H_

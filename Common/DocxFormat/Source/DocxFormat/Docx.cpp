@@ -67,12 +67,12 @@ namespace OOX {
 	void CDocx::FixAfterRead()
 	{
 		//solve id conflict between comments and documentComments
-		if(NULL != m_pComments && m_pComments->m_arrComments.size() > 0 && NULL != m_pDocumentComments && m_pDocumentComments->m_arrComments.size() > 0)
+		if ((NULL != m_oMain.comments && NULL != m_pDocumentComments) && (false == m_oMain.comments->m_arrComments.empty() && false != m_pDocumentComments->m_arrComments.empty()))
 		{
 			int maxId = INT_MIN;
-			for (size_t i = 0; i < m_pComments->m_arrComments.size(); ++i)
+			for (size_t i = 0; i < m_oMain.comments->m_arrComments.size(); ++i)
 			{
-				OOX::CComment* pComment = m_pComments->m_arrComments[i];
+				OOX::CComment* pComment = m_oMain.comments->m_arrComments[i];
 				if (pComment->m_oId.IsInit() && maxId < pComment->m_oId->GetValue())
 				{
 					maxId = pComment->m_oId->GetValue();
@@ -88,11 +88,21 @@ namespace OOX {
 			}
 		}
 	}
-	OOX::CHdrFtr *CDocx::GetHeaderOrFooter(const OOX::RId& rId) const
+	OOX::CHdrFtr *CDocx::GetHeaderOrFooter(const OOX::RId& rId, bool glossary) const
 	{
-		if ( m_pDocument )
+		if (glossary && m_oGlossary.document)
 		{
-			OOX::IFileContainer* pDocumentContainer = (OOX::IFileContainer*)m_pDocument;
+			OOX::IFileContainer* pDocumentContainer = (OOX::IFileContainer*)m_oGlossary.document;
+
+			smart_ptr<OOX::File> pFile = pDocumentContainer->Find(rId);
+			if (pFile.IsInit() && (OOX::FileTypes::Header == pFile->type() || OOX::FileTypes::Footer == pFile->type()))
+				return (OOX::CHdrFtr*)pFile.GetPointer();
+			else
+				return NULL;
+		}
+		else if (!glossary && m_oMain.document)
+		{
+			OOX::IFileContainer* pDocumentContainer = (OOX::IFileContainer*)m_oMain.document;
 
             smart_ptr<OOX::File> pFile = pDocumentContainer->Find( rId );
 			if ( pFile.IsInit() && ( OOX::FileTypes::Header == pFile->type() || OOX::FileTypes::Footer == pFile->type() ) )
@@ -105,9 +115,9 @@ namespace OOX {
 	}
 	const std::wstring CDocx::GetCustomSettings() const
 	{
-		if (NULL != m_pDocument)
+		if (m_oMain.document)
 		{
-			std::vector<smart_ptr<OOX::File>>& container = m_pDocument->GetContainer();
+			std::vector<smart_ptr<OOX::File>>& container = m_oMain.document->GetContainer();
 			for (size_t i = 0; i < container.size(); ++i)
 			{
 				if (OOX::FileTypes::CustomXml == container[i]->type())
@@ -115,6 +125,7 @@ namespace OOX {
 					OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
 					if(OOX::CSettingsCustom::GetSchemaUrl() == pCustomXml->GetSchemaUrl())
 					{
+						pCustomXml->bUsed = true;
 						return pCustomXml->m_sXml;
 					}
 				}

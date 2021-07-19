@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_BLIP_INCLUDE_H_
-#define PPTX_LOGIC_BLIP_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "./../../Limit/BlipCompression.h"
@@ -83,11 +81,11 @@ namespace PPTX
 			
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:embed"), embed)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:link"), link )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("cstate"), cstate )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"embed", embed)
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"link", link )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"cstate", cstate )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
@@ -104,6 +102,8 @@ namespace PPTX
 			nullable<OOX::RId>	embed;
 			nullable<OOX::RId>	link;
 			std::wstring		m_namespace;
+
+			std::wstring		imageFilepath;
 	//internal
 			std::wstring		mediaRid;
 			std::wstring		mediaFilepath;
@@ -112,10 +112,10 @@ namespace PPTX
 			std::wstring		oleRid;
 			std::wstring		oleFilepathBin;
 			std::wstring		oleFilepathImage;
+			
+			std::wstring		dataFilepathImage;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_BLIP_INCLUDE_H_

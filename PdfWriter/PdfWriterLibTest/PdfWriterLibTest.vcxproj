@@ -71,10 +71,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(IncludePath);D:\_Work\core-release-next\DesktopEditor\freetype-2.10.4\include;D:\_Work\core-release-next\DesktopEditor\freetype-2.10.4\include\freetype</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>..\..\build\lib\win_64\DEBUG;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\_Work\core-release-next\DesktopEditor\freetype-2.10.4\include\freetype;D:\_Work\core-release-next\DesktopEditor\freetype-2.10.4\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -90,6 +92,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -104,7 +107,6 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;NOMINMAX;FT2_BUILD_LIBRARY;CRYPTOPP_DISABLE_ASM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\DesktopEditor\freetype-2.5.2\include;..\..\DesktopEditor\agg-2.4\include;..\..\DesktopEditor\cximage\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4018;4005;4267;4146;4703</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -182,44 +184,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftbbox.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftgxval.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftlcdfil.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftmm.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftotval.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftpatent.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftpfr.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftsynth.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\fttype1.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftwinfnt.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftxf86.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\pcf\pcf.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\pfr\pfr.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\psaux\psaux.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\pshinter\pshinter.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\psnames\psmodule.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\raster\raster.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\sfnt\sfnt.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\truetype\truetype.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\type1\type1.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\cid\type1cid.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\type42\type42.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\winfonts\winfnt.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\autofit\autofit.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\bdf\bdf.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\cff\cff.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftbase.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftbitmap.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\cache\ftcache.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftfstype.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftgasp.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftglyph.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\gzip\ftgzip.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftinit.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\lzw\ftlzw.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftstroke.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\base\ftsystem.c" />
-    <ClCompile Include="..\..\DesktopEditor\freetype-2.5.2\src\smooth\smooth.c" />
     <ClCompile Include="..\OnlineOfficeBinToPdf.cpp" />
     <ClCompile Include="..\PdfRenderer.cpp" />
     <ClCompile Include="..\Src\Annotation.cpp" />
@@ -244,7 +208,14 @@
     <ClCompile Include="..\Src\Streams.cpp" />
     <ClCompile Include="..\Src\Utils.cpp" />
     <ClCompile Include="PdfWriterLibTest.cpp" />
-    <ClCompile Include="stdafx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\3dParty\cryptopp\cryptlib.vcxproj">
+      <Project>{3423ec9a-52e4-4a4d-9753-edebc38785ef}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DesktopEditor\freetype-2.10.4\builds\windows\vc2010\freetype.vcxproj">
+      <Project>{78b079bd-9fc7-4b9e-b4a6-96da0f00248b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

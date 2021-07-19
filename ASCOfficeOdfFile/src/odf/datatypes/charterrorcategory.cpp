@@ -69,7 +69,6 @@ chart_error_category chart_error_category::parse(const std::wstring & Str)
         return chart_error_category( constant );
     else
     {
-        BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
         return chart_error_category( none );
     }
 }

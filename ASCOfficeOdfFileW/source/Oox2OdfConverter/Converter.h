@@ -682,7 +682,7 @@ public:
 		void convert(OOX::Logic::CFunc					*oox_func);
 		void convert(OOX::Logic::CFuncPr				*oox_func_pr);
 		void convert(OOX::Logic::CGroupChr				*oox_group_ch);
-		void convert(OOX::Logic::CGroupChrPr			*oox_group_ch_pr);
+		bool convert(OOX::Logic::CGroupChrPr			*oox_group_ch_pr);
 		void convert(OOX::Logic::CLimLow				*oox_lim_low);
 		void convert(OOX::Logic::CLimLowPr				*oox_lim_low_pr);
 		void convert(OOX::Logic::CLimUpp				*oox_lim_upp);
@@ -733,6 +733,13 @@ public:
 		std::wstring convert(OOX::Logic::CType			*oox_type);
 		void convert(OOX::Logic::CDiff					*oox_diff);
 		void convert(OOX::Logic::CArgSz					*oox_arg_sz);
+		void convert(OOX::Logic::COpEmu					*oox_op_emu);
+		bool convert(OOX::Logic::CPos					*oox_pos);
+		void convert(OOX::Logic::CVertJc				*oox_vert_jc);
+		void convert(OOX::Logic::CNoBreak				*oox_no_break);
+		void convert(OOX::Logic::CCount					*oox_count);
+		void convert(OOX::Logic::CMcJc					*oox_mc_jc);
+		void convert(OOX::Logic::CPlcHide				*oox_plc_hide);
 	};
 
 } // namespace Oox2Odf

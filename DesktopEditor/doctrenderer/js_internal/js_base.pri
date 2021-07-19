@@ -7,7 +7,10 @@ core_ios {
 
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/js_base.h
+HEADERS += $$PWD/js_base.h \
+    $$PWD/v8/inspector/port_holder_id.h \
+    $$PWD/v8/inspector/thread_id.h \
+    $$PWD/v8/inspector/threadinspectoramount.h
 
 !use_javascript_core {
 
@@ -72,3 +75,6 @@ use_javascript_core {
     LIBS += -framework JavaScriptCore
 
 }
+
+SOURCES += \
+    $$PWD/v8/inspector/threadinspectoramount.cpp

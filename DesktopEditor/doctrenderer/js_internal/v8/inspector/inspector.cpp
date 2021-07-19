@@ -2,6 +2,7 @@
 #include "inspectormanager.h"//for getting inspector
 #include "../v8_base.h"//v8 wrappers and smart_ptr
 #include "inspector_impl.h"//inspector implementation
+#include <stdio.h>//getchar
 
 NSJSBase::v8_debug::CInspector::CInspector(
         v8::Local<v8::Context> context

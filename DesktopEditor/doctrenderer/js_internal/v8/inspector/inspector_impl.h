@@ -5,6 +5,8 @@
 #include <v8.h>//v8 stuff
 #include "client.h"//inspector is what holds client
 #include "inspectorinfo.h"//info for constructing inspector
+#include "thread_id.h"//current thread id
+#include "threadinspectoramount.h"//to count inspectors in current thread
 
 namespace NSJSBase {
 namespace v8_debug {
@@ -31,6 +33,9 @@ class CInspectorImpl
 
     //using pointer to initialize client out of constructor
     std::unique_ptr<CInspectorClient> m_pClient{nullptr};
+
+    //
+    CCountManager m_Counter;
 
 
 
@@ -74,6 +79,8 @@ public:
             , v8::Platform *platform
             //
             , CInspectorInfo info
+            //current thread id
+            , ASC_THREAD_ID threadId
     );
 
     //running stuff

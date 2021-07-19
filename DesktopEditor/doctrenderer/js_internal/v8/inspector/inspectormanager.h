@@ -1,9 +1,9 @@
 #ifndef CINSPECTORMANAGER_H
 #define CINSPECTORMANAGER_H
 
-#include <unordered_map>//std::unordered_map
+#include <map>//std::map
 #include <mutex>//std::mutex
-#include "../../../../../../DesktopEditor/graphics/BaseThread.h"//GetCurrentThreadId
+#include "port_holder_id.h"//GetCurrentThreadId, CPortHolderId
 #include "inspectorinfo.h"//CInspectorInfo
 #include <v8.h>//v8 stuff
 
@@ -17,13 +17,13 @@ class CInspectorImpl;
 //one inspector per thread
 class CInspectorHolder {
     std::mutex m_Mutex{};
-    std::unordered_map<ASC_THREAD_ID, CInspectorInfo> m_Inspectors{};
+    std::map<CPortHolderId, CInspectorInfo, CPHIdLess> m_Inspectors{};
     static constexpr uint16_t startPort = 8080;
 
     std::unique_ptr<CInspectorImpl> makeNewInspectorInfo(
             v8::Local<v8::Context> context
             , v8::Platform *platform
-            , ASC_THREAD_ID threadId
+            , const CPortHolderId &id
             );
 public:
     std::unique_ptr<CInspectorImpl> getInspector(

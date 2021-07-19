@@ -1,7 +1,8 @@
+//this file contains boost includes, and is should be included before any others
+#include "singleconnectionserver.h"//server implementation
 #include "inspector_impl.h"
 #include <iostream>//std::cout
 #include "singlethreadutils.h"//string conversion
-#include "singleconnectionserver.h"//server implementation
 #include "../v8_base.h"//v8 wrappers and other stuff
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::initServer()
@@ -138,17 +139,18 @@ NSJSBase::v8_debug::internal::CInspectorImpl::getReturnValue()
     return result;
 }
 
-NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(
-        //for client
+NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         v8::Local<v8::Context> context
         //platform to pump
         , v8::Platform *platform
         //other info
         , CInspectorInfo info
-        )
+        //current thread id
+        , ASC_THREAD_ID threadId)
     : m_pServer(std::make_unique<internal::SingleConnectionServer>(info.port))
     , m_pIsolate(context->GetIsolate())
     , m_bLog(info.log)
+    , m_Counter{CThreadInspectorCounter::getCount(threadId)}
 {
     if (!initServer()) {
         std::cerr << "can't initialize server" << std::endl;
@@ -189,4 +191,6 @@ NSJSBase::v8_debug::internal::CInspectorImpl::callFunc(
     return getReturnValue();
 }
 
-NSJSBase::v8_debug::internal::CInspectorImpl::~CInspectorImpl() = default;
+NSJSBase::v8_debug::internal::CInspectorImpl::~CInspectorImpl()
+= default
+        ;

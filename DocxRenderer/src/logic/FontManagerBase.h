@@ -44,7 +44,7 @@ namespace NSFontManager
         {
             // https://docs.microsoft.com/en-us/typography/opentype/spec/os2#ur
 
-            m_arRanges.push_back(CUnicodeRange(0x0020, 0x007F, 0, 0)); // Basic Latin
+            m_arRanges.push_back(CUnicodeRange(0x0000, 0x007F, 0, 0)); // Basic Latin
             m_arRanges.push_back(CUnicodeRange(0x0080, 0x00FF, 1, 0)); // Latin-1 Supplement
             m_arRanges.push_back(CUnicodeRange(0x0100, 0x017F, 2, 0)); // Latin Extended-A
             m_arRanges.push_back(CUnicodeRange(0x0180, 0x024F, 3, 0)); // Latin Extended-B
@@ -142,7 +142,7 @@ namespace NSFontManager
             m_arRanges.push_back(CUnicodeRange(0xFE10, 0xFE1F, 1, 2)); // Vertical Forms
             m_arRanges.push_back(CUnicodeRange(0xFE30, 0xFE4F, 1, 2)); // CJK Compatibility Forms
             m_arRanges.push_back(CUnicodeRange(0xFE50, 0xFE6F, 2, 2)); // Small Form Variants
-            m_arRanges.push_back(CUnicodeRange(0xFE70, 0xFEFE, 3, 2)); // Arabic Presentation Forms-B
+            m_arRanges.push_back(CUnicodeRange(0xFE70, 0xFEFF, 3, 2)); // Arabic Presentation Forms-B
             m_arRanges.push_back(CUnicodeRange(0xFF00, 0xFFEF, 4, 2)); // Halfwidth And Fullwidth Forms
             m_arRanges.push_back(CUnicodeRange(0xFFF0, 0xFFFF, 5, 2)); // Specials
             m_arRanges.push_back(CUnicodeRange(0x0F00, 0x0FFF, 6, 2)); // Tibetan

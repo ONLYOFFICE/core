@@ -339,6 +339,7 @@ Binary_VbaProjectTableReader::Binary_VbaProjectTableReader (NSBinPptxRW::CBinary
 }
 int Binary_VbaProjectTableReader::Read()
 {
+	m_oBufferedStream.Skip(1); // type
 	m_oFileWriter.m_pVbaProject = new OOX::VbaProject(NULL);
     m_oFileWriter.m_pVbaProject->fromPPTY(&m_oBufferedStream);
 

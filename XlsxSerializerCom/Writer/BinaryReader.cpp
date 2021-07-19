@@ -2099,6 +2099,7 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	{
         smart_ptr<OOX::VbaProject> oFileVbaProject(new OOX::VbaProject(NULL));
 
+		m_oBufferedStream.Skip(1); // type
         oFileVbaProject->fromPPTY(&m_oBufferedStream);
 
         smart_ptr<OOX::File> oFile = oFileVbaProject.smart_dynamic_cast<OOX::File>();

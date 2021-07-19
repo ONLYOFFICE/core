@@ -50,7 +50,7 @@
 #include "embed/NativeControlEmbed.h"
 #include "embed/MemoryStreamEmbed.h"
 #include "embed/GraphicsEmbed.h"
-#ifdef LINUX
+#if defined(LINUX) || defined(__FreeBSD__)
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdio.h>

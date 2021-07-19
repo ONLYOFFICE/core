@@ -30,27 +30,33 @@
  *
  */
 
-#include "BEGIN_BOOK.h"
+#include "FileSharingIso.h"
 
 namespace XLSB
 {
 
-    BEGIN_BOOK::BEGIN_BOOK()
+    FileSharingIso::FileSharingIso()
     {
     }
 
-    BEGIN_BOOK::~BEGIN_BOOK()
+
+    FileSharingIso::~FileSharingIso()
     {
     }
 
-    BaseObjectPtr BEGIN_BOOK::clone()
+
+    BaseObjectPtr FileSharingIso::clone()
     {
-        return BaseObjectPtr(new BEGIN_BOOK(*this));
+            return BaseObjectPtr(new FileSharingIso(*this));
     }
 
-    void BEGIN_BOOK::readFields(CFRecord& record)
+
+    void FileSharingIso::readFields(CFRecord& record)
     {
-        // No data in this record
+        record >> dwSpinCount;
+        record >> fReadOnlyRec;
+        record >> stUserName;
+        record >> ipdPasswordData;
     }
 
 } // namespace XLSB

@@ -29,31 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../Source/XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-#include "../Biff12_structures/CodeName.h"
-using namespace XLS;
+#include "BeginBookViews.h"
 
 namespace XLSB
 {
-    // Logical representation of ABS_PATH15 record in BIFF12
-    class ABS_PATH15: public BiffRecord
+
+    BeginBookViews::BeginBookViews()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(ABS_PATH15)
-            BASE_OBJECT_DEFINE_CLASS_NAME(ABS_PATH15)
-        public:
-            ABS_PATH15();
-            virtual ~ABS_PATH15();
+    }
 
-            BaseObjectPtr clone();
+    BeginBookViews::~BeginBookViews()
+    {
+    }
 
-            void readFields(CFRecord& record);
+    BaseObjectPtr BeginBookViews::clone()
+    {
+        return BaseObjectPtr(new BeginBookViews(*this));
+    }
 
-            XLWideString    stAbsPath;
-    };
+    void BeginBookViews::readFields(CFRecord& record)
+    {
+        //empty data
+    }
 
 } // namespace XLSB
 

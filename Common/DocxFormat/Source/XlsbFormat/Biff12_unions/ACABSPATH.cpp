@@ -31,9 +31,9 @@
  */
 
 #include "ACABSPATH.h"
-#include "../Biff12_records/AC_BEGIN.h"
-#include "../Biff12_records/ABS_PATH15.h"
-#include "../Biff12_records/AC_END.h"
+#include "../Biff12_records/ACBegin.h"
+#include "../Biff12_records/AbsPath15.h"
+#include "../Biff12_records/ACEnd.h"
 
 namespace XLSB
 {
@@ -54,17 +54,17 @@ namespace XLSB
     // ACABSPATH = BrtACBegin BrtAbsPath15 BrtACEnd
     const bool ACABSPATH::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<AC_BEGIN>())
+        if (proc.optional<ACBegin>())
         {
             m_BrtACBegin = elements_.back();
             elements_.pop_back();
         }
-        if (proc.optional<ABS_PATH15>())
+        if (proc.optional<AbsPath15>())
         {
             m_BrtAbsPath15 = elements_.back();
             elements_.pop_back();
         }
-        if (proc.optional<AC_END>())
+        if (proc.optional<ACEnd>())
         {
             m_BrtACEnd = elements_.back();
             elements_.pop_back();

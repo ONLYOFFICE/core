@@ -29,29 +29,33 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "BUNDLE_SH.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../Source/XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
+#include "../Biff12_structures/XLWideString.h"
+using namespace XLS;
 
 namespace XLSB
 {
 
-    BUNDLE_SH::BUNDLE_SH()
+    // Logical representation of FnGroup record in BIFF12
+    class FnGroup: public BiffRecord
     {
-    }
+        BIFF_RECORD_DEFINE_TYPE_INFO(FnGroup)
+        BASE_OBJECT_DEFINE_CLASS_NAME(FnGroup)
+    public:
+        FnGroup();
+        ~FnGroup();
 
-    BUNDLE_SH::~BUNDLE_SH()
-    {
-    }
+        BaseObjectPtr clone();
 
-    BaseObjectPtr BUNDLE_SH::clone()
-    {
-        return BaseObjectPtr(new BUNDLE_SH(*this));
-    }
+        void readFields(CFRecord& record);
 
-    void BUNDLE_SH::readFields(CFRecord& record)
-    {
-        record >> hsState >> iTabID >> strRelID >> strName;
-    }
+        XLWideString    stGroup;
+
+    };
 
 } // namespace XLSB
 

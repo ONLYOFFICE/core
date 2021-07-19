@@ -29,29 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "AC_END.h"
+#include <Logic/CompositeObject.h>
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    AC_END::AC_END()
+    class FNGROUP: public CompositeObject
     {
-    }
+        BASE_OBJECT_DEFINE_CLASS_NAME(FNGROUP)
+    public:
+         FNGROUP();
+        virtual ~FNGROUP();
 
-    AC_END::~AC_END()
-    {
-    }
+        BaseObjectPtr clone();
 
-    BaseObjectPtr AC_END::clone()
-    {
-        return BaseObjectPtr(new AC_END(*this));
-    }
+        virtual const bool loadContent(BinProcessor& proc);
 
-    void AC_END::readFields(CFRecord& record)
-    {
-        // No data in this record
-    }
+        BaseObjectPtr               BrtBeginFnGroup;
+        std::vector<BaseObjectPtr>	arrBrtFnGroup;
+        BaseObjectPtr               BrtEndFnGroup;
+
+    };
 
 } // namespace XLSB
 

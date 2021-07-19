@@ -23,6 +23,7 @@ DEFINES +=  UNICODE _UNICODE \
 include($$PWD/../../3dParty/boost/boost.pri)
 INCLUDEPATH += ../../../ASCOfficeXlsFile2/source/XlsFormat
 INCLUDEPATH += ../../../ASCOfficeXlsFile2/source/Common
+INCLUDEPATH += ../Source/XlsbFormat
 core_release {
 SOURCES += \
     docxformatlib_logic.cpp
@@ -103,20 +104,25 @@ SOURCES += \
 ### XLSB
     ../Source/XlsbFormat/WorkBookStream.cpp \
 ### Biff12_records
-    ../Source/XlsbFormat/Biff12_records/BEGIN_BOOK.cpp \
-    ../Source/XlsbFormat/Biff12_records/FILE_VERSION.cpp \
-    ../Source/XlsbFormat/Biff12_records/FILE_SHARING.cpp \
-    ../Source/XlsbFormat/Biff12_records/FILE_SHARING_ISO.cpp \
-    ../Source/XlsbFormat/Biff12_records/WB_PROP.cpp \
-    ../Source/XlsbFormat/Biff12_records/AC_BEGIN.cpp \
-    ../Source/XlsbFormat/Biff12_records/ABS_PATH15.cpp \
-    ../Source/XlsbFormat/Biff12_records/AC_END.cpp \
-    ../Source/XlsbFormat/Biff12_records/BEGIN_BOOK_VIEWS.cpp \
-    ../Source/XlsbFormat/Biff12_records/BOOK_VIEW.cpp \
-    ../Source/XlsbFormat/Biff12_records/END_BOOK_VIEWS.cpp \
-    ../Source/XlsbFormat/Biff12_records/BEGIN_BUNDLE_SHS.cpp \
-    ../Source/XlsbFormat/Biff12_records/BUNDLE_SH.cpp \
-    ../Source/XlsbFormat/Biff12_records/END_BUNDLE_SHS.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginBook.cpp \
+    ../Source/XlsbFormat/Biff12_records/FileVersion.cpp \
+    ../Source/XlsbFormat/Biff12_records/FileSharingIso.cpp \
+    ../Source/XlsbFormat/Biff12_records/WbProp.cpp \
+    ../Source/XlsbFormat/Biff12_records/ACBegin.cpp \
+    ../Source/XlsbFormat/Biff12_records/AbsPath15.cpp \
+    ../Source/XlsbFormat/Biff12_records/ACEnd.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginBookViews.cpp \
+    ../Source/XlsbFormat/Biff12_records/BookView.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndBookViews.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginBundleShs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BundleSh.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndBundleShs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginFnGroup.cpp \
+    ../Source/XlsbFormat/Biff12_records/FnGroup.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndFnGroup.cpp \
+    #../Source/XlsbFormat/Biff12_records/BeginExternals.cpp \
+#
+   # ../Source/XlsbFormat/Biff12_records/EndExternals.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -127,6 +133,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.cpp \
     ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.cpp \
     ../Source/XlsbFormat/Biff12_unions/BUNDLESHS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FNGROUP.cpp \
+    #../Source/XlsbFormat/Biff12_unions/EXTERNALS.cpp \
 }
 
 
@@ -242,7 +250,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12StreamReader.h \
     ../Source/XlsbFormat/Biff12Structures/Biff12StructType.h \
     ../Source/XlsbFormat/Biff12Structures/Biff12StructureBase.h \
-    ../Source/XlsbFormat/Biff12_records/BEGIN_BOOK.h \
+    ../Source/XlsbFormat/Biff12_records/BeginBook.h \
     ../Source/XlsbFormat/WorkBookStream.h \
     ../Source/XlsxFormat/CalcChain/CalcChain.h \
     ../Source/XlsxFormat/Chart/Chart.h \
@@ -326,20 +334,25 @@ HEADERS += docxformatlib.h \
 ### XLSB
     ../Source/XlsbFormat/WorkBookStream.h \
 ### Biff12_records
-    ../Source/XlsbFormat/Biff12_records/BEGIN_BOOK.h \
-    ../Source/XlsbFormat/Biff12_records/FILE_VERSION.h \
-    ../Source/XlsbFormat/Biff12_records/FILE_SHARING.h \
-    ../Source/XlsbFormat/Biff12_records/FILE_SHARING_ISO.h \
-    ../Source/XlsbFormat/Biff12_records/WB_PROP.h \
-    ../Source/XlsbFormat/Biff12_records/AC_BEGIN.h \
-    ../Source/XlsbFormat/Biff12_records/ABS_PATH15.h \
-    ../Source/XlsbFormat/Biff12_records/AC_END.h \
-    ../Source/XlsbFormat/Biff12_records/BEGIN_BOOK_VIEWS.h \
-    ../Source/XlsbFormat/Biff12_records/BOOK_VIEW.h \
-    ../Source/XlsbFormat/Biff12_records/END_BOOK_VIEWS.h \
-    ../Source/XlsbFormat/Biff12_records/BEGIN_BUNDLE_SHS.h \
-    ../Source/XlsbFormat/Biff12_records/BUNDLE_SH.h \
-    ../Source/XlsbFormat/Biff12_records/END_BUNDLE_SHS.h \
+    ../Source/XlsbFormat/Biff12_records/BeginBook.h \
+    ../Source/XlsbFormat/Biff12_records/FileVersion.h \
+    ../Source/XlsbFormat/Biff12_records/FileSharingIso.h \
+    ../Source/XlsbFormat/Biff12_records/WbProp.h \
+    ../Source/XlsbFormat/Biff12_records/ACBegin.h \
+    ../Source/XlsbFormat/Biff12_records/AbsPath15.h \
+    ../Source/XlsbFormat/Biff12_records/ACEnd.h \
+    ../Source/XlsbFormat/Biff12_records/BeginBookViews.h \
+    ../Source/XlsbFormat/Biff12_records/BookView.h \
+    ../Source/XlsbFormat/Biff12_records/EndBookViews.h \
+    ../Source/XlsbFormat/Biff12_records/BeginBundleShs.h \
+    ../Source/XlsbFormat/Biff12_records/BundleSh.h \
+    ../Source/XlsbFormat/Biff12_records/EndBundleShs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginFnGroup.h \
+    ../Source/XlsbFormat/Biff12_records/FnGroup.h \
+    ../Source/XlsbFormat/Biff12_records/EndFnGroup.h \
+    #../Source/XlsbFormat/Biff12_records/BeginExternals.h \
+#
+    #../Source/XlsbFormat/Biff12_records/EndExternals.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
@@ -351,3 +364,5 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
     ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.h \
     ../Source/XlsbFormat/Biff12_unions/BUNDLESHS.h \
+    ../Source/XlsbFormat/Biff12_unions/FNGROUP.h \
+    #../Source/XlsbFormat/Biff12_unions/EXTERNALS.h \

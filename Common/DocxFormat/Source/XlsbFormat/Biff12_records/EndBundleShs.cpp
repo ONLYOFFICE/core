@@ -29,29 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../Source/XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-
-using namespace XLS;
+#include "EndBundleShs.h"
 
 namespace XLSB
 {
-    // Logical representation of END_BUNDLE_SHS record in BIFF12
-    class END_BUNDLE_SHS: public BiffRecord
+
+    EndBundleShs::EndBundleShs()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(END_BUNDLE_SHS)
-            BASE_OBJECT_DEFINE_CLASS_NAME(END_BUNDLE_SHS)
-        public:
-            END_BUNDLE_SHS();
-            virtual ~END_BUNDLE_SHS();
+    }
 
-            BaseObjectPtr clone();
+    EndBundleShs::~EndBundleShs()
+    {
+    }
 
-            void readFields(CFRecord& record);
-    };
+    BaseObjectPtr EndBundleShs::clone()
+    {
+        return BaseObjectPtr(new EndBundleShs(*this));
+    }
+
+    void EndBundleShs::readFields(CFRecord& record)
+    {
+        //empty data
+    }
 
 } // namespace XLSB
 

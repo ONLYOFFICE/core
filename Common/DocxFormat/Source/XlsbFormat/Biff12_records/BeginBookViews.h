@@ -29,50 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "WB_PROP.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../Source/XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-
-    WB_PROP::WB_PROP()
+    // Logical representation of BeginBookViews record in BIFF12
+    class BeginBookViews: public BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginBookViews)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginBookViews)
+        public:
+            BeginBookViews();
+            virtual ~BeginBookViews();
 
-    WB_PROP::~WB_PROP()
-    {
-    }
+            BaseObjectPtr clone();
 
-    BaseObjectPtr WB_PROP::clone()
-    {
-        return BaseObjectPtr(new WB_PROP(*this));
-    }
-
-    void WB_PROP::readFields(CFRecord& record)
-    {
-        unsigned int flags;
-        record >> flags;
-
-        f1904                    = GETBIT(flags, 0);
-        fHideBorderUnselLists	 = GETBIT(flags, 2);
-        fFilterPrivacy           = GETBIT(flags, 3);
-        fBuggedUserAboutSolution = GETBIT(flags, 4);
-
-        fShowInkAnnotation       = GETBIT(flags, 5);
-        fBackup                  = GETBIT(flags, 6);
-        fNoSaveSup               = GETBIT(flags, 7);
-        grbitUpdateLinks         = GETBITS(flags, 8, 9);
-        fHidePivotTableFList     = GETBIT(flags, 10);
-        fPublishedBookItems      = GETBIT(flags, 11);
-        fCheckCompat             = GETBIT(flags, 12);
-        mdDspObj                 = GETBITS(flags, 13, 14);
-        fShowPivotChartFilter    = GETBIT(flags, 15);
-        fAutoCompressPictures    = GETBIT(flags, 16);
-        fRefreshAll              = GETBIT(flags, 17);
-
-        record >> dwThemeVersion;
-        record >> strName;
-    }
+            void readFields(CFRecord& record);
+    };
 
 } // namespace XLSB
 

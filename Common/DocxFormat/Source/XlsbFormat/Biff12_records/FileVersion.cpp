@@ -30,27 +30,31 @@
  *
  */
 
-#include "END_BOOK_VIEWS.h"
+#include "FileVersion.h"
 
 namespace XLSB
 {
 
-    END_BOOK_VIEWS::END_BOOK_VIEWS()
+    FileVersion::FileVersion()
     {
     }
 
-    END_BOOK_VIEWS::~END_BOOK_VIEWS()
+    FileVersion::~FileVersion()
     {
     }
 
-    BaseObjectPtr END_BOOK_VIEWS::clone()
+    BaseObjectPtr FileVersion::clone()
     {
-        return BaseObjectPtr(new END_BOOK_VIEWS(*this));
+        return BaseObjectPtr(new FileVersion(*this));
     }
 
-    void END_BOOK_VIEWS::readFields(CFRecord& record)
+    void FileVersion::readFields(CFRecord& record)
     {
-        //empty data
+        record >> guidCodeName;
+        record >> stAppName;
+        record >> stLastEdited;
+        record >> stLowestEdited;
+        record >> stRupBuild;
     }
 
 } // namespace XLSB

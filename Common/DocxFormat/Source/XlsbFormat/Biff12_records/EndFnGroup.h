@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,32 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "FILE_SHARING.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../Source/XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-
-    FILE_SHARING::FILE_SHARING()
+    // Logical representation of EndFnGroup record in BIFF12
+    class EndFnGroup: public BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(EndFnGroup)
+            BASE_OBJECT_DEFINE_CLASS_NAME(EndFnGroup)
+        public:
+            EndFnGroup();
+            virtual ~EndFnGroup();
 
+            BaseObjectPtr clone();
 
-    FILE_SHARING::~FILE_SHARING()
-    {
-    }
-
-
-    BaseObjectPtr FILE_SHARING::clone()
-    {
-        return BaseObjectPtr(new FILE_SHARING(*this));
-    }
-
-    void FILE_SHARING::readFields(CFRecord& record)
-    {
-        record >> fReadOnlyRec >> wResPassNum;
-        wResPass = std::wstring (STR::int2hex_wstr(wResPassNum, sizeof(wResPassNum)).c_str());
-        record >> stUserName;
-    }
+            void readFields(CFRecord& record);
+    };
 
 } // namespace XLSB
+

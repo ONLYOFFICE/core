@@ -34,14 +34,15 @@
 #include "WorkBookStream.h"
 
 
-#include "Biff12_records/BEGIN_BOOK.h"
-#include "Biff12_records/FILE_VERSION.h"
-#include "Biff12_records/FILE_SHARING_ISO.h"
-#include "Biff12_records/FILE_SHARING.h"
-#include "Biff12_records/WB_PROP.h"
+#include "Biff12_records/BeginBook.h"
+#include "Biff12_records/FileVersion.h"
+#include "Biff12_records/FileSharingIso.h"
+#include <Logic/Biff_records/FileSharing.h>
+#include "Biff12_records/WbProp.h"
 #include "Biff12_unions/ACABSPATH.h"
 #include "Biff12_unions/BOOKVIEWS.h"
 #include "Biff12_unions/BUNDLESHS.h"
+#include "Biff12_unions/FNGROUP.h"
 
 namespace XLSB
 {
@@ -111,52 +112,52 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
 
 		switch(type)
 		{
-            case rt_BEGIN_BOOK:
+            case rt_BeginBook:
             {
-                if (proc.optional<BEGIN_BOOK>())
+                if (proc.optional<BeginBook>())
                 {
                     m_BrtBeginBook = elements_.back();
                     elements_.pop_back();
                 }
             }break;
 
-            case rt_FILE_VERSION:
+            case rt_FileVersion:
             {
-                if (proc.optional<FILE_VERSION>())
+                if (proc.optional<FileVersion>())
                 {
                     m_BrtFileVersion = elements_.back();
                     elements_.pop_back();
                 }
             }break;
 
-            case rt_FILE_SHARING_ISO:
+            case rt_FileSharingIso:
             {
-                if (proc.optional<FILE_SHARING_ISO>())
+                if (proc.optional<FileSharingIso>())
                 {
                     m_BrtFileSharingIso = elements_.back();
                     elements_.pop_back();
                 }
             }break;
 
-            case rt_FILE_SHARING:
+            case rt_FileSharing:
             {
-                if (proc.optional<FILE_SHARING>())
+                if (proc.optional<FileSharing>())
                 {
                     m_BrtFileSharing = elements_.back();
                     elements_.pop_back();
                 }
             }break;
 
-            case rt_WB_PROP:
+            case rt_WbProp:
             {
-                if (proc.optional<WB_PROP>())
+                if (proc.optional<WbProp>())
                 {
                     m_BrtWbProp = elements_.back();
                     elements_.pop_back();
                 }
             }break;
 
-            case rt_AC_BEGIN:
+            case rt_ACBegin:
             {
                 if (proc.optional<ACABSPATH>())
                 {
@@ -165,7 +166,7 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                 }
             }break;
 
-            case rt_BEGIN_BOOK_VIEWS:
+            case rt_BeginBookViews:
             {
                 if (proc.optional<BOOKVIEWS>())
                 {
@@ -174,9 +175,18 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                 }
             }break;
 
-            case rt_BEGIN_BUNDLE_SHS:
+            case rt_BeginBundleShs:
             {
                 if (proc.optional<BUNDLESHS>())
+                {
+                    m_BUNDLESHS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginFnGroup:
+            {
+                if (proc.optional<FNGROUP>())
                 {
                     m_BUNDLESHS = elements_.back();
                     elements_.pop_back();

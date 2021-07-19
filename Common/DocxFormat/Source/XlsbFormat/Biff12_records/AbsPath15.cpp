@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,31 +30,28 @@
  *
  */
 
-#include "FILE_SHARING.h"
+#include "AbsPath15.h"
 
 namespace XLSB
 {
 
-    FILE_SHARING::FILE_SHARING()
+    AbsPath15::AbsPath15()
     {
     }
 
-
-    FILE_SHARING::~FILE_SHARING()
+    AbsPath15::~AbsPath15()
     {
     }
 
-
-    BaseObjectPtr FILE_SHARING::clone()
+    BaseObjectPtr AbsPath15::clone()
     {
-        return BaseObjectPtr(new FILE_SHARING(*this));
+        return BaseObjectPtr(new AbsPath15(*this));
     }
 
-    void FILE_SHARING::readFields(CFRecord& record)
+    void AbsPath15::readFields(CFRecord& record)
     {
-        record >> fReadOnlyRec >> wResPassNum;
-        wResPass = std::wstring (STR::int2hex_wstr(wResPassNum, sizeof(wResPassNum)).c_str());
-        record >> stUserName;
+        record >> stAbsPath;
     }
 
 } // namespace XLSB
+

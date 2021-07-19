@@ -30,27 +30,27 @@
  *
  */
 
-#include "ABS_PATH15.h"
+#include "EndFnGroup.h"
 
 namespace XLSB
 {
 
-    ABS_PATH15::ABS_PATH15()
+    EndFnGroup::EndFnGroup()
     {
     }
 
-    ABS_PATH15::~ABS_PATH15()
+    EndFnGroup::~EndFnGroup()
     {
     }
 
-    BaseObjectPtr ABS_PATH15::clone()
+    BaseObjectPtr EndFnGroup::clone()
     {
-        return BaseObjectPtr(new ABS_PATH15(*this));
+        return BaseObjectPtr(new EndFnGroup(*this));
     }
 
-    void ABS_PATH15::readFields(CFRecord& record)
+    void EndFnGroup::readFields(CFRecord& record)
     {
-        record >> stAbsPath;
+        //empty data
     }
 
 } // namespace XLSB

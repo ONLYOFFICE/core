@@ -30,25 +30,25 @@
  *
  */
 
-#include "BEGIN_BOOK_VIEWS.h"
+#include "EndBookViews.h"
 
 namespace XLSB
 {
 
-    BEGIN_BOOK_VIEWS::BEGIN_BOOK_VIEWS()
+    EndBookViews::EndBookViews()
     {
     }
 
-    BEGIN_BOOK_VIEWS::~BEGIN_BOOK_VIEWS()
+    EndBookViews::~EndBookViews()
     {
     }
 
-    BaseObjectPtr BEGIN_BOOK_VIEWS::clone()
+    BaseObjectPtr EndBookViews::clone()
     {
-        return BaseObjectPtr(new BEGIN_BOOK_VIEWS(*this));
+        return BaseObjectPtr(new EndBookViews(*this));
     }
 
-    void BEGIN_BOOK_VIEWS::readFields(CFRecord& record)
+    void EndBookViews::readFields(CFRecord& record)
     {
         //empty data
     }

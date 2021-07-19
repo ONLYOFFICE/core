@@ -30,31 +30,27 @@
  *
  */
 
-#include "FILE_VERSION.h"
+#include "BeginBundleShs.h"
 
 namespace XLSB
 {
 
-    FILE_VERSION::FILE_VERSION()
+    BeginBundleShs::BeginBundleShs()
     {
     }
 
-    FILE_VERSION::~FILE_VERSION()
+    BeginBundleShs::~BeginBundleShs()
     {
     }
 
-    BaseObjectPtr FILE_VERSION::clone()
+    BaseObjectPtr BeginBundleShs::clone()
     {
-        return BaseObjectPtr(new FILE_VERSION(*this));
+        return BaseObjectPtr(new BeginBundleShs(*this));
     }
 
-    void FILE_VERSION::readFields(CFRecord& record)
+    void BeginBundleShs::readFields(CFRecord& record)
     {
-        record >> guidCodeName;
-        record >> stAppName;
-        record >> stLastEdited;
-        record >> stLowestEdited;
-        record >> stRupBuild;
+        //empty data
     }
 
 } // namespace XLSB

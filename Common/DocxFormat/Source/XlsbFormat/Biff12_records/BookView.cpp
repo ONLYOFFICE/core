@@ -29,35 +29,41 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../Biff12_records/FILE_SHARING.h"
-#include "../Source/XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-#include "../Biff12_structures/XLWideString.h"
-#include "../Biff12_structures/LPByteBuf.h"
-using namespace XLS;
+#include "BookView.h"
 
 namespace XLSB
 {
-    // Logical representation of FILE_SHARING_ISO record in BIFF12
-    class FILE_SHARING_ISO: public FILE_SHARING
+
+    BookView::BookView()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(FILE_SHARING_ISO)
-            BASE_OBJECT_DEFINE_CLASS_NAME(FILE_SHARING_ISO)
-        public:
-            FILE_SHARING_ISO();
-            virtual ~FILE_SHARING_ISO();
+    }
 
-            BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+    BookView::~BookView()
+    {
+    }
 
-            static const ElementType	type = typeFileSharing;
 
-            _UINT32                 dwSpinCount;
-            LPByteBuf               ipdPasswordData;
-    };
+    BaseObjectPtr BookView::clone()
+    {
+        return BaseObjectPtr(new BookView(*this));
+    }
+
+
+    void BookView::readFields(CFRecord& record)
+    {
+        unsigned short flags;
+        record >> xWn >> yWn >> dxWn >> dyWn >> iTabRatio >> itabFirst >> itabCur >> flags;
+
+        fHidden			= GETBIT(flags, 0);
+        fVeryHidden		= GETBIT(flags, 1);
+        fIconic 		= GETBIT(flags, 2);
+        fDspHScroll		= GETBIT(flags, 3);
+        fDspVScroll		= GETBIT(flags, 4);
+        fBotAdornment	= GETBIT(flags, 5);
+        fAFDateGroup	= GETBIT(flags, 6);
+    }
 
 } // namespace XLSB
 

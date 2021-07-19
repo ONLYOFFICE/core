@@ -29,41 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "BOOK_VIEW.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../Source/XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-
-    BOOK_VIEW::BOOK_VIEW()
+    // Logical representation of EndBundleShs record in BIFF12
+    class EndBundleShs: public BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(EndBundleShs)
+            BASE_OBJECT_DEFINE_CLASS_NAME(EndBundleShs)
+        public:
+            EndBundleShs();
+            virtual ~EndBundleShs();
 
+            BaseObjectPtr clone();
 
-    BOOK_VIEW::~BOOK_VIEW()
-    {
-    }
+            void readFields(CFRecord& record);
+    };
 
-
-    BaseObjectPtr BOOK_VIEW::clone()
-    {
-        return BaseObjectPtr(new BOOK_VIEW(*this));
-    }
-
-
-    void BOOK_VIEW::readFields(CFRecord& record)
-    {
-        unsigned short flags;
-        record >> xWn >> yWn >> dxWn >> dyWn >> iTabRatio >> itabFirst >> itabCur >> flags;
-
-        fHidden			= GETBIT(flags, 0);
-        fVeryHidden		= GETBIT(flags, 1);
-        fIconic 		= GETBIT(flags, 2);
-        fDspHScroll		= GETBIT(flags, 3);
-        fDspVScroll		= GETBIT(flags, 4);
-        fBotAdornment	= GETBIT(flags, 5);
-        fAFDateGroup	= GETBIT(flags, 6);
-    }
-
-} // namespace XLS
+} // namespace XLSB
 

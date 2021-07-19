@@ -29,35 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "FILE_SHARING_ISO.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../Source/XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-
-    FILE_SHARING_ISO::FILE_SHARING_ISO()
+    // Logical representation of BeginFnGroup record in BIFF12
+    class BeginFnGroup: public BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginFnGroup)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginFnGroup)
+        public:
+            BeginFnGroup();
+            virtual ~BeginFnGroup();
 
+            BaseObjectPtr clone();
 
-    FILE_SHARING_ISO::~FILE_SHARING_ISO()
-    {
-    }
+            void readFields(CFRecord& record);
 
-
-    BaseObjectPtr FILE_SHARING_ISO::clone()
-    {
-            return BaseObjectPtr(new FILE_SHARING_ISO(*this));
-    }
-
-
-    void FILE_SHARING_ISO::readFields(CFRecord& record)
-    {
-        record >> dwSpinCount >> fReadOnlyRec;
-        wResPass = std::wstring (STR::int2hex_wstr(wResPassNum, sizeof(wResPassNum)).c_str());
-        record >> stUserName;
-        record >> ipdPasswordData;
-    }
+            BYTE iMac;
+    };
 
 } // namespace XLSB
 

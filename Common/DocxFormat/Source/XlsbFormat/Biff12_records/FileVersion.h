@@ -39,14 +39,14 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of FILE_VERSION record in BIFF12
-    class FILE_VERSION: public BiffRecord
+    // Logical representation of FileVersion record in BIFF12
+    class FileVersion: public BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(FILE_VERSION)
-            BASE_OBJECT_DEFINE_CLASS_NAME(FILE_VERSION)
+            BIFF_RECORD_DEFINE_TYPE_INFO(FileVersion)
+            BASE_OBJECT_DEFINE_CLASS_NAME(FileVersion)
         public:
-            FILE_VERSION();
-            virtual ~FILE_VERSION();
+            FileVersion();
+            virtual ~FileVersion();
 
             BaseObjectPtr clone();
 

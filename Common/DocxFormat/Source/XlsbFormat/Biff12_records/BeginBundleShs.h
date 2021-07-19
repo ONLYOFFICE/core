@@ -39,14 +39,14 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BEGIN_BUNDLE_SHS record in BIFF12
-    class BEGIN_BUNDLE_SHS: public BiffRecord
+    // Logical representation of BeginBundleShs record in BIFF12
+    class BeginBundleShs: public BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BEGIN_BUNDLE_SHS)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BEGIN_BUNDLE_SHS)
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginBundleShs)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginBundleShs)
         public:
-            BEGIN_BUNDLE_SHS();
-            virtual ~BEGIN_BUNDLE_SHS();
+            BeginBundleShs();
+            virtual ~BeginBundleShs();
 
             BaseObjectPtr clone();
 

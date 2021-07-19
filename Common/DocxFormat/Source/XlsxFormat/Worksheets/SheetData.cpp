@@ -516,7 +516,7 @@ namespace OOX
 		}
 		void CCellXLSB::toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream)
 		{
-			_INT16 nType = XLSB::rt_CELL_BLANK;
+			_INT16 nType = XLSB::rt_CellBlank;
 			if(m_oFormula.m_bIsInit && SimpleTypes::Spreadsheet::celltypeSharedString == m_oType.GetValue())
 			{
 				m_oType.SetValue(SimpleTypes::Spreadsheet::celltypeError);
@@ -528,52 +528,52 @@ namespace OOX
 			{
 				switch(m_oType.GetValue())
 				{
-					case SimpleTypes::Spreadsheet::celltypeNumber: nType = XLSB::rt_CELL_REAL; break;
-					case SimpleTypes::Spreadsheet::celltypeSharedString: nType = XLSB::rt_CELL_ISST; break;
-					case SimpleTypes::Spreadsheet::celltypeError: nType = XLSB::rt_CELL_ERROR; break;
-					case SimpleTypes::Spreadsheet::celltypeBool: nType = XLSB::rt_CELL_BOOL; break;
+                    case SimpleTypes::Spreadsheet::celltypeNumber: nType = XLSB::rt_CellReal; break;
+                    case SimpleTypes::Spreadsheet::celltypeSharedString: nType = XLSB::rt_CellIsst; break;
+                    case SimpleTypes::Spreadsheet::celltypeError: nType = XLSB::rt_CellError; break;
+                    case SimpleTypes::Spreadsheet::celltypeBool: nType = XLSB::rt_CellBool; break;
 					case SimpleTypes::Spreadsheet::celltypeInlineStr:
-					case SimpleTypes::Spreadsheet::celltypeStr: nType = XLSB::rt_CELL_ST; break;
+                    case SimpleTypes::Spreadsheet::celltypeStr: nType = XLSB::rt_CellSt; break;
 				}
 			}
 			bool bIsBlankFormula = false;
-			if(XLSB::rt_CELL_BLANK == nType && m_oFormula.m_bIsInit)
+			if(XLSB::rt_CellBlank == nType && m_oFormula.m_bIsInit)
 			{
-				nType = XLSB::rt_CELL_ST;
+                nType = XLSB::rt_CellSt;
 				bIsBlankFormula = true;
 			}
 
 			_UINT32 nLen = 4+4+2;
 			switch(nType)
 			{
-				case XLSB::rt_CELL_REAL: nLen += 8; break;
-				case XLSB::rt_CELL_ISST: nLen += 4; break;
-				case XLSB::rt_CELL_ST: nLen += 4 + 2 * m_oValue.m_oValue.m_nLen;break;
-				case XLSB::rt_CELL_ERROR:
-				case XLSB::rt_CELL_BOOL: nLen += 1; break;
+                case XLSB::rt_CellReal: nLen += 8; break;
+                case XLSB::rt_CellIsst: nLen += 4; break;
+                case XLSB::rt_CellSt: nLen += 4 + 2 * m_oValue.m_oValue.m_nLen;break;
+                case XLSB::rt_CellError:
+                case XLSB::rt_CellBool: nLen += 1; break;
 			}
 			if(m_oFormula.m_bIsInit)
 			{
 				nLen += m_oFormula.getXLSBSize();
-				if(XLSB::rt_CELL_REAL == nType)
+                if(XLSB::rt_CellReal == nType)
 				{
-					nType = XLSB::rt_FMLA_NUM;
+                    nType = XLSB::rt_FmlaNum;
 				}
-				else if(XLSB::rt_CELL_ST == nType)
+                else if(XLSB::rt_CellSt == nType)
 				{
-					nType = XLSB::rt_FMLA_STRING;
+                    nType = XLSB::rt_FmlaString;
 				}
-				else if(XLSB::rt_CELL_BOOL == nType)
+                else if(XLSB::rt_CellBool == nType)
 				{
-					nType = XLSB::rt_FMLA_BOOL;
+                    nType = XLSB::rt_FmlaBool;
 				}
-				else if(XLSB::rt_CELL_ERROR == nType)
+                else if(XLSB::rt_CellError == nType)
 				{
-					nType = XLSB::rt_FMLA_ERROR;
+                    nType = XLSB::rt_FmlaError;
 				}
-				else if(XLSB::rt_CELL_BLANK == nType)
+				else if(XLSB::rt_CellBlank == nType)
 				{
-					nType = XLSB::rt_FMLA_STRING;
+                    nType = XLSB::rt_FmlaString;
 				}
 			}
 			if(m_oRichText.IsInit())
@@ -593,21 +593,21 @@ namespace OOX
 			//todo RkNumber
 			switch(nType)
 			{
-				case XLSB::rt_CELL_REAL:
-				case XLSB::rt_FMLA_NUM:
+                case XLSB::rt_CellReal:
+                case XLSB::rt_FmlaNum:
 					oStream.WriteDoubleReal(m_oValue.m_dValue);
 				break;
-				case XLSB::rt_CELL_ISST:
+                case XLSB::rt_CellIsst:
 					oStream.WriteULONG(m_oValue.m_nValue);
 				break;
-				case XLSB::rt_CELL_ST:
-				case XLSB::rt_FMLA_STRING:
+                case XLSB::rt_CellSt:
+                case XLSB::rt_FmlaString:
 					oStream.WriteStringData(m_oValue.m_oValue.m_sBuffer, m_oValue.m_oValue.m_nLen);
 				break;
-				case XLSB::rt_CELL_ERROR:
-				case XLSB::rt_FMLA_ERROR:
-				case XLSB::rt_CELL_BOOL:
-				case XLSB::rt_FMLA_BOOL:
+                case XLSB::rt_CellError:
+                case XLSB::rt_FmlaError:
+                case XLSB::rt_CellBool:
+                case XLSB::rt_FmlaBool:
 					oStream.WriteBYTE(m_oValue.m_nValue);
 				break;
 			}
@@ -680,7 +680,7 @@ namespace OOX
 		}
 		void CRowXLSB::toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream)
 		{
-			oStream.XlsbStartRecord(XLSB::rt_ROW_HDR, 17);
+            oStream.XlsbStartRecord(XLSB::rt_RowHdr, 17);
 			oStream.WriteULONG(m_nR & 0xFFFFF);
 			oStream.WriteULONG(m_nS);
 			oStream.WriteUSHORT(((_UINT16)(m_dHt * 20)) & 0x1FFF);//pt to twips;
@@ -1433,12 +1433,12 @@ namespace OOX
 				m_oShowPhonetic->FromBool(true);
 			}
 
-			if (XLSB::rt_CELL_RK == nType)
+            if (XLSB::rt_CellRk == nType)
 			{
 				m_oValue.Init();
 				m_oValue->m_sText = std::to_wstring(oStream.GetULong());
 			}
-			else if (XLSB::rt_CELL_ERROR == nType || XLSB::rt_FMLA_ERROR == nType)
+            else if (XLSB::rt_CellError == nType || XLSB::rt_FmlaError == nType)
 			{
 				m_oType.Init();
 				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeError);
@@ -1456,26 +1456,26 @@ namespace OOX
 				case 0x2B: m_oValue->m_sText = L"#GETTING_DATA"; break;
 				}
 			}
-			else if (XLSB::rt_CELL_BOOL == nType || XLSB::rt_FMLA_BOOL == nType)
+            else if (XLSB::rt_CellBool == nType || XLSB::rt_FmlaBool == nType)
 			{
 				m_oType.Init();
 				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
 				m_oValue.Init();
 				m_oValue->m_sText = oStream.GetBool() ? L"1" : L"0";
 			}
-			else if (XLSB::rt_CELL_REAL == nType || XLSB::rt_FMLA_NUM == nType)
+            else if (XLSB::rt_CellReal == nType || XLSB::rt_FmlaNum == nType)
 			{
 				m_oValue.Init();
 				m_oValue->m_sText = OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(oStream.GetDoubleReal());
 			}
-			else if (XLSB::rt_CELL_ST == nType || XLSB::rt_FMLA_STRING == nType)
+            else if (XLSB::rt_CellSt == nType || XLSB::rt_FmlaString == nType)
 			{
 				m_oType.Init();
-				m_oType->SetValue(XLSB::rt_CELL_ST == nType ? SimpleTypes::Spreadsheet::celltypeInlineStr : SimpleTypes::Spreadsheet::celltypeStr);
+                m_oType->SetValue(XLSB::rt_CellSt == nType ? SimpleTypes::Spreadsheet::celltypeInlineStr : SimpleTypes::Spreadsheet::celltypeStr);
 				m_oValue.Init();
 				m_oValue->m_sText = oStream.GetString2();
 			}
-			else if (XLSB::rt_CELL_ISST == nType)
+            else if (XLSB::rt_CellIsst == nType)
 			{
 				m_oType.Init();
 				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
@@ -1484,7 +1484,7 @@ namespace OOX
 			}
 
 
-			if (XLSB::rt_FMLA_STRING <= nType && nType <= XLSB::rt_FMLA_ERROR)
+            if (XLSB::rt_FmlaString <= nType && nType <= XLSB::rt_FmlaError)
 			{
 				m_oFormula.Init();
 				m_oFormula->fromXLSB(oStream);
@@ -1811,7 +1811,7 @@ namespace OOX
 				m_oXlsbPos.Init();
 				m_oXlsbPos->SetValue(oStream.GetPositionAbsolute());
 
-				oStream.XlsbStartRecord(XLSB::rt_BEGIN_SHEET_DATA, 0);
+                oStream.XlsbStartRecord(XLSB::rt_BeginSheetData, 0);
 				oStream.XlsbEndRecord();
 
 				int nCurDepth = oReader.GetDepth();
@@ -1828,7 +1828,7 @@ namespace OOX
 					}
 				}
 
-				oStream.XlsbStartRecord(XLSB::rt_END_SHEET_DATA, 0);
+                oStream.XlsbStartRecord(XLSB::rt_EndSheetData, 0);
 				oStream.XlsbEndRecord();
 			}
 			else
@@ -1897,7 +1897,7 @@ namespace OOX
 		}
 		void CSheetData::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{
-			oStream.XlsbSkipRecord();//XLSB::rt_BEGIN_SHEET_DATA
+            oStream.XlsbSkipRecord();//XLSB::rt_BeginSheetData
 
 			CRow* pRow = NULL;
 			LONG nOldPos = -1;
@@ -1905,13 +1905,13 @@ namespace OOX
 			{
 				nOldPos = oStream.GetPos();
 				nType = oStream.XlsbReadRecordType();
-				if (XLSB::rt_CELL_BLANK <= nType && nType <= XLSB::rt_FMLA_ERROR)
+                if (XLSB::rt_CellBlank <= nType && nType <= XLSB::rt_FmlaError)
 				{
 					CCell oCell(m_pMainDocument);
 					oCell.fromXLSB(oStream, nType, pRow->m_oR->GetValue() - 1);
 					fromXLSBToXmlCell(oCell, pCSVWriter, oStreamWriter);
 				}
-				else if (XLSB::rt_ROW_HDR == nType)
+                else if (XLSB::rt_RowHdr == nType)
 				{
 					fromXLSBToXmlRowEnd(pRow, pCSVWriter, oStreamWriter);
 					RELEASEOBJECT(pRow);
@@ -1921,7 +1921,7 @@ namespace OOX
 
 					fromXLSBToXmlRowStart(pRow, pCSVWriter, oStreamWriter);
 				}
-				else if (XLSB::rt_END_SHEET_DATA == nType)
+                else if (XLSB::rt_EndSheetData == nType)
 				{
 					fromXLSBToXmlRowEnd(pRow, pCSVWriter, oStreamWriter);
 					RELEASEOBJECT(pRow);

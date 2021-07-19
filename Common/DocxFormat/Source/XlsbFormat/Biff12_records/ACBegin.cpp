@@ -29,29 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../Source/XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-
-using namespace XLS;
+#include "ACBegin.h"
+#include "../Biff12_structures/ACProductVersion.h"
 
 namespace XLSB
 {
-    // Logical representation of END_BOOK_VIEWS record in BIFF12
-    class END_BOOK_VIEWS: public BiffRecord
+
+    ACBegin::ACBegin()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(END_BOOK_VIEWS)
-            BASE_OBJECT_DEFINE_CLASS_NAME(END_BOOK_VIEWS)
-        public:
-            END_BOOK_VIEWS();
-            virtual ~END_BOOK_VIEWS();
+    }
 
-            BaseObjectPtr clone();
+    ACBegin::~ACBegin()
+    {
+    }
 
-            void readFields(CFRecord& record);
-    };
+    BaseObjectPtr ACBegin::clone()
+    {
+        return BaseObjectPtr(new ACBegin(*this));
+    }
+
+    void ACBegin::readFields(CFRecord& record)
+    {
+        record >> cver;
+        for(int i = 0; i < cver; ++i)
+        {
+            ACProductVersionPtr acProdVer(new ACProductVersion);
+            record >> *acProdVer;
+            RgACVer.push_back(acProdVer);
+        }
+    }
 
 } // namespace XLSB
 

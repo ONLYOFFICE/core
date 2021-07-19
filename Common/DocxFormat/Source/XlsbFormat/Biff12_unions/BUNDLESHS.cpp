@@ -31,9 +31,9 @@
  */
 
 #include "BUNDLESHS.h"
-#include "../Biff12_records/BEGIN_BUNDLE_SHS.h"
-#include "../Biff12_records/BUNDLE_SH.h"
-#include "../Biff12_records/END_BUNDLE_SHS.h"
+#include "../Biff12_records/BeginBundleShs.h"
+#include "../Biff12_records/BundleSh.h"
+#include "../Biff12_records/EndBundleShs.h"
 
 namespace XLSB
 {
@@ -54,19 +54,19 @@ namespace XLSB
     // BUNDLESHS = BrtBeginBUNDLESHS ...
     const bool BUNDLESHS::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<BEGIN_BUNDLE_SHS>())
+        if (proc.optional<BeginBundleShs>())
         {
             BrtBeginBundleShs = elements_.back();
             elements_.pop_back();
         }
 
-        while (proc.optional<BUNDLE_SH>())
+        while (proc.optional<BundleSh>())
         {
             arrBrtBundleSh.push_back(elements_.back());
             elements_.pop_back();
         }
 
-        if (proc.optional<END_BUNDLE_SHS>())
+        if (proc.optional<EndBundleShs>())
         {
             BrtEndBundleShs = elements_.back();
             elements_.pop_back();

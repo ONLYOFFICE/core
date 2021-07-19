@@ -39,37 +39,21 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of WB_PROP record in BIFF12
-    class WB_PROP: public BiffRecord
+    // Logical representation of ACBegin record in BIFF12
+    class ACBegin: public BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(WB_PROP)
-            BASE_OBJECT_DEFINE_CLASS_NAME(WB_PROP)
+            BIFF_RECORD_DEFINE_TYPE_INFO(ACBegin)
+            BASE_OBJECT_DEFINE_CLASS_NAME(ACBegin)
         public:
-            WB_PROP();
-            virtual ~WB_PROP();
+            ACBegin();
+            virtual ~ACBegin();
 
             BaseObjectPtr clone();
 
             void readFields(CFRecord& record);
 
-            bool        f1904;
-            bool        fHideBorderUnselLists;
-            bool        fFilterPrivacy;
-            bool        fBuggedUserAboutSolution;
-            bool        fShowInkAnnotation;
-            bool        fBackup;
-            bool        fNoSaveSup;
-            BYTE        grbitUpdateLinks;
-            bool        fHidePivotTableFList;
-            bool        fPublishedBookItems;
-            bool        fCheckCompat;
-            BYTE        mdDspObj;
-            bool        fShowPivotChartFilter;
-            bool        fAutoCompressPictures;
-            bool        fRefreshAll;
-            _UINT32		dwThemeVersion;
-            CodeName    strName;
-
+            _UINT16                   cver;
+            BiffStructurePtrVector    RgACVer;
     };
 
 } // namespace XLSB

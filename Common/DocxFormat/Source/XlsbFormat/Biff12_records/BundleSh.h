@@ -29,29 +29,43 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "END_BUNDLE_SHS.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../Source/XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
+#include "../Biff12_structures/XLWideString.h"
+#include "../Biff12_structures/RelID.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-
-    END_BUNDLE_SHS::END_BUNDLE_SHS()
+    // Logical representation of BundleSh record in BIFF12
+    class BundleSh: public BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(BundleSh)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BundleSh)
+        public:
+            BundleSh();
+            virtual ~BundleSh();
 
-    END_BUNDLE_SHS::~END_BUNDLE_SHS()
-    {
-    }
+            BaseObjectPtr clone();
 
-    BaseObjectPtr END_BUNDLE_SHS::clone()
-    {
-        return BaseObjectPtr(new END_BUNDLE_SHS(*this));
-    }
+            void readFields(CFRecord& record);
 
-    void END_BUNDLE_SHS::readFields(CFRecord& record)
-    {
-        //empty data
-    }
+            enum ST_SheetState {
+                VISIBLE     = 0x00000000,
+                HIDDEN      = 0x00000001,
+                VERYHIDDEN  = 0x00000002
+            };
+
+            _UINT32       hsState; //ST_SheetState
+            _UINT32       iTabID;
+            RelID         strRelID;
+            XLWideString  strName;
+
+    };
 
 } // namespace XLSB
 

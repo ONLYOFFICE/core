@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,32 +29,48 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "FILE_SHARING.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../Source/XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
+#include "../Biff12_structures/CodeName.h"
+using namespace XLS;
 
 namespace XLSB
 {
-
-    FILE_SHARING::FILE_SHARING()
+    // Logical representation of WbProp record in BIFF12
+    class WbProp: public BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(WbProp)
+            BASE_OBJECT_DEFINE_CLASS_NAME(WbProp)
+        public:
+            WbProp();
+            virtual ~WbProp();
 
+            BaseObjectPtr clone();
 
-    FILE_SHARING::~FILE_SHARING()
-    {
-    }
+            void readFields(CFRecord& record);
 
+            bool        f1904;
+            bool        fHideBorderUnselLists;
+            bool        fFilterPrivacy;
+            bool        fBuggedUserAboutSolution;
+            bool        fShowInkAnnotation;
+            bool        fBackup;
+            bool        fNoSaveSup;
+            BYTE        grbitUpdateLinks;
+            bool        fHidePivotTableFList;
+            bool        fPublishedBookItems;
+            bool        fCheckCompat;
+            BYTE        mdDspObj;
+            bool        fShowPivotChartFilter;
+            bool        fAutoCompressPictures;
+            bool        fRefreshAll;
+            _UINT32		dwThemeVersion;
+            CodeName    strName;
 
-    BaseObjectPtr FILE_SHARING::clone()
-    {
-        return BaseObjectPtr(new FILE_SHARING(*this));
-    }
-
-    void FILE_SHARING::readFields(CFRecord& record)
-    {
-        record >> fReadOnlyRec >> wResPassNum;
-        wResPass = std::wstring (STR::int2hex_wstr(wResPassNum, sizeof(wResPassNum)).c_str());
-        record >> stUserName;
-    }
+    };
 
 } // namespace XLSB
+

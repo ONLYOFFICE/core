@@ -29,29 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "BEGIN_BUNDLE_SHS.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../Source/XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
+#include "../Biff12_structures/XLWideString.h"
+#include "../Biff12_structures/LPByteBuf.h"
+#include <Logic/Biff_structures/Boolean.h>
+using namespace XLS;
 
 namespace XLSB
 {
-
-    BEGIN_BUNDLE_SHS::BEGIN_BUNDLE_SHS()
+    // Logical representation of FileSharingIso record in BIFF12
+    class FileSharingIso: public BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(FileSharingIso)
+            BASE_OBJECT_DEFINE_CLASS_NAME(FileSharingIso)
+        public:
+            FileSharingIso();
+            virtual ~FileSharingIso();
 
-    BEGIN_BUNDLE_SHS::~BEGIN_BUNDLE_SHS()
-    {
-    }
+            BaseObjectPtr clone();
 
-    BaseObjectPtr BEGIN_BUNDLE_SHS::clone()
-    {
-        return BaseObjectPtr(new BEGIN_BUNDLE_SHS(*this));
-    }
+            void readFields(CFRecord& record);
 
-    void BEGIN_BUNDLE_SHS::readFields(CFRecord& record)
-    {
-        //empty data
-    }
+            _UINT32                      dwSpinCount;
+            XLS::Boolean<unsigned short> fReadOnlyRec;
+            XLNullableWideString         stUserName;
+            LPByteBuf                    ipdPasswordData;
+    };
 
 } // namespace XLSB
 

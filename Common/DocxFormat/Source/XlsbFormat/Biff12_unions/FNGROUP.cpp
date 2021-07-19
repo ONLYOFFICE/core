@@ -29,43 +29,56 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../Source/XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-#include "../Biff12_structures/XLWideString.h"
-#include "../Biff12_structures/RelID.h"
-
-using namespace XLS;
+#include "FNGROUP.h"
+#include "../Biff12_records/BeginFnGroup.h"
+#include "../Biff12_records/FnGroup.h"
+#include "../Biff12_records/EndFnGroup.h"
 
 namespace XLSB
 {
-    // Logical representation of BUNDLE_SH record in BIFF12
-    class BUNDLE_SH: public BiffRecord
+
+    FNGROUP::FNGROUP()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BUNDLE_SH)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BUNDLE_SH)
-        public:
-            BUNDLE_SH();
-            virtual ~BUNDLE_SH();
+    }
 
-            BaseObjectPtr clone();
+    FNGROUP::~FNGROUP()
+    {
+    }
 
-            void readFields(CFRecord& record);
+    BaseObjectPtr FNGROUP::clone()
+    {
+        return BaseObjectPtr(new FNGROUP(*this));
+    }
 
-            enum ST_SheetState {
-                VISIBLE     = 0x00000000,
-                HIDDEN      = 0x00000001,
-                VERYHIDDEN  = 0x00000002
-            };
+    // FNGROUP = BrtBeginFNGROUP ...
+    const bool FNGROUP::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginFnGroup>())
+        {
+            BrtBeginFnGroup = elements_.back();
+            elements_.pop_back();
+        }
 
-            _UINT32       hsState; //ST_SheetState
-            _UINT32       iTabID;
-            RelID         strRelID;
-            XLWideString  strName;
+        int count = dynamic_cast<BeginFnGroup*>(BrtBeginFnGroup.get())->iMac;
 
-    };
+        for (auto i = 0; i < count; i++)
+        {
+            if (proc.optional<FnGroup>())
+            {
+                arrBrtFnGroup.push_back(elements_.back());
+                elements_.pop_back();
+            }
+        }
+
+        if (proc.optional<EndFnGroup>())
+        {
+            BrtEndFnGroup = elements_.back();
+            elements_.pop_back();
+        }
+
+        return BrtBeginFnGroup || !arrBrtFnGroup.empty() || BrtEndFnGroup;
+    }
 
 } // namespace XLSB
 

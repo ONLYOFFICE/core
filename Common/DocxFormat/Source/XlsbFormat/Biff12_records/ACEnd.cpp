@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -30,31 +30,28 @@
  *
  */
 
-#include "FILE_SHARING.h"
+#include "ACEnd.h"
 
 namespace XLSB
 {
 
-    FILE_SHARING::FILE_SHARING()
+    ACEnd::ACEnd()
     {
     }
 
-
-    FILE_SHARING::~FILE_SHARING()
+    ACEnd::~ACEnd()
     {
     }
 
-
-    BaseObjectPtr FILE_SHARING::clone()
+    BaseObjectPtr ACEnd::clone()
     {
-        return BaseObjectPtr(new FILE_SHARING(*this));
+        return BaseObjectPtr(new ACEnd(*this));
     }
 
-    void FILE_SHARING::readFields(CFRecord& record)
+    void ACEnd::readFields(CFRecord& record)
     {
-        record >> fReadOnlyRec >> wResPassNum;
-        wResPass = std::wstring (STR::int2hex_wstr(wResPassNum, sizeof(wResPassNum)).c_str());
-        record >> stUserName;
+        // No data in this record
     }
 
 } // namespace XLSB
+

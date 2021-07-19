@@ -29,36 +29,42 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "AC_BEGIN.h"
-#include "../Biff12_structures/ACProductVersion.h"
+#include <Logic/Biff_records/Window1.h>
+#include "../Source/XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
+using namespace XLS;
 
 namespace XLSB
 {
 
-    AC_BEGIN::AC_BEGIN()
+    // Logical representation of BookView record in BIFF12
+    class BookView: public Window1
     {
-    }
+        BIFF_RECORD_DEFINE_TYPE_INFO(BookView)
+        BASE_OBJECT_DEFINE_CLASS_NAME(BookView)
+    public:
+        BookView();
+        ~BookView();
 
-    AC_BEGIN::~AC_BEGIN()
-    {
-    }
+        BaseObjectPtr clone();
 
-    BaseObjectPtr AC_BEGIN::clone()
-    {
-        return BaseObjectPtr(new AC_BEGIN(*this));
-    }
+        void readFields(CFRecord& record);
 
-    void AC_BEGIN::readFields(CFRecord& record)
-    {
-        record >> cver;
-        for(int i = 0; i < cver; ++i)
-        {
-            ACProductVersionPtr acProdVer(new ACProductVersion);
-            record >> *acProdVer;
-            RgACVer.push_back(acProdVer);
-        }
-    }
+    //-----------------------------
+        _INT32 xWn;
+        _INT32 yWn;
+        _INT32 dxWn;
+        _INT32 dyWn;
+
+        _INT32 itabCur;
+        _INT32 itabFirst;
+        _INT32 iTabRatio;
+
+        bool   fAFDateGroup;
+
+    };
 
 } // namespace XLSB
 

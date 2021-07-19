@@ -31,9 +31,9 @@
  */
 
 #include "BOOKVIEWS.h"
-#include "../Biff12_records/BEGIN_BOOK_VIEWS.h"
-#include "../Biff12_records/BOOK_VIEW.h"
-#include "../Biff12_records/END_BOOK_VIEWS.h"
+#include "../Biff12_records/BeginBookViews.h"
+#include "../Biff12_records/BookView.h"
+#include "../Biff12_records/EndBookViews.h"
 
 namespace XLSB
 {
@@ -54,20 +54,20 @@ namespace XLSB
     // BOOKVIEWS = BrtBeginBookViews ...
     const bool BOOKVIEWS::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<BEGIN_BOOK_VIEWS>())
+        if (proc.optional<BeginBookViews>())
         {
             BrtBeginBookViews = elements_.back();
             elements_.pop_back();
         }
 
-        while (proc.optional<BOOK_VIEW>())
+        while (proc.optional<BookView>())
         {
             arrBrtBookView.push_back(elements_.back());
             elements_.pop_back();
         }
 
 
-        if (proc.optional<END_BOOK_VIEWS>())
+        if (proc.optional<EndBookViews>())
         {
             BrtEndBookViews = elements_.back();
             elements_.pop_back();

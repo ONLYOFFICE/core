@@ -31,39 +31,27 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/Window1.h>
+#include <Logic/Biff_records/BiffRecord.h>
 #include "../Source/XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
 using namespace XLS;
 
 namespace XLSB
 {
-
-    // Logical representation of BOOK_VIEW record in BIFF12
-    class BOOK_VIEW: public Window1
+    // Logical representation of BeginBook record in BIFF12
+    class BeginBook: public BiffRecord
     {
-        BIFF_RECORD_DEFINE_TYPE_INFO(BOOK_VIEW)
-        BASE_OBJECT_DEFINE_CLASS_NAME(BOOK_VIEW)
-    public:
-        BOOK_VIEW();
-        ~BOOK_VIEW();
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginBook)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginBook)
+        public:
+            BeginBook();
+            virtual ~BeginBook();
 
-        BaseObjectPtr clone();
+            BaseObjectPtr clone();
 
-        void readFields(CFRecord& record);
+            void readFields(CFRecord& record);
 
-    //-----------------------------
-        _INT32 xWn;
-        _INT32 yWn;
-        _INT32 dxWn;
-        _INT32 dyWn;
-
-        _INT32 itabCur;
-        _INT32 itabFirst;
-        _INT32 iTabRatio;
-
-        bool   fAFDateGroup;
-
+            //static const ElementType	type = typeBeginBook;
     };
 
 } // namespace XLSB

@@ -79,13 +79,14 @@ public:
         eftNone		= 0,
         eftVideo	= 1,
         eftAudio	= 2,
-        eftHyperlink= 3,
+        eftHyperlink    = 3,
         eftObject	= 4,
-        eftSlide    // Not used yet
+        eftSlide
     };
-    _UINT32		m_dwID;
-    std::wstring	m_strFilePath;
-    std::wstring    m_strLocation;
+
+    ExFilesType     m_type;
+    _UINT32	    m_dwID;
+    std::wstring    m_strFilePath;
     std::wstring    m_name;
 
     // clip
@@ -97,32 +98,18 @@ public:
 
     CExFilesInfo()
     {
-        m_dwID			= 0;
-        m_strFilePath	= _T("");
-        m_strLocation       = _T("");
+        m_type = eftNone;
+        m_dwID = 0;
+        m_strFilePath = _T("");
 
-        m_dStartTime	= 0.0;
-        m_dEndTime		= -1.0;
+        m_dStartTime = 0.0;
+        m_dEndTime = -1.0;
 
-        m_bLoop			= false;
+        m_bLoop	= false;
     }
     CExFilesInfo(const CExFilesInfo& oSrc)
     {
         *this = oSrc;
-    }
-    CExFilesInfo& operator=(const CExFilesInfo& oSrc)
-    {
-        m_dwID			= oSrc.m_dwID;
-        m_strFilePath	= oSrc.m_strFilePath;
-        m_strLocation       = oSrc.m_strLocation;
-        m_name              = oSrc.m_name;
-
-        m_dStartTime	= oSrc.m_dStartTime;
-        m_dEndTime		= oSrc.m_dEndTime;
-
-        m_bLoop			= oSrc.m_bLoop;
-
-        return *this;
     }
 
     static int GetSlideNumber(const std::wstring &str)
@@ -144,6 +131,12 @@ public:
 
         return -1;
     }
+    static bool isHTTPLink(const std::wstring &str)
+    {
+        int iter1 = str.find(L"http://");
+        int iter2 = str.find(L"https://");
+        return iter1 != -1 || iter2 != -1;
+    }
 };
 
 class CExMedia
@@ -155,6 +148,7 @@ public:
     std::vector<CExFilesInfo>	m_arImages;
     std::vector<CExFilesInfo>	m_arAudios;
     std::vector<CExFilesInfo>	m_arHyperlinks;
+    std::vector<CExFilesInfo>	m_arSlides;
 
     std::vector<CExFilesInfo>	m_arAudioCollection;
 
@@ -196,6 +190,19 @@ public:
             if (dwID == m_arHyperlinks[i].m_dwID)
             {
                 return &m_arHyperlinks[i];
+            }
+        }
+
+        return NULL;
+    }
+    CExFilesInfo* LockSlide(_UINT32 dwID)
+    {
+        size_t nCount = m_arSlides.size();
+        for (size_t i = 0; i < nCount; ++i)
+        {
+            if (dwID == m_arSlides[i].m_dwID)
+            {
+                return &m_arSlides[i];
             }
         }
 
@@ -274,6 +281,12 @@ public:
         if (NULL != pInfo)
         {
             eType = CExFilesInfo::eftAudio;
+            return pInfo;
+        }
+        pInfo = LockSlide(dwID);
+        if (NULL != pInfo)
+        {
+            eType = CExFilesInfo::eftSlide;
             return pInfo;
         }
         eType = CExFilesInfo::eftNone;

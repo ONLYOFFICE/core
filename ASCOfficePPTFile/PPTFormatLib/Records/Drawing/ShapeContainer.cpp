@@ -1896,6 +1896,9 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
         std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
         GetRecordsByType(&oArrayInteractive, true, false);
+        std::vector<CRecordCString*> oArrayMacro;
+        GetRecordsByType(&oArrayMacro, true, false);
+
         if (oArrayInteractive.size() == 2)
             oArrayInteractive[1]->m_oHeader.RecInstance = 1;
 
@@ -1913,12 +1916,19 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
                     interactiveInfo.m_strAudioFileName = pInfo1->m_strFilePath;
                     interactiveInfo.m_strAudioName = pInfo1->m_name;
                 }
-                CExFilesInfo* pInfo2 = pMapIDs->LockHyperlink(interactiveAtom->m_nExHyperlinkIdRef);
+                CExFilesInfo* pInfo2 = pMapIDs->LockSlide(interactiveAtom->m_nExHyperlinkIdRef);
                 if (NULL != pInfo2)
                 {
-                    interactiveInfo.m_strHyperlink = pInfo2->m_strLocation;
+                    interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
+                }
+                pInfo2 = pMapIDs->LockHyperlink(interactiveAtom->m_nExHyperlinkIdRef);
+                if (NULL != pInfo2)
+                {
+                    interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
                 }
             }
+            if (oArrayMacro.size())
+                interactiveInfo.m_macro = oArrayMacro[0]->m_strText;
 
             interactiveInfo.m_lType				= interactiveAtom->m_nAction;
             interactiveInfo.m_lOleVerb			= interactiveAtom->m_nOleVerb;

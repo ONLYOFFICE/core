@@ -332,7 +332,7 @@ template<typename T> int Binary_CommonReader2::ReadTrackRevisionInner(BYTE type,
 	 res = c_oSerConstants::ReadUnknown;
 	return res;
 }
-Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments)
+Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
 	:
 	Binary_CommonReader(poBufferedStream),
 	m_oFileWriter(oFileWriter),

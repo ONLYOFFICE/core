@@ -2097,6 +2097,8 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	}
 	else if(c_oSerWorkbookTypes::VbaProject == type)
 	{
+		m_oBufferedStream.Skip(1); //skip type
+
 		if (m_oWorkbook.m_bMacroEnabled)
 		{
 			smart_ptr<OOX::VbaProject> oFileVbaProject(new OOX::VbaProject(NULL));

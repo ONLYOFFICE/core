@@ -327,7 +327,7 @@ public:
 
             if (m_map_access_directories.end() == m_map_access_directories.find(NSFile::GetDirectoryName(strFile)))
             {
-                *pData = NULL;
+                pData = NULL;
                 dwLen = 0;
                 return;
             }

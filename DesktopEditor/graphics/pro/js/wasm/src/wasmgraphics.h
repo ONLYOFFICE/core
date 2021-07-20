@@ -66,6 +66,14 @@ public:
         }
         return flipped;
     }
+    BYTE* GetXPSGlyphs(int nPageIndex)
+    {
+        return ((CXpsFile*)pReader)->GetGlyphs(nPageIndex);
+    }
+    BYTE* GetXPSStructure()
+    {
+        return ((CXpsFile*)pReader)->GetStructure();
+    }
 };
 
 #endif // _WASM_GRAPHICS_

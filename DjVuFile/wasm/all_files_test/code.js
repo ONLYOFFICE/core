@@ -327,6 +327,9 @@ window.onload = function()
 		{
 			if (!this.file.isValid())
 				return;
+			
+			if (!down && !this.Selection.IsSelection)
+				return;
 
 			let lCurrentPage = -1;
 			for (let i = 0; i < this.drawingPages.length; i++)

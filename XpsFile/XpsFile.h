@@ -66,6 +66,10 @@ public:
     virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1);
 
 	void         ConvertToPdf(const std::wstring& wsDstPath);
+    #ifdef BUILDING_WASM_MODULE
+    BYTE* GetGlyphs(int nPageIndex);
+    BYTE* GetStructure();
+    #endif
 
 private:
     CXpsFile_Private* m_pInternal;

@@ -208,19 +208,6 @@ BYTE* CXpsFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH)
     RELEASEOBJECT(pRenderer);
     oFrame.ClearNoAttack();
 
-    #ifdef BUILDING_WASM_MODULE
-    BYTE* pGlyphs = NULL;
-    DWORD dGlyphs = 0;
-    m_pInternal->m_pDocument->GetPageGlyphs(nPageIndex, pGlyphs, dGlyphs);
-    if (pGlyphs && dGlyphs)
-    {
-        BYTE* pRes = new BYTE[nWidth * nHeight * 4 + dGlyphs];
-        memcpy(pRes, pBgraData, nWidth * nHeight * 4);
-        memcpy(pRes + nWidth * nHeight * 4, pGlyphs, dGlyphs);
-        RELEASEARRAYOBJECTS(pBgraData);
-        return pRes;
-    }
-    #endif
     return pBgraData;
 }
 void CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
@@ -295,3 +282,13 @@ void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 
 	oPdf.SaveToFile(wsPath);
 }
+#ifdef BUILDING_WASM_MODULE
+BYTE* CXpsFile::GetGlyphs(int nPageIndex)
+{
+	return m_pInternal->m_pDocument->GetPageGlyphs(nPageIndex);
+}
+BYTE* CXpsFile::GetStructure()
+{
+	return m_pInternal->m_pDocument->GetStructure();
+}
+#endif

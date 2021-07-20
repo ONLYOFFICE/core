@@ -64,11 +64,11 @@ namespace XPS
 			int nLevel;
 			int nPage;
 			double dY;
-			std::wstring wsDescription;
+			std::string sDescription;
 			std::wstring wsTarget;
 		};
 		BYTE* GetStructure();
-		void GetPageGlyphs(int nPageIndex, BYTE*& pGlyphs, DWORD& length);
+		BYTE* GetPageGlyphs(int nPageIndex);
 		std::vector<CDocumentStructure>          m_vStructure;
 		#endif
 	private:

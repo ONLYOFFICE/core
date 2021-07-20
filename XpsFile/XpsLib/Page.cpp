@@ -176,13 +176,11 @@ namespace XPS
 		}
 	}
 	#ifdef BUILDING_WASM_MODULE
-	void Page::GetGlyphs(BYTE*& pGlyphs, DWORD& length)
+	BYTE* Page::GetGlyphs()
 	{
 		if (m_pGlyphs)
-		{
-			pGlyphs = m_pGlyphs->GetBuffer();
-			length  = m_pGlyphs->GetSize();
-		}
+			return m_pGlyphs->GetBuffer();
+		return NULL;
 	}
 	#endif
 	void Page::Draw(IRenderer* pRenderer, bool* pbBreak)
@@ -977,6 +975,7 @@ namespace XPS
 			size_t nFindY = wsPath.find(L',');
 			if (nFindY != std::wstring::npos)
 			{
+				nFindY++;
 				size_t nFindEndY = wsPath.find(L' ', nFindY);
 				if (nFindEndY != std::wstring::npos)
 					find->dY = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));

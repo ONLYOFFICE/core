@@ -44,6 +44,8 @@ exported_functions = ["_malloc",
                       "_XPS_Close",
                       "_XPS_GetInfo",
                       "_XPS_GetPixmap",
+                      "_XPS_GetGlyphs",
+                      "_XPS_GetStructure",
                       "_XPS_Delete"]
 
 libGraphics_src_path = "../../"

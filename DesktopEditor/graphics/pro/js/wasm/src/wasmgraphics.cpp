@@ -53,6 +53,14 @@ WASM_EXPORT BYTE* XPS_GetPixmap(CGraphicsFileDrawing* pGraphics, int nPageIndex,
 {
     return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH);
 }
+WASM_EXPORT BYTE* XPS_GetGlyphs(CGraphicsFileDrawing* pGraphics, int nPageIndex)
+{
+    return pGraphics->GetXPSGlyphs(nPageIndex);
+}
+WASM_EXPORT BYTE* XPS_GetStructure(CGraphicsFileDrawing* pGraphics)
+{
+    return pGraphics->GetXPSStructure();
+}
 WASM_EXPORT void  XPS_Delete(BYTE* pData)
 {
     RELEASEARRAYOBJECTS(pData);
@@ -754,34 +762,59 @@ int main()
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
-    DWORD nLength = GetLength(res + width * height * 4);
+    BYTE* pGlyphs = XPS_GetGlyphs(test, 0);
+    DWORD nLength = GetLength(pGlyphs);
     DWORD i = 4;
     nLength -= 4;
     while (i < nLength)
     {
-        DWORD nPathLength = GetLength(res + width * height * 4 + i);
+        DWORD nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout << std::string((char*)(res + width * height * 4 + i), nPathLength) << " ";
+        std::cout << std::string((char*)(pGlyphs + i), nPathLength) << " ";
         i += nPathLength;
-        nPathLength = GetLength(res + width * height * 4 + i);
+        nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout << std::string((char*)(res + width * height * 4 + i), nPathLength) << " ";
+        std::cout << std::string((char*)(pGlyphs + i), nPathLength) << " ";
         i += nPathLength;
-        nPathLength = GetLength(res + width * height * 4 + i);
+        nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout << std::string((char*)(res + width * height * 4 + i), nPathLength) << " ";
+        std::cout << std::string((char*)(pGlyphs + i), nPathLength) << " ";
         i += nPathLength;
-        nPathLength = GetLength(res + width * height * 4 + i);
+        nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout << std::string((char*)(res + width * height * 4 + i), nPathLength) << " ";
+        std::cout << std::string((char*)(pGlyphs + i), nPathLength) << " ";
         i += nPathLength;
-        nPathLength = GetLength(res + width * height * 4 + i);
+        nPathLength = GetLength(pGlyphs + i);
         i += 4;
         std::cout << nPathLength << std::endl;
     }
 
+    BYTE* pStructure = XPS_GetStructure(test);
+    nLength = GetLength(pStructure);
+    i = 4;
+    nLength -= 4;
+    while (i < nLength)
+    {
+        DWORD nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Page " << nPathLength << ", ";
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Level " << nPathLength << ", ";
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Y "<< std::string((char*)(pStructure + i), nPathLength) << ", ";
+        i += nPathLength;
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Description "<< std::string((char*)(pStructure + i), nPathLength) << std::endl;
+        i += nPathLength;
+    }
+
     XPS_Close(test);
     RELEASEARRAYOBJECTS(res);
+    RELEASEARRAYOBJECTS(pGlyphs);
+    RELEASEARRAYOBJECTS(pStructure);
     RELEASEOBJECT(resFrame);
     return 0;
 }

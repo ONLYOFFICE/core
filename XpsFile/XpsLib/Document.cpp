@@ -190,7 +190,7 @@ namespace XPS
 									if (wsAttrName == L"OutlineLevel")
 										oStructure.nLevel = GetInteger(wsAttrText);
 									else if (wsAttrName == L"Description")
-										oStructure.wsDescription = wsAttrText;
+										oStructure.sDescription = U_TO_UTF8(wsAttrText);
 									else if (wsAttrName == L"OutlineTarget")
 									{
 										size_t nSharp = wsAttrText.find(L'#');
@@ -292,19 +292,19 @@ namespace XPS
 			oRes.AddInt(str.nPage);
 			oRes.AddInt(str.nLevel);
 			oRes.WriteString((BYTE*)sY.c_str(), sY.length());
-			oRes.WriteString((BYTE*)str.wsDescription.c_str(), str.wsDescription.length());
-			oRes.WriteString((BYTE*)str.wsTarget.c_str(), str.wsTarget.length());
+			oRes.WriteString((BYTE*)str.sDescription.c_str(), str.sDescription.length());
 		}
 		oRes.WriteLen();
 		BYTE* bRes = oRes.GetBuffer();
 		oRes.ClearWithoutAttack();
 		return bRes;
 	}
-	void CDocument::GetPageGlyphs(int nPageIndex, BYTE*& pGlyphs, DWORD& length)
+	BYTE* CDocument::GetPageGlyphs(int nPageIndex)
 	{
 		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
 		if (oIter != m_mPages.end())
-			oIter->second->GetGlyphs(pGlyphs, length);
+			return oIter->second->GetGlyphs();
+		return NULL;
 	}
 	#endif
 	void CDocument::DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak)

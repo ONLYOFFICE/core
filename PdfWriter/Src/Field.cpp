@@ -292,6 +292,14 @@ namespace PdfWriter
 	{
 		m_bAutoFit = isAutoFit;
 	}
+	void CFieldBase::SetParent(CFieldBase* pParent)
+	{
+
+	}
+	void CFieldBase::AddChild(CFieldBase* pChild)
+	{
+
+	}
 	//----------------------------------------------------------------------------------------
 	// CTextField
 	//----------------------------------------------------------------------------------------

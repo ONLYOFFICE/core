@@ -416,9 +416,14 @@ void CPdfRenderer::CCommandManager::Flush()
 					isNeedDoBold = pText->IsNeedDoBold();
 
 					if (isNeedDoBold && eMode == textrenderingmode_Fill)
+					{
+						pPage->SetLineWidth(dTextSize / 12 * 0.343);
 						pPage->SetTextRenderingMode(textrenderingmode_FillThenStroke);
+					}
 					else
+					{
 						pPage->SetTextRenderingMode(eMode);
+					}
 				}
 
 				if (fabs(dHorScaling - pText->GetHorScaling()) > 0.001)

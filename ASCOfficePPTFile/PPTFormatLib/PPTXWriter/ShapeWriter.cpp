@@ -691,10 +691,7 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
     m_oWriter.WriteString(std::wstring(L">"));
 
 
-    if (pVideoElement || pAudioElement)
-    {
-        m_oWriter.WriteString(std::wstring(L"<a:hlinkClick r:id=\"\" action=\"ppaction://media\"/>"));
-    }
+    WriteButton();
 
     m_oWriter.WriteString(std::wstring(L"</p:cNvPr><p:cNvPicPr><a:picLocks"));
 
@@ -1586,7 +1583,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 m_oWriter.WriteString(std::wstring(L"<a:sym typeface=\"") + pCF->font.sym->Name + _T("\"/>"));
             }
 
-            WriteButton(nIndexPar);
+//            WriteButton(nIndexPar);
 
             m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
 
@@ -1781,11 +1778,11 @@ void PPT_FORMAT::CShapeWriter::WriteButton(int paragraphNum)
                 if (hlink.id.is_init())
                     hlink.action = L"ppaction://hlinksldjump";
             }
-            else if (actions[i].m_lHyperlinkType == 8)
-                hlink.action = L"";
+//            else if (actions[i].m_lHyperlinkType == 8)
+//                hlink.action = L"";
 
-            if (!hlink.action.is_init() || hlink.action->empty())
-                hlink.action = L"ppaction://noaction";
+//            if (!hlink.action.is_init() || hlink.action->empty())
+//                hlink.action = L"ppaction://noaction";
             break;
         }
         case II_MediaAction:
@@ -1804,10 +1801,7 @@ void PPT_FORMAT::CShapeWriter::WriteButton(int paragraphNum)
 
 std::vector<CInteractiveInfo> CShapeWriter::getActionsByNum(const int num)
 {
-    CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
-    if (!pShapeElement) return {};
-
-    auto& actions = pShapeElement->m_arrActions;
+    auto& actions = m_pElement->m_arrActions;
 
     // Need to check paragraph or button
     if (num == -1 && actions.size() > 2) // paragraph inside shape

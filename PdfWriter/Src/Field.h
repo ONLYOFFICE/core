@@ -69,6 +69,8 @@ namespace PdfWriter
 		const TRgb& GetBorderColor() const;
 		const bool& IsAutoFit() const;
 		void SetAutoFit(const bool& isAutoFit);
+		void SetParent(CFieldBase* pParent);
+		void AddChild(CFieldBase* pChild);
 
 	protected:
 
@@ -76,13 +78,14 @@ namespace PdfWriter
 
 	protected:
 
-		CXref*     m_pXref;
-		TRect      m_oRect;
-		CDocument* m_pDocument;
-		int        m_nBorderType;
-		double     m_dBorderSize;
-		TRgb       m_oBorderColor;
-		bool       m_bAutoFit;
+		CXref*      m_pXref;
+		TRect       m_oRect;
+		CDocument*  m_pDocument;
+		int         m_nBorderType;
+		double      m_dBorderSize;
+		TRgb        m_oBorderColor;
+		bool        m_bAutoFit;
+		CFieldBase* m_pParent;
 	};
 
 	class CTextField : public CFieldBase

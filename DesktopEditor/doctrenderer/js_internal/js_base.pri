@@ -34,7 +34,6 @@ HEADERS += $$PWD/js_base.h \
             $$V8_INSPECTOR_PATH/inspector_impl.h \
             $$V8_INSPECTOR_PATH/inspectorinfo.h \
             $$V8_INSPECTOR_PATH/inspectormanager.h \
-            $$V8_INSPECTOR_PATH/scriptholder.h \
             $$V8_INSPECTOR_PATH/singleconnectionserver.h \
             $$V8_INSPECTOR_PATH/singlethreadutils.h
 
@@ -45,7 +44,6 @@ HEADERS += $$PWD/js_base.h \
                 $$V8_INSPECTOR_PATH/inspector.cpp \
                 $$V8_INSPECTOR_PATH/inspector_impl.cpp \
                 $$V8_INSPECTOR_PATH/inspectormanager.cpp \
-                $$V8_INSPECTOR_PATH/scriptholder.cpp \
                 $$V8_INSPECTOR_PATH/singleconnectionserver.cpp \
                 $$V8_INSPECTOR_PATH/singlethreadutils.cpp
 

@@ -3,7 +3,6 @@
 #include "singlethreadutils.h"//converting strings
 #include <libplatform/libplatform.h>//v8::Platform
 #include "../../v8/v8_base.h"//runScript and callFunc impls
-#include "scriptholder.h"//CScriptHolder for saving scripts
 
 namespace {
     //use them in loop
@@ -89,10 +88,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::quitMessageLoopOnPause() {
 
 void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 {
-    //previous scripts
-    compilePreviousScripts();
-
-    //pause before current one
+    //pause before current script
     pauseOnNextStatement();
 
     //prepare result
@@ -100,8 +96,6 @@ void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 
     switch (m_Mode) {
     case mode::kScriptExec: {
-        //save script
-        m_pPreviousScripts->addScript(m_ScriptExecData.scriptSource);
         //run script
         result = NSJSBase::runScriptImpl(
                     m_Context
@@ -180,12 +174,6 @@ void NSJSBase::v8_debug::internal::CInspectorClient::pauseOnNextStatement()
     m_pSession->schedulePauseOnNextStatement(strToView("debugCommand"), {});
 }
 
-void NSJSBase::v8_debug::internal::CInspectorClient::compilePreviousScripts()
-{
-    pauseOnNextStatement();
-    m_pPreviousScripts->compileScripts(m_Context);
-}
-
 void NSJSBase::v8_debug::internal::CInspectorClient::dispatchProtocolMessage(
         const std::string &message)
 {
@@ -224,9 +212,6 @@ NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(
 
     //logging
     , m_bLog(log)
-
-    //
-    , m_pPreviousScripts(CScriptHoldersManager::getHolder())
 {
     setUpDebuggingSession(contextName, contextGroupId, std::move(sendDataFunc));
 }

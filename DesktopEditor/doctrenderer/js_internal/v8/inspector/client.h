@@ -22,9 +22,6 @@ namespace NSJSBase {
 namespace v8_debug {
 namespace internal {
 
-//script holder forward declaratioin
-class CScriptHolder;
-
 //class that is intended to synchronously consume frontend messages on pause
 //it also sets up the debugging session
 class CInspectorClient : public v8_inspector::V8InspectorClient
@@ -67,9 +64,6 @@ private:
     //log
     bool m_bLog{false};
 
-    //script holder; owned by external static container, doesn't need to be deleted
-    CScriptHolder *m_pPreviousScripts{nullptr};
-
 
 
     //sets up a debugging session
@@ -85,8 +79,6 @@ private:
     void maybeLogIncoming(const std::string &message) const;
     //schedule pause on next statement
     void pauseOnNextStatement();
-    //
-    void compilePreviousScripts();
     //start debugging itself
     void startDebugging();
     //

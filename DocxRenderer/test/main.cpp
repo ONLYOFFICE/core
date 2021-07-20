@@ -54,8 +54,11 @@ int main(int argc, char *argv[])
 
     std::wstring sTempDir = NSFile::GetProcessDirectory() + L"/temp";
     std::wstring sTempDirOut = NSFile::GetProcessDirectory() + L"/temp/output";
+
+    if (!NSDirectory::Exists(sTempDir))
+        NSDirectory::CreateDirectory(sTempDir);
     if (!NSDirectory::Exists(sTempDirOut))
-        NSDirectory::CreateDirectories(sTempDirOut);
+        NSDirectory::CreateDirectory(sTempDirOut);
 
     std::wstring sSourceFile = L"PATH_TO_TEST_FILE";
     std::wstring sDestFile = NSFile::GetProcessDirectory() + L"/output.docx";

@@ -61,6 +61,8 @@ size_t CStringUTF32::length() const
 
 wstring CStringUTF32::ToStdWString() const
 {
+    if (0 == length())
+        return L"";
     return NSStringExt::CConverter::GetUnicodeFromUTF32(&this->m_vec[0], static_cast<long>(this->length()));
 }
 

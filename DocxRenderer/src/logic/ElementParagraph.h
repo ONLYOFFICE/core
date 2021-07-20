@@ -99,7 +99,7 @@ namespace NSDocxRenderer
 			return;
 		}
 		
-        std::wstring::size_type nEnd = nLen - 1;
+        size_t nEnd = nLen - 1;
         while ((nEnd > nStart) && (' ' == oText[nEnd]))
 			--nEnd;
 

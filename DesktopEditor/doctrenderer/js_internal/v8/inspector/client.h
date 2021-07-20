@@ -61,8 +61,6 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
 
     //log
     bool m_bLog{false};
-    //
-    bool m_bNeedToDebug{true};
 
 
 
@@ -98,8 +96,6 @@ public:
             , CInspectorImpl *inspector
             //log
             , bool log
-            //
-            , bool needToDebug
             );
 
     //wait for incoming message

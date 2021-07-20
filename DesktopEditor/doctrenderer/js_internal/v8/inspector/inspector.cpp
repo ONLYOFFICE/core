@@ -2,28 +2,6 @@
 #include "inspectormanager.h"//for getting inspector
 #include "../v8_base.h"//v8 wrappers and smart_ptr
 #include "inspector_impl.h"//inspector implementation
-#include <fstream>//std::ifstream
-
-namespace {
-    bool checkForInspection()
-    {
-        std::ifstream checkFile{};
-        checkFile.open(
-                    //you can insert here your absolute path
-                    //i considered adding std::filesystem excessive for such a small job
-                     "D:/111/work/core/DesktopEditor/doctrenderer/js_internal/v8/inspector"
-                     "/other_files/print_here_anything_to_refuse_debugging.txt"
-                );
-        //debug always, if file does not exist or could not be opened
-        if (!checkFile) {
-            return true;
-        }
-        //check for eof as first symbol
-        char check = checkFile.get();
-        char eof = std::char_traits<char>::eof();
-        return check == eof;//continue inspection only if file is empty
-    }
-}//namespace anonymous
 
 void NSJSBase::v8_debug::CInspector::noteScriptExec(const std::string &script)
 {
@@ -47,7 +25,6 @@ NSJSBase::v8_debug::CInspector::CInspector(
           internal::CInspectorManager::getInspector(
               context
               , platform
-              , checkForInspection()
               )
           )
 {

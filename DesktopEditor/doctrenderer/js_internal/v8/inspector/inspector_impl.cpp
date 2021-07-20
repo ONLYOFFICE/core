@@ -34,8 +34,7 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::initClient(
         , int contextGroupId
         , const std::string &contextName
         , v8::Platform *platform
-        //
-        , bool needToDebug)
+        )
 {
     //make client
     this->m_pClient = std::make_unique<CInspectorClient>(
@@ -50,8 +49,6 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::initClient(
                 , this
                 //logging
                 , m_bLog
-                //
-                , needToDebug
                 );
 }
 
@@ -142,14 +139,6 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::setRetVal(const NSCommon::sma
     m_pScriptResult = std::make_unique<JSSmart<CJSValue> >(val);
 }
 
-bool NSJSBase::v8_debug::internal::CInspectorImpl::shutServerDown()
-{
-    if (!m_pServer) {
-        return false;
-    }
-    return m_pServer->shutdown();
-}
-
 NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         v8::Local<v8::Context> context
         //platform to pump
@@ -158,8 +147,7 @@ NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         , CInspectorInfo info
         //current thread id
         , ASC_THREAD_ID threadId
-        //
-        , bool needToDebug)
+        )
     : m_pServer{std::make_unique<internal::SingleConnectionServer>(info.port)}
     , m_pIsolate{context->GetIsolate()}
     , m_bLog{info.log}
@@ -173,7 +161,7 @@ NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
                , info.contextGroupId
                , info.contextName
                , platform
-               , needToDebug);
+               );
 }
 
 NSCommon::smart_ptr<NSJSBase::CJSValue>

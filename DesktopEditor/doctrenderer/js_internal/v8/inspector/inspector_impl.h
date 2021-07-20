@@ -51,8 +51,6 @@ class CInspectorImpl
             , const std::string &contextName
             //platform to pump it
             , v8::Platform *platform
-            //
-            , bool needToDebug
             );
 
     //logging and hints
@@ -83,15 +81,12 @@ public:
             , CInspectorInfo info
             //current thread id
             , ASC_THREAD_ID threadId
-            //
-            , bool needToDebug
     );
 
     //api for inspector client
     void sendData(const v8_inspector::StringView &message);
     bool waitForMessage();
     void setRetVal(const NSCommon::smart_ptr<CJSValue> &val);
-    bool shutServerDown();
 
     //running api
     NSCommon::smart_ptr<CJSValue> runScript(

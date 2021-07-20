@@ -92,9 +92,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::quitMessageLoopOnPause() {
 void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 {
     //pause before current script on debugging launch
-    if (m_bNeedToDebug){
-        pauseOnNextStatement();
-    }
+    pauseOnNextStatement();
 
     //prepare result
     JSSmart<CJSValue> result;
@@ -128,11 +126,6 @@ void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 
     //save result on inspector
     m_pInspectingWrapper->setRetVal(result);
-
-    //
-    if (!m_bNeedToDebug) {
-        m_pInspectingWrapper->shutServerDown();
-    }
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::processMessageFromFrontend(
@@ -205,8 +198,6 @@ NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(
         , CInspectorImpl *inspector
         //
         , bool log
-        //
-        , bool needToDebug
         )
 
     //v8 stuff
@@ -219,9 +210,6 @@ NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(
 
     //logging
     , m_bLog(log)
-
-    //
-    , m_bNeedToDebug{needToDebug}
 {
     setUpDebuggingSession(contextName
                           , contextGroupId

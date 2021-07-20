@@ -3,6 +3,7 @@
 #include "singlethreadutils.h"//converting strings
 #include <libplatform/libplatform.h>//v8::Platform
 #include "../../v8/v8_base.h"//runScript and callFunc impls
+#include "inspector_impl.h"//to interact with inspector
 
 namespace {
     //use them in loop
@@ -73,7 +74,9 @@ void NSJSBase::v8_debug::internal::CInspectorClient::runMessageLoopOnPause(
 
     while (m_bPause) {
         //while not paused by cdt or cdt disconnected
-        if (!m_WaitForFrontendMessage()) {
+        if (
+                !m_pInspectingWrapper->waitForMessage()
+                ) {
             break;
         }
         //
@@ -88,8 +91,10 @@ void NSJSBase::v8_debug::internal::CInspectorClient::quitMessageLoopOnPause() {
 
 void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 {
-    //pause before current script
-    pauseOnNextStatement();
+    //pause before current script on debugging launch
+    if (m_bNeedToDebug){
+        pauseOnNextStatement();
+    }
 
     //prepare result
     JSSmart<CJSValue> result;
@@ -122,7 +127,12 @@ void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
     }
 
     //save result on inspector
-    m_SetRetVal(result);
+    m_pInspectingWrapper->setRetVal(result);
+
+    //
+    if (!m_bNeedToDebug) {
+        m_pInspectingWrapper->shutServerDown();
+    }
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::processMessageFromFrontend(
@@ -191,14 +201,12 @@ NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(
         , int contextGroupId
         //to pump it
         , v8::Platform *platform
-        //for channel
-        , CInspectorChannel::sendDataCallback sendDataFunc
-        //to synchronously consume incoming messages
-        , waitMessageCallback waitIncomingMessage
-        //to set script result to inspector
-        , setRetValCallback setRetVal
-        //log
+        //to interact with inspector, which holds client
+        , CInspectorImpl *inspector
+        //
         , bool log
+        //
+        , bool needToDebug
         )
 
     //v8 stuff
@@ -207,11 +215,17 @@ NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(
     , m_pPlatform(platform)
 
     //callbacks
-    , m_WaitForFrontendMessage(std::move(waitIncomingMessage))
-    , m_SetRetVal(std::move(setRetVal))
+    , m_pInspectingWrapper{inspector}
 
     //logging
     , m_bLog(log)
+
+    //
+    , m_bNeedToDebug{needToDebug}
 {
-    setUpDebuggingSession(contextName, contextGroupId, std::move(sendDataFunc));
+    setUpDebuggingSession(contextName
+                          , contextGroupId
+                          , [inspector](const v8_inspector::StringView &message) {
+        inspector->sendData(message);
+    });
 }

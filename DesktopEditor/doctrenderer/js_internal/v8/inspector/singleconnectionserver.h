@@ -34,7 +34,7 @@ private:
     boost::asio::ip::tcp::endpoint m_Endpoint;
     //connection acceptor
     boost::asio::ip::tcp::acceptor m_ConnectionAcceptor;
-    //using pointer to create stream on connection, not in ctor
+    //using pointer to be able to create stream on connection, not in ctor
     std::unique_ptr<stream_t> m_pWebsocketStream{nullptr};
 
     //message handler
@@ -49,6 +49,7 @@ private:
     //private api
     //read data(blocks)
     std::string getData();
+    boost::beast::error_code discardData();
     //report error
     void reportError(const boost::beast::error_code &code, const char *context) const;
     //
@@ -67,6 +68,7 @@ public:
     bool waitAndProcessMessage();
     bool connected() const;
     bool listening() const;
+    bool shutdown();
     uint16_t port() const;
 };
 

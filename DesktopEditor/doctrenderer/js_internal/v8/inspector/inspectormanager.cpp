@@ -10,6 +10,7 @@ NSJSBase::v8_debug::internal::CInspectorHolder::makeNewInspectorInfo(
         v8::Local<v8::Context> context
         , v8::Platform *platform
         , const CPortHolderId &id
+        , bool needToDebug
         )
 {
     //mutex should be already locked
@@ -39,6 +40,7 @@ NSJSBase::v8_debug::internal::CInspectorHolder::makeNewInspectorInfo(
                 , platform
                 , newInfo
                 , id.threadId
+                , needToDebug
                 );
 }
 
@@ -46,6 +48,7 @@ std::unique_ptr<NSJSBase::v8_debug::internal::CInspectorImpl>
 NSJSBase::v8_debug::internal::CInspectorHolder::getInspector(
         v8::Local<v8::Context> context
         , v8::Platform *platform
+        , bool needToDebug
         )
 {
     //lock
@@ -58,7 +61,10 @@ NSJSBase::v8_debug::internal::CInspectorHolder::getInspector(
     auto inspectorIter = m_Inspectors.find(id);
     if (m_Inspectors.end() == inspectorIter) {
         //make inspector with new info
-        return makeNewInspectorInfo(context, platform, id);
+        return makeNewInspectorInfo(context
+                                    , platform
+                                    , id
+                                    , needToDebug);
     }
     //make inspector with existing info
     return std::make_unique<CInspectorImpl>(
@@ -66,6 +72,7 @@ NSJSBase::v8_debug::internal::CInspectorHolder::getInspector(
                 , platform
                 , inspectorIter->second
                 , threadId
+                , needToDebug
                 );
 }
 
@@ -73,7 +80,10 @@ std::unique_ptr<NSJSBase::v8_debug::internal::CInspectorImpl>
 NSJSBase::v8_debug::internal::CInspectorManager::getInspector(
         v8::Local<v8::Context> context
         , v8::Platform *platform
+        , bool needToDebug
         )
 {
-    return m_Holder.getInspector(context, platform);
+    return m_Holder.getInspector(context
+                                 , platform
+                                 , needToDebug);
 }

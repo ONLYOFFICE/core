@@ -41,7 +41,7 @@ class CInspectorImpl
 
 
 
-    //
+    //initialize methods
     bool initServer();
     void initClient(
             //for general purpose
@@ -51,15 +51,17 @@ class CInspectorImpl
             , const std::string &contextName
             //platform to pump it
             , v8::Platform *platform
+            //
+            , bool needToDebug
             );
 
+    //logging and hints
     void maybeLogOutgoing(const std::string &message) const;
-
     //
     void printChromeLaunchHint(std::ostream &out
                                , uint16_t port);
 
-    //server and run stuff stuff
+    //server and run stuff
     bool checkServer() const;
     void waitAndRunServer();
     NSCommon::smart_ptr<CJSValue> getReturnValue();
@@ -81,9 +83,17 @@ public:
             , CInspectorInfo info
             //current thread id
             , ASC_THREAD_ID threadId
+            //
+            , bool needToDebug
     );
 
-    //running stuff
+    //api for inspector client
+    void sendData(const v8_inspector::StringView &message);
+    bool waitForMessage();
+    void setRetVal(const NSCommon::smart_ptr<CJSValue> &val);
+    bool shutServerDown();
+
+    //running api
     NSCommon::smart_ptr<CJSValue> runScript(
             const CScriptExecData &execData
             );

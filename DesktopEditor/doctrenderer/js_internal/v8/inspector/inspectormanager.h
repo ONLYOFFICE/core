@@ -25,11 +25,13 @@ class CInspectorHolder {
             v8::Local<v8::Context> context
             , v8::Platform *platform
             , const CPortHolderId &id
+            , bool needToDebug
             );
 public:
     std::unique_ptr<CInspectorImpl> getInspector(
             v8::Local<v8::Context> context
             , v8::Platform *platform
+            , bool needToDebug
             );
 };
 
@@ -41,6 +43,7 @@ public:
     static std::unique_ptr<CInspectorImpl> getInspector(
             v8::Local<v8::Context> context
             , v8::Platform *platform
+            , bool needToDebug
             );
 };
 

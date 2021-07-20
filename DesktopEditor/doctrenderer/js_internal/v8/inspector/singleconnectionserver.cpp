@@ -37,6 +37,19 @@ std::string NSJSBase::v8_debug::internal::SingleConnectionServer::getData()
     return boost::beast::buffers_to_string(buffer.data());
 }
 
+beast::error_code NSJSBase::v8_debug::internal::SingleConnectionServer::discardData()
+{
+    //check stream
+    if (!checkStream()) {
+        return beast::error_code();
+    }
+
+    beast::flat_buffer buffer;//no need in multi buffer
+    beast::error_code errCode;
+    m_pWebsocketStream->read(buffer, errCode);
+    return errCode;
+}
+
 void NSJSBase::v8_debug::internal::SingleConnectionServer::reportError(
         const beast::error_code &code
         , const char *context) const
@@ -197,6 +210,39 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::connected() const
 bool NSJSBase::v8_debug::internal::SingleConnectionServer::listening() const
 {
     return m_bListening;
+}
+
+bool NSJSBase::v8_debug::internal::SingleConnectionServer::shutdown()
+{
+    //check stream
+    if (checkStream()) {
+        return false;
+    }
+
+    beast::error_code errCode;
+    //send close frame
+    m_pWebsocketStream->close(beast::websocket::close_code::normal, errCode);
+    if (errCode) {
+        reportError(errCode, "while closing");
+        return false;
+    }
+
+    //discard pending messages until receiving close frame
+    while (true) {
+        //read and get error_code
+        errCode = discardData();
+
+        //close frame is delivered as closed error
+        if (errCode == beast::websocket::error::closed) {
+            return true;
+        }
+
+        //any other errors
+        if (errCode) {
+            reportError(errCode, "while waiting for close responce at close");
+            return false;
+        }
+    }
 }
 
 uint16_t NSJSBase::v8_debug::internal::SingleConnectionServer::port() const

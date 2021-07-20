@@ -33,37 +33,10 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::initClient(
         v8::Local<v8::Context> context
         , int contextGroupId
         , const std::string &contextName
-        , v8::Platform *platform)
+        , v8::Platform *platform
+        //
+        , bool needToDebug)
 {
-    //send message to frontend (for channel)
-    internal::CInspectorChannel::sendDataCallback sendDataCallback = [this](
-            const v8_inspector::StringView &message
-            ) {
-        if (message.length() == 0) {
-            return;
-        }
-        std::string str = internal::viewToStr(
-                    m_pIsolate
-                    , message);
-        //
-        maybeLogOutgoing(str);
-        //
-        this->m_pServer->sendData(str);
-    };
-
-    //wait for message (for client in runMessageLoopOnPause)
-    internal::CInspectorClient::waitMessageCallback waitForMessage = [this]() {
-        return m_pServer->waitAndProcessMessage();
-    };
-
-    //set script result from client
-    internal::CInspectorClient::setRetValCallback setScriptRetVal = [this](
-            JSSmart<CJSValue> result
-            ) {
-        this->m_pScriptResult =
-                std::make_unique<JSSmart<CJSValue> >(result);
-    };
-
     //make client
     this->m_pClient = std::make_unique<CInspectorClient>(
                 //for all v8 stuff
@@ -71,16 +44,14 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::initClient(
                 //context name for cdt
                 , contextName
                 , contextGroupId
-                //
+                //to pump it
                 , platform
-                //for channel to send data
-                , std::move(sendDataCallback)
-                //for client to receive data
-                , std::move(waitForMessage)
-                //set script result to inspector
-                , std::move(setScriptRetVal)
+                //
+                , this
                 //logging
                 , m_bLog
+                //
+                , needToDebug
                 );
 }
 
@@ -121,6 +92,8 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::waitAndRunServer()
     m_pServer->waitForConnection();
     //blocks until disconnected
     m_pServer->run();
+    //finely shut server down
+    m_pServer->shutdown();
 }
 
 NSCommon::smart_ptr<NSJSBase::CJSValue>
@@ -139,6 +112,44 @@ NSJSBase::v8_debug::internal::CInspectorImpl::getReturnValue()
     return result;
 }
 
+void NSJSBase::v8_debug::internal::CInspectorImpl::sendData(const v8_inspector::StringView &message)
+{
+    if (!m_pServer) {
+        return;
+    }
+    if (message.length() == 0) {
+        return;
+    }
+    std::string str = internal::viewToStr(
+                m_pIsolate
+                , message);
+    //
+    maybeLogOutgoing(str);
+    //
+    this->m_pServer->sendData(str);
+}
+
+bool NSJSBase::v8_debug::internal::CInspectorImpl::waitForMessage()
+{
+    if (!m_pServer) {
+        return false;
+    }
+    return m_pServer->waitAndProcessMessage();
+}
+
+void NSJSBase::v8_debug::internal::CInspectorImpl::setRetVal(const NSCommon::smart_ptr<CJSValue> &val)
+{
+    m_pScriptResult = std::make_unique<JSSmart<CJSValue> >(val);
+}
+
+bool NSJSBase::v8_debug::internal::CInspectorImpl::shutServerDown()
+{
+    if (!m_pServer) {
+        return false;
+    }
+    return m_pServer->shutdown();
+}
+
 NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         v8::Local<v8::Context> context
         //platform to pump
@@ -146,7 +157,9 @@ NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         //other info
         , CInspectorInfo info
         //current thread id
-        , ASC_THREAD_ID threadId)
+        , ASC_THREAD_ID threadId
+        //
+        , bool needToDebug)
     : m_pServer{std::make_unique<internal::SingleConnectionServer>(info.port)}
     , m_pIsolate{context->GetIsolate()}
     , m_bLog{info.log}
@@ -156,7 +169,11 @@ NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         std::cerr << "can't initialize server" << std::endl;
         return;
     }
-    initClient(context, info.contextGroupId, info.contextName, platform);
+    initClient(context
+               , info.contextGroupId
+               , info.contextName
+               , platform
+               , needToDebug);
 }
 
 NSCommon::smart_ptr<NSJSBase::CJSValue>

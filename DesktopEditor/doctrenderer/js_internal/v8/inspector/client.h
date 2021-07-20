@@ -22,15 +22,15 @@ namespace NSJSBase {
 namespace v8_debug {
 namespace internal {
 
+//inspector holds client, but instead of using callbacks client directly accesses inspector
+//it's safe due to inspector and client living in the same thread
+//and inspector managing lifetime of client, but not vice versa
+class CInspectorImpl;
+
 //class that is intended to synchronously consume frontend messages on pause
 //it also sets up the debugging session
 class CInspectorClient : public v8_inspector::V8InspectorClient
 {
-public:
-    using waitMessageCallback = std::function<bool(void)>;
-    using setRetValCallback = std::function<void(const NSCommon::smart_ptr<CJSValue>&)>;
-
-private:
     //notable cdt messages
     static constexpr char debugStartMarker[32] = "Runtime.runIfWaitingForDebugger";
 
@@ -55,14 +55,14 @@ private:
 
     //message loop flag
     std::atomic<bool> m_bPause{false};
-    //message loop callback
-    waitMessageCallback m_WaitForFrontendMessage{};
 
-    //setting return value of the script to the inspector
-    setRetValCallback m_SetRetVal{};
+    //to interact with superior class which holds all the stuff, including client
+    CInspectorImpl *m_pInspectingWrapper{nullptr};
 
     //log
     bool m_bLog{false};
+    //
+    bool m_bNeedToDebug{true};
 
 
 
@@ -94,14 +94,12 @@ public:
             , int contextGroupId
             //to pump it
             , v8::Platform *platform
-            //for channel
-            , CInspectorChannel::sendDataCallback sendDataFunc
-            //to synchronously consume incoming messages
-            , waitMessageCallback waitIncomingMessage
-            //to set script result to inspector
-            , setRetValCallback setRetVal
+            //to interact with inspector, which holds client
+            , CInspectorImpl *inspector
             //log
             , bool log
+            //
+            , bool needToDebug
             );
 
     //wait for incoming message

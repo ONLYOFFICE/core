@@ -17,11 +17,6 @@ std::size_t& NSJSBase::v8_debug::internal::CThreadInspectorAmount::addThread(ASC
             ;
 }
 
-std::size_t& NSJSBase::v8_debug::internal::CThreadInspectorAmount::getCount()
-{
-    return getCount(NSThreads::GetCurrentThreadId());
-}
-
 std::size_t& NSJSBase::v8_debug::internal::CThreadInspectorAmount::getCount(ASC_THREAD_ID id)
 {
     std::lock_guard<std::mutex> lock{m_Mutex};
@@ -30,11 +25,6 @@ std::size_t& NSJSBase::v8_debug::internal::CThreadInspectorAmount::getCount(ASC_
         return addThread(id);
     }
     return iter->second;
-}
-
-std::size_t& NSJSBase::v8_debug::internal::CThreadInspectorCounter::getCount()
-{
-    return m_Amounts.getCount();
 }
 
 std::size_t& NSJSBase::v8_debug::internal::CThreadInspectorCounter::getCount(ASC_THREAD_ID id)

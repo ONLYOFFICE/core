@@ -18,14 +18,12 @@ class CThreadInspectorAmount
 
     std::size_t& addThread(ASC_THREAD_ID id);
 public:
-    std::size_t& getCount();
     std::size_t& getCount(ASC_THREAD_ID id);
 };
 
 class CThreadInspectorCounter {
     static CThreadInspectorAmount m_Amounts;
 public:
-    static std::size_t& getCount();
     static std::size_t& getCount(ASC_THREAD_ID id);
 };
 

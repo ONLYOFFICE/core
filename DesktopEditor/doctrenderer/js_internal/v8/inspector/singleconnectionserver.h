@@ -5,8 +5,8 @@
 #include <boost/beast/websocket.hpp>
 #include <boost/asio/strand.hpp>
 
-#include <functional>
-#include <atomic>
+#include <functional>//std::function
+#include <atomic>//std::atomic for thread-safe flags
 
 namespace NSJSBase {
 namespace v8_debug {

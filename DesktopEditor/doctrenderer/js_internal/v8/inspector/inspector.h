@@ -27,6 +27,11 @@ namespace internal {
 class CInspector
 {
     std::unique_ptr<internal::CInspectorImpl> pImpl;
+
+    static constexpr std::size_t bigScript = 150;
+    static void noteScriptExec(const std::string &script);
+    static void noteFuncCall(const char *func);
+
 public:
     CInspector(
             v8::Local<v8::Context> context

@@ -147,9 +147,9 @@ NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         , CInspectorInfo info
         //current thread id
         , ASC_THREAD_ID threadId)
-    : m_pServer(std::make_unique<internal::SingleConnectionServer>(info.port))
-    , m_pIsolate(context->GetIsolate())
-    , m_bLog(info.log)
+    : m_pServer{std::make_unique<internal::SingleConnectionServer>(info.port)}
+    , m_pIsolate{context->GetIsolate()}
+    , m_bLog{info.log}
     , m_Counter{CThreadInspectorCounter::getCount(threadId)}
 {
     if (!initServer()) {
@@ -191,6 +191,4 @@ NSJSBase::v8_debug::internal::CInspectorImpl::callFunc(
     return getReturnValue();
 }
 
-NSJSBase::v8_debug::internal::CInspectorImpl::~CInspectorImpl()
-= default
-        ;
+NSJSBase::v8_debug::internal::CInspectorImpl::~CInspectorImpl() = default;

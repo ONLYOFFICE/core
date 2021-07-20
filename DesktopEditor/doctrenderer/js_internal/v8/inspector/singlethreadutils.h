@@ -1,8 +1,8 @@
 #ifndef SINGLETHREADUTILS_H
 #define SINGLETHREADUTILS_H
 
-#include <v8-inspector.h>
-#include <string>
+#include <v8-inspector.h>//v8 stuff
+#include <string>//std::string
 
 namespace NSJSBase {
 namespace v8_debug {

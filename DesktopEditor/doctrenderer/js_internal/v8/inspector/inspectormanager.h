@@ -17,6 +17,7 @@ class CInspectorImpl;
 //one inspector per thread
 class CInspectorHolder {
     std::mutex m_Mutex{};
+    //might use unordered map, but it's easier to implement compare than hash for port holder id class
     std::map<CPortHolderId, CInspectorInfo, CPHIdLess> m_Inspectors{};
     static constexpr uint16_t startPort = 8080;
 

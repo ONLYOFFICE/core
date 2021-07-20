@@ -2,7 +2,21 @@
 #include "inspectormanager.h"//for getting inspector
 #include "../v8_base.h"//v8 wrappers and smart_ptr
 #include "inspector_impl.h"//inspector implementation
-#include <stdio.h>//getchar
+
+void NSJSBase::v8_debug::CInspector::noteScriptExec(const std::string &script)
+{
+    std::cout << "to inspect script";
+    if (script.size() > bigScript) {
+        std::cout << " of length " << script.size() << std::endl;
+    } else {
+        std::cout << ":\n" << script << std::endl;
+    }
+}
+
+void NSJSBase::v8_debug::CInspector::noteFuncCall(const char *func)
+{
+    std::cout << "to call function " << func << std::endl;
+}
 
 NSJSBase::v8_debug::CInspector::CInspector(
         v8::Local<v8::Context> context
@@ -19,6 +33,7 @@ NSJSBase::v8_debug::CInspector::runScript(
         , const std::wstring &scriptPath
         )
 {
+    noteScriptExec(scriptStr);
     return pImpl->runScript(internal::CScriptExecData{
                               scriptStr
                               , pException
@@ -34,6 +49,7 @@ NSJSBase::v8_debug::CInspector::callFunc(
         , NSCommon::smart_ptr<CJSValue> argv[]
         )
 {
+    noteFuncCall(name);
     return pImpl->callFunc(internal::CFCallData{
                              value
                              , name

@@ -34,7 +34,7 @@ class CInspectorImpl
     //using pointer to initialize client out of constructor
     std::unique_ptr<CInspectorClient> m_pClient{nullptr};
 
-    //
+    //to count amount of inspectors in current thread
     CCountManager m_Counter;
 
 

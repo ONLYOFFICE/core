@@ -9,7 +9,7 @@
 namespace NSJSBase {
 namespace v8_debug {
 namespace internal {
-
+//seems to be useless
 class CScriptHolder
 {
 public:

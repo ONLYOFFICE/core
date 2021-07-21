@@ -1806,10 +1806,20 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         pElementLayout->m_bChildAnchorEnabled	= pElement->m_bChildAnchorEnabled;
     }
 
+    std::vector<CRecordOfficeArtClientData*> oArrayArtClient;
+    GetRecordsByType(&oArrayArtClient, false, true);
     std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
-    GetRecordsByType(&oArrayInteractive, true, false);
     std::vector<CRecordCString*> oArrayMacro;
-    GetRecordsByType(&oArrayMacro, true, false);
+//    GetRecordsByType(&oArrayMacro, true, false);
+
+    if (oArrayArtClient.size())
+        oArrayArtClient[0]->GetRecordsByType(&oArrayInteractive, true, false);
+    else
+    {
+        GetRecordsByType(&oArrayInteractive, true, false);
+        if (oArrayInteractive.size())
+            oArrayInteractive.clear();
+    }
 
     if (oArrayInteractive.size() == 2)
         oArrayInteractive[1]->m_oHeader.RecInstance = 1;

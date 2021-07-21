@@ -691,7 +691,7 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
     m_oWriter.WriteString(std::wstring(L">"));
 
 
-    WriteButton();
+    WriteHyperlink(m_pElement->m_arrActions);
 
     m_oWriter.WriteString(std::wstring(L"</p:cNvPr><p:cNvPicPr><a:picLocks"));
 
@@ -886,7 +886,7 @@ void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
         m_oWriter.WriteString(std::wstring(L"\""));
     }
     m_oWriter.WriteString(std::wstring(L">"));
-    WriteButton();
+    WriteHyperlink(m_pElement->m_arrActions);
     if (!pShapeElement->m_sHyperlink.empty())
     {
         std::wstring rId = m_pRels->WriteHyperlink(pShapeElement->m_sHyperlink);
@@ -1482,6 +1482,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 else
                 {
                     m_oWriter.WriteString(std::wstring(L"<a:r><a:rPr"));
+                    WriteHyperlink(pCF->oArrayInteractive);
                 }
             }
 
@@ -1583,7 +1584,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 m_oWriter.WriteString(std::wstring(L"<a:sym typeface=\"") + pCF->font.sym->Name + _T("\"/>"));
             }
 
-//            WriteButton(nIndexPar);
+//            WriteHyperlink(nIndexPar);
 
             m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
 
@@ -1684,9 +1685,8 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertGroup()
     return m_oWriter.GetData();
 }
 
-void PPT_FORMAT::CShapeWriter::WriteButton(int paragraphNum)
+void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo>& actions)
 {
-    auto actions = getActionsByNum(paragraphNum);
     for (unsigned i = 0; i < actions.size(); i++)
     {
         if (actions[i].m_lType == CInteractiveInfo::over

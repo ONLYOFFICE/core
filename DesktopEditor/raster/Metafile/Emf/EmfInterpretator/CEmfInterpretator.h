@@ -94,7 +94,9 @@ namespace MetaFile
                 void HANDLE_EMR_STROKEPATH(const TEmfRectL& oBounds) override ;
         private:
                 std::ofstream   *m_pOutStream;
+
                 unsigned int    unFileSize;
+                unsigned int    unNumberRecords;
 
                 void WriteRectangle (const TEmfRectL&           oBounds);
                 void WriteSize      (const TEmfSizeL&           oSize);

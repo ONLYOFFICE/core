@@ -8,7 +8,7 @@ namespace MetaFile
 {
         CEmfInterpretator::CEmfInterpretator(const wchar_t* wsFilepath) :
                 m_pOutStream(new std::ofstream(wsFilepath, std::ios::binary | std::ios::out)),
-                unFileSize(0){}
+                unFileSize(0), unNumberRecords(0){}
 
         CEmfInterpretator::~CEmfInterpretator()
         {
@@ -27,6 +27,7 @@ namespace MetaFile
                 int unType                  = EMR_HEADER;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -34,14 +35,16 @@ namespace MetaFile
                 WriteRectangle(oTEmfHeader.oBounds);
                 WriteRectangle(oTEmfHeader.oFrame);
 
+                unsigned int unZero = 0;
+
                 m_pOutStream->write((char*)&oTEmfHeader.ulSignature,        sizeof (unsigned int));
                 m_pOutStream->write((char*)&oTEmfHeader.ulVersion,          sizeof (unsigned int));
                 m_pOutStream->write((char*)&oTEmfHeader.ulSize,             sizeof (unsigned int));
                 m_pOutStream->write((char*)&oTEmfHeader.ulRecords,          sizeof (unsigned int));
                 m_pOutStream->write((char*)&oTEmfHeader.ushObjects,         sizeof (unsigned short));
                 m_pOutStream->write((char*)&oTEmfHeader.ushReserved,        sizeof (unsigned short));
-                m_pOutStream->write((char*)&oTEmfHeader.ulSizeDescription,  sizeof (unsigned int));
-                m_pOutStream->write((char*)&oTEmfHeader.ulOffsetDescription,sizeof (unsigned int));
+                m_pOutStream->write((char*)&unZero,                         sizeof (unsigned int));
+                m_pOutStream->write((char*)&unZero,                         sizeof (unsigned int));
                 m_pOutStream->write((char*)&oTEmfHeader.ulPalEntries,       sizeof (unsigned int));
 
                 WriteSize(oTEmfHeader.oDevice);
@@ -54,6 +57,7 @@ namespace MetaFile
                 int unType                  = EMR_ALPHABLEND;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -102,6 +106,7 @@ namespace MetaFile
                 int unType                  = EMR_STRETCHDIBITS;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -141,6 +146,7 @@ namespace MetaFile
                 int unType                  = EMR_BITBLT;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -182,6 +188,7 @@ namespace MetaFile
                 int unType                  = EMR_SETDIBITSTODEVICE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -219,6 +226,7 @@ namespace MetaFile
                 int unType                  = EMR_STRETCHBLT;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -263,6 +271,7 @@ namespace MetaFile
                 int unType                  = EMR_EOF;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -273,6 +282,7 @@ namespace MetaFile
 
                 m_pOutStream->seekp(48);
                 m_pOutStream->write((char *)&unFileSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unNumberRecords,       sizeof (unsigned int));
                 m_pOutStream->close();
         }
 
@@ -282,6 +292,7 @@ namespace MetaFile
                 int unType                  = EMR_SAVEDC;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -293,6 +304,7 @@ namespace MetaFile
                 int unType                  = EMR_RESTOREDC;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -306,6 +318,7 @@ namespace MetaFile
                 int unType                  = EMR_MODIFYWORLDTRANSFORM;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -321,6 +334,7 @@ namespace MetaFile
                 int unType                  = EMR_SETWORLDTRANSFORM;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -334,6 +348,7 @@ namespace MetaFile
                 int unType                  = EMR_CREATEBRUSHINDIRECT;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -352,6 +367,7 @@ namespace MetaFile
                 int unType                  = EMR_SETTEXTCOLOR;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -365,6 +381,7 @@ namespace MetaFile
                 int unType                  = EMR_SELECTOBJECT;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -384,6 +401,7 @@ namespace MetaFile
                 int unType                  = EMR_EXTCREATEFONTINDIRECTW;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -424,6 +442,7 @@ namespace MetaFile
                 int unType                  = EMR_SETTEXTALIGN;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -437,6 +456,7 @@ namespace MetaFile
                 int unType                  = EMR_SETBKMODE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -450,6 +470,7 @@ namespace MetaFile
                 int unType                  = EMR_DELETEOBJECT;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -463,6 +484,7 @@ namespace MetaFile
                 int unType                  = EMR_SETMITERLIMIT;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -479,6 +501,7 @@ namespace MetaFile
                 int unType                  = EMR_EXTCREATEPEN;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -515,6 +538,7 @@ namespace MetaFile
                 int unType                  = EMR_CREATEPEN;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -534,6 +558,7 @@ namespace MetaFile
                 int unType                  = EMR_SETPOLYFILLMODE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -547,6 +572,7 @@ namespace MetaFile
                 int unType                  = EMR_BEGINPATH;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -558,6 +584,7 @@ namespace MetaFile
                 int unType                  = EMR_ENDPATH;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -569,6 +596,7 @@ namespace MetaFile
                 int unType                  = EMR_CLOSEFIGURE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -580,6 +608,7 @@ namespace MetaFile
                 int unType                  = EMR_FLATTENPATH;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -591,6 +620,7 @@ namespace MetaFile
                 int unType                  = EMR_WIDENPATH;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -602,6 +632,7 @@ namespace MetaFile
                 int unType                  = EMR_ABORTPATH;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -613,6 +644,7 @@ namespace MetaFile
                 int unType                  = EMR_MOVETOEX;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -626,6 +658,7 @@ namespace MetaFile
                 int unType                  = EMR_SETARCDIRECTION;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -639,6 +672,7 @@ namespace MetaFile
                 int unType                  = EMR_FILLPATH;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -652,6 +686,7 @@ namespace MetaFile
                 int unType                  = EMR_SETMAPMODE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -665,6 +700,7 @@ namespace MetaFile
                 int unType                  = EMR_SETWINDOWORGEX;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -678,6 +714,7 @@ namespace MetaFile
                 int unType                  = EMR_SETWINDOWEXTEX;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -691,6 +728,7 @@ namespace MetaFile
                 int unType                  = EMR_SETVIEWPORTORGEX;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -704,6 +742,7 @@ namespace MetaFile
                 int unType                  = EMR_SETVIEWPORTEXTEX;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -717,6 +756,7 @@ namespace MetaFile
                 int unType                  = EMR_SETSTRETCHBLTMODE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -730,6 +770,7 @@ namespace MetaFile
                 int unType                  = EMR_SETICMMODE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -743,6 +784,7 @@ namespace MetaFile
             int unType                  = EMR_CREATEDIBPATTERNBRUSHPT;
 
             unFileSize += unExplicitRecordSize;
+            ++unNumberRecords;
 
             m_pOutStream->write((char *)&unType,                sizeof (int));
             m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -772,6 +814,7 @@ namespace MetaFile
                 int unType                  = EMR_SELECTCLIPPATH;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -785,6 +828,7 @@ namespace MetaFile
                 int unType                  = EMR_SETBKCOLOR;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -798,6 +842,7 @@ namespace MetaFile
                 int unType                  = EMR_EXCLUDECLIPRECT;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -811,6 +856,7 @@ namespace MetaFile
                 int unType                  = EMR_EXTSELECTCLIPRGN;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -829,6 +875,7 @@ namespace MetaFile
                 int unType                  = EMR_SETMETARGN;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -840,6 +887,7 @@ namespace MetaFile
                 int unType                  = EMR_SETROP2;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -857,6 +905,7 @@ namespace MetaFile
                 short unVersion             = 0x0300;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -876,6 +925,7 @@ namespace MetaFile
                 int unType                  = EMR_SELECTPALETTE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -889,6 +939,7 @@ namespace MetaFile
                 int unType                  = EMR_REALIZEPALETTE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -900,6 +951,7 @@ namespace MetaFile
                 int unType                  = EMR_INTERSECTCLIPRECT;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -913,6 +965,7 @@ namespace MetaFile
                 int unType                  = EMR_SETLAYOUT;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -926,6 +979,7 @@ namespace MetaFile
                 int unType                  = EMR_SETBRUSHORGEX;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -939,6 +993,7 @@ namespace MetaFile
                 int unType                  = EMR_ANGLEARC;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -956,6 +1011,7 @@ namespace MetaFile
                 int unType                  = EMR_ARC;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -971,6 +1027,7 @@ namespace MetaFile
                 int unType                  = EMR_ARCTO;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -986,6 +1043,7 @@ namespace MetaFile
                 int unType                  = EMR_CHORD;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1001,6 +1059,7 @@ namespace MetaFile
                 int unType                  = EMR_ELLIPSE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1016,6 +1075,7 @@ namespace MetaFile
                 int unType                  = EMR_EXTTEXTOUTA;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1049,6 +1109,7 @@ namespace MetaFile
                 int unType                  = EMR_EXTTEXTOUTW;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1080,6 +1141,7 @@ namespace MetaFile
                 int unType                  = EMR_LINETO;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1093,6 +1155,7 @@ namespace MetaFile
                 int unType                  = EMR_PIE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1108,6 +1171,7 @@ namespace MetaFile
                 int unType                  = EMR_POLYBEZIER;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1126,6 +1190,7 @@ namespace MetaFile
                 int unType                  = EMR_POLYBEZIER;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1144,6 +1209,7 @@ namespace MetaFile
                 int unType                  = EMR_POLYBEZIERTO;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1162,6 +1228,7 @@ namespace MetaFile
                 int unType                  = EMR_POLYBEZIERTO;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1183,6 +1250,7 @@ namespace MetaFile
                 int unType                  = EMR_POLYDRAW;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1207,6 +1275,7 @@ namespace MetaFile
                 int unType                  = EMR_POLYDRAW;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1228,6 +1297,7 @@ namespace MetaFile
                 int unType                  = EMR_POLYGON;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1246,6 +1316,7 @@ namespace MetaFile
                 int unType                  = EMR_POLYGON;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1264,6 +1335,7 @@ namespace MetaFile
                 int unType                  = EMR_POLYLINE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1282,6 +1354,7 @@ namespace MetaFile
                 int unType                  = EMR_POLYLINE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1300,6 +1373,7 @@ namespace MetaFile
                 int unType                  = EMR_POLYLINETO;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1318,6 +1392,7 @@ namespace MetaFile
                 int unType                  = EMR_POLYLINETO;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1336,6 +1411,7 @@ namespace MetaFile
                 int unType                  = EMR_RECTANGLE;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1349,6 +1425,7 @@ namespace MetaFile
                 int unType                  = EMR_ROUNDRECT;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1363,6 +1440,7 @@ namespace MetaFile
                 int unType                  = EMR_ROUNDRECT;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1379,6 +1457,7 @@ namespace MetaFile
             int unType                  = EMR_SMALLTEXTOUT;
 
             unFileSize += unExplicitRecordSize;
+            ++unNumberRecords;
 
             m_pOutStream->write((char *)&unType,                sizeof (int));
             m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1409,6 +1488,7 @@ namespace MetaFile
                 int unType                  = EMR_STROKEANDFILLPATH;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -1422,6 +1502,7 @@ namespace MetaFile
                 int unType                  = EMR_STROKEPATH;
 
                 unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));

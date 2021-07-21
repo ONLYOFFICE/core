@@ -24,155 +24,267 @@ namespace MetaFile
                 if (NULL != m_pInterpretator)
                         m_pInterpretator->Begin();
 
+                m_pOutput->ReadNextRecord();
+
                 do
                 {
-                        unsigned int unRecorId;
-                        m_pOutput->ReadArguments(unRecorId, m_ulRecordSize);
+                        const std::wstring wsRecordName = m_pOutput->GetName();
 
-                        m_ulRecordSize -= 8;
-
-                        if (m_ulRecordSize < 0)
-                                continue;
-
-                        if (unRecorId < EMR_MIN || unRecorId > EMR_MAX)
-                        {
-                                if (ENHMETA_SIGNATURE != m_oHeader.ulSignature || 0x00010000 != m_oHeader.ulVersion)
-                                        return SetError();
-                                else
-                                        break;
-                        }
-
-                        if (0 == unRecorId && EMR_HEADER != unRecorId)
+                        if (wsRecordName.size() < 7 || wsRecordName.substr(0, 4) != L"EMR_")
                                 return SetError();
 
-                        switch (unRecorId)
+                        switch (wsRecordName[4])
                         {
-                                //-----------------------------------------------------------
-                                // 2.3.1 Bitmap
-                                //-----------------------------------------------------------
-                                case EMR_ALPHABLEND:        Read_EMR_ALPHABLEND(); break;
-                                case EMR_BITBLT:            Read_EMR_BITBLT(); break;
-                                case EMR_STRETCHDIBITS:     Read_EMR_STRETCHDIBITS(); break;
-                                case EMR_SETDIBITSTODEVICE: Read_EMR_SETDIBITSTODEVICE(); break;
-                                case EMR_STRETCHBLT:        Read_EMR_STRETCHBLT(); break;
-                                        //-----------------------------------------------------------
-                                        // 2.3.2 Clipping
-                                        //-----------------------------------------------------------
-                                case EMR_EXCLUDECLIPRECT:   Read_EMR_EXCLUDECLIPRECT(); break;
-                                case EMR_EXTSELECTCLIPRGN:  Read_EMR_EXTSELECTCLIPRGN(); break;
-                                case EMR_INTERSECTCLIPRECT: Read_EMR_INTERSECTCLIPRECT(); break;
-                                case EMR_SELECTCLIPPATH:    Read_EMR_SELECTCLIPPATH(); break;
-                                case EMR_SETMETARGN:        Read_EMR_SETMETARGN(); break;
-                                        //-----------------------------------------------------------
-                                        // 2.3.4 Control
-                                        //-----------------------------------------------------------
-                                case EMR_HEADER: Read_EMR_HEADER(); break;
-                                case EMR_EOF:    Read_EMR_EOF(); bEOF = true; break;
-                                        //-----------------------------------------------------------
-                                        // 2.3.5 Drawing
-                                        //-----------------------------------------------------------
-                                case EMR_ANGLEARC:          Read_EMR_ANGLEARC(); break;
-                                case EMR_ARC:		    Read_EMR_ARC(); break;
-                                case EMR_ARCTO:             Read_EMR_ARCTO(); break;
-                                case EMR_CHORD:             Read_EMR_CHORD(); break;
-                                case EMR_ELLIPSE:           Read_EMR_ELLIPSE(); break;
-                                case EMR_EXTTEXTOUTA:       Read_EMR_EXTTEXTOUTA(); break;
-                                case EMR_EXTTEXTOUTW:       Read_EMR_EXTTEXTOUTW(); break;
-                                case EMR_FILLPATH:          Read_EMR_FILLPATH(); break;
-                                case EMR_LINETO:            Read_EMR_LINETO(); break;
-                                case EMR_PIE:		    Read_EMR_PIE(); break;
-                                case EMR_POLYBEZIER:        Read_EMR_POLYBEZIER(); break;
-                                case EMR_POLYBEZIER16:      Read_EMR_POLYBEZIER16(); break;
-                                case EMR_POLYBEZIERTO:      Read_EMR_POLYBEZIERTO(); break;
-                                case EMR_POLYBEZIERTO16:    Read_EMR_POLYBEZIERTO16(); break;
-                                case EMR_POLYDRAW:          Read_EMR_POLYDRAW(); break;
-                                case EMR_POLYDRAW16:        Read_EMR_POLYDRAW16(); break;
-                                case EMR_POLYGON:           Read_EMR_POLYGON(); break;
-                                case EMR_POLYGON16:         Read_EMR_POLYGON16(); break;
-                                case EMR_POLYLINE:          Read_EMR_POLYLINE(); break;
-                                case EMR_POLYLINE16:        Read_EMR_POLYLINE16(); break;
-                                case EMR_POLYLINETO:        Read_EMR_POLYLINETO(); break;
-                                case EMR_POLYLINETO16:      Read_EMR_POLYLINETO16(); break;
-                                case EMR_POLYPOLYGON:       Read_EMR_POLYPOLYGON(); break;
-                                case EMR_POLYPOLYGON16:     Read_EMR_POLYPOLYGON16(); break;
-                                case EMR_POLYPOLYLINE:      Read_EMR_POLYPOLYLINE(); break;
-                                case EMR_POLYPOLYLINE16:    Read_EMR_POLYPOLYLINE16(); break;
-                                case EMR_POLYTEXTOUTA:      Read_EMR_POLYTEXTOUTA(); break;
-                                case EMR_POLYTEXTOUTW:      Read_EMR_POLYTEXTOUTW(); break;
-                                case EMR_RECTANGLE:         Read_EMR_RECTANGLE(); break;
-                                case EMR_ROUNDRECT:         Read_EMR_ROUNDRECT(); break;
-                                case EMR_SETPIXELV:         Read_EMR_SETPIXELV(); break;
-                                case EMR_SMALLTEXTOUT:      Read_EMR_SMALLTEXTOUT(); break;
-                                case EMR_STROKEANDFILLPATH: Read_EMR_STROKEANDFILLPATH(); break;
-                                case EMR_STROKEPATH:        Read_EMR_STROKEPATH(); break;
-                                        //-----------------------------------------------------------
-                                        // 2.3.7 Object Creation
-                                        //-----------------------------------------------------------
-                                case EMR_CREATEBRUSHINDIRECT:	    Read_EMR_CREATEBRUSHINDIRECT(); break;
-                                case EMR_CREATEDIBPATTERNBRUSHPT:   Read_EMR_CREATEDIBPATTERNBRUSHPT(); break;
-                                case EMR_CREATEPALETTE:		    Read_EMR_CREATEPALETTE(); break;
-                                case EMR_CREATEPEN:		    Read_EMR_CREATEPEN(); break;
-                                case EMR_EXTCREATEFONTINDIRECTW:    Read_EMR_EXTCREATEFONTINDIRECTW(); break;
-                                case EMR_EXTCREATEPEN:		    Read_EMR_EXTCREATEPEN(); break;
-                                        //-----------------------------------------------------------
-                                        // 2.3.8 Object Manipulation
-                                        //-----------------------------------------------------------
-                                case EMR_SELECTOBJECT:  Read_EMR_SELECTOBJECT(); break;
-                                case EMR_DELETEOBJECT:  Read_EMR_DELETEOBJECT(); break;
-                                case EMR_SELECTPALETTE: Read_EMR_SELECTPALETTE(); break;
-                                        //-----------------------------------------------------------
-                                        // 2.3.10 Path Bracket
-                                        //-----------------------------------------------------------
-                                case EMR_BEGINPATH:   Read_EMR_BEGINPATH(); break;
-                                case EMR_ENDPATH:     Read_EMR_ENDPATH(); break;
-                                case EMR_CLOSEFIGURE: Read_EMR_CLOSEFIGURE(); break;
-                                case EMR_FLATTENPATH: Read_EMR_FLATTENPATH(); break;
-                                case EMR_WIDENPATH:   Read_EMR_WIDENPATH(); break;
-                                case EMR_ABORTPATH:   Read_EMR_ABORTPATH(); break;
-                                        //-----------------------------------------------------------
-                                        // 2.3.11 State
-                                        //-----------------------------------------------------------
-                                case EMR_MOVETOEX:          Read_EMR_MOVETOEX(); break;
-                                case EMR_SETARCDIRECTION:   Read_EMR_SETARCDIRECTION(); break;
-                                case EMR_SAVEDC:            Read_EMR_SAVEDC(); break;
-                                case EMR_RESTOREDC:         Read_EMR_RESTOREDC(); break;
-                                case EMR_SETTEXTCOLOR:      Read_EMR_SETTEXTCOLOR(); break;
-                                case EMR_SETTEXTALIGN:      Read_EMR_SETTEXTALIGN(); break;
-                                case EMR_SETBKMODE:         Read_EMR_SETBKMODE(); break;
-                                case EMR_SETMITERLIMIT:     Read_EMR_SETMITERLIMIT(); break;
-                                case EMR_SETPOLYFILLMODE:   Read_EMR_SETPOLYFILLMODE(); break;
-                                case EMR_SETMAPMODE:        Read_EMR_SETMAPMODE(); break;
-                                case EMR_SETWINDOWORGEX:    Read_EMR_SETWINDOWORGEX(); break;
-                                case EMR_SETWINDOWEXTEX:    Read_EMR_SETWINDOWEXTEX(); break;
-                                case EMR_SETVIEWPORTORGEX:  Read_EMR_SETVIEWPORTORGEX(); break;
-                                case EMR_SETVIEWPORTEXTEX:  Read_EMR_SETVIEWPORTEXTEX(); break;
-                                case EMR_SETBKCOLOR:        Read_EMR_SETBKCOLOR(); break;
-                                case EMR_SETSTRETCHBLTMODE: Read_EMR_SETSTRETCHBLTMODE(); break;
-                                case EMR_SETICMMODE:        Read_EMR_SETICMMODE(); break;
-                                case EMR_SETROP2:           Read_EMR_SETROP2(); break;
-                                case EMR_REALIZEPALETTE:    Read_EMR_REALIZEPALETTE(); break;
-                                case EMR_SETLAYOUT:         Read_EMR_SETLAYOUT(); break;
-                                case EMR_SETBRUSHORGEX:     Read_EMR_SETBRUSHORGEX(); break;
-                                        //-----------------------------------------------------------
-                                        // 2.3.12 Transform
-                                        //-----------------------------------------------------------
-                                case EMR_SETWORLDTRANSFORM:	Read_EMR_SETWORLDTRANSFORM(); break;
-                                case EMR_MODIFYWORLDTRANSFORM:	Read_EMR_MODIFYWORLDTRANSFORM(); break;
-                                        //-----------------------------------------------------------
-                                        // Неподдерживаемые записи
-                                        //-----------------------------------------------------------
-                                case EMR_GDICOMMENT: Read_EMR_UNKNOWN(); break;
-                                        //-----------------------------------------------------------
-                                        // Неизвестные записи
-                                        //-----------------------------------------------------------
-                                default:
+                                case 'A':
                                 {
-                                        Read_EMR_UNKNOWN();
+                                        switch (wsRecordName.size())
+                                        {
+                                                case 7: Read_EMR_ARC();         break;
+                                                case 9: Read_EMR_ARCTO();       break;
+                                                case 12:Read_EMR_ANGLEARC();    break;
+                                                case 13:Read_EMR_ABORTPATH();   break;
+                                                case 14:Read_EMR_ALPHABLEND();  break;
+                                        }
                                         break;
                                 }
-                        }
+                                case 'B':
+                                {
+                                        if (wsRecordName.size() == 10)
+                                                Read_EMR_BITBLT();
+                                        else
+                                                Read_EMR_BEGINPATH();
+                                        break;
+                                }
+                                case 'C':
+                                {
+                                        switch (wsRecordName.size())
+                                        {
+                                                case 9:  Read_EMR_CHORD();                  break;
+                                                case 13: Read_EMR_CREATEPEN();              break;
+                                                case 15: Read_EMR_CLOSEFIGURE();            break;
+                                                case 17: Read_EMR_CREATEPALETTE();          break;
+                                                case 23: Read_EMR_CREATEBRUSHINDIRECT();    break;
+                                                case 27: Read_EMR_CREATEDIBPATTERNBRUSHPT();break;
+                                        }
+                                        break;
+                                }
+                                case 'D': Read_EMR_DELETEOBJECT(); break;
+                                case 'E':
+                                {
+                                        switch (wsRecordName.size())
+                                        {
+                                                case 7: {Read_EMR_EOF(); bEOF = true; break;}
+                                                case 11:
+                                                {
+                                                        if (wsRecordName[5] == L'L')
+                                                                Read_EMR_ELLIPSE();
+                                                        else
+                                                                Read_EMR_ENDPATH();
+                                                        break;
+                                                }
+                                                case 15:
+                                                {
+                                                        if (wsRecordName.back() == L'W')
+                                                                Read_EMR_EXTTEXTOUTW();
+                                                        else
+                                                                Read_EMR_EXTTEXTOUTA();
+                                                        break;
+                                                }
+                                                case 16: Read_EMR_EXTCREATEPEN();           break;
+                                                case 19: Read_EMR_EXCLUDECLIPRECT();        break;
+                                                case 20: Read_EMR_EXTSELECTCLIPRGN();       break;
+                                                case 26: Read_EMR_EXTCREATEFONTINDIRECTW(); break;
+                                        }
+                                        break;
+                                }
+                                case 'F':
+                                {
+                                        if (wsRecordName[5] == L'I')
+                                                Read_EMR_FILLPATH();
+                                        else
+                                                Read_EMR_FLATTENPATH();
+                                        break;
+                                }
+                                case 'H': Read_EMR_HEADER();            break;
+                                case 'I': Read_EMR_INTERSECTCLIPRECT(); break;
+                                case 'L': Read_EMR_LINETO();            break;
+                                case 'M':
+                                {
+                                        if(wsRecordName[6] == L'V')
+                                                Read_EMR_MOVETOEX();
+                                        else
+                                                Read_EMR_MODIFYWORLDTRANSFORM();
+                                        break;
+                                }
+                                case 'P':
+                                {
+                                        if (wsRecordName[5] == L'I')
+                                                Read_EMR_PIE();
+                                        else
+                                        {
+                                                switch (wsRecordName[8])
+                                                {
+                                                        case 'B':
+                                                        {
+                                                                switch (wsRecordName.back())
+                                                                {
+                                                                        case 'R': Read_EMR_POLYBEZIER();    break;
+                                                                        case 'O': Read_EMR_POLYBEZIERTO();  break;
+                                                                        case '6': ((*(wsRecordName.end() - 3)) == L'R')
+                                                                                  ? Read_EMR_POLYBEZIER16()
+                                                                                  : Read_EMR_POLYBEZIERTO16();
+                                                                }
+                                                                break;
+                                                        }
+                                                        case 'D':
+                                                        {
+                                                                if (wsRecordName.back() == L'W')
+                                                                        Read_EMR_POLYDRAW();
+                                                                else
+                                                                        Read_EMR_POLYDRAW16();
 
-                }while (!CheckError() && ! bEOF && m_pOutput->ReadNextNode());
+                                                                break;
+                                                        }
+                                                        case 'L':
+                                                        {
+                                                                switch (wsRecordName.back())
+                                                                {
+                                                                        case 'E': Read_EMR_POLYLINE();      break;
+                                                                        case 'O': Read_EMR_POLYLINETO();    break;
+                                                                        case '6': ((*(wsRecordName.end() - 3)) == L'E')
+                                                                                  ? Read_EMR_POLYLINE16()
+                                                                                  : Read_EMR_POLYLINETO16();
+                                                                }
+                                                                break;
+                                                        }
+                                                        case 'P':
+                                                        {
+                                                                switch (wsRecordName.back())
+                                                                {
+                                                                        case 'E': Read_EMR_POLYPOLYLINE();  break;
+                                                                        case 'N': Read_EMR_POLYGON();       break;
+                                                                        case '6': ((*(wsRecordName.end() - 3)) == L'E')
+                                                                                  ? Read_EMR_POLYPOLYLINE16()
+                                                                                  : Read_EMR_POLYGON16();
+                                                                }
+                                                                break;
+                                                        }
+                                                        case 'T':
+                                                        {
+                                                                if (wsRecordName.back() == L'W')
+                                                                        Read_EMR_POLYTEXTOUTW();
+                                                                else
+                                                                        Read_EMR_POLYTEXTOUTA();
+                                                                break;
+                                                        }
+                                                }
+                                        }
+                                        break;
+                                }
+                                case 'R':
+                                {
+                                        switch (wsRecordName[6])
+                                        {
+                                                case 'A': Read_EMR_REALIZEPALETTE();    break;
+                                                case 'C': Read_EMR_RECTANGLE();         break;
+                                                case 'S': Read_EMR_RESTOREDC();         break;
+                                                case 'U': Read_EMR_ROUNDRECT();         break;
+                                        }
+                                        break;
+                                }
+                                case 'S':
+                                {
+                                        if (wsRecordName[6] == L'T')
+                                        {
+                                                switch (wsRecordName[7])
+                                                {
+                                                        case 'A': Read_EMR_SETARCDIRECTION(); break;
+                                                        case 'B':
+                                                        {
+                                                                switch (wsRecordName.back())
+                                                                {
+                                                                        case 'E': Read_EMR_SETBKMODE();     break;
+                                                                        case 'R': Read_EMR_SETBKCOLOR();    break;
+                                                                        case 'X': Read_EMR_SETBRUSHORGEX(); break;
+                                                                }
+                                                                break;
+                                                        }
+                                                        case 'D': Read_EMR_SETDIBITSTODEVICE(); break;
+                                                        case 'I': Read_EMR_SETICMMODE();        break;
+                                                        case 'L': Read_EMR_SETLAYOUT();         break;
+                                                        case 'M':
+                                                        {
+                                                                switch (wsRecordName.back())
+                                                                {
+                                                                        case 'E': Read_EMR_SETMAPMODE();    break;
+                                                                        case 'N': Read_EMR_SETMETARGN();    break;
+                                                                        case 'T': Read_EMR_SETMITERLIMIT(); break;
+                                                                }
+                                                                break;
+                                                        }
+                                                        case 'P':
+                                                        {
+                                                                if (wsRecordName.back() == L'V')
+                                                                        Read_EMR_SETPIXELV();
+                                                                else
+                                                                        Read_EMR_SETPOLYFILLMODE();
+                                                                break;
+                                                        }
+                                                        case 'R': Read_EMR_SETROP2();           break;
+                                                        case 'S': Read_EMR_SETSTRETCHBLTMODE(); break;
+                                                        case 'T':
+                                                        {
+                                                                if (wsRecordName.back() == L'R')
+                                                                        Read_EMR_SETTEXTCOLOR();
+                                                                else
+                                                                        Read_EMR_SETTEXTALIGN();
+                                                        }
+                                                        case 'V':
+                                                        {
+                                                                if ((*(wsRecordName.end() - 3)) == L'G')
+                                                                        Read_EMR_SETVIEWPORTORGEX();
+                                                                else
+                                                                        Read_EMR_SETVIEWPORTEXTEX();
+                                                        }
+                                                        case 'W':
+                                                        {
+                                                                switch (*(wsRecordName.end() - 3))
+                                                                {
+                                                                        case 'O': Read_EMR_SETWORLDTRANSFORM(); break;
+                                                                        case 'G': Read_EMR_SETWINDOWORGEX();    break;
+                                                                        case 'T': Read_EMR_SETWINDOWEXTEX();    break;
+                                                                }
+                                                                break;
+                                                        }
+
+                                                }
+                                        }
+                                        else
+                                        {
+                                                switch (*(wsRecordName.end() - 4))
+                                                {
+                                                    case 'B': Read_EMR_STRETCHDIBITS(); break;
+                                                    case 'E': Read_EMR_SELECTPALETTE(); break;
+                                                    case 'H': Read_EMR_STRETCHBLT();    break;
+                                                    case 'J': Read_EMR_SELECTOBJECT();  break;
+                                                    case 'P':
+                                                    {
+                                                            switch (*(wsRecordName.end() - 5))
+                                                            {
+                                                                    case 'E': Read_EMR_STROKEPATH();        break;
+                                                                    case 'L': Read_EMR_STROKEANDFILLPATH(); break;
+                                                                    case 'P': Read_EMR_SELECTCLIPPATH();    break;
+                                                            }
+                                                    }
+                                                    case 'T': Read_EMR_SMALLTEXTOUT();  break;
+                                                    case 'V': Read_EMR_SAVEDC();        break;
+                                                }
+                                        }
+                                        break;
+                                }
+                            case 'W': Read_EMR_WIDENPATH(); break;
+                        }
+                }while (!CheckError() && !bEOF && m_pOutput->ReadNextRecord());
 
                 if (!CheckError())
                         m_pOutput->MoveToStart();
@@ -188,11 +300,9 @@ namespace MetaFile
                 if (m_pOutput->GetName() != L"EMF")
                         return SetError();
 
-                unsigned int unRecordSize, unRecordId;
-                m_pOutput->ReadArguments(unRecordId, unRecordSize);
+                m_pOutput->ReadNextRecord();
 
-                if (unRecordId < EMR_MIN || unRecordId > EMR_MAX ||
-                    unRecordSize < 8)
+                if (m_pOutput->GetName() != L"EMR_HEADER")
                         return SetError();
 
                 *m_pOutput >> m_oHeader;

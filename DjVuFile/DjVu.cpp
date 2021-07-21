@@ -52,6 +52,8 @@ bool CDjVuFile::LoadFromFile(const std::wstring& file, const std::wstring& optio
 bool CDjVuFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options,
                                const std::wstring& owner_password, const std::wstring& user_password)
 {
+    if (m_pImplementation)
+        return m_pImplementation->LoadFromMemory(data, length, options);
     return false;
 }
 
@@ -89,6 +91,8 @@ void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* p
 }
 BYTE* CDjVuFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH)
 {
+    if (m_pImplementation)
+        return m_pImplementation->ConvertToPixels(nPageIndex, nRasterW, nRasterH);
     return NULL;
 }
 void CDjVuFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)

@@ -125,14 +125,6 @@ void CZipBuffer::move(const std::string& sSrc, const std::string& sDst)
     if (it != m_arrFiles.end())
         it->m_sPath = sDst;
 }
-// Возвращает вектор путей в архиве
-std::vector<std::string> CZipBuffer::getPaths()
-{
-    std::vector<std::string> oRes;
-    for (CFile& oFile : m_arrFiles)
-        oRes.push_back(oFile.m_sPath);
-    return oRes;
-}
 // Сохраняет архив в переданную память, полученные данные необходимо освободить
 void CZipBuffer::save(BYTE*& data, DWORD& length)
 {

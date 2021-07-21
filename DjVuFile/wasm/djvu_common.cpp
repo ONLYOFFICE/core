@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
         int pages_count = *info;
         if (pages_count > 0)
         {
-            unsigned char* pixmap = DJVU_GetPixmap(file, 0, 300, 300);
+            unsigned char* pixmap = DJVU_GetPixmap(file, 0, info[1] * 96 / info[3], info[2] * 96 / info[3]);
             delete [] pixmap;
         }
 

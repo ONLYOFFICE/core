@@ -69,12 +69,14 @@ public:
 	~CDjVuFileImplementation();
 
 	bool         LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXmlOptions = L"");
+    bool         LoadFromMemory(BYTE* data, DWORD length, const std::wstring& wsXmlOptions = L"");
 	void         Close();
 	std::wstring GetTempDirectory() const;
 	void         SetTempDirectory(const std::wstring& wsDirectory);
 	int          GetPagesCount() const;
 	void         GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) const;
 	void         DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
+    BYTE*        ConvertToPixels(int nPageIndex, const int& nRasterW = -1, const int& nRasterH = -1);
     void         ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int& nRasterW = -1, const int& nRasterH = -1);
     void         ConvertToPdf(const std::wstring& wsDstPath);
 

@@ -289,8 +289,7 @@ public:
     virtual bool exists(const std::wstring& path)
     {
         std::string sPath = getLocalFilePathA(path);
-        std::vector<std::string> sPaths = m_zlib->getPaths();
-        return std::find(sPaths.begin(), sPaths.end(), sPath) != sPaths.end();
+        return std::find_if(m_zlib->m_arrFiles.begin(), m_zlib->m_arrFiles.end(), [sPath](const CZipBuffer::CFile& file){ return file.m_sPath == sPath; }) != m_zlib->m_arrFiles.end();
     }
     // Удаляет файл по относительному пути в архиве
     virtual void remove(const std::wstring& path)
@@ -302,28 +301,27 @@ public:
     virtual void createDirectory(const std::wstring& path)
     {
     }    
-    // Возвращает вектор путей в архиве до файлов расположенной в папке
+    // Возвращает вектор путей расположенных в папке
     virtual std::vector<std::wstring> getFiles(const std::wstring& path, bool bIsRecursion)
     {
         std::string sPath = getLocalFilePathA(path);
-        std::vector<std::string> sPaths = m_zlib->getPaths();
         std::vector<std::wstring> sRes;
 
-        for (std::string& i : sPaths)
+        for (const CZipBuffer::CFile& i : m_zlib->m_arrFiles)
         {
             if (bIsRecursion)
             {
-                if (i.find(sPath) == 0)
-                    sRes.push_back(L'/' + UTF8_TO_U(i));
+                if (i.m_sPath.find(sPath) == 0)
+                    sRes.push_back(L'/' + UTF8_TO_U(i.m_sPath));
             }
             else
             {
-                size_t nFindDirectory = i.find(sPath);
+                size_t nFindDirectory = i.m_sPath.find(sPath);
                 if (nFindDirectory == 0)
                 {
-                    nFindDirectory = i.find_first_of("\\/", sPath.length());
-                    if (nFindDirectory != std::wstring::npos && i.find_first_of("\\/", nFindDirectory + 1) == std::wstring::npos)
-                        sRes.push_back(L'/' + UTF8_TO_U(i));
+                    nFindDirectory = i.m_sPath.find_first_of("\\/", sPath.length());
+                    if (nFindDirectory != std::wstring::npos && i.m_sPath.find_first_of("\\/", nFindDirectory + 1) == std::wstring::npos)
+                        sRes.push_back(L'/' + UTF8_TO_U(i.m_sPath));
                 }
             }
         }

@@ -115,6 +115,22 @@ bool               CDjVuFileImplementation::LoadFromFile(const std::wstring& wsS
 
 	return true;
 }
+bool               CDjVuFileImplementation::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& wsXmlOptions)
+{
+    m_pDoc = NULL;
+    try
+    {
+        GP<ByteStream> stream = ByteStream::create(data, (size_t)length);
+        m_pDoc = DjVuDocument::create(stream);
+        m_pDoc->wait_get_pages_num();
+    }
+    catch (...)
+    {
+        return false;
+    }
+
+    return true;
+}
 void               CDjVuFileImplementation::Close()
 {
 }
@@ -201,6 +217,51 @@ void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRende
 	{
 		// белая страница
 	}
+}
+BYTE*              CDjVuFileImplementation::ConvertToPixels(int nPageIndex, const int& nRasterW, const int& nRasterH)
+{
+    if (!m_pApplicationFonts)
+        return NULL;
+
+    NSFonts::IFontManager *pFontManager = m_pApplicationFonts->GenerateFontManager();
+    NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
+    pFontCache->SetStreams(m_pApplicationFonts->GetStreams());
+    pFontManager->SetOwnerCache(pFontCache);
+
+    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+    pRenderer->SetFontManager(pFontManager);
+
+    double dPageDpiX, dPageDpiY;
+    double dWidth, dHeight;
+    GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiX);
+
+    int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth * 96 / dPageDpiX);
+    int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 96 / dPageDpiX);
+
+    BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+    if (!pBgraData)
+        return NULL;
+
+    memset(pBgraData, 0xff, nWidth * nHeight * 4);
+    CBgraFrame oFrame;
+    oFrame.put_Data(pBgraData);
+    oFrame.put_Width(nWidth);
+    oFrame.put_Height(nHeight);
+    oFrame.put_Stride(-4 * nWidth);
+
+    pRenderer->CreateFromBgraFrame(&oFrame);
+    pRenderer->SetSwapRGB(true);
+    pRenderer->put_Width(dWidth);
+    pRenderer->put_Height(dHeight);
+
+    bool bBreak = false;
+    DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
+
+    RELEASEINTERFACE(pFontManager);
+    RELEASEOBJECT(pRenderer);
+    oFrame.ClearNoAttack();
+
+    return pBgraData;
 }
 void               CDjVuFileImplementation::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int& nRasterW, const int& nRasterH)
 {

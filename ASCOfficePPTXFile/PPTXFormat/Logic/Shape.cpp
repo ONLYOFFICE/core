@@ -435,6 +435,7 @@ namespace PPTX
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 			pWriter->WriteBool2(0, attrUseBgFill);
+			pWriter->WriteString2(1, attrMacro);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord1(0, nvSpPr);

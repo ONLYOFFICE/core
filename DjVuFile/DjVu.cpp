@@ -56,6 +56,11 @@ void CDjVuFile::Close()
 		m_pImplementation->Close();
 }
 
+OfficeDrawingFileType CDjVuFile::GetType()
+{
+    return odftDJVU;
+}
+
 std::wstring CDjVuFile::GetTempDirectory()
 {
     return m_pImplementation ? m_pImplementation->GetTempDirectory() : L"";

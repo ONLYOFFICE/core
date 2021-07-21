@@ -429,6 +429,7 @@ namespace NSFontManager
         void LoadFontByName(const std::wstring& strName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY)
 		{
             m_pManager->LoadFontByName(strName, (float)dSize, lStyle, dDpiX, dDpiY);
+            m_pManager->AfterLoad();
 
 			LoadFontMetrics();
 			LoadFontParams();
@@ -439,9 +440,12 @@ namespace NSFontManager
         void LoadFontByFile(const std::wstring& strPath, const double& dSize, const double& dDpiX, const double& dDpiY, const LONG& lFaceIndex)
 		{
             m_pManager->LoadFontFromFile(strPath, (int)lFaceIndex, (float)dSize, dDpiX, dDpiY);
+            m_pManager->AfterLoad();
 
 			LoadFontMetrics();
 			LoadFontParams();
+            m_oFont.m_oFont.Name = m_pManager->GetName();
+            m_oFont.m_strFamilyName = m_oFont.m_oFont.Name;
 
 			m_oFont.m_lAvgWidth = -1;
 

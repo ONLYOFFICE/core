@@ -151,9 +151,6 @@ namespace NSDocxRenderer
 
             m_pManager->SetStringGID(bIsGID);
 
-			LoadFontMetrics();
-			LoadFontParams(bIsPath);
-
 			if (bNeedAddToMap)
 				AddFontToMap();
 		}

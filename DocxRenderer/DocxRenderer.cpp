@@ -90,11 +90,15 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFi
 {
     CreateNewFile(sDstFile);
 
+    if (odftPDF == pFile->GetType())
+        m_pInternal->m_oDocument.m_bIsNeedPDFTextAnalyzer = true;
+
     int nPagesCount = pFile->GetPagesCount();
     for (int i = 0; i < nPagesCount; ++i)
     {
         NewPage();
-        BeginCommand(c_nPageType);
+        BeginCommand(c_nPageType);        
+        m_pInternal->m_oDocument.m_bIsDisablePageCommand = true;
 
         double dPageDpiX, dPageDpiY;
         double dWidth, dHeight;
@@ -108,6 +112,7 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFi
 
         pFile->DrawPageOnRenderer(this, i, NULL);
 
+        m_pInternal->m_oDocument.m_bIsDisablePageCommand = false;
         EndCommand(c_nPageType);
     }
 
@@ -149,7 +154,7 @@ HRESULT CDocxRenderer::get_Width(double* dWidth)
 }
 HRESULT CDocxRenderer::put_Width(const double& dWidth)
 {
-    return m_pInternal->m_oDocument.put_Height(dWidth);
+    return m_pInternal->m_oDocument.put_Width(dWidth);
 }
 HRESULT CDocxRenderer::get_DpiX(double* dDpiX)
 {

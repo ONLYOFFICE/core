@@ -42,11 +42,14 @@ namespace NSDocxRenderer
 		LONG							m_lPagesCount;
 
         NSStringUtils::CStringBuilder	m_oWriter;
-		bool							m_bIsNeedPDFTextAnalyzer;
+        bool							m_bIsNeedPDFTextAnalyzer;
+
+        bool                            m_bIsDisablePageCommand; // disable commands inside draw function
 
 	public:
         CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts) : m_oWriter(), m_oCurrentPage(pFonts)
 		{
+            m_pAppFonts = pFonts;
             m_oSimpleGraphicsConverter.SetRenderer(pRenderer);
 			m_lCurrentCommandType		= 0;
 
@@ -61,6 +64,8 @@ namespace NSDocxRenderer
 
 			m_bIsNeedPDFTextAnalyzer	= false;
             m_pFontManager = NULL;
+
+            m_bIsDisablePageCommand = false;
 		}
         void Clear()
 		{
@@ -521,6 +526,7 @@ namespace NSDocxRenderer
             double dAngleMatrix = m_oTransform.z_Rotation();
             if (abs(dAngleMatrix) > 1)
             {
+                _SetFont();
                 PathCommandEnd();
                 BeginCommand(c_nPathType);
                 m_oSimpleGraphicsConverter.PathCommandText2(pUnicodes, pGids, nCount, m_pFontManager, dX, dY, dW, dH);
@@ -571,6 +577,9 @@ namespace NSDocxRenderer
 		//-------- Маркеры для команд ---------------------------------------------------------------
         HRESULT BeginCommand(DWORD lType)
 		{
+            if (c_nPageType == lType && m_bIsDisablePageCommand)
+                return S_OK;
+
 			m_lCurrentCommandType = (LONG)lType;
 			m_oCurrentPage.m_lCurrentCommand	= m_lCurrentCommandType;
 
@@ -578,6 +587,9 @@ namespace NSDocxRenderer
 		}
         HRESULT EndCommand(DWORD lType)
 		{
+            if (c_nPageType == lType && m_bIsDisablePageCommand)
+                return S_OK;
+
 			m_lCurrentCommandType				= -1;
 			m_oCurrentPage.m_lCurrentCommand	= m_lCurrentCommandType;
 

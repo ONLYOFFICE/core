@@ -344,7 +344,7 @@ namespace NSDocxRenderer
 			{
                 for (unsigned int i = 0; i < nCount; ++i)
 				{
-                    if ( IsUnicodeSymbol( pUnicodes[i] ) )
+                    if ( !IsUnicodeSymbol( pUnicodes[i] ) )
 					{
                         oText[i] = ' ';
                     }

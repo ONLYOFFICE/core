@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     CDocxRenderer oDocxRenderer(pFonts);
 
     // проверить все режимы
-    NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::TextAssociationTypeDefault;
+    NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::TextAssociationTypeNoFrames;
     //taType = NSDocxRenderer::TextAssociationTypeLine;
     //taType = NSDocxRenderer::TextAssociationTypeBlock;
     //taType = NSDocxRenderer::TextAssociationTypeNoFrames;

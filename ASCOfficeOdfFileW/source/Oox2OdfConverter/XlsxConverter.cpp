@@ -3229,8 +3229,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 	if (!oox_cond_rule)return;
 
 	if (false == oox_cond_rule->m_oType.IsInit()) return;
+
+	_CP_OPT(unsigned int) rank; 
+	if (oox_cond_rule->m_oRank.IsInit()) rank = oox_cond_rule->m_oRank->GetValue();
 	
-	ods_context->current_table()->start_conditional_rule(oox_cond_rule->m_oType->GetValue());
+	ods_context->current_table()->start_conditional_rule(oox_cond_rule->m_oType->GetValue(), rank);
 	{
 		if (oox_cond_rule->m_oDxfId.IsInit()) 
 		{
@@ -3249,7 +3252,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 			ods_context->current_table()->set_conditional_operator(oox_cond_rule->m_oOperator->GetValue());
 
 		if (oox_cond_rule->m_oText.IsInit()) 
-			ods_context->current_table()->set_conditional_text(oox_cond_rule->m_oText.get2());
+			ods_context->current_table()->set_conditional_text(*oox_cond_rule->m_oText);
 		
 		convert(oox_cond_rule->m_oIconSet.GetPointer());
 		convert(oox_cond_rule->m_oColorScale.GetPointer());
@@ -3315,7 +3318,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatValueObject *oox
 	if (oox_cond_value->m_oType.IsInit())	type = oox_cond_value->m_oType->GetValue();
 	
 	if (oox_cond_value->m_oFormula.IsInit())	val = oox_cond_value->m_oFormula->m_sText;
-	else if (oox_cond_value->m_oVal.IsInit())	val = oox_cond_value->m_oVal.get2();
+	else if (oox_cond_value->m_oVal.IsInit())	val = *oox_cond_value->m_oVal;
 	
 	ods_context->current_table()->set_conditional_value(type, val);
 }

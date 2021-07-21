@@ -29,31 +29,49 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "SUP.h"
+#include "../Biff12_records/SupSelf.h"
+#include "../Biff12_records/SupBookSrc.h"
+#include "SUPSAME.h"
+#include "SUPADDIN.h"
 
 namespace XLSB
 {
 
-    class BOOKVIEWS: public CompositeObject
+    SUP::SUP()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BOOKVIEWS)
-    public:
-        BOOKVIEWS();
-        virtual ~BOOKVIEWS();
+    }
 
-        BaseObjectPtr clone();
+    SUP::~SUP()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr SUP::clone()
+    {
+        return BaseObjectPtr(new SUP(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginBookViews;
-        std::vector<BaseObjectPtr>	m_arBrtBookView;
-        BaseObjectPtr               m_BrtEndBookViews;
-
-    };
+    // SUP = BrtSupSelf/ SUPSAME / SUPADDIN / BrtSupBookSrc
+    const bool SUP::loadContent(BinProcessor& proc)
+    {
+        if(!proc.optional<SupSelf>())
+        {
+            if(!proc.optional<SUPSAME>())
+            {
+                if(!proc.optional<SUPADDIN>())
+                {
+                    if(!proc.optional<SupBookSrc>())
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+        m_source = elements_.back();
+        elements_.pop_back();
+        return true;
+    }
 
 } // namespace XLSB
 

@@ -51,29 +51,29 @@ namespace XLSB
         return BaseObjectPtr(new BOOKVIEWS(*this));
     }
 
-    // BOOKVIEWS = BrtBeginBookViews ...
+    // BOOKVIEWS = m_BrtBeginBookViews ...
     const bool BOOKVIEWS::loadContent(BinProcessor& proc)
     {
         if (proc.optional<BeginBookViews>())
         {
-            BrtBeginBookViews = elements_.back();
+            m_BrtBeginBookViews = elements_.back();
             elements_.pop_back();
         }
 
         while (proc.optional<BookView>())
         {
-            arrBrtBookView.push_back(elements_.back());
+            m_arBrtBookView.push_back(elements_.back());
             elements_.pop_back();
         }
 
 
         if (proc.optional<EndBookViews>())
         {
-            BrtEndBookViews = elements_.back();
+            m_BrtEndBookViews = elements_.back();
             elements_.pop_back();
         }
 
-        return BrtBeginBookViews || !arrBrtBookView.empty() || BrtEndBookViews;
+        return m_BrtBeginBookViews || !m_arBrtBookView.empty() || m_BrtEndBookViews;
     }
 
 } // namespace XLSB

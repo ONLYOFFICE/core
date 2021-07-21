@@ -434,7 +434,7 @@ CFRecordPtr BinaryStreamCacheReader::getNextRecord(const CFRecordType::TypeId de
 
         Log::warning(rec_name);
 
-        if (desirable_type == rt_MsoDrawingGroup)	// объединяем rt_MsoDrawingGroup + rt_Continue в один блок
+        /*if (desirable_type == rt_MsoDrawingGroup)	// объединяем rt_MsoDrawingGroup + rt_Continue в один блок
         {
             if (checkNextRecord(desirable_type, 1))
             {
@@ -456,7 +456,7 @@ CFRecordPtr BinaryStreamCacheReader::getNextRecord(const CFRecordType::TypeId de
                     }
                 }
             }
-        }
+        }*/
 
         /*if(0 == rec_name.length())
         {

@@ -29,31 +29,59 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "EXTERNALS.h"
+#include "../Biff12_records/BeginExternals.h"
+#include "SUP.h"
+#include "../Biff12_records/EndExternals.h"
+#include "Biff12_records/CommonRecords.h"
 
 namespace XLSB
 {
 
-    class BOOKVIEWS: public CompositeObject
+    EXTERNALS::EXTERNALS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BOOKVIEWS)
-    public:
-        BOOKVIEWS();
-        virtual ~BOOKVIEWS();
+    }
 
-        BaseObjectPtr clone();
+    EXTERNALS::~EXTERNALS()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr EXTERNALS::clone()
+    {
+        return BaseObjectPtr(new EXTERNALS(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginBookViews;
-        std::vector<BaseObjectPtr>	m_arBrtBookView;
-        BaseObjectPtr               m_BrtEndBookViews;
+    //EXTERNALS = BrtBeginExternals *SUP BrtExternSheet BrtEndExternals
+    const bool EXTERNALS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginExternals>())
+        {
+            m_BrtBeginExternals = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        int countSUP = proc.repeated<SUP>(0, 0);
+        while(!elements_.empty())
+        {
+            m_arSUP.insert(m_arSUP.begin(), elements_.back());
+            elements_.pop_back();
+        }
+
+        if (proc.optional<ExternSheet>())
+        {
+            m_BrtExternSheet = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<EndExternals>())
+        {
+            m_BrtEndExternals = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginExternals || countSUP > 0 || m_BrtExternSheet || m_BrtEndExternals;
+    }
 
 } // namespace XLSB
 

@@ -49,9 +49,9 @@ namespace XLSB
 
         virtual const bool loadContent(BinProcessor& proc);
 
-        BaseObjectPtr               BrtBeginBundleShs;
-        std::vector<BaseObjectPtr>	arrBrtBundleSh;
-        BaseObjectPtr               BrtEndBundleShs;
+        BaseObjectPtr               m_BrtBeginBundleShs;
+        std::vector<BaseObjectPtr>	m_arBrtBundleSh;
+        BaseObjectPtr               m_BrtEndBundleShs;
 
     };
 

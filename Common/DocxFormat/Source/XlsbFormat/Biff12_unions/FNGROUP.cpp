@@ -51,33 +51,33 @@ namespace XLSB
         return BaseObjectPtr(new FNGROUP(*this));
     }
 
-    // FNGROUP = BrtBeginFNGROUP ...
+    // FNGROUP = m_BrtBeginFNGROUP ...
     const bool FNGROUP::loadContent(BinProcessor& proc)
     {
         if (proc.optional<BeginFnGroup>())
         {
-            BrtBeginFnGroup = elements_.back();
+            m_BrtBeginFnGroup = elements_.back();
             elements_.pop_back();
         }
 
-        int count = dynamic_cast<BeginFnGroup*>(BrtBeginFnGroup.get())->iMac;
+        int count = dynamic_cast<BeginFnGroup*>(m_BrtBeginFnGroup.get())->iMac;
 
         for (auto i = 0; i < count; i++)
         {
             if (proc.optional<FnGroup>())
             {
-                arrBrtFnGroup.push_back(elements_.back());
+                m_arBrtFnGroup.push_back(elements_.back());
                 elements_.pop_back();
             }
         }
 
         if (proc.optional<EndFnGroup>())
         {
-            BrtEndFnGroup = elements_.back();
+            m_BrtEndFnGroup = elements_.back();
             elements_.pop_back();
         }
 
-        return BrtBeginFnGroup || !arrBrtFnGroup.empty() || BrtEndFnGroup;
+        return m_BrtBeginFnGroup || !m_arBrtFnGroup.empty() || m_BrtEndFnGroup;
     }
 
 } // namespace XLSB

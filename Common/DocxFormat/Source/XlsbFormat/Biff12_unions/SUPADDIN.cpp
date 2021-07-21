@@ -29,31 +29,44 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "SUPADDIN.h"
+#include "../Biff12_records/SupAddin.h"
+#include "../Biff12_records/PlaceholderName.h"
 
 namespace XLSB
 {
 
-    class BOOKVIEWS: public CompositeObject
+    SUPADDIN::SUPADDIN()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BOOKVIEWS)
-    public:
-        BOOKVIEWS();
-        virtual ~BOOKVIEWS();
+    }
 
-        BaseObjectPtr clone();
+    SUPADDIN::~SUPADDIN()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr SUPADDIN::clone()
+    {
+        return BaseObjectPtr(new SUPADDIN(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginBookViews;
-        std::vector<BaseObjectPtr>	m_arBrtBookView;
-        BaseObjectPtr               m_BrtEndBookViews;
+    // SUPADDIN = m_BrtSupAddin 1*BrtPlaceholderName
+    const bool SUPADDIN::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<SupAddin>())
+        {
+            m_BrtSupAddin = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        while (proc.optional<PlaceholderName>())
+        {
+            m_arBrtPlaceholderName.push_back(elements_.back());
+            elements_.pop_back();
+        }
+
+        return m_BrtSupAddin || !m_arBrtPlaceholderName.empty();
+    }
 
 } // namespace XLSB
 

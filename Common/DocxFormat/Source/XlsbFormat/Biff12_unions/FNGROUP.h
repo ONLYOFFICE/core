@@ -42,16 +42,16 @@ namespace XLSB
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(FNGROUP)
     public:
-         FNGROUP();
+        FNGROUP();
         virtual ~FNGROUP();
 
         BaseObjectPtr clone();
 
         virtual const bool loadContent(BinProcessor& proc);
 
-        BaseObjectPtr               BrtBeginFnGroup;
-        std::vector<BaseObjectPtr>	arrBrtFnGroup;
-        BaseObjectPtr               BrtEndFnGroup;
+        BaseObjectPtr               m_BrtBeginFnGroup;
+        std::vector<BaseObjectPtr>	m_arBrtFnGroup;
+        BaseObjectPtr               m_BrtEndFnGroup;
 
     };
 

@@ -29,31 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "PlaceholderName.h"
 
 namespace XLSB
 {
 
-    class BOOKVIEWS: public CompositeObject
+    PlaceholderName::PlaceholderName()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BOOKVIEWS)
-    public:
-        BOOKVIEWS();
-        virtual ~BOOKVIEWS();
+    }
 
-        BaseObjectPtr clone();
+    PlaceholderName::~PlaceholderName()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr PlaceholderName::clone()
+    {
+        return BaseObjectPtr(new PlaceholderName(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginBookViews;
-        std::vector<BaseObjectPtr>	m_arBrtBookView;
-        BaseObjectPtr               m_BrtEndBookViews;
-
-    };
+    void PlaceholderName::readFields(CFRecord& record)
+    {
+       record >> name;
+    }
 
 } // namespace XLSB
 

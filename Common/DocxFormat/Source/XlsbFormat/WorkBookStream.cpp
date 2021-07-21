@@ -33,20 +33,19 @@
 
 #include "WorkBookStream.h"
 
-
+#include "Biff12_records/CommonRecords.h"
 #include "Biff12_records/BeginBook.h"
 #include "Biff12_records/FileVersion.h"
 #include "Biff12_records/FileSharingIso.h"
-#include <Logic/Biff_records/FileSharing.h>
 #include "Biff12_records/WbProp.h"
 #include "Biff12_unions/ACABSPATH.h"
 #include "Biff12_unions/BOOKVIEWS.h"
 #include "Biff12_unions/BUNDLESHS.h"
 #include "Biff12_unions/FNGROUP.h"
+#include "Biff12_unions/EXTERNALS.h"
 
 namespace XLSB
 {
-
 
 static const int aCodePages[][2] = {
     //charset	codepage
@@ -146,6 +145,7 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                     m_BrtFileSharing = elements_.back();
                     elements_.pop_back();
                 }
+
             }break;
 
             case rt_WbProp:
@@ -188,7 +188,16 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
             {
                 if (proc.optional<FNGROUP>())
                 {
-                    m_BUNDLESHS = elements_.back();
+                    m_FNGROUP = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginExternals:
+            {
+                if (proc.optional<EXTERNALS>())
+                {
+                    m_EXTERNALS = elements_.back();
                     elements_.pop_back();
                 }
             }break;

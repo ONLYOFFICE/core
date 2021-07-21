@@ -120,9 +120,13 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/BeginFnGroup.cpp \
     ../Source/XlsbFormat/Biff12_records/FnGroup.cpp \
     ../Source/XlsbFormat/Biff12_records/EndFnGroup.cpp \
-    #../Source/XlsbFormat/Biff12_records/BeginExternals.cpp \
-#
-   # ../Source/XlsbFormat/Biff12_records/EndExternals.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginExternals.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndExternals.cpp \
+    ../Source/XlsbFormat/Biff12_records/SupSelf.cpp \
+    ../Source/XlsbFormat/Biff12_records/SupBookSrc.cpp \
+    ../Source/XlsbFormat/Biff12_records/SupSame.cpp \
+    ../Source/XlsbFormat/Biff12_records/PlaceholderName.cpp \
+    ../Source/XlsbFormat/Biff12_records/SupAddin.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -134,7 +138,11 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.cpp \
     ../Source/XlsbFormat/Biff12_unions/BUNDLESHS.cpp \
     ../Source/XlsbFormat/Biff12_unions/FNGROUP.cpp \
-    #../Source/XlsbFormat/Biff12_unions/EXTERNALS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNALS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SUP.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SUPSAME.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SUPADDIN.cpp \
+
 }
 
 
@@ -334,6 +342,7 @@ HEADERS += docxformatlib.h \
 ### XLSB
     ../Source/XlsbFormat/WorkBookStream.h \
 ### Biff12_records
+    ../Source/XlsbFormat/Biff12_records/CommonRecords.h \
     ../Source/XlsbFormat/Biff12_records/BeginBook.h \
     ../Source/XlsbFormat/Biff12_records/FileVersion.h \
     ../Source/XlsbFormat/Biff12_records/FileSharingIso.h \
@@ -350,9 +359,13 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/BeginFnGroup.h \
     ../Source/XlsbFormat/Biff12_records/FnGroup.h \
     ../Source/XlsbFormat/Biff12_records/EndFnGroup.h \
-    #../Source/XlsbFormat/Biff12_records/BeginExternals.h \
-#
-    #../Source/XlsbFormat/Biff12_records/EndExternals.h \
+    ../Source/XlsbFormat/Biff12_records/BeginExternals.h \
+    ../Source/XlsbFormat/Biff12_records/EndExternals.h \
+    ../Source/XlsbFormat/Biff12_records/SupSelf.h \
+    ../Source/XlsbFormat/Biff12_records/SupBookSrc.h \
+    ../Source/XlsbFormat/Biff12_records/SupSame.h \
+    ../Source/XlsbFormat/Biff12_records/PlaceholderName.h \
+    ../Source/XlsbFormat/Biff12_records/SupAddin.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
@@ -365,4 +378,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.h \
     ../Source/XlsbFormat/Biff12_unions/BUNDLESHS.h \
     ../Source/XlsbFormat/Biff12_unions/FNGROUP.h \
-    #../Source/XlsbFormat/Biff12_unions/EXTERNALS.h \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNALS.h \
+    ../Source/XlsbFormat/Biff12_unions/SUP.h \
+    ../Source/XlsbFormat/Biff12_unions/SUPSAME.h \
+    ../Source/XlsbFormat/Biff12_unions/SUPADDIN.h \

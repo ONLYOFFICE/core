@@ -29,31 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "EndExternals.h"
 
 namespace XLSB
 {
 
-    class BOOKVIEWS: public CompositeObject
+    EndExternals::EndExternals()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BOOKVIEWS)
-    public:
-        BOOKVIEWS();
-        virtual ~BOOKVIEWS();
+    }
 
-        BaseObjectPtr clone();
+    EndExternals::~EndExternals()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr EndExternals::clone()
+    {
+        return BaseObjectPtr(new EndExternals(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginBookViews;
-        std::vector<BaseObjectPtr>	m_arBrtBookView;
-        BaseObjectPtr               m_BrtEndBookViews;
-
-    };
+    void EndExternals::readFields(CFRecord& record)
+    {
+        //empty data
+    }
 
 } // namespace XLSB
 

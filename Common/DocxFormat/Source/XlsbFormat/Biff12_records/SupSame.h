@@ -31,27 +31,25 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
-
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../Source/XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
 using namespace XLS;
 
 namespace XLSB
 {
-
-    class BOOKVIEWS: public CompositeObject
+    // Logical representation of SupSame record in BIFF12
+    class SupSame: public BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BOOKVIEWS)
-    public:
-        BOOKVIEWS();
-        virtual ~BOOKVIEWS();
+            BIFF_RECORD_DEFINE_TYPE_INFO(SupSame)
+            BASE_OBJECT_DEFINE_CLASS_NAME(SupSame)
+        public:
+            SupSame();
+            virtual ~SupSame();
 
-        BaseObjectPtr clone();
+            BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
-
-        BaseObjectPtr               m_BrtBeginBookViews;
-        std::vector<BaseObjectPtr>	m_arBrtBookView;
-        BaseObjectPtr               m_BrtEndBookViews;
+            void readFields(CFRecord& record);
 
     };
 

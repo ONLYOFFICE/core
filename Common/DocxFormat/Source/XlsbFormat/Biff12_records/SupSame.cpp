@@ -29,31 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "SupSame.h"
 
 namespace XLSB
 {
 
-    class BOOKVIEWS: public CompositeObject
+    SupSame::SupSame()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BOOKVIEWS)
-    public:
-        BOOKVIEWS();
-        virtual ~BOOKVIEWS();
+    }
 
-        BaseObjectPtr clone();
+    SupSame::~SupSame()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr SupSame::clone()
+    {
+        return BaseObjectPtr(new SupSame(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginBookViews;
-        std::vector<BaseObjectPtr>	m_arBrtBookView;
-        BaseObjectPtr               m_BrtEndBookViews;
-
-    };
+    void SupSame::readFields(CFRecord& record)
+    {
+       //empty data
+    }
 
 } // namespace XLSB
 

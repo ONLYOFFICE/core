@@ -38,20 +38,21 @@ using namespace XLS;
 namespace XLSB
 {
 
-    class BOOKVIEWS: public CompositeObject
+    class EXTERNALS: public CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BOOKVIEWS)
+        BASE_OBJECT_DEFINE_CLASS_NAME(EXTERNALS)
     public:
-        BOOKVIEWS();
-        virtual ~BOOKVIEWS();
+        EXTERNALS();
+        virtual ~EXTERNALS();
 
         BaseObjectPtr clone();
 
         virtual const bool loadContent(BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginBookViews;
-        std::vector<BaseObjectPtr>	m_arBrtBookView;
-        BaseObjectPtr               m_BrtEndBookViews;
+        BaseObjectPtr               m_BrtBeginExternals;
+        std::vector<BaseObjectPtr>	m_arSUP;
+        BaseObjectPtr               m_BrtExternSheet;
+        BaseObjectPtr               m_BrtEndExternals;
 
     };
 

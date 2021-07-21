@@ -38,20 +38,19 @@ using namespace XLS;
 namespace XLSB
 {
 
-    class BOOKVIEWS: public CompositeObject
+    class SUPADDIN: public CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BOOKVIEWS)
+        BASE_OBJECT_DEFINE_CLASS_NAME(SUPADDIN)
     public:
-        BOOKVIEWS();
-        virtual ~BOOKVIEWS();
+        SUPADDIN();
+        virtual ~SUPADDIN();
 
         BaseObjectPtr clone();
 
         virtual const bool loadContent(BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginBookViews;
-        std::vector<BaseObjectPtr>	m_arBrtBookView;
-        BaseObjectPtr               m_BrtEndBookViews;
+        BaseObjectPtr               m_BrtSupAddin;
+        std::vector<BaseObjectPtr>  m_arBrtPlaceholderName;
 
     };
 

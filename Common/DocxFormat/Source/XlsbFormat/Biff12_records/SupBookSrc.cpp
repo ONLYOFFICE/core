@@ -29,31 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "SupBookSrc.h"
 
 namespace XLSB
 {
 
-    class BOOKVIEWS: public CompositeObject
+    SupBookSrc::SupBookSrc()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BOOKVIEWS)
-    public:
-        BOOKVIEWS();
-        virtual ~BOOKVIEWS();
+    }
 
-        BaseObjectPtr clone();
+    SupBookSrc::~SupBookSrc()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr SupBookSrc::clone()
+    {
+        return BaseObjectPtr(new SupBookSrc(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginBookViews;
-        std::vector<BaseObjectPtr>	m_arBrtBookView;
-        BaseObjectPtr               m_BrtEndBookViews;
-
-    };
+    void SupBookSrc::readFields(CFRecord& record)
+    {
+        record >> strRelID;
+    }
 
 } // namespace XLSB
 

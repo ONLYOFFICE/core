@@ -39,7 +39,6 @@ FileSharing::FileSharing()
 {
 }
 
-
 FileSharing::~FileSharing()
 {
 }
@@ -54,14 +53,21 @@ void FileSharing::readFields(CFRecord& record)
 {
 	record >> fReadOnlyRec >> wResPassNum;
 	wResPass = std::wstring (STR::int2hex_wstr(wResPassNum, sizeof(wResPassNum)).c_str());
-	if(!wResPassNum)
-	{
-		record >> iNoResPass;
-	}
-	else
-	{
-		record >> stUNUsername;
-	}
+    if(record.getGlobalWorkbookInfo()->Version == 0x0800)
+    {
+        record >> stUserName;
+    }
+    else
+    {
+        if(!wResPassNum)
+        {
+            record >> iNoResPass;
+        }
+        else
+        {
+            record >> stUNUsername;
+        }
+    }
 }
 
 } // namespace XLS

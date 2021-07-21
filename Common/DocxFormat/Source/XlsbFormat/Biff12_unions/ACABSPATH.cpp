@@ -51,7 +51,7 @@ namespace XLSB
         return BaseObjectPtr(new ACABSPATH(*this));
     }
 
-    // ACABSPATH = BrtACBegin BrtAbsPath15 BrtACEnd
+    // ACABSPATH = m_BrtACBegin m_BrtAbsPath15 m_BrtACEnd
     const bool ACABSPATH::loadContent(BinProcessor& proc)
     {
         if (proc.optional<ACBegin>())

@@ -51,28 +51,28 @@ namespace XLSB
         return BaseObjectPtr(new BUNDLESHS(*this));
     }
 
-    // BUNDLESHS = BrtBeginBUNDLESHS ...
+    // BUNDLESHS = m_BrtBeginBUNDLESHS ...
     const bool BUNDLESHS::loadContent(BinProcessor& proc)
     {
         if (proc.optional<BeginBundleShs>())
         {
-            BrtBeginBundleShs = elements_.back();
+            m_BrtBeginBundleShs = elements_.back();
             elements_.pop_back();
         }
 
         while (proc.optional<BundleSh>())
         {
-            arrBrtBundleSh.push_back(elements_.back());
+            m_arBrtBundleSh.push_back(elements_.back());
             elements_.pop_back();
         }
 
         if (proc.optional<EndBundleShs>())
         {
-            BrtEndBundleShs = elements_.back();
+            m_BrtEndBundleShs = elements_.back();
             elements_.pop_back();
         }
 
-        return BrtBeginBundleShs || !arrBrtBundleSh.empty() || BrtEndBundleShs;
+        return m_BrtBeginBundleShs || !m_arBrtBundleSh.empty() || m_BrtEndBundleShs;
     }
 
 } // namespace XLSB

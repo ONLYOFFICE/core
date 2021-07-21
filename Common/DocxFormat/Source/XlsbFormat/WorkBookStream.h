@@ -74,6 +74,8 @@ namespace XLSB
         BaseObjectPtr           m_ACABSPATH;
         BaseObjectPtr           m_BOOKVIEWS;
         BaseObjectPtr           m_BUNDLESHS;
+        BaseObjectPtr           m_FNGROUP;
+        BaseObjectPtr           m_EXTERNALS;
 
         unsigned short			code_page_;
         GlobalWorkbookInfoPtr		global_info_;

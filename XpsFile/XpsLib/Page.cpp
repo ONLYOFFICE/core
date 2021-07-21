@@ -179,12 +179,20 @@ namespace XPS
 	BYTE* Page::GetGlyphs()
 	{
 		if (m_pGlyphs)
-			return m_pGlyphs->GetBuffer();
+		{
+			BYTE* res = m_pGlyphs->GetBuffer();
+			m_pGlyphs->ClearWithoutAttack();
+			RELEASEOBJECT(m_pGlyphs);
+			return res;
+		}
 		return NULL;
 	}
 	#endif
 	void Page::Draw(IRenderer* pRenderer, bool* pbBreak)
 	{
+		#ifdef BUILDING_WASM_MODULE
+		RELEASEOBJECT(m_pGlyphs);
+		#endif
 		XmlUtils::CXmlLiteReader oReader;
 
 		if (!oReader.FromStringA(m_wsRootPath->readXml(m_wsPagePath)))

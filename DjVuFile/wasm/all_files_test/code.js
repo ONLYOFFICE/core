@@ -327,9 +327,6 @@ window.onload = function()
 		{
 			if (!this.file.isValid())
 				return;
-			
-			if (!down && !this.Selection.IsSelection)
-				return;
 
 			let lCurrentPage = -1;
 			for (let i = 0; i < this.drawingPages.length; i++)
@@ -358,13 +355,15 @@ window.onload = function()
 					this.file.OnMouseDown(lCurrentPage, this.Selection, x, y, w, h);
 				else
 					this.file.OnMouseMove(lCurrentPage, this.Selection, x, y, w, h);
-				this.paint();
+				if (this.Selection.IsSelection)
+					this.paint();
 			}
 		};
 		
 		this.OnMouseUp = function(e)
 		{
 			this.file.OnMouseUp();
+			this.paint();
 		};
 
 		this.paint = function()

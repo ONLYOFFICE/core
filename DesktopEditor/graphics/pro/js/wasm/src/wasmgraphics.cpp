@@ -749,6 +749,9 @@ int main()
     BYTE* res = NULL;
     if (pages_count > 0)
         res = XPS_GetPixmap(test, 0, width, height);
+    RELEASEARRAYOBJECTS(res);
+    if (pages_count > 0)
+        res = XPS_GetPixmap(test, 0, width, height);
 
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";

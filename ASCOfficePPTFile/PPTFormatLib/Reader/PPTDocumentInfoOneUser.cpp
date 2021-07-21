@@ -2387,17 +2387,44 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
             oInfo.m_dwID = oArrayHyperlink[0]->m_nHyperlinkID;
             for (size_t i = 0 ; i < oArrayCString.size(); i++)
             {
+                const auto& recStr = oArrayCString[i]->m_strText;
+                const auto recInst = oArrayCString[i]->m_oHeader.RecInstance;
                 // Target atom. It's for eigher local and external files.
-                if (oArrayCString[i]->m_oHeader.RecInstance == 1)
-                    oInfo.m_strFilePath		= oArrayCString[i]->m_strText;
+                if (recInst == 1)
+                {
+                    oInfo.m_strFilePath		= recStr;
+                    oInfo.m_type = oInfo.isHTTPLink(recStr) ? CExFilesInfo::ExFilesType::eftHyperlink :
+                                                              CExFilesInfo::ExFilesType::eftAudio;
+                }
                 // Location atom. It's for slides or other local pp objects.
-                if (oArrayCString[i]->m_oHeader.RecInstance == 3)
-                    oInfo.m_strLocation		= oArrayCString[i]->m_strText;
+                else if (recInst == 3 && oInfo.GetSlideNumber(recStr) != -1)
+                {
+                    oInfo.m_strFilePath	= recStr;
+                    oInfo.m_type = CExFilesInfo::ExFilesType::eftSlide;
+                }
+                else
+                    continue;
             }
-            m_oExMedia.m_arHyperlinks.push_back(oInfo);
+            switch (oInfo.m_type)
+            {
+            case CExFilesInfo::ExFilesType::eftHyperlink:
+                m_oExMedia.m_arHyperlinks.push_back(oInfo);
+                break;
+            case CExFilesInfo::ExFilesType::eftAudio:
+                m_oExMedia.m_arAudioCollection.push_back(oInfo);
+                break;
+            case CExFilesInfo::ExFilesType::eftSlide:
+                m_oExMedia.m_arSlides.push_back(oInfo);
+                break;
+            default:
+                m_oExMedia.m_arHyperlinks.push_back(oInfo);
+            }
+
         }
     }
 }
+
+
 
 void CPPTUserInfo::LoadExVideo(CRecordsContainer* pExObject)
 {

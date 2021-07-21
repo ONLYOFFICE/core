@@ -361,11 +361,10 @@ namespace PPT_FORMAT
 		}
         std::wstring WriteSlideRef(const std::wstring& strLocation)
         {
+            int sldNum = CExFilesInfo::GetSlideNumber(strLocation);
+
             std::wstring strSlide(L"slide");
-            std::vector<std::wstring> strs;
-            boost::split(strs, strLocation, boost::is_any_of(L","));
-            if (strs.size() == 3)
-                strSlide += strs[1];
+            strSlide += std::to_wstring(sldNum);
             strSlide += L".xml";
             return WriteHyperlinkMedia(strSlide, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide");
         }

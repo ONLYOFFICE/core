@@ -285,7 +285,7 @@ namespace OOX
 			else if (14 == _at)	m_custScaleY = pReader->GetLong();
 			else if (15 == _at)	m_custSzX = pReader->GetLong();
 			else if (16 == _at)	m_custSzY = pReader->GetLong();
-			else if (17 == _at)	m_loCatId = pReader->GetString2();
+			else if (17 == _at)	m_custT = pReader->GetBool();
 			else if (18 == _at)	m_loCatId = pReader->GetString2();
 			else if (19 == _at)	m_loTypeId = pReader->GetString2();
 			else if (20 == _at)	m_phldr = pReader->GetBool();

@@ -586,7 +586,7 @@ namespace PdfReader
         updateFillOpacity(pGState);
         updateStrokeOpacity(pGState);
         updateFont(pGState);
-        updateClip(pGState);
+       // updateClip(pGState);
     }
     void RendererOutputDev::updateRender(GfxState *pGState)
     {
@@ -2930,21 +2930,24 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        updateClip(pGState);
+        clipToPath(pGState, pGState->getPath(), pGState->getCTM(), false);
+        //updateClip(pGState);
     }
     void RendererOutputDev::eoClip(GfxState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
 
-        updateClip(pGState);
+        clipToPath(pGState, pGState->getPath(), pGState->getCTM(), true);
+        //updateClip(pGState);
     }
     void RendererOutputDev::clipToStrokePath(GfxState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
 
-        updateClip(pGState);
+        clipToPath(pGState, pGState->getPath(), pGState->getCTM(), true);
+        //updateClip(pGState);
     }
     void RendererOutputDev::clipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO)
     {

@@ -5,6 +5,7 @@
 #include "../../../../pro/Graphics.h"
 #include "../../../../../common/officedrawingfile.h"
 #include "../../../../../../XpsFile/XpsFile.h"
+#include "../../../../../../DjVuFile/DjVu.h"
 
 class CGraphicsFileDrawing
 {
@@ -15,12 +16,19 @@ public:
     CGraphicsFileDrawing()
     {
         pApplicationFonts = NSFonts::NSApplication::Create();
-        pReader = new CXpsFile(pApplicationFonts);
     }
     ~CGraphicsFileDrawing()
     {
         RELEASEOBJECT(pReader);
         RELEASEOBJECT(pApplicationFonts);
+    }
+    void CreateXPS()
+    {
+        pReader = new CXpsFile(pApplicationFonts);
+    }
+    void CreateDjVu()
+    {
+        pReader = new CDjVuFile(pApplicationFonts);
     }
 
     bool LoadFromMemory(BYTE* data, DWORD length)

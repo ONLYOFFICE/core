@@ -51,7 +51,7 @@ for item in input_wasmdjvu_sources:
     sources.append(libWasmDjVu_src_path + item)
 sources.append("djvu_common.cpp")
 
-compiler_flags.append("-DWIN32 -DNDEBUG -D_LIB -D_CRT_SECURE_NO_WARNINGS -DWASM_MODE -Derrno=0 \"-DUINT=unsigned int\" -DTHREADMODEL=0 -DDEBUGLVL=0")
+compiler_flags.append("-DWIN32 -DNDEBUG -D_LIB -D_CRT_SECURE_NO_WARNINGS -DWASM_MODE -Derrno=0 -DTHREADMODEL=0 -DDEBUGLVL=0")
 
 # arguments
 arguments = ""

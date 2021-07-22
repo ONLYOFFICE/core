@@ -87,16 +87,19 @@ namespace NSDjvu
 CDjVuFileImplementation::CDjVuFileImplementation(NSFonts::IApplicationFonts* pFonts)
 {
 	m_pDoc = NULL;
+#ifndef WASM_MODE
 	std::wstring wsTempPath = NSFile::CFileBinary::GetTempPath();
 	wsTempPath += L"DJVU\\";
 	m_wsTempDirectory = wsTempPath;
 	NSDirectory::CreateDirectory(m_wsTempDirectory);
-
+#endif
     m_pApplicationFonts = pFonts;
 }
 CDjVuFileImplementation::~CDjVuFileImplementation()
 {
+#ifndef WASM_MODE
 	NSDirectory::DeleteDirectory(m_wsTempDirectory);
+#endif
 }
 bool               CDjVuFileImplementation::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXMLOptions)
 {
@@ -202,11 +205,13 @@ void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRende
 		{
 			CreateGrFrame(pRenderer, pPage, pBreak);
 		}
+        #ifndef WASM_MODE
 		else if (c_nPDFWriter == lRendererType)
 		{
 			XmlUtils::CXmlNode oText = ParseText(pPage);
 			CreatePdfFrame(pRenderer, pPage, nPageIndex, oText);
 		}
+        #endif
 		else
 		{
 			XmlUtils::CXmlNode oText = ParseText(pPage);

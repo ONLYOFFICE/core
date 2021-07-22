@@ -181,7 +181,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			}
 		}
 	
-		if (level >= 0)
+		if (level >= 0 && level < 10)
 		{
 			if (list_styles.outline_style())
 			{

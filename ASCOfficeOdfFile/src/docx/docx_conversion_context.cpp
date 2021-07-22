@@ -1119,6 +1119,8 @@ void docx_conversion_context::process_styles()
         }
         _Wostream << L"</w:docDefaults>";
 
+		std::wstring default_style;
+
 		for (size_t i = 0; i < arStyles.size(); i++)
 		{
             if (false == arStyles[i]->is_automatic() && 
@@ -1134,6 +1136,11 @@ void docx_conversion_context::process_styles()
 				if (bDefault)  // style
 				{
 					_Wostream << L" w:default=\"1\"";
+
+					if (arStyles[i]->type() == odf_types::style_family::Paragraph)
+					{
+						default_style = id;
+					}
 				}
 				else if (!arStyles[i]->is_default()) // default-style
 				{
@@ -1150,6 +1157,10 @@ void docx_conversion_context::process_styles()
                     const std::wstring basedOnId = styles_map_.get(baseOn->name(), baseOn->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\"/>";
                 }
+				else if (!bDefault && !default_style.empty())
+				{
+					_Wostream << L"<w:basedOn w:val=\"" << default_style << "\"/>";
+				}
      //           else if (false == bDefault && false == arStyles[i]->is_default() && styles_map_.check(L"", arStyles[i]->type()))
      //           {
 					//bDisplayed = false;
@@ -1809,7 +1820,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 							//process_paragraph_style(Context.get_current_paragraph_style()); ??
 
 							//if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
-							if (outline_level)
+							if ((outline_level) && (*outline_level < 10))
 							{
 								output_stream() << L"<w:pPr>";
 									output_stream() << L"<w:outlineLvl w:val=\"" << *outline_level << L"\"/>";
@@ -1821,7 +1832,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 							output_stream() << get_section_context().dump_;
 							get_section_context().dump_.clear();
 							//if ((Attr->outline_level_) && (*Attr->outline_level_ > 0))
-							if (outline_level)
+							if ((outline_level) && (*outline_level < 10))
 							{
 								output_stream() << L"<w:outlineLvl w:val=\"" << *outline_level << L"\"/>";
 							}

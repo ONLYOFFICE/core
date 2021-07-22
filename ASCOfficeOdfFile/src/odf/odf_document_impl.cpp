@@ -854,7 +854,7 @@ void odf_document::Impl::parse_styles(office_element *element)
                     L"",
 					L"",
                     L"",
-					L"");                                            
+					L"default");                                            
             }
 			for (size_t i = 0; i < docStyles->style_presentation_page_layout_.size(); i++)
 			{	

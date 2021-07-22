@@ -904,7 +904,10 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 	
 	if (number_val.empty() && !bool_val)
 	{
-		sharedStringId = content_.xlsx_convert(Context, textFormatProperties);
+		if (!formula.empty())
+			xlsx_value_type = oox::XlsxCellType::str;
+		else
+			sharedStringId = content_.xlsx_convert(Context, textFormatProperties);
 	}	
 	
 //---------------------------------------------------------------------------------------------------------	

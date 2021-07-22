@@ -89,8 +89,6 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::waitAndRunServer()
     m_pServer->waitForConnection();
     //blocks until disconnected
     m_pServer->run();
-    //finely shut server down
-    m_pServer->shutdown();
 }
 
 NSCommon::smart_ptr<NSJSBase::CJSValue>

@@ -4,6 +4,9 @@
 namespace ip = boost::asio::ip;
 namespace beast = boost::beast;
 
+//tmp
+static std::size_t count = 0;
+
 std::string NSJSBase::v8_debug::internal::SingleConnectionServer::getData()
 {
     //check stream
@@ -67,10 +70,11 @@ void NSJSBase::v8_debug::internal::SingleConnectionServer::setDisconnected()
     m_bCdtConnected = false;
 }
 
-bool NSJSBase::v8_debug::internal::SingleConnectionServer::checkStream() const
+bool NSJSBase::v8_debug::internal::SingleConnectionServer::checkStream()
 {
     if (!m_pWebsocketStream) {
         std::cerr << "no websocket stream when requested one" << std::endl;
+        setDisconnected();
         return false;
     }
     return true;
@@ -90,7 +94,8 @@ NSJSBase::v8_debug::internal::SingleConnectionServer::SingleConnectionServer(uin
           )
 
 {
-    //
+    //tmp
+    count = 0;
 }
 
 void NSJSBase::v8_debug::internal::SingleConnectionServer::setOnMessageCallback(
@@ -168,7 +173,7 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::listen()
 void NSJSBase::v8_debug::internal::SingleConnectionServer::run()
 {
     while (waitAndProcessMessage()) {
-        //just run in loop
+        std::clog << "SingleConnectionServer: waiting for message in loop " << count++ << std::endl;
     }
 }
 

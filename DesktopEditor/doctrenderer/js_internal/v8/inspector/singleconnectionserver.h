@@ -56,7 +56,7 @@ private:
     void setConnected();
     void setDisconnected();
     //
-    bool checkStream() const;
+    bool checkStream();
 
 public:
     SingleConnectionServer(uint16_t port = 8080, std::string host = "127.0.0.1");

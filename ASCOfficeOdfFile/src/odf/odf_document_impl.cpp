@@ -518,26 +518,19 @@ void odf_document::Impl::parse_fonts(office_element *element)
             std::wstring altName = fontNames.size() >= 2 ? fontNames[1] : L"";
 
             const std::wstring charset = fontFace->style_font_charset_.get_value_or(L"") == L"x-symbol" ? L"02" : L"00";
-            const std::wstring fontFamily 
+            
+			std::wstring fontFamily 
                 = fontFace->style_font_family_generic_.get_value_or( font_family_generic(font_family_generic::System) ).get_type() 
                 == font_family_generic::System ?
                 L"auto" : boost::lexical_cast<std::wstring>(*fontFace->style_font_family_generic_);
-            const std::wstring fontPitch = fontFace->style_font_pitch_ ? boost::lexical_cast<std::wstring>(*fontFace->style_font_pitch_) : L"";
+            
+			const std::wstring fontPitch = fontFace->style_font_pitch_ ? boost::lexical_cast<std::wstring>(*fontFace->style_font_pitch_) : L"";
 
             boost::algorithm::trim_if(fontName, boost::algorithm::is_any_of("'"));
-            
+
             font_instance_ptr fontInstance( new font_instance (styleName, fontName, charset, fontFamily, fontPitch, altName) );
 
             context_->fontContainer().add_font( fontInstance );
-            /*if  (!context_.fontContainer().font_by_name(fontStyleName))
-            {
-                // два раза не добавляем?
-                
-            }
-            else
-            {
-                _CP_LOG << L"[warning] duplicate font name (" << fontName << L")\n";
-            }*/
         }
     }
     while (0);

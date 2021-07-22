@@ -1808,59 +1808,49 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
     std::vector<CRecordOfficeArtClientData*> oArrayArtClient;
     GetRecordsByType(&oArrayArtClient, false, true);
-    std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
-    std::vector<CRecordCString*> oArrayMacro;
-//    GetRecordsByType(&oArrayMacro, true, false);
+    std::vector<CRecordMouseInteractiveInfoContainer*> oArrayInteractive;
 
     if (oArrayArtClient.size())
         oArrayArtClient[0]->GetRecordsByType(&oArrayInteractive, true, false);
-    else
-    {
-        GetRecordsByType(&oArrayInteractive, true, false);
-        if (oArrayInteractive.size())
-            oArrayInteractive.clear();
-    }
 
-    if (oArrayInteractive.size() == 2)
-        oArrayInteractive[1]->m_oHeader.RecInstance = 1;
-
-    for (auto const* interactiveAtom : oArrayInteractive)
+    for (auto const* interactiveCont : oArrayInteractive)
     {
+        auto& interactiveAtom = interactiveCont->interactiveInfoAtom;
         CInteractiveInfo interactiveInfo;
         interactiveInfo.m_bPresent = true;
-        interactiveInfo.m_eActivation = (bool)interactiveAtom->m_oHeader.RecInstance;
+        interactiveInfo.m_eActivation = interactiveCont->isOver;
 
         if (pMapIDs)
         {
-            CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(interactiveAtom->m_nSoundIdRef);
+            CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(interactiveAtom.m_nSoundIdRef);
             if (NULL != pInfo1)
             {
                 interactiveInfo.m_strAudioFileName = pInfo1->m_strFilePath;
                 interactiveInfo.m_strAudioName = pInfo1->m_name;
             }
-            CExFilesInfo* pInfo2 = pMapIDs->LockSlide(interactiveAtom->m_nExHyperlinkIdRef);
+            CExFilesInfo* pInfo2 = pMapIDs->LockSlide(interactiveAtom.m_nExHyperlinkIdRef);
             if (NULL != pInfo2)
             {
                 interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
             }
-            pInfo2 = pMapIDs->LockHyperlink(interactiveAtom->m_nExHyperlinkIdRef);
+            pInfo2 = pMapIDs->LockHyperlink(interactiveAtom.m_nExHyperlinkIdRef);
             if (NULL != pInfo2)
             {
                 interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
             }
         }
-        if (oArrayMacro.size())
-            interactiveInfo.m_macro = oArrayMacro[0]->m_strText;
+        if (interactiveCont->macroNameAtom.is_init())
+            interactiveInfo.m_macro = interactiveCont->macroNameAtom->m_strText;
 
-        interactiveInfo.m_lType				= interactiveAtom->m_nAction;
-        interactiveInfo.m_lOleVerb			= interactiveAtom->m_nOleVerb;
-        interactiveInfo.m_lJump				= interactiveAtom->m_nJump;
-        interactiveInfo.m_lHyperlinkType	= interactiveAtom->m_nHyperlinkType;
+        interactiveInfo.m_lType				= interactiveAtom.m_nAction;
+        interactiveInfo.m_lOleVerb			= interactiveAtom.m_nOleVerb;
+        interactiveInfo.m_lJump				= interactiveAtom.m_nJump;
+        interactiveInfo.m_lHyperlinkType	= interactiveAtom.m_nHyperlinkType;
 
-        interactiveInfo.m_bAnimated			= interactiveAtom->m_bAnimated;
-        interactiveInfo.m_bStopSound		= interactiveAtom->m_bStopSound;
-        interactiveInfo.m_bCustomShowReturn	= interactiveAtom->m_bCustomShowReturn;
-        interactiveInfo.m_bVisited			= interactiveAtom->m_bVisited;
+        interactiveInfo.m_bAnimated			= interactiveAtom.m_bAnimated;
+        interactiveInfo.m_bStopSound		= interactiveAtom.m_bStopSound;
+        interactiveInfo.m_bCustomShowReturn	= interactiveAtom.m_bCustomShowReturn;
+        interactiveInfo.m_bVisited			= interactiveAtom.m_bVisited;
 
         pElement->m_arrActions.push_back(interactiveInfo);
     }

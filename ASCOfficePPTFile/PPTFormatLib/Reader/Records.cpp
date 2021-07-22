@@ -624,6 +624,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
             // интерактив
     CREATE_BY_TYPE(RT_InteractiveInfoAtom       			, CRecordInteractiveInfoAtom)
     CREATE_BY_TYPE(RT_TextInteractiveInfoAtom       		, CRecordTextInteractiveInfoAtom)
+    CREATE_BY_TYPE(RT_InteractiveInfo                       , CRecordMouseInteractiveInfoContainer)
 
             // читаем для анимации
 
@@ -632,7 +633,6 @@ IRecord* CreateByType(SRecordHeader oHeader)
 
     CREATE_BY_TYPE(RT_Sound         						, CRecordSoundContainer)
     CREATE_BY_TYPE(RT_SoundDataBlob     					, CRecordSoundDataBlob)
-
 
     default:
         {

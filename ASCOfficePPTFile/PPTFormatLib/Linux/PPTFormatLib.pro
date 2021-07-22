@@ -440,6 +440,7 @@ HEADERS += \
     ../Records/BuildAtom.h \
     ../Records/DocInfoListContainer.h \
     ../Records/DocProgTagsContainer.h \
+    ../Records/MouseInteractiveInfoContainer.h \
     ../Records/OfficeArtClientData.h \
     ../Records/PlaceHolderAtom.h \
     ../Records/ShapeProgBinaryTagSubContainerOrAtom.h \

@@ -41,7 +41,7 @@
 #include "../PlaceHolderAtom.h"
 #include "../StyleTextPropAtom.h"
 #include "../OutlineTextRefAtom.h"
-#include "../InteractiveInfoAtom.h"
+#include "../MouseInteractiveInfoContainer.h"
 #include "../TextInteractiveInfoAtom.h"
 #include "../MasterTextPropAtom.h"
 #include "../HeadersFootersAtom.h"
@@ -143,4 +143,6 @@ protected:
     void ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels);
     void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels);
     void ApplyHyperlink(CShapeElement* pShape, CColor& oColor);
+    static void ConvertInteractiveInfo(CInteractiveInfo& interactiveInfo, const CRecordMouseInteractiveInfoContainer* interactiveCont, CExMedia* pMapIDs);
+
 };

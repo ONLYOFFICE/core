@@ -114,6 +114,7 @@ public:
     std::wstring	m_strHyperlink;
     std::wstring        m_strAudioName;
     std::wstring        m_macro;
+
 };
 class CTextInteractiveInfo
 {

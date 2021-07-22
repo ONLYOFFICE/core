@@ -40,6 +40,7 @@
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
 #include "../../Enums/_includer.h"
+#include "iostream"
 
 
 
@@ -1815,42 +1816,8 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
     for (auto const* interactiveCont : oArrayInteractive)
     {
-        auto& interactiveAtom = interactiveCont->interactiveInfoAtom;
         CInteractiveInfo interactiveInfo;
-        interactiveInfo.m_bPresent = true;
-        interactiveInfo.m_eActivation = interactiveCont->isOver;
-
-        if (pMapIDs)
-        {
-            CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(interactiveAtom.m_nSoundIdRef);
-            if (NULL != pInfo1)
-            {
-                interactiveInfo.m_strAudioFileName = pInfo1->m_strFilePath;
-                interactiveInfo.m_strAudioName = pInfo1->m_name;
-            }
-            CExFilesInfo* pInfo2 = pMapIDs->LockSlide(interactiveAtom.m_nExHyperlinkIdRef);
-            if (NULL != pInfo2)
-            {
-                interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
-            }
-            pInfo2 = pMapIDs->LockHyperlink(interactiveAtom.m_nExHyperlinkIdRef);
-            if (NULL != pInfo2)
-            {
-                interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
-            }
-        }
-        if (interactiveCont->macroNameAtom.is_init())
-            interactiveInfo.m_macro = interactiveCont->macroNameAtom->m_strText;
-
-        interactiveInfo.m_lType				= interactiveAtom.m_nAction;
-        interactiveInfo.m_lOleVerb			= interactiveAtom.m_nOleVerb;
-        interactiveInfo.m_lJump				= interactiveAtom.m_nJump;
-        interactiveInfo.m_lHyperlinkType	= interactiveAtom.m_nHyperlinkType;
-
-        interactiveInfo.m_bAnimated			= interactiveAtom.m_bAnimated;
-        interactiveInfo.m_bStopSound		= interactiveAtom.m_bStopSound;
-        interactiveInfo.m_bCustomShowReturn	= interactiveAtom.m_bCustomShowReturn;
-        interactiveInfo.m_bVisited			= interactiveAtom.m_bVisited;
+        ConvertInteractiveInfo(interactiveInfo, interactiveCont, pMapIDs);
 
         pElement->m_arrActions.push_back(interactiveInfo);
     }
@@ -2559,7 +2526,48 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
             }
         }
     }
-}	
+}
+
+void CRecordShapeContainer::ConvertInteractiveInfo(CInteractiveInfo &interactiveInfo, const CRecordMouseInteractiveInfoContainer *interactiveCont, CExMedia *pMapIDs)
+{
+
+    auto& interactiveAtom = interactiveCont->interactiveInfoAtom;
+    interactiveInfo.m_bPresent = true;
+    interactiveInfo.m_eActivation = interactiveCont->isOver;
+
+    if (pMapIDs)
+    {
+        CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(interactiveAtom.m_nSoundIdRef);
+        if (NULL != pInfo1)
+        {
+            interactiveInfo.m_strAudioFileName = pInfo1->m_strFilePath;
+            interactiveInfo.m_strAudioName = pInfo1->m_name;
+        }
+        CExFilesInfo* pInfo2 = pMapIDs->LockSlide(interactiveAtom.m_nExHyperlinkIdRef);
+        if (NULL != pInfo2)
+        {
+            interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
+        }
+        pInfo2 = pMapIDs->LockHyperlink(interactiveAtom.m_nExHyperlinkIdRef);
+        if (NULL != pInfo2)
+        {
+            interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
+        }
+    }
+    if (interactiveCont->macroNameAtom.is_init())
+        interactiveInfo.m_macro = interactiveCont->macroNameAtom->m_strText;
+
+    interactiveInfo.m_lType				= interactiveAtom.m_nAction;
+    interactiveInfo.m_lOleVerb			= interactiveAtom.m_nOleVerb;
+    interactiveInfo.m_lJump				= interactiveAtom.m_nJump;
+    interactiveInfo.m_lHyperlinkType	= interactiveAtom.m_nHyperlinkType;
+
+    interactiveInfo.m_bAnimated			= interactiveAtom.m_bAnimated;
+    interactiveInfo.m_bStopSound		= interactiveAtom.m_bStopSound;
+    interactiveInfo.m_bCustomShowReturn	= interactiveAtom.m_bCustomShowReturn;
+    interactiveInfo.m_bVisited			= interactiveAtom.m_bVisited;
+
+}
 
 void CRecordGroupShapeContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 {

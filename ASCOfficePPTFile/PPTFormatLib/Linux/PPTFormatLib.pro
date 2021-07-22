@@ -442,6 +442,7 @@ HEADERS += \
     ../Records/DocProgTagsContainer.h \
     ../Records/MouseInteractiveInfoContainer.h \
     ../Records/OfficeArtClientData.h \
+    ../Records/OfficeArtClientTextbox.h \
     ../Records/PlaceHolderAtom.h \
     ../Records/ShapeProgBinaryTagSubContainerOrAtom.h \
     ../Records/CFMasks.h \

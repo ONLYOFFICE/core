@@ -421,10 +421,11 @@ namespace MetaFile
                 m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.ClipPrecision, sizeof (unsigned char));
                 m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.Quality,       sizeof (unsigned char));
                 m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.PitchAndFamily,sizeof (unsigned char));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.FaceName,      sizeof (unsigned short) * 16);
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.FullName,              sizeof (unsigned short) * 32);
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.Style,                 sizeof (unsigned short) * 32);
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.Script,                sizeof (unsigned short) * 32);
+
+                WriteString(oLogFont->LogFontEx.LogFont.FaceName,   16);
+                WriteString(oLogFont->LogFontEx.FullName,           32);
+                WriteString(oLogFont->LogFontEx.Style,              32);
+                WriteString(oLogFont->LogFontEx.Script,             32);
 
                 if (!oLogFont->IsFixedLength())
                 {
@@ -1001,8 +1002,9 @@ namespace MetaFile
                 WritePoint(oCenter);
 
                 m_pOutStream->write((char *)&unRadius,          sizeof (unsigned int));
-                m_pOutStream->write((char *)&dStartAngle,       sizeof (float));
-                m_pOutStream->write((char *)&dSweepAngle,       sizeof (float));
+
+                WriteFloat(dStartAngle);
+                WriteFloat(dSweepAngle);
         }
 
         void CEmfInterpretator::HANDLE_EMR_ARC(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
@@ -1083,8 +1085,9 @@ namespace MetaFile
                 WriteRectangle(oTEmfExtTextoutA.Bounds);
 
                 m_pOutStream->write((char *)&oTEmfExtTextoutA.iGraphicsMode,    sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfExtTextoutA.exScale,          sizeof (float));
-                m_pOutStream->write((char *)&oTEmfExtTextoutA.eyScale,          sizeof (float));
+
+                WriteFloat(oTEmfExtTextoutA.exScale);
+                WriteFloat(oTEmfExtTextoutA.exScale);
 
                 WritePoint(oTEmfExtTextoutA.aEmrText.Reference);
 
@@ -1117,8 +1120,9 @@ namespace MetaFile
                 WriteRectangle(oTEmfExtTextoutW.Bounds);
 
                 m_pOutStream->write((char *)&oTEmfExtTextoutW.iGraphicsMode,    sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfExtTextoutW.exScale,          sizeof (float));
-                m_pOutStream->write((char *)&oTEmfExtTextoutW.eyScale,          sizeof (float));
+
+                WriteFloat(oTEmfExtTextoutW.exScale);
+                WriteFloat(oTEmfExtTextoutW.eyScale);
 
                 WritePoint(oTEmfExtTextoutW.wEmrText.Reference);
 
@@ -1451,35 +1455,36 @@ namespace MetaFile
 
         void CEmfInterpretator::HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout &oText)
         {
-            int unExplicitRecordSize    = 36 + ((oText.fuOptions & ETO_NO_RECT) ? 0 : 16) +
-                                                oText.cChars * ((oText.fuOptions & ETO_SMALL_CHARS) ? sizeof (unsigned char)
-                                                                                                    : sizeof (unsigned short));
-            int unType                  = EMR_SMALLTEXTOUT;
+                int unExplicitRecordSize    = 36 + ((oText.fuOptions & ETO_NO_RECT) ? 0 : 16) +
+                                                    oText.cChars * ((oText.fuOptions & ETO_SMALL_CHARS) ? sizeof (unsigned char)
+                                                                                                        : sizeof (unsigned short));
+                int unType                  = EMR_SMALLTEXTOUT;
 
-            unFileSize += unExplicitRecordSize;
-            ++unNumberRecords;
+                unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
 
-            m_pOutStream->write((char *)&unType,                sizeof (int));
-            m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->write((char *)&unType,                sizeof (int));
+                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
 
-            m_pOutStream->write((char *)&oText.x,               sizeof (int));
-            m_pOutStream->write((char *)&oText.y,               sizeof (int));
-            m_pOutStream->write((char *)&oText.cChars,          sizeof (unsigned int));
-            m_pOutStream->write((char *)&oText.fuOptions,       sizeof (unsigned int));
-            m_pOutStream->write((char *)&oText.iGraphicsMode,   sizeof (unsigned int));
-            m_pOutStream->write((char *)&oText.exScale,         sizeof (float));
-            m_pOutStream->write((char *)&oText.eyScale,         sizeof (float));
+                m_pOutStream->write((char *)&oText.x,               sizeof (int));
+                m_pOutStream->write((char *)&oText.y,               sizeof (int));
+                m_pOutStream->write((char *)&oText.cChars,          sizeof (unsigned int));
+                m_pOutStream->write((char *)&oText.fuOptions,       sizeof (unsigned int));
+                m_pOutStream->write((char *)&oText.iGraphicsMode,   sizeof (unsigned int));
 
-            if (!(oText.fuOptions & ETO_NO_RECT))
-                WriteRectangle(oText.Bounds);
+                WriteFloat(oText.exScale);
+                WriteFloat(oText.eyScale);
 
-            if (oText.cChars > 0)
-            {
-                if (oText.fuOptions & ETO_SMALL_CHARS)
-                    m_pOutStream->write((char *)&oText.TextString ,sizeof (unsigned char) * oText.cChars);
-                else
-                    m_pOutStream->write((char *)&oText.TextString ,sizeof (unsigned short) * oText.cChars);
-            }
+                if (!(oText.fuOptions & ETO_NO_RECT))
+                    WriteRectangle(oText.Bounds);
+
+                if (oText.cChars > 0)
+                {
+                    if (oText.fuOptions & ETO_SMALL_CHARS)
+                        m_pOutStream->write((char *)&oText.TextString ,sizeof (unsigned char) * oText.cChars);
+                    else
+                        m_pOutStream->write((char *)&oText.TextString ,sizeof (unsigned short) * oText.cChars);
+                }
         }
 
         void CEmfInterpretator::HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL &oBounds)
@@ -1542,12 +1547,12 @@ namespace MetaFile
 
         void CEmfInterpretator::WriteForm(const TXForm &oForm)
         {
-                m_pOutStream->write((char *)&oForm.M11,  sizeof (float));
-                m_pOutStream->write((char *)&oForm.M12,  sizeof (float));
-                m_pOutStream->write((char *)&oForm.M21,  sizeof (float));
-                m_pOutStream->write((char *)&oForm.M22,  sizeof (float));
-                m_pOutStream->write((char *)&oForm.Dx,   sizeof (float));
-                m_pOutStream->write((char *)&oForm.Dy,   sizeof (float));
+                WriteFloat(oForm.M11);
+                WriteFloat(oForm.M12);
+                WriteFloat(oForm.M21);
+                WriteFloat(oForm.M22);
+                WriteFloat(oForm.Dx);
+                WriteFloat(oForm.Dy);
         }
 
         void CEmfInterpretator::WritePoint(const TEmfPointL &oPoint)
@@ -1560,6 +1565,38 @@ namespace MetaFile
         {
                 m_pOutStream->write((char *)&oPoint.x, sizeof (short));
                 m_pOutStream->write((char *)&oPoint.y, sizeof (short));
+        }
+
+        void CEmfInterpretator::WriteString(const unsigned short arshString[], const unsigned int &unSize)
+        {
+                unsigned int unZero = 0;
+                if (NULL == arshString)
+                {
+                        m_pOutStream->write((char *)&unZero, sizeof (unsigned int) * unSize);
+                        return;
+                }
+
+                unsigned short ushNULL = 52685;
+
+                for (unsigned int i = 0; i < unSize; ++i)
+                {
+                        if (arshString[i] != ushNULL)
+                            m_pOutStream->write((char *)&arshString[i], sizeof (unsigned short));
+                        else
+                           m_pOutStream->write((char *)&unZero, sizeof (unsigned short));
+                    }
+        }
+
+        void CEmfInterpretator::WriteFloat(const float &fValue)
+        {
+                unsigned char arValue[4];
+
+                arValue[0] = *((unsigned char*)(&fValue) + 0);
+                arValue[1] = *((unsigned char*)(&fValue) + 1);
+                arValue[2] = *((unsigned char*)(&fValue) + 2);
+                arValue[3] = *((unsigned char*)(&fValue) + 3);
+
+                m_pOutStream->write((char *)arValue, sizeof (arValue));
         }
 }
 

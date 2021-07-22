@@ -105,6 +105,8 @@ namespace MetaFile
                 void WriteForm      (const TEmfXForm&           oForm);
                 void WritePoint     (const TEmfPointL&          oPoint);
                 void WritePoint     (const TEmfPointS&          oPoint);
+                void WriteString    (const unsigned short       arshString[], const unsigned int& unSize);
+                void WriteFloat     (const float&               fValue);
         public:
                 //Следующие методы ничего не делают
                 void Begin() override {};

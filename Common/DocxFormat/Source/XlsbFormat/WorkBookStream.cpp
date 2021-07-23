@@ -43,6 +43,7 @@
 #include "Biff12_unions/BUNDLESHS.h"
 #include "Biff12_unions/FNGROUP.h"
 #include "Biff12_unions/EXTERNALS.h"
+#include "Biff12_records/CalcProp.h"
 
 namespace XLSB
 {
@@ -211,6 +212,15 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                     m_arName.insert(m_arName.begin() + start_pos, elements_.back());
                     elements_.pop_back();
                     count--;
+                }
+            }break;
+
+            case rt_CalcProp:
+            {
+                if (proc.optional<CalcProp>())
+                {
+                    m_BrtCalcProp = elements_.back();
+                    elements_.pop_back();
                 }
             }break;
 

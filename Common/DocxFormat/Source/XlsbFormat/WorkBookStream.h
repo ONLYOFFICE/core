@@ -76,6 +76,7 @@ namespace XLSB
         BaseObjectPtr               m_BUNDLESHS;
         BaseObjectPtr               m_FNGROUP;
         BaseObjectPtr               m_EXTERNALS;
+        BaseObjectPtr               m_BrtCalcProp;
 
         std::vector<BaseObjectPtr>  m_arName;
 

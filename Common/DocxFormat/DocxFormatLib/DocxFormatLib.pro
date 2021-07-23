@@ -126,6 +126,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/SupSame.cpp \
     ../Source/XlsbFormat/Biff12_records/PlaceholderName.cpp \
     ../Source/XlsbFormat/Biff12_records/SupAddin.cpp \
+    ../Source/XlsbFormat/Biff12_records/CalcProp.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -364,6 +365,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/SupSame.h \
     ../Source/XlsbFormat/Biff12_records/PlaceholderName.h \
     ../Source/XlsbFormat/Biff12_records/SupAddin.h \
+    ../Source/XlsbFormat/Biff12_records/CalcProp.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \

@@ -32,7 +32,7 @@
 
 #include "BOOKVIEWS.h"
 #include "../Biff12_records/BeginBookViews.h"
-#include "../Biff12_records/BookView.h"
+#include "../Biff12_records/CommonRecords.h"
 #include "../Biff12_records/EndBookViews.h"
 
 namespace XLSB

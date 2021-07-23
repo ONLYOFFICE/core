@@ -54,15 +54,48 @@ BaseObjectPtr Window1::clone()
 void Window1::readFields(CFRecord& record)
 {
 	unsigned short flags;
-	record >> xWn >> yWn >> dxWn >> dyWn >> flags >> itabCur >> itabFirst >> ctabSel >> wTabRatio;
-	
-	fHidden			= GETBIT(flags, 0);
-	fIconic			= GETBIT(flags, 1);
-	fVeryHidden		= GETBIT(flags, 2);
-	fDspHScroll		= GETBIT(flags, 3);
-	fDspVScroll		= GETBIT(flags, 4);
-	fBotAdornment	= GETBIT(flags, 5);
-	fNoAFDateGroup	= GETBIT(flags, 6);
+
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        _INT16 xWn_2b;
+        _INT16 yWn_2b;
+        _INT16 dxWn_2b;
+        _INT16 dyWn_2b;
+        _UINT16 itabCur_2b;
+        _UINT16 itabFirst_2b;
+        _UINT16 wTabRatio_2b;
+
+        record >> xWn_2b >> yWn_2b >> dxWn_2b >> dyWn_2b >> flags >> itabCur_2b >> itabFirst_2b >> ctabSel >> wTabRatio_2b;
+
+        fHidden			= GETBIT(flags, 0);
+        fIconic			= GETBIT(flags, 1);
+        fVeryHidden		= GETBIT(flags, 2);
+        fDspHScroll		= GETBIT(flags, 3);
+        fDspVScroll		= GETBIT(flags, 4);
+        fBotAdornment	= GETBIT(flags, 5);
+        fNoAFDateGroup	= GETBIT(flags, 6);
+
+        xWn = xWn_2b;
+        yWn = yWn_2b;
+        dxWn = dxWn_2b;
+        dyWn = dyWn_2b;
+        itabCur = itabCur_2b;
+        itabFirst = itabFirst_2b;
+        wTabRatio = wTabRatio_2b;
+    }
+
+    else
+    {
+        record >> xWn >> yWn >> dxWn >> dyWn >> wTabRatio >> itabFirst >> itabCur >> flags;
+
+        fHidden			= GETBIT(flags, 0);
+        fVeryHidden		= GETBIT(flags, 1);
+        fIconic 		= GETBIT(flags, 2);
+        fDspHScroll		= GETBIT(flags, 3);
+        fDspVScroll		= GETBIT(flags, 4);
+        fBotAdornment	= GETBIT(flags, 5);
+        fNoAFDateGroup	= GETBIT(flags, 6);
+    }
 }
 
 int Window1::serialize(std::wostream & stream)

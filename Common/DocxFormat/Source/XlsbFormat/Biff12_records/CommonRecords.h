@@ -33,6 +33,8 @@
 
 #include <Logic/Biff_records/FileSharing.h>
 #include <Logic/Biff_records/ExternSheet.h>
+#include <Logic/Biff_records/Window1.h>
+#include <Logic/Biff_records/Lbl.h>
 #include "../Source/XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
 
@@ -50,6 +52,16 @@ namespace XLSB
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(ExternSheet)
 
+    };
+
+    class BookView: public XLS::Window1
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(BookView)
+    };
+
+    class Name: public XLS::Lbl
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(Name)
     };
 
 } // namespace XLSB

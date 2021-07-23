@@ -202,6 +202,18 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                 }
             }break;
 
+            case rt_Name:
+            {
+                count = proc.repeated<Name>(0, 0);
+                int start_pos = m_arName.size();
+                while(count > 0)
+                {
+                    m_arName.insert(m_arName.begin() + start_pos, elements_.back());
+                    elements_.pop_back();
+                    count--;
+                }
+            }break;
+
 			default://skip					
 			{
 				proc.SkipRecord();	

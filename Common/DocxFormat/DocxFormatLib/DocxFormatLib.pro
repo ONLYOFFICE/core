@@ -112,7 +112,6 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/AbsPath15.cpp \
     ../Source/XlsbFormat/Biff12_records/ACEnd.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginBookViews.cpp \
-    ../Source/XlsbFormat/Biff12_records/BookView.cpp \
     ../Source/XlsbFormat/Biff12_records/EndBookViews.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginBundleShs.cpp \
     ../Source/XlsbFormat/Biff12_records/BundleSh.cpp \
@@ -351,7 +350,6 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/AbsPath15.h \
     ../Source/XlsbFormat/Biff12_records/ACEnd.h \
     ../Source/XlsbFormat/Biff12_records/BeginBookViews.h \
-    ../Source/XlsbFormat/Biff12_records/BookView.h \
     ../Source/XlsbFormat/Biff12_records/EndBookViews.h \
     ../Source/XlsbFormat/Biff12_records/BeginBundleShs.h \
     ../Source/XlsbFormat/Biff12_records/BundleSh.h \

@@ -66,16 +66,18 @@ namespace XLSB
         int serialize_format(std::wostream & _stream);
         int serialize_protection(std::wostream & _stream);
 
-        BaseObjectPtr			m_BrtBeginBook;
-        BaseObjectPtr			m_BrtFileVersion;
-        BaseObjectPtr			m_BrtFileSharingIso;
-        BaseObjectPtr			m_BrtFileSharing;
-        BaseObjectPtr           m_BrtWbProp;
-        BaseObjectPtr           m_ACABSPATH;
-        BaseObjectPtr           m_BOOKVIEWS;
-        BaseObjectPtr           m_BUNDLESHS;
-        BaseObjectPtr           m_FNGROUP;
-        BaseObjectPtr           m_EXTERNALS;
+        BaseObjectPtr               m_BrtBeginBook;
+        BaseObjectPtr               m_BrtFileVersion;
+        BaseObjectPtr               m_BrtFileSharingIso;
+        BaseObjectPtr               m_BrtFileSharing;
+        BaseObjectPtr               m_BrtWbProp;
+        BaseObjectPtr               m_ACABSPATH;
+        BaseObjectPtr               m_BOOKVIEWS;
+        BaseObjectPtr               m_BUNDLESHS;
+        BaseObjectPtr               m_FNGROUP;
+        BaseObjectPtr               m_EXTERNALS;
+
+        std::vector<BaseObjectPtr>  m_arName;
 
         unsigned short			code_page_;
         GlobalWorkbookInfoPtr		global_info_;

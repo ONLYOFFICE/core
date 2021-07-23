@@ -37,6 +37,7 @@
 namespace XLS
 {
 
+// Logical representation of ExternSheet record in BIFF8 and BrtExternSheet in BIFF12
 class ExternSheet: public BiffRecord
 {
     BIFF_RECORD_DEFINE_TYPE_INFO(ExternSheet)

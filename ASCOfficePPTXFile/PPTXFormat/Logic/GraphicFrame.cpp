@@ -691,7 +691,7 @@ namespace PPTX
 					}break;
 					case SPTREE_TYPE_MACRO:
 					{
-						pReader->Skip(1); // type
+						pReader->Skip(5); // type + size
 						macro = pReader->GetString2();
 					}break;
 					default:

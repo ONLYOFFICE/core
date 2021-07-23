@@ -19,7 +19,7 @@ NSJSBase::v8_debug::internal::CInspectorHolder::makeNewInspectorInfo(
                 id
                 , CInspectorInfo{
                     //logging
-                    false//should be false on prod
+                    true//should be false on prod
                     //port
                     , uint16_t(startPort + m_Inspectors.size())
                     //context group id

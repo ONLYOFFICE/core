@@ -4,9 +4,6 @@
 namespace ip = boost::asio::ip;
 namespace beast = boost::beast;
 
-//tmp
-static std::size_t count = 0;
-
 std::string NSJSBase::v8_debug::internal::SingleConnectionServer::getData()
 {
     //check stream
@@ -94,8 +91,7 @@ NSJSBase::v8_debug::internal::SingleConnectionServer::SingleConnectionServer(uin
           )
 
 {
-    //tmp
-    count = 0;
+    //
 }
 
 void NSJSBase::v8_debug::internal::SingleConnectionServer::setOnMessageCallback(
@@ -173,7 +169,7 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::listen()
 void NSJSBase::v8_debug::internal::SingleConnectionServer::run()
 {
     while (waitAndProcessMessage()) {
-        std::clog << "SingleConnectionServer: waiting for message in loop " << count++ << std::endl;
+        //
     }
 }
 
@@ -220,13 +216,14 @@ bool NSJSBase::v8_debug::internal::SingleConnectionServer::listening() const
 bool NSJSBase::v8_debug::internal::SingleConnectionServer::shutdown()
 {
     //check stream
-    if (checkStream()) {
+    if (!checkStream()) {
         return false;
     }
 
     beast::error_code errCode;
     //send close frame
     m_pWebsocketStream->close(beast::websocket::close_code::normal, errCode);
+
     if (errCode) {
         reportError(errCode, "while closing");
         return false;

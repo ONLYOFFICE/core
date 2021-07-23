@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
         JSSmart<NSJSBase::CJSObject> global_js = pJSContext->GetGlobal();
 
         //one
-        pJSContext->runScript("function function_1() { return 1 + 2; }", try_catch);
+        pJSContext->runScript("function function_1() { return 1 + 2; }function_1();", try_catch);
         try_catch->Check();
 
         //two
@@ -29,10 +29,16 @@ int main(int argc, char *argv[])
         JSSmart<NSJSBase::CJSValue> js_result = global_js->call_func("function_2");
 
         //check
-        if (js_result->isNumber()) {
-            std::cout << js_result->toInt32() << std::endl;
-        } else {
-            std::cout << "no result\n";
+        if (js_result.IsInit()){
+            if (js_result->isNumber()) {
+                std::cout << js_result->toInt32() << std::endl;
+            } else {
+                std::cout << "no result\n";
+            }
+        }
+        else
+        {
+            std::cout << "result not init\n";
         }
     }
 

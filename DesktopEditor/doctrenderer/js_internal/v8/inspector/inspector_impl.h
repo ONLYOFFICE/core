@@ -87,6 +87,7 @@ public:
     void sendData(const v8_inspector::StringView &message);
     bool waitForMessage();
     void setRetVal(const NSCommon::smart_ptr<CJSValue> &val);
+    void shutServerDown();
 
     //running api
     NSCommon::smart_ptr<CJSValue> runScript(

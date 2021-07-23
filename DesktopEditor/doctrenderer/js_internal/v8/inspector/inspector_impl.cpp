@@ -137,6 +137,11 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::setRetVal(const NSCommon::sma
     m_pScriptResult = std::make_unique<JSSmart<CJSValue> >(val);
 }
 
+void NSJSBase::v8_debug::internal::CInspectorImpl::shutServerDown()
+{
+    m_pServer->shutdown();
+}
+
 NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         v8::Local<v8::Context> context
         //platform to pump

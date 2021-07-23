@@ -91,32 +91,51 @@ void NSJSBase::v8_debug::internal::CInspectorClient::quitMessageLoopOnPause() {
 
 void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 {
+//    std::string s1 = "function function_1() { return 1 + 2; }";
+//    std::string s2 = "function function_2() { return 100 + function_1(); }";
+//    v8::Script::Compile(m_Context, tov8str(m_pIsolate, s1)).ToLocalChecked()->Run(m_Context);
+//    v8::Script::Compile(m_Context, tov8str(m_pIsolate, s2)).ToLocalChecked()->Run(m_Context);
     //pause before current script on debugging launch
     pauseOnNextStatement();
 
     //prepare result
     JSSmart<CJSValue> result;
 
+    //tmp
+    struct kkk {
+        JSSmart<CJSValue> &r;
+        CInspectorImpl *p;
+        kkk(JSSmart<CJSValue> &kk, CInspectorImpl *pp) : r(kk), p(pp) {}
+        ~kkk() {
+//            p->setRetVal(r);
+        }
+    } iiiiiiiiiiiiiii(result, m_pInspectingWrapper);
+
     switch (m_Mode) {
     case mode::kScriptExec: {
         //run script
-        result = NSJSBase::runScriptImpl(
+        m_pInspectingWrapper->setRetVal(
+        NSJSBase::runScriptImpl(
                     m_Context
                     , m_ScriptExecData.scriptSource
                     , *m_ScriptExecData.pException
-                    , m_ScriptExecData.scriptPath);
+                    , m_ScriptExecData.scriptPath
+                        )
+                    );
         //dispose script data
         m_ScriptExecData.dispose();
         break;
     }
     case mode::kFuncCall: {
         //call function
-        result = NSJSBase::callFuncImpl(
+        m_pInspectingWrapper->setRetVal(
+                    NSJSBase::callFuncImpl(
                     m_FunctionCallData.value
                     , m_Context
                     , m_FunctionCallData.name
                     , m_FunctionCallData.argc
                     , m_FunctionCallData.argv
+                    )
                     );
         //dispose function data
         m_FunctionCallData.dispose();
@@ -125,7 +144,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
     }
 
     //save result on inspector
-    m_pInspectingWrapper->setRetVal(result);
+//    m_pInspectingWrapper->setRetVal(result);
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::processMessageFromFrontend(
@@ -213,7 +232,23 @@ NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(
 {
     setUpDebuggingSession(contextName
                           , contextGroupId
-                          , [inspector](const v8_inspector::StringView &message) {
+                          , [inspector, this](const v8_inspector::StringView &message) {
         inspector->sendData(message);
+        std::string msg = viewToStr(m_pIsolate, message);
+        if (msg.find("DOM.getDocument") != std::string::npos) {
+            std::cout << "kkk\n";
+            m_pSession->dispatchProtocolMessage(
+                        strToView(R"({"id":1,"method":"Debugger.resume","params":{"terminateOnResume":false}})")
+                        );
+        }
+        return;
+        if (getMethod(m_Context, message) ==
+//                "Debugger.paused"
+                "DOM.getDocument"
+                ) {
+            std::cout << "kkk\n";
+//            m_pSession->resume();
+
+        }
     });
 }

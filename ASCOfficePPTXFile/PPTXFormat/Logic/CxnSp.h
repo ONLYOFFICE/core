@@ -76,14 +76,16 @@ namespace PPTX
 			{
 				pWriter->StartRecord(SPTREE_TYPE_CXNSP);
 
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString2(0, macro);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
 				pWriter->WriteRecord1(0, nvCxnSpPr);
 				pWriter->WriteRecord1(1, spPr);
 				pWriter->WriteRecord2(2, style);
 
+				if (macro.IsInit())
+				{
+					pWriter->StartRecord(SPTREE_TYPE_MACRO);
+					pWriter->WriteString1(0, *macro);
+					pWriter->EndRecord();
+				}
 				pWriter->EndRecord();
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -126,24 +128,6 @@ namespace PPTX
 			{
 				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							macro = pReader->GetString2();						
-						}break;
-						default:
-							break;
-					}
-				}
 				while (pReader->GetPos() < _end_rec)
 				{
 					BYTE _at = pReader->GetUChar();
@@ -165,6 +149,11 @@ namespace PPTX
 							style->fromPPTY(pReader);
 							break;
 						}
+						case SPTREE_TYPE_MACRO:
+						{
+							pReader->Skip(1); // type
+							macro = pReader->GetString2();
+						}break;
 						default:
 						{
 							break;

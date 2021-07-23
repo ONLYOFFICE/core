@@ -576,7 +576,6 @@ namespace PPTX
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 			pWriter->WriteString2(0, vmlSpid);
-			pWriter->WriteString2(1, macro);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord2(0, nvGraphicFramePr);
@@ -613,7 +612,12 @@ namespace PPTX
 			{
 				//????
 			}
-
+			if (macro.IsInit())
+			{
+				pWriter->StartRecord(SPTREE_TYPE_MACRO);
+				pWriter->WriteString1(0, *macro);
+				pWriter->EndRecord();
+			}
 			pWriter->EndRecord();
 		}
 
@@ -634,10 +638,6 @@ namespace PPTX
 					{
 						vmlSpid = pReader->GetString2();						
 					}break;	
-					case 1:
-					{
-						macro = pReader->GetString2();
-					}break;
 					default:
 						break;
 				}
@@ -688,6 +688,11 @@ namespace PPTX
 						chartRec = new Logic::ChartRec();
 						chartRec->m_bChartEx = true;
 						chartRec->fromPPTY(pReader);
+					}break;
+					case SPTREE_TYPE_MACRO:
+					{
+						pReader->Skip(1); // type
+						macro = pReader->GetString2();
 					}break;
 					default:
 						pReader->SkipRecord();

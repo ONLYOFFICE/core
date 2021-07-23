@@ -347,9 +347,9 @@ namespace NSDocxRenderer
             oWriter.AddInt((int)m_lCoordSizeY);
             oWriter.WriteString(L"\" path=\"");
             oWriter.WriteString(m_strPath);
-            oWriter.WriteString(L"\" fillcolor=\"");
+            oWriter.WriteString(L"\" fillcolor=\"#");
             oWriter.WriteHexInt3((int)ConvertColor(m_oBrush.Color1));
-            oWriter.WriteString(L"\" strokecolor=\"");
+            oWriter.WriteString(L"\" strokecolor=\"#");
             oWriter.WriteHexInt3((int)ConvertColor(m_oPen.Color));
             oWriter.WriteString(L"\" strokeweight=\"");
             oWriter.AddDouble(m_oPen.Size, 2);

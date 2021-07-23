@@ -1913,8 +1913,24 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         }
 
 
+        std::vector<CRecordOfficeArtClientTextbox*> oArrayTextBox;
+        std::vector<CRecordMouseInteractiveInfoContainer*> oArrayInteractiveCont;
         std::vector<CRecordTextInteractiveInfoAtom*> oArrayTextInteractive;
-        this->GetRecordsByType(&oArrayTextInteractive, true);
+        this->GetRecordsByType(&oArrayTextBox, false);
+
+        if (oArrayTextBox.size())
+        {
+            oArrayTextBox[0]->GetRecordsByType(&oArrayTextInteractive, false);
+
+            oArrayTextBox[0]->GetRecordsByType(&oArrayInteractiveCont, false);
+        }
+
+        for (const auto* pInerAtom : oArrayInteractiveCont)
+        {
+            CInteractiveInfo interactive;
+            ConvertInteractiveInfo(interactive, pInerAtom, pMapIDs);
+            pShapeElem->m_textHyperlinks.push_back(interactive);
+        }
 
         if (!oArrayTextInteractive.empty())
         {
@@ -2471,6 +2487,7 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
 {
     std::vector<CTextRange>* pRanges	= &pShape->m_oTextActions.m_arRanges;
     CTextAttributesEx* pTextAttributes	= &pShape->m_pShape->m_oText;
+    auto& arrInteractive                = pShape->m_textHyperlinks;
 
     int lCountHyper	= pRanges->size();
 
@@ -2516,6 +2533,8 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
                 pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(lStart_ - lCurrentStart, lEnd_ - lStart_ + 1);
                 if (lEnd_ < lCurrentEnd)
                 {
+                    pParagraph->m_arSpans[nIndexSpan].m_oRun.arrInteractive.push_back(arrInteractive.front());
+                    arrInteractive.erase(arrInteractive.begin());
                     pParagraph->m_arSpans.insert(pParagraph->m_arSpans.begin() + nIndexSpan + 1, oRunProp);
                     ++nIndexSpan;
 

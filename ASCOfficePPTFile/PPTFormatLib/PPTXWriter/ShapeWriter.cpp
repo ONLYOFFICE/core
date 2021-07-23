@@ -1482,7 +1482,6 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 else
                 {
                     m_oWriter.WriteString(std::wstring(L"<a:r><a:rPr"));
-                    WriteHyperlink(pCF->oArrayInteractive);
                 }
             }
 
@@ -1524,6 +1523,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
             }
             m_oWriter.WriteString(std::wstring(L">"));
+            WriteHyperlink(pCF->arrInteractive);
 
             if (m_bWordArt)
             {//порядок важен - линия, заливка, тень !!!

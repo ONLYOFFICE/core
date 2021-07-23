@@ -164,8 +164,8 @@ namespace PPT_FORMAT
 		NSCommon::nullable_base<WORD>	Cap;				// 0 - none, 1 - TEXT, 2 - text
 		NSCommon::nullable_base<WORD>	Language;
 
-                CFontProperties			font;
-                std::vector<CInteractiveInfo>   oArrayInteractive;
+        CFontProperties			font;
+        std::vector<CInteractiveInfo>   arrInteractive;
 
 		CTextCFRun()
 		{
@@ -200,7 +200,7 @@ namespace PPT_FORMAT
 			Cap				= oSrc.Cap;
 
 			Language		= oSrc.Language;
-
+                        arrInteractive = oSrc.arrInteractive;
 			return *this;
 		}
 		~CTextCFRun()

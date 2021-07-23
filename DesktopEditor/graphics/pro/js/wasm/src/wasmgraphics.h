@@ -82,6 +82,10 @@ public:
     {
         return ((CXpsFile*)pReader)->GetStructure();
     }
+    BYTE* GetDJVUStructure()
+    {
+        return ((CDjVuFile*)pReader)->GetStructure();
+    }
 };
 
 #endif // _WASM_GRAPHICS_

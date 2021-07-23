@@ -74,6 +74,8 @@
         }
     }
 
+    //string_utf8
+
     //module
 
     /**
@@ -123,6 +125,41 @@
     CFile.prototype.getPagePixmap = function(pageIndex, width, height)
     {
         return Module["_DJVU_GetPixmap"](this.nativeFile, pageIndex, width, height);
+    };
+    CFile.prototype.structure = function()
+    {
+        var res = [];
+        var str = Module["_DJVU_GetStructure"](this.nativeFile);
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, str, 4);
+        if (lenArray == null)
+            return res;
+        var len = lenArray[0];
+        len -= 4;
+        if (len <= 0)
+            return res;
+
+        var buffer = new Uint8Array(Module["HEAP8"].buffer, str + 4, len);
+        var index = 0;
+        var Line = -1;
+        var prevY = -1;
+        while (index < len)
+        {
+            var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _Page = lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _Level = lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _Description = "".fromUtf8(buffer, index, lenRec);
+            index += lenRec;
+
+            res.push({ page : _Page, level : _Level, Y : 0, description : _Description});
+        }
+
+        Module["_DJVU_Delete"](str);
+        return res;
     };
     CFile.prototype.close = function()
     {

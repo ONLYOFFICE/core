@@ -370,6 +370,12 @@ window.onload = function()
 		{
 			this.isRepaint = true;
 		};
+		
+		this.getStructure = function()
+		{
+			var res = this.file.structure();
+			return res;
+		};
 
 		this._paint = function()
 		{

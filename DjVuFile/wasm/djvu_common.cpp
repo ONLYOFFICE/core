@@ -15,6 +15,128 @@ class CDjvuFile
 public:
     GP<DjVuDocument> m_doc;
 };
+class CData
+{
+protected:
+    unsigned char* m_pData;
+    size_t m_lSize;
+
+    unsigned char* m_pDataCur;
+    size_t m_lSizeCur;
+
+public:
+    CData()
+    {
+        m_pData = NULL;
+        m_lSize = 0;
+
+        m_pDataCur = m_pData;
+        m_lSizeCur = m_lSize;
+    }
+    virtual ~CData()
+    {
+        Clear();
+    }
+
+    inline void AddSize(size_t nSize)
+    {
+        if (NULL == m_pData)
+        {
+            m_lSize = 1000;
+            if (nSize > m_lSize)
+                m_lSize = nSize;
+
+            m_pData = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
+
+            m_lSizeCur = 0;
+            m_pDataCur = m_pData;
+            return;
+        }
+
+        if ((m_lSizeCur + nSize) > m_lSize)
+        {
+            while ((m_lSizeCur + nSize) > m_lSize)
+                m_lSize *= 2;
+
+            unsigned char* pRealloc = (unsigned char*)realloc(m_pData, m_lSize * sizeof(unsigned char));
+            if (NULL != pRealloc)
+            {
+                m_pData    = pRealloc;
+                m_pDataCur = m_pData + m_lSizeCur;
+            }
+            else
+            {
+                unsigned char* pMalloc = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
+                memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(unsigned char));
+
+                free(m_pData);
+                m_pData    = pMalloc;
+                m_pDataCur = m_pData + m_lSizeCur;
+            }
+        }
+    }
+
+public:
+    void AddInt(unsigned int value)
+    {
+        AddSize(4);
+        memcpy(m_pDataCur, &value, sizeof(unsigned int));
+        m_pDataCur += 4;
+        m_lSizeCur += 4;
+    }
+    void WriteString(unsigned char* value, unsigned int len)
+    {
+        AddSize(len + 4);
+        memcpy(m_pDataCur, &len, sizeof(unsigned int));
+        m_pDataCur += 4;
+        m_lSizeCur += 4;
+        memcpy(m_pDataCur, value, len);
+        m_pDataCur += len;
+        m_lSizeCur += len;
+    }
+    unsigned char* GetBuffer()
+    {
+        return m_pData;
+    }
+
+    void Clear()
+    {
+        if (m_pData) free(m_pData);
+
+        m_pData = NULL;
+        m_lSize = 0;
+
+        m_pDataCur = m_pData;
+        m_lSizeCur = 0;
+    }
+    void ClearWithoutAttack()
+    {
+        m_pData = NULL;
+        m_lSize = 0;
+
+        m_pDataCur = m_pData;
+        m_lSizeCur = 0;
+    }
+    void ClearNoAttack()
+    {
+        m_pDataCur = m_pData;
+        m_lSizeCur = 0;
+    }
+    unsigned int GetSize()
+    {
+        return (unsigned int)m_lSizeCur;
+    }
+
+    void SkipLen()
+    {
+        AddInt(0);
+    }
+    void WriteLen()
+    {
+        unsigned int len = (unsigned int)m_lSizeCur;
+        memcpy(m_pData, &len, sizeof(unsigned int));
+    }
+};
 
 extern "C"
 {
@@ -22,6 +144,7 @@ extern "C"
     void DJVU_Close(CDjvuFile* file);
     int* DJVU_GetInfo(CDjvuFile* file);
     unsigned char* DJVU_GetPixmap(CDjvuFile* file, int page_index, int w, int h);
+    unsigned char* DJVU_GetStructure(CDjvuFile* file);
     void DJVU_Delete(unsigned char* pData);
 }
 
@@ -198,6 +321,48 @@ unsigned char* DJVU_GetPixmap(CDjvuFile* file, int page_index, int w, int h)
     return pixmap;
 }
 
+void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, CData& out, int level)
+{
+    while (count > 0 && pos < nav->getBookMarkCount())
+    {
+        GP<DjVmNav::DjVuBookMark> gpBookMark;
+        nav->getBookMark(gpBookMark, pos++);
+
+        GUTF8String str = gpBookMark->url;
+        int endpos;
+        unsigned long nPage = str.toULong(1, endpos);
+        if (endpos == (int)str.length())
+        {
+            out.AddInt(nPage);
+            out.AddInt(level);
+            GUTF8String description = gpBookMark->displayname;
+            out.WriteString((unsigned char*)description.getbuf(), description.length());
+        }
+
+        getBookmars(nav, pos, gpBookMark->count, out, level + 1);
+        count--;
+    }
+}
+unsigned char* DJVU_GetStructure(CDjvuFile* file)
+{
+    GP<DjVmNav> nav = file->m_doc->get_djvm_nav();
+    if (!nav)
+        return NULL;
+
+    int pos = 0;
+    int count = nav->getBookMarkCount();
+    if (count <= 0)
+        return NULL;
+
+    CData oRes;
+    oRes.SkipLen();
+    getBookmars(nav, pos, count, oRes, 1);
+    oRes.WriteLen();
+    unsigned char* bRes = oRes.GetBuffer();
+    oRes.ClearWithoutAttack();
+    return bRes;
+}
+
 void DJVU_Delete(unsigned char* pData)
 {
     delete [] pData;
@@ -205,6 +370,8 @@ void DJVU_Delete(unsigned char* pData)
 
 #ifdef WASM_MODE_DEBUG
 #include <stdio.h>
+#include <string>
+#include <iostream>
 int main(int argc, char *argv[])
 {
     FILE* f = fopen("D:\\1.djvu", "rb");
@@ -231,6 +398,27 @@ int main(int argc, char *argv[])
         }
 
         delete [] info;
+
+        unsigned char* pStructure = DJVU_GetStructure(file);
+        unsigned nLength = pStructure[0] | pStructure[1] << 8 | pStructure[2] << 16 | pStructure[3] << 24;
+        unsigned i = 4;
+        nLength -= 4;
+        while (i < nLength)
+        {
+            unsigned nPathLength = (pStructure + i)[0] | (pStructure + i)[1] << 8 | (pStructure + i)[2] << 16 | (pStructure + i)[3] << 24;
+            i += 4;
+            std::cout << "Page " << nPathLength << ", ";
+            nPathLength = (pStructure + i)[0] | (pStructure + i)[1] << 8 | (pStructure + i)[2] << 16 | (pStructure + i)[3] << 24;
+            i += 4;
+            std::cout << "Level " << nPathLength << ", ";
+            nPathLength = (pStructure + i)[0] | (pStructure + i)[1] << 8 | (pStructure + i)[2] << 16 | (pStructure + i)[3] << 24;
+            i += 4;
+            std::string oDs = std::string((char*)(pStructure + i), nPathLength);
+            std::cout << "Description " << oDs << std::endl;
+            i += nPathLength;
+        }
+
+        delete [] pStructure;
     }
 
     return 0;

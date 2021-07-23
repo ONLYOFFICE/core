@@ -35,6 +35,7 @@ exported_functions = ["_malloc",
                       "_DJVU_Close",
                       "_DJVU_GetInfo",
                       "_DJVU_GetPixmap",
+                      "_DJVU_GetStructure",
                       "_DJVU_Delete"]
 
 libDjVu_src_path = "../libdjvu/"
@@ -82,7 +83,9 @@ base.replaceInFile("./djvu.js", "function getBinaryPromise(){", "function getBin
 
 djvu_js_content = base.readFile("./djvu.js")
 engine_base_js_content = base.readFile("./djvu_base.js")
+string_utf8_content    = base.readFile("./../../Common/js/string_utf8.js")
 engine_js_content = engine_base_js_content.replace("//module", djvu_js_content)
+engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
 
 # write new version
 base.writeFile("./deploy/djvu/djvu.js", engine_js_content)

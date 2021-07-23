@@ -71,6 +71,10 @@ WASM_EXPORT BYTE* XPS_GetStructure(CGraphicsFileDrawing* pGraphics)
 {
     return pGraphics->GetXPSStructure();
 }
+WASM_EXPORT BYTE* DJVU_GetStructure(CGraphicsFileDrawing* pGraphics)
+{
+    return pGraphics->GetDJVUStructure();
+}
 WASM_EXPORT void  XPS_Delete(BYTE* pData)
 {
     RELEASEARRAYOBJECTS(pData);
@@ -216,9 +220,29 @@ int main()
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
+    BYTE* pStructure = DJVU_GetStructure(test);
+    DWORD nLength = GetLength(pStructure);
+    DWORD i = 4;
+    nLength -= 4;
+    while (i < nLength)
+    {
+        DWORD nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Page " << nPathLength << ", ";
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Level " << nPathLength << ", ";
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::string oDs = std::string((char*)(pStructure + i), nPathLength);
+        std::wcout << L"Description "<< UTF8_TO_U(oDs) << std::endl;
+        i += nPathLength;
+    }
+
     XPS_Close(test);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
+    RELEASEARRAYOBJECTS(pStructure);
     RELEASEOBJECT(resFrame);
     return 0;
 #endif

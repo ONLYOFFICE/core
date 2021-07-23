@@ -105,3 +105,9 @@ void CDjVuFile::ConvertToPdf(const std::wstring& wsDstPath)
 	if (m_pImplementation)
         m_pImplementation->ConvertToPdf(wsDstPath);
 }
+BYTE* CDjVuFile::GetStructure()
+{
+    if (m_pImplementation)
+        return m_pImplementation->GetStructure();
+    return NULL;
+}

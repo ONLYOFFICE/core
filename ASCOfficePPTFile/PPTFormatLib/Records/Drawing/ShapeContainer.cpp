@@ -2381,7 +2381,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 
         oArrayCF.push_back(elm1);
 
-        PPT_FORMAT::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings);
+        PPT_FORMAT::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings, pShape->m_oTextActions.m_arRanges);
     }
 
     if (NULL != oElemInfo.m_pStream && -1 != oElemInfo.m_lOffsetTextProp)
@@ -2530,7 +2530,7 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
                 }
                 pParagraph->m_arSpans[nIndexSpan].m_oRun.Color = oColor;
                 pParagraph->m_arSpans[nIndexSpan].m_oRun.FontUnderline = (bool)true;
-                pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(lStart_ - lCurrentStart, lEnd_ - lStart_ + 1);
+                pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(lStart_ - lCurrentStart, lEnd_ - lStart_);
                 if (lEnd_ < lCurrentEnd)
                 {
                     pParagraph->m_arSpans[nIndexSpan].m_oRun.arrInteractive.push_back(arrInteractive.front());
@@ -2545,6 +2545,18 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
             }
         }
     }
+}
+
+void CRecordShapeContainer::addHyperlinkToSpan(CSpan &oSpan, CInteractiveInfo &oInteractive, CColor &oColor)
+{
+    oSpan.m_oRun.Color = oColor;
+    oSpan.m_oRun.FontUnderline = (bool)true;
+    oSpan.m_oRun.arrInteractive.push_back(oInteractive);
+}
+
+void CRecordShapeContainer::splitSpans(std::vector<CParagraph> &oParagraps, std::vector<CTextRange> &oRanges)
+{
+
 }
 
 void CRecordShapeContainer::ConvertInteractiveInfo(CInteractiveInfo &interactiveInfo, const CRecordMouseInteractiveInfoContainer *interactiveCont, CExMedia *pMapIDs)

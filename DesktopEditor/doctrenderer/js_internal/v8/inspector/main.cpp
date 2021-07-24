@@ -20,13 +20,16 @@ int main(int argc, char *argv[])
         //one
         pJSContext->runScript("function function_1() { return 1 + 2; }function_1();", try_catch);
         try_catch->Check();
+        std::cout << "after one\n";
 
         //two
         pJSContext->runScript("function function_2() { return 100 + function_1(); }", try_catch);
         try_catch->Check();
+        std::cout << "after two\n";
 
         //three
         JSSmart<NSJSBase::CJSValue> js_result = global_js->call_func("function_2");
+        std::cout << "after three\n";
 
         //check
         if (js_result.IsInit()){

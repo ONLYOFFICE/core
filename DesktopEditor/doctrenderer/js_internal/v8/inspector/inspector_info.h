@@ -11,9 +11,10 @@ namespace internal {
 struct CInspectorInfo
 {
     bool log;
-    uint16_t port;
     int contextGroupId;
     std::string contextName;
+
+    static int getContextId();
 };
 
 }//namespace internal

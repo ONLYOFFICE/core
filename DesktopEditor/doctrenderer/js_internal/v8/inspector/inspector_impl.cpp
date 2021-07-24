@@ -5,51 +5,24 @@
 #include "singlethreadutils.h"//string conversion
 #include "../v8_base.h"//v8 wrappers and other stuff
 
-bool NSJSBase::v8_debug::internal::CInspectorImpl::initServer()
+void NSJSBase::v8_debug::internal::CInspectorImpl::initServer()
 {
-    //
+    //in any case
+    m_pServer->pause();
+
+    //set callback
     auto messageCallback = [this](const std::string &message) {
-        if (message.empty()) {
-            return;
-        }
-        //logging on client
-        m_pClient->processMessageFromFrontend(message);
+        this->processIncomingMessage(message);
     };
     m_pServer->setOnMessageCallback(messageCallback);
-
-    //callback is set. now listen
-    m_pServer->listen();
-
-    //
-    if (!m_pServer->listening()) {
-        std::cerr << "server can't listen to CDT connection" << std::endl;
-        return false;
-    }
-
-    return true;
 }
 
-void NSJSBase::v8_debug::internal::CInspectorImpl::initClient(
-        v8::Local<v8::Context> context
-        , int contextGroupId
-        , const std::string &contextName
-        , v8::Platform *platform
-        )
+void NSJSBase::v8_debug::internal::CInspectorImpl::processIncomingMessage(const std::string &message)
 {
-    //make client
-    this->m_pClient = std::make_unique<CInspectorClient>(
-                //for all v8 stuff
-                context
-                //context name for cdt
-                , contextName
-                , contextGroupId
-                //to pump it
-                , platform
-                //
-                , this
-                //logging
-                , m_bLog
-                );
+    if (message.empty()) {
+        return;
+    }
+    m_Client.processMessageFromFrontend(message);
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::maybeLogOutgoing(
@@ -74,21 +47,15 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::printChromeLaunchHint(
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::checkServer() const
 {
-    if (!m_pServer->listening()) {
+    if (!m_pServer) {
         std::cerr << "no server for inspector" << std::endl;
         return false;
     }
+    if (!m_pServer->listening()) {
+        std::cerr << "server is not listening" << std::endl;
+        return false;
+    }
     return true;
-}
-
-void NSJSBase::v8_debug::internal::CInspectorImpl::waitAndRunServer()
-{
-    //
-    printChromeLaunchHint(std::cout, m_pServer->port());
-    //blocks until connected
-    m_pServer->waitForConnection();
-    //blocks until disconnected
-    m_pServer->run();
 }
 
 NSCommon::smart_ptr<NSJSBase::CJSValue>
@@ -142,29 +109,29 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::shutServerDown()
     m_pServer->shutdown();
 }
 
+void NSJSBase::v8_debug::internal::CInspectorImpl::pauseServer()
+{
+    m_pServer->pause();
+}
+
 NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         v8::Local<v8::Context> context
         //platform to pump
         , v8::Platform *platform
         //other info
         , CInspectorInfo info
-        //current thread id
-        , ASC_THREAD_ID threadId
+        //server and use flag
+        , CServerHolder::CUseData useData
         )
-    : m_pServer{std::make_unique<internal::SingleConnectionServer>(info.port)}
+    : m_pServer{useData.pServer}
     , m_pIsolate{context->GetIsolate()}
     , m_bLog{info.log}
-    , m_Counter{CThreadInspectorCounter::getCount(threadId)}
+    , m_Client{context, info.contextName, info.contextGroupId, platform, this, info.log, useData.ready}
+    , m_bServerInUse{useData.inUse}
+    , m_bServerReady{useData.ready}
 {
-    if (!initServer()) {
-        std::cerr << "can't initialize server" << std::endl;
-        return;
-    }
-    initClient(context
-               , info.contextGroupId
-               , info.contextName
-               , platform
-               );
+    m_bServerInUse = true;
+    initServer();
 }
 
 NSCommon::smart_ptr<NSJSBase::CJSValue>
@@ -177,9 +144,18 @@ NSJSBase::v8_debug::internal::CInspectorImpl::runScript(
         return JSSmart<CJSValue>();
     }
     //set data to client
-    m_pClient->setScriptExecData(execData);
-    //catch the server up
-    waitAndRunServer();
+    m_Client.setScriptExecData(execData);
+//    m_Client.pauseOnNextStatement();
+//    setRetVal(m_Client.runScript());
+    //run server
+
+    if (m_bServerReady) {
+        std::cout << "BEFORE PROCESSING FAKE MESSAGE: RS\n";
+        m_Client.processMessageFromFrontend("kkk");
+    }
+    std::cout << "BEFORE RUN SERVER: RS\n";
+    m_pServer->run();
+    std::cout << "AFTER RUN SERVER: RS\n";
     return getReturnValue();
 }
 
@@ -193,10 +169,20 @@ NSJSBase::v8_debug::internal::CInspectorImpl::callFunc(
         return JSSmart<CJSValue>();
     }
     //set data to client
-    m_pClient->setFuncCallData(callData);
-    //catch the server up
-    waitAndRunServer();
+    m_Client.setFuncCallData(callData);
+//    m_Client.pauseOnNextStatement();
+//    setRetVal(m_Client.callFunc());
+    if (m_bServerReady) {
+        std::cout << "BEFORE PROCESSING FAKE MESSAGE: FC\n";
+        m_Client.processMessageFromFrontend("kkk");
+    }
+    //run server
+    std::cout << "BEFORE RUN SERVER: FC\n";
+    m_pServer->run();
+    std::cout << "AFTER RUN SERVER: FC\n";
     return getReturnValue();
 }
 
-NSJSBase::v8_debug::internal::CInspectorImpl::~CInspectorImpl() = default;
+NSJSBase::v8_debug::internal::CInspectorImpl::~CInspectorImpl() {
+    m_bServerInUse = false;
+}

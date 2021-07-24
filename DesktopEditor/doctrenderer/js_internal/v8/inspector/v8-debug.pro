@@ -16,4 +16,5 @@ core_linux:include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 CONFIG += v8_use_inspector
 include($$CORE_ROOT_DIR/DesktopEditor/doctrenderer/js_internal/js_base.pri)
 
-SOURCES += $$PWD/main.cpp
+SOURCES += \
+    $$PWD/main.cpp

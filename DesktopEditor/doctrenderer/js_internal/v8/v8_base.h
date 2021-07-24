@@ -2,7 +2,7 @@
 #define _BUILD_NATIVE_CONTROL_V8_BASE_H_
 
 #ifdef V8_INSPECTOR
-#include "inspector/inspector.h"//v8 inspector debugging stuff
+#include "inspector/per_context_inspector.h"
 #endif
 
 #include "../js_base.h"
@@ -371,10 +371,42 @@ namespace NSJSBase
                                         , const int argc
                                         , JSSmart<CJSValue> argv[]);
 
+    class CJSContextPrivate
+    {
+#ifdef V8_INSPECTOR
+        friend class CJSContext;
+        friend class CJSObjectV8;
+        std::unique_ptr<v8_debug::CPerContextInspector> m_pInspector{nullptr};
+        void initInspector(v8::Local<v8::Context> context, v8::Platform *platform);
+        void maybeInitInspector();
+#endif
+
+    public:
+        CV8Worker m_oWorker;
+        v8::Isolate* m_isolate;
+
+        v8::Local<v8::ObjectTemplate>   m_global;
+        v8::Local<v8::Context>          m_context;
+
+    public:
+        CJSContextPrivate()
+            : m_oWorker()
+            , m_isolate(NULL)
+        {
+            //
+        }
+    };
+
     class CJSObjectV8 : public CJSValueV8Template<v8::Object, CJSObject>
     {
+        //чтобы ставить context private из cjscontext
+        friend class CJSContext;
+        //чтобы дёргать в call_func
+        CJSContextPrivate *m_pContextPrivate{nullptr};
+
     public:
         CJSObjectV8()
+            : m_pContextPrivate{CJSContext::GetCurrent()->m_internal}
         {
         }
 
@@ -423,16 +455,8 @@ namespace NSJSBase
                 , JSSmart<CJSValue> argv[] = NULL)
         {
 #ifdef V8_INSPECTOR
-            v8_debug::CInspector inspector(
-                        CV8Worker::GetCurrentContext()
-                        , CV8Worker::getInitializer()->getPlatform()
-                        );
-            return inspector.callFunc(
-                        this->value
-                        , name
-                        , argc
-                        , argv
-                        );
+            m_pContextPrivate->maybeInitInspector();
+            return m_pContextPrivate->m_pInspector->callFunc(this->value, name, argc, argv);
 #else
             return callFuncImpl(this->value
                                 , CV8Worker::GetCurrentContext()
@@ -710,23 +734,6 @@ namespace NSJSBase
     v8::Local<v8::Script> compileScript(v8::Local<v8::Context> context
                                         , const std::string &script
                                         , const std::wstring &scriptPath);
-
-    class CJSContextPrivate
-    {
-        friend class CJSContext;
-
-    public:
-        CV8Worker m_oWorker;
-        v8::Isolate* m_isolate;
-
-        v8::Local<v8::ObjectTemplate>   m_global;
-        v8::Local<v8::Context>          m_context;
-
-    public:
-        CJSContextPrivate() : m_oWorker(), m_isolate(NULL)
-        {
-        }
-    };
 }
 
 namespace NSV8Objects

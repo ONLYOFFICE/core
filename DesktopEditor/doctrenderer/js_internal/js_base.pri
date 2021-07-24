@@ -7,7 +7,8 @@ core_ios {
 
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/js_base.h
+HEADERS += $$PWD/js_base.h \
+    $$PWD/v8/inspector/per_context_inspector.h
 
 !use_javascript_core {
 
@@ -27,26 +28,22 @@ HEADERS += $$PWD/js_base.h
             $$V8_INSPECTOR_PATH/channel.h \
             $$V8_INSPECTOR_PATH/client.h \
             $$V8_INSPECTOR_PATH/execution_data.h \
-            $$V8_INSPECTOR_PATH/inspector.h \
             $$V8_INSPECTOR_PATH/inspector_impl.h \
-            $$V8_INSPECTOR_PATH/inspectorinfo.h \
-            $$V8_INSPECTOR_PATH/inspectormanager.h \
+            $$V8_INSPECTOR_PATH/inspector_info.h \
             $$V8_INSPECTOR_PATH/singleconnectionserver.h \
             $$V8_INSPECTOR_PATH/singlethreadutils.h \
-            $$V8_INSPECTOR_PATH/port_holder_id.h \
-            $$V8_INSPECTOR_PATH/thread_id.h \
-            $$V8_INSPECTOR_PATH/threadinspectoramount.h
+            $$V8_INSPECTOR_PATH/portdistributor.h \
+            $$V8_INSPECTOR_PATH/serverholder.h
 
         SOURCES += \
             $$V8_INSPECTOR_PATH/channel.cpp \
             $$V8_INSPECTOR_PATH/client.cpp \
             $$V8_INSPECTOR_PATH/execution_data.cpp \
-            $$V8_INSPECTOR_PATH/inspector.cpp \
             $$V8_INSPECTOR_PATH/inspector_impl.cpp \
-            $$V8_INSPECTOR_PATH/inspectormanager.cpp \
             $$V8_INSPECTOR_PATH/singleconnectionserver.cpp \
             $$V8_INSPECTOR_PATH/singlethreadutils.cpp \
-            $$V8_INSPECTOR_PATH/threadinspectoramount.cpp
+            $$V8_INSPECTOR_PATH/portdistributor.cpp \
+            $$V8_INSPECTOR_PATH/serverholder.cpp
 
 
         #to include inspector files
@@ -74,3 +71,7 @@ use_javascript_core {
     LIBS += -framework JavaScriptCore
 
 }
+
+SOURCES += \
+    $$PWD/v8/inspector/inspector_info.cpp \
+    $$PWD/v8/inspector/per_context_inspector.cpp

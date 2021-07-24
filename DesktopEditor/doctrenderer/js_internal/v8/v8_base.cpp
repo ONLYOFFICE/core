@@ -162,6 +162,7 @@ namespace NSJSBase
     void CJSContext::CreateContext()
     {
         m_internal->m_context = v8::Context::New(CV8Worker::GetCurrent(), NULL, m_internal->m_global);
+        //
     }
 
     void CJSContext::CreateGlobalForContext()
@@ -173,6 +174,7 @@ namespace NSJSBase
     {
         CJSObjectV8* ret = new CJSObjectV8();
         ret->value = m_internal->m_context->Global();
+        ret->m_pContextPrivate = m_internal;
         return ret;
     }
 
@@ -272,15 +274,8 @@ namespace NSJSBase
                                             , const std::wstring& scriptPath)
     {
 #ifdef V8_INSPECTOR
-        v8_debug::CInspector inspector(
-                    m_internal->m_context
-                    , CV8Worker::getInitializer()->getPlatform()
-                    );
-        return inspector.runScript(
-                    script
-                    , exception
-                    , scriptPath
-                    );
+        m_internal->maybeInitInspector();
+        return m_internal->m_pInspector->runScript(script, exception, scriptPath);
 #else
         return runScriptImpl(
                     m_internal->m_context
@@ -374,6 +369,24 @@ namespace NSJSBase
         }
         return new CJSValueV8(result.ToLocalChecked());
     }
+#ifdef V8_INSPECTOR
+    void CJSContextPrivate::initInspector(v8::Local<v8::Context> context, v8::Platform *platform)
+    {
+        m_pInspector = std::make_unique<v8_debug::CPerContextInspector>(
+                    context
+                    , platform
+                    );
+    }
+
+    void CJSContextPrivate::maybeInitInspector()
+    {
+        if (m_pInspector) {
+            return;
+        }
+
+        initInspector(m_context, CV8Worker::getInitializer()->getPlatform());
+    }
+#endif
 
 }//namespace NSJSBase
 

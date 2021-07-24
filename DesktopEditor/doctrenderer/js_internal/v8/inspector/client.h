@@ -6,6 +6,7 @@
 #include <atomic>//std::atomic for flags
 #include "channel.h"//CChannel for debug session
 #include "execution_data.h"//data for execution of script and function
+#include "serverholder.h"//shared_flag_t
 
 //forward declarations
 namespace NSJSBase {
@@ -31,6 +32,8 @@ class CInspectorImpl;
 //it also sets up the debugging session
 class CInspectorClient : public v8_inspector::V8InspectorClient
 {
+    //tmp
+public:
     //notable cdt messages
     static constexpr char debugStartMarker[32] = "Runtime.runIfWaitingForDebugger";
 
@@ -61,6 +64,8 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
 
     //log
     bool m_bLog{false};
+    CServerHolder::shared_flag_t &m_bServerReady;
+    bool debugged = false;
 
 
 
@@ -81,8 +86,17 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
     void startDebugging();
     //
     void dispatchProtocolMessage(const std::string &message);
+    //run stuff
+    NSCommon::smart_ptr<CJSValue> runScript();
+    NSCommon::smart_ptr<CJSValue> callFunc();
 
 public:
+    CInspectorClient() = delete;
+    CInspectorClient(const CInspectorClient&) = delete;
+    CInspectorClient(CInspectorClient&&) = delete;
+    CInspectorClient& operator=(const CInspectorClient&) = delete;
+    CInspectorClient& operator=(CInspectorClient&&) = delete;
+
     CInspectorClient(
             //
             v8::Local<v8::Context> context
@@ -96,6 +110,8 @@ public:
             , CInspectorImpl *inspector
             //log
             , bool log
+            //
+            , CServerHolder::shared_flag_t &serverReady
             );
 
     //wait for incoming message

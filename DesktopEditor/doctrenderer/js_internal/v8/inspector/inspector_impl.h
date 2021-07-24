@@ -4,21 +4,20 @@
 #include <stdint.h>//uintxx_t
 #include <v8.h>//v8 stuff
 #include "client.h"//inspector is what holds client
-#include "inspectorinfo.h"//info for constructing inspector
-#include "thread_id.h"//current thread id
-#include "threadinspectoramount.h"//to count inspectors in current thread
+#include "inspector_info.h"//info for constructing inspector
+#include "serverholder.h"
 
 namespace NSJSBase {
 namespace v8_debug {
 namespace internal {
 
 //server forward declaration
-class SingleConnectionServer;
+class CSingleConnectionServer;
 
 class CInspectorImpl
 {
-    //pointer to keep boost stuff in .cpp file
-    std::unique_ptr<SingleConnectionServer> m_pServer{};
+    //server
+    CSingleConnectionServer *m_pServer{nullptr};
 
     //to convert v8 string view to string
     v8::Isolate *m_pIsolate{nullptr};
@@ -32,26 +31,23 @@ class CInspectorImpl
     > m_pScriptResult{nullptr};
 
     //using pointer to initialize client out of constructor
-    std::unique_ptr<CInspectorClient> m_pClient{nullptr};
+//    std::unique_ptr<CInspectorClient>
+    CInspectorClient
+    m_Client;
 
-    //to count amount of inspectors in current thread
-    CCountManager m_Counter;
+    //to set that the server is in use
+    CServerHolder::shared_flag_t &m_bServerInUse;
+    CServerHolder::shared_flag_t &m_bServerReady;
 
 
 
 
 
     //initialize methods
-    bool initServer();
-    void initClient(
-            //for general purpose
-            v8::Local<v8::Context> context
-            //for cdt
-            , int contextGroupId
-            , const std::string &contextName
-            //platform to pump it
-            , v8::Platform *platform
-            );
+    void initServer();
+
+    //
+    void processIncomingMessage(const std::string &message);
 
     //logging and hints
     void maybeLogOutgoing(const std::string &message) const;
@@ -61,7 +57,6 @@ class CInspectorImpl
 
     //server and run stuff
     bool checkServer() const;
-    void waitAndRunServer();
     NSCommon::smart_ptr<CJSValue> getReturnValue();
 
 public:
@@ -79,8 +74,8 @@ public:
             , v8::Platform *platform
             //
             , CInspectorInfo info
-            //current thread id
-            , ASC_THREAD_ID threadId
+            //
+            , CServerHolder::CUseData useData
     );
 
     //api for inspector client
@@ -88,6 +83,7 @@ public:
     bool waitForMessage();
     void setRetVal(const NSCommon::smart_ptr<CJSValue> &val);
     void shutServerDown();
+    void pauseServer();
 
     //running api
     NSCommon::smart_ptr<CJSValue> runScript(

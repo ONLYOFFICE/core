@@ -12,7 +12,7 @@ namespace NSJSBase {
 namespace v8_debug {
 namespace internal {
 
-class SingleConnectionServer
+class CSingleConnectionServer
 {
 public:
     using onMessageCallback = std::function<void(const std::string &message)>;
@@ -43,6 +43,7 @@ private:
     //flags
     std::atomic<bool> m_bCdtConnected{false};//cdt for chrome developer tools
     std::atomic<bool> m_bListening{false};
+    std::atomic<bool> m_bPaused{false};
 
 
 
@@ -59,16 +60,18 @@ private:
     bool checkStream();
 
 public:
-    SingleConnectionServer(uint16_t port = 8080, std::string host = "127.0.0.1");
+    CSingleConnectionServer(uint16_t port = 8080, std::string host = "127.0.0.1");
     void setOnMessageCallback(onMessageCallback callback);
     bool waitForConnection();
     bool listen();
     void run();//start and wait
+    void runFake();
     void sendData(const std::string &data);
     bool waitAndProcessMessage();
     bool connected() const;
     bool listening() const;
     bool shutdown();
+    void pause();
     uint16_t port() const;
 };
 

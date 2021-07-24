@@ -3231,9 +3231,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 	if (false == oox_cond_rule->m_oType.IsInit()) return;
 
 	_CP_OPT(unsigned int) rank; 
-	if (oox_cond_rule->m_oRank.IsInit()) rank = oox_cond_rule->m_oRank->GetValue();
+	_CP_OPT(bool) bottom;
 	
-	ods_context->current_table()->start_conditional_rule(oox_cond_rule->m_oType->GetValue(), rank);
+	if (oox_cond_rule->m_oRank.IsInit()) rank = oox_cond_rule->m_oRank->GetValue();
+	if (oox_cond_rule->m_oBottom.IsInit()) bottom = oox_cond_rule->m_oBottom->ToBool();
+
+	ods_context->current_table()->start_conditional_rule(oox_cond_rule->m_oType->GetValue(), rank, bottom);
 	{
 		if (oox_cond_rule->m_oDxfId.IsInit()) 
 		{

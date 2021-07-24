@@ -89,6 +89,7 @@ namespace oox {
 		_CP_OPT(std::wstring)		text;
 		_CP_OPT(std::wstring)		formula2;
 		_CP_OPT(int)				rank;
+		_CP_OPT(bool)				bottom;
 //color scale icon set data_bar
 		std::vector<_cfvo>			cfvo;
 //color scale data_bar(1 element)
@@ -144,9 +145,8 @@ public:
 								if (c.rules[j].stopIfTrue)	CP_XML_ATTR(L"stopIfTrue",	*c.rules[j].stopIfTrue);
 								if (c.rules[j].text)		CP_XML_ATTR(L"text",		*c.rules[j].text);
 								if (c.rules[j].rank)		CP_XML_ATTR(L"rank",		*c.rules[j].rank);
-
-                                //CP_XML_ATTR(L"bottom"			, 0);
-                                //CP_XML_ATTR(L"equalAverage"	, 0);
+								if (c.rules[j].bottom)		CP_XML_ATTR(L"bottom",		*c.rules[j].bottom);
+                                 //CP_XML_ATTR(L"equalAverage"	, 0);
                                 //CP_XML_ATTR(L"aboveAverage"	, 0);
 								if (c.rules[j].type == 1)
 								{
@@ -361,6 +361,21 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 			if (!val.empty())
 				impl_->conditionalFormattings_.back().rules.back().rank = boost::lexical_cast<int>(val);
 		}	
+	}
+	else if (0 <= (pos = f.find(L"bottom")))
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"top10";
+		impl_->conditionalFormattings_.back().rules.back().bottom = true;
+		if (0 < (pos = f.find(L"percent")))
+		{
+			impl_->conditionalFormattings_.back().rules.back().percent = true;
+		}
+		if (0 <= (pos = f.find(L"(")))
+		{
+			val = f.substr(pos + 1, f.length() - pos - 2);
+			if (!val.empty())
+				impl_->conditionalFormattings_.back().rules.back().rank = boost::lexical_cast<int>(val);
+		}
 	}
 	else
 	{

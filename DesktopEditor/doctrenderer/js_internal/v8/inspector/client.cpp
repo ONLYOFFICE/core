@@ -87,15 +87,11 @@ void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 {
     //pause before current script on debugging launch
     pauseOnNextStatement();
-    std::cout << "AFTER PAUSE IN START DEBUGGING\n";
+    std::cout << "TO EXECUTE\n";
 
     execute();
 
-    std::cout << "TO PAUSE SERVER IN START DEBUGGING\n";
     m_pInspectingWrapper->pauseServer();
-
-    std::cout << "SERVER PAUSED, OUT OF START DEBUGGING\n";
-
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::processFrontendMessage(
@@ -205,7 +201,6 @@ void NSJSBase::v8_debug::internal::CInspectorClient::dispatchProtocolMessage(
     maybeLogIncoming(message);
     v8_inspector::StringView v8message = strToView(message);
     m_pSession->dispatchProtocolMessage(v8message);
-    std::cout << "after dispatch\n";
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::execute()

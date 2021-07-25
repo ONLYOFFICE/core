@@ -207,6 +207,7 @@ NSJSBase::v8_debug::internal::CInspectorImpl::callFunc(
 }
 
 NSJSBase::v8_debug::internal::CInspectorImpl::~CInspectorImpl() {
+    std::cout << "INSPECTOR DTOR\n";
     if (m_pServer->listening()) {
         m_pServer->shutdown();
     }

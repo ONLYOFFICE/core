@@ -24,7 +24,8 @@ class CInspectorPool;
 
 class CPerContextInspector
 {
-    std::unique_ptr<internal::CInspectorPool> m_pPool{nullptr};
+    static
+    std::unique_ptr<internal::CInspectorPool> m_pPool;
 
 public:
     CPerContextInspector(const std::string &contextName = "");

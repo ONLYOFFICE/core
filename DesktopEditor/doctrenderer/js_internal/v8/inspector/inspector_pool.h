@@ -14,17 +14,21 @@ class CInspectorPool
     //using map for piecewise construct
     using storage_t = std::map<uint16_t, CInspectorImpl>;
     storage_t m_Inspectors{};
+    std::unique_ptr<CInspectorImpl> ppp{nullptr};
 
     v8::Local<v8::Context> m_Context{};
     v8::Platform *m_pPlatform{nullptr};
 
-    static constexpr bool m_bLog{true};
+    static constexpr bool m_bLog{false};
     const int m_iContextGroupId;
     const std::string m_ContextName;
 
 
     storage_t::iterator findFreeInspector();
     CInspectorImpl& addInspector();
+
+    //tmp
+    CInspectorImpl& singleInsp();
 
 public:
     CInspectorPool(const std::string &contextName);

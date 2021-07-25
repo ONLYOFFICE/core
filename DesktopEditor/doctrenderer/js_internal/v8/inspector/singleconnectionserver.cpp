@@ -55,7 +55,13 @@ void NSJSBase::v8_debug::internal::CSingleConnectionServer::reportError(
         const beast::error_code &code
         , const char *context) const
 {
-    std::cerr << context << ": error with code " << code << ": " << code.message() << std::endl;
+    beast::error_code ec;
+    std::cerr
+            << m_Endpoint.address().to_string(ec)
+            << ':'
+            << m_Endpoint.port()
+            << ": "
+            << context << ": error with code " << code << ": " << code.message() << std::endl;
 }
 
 void NSJSBase::v8_debug::internal::CSingleConnectionServer::setConnected()

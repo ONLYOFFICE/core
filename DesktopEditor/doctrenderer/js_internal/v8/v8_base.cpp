@@ -138,6 +138,7 @@ namespace NSJSBase
     }
     CJSContext::~CJSContext()
     {
+        std::cout << "CJSCONTEXT DTOR CALLED\n";
         RELEASEOBJECT(m_internal);
     }
 
@@ -153,6 +154,7 @@ namespace NSJSBase
     }
     void CJSContext::Dispose()
     {
+        std::cout << "CONTEXT DISPOSE\n";
 #ifdef V8_INSPECTOR
         m_internal->disposeInspector();
 #endif

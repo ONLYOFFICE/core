@@ -1,5 +1,6 @@
 #include "inspector_pool.h"
 #include "portdistributor.h"
+#include <iostream>
 
 
 NSJSBase::v8_debug::internal::CInspectorPool::CInspectorPool(const std::string &contextName)
@@ -9,7 +10,9 @@ NSJSBase::v8_debug::internal::CInspectorPool::CInspectorPool(const std::string &
     //
 }
 
-NSJSBase::v8_debug::internal::CInspectorPool::~CInspectorPool() = default;
+NSJSBase::v8_debug::internal::CInspectorPool::~CInspectorPool() {
+    std::cout << "POOL DTOR\n";
+}
 
 NSJSBase::v8_debug::internal::CInspectorPool::storage_t::iterator
 NSJSBase::v8_debug::internal::CInspectorPool::findFreeInspector()
@@ -43,13 +46,25 @@ NSJSBase::v8_debug::internal::CInspectorImpl& NSJSBase::v8_debug::internal::CIns
     return inspector;
 }
 
+NSJSBase::v8_debug::internal::CInspectorImpl& NSJSBase::v8_debug::internal::CInspectorPool::singleInsp()
+{
+    if (1 == m_Inspectors.size()) {
+        return m_Inspectors.begin()->second;
+    }
+    return addInspector();
+}
+
 NSJSBase::v8_debug::internal::CInspectorImpl& NSJSBase::v8_debug::internal::CInspectorPool::getInspector()
 {
-    storage_t::iterator iter = findFreeInspector();
-    if (m_Inspectors.end() == iter) {
-        return addInspector();
-    }
-    return iter->second;
+//    //tmp
+//    return singleInsp();
+//    //main variant
+//    storage_t::iterator iter = findFreeInspector();
+//    if (m_Inspectors.end() == iter) {
+//        return addInspector();
+//    }
+//    return iter->second;
+    return *ppp;
 }
 
 void NSJSBase::v8_debug::internal::CInspectorPool::maybeSetV8Data(v8::Local<v8::Context> context, v8::Platform *platform)
@@ -59,6 +74,20 @@ void NSJSBase::v8_debug::internal::CInspectorPool::maybeSetV8Data(v8::Local<v8::
     }
     m_Context = context;
     m_pPlatform = platform;
+    if (ppp) {
+        std::cout << "init called for second time\n";
+        return;
+    }
+    ppp = std::make_unique<CInspectorImpl>(
+                m_Context
+                , m_pPlatform
+                , CInspectorInfo{
+                    m_bLog
+                    , m_iContextGroupId
+                    , m_ContextName
+                }
+                , 8080);
+    ppp->prepareServer();
 }
 
 bool NSJSBase::v8_debug::internal::CInspectorPool::isInitV8Data() const

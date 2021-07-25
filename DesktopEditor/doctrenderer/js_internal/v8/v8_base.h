@@ -401,7 +401,10 @@ namespace NSJSBase
     class CJSObjectV8 : public CJSValueV8Template<v8::Object, CJSObject>
     {
 #ifdef V8_INSPECTOR
-        JSSmart<CJSContext> m_pDefaultContext{};
+        int tmp_here(){}
+//        JSSmart<CJSContext>
+        CJSContext *
+        m_pDefaultContext{nullptr};
         CJSContext *m_pSpecialContext{nullptr};
         CJSContext* getContext() {
             return
@@ -409,7 +412,9 @@ namespace NSJSBase
                     ?
                         m_pSpecialContext
                       :
-                        m_pDefaultContext.GetPointer();
+                        m_pDefaultContext
+//                        .GetPointer()
+                        ;
         }
 #endif
 

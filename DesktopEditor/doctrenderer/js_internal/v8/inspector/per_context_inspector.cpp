@@ -1,11 +1,18 @@
 #include "per_context_inspector.h"
 #include "inspector_pool.h"
 #include "../../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
+#include <iostream>
+
+std::unique_ptr<NSJSBase::v8_debug::internal::CInspectorPool>
+NSJSBase::v8_debug::CPerContextInspector::m_pPool{nullptr};
+
 
 NSJSBase::v8_debug::CPerContextInspector::CPerContextInspector(const std::string &contextName)
-    : m_pPool{std::make_unique<internal::CInspectorPool>(contextName)}
+//    : m_pPool{std::make_unique<internal::CInspectorPool>(contextName)}
 {
-    //
+    if (!m_pPool) {
+        m_pPool = std::make_unique<internal::CInspectorPool>("");
+    }
 }
 
 NSJSBase::v8_debug::CPerContextInspector&
@@ -40,4 +47,7 @@ void NSJSBase::v8_debug::CPerContextInspector::dispose()
     m_pPool.reset(nullptr);
 }
 
-NSJSBase::v8_debug::CPerContextInspector::~CPerContextInspector() = default;
+NSJSBase::v8_debug::CPerContextInspector::~CPerContextInspector() {
+    std::cout << "PER CONTEXT STUFF DTOR CALLED\n";
+//    m_pPool.release();//tmp
+}

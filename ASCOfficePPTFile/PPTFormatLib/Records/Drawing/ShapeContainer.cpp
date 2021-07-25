@@ -40,8 +40,6 @@
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
 #include "../../Enums/_includer.h"
-#include "iostream"
-
 
 
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
@@ -1866,6 +1864,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         if (0 < oArrayTextBytes.size() && strShapeText.empty())
         {
             strShapeText = oArrayTextBytes[0]->m_strText;
+            pShapeElem->m_pShape->m_oText.m_originalText = strShapeText;
         }
 
         std::vector<CRecordTextCharsAtom*> oArrayTextChars;
@@ -2381,7 +2380,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 
         oArrayCF.push_back(elm1);
 
-        PPT_FORMAT::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings, pShape->m_oTextActions.m_arRanges);
+        PPT_FORMAT::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings);
     }
 
     if (NULL != oElemInfo.m_pStream && -1 != oElemInfo.m_lOffsetTextProp)
@@ -2485,78 +2484,113 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 
 void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor)
 {
-    std::vector<CTextRange>* pRanges	= &pShape->m_oTextActions.m_arRanges;
-    CTextAttributesEx* pTextAttributes	= &pShape->m_pShape->m_oText;
-    auto& arrInteractive                = pShape->m_textHyperlinks;
+    auto& oTextAttributes = pShape->m_pShape->m_oText;
+    const auto& originalText = oTextAttributes.m_originalText;
 
-    int lCountHyper	= pRanges->size();
+    // lenght these ones shoud be equal
+    const auto& arrRanges	= pShape->m_oTextActions.m_arRanges;
+    const auto arrSplitedInteractive = splitInteractive(pShape->m_textHyperlinks);
+    const auto lCountHyper = arrRanges.size();
 
     if (0 == lCountHyper)
         return;
 
-    size_t nCountPars = pTextAttributes->m_arParagraphs.size();
-    for (int nIndexRange = 0; nIndexRange < lCountHyper; ++nIndexRange)
+    // Ranges
+    // Paragraphs
+    //Spans
+
+    const auto nCountPars = oTextAttributes.m_arParagraphs.size();
+    size_t iterRange = 0;
+    int iterTextPos = 0;
+    for (size_t iterPar = 0; iterPar < nCountPars; ++iterPar)
     {
-        int lStart = (*pRanges)[nIndexRange].m_lStart;
-        int lEnd	= (*pRanges)[nIndexRange].m_lEnd;
+        auto& oParagraph = oTextAttributes.m_arParagraphs[iterPar];
 
-        int lCurrentStart = 0;
-        for (size_t nIndexPar = 0; nIndexPar < nCountPars; ++nIndexPar)
+        for (size_t iterSpan = 0; iterSpan < oParagraph.m_arSpans.size(); ++iterSpan)
         {
-            CParagraph* pParagraph = &pTextAttributes->m_arParagraphs[nIndexPar];
+            const auto rangeStart = arrRanges[iterRange].m_lStart;
+            const auto rangeEnd   = arrRanges[iterRange].m_lEnd;
 
-            for (size_t nIndexSpan = 0; nIndexSpan < pParagraph->m_arSpans.size(); ++nIndexSpan)
+            const int currentSpanEndPos = iterTextPos + oParagraph.m_arSpans[iterSpan].m_strText.length();
+
+            // If hyperlink is outside current span
+            if (iterTextPos > rangeEnd || currentSpanEndPos < rangeStart)
             {
-                int lCurrentEnd = lCurrentStart + pParagraph->m_arSpans[nIndexSpan].m_strText.length() - 1;
-
-                if (lCurrentStart > lEnd || lCurrentEnd < lStart)
-                {
-                    lCurrentStart = lCurrentEnd + 1;
-                    continue;
-                }
-
-                int lStart_	= (std::max)(lStart, lCurrentStart);
-                int lEnd_	= (std::min)(lEnd, lCurrentEnd);
-
-                CSpan oRunProp = pParagraph->m_arSpans[nIndexSpan];
-
-                std::wstring strText = pParagraph->m_arSpans[nIndexSpan].m_strText;
-                if (lStart_ > lCurrentStart)
-                {
-                    pParagraph->m_arSpans.insert(pParagraph->m_arSpans.begin()  + nIndexSpan, oRunProp);
-                    pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(0, lStart_ - lCurrentStart);
-
-                    ++nIndexSpan;
-                }
-                pParagraph->m_arSpans[nIndexSpan].m_oRun.Color = oColor;
-                pParagraph->m_arSpans[nIndexSpan].m_oRun.FontUnderline = (bool)true;
-                pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(lStart_ - lCurrentStart, lEnd_ - lStart_);
-                if (lEnd_ < lCurrentEnd)
-                {
-                    pParagraph->m_arSpans[nIndexSpan].m_oRun.arrInteractive.push_back(arrInteractive.front());
-                    arrInteractive.erase(arrInteractive.begin());
-                    pParagraph->m_arSpans.insert(pParagraph->m_arSpans.begin() + nIndexSpan + 1, oRunProp);
-                    ++nIndexSpan;
-
-                    pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(lEnd_ - lCurrentStart + 1, lCurrentEnd - lEnd_);
-                }
-
-                lCurrentStart = lCurrentEnd + 1;
+                // go to next span. +1 - skipping '\r'
+                iterTextPos = originalText[currentSpanEndPos] == '\r' ?
+                            currentSpanEndPos + 1 : currentSpanEndPos;
+                continue;
             }
+//            if (oParagraph.m_arSpans[iterSpan].m_oRun.arrInteractive.size())
+//                continue;
+
+            // find possitions for hyperlink inside current span
+            const int hyperStart	= (std::max)(rangeStart, iterTextPos);
+            const int hyperEnd      = (std::min)(rangeEnd, currentSpanEndPos);
+
+            // property for copy to new span
+            CSpan& oRunProp = oParagraph.m_arSpans[iterSpan];
+
+            // text HYPERLINK
+            if (hyperStart > iterTextPos)
+            {
+                // text without hyperlink
+                // push current front new span with prop and sub string
+                oParagraph.m_arSpans.insert(oParagraph.m_arSpans.begin()  + iterSpan, oRunProp);
+                oParagraph.m_arSpans[iterSpan].m_strText = originalText.substr(iterTextPos, hyperStart - iterTextPos);
+
+                ++iterSpan;
+            }
+
+            // HYPERLINK
+            oParagraph.m_arSpans[iterSpan].m_oRun.Color = oColor;
+            oParagraph.m_arSpans[iterSpan].m_oRun.FontUnderline = (bool)true;
+            oParagraph.m_arSpans[iterSpan].m_strText = originalText.substr(hyperStart, hyperEnd - hyperStart);
+            oParagraph.m_arSpans[iterSpan].m_arrInteractive = arrSplitedInteractive[iterRange];
+            if (hyperEnd == currentSpanEndPos)
+                iterRange++;
+
+            // HYPERLINK text
+            // In case: "HYPERLINK1 HYPERLINK2" it'll be temporarily written such as simple text
+            // and will be rewritted to the next iteration of span or paragraph
+            if (hyperEnd < currentSpanEndPos)
+            {
+                // text without hyperlink
+                // push current back new span with prop and sub string
+                ++iterSpan;
+                oParagraph.m_arSpans.insert(oParagraph.m_arSpans.begin() + iterSpan, oRunProp);
+                oParagraph.m_arSpans[iterSpan].m_strText = originalText.substr(hyperEnd, currentSpanEndPos - hyperEnd);
+            }
+
+            // go to next span. +1 - skipping '\r'
+            iterTextPos = originalText[currentSpanEndPos] == '\r' ?
+                        currentSpanEndPos + 1 : currentSpanEndPos;
         }
     }
+
 }
 
 void CRecordShapeContainer::addHyperlinkToSpan(CSpan &oSpan, CInteractiveInfo &oInteractive, CColor &oColor)
 {
     oSpan.m_oRun.Color = oColor;
     oSpan.m_oRun.FontUnderline = (bool)true;
-    oSpan.m_oRun.arrInteractive.push_back(oInteractive);
+    oSpan.m_arrInteractive.push_back(oInteractive);
 }
 
-void CRecordShapeContainer::splitSpans(std::vector<CParagraph> &oParagraps, std::vector<CTextRange> &oRanges)
+std::vector<std::vector<CInteractiveInfo> > CRecordShapeContainer::splitInteractive(const std::vector<CInteractiveInfo> &arrInteractive)
 {
+    std::vector<std::vector<CInteractiveInfo> > splited;
+    std::vector<CInteractiveInfo> inserting;
+    for (const auto& interactive : arrInteractive)
+    {
+        if (interactive.m_eActivation == interactive.click && !inserting.empty())
+            splited.push_back(std::move(inserting));
+        inserting.push_back(interactive);
+    }
+    if (!inserting.empty())
+        splited.push_back(std::move(inserting));
 
+    return splited;
 }
 
 void CRecordShapeContainer::ConvertInteractiveInfo(CInteractiveInfo &interactiveInfo, const CRecordMouseInteractiveInfoContainer *interactiveCont, CExMedia *pMapIDs)

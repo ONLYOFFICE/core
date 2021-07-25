@@ -165,7 +165,6 @@ namespace PPT_FORMAT
 		NSCommon::nullable_base<WORD>	Language;
 
         CFontProperties			font;
-        std::vector<CInteractiveInfo>   arrInteractive;
 
 		CTextCFRun()
 		{
@@ -199,8 +198,7 @@ namespace PPT_FORMAT
 
 			Cap				= oSrc.Cap;
 
-			Language		= oSrc.Language;
-                        arrInteractive = oSrc.arrInteractive;
+            Language		= oSrc.Language;
 			return *this;
 		}
 		~CTextCFRun()
@@ -639,6 +637,8 @@ namespace PPT_FORMAT
 		bool				m_bField;
 		bool				m_bBreak;
 
+        std::vector<CInteractiveInfo>   m_arrInteractive;
+
 		CSpan() : m_bField(false), m_bBreak(false)
 		{
 		}
@@ -652,6 +652,7 @@ namespace PPT_FORMAT
 			m_strText	= oSrc.m_strText;
 			m_bField	= oSrc.m_bField;
 			m_bBreak	= oSrc.m_bBreak;
+            m_arrInteractive = oSrc.m_arrInteractive;
 
 			return *this;
 		}

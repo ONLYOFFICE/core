@@ -55,6 +55,7 @@
 #include "../../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
+
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
 using namespace ODRAW;
@@ -144,7 +145,7 @@ protected:
     void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels);
     void ApplyHyperlink(CShapeElement* pShape, CColor& oColor);
     static void addHyperlinkToSpan(CSpan& oSpan, CInteractiveInfo &oInteractive, CColor& oColor);
-    static void splitSpans(std::vector<CParagraph>& oParagraps, std::vector<CTextRange> &oRanges);
+    static std::vector<std::vector<CInteractiveInfo> > splitInteractive(const std::vector<CInteractiveInfo>& arrInteractive);
     static void ConvertInteractiveInfo(CInteractiveInfo& interactiveInfo, const CRecordMouseInteractiveInfoContainer* interactiveCont, CExMedia* pMapIDs);
 
 };

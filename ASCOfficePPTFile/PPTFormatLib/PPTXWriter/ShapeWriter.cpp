@@ -1523,7 +1523,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
             }
             m_oWriter.WriteString(std::wstring(L">"));
-            WriteHyperlink(pCF->arrInteractive);
+            WriteHyperlink(pParagraph->m_arSpans[nSpan].m_arrInteractive);
 
             if (m_bWordArt)
             {//порядок важен - линия, заливка, тень !!!

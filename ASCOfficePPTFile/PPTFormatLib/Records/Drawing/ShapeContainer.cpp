@@ -2508,64 +2508,60 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
 
         for (size_t iterSpan = 0; iterSpan < oParagraph.m_arSpans.size(); ++iterSpan)
         {
-            const auto rangeStart = arrRanges[iterRange].m_lStart;
-            const auto rangeEnd   = arrRanges[iterRange].m_lEnd;
+            const auto& hyperRange = arrRanges[iterRange];
+            const auto hyperStart = std::max(hyperRange.m_lStart, iterTextPos);
+            const auto hyperEnd   = hyperRange.m_lEnd;
+            auto nextHyperStart = -1;
+            if (arrRanges.size() > iterRange + 1)
+                nextHyperStart = arrRanges[iterRange + 1].m_lStart;
 
             const int currentSpanEndPos = iterTextPos + oParagraph.m_arSpans[iterSpan].m_strText.length();
 
             // If hyperlink is outside current span
-            if (iterTextPos > rangeEnd || currentSpanEndPos < rangeStart)
+            if (iterTextPos > hyperEnd || currentSpanEndPos < hyperStart)
             {
-                // go to next span. +1 - skipping '\r'
-                iterTextPos = originalText[currentSpanEndPos] == '\r' ?
-                            currentSpanEndPos + 1 : currentSpanEndPos;
+                // go to next span.
+                iterTextPos = currentSpanEndPos;
                 continue;
             }
-//            if (oParagraph.m_arSpans[iterSpan].m_oRun.arrInteractive.size())
-//                continue;
 
             // find possitions for hyperlink inside current span
-            const int hyperStart	= (std::max)(rangeStart, iterTextPos);
-            const int hyperEnd      = (std::min)(rangeEnd, currentSpanEndPos);
+            int blockEnd      = (std::min)(hyperEnd, currentSpanEndPos);
+            if (nextHyperStart != -1)
+                blockEnd = std::min(blockEnd, nextHyperStart);
 
             // property for copy to new span
             CSpan& oRunProp = oParagraph.m_arSpans[iterSpan];
 
-            // text HYPERLINK
-            if (hyperStart > iterTextPos)
+
+            // text
+            if (iterTextPos < hyperStart || iterTextPos >= hyperEnd)
             {
                 // text without hyperlink
-                // push current front new span with prop and sub string
-                oParagraph.m_arSpans.insert(oParagraph.m_arSpans.begin()  + iterSpan, oRunProp);
-                oParagraph.m_arSpans[iterSpan].m_strText = originalText.substr(iterTextPos, hyperStart - iterTextPos);
+                // push current new span with prop and sub string
+                const bool afterHyperlink = hyperStart < iterTextPos;
+                oParagraph.m_arSpans.insert(oParagraph.m_arSpans.begin()  + iterSpan + afterHyperlink, oRunProp);
+                const auto textLen = (afterHyperlink ? blockEnd : hyperStart) - iterTextPos;
+                oParagraph.m_arSpans[iterSpan].m_strText = originalText.substr(iterTextPos, textLen);
 
-                ++iterSpan;
+                iterTextPos += textLen;
             }
 
             // HYPERLINK
-            oParagraph.m_arSpans[iterSpan].m_oRun.Color = oColor;
-            oParagraph.m_arSpans[iterSpan].m_oRun.FontUnderline = (bool)true;
-            oParagraph.m_arSpans[iterSpan].m_strText = originalText.substr(hyperStart, hyperEnd - hyperStart);
-            oParagraph.m_arSpans[iterSpan].m_arrInteractive = arrSplitedInteractive[iterRange];
-            if (hyperEnd == currentSpanEndPos)
-                iterRange++;
-
-            // HYPERLINK text
-            // In case: "HYPERLINK1 HYPERLINK2" it'll be temporarily written such as simple text
-            // and will be rewritted to the next iteration of span or paragraph
-            if (hyperEnd < currentSpanEndPos)
+            else if (hyperStart == iterTextPos && iterTextPos < currentSpanEndPos)
             {
-                // text without hyperlink
-                // push current back new span with prop and sub string
-                ++iterSpan;
-                oParagraph.m_arSpans.insert(oParagraph.m_arSpans.begin() + iterSpan, oRunProp);
-                oParagraph.m_arSpans[iterSpan].m_strText = originalText.substr(hyperEnd, currentSpanEndPos - hyperEnd);
+                oParagraph.m_arSpans[iterSpan].m_oRun.Color = oColor;
+                oParagraph.m_arSpans[iterSpan].m_oRun.FontUnderline = (bool)true;
+                const auto hyperLen = blockEnd - hyperStart;
+                oParagraph.m_arSpans[iterSpan].m_strText = originalText.substr(iterTextPos, hyperLen);
+                oParagraph.m_arSpans[iterSpan].m_arrInteractive = arrSplitedInteractive[iterRange];
+                iterTextPos += hyperLen;
+                if (hyperEnd == iterTextPos)
+                    iterRange++;
             }
-
-            // go to next span. +1 - skipping '\r'
-            iterTextPos = originalText[currentSpanEndPos] == '\r' ?
-                        currentSpanEndPos + 1 : currentSpanEndPos;
         }
+        // skipping '\r'
+        iterTextPos++;
     }
 
 }

@@ -59,6 +59,10 @@ public:
     {
         *this = oSrc;
     }
+    bool inRange(const int pos)const
+    {
+        return (pos >= m_lStart && pos < m_lEnd);
+    }
 };
 class CInteractiveInfo
 {

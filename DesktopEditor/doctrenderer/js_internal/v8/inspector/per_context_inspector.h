@@ -1,9 +1,9 @@
-#ifndef CPERCONTEXTSERVERMANAGER_H
-#define CPERCONTEXTSERVERMANAGER_H
+#ifndef CPERCONTEXTINSPECTOR_H
+#define CPERCONTEXTINSPECTOR_H
 
-#include <vector>//std::vector
-#include "serverholder.h"//CServerHolder
-#include <v8.h>//v8 stuff
+#include <memory>
+#include <string>
+#include <v8.h>
 
 //forward declarations
 namespace NSJSBase {
@@ -18,31 +18,18 @@ namespace NSCommon {
 namespace NSJSBase {
 namespace v8_debug {
 
+namespace internal {
+class CInspectorPool;
+}
+
 class CPerContextInspector
 {
-    using storage_t = std::vector<
-    std::unique_ptr<
-    internal::CServerHolder
-    >
-    >;
-    storage_t m_Holders{};
-    v8::Local<v8::Context> m_Context{};
-    v8::Platform *m_pPlatform{nullptr};
-
-    //getting servers helpers
-    storage_t::iterator findFreeHolder();
-    internal::CServerHolder* addHolder();
-    internal::CServerHolder* getFreeHolder();
-
-    //getting server data for inspector
-    internal::CServerHolder::CUseData getServer();
+    std::unique_ptr<internal::CInspectorPool> m_pPool{nullptr};
 
 public:
-    CPerContextInspector(
-            v8::Local<v8::Context> context
-            , v8::Platform *platform
-            );
+    CPerContextInspector(const std::string &contextName = "");
 
+    CPerContextInspector& maybeInit(v8::Local<v8::Context> context, v8::Platform *platform);
     NSCommon::smart_ptr<CJSValue> runScript(
                 const std::string &scriptStr
                 , NSCommon::smart_ptr<CJSTryCatch> &pException
@@ -54,6 +41,7 @@ public:
                 , int argc
                 , NSCommon::smart_ptr<CJSValue> argv[]
                 );
+    void dispose();
 
     ~CPerContextInspector();
 };
@@ -61,4 +49,4 @@ public:
 }//namespace v8_debug
 }//namespace NSJSBase
 
-#endif // CPERCONTEXTSERVERMANAGER_H
+#endif // CPERCONTEXTINSPECTOR_H

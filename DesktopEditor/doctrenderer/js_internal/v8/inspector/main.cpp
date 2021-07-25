@@ -1,4 +1,5 @@
 #include "../v8_base.h"
+#include "inspector_impl.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,19 +18,60 @@ int main(int argc, char *argv[])
         JSSmart<NSJSBase::CJSTryCatch> try_catch = pJSContext->GetExceptions();
         JSSmart<NSJSBase::CJSObject> global_js = pJSContext->GetGlobal();
 
+//        NSJSBase::v8_debug::internal::CInspectorImpl i{
+//            pJSContext->m_internal->m_context
+//                    , CV8Worker::getInitializer()->getPlatform()
+//                    , {true, 1, ""}
+//            , 8080};
+//        i.prepareServer();
+
         //one
-        pJSContext->runScript("function function_1() { return 1 + 2; }function_1();", try_catch);
+        pJSContext->
+//        i.
+                runScript(
+//                            {
+                                "function function_1() { return 1 + 2; }function_1();", try_catch, L""
+//                            }
+                            );
         try_catch->Check();
         std::cout << "after one\n";
 
         //two
-        pJSContext->runScript("function function_2() { return 100 + function_1(); }", try_catch);
+        pJSContext->
+//        i.
+                runScript(
+//                    {
+                        "function function_2() { return 100 + function_1(); }", try_catch, L""
+//                    }
+                    );
         try_catch->Check();
         std::cout << "after two\n";
 
         //three
-        JSSmart<NSJSBase::CJSValue> js_result = global_js->call_func("function_2");
+
+        JSSmart<NSJSBase::CJSValue> js_result =
+
+
+                global_js->call_func("function_2")
+
+
+//                i.callFunc({
+//                               static_cast<NSJSBase::CJSObjectV8*>(global_js.GetPointer())->value
+//                               , "function_2"
+//                               , 0
+//                               , nullptr
+//                           });
+                ;
         std::cout << "after three\n";
+
+        //four
+//        i.callFunc({
+//                       static_cast<NSJSBase::CJSObjectV8*>(global_js.GetPointer())->value
+//                       , "function_1"
+//                       , 0
+//                       , nullptr
+//                   });
+//        std::cout << "after four\n";
 
         //check
         if (js_result.IsInit()){

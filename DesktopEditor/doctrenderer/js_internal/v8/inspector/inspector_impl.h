@@ -5,7 +5,6 @@
 #include <v8.h>//v8 stuff
 #include "client.h"//inspector is what holds client
 #include "inspector_info.h"//info for constructing inspector
-#include "serverholder.h"
 
 namespace NSJSBase {
 namespace v8_debug {
@@ -17,7 +16,7 @@ class CSingleConnectionServer;
 class CInspectorImpl
 {
     //server
-    CSingleConnectionServer *m_pServer{nullptr};
+    std::unique_ptr<CSingleConnectionServer> m_pServer{nullptr};
 
     //to convert v8 string view to string
     v8::Isolate *m_pIsolate{nullptr};
@@ -30,21 +29,16 @@ class CInspectorImpl
     NSCommon::smart_ptr<CJSValue>
     > m_pScriptResult{nullptr};
 
-    //using pointer to initialize client out of constructor
-//    std::unique_ptr<CInspectorClient>
-    CInspectorClient
-    m_Client;
-
-    //to set that the server is in use
-    CServerHolder::shared_flag_t &m_bServerInUse;
-    CServerHolder::shared_flag_t &m_bServerReady;
+    //
+    CInspectorClient m_Client;
 
 
 
 
-
-    //initialize methods
-    void initServer();
+    //
+    bool initServer();
+    bool connectServer();
+    void waitWhileServerReady();
 
     //
     void processIncomingMessage(const std::string &message);
@@ -75,7 +69,7 @@ public:
             //
             , CInspectorInfo info
             //
-            , CServerHolder::CUseData useData
+            , uint16_t port
     );
 
     //api for inspector client
@@ -84,6 +78,13 @@ public:
     void setRetVal(const NSCommon::smart_ptr<CJSValue> &val);
     void shutServerDown();
     void pauseServer();
+    void onServerReady();
+
+    //about server busyness
+    bool free() const;
+
+    //necessary to call before using inspector
+    void prepareServer();
 
     //running api
     NSCommon::smart_ptr<CJSValue> runScript(

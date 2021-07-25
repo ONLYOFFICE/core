@@ -16,6 +16,7 @@ class CSingleConnectionServer
 {
 public:
     using onMessageCallback = std::function<void(const std::string &message)>;
+    using onResumeCallback = std::function<void()>;
 
 private:
     //tcp is a class
@@ -38,18 +39,22 @@ private:
     std::unique_ptr<stream_t> m_pWebsocketStream{nullptr};
 
     //message handler
-    onMessageCallback m_fOnMessage;
+    onMessageCallback m_fOnMessage{};
+    onResumeCallback m_fOnResume{};
 
     //flags
-    std::atomic<bool> m_bCdtConnected{false};//cdt for chrome developer tools
-    std::atomic<bool> m_bListening{false};
-    std::atomic<bool> m_bPaused{false};
+    std::atomic<bool> m_bCdtConnected{false};//используется для выхода из цикла после закрытия chrome dev tools
+    std::atomic<bool> m_bListening{false};//слушает ли сервак входящие соединения
+    std::atomic<bool> m_bPaused{false};//пауза
+    std::atomic<bool> m_bBusy{false};//используется наряду с m_bPaused,
+                                        //потому что в обработке сообщения может быть поставлена пауза
+                                        //, а сервер всё ещё будет в цикле
 
 
 
     //private api
     //read data(blocks)
-    std::string getData();
+    std::pair<std::string, boost::beast::error_code> getData();
     boost::beast::error_code discardData();
     //report error
     void reportError(const boost::beast::error_code &code, const char *context) const;
@@ -61,17 +66,21 @@ private:
 
 public:
     CSingleConnectionServer(uint16_t port = 8080, std::string host = "127.0.0.1");
+
     void setOnMessageCallback(onMessageCallback callback);
+    void setOnResumeCallback(onResumeCallback callback);
+
     bool waitForConnection();
     bool listen();
-    void run();//start and wait
-    void runFake();
+    void run();
+    void resume();
     void sendData(const std::string &data);
     bool waitAndProcessMessage();
     bool connected() const;
     bool listening() const;
     bool shutdown();
     void pause();
+    bool busy() const;
     uint16_t port() const;
 };
 

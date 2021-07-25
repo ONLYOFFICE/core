@@ -5,16 +5,33 @@
 #include "singlethreadutils.h"//string conversion
 #include "../v8_base.h"//v8 wrappers and other stuff
 
-void NSJSBase::v8_debug::internal::CInspectorImpl::initServer()
+bool NSJSBase::v8_debug::internal::CInspectorImpl::initServer()
 {
-    //in any case
-    m_pServer->pause();
-
-    //set callback
+    //set on message callback
     auto messageCallback = [this](const std::string &message) {
         this->processIncomingMessage(message);
     };
     m_pServer->setOnMessageCallback(messageCallback);
+
+    //set on resume callback
+    auto resumeCallback = [this]() {
+        this->m_Client.startDebugging();
+    };
+    m_pServer->setOnResumeCallback(resumeCallback);
+
+    //listen
+    return m_pServer->listen();
+}
+
+bool NSJSBase::v8_debug::internal::CInspectorImpl::connectServer()
+{
+    printChromeLaunchHint(std::cout, m_pServer->port());
+    return m_pServer->waitForConnection();
+}
+
+void NSJSBase::v8_debug::internal::CInspectorImpl::waitWhileServerReady()
+{
+    m_pServer->run();
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::processIncomingMessage(const std::string &message)
@@ -22,7 +39,7 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::processIncomingMessage(const 
     if (message.empty()) {
         return;
     }
-    m_Client.processMessageFromFrontend(message);
+    m_Client.processFrontendMessage(message);
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::maybeLogOutgoing(
@@ -31,7 +48,7 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::maybeLogOutgoing(
     if (!m_bLog) {
         return;
     }
-    logOutgoingMessage(std::clog, message);
+    logOutgoingMessage(std::cout, message);
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::printChromeLaunchHint(
@@ -114,24 +131,44 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::pauseServer()
     m_pServer->pause();
 }
 
+bool NSJSBase::v8_debug::internal::CInspectorImpl::free() const
+{
+    return !m_pServer->busy();
+}
+
+void NSJSBase::v8_debug::internal::CInspectorImpl::onServerReady()
+{
+    std::cout << "THAT START DEBUGGING MESSAGE HAPPENED\n";
+    pauseServer();
+}
+
+void NSJSBase::v8_debug::internal::CInspectorImpl::prepareServer()
+{
+    if (!connectServer()) {
+        std::cerr << "server can't connect" << std::endl;
+        return;
+    }
+    waitWhileServerReady();
+}
+
 NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         v8::Local<v8::Context> context
         //platform to pump
         , v8::Platform *platform
         //other info
         , CInspectorInfo info
-        //server and use flag
-        , CServerHolder::CUseData useData
+        //
+        , uint16_t port
         )
-    : m_pServer{useData.pServer}
+    : m_pServer{std::make_unique<CSingleConnectionServer>(port)}
     , m_pIsolate{context->GetIsolate()}
     , m_bLog{info.log}
-    , m_Client{context, info.contextName, info.contextGroupId, platform, this, info.log, useData.ready}
-    , m_bServerInUse{useData.inUse}
-    , m_bServerReady{useData.ready}
+    , m_Client{context, info.contextName, info.contextGroupId, platform, this, info.log}
 {
-    m_bServerInUse = true;
-    initServer();
+    if (!initServer()) {
+        std::cerr << "server can't listen to incoming connections" << std::endl;
+        return;
+    }
 }
 
 NSCommon::smart_ptr<NSJSBase::CJSValue>
@@ -145,17 +182,9 @@ NSJSBase::v8_debug::internal::CInspectorImpl::runScript(
     }
     //set data to client
     m_Client.setScriptExecData(execData);
-//    m_Client.pauseOnNextStatement();
-//    setRetVal(m_Client.runScript());
-    //run server
-
-    if (m_bServerReady) {
-        std::cout << "BEFORE PROCESSING FAKE MESSAGE: RS\n";
-        m_Client.processMessageFromFrontend("kkk");
-    }
-    std::cout << "BEFORE RUN SERVER: RS\n";
-    m_pServer->run();
-    std::cout << "AFTER RUN SERVER: RS\n";
+    std::cout << "BEFORE RESUME SERVER: RS\n";
+    m_pServer->resume();
+    std::cout << "AFTER RESUME SERVER: RS\n";
     return getReturnValue();
 }
 
@@ -170,19 +199,15 @@ NSJSBase::v8_debug::internal::CInspectorImpl::callFunc(
     }
     //set data to client
     m_Client.setFuncCallData(callData);
-//    m_Client.pauseOnNextStatement();
-//    setRetVal(m_Client.callFunc());
-    if (m_bServerReady) {
-        std::cout << "BEFORE PROCESSING FAKE MESSAGE: FC\n";
-        m_Client.processMessageFromFrontend("kkk");
-    }
     //run server
-    std::cout << "BEFORE RUN SERVER: FC\n";
-    m_pServer->run();
-    std::cout << "AFTER RUN SERVER: FC\n";
+    std::cout << "BEFORE RESUME SERVER: FC\n";
+    m_pServer->resume();
+    std::cout << "AFTER RESUME SERVER: FC\n";
     return getReturnValue();
 }
 
 NSJSBase::v8_debug::internal::CInspectorImpl::~CInspectorImpl() {
-    m_bServerInUse = false;
+    if (m_pServer->listening()) {
+        m_pServer->shutdown();
+    }
 }

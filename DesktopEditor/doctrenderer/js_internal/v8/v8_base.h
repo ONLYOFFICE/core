@@ -374,11 +374,7 @@ namespace NSJSBase
     class CJSContextPrivate
     {
 #ifdef V8_INSPECTOR
-        friend class CJSContext;
-        friend class CJSObjectV8;
-        std::unique_ptr<v8_debug::CPerContextInspector> m_pInspector{nullptr};
-        void initInspector(v8::Local<v8::Context> context, v8::Platform *platform);
-        void maybeInitInspector();
+        v8_debug::CPerContextInspector m_Inspector{};
 #endif
 
     public:
@@ -395,20 +391,44 @@ namespace NSJSBase
         {
             //
         }
+
+#ifdef V8_INSPECTOR
+        v8_debug::CPerContextInspector& getInspector();
+        void disposeInspector();
+#endif
     };
 
     class CJSObjectV8 : public CJSValueV8Template<v8::Object, CJSObject>
     {
-        //чтобы ставить context private из cjscontext
-        friend class CJSContext;
-        //чтобы дёргать в call_func
-        CJSContextPrivate *m_pContextPrivate{nullptr};
+#ifdef V8_INSPECTOR
+        JSSmart<CJSContext> m_pDefaultContext{};
+        CJSContext *m_pSpecialContext{nullptr};
+        CJSContext* getContext() {
+            return
+                    (m_pSpecialContext)
+                    ?
+                        m_pSpecialContext
+                      :
+                        m_pDefaultContext.GetPointer();
+        }
+#endif
 
     public:
         CJSObjectV8()
-            : m_pContextPrivate{CJSContext::GetCurrent()->m_internal}
+#ifdef V8_INSPECTOR
+            : m_pDefaultContext{CJSContext::GetCurrent()}
+#endif
         {
+            //
         }
+
+#ifdef V8_INSPECTOR
+        CJSObjectV8(CJSContext *pContext)
+            : m_pSpecialContext{pContext}
+        {
+            //
+        }
+#endif
 
         virtual ~CJSObjectV8()
         {
@@ -455,8 +475,7 @@ namespace NSJSBase
                 , JSSmart<CJSValue> argv[] = NULL)
         {
 #ifdef V8_INSPECTOR
-            m_pContextPrivate->maybeInitInspector();
-            return m_pContextPrivate->m_pInspector->callFunc(this->value, name, argc, argv);
+            return getContext()->m_internal->getInspector().callFunc(this->value, name, argc, argv);
 #else
             return callFuncImpl(this->value
                                 , CV8Worker::GetCurrentContext()

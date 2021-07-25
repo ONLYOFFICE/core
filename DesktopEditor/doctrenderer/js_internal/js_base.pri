@@ -7,8 +7,7 @@ core_ios {
 
 INCLUDEPATH += $$PWD
 
-HEADERS += $$PWD/js_base.h \
-    $$PWD/v8/inspector/per_context_inspector.h
+HEADERS += $$PWD/js_base.h
 
 !use_javascript_core {
 
@@ -33,7 +32,8 @@ HEADERS += $$PWD/js_base.h \
             $$V8_INSPECTOR_PATH/singleconnectionserver.h \
             $$V8_INSPECTOR_PATH/singlethreadutils.h \
             $$V8_INSPECTOR_PATH/portdistributor.h \
-            $$V8_INSPECTOR_PATH/serverholder.h
+            $$V8_INSPECTOR_PATH/inspector_pool.h \
+            $$V8_INSPECTOR_PATH/per_context_inspector.h
 
         SOURCES += \
             $$V8_INSPECTOR_PATH/channel.cpp \
@@ -43,7 +43,9 @@ HEADERS += $$PWD/js_base.h \
             $$V8_INSPECTOR_PATH/singleconnectionserver.cpp \
             $$V8_INSPECTOR_PATH/singlethreadutils.cpp \
             $$V8_INSPECTOR_PATH/portdistributor.cpp \
-            $$V8_INSPECTOR_PATH/serverholder.cpp
+            $$V8_INSPECTOR_PATH/inspector_info.cpp \
+            $$V8_INSPECTOR_PATH/inspector_pool.cpp \
+            $$V8_INSPECTOR_PATH/per_context_inspector.cpp
 
 
         #to include inspector files
@@ -71,7 +73,3 @@ use_javascript_core {
     LIBS += -framework JavaScriptCore
 
 }
-
-SOURCES += \
-    $$PWD/v8/inspector/inspector_info.cpp \
-    $$PWD/v8/inspector/per_context_inspector.cpp

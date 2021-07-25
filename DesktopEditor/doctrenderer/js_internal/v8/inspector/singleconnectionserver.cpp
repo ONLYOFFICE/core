@@ -4,13 +4,19 @@
 namespace ip = boost::asio::ip;
 namespace beast = boost::beast;
 
-std::string NSJSBase::v8_debug::internal::CSingleConnectionServer::getData()
-{
-    //check stream
-    if (!checkStream()) {
-        return std::string();
-    }
+namespace {
+    //use them in loop
+    class TrueSetter {
+        std::atomic<bool> &m_bool;
+    public:
+        TrueSetter(std::atomic<bool> &b) : m_bool(b) {m_bool = true;}
+        ~TrueSetter() {m_bool = false;}
+    };
+}
 
+std::pair<std::string, beast::error_code>
+NSJSBase::v8_debug::internal::CSingleConnectionServer::getData()
+{
     //set up buffer
     beast::multi_buffer buffer;
     //to check for err
@@ -23,10 +29,10 @@ std::string NSJSBase::v8_debug::internal::CSingleConnectionServer::getData()
                 errCode == boost::asio::error::operation_aborted
                 ) {
             setDisconnected();
-            return std::string();
+            return {std::string(), errCode};
         }
         reportError(errCode, "while reading");
-        return std::string();
+        return {std::string(), errCode};
     }
     //set mode equal to incoming message mode
     m_pWebsocketStream->text(
@@ -34,16 +40,11 @@ std::string NSJSBase::v8_debug::internal::CSingleConnectionServer::getData()
                 m_pWebsocketStream->got_text()
                 );
     //return value read
-    return boost::beast::buffers_to_string(buffer.data());
+    return {boost::beast::buffers_to_string(buffer.data()), errCode};
 }
 
 beast::error_code NSJSBase::v8_debug::internal::CSingleConnectionServer::discardData()
 {
-    //check stream
-    if (!checkStream()) {
-        return beast::error_code();
-    }
-
     beast::flat_buffer buffer;//no need in multi buffer
     beast::error_code errCode;
     m_pWebsocketStream->read(buffer, errCode);
@@ -100,6 +101,11 @@ void NSJSBase::v8_debug::internal::CSingleConnectionServer::setOnMessageCallback
     m_fOnMessage = std::move(callback);
 }
 
+void NSJSBase::v8_debug::internal::CSingleConnectionServer::setOnResumeCallback(onResumeCallback callback)
+{
+    m_fOnResume = std::move(callback);
+}
+
 bool NSJSBase::v8_debug::internal::CSingleConnectionServer::waitForConnection()
 {
     //to check errors
@@ -113,11 +119,12 @@ bool NSJSBase::v8_debug::internal::CSingleConnectionServer::waitForConnection()
         reportError(errCode, "while accepting connection");
         return false;
     }
-    //set up websocket stream
-    m_pWebsocketStream = std::make_unique<stream_t>(
-                //moving local object to stream
-                std::move(socket)
-                );
+    //set up websocket stream and delete old one if any
+    m_pWebsocketStream.reset(new stream_t{
+                                 //move local object to stream
+                                 std::move(socket)
+                             }
+                             );
     //accept client handshake
     m_pWebsocketStream->accept(errCode);
     //check error
@@ -168,19 +175,19 @@ bool NSJSBase::v8_debug::internal::CSingleConnectionServer::listen()
 //blocks
 void NSJSBase::v8_debug::internal::CSingleConnectionServer::run()
 {
-    m_bPaused = false;
-    while (!m_bPaused
-           && waitAndProcessMessage()
-           ) {
-        //
+    TrueSetter ts{m_bBusy};
+    while (!m_bPaused) {
+        if (!waitAndProcessMessage()) {
+            return;
+        }
     }
 }
 
-//blocks
-void NSJSBase::v8_debug::internal::CSingleConnectionServer::runFake()
+void NSJSBase::v8_debug::internal::CSingleConnectionServer::resume()
 {
-    if (m_fOnMessage) {
-        m_fOnMessage("kkk");
+    m_bPaused = false;
+    if (m_fOnResume) {
+        m_fOnResume();
     }
     run();
 }
@@ -189,6 +196,10 @@ void NSJSBase::v8_debug::internal::CSingleConnectionServer::sendData(const std::
 {
     //check stream
     if (!checkStream()) {
+        return;
+    }
+
+    if (m_bPaused) {
         return;
     }
 
@@ -207,13 +218,29 @@ void NSJSBase::v8_debug::internal::CSingleConnectionServer::sendData(const std::
 
 bool NSJSBase::v8_debug::internal::CSingleConnectionServer::waitAndProcessMessage()
 {
-    std::string data = getData();
+    //check stream
+    if (!checkStream()) {
+        return false;
+    }
+
+    std::pair<std::string, beast::error_code> result = getData();
+
     if (!connected()) {
         return false;
     }
-    if (m_fOnMessage){
-        m_fOnMessage(data);
+
+    if (result.second) {
+        return false;
     }
+
+    if (m_fOnMessage){
+        m_fOnMessage(result.first);
+    }
+
+    if (m_bPaused) {
+        return false;
+    }
+
     return true;
 }
 
@@ -263,7 +290,13 @@ bool NSJSBase::v8_debug::internal::CSingleConnectionServer::shutdown()
 
 void NSJSBase::v8_debug::internal::CSingleConnectionServer::pause()
 {
+    std::cout << "SERVER FUCKING PAUSED\n";
     m_bPaused = true;
+}
+
+bool NSJSBase::v8_debug::internal::CSingleConnectionServer::busy() const
+{
+    return m_bBusy;
 }
 
 uint16_t NSJSBase::v8_debug::internal::CSingleConnectionServer::port() const

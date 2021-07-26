@@ -281,29 +281,53 @@ namespace PPT_FORMAT
             std::wstring strMem = m_oWriter.GetData();
 			oFile.WriteStringUTF8(strMem);
 			oFile.CloseFile();
-		}
+        }
         inline std::wstring WriteHyperlink(const std::wstring& strHyperlink)
-		{
-			std::map<std::wstring, std::wstring>::iterator pPair = m_mapHyperlinks.find(strHyperlink);
+        {
+            std::map<std::wstring, std::wstring>::iterator pPair = m_mapHyperlinks.find(strHyperlink);
 
-			if (m_mapHyperlinks.end() != pPair)
-			{
+            if (m_mapHyperlinks.end() != pPair)
+            {
                 std::wstring strRid = L"rId" + pPair->second;
-				return strRid;
-			}
-			m_mapHyperlinks[strHyperlink] = m_lNextRelsID;
+                return strRid;
+            }
+            m_mapHyperlinks[strHyperlink] = m_lNextRelsID;
 
             std::wstring strRid = L"rId" + std::to_wstring( m_lNextRelsID++);
 
-			std::wstring strRels = L"<Relationship Id=\"";
+            std::wstring strRels = L"<Relationship Id=\"";
 
             strRels += strRid + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"";
             strRels += strHyperlink + L"\"/>";
 
-			m_oWriter.WriteString(strRels);
-		
+            m_oWriter.WriteString(strRels);
+
             return strRid;
         }
+
+        inline std::wstring WriteFile(const std::wstring& strPath)
+        {
+            std::map<std::wstring, std::wstring>::iterator pPair = m_mapHyperlinks.find(strPath);
+
+            if (m_mapHyperlinks.end() != pPair)
+            {
+                std::wstring strRid = L"rId" + pPair->second;
+                return strRid;
+            }
+            m_mapHyperlinks[strPath] = m_lNextRelsID;
+
+            std::wstring strRid = L"rId" + std::to_wstring( m_lNextRelsID++);
+
+            std::wstring strRels = L"<Relationship Id=\"";
+
+            strRels += strRid + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"";
+            strRels += L"file:///" + strPath + L"\" TargetMode=\"External\" />";
+
+            m_oWriter.WriteString(strRels);
+
+            return strRid;
+        }
+
 
 		inline std::wstring WriteHyperlinkMedia(const std::wstring& strMedia, bool bExternal = true, bool newRIdAlways = false, std::wstring strRelsType = L"http://schemas.microsoft.com/office/2007/relationships/media")
 		{

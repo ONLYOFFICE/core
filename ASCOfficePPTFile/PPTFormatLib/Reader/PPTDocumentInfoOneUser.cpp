@@ -2393,8 +2393,12 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
                 if (recInst == 1)
                 {
                     oInfo.m_strFilePath		= recStr;
-                    oInfo.m_type = oInfo.isHTTPLink(recStr) ? CExFilesInfo::ExFilesType::eftHyperlink :
-                                                              CExFilesInfo::ExFilesType::eftAudio;
+                    if (oInfo.isAudioLink(recStr))
+                        oInfo.m_type = CExFilesInfo::ExFilesType::eftAudio;
+                    else if (oInfo.isHTTPLink(recStr))
+                        oInfo.m_type = CExFilesInfo::ExFilesType::eftHyperlink;
+                    else
+                        oInfo.m_type = CExFilesInfo::ExFilesType::eftHyperlink;
                 }
                 // Location atom. It's for slides or other local pp objects.
                 else if (recInst == 3 && oInfo.GetSlideNumber(recStr) != -1)

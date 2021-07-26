@@ -1697,8 +1697,16 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
         PPTX::Logic::Hyperlink hlink;
         if (actions[i].m_strHyperlink.size() && m_pRels)
         {
-            std::wstring id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);
-            hlink.id = id;
+            std::wstring id;
+            switch (actions[i].m_lHyperlinkType)
+            {
+            case LT_SlideNumber:        id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);     break;
+            case LT_Url:                id = m_pRels->WriteHyperlink(actions[i].m_strHyperlink);    break;
+            case LT_OtherPresentation:  id = m_pRels->WriteFile(actions[i].m_strHyperlink);         break;
+            case LT_OtherFile:          id = m_pRels->WriteFile(actions[i].m_strHyperlink);         break;
+            }
+            if (!id.empty())
+                hlink.id = id;
         }
 
         if (actions[i].m_strAudioFileName.size() && m_pRels)
@@ -1712,7 +1720,8 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
 
         if (actions[i].m_eActivation == CInteractiveInfo::over)
             hlink.m_name = L"hlinkHover";
-        else
+
+        if (actions[i].m_bVisited)
             hlink.highlightClick = true;
 
         switch (actions[i].m_lType)
@@ -1773,16 +1782,33 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
         }
         case II_HyperlinkAction:
         {
-            if (actions[i].m_lHyperlinkType == 7)
+
+            switch (actions[i].m_lHyperlinkType)
+            {
+            case LT_SlideNumber:
             {
                 if (hlink.id.is_init())
                     hlink.action = L"ppaction://hlinksldjump";
+                break;
             }
-//            else if (actions[i].m_lHyperlinkType == 8)
-//                hlink.action = L"";
+            case LT_Url:
+            {
+                break;
+            }
+            case LT_OtherPresentation:
+            {
+                if (hlink.id.is_init())
+                    hlink.action = L"ppaction://hlinkpres?slideindex=1&slidetitle=";
+                break;
+            }
+            case LT_OtherFile:
+            {
+                break;
+            }
+            }
 
-//            if (!hlink.action.is_init() || hlink.action->empty())
-//                hlink.action = L"ppaction://noaction";
+            if (!hlink.action.is_init() || hlink.action->empty())
+                hlink.action = L"ppaction://noaction";
             break;
         }
         case II_MediaAction:

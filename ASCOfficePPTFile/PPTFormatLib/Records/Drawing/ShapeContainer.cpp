@@ -2490,87 +2490,97 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
     // lenght these ones shoud be equal
     const auto& arrRanges	= pShape->m_oTextActions.m_arRanges;
     const auto arrSplitedInteractive = splitInteractive(pShape->m_textHyperlinks);
-    const auto lCountHyper = arrRanges.size();
 
-    if (0 == lCountHyper)
+    // It cannot be changed
+    if (arrRanges.empty() || arrSplitedInteractive.empty())
         return;
 
-    // Ranges
-    // Paragraphs
-    //Spans
-
-    const auto nCountPars = oTextAttributes.m_arParagraphs.size();
-    size_t iterRange = 0;
-    int iterTextPos = 0;
-    for (size_t iterPar = 0; iterPar < nCountPars; ++iterPar)
+    size_t posOrigText(0);
+    auto iterRange = arrRanges.begin();
+    auto iterInteractive = arrSplitedInteractive.begin();
+    for (auto& paragraph : oTextAttributes.m_arParagraphs)
     {
-        auto& oParagraph = oTextAttributes.m_arParagraphs[iterPar];
-
-        for (size_t iterSpan = 0; iterSpan < oParagraph.m_arSpans.size(); ++iterSpan)
+        auto& arrSpans = paragraph.m_arSpans;
+        for (auto iterSpan = arrSpans.begin(); iterSpan != arrSpans.end(); iterSpan++)
         {
-            const auto& hyperRange = arrRanges[iterRange];
-            const auto hyperStart = std::max(hyperRange.m_lStart, iterTextPos);
-            const auto hyperEnd   = hyperRange.m_lEnd;
-            auto nextHyperStart = -1;
-            if (arrRanges.size() > iterRange + 1)
-                nextHyperStart = arrRanges[iterRange + 1].m_lStart;
-
-            const int currentSpanEndPos = iterTextPos + oParagraph.m_arSpans[iterSpan].m_strText.length();
-
-            // If hyperlink is outside current span
-            if (iterTextPos > hyperEnd || currentSpanEndPos < hyperStart)
+            // if there isn't needed changes in next spans & paragraps
+            if (iterRange == arrRanges.end())
             {
-                // go to next span.
-                iterTextPos = currentSpanEndPos;
+                return;
+            }
+
+            const bool isHyperlink = iterRange->inRange(posOrigText);
+
+            const int posBlockStart = posOrigText;
+            const int posOrigSpanEnd = posBlockStart + iterSpan->m_strText.length();
+            const int posBlockEnd = isHyperlink ?
+                        std::min(posOrigSpanEnd, iterRange->m_lEnd)  :
+                        std::min(posOrigSpanEnd, iterRange->m_lStart);
+            const size_t blockLen = posBlockEnd - posBlockStart;
+
+            const bool isNeedToSplit = posBlockEnd < posOrigSpanEnd && isHyperlink;
+
+            posOrigText += blockLen;
+            // Skipping span
+            if (iterRange->m_lStart > posBlockEnd)
+            {
                 continue;
             }
 
-            // find possitions for hyperlink inside current span
-            int blockEnd      = (std::min)(hyperEnd, currentSpanEndPos);
-            if (nextHyperStart != -1)
-                blockEnd = std::min(blockEnd, nextHyperStart);
-
-            // property for copy to new span
-            CSpan& oRunProp = oParagraph.m_arSpans[iterSpan];
-
-
-            // text
-            if (iterTextPos < hyperStart || iterTextPos >= hyperEnd)
-            {
-                // text without hyperlink
-                // push current new span with prop and sub string
-                const bool afterHyperlink = hyperStart < iterTextPos;
-                oParagraph.m_arSpans.insert(oParagraph.m_arSpans.begin()  + iterSpan + afterHyperlink, oRunProp);
-                const auto textLen = (afterHyperlink ? blockEnd : hyperStart) - iterTextPos;
-                oParagraph.m_arSpans[iterSpan].m_strText = originalText.substr(iterTextPos, textLen);
-
-                iterTextPos += textLen;
-            }
-
             // HYPERLINK
-            else if (hyperStart == iterTextPos && iterTextPos < currentSpanEndPos)
+            if (isHyperlink)
             {
-                oParagraph.m_arSpans[iterSpan].m_oRun.Color = oColor;
-                oParagraph.m_arSpans[iterSpan].m_oRun.FontUnderline = (bool)true;
-                const auto hyperLen = blockEnd - hyperStart;
-                oParagraph.m_arSpans[iterSpan].m_strText = originalText.substr(iterTextPos, hyperLen);
-                oParagraph.m_arSpans[iterSpan].m_arrInteractive = arrSplitedInteractive[iterRange];
-                iterTextPos += hyperLen;
-                if (hyperEnd == iterTextPos)
+                // case: HYPERLINK & text(or next HYPERLINK inside original span)
+                if (isNeedToSplit)
+                {
+                    // HYPERLINK
+                    iterSpan->m_strText = originalText.substr(posBlockStart, blockLen);
+
+                    const size_t nextBlockLen = posOrigSpanEnd - posBlockEnd;
+                    iterSpan = arrSpans.insert(iterSpan, *iterSpan);
+                    // Go to next new span and correct text
+                    iterSpan++;
+                    iterSpan->m_strText = originalText.substr(posBlockEnd, nextBlockLen);
+                    iterSpan->m_arrInteractive.clear();
+                    // Return to current span
+                    iterSpan--;
+                }
+
+                addHyperlinkToSpan(*iterSpan, *iterInteractive, oColor);
+
+                if (posBlockEnd == iterRange->m_lEnd)
+                {
                     iterRange++;
+                    iterInteractive++;
+                }
+            }
+            // Hyperlink will be written in the next iteration
+            // case: text & HYPERLINK
+            else
+            {
+                iterSpan = arrSpans.insert(iterSpan, *iterSpan);
+                iterSpan->m_strText = originalText.substr(posBlockStart, blockLen);
+                iterSpan->m_arrInteractive.clear();
+
+                // Go to next new span and correct text
+                iterSpan++;
+                const size_t nextBlockLen = posOrigSpanEnd - posBlockEnd;
+                iterSpan->m_strText = originalText.substr(posBlockEnd, nextBlockLen);
+                iterSpan->m_arrInteractive.clear();
+                 // Return to current span
+                iterSpan--;
             }
         }
         // skipping '\r'
-        iterTextPos++;
+        posOrigText++;
     }
-
 }
 
-void CRecordShapeContainer::addHyperlinkToSpan(CSpan &oSpan, CInteractiveInfo &oInteractive, CColor &oColor)
+void CRecordShapeContainer::addHyperlinkToSpan(CSpan &oSpan, const std::vector<CInteractiveInfo> &arrInteractive, const CColor &oColor)
 {
     oSpan.m_oRun.Color = oColor;
     oSpan.m_oRun.FontUnderline = (bool)true;
-    oSpan.m_arrInteractive.push_back(oInteractive);
+    oSpan.m_arrInteractive = arrInteractive;
 }
 
 std::vector<std::vector<CInteractiveInfo> > CRecordShapeContainer::splitInteractive(const std::vector<CInteractiveInfo> &arrInteractive)

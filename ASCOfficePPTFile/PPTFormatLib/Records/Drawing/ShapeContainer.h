@@ -144,7 +144,7 @@ protected:
     void ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels);
     void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels);
     void ApplyHyperlink(CShapeElement* pShape, CColor& oColor);
-    static void addHyperlinkToSpan(CSpan& oSpan, CInteractiveInfo &oInteractive, CColor& oColor);
+    static void addHyperlinkToSpan(CSpan& oSpan, const std::vector<CInteractiveInfo> &arrInteractive, const CColor& oColor);
     static std::vector<std::vector<CInteractiveInfo> > splitInteractive(const std::vector<CInteractiveInfo>& arrInteractive);
     static void ConvertInteractiveInfo(CInteractiveInfo& interactiveInfo, const CRecordMouseInteractiveInfoContainer* interactiveCont, CExMedia* pMapIDs);
 

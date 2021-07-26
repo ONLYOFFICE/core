@@ -282,7 +282,7 @@ namespace PPT_FORMAT
 			oFile.WriteStringUTF8(strMem);
 			oFile.CloseFile();
         }
-        inline std::wstring WriteHyperlink(const std::wstring& strHyperlink)
+        inline std::wstring WriteHyperlink(const std::wstring& strHyperlink, bool isExternal = false)
         {
             std::map<std::wstring, std::wstring>::iterator pPair = m_mapHyperlinks.find(strHyperlink);
 
@@ -298,7 +298,8 @@ namespace PPT_FORMAT
             std::wstring strRels = L"<Relationship Id=\"";
 
             strRels += strRid + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"";
-            strRels += strHyperlink + L"\"/>";
+            strRels += strHyperlink;
+            strRels += (isExternal ? L"\" TargetMode=\"External\" />" : L"\"/>");
 
             m_oWriter.WriteString(strRels);
 

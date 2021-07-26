@@ -1700,10 +1700,10 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
             std::wstring id;
             switch (actions[i].m_lHyperlinkType)
             {
-            case LT_SlideNumber:        id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);     break;
-            case LT_Url:                id = m_pRels->WriteHyperlink(actions[i].m_strHyperlink);    break;
-            case LT_OtherPresentation:  id = m_pRels->WriteFile(actions[i].m_strHyperlink);         break;
-            case LT_OtherFile:          id = m_pRels->WriteFile(actions[i].m_strHyperlink);         break;
+            case LT_SlideNumber:        id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);         break;
+            case LT_Url:                id = m_pRels->WriteHyperlink(actions[i].m_strHyperlink, true);  break;
+            case LT_OtherPresentation:  id = m_pRels->WriteFile(actions[i].m_strHyperlink);             break;
+            case LT_OtherFile:          id = m_pRels->WriteFile(actions[i].m_strHyperlink);             break;
             }
             if (!id.empty())
                 hlink.id = id;
@@ -1807,8 +1807,6 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
             }
             }
 
-            if (!hlink.action.is_init() || hlink.action->empty())
-                hlink.action = L"ppaction://noaction";
             break;
         }
         case II_MediaAction:

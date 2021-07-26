@@ -114,9 +114,6 @@ int main()
     BYTE* res = NULL;
     if (pages_count > 0)
         res = XPS_GetPixmap(test, 0, width, height);
-    RELEASEARRAYOBJECTS(res);
-    if (pages_count > 0)
-        res = XPS_GetPixmap(test, 0, width, height);
 
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";
@@ -138,23 +135,30 @@ int main()
     {
         DWORD nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout << std::string((char*)(pGlyphs + i), nPathLength) << " ";
+        std::cout << "Font " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
         i += nPathLength;
         nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout << std::string((char*)(pGlyphs + i), nPathLength) << " ";
+        std::cout << "Size " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
         i += nPathLength;
         nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout << std::string((char*)(pGlyphs + i), nPathLength) << " ";
-        i += nPathLength;
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << std::string((char*)(pGlyphs + i), nPathLength) << " ";
-        i += nPathLength;
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << nPathLength << std::endl;
+        std::cout << "Amount " << nPathLength << std::endl;
+        DWORD nAmount = nPathLength;
+        for (DWORD j = 0; j < nAmount; j++)
+        {
+            nPathLength = GetLength(pGlyphs + i);
+            i += 4;
+            std::cout << "X " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
+            i += nPathLength;
+            nPathLength = GetLength(pGlyphs + i);
+            i += 4;
+            std::cout << "Y " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
+            i += nPathLength;
+            nPathLength = GetLength(pGlyphs + i);
+            i += 4;
+            std::cout << "Symbol " << nPathLength << std::endl;
+        }
     }
 
     BYTE* pStructure = XPS_GetStructure(test);
@@ -206,7 +210,7 @@ int main()
     int height = info[2] * 96 / info[3];
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = XPS_GetPixmap(test, 0, width, height);
+        res = XPS_GetPixmap(test, 1, width, height);
 
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";

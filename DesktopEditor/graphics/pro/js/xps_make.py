@@ -4,8 +4,9 @@ import base
 import os
 
 if not base.is_file("raster.o"):
-  print("Please use raster_make.py previously")
-  exit(0)
+    base.cmd("python", ["raster_make.py"])
+if not base.is_file("raster.o"):
+    exit(0)
 
 base.configure_common_apps()
 

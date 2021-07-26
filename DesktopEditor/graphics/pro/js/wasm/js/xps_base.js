@@ -153,33 +153,62 @@
             index += lenRec;
             lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
             index += 4;
-            var _X = parseFloat("".fromUtf8(buffer, index, lenRec));
-            index += lenRec;
-            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
-            index += 4;
-            var _Y = parseFloat("".fromUtf8(buffer, index, lenRec));
-            // TODO: близость
-            if (_Y != prevY)
+            let amount = lenRec;
+            for (var i = 0; i < amount; i++)
             {
-                if (Line >= 0)
-                    this.pages[pageIndex].Lines[Line].Glyphs.sort((prev, next) => prev.X - next.X);
-                Line++;
-                this.pages[pageIndex].Lines.push({ Glyphs : [] });
-                prevY = _Y;
+                lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+                index += 4;
+                var _X = parseFloat("".fromUtf8(buffer, index, lenRec));
+                index += lenRec;
+                lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+                index += 4;
+                var _Y = parseFloat("".fromUtf8(buffer, index, lenRec));
+                if (_Y != prevY)
+                {
+                    if (Line >= 0)
+                        this.pages[pageIndex].Lines[Line].Glyphs.sort((prev, next) => prev.X - next.X);
+                    Line++;
+                    this.pages[pageIndex].Lines.push({ Glyphs : [] });
+                    prevY = _Y;
+                }
+                index += lenRec;
+                lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+                index += 4;
+                this.pages[pageIndex].Lines[Line].Glyphs.push({
+                    fontName : _fontName,
+                    fontSize : _fontSize,
+                    X : _X * 1.015,
+                    Y : _Y * 1.015,
+                    UChar : String.fromCharCode(lenRec)
+                });
             }
-            index += lenRec;
-            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
-            index += 4;
-            this.pages[pageIndex].Lines[Line].Glyphs.push({
-                fontName : _fontName,
-                fontSize : _fontSize,
-                X : _X * 1.015,
-                Y : _Y * 1.015,
-                UChar : String.fromCharCode(lenRec)
-            });
         }
         this.pages[pageIndex].Lines.sort((prev, next) => prev.Glyphs[0].Y - next.Glyphs[0].Y);
+
+        prevY = -1;
+        var prevFontName = "";
+        var prevFontSize = "";
+        for (let i = 0; i < this.pages[pageIndex].Lines.length; i++)
+        {
+            for (let j = 0; j < this.pages[pageIndex].Lines[i].Glyphs.length; j++)
+            {
+                let glyph = this.pages[pageIndex].Lines[i].Glyphs[j];
+                if (glyph.fontName == prevFontName)
+                    delete glyph.fontName;
+                else
+                    prevFontName = glyph.fontName;
+                if (glyph.fontSize == prevFontSize && j != 0)
+                    delete glyph.fontSize;
+                else
+                    prevFontSize = glyph.fontSize;
+                if (glyph.Y == prevY && j != 0)
+                    delete glyph.Y;
+                else
+                    prevY = glyph.Y;
+            }
+        }
         Module["_XPS_Delete"](glyphs);
+
         return res;
     };
     CFile.prototype.structure = function()

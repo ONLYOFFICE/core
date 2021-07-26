@@ -684,6 +684,24 @@ namespace XPS
 
 		if (!bIsSideways)
 		{
+            #ifdef BUILDING_WASM_MODULE
+            if (!m_pGlyphs)
+            {
+                m_pGlyphs = new CData();
+                m_pGlyphs->SkipLen();
+            }
+
+            double pdA, pdB, pdC, pdD, pdE, pdF;
+            pRenderer->GetTransform(&pdA, &pdB, &pdC, &pdD, &pdE, &pdF);
+            Aggplus::CMatrix oTransform(pdA, pdB, pdC, pdD, pdE, pdF);
+
+            std::string sFontName = U_TO_UTF8(m_pFontManager->GetName());
+            m_pGlyphs->WriteString((BYTE*)sFontName.c_str(), sFontName.length());
+            std::string sFontSize = std::to_string(dFontSize * pdA + pdE);
+            m_pGlyphs->WriteString((BYTE*)sFontSize.c_str(), sFontSize.length());
+            m_pGlyphs->AddInt(unUtf16Len);
+            #endif
+
 			while (GetNextGlyph(wsIndices.c_str(), nIndicesPos, nIndicesLen, pUtf16, nUtf16Pos, unUtf16Len, oEntry))
 			{
 				double dAdvance, dRealAdvance;
@@ -716,25 +734,10 @@ namespace XPS
 				}
 
 				#ifdef BUILDING_WASM_MODULE
-				if (!m_pGlyphs)
-				{
-					m_pGlyphs = new CData();
-					m_pGlyphs->SkipLen();
-				}
-
 				double _dX = dXorigin;
 				double _dY = dYorigin;
-				double pdA, pdB, pdC, pdD, pdE, pdF;
-				pRenderer->GetTransform(&pdA, &pdB, &pdC, &pdD, &pdE, &pdF);
-				Aggplus::CMatrix oTransform(pdA, pdB, pdC, pdD, pdE, pdF);
 				oTransform.TransformPoint(_dX, _dY);
 
-				std::wstring wsFontName;
-				pRenderer->get_FontName(&wsFontName);
-				std::string sFontName = U_TO_UTF8(wsFontName);
-				m_pGlyphs->WriteString((BYTE*)sFontName.c_str(), sFontName.length());
-				std::string sFontSize = std::to_string(dFontSize * pdA + pdE);
-				m_pGlyphs->WriteString((BYTE*)sFontSize.c_str(), sFontSize.length());
 				std::string sX = std::to_string(_dX);
 				m_pGlyphs->WriteString((BYTE*)sX.c_str(), sX.length());
 				std::string sY = std::to_string(_dY);

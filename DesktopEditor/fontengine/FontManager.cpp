@@ -231,6 +231,8 @@ NSFonts::IFontFile* CFontsCache::LockFont(NSFonts::CLibrary& library, const std:
 		return pFile;
 
     CFontStream* pStream = (CFontStream*)m_pApplicationFontStreams->GetStream(strFileName);
+    if (NULL == pStream)
+        return NULL;
     pFile = (CFontFile*)CFontManager::LoadFontFile(library, pStream, lFaceIndex);
 	if (NULL == pFile)
 		return NULL;

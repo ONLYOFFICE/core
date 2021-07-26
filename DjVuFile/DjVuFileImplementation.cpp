@@ -698,6 +698,9 @@ void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP
 	{
 		TextToRenderer(pRenderer, text, dPixToMM / nDpi);
 	}
+    #ifdef WASM_MODE
+    TextToRenderer(pRenderer, text, dPixToMM / nDpi);
+    #endif
 
 	pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dRendWidth, dRendHeight);
 	pRenderer->EndCommand(c_nPageType);

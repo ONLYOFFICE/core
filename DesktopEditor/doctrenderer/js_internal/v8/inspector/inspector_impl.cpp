@@ -48,6 +48,10 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::maybeLogOutgoing(
     if (!m_bLog) {
         return;
     }
+    if (message.size() > 10000) {
+        logOutgoingMessage(std::cout, "very long message");
+        return;
+    }
     logOutgoingMessage(std::cout, message);
 }
 

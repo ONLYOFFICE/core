@@ -87,7 +87,6 @@ void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
 {
     //pause before current script on debugging launch
     pauseOnNextStatement();
-    std::cout << "TO EXECUTE\n";
 
     execute();
 
@@ -177,6 +176,10 @@ void NSJSBase::v8_debug::internal::CInspectorClient::maybeLogIncoming(
         const std::string &message) const
 {
     if (!m_bLog) {
+        return;
+    }
+    if (message.size() > 10000) {
+        logCdtMessage(std::cout, "very long message");
         return;
     }
     //log incoming message

@@ -19,7 +19,7 @@ class CInspectorPool
     v8::Local<v8::Context> m_Context{};
     v8::Platform *m_pPlatform{nullptr};
 
-    static constexpr bool m_bLog{false};
+    static constexpr bool m_bLog{true};
     const int m_iContextGroupId;
     const std::string m_ContextName;
 

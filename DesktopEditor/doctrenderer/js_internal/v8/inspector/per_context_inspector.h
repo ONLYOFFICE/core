@@ -24,8 +24,11 @@ class CInspectorPool;
 
 class CPerContextInspector
 {
-    static
-    std::unique_ptr<internal::CInspectorPool> m_pPool;
+//    static
+//    std::unique_ptr<internal::CInspectorPool> m_pPool;
+    void kostyl(){int todo_remove_tmp_context_and_platform;}
+    v8::Local<v8::Context> c{};
+    v8::Platform *p{nullptr};
 
 public:
     CPerContextInspector(const std::string &contextName = "");

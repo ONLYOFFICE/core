@@ -17,7 +17,7 @@ namespace {
 
 void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
         const std::string &contextName
-        , int contextGroupId
+//        , int contextGroupId
         , CInspectorChannel::sendDataCallback sendDataCallback)
 {
     //client instance is this
@@ -34,20 +34,10 @@ void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
     v8_inspector::StringView state{};
 
     //session
-    m_pSession = m_pInspector->connect(contextGroupId, m_pChannel.get(), state);
+    m_pSession = m_pInspector->connect(m_iContextGroupId, m_pChannel.get(), state);
 
-    //context name as string view
-    v8_inspector::StringView viewContextName = strToView(contextName);
-
-    //context info
-    v8_inspector::V8ContextInfo info{
-                m_Context
-                , contextGroupId
-                , viewContextName
-    };
-
-    //register context objects in inspector
-    m_pInspector->contextCreated(info);
+    //
+    registerContext(m_CurrentContext, contextName);
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::pumpPlatform()
@@ -103,6 +93,25 @@ void NSJSBase::v8_debug::internal::CInspectorClient::processFrontendMessage(
     checkFrontendMessage(message);
 }
 
+void NSJSBase::v8_debug::internal::CInspectorClient::maybeRegisterContext(v8::Local<v8::Context> context
+//                                                                          , int contextGroupId
+                                                                          , const std::string &contextName)
+{
+    if (m_CurrentContext == context) {
+        return;
+    }
+    registerContext(context
+//                    , contextGroupId
+                    , contextName);
+}
+
+void NSJSBase::v8_debug::internal::CInspectorClient::maybeSetPlatform(v8::Platform *platform)
+{
+    if (m_pPlatform != platform) {
+        m_pPlatform = platform;
+    }
+}
+
 void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessage(const std::string &message)
 {
     switch (m_State) {
@@ -114,7 +123,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessage(const 
 
 void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessageOnScript(const std::string &message)
 {
-    if (getMethod(m_Context, message) ==
+    if (getMethod(m_CurrentContext, message) ==
             scriptResumeFlag_1
             ) {
         resumeDebuggingSession();
@@ -123,12 +132,33 @@ void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessageOnScrip
 
 void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessageOnFunc(const std::string &message)
 {
-    if (getMethod(m_Context, message) ==
+    if (getMethod(m_CurrentContext, message) ==
             funcResumeFlag_1
 //            funcResumeFlag_2
             ) {
         resumeDebuggingSession();
     }
+}
+
+void NSJSBase::v8_debug::internal::CInspectorClient::registerContext(v8::Local<v8::Context> context
+//                                                                     , int contextGroupId
+                                                                     , const std::string &contextName)
+{
+    //save as current context
+    m_CurrentContext = context;
+
+    //context name as string view
+    v8_inspector::StringView viewContextName = strToView(contextName);
+
+    //context info
+    v8_inspector::V8ContextInfo info{
+                m_CurrentContext
+                , m_iContextGroupId
+                , viewContextName
+    };
+
+    //register context objects in inspector
+    m_pInspector->contextCreated(info);
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessageBeforeReady(const std::string &message)
@@ -150,7 +180,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessageOnDebug
 bool NSJSBase::v8_debug::internal::CInspectorClient::checkForReadyMessage(
         const std::string &json) const
 {
-    return getMethod(m_Context, json) == readyMessage;
+    return getMethod(m_CurrentContext, json) == readyMessage;
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::setScriptExecData(
@@ -217,7 +247,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::execute()
 void NSJSBase::v8_debug::internal::CInspectorClient::runScript()
 {
     JSSmart<CJSValue> result = runScriptImpl(
-                            m_Context
+                            m_CurrentContext
                             , m_ScriptExecData.scriptSource
                             , *m_ScriptExecData.pException
                             , m_ScriptExecData.scriptPath
@@ -230,7 +260,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::callFunc()
 {
     JSSmart<CJSValue> result = callFuncImpl(
                             m_FunctionCallData.value
-                            , m_Context
+                            , m_CurrentContext
                             , m_FunctionCallData.name
                             , m_FunctionCallData.argc
                             , m_FunctionCallData.argv
@@ -255,18 +285,21 @@ NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(//
         )
 
     //v8 stuff
-    : m_Context(context)
-    , m_pIsolate(m_Context->GetIsolate())
-    , m_pPlatform(platform)
+    : m_CurrentContext{context}
+    , m_pIsolate{m_CurrentContext->GetIsolate()}
+    , m_pPlatform{platform}
 
     //callbacks
     , m_pInspectingWrapper{inspector}
 
     //logging
     , m_bLog(log)
+
+    //
+    , m_iContextGroupId{contextGroupId}
 {
     setUpDebuggingSession(contextName
-                          , contextGroupId
+//                          , contextGroupId
                           , [inspector](const v8_inspector::StringView &message) {
         inspector->sendData(message);
     });

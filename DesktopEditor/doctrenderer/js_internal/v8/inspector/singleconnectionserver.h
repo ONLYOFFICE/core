@@ -40,7 +40,7 @@ private:
 
     //message handler
     onMessageCallback m_fOnMessage{};
-    onResumeCallback m_fOnResume{};
+//    onResumeCallback m_fOnResume{};
 
     //flags
     std::atomic<bool> m_bCdtConnected{false};//используется для выхода из цикла после закрытия chrome dev tools
@@ -68,12 +68,12 @@ public:
     CSingleConnectionServer(uint16_t port = 8080, std::string host = "127.0.0.1");
 
     void setOnMessageCallback(onMessageCallback callback);
-    void setOnResumeCallback(onResumeCallback callback);
+//    void setOnResumeCallback(onResumeCallback callback);
 
     bool waitForConnection();
     bool listen();
-    void run();
-    void resume();
+    void run(onResumeCallback beforeRun = onResumeCallback());
+//    void resume();
     void sendData(const std::string &data);
     bool waitAndProcessMessage();
     bool connected() const;

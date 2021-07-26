@@ -39,7 +39,7 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
     static constexpr char funcResumeFlag_2[35] = "Overlay.setPausedInDebuggerMessage";
 
     //v8 stuff
-    v8::Local<v8::Context> m_Context{};//to register context in inspector
+    v8::Local<v8::Context> m_CurrentContext{};//to register context in inspector
     v8::Isolate *m_pIsolate = nullptr;//to create inspector
     v8::Platform *m_pPlatform = nullptr;//to pump it
 
@@ -74,11 +74,12 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
     //log
     bool m_bLog{false};
 
+    const int m_iContextGroupId;
 
 
     //sets up a debugging session
     void setUpDebuggingSession(const std::string &contextName
-                               , int contextGroupId
+//                               , int contextGroupId
                                , CInspectorChannel::sendDataCallback sendDataCallback);
     //pump platform on pause
     void pumpPlatform();
@@ -108,6 +109,11 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
 
     void checkFrontendMessageOnScript(const std::string &message);
     void checkFrontendMessageOnFunc(const std::string &message);
+
+    //
+    void registerContext(v8::Local<v8::Context> context
+//                              , int contextGroupId
+                              , const std::string &contextName = "");
 
 
 public:
@@ -146,6 +152,13 @@ public:
 
     //dispatch message by session and check it for Runtime.runIfWaitingForDebugger
     void processFrontendMessage(const std::string &message);
+
+
+    //
+    void maybeRegisterContext(v8::Local<v8::Context> context
+//                              , int contextGroupId
+                              , const std::string &contextName = "");
+    void maybeSetPlatform(v8::Platform *platform);
 
 
 

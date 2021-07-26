@@ -3,22 +3,24 @@
 #include "../../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 #include <iostream>
 
-std::unique_ptr<NSJSBase::v8_debug::internal::CInspectorPool>
-NSJSBase::v8_debug::CPerContextInspector::m_pPool{nullptr};
+//std::unique_ptr<NSJSBase::v8_debug::internal::CInspectorPool>
+//NSJSBase::v8_debug::CPerContextInspector::m_pPool{nullptr};
 
 
 NSJSBase::v8_debug::CPerContextInspector::CPerContextInspector(const std::string &contextName)
 //    : m_pPool{std::make_unique<internal::CInspectorPool>(contextName)}
 {
-    if (!m_pPool) {
-        m_pPool = std::make_unique<internal::CInspectorPool>("");
-    }
+//    if (!m_pPool) {
+//        m_pPool = std::make_unique<internal::CInspectorPool>("");
+//    }
 }
 
 NSJSBase::v8_debug::CPerContextInspector&
 NSJSBase::v8_debug::CPerContextInspector::maybeInit(v8::Local<v8::Context> context, v8::Platform *platform)
 {
-    m_pPool->maybeSetV8Data(context, platform);
+//    m_pPool->maybeSetV8Data(context, platform);
+    c = context;
+    p = platform;
     return *this;
 }
 
@@ -29,7 +31,7 @@ NSJSBase::v8_debug::CPerContextInspector::runScript(
         , const std::wstring &scriptPath
         )
 {
-    return m_pPool->getInspector().runScript({scriptStr, pException, scriptPath});
+    return internal::CInspectorPool::get().getInspector(c, p).runScript({scriptStr, pException, scriptPath});
 }
 
 NSCommon::smart_ptr<NSJSBase::CJSValue>
@@ -39,12 +41,13 @@ NSJSBase::v8_debug::CPerContextInspector::callFunc(
         , int argc
         , NSCommon::smart_ptr<CJSValue> argv[])
 {
-    return m_pPool->getInspector().callFunc({value, name, argc, argv});
+    return internal::CInspectorPool::get().getInspector(c, p).callFunc({value, name, argc, argv});
 }
 
 void NSJSBase::v8_debug::CPerContextInspector::dispose()
 {
-    m_pPool.reset(nullptr);
+//    m_pPool.reset(nullptr);
+    int todo_dispose;
 }
 
 NSJSBase::v8_debug::CPerContextInspector::~CPerContextInspector() {

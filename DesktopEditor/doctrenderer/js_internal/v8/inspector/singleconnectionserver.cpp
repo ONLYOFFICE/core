@@ -107,10 +107,10 @@ void NSJSBase::v8_debug::internal::CSingleConnectionServer::setOnMessageCallback
     m_fOnMessage = std::move(callback);
 }
 
-void NSJSBase::v8_debug::internal::CSingleConnectionServer::setOnResumeCallback(onResumeCallback callback)
-{
-    m_fOnResume = std::move(callback);
-}
+//void NSJSBase::v8_debug::internal::CSingleConnectionServer::setOnResumeCallback(onResumeCallback callback)
+//{
+//    m_fOnResume = std::move(callback);
+//}
 
 bool NSJSBase::v8_debug::internal::CSingleConnectionServer::waitForConnection()
 {
@@ -179,8 +179,15 @@ bool NSJSBase::v8_debug::internal::CSingleConnectionServer::listen()
 }
 
 //blocks
-void NSJSBase::v8_debug::internal::CSingleConnectionServer::run()
+void NSJSBase::v8_debug::internal::CSingleConnectionServer::run(onResumeCallback beforeRun)
 {
+    //resume stuff
+    m_bPaused = false;
+    if (beforeRun) {
+        beforeRun();
+    }
+
+    //old run stuff
     TrueSetter ts{m_bBusy};
     while (!m_bPaused) {
         if (!waitAndProcessMessage()) {
@@ -189,14 +196,14 @@ void NSJSBase::v8_debug::internal::CSingleConnectionServer::run()
     }
 }
 
-void NSJSBase::v8_debug::internal::CSingleConnectionServer::resume()
-{
-    m_bPaused = false;
-    if (m_fOnResume) {
-        m_fOnResume();
-    }
-    run();
-}
+//void NSJSBase::v8_debug::internal::CSingleConnectionServer::resume()
+//{
+//    m_bPaused = false;
+//    if (m_fOnResume) {
+//        m_fOnResume();
+//    }
+//    run();
+//}
 
 void NSJSBase::v8_debug::internal::CSingleConnectionServer::sendData(const std::string &data)
 {

@@ -1,5 +1,5 @@
 //this file contains boost includes, and is should be included before any others
-#include "singleconnectionserver.h"//server implementation
+//#include "singleconnectionserver.h"//server implementation
 #include "inspector_impl.h"
 #include <iostream>//std::cout
 #include "singlethreadutils.h"//string conversion
@@ -11,27 +11,27 @@ bool NSJSBase::v8_debug::internal::CInspectorImpl::initServer()
     auto messageCallback = [this](const std::string &message) {
         this->processIncomingMessage(message);
     };
-    m_pServer->setOnMessageCallback(messageCallback);
+    m_pServer.setOnMessageCallback(messageCallback);
 
     //set on resume callback
-    auto resumeCallback = [this]() {
+    m_fOnServerResume = [this]() {
         this->m_Client.startDebugging();
     };
-    m_pServer->setOnResumeCallback(resumeCallback);
+//    m_pServer.setOnResumeCallback(resumeCallback);
 
     //listen
-    return m_pServer->listen();
+    return m_pServer.listen();
 }
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::connectServer()
 {
-    printChromeLaunchHint(std::cout, m_pServer->port());
-    return m_pServer->waitForConnection();
+    printChromeLaunchHint(std::cout, m_pServer.port());
+    return m_pServer.waitForConnection();
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::waitWhileServerReady()
 {
-    m_pServer->run();
+    m_pServer.run();
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::processIncomingMessage(const std::string &message)
@@ -68,11 +68,11 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::printChromeLaunchHint(
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::checkServer() const
 {
-    if (!m_pServer) {
-        std::cerr << "no server for inspector" << std::endl;
-        return false;
-    }
-    if (!m_pServer->listening()) {
+//    if (!m_pServer) {
+//        std::cerr << "no server for inspector" << std::endl;
+//        return false;
+//    }
+    if (!m_pServer.listening()) {
         std::cerr << "server is not listening" << std::endl;
         return false;
     }
@@ -97,9 +97,9 @@ NSJSBase::v8_debug::internal::CInspectorImpl::getReturnValue()
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::sendData(const v8_inspector::StringView &message)
 {
-    if (!m_pServer) {
-        return;
-    }
+//    if (!m_pServer) {
+//        return;
+//    }
     if (message.length() == 0) {
         return;
     }
@@ -109,15 +109,15 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::sendData(const v8_inspector::
     //
     maybeLogOutgoing(str);
     //
-    this->m_pServer->sendData(str);
+    this->m_pServer.sendData(str);
 }
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::waitForMessage()
 {
-    if (!m_pServer) {
-        return false;
-    }
-    return m_pServer->waitAndProcessMessage();
+//    if (!m_pServer) {
+//        return false;
+//    }
+    return m_pServer.waitAndProcessMessage();
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::setRetVal(const NSCommon::smart_ptr<CJSValue> &val)
@@ -127,18 +127,23 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::setRetVal(const NSCommon::sma
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::shutServerDown()
 {
-    m_pServer->shutdown();
+    m_pServer.shutdown();
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::pauseServer()
 {
-    m_pServer->pause();
+    m_pServer.pause();
 }
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::free() const
 {
-    return !m_pServer->busy();
+    return !m_pServer.busy();
 }
+
+//int NSJSBase::v8_debug::internal::CInspectorImpl::contextGroupId() const
+//{
+//    return m_iContextGroupId;
+//}
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::onServerReady()
 {
@@ -164,10 +169,11 @@ NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         //
         , uint16_t port
         )
-    : m_pServer{std::make_unique<CSingleConnectionServer>(port)}
+    : m_pServer{port}
     , m_pIsolate{context->GetIsolate()}
     , m_bLog{info.log}
     , m_Client{context, info.contextName, info.contextGroupId, platform, this, info.log}
+//    , m_iContextGroupId{info.contextGroupId}
 {
     if (!initServer()) {
         std::cerr << "server can't listen to incoming connections" << std::endl;
@@ -187,7 +193,7 @@ NSJSBase::v8_debug::internal::CInspectorImpl::runScript(
     //set data to client
     m_Client.setScriptExecData(execData);
     std::cout << "BEFORE RESUME SERVER: RS\n";
-    m_pServer->resume();
+    m_pServer.run(m_fOnServerResume);
     std::cout << "AFTER RESUME SERVER: RS\n";
     return getReturnValue();
 }
@@ -205,14 +211,14 @@ NSJSBase::v8_debug::internal::CInspectorImpl::callFunc(
     m_Client.setFuncCallData(callData);
     //run server
     std::cout << "BEFORE RESUME SERVER: FC\n";
-    m_pServer->resume();
+    m_pServer.run(m_fOnServerResume);
     std::cout << "AFTER RESUME SERVER: FC\n";
     return getReturnValue();
 }
 
 NSJSBase::v8_debug::internal::CInspectorImpl::~CInspectorImpl() {
     std::cout << "INSPECTOR DTOR\n";
-    if (m_pServer->listening()) {
-        m_pServer->shutdown();
+    if (m_pServer.listening()) {
+        m_pServer.shutdown();
     }
 }

@@ -2,22 +2,21 @@
 #include "channel.h"//client holds channel
 #include "singlethreadutils.h"//converting strings
 #include <libplatform/libplatform.h>//v8::Platform
-#include "../../v8/v8_base.h"//runScript and callFunc impls
 #include "inspector_impl.h"//to interact with inspector
+#include <iostream>
 
 namespace {
     //use them in loop
     class TrueSetter {
-        std::atomic<bool> &m_bool;
+        bool &m_bool;
     public:
-        TrueSetter(std::atomic<bool> &b) : m_bool(b) {m_bool = true;}
+        TrueSetter(bool &b) : m_bool(b) {m_bool = true;}
         ~TrueSetter() {m_bool = false;}
     };
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
         const std::string &contextName
-//        , CInspectorChannel::sendDataCallback sendDataCallback
         )
 {
     //client instance is this
@@ -25,8 +24,8 @@ void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
     //channel
     m_pChannel = std::make_unique<CInspectorChannel>(
                 [this](const v8_inspector::StringView &message) {
-        m_pInspectingWrapper->sendData(message);
-    }
+                        m_pInspectingWrapper->sendData(message);
+                    }
                 );
 
     //inspector
@@ -39,7 +38,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
     m_pSession = m_pInspector->connect(m_iContextGroupId, m_pChannel.get(), state);
 
     //
-    m_pInspector->contextCreated({m_CurrentContext, m_iContextGroupId, strToView(contextName)});
+    m_pInspector->contextCreated({m_Context, m_iContextGroupId, strToView(contextName)});
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::pumpPlatform()
@@ -85,16 +84,6 @@ void NSJSBase::v8_debug::internal::CInspectorClient::processFrontendMessage(
     checkFrontendMessage(message);
 }
 
-void NSJSBase::v8_debug::internal::CInspectorClient::setFunc()
-{
-    m_State = state::kFunc;
-}
-
-void NSJSBase::v8_debug::internal::CInspectorClient::setScript()
-{
-    m_State = state::kScript;
-}
-
 void NSJSBase::v8_debug::internal::CInspectorClient::setAutoResume(bool how)
 {
     autoResume = how;
@@ -102,43 +91,36 @@ void NSJSBase::v8_debug::internal::CInspectorClient::setAutoResume(bool how)
 
 void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessage(const std::string &message)
 {
-    //убрать под server unready - подготовка сервака тут вообще никаким боком
+    //если не нужно запускать сессию автоматически, ничего не смотрим
     if (!autoResume) {
         return;
     }
-    std::string method = getMethod(m_CurrentContext, message);
-    switch (m_State) {
-    case state::kServerUnready: {
-        if (readyMessage == method) {
-            m_State = state::kScript;
-            return onServerReady();
-        }
-    }
-    case state::kScript: {
-        if (scriptResumeFlag_1 == method) {
-            return onResume();
-        }
-    }
-    case state::kFunc: {
-        if (funcResumeFlag_2 == method) {
-            return onResume();
-        }
-    }
-    }
-}
 
-void NSJSBase::v8_debug::internal::CInspectorClient::onServerReady()
-{
-    m_pInspectingWrapper->onServerReady();
-}
+    std::string method = getMethod(m_Context, message);
 
-void NSJSBase::v8_debug::internal::CInspectorClient::onResume()
-{
-    resumeDebuggingSession();
+    //если сервер не готов - смотрим сообщение о готовности
+    if (!serverReady) {
+        if (serverReadyMessage == method) {
+            serverReady = true;
+            m_pInspectingWrapper->onServerReady();
+        }
+        return;
+    }
+
+    //функции вызываются чаще, первыми проверяем их
+    if (funcResumeFlag_2 == method) {
+        return resumeDebuggingSession();
+    }
+
+    //проверяем скрипт
+    if (scriptResumeFlag_1 == method) {
+        return resumeDebuggingSession();
+    }
 }
 
 NSJSBase::v8_debug::internal::CInspectorClient::~CInspectorClient() {
     //tmp
+    //если не релизить, она дважды удаляется
     m_pSession.release();
 }
 
@@ -184,8 +166,8 @@ NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(
         )
 
     //v8 stuff
-    : m_CurrentContext{context}
-    , m_pIsolate{m_CurrentContext->GetIsolate()}
+    : m_Context{context}
+    , m_pIsolate{m_Context->GetIsolate()}
     , m_pPlatform{platform}
 
     //callbacks

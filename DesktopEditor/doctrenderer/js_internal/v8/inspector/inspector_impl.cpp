@@ -1,9 +1,6 @@
-//this file contains boost includes, and is should be included before any others
-//#include "singleconnectionserver.h"//server implementation
 #include "inspector_impl.h"
 #include <iostream>//std::cout
 #include "singlethreadutils.h"//string conversion
-#include "../v8_base.h"//v8 wrappers and other stuff
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::initServer()
 {
@@ -50,54 +47,73 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::printChromeLaunchHint(
          << std::endl;
 }
 
-std::string NSJSBase::v8_debug::internal::CInspectorImpl::getFunctionName(const std::string &json) {
-    std::cout << "CALL FRAMES: ";
-    v8::Local<v8::Value> params = getJsonProperty(m_Context, json, "params");
-//    std::cout << "!!! params: " << params << std::endl;
+v8::Local<v8::Object> NSJSBase::v8_debug::internal::CInspectorImpl::getParams(
+        const std::string &debuggerPausedMessage
+        ) {
+    v8::Local<v8::Value> params = getJsonProperty(m_Context, debuggerPausedMessage, "params");
     if (!params->IsObject()) {
-        std::cout << "params not object\n";
-        return std::string();
+        return v8::Local<v8::Object>();
     }
-    int check_before_cast_all;
-    v8::Local<v8::Value> hitBreakpoints = getJsonPropertyImpl(m_Context
-                                                              , params->ToObject(m_Context).ToLocalChecked(), "hitBreakpoints");
-    if (!hitBreakpoints->IsArray()) {
-        std::cout << "not array\n";
-        return std::string();
+    v8::MaybeLocal<v8::Object> maybeParams = params->ToObject(m_Context);
+    if (maybeParams.IsEmpty()) {
+        return v8::Local<v8::Object>();
     }
-    v8::Local<v8::Array> arrr = v8::Local<v8::Array>::Cast(hitBreakpoints);
-    uint32_t len = arrr->Length();
-    if (len) {
-        m_Client.setAutoResume(false);
-    } else {
-        m_Client.setAutoResume(true);
-    }
-    std::cout << "LOOK LEN = " << len << std::endl;
-    return std::string();
-    v8::Local<v8::Value> callFrames = getJsonPropertyImpl(m_Context, params->ToObject(m_Context).ToLocalChecked(), "callFrames");
-    if (!callFrames->IsArray()) {
-        std::cout << "frames not array\n";
-        return std::string();
-    }
-    v8::Local<v8::Array> a = v8::Local<v8::Array>::Cast(callFrames);
-    v8::Local<v8::Value> json0 = a->Get(0);
-    v8::Local<v8::Value> fname = getJsonPropertyImpl(m_Context, json0->ToObject(m_Context).ToLocalChecked(), "functionName");
-//    v8::MaybeLocal<v8::String> s = v8::JSON::Stringify(m_Context, callFrames->ToObject(m_Context).ToLocalChecked());
-    std::string result = asString(fname);
-    std::cout << asString(fname) << std::endl << "LOOK" << std::endl;
-    return result;
+    return maybeParams.ToLocalChecked();
+}
 
-//    if (s.IsEmpty()) {
-//        std::cout << "empty\n";
-//        return std::string();
-//    } else {
-//        std::cout << asString(s.ToLocalChecked());
-//    }
-//    v8::Array::n
-    std::cout << std::endl << "END FRAMES" << std::endl;
-//    std::string object = getJsonProperty(m_Context, params, "object");
-//    std::cout << "!!! object: " << object << std::endl;
-    return std::string();
+bool NSJSBase::v8_debug::internal::CInspectorImpl::hasFunction(v8::Local<v8::Object> params)
+{
+    if (params.IsEmpty()) {
+        return false;
+    }
+    v8::Local<v8::Value> callFrames = getJsonPropertyImpl(m_Context, params, "callFrames");
+    if (!callFrames->IsArray()) {
+        return false;
+    }
+    v8::Local<v8::Array> callFramesArr = v8::Local<v8::Array>::Cast(callFrames);
+    v8::Local<v8::Value> jsonZero = callFramesArr->Get(0);
+    if (!jsonZero->IsObject()) {
+        return false;
+    }
+    v8::MaybeLocal<v8::Object> maybeJson = jsonZero->ToObject(m_Context);
+    if (maybeJson.IsEmpty()) {
+        return false;
+    }
+    v8::Local<v8::Object> json = maybeJson.ToLocalChecked();
+    v8::Local<v8::Value> functionName = getJsonPropertyImpl(m_Context, json, "functionName");
+    return !asString(functionName).empty();
+}
+
+bool NSJSBase::v8_debug::internal::CInspectorImpl::hasBreakpoint(v8::Local<v8::Object> params)
+{
+    if (params.IsEmpty()) {
+        return false;
+    }
+    v8::Local<v8::Value> hitBreakpoints = getJsonPropertyImpl(m_Context
+                                                              , params, "hitBreakpoints");
+    if (!hitBreakpoints->IsArray()) {
+        return false;
+    }
+    v8::Local<v8::Array> hbArr = v8::Local<v8::Array>::Cast(hitBreakpoints);
+    return hbArr->Length();
+}
+
+bool NSJSBase::v8_debug::internal::CInspectorImpl::hasFunction(const std::string &debuggerPausedMessage)
+{
+    return hasFunction(getParams(debuggerPausedMessage));
+}
+
+bool NSJSBase::v8_debug::internal::CInspectorImpl::hasBreakpoint(const std::string &debuggerPausedMessage)
+{
+    return hasBreakpoint(getParams(debuggerPausedMessage));
+}
+
+void NSJSBase::v8_debug::internal::CInspectorImpl::checkOutgoingMessage(const std::string &message)
+{
+    if (CInspectorClient::debuggerPausedFlag == getMethod(m_Context, message)) {
+        m_Client.setAutoResume(!hasBreakpoint(message));
+        bool isFunc = hasFunction(message);
+    }
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::sendData(const v8_inspector::StringView &message)
@@ -110,15 +126,10 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::sendData(const v8_inspector::
                 , message);
     //
     maybeLogOutgoing(str);
+    //чекаем прежде, чем отправить, чтобы заранее поставить флаги на клиент
+    checkOutgoingMessage(str);
     //
-    if (CInspectorClient::funcResumeFlag_1 == getMethod(m_Context, str)) {
-        if (!getFunctionName(str).empty()) {
-            int todo;
-        }
-    }
     this->m_Server.sendData(str);
-    //
-
 }
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::waitForMessage()
@@ -139,32 +150,21 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::prepareServer()
     waitWhileServerReady();
 }
 
-void NSJSBase::v8_debug::internal::CInspectorImpl::beforeScript()
-{
-    m_Client.setScript();
-    beforeLaunch();
-}
-
-void NSJSBase::v8_debug::internal::CInspectorImpl::beforeFunc()
-{
-    m_Client.setFunc();
-    beforeLaunch();
-}
-
 void NSJSBase::v8_debug::internal::CInspectorImpl::beforeLaunch()
 {
     m_Client.pauseOnNextStatement();
 }
 
-NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
+NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(
+        //
         v8::Local<v8::Context> context
         //platform to pump
         , v8::Platform *platform
         //
         , uint16_t port
-                                                             , int contextGroupId
-                                                             , const std::string &contextName
-                                                             , bool log
+        , int contextGroupId
+        , const std::string &contextName
+        , bool log
         )
     : m_Server{port}
     , m_pIsolate{context->GetIsolate()}

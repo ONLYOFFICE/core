@@ -4,16 +4,6 @@
 namespace ip = boost::asio::ip;
 namespace beast = boost::beast;
 
-namespace {
-    //use them in loop
-    class TrueSetter {
-        std::atomic<bool> &m_bool;
-    public:
-        TrueSetter(std::atomic<bool> &b) : m_bool(b) {m_bool = true;}
-        ~TrueSetter() {m_bool = false;}
-    };
-}
-
 std::pair<std::string, beast::error_code>
 NSJSBase::v8_debug::internal::CSingleConnectionServer::getData()
 {
@@ -223,6 +213,8 @@ bool NSJSBase::v8_debug::internal::CSingleConnectionServer::waitAndProcessMessag
     if (!connected()) {
         return false;
     }
+
+    //no need to check for pause
 
     if (result.second) {
         return false;

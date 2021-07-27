@@ -1,40 +1,28 @@
 #ifndef INSPECTOR_IMPL_H
 #define INSPECTOR_IMPL_H
 
-#include "singleconnectionserver.h"//CSingleConnectionServer; onResumeCallback
-#include <stdint.h>//uintxx_t
-#include <v8.h>//v8 stuff
+//здесь лежат бустовые хедеры, он должен быть включён выше всех
+#include "singleconnectionserver.h"//CSingleConnectionServer
 #include "client.h"//inspector is what holds client
-//#include "inspector_info.h"//info for constructing inspector
 
 namespace NSJSBase {
 namespace v8_debug {
 namespace internal {
 
-//server forward declaration
-class CSingleConnectionServer;
-
 class CInspectorImpl
 {
     //server
     CSingleConnectionServer m_Server;
-//    CSingleConnectionServer::onResumeCallback m_fOnServerResume{};
 
     //to convert v8 string view to string
     v8::Isolate *m_pIsolate{nullptr};// для viewToStr
-    v8::Local<v8::Context> m_Context{};//для getJsonProperty
+    v8::Local<v8::Context> m_Context{};//для парсинга жсонов
 
     //logging protocol messages
     bool m_bLog{false};
 
-    //using pointer to limit with forward declaration of smart_ptr
-//    std::unique_ptr<
-//    NSCommon::smart_ptr<CJSValue>
-//    > m_pScriptResult{nullptr};
-
     //
     CInspectorClient m_Client;
-
 
 
 
@@ -42,19 +30,19 @@ class CInspectorImpl
     bool initServer();
     bool connectServer();
     void waitWhileServerReady();
-
-    //
-//    void processIncomingMessage(const std::string &message);
-
     //logging and hints
     void maybeLogOutgoing(const std::string &message) const;
     //
     void printChromeLaunchHint(std::ostream &out
                                , uint16_t port);
 
-    void beforeLaunch();
-
-    std::string getFunctionName(const std::string &json);
+    //парсинг сообщения Debugger.paused
+    v8::Local<v8::Object> getParams(const std::string &debuggerPausedMessage);
+    bool hasFunction(v8::Local<v8::Object> params);
+    bool hasBreakpoint(v8::Local<v8::Object> params);
+    bool hasFunction(const std::string &debuggerPausedMessage);
+    bool hasBreakpoint(const std::string &debuggerPausedMessage);
+    void checkOutgoingMessage(const std::string &message);
 
 public:
     //explicitly delete all the stuff
@@ -80,24 +68,13 @@ public:
     //api for inspector client
     void sendData(const v8_inspector::StringView &message);
     bool waitForMessage();
-//    void setRetVal(const NSCommon::smart_ptr<CJSValue> &val);
-//    void pauseServer();
     void onServerReady();
 
     //necessary to call before using inspector
     void prepareServer();
 
     //
-    void beforeScript();
-    void beforeFunc();
-
-    //running api
-//    NSCommon::smart_ptr<CJSValue> runScript(
-//            const CScriptExecData &execData
-//            );
-//    NSCommon::smart_ptr<CJSValue> callFunc(
-//            const CFCallData &callData
-//            );
+    void beforeLaunch();
 
     ~CInspectorImpl();
 };

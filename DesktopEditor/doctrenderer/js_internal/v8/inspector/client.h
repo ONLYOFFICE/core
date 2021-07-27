@@ -2,10 +2,7 @@
 #define CLIENT_H
 
 #include <v8-inspector.h>//v8_inspector stuff
-#include <functional>//std::function for callbacks
-#include <atomic>//std::atomic for flags
 #include "channel.h"//CChannel for debug session
-//#include "execution_data.h"//data for execution of script and function
 
 
 namespace NSJSBase {
@@ -23,42 +20,22 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
 {
 public:
     //notable cdt messages
-    static constexpr char readyMessage[32] = "Runtime.runIfWaitingForDebugger";
+    static constexpr char serverReadyMessage[32] = "Runtime.runIfWaitingForDebugger";
     static constexpr char scriptResumeFlag_1[25] = "Debugger.getScriptSource";
-    static constexpr char funcResumeFlag_1[16] = "Debugger.paused";
+    static constexpr char debuggerPausedFlag[16] = "Debugger.paused";
 
     static constexpr char funcResumeFlag_2[22] = "Runtime.getProperties";
     static constexpr char funcResumeFlag_3[35] = "Overlay.setPausedInDebuggerMessage";
 
 private:
     //v8 stuff
-    v8::Local<v8::Context> m_CurrentContext{};//to register context in inspector
+    v8::Local<v8::Context> m_Context{};//to register context in inspector
     v8::Isolate *m_pIsolate = nullptr;//to create inspector
     v8::Platform *m_pPlatform = nullptr;//to pump it
 
     //state
-//    enum class mode : bool {
-//        kScriptExec
-//        , kFuncCall
-//    };
-//    enum class debugState : int {
-//        kServerNotReady
-//        , kDebugPaused
-//        , kSessionResumed
-//    };
-//    mode m_Mode{mode::kScriptExec};//need to execute script before call to any function
-//    debugState m_State{debugState::kServerNotReady};//
-    enum class state : char {
-        kServerUnready
-        , kScript
-        , kFunc
-    } m_State{state::kServerUnready};
-
+    bool serverReady = false;
     bool autoResume = true;
-
-    //execution data
-//    CScriptExecData m_ScriptExecData{};
-//    CFCallData m_FunctionCallData{};
 
     //debug session data
     std::unique_ptr<v8_inspector::V8Inspector> m_pInspector{nullptr};
@@ -66,7 +43,7 @@ private:
     std::unique_ptr<v8_inspector::V8InspectorSession> m_pSession{nullptr};
 
     //message loop flag
-    std::atomic<bool> m_bPause{false};
+    bool m_bPause{false};
 
     //to interact with superior class which holds all the stuff, including client
     CInspectorImpl *m_pInspectingWrapper{nullptr};
@@ -74,32 +51,20 @@ private:
     //log
     bool m_bLog{false};
 
+    //
     const int m_iContextGroupId;
 
 
     //sets up a debugging session
-    void setUpDebuggingSession(const std::string &contextName
-//                               , CInspectorChannel::sendDataCallback sendDataCallback
-                               );
+    void setUpDebuggingSession(const std::string &contextName);
     //pump platform on pause
     void pumpPlatform();
     //log incoming message
     void maybeLogIncoming(const std::string &message) const;
     //
-
-
-
-    //
     void dispatchProtocolMessage(const std::string &message);
-
-
     //
     void checkFrontendMessage(const std::string &message);
-
-    //
-    void onServerReady();
-    void onResume();
-
 
 public:
     CInspectorClient() = delete;
@@ -135,9 +100,6 @@ public:
     void resumeDebuggingSession();
 
     //
-    void setFunc();
-    void setScript();
-
     void setAutoResume(bool how);
 
     ~CInspectorClient();

@@ -16,7 +16,7 @@ class CSingleConnectionServer
 {
 public:
     using onMessageCallback = std::function<void(const std::string &message)>;
-    using onResumeCallback = std::function<void()>;
+    using onResumeCallback = std::function<void()>;//not used, for any case
 
 private:
     //tcp is a class

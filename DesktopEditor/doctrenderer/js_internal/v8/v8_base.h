@@ -2,7 +2,7 @@
 #define _BUILD_NATIVE_CONTROL_V8_BASE_H_
 
 #ifdef V8_INSPECTOR
-#include "inspector/per_context_inspector.h"
+#include "inspector/inspector_interface.h"
 #endif
 
 #include "../js_base.h"
@@ -72,6 +72,13 @@ private:
     v8::ArrayBuffer::Allocator* m_pAllocator;
 
 public:
+    v8::Platform* getPlatform() {
+#ifdef V8_VERSION_87_PLUS
+    return m_platform.get();
+#else
+    return m_platform;
+#endif
+    }
     CV8Initializer()
     {
         std::wstring sPrW = NSFile::GetProcessPath();
@@ -111,16 +118,6 @@ public:
     v8::ArrayBuffer::Allocator* getAllocator()
     {
         return m_pAllocator;
-    }
-
-    //need for inspector
-    v8::Platform* getPlatform() {
-        return
-                m_platform
-#ifdef V8_VERSION_87_PLUS
-            .get()
-#endif
-                ;
     }
 
     v8::Isolate* CreateNew()
@@ -365,75 +362,12 @@ namespace NSJSBase
 
     typedef CJSValueV8TemplatePrimitive CJSValueV8;
 
-    JSSmart<CJSValue> callFuncImpl(v8::Local<v8::Object> value
-                                        , v8::Local<v8::Context> context
-                                        , const char *name
-                                        , const int argc
-                                        , JSSmart<CJSValue> argv[]);
-
-    class CJSContextPrivate
-    {
-//#ifdef V8_INSPECTOR
-//        v8_debug::CPerContextInspector m_Inspector{};
-//#endif
-
-    public:
-        CV8Worker m_oWorker;
-        v8::Isolate* m_isolate;
-
-        v8::Local<v8::ObjectTemplate>   m_global;
-        v8::Local<v8::Context>          m_context;
-
-    public:
-        CJSContextPrivate()
-            : m_oWorker()
-            , m_isolate(NULL)
-        {
-            //
-        }
-
-//#ifdef V8_INSPECTOR
-//        v8_debug::CPerContextInspector& getInspector();
-//        void disposeInspector();
-//#endif
-    };
-
     class CJSObjectV8 : public CJSValueV8Template<v8::Object, CJSObject>
     {
-//#ifdef V8_INSPECTOR
-//        int tmp_here(){}
-////        JSSmart<CJSContext>
-//        CJSContext *
-//        m_pDefaultContext{nullptr};
-//        CJSContext *m_pSpecialContext{nullptr};
-//        CJSContext* getContext() {
-//            return
-//                    (m_pSpecialContext)
-//                    ?
-//                        m_pSpecialContext
-//                      :
-//                        m_pDefaultContext
-////                        .GetPointer()
-//                        ;
-//        }
-//#endif
-
     public:
         CJSObjectV8()
-//#ifdef V8_INSPECTOR
-//            : m_pDefaultContext{CJSContext::GetCurrent()}
-//#endif
         {
-            //
         }
-
-//#ifdef V8_INSPECTOR
-//        CJSObjectV8(CJSContext *pContext)
-//            : m_pSpecialContext{pContext}
-//        {
-//            //
-//        }
-//#endif
 
         virtual ~CJSObjectV8()
         {
@@ -475,24 +409,42 @@ namespace NSJSBase
             return (CJSEmbedObject*)field->Value();
         }
 
-        virtual JSSmart<CJSValue> call_func(const char* name
-                                            , const int argc = 0
-                , JSSmart<CJSValue> argv[] = NULL)
+        virtual JSSmart<CJSValue> call_func(const char* name, const int argc = 0, JSSmart<CJSValue> argv[] = NULL)
         {
-            v8::Local<v8::Context> context = CV8Worker::GetCurrentContext();
 #ifdef V8_INSPECTOR
-            v8_debug::beforeFunc(context, CV8Worker::getInitializer()->getPlatform());
-//            return i.callFunc(value, name, argc, argv);
+            v8_debug::before(V8ContextFirstArg CV8Worker::getInitializer()->getPlatform());
 #endif
-            JSSmart<CJSValue> result = callFuncImpl(this->value
-                                , context
-                                , name
-                                , argc
-                                , argv);
-//#ifdef V8_INSPECTOR
-//            i.a();
-//#endif
-            return result;
+            v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
+            v8::Handle<v8::Value> _func = value->Get(V8ContextFirstArg _name).ToLocalChecked();
+
+            CJSValueV8* _return = new CJSValueV8();
+            if (_func->IsFunction())
+            {
+                v8::Handle<v8::Function> _funcN = v8::Handle<v8::Function>::Cast(_func);
+
+                if (0 == argc)
+                {
+                    v8::MaybeLocal<v8::Value> retValue = _funcN->Call(V8ContextFirstArg value, 0, NULL);
+                    if (!retValue.IsEmpty())
+                        _return->value = retValue.ToLocalChecked();
+                }
+                else
+                {
+                    v8::Local<v8::Value>* args = new v8::Local<v8::Value>[argc];
+                    for (int i = 0; i < argc; ++i)
+                    {
+                        CJSValueV8* _value_arg = static_cast<CJSValueV8*>(argv[i].operator ->());
+                        args[i] = _value_arg->value;
+                    }
+                    v8::MaybeLocal<v8::Value> retValue = _funcN->Call(V8ContextFirstArg value, argc, args);
+                    if (!retValue.IsEmpty())
+                        _return->value = retValue.ToLocalChecked();
+                    RELEASEARRAYOBJECTS(args);
+                }
+            }
+
+            JSSmart<CJSValue> _ret = _return;
+            return _ret;
         }
 
         virtual JSSmart<CJSValue> toValue()
@@ -755,14 +707,20 @@ namespace NSJSBase
 
 namespace NSJSBase
 {
-    JSSmart<CJSValue> runScriptImpl(v8::Local<v8::Context> context
-                                    , const std::string &script
-                                    , JSSmart<CJSTryCatch> pException
-                                    , const std::wstring &scriptPath);
+    class CJSContextPrivate
+    {
+    public:
+        CV8Worker m_oWorker;
+        v8::Isolate* m_isolate;
 
-    v8::Local<v8::Script> compileScript(v8::Local<v8::Context> context
-                                        , const std::string &script
-                                        , const std::wstring &scriptPath);
+        v8::Local<v8::ObjectTemplate>   m_global;
+        v8::Local<v8::Context>          m_context;
+
+    public:
+        CJSContextPrivate() : m_oWorker(), m_isolate(NULL)
+        {
+        }
+    };
 }
 
 namespace NSV8Objects

@@ -78,6 +78,10 @@ public:
     {
         return ((CXpsFile*)pReader)->GetGlyphs(nPageIndex);
     }
+    BYTE* GetDJVUGlyphs()
+    {
+        return ((CDjVuFile*)pReader)->GetPageGlyphs();
+    }
     BYTE* GetXPSStructure()
     {
         return ((CXpsFile*)pReader)->GetStructure();

@@ -144,6 +144,7 @@ extern "C"
     void DJVU_Close(CDjvuFile* file);
     int* DJVU_GetInfo(CDjvuFile* file);
     unsigned char* DJVU_GetPixmap(CDjvuFile* file, int page_index, int w, int h);
+    unsigned char* DJVU_GetGlyphs(CDjvuFile* file);
     unsigned char* DJVU_GetStructure(CDjvuFile* file);
     void DJVU_Delete(unsigned char* pData);
 }
@@ -319,6 +320,19 @@ unsigned char* DJVU_GetPixmap(CDjvuFile* file, int page_index, int w, int h)
     }
 
     return pixmap;
+}
+
+unsigned char* DJVU_GetGlyphs(CDjvuFile* file, int page_index)
+{
+    GP<DjVuImage> pPage = file->m_doc->get_page(page_index);
+    GP<DjVuText> text(DjVuText::create());
+    GP<ByteStream> text_str(pPage->get_text());
+    if (text_str)
+    {
+        text->decode(text_str);
+        GUTF8String pageText = text->get_xmlText(pPage->get_height());
+    }
+    return NULL;
 }
 
 void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, CData& out, int level)

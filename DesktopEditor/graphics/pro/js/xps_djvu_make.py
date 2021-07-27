@@ -4,8 +4,10 @@ import base
 import os
 
 if not base.is_file("raster.o"):
-  print("Please use raster_make.py previously")
-  exit(0)
+    base.cmd("python", ["raster_make.py"])
+if not base.is_file("raster.o"):
+    print("raster_make.py error")
+    exit(0)
 
 base.configure_common_apps()
 
@@ -46,7 +48,9 @@ exported_functions = ["_malloc",
                       "_XPS_GetInfo",
                       "_XPS_GetPixmap",
                       "_XPS_GetGlyphs",
+                      "_DJVU_GetGlyphs",
                       "_XPS_GetStructure",
+                      "_DJVU_GetStructure",
                       "_XPS_Delete"]
 
 libGraphics_src_path = "../../"
@@ -206,22 +210,28 @@ else:
         arguments += (item + " ")
     
     windows_bat.append("emcc -o xps_djvu.js " + arguments + libs)
+base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n    UDataMemory tData;", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;")
 base.run_as_bat(windows_bat)
+base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;", "\n{\n    UDataMemory tData;")
 
 # finalize
 base.replaceInFile("./xps_djvu.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
 graphics_js_content = base.readFile("./xps_djvu.js")
-engine_base_js_content = base.readFile("./wasm/js/xps_djvu_base.js")
+engine_base_js_content = base.readFile("./wasm/js/xps_base.js")
 string_utf8_content    = base.readFile("./../../../../Common/js/string_utf8.js")
 engine_js_content = engine_base_js_content.replace("//module", graphics_js_content)
 engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
+engine_base_js_content = base.readFile("./../../../../DjVuFile/wasm/djvu_base.js")
+djvu_js_content = engine_base_js_content.replace("//module", graphics_js_content)
+djvu_js_content = djvu_js_content.replace("//string_utf8", string_utf8_content)
 
 # write new version
-base.writeFile("./deploy/xps_djvu.js", engine_js_content)
+base.writeFile("./deploy/xps.js", engine_js_content)
+base.writeFile("./deploy/djvu.js", djvu_js_content)
 base.copy_file("./xps_djvu.wasm", "./deploy/xps_djvu.wasm")
 
 base.delete_file("xps_djvu.js")
 base.delete_file("xps_djvu.wasm")
 base.delete_dir("./temp")
 base.delete_dir("./xml")
-#base.delete_file("raster.o")
+base.delete_file("raster.o")

@@ -67,6 +67,10 @@ WASM_EXPORT BYTE* XPS_GetGlyphs(CGraphicsFileDrawing* pGraphics, int nPageIndex)
 {
     return pGraphics->GetXPSGlyphs(nPageIndex);
 }
+WASM_EXPORT BYTE* DJVU_GetGlyphs(CGraphicsFileDrawing* pGraphics)
+{
+    return pGraphics->GetDJVUGlyphs();
+}
 WASM_EXPORT BYTE* XPS_GetStructure(CGraphicsFileDrawing* pGraphics)
 {
     return pGraphics->GetXPSStructure();
@@ -224,9 +228,38 @@ int main()
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
-    BYTE* pStructure = DJVU_GetStructure(test);
-    DWORD nLength = GetLength(pStructure);
+    BYTE* pGlyphs = DJVU_GetGlyphs(test);
+    DWORD nLength = GetLength(pGlyphs);
     DWORD i = 4;
+    nLength -= 4;
+    while (i < nLength)
+    {
+        DWORD nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::string oWord = std::string((char*)(pGlyphs + i), nPathLength);
+        std::wcout << L"Word " << UTF8_TO_U(oWord) << L" ";
+        i += nPathLength;
+        nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout << "X " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
+        i += nPathLength;
+        nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout << "Y " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
+        i += nPathLength;
+        nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout << "W " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
+        i += nPathLength;
+        nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout << "H " << std::string((char*)(pGlyphs + i), nPathLength) << std::endl;
+        i += nPathLength;
+    }
+
+    BYTE* pStructure = DJVU_GetStructure(test);
+    nLength = GetLength(pStructure);
+    i = 4;
     nLength -= 4;
     while (i < nLength)
     {
@@ -246,6 +279,7 @@ int main()
     XPS_Close(test);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
+    RELEASEARRAYOBJECTS(pGlyphs);
     RELEASEARRAYOBJECTS(pStructure);
     RELEASEOBJECT(resFrame);
     return 0;

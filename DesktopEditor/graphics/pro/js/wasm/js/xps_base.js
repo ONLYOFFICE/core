@@ -127,10 +127,9 @@
         var res = Module["_XPS_GetPixmap"](this.nativeFile, pageIndex, width, height);
 
         var glyphs = Module["_XPS_GetGlyphs"](this.nativeFile, pageIndex);
-
-        var lenArray = new Int32Array(Module["HEAP8"].buffer, glyphs, 4);
-        if (lenArray == null)
+        if (glyphs == null)
             return res;
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, glyphs, 4);
         var len = lenArray[0];
         len -= 4;
         if (len <= 0)

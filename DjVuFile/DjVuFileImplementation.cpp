@@ -92,6 +92,8 @@ CDjVuFileImplementation::CDjVuFileImplementation(NSFonts::IApplicationFonts* pFo
 	wsTempPath += L"DJVU\\";
 	m_wsTempDirectory = wsTempPath;
 	NSDirectory::CreateDirectory(m_wsTempDirectory);
+#else
+	m_pGlyphs = NULL;
 #endif
     m_pApplicationFonts = pFonts;
 }
@@ -99,6 +101,8 @@ CDjVuFileImplementation::~CDjVuFileImplementation()
 {
 #ifndef WASM_MODE
 	NSDirectory::DeleteDirectory(m_wsTempDirectory);
+#else
+	RELEASEOBJECT(m_pGlyphs);
 #endif
 }
 bool               CDjVuFileImplementation::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXMLOptions)
@@ -336,129 +340,8 @@ void               CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsD
 
 	oPdf.SaveToFile(wsDstPath);
 }
-class CData
-{
-protected:
-    unsigned char* m_pData;
-    size_t m_lSize;
-
-    unsigned char* m_pDataCur;
-    size_t m_lSizeCur;
-
-public:
-    CData()
-    {
-        m_pData = NULL;
-        m_lSize = 0;
-
-        m_pDataCur = m_pData;
-        m_lSizeCur = m_lSize;
-    }
-    virtual ~CData()
-    {
-        Clear();
-    }
-
-    inline void AddSize(size_t nSize)
-    {
-        if (NULL == m_pData)
-        {
-            m_lSize = 1000;
-            if (nSize > m_lSize)
-                m_lSize = nSize;
-
-            m_pData = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
-
-            m_lSizeCur = 0;
-            m_pDataCur = m_pData;
-            return;
-        }
-
-        if ((m_lSizeCur + nSize) > m_lSize)
-        {
-            while ((m_lSizeCur + nSize) > m_lSize)
-                m_lSize *= 2;
-
-            unsigned char* pRealloc = (unsigned char*)realloc(m_pData, m_lSize * sizeof(unsigned char));
-            if (NULL != pRealloc)
-            {
-                m_pData    = pRealloc;
-                m_pDataCur = m_pData + m_lSizeCur;
-            }
-            else
-            {
-                unsigned char* pMalloc = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
-                memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(unsigned char));
-
-                free(m_pData);
-                m_pData    = pMalloc;
-                m_pDataCur = m_pData + m_lSizeCur;
-            }
-        }
-    }
-
-public:
-    void AddInt(unsigned int value)
-    {
-        AddSize(4);
-        memcpy(m_pDataCur, &value, sizeof(unsigned int));
-        m_pDataCur += 4;
-        m_lSizeCur += 4;
-    }
-    void WriteString(unsigned char* value, unsigned int len)
-    {
-        AddSize(len + 4);
-        memcpy(m_pDataCur, &len, sizeof(unsigned int));
-        m_pDataCur += 4;
-        m_lSizeCur += 4;
-        memcpy(m_pDataCur, value, len);
-        m_pDataCur += len;
-        m_lSizeCur += len;
-    }
-    unsigned char* GetBuffer()
-    {
-        return m_pData;
-    }
-
-    void Clear()
-    {
-        if (m_pData) free(m_pData);
-
-        m_pData = NULL;
-        m_lSize = 0;
-
-        m_pDataCur = m_pData;
-        m_lSizeCur = 0;
-    }
-    void ClearWithoutAttack()
-    {
-        m_pData = NULL;
-        m_lSize = 0;
-
-        m_pDataCur = m_pData;
-        m_lSizeCur = 0;
-    }
-    void ClearNoAttack()
-    {
-        m_pDataCur = m_pData;
-        m_lSizeCur = 0;
-    }
-    unsigned int GetSize()
-    {
-        return (unsigned int)m_lSizeCur;
-    }
-
-    void SkipLen()
-    {
-        AddInt(0);
-    }
-    void WriteLen()
-    {
-        unsigned int len = (unsigned int)m_lSizeCur;
-        memcpy(m_pData, &len, sizeof(unsigned int));
-    }
-};
-void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, CData& out, int level)
+#ifdef WASM_MODE
+void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, CDjVuFileImplementation::CData& out, int level)
 {
     while (count > 0 && pos < nav->getBookMarkCount())
     {
@@ -499,6 +382,18 @@ BYTE*              CDjVuFileImplementation::GetStructure()
     oRes.ClearWithoutAttack();
     return bRes;
 }
+BYTE*              CDjVuFileImplementation::GetPageGlyphs()
+{
+    if (m_pGlyphs)
+    {
+        BYTE* res = m_pGlyphs->GetBuffer();
+        m_pGlyphs->ClearWithoutAttack();
+        RELEASEOBJECT(m_pGlyphs);
+        return res;
+    }
+    return NULL;
+}
+#endif
 void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
 {
 	int nWidth	= pPage->get_real_width();
@@ -698,9 +593,6 @@ void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP
 	{
 		TextToRenderer(pRenderer, text, dPixToMM / nDpi);
 	}
-    #ifdef WASM_MODE
-    TextToRenderer(pRenderer, text, dPixToMM / nDpi);
-    #endif
 
 	pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dRendWidth, dRendHeight);
 	pRenderer->EndCommand(c_nPageType);
@@ -1133,6 +1025,50 @@ XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage)
         hiddenText.GetNode(L"PAGECOLUMN", pageColumn);
         pageColumn.GetNode(L"REGION", region);
         region.GetNode(L"PARAGRAPH", paragraph);
+
+        #ifdef WASM_MODE
+        RELEASEOBJECT(m_pGlyphs);
+        m_pGlyphs = new CData();
+        m_pGlyphs->SkipLen();
+        double dKoef = 25.4 / pPage->get_dpi();
+        XmlUtils::CXmlNodes oParagraphsNodes;
+        region.GetNodes(L"PARAGRAPH", oParagraphsNodes);
+        for (int nParagraphIndex = 0; nParagraphIndex < oParagraphsNodes.GetCount(); nParagraphIndex++)
+        {
+            XmlUtils::CXmlNode oParagraphNode;
+            oParagraphsNodes.GetAt(nParagraphIndex, oParagraphNode);
+            XmlUtils::CXmlNodes oLinesNodes;
+            oParagraphNode.GetNodes(L"LINE", oLinesNodes);
+            for (int nLineIndex = 0; nLineIndex < oLinesNodes.GetCount(); nLineIndex++)
+            {
+                XmlUtils::CXmlNode oLineNode;
+                oLinesNodes.GetAt(nLineIndex, oLineNode);
+                XmlUtils::CXmlNodes oWordsNodes;
+                oLineNode.GetNodes(L"WORD", oWordsNodes);
+                for (int nWordIndex = 0; nWordIndex < oWordsNodes.GetCount(); ++nWordIndex)
+                {
+                    XmlUtils::CXmlNode oWordNode;
+                    oWordsNodes.GetAt(nWordIndex, oWordNode);
+                    std::wstring csWord   = oWordNode.GetText();
+                    std::wstring csCoords = oWordNode.GetAttribute(L"coords");
+                    double arrCoords[4];
+                    ParseCoords(csCoords, arrCoords, dKoef);
+
+                    std::string sText = U_TO_UTF8(csWord);
+                    m_pGlyphs->WriteString((BYTE*)sText.c_str(), sText.length());
+                    std::string sX = std::to_string(arrCoords[0]);
+                    m_pGlyphs->WriteString((BYTE*)sX.c_str(), sX.length());
+                    std::string sY = std::to_string(arrCoords[3]);
+                    m_pGlyphs->WriteString((BYTE*)sY.c_str(), sY.length());
+                    std::string sW = std::to_string(arrCoords[2] - arrCoords[0]);
+                    m_pGlyphs->WriteString((BYTE*)sW.c_str(), sW.length());
+                    std::string sH = std::to_string(arrCoords[1] - arrCoords[3]);
+                    m_pGlyphs->WriteString((BYTE*)sH.c_str(), sH.length());
+                }
+            }
+        }
+        m_pGlyphs->WriteLen();
+        #endif
 	}
 	return paragraph;
 }

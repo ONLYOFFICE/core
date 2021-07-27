@@ -106,7 +106,7 @@
         if (!this.nativeFile)
             return false;
         
-        var _info = Module["_DJVU_GetInfo"](this.nativeFile);
+        var _info = Module["_XPS_GetInfo"](this.nativeFile);
         if (!_info)
             return false;
         
@@ -124,7 +124,58 @@
     };
     CFile.prototype.getPagePixmap = function(pageIndex, width, height)
     {
-        return Module["_DJVU_GetPixmap"](this.nativeFile, pageIndex, width, height);
+        var res = Module["_XPS_GetPixmap"](this.nativeFile, pageIndex, width, height);
+
+        var glyphs = Module["_DJVU_GetGlyphs"](this.nativeFile, pageIndex);
+        if (glyphs == null)
+            return res;
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, glyphs, 4);
+        var len = lenArray[0];
+        len -= 4;
+        if (len <= 0)
+            return res;
+
+        this.pages[pageIndex].Lines = [];
+        var buffer = new Uint8Array(Module["HEAP8"].buffer, glyphs + 4, len);
+        var index = 0;
+        var Line = -1;
+        while (index < len)
+        {
+            var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _Word = "".fromUtf8(buffer, index, lenRec);
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _X = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _Y = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _W = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _H = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+
+            Line++;
+            this.pages[pageIndex].Lines.push({ Glyphs : [] });
+            for (let i = 0; i < _Word.length; i++)
+            {
+                this.pages[pageIndex].Lines[Line].Glyphs.push({
+                    X : (_X + _W / _Word.length * i) * 1.015,
+                    UChar : _Word[i]
+                });
+            }
+            this.pages[pageIndex].Lines[Line].Glyphs[0].Y = _Y * 1.015;
+            this.pages[pageIndex].Lines[Line].Glyphs[0].fontSize = _H;
+        }
+
+        return res;
     };
     CFile.prototype.structure = function()
     {
@@ -158,12 +209,12 @@
             res.push({ page : _Page, level : _Level, Y : 0, description : _Description});
         }
 
-        Module["_DJVU_Delete"](str);
+        Module["_XPS_Delete"](str);
         return res;
     };
     CFile.prototype.close = function()
     {
-        Module["_DJVU_Close"](this.nativeFile);
+        Module["_XPS_Close"](this.nativeFile);
         this.nativeFile = 0;
         this.pages = [];
     };
@@ -173,7 +224,7 @@
     };
     CFile.prototype.free = function(pointer)
     {
-        Module["_DJVU_Delete"](pointer);
+        Module["_XPS_Delete"](pointer);
     };
 
     window["AscViewer"].DjVuFile = CFile;

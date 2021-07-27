@@ -1229,7 +1229,11 @@ namespace NExtractTools
 		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
         m_oCXlsxSerializer.setFontDir(params.getFontPath());
 
-        _UINT32 nRes = m_oCXlsxSerializer.saveToFile (sResultXlstFileEditor, sCSV, params.getXmlOptions());
+		if (!params.m_nFormatFrom) params.m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_UNKNOWN);
+		if (AVS_OFFICESTUDIO_FILE_UNKNOWN == *params.m_nFormatFrom)
+			*params.m_nFormatFrom = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
+			
+		_UINT32 nRes = m_oCXlsxSerializer.saveToFile (sResultXlstFileEditor, sCSV, params.getXmlOptions());
 
         if (SUCCEEDED_X2T(nRes))
         {

@@ -1721,8 +1721,8 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
         if (actions[i].m_eActivation == CInteractiveInfo::over)
             hlink.m_name = L"hlinkHover";
 
-        if (actions[i].m_bVisited)
-            hlink.highlightClick = true;
+//        if (actions[i].m_bVisited)
+//            hlink.highlightClick = true;
 
         switch (actions[i].m_lType)
         {

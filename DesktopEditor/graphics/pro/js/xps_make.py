@@ -194,7 +194,11 @@ else:
         arguments += (item + " ")
     
     windows_bat.append("emcc -o xps.js " + arguments + libs)
+base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n    UDataMemory tData;", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;")
+base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\r\n{\r\n    UDataMemory tData;", "\r\n{\r\n#ifdef BUILDING_WASM_MODULE\r\nreturn NULL;\r\n#endif\r\n    UDataMemory tData;")
 base.run_as_bat(windows_bat)
+base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;", "\n{\n    UDataMemory tData;")
+base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\r\n{\r\n#ifdef BUILDING_WASM_MODULE\r\nreturn NULL;\r\n#endif\r\n    UDataMemory tData;", "\r\n{\r\n    UDataMemory tData;")
 
 # finalize
 base.replaceInFile("./xps.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")

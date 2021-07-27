@@ -1630,7 +1630,7 @@ void ods_table_state::end_conditional_format()
 {
 	current_level_.pop_back();
 }
-void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank)
+void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom)
 {
 	office_element_ptr elm;
 
@@ -1680,7 +1680,13 @@ void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int
 				case 11: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
 				case 12: condition->attr_.calcext_value_	= L"is-no-error";		break;
 				case 13: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
-				case 15: condition->attr_.calcext_value_ = L"top-elements(" + std::to_wstring(rank.get_value_or(10)) + L")"; break;//bottom-elements ???
+				case 15:
+				{
+					if ((bottom) && (*bottom))
+						condition->attr_.calcext_value_ = L"bottom-elements(" + std::to_wstring(rank.get_value_or(10)) + L")";
+					else
+						condition->attr_.calcext_value_ = L"top-elements(" + std::to_wstring(rank.get_value_or(10)) + L")";
+				}break;
 				case 16: condition->attr_.calcext_value_	= L"unique";			break;
 				case 2: /*cellIs*/
 				default:	break;							

@@ -138,7 +138,6 @@ namespace NSJSBase
     }
     CJSContext::~CJSContext()
     {
-        std::cout << "CJSCONTEXT DTOR CALLED\n";
         RELEASEOBJECT(m_internal);
     }
 
@@ -154,9 +153,8 @@ namespace NSJSBase
     }
     void CJSContext::Dispose()
     {
-        std::cout << "CONTEXT DISPOSE\n";
 #ifdef V8_INSPECTOR
-        m_internal->disposeInspector();
+        v8_debug::CPerContextInspector::dispose();
 #endif
         m_internal->m_isolate->Dispose();
         m_internal->m_isolate = NULL;
@@ -178,9 +176,9 @@ namespace NSJSBase
     CJSObject* CJSContext::GetGlobal()
     {
         CJSObjectV8* ret = new CJSObjectV8(
-#ifdef V8_INSPECTOR
-                 this
-#endif
+//#ifdef V8_INSPECTOR
+//                 this
+//#endif
                     );
         ret->value = m_internal->m_context->Global();
         return ret;
@@ -281,16 +279,21 @@ namespace NSJSBase
                                             , JSSmart<CJSTryCatch> exception
                                             , const std::wstring& scriptPath)
     {
+        v8::Local<v8::Context> context = m_internal->m_context;
 #ifdef V8_INSPECTOR
-        return m_internal->getInspector().runScript(script, exception, scriptPath);
-#else
-        return runScriptImpl(
-                    m_internal->m_context
+        v8_debug::CPerContextInspector i{context, CV8Worker::getInitializer()->getPlatform()};
+        return i.runScript(script, exception, scriptPath);
+#endif
+        JSSmart<CJSValue> result = runScriptImpl(
+                    context
                     , script
                     , exception
                     , scriptPath
                     );
-#endif
+//#ifdef V8_INSPECTOR
+//            i.a();
+//#endif
+            return result;
     }
 
     CJSContext* CJSContext::GetCurrent()
@@ -377,19 +380,19 @@ namespace NSJSBase
         return new CJSValueV8(result.ToLocalChecked());
     }
 
-#ifdef V8_INSPECTOR
+//#ifdef V8_INSPECTOR
 
-    v8_debug::CPerContextInspector &CJSContextPrivate::getInspector()
-    {
-        return m_Inspector.maybeInit(m_context, CV8Worker::getInitializer()->getPlatform());
-    }
+//    v8_debug::CPerContextInspector &CJSContextPrivate::getInspector()
+//    {
+//        return m_Inspector.maybeInit(m_context, CV8Worker::getInitializer()->getPlatform());
+//    }
 
-    void CJSContextPrivate::disposeInspector()
-    {
-        m_Inspector.dispose();
-    }
+//    void CJSContextPrivate::disposeInspector()
+//    {
+//        m_Inspector.dispose();
+//    }
 
-#endif
+//#endif
 
 }//namespace NSJSBase
 

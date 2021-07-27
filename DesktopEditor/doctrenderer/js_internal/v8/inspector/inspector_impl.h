@@ -1,7 +1,7 @@
 #ifndef INSPECTOR_IMPL_H
 #define INSPECTOR_IMPL_H
 
-#include "singleconnectionserver.h"
+#include "singleconnectionserver.h"//CSingleConnectionServer; onResumeCallback
 #include <stdint.h>//uintxx_t
 #include <v8.h>//v8 stuff
 #include "client.h"//inspector is what holds client
@@ -17,12 +17,7 @@ class CSingleConnectionServer;
 class CInspectorImpl
 {
     //server
-//    std::unique_ptr<CSingleConnectionServer>
-    CSingleConnectionServer
-    m_pServer
-//    {nullptr}
-    ;
-
+    CSingleConnectionServer m_Server;
     CSingleConnectionServer::onResumeCallback m_fOnServerResume{};
 
     //to convert v8 string view to string
@@ -38,9 +33,6 @@ class CInspectorImpl
 
     //
     CInspectorClient m_Client;
-
-    //
-//    int m_iContextGroupId;
 
 
 
@@ -86,13 +78,8 @@ public:
     void sendData(const v8_inspector::StringView &message);
     bool waitForMessage();
     void setRetVal(const NSCommon::smart_ptr<CJSValue> &val);
-    void shutServerDown();
     void pauseServer();
     void onServerReady();
-
-    //about server busyness
-    bool free() const;
-//    int contextGroupId() const;
 
     //necessary to call before using inspector
     void prepareServer();

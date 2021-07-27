@@ -19,18 +19,11 @@ class CInspectorPool
     storage_t m_Inspectors{};
     std::mutex m_Mutex{};
 
-//    v8::Local<v8::Context> m_Context{};
-//    v8::Platform *m_pPlatform{nullptr};
-
     static constexpr bool m_bLog{true};
-//    const int m_iContextGroupId;
-//    const std::string m_ContextName;
 
-
-//    storage_t::iterator findInspector(v8::Isolate *isolate);
     CInspectorImpl& addInspector(v8::Local<v8::Context> context
                                  , v8::Platform *platform
-                                 , const std::string &contextName = "");
+                                 , const std::string &contextName);
 
     CInspectorPool();
     ~CInspectorPool();
@@ -44,10 +37,8 @@ public:
     CInspectorImpl& getInspector(v8::Local<v8::Context> context
                                  , v8::Platform *platform
                                  , const std::string &contextName = "");
-//    void maybeSetV8Data(v8::Local<v8::Context> context, v8::Platform *platform);
-//    bool isInitV8Data() const;
+    void dispose();
     static CInspectorPool& get();
-
 };
 
 }//namespace internal

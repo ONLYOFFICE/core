@@ -79,7 +79,6 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
 
     //sets up a debugging session
     void setUpDebuggingSession(const std::string &contextName
-//                               , int contextGroupId
                                , CInspectorChannel::sendDataCallback sendDataCallback);
     //pump platform on pause
     void pumpPlatform();
@@ -88,10 +87,10 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
     bool checkForReadyMessage(const std::string &json) const;
     //log incoming message
     void maybeLogIncoming(const std::string &message) const;
-    //schedule pause on next statement
-    void pauseOnNextStatement();
     //
     void resumeDebuggingSession();
+    //schedule pause on next statement
+    void pauseOnNextStatement();
 
     //
     void dispatchProtocolMessage(const std::string &message);
@@ -111,9 +110,7 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
     void checkFrontendMessageOnFunc(const std::string &message);
 
     //
-    void registerContext(v8::Local<v8::Context> context
-//                              , int contextGroupId
-                              , const std::string &contextName = "");
+    void registerContext(const std::string &contextName = "");
 
 
 public:
@@ -136,8 +133,6 @@ public:
             , CInspectorImpl *inspector
             //log
             , bool log
-            //
-//            , CServerHolder::shared_flag_t &serverReady
             );
 
     //wait for incoming message
@@ -146,19 +141,14 @@ public:
     virtual void quitMessageLoopOnPause() override;
 
 
+
+
     //start debugging itself
     void startDebugging();
 
 
-    //dispatch message by session and check it for Runtime.runIfWaitingForDebugger
+    //dispatch message by session
     void processFrontendMessage(const std::string &message);
-
-
-    //
-    void maybeRegisterContext(v8::Local<v8::Context> context
-//                              , int contextGroupId
-                              , const std::string &contextName = "");
-    void maybeSetPlatform(v8::Platform *platform);
 
 
 

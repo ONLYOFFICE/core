@@ -107,11 +107,6 @@ void NSJSBase::v8_debug::internal::CSingleConnectionServer::setOnMessageCallback
     m_fOnMessage = std::move(callback);
 }
 
-//void NSJSBase::v8_debug::internal::CSingleConnectionServer::setOnResumeCallback(onResumeCallback callback)
-//{
-//    m_fOnResume = std::move(callback);
-//}
-
 bool NSJSBase::v8_debug::internal::CSingleConnectionServer::waitForConnection()
 {
     //to check errors
@@ -187,23 +182,12 @@ void NSJSBase::v8_debug::internal::CSingleConnectionServer::run(onResumeCallback
         beforeRun();
     }
 
-    //old run stuff
-    TrueSetter ts{m_bBusy};
     while (!m_bPaused) {
         if (!waitAndProcessMessage()) {
             return;
         }
     }
 }
-
-//void NSJSBase::v8_debug::internal::CSingleConnectionServer::resume()
-//{
-//    m_bPaused = false;
-//    if (m_fOnResume) {
-//        m_fOnResume();
-//    }
-//    run();
-//}
 
 void NSJSBase::v8_debug::internal::CSingleConnectionServer::sendData(const std::string &data)
 {
@@ -212,9 +196,7 @@ void NSJSBase::v8_debug::internal::CSingleConnectionServer::sendData(const std::
         return;
     }
 
-    if (m_bPaused) {
-        return;
-    }
+    //no need to check for pause
 
     //write data to buffer
     beast::multi_buffer buffer;
@@ -303,13 +285,7 @@ bool NSJSBase::v8_debug::internal::CSingleConnectionServer::shutdown()
 
 void NSJSBase::v8_debug::internal::CSingleConnectionServer::pause()
 {
-    std::cout << "SERVER FUCKING PAUSED\n";
     m_bPaused = true;
-}
-
-bool NSJSBase::v8_debug::internal::CSingleConnectionServer::busy() const
-{
-    return m_bBusy;
 }
 
 uint16_t NSJSBase::v8_debug::internal::CSingleConnectionServer::port() const

@@ -54,6 +54,8 @@ std::string NSJSBase::v8_debug::internal::viewToStr(v8::Isolate *isolate
 v8::Local<v8::Object> NSJSBase::v8_debug::internal::parseJsonImpl(v8::Local<v8::Context> context
                                    , v8::Local<v8::String> v8str)
 {
+    int tmp;
+    context = v8::Isolate::GetCurrent()->GetCurrentContext();
     v8::Local<v8::Value> value = v8::JSON::Parse(context, v8str).ToLocalChecked();
     v8::Local<v8::Object> obj = value->ToObject(context).ToLocalChecked();
     return
@@ -158,7 +160,15 @@ void NSJSBase::v8_debug::internal::logWithPrefix(std::ostream &out
                                                  , const std::string &prefix
                                                  , const std::string &message)
 {
-    out << prefix << message << std::endl;
+    out << prefix;
+    static constexpr std::size_t bigLen = 10000;
+    if (message.size() > bigLen) {
+        out << "message of size " << message.size();
+    }
+    else {
+        out << message;
+    }
+    out << std::endl;
 }
 
 void NSJSBase::v8_debug::internal::logCdtMessage(std::ostream &out

@@ -11,27 +11,26 @@ bool NSJSBase::v8_debug::internal::CInspectorImpl::initServer()
     auto messageCallback = [this](const std::string &message) {
         this->processIncomingMessage(message);
     };
-    m_pServer.setOnMessageCallback(messageCallback);
+    m_Server.setOnMessageCallback(messageCallback);
 
     //set on resume callback
     m_fOnServerResume = [this]() {
         this->m_Client.startDebugging();
     };
-//    m_pServer.setOnResumeCallback(resumeCallback);
 
     //listen
-    return m_pServer.listen();
+    return m_Server.listen();
 }
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::connectServer()
 {
-    printChromeLaunchHint(std::cout, m_pServer.port());
-    return m_pServer.waitForConnection();
+    printChromeLaunchHint(std::cout, m_Server.port());
+    return m_Server.waitForConnection();
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::waitWhileServerReady()
 {
-    m_pServer.run();
+    m_Server.run();
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::processIncomingMessage(const std::string &message)
@@ -46,10 +45,6 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::maybeLogOutgoing(
         const std::string &message) const
 {
     if (!m_bLog) {
-        return;
-    }
-    if (message.size() > 10000) {
-        logOutgoingMessage(std::cout, "very long message");
         return;
     }
     logOutgoingMessage(std::cout, message);
@@ -68,12 +63,12 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::printChromeLaunchHint(
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::checkServer() const
 {
-//    if (!m_pServer) {
-//        std::cerr << "no server for inspector" << std::endl;
-//        return false;
-//    }
-    if (!m_pServer.listening()) {
+    if (!m_Server.listening()) {
         std::cerr << "server is not listening" << std::endl;
+        return false;
+    }
+    if (!m_Server.connected()) {
+        std::cerr << "server is not connected" << std::endl;
         return false;
     }
     return true;
@@ -97,9 +92,6 @@ NSJSBase::v8_debug::internal::CInspectorImpl::getReturnValue()
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::sendData(const v8_inspector::StringView &message)
 {
-//    if (!m_pServer) {
-//        return;
-//    }
     if (message.length() == 0) {
         return;
     }
@@ -109,52 +101,32 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::sendData(const v8_inspector::
     //
     maybeLogOutgoing(str);
     //
-    this->m_pServer.sendData(str);
+    this->m_Server.sendData(str);
 }
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::waitForMessage()
 {
-//    if (!m_pServer) {
-//        return false;
-//    }
-    return m_pServer.waitAndProcessMessage();
+    return m_Server.waitAndProcessMessage();
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::setRetVal(const NSCommon::smart_ptr<CJSValue> &val)
 {
-    m_pScriptResult = std::make_unique<JSSmart<CJSValue> >(val);
-}
-
-void NSJSBase::v8_debug::internal::CInspectorImpl::shutServerDown()
-{
-    m_pServer.shutdown();
+    m_pScriptResult.reset(new JSSmart<CJSValue>(val));
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::pauseServer()
 {
-    m_pServer.pause();
+    m_Server.pause();
 }
-
-bool NSJSBase::v8_debug::internal::CInspectorImpl::free() const
-{
-    return !m_pServer.busy();
-}
-
-//int NSJSBase::v8_debug::internal::CInspectorImpl::contextGroupId() const
-//{
-//    return m_iContextGroupId;
-//}
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::onServerReady()
 {
-    std::cout << "THAT START DEBUGGING MESSAGE HAPPENED\n";
     pauseServer();
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::prepareServer()
 {
     if (!connectServer()) {
-        std::cerr << "server can't connect" << std::endl;
         return;
     }
     waitWhileServerReady();
@@ -169,11 +141,10 @@ NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         //
         , uint16_t port
         )
-    : m_pServer{port}
+    : m_Server{port}
     , m_pIsolate{context->GetIsolate()}
     , m_bLog{info.log}
     , m_Client{context, info.contextName, info.contextGroupId, platform, this, info.log}
-//    , m_iContextGroupId{info.contextGroupId}
 {
     if (!initServer()) {
         std::cerr << "server can't listen to incoming connections" << std::endl;
@@ -192,9 +163,7 @@ NSJSBase::v8_debug::internal::CInspectorImpl::runScript(
     }
     //set data to client
     m_Client.setScriptExecData(execData);
-    std::cout << "BEFORE RESUME SERVER: RS\n";
-    m_pServer.run(m_fOnServerResume);
-    std::cout << "AFTER RESUME SERVER: RS\n";
+    m_Server.run(m_fOnServerResume);
     return getReturnValue();
 }
 
@@ -210,15 +179,12 @@ NSJSBase::v8_debug::internal::CInspectorImpl::callFunc(
     //set data to client
     m_Client.setFuncCallData(callData);
     //run server
-    std::cout << "BEFORE RESUME SERVER: FC\n";
-    m_pServer.run(m_fOnServerResume);
-    std::cout << "AFTER RESUME SERVER: FC\n";
+    m_Server.run(m_fOnServerResume);
     return getReturnValue();
 }
 
 NSJSBase::v8_debug::internal::CInspectorImpl::~CInspectorImpl() {
-    std::cout << "INSPECTOR DTOR\n";
-    if (m_pServer.listening()) {
-        m_pServer.shutdown();
+    if (m_Server.listening() && m_Server.connected()) {
+        m_Server.shutdown();
     }
 }

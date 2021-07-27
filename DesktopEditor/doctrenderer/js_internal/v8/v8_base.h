@@ -373,9 +373,9 @@ namespace NSJSBase
 
     class CJSContextPrivate
     {
-#ifdef V8_INSPECTOR
-        v8_debug::CPerContextInspector m_Inspector{};
-#endif
+//#ifdef V8_INSPECTOR
+//        v8_debug::CPerContextInspector m_Inspector{};
+//#endif
 
     public:
         CV8Worker m_oWorker;
@@ -392,48 +392,48 @@ namespace NSJSBase
             //
         }
 
-#ifdef V8_INSPECTOR
-        v8_debug::CPerContextInspector& getInspector();
-        void disposeInspector();
-#endif
+//#ifdef V8_INSPECTOR
+//        v8_debug::CPerContextInspector& getInspector();
+//        void disposeInspector();
+//#endif
     };
 
     class CJSObjectV8 : public CJSValueV8Template<v8::Object, CJSObject>
     {
-#ifdef V8_INSPECTOR
-        int tmp_here(){}
-//        JSSmart<CJSContext>
-        CJSContext *
-        m_pDefaultContext{nullptr};
-        CJSContext *m_pSpecialContext{nullptr};
-        CJSContext* getContext() {
-            return
-                    (m_pSpecialContext)
-                    ?
-                        m_pSpecialContext
-                      :
-                        m_pDefaultContext
-//                        .GetPointer()
-                        ;
-        }
-#endif
+//#ifdef V8_INSPECTOR
+//        int tmp_here(){}
+////        JSSmart<CJSContext>
+//        CJSContext *
+//        m_pDefaultContext{nullptr};
+//        CJSContext *m_pSpecialContext{nullptr};
+//        CJSContext* getContext() {
+//            return
+//                    (m_pSpecialContext)
+//                    ?
+//                        m_pSpecialContext
+//                      :
+//                        m_pDefaultContext
+////                        .GetPointer()
+//                        ;
+//        }
+//#endif
 
     public:
         CJSObjectV8()
-#ifdef V8_INSPECTOR
-            : m_pDefaultContext{CJSContext::GetCurrent()}
-#endif
+//#ifdef V8_INSPECTOR
+//            : m_pDefaultContext{CJSContext::GetCurrent()}
+//#endif
         {
             //
         }
 
-#ifdef V8_INSPECTOR
-        CJSObjectV8(CJSContext *pContext)
-            : m_pSpecialContext{pContext}
-        {
-            //
-        }
-#endif
+//#ifdef V8_INSPECTOR
+//        CJSObjectV8(CJSContext *pContext)
+//            : m_pSpecialContext{pContext}
+//        {
+//            //
+//        }
+//#endif
 
         virtual ~CJSObjectV8()
         {
@@ -479,15 +479,20 @@ namespace NSJSBase
                                             , const int argc = 0
                 , JSSmart<CJSValue> argv[] = NULL)
         {
+            v8::Local<v8::Context> context = CV8Worker::GetCurrentContext();
 #ifdef V8_INSPECTOR
-            return getContext()->m_internal->getInspector().callFunc(this->value, name, argc, argv);
-#else
-            return callFuncImpl(this->value
-                                , CV8Worker::GetCurrentContext()
+            v8_debug::CPerContextInspector i{context, CV8Worker::getInitializer()->getPlatform()};
+            return i.callFunc(value, name, argc, argv);
+#endif
+            JSSmart<CJSValue> result = callFuncImpl(this->value
+                                , context
                                 , name
                                 , argc
                                 , argv);
-#endif
+//#ifdef V8_INSPECTOR
+//            i.a();
+//#endif
+            return result;
         }
 
         virtual JSSmart<CJSValue> toValue()

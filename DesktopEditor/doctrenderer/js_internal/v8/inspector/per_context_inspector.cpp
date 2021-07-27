@@ -3,25 +3,13 @@
 #include "../../../../../Common/DocxFormat/Source/Base/SmartPtr.h"
 #include <iostream>
 
-//std::unique_ptr<NSJSBase::v8_debug::internal::CInspectorPool>
-//NSJSBase::v8_debug::CPerContextInspector::m_pPool{nullptr};
-
-
-NSJSBase::v8_debug::CPerContextInspector::CPerContextInspector(const std::string &contextName)
-//    : m_pPool{std::make_unique<internal::CInspectorPool>(contextName)}
+NSJSBase::v8_debug::CPerContextInspector::CPerContextInspector(
+        v8::Local<v8::Context> context
+        , v8::Platform *platform)
+    : m_Context{context}
+    , m_pPlatform{platform}
 {
-//    if (!m_pPool) {
-//        m_pPool = std::make_unique<internal::CInspectorPool>("");
-//    }
-}
-
-NSJSBase::v8_debug::CPerContextInspector&
-NSJSBase::v8_debug::CPerContextInspector::maybeInit(v8::Local<v8::Context> context, v8::Platform *platform)
-{
-//    m_pPool->maybeSetV8Data(context, platform);
-    c = context;
-    p = platform;
-    return *this;
+    //
 }
 
 NSCommon::smart_ptr<NSJSBase::CJSValue>
@@ -31,7 +19,7 @@ NSJSBase::v8_debug::CPerContextInspector::runScript(
         , const std::wstring &scriptPath
         )
 {
-    return internal::CInspectorPool::get().getInspector(c, p).runScript({scriptStr, pException, scriptPath});
+    return internal::CInspectorPool::get().getInspector(m_Context, m_pPlatform).runScript({scriptStr, pException, scriptPath});
 }
 
 NSCommon::smart_ptr<NSJSBase::CJSValue>
@@ -41,16 +29,12 @@ NSJSBase::v8_debug::CPerContextInspector::callFunc(
         , int argc
         , NSCommon::smart_ptr<CJSValue> argv[])
 {
-    return internal::CInspectorPool::get().getInspector(c, p).callFunc({value, name, argc, argv});
+    return internal::CInspectorPool::get().getInspector(m_Context, m_pPlatform).callFunc({value, name, argc, argv});
 }
 
 void NSJSBase::v8_debug::CPerContextInspector::dispose()
 {
-//    m_pPool.reset(nullptr);
-    int todo_dispose;
+    internal::CInspectorPool::get().dispose();
 }
 
-NSJSBase::v8_debug::CPerContextInspector::~CPerContextInspector() {
-    std::cout << "PER CONTEXT STUFF DTOR CALLED\n";
-//    m_pPool.release();//tmp
-}
+NSJSBase::v8_debug::CPerContextInspector::~CPerContextInspector() = default;

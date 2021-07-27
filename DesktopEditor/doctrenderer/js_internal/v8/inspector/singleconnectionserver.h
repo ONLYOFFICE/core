@@ -40,15 +40,11 @@ private:
 
     //message handler
     onMessageCallback m_fOnMessage{};
-//    onResumeCallback m_fOnResume{};
 
     //flags
     std::atomic<bool> m_bCdtConnected{false};//используется для выхода из цикла после закрытия chrome dev tools
     std::atomic<bool> m_bListening{false};//слушает ли сервак входящие соединения
     std::atomic<bool> m_bPaused{false};//пауза
-    std::atomic<bool> m_bBusy{false};//используется наряду с m_bPaused,
-                                        //потому что в обработке сообщения может быть поставлена пауза
-                                        //, а сервер всё ещё будет в цикле
 
 
 
@@ -68,19 +64,16 @@ public:
     CSingleConnectionServer(uint16_t port = 8080, std::string host = "127.0.0.1");
 
     void setOnMessageCallback(onMessageCallback callback);
-//    void setOnResumeCallback(onResumeCallback callback);
 
     bool waitForConnection();
     bool listen();
     void run(onResumeCallback beforeRun = onResumeCallback());
-//    void resume();
     void sendData(const std::string &data);
     bool waitAndProcessMessage();
     bool connected() const;
     bool listening() const;
     bool shutdown();
     void pause();
-    bool busy() const;
     uint16_t port() const;
 };
 

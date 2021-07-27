@@ -18,22 +18,14 @@ namespace NSCommon {
 namespace NSJSBase {
 namespace v8_debug {
 
-namespace internal {
-class CInspectorPool;
-}
-
 class CPerContextInspector
 {
-//    static
-//    std::unique_ptr<internal::CInspectorPool> m_pPool;
-    void kostyl(){int todo_remove_tmp_context_and_platform;}
-    v8::Local<v8::Context> c{};
-    v8::Platform *p{nullptr};
+    v8::Local<v8::Context> m_Context{};
+    v8::Platform *m_pPlatform{nullptr};
 
 public:
-    CPerContextInspector(const std::string &contextName = "");
+    CPerContextInspector(v8::Local<v8::Context> context, v8::Platform *platform);
 
-    CPerContextInspector& maybeInit(v8::Local<v8::Context> context, v8::Platform *platform);
     NSCommon::smart_ptr<CJSValue> runScript(
                 const std::string &scriptStr
                 , NSCommon::smart_ptr<CJSTryCatch> &pException
@@ -45,7 +37,8 @@ public:
                 , int argc
                 , NSCommon::smart_ptr<CJSValue> argv[]
                 );
-    void dispose();
+
+    static void dispose();
 
     ~CPerContextInspector();
 };

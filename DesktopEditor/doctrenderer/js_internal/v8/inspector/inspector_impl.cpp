@@ -9,14 +9,11 @@ bool NSJSBase::v8_debug::internal::CInspectorImpl::initServer()
 {
     //set on message callback
     auto messageCallback = [this](const std::string &message) {
-        this->processIncomingMessage(message);
+        if (!message.empty()) {
+            m_Client.processFrontendMessage(message);
+        }
     };
     m_Server.setOnMessageCallback(messageCallback);
-
-    //set on resume callback
-    m_fOnServerResume = [this]() {
-        this->m_Client.startDebugging();
-    };
 
     //listen
     return m_Server.listen();
@@ -31,14 +28,6 @@ bool NSJSBase::v8_debug::internal::CInspectorImpl::connectServer()
 void NSJSBase::v8_debug::internal::CInspectorImpl::waitWhileServerReady()
 {
     m_Server.run();
-}
-
-void NSJSBase::v8_debug::internal::CInspectorImpl::processIncomingMessage(const std::string &message)
-{
-    if (message.empty()) {
-        return;
-    }
-    m_Client.processFrontendMessage(message);
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::maybeLogOutgoing(
@@ -61,33 +50,54 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::printChromeLaunchHint(
          << std::endl;
 }
 
-bool NSJSBase::v8_debug::internal::CInspectorImpl::checkServer() const
-{
-    if (!m_Server.listening()) {
-        std::cerr << "server is not listening" << std::endl;
-        return false;
+std::string NSJSBase::v8_debug::internal::CInspectorImpl::getFunctionName(const std::string &json) {
+    std::cout << "CALL FRAMES: ";
+    v8::Local<v8::Value> params = getJsonProperty(m_Context, json, "params");
+//    std::cout << "!!! params: " << params << std::endl;
+    if (!params->IsObject()) {
+        std::cout << "params not object\n";
+        return std::string();
     }
-    if (!m_Server.connected()) {
-        std::cerr << "server is not connected" << std::endl;
-        return false;
+    int check_before_cast_all;
+    v8::Local<v8::Value> hitBreakpoints = getJsonPropertyImpl(m_Context
+                                                              , params->ToObject(m_Context).ToLocalChecked(), "hitBreakpoints");
+    if (!hitBreakpoints->IsArray()) {
+        std::cout << "not array\n";
+        return std::string();
     }
-    return true;
-}
-
-NSCommon::smart_ptr<NSJSBase::CJSValue>
-NSJSBase::v8_debug::internal::CInspectorImpl::getReturnValue()
-{
-    //get result, if any
-    NSCommon::smart_ptr<CJSValue> result;
-    if (m_pScriptResult) {
-        result = *m_pScriptResult;
+    v8::Local<v8::Array> arrr = v8::Local<v8::Array>::Cast(hitBreakpoints);
+    uint32_t len = arrr->Length();
+    if (len) {
+        m_Client.setAutoResume(false);
+    } else {
+        m_Client.setAutoResume(true);
     }
-
-    //reset pointer
-    m_pScriptResult.reset(nullptr);
-
-    //return result
+    std::cout << "LOOK LEN = " << len << std::endl;
+    return std::string();
+    v8::Local<v8::Value> callFrames = getJsonPropertyImpl(m_Context, params->ToObject(m_Context).ToLocalChecked(), "callFrames");
+    if (!callFrames->IsArray()) {
+        std::cout << "frames not array\n";
+        return std::string();
+    }
+    v8::Local<v8::Array> a = v8::Local<v8::Array>::Cast(callFrames);
+    v8::Local<v8::Value> json0 = a->Get(0);
+    v8::Local<v8::Value> fname = getJsonPropertyImpl(m_Context, json0->ToObject(m_Context).ToLocalChecked(), "functionName");
+//    v8::MaybeLocal<v8::String> s = v8::JSON::Stringify(m_Context, callFrames->ToObject(m_Context).ToLocalChecked());
+    std::string result = asString(fname);
+    std::cout << asString(fname) << std::endl << "LOOK" << std::endl;
     return result;
+
+//    if (s.IsEmpty()) {
+//        std::cout << "empty\n";
+//        return std::string();
+//    } else {
+//        std::cout << asString(s.ToLocalChecked());
+//    }
+//    v8::Array::n
+    std::cout << std::endl << "END FRAMES" << std::endl;
+//    std::string object = getJsonProperty(m_Context, params, "object");
+//    std::cout << "!!! object: " << object << std::endl;
+    return std::string();
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::sendData(const v8_inspector::StringView &message)
@@ -101,7 +111,14 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::sendData(const v8_inspector::
     //
     maybeLogOutgoing(str);
     //
+    if (CInspectorClient::funcResumeFlag_1 == getMethod(m_Context, str)) {
+        if (!getFunctionName(str).empty()) {
+            int todo;
+        }
+    }
     this->m_Server.sendData(str);
+    //
+
 }
 
 bool NSJSBase::v8_debug::internal::CInspectorImpl::waitForMessage()
@@ -109,19 +126,9 @@ bool NSJSBase::v8_debug::internal::CInspectorImpl::waitForMessage()
     return m_Server.waitAndProcessMessage();
 }
 
-void NSJSBase::v8_debug::internal::CInspectorImpl::setRetVal(const NSCommon::smart_ptr<CJSValue> &val)
-{
-    m_pScriptResult.reset(new JSSmart<CJSValue>(val));
-}
-
-void NSJSBase::v8_debug::internal::CInspectorImpl::pauseServer()
-{
-    m_Server.pause();
-}
-
 void NSJSBase::v8_debug::internal::CInspectorImpl::onServerReady()
 {
-    pauseServer();
+    m_Server.pause();
 }
 
 void NSJSBase::v8_debug::internal::CInspectorImpl::prepareServer()
@@ -132,55 +139,43 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::prepareServer()
     waitWhileServerReady();
 }
 
+void NSJSBase::v8_debug::internal::CInspectorImpl::beforeScript()
+{
+    m_Client.setScript();
+    beforeLaunch();
+}
+
+void NSJSBase::v8_debug::internal::CInspectorImpl::beforeFunc()
+{
+    m_Client.setFunc();
+    beforeLaunch();
+}
+
+void NSJSBase::v8_debug::internal::CInspectorImpl::beforeLaunch()
+{
+    m_Client.pauseOnNextStatement();
+}
+
 NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(//for client
         v8::Local<v8::Context> context
         //platform to pump
         , v8::Platform *platform
-        //other info
-        , CInspectorInfo info
         //
         , uint16_t port
+                                                             , int contextGroupId
+                                                             , const std::string &contextName
+                                                             , bool log
         )
     : m_Server{port}
     , m_pIsolate{context->GetIsolate()}
-    , m_bLog{info.log}
-    , m_Client{context, info.contextName, info.contextGroupId, platform, this, info.log}
+    , m_Context{context}
+    , m_bLog{log}
+    , m_Client{context, contextName, contextGroupId, platform, this, log}
 {
     if (!initServer()) {
         std::cerr << "server can't listen to incoming connections" << std::endl;
         return;
     }
-}
-
-NSCommon::smart_ptr<NSJSBase::CJSValue>
-NSJSBase::v8_debug::internal::CInspectorImpl::runScript(
-        const CScriptExecData &execData
-        )
-{
-    //check for listening
-    if (!checkServer()) {
-        return JSSmart<CJSValue>();
-    }
-    //set data to client
-    m_Client.setScriptExecData(execData);
-    m_Server.run(m_fOnServerResume);
-    return getReturnValue();
-}
-
-NSCommon::smart_ptr<NSJSBase::CJSValue>
-NSJSBase::v8_debug::internal::CInspectorImpl::callFunc(
-        const CFCallData &callData
-        )
-{
-    //check for listening
-    if (!checkServer()) {
-        return JSSmart<CJSValue>();
-    }
-    //set data to client
-    m_Client.setFuncCallData(callData);
-    //run server
-    m_Server.run(m_fOnServerResume);
-    return getReturnValue();
 }
 
 NSJSBase::v8_debug::internal::CInspectorImpl::~CInspectorImpl() {

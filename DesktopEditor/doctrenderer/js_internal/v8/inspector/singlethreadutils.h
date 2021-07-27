@@ -25,13 +25,14 @@ namespace internal {
                                   , const std::string &str);
     v8::Local<v8::String> viewTov8str(v8::Isolate *isolate
                                       , const v8_inspector::StringView &view);
+    std::string asString(v8::Local<v8::Value> value);
 
 
     //get value of property |property| from json object
-    std::string getJsonProperty(v8::Local<v8::Context> context
+    v8::Local<v8::Value> getJsonProperty(v8::Local<v8::Context> context
                                 , const std::string &json
                                 , const std::string &property);
-    std::string getJsonPropertyImpl(
+    v8::Local<v8::Value> getJsonPropertyImpl(
             v8::Local<v8::Context> context
             , v8::Local<v8::Object> jsonObject
             , const std::string &property

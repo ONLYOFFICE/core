@@ -232,10 +232,6 @@ bool NSJSBase::v8_debug::internal::CSingleConnectionServer::waitAndProcessMessag
         m_fOnMessage(result.first);
     }
 
-    if (m_bPaused) {
-        return false;
-    }
-
     return true;
 }
 

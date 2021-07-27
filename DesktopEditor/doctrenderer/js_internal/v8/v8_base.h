@@ -481,8 +481,8 @@ namespace NSJSBase
         {
             v8::Local<v8::Context> context = CV8Worker::GetCurrentContext();
 #ifdef V8_INSPECTOR
-            v8_debug::CPerContextInspector i{context, CV8Worker::getInitializer()->getPlatform()};
-            return i.callFunc(value, name, argc, argv);
+            v8_debug::beforeFunc(context, CV8Worker::getInitializer()->getPlatform());
+//            return i.callFunc(value, name, argc, argv);
 #endif
             JSSmart<CJSValue> result = callFuncImpl(this->value
                                 , context

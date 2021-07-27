@@ -26,24 +26,24 @@ HEADERS += $$PWD/js_base.h
         HEADERS += \
             $$V8_INSPECTOR_PATH/channel.h \
             $$V8_INSPECTOR_PATH/client.h \
-            $$V8_INSPECTOR_PATH/execution_data.h \
+#            $$V8_INSPECTOR_PATH/execution_data.h \
             $$V8_INSPECTOR_PATH/inspector_impl.h \
-            $$V8_INSPECTOR_PATH/inspector_info.h \
+#            $$V8_INSPECTOR_PATH/inspector_info.h \
             $$V8_INSPECTOR_PATH/singleconnectionserver.h \
             $$V8_INSPECTOR_PATH/singlethreadutils.h \
-            $$V8_INSPECTOR_PATH/portdistributor.h \
+#            $$V8_INSPECTOR_PATH/portdistributor.h \
             $$V8_INSPECTOR_PATH/inspector_pool.h \
             $$V8_INSPECTOR_PATH/per_context_inspector.h
 
         SOURCES += \
             $$V8_INSPECTOR_PATH/channel.cpp \
             $$V8_INSPECTOR_PATH/client.cpp \
-            $$V8_INSPECTOR_PATH/execution_data.cpp \
+#            $$V8_INSPECTOR_PATH/execution_data.cpp \
             $$V8_INSPECTOR_PATH/inspector_impl.cpp \
             $$V8_INSPECTOR_PATH/singleconnectionserver.cpp \
             $$V8_INSPECTOR_PATH/singlethreadutils.cpp \
-            $$V8_INSPECTOR_PATH/portdistributor.cpp \
-            $$V8_INSPECTOR_PATH/inspector_info.cpp \
+#            $$V8_INSPECTOR_PATH/portdistributor.cpp \
+#            $$V8_INSPECTOR_PATH/inspector_info.cpp \
             $$V8_INSPECTOR_PATH/inspector_pool.cpp \
             $$V8_INSPECTOR_PATH/per_context_inspector.cpp
 

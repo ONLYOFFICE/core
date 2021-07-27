@@ -154,7 +154,7 @@ namespace NSJSBase
     void CJSContext::Dispose()
     {
 #ifdef V8_INSPECTOR
-        v8_debug::CPerContextInspector::dispose();
+        v8_debug::disposeInspector(m_internal->m_context);
 #endif
         m_internal->m_isolate->Dispose();
         m_internal->m_isolate = NULL;
@@ -281,8 +281,9 @@ namespace NSJSBase
     {
         v8::Local<v8::Context> context = m_internal->m_context;
 #ifdef V8_INSPECTOR
-        v8_debug::CPerContextInspector i{context, CV8Worker::getInitializer()->getPlatform()};
-        return i.runScript(script, exception, scriptPath);
+//        v8_debug::CPerContextInspector i{context, CV8Worker::getInitializer()->getPlatform()};
+//        return i.runScript(script, exception, scriptPath);
+        v8_debug::beforeScript(context, CV8Worker::getInitializer()->getPlatform());
 #endif
         JSSmart<CJSValue> result = runScriptImpl(
                     context

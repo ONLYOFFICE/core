@@ -17,13 +17,16 @@ namespace {
 
 void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
         const std::string &contextName
-        , CInspectorChannel::sendDataCallback sendDataCallback)
+//        , CInspectorChannel::sendDataCallback sendDataCallback
+        )
 {
     //client instance is this
 
     //channel
     m_pChannel = std::make_unique<CInspectorChannel>(
-                std::move(sendDataCallback)
+                [this](const v8_inspector::StringView &message) {
+        m_pInspectingWrapper->sendData(message);
+    }
                 );
 
     //inspector
@@ -36,7 +39,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
     m_pSession = m_pInspector->connect(m_iContextGroupId, m_pChannel.get(), state);
 
     //
-    registerContext(contextName);
+    m_pInspector->contextCreated({m_CurrentContext, m_iContextGroupId, strToView(contextName)});
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::pumpPlatform()
@@ -47,8 +50,9 @@ void NSJSBase::v8_debug::internal::CInspectorClient::pumpPlatform()
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::runMessageLoopOnPause(
-        int contextGroupId
+        int
         ) {
+    //no nested calls
     if (m_bPause) {
         return;
     }
@@ -71,17 +75,6 @@ void NSJSBase::v8_debug::internal::CInspectorClient::quitMessageLoopOnPause() {
     m_bPause = false;
 }
 
-
-void NSJSBase::v8_debug::internal::CInspectorClient::startDebugging()
-{
-    //pause before current script on debugging launch
-    pauseOnNextStatement();
-
-    execute();
-
-    m_pInspectingWrapper->pauseServer();
-}
-
 void NSJSBase::v8_debug::internal::CInspectorClient::processFrontendMessage(
         const std::string &message
         )
@@ -92,91 +85,60 @@ void NSJSBase::v8_debug::internal::CInspectorClient::processFrontendMessage(
     checkFrontendMessage(message);
 }
 
+void NSJSBase::v8_debug::internal::CInspectorClient::setFunc()
+{
+    m_State = state::kFunc;
+}
+
+void NSJSBase::v8_debug::internal::CInspectorClient::setScript()
+{
+    m_State = state::kScript;
+}
+
+void NSJSBase::v8_debug::internal::CInspectorClient::setAutoResume(bool how)
+{
+    autoResume = how;
+}
+
 void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessage(const std::string &message)
 {
+    //убрать под server unready - подготовка сервака тут вообще никаким боком
+    if (!autoResume) {
+        return;
+    }
+    std::string method = getMethod(m_CurrentContext, message);
     switch (m_State) {
-    case debugState::kDebugPaused: return checkFrontendMessageOnDebugPaused(message);
-    case debugState::kServerNotReady: return checkFrontendMessageBeforeReady(message);
-    case debugState::kSessionResumed: return;//do nothing
+    case state::kServerUnready: {
+        if (readyMessage == method) {
+            m_State = state::kScript;
+            return onServerReady();
+        }
+    }
+    case state::kScript: {
+        if (scriptResumeFlag_1 == method) {
+            return onResume();
+        }
+    }
+    case state::kFunc: {
+        if (funcResumeFlag_2 == method) {
+            return onResume();
+        }
+    }
     }
 }
 
-void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessageOnScript(const std::string &message)
+void NSJSBase::v8_debug::internal::CInspectorClient::onServerReady()
 {
-    if (
-            getMethod(m_CurrentContext, message) ==
-            scriptResumeFlag_1
-            )
-    {
-        resumeDebuggingSession();
-    }
+    m_pInspectingWrapper->onServerReady();
 }
 
-void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessageOnFunc(const std::string &message)
+void NSJSBase::v8_debug::internal::CInspectorClient::onResume()
 {
-    if (
-            getMethod(m_CurrentContext, message) ==
-            funcResumeFlag_1
-//            funcResumeFlag_2//may be used
-            ) {
-        resumeDebuggingSession();
-    }
-}
-
-void NSJSBase::v8_debug::internal::CInspectorClient::registerContext(const std::string &contextName)
-{
-    //context name as string view
-    v8_inspector::StringView viewContextName = strToView(contextName);
-
-    //context info
-    v8_inspector::V8ContextInfo info{
-                m_CurrentContext
-                , m_iContextGroupId
-                , viewContextName
-    };
-
-    //register context objects in inspector
-    m_pInspector->contextCreated(info);
-}
-
-void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessageBeforeReady(const std::string &message)
-{
-    if (checkForReadyMessage(message)) {
-        m_pInspectingWrapper->onServerReady();
-    }
-}
-
-void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessageOnDebugPaused(const std::string &message)
-{
-    //
-    switch (m_Mode) {
-    case mode::kFuncCall : return checkFrontendMessageOnFunc(message);
-    case mode::kScriptExec: return checkFrontendMessageOnScript(message);
-    }
-}
-
-bool NSJSBase::v8_debug::internal::CInspectorClient::checkForReadyMessage(
-        const std::string &json) const
-{
-    return getMethod(m_CurrentContext, json) == readyMessage;
-}
-
-void NSJSBase::v8_debug::internal::CInspectorClient::setScriptExecData(
-        const CScriptExecData &data)
-{
-    m_Mode = mode::kScriptExec;
-    m_ScriptExecData = data;
-}
-
-void NSJSBase::v8_debug::internal::CInspectorClient::setFuncCallData(
-        const CFCallData &data)
-{
-    m_Mode = mode::kFuncCall;
-    m_FunctionCallData = data;
+    resumeDebuggingSession();
 }
 
 NSJSBase::v8_debug::internal::CInspectorClient::~CInspectorClient() {
-    //check here
+    //tmp
     m_pSession.release();
 }
 
@@ -192,13 +154,11 @@ void NSJSBase::v8_debug::internal::CInspectorClient::maybeLogIncoming(
 
 void NSJSBase::v8_debug::internal::CInspectorClient::pauseOnNextStatement()
 {
-    m_State = debugState::kDebugPaused;
-    m_pSession->schedulePauseOnNextStatement(strToView("debugCommand"), {});
+    m_pSession->schedulePauseOnNextStatement({}, {});
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::resumeDebuggingSession()
 {
-    m_State = debugState::kSessionResumed;
     m_pSession->resume();
 }
 
@@ -206,41 +166,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::dispatchProtocolMessage(
         const std::string &message)
 {
     maybeLogIncoming(message);
-    v8_inspector::StringView v8message = strToView(message);
-    m_pSession->dispatchProtocolMessage(v8message);
-}
-
-void NSJSBase::v8_debug::internal::CInspectorClient::execute()
-{
-    switch (m_Mode) {
-    case mode::kFuncCall: return callFunc();
-    case mode::kScriptExec: return runScript();
-    }
-}
-
-void NSJSBase::v8_debug::internal::CInspectorClient::runScript()
-{
-    JSSmart<CJSValue> result = runScriptImpl(
-                            m_CurrentContext
-                            , m_ScriptExecData.scriptSource
-                            , *m_ScriptExecData.pException
-                            , m_ScriptExecData.scriptPath
-                            );
-    m_ScriptExecData.dispose();
-    m_pInspectingWrapper->setRetVal(result);
-}
-
-void NSJSBase::v8_debug::internal::CInspectorClient::callFunc()
-{
-    JSSmart<CJSValue> result = callFuncImpl(
-                            m_FunctionCallData.value
-                            , m_CurrentContext
-                            , m_FunctionCallData.name
-                            , m_FunctionCallData.argc
-                            , m_FunctionCallData.argv
-                            );
-    m_FunctionCallData.dispose();
-    m_pInspectingWrapper->setRetVal(result);
+    m_pSession->dispatchProtocolMessage(strToView(message));
 }
 
 NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(
@@ -271,8 +197,5 @@ NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(
     //
     , m_iContextGroupId{contextGroupId}
 {
-    setUpDebuggingSession(contextName
-                          , [inspector](const v8_inspector::StringView &message) {
-        inspector->sendData(message);
-    });
+    setUpDebuggingSession(contextName);
 }

@@ -1,5 +1,5 @@
 #include "inspector_pool.h"
-#include "portdistributor.h"
+//#include "portdistributor.h"
 #include <iostream>
 
 
@@ -12,23 +12,33 @@ NSJSBase::v8_debug::internal::CInspectorPool::addInspector(v8::Local<v8::Context
                                                            , v8::Platform *platform
                                                            , const std::string &contextName)
 {
-    uint16_t port = CPortDistributor::getPort();
     std::pair<storage_t::iterator, bool> result = m_Inspectors.emplace(
                 std::piecewise_construct
-                , std::forward_as_tuple(context->GetIsolate())
+                , std::forward_as_tuple(context)
                 , std::forward_as_tuple(
                     context
                     , platform
-                    , CInspectorInfo{
-                        m_bLog
-                        , CInspectorInfo::getContextId()
-                        , contextName
-                    }
-                    , port)
+                    , getPort()
+                    , getContextGroupId()
+                    , contextName
+                    , m_bLog
+                    )
                 );
     CInspectorImpl &inspector = result.first->second;
     inspector.prepareServer();
     return inspector;
+}
+
+uint16_t NSJSBase::v8_debug::internal::CInspectorPool::getPort()
+{
+    static std::atomic<uint16_t> currentPort{8080};
+    return currentPort++;
+}
+
+int NSJSBase::v8_debug::internal::CInspectorPool::getContextGroupId()
+{
+    static std::atomic<int> currentId{1};
+    return currentId++;
 }
 
 NSJSBase::v8_debug::internal::CInspectorImpl&
@@ -37,16 +47,20 @@ NSJSBase::v8_debug::internal::CInspectorPool::getInspector(v8::Local<v8::Context
                                                            , const std::string &contextName)
 {
     std::lock_guard<std::mutex> lock{m_Mutex};
-    auto iter = m_Inspectors.find(context->GetIsolate());
+    storage_t::iterator iter = m_Inspectors.find(context);
     if (m_Inspectors.end() == iter) {
         return addInspector(context, platform, contextName);
     }
     return iter->second;
 }
 
-void NSJSBase::v8_debug::internal::CInspectorPool::dispose()
+void NSJSBase::v8_debug::internal::CInspectorPool::disposeInspector(v8::Local<v8::Context> context)
 {
-    m_Inspectors.clear();
+    std::lock_guard<std::mutex> lock{m_Mutex};
+    storage_t::iterator iter = m_Inspectors.find(context);
+    if (m_Inspectors.end() != iter) {
+        m_Inspectors.erase(iter);
+    }
 }
 
 NSJSBase::v8_debug::internal::CInspectorPool&

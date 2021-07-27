@@ -7,7 +7,21 @@ int main(int argc, char *argv[])
     JSSmart<NSJSBase::CJSContext> pJSContext = new NSJSBase::CJSContext();
     pJSContext->Initialize();
 
+//    v8::V8::InitializeICU();
+//    v8::Platform* v8Platform = v8::platform::CreateDefaultPlatform();
+//    v8::V8::InitializePlatform(v8Platform);
+//    v8::V8::Initialize();
+
+//    v8::Isolate::CreateParams create_params;
+//    create_params.array_buffer_allocator =
+//            v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+//    v8::Isolate* isolate = v8::Isolate::New(create_params);
+
     {
+//        v8::Isolate::Scope isolate_scope(isolate);
+//        v8::HandleScope scope(isolate);
+//        v8::Handle<v8::Context> context = v8::Context::New(isolate);
+//        v8::Context::Scope context_scope(context);
         JSSmart<NSJSBase::CJSIsolateScope> isolate_scope = pJSContext->CreateIsolateScope();
         JSSmart<NSJSBase::CJSLocalScope> handle_scope = pJSContext->CreateLocalScope();
 
@@ -19,11 +33,24 @@ int main(int argc, char *argv[])
         JSSmart<NSJSBase::CJSObject> global_js = pJSContext->GetGlobal();
 
 //        NSJSBase::v8_debug::internal::CInspectorImpl i{
-//            pJSContext->m_internal->m_context
-//                    , CV8Worker::getInitializer()->getPlatform()
+//            context
+////                    , CV8Worker::getInitializer()->getPlatform()
+//                    , v8Platform
 //                    , {true, 1, ""}
 //            , 8080};
 //        i.prepareServer();
+//        std::cout << "server prepared\n";
+
+        //trial shit
+//        v8::Local<v8::Context> context = pJSContext->m_internal->m_context;
+//        v8::Isolate *isolate = context->GetIsolate();
+
+//        i.before();
+//        std::cout << "before called 1\n";
+//        const char *c1 = "function func1() {return 1 + 2;}func1();";
+//        v8::Script::Compile(context
+//                            , v8::String::NewFromOneByte(isolate, (uint8_t*)c1))
+//                .ToLocalChecked()->Run(context).ToLocalChecked();
 
         //one
         pJSContext->
@@ -45,6 +72,12 @@ int main(int argc, char *argv[])
 //                    }
                     );
         try_catch->Check();
+//        i.before();
+//        std::cout << "before called 2\n";
+//        const char *c2 = "var val = func1();";
+//        v8::Script::Compile(context
+//                            , v8::String::NewFromOneByte(isolate, (uint8_t*)c2))
+//                .ToLocalChecked()->Run(context).ToLocalChecked();
         std::cout << "after two\n";
 
         //three
@@ -71,7 +104,8 @@ int main(int argc, char *argv[])
 //                       , 0
 //                       , nullptr
 //                   });
-//        std::cout << "after four\n";
+        global_js->call_func("function_1");
+        std::cout << "after four\n";
 
         //check
         if (js_result.IsInit()){
@@ -86,6 +120,11 @@ int main(int argc, char *argv[])
             std::cout << "result not init\n";
         }
     }
+
+//    isolate->Dispose();
+//    v8::V8::Dispose();
+//    v8::V8::ShutdownPlatform();
+//    delete create_params.array_buffer_allocator;
 
     pJSContext->Dispose();
     NSJSBase::CJSContext::ExternalDispose();

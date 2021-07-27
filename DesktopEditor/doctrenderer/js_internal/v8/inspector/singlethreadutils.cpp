@@ -54,12 +54,13 @@ std::string NSJSBase::v8_debug::internal::viewToStr(v8::Isolate *isolate
 v8::Local<v8::Object> NSJSBase::v8_debug::internal::parseJsonImpl(v8::Local<v8::Context> context
                                    , v8::Local<v8::String> v8str)
 {
-    int tmp;
-    context = v8::Isolate::GetCurrent()->GetCurrentContext();
     v8::Local<v8::Value> value = v8::JSON::Parse(context, v8str).ToLocalChecked();
-    v8::Local<v8::Object> obj = value->ToObject(context).ToLocalChecked();
+    v8::MaybeLocal<v8::Object> obj = value->ToObject(context);
+    if (obj.IsEmpty()) {
+        v8::Local<v8::Object>();
+    }
     return
-                obj
+                obj.ToLocalChecked()
             ;
 }
 
@@ -75,7 +76,7 @@ v8::Local<v8::String> NSJSBase::v8_debug::internal::tov8str(v8::Isolate *isolate
             .ToLocalChecked();
 }
 
-std::string NSJSBase::v8_debug::internal::getJsonPropertyImpl(v8::Local<v8::Context> context
+v8::Local<v8::Value> NSJSBase::v8_debug::internal::getJsonPropertyImpl(v8::Local<v8::Context> context
                                                           , v8::Local<v8::Object> jsonObject
                                                           , const std::string &property)
 {
@@ -87,9 +88,11 @@ std::string NSJSBase::v8_debug::internal::getJsonPropertyImpl(v8::Local<v8::Cont
                 , v8::NewStringType::kNormal
                 , property.length())
             .ToLocalChecked();
-    v8::Local<v8::Value> prop = jsonObject->Get(context, name).ToLocalChecked();
-    v8::String::Utf8Value utf8(prop);
-    return std::string(*utf8);
+    v8::MaybeLocal<v8::Value> maybeProperty = jsonObject->Get(context, name);
+    if (maybeProperty.IsEmpty()) {
+        return v8::Local<v8::Value>();
+    }
+    return maybeProperty.ToLocalChecked();
 }
 
 std::string NSJSBase::v8_debug::internal::getMethod(v8::Local<v8::Context> context
@@ -110,7 +113,7 @@ std::string NSJSBase::v8_debug::internal::getMethodImpl(v8::Local<v8::Context> c
     if (jsonObj.IsEmpty()) {
         return std::string();
     }
-    return getJsonPropertyImpl(context, jsonObj, "method");
+    return asString(getJsonPropertyImpl(context, jsonObj, "method"));
 }
 
 v8::Local<v8::String> NSJSBase::v8_debug::internal::viewTov8str(v8::Isolate *isolate
@@ -174,7 +177,7 @@ void NSJSBase::v8_debug::internal::logWithPrefix(std::ostream &out
 void NSJSBase::v8_debug::internal::logCdtMessage(std::ostream &out
                                                  , const std::string &message)
 {
-    logWithPrefix(out, "frontend: ", message);
+    logWithPrefix(out, "CDT: ", message);
 }
 
 void NSJSBase::v8_debug::internal::logOutgoingMessage(std::ostream &out
@@ -183,14 +186,20 @@ void NSJSBase::v8_debug::internal::logOutgoingMessage(std::ostream &out
     logWithPrefix(out, "responce: ", message);
 }
 
-std::string NSJSBase::v8_debug::internal::getJsonProperty(
+v8::Local<v8::Value> NSJSBase::v8_debug::internal::getJsonProperty(
         v8::Local<v8::Context> context
         , const std::string &json
         , const std::string &property)
 {
     v8::Local<v8::Object> jsonObject = parseJson(context, json);
     if (jsonObject.IsEmpty()) {
-        return std::string();
+        return v8::Local<v8::Value>();
     }
     return getJsonPropertyImpl(context, jsonObject, property);
+}
+
+std::string NSJSBase::v8_debug::internal::asString(v8::Local<v8::Value> value)
+{
+    v8::String::Utf8Value utf8(value);
+    return std::string(*utf8);
 }

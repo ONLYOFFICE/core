@@ -77,8 +77,10 @@ namespace XLSB
         BaseObjectPtr               m_FNGROUP;
         BaseObjectPtr               m_EXTERNALS;
         BaseObjectPtr               m_BrtCalcProp;
+        BaseObjectPtr               m_BrtOleSize;
 
-        std::vector<BaseObjectPtr>  m_arName;
+        std::vector<BaseObjectPtr>  m_arBrtName;
+        std::vector<BaseObjectPtr>  m_arBrtUserBookView;
 
         unsigned short			code_page_;
         GlobalWorkbookInfoPtr		global_info_;

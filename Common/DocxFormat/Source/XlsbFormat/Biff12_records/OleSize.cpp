@@ -29,46 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/Biff_records/FileSharing.h>
-#include <Logic/Biff_records/ExternSheet.h>
-#include <Logic/Biff_records/Window1.h>
-#include <Logic/Biff_records/Lbl.h>
-#include <Logic/Biff_records/UserBView.h>
-#include "../Source/XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-
+#include "OleSize.h"
 
 namespace XLSB
 {
-    // Logical representation of common record in BIFF12
-    class FileSharing: public XLS::FileSharing
+
+    OleSize::OleSize()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(FileSharing)
+    }
 
-    };
-
-    class ExternSheet: public XLS::ExternSheet
+    OleSize::~OleSize()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(ExternSheet)
+    }
 
-    };
-
-    class BookView: public XLS::Window1
+    BaseObjectPtr OleSize::clone()
     {
-        BIFF_RECORD_DEFINE_TYPE_INFO(BookView)
-    };
+        return BaseObjectPtr(new OleSize(*this));
+    }
 
-    class Name: public XLS::Lbl
-    {
-        BIFF_RECORD_DEFINE_TYPE_INFO(Name)
-    };
-
-    class UserBookView: public XLS::UserBView
-    {
-        BIFF_RECORD_DEFINE_TYPE_INFO(UserBookView)
-    };
+    void OleSize::readFields(CFRecord& record)
+    { 
+        record >> rfx;
+    }
 
 } // namespace XLSB
 

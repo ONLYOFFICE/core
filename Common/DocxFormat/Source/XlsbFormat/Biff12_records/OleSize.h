@@ -31,43 +31,29 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/FileSharing.h>
-#include <Logic/Biff_records/ExternSheet.h>
-#include <Logic/Biff_records/Window1.h>
-#include <Logic/Biff_records/Lbl.h>
-#include <Logic/Biff_records/UserBView.h>
+#include <Logic/Biff_records/BiffRecord.h>
 #include "../Source/XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
-
+#include "../Biff12_structures/UncheckedRfx.h"
+using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of common record in BIFF12
-    class FileSharing: public XLS::FileSharing
+    // Logical representation of OleSize record in BIFF12
+    class OleSize: public BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(FileSharing)
+            BIFF_RECORD_DEFINE_TYPE_INFO(OleSize)
+            BASE_OBJECT_DEFINE_CLASS_NAME(OleSize)
+        public:
+            OleSize();
+            virtual ~OleSize();
 
-    };
+            BaseObjectPtr clone();
 
-    class ExternSheet: public XLS::ExternSheet
-    {
-            BIFF_RECORD_DEFINE_TYPE_INFO(ExternSheet)
+            void readFields(CFRecord& record);
 
-    };
+            UncheckedRfX    rfx;
 
-    class BookView: public XLS::Window1
-    {
-        BIFF_RECORD_DEFINE_TYPE_INFO(BookView)
-    };
-
-    class Name: public XLS::Lbl
-    {
-        BIFF_RECORD_DEFINE_TYPE_INFO(Name)
-    };
-
-    class UserBookView: public XLS::UserBView
-    {
-        BIFF_RECORD_DEFINE_TYPE_INFO(UserBookView)
     };
 
 } // namespace XLSB

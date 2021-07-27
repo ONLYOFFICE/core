@@ -127,6 +127,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/PlaceholderName.cpp \
     ../Source/XlsbFormat/Biff12_records/SupAddin.cpp \
     ../Source/XlsbFormat/Biff12_records/CalcProp.cpp \
+    ../Source/XlsbFormat/Biff12_records/OleSize.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -366,6 +367,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/PlaceholderName.h \
     ../Source/XlsbFormat/Biff12_records/SupAddin.h \
     ../Source/XlsbFormat/Biff12_records/CalcProp.h \
+    ../Source/XlsbFormat/Biff12_records/OleSize.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
@@ -373,6 +375,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_structures/CodeName.h \
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/RelID.h \
+    ../Source/XlsbFormat/Biff12_structures/UncheckedRfx.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
     ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.h \

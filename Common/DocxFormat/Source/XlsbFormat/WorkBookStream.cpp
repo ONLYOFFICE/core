@@ -44,6 +44,7 @@
 #include "Biff12_unions/FNGROUP.h"
 #include "Biff12_unions/EXTERNALS.h"
 #include "Biff12_records/CalcProp.h"
+#include "Biff12_records/OleSize.h"
 
 namespace XLSB
 {
@@ -206,10 +207,10 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
             case rt_Name:
             {
                 count = proc.repeated<Name>(0, 0);
-                int start_pos = m_arName.size();
+                int start_pos = m_arBrtName.size();
                 while(count > 0)
                 {
-                    m_arName.insert(m_arName.begin() + start_pos, elements_.back());
+                    m_arBrtName.insert(m_arBrtName.begin() + start_pos, elements_.back());
                     elements_.pop_back();
                     count--;
                 }
@@ -221,6 +222,26 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                 {
                     m_BrtCalcProp = elements_.back();
                     elements_.pop_back();
+                }
+            }break;
+
+            case rt_OleSize:
+            {
+                if (proc.optional<OleSize>())
+                {
+                    m_BrtOleSize = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_UserBookView:
+            {
+                count = proc.repeated<UserBookView>(0, 0);
+                while(count > 0)
+                {
+                    m_arBrtUserBookView.insert(m_arBrtUserBookView.begin(), elements_.back());
+                    elements_.pop_back();
+                    count--;
                 }
             }break;
 

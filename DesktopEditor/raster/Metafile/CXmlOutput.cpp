@@ -172,7 +172,7 @@ namespace MetaFile
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode)
     {
-        m_pXmlWriter->WriteNodeBegin(wsNameNode);
+        m_pXmlWriter->WriteNodeBegin(wsNameNode, true);
         m_pXmlWriter->WriteNodeEnd(wsNameNode, true, true);
     }
 

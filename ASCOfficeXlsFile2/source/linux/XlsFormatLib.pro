@@ -35,6 +35,7 @@ LIBS += $$DESTDIR -lUnicodeConverter
 
 INCLUDEPATH += ../XlsFormat
 INCLUDEPATH += ../Common
+INCLUDEPATH += ../../../Common/DocxFormat/Source/XlsbFormat
 
 core_release {
 SOURCES += \

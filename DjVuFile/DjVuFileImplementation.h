@@ -75,7 +75,7 @@ public:
 	void         SetTempDirectory(const std::wstring& wsDirectory);
 	int          GetPagesCount() const;
 	void         GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) const;
-	void         DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
+	void         DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, double dKoefX = 0, double dKoefY = 0);
     BYTE*        ConvertToPixels(int nPageIndex, const int& nRasterW = -1, const int& nRasterH = -1);
     void         ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int& nRasterW = -1, const int& nRasterH = -1);
     void         ConvertToPdf(const std::wstring& wsDstPath);
@@ -212,7 +212,7 @@ private:
 	void               CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& oText);
 	void               CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& oText);
 	void               CreateGrFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, bool* pBreak);
-	XmlUtils::CXmlNode ParseText(GP<DjVuImage> pPage);
+	XmlUtils::CXmlNode ParseText(GP<DjVuImage> pPage, double dKoefX, double dKoefY);
 	void               TextToRenderer(IRenderer* pRenderer, XmlUtils::CXmlNode text, double koef, bool isView = true);
 	void               DrawPageText(IRenderer* pRenderer, double* pdCoords, const std::wstring& wsText);
 	void               ParseCoords(const std::wstring& wsCoordsStr, double* pdCoords, double dKoef);

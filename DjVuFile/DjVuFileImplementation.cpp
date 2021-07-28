@@ -192,7 +192,7 @@ void               CDjVuFileImplementation::GetPageInfo(int nPageIndex, double* 
     *pdDpiX = nDpi;
     *pdDpiY = nDpi;
 }
-void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
+void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, double dKoefX, double dKoefY)
 {
 	if (!m_pDoc)
 		return;
@@ -218,7 +218,7 @@ void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRende
         #endif
 		else
 		{
-			XmlUtils::CXmlNode oText = ParseText(pPage);
+			XmlUtils::CXmlNode oText = ParseText(pPage, dKoefX, dKoefY);
 			CreateFrame(pRenderer, pPage, nPageIndex, oText);
 		}
 	}
@@ -264,7 +264,7 @@ BYTE*              CDjVuFileImplementation::ConvertToPixels(int nPageIndex, cons
     pRenderer->put_Height(dHeight);
 
     bool bBreak = false;
-    DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
+    DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak, (double)nWidth * dPageDpiX / 25.4 / dWidth, (double)nHeight * dPageDpiX / 25.4 / dHeight);
 
     RELEASEINTERFACE(pFontManager);
     RELEASEOBJECT(pRenderer);
@@ -350,7 +350,7 @@ void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, CDjVuFileImplement
 
         GUTF8String str = gpBookMark->url;
         int endpos;
-        DWORD nPage = str.toULong(1, endpos);
+        DWORD nPage = str.toULong(1, endpos) - 1;
         if (endpos == (int)str.length())
         {
             out.AddInt(nPage);
@@ -1009,7 +1009,7 @@ void               CDjVuFileImplementation::CreateGrFrame(IRenderer* pRenderer, 
 		}
 	}
 }
-XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage)
+XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage, double dKoefX, double dKoefY)
 {
 	XmlUtils::CXmlNode paragraph;
 	const GP<DjVuText> text(DjVuText::create());
@@ -1056,13 +1056,13 @@ XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage)
 
                     std::string sText = U_TO_UTF8(csWord);
                     m_pGlyphs->WriteString((BYTE*)sText.c_str(), sText.length());
-                    std::string sX = std::to_string(arrCoords[0]);
+                    std::string sX = std::to_string(arrCoords[0] * dKoefX);
                     m_pGlyphs->WriteString((BYTE*)sX.c_str(), sX.length());
-                    std::string sY = std::to_string(arrCoords[3]);
+                    std::string sY = std::to_string(arrCoords[3] * dKoefY);
                     m_pGlyphs->WriteString((BYTE*)sY.c_str(), sY.length());
-                    std::string sW = std::to_string(arrCoords[2] - arrCoords[0]);
+                    std::string sW = std::to_string((arrCoords[2] - arrCoords[0]) * dKoefX);
                     m_pGlyphs->WriteString((BYTE*)sW.c_str(), sW.length());
-                    std::string sH = std::to_string(arrCoords[1] - arrCoords[3]);
+                    std::string sH = std::to_string((arrCoords[1] - arrCoords[3]) * dKoefY);
                     m_pGlyphs->WriteString((BYTE*)sH.c_str(), sH.length());
                 }
             }

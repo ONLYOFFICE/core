@@ -167,11 +167,11 @@
             for (let i = 0; i < _Word.length; i++)
             {
                 this.pages[pageIndex].Lines[Line].Glyphs.push({
-                    X : (_X + _W / _Word.length * i) * 1.015,
+                    X : _X + _W / (_Word.length - 1) * i,
                     UChar : _Word[i]
                 });
             }
-            this.pages[pageIndex].Lines[Line].Glyphs[0].Y = _Y * 1.015;
+            this.pages[pageIndex].Lines[Line].Glyphs[0].Y = _Y + _H;
             this.pages[pageIndex].Lines[Line].Glyphs[0].fontSize = _H;
         }
 

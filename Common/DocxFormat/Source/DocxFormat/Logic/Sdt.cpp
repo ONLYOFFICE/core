@@ -55,59 +55,6 @@ namespace ComplexTypes
 {
 	namespace Word
 	{
-		void CFormPr::FromXML(XmlUtils::CXmlNode& oNode)
-		{
-			XmlMacroReadAttributeBase( oNode, L"w:key", m_oKey );
-			XmlMacroReadAttributeBase( oNode, L"w:label", m_oLabel );
-			XmlMacroReadAttributeBase( oNode, L"w:helpText", m_oHelpText );
-			XmlMacroReadAttributeBase( oNode, L"w:required", m_oRequired );
-		}
-		void CFormPr::FromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			ReadAttributes(oReader);
-
-			if ( !oReader.IsEmptyNode() )
-				oReader.ReadTillEnd();
-		}
-		std::wstring CFormPr::ToString() const
-		{
-			std::wstring sResult;
-			if(m_oKey.IsInit())
-			{
-				sResult += L"w:key=\"" + XmlUtils::EncodeXmlString(m_oKey.get()) + L"\" ";
-			}
-			if(m_oLabel.IsInit())
-			{
-				sResult += L"w:label=\"" + XmlUtils::EncodeXmlString(m_oLabel.get()) + L"\" ";
-			}
-			if(m_oHelpText.IsInit())
-			{
-				sResult += L"w:helpText=\"" + XmlUtils::EncodeXmlString(m_oHelpText.get()) + L"\" ";
-			}
-			if(m_oRequired.IsInit())
-			{
-				if(*m_oRequired)
-				{
-					sResult += L"w:required=\"1\" ";
-				}
-				else
-				{
-					sResult += L"w:required=\"0\" ";
-				}
-
-			}
-
-			return sResult;
-		}
-		void CFormPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if( oReader, L"key", m_oKey )
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"label", m_oLabel )
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"helpText", m_oHelpText )
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"required", m_oRequired )
-					WritingElement_ReadAttributes_End_No_NS( oReader )
-		}
 		void CComb::FromXML(XmlUtils::CXmlNode& oNode)
 		{
 			XmlMacroReadAttributeBase( oNode, L"w:width", m_oWidth );
@@ -154,9 +101,9 @@ namespace OOX
 {
 	namespace Logic
 	{
-		//--------------------------------------------------------------------------------
-		// CSdtContent
-		//--------------------------------------------------------------------------------	
+//--------------------------------------------------------------------------------
+// CSdtContent
+//--------------------------------------------------------------------------------	
 		void CSdtContent::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			ClearItems();
@@ -363,6 +310,87 @@ namespace OOX
 			sResult += L"</w:sdtContent>";
 
 			return sResult;
+		}
+//--------------------------------------------------------------------------------	
+		EElementType CFormPr::getType() const
+		{
+			return et_w_formPr;
+		}
+		void CFormPr::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNode oChild;
+
+			XmlMacroReadAttributeBase(oNode, L"w:key", m_oKey);
+			XmlMacroReadAttributeBase(oNode, L"w:label", m_oLabel);
+			XmlMacroReadAttributeBase(oNode, L"w:helpText", m_oHelpText);
+			XmlMacroReadAttributeBase(oNode, L"w:required", m_oRequired);
+			
+			WritingElement_ReadNode(oNode, oChild, L"w:border", m_oBorder);
+			WritingElement_ReadNode(oNode, oChild, L"w:shd", m_oShd);
+		}
+		void CFormPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nParentDepth))
+			{
+				std::wstring sName = oReader.GetName();
+				if (L"w:shd" == sName)
+					m_oShd = oReader;
+				else if (L"w:border" == sName)
+					m_oBorder = oReader;
+			}
+		}
+		std::wstring CFormPr::toXML() const
+		{
+			std::wstring sResult = L"<w:formPr";
+
+			if (m_oKey.IsInit())
+			{
+				sResult += L"w:key=\"" + XmlUtils::EncodeXmlString(m_oKey.get()) + L"\" ";
+			}
+			if (m_oLabel.IsInit())
+			{
+				sResult += L"w:label=\"" + XmlUtils::EncodeXmlString(m_oLabel.get()) + L"\" ";
+			}
+			if (m_oHelpText.IsInit())
+			{
+				sResult += L"w:helpText=\"" + XmlUtils::EncodeXmlString(m_oHelpText.get()) + L"\" ";
+			}
+			if (m_oRequired.IsInit())
+			{
+				if (*m_oRequired)
+				{
+					sResult += L"w:required=\"1\" ";
+				}
+				else
+				{
+					sResult += L"w:required=\"0\" ";
+				}
+
+			}
+			sResult += L">";
+			WritingElement_WriteNode_1(L"<w:shd ", m_oShd);
+			WritingElement_WriteNode_1(L"<w:border ", m_oBorder);
+
+			sResult += L"</w:textFormPr>";
+
+			return sResult;
+
+			return sResult;
+		}
+		void CFormPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"key", m_oKey)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"label", m_oLabel)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"helpText", m_oHelpText)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"required", m_oRequired)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
 		}
 //-----------------------------------------------------------------------------------------------------------------------------
 		void CTextFormPr::fromXML(XmlUtils::CXmlNode& oNode)
@@ -739,7 +767,7 @@ namespace OOX
 				break;
 			}
 			}
-			WritingElement_WriteNode_1(L"<w:formPr ", m_oFormPr);
+			WritingElement_WriteNode_2(m_oFormPr);
 			WritingElement_WriteNode_2(m_oTextFormPr);
 
 			return sResult;

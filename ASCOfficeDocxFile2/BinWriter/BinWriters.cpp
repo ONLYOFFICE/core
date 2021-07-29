@@ -7843,7 +7843,7 @@ void BinaryDocumentTableWriter::WriteDropDownList(const OOX::Logic::CSdtDropDown
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
-void BinaryDocumentTableWriter::WriteSdtFormPr(const ComplexTypes::Word::CFormPr& oFormPr)
+void BinaryDocumentTableWriter::WriteSdtFormPr(const OOX::Logic::CFormPr& oFormPr)
 {
 	int nCurPos = 0;
 	if(oFormPr.m_oKey.IsInit())
@@ -7868,6 +7868,18 @@ void BinaryDocumentTableWriter::WriteSdtFormPr(const ComplexTypes::Word::CFormPr
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrRequired);
 		m_oBcw.m_oStream.WriteBOOL(oFormPr.m_oRequired.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oFormPr.m_oBorder.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombBorder);
+		m_oBcw.WriteBorder(oFormPr.m_oBorder.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oFormPr.m_oShd.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombBorder);
+		m_oBcw.WriteShd(oFormPr.m_oShd.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }

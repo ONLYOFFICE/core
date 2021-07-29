@@ -405,32 +405,6 @@ namespace ComplexTypes
 		};
 
 		//Not from specification
-		class CFormPr : public ComplexType
-		{
-		public:
-			ComplexTypes_AdditionConstructors(CFormPr)
-			CFormPr()
-			{
-			}
-			virtual ~CFormPr()
-			{
-			}
-
-			virtual void FromXML(XmlUtils::CXmlNode& oNode);
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring ToString() const;
-		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
-		public:
-
-			nullable_string m_oKey;
-			nullable_string m_oLabel;
-			nullable_string m_oHelpText;
-			nullable_bool m_oRequired;
-		};
-		//Not from specification
 		class CComb : public ComplexType
 		{
 		public:
@@ -462,6 +436,32 @@ namespace OOX
 {
 	namespace Logic
 	{
+		//Not from specification
+		class CFormPr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CFormPr)
+			CFormPr(OOX::Document *pMain = NULL) : WritingElement(pMain)
+			{
+			}
+			virtual ~CFormPr()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		public:
+			nullable_string m_oKey;
+			nullable_string m_oLabel;
+			nullable_string m_oHelpText;
+			nullable_bool m_oRequired;
+
+			nullable<ComplexTypes::Word::CBorder> m_oBorder;
+			nullable<ComplexTypes::Word::CShading> m_oShd;
+		};
 		//Not from specification
 		class CTextFormPr : public WritingElement
 		{
@@ -1163,7 +1163,7 @@ namespace OOX
 			nullable<ComplexTypes::Word::CSdtText> m_oText;
 			nullable<CSdtCheckBox> m_oCheckbox;
 
-			nullable<ComplexTypes::Word::CFormPr> m_oFormPr; //Not from specification
+			nullable<CFormPr> m_oFormPr; //Not from specification
 			nullable<CTextFormPr> m_oTextFormPr; //Not from specification
 			nullable<CSdtPicture> m_oPicture; //Not from specification
 		};

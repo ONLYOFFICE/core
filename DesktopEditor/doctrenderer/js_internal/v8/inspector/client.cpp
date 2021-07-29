@@ -84,42 +84,31 @@ void NSJSBase::v8_debug::internal::CInspectorClient::processFrontendMessage(
     checkFrontendMessage(message);
 }
 
-void NSJSBase::v8_debug::internal::CInspectorClient::setAutoResume(bool how)
-{
-//    autoResume = how;
-    int check_here;
-}
-
 void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessage(const std::string &message)
 {
-    //если не нужно запускать сессию автоматически, ничего не смотрим
-//    if (!autoResume) {
-//        return;
-//    }
-    int check_here;
-
     std::string method = getMethod(m_Context, message);
 
     //если сервер не готов - смотрим сообщение о готовности
-    if (!serverReady) {
+    if (!m_bServerReady) {
         if (serverReadyMessage == method) {
-            serverReady = true;
+            m_bServerReady = true;
             m_pInspectingWrapper->onServerReady();
         }
         return;
     }
 
-    if (!myPause) {
+    //если пауза поставлена из v8, то ничего не смотрим
+    if (!m_bMySessionPause) {
         return;
     }
 
     //функции вызываются чаще, первыми проверяем их
-    if (funcResumeFlag_2 == method) {
+    if (funcResumeMessageLate == method) {
         return resumeDebuggingSession();
     }
 
     //проверяем скрипт
-    if (scriptResumeFlag_1 == method) {
+    if (scriptResumeMessage == method) {
         return resumeDebuggingSession();
     }
 }
@@ -142,13 +131,13 @@ void NSJSBase::v8_debug::internal::CInspectorClient::maybeLogIncoming(
 
 void NSJSBase::v8_debug::internal::CInspectorClient::pauseOnNextStatement()
 {
-    myPause = true;
+    m_bMySessionPause = true;
     m_pSession->schedulePauseOnNextStatement({}, {});
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::resumeDebuggingSession()
 {
-    myPause = false;
+    m_bMySessionPause = false;
     m_pSession->resume();
 }
 

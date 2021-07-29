@@ -37,12 +37,12 @@ class CInspectorImpl
                                , uint16_t port);
 
     //парсинг сообщения Debugger.paused
-    v8::Local<v8::Object> getParams(const std::string &debuggerPausedMessage);
-    bool hasFunction(v8::Local<v8::Object> params);
-    bool hasBreakpoint(v8::Local<v8::Object> params);
-    bool hasFunction(const std::string &debuggerPausedMessage);
-    bool hasBreakpoint(const std::string &debuggerPausedMessage);
-    void checkOutgoingMessage(const std::string &message);
+//    v8::Local<v8::Object> getParams(const std::string &debuggerPausedMessage);
+//    bool hasFunction(v8::Local<v8::Object> params);
+//    bool hasBreakpoint(v8::Local<v8::Object> params);
+//    bool hasFunction(const std::string &debuggerPausedMessage);
+//    bool hasBreakpoint(const std::string &debuggerPausedMessage);
+//    void checkOutgoingMessage(const std::string &message);
 
 public:
     //explicitly delete all the stuff

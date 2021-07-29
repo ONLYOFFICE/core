@@ -18,25 +18,22 @@ class CInspectorImpl;
 //it also sets up the debugging session
 class CInspectorClient : public v8_inspector::V8InspectorClient
 {
-public:
     //notable cdt messages
     static constexpr char serverReadyMessage[32] = "Runtime.runIfWaitingForDebugger";
-    static constexpr char scriptResumeFlag_1[25] = "Debugger.getScriptSource";
+    static constexpr char scriptResumeMessage[25] = "Debugger.getScriptSource";
     static constexpr char debuggerPausedFlag[16] = "Debugger.paused";
 
-    static constexpr char funcResumeFlag_2[22] = "Runtime.getProperties";
-    static constexpr char funcResumeFlag_3[35] = "Overlay.setPausedInDebuggerMessage";
+    static constexpr char funcResumeMessageLate[22] = "Runtime.getProperties";
+    static constexpr char funcResumeMessageEarly[35] = "Overlay.setPausedInDebuggerMessage";
 
-private:
     //v8 stuff
     v8::Local<v8::Context> m_Context{};//to register context in inspector
     v8::Isolate *m_pIsolate = nullptr;//to create inspector
     v8::Platform *m_pPlatform = nullptr;//to pump it
 
     //state
-    bool serverReady = false;
-//    bool autoResume = true;
-    bool myPause = false;
+    bool m_bServerReady = false;
+    bool m_bMySessionPause = false;
 
     //debug session data
     std::unique_ptr<v8_inspector::V8Inspector> m_pInspector{nullptr};
@@ -66,6 +63,8 @@ private:
     void dispatchProtocolMessage(const std::string &message);
     //
     void checkFrontendMessage(const std::string &message);
+    //
+    void resumeDebuggingSession();
 
 public:
     CInspectorClient() = delete;
@@ -98,10 +97,6 @@ public:
 
     //schedule pause on next statement
     void pauseOnNextStatement();
-    void resumeDebuggingSession();
-
-    //
-    void setAutoResume(bool how);
 
     ~CInspectorClient();
 };

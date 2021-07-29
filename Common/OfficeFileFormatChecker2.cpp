@@ -487,12 +487,22 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 	
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
 	
-	if (bEmptyFile && 0 == sExt.compare(L".xlsx"))
-		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-	else if (bEmptyFile && 0 == sExt.compare(L".docx"))
-		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-	if (bEmptyFile && 0 == sExt.compare(L".pptx"))
-		nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+	if (bEmptyFile)
+	{
+		if (0 == sExt.compare(L".xlsx"))
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+		else if ( 0 == sExt.compare(L".docx"))
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+		else if (0 == sExt.compare(L".pptx"))
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+		
+		else if (0 == sExt.compare(L".ods"))
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+		else if (0 == sExt.compare(L".odt"))
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+		else if (0 == sExt.compare(L".odp"))
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
+	}
 	else if (0 == sExt.compare(L".mht"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
     else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".xlsx") || 0 == sExt.compare(L".xls"))

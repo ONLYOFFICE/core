@@ -296,10 +296,11 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if( oReader, _T("useBgFill"), useBgFill)
-				WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if( oReader, L"useBgFill", useBgFill)
+					WritingElement_ReadAttributes_Read_if(oReader, L"macro", macro)
+					WritingElement_ReadAttributes_End( oReader )
 			}
-			std::wstring GetText()const{if(txBody.IsInit()) return txBody->GetText(); return _T(""); };
+			std::wstring GetText()const{if(txBody.IsInit()) return txBody->GetText(); return L""; };
 
 			void FillLevelUp();
 			void Merge(Shape& shape, bool bIsSlidePlaceholder = false);

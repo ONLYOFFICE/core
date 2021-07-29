@@ -57,6 +57,7 @@
 #include "Drawing/DrawingContainer.h"
 
 #include "OfficeArtClientData.h"
+#include "OfficeArtClientTextbox.h"
 
 // others
 
@@ -128,6 +129,7 @@
 #include "Animations/_includer.h"
 #include "InteractiveInfoAtom.h"
 #include "TextInteractiveInfoAtom.h"
+#include "MouseInteractiveInfoContainer.h"
 
 //sound
 #include "ExMIDIAudioContainer.h"

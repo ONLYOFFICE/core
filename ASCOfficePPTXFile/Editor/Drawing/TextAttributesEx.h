@@ -63,6 +63,7 @@ namespace PPT_FORMAT
 		// настройки по-умолчанию
 		CTextAttributes			m_oAttributes;
 		std::vector<CParagraph>	m_arParagraphs;
+        std::wstring m_originalText;
 
         bool	m_bVertical;
 		bool	m_bAutoFit;

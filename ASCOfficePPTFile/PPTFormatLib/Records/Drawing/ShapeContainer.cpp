@@ -42,7 +42,6 @@
 #include "../../Enums/_includer.h"
 
 
-
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
 bool CPPTElement::ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2)
@@ -1806,51 +1805,17 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         pElementLayout->m_bChildAnchorEnabled	= pElement->m_bChildAnchorEnabled;
     }
 
-    std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
-    GetRecordsByType(&oArrayInteractive, true, false);
-    std::vector<CRecordCString*> oArrayMacro;
-    GetRecordsByType(&oArrayMacro, true, false);
+    std::vector<CRecordOfficeArtClientData*> oArrayArtClient;
+    GetRecordsByType(&oArrayArtClient, false, true);
+    std::vector<CRecordMouseInteractiveInfoContainer*> oArrayInteractive;
 
-    if (oArrayInteractive.size() == 2)
-        oArrayInteractive[1]->m_oHeader.RecInstance = 1;
+    if (oArrayArtClient.size())
+        oArrayArtClient[0]->GetRecordsByType(&oArrayInteractive, true, false);
 
-    for (auto const* interactiveAtom : oArrayInteractive)
+    for (auto const* interactiveCont : oArrayInteractive)
     {
         CInteractiveInfo interactiveInfo;
-        interactiveInfo.m_bPresent = true;
-        interactiveInfo.m_eActivation = (bool)interactiveAtom->m_oHeader.RecInstance;
-
-        if (pMapIDs)
-        {
-            CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(interactiveAtom->m_nSoundIdRef);
-            if (NULL != pInfo1)
-            {
-                interactiveInfo.m_strAudioFileName = pInfo1->m_strFilePath;
-                interactiveInfo.m_strAudioName = pInfo1->m_name;
-            }
-            CExFilesInfo* pInfo2 = pMapIDs->LockSlide(interactiveAtom->m_nExHyperlinkIdRef);
-            if (NULL != pInfo2)
-            {
-                interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
-            }
-            pInfo2 = pMapIDs->LockHyperlink(interactiveAtom->m_nExHyperlinkIdRef);
-            if (NULL != pInfo2)
-            {
-                interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
-            }
-        }
-        if (oArrayMacro.size())
-            interactiveInfo.m_macro = oArrayMacro[0]->m_strText;
-
-        interactiveInfo.m_lType				= interactiveAtom->m_nAction;
-        interactiveInfo.m_lOleVerb			= interactiveAtom->m_nOleVerb;
-        interactiveInfo.m_lJump				= interactiveAtom->m_nJump;
-        interactiveInfo.m_lHyperlinkType	= interactiveAtom->m_nHyperlinkType;
-
-        interactiveInfo.m_bAnimated			= interactiveAtom->m_bAnimated;
-        interactiveInfo.m_bStopSound		= interactiveAtom->m_bStopSound;
-        interactiveInfo.m_bCustomShowReturn	= interactiveAtom->m_bCustomShowReturn;
-        interactiveInfo.m_bVisited			= interactiveAtom->m_bVisited;
+        ConvertInteractiveInfo(interactiveInfo, interactiveCont, pMapIDs);
 
         pElement->m_arrActions.push_back(interactiveInfo);
     }
@@ -1899,6 +1864,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         if (0 < oArrayTextBytes.size() && strShapeText.empty())
         {
             strShapeText = oArrayTextBytes[0]->m_strText;
+            pShapeElem->m_pShape->m_oText.m_originalText = strShapeText;
         }
 
         std::vector<CRecordTextCharsAtom*> oArrayTextChars;
@@ -1946,8 +1912,24 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         }
 
 
+        std::vector<CRecordOfficeArtClientTextbox*> oArrayTextBox;
+        std::vector<CRecordMouseInteractiveInfoContainer*> oArrayInteractiveCont;
         std::vector<CRecordTextInteractiveInfoAtom*> oArrayTextInteractive;
-        this->GetRecordsByType(&oArrayTextInteractive, true);
+        this->GetRecordsByType(&oArrayTextBox, false);
+
+        if (oArrayTextBox.size())
+        {
+            oArrayTextBox[0]->GetRecordsByType(&oArrayTextInteractive, false);
+
+            oArrayTextBox[0]->GetRecordsByType(&oArrayInteractiveCont, false);
+        }
+
+        for (const auto* pInerAtom : oArrayInteractiveCont)
+        {
+            CInteractiveInfo interactive;
+            ConvertInteractiveInfo(interactive, pInerAtom, pMapIDs);
+            pShapeElem->m_textHyperlinks.push_back(interactive);
+        }
 
         if (!oArrayTextInteractive.empty())
         {
@@ -2502,64 +2484,161 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 
 void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor)
 {
-    std::vector<CTextRange>* pRanges	= &pShape->m_oTextActions.m_arRanges;
-    CTextAttributesEx* pTextAttributes	= &pShape->m_pShape->m_oText;
+    auto& oTextAttributes = pShape->m_pShape->m_oText;
+    const auto& originalText = oTextAttributes.m_originalText;
 
-    int lCountHyper	= pRanges->size();
+    // lenght these ones shoud be equal
+    const auto& arrRanges	= pShape->m_oTextActions.m_arRanges;
+    const auto arrSplitedInteractive = splitInteractive(pShape->m_textHyperlinks);
 
-    if (0 == lCountHyper)
+    // It cannot be changed
+    if (arrRanges.empty() || arrSplitedInteractive.empty())
         return;
 
-    size_t nCountPars = pTextAttributes->m_arParagraphs.size();
-    for (int nIndexRange = 0; nIndexRange < lCountHyper; ++nIndexRange)
+    size_t posOrigText(0);
+    auto iterRange = arrRanges.begin();
+    auto iterInteractive = arrSplitedInteractive.begin();
+    for (auto& paragraph : oTextAttributes.m_arParagraphs)
     {
-        int lStart = (*pRanges)[nIndexRange].m_lStart;
-        int lEnd	= (*pRanges)[nIndexRange].m_lEnd;
-
-        int lCurrentStart = 0;
-        for (size_t nIndexPar = 0; nIndexPar < nCountPars; ++nIndexPar)
+        auto& arrSpans = paragraph.m_arSpans;
+        for (auto iterSpan = arrSpans.begin(); iterSpan != arrSpans.end(); iterSpan++)
         {
-            CParagraph* pParagraph = &pTextAttributes->m_arParagraphs[nIndexPar];
-
-            for (size_t nIndexSpan = 0; nIndexSpan < pParagraph->m_arSpans.size(); ++nIndexSpan)
+            // if there isn't needed changes in next spans & paragraps
+            if (iterRange == arrRanges.end())
             {
-                int lCurrentEnd = lCurrentStart + pParagraph->m_arSpans[nIndexSpan].m_strText.length() - 1;
+                return;
+            }
 
-                if (lCurrentStart > lEnd || lCurrentEnd < lStart)
+            const bool isHyperlink = iterRange->inRange(posOrigText);
+
+            const int posBlockStart = posOrigText;
+            const int posOrigSpanEnd = posBlockStart + iterSpan->m_strText.length();
+            const int posBlockEnd = isHyperlink ?
+                        std::min(posOrigSpanEnd, iterRange->m_lEnd)  :
+                        std::min(posOrigSpanEnd, iterRange->m_lStart);
+            const size_t blockLen = posBlockEnd - posBlockStart;
+
+            const bool isNeedToSplit = posBlockEnd < posOrigSpanEnd && isHyperlink;
+
+            posOrigText += blockLen;
+            // Skipping span
+            if (iterRange->m_lStart > posBlockEnd)
+            {
+                continue;
+            }
+
+            // HYPERLINK
+            if (isHyperlink)
+            {
+                // case: HYPERLINK & text(or next HYPERLINK inside original span)
+                if (isNeedToSplit)
                 {
-                    lCurrentStart = lCurrentEnd + 1;
-                    continue;
+                    // HYPERLINK
+                    iterSpan->m_strText = originalText.substr(posBlockStart, blockLen);
+
+                    const size_t nextBlockLen = posOrigSpanEnd - posBlockEnd;
+                    iterSpan = arrSpans.insert(iterSpan, *iterSpan);
+                    // Go to next new span and correct text
+                    iterSpan++;
+                    iterSpan->m_strText = originalText.substr(posBlockEnd, nextBlockLen);
+                    iterSpan->m_arrInteractive.clear();
+                    // Return to current span
+                    iterSpan--;
                 }
 
-                int lStart_	= (std::max)(lStart, lCurrentStart);
-                int lEnd_	= (std::min)(lEnd, lCurrentEnd);
+                addHyperlinkToSpan(*iterSpan, *iterInteractive, oColor);
 
-                CSpan oRunProp = pParagraph->m_arSpans[nIndexSpan];
-
-                std::wstring strText = pParagraph->m_arSpans[nIndexSpan].m_strText;
-                if (lStart_ > lCurrentStart)
+                if (posBlockEnd == iterRange->m_lEnd)
                 {
-                    pParagraph->m_arSpans.insert(pParagraph->m_arSpans.begin()  + nIndexSpan, oRunProp);
-                    pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(0, lStart_ - lCurrentStart);
-
-                    ++nIndexSpan;
+                    iterRange++;
+                    iterInteractive++;
                 }
-                pParagraph->m_arSpans[nIndexSpan].m_oRun.Color = oColor;
-                pParagraph->m_arSpans[nIndexSpan].m_oRun.FontUnderline = (bool)true;
-                pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(lStart_ - lCurrentStart, lEnd_ - lStart_ + 1);
-                if (lEnd_ < lCurrentEnd)
-                {
-                    pParagraph->m_arSpans.insert(pParagraph->m_arSpans.begin() + nIndexSpan + 1, oRunProp);
-                    ++nIndexSpan;
+            }
+            // Hyperlink will be written in the next iteration
+            // case: text & HYPERLINK
+            else
+            {
+                iterSpan = arrSpans.insert(iterSpan, *iterSpan);
+                iterSpan->m_strText = originalText.substr(posBlockStart, blockLen);
+                iterSpan->m_arrInteractive.clear();
 
-                    pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(lEnd_ - lCurrentStart + 1, lCurrentEnd - lEnd_);
-                }
-
-                lCurrentStart = lCurrentEnd + 1;
+                // Go to next new span and correct text
+                iterSpan++;
+                const size_t nextBlockLen = posOrigSpanEnd - posBlockEnd;
+                iterSpan->m_strText = originalText.substr(posBlockEnd, nextBlockLen);
+                iterSpan->m_arrInteractive.clear();
+                 // Return to current span
+                iterSpan--;
             }
         }
+        // skipping '\r'
+        posOrigText++;
     }
-}	
+}
+
+void CRecordShapeContainer::addHyperlinkToSpan(CSpan &oSpan, const std::vector<CInteractiveInfo> &arrInteractive, const CColor &oColor)
+{
+    oSpan.m_oRun.Color = oColor;
+    oSpan.m_oRun.FontUnderline = (bool)true;
+    oSpan.m_arrInteractive = arrInteractive;
+}
+
+std::vector<std::vector<CInteractiveInfo> > CRecordShapeContainer::splitInteractive(const std::vector<CInteractiveInfo> &arrInteractive)
+{
+    std::vector<std::vector<CInteractiveInfo> > splited;
+    std::vector<CInteractiveInfo> inserting;
+    for (const auto& interactive : arrInteractive)
+    {
+        if (interactive.m_eActivation == interactive.click && !inserting.empty())
+            splited.push_back(std::move(inserting));
+        inserting.push_back(interactive);
+    }
+    if (!inserting.empty())
+        splited.push_back(std::move(inserting));
+
+    return splited;
+}
+
+void CRecordShapeContainer::ConvertInteractiveInfo(CInteractiveInfo &interactiveInfo, const CRecordMouseInteractiveInfoContainer *interactiveCont, CExMedia *pMapIDs)
+{
+
+    auto& interactiveAtom = interactiveCont->interactiveInfoAtom;
+    interactiveInfo.m_bPresent = true;
+    interactiveInfo.m_eActivation = interactiveCont->isOver;
+
+    if (pMapIDs)
+    {
+        CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(interactiveAtom.m_nSoundIdRef);
+        if (NULL != pInfo1)
+        {
+            interactiveInfo.m_strAudioFileName = pInfo1->m_strFilePath;
+            interactiveInfo.m_strAudioName = pInfo1->m_name;
+        }
+        CExFilesInfo* pInfo2 = pMapIDs->LockSlide(interactiveAtom.m_nExHyperlinkIdRef);
+        if (NULL != pInfo2)
+        {
+            interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
+        }
+        pInfo2 = pMapIDs->LockHyperlink(interactiveAtom.m_nExHyperlinkIdRef);
+        if (NULL != pInfo2)
+        {
+            interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
+        }
+    }
+    if (interactiveCont->macroNameAtom.is_init())
+        interactiveInfo.m_macro = interactiveCont->macroNameAtom->m_strText;
+
+    interactiveInfo.m_lType				= interactiveAtom.m_nAction;
+    interactiveInfo.m_lOleVerb			= interactiveAtom.m_nOleVerb;
+    interactiveInfo.m_lJump				= interactiveAtom.m_nJump;
+    interactiveInfo.m_lHyperlinkType	= interactiveAtom.m_nHyperlinkType;
+
+    interactiveInfo.m_bAnimated			= interactiveAtom.m_bAnimated;
+    interactiveInfo.m_bStopSound		= interactiveAtom.m_bStopSound;
+    interactiveInfo.m_bCustomShowReturn	= interactiveAtom.m_bCustomShowReturn;
+    interactiveInfo.m_bVisited			= interactiveAtom.m_bVisited;
+
+}
 
 void CRecordGroupShapeContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 {

@@ -81,7 +81,8 @@ public:
         eftAudio	= 2,
         eftHyperlink    = 3,
         eftObject	= 4,
-        eftSlide
+        eftSlide        = 5/*,
+        eftFile         = 6*/
     };
 
     ExFilesType     m_type;
@@ -137,6 +138,13 @@ public:
         int iter2 = str.find(L"https://");
         return iter1 != -1 || iter2 != -1;
     }
+    static bool isAudioLink(const std::wstring &str)
+    {
+        int iter1 = str.find(L".mp3");
+        int iter2 = str.find(L".wav");
+        int iter3 = str.find(L".waw");
+        return iter1 != -1 || iter2 != -1 || iter3 != -1;
+    }
 };
 
 class CExMedia
@@ -149,6 +157,7 @@ public:
     std::vector<CExFilesInfo>	m_arAudios;
     std::vector<CExFilesInfo>	m_arHyperlinks;
     std::vector<CExFilesInfo>	m_arSlides;
+    std::vector<CExFilesInfo>   m_arFiles;
 
     std::vector<CExFilesInfo>	m_arAudioCollection;
 

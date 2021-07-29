@@ -691,7 +691,7 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
     m_oWriter.WriteString(std::wstring(L">"));
 
 
-    WriteButton();
+    WriteHyperlink(m_pElement->m_arrActions);
 
     m_oWriter.WriteString(std::wstring(L"</p:cNvPr><p:cNvPicPr><a:picLocks"));
 
@@ -886,7 +886,7 @@ void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
         m_oWriter.WriteString(std::wstring(L"\""));
     }
     m_oWriter.WriteString(std::wstring(L">"));
-    WriteButton();
+    WriteHyperlink(m_pElement->m_arrActions);
     if (!pShapeElement->m_sHyperlink.empty())
     {
         std::wstring rId = m_pRels->WriteHyperlink(pShapeElement->m_sHyperlink);
@@ -1523,6 +1523,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
             }
             m_oWriter.WriteString(std::wstring(L">"));
+            WriteHyperlink(pParagraph->m_arSpans[nSpan].m_arrInteractive);
 
             if (m_bWordArt)
             {//порядок важен - линия, заливка, тень !!!
@@ -1583,7 +1584,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 m_oWriter.WriteString(std::wstring(L"<a:sym typeface=\"") + pCF->font.sym->Name + _T("\"/>"));
             }
 
-//            WriteButton(nIndexPar);
+//            WriteHyperlink(nIndexPar);
 
             m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
 
@@ -1684,9 +1685,8 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertGroup()
     return m_oWriter.GetData();
 }
 
-void PPT_FORMAT::CShapeWriter::WriteButton(int paragraphNum)
+void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo>& actions)
 {
-    auto actions = getActionsByNum(paragraphNum);
     for (unsigned i = 0; i < actions.size(); i++)
     {
         if (actions[i].m_lType == CInteractiveInfo::over
@@ -1697,8 +1697,16 @@ void PPT_FORMAT::CShapeWriter::WriteButton(int paragraphNum)
         PPTX::Logic::Hyperlink hlink;
         if (actions[i].m_strHyperlink.size() && m_pRels)
         {
-            std::wstring id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);
-            hlink.id = id;
+            std::wstring id;
+            switch (actions[i].m_lHyperlinkType)
+            {
+            case LT_SlideNumber:        id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);         break;
+            case LT_Url:                id = m_pRels->WriteHyperlink(actions[i].m_strHyperlink, true);  break;
+            case LT_OtherPresentation:  id = m_pRels->WriteFile(actions[i].m_strHyperlink);             break;
+            case LT_OtherFile:          id = m_pRels->WriteFile(actions[i].m_strHyperlink);             break;
+            }
+            if (!id.empty())
+                hlink.id = id;
         }
 
         if (actions[i].m_strAudioFileName.size() && m_pRels)
@@ -1712,8 +1720,9 @@ void PPT_FORMAT::CShapeWriter::WriteButton(int paragraphNum)
 
         if (actions[i].m_eActivation == CInteractiveInfo::over)
             hlink.m_name = L"hlinkHover";
-        else
-            hlink.highlightClick = true;
+
+//        if (actions[i].m_bVisited)
+//            hlink.highlightClick = true;
 
         switch (actions[i].m_lType)
         {
@@ -1773,16 +1782,31 @@ void PPT_FORMAT::CShapeWriter::WriteButton(int paragraphNum)
         }
         case II_HyperlinkAction:
         {
-            if (actions[i].m_lHyperlinkType == 7)
+
+            switch (actions[i].m_lHyperlinkType)
+            {
+            case LT_SlideNumber:
             {
                 if (hlink.id.is_init())
                     hlink.action = L"ppaction://hlinksldjump";
+                break;
             }
-//            else if (actions[i].m_lHyperlinkType == 8)
-//                hlink.action = L"";
+            case LT_Url:
+            {
+                break;
+            }
+            case LT_OtherPresentation:
+            {
+                if (hlink.id.is_init())
+                    hlink.action = L"ppaction://hlinkpres?slideindex=1&slidetitle=";
+                break;
+            }
+            case LT_OtherFile:
+            {
+                break;
+            }
+            }
 
-//            if (!hlink.action.is_init() || hlink.action->empty())
-//                hlink.action = L"ppaction://noaction";
             break;
         }
         case II_MediaAction:

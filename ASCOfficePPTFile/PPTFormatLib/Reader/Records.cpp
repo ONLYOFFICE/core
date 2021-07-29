@@ -613,6 +613,8 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RTE_SPLITMENUCOLORS		, CRecordSplitMenuColorRecord)
     CREATE_BY_TYPE(RTE_COLORMRU				, CRecordMostRecentlyUserColors)
     CREATE_BY_TYPE(RTE_CLIENTDATA           , CRecordOfficeArtClientData)
+    CREATE_BY_TYPE(RTE_CLIENTTEXTBOX        , CRecordOfficeArtClientTextbox)
+
 
     CREATE_BY_TYPE(RT_ExternalCdAudio   					, CRecordExCDAudioContainer)
     CREATE_BY_TYPE(RT_ExternalWavAudioLink  				, CRecordWAVAudioLinkContainer)
@@ -624,6 +626,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
             // интерактив
     CREATE_BY_TYPE(RT_InteractiveInfoAtom       			, CRecordInteractiveInfoAtom)
     CREATE_BY_TYPE(RT_TextInteractiveInfoAtom       		, CRecordTextInteractiveInfoAtom)
+    CREATE_BY_TYPE(RT_InteractiveInfo                       , CRecordMouseInteractiveInfoContainer)
 
             // читаем для анимации
 
@@ -632,7 +635,6 @@ IRecord* CreateByType(SRecordHeader oHeader)
 
     CREATE_BY_TYPE(RT_Sound         						, CRecordSoundContainer)
     CREATE_BY_TYPE(RT_SoundDataBlob     					, CRecordSoundDataBlob)
-
 
     default:
         {

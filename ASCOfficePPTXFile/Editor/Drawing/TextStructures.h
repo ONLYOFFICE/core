@@ -33,6 +33,7 @@
 #include "Structures.h"
 #include "../../../ASCOfficePPTFile/PPTFormatLib/Enums/enums.h"
 #include "../../../Common/DocxFormat/Source/Base/Nullable.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Interactive.h"
 
 using namespace ODRAW;
 
@@ -163,7 +164,7 @@ namespace PPT_FORMAT
 		NSCommon::nullable_base<WORD>	Cap;				// 0 - none, 1 - TEXT, 2 - text
 		NSCommon::nullable_base<WORD>	Language;
 
-		CFontProperties					font;
+        CFontProperties			font;
 
 		CTextCFRun()
 		{
@@ -197,8 +198,7 @@ namespace PPT_FORMAT
 
 			Cap				= oSrc.Cap;
 
-			Language		= oSrc.Language;
-
+            Language		= oSrc.Language;
 			return *this;
 		}
 		~CTextCFRun()
@@ -637,6 +637,8 @@ namespace PPT_FORMAT
 		bool				m_bField;
 		bool				m_bBreak;
 
+        std::vector<CInteractiveInfo>   m_arrInteractive;
+
 		CSpan() : m_bField(false), m_bBreak(false)
 		{
 		}
@@ -650,6 +652,7 @@ namespace PPT_FORMAT
 			m_strText	= oSrc.m_strText;
 			m_bField	= oSrc.m_bField;
 			m_bBreak	= oSrc.m_bBreak;
+            m_arrInteractive = oSrc.m_arrInteractive;
 
 			return *this;
 		}

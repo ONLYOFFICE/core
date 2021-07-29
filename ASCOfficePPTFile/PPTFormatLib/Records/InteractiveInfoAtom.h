@@ -32,8 +32,6 @@
 #pragma once
 #include "../Reader/Records.h"
 
-using namespace std;
-
 class CRecordInteractiveInfoAtom : public CUnknownRecord
 {
 public:

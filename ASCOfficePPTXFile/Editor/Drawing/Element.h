@@ -73,6 +73,7 @@ namespace PPT_FORMAT
 
 		CTextInteractiveInfo m_oTextActions;
                 std::vector<CInteractiveInfo>	m_arrActions;
+                std::vector<CInteractiveInfo>   m_textHyperlinks;
 
 		CAnimationInfo		m_oAnimations;
 		CEffects			m_oEffects;

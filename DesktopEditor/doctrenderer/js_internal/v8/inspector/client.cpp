@@ -86,15 +86,17 @@ void NSJSBase::v8_debug::internal::CInspectorClient::processFrontendMessage(
 
 void NSJSBase::v8_debug::internal::CInspectorClient::setAutoResume(bool how)
 {
-    autoResume = how;
+//    autoResume = how;
+    int check_here;
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessage(const std::string &message)
 {
     //если не нужно запускать сессию автоматически, ничего не смотрим
-    if (!autoResume) {
-        return;
-    }
+//    if (!autoResume) {
+//        return;
+//    }
+    int check_here;
 
     std::string method = getMethod(m_Context, message);
 
@@ -104,6 +106,10 @@ void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessage(const 
             serverReady = true;
             m_pInspectingWrapper->onServerReady();
         }
+        return;
+    }
+
+    if (!myPause) {
         return;
     }
 
@@ -136,11 +142,13 @@ void NSJSBase::v8_debug::internal::CInspectorClient::maybeLogIncoming(
 
 void NSJSBase::v8_debug::internal::CInspectorClient::pauseOnNextStatement()
 {
+    myPause = true;
     m_pSession->schedulePauseOnNextStatement({}, {});
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::resumeDebuggingSession()
 {
+    myPause = false;
     m_pSession->resume();
 }
 

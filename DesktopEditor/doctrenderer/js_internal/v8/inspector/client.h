@@ -35,7 +35,8 @@ private:
 
     //state
     bool serverReady = false;
-    bool autoResume = true;
+//    bool autoResume = true;
+    bool myPause = false;
 
     //debug session data
     std::unique_ptr<v8_inspector::V8Inspector> m_pInspector{nullptr};

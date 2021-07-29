@@ -214,8 +214,6 @@ bool NSJSBase::v8_debug::internal::CSingleConnectionServer::waitAndProcessMessag
         return false;
     }
 
-    //no need to check for pause
-
     if (result.second) {
         return false;
     }
@@ -223,6 +221,8 @@ bool NSJSBase::v8_debug::internal::CSingleConnectionServer::waitAndProcessMessag
     if (m_fOnMessage){
         m_fOnMessage(result.first);
     }
+
+    //it won't work with check for pause
 
     return true;
 }

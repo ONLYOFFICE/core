@@ -4,7 +4,6 @@
 #include <v8-inspector.h>//v8_inspector stuff
 #include "channel.h"//CChannel for debug session
 
-
 namespace NSJSBase {
 namespace v8_debug {
 namespace internal {
@@ -20,11 +19,11 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
 {
     //notable cdt messages
     static constexpr char serverReadyMessage[32] = "Runtime.runIfWaitingForDebugger";
-    static constexpr char scriptResumeMessage[25] = "Debugger.getScriptSource";
-    static constexpr char debuggerPausedFlag[16] = "Debugger.paused";
 
-    static constexpr char funcResumeMessageLate[22] = "Runtime.getProperties";
+    static constexpr char scriptResumeMessage[25] = "Debugger.getScriptSource";
+
     static constexpr char funcResumeMessageEarly[35] = "Overlay.setPausedInDebuggerMessage";
+    static constexpr char funcResumeMessageLate[22] = "Runtime.getProperties";
 
     //v8 stuff
     v8::Local<v8::Context> m_Context{};//to register context in inspector

@@ -1,5 +1,8 @@
 #include "CEmfParserBase.h"
 
+#include "../EmfInterpretator/CEmfInterpretatorRender.h"
+#include "../EmfInterpretator/CEmfInterpretatorArray.h"
+#include "../EmfInterpretator/CEmfInterpretatorXml.h"
 #include "../EmfInterpretator/CEmfInterpretator.h"
 
 namespace MetaFile
@@ -768,7 +771,10 @@ namespace MetaFile
                 if (NULL != m_pInterpretator)
                         delete m_pInterpretator;
 
-                m_pInterpretator = new CEmfInterpretatorAll(pOutput, wsFilePath);
+                m_pInterpretator = new CEmfInterpretatorArray;
+
+                ((CEmfInterpretatorArray*)m_pInterpretator)->AddRenderInterpretator(pOutput);
+                ((CEmfInterpretatorArray*)m_pInterpretator)->AddXmlInterpretator(wsFilePath);
         }
 
         TEmfRectL* CEmfParserBase::GetBounds()

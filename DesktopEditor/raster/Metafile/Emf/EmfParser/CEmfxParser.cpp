@@ -37,72 +37,56 @@ namespace MetaFile
                         {
                                 case 'A':
                                 {
-                                        switch (wsRecordName.size())
+                                        switch ((*(wsRecordName.end() - 4)))
                                         {
-                                                case 7: Read_EMR_ARC();         break;
-                                                case 9: Read_EMR_ARCTO();       break;
-                                                case 12:Read_EMR_ANGLEARC();    break;
-                                                case 13:Read_EMR_ABORTPATH();   break;
-                                                case 14:Read_EMR_ALPHABLEND();  break;
+                                                case L'_': Read_EMR_ARC();         break;
+                                                case L'E': Read_EMR_ANGLEARC();    break;
+                                                case L'L': Read_EMR_ALPHABLEND();  break;
+                                                case L'P': Read_EMR_ABORTPATH();   break;
+                                                case L'R': Read_EMR_ARCTO();       break;
                                         }
                                         break;
                                 }
                                 case 'B':
                                 {
-                                        if (wsRecordName.size() == 10)
-                                                Read_EMR_BITBLT();
-                                        else
-                                                Read_EMR_BEGINPATH();
+                                        (wsRecordName.back() == L'T') ? Read_EMR_BITBLT()
+                                                                      : Read_EMR_BEGINPATH();
                                         break;
                                 }
                                 case 'C':
                                 {
-                                        switch (wsRecordName.size())
+                                        switch ((*(wsRecordName.end() - 3)))
                                         {
-                                                case 9:  Read_EMR_CHORD();                  break;
-                                                case 13: Read_EMR_CREATEPEN();              break;
-                                                case 15: Read_EMR_CLOSEFIGURE();            break;
-                                                case 17: Read_EMR_CREATEPALETTE();          break;
-                                                case 23: Read_EMR_CREATEBRUSHINDIRECT();    break;
-                                                case 27: Read_EMR_CREATEDIBPATTERNBRUSHPT();break;
+                                                case L'E': Read_EMR_CREATEBRUSHINDIRECT();    break;
+                                                case L'H': Read_EMR_CREATEDIBPATTERNBRUSHPT();break;
+                                                case L'O': Read_EMR_CHORD();                  break;
+                                                case L'P': Read_EMR_CREATEPEN();              break;
+                                                case L'T': Read_EMR_CREATEPALETTE();          break;
+                                                case L'U': Read_EMR_CLOSEFIGURE();            break;
                                         }
                                         break;
                                 }
                                 case 'D': Read_EMR_DELETEOBJECT(); break;
                                 case 'E':
                                 {
-                                        switch (wsRecordName.size())
+                                        switch (wsRecordName.back())
                                         {
-                                                case 7: {Read_EMR_EOF(); bEOF = true; break;}
-                                                case 11:
-                                                {
-                                                        if (wsRecordName[5] == L'L')
-                                                                Read_EMR_ELLIPSE();
-                                                        else
-                                                                Read_EMR_ENDPATH();
-                                                        break;
-                                                }
-                                                case 15:
-                                                {
-                                                        if (wsRecordName.back() == L'W')
-                                                                Read_EMR_EXTTEXTOUTW();
-                                                        else
-                                                                Read_EMR_EXTTEXTOUTA();
-                                                        break;
-                                                }
-                                                case 16: Read_EMR_EXTCREATEPEN();           break;
-                                                case 19: Read_EMR_EXCLUDECLIPRECT();        break;
-                                                case 20: Read_EMR_EXTSELECTCLIPRGN();       break;
-                                                case 26: Read_EMR_EXTCREATEFONTINDIRECTW(); break;
+                                                case L'A': Read_EMR_EXTTEXTOUTA();          break;
+                                                case L'E': Read_EMR_ELLIPSE();              break;
+                                                case L'F': Read_EMR_EOF(); bEOF = true;     break;
+                                                case L'H': Read_EMR_ENDPATH();              break;
+                                                case L'N': ((*(wsRecordName.end() - 2)) == L'E') ? Read_EMR_EXTCREATEPEN()
+                                                                                                 : Read_EMR_EXTSELECTCLIPRGN(); break;
+                                                case L'T': Read_EMR_EXCLUDECLIPRECT();      break;
+                                                case L'W': ((*(wsRecordName.end() - 3)) == L'U') ? Read_EMR_EXTTEXTOUTW()
+                                                                                                 : Read_EMR_EXTCREATEFONTINDIRECTW(); break;
                                         }
                                         break;
                                 }
                                 case 'F':
                                 {
-                                        if (wsRecordName[5] == L'I')
-                                                Read_EMR_FILLPATH();
-                                        else
-                                                Read_EMR_FLATTENPATH();
+                                        (wsRecordName[5] == L'I') ? Read_EMR_FILLPATH()
+                                                                  : Read_EMR_FLATTENPATH();
                                         break;
                                 }
                                 case 'H': Read_EMR_HEADER();            break;
@@ -110,10 +94,8 @@ namespace MetaFile
                                 case 'L': Read_EMR_LINETO();            break;
                                 case 'M':
                                 {
-                                        if(wsRecordName[6] == L'V')
-                                                Read_EMR_MOVETOEX();
-                                        else
-                                                Read_EMR_MODIFYWORLDTRANSFORM();
+                                        (wsRecordName[6] == L'V') ? Read_EMR_MOVETOEX()
+                                                                  : Read_EMR_MODIFYWORLDTRANSFORM();
                                         break;
                                 }
                                 case 'P':
@@ -138,11 +120,8 @@ namespace MetaFile
                                                         }
                                                         case 'D':
                                                         {
-                                                                if (wsRecordName.back() == L'W')
-                                                                        Read_EMR_POLYDRAW();
-                                                                else
-                                                                        Read_EMR_POLYDRAW16();
-
+                                                                (wsRecordName.back() == L'W') ? Read_EMR_POLYDRAW()
+                                                                                              : Read_EMR_POLYDRAW16();
                                                                 break;
                                                         }
                                                         case 'L':
@@ -171,10 +150,8 @@ namespace MetaFile
                                                         }
                                                         case 'T':
                                                         {
-                                                                if (wsRecordName.back() == L'W')
-                                                                        Read_EMR_POLYTEXTOUTW();
-                                                                else
-                                                                        Read_EMR_POLYTEXTOUTA();
+                                                                (wsRecordName.back() == L'W') ? Read_EMR_POLYTEXTOUTW()
+                                                                                              : Read_EMR_POLYTEXTOUTA();
                                                                 break;
                                                         }
                                                 }
@@ -224,27 +201,23 @@ namespace MetaFile
                                                         }
                                                         case 'P':
                                                         {
-                                                                if (wsRecordName.back() == L'V')
-                                                                        Read_EMR_SETPIXELV();
-                                                                else
-                                                                        Read_EMR_SETPOLYFILLMODE();
+                                                                (wsRecordName.back() == L'V') ? Read_EMR_SETPIXELV()
+                                                                                              : Read_EMR_SETPOLYFILLMODE();
                                                                 break;
                                                         }
                                                         case 'R': Read_EMR_SETROP2();           break;
                                                         case 'S': Read_EMR_SETSTRETCHBLTMODE(); break;
                                                         case 'T':
                                                         {
-                                                                if (wsRecordName.back() == L'R')
-                                                                        Read_EMR_SETTEXTCOLOR();
-                                                                else
-                                                                        Read_EMR_SETTEXTALIGN();
+                                                                (wsRecordName.back() == L'R') ? Read_EMR_SETTEXTCOLOR()
+                                                                                              : Read_EMR_SETTEXTALIGN();
+                                                                break;
                                                         }
                                                         case 'V':
                                                         {
-                                                                if ((*(wsRecordName.end() - 3)) == L'G')
-                                                                        Read_EMR_SETVIEWPORTORGEX();
-                                                                else
-                                                                        Read_EMR_SETVIEWPORTEXTEX();
+                                                                ((*(wsRecordName.end() - 3)) == L'G') ? Read_EMR_SETVIEWPORTORGEX()
+                                                                                                      : Read_EMR_SETVIEWPORTEXTEX();
+                                                                break;
                                                         }
                                                         case 'W':
                                                         {
@@ -263,21 +236,21 @@ namespace MetaFile
                                         {
                                                 switch (*(wsRecordName.end() - 4))
                                                 {
-                                                    case 'B': Read_EMR_STRETCHDIBITS(); break;
-                                                    case 'E': Read_EMR_SELECTPALETTE(); break;
-                                                    case 'H': Read_EMR_STRETCHBLT();    break;
-                                                    case 'J': Read_EMR_SELECTOBJECT();  break;
-                                                    case 'P':
-                                                    {
-                                                            switch (*(wsRecordName.end() - 5))
-                                                            {
-                                                                    case 'E': Read_EMR_STROKEPATH();        break;
-                                                                    case 'L': Read_EMR_STROKEANDFILLPATH(); break;
-                                                                    case 'P': Read_EMR_SELECTCLIPPATH();    break;
-                                                            }
-                                                    }
-                                                    case 'T': Read_EMR_SMALLTEXTOUT();  break;
-                                                    case 'V': Read_EMR_SAVEDC();        break;
+                                                        case 'B': Read_EMR_STRETCHDIBITS(); break;
+                                                        case 'E': Read_EMR_SELECTPALETTE(); break;
+                                                        case 'H': Read_EMR_STRETCHBLT();    break;
+                                                        case 'J': Read_EMR_SELECTOBJECT();  break;
+                                                        case 'P':
+                                                        {
+                                                                switch (*(wsRecordName.end() - 5))
+                                                                {
+                                                                        case 'E': Read_EMR_STROKEPATH();        break;
+                                                                        case 'L': Read_EMR_STROKEANDFILLPATH(); break;
+                                                                        case 'P': Read_EMR_SELECTCLIPPATH();    break;
+                                                                }
+                                                        }
+                                                        case 'T': Read_EMR_SMALLTEXTOUT();  break;
+                                                        case 'V': Read_EMR_SAVEDC();        break;
                                                 }
                                         }
                                         break;

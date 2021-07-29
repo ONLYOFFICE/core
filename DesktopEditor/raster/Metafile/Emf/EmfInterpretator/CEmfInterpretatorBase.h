@@ -13,7 +13,7 @@ namespace MetaFile
                 Emf,
                 Render,
                 XML,
-                RenderAndXml
+                Array
         };
 
         class CEmfInterpretatorBase : public IOutputDevice

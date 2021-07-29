@@ -7,7 +7,7 @@
 
 namespace MetaFile
 {
-        class CEmfInterpretatorXml : public virtual CEmfInterpretatorBase
+        class CEmfInterpretatorXml : public CEmfInterpretatorBase
         {
                 struct RecordData
                 {

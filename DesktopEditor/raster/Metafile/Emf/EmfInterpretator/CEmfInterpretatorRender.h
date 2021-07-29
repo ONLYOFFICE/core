@@ -6,7 +6,7 @@
 
 namespace MetaFile
 {
-        class CEmfInterpretatorRender : public virtual CEmfInterpretatorBase
+        class CEmfInterpretatorRender : public CEmfInterpretatorBase
         {
         public:
                 CEmfInterpretatorRender(IOutputDevice* pIOutputDevice);

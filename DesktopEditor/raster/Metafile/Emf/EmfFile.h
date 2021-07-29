@@ -35,7 +35,6 @@
 #include "../Common/MetaFile.h"
 #include "EmfParser/CEmfParser.h"
 #include "EmfParser/CEmfxParser.h"
-#include "EmfInterpretator/CEmfInterpretatorAll.h"
 
 #include "EmfTypes.h"
 #include "EmfPlayer.h"

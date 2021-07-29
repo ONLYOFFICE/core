@@ -198,8 +198,8 @@ namespace MetaFile
 			if (!pFont)
 				return;
 
-			UpdateClip();
 			UpdateTransform(iGraphicsMode);
+			UpdateClip();
 
 			int lLogicalFontHeight = pFont->GetHeight();
 			if (lLogicalFontHeight < 0)

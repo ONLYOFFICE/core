@@ -5,7 +5,7 @@
 
 namespace MetaFile
 {
-        class CEmfInterpretator : public virtual CEmfInterpretatorBase
+        class CEmfInterpretator : public CEmfInterpretatorBase
         {
         public:
                 CEmfInterpretator(const wchar_t* wsFilepath);

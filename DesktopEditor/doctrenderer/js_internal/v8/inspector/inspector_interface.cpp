@@ -1,6 +1,5 @@
 #include "inspector_interface.h"
-#include "inspector_pool.h"
-#include <iostream>
+#include "inspector_pool.h"//to get inspectors
 
 void NSJSBase::v8_debug::before(const v8::Local<v8::Context> &context
                                       , v8::Platform *platform

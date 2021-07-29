@@ -1,6 +1,7 @@
 #ifndef SINGLECONNECTIONSERVER_H
 #define SINGLECONNECTIONSERVER_H
 
+//boost stuff
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
 #include <boost/asio/strand.hpp>
@@ -67,7 +68,7 @@ public:
 
     bool waitForConnection();
     bool listen();
-    void run(onResumeCallback beforeRun = onResumeCallback());
+    void run(onResumeCallback beforeRun = onResumeCallback{});
     void sendData(const std::string &data);
     bool waitAndProcessMessage();
     bool connected() const;

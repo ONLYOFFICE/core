@@ -412,7 +412,7 @@ namespace NSJSBase
         virtual JSSmart<CJSValue> call_func(const char* name, const int argc = 0, JSSmart<CJSValue> argv[] = NULL)
         {
 #ifdef V8_INSPECTOR
-            v8_debug::before(V8ContextFirstArg CV8Worker::getInitializer()->getPlatform());
+            v8_debug::before(V8ContextFirstArg CV8Worker::getInitializer()->getPlatform(), "");
 #endif
             v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
             v8::Handle<v8::Value> _func = value->Get(V8ContextFirstArg _name).ToLocalChecked();

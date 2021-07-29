@@ -16,33 +16,24 @@ class CInspectorImpl
 
     //to convert v8 string view to string
     v8::Isolate *m_pIsolate{nullptr};// для viewToStr
-    v8::Local<v8::Context> m_Context{};//для парсинга жсонов
 
     //logging protocol messages
     bool m_bLog{false};
 
-    //
+    //сам клиент
     CInspectorClient m_Client;
 
 
 
-    //
+    //сервер
     bool initServer();
     bool connectServer();
     void waitWhileServerReady();
+
     //logging and hints
     void maybeLogOutgoing(const std::string &message) const;
-    //
     void printChromeLaunchHint(std::ostream &out
                                , uint16_t port);
-
-    //парсинг сообщения Debugger.paused
-//    v8::Local<v8::Object> getParams(const std::string &debuggerPausedMessage);
-//    bool hasFunction(v8::Local<v8::Object> params);
-//    bool hasBreakpoint(v8::Local<v8::Object> params);
-//    bool hasFunction(const std::string &debuggerPausedMessage);
-//    bool hasBreakpoint(const std::string &debuggerPausedMessage);
-//    void checkOutgoingMessage(const std::string &message);
 
 public:
     //explicitly delete all the stuff
@@ -53,15 +44,16 @@ public:
 
     //only allowed ctor
     CInspectorImpl(
-            //stript executor
+            //context for client
             v8::Local<v8::Context> context
             //platform to pump
             , v8::Platform *platform
-            //
+            //port to connect to
             , uint16_t port
-            //
+            //some stuff for cdt and v8 internals
             , int contextGroupId
             , const std::string &contextName
+            //
             , bool log
     );
 
@@ -73,7 +65,7 @@ public:
     //necessary to call before using inspector
     void prepareServer();
 
-    //
+    //before debugged code
     void beforeLaunch();
 
     ~CInspectorImpl();

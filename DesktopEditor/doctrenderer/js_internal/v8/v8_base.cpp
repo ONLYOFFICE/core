@@ -275,7 +275,7 @@ namespace NSJSBase
             v8_debug::before(
 //                        V8ContextFirstArg
                         m_internal->m_context,
-                        CV8Worker::getInitializer()->getPlatform());
+                        CV8Worker::getInitializer()->getPlatform(), "");
 #endif
         v8::Local<v8::String> _source = CreateV8String(CV8Worker::GetCurrent(), script.c_str());
         

@@ -1,9 +1,9 @@
 #ifndef CINSPECTORPOOL_H
 #define CINSPECTORPOOL_H
 
-#include "inspector_impl.h"
-#include <map>
-#include <mutex>
+#include "inspector_impl.h"//inspector itself
+#include <map>//to hold inspectors
+#include <mutex>//may be used in multithread environment
 
 namespace NSJSBase {
 namespace v8_debug {
@@ -27,13 +27,16 @@ class CInspectorPool
 
     static constexpr bool m_bLog{true};
 
+    //добавить новый инспектор
     CInspectorImpl& addInspector(v8::Local<v8::Context> context
                                  , v8::Platform *platform
                                  , const std::string &contextName);
 
+    //порт для сервака, id для v8
     static uint16_t getPort();
     static int getContextGroupId();
 
+    //всё приватное, синглтон по классике
     CInspectorPool();
     ~CInspectorPool();
 
@@ -43,11 +46,14 @@ public:
     CInspectorPool& operator=(const CInspectorPool&) = delete;
     CInspectorPool& operator=(CInspectorPool&&) = delete;
 
+    //инстанс пула
     static CInspectorPool& get();
 
+    //достать инспектор для контекста
     CInspectorImpl& getInspector(v8::Local<v8::Context> context
                                  , v8::Platform *platform
                                  , const std::string &contextName);
+    //удалить инспектор для контекста
     void disposeInspector(v8::Local<v8::Context> context);
 };
 

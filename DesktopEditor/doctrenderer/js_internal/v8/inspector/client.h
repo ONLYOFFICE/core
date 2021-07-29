@@ -28,12 +28,12 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
 
     //v8 stuff
     v8::Local<v8::Context> m_Context{};//to register context in inspector
-    v8::Isolate *m_pIsolate = nullptr;//to create inspector
-    v8::Platform *m_pPlatform = nullptr;//to pump it
+    v8::Isolate *m_pIsolate{nullptr};//to create inspector
+    v8::Platform *m_pPlatform{nullptr};//to pump platform on pause
 
-    //state
-    bool m_bServerReady = false;
-    bool m_bMySessionPause = false;
+    //debug state
+    bool m_bServerReady{false};
+    bool m_bMySessionPause{false};
 
     //debug session data
     std::unique_ptr<v8_inspector::V8Inspector> m_pInspector{nullptr};
@@ -49,20 +49,25 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
     //log
     bool m_bLog{false};
 
-    //
+    //idk what is intended for
     const int m_iContextGroupId;
 
 
     //sets up a debugging session
     void setUpDebuggingSession(const std::string &contextName);
-    //pump platform on pause
+
+    //pumps platform on pause
     void pumpPlatform();
-    //log incoming message
+
+    //logs incoming message
     void maybeLogIncoming(const std::string &message) const;
-    //
+
+    //client's duty to send protocol messages to v8 internals
     void dispatchProtocolMessage(const std::string &message);
-    //
+
+    //check for pause flags
     void checkFrontendMessage(const std::string &message);
+
     //
     void resumeDebuggingSession();
 
@@ -87,15 +92,14 @@ public:
             , bool log
             );
 
-    //wait for incoming message
+    //api for v8 internals
     virtual void runMessageLoopOnPause(int contextGroupId) override;
-    //quit waiting
     virtual void quitMessageLoopOnPause() override;
 
-    //dispatch message by session
+    //dispatch and check message
     void processFrontendMessage(const std::string &message);
 
-    //schedule pause on next statement
+    //api for inspector: schedule pause on next statement
     void pauseOnNextStatement();
 
     ~CInspectorClient();

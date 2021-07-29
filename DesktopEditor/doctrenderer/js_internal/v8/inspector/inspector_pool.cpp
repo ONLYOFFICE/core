@@ -1,6 +1,4 @@
 #include "inspector_pool.h"
-#include <iostream>
-
 
 NSJSBase::v8_debug::internal::CInspectorPool::CInspectorPool() = default;
 
@@ -30,14 +28,14 @@ NSJSBase::v8_debug::internal::CInspectorPool::addInspector(v8::Local<v8::Context
 
 uint16_t NSJSBase::v8_debug::internal::CInspectorPool::getPort()
 {
-    static std::atomic<uint16_t> currentPort{8080};
-    return currentPort++;
+    static std::atomic<uint16_t> initialPort{8080};
+    return initialPort++;
 }
 
 int NSJSBase::v8_debug::internal::CInspectorPool::getContextGroupId()
 {
-    static std::atomic<int> currentId{1};
-    return currentId++;
+    static std::atomic<int> initialId{1};
+    return initialId++;
 }
 
 NSJSBase::v8_debug::internal::CInspectorImpl&

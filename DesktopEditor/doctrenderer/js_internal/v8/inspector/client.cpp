@@ -3,10 +3,10 @@
 #include "singlethreadutils.h"//converting strings
 #include <libplatform/libplatform.h>//v8::Platform
 #include "inspector_impl.h"//to interact with inspector
-#include <iostream>
+#include <iostream>//std::cout
 
 namespace {
-    //use them in loop
+    //use it in loop
     class TrueSetter {
         bool &m_bool;
     public:
@@ -37,7 +37,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
     //session
     m_pSession = m_pInspector->connect(m_iContextGroupId, m_pChannel.get(), state);
 
-    //
+    //register context in v8 inspector
     m_pInspector->contextCreated({m_Context, m_iContextGroupId, strToView(contextName)});
 }
 
@@ -80,7 +80,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::processFrontendMessage(
 {
     //send message to V8 internals
     dispatchProtocolMessage(message);
-    //
+    //check it for notable stuff
     checkFrontendMessage(message);
 }
 
@@ -114,8 +114,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessage(const 
 }
 
 NSJSBase::v8_debug::internal::CInspectorClient::~CInspectorClient() {
-    //tmp
-    //если не релизить, она дважды удаляется
+    //если не релизить, она дважды удаляется, и программа падает на выходе
     m_pSession.release();
 }
 
@@ -132,7 +131,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::maybeLogIncoming(
 void NSJSBase::v8_debug::internal::CInspectorClient::pauseOnNextStatement()
 {
     m_bMySessionPause = true;
-    m_pSession->schedulePauseOnNextStatement({}, {});
+    m_pSession->schedulePauseOnNextStatement(strToView("other"), {});
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::resumeDebuggingSession()
@@ -149,12 +148,13 @@ void NSJSBase::v8_debug::internal::CInspectorClient::dispatchProtocolMessage(
 }
 
 NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(
+        //for v8 inspector
         v8::Local<v8::Context> context,
         //for cdt
         const std::string &contextName
         //somewhat
         , int contextGroupId
-        //to pump it
+        //to pump platform on pause
         , v8::Platform *platform
         //to interact with inspector, which holds client
         , CInspectorImpl *inspector
@@ -173,7 +173,7 @@ NSJSBase::v8_debug::internal::CInspectorClient::CInspectorClient(
     //logging
     , m_bLog(log)
 
-    //
+    //somewhat
     , m_iContextGroupId{contextGroupId}
 {
     setUpDebuggingSession(contextName);

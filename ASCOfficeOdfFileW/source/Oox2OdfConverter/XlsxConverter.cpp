@@ -3231,12 +3231,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 	if (false == oox_cond_rule->m_oType.IsInit()) return;
 
 	_CP_OPT(unsigned int) rank; 
-	_CP_OPT(bool) bottom;
+	_CP_OPT(bool) bottom, percent;
 	
 	if (oox_cond_rule->m_oRank.IsInit()) rank = oox_cond_rule->m_oRank->GetValue();
 	if (oox_cond_rule->m_oBottom.IsInit()) bottom = oox_cond_rule->m_oBottom->ToBool();
+	if (oox_cond_rule->m_oPercent.IsInit()) percent = oox_cond_rule->m_oPercent->ToBool();
 
-	ods_context->current_table()->start_conditional_rule(oox_cond_rule->m_oType->GetValue(), rank, bottom);
+	ods_context->current_table()->start_conditional_rule(oox_cond_rule->m_oType->GetValue(), rank, bottom, percent);
 	{
 		if (oox_cond_rule->m_oDxfId.IsInit()) 
 		{

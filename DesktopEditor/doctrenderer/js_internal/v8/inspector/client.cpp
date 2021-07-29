@@ -102,9 +102,34 @@ void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessage(const 
         return;
     }
 
+    if (m_bp == bp::afterRuntime) {//3
+        if (message.find(R"("method":"Debugger.setBreakpoint")") != std::string::npos
+                || message.find(R"("method":"Debugger.removeBreakpoint")") != std::string::npos) {
+            std::cout << "after runtime bp flag check, to resume\n";
+            m_bp = bp::no;
+            return resumeDebuggingSession();
+        }
+    }
+
+    //1
+    if (message.find(R"("method":"Debugger.setBreakpointsActive","params":{"active":true})") != std::string::npos) {
+        std::cout << "bp check\n";
+        m_bp = bp::beforeRuntime;//1
+        return;
+    }
     //функции вызываются чаще, первыми проверяем их
     if (funcResumeMessageLate == method) {
-        return resumeDebuggingSession();
+        //2
+        if (m_bp == bp::beforeRuntime) {
+            std::cout << "runtime with bp check\n";
+            m_bp = bp::afterRuntime;//2
+            return;
+        }
+
+        if (m_bp == bp::no){
+            std::cout << "to plain resume after runtime\n";
+            return resumeDebuggingSession();
+        }
     }
 
     //проверяем скрипт
@@ -128,8 +153,9 @@ void NSJSBase::v8_debug::internal::CInspectorClient::maybeLogIncoming(
     logCdtMessage(std::cout, message);
 }
 
-void NSJSBase::v8_debug::internal::CInspectorClient::pauseOnNextStatement()
+void NSJSBase::v8_debug::internal::CInspectorClient::pauseOnNextStatement(const char *fname)
 {
+//    if (std::string(fname) != "offline_mouse_move")
     m_bMySessionPause = true;
     m_pSession->schedulePauseOnNextStatement(strToView("other"), {});
 }

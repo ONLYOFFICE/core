@@ -39,6 +39,12 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
     std::unique_ptr<v8_inspector::V8Inspector::Channel> m_pChannel{nullptr};
     std::unique_ptr<v8_inspector::V8InspectorSession> m_pSession{nullptr};
 
+    enum class bp : int {
+        no
+        , beforeRuntime
+        , afterRuntime
+    } m_bp{bp::no};
+
     //message loop flag
     bool m_bPause{false};
 
@@ -99,7 +105,7 @@ public:
     void processFrontendMessage(const std::string &message);
 
     //api for inspector: schedule pause on next statement
-    void pauseOnNextStatement();
+    void pauseOnNextStatement(const char *fname);
 
     ~CInspectorClient();
 };

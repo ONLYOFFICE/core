@@ -83,10 +83,10 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::prepareServer()
     waitWhileServerReady();
 }
 
-void NSJSBase::v8_debug::internal::CInspectorImpl::beforeLaunch()
+void NSJSBase::v8_debug::internal::CInspectorImpl::beforeLaunch(const char *fname)
 {
     //перед запуском кода ставим паузу в его начале
-    m_Client.pauseOnNextStatement();
+    m_Client.pauseOnNextStatement(fname);
 }
 
 NSJSBase::v8_debug::internal::CInspectorImpl::CInspectorImpl(

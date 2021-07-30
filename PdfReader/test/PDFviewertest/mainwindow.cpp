@@ -53,6 +53,10 @@ void MainWindow::OpenFile()
         delete m_pReader;
 
     m_pReader = new PdfReader::CPdfReader(m_pFonts);
+//    std::wstring sTempDirectory = NSFile::GetProcessDirectory() + L"/file_tmp";
+//    if (!NSDirectory::Exists(sTempDirectory))
+//        NSDirectory::CreateDirectory(sTempDirectory);
+//    m_pReader->SetTempDirectory(sTempDirectory);
     if (!m_pReader->LoadFromFile(m_sFile.toStdWString()))
     {
         delete m_pReader;

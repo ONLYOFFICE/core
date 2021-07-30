@@ -10,6 +10,7 @@
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Directory.h"
 #include <string>
 
 #define GrClipEOFlag 0x01
@@ -25,6 +26,9 @@ public:
 
     std::wstring GetTempFolder()
     {
+        if (temp_folder == L"") {
+            temp_folder = NSDirectory::GetTempPath();
+        }
         return temp_folder;
     }
     void SetTempFolder(const std::wstring &folder)

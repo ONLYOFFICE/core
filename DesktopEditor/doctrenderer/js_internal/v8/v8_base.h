@@ -72,11 +72,12 @@ private:
     v8::ArrayBuffer::Allocator* m_pAllocator;
 
 public:
-    v8::Platform* getPlatform() {
+    v8::Platform* getPlatform()
+    {
 #ifdef V8_VERSION_87_PLUS
-    return m_platform.get();
+        return m_platform.get();
 #else
-    return m_platform;
+        return m_platform;
 #endif
     }
     CV8Initializer()

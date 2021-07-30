@@ -73,6 +73,6 @@ public:
     void ConvertToPdf(const std::wstring& path);
     #ifdef WASM_MODE
     BYTE* GetStructure();
-    BYTE* GetPageGlyphs();
+    BYTE* GetPageGlyphs(int nPageIndex, int nRasterW, int nRasterH);
     #endif
 };

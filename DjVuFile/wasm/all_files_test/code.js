@@ -377,6 +377,11 @@ window.onload = function()
 			return res;
 		};
 
+		this.getGlyphs = function(pageIndex, width, height)
+		{
+			this.file.getGlyphs(pageIndex, width, height);
+		};
+
 		this._paint = function()
 		{
 			if (!this.isRepaint)
@@ -454,7 +459,10 @@ window.onload = function()
 				}
 				
 				if (!page.Image)
+				{
 					page.Image = this.file.getPage(i, w, h);
+					this.getGlyphs(i, w, h);
+				}
 
 				let x = ((xCenter * this.retinaPixelRatio) >> 0) - (w >> 1);
 				let y = ((page.Y - yPos) * this.retinaPixelRatio) >> 0;

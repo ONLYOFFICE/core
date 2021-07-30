@@ -124,16 +124,18 @@
     };
     CFile.prototype.getPagePixmap = function(pageIndex, width, height)
     {
-        var res = Module["_XPS_GetPixmap"](this.nativeFile, pageIndex, width, height);
-
-        var glyphs = Module["_DJVU_GetGlyphs"](this.nativeFile, pageIndex);
+        return Module["_XPS_GetPixmap"](this.nativeFile, pageIndex, width, height);
+    };
+    CFile.prototype.getGlyphs = function(pageIndex, width, height)
+    {
+        var glyphs = Module["_DJVU_GetGlyphs"](this.nativeFile, pageIndex, width, height);
         if (glyphs == null)
-            return res;
+            return;
         var lenArray = new Int32Array(Module["HEAP8"].buffer, glyphs, 4);
         var len = lenArray[0];
         len -= 4;
         if (len <= 0)
-            return res;
+            return;
 
         this.pages[pageIndex].Lines = [];
         var buffer = new Uint8Array(Module["HEAP8"].buffer, glyphs + 4, len);
@@ -174,8 +176,7 @@
             this.pages[pageIndex].Lines[Line].Glyphs[0].Y = _Y + _H;
             this.pages[pageIndex].Lines[Line].Glyphs[0].fontSize = _H;
         }
-
-        return res;
+        Module["_XPS_Delete"](glyphs);
     };
     CFile.prototype.structure = function()
     {

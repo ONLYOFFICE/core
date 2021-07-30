@@ -78,9 +78,9 @@ public:
     {
         return ((CXpsFile*)pReader)->GetGlyphs(nPageIndex);
     }
-    BYTE* GetDJVUGlyphs()
+    BYTE* GetDJVUGlyphs(int nPageIndex, int nRasterW, int nRasterH)
     {
-        return ((CDjVuFile*)pReader)->GetPageGlyphs();
+        return ((CDjVuFile*)pReader)->GetPageGlyphs(nPageIndex, nRasterW, nRasterH);
     }
     BYTE* GetXPSStructure()
     {

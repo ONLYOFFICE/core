@@ -92,8 +92,6 @@ CDjVuFileImplementation::CDjVuFileImplementation(NSFonts::IApplicationFonts* pFo
 	wsTempPath += L"DJVU\\";
 	m_wsTempDirectory = wsTempPath;
 	NSDirectory::CreateDirectory(m_wsTempDirectory);
-#else
-	m_pGlyphs = NULL;
 #endif
     m_pApplicationFonts = pFonts;
 }
@@ -101,8 +99,6 @@ CDjVuFileImplementation::~CDjVuFileImplementation()
 {
 #ifndef WASM_MODE
 	NSDirectory::DeleteDirectory(m_wsTempDirectory);
-#else
-	RELEASEOBJECT(m_pGlyphs);
 #endif
 }
 bool               CDjVuFileImplementation::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXMLOptions)
@@ -192,7 +188,7 @@ void               CDjVuFileImplementation::GetPageInfo(int nPageIndex, double* 
     *pdDpiX = nDpi;
     *pdDpiY = nDpi;
 }
-void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, double dKoefX, double dKoefY)
+void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {
 	if (!m_pDoc)
 		return;
@@ -218,7 +214,7 @@ void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRende
         #endif
 		else
 		{
-			XmlUtils::CXmlNode oText = ParseText(pPage, dKoefX, dKoefY);
+			XmlUtils::CXmlNode oText = ParseText(pPage);
 			CreateFrame(pRenderer, pPage, nPageIndex, oText);
 		}
 	}
@@ -264,7 +260,7 @@ BYTE*              CDjVuFileImplementation::ConvertToPixels(int nPageIndex, cons
     pRenderer->put_Height(dHeight);
 
     bool bBreak = false;
-    DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak, (double)nWidth * dPageDpiX / 25.4 / dWidth, (double)nHeight * dPageDpiX / 25.4 / dHeight);
+    DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
 
     RELEASEINTERFACE(pFontManager);
     RELEASEOBJECT(pRenderer);
@@ -341,7 +337,129 @@ void               CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsD
 	oPdf.SaveToFile(wsDstPath);
 }
 #ifdef WASM_MODE
-void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, CDjVuFileImplementation::CData& out, int level)
+class              CData
+{
+protected:
+    unsigned char* m_pData;
+    size_t m_lSize;
+
+    unsigned char* m_pDataCur;
+    size_t m_lSizeCur;
+
+public:
+    CData()
+    {
+        m_pData = NULL;
+        m_lSize = 0;
+
+        m_pDataCur = m_pData;
+        m_lSizeCur = m_lSize;
+    }
+    virtual ~CData()
+    {
+        Clear();
+    }
+
+    inline void AddSize(size_t nSize)
+    {
+        if (NULL == m_pData)
+        {
+            m_lSize = 1000;
+            if (nSize > m_lSize)
+                m_lSize = nSize;
+
+            m_pData = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
+
+            m_lSizeCur = 0;
+            m_pDataCur = m_pData;
+            return;
+        }
+
+        if ((m_lSizeCur + nSize) > m_lSize)
+        {
+            while ((m_lSizeCur + nSize) > m_lSize)
+                m_lSize *= 2;
+
+            unsigned char* pRealloc = (unsigned char*)realloc(m_pData, m_lSize * sizeof(unsigned char));
+            if (NULL != pRealloc)
+            {
+                m_pData    = pRealloc;
+                m_pDataCur = m_pData + m_lSizeCur;
+            }
+            else
+            {
+                unsigned char* pMalloc = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
+                memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(unsigned char));
+
+                free(m_pData);
+                m_pData    = pMalloc;
+                m_pDataCur = m_pData + m_lSizeCur;
+            }
+        }
+    }
+
+public:
+    void AddInt(unsigned int value)
+    {
+        AddSize(4);
+        memcpy(m_pDataCur, &value, sizeof(unsigned int));
+        m_pDataCur += 4;
+        m_lSizeCur += 4;
+    }
+    void WriteString(unsigned char* value, unsigned int len)
+    {
+        AddSize(len + 4);
+        memcpy(m_pDataCur, &len, sizeof(unsigned int));
+        m_pDataCur += 4;
+        m_lSizeCur += 4;
+        memcpy(m_pDataCur, value, len);
+        m_pDataCur += len;
+        m_lSizeCur += len;
+    }
+    unsigned char* GetBuffer()
+    {
+        return m_pData;
+    }
+
+    void Clear()
+    {
+        if (m_pData) free(m_pData);
+
+        m_pData = NULL;
+        m_lSize = 0;
+
+        m_pDataCur = m_pData;
+        m_lSizeCur = 0;
+    }
+    void ClearWithoutAttack()
+    {
+        m_pData = NULL;
+        m_lSize = 0;
+
+        m_pDataCur = m_pData;
+        m_lSizeCur = 0;
+    }
+    void ClearNoAttack()
+    {
+        m_pDataCur = m_pData;
+        m_lSizeCur = 0;
+    }
+    unsigned int GetSize()
+    {
+        return (unsigned int)m_lSizeCur;
+    }
+
+    void SkipLen()
+    {
+        AddInt(0);
+    }
+    void WriteLen()
+    {
+        unsigned int len = (unsigned int)m_lSizeCur;
+        memcpy(m_pData, &len, sizeof(unsigned int));
+    }
+};
+void               getBookmars(const GP<DjVmNav>& nav, int& pos, int count, CData& out, int level)
 {
     while (count > 0 && pos < nav->getBookMarkCount())
     {
@@ -382,16 +500,73 @@ BYTE*              CDjVuFileImplementation::GetStructure()
     oRes.ClearWithoutAttack();
     return bRes;
 }
-BYTE*              CDjVuFileImplementation::GetPageGlyphs()
+BYTE*              CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const int& nRasterW, const int& nRasterH)
 {
-    if (m_pGlyphs)
+    double dPageDpiX, dPageDpiY;
+    double dWidth, dHeight;
+    GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+    GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
+    const GP<DjVuText> text(DjVuText::create());
+    const GP<ByteStream> text_str(pPage->get_text());
+    if (!text_str)
+        return NULL;
+
+    text->decode(text_str);
+    GUTF8String pageText = text->get_xmlText(pPage->get_height());
+    XmlUtils::CXmlNode hiddenText;
+    XmlUtils::CXmlNode pageColumn;
+    XmlUtils::CXmlNode region;
+    hiddenText.FromXmlStringA(NSDjvu::MakeCString(pageText));
+    hiddenText.GetNode(L"PAGECOLUMN", pageColumn);
+    pageColumn.GetNode(L"REGION", region);
+
+    CData oRes;
+    oRes.SkipLen();
+    double dKoef = 25.4 / pPage->get_dpi();
+    double dKoefX = (double)nRasterW * dPageDpiX / 25.4 / dWidth;
+    double dKoefY = (double)nRasterH * dPageDpiY / 25.4 / dHeight;
+    XmlUtils::CXmlNodes oParagraphsNodes;
+    region.GetNodes(L"PARAGRAPH", oParagraphsNodes);
+    for (int nParagraphIndex = 0; nParagraphIndex < oParagraphsNodes.GetCount(); nParagraphIndex++)
     {
-        BYTE* res = m_pGlyphs->GetBuffer();
-        m_pGlyphs->ClearWithoutAttack();
-        RELEASEOBJECT(m_pGlyphs);
-        return res;
+        XmlUtils::CXmlNode oParagraphNode;
+        oParagraphsNodes.GetAt(nParagraphIndex, oParagraphNode);
+        XmlUtils::CXmlNodes oLinesNodes;
+        oParagraphNode.GetNodes(L"LINE", oLinesNodes);
+        for (int nLineIndex = 0; nLineIndex < oLinesNodes.GetCount(); nLineIndex++)
+        {
+            XmlUtils::CXmlNode oLineNode;
+            oLinesNodes.GetAt(nLineIndex, oLineNode);
+            XmlUtils::CXmlNodes oWordsNodes;
+            oLineNode.GetNodes(L"WORD", oWordsNodes);
+            for (int nWordIndex = 0; nWordIndex < oWordsNodes.GetCount(); ++nWordIndex)
+            {
+                XmlUtils::CXmlNode oWordNode;
+                oWordsNodes.GetAt(nWordIndex, oWordNode);
+                std::wstring csWord   = oWordNode.GetText();
+                std::wstring csCoords = oWordNode.GetAttribute(L"coords");
+                double arrCoords[4];
+                ParseCoords(csCoords, arrCoords, dKoef);
+
+                std::string sText = U_TO_UTF8(csWord);
+                oRes.WriteString((BYTE*)sText.c_str(), sText.length());
+                std::string sX = std::to_string(arrCoords[0] * dKoefX);
+                oRes.WriteString((BYTE*)sX.c_str(), sX.length());
+                std::string sY = std::to_string(arrCoords[3] * dKoefY);
+                oRes.WriteString((BYTE*)sY.c_str(), sY.length());
+                std::string sW = std::to_string((arrCoords[2] - arrCoords[0]) * dKoefX);
+                oRes.WriteString((BYTE*)sW.c_str(), sW.length());
+                std::string sH = std::to_string((arrCoords[1] - arrCoords[3]) * dKoefY);
+                oRes.WriteString((BYTE*)sH.c_str(), sH.length());
+            }
+        }
     }
-    return NULL;
+    oRes.WriteLen();
+
+    BYTE* res = oRes.GetBuffer();
+    oRes.ClearWithoutAttack();
+    return res;
 }
 #endif
 void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
@@ -1009,7 +1184,7 @@ void               CDjVuFileImplementation::CreateGrFrame(IRenderer* pRenderer, 
 		}
 	}
 }
-XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage, double dKoefX, double dKoefY)
+XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage)
 {
 	XmlUtils::CXmlNode paragraph;
 	const GP<DjVuText> text(DjVuText::create());
@@ -1025,50 +1200,6 @@ XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage, doubl
         hiddenText.GetNode(L"PAGECOLUMN", pageColumn);
         pageColumn.GetNode(L"REGION", region);
         region.GetNode(L"PARAGRAPH", paragraph);
-
-        #ifdef WASM_MODE
-        RELEASEOBJECT(m_pGlyphs);
-        m_pGlyphs = new CData();
-        m_pGlyphs->SkipLen();
-        double dKoef = 25.4 / pPage->get_dpi();
-        XmlUtils::CXmlNodes oParagraphsNodes;
-        region.GetNodes(L"PARAGRAPH", oParagraphsNodes);
-        for (int nParagraphIndex = 0; nParagraphIndex < oParagraphsNodes.GetCount(); nParagraphIndex++)
-        {
-            XmlUtils::CXmlNode oParagraphNode;
-            oParagraphsNodes.GetAt(nParagraphIndex, oParagraphNode);
-            XmlUtils::CXmlNodes oLinesNodes;
-            oParagraphNode.GetNodes(L"LINE", oLinesNodes);
-            for (int nLineIndex = 0; nLineIndex < oLinesNodes.GetCount(); nLineIndex++)
-            {
-                XmlUtils::CXmlNode oLineNode;
-                oLinesNodes.GetAt(nLineIndex, oLineNode);
-                XmlUtils::CXmlNodes oWordsNodes;
-                oLineNode.GetNodes(L"WORD", oWordsNodes);
-                for (int nWordIndex = 0; nWordIndex < oWordsNodes.GetCount(); ++nWordIndex)
-                {
-                    XmlUtils::CXmlNode oWordNode;
-                    oWordsNodes.GetAt(nWordIndex, oWordNode);
-                    std::wstring csWord   = oWordNode.GetText();
-                    std::wstring csCoords = oWordNode.GetAttribute(L"coords");
-                    double arrCoords[4];
-                    ParseCoords(csCoords, arrCoords, dKoef);
-
-                    std::string sText = U_TO_UTF8(csWord);
-                    m_pGlyphs->WriteString((BYTE*)sText.c_str(), sText.length());
-                    std::string sX = std::to_string(arrCoords[0] * dKoefX);
-                    m_pGlyphs->WriteString((BYTE*)sX.c_str(), sX.length());
-                    std::string sY = std::to_string(arrCoords[3] * dKoefY);
-                    m_pGlyphs->WriteString((BYTE*)sY.c_str(), sY.length());
-                    std::string sW = std::to_string((arrCoords[2] - arrCoords[0]) * dKoefX);
-                    m_pGlyphs->WriteString((BYTE*)sW.c_str(), sW.length());
-                    std::string sH = std::to_string((arrCoords[1] - arrCoords[3]) * dKoefY);
-                    m_pGlyphs->WriteString((BYTE*)sH.c_str(), sH.length());
-                }
-            }
-        }
-        m_pGlyphs->WriteLen();
-        #endif
 	}
 	return paragraph;
 }

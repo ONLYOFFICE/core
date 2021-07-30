@@ -55,6 +55,7 @@ namespace XPS
 		void GetSize(int& nW, int& nH) const;
 		#ifdef BUILDING_WASM_MODULE
 		BYTE* GetGlyphs();
+        BYTE* GetGlyphs2();
         class CData
         {
         protected:

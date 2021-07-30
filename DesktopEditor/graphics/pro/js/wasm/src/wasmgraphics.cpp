@@ -67,9 +67,9 @@ WASM_EXPORT BYTE* XPS_GetGlyphs(CGraphicsFileDrawing* pGraphics, int nPageIndex)
 {
     return pGraphics->GetXPSGlyphs(nPageIndex);
 }
-WASM_EXPORT BYTE* DJVU_GetGlyphs(CGraphicsFileDrawing* pGraphics)
+WASM_EXPORT BYTE* DJVU_GetGlyphs(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
-    return pGraphics->GetDJVUGlyphs();
+    return pGraphics->GetDJVUGlyphs(nPageIndex, nRasterW, nRasterH);
 }
 WASM_EXPORT BYTE* XPS_GetStructure(CGraphicsFileDrawing* pGraphics)
 {
@@ -212,23 +212,8 @@ int main()
     int pages_count = *info;
     int width  = info[1] * 96 / info[3];
     int height = info[2] * 96 / info[3];
-    BYTE* res = NULL;
-    if (pages_count > 0)
-        res = XPS_GetPixmap(test, 1, width, height);
 
-    for (int i = 0; i < 100; i++)
-        std::cout << (int)res[i] << " ";
-
-    CBgraFrame* resFrame = new CBgraFrame();
-    resFrame->put_Data(res);
-    resFrame->put_Width(width);
-    resFrame->put_Height(height);
-    resFrame->put_Stride(-4 * width);
-    resFrame->put_IsRGBA(true);
-    resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
-    resFrame->ClearNoAttack();
-
-    BYTE* pGlyphs = DJVU_GetGlyphs(test);
+    BYTE* pGlyphs = DJVU_GetGlyphs(test, 3, width, height);
     DWORD nLength = GetLength(pGlyphs);
     DWORD i = 4;
     nLength -= 4;
@@ -256,6 +241,22 @@ int main()
         std::cout << "H " << std::string((char*)(pGlyphs + i), nPathLength) << std::endl;
         i += nPathLength;
     }
+
+    BYTE* res = NULL;
+    if (pages_count > 0)
+        res = XPS_GetPixmap(test, 3, width, height);
+
+    for (int i = 0; i < 100; i++)
+        std::cout << (int)res[i] << " ";
+
+    CBgraFrame* resFrame = new CBgraFrame();
+    resFrame->put_Data(res);
+    resFrame->put_Width(width);
+    resFrame->put_Height(height);
+    resFrame->put_Stride(-4 * width);
+    resFrame->put_IsRGBA(true);
+    resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
+    resFrame->ClearNoAttack();
 
     BYTE* pStructure = DJVU_GetStructure(test);
     nLength = GetLength(pStructure);

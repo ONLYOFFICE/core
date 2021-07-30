@@ -126,6 +126,12 @@
     {
         var res = Module["_XPS_GetPixmap"](this.nativeFile, pageIndex, width, height);
 
+        this.getGlyphs(pageIndex);
+
+        return res;
+    };
+    CFile.prototype.getGlyphs = function(pageIndex)
+    {
         var glyphs = Module["_XPS_GetGlyphs"](this.nativeFile, pageIndex);
         if (glyphs == null)
             return res;
@@ -207,8 +213,6 @@
             }
         }
         Module["_XPS_Delete"](glyphs);
-
-        return res;
     };
     CFile.prototype.structure = function()
     {

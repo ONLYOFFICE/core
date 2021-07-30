@@ -39,10 +39,12 @@
 #include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
+#include <fstream>
 #include "../../Enums/_includer.h"
 
-
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
+
+ULONG xmlName = 1;
 
 bool CPPTElement::ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2)
 {
@@ -813,6 +815,12 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
         pElement->m_bHidden = fHidden || fIsBullet;
         //presentation_ticio_20100610.ppt
     }break;
+    case tableProperties:
+    case tableRowProperties:
+    {
+        pElement->m_etType = etTable;
+        break;
+    }
     default:
         break;
     }
@@ -1636,7 +1644,14 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         }break;
         default:
         {
-            if (bGroupShape)
+            if (isTable())
+            {
+                CTableElement* pTableElem = new CTableElement();
+                pTableElem->m_xmlRawData = getTableXmlStr();
+                pTableElem->m_etType = etGroup;
+                pElement = CElementPtr(pTableElem);
+            }
+            else if (bGroupShape)
             {
                 CGroupElement* pGroupElem = new CGroupElement();
                 pElement = CElementPtr(pGroupElem);
@@ -1819,6 +1834,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
         pElement->m_arrActions.push_back(interactiveInfo);
     }
+
 
 
     //--------- наличие текста --------------------------------------------------------------------------
@@ -2025,6 +2041,63 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     return pElement;
 }
 
+bool CRecordShapeContainer::isTable() const
+{
+    std::vector<CRecordShapeProperties*> oArrayOptions;
+    GetRecordsByType(&oArrayOptions, true, false);
+
+    for (const auto* option : oArrayOptions)
+    {
+        for (const auto& prop : option->m_oProperties.m_arProperties)
+        {
+            if ((prop.m_ePID == tableProperties ||
+                 prop.m_ePID == tableRowProperties) &&
+                bGroupShape)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+std::wstring CRecordShapeContainer::getTableXmlStr() const
+{
+    std::vector<CRecordShapeProperties*> oArrayOptions;
+    GetRecordsByType(&oArrayOptions, true, false);
+    std::wstring xmlStr = L"";
+
+    if (oArrayOptions.size() >= 2 &&
+            oArrayOptions[1]->m_oProperties.m_arProperties.size() >= 3)
+    {
+        COfficeUtils officeUtils(NULL);
+        BYTE *utf8Data = NULL;
+        ULONG utf8DataSize = 0;
+        auto& xmlProp = oArrayOptions[1]->m_oProperties.m_arProperties[2];
+        NSFile::CFileBinary file;
+
+        std::wstring temp = NSDirectory::GetTempPath();
+
+        std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
+
+        if (file.CreateFileW(tempFileName))
+        {
+            file.WriteFile(xmlProp.m_pOptions, xmlProp.m_lValue);
+            file.CloseFile();
+        }
+
+        if (S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"drs/e2oDoc.xml", &utf8Data, utf8DataSize))
+        {
+            xmlStr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+        }
+
+        delete [] utf8Data;
+        NSFile::CFileBinary::Remove(tempFileName);
+    }
+
+    return xmlStr;
+}
+
 void CRecordShapeContainer::ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels)
 {
     CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem.get());
@@ -2134,7 +2207,6 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
         if ((0 != pSettings->m_arRanges.size()) && (0 == pShape->m_oTextActions.m_arRanges.size()))
         {
             pShape->m_oTextActions.m_bPresent = true;
-
             pShape->m_oTextActions.m_arRanges = pSettings->m_arRanges;
         }
 

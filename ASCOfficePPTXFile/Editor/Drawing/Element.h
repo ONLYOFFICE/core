@@ -38,184 +38,186 @@ using namespace ODRAW;
 
 namespace PPT_FORMAT
 {
-	enum ElementType
-	{
-		etGroup		 = 0,
-		etVideo		 = 1,
-		etAudio		 = 2,
-		etPicture    = 3,
-		etShape      = 4,
-		etText		 = 5
-	};
+enum ElementType
+{
+    etGroup		 = 0,
+    etVideo		 = 1,
+    etAudio		 = 2,
+    etPicture    = 3,
+    etShape      = 4,
+    etText		 = 5,
+    etTable      = 6
+};
 
-	class CTheme;
-	class CLayout;
-	class CSlide;
+class CTheme;
+class CLayout;
+class CSlide;
 
-	class CElement;
-	typedef boost::shared_ptr<CElement> CElementPtr;
+class CElement;
+typedef boost::shared_ptr<CElement> CElementPtr;
 
-	class CElement
-	{
-	public:
-		ElementType			m_etType;
-		
-		CDoubleRect			m_rcChildAnchor;
-		CDoubleRect			m_rcAnchor;
-		CDoubleRect			m_rcGroupAnchor;
+class CElement
+{
+public:
+    ElementType			m_etType;
 
-		bool				m_bChildAnchorEnabled;
-		bool				m_bAnchorEnabled;
-		bool				m_bGroupAnchorEnabled;
-		
-		double				m_dStartTime;
-		double				m_dEndTime;
+    CDoubleRect			m_rcChildAnchor;
+    CDoubleRect			m_rcAnchor;
+    CDoubleRect			m_rcGroupAnchor;
 
-		CTextInteractiveInfo m_oTextActions;
-                std::vector<CInteractiveInfo>	m_arrActions;
-                std::vector<CInteractiveInfo>   m_textHyperlinks;
+    bool				m_bChildAnchorEnabled;
+    bool				m_bAnchorEnabled;
+    bool				m_bGroupAnchorEnabled;
 
-		CAnimationInfo		m_oAnimations;
-		CEffects			m_oEffects;
+    double				m_dStartTime;
+    double				m_dEndTime;
 
-		CPen				m_oPen;
-		CBrush				m_oBrush;
-		CShadow				m_oShadow;
+    CTextInteractiveInfo m_oTextActions;
 
-		int					m_lID;
-		int					m_lLayoutID;
+    std::vector<CInteractiveInfo>	m_arrActions;
+    std::vector<CInteractiveInfo>   m_textHyperlinks;
 
-		int					m_lPlaceholderID;
-		int					m_lPlaceholderType;
-		bool				m_bPlaceholderSet;
-		int					m_lPlaceholderSizePreset;
-		int					m_lPlaceholderUserStr;
-		int					m_nFormatDate;
+    CAnimationInfo		m_oAnimations;
+    CEffects			m_oEffects;
 
-		double				m_dRotate;			// угол поворота в градусах
-		bool				m_bFlipH;			// симметричное отражение относительно горизонтальной оси
-		bool				m_bFlipV;			// симметричное отражение относительно вертикальной оси
+    CPen				m_oPen;
+    CBrush				m_oBrush;
+    CShadow				m_oShadow;
 
-		bool				m_bLine;
-		bool				m_bIsFilled;
+    int					m_lID;
+    int					m_lLayoutID;
 
-		bool				m_bIsBackground;	
-		bool				m_bHaveAnchor;	
-		bool				m_bHidden;
+    int					m_lPlaceholderID;
+    int					m_lPlaceholderType;
+    bool				m_bPlaceholderSet;
+    int					m_lPlaceholderSizePreset;
+    int					m_lPlaceholderUserStr;
+    int					m_nFormatDate;
 
-		CTheme*				m_pTheme;
-		CLayout*			m_pLayout;
+    double				m_dRotate;			// угол поворота в градусах
+    bool				m_bFlipH;			// симметричное отражение относительно горизонтальной оси
+    bool				m_bFlipV;			// симметричное отражение относительно вертикальной оси
 
-		std::wstring		m_sName;
-		std::wstring		m_sDescription;
+    bool				m_bLine;
+    bool				m_bIsFilled;
 
-		std::wstring		m_sHyperlink;
+    bool				m_bIsBackground;
+    bool				m_bHaveAnchor;
+    bool				m_bHidden;
 
-		std::vector<CElementPtr>*	m_pParentElements;
-		std::vector<CElementPtr>	m_pChildElements;
+    CTheme*				m_pTheme;
+    CLayout*			m_pLayout;
 
-		CElement()
-		{
-			m_bIsBackground				= false;
-			m_bHaveAnchor				= true;
-			m_bHidden					= false;
+    std::wstring		m_sName;
+    std::wstring		m_sDescription;
 
-			m_bChildAnchorEnabled		= false;
-			m_bAnchorEnabled			= false;
-			m_bGroupAnchorEnabled		= false;
+    std::wstring		m_sHyperlink;
 
-			m_lID						= -1;
-			m_lLayoutID					= -1;
+    std::vector<CElementPtr>*	m_pParentElements;
+    std::vector<CElementPtr>	m_pChildElements;
 
-			m_lPlaceholderID			= -1;
-			m_lPlaceholderType			= -1;
-			m_bPlaceholderSet			= false;
-			m_lPlaceholderSizePreset	= -1;
-			m_lPlaceholderUserStr		= -1;
-			m_nFormatDate				= 1;
+    CElement()
+    {
+        m_bIsBackground				= false;
+        m_bHaveAnchor				= true;
+        m_bHidden					= false;
 
-			m_etType					= etShape;
-						
-			m_dStartTime				= 0.0;
-			m_dEndTime					= 30.0;
+        m_bChildAnchorEnabled		= false;
+        m_bAnchorEnabled			= false;
+        m_bGroupAnchorEnabled		= false;
 
-			m_dRotate					= 0.0;
-			m_bFlipH					= false;
-			m_bFlipV					= false;
-			m_bLine						= true;
-			m_bIsFilled					= true;
+        m_lID						= -1;
+        m_lLayoutID					= -1;
 
-			m_pTheme					= NULL;
-			m_pLayout					= NULL;
-			m_pParentElements			= NULL;
-		}
-		virtual ~CElement()
-		{
-		}
+        m_lPlaceholderID			= -1;
+        m_lPlaceholderType			= -1;
+        m_bPlaceholderSet			= false;
+        m_lPlaceholderSizePreset	= -1;
+        m_lPlaceholderUserStr		= -1;
+        m_nFormatDate				= 1;
 
-		virtual CElementPtr CreateDublicate() = 0;
+        m_etType					= etShape;
 
-		virtual void SetProperiesToDublicate(CElementPtr pDublicate)
-		{
-			if (!pDublicate)
-				return;
+        m_dStartTime				= 0.0;
+        m_dEndTime					= 30.0;
 
-			pDublicate->m_bIsBackground				= m_bIsBackground;	
-			pDublicate->m_bHaveAnchor				= m_bHaveAnchor;
-			pDublicate->m_bHidden					= m_bHidden;
+        m_dRotate					= 0.0;
+        m_bFlipH					= false;
+        m_bFlipV					= false;
+        m_bLine						= true;
+        m_bIsFilled					= true;
 
-			pDublicate->m_etType					= m_etType;
-			
-			pDublicate->m_rcChildAnchor				= m_rcChildAnchor;
-			pDublicate->m_rcAnchor					= m_rcAnchor;
-			pDublicate->m_rcGroupAnchor				= m_rcGroupAnchor;
+        m_pTheme					= NULL;
+        m_pLayout					= NULL;
+        m_pParentElements			= NULL;
+    }
+    virtual ~CElement()
+    {
+    }
 
-			pDublicate->m_bChildAnchorEnabled		= m_bChildAnchorEnabled;
-			pDublicate->m_bAnchorEnabled			= m_bAnchorEnabled;
-			pDublicate->m_bGroupAnchorEnabled		= m_bGroupAnchorEnabled;
+    virtual CElementPtr CreateDublicate() = 0;
 
-			pDublicate->m_dStartTime				= m_dStartTime;
-			pDublicate->m_dEndTime					= m_dEndTime;
+    virtual void SetProperiesToDublicate(CElementPtr pDublicate)
+    {
+        if (!pDublicate)
+            return;
 
-			pDublicate->m_lID						= m_lID;
-			pDublicate->m_lLayoutID					= m_lLayoutID;
+        pDublicate->m_bIsBackground				= m_bIsBackground;
+        pDublicate->m_bHaveAnchor				= m_bHaveAnchor;
+        pDublicate->m_bHidden					= m_bHidden;
 
-                        pDublicate->m_arrActions					= m_arrActions;
-			pDublicate->m_oTextActions				= m_oTextActions;
-			pDublicate->m_oAnimations				= m_oAnimations;
-			pDublicate->m_oEffects					= m_oEffects;
+        pDublicate->m_etType					= m_etType;
 
-			pDublicate->m_lPlaceholderID			= m_lPlaceholderID;
-			pDublicate->m_lPlaceholderType			= m_lPlaceholderType;
-			pDublicate->m_bPlaceholderSet			= m_bPlaceholderSet;
-			
-			pDublicate->m_lPlaceholderSizePreset	= m_lPlaceholderSizePreset;
-			pDublicate->m_lPlaceholderUserStr		= m_lPlaceholderUserStr;
-			pDublicate->m_nFormatDate				= m_nFormatDate;
+        pDublicate->m_rcChildAnchor				= m_rcChildAnchor;
+        pDublicate->m_rcAnchor					= m_rcAnchor;
+        pDublicate->m_rcGroupAnchor				= m_rcGroupAnchor;
 
-			pDublicate->m_dRotate					= m_dRotate;
-			pDublicate->m_bFlipH					= m_bFlipH;
-			pDublicate->m_bFlipV					= m_bFlipV;
-			pDublicate->m_bLine						= m_bLine;
-			pDublicate->m_bIsFilled					= m_bIsFilled;
+        pDublicate->m_bChildAnchorEnabled		= m_bChildAnchorEnabled;
+        pDublicate->m_bAnchorEnabled			= m_bAnchorEnabled;
+        pDublicate->m_bGroupAnchorEnabled		= m_bGroupAnchorEnabled;
 
-			pDublicate->m_pTheme					= m_pTheme;
-			pDublicate->m_pLayout					= m_pLayout;
-			
-			pDublicate->m_oPen						= m_oPen;
-			pDublicate->m_oBrush					= m_oBrush;
-			pDublicate->m_oShadow					= m_oShadow;
-		}
+        pDublicate->m_dStartTime				= m_dStartTime;
+        pDublicate->m_dEndTime					= m_dEndTime;
 
-		void NormalizeCoordsByMetric()
-		{
-			if (!m_bAnchorEnabled) return;
-			double dScale = 1587.5; //master to emu
-			
-			m_rcAnchor.left		= dScale * m_rcAnchor.left;
-			m_rcAnchor.right	= dScale * m_rcAnchor.right;
-			m_rcAnchor.top		= dScale * m_rcAnchor.top;
-			m_rcAnchor.bottom	= dScale * m_rcAnchor.bottom;
-		}
-	};
+        pDublicate->m_lID						= m_lID;
+        pDublicate->m_lLayoutID					= m_lLayoutID;
+
+        pDublicate->m_arrActions					= m_arrActions;
+        pDublicate->m_oTextActions				= m_oTextActions;
+        pDublicate->m_oAnimations				= m_oAnimations;
+        pDublicate->m_oEffects					= m_oEffects;
+
+        pDublicate->m_lPlaceholderID			= m_lPlaceholderID;
+        pDublicate->m_lPlaceholderType			= m_lPlaceholderType;
+        pDublicate->m_bPlaceholderSet			= m_bPlaceholderSet;
+
+        pDublicate->m_lPlaceholderSizePreset	= m_lPlaceholderSizePreset;
+        pDublicate->m_lPlaceholderUserStr		= m_lPlaceholderUserStr;
+        pDublicate->m_nFormatDate				= m_nFormatDate;
+
+        pDublicate->m_dRotate					= m_dRotate;
+        pDublicate->m_bFlipH					= m_bFlipH;
+        pDublicate->m_bFlipV					= m_bFlipV;
+        pDublicate->m_bLine						= m_bLine;
+        pDublicate->m_bIsFilled					= m_bIsFilled;
+
+        pDublicate->m_pTheme					= m_pTheme;
+        pDublicate->m_pLayout					= m_pLayout;
+
+        pDublicate->m_oPen						= m_oPen;
+        pDublicate->m_oBrush					= m_oBrush;
+        pDublicate->m_oShadow					= m_oShadow;
+    }
+
+    void NormalizeCoordsByMetric()
+    {
+        if (!m_bAnchorEnabled) return;
+        double dScale = 1587.5; //master to emu
+
+        m_rcAnchor.left		= dScale * m_rcAnchor.left;
+        m_rcAnchor.right	= dScale * m_rcAnchor.right;
+        m_rcAnchor.top		= dScale * m_rcAnchor.top;
+        m_rcAnchor.bottom	= dScale * m_rcAnchor.bottom;
+    }
+};
 }

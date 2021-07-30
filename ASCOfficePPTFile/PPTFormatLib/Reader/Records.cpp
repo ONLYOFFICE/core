@@ -528,7 +528,8 @@ IRecord* CreateByType(SRecordHeader oHeader)
             //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPSHAPEID12			, CRecordRoundTripShapeId12Atom)
     CREATE_BY_TYPE(RT_RoundTripHFPlaceholder12Atom  		, CRecordRoundTripHFPlaceholder12Atom)
             //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPCONTENTMASTERID	, CRecordRoundTripContentMasterId12Atom)
-            //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPOARTTEXTSTYLES12	, CRecordRoundTripOArtTextStyles12Atom)
+
+    CREATE_BY_TYPE(RT_RoundTripOArtTextStyles12Atom	, CRecordRoundTripOArtTextStyles12Atom)
     CREATE_BY_TYPE(RT_RoundTripHeaderFooterDefaults12Atom	, CRecordRoundTripHeaderFooterDefaults12Atom)
     CREATE_BY_TYPE(RT_RoundTripNotesMasterTextStyles12Atom	, CRecordRoundTripNotesMasterTextStyles12Atom)
             //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPDOCFLAGS12						, CRecordRoundTripDocFlags12Atom)
@@ -635,13 +636,13 @@ IRecord* CreateByType(SRecordHeader oHeader)
 
     CREATE_BY_TYPE(RT_Sound         						, CRecordSoundContainer)
     CREATE_BY_TYPE(RT_SoundDataBlob     					, CRecordSoundDataBlob)
+    CREATE_BY_TYPE(RT_MetaFile                              , CRecordMetafileBlob)
 
     default:
         {
+//            std::cout << GetRecordName(oHeader.RecType) << ": " << oHeader.RecLen << "\n";
         }break;
     };
-
-//    std::cout << GetRecordName(oHeader.RecType) << ": " << oHeader.RecLen << "\n";
 
 	if (NULL == pRecord)
 	{

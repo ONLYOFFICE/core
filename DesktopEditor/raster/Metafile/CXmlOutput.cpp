@@ -484,6 +484,7 @@ namespace MetaFile
         std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oTEmfEmrText.OutputString, oTEmfEmrText.Chars);
 
         WriteNode(L"Text",      StringNormalization(wsText));
+        WriteNode(L"Dx",        oTEmfEmrText.OutputDx, oTEmfEmrText.Chars);
     }
 
     void CXmlOutput::WriteTEmfPointL(const TEmfPointL &oTEmfPointL)
@@ -589,7 +590,17 @@ namespace MetaFile
 		WriteNode(L"Green",	oEmfLogPalette.PaletteEntries[i].Green);
 		WriteNode(L"Red",	oEmfLogPalette.PaletteEntries[i].Red);
 		WriteNodeEnd(L"LogPaletteEntry" + std::to_wstring(i + 1));
-	}
+	    }
+    }
+
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const unsigned int *pUnValues, const unsigned int &unSize)
+    {
+        if (NULL == pUnValues || unSize == 0)
+            return;
+
+        WriteNodeBegin(wsNameNode);
+            for (unsigned int i = 1; i < unSize + 1; ++i)
+                WriteNode(L"Dx" + std::to_wstring(i), pUnValues[i - 1]);
     }
 
     bool CXmlOutput::ReadFromFile(const std::wstring &wsPathToFile)
@@ -652,6 +663,15 @@ namespace MetaFile
         *this >> oTEmfHeader.oMillimeters;
 //        *this >> oTEmfHeader.oFrameToBounds;
         //        *this >> oTEmfHeader.oFramePx;
+    }
+
+    void CXmlOutput::ReadDx(unsigned int arunValue[], const unsigned int &unCount)
+    {
+        if (!m_pXmlLiteReader->ReadNextNode())
+            return;
+
+        for (unsigned int  i = 0; i < unCount; ++i)
+            *this >> arunValue[i];
     }
 
     void CXmlOutput::operator>>(TEmfAlphaBlend &oTEmfAlphaBlend)
@@ -857,8 +877,14 @@ namespace MetaFile
         *this >> oTEmfEmrText.Options;
         *this >> oTEmfEmrText.Rectangle;
         *this >> oTEmfEmrText.offDx;
-        oTEmfEmrText.OutputString = new unsigned short[oTEmfEmrText.Chars];
+
+        oTEmfEmrText.OutputString   = new unsigned short[oTEmfEmrText.Chars];
+        oTEmfEmrText.OutputDx       = new unsigned int[oTEmfEmrText.Chars];
+
+        ((unsigned short*)oTEmfEmrText.OutputString)[oTEmfEmrText.Chars - 1] = 0x00;
         *this >> (unsigned short*)oTEmfEmrText.OutputString;
+
+        ReadDx(oTEmfEmrText.OutputDx, oTEmfEmrText.Chars);
     }
 
     void CXmlOutput::operator>>(TEmfDibPatternBrush &oTEmfDibPatternBrush)

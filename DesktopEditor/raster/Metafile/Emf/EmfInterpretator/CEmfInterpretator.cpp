@@ -94,6 +94,8 @@ namespace MetaFile
                         unsigned int unZero = 0;
                         for (unsigned int i = 0; i < oTEmfAlphaBlend.cbBmiSrc; ++i)
                             m_pOutStream->write((char *)&unZero, sizeof (BYTE));
+
+                        oDataStream.Skip(oTEmfAlphaBlend.cbBmiSrc);
                 }
 
                 if (oTEmfAlphaBlend.cbBitsSrc > 0)
@@ -134,6 +136,8 @@ namespace MetaFile
                         unsigned int unZero = 0;
                         for (unsigned int i = 0; i < oTEmfStretchDIBITS.cbBmiSrc; ++i)
                             m_pOutStream->write((char *)&unZero, sizeof (BYTE));
+
+                        oDataStream.Skip(oTEmfStretchDIBITS.cbBmiSrc);
                 }
 
                 if (oTEmfStretchDIBITS.cbBitsSrc > 0)
@@ -176,6 +180,8 @@ namespace MetaFile
                         unsigned int unZero = 0;
                         for (unsigned int i = 0; i < oTEmfBitBlt.cbBmiSrc ; ++i)
                             m_pOutStream->write((char *)&unZero, sizeof (BYTE));
+
+                        oDataStream.Skip(oTEmfBitBlt.cbBmiSrc);
                 }
 
                 if (oTEmfBitBlt.cbBitsSrc > 0)
@@ -214,6 +220,8 @@ namespace MetaFile
                         unsigned int unZero = 0;
                         for (unsigned int i = 0; i < oTEmfSetDiBitsToDevice.cbBmiSrc; ++i)
                             m_pOutStream->write((char *)&unZero, sizeof (BYTE));
+
+                        oDataStream.Skip(oTEmfSetDiBitsToDevice.cbBmiSrc);
                 }
 
                 if (oTEmfSetDiBitsToDevice.cbBitsSrc > 0)
@@ -259,6 +267,8 @@ namespace MetaFile
                         unsigned int unZero = 0;
                         for (unsigned int i = 0; i < oTEmfStretchBLT.cbBmiSrc; ++i)
                             m_pOutStream->write((char *)&unZero, sizeof (BYTE));
+
+                        oDataStream.Skip(oTEmfStretchBLT.cbBmiSrc);
                 }
 
                 if (oTEmfStretchBLT.cbBitsSrc > 0)
@@ -394,9 +404,8 @@ namespace MetaFile
                 if (NULL == oLogFont)
                         return;
 
-
-                int unExplicitRecordSize = (oLogFont->IsFixedLength()) ? 348
-                                                                       : (100 + oLogFont->DesignVector.NumAxes * sizeof(int));
+                int unExplicitRecordSize = (oLogFont->IsFixedLength()) ? 332
+                                                                       : (368 + oLogFont->DesignVector.NumAxes * sizeof(int));
 
                 int unType                  = EMR_EXTCREATEFONTINDIRECTW;
 
@@ -422,8 +431,8 @@ namespace MetaFile
                 m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.Quality,       sizeof (unsigned char));
                 m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.PitchAndFamily,sizeof (unsigned char));
 
-                WriteString(oLogFont->LogFontEx.LogFont.FaceName,   16);
-                WriteString(oLogFont->LogFontEx.FullName,           32);
+                WriteString(oLogFont->LogFontEx.LogFont.FaceName,   32);
+                WriteString(oLogFont->LogFontEx.FullName,           64);
                 WriteString(oLogFont->LogFontEx.Style,              32);
                 WriteString(oLogFont->LogFontEx.Script,             32);
 
@@ -1133,10 +1142,11 @@ namespace MetaFile
                 WriteRectangle(oTEmfExtTextoutW.wEmrText.Rectangle);
 
                 m_pOutStream->write((char *)&oTEmfExtTextoutW.wEmrText.offDx,       sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfExtTextoutW.wEmrText.OutputString,sizeof (unsigned short) * oTEmfExtTextoutW.wEmrText.Chars);
+
+                m_pOutStream->write((char *)oTEmfExtTextoutW.wEmrText.OutputString, sizeof (unsigned short) * oTEmfExtTextoutW.wEmrText.Chars);
 
                 if (unDxCount > 0)
-                        m_pOutStream->write((char *)&oTEmfExtTextoutW.wEmrText.OutputDx,sizeof (unsigned int) * unDxCount);
+                        m_pOutStream->write((char *)oTEmfExtTextoutW.wEmrText.OutputDx, sizeof (unsigned int) * unDxCount);
         }
 
         void CEmfInterpretator::HANDLE_EMR_LINETO(const TEmfPointL &oPoint)
@@ -1539,10 +1549,10 @@ namespace MetaFile
 
         void CEmfInterpretator::WriteRColor(const TEmfLogPaletteEntry &oRColor)
         {
-            m_pOutStream->write((char *)&oRColor.Reserved,  sizeof (unsigned char));
-            m_pOutStream->write((char *)&oRColor.Blue,      sizeof (unsigned char));
-            m_pOutStream->write((char *)&oRColor.Green,     sizeof (unsigned char));
-            m_pOutStream->write((char *)&oRColor.Red,       sizeof (unsigned char));
+                m_pOutStream->write((char *)&oRColor.Reserved,  sizeof (unsigned char));
+                m_pOutStream->write((char *)&oRColor.Blue,      sizeof (unsigned char));
+                m_pOutStream->write((char *)&oRColor.Green,     sizeof (unsigned char));
+                m_pOutStream->write((char *)&oRColor.Red,       sizeof (unsigned char));
         }
 
         void CEmfInterpretator::WriteForm(const TXForm &oForm)
@@ -1572,18 +1582,18 @@ namespace MetaFile
                 unsigned int unZero = 0;
                 if (NULL == arshString)
                 {
-                        m_pOutStream->write((char *)&unZero, sizeof (unsigned int) * unSize);
+                        m_pOutStream->write((char *)&unZero, sizeof (unsigned int) * 4);
                         return;
                 }
 
-                unsigned short ushNULL = 52685;
+                unsigned short ushNULL = 52685; //0xCDCD
 
                 for (unsigned int i = 0; i < unSize; ++i)
                 {
                         if (arshString[i] != ushNULL)
                             m_pOutStream->write((char *)&arshString[i], sizeof (unsigned short));
                         else
-                           m_pOutStream->write((char *)&unZero, sizeof (unsigned short));
+                            m_pOutStream->write((char *)&unZero, sizeof (unsigned short));
                     }
         }
 

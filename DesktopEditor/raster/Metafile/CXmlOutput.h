@@ -102,6 +102,8 @@ namespace MetaFile
         void WriteEmfLogPen             (const CEmfLogPen&              oEmfLogPen);
         void WriteEmfLogPalette         (const CEmfLogPalette&          oEmfLogPalette);
 
+        void WriteNode(const std::wstring& wsNameNode, const unsigned int* pUnValues, const unsigned int& unSize);
+
         // Чтение из Xml файла
 
     public:
@@ -157,6 +159,8 @@ namespace MetaFile
         void operator>>(unsigned short  arushValue[]);
         void operator>>(std::wstring&   wsValue);
         void operator>>(std::string&    sValue);
+
+        void ReadDx(unsigned int  arunValue[], const unsigned int& unCount);
     };
 }
 #endif // CXMLOUTPUT_H

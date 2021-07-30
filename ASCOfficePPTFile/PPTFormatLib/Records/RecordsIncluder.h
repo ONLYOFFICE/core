@@ -143,3 +143,6 @@
 
 #include "RoundTripOriginalMainMasterId12Atom.h"
 #include "RoundTripCompositeMainMasterId12Atom.h"
+
+// Meta data
+#include "RoundTripOArtTextStyles12Atom.h"

@@ -34,6 +34,7 @@
 #include "CString.h"
 
 
+
 class CRecordExHyperlinkAtom : public CUnknownRecord
 {
 
@@ -101,5 +102,11 @@ public:
             }
             currentLen += 8 + header.RecLen; // headerLen + CStringLen
         }
+//        if (m_friendlyNameAtom.IsInit() && (int)m_friendlyNameAtom->m_strText.find(L"NEXT") == -1)
+//            std::wcout << m_exHyperlinkAtom.m_nHyperlinkID << L" "
+//                       << (m_friendlyNameAtom.IsInit() ? m_friendlyNameAtom->m_strText : L"-") << L" "
+//                       << (m_targetAtom.IsInit() ? m_targetAtom->m_strText : L"-") << L" "
+//                       << (m_locationAtom.IsInit() ? m_locationAtom->m_strText : L"-")
+//                       << std::endl;
     }
 };

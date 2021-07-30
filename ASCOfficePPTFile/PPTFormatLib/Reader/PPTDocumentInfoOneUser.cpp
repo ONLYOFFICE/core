@@ -1629,6 +1629,14 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
     }
     int lLayoutID = AddNewLayout(pTheme, pMaster, false, true);
 
+
+    for (auto& oMaster : m_mapMasters)
+        oMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
+//    for (auto& oNoteMaster : m_mapNotesMasters)
+//        oNoteMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
+//    for (auto& oHandoutMaster : m_mapHandoutMasters)
+//        oHandoutMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
+
     if (lLayoutID >= 0 && false == pTheme->m_arLayouts.empty())
     {
         CLayout *pLayout_ = pTheme->m_arLayouts.back().get();
@@ -2386,14 +2394,14 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
         if (pExHyperlink->m_friendlyNameAtom.IsInit())
         {
             std::wstring& recStr =pExHyperlink->m_friendlyNameAtom->m_strText;
-//            int slideNum = oInfo.GetSlideNumber(recStr);
-//            if (slideNum != -1)
-//            {
-//                oInfo.m_strFilePath	= recStr;
-//                oInfo.m_type = CExFilesInfo::ExFilesType::eftSlide;
-//                m_oExMedia.m_arSlides.push_back(oInfo);
-//                wasSlide = true;
-//            }
+            int slideNum = oInfo.GetSlideNumber(recStr);
+            if (slideNum != -1)
+            {
+                oInfo.m_strFilePath	= recStr;
+                oInfo.m_type = CExFilesInfo::ExFilesType::eftSlide;
+                m_oExMedia.m_arSlides.push_back(oInfo);
+                wasSlide = true;
+            }
         }
 
         if (pExHyperlink->m_targetAtom.IsInit())

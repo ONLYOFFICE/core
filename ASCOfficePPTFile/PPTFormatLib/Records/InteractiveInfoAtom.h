@@ -31,6 +31,7 @@
  */
 #pragma once
 #include "../Reader/Records.h"
+#include <iostream>
 
 class CRecordInteractiveInfoAtom : public CUnknownRecord
 {
@@ -74,5 +75,8 @@ public:
 
         m_nHyperlinkType = StreamUtils::ReadBYTE(pStream);
         StreamUtils::StreamSkip(3, pStream);
+//        if (m_nExHyperlinkIdRef)
+//            std::wcout << L"HyperlinkIDRef: " << m_nExHyperlinkIdRef << std::endl;;
+
     }
 };

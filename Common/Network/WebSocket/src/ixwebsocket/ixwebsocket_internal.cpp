@@ -76,5 +76,7 @@ namespace NSNetwork
         {
             webSocket.stop();
         }
+
+        CIXWebSocket::~CIXWebSocket() = default;
     }
 }

@@ -66,7 +66,7 @@ public:
     void prepareServer();
 
     //before debugged code
-    void beforeLaunch(const char *fname);
+    void beforeLaunch();
 
     ~CInspectorImpl();
 };

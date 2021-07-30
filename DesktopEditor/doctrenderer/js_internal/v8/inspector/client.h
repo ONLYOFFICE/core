@@ -18,12 +18,17 @@ class CInspectorImpl;
 class CInspectorClient : public v8_inspector::V8InspectorClient
 {
     //notable cdt messages
-    static constexpr char serverReadyMessage[32] = "Runtime.runIfWaitingForDebugger";
+    static constexpr char serverReadyMessage[32] {"Runtime.runIfWaitingForDebugger"};
 
-    static constexpr char scriptResumeMessage[25] = "Debugger.getScriptSource";
+    static constexpr char scriptResumeMessage[25] {"Debugger.getScriptSource"};
 
-    static constexpr char funcResumeMessageEarly[35] = "Overlay.setPausedInDebuggerMessage";
-    static constexpr char funcResumeMessageLate[22] = "Runtime.getProperties";
+    static constexpr char funcResumeMessageEarly[35] {"Overlay.setPausedInDebuggerMessage"};
+    static constexpr char funcResumeMessageLate[22] {"Runtime.getProperties"};
+
+    static constexpr char activateBreakpointsMethod[30] {"Debugger.setBreakpointsActive"};
+    static constexpr char setBreakpointMethod[23] {"Debugger.setBreakpoint"};
+    static constexpr char removeBreakpointMethod[26] {"Debugger.removeBreakpoint"};
+    static constexpr char getPossibleBreakpointsMethod[32] {"Debugger.getPossibleBreakpoints"};
 
     //v8 stuff
     v8::Local<v8::Context> m_Context{};//to register context in inspector
@@ -39,11 +44,11 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
     std::unique_ptr<v8_inspector::V8Inspector::Channel> m_pChannel{nullptr};
     std::unique_ptr<v8_inspector::V8InspectorSession> m_pSession{nullptr};
 
-    enum class bp : int {
-        no
-        , beforeRuntime
-        , afterRuntime
-    } m_bp{bp::no};
+    //сообщения об изменении брейкпойнтов могут приходить в любом порядке
+    //поэтому вместо конечного автомата просто флаги
+    bool m_bBreakpointAdded{false};
+    bool m_bBreakpointAlterMethodCame{false};
+    bool m_bResumeOnBreakpointCame{false};
 
     //message loop flag
     bool m_bPause{false};
@@ -76,6 +81,10 @@ class CInspectorClient : public v8_inspector::V8InspectorClient
     //
     void resumeDebuggingSession();
 
+    //
+    bool isBreakpointAlterMethod(const std::string &method);
+    bool isActiveTrue(const std::string &message);
+
 public:
     CInspectorClient() = delete;
     CInspectorClient(const CInspectorClient&) = delete;
@@ -105,7 +114,7 @@ public:
     void processFrontendMessage(const std::string &message);
 
     //api for inspector: schedule pause on next statement
-    void pauseOnNextStatement(const char *fname);
+    void pauseOnNextStatement();
 
     ~CInspectorClient();
 };

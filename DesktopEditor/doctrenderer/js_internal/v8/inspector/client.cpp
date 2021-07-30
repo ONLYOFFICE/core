@@ -102,32 +102,42 @@ void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessage(const 
         return;
     }
 
-    if (m_bp == bp::afterRuntime) {//3
-        if (message.find(R"("method":"Debugger.setBreakpoint")") != std::string::npos
-                || message.find(R"("method":"Debugger.removeBreakpoint")") != std::string::npos) {
-            std::cout << "after runtime bp flag check, to resume\n";
-            m_bp = bp::no;
-            return resumeDebuggingSession();
+    //3
+    //ждём первого сообщения о постановке/снятии брейкпойнта
+    //остальные придут на паузе
+    //если Runtime.getProperties пришёл до этого, снимаемся с паузы
+    if (m_bBreakpointAdded) {
+        if (isBreakpointAlterMethod(method)) {
+            m_bBreakpointAlterMethodCame = true;
+            if (m_bResumeOnBreakpointCame) {
+                return resumeDebuggingSession();
+            }
+            return;
         }
     }
 
     //1
-    if (message.find(R"("method":"Debugger.setBreakpointsActive","params":{"active":true})") != std::string::npos) {
-        std::cout << "bp check\n";
-        m_bp = bp::beforeRuntime;//1
+    //если пришёл Debugger.setBreakpointsActive
+    if (activateBreakpointsMethod == method) {
+        //и active == true
+        if (isActiveTrue(message)) {
+            //ставим флаг, что ждём изменения брейкпойнтов
+            m_bBreakpointAdded = true;
+        }
         return;
     }
+
     //функции вызываются чаще, первыми проверяем их
     if (funcResumeMessageLate == method) {
-        //2
-        if (m_bp == bp::beforeRuntime) {
-            std::cout << "runtime with bp check\n";
-            m_bp = bp::afterRuntime;//2
+        //если ждём изменения брейкпойнтов, запоминаем, что Runtime.getProperties пришёл
+        if (m_bBreakpointAdded) {
+            m_bResumeOnBreakpointCame = true;
+            //если сообщение об изменении брейкпойнтов пришло до этого, снимаемся с паузы
+            if (m_bBreakpointAlterMethodCame) {
+                return resumeDebuggingSession();
+            }
             return;
-        }
-
-        if (m_bp == bp::no){
-            std::cout << "to plain resume after runtime\n";
+        } else {
             return resumeDebuggingSession();
         }
     }
@@ -153,17 +163,57 @@ void NSJSBase::v8_debug::internal::CInspectorClient::maybeLogIncoming(
     logCdtMessage(std::cout, message);
 }
 
-void NSJSBase::v8_debug::internal::CInspectorClient::pauseOnNextStatement(const char *fname)
+void NSJSBase::v8_debug::internal::CInspectorClient::pauseOnNextStatement()
 {
-//    if (std::string(fname) != "offline_mouse_move")
     m_bMySessionPause = true;
     m_pSession->schedulePauseOnNextStatement(strToView("other"), {});
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::resumeDebuggingSession()
 {
+    //manual pause setting flag
     m_bMySessionPause = false;
+
+    //breakpoint altering flags
+    m_bBreakpointAdded = false;
+    m_bBreakpointAlterMethodCame = false;
+    m_bResumeOnBreakpointCame = false;
+
     m_pSession->resume();
+}
+
+bool NSJSBase::v8_debug::internal::CInspectorClient::isBreakpointAlterMethod(const std::string &method)
+{
+    return method == setBreakpointMethod || method == removeBreakpointMethod;
+}
+
+bool NSJSBase::v8_debug::internal::CInspectorClient::isActiveTrue(const std::string &message)
+{
+    v8::Local<v8::Value> params = getJsonProperty(m_Context, message, "params");
+    if (params.IsEmpty()) {
+        return false;
+    }
+    if (!params->IsObject()) {
+        return false;
+    }
+    v8::MaybeLocal<v8::Object> maybeObj = params->ToObject(m_Context);
+    if (maybeObj.IsEmpty()) {
+        return false;
+    }
+    v8::Local<v8::Object> obj = maybeObj.ToLocalChecked();
+    v8::Local<v8::Value> active = getJsonPropertyImpl(m_Context, obj, "active");
+    if (active.IsEmpty()) {
+        return false;
+    }
+    if (!active->IsBoolean()){
+        return false;
+    }
+    v8::MaybeLocal<v8::Boolean> maybeBool = active->ToBoolean(m_Context);
+    if (maybeBool.IsEmpty()) {
+        return false;
+    }
+    v8::Local<v8::Boolean> result = maybeBool.ToLocalChecked();
+    return result->IsTrue();
 }
 
 void NSJSBase::v8_debug::internal::CInspectorClient::dispatchProtocolMessage(

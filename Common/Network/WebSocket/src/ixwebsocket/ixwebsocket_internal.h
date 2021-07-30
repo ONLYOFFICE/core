@@ -48,13 +48,19 @@ namespace NSNetwork
            
         public:
 
-            CIXWebSocket(const std::string& url, std::shared_ptr<IListener> listener);
+            CIXWebSocket(const std::string& url, std::shared_ptr<IListener> listener): CWebWorkerBase(url, listener)
+            {
+                ix::initNetSystem();
+            }
+            
+        public:
             
             virtual void open() override;
             virtual void send(const std::string& message) override;
             virtual void close() override;
             void receive(const ix::WebSocketMessagePtr& msg);
             virtual ~CIXWebSocket();
+
         };
     }
 }

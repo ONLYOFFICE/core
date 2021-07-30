@@ -31,17 +31,11 @@
  */
 
 #include "ixwebsocket_internal.h"
-#include <iostream>
 
 namespace NSNetwork
 {
     namespace NSWebSocket
     {
-        CIXWebSocket::CIXWebSocket(const std::string &url, std::shared_ptr<IListener> listener): CWebWorkerBase(url, listener)
-        {
-            //
-        }
-
         void CIXWebSocket::open()
         {
             ix::SocketTLSOptions tls;
@@ -65,25 +59,12 @@ namespace NSNetwork
             }
             else if (msg->type == ix::WebSocketMessageType::Error)
             {
-                auto errinfo = msg->errorInfo;
-                std::cerr << std::boolalpha
-                          << "is decomp err " << errinfo.decompressionError << std::endl
-                          << "http status " << errinfo.http_status << std::endl
-                          << "reason " << errinfo.reason << std::endl
-                          << "retries " << errinfo.retries << std::endl
-                          << "wait time " << errinfo.wait_time << std::endl
-                          << std::endl;
                 CWebWorkerBase::listener->onError(msg->errorInfo.reason);
             }
             else if (msg->type == ix::WebSocketMessageType::Close)
             {
                 CWebWorkerBase::listener->onClose(msg->closeInfo.code, msg->closeInfo.reason);
             }
-        }
-
-        CIXWebSocket::~CIXWebSocket()
-        {
-            this->close();
         }
 
         void CIXWebSocket::send(const std::string& message)
@@ -95,5 +76,7 @@ namespace NSNetwork
         {
             webSocket.stop();
         }
+
+        CIXWebSocket::~CIXWebSocket() = default;
     }
 }

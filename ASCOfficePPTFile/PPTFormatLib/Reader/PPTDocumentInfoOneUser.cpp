@@ -2386,14 +2386,14 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
         if (pExHyperlink->m_friendlyNameAtom.IsInit())
         {
             std::wstring& recStr =pExHyperlink->m_friendlyNameAtom->m_strText;
-//            int slideNum = oInfo.GetSlideNumber(recStr);
-//            if (slideNum != -1)
-//            {
-//                oInfo.m_strFilePath	= recStr;
-//                oInfo.m_type = CExFilesInfo::ExFilesType::eftSlide;
-//                m_oExMedia.m_arSlides.push_back(oInfo);
-//                wasSlide = true;
-//            }
+            int slideNum = oInfo.GetSlideNumber(recStr);
+            if (slideNum != -1)
+            {
+                oInfo.m_strFilePath	= recStr;
+                oInfo.m_type = CExFilesInfo::ExFilesType::eftSlide;
+                m_oExMedia.m_arSlides.push_back(oInfo);
+                wasSlide = true;
+            }
         }
 
         if (pExHyperlink->m_targetAtom.IsInit())

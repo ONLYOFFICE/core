@@ -1921,7 +1921,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         {
             oArrayTextBox[0]->GetRecordsByType(&oArrayTextInteractive, false);
 
-            oArrayTextBox[0]->GetRecordsByType(&oArrayInteractiveCont, false);
+//            oArrayTextBox[0]->GetRecordsByType(&oArrayInteractiveCont, false);
         }
 
         for (const auto* pInerAtom : oArrayInteractiveCont)
@@ -2618,11 +2618,12 @@ void CRecordShapeContainer::ConvertInteractiveInfo(CInteractiveInfo &interactive
         if (NULL != pInfo2)
         {
             interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
-        }
-        pInfo2 = pMapIDs->LockHyperlink(interactiveAtom.m_nExHyperlinkIdRef);
-        if (NULL != pInfo2)
-        {
-            interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
+        } else {
+            pInfo2 = pMapIDs->LockHyperlink(interactiveAtom.m_nExHyperlinkIdRef);
+            if (NULL != pInfo2)
+            {
+                interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
+            }
         }
     }
     if (interactiveCont->macroNameAtom.is_init())

@@ -351,25 +351,25 @@ namespace OOX
 
 			if (m_oKey.IsInit())
 			{
-				sResult += L"w:key=\"" + XmlUtils::EncodeXmlString(m_oKey.get()) + L"\" ";
+				sResult += L" w:key=\"" + XmlUtils::EncodeXmlString(m_oKey.get()) + L"\"";
 			}
 			if (m_oLabel.IsInit())
 			{
-				sResult += L"w:label=\"" + XmlUtils::EncodeXmlString(m_oLabel.get()) + L"\" ";
+				sResult += L" w:label=\"" + XmlUtils::EncodeXmlString(m_oLabel.get()) + L"\"";
 			}
 			if (m_oHelpText.IsInit())
 			{
-				sResult += L"w:helpText=\"" + XmlUtils::EncodeXmlString(m_oHelpText.get()) + L"\" ";
+				sResult += L" w:helpText=\"" + XmlUtils::EncodeXmlString(m_oHelpText.get()) + L"\"";
 			}
 			if (m_oRequired.IsInit())
 			{
 				if (*m_oRequired)
 				{
-					sResult += L"w:required=\"1\" ";
+					sResult += L" w:required=\"1\" ";
 				}
 				else
 				{
-					sResult += L"w:required=\"0\" ";
+					sResult += L" w:required=\"0\" ";
 				}
 
 			}
@@ -377,7 +377,7 @@ namespace OOX
 			WritingElement_WriteNode_1(L"<w:shd ", m_oShd);
 			WritingElement_WriteNode_1(L"<w:border ", m_oBorder);
 
-			sResult += L"</w:textFormPr>";
+			sResult += L"</w:formPr>";
 
 			return sResult;
 

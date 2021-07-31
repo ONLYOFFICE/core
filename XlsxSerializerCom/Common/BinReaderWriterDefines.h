@@ -143,7 +143,7 @@ namespace BinXlsxRW
 		Aligment = 13,
 		Protection = 14
 	};}
-	namespace c_oSerProtectionTypes {enum c_oSerAligmentTypes
+	namespace c_oSerProtectionTypes {enum c_oSerProtectionTypes
 	{
 		Hidden = 0,
 		Locked = 1

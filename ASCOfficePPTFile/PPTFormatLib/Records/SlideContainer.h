@@ -32,6 +32,7 @@
 #pragma once
 #include "../Reader/Records.h"
 #include "SlideProgTagsContainer.h"
+#include "VBAInfoAtom.h"
 
 #include "../Records/SSSlideInfoAtom.h"
 
@@ -105,6 +106,16 @@ public:
                 m_pSlideProgTagsContainer =
                         new CRecordSlideProgTagsContainer();
                 m_pSlideProgTagsContainer->ReadFromStream(oRec, pStream);
+
+                lCurLen += (8 + oRec.RecLen);
+                continue;
+            }
+
+            if (RT_VbaInfo == oRec.RecType)
+            {
+                auto pVbaInfo = new CRecordsContainer;
+                pVbaInfo->ReadFromStream(oRec, pStream);
+                m_arRecords.push_back(pVbaInfo);
 
                 lCurLen += (8 + oRec.RecLen);
                 continue;

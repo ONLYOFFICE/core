@@ -151,7 +151,7 @@ namespace PdfReader
 				if (oCryptCurFilter.DictLookup("Length", &oCFLength)->IsInt())
 				{
 					// Согласно спецификации, должно быть oCFLength / 8
-					m_nFileKeyLength = oCFLength.GetInt();
+					m_nFileKeyLength = oCFLength.GetInt() / 8;
 				}
 				oCFLength.Free();	
 

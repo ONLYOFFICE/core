@@ -229,7 +229,7 @@ namespace PdfReader
 	{
 		m_oCS.InitializeCriticalSection();
 
-        m_arrDecryptKey = NULL;
+		m_arrDecryptKey = NULL;
 
 		m_bValidXref = true;
 		m_eErrorCode = errorNone;
@@ -316,9 +316,8 @@ namespace PdfReader
 			delete m_pObjectStream;
 		}
 
-        if (NULL != m_arrDecryptKey)
-            MemUtilsFree(m_arrDecryptKey);
-        m_arrDecryptKey = NULL;
+		if (NULL != m_arrDecryptKey)
+			MemUtilsFree(m_arrDecryptKey);		
 
 		m_oCS.DeleteCriticalSection();
 	}
@@ -932,9 +931,9 @@ namespace PdfReader
 		m_bOwnerPassword = bOwnerPassword;
 		m_nKeyLength = nKeyLength;
 
-        if (NULL != m_arrDecryptKey)
-            MemUtilsFree(m_arrDecryptKey);
-        m_arrDecryptKey = (unsigned char*)MemUtilsMalloc(m_nKeyLength);
+		if (NULL != m_arrDecryptKey)
+			MemUtilsFree(m_arrDecryptKey);
+		m_arrDecryptKey = (unsigned char*)MemUtilsMalloc(m_nKeyLength);
 
 		for (int nIndex = 0; nIndex < m_nKeyLength; ++nIndex)
 		{

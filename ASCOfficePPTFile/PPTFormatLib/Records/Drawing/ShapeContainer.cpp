@@ -1880,7 +1880,6 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         if (0 < oArrayTextBytes.size() && strShapeText.empty())
         {
             strShapeText = oArrayTextBytes[0]->m_strText;
-            pShapeElem->m_pShape->m_oText.m_originalText = strShapeText;
         }
 
         std::vector<CRecordTextCharsAtom*> oArrayTextChars;
@@ -2559,12 +2558,13 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
     auto& oTextAttributes = pShape->m_pShape->m_oText;
     const auto& originalText = oTextAttributes.m_originalText;
 
+
     // lenght these ones shoud be equal
     const auto& arrRanges	= pShape->m_oTextActions.m_arRanges;
     const auto arrSplitedInteractive = splitInteractive(pShape->m_textHyperlinks);
 
     // It cannot be changed
-    if (arrRanges.empty() || arrSplitedInteractive.empty())
+    if (arrRanges.empty() || arrSplitedInteractive.empty() || originalText.empty())
         return;
 
     size_t posOrigText(0);

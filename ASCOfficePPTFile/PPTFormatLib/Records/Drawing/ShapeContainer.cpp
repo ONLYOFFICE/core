@@ -1935,9 +1935,9 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
         if (oArrayTextBox.size())
         {
+            // It's differance records
             oArrayTextBox[0]->GetRecordsByType(&oArrayTextInteractive, false);
-
-//            oArrayTextBox[0]->GetRecordsByType(&oArrayInteractiveCont, false);
+            oArrayTextBox[0]->GetRecordsByType(&oArrayInteractiveCont, false);
         }
 
         for (const auto* pInerAtom : oArrayInteractiveCont)

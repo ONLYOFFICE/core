@@ -403,14 +403,18 @@ bool CPPTUserInfo::ReadDocumentPersists(POLE::Stream* pStream)
     if (m_bMacros)
     {
         m_bMacros = false;
-        std::vector<CRecordVBAInfoAtom*> oArrayVba;
-        m_oDocument.GetRecordsByType(&oArrayVba, true, true);
+        std::vector<CRecordDocInfoListContainer*> oArrayDocInfo;
+        m_oDocument.GetRecordsByType(&oArrayDocInfo, true, true);
 
-        if (!oArrayVba.empty())
+        CRecordVBAInfoAtom* pVbaAtom = nullptr;
+        if (!oArrayDocInfo.empty())
+            pVbaAtom = oArrayDocInfo[0]->getVBAInfoAtom();
+
+        if (pVbaAtom)
         {
-            if (oArrayVba[0]->m_nHasMacros)
+            if (pVbaAtom->m_nHasMacros)
             {
-                nIndexPsrRef = m_mapOffsetInPIDs.find(oArrayVba[0]->m_nObjStgDataRef);
+                nIndexPsrRef = m_mapOffsetInPIDs.find(pVbaAtom->m_nObjStgDataRef);
 
                 if (m_mapOffsetInPIDs.end() != nIndexPsrRef)
                 {
@@ -420,7 +424,7 @@ bool CPPTUserInfo::ReadDocumentPersists(POLE::Stream* pStream)
                     POLE::Stream *pStreamTmp = pStream;
                     if (m_pDecryptor)
                     {
-                        DecryptStream(pStream, oArrayVba[0]->m_nObjStgDataRef);
+                        DecryptStream(pStream, pVbaAtom->m_nObjStgDataRef);
                         pStreamTmp = m_arStreamDecrypt.back()->stream_;
                     }
                     oHeader.ReadFromStream(pStreamTmp);

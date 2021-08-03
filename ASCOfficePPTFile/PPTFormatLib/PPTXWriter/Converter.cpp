@@ -40,6 +40,7 @@
 #include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
+#include "TableWriter.h"
 #include "../Reader/PPTDocumentInfo.h"
 
 #include "ShapeWriter.h"
@@ -946,17 +947,12 @@ void PPT_FORMAT::CPPTXWriter::WriteGroup(CStringWriter& oWriter, CRelsGenerator&
 }
 void PPT_FORMAT::CPPTXWriter::WriteTable(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {
-    CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
+    CTableElement *pTableElement = dynamic_cast<CTableElement*>(pElement.get());
 
-    m_pShapeWriter->SetElement(pElement);
-    oWriter.WriteString(m_pShapeWriter->ConvertTable());
 
-    oWriter.WriteString(m_pShapeWriter->ConvertTableCells());
-    //    for (size_t i = 0; i < pGroupElement->m_pChildElements.size(); i++)
-    //    {
-    //        WriteElement(oWriter, oRels, pGroupElement->m_pChildElements[i], pLayout);
-    //    }
-    oWriter.WriteString(L"</a:tbl></a:graphicData></a:graphic></p:graphicFrame>");
+    PPTX::Logic::GraphicFrame gf;
+    TableWriter(pTableElement, &oRels).Convert(gf);
+    oWriter.WriteString(gf.toXML());
 }
 void PPT_FORMAT::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {

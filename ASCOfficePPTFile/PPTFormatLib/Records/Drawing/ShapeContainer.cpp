@@ -2592,6 +2592,10 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
 
             const bool isNeedToSplit = posBlockEnd < posOrigSpanEnd && isHyperlink;
 
+            // Skiping span with '\r'
+            if (iterSpan->m_strText.size() && (int)iterSpan->m_strText.find(L"\r") != -1)
+                continue;
+
             posOrigText += blockLen;
             // Skipping span
             if (iterRange->m_lStart > posBlockEnd)

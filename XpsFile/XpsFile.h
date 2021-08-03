@@ -67,7 +67,7 @@ public:
 
 	void         ConvertToPdf(const std::wstring& wsDstPath);
     #ifdef BUILDING_WASM_MODULE
-    BYTE* GetGlyphs(int nPageIndex);
+    BYTE* GetGlyphs(int nPageIndex, int nRasterW, int nRasterH);
     BYTE* GetStructure();
     #endif
 

@@ -55,7 +55,6 @@ namespace XPS
 		void GetSize(int& nW, int& nH) const;
 		#ifdef BUILDING_WASM_MODULE
 		BYTE* GetGlyphs();
-        BYTE* GetGlyphs2();
         class CData
         {
         protected:
@@ -179,6 +178,14 @@ namespace XPS
             }
         };
         CData* m_pGlyphs;
+        class CPageLink
+        {
+            double dX;
+            double dY;
+            double dW;
+            double dH;
+        };
+        std::vector<CPageLink> m_vExternalLinks;
         #endif
 		void Draw(IRenderer* pRenderer, bool* pbBreak);
 

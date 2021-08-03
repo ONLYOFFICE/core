@@ -283,8 +283,10 @@ void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 	oPdf.SaveToFile(wsPath);
 }
 #ifdef BUILDING_WASM_MODULE
-BYTE* CXpsFile::GetGlyphs(int nPageIndex)
+BYTE* CXpsFile::GetGlyphs(int nPageIndex, int nRasterW, int nRasterH)
 {
+	BYTE* oTemp = ConvertToPixels(nPageIndex, nRasterW, nRasterH);
+	RELEASEARRAYOBJECTS(oTemp);
 	return m_pInternal->m_pDocument->GetPageGlyphs(nPageIndex);
 }
 BYTE* CXpsFile::GetStructure()

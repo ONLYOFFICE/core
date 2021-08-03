@@ -63,9 +63,9 @@ WASM_EXPORT BYTE* XPS_GetPixmap(CGraphicsFileDrawing* pGraphics, int nPageIndex,
 {
     return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH);
 }
-WASM_EXPORT BYTE* XPS_GetGlyphs(CGraphicsFileDrawing* pGraphics, int nPageIndex)
+WASM_EXPORT BYTE* XPS_GetGlyphs(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
-    return pGraphics->GetXPSGlyphs(nPageIndex);
+    return pGraphics->GetXPSGlyphs(nPageIndex, nRasterW, nRasterH);
 }
 WASM_EXPORT BYTE* DJVU_GetGlyphs(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
@@ -96,8 +96,8 @@ static DWORD GetLength(BYTE* x)
 
 int main()
 {
-#define XPS_TEST  0
-#define DJVU_TEST 1
+#define XPS_TEST  1
+#define DJVU_TEST 0
 #if XPS_TEST
     BYTE* pXpsData = NULL;
     DWORD nXpsBytesCount;
@@ -115,23 +115,8 @@ int main()
     int pages_count = *info;
     int width  = info[1] * 96 / info[3];
     int height = info[2] * 96 / info[3];
-    BYTE* res = NULL;
-    if (pages_count > 0)
-        res = XPS_GetPixmap(test, 0, width, height);
 
-    for (int i = 0; i < 100; i++)
-        std::cout << (int)res[i] << " ";
-
-    CBgraFrame* resFrame = new CBgraFrame();
-    resFrame->put_Data(res);
-    resFrame->put_Width(width);
-    resFrame->put_Height(height);
-    resFrame->put_Stride(-4 * width);
-    resFrame->put_IsRGBA(true);
-    resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
-    resFrame->ClearNoAttack();
-
-    BYTE* pGlyphs = XPS_GetGlyphs(test, 0);
+    BYTE* pGlyphs = XPS_GetGlyphs(test, 0, width, height);
     DWORD nLength = GetLength(pGlyphs);
     DWORD i = 4;
     nLength -= 4;
@@ -164,6 +149,22 @@ int main()
             std::cout << "Symbol " << nPathLength << std::endl;
         }
     }
+
+    BYTE* res = NULL;
+    if (pages_count > 0)
+        res = XPS_GetPixmap(test, 0, width, height);
+
+    for (int i = 0; i < 100; i++)
+        std::cout << (int)res[i] << " ";
+
+    CBgraFrame* resFrame = new CBgraFrame();
+    resFrame->put_Data(res);
+    resFrame->put_Width(width);
+    resFrame->put_Height(height);
+    resFrame->put_Stride(-4 * width);
+    resFrame->put_IsRGBA(true);
+    resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
+    resFrame->ClearNoAttack();
 
     BYTE* pStructure = XPS_GetStructure(test);
     nLength = GetLength(pStructure);

@@ -74,9 +74,9 @@ public:
         }
         return flipped;
     }
-    BYTE* GetXPSGlyphs(int nPageIndex)
+    BYTE* GetXPSGlyphs(int nPageIndex, int nRasterW, int nRasterH)
     {
-        return ((CXpsFile*)pReader)->GetGlyphs(nPageIndex);
+        return ((CXpsFile*)pReader)->GetGlyphs(nPageIndex, nRasterW, nRasterH);
     }
     BYTE* GetDJVUGlyphs(int nPageIndex, int nRasterW, int nRasterH)
     {

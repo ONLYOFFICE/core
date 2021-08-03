@@ -187,88 +187,6 @@ namespace XPS
 		}
 		return NULL;
 	}
-    BYTE* ForGetGlyphs2(XmlUtils::CXmlLiteReader& oReader)
-    {
-        if (oReader.IsEmptyNode())
-            return NULL;
-
-        int nCurDepth = oReader.GetDepth();
-        while (oReader.ReadNextSiblingNode(nCurDepth))
-        {
-            if (oReader.GetName() == L"Glyphs")
-            {
-
-            }
-        }
-
-        return NULL;
-    }
-    BYTE* Page::GetGlyphs2()
-    {
-        XmlUtils::CXmlLiteReader oReader;
-
-        if (!oReader.FromStringA(m_wsRootPath->readXml(m_wsPagePath)))
-            return NULL;
-
-        if (!oReader.ReadNextNode())
-            return NULL;
-
-        CWString wsNodeName = oReader.GetName();
-        if (wsNodeName == L"mc:AlternateContent")
-        {
-            if (!oReader.IsEmptyNode())
-            {
-                int nAltDepth = oReader.GetDepth();
-                while (oReader.ReadNextSiblingNode(nAltDepth))
-                {
-                    wsNodeName = oReader.GetName();
-                    if (wsNodeName == L"mc:Choice")
-                    {
-                        CWString wsAttr;
-                        ReadAttribute(oReader, L"Requires", wsAttr);
-                        if (wsAttr == L"xps")
-                        {
-                            if (!oReader.IsEmptyNode())
-                            {
-                                int nAltDepth2 = oReader.GetDepth();
-                                while (oReader.ReadNextSiblingNode(nAltDepth2))
-                                {
-                                    wsNodeName = oReader.GetName();
-                                    if (wsNodeName == L"FixedPage")
-                                    {
-                                        return ForGetGlyphs2(oReader);
-                                    }
-                                }
-                            }
-                            break;
-                        }
-                    }
-                    else if (wsNodeName == L"mc:Fallback")
-                    {
-                        if (!oReader.IsEmptyNode())
-                        {
-                            int nAltDepth2 = oReader.GetDepth();
-                            while (oReader.ReadNextSiblingNode(nAltDepth2))
-                            {
-                                wsNodeName = oReader.GetName();
-                                if (wsNodeName == L"FixedPage")
-                                {
-                                    return ForGetGlyphs2(oReader);
-                                }
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-        else if (wsNodeName == L"FixedPage")
-        {
-            return ForGetGlyphs2(oReader);
-        }
-
-        return NULL;
-    }
 	#endif
 	void Page::Draw(IRenderer* pRenderer, bool* pbBreak)
 	{
@@ -1051,6 +969,16 @@ namespace XPS
 				{
 					std::wstring wsNameTarget = oReader.GetText();
 					find = std::find_if(m_pDocument->m_vStructure.begin(), m_pDocument->m_vStructure.end(), [wsNameTarget](const CDocument::CDocumentStructure& str){ return str.wsTarget == wsNameTarget; });
+				}
+				else if (L"FixedPage.NavigateUri" == wsAttrName)
+				{
+					std::wstring wsPath = wsPathData.c_stdstr();
+
+					std::wstring wsNameTarget = oReader.GetText();
+					if (wsNameTarget.find(L"http") == 0)
+					{
+						m_vExternalLinks.push_back({});
+					}
 				}
 				#endif
 

@@ -951,17 +951,29 @@ void PPT_FORMAT::CPPTXWriter::WriteTable(CStringWriter& oWriter, CRelsGenerator&
 
 
     PPTX::Logic::GraphicFrame gf;
-    TableWriter(pTableElement, &oRels).Convert(gf);
-    oWriter.WriteString(gf.toXML());
+    TableWriter table(pTableElement, &oRels);
+    if (pTableElement->m_xmlRawData.empty())
+    {
+        table.Convert(gf);
+        oWriter.WriteString(gf.toXML());
+    } else
+    {
+        oWriter.WriteString(table.getXmlForGraphicFrame());
+    }
 }
+
 void PPT_FORMAT::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {
     if (!pElement) return;
 
-    CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
 
-    if (pGroupElement && pGroupElement->m_sName.find(L"Table") != -1)
+    CTableElement *pTableElement = dynamic_cast<CTableElement*>(pElement.get());
+    if (pTableElement)
+    {
         return WriteTable(oWriter, oRels, pElement, pLayout);
+    }
+
+    CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
     if (pGroupElement)
     {
         return WriteGroup(oWriter, oRels, pElement, pLayout);

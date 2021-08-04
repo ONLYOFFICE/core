@@ -436,10 +436,7 @@ namespace PPTX
 
 			pReader->Seek(_end_rec);
 		}
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/release/v6.4.0
 		void Shape::FillParentPointersForChilds()
 		{
 			nvSpPr.SetParentPointer(this);

@@ -48,6 +48,8 @@
 
 #include "Converter.h"
 #include "Animation.h"
+#include <unordered_set>
+#include <boost/uuid/detail/md5.hpp>
 
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/Transition.h"
@@ -61,6 +63,8 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/WheelTransition.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/SplitTransition.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/ZoomTransition.h"
+
+typedef boost::uuids::detail::md5 MD5;
 
 namespace PPT_FORMAT
 {
@@ -602,16 +606,78 @@ void PPT_FORMAT::CPPTXWriter::WriteAll()
 void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
     int nStartLayout = 0, nIndexTheme = 0;
-
-    for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
+    auto arrRT = m_pDocument->getArrRoundTripTheme();
+    if (arrRT.empty())
     {
-        m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i].get();
-        WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
-        m_pShapeWriter->m_pTheme = NULL;
+        for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
+        {
+            m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i].get();
+            WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
+            m_pShapeWriter->m_pTheme = NULL;
+        }
+    }
+    else
+    {
+        WriteRoundTripThemes(arrRT, nIndexTheme);
     }
 
     WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
     WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
+}
+
+void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom*>& arrRTThemes, int& nIndexTheme)
+{
+    std::unordered_set<MD5> writedFilesHash;
+    for (const auto* pRTT : arrRTThemes)
+    {
+        std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
+
+        std::wstring strThemeFile = L"theme" + std::to_wstring(nIndexTheme + 1) + L".xml";
+        strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
+
+        CFile oFile;
+        oFile.CreateFile(strThemeFile);
+
+        if (pRTT == nullptr)
+            continue;
+
+        auto& zipData = *pRTT;
+        BYTE* themeData = zipData.data.first.get();
+        ULONG themeLen = zipData.data.second;
+        NSFile::CFileBinary binFile;
+
+        std::wstring temp = NSDirectory::GetTempPath();
+
+        std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempTheme.zip";
+        if (binFile.CreateFileW(tempFileName))
+        {
+            binFile.WriteFile(themeData, themeLen);
+            binFile.CloseFile();
+        }
+
+        COfficeUtils officeUtils(NULL);
+        BYTE *utf8Data = NULL;
+        ULONG utf8DataSize = 0;
+        // here need to check second theme and etc
+        if(S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"theme/theme/theme1.xml", &utf8Data, utf8DataSize))
+        {
+            MD5 hash;
+            hash.process_bytes(utf8Data, utf8DataSize);
+            if (writedFilesHash.find(hash) == writedFilesHash.end())
+            {
+                oFile.WriteFile(utf8Data, utf8DataSize);
+                nIndexTheme++;
+                writedFilesHash.insert(hash);
+            }
+
+
+        }
+
+        NSFile::CFileBinary::Remove(tempFileName);
+        delete [] utf8Data;
+        oFile.CloseFile();
+
+    }
 }
 
 void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout)

@@ -59,6 +59,20 @@ public:
 
 };
 
+class CRecordVBAInfoContainer : public CRecordsContainer
+{
+public:
+    CRecordVBAInfoContainer()
+    {}
+    ~CRecordVBAInfoContainer()
+    {}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+        CRecordsContainer::ReadFromStream(oHeader, pStream);
+    }
+};
+
 class CRecordVbaProjectStg : public CUnknownRecord
 {
 public:

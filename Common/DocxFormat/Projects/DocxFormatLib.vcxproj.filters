@@ -121,9 +121,6 @@
     <Filter Include="XlsxFormat\SharedStrings">
       <UniqueIdentifier>{1be492b6-dbf2-436f-be99-b8ce8cd99269}</UniqueIdentifier>
     </Filter>
-    <Filter Include="XlsxFormat\Styles">
-      <UniqueIdentifier>{ebf55a86-a27b-4d5d-a95b-1f9cbc890855}</UniqueIdentifier>
-    </Filter>
     <Filter Include="XlsxFormat\Table">
       <UniqueIdentifier>{c6fe581a-01db-4119-9bbc-1dfdc7e376ed}</UniqueIdentifier>
     </Filter>
@@ -165,6 +162,9 @@
     </Filter>
     <Filter Include="Diagram">
       <UniqueIdentifier>{da1b6ba4-f567-4fa5-afe5-ba031ec0ad29}</UniqueIdentifier>
+     </Filter>
+   <Filter Include="XlsxFormat\Slicer\Styles">
+      <UniqueIdentifier>{ebf55a86-a27b-4d5d-a95b-1f9cbc890855}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -481,37 +481,37 @@
       <Filter>XlsxFormat\SharedStrings</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\Borders.h">
-      <Filter>XlsxFormat\Styles</Filter>
+      <Filter>XlsxFormat\Slicer\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\CellStyles.h">
-      <Filter>XlsxFormat\Styles</Filter>
+      <Filter>XlsxFormat\Slicer\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\Colors.h">
-      <Filter>XlsxFormat\Styles</Filter>
+      <Filter>XlsxFormat\Slicer\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\dxf.h">
-      <Filter>XlsxFormat\Styles</Filter>
+      <Filter>XlsxFormat\Slicer\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\Fills.h">
-      <Filter>XlsxFormat\Styles</Filter>
+      <Filter>XlsxFormat\Slicer\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\Fonts.h">
-      <Filter>XlsxFormat\Styles</Filter>
+      <Filter>XlsxFormat\Slicer\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\NumFmts.h">
-      <Filter>XlsxFormat\Styles</Filter>
+      <Filter>XlsxFormat\Slicer\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\rPr.h">
-      <Filter>XlsxFormat\Styles</Filter>
+      <Filter>XlsxFormat\Slicer\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\Styles.h">
-      <Filter>XlsxFormat\Styles</Filter>
+      <Filter>XlsxFormat\Slicer\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\TableStyles.h">
-      <Filter>XlsxFormat\Styles</Filter>
+      <Filter>XlsxFormat\Slicer\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\Xfs.h">
-      <Filter>XlsxFormat\Styles</Filter>
+      <Filter>XlsxFormat\Slicer\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Table\Autofilter.h">
       <Filter>XlsxFormat\Table</Filter>
@@ -694,6 +694,7 @@
     <ClInclude Include="..\Source\XlsxFormat\Chart\ChartDrawing.h">
       <Filter>XlsxFormat\Chart</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramColors.h">
       <Filter>Diagram</Filter>
     </ClInclude>
@@ -708,6 +709,10 @@
     </ClInclude>
     <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramQuickStyle.h">
       <Filter>Diagram</Filter>
+=======
+    <ClInclude Include="..\Source\XlsxFormat\Worksheets\Sparkline.h">
+      <Filter>XlsxFormat\Worksheets</Filter>
+>>>>>>> origin/release/v6.4.0
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -826,7 +831,7 @@
       <Filter>XlsxFormat\SharedStrings</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsxFormat\Styles\rPr.cpp">
-      <Filter>XlsxFormat\Styles</Filter>
+      <Filter>XlsxFormat\Slicer\Styles</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsxFormat\Table\Tables.cpp">
       <Filter>XlsxFormat\Table</Filter>

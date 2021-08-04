@@ -365,6 +365,7 @@ void CPdfRenderer::CCommandManager::Flush()
 			ETextRenderingMode eMode = textrenderingmode_Fill;
 			bool        isNeedDoBold = false;
 			bool      isNeedDoItalic = false;
+			double        dLineWidth = -1;
 
 			double dPrevX = -1000;
 			double dPrevY = -1000;
@@ -416,9 +417,20 @@ void CPdfRenderer::CCommandManager::Flush()
 					isNeedDoBold = pText->IsNeedDoBold();
 
 					if (isNeedDoBold && eMode == textrenderingmode_Fill)
+					{
+						double dNewLineWidth = dTextSize / 12 * 0.343;
+						if (fabs(dLineWidth - dNewLineWidth) > 0.001)
+						{
+							dLineWidth = dNewLineWidth;
+							pPage->SetLineWidth(dLineWidth);
+						}
+
 						pPage->SetTextRenderingMode(textrenderingmode_FillThenStroke);
+					}
 					else
+					{
 						pPage->SetTextRenderingMode(eMode);
+					}
 				}
 
 				if (fabs(dHorScaling - pText->GetHorScaling()) > 0.001)
@@ -457,8 +469,8 @@ void CPdfRenderer::CCommandManager::Flush()
 					}
 				}
 			}
-			oTextLine.Flush(pPage);
 
+			oTextLine.Flush(pPage);
 			pPage->EndText();
 		}
 

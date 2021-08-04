@@ -225,7 +225,7 @@ public:
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
 	template <typename T>
-	void GetRecordsByType(std::vector<T>* pArray, bool bIsChild, bool bOnlyFirst = false)
+    void GetRecordsByType(std::vector<T>* pArray, bool bIsChild, bool bOnlyFirst = false) const
 	{
 		if (NULL == pArray)
 			return;

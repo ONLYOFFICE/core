@@ -403,14 +403,18 @@ bool CPPTUserInfo::ReadDocumentPersists(POLE::Stream* pStream)
     if (m_bMacros)
     {
         m_bMacros = false;
-        std::vector<CRecordVBAInfoAtom*> oArrayVba;
-        m_oDocument.GetRecordsByType(&oArrayVba, true, true);
+        std::vector<CRecordDocInfoListContainer*> oArrayDocInfo;
+        m_oDocument.GetRecordsByType(&oArrayDocInfo, true, true);
 
-        if (!oArrayVba.empty())
+        CRecordVBAInfoAtom* pVbaAtom = nullptr;
+        if (!oArrayDocInfo.empty())
+            pVbaAtom = oArrayDocInfo[0]->getVBAInfoAtom();
+
+        if (pVbaAtom)
         {
-            if (oArrayVba[0]->m_nHasMacros)
+            if (pVbaAtom->m_nHasMacros)
             {
-                nIndexPsrRef = m_mapOffsetInPIDs.find(oArrayVba[0]->m_nObjStgDataRef);
+                nIndexPsrRef = m_mapOffsetInPIDs.find(pVbaAtom->m_nObjStgDataRef);
 
                 if (m_mapOffsetInPIDs.end() != nIndexPsrRef)
                 {
@@ -420,7 +424,7 @@ bool CPPTUserInfo::ReadDocumentPersists(POLE::Stream* pStream)
                     POLE::Stream *pStreamTmp = pStream;
                     if (m_pDecryptor)
                     {
-                        DecryptStream(pStream, oArrayVba[0]->m_nObjStgDataRef);
+                        DecryptStream(pStream, pVbaAtom->m_nObjStgDataRef);
                         pStreamTmp = m_arStreamDecrypt.back()->stream_;
                     }
                     oHeader.ReadFromStream(pStreamTmp);
@@ -536,8 +540,8 @@ void CPPTUserInfo::FromDocument()
         if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
         {
             m_bHasDate			=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate/* ||
-                                            oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
-                                            oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
+                                                                    oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
+                                                                    oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
             m_bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
             m_bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
@@ -731,8 +735,8 @@ void CPPTUserInfo::LoadNotes(_UINT32 dwNoteID, CSlide* pNotes)
         if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
         {
             bHasDate		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate/* ||
-                                        oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
-                                        oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
+                                                                oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
+                                                                oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
             bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
             bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
@@ -963,8 +967,8 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
         if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
         {
             bHasDate		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate/* ||
-                                        oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
-                                        oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
+                                                                oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
+                                                                oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
             bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
             bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
@@ -1628,6 +1632,14 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
         }
     }
     int lLayoutID = AddNewLayout(pTheme, pMaster, false, true);
+
+
+    for (auto& oMaster : m_mapMasters)
+        oMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
+//    for (auto& oNoteMaster : m_mapNotesMasters)
+//        oNoteMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
+//    for (auto& oHandoutMaster : m_mapHandoutMasters)
+//        oHandoutMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
 
     if (lLayoutID >= 0 && false == pTheme->m_arLayouts.empty())
     {
@@ -2369,35 +2381,71 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
     //--------------------------------------------------------------------
 
     std::vector<CRecordExHyperlinkContainer*>	oArrayHyperlinkContainer;
-
     pExObjects->GetRecordsByType(&oArrayHyperlinkContainer		, true);
 
-    for (size_t nIndex = 0; nIndex < oArrayHyperlinkContainer.size(); ++nIndex)
+    for (const auto* pExHyperlink : oArrayHyperlinkContainer)
     {
-        std::vector<CRecordExHyperlinkAtom*>	oArrayHyperlink;
-        std::vector<CRecordCString*>			oArrayCString;
+        if (!pExHyperlink || !pExHyperlink->hasCString())
+            continue;
 
-        oArrayHyperlinkContainer[nIndex]->GetRecordsByType	(&oArrayHyperlink, false);
-        oArrayHyperlinkContainer[nIndex]->GetRecordsByType	(&oArrayCString, false);
+        PPT_FORMAT::CExFilesInfo oInfo;
+        oInfo.m_dwID = pExHyperlink->m_exHyperlinkAtom.m_nHyperlinkID;
 
-        if (oArrayCString.size() > 0 && oArrayHyperlink.size() > 0)
+        bool wasSlide = false;
+//        bool wasLink = false;
+
+        // it isn't normal that here we should catch slide number.
+        if (pExHyperlink->m_friendlyNameAtom.IsInit())
         {
-            PPT_FORMAT::CExFilesInfo oInfo;
-
-            oInfo.m_dwID = oArrayHyperlink[0]->m_nHyperlinkID;
-            for (size_t i = 0 ; i < oArrayCString.size(); i++)
+            std::wstring& recStr =pExHyperlink->m_friendlyNameAtom->m_strText;
+            int slideNum = oInfo.GetSlideNumber(recStr);
+            if (slideNum != -1)
             {
-                // Target atom. It's for eigher local and external files.
-                if (oArrayCString[i]->m_oHeader.RecInstance == 1)
-                    oInfo.m_strFilePath		= oArrayCString[i]->m_strText;
-                // Location atom. It's for slides or other local pp objects.
-                if (oArrayCString[i]->m_oHeader.RecInstance == 3)
-                    oInfo.m_strLocation		= oArrayCString[i]->m_strText;
+                oInfo.m_strFilePath	= recStr;
+                oInfo.m_type = CExFilesInfo::ExFilesType::eftSlide;
+                m_oExMedia.m_arSlides.push_back(oInfo);
+                wasSlide = true;
             }
-            m_oExMedia.m_arHyperlinks.push_back(oInfo);
         }
+
+        if (pExHyperlink->m_targetAtom.IsInit())
+        {
+            std::wstring& recStr =pExHyperlink->m_targetAtom->m_strText;
+            oInfo.m_strFilePath		= recStr;
+            if (oInfo.isAudioLink(recStr))
+            {
+                oInfo.m_type = CExFilesInfo::ExFilesType::eftAudio;
+                m_oExMedia.m_arAudioCollection.push_back(oInfo);
+            }else if (oInfo.isHTTPLink(recStr))
+            {
+                oInfo.m_type = CExFilesInfo::ExFilesType::eftHyperlink;
+                m_oExMedia.m_arHyperlinks.push_back(oInfo);
+            }else{
+                oInfo.m_type = CExFilesInfo::ExFilesType::eftHyperlink;
+                m_oExMedia.m_arHyperlinks.push_back(oInfo);
+            }
+        }
+
+        if (pExHyperlink->m_locationAtom.IsInit())
+        {
+            // Here we need to write some records like file's path and slides
+            std::wstring& recStr = pExHyperlink->m_locationAtom->m_strText;
+            oInfo.m_strFilePath	= recStr;
+            if (!wasSlide)
+            {
+                oInfo.m_type = CExFilesInfo::ExFilesType::eftSlide;
+                m_oExMedia.m_arSlides.push_back(oInfo);
+            } else if (!m_oExMedia.m_arSlides.empty())
+            {
+                oInfo.m_type = CExFilesInfo::ExFilesType::eftSlide;
+                m_oExMedia.m_arSlides.back().m_strFilePath = recStr;
+            }
+        }
+
     }
 }
+
+
 
 void CPPTUserInfo::LoadExVideo(CRecordsContainer* pExObject)
 {
@@ -2505,7 +2553,7 @@ void CPPTUserInfo::AddAudioTransition (_UINT32 refID, CTransition* pTransition, 
 
     std::wstring audioName = strRecord->m_strText;
     ;
-//    audioName.erase(audioName.find(L"."), audioName.end()); todo
+    //    audioName.erase(audioName.find(L"."), audioName.end()); todo
     if (strRecord)
         pTransition->m_oAudio.m_sImageName = audioName;
 

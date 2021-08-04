@@ -122,6 +122,9 @@ namespace BinDocxRW
 				if (L"pkg:xmlData" == sName)
 				{
 					std::wstring data = oReader.GetInnerXml();
+					XmlUtils::replace_all(data, L"&#xA;", L"");
+					XmlUtils::replace_all(data, L"&#x9;", L"");
+					//todooo убрать "красивую" разметку xml
 					WriteXmlFile(*name, data);
 				}
 				if (L"pkg:binaryData" == sName)
@@ -142,6 +145,7 @@ namespace BinDocxRW
 			NSFile::CFileBinary file;
 			if (file.CreateFileW(path.GetPath()))
 			{
+				file.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
 				file.WriteStringUTF8(data);
 				file.CloseFile();
 			}

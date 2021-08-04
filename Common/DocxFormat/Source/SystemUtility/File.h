@@ -111,6 +111,18 @@ private:
 
         return hRes;
     }
+
+    // Todo for windows =)
+    HRESULT _Remove(const std::wstring& strFileName)
+    {
+        BYTE* pUtf8 = NULL;
+        LONG lLen = 0;
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
+        auto err = remove((char*)pUtf8);
+
+        return S_OK;
+    }
+
 public:
     CFile()
     {
@@ -197,6 +209,10 @@ public:
     HRESULT CreateFile(std::wstring strFileName)
     {
         return _Open(strFileName, false, true, true);
+    }
+    HRESULT RemoveFile(const std::wstring& strFileName)
+    {
+        return _Remove(strFileName);
     }
     HRESULT SetPosition( ULONG nPos )
     {

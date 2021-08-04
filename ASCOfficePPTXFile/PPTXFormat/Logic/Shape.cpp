@@ -149,9 +149,8 @@ namespace PPTX
 		{
 			m_name = node.GetName();
 
-            XmlMacroReadAttributeBase(node,L"useBgFill", attrUseBgFill);
-			XmlMacroReadAttributeBase(node, L"macro", attrMacro);
-			XmlMacroReadAttributeBase(node, L"modelId", attrModelId);
+            XmlMacroReadAttributeBase(node,L"useBgFill", useBgFill);
+			XmlMacroReadAttributeBase(node, L"modelId", modelId);
 
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(L"*", oNodes))
@@ -192,9 +191,9 @@ namespace PPTX
 		std::wstring Shape::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(L"useBgFill", attrUseBgFill);
-			oAttr.Write(L"macro", attrMacro);
-			oAttr.Write(L"modelId", attrModelId);
+
+			oAttr.Write(L"useBgFill", useBgFill);
+			oAttr.Write(L"modelId", modelId);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(nvSpPr);
@@ -221,9 +220,10 @@ namespace PPTX
 			pWriter->StartNode(name_);
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(L"macro", attrMacro);
-			pWriter->WriteAttribute(L"useBgFill", attrUseBgFill);
-			pWriter->WriteAttribute(L"modelId", attrModelId);
+
+			pWriter->WriteAttribute(L"useBgFill", useBgFill);
+			pWriter->WriteAttribute(L"modelId", modelId);
+
 			pWriter->EndAttributes();
 
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
@@ -338,15 +338,11 @@ namespace PPTX
 				{
 					case 0:
 					{
-						attrUseBgFill = pReader->GetBool();						
-					}break;
-					case 1:
-					{
-						attrMacro = pReader->GetString2();						
+						useBgFill = pReader->GetBool();						
 					}break;
 					case 2:
 					{
-						attrModelId = pReader->GetString2();
+						modelId = pReader->GetString2();
 					}break;					
 					default:
 						break;
@@ -425,6 +421,11 @@ namespace PPTX
 						signatureLine->fromPPTY(pReader);
 						break;
 					}
+					case SPTREE_TYPE_MACRO:
+					{
+						pReader->Skip(5); // type + size
+						macro = pReader->GetString2();
+					}break;
 					default:
 					{
 						pReader->SkipRecord();
@@ -435,6 +436,10 @@ namespace PPTX
 
 			pReader->Seek(_end_rec);
 		}
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/release/v6.4.0
 		void Shape::FillParentPointersForChilds()
 		{
 			nvSpPr.SetParentPointer(this);
@@ -450,9 +455,10 @@ namespace PPTX
 			pWriter->StartRecord(SPTREE_TYPE_SHAPE);
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteBool2(0, attrUseBgFill);
-			pWriter->WriteString2(1, attrMacro);
-			pWriter->WriteString2(2, attrModelId);
+
+			pWriter->WriteBool2(0, useBgFill);
+			pWriter->WriteString2(2, modelId);
+
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord1(0, nvSpPr);
@@ -519,6 +525,12 @@ namespace PPTX
 			pWriter->WriteRecord2(6, txXfrm);
 			pWriter->WriteRecord2(7, signatureLine);
 			
+			if (macro.IsInit())
+			{
+				pWriter->StartRecord(SPTREE_TYPE_MACRO);
+				pWriter->WriteString1(0, *macro);
+				pWriter->EndRecord();
+			}
 			pWriter->EndRecord();
 		}
 

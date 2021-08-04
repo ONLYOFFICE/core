@@ -342,6 +342,6 @@ public:
 
 namespace PPT_FORMAT
 {
-	void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF, 
-		std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes);
+    void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF,
+        std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes);
 }

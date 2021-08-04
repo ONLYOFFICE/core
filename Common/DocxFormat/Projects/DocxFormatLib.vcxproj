@@ -406,6 +406,7 @@
     <ClInclude Include="..\Source\XlsxFormat\Worksheets\Hyperlinks.h" />
     <ClInclude Include="..\Source\XlsxFormat\Worksheets\MergeCells.h" />
     <ClInclude Include="..\Source\XlsxFormat\Worksheets\SheetData.h" />
+    <ClInclude Include="..\Source\XlsxFormat\Worksheets\Sparkline.h" />
     <ClInclude Include="..\Source\XlsxFormat\Worksheets\Worksheet.h" />
     <ClInclude Include="..\Source\XlsxFormat\Worksheets\WorksheetChildOther.h" />
     <ClInclude Include="..\Source\XlsxFormat\WritingElement.h" />

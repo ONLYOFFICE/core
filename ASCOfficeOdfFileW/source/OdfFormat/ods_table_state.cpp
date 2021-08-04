@@ -1630,9 +1630,9 @@ void ods_table_state::end_conditional_format()
 {
 	current_level_.pop_back();
 }
-void ods_table_state::start_conditional_rule(int rule_type)
+void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent)
 {
-	office_element_ptr		elm;
+	office_element_ptr elm;
 
 	if (rule_type == 3)		create_element(L"calcext", L"color-scale",  elm, context_); 
 	else if (rule_type == 7)create_element(L"calcext", L"data-bar", elm ,context_);
@@ -1680,7 +1680,16 @@ void ods_table_state::start_conditional_rule(int rule_type)
 				case 11: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
 				case 12: condition->attr_.calcext_value_	= L"is-no-error";		break;
 				case 13: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
-				case 15: condition->attr_.calcext_value_	= L"top-elements()";	break;//bottom-elements ???
+				case 15:
+				{
+					if ((bottom) && (*bottom)) 	condition->attr_.calcext_value_ = L"bottom";
+					else 						condition->attr_.calcext_value_ = L"top";
+					
+					if (percent && (*percent))	*condition->attr_.calcext_value_ += L"-percent(";
+					else						*condition->attr_.calcext_value_ += L"-elements(";
+
+					*condition->attr_.calcext_value_ += std::to_wstring(rank.get_value_or(10)) + L")";
+				}break;
 				case 16: condition->attr_.calcext_value_	= L"unique";			break;
 				case 2: /*cellIs*/
 				default:	break;							

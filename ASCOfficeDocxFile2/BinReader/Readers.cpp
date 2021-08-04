@@ -9425,7 +9425,8 @@ int Binary_DocumentTableReader::ReadSdtPicture(BYTE type, long length, void* poR
 int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poResult)
 {
 	int res = 0;
-	ComplexTypes::Word::CFormPr* pFormPr = static_cast<ComplexTypes::Word::CFormPr*>(poResult);
+	OOX::Logic::CFormPr* pFormPr = static_cast<OOX::Logic::CFormPr*>(poResult);
+	
 	if (c_oSerSdt::FormPrKey == type)
 	{
 		pFormPr->m_oKey = m_oBufferedStream.GetString3(length);
@@ -9441,6 +9442,16 @@ int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poRe
 	else if (c_oSerSdt::FormPrRequired == type)
 	{
 		pFormPr->m_oRequired = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerSdt::FormPrBorder == type)
+	{
+		pFormPr->m_oBorder.Init();
+		READ2_DEF(length, res, oBinary_pPrReader.ReadBorder2, pFormPr->m_oBorder.GetPointer());
+	}
+	else if (c_oSerSdt::FormPrShd == type)
+	{
+		pFormPr->m_oShd.Init();
+		READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, pFormPr->m_oShd.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

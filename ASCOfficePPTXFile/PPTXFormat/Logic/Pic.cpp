@@ -725,9 +725,6 @@ namespace PPTX
 			{
 				pWriter->StartRecord(SPTREE_TYPE_PIC);
 			}
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteString2(0, macro);
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			if (blipFill.additionalFile.is<OOX::Media>())
 			{
@@ -754,6 +751,12 @@ namespace PPTX
 			pWriter->WriteRecord1(2, spPr);
 			pWriter->WriteRecord2(3, style);
 
+			if (macro.IsInit())
+			{
+				pWriter->StartRecord(SPTREE_TYPE_MACRO);
+				pWriter->WriteString1(0, *macro);
+				pWriter->EndRecord();
+			}
 			pWriter->EndRecord();
 		}
 
@@ -850,24 +853,6 @@ namespace PPTX
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			nvPicPr.cNvPr.id = -1;
-			pReader->Skip(1); // start attributes
-
-			while (true)
-			{
-				BYTE _at = pReader->GetUChar_TypeNode();
-				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-					break;
-
-				switch (_at)
-				{
-					case 0:
-					{
-						macro = pReader->GetString2();
-					}break;
-					default:
-						break;
-				}
-			}
 
 			while (pReader->GetPos() < _end_rec)
 			{
@@ -954,6 +939,11 @@ namespace PPTX
 						}
 						pReader->Seek(_end_rec1);
 					}
+					case SPTREE_TYPE_MACRO:
+					{
+						pReader->Skip(5); // type + size
+						macro = pReader->GetString2();
+					}break;
 					default:
 					{
 						break;

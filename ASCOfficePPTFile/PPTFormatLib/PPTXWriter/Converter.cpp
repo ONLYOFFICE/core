@@ -627,7 +627,7 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
 
 void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom*>& arrRTThemes, int& nIndexTheme)
 {
-    std::unordered_set<MD5> writedFilesHash;
+    std::unordered_set<std::string> writedFilesHash;
     for (const auto* pRTT : arrRTThemes)
     {
         std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
@@ -661,13 +661,13 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
         // here need to check second theme and etc
         if(S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"theme/theme/theme1.xml", &utf8Data, utf8DataSize))
         {
-            MD5 hash;
-            hash.process_bytes(utf8Data, utf8DataSize);
-            if (writedFilesHash.find(hash) == writedFilesHash.end())
+            // that not work correctly but we really need to skip some header name to compare files
+            auto strHash = oFile.md5(utf8Data+150, utf8DataSize-150);
+            if (writedFilesHash.find(strHash) == writedFilesHash.end())
             {
                 oFile.WriteFile(utf8Data, utf8DataSize);
                 nIndexTheme++;
-                writedFilesHash.insert(hash);
+                writedFilesHash.insert(strHash);
             }
 
 

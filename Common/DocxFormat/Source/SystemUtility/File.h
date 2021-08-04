@@ -31,6 +31,8 @@
  */
 #pragma once
 #include <boost/lexical_cast.hpp>
+#include <boost/uuid/detail/md5.hpp>
+#include <boost/algorithm/hex.hpp>
 
 #include "../../../3dParty/pole/pole.h"
 #include "../Base/unicode_util.h"
@@ -312,6 +314,28 @@ public:
 
         RELEASEARRAYOBJECTS(pData);
     }
+
+    static std::string md5(const BYTE* pData, const ULONG dataLen)
+    {
+        std::string strHash;
+        boost::uuids::detail::md5 hash;
+        boost::uuids::detail::md5::digest_type digest;
+
+        hash.process_bytes(pData, dataLen);
+        hash.get_digest(digest);
+
+        const auto charDigest = reinterpret_cast<const char *>(&digest);
+        boost::algorithm::hex(charDigest, charDigest + sizeof(boost::uuids::detail::md5::digest_type),
+                              std::back_inserter(strHash));
+
+        return strHash;
+    }
+
+    static std::string md5(const std::string& strData)
+    {
+        return CFile::md5((BYTE*)strData.c_str(), strData.size());
+    }
+
 protected:
     FILE* m_pFile;
 

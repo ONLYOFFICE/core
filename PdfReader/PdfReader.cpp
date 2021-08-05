@@ -86,6 +86,7 @@ namespace PdfReader
         m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(1);
         ((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pInternal->m_pFontManager);
+        globalParams->setupBaseFonts(NULL);
 
         m_eError = errNone;
 	}

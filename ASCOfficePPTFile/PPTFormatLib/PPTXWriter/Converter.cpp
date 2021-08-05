@@ -627,16 +627,11 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
 
 void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom*>& arrRTThemes, int& nIndexTheme)
 {
+    PPT_FORMAT::CRelsGenerator themeRels(&m_oManager);
     std::unordered_set<std::string> writedFilesHash;
     for (const auto* pRTT : arrRTThemes)
     {
         std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
-
-        std::wstring strThemeFile = L"theme" + std::to_wstring(nIndexTheme + 1) + L".xml";
-        strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
-
-        CFile oFile;
-        oFile.CreateFile(strThemeFile);
 
         if (pRTT == nullptr)
             continue;
@@ -658,9 +653,16 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
         COfficeUtils officeUtils(NULL);
         BYTE *utf8Data = NULL;
         ULONG utf8DataSize = 0;
+        UINT themeNum = 1;
         // here need to check second theme and etc
-        if(S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"theme/theme/theme1.xml", &utf8Data, utf8DataSize))
+        while (S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"theme/theme/theme" + std::to_wstring(themeNum++)+ L".xml", &utf8Data, utf8DataSize))
         {
+            std::wstring strThemeFile = L"theme" + std::to_wstring(nIndexTheme + 1) + L".xml";
+            strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
+
+            CFile oFile;
+            oFile.CreateFile(strThemeFile);
+
             // that not work correctly but we really need to skip some header name to compare files
             char* pointerToThemeElems = strstr((char*)utf8Data, "<a:themeElements>");
             UINT hashShift = pointerToThemeElems ? pointerToThemeElems - (char*)utf8Data : 0;
@@ -671,15 +673,18 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
                 oFile.WriteFile(utf8Data, utf8DataSize);
                 nIndexTheme++;
                 writedFilesHash.insert(strHash);
+                RELEASEOBJECT(utf8Data);
+
+//                UINT imageIndex = 1;
+//                while (S_OK == officeUtils.)
+//                {
+
+//                }
             }
-
-
+            oFile.CloseFile();
         }
 
         NSFile::CFileBinary::Remove(tempFileName);
-        delete [] utf8Data;
-        oFile.CloseFile();
-
     }
 }
 

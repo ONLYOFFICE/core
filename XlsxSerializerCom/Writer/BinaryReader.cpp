@@ -86,13 +86,20 @@ namespace BinXlsxRW
 				length = pFind->second[i + 1]; \
 				m_oBufferedStream.Seek(nPos); \
 
-	#define SEEK_TO_POS_END(elem) \
+#define SEEK_TO_POS_END(elem) \
 				elem.toXML(oStreamWriter); \
 			} \
 		}
 
-	#define SEEK_TO_POS_END2() \
+#define SEEK_TO_POS_END2() \
 			} \
+		}
+
+#define SEEK_TO_POS_ELSE() \
+		else \
+		{
+
+#define SEEK_TO_POS_ELSE_END() \
 		}
 
 Binary_CommonReader2::Binary_CommonReader2(NSBinPptxRW::CBinaryFileReader& poBufferedStream):m_poBufferedStream(poBufferedStream)
@@ -3701,7 +3708,7 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		READ1_DEF(length, res, this->ReadWorksheetCols, &oCols);
 	SEEK_TO_POS_END(oCols);
 //-------------------------------------------------------------------------------------------------------------
-	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetData);
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetData)
 		if (NULL == m_oSaveParams.pCSVWriter)
 		{
 			OOX::Spreadsheet::CSheetData oSheetData;
@@ -3715,7 +3722,12 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 			READ1_DEF(length, res, this->ReadSheetData, NULL);
 			m_oSaveParams.pCSVWriter->WriteSheetEnd(m_pCurWorksheet.GetPointer());
 		}
-	SEEK_TO_POS_END2();
+	SEEK_TO_POS_END2()
+	SEEK_TO_POS_ELSE()
+		OOX::Spreadsheet::CSheetData oSheetData;
+		oSheetData.toXMLStart(oStreamWriter);
+		oSheetData.toXMLEnd(oStreamWriter);
+	SEEK_TO_POS_ELSE_END()
 //-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Protection);
 	OOX::Spreadsheet::CSheetProtection oProtection;

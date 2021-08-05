@@ -662,7 +662,10 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
         if(S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"theme/theme/theme1.xml", &utf8Data, utf8DataSize))
         {
             // that not work correctly but we really need to skip some header name to compare files
-            auto strHash = oFile.md5(utf8Data+150, utf8DataSize-150);
+            char* pointerToThemeElems = strstr((char*)utf8Data, "<a:themeElements>");
+            UINT hashShift = pointerToThemeElems ? pointerToThemeElems - (char*)utf8Data : 0;
+            auto strHash = oFile.md5(utf8Data+hashShift, utf8DataSize-hashShift);
+
             if (writedFilesHash.find(strHash) == writedFilesHash.end())
             {
                 oFile.WriteFile(utf8Data, utf8DataSize);

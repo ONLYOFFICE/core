@@ -586,6 +586,11 @@ namespace OOX
 				pSheetView->m_oWorkbookViewId.Init();
 				pSheetView->m_oWorkbookViewId->SetValue(0);
 			}
+
+			if (false == m_oSheetData.IsInit())
+			{
+				m_oSheetData.Init();
+			}
 		}
 		void CWorksheet::toXML(NSStringUtils::CStringBuilder& writer) const
 		{

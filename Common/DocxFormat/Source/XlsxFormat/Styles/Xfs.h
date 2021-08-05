@@ -161,9 +161,14 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
+				toXMLWithNS(writer, L"", L"protection", L"");
 			}
 			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
 			{
+				writer.WriteString(L"<" + node_ns + node_name);
+				WritingStringNullableAttrBool(L"hidden", m_oHidden);
+				WritingStringNullableAttrBool(L"locked", m_oLocked);
+				writer.WriteString(L"/>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -195,7 +200,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CXfs)
-			CXfs()
+				CXfs()
 			{
 			}
 			virtual ~CXfs()
@@ -204,7 +209,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -221,12 +226,16 @@ namespace OOX
 				WritingStringNullableAttrBool(L"applyFill", m_oApplyFill);
 				WritingStringNullableAttrBool(L"applyBorder", m_oApplyBorder);
 				WritingStringNullableAttrBool(L"applyAlignment", m_oApplyAlignment);
+				WritingStringNullableAttrBool(L"applyProtection", m_oApplyProtection);
 				WritingStringNullableAttrBool(L"quotePrefix", m_oQuotePrefix);
 				WritingStringNullableAttrBool(L"pivotButton", m_oPivotButton);
-				if(m_oAligment.IsInit())
+				if (m_oAligment.IsInit() || m_oProtection.IsInit())
 				{
 					writer.WriteString(_T(">"));
-					m_oAligment->toXML(writer);
+
+					if (m_oAligment.IsInit())m_oAligment->toXML(writer);
+					if (m_oProtection.IsInit())m_oProtection->toXML(writer);
+
 					writer.WriteString(_T("</xf>"));
 				}
 				else

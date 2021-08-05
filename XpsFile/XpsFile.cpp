@@ -293,4 +293,12 @@ BYTE* CXpsFile::GetStructure()
 {
 	return m_pInternal->m_pDocument->GetStructure();
 }
+BYTE* CXpsFile::GetExternalLinks(int nPageIndex)
+{
+	return m_pInternal->m_pDocument->GetExternalLinks(nPageIndex);
+}
+BYTE* CXpsFile::GetInternalLinks(int nPageIndex)
+{
+	return m_pInternal->m_pDocument->GetInternalLinks(nPageIndex);
+}
 #endif

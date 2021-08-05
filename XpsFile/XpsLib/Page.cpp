@@ -187,6 +187,51 @@ namespace XPS
 		}
 		return NULL;
 	}
+	BYTE* Page::GetExternalLinks()
+	{
+		CData oRes;
+		oRes.SkipLen();
+		for (const CPageLink& link : m_vExternalLinks)
+		{
+			std::string s = std::to_string(link.dX);
+			oRes.WriteString((BYTE*)s.c_str(), s.length());
+			s = std::to_string(link.dY);
+			oRes.WriteString((BYTE*)s.c_str(), s.length());
+			s = std::to_string(link.dW);
+			oRes.WriteString((BYTE*)s.c_str(), s.length());
+			s = std::to_string(link.dH);
+			oRes.WriteString((BYTE*)s.c_str(), s.length());
+			s = U_TO_UTF8(link.sLink);
+			oRes.WriteString((BYTE*)s.c_str(), s.length());
+		}
+		oRes.WriteLen();
+
+		BYTE* res = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+		return res;
+	}
+	BYTE* Page::GetInternalLinks()
+	{
+		CData oRes;
+		oRes.SkipLen();
+		for (const CPageLink& link : m_vInternalLinks)
+		{
+			oRes.AddInt(link.nPage);
+			std::string s = std::to_string(link.dX);
+			oRes.WriteString((BYTE*)s.c_str(), s.length());
+			s = std::to_string(link.dY);
+			oRes.WriteString((BYTE*)s.c_str(), s.length());
+			s = std::to_string(link.dW);
+			oRes.WriteString((BYTE*)s.c_str(), s.length());
+			s = std::to_string(link.dH);
+			oRes.WriteString((BYTE*)s.c_str(), s.length());
+		}
+		oRes.WriteLen();
+
+		BYTE* res = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+		return res;
+	}
 	#endif
 	void Page::Draw(IRenderer* pRenderer, bool* pbBreak)
 	{
@@ -972,12 +1017,81 @@ namespace XPS
 				}
 				else if (L"FixedPage.NavigateUri" == wsAttrName)
 				{
+					CPageLink oLink = {0,0,0,0,L"",-1};
 					std::wstring wsPath = wsPathData.c_stdstr();
+					size_t nFindX = wsPath.find(L"M ");
+					if (nFindX != std::wstring::npos)
+					{
+						nFindX += 2;
+						size_t nFindEndX = wsPath.find(L',', nFindX);
+						if (nFindEndX != std::wstring::npos)
+						{
+							oLink.dX = GetDouble(wsPath.substr(nFindX, nFindEndX - nFindX));
+							size_t nFindY = nFindEndX + 1;
+							size_t nFindEndY = wsPath.find(L' ', nFindY);
+							if (nFindEndY != std::wstring::npos)
+								oLink.dY = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+						}
+					}
+					double MaybeH = 0;
+					double MaybeW = 0;
+					nFindX = wsPath.find(L"L ");
+					if (nFindX != std::wstring::npos)
+					{
+						nFindX += 2;
+						size_t nFindEndX = wsPath.find(L',', nFindX);
+						if (nFindEndX != std::wstring::npos)
+						{
+							MaybeW = GetDouble(wsPath.substr(nFindX, nFindEndX - nFindX));
+							size_t nFindY = nFindEndX + 1;
+							size_t nFindEndY = wsPath.find(L' ', nFindY);
+							if (nFindEndY != std::wstring::npos)
+								MaybeH = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+							if (MaybeW == oLink.dX)
+								oLink.dH = MaybeH - oLink.dY;
+							if (MaybeH == oLink.dY)
+								oLink.dW = MaybeW - oLink.dX;
+						}
+					}
+					nFindX = wsPath.find(L"L ", nFindX);
+					if (nFindX != std::wstring::npos)
+					{
+						nFindX += 2;
+						size_t nFindEndX = wsPath.find(L',', nFindX);
+						if (nFindEndX != std::wstring::npos)
+						{
+							double MaybeInH = 0;
+							double MaybeInW = GetDouble(wsPath.substr(nFindX, nFindEndX - nFindX));
+							size_t nFindY = nFindEndX + 1;
+							size_t nFindEndY = wsPath.find(L' ', nFindY);
+							if (nFindEndY != std::wstring::npos)
+								MaybeInH = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+							if (MaybeInW == MaybeW)
+								oLink.dH = MaybeInH - oLink.dY;
+							if (MaybeInH == MaybeH)
+								oLink.dW = MaybeInW - oLink.dX;
+						}
+					}
 
 					std::wstring wsNameTarget = oReader.GetText();
 					if (wsNameTarget.find(L"http") == 0)
 					{
-						m_vExternalLinks.push_back({});
+						oLink.sLink = wsNameTarget;
+						m_vExternalLinks.push_back(oLink);
+					}
+					else
+					{
+						size_t nSharp = wsNameTarget.find(L'#');
+						if (nSharp != std::wstring::npos)
+						{
+							oLink.sLink = wsNameTarget.substr(nSharp + 1);
+							std::map<std::wstring, int>::iterator find = m_pDocument->m_mInternalLinks.find(oLink.sLink);
+							if (find != m_pDocument->m_mInternalLinks.end())
+							{
+								oLink.nPage = find->second;
+								m_vInternalLinks.push_back(oLink);
+							}
+						}
 					}
 				}
 				#endif

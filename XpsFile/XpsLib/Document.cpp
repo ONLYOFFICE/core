@@ -257,6 +257,8 @@ namespace XPS
 									std::vector<CDocumentStructure>::iterator find = std::find_if(m_vStructure.begin(), m_vStructure.end(), [wsNameTarget](const CDocumentStructure& str){ return str.wsTarget == wsNameTarget; });
 									if (find != m_vStructure.end())
 										find->nPage = nIndex;
+									else
+										m_mInternalLinks.insert(std::pair<std::wstring, int>(wsNameTarget, nIndex));
 								}
 							}
 						}
@@ -304,6 +306,20 @@ namespace XPS
 		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
 		if (oIter != m_mPages.end())
 			return oIter->second->GetGlyphs();
+		return NULL;
+	}
+	BYTE* CDocument::GetExternalLinks(int nPageIndex)
+	{
+		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
+		if (oIter != m_mPages.end())
+			return oIter->second->GetExternalLinks();
+		return NULL;
+	}
+	BYTE* CDocument::GetInternalLinks(int nPageIndex)
+	{
+		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
+		if (oIter != m_mPages.end())
+			return oIter->second->GetInternalLinks();
 		return NULL;
 	}
 	#endif

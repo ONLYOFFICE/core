@@ -69,7 +69,10 @@ namespace XPS
 		};
 		BYTE* GetStructure();
 		BYTE* GetPageGlyphs(int nPageIndex);
+		BYTE* GetExternalLinks(int nPageIndex);
+		BYTE* GetInternalLinks(int nPageIndex);
 		std::vector<CDocumentStructure>          m_vStructure;
+		std::map<std::wstring, int>              m_mInternalLinks;
 		#endif
 	private:
 									        

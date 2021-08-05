@@ -69,6 +69,8 @@ public:
     #ifdef BUILDING_WASM_MODULE
     BYTE* GetGlyphs(int nPageIndex, int nRasterW, int nRasterH);
     BYTE* GetStructure();
+    BYTE* GetExternalLinks(int nPageIndex);
+    BYTE* GetInternalLinks(int nPageIndex);
     #endif
 
 private:

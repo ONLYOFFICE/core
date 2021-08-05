@@ -36,12 +36,12 @@ WASM_EXPORT CGraphicsFileDrawing* DJVU_Load(BYTE* data, LONG size)
     pGraphics->LoadFromMemory(data, size);
     return pGraphics;
 }
-WASM_EXPORT void  XPS_Close    (CGraphicsFileDrawing* pGraphics)
+WASM_EXPORT void  XPS_Close     (CGraphicsFileDrawing* pGraphics)
 {
     delete pGraphics;
     RELEASEOBJECT(CApplicationFontStreams::m_pMemoryStorage);
 }
-WASM_EXPORT int*  XPS_GetInfo  (CGraphicsFileDrawing* pGraphics)
+WASM_EXPORT int*  XPS_GetInfo   (CGraphicsFileDrawing* pGraphics)
 {
     int pages_count = pGraphics->GetPagesCount();
     int* buffer = new int[pages_count * 3 + 1];
@@ -59,17 +59,25 @@ WASM_EXPORT int*  XPS_GetInfo  (CGraphicsFileDrawing* pGraphics)
     }
     return buffer;
 }
-WASM_EXPORT BYTE* XPS_GetPixmap(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+WASM_EXPORT BYTE* XPS_GetPixmap (CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
     return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH);
 }
-WASM_EXPORT BYTE* XPS_GetGlyphs(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+WASM_EXPORT BYTE* XPS_GetGlyphs (CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
     return pGraphics->GetXPSGlyphs(nPageIndex, nRasterW, nRasterH);
 }
 WASM_EXPORT BYTE* DJVU_GetGlyphs(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
     return pGraphics->GetDJVUGlyphs(nPageIndex, nRasterW, nRasterH);
+}
+WASM_EXPORT BYTE* XPS_GetExternalLinks(CGraphicsFileDrawing* pGraphics, int nPageIndex)
+{
+    return pGraphics->GetXPSExternalLinks(nPageIndex);
+}
+WASM_EXPORT BYTE* XPS_GetInternalLinks(CGraphicsFileDrawing* pGraphics, int nPageIndex)
+{
+    return pGraphics->GetXPSInternalLinks(nPageIndex);
 }
 WASM_EXPORT BYTE* XPS_GetStructure(CGraphicsFileDrawing* pGraphics)
 {
@@ -116,7 +124,7 @@ int main()
     int width  = info[1] * 96 / info[3];
     int height = info[2] * 96 / info[3];
 
-    BYTE* pGlyphs = XPS_GetGlyphs(test, 0, width, height);
+    BYTE* pGlyphs = XPS_GetGlyphs(test, 22, width, height);
     DWORD nLength = GetLength(pGlyphs);
     DWORD i = 4;
     nLength -= 4;
@@ -152,10 +160,11 @@ int main()
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = XPS_GetPixmap(test, 0, width, height);
+        res = XPS_GetPixmap(test, 22, width, height);
 
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";
+    std::cout << std::endl;
 
     CBgraFrame* resFrame = new CBgraFrame();
     resFrame->put_Data(res);
@@ -165,6 +174,61 @@ int main()
     resFrame->put_IsRGBA(true);
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
+
+    BYTE* pInternal = XPS_GetInternalLinks(test, 22);
+    nLength = GetLength(pInternal);
+    i = 4;
+    nLength -= 4;
+    while (i < nLength)
+    {
+        DWORD nPathLength = GetLength(pInternal + i);
+        i += 4;
+        std::cout <<  "Page "<< nPathLength;
+        nPathLength = GetLength(pInternal + i);
+        i += 4;
+        std::cout << " X "<< std::string((char*)(pInternal + i), nPathLength);
+        i += nPathLength;
+        nPathLength = GetLength(pInternal + i);
+        i += 4;
+        std::cout << " Y "<< std::string((char*)(pInternal + i), nPathLength);
+        i += nPathLength;
+        nPathLength = GetLength(pInternal + i);
+        i += 4;
+        std::cout << " W "<< std::string((char*)(pInternal + i), nPathLength);
+        i += nPathLength;
+        nPathLength = GetLength(pInternal + i);
+        i += 4;
+        std::cout << " H "<< std::string((char*)(pInternal + i), nPathLength) << std::endl;
+        i += nPathLength;
+    }
+
+    BYTE* pExternal = XPS_GetExternalLinks(test, 22);
+    nLength = GetLength(pExternal);
+    i = 4;
+    nLength -= 4;
+    while (i < nLength)
+    {
+        DWORD nPathLength = GetLength(pExternal + i);
+        i += 4;
+        std::cout <<  "X "<< std::string((char*)(pExternal + i), nPathLength);
+        i += nPathLength;
+        nPathLength = GetLength(pExternal + i);
+        i += 4;
+        std::cout << " Y "<< std::string((char*)(pExternal + i), nPathLength);
+        i += nPathLength;
+        nPathLength = GetLength(pExternal + i);
+        i += 4;
+        std::cout << " W "<< std::string((char*)(pExternal + i), nPathLength);
+        i += nPathLength;
+        nPathLength = GetLength(pExternal + i);
+        i += 4;
+        std::cout << " H "<< std::string((char*)(pExternal + i), nPathLength);
+        i += nPathLength;
+        nPathLength = GetLength(pExternal + i);
+        i += 4;
+        std::cout << " Link "<< std::string((char*)(pExternal + i), nPathLength) << std::endl;
+        i += nPathLength;
+    }
 
     BYTE* pStructure = XPS_GetStructure(test);
     nLength = GetLength(pStructure);

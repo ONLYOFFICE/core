@@ -631,31 +631,42 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
     std::unordered_set<std::string> writedFilesHash;
     for (const auto* pRTT : arrRTThemes)
     {
-        std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
-
         if (pRTT == nullptr)
             continue;
 
-        auto& zipData = *pRTT;
-        BYTE* themeData = zipData.data.first.get();
-        ULONG themeLen = zipData.data.second;
+        std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
+        std::wstring tempPath = NSDirectory::GetTempPath();
+
+        auto& zipAtom = *pRTT;
+        BYTE* zipData = zipAtom.data.first.get();
+        ULONG zipDataLen = zipAtom.data.second;
+
+
         NSFile::CFileBinary binFile;
+        std::wstring tempZipPath = tempPath + FILE_SEPARATOR_STR + L"tempTheme.zip";
+        if (!binFile.CreateFileW(tempZipPath))
+            continue;
 
-        std::wstring temp = NSDirectory::GetTempPath();
-
-        std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempTheme.zip";
-        if (binFile.CreateFileW(tempFileName))
-        {
-            binFile.WriteFile(themeData, themeLen);
-            binFile.CloseFile();
-        }
+        binFile.WriteFile(zipData, zipDataLen);
+        binFile.CloseFile();
 
         COfficeUtils officeUtils(NULL);
+        std::wstring tempUnZipPath = tempPath + FILE_SEPARATOR_STR + L"tempTheme";
+        NSDirectory::CreateDirectory(tempUnZipPath);
+        officeUtils.ExtractToDirectory(tempZipPath, tempUnZipPath, NULL, 0);
+        NSFile::CFileBinary::Remove(tempZipPath);
+
+        auto arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"theme");
+        auto arrThemesPaths = NSDirectory::GrepPaths(arrPaths, L"theme[0-9]\\+.xml");
+
+        arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"media");
+        auto arrImagePaths = NSDirectory::GrepPaths(arrPaths, L"image[0-9]\\+.*");
+
         BYTE *utf8Data = NULL;
         ULONG utf8DataSize = 0;
         UINT themeNum = 1;
         // here need to check second theme and etc
-        while (S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"theme/theme/theme" + std::to_wstring(themeNum++)+ L".xml", &utf8Data, utf8DataSize))
+        while (S_OK == officeUtils.LoadFileFromArchive(tempZipPath, L"theme/theme/theme" + std::to_wstring(themeNum++)+ L".xml", &utf8Data, utf8DataSize))
         {
             std::wstring strThemeFile = L"theme" + std::to_wstring(nIndexTheme + 1) + L".xml";
             strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
@@ -684,7 +695,6 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
             oFile.CloseFile();
         }
 
-        NSFile::CFileBinary::Remove(tempFileName);
     }
 }
 

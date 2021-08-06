@@ -657,10 +657,10 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
         NSFile::CFileBinary::Remove(tempZipPath);
 
         auto arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"theme");
-        auto arrThemesPaths = NSDirectory::GrepPaths(arrPaths, L"theme[0-9]\\+.xml");
+        auto arrThemesPaths = NSDirectory::GrepPaths(arrPaths, L".*theme[0-9]+.xml");
 
         arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"media");
-        auto arrImagePaths = NSDirectory::GrepPaths(arrPaths, L"image[0-9]\\+.*");
+        auto arrImagePaths = NSDirectory::GrepPaths(arrPaths, L".*image[0-9]+.*");
 
         BYTE *utf8Data = NULL;
         ULONG utf8DataSize = 0;

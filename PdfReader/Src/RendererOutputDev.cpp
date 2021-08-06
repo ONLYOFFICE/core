@@ -921,7 +921,7 @@ namespace PdfReader
                 }
             }
             else if (pFont->locateFont(m_pXref, false) &&
-                (wsFileName = NSStrings::GetString(pFont->locateFont(m_pXref, false)->path)).length() == 0)
+                (wsFileName = NSStrings::GetString(pFont->locateFont(m_pXref, false)->path)).length() != 0)
             //else if (0)
             {
                 // TODO: Сначала тут мы должны проверить, если ищется один из 14 стандартных шрифтов,

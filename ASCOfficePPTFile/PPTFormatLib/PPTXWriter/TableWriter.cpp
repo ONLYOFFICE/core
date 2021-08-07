@@ -46,7 +46,7 @@ void TableWriter::FillNvGraphicFramePr(PPTX::Logic::NvGraphicFramePr& oNvGFPr)
 
 void TableWriter::FillXfrm(PPTX::Logic::Xfrm &oXFRM)
 {
-    oXFRM.m_ns = L"p";
+    oXFRM.node_name = L"p:xfrm";
     double multip1 = m_pTableElement->m_bAnchorEnabled ? 1587.5 : 1;
 
     oXFRM.offX = round(m_pTableElement->m_rcAnchor.left * multip1);

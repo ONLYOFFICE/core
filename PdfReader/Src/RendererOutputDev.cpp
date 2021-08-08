@@ -35,6 +35,7 @@
 #include "../lib/xpdf/GfxState.h"
 #include "../lib/xpdf/GfxFont.h"
 #include "../lib/fofi/FoFiTrueType.h"
+#include "../lib/fofi/FoFiIdentifier.h"
 //#include "../lib/xpdf/File.h"
 #include "../lib/xpdf/CMap.h"
 #include "../lib/xpdf/Dict.h"
@@ -920,8 +921,8 @@ namespace PdfReader
                     }
                 }
             }
-            else if (pFont->locateFont(m_pXref, false) &&
-                (wsFileName = NSStrings::GetString(pFont->locateFont(m_pXref, false)->path)).length() != 0)
+            else if (!pFont->locateFont(m_pXref, false) ||
+                (wsFileName = NSStrings::GetString(pFont->locateFont(m_pXref, false)->path)).length() == 0)
             //else if (0)
             {
                 // TODO: Сначала тут мы должны проверить, если ищется один из 14 стандартных шрифтов,
@@ -1198,6 +1199,7 @@ namespace PdfReader
             int nLen = 0;
             FoFiTrueType *pTTFontFile  = NULL;
             FoFiType1C   *pT1CFontFile = NULL;
+            FoFiIdentifierType fofiType =  FoFiIdentifier::identifyFile((char*)U_TO_UTF8(wsFileName).c_str());
             switch (eFontType)
             {
                 case fontType1:
@@ -1235,6 +1237,36 @@ namespace PdfReader
                 case fontTrueType:
                 case fontTrueTypeOT:
                 {
+                    if (fofiType == fofiIdType1PFB)
+                    {
+                        if (L"" != wsFileName)
+                        {
+                            char **ppEncoding = ((Gfx8BitFont *)pFont)->getEncoding();
+                            if (!ppEncoding)
+                                break;
+
+                            if (!m_pFontManager)
+                                break;
+
+                            m_pFontManager->LoadFontFromFile(wsFileName, 0, 1, 72, 72);
+                            pCodeToGID = (int *)MemUtilsMallocArray(256, sizeof(int));
+                            if (!pCodeToGID)
+                                break;
+
+                            nLen = 256;
+                            for (int nIndex = 0; nIndex < 256; ++nIndex)
+                            {
+                                pCodeToGID[nIndex] = 0;
+                                char* sName = NULL;
+                                if ((sName = ppEncoding[nIndex]))
+                                {
+                                    unsigned short ushGID = m_pFontManager->GetNameIndex(AStringToWString(sName));
+                                    pCodeToGID[nIndex] = ushGID;
+                                }
+                            }
+                        }
+                        break;
+                    }
                     //todo correct fontNum
                     if ((pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0)))
                     {

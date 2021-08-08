@@ -17,7 +17,7 @@
 
 class GlobalParamsAdaptor : public GlobalParams
 {
-    std::wstring temp_folder;
+    std::wstring m_sTempFolder;
 public:
     NSFonts::IFontManager *m_pFontManager;
     GlobalParamsAdaptor(const char *filename) : GlobalParams(filename) {}
@@ -26,14 +26,11 @@ public:
 
     std::wstring GetTempFolder()
     {
-        if (temp_folder == L"") {
-            temp_folder = NSDirectory::GetTempPath();
-        }
-        return temp_folder;
+        return m_sTempFolder;
     }
     void SetTempFolder(const std::wstring &folder)
     {
-        temp_folder = folder;
+        m_sTempFolder = folder;
     }
 
 

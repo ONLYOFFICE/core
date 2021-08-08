@@ -128,6 +128,11 @@ namespace PdfReader
         if (m_pInternal->m_pPDFDocument)
             delete m_pInternal->m_pPDFDocument;
 
+        if (GetTempDirectory() == L"")
+        {
+            SetTempDirectory(NSDirectory::GetTempPath());
+        }
+
         m_eError = errNone;
         GString* owner_pswd = NSStrings::CreateString(wsOwnerPassword);
         GString* user_pswd = NSStrings::CreateString(wsUserPassword);

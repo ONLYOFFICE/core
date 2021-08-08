@@ -660,41 +660,48 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
         auto arrThemesPaths = NSDirectory::GrepPaths(arrPaths, L".*theme[0-9]+.xml");
 
         arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"media");
-        auto arrImagePaths = NSDirectory::GrepPaths(arrPaths, L".*image[0-9]+.*");
+        auto arrImagesPaths = NSDirectory::GrepPaths(arrPaths, L".*image[0-9]+.*");
 
         BYTE *utf8Data = NULL;
         ULONG utf8DataSize = 0;
-        UINT themeNum = 1;
-        // here need to check second theme and etc
-        while (S_OK == officeUtils.LoadFileFromArchive(tempZipPath, L"theme/theme/theme" + std::to_wstring(themeNum++)+ L".xml", &utf8Data, utf8DataSize))
+        bool wasThemeWrite = false;
+
+        // write themes
+        for (auto& strThemePath : arrThemesPaths)
         {
-            std::wstring strThemeFile = L"theme" + std::to_wstring(nIndexTheme + 1) + L".xml";
-            strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
-
-            CFile oFile;
-            oFile.CreateFile(strThemeFile);
-
-            // that not work correctly but we really need to skip some header name to compare files
+            // read file bytes
+            NSFile::CFileBinary::ReadAllBytes(strThemePath, &utf8Data, utf8DataSize);
+            // compare hash
             char* pointerToThemeElems = strstr((char*)utf8Data, "<a:themeElements>");
             UINT hashShift = pointerToThemeElems ? pointerToThemeElems - (char*)utf8Data : 0;
-            auto strHash = oFile.md5(utf8Data+hashShift, utf8DataSize-hashShift);
+            auto strHash = CFile::md5(utf8Data+hashShift, utf8DataSize-hashShift);
 
+            // cp file with new name or write bytes
             if (writedFilesHash.find(strHash) == writedFilesHash.end())
             {
+                std::wstring strThemeFile = L"theme" + std::to_wstring(++nIndexTheme) + L".xml";
+                strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
+                CFile oFile;
+                oFile.CreateFile(strThemeFile);
                 oFile.WriteFile(utf8Data, utf8DataSize);
-                nIndexTheme++;
+                wasThemeWrite = true;
+
+                // clear bytes
                 writedFilesHash.insert(strHash);
                 RELEASEOBJECT(utf8Data);
-
-//                UINT imageIndex = 1;
-//                while (S_OK == officeUtils.)
-//                {
-
-//                }
+                utf8DataSize = 0;
+                oFile.CloseFile();
             }
-            oFile.CloseFile();
         }
+        if (wasThemeWrite == false)
+            continue;
 
+        // we can have problems with image numbers in slide
+        for (auto& strImagePath : arrImagesPaths)
+        {
+            themeRels.WriteImage(strImagePath);
+        }
+        // write _rels
     }
 }
 

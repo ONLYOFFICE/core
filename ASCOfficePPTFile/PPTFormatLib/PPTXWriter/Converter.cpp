@@ -662,6 +662,9 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
         arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"media");
         auto arrImagesPaths = NSDirectory::GrepPaths(arrPaths, L".*image[0-9]+.*");
 
+        arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"_rels");
+        auto arrRelsPaths = NSDirectory::GrepPaths(arrPaths, L".*theme[0-9]+.xml.rels");
+
         BYTE *utf8Data = NULL;
         ULONG utf8DataSize = 0;
         bool wasThemeWrite = false;
@@ -696,12 +699,27 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
         if (wasThemeWrite == false)
             continue;
 
-        // we can have problems with image numbers in slide
         for (auto& strImagePath : arrImagesPaths)
         {
             themeRels.WriteImage(strImagePath);
         }
         // write _rels
+        if (!arrRelsPaths.empty())
+        {
+            std::wstring relsFolder = strPptDirectory + L"theme" + FILE_SEPARATOR_STR  + L"_rels" + FILE_SEPARATOR_STR;
+            std::wstring relsName = L"theme" + std::to_wstring(nIndexTheme) + L".xml.rels";
+            std::wstring themeRelsPath = arrRelsPaths[0];
+            NSDirectory::CreateDirectory(relsFolder);
+
+            NSFile::CFileBinary::ReadAllBytes(arrRelsPaths[0], &utf8Data, utf8DataSize);
+            CFile oFile;
+            oFile.CreateFile(relsFolder + relsName);
+            oFile.WriteFile(utf8Data, utf8DataSize);
+
+            oFile.CloseFile();
+            RELEASEOBJECT(utf8Data);
+//            utf8DataSize = 0;
+        }
     }
 }
 

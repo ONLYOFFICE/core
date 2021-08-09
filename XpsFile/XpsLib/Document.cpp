@@ -322,12 +322,19 @@ namespace XPS
 			return oIter->second->GetInternalLinks();
 		return NULL;
 	}
-	#endif
-	void CDocument::DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak)
+	bool  CDocument::CompareWH(int nPageIndex, int nRasterW, int nRasterH)
 	{
 		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
 		if (oIter != m_mPages.end())
-			oIter->second->Draw(pRenderer, pbBreak);
+			return oIter->second->CompareWH(nRasterW, nRasterH);
+		return false;
+	}
+	#endif
+	void CDocument::DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak, int nRasterW, int nRasterH)
+	{
+		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
+		if (oIter != m_mPages.end())
+			oIter->second->Draw(pRenderer, pbBreak, nRasterW, nRasterH);
 	}
 	void CDocument::Close()
 	{

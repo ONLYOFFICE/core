@@ -53,10 +53,12 @@ namespace XPS
 		~Page();
 
 		void GetSize(int& nW, int& nH) const;
+		void Draw(IRenderer* pRenderer, bool* pbBreak, int nRasterW, int nRasterH);
 		#ifdef BUILDING_WASM_MODULE
 		BYTE* GetGlyphs();
         BYTE* GetExternalLinks();
         BYTE* GetInternalLinks();
+        bool  CompareWH(int nRasterW, int nRasterH);
         class CData
         {
         protected:
@@ -179,6 +181,8 @@ namespace XPS
                 memcpy(m_pData, &len, sizeof(unsigned int));
             }
         };
+    private:
+
         CData* m_pGlyphs;
         struct CPageLink
         {
@@ -191,8 +195,8 @@ namespace XPS
         };
         std::vector<CPageLink> m_vExternalLinks;
         std::vector<CPageLink> m_vInternalLinks;
+        int nLastW, nLastH;
         #endif
-		void Draw(IRenderer* pRenderer, bool* pbBreak);
 
 	private:
 

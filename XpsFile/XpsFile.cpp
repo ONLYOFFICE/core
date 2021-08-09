@@ -74,6 +74,7 @@ public:
 
 CXpsFile::CXpsFile(NSFonts::IApplicationFonts* pAppFonts)
 {
+    nLastW = -1, nLastH = -1;
     m_pInternal = new CXpsFile_Private(pAppFonts);
 }
 CXpsFile::~CXpsFile()
@@ -166,10 +167,11 @@ void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
     if (!m_pInternal->m_pDocument)
 		return;
 
-    m_pInternal->m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak);
+    m_pInternal->m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak, nLastW, nLastH);
 }
 BYTE* CXpsFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH)
 {
+    nLastW = nRasterW, nLastH = nRasterH;
     NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
     NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
     pFontCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
@@ -283,22 +285,35 @@ void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 	oPdf.SaveToFile(wsPath);
 }
 #ifdef BUILDING_WASM_MODULE
-BYTE* CXpsFile::GetGlyphs(int nPageIndex, int nRasterW, int nRasterH)
-{
-	BYTE* oTemp = ConvertToPixels(nPageIndex, nRasterW, nRasterH);
-	RELEASEARRAYOBJECTS(oTemp);
-	return m_pInternal->m_pDocument->GetPageGlyphs(nPageIndex);
-}
 BYTE* CXpsFile::GetStructure()
 {
 	return m_pInternal->m_pDocument->GetStructure();
 }
-BYTE* CXpsFile::GetExternalLinks(int nPageIndex)
+BYTE* CXpsFile::GetGlyphs       (int nPageIndex, int nRasterW, int nRasterH)
 {
+	if (!m_pInternal->m_pDocument->CompareWH(nPageIndex, nRasterW, nRasterH))
+	{
+		BYTE* oTemp = ConvertToPixels(nPageIndex, nRasterW, nRasterH);
+		RELEASEARRAYOBJECTS(oTemp);
+	}
+	return m_pInternal->m_pDocument->GetPageGlyphs(nPageIndex);
+}
+BYTE* CXpsFile::GetExternalLinks(int nPageIndex, int nRasterW, int nRasterH)
+{
+	if (!m_pInternal->m_pDocument->CompareWH(nPageIndex, nRasterW, nRasterH))
+	{
+		BYTE* oTemp = ConvertToPixels(nPageIndex, nRasterW, nRasterH);
+		RELEASEARRAYOBJECTS(oTemp);
+	}
 	return m_pInternal->m_pDocument->GetExternalLinks(nPageIndex);
 }
-BYTE* CXpsFile::GetInternalLinks(int nPageIndex)
+BYTE* CXpsFile::GetInternalLinks(int nPageIndex, int nRasterW, int nRasterH)
 {
+	if (!m_pInternal->m_pDocument->CompareWH(nPageIndex, nRasterW, nRasterH))
+	{
+		BYTE* oTemp = ConvertToPixels(nPageIndex, nRasterW, nRasterH);
+		RELEASEARRAYOBJECTS(oTemp);
+	}
 	return m_pInternal->m_pDocument->GetInternalLinks(nPageIndex);
 }
 #endif

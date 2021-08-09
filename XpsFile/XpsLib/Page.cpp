@@ -89,6 +89,7 @@ namespace XPS
 		m_pDocument    = pDocument;
 		#ifdef BUILDING_WASM_MODULE
 		m_pGlyphs      = NULL;
+		nLastW = -1, nLastH = -1;
 		#endif
 	}
 	Page::~Page()
@@ -232,11 +233,18 @@ namespace XPS
 		oRes.ClearWithoutAttack();
 		return res;
 	}
+	bool  Page::CompareWH(int nRasterW, int nRasterH)
+	{
+		return nRasterW == nLastW && nRasterH == nLastH;
+	}
 	#endif
-	void Page::Draw(IRenderer* pRenderer, bool* pbBreak)
+	void Page::Draw(IRenderer* pRenderer, bool* pbBreak, int nRasterW, int nRasterH)
 	{
 		#ifdef BUILDING_WASM_MODULE
+		nLastW = nRasterW, nLastH = nRasterH;
 		RELEASEOBJECT(m_pGlyphs);
+		m_vExternalLinks.clear();
+		m_vInternalLinks.clear();
 		#endif
 		XmlUtils::CXmlLiteReader oReader;
 

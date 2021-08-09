@@ -71,13 +71,13 @@ WASM_EXPORT BYTE* DJVU_GetGlyphs(CGraphicsFileDrawing* pGraphics, int nPageIndex
 {
     return pGraphics->GetDJVUGlyphs(nPageIndex, nRasterW, nRasterH);
 }
-WASM_EXPORT BYTE* XPS_GetExternalLinks(CGraphicsFileDrawing* pGraphics, int nPageIndex)
+WASM_EXPORT BYTE* XPS_GetExternalLinks(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
-    return pGraphics->GetXPSExternalLinks(nPageIndex);
+    return pGraphics->GetXPSExternalLinks(nPageIndex, nRasterW, nRasterH);
 }
-WASM_EXPORT BYTE* XPS_GetInternalLinks(CGraphicsFileDrawing* pGraphics, int nPageIndex)
+WASM_EXPORT BYTE* XPS_GetInternalLinks(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
-    return pGraphics->GetXPSInternalLinks(nPageIndex);
+    return pGraphics->GetXPSInternalLinks(nPageIndex, nRasterW, nRasterH);
 }
 WASM_EXPORT BYTE* XPS_GetStructure(CGraphicsFileDrawing* pGraphics)
 {
@@ -158,24 +158,7 @@ int main()
         }
     }
 
-    BYTE* res = NULL;
-    if (pages_count > 0)
-        res = XPS_GetPixmap(test, 22, width, height);
-
-    for (int i = 0; i < 100; i++)
-        std::cout << (int)res[i] << " ";
-    std::cout << std::endl;
-
-    CBgraFrame* resFrame = new CBgraFrame();
-    resFrame->put_Data(res);
-    resFrame->put_Width(width);
-    resFrame->put_Height(height);
-    resFrame->put_Stride(-4 * width);
-    resFrame->put_IsRGBA(true);
-    resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
-    resFrame->ClearNoAttack();
-
-    BYTE* pInternal = XPS_GetInternalLinks(test, 22);
+    BYTE* pInternal = XPS_GetInternalLinks(test, 22, width, height);
     nLength = GetLength(pInternal);
     i = 4;
     nLength -= 4;
@@ -202,7 +185,7 @@ int main()
         i += nPathLength;
     }
 
-    BYTE* pExternal = XPS_GetExternalLinks(test, 22);
+    BYTE* pExternal = XPS_GetExternalLinks(test, 22, width, height);
     nLength = GetLength(pExternal);
     i = 4;
     nLength -= 4;
@@ -252,10 +235,29 @@ int main()
         i += nPathLength;
     }
 
+    BYTE* res = NULL;
+    if (pages_count > 0)
+        res = XPS_GetPixmap(test, 22, width, height);
+
+    for (int i = 0; i < 100; i++)
+        std::cout << (int)res[i] << " ";
+    std::cout << std::endl;
+
+    CBgraFrame* resFrame = new CBgraFrame();
+    resFrame->put_Data(res);
+    resFrame->put_Width(width);
+    resFrame->put_Height(height);
+    resFrame->put_Stride(-4 * width);
+    resFrame->put_IsRGBA(true);
+    resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
+    resFrame->ClearNoAttack();
+
     XPS_Close(test);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
     RELEASEARRAYOBJECTS(pGlyphs);
+    RELEASEARRAYOBJECTS(pInternal);
+    RELEASEARRAYOBJECTS(pExternal);
     RELEASEARRAYOBJECTS(pStructure);
     RELEASEOBJECT(resFrame);
     return 0;

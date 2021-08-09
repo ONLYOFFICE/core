@@ -54,7 +54,7 @@ namespace XPS
 		bool Read(IFolder* pFolder);
 		int  GetPageCount() const;
 		void GetPageSize(int nPageIndex, int& nW, int& nH);
-		void DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak);
+		void DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak, int nRasterW, int nRasterH);
 		void Close();
 		CStaticResource* GetStaticResource(const wchar_t* wsPath);
 
@@ -71,6 +71,7 @@ namespace XPS
 		BYTE* GetPageGlyphs(int nPageIndex);
 		BYTE* GetExternalLinks(int nPageIndex);
 		BYTE* GetInternalLinks(int nPageIndex);
+		bool  CompareWH(int nPageIndex, int nRasterW, int nRasterH);
 		std::vector<CDocumentStructure>          m_vStructure;
 		std::map<std::wstring, int>              m_mInternalLinks;
 		#endif

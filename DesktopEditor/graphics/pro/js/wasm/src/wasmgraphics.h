@@ -82,13 +82,13 @@ public:
     {
         return ((CDjVuFile*)pReader)->GetPageGlyphs(nPageIndex, nRasterW, nRasterH);
     }
-    BYTE* GetXPSExternalLinks(int nPageIndex)
+    BYTE* GetXPSExternalLinks(int nPageIndex, int nRasterW, int nRasterH)
     {
-        return ((CXpsFile*)pReader)->GetExternalLinks(nPageIndex);
+        return ((CXpsFile*)pReader)->GetExternalLinks(nPageIndex, nRasterW, nRasterH);
     }
-    BYTE* GetXPSInternalLinks(int nPageIndex)
+    BYTE* GetXPSInternalLinks(int nPageIndex, int nRasterW, int nRasterH)
     {
-        return ((CXpsFile*)pReader)->GetInternalLinks(nPageIndex);
+        return ((CXpsFile*)pReader)->GetInternalLinks(nPageIndex, nRasterW, nRasterH);
     }
     BYTE* GetXPSStructure()
     {

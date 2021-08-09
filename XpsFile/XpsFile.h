@@ -67,13 +67,14 @@ public:
 
 	void         ConvertToPdf(const std::wstring& wsDstPath);
     #ifdef BUILDING_WASM_MODULE
-    BYTE* GetGlyphs(int nPageIndex, int nRasterW, int nRasterH);
     BYTE* GetStructure();
-    BYTE* GetExternalLinks(int nPageIndex);
-    BYTE* GetInternalLinks(int nPageIndex);
+    BYTE* GetGlyphs       (int nPageIndex, int nRasterW, int nRasterH);
+    BYTE* GetExternalLinks(int nPageIndex, int nRasterW, int nRasterH);
+    BYTE* GetInternalLinks(int nPageIndex, int nRasterW, int nRasterH);
     #endif
 
 private:
+    int nLastW, nLastH;
     CXpsFile_Private* m_pInternal;
 };
 

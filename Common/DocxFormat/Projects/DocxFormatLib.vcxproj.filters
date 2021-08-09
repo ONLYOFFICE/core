@@ -414,9 +414,6 @@
     <ClInclude Include="..\Source\XlsxFormat\SimpleTypes_Spreadsheet.h">
       <Filter>XlsxFormat</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\XlsxFormat\Worksheets\WorksheetChildOther.h">
-      <Filter>XlsxFormat</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\WritingElement.h">
       <Filter>XlsxFormat</Filter>
     </ClInclude>
@@ -698,6 +695,9 @@
       <Filter>XlsxFormat\Chart</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Worksheets\Sparkline.h">
+      <Filter>XlsxFormat\Worksheets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Worksheets\WorksheetChildOther.h">
       <Filter>XlsxFormat\Worksheets</Filter>
     </ClInclude>
   </ItemGroup>

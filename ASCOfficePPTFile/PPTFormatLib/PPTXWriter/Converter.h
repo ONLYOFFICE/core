@@ -75,12 +75,13 @@ namespace PPT_FORMAT
 		void WritePresInfo		();
 		void WriteAll			();
 		void WriteThemes		();
-        void WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom *> &arrRTThemes, int& nIndexTheme);
+        void WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom *> &arrRTThemes, int& nIndexTheme, int &nStartLayout);
 		void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
         void WriteTheme         (CRecordRoundTripThemeAtom *pTheme, int &nIndexTheme);
         void WriteSlides		();
 		void WriteNotes			();
-		void WriteLayout		(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);
+        void WriteLayoutAfterTheme (CThemePtr pTheme, const int nIndexTheme, int &nStartLayout);
+        void WriteLayout		(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);
 		void WriteSlide			(int nIndexSlide);
 		void WriteNotes			(int nIndexNotes);
         void WriteTiming        (CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide); // TODO write spec class for timing

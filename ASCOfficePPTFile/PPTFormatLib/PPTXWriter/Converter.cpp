@@ -618,14 +618,14 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
     }
     else
     {
-        WriteRoundTripThemes(arrRT, nIndexTheme);
+        WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
     }
 
     WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
     WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
 }
 
-void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom*>& arrRTThemes, int& nIndexTheme)
+void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom*>& arrRTThemes, int& nIndexTheme, int & nStartLayout)
 {
     PPT_FORMAT::CRelsGenerator themeRels(&m_oManager);
     std::unordered_set<std::string> writedFilesHash;
@@ -721,6 +721,9 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
 //            utf8DataSize = 0;
         }
     }
+
+    if (!m_pDocument->m_arThemes.empty())
+        WriteLayoutAfterTheme(m_pDocument->m_arThemes[0], nIndexTheme, nStartLayout);
 }
 
 void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout)
@@ -1547,6 +1550,191 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes()
     {
         WriteNotes((int)nIndexS);
     }
+}
+
+void CPPTXWriter::WriteLayoutAfterTheme(CThemePtr pTheme, const int nIndexTheme, int &nStartLayout)
+{
+    CRelsGenerator oRels(&m_oManager);
+    int nCountLayouts = (int)pTheme->m_arLayouts.size();
+    oRels.StartMaster(nIndexTheme, nStartLayout, nCountLayouts);
+
+    CStringWriter oWriter;
+    oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
+
+    if (pTheme->m_eType == typeMaster)
+    {
+        oWriter.WriteString(L"<p:sldMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
+    }
+    else if (pTheme->m_eType == typeNotesMaster)
+    {
+        oWriter.WriteString(L"<p:notesMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
+    }
+    else if (pTheme->m_eType == typeHandoutMaster)
+    {
+        oWriter.WriteString(L"<p:handoutMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
+    }
+    oWriter.WriteString(L"<p:cSld>");
+
+    if (pTheme->m_bIsBackground)
+    {
+        WriteBackground(oWriter, oRels, pTheme->m_oBackground);
+    }
+    oWriter.WriteString(L"<p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr>\
+                        <a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>");
+
+    CGroupElement *pGroupElement = !pTheme->m_arElements.empty() ? dynamic_cast<CGroupElement *>(pTheme->m_arElements[0].get()) : NULL;
+
+    size_t start_index = 0;
+    if (pGroupElement)
+    {
+        for (size_t i = 0; i < pGroupElement->m_pChildElements.size(); ++i)
+        {
+            if (isBodyPlaceholder(pGroupElement->m_pChildElements[i]->m_lPlaceholderType))
+                pGroupElement->m_pChildElements[i]->m_lPlaceholderType = 100; //body тип прописывать !!
+
+            //if (pGroupElement->m_pChildElements[i]->m_bAnchorEnabled == false &&
+            //	pGroupElement->m_pChildElements[i]->m_bChildAnchorEnabled == false)
+            //	continue;
+
+            //if (pTheme->m_eType == typeNotesMaster)
+            //{
+            //	pGroupElement->m_pChildElements[i]->m_lPlaceholderID = -1;
+            //}
+            //else if (pTheme->m_eType == typeHandoutMaster)
+            //{
+            //	pGroupElement->m_pChildElements[i]->m_lPlaceholderID = -1;
+            //	pGroupElement->m_pChildElements[i]->m_lPlaceholderSizePreset = -1;
+            //}
+            WriteElement(oWriter, oRels, pGroupElement->m_pChildElements[i]);
+        }
+
+        start_index = 1;
+    }
+
+    for (size_t i = start_index; i < pTheme->m_arElements.size(); ++i)
+    {
+        if (isBodyPlaceholder(pTheme->m_arElements[i]->m_lPlaceholderType))
+            pTheme->m_arElements[i]->m_lPlaceholderType = 100; //body тип прописывать !!
+
+        //if (pTheme->m_arElements[i]->m_bAnchorEnabled == false &&
+        //	pTheme->m_arElements[i]->m_bChildAnchorEnabled == false)
+        //	continue;
+
+        //if (pTheme->m_eType == typeNotesMaster)
+        //{
+        //	pTheme->m_arElements[i]->m_lPlaceholderID = -1;
+        //}
+        //else if (pTheme->m_eType == typeHandoutMaster)
+        //{
+        //	pTheme->m_arElements[i]->m_lPlaceholderID = -1;
+        //	pTheme->m_arElements[i]->m_lPlaceholderSizePreset = -1;
+        //}
+
+        WriteElement(oWriter, oRels, pTheme->m_arElements[i]);
+    }
+
+    oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
+
+    std::wstring strOverrideColorScheme = _T("<p:clrMap bg1=\"lt1\" tx1=\"dk1\" bg2=\"lt2\" tx2=\"dk2\" accent1=\"accent1\" accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" hlink=\"hlink\" folHlink=\"folHlink\"/>");
+    oWriter.WriteString(strOverrideColorScheme);
+
+    if (pTheme->m_eType == typeMaster)
+    {
+        oWriter.WriteString(std::wstring(L"<p:sldLayoutIdLst>"));
+
+        size_t __nCountLayouts = 0;
+        for (int nIndexLayout = 0; nIndexLayout < nCountLayouts; ++nIndexLayout)
+        {
+            oWriter.WriteString(L"<p:sldLayoutId id=\"" + std::to_wstring(0x80000000 + nIndexTheme + 1 + nStartLayout + nIndexLayout) + L"\" r:id=\"rId" + std::to_wstring(nIndexLayout + 1) + L"\"/>");
+
+            WriteLayout(pTheme->m_arLayouts[nIndexLayout], nIndexLayout, nStartLayout, nIndexTheme);
+        }
+
+        oWriter.WriteString(std::wstring(L"</p:sldLayoutIdLst>"));
+    }
+
+    if (pTheme->m_bHasDate || pTheme->m_bHasFooter || pTheme->m_bHasSlideNumber)
+    {
+        oWriter.WriteString(std::wstring(L"<p:hf"));
+        if (!pTheme->m_bHasDate)		oWriter.WriteString(std::wstring(L" dt=\"0\""));
+        if (!pTheme->m_bHasSlideNumber) oWriter.WriteString(std::wstring(L" sldNum=\"0\""));
+        oWriter.WriteString(std::wstring(L" hdr=\"0\""));
+        if (!pTheme->m_bHasFooter)		oWriter.WriteString(std::wstring(L" ftr=\"0\""));
+        oWriter.WriteString(std::wstring(L"/>"));
+    }
+    CStylesWriter styleWriter;
+    styleWriter.m_pTheme = pTheme.get();
+
+    if (pTheme->m_eType == typeMaster)
+    {
+        oWriter.WriteString(std::wstring(L"<p:txStyles>"));
+
+        oWriter.WriteString(std::wstring(L"<p:titleStyle>"));
+        styleWriter.ConvertStyles(pTheme->m_pStyles[1], oWriter, 9);
+        oWriter.WriteString(std::wstring(L"</p:titleStyle>"));
+
+        oWriter.WriteString(std::wstring(L"<p:bodyStyle>"));
+        styleWriter.ConvertStyles(pTheme->m_pStyles[2], oWriter, 9);
+        oWriter.WriteString(std::wstring(L"</p:bodyStyle>"));
+
+        oWriter.WriteString(std::wstring(L"<p:otherStyle>"));
+        styleWriter.ConvertStyles(pTheme->m_pStyles[3], oWriter, 9);
+        oWriter.WriteString(std::wstring(L"</p:otherStyle>"));
+
+        oWriter.WriteString(std::wstring(L"</p:txStyles>"));
+    }
+    else if (pTheme->m_eType == typeNotesMaster)
+    {
+        oWriter.WriteString(std::wstring(L"<p:notesStyle>"));
+        styleWriter.ConvertStyles(pTheme->m_pStyles[1], oWriter, 9);
+        oWriter.WriteString(std::wstring(L"</p:notesStyle>"));
+    }
+
+    std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
+
+    std::wstring strSlideMasterFile;
+    std::wstring strSlideMasterRelsFile;
+    if (pTheme->m_eType == typeMaster)
+    {
+        oWriter.WriteString(std::wstring(L"</p:sldMaster>"));
+
+        strSlideMasterFile = L"slideMaster" + std::to_wstring(nIndexTheme + 1) + L".xml";
+        strSlideMasterFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+
+        strSlideMasterRelsFile = L"slideMaster" + std::to_wstring(nIndexTheme + 1) + L".xml.rels";
+        strSlideMasterRelsFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
+    }
+    else if (pTheme->m_eType == typeNotesMaster)
+    {
+        oWriter.WriteString(std::wstring(L"</p:notesMaster>"));
+
+        strSlideMasterFile = L"notesMaster1.xml";
+        strSlideMasterFile = strPptDirectory + _T("notesMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+
+        strSlideMasterRelsFile = L"notesMaster1.xml.rels";
+        strSlideMasterRelsFile = strPptDirectory + _T("notesMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
+    }
+    else if (pTheme->m_eType == typeHandoutMaster)
+    {
+        oWriter.WriteString(std::wstring(L"</p:handoutMaster>"));
+
+        strSlideMasterFile = L"handoutMaster1.xml";
+        strSlideMasterFile = strPptDirectory + _T("handoutMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+
+        strSlideMasterRelsFile = L"handoutMaster1.xml.rels";
+        strSlideMasterRelsFile = strPptDirectory + _T("handoutMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
+    }
+
+    CFile oFile;
+    oFile.CreateFile(strSlideMasterFile);
+    std::wstring strMaster = oWriter.GetData();
+    oFile.WriteStringUTF8(strMaster);
+    oFile.CloseFile();
+
+    oRels.CloseRels();
+    oRels.SaveRels(strSlideMasterRelsFile);
+
+    nStartLayout += nCountLayouts;
 }
 
 

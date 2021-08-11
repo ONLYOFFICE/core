@@ -247,7 +247,7 @@
             var _Link = parseFloat("".fromUtf8(buffer, index, lenRec));
             index += lenRec;
 
-            res.push({ X : _X, Y : _Y, W : _W, H : _H, Link : _Link});
+            res.push({ X : _X * 1.015, Y : _Y * 1.015, W : _W, H : _H, Link : _Link});
         }
 
         Module["_XPS_Delete"](ext);
@@ -289,7 +289,7 @@
             var _H = parseFloat("".fromUtf8(buffer, index, lenRec));
             index += lenRec;
 
-            res.push({ X : _X, Y : _Y, W : _W, H : _H, Page : _Page});
+            res.push({ X : _X * 1.015, Y : _Y * 1.015, W : _W, H : _H, Page : _Page});
         }
 
         Module["_XPS_Delete"](ext);

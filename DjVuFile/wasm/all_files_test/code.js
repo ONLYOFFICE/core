@@ -394,9 +394,6 @@ window.onload = function()
 			return res;
 		};
 
-		this.ext = null;
-		this.Int = null;
-
 		this._paint = function()
 		{
 			if (!this.isRepaint)
@@ -477,10 +474,6 @@ window.onload = function()
 				{
 					page.Image = this.file.getPage(i, w, h);
 					this.getGlyphs(i, w, h);
-					this.ext = this.getExternalLinks(i, w, h);
-					this.ext.Page = i;
-					this.Int = this.getInternalLinks(i, w, h);
-					this.Int.Page = i;
 				}
 
 				let x = ((xCenter * this.retinaPixelRatio) >> 0) - (w >> 1);
@@ -489,25 +482,6 @@ window.onload = function()
 				ctx.drawImage(page.Image, 0, 0, w, h, x, y, w, h);
 				if (this.Selection.page == i && this.Selection.IsSelection)
 					ctx.drawImage(this.Selection.Image, 0, 0, w, h, x, y, w, h);
-
-				if (this.ext && this.ext.Page == i)
-				{
-					ctx.fillStyle = "#FF0000";
-					for (let j = 0; j < this.ext.length; j++)
-					{
-						let Link = this.ext[j];
-						ctx.fillRect(x + Link.X, y + Link.Y, Link.W, Link.H);
-					}
-				}
-				if (this.Int && this.Int.Page == i)
-				{
-					ctx.fillStyle = "#00FF00";
-					for (let j = 0; j < this.Int.length; j++)
-					{
-						let Link = this.Int[j];
-						ctx.fillRect(x + Link.X, y + Link.Y, Link.W, Link.H);
-					}
-				}
 
 				ctx.strokeRect(x + lineW / 2, y + lineW / 2, w - lineW, h - lineW);
 			}

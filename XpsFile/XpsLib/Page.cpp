@@ -1025,6 +1025,10 @@ namespace XPS
 				}
 				else if (L"FixedPage.NavigateUri" == wsAttrName)
 				{
+					double pdA, pdB, pdC, pdD, pdE, pdF;
+					pRenderer->GetTransform(&pdA, &pdB, &pdC, &pdD, &pdE, &pdF);
+					Aggplus::CMatrix oTransform(pdA, pdB, pdC, pdD, pdE, pdF);
+
 					CPageLink oLink = {0,0,0,0,L"",-1};
 					std::wstring wsPath = wsPathData.c_stdstr();
 					size_t nFindX = wsPath.find(L"M ");
@@ -1039,6 +1043,7 @@ namespace XPS
 							size_t nFindEndY = wsPath.find(L' ', nFindY);
 							if (nFindEndY != std::wstring::npos)
 								oLink.dY = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+							oTransform.TransformPoint(oLink.dX, oLink.dY);
 						}
 					}
 					double MaybeH = 0;
@@ -1055,6 +1060,7 @@ namespace XPS
 							size_t nFindEndY = wsPath.find(L' ', nFindY);
 							if (nFindEndY != std::wstring::npos)
 								MaybeH = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+							oTransform.TransformPoint(MaybeW, MaybeH);
 							if (MaybeW == oLink.dX)
 								oLink.dH = MaybeH - oLink.dY;
 							if (MaybeH == oLink.dY)
@@ -1074,6 +1080,7 @@ namespace XPS
 							size_t nFindEndY = wsPath.find(L' ', nFindY);
 							if (nFindEndY != std::wstring::npos)
 								MaybeInH = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+							oTransform.TransformPoint(MaybeInW, MaybeInH);
 							if (MaybeInW == MaybeW)
 								oLink.dH = MaybeInH - oLink.dY;
 							if (MaybeInH == MaybeH)

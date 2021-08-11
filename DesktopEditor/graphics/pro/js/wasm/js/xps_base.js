@@ -124,22 +124,18 @@
     };
     CFile.prototype.getPagePixmap = function(pageIndex, width, height)
     {
-        var res = Module["_XPS_GetPixmap"](this.nativeFile, pageIndex, width, height);
-
-        this.getGlyphs(pageIndex);
-
-        return res;
+        return Module["_XPS_GetPixmap"](this.nativeFile, pageIndex, width, height);
     };
-    CFile.prototype.getGlyphs = function(pageIndex)
+    CFile.prototype.getGlyphs = function(pageIndex, width, height)
     {
-        var glyphs = Module["_XPS_GetGlyphs"](this.nativeFile, pageIndex);
+        var glyphs = Module["_XPS_GetGlyphs"](this.nativeFile, pageIndex, width, height);
         if (glyphs == null)
-            return res;
+            return;
         var lenArray = new Int32Array(Module["HEAP8"].buffer, glyphs, 4);
         var len = lenArray[0];
         len -= 4;
         if (len <= 0)
-            return res;
+            return;
 
         this.pages[pageIndex].Lines = [];
         var buffer = new Uint8Array(Module["HEAP8"].buffer, glyphs + 4, len);
@@ -213,6 +209,91 @@
             }
         }
         Module["_XPS_Delete"](glyphs);
+    };
+    CFile.prototype.getExtLinks = function(pageIndex, width, height)
+    {
+        var res = [];
+        var ext = Module["_XPS_GetExternalLinks"](this.nativeFile, pageIndex, width, height);
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+        if (lenArray == null)
+            return res;
+        var len = lenArray[0];
+        len -= 4;
+        if (len <= 0)
+            return res;
+
+        var index = 0;
+        var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+        while (index < len)
+        {
+            var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _X = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _Y = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _W = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _H = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _Link = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+
+            res.push({ X : _X, Y : _Y, W : _W, H : _H, Link : _Link});
+        }
+
+        Module["_XPS_Delete"](ext);
+        return res;
+    };
+    CFile.prototype.getIntLinks = function(pageIndex, width, height)
+    {
+        var res = [];
+        var ext = Module["_XPS_GetInternalLinks"](this.nativeFile, pageIndex, width, height);
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+        if (lenArray == null)
+            return res;
+        var len = lenArray[0];
+        len -= 4;
+        if (len <= 0)
+            return res;
+
+        var index = 0;
+        var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+        while (index < len)
+        {
+            var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _Page = lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _X = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _Y = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _W = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _H = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
+
+            res.push({ X : _X, Y : _Y, W : _W, H : _H, Page : _Page});
+        }
+
+        Module["_XPS_Delete"](ext);
+        return res;
     };
     CFile.prototype.structure = function()
     {

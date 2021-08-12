@@ -1690,9 +1690,10 @@ void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int
 
 					*condition->attr_.calcext_value_ += std::to_wstring(rank.get_value_or(10)) + L")";
 				}break;
-				case 16: condition->attr_.calcext_value_	= L"unique";			break;
+				case 16: condition->attr_.calcext_value_ = L"unique"; break;
+				case 17:	condition->attr_.calcext_value_ = L"ends-with()";break;
 				case 2: /*cellIs*/
-				default:	break;							
+				default: break;
 			}
 		}
 	}
@@ -1728,9 +1729,15 @@ void ods_table_state::set_conditional_formula(std::wstring formula)
 		s = true; 
 		operator_ = operator_.substr(0, f_end);
 	}
-	operator_ += (split ? L"," : L"") + odfFormula + (s ? L")" : L"");
+	if (operator_.empty())
+		operator_ = odfFormula;
+	else
+		operator_ += (split ? L"," : L" ") + odfFormula + (s ? L")" : L"");
 
-	if (std::wstring::npos == operator_.find(L"contains-text") || !split)
+	if ((std::wstring::npos == operator_.find(L"contains-text") &&
+		std::wstring::npos == operator_.find(L"begins-with") && 
+		std::wstring::npos == operator_.find(L"ends-with"))
+		|| !split )
 		condition->attr_.calcext_value_= operator_;
 }
 void ods_table_state::set_conditional_style_name(const std::wstring &style_name)
@@ -1743,9 +1750,12 @@ void ods_table_state::set_conditional_style_name(const std::wstring &style_name)
 }
 void ods_table_state::set_conditional_text(const std::wstring &text)
 {
-	calcext_condition*	condition	 = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
+	calcext_condition* condition = dynamic_cast<calcext_condition*>(current_level_.back().get());
 
-	if ((condition->attr_.calcext_value_) && (std::wstring::npos != condition->attr_.calcext_value_->find(L"contains-text")))
+	if ((condition->attr_.calcext_value_) && 
+		(std::wstring::npos != condition->attr_.calcext_value_->find(L"contains-text") || 
+		 std::wstring::npos != condition->attr_.calcext_value_->find(L"ends-with") ||
+		 std::wstring::npos != condition->attr_.calcext_value_->find(L"begins-with")))
 	{
 		std::wstring operator_;
 		bool s = false;

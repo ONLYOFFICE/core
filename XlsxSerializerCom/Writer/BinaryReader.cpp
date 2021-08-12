@@ -4911,8 +4911,8 @@ int BinaryWorksheetsTableReader::ReadProtection(BYTE type, long length, void* po
 	}
 	else if (c_oSerWorksheetProtection::SelectUnlockedCell == type)
 	{
-		pProtection->m_oSelectUnlockedCell.Init();
-		pProtection->m_oSelectUnlockedCell->FromBool(m_oBufferedStream.GetBool());
+		pProtection->m_oSelectUnlockedCells.Init();
+		pProtection->m_oSelectUnlockedCells->FromBool(m_oBufferedStream.GetBool());
 	}
 	else if (c_oSerWorksheetProtection::Sheet == type)
 	{

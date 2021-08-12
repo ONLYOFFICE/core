@@ -862,9 +862,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetProtection *oox_prot)
 	{
 		ods_context->current_table()->set_table_protection_protected_cells(oox_prot->m_oSelectLockedCells->ToBool());
 	}
-	if (oox_prot->m_oSelectUnlockedCell.IsInit())
+	if (oox_prot->m_oSelectUnlockedCells.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_unprotected_cells(oox_prot->m_oSelectUnlockedCell->ToBool());
+		ods_context->current_table()->set_table_protection_unprotected_cells(oox_prot->m_oSelectUnlockedCells->ToBool());
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDataValidations *oox_validations)

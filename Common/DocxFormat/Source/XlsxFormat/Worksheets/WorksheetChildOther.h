@@ -1532,7 +1532,7 @@ namespace OOX
 					WritingStringNullableAttrInt(L"pivotTables",	m_oPivotTables,		m_oPivotTables->GetValue());
 					WritingStringNullableAttrInt(L"scenarios",		m_oScenarios,		m_oScenarios->GetValue());
 					WritingStringNullableAttrInt(L"selectLockedCells",	m_oSelectLockedCells,	m_oSelectLockedCells->GetValue());
-					WritingStringNullableAttrInt(L"selectUnlockedCell",	m_oSelectUnlockedCell,	m_oSelectUnlockedCell->GetValue());
+					WritingStringNullableAttrInt(L"selectUnlockedCells",	m_oSelectUnlockedCells,	m_oSelectUnlockedCells->GetValue());
 					WritingStringNullableAttrInt(L"sheet",			m_oSheet,			m_oSheet->GetValue());
 					WritingStringNullableAttrInt(L"sort",			m_oSort,			m_oSort->GetValue());
 				writer.WriteString(L"/>");
@@ -1572,7 +1572,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"pivotTables"),	m_oPivotTables)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"scenarios"),		m_oScenarios)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"selectLockedCells"),m_oSelectLockedCells)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"selectUnlockedCell"),m_oSelectUnlockedCell)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"selectUnlockedCells"),m_oSelectUnlockedCells)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"sheet"),			m_oSheet)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"sort"),			m_oSort)
 				WritingElement_ReadAttributes_End( oReader )
@@ -1597,7 +1597,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>		m_oPivotTables;
 			nullable<SimpleTypes::COnOff<>>		m_oScenarios;
 			nullable<SimpleTypes::COnOff<>>		m_oSelectLockedCells;
-			nullable<SimpleTypes::COnOff<>>		m_oSelectUnlockedCell;
+			nullable<SimpleTypes::COnOff<>>		m_oSelectUnlockedCells;
 			nullable<SimpleTypes::COnOff<>>		m_oSheet;
 			nullable<SimpleTypes::COnOff<>>		m_oSort;
 		};

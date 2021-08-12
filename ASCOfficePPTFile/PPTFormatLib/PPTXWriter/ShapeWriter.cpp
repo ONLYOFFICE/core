@@ -738,14 +738,18 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
         bool bExternal = false;
         std::wstring strRid = m_pRels->WriteAudio(pAudioElement->m_strAudioFileName, bExternal);
 
-        m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>");
+        if ((int)pAudioElement->m_strAudioFileName.find(L".WAV") == -1 &&
+            (int)pAudioElement->m_strAudioFileName.find(L".wav") == -1)
+            m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>");
+        else
+            m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
 
         sMediaFile = bExternal ? L"" : pAudioElement->m_strAudioFileName;
     }
     if (sMediaFile.empty() == false)
     {
         std::wstring strRid = m_pRels->WriteMedia(sMediaFile);
-        if (!strRid.empty())
+        if (!strRid.empty() && false)
         {
             m_oWriter.WriteString(L"<p:extLst><p:ext uri=\"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}\">\
                                   <p14:media xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" r:embed=\"" + strRid + L"\"/></p:ext></p:extLst>");
@@ -1716,6 +1720,7 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
             hlink.snd->embed = m_pRels->WriteAudio(actions[i].m_strAudioFileName, bExternal);
             hlink.snd->m_name = L"snd";
             hlink.snd->name = actions[i].m_strAudioName;
+            hlink.id = std::wstring(L"");
         }
 
         if (actions[i].m_eActivation == CInteractiveInfo::over)
@@ -1813,6 +1818,7 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
         {
 
             hlink.action = L"ppaction://media";
+            hlink.id = L"";
             break;
         }
         default:

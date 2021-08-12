@@ -3692,11 +3692,11 @@ void BinaryWorksheetTableWriter::WriteProtection(const OOX::Spreadsheet::CSheetP
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(protection.m_oSelectLockedCells->ToBool());
 	}
-	if (protection.m_oSelectUnlockedCell.IsInit())
+	if (protection.m_oSelectUnlockedCells.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::SelectUnlockedCell);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBOOL(protection.m_oSelectUnlockedCell->ToBool());
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oSelectUnlockedCells->ToBool());
 	}
 	if (protection.m_oSheet.IsInit())
 	{

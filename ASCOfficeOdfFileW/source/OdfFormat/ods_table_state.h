@@ -386,6 +386,8 @@ public:
                 void set_conditional_operator(int _operator);
 
 				void set_conditional_text(const std::wstring &text);
+				
+				void set_conditional_time(const std::wstring &period);
 			void end_conditional_rule();
 		void end_conditional_format();
 	void end_conditional_formats();

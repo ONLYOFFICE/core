@@ -1634,10 +1634,10 @@ void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int
 {
 	office_element_ptr elm;
 
-	if (rule_type == 3)		create_element(L"calcext", L"color-scale",  elm, context_); 
-	else if (rule_type == 7)create_element(L"calcext", L"data-bar", elm ,context_);
-	else if (rule_type ==10)create_element(L"calcext", L"icon-set", elm, context_);
-	else if (rule_type ==14)create_element(L"calcext", L"date-is", elm, context_);
+		 if (rule_type == 3) create_element(L"calcext", L"color-scale", elm, context_); 
+	else if (rule_type == 7) create_element(L"calcext", L"data-bar", elm ,context_);
+	else if (rule_type == 10)create_element(L"calcext", L"icon-set", elm, context_);
+	else if (rule_type == 14)create_element(L"calcext", L"date-is", elm, context_);
 	else
 	{
 		create_element(L"calcext", L"condition", elm, context_);
@@ -1747,6 +1747,12 @@ void ods_table_state::set_conditional_style_name(const std::wstring &style_name)
 
 	if (condition)	condition->attr_.calcext_apply_style_name_	= style_name;
 	if (date_is)	date_is->attr_.calcext_style_				= style_name;
+}
+void ods_table_state::set_conditional_time(const std::wstring &period)
+{
+	calcext_date_is* date_is = dynamic_cast<calcext_date_is*>(current_level_.back().get());
+	if (date_is)
+		date_is->attr_.calcext_date_ = period;
 }
 void ods_table_state::set_conditional_text(const std::wstring &text)
 {

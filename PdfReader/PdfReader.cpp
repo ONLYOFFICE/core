@@ -47,7 +47,7 @@
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/GlobalParams.h"
 #include "lib/xpdf/ErrorCodes.h"
-//#include "Src/ExtractImageOutputDev.h"
+#include "lib/xpdf/ImageOutputDev.h"
 #include "Src/RendererOutputDev.h"
 //#include "Src/PageLabels.h"
 
@@ -217,20 +217,22 @@ namespace PdfReader
 	}
     bool CPdfReader::ExtractAllImages(const wchar_t* wsDstPath, const wchar_t* wsPrefix)
 	{
-        // todo extractimg
-//		StringExt seString(wsDstPath);
-//        ExtractImageOutputDev *pOutputDev = new ExtractImageOutputDev(globalParams, seString.GetBuffer(), true);
-//		if (!pOutputDev)
-//			return false;
-//
-//        int nPagesCount = GetPagesCount();
-//        for (int nIndex = 1; nIndex <= nPagesCount; nIndex++)
-//		{
-//            m_pInternal->m_pPDFDocument->DisplayPage(pOutputDev, nIndex, 72, 72, 0, false, false, false);
-//		}
-//
-//		delete pOutputDev;
-//
+        std::wstring temp(wsDstPath);
+        std::string prefix = U_TO_UTF8(temp);
+        char *pPrefix = new char[prefix.length() + 1];
+        strcpy_s(pPrefix, prefix.size() + 1, prefix.c_str());
+        ImageOutputDev *pOutputDev = new ImageOutputDev(pPrefix, true, false, false);
+		if (!pOutputDev)
+			return false;
+
+        int nPagesCount = GetPagesCount();
+        for (int nIndex = 1; nIndex <= nPagesCount; nIndex++)
+		{
+            m_pInternal->m_pPDFDocument->displayPage(pOutputDev, nIndex, 72, 72, 0, false, false, false);
+		}
+
+		delete pOutputDev;
+
         return true;
 	}
     void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
@@ -327,18 +329,17 @@ namespace PdfReader
 	}
     int CPdfReader::GetImagesCount()
 	{
-        // todo
-//        ExtractImageOutputDev *pOutputDev = new ExtractImageOutputDev((GlobalParamsAdaptor*)globalParams, NULL, true, true);
+//        ImageOutputDev *pOutputDev = new ImageOutputDev(NULL, true, true, false);
 //		if (!pOutputDev)
 //			return 0;
 //
 //        for (int nIndex = 1; nIndex <= m_pInternal->m_pPDFDocument->GetPagesCount(); nIndex++)
 //		{
-//            m_pInternal->m_pPDFDocument->DisplayPage(pOutputDev, nIndex, 72, 72, 0, false, false, false);
+//            m_pInternal->m_pPDFDocument->displayPage(pOutputDev, nIndex, 72, 72, 0, false, false, false);
 //		}
 //
-//		return pOutputDev->GetImagesCount();
-        return 0;
+//		return pOutputDev->
+return 0;
 	}	
     void CPdfReader::SetTempDirectory(const std::wstring& wsTempFolder)
 	{		
@@ -374,10 +375,10 @@ namespace PdfReader
 
     void CPdfReader::SetCMapFolder(const wchar_t* wsCMapFolder)
 	{
-//        m_pInternal->m_wsCMapFolder = std::wstring(wsCMapFolder); todo
-//
-//        if (globalParams)
-//            ((GlobalParamsAdaptor*)globalParams)->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
+        m_pInternal->m_wsCMapFolder = std::wstring(wsCMapFolder);
+
+        if (globalParams)
+            ((GlobalParamsAdaptor*)globalParams)->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
 	}
     NSFonts::IFontManager* CPdfReader::GetFontManager()
 	{

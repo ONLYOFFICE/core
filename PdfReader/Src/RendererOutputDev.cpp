@@ -629,7 +629,6 @@ namespace PdfReader
             // 1. Если шрифт внедренный, тогда скидываем его в темповый файл.
             // 2. Если шрифт лежит вне пдф, а в самом пдф есть ссылка на него, тогда используем эту ссылку.
             // 3. В противном случае подбираем шрифт.
-            // if (pFont->getEmbeddedFontFileRef(&oEmbRef)) todo font file ref
 
             if (pFont->getEmbeddedFontID(&oEmbRef))
             {
@@ -1267,7 +1266,6 @@ namespace PdfReader
                         }
                         break;
                     }
-                    //todo correct fontNum
                     if ((pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0)))
                     {
                         pCodeToGID = ((Gfx8BitFont *)pFont)->getCodeToGIDMap(pTTFontFile);
@@ -1301,7 +1299,6 @@ namespace PdfReader
                 }
                 case fontCIDType0COT:
                 {
-                    // todo correct fontNum
                     if ((pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0)))
                     {
                         if (pTTFontFile->isOpenTypeCFF())
@@ -1336,7 +1333,6 @@ namespace PdfReader
                         CharCodeToUnicode *pCodeToUnicode = NULL;
                         if ((pCodeToUnicode = ((GfxCIDFont *)pFont)->getToUnicode()))
                         {
-                            //todo correct fontNum
                             if ((pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0)))
                             {
                                 // Ищем Unicode Cmap
@@ -1580,7 +1576,6 @@ namespace PdfReader
                             oXmlWriter.WriteNodeBegin(L"ToUnicode");
 
                             std::string sBuffer;
-                            // Maybe some condition will be necessary TODO
                             if (true)
                             {
                                 oDictItem.streamReset();
@@ -3058,15 +3053,15 @@ namespace PdfReader
         // Обработка Stroke
         if (1 == nRenderMode || 2 == nRenderMode || 5 == nRenderMode || 6 == nRenderMode)
         {
-            //Painter::CPen oPen;
-
-            //m_pRenderer->put_PenSize( PDFCoordsToMM( pGState->getFontSize() ) * 0.05 );
-            //m_pRenderer->put_PenAlpha(  255 );
-            //oPen.SetColor( m_oPen.GetColor() );
-
-            //BSTR bsPen = oPen.ToXmlString().AllocSysString();
-            //m_pRenderer->SetPen( bsPen );
-            //::SysFreeString( bsPen );
+//            Painter::CPen oPen;
+//
+//            m_pRenderer->put_PenSize( PDFCoordsToMM( pGState->getFontSize() ) * 0.05 );
+//            m_pRenderer->put_PenAlpha(  255 );
+//            oPen.SetColor( m_oPen.GetColor() );
+//
+//            BSTR bsPen = oPen.ToXmlString().AllocSysString();
+//            m_pRenderer->SetPen( bsPen );
+//            ::SysFreeString( bsPen );
         }
     }
     void RendererOutputDev::endStringOp(GfxState *pGState)

@@ -7,6 +7,7 @@
 
 #include "../lib/xpdf/GlobalParams.h"
 #include "../lib/xpdf/Object.h"
+#include "../lib/xpdf/XRef.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/common/File.h"
@@ -17,7 +18,8 @@
 
 class GlobalParamsAdaptor : public GlobalParams
 {
-    std::wstring m_sTempFolder;
+    std::wstring m_wsTempFolder;
+    std::wstring m_wsCMapFolder;
 public:
     NSFonts::IFontManager *m_pFontManager;
     GlobalParamsAdaptor(const char *filename) : GlobalParams(filename) {}
@@ -26,11 +28,15 @@ public:
 
     std::wstring GetTempFolder()
     {
-        return m_sTempFolder;
+        return m_wsTempFolder;
     }
     void SetTempFolder(const std::wstring &folder)
     {
-        m_sTempFolder = folder;
+        m_wsTempFolder = folder;
+    }
+
+    void SetCMapFolder(const std::wstring &folder) {
+        m_wsCMapFolder = folder;
     }
 
 
@@ -121,4 +127,16 @@ namespace PdfReader
     }
 }
 
+class XMLConverter {
+public:
+    static void XRefToXml(XRef &xref, std::wstring &wsXml, bool parse_streams);
+    static void StreamDictToXml(Dict *dict, std::wstring &wsXml);
+    static void ObjectToXml(Object *obj, std::wstring &wsXml);
+
+    static void AppendStringToXml(std::wstring& wsXml, const std::string& sString)
+    {
+        std::wstring wsTmp(sString.begin(), sString.end());
+        wsXml += wsTmp;
+    }
+};
 #endif //CORE_ADAPTORS_H

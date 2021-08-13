@@ -396,8 +396,8 @@ namespace NSCommon
             pCache->SetStreams(applicationFonts->GetStreams());
             pManager->SetOwnerCache(pCache);
 
-            #define COUNT_FONTS_SCALE 3
-            double support_scales[COUNT_FONTS_SCALE] = { 1, 1.5, 2 };
+            #define COUNT_FONTS_SCALE 5
+            double support_scales[COUNT_FONTS_SCALE] = { 1, 1.25, 1.5, 1.75, 2 };
 
             for (int iX = 0; iX < COUNT_FONTS_SCALE; ++iX)
             {
@@ -536,14 +536,16 @@ namespace NSCommon
                 }
 
                 std::wstring strThumbnailPath = strFolderThumbnails + L"/fonts_thumbnail";
-                int nScaleOut = (int)(dScale * 10 + 0.5);
+                int nScaleOut = (int)(dScale * 100 + 0.5);
 
-                if (nScaleOut == 10)
+                if (nScaleOut == 100)
                     strThumbnailPath += L".png";
+                else if ((nScaleOut % 100) == 0)
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"x.png";
                 else if ((nScaleOut % 10) == 0)
-                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"x.png";
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"." + std::to_wstring((int)((nScaleOut / 10) % 10)) + L"x.png";
                 else
-                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"." + std::to_wstring((int)(nScaleOut % 10)) + L"x.png";
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"." + std::to_wstring((int)(nScaleOut % 100)) + L"x.png";
 
                 oFrame.SaveFile(strThumbnailPath, 4);
 

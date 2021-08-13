@@ -1071,10 +1071,11 @@ public:
 
             // создаем картинку для табнейлов
             double dDpi = 96 * dScale;
-            double dW_mm = 80;
-            LONG lH1_px = LONG(7 * dDpi / 25.4);
-            LONG lWidthPix = (LONG)(dW_mm * dDpi / 25.4);
+            LONG lH1_px = (LONG)(28 * dScale);
+            LONG lWidthPix = (LONG)(300 * dScale);
             LONG lHeightPix = (LONG)(nCountFonts * lH1_px);
+            double dW_mm = 25.4 * lWidthPix / dDpi;
+            double dH1_mm = 25.4 * lH1_px / dDpi;
 
             LONG lCountPixels = 4 * lWidthPix * lHeightPix;
             BYTE* pImageData = new BYTE[lCountPixels];

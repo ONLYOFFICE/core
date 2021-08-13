@@ -1820,11 +1820,13 @@ void ods_table_state::set_conditional_value(int type, std::wstring value )
 		{
 			switch(type)
 			{
-				case 0: //Formula	
-				case 1: entry->calcext_type_ = calcext_type(calcext_type::AutoMaximum); break;
-				case 2: entry->calcext_type_ = calcext_type(calcext_type::AutoMinimum); break;
+				case 1: entry->calcext_type_ = calcext_type(calcext_type::Maximum); break;
+				case 2: entry->calcext_type_ = calcext_type(calcext_type::Minimum); break;
 				case 4: entry->calcext_type_ = calcext_type(calcext_type::Percent); break;
-				case 5: //Percentile		
+				case 5: entry->calcext_type_ = calcext_type(calcext_type::Percentile); break;
+				case 6: entry->calcext_type_ = calcext_type(calcext_type::AutoMinimum); break;
+				case 7: entry->calcext_type_ = calcext_type(calcext_type::AutoMaximum); break;
+				case 0: //Formula	
 				case 3: //Number
 				default: entry->calcext_type_ = calcext_type(calcext_type::Number);
 			}

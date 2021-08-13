@@ -748,7 +748,7 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
     }
     if (sMediaFile.empty() == false)
     {
-        std::wstring strRid = m_pRels->WriteMedia(sMediaFile);
+        std::wstring strRid = m_pRels->WriteImage(pImageElement->m_strImageFileName);
         if (!strRid.empty() && false)
         {
             m_oWriter.WriteString(L"<p:extLst><p:ext uri=\"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}\">\

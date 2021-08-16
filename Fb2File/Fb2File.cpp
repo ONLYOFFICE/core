@@ -1744,17 +1744,18 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         }
         else if (sName == L"a")
         {
+            oXml.WriteString(L"<a ");
             while (oIndexHtml.MoveToNextAttribute())
             {
                 std::wstring sName = oIndexHtml.GetName();
                 if (sName == L"name")
                     sName = L"id";
-                oXml.WriteString(L"<a ");
                 oXml.WriteString(sName + L"=\"");
                 oXml.WriteString(oIndexHtml.GetText());
-                oXml.WriteString(L"\">");
+                oXml.WriteString(L"\" ");
             }
             oIndexHtml.MoveToElement();
+            oXml.WriteString(L">");
 
             readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</a>");
@@ -1771,7 +1772,7 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
                 if (oIndexHtml.GetName() == L"src")
                 {
                     sBinary = oIndexHtml.GetText();
-                    sBinary.erase(0, sBinary.find(L',') + 2);
+                    sBinary.erase(0, sBinary.find(L',') + 1);
                     arrBinary.push_back(sBinary);
                 }
             }

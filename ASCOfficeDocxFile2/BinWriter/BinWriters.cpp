@@ -7875,13 +7875,13 @@ void BinaryDocumentTableWriter::WriteSdtFormPr(const OOX::Logic::CFormPr& oFormP
 	}
 	if (oFormPr.m_oBorder.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombBorder);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrBorder);
 		m_oBcw.WriteBorder(oFormPr.m_oBorder.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oFormPr.m_oShd.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombBorder);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrShd);
 		m_oBcw.WriteShd(oFormPr.m_oShd.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}

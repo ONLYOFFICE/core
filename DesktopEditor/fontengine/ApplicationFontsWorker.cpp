@@ -1023,14 +1023,17 @@ public:
             double dScale = m_pMain->m_arThumbnailsScales[iX];
 
             std::wstring strThumbnailPath = m_pMain->m_sDirectory + L"/fonts_thumbnail";
-            int nScaleOut = (int)(dScale * 10 + 0.5);
 
-            if (nScaleOut == 10)
+            int nScaleOut = (int)(dScale * 100 + 0.5);
+
+            if (nScaleOut == 100)
                 strThumbnailPath += L".png";
+            else if ((nScaleOut % 100) == 0)
+                strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"x.png";
             else if ((nScaleOut % 10) == 0)
-                strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"x.png";
+                strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"." + std::to_wstring((int)((nScaleOut / 10) % 10)) + L"x.png";
             else
-                strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"." + std::to_wstring((int)(nScaleOut % 10)) + L"x.png";
+                strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"." + std::to_wstring((int)(nScaleOut % 100)) + L"x.png";
 
             arrFiles.push_back(strThumbnailPath);
 
@@ -1068,10 +1071,11 @@ public:
 
             // создаем картинку для табнейлов
             double dDpi = 96 * dScale;
-            double dW_mm = 80;
-            LONG lH1_px = LONG(7 * dDpi / 25.4);
-            LONG lWidthPix = (LONG)(dW_mm * dDpi / 25.4);
+            LONG lH1_px = (LONG)(28 * dScale);
+            LONG lWidthPix = (LONG)(300 * dScale);
             LONG lHeightPix = (LONG)(nCountFonts * lH1_px);
+            double dW_mm = 25.4 * lWidthPix / dDpi;
+            double dH1_mm = 25.4 * lH1_px / dDpi;
 
             LONG lCountPixels = 4 * lWidthPix * lHeightPix;
             BYTE* pImageData = new BYTE[lCountPixels];
@@ -1202,7 +1206,9 @@ CApplicationFontsWorker::CApplicationFontsWorker()
 
     m_arThumbnailsScales.clear();
     m_arThumbnailsScales.push_back(1);
+    m_arThumbnailsScales.push_back(1.25);
     m_arThumbnailsScales.push_back(1.5);
+    m_arThumbnailsScales.push_back(1.75);
     m_arThumbnailsScales.push_back(2);
 
     m_pInternal = new CApplicationFontsWorker_private(this);

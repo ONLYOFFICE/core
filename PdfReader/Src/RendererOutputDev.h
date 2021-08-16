@@ -244,7 +244,7 @@ namespace PdfReader
 		virtual void clipToStrokePath(GfxState *pGState);
 		virtual void clipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO);
 		//----- Вывод текста
-        virtual void EndTextObject(GfxState *pGState);
+        virtual void endTextObject(GfxState *pGState);
 		virtual void beginStringOp(GfxState *pGState);
 		virtual void endStringOp(GfxState *pGState);
 		virtual void drawString(GfxState *pGState, GString *seString);

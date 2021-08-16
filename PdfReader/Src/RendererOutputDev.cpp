@@ -587,7 +587,7 @@ namespace PdfReader
         updateFillOpacity(pGState);
         updateStrokeOpacity(pGState);
         updateFont(pGState);
-       // updateClip(pGState);
+        updateClip(pGState);
     }
     void RendererOutputDev::updateRender(GfxState *pGState)
     {
@@ -3025,7 +3025,7 @@ namespace PdfReader
             RELEASEARRAYOBJECTS(pGids);
         }
     }
-    void RendererOutputDev::EndTextObject(GfxState *pGState)
+    void RendererOutputDev::endTextObject(GfxState *pGState)
     {
 //        if (NULL != m_pBufferTextClip) tmpchange
 //        {
@@ -3960,27 +3960,27 @@ namespace PdfReader
         m_pRenderer->BeginCommand(c_nResetClipType);
         m_pRenderer->EndCommand(c_nResetClipType);
         //todo update clip
-            GfxPath *pPath   = pGState->getPath();
-            double *pMatrix;
-            if (GfxCalRGBColorSpace *a = dynamic_cast<GfxCalRGBColorSpace *>(pGState->getFillColorSpace()))
-            {
-                pMatrix = a->getMatrix();
-            }
-            else {
-                return;
-            }
+//            GfxPath *pPath   = pGState->getPath();
+//            double *pMatrix;
+//            if (GfxCalRGBColorSpace *a = dynamic_cast<GfxCalRGBColorSpace *>(pGState->getFillColorSpace()))
+//            {
+//                pMatrix = a->getMatrix();
+//            }
+//            else {
+//                return;
+//            }
 
 
 
-            m_pRenderer->BeginCommand(c_nClipType);
-            DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);
-            m_pRenderer->EndCommand(c_nPathType);
-            m_pRenderer->EndCommand(c_nClipType);
-            m_pRenderer->PathCommandEnd();
-
-            m_pRenderer->BeginCommand(c_nClipType);
-            m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
-            m_pRenderer->StartConvertCoordsToIdentity();
+//            m_pRenderer->BeginCommand(c_nClipType);
+//            DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);
+//            m_pRenderer->EndCommand(c_nPathType);
+//            m_pRenderer->EndCommand(c_nClipType);
+//            m_pRenderer->PathCommandEnd();
+//
+//            m_pRenderer->BeginCommand(c_nClipType);
+//            m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
+//            m_pRenderer->StartConvertCoordsToIdentity();
 //
 //                WString wsFontName, wsFontPath;
 //                int lFontStyle;

@@ -319,7 +319,7 @@ namespace PdfReader
         m_bTiling       = false;
 
         //m_pBufferTextClip = NULL; tmpchange
-        //m_pClip           = NULL;
+        //m_sClip           = NULL;
 
         m_lRendererType = c_nUnknownRenderer;
         m_pRenderer     = pRenderer;
@@ -430,8 +430,8 @@ namespace PdfReader
     {
         m_pRenderer = NULL;
 
-//        if (m_pClip)  tmpchange
-//            delete m_pClip;
+//        if (m_sClip)  tmpchange
+//            delete m_sClip;
 
 //        if (m_pBufferTextClip) tmpchange
 //            delete m_pBufferTextClip;
@@ -466,10 +466,13 @@ namespace PdfReader
     }
     void RendererOutputDev::saveState(GfxState *pGState)
     {
+        m_sClip.push(GfxClip());
         updateAll(pGState);
     }
     void RendererOutputDev::restoreState(GfxState *pGState)
     {
+        if (!m_sClip.empty())
+            m_sClip.pop();
         updateAll(pGState);
     }
     void RendererOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
@@ -2957,24 +2960,39 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        clipToPath(pGState, pGState->getPath(), pGState->getCTM(), false);
-        //updateClip(pGState);
+        if (m_sClip.empty())
+        {
+            m_sClip.push(GfxClip());
+        }
+        //clipToPath(pGState, pGState->getPath(), pGState->getCTM(), false);
+        m_sClip.top().AddPath(pGState->getPath(), pGState->getCTM(), false);
+        updateClip(pGState);
     }
     void RendererOutputDev::eoClip(GfxState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
 
-        clipToPath(pGState, pGState->getPath(), pGState->getCTM(), true);
-        //updateClip(pGState);
+        if (m_sClip.empty())
+        {
+            m_sClip.push(GfxClip());
+        }
+        m_sClip.top().AddPath(pGState->getPath(), pGState->getCTM(), true);
+        //clipToPath(pGState, pGState->getPath(), pGState->getCTM(), true);
+        updateClip(pGState);
     }
     void RendererOutputDev::clipToStrokePath(GfxState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
 
-        clipToPath(pGState, pGState->getPath(), pGState->getCTM(), true);
-        //updateClip(pGState);
+        if (m_sClip.empty())
+        {
+            m_sClip.push(GfxClip());
+        }
+        m_sClip.top().AddPath(pGState->getPath(), pGState->getCTM(), false);
+        //clipToPath(pGState, pGState->getPath(), pGState->getCTM(), true);
+        updateClip(pGState);
     }
     void RendererOutputDev::clipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO)
     {
@@ -3330,7 +3348,7 @@ namespace PdfReader
             m_pRenderer->get_FontSize(&dTempFontSize);
             m_pRenderer->get_FontStyle(&lTempFontStyle);
 //            tmpchange
-//            m_pBufferTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ +dShiftY, 0, 0, 0);
+            //m_pBufferTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ +dShiftY, 0, 0, 0);
         }
 
         m_pRenderer->put_FontSize(dOldSize);
@@ -3950,7 +3968,7 @@ namespace PdfReader
     {
 
         int nPathIndex = -1;
-        //if ( m_pClip && m_pClip->IsEqual( pClip, nPathIndex ) )
+        //if ( m_sClip && m_sClip->IsEqual( pClip, nPathIndex ) )
         //{
         //    return;
         //}
@@ -3959,17 +3977,25 @@ namespace PdfReader
 
         m_pRenderer->BeginCommand(c_nResetClipType);
         m_pRenderer->EndCommand(c_nResetClipType);
-        //todo update clip
-//            GfxPath *pPath   = pGState->getPath();
-//            double *pMatrix;
-//            if (GfxCalRGBColorSpace *a = dynamic_cast<GfxCalRGBColorSpace *>(pGState->getFillColorSpace()))
-//            {
-//                pMatrix = a->getMatrix();
-//            }
-//            else {
-//                return;
-//            }
 
+        if (m_sClip.empty()) return;
+
+        for (int nIndex = nPathIndexStart; nIndex < m_sClip.top().GetPathNum(); nIndex++)
+        {
+            GfxPath *pPath   = m_sClip.top().GetPath(nIndex);
+            bool    bFlag   = m_sClip.top().GetClipEo(nIndex);
+            double *pMatrix = m_sClip.top().GetMatrix(nIndex);
+
+            int     nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
+            nClipFlag |= c_nClipRegionIntersect;
+
+            m_pRenderer->BeginCommand(c_nClipType);
+            m_pRenderer->put_ClipMode(nClipFlag);
+            DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);
+            m_pRenderer->EndCommand(c_nPathType);
+            m_pRenderer->EndCommand(c_nClipType);
+            m_pRenderer->PathCommandEnd();
+        }
 
 
 //            m_pRenderer->BeginCommand(c_nClipType);
@@ -4026,10 +4052,10 @@ namespace PdfReader
 //            m_pRenderer->EndConvertCoordsToIdentity();
 //        }
 //
-//        if (m_pClip)
-//            delete m_pClip;
+//        if (m_sClip)
+//            delete m_sClip;
 //
-//        m_pClip = pClip->Copy(); tmpchange
+//        m_sClip = pClip->Copy(); tmpchange
 
         updateFont(pGState);
     }

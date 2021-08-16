@@ -46,6 +46,8 @@
 #include "XmlUtils.h"
 #include "Adaptors.h"
 #include "MemoryUtils.h"
+#include "GfxClip.h"
+#include <stack>
 
 namespace PdfReader
 {
@@ -298,7 +300,7 @@ namespace PdfReader
 
 		bool                         *m_pbBreak;         // Внешняя остановка рендерера
 
-		//GrClip                       *m_pClip;
+		std::stack<GfxClip>           m_sClip;
 		bool                          m_bTiling;
 		bool                          m_bTransparentGroup;
 

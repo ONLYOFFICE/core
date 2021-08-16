@@ -856,10 +856,10 @@ namespace MetaFile
             ImageProcessing(oTEmfStretchBLT);
         }
 
-        void CEmfParserBase::HANDLE_EMR_EOF(unsigned int &unCount, unsigned int &unOffset, unsigned int &unSizeLast)
+        void CEmfParserBase::HANDLE_EMR_EOF()
         {
             if (NULL != m_pInterpretator)
-                m_pInterpretator->HANDLE_EMR_EOF(unCount, unOffset, unSizeLast);
+                m_pInterpretator->HANDLE_EMR_EOF();
         }
 
         void CEmfParserBase::HANDLE_EMR_SAVEDC()

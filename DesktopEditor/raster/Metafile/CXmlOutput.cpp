@@ -601,6 +601,7 @@ namespace MetaFile
         WriteNodeBegin(wsNameNode);
             for (unsigned int i = 1; i < unSize + 1; ++i)
                 WriteNode(L"Dx" + std::to_wstring(i), pUnValues[i - 1]);
+            WriteNodeEnd(wsNameNode);
     }
 
     bool CXmlOutput::ReadFromFile(const std::wstring &wsPathToFile)

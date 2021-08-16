@@ -48,7 +48,7 @@ namespace MetaFile
                 void HANDLE_EMR_BITBLT(const TEmfBitBlt& oTEmfBitBlt, CDataStream &oDataStream) override;
                 void HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice& oTEmfSetDiBitsToDevice, CDataStream &oDataStream) override;
                 void HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT& oTEmfStretchBLT, CDataStream &oDataStream) override;
-                void HANDLE_EMR_EOF(const unsigned int& unCount, const unsigned int& unOffset, const unsigned int& unSizeLast) override;
+                void HANDLE_EMR_EOF() override;
                 void HANDLE_EMR_SAVEDC() override;
                 void HANDLE_EMR_RESTOREDC(const int &nIndexDC) override;
                 void HANDLE_EMR_MODIFYWORLDTRANSFORM(const TEmfXForm& oXForm, const unsigned int& unMode) override;

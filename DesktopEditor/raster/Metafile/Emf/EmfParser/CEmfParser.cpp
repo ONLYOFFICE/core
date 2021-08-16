@@ -325,7 +325,7 @@ namespace MetaFile
 
                 m_oStream >> ulSizeLast;
 
-                HANDLE_EMR_EOF(ulCount, ulOffset, ulSizeLast);
+                HANDLE_EMR_EOF();
         }
 
         void CEmfParser::Read_EMR_UNKNOWN()

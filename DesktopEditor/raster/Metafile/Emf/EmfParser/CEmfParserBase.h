@@ -136,7 +136,7 @@ namespace MetaFile
                 void HANDLE_EMR_BITBLT(TEmfBitBlt& oTEmfBitBlt);
                 void HANDLE_EMR_SETDIBITSTODEVICE(TEmfSetDiBitsToDevice& oTEmfSetDiBitsToDevice);
                 void HANDLE_EMR_STRETCHBLT(TEmfStretchBLT& oTEmfStretchBLT);
-                void HANDLE_EMR_EOF(unsigned int& unCount, unsigned int& unOffset, unsigned int& unSizeLast);
+                void HANDLE_EMR_EOF();
                 void HANDLE_EMR_SAVEDC();
                 void HANDLE_EMR_RESTOREDC(int &nIndexDC);
                 void HANDLE_EMR_MODIFYWORLDTRANSFORM(TEmfXForm& oXForm, unsigned int& unMode);

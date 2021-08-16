@@ -8,7 +8,7 @@ namespace MetaFile
 {
         CEmfInterpretator::CEmfInterpretator(const wchar_t* wsFilepath) :
                 m_pOutStream(new std::ofstream(wsFilepath, std::ios::binary | std::ios::out)),
-                unFileSize(0), unNumberRecords(0){}
+                unFileSize(0), unNumberRecords(0), ushNuberDescriptors(0){}
 
         CEmfInterpretator::~CEmfInterpretator()
         {
@@ -45,7 +45,7 @@ namespace MetaFile
                 m_pOutStream->write((char*)&oTEmfHeader.ushReserved,        sizeof (unsigned short));
                 m_pOutStream->write((char*)&unZero,                         sizeof (unsigned int));
                 m_pOutStream->write((char*)&unZero,                         sizeof (unsigned int));
-                m_pOutStream->write((char*)&oTEmfHeader.ulPalEntries,       sizeof (unsigned int));
+                m_pOutStream->write((char*)&unZero,                         sizeof (unsigned int));
 
                 WriteSize(oTEmfHeader.oDevice);
                 WriteSize(oTEmfHeader.oMillimeters);
@@ -275,7 +275,7 @@ namespace MetaFile
                         m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfStretchBLT.cbBitsSrc);
         }
 
-        void CEmfInterpretator::HANDLE_EMR_EOF(const unsigned int &unCount, const unsigned int &unOffset, const unsigned int &unSizeLast)
+        void CEmfInterpretator::HANDLE_EMR_EOF()
         {
                 int unExplicitRecordSize    = 20;
                 int unType                  = EMR_EOF;
@@ -286,13 +286,17 @@ namespace MetaFile
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unCount,               sizeof (unsigned int));
-                m_pOutStream->write((char *)&unOffset,              sizeof (unsigned int));
-                m_pOutStream->write((char *)&unSizeLast,            sizeof (unsigned int));
+                unsigned int unZero = 0;
+
+                m_pOutStream->write((char *)&unZero,                sizeof (unsigned int));
+                m_pOutStream->write((char *)&unZero,                sizeof (unsigned int));
+                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (unsigned int));
 
                 m_pOutStream->seekp(48);
                 m_pOutStream->write((char *)&unFileSize,            sizeof (unsigned int));
                 m_pOutStream->write((char *)&unNumberRecords,       sizeof (unsigned int));
+                m_pOutStream->write((char *)&ushNuberDescriptors,   sizeof (unsigned short));
+
                 m_pOutStream->close();
         }
 
@@ -359,6 +363,7 @@ namespace MetaFile
 
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
+                ++ushNuberDescriptors;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -411,6 +416,7 @@ namespace MetaFile
 
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
+                ++ushNuberDescriptors;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -512,6 +518,7 @@ namespace MetaFile
 
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
+                ++ushNuberDescriptors;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -549,6 +556,7 @@ namespace MetaFile
 
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
+                ++ushNuberDescriptors;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -795,6 +803,7 @@ namespace MetaFile
 
             unFileSize += unExplicitRecordSize;
             ++unNumberRecords;
+            ++ushNuberDescriptors;
 
             m_pOutStream->write((char *)&unType,                sizeof (int));
             m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
@@ -916,6 +925,7 @@ namespace MetaFile
 
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
+                ++ushNuberDescriptors;
 
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));

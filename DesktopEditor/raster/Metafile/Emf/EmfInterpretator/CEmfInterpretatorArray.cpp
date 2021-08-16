@@ -201,10 +201,10 @@ namespace MetaFile
                         pInterpretator->HANDLE_EMR_STRETCHBLT(oTEmfStretchBLT, oDataStream);
         }
 
-        void CEmfInterpretatorArray::HANDLE_EMR_EOF(const unsigned int &unCount, const unsigned int &unOffset, const unsigned int &unSizeLast)
+        void CEmfInterpretatorArray::HANDLE_EMR_EOF()
         {
                 for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
-                        pInterpretator->HANDLE_EMR_EOF(unCount, unOffset, unSizeLast);
+                        pInterpretator->HANDLE_EMR_EOF();
         }
 
         void CEmfInterpretatorArray::HANDLE_EMR_SAVEDC()

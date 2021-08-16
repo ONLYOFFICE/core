@@ -27,7 +27,7 @@ namespace MetaFile
                 virtual void HANDLE_EMR_BITBLT(const TEmfBitBlt&, CDataStream&) = 0;
                 virtual void HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice&, CDataStream&) = 0;
                 virtual void HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT& oTEmfStretchBLT, CDataStream &oDataStream) = 0;
-                virtual void HANDLE_EMR_EOF(const unsigned int&, const unsigned int&, const unsigned int&) = 0;
+                virtual void HANDLE_EMR_EOF() = 0;
                 virtual void HANDLE_EMR_SAVEDC() = 0;
                 virtual void HANDLE_EMR_RESTOREDC(const int&) = 0;
                 virtual void HANDLE_EMR_MODIFYWORLDTRANSFORM(const TEmfXForm&, const unsigned int&) = 0;

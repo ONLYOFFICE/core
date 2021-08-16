@@ -389,7 +389,7 @@ namespace MetaFile
                 *m_pOutput >> ulOffset;
                 *m_pOutput >> ulSizeLast;
 
-                HANDLE_EMR_EOF(ulCount, ulOffset, ulSizeLast);
+                HANDLE_EMR_EOF();
         }
 
         void CEmfxParser::Read_EMR_UNKNOWN()

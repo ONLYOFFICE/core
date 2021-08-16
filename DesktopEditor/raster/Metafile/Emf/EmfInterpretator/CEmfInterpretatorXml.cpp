@@ -102,13 +102,12 @@ namespace MetaFile
                         m_pOutputXml->WriteNodeEnd(L"EMR_STRETCHBLT");
         }
 
-        void CEmfInterpretatorXml::HANDLE_EMR_EOF(const unsigned int &unCount, const unsigned int &unOffset,
-                                                  const unsigned int &unSizeLast)
+        void CEmfInterpretatorXml::HANDLE_EMR_EOF()
         {
                 m_pOutputXml->WriteNodeBegin(L"EMR_EOF");
-                        m_pOutputXml->WriteNode(L"nPalEntries",	    unCount);
-                        m_pOutputXml->WriteNode(L"offPalEntries",   unOffset);
-                        m_pOutputXml->WriteNode(L"SizeLast",	    unSizeLast);
+                        m_pOutputXml->WriteNode(L"nPalEntries",	    0);
+                        m_pOutputXml->WriteNode(L"offPalEntries",   0);
+                        m_pOutputXml->WriteNode(L"SizeLast",	    20);
                         m_pOutputXml->WriteNodeEnd(L"EMR_EOF");
         }
 
@@ -634,7 +633,7 @@ namespace MetaFile
                 if (NULL == m_pOutputXml)
                         return;
 
-                m_pOutputXml->WriteString(L"<?xml version=\"1.0\"?>\n");
+                m_pOutputXml->WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
                 m_pOutputXml->WriteNodeBegin(L"EMF");
         }
 

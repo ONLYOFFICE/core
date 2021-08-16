@@ -1396,10 +1396,15 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     }
                     m_oWriter.WriteString(std::wstring(L"/>"));
                 }
-                if (pPF->bulletAutoNum.is_init())  // TODO Numbering
+                if (pPF->bulletAutoNum.is_init() && !pPF->bulletChar.is_init())  // TODO Numbering
                 {
                     m_oWriter.WriteString(L"<a:buAutoNum type=\"");
                     m_oWriter.WriteString(pPF->bulletAutoNum->type.get());
+                    if (pPF->bulletAutoNum->startAt.get2() != 1)
+                    {
+                        m_oWriter.WriteString(L" startAt=\"");
+                        m_oWriter.WriteString(std::to_wstring(pPF->bulletAutoNum->startAt.get2()));
+                    }
                     m_oWriter.WriteString(L"\"/>");
                 }
 

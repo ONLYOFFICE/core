@@ -580,7 +580,7 @@ namespace SimpleTypes
 			else if	(strcmp("false",	sValue) == 0) this->m_eValue = onoffFalse;
 			else if	(strcmp("False",	sValue) == 0) this->m_eValue = onoffFalse;
 			else if	(strcmp("off",		sValue) == 0) this->m_eValue = onoffFalse;
-			else                              this->m_eValue = eDefValue;
+			else this->m_eValue = eDefValue;
 
 			return this->m_eValue;
 		}
@@ -685,6 +685,28 @@ namespace SimpleTypes
 
 		SimpleType_FromString     (EOnOff)
 		SimpleType_Operator_Equal (COnOff)
+	};
+
+	class CBool : public COnOff<>
+	{
+	public:
+		CBool() {}
+
+		CBool(const bool & bVal)
+		{
+			this->m_eValue = (false != bVal) ? onoffTrue : onoffFalse;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (m_eValue)
+			{
+				case onoffTrue: return L"1";
+				case onoffFalse:
+				default:		return L"0";
+			}
+		}
+		SimpleType_FromString(EOnOff)
+		SimpleType_Operator_Equal(CBool)
 	};
 
 	//--------------------------------------------------------------------------------

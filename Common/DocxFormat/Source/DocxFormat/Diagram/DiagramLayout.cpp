@@ -696,8 +696,6 @@ namespace OOX
 	{
 		pWriter->StartNode(L"dgm:if");
 			pWriter->WriteAttribute(L"name", m_sName);
-			if (m_oFunc.IsInit()) pWriter->WriteAttribute(L"func", m_oFunc->ToString());
-			pWriter->WriteAttribute(L"arg", m_sArg);
 			if (false == m_arAxis.empty())
 			{
 				std::wstring sAxis;
@@ -722,6 +720,8 @@ namespace OOX
 				for (size_t i = 0; i < m_arCnt.size(); ++i) sRes += L" " + std::to_wstring(m_arCnt[i]);
 				pWriter->WriteAttribute(L"cnt", sRes.substr(1));
 			}
+			if (m_oFunc.IsInit()) pWriter->WriteAttribute(L"func", m_oFunc->ToString());
+			pWriter->WriteAttribute(L"arg", m_sArg);
 			if (false == m_arStep.empty())
 			{
 				std::wstring sRes;
@@ -874,7 +874,9 @@ namespace OOX
 			
 			if (L"dgm:if" == sName)
 			{
-				m_oIf = oReader;
+				OOX::Diagram::CIf *pItem = new Diagram::CIf(oReader);
+				if (pItem)
+					m_arrItems.push_back(pItem); 
 			}
 			else if (L"dgm:else" == sName)
 			{
@@ -903,8 +905,8 @@ namespace OOX
 			{
 				case 0:
 				{
-					m_oIf.Init();
-					m_oIf->fromPPTY(pReader);
+					m_arrItems.push_back(new Diagram::CIf());
+					m_arrItems.back()->fromPPTY(pReader);
 				}break;
 				case 1:
 				{
@@ -925,7 +927,9 @@ namespace OOX
 			pWriter->WriteString2(0, m_sName);
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-		pWriter->WriteRecord2(0, m_oIf);
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+			pWriter->WriteRecord2(0, dynamic_cast<OOX::WritingElement*>(m_arrItems[i]));
+
 		pWriter->WriteRecord2(1, m_oElse);
 	}
 	void Diagram::CChoose::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -934,7 +938,9 @@ namespace OOX
 		pWriter->WriteAttribute(L"name", m_sName);
 		pWriter->EndAttributes();
 
-		if (m_oIf.IsInit()) m_oIf->toXmlWriter(pWriter);
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+			m_arrItems[i]->toXmlWriter(pWriter);
+
 		if (m_oElse.IsInit()) m_oElse->toXmlWriter(pWriter);
 
 		pWriter->WriteNodeEnd(L"dgm:choose");
@@ -1289,11 +1295,11 @@ namespace OOX
 			if (m_oType.IsInit()) pWriter->WriteAttribute(L"type", m_oType->ToString());
 			if (m_oFor.IsInit()) pWriter->WriteAttribute(L"for", m_oFor->ToString());
 			pWriter->WriteAttribute(L"forName", m_oForName);
+			if (m_oPtType.IsInit()) pWriter->WriteAttribute(L"ptType", m_oPtType->ToString());
+			if (m_oRefPtType.IsInit()) pWriter->WriteAttribute(L"refPtType", m_oRefPtType->ToString());
 			if (m_oRefType.IsInit()) pWriter->WriteAttribute(L"refType", m_oRefType->ToString());
 			if (m_oRefFor.IsInit()) pWriter->WriteAttribute(L"refFor", m_oRefFor->ToString());
 			pWriter->WriteAttribute(L"refForName", m_oRefForName);
-			if (m_oRefPtType.IsInit()) pWriter->WriteAttribute(L"refPtType", m_oRefPtType->ToString());
-			if (m_oPtType.IsInit()) pWriter->WriteAttribute(L"ptType", m_oPtType->ToString());
 			if (m_oOp.IsInit()) pWriter->WriteAttribute(L"op", m_oOp->ToString());
 			pWriter->WriteAttribute(L"fact", m_oFact);
 			pWriter->WriteAttribute(L"val", m_oVal);
@@ -1552,6 +1558,12 @@ namespace OOX
 				for (size_t i = 0; i < m_arSt.size(); ++i) sRes += L" " + std::to_wstring(m_arSt[i]);
 				pWriter->WriteAttribute(L"st", sRes.substr(1));
 			}
+			if (false == m_arHideLastTrans.empty())
+			{
+				std::wstring sRes;
+				for (size_t i = 0; i < m_arHideLastTrans.size(); ++i) sRes += (m_arHideLastTrans[i] ? L" 1" : L" 0");
+				pWriter->WriteAttribute(L"hideLastTrans", sRes.substr(1));
+			}
 			if (false == m_arCnt.empty())
 			{
 				std::wstring sRes;
@@ -1563,12 +1575,6 @@ namespace OOX
 				std::wstring sRes;
 				for (size_t i = 0; i < m_arStep.size(); ++i) sRes += L" " + std::to_wstring(m_arStep[i]);
 				pWriter->WriteAttribute(L"step", sRes.substr(1));
-			}
-			if (false == m_arHideLastTrans.empty())
-			{
-				std::wstring sRes;
-				for (size_t i = 0; i < m_arHideLastTrans.size(); ++i) sRes += (m_arHideLastTrans[i] ? L" 1" : L" 0");
-				pWriter->WriteAttribute(L"hideLastTrans", sRes.substr(1));
 			}
 		pWriter->EndAttributes();
 		pWriter->WriteNodeEnd(L"dgm:presOf");

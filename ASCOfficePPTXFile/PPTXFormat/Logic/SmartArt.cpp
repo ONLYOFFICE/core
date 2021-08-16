@@ -56,6 +56,21 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		smart_ptr<OOX::File> SmartArt::FindDiagramDrawing(OOX::CDiagramData* pDiagramData) const
+		{
+			if (!pDiagramData) return NULL;
+
+			// easy4cargo1.pptx - слайд 2 - в диаграмме Smart вместо ссылки на drawing.xml ссылка на стороннюю картинку
+			OOX::CPath pathDiagramData = pDiagramData->m_strFilename;
+
+			int a1 = (int)pathDiagramData.GetFilename().find(L".");
+			std::wstring strId = pathDiagramData.GetFilename().substr(4, pathDiagramData.GetFilename().length() - 8);
+			//стандартизированные имена only
+
+			OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + L"drawing" + strId + L".xml";
+
+			return smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(new OOX::CDiagramDrawing(NULL, pathDiagramDrawing)));
+		}
 		bool SmartArt::LoadDrawing(OOX::IFileContainer* pRels)
 		{
 			if (m_oDrawing.IsInit())
@@ -87,23 +102,8 @@ namespace PPTX
 
 			if (!pDiagramDrawing)
 			{
-				smart_ptr<OOX::File> oFileData = pRels->Find(*id_data);
-				OOX::CDiagramData* pDiagramData = dynamic_cast<OOX::CDiagramData*>(oFileData.GetPointer());
-
-				if (pDiagramData)
-				{
-					// easy4cargo1.pptx - слайд 2 - в диаграмме Smart вместо ссылки на drawing.xml ссылка на стороннюю картинку
-					OOX::CPath pathDiagramData = pDiagramData->m_strFilename;
-
-					int a1 = (int)pathDiagramData.GetFilename().find(L".");
-					std::wstring strId = pathDiagramData.GetFilename().substr(4, pathDiagramData.GetFilename().length() - 8);
-
-					OOX::CPath pathDiagramDrawing = pathDiagramData.GetDirectory() + FILE_SEPARATOR_STR + L"drawing" + strId + L".xml";
-
-					oFileDrawing = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(new OOX::CDiagramDrawing(NULL, pathDiagramDrawing)));
-					if (oFileDrawing.IsInit())
-						pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
-				}
+				oFileDrawing = FindDiagramDrawing(pDiagramData);
+				pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
 			}
 
 			if ((pDiagramDrawing) && (pDiagramDrawing->m_oShapeTree.IsInit()))
@@ -157,22 +157,33 @@ namespace PPTX
 
 				if (pDiagramData)
 				{
+					OOX::CDiagramDrawing* pDiagramDrawing = NULL;
+					smart_ptr<OOX::File> oFileDrawing;
+
 					if (pDiagramData->id_drawing.IsInit())
 					{
-						smart_ptr<OOX::File> oFileDrawing;
 						if (parentFileIs<OOX::IFileContainer>()) oFileDrawing = parentFileAs<OOX::IFileContainer>().Find(*pDiagramData->id_drawing);
 						else if (pDocumentRels != NULL) oFileDrawing = pDocumentRels->Find(*pDiagramData->id_drawing);
 
-						OOX::CDiagramDrawing* pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
-						if (pDiagramDrawing)
-						{
-							pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>(oFileDrawing.GetPointer()));
+						pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
 
-							pWriter->StartRecord(0);
-							pDiagramDrawing->toPPTY(pWriter);
-							pWriter->EndRecord();
-						}
 					}
+					if (!pDiagramDrawing)
+					{
+						//Demo-Hayden-Management-v2.docx 
+						oFileDrawing = FindDiagramDrawing(pDiagramData);
+						pDiagramDrawing = dynamic_cast<OOX::CDiagramDrawing*>(oFileDrawing.GetPointer());
+					}
+
+					if (pDiagramDrawing)
+					{
+						pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>(oFileDrawing.GetPointer()));
+
+						pWriter->StartRecord(0);
+						pDiagramDrawing->toPPTY(pWriter);
+						pWriter->EndRecord();
+					}
+
 					pWriter->SetRels(dynamic_cast<OOX::IFileContainer*>(oFileData.GetPointer()));
 
 					pWriter->StartRecord(1);

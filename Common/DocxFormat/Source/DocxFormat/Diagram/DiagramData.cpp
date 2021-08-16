@@ -114,7 +114,9 @@ namespace OOX
 
 		pWriter->StartAttributes();
 		if (m_oVal.IsInit())
+		{
 			pWriter->WriteAttribute(L"val", m_oVal.IsInit() ? m_oVal->ToString() : L"");
+		}
 		pWriter->EndAttributes();
 		pWriter->WriteNodeEnd(node_name);
 	}

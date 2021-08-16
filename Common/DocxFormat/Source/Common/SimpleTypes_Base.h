@@ -493,6 +493,7 @@ namespace SimpleTypes
         virtual std::wstring ToString  () const
 		{
 			if (std::isnan(m_dValue)) return L"NaN";
+			else if (std::isinf(m_dValue)) return L"INF";
 			else return boost::lexical_cast<std::wstring>(m_dValue);
 		}
 		virtual std::wstring ToString2() const

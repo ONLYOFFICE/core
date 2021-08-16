@@ -1259,6 +1259,7 @@ namespace OOX
 		et_x_FromTo,
 		et_x_Pos,
 		et_x_Ext,
+		et_x_ClientData,
 		et_x_CalcCell,
 		et_x_SheetViews,
 		et_x_SheetView,

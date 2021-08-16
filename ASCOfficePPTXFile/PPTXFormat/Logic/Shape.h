@@ -296,9 +296,10 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-                                        WritingElement_ReadAttributes_Read_if( oReader, _T("useBgFill"), useBgFill)
-                                        WritingElement_ReadAttributes_Read_else_if(oReader, _T("macro"), macro)
-                                        WritingElement_ReadAttributes_Read_else_if(oReader, _T("modelId"), modelId)
+					WritingElement_ReadAttributes_Read_if( oReader, _T("useBgFill"), useBgFill)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("macro"), macro)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("modelId"), modelId)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("fLocksText"), fLocksText)					
 				WritingElement_ReadAttributes_End( oReader )
 
 			}
@@ -333,11 +334,12 @@ namespace PPTX
 			nullable<OOX::Logic::CSdtContent>	oTextBoxShape;
 			nullable<BodyPr>					oTextBoxBodyPr;
 
-
-                        nullable_string						modelId;
+			nullable_string						modelId;
 			nullable_bool						useBgFill;
 			nullable_string						macro;
-//-------------------------------------------------------------------------------------------------
+			nullable_bool						fLocksText;
+			;;
+	//-------------------------------------------------------------------------------------------------
 			nullable<OOX::VmlOffice::CSignatureLine> signatureLine;
 			std::wstring						m_sClientDataXml;
 		protected:

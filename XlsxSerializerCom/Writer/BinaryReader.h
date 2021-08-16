@@ -331,6 +331,7 @@ namespace BinXlsxRW
 		int ReadFromTo(BYTE type, long length, void* poResult);
 		int ReadExt(BYTE type, long length, void* poResult);
 		int ReadPos(BYTE type, long length, void* poResult);
+		int ReadClientData(BYTE type, long length, void* poResult);
 		int ReadSheetData(BYTE type, long length, void* poResult);
 		int ReadRow(BYTE type, long length, void* poResult);
 		int ReadCells(BYTE type, long length, void* poResult);

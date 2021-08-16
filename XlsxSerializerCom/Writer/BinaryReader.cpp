@@ -5342,6 +5342,11 @@ int BinaryWorksheetsTableReader::ReadCellAnchor(BYTE type, long length, void* po
 		pCellAnchor->m_oExt.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadExt, pCellAnchor->m_oExt.GetPointer());
 	}
+	else if (c_oSer_DrawingType::ClientData == type)
+	{
+		pCellAnchor->m_oClientData.Init();
+		READ2_DEF_SPREADSHEET(length, res, this->ReadClientData, pCellAnchor->m_oClientData.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -5570,6 +5575,22 @@ int BinaryWorksheetsTableReader::ReadFromTo(BYTE type, long length, void* poResu
 		double dRowOffMm = m_oBufferedStream.GetDoubleReal();
 		pFromTo->m_oRowOff.Init();
 		pFromTo->m_oRowOff->FromMm(dRowOffMm);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadClientData(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CClientData *pClientData = static_cast<OOX::Spreadsheet::CClientData*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_DrawingClientDataType::fLocksWithSheet == type)
+	{
+		pClientData->fLocksWithSheet = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSer_DrawingClientDataType::fPrintsWithSheet == type)
+	{
+		pClientData->fPrintsWithSheet = m_oBufferedStream.GetBool();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

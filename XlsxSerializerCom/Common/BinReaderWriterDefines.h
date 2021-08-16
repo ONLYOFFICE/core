@@ -580,7 +580,8 @@ namespace BinXlsxRW
 		pptxDrawing = 9,
 		//Chart2 = 10,
 		//ObjectName = 11
-		EditAs = 12
+		EditAs = 12,
+		ClientData = 14
 	};}
 	namespace c_oSer_DrawingFromToType{enum c_oSer_DrawingFromToType
 	{
@@ -598,6 +599,11 @@ namespace BinXlsxRW
 	{
 		Cx = 0,
 		Cy = 1
+	};}
+	namespace c_oSer_DrawingClientDataType {enum c_oSer_DrawingClientDataType
+	{
+		fLocksWithSheet = 0,
+		fPrintsWithSheet = 1
 	};}
 	namespace c_oSer_OtherType{enum c_oSer_OtherType
 	{

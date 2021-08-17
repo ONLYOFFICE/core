@@ -46,6 +46,7 @@
 #include "Biff12_records/CalcProp.h"
 #include "Biff12_records/OleSize.h"
 
+
 namespace XLSB
 {
 
@@ -240,6 +241,26 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                 while(count > 0)
                 {
                     m_arBrtUserBookView.insert(m_arBrtUserBookView.begin(), elements_.back());
+                    elements_.pop_back();
+                    count--;
+                }
+            }break;
+
+            case rt_WebOpt:
+            {
+                if (proc.optional<WebOpt>())
+                {
+                    m_BrtWebOpt = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_FileRecover:
+            {
+                count = proc.repeated<FileRecover>(0, 0);
+                while(count > 0)
+                {
+                    m_arBrtFileRecover.insert(m_arBrtFileRecover.begin(), elements_.back());
                     elements_.pop_back();
                     count--;
                 }

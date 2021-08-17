@@ -54,35 +54,54 @@ BaseObjectPtr BookExt::clone()
 
 void BookExt::readFields(CFRecord& record)
 {
-	FrtHeader header(rt_BookExt);
-	record >> header;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        FrtHeader header(rt_BookExt);
+        record >> header;
 
-	record >> cb;
-	_UINT32 flags;
-	
-	if (record.loadAnyData(flags))
-	{	
-		fDontAutoRecover		= GETBIT(flags, 0);
-		fHidePivotList			= GETBIT(flags, 1);
-		fFilterPrivacy			= GETBIT(flags, 2);
-		fEmbedFactoids			= GETBIT(flags, 3);
-		mdFactoidDisplay		= GETBITS(flags, 4, 5);
-		fSavedDuringRecovery	= GETBIT(flags, 6);
-		fCreatedViaMinimalSave	= GETBIT(flags, 7);
-		fOpenedViaDataRecovery	= GETBIT(flags, 8);
-		fOpenedViaSafeLoad		= GETBIT(flags, 9);
-	}
-	else return;
+        record >> cb;
+        _UINT32 flags;
+
+        if (record.loadAnyData(flags))
+        {
+            fDontAutoRecover		= GETBIT(flags, 0);
+            fHidePivotList			= GETBIT(flags, 1);
+            fFilterPrivacy			= GETBIT(flags, 2);
+            fEmbedFactoids			= GETBIT(flags, 3);
+            mdFactoidDisplay		= GETBITS(flags, 4, 5);
+            fSavedDuringRecovery	= GETBIT(flags, 6);
+            fCreatedViaMinimalSave	= GETBIT(flags, 7);
+            fOpenedViaDataRecovery	= GETBIT(flags, 8);
+            fOpenedViaSafeLoad		= GETBIT(flags, 9);
+        }
+        else return;
 
 
-	if(cb > 20)
-	{
-		record >> grbit1;
-	}
-	if(cb > 21)
-	{
-		record >> grbit2;
-	}
+        if(cb > 20)
+        {
+            record >> grbit1;
+        }
+        if(cb > 21)
+        {
+            record >> grbit2;
+        }
+    }
+    else
+    {
+        unsigned char flags;
+
+        if (record.loadAnyData(flags))
+        {
+            fDontAutoRecover		= GETBIT(flags, 0);
+            fSavedDuringRecovery	= GETBIT(flags, 1);
+            fCreatedViaMinimalSave	= GETBIT(flags, 2);
+            fOpenedViaDataRecovery	= GETBIT(flags, 3);
+            fOpenedViaSafeLoad		= GETBIT(flags, 4);
+        }
+
+    }
+
+
 
 }
 

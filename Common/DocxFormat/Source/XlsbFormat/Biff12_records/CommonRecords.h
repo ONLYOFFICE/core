@@ -36,6 +36,8 @@
 #include <Logic/Biff_records/Window1.h>
 #include <Logic/Biff_records/Lbl.h>
 #include <Logic/Biff_records/UserBView.h>
+#include <Logic/Biff_records/WOpt.h>
+#include <Logic/Biff_records/BookExt.h>
 #include "../Source/XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
 
@@ -70,5 +72,14 @@ namespace XLSB
         BIFF_RECORD_DEFINE_TYPE_INFO(UserBookView)
     };
 
+    class WebOpt: public XLS::WOpt
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(WebOpt)
+    };
+
+    class FileRecover: public XLS::BookExt
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(FileRecover)
+    };
 } // namespace XLSB
 

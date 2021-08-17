@@ -167,13 +167,14 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"), m_oCount )
+					WritingElement_ReadAttributes_Read_if ( oReader, _T("count"), m_oCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
 
 			std::map<unsigned int, size_t> m_mapNumFmtIndex;
+			std::map<std::wstring, int> m_mapFormatCode;
 		};
 	} //Spreadsheet
 } // namespace OOX

@@ -114,7 +114,9 @@ namespace OOX
 
 		pWriter->StartAttributes();
 		if (m_oVal.IsInit())
+		{
 			pWriter->WriteAttribute(L"val", m_oVal.IsInit() ? m_oVal->ToString() : L"");
+		}
 		pWriter->EndAttributes();
 		pWriter->WriteNodeEnd(node_name);
 	}
@@ -269,7 +271,6 @@ namespace OOX
 			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 				break;
 
-			else if (0 == _at)	m_coherent3DOff = pReader->GetBool();
 			else if (1 == _at)	m_coherent3DOff = pReader->GetBool();
 			else if (2 == _at)	m_csCatId = pReader->GetString2();
 			else if (3 == _at)	m_csTypeId = pReader->GetString2();
@@ -286,7 +287,7 @@ namespace OOX
 			else if (14 == _at)	m_custScaleY = pReader->GetLong();
 			else if (15 == _at)	m_custSzX = pReader->GetLong();
 			else if (16 == _at)	m_custSzY = pReader->GetLong();
-			else if (17 == _at)	m_loCatId = pReader->GetString2();
+			else if (17 == _at)	m_custT = pReader->GetBool();
 			else if (18 == _at)	m_loCatId = pReader->GetString2();
 			else if (19 == _at)	m_loTypeId = pReader->GetString2();
 			else if (20 == _at)	m_phldr = pReader->GetBool();
@@ -326,7 +327,6 @@ namespace OOX
 	void Diagram::CPropertySet::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteBool2(0, m_coherent3DOff);
 			pWriter->WriteBool2(1, m_coherent3DOff);
 			pWriter->WriteString2(2, m_csCatId);
 			pWriter->WriteString2(3, m_csTypeId);

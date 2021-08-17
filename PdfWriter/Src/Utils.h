@@ -34,12 +34,12 @@
 
 #include "Types.h"
 
-#define NEEDS_ESCAPE(c)    (c < 0x20 || \
+#define NEEDS_ESCAPE(c)    (c < 0x21 || \
                             c > 0x7e || \
                             c == '\\' || \
                             c == '%' || \
                             c == '#' || \
-                            /*c == '/' || */\
+							c == '/' || \
                             c == '(' || \
                             c == ')' || \
                             c == '<' || \

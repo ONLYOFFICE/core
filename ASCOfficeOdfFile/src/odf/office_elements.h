@@ -73,33 +73,8 @@ public:
     void set_root(bool isRoot) { is_root_ = isRoot; }
     bool is_root() const { return is_root_; }
 
-    virtual void afterCreate()
-	{
-		if (!context_) return;
-
-		ElementType type_ = this->get_type();
-		
-		context_->levels.push_back(this);
-	}
-	virtual void afterReadContent()
-	{
-		if (!context_) return;
-
-		ElementType type_ = this->get_type();
-
-		if (context_->levels.size() == 4) 
-		{
-			if (office_element * prev= context_->levels[context_->levels.size() - 2]) //for master pages doc
-			{
-				if (element_style_name)
-				{
-					prev->next_element_style_name = element_style_name;
-				}
-			}
-		}
-		if (false == context_->levels.empty())
-			context_->levels.pop_back();
-	}
+	virtual void afterCreate();
+	virtual void afterReadContent(); // -> createandread.cpp
    
     CPDOCCORE_DEFINE_VISITABLE();
 

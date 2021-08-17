@@ -322,6 +322,10 @@ plugin {
 }
 }
 
+core_disable_all_warnings {
+    CONFIG += warn_off
+}
+
 # BUILD_PATHS
 # MUST BE DEFINED CORE_ROOT_DIR
 !core_no_dst {

@@ -31,9 +31,9 @@
  */
 
 
-#include "FileContainer.h"
-#include "FileTypes.h"
+#include "Folder.h"
 
+#include "FileTypes.h"
 #include "FileFactory.h"
 #include "WrapperFile.h"
 
@@ -154,7 +154,7 @@ namespace PPTX
 			return _T("");
 		return p->filename().m_strFilename;
 	}
-	void FileContainer::read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event)
+	void FileContainer::read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map)
 	{
 		bool bIsSlide = false;
 		OOX::File* pSrcFile = dynamic_cast<OOX::File*>(this);
@@ -197,8 +197,6 @@ namespace PPTX
 				}
 				else
 				{
-					long percent = Event ? Event->GetPercent() : 0;
-
 					smart_ptr<OOX::File> file = PPTX::FileFactory::CreateFilePPTX(normPath, *pRelation, map, OOX::IFileContainer::m_pMainDocument);
 
 					if (file.IsInit() == false)
@@ -209,20 +207,10 @@ namespace PPTX
 
 					smart_ptr<FileContainer> pContainer = file.smart_dynamic_cast<FileContainer>();
                     
-					if (Event) Event->Progress(0, percent + m_lPercent);
-
                     if (pContainer.IsInit())
 					{
-						pContainer->m_lPercent = m_lPercent;
-						if (Event) Event->AddPercent(m_lPercent);
-
-						pContainer->read(normPath, map, Event);
-						m_bCancelled = pContainer->m_bCancelled;
+						pContainer->read(normPath, map);
 					}
-                    if (m_bCancelled)
-                    {
-                       break;
-                    }
                 }
 			}
 		}
@@ -312,11 +300,11 @@ namespace PPTX
 		}
 	}
 
-	void FileContainer::read(const OOX::CPath& filename, FileMap& map, IPPTXEvent* Event)
+	void FileContainer::read(const OOX::CPath& filename, FileMap& map)
 	{
 		OOX::CRels rels(filename);
 		OOX::CPath path = filename.GetDirectory();
-		read(rels, path, map, Event);
+		read(rels, path, map);
 	}
 
 	OOX::CPath FileContainer::CorrectPathRels(const OOX::CPath& path, OOX::Rels::CRelationShip* relation )
@@ -327,6 +315,17 @@ namespace PPTX
 		
 		if ( NSFile::CFileBinary::Exists(filename.GetPath()) == true ) return filename;
 		
+		//tf22977542_win32.potx
+
+		PPTX::Document *pPptxDocument = dynamic_cast<PPTX::Document *>(m_pMainDocument);
+
+		if (m_pMainDocument)
+		{
+			OOX::CPath main_path(m_pMainDocument->m_sDocumentPath);
+			filename = main_path / relation->Target();
+			
+			if (NSFile::CFileBinary::Exists(filename.GetPath()) == true) return filename;
+		}
 		//file_1_ (1).pptx			
 		std::wstring strDefDirectory;
 		for (int i = 0; i < 9; i++)
@@ -338,7 +337,16 @@ namespace PPTX
 			}
 		}
 
-		if (strDefDirectory.empty()) return OOX::CPath();
+		if (strDefDirectory.empty())
+		{
+			if (std::wstring::npos != relation->Type().find(L"image") ||
+				std::wstring::npos != relation->Type().find(L"audio") ||
+				std::wstring::npos != relation->Type().find(L"media"))
+			{
+				strDefDirectory = L"media";
+			}
+			else return OOX::CPath();
+		}
 		
 		OOX::CPath new_filename = strDefDirectory + FILE_SEPARATOR_STR + relation->Filename().GetFilename();
 		

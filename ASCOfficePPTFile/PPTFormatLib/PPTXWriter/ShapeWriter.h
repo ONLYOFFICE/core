@@ -448,7 +448,7 @@ namespace PPT_FORMAT
 
         void WriteGroupInfo();
         void WriteTableInfo();
-        void WriteButton(int paragraphNum = -1);
+        void WriteHyperlink(const std::vector<CInteractiveInfo> &actions);
         std::vector<CInteractiveInfo> getActionsByNum(const int num);
         std::wstring ConvertTableCells();
         std::wstring ConvertTableRow();

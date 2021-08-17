@@ -143,7 +143,11 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 		} 
-
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = FromEmu(dValue);
+		}
         virtual double  FromString(std::wstring &sValue)
 		{
             m_sGuide.clear();
@@ -877,13 +881,11 @@ namespace SimpleTypes
 		{
 			return m_dValue;
 		}
-
-		void   SetValue(double dValue)
+		virtual void SetValue(double dValue)
 		{
-			m_bUnit  = false;
+			m_bUnit = false;
 			m_dValue = dValue;
 		}
-
         virtual double  FromString(std::wstring &sValue)
         {
             Parse(sValue, 12700);

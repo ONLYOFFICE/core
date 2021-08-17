@@ -39,10 +39,10 @@
 #include "../graphics/Timer.h"
 #include "../common/Directory.h"
 #include "../common/Array.h"
+#include "../common/StringBuilder.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
 #include "js_internal/js_base.h"
-#include "../fontengine/application_generate_fonts_common.h"
 
 #if defined(CreateDirectory)
 #undef CreateDirectory
@@ -182,7 +182,7 @@ private:
 
     void url_correct2(std::wstring& url)
     {
-        NSCommon::string_replace(url, L"/./", L"/");
+        NSStringUtils::string_replace(url, L"/./", L"/");
 
         size_t posn = 0;
         while (std::wstring::npos != (posn = url.find(L"/../")))
@@ -195,9 +195,9 @@ private:
             }
         }
 
-        NSCommon::string_replace(url, L"\\\\", L"\\");
-        NSCommon::string_replace(url, L"//", L"/");
-        NSCommon::string_replace(url, L"\\", L"/");
+        NSStringUtils::string_replace(url, L"\\\\", L"\\");
+        NSStringUtils::string_replace(url, L"//", L"/");
+        NSStringUtils::string_replace(url, L"\\", L"/");
     }
 };
 
@@ -346,7 +346,7 @@ public:
     {
         m_strFilePath = strPath;
 
-        m_oZipWorker.m_sWorkerFolder = NSCommon::GetDirectoryName(strPath);
+        m_oZipWorker.m_sWorkerFolder = NSFile::GetDirectoryName(strPath);
     }
     std::wstring GetFilePath()
     {

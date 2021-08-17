@@ -1407,8 +1407,16 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 		if (style_font_name_)
 		{
 			font_instance * font = fonts.font_by_style_name(*style_font_name_);
-			if (font) 
+			if (font)
+			{
 				w_ascii = w_hAnsi = font->name();
+
+				if (font->charset() == L"02")
+				{
+					if (w_cs.empty()) w_cs = font->name();
+					if (w_eastAsia.empty()) w_eastAsia = font->name();
+				}
+			}
 		}
 
 		_rPr << L"<w:rFonts";

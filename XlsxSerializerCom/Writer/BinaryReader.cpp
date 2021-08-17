@@ -86,13 +86,20 @@ namespace BinXlsxRW
 				length = pFind->second[i + 1]; \
 				m_oBufferedStream.Seek(nPos); \
 
-	#define SEEK_TO_POS_END(elem) \
+#define SEEK_TO_POS_END(elem) \
 				elem.toXML(oStreamWriter); \
 			} \
 		}
 
-	#define SEEK_TO_POS_END2() \
+#define SEEK_TO_POS_END2() \
 			} \
+		}
+
+#define SEEK_TO_POS_ELSE() \
+		else \
+		{
+
+#define SEEK_TO_POS_ELSE_END() \
 		}
 
 Binary_CommonReader2::Binary_CommonReader2(NSBinPptxRW::CBinaryFileReader& poBufferedStream):m_poBufferedStream(poBufferedStream)
@@ -2097,14 +2104,21 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	}
 	else if(c_oSerWorkbookTypes::VbaProject == type)
 	{
-        smart_ptr<OOX::VbaProject> oFileVbaProject(new OOX::VbaProject(NULL));
+		m_oBufferedStream.Skip(1); //skip type
 
-        oFileVbaProject->fromPPTY(&m_oBufferedStream);
+		if (m_oWorkbook.m_bMacroEnabled)
+		{
+			smart_ptr<OOX::VbaProject> oFileVbaProject(new OOX::VbaProject(NULL));
 
-        smart_ptr<OOX::File> oFile = oFileVbaProject.smart_dynamic_cast<OOX::File>();
-        const OOX::RId oRId = m_oWorkbook.Add(oFile);
+			oFileVbaProject->fromPPTY(&m_oBufferedStream);
 
-        m_oWorkbook.m_bMacroEnabled = true;
+			smart_ptr<OOX::File> oFile = oFileVbaProject.smart_dynamic_cast<OOX::File>();
+			const OOX::RId oRId = m_oWorkbook.Add(oFile);
+		}
+		else
+		{
+			m_oBufferedStream.SkipRecord();
+		}
     }
 	else if(c_oSerWorkbookTypes::JsaProject == type)
 	{
@@ -3694,7 +3708,7 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		READ1_DEF(length, res, this->ReadWorksheetCols, &oCols);
 	SEEK_TO_POS_END(oCols);
 //-------------------------------------------------------------------------------------------------------------
-	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetData);
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetData)
 		if (NULL == m_oSaveParams.pCSVWriter)
 		{
 			OOX::Spreadsheet::CSheetData oSheetData;
@@ -3708,7 +3722,17 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 			READ1_DEF(length, res, this->ReadSheetData, NULL);
 			m_oSaveParams.pCSVWriter->WriteSheetEnd(m_pCurWorksheet.GetPointer());
 		}
-	SEEK_TO_POS_END2();
+	SEEK_TO_POS_END2()
+	SEEK_TO_POS_ELSE()
+		OOX::Spreadsheet::CSheetData oSheetData;
+		oSheetData.toXMLStart(oStreamWriter);
+		oSheetData.toXMLEnd(oStreamWriter);
+	SEEK_TO_POS_ELSE_END()
+//-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Protection);
+	OOX::Spreadsheet::CSheetProtection oProtection;
+	READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, &oProtection);
+	SEEK_TO_POS_END(oProtection);
 //-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Autofilter);
 		OOX::Spreadsheet::CAutofilter oAutofilter;
@@ -3814,11 +3838,6 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		OOX::Spreadsheet::CHyperlinks oHyperlinks;
 		READ1_DEF(length, res, this->ReadHyperlinks, &oHyperlinks);
 	SEEK_TO_POS_END(oHyperlinks);
-//-------------------------------------------------------------------------------------------------------------
-	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Protection);
-	OOX::Spreadsheet::CSheetProtection oProtection;
-	READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, &oProtection);
-	SEEK_TO_POS_END(oProtection);
 //-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::ProtectedRanges);
 	OOX::Spreadsheet::CProtectedRanges oProtectedRanges;
@@ -4892,8 +4911,8 @@ int BinaryWorksheetsTableReader::ReadProtection(BYTE type, long length, void* po
 	}
 	else if (c_oSerWorksheetProtection::SelectUnlockedCell == type)
 	{
-		pProtection->m_oSelectUnlockedCell.Init();
-		pProtection->m_oSelectUnlockedCell->FromBool(m_oBufferedStream.GetBool());
+		pProtection->m_oSelectUnlockedCells.Init();
+		pProtection->m_oSelectUnlockedCells->FromBool(m_oBufferedStream.GetBool());
 	}
 	else if (c_oSerWorksheetProtection::Sheet == type)
 	{
@@ -5323,6 +5342,11 @@ int BinaryWorksheetsTableReader::ReadCellAnchor(BYTE type, long length, void* po
 		pCellAnchor->m_oExt.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadExt, pCellAnchor->m_oExt.GetPointer());
 	}
+	else if (c_oSer_DrawingType::ClientData == type)
+	{
+		pCellAnchor->m_oClientData.Init();
+		READ2_DEF_SPREADSHEET(length, res, this->ReadClientData, pCellAnchor->m_oClientData.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -5551,6 +5575,22 @@ int BinaryWorksheetsTableReader::ReadFromTo(BYTE type, long length, void* poResu
 		double dRowOffMm = m_oBufferedStream.GetDoubleReal();
 		pFromTo->m_oRowOff.Init();
 		pFromTo->m_oRowOff->FromMm(dRowOffMm);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadClientData(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CClientData *pClientData = static_cast<OOX::Spreadsheet::CClientData*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_DrawingClientDataType::fLocksWithSheet == type)
+	{
+		pClientData->fLocksWithSheet = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSer_DrawingClientDataType::fPrintsWithSheet == type)
+	{
+		pClientData->fPrintsWithSheet = m_oBufferedStream.GetBool();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7098,7 +7138,7 @@ int BinaryPersonReader::ReadPerson(BYTE type, long length, void* poResult)
 BinaryFileReader::BinaryFileReader()
 {
 }
-int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions)
+int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bMacro)
 {
 	bool bResultOk = false;
 	
@@ -7217,7 +7257,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			
 			if(BinXlsxRW::c_oFileTypes::XLSX == fileType)
 			{
-				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), NULL);
+				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), NULL, bMacro);
 				
 				try
 				{
@@ -7330,6 +7370,8 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 	boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>> m_mapPivotCacheDefinitions;
 	if(-1 != nWorkbookOffBits)
 	{
+		oXlsx.m_pWorkbook->m_bMacroEnabled = oSaveParams.bMacroEnabled;
+
 		oBufferedStream.Seek(nWorkbookOffBits);
 		res = BinaryWorkbookTableReader(oBufferedStream, *oXlsx.m_pWorkbook, m_mapPivotCacheDefinitions, sOutDir, pOfficeDrawingConverter).Read();
 		if(c_oSerConstants::ReadOk != res)

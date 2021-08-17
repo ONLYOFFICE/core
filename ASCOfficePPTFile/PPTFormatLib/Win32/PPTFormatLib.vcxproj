@@ -476,6 +476,8 @@
     <ClCompile Include="..\PPTXWriter\Animation.cpp" />
     <ClCompile Include="..\PPTXWriter\Converter.cpp" />
     <ClCompile Include="..\PPTXWriter\ShapeWriter.cpp" />
+    <ClCompile Include="..\PPTXWriter\TableWriter.cpp" />
+    <ClCompile Include="..\PPTXWriter\TxBodyConverter.cpp" />
     <ClCompile Include="..\Reader\PPTDocumentInfoOneUser.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>

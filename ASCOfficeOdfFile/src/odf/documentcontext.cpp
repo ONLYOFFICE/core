@@ -29,27 +29,40 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <stdio.h>
 
 #include "documentcontext.h"
+#include "office_elements.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
 	
-document_context::document_context() 
+document_context::document_context() : last_paragraph(NULL)
 {            
 }
 
 document_context::~document_context()
 {
+	levels.clear();
+	last_paragraph = NULL;
 }
-
 office_element* document_context::get_last_element()
 {
 	if (levels.size() > 1)
 		return levels[levels.size() - 2];
-	else 
+	else
 		return NULL;
+}
+office_element* document_context::get_last_paragraph()
+{
+	for (int i = levels.size() - 2; i >= 0; i--)
+	{
+		if (levels[i]->get_type() == typeTextH || levels[i]->get_type() == typeTextP)
+		{
+			return levels[i];
+		}
+	}
+
+	return last_paragraph;
 }
 
 

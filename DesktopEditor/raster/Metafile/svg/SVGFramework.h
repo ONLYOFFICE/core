@@ -3,7 +3,6 @@
 #include "../../../common/Directory.h"
 #include "../../../common/Array.h"
 #include "../../../xml/include/xmlutils.h"
-#include "../../../../Common/FileDownloader/FileDownloader.h"
 #include "../../../graphics/pro/Graphics.h"
 #include "../../../graphics/Matrix.h"
 
@@ -2835,16 +2834,20 @@ public:
                 std::vector<double> Values;
                 if (StrUtils::DoubleValues(Source, Values))
                 {
-                    PointPath oPoint;
-                    oPoint.code	=	symbol;
+                    int Size	=	( Values.size () / 4 ) * 4;
+                    for ( int j = 0; j < Size; j += 4 )
+                    {
+                        PointPath oPoint;
+                        oPoint.code	=	symbol;
 
-                    oPoint.oPoint	=	Point ( Values [ 0 ], Values [ 1 ] );
-                    m_Points.push_back ( oPoint );
+                        oPoint.oPoint	=	Point ( Values [ j ], Values [ j + 1 ] );
+                        m_Points.push_back ( oPoint );
 
-                    oPoint.oPoint	=	Point ( Values [ 2 ], Values [ 3 ] );
-                    m_Points.push_back ( oPoint );
+                        oPoint.oPoint	=	Point ( Values [ j + 2 ], Values [ j + 3 ] );
+                        m_Points.push_back ( oPoint );
 
-                    // ATLTRACE ( _T("LineTo : %f, %f "), oPoint.oPoint.X, oPoint.oPoint.Y );
+                        // ATLTRACE ( _T("LineTo : %f, %f "), oPoint.oPoint.X, oPoint.oPoint.Y );
+                    }
                 }
 
                 if ( To == std::wstring::npos )

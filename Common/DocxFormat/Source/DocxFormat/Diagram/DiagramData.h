@@ -142,7 +142,7 @@ namespace OOX
 				WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
 			}
 		};
-		class CBulletEnabled : public Diagram::ComplexType<SimpleTypes::COnOff<>>
+		class CBulletEnabled : public Diagram::ComplexType<SimpleTypes::CBool>
 		{
 		public:
 			WritingElement_AdditionConstructors(CBulletEnabled)
@@ -154,11 +154,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				return Diagram::ComplexType<SimpleTypes::COnOff<>>::toXML(L"dgm:bulletEnabled");
+				return Diagram::ComplexType<SimpleTypes::CBool>::toXML(L"dgm:bulletEnabled");
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				return Diagram::ComplexType<SimpleTypes::COnOff<>>::toXmlWriter(L"dgm:bulletEnabled", pWriter);
+				return Diagram::ComplexType<SimpleTypes::CBool>::toXmlWriter(L"dgm:bulletEnabled", pWriter);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -282,7 +282,7 @@ namespace OOX
 				WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
 			}
 		};
-		class COrgChart : public Diagram::ComplexType<SimpleTypes::COnOff<>>
+		class COrgChart : public Diagram::ComplexType<SimpleTypes::CBool>
 		{
 		public:
 			WritingElement_AdditionConstructors(COrgChart)
@@ -294,11 +294,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				return Diagram::ComplexType<SimpleTypes::COnOff<>>::toXML(L"dgm:orgChart");
+				return Diagram::ComplexType<SimpleTypes::CBool>::toXML(L"dgm:orgChart");
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				return Diagram::ComplexType<SimpleTypes::COnOff<>>::toXmlWriter(L"dgm:orgChart", pWriter);
+				return Diagram::ComplexType<SimpleTypes::CBool>::toXmlWriter(L"dgm:orgChart", pWriter);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{

@@ -1185,10 +1185,10 @@ class RtfMathReader: public RtfAbstractReader
 private: 
 	RtfCharProperty m_oCharProp;
 public: 
-	RtfMath&								m_oMath;
+	RtfMathPtr								m_pMath;
 	RtfParagraphProperty::ParagraphAlign	m_eParAlign;
 
-	RtfMathReader(RtfMath& oMath): m_oMath(oMath)
+	RtfMathReader(RtfMathPtr& pMath): m_pMath(pMath)
 	{
 		m_eParAlign = RtfParagraphProperty::pa_none;
 		m_oCharProp.SetDefaultRtf();
@@ -1200,56 +1200,57 @@ public:
 			;
         else if( "shppict" == sCommand )
 		{
-			m_oMath.m_oPicture = RtfShapePtr( new RtfShape() );
-			RtfShppictReader oShppictReader( *m_oMath.m_oPicture );
+			m_pMath->m_oPicture = RtfShapePtr( new RtfShape() );
+			
+			RtfShppictReader oShppictReader( *m_pMath->m_oPicture );
 			StartSubReader( oShppictReader, oDocument, oReader );
 		}
         else if( "nonshppict" == sCommand )
 			Skip( oDocument, oReader );
 		else 
 		{
-			bool isBoolMath = m_oMath.IsRtfControlPropertyBool(sCommand);
-			bool isValMath	= isBoolMath ? false : m_oMath.IsRtfControlProperty(sCommand);
-			bool isMath		= (isValMath || isBoolMath) ? false : m_oMath.IsRtfControlWord(sCommand);
+			bool isBoolMath = m_pMath ? m_pMath->IsRtfControlPropertyBool(sCommand) : false;
+			bool isValMath	= isBoolMath ? false : (m_pMath ? m_pMath->IsRtfControlProperty(sCommand) : false);
+			bool isMath		= (isValMath || isBoolMath) ? false : (m_pMath ? m_pMath->IsRtfControlWord(sCommand) : false);
 			
 			if( isMath || isValMath || isBoolMath)
 			{
-				if( true == m_oMath.m_bHeader )
+				if( true == m_pMath->m_bHeader )
 				{
-					m_oMath.m_bHeader = false;
-                    if (m_oMath.IsEmpty())
-						m_oMath.SetRtfName( sCommand );
+					m_pMath->m_bHeader = false;
+                    if (m_pMath->IsEmpty())
+						m_pMath->SetRtfName( sCommand );
 					
 				}
 				else
 				{
-					RtfMathPtr oNewMath ( new RtfMath() );
-					oNewMath->SetRtfName( sCommand );
+					RtfMathPtr pNewMath ( new RtfMath() );
+					pNewMath->SetRtfName( sCommand );
 					
-					oNewMath->m_bIsVal	= isValMath;
-					oNewMath->m_bIsBool	= isBoolMath;
+					pNewMath->m_bIsVal	= isValMath;
+					pNewMath->m_bIsBool	= isBoolMath;
 
-					RtfMathReader oSubMathReader( *oNewMath );
+					RtfMathReader oSubMathReader(pNewMath);
 					bool resParseSub = StartSubReader( oSubMathReader, oDocument, oReader );
 
                     if (resParseSub && "mctrlPr" == sCommand)
 					{
 						RtfCharPropertyPtr oNewCharProp ( new RtfCharProperty() );
 						oNewCharProp->Merge(oSubMathReader.m_oCharProp);
-						oNewMath->AddItem( oNewCharProp );
+						pNewMath->AddItem( oNewCharProp );
 					}
 
-					if( oNewMath->IsValid() == true )
+					if(pNewMath->IsValid() == true )
 					{
-						if ((oNewMath->m_bIsVal || oNewMath->m_bIsBool) && hasParameter)
+						if ((pNewMath->m_bIsVal || pNewMath->m_bIsBool) && hasParameter)
 						{
 							RtfCharPtr oChar = RtfCharPtr(new RtfChar);
                             std::wstring s = ExecuteMathProp(oDocument, sCommand, parameter);
 							oChar->setText( s);
-							oNewMath->m_oVal.AddItem( oChar );
+							pNewMath->m_oVal.AddItem( oChar );
 						}
 
-						m_oMath.AddItem( oNewMath );
+						m_pMath->AddItem(pNewMath);
 					}
 				}
 			}
@@ -1270,7 +1271,7 @@ public:
 		pNewChar->m_oProperty.Merge(m_oCharProp);
 
 		pNewChar->setText( sText ); 
-		m_oMath.AddItem( pNewChar );
+		m_pMath->AddItem( pNewChar );
 	}
     std::wstring ExecuteMathProp(RtfDocument& oDocument, std::string sCommand, int parameter)
 	{//rtf math properties (int) to oox math properties (string)
@@ -2485,34 +2486,6 @@ public:
 	}
 };
 
-class RtfParagraphReader : public RtfAbstractReader
-{
-private: 
-    std::string m_sHeader;
-public: 
-	RtfParagraphPropDestination m_oParPropDest;
-
-    RtfParagraphReader( std::string sHeader, RtfReader& oReader ): m_sHeader(sHeader)
-	{
-		if( PROP_DEF != oReader.m_oState->m_oParagraphProp.m_nItap )
-			m_oParPropDest.nTargetItap = oReader.m_oState->m_oParagraphProp.m_nItap;
-	}
-    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
-	{
-		if( m_sHeader == sCommand )
-			return true;
-		else
-			return m_oParPropDest.ExecuteCommand( oDocument, oReader, (*this), sCommand, hasParameter, parameter );
-	}
-    void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
-	{
-		m_oParPropDest.ExecuteText( oDocument, oReader, sText );
-	}
-	void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
-	{
-		m_oParPropDest.Finalize( oReader );
-	}
-};
 
 class RtfDocumentCommand
 {
@@ -2631,6 +2604,44 @@ private:
 	 }
 };
 
+class RtfParagraphReader : public RtfAbstractReader
+{
+private:
+	std::string m_sHeader;
+public:
+	RtfParagraphPropDestination m_oParPropDest;
+
+	RtfParagraphReader(std::string sHeader, RtfReader& oReader) : m_sHeader(sHeader)
+	{
+		if (PROP_DEF != oReader.m_oState->m_oParagraphProp.m_nItap)
+			m_oParPropDest.nTargetItap = oReader.m_oState->m_oParagraphProp.m_nItap;
+	}
+	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
+	{
+		if (m_sHeader == sCommand)
+			return true;
+		else if ("rtf" == sCommand)
+		{
+			RtfNormalReader oRtfReader(oDocument, oReader);
+			oDocument.m_bStartRead = false;
+			oRtfReader.oParagraphReaderDestination = m_oParPropDest;
+			StartSubReader(oRtfReader, oDocument, oReader);
+
+			m_oParPropDest = oRtfReader.oParagraphReaderDestination;
+			return true;
+		}
+		else
+			return m_oParPropDest.ExecuteCommand(oDocument, oReader, (*this), sCommand, hasParameter, parameter);
+	}
+	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
+	{
+		m_oParPropDest.ExecuteText(oDocument, oReader, sText);
+	}
+	void ExitReader(RtfDocument& oDocument, RtfReader& oReader)
+	{
+		m_oParPropDest.Finalize(oReader);
+	}
+};
 
 class RtfFieldInstReader : public RtfAbstractReader, public RtfParagraphPropDestination
 {

@@ -61,7 +61,7 @@ namespace XLSB
 
         virtual const bool loadContent(BinProcessor& proc);
 
-        static const ElementType type = typeWorkbookStreamObject;
+        static const XLS::ElementType type = typeWorkbookStreamObject;
 
         int serialize_format(std::wostream & _stream);
         int serialize_protection(std::wostream & _stream);

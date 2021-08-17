@@ -68,7 +68,7 @@ namespace OOX
 
             CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal) : m_rId(rId)
 			{
-                m_sMode = new std::wstring( _T("External") );
+                m_sMode = new std::wstring(L"External" );
 
 				if (pExternal.IsInit())
 				{
@@ -90,25 +90,25 @@ namespace OOX
 			}
             virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode,  _T("Id"),         m_rId );
-				XmlMacroReadAttributeBase( oNode,  _T("Target"),     m_oTarget );
-				XmlMacroReadAttributeBase( oNode,  _T("Type"),       m_sType );
-				XmlMacroReadAttributeBase( oNode,  _T("TargetMode"), m_sMode );
+				XmlMacroReadAttributeBase( oNode, L"Id",         m_rId );
+				XmlMacroReadAttributeBase( oNode, L"Target",     m_oTarget );
+				XmlMacroReadAttributeBase( oNode, L"Type",       m_sType );
+				XmlMacroReadAttributeBase( oNode, L"TargetMode", m_sMode );
 			}
             virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write( _T("Id"),         m_rId.ToString() );
-				oAttr.Write( _T("Type"),       m_sType );
+				oAttr.Write(L"Id",         m_rId.ToString() );
+				oAttr.Write(L"Type",       m_sType );
                 std::wstring sTarget = m_oTarget.m_strFilename;
 
-                XmlUtils::replace_all(sTarget, _T("\\"), _T("/"));
+                XmlUtils::replace_all(sTarget,L"\\",L"/");
 				sTarget = XmlUtils::EncodeXmlString(sTarget);
-				oAttr.Write( _T("Target"), sTarget);
+				oAttr.Write(L"Target", sTarget);
 				if(m_sMode.IsInit())
-					oAttr.Write( _T("TargetMode"), m_sMode.get() );
+					oAttr.Write(L"TargetMode", m_sMode.get() );
 				
-				return XmlUtils::CreateNode( _T("Relationship"), oAttr );
+				return XmlUtils::CreateNode(L"Relationship", oAttr );
 			}
 
 			virtual EElementType getType() const
@@ -123,10 +123,10 @@ namespace OOX
                 std::wstring sTempTarget;
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("Id"),         m_rId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("Target"),     sTempTarget )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("Type"),       m_sType )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("TargetMode"), m_sMode )
+				WritingElement_ReadAttributes_Read_if     ( oReader,L"Id",         m_rId )
+				WritingElement_ReadAttributes_Read_else_if( oReader,L"Target",     sTempTarget )
+				WritingElement_ReadAttributes_Read_else_if( oReader,L"Type",       m_sType )
+				WritingElement_ReadAttributes_Read_else_if( oReader,L"TargetMode", m_sMode )
 				WritingElement_ReadAttributes_End( oReader )
 
 				//External rels не нормализуем, иначе искажаются пути в гиперссылках.
@@ -204,16 +204,16 @@ namespace OOX
             if ( !oReader.ReadNextNode() )
                 return;
 
-            std::wstring sName = oReader.GetName();
-            if ( _T("Relationships") == sName )
+            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+            if (L"Relationships" == sName )
             {
                 if ( !oReader.IsEmptyNode() )
                 {
                     int nRelationshipsDepth = oReader.GetDepth();
                     while ( oReader.ReadNextSiblingNode( nRelationshipsDepth ) )
                     {
-                        sName = oReader.GetName();
-                        if ( _T("Relationship") == sName )
+                        sName = XmlUtils::GetNameNoNS(oReader.GetName());
+                        if (L"Relationship" == sName )
                         {
                             OOX::Rels::CRelationShip *pRel = new OOX::Rels::CRelationShip(oReader);
                             if (pRel) 
@@ -236,11 +236,11 @@ namespace OOX
 
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
+			oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 
-            oWriter.WriteNodeBegin( _T("Relationships"), true );
-			oWriter.WriteAttribute( _T("xmlns"), _T("http://schemas.openxmlformats.org/package/2006/relationships") );
-            oWriter.WriteNodeEnd( _T("Relationships"), true, false );
+            oWriter.WriteNodeBegin(L"Relationships", true );
+			oWriter.WriteAttribute(L"xmlns",L"http://schemas.openxmlformats.org/package/2006/relationships" );
+            oWriter.WriteNodeEnd(L"Relationships", true, false );
 
 			for (size_t i = 0; i < m_arRelations.size(); ++i)
 			{
@@ -248,7 +248,7 @@ namespace OOX
 					oWriter.WriteString( m_arRelations[i]->toXML() );
 			}
 
-			oWriter.WriteNodeEnd(_T("Relationships") );
+			oWriter.WriteNodeEnd(L"Relationships");
 
 			NSFile::CFileBinary::SaveToFile(oFile.GetPath(), oWriter.GetXmlString());
 		}
@@ -260,7 +260,7 @@ namespace OOX
 
 			std::wstring strFileName = oPath.m_strFilename;
            
-			std::wstring strDir = oPath.GetDirectory() + _T("");
+			std::wstring strDir = oPath.GetDirectory() +L"";
 
 			Rels::CRelationShip* pRel = NULL;
 
@@ -310,10 +310,10 @@ namespace OOX
 
 		const CPath CreateFileName(const CPath& oFilePath) const
 		{
-            std::wstring strTemp = oFilePath.GetDirectory()  + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR;
+            std::wstring strTemp = oFilePath.GetDirectory()  + FILE_SEPARATOR_STR +L"_rels" + FILE_SEPARATOR_STR;
 
-			if ( _T("") == oFilePath.GetFilename() )	strTemp += _T(".rels");
-			else										strTemp += ( oFilePath.GetFilename() + _T(".rels") );
+			if (L"" == oFilePath.GetFilename() )	strTemp +=L".rels";
+			else										strTemp += ( oFilePath.GetFilename() +L".rels" );
 
             CPath pathTemp = strTemp;
 			return pathTemp.GetPath();

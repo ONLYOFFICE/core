@@ -487,41 +487,41 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------		
 
 	// TO DO: сделать парсер языка по спецификации RFC 4646/BCP 47
-	class CLang
-	{
-	public:
-		CLang() {}
+	//class CLang
+	//{
+	//public:
+	//	CLang() {}
 
-        std::wstring GetValue() const
-		{
-			return m_sValue;
-		}
+ //       std::wstring GetValue() const
+	//	{
+	//		return m_sValue;
+	//	}
 
-        void    SetValue(std::wstring &sValue)
-		{
-			m_sValue = sValue;
-		}
+ //       void    SetValue(std::wstring &sValue)
+	//	{
+	//		m_sValue = sValue;
+	//	}
 
 
-        std::wstring FromString(std::wstring &sValue)
-		{
-			m_sValue = sValue;
+ //       std::wstring FromString(std::wstring &sValue)
+	//	{
+	//		m_sValue = sValue;
 
-			return m_sValue;
-		}
+	//		return m_sValue;
+	//	}
 
-        std::wstring ToString  () const
-		{
-			return m_sValue;
-		}
+ //       std::wstring ToString  () const
+	//	{
+	//		return m_sValue;
+	//	}
 
-        SimpleType_FromString2    (std::wstring)
-		SimpleType_Operator_Equal (CLang)
+ //       SimpleType_FromString2    (std::wstring)
+	//	SimpleType_Operator_Equal (CLang)
 
-	private:
+	//private:
 
-        std::wstring m_sValue;
-	};
+ //       std::wstring m_sValue;
+	//};
 
 
 	//--------------------------------------------------------------------------------
@@ -580,7 +580,7 @@ namespace SimpleTypes
 			else if	(strcmp("false",	sValue) == 0) this->m_eValue = onoffFalse;
 			else if	(strcmp("False",	sValue) == 0) this->m_eValue = onoffFalse;
 			else if	(strcmp("off",		sValue) == 0) this->m_eValue = onoffFalse;
-			else                              this->m_eValue = eDefValue;
+			else this->m_eValue = eDefValue;
 
 			return this->m_eValue;
 		}
@@ -687,6 +687,28 @@ namespace SimpleTypes
 		SimpleType_Operator_Equal (COnOff)
 	};
 
+	class CBool : public COnOff<>
+	{
+	public:
+		CBool() {}
+
+		CBool(const bool & bVal)
+		{
+			this->m_eValue = (false != bVal) ? onoffTrue : onoffFalse;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (m_eValue)
+			{
+				case onoffTrue: return L"1";
+				case onoffFalse:
+				default:		return L"0";
+			}
+		}
+		SimpleType_FromString(EOnOff)
+		SimpleType_Operator_Equal(CBool)
+	};
+
 	//--------------------------------------------------------------------------------
 	// Panose 22.9.2.8 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -778,8 +800,12 @@ namespace SimpleTypes
 
 			return m_dValue;
 		}
-
-        virtual std::wstring ToString  () const
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = FromTwips(dValue);
+		}
+        virtual std::wstring ToString() const
 		{
             std::wstring sResult;
 

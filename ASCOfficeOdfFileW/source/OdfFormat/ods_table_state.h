@@ -375,7 +375,7 @@ public:
 
 	void start_conditional_formats();
 		void start_conditional_format(std::wstring ref);
-            void start_conditional_rule(int rule_type);
+            void start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent);
 				void set_conditional_formula(std::wstring formula);
                 void set_conditional_value(int type, std::wstring value );
                 void set_conditional_iconset(int type_iconset);
@@ -386,6 +386,8 @@ public:
                 void set_conditional_operator(int _operator);
 
 				void set_conditional_text(const std::wstring &text);
+				
+				void set_conditional_time(const std::wstring &period);
 			void end_conditional_rule();
 		void end_conditional_format();
 	void end_conditional_formats();

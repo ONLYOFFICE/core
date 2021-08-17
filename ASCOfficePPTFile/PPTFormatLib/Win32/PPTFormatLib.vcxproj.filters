@@ -787,5 +787,11 @@
     <ClCompile Include="..\PPTXWriter\Animation.cpp">
       <Filter>OOXWriter</Filter>
     </ClCompile>
+    <ClCompile Include="..\PPTXWriter\TableWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PPTXWriter\TxBodyConverter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

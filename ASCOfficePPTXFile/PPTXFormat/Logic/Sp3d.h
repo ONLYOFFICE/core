@@ -185,13 +185,19 @@ namespace PPTX
 					pWriter->WriteInt2(1, extrusionH);
 					pWriter->WriteLimit2(2, prstMaterial);
 					pWriter->WriteInt2(3, z);
-					pWriter->WriteString2(4, macro);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->WriteRecord2(0, bevelT);
 				pWriter->WriteRecord2(1, bevelB);
 				pWriter->WriteRecord1(2, extrusionClr);
 				pWriter->WriteRecord1(3, contourClr);
+				
+				if (macro.IsInit())
+				{
+					pWriter->StartRecord(SPTREE_TYPE_MACRO);
+					pWriter->WriteString1(0, *macro);
+					pWriter->EndRecord();
+				}
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -209,7 +215,6 @@ namespace PPTX
 					else if (1 == _at)	extrusionH = pReader->GetLong();
 					else if (2 == _at)	prstMaterial = pReader->GetUChar();
 					else if (3 == _at)	z = pReader->GetLong();
-					else if (4 == _at)	macro = pReader->GetString2();
 					else
 						break;
 				}
@@ -241,11 +246,15 @@ namespace PPTX
 							contourClr.fromPPTY(pReader);
 							break;
 						}
+						case SPTREE_TYPE_MACRO:
+						{
+							pReader->Skip(5); // type + size
+							macro = pReader->GetString2();
+						}break;
 						default:
 							break;
 					}
 				}
-
 				pReader->Seek(_end_rec);
 			}
 			

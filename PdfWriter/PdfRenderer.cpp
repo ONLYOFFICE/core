@@ -365,6 +365,7 @@ void CPdfRenderer::CCommandManager::Flush()
 			ETextRenderingMode eMode = textrenderingmode_Fill;
 			bool        isNeedDoBold = false;
 			bool      isNeedDoItalic = false;
+			double        dLineWidth = -1;
 
 			double dPrevX = -1000;
 			double dPrevY = -1000;
@@ -416,9 +417,20 @@ void CPdfRenderer::CCommandManager::Flush()
 					isNeedDoBold = pText->IsNeedDoBold();
 
 					if (isNeedDoBold && eMode == textrenderingmode_Fill)
+					{
+						double dNewLineWidth = dTextSize / 12 * 0.343;
+						if (fabs(dLineWidth - dNewLineWidth) > 0.001)
+						{
+							dLineWidth = dNewLineWidth;
+							pPage->SetLineWidth(dLineWidth);
+						}
+
 						pPage->SetTextRenderingMode(textrenderingmode_FillThenStroke);
+					}
 					else
+					{
 						pPage->SetTextRenderingMode(eMode);
+					}
 				}
 
 				if (fabs(dHorScaling - pText->GetHorScaling()) > 0.001)
@@ -457,8 +469,8 @@ void CPdfRenderer::CCommandManager::Flush()
 					}
 				}
 			}
-			oTextLine.Flush(pPage);
 
+			oTextLine.Flush(pPage);
 			pPage->EndText();
 		}
 
@@ -1675,7 +1687,10 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	}
 	else if (oInfo.IsPicture())
 	{
-		// TODO: Реализовать картиночную форму
+		CPictureField* pField = m_pDocument->CreatePictureField();
+		pFieldBase = static_cast<CFieldBase*>(pField);
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+		pField->SetAppearance();
 	}
 
 	if (pFieldBase)
@@ -1690,7 +1705,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		}
 
 		pFieldBase->SetRequiredFlag(oInfo.IsRequired());
-		pFieldBase->SetFieldHint(oInfo.GetHelpText());
+		pFieldBase->SetFieldHint(oInfo.GetHelpText());		
 	}
 
 	return S_OK;

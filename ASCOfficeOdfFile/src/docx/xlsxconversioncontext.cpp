@@ -139,6 +139,13 @@ void xlsx_conversion_context::end_document()
 {
 	std::wstringstream workbook_content;
 
+	if (sheets_.empty())
+	{ // owncloud new document  ... oO
+		start_table(L"Sheet1", L"");
+		current_sheet().cols() << L"<col min=\"1\" max=\"1024\" width=\"11.6\" customWidth=\"0\"/>";
+		end_table();
+	}
+
 	for (size_t i = 0; i < sheets_.size(); i++)
     {
 		xlsx_xml_worksheet_ptr& sheet = sheets_[i];

@@ -862,9 +862,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetProtection *oox_prot)
 	{
 		ods_context->current_table()->set_table_protection_protected_cells(oox_prot->m_oSelectLockedCells->ToBool());
 	}
-	if (oox_prot->m_oSelectUnlockedCell.IsInit())
+	if (oox_prot->m_oSelectUnlockedCells.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_unprotected_cells(oox_prot->m_oSelectUnlockedCell->ToBool());
+		ods_context->current_table()->set_table_protection_unprotected_cells(oox_prot->m_oSelectUnlockedCells->ToBool());
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDataValidations *oox_validations)
@@ -3229,8 +3229,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 	if (!oox_cond_rule)return;
 
 	if (false == oox_cond_rule->m_oType.IsInit()) return;
+
+	_CP_OPT(unsigned int) rank; 
+	_CP_OPT(bool) bottom, percent;
 	
-	ods_context->current_table()->start_conditional_rule(oox_cond_rule->m_oType->GetValue());
+	if (oox_cond_rule->m_oRank.IsInit()) rank = oox_cond_rule->m_oRank->GetValue();
+	if (oox_cond_rule->m_oBottom.IsInit()) bottom = oox_cond_rule->m_oBottom->ToBool();
+	if (oox_cond_rule->m_oPercent.IsInit()) percent = oox_cond_rule->m_oPercent->ToBool();
+
+	ods_context->current_table()->start_conditional_rule(oox_cond_rule->m_oType->GetValue(), rank, bottom, percent);
 	{
 		if (oox_cond_rule->m_oDxfId.IsInit()) 
 		{
@@ -3249,7 +3256,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 			ods_context->current_table()->set_conditional_operator(oox_cond_rule->m_oOperator->GetValue());
 
 		if (oox_cond_rule->m_oText.IsInit()) 
-			ods_context->current_table()->set_conditional_text(oox_cond_rule->m_oText.get2());
+			ods_context->current_table()->set_conditional_text(*oox_cond_rule->m_oText);
+
+		if (oox_cond_rule->m_oTimePeriod.IsInit())
+			ods_context->current_table()->set_conditional_time(*oox_cond_rule->m_oTimePeriod);
 		
 		convert(oox_cond_rule->m_oIconSet.GetPointer());
 		convert(oox_cond_rule->m_oColorScale.GetPointer());
@@ -3315,7 +3325,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatValueObject *oox
 	if (oox_cond_value->m_oType.IsInit())	type = oox_cond_value->m_oType->GetValue();
 	
 	if (oox_cond_value->m_oFormula.IsInit())	val = oox_cond_value->m_oFormula->m_sText;
-	else if (oox_cond_value->m_oVal.IsInit())	val = oox_cond_value->m_oVal.get2();
+	else if (oox_cond_value->m_oVal.IsInit())	val = *oox_cond_value->m_oVal;
 	
 	ods_context->current_table()->set_conditional_value(type, val);
 }

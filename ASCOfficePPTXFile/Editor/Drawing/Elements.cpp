@@ -33,14 +33,14 @@
 #include "Slide.h"
 
 #ifndef DISABLE_FILE_DOWNLOADER
-    #include "../../../Common/FileDownloader/FileDownloader.h"
+    #include "../../../Common/Network/FileTransporter/include/FileTransporter.h"
 	#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #endif
 
 std::wstring PPT_FORMAT::CImageElement::DownloadImage(const std::wstring& strFile)
 {
 #ifndef DISABLE_FILE_DOWNLOADER
-	CFileDownloader oDownloader(strFile, true);
+    NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFile, true);
 	if ( oDownloader.DownloadSync() )
 	{
 		m_strImageFileName = oDownloader.GetFilePath();

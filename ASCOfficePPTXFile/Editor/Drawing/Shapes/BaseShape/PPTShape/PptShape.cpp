@@ -74,6 +74,8 @@ CBaseShapePtr CPPTShape::CreateByType(PPTShapes::ShapeType type)
 	
 	case sptPictureFrame: { pShape = new CRectangleType(); pShape->m_eType = type; break; }
 
+		CREATE_BY_SPT(0x00000064, CArcType)
+
 		CREATE_BY_SPT(sptAccentBorderCallout90, CAccentBorderCallout90Type)
 		CREATE_BY_SPT(sptAccentBorderCallout1, CAccentBorderCallout1Type)
 		CREATE_BY_SPT(sptAccentBorderCallout2, CAccentBorderCallout2Type)

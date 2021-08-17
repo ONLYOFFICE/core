@@ -72,7 +72,7 @@ public:
 
 	RtfParagraphProperty	m_oDefaultParagraphProp;
 	RtfCharProperty			m_oDefaultCharProp;
-	RtfMath					m_oMathProp;
+	RtfMathPtr				m_pMathProp;
 
 	TextItemContainerPtr	m_oFootnoteSep;
 	TextItemContainerPtr	m_oFootnoteCon;
@@ -84,11 +84,11 @@ public:
 	
 	NSFonts::IApplicationFonts* m_pAppFonts;
 	int							m_nUserLCID;
+	bool						m_bStartRead;
 
 private: 
 	std::vector<int>	m_aShapeId;
 	int					m_nZIndexLast;
-
 public: 
 	int GetZIndex()
 	{

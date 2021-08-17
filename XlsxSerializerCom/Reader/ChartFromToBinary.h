@@ -93,10 +93,9 @@ namespace OOX
 
 namespace BinXlsxRW
 {
-	class SaveParams
+	struct SaveParams
 	{
-	public:
-		SaveParams	(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes *pContentTypes, CSVWriter::CCSVWriter* pCSVWriter = NULL);
+		SaveParams	(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes *pContentTypes, CSVWriter::CCSVWriter* pCSVWriter = NULL, bool bMacro = false);
 
 		smart_ptr<PPTX::Theme>			pTheme;
 		std::wstring					sThemePath;
@@ -105,6 +104,7 @@ namespace BinXlsxRW
 		OOX::CContentTypes*				pContentTypes;
 		int								nThemeOverrideCount;
 		CSVWriter::CCSVWriter*			pCSVWriter;
+		bool							bMacroEnabled = false;
 	};
 
 	class BinaryChartReader : public Binary_CommonReader

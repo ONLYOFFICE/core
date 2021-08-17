@@ -44,7 +44,7 @@ class PtgArea: public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgArea)
 public:
-	PtgArea();
+	PtgArea(const unsigned short full_ptg_id);
 	PtgArea(const std::wstring& word, const PtgDataType data_type);
 	BiffStructurePtr clone();
 

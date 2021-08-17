@@ -900,54 +900,56 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		sResult += L" title=\"" + m_sName + L"\"";
 	}
 
-	if( PROP_DEF != m_nShapeType && 0 != m_nShapeType)
+	if (!m_bIsGroup)
 	{
-        sResult += L" type=\"#_x0000_t" + std::to_wstring(m_nShapeType) + L"\"";
-        sResult += L" o:spt=\"" + std::to_wstring(m_nShapeType) + L"\"";
-	}
+		if (PROP_DEF != m_nShapeType && 0 != m_nShapeType)
+		{
+			sResult += L" type=\"#_x0000_t" + std::to_wstring(m_nShapeType) + L"\"";
+			sResult += L" o:spt=\"" + std::to_wstring(m_nShapeType) + L"\"";
+		}
 
-	if( 0 == m_bFilled || (	m_nFillColor == PROP_DEF && m_nFillColor2 == PROP_DEF && m_nFillType == PROP_DEF)) 
-		sResult += L" filled=\"f\""; //сф_850000158725_R7_M194_МО_Q194.rtf
-	else				
-		sResult += L" filled=\"t\"";
+		if (0 == m_bFilled || (m_nFillColor == PROP_DEF && m_nFillColor2 == PROP_DEF && m_nFillType == PROP_DEF))
+			sResult += L" filled=\"f\""; //сф_850000158725_R7_M194_МО_Q194.rtf
+		else
+			sResult += L" filled=\"t\"";
 
-	if( PROP_DEF == m_bLine)
-	{
-		m_bLine = (m_nShapeType == SimpleTypes::Vml::sptPictureFrame || m_nShapeType == SimpleTypes::Vml::sptTextBox) ? 0 : 1;
-	}
+		if (PROP_DEF == m_bLine)
+		{
+			m_bLine = (m_nShapeType == SimpleTypes::Vml::sptPictureFrame || m_nShapeType == SimpleTypes::Vml::sptTextBox) ? 0 : 1;
+		}
 
-	if ( 0 == m_bLine)	sResult += L" stroked=\"f\"";
-	else				sResult += L" stroked=\"t\"";
+		if (0 == m_bLine)	sResult += L" stroked=\"f\"";
+		else				sResult += L" stroked=\"t\"";
 
-	if( PROP_DEF != m_nFillColor)
-	{
-		RtfColor color(m_nFillColor);
-        sResult += L" fillcolor=\"#" + color.ToHexColor(true) + L"\"";
-	}
-	if( PROP_DEF != m_nLineColor)
-	{
-		RtfColor color(m_nLineColor);
-        sResult += L" strokecolor=\"#" + color.ToHexColor(true) + L"\"";
-	}
-	if(PROP_DEF != m_nLineWidth)
-        sResult += L" strokeweight=\"" + XmlUtils::DoubleToString(RtfUtility::Emu2Pt(m_nLineWidth), L"%.2f") + L"pt\"";
-//path
-	switch( m_nConnectionType )
-	{
+		if (PROP_DEF != m_nFillColor)
+		{
+			RtfColor color(m_nFillColor);
+			sResult += L" fillcolor=\"#" + color.ToHexColor(true) + L"\"";
+		}
+		if (PROP_DEF != m_nLineColor)
+		{
+			RtfColor color(m_nLineColor);
+			sResult += L" strokecolor=\"#" + color.ToHexColor(true) + L"\"";
+		}
+		if (PROP_DEF != m_nLineWidth)
+			sResult += L" strokeweight=\"" + XmlUtils::DoubleToString(RtfUtility::Emu2Pt(m_nLineWidth), L"%.2f") + L"pt\"";
+		//path
+		switch (m_nConnectionType)
+		{
 		case 0: sResult += L" o:connecttype=\"custom\"";	break;
 		case 1: sResult += L" o:connecttype=\"none\"";		break;
 		case 2: sResult += L" o:connecttype=\"rect\"";		break;
 		case 3: sResult += L" o:connecttype=\"segments\"";	break;
-	}
-//Connectors
-	switch( m_nConnectorStyle )
-	{
-		case 0: sResult += L" o:connectortype=\"straight\"";break;
+		}
+		//Connectors
+		switch (m_nConnectorStyle)
+		{
+		case 0: sResult += L" o:connectortype=\"straight\""; break;
 		case 1: sResult += L" o:connectortype=\"elbow\"";	break;
 		case 2: sResult += L" o:connectortype=\"curved\"";	break;
 		case 3: sResult += L" o:connectortype=\"none\"";	break;
+		}
 	}
-
 //-----------------------------------------------------------------------------------------------------------------
     std::wstring sStyle ;
 	if( PROP_DEF != m_nLeft &&  PROP_DEF != m_nRight && PROP_DEF != m_nTop && PROP_DEF != m_nBottom   )
@@ -1043,7 +1045,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		case 4: sStyle += L"mso-position-horizontal:inside;";	break;
 		case 5: sStyle += L"mso-position-horizontal:outside;";	break;
 	}
-	if( PROP_DEF != m_nPositionHPct )//todo
+	if( PROP_DEF != m_nPositionHPct && m_nPositionHPct > 0)//todo
 	{
         sStyle += L"mso-left-percent:" + std::to_wstring(m_nPositionHPct) + L";";
 	}
@@ -1083,7 +1085,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		case 4: sStyle += L"mso-position-vertical:inside;";		break;
         case 5: sStyle += L"mso-position-vertical:outside;";	break;
 	}
-	if( PROP_DEF != m_nPositionVPct )
+	if( PROP_DEF != m_nPositionVPct && m_nPositionVPct > 0)
         sStyle += L"mso-top-percent:" + std::to_wstring(m_nPositionVPct) + L";";
 
 	if( PROP_DEF != m_nPositionV && PROP_DEF == m_nPositionVRelative )
@@ -1111,7 +1113,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
             //case ay_Para: sStyle += L"mso-position-vertical-relative:text;";          break;
 		}
 	}
-	if( PROP_DEF != m_nPctWidth )
+	if( PROP_DEF != m_nPctWidth && m_nPctWidth > 0)
         sStyle += L"mso-width-percent:" + std::to_wstring(m_nPctWidth) + L";";
 	switch( m_nPctWidthRelative )
 	{
@@ -1123,7 +1125,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		case 5:	sStyle += L"mso-width-relative:outer-margin-area;";	break;
 	}
 	
-	if( PROP_DEF != m_nPctHeight )
+	if( PROP_DEF != m_nPctHeight && m_nPctHeight > 0)
         sStyle += L"mso-height-percent:" + std::to_wstring(m_nPctHeight) + L";";
 	
 	switch( m_nPctHeightRelative )
@@ -1217,45 +1219,48 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		}
 	}
 //Geometry
-	if( PROP_DEF != m_nAdjustValue[0] )
+	if (!m_bIsGroup)
 	{
-        std::wstring sAdjust;
-        sAdjust += L" " + std::to_wstring(m_nAdjustValue[0]) + L"";
-		for (size_t i = 1 ; i < 10; i++)
+		if (PROP_DEF != m_nAdjustValue[0])
 		{
-			if (PROP_DEF != m_nAdjustValue[i])
-                sAdjust += L"," + std::to_wstring(m_nAdjustValue[i]) + L"";
-			else
-				sAdjust += L",";
-		}
-		sResult +=L" adj=\"" + sAdjust + L"\"";
-	}
-//Custom
-	if (!m_aPVerticles.empty() || !m_aPSegmentInfo.empty())
-	{
-        CBaseShapePtr base_shape = CPPTShape::CreateByType((PPTShapes::ShapeType)m_nShapeType);
-        CPPTShape *custom_shape = dynamic_cast<CPPTShape*>(base_shape.get());
-		if (custom_shape)
-		{
-			custom_shape->m_bCustomShape = true;
-			
-			custom_shape->m_oPath.SetCoordsize(m_nGeoRight - m_nGeoLeft, m_nGeoBottom - m_nGeoTop);
-			
-			for (size_t i = 0 ; i < 10; i++)
+			std::wstring sAdjust;
+			sAdjust += L" " + std::to_wstring(m_nAdjustValue[0]) + L"";
+			for (size_t i = 1; i < 10; i++)
 			{
 				if (PROP_DEF != m_nAdjustValue[i])
-					custom_shape->m_oCustomVML.LoadAdjusts((long)i + 1, m_nAdjustValue[i]);
+					sAdjust += L"," + std::to_wstring(m_nAdjustValue[i]) + L"";
+				else
+					sAdjust += L",";
 			}
-			
-			if (PROP_DEF != m_nShapePath)
-				custom_shape->m_oCustomVML.SetPath((ODRAW::RulesType)m_nShapePath);
-			
-			custom_shape->m_oCustomVML.LoadVertices(m_aPVerticles);
-			custom_shape->m_oCustomVML.LoadSegments(m_aPSegmentInfo);
+			sResult += L" adj=\"" + sAdjust + L"\"";
+		}
+		//Custom
+		if (!m_aPVerticles.empty() || !m_aPSegmentInfo.empty())
+		{
+			CBaseShapePtr base_shape = CPPTShape::CreateByType((PPTShapes::ShapeType)m_nShapeType);
+			CPPTShape *custom_shape = dynamic_cast<CPPTShape*>(base_shape.get());
+			if (custom_shape)
+			{
+				custom_shape->m_bCustomShape = true;
 
-			custom_shape->m_oCustomVML.ToCustomShape(custom_shape, custom_shape->m_oManager);
-			
-			sResult +=L" path=\"" + custom_shape->m_strPath + L"\"";
+				custom_shape->m_oPath.SetCoordsize(m_nGeoRight - m_nGeoLeft, m_nGeoBottom - m_nGeoTop);
+
+				for (size_t i = 0; i < 10; i++)
+				{
+					if (PROP_DEF != m_nAdjustValue[i])
+						custom_shape->m_oCustomVML.LoadAdjusts((long)i + 1, m_nAdjustValue[i]);
+				}
+
+				if (PROP_DEF != m_nShapePath)
+					custom_shape->m_oCustomVML.SetPath((ODRAW::RulesType)m_nShapePath);
+
+				custom_shape->m_oCustomVML.LoadVertices(m_aPVerticles);
+				custom_shape->m_oCustomVML.LoadSegments(m_aPSegmentInfo);
+
+				custom_shape->m_oCustomVML.ToCustomShape(custom_shape, custom_shape->m_oManager);
+
+				sResult += L" path=\"" + custom_shape->m_strPath + L"\"";
+			}
 		}
 	}
 //Wrap Geometry
@@ -1297,7 +1302,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	}
 	
 //Line
-	if( 0 != m_bLine)
+	if( 0 != m_bLine && !m_bIsGroup)
 	{
         std::wstring sStroke;
 		switch( m_nLineDashing )
@@ -1366,7 +1371,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		}
 	}
 
-	if( 0 != m_aTextItems && !m_bIsOle)
+	if( 0 != m_aTextItems && !m_bIsOle && !m_bIsGroup)
 	{
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
@@ -1389,7 +1394,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	}
 	
     std::wstring sPicture;
-	if( m_oPicture )
+	if( m_oPicture && !m_bIsGroup)
 	{
 		sPicture = m_oPicture->RenderToOOX(oRenderParameter);
 		
@@ -1438,7 +1443,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		}
 	}
 //-----------------------------------------------------------------------------------------------
-	if( 0 != m_bFilled)
+	if( 0 != m_bFilled && !m_bIsGroup) 
 	{
 		sResult += L"<v:fill";
 
@@ -1499,7 +1504,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		sResult += L"/>";
 	}
 //---------------------------------------------------------------------------------------------------------------------------
-    if( false == m_sGtextUNICODE.empty())
+    if( false == m_sGtextUNICODE.empty() && !m_bIsGroup)
 	{
 		sResult += L"<v:textpath"; 
 

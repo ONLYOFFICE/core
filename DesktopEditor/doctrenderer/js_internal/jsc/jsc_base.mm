@@ -217,8 +217,7 @@ namespace NSJSBase
     {
         CJSValueJSC* _value = new CJSValueJSC();
         _value->context = _getCurrentContext();
-        _value->value = [NSString stringWithUtf8Buffer:value
-                                                length:(size_t)len];
+        _value->value = [NSString stringWithUtf8Buffer:value length:(size_t)((len == -1) ? strlen(value) : len)];
         return _value;
     }
 

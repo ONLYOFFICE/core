@@ -388,8 +388,12 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
  {
 	if ("rtf" == sCommand) //open-rtf-document-image-error.rtf
 	{
-		RtfNormalReader oRtfReader(oDocument, oReader);
-		return StartSubReader(oRtfReader, oDocument, oReader);
+		if (oDocument.m_bStartRead)
+		{
+			RtfNormalReader oRtfReader(oDocument, oReader);
+			return StartSubReader(oRtfReader, oDocument, oReader);
+		}
+		oDocument.m_bStartRead = true;
 	}
 	else if ( "colortbl" == sCommand )
 	{
@@ -469,22 +473,10 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 
 		}
 	}
-	//else if ("qqq" == sCommand)//test
-	//{
-	//	oDocument.m_oMathProp.m_bHeader = false;
-	//}
-	//else if ( "defchp" == sCommand )
-	//{
-	//	RtfDefCharPropReader oDefCharPropReader( oDocument.m_oDefaultCharProp );
-	//	return StartSubReader( oDefCharPropReader, oDocument, oReader );				}
-    //else if ( "defpap" == sCommand )
-	//{
-	//	RtfDefParPropReader oDefParPropReader;
-	//	return StartSubReader( oDefParPropReader, oDocument, oReader );
-	//}
     else if ( "mmathPr" == sCommand )
 	{
-		RtfMathReader oMathPropReader(oDocument.m_oMathProp);
+		oDocument.m_pMathProp = RtfMathPtr(new RtfMath());
+		RtfMathReader oMathPropReader(oDocument.m_pMathProp);
 		return StartSubReader( oMathPropReader, oDocument, oReader );
 	}
     else if ( "ftnsep" == sCommand || "ftnsepc" == sCommand ||
@@ -2859,11 +2851,11 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 //Math
     else if ( "mmath" == sCommand )
 	{
-		RtfMathPtr		oNewMath	( new RtfMath() );
-		RtfMathReader	oMathReader	( *oNewMath );
+		RtfMathPtr		pNewMath	( new RtfMath() );
+		RtfMathReader	oMathReader	( pNewMath );
 		
 		oAbstrReader.StartSubReader( oMathReader, oDocument, oReader );
-		m_oCurParagraph->AddItem( oNewMath );
+		m_oCurParagraph->AddItem(pNewMath);
 	}
 //Drawing
     else if ( "shp" == sCommand )

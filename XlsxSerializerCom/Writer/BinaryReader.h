@@ -331,6 +331,7 @@ namespace BinXlsxRW
 		int ReadFromTo(BYTE type, long length, void* poResult);
 		int ReadExt(BYTE type, long length, void* poResult);
 		int ReadPos(BYTE type, long length, void* poResult);
+		int ReadClientData(BYTE type, long length, void* poResult);
 		int ReadSheetData(BYTE type, long length, void* poResult);
 		int ReadRow(BYTE type, long length, void* poResult);
 		int ReadCells(BYTE type, long length, void* poResult);
@@ -391,7 +392,7 @@ namespace BinXlsxRW
 	{
 	public: 
 		BinaryFileReader();
-        int ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions);
+        int ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bMacro = false);
         int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW::CBinaryFileReader& oBufferedStream, const std::wstring& sFileInDir, const std::wstring& sOutDir, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
 		void initWorkbook(OOX::Spreadsheet::CWorkbook* pWorkbook);
 	};

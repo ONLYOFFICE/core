@@ -55,7 +55,7 @@ namespace PPT_FORMAT
 		bool					m_bMacros;
 		std::wstring			m_sVbaProjectFile;
 
-		CDocument() : m_bMacros (false)
+                CDocument() : m_bMacros (true)
 		{			
 			m_lSlideWidth	= 0;
 			m_lSlideHeight	= 0;

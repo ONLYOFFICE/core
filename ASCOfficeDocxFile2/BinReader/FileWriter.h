@@ -61,6 +61,7 @@ namespace OOX
 {
 	class CApp;
 	class CCore;
+	class CSettings;
 }
 namespace PPTX
 {
@@ -80,7 +81,7 @@ namespace Writers
 			numbering(sDirOutput),
 			footnotes(sDirOutput),
 			endnotes(sDirOutput),
-			settings(sDirOutput, headers_footers),
+			settings(sDirOutput),
 			comments(sDirOutput),
 			web_settings(sDirOutput)
 		{}
@@ -167,6 +168,7 @@ namespace Writers
 		BinDocxRW::CComments*			m_pComments;
 		OOX::CApp*						m_pApp;
 		OOX::CCore*						m_pCore;
+		OOX::CSettings*					m_pCurrentSettings;
 		PPTX::CustomProperties*			m_pCustomProperties;
 
 		bool m_bGlossaryMode = false;

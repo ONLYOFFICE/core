@@ -784,944 +784,944 @@ namespace MetaFile
 
         void CEmfParserBase::HANDLE_EMR_HEADER(TEmfHeader &oTEmfHeader)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_HEADER(m_oHeader);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_HEADER(m_oHeader);
 
-            if (ENHMETA_SIGNATURE != m_oHeader.ulSignature || 0x00010000 != m_oHeader.ulVersion)
-                    return SetError();
+                if (ENHMETA_SIGNATURE != m_oHeader.ulSignature || 0x00010000 != m_oHeader.ulVersion)
+                        return SetError();
 
-            // Пропускаем остальную часть заголовка, т.к. она нас пока не интересует
-            unsigned int ulRemaining = m_ulRecordSize - 80; // sizeof(TEmfHeader)
-            m_oStream.Skip(ulRemaining);
+                // Пропускаем остальную часть заголовка, т.к. она нас пока не интересует
+                unsigned int ulRemaining = m_ulRecordSize - 80; // sizeof(TEmfHeader)
+                m_oStream.Skip(ulRemaining);
 
-            double dL = m_oHeader.oFrame.lLeft / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx;
-            double dR = m_oHeader.oFrame.lRight / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx;
-            double dT = m_oHeader.oFrame.lTop / 100.0 / m_oHeader.oMillimeters.cy * m_oHeader.oDevice.cy;
-            double dB = m_oHeader.oFrame.lBottom / 100.0 / m_oHeader.oMillimeters.cy * m_oHeader.oDevice.cy;
+                double dL = m_oHeader.oFrame.lLeft / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx;
+                double dR = m_oHeader.oFrame.lRight / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx;
+                double dT = m_oHeader.oFrame.lTop / 100.0 / m_oHeader.oMillimeters.cy * m_oHeader.oDevice.cy;
+                double dB = m_oHeader.oFrame.lBottom / 100.0 / m_oHeader.oMillimeters.cy * m_oHeader.oDevice.cy;
 
-            double dW = dR - dL;
-            double dH = dB - dT;
+                double dW = dR - dL;
+                double dH = dB - dT;
 
-            int nL = (int)floor(dL + 0.5);
-            int nT = (int)floor(dT + 0.5);
-            int nR = (int)floor(dW + 0.5) + nL;
-            int nB = (int)floor(dH + 0.5) + nT;
+                int nL = (int)floor(dL + 0.5);
+                int nT = (int)floor(dT + 0.5);
+                int nR = (int)floor(dW + 0.5) + nL;
+                int nB = (int)floor(dH + 0.5) + nT;
 
-            // По логике мы должны получать рект, точно такой же как и oBounds, но есть файлы, где это не так.
-            m_oHeader.oFrameToBounds.nLeft   = nL;
-            m_oHeader.oFrameToBounds.nRight  = nR;
-            m_oHeader.oFrameToBounds.nTop    = nT;
-            m_oHeader.oFrameToBounds.nBottom = nB;
+                // По логике мы должны получать рект, точно такой же как и oBounds, но есть файлы, где это не так.
+                m_oHeader.oFrameToBounds.nLeft   = nL;
+                m_oHeader.oFrameToBounds.nRight  = nR;
+                m_oHeader.oFrameToBounds.nTop    = nT;
+                m_oHeader.oFrameToBounds.nBottom = nB;
 
-            m_oHeader.oFramePx = m_oHeader.oFrameToBounds;
+                m_oHeader.oFramePx = m_oHeader.oFrameToBounds;
         }
 
         void CEmfParserBase::HANDLE_EMR_ALPHABLEND(TEmfAlphaBlend &oTEmfAlphaBlend)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_ALPHABLEND(oTEmfAlphaBlend, m_oStream);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_ALPHABLEND(oTEmfAlphaBlend, m_oStream);
 
-            ImageProcessing(oTEmfAlphaBlend);
+                ImageProcessing(oTEmfAlphaBlend);
         }
 
         void CEmfParserBase::HANDLE_EMR_STRETCHDIBITS(TEmfStretchDIBITS &oTEmfStretchDIBITS)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_STRETCHDIBITS(oTEmfStretchDIBITS, m_oStream);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_STRETCHDIBITS(oTEmfStretchDIBITS, m_oStream);
 
-            ImageProcessing(oTEmfStretchDIBITS);
+                ImageProcessing(oTEmfStretchDIBITS);
         }
 
         void CEmfParserBase::HANDLE_EMR_BITBLT(TEmfBitBlt &oTEmfBitBlt)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_BITBLT(oTEmfBitBlt, m_oStream);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_BITBLT(oTEmfBitBlt, m_oStream);
 
-            ImageProcessing(oTEmfBitBlt);
+                ImageProcessing(oTEmfBitBlt);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETDIBITSTODEVICE(TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETDIBITSTODEVICE(oTEmfSetDiBitsToDevice, m_oStream);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETDIBITSTODEVICE(oTEmfSetDiBitsToDevice, m_oStream);
 
-            ImageProcessing(oTEmfSetDiBitsToDevice);
+                ImageProcessing(oTEmfSetDiBitsToDevice);
         }
 
         void CEmfParserBase::HANDLE_EMR_STRETCHBLT(TEmfStretchBLT &oTEmfStretchBLT)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_STRETCHBLT(oTEmfStretchBLT, m_oStream);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_STRETCHBLT(oTEmfStretchBLT, m_oStream);
 
-            ImageProcessing(oTEmfStretchBLT);
+                ImageProcessing(oTEmfStretchBLT);
         }
 
         void CEmfParserBase::HANDLE_EMR_EOF()
         {
-            if (NULL != m_pInterpretator)
-                m_pInterpretator->HANDLE_EMR_EOF();
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_EOF();
         }
 
         void CEmfParserBase::HANDLE_EMR_SAVEDC()
         {
-            m_pDC = m_oPlayer.SaveDC();
+                m_pDC = m_oPlayer.SaveDC();
 
-            if (NULL != m_pInterpretator)
-                m_pInterpretator->HANDLE_EMR_SAVEDC();
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SAVEDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_RESTOREDC(int &nIndexDC)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_RESTOREDC(nIndexDC);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_RESTOREDC(nIndexDC);
 
-            if (nIndexDC >= 0)
-            {
-                    SetError();
-                    return;
-            }
+                if (nIndexDC >= 0)
+                {
+                        SetError();
+                        return;
+                }
 
-            int lCount = -nIndexDC;
-            for (int lIndex = 0; lIndex < lCount; lIndex++)
-                    m_oPlayer.RestoreDC();
+                int lCount = -nIndexDC;
+                for (int lIndex = 0; lIndex < lCount; lIndex++)
+                        m_oPlayer.RestoreDC();
 
-            m_pDC = m_oPlayer.GetDC();
-            UpdateOutputDC();
+                m_pDC = m_oPlayer.GetDC();
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_MODIFYWORLDTRANSFORM(TXForm &oXForm, unsigned int &unMode)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_MODIFYWORLDTRANSFORM(oXForm, unMode);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_MODIFYWORLDTRANSFORM(oXForm, unMode);
 
-            m_pDC->MultiplyTransform(oXForm, unMode);
-            UpdateOutputDC();
+                m_pDC->MultiplyTransform(oXForm, unMode);
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_SETWORLDTRANSFORM(TXForm &oXForm)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETWORLDTRANSFORM(oXForm);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETWORLDTRANSFORM(oXForm);
 
-            m_pDC->MultiplyTransform(oXForm, MWT_SET);
-            UpdateOutputDC();
+                m_pDC->MultiplyTransform(oXForm, MWT_SET);
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_CREATEBRUSHINDIRECT(unsigned int &unBrushIndex, CEmfLogBrushEx *pBrush)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_CREATEBRUSHINDIRECT(unBrushIndex, pBrush);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_CREATEBRUSHINDIRECT(unBrushIndex, pBrush);
 
-            m_oPlayer.RegisterObject(unBrushIndex, (CEmfObjectBase*)pBrush);
+                m_oPlayer.RegisterObject(unBrushIndex, (CEmfObjectBase*)pBrush);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETTEXTCOLOR(TEmfColor &oColor)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETTEXTCOLOR(oColor);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETTEXTCOLOR(oColor);
 
-            m_pDC->SetTextColor(oColor);
-            UpdateOutputDC();
+                m_pDC->SetTextColor(oColor);
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_SELECTOBJECT(unsigned int &unObjectIndex)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SELECTOBJECT(unObjectIndex);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SELECTOBJECT(unObjectIndex);
 
-            m_oPlayer.SelectObject(unObjectIndex);
-            UpdateOutputDC();
+                m_oPlayer.SelectObject(unObjectIndex);
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_EXTCREATEFONTINDIRECTW(unsigned int &unIndex, CEmfLogFont *oLogFont)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_EXTCREATEFONTINDIRECTW(unIndex, oLogFont);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_EXTCREATEFONTINDIRECTW(unIndex, oLogFont);
 
-            m_oPlayer.RegisterObject(unIndex, (CEmfObjectBase*)oLogFont);
+                m_oPlayer.RegisterObject(unIndex, (CEmfObjectBase*)oLogFont);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETTEXTALIGN(unsigned int &unAlign)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETTEXTALIGN(unAlign);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETTEXTALIGN(unAlign);
 
-            m_pDC->SetTextAlign(unAlign);
-            UpdateOutputDC();
+                m_pDC->SetTextAlign(unAlign);
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_SETBKMODE(unsigned int &unBgMode)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETBKMODE(unBgMode);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETBKMODE(unBgMode);
 
-            m_pDC->SetBgMode(unBgMode);
-            UpdateOutputDC();
+                m_pDC->SetBgMode(unBgMode);
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_DELETEOBJECT(unsigned int &unObjectIndex)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_DELETEOBJECT(unObjectIndex);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_DELETEOBJECT(unObjectIndex);
 
-            m_oPlayer.DeleteObject(unObjectIndex);
-            UpdateOutputDC();
+                m_oPlayer.DeleteObject(unObjectIndex);
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_SETMITERLIMIT(unsigned int &unMeterLimit)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETMITERLIMIT(unMeterLimit);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETMITERLIMIT(unMeterLimit);
 
-            m_pDC->SetMiterLimit(unMeterLimit);
-            UpdateOutputDC();
+                m_pDC->SetMiterLimit(unMeterLimit);
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_EXTCREATEPEN(unsigned int &unPenIndex, CEmfLogPen *pPen)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_EXTCREATEPEN(unPenIndex, pPen);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_EXTCREATEPEN(unPenIndex, pPen);
 
-            m_oPlayer.RegisterObject(unPenIndex, (CEmfObjectBase*)pPen);
+                m_oPlayer.RegisterObject(unPenIndex, (CEmfObjectBase*)pPen);
         }
 
         void CEmfParserBase::HANDLE_EMR_CREATEPEN(unsigned int &unPenIndex, unsigned int &unWidthX, CEmfLogPen *pPen)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_CREATEPEN(unPenIndex, unWidthX, pPen);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_CREATEPEN(unPenIndex, unWidthX, pPen);
 
-            if (!unWidthX)
-            {//emf from Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx
-                    unWidthX = 1 / m_pDC->GetPixelWidth();
-            }
-            pPen->Width = unWidthX;
+                if (!unWidthX)
+                {//emf from Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx
+                        unWidthX = 1 / m_pDC->GetPixelWidth();
+                }
+                pPen->Width = unWidthX;
 
-            m_oPlayer.RegisterObject(unPenIndex, (CEmfObjectBase*)pPen);
+                m_oPlayer.RegisterObject(unPenIndex, (CEmfObjectBase*)pPen);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETPOLYFILLMODE(unsigned int &unFillMode)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETPOLYFILLMODE(unFillMode);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETPOLYFILLMODE(unFillMode);
 
-            m_pDC->SetFillMode(unFillMode);
-            UpdateOutputDC();
+                m_pDC->SetFillMode(unFillMode);
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_BEGINPATH()
         {
-            if (m_pPath)
-                    delete m_pPath;
+                if (m_pPath)
+                        delete m_pPath;
 
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_BEGINPATH();
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_BEGINPATH();
 
-            m_pPath = new CEmfPath();
-            if (!m_pPath)
-                    SetError();
+                m_pPath = new CEmfPath();
+                if (!m_pPath)
+                        SetError();
 
-            // Иногда MoveTo идет до BeginPath
-            TEmfPointL oPoint = m_pDC->GetCurPos();
-            double dX, dY;
-            TranslatePoint(oPoint, dX, dY);
-            m_pPath->MoveTo(dX, dY);
+                // Иногда MoveTo идет до BeginPath
+                TEmfPointL oPoint = m_pDC->GetCurPos();
+                double dX, dY;
+                TranslatePoint(oPoint, dX, dY);
+                m_pPath->MoveTo(dX, dY);
         }
 
         void CEmfParserBase::HANDLE_EMR_ENDPATH()
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_ENDPATH();
-            // Ничего не делаем
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_ENDPATH();
+                // Ничего не делаем
         }
 
         void CEmfParserBase::HANDLE_EMR_CLOSEFIGURE()
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_CLOSEFIGURE();
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_CLOSEFIGURE();
 
-            if (m_pPath)
-            {
-                    if (!m_pPath->Close())
-                            return SetError();
+                if (m_pPath)
+                {
+                        if (!m_pPath->Close())
+                                return SetError();
                 }
         }
 
         void CEmfParserBase::HANDLE_EMR_FLATTENPATH()
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_FLATTENPATH();
-            // Ничего не делаем
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_FLATTENPATH();
+                // Ничего не делаем
         }
 
         void CEmfParserBase::HANDLE_EMR_WIDENPATH()
         {
-            // TODO: реализовать
-            if (NULL != m_pInterpretator)
-                m_pInterpretator->HANDLE_EMR_WIDENPATH();
+                // TODO: реализовать
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_WIDENPATH();
         }
 
         void CEmfParserBase::HANDLE_EMR_ABORTPATH()
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_ABORTPATH();
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_ABORTPATH();
 
-            if (m_pPath)
-            {
-                    delete m_pPath;
-                    m_pPath = NULL;
+                if (m_pPath)
+                {
+                        delete m_pPath;
+                        m_pPath = NULL;
                 }
         }
 
         void CEmfParserBase::HANDLE_EMR_MOVETOEX(TEmfPointL &oPoint)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_MOVETOEX(oPoint);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_MOVETOEX(oPoint);
 
-            MoveTo(oPoint);
+                MoveTo(oPoint);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETARCDIRECTION(unsigned int &unDirection)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETARCDIRECTION(unDirection);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETARCDIRECTION(unDirection);
 
-            m_pDC->SetArcDirection(unDirection);
-            // Здесь не обновляем DC у Output, т.к. этот параметр разруливается внутри данного класса.
+                m_pDC->SetArcDirection(unDirection);
+                // Здесь не обновляем DC у Output, т.к. этот параметр разруливается внутри данного класса.
         }
 
         void CEmfParserBase::HANDLE_EMR_FILLPATH(TEmfRectL &oBounds)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_FILLPATH(oBounds);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_FILLPATH(oBounds);
 
-            if (m_pPath)
-            {
-                    m_pPath->Draw(m_pInterpretator, false, true);
-                    RELEASEOBJECT(m_pPath);
+                if (m_pPath)
+                {
+                        m_pPath->Draw(m_pInterpretator, false, true);
+                        RELEASEOBJECT(m_pPath);
                 }
         }
 
         void CEmfParserBase::HANDLE_EMR_SETMAPMODE(unsigned int &unMapMode)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETMAPMODE(unMapMode);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETMAPMODE(unMapMode);
 
-            m_pDC->SetMapMode(unMapMode);
+                m_pDC->SetMapMode(unMapMode);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETWINDOWORGEX(TEmfPointL &oOrigin)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETWINDOWORGEX(oOrigin);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETWINDOWORGEX(oOrigin);
 
-            m_pDC->SetWindowOrigin(oOrigin);
+                m_pDC->SetWindowOrigin(oOrigin);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETWINDOWEXTEX(TEmfSizeL &oExtent)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETWINDOWEXTEX(oExtent);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETWINDOWEXTEX(oExtent);
 
-            m_pDC->SetWindowExtents(oExtent);
+                m_pDC->SetWindowExtents(oExtent);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETVIEWPORTORGEX(TEmfPointL &oOrigin)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETVIEWPORTORGEX(oOrigin);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETVIEWPORTORGEX(oOrigin);
 
-            m_pDC->SetViewportOrigin(oOrigin);
+                m_pDC->SetViewportOrigin(oOrigin);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETVIEWPORTEXTEX(TEmfSizeL &oExtent)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
 
-            m_pDC->SetViewportExtents(oExtent);
+                m_pDC->SetViewportExtents(oExtent);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETSTRETCHBLTMODE(unsigned int &unStretchMode)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETSTRETCHBLTMODE(unStretchMode);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETSTRETCHBLTMODE(unStretchMode);
 
-            m_pDC->SetStretchMode(unStretchMode);
+                m_pDC->SetStretchMode(unStretchMode);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETICMMODE(unsigned int &unICMMode)
         {
-            if (NULL != m_pInterpretator)
-                m_pInterpretator->HANDLE_EMR_SETICMMODE(unICMMode);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETICMMODE(unICMMode);
         }
 
         void CEmfParserBase::HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(unsigned int &unBrushIndex, TEmfDibPatternBrush &oDibBrush)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(unBrushIndex, oDibBrush, m_oStream);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(unBrushIndex, oDibBrush, m_oStream);
 
-            ImageProcessing(oDibBrush, unBrushIndex);
+                ImageProcessing(oDibBrush, unBrushIndex);
         }
 
         void CEmfParserBase::HANDLE_EMR_SELECTCLIPPATH(unsigned int &unRegionMode)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SELECTCLIPPATH(unRegionMode);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SELECTCLIPPATH(unRegionMode);
 
-            if (m_pPath)
-            {
-                    m_pDC->ClipToPath(m_pPath, unRegionMode, GetDC()->GetFinalTransform(GM_ADVANCED));
-                    RELEASEOBJECT(m_pPath);
+                if (m_pPath)
+                {
+                        m_pDC->ClipToPath(m_pPath, unRegionMode, GetDC()->GetFinalTransform(GM_ADVANCED));
+                        RELEASEOBJECT(m_pPath);
 
-                    UpdateOutputDC();
+                        UpdateOutputDC();
                 }
         }
 
         void CEmfParserBase::HANDLE_EMR_SETBKCOLOR(TEmfColor &oColor)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETBKCOLOR(oColor);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETBKCOLOR(oColor);
 
-            m_pDC->SetBgColor(oColor);
-            UpdateOutputDC();
+                m_pDC->SetBgColor(oColor);
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_EXCLUDECLIPRECT(TEmfRectL &oClip)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_EXCLUDECLIPRECT(oClip);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_EXCLUDECLIPRECT(oClip);
 
-            TRectD oClipRect, oBB;
+                TRectD oClipRect, oBB;
 
-            // Поскольку мы реализовываем данный тип клипа с помощью разницы внешнего ректа и заданного, и
-            // пересечением с полученной областью, то нам надо вычесть границу заданного ректа.
-            if (oClip.lLeft < oClip.lRight)
-            {
-                    oClip.lLeft--;
-                    oClip.lRight++;
-            }
-            else
-            {
-                    oClip.lLeft++;
-                    oClip.lRight--;
-            }
+                // Поскольку мы реализовываем данный тип клипа с помощью разницы внешнего ректа и заданного, и
+                // пересечением с полученной областью, то нам надо вычесть границу заданного ректа.
+                if (oClip.lLeft < oClip.lRight)
+                {
+                        oClip.lLeft--;
+                        oClip.lRight++;
+                }
+                else
+                {
+                        oClip.lLeft++;
+                        oClip.lRight--;
+                }
 
-            if (oClip.lTop < oClip.lBottom)
-            {
-                    oClip.lTop--;
-                    oClip.lBottom++;
-            }
-            else
-            {
-                    oClip.lTop++;
-                    oClip.lBottom--;
-            }
+                if (oClip.lTop < oClip.lBottom)
+                {
+                        oClip.lTop--;
+                        oClip.lBottom++;
+                }
+                else
+                {
+                        oClip.lTop++;
+                        oClip.lBottom--;
+                }
 
-            TranslatePoint(oClip.lLeft, oClip.lTop, oClipRect.dLeft, oClipRect.dTop);
-            TranslatePoint(oClip.lRight, oClip.lBottom, oClipRect.dRight, oClipRect.dBottom);
+                TranslatePoint(oClip.lLeft, oClip.lTop, oClipRect.dLeft, oClipRect.dTop);
+                TranslatePoint(oClip.lRight, oClip.lBottom, oClipRect.dRight, oClipRect.dBottom);
 
-            TRect* pRect = GetDCBounds();
-            TranslatePoint(pRect->nLeft, pRect->nTop, oBB.dLeft, oBB.dTop);
-            TranslatePoint(pRect->nRight, pRect->nBottom, oBB.dRight, oBB.dBottom);
+                TRect* pRect = GetDCBounds();
+                TranslatePoint(pRect->nLeft, pRect->nTop, oBB.dLeft, oBB.dTop);
+                TranslatePoint(pRect->nRight, pRect->nBottom, oBB.dRight, oBB.dBottom);
 
-            m_pDC->GetClip()->Exclude(oClipRect, oBB);
-            UpdateOutputDC();
+                m_pDC->GetClip()->Exclude(oClipRect, oBB);
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_EXTSELECTCLIPRGN(unsigned int &unRgnDataSize, unsigned int &unRegionMode)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_EXTSELECTCLIPRGN(unRgnDataSize, unRegionMode, m_oStream);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_EXTSELECTCLIPRGN(unRgnDataSize, unRegionMode, m_oStream);
 
-            m_oStream.Skip(m_ulRecordSize - 8);
+                m_oStream.Skip(m_ulRecordSize - 8);
 
-            // Тут просто сбрасываем текущий клип. Ничего не добавляем в клип, т.е. реализовать регионы с
-            // текущим интерфейсом рендерера невозможно.
-            m_pDC->GetClip()->Reset();
+                // Тут просто сбрасываем текущий клип. Ничего не добавляем в клип, т.е. реализовать регионы с
+                // текущим интерфейсом рендерера невозможно.
+                m_pDC->GetClip()->Reset();
         }
 
         void CEmfParserBase::HANDLE_EMR_SETMETARGN()
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETMETARGN();
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETMETARGN();
 
-            m_pDC->GetClip()->Reset();
-            UpdateOutputDC();
+                m_pDC->GetClip()->Reset();
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_SETROP2(unsigned int &unRop2Mode)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETROP2(unRop2Mode);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETROP2(unRop2Mode);
 
-            m_pDC->SetRop2Mode(unRop2Mode);
-            UpdateOutputDC();
+                m_pDC->SetRop2Mode(unRop2Mode);
+                UpdateOutputDC();
         }
 
         void CEmfParserBase::HANDLE_EMR_CREATEPALETTE(unsigned int &unPaletteIndex, CEmfLogPalette *oEmfLogPalette)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_CREATEPALETTE(unPaletteIndex, oEmfLogPalette);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_CREATEPALETTE(unPaletteIndex, oEmfLogPalette);
 
-            m_oPlayer.RegisterObject(unPaletteIndex, (CEmfObjectBase*)oEmfLogPalette);
+                m_oPlayer.RegisterObject(unPaletteIndex, (CEmfObjectBase*)oEmfLogPalette);
         }
 
         void CEmfParserBase::HANDLE_EMR_SELECTPALETTE(unsigned int &unPaletteIndex)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SELECTPALETTE(unPaletteIndex);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SELECTPALETTE(unPaletteIndex);
 
-            m_oPlayer.SelectPalette(unPaletteIndex);
+                m_oPlayer.SelectPalette(unPaletteIndex);
         }
 
         void CEmfParserBase::HANDLE_EMR_REALIZEPALETTE()
         {
-            // TODO: Реализовать
-            if (NULL != m_pInterpretator)
-                m_pInterpretator->HANDLE_EMR_REALIZEPALETTE();
+                // TODO: Реализовать
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_REALIZEPALETTE();
         }
 
         void CEmfParserBase::HANDLE_EMR_INTERSECTCLIPRECT(TEmfRectL &oClip)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_INTERSECTCLIPRECT(oClip);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_INTERSECTCLIPRECT(oClip);
 
-            TRectD oClipRect;
-            TranslatePoint(oClip.lLeft, oClip.lTop, oClipRect.dLeft, oClipRect.dTop);
-            TranslatePoint(oClip.lRight, oClip.lBottom, oClipRect.dRight, oClipRect.dBottom);
-            m_pDC->GetClip()->Intersect(oClipRect);
+                TRectD oClipRect;
+                TranslatePoint(oClip.lLeft, oClip.lTop, oClipRect.dLeft, oClipRect.dTop);
+                TranslatePoint(oClip.lRight, oClip.lBottom, oClipRect.dRight, oClipRect.dBottom);
+                m_pDC->GetClip()->Intersect(oClipRect);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETLAYOUT(unsigned int &unLayoutMode)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETLAYOUT(unLayoutMode);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETLAYOUT(unLayoutMode);
 
-            // TODO: реализовать
+                // TODO: реализовать
         }
 
         void CEmfParserBase::HANDLE_EMR_SETBRUSHORGEX(TEmfPointL &oOrigin)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETBRUSHORGEX(oOrigin);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETBRUSHORGEX(oOrigin);
 
-            // TODO: реализовать
+                // TODO: реализовать
         }
 
         void CEmfParserBase::HANDLE_EMR_ANGLEARC(TEmfPointL &oCenter, unsigned int &unRadius, double &dStartAngle, double &dSweepAngle)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_ANGLEARC(oCenter, unRadius, dStartAngle, dSweepAngle);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_ANGLEARC(oCenter, unRadius, dStartAngle, dSweepAngle);
 
-            ArcTo(oCenter.x - unRadius, oCenter.y - unRadius, oCenter.x + unRadius, oCenter.y + unRadius, dStartAngle, dSweepAngle);
-            DrawPath(true, false);
+                ArcTo(oCenter.x - unRadius, oCenter.y - unRadius, oCenter.x + unRadius, oCenter.y + unRadius, dStartAngle, dSweepAngle);
+                DrawPath(true, false);
         }
 
         void CEmfParserBase::HANDLE_EMR_ARC(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_ARC(oBox, oStart, oEnd);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_ARC(oBox, oStart, oEnd);
 
-            double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
-            double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
+                double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
+                double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
-            // TODO: Проверить здесь
-            if (dSweepAngle < 0.001)
-                    dSweepAngle += 360;
+                // TODO: Проверить здесь
+                if (dSweepAngle < 0.001)
+                        dSweepAngle += 360;
 
-            // TODO: Проверить здесь
-            if (AD_COUNTERCLOCKWISE != m_pDC->GetArcDirection())
-            {
-                    dSweepAngle = dSweepAngle - 360;
-            }
+                // TODO: Проверить здесь
+                if (AD_COUNTERCLOCKWISE != m_pDC->GetArcDirection())
+                {
+                        dSweepAngle = dSweepAngle - 360;
+                }
 
-            MoveTo(oStart);
-            ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
-            DrawPath(true, false);
+                MoveTo(oStart);
+                ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
+                DrawPath(true, false);
         }
 
         void CEmfParserBase::HANDLE_EMR_ARCTO(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_ARCTO(oBox, oStart, oEnd);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_ARCTO(oBox, oStart, oEnd);
 
-            double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
-            double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
+                double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
+                double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
-            ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
+                ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
         }
 
         void CEmfParserBase::HANDLE_EMR_CHORD(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
         {
-            if (NULL != m_pInterpretator)
-                m_pInterpretator->HANDLE_EMR_CHORD(oBox, oStart, oEnd);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_CHORD(oBox, oStart, oEnd);
 
-            double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
-            double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
+                double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
+                double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
-            MoveTo(oStart);
-            ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
-            LineTo(oStart);
-            DrawPath(true, true);
+                MoveTo(oStart);
+                ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
+                LineTo(oStart);
+                DrawPath(true, true);
         }
 
         void CEmfParserBase::HANDLE_EMR_ELLIPSE(TEmfRectL &oBox)
         {
-            if (NULL != m_pInterpretator)
-                m_pInterpretator->HANDLE_EMR_ELLIPSE(oBox);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_ELLIPSE(oBox);
 
-            if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
-                ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
-            else
-                ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
+                if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
+                        ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
+                else
+                        ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
 
 
-            DrawPath(true, true);
+                DrawPath(true, true);
         }
 
         void CEmfParserBase::HANDLE_EMR_EXTTEXTOUTA(TEmfExtTextoutA &oTEmfExtTextoutA)
         {
-            if (NULL != m_pInterpretator)
-                m_pInterpretator->HANDLE_EMR_EXTTEXTOUTA(oTEmfExtTextoutA);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_EXTTEXTOUTA(oTEmfExtTextoutA);
 
-            DrawTextA(oTEmfExtTextoutA.aEmrText, oTEmfExtTextoutA.iGraphicsMode);
+                DrawTextA(oTEmfExtTextoutA.aEmrText, oTEmfExtTextoutA.iGraphicsMode);
         }
 
         void CEmfParserBase::HANDLE_EMR_EXTTEXTOUTW(TEmfExtTextoutW &oTEmfExtTextoutW)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_EXTTEXTOUTW(oTEmfExtTextoutW);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_EXTTEXTOUTW(oTEmfExtTextoutW);
 
-            DrawTextW(oTEmfExtTextoutW.wEmrText, oTEmfExtTextoutW.iGraphicsMode);
+                DrawTextW(oTEmfExtTextoutW.wEmrText, oTEmfExtTextoutW.iGraphicsMode);
         }
 
         void CEmfParserBase::HANDLE_EMR_LINETO(TEmfPointL &oPoint)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_LINETO(oPoint);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_LINETO(oPoint);
 
-            LineTo(oPoint);
+                LineTo(oPoint);
         }
 
         void CEmfParserBase::HANDLE_EMR_PIE(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_PIE(oBox, oStart, oEnd);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_PIE(oBox, oStart, oEnd);
 
-            double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
-            double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
+                double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
+                double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
-            ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
-            LineTo((oBox.lLeft + oBox.lRight) / 2, (oBox.lTop + oBox.lBottom) / 2);
-            ClosePath();
-            DrawPath(true, true);
+                ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
+                LineTo((oBox.lLeft + oBox.lRight) / 2, (oBox.lTop + oBox.lBottom) / 2);
+                ClosePath();
+                DrawPath(true, true);
         }
 
         void CEmfParserBase::HANDLE_EMR_RECTANGLE(TEmfRectL &oBox)
         {
-            if (NULL != m_pInterpretator)
-                m_pInterpretator->HANDLE_EMR_RECTANGLE(oBox);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_RECTANGLE(oBox);
 
-            if (AD_COUNTERCLOCKWISE == m_pDC->GetArcDirection())
-            {
-                    MoveTo(oBox.lLeft, oBox.lTop);
-                    LineTo(oBox.lLeft, oBox.lBottom);
-                    LineTo(oBox.lRight, oBox.lBottom);
-                    LineTo(oBox.lRight, oBox.lTop);
-            }
-            else
-            {
-                    MoveTo(oBox.lLeft, oBox.lTop);
-                    LineTo(oBox.lRight, oBox.lTop);
-                    LineTo(oBox.lRight, oBox.lBottom);
-                    LineTo(oBox.lLeft, oBox.lBottom);
-            }
-            ClosePath();
-            DrawPath(true, true);
+                if (AD_COUNTERCLOCKWISE == m_pDC->GetArcDirection())
+                {
+                        MoveTo(oBox.lLeft, oBox.lTop);
+                        LineTo(oBox.lLeft, oBox.lBottom);
+                        LineTo(oBox.lRight, oBox.lBottom);
+                        LineTo(oBox.lRight, oBox.lTop);
+                }
+                else
+                {
+                        MoveTo(oBox.lLeft, oBox.lTop);
+                        LineTo(oBox.lRight, oBox.lTop);
+                        LineTo(oBox.lRight, oBox.lBottom);
+                        LineTo(oBox.lLeft, oBox.lBottom);
+                }
+                ClosePath();
+                DrawPath(true, true);
         }
 
         void CEmfParserBase::HANDLE_EMR_ROUNDRECT(TEmfRectL &oBox, TEmfSizeL &oCorner)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_ROUNDRECT(oBox, oCorner);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_ROUNDRECT(oBox, oCorner);
 
-            int lBoxW = oBox.lRight - oBox.lLeft;
-            int lBoxH = oBox.lBottom - oBox.lTop;
+                int lBoxW = oBox.lRight - oBox.lLeft;
+                int lBoxH = oBox.lBottom - oBox.lTop;
 
-            int lRoundW = (std::min)((int)oCorner.cx, lBoxW / 2);
-            int lRoundH = (std::min)((int)oCorner.cy, lBoxH / 2);
+                int lRoundW = (std::min)((int)oCorner.cx, lBoxW / 2);
+                int lRoundH = (std::min)((int)oCorner.cy, lBoxH / 2);
 
-            if (AD_COUNTERCLOCKWISE == m_pDC->GetArcDirection())
-            {
-                    MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
-                    ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundH, 270, -90);
-                    LineTo(oBox.lLeft, oBox.lBottom - lRoundH);
-                    ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 180, -90);
-                    LineTo(oBox.lRight - lRoundW, oBox.lBottom);
-                    ArcTo(oBox.lRight - lRoundW, oBox.lBottom - lRoundH, oBox.lRight, oBox.lBottom, 90, -90);
-                    LineTo(oBox.lRight, oBox.lTop + lRoundH);
-                    ArcTo(oBox.lRight - lRoundW, oBox.lTop, oBox.lRight, oBox.lTop + lRoundH, 0, -90);
-                    LineTo(oBox.lLeft + lRoundW, oBox.lTop);
-            }
-            else
-            {
-                    MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
-                    LineTo(oBox.lRight - lRoundW, oBox.lTop);
-                    ArcTo(oBox.lRight - lRoundW, oBox.lTop, oBox.lRight, oBox.lTop + lRoundH, -90, 90);
-                    LineTo(oBox.lRight, oBox.lBottom - lRoundH);
-                    ArcTo(oBox.lRight - lRoundW, oBox.lBottom - lRoundH, oBox.lRight, oBox.lBottom, 0, 90);
-                    LineTo(oBox.lLeft + lRoundW, oBox.lBottom);
-                    ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 90, 90);
-                    LineTo(oBox.lLeft, oBox.lTop + lRoundH);
-                    ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundH, 180, 90);
-            }
+                if (AD_COUNTERCLOCKWISE == m_pDC->GetArcDirection())
+                {
+                        MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
+                        ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundH, 270, -90);
+                        LineTo(oBox.lLeft, oBox.lBottom - lRoundH);
+                        ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 180, -90);
+                        LineTo(oBox.lRight - lRoundW, oBox.lBottom);
+                        ArcTo(oBox.lRight - lRoundW, oBox.lBottom - lRoundH, oBox.lRight, oBox.lBottom, 90, -90);
+                        LineTo(oBox.lRight, oBox.lTop + lRoundH);
+                        ArcTo(oBox.lRight - lRoundW, oBox.lTop, oBox.lRight, oBox.lTop + lRoundH, 0, -90);
+                        LineTo(oBox.lLeft + lRoundW, oBox.lTop);
+                }
+                else
+                {
+                        MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
+                        LineTo(oBox.lRight - lRoundW, oBox.lTop);
+                        ArcTo(oBox.lRight - lRoundW, oBox.lTop, oBox.lRight, oBox.lTop + lRoundH, -90, 90);
+                        LineTo(oBox.lRight, oBox.lBottom - lRoundH);
+                        ArcTo(oBox.lRight - lRoundW, oBox.lBottom - lRoundH, oBox.lRight, oBox.lBottom, 0, 90);
+                        LineTo(oBox.lLeft + lRoundW, oBox.lBottom);
+                        ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 90, 90);
+                        LineTo(oBox.lLeft, oBox.lTop + lRoundH);
+                        ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundH, 180, 90);
+                }
 
-            ClosePath();
-            DrawPath(true, true);
+                ClosePath();
+                DrawPath(true, true);
         }
 
         void CEmfParserBase::HANDLE_EMR_SETPIXELV(TEmfPointL &oPoint, TEmfColor &oColor)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_SETPIXELV(oPoint, oColor);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SETPIXELV(oPoint, oColor);
 
-            // Делаем цветом кисти
-            BYTE pBgraBuffer[4];
-            pBgraBuffer[0] = oColor.b;
-            pBgraBuffer[1] = oColor.g;
-            pBgraBuffer[2] = oColor.r;
-            pBgraBuffer[3] = 0xff;
+                // Делаем цветом кисти
+                BYTE pBgraBuffer[4];
+                pBgraBuffer[0] = oColor.b;
+                pBgraBuffer[1] = oColor.g;
+                pBgraBuffer[2] = oColor.r;
+                pBgraBuffer[3] = 0xff;
 
-            DrawImage(oPoint.x, oPoint.y, 1, 1, pBgraBuffer, 1, 1);
+                DrawImage(oPoint.x, oPoint.y, 1, 1, pBgraBuffer, 1, 1);
         }
 
         void CEmfParserBase::HANDLE_EMR_SMALLTEXTOUT(TEmfSmallTextout &oText)
         {
-            if (NULL != m_pInterpretator)
-                m_pInterpretator->HANDLE_EMR_SMALLTEXTOUT(oText);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_SMALLTEXTOUT(oText);
 
-            // Переводим oText в TEmfEmrText
-            TEmfEmrText oEmrText;
-            oEmrText.Chars        = oText.cChars;
-            oEmrText.offDx        = 0;
-            oEmrText.offString    = 0;
-            oEmrText.Options      = oText.fuOptions;
-            oEmrText.OutputString = oText.TextString;
-            oEmrText.Reference.x  = oText.x;
-            oEmrText.Reference.y  = oText.y;
-            oEmrText.OutputDx     = NULL;
+                // Переводим oText в TEmfEmrText
+                TEmfEmrText oEmrText;
+                oEmrText.Chars        = oText.cChars;
+                oEmrText.offDx        = 0;
+                oEmrText.offString    = 0;
+                oEmrText.Options      = oText.fuOptions;
+                oEmrText.OutputString = oText.TextString;
+                oEmrText.Reference.x  = oText.x;
+                oEmrText.Reference.y  = oText.y;
+                oEmrText.OutputDx     = NULL;
 
-            // Запись не документированна нормально, остается несколько байт в конце, непонятно почему.
-            unsigned int unSize = oText.GetSize();
-            if (m_ulRecordSize - unSize > 0)
-                    m_oStream.Skip(m_ulRecordSize - unSize);
-            else if (m_ulRecordSize - unSize < 0)
-                    m_oStream.SeekBack(unSize - m_ulRecordSize);
+                // Запись не документированна нормально, остается несколько байт в конце, непонятно почему.
+                unsigned int unSize = oText.GetSize();
+                if (m_ulRecordSize - unSize > 0)
+                        m_oStream.Skip(m_ulRecordSize - unSize);
+                else if (m_ulRecordSize - unSize < 0)
+                        m_oStream.SeekBack(unSize - m_ulRecordSize);
 
-            DrawTextW(oEmrText, oText.iGraphicsMode);
+                DrawTextW(oEmrText, oText.iGraphicsMode);
 
-            // Поскольку мы просто скопировали ссылку на строку, а не скопировали сами строку обнуляем здесь, потому
-            // что на деструкторе структуры освобождается память.
-            oEmrText.OutputString = NULL;
+                // Поскольку мы просто скопировали ссылку на строку, а не скопировали сами строку обнуляем здесь, потому
+                // что на деструкторе структуры освобождается память.
+                oEmrText.OutputString = NULL;
         }
 
         void CEmfParserBase::HANDLE_EMR_STROKEANDFILLPATH(TEmfRectL &oBounds)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_STROKEANDFILLPATH(oBounds);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_STROKEANDFILLPATH(oBounds);
 
-            if (m_pInterpretator && m_pPath)
-            {
-                    m_pPath->Draw(m_pInterpretator, true, true);
-                    RELEASEOBJECT(m_pPath);
+                if (m_pInterpretator && m_pPath)
+                {
+                        m_pPath->Draw(m_pInterpretator, true, true);
+                        RELEASEOBJECT(m_pPath);
                 }
         }
 
         void CEmfParserBase::HANDLE_EMR_STROKEPATH(TEmfRectL &oBounds)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_STROKEPATH(oBounds);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_STROKEPATH(oBounds);
 
-            if (m_pInterpretator && m_pPath)
-            {
-                    m_pPath->Draw(m_pInterpretator, true, false);
-                    RELEASEOBJECT(m_pPath);
-            }
+                if (m_pInterpretator && m_pPath)
+                {
+                        m_pPath->Draw(m_pInterpretator, true, false);
+                        RELEASEOBJECT(m_pPath);
+                }
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYBEZIER(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
         {
-            HANDLE_EMR_POLYBEZIER_BASE<TEmfPointL>(oBounds, arPoints);
+                HANDLE_EMR_POLYBEZIER_BASE<TEmfPointL>(oBounds, arPoints);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYBEZIER(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
         {
-            HANDLE_EMR_POLYBEZIER_BASE<TEmfPointS>(oBounds, arPoints);
+                HANDLE_EMR_POLYBEZIER_BASE<TEmfPointS>(oBounds, arPoints);
         }
 
         template<typename T>
         void CEmfParserBase::HANDLE_EMR_POLYBEZIER_BASE(TEmfRectL &oBounds, std::vector<T> &arPoints)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_POLYBEZIER(oBounds, arPoints);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_POLYBEZIER(oBounds, arPoints);
 
-            MoveTo(arPoints[0]);
+                MoveTo(arPoints[0]);
 
-            for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
-                    CurveTo(arPoints[unIndex], arPoints[unIndex + 1], arPoints[unIndex + 2]);
+                for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+                        CurveTo(arPoints[unIndex], arPoints[unIndex + 1], arPoints[unIndex + 2]);
 
-            DrawPath(true, false);
+                DrawPath(true, false);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYBEZIERTO(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
         {
-            HANDLE_EMR_POLYBEZIERTO_BASE<TEmfPointL>(oBounds, arPoints);
+                HANDLE_EMR_POLYBEZIERTO_BASE<TEmfPointL>(oBounds, arPoints);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYBEZIERTO(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
         {
-            HANDLE_EMR_POLYBEZIERTO_BASE<TEmfPointS>(oBounds, arPoints);
+                HANDLE_EMR_POLYBEZIERTO_BASE<TEmfPointS>(oBounds, arPoints);
         }
 
         template<typename T>
         void CEmfParserBase::HANDLE_EMR_POLYBEZIERTO_BASE(TEmfRectL &oBounds, std::vector<T> &arPoints)
         {
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_POLYBEZIERTO(oBounds, arPoints);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_POLYBEZIERTO(oBounds, arPoints);
 
-            for (unsigned int unIndex = 0; unIndex < arPoints.size(); unIndex += 3)
-                CurveTo(arPoints[unIndex], arPoints[unIndex + 1], arPoints[unIndex + 2]);
+                for (unsigned int unIndex = 0; unIndex < arPoints.size(); unIndex += 3)
+                        CurveTo(arPoints[unIndex], arPoints[unIndex + 1], arPoints[unIndex + 2]);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYDRAW(TEmfRectL &oBounds, TEmfPointL *arPoints, unsigned int &unCount, unsigned char *pAbTypes)
         {
-            HANDLE_EMR_POLYDRAW_BASE<TEmfPointL>(oBounds, arPoints, unCount, pAbTypes);
+                 HANDLE_EMR_POLYDRAW_BASE<TEmfPointL>(oBounds, arPoints, unCount, pAbTypes);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYDRAW(TEmfRectL &oBounds, TEmfPointS *arPoints, unsigned int &unCount, unsigned char *pAbTypes)
         {
-            HANDLE_EMR_POLYDRAW_BASE<TEmfPointS>(oBounds, arPoints, unCount, pAbTypes);
+                HANDLE_EMR_POLYDRAW_BASE<TEmfPointS>(oBounds, arPoints, unCount, pAbTypes);
         }
 
         template<typename T>
         void CEmfParserBase::HANDLE_EMR_POLYDRAW_BASE(TEmfRectL &oBounds, T *arPoints, unsigned int &unCount, unsigned char *pAbTypes)
         {
-            T* pPoint1 = NULL, *pPoint2 = NULL;
-            for (unsigned int unIndex = 0, unPointIndex = 0; unIndex < unCount; unIndex++)
-            {
-                    unsigned char unType = pAbTypes[unIndex];
-                    T* pPoint = arPoints + unIndex;
-                    if (PT_MOVETO == unType)
-                    {
-                            MoveTo(*pPoint);
-                            unPointIndex = 0;
-                    }
-                    else if (PT_LINETO & unType)
-                    {
-                            LineTo(*pPoint);
-                            if (PT_CLOSEFIGURE & unType)
-                                    ClosePath();
-                            unPointIndex = 0;
-                    }
-                    else if (PT_BEZIERTO & unType)
-                    {
-                            if (0 == unPointIndex)
-                            {
-                                    pPoint1 = pPoint;
-                                    unPointIndex = 1;
-                            }
-                            else if (1 == unPointIndex)
-                            {
-                                    pPoint2 = pPoint;
-                                    unPointIndex = 2;
-                            }
-                            else if (2 == unPointIndex)
-                            {
-                                    CurveTo(*pPoint1, *pPoint2, *pPoint);
-                                    unPointIndex = 0;
+                T* pPoint1 = NULL, *pPoint2 = NULL;
+                for (unsigned int unIndex = 0, unPointIndex = 0; unIndex < unCount; unIndex++)
+                {
+                        unsigned char unType = pAbTypes[unIndex];
+                        T* pPoint = arPoints + unIndex;
+                        if (PT_MOVETO == unType)
+                        {
+                                MoveTo(*pPoint);
+                                unPointIndex = 0;
+                        }
+                        else if (PT_LINETO & unType)
+                        {
+                                LineTo(*pPoint);
+                                if (PT_CLOSEFIGURE & unType)
+                                        ClosePath();
+                                unPointIndex = 0;
+                        }
+                        else if (PT_BEZIERTO & unType)
+                        {
+                                if (0 == unPointIndex)
+                                {
+                                        pPoint1 = pPoint;
+                                        unPointIndex = 1;
+                                }
+                                else if (1 == unPointIndex)
+                                {
+                                        pPoint2 = pPoint;
+                                        unPointIndex = 2;
+                                }
+                                else if (2 == unPointIndex)
+                                {
+                                        CurveTo(*pPoint1, *pPoint2, *pPoint);
+                                        unPointIndex = 0;
 
-                                    if (PT_CLOSEFIGURE & unType)
-                                            ClosePath();
-                            }
-                            else
-                            {
-                                    SetError();
-                                    break;
-                            }
-                    }
-            }
+                                        if (PT_CLOSEFIGURE & unType)
+                                                ClosePath();
+                                }
+                                else
+                                {
+                                        SetError();
+                                        break;
+                                }
+                        }
+                }
 
-            if (NULL != m_pInterpretator)
-                m_pInterpretator->HANDLE_EMR_POLYDRAW(oBounds, arPoints, unCount, pAbTypes);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_POLYDRAW(oBounds, arPoints, unCount, pAbTypes);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYGON(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
         {
-            HANDLE_EMR_POLYGON_BASE<TEmfPointL>(oBounds, arPoints);
+                HANDLE_EMR_POLYGON_BASE<TEmfPointL>(oBounds, arPoints);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYGON16(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
         {
-            HANDLE_EMR_POLYGON_BASE<TEmfPointS>(oBounds, arPoints);
+                HANDLE_EMR_POLYGON_BASE<TEmfPointS>(oBounds, arPoints);
         }
 
         template<typename T>
         void CEmfParserBase::HANDLE_EMR_POLYGON_BASE(TEmfRectL &oBounds, std::vector<T> &arPoints)
         {
-            MoveTo(arPoints[0]);
+                MoveTo(arPoints[0]);
 
-            for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
-                    LineTo(arPoints[unIndex]);
+                for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
+                        LineTo(arPoints[unIndex]);
 
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_POLYGON(oBounds, arPoints);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_POLYGON(oBounds, arPoints);
 
-            ClosePath();
-            DrawPath(true, true);
+                ClosePath();
+                DrawPath(true, true);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYLINE(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
         {
-            HANDLE_EMR_POLYLINE_BASE<TEmfPointL>(oBounds, arPoints);
+                HANDLE_EMR_POLYLINE_BASE<TEmfPointL>(oBounds, arPoints);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYLINE(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
         {
-            HANDLE_EMR_POLYLINE_BASE<TEmfPointS>(oBounds, arPoints);
+                HANDLE_EMR_POLYLINE_BASE<TEmfPointS>(oBounds, arPoints);
         }
 
         template<typename T>
         void CEmfParserBase::HANDLE_EMR_POLYLINE_BASE(TEmfRectL &oBounds, std::vector<T> &arPoints)
         {
-            MoveTo(arPoints[0]);
+                MoveTo(arPoints[0]);
 
-            for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
-                    LineTo(arPoints[unIndex]);
+                for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
+                        LineTo(arPoints[unIndex]);
 
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_POLYLINE(oBounds, arPoints);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_POLYLINE(oBounds, arPoints);
 
-            DrawPath(true, false);
+                DrawPath(true, false);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYLINETO(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
         {
-            HANDLE_EMR_POLYLINETO_BASE<TEmfPointL>(oBounds, arPoints);
+                HANDLE_EMR_POLYLINETO_BASE<TEmfPointL>(oBounds, arPoints);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYLINETO(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
         {
-            HANDLE_EMR_POLYLINETO_BASE<TEmfPointS>(oBounds, arPoints);
+                HANDLE_EMR_POLYLINETO_BASE<TEmfPointS>(oBounds, arPoints);
         }
 
         template<typename T>
         void CEmfParserBase::HANDLE_EMR_POLYLINETO_BASE(TEmfRectL &oBounds, std::vector<T> &arPoints)
         {
-            for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
-                    LineTo(arPoints[unIndex]);
+                for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
+                        LineTo(arPoints[unIndex]);
 
-            if (NULL != m_pInterpretator)
-                    m_pInterpretator->HANDLE_EMR_POLYLINETO(oBounds, arPoints);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_POLYLINETO(oBounds, arPoints);
         }
 
 }

@@ -91,10 +91,7 @@ namespace MetaFile
 
                 if (oTEmfAlphaBlend.cbBmiSrc > 0)
                 {
-                        unsigned int unZero = 0;
-                        for (unsigned int i = 0; i < oTEmfAlphaBlend.cbBmiSrc; ++i)
-                            m_pOutStream->write((char *)&unZero, sizeof (BYTE));
-
+                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfAlphaBlend.cbBmiSrc);
                         oDataStream.Skip(oTEmfAlphaBlend.cbBmiSrc);
                 }
 
@@ -133,10 +130,7 @@ namespace MetaFile
 
                 if (oTEmfStretchDIBITS.cbBmiSrc > 0)
                 {
-                        unsigned int unZero = 0;
-                        for (unsigned int i = 0; i < oTEmfStretchDIBITS.cbBmiSrc; ++i)
-                            m_pOutStream->write((char *)&unZero, sizeof (BYTE));
-
+                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfStretchDIBITS.cbBmiSrc);
                         oDataStream.Skip(oTEmfStretchDIBITS.cbBmiSrc);
                 }
 
@@ -177,10 +171,7 @@ namespace MetaFile
 
                 if (oTEmfBitBlt.cbBmiSrc > 0)
                 {
-                        unsigned int unZero = 0;
-                        for (unsigned int i = 0; i < oTEmfBitBlt.cbBmiSrc ; ++i)
-                            m_pOutStream->write((char *)&unZero, sizeof (BYTE));
-
+                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfBitBlt.cbBmiSrc);
                         oDataStream.Skip(oTEmfBitBlt.cbBmiSrc);
                 }
 
@@ -217,10 +208,7 @@ namespace MetaFile
 
                 if (oTEmfSetDiBitsToDevice.cbBmiSrc > 0)
                 {
-                        unsigned int unZero = 0;
-                        for (unsigned int i = 0; i < oTEmfSetDiBitsToDevice.cbBmiSrc; ++i)
-                            m_pOutStream->write((char *)&unZero, sizeof (BYTE));
-
+                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfSetDiBitsToDevice.cbBmiSrc);
                         oDataStream.Skip(oTEmfSetDiBitsToDevice.cbBmiSrc);
                 }
 
@@ -264,10 +252,7 @@ namespace MetaFile
 
                 if (oTEmfStretchBLT.cbBmiSrc > 0)
                 {
-                        unsigned int unZero = 0;
-                        for (unsigned int i = 0; i < oTEmfStretchBLT.cbBmiSrc; ++i)
-                            m_pOutStream->write((char *)&unZero, sizeof (BYTE));
-
+                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfStretchBLT.cbBmiSrc);
                         oDataStream.Skip(oTEmfStretchBLT.cbBmiSrc);
                 }
 
@@ -811,16 +796,15 @@ namespace MetaFile
             m_pOutStream->write((char *)&unBrushIndex,          sizeof (unsigned int));
             m_pOutStream->write((char *)&oDibBrush.Usage,       sizeof (unsigned int));
 
-            m_pOutStream->write((char *)&oDibBrush.offBmi,       sizeof (unsigned int));
+            m_pOutStream->write((char *)&oDibBrush.offBmi,      sizeof (unsigned int));
             m_pOutStream->write((char *)&oDibBrush.cbBmi,       sizeof (unsigned int));
-            m_pOutStream->write((char *)&oDibBrush.offBits,       sizeof (unsigned int));
-            m_pOutStream->write((char *)&oDibBrush.cbBits,       sizeof (unsigned int));
+            m_pOutStream->write((char *)&oDibBrush.offBits,     sizeof (unsigned int));
+            m_pOutStream->write((char *)&oDibBrush.cbBits,      sizeof (unsigned int));
 
             if (oDibBrush.cbBmi > 0)
             {
-                    unsigned int unZero = 0;
-                    for (unsigned int i = 0; i < oDibBrush.cbBmi; ++i)
-                        m_pOutStream->write((char *)&unZero, sizeof (BYTE));
+                    m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oDibBrush.cbBmi);
+                    oDataStream.Skip(oDibBrush.cbBmi);
             }
 
             if (oDibBrush.cbBits > 0)
@@ -883,9 +867,11 @@ namespace MetaFile
                 m_pOutStream->write((char *)&unRgnDataSize,         sizeof (unsigned int));
                 m_pOutStream->write((char *)&unRegionMode,          sizeof (unsigned int));
 
-                unsigned int unZero = 0;
                 if (unRgnDataSize > 0)
-                        m_pOutStream->write((char *)&unZero, sizeof (BYTE) * unRgnDataSize);
+                {
+                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * unRgnDataSize);
+                        oDataStream.Skip(unRgnDataSize);
+                }
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETMETARGN()

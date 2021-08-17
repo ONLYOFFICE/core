@@ -84,9 +84,9 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
+                oAttr.WriteLimitNullable(_T("spd"), spd);
 				oAttr.Write(_T("advClick"), advClick);
 				oAttr.Write(_T("advTm"), advTm);
-				oAttr.WriteLimitNullable(_T("spd"), spd);
 				oAttr.Write(_T("dur"), dur);
 
 				XmlUtils::CNodeValue oValue;

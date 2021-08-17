@@ -1466,8 +1466,10 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
         std::wstring rId = m_pShapeWriter->m_pRels->WriteAudio(transition.m_oAudio.m_strAudioFileName, bExternal);
         Tr.sndAc = new PPTX::Logic::SndAc;
         Tr.sndAc->stSnd = new PPTX::Logic::StSnd;
-        Tr.sndAc->stSnd->name = XmlUtils::EncodeXmlString(transition.m_oAudio.m_sImageName);
         Tr.sndAc->stSnd->embed = rId;
+
+        if (!transition.m_oAudio.m_sImageName.empty())
+            Tr.sndAc->stSnd->name = XmlUtils::EncodeXmlString(transition.m_oAudio.m_sImageName);
     }
     oWriter.WriteString(Tr.toXML());
 }

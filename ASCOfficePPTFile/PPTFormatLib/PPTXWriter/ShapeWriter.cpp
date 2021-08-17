@@ -1804,7 +1804,7 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
             case LT_Url:
             {
                 // TODO need check 1713 and hyperlink there
-                return; // break;
+                break; // break;
             }
             case LT_OtherPresentation:
             {

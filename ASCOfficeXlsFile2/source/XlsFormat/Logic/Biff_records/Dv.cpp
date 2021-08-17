@@ -47,13 +47,13 @@ static std::wstring replace_zero (const std::wstring &str, const std::wstring &d
 	{
 		if (pos >= str.size()) break;
 
-		if (str[pos] == '\0')
-		{
-			out += delimetr;
-		}
-		else if (str[pos] >= 0x20)
+		if (str[pos] >= 0x20)
 		{
 			out += str[pos];
+		}
+		else
+		{
+			out += delimetr;
 		}
 		pos++;
 	}

@@ -85,11 +85,15 @@ namespace PPT_FORMAT
 		inline std::wstring GenerateAudio(const std::wstring& strInput)
 		{
 			return GenerateMedia(strInput, L"audio", m_lIndexNextAudio, L".wav");
-		}
-		inline std::wstring GenerateImage(const std::wstring& strInput)
-		{
-			return GenerateMedia(strInput, L"image", m_lIndexNextImage, L".png");
-		}        
+        }
+        inline std::wstring GenerateImage(const std::wstring& strInput)
+        {
+            return GenerateMedia(strInput, L"image", m_lIndexNextImage, L".png");
+        }
+        inline std::wstring GenerateImageJPEG(const std::wstring& strInput)
+        {
+            return GenerateMedia(strInput, L"image", m_lIndexNextImage, L".jpeg");
+        }
 		inline std::wstring GenerateMedia(const std::wstring& strInput, const std::wstring& Template, long & Indexer, const std::wstring& strDefaultExt)
 		{
 			std::map<std::wstring, std::wstring>::iterator pPair = m_mapMedia.find(strInput);

@@ -36,268 +36,279 @@
 
 namespace PPT_FORMAT
 {
-	class CDocument
-	{
-	public:
-		long m_lSlideWidth;
-		long m_lSlideHeight;
+class CDocument
+{
+public:
+    long m_lSlideWidth;
+    long m_lSlideHeight;
 
-		long m_lNotesWidth;
-		long m_lNotesHeight;
+    long m_lNotesWidth;
+    long m_lNotesHeight;
 
-		std::vector<CThemePtr>	m_arThemes;
-		std::vector<CSlide*>	m_arSlides;
-		std::vector<CSlide*>	m_arNotes;
+    std::vector<CThemePtr>	m_arThemes;
+    std::vector<CSlide*>	m_arSlides;
+    std::vector<CSlide*>	m_arNotes;
 
-		CThemePtr				m_pNotesMaster;
-		CThemePtr				m_pHandoutMaster;
+    CThemePtr				m_pNotesMaster;
+    CThemePtr				m_pHandoutMaster;
 
-		bool					m_bMacros;
-		std::wstring			m_sVbaProjectFile;
+    bool					m_bMacros;
+    std::wstring			m_sVbaProjectFile;
 
-                CDocument() : m_bMacros (true)
-		{			
-			m_lSlideWidth	= 0;
-			m_lSlideHeight	= 0;
+    CDocument() : m_bMacros (true)
+    {
+        m_lSlideWidth	= 0;
+        m_lSlideHeight	= 0;
 
-			m_lNotesWidth	= 0;
-			m_lNotesHeight	= 0;
-		}
+        m_lNotesWidth	= 0;
+        m_lNotesHeight	= 0;
+    }
 
-		virtual ~CDocument()
-		{
-			Clear();
-		}
+    virtual ~CDocument()
+    {
+        Clear();
+    }
 
-		void Clear()
-		{
-			m_arThemes.clear();
-			try
-			{
-				ClearSlides();
-				ClearNotes();
-			}catch(...)
-			{
-			}
-		}
-		inline void ClearSlides()
-		{
-			for (size_t i = 0 ; i < m_arSlides.size(); i++)
-			{
-				RELEASEOBJECT(m_arSlides[i]);
-			}
-			m_arSlides.clear();
-		}
-		inline void ClearNotes()
-		{
-			for (size_t i = 0 ; i < m_arNotes.size(); i++)
-			{
-				RELEASEOBJECT(m_arNotes[i]);
-			}
-			m_arNotes.clear();
-		}
-		void CalculateSlideElements(int nIndex, CAudioOverlay& oAudioOverlay)
-		{
-			double dStartTime	= m_arSlides[nIndex]->m_dStartTime;
-			double dEndTime		= m_arSlides[nIndex]->m_dEndTime;
-			double dDuration	= m_arSlides[nIndex]->m_dDuration;
-			
-			CSlide* pSlide = m_arSlides[nIndex];
-			
-			size_t nCountElems = pSlide->m_arElements.size();
-			for (size_t i = 0; i < nCountElems; ++i)
-			{
-				CElementPtr pElement = pSlide->m_arElements[i];
+    void Clear()
+    {
+        m_arThemes.clear();
+        try
+        {
+            ClearSlides();
+            ClearNotes();
+        }catch(...)
+        {
+        }
+    }
+    inline void ClearSlides()
+    {
+        for (size_t i = 0 ; i < m_arSlides.size(); i++)
+        {
+            RELEASEOBJECT(m_arSlides[i]);
+        }
+        m_arSlides.clear();
+    }
+    inline void ClearNotes()
+    {
+        for (size_t i = 0 ; i < m_arNotes.size(); i++)
+        {
+            RELEASEOBJECT(m_arNotes[i]);
+        }
+        m_arNotes.clear();
+    }
+    void CalculateSlideElements(int nIndex, CAudioOverlay& oAudioOverlay)
+    {
+        double dStartTime	= m_arSlides[nIndex]->m_dStartTime;
+        double dEndTime		= m_arSlides[nIndex]->m_dEndTime;
+        double dDuration	= m_arSlides[nIndex]->m_dDuration;
 
-				switch (pElement->m_etType)
-				{
-				case etAudio:
-					{
-						CAudioElement* pAudioElem = dynamic_cast<CAudioElement*>(pElement.get());
+        CSlide* pSlide = m_arSlides[nIndex];
 
-						if (NULL != pAudioElem)
-						{
-							// а другого и быть не может
-							if (pAudioElem->m_bWithVideo)
-							{
-								pElement->m_dStartTime	= dStartTime;
-								pElement->m_dEndTime	= dEndTime;
-							}
-							else if (pAudioElem->m_bLoop)
-							{
-								pElement->m_dStartTime	= dStartTime;
-								pElement->m_dEndTime	= oAudioOverlay.m_dAllDuration/* - dStartTime*/;
-							}
-							else
-							{
-								pElement->m_dStartTime	= dStartTime;
-                                pElement->m_dEndTime	= (std::min)(dStartTime + pAudioElem->m_dAudioDuration, oAudioOverlay.m_dAllDuration/* - dStartTime*/);
-							}
+        size_t nCountElems = pSlide->m_arElements.size();
+        for (size_t i = 0; i < nCountElems; ++i)
+        {
+            CElementPtr pElement = pSlide->m_arElements[i];
 
-							CAudioPart oPart(pAudioElem);
-							oAudioOverlay.m_arParts.push_back(oPart);					
-						}
+            switch (pElement->m_etType)
+            {
+            case etAudio:
+            {
+                CAudioElement* pAudioElem = dynamic_cast<CAudioElement*>(pElement.get());
 
-						break;
-					}
-				default:
-					//{
-					//pElement->m_dStartTime	= 0;
-					//pElement->m_dEndTime	= dDuration;
+                if (NULL != pAudioElem)
+                {
+                    // а другого и быть не может
+                    if (pAudioElem->m_bWithVideo)
+                    {
+                        pElement->m_dStartTime	= dStartTime;
+                        pElement->m_dEndTime	= dEndTime;
+                    }
+                    else if (pAudioElem->m_bLoop)
+                    {
+                        pElement->m_dStartTime	= dStartTime;
+                        pElement->m_dEndTime	= oAudioOverlay.m_dAllDuration/* - dStartTime*/;
+                    }
+                    else
+                    {
+                        pElement->m_dStartTime	= dStartTime;
+                        pElement->m_dEndTime	= (std::min)(dStartTime + pAudioElem->m_dAudioDuration, oAudioOverlay.m_dAllDuration/* - dStartTime*/);
+                    }
 
-					break;
-					//}
-				};
-			}
-		}
+                    CAudioPart oPart(pAudioElem);
+                    oAudioOverlay.m_arParts.push_back(oPart);
+                }
 
-		void ResetAutoText(CElementPtr pElement, vector_string const (&placeholdersReplaceString)[3])
-		{
-			CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
-			
-			if (NULL == pShape) return;
-			
-			if (pElement->m_lPlaceholderType == PT_MasterSlideNumber)	pShape->SetUpTextPlaceholder(L"<#>");
-			
-			int ind = -1;
-			if (pElement->m_lPlaceholderType == PT_MasterDate)	ind = 0;
-			if (pElement->m_lPlaceholderType == PT_MasterFooter)	ind = 2;
+                break;
+            }
+            default:
+                //{
+                //pElement->m_dStartTime	= 0;
+                //pElement->m_dEndTime	= dDuration;
 
-			if (pElement->m_lPlaceholderUserStr >= 0 && ind >= 0)
-			{
-				if (pElement->m_lPlaceholderUserStr < (int)placeholdersReplaceString[ind].size())
-					pShape->SetUpTextPlaceholder( placeholdersReplaceString[ind][pElement->m_lPlaceholderUserStr] );
-				else pShape->SetUpTextPlaceholder(L"");	
-			}
-			else
-			{
-				if (pElement->m_lPlaceholderType == PT_MasterDate && pElement->m_nFormatDate == 1)
-				{
-					std::wstring current_date = L"11.11.2015";
-					pShape->SetUpTextPlaceholder(current_date);
-				}
-			}
-		}
+                break;
+                //}
+            };
+        }
+    }
+    std::vector<CRecordRoundTripThemeAtom*> getArrRoundTripTheme()const
+    {
+        std::vector<CRecordRoundTripThemeAtom*> arrRoundTripThemes;
+        for (const auto& theme : m_arThemes)
+        {
+            for (auto* pRoundTripAtom : theme->m_arrZipXml)
+                arrRoundTripThemes.push_back(pRoundTripAtom);
+        }
 
-		void CalculateEditor(bool bIsPlaceholderSetUp = false)
-		{
-			// автозамены и поля настраиваем тут во избежания путаницы
+        return arrRoundTripThemes;
+    }
 
-			size_t nCountThemes = m_arThemes.size();
-			for (size_t i = 0; i < nCountThemes; ++i)
-			{
-				CTheme* pTheme = m_arThemes[i].get();
-				pTheme->CalculateStyles();
+    void ResetAutoText(CElementPtr pElement, vector_string const (&placeholdersReplaceString)[3])
+    {
+        CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
 
-				size_t nCountElems = pTheme->m_arElements.size();
-				for (size_t nIndexEl = 0; nIndexEl < nCountElems; ++nIndexEl)
-				{
-					CElementPtr pElement = pTheme->m_arElements[nIndexEl];
+        if (NULL == pShape) return;
 
-					if (pElement->m_lPlaceholderType > 0)
-					{
-						ResetAutoText(pElement, pTheme->m_PlaceholdersReplaceString);
-					}
-					pElement->m_pTheme = pTheme;
-					pElement->m_pLayout = NULL;
-				}
+        if (pElement->m_lPlaceholderType == PT_MasterSlideNumber)	pShape->SetUpTextPlaceholder(L"<#>");
 
-				size_t nCountLayouts = pTheme->m_arLayouts.size();
-				for (size_t nIndexL = 0; nIndexL < nCountLayouts; ++nIndexL)
-				{
-					CLayout* pLayout = pTheme->m_arLayouts[nIndexL].get();
+        int ind = -1;
+        if (pElement->m_lPlaceholderType == PT_MasterDate)	ind = 0;
+        if (pElement->m_lPlaceholderType == PT_MasterFooter)	ind = 2;
 
-					size_t nCountLayoutElements = pLayout->m_arElements.size();
-					for (size_t nIndexLayoutEl = 0; nIndexLayoutEl < nCountLayoutElements; ++nIndexLayoutEl)
-					{
-						CElementPtr pElement = pLayout->m_arElements[nIndexLayoutEl];
-						
-						if (pElement->m_lPlaceholderType > 0)
-						{
-							ResetAutoText(pElement, pLayout->m_PlaceholdersReplaceString);
-						}
+        if (pElement->m_lPlaceholderUserStr >= 0 && ind >= 0)
+        {
+            if (pElement->m_lPlaceholderUserStr < (int)placeholdersReplaceString[ind].size())
+                pShape->SetUpTextPlaceholder( placeholdersReplaceString[ind][pElement->m_lPlaceholderUserStr] );
+            else pShape->SetUpTextPlaceholder(L"");
+        }
+        else
+        {
+            if (pElement->m_lPlaceholderType == PT_MasterDate && pElement->m_nFormatDate == 1)
+            {
+                std::wstring current_date = L"11.11.2015";
+                pShape->SetUpTextPlaceholder(current_date);
+            }
+        }
+    }
 
-						pElement->m_pTheme = pTheme;
-						pElement->m_pLayout = NULL;
+    void CalculateEditor(bool bIsPlaceholderSetUp = false)
+    {
+        // автозамены и поля настраиваем тут во избежания путаницы
 
-						CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
-						if (!pLayout->m_bUseThemeColorScheme && NULL != pShape)
-						{
-							int lPhType = pElement->m_lPlaceholderType;
-							
-							int lIndex = 0;
-							
-							if (isTitlePlaceholder(lPhType))		lIndex = 1;
-							else if (isBodyPlaceholder(lPhType))	lIndex = 2;
-							else if (-1 != lPhType)					lIndex = 3;
+        size_t nCountThemes = m_arThemes.size();
+        for (size_t i = 0; i < nCountThemes; ++i)
+        {
+            CTheme* pTheme = m_arThemes[i].get();
+            pTheme->CalculateStyles();
 
-							CTextStyles* pThemeStyles = &pTheme->m_pStyles[lIndex];
-							for (int nIndexLevel = 0; nIndexLevel < 10; ++nIndexLevel)
-							{
-								if (!pThemeStyles->m_pLevels[nIndexLevel].is_init())
-									continue;
-								if (!pThemeStyles->m_pLevels[nIndexLevel]->m_oCFRun.Color.is_init())
-									continue;
-								if (pThemeStyles->m_pLevels[nIndexLevel]->m_oCFRun.Color->m_lSchemeIndex == -1)
-									continue;
+            size_t nCountElems = pTheme->m_arElements.size();
+            for (size_t nIndexEl = 0; nIndexEl < nCountElems; ++nIndexEl)
+            {
+                CElementPtr pElement = pTheme->m_arElements[nIndexEl];
 
-								if (pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0].is_init())
-								{
-									if (pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color.is_init())
-									{
+                if (pElement->m_lPlaceholderType > 0)
+                {
+                    ResetAutoText(pElement, pTheme->m_PlaceholdersReplaceString);
+                }
+                pElement->m_pTheme = pTheme;
+                pElement->m_pLayout = NULL;
+            }
 
-										if (pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->m_lSchemeIndex != -1)
-											continue;
-								
-										LONG lIndexSchemeT = pThemeStyles->m_pLevels[nIndexLevel]->m_oCFRun.Color->m_lSchemeIndex;
+            size_t nCountLayouts = pTheme->m_arLayouts.size();
+            for (size_t nIndexL = 0; nIndexL < nCountLayouts; ++nIndexL)
+            {
+                CLayout* pLayout = pTheme->m_arLayouts[nIndexL].get();
 
-										pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->m_lSchemeIndex = -1;
-										pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->R = pLayout->m_arColorScheme[lIndexSchemeT].R;
-										pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->G = pLayout->m_arColorScheme[lIndexSchemeT].G;
-										pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->B = pLayout->m_arColorScheme[lIndexSchemeT].B;
-										
-										bIsPlaceholderSetUp = true;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
+                size_t nCountLayoutElements = pLayout->m_arElements.size();
+                for (size_t nIndexLayoutEl = 0; nIndexLayoutEl < nCountLayoutElements; ++nIndexLayoutEl)
+                {
+                    CElementPtr pElement = pLayout->m_arElements[nIndexLayoutEl];
 
-			size_t nCountSlides = m_arSlides.size();
-			for (size_t i = 0; i < nCountSlides; ++i)
-			{
-				CSlide* pSlide = m_arSlides[i];
+                    if (pElement->m_lPlaceholderType > 0)
+                    {
+                        ResetAutoText(pElement, pLayout->m_PlaceholdersReplaceString);
+                    }
 
-				CTheme* pTheme = NULL;
-				if ((0 <= pSlide->m_lThemeID) && (pSlide->m_lThemeID < (LONG)nCountThemes))
-					pTheme = m_arThemes[pSlide->m_lThemeID].get();
+                    pElement->m_pTheme = pTheme;
+                    pElement->m_pLayout = NULL;
 
-				CLayout* pLayout = NULL;
-				if (NULL != pTheme)
-				{
-					if ((0 <= pSlide->m_lLayoutID) && (pSlide->m_lLayoutID < (LONG)pTheme->m_arLayouts.size()))
-						pLayout = pTheme->m_arLayouts[pSlide->m_lLayoutID].get();
-				}
+                    CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
+                    if (!pLayout->m_bUseThemeColorScheme && NULL != pShape)
+                    {
+                        int lPhType = pElement->m_lPlaceholderType;
 
-				size_t nCountElems = pSlide->m_arElements.size();
-				for (size_t nIndexEl = 0; nIndexEl < nCountElems; ++nIndexEl)
-				{
-					CElementPtr pElement = pSlide->m_arElements[nIndexEl];
+                        int lIndex = 0;
 
-					if (pElement->m_lPlaceholderType > 0)
-					{
-						ResetAutoText(pElement, pSlide->m_PlaceholdersReplaceString);
-					}
-					pElement->m_pTheme = pTheme;
-					pElement->m_pLayout = pLayout;
+                        if (isTitlePlaceholder(lPhType))		lIndex = 1;
+                        else if (isBodyPlaceholder(lPhType))	lIndex = 2;
+                        else if (-1 != lPhType)					lIndex = 3;
 
-				}
+                        CTextStyles* pThemeStyles = &pTheme->m_pStyles[lIndex];
+                        for (int nIndexLevel = 0; nIndexLevel < 10; ++nIndexLevel)
+                        {
+                            if (!pThemeStyles->m_pLevels[nIndexLevel].is_init())
+                                continue;
+                            if (!pThemeStyles->m_pLevels[nIndexLevel]->m_oCFRun.Color.is_init())
+                                continue;
+                            if (pThemeStyles->m_pLevels[nIndexLevel]->m_oCFRun.Color->m_lSchemeIndex == -1)
+                                continue;
 
-				if (NULL != pLayout && bIsPlaceholderSetUp)
-					pSlide->SetUpPlaceholderStyles(pLayout);
-			}
-		}
-	};
+                            if (pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0].is_init())
+                            {
+                                if (pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color.is_init())
+                                {
+
+                                    if (pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->m_lSchemeIndex != -1)
+                                        continue;
+
+                                    LONG lIndexSchemeT = pThemeStyles->m_pLevels[nIndexLevel]->m_oCFRun.Color->m_lSchemeIndex;
+
+                                    pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->m_lSchemeIndex = -1;
+                                    pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->R = pLayout->m_arColorScheme[lIndexSchemeT].R;
+                                    pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->G = pLayout->m_arColorScheme[lIndexSchemeT].G;
+                                    pShape->m_pShape->m_oText.m_oStyles.m_pLevels[0]->m_oCFRun.Color->B = pLayout->m_arColorScheme[lIndexSchemeT].B;
+
+                                    bIsPlaceholderSetUp = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        size_t nCountSlides = m_arSlides.size();
+        for (size_t i = 0; i < nCountSlides; ++i)
+        {
+            CSlide* pSlide = m_arSlides[i];
+
+            CTheme* pTheme = NULL;
+            if ((0 <= pSlide->m_lThemeID) && (pSlide->m_lThemeID < (LONG)nCountThemes))
+                pTheme = m_arThemes[pSlide->m_lThemeID].get();
+
+            CLayout* pLayout = NULL;
+            if (NULL != pTheme)
+            {
+                if ((0 <= pSlide->m_lLayoutID) && (pSlide->m_lLayoutID < (LONG)pTheme->m_arLayouts.size()))
+                    pLayout = pTheme->m_arLayouts[pSlide->m_lLayoutID].get();
+            }
+
+            size_t nCountElems = pSlide->m_arElements.size();
+            for (size_t nIndexEl = 0; nIndexEl < nCountElems; ++nIndexEl)
+            {
+                CElementPtr pElement = pSlide->m_arElements[nIndexEl];
+
+                if (pElement->m_lPlaceholderType > 0)
+                {
+                    ResetAutoText(pElement, pSlide->m_PlaceholdersReplaceString);
+                }
+                pElement->m_pTheme = pTheme;
+                pElement->m_pLayout = pLayout;
+
+            }
+
+            if (NULL != pLayout && bIsPlaceholderSetUp)
+                pSlide->SetUpPlaceholderStyles(pLayout);
+        }
+    }
+};
 }

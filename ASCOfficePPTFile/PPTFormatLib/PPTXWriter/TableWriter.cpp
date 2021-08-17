@@ -13,7 +13,7 @@ void TableWriter::Convert(PPTX::Logic::GraphicFrame &oGraphicFrame)
     if (!m_pTableElement)
         return;
 
-    if (m_pTableElement->m_xmlRawData.empty()/* || true*/)
+    if (/*m_pTableElement->m_xmlRawData.empty() || */true)
     {
         oGraphicFrame.nvGraphicFramePr = new PPTX::Logic::NvGraphicFramePr;
         FillNvGraphicFramePr(oGraphicFrame.nvGraphicFramePr.get2());
@@ -23,11 +23,6 @@ void TableWriter::Convert(PPTX::Logic::GraphicFrame &oGraphicFrame)
 
         oGraphicFrame.table = new PPTX::Logic::Table;
         FillTable(oGraphicFrame.table.get2());
-    }
-    else
-    {
-        oGraphicFrame.fromXMLString(getXmlForGraphicFrame());
-//        CorrectGraphicFrame(oGraphicFrame);
     }
 }
 

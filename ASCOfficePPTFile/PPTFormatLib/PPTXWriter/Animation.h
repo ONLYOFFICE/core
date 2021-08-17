@@ -133,8 +133,9 @@ private:
     void FillAnimScale(
             CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::AnimScale &oAnim);
-    void FillAudio(
-            PPT_FORMAT::CRecordClientVisualElementContainer *pCVEC,
+    void FillAudio(CRecordExtTimeNodeContainer *pETNC,
+            PPTX::Logic::Audio &oAudio);
+    void FillAudio(CRecordClientVisualElementContainer *pCVEC,
             PPTX::Logic::Audio &oAudio);
     void FillCmd(
             CRecordExtTimeNodeContainer *pETNC,

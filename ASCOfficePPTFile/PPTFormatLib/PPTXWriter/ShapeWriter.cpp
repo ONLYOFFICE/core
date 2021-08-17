@@ -738,14 +738,18 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
         bool bExternal = false;
         std::wstring strRid = m_pRels->WriteAudio(pAudioElement->m_strAudioFileName, bExternal);
 
-        m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>");
+        if ((int)pAudioElement->m_strAudioFileName.find(L".WAV") == -1 &&
+            (int)pAudioElement->m_strAudioFileName.find(L".wav") == -1)
+            m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>");
+        else
+            m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
 
         sMediaFile = bExternal ? L"" : pAudioElement->m_strAudioFileName;
     }
     if (sMediaFile.empty() == false)
     {
-        std::wstring strRid = m_pRels->WriteMedia(sMediaFile);
-        if (!strRid.empty())
+        std::wstring strRid = m_pRels->WriteImage(pImageElement->m_strImageFileName);
+        if (!strRid.empty() && false)
         {
             m_oWriter.WriteString(L"<p:extLst><p:ext uri=\"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}\">\
                                   <p14:media xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" r:embed=\"" + strRid + L"\"/></p:ext></p:extLst>");
@@ -1392,10 +1396,15 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     }
                     m_oWriter.WriteString(std::wstring(L"/>"));
                 }
-                if (pPF->bulletAutoNum.is_init())  // TODO Numbering
+                if (pPF->bulletAutoNum.is_init() && !pPF->bulletChar.is_init())  // TODO Numbering
                 {
                     m_oWriter.WriteString(L"<a:buAutoNum type=\"");
                     m_oWriter.WriteString(pPF->bulletAutoNum->type.get());
+                    if (pPF->bulletAutoNum->startAt.get2() != 1)
+                    {
+                        m_oWriter.WriteString(L" startAt=\"");
+                        m_oWriter.WriteString(std::to_wstring(pPF->bulletAutoNum->startAt.get2()));
+                    }
                     m_oWriter.WriteString(L"\"/>");
                 }
 
@@ -1716,6 +1725,7 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
             hlink.snd->embed = m_pRels->WriteAudio(actions[i].m_strAudioFileName, bExternal);
             hlink.snd->m_name = L"snd";
             hlink.snd->name = actions[i].m_strAudioName;
+            hlink.id = std::wstring(L"");
         }
 
         if (actions[i].m_eActivation == CInteractiveInfo::over)
@@ -1813,6 +1823,7 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
         {
 
             hlink.action = L"ppaction://media";
+            hlink.id = L"";
             break;
         }
         default:

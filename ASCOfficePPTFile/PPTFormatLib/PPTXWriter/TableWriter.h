@@ -159,8 +159,9 @@ private:
 
     void FillRow(PPTX::Logic::TableRow& oRow, ProtoTableRow &arrCells);
 
-private:
+public:
     std::wstring getXmlForGraphicFrame()const;
+private:
     void CorrectGraphicFrame(PPTX::Logic::GraphicFrame& oGraphicFrame);
     void FillnvPr(PPTX::Logic::NvPr& oNvPr);
 

@@ -215,6 +215,8 @@ namespace MetaFile
                 void HANDLE_EMR_SMALLTEXTOUT(TEmfSmallTextout& oText);
                 void HANDLE_EMR_STROKEANDFILLPATH(TEmfRectL& oBounds);
                 void HANDLE_EMR_STROKEPATH(TEmfRectL& oBounds);
+
+                void HANDLE_EMR_UNKNOWN(const unsigned int& unRecordSize);
         };
 
 }

@@ -255,7 +255,8 @@ namespace MetaFile
                                         }
                                         break;
                                 }
-                            case 'W': Read_EMR_WIDENPATH(); break;
+                                case 'U': Read_EMR_UNKNOWN(); break;
+                                case 'W': Read_EMR_WIDENPATH(); break;
                         }
                 }while (!CheckError() && !bEOF && m_pOutput->ReadNextRecord());
 
@@ -394,7 +395,11 @@ namespace MetaFile
 
         void CEmfxParser::Read_EMR_UNKNOWN()
         {
-                m_pOutput->ReadNextRecord();
+                *m_pOutput >> m_oStream;
+                m_oStream.Skip(8);
+
+                HANDLE_EMR_UNKNOWN(0);
+//                m_pOutput->ReadNextRecord();
         }
 
         void CEmfxParser::Read_EMR_SAVEDC()
@@ -571,10 +576,9 @@ namespace MetaFile
 
                 *m_pOutput >> pPen->PenStyle;
 
-                unsigned int widthX, widthY;
+                unsigned int widthX;
 
                 *m_pOutput >> widthX;
-                *m_pOutput >> widthY;
                 *m_pOutput >> pPen->Color;
 
                 HANDLE_EMR_CREATEPEN(ulPenIndex, widthX, pPen);

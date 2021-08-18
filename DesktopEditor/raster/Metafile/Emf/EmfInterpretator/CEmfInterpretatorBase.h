@@ -100,6 +100,8 @@ namespace MetaFile
                 virtual void HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout&) = 0;
                 virtual void HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL&) = 0;
                 virtual void HANDLE_EMR_STROKEPATH(const TEmfRectL&) = 0;
+
+                virtual void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) = 0;
         };
 }
 

@@ -1549,6 +1549,18 @@ namespace MetaFile
                 }
         }
 
+        void CEmfParserBase::HANDLE_EMR_UNKNOWN(const unsigned int& unRecordSize)
+        {
+                if (NULL != m_pInterpretator)
+                {
+                        m_oStream.SeekBack(8);
+                        m_pInterpretator->HANDLE_EMR_UNKNOWN(m_oStream);
+                        m_oStream.Skip(unRecordSize);
+                }
+                else
+                        m_oStream.Skip(unRecordSize);
+        }
+
         void CEmfParserBase::HANDLE_EMR_POLYBEZIER(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
         {
                 HANDLE_EMR_POLYBEZIER_BASE<TEmfPointL>(oBounds, arPoints);

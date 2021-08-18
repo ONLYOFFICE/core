@@ -110,6 +110,8 @@ namespace MetaFile
                 void HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout& oText) override ;
                 void HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL& oBounds) override ;
                 void HANDLE_EMR_STROKEPATH(const TEmfRectL& oBounds) override ;
+
+                void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) override;
         private:
                 template<typename T> void Save_EMR_POLY_BASE(const RecordData& oRecordData, const std::vector<T>& arPoints);
                 template<typename T> void Save_EMR_POLYDRAW_BASE(const TEmfRectL& oBounds, T* arPoints, const unsigned int& unCount, const unsigned char* pAbTypes);

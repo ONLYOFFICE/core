@@ -632,4 +632,10 @@ namespace MetaFile
                 for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
                         pInterpretator->HANDLE_EMR_STROKEPATH(oBounds);
         }
+
+        void CEmfInterpretatorArray::HANDLE_EMR_UNKNOWN(CDataStream &oDataStream)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMR_UNKNOWN(oDataStream);
+        }
 }

@@ -330,7 +330,7 @@ namespace MetaFile
 
         void CEmfParser::Read_EMR_UNKNOWN()
         {
-                m_oStream.Skip(m_ulRecordSize);
+                HANDLE_EMR_UNKNOWN(m_ulRecordSize);
         }
 
         void CEmfParser::Read_EMR_SAVEDC()

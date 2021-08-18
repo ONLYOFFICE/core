@@ -118,7 +118,9 @@ namespace MetaFile
 
     void CXmlOutput::WriteNode(const std::wstring& wsNameNode, const std::wstring& wsValueNode)
     {
-        m_pXmlWriter->WriteNode(wsNameNode, wsValueNode);
+        WriteNodeBegin(wsNameNode);
+        WriteString(wsValueNode);
+        WriteNodeEnd(wsNameNode);
     }
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, unsigned short usValueNode)
@@ -149,7 +151,7 @@ namespace MetaFile
         std::wstring wsValue(ucValue, ucValue + nSize);
 
         if (!wsValue.empty())
-            m_pXmlWriter->WriteNode(wsNameNode, wsValue);
+            WriteNode(wsNameNode, wsValue);
 
         delete[] pData;
         delete[] ucValue;

@@ -29,11 +29,12 @@ namespace MetaFile
                         m_pOutputXml->WriteNode(L"Records",		oTEmfHeader.ulRecords);
                         m_pOutputXml->WriteNode(L"CountObjects",	oTEmfHeader.ushObjects);
                         m_pOutputXml->WriteNode(L"Reserved",		oTEmfHeader.ushReserved);
-                        m_pOutputXml->WriteNode(L"SizeDescription",	oTEmfHeader.ulSizeDescription);
-                        m_pOutputXml->WriteNode(L"OffsetDescription",	oTEmfHeader.ulOffsetDescription);
+                        m_pOutputXml->WriteNode(L"SizeDescription",	0/*oTEmfHeader.ulSizeDescription*/);
+                        m_pOutputXml->WriteNode(L"OffsetDescription",	0/*oTEmfHeader.ulOffsetDescription*/);
                         m_pOutputXml->WriteNode(L"PalletEntries",	oTEmfHeader.ulPalEntries);
                         m_pOutputXml->WriteNode(L"Device",		oTEmfHeader.oDevice);
                         m_pOutputXml->WriteNode(L"Millimeters",		oTEmfHeader.oMillimeters);
+
                         m_pOutputXml->WriteNodeEnd(L"EMR_HEADER");
         }
 
@@ -233,7 +234,6 @@ namespace MetaFile
                         m_pOutputXml->WriteNodeBegin(L"LogPen");
                                 m_pOutputXml->WriteNode(L"PenStyle", pPen->PenStyle);
                                 m_pOutputXml->WriteNode(L"Width", unWidthX);
-                                m_pOutputXml->WriteNode(L"Height", unWidthX);
                                 m_pOutputXml->WriteNodeEnd(L"LogPen");
                         m_pOutputXml->WriteNode(L"COLORREF", pPen->Color);
                         m_pOutputXml->WriteNodeEnd(L"EMR_CREATEPEN");
@@ -628,6 +628,18 @@ namespace MetaFile
                         m_pOutputXml->WriteNodeEnd(L"EMR_STROKEPATH");
         }
 
+        void CEmfInterpretatorXml::HANDLE_EMR_UNKNOWN(CDataStream &oDataStream)
+        {
+                unsigned int unRecordSize;
+
+                oDataStream.Skip(4);
+                oDataStream >> unRecordSize;
+
+                m_pOutputXml->WriteNodeBegin(L"EMR_UNKNOWN");
+                        m_pOutputXml->WriteNode(L"", oDataStream, unRecordSize);
+                        m_pOutputXml->WriteNodeEnd(L"EMR_UNKNOWN");
+        }
+
         void CEmfInterpretatorXml::Begin()
         {
                 if (NULL == m_pOutputXml)
@@ -643,6 +655,7 @@ namespace MetaFile
                         return;
 
                 m_pOutputXml->WriteNodeEnd(L"EMF");
+
                 m_pOutputXml->SaveToFile(m_wsXmlFilePath.empty() ?
                                          NSFile::GetProcessDirectory() + L"/test.xml" :
                                          m_wsXmlFilePath);

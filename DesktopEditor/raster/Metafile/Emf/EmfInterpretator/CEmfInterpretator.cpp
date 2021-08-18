@@ -1521,6 +1521,25 @@ namespace MetaFile
                 WriteRectangle(oBounds);
         }
 
+        void CEmfInterpretator::HANDLE_EMR_UNKNOWN(CDataStream &oDataStream)
+        {
+                unsigned int unRecordType, unRecordSize;
+
+                oDataStream >> unRecordType;
+                oDataStream >> unRecordSize;
+
+                if (unRecordSize == 0) return;
+
+                unFileSize += unRecordSize;
+                ++unNumberRecords;
+
+                m_pOutStream->write((char *)&unRecordType, sizeof (int));
+                m_pOutStream->write((char *)&unRecordSize, sizeof (int));
+
+                if (unRecordSize > 0)
+                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * unRecordSize - 8);
+        }
+
         void CEmfInterpretator::WriteRectangle(const TEmfRectL &oBounds)
         {
                 m_pOutStream->write((char *)&oBounds.lLeft,   sizeof(int));

@@ -122,6 +122,8 @@ namespace MetaFile
                 void HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout& oText) override {};
                 void HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL& oBounds) override {};
                 void HANDLE_EMR_STROKEPATH(const TEmfRectL& oBounds) override {};
+
+                void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) override {};
         };
 }
 

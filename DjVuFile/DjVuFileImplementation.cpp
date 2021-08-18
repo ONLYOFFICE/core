@@ -568,6 +568,25 @@ BYTE*              CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const 
     oRes.ClearWithoutAttack();
     return res;
 }
+BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex, const int& nRasterW, const int& nRasterH)
+{
+    GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
+    GP<DjVuAnno>  pAnno = pPage->get_decoded_anno();
+    GPList<GMapArea> map_areas = pAnno->ant->map_areas;
+
+    CData oRes;
+    oRes.SkipLen();
+    for(GPosition pos(map_areas); pos; ++pos)
+    {
+        GUTF8String sURL = map_areas[pos]->url;
+        oRes.WriteString((BYTE*)sURL.getbuf(), sURL.length());
+    }
+    oRes.WriteLen();
+
+    BYTE* res = oRes.GetBuffer();
+    oRes.ClearWithoutAttack();
+    return res;
+}
 #endif
 void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
 {

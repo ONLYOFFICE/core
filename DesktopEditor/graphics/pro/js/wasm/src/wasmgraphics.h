@@ -90,6 +90,10 @@ public:
     {
         return ((CXpsFile*)pReader)->GetInternalLinks(nPageIndex, nRasterW, nRasterH);
     }
+    BYTE* GetDJVULinks(int nPageIndex, int nRasterW, int nRasterH)
+    {
+        return ((CDjVuFile*)pReader)->GetPageLinks(nPageIndex, nRasterW, nRasterH);
+    }
     BYTE* GetXPSStructure()
     {
         return ((CXpsFile*)pReader)->GetStructure();

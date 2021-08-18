@@ -74,5 +74,6 @@ public:
     #ifdef WASM_MODE
     BYTE* GetStructure();
     BYTE* GetPageGlyphs(int nPageIndex, int nRasterW, int nRasterH);
+    BYTE* GetPageLinks (int nPageIndex, int nRasterW, int nRasterH);
     #endif
 };

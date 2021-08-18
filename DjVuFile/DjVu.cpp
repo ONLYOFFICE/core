@@ -118,4 +118,10 @@ BYTE* CDjVuFile::GetPageGlyphs(int nPageIndex, int nRasterW, int nRasterH)
         return m_pImplementation->GetPageGlyphs(nPageIndex, nRasterW, nRasterH);
     return NULL;
 }
+BYTE* CDjVuFile::GetPageLinks (int nPageIndex, int nRasterW, int nRasterH)
+{
+    if (m_pImplementation)
+        return m_pImplementation->GetPageLinks(nPageIndex, nRasterW, nRasterH);
+    return NULL;
+}
 #endif

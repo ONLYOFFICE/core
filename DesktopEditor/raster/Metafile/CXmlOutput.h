@@ -140,6 +140,9 @@ namespace MetaFile
         void operator>>(TEmfSizeL&      oTEmfSizeL);
         void operator>>(TEmfRectL&      oTEmfRectL);
 
+        void operator>>(std::vector<std::vector<TEmfPointL>>& arPoints);
+        void operator>>(std::vector<std::vector<TEmfPointS>>& arPoints);
+
         void operator>>(unsigned short& ushValue);
         void operator>>(unsigned char&  ucValue);
         void operator>>(unsigned int&   unValue);

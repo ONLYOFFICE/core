@@ -115,6 +115,10 @@ namespace MetaFile
                 void HANDLE_EMR_POLYLINE(const TEmfRectL& oBounds, const std::vector<TEmfPointS>& arPoints) override {};
                 void HANDLE_EMR_POLYLINETO(const TEmfRectL& oBounds, const std::vector<TEmfPointL>& arPoints) override {};
                 void HANDLE_EMR_POLYLINETO(const TEmfRectL& oBounds, const std::vector<TEmfPointS>& arPoints) override {};
+                void HANDLE_EMR_POLYPOLYGON(const TEmfRectL& oBounds, const std::vector<std::vector<TEmfPointL>>& arPoints) override {};
+                void HANDLE_EMR_POLYPOLYGON(const TEmfRectL& oBounds, const std::vector<std::vector<TEmfPointS>>& arPoints) override {};
+                void HANDLE_EMR_POLYPOLYLINE(const TEmfRectL& oBounds, const std::vector<std::vector<TEmfPointL>>& arPoints) override {};
+                void HANDLE_EMR_POLYPOLYLINE(const TEmfRectL& oBounds, const std::vector<std::vector<TEmfPointS>>& arPoints) override {};
                 //TODO: Реализовать сохранение полигонов в полигоне
                 void HANDLE_EMR_RECTANGLE(const TEmfRectL& oBox) override {};
                 void HANDLE_EMR_ROUNDRECT(const TEmfRectL& oBox, const TEmfSizeL& oCorner) override {};

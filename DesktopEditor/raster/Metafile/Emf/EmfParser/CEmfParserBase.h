@@ -208,6 +208,12 @@ namespace MetaFile
                 void HANDLE_EMR_POLYLINETO(TEmfRectL& oBounds, std::vector<TEmfPointL>& arPoints);
                 void HANDLE_EMR_POLYLINETO(TEmfRectL& oBounds, std::vector<TEmfPointS>& arPoints);
                 template<typename T> void HANDLE_EMR_POLYLINETO_BASE(TEmfRectL& oBounds, std::vector<T>& arPoints);
+                void HANDLE_EMR_POLYPOLYGON(TEmfRectL& oBounds, std::vector<std::vector<TEmfPointL>>& arPoints);
+                void HANDLE_EMR_POLYPOLYGON(TEmfRectL& oBounds, std::vector<std::vector<TEmfPointS>>& arPoints);
+                template<typename T> void HANDLE_EMR_POLYPOLYGON_BASE(TEmfRectL& oBounds, std::vector<std::vector<T>>& arPoints);
+                void HANDLE_EMR_POLYPOLYLINE(TEmfRectL& oBounds, std::vector<std::vector<TEmfPointL>>& arPoints);
+                void HANDLE_EMR_POLYPOLYLINE(TEmfRectL& oBounds, std::vector<std::vector<TEmfPointS>>& arPoints);
+                template<typename T> void HANDLE_EMR_POLYPOLYLINE_BASE(TEmfRectL& oBounds, std::vector<std::vector<T>>& arPoints);
                 //TODO: Реализовать сохранение полигонов в полигоне
                 void HANDLE_EMR_RECTANGLE(TEmfRectL& oBox);
                 void HANDLE_EMR_ROUNDRECT(TEmfRectL& oBox, TEmfSizeL& oCorner);

@@ -110,11 +110,11 @@ namespace MetaFile
                                                         {
                                                                 switch (wsRecordName.back())
                                                                 {
-                                                                        case 'R': Read_EMR_POLYBEZIER();    break;
-                                                                        case 'O': Read_EMR_POLYBEZIERTO();  break;
+                                                                        case 'R': Read_EMR_POLYBEZIER();       break;
+                                                                        case 'O': Read_EMR_POLYBEZIERTO();     break;
                                                                         case '6': ((*(wsRecordName.end() - 3)) == L'R')
                                                                                   ? Read_EMR_POLYBEZIER16()
-                                                                                  : Read_EMR_POLYBEZIERTO16();
+                                                                                  : Read_EMR_POLYBEZIERTO16(); break;
                                                                 }
                                                                 break;
                                                         }
@@ -122,6 +122,12 @@ namespace MetaFile
                                                         {
                                                                 (wsRecordName.back() == L'W') ? Read_EMR_POLYDRAW()
                                                                                               : Read_EMR_POLYDRAW16();
+                                                                break;
+                                                        }
+                                                        case 'G':
+                                                        {
+                                                                (wsRecordName.back() == L'N') ? Read_EMR_POLYGON() :
+                                                                                                Read_EMR_POLYGON16();
                                                                 break;
                                                         }
                                                         case 'L':
@@ -132,7 +138,7 @@ namespace MetaFile
                                                                         case 'O': Read_EMR_POLYLINETO();    break;
                                                                         case '6': ((*(wsRecordName.end() - 3)) == L'E')
                                                                                   ? Read_EMR_POLYLINE16()
-                                                                                  : Read_EMR_POLYLINETO16();
+                                                                                  : Read_EMR_POLYLINETO16();break;
                                                                 }
                                                                 break;
                                                         }
@@ -141,10 +147,10 @@ namespace MetaFile
                                                                 switch (wsRecordName.back())
                                                                 {
                                                                         case 'E': Read_EMR_POLYPOLYLINE();  break;
-                                                                        case 'N': Read_EMR_POLYGON();       break;
+                                                                        case 'N': Read_EMR_POLYPOLYGON();   break;
                                                                         case '6': ((*(wsRecordName.end() - 3)) == L'E')
                                                                                   ? Read_EMR_POLYPOLYLINE16()
-                                                                                  : Read_EMR_POLYGON16();
+                                                                                  : Read_EMR_POLYPOLYGON16(); break;
                                                                 }
                                                                 break;
                                                         }
@@ -570,7 +576,6 @@ namespace MetaFile
                 CEmfLogPen* pPen = new CEmfLogPen();
                 if (!pPen)
                         return SetError();
-
 
                 m_pOutput->ReadNextNode();
 
@@ -1148,53 +1153,21 @@ namespace MetaFile
         template<typename T>void CEmfxParser::Read_EMR_POLYPOLYGON_BASE()
         {
                 TEmfRectL oBounds;
-                unsigned int ulNumberOfPolygons;
-                unsigned int ulTotalPointsCount;
+                unsigned int unValue;
 
                 //TODO: сделать сохранение в XML
 
                 *m_pOutput >> oBounds;
-                *m_pOutput >> ulNumberOfPolygons;
-                *m_pOutput >> ulTotalPointsCount;
+//                *m_pOutput >> unValue;
 
-                unsigned int* pPolygonPointCount = new unsigned int[ulNumberOfPolygons];
-                if (!pPolygonPointCount)
-                        return SetError();
+                std::wcout << L"Vot: " << m_pOutput->GetName() << std::endl;
 
-                for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolygons; ulIndex++)
-                        *m_pOutput >> pPolygonPointCount[ulIndex];
 
-                for (unsigned int ulPolygonIndex = 0, unStartPointIndex = 0; ulPolygonIndex < ulNumberOfPolygons; ulPolygonIndex++)
-                {
-                        unsigned int ulCurrentPolygonPointsCount = pPolygonPointCount[ulPolygonIndex];
-                        if (0 == ulCurrentPolygonPointsCount)
-                                continue;
+                std::vector<std::vector<T>> arPoints;
 
-                        T oPoint;
-                        *m_pOutput >> oPoint;
+                *m_pOutput >> arPoints;
 
-                        MoveTo(oPoint);
-
-                        for (unsigned int ulPointIndex = 1; ulPointIndex < ulCurrentPolygonPointsCount; ulPointIndex++)
-                        {
-                                unsigned int ulRealPointIndex = ulPointIndex + unStartPointIndex;
-                                if (ulRealPointIndex >= ulTotalPointsCount)
-                                {
-                                        delete[] pPolygonPointCount;
-                                        return SetError();
-                                }
-
-                                *m_pOutput >> oPoint;
-
-                                LineTo(oPoint);
-                        }
-
-                        ClosePath();
-                }
-
-                DrawPath(true, true);
-
-                delete[] pPolygonPointCount;
+                HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
         }
 
         void CEmfxParser::Read_EMR_POLYPOLYLINE()
@@ -1210,53 +1183,18 @@ namespace MetaFile
         template<typename T>void CEmfxParser::Read_EMR_POLYPOLYLINE_BASE()
         {
                 TEmfRectL oBounds;
-                unsigned int ulNumberOfPolylines;
-                unsigned int ulTotalPointsCount;
+                unsigned int unValue;
 
                 //TODO: сделать сохранение в XML
 
                 *m_pOutput >> oBounds;
-                *m_pOutput >> ulNumberOfPolylines;
-                *m_pOutput >> ulTotalPointsCount;
+                *m_pOutput >> unValue;
 
-                if (0 == ulNumberOfPolylines && 0 == ulTotalPointsCount)
-                        return;
-                else if (0 == ulNumberOfPolylines || 0 == ulTotalPointsCount)
-                        return SetError();
 
-                unsigned int* pPolylinePointCount = new unsigned int[ulNumberOfPolylines];
-                for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolylines; ulIndex++)
-                        *m_pOutput >> pPolylinePointCount[ulIndex];
+                std::vector<std::vector<T>> arPoints;
 
-                for (unsigned int ulPolyIndex = 0, ulStartPointIndex = 0; ulPolyIndex < ulNumberOfPolylines; ulPolyIndex++)
-                {
-                        unsigned int ulCurrentPolylinePointsCount = pPolylinePointCount[ulPolyIndex];
-                        if (0 == ulCurrentPolylinePointsCount)
-                                continue;
 
-                        T oPoint;
-                        *m_pOutput >> oPoint;
-
-                        MoveTo(oPoint);
-
-                        for (unsigned int ulPointIndex = 1; ulPointIndex < ulCurrentPolylinePointsCount; ulPointIndex++)
-                        {
-                                unsigned int ulRealPointIndex = ulPointIndex + ulStartPointIndex;
-                                if (ulRealPointIndex >= ulTotalPointsCount)
-                                {
-                                        delete[] pPolylinePointCount;
-                                        return SetError();
-                                }
-
-                                *m_pOutput >> oPoint;
-
-                                LineTo(oPoint);
-                        }
-                }
-
-                DrawPath(true, false);
-
-                delete[] pPolylinePointCount;
+                HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
         }
 
         void CEmfxParser::Read_EMR_POLYTEXTOUTA()

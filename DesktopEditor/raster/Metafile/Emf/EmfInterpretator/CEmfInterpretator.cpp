@@ -536,6 +536,8 @@ namespace MetaFile
                 if (NULL == pPen)
                         return;
 
+                const unsigned int unZero = 0;
+
                 int unExplicitRecordSize    = 28;
                 int unType                  = EMR_CREATEPEN;
 
@@ -546,11 +548,11 @@ namespace MetaFile
                 m_pOutStream->write((char *)&unType,                sizeof (int));
                 m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unPenIndex,  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unPenIndex,            sizeof (unsigned int));
 
-                m_pOutStream->write((char *)&pPen->PenStyle,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&unWidthX,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&unWidthX,  sizeof (unsigned int));
+                m_pOutStream->write((char *)&pPen->PenStyle,        sizeof (unsigned int));
+                m_pOutStream->write((char *)&unWidthX,              sizeof (unsigned int));
+                m_pOutStream->write((char *)&unZero,                sizeof (unsigned int));
 
                 WriteColor(pPen->Color);
         }
@@ -1112,9 +1114,11 @@ namespace MetaFile
         void CEmfInterpretator::HANDLE_EMR_EXTTEXTOUTW(const TEmfExtTextoutW &oTEmfExtTextoutW)
         {
                 const unsigned int unDxCount = oTEmfExtTextoutW.wEmrText.Options & ETO_PDY ? 2 * oTEmfExtTextoutW.wEmrText.Chars : oTEmfExtTextoutW.wEmrText.Chars;
+                const unsigned int unAlign   = oTEmfExtTextoutW.wEmrText.offDx - 76 - 2 * oTEmfExtTextoutW.wEmrText.Chars;
+                const unsigned int unZero    = 0;
 
-                int unExplicitRecordSize    = 76 + oTEmfExtTextoutW.wEmrText.Chars * 2 + unDxCount * 4;
-                int unType                  = EMR_EXTTEXTOUTW;
+                int unExplicitRecordSize     = 76 + oTEmfExtTextoutW.wEmrText.Chars * 2 + unDxCount * 4 + unAlign;
+                int unType                   = EMR_EXTTEXTOUTW;
 
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
@@ -1140,6 +1144,9 @@ namespace MetaFile
                 m_pOutStream->write((char *)&oTEmfExtTextoutW.wEmrText.offDx,       sizeof (unsigned int));
 
                 m_pOutStream->write((char *)oTEmfExtTextoutW.wEmrText.OutputString, sizeof (unsigned short) * oTEmfExtTextoutW.wEmrText.Chars);
+
+                for (unsigned int i = 0; i < unAlign; ++i)
+                        m_pOutStream->write((char *)&unZero, sizeof (BYTE));
 
                 if (unDxCount > 0)
                         m_pOutStream->write((char *)oTEmfExtTextoutW.wEmrText.OutputDx, sizeof (unsigned int) * unDxCount);
@@ -1177,7 +1184,9 @@ namespace MetaFile
 
         void CEmfInterpretator::HANDLE_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
         {
-                int unExplicitRecordSize    = 28 + 8 * arPoints.size();
+                unsigned int unCountPoints = arPoints.size();
+
+                int unExplicitRecordSize    = 28 + 8 * unCountPoints;
                 int unType                  = EMR_POLYBEZIER;
 
                 unFileSize += unExplicitRecordSize;
@@ -1188,7 +1197,7 @@ namespace MetaFile
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)arPoints.size(),  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointL& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1196,7 +1205,9 @@ namespace MetaFile
 
         void CEmfInterpretator::HANDLE_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
         {
-                int unExplicitRecordSize    = 28 + 4 * arPoints.size();
+                unsigned int unCountPoints = arPoints.size();
+
+                int unExplicitRecordSize    = 28 + 4 * unCountPoints;
                 int unType                  = EMR_POLYBEZIER;
 
                 unFileSize += unExplicitRecordSize;
@@ -1207,7 +1218,7 @@ namespace MetaFile
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)arPoints.size(),  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointS& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1215,7 +1226,9 @@ namespace MetaFile
 
         void CEmfInterpretator::HANDLE_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
         {
-                int unExplicitRecordSize    = 28 + 8 * arPoints.size();
+                unsigned int unCountPoints = arPoints.size();
+
+                int unExplicitRecordSize    = 28 + 8 * unCountPoints;
                 int unType                  = EMR_POLYBEZIERTO;
 
                 unFileSize += unExplicitRecordSize;
@@ -1226,7 +1239,7 @@ namespace MetaFile
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)arPoints.size(),  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointL& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1234,7 +1247,9 @@ namespace MetaFile
 
         void CEmfInterpretator::HANDLE_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
         {
-                int unExplicitRecordSize    = 28 + 4 * arPoints.size();
+                unsigned int unCountPoints = arPoints.size();
+
+                int unExplicitRecordSize    = 28 + 4 * unCountPoints;
                 int unType                  = EMR_POLYBEZIERTO;
 
                 unFileSize += unExplicitRecordSize;
@@ -1245,7 +1260,7 @@ namespace MetaFile
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)arPoints.size(),  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointS& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1303,7 +1318,9 @@ namespace MetaFile
 
         void CEmfInterpretator::HANDLE_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
         {
-                int unExplicitRecordSize    = 28 + 8 * arPoints.size();
+                unsigned int unCountPoints = arPoints.size();
+
+                int unExplicitRecordSize    = 28 + 8 * unCountPoints;
                 int unType                  = EMR_POLYGON;
 
                 unFileSize += unExplicitRecordSize;
@@ -1314,7 +1331,7 @@ namespace MetaFile
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)arPoints.size(),  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointL& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1322,7 +1339,9 @@ namespace MetaFile
 
         void CEmfInterpretator::HANDLE_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
         {
-                int unExplicitRecordSize    = 28 + 4 * arPoints.size();
+                unsigned int unCountPoints = arPoints.size();
+
+                int unExplicitRecordSize    = 28 + 4 * unCountPoints;
                 int unType                  = EMR_POLYGON;
 
                 unFileSize += unExplicitRecordSize;
@@ -1333,7 +1352,7 @@ namespace MetaFile
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)arPoints.size(),  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointS& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1341,7 +1360,9 @@ namespace MetaFile
 
         void CEmfInterpretator::HANDLE_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
         {
-                int unExplicitRecordSize    = 28 + 8 * arPoints.size();
+                unsigned int unCountPoints = arPoints.size();
+
+                int unExplicitRecordSize    = 28 + 8 * unCountPoints;
                 int unType                  = EMR_POLYLINE;
 
                 unFileSize += unExplicitRecordSize;
@@ -1352,7 +1373,7 @@ namespace MetaFile
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)arPoints.size(),  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointL& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1360,7 +1381,9 @@ namespace MetaFile
 
         void CEmfInterpretator::HANDLE_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
         {
-                int unExplicitRecordSize    = 28 + 4 * arPoints.size();
+                unsigned int unCountPoints = arPoints.size();
+
+                int unExplicitRecordSize    = 28 + 4 * unCountPoints;
                 int unType                  = EMR_POLYLINE;
 
                 unFileSize += unExplicitRecordSize;
@@ -1371,7 +1394,7 @@ namespace MetaFile
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)arPoints.size(),  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointS& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1379,7 +1402,9 @@ namespace MetaFile
 
         void CEmfInterpretator::HANDLE_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
         {
-                int unExplicitRecordSize    = 28 + 8 * arPoints.size();
+                unsigned int unCountPoints = arPoints.size();
+
+                int unExplicitRecordSize    = 28 + 8 * unCountPoints;
                 int unType                  = EMR_POLYLINETO;
 
                 unFileSize += unExplicitRecordSize;
@@ -1390,7 +1415,7 @@ namespace MetaFile
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)arPoints.size(),  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointL& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1398,7 +1423,9 @@ namespace MetaFile
 
         void CEmfInterpretator::HANDLE_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
         {
-                int unExplicitRecordSize    = 28 + 4 * arPoints.size();
+                unsigned int unCountPoints = arPoints.size();
+
+                int unExplicitRecordSize    = 28 + 4 * unCountPoints;
                 int unType                  = EMR_POLYLINETO;
 
                 unFileSize += unExplicitRecordSize;
@@ -1409,10 +1436,150 @@ namespace MetaFile
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)arPoints.size(),  sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointS& oPoint : arPoints)
                         WritePoint(oPoint);
+        }
+
+        void CEmfInterpretator::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
+        {
+                const unsigned int unNumberOfPolygons = arPoints.size();
+
+                unsigned int unCountPoints = 0;
+
+                for (const std::vector<TEmfPointL>& arTempPoints : arPoints)
+                        unCountPoints += arTempPoints.size();
+
+                int unExplicitRecordSize    = 32 + 4 * unNumberOfPolygons + 8 * unCountPoints;
+                int unType                  = EMR_POLYPOLYGON;
+
+                unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
+
+                m_pOutStream->write((char *)&unType,                sizeof (int));
+                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+
+                WriteRectangle(oBounds);
+
+                m_pOutStream->write((char *)&unNumberOfPolygons,     sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,          sizeof (unsigned int));
+
+                for (const std::vector<TEmfPointL>& arTempPoints : arPoints)
+                {
+                        unsigned int  unPointCount = arTempPoints.size();
+                        m_pOutStream->write((char *)&unPointCount,   sizeof (unsigned int));
+                }
+
+                for (const std::vector<TEmfPointL>& arTempPoints : arPoints)
+                        for (const TEmfPointL& oPoint : arTempPoints)
+                                WritePoint(oPoint);
+
+        }
+
+        void CEmfInterpretator::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
+        {
+                const unsigned int unNumberOfPolygons = arPoints.size();
+
+                unsigned int unCountPoints = 0;
+
+                for (const std::vector<TEmfPointS>& arTempPoints : arPoints)
+                        unCountPoints += arTempPoints.size();
+
+                int unExplicitRecordSize    = 32 + 4 * unNumberOfPolygons + 4 * unCountPoints;
+                int unType                  = EMR_POLYPOLYGON16;
+
+
+                unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
+
+                m_pOutStream->write((char *)&unType,                sizeof (int));
+                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+
+                WriteRectangle(oBounds);
+
+                m_pOutStream->write((char *)&unNumberOfPolygons,     sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,          sizeof (unsigned int));
+
+                for (const std::vector<TEmfPointS>& arTempPoints : arPoints)
+                {
+                        unsigned int  unPointCount = arTempPoints.size();
+                        m_pOutStream->write((char *)&unPointCount,   sizeof (unsigned int));
+                }
+
+                for (const std::vector<TEmfPointS>& arTempPoints : arPoints)
+                        for (const TEmfPointS& oPoint : arTempPoints)
+                                WritePoint(oPoint);
+        }
+
+        void CEmfInterpretator::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
+        {
+                const unsigned int unNumberOfPolygons = arPoints.size();
+
+                unsigned int unCountPoints = 0;
+
+                for (const std::vector<TEmfPointL>& arTempPoints : arPoints)
+                        unCountPoints += arTempPoints.size();
+
+                int unExplicitRecordSize    = 32 + 4 * unNumberOfPolygons + 8 * unCountPoints;
+                int unType                  = EMR_POLYPOLYLINE;
+
+
+                unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
+
+                m_pOutStream->write((char *)&unType,                sizeof (int));
+                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+
+                WriteRectangle(oBounds);
+
+                m_pOutStream->write((char *)&unNumberOfPolygons,     sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,          sizeof (unsigned int));
+
+                for (const std::vector<TEmfPointL>& arTempPoints : arPoints)
+                {
+                        unsigned int  unPointCount = arTempPoints.size();
+                        m_pOutStream->write((char *)&unPointCount,   sizeof (unsigned int));
+                }
+
+                for (const std::vector<TEmfPointL>& arTempPoints : arPoints)
+                        for (const TEmfPointL& oPoint : arTempPoints)
+                                WritePoint(oPoint);
+        }
+
+        void CEmfInterpretator::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
+        {
+                const unsigned int unNumberOfPolygons = arPoints.size();
+
+                unsigned int unCountPoints = 0;
+
+                for (const std::vector<TEmfPointS>& arTempPoints : arPoints)
+                        unCountPoints += arTempPoints.size();
+
+                int unExplicitRecordSize    = 32 + 4 * unNumberOfPolygons + 4 * unCountPoints;
+                int unType                  = EMR_POLYPOLYLINE16;
+
+
+                unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
+
+                m_pOutStream->write((char *)&unType,                sizeof (int));
+                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+
+                WriteRectangle(oBounds);
+
+                m_pOutStream->write((char *)&unNumberOfPolygons,     sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCountPoints,          sizeof (unsigned int));
+
+                for (const std::vector<TEmfPointS>& arTempPoints : arPoints)
+                {
+                        unsigned int  unPointCount = arTempPoints.size();
+                        m_pOutStream->write((char *)&unPointCount,   sizeof (unsigned int));
+                }
+
+                for (const std::vector<TEmfPointS>& arTempPoints : arPoints)
+                        for (const TEmfPointS& oPoint : arTempPoints)
+                                WritePoint(oPoint);
         }
 
         void CEmfInterpretator::HANDLE_EMR_RECTANGLE(const TEmfRectL &oBox)

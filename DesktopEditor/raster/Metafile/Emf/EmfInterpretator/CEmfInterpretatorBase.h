@@ -93,6 +93,10 @@ namespace MetaFile
                 virtual void HANDLE_EMR_POLYLINE(const TEmfRectL&, const std::vector<TEmfPointS>&) = 0;
                 virtual void HANDLE_EMR_POLYLINETO(const TEmfRectL&, const std::vector<TEmfPointL>&) = 0;
                 virtual void HANDLE_EMR_POLYLINETO(const TEmfRectL&, const std::vector<TEmfPointS>&) = 0;
+                virtual void HANDLE_EMR_POLYPOLYGON(const TEmfRectL&, const std::vector<std::vector<TEmfPointL>>&) = 0;
+                virtual void HANDLE_EMR_POLYPOLYGON(const TEmfRectL&, const std::vector<std::vector<TEmfPointS>>&) = 0;
+                virtual void HANDLE_EMR_POLYPOLYLINE(const TEmfRectL&, const std::vector<std::vector<TEmfPointL>>&) = 0;
+                virtual void HANDLE_EMR_POLYPOLYLINE(const TEmfRectL&, const std::vector<std::vector<TEmfPointS>>&) = 0;
                 //TODO: Реализовать сохранение полигонов в полигоне
                 virtual void HANDLE_EMR_RECTANGLE(const TEmfRectL&) = 0;
                 virtual void HANDLE_EMR_ROUNDRECT(const TEmfRectL&, const TEmfSizeL&) = 0;

@@ -597,6 +597,30 @@ namespace MetaFile
                         pInterpretator->HANDLE_EMR_POLYLINETO(oBounds, arPoints);
         }
 
+        void CEmfInterpretatorArray::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMR_POLYPOLYGON(oBounds, arPoints);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMR_POLYPOLYGON(oBounds, arPoints);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
+        }
+
         void CEmfInterpretatorArray::HANDLE_EMR_RECTANGLE(const TEmfRectL &oBox)
         {
                 for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)

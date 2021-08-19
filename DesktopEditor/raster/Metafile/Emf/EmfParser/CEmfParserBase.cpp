@@ -1736,4 +1736,62 @@ namespace MetaFile
                         m_pInterpretator->HANDLE_EMR_POLYLINETO(oBounds, arPoints);
         }
 
+        void CEmfParserBase::HANDLE_EMR_POLYPOLYGON(TEmfRectL &oBounds, std::vector<std::vector<TEmfPointL>> &arPoints)
+        {
+                HANDLE_EMR_POLYPOLYGON_BASE<TEmfPointL>(oBounds, arPoints);
+        }
+
+        void CEmfParserBase::HANDLE_EMR_POLYPOLYGON(TEmfRectL &oBounds, std::vector<std::vector<TEmfPointS>> &arPoints)
+        {
+                HANDLE_EMR_POLYPOLYGON_BASE<TEmfPointS>(oBounds, arPoints);
+        }
+
+        template<typename T>
+        void CEmfParserBase::HANDLE_EMR_POLYPOLYGON_BASE(TEmfRectL &oBounds, std::vector<std::vector<T>> &arPoints)
+        {
+                for (unsigned int unPolygonIndex = 0; unPolygonIndex < arPoints.size(); ++unPolygonIndex)
+                {
+                        MoveTo(arPoints[unPolygonIndex][0]);
+
+                        for (unsigned int unPointIndex = 1; unPointIndex < arPoints[unPolygonIndex].size(); ++unPointIndex)
+                                LineTo(arPoints[unPolygonIndex][unPointIndex]);
+
+                        ClosePath();
+                }
+
+                DrawPath(true, true);
+
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_POLYPOLYGON(oBounds, arPoints);
+        }
+
+        void CEmfParserBase::HANDLE_EMR_POLYPOLYLINE(TEmfRectL &oBounds, std::vector<std::vector<TEmfPointL>> &arPoints)
+        {
+                HANDLE_EMR_POLYPOLYLINE_BASE<TEmfPointL>(oBounds, arPoints);
+        }
+
+        void CEmfParserBase::HANDLE_EMR_POLYPOLYLINE(TEmfRectL &oBounds, std::vector<std::vector<TEmfPointS>> &arPoints)
+        {
+                HANDLE_EMR_POLYPOLYLINE_BASE<TEmfPointS>(oBounds, arPoints);
+        }
+
+        template<typename T>
+        void CEmfParserBase::HANDLE_EMR_POLYPOLYLINE_BASE(TEmfRectL &oBounds, std::vector<std::vector<T>> &arPoints)
+        {
+                for (unsigned int unPolylineIndex = 0; unPolylineIndex < arPoints.size(); ++unPolylineIndex)
+                {
+                        MoveTo(arPoints[unPolylineIndex][0]);
+
+                        for (unsigned int unPointIndex = 1; unPointIndex < arPoints[unPolylineIndex].size(); ++unPointIndex)
+                                LineTo(arPoints[unPolylineIndex][unPointIndex]);
+
+                        ClosePath();
+                }
+
+                DrawPath(true, false);
+
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
+        }
+
 }

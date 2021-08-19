@@ -103,6 +103,10 @@ namespace MetaFile
                 void HANDLE_EMR_POLYLINE(const TEmfRectL& oBounds, const std::vector<TEmfPointS>& arPoints) override ;
                 void HANDLE_EMR_POLYLINETO(const TEmfRectL& oBounds, const std::vector<TEmfPointL>& arPoints) override ;
                 void HANDLE_EMR_POLYLINETO(const TEmfRectL& oBounds, const std::vector<TEmfPointS>& arPoints) override ;
+                void HANDLE_EMR_POLYPOLYGON(const TEmfRectL& oBounds, const std::vector<std::vector<TEmfPointL>>& arPoints) override;
+                void HANDLE_EMR_POLYPOLYGON(const TEmfRectL& oBounds, const std::vector<std::vector<TEmfPointS>>& arPoints) override;
+                void HANDLE_EMR_POLYPOLYLINE(const TEmfRectL& oBounds, const std::vector<std::vector<TEmfPointL>>& arPoints) override;
+                void HANDLE_EMR_POLYPOLYLINE(const TEmfRectL& oBounds, const std::vector<std::vector<TEmfPointS>>& arPoints) override;
                 //TODO: Реализовать сохранение полигонов в полигоне
                 void HANDLE_EMR_RECTANGLE(const TEmfRectL& oBox) override ;
                 void HANDLE_EMR_ROUNDRECT(const TEmfRectL& oBox, const TEmfSizeL& oCorner) override ;
@@ -114,6 +118,7 @@ namespace MetaFile
                 void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) override;
         private:
                 template<typename T> void Save_EMR_POLY_BASE(const RecordData& oRecordData, const std::vector<T>& arPoints);
+                template<typename T> void Save_EMR_POLYPOLY_BASE(const RecordData& oRecordData, const std::vector<std::vector<T>>& arPoints);
                 template<typename T> void Save_EMR_POLYDRAW_BASE(const TEmfRectL& oBounds, T* arPoints, const unsigned int& unCount, const unsigned char* pAbTypes);
 
                 CXmlOutput*     m_pOutputXml;

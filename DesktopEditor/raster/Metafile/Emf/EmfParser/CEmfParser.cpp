@@ -1101,8 +1101,6 @@ namespace MetaFile
                 unsigned int ulNumberOfPolygons;
                 unsigned int ulTotalPointsCount;
 
-                //TODO: сделать сохранение в XML
-
                 m_oStream >> oBounds;
                 m_oStream >> ulNumberOfPolygons;
                 m_oStream >> ulTotalPointsCount;
@@ -1112,38 +1110,20 @@ namespace MetaFile
                 if (!pPolygonPointCount)
                         return SetError();
 
+                std::vector<std::vector<T>> arPoints;
+                arPoints.resize(ulNumberOfPolygons);
+
                 for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolygons; ulIndex++)
-                        m_oStream >> pPolygonPointCount[ulIndex];
-
-                for (unsigned int ulPolygonIndex = 0, unStartPointIndex = 0; ulPolygonIndex < ulNumberOfPolygons; ulPolygonIndex++)
                 {
-                        unsigned int ulCurrentPolygonPointsCount = pPolygonPointCount[ulPolygonIndex];
-                        if (0 == ulCurrentPolygonPointsCount)
-                                continue;
-
-                        T oPoint;
-                        m_oStream >> oPoint;
-
-                        MoveTo(oPoint);
-
-                        for (unsigned int ulPointIndex = 1; ulPointIndex < ulCurrentPolygonPointsCount; ulPointIndex++)
-                        {
-                                unsigned int ulRealPointIndex = ulPointIndex + unStartPointIndex;
-                                if (ulRealPointIndex >= ulTotalPointsCount)
-                                {
-                                        delete[] pPolygonPointCount;
-                                        return SetError();
-                                }
-
-                                m_oStream >> oPoint;
-
-                                LineTo(oPoint);
-                        }
-
-                        ClosePath();
+                        m_oStream >> pPolygonPointCount[ulIndex];
+                        arPoints[ulIndex].resize(pPolygonPointCount[ulIndex]);
                 }
 
-                DrawPath(true, true);
+                for (unsigned int unPolygonIndex = 0; unPolygonIndex < ulNumberOfPolygons; ++unPolygonIndex)
+                        for (unsigned int unPointIndex = 0; unPointIndex < arPoints[unPolygonIndex].size(); ++unPointIndex)
+                               m_oStream >> arPoints[unPolygonIndex][unPointIndex];
+
+                HANDLE_EMR_POLYPOLYGON(oBounds, arPoints);
 
                 delete[] pPolygonPointCount;
         }
@@ -1177,36 +1157,20 @@ namespace MetaFile
 
                 unsigned int* pPolylinePointCount = new unsigned int[ulNumberOfPolylines];
 
+                std::vector<std::vector<T>> arPoints;
+                arPoints.resize(ulNumberOfPolylines);
+
                 for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolylines; ulIndex++)
-                        m_oStream >> pPolylinePointCount[ulIndex];
-
-                for (unsigned int ulPolyIndex = 0, ulStartPointIndex = 0; ulPolyIndex < ulNumberOfPolylines; ulPolyIndex++)
                 {
-                        unsigned int ulCurrentPolylinePointsCount = pPolylinePointCount[ulPolyIndex];
-                        if (0 == ulCurrentPolylinePointsCount)
-                                continue;
-
-                        T oPoint;
-                        m_oStream >> oPoint;
-
-                        MoveTo(oPoint);
-
-                        for (unsigned int ulPointIndex = 1; ulPointIndex < ulCurrentPolylinePointsCount; ulPointIndex++)
-                        {
-                                unsigned int ulRealPointIndex = ulPointIndex + ulStartPointIndex;
-                                if (ulRealPointIndex >= ulTotalPointsCount)
-                                {
-                                        delete[] pPolylinePointCount;
-                                        return SetError();
-                                }
-
-                                m_oStream >> oPoint;
-
-                                LineTo(oPoint);
-                        }
+                        m_oStream >> pPolylinePointCount[ulIndex];
+                        arPoints[ulIndex].resize(pPolylinePointCount[ulIndex]);
                 }
 
-                DrawPath(true, false);
+                for (unsigned int unPolylineIndex = 0; unPolylineIndex < ulNumberOfPolylines; ++unPolylineIndex)
+                        for (unsigned int unPointIndex = 0; unPointIndex < arPoints[unPolylineIndex].size(); ++unPointIndex)
+                               m_oStream >> arPoints[unPolylineIndex][unPointIndex];
+
+                HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
 
                 delete[] pPolylinePointCount;
         }

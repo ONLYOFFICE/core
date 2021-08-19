@@ -586,6 +586,26 @@ namespace MetaFile
                 Save_EMR_POLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYLINETO16", EMR_POLYLINETO16, oBounds), arPoints);
         }
 
+        void CEmfInterpretatorXml::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
+        {
+                Save_EMR_POLYPOLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYPOLYGON", EMR_POLYPOLYGON, oBounds), arPoints);
+        }
+
+        void CEmfInterpretatorXml::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
+        {
+                Save_EMR_POLYPOLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYPOLYGON16", EMR_POLYPOLYGON16, oBounds), arPoints);
+        }
+
+        void CEmfInterpretatorXml::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
+        {
+                Save_EMR_POLYPOLY_BASE<TEmfPointL>(RecordData(L"EMR_POLYPOLYLINE", EMR_POLYPOLYLINE, oBounds), arPoints);
+        }
+
+        void CEmfInterpretatorXml::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
+        {
+                Save_EMR_POLYPOLY_BASE<TEmfPointS>(RecordData(L"EMR_POLYPOLYLINE16", EMR_POLYPOLYLINE16, oBounds), arPoints);
+        }
+
         void CEmfInterpretatorXml::HANDLE_EMR_RECTANGLE(const TEmfRectL& oBox)
         {
                 m_pOutputXml->WriteNodeBegin(L"EMR_RECTANGLE");
@@ -677,6 +697,29 @@ namespace MetaFile
                                 m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), arPoints[unIndex]);
 
                         m_pOutputXml->WriteNodeEnd(oRecordData.m_wsName);
+        }
+
+        template<typename T>
+        void CEmfInterpretatorXml::Save_EMR_POLYPOLY_BASE(const RecordData &oRecordData, const std::vector<std::vector<T>> &arPoints)
+        {
+                if (arPoints.empty())
+                        return;
+
+                m_pOutputXml->WriteNodeBegin(oRecordData.m_wsName);
+                        m_pOutputXml->WriteNode(L"Bounds",              oRecordData.m_oBounds);
+//                        m_pOutputXml->WriteNode(L"NumberOfPolygons ",   (unsigned int)arPoints.size());
+
+                        for (unsigned int unPolygonIndex = 0; unPolygonIndex < arPoints.size(); ++unPolygonIndex)
+                        {
+                                std::wstring wsNameNode = L"PolygonPoint" + std::to_wstring(unPolygonIndex + 1);
+                                m_pOutputXml->WriteNodeBegin(wsNameNode);
+                                        for (unsigned int unPointIndex = 0; unPointIndex < arPoints[unPolygonIndex].size(); ++unPointIndex)
+                                                m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unPointIndex + 1), arPoints[unPolygonIndex][unPointIndex]);
+                                        m_pOutputXml->WriteNodeEnd(wsNameNode);
+                        }
+
+                        m_pOutputXml->WriteNodeEnd(oRecordData.m_wsName);
+
         }
 
         template<typename T>

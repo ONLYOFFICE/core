@@ -478,10 +478,10 @@ namespace MetaFile
     {
         WriteNode(L"Reference", oTEmfEmrText.Reference);
         WriteNode(L"Chars",     oTEmfEmrText.Chars);
-        WriteNode(L"offString", oTEmfEmrText.offString);
+        WriteNode(L"offString", 76/*oTEmfEmrText.offString*/);
         WriteNode(L"Options",   oTEmfEmrText.Options);
         WriteNode(L"Rectangle", oTEmfEmrText.Rectangle);
-        WriteNode(L"offDx",     oTEmfEmrText.offDx);
+        WriteNode(L"offDx",     76 + oTEmfEmrText.Chars * 2 + (oTEmfEmrText.Chars % 2) * 2/*oTEmfEmrText.offDx*/);
 
         std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oTEmfEmrText.OutputString, oTEmfEmrText.Chars);
 

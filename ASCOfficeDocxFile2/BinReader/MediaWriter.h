@@ -54,7 +54,7 @@ namespace Writers
 		}
         std::wstring AddImageGetNewPath()
 		{
-			OOX::CSystemUtility::CreateDirectories(m_sMediaDir);
+			NSDirectory::CreateDirectories(m_sMediaDir);
 
             std::wstring sNewImgName = L"image" + std::to_wstring(nImageCount + 1) + L".jpg";
             std::wstring sNewImg = m_sMediaDir + FILE_SEPARATOR_STR + sNewImgName;

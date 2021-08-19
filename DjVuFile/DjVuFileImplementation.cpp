@@ -570,16 +570,32 @@ BYTE*              CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const 
 }
 BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex, const int& nRasterW, const int& nRasterH)
 {
+    double dPageDpiX, dPageDpiY;
+    double dWidth, dHeight;
+    GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
     GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
     GP<DjVuAnno>  pAnno = pPage->get_decoded_anno();
     GPList<GMapArea> map_areas = pAnno->ant->map_areas;
 
     CData oRes;
     oRes.SkipLen();
+    double dKoefX = (double)nRasterW * dPageDpiX / 25.4 / dWidth;
+    double dKoefY = (double)nRasterH * dPageDpiY / 25.4 / dHeight;
     for(GPosition pos(map_areas); pos; ++pos)
     {
-        GUTF8String sURL = map_areas[pos]->url;
-        oRes.WriteString((BYTE*)sURL.getbuf(), sURL.length());
+        GUTF8String str = map_areas[pos]->url;
+        oRes.WriteString((BYTE*)str.getbuf(), str.length());
+        double x = map_areas[pos]->get_xmin() * dKoefX;
+        std::string s = std::to_string(x);
+        oRes.WriteString((BYTE*)s.c_str(), s.length());
+        double y = map_areas[pos]->get_ymin() * dKoefY;
+        s = std::to_string(y);
+        oRes.WriteString((BYTE*)s.c_str(), s.length());
+        s = std::to_string(map_areas[pos]->get_xmax() * dKoefX - x);
+        oRes.WriteString((BYTE*)s.c_str(), s.length());
+        s = std::to_string(map_areas[pos]->get_ymax() * dKoefY - y);
+        oRes.WriteString((BYTE*)s.c_str(), s.length());
     }
     oRes.WriteLen();
 

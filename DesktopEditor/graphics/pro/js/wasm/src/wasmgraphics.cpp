@@ -284,6 +284,22 @@ int main()
     int width  = info[1] * 96 / info[3];
     int height = info[2] * 96 / info[3];
 
+    BYTE* res = NULL;
+    if (pages_count > 0)
+        res = XPS_GetPixmap(test, 0, width, height);
+
+    for (int i = 0; i < 100; i++)
+        std::cout << (int)res[i] << " ";
+
+    CBgraFrame* resFrame = new CBgraFrame();
+    resFrame->put_Data(res);
+    resFrame->put_Width(width);
+    resFrame->put_Height(height);
+    resFrame->put_Stride(-4 * width);
+    resFrame->put_IsRGBA(true);
+    resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
+    resFrame->ClearNoAttack();
+
     BYTE* pGlyphs = DJVU_GetGlyphs(test, 0, width, height);
     DWORD nLength = GetLength(pGlyphs);
     DWORD i = 4;
@@ -321,25 +337,25 @@ int main()
     {
         DWORD nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout <<  "Link "<< std::string((char*)(pLinks + i), nPathLength) << std::endl;
+        std::cout <<  "Link "<< std::string((char*)(pLinks + i), nPathLength) << " ";
+        i += nPathLength;
+        nPathLength = GetLength(pLinks + i);
+        i += 4;
+        std::cout << "X " << std::string((char*)(pLinks + i), nPathLength) << " ";
+        i += nPathLength;
+        nPathLength = GetLength(pLinks + i);
+        i += 4;
+        std::cout << "Y " << std::string((char*)(pLinks + i), nPathLength) << " ";
+        i += nPathLength;
+        nPathLength = GetLength(pLinks + i);
+        i += 4;
+        std::cout << "W " << std::string((char*)(pLinks + i), nPathLength) << " ";
+        i += nPathLength;
+        nPathLength = GetLength(pLinks + i);
+        i += 4;
+        std::cout << "H " << std::string((char*)(pLinks + i), nPathLength) << std::endl;
         i += nPathLength;
     }
-
-    BYTE* res = NULL;
-    if (pages_count > 0)
-        res = XPS_GetPixmap(test, 0, width, height);
-
-    for (int i = 0; i < 100; i++)
-        std::cout << (int)res[i] << " ";
-
-    CBgraFrame* resFrame = new CBgraFrame();
-    resFrame->put_Data(res);
-    resFrame->put_Width(width);
-    resFrame->put_Height(height);
-    resFrame->put_Stride(-4 * width);
-    resFrame->put_IsRGBA(true);
-    resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
-    resFrame->ClearNoAttack();
 
     BYTE* pStructure = DJVU_GetStructure(test);
     nLength = GetLength(pStructure);

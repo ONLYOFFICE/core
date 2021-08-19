@@ -178,6 +178,44 @@
         }
         Module["_XPS_Delete"](glyphs);
     };
+    CFile.prototype.getLinks  = function(pageIndex, width, height)
+    {
+        var res = [];
+        var ext = Module["_DJVU_GetLinks"](this.nativeFile, pageIndex, width, height);
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+        if (lenArray == null)
+            return res;
+        var len = lenArray[0];
+        len -= 4;
+        if (len <= 0)
+            return res;
+
+        var index = 0;
+        var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+        while (index < len)
+        {
+            var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _Link = "".fromUtf8(buffer, index, lenRec);
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _X = lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _Y = lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _W = lenRec;
+            lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+            index += 4;
+            var _H = lenRec;
+
+            res.push({ X : _X, Y : _Y, W : _W, H : _H, Link : _Link});
+        }
+
+        Module["_XPS_Delete"](ext);
+        return res;
+    };
     CFile.prototype.structure = function()
     {
         var res = [];

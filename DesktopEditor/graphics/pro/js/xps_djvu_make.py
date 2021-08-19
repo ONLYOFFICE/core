@@ -51,6 +51,7 @@ exported_functions = ["_malloc",
                       "_DJVU_GetGlyphs",
                       "_XPS_GetExternalLinks",
                       "_XPS_GetInternalLinks",
+                      "_DJVU_GetLinks",
                       "_XPS_GetStructure",
                       "_DJVU_GetStructure",
                       "_XPS_Delete"]

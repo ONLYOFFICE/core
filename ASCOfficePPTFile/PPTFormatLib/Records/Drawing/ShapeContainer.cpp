@@ -2586,8 +2586,8 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
             const int posBlockStart = posOrigText;
             const int posOrigSpanEnd = posBlockStart + iterSpan->m_strText.length();
             const int posBlockEnd = isHyperlink ?
-                        std::min(posOrigSpanEnd, iterRange->m_lEnd)  :
-                        std::min(posOrigSpanEnd, iterRange->m_lStart);
+                        min(posOrigSpanEnd, iterRange->m_lEnd)  :
+                        min(posOrigSpanEnd, iterRange->m_lStart);
             const size_t blockLen = posBlockEnd - posBlockStart;
 
             const bool isNeedToSplit = posBlockEnd < posOrigSpanEnd && isHyperlink;

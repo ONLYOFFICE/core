@@ -2557,6 +2557,16 @@ int BinaryWorkbookTableReader::ReadProtection(BYTE type, long length, void* poRe
 	{
 		m_oWorkbook.m_oWorkbookProtection->m_oWorkbookSaltValue = m_oBufferedStream.GetString4(length);
 	}
+	else if (c_oSerWorkbookProtection::LockStructure == type)
+	{
+		m_oWorkbook.m_oWorkbookProtection->m_oLockStructure.Init();
+		m_oWorkbook.m_oWorkbookProtection->m_oLockStructure->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorkbookProtection::LockWindows == type)
+	{
+		m_oWorkbook.m_oWorkbookProtection->m_oLockWindows.Init();
+		m_oWorkbook.m_oWorkbookProtection->m_oLockWindows->FromBool(m_oBufferedStream.GetBool());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -2567,12 +2577,12 @@ int BinaryWorkbookTableReader::ReadWorkbookPr(BYTE type, long length, void* poRe
 	if(c_oSerWorkbookPrTypes::Date1904 == type)
 	{
 		m_oWorkbook.m_oWorkbookPr->m_oDate1904.Init();
-		m_oWorkbook.m_oWorkbookPr->m_oDate1904->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+		m_oWorkbook.m_oWorkbookPr->m_oDate1904->FromBool(m_oBufferedStream.GetBool());
 	}
 	else if(c_oSerWorkbookPrTypes::DateCompatibility == type)
 	{
 		m_oWorkbook.m_oWorkbookPr->m_oDateCompatibility.Init();
-		m_oWorkbook.m_oWorkbookPr->m_oDateCompatibility->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+		m_oWorkbook.m_oWorkbookPr->m_oDateCompatibility->FromBool(m_oBufferedStream.GetBool());
 	}
 	else if(c_oSerWorkbookPrTypes::HidePivotFieldList == type)
 	{

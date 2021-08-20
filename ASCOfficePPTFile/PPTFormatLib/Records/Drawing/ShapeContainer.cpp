@@ -2619,10 +2619,13 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
                     iterSpan->m_strText = originalText.substr(posBlockEnd, nextBlockLen);
                     iterSpan->m_arrInteractive.clear();
                     // Return to current span
-                    iterSpan--;
+					iterSpan--;
                 }
 
-                addHyperlinkToSpan(*iterSpan, *iterInteractive, oColor);
+				if (iterSpan != arrSpans.end() && iterInteractive != arrSplitedInteractive.end())
+					addHyperlinkToSpan(*iterSpan, *iterInteractive, oColor);
+				else
+					break; //GZoabli_PhD.ppt
 
                 if (posBlockEnd == iterRange->m_lEnd)
                 {

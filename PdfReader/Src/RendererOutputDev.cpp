@@ -3050,7 +3050,7 @@ namespace PdfReader
     {
 //        if (NULL != m_pBufferTextClip) tmpchange
 //        {
-//            updateClip(pGState);
+           updateClip(pGState);
 //
 //            RELEASEOBJECT(m_pBufferTextClip);
 //        }
@@ -3351,7 +3351,11 @@ namespace PdfReader
             m_pRenderer->get_FontSize(&dTempFontSize);
             m_pRenderer->get_FontStyle(&lTempFontStyle);
 //            tmpchange
-            //m_pBufferTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ +dShiftY, 0, 0, 0);
+            if (m_sClip.empty())
+            {
+                m_sClip.push_back(GfxClip());
+            }
+            m_sClip.back().GetTextClip()->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ +dShiftY, 0, 0, 0);
         }
 
         m_pRenderer->put_FontSize(dOldSize);
@@ -3970,21 +3974,13 @@ namespace PdfReader
     void RendererOutputDev::updateClipAttack(GfxState *pGState)
     {
 
-            //return;
-        int nPathIndex = -1;
-        //if ( m_sClip && m_sClip->IsEqual( pClip, nPathIndex ) )
-        //{
-        //    return;
-        //}
-
-        int nPathIndexStart = (-1 == nPathIndex) ? 0 : nPathIndex;
 
         m_pRenderer->BeginCommand(c_nResetClipType);
         m_pRenderer->EndCommand(c_nResetClipType);
         if (m_sClip.empty()) return;
 
         for (GfxClip &curClip : m_sClip) {
-            for (int nIndex = nPathIndexStart; nIndex < curClip.GetPathNum(); nIndex++)
+            for (int nIndex = 0; nIndex < curClip.GetPathNum(); nIndex++)
             {
                 GfxPath *pPath   = curClip.GetPath(nIndex);
                 bool    bFlag   = curClip.GetClipEo(nIndex);
@@ -4000,7 +3996,64 @@ namespace PdfReader
                 m_pRenderer->EndCommand(c_nClipType);
                 m_pRenderer->PathCommandEnd();
             }
+
+            int nTextClipCount = curClip.GetTextClip()->GetTextsCount();
+            if (nTextClipCount > 0)
+            {
+                m_pRenderer->BeginCommand(c_nClipType);
+                m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
+                m_pRenderer->StartConvertCoordsToIdentity();
+
+                for (int nIndex = 0; nIndex < nTextClipCount; nIndex++)
+                {
+                    wchar_t *wsFontName, *wsFontPath;
+                    int lFontStyle;
+                    double dFontSize = 10, dX = 0, dY = 0, dWidth = 0, dHeight = 0, dBaseLineOffset = 0;
+                    wchar_t *wsText = curClip.GetTextClip()->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
+
+                    m_pRenderer->put_FontName(wsFontName);
+                    m_pRenderer->put_FontPath(wsFontPath);
+                    m_pRenderer->put_FontSize(dFontSize);
+                    m_pRenderer->put_FontStyle(lFontStyle);
+
+                    double dShiftX = 0, dShiftY = 0;
+                    DoTransform(curClip.GetTextClip()->GetMatrix(nIndex), &dShiftX, &dShiftY, true);
+
+                    // TODO: нужна нормальная конвертация
+                    int nLen = 0;
+                    wchar_t *wsTextTmp = wsText;
+                    if (wsTextTmp)
+                    {
+                        while (*wsTextTmp)
+                            ++wsTextTmp;
+
+                        nLen = (int)(wsTextTmp - wsText);
+                    }
+
+                    if (1 == nLen)
+                        m_pRenderer->PathCommandTextExCHAR(0, (LONG)wsText[0], PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
+                    else if (0 != nLen)
+                    {
+                        unsigned int* pGids = new unsigned int[nLen];
+                        for (int nIndex = 0; nIndex < nLen; ++nIndex)
+                            pGids[nIndex] = (unsigned int)wsText[nIndex];
+
+                        m_pRenderer->PathCommandTextEx(L"", pGids, nLen, PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
+
+                        RELEASEARRAYOBJECTS(pGids);
+                    }
+
+                }
+
+                m_pRenderer->EndCommand(c_nPathType);
+                m_pRenderer->EndCommand(c_nClipType);
+                m_pRenderer->PathCommandEnd();
+                m_pRenderer->EndConvertCoordsToIdentity();
+            }
         }
+
+
+
 
 //            m_pRenderer->BeginCommand(c_nClipType);
 //            DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);

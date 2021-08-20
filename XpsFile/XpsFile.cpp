@@ -298,22 +298,13 @@ BYTE* CXpsFile::GetGlyphs       (int nPageIndex, int nRasterW, int nRasterH)
 	}
 	return m_pInternal->m_pDocument->GetPageGlyphs(nPageIndex);
 }
-BYTE* CXpsFile::GetExternalLinks(int nPageIndex, int nRasterW, int nRasterH)
+BYTE* CXpsFile::GetLinks(int nPageIndex, int nRasterW, int nRasterH)
 {
 	if (!m_pInternal->m_pDocument->CompareWH(nPageIndex, nRasterW, nRasterH))
 	{
 		BYTE* oTemp = ConvertToPixels(nPageIndex, nRasterW, nRasterH);
 		RELEASEARRAYOBJECTS(oTemp);
 	}
-	return m_pInternal->m_pDocument->GetExternalLinks(nPageIndex);
-}
-BYTE* CXpsFile::GetInternalLinks(int nPageIndex, int nRasterW, int nRasterH)
-{
-	if (!m_pInternal->m_pDocument->CompareWH(nPageIndex, nRasterW, nRasterH))
-	{
-		BYTE* oTemp = ConvertToPixels(nPageIndex, nRasterW, nRasterH);
-		RELEASEARRAYOBJECTS(oTemp);
-	}
-	return m_pInternal->m_pDocument->GetInternalLinks(nPageIndex);
+	return m_pInternal->m_pDocument->GetPageLinks(nPageIndex);
 }
 #endif

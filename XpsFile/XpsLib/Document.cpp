@@ -308,18 +308,11 @@ namespace XPS
 			return oIter->second->GetGlyphs();
 		return NULL;
 	}
-	BYTE* CDocument::GetExternalLinks(int nPageIndex)
+	BYTE* CDocument::GetPageLinks (int nPageIndex)
 	{
 		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
 		if (oIter != m_mPages.end())
-			return oIter->second->GetExternalLinks();
-		return NULL;
-	}
-	BYTE* CDocument::GetInternalLinks(int nPageIndex)
-	{
-		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
-		if (oIter != m_mPages.end())
-			return oIter->second->GetInternalLinks();
+			return oIter->second->GetLinks();
 		return NULL;
 	}
 	bool  CDocument::CompareWH(int nPageIndex, int nRasterW, int nRasterH)

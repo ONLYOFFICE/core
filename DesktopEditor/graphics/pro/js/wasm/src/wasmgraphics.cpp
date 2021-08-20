@@ -71,13 +71,9 @@ WASM_EXPORT BYTE* DJVU_GetGlyphs(CGraphicsFileDrawing* pGraphics, int nPageIndex
 {
     return pGraphics->GetDJVUGlyphs(nPageIndex, nRasterW, nRasterH);
 }
-WASM_EXPORT BYTE* XPS_GetExternalLinks(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+WASM_EXPORT BYTE* XPS_GetLinks(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
-    return pGraphics->GetXPSExternalLinks(nPageIndex, nRasterW, nRasterH);
-}
-WASM_EXPORT BYTE* XPS_GetInternalLinks(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
-{
-    return pGraphics->GetXPSInternalLinks(nPageIndex, nRasterW, nRasterH);
+    return pGraphics->GetXPSLinks(nPageIndex, nRasterW, nRasterH);
 }
 WASM_EXPORT BYTE* DJVU_GetLinks(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
@@ -108,8 +104,8 @@ static DWORD GetLength(BYTE* x)
 
 int main()
 {
-#define XPS_TEST  0
-#define DJVU_TEST 1
+#define XPS_TEST  1
+#define DJVU_TEST 0
 #if XPS_TEST
     BYTE* pXpsData = NULL;
     DWORD nXpsBytesCount;
@@ -162,58 +158,31 @@ int main()
         }
     }
 
-    BYTE* pInternal = XPS_GetInternalLinks(test, 22, width, height);
-    nLength = GetLength(pInternal);
+    BYTE* pLinks = XPS_GetLinks(test, 22, width, height);
+    nLength = GetLength(pLinks);
     i = 4;
     nLength -= 4;
     while (i < nLength)
     {
-        DWORD nPathLength = GetLength(pInternal + i);
+        DWORD nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout <<  "Page "<< nPathLength;
-        nPathLength = GetLength(pInternal + i);
-        i += 4;
-        std::cout << " X "<< std::string((char*)(pInternal + i), nPathLength);
+        std::cout <<  "Link "<< std::string((char*)(pLinks + i), nPathLength);
         i += nPathLength;
-        nPathLength = GetLength(pInternal + i);
+        nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout << " Y "<< std::string((char*)(pInternal + i), nPathLength);
+        std::cout << " X "<< std::string((char*)(pLinks + i), nPathLength);
         i += nPathLength;
-        nPathLength = GetLength(pInternal + i);
+        nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout << " W "<< std::string((char*)(pInternal + i), nPathLength);
+        std::cout << " Y "<< std::string((char*)(pLinks + i), nPathLength);
         i += nPathLength;
-        nPathLength = GetLength(pInternal + i);
+        nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout << " H "<< std::string((char*)(pInternal + i), nPathLength) << std::endl;
+        std::cout << " W "<< std::string((char*)(pLinks + i), nPathLength);
         i += nPathLength;
-    }
-
-    BYTE* pExternal = XPS_GetExternalLinks(test, 22, width, height);
-    nLength = GetLength(pExternal);
-    i = 4;
-    nLength -= 4;
-    while (i < nLength)
-    {
-        DWORD nPathLength = GetLength(pExternal + i);
+        nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout <<  "X "<< std::string((char*)(pExternal + i), nPathLength);
-        i += nPathLength;
-        nPathLength = GetLength(pExternal + i);
-        i += 4;
-        std::cout << " Y "<< std::string((char*)(pExternal + i), nPathLength);
-        i += nPathLength;
-        nPathLength = GetLength(pExternal + i);
-        i += 4;
-        std::cout << " W "<< std::string((char*)(pExternal + i), nPathLength);
-        i += nPathLength;
-        nPathLength = GetLength(pExternal + i);
-        i += 4;
-        std::cout << " H "<< std::string((char*)(pExternal + i), nPathLength);
-        i += nPathLength;
-        nPathLength = GetLength(pExternal + i);
-        i += 4;
-        std::cout << " Link "<< std::string((char*)(pExternal + i), nPathLength) << std::endl;
+        std::cout << " H "<< std::string((char*)(pLinks + i), nPathLength) << std::endl;
         i += nPathLength;
     }
 
@@ -260,8 +229,7 @@ int main()
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
     RELEASEARRAYOBJECTS(pGlyphs);
-    RELEASEARRAYOBJECTS(pInternal);
-    RELEASEARRAYOBJECTS(pExternal);
+    RELEASEARRAYOBJECTS(pLinks);
     RELEASEARRAYOBJECTS(pStructure);
     RELEASEOBJECT(resFrame);
     return 0;

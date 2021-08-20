@@ -188,37 +188,15 @@ namespace XPS
 		}
 		return NULL;
 	}
-	BYTE* Page::GetExternalLinks()
+	BYTE* Page::GetLinks()
 	{
 		CData oRes;
 		oRes.SkipLen();
-		for (const CPageLink& link : m_vExternalLinks)
+		for (const CPageLink& link : m_vLinks)
 		{
-			std::string s = std::to_string(link.dX);
+			std::string s = U_TO_UTF8(link.sLink);
 			oRes.WriteString((BYTE*)s.c_str(), s.length());
-			s = std::to_string(link.dY);
-			oRes.WriteString((BYTE*)s.c_str(), s.length());
-			s = std::to_string(link.dW);
-			oRes.WriteString((BYTE*)s.c_str(), s.length());
-			s = std::to_string(link.dH);
-			oRes.WriteString((BYTE*)s.c_str(), s.length());
-			s = U_TO_UTF8(link.sLink);
-			oRes.WriteString((BYTE*)s.c_str(), s.length());
-		}
-		oRes.WriteLen();
-
-		BYTE* res = oRes.GetBuffer();
-		oRes.ClearWithoutAttack();
-		return res;
-	}
-	BYTE* Page::GetInternalLinks()
-	{
-		CData oRes;
-		oRes.SkipLen();
-		for (const CPageLink& link : m_vInternalLinks)
-		{
-			oRes.AddInt(link.nPage);
-			std::string s = std::to_string(link.dX);
+			s = std::to_string(link.dX);
 			oRes.WriteString((BYTE*)s.c_str(), s.length());
 			s = std::to_string(link.dY);
 			oRes.WriteString((BYTE*)s.c_str(), s.length());
@@ -243,8 +221,7 @@ namespace XPS
 		#ifdef BUILDING_WASM_MODULE
 		nLastW = nRasterW, nLastH = nRasterH;
 		RELEASEOBJECT(m_pGlyphs);
-		m_vExternalLinks.clear();
-		m_vInternalLinks.clear();
+		m_vLinks.clear();
 		#endif
 		XmlUtils::CXmlLiteReader oReader;
 
@@ -1029,7 +1006,7 @@ namespace XPS
 					pRenderer->GetTransform(&pdA, &pdB, &pdC, &pdD, &pdE, &pdF);
 					Aggplus::CMatrix oTransform(pdA, pdB, pdC, pdD, pdE, pdF);
 
-					CPageLink oLink = {0,0,0,0,L"",-1};
+					CPageLink oLink = {0,0,0,0,L""};
 					std::wstring wsPath = wsPathData.c_stdstr();
 					size_t nFindX = wsPath.find(L"M ");
 					if (nFindX != std::wstring::npos)
@@ -1092,19 +1069,18 @@ namespace XPS
 					if (wsNameTarget.find(L"http") == 0)
 					{
 						oLink.sLink = wsNameTarget;
-						m_vExternalLinks.push_back(oLink);
+						m_vLinks.push_back(oLink);
 					}
 					else
 					{
 						size_t nSharp = wsNameTarget.find(L'#');
 						if (nSharp != std::wstring::npos)
 						{
-							oLink.sLink = wsNameTarget.substr(nSharp + 1);
-							std::map<std::wstring, int>::iterator find = m_pDocument->m_mInternalLinks.find(oLink.sLink);
+							std::map<std::wstring, int>::iterator find = m_pDocument->m_mInternalLinks.find(wsNameTarget.substr(nSharp + 1));
 							if (find != m_pDocument->m_mInternalLinks.end())
 							{
-								oLink.nPage = find->second;
-								m_vInternalLinks.push_back(oLink);
+								oLink.sLink = L'#' + std::to_wstring(find->second);
+								m_vLinks.push_back(oLink);
 							}
 						}
 					}

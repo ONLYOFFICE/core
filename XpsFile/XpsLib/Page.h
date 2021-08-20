@@ -56,8 +56,7 @@ namespace XPS
 		void Draw(IRenderer* pRenderer, bool* pbBreak, int nRasterW, int nRasterH);
 		#ifdef BUILDING_WASM_MODULE
 		BYTE* GetGlyphs();
-        BYTE* GetExternalLinks();
-        BYTE* GetInternalLinks();
+        BYTE* GetLinks();
         bool  CompareWH(int nRasterW, int nRasterH);
         class CData
         {
@@ -191,10 +190,8 @@ namespace XPS
             double dW;
             double dH;
             std::wstring sLink;
-            int nPage;
         };
-        std::vector<CPageLink> m_vExternalLinks;
-        std::vector<CPageLink> m_vInternalLinks;
+        std::vector<CPageLink> m_vLinks;
         int nLastW, nLastH;
         #endif
 

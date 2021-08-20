@@ -199,16 +199,20 @@
             var _Link = "".fromUtf8(buffer, index, lenRec);
             lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
             index += 4;
-            var _X = lenRec;
+            var _X = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
             lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
             index += 4;
-            var _Y = lenRec;
+            var _Y = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
             lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
             index += 4;
-            var _W = lenRec;
+            var _W = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
             lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
             index += 4;
-            var _H = lenRec;
+            var _H = parseFloat("".fromUtf8(buffer, index, lenRec));
+            index += lenRec;
 
             res.push({ X : _X, Y : _Y, W : _W, H : _H, Link : _Link});
         }

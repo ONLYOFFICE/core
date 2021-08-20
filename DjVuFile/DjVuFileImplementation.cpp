@@ -506,67 +506,72 @@ BYTE*              CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const 
     double dWidth, dHeight;
     GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
-    GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
-    const GP<DjVuText> text(DjVuText::create());
-    const GP<ByteStream> text_str(pPage->get_text());
-    if (!text_str)
-        return NULL;
-
-    text->decode(text_str);
-    GUTF8String pageText = text->get_xmlText(pPage->get_height());
-    XmlUtils::CXmlNode hiddenText;
-    XmlUtils::CXmlNode pageColumn;
-    XmlUtils::CXmlNode region;
-    hiddenText.FromXmlStringA(NSDjvu::MakeCString(pageText));
-    hiddenText.GetNode(L"PAGECOLUMN", pageColumn);
-    pageColumn.GetNode(L"REGION", region);
-
-    CData oRes;
-    oRes.SkipLen();
-    double dKoef = 25.4 / pPage->get_dpi();
-    double dKoefX = (double)nRasterW * dPageDpiX / 25.4 / dWidth;
-    double dKoefY = (double)nRasterH * dPageDpiY / 25.4 / dHeight;
-    XmlUtils::CXmlNodes oParagraphsNodes;
-    region.GetNodes(L"PARAGRAPH", oParagraphsNodes);
-    for (int nParagraphIndex = 0; nParagraphIndex < oParagraphsNodes.GetCount(); nParagraphIndex++)
+    try
     {
-        XmlUtils::CXmlNode oParagraphNode;
-        oParagraphsNodes.GetAt(nParagraphIndex, oParagraphNode);
-        XmlUtils::CXmlNodes oLinesNodes;
-        oParagraphNode.GetNodes(L"LINE", oLinesNodes);
-        for (int nLineIndex = 0; nLineIndex < oLinesNodes.GetCount(); nLineIndex++)
-        {
-            XmlUtils::CXmlNode oLineNode;
-            oLinesNodes.GetAt(nLineIndex, oLineNode);
-            XmlUtils::CXmlNodes oWordsNodes;
-            oLineNode.GetNodes(L"WORD", oWordsNodes);
-            for (int nWordIndex = 0; nWordIndex < oWordsNodes.GetCount(); ++nWordIndex)
-            {
-                XmlUtils::CXmlNode oWordNode;
-                oWordsNodes.GetAt(nWordIndex, oWordNode);
-                std::wstring csWord   = oWordNode.GetText();
-                std::wstring csCoords = oWordNode.GetAttribute(L"coords");
-                double arrCoords[4];
-                ParseCoords(csCoords, arrCoords, dKoef);
+        GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
+        const GP<DjVuText> text(DjVuText::create());
+        const GP<ByteStream> text_str(pPage->get_text());
+        if (!text_str)
+            return NULL;
+        text->decode(text_str);
 
-                std::string sText = U_TO_UTF8(csWord);
-                oRes.WriteString((BYTE*)sText.c_str(), sText.length());
-                std::string sX = std::to_string(arrCoords[0] * dKoefX);
-                oRes.WriteString((BYTE*)sX.c_str(), sX.length());
-                std::string sY = std::to_string(arrCoords[3] * dKoefY);
-                oRes.WriteString((BYTE*)sY.c_str(), sY.length());
-                std::string sW = std::to_string((arrCoords[2] - arrCoords[0]) * dKoefX);
-                oRes.WriteString((BYTE*)sW.c_str(), sW.length());
-                std::string sH = std::to_string((arrCoords[1] - arrCoords[3]) * dKoefY);
-                oRes.WriteString((BYTE*)sH.c_str(), sH.length());
+        GUTF8String pageText = text->get_xmlText(pPage->get_height());
+        XmlUtils::CXmlNode hiddenText;
+        XmlUtils::CXmlNode pageColumn;
+        XmlUtils::CXmlNode region;
+        hiddenText.FromXmlStringA(NSDjvu::MakeCString(pageText));
+        hiddenText.GetNode(L"PAGECOLUMN", pageColumn);
+        pageColumn.GetNode(L"REGION", region);
+
+        CData oRes;
+        oRes.SkipLen();
+        double dKoef = 25.4 / pPage->get_dpi();
+        double dKoefX = (double)nRasterW * dPageDpiX / 25.4 / dWidth;
+        double dKoefY = (double)nRasterH * dPageDpiY / 25.4 / dHeight;
+        XmlUtils::CXmlNodes oParagraphsNodes;
+        region.GetNodes(L"PARAGRAPH", oParagraphsNodes);
+        for (int nParagraphIndex = 0; nParagraphIndex < oParagraphsNodes.GetCount(); nParagraphIndex++)
+        {
+            XmlUtils::CXmlNode oParagraphNode;
+            oParagraphsNodes.GetAt(nParagraphIndex, oParagraphNode);
+            XmlUtils::CXmlNodes oLinesNodes;
+            oParagraphNode.GetNodes(L"LINE", oLinesNodes);
+            for (int nLineIndex = 0; nLineIndex < oLinesNodes.GetCount(); nLineIndex++)
+            {
+                XmlUtils::CXmlNode oLineNode;
+                oLinesNodes.GetAt(nLineIndex, oLineNode);
+                XmlUtils::CXmlNodes oWordsNodes;
+                oLineNode.GetNodes(L"WORD", oWordsNodes);
+                for (int nWordIndex = 0; nWordIndex < oWordsNodes.GetCount(); ++nWordIndex)
+                {
+                    XmlUtils::CXmlNode oWordNode;
+                    oWordsNodes.GetAt(nWordIndex, oWordNode);
+                    std::wstring csWord   = oWordNode.GetText();
+                    std::wstring csCoords = oWordNode.GetAttribute(L"coords");
+                    double arrCoords[4];
+                    ParseCoords(csCoords, arrCoords, dKoef);
+
+                    std::string sText = U_TO_UTF8(csWord);
+                    oRes.WriteString((BYTE*)sText.c_str(), sText.length());
+                    std::string sX = std::to_string(arrCoords[0] * dKoefX);
+                    oRes.WriteString((BYTE*)sX.c_str(), sX.length());
+                    std::string sY = std::to_string(arrCoords[3] * dKoefY);
+                    oRes.WriteString((BYTE*)sY.c_str(), sY.length());
+                    std::string sW = std::to_string((arrCoords[2] - arrCoords[0]) * dKoefX);
+                    oRes.WriteString((BYTE*)sW.c_str(), sW.length());
+                    std::string sH = std::to_string((arrCoords[1] - arrCoords[3]) * dKoefY);
+                    oRes.WriteString((BYTE*)sH.c_str(), sH.length());
+                }
             }
         }
-    }
-    oRes.WriteLen();
+        oRes.WriteLen();
 
-    BYTE* res = oRes.GetBuffer();
-    oRes.ClearWithoutAttack();
-    return res;
+        BYTE* res = oRes.GetBuffer();
+        oRes.ClearWithoutAttack();
+        return res;
+    }
+    catch (...) {}
+    return NULL;
 }
 BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex, const int& nRasterW, const int& nRasterH)
 {
@@ -574,34 +579,42 @@ BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex, const 
     double dWidth, dHeight;
     GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
-    GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
-    GP<DjVuAnno>  pAnno = pPage->get_decoded_anno();
-    GPList<GMapArea> map_areas = pAnno->ant->map_areas;
-
-    CData oRes;
-    oRes.SkipLen();
-    double dKoefX = (double)nRasterW * dPageDpiX / 25.4 / dWidth;
-    double dKoefY = (double)nRasterH * dPageDpiY / 25.4 / dHeight;
-    for(GPosition pos(map_areas); pos; ++pos)
+    try
     {
-        GUTF8String str = map_areas[pos]->url;
-        oRes.WriteString((BYTE*)str.getbuf(), str.length());
-        double x = map_areas[pos]->get_xmin() * dKoefX;
-        std::string s = std::to_string(x);
-        oRes.WriteString((BYTE*)s.c_str(), s.length());
-        double y = map_areas[pos]->get_ymin() * dKoefY;
-        s = std::to_string(y);
-        oRes.WriteString((BYTE*)s.c_str(), s.length());
-        s = std::to_string(map_areas[pos]->get_xmax() * dKoefX - x);
-        oRes.WriteString((BYTE*)s.c_str(), s.length());
-        s = std::to_string(map_areas[pos]->get_ymax() * dKoefY - y);
-        oRes.WriteString((BYTE*)s.c_str(), s.length());
-    }
-    oRes.WriteLen();
+        GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
+        pPage->wait_for_complete_decode();
+        GP<DjVuAnno> pAnno = pPage->get_decoded_anno();
+        if (!pAnno)
+            return NULL;
+        GPList<GMapArea> map_areas = pAnno->ant->map_areas;
 
-    BYTE* res = oRes.GetBuffer();
-    oRes.ClearWithoutAttack();
-    return res;
+        CData oRes;
+        oRes.SkipLen();
+        double dKoefX = (double)nRasterW * dPageDpiX / 25.4 / dWidth;
+        double dKoefY = (double)nRasterH * dPageDpiY / 25.4 / dHeight;
+        for (GPosition pos(map_areas); pos; ++pos)
+        {
+            GUTF8String str = map_areas[pos]->url;
+            oRes.WriteString((BYTE*)str.getbuf(), str.length());
+            double x = map_areas[pos]->get_xmin() * dKoefX;
+            std::string s = std::to_string(x);
+            oRes.WriteString((BYTE*)s.c_str(), s.length());
+            double y = map_areas[pos]->get_ymin() * dKoefY;
+            s = std::to_string(y);
+            oRes.WriteString((BYTE*)s.c_str(), s.length());
+            s = std::to_string(map_areas[pos]->get_xmax() * dKoefX - x);
+            oRes.WriteString((BYTE*)s.c_str(), s.length());
+            s = std::to_string(map_areas[pos]->get_ymax() * dKoefY - y);
+            oRes.WriteString((BYTE*)s.c_str(), s.length());
+        }
+        oRes.WriteLen();
+
+        BYTE* res = oRes.GetBuffer();
+        oRes.ClearWithoutAttack();
+        return res;
+    }
+    catch (...) {}
+    return NULL;
 }
 #endif
 void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)

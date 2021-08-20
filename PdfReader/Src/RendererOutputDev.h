@@ -300,7 +300,8 @@ namespace PdfReader
 
 		bool                         *m_pbBreak;         // Внешняя остановка рендерера
 
-		std::stack<GfxClip>           m_sClip;
+		std::deque<GfxClip>           m_sClip;
+		std::deque<GfxClip>           m_sClipSaved;
 		bool                          m_bTiling;
 		bool                          m_bTransparentGroup;
 

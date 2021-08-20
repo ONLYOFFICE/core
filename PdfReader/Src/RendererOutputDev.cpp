@@ -466,13 +466,16 @@ namespace PdfReader
     }
     void RendererOutputDev::saveState(GfxState *pGState)
     {
-        m_sClip.push(GfxClip());
+
+            m_sClip.push_back(GfxClip());
         updateAll(pGState);
     }
     void RendererOutputDev::restoreState(GfxState *pGState)
     {
+
         if (!m_sClip.empty())
-            m_sClip.pop();
+            m_sClip.pop_back();
+
         updateAll(pGState);
     }
     void RendererOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
@@ -2962,10 +2965,10 @@ namespace PdfReader
 
         if (m_sClip.empty())
         {
-            m_sClip.push(GfxClip());
+            m_sClip.push_back(GfxClip());
         }
         //clipToPath(pGState, pGState->getPath(), pGState->getCTM(), false);
-        m_sClip.top().AddPath(pGState->getPath(), pGState->getCTM(), false);
+        m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
         updateClip(pGState);
     }
     void RendererOutputDev::eoClip(GfxState *pGState)
@@ -2975,9 +2978,9 @@ namespace PdfReader
 
         if (m_sClip.empty())
         {
-            m_sClip.push(GfxClip());
+            m_sClip.push_back(GfxClip());
         }
-        m_sClip.top().AddPath(pGState->getPath(), pGState->getCTM(), true);
+        m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), true);
         //clipToPath(pGState, pGState->getPath(), pGState->getCTM(), true);
         updateClip(pGState);
     }
@@ -2988,9 +2991,9 @@ namespace PdfReader
 
         if (m_sClip.empty())
         {
-            m_sClip.push(GfxClip());
+            m_sClip.push_back(GfxClip());
         }
-        m_sClip.top().AddPath(pGState->getPath(), pGState->getCTM(), false);
+        m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
         //clipToPath(pGState, pGState->getPath(), pGState->getCTM(), true);
         updateClip(pGState);
     }
@@ -3967,6 +3970,7 @@ namespace PdfReader
     void RendererOutputDev::updateClipAttack(GfxState *pGState)
     {
 
+            //return;
         int nPathIndex = -1;
         //if ( m_sClip && m_sClip->IsEqual( pClip, nPathIndex ) )
         //{
@@ -3977,26 +3981,26 @@ namespace PdfReader
 
         m_pRenderer->BeginCommand(c_nResetClipType);
         m_pRenderer->EndCommand(c_nResetClipType);
-
         if (m_sClip.empty()) return;
 
-        for (int nIndex = nPathIndexStart; nIndex < m_sClip.top().GetPathNum(); nIndex++)
-        {
-            GfxPath *pPath   = m_sClip.top().GetPath(nIndex);
-            bool    bFlag   = m_sClip.top().GetClipEo(nIndex);
-            double *pMatrix = m_sClip.top().GetMatrix(nIndex);
+        for (GfxClip &curClip : m_sClip) {
+            for (int nIndex = nPathIndexStart; nIndex < curClip.GetPathNum(); nIndex++)
+            {
+                GfxPath *pPath   = curClip.GetPath(nIndex);
+                bool    bFlag   = curClip.GetClipEo(nIndex);
+                double *pMatrix = curClip.GetMatrix(nIndex);
 
-            int     nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
-            nClipFlag |= c_nClipRegionIntersect;
+                int     nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
+                nClipFlag |= c_nClipRegionIntersect;
 
-            m_pRenderer->BeginCommand(c_nClipType);
-            m_pRenderer->put_ClipMode(nClipFlag);
-            DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);
-            m_pRenderer->EndCommand(c_nPathType);
-            m_pRenderer->EndCommand(c_nClipType);
-            m_pRenderer->PathCommandEnd();
+                m_pRenderer->BeginCommand(c_nClipType);
+                m_pRenderer->put_ClipMode(nClipFlag);
+                DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);
+                m_pRenderer->EndCommand(c_nPathType);
+                m_pRenderer->EndCommand(c_nClipType);
+                m_pRenderer->PathCommandEnd();
+            }
         }
-
 
 //            m_pRenderer->BeginCommand(c_nClipType);
 //            DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);

@@ -10,9 +10,13 @@ class GfxClip
 public:
     void AddPath(GfxPath *pPath, double *Matrix, bool bEo)
     {
-        m_vPaths.push_back(pPath);
-        m_vMatrix.push_back(Matrix);
-        m_vPathsClipEo.push_back(bEo);
+        if (pPath && Matrix)
+        {
+            m_vPaths.push_back(pPath->copy());
+            m_vMatrix.push_back(Matrix);
+            m_vPathsClipEo.push_back(bEo);
+        }
+
     }
 
     size_t GetPathNum()
@@ -36,7 +40,7 @@ public:
     }
 
 private:
-    std::vector<GfxPath*> m_vPaths;
+    std::vector<GfxPath *> m_vPaths;
     std::vector<bool> m_vPathsClipEo;
     std::vector<double*> m_vMatrix;
 };

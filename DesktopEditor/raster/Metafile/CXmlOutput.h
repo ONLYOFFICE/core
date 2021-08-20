@@ -140,6 +140,8 @@ namespace MetaFile
         void operator>>(TEmfSizeL&      oTEmfSizeL);
         void operator>>(TEmfRectL&      oTEmfRectL);
 
+        void operator>>(std::vector<TEmfPointL> &arPoints);
+        void operator>>(std::vector<TEmfPointS> &arPoints);
         void operator>>(std::vector<std::vector<TEmfPointL>>& arPoints);
         void operator>>(std::vector<std::vector<TEmfPointS>>& arPoints);
 
@@ -163,6 +165,8 @@ namespace MetaFile
         void operator>>(std::wstring&   wsValue);
         void operator>>(std::string&    sValue);
 
+        void ReadPoint(TEmfPointL& oPoint);
+        void ReadPoint(TEmfPointS& oPoint);
         void ReadDx(unsigned int  arunValue[], const unsigned int& unCount);
     };
 }

@@ -22,7 +22,8 @@ namespace MetaFile
             else if (wChar == L'"')
                    wsText += L"&quot;";
             else if (wChar == 0x00)
-                return wsText;
+                   return wsText;
+
             else wsText += wChar;
         return wsText;
     }
@@ -459,9 +460,9 @@ namespace MetaFile
     void CXmlOutput::WriteTEmfDibPatternBrush(const TEmfDibPatternBrush &oTEmfDibPatternBrush)
     {
         WriteNode(L"Usage",   oTEmfDibPatternBrush.Usage);
-        WriteNode(L"offBmi",  oTEmfDibPatternBrush.offBmi);
+        WriteNode(L"offBmi",  32/*oTEmfDibPatternBrush.offBmi*/);
         WriteNode(L"cbBmi",   oTEmfDibPatternBrush.cbBmi);
-        WriteNode(L"offBits", oTEmfDibPatternBrush.offBits);
+        WriteNode(L"offBits", 32 + oTEmfDibPatternBrush.cbBmi/*oTEmfDibPatternBrush.offBits*/);
         WriteNode(L"cbBits",  oTEmfDibPatternBrush.cbBits);
     }
 
@@ -482,6 +483,9 @@ namespace MetaFile
         WriteNode(L"Options",   oTEmfEmrText.Options);
         WriteNode(L"Rectangle", oTEmfEmrText.Rectangle);
         WriteNode(L"offDx",     76 + oTEmfEmrText.Chars * 2 + (oTEmfEmrText.Chars % 2) * 2/*oTEmfEmrText.offDx*/);
+
+        if (oTEmfEmrText.Chars == 0)
+                return;
 
         std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oTEmfEmrText.OutputString, oTEmfEmrText.Chars);
 
@@ -665,7 +669,19 @@ namespace MetaFile
         *this >> oTEmfHeader.oDevice;
         *this >> oTEmfHeader.oMillimeters;
 //        *this >> oTEmfHeader.oFrameToBounds;
-        //        *this >> oTEmfHeader.oFramePx;
+            //        *this >> oTEmfHeader.oFramePx;
+    }
+
+    void CXmlOutput::ReadPoint(TEmfPointL &oPoint)
+    {
+            *this >> oPoint.x;
+            *this >> oPoint.y;
+    }
+
+    void CXmlOutput::ReadPoint(TEmfPointS &oPoint)
+    {
+        *this >> oPoint.x;
+        *this >> oPoint.y;
     }
 
     void CXmlOutput::ReadDx(unsigned int arunValue[], const unsigned int &unCount)
@@ -881,6 +897,9 @@ namespace MetaFile
         *this >> oTEmfEmrText.Rectangle;
         *this >> oTEmfEmrText.offDx;
 
+        if (oTEmfEmrText.Chars == 0)
+                return;
+
         oTEmfEmrText.OutputString   = new unsigned short[oTEmfEmrText.Chars];
         oTEmfEmrText.OutputDx       = new unsigned int[oTEmfEmrText.Chars];
 
@@ -923,6 +942,7 @@ namespace MetaFile
 
         BYTE* pBuffer;
         int unSize = NSBase64::Base64DecodeGetRequiredLength(sBuffer.length());
+
         pBuffer = new BYTE[unSize];
         NSBase64::Base64Decode(sBuffer.c_str(), sBuffer.length(), pBuffer, &unSize);
         oCDataStream.SetStream(pBuffer, unSize);
@@ -974,6 +994,70 @@ namespace MetaFile
         *this >> oTEmfRectL.lBottom;
     }
 
+    void CXmlOutput::operator>>(std::vector<TEmfPointL> &arPoints)
+    {
+            if (!m_pXmlLiteReader->ReadNextNode())
+                return;
+
+            unsigned int unDepth = m_pXmlLiteReader->GetDepth();
+
+            do
+            {
+                TEmfPointL oPoint;
+                ReadPoint(oPoint);
+                arPoints.push_back(oPoint);
+            }
+            while (m_pXmlLiteReader->ReadNextSiblingNode(unDepth - 1));
+    }
+
+    void CXmlOutput::operator>>(std::vector<TEmfPointS> &arPoints)
+    {
+            if (!m_pXmlLiteReader->ReadNextNode())
+                return;
+
+            unsigned int unDepth = m_pXmlLiteReader->GetDepth();
+
+            do
+            {
+                TEmfPointS oPoint;
+                ReadPoint(oPoint);
+                arPoints.push_back(oPoint);
+            }
+            while (m_pXmlLiteReader->ReadNextSiblingNode(unDepth - 1));
+    }
+
+    void CXmlOutput::operator>>(std::vector<std::vector<TEmfPointL>> &arPoints)
+    {
+            if (!m_pXmlLiteReader->ReadNextNode())
+                return;
+
+            unsigned int unDepth = m_pXmlLiteReader->GetDepth();
+
+            do
+            {
+                std::vector<TEmfPointL> arTempPoints;
+                *this >> arTempPoints;
+                arPoints.push_back(arTempPoints);
+            }
+            while (m_pXmlLiteReader->ReadNextSiblingNode(unDepth - 1));
+    }
+
+    void CXmlOutput::operator>>(std::vector<std::vector<TEmfPointS>> &arPoints)
+    {
+            if (!m_pXmlLiteReader->ReadNextNode())
+                return;
+
+            unsigned int unDepth = m_pXmlLiteReader->GetDepth();
+
+            do
+            {
+                std::vector<TEmfPointS> arTempPoints;
+                *this >> arTempPoints;
+                arPoints.push_back(arTempPoints);
+            }
+            while (m_pXmlLiteReader->ReadNextSiblingNode(unDepth - 1));
+    }
+
     void CXmlOutput::operator>>(TEmfSizeL &oTEmfSizeL)
     {
         if (!m_pXmlLiteReader->ReadNextNode())
@@ -988,8 +1072,7 @@ namespace MetaFile
         if (!m_pXmlLiteReader->ReadNextNode())
             return;
 
-        *this >> oTEmfPointL.x;
-        *this >> oTEmfPointL.y;
+        ReadPoint(oTEmfPointL);
     }
 
     void CXmlOutput::operator>>(TEmfPointS &oTEmfPointS)
@@ -997,8 +1080,7 @@ namespace MetaFile
         if (!m_pXmlLiteReader->ReadNextNode())
             return;
 
-        *this >> oTEmfPointS.x;
-        *this >> oTEmfPointS.y;
+        ReadPoint(oTEmfPointS);
     }
 
     void CXmlOutput::operator>>(TRect &oTRect)

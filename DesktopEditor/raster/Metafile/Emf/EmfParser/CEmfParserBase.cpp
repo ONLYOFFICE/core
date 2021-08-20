@@ -977,10 +977,10 @@ namespace MetaFile
                 UpdateOutputDC();
         }
 
-        void CEmfParserBase::HANDLE_EMR_EXTCREATEPEN(unsigned int &unPenIndex, CEmfLogPen *pPen)
+        void CEmfParserBase::HANDLE_EMR_EXTCREATEPEN(unsigned int &unPenIndex, CEmfLogPen *pPen, const std::vector<unsigned int>& arUnused)
         {
                 if (NULL != m_pInterpretator)
-                        m_pInterpretator->HANDLE_EMR_EXTCREATEPEN(unPenIndex, pPen);
+                        m_pInterpretator->HANDLE_EMR_EXTCREATEPEN(unPenIndex, pPen, arUnused);
 
                 m_oPlayer.RegisterObject(unPenIndex, (CEmfObjectBase*)pPen);
         }
@@ -1296,7 +1296,6 @@ namespace MetaFile
         {
                 if (NULL != m_pInterpretator)
                         m_pInterpretator->HANDLE_EMR_SETLAYOUT(unLayoutMode);
-
                 // TODO: реализовать
         }
 
@@ -1304,7 +1303,6 @@ namespace MetaFile
         {
                 if (NULL != m_pInterpretator)
                         m_pInterpretator->HANDLE_EMR_SETBRUSHORGEX(oOrigin);
-
                 // TODO: реализовать
         }
 
@@ -1384,7 +1382,8 @@ namespace MetaFile
                 if (NULL != m_pInterpretator)
                         m_pInterpretator->HANDLE_EMR_EXTTEXTOUTA(oTEmfExtTextoutA);
 
-                DrawTextA(oTEmfExtTextoutA.aEmrText, oTEmfExtTextoutA.iGraphicsMode);
+                if (oTEmfExtTextoutA.aEmrText.Chars > 0)
+                        DrawTextA(oTEmfExtTextoutA.aEmrText, oTEmfExtTextoutA.iGraphicsMode);
         }
 
         void CEmfParserBase::HANDLE_EMR_EXTTEXTOUTW(TEmfExtTextoutW &oTEmfExtTextoutW)
@@ -1392,7 +1391,8 @@ namespace MetaFile
                 if (NULL != m_pInterpretator)
                         m_pInterpretator->HANDLE_EMR_EXTTEXTOUTW(oTEmfExtTextoutW);
 
-                DrawTextW(oTEmfExtTextoutW.wEmrText, oTEmfExtTextoutW.iGraphicsMode);
+                if (oTEmfExtTextoutW.wEmrText.Chars > 0)
+                        DrawTextW(oTEmfExtTextoutW.wEmrText, oTEmfExtTextoutW.iGraphicsMode);
         }
 
         void CEmfParserBase::HANDLE_EMR_LINETO(TEmfPointL &oPoint)
@@ -1555,10 +1555,9 @@ namespace MetaFile
                 {
                         m_oStream.SeekBack(8);
                         m_pInterpretator->HANDLE_EMR_UNKNOWN(m_oStream);
-                        m_oStream.Skip(unRecordSize);
                 }
-                else
-                        m_oStream.Skip(unRecordSize);
+
+                m_oStream.Skip(unRecordSize);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYBEZIER(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
@@ -1672,7 +1671,7 @@ namespace MetaFile
                 HANDLE_EMR_POLYGON_BASE<TEmfPointL>(oBounds, arPoints);
         }
 
-        void CEmfParserBase::HANDLE_EMR_POLYGON16(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
+        void CEmfParserBase::HANDLE_EMR_POLYGON(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
         {
                 HANDLE_EMR_POLYGON_BASE<TEmfPointS>(oBounds, arPoints);
         }

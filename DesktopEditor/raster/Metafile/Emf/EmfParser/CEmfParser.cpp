@@ -466,11 +466,13 @@ namespace MetaFile
                 if (!pPen)
                         return SetError();
 
+                std::vector<unsigned int> arUnused(2);
+
                 m_oStream >> pPen->PenStyle;
                 m_oStream >> pPen->Width;
-                m_oStream.Skip(4);// BrushStyle
+                m_oStream >> arUnused[0]; // BrushStyle
                 m_oStream >> pPen->Color;
-                m_oStream.Skip(4); // BrushHatch
+                m_oStream >> arUnused[1]; // BrushHatch
 
                 m_oStream >> pPen->NumStyleEntries;
 
@@ -496,7 +498,7 @@ namespace MetaFile
                 // Пропускаем часть с картинкой, если она была
                 m_oStream.Skip(current_size);
 
-                HANDLE_EMR_EXTCREATEPEN(ulPenIndex, pPen);
+                HANDLE_EMR_EXTCREATEPEN(ulPenIndex, pPen, arUnused);
         }
 
         void CEmfParser::Read_EMR_CREATEPEN()

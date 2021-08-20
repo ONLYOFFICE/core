@@ -279,10 +279,10 @@ namespace MetaFile
                         pInterpretator->HANDLE_EMR_SETMITERLIMIT(unMeterLimit);
         }
 
-        void CEmfInterpretatorArray::HANDLE_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen)
+        void CEmfInterpretatorArray::HANDLE_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen, const std::vector<unsigned int>& arUnused)
         {
                 for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
-                        pInterpretator->HANDLE_EMR_EXTCREATEPEN(unPenIndex, pPen);
+                        pInterpretator->HANDLE_EMR_EXTCREATEPEN(unPenIndex, pPen, arUnused);
         }
 
         void CEmfInterpretatorArray::HANDLE_EMR_CREATEPEN(const unsigned int &unPenIndex, const unsigned int &unWidthX, const CEmfLogPen *pPen)

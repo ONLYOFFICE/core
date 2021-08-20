@@ -50,7 +50,7 @@ namespace MetaFile
                 void HANDLE_EMR_SETBKMODE(const unsigned int &unBgMode) override ;
                 void HANDLE_EMR_DELETEOBJECT(const unsigned int &unObjectIndex) override ;
                 void HANDLE_EMR_SETMITERLIMIT(const unsigned int &unMeterLimit) override ;
-                void HANDLE_EMR_EXTCREATEPEN(const unsigned int& unPenIndex, CEmfLogPen* pPen) override ;
+                void HANDLE_EMR_EXTCREATEPEN(const unsigned int& unPenIndex, CEmfLogPen* pPen, const std::vector<unsigned int>& arUnused) override ;
                 void HANDLE_EMR_CREATEPEN(const unsigned int& unPenIndex, const unsigned int& unWidthX, const CEmfLogPen* pPen) override ;
                 void HANDLE_EMR_SETPOLYFILLMODE(const unsigned int& unFillMode) override ;
                 void HANDLE_EMR_BEGINPATH() override ;

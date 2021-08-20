@@ -149,7 +149,7 @@ namespace MetaFile
                 void HANDLE_EMR_SETBKMODE(unsigned int &unBgMode);
                 void HANDLE_EMR_DELETEOBJECT(unsigned int &unObjectIndex);
                 void HANDLE_EMR_SETMITERLIMIT(unsigned int &unMeterLimit);
-                void HANDLE_EMR_EXTCREATEPEN(unsigned int& unPenIndex, CEmfLogPen* pPen);
+                void HANDLE_EMR_EXTCREATEPEN(unsigned int& unPenIndex, CEmfLogPen* pPen, const std::vector<unsigned int>& arUnused);
                 void HANDLE_EMR_CREATEPEN(unsigned int& unPenIndex, unsigned int& unWidthX, CEmfLogPen* pPen);
                 void HANDLE_EMR_SETPOLYFILLMODE(unsigned int& unFillMode);
                 void HANDLE_EMR_BEGINPATH();
@@ -200,7 +200,7 @@ namespace MetaFile
                 void HANDLE_EMR_POLYDRAW(TEmfRectL &oBounds, TEmfPointS *arPoints, unsigned int &unCount, unsigned char *pAbTypes);
                 template<typename T> void HANDLE_EMR_POLYDRAW_BASE(TEmfRectL &oBounds, T *arPoints, unsigned int &unCount, unsigned char *pAbTypes);
                 void HANDLE_EMR_POLYGON(TEmfRectL& oBounds, std::vector<TEmfPointL>& arPoints);
-                void HANDLE_EMR_POLYGON16(TEmfRectL& oBounds, std::vector<TEmfPointS>& arPoints);
+                void HANDLE_EMR_POLYGON(TEmfRectL& oBounds, std::vector<TEmfPointS>& arPoints);
                 template<typename T> void HANDLE_EMR_POLYGON_BASE(TEmfRectL& oBounds, std::vector<T>& arPoints);
                 void HANDLE_EMR_POLYLINE(TEmfRectL& oBounds, std::vector<TEmfPointL>& arPoints);
                 void HANDLE_EMR_POLYLINE(TEmfRectL& oBounds, std::vector<TEmfPointS>& arPoints);

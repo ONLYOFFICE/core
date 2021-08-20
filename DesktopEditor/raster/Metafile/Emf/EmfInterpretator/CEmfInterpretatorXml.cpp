@@ -203,18 +203,20 @@ namespace MetaFile
                         m_pOutputXml->WriteNodeEnd(L"EMR_SETMITERLIMIT");
         }
 
-        void CEmfInterpretatorXml::HANDLE_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen)
+        void CEmfInterpretatorXml::HANDLE_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen, const std::vector<unsigned int>& arUnused)
         {
-                if (NULL == pPen)
+                if (NULL == pPen || arUnused.size() < 2)
                         return;
 
                 m_pOutputXml->WriteNodeBegin(L"EMR_EXTCREATEPEN");
                         m_pOutputXml->WriteNode(L"ihPen",   unPenIndex);
                         m_pOutputXml->WriteNodeBegin(L"LogPenEx");
-                                m_pOutputXml->WriteNode(L"PenStyle",	pPen->PenStyle);
-                                m_pOutputXml->WriteNode(L"Width",	pPen->Width);
-                                m_pOutputXml->WriteNode(L"ColorRef",    pPen->Color);
-                                m_pOutputXml->WriteNode(L"NumStyleEntries", pPen->NumStyleEntries);
+                                m_pOutputXml->WriteNode(L"PenStyle",            pPen->PenStyle);
+                                m_pOutputXml->WriteNode(L"Width",               pPen->Width);
+                                m_pOutputXml->WriteNode(L"BrushStyle",          arUnused[0]);
+                                m_pOutputXml->WriteNode(L"ColorRef",            pPen->Color);
+                                m_pOutputXml->WriteNode(L"BrushHatch",          arUnused[1]);
+                                m_pOutputXml->WriteNode(L"NumStyleEntries",     pPen->NumStyleEntries);
 
                                 for (unsigned int ulIndex = 0; ulIndex < pPen->NumStyleEntries; ulIndex++)
                                         m_pOutputXml->WriteNode(L"StyleEntry" + std::to_wstring(ulIndex + 1),  pPen->StyleEntry[ulIndex]);
@@ -354,9 +356,14 @@ namespace MetaFile
                         m_pOutputXml->WriteNode(L"", oDibBrush);
 
                         unsigned int unSize = oDibBrush.cbBmi + oDibBrush.cbBits;
+                        unsigned int unSkip = oDibBrush.offBmi - 32;
+
+                        oDataStream.Skip(unSkip);
 
                         if (unSize > 0)
                                 m_pOutputXml->WriteNode(L"Buffer", oDataStream, unSize);
+
+                        oDataStream.SeekBack(unSkip);
 
                         m_pOutputXml->WriteNodeEnd(L"EMR_CREATEDIBPATTERNBRUSHPT");
         }
@@ -655,8 +662,10 @@ namespace MetaFile
                 oDataStream.Skip(4);
                 oDataStream >> unRecordSize;
 
+                oDataStream.SeekBack(8);
+
                 m_pOutputXml->WriteNodeBegin(L"EMR_UNKNOWN");
-                        m_pOutputXml->WriteNode(L"", oDataStream, unRecordSize);
+                        m_pOutputXml->WriteNode(L"Buffer", oDataStream, unRecordSize);
                         m_pOutputXml->WriteNodeEnd(L"EMR_UNKNOWN");
         }
 
@@ -687,13 +696,10 @@ namespace MetaFile
                 if (arPoints.empty())
                         return;
 
-                unsigned int unNumberPoints = arPoints.size();
-
                 m_pOutputXml->WriteNodeBegin(oRecordData.m_wsName);
                         m_pOutputXml->WriteNode(L"Bounds",          oRecordData.m_oBounds);
-                        m_pOutputXml->WriteNode(L"NumberPoints",    unNumberPoints);
 
-                        for (unsigned int unIndex = 0; unIndex < unNumberPoints; ++unIndex)
+                        for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
                                 m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), arPoints[unIndex]);
 
                         m_pOutputXml->WriteNodeEnd(oRecordData.m_wsName);
@@ -707,7 +713,6 @@ namespace MetaFile
 
                 m_pOutputXml->WriteNodeBegin(oRecordData.m_wsName);
                         m_pOutputXml->WriteNode(L"Bounds",              oRecordData.m_oBounds);
-//                        m_pOutputXml->WriteNode(L"NumberOfPolygons ",   (unsigned int)arPoints.size());
 
                         for (unsigned int unPolygonIndex = 0; unPolygonIndex < arPoints.size(); ++unPolygonIndex)
                         {

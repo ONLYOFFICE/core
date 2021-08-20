@@ -40,7 +40,7 @@ namespace MetaFile
                 virtual void HANDLE_EMR_SETBKMODE(const unsigned int&) = 0;
                 virtual void HANDLE_EMR_DELETEOBJECT(const unsigned int&) = 0;
                 virtual void HANDLE_EMR_SETMITERLIMIT(const unsigned int&) = 0;
-                virtual void HANDLE_EMR_EXTCREATEPEN(const unsigned int&, CEmfLogPen*) = 0;
+                virtual void HANDLE_EMR_EXTCREATEPEN(const unsigned int&, CEmfLogPen*, const std::vector<unsigned int>&) = 0;
                 virtual void HANDLE_EMR_CREATEPEN(const unsigned int&, const unsigned int&, const CEmfLogPen*) = 0;
                 virtual void HANDLE_EMR_SETPOLYFILLMODE(const unsigned int&) = 0;
                 virtual void HANDLE_EMR_BEGINPATH() = 0;

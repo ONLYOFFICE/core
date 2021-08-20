@@ -403,7 +403,6 @@ namespace MetaFile
         {
                 *m_pOutput >> m_oStream;
                 m_oStream.Skip(8);
-
                 HANDLE_EMR_UNKNOWN(0);
 //                m_pOutput->ReadNextRecord();
         }
@@ -537,11 +536,15 @@ namespace MetaFile
                 if (!pPen)
                         return SetError();
 
+                std::vector<unsigned int> arUnused(2);
+
                 m_pOutput->ReadNextNode();
 
                 *m_pOutput >> pPen->PenStyle;
                 *m_pOutput >> pPen->Width;
+                *m_pOutput >> arUnused[0];
                 *m_pOutput >> pPen->Color;
+                *m_pOutput >> arUnused[1];
 
                 *m_pOutput >> pPen->NumStyleEntries;
 
@@ -564,7 +567,7 @@ namespace MetaFile
                         pPen->StyleEntry = NULL;
                 }
 
-                HANDLE_EMR_EXTCREATEPEN(ulPenIndex, pPen);
+                HANDLE_EMR_EXTCREATEPEN(ulPenIndex, pPen, arUnused);
         }
 
         void CEmfxParser::Read_EMR_CREATEPEN()
@@ -950,24 +953,10 @@ namespace MetaFile
         template<typename T>void CEmfxParser::Read_EMR_POLYBEZIER_BASE()
         {
                 TEmfRectL oBounds;
-                unsigned int ulCount;
+                std::vector<T> arPoints;
 
                 *m_pOutput >> oBounds;
-                *m_pOutput >> ulCount;
-
-                if (0 == ulCount)
-                        return;
-
-                std::vector<T> arPoints(ulCount);
-
-                *m_pOutput >> arPoints[0];
-
-                for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex += 3)
-                {
-                        *m_pOutput >> arPoints[ulIndex];
-                        *m_pOutput >> arPoints[ulIndex + 1];
-                        *m_pOutput >> arPoints[ulIndex + 2];
-                }
+                *m_pOutput >> arPoints;
 
                 HANDLE_EMR_POLYBEZIER(oBounds, arPoints);
         }
@@ -985,24 +974,12 @@ namespace MetaFile
         template<typename T>void CEmfxParser::Read_EMR_POLYBEZIERTO_BASE()
         {
                 TEmfRectL oBounds;
-                unsigned int ulCount;
+                std::vector<T> arPoints;
 
                 *m_pOutput >> oBounds;
-                *m_pOutput >> ulCount;
+                *m_pOutput >> arPoints;
 
-                std::vector<T> arPoints(ulCount);
-
-                for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex += 3)
-                {
-                        if (ulCount - ulIndex < 2)
-                                return SetError();
-
-                        *m_pOutput >> arPoints[ulIndex];
-                        *m_pOutput >> arPoints[ulIndex + 1];
-                        *m_pOutput >> arPoints[ulIndex + 2];
-                }
-
-                HANDLE_EMR_POLYBEZIERTO_BASE(oBounds, arPoints);
+                HANDLE_EMR_POLYBEZIERTO(oBounds, arPoints);
         }
 
         void CEmfxParser::Read_EMR_POLYDRAW()
@@ -1046,7 +1023,7 @@ namespace MetaFile
                 for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
                         *m_pOutput >> pAbTypes[unIndex];
 
-                HANDLE_EMR_POLYDRAW_BASE(oBounds, pPoints, unCount, pAbTypes);
+                HANDLE_EMR_POLYDRAW(oBounds, pPoints, unCount, pAbTypes);
 
                 delete[] pPoints;
                 delete[] pAbTypes;
@@ -1065,22 +1042,12 @@ namespace MetaFile
         template<typename T>void CEmfxParser::Read_EMR_POLYGON_BASE()
         {
                 TEmfRectL oBounds;
-                unsigned int ulCount;
+                std::vector<T> arPoints;
 
                 *m_pOutput >> oBounds;
-                *m_pOutput >> ulCount;
+                *m_pOutput >> arPoints;
 
-                if (ulCount <= 0)
-                        return;
-
-                std::vector<T> arPoints(ulCount);
-
-                *m_pOutput >> arPoints[0];
-
-                for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
-                        *m_pOutput >> arPoints[ulIndex];
-
-                HANDLE_EMR_POLYGON_BASE(oBounds, arPoints);
+                HANDLE_EMR_POLYGON(oBounds, arPoints);
         }
 
         void CEmfxParser::Read_EMR_POLYLINE()
@@ -1096,22 +1063,12 @@ namespace MetaFile
         template<typename T>void CEmfxParser::Read_EMR_POLYLINE_BASE()
         {
                 TEmfRectL oBounds;
-                unsigned int ulCount;
+                std::vector<T> arPoints;
 
                 *m_pOutput >> oBounds;
-                *m_pOutput >> ulCount;
+                *m_pOutput >> arPoints;
 
-                if (0 == ulCount)
-                        return;
-
-                std::vector<T> arPoints(ulCount);
-
-                *m_pOutput >> arPoints[0];
-
-                for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
-                        *m_pOutput >> arPoints[ulIndex];
-
-                HANDLE_EMR_POLYLINE_BASE(oBounds, arPoints);
+                HANDLE_EMR_POLYLINE(oBounds, arPoints);
         }
 
         void CEmfxParser::Read_EMR_POLYLINETO()
@@ -1127,17 +1084,12 @@ namespace MetaFile
         template<typename T>void CEmfxParser::Read_EMR_POLYLINETO_BASE()
         {
                 TEmfRectL oBounds;
-                unsigned int ulCount;
+                std::vector<T> arPoints;
 
                 *m_pOutput >> oBounds;
-                *m_pOutput >> ulCount;
+                *m_pOutput >> arPoints;
 
-                std::vector<T> arPoints(ulCount);
-
-                for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
-                        *m_pOutput >> arPoints[ulIndex];
-
-                HANDLE_EMR_POLYLINETO_BASE(oBounds, arPoints);
+                HANDLE_EMR_POLYLINETO(oBounds, arPoints);
         }
 
         void CEmfxParser::Read_EMR_POLYPOLYGON()
@@ -1153,21 +1105,12 @@ namespace MetaFile
         template<typename T>void CEmfxParser::Read_EMR_POLYPOLYGON_BASE()
         {
                 TEmfRectL oBounds;
-                unsigned int unValue;
-
-                //TODO: сделать сохранение в XML
-
-                *m_pOutput >> oBounds;
-//                *m_pOutput >> unValue;
-
-                std::wcout << L"Vot: " << m_pOutput->GetName() << std::endl;
-
-
                 std::vector<std::vector<T>> arPoints;
 
+                *m_pOutput >> oBounds;
                 *m_pOutput >> arPoints;
 
-                HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
+                HANDLE_EMR_POLYPOLYGON(oBounds, arPoints);
         }
 
         void CEmfxParser::Read_EMR_POLYPOLYLINE()
@@ -1183,16 +1126,10 @@ namespace MetaFile
         template<typename T>void CEmfxParser::Read_EMR_POLYPOLYLINE_BASE()
         {
                 TEmfRectL oBounds;
-                unsigned int unValue;
-
-                //TODO: сделать сохранение в XML
-
-                *m_pOutput >> oBounds;
-                *m_pOutput >> unValue;
-
-
                 std::vector<std::vector<T>> arPoints;
 
+                *m_pOutput >> oBounds;
+                *m_pOutput >> arPoints;
 
                 HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
         }

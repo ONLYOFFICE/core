@@ -29,6 +29,8 @@ private slots:
 
     void on_actionStatistics_triggered();
 
+    void on_actionSave_XML_as_triggered();
+
 private:
     Ui::MainWindow      *ui;
     std::wstring        m_wsPathToFile;

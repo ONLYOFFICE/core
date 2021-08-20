@@ -177,6 +177,7 @@ void MainWindow::on_actionChange_File_triggered()
     ReadFile();
 
     ui->actionStatistics->setEnabled(true);
+    ui->actionSave_XML_as->setEnabled(true);
 }
 
 
@@ -186,5 +187,12 @@ void MainWindow::on_actionStatistics_triggered()
     pStaticsWidget->SetMainWindow(this);
     pStaticsWidget->SetStatistics(ui->treeView->GetStatistics());
     pStaticsWidget->show();
+}
+
+
+void MainWindow::on_actionSave_XML_as_triggered()
+{
+        QString sSaveFilePath = QFileDialog::getSaveFileName(this, tr("Save file"), "", tr("XML file (*.xml)"));
+        ui->treeView->SaveInFile(sSaveFilePath);
 }
 

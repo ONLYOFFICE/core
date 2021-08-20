@@ -47,7 +47,7 @@ void CMetafileTreeView::SetMetafile(const std::wstring &wsXmlFilePath)
     QStandardItem *pStandardItem = new QStandardItem(QString::fromStdWString(L'<' + oXmlRootNode.GetName() + L'>'));
     pStandardItem->setEditable(false);
 
-    ReadXmlNode(oXmlRootNode, *pStandardItem, 1);
+    ReadXmlNode(oXmlRootNode, pStandardItem, 1);
 
     pStandardItemModel->appendRow(pStandardItem);
     setModel(pStandardItemModel);
@@ -85,10 +85,24 @@ void CMetafileTreeView::Clear()
 
 QMap<QString, unsigned int>* CMetafileTreeView::GetStatistics()
 {
-    return &m_mStatistics;
+        return &m_mStatistics;
 }
 
-void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem& oStandartItem, unsigned int unLevel)
+bool CMetafileTreeView::SaveInFile(const QString &sSaveFilePath)
+{
+        QStandardItemModel *pStandardItemModel = (QStandardItemModel*)model();
+        QStandardItem *pRootNode = pStandardItemModel->item(0);
+
+        XmlUtils::CXmlWriter oXmlWriter;
+
+        WriteXmlNode(oXmlWriter, pRootNode);
+
+        oXmlWriter.SaveToFile(sSaveFilePath.toStdWString());
+
+        return true;
+}
+
+void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem* oStandartItem, unsigned int unLevel)
 {
     XmlUtils::CXmlNodes oXmlChilds;
 

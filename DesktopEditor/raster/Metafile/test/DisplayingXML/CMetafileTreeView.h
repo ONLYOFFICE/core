@@ -20,8 +20,11 @@ public:
     void Clear();
     QMap<QString, unsigned int>* GetStatistics();
 
+    bool SaveInFile(const QString& sSaveFilePath);
+
 private:
-    void ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem& oStandartItem, unsigned int unLevel = 0);
+    void ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem* oStandartItem, unsigned int unLevel = 0);
+    void WriteXmlNode(XmlUtils::CXmlWriter& oXmlWriter, QStandardItem* oStandartItem);
 
     QMap<QString, unsigned int> m_mStatistics;
 };

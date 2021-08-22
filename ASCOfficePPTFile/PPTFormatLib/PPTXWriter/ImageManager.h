@@ -127,7 +127,7 @@ namespace PPT_FORMAT
 				nIndexExt = strInput1.rfind(wchar_t('.'));
 				strExts =  nIndexExt < 0 ? L"" : strInput1.substr(nIndexExt);
 			}
-			if (strExts == _T(".tmp"))		strExts = strDefaultExt;
+			if (strExts == _T(".tmp") || strExts.empty()) strExts = strDefaultExt;
 
 			std::wstring strMediaName = Template + std::to_wstring(++Indexer);
 
@@ -302,7 +302,7 @@ namespace PPT_FORMAT
             std::wstring strRels = L"<Relationship Id=\"";
 
             strRels += strRid + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"";
-            strRels += strHyperlink;
+            strRels += XmlUtils::EncodeXmlStringExtend(strHyperlink);
             strRels += (isExternal ? L"\" TargetMode=\"External\" />" : L"\"/>");
 
             m_oWriter.WriteString(strRels);

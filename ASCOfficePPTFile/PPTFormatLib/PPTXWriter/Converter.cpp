@@ -1072,7 +1072,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTable(CStringWriter& oWriter, CRelsGenerator&
         oWriter.WriteString(gf.toXML());
     } else
     {
-        oWriter.WriteString(table.getXmlForGraphicFrame());
+        oWriter.WriteString(table.getXmlForGraphicFrame(pElement->m_lID, pElement->m_lPlaceholderID));
     }
 }
 

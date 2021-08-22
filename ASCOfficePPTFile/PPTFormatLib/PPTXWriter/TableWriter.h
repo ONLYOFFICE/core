@@ -160,7 +160,7 @@ private:
     void FillRow(PPTX::Logic::TableRow& oRow, ProtoTableRow &arrCells);
 
 public:
-    std::wstring getXmlForGraphicFrame()const;
+    std::wstring getXmlForGraphicFrame(int ID, int idx)const;
 private:
     void CorrectGraphicFrame(PPTX::Logic::GraphicFrame& oGraphicFrame);
     void FillnvPr(PPTX::Logic::NvPr& oNvPr);

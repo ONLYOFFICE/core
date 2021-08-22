@@ -663,7 +663,7 @@ void Animation::FillCBhvr(
                 pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1 != 0xFFFFFFFF)
         {
             oBhvr.tgtEl.spTgt->txEl         = new PPTX::Logic::TxEl;
-            oBhvr.tgtEl.spTgt->txEl->charRg = true;
+            oBhvr.tgtEl.spTgt->txEl->charRg = false;
             oBhvr.tgtEl.spTgt->txEl->st     = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1;
             oBhvr.tgtEl.spTgt->txEl->end    = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2;
         }

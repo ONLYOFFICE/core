@@ -1,4 +1,4 @@
-#include "TableWriter.h"
+﻿#include "TableWriter.h"
 #include "TxBodyConverter.h"
 #include <iostream>
 
@@ -387,7 +387,7 @@ void TableWriter::FillRow(PPTX::Logic::TableRow &oRow, ProtoTableRow& arrCells)
     }
 }
 
-std::wstring TableWriter::getXmlForGraphicFrame() const
+std::wstring TableWriter::getXmlForGraphicFrame(int ID, int idx) const
 {
     auto& rXml = m_pTableElement->m_xmlRawData;
 
@@ -397,7 +397,20 @@ std::wstring TableWriter::getXmlForGraphicFrame() const
     xml += std::wstring(rXml.begin() + startIter, rXml.begin() + endIter);
     xml += L"</p:graphicFrame>";
 
-    return xml;
+	PPTX::Logic::GraphicFrame graphic_frame;
+	
+	graphic_frame.fromXMLString(xml);
+	
+	if (graphic_frame.nvGraphicFramePr.IsInit())
+	{
+		graphic_frame.nvGraphicFramePr->cNvPr.id = ID; // или менять в карте связей для анимаций
+		
+		if (graphic_frame.nvGraphicFramePr->nvPr.ph.IsInit() && idx >= 0)
+		{//проверить
+			graphic_frame.nvGraphicFramePr->nvPr.ph->idx = std::to_wstring(idx);
+		}
+	}
+    return graphic_frame.toXML();
 }
 
 void TableWriter::CorrectGraphicFrame(PPTX::Logic::GraphicFrame &oGraphicFrame)

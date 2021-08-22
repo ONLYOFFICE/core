@@ -59,17 +59,6 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 
     PPT_FORMAT::CTextPFRun* pPF = &oLevel.m_oPFRun;
 
-    if (pPF->textDirection.is_init())
-    {
-        if (pPF->textDirection.get() == 1)	oWriter.WriteString(L" rtl=\"1\"");
-        else								oWriter.WriteString(L" rtl=\"0\"");
-    }
-    if (pPF->fontAlign.is_init())
-    {
-        std::wstring strProp = GetFontAlign(pPF->fontAlign.get());
-        oWriter.WriteString(L" fontAlgn=\"" + strProp + L"\"");
-    }
-
     int leftMargin = 0;
     if (pPF->leftMargin.is_init())
     {
@@ -92,7 +81,17 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
         std::wstring strProp = std::to_wstring(pPF->defaultTabSize.get());
         oWriter.WriteString(L" defTabSz=\"" + strProp + L"\"");
     }
-    oWriter.WriteString(L">");
+	if (pPF->textDirection.is_init())
+	{
+		if (pPF->textDirection.get() == 1)	oWriter.WriteString(L" rtl=\"1\"");
+		else								oWriter.WriteString(L" rtl=\"0\"");
+	}
+	if (pPF->fontAlign.is_init())
+	{
+		std::wstring strProp = GetFontAlign(pPF->fontAlign.get());
+		oWriter.WriteString(L" fontAlgn=\"" + strProp + L"\"");
+	}
+	oWriter.WriteString(L">");
 
     if (pPF->tabStops.size() > 0)
     {
@@ -217,7 +216,14 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 
     PPT_FORMAT::CTextCFRun* pCF = &oLevel.m_oCFRun;
 
-    if (pCF->Size.is_init())
+	if (pCF->Language.is_init())
+	{
+		std::wstring str_lang = msLCID2wstring(pCF->Language.get());
+
+		if (str_lang.length() > 0)
+			oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
+	}
+	if (pCF->Size.is_init())
     {
         std::wstring str = std::to_wstring((int)(100 * pCF->Size.get()));
         oWriter.WriteString(L" sz=\"" + str + L"\"");
@@ -236,13 +242,7 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
         else
             oWriter.WriteString(std::wstring(L" i=\"0\""));
     }
-    if (pCF->Language.is_init())
-    {
-        std::wstring str_lang = msLCID2wstring(pCF->Language.get());
 
-        if (str_lang.length() > 0)
-            oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
-    }
     oWriter.WriteString(std::wstring(L">"));
 
     if (pCF->Color.is_init())
@@ -1274,29 +1274,21 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
         //	if (pParagraph->m_arSpans.size() == 1 && pParagraph->m_arSpans[0].m_strText.empty()) break;
         //}
 
-        std::wstring _str1 = std::to_wstring(pParagraph->m_lTextLevel);
-        m_oWriter.WriteString(L"<a:p><a:pPr lvl=\"" + _str1 + L"\"");
+        m_oWriter.WriteString(L"<a:p><a:pPr");
 
         PPT_FORMAT::CTextPFRun* pPF = &pParagraph->m_oPFRun;
-
-        if (pPF->textDirection.is_init())
-        {
-            if (pPF->textDirection.get() == 1)	m_oWriter.WriteString(std::wstring(L" rtl=\"1\""));
-            else								m_oWriter.WriteString(std::wstring(L" rtl=\"0\""));
-        }
-        if (pPF->fontAlign.is_init())
-        {
-            std::wstring strProp = CStylesWriter::GetFontAlign(pPF->fontAlign.get());
-            m_oWriter.WriteString(std::wstring(L" fontAlgn=\"") + strProp + L"\"");
-        }
-        int leftMargin = 0;
+        
+		int leftMargin = 0;
         if (pPF->leftMargin.is_init())
         {
             leftMargin = pPF->leftMargin.get();
             std::wstring strProp = std::to_wstring( leftMargin );
             m_oWriter.WriteString(L" marL=\"" + strProp + L"\"");
         }
-        if (pPF->indent.is_init())
+        std::wstring _strLevel = std::to_wstring(pParagraph->m_lTextLevel);
+		m_oWriter.WriteString(L" lvl=\"" + _strLevel + L"\"");
+		
+		if (pPF->indent.is_init())
         {
             std::wstring strProp = std::to_wstring(pPF->indent.get() - leftMargin);
             m_oWriter.WriteString(L" indent=\"" + strProp + L"\"");
@@ -1311,7 +1303,17 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
             std::wstring strProp= std::to_wstring( pPF->defaultTabSize.get());
             m_oWriter.WriteString(L" defTabSz=\"" + strProp + L"\"");
         }
-        m_oWriter.WriteString(L">");
+		if (pPF->textDirection.is_init())
+		{
+			if (pPF->textDirection.get() == 1)	m_oWriter.WriteString(std::wstring(L" rtl=\"1\""));
+			else								m_oWriter.WriteString(std::wstring(L" rtl=\"0\""));
+		}
+		if (pPF->fontAlign.is_init())
+		{
+			std::wstring strProp = CStylesWriter::GetFontAlign(pPF->fontAlign.get());
+			m_oWriter.WriteString(std::wstring(L" fontAlgn=\"") + strProp + L"\"");
+		}
+		m_oWriter.WriteString(L">");
 
         double dKoef1 = 3.52777778; // :-) чё это не понятно ...
         if (pPF->lineSpacing.is_init())
@@ -1493,7 +1495,13 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     m_oWriter.WriteString(std::wstring(L"<a:r><a:rPr"));
                 }
             }
+			if (pCF->Language.is_init())
+			{
+				std::wstring str_lang = msLCID2wstring(pCF->Language.get());
 
+				if (str_lang.length() > 0)
+					m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
+			}
             if ((pCF->Size.is_init()) && (pCF->Size.get() > 0) && (pCF->Size.get() < 4001))
             {
                 m_oWriter.WriteString(L" sz=\"" + std::to_wstring((int)(100 * pCF->Size.get())) + L"\"");
@@ -1524,13 +1532,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 else
                     m_oWriter.WriteString(std::wstring(L" u=\"none\""));
             }
-            if (pCF->Language.is_init())
-            {
-                std::wstring str_lang = msLCID2wstring(pCF->Language.get());
 
-                if (str_lang.length() > 0)
-                    m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
-            }
             m_oWriter.WriteString(std::wstring(L">"));
             WriteHyperlink(pParagraph->m_arSpans[nSpan].m_arrInteractive);
 

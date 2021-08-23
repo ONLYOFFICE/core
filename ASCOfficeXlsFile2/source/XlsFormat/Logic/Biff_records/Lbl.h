@@ -75,7 +75,7 @@ public:
     std::wstring                Name;
     XLSB::XLNameWideString      name; //biff12
     NameParsedFormula           rgce; //formula in biff12
-    XLSB::XLNullableWideString  comment;
+    XLSB::XLNullableWideString  comment; //biff12
     XLSB::XLNullableWideString  unusedstring1; //biff12
     XLSB::XLNullableWideString  description; //biff12
     XLSB::XLNullableWideString  helpTopic; //biff12

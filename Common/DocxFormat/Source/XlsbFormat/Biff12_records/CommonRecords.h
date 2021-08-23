@@ -38,7 +38,7 @@
 #include <Logic/Biff_records/UserBView.h>
 #include <Logic/Biff_records/WOpt.h>
 #include <Logic/Biff_records/BookExt.h>
-#include "../Source/XlsxFormat/WritingElement.h"
+#include "../../XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
 
 
@@ -47,39 +47,74 @@ namespace XLSB
     // Logical representation of common record in BIFF12
     class FileSharing: public XLS::FileSharing
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(FileSharing)
+        BIFF_RECORD_DEFINE_TYPE_INFO(FileSharing)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new FileSharing(*this));
+        }
 
     };
 
     class ExternSheet: public XLS::ExternSheet
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(ExternSheet)
+        BIFF_RECORD_DEFINE_TYPE_INFO(ExternSheet)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new ExternSheet(*this));
+        }
 
     };
 
     class BookView: public XLS::Window1
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BookView)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new BookView(*this));
+        }
     };
 
     class Name: public XLS::Lbl
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(Name)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new Name(*this));
+        }
     };
 
     class UserBookView: public XLS::UserBView
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(UserBookView)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new UserBookView(*this));
+        }
     };
 
     class WebOpt: public XLS::WOpt
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(WebOpt)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new WebOpt(*this));
+        }
     };
 
     class FileRecover: public XLS::BookExt
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(FileRecover)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new FileRecover(*this));
+        }
     };
 } // namespace XLSB
 

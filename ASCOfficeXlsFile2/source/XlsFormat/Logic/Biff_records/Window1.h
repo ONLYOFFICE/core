@@ -67,7 +67,7 @@ public:
     _UINT32 itabCur;
     _UINT32 itabFirst;
 	_UINT16 ctabSel;
-    _UINT32 wTabRatio; //itabFirst in BIFF12
+    _UINT32 wTabRatio; //itabRatio in BIFF12
 
 };
 

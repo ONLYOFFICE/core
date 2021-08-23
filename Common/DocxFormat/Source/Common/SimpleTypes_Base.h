@@ -554,7 +554,7 @@ namespace SimpleTypes
 		{
 			return std::to_wstring(this->m_eValue);
 		}
-		SimpleType_FromString(int)
+        SimpleType_FromString(int)
 		SimpleType_Operator_Equal(CDecimalNumber)
 		SimpleTypes_AdditionalOpearators(CDecimalNumber)
 	};

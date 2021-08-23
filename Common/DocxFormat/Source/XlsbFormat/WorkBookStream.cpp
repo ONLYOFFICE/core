@@ -45,6 +45,7 @@
 #include "Biff12_unions/EXTERNALS.h"
 #include "Biff12_records/CalcProp.h"
 #include "Biff12_records/OleSize.h"
+#include "Biff12_records/EndBook.h"
 
 
 namespace XLSB
@@ -263,6 +264,15 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                     m_arBrtFileRecover.insert(m_arBrtFileRecover.begin(), elements_.back());
                     elements_.pop_back();
                     count--;
+                }
+            }break;
+
+            case rt_EndBook:
+            {
+                if (proc.optional<EndBook>())
+                {
+                    m_BrtEndBook = elements_.back();
+                    elements_.pop_back();
                 }
             }break;
 

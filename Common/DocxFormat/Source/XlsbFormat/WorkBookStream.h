@@ -79,6 +79,7 @@ namespace XLSB
         BaseObjectPtr               m_BrtCalcProp;
         BaseObjectPtr               m_BrtOleSize;
         BaseObjectPtr               m_BrtWebOpt;
+        BaseObjectPtr               m_BrtEndBook;
 
         std::vector<BaseObjectPtr>  m_arBrtName;
         std::vector<BaseObjectPtr>  m_arBrtUserBookView;

@@ -50,6 +50,8 @@
 
 #include "../../XlsbFormat/WorkBookStream.h"
 
+#include "../../XlsbFormat/Biff12_unions/BOOKVIEWS.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -122,6 +124,36 @@ namespace OOX
                 XLS::BinReaderProcessor proc(reader, workBookStream.get(), true);
 
                 proc.mandatory(*workBookStream.get());
+
+                if (workBookStream != nullptr)
+                {
+                    if (workBookStream->m_BOOKVIEWS != nullptr)
+                        m_oBookViews = static_cast<XLSB::BOOKVIEWS*>(workBookStream->m_BOOKVIEWS.get())->m_arBrtBookView;
+                    else if (workBookStream->m_BrtCalcProp != nullptr)
+                        m_oCalcPr = workBookStream->m_BrtCalcProp;
+                    else if (!workBookStream->m_arBrtName.empty())
+                        m_oDefinedNames = workBookStream->m_arBrtName;
+                     /*
+                    else if ( L"definedNames" == sName )
+                        m_oDefinedNames = oReader;
+                    else if ( L"sheets" == sName )
+                        m_oSheets = oReader;
+                    else if ( L"workbookPr" == sName )
+                        m_oWorkbookPr = oReader;
+                    else if (L"workbookProtection" == sName)
+                        m_oWorkbookProtection = oReader;
+                    else if ( L"externalReferences" == sName )
+                        m_oExternalReferences = oReader;
+                    else if ( L"extLst" == sName )
+                        m_oExtLst = oReader;
+                    else if ( L"fileVersion" == sName )
+                    {
+                        WritingElement_ReadAttributes_Start( oReader )
+                            WritingElement_ReadAttributes_Read_if( oReader, L"appName", m_oAppName )
+                        WritingElement_ReadAttributes_End( oReader )
+                    }*/
+
+                }
             }
 			virtual void read(const CPath& oPath)
 			{

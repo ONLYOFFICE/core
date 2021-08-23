@@ -129,6 +129,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/SupAddin.cpp \
     ../Source/XlsbFormat/Biff12_records/CalcProp.cpp \
     ../Source/XlsbFormat/Biff12_records/OleSize.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndBook.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -369,6 +370,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/SupAddin.h \
     ../Source/XlsbFormat/Biff12_records/CalcProp.h \
     ../Source/XlsbFormat/Biff12_records/OleSize.h \
+    ../Source/XlsbFormat/Biff12_records/EndBook.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \

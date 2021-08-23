@@ -34,7 +34,8 @@ INCLUDEPATH += \
     ../../../../Common/ASCDocxFormat/Source/XML \
     ../../../../Common/ASCDocxFormat/Source \
     ../../../../ASCOfficeXlsFile2/source/XlsFormat \
-    ../../../../ASCOfficeXlsFile2/source/Common
+    ../../../../ASCOfficeXlsFile2/source/Common \
+    ../../../../Common/DocxFormat/Source/XlsbFormat
 
 core_release {
 SOURCES += \

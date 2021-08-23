@@ -48,7 +48,11 @@ namespace OOX
 			WritingElement_AdditionConstructors(CWorkbookView)
 			CWorkbookView()
 			{
-			}
+			}            
+            CWorkbookView(XLS::BaseObjectPtr& obj)
+            {
+                fromBin(obj);
+            }
 			virtual ~CWorkbookView()
 			{
 			}
@@ -76,6 +80,11 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+
+            virtual void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -106,6 +115,32 @@ namespace OOX
 					WritingElement_ReadAttributes_End( oReader )
 			}
 
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = dynamic_cast<XLSB::BookView*>(obj.get());
+                m_oActiveTab                = ptr->itabCur;
+                m_oAutoFilterDateGrouping   = ptr->fNoAFDateGroup;
+                m_oFirstSheet               = ptr->itabFirst;
+                m_oMinimized                = ptr->fIconic;
+                m_oShowHorizontalScroll     = ptr->fDspHScroll;
+                m_oShowSheetTabs            = ptr->fBotAdornment;
+                m_oShowVerticalScroll       = ptr->fDspVScroll;
+                m_oTabRatio                 = ptr->wTabRatio;
+                m_oWindowHeight             = ptr->dyWn;
+                m_oWindowWidth              = ptr->dxWn;
+                m_oXWindow                  = (int)ptr->xWn;//                 = ptr->xWn;
+                m_oYWindow                  = (int)ptr->yWn;//                  = ptr->yWn;
+
+                if(ptr->fHidden)
+                    m_oVisibility = SimpleTypes::Spreadsheet::EVisibleType::visibleHidden;
+                else if(ptr->fVeryHidden)
+                    m_oVisibility = SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden;
+                else if(!ptr->fHidden && !ptr->fVeryHidden)
+                    m_oVisibility = SimpleTypes::Spreadsheet::EVisibleType::visibleVisible;
+
+            }
+
+
 		public:
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oActiveTab;
 				nullable<SimpleTypes::COnOff<>>						m_oAutoFilterDateGrouping;
@@ -129,6 +164,10 @@ namespace OOX
 			CBookViews()
 			{
 			}
+            CBookViews(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                fromBin(obj);
+            }
 			virtual ~CBookViews()
 			{
 			}
@@ -169,6 +208,19 @@ namespace OOX
 						m_arrItems.push_back( new CWorkbookView( oReader ));
 				}
 			}
+
+            virtual void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                //ReadAttributes(obj);
+
+                if (obj.empty())
+                    return;
+
+                for(auto &workbookView : obj)
+                {
+                    m_arrItems.push_back(new CWorkbookView(workbookView));
+                }
+            }
 
 			virtual EElementType getType () const
 			{

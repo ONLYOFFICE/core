@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
+//#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BaseObject.h"
 
 namespace NSBinPptxRW
 {
@@ -75,6 +76,18 @@ namespace OOX
 		fromXML(node);												\
 		return *this;												\
 	}																\
+    /*const Class& operator =(BaseObjectPtr& obj)        \
+    {																\
+        m_pMainDocument = NULL;\
+        fromBin(obj);												\
+        return *this;												\
+    }																\
+    const Class& operator =(std::vector<BaseObjectPtr>& obj)        \
+    {																\
+        m_pMainDocument = NULL;\
+        fromBin(obj);												\
+        return *this;												\
+    }																\ */
 
 #define WritingElement_ReadNode( oRootNode, oChildNode, sNodeName, oValue ) \
 	if ( oRootNode.GetNode( sNodeName, oChildNode ) )\

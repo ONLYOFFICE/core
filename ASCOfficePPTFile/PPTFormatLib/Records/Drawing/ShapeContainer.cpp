@@ -2064,34 +2064,36 @@ std::wstring CRecordShapeContainer::getTableXmlStr() const
 {
     std::vector<CRecordShapeProperties*> oArrayOptions;
     GetRecordsByType(&oArrayOptions, true, false);
-    std::wstring xmlStr = L"";
+    std::wstring xmlStr;
 
-    if (oArrayOptions.size() >= 2 &&
-            oArrayOptions[1]->m_oProperties.m_arProperties.size() >= 3)
+    if (oArrayOptions.size() > 1 &&
+            oArrayOptions[1]->m_oProperties.m_arProperties.size() > 2)
     {
         COfficeUtils officeUtils(NULL);
         BYTE *utf8Data = NULL;
         ULONG utf8DataSize = 0;
-        auto& xmlProp = oArrayOptions[1]->m_oProperties.m_arProperties[2];
-        NSFile::CFileBinary file;
+        auto& xmlProp = oArrayOptions[1]->m_oProperties.m_arProperties[2]; //id == 0x2065 ?
 
-        std::wstring temp = NSDirectory::GetTempPath();
+		if (xmlProp.m_pOptions && xmlProp.m_lValue > 0) // file513.ppt
+		{
+			std::wstring temp = NSDirectory::GetTempPath();
+			std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
 
-        std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
+			NSFile::CFileBinary file;
+			if (file.CreateFileW(tempFileName))
+			{
+				file.WriteFile(xmlProp.m_pOptions, xmlProp.m_lValue);
+				file.CloseFile();
+			}
 
-        if (file.CreateFileW(tempFileName))
-        {
-            file.WriteFile(xmlProp.m_pOptions, xmlProp.m_lValue);
-            file.CloseFile();
-        }
+			if (S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"drs/e2oDoc.xml", &utf8Data, utf8DataSize))
+			{
+				xmlStr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+			}
 
-        if (S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"drs/e2oDoc.xml", &utf8Data, utf8DataSize))
-        {
-            xmlStr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
-        }
-
-        delete [] utf8Data;
-        NSFile::CFileBinary::Remove(tempFileName);
+			delete[] utf8Data;
+			NSFile::CFileBinary::Remove(tempFileName);
+		}
     }
 
     return xmlStr;

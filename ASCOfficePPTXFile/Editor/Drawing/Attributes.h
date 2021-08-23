@@ -42,6 +42,7 @@
 #include "../../../DesktopEditor/graphics/IRenderer.h"
 #include "../../../DesktopEditor/graphics/structures.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include <boost/algorithm/string.hpp>
 
 static void ReplaceAll(std::wstring & str, const std::wstring& from, const std::wstring& to)
 {
@@ -130,6 +131,19 @@ public:
             }
         }
 
+        // Second chance
+        std::vector<std::wstring> splited;
+        boost::split(splited, str, boost::is_any_of(L","));
+        if (splited.size() == 3)
+        {
+            try {
+                int num = std::stoi(splited[1]);
+                if (num > 0 && num < 256)
+                    return num;
+            }  catch (...) {
+
+            }
+        }
         return -1;
     }
     static bool isHTTPLink(const std::wstring &str)

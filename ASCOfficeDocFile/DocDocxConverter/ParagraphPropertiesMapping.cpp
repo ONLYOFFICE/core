@@ -661,7 +661,8 @@ namespace DocFileFormat
 				//Vinci_Customer_Case_Study.doc
 				_isSectionPageBreak = 1;
 			}
-			else _isSectionPageBreak = 2;
+			else 
+				_isSectionPageBreak = 2;
 			
 			RELEASEOBJECT( sectionPropertiesMapping );
 			_pPr->AppendChild( sectPr );

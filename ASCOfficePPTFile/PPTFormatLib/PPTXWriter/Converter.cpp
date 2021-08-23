@@ -36,10 +36,7 @@
 #include "../../../ASCOfficePPTXFile/Editor/DefaultNotesMaster.h"
 #include "../../../ASCOfficePPTXFile/Editor/DefaultNotesTheme.h"
 
-#include "../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"
-#include "../../../DesktopEditor/common/Directory.h"
-#include "../../../DesktopEditor/common/SystemUtils.h"
+#include "TableWriter.h"
 #include "../Reader/PPTDocumentInfo.h"
 
 #include "ShapeWriter.h"
@@ -47,7 +44,6 @@
 
 #include "Converter.h"
 #include "Animation.h"
-
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/Transition.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/TransitionBase.h"
@@ -60,6 +56,16 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/WheelTransition.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/SplitTransition.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/ZoomTransition.h"
+
+#include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"
+
+#include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/common/SystemUtils.h"
+
+#include <unordered_set>
+#include <boost/uuid/detail/md5.hpp>
+
+typedef boost::uuids::detail::md5 MD5;
 
 namespace PPT_FORMAT
 {
@@ -109,13 +115,13 @@ void PPT_FORMAT::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo	)
     m_pShapeWriter->InitNextId();
 
     NSDirectory::CreateDirectory(m_strTempDirectory);
-    CFile oFile;
+	NSFile::CFileBinary oFile;
     std::wstring strMemory = _T("");
 
     // _rels
     NSDirectory::CreateDirectory(m_strTempDirectory + FILE_SEPARATOR_STR + _T("_rels"));
 
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("_rels")  + FILE_SEPARATOR_STR + _T(".rels"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("_rels")  + FILE_SEPARATOR_STR + _T(".rels"));
     strMemory = NSPPTXWriterConst::g_string_rels_presentation;
     oFile.WriteStringUTF8(strMemory);
     oFile.CloseFile();
@@ -124,13 +130,13 @@ void PPT_FORMAT::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo	)
     NSDirectory::CreateDirectory(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps"));
 
     // core
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml"));
     strMemory = NSPPTXWriterConst::g_string_core;
     oFile.WriteStringUTF8(strMemory);
     oFile.CloseFile();
 
     // app
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("app.xml"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("app.xml"));
     WriteApp(oFile);
     oFile.CloseFile();
 
@@ -153,13 +159,13 @@ void PPT_FORMAT::CPPTXWriter::CreateFile(CDocument* pDocument)
     m_pShapeWriter->InitNextId();
 
     NSDirectory::CreateDirectory(m_strTempDirectory);
-    CFile oFile;
+	NSFile::CFileBinary oFile;
     std::wstring strMemory = _T("");
 
     // _rels
     NSDirectory::CreateDirectory(m_strTempDirectory + FILE_SEPARATOR_STR + _T("_rels"));
 
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("_rels")  + FILE_SEPARATOR_STR + _T(".rels"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("_rels")  + FILE_SEPARATOR_STR + _T(".rels"));
     strMemory = NSPPTXWriterConst::g_string_rels_presentation;
     oFile.WriteStringUTF8(strMemory);
     oFile.CloseFile();
@@ -168,13 +174,13 @@ void PPT_FORMAT::CPPTXWriter::CreateFile(CDocument* pDocument)
     NSDirectory::CreateDirectory(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps"));
 
     // core
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml"));
     strMemory = NSPPTXWriterConst::g_string_core;
     oFile.WriteStringUTF8(strMemory);
     oFile.CloseFile();
 
     // app
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("app.xml"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("app.xml"));
     WriteApp(oFile);
     oFile.CloseFile();
 
@@ -279,14 +285,14 @@ void PPT_FORMAT::CPPTXWriter::WriteContentTypes()
     }
     strContentTypes += _T("</Types>");
 
-    CFile oFile;
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("[Content_Types].xml"));
+	NSFile::CFileBinary oFile;
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("[Content_Types].xml"));
     oFile.WriteStringUTF8(strContentTypes);
     oFile.CloseFile();
 }
 
 
-void PPT_FORMAT::CPPTXWriter::WriteApp(CFile& oFile)
+void PPT_FORMAT::CPPTXWriter::WriteApp(NSFile::CFileBinary& oFile)
 {
     std::wstringstream strm;
 
@@ -428,17 +434,17 @@ void PPT_FORMAT::CPPTXWriter::WriteApp(CFile& oFile)
 
 void PPT_FORMAT::CPPTXWriter::WritePresInfo()
 {
-    CFile oFile;
+	NSFile::CFileBinary oFile;
 
     // tableStyles.xml
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("tableStyles.xml"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("tableStyles.xml"));
 
     oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
                           <a:tblStyleLst xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" def=\"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}\"/>");
     oFile.CloseFile();
 
     // presProps.xml
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("presProps.xml"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("presProps.xml"));
     oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
                           <p:presentationPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">\
             <p:extLst><p:ext uri=\"{E76CE94A-603C-4142-B9EB-6D1370010A27}\">\
@@ -449,7 +455,7 @@ void PPT_FORMAT::CPPTXWriter::WritePresInfo()
             oFile.CloseFile();
 
             // viewProps.xml
-            oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("viewProps.xml"));
+            oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("viewProps.xml"));
     oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
                           <p:viewPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">\
             <p:normalViewPr><p:restoredLeft sz=\"15620\"/><p:restoredTop sz=\"94660\"/></p:normalViewPr><p:slideViewPr><p:cSldViewPr><p:cViewPr varScale=\"1\">\
@@ -526,7 +532,7 @@ void PPT_FORMAT::CPPTXWriter::WritePresInfo()
     std::wstring strPptRels = m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("_rels");
 
     NSDirectory::CreateDirectory(strPptRels);
-    oFile.CreateFile(strPptRels + FILE_SEPARATOR_STR + _T("presentation.xml.rels"));
+    oFile.CreateFileW(strPptRels + FILE_SEPARATOR_STR + _T("presentation.xml.rels"));
     oFile.WriteStringUTF8(strPresRels);
     oFile.CloseFile();
 
@@ -559,7 +565,7 @@ void PPT_FORMAT::CPPTXWriter::WritePresInfo()
     strPres += strDefaultTextStyle;
     strPres +=_T("</p:presentation>");
 
-    oFile.CreateFile(m_strTempDirectory+ FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR + _T("presentation.xml"));
+    oFile.CreateFileW(m_strTempDirectory+ FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR + _T("presentation.xml"));
     oFile.WriteStringUTF8(strPres);
     oFile.CloseFile();
 }
@@ -601,16 +607,125 @@ void PPT_FORMAT::CPPTXWriter::WriteAll()
 void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
     int nStartLayout = 0, nIndexTheme = 0;
+    auto arrRT = m_pDocument->getArrRoundTripTheme();
 
-    for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
+    //if (arrRT.empty()) - см баг 52046
     {
-        m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i].get();
-        WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
-        m_pShapeWriter->m_pTheme = NULL;
+        for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
+        {
+            m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i].get();
+            WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
+            m_pShapeWriter->m_pTheme = NULL;
+        }
     }
+    //else
+    //{
+    //    WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
+    //}
 
     WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
     WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
+}
+
+void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom*>& arrRTThemes, int& nIndexTheme, int & nStartLayout)
+{
+    PPT_FORMAT::CRelsGenerator themeRels(&m_oManager);
+    std::unordered_set<std::string> writedFilesHash;
+    for (const auto* pRTT : arrRTThemes)
+    {
+        if (pRTT == nullptr)
+            continue;
+
+        std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
+        std::wstring tempPath = NSDirectory::GetTempPath();
+
+        auto& zipAtom = *pRTT;
+        BYTE* zipData = zipAtom.data.first.get();
+        ULONG zipDataLen = zipAtom.data.second;
+
+
+        NSFile::CFileBinary binFile;
+        std::wstring tempZipPath = tempPath + FILE_SEPARATOR_STR + L"tempTheme.zip";
+        if (!binFile.CreateFileW(tempZipPath))
+            continue;
+
+        binFile.WriteFile(zipData, zipDataLen);
+        binFile.CloseFile();
+
+        COfficeUtils officeUtils(NULL);
+        std::wstring tempUnZipPath = tempPath + FILE_SEPARATOR_STR + L"tempTheme";
+        NSDirectory::CreateDirectory(tempUnZipPath);
+        officeUtils.ExtractToDirectory(tempZipPath, tempUnZipPath, NULL, 0);
+        NSFile::CFileBinary::Remove(tempZipPath);
+
+        auto arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"theme");
+        auto arrThemesPaths = NSDirectory::GrepPaths(arrPaths, L".*theme[0-9]+.xml");
+
+        arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"media");
+        auto arrImagesPaths = NSDirectory::GrepPaths(arrPaths, L".*image[0-9]+.*");
+
+        arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"_rels");
+        auto arrRelsPaths = NSDirectory::GrepPaths(arrPaths, L".*theme[0-9]+.xml.rels");
+
+        BYTE *utf8Data = NULL;
+        ULONG utf8DataSize = 0;
+        bool wasThemeWrite = false;
+
+        // write themes
+        for (auto& strThemePath : arrThemesPaths)
+        {
+            // read file bytes
+            NSFile::CFileBinary::ReadAllBytes(strThemePath, &utf8Data, utf8DataSize);
+            // compare hash
+            char* pointerToThemeElems = strstr((char*)utf8Data, "<a:themeElements>");
+            UINT hashShift = pointerToThemeElems ? pointerToThemeElems - (char*)utf8Data : 0;
+            auto strHash = CFile::md5(utf8Data+hashShift, utf8DataSize-hashShift);
+
+            // cp file with new name or write bytes
+            if (writedFilesHash.find(strHash) == writedFilesHash.end())
+            {
+                std::wstring strThemeFile = L"theme" + std::to_wstring(++nIndexTheme) + L".xml";
+                strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
+				NSFile::CFileBinary oFile;
+                oFile.CreateFileW(strThemeFile);
+                oFile.WriteFile(utf8Data, utf8DataSize);
+                wasThemeWrite = true;
+
+                // clear bytes
+                writedFilesHash.insert(strHash);
+                RELEASEOBJECT(utf8Data);
+                utf8DataSize = 0;
+                oFile.CloseFile();
+            }
+        }
+        if (wasThemeWrite == false)
+            continue;
+
+        for (auto& strImagePath : arrImagesPaths)
+        {
+            themeRels.WriteImage(strImagePath);
+        }
+        // write _rels
+        if (!arrRelsPaths.empty())
+        {
+            std::wstring relsFolder = strPptDirectory + L"theme" + FILE_SEPARATOR_STR  + L"_rels" + FILE_SEPARATOR_STR;
+            std::wstring relsName = L"theme" + std::to_wstring(nIndexTheme) + L".xml.rels";
+            std::wstring themeRelsPath = arrRelsPaths[0];
+            NSDirectory::CreateDirectory(relsFolder);
+
+            NSFile::CFileBinary::ReadAllBytes(arrRelsPaths[0], &utf8Data, utf8DataSize);
+			NSFile::CFileBinary oFile;
+            oFile.CreateFileW(relsFolder + relsName);
+            oFile.WriteFile(utf8Data, utf8DataSize);
+
+            oFile.CloseFile();
+            RELEASEOBJECT(utf8Data);
+//            utf8DataSize = 0;
+        }
+    }
+
+    if (!m_pDocument->m_arThemes.empty())
+        WriteLayoutAfterTheme(m_pDocument->m_arThemes[0], nIndexTheme, nStartLayout);
 }
 
 void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout)
@@ -622,8 +737,8 @@ void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, in
     std::wstring strThemeFile = L"theme" + std::to_wstring(nIndexTheme + 1) + L".xml";
     strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
 
-    CFile oFile;
-    oFile.CreateFile(strThemeFile);
+    NSFile::CFileBinary oFile;
+    oFile.CreateFileW(strThemeFile);
 
     PPT_FORMAT::CStringWriter oStringWriter;
 
@@ -713,7 +828,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, in
         WriteBackground(oWriter, oRels, pTheme->m_oBackground);
     }
     oWriter.WriteString(L"<p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr>\
-                        <a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>");
+<a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>");
 
     CGroupElement *pGroupElement = !pTheme->m_arElements.empty() ? dynamic_cast<CGroupElement *>(pTheme->m_arElements[0].get()) : NULL;
 
@@ -855,7 +970,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, in
         strSlideMasterRelsFile = L"handoutMaster1.xml.rels";
         strSlideMasterRelsFile = strPptDirectory + _T("handoutMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
     }
-    oFile.CreateFile(strSlideMasterFile);
+    oFile.CreateFileW(strSlideMasterFile);
     std::wstring strMaster = oWriter.GetData();
     oFile.WriteStringUTF8(strMaster);
     oFile.CloseFile();
@@ -946,26 +1061,33 @@ void PPT_FORMAT::CPPTXWriter::WriteGroup(CStringWriter& oWriter, CRelsGenerator&
 }
 void PPT_FORMAT::CPPTXWriter::WriteTable(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {
-    CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
+    CTableElement *pTableElement = dynamic_cast<CTableElement*>(pElement.get());
 
-    m_pShapeWriter->SetElement(pElement);
-    oWriter.WriteString(m_pShapeWriter->ConvertTable());
 
-    oWriter.WriteString(m_pShapeWriter->ConvertTableCells());
-    //    for (size_t i = 0; i < pGroupElement->m_pChildElements.size(); i++)
-    //    {
-    //        WriteElement(oWriter, oRels, pGroupElement->m_pChildElements[i], pLayout);
-    //    }
-    oWriter.WriteString(L"</a:tbl></a:graphicData></a:graphic></p:graphicFrame>");
+    PPTX::Logic::GraphicFrame gf;
+    TableWriter table(pTableElement, &oRels);
+    if (pTableElement->m_xmlRawData.empty())
+    {
+        table.Convert(gf);
+        oWriter.WriteString(gf.toXML());
+    } else
+    {
+        oWriter.WriteString(table.getXmlForGraphicFrame(pElement->m_lID, pElement->m_lPlaceholderID));
+    }
 }
+
 void PPT_FORMAT::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {
     if (!pElement) return;
 
-    CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
 
-    if (pGroupElement && pGroupElement->m_sName.find(L"Table") != -1)
+    CTableElement *pTableElement = dynamic_cast<CTableElement*>(pElement.get());
+    if (pTableElement)
+    {
         return WriteTable(oWriter, oRels, pElement, pLayout);
+    }
+
+    CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
     if (pGroupElement)
     {
         return WriteGroup(oWriter, oRels, pElement, pLayout);
@@ -1041,7 +1163,7 @@ void PPT_FORMAT::CPPTXWriter::WriteLayout(CLayoutPtr pLayout, int nIndexLayout, 
     }
 
     std::wstring strElems = _T("<p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr>\
-                               <a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>");
+<a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>");
     oWriter.WriteString(strElems);
 
     size_t start_index = 0;
@@ -1075,9 +1197,9 @@ void PPT_FORMAT::CPPTXWriter::WriteLayout(CLayoutPtr pLayout, int nIndexLayout, 
     std::wstring strXml = oWriter.GetData();
     std::wstring strFile = L"slideLayout" + std::to_wstring(nIndexLayout + nStartLayout + 1) + L".xml";
 
-    CFile oFile;
+	NSFile::CFileBinary oFile;
     std::wstring strFileLayoutPath= m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("slideLayouts") + FILE_SEPARATOR_STR;
-    oFile.CreateFile(strFileLayoutPath  + strFile);
+    oFile.CreateFileW(strFileLayoutPath  + strFile);
     oFile.WriteStringUTF8(strXml);
     oFile.CloseFile();
 
@@ -1123,7 +1245,7 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     }
 
     oWriter.WriteString(std::wstring(L"<p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr>\
-                                     <a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>"));
+<a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>"));
 
     CGroupElement *pGroupElement = !pSlide->m_arElements.empty() ? dynamic_cast<CGroupElement *>(pSlide->m_arElements[0].get()) : NULL;
 
@@ -1165,8 +1287,8 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     std::wstring strFile = L"slide" + std::to_wstring(nIndexSlide + 1) + L".xml";
     std::wstring strFileSlidePath= m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("slides")  + FILE_SEPARATOR_STR;
 
-    CFile oFile;
-    oFile.CreateFile(strFileSlidePath + strFile);
+	NSFile::CFileBinary oFile;
+    oFile.CreateFileW(strFileSlidePath + strFile);
     oFile.WriteStringUTF8(strXml);
     oFile.CloseFile();
 
@@ -1226,11 +1348,15 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
     case 5:
     case 6:
     {
+        // case was not documented
+        if ((UINT)transition.m_nEffectDirection > 1)
+            break;
+
         auto pTrBase = new PPTX::Logic::OptionalBlackTransition;
         if      (transition.m_nEffectType == 0) pTrBase->name	= L"cut";
         else if (transition.m_nEffectType == 5) pTrBase->name	= L"dissolve";
         else if (transition.m_nEffectType == 6) pTrBase->name	= L"fade";
-        pTrBase->thruBlk = transition.m_nEffectDirection;
+        pTrBase->thruBlk = (bool)transition.m_nEffectDirection;
         Tr.base.base.reset(pTrBase);
     }break;
     case 4:
@@ -1342,8 +1468,10 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
         std::wstring rId = m_pShapeWriter->m_pRels->WriteAudio(transition.m_oAudio.m_strAudioFileName, bExternal);
         Tr.sndAc = new PPTX::Logic::SndAc;
         Tr.sndAc->stSnd = new PPTX::Logic::StSnd;
-        Tr.sndAc->stSnd->name = XmlUtils::EncodeXmlString(transition.m_oAudio.m_sImageName);
         Tr.sndAc->stSnd->embed = rId;
+
+        if (!transition.m_oAudio.m_sImageName.empty())
+            Tr.sndAc->stSnd->name = XmlUtils::EncodeXmlString(transition.m_oAudio.m_sImageName);
     }
     oWriter.WriteString(Tr.toXML());
 }
@@ -1371,7 +1499,7 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes(int nIndexNotes)
     }
 
     oWriter.WriteString(std::wstring(L"<p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr>\
-                                     <a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>"));
+<a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>"));
 
     CGroupElement *pGroupElement = !pNotes->m_arElements.empty() ? dynamic_cast<CGroupElement *>(pNotes->m_arElements[0].get()) : NULL;
 
@@ -1403,8 +1531,8 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes(int nIndexNotes)
     std::wstring strFile = L"notesSlide" + std::to_wstring(nIndexNotes + 1) + L".xml";
     std::wstring strFileSlidePath = m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("notesSlides")  + FILE_SEPARATOR_STR;
 
-    CFile oFile;
-    oFile.CreateFile(strFileSlidePath + strFile);
+	NSFile::CFileBinary oFile;
+    oFile.CreateFileW(strFileSlidePath + strFile);
     oFile.WriteStringUTF8(strXml);
     oFile.CloseFile();
 
@@ -1426,6 +1554,191 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes()
     {
         WriteNotes((int)nIndexS);
     }
+}
+
+void CPPTXWriter::WriteLayoutAfterTheme(CThemePtr pTheme, const int nIndexTheme, int &nStartLayout)
+{//nIndexTheme тут уже +1
+    CRelsGenerator oRels(&m_oManager);
+    int nCountLayouts = (int)pTheme->m_arLayouts.size();
+    oRels.StartMaster(nIndexTheme - 1, nStartLayout, nCountLayouts);
+
+    CStringWriter oWriter;
+    oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
+
+    if (pTheme->m_eType == typeMaster)
+    {
+        oWriter.WriteString(L"<p:sldMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
+    }
+    else if (pTheme->m_eType == typeNotesMaster)
+    {
+        oWriter.WriteString(L"<p:notesMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
+    }
+    else if (pTheme->m_eType == typeHandoutMaster)
+    {
+        oWriter.WriteString(L"<p:handoutMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
+    }
+    oWriter.WriteString(L"<p:cSld>");
+
+    if (pTheme->m_bIsBackground)
+    {
+        WriteBackground(oWriter, oRels, pTheme->m_oBackground);
+    }
+    oWriter.WriteString(L"<p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr>\
+<a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>");
+
+    CGroupElement *pGroupElement = !pTheme->m_arElements.empty() ? dynamic_cast<CGroupElement *>(pTheme->m_arElements[0].get()) : NULL;
+
+    size_t start_index = 0;
+    if (pGroupElement)
+    {
+        for (size_t i = 0; i < pGroupElement->m_pChildElements.size(); ++i)
+        {
+            if (isBodyPlaceholder(pGroupElement->m_pChildElements[i]->m_lPlaceholderType))
+                pGroupElement->m_pChildElements[i]->m_lPlaceholderType = 100; //body тип прописывать !!
+
+            //if (pGroupElement->m_pChildElements[i]->m_bAnchorEnabled == false &&
+            //	pGroupElement->m_pChildElements[i]->m_bChildAnchorEnabled == false)
+            //	continue;
+
+            //if (pTheme->m_eType == typeNotesMaster)
+            //{
+            //	pGroupElement->m_pChildElements[i]->m_lPlaceholderID = -1;
+            //}
+            //else if (pTheme->m_eType == typeHandoutMaster)
+            //{
+            //	pGroupElement->m_pChildElements[i]->m_lPlaceholderID = -1;
+            //	pGroupElement->m_pChildElements[i]->m_lPlaceholderSizePreset = -1;
+            //}
+            WriteElement(oWriter, oRels, pGroupElement->m_pChildElements[i]);
+        }
+
+        start_index = 1;
+    }
+
+    for (size_t i = start_index; i < pTheme->m_arElements.size(); ++i)
+    {
+        if (isBodyPlaceholder(pTheme->m_arElements[i]->m_lPlaceholderType))
+            pTheme->m_arElements[i]->m_lPlaceholderType = 100; //body тип прописывать !!
+
+        //if (pTheme->m_arElements[i]->m_bAnchorEnabled == false &&
+        //	pTheme->m_arElements[i]->m_bChildAnchorEnabled == false)
+        //	continue;
+
+        //if (pTheme->m_eType == typeNotesMaster)
+        //{
+        //	pTheme->m_arElements[i]->m_lPlaceholderID = -1;
+        //}
+        //else if (pTheme->m_eType == typeHandoutMaster)
+        //{
+        //	pTheme->m_arElements[i]->m_lPlaceholderID = -1;
+        //	pTheme->m_arElements[i]->m_lPlaceholderSizePreset = -1;
+        //}
+
+        WriteElement(oWriter, oRels, pTheme->m_arElements[i]);
+    }
+
+    oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
+
+    std::wstring strOverrideColorScheme = _T("<p:clrMap bg1=\"lt1\" tx1=\"dk1\" bg2=\"lt2\" tx2=\"dk2\" accent1=\"accent1\" accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" hlink=\"hlink\" folHlink=\"folHlink\"/>");
+    oWriter.WriteString(strOverrideColorScheme);
+
+    if (pTheme->m_eType == typeMaster)
+    {
+        oWriter.WriteString(std::wstring(L"<p:sldLayoutIdLst>"));
+
+        size_t __nCountLayouts = 0;
+        for (int nIndexLayout = 0; nIndexLayout < nCountLayouts; ++nIndexLayout)
+        {
+            oWriter.WriteString(L"<p:sldLayoutId id=\"" + std::to_wstring(0x80000000 + nIndexTheme + 1 + nStartLayout + nIndexLayout) + L"\" r:id=\"rId" + std::to_wstring(nIndexLayout + 1) + L"\"/>");
+
+            WriteLayout(pTheme->m_arLayouts[nIndexLayout], nIndexLayout, nStartLayout, nIndexTheme - 1);
+        }
+
+        oWriter.WriteString(std::wstring(L"</p:sldLayoutIdLst>"));
+    }
+
+    if (pTheme->m_bHasDate || pTheme->m_bHasFooter || pTheme->m_bHasSlideNumber)
+    {
+        oWriter.WriteString(std::wstring(L"<p:hf"));
+        if (!pTheme->m_bHasDate)		oWriter.WriteString(std::wstring(L" dt=\"0\""));
+        if (!pTheme->m_bHasSlideNumber) oWriter.WriteString(std::wstring(L" sldNum=\"0\""));
+        oWriter.WriteString(std::wstring(L" hdr=\"0\""));
+        if (!pTheme->m_bHasFooter)		oWriter.WriteString(std::wstring(L" ftr=\"0\""));
+        oWriter.WriteString(std::wstring(L"/>"));
+    }
+    CStylesWriter styleWriter;
+    styleWriter.m_pTheme = pTheme.get();
+
+    if (pTheme->m_eType == typeMaster)
+    {
+        oWriter.WriteString(std::wstring(L"<p:txStyles>"));
+
+        oWriter.WriteString(std::wstring(L"<p:titleStyle>"));
+        styleWriter.ConvertStyles(pTheme->m_pStyles[1], oWriter, 9);
+        oWriter.WriteString(std::wstring(L"</p:titleStyle>"));
+
+        oWriter.WriteString(std::wstring(L"<p:bodyStyle>"));
+        styleWriter.ConvertStyles(pTheme->m_pStyles[2], oWriter, 9);
+        oWriter.WriteString(std::wstring(L"</p:bodyStyle>"));
+
+        oWriter.WriteString(std::wstring(L"<p:otherStyle>"));
+        styleWriter.ConvertStyles(pTheme->m_pStyles[3], oWriter, 9);
+        oWriter.WriteString(std::wstring(L"</p:otherStyle>"));
+
+        oWriter.WriteString(std::wstring(L"</p:txStyles>"));
+    }
+    else if (pTheme->m_eType == typeNotesMaster)
+    {
+        oWriter.WriteString(std::wstring(L"<p:notesStyle>"));
+        styleWriter.ConvertStyles(pTheme->m_pStyles[1], oWriter, 9);
+        oWriter.WriteString(std::wstring(L"</p:notesStyle>"));
+    }
+
+    std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
+
+    std::wstring strSlideMasterFile;
+    std::wstring strSlideMasterRelsFile;
+    if (pTheme->m_eType == typeMaster)
+    {
+        oWriter.WriteString(std::wstring(L"</p:sldMaster>"));
+
+        strSlideMasterFile = L"slideMaster" + std::to_wstring(nIndexTheme) + L".xml";
+        strSlideMasterFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+
+        strSlideMasterRelsFile = L"slideMaster" + std::to_wstring(nIndexTheme) + L".xml.rels";
+        strSlideMasterRelsFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
+    }
+    else if (pTheme->m_eType == typeNotesMaster)
+    {
+        oWriter.WriteString(std::wstring(L"</p:notesMaster>"));
+
+        strSlideMasterFile = L"notesMaster1.xml";
+        strSlideMasterFile = strPptDirectory + _T("notesMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+
+        strSlideMasterRelsFile = L"notesMaster1.xml.rels";
+        strSlideMasterRelsFile = strPptDirectory + _T("notesMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
+    }
+    else if (pTheme->m_eType == typeHandoutMaster)
+    {
+        oWriter.WriteString(std::wstring(L"</p:handoutMaster>"));
+
+        strSlideMasterFile = L"handoutMaster1.xml";
+        strSlideMasterFile = strPptDirectory + _T("handoutMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+
+        strSlideMasterRelsFile = L"handoutMaster1.xml.rels";
+        strSlideMasterRelsFile = strPptDirectory + _T("handoutMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
+    }
+
+	NSFile::CFileBinary oFile;
+    oFile.CreateFileW(strSlideMasterFile);
+    std::wstring strMaster = oWriter.GetData();
+    oFile.WriteStringUTF8(strMaster);
+    oFile.CloseFile();
+
+    oRels.CloseRels();
+    oRels.SaveRels(strSlideMasterRelsFile);
+
+    nStartLayout += nCountLayouts;
 }
 
 

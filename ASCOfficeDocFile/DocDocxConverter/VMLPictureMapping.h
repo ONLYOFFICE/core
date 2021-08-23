@@ -50,7 +50,7 @@ namespace DocFileFormat
 	class VMLPictureMapping: public PropertiesMapping, public IMapping
 	{
 	public:
-		VMLPictureMapping( ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture = false );
+		VMLPictureMapping( ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture = false, bool inGroup = false);
 		virtual ~VMLPictureMapping();
 		virtual void Apply( IVisitable* visited );
 	private:
@@ -88,6 +88,7 @@ namespace DocFileFormat
 		
 		bool							m_isOlePreview;		
 		bool							m_isInlinePicture;
+		bool							m_inGroup;
 
         XMLTools::XMLElement*           m_imageData;
 		

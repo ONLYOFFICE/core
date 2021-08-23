@@ -403,6 +403,30 @@ void Animation::FillAnimScale(
         oAnim.zoomContents = oAtom.m_fZoomContents;
 }
 
+// TODO refactoring
+void Animation::FillAudio(CRecordExtTimeNodeContainer *pETNC,
+                          PPTX::Logic::Audio &oAudio)
+{
+    auto* pCVEC = pETNC->m_pClientVisualElement;
+    if (pCVEC->m_bVisualShapeAtom && m_pRels)
+    {
+        CExFilesInfo* pInfo1 = m_pExMedia->LockAudioFromCollection(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
+        if (pInfo1)
+        {
+            bool bExternal(false);
+            oAudio.cMediaNode.tgtEl.embed =
+                    new OOX::RId(m_pRels->WriteAudio(pInfo1->m_strFilePath, bExternal));
+             oAudio.cMediaNode.tgtEl.name = XmlUtils::EncodeXmlString(pInfo1->m_name);
+        } else if (pCVEC->m_oVisualShapeAtom.m_RefType == TL_ET_ShapeType)
+        {
+            oAudio.cMediaNode.tgtEl.spTgt = new PPTX::Logic::SpTgt;
+            oAudio.cMediaNode.tgtEl.spTgt->spid = std::to_wstring(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
+        } else
+            return;
+        FillCTn(pETNC, oAudio.cMediaNode.cTn);
+    }
+}
+
 void Animation::FillAudio(CRecordClientVisualElementContainer *pCVEC,
                           PPTX::Logic::Audio &oAudio)
 {
@@ -639,7 +663,7 @@ void Animation::FillCBhvr(
                 pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1 != 0xFFFFFFFF)
         {
             oBhvr.tgtEl.spTgt->txEl         = new PPTX::Logic::TxEl;
-            oBhvr.tgtEl.spTgt->txEl->charRg = true;
+            oBhvr.tgtEl.spTgt->txEl->charRg = false;
             oBhvr.tgtEl.spTgt->txEl->st     = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1;
             oBhvr.tgtEl.spTgt->txEl->end    = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2;
         }
@@ -1103,6 +1127,13 @@ void Animation::FillTnChild(
                 auto video = new PPTX::Logic::Video;
                 FillVideo(pETNC, *video);
                 oChild.m_node = video;
+            }
+
+            if (pETNC->m_pClientVisualElement->m_oVisualShapeAtom.m_Type == TL_TVET_Audio)
+            {
+                auto audio = new PPTX::Logic::Audio;
+                FillAudio(pETNC, *audio);
+                oChild.m_node = audio;
             }
         }
     }

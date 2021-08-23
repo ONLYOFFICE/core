@@ -32,7 +32,7 @@
 #pragma once
 
 #include  "../../../Common/DocxFormat/Source/Base/Types_32.h"
-#include  "../../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../../DesktopEditor/common/File.h"
 
 namespace PPT_FORMAT {
 struct IStruct {

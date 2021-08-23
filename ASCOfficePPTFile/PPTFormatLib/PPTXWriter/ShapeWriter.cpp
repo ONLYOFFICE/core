@@ -59,17 +59,6 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 
     PPT_FORMAT::CTextPFRun* pPF = &oLevel.m_oPFRun;
 
-    if (pPF->textDirection.is_init())
-    {
-        if (pPF->textDirection.get() == 1)	oWriter.WriteString(L" rtl=\"1\"");
-        else								oWriter.WriteString(L" rtl=\"0\"");
-    }
-    if (pPF->fontAlign.is_init())
-    {
-        std::wstring strProp = GetFontAlign(pPF->fontAlign.get());
-        oWriter.WriteString(L" fontAlgn=\"" + strProp + L"\"");
-    }
-
     int leftMargin = 0;
     if (pPF->leftMargin.is_init())
     {
@@ -92,7 +81,17 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
         std::wstring strProp = std::to_wstring(pPF->defaultTabSize.get());
         oWriter.WriteString(L" defTabSz=\"" + strProp + L"\"");
     }
-    oWriter.WriteString(L">");
+	if (pPF->textDirection.is_init())
+	{
+		if (pPF->textDirection.get() == 1)	oWriter.WriteString(L" rtl=\"1\"");
+		else								oWriter.WriteString(L" rtl=\"0\"");
+	}
+	if (pPF->fontAlign.is_init())
+	{
+		std::wstring strProp = GetFontAlign(pPF->fontAlign.get());
+		oWriter.WriteString(L" fontAlgn=\"" + strProp + L"\"");
+	}
+	oWriter.WriteString(L">");
 
     if (pPF->tabStops.size() > 0)
     {
@@ -217,7 +216,14 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 
     PPT_FORMAT::CTextCFRun* pCF = &oLevel.m_oCFRun;
 
-    if (pCF->Size.is_init())
+	if (pCF->Language.is_init())
+	{
+		std::wstring str_lang = msLCID2wstring(pCF->Language.get());
+
+		if (str_lang.length() > 0)
+			oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
+	}
+	if (pCF->Size.is_init())
     {
         std::wstring str = std::to_wstring((int)(100 * pCF->Size.get()));
         oWriter.WriteString(L" sz=\"" + str + L"\"");
@@ -236,13 +242,7 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
         else
             oWriter.WriteString(std::wstring(L" i=\"0\""));
     }
-    if (pCF->Language.is_init())
-    {
-        std::wstring str_lang = msLCID2wstring(pCF->Language.get());
 
-        if (str_lang.length() > 0)
-            oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
-    }
     oWriter.WriteString(std::wstring(L">"));
 
     if (pCF->Color.is_init())
@@ -738,14 +738,18 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
         bool bExternal = false;
         std::wstring strRid = m_pRels->WriteAudio(pAudioElement->m_strAudioFileName, bExternal);
 
-        m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>");
+        if ((int)pAudioElement->m_strAudioFileName.find(L".WAV") == -1 &&
+            (int)pAudioElement->m_strAudioFileName.find(L".wav") == -1)
+            m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>");
+        else
+            m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
 
         sMediaFile = bExternal ? L"" : pAudioElement->m_strAudioFileName;
     }
     if (sMediaFile.empty() == false)
     {
-        std::wstring strRid = m_pRels->WriteMedia(sMediaFile);
-        if (!strRid.empty())
+        std::wstring strRid = m_pRels->WriteImage(pImageElement->m_strImageFileName);
+        if (!strRid.empty() && false)
         {
             m_oWriter.WriteString(L"<p:extLst><p:ext uri=\"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}\">\
                                   <p14:media xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" r:embed=\"" + strRid + L"\"/></p:ext></p:extLst>");
@@ -1270,29 +1274,21 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
         //	if (pParagraph->m_arSpans.size() == 1 && pParagraph->m_arSpans[0].m_strText.empty()) break;
         //}
 
-        std::wstring _str1 = std::to_wstring(pParagraph->m_lTextLevel);
-        m_oWriter.WriteString(L"<a:p><a:pPr lvl=\"" + _str1 + L"\"");
+        m_oWriter.WriteString(L"<a:p><a:pPr");
 
         PPT_FORMAT::CTextPFRun* pPF = &pParagraph->m_oPFRun;
-
-        if (pPF->textDirection.is_init())
-        {
-            if (pPF->textDirection.get() == 1)	m_oWriter.WriteString(std::wstring(L" rtl=\"1\""));
-            else								m_oWriter.WriteString(std::wstring(L" rtl=\"0\""));
-        }
-        if (pPF->fontAlign.is_init())
-        {
-            std::wstring strProp = CStylesWriter::GetFontAlign(pPF->fontAlign.get());
-            m_oWriter.WriteString(std::wstring(L" fontAlgn=\"") + strProp + L"\"");
-        }
-        int leftMargin = 0;
+        
+		int leftMargin = 0;
         if (pPF->leftMargin.is_init())
         {
             leftMargin = pPF->leftMargin.get();
             std::wstring strProp = std::to_wstring( leftMargin );
             m_oWriter.WriteString(L" marL=\"" + strProp + L"\"");
         }
-        if (pPF->indent.is_init())
+        std::wstring _strLevel = std::to_wstring(pParagraph->m_lTextLevel);
+		m_oWriter.WriteString(L" lvl=\"" + _strLevel + L"\"");
+		
+		if (pPF->indent.is_init())
         {
             std::wstring strProp = std::to_wstring(pPF->indent.get() - leftMargin);
             m_oWriter.WriteString(L" indent=\"" + strProp + L"\"");
@@ -1307,7 +1303,17 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
             std::wstring strProp= std::to_wstring( pPF->defaultTabSize.get());
             m_oWriter.WriteString(L" defTabSz=\"" + strProp + L"\"");
         }
-        m_oWriter.WriteString(L">");
+		if (pPF->textDirection.is_init())
+		{
+			if (pPF->textDirection.get() == 1)	m_oWriter.WriteString(std::wstring(L" rtl=\"1\""));
+			else								m_oWriter.WriteString(std::wstring(L" rtl=\"0\""));
+		}
+		if (pPF->fontAlign.is_init())
+		{
+			std::wstring strProp = CStylesWriter::GetFontAlign(pPF->fontAlign.get());
+			m_oWriter.WriteString(std::wstring(L" fontAlgn=\"") + strProp + L"\"");
+		}
+		m_oWriter.WriteString(L">");
 
         double dKoef1 = 3.52777778; // :-) чё это не понятно ...
         if (pPF->lineSpacing.is_init())
@@ -1392,10 +1398,15 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     }
                     m_oWriter.WriteString(std::wstring(L"/>"));
                 }
-                if (pPF->bulletAutoNum.is_init())  // TODO Numbering
+                if (pPF->bulletAutoNum.is_init() && !pPF->bulletChar.is_init())  // TODO Numbering
                 {
                     m_oWriter.WriteString(L"<a:buAutoNum type=\"");
                     m_oWriter.WriteString(pPF->bulletAutoNum->type.get());
+                    if (pPF->bulletAutoNum->startAt.get2() != 1)
+                    {
+                        m_oWriter.WriteString(L" startAt=\"");
+                        m_oWriter.WriteString(std::to_wstring(pPF->bulletAutoNum->startAt.get2()));
+                    }
                     m_oWriter.WriteString(L"\"/>");
                 }
 
@@ -1484,7 +1495,13 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     m_oWriter.WriteString(std::wstring(L"<a:r><a:rPr"));
                 }
             }
+			if (pCF->Language.is_init())
+			{
+				std::wstring str_lang = msLCID2wstring(pCF->Language.get());
 
+				if (str_lang.length() > 0)
+					m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
+			}
             if ((pCF->Size.is_init()) && (pCF->Size.get() > 0) && (pCF->Size.get() < 4001))
             {
                 m_oWriter.WriteString(L" sz=\"" + std::to_wstring((int)(100 * pCF->Size.get())) + L"\"");
@@ -1515,13 +1532,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 else
                     m_oWriter.WriteString(std::wstring(L" u=\"none\""));
             }
-            if (pCF->Language.is_init())
-            {
-                std::wstring str_lang = msLCID2wstring(pCF->Language.get());
 
-                if (str_lang.length() > 0)
-                    m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
-            }
             m_oWriter.WriteString(std::wstring(L">"));
             WriteHyperlink(pParagraph->m_arSpans[nSpan].m_arrInteractive);
 
@@ -1716,6 +1727,7 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
             hlink.snd->embed = m_pRels->WriteAudio(actions[i].m_strAudioFileName, bExternal);
             hlink.snd->m_name = L"snd";
             hlink.snd->name = actions[i].m_strAudioName;
+            hlink.id = std::wstring(L"");
         }
 
         if (actions[i].m_eActivation == CInteractiveInfo::over)
@@ -1793,7 +1805,8 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
             }
             case LT_Url:
             {
-                break;
+                // TODO need check 1713 and hyperlink there
+                break; // break;
             }
             case LT_OtherPresentation:
             {
@@ -1813,6 +1826,7 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
         {
 
             hlink.action = L"ppaction://media";
+            hlink.id = L"";
             break;
         }
         default:

@@ -523,6 +523,8 @@ namespace PPT_FORMAT
 		int nCountCFs = (int)oArrayCF.size();
 
 		oAttributes.m_arParagraphs.clear();
+        oAttributes.m_originalText = strText;
+
 		int nCurrentPF = 0;
 		int nCurrentCF = 0;
 		int nOffsetCF  = 0;

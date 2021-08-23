@@ -57,7 +57,7 @@ namespace DocFileFormat
 	{
 	public:
 
-		VMLShapeMapping (ConversionContext* ctx ,XMLTools::CStringXmlWriter* writer, Spa* pSpa, PictureDescriptor* pict,  IMapping* caller, bool bullet = false);
+		VMLShapeMapping (ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, Spa* pSpa, PictureDescriptor* pict,  IMapping* caller, bool bullet = false, bool in_group = false);
 		virtual ~VMLShapeMapping();
 		virtual void Apply(IVisitable* visited);
 
@@ -67,6 +67,7 @@ namespace DocFileFormat
         static std::wstring mapHorizontalPositionRelative (int hRel );
 		static std::wstring mapWrapText (int val_);
 
+		bool			m_inGroup;
 		bool			m_isBullete;
 		bool			m_isPictureBroken;
 		std::wstring	m_shapeId;

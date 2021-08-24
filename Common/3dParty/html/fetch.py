@@ -14,6 +14,7 @@ if not base.is_dir("gumbo-parser"):
   base.cmd_in_dir("gumbo-parser", "git", ["checkout", "aa91b27b02c0c80c482e24348a457ed7c3c088e0"])
 
   # fix gumbo
+  base.replaceInFile(base_directory + "/gumbo-parser/src/tag.c", "#include <string.h>", "#include <string.h>\n#include <wchar.h>\n#include <wctype.h>")
   base.replaceInFile(base_directory + "/gumbo-parser/src/tag.c", "isspace", "iswspace")
 
 if not base.is_dir("katana-parser"):

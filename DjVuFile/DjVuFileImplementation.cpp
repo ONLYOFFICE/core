@@ -590,8 +590,8 @@ BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex, const 
 
         CData oRes;
         oRes.SkipLen();
-        double dKoefX = (double)nRasterW * dPageDpiX / 25.4 / dWidth;
-        double dKoefY = (double)nRasterH * dPageDpiY / 25.4 / dHeight;
+        double dKoefX = (double)nRasterW / dWidth;
+        double dKoefY = (double)nRasterH / dHeight;
         for (GPosition pos(map_areas); pos; ++pos)
         {
             GUTF8String str = map_areas[pos]->url;
@@ -599,12 +599,12 @@ BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex, const 
             double x = map_areas[pos]->get_xmin() * dKoefX;
             std::string s = std::to_string(x);
             oRes.WriteString((BYTE*)s.c_str(), s.length());
-            double y = map_areas[pos]->get_ymin() * dKoefY;
+            double y = (double)nRasterH - map_areas[pos]->get_ymin() * dKoefY;
             s = std::to_string(y);
             oRes.WriteString((BYTE*)s.c_str(), s.length());
             s = std::to_string(map_areas[pos]->get_xmax() * dKoefX - x);
             oRes.WriteString((BYTE*)s.c_str(), s.length());
-            s = std::to_string(map_areas[pos]->get_ymax() * dKoefY - y);
+            s = std::to_string((double)nRasterH - map_areas[pos]->get_ymax() * dKoefY - y);
             oRes.WriteString((BYTE*)s.c_str(), s.length());
         }
         oRes.WriteLen();

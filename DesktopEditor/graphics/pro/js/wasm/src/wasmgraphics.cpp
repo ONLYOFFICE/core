@@ -104,8 +104,8 @@ static DWORD GetLength(BYTE* x)
 
 int main()
 {
-#define XPS_TEST  1
-#define DJVU_TEST 0
+#define XPS_TEST  0
+#define DJVU_TEST 1
 #if XPS_TEST
     BYTE* pXpsData = NULL;
     DWORD nXpsBytesCount;

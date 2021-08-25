@@ -197,6 +197,7 @@
             var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
             index += 4;
             var _Link = "".fromUtf8(buffer, index, lenRec);
+            index += lenRec;
             lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
             index += 4;
             var _X = parseFloat("".fromUtf8(buffer, index, lenRec));

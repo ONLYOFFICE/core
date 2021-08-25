@@ -327,11 +327,35 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"duplicateValues";
 	}
+	else if (0 <= (pos = f.find(L"begins-with")))
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"beginsWith";
+		std::wstring text = f.substr(pos + 12, f.length() - pos - 13);
+		
+		if (0 == text.find(L"\"") && text.length() - 1 == text.rfind(L"\""))
+		{
+			text = text.substr(1, text.length() - 2);
+		}
+		
+		impl_->conditionalFormattings_.back().rules.back().text = text;
+	}
+	else if (0 <= (pos = f.find(L"ends-with")))
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"endsWith";
+		std::wstring text = f.substr(pos + 10, f.length() - pos - 11);
+		
+		if (0 == text.find(L"\"") && text.length() - 1 == text.rfind(L"\""))
+		{
+			text = text.substr(1, text.length() - 2);
+		}
+		
+		impl_->conditionalFormattings_.back().rules.back().text = text;
+	}
 	else if (0 <= (pos = f.find(L"contains-text")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsText";
 
-		std::wstring text = f.substr(14, f.length() - 15);
+		std::wstring text = f.substr(pos + 14, f.length() - pos - 15);
 
 		if (std::wstring::npos != text.find(L"IF(") || 
 			std::wstring::npos != text.find(L"AND(") ||

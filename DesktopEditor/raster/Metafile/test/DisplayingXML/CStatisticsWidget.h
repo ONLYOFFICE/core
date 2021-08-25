@@ -4,6 +4,10 @@
 #include <QWidget>
 #include "ui_Statistics.h"
 
+namespace Ui {
+        class CStatisticsWidget;
+}
+
 class CStatisticsWidget : public QWidget
 {
     Q_OBJECT
@@ -18,7 +22,7 @@ private slots:
     void on_StatisticsExit_clicked();
 
 private:
-    Ui::Form *ui;
+    Ui::CStatisticsWidget *ui;
     QWidget *pMainWindow;
     virtual void resizeEvent(QResizeEvent *);
 };

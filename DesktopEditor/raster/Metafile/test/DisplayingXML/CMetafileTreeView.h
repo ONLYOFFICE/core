@@ -22,9 +22,13 @@ public:
 
     bool SaveInFile(const QString& sSaveFilePath);
 
+    void mousePressEvent(QMouseEvent *event) override;
+
 private:
     void ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem* oStandartItem, unsigned int unLevel = 0);
     void WriteXmlNode(XmlUtils::CXmlWriter& oXmlWriter, QStandardItem* oStandartItem);
+
+    void EditItem(QStandardItem* pStandardItem);
 
     QMap<QString, unsigned int> m_mStatistics;
 };

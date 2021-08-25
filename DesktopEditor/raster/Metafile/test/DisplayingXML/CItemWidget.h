@@ -20,9 +20,11 @@ public:
 
 private slots:
     void on_deleteButton_clicked();
+    void on_editButton_clicked();
 
 private:
     QTextEdit   *m_pTextEdit;
+    QPushButton *m_pEditButton;
     QPushButton *m_pDeleteButton;
 };
 

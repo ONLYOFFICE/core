@@ -2,8 +2,10 @@
 
 #include <QFile>
 #include <QMessageBox>
-#include <QStandardItem>
+#include <QMouseEvent>
 #include <CTextEditDelegate.h>
+
+#include "CEditItemWidget.h"
 
 CMetafileTreeView::CMetafileTreeView(QWidget *parent) :
     QTreeView(parent)
@@ -102,6 +104,19 @@ bool CMetafileTreeView::SaveInFile(const QString &sSaveFilePath)
         return true;
 }
 
+void CMetafileTreeView::mousePressEvent(QMouseEvent *event)
+{
+        if (event->button() == Qt::RightButton)
+        {
+                QModelIndex index =  this->indexAt(event->pos());
+                QStandardItem *pStandardItem = static_cast<QStandardItem*>(index.internalPointer());
+                QStandardItem *pItem = pStandardItem->child(index.row(), index.column());
+                EditItem(pItem);
+        }
+
+        QTreeView::mousePressEvent(event);
+}
+
 void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem* oStandartItem, unsigned int unLevel)
 {
     XmlUtils::CXmlNodes oXmlChilds;
@@ -128,8 +143,11 @@ void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem*
 
                     QStandardItem *pStandardItem = new QStandardItem(QString("<%1%2>").arg(QString::fromStdWString(oXmlChild.GetName()), qsArguments));
 
-                    ReadXmlNode(oXmlChild, *pStandardItem, unLevel + 1);
-                    oStandartItem.appendRow(pStandardItem);
+                    if (unLevel > 1)
+                            pStandardItem->setEditable(false);
+
+                    ReadXmlNode(oXmlChild, pStandardItem, unLevel + 1);
+                    oStandartItem->appendRow(pStandardItem);
             }
         }
     }
@@ -138,8 +156,45 @@ void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem*
         std::wstring wsText = oXmlNode.GetText();
         if (!wsText.empty())
         {
-            QString qsText = oStandartItem.text();
-            oStandartItem.setText(qsText + (QString::fromStdWString(wsText)) + qsText[0] + '/' + qsText.mid(1));
+            QString qsText = oStandartItem->text();
+            oStandartItem->setText(qsText + (QString::fromStdWString(wsText)) + qsText[0] + '/' + qsText.mid(1));
         }
     }
+}
+
+void CMetafileTreeView::WriteXmlNode(XmlUtils::CXmlWriter &oXmlWriter, QStandardItem *oStandartItem)
+{
+        unsigned int unCountNodes = oStandartItem->rowCount();
+
+        std::wstring wsNodeText = oStandartItem->text().toStdWString();
+
+        if (oStandartItem->rowCount() == 0)
+        {
+                if (wsNodeText.find_last_of(L'/') != std::wstring::npos)
+                        oXmlWriter.WriteString(wsNodeText);
+                else
+                        oXmlWriter.WriteString(wsNodeText.substr(0, wsNodeText.size() - 1) + L"/>");
+                return;
+        }
+
+        oXmlWriter.WriteString(wsNodeText);
+
+        for (unsigned int unIndexNode = 0; unIndexNode < unCountNodes; ++unIndexNode)
+        {
+                QStandardItem *pNode = oStandartItem->child(unIndexNode);
+                WriteXmlNode(oXmlWriter, pNode);
+        }
+
+        oXmlWriter.WriteString(L"</" + wsNodeText.substr(1));
+}
+
+void CMetafileTreeView::EditItem(QStandardItem *pStandardItem)
+{
+        if (NULL == pStandardItem)
+                return;
+
+        CEditItemWidget *pEditItemWidget = new CEditItemWidget;
+        pEditItemWidget->SetMainWindow((QWidget*)parent()->parent()->parent());
+        pEditItemWidget->SetItem(pStandardItem);
+        pEditItemWidget->show();
 }

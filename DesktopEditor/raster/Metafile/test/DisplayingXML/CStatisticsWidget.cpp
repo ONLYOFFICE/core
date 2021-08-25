@@ -6,7 +6,7 @@
 
 CStatisticsWidget::CStatisticsWidget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Form)
+    ui(new Ui::CStatisticsWidget)
 {
     this->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
     ui->setupUi(this);

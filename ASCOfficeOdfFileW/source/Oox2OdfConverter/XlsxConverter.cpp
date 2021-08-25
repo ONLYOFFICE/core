@@ -3259,7 +3259,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 			ods_context->current_table()->set_conditional_text(*oox_cond_rule->m_oText);
 
 		if (oox_cond_rule->m_oTimePeriod.IsInit())
-			ods_context->current_table()->set_conditional_time(*oox_cond_rule->m_oTimePeriod);
+			ods_context->current_table()->set_conditional_time(oox_cond_rule->m_oTimePeriod->GetValue());
 		
 		convert(oox_cond_rule->m_oIconSet.GetPointer());
 		convert(oox_cond_rule->m_oColorScale.GetPointer());

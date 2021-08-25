@@ -44,6 +44,7 @@
 
 #include "datatypes/iconset_type.h"
 #include "datatypes/calcext_type.h"
+#include "datatypes/timeperiod.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -87,7 +88,7 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 	_CP_OPT(std::wstring)	calcext_style_;
-	_CP_OPT(std::wstring)	calcext_date_;
+	_CP_OPT(odf_types::time_period)	calcext_date_;
 
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -151,7 +152,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	
 	_CP_OPT(bool)				calcext_show_value_;
-	calcext_icon_set_attr		calcext_icon_set_attr_;
+	calcext_icon_set_attr		attr_;
     office_element_ptr_array	content_;
 
 };
@@ -173,7 +174,7 @@ public:
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 	
 	_CP_OPT(bool)				calcext_show_value_;
-	calcext_data_bar_attr		calcext_data_bar_attr_;
+	calcext_data_bar_attr		attr_;
     office_element_ptr_array	content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_data_bar)
@@ -212,7 +213,7 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
-	calcext_date_is_attr calcext_date_is_attr_;
+	calcext_date_is_attr attr_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_date_is)
 
@@ -231,7 +232,7 @@ public:
 
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
 
-	calcext_condition_attr calcext_condition_attr_;
+	calcext_condition_attr attr_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_condition)
 

@@ -8,24 +8,17 @@
 
 class CItemWidget : public QWidget
 {
-    Q_OBJECT
-public:
-    explicit CItemWidget(QWidget* parent = NULL);
-    virtual ~CItemWidget();
+        Q_OBJECT
+    public:
+        explicit CItemWidget(QWidget* parent = NULL);
+        virtual ~CItemWidget();
 
-    QString GetText();
+        QString GetText();
 
-    void SetText(const QString& qsString);
-    void SetFont(const QFont&   oFont);
-
-private slots:
-    void on_deleteButton_clicked();
-    void on_editButton_clicked();
-
-private:
-    QTextEdit   *m_pTextEdit;
-    QPushButton *m_pEditButton;
-    QPushButton *m_pDeleteButton;
+        void SetText(const QString& qsString);
+        void SetFont(const QFont&   oFont);
+    private:
+        QTextEdit   *m_pTextEdit;
 };
 
 #endif // CITEMWIDGET_H

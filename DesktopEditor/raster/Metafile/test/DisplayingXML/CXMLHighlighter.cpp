@@ -6,24 +6,24 @@
 bool SplitString(const QString &str, int n, QStringList &list);
 
 CXMLHighlighter::CXMLHighlighter(QObject * parent) :
-    QSyntaxHighlighter(parent)
+        QSyntaxHighlighter(parent)
 {
-    SetRegexes();
-    SetFormats();
+        SetRegexes();
+        SetFormats();
 }
 
 CXMLHighlighter::CXMLHighlighter(QTextDocument * parent) :
-    QSyntaxHighlighter(parent)
+        QSyntaxHighlighter(parent)
 {
-    SetRegexes();
-    SetFormats();
+        SetRegexes();
+        SetFormats();
 }
 
 CXMLHighlighter::CXMLHighlighter(QTextEdit * parent) :
-    QSyntaxHighlighter(parent)
+        QSyntaxHighlighter(parent)
 {
-    SetRegexes();
-    SetFormats();
+        SetRegexes();
+        SetFormats();
 }
 
 void CXMLHighlighter::PaintByRegex(const QString &qsText, QPainter* pPainter, const QRect& oRect, QFont* pFont)

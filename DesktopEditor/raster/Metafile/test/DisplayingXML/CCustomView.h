@@ -10,20 +10,20 @@ using namespace std; // устраняет ошибки с min, max при ко�
 
 class CCustomView : public QGraphicsView
 {
-    Q_OBJECT
-public:
-    explicit CCustomView(QWidget *parent);
-    virtual ~CCustomView();
+        Q_OBJECT
+    public:
+        explicit CCustomView(QWidget *parent);
+        virtual ~CCustomView();
 
-    unsigned int GetHeightMetafile() const;
-    unsigned int GetWidthMetafile() const;
+        unsigned int GetHeightMetafile() const;
+        unsigned int GetWidthMetafile() const;
 
-    bool DrawMetafile(const std::wstring& wsFilePath);
-    void Clear();
+        bool DrawMetafile(const std::wstring& wsFilePath);
+        void Clear();
 
-    void wheelEvent(QWheelEvent * event) override;
-private:
-    Gdiplus::Bitmap *m_pBitmap;
+        virtual void wheelEvent(QWheelEvent * event) override;
+    private:
+        Gdiplus::Bitmap *m_pBitmap;
 
 };
 

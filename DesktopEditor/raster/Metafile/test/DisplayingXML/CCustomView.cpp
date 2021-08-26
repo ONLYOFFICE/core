@@ -6,71 +6,71 @@ Q_GUI_EXPORT QPixmap qt_pixmapFromWinHBITMAP(HBITMAP bitmap, int hbitmapFormat=0
 #include <QWheelEvent>
 
 CCustomView::CCustomView(QWidget *parent)
-    : QGraphicsView(parent),
-      m_pBitmap(NULL)
+      : QGraphicsView(parent),
+        m_pBitmap(NULL)
 {}
 
 CCustomView::~CCustomView()
 {
-    Clear();
+        Clear();
 }
 
 unsigned int CCustomView::GetHeightMetafile() const
 {
-    return m_pBitmap->GetHeight();
+        return m_pBitmap->GetHeight();
 }
 
 unsigned int CCustomView::GetWidthMetafile() const
 {
-    return m_pBitmap->GetWidth();
+        return m_pBitmap->GetWidth();
 }
 
 bool CCustomView::DrawMetafile(const std::wstring& wsFilePath)
 {
-    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-    ULONG_PTR gdiplusToken;
+        Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+        ULONG_PTR gdiplusToken;
 
-    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+        GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-    Clear();
-    m_pBitmap = Gdiplus::Bitmap::FromFile(wsFilePath.c_str());
+        Clear();
+        m_pBitmap = Gdiplus::Bitmap::FromFile(wsFilePath.c_str());
 
-    HBITMAP handleToSliceRet = NULL;
-    m_pBitmap->GetHBITMAP(Gdiplus::Color::Transparent, &handleToSliceRet);
+        HBITMAP handleToSliceRet = NULL;
+        m_pBitmap->GetHBITMAP(Gdiplus::Color::Transparent, &handleToSliceRet);
 
-    if (NULL == handleToSliceRet)
-        return false;
+        if (NULL == handleToSliceRet)
+                return false;
 
-    QPixmap oPixmap = qt_pixmapFromWinHBITMAP(handleToSliceRet);
+        QPixmap oPixmap = qt_pixmapFromWinHBITMAP(handleToSliceRet);
 
-    QGraphicsScene *pScene = new QGraphicsScene();
+        QGraphicsScene *pScene = new QGraphicsScene();
 
-    pScene->addPixmap(oPixmap);
+        pScene->addPixmap(oPixmap);
 
-    setScene(pScene);
+        setScene(pScene);
 
-    return true;
+        return true;
 }
 
 void CCustomView::Clear()
 {
-    if (NULL != m_pBitmap)
-    {
-        delete m_pBitmap;
-        m_pBitmap = NULL;
-    }
+        if (NULL != m_pBitmap)
+        {
+                delete m_pBitmap;
+                m_pBitmap = NULL;
+        }
 
-    QGraphicsScene *pScene = scene();
-    if (NULL != pScene)
-    {
-        delete pScene;
-        setScene(NULL);
-    }
+        QGraphicsScene *pScene = scene();
+        if (NULL != pScene)
+        {
+                delete pScene;
+                setScene(NULL);
+        }
 }
 
 void CCustomView::wheelEvent(QWheelEvent *event)
 {
-    double delta = event->delta();
-    double sf = 1.0 + delta / 1000;
-    scale(sf, sf);
+        double delta = event->delta();
+        double sf = 1.0 + delta / 1000;
+        scale(sf, sf);
 }

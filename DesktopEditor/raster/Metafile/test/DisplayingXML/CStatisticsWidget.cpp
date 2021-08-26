@@ -8,43 +8,43 @@ CStatisticsWidget::CStatisticsWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::CStatisticsWidget)
 {
-    this->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
-    ui->setupUi(this);
+        this->setWindowFlags(Qt::Window  | Qt::WindowCloseButtonHint);
+        ui->setupUi(this);
 }
 
 CStatisticsWidget::~CStatisticsWidget()
 {
-    delete ui;
+        delete ui;
 }
 
 void CStatisticsWidget::SetMainWindow(QWidget *pMainWidget)
 {
-    this->pMainWindow = pMainWidget;
+        this->pMainWindow = pMainWidget;
 
-    if(NULL != pMainWidget)
-        pMainWidget->setEnabled(false);
+        if(NULL != pMainWidget)
+                pMainWidget->setEnabled(false);
 }
 
 void CStatisticsWidget::SetStatistics(QMap<QString, unsigned int>* mStaticstics)
 {
-    CMapModel *pMapModel = new CMapModel;
-    pMapModel->SetMap(mStaticstics);
-    ui->StatisticsView->setModel(pMapModel);
+        CMapModel *pMapModel = new CMapModel;
+        pMapModel->SetMap(mStaticstics);
+        ui->StatisticsView->setModel(pMapModel);
 }
 
 void CStatisticsWidget::resizeEvent(QResizeEvent *pResizeEvent)
 {
-    unsigned int unWorkingPartHeight    = pResizeEvent->size().height();
-    unsigned int unWorkingPartWidth     = pResizeEvent->size().width();
+        unsigned int unWorkingPartHeight    = pResizeEvent->size().height();
+        unsigned int unWorkingPartWidth     = pResizeEvent->size().width();
 
-    ui->verticalLayout->setGeometry(QRect(0, 0, unWorkingPartWidth, unWorkingPartHeight));
+        ui->verticalLayout->setGeometry(QRect(0, 0, unWorkingPartWidth, unWorkingPartHeight));
 }
 
-void CStatisticsWidget::on_StatisticsExit_clicked()
+void CStatisticsWidget::closeEvent(QCloseEvent *event)
 {
-    if (NULL != pMainWindow)
-        pMainWindow->setEnabled(true);
+        if (NULL != pMainWindow)
+            pMainWindow->setEnabled(true);
 
-    this->close();
+        this->close();
 }
 

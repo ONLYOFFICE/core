@@ -10,21 +10,20 @@ namespace Ui {
 
 class CStatisticsWidget : public QWidget
 {
-    Q_OBJECT
-public:
-    CStatisticsWidget(QWidget *parent = NULL);
-    ~CStatisticsWidget();
+        Q_OBJECT
+    public:
+        CStatisticsWidget(QWidget *parent = NULL);
+        ~CStatisticsWidget();
 
-    void SetMainWindow(QWidget *pMainWidget);
-    void SetStatistics(QMap<QString, unsigned int>* mStaticstics);
+        void SetMainWindow(QWidget *pMainWidget);
+        void SetStatistics(QMap<QString, unsigned int>* mStaticstics);
 
-private slots:
-    void on_StatisticsExit_clicked();
+    private:
+        Ui::CStatisticsWidget *ui;
+        QWidget *pMainWindow;
 
-private:
-    Ui::CStatisticsWidget *ui;
-    QWidget *pMainWindow;
-    virtual void resizeEvent(QResizeEvent *);
+        virtual void resizeEvent(QResizeEvent *) override;
+        virtual void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // CSTATISTICSWIDGET_H

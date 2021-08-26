@@ -7,15 +7,13 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 
-#include <QtDebug>
-
 CEditItemWidget::CEditItemWidget(QWidget *parent) :
         QWidget(parent),
         ui(new Ui::CEditItemWidget),
         m_pMainWindow(NULL),
         m_pStandardItem(NULL)
 {
-        this->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::CustomizeWindowHint);
+        this->setWindowFlags(Qt::Window  | Qt::WindowCloseButtonHint);
         this->setWindowTitle("Edit");
 
         QVBoxLayout *pVerticalLayout    = new QVBoxLayout;
@@ -24,12 +22,12 @@ CEditItemWidget::CEditItemWidget(QWidget *parent) :
         QPushButton *pSaveButton        = new QPushButton("Save");
         QPushButton *pCancelButton      = new QPushButton("Cancel");
 
-        connect(pSaveButton, SIGNAL(clicked()), this, SLOT(on_Save_clicked()));
-        connect(pCancelButton, SIGNAL(clicked()), this, SLOT(on_Cancel_clicked()));
+        connect(pSaveButton,    SIGNAL(clicked()), this, SLOT(on_Save_clicked()));
+        connect(pCancelButton,  SIGNAL(clicked()), this, SLOT(on_Cancel_clicked()));
 
         pButtonsLayout->addWidget(pSaveButton);
         pButtonsLayout->addWidget(pCancelButton);
-//        pButtonsLayout->setStretch(0, 1);
+        pButtonsLayout->setStretch(0, 1);
 
         pVerticalLayout->addLayout(pButtonsLayout);
         this->setLayout(pVerticalLayout);
@@ -58,7 +56,27 @@ void CEditItemWidget::SetItem(QStandardItem *pStandardItem)
 
 void CEditItemWidget::on_Save_clicked()
 {
+        for (QStandardItem* oStandardItem : m_oBind)
+        {
+                const QTextEdit* pTextEdit = m_oBind.key(oStandardItem);
 
+                unsigned int unFirstQuotationMark, unFirstSlash;
+
+                const QString qsStandardItemValue = oStandardItem->data(0).toString();
+
+                unFirstQuotationMark = qsStandardItemValue.indexOf('>');
+                unFirstSlash = qsStandardItemValue.indexOf('/');
+
+                const QString qsName = qsStandardItemValue.mid(1, ((unFirstSlash > unFirstQuotationMark) ? (unFirstQuotationMark) : (unFirstSlash)) - 1);
+                const QString qsValue = pTextEdit->toPlainText();
+
+                if (qsValue.size() == 0)
+                        oStandardItem->setText(QString("<%1/>").arg(qsName));
+                else
+                        oStandardItem->setText(QString("<%1>%2</%1>").arg(qsName, qsValue));
+        }
+
+        on_Cancel_clicked();
 }
 
 void CEditItemWidget::on_Cancel_clicked()
@@ -67,6 +85,15 @@ void CEditItemWidget::on_Cancel_clicked()
                 m_pMainWindow->setEnabled(true);
 
         this->close();
+}
+
+void CEditItemWidget::on_DeleteItem_clicked()
+{
+        QStandardItem *pParent = m_pStandardItem->parent();
+
+        pParent->removeRow(m_pStandardItem->index().row());
+
+        on_Cancel_clicked();
 }
 
 void CEditItemWidget::ParsingItem()
@@ -78,6 +105,15 @@ void CEditItemWidget::ParsingItem()
 
         ParsingAttachments(m_pStandardItem);
 
+        if (m_pStandardItem->parent()->data(0).toString() == "<EMF>")
+        {
+                QPushButton *pDeleteButton = new QPushButton("Delete");
+
+                connect(pDeleteButton,  SIGNAL(clicked()), this, SLOT(on_DeleteItem_clicked()));
+
+                pButtonsLayout->addWidget(pDeleteButton);
+        }
+
         ((QVBoxLayout*)layout())->addLayout(pButtonsLayout);
 }
 
@@ -85,12 +121,12 @@ void CEditItemWidget::ParsingAttachments(QStandardItem *pStandardItem, unsigned 
 {
         const unsigned int unCountRow           = pStandardItem->rowCount();
         const QString qsStandardItemValue       = pStandardItem->data(0).toString();
-
-        QString qsName;
         unsigned int unFirstQuotationMark, unFirstSlash;
 
         unFirstQuotationMark = qsStandardItemValue.indexOf('>');
         unFirstSlash = qsStandardItemValue.indexOf('/');
+
+        const QString qsName = qsStandardItemValue.mid(1, ((unFirstSlash > unFirstQuotationMark) ? (unFirstQuotationMark) : (unFirstSlash)) - 1);
 
         if (unCountRow == 0)
         {
@@ -98,15 +134,8 @@ void CEditItemWidget::ParsingAttachments(QStandardItem *pStandardItem, unsigned 
 
                 QString qsValue;
 
-                if (unFirstSlash < unFirstQuotationMark)
-                {
-
-                }
-                else
-                {
-                      qsName = qsStandardItemValue.mid(1, unFirstQuotationMark - 1);
+                if (unFirstSlash > unFirstQuotationMark)
                       qsValue = qsStandardItemValue.mid(unFirstQuotationMark + 1, unFirstSlash - unFirstQuotationMark - 2);
-                }
 
                 QLabel *pNameLabel = new QLabel(qsName);
                 QTextEdit *pValueEdit = new QTextEdit(qsValue);
@@ -120,12 +149,12 @@ void CEditItemWidget::ParsingAttachments(QStandardItem *pStandardItem, unsigned 
                 pLayout->addWidget(pNameLabel);
                 pLayout->addWidget(pValueEdit);
 
+                m_oBind.insert(pValueEdit, pStandardItem);
+
                 ((QVBoxLayout*)layout())->addLayout(pLayout);
         }
         else
         {
-                qsName = qsStandardItemValue.mid(1, unFirstQuotationMark - 1);
-
                 if (unLevel != 0)
                 {
                         QLabel *pLabel = new QLabel(qsName);
@@ -139,4 +168,9 @@ void CEditItemWidget::ParsingAttachments(QStandardItem *pStandardItem, unsigned 
                 for (unsigned int unNumberRow = 0; unNumberRow < unCountRow; ++unNumberRow)
                         ParsingAttachments(pStandardItem->child(unNumberRow), unLevel + 1);
         }
+}
+
+void CEditItemWidget::closeEvent(QCloseEvent *event)
+{
+        on_Cancel_clicked();
 }

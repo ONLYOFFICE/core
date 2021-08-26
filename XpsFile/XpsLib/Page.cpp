@@ -1005,8 +1005,9 @@ namespace XPS
 					double pdA, pdB, pdC, pdD, pdE, pdF;
 					pRenderer->GetTransform(&pdA, &pdB, &pdC, &pdD, &pdE, &pdF);
 					Aggplus::CMatrix oTransform(pdA, pdB, pdC, pdD, pdE, pdF);
+					double x1 = 0, y1 = 0, x2 = 0, y2 = 0, x3 = 0, y3 = 0;
 
-					CPageLink oLink = {0,0,0,0,L""};
+					CPageLink oLink = {0, 0, 0, 0, L""};
 					std::wstring wsPath = wsPathData.c_stdstr();
 					size_t nFindX = wsPath.find(L"M ");
 					if (nFindX != std::wstring::npos)
@@ -1015,16 +1016,14 @@ namespace XPS
 						size_t nFindEndX = wsPath.find(L',', nFindX);
 						if (nFindEndX != std::wstring::npos)
 						{
-							oLink.dX = GetDouble(wsPath.substr(nFindX, nFindEndX - nFindX));
+							x1 = GetDouble(wsPath.substr(nFindX, nFindEndX - nFindX));
 							size_t nFindY = nFindEndX + 1;
 							size_t nFindEndY = wsPath.find(L' ', nFindY);
 							if (nFindEndY != std::wstring::npos)
-								oLink.dY = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
-							oTransform.TransformPoint(oLink.dX, oLink.dY);
+								y1 = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+							oTransform.TransformPoint(x1, y1);
 						}
 					}
-					double MaybeH = 0;
-					double MaybeW = 0;
 					nFindX = wsPath.find(L"L ");
 					if (nFindX != std::wstring::npos)
 					{
@@ -1032,16 +1031,12 @@ namespace XPS
 						size_t nFindEndX = wsPath.find(L',', nFindX);
 						if (nFindEndX != std::wstring::npos)
 						{
-							MaybeW = GetDouble(wsPath.substr(nFindX, nFindEndX - nFindX));
+							x2 = GetDouble(wsPath.substr(nFindX, nFindEndX - nFindX));
 							size_t nFindY = nFindEndX + 1;
 							size_t nFindEndY = wsPath.find(L' ', nFindY);
 							if (nFindEndY != std::wstring::npos)
-								MaybeH = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
-							oTransform.TransformPoint(MaybeW, MaybeH);
-							if (MaybeW == oLink.dX)
-								oLink.dH = MaybeH - oLink.dY;
-							if (MaybeH == oLink.dY)
-								oLink.dW = MaybeW - oLink.dX;
+								y2 = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+							oTransform.TransformPoint(x2, y2);
 						}
 					}
 					nFindX = wsPath.find(L"L ", nFindX);
@@ -1051,19 +1046,18 @@ namespace XPS
 						size_t nFindEndX = wsPath.find(L',', nFindX);
 						if (nFindEndX != std::wstring::npos)
 						{
-							double MaybeInH = 0;
-							double MaybeInW = GetDouble(wsPath.substr(nFindX, nFindEndX - nFindX));
+							x3 = GetDouble(wsPath.substr(nFindX, nFindEndX - nFindX));
 							size_t nFindY = nFindEndX + 1;
 							size_t nFindEndY = wsPath.find(L' ', nFindY);
 							if (nFindEndY != std::wstring::npos)
-								MaybeInH = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
-							oTransform.TransformPoint(MaybeInW, MaybeInH);
-							if (MaybeInW == MaybeW)
-								oLink.dH = MaybeInH - oLink.dY;
-							if (MaybeInH == MaybeH)
-								oLink.dW = MaybeInW - oLink.dX;
+								y3 = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+							oTransform.TransformPoint(x3, y3);
 						}
 					}
+					oLink.dX = x1 == x2 ? fmin(x1, x3) : fmin(x1, x2);
+					oLink.dY = y1 == y2 ? fmin(y1, y3) : fmin(y1, y2);
+					oLink.dH = x1 == x2 ? abs(y1 - y2) : abs(y1 - y3);
+					oLink.dW = y1 == y2 ? abs(x1 - x2) : abs(x1 - x3);
 
 					std::wstring wsNameTarget = oReader.GetText();
 					if (wsNameTarget.find(L"http") == 0)

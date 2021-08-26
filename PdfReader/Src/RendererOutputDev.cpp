@@ -343,6 +343,7 @@ namespace PdfReader
         m_pTransparentGroupSoftMask = NULL;
 
         m_bDrawOnlyText = false;
+        m_bClipChanged = true;
 
         //m_oFontList.LoadFromFile( (GlobalParamsAdaptor*)globalParams->GetTempFolder() );
         //// Тестовый пример
@@ -467,7 +468,8 @@ namespace PdfReader
     void RendererOutputDev::saveState(GfxState *pGState)
     {
 
-            m_sClip.push_back(GfxClip());
+        m_sClip.push_back(GfxClip());
+        m_bClipChanged = true;
         updateAll(pGState);
     }
     void RendererOutputDev::restoreState(GfxState *pGState)
@@ -475,7 +477,7 @@ namespace PdfReader
 
         if (!m_sClip.empty())
             m_sClip.pop_back();
-
+        m_bClipChanged = true;
         updateAll(pGState);
     }
     void RendererOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
@@ -2607,6 +2609,78 @@ namespace PdfReader
         m_pRenderer->EndCommand(c_nComplexFigureType);
         m_bTiling = false;
     }
+
+    GBool RendererOutputDev::shadedFill(GfxState *pGState, GfxShading *pShading)
+    {
+        double xmin, xmax, ymin, ymax;
+
+        switch (pShading->getType())
+        {
+            case 1:
+            case 2:
+            case 3:
+                pGState->clearPath();
+                pGState->getClipBBox(&xmin, &ymin, &xmax, &ymax);
+
+                pGState->moveTo(xmin, ymin);
+                pGState->lineTo(xmax, ymin);
+                pGState->lineTo(xmax, ymax);
+                pGState->lineTo(xmin, ymax);
+                pGState->clip();
+                pGState->closePath();
+        }
+        int nTriangles = 0, nPatches = 0;
+        switch (pShading->getType())
+        {
+            case 1:
+                FunctionShadedFill(pGState, (GfxFunctionShading *) pShading);
+                return true;
+            case 2:
+                AxialShadedFill(pGState, (GfxAxialShading* )pShading);
+                return true;
+            case 3:
+                RadialShadedFill(pGState, (GfxRadialShading*) pShading);
+                return true;
+            case 4:
+            case 5:
+                nTriangles = ((GfxGouraudTriangleShading *) pShading)->getNTriangles();
+
+                for (int i = 0; i < nTriangles; i++) {
+                    int nComps = ((GfxGouraudTriangleShading *) pShading)->getNComps();
+                    double x1,x2,x3,y1,y2,y3;
+                    double *c1 =  new double[nComps];
+                    double *c2 =  new double[nComps];
+                    double *c3 =  new double[nComps];
+
+                    GfxColor col1, col2, col3;
+
+                    ((GfxGouraudTriangleShading *) pShading)->getTriangle(i, &x1, &y1, c1, &x2, &y2, c2, &x3, &y3, c3);
+                    ((GfxGouraudTriangleShading *) pShading)->getColor(c1, &col1);
+                    ((GfxGouraudTriangleShading *) pShading)->getColor(c2, &col2);
+                    ((GfxGouraudTriangleShading *) pShading)->getColor(c3, &col3);
+
+                    pGState->clearPath();
+
+                    pGState->moveTo(x1, y1);
+                    pGState->lineTo(x2, y2);
+                    pGState->lineTo(x3, y3);
+
+                    pGState->closePath();
+
+                    GouraundTriangleFill(pGState, {&col1, &col2, &col3}, {{x1,y1},{x2,y2},{x3,y3}});
+                    delete[] c1;
+                    delete[] c2;
+                    delete[] c3;
+                }
+                return true;
+            case 6:
+            case 7:
+                return false;
+
+        }
+        return false;
+    }
+
 	bool RendererOutputDev::FunctionShadedFill(GfxState *pGState, GfxFunctionShading *pShading)
 	{
 		if (m_bDrawOnlyText)
@@ -2671,24 +2745,32 @@ namespace PdfReader
 
 		if (m_bTransparentGroupSoftMask)
 			return true;
+		double x1, x2, y1, y2;
+		double t0, t1;
+		pShading->getCoords(&x1, &y1, &x2, &y2);
+
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+
+
+
 
 		long brush;
 		int alpha = pGState->getFillOpacity() * 255;
 		m_pRenderer->get_BrushType(&brush);
 		m_pRenderer->put_BrushType(c_BrushTypePathNewLinearGradient);
 
-		double x1, x2, y1, y2;
-		double t0, t1;
-		pShading->getCoords(&x1, &y1, &x2, &y2);
+		//double x1, x2, y1, y2;
+		//double t0, t1;
+        pShading->getCoords(&x1, &y1, &x2, &y2);
 		t0 = pShading->getDomain0();
 		t1 = pShading->getDomain1();
 
-        x1 = PDFCoordsToMM(x1);
-        x2 = PDFCoordsToMM(x2);
-        y1 = PDFCoordsToMM(y1);
-        y2 = PDFCoordsToMM(y2);
+//        x1 = PDFCoordsToMM(x1);
+//        x2 = PDFCoordsToMM(x2);
+//        y1 = PDFCoordsToMM(y1);
+//        y2 = PDFCoordsToMM(y2);
+
 
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
 															   pShading->getExtend0(), pShading->getExtend1());
@@ -2705,20 +2787,22 @@ namespace PdfReader
 
             // RenderingIntent in this case does nothing but it's an obligatory arguments
             ColorSpace->getRGB(&c, &draw_color, gfxRenderingIntentAbsoluteColorimetric);
-			info.shading.function.set_color(i, colToByte(draw_color.b),
+            info.shading.function.set_color(i, colToByte(draw_color.b),
                                             colToByte(draw_color.g), colToByte(draw_color.r), alpha);
             t+=delta;
 		}
 
 		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
 		{
-			GRenderer->put_BrushGradInfo(info);
+		    GRenderer->put_BrushGradInfo(info);
 			m_pRenderer->DrawPath(c_nWindingFillMode);
 		}
 
 		m_pRenderer->EndCommand(c_nPathType);
+
 		m_pRenderer->put_BrushType(brush);
 
+		pGState->clearPath();
 		return true;
 	}
 	bool RendererOutputDev::RadialShadedFill(GfxState *pGState, GfxRadialShading *pShading)
@@ -2728,6 +2812,8 @@ namespace PdfReader
 
 		if (m_bTransparentGroupSoftMask)
 			return true;
+
+
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
 
@@ -2777,7 +2863,7 @@ namespace PdfReader
 		}
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
-
+		pGState->clearPath();
 		return true;
 	}
 	bool RendererOutputDev::GouraundTriangleFill(GfxState *pGState, const std::vector<GfxColor*> &colors, const std::vector<NSStructures::Point> &points)
@@ -2805,7 +2891,7 @@ namespace PdfReader
             GfxRGB draw_color;
             // RenderingIntent in this case does nothing but it's an obligatory arguments
             ColorSpace.getRGB(&c, &draw_color, gfxRenderingIntentAbsoluteColorimetric);
-			rgba8_colors.push_back({colToByte(draw_color.r), colToByte(draw_color.g), colToByte(draw_color.b), (unsigned)alpha});
+			rgba8_colors.push_back({colToByte(draw_color.b), colToByte(draw_color.g), colToByte(draw_color.r), (unsigned)alpha});
 			double x = points[i].x;
 			double y = points[i].y;
 			x = PDFCoordsToMM(x);
@@ -2967,8 +3053,8 @@ namespace PdfReader
         {
             m_sClip.push_back(GfxClip());
         }
-        //clipToPath(pGState, pGState->getPath(), pGState->getCTM(), false);
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
+        m_bClipChanged = true;
         updateClip(pGState);
     }
     void RendererOutputDev::eoClip(GfxState *pGState)
@@ -2981,7 +3067,7 @@ namespace PdfReader
             m_sClip.push_back(GfxClip());
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), true);
-        //clipToPath(pGState, pGState->getPath(), pGState->getCTM(), true);
+        m_bClipChanged = true;
         updateClip(pGState);
     }
     void RendererOutputDev::clipToStrokePath(GfxState *pGState)
@@ -2994,7 +3080,7 @@ namespace PdfReader
             m_sClip.push_back(GfxClip());
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
-        //clipToPath(pGState, pGState->getPath(), pGState->getCTM(), true);
+        m_bClipChanged = true;
         updateClip(pGState);
     }
     void RendererOutputDev::clipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO)
@@ -3127,7 +3213,7 @@ namespace PdfReader
 
         int nRendererMode = pGState->getRender();
 
-        if (3 == nRendererMode) // Невидимый текс
+        if (3 == nRendererMode) // Невидимый текст
             return;
 
         double *pCTM  = pGState->getCTM();
@@ -3343,7 +3429,7 @@ namespace PdfReader
         if (4 <= nRenderMode)
         {
             std::wstring wsTempFontName, wsTempFontPath;
-            std::wstring wsClipText; wsClipText += (wchar_t)(unGid);
+            std::wstring wsClipText; wsClipText += wsUnicodeText;
             double dTempFontSize;
             long lTempFontStyle;
             m_pRenderer->get_FontName(&wsTempFontName);
@@ -3356,6 +3442,7 @@ namespace PdfReader
                 m_sClip.push_back(GfxClip());
             }
             m_sClip.back().GetTextClip()->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ +dShiftY, 0, 0, 0);
+            m_bClipChanged = true;
         }
 
         m_pRenderer->put_FontSize(dOldSize);
@@ -3974,7 +4061,8 @@ namespace PdfReader
     void RendererOutputDev::updateClipAttack(GfxState *pGState)
     {
 
-
+        //return;
+        if (!m_bClipChanged) return;
         m_pRenderer->BeginCommand(c_nResetClipType);
         m_pRenderer->EndCommand(c_nResetClipType);
         if (m_sClip.empty()) return;
@@ -4052,67 +4140,8 @@ namespace PdfReader
             }
         }
 
+        m_bClipChanged = false;
 
-
-
-//            m_pRenderer->BeginCommand(c_nClipType);
-//            DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);
-//            m_pRenderer->EndCommand(c_nPathType);
-//            m_pRenderer->EndCommand(c_nClipType);
-//            m_pRenderer->PathCommandEnd();
-//
-//            m_pRenderer->BeginCommand(c_nClipType);
-//            m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
-//            m_pRenderer->StartConvertCoordsToIdentity();
-//
-//                WString wsFontName, wsFontPath;
-//                int lFontStyle;
-//                double dFontSize = 10, dX = 0, dY = 0, dWidth = 0, dHeight = 0, dBaseLineOffset = 0;
-//                WString wsText = pGState->text(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
-//                int     nFlag   = pClip->GetFlag(nIndex);
-//
-//                m_pRenderer->put_FontName(wsFontName);
-//                m_pRenderer->put_FontPath(wsFontPath);
-//                m_pRenderer->put_FontSize(dFontSize);
-//                m_pRenderer->put_FontStyle(lFontStyle);
-//
-//                double dShiftX = 0, dShiftY = 0;
-//                DoTransform(pClip->getTextMat(nIndex), &dShiftX, &dShiftY, true);
-//
-//                // TODO: нужна нормальная конвертация
-//                int nLen = 0;
-//                WString wsTextTmp = wsText;
-//                if (wsTextTmp)
-//                {
-//                    while (*wsTextTmp)
-//                        ++wsTextTmp;
-//
-//                    nLen = (int)(wsTextTmp - wsText);
-//                }
-//
-//                if (1 == nLen)
-//                    m_pRenderer->PathCommandTextExCHAR(0, (LONG)wsText[0], PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
-//                else if (0 != nLen)
-//                {
-//                    unsigned int* pGids = new unsigned int[nLen];
-//                    for (int nIndex = 0; nIndex < nLen; ++nIndex)
-//                        pGids[nIndex] = (unsigned int)wsText[nIndex];
-//
-//                    m_pRenderer->PathCommandTextEx(L"", pGids, nLen, PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
-//
-//                    RELEASEARRAYOBJECTS(pGids);
-//                }
-//
-//            m_pRenderer->EndCommand(c_nPathType);
-//            m_pRenderer->EndCommand(c_nClipType);
-//            m_pRenderer->PathCommandEnd();
-//            m_pRenderer->EndConvertCoordsToIdentity();
-//        }
-//
-//        if (m_sClip)
-//            delete m_sClip;
-//
-//        m_sClip = pClip->Copy(); tmpchange
 
         updateFont(pGState);
     }

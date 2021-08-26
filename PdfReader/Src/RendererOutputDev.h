@@ -225,6 +225,7 @@ namespace PdfReader
 		virtual void StartTilingFill(GfxState *pGState);
 		virtual void EndTilingFill();
 		//todo overide
+		virtual GBool shadedFill(GfxState *state, GfxShading *shading);
 		virtual bool FunctionShadedFill(GfxState *pGState, GfxFunctionShading *pShading);
 		virtual bool AxialShadedFill(GfxState *pGState, GfxAxialShading    *pShading);
 		virtual bool RadialShadedFill(GfxState *pGState, GfxRadialShading   *pShading);
@@ -301,7 +302,8 @@ namespace PdfReader
 		bool                         *m_pbBreak;         // Внешняя остановка рендерера
 
 		std::deque<GfxClip>           m_sClip;
-		std::deque<GfxClip>           m_sClipSaved;
+		bool                          m_bClipChanged;
+
 		bool                          m_bTiling;
 		bool                          m_bTransparentGroup;
 

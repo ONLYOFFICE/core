@@ -57,6 +57,7 @@ SOURCES -= \
 SOURCES += \
     Src/RendererOutputDev.cpp \
     Src/Adaptors.cpp \
+    Src/GfxClip.cpp \
     PdfReader.cpp
 
 HEADERS +=\
@@ -77,6 +78,7 @@ HEADERS +=\
     Src/RendererOutputDev.h \
     Src/Adaptors.h \
     Src/MemoryUtils.h \
+    Src/GfxClip.h \
     PdfReader.h
 
 core_windows:LIBS += -lOle32

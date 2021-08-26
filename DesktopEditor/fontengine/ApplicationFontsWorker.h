@@ -43,7 +43,7 @@ public:
 };
 
 class CApplicationFontsWorker_private;
-class CApplicationFontsWorker
+class GRAPHICS_DECL CApplicationFontsWorker
 {
 public:
     // использовать ли системные шрифты

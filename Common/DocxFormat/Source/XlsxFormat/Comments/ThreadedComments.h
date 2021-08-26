@@ -198,12 +198,7 @@ namespace OOX
 
 					if ( L"person" == sName )
 					{
-						CPerson* pPerson = new CPerson(oReader);
-						if(pPerson->id.IsInit())
-						{
-							m_mapPersonList[pPerson->id.get()] = pPerson;
-						}
-						m_arrItems.push_back(pPerson);
+						m_arrItems.push_back(new CPerson(oReader));
 					}
 				}
 			}
@@ -240,7 +235,19 @@ namespace OOX
 				return m_oReadPath;
 			}
 		public:
-			std::unordered_map<std::wstring, CPerson*> m_mapPersonList;
+			const nullable<std::unordered_map<std::wstring, CPerson*>> GetPersonList()
+			{
+				nullable<std::unordered_map<std::wstring, CPerson*>> mapPersonList;
+				mapPersonList.Init();
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i]->id.IsInit())
+					{
+						(*mapPersonList)[m_arrItems[i]->id.get()] = m_arrItems[i];
+					}
+				}
+				return mapPersonList;
+			}
 		private:
 			CPath m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

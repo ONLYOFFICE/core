@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_C_NV_PROPERTIES_INCLUDE_H_
-#define PPTX_LOGIC_C_NV_PROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 
@@ -60,11 +58,12 @@ namespace PPTX
 			{
 				nullable_int id_;
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("id"),	id_)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("name"),	name)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("descr"), descr)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("hidden"), hidden)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("title"), title)
+					WritingElement_ReadAttributes_Read_if		( oReader, L"id", id_)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"name",	name)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"descr", descr)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"hidden", hidden)
+					WritingElement_ReadAttributes_Read_else_if	( oReader, L"title", title)
+					WritingElement_ReadAttributes_Read_else_if  (oReader, L"form", form)
 				WritingElement_ReadAttributes_End( oReader )
 				
 				id = id_.get_value_or(0);
@@ -118,14 +117,14 @@ namespace PPTX
 				XmlMacroReadAttributeBase(node, L"hidden", hidden);
 				XmlMacroReadAttributeBase(node, L"title", title);
 
-				hlinkClick = node.ReadNode(_T("a:hlinkClick"));
-				hlinkHover = node.ReadNode(_T("a:hlinkHover"));
+				hlinkClick = node.ReadNode(L"a:hlinkClick");
+				hlinkHover = node.ReadNode(L"a:hlinkHover");
 
-				XmlUtils::CXmlNode list = node.ReadNodeNoNS(_T("extLst"));
+				XmlUtils::CXmlNode list = node.ReadNodeNoNS(L"extLst");
 				if (list.IsValid())
 				{		
 					XmlUtils::CXmlNodes oNodes;
-					if (list.GetNodes(_T("*"), oNodes))
+					if (list.GetNodes(L"*", oNodes))
 					{
 						int nCount = oNodes.GetCount();
 						for (int i = 0; i < nCount; ++i)
@@ -151,17 +150,18 @@ namespace PPTX
 			std::wstring toXML2(std::wstring node_name) const
 			{
 				XmlUtils::CAttribute oAttr;
-									oAttr.Write(_T("id"),		id);
-									oAttr.Write(_T("name"),		XmlUtils::EncodeXmlString(name));
+									oAttr.Write(L"id", id);
+									oAttr.Write(L"name", XmlUtils::EncodeXmlString(name));
                 if (descr.IsInit())
                 {
                     std::wstring d = XmlUtils::EncodeXmlString(descr.get());
                     XmlUtils::replace_all(d, L"\n", L"&#xA;");
 
-                    oAttr.Write(_T("descr"), d);
+                    oAttr.Write(L"descr", d);
                 }
-									oAttr.Write(_T("hidden"),	hidden);
-				if (title.IsInit())	oAttr.Write(_T("title"),	XmlUtils::EncodeXmlString(title.get()));
+									oAttr.Write(L"hidden", hidden);
+				if (title.IsInit())	oAttr.Write(L"title", XmlUtils::EncodeXmlString(title.get()));
+									oAttr.Write(L"form", form);
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(hlinkClick);
@@ -189,7 +189,7 @@ namespace PPTX
 			}
 			void toXmlWriter2(const std::wstring& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(strNS + _T(":cNvPr"));
+				pWriter->StartNode(strNS + L":cNvPr");
 
 				int _id = id;
 				if (_id < 0)
@@ -206,34 +206,36 @@ namespace PPTX
 				}
 
 				pWriter->StartAttributes();
-									pWriter->WriteAttribute (_T("id"),      _id);
-									pWriter->WriteAttribute (_T("name"),    XmlUtils::EncodeXmlString(name));
+									pWriter->WriteAttribute (L"id",      _id);
+									pWriter->WriteAttribute (L"name",    XmlUtils::EncodeXmlString(name));
 				if (descr.IsInit())
 				{
 					std::wstring d = XmlUtils::EncodeXmlString(descr.get());
 					XmlUtils::replace_all(d, L"\n", L"&#xA;");	
 
-					pWriter->WriteAttribute	(_T("descr"), d);
+					pWriter->WriteAttribute	(L"descr", d);
 				}
-									pWriter->WriteAttribute (_T("hidden"),  hidden);
-				if (title.IsInit())	pWriter->WriteAttribute (_T("title"),   XmlUtils::EncodeXmlString(title.get()));
+									pWriter->WriteAttribute (L"hidden", hidden);
+				if (title.IsInit()) pWriter->WriteAttribute (L"title",   XmlUtils::EncodeXmlString(title.get()));
+									pWriter->WriteAttribute (L"form", form);
 
 				pWriter->EndAttributes();
 
 				pWriter->Write(hlinkClick);
 				pWriter->Write(hlinkHover);
 
-				pWriter->EndNode(strNS + _T(":cNvPr"));
+				pWriter->EndNode(strNS + L":cNvPr");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt1(0, id);
-				pWriter->WriteString1(1, name);
-				pWriter->WriteBool2(2, hidden);
-				pWriter->WriteString2(3, title);
-				pWriter->WriteString2(4, descr);
+					pWriter->WriteInt1(0, id);
+					pWriter->WriteString1(1, name);
+					pWriter->WriteBool2(2, hidden);
+					pWriter->WriteString2(3, title);
+					pWriter->WriteString2(4, descr);
+					pWriter->WriteBool2(5, form);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->WriteRecord2(0, hlinkClick);
@@ -258,29 +260,28 @@ namespace PPTX
 					{
 						case 0:
 						{
-							id = pReader->GetLong();
-							break;
-						}
+							id = pReader->GetLong();							
+						}break;
 						case 1:
 						{
-							name = pReader->GetString2();
-							break;
-						}
+							name = pReader->GetString2();							
+						}break;
 						case 2:
 						{
-							hidden = pReader->GetBool();
-							break;
-						}
+							hidden = pReader->GetBool();							
+						}break;
 						case 3:
 						{
-							title = pReader->GetString2();
-							break;
-						}
+							title = pReader->GetString2();							
+						}break;
 						case 4:
 						{
-							descr = pReader->GetString2();
-							break;
-						}
+							descr = pReader->GetString2();							
+						}break;
+						case 5:
+						{
+							form = pReader->GetBool();
+						}break;
 						default:
 							break;
 					}
@@ -319,6 +320,7 @@ namespace PPTX
 			nullable_string		descr;
 			nullable_bool		hidden;
 			nullable_string		title;
+			nullable_bool		form;
 			nullable<Hyperlink> hlinkClick;
 			nullable<Hyperlink> hlinkHover;
 			
@@ -342,4 +344,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_C_NV_PROPERTIES_INCLUDE_H

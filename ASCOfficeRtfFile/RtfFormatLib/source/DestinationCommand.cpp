@@ -386,7 +386,16 @@ bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
 
 bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter )
  {
-    if ( "colortbl" == sCommand )
+	if ("rtf" == sCommand) //open-rtf-document-image-error.rtf
+	{
+		if (oDocument.m_bStartRead)
+		{
+			RtfNormalReader oRtfReader(oDocument, oReader);
+			return StartSubReader(oRtfReader, oDocument, oReader);
+		}
+		oDocument.m_bStartRead = true;
+	}
+	else if ( "colortbl" == sCommand )
 	{
 		RtfColorTableReader oColorTableReader;
 		return StartSubReader( oColorTableReader, oDocument, oReader );
@@ -464,19 +473,6 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 
 		}
 	}
-	else if ("qqq" == sCommand)
-	{
-		oDocument.m_oMathProp.m_bHeader = false;
-	}
-	//else if ( "defchp" == sCommand )
-	//{
-	//	RtfDefCharPropReader oDefCharPropReader( oDocument.m_oDefaultCharProp );
-	//	return StartSubReader( oDefCharPropReader, oDocument, oReader );				}
-    //else if ( "defpap" == sCommand )
-	//{
-	//	RtfDefParPropReader oDefParPropReader;
-	//	return StartSubReader( oDefParPropReader, oDocument, oReader );
-	//}
     else if ( "mmathPr" == sCommand )
 	{
 		RtfMathReader oMathPropReader(oDocument.m_oMathProp);

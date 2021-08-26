@@ -99,7 +99,8 @@ namespace OOX
 	}
 	void VbaProject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		LONG _rec_size = pReader->GetRecordSize();
+		LONG _end_rec = pReader->GetPos() + _rec_size + 4;
 
 		pReader->Skip(1); // start attributes
 		while (true)

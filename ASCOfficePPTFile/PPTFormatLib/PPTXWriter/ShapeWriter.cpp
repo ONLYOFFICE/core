@@ -59,17 +59,6 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 
     PPT_FORMAT::CTextPFRun* pPF = &oLevel.m_oPFRun;
 
-    if (pPF->textDirection.is_init())
-    {
-        if (pPF->textDirection.get() == 1)	oWriter.WriteString(L" rtl=\"1\"");
-        else								oWriter.WriteString(L" rtl=\"0\"");
-    }
-    if (pPF->fontAlign.is_init())
-    {
-        std::wstring strProp = GetFontAlign(pPF->fontAlign.get());
-        oWriter.WriteString(L" fontAlgn=\"" + strProp + L"\"");
-    }
-
     int leftMargin = 0;
     if (pPF->leftMargin.is_init())
     {
@@ -92,7 +81,17 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
         std::wstring strProp = std::to_wstring(pPF->defaultTabSize.get());
         oWriter.WriteString(L" defTabSz=\"" + strProp + L"\"");
     }
-    oWriter.WriteString(L">");
+	if (pPF->textDirection.is_init())
+	{
+		if (pPF->textDirection.get() == 1)	oWriter.WriteString(L" rtl=\"1\"");
+		else								oWriter.WriteString(L" rtl=\"0\"");
+	}
+	if (pPF->fontAlign.is_init())
+	{
+		std::wstring strProp = GetFontAlign(pPF->fontAlign.get());
+		oWriter.WriteString(L" fontAlgn=\"" + strProp + L"\"");
+	}
+	oWriter.WriteString(L">");
 
     if (pPF->tabStops.size() > 0)
     {
@@ -156,12 +155,12 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
                 oWriter.WriteStringXML(std::wstring(&bu, 1));
                 oWriter.WriteString(L"\"/>");
             }
-//            if (!pPF->bulletAutoNum.is_init())
-//            {
-//                oWriter.WriteString(L"<a:buAutoNum type=\"");
-//                oWriter.WriteString(L"arabicPeriod");
-//                oWriter.WriteString(L"\"/>");
-//            }
+            //            if (!pPF->bulletAutoNum.is_init())
+            //            {
+            //                oWriter.WriteString(L"<a:buAutoNum type=\"");
+            //                oWriter.WriteString(L"arabicPeriod");
+            //                oWriter.WriteString(L"\"/>");
+            //            }
         }
         else
         {
@@ -217,7 +216,14 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 
     PPT_FORMAT::CTextCFRun* pCF = &oLevel.m_oCFRun;
 
-    if (pCF->Size.is_init())
+	if (pCF->Language.is_init())
+	{
+		std::wstring str_lang = msLCID2wstring(pCF->Language.get());
+
+		if (str_lang.length() > 0)
+			oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
+	}
+	if (pCF->Size.is_init())
     {
         std::wstring str = std::to_wstring((int)(100 * pCF->Size.get()));
         oWriter.WriteString(L" sz=\"" + str + L"\"");
@@ -236,13 +242,7 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
         else
             oWriter.WriteString(std::wstring(L" i=\"0\""));
     }
-    if (pCF->Language.is_init())
-    {
-        std::wstring str_lang = msLCID2wstring(pCF->Language.get());
 
-        if (str_lang.length() > 0)
-            oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
-    }
     oWriter.WriteString(std::wstring(L">"));
 
     if (pCF->Color.is_init())
@@ -307,7 +307,7 @@ PPT_FORMAT::CShapeWriter::CShapeWriter()
     m_bWordArt		= false;
     m_bTextBox		= false;
 
-//////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
     m_dDpiX = 96.0;
     m_dDpiY	= 96.0;
 
@@ -346,35 +346,35 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertLine(CPen & pen)
     std::wstring strL;
     switch(pen.LineStyle)
     {
-        case 1: strL = L"  cmpd=\"dbl\"";		break;
-        case 2: strL = L"  cmpd=\"thickThin\""; break;
-        case 3: strL = L"  cmpd=\"thinThick\"";	break;
-        case 4: strL = L"  cmpd=\"tri\"";		break;
+    case 1: strL = L"  cmpd=\"dbl\"";		break;
+    case 2: strL = L"  cmpd=\"thickThin\""; break;
+    case 3: strL = L"  cmpd=\"thinThick\"";	break;
+    case 4: strL = L"  cmpd=\"tri\"";		break;
     }
     line_writer.WriteString(L"<a:ln w=\"" + std::to_wstring(pen.Size) + L"\"" + strL + L">");
 
     line_writer.WriteString(L"<a:solidFill>");
-        line_writer.WriteString(ConvertColor(pen.Color, pen.Alpha));
+    line_writer.WriteString(ConvertColor(pen.Color, pen.Alpha));
     line_writer.WriteString(L"</a:solidFill>");
 
     switch(pen.DashStyle)
     {
-        case 1:	line_writer.WriteString(L"<a:prstDash val=\"sysDash\"/>");			break;
-        case 2:	line_writer.WriteString(L"<a:prstDash val=\"sysDot\"/>");			break;
-        case 3:	line_writer.WriteString(L"<a:prstDash val=\"sysDashDot\"/>");		break;
-        case 4:	line_writer.WriteString(L"<a:prstDash val=\"sysDashDotDot\"/>");	break;
-        case 5:	line_writer.WriteString(L"<a:prstDash val=\"dot\"/>");				break;
-        case 6:	line_writer.WriteString(L"<a:prstDash val=\"dash\"/>");				break;
-        case 7:	line_writer.WriteString(L"<a:prstDash val=\"lgDash\"/>");			break;
-        case 8:	line_writer.WriteString(L"<a:prstDash val=\"dashDot\"/>");			break;
-        case 9:	line_writer.WriteString(L"<a:prstDash val=\"lgDashDot\"/>");		break;
-        case 10:line_writer.WriteString(L"<a:prstDash val=\"lgDashDotDot\"/>");		break;
+    case 1:	line_writer.WriteString(L"<a:prstDash val=\"sysDash\"/>");			break;
+    case 2:	line_writer.WriteString(L"<a:prstDash val=\"sysDot\"/>");			break;
+    case 3:	line_writer.WriteString(L"<a:prstDash val=\"sysDashDot\"/>");		break;
+    case 4:	line_writer.WriteString(L"<a:prstDash val=\"sysDashDotDot\"/>");	break;
+    case 5:	line_writer.WriteString(L"<a:prstDash val=\"dot\"/>");				break;
+    case 6:	line_writer.WriteString(L"<a:prstDash val=\"dash\"/>");				break;
+    case 7:	line_writer.WriteString(L"<a:prstDash val=\"lgDash\"/>");			break;
+    case 8:	line_writer.WriteString(L"<a:prstDash val=\"dashDot\"/>");			break;
+    case 9:	line_writer.WriteString(L"<a:prstDash val=\"lgDashDot\"/>");		break;
+    case 10:line_writer.WriteString(L"<a:prstDash val=\"lgDashDotDot\"/>");		break;
     }
     switch(pen.LineJoin)
     {
-        case 0:	line_writer.WriteString(L"<a:bevel/>");	break;
-        case 1:	line_writer.WriteString(L"<a:miter/>");	break;
-        case 2:	line_writer.WriteString(L"<a:round/>");	break;
+    case 0:	line_writer.WriteString(L"<a:bevel/>");	break;
+    case 1:	line_writer.WriteString(L"<a:miter/>");	break;
+    case 2:	line_writer.WriteString(L"<a:round/>");	break;
     }
 
     line_writer.WriteString(L"<a:headEnd" + ConvertLineEnd(pen.LineStartCap, pen.LineStartLength, pen.LineStartWidth)	+ L"/>");
@@ -392,23 +392,23 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertLineEnd(unsigned char cap, unsigne
 
     switch(cap)
     {
-        case 1: sResult += L" type=\"triangle\"";	break;
-        case 2: sResult += L" type=\"stealth\"";	break;
-        case 3: sResult += L" type=\"diamond\"";	break;
-        case 4: sResult += L" type=\"oval\"";		break;
-        case 5: sResult += L" type=\"arrow\"";		break;
+    case 1: sResult += L" type=\"triangle\"";	break;
+    case 2: sResult += L" type=\"stealth\"";	break;
+    case 3: sResult += L" type=\"diamond\"";	break;
+    case 4: sResult += L" type=\"oval\"";		break;
+    case 5: sResult += L" type=\"arrow\"";		break;
     }
     switch(length)
     {
-        case 0: sResult += L" len=\"sm\"";	break;
-        case 1: sResult += L" len=\"med\"";	break;
-        case 2: sResult += L" len=\"lg\"";	break;
+    case 0: sResult += L" len=\"sm\"";	break;
+    case 1: sResult += L" len=\"med\"";	break;
+    case 2: sResult += L" len=\"lg\"";	break;
     }
     switch(width)
     {
-        case 0: sResult += L" w=\"sm\"";	break;
-        case 1: sResult += L" w=\"med\"";	break;
-        case 2: sResult += L" w=\"lg\"";	break;
+    case 0: sResult += L" w=\"sm\"";	break;
+    case 1: sResult += L" w=\"med\"";	break;
+    case 2: sResult += L" w=\"lg\"";	break;
     }
     return sResult;
 }
@@ -456,18 +456,18 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertBrush(CBrush & brush)
                 std::wstring str = std::to_wstring( (int)(brush.ColorsPosition[i].second * 1000));
 
                 brush_writer.WriteString(L"<a:gs pos=\"" + str + L"\">");
-                    brush_writer.WriteString(ConvertColor(brush.ColorsPosition[i].first, 255));
+                brush_writer.WriteString(ConvertColor(brush.ColorsPosition[i].first, 255));
                 brush_writer.WriteString(L"</a:gs>");
             }
         }
         else
         {
             brush_writer.WriteString(L"<a:gs pos=\"0\">");
-                brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));
+            brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));
             brush_writer.WriteString(L"</a:gs>");
 
             brush_writer.WriteString(L"<a:gs pos=\"100000\">");
-                brush_writer.WriteString(ConvertColor(brush.Color2, brush.Alpha2));
+            brush_writer.WriteString(ConvertColor(brush.Color2, brush.Alpha2));
             brush_writer.WriteString(L"</a:gs>");
         }
         brush_writer.WriteString(L"</a:gsLst>");
@@ -489,18 +489,18 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertBrush(CBrush & brush)
     else if(brush.Type == c_BrushTypePattern)
     {//типов нету в ппт - вместо них шаблон-картинка
         brush_writer.WriteString(L"<a:pattFill prst=\"pct80\">");
-            brush_writer.WriteString(L"<a:fgClr>");
-                brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));
-            brush_writer.WriteString(L"</a:fgClr>");
-            brush_writer.WriteString(L"<a:bgClr>");
-                brush_writer.WriteString(ConvertColor(brush.Color2, brush.Alpha2));
-            brush_writer.WriteString(L"</a:bgClr>");
+        brush_writer.WriteString(L"<a:fgClr>");
+        brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));
+        brush_writer.WriteString(L"</a:fgClr>");
+        brush_writer.WriteString(L"<a:bgClr>");
+        brush_writer.WriteString(ConvertColor(brush.Color2, brush.Alpha2));
+        brush_writer.WriteString(L"</a:bgClr>");
         brush_writer.WriteString(L"</a:pattFill>");
     }
     else if (brush.Type != c_BrushTypeNotSet)
     {
         brush_writer.WriteString(std::wstring(L"<a:solidFill>"));
-            brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));
+        brush_writer.WriteString(ConvertColor(brush.Color1, brush.Alpha1));
         brush_writer.WriteString(std::wstring(L"</a:solidFill>"));
     }
     return brush_writer.GetData();
@@ -576,10 +576,10 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
     if (!Preset.empty())
     {
         shadow_writer.WriteString(L"<a:prstShdw");
-            shadow_writer.WriteString(L" prst=\"" + Preset + L"\"");
-            //shadow_writer.WriteString(std::wstring(L" rotWithShape=\"0\" algn=\"ctr\""));
-            shadow_writer.WriteString(strDir);
-            shadow_writer.WriteString(strDist);
+        shadow_writer.WriteString(L" prst=\"" + Preset + L"\"");
+        //shadow_writer.WriteString(std::wstring(L" rotWithShape=\"0\" algn=\"ctr\""));
+        shadow_writer.WriteString(strDir);
+        shadow_writer.WriteString(strDist);
         shadow_writer.WriteString(L">");
 
         shadow_writer.WriteString(ConvertColor(shadow.Color,shadow.Alpha));
@@ -588,15 +588,15 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
     else if (Inner)
     {
         shadow_writer.WriteString(L"<a:innerShdw");
-            shadow_writer.WriteString(L" rotWithShape=\"0\"");
-            if (strSX.empty() && strSY.empty())
-            {
-                shadow_writer.WriteString(L" algn=\"ctr\"");
-            }
-            shadow_writer.WriteString(strSX);
-            shadow_writer.WriteString(strSY);
-            shadow_writer.WriteString(strDir);
-            shadow_writer.WriteString(strDist);
+        shadow_writer.WriteString(L" rotWithShape=\"0\"");
+        if (strSX.empty() && strSY.empty())
+        {
+            shadow_writer.WriteString(L" algn=\"ctr\"");
+        }
+        shadow_writer.WriteString(strSX);
+        shadow_writer.WriteString(strSY);
+        shadow_writer.WriteString(strDir);
+        shadow_writer.WriteString(strDist);
         shadow_writer.WriteString(L">");
 
         shadow_writer.WriteString(ConvertColor(shadow.Color,shadow.Alpha));
@@ -605,15 +605,15 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
     else
     {
         shadow_writer.WriteString(L"<a:outerShdw");
-            shadow_writer.WriteString(L" rotWithShape=\"0\"");
-            if (strSX.empty() && strSY.empty())
-            {
-                shadow_writer.WriteString(L" algn=\"ctr\"");
-            }
-            shadow_writer.WriteString(strSX);
-            shadow_writer.WriteString(strSY);
-            shadow_writer.WriteString(strDir);
-            shadow_writer.WriteString(strDist);
+        shadow_writer.WriteString(L" rotWithShape=\"0\"");
+        if (strSX.empty() && strSY.empty())
+        {
+            shadow_writer.WriteString(L" algn=\"ctr\"");
+        }
+        shadow_writer.WriteString(strSX);
+        shadow_writer.WriteString(strSY);
+        shadow_writer.WriteString(strDir);
+        shadow_writer.WriteString(strDist);
         shadow_writer.WriteString(L">");
 
         shadow_writer.WriteString(ConvertColor(shadow.Color,shadow.Alpha));
@@ -679,7 +679,7 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
     if (pImageElement->m_bHidden)	m_oWriter.WriteString(std::wstring(L" hidden=\"1\""));
 
     m_oWriter.WriteString(std::wstring(L" name=\""));
-        m_oWriter.WriteStringXML(pImageElement->m_sName);
+    m_oWriter.WriteStringXML(pImageElement->m_sName);
     m_oWriter.WriteString(std::wstring(L"\""));
 
     if (!pImageElement->m_sDescription.empty())
@@ -691,10 +691,7 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
     m_oWriter.WriteString(std::wstring(L">"));
 
 
-    if (pVideoElement || pAudioElement)
-    {
-        m_oWriter.WriteString(std::wstring(L"<a:hlinkClick r:id=\"\" action=\"ppaction://media\"/>"));
-    }
+    WriteHyperlink(m_pElement->m_arrActions);
 
     m_oWriter.WriteString(std::wstring(L"</p:cNvPr><p:cNvPicPr><a:picLocks"));
 
@@ -741,17 +738,21 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
         bool bExternal = false;
         std::wstring strRid = m_pRels->WriteAudio(pAudioElement->m_strAudioFileName, bExternal);
 
-        m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>");
+        if ((int)pAudioElement->m_strAudioFileName.find(L".WAV") == -1 &&
+            (int)pAudioElement->m_strAudioFileName.find(L".wav") == -1)
+            m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>");
+        else
+            m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
 
         sMediaFile = bExternal ? L"" : pAudioElement->m_strAudioFileName;
     }
     if (sMediaFile.empty() == false)
     {
-        std::wstring strRid = m_pRels->WriteMedia(sMediaFile);
-        if (!strRid.empty())
+        std::wstring strRid = m_pRels->WriteImage(pImageElement->m_strImageFileName);
+        if (!strRid.empty() && false)
         {
             m_oWriter.WriteString(L"<p:extLst><p:ext uri=\"{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}\">\
-<p14:media xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" r:embed=\"" + strRid + L"\"/></p:ext></p:extLst>");
+                                  <p14:media xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" r:embed=\"" + strRid + L"\"/></p:ext></p:extLst>");
         }
     }
 
@@ -779,13 +780,13 @@ void PPT_FORMAT::CShapeWriter::WriteGroupInfo()
     if (pGroupElement->m_bHidden)	m_oWriter.WriteString(std::wstring(L" hidden=\"1\""));
 
     m_oWriter.WriteString(std::wstring(L" name=\""));
-        m_oWriter.WriteStringXML(pGroupElement->m_sName);
+    m_oWriter.WriteStringXML(pGroupElement->m_sName);
     m_oWriter.WriteString(std::wstring(L"\""));
 
     if (!pGroupElement->m_sDescription.empty())
     {
         m_oWriter.WriteString(std::wstring(L" descr=\""));
-            m_oWriter.WriteStringXML(pGroupElement->m_sDescription);
+        m_oWriter.WriteStringXML(pGroupElement->m_sDescription);
         m_oWriter.WriteString(std::wstring(L"\""));
     }
     m_oWriter.WriteString(std::wstring(L">"));
@@ -794,8 +795,8 @@ void PPT_FORMAT::CShapeWriter::WriteGroupInfo()
         std::wstring rId = m_pRels->WriteHyperlink(pGroupElement->m_sHyperlink);
 
         m_oWriter.WriteString(std::wstring(L"<a:hlinkClick"));
-            m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
-            m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId ));
+        m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
+        m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId ));
         m_oWriter.WriteString(std::wstring(L"\"></a:hlinkClick>"));
     }
     m_oWriter.WriteString(std::wstring(L"</p:cNvPr>"));
@@ -829,13 +830,13 @@ void PPT_FORMAT::CShapeWriter::WriteTableInfo()
     if (pGroupElement->m_bHidden)	m_oWriter.WriteString(std::wstring(L" hidden=\"1\""));
 
     m_oWriter.WriteString(std::wstring(L" name=\""));
-        m_oWriter.WriteStringXML(pGroupElement->m_sName);
+    m_oWriter.WriteStringXML(pGroupElement->m_sName);
     m_oWriter.WriteString(std::wstring(L"\""));
 
     if (!pGroupElement->m_sDescription.empty())
     {
         m_oWriter.WriteString(std::wstring(L" descr=\""));
-            m_oWriter.WriteStringXML(pGroupElement->m_sDescription);
+        m_oWriter.WriteStringXML(pGroupElement->m_sDescription);
         m_oWriter.WriteString(std::wstring(L"\""));
     }
     m_oWriter.WriteString(std::wstring(L">"));
@@ -844,8 +845,8 @@ void PPT_FORMAT::CShapeWriter::WriteTableInfo()
         std::wstring rId = m_pRels->WriteHyperlink(pGroupElement->m_sHyperlink);
 
         m_oWriter.WriteString(std::wstring(L"<a:hlinkClick"));
-            m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
-            m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId ));
+        m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
+        m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId ));
         m_oWriter.WriteString(std::wstring(L"\"></a:hlinkClick>"));
     }
     m_oWriter.WriteString(std::wstring(L"</p:cNvPr>"));
@@ -879,31 +880,31 @@ void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
     if (pShapeElement->m_bHidden)	m_oWriter.WriteString(std::wstring(L" hidden=\"1\""));
 
     m_oWriter.WriteString(std::wstring(L" name=\""));
-        m_oWriter.WriteStringXML(pShapeElement->m_sName);
+    m_oWriter.WriteStringXML(pShapeElement->m_sName);
     m_oWriter.WriteString(std::wstring(L"\""));
 
     if (!pShapeElement->m_sDescription.empty())
     {
         m_oWriter.WriteString(std::wstring(L" descr=\""));
-            m_oWriter.WriteStringXML(pShapeElement->m_sDescription);
+        m_oWriter.WriteStringXML(pShapeElement->m_sDescription);
         m_oWriter.WriteString(std::wstring(L"\""));
     }
     m_oWriter.WriteString(std::wstring(L">"));
-    WriteButton();
+    WriteHyperlink(m_pElement->m_arrActions);
     if (!pShapeElement->m_sHyperlink.empty())
     {
         std::wstring rId = m_pRels->WriteHyperlink(pShapeElement->m_sHyperlink);
 
         m_oWriter.WriteString(std::wstring(L"<a:hlinkClick"));
-            m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
-            m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId ));
+        m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
+        m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId ));
         m_oWriter.WriteString(std::wstring(L"\"></a:hlinkClick>"));
     }
     m_oWriter.WriteString(std::wstring(L"</p:cNvPr>"));
 
     m_oWriter.WriteString(std::wstring(L"<p:cNvSpPr"));
-        if (m_bTextBox)
-            m_oWriter.WriteString(std::wstring(L" txBox=\"1\""));
+    if (m_bTextBox)
+        m_oWriter.WriteString(std::wstring(L" txBox=\"1\""));
     m_oWriter.WriteString(std::wstring(L"><a:spLocks"));
 
     if (false == m_pElement->m_bChildAnchorEnabled)
@@ -1054,63 +1055,63 @@ void PPT_FORMAT::CShapeWriter::Write3dShape()
     //}
 
     m_oWriter.WriteString(std::wstring(L"<a:scene3d>"));
-        m_oWriter.WriteString(std::wstring(L"<a:camera"));
+    m_oWriter.WriteString(std::wstring(L"<a:camera"));
 
-        std::wstring sAngle;
-        if (pPPTShape->m_o3dOptions.dSkewAngle < 10) sAngle = L"Left";
-        else if (pPPTShape->m_o3dOptions.dSkewAngle >= 10 && pPPTShape->m_o3dOptions.dSkewAngle < 80) sAngle = L"BottomLeft";
-        else if (pPPTShape->m_o3dOptions.dSkewAngle >= 80 && pPPTShape->m_o3dOptions.dSkewAngle < 100) sAngle = L"Bottom";
-        else if (pPPTShape->m_o3dOptions.dSkewAngle >= 100 && pPPTShape->m_o3dOptions.dSkewAngle < 145) sAngle = L"BottomRight";
-        else if (pPPTShape->m_o3dOptions.dSkewAngle >= 145 && pPPTShape->m_o3dOptions.dSkewAngle < 190) sAngle = L"Right";
-        else if (pPPTShape->m_o3dOptions.dSkewAngle >= 190 && pPPTShape->m_o3dOptions.dSkewAngle < 235) sAngle = L"TopRight";
-        else if (pPPTShape->m_o3dOptions.dSkewAngle >= 235 && pPPTShape->m_o3dOptions.dSkewAngle < 280) sAngle = L"Top";
-        else if (pPPTShape->m_o3dOptions.dSkewAngle >= 280 && pPPTShape->m_o3dOptions.dSkewAngle < 325) sAngle = L"TopLeft";
-        else sAngle = L"Front";
+    std::wstring sAngle;
+    if (pPPTShape->m_o3dOptions.dSkewAngle < 10) sAngle = L"Left";
+    else if (pPPTShape->m_o3dOptions.dSkewAngle >= 10 && pPPTShape->m_o3dOptions.dSkewAngle < 80) sAngle = L"BottomLeft";
+    else if (pPPTShape->m_o3dOptions.dSkewAngle >= 80 && pPPTShape->m_o3dOptions.dSkewAngle < 100) sAngle = L"Bottom";
+    else if (pPPTShape->m_o3dOptions.dSkewAngle >= 100 && pPPTShape->m_o3dOptions.dSkewAngle < 145) sAngle = L"BottomRight";
+    else if (pPPTShape->m_o3dOptions.dSkewAngle >= 145 && pPPTShape->m_o3dOptions.dSkewAngle < 190) sAngle = L"Right";
+    else if (pPPTShape->m_o3dOptions.dSkewAngle >= 190 && pPPTShape->m_o3dOptions.dSkewAngle < 235) sAngle = L"TopRight";
+    else if (pPPTShape->m_o3dOptions.dSkewAngle >= 235 && pPPTShape->m_o3dOptions.dSkewAngle < 280) sAngle = L"Top";
+    else if (pPPTShape->m_o3dOptions.dSkewAngle >= 280 && pPPTShape->m_o3dOptions.dSkewAngle < 325) sAngle = L"TopLeft";
+    else sAngle = L"Front";
 
-        if (pPPTShape->m_o3dOptions.bParallel)
-            m_oWriter.WriteString(std::wstring(L" prst=\"legacyOblique" + sAngle + L"\""));
-        else
-            m_oWriter.WriteString(std::wstring(L" prst=\"legacyPerspective" + sAngle + L"\""));
-        m_oWriter.WriteString(std::wstring(L">"));
-        if (pPPTShape->m_o3dOptions.bConstrainRotation)
-        {
-            m_oWriter.WriteString(std::wstring(L"<a:rot"));
-                m_oWriter.WriteString(std::wstring(L" lat=\"" + std::to_wstring((int)(60000 * pPPTShape->m_o3dOptions.dXRotationAngle.get_value_or(0))) + L"\""));
-                m_oWriter.WriteString(std::wstring(L" lon=\"" + std::to_wstring((int)(60000 * pPPTShape->m_o3dOptions.dYRotationAngle.get_value_or(0))) + L"\""));
-                m_oWriter.WriteString(std::wstring(L" rev=\"" + std::to_wstring((int)(60000 * pPPTShape->m_o3dOptions.dRotationAngle.get_value_or(0))) + L"\""));
-            m_oWriter.WriteString(std::wstring(L"/>"));
-        }
-        m_oWriter.WriteString(std::wstring(L"</a:camera>"));
-
-        m_oWriter.WriteString(std::wstring(L"<a:lightRig"));
-            if (pPPTShape->m_o3dOptions.dFillIntensity < 0.3)
-                m_oWriter.WriteString(std::wstring(L" rig=\"legacyHarsh3\""));
-            else if (pPPTShape->m_o3dOptions.dFillIntensity < 0.4)
-                m_oWriter.WriteString(std::wstring(L" rig=\"legacyFlat4\""));
-            else if (pPPTShape->m_o3dOptions.dFillIntensity > 0.6 ||
-                (pPPTShape->m_o3dOptions.dKeyX < 0.1 && pPPTShape->m_o3dOptions.dFillX < 0.1 &&
-                 pPPTShape->m_o3dOptions.dKeyY < 0.1 && pPPTShape->m_o3dOptions.dFillY < 0.1))
-                m_oWriter.WriteString(std::wstring(L" rig=\"legacyFlat1\""));
-            else
-                m_oWriter.WriteString(std::wstring(L" rig=\"legacyFlat3\""));
-
-            if (pPPTShape->m_o3dOptions.dKeyX < 0.1 && pPPTShape->m_o3dOptions.dFillX < 0.1)
-            {
-                if (pPPTShape->m_o3dOptions.dKeyY < 0.1 && pPPTShape->m_o3dOptions.dFillY < 0.1)
-                                                            m_oWriter.WriteString(std::wstring(L" dir=\"t\""));
-                else if (pPPTShape->m_o3dOptions.dKeyY < 0)	m_oWriter.WriteString(std::wstring(L" dir=\"r\""));
-                else										m_oWriter.WriteString(std::wstring(L" dir=\"l\""));
-            }
-            else
-            {
-                if (pPPTShape->m_o3dOptions.dKeyX < 0)	m_oWriter.WriteString(std::wstring(L" dir=\"t\""));
-                else									m_oWriter.WriteString(std::wstring(L" dir=\"b\""));
-            }
+    if (pPPTShape->m_o3dOptions.bParallel)
+        m_oWriter.WriteString(std::wstring(L" prst=\"legacyOblique" + sAngle + L"\""));
+    else
+        m_oWriter.WriteString(std::wstring(L" prst=\"legacyPerspective" + sAngle + L"\""));
+    m_oWriter.WriteString(std::wstring(L">"));
+    if (pPPTShape->m_o3dOptions.bConstrainRotation)
+    {
+        m_oWriter.WriteString(std::wstring(L"<a:rot"));
+        m_oWriter.WriteString(std::wstring(L" lat=\"" + std::to_wstring((int)(60000 * pPPTShape->m_o3dOptions.dXRotationAngle.get_value_or(0))) + L"\""));
+        m_oWriter.WriteString(std::wstring(L" lon=\"" + std::to_wstring((int)(60000 * pPPTShape->m_o3dOptions.dYRotationAngle.get_value_or(0))) + L"\""));
+        m_oWriter.WriteString(std::wstring(L" rev=\"" + std::to_wstring((int)(60000 * pPPTShape->m_o3dOptions.dRotationAngle.get_value_or(0))) + L"\""));
         m_oWriter.WriteString(std::wstring(L"/>"));
+    }
+    m_oWriter.WriteString(std::wstring(L"</a:camera>"));
+
+    m_oWriter.WriteString(std::wstring(L"<a:lightRig"));
+    if (pPPTShape->m_o3dOptions.dFillIntensity < 0.3)
+        m_oWriter.WriteString(std::wstring(L" rig=\"legacyHarsh3\""));
+    else if (pPPTShape->m_o3dOptions.dFillIntensity < 0.4)
+        m_oWriter.WriteString(std::wstring(L" rig=\"legacyFlat4\""));
+    else if (pPPTShape->m_o3dOptions.dFillIntensity > 0.6 ||
+             (pPPTShape->m_o3dOptions.dKeyX < 0.1 && pPPTShape->m_o3dOptions.dFillX < 0.1 &&
+              pPPTShape->m_o3dOptions.dKeyY < 0.1 && pPPTShape->m_o3dOptions.dFillY < 0.1))
+        m_oWriter.WriteString(std::wstring(L" rig=\"legacyFlat1\""));
+    else
+        m_oWriter.WriteString(std::wstring(L" rig=\"legacyFlat3\""));
+
+    if (pPPTShape->m_o3dOptions.dKeyX < 0.1 && pPPTShape->m_o3dOptions.dFillX < 0.1)
+    {
+        if (pPPTShape->m_o3dOptions.dKeyY < 0.1 && pPPTShape->m_o3dOptions.dFillY < 0.1)
+            m_oWriter.WriteString(std::wstring(L" dir=\"t\""));
+        else if (pPPTShape->m_o3dOptions.dKeyY < 0)	m_oWriter.WriteString(std::wstring(L" dir=\"r\""));
+        else										m_oWriter.WriteString(std::wstring(L" dir=\"l\""));
+    }
+    else
+    {
+        if (pPPTShape->m_o3dOptions.dKeyX < 0)	m_oWriter.WriteString(std::wstring(L" dir=\"t\""));
+        else									m_oWriter.WriteString(std::wstring(L" dir=\"b\""));
+    }
+    m_oWriter.WriteString(std::wstring(L"/>"));
     m_oWriter.WriteString(std::wstring(L"</a:scene3d>"));
 
     m_oWriter.WriteString(std::wstring(L"<a:sp3d"));
-        m_oWriter.WriteString(std::wstring(L" extrusionH=\"" + std::to_wstring(pPPTShape->m_o3dOptions.nExtrudeBackward) + L"\""));
+    m_oWriter.WriteString(std::wstring(L" extrusionH=\"" + std::to_wstring(pPPTShape->m_o3dOptions.nExtrudeBackward) + L"\""));
 
     switch(pPPTShape->m_o3dOptions.nRenderMode)
     {
@@ -1131,26 +1132,26 @@ void PPT_FORMAT::CShapeWriter::Write3dShape()
     m_oWriter.WriteString(std::wstring(L"<a:bevelB w=\"13500\" h=\"13500\" prst=\"angle\"/>"));
 
     std::wstring strExtrusionClr;
-        if (pPPTShape->m_o3dOptions.oExtrusionColor)
+    if (pPPTShape->m_o3dOptions.oExtrusionColor)
+    {
+        strExtrusionClr = ConvertColor(*pPPTShape->m_o3dOptions.oExtrusionColor);
+    }
+    else
+    {
+        if (pShapeElement->m_oBrush.Type != c_BrushTypeNoFill)
         {
-            strExtrusionClr = ConvertColor(*pPPTShape->m_o3dOptions.oExtrusionColor);
+            strExtrusionClr = ConvertColor(pShapeElement->m_oBrush.Color1, pShapeElement->m_oBrush.Alpha1);
         }
         else
         {
-            if (pShapeElement->m_oBrush.Type != c_BrushTypeNoFill)
-            {
-                strExtrusionClr = ConvertColor(pShapeElement->m_oBrush.Color1, pShapeElement->m_oBrush.Alpha1);
-            }
-            else
-            {
-                strExtrusionClr = ConvertColor(pShapeElement->m_oPen.Color, pShapeElement->m_oPen.Alpha);
-            }
+            strExtrusionClr = ConvertColor(pShapeElement->m_oPen.Color, pShapeElement->m_oPen.Alpha);
         }
+    }
     m_oWriter.WriteString(std::wstring(L"<a:extrusionClr>"));
-        m_oWriter.WriteString(strExtrusionClr);
+    m_oWriter.WriteString(strExtrusionClr);
     m_oWriter.WriteString(std::wstring(L"</a:extrusionClr>"));
     m_oWriter.WriteString(std::wstring(L"<a:contourClr>"));
-        m_oWriter.WriteString(strExtrusionClr);
+    m_oWriter.WriteString(strExtrusionClr);
     m_oWriter.WriteString(std::wstring(L"</a:contourClr>"));
 
     m_oWriter.WriteString(std::wstring(L"</a:sp3d>"));
@@ -1177,11 +1178,11 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
     pShapeElement->m_pShape->GetTextRect(oTextRect);
 
     std::wstring str =  L" lIns=\"" + std::to_wstring((int)oTextRect.left) + L"\" tIns=\"" + std::to_wstring((int)oTextRect.top) +
-                        L"\" rIns=\"" + std::to_wstring((int)oTextRect.right) + L"\" bIns=\"" + std::to_wstring((int)oTextRect.bottom) + L"\"";
+            L"\" rIns=\"" + std::to_wstring((int)oTextRect.right) + L"\" bIns=\"" + std::to_wstring((int)oTextRect.bottom) + L"\"";
 
     m_oWriter.WriteString(str);
 
-//	m_oWriter.WriteString(std::wstring(L" lIns=\"0\" tIns=\"0\" rIns=\"0\" bIns=\"0\""));
+    //	m_oWriter.WriteString(std::wstring(L" lIns=\"0\" tIns=\"0\" rIns=\"0\" bIns=\"0\""));
 
     if (pShapeElement->m_pShape->m_oText.m_oAttributes.m_nTextAlignVertical == 0 )
         m_oWriter.WriteString(L" anchor=\"t\"");
@@ -1201,10 +1202,10 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
     {
         switch(pShapeElement->m_pShape->m_oText.m_nTextFlow)
         {
-            case 1:
-            case 3: m_oWriter.WriteString(L" vert=\"vert\"");			break;
-            case 2: m_oWriter.WriteString(L" vert=\"vert270\"");		break;
-            case 5: m_oWriter.WriteString(L" vert=\"wordArtVert\"");	break;
+        case 1:
+        case 3: m_oWriter.WriteString(L" vert=\"vert\"");			break;
+        case 2: m_oWriter.WriteString(L" vert=\"vert270\"");		break;
+        case 5: m_oWriter.WriteString(L" vert=\"wordArtVert\"");	break;
         }
     }
     else if (pShapeElement->m_pShape->m_oText.m_bVertical)
@@ -1217,29 +1218,29 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
     {
         std::wstring prstTxWarp = oox::Spt2WordArtShapeType((oox::MSOSPT)pShapeElement->m_lShapeType);
         m_oWriter.WriteString(std::wstring(L"<a:prstTxWarp"));
-            m_oWriter.WriteString(std::wstring(L" prst=\"") + prstTxWarp + _T("\">"));
-            m_oWriter.WriteString(std::wstring(L"<a:avLst>"));//модификаторы
+        m_oWriter.WriteString(std::wstring(L" prst=\"") + prstTxWarp + _T("\">"));
+        m_oWriter.WriteString(std::wstring(L"<a:avLst>"));//модификаторы
 
-            CPPTShape *pPPTShape = dynamic_cast<CPPTShape *>(pShapeElement->m_pShape->getBaseShape().get());
-            std::wstring strVal;
+        CPPTShape *pPPTShape = dynamic_cast<CPPTShape *>(pShapeElement->m_pShape->getBaseShape().get());
+        std::wstring strVal;
 
-            for (size_t i = 0 ; (pPPTShape) && (i < pPPTShape->m_arAdjustments.size()); i++)
+        for (size_t i = 0 ; (pPPTShape) && (i < pPPTShape->m_arAdjustments.size()); i++)
+        {
+            switch(pShapeElement->m_lShapeType)
             {
-                switch(pShapeElement->m_lShapeType)
-                {
-                    case oox::msosptTextFadeUp:
-                    {
-                        double kf = 4.63; //"волшебный"
-                        std::wstring strVal = std::to_wstring((int)(kf * pPPTShape->m_arAdjustments[i]));
+            case oox::msosptTextFadeUp:
+            {
+                double kf = 4.63; //"волшебный"
+                std::wstring strVal = std::to_wstring((int)(kf * pPPTShape->m_arAdjustments[i]));
 
-                        m_oWriter.WriteString(L"<a:gd name=\"adj\" fmla=\"val ");
-                        m_oWriter.WriteString(strVal + L"\"/>");
-                    }break;
-                }
-
+                m_oWriter.WriteString(L"<a:gd name=\"adj\" fmla=\"val ");
+                m_oWriter.WriteString(strVal + L"\"/>");
+            }break;
             }
 
-            m_oWriter.WriteString(L"</a:avLst>");
+        }
+
+        m_oWriter.WriteString(L"</a:avLst>");
         m_oWriter.WriteString(L"</a:prstTxWarp>");
     }
     if (pShapeElement->m_pShape->m_oText.m_bAutoFit)
@@ -1273,29 +1274,21 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
         //	if (pParagraph->m_arSpans.size() == 1 && pParagraph->m_arSpans[0].m_strText.empty()) break;
         //}
 
-        std::wstring _str1 = std::to_wstring(pParagraph->m_lTextLevel);
-        m_oWriter.WriteString(L"<a:p><a:pPr lvl=\"" + _str1 + L"\"");
+        m_oWriter.WriteString(L"<a:p><a:pPr");
 
         PPT_FORMAT::CTextPFRun* pPF = &pParagraph->m_oPFRun;
-
-        if (pPF->textDirection.is_init())
-        {
-            if (pPF->textDirection.get() == 1)	m_oWriter.WriteString(std::wstring(L" rtl=\"1\""));
-            else								m_oWriter.WriteString(std::wstring(L" rtl=\"0\""));
-        }
-        if (pPF->fontAlign.is_init())
-        {
-            std::wstring strProp = CStylesWriter::GetFontAlign(pPF->fontAlign.get());
-            m_oWriter.WriteString(std::wstring(L" fontAlgn=\"") + strProp + L"\"");
-        }
-        int leftMargin = 0;
+        
+		int leftMargin = 0;
         if (pPF->leftMargin.is_init())
         {
             leftMargin = pPF->leftMargin.get();
             std::wstring strProp = std::to_wstring( leftMargin );
             m_oWriter.WriteString(L" marL=\"" + strProp + L"\"");
         }
-        if (pPF->indent.is_init())
+        std::wstring _strLevel = std::to_wstring(pParagraph->m_lTextLevel);
+		m_oWriter.WriteString(L" lvl=\"" + _strLevel + L"\"");
+		
+		if (pPF->indent.is_init())
         {
             std::wstring strProp = std::to_wstring(pPF->indent.get() - leftMargin);
             m_oWriter.WriteString(L" indent=\"" + strProp + L"\"");
@@ -1310,7 +1303,17 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
             std::wstring strProp= std::to_wstring( pPF->defaultTabSize.get());
             m_oWriter.WriteString(L" defTabSz=\"" + strProp + L"\"");
         }
-        m_oWriter.WriteString(L">");
+		if (pPF->textDirection.is_init())
+		{
+			if (pPF->textDirection.get() == 1)	m_oWriter.WriteString(std::wstring(L" rtl=\"1\""));
+			else								m_oWriter.WriteString(std::wstring(L" rtl=\"0\""));
+		}
+		if (pPF->fontAlign.is_init())
+		{
+			std::wstring strProp = CStylesWriter::GetFontAlign(pPF->fontAlign.get());
+			m_oWriter.WriteString(std::wstring(L" fontAlgn=\"") + strProp + L"\"");
+		}
+		m_oWriter.WriteString(L">");
 
         double dKoef1 = 3.52777778; // :-) чё это не понятно ...
         if (pPF->lineSpacing.is_init())
@@ -1365,7 +1368,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 if (pPF->bulletColor.is_init())
                 {
                     m_oWriter.WriteString(std::wstring(L"<a:buClr>"));
-                        m_oWriter.WriteString(ConvertColor(pPF->bulletColor.get(), 255));
+                    m_oWriter.WriteString(ConvertColor(pPF->bulletColor.get(), 255));
                     m_oWriter.WriteString(std::wstring(L"</a:buClr>"));
                 }
                 if (pPF->bulletSize.is_init())
@@ -1395,10 +1398,15 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     }
                     m_oWriter.WriteString(std::wstring(L"/>"));
                 }
-                if (pPF->bulletAutoNum.is_init())  // TODO Numbering
+                if (pPF->bulletAutoNum.is_init() && !pPF->bulletChar.is_init())  // TODO Numbering
                 {
                     m_oWriter.WriteString(L"<a:buAutoNum type=\"");
                     m_oWriter.WriteString(pPF->bulletAutoNum->type.get());
+                    if (pPF->bulletAutoNum->startAt.get2() != 1)
+                    {
+                        m_oWriter.WriteString(L" startAt=\"");
+                        m_oWriter.WriteString(std::to_wstring(pPF->bulletAutoNum->startAt.get2()));
+                    }
                     m_oWriter.WriteString(L"\"/>");
                 }
 
@@ -1461,7 +1469,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
             int span_sz = pParagraph->m_arSpans[nSpan].m_strText.length() ;
 
             if	((span_sz==1 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (wchar_t)13 )) ||
-                ((span_sz==2 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (wchar_t)13 ) && ( pParagraph->m_arSpans[nSpan].m_strText[1] == (wchar_t)13 ))))
+                 ((span_sz==2 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (wchar_t)13 ) && ( pParagraph->m_arSpans[nSpan].m_strText[1] == (wchar_t)13 ))))
             {
                 continue;
             }
@@ -1487,7 +1495,13 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     m_oWriter.WriteString(std::wstring(L"<a:r><a:rPr"));
                 }
             }
+			if (pCF->Language.is_init())
+			{
+				std::wstring str_lang = msLCID2wstring(pCF->Language.get());
 
+				if (str_lang.length() > 0)
+					m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
+			}
             if ((pCF->Size.is_init()) && (pCF->Size.get() > 0) && (pCF->Size.get() < 4001))
             {
                 m_oWriter.WriteString(L" sz=\"" + std::to_wstring((int)(100 * pCF->Size.get())) + L"\"");
@@ -1518,14 +1532,9 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 else
                     m_oWriter.WriteString(std::wstring(L" u=\"none\""));
             }
-            if (pCF->Language.is_init())
-            {
-                std::wstring str_lang = msLCID2wstring(pCF->Language.get());
 
-                if (str_lang.length() > 0)
-                    m_oWriter.WriteString(std::wstring(L" lang=\"") + str_lang + _T("\""));
-            }
             m_oWriter.WriteString(std::wstring(L">"));
+            WriteHyperlink(pParagraph->m_arSpans[nSpan].m_arrInteractive);
 
             if (m_bWordArt)
             {//порядок важен - линия, заливка, тень !!!
@@ -1536,7 +1545,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 m_oWriter.WriteString(ConvertBrush(pShapeElement->m_oBrush));
                 m_oWriter.WriteString(ConvertShadow(pShapeElement->m_oShadow));
             }
-        else
+            else
             {
                 if (pCF->Color.is_init())
                 {
@@ -1585,6 +1594,9 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
             {
                 m_oWriter.WriteString(std::wstring(L"<a:sym typeface=\"") + pCF->font.sym->Name + _T("\"/>"));
             }
+
+//            WriteHyperlink(nIndexPar);
+
             m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
 
             if (pParagraph->m_arSpans[nSpan].m_bBreak)
@@ -1604,7 +1616,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 m_oWriter.WriteString(strT2);
 
                 if ((pShapeElement->m_lPlaceholderType == PT_MasterSlideNumber ||
-                    (pShapeElement->m_lPlaceholderType == PT_MasterDate && pShapeElement->m_nFormatDate == 1))/* &&  pParagraph->m_arSpans[nSpan].m_bField*/)
+                     (pShapeElement->m_lPlaceholderType == PT_MasterDate && pShapeElement->m_nFormatDate == 1))/* &&  pParagraph->m_arSpans[nSpan].m_bField*/)
                 {
                     m_oWriter.WriteString(std::wstring(L"</a:fld>"));
                 }
@@ -1638,28 +1650,28 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertGroup()
         std::wstring str;
 
         m_oWriter.WriteString(std::wstring(L"<a:xfrm"));
-            if (0 != pGroupElement->m_dRotate)
-            {
-                if (pGroupElement->m_bFlipH && pGroupElement->m_dRotate < 180)
-                    pGroupElement->m_dRotate += 180; //Тікбұрышты үшбұрыштарды.ppt slide-7
+        if (0 != pGroupElement->m_dRotate)
+        {
+            if (pGroupElement->m_bFlipH && pGroupElement->m_dRotate < 180)
+                pGroupElement->m_dRotate += 180; //Тікбұрышты үшбұрыштарды.ppt slide-7
 
-                m_oWriter.WriteString(L" rot=\"" + std::to_wstring((int)(pGroupElement->m_dRotate * 60000)) + L"\"");
-            }
-            if (pGroupElement->m_bFlipH)
-            {
-                m_oWriter.WriteString(std::wstring(L" flipH=\"1\""));
-            }
-            if (pGroupElement->m_bFlipV)
-            {
-                m_oWriter.WriteString(std::wstring(L" flipV=\"1\""));
-            }
+            m_oWriter.WriteString(L" rot=\"" + std::to_wstring((int)(pGroupElement->m_dRotate * 60000)) + L"\"");
+        }
+        if (pGroupElement->m_bFlipH)
+        {
+            m_oWriter.WriteString(std::wstring(L" flipH=\"1\""));
+        }
+        if (pGroupElement->m_bFlipV)
+        {
+            m_oWriter.WriteString(std::wstring(L" flipV=\"1\""));
+        }
         m_oWriter.WriteString(std::wstring(L">"));
 
         m_oWriter.WriteString(L"<a:off x=\"" +
-            std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.left : (int)pGroupElement->m_rcAnchor.left)
-            + L"\" y=\"" +
-            std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.top : (int)pGroupElement->m_rcAnchor.top) +
-            L"\"/>");
+                              std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.left : (int)pGroupElement->m_rcAnchor.left)
+                              + L"\" y=\"" +
+                              std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.top : (int)pGroupElement->m_rcAnchor.top) +
+                              L"\"/>");
 
         double width	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetWidth() : pGroupElement->m_rcAnchor.GetWidth();
         double height	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetHeight() : pGroupElement->m_rcAnchor.GetHeight();
@@ -1670,9 +1682,9 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertGroup()
         }
 
         m_oWriter.WriteString(L"<a:chOff x=\"" + std::to_wstring((int)pGroupElement->m_rcGroupAnchor.left) +
-                                    L"\" y=\"" + std::to_wstring((int)pGroupElement->m_rcGroupAnchor.top) + L"\"/>");
+                              L"\" y=\"" + std::to_wstring((int)pGroupElement->m_rcGroupAnchor.top) + L"\"/>");
         m_oWriter.WriteString(L"<a:chExt cx=\"" + std::to_wstring((int)pGroupElement->m_rcGroupAnchor.GetWidth()) +
-                                    L"\" cy=\"" + std::to_wstring((int)pGroupElement->m_rcGroupAnchor.GetHeight()) + L"\"/>");
+                              L"\" cy=\"" + std::to_wstring((int)pGroupElement->m_rcGroupAnchor.GetHeight()) + L"\"/>");
 
         m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
     }
@@ -1684,13 +1696,9 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertGroup()
     return m_oWriter.GetData();
 }
 
-void PPT_FORMAT::CShapeWriter::WriteButton()
+void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo>& actions)
 {
-    CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
-    if (!pShapeElement) return;
-
-    auto& actions = pShapeElement->m_arrActions;
-    for (unsigned i = 0; i < actions.size() && actions.size() < 3; i++)
+    for (unsigned i = 0; i < actions.size(); i++)
     {
         if (actions[i].m_lType == CInteractiveInfo::over
                 && actions[i].m_strAudioFileName.empty()
@@ -1700,8 +1708,16 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
         PPTX::Logic::Hyperlink hlink;
         if (actions[i].m_strHyperlink.size() && m_pRels)
         {
-            std::wstring id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);
-            hlink.id = id;
+            std::wstring id;
+            switch (actions[i].m_lHyperlinkType)
+            {
+            case LT_SlideNumber:        id = m_pRels->WriteSlideRef(actions[i].m_strHyperlink);         break;
+            case LT_Url:                id = m_pRels->WriteHyperlink(actions[i].m_strHyperlink, true);  break;
+            case LT_OtherPresentation:  id = m_pRels->WriteFile(actions[i].m_strHyperlink);             break;
+            case LT_OtherFile:          id = m_pRels->WriteFile(actions[i].m_strHyperlink);             break;
+            }
+            if (!id.empty())
+                hlink.id = id;
         }
 
         if (actions[i].m_strAudioFileName.size() && m_pRels)
@@ -1711,18 +1727,29 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
             hlink.snd->embed = m_pRels->WriteAudio(actions[i].m_strAudioFileName, bExternal);
             hlink.snd->m_name = L"snd";
             hlink.snd->name = actions[i].m_strAudioName;
+            hlink.id = std::wstring(L"");
         }
 
         if (actions[i].m_eActivation == CInteractiveInfo::over)
             hlink.m_name = L"hlinkHover";
-        else
-            hlink.highlightClick = true;
+
+//        if (actions[i].m_bVisited)
+//            hlink.highlightClick = true;
 
         switch (actions[i].m_lType)
         {
         case II_NoAction:
         {
             hlink.action = L"ppaction://noaction";
+            break;
+        }
+        case II_MacroAction:
+        {
+            if (actions[i].m_macro.size())
+                hlink.action = L"ppaction://macro?name=" + actions[i].m_macro;
+            else
+                hlink.action = L"ppaction://noaction";
+
             break;
         }
         case II_JumpAction:
@@ -1767,18 +1794,81 @@ void PPT_FORMAT::CShapeWriter::WriteButton()
         }
         case II_HyperlinkAction:
         {
-            if (hlink.id.is_init())
-                hlink.action = L"ppaction://hlinksldjump";
-            else
-                hlink.action = L"ppaction://noaction";
+
+            switch (actions[i].m_lHyperlinkType)
+            {
+            case LT_SlideNumber:
+            {
+                if (hlink.id.is_init())
+                    hlink.action = L"ppaction://hlinksldjump";
+                break;
+            }
+            case LT_Url:
+            {
+                // TODO need check 1713 and hyperlink there
+                break; // break;
+            }
+            case LT_OtherPresentation:
+            {
+                if (hlink.id.is_init())
+                    hlink.action = L"ppaction://hlinkpres?slideindex=1&slidetitle=";
+                break;
+            }
+            case LT_OtherFile:
+            {
+                break;
+            }
+            }
+
+            break;
+        }
+        case II_MediaAction:
+        {
+
+            hlink.action = L"ppaction://media";
+            hlink.id = L"";
             break;
         }
         default:
             hlink.action = L"ppaction://noaction";
-    }
+        }
 
         m_oWriter.WriteString(hlink.toXML());
     }
+}
+
+std::vector<CInteractiveInfo> CShapeWriter::getActionsByNum(const int num)
+{
+    auto& actions = m_pElement->m_arrActions;
+
+    // Need to check paragraph or button
+    if (num == -1 && actions.size() > 2) // paragraph inside shape
+        return {};
+    else if (num == -1) // button inside shape
+        return actions;
+
+    bool wasClick = false;
+    int currentNum = 0;
+    std::vector<CInteractiveInfo> actionsForOneParagraph;
+    for (const auto& act : actions)
+    {
+        if (act.m_eActivation == CInteractiveInfo::click)
+            wasClick = true;
+        else if (act.m_eActivation == CInteractiveInfo::over && wasClick == true)
+        {
+            currentNum--;
+            wasClick = false;
+        }
+
+        if (currentNum == num)
+            actionsForOneParagraph.push_back(act);
+
+        currentNum++;
+        if (currentNum > num)
+            break;
+    }
+
+    return actionsForOneParagraph;
 }
 
 // TODO! Not work correct
@@ -1799,28 +1889,28 @@ std::wstring	PPT_FORMAT::CShapeWriter::ConvertTable	()
         std::wstring str;
 
         m_oWriter.WriteString(std::wstring(L"<p:xfrm"));
-            if (0 != pGroupElement->m_dRotate)
-            {
-                if (pGroupElement->m_bFlipH && pGroupElement->m_dRotate < 180)
-                    pGroupElement->m_dRotate += 180; //Тікбұрышты үшбұрыштарды.ppt slide-7
+        if (0 != pGroupElement->m_dRotate)
+        {
+            if (pGroupElement->m_bFlipH && pGroupElement->m_dRotate < 180)
+                pGroupElement->m_dRotate += 180; //Тікбұрышты үшбұрыштарды.ppt slide-7
 
-                m_oWriter.WriteString(L" rot=\"" + std::to_wstring((int)(pGroupElement->m_dRotate * 60000)) + L"\"");
-            }
-            if (pGroupElement->m_bFlipH)
-            {
-                m_oWriter.WriteString(std::wstring(L" flipH=\"1\""));
-            }
-            if (pGroupElement->m_bFlipV)
-            {
-                m_oWriter.WriteString(std::wstring(L" flipV=\"1\""));
-            }
+            m_oWriter.WriteString(L" rot=\"" + std::to_wstring((int)(pGroupElement->m_dRotate * 60000)) + L"\"");
+        }
+        if (pGroupElement->m_bFlipH)
+        {
+            m_oWriter.WriteString(std::wstring(L" flipH=\"1\""));
+        }
+        if (pGroupElement->m_bFlipV)
+        {
+            m_oWriter.WriteString(std::wstring(L" flipV=\"1\""));
+        }
         m_oWriter.WriteString(std::wstring(L">"));
 
         m_oWriter.WriteString(L"<a:off x=\"" +
-            std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.left : (int)pGroupElement->m_rcAnchor.left)
-            + L"\" y=\"" +
-            std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.top : (int)pGroupElement->m_rcAnchor.top) +
-            L"\"/>");
+                              std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.left : (int)pGroupElement->m_rcAnchor.left)
+                              + L"\" y=\"" +
+                              std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.top : (int)pGroupElement->m_rcAnchor.top) +
+                              L"\"/>");
 
         double width	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetWidth() : pGroupElement->m_rcAnchor.GetWidth();
         double height	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetHeight() : pGroupElement->m_rcAnchor.GetHeight();
@@ -1864,7 +1954,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()
 
     std::wstring prstTxWarp;
     std::wstring prstGeom	= oox::Spt2ShapeType_mini((oox::MSOSPT)pShapeElement->m_lShapeType);
-//rect, ellipse, line
+    //rect, ellipse, line
 
     if (prstGeom.empty())
     {
@@ -1913,28 +2003,28 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()
         std::wstring str;
 
         m_oWriter.WriteString(std::wstring(L"<a:xfrm"));
-            if (0 != pShapeElement->m_dRotate)
-            {
-                if (pShapeElement->m_bFlipH && pShapeElement->m_dRotate < 180)
-                    pShapeElement->m_dRotate += 180; //Тікбұрышты үшбұрыштарды.ppt slide-7
+        if (0 != pShapeElement->m_dRotate)
+        {
+            if (pShapeElement->m_bFlipH && pShapeElement->m_dRotate < 180)
+                pShapeElement->m_dRotate += 180; //Тікбұрышты үшбұрыштарды.ppt slide-7
 
-                m_oWriter.WriteString(L" rot=\"" + std::to_wstring((int)(pShapeElement->m_dRotate * 60000)) + L"\"");
-            }
-            if (pShapeElement->m_bFlipH)
-            {
-                m_oWriter.WriteString(std::wstring(L" flipH=\"1\""));
-            }
-            if (pShapeElement->m_bFlipV)
-            {
-                m_oWriter.WriteString(std::wstring(L" flipV=\"1\""));
-            }
+            m_oWriter.WriteString(L" rot=\"" + std::to_wstring((int)(pShapeElement->m_dRotate * 60000)) + L"\"");
+        }
+        if (pShapeElement->m_bFlipH)
+        {
+            m_oWriter.WriteString(std::wstring(L" flipH=\"1\""));
+        }
+        if (pShapeElement->m_bFlipV)
+        {
+            m_oWriter.WriteString(std::wstring(L" flipV=\"1\""));
+        }
         m_oWriter.WriteString(std::wstring(L">"));
 
         m_oWriter.WriteString(L"<a:off x=\"" +
-            std::to_wstring(pShapeElement->m_bChildAnchorEnabled ? (int)pShapeElement->m_rcChildAnchor.left : (int)pShapeElement->m_rcAnchor.left)
-            + L"\" y=\"" +
-            std::to_wstring(pShapeElement->m_bChildAnchorEnabled ? (int)pShapeElement->m_rcChildAnchor.top : (int)pShapeElement->m_rcAnchor.top) +
-            L"\"/>");
+                              std::to_wstring(pShapeElement->m_bChildAnchorEnabled ? (int)pShapeElement->m_rcChildAnchor.left : (int)pShapeElement->m_rcAnchor.left)
+                              + L"\" y=\"" +
+                              std::to_wstring(pShapeElement->m_bChildAnchorEnabled ? (int)pShapeElement->m_rcChildAnchor.top : (int)pShapeElement->m_rcAnchor.top) +
+                              L"\"/>");
 
         double width	= pShapeElement->m_bChildAnchorEnabled ? pShapeElement->m_rcChildAnchor.GetWidth() : pShapeElement->m_rcAnchor.GetWidth();
         double height	= pShapeElement->m_bChildAnchorEnabled ? pShapeElement->m_rcChildAnchor.GetHeight() : pShapeElement->m_rcAnchor.GetHeight();
@@ -2017,7 +2107,7 @@ void PPT_FORMAT::CShapeWriter::ParseXmlAlternative(const std::wstring & xml)
     nullable<PPTX::Logic::SpTreeElem> oElement;
 
     if ( L"graphicFrame" == sName || L"pic" == sName || L"sp" == sName || L"grpSp" == sName || L"cxnSp" == sName || L"AlternateContent" == sName
-        || L"spTree" )
+         || L"spTree" )
     {
         oElement = oReader;
     }
@@ -2100,27 +2190,27 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertImage()
 
     m_oWriter.WriteString(std::wstring(L"<p:blipFill>"));
 
-        std::wstring strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"/>");
-        m_oWriter.WriteString(strWrite);
+    std::wstring strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"/>");
+    m_oWriter.WriteString(strWrite);
 
-        m_oWriter.WriteString(std::wstring(L"<a:srcRect"));
-        if (pImageElement->m_bCropEnabled)
-        {//124-125 Q3 V2 Win File 3.ppt
-            m_oWriter.WriteString(L" l=\"" + std::to_wstring((_INT64)(pImageElement->m_lcropFromLeft  *1.5)) + L"\"");
-            m_oWriter.WriteString(L" t=\"" + std::to_wstring((_INT64)(pImageElement->m_lcropFromTop   *1.5)) + L"\"");
-            m_oWriter.WriteString(L" r=\"" + std::to_wstring((_INT64)(pImageElement->m_lcropFromRight *1.5)) + L"\"");
-            m_oWriter.WriteString(L" b=\"" + std::to_wstring((_INT64)(pImageElement->m_lcropFromBottom*1.5)) + L"\"");
-        }
-        m_oWriter.WriteString(std::wstring(L"/>"));
+    m_oWriter.WriteString(std::wstring(L"<a:srcRect"));
+    if (pImageElement->m_bCropEnabled)
+    {//124-125 Q3 V2 Win File 3.ppt
+        m_oWriter.WriteString(L" l=\"" + std::to_wstring((_INT64)(pImageElement->m_lcropFromLeft  *1.5)) + L"\"");
+        m_oWriter.WriteString(L" t=\"" + std::to_wstring((_INT64)(pImageElement->m_lcropFromTop   *1.5)) + L"\"");
+        m_oWriter.WriteString(L" r=\"" + std::to_wstring((_INT64)(pImageElement->m_lcropFromRight *1.5)) + L"\"");
+        m_oWriter.WriteString(L" b=\"" + std::to_wstring((_INT64)(pImageElement->m_lcropFromBottom*1.5)) + L"\"");
+    }
+    m_oWriter.WriteString(std::wstring(L"/>"));
 
-        if (pImageElement->m_bTile)
-        {
-            m_oWriter.WriteString(std::wstring(L"<a:tile/>"));
-        }
-        else if (pImageElement->m_bStretch)
-        {
-            m_oWriter.WriteString(std::wstring(L"<a:stretch><a:fillRect/></a:stretch>"));
-        }
+    if (pImageElement->m_bTile)
+    {
+        m_oWriter.WriteString(std::wstring(L"<a:tile/>"));
+    }
+    else if (pImageElement->m_bStretch)
+    {
+        m_oWriter.WriteString(std::wstring(L"<a:stretch><a:fillRect/></a:stretch>"));
+    }
 
     m_oWriter.WriteString(std::wstring(L"</p:blipFill>"));
 
@@ -2131,25 +2221,25 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertImage()
         std::wstring str;
 
         m_oWriter.WriteString(std::wstring(L"<a:xfrm"));
-            if (0 != pImageElement->m_dRotate)
-            {
-                m_oWriter.WriteString(L" rot=\"" + std::to_wstring((int)(pImageElement->m_dRotate * 60000)) + L"\"");
-            }
-            if (pImageElement->m_bFlipH)
-            {
-                m_oWriter.WriteString(std::wstring(L" flipH=\"1\""));
-            }
-            if (pImageElement->m_bFlipV)
-            {
-                m_oWriter.WriteString(std::wstring(L" flipV=\"1\""));
-            }
+        if (0 != pImageElement->m_dRotate)
+        {
+            m_oWriter.WriteString(L" rot=\"" + std::to_wstring((int)(pImageElement->m_dRotate * 60000)) + L"\"");
+        }
+        if (pImageElement->m_bFlipH)
+        {
+            m_oWriter.WriteString(std::wstring(L" flipH=\"1\""));
+        }
+        if (pImageElement->m_bFlipV)
+        {
+            m_oWriter.WriteString(std::wstring(L" flipV=\"1\""));
+        }
         m_oWriter.WriteString(std::wstring(L">"));
 
         m_oWriter.WriteString(L"<a:off x=\"" +
-            std::to_wstring(pImageElement->m_bChildAnchorEnabled ? (int)pImageElement->m_rcChildAnchor.left : (int)pImageElement->m_rcAnchor.left)
-            + L"\" y=\"" +
-            std::to_wstring(pImageElement->m_bChildAnchorEnabled ? (int)pImageElement->m_rcChildAnchor.top : (int)pImageElement->m_rcAnchor.top) +
-            L"\"/>");
+                              std::to_wstring(pImageElement->m_bChildAnchorEnabled ? (int)pImageElement->m_rcChildAnchor.left : (int)pImageElement->m_rcAnchor.left)
+                              + L"\" y=\"" +
+                              std::to_wstring(pImageElement->m_bChildAnchorEnabled ? (int)pImageElement->m_rcChildAnchor.top : (int)pImageElement->m_rcAnchor.top) +
+                              L"\"/>");
 
         double width	= pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetWidth() : pImageElement->m_rcAnchor.GetWidth();
         double height	= pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetHeight() : pImageElement->m_rcAnchor.GetHeight();
@@ -2867,7 +2957,7 @@ HRESULT PPT_FORMAT::CShapeWriter::PathCommandTextEx(const std::wstring& bsUnicod
     //TODOO
     //if (NULL != bsGidText)
     //{
- //       m_oFont.StringGID = true;
+    //       m_oFont.StringGID = true;
     //	PathCommandText(bsUnicodeText, x, y, w, h, baselineOffset);
     //}
 

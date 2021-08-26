@@ -51,6 +51,7 @@ public:
 	const size_t	getCCE() const;
 	
 	const bool HasPtgTbl() const;
+	const bool IsVolatile() const;
 
 	const std::wstring getAssembledFormula(bool full_names = false) const;
 	

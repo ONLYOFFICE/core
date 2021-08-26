@@ -47,10 +47,9 @@
 namespace BinXlsxRW{
 	int g_nCurFormatVersion = 0;
 
-	CXlsxSerializer::CXlsxSerializer()
+	CXlsxSerializer::CXlsxSerializer() : m_bIsMacro(false), m_bIsNoBase64(false)
 	{
 		m_pExternalDrawingConverter = NULL;
-		m_bIsNoBase64 = false;
 	}
 	CXlsxSerializer::~CXlsxSerializer()
 	{
@@ -98,7 +97,7 @@ namespace BinXlsxRW{
 		oDrawingConverter.SetEmbedDstPath(sEmbedDir);
 
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;		
-		return oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions);
+		return oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions, m_bIsMacro);
 	}
     _UINT32 CXlsxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions)
 	{
@@ -259,9 +258,13 @@ namespace BinXlsxRW{
 	{
 		m_pExternalDrawingConverter = pDrawingConverter;
 	}
-	void CXlsxSerializer::setIsNoBase64(bool bIsNoBase64)
+	void CXlsxSerializer::setIsNoBase64(bool val)
 	{
-		m_bIsNoBase64 = bIsNoBase64;
+		m_bIsNoBase64 = val;
+	}
+	void CXlsxSerializer::setMacroEnabled(bool val)
+	{
+		m_bIsMacro = val;
 	}
 
 	bool CXlsxSerializer::writeChartXlsx(const std::wstring& sDstFile, NSCommon::smart_ptr<OOX::File> &file)

@@ -1654,11 +1654,13 @@ void DocxConverter::convert( ComplexTypes::Word::CShading* shading, _CP_OPT(odf_
 
 	if ((shading->m_oVal.IsInit()) && (shading->m_oVal->GetValue() == SimpleTypes::shdNil)) return;
 	
-	bool bColor = shading->m_oFill.IsInit() || ((shading->m_oVal.IsInit()) && shading->m_oColor.IsInit() && 
-												(shading->m_oVal->GetValue() != SimpleTypes::shdClear));
+	bool bColor = ((shading->m_oFill.IsInit()) && (shading->m_oFill->GetValue() == SimpleTypes::hexcolorRGB) )
+		|| ((shading->m_oVal.IsInit()) && shading->m_oColor.IsInit() &&
+			(shading->m_oVal->GetValue() != SimpleTypes::shdClear));
 
-	bool bThemeColor = shading->m_oThemeFill.IsInit() || ((shading->m_oVal.IsInit()) && shading->m_oThemeColor.IsInit() && 
-															(shading->m_oVal->GetValue() != SimpleTypes::shdClear));
+	bool bThemeColor = ((shading->m_oThemeFill.IsInit()) && (shading->m_oThemeFill->GetValue() == SimpleTypes::hexcolorRGB))
+		|| ((shading->m_oVal.IsInit()) && shading->m_oThemeColor.IsInit() &&
+			(shading->m_oVal->GetValue() != SimpleTypes::shdClear));
 
 	if (!bThemeColor && !bColor) return;
 
@@ -2621,7 +2623,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 						(oox_run_pr->m_oTextOutline->Fill.m_type != PPTX::Logic::UniFill::notInit) && 
 						(oox_run_pr->m_oTextOutline->Fill.m_type != PPTX::Logic::UniFill::noFill));
 
-	bool bOutline	= oox_run_pr->m_oOutline.IsInit();
+	bool bOutline	= ((oox_run_pr->m_oOutline.IsInit()) && (oox_run_pr->m_oOutline->m_oVal.ToBool()));
 	bool bColorText = !bOutline && (oox_run_pr->m_oColor.IsInit() && (oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorRGB));
 	
 	_CP_OPT(odf_types::color) color;
@@ -2878,7 +2880,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 			text_properties->content_.fo_background_color_= *odf_color;
 		}
 	}
-	if (oox_run_pr->m_oOutline.IsInit())
+	if ((oox_run_pr->m_oOutline.IsInit()) && (oox_run_pr->m_oOutline->m_oVal.ToBool()))
 		text_properties->content_.style_text_outline_ = true; //контур
 
 	if (oox_run_pr->m_oVanish.IsInit())

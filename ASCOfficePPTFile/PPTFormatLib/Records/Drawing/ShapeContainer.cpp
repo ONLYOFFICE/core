@@ -39,10 +39,12 @@
 #include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
+#include <fstream>
 #include "../../Enums/_includer.h"
 
-
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
+
+ULONG xmlName = 1;
 
 bool CPPTElement::ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2)
 {
@@ -133,62 +135,62 @@ CColor CPPTElement::CorrectSysColor(int nColorCode, CElementPtr pElement, CTheme
     }
     switch( nFunctionBits )
     {
-        case 0x01 :     // darken color by parameter
-        {
-            color.SetR	( static_cast<BYTE>	( ( nParameter * color.GetR() ) >> 8 ) );
-            color.SetG	( static_cast<BYTE>	( ( nParameter * color.GetG() ) >> 8 ) );
-            color.SetB	( static_cast<BYTE> ( ( nParameter * color.GetB() ) >> 8 ) );
-        }
+    case 0x01 :     // darken color by parameter
+    {
+        color.SetR	( static_cast<BYTE>	( ( nParameter * color.GetR() ) >> 8 ) );
+        color.SetG	( static_cast<BYTE>	( ( nParameter * color.GetG() ) >> 8 ) );
+        color.SetB	( static_cast<BYTE> ( ( nParameter * color.GetB() ) >> 8 ) );
+    }
         break;
-        case 0x02 :     // lighten color by parameter
-        {
-            unsigned short nInvParameter = ( 0x00ff - nParameter ) * 0xff;
-            color.SetR( static_cast<BYTE>( ( nInvParameter + ( nParameter * color.GetR() ) ) >> 8 ) );
-            color.SetG( static_cast<BYTE>( ( nInvParameter + ( nParameter * color.GetG() ) ) >> 8 ) );
-            color.SetB( static_cast<BYTE>( ( nInvParameter + ( nParameter * color.GetB() ) ) >> 8 ) );
-        }
+    case 0x02 :     // lighten color by parameter
+    {
+        unsigned short nInvParameter = ( 0x00ff - nParameter ) * 0xff;
+        color.SetR( static_cast<BYTE>( ( nInvParameter + ( nParameter * color.GetR() ) ) >> 8 ) );
+        color.SetG( static_cast<BYTE>( ( nInvParameter + ( nParameter * color.GetG() ) ) >> 8 ) );
+        color.SetB( static_cast<BYTE>( ( nInvParameter + ( nParameter * color.GetB() ) ) >> 8 ) );
+    }
         break;
-        case 0x03 :     // add grey level RGB(p,p,p)
-        {
-            short nR = (short)color.GetR()	+ (short)nParameter;
-            short nG = (short)color.GetG()	+ (short)nParameter;
-            short nB = (short)color.GetB()	+ (short)nParameter;
+    case 0x03 :     // add grey level RGB(p,p,p)
+    {
+        short nR = (short)color.GetR()	+ (short)nParameter;
+        short nG = (short)color.GetG()	+ (short)nParameter;
+        short nB = (short)color.GetB()	+ (short)nParameter;
 
-            if ( nR > 0x00ff )	nR = 0x00ff;
-            if ( nG > 0x00ff )	nG = 0x00ff;
-            if ( nB > 0x00ff )	nB = 0x00ff;
+        if ( nR > 0x00ff )	nR = 0x00ff;
+        if ( nG > 0x00ff )	nG = 0x00ff;
+        if ( nB > 0x00ff )	nB = 0x00ff;
 
-           color.SetRGB( (BYTE)nR, (BYTE)nG, (BYTE)nB );
-        }
+        color.SetRGB( (BYTE)nR, (BYTE)nG, (BYTE)nB );
+    }
         break;
-        case 0x04 :     // substract grey level RGB(p,p,p)
-        {
-            short nR = (short)color.GetR() - (short)nParameter;
-            short nG = (short)color.GetG() - (short)nParameter;
-            short nB = (short)color.GetB() - (short)nParameter;
-            if ( nR < 0 ) nR = 0;
-            if ( nG < 0 ) nG = 0;
-            if ( nB < 0 ) nB = 0;
-            color.SetRGB( (BYTE)nR, (BYTE)nG, (BYTE)nB );
-        }
+    case 0x04 :     // substract grey level RGB(p,p,p)
+    {
+        short nR = (short)color.GetR() - (short)nParameter;
+        short nG = (short)color.GetG() - (short)nParameter;
+        short nB = (short)color.GetB() - (short)nParameter;
+        if ( nR < 0 ) nR = 0;
+        if ( nG < 0 ) nG = 0;
+        if ( nB < 0 ) nB = 0;
+        color.SetRGB( (BYTE)nR, (BYTE)nG, (BYTE)nB );
+    }
         break;
-        case 0x05 :     // substract from gray level RGB(p,p,p)
-        {
-            short nR = (short)nParameter - (short)color.GetR();
-            short nG = (short)nParameter - (short)color.GetG();
-            short nB = (short)nParameter - (short)color.GetB();
-            if ( nR < 0 ) nR = 0;
-            if ( nG < 0 ) nG = 0;
-            if ( nB < 0 ) nB = 0;
-            color.SetRGB( (BYTE)nR, (BYTE)nG, (BYTE)nB );
-        }
+    case 0x05 :     // substract from gray level RGB(p,p,p)
+    {
+        short nR = (short)nParameter - (short)color.GetR();
+        short nG = (short)nParameter - (short)color.GetG();
+        short nB = (short)nParameter - (short)color.GetB();
+        if ( nR < 0 ) nR = 0;
+        if ( nG < 0 ) nG = 0;
+        if ( nB < 0 ) nB = 0;
+        color.SetRGB( (BYTE)nR, (BYTE)nG, (BYTE)nB );
+    }
         break;
-        case 0x06 :     // per component: black if < p, white if >= p
-        {
-            color.SetR( color.GetR() < nParameter ? 0x00 : 0xff );
-            color.SetG( color.GetG() < nParameter ? 0x00 : 0xff );
-            color.SetB( color.GetB() < nParameter ? 0x00 : 0xff );
-        }
+    case 0x06 :     // per component: black if < p, white if >= p
+    {
+        color.SetR( color.GetR() < nParameter ? 0x00 : 0xff );
+        color.SetG( color.GetG() < nParameter ? 0x00 : 0xff );
+        color.SetB( color.GetB() < nParameter ? 0x00 : 0xff );
+    }
         break;
     }
     if ( nAdditionalFlags & 0x40 )                  // top-bit invert
@@ -205,86 +207,86 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
     switch (pElement->m_etType)
     {
     case PPT_FORMAT::etVideo:
+    {
+        if (reset_default)
         {
-            if (reset_default)
-            {
-                pElement->m_bLine = false;
-            }
-            for (size_t i = 0; i < lCount; ++i)
-            {
-                SetUpPropertyVideo(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
-            }
-            break;
+            pElement->m_bLine = false;
         }
+        for (size_t i = 0; i < lCount; ++i)
+        {
+            SetUpPropertyVideo(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
+        }
+        break;
+    }
     case PPT_FORMAT::etPicture:
+    {
+        if (reset_default)
         {
-            if (reset_default)
-            {
-                pElement->m_oBrush.Type = c_BrushTypeTexture;
-                pElement->m_bLine = false;
-            }
-            for (size_t i = 0; i < lCount; ++i)
-            {
-                SetUpPropertyImage(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
-            }
-            break;
+            pElement->m_oBrush.Type = c_BrushTypeTexture;
+            pElement->m_bLine = false;
         }
+        for (size_t i = 0; i < lCount; ++i)
+        {
+            SetUpPropertyImage(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
+        }
+        break;
+    }
     case PPT_FORMAT::etAudio:
+    {
+        if (reset_default)
         {
-            if (reset_default)
-            {
-                pElement->m_bLine = false;
-            }
-            for (size_t i = 0; i < lCount; ++i)
-            {
-                SetUpPropertyAudio(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
-            }
-            break;
+            pElement->m_bLine = false;
         }
+        for (size_t i = 0; i < lCount; ++i)
+        {
+            SetUpPropertyAudio(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
+        }
+        break;
+    }
     case PPT_FORMAT::etGroup:
+    {
+        if (reset_default)
         {
-            if (reset_default)
-            {
-                pElement->m_bLine = false;
-                pElement->m_bIsFilled = false;
-            }
-            for (size_t i = 0; i < lCount; ++i)
-            {
-                SetUpProperty(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
-            }
-        }break;
-    case PPT_FORMAT::etShape:
-        {
-            CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
-            CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShapeElem->m_pShape->getBaseShape().get());
-
-            if (NULL != pPPTShape)
-            {
-                pPPTShape->m_oCustomVML.SetAdjusts(&pPPTShape->m_arAdjustments);
-            }
-
-            for (size_t i = 0; i < lCount; ++i)
-            {
-                SetUpPropertyShape(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
-            }
-
-            if (false == pElement->m_bIsFilled)
-            {
-                pElement->m_oBrush.Type = c_BrushTypeNoFill;
-            }
-            else if (pElement->m_oBrush.Type == c_BrushTypeNotSet &&
-                (pElement->m_lPlaceholderType == 0 && pElement->m_lPlaceholderID < 0 ))
-            {
-                pElement->m_oBrush.Type = c_BrushTypeSolid;
-            }
-
-            if (NULL != pPPTShape)
-            {
-                pPPTShape->m_oCustomVML.ToCustomShape(pPPTShape, pPPTShape->m_oManager);
-                pPPTShape->ReCalculate();
-            }
-            break;
+            pElement->m_bLine = false;
+            pElement->m_bIsFilled = false;
         }
+        for (size_t i = 0; i < lCount; ++i)
+        {
+            SetUpProperty(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
+        }
+    }break;
+    case PPT_FORMAT::etShape:
+    {
+        CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
+        CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShapeElem->m_pShape->getBaseShape().get());
+
+        if (NULL != pPPTShape)
+        {
+            pPPTShape->m_oCustomVML.SetAdjusts(&pPPTShape->m_arAdjustments);
+        }
+
+        for (size_t i = 0; i < lCount; ++i)
+        {
+            SetUpPropertyShape(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
+        }
+
+        if (false == pElement->m_bIsFilled)
+        {
+            pElement->m_oBrush.Type = c_BrushTypeNoFill;
+        }
+        else if (pElement->m_oBrush.Type == c_BrushTypeNotSet &&
+                 (pElement->m_lPlaceholderType == 0 && pElement->m_lPlaceholderID < 0 ))
+        {
+            pElement->m_oBrush.Type = c_BrushTypeSolid;
+        }
+
+        if (NULL != pPPTShape)
+        {
+            pPPTShape->m_oCustomVML.ToCustomShape(pPPTShape, pPPTShape->m_oManager);
+            pPPTShape->ReCalculate();
+        }
+        break;
+    }
     default:
         break;
     }
@@ -295,284 +297,284 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
     switch (pProperty->m_ePID)
     {
     case wzName:
-        {
-            pElement->m_sName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2 - 1);
-        }break;
+    {
+        pElement->m_sName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2 - 1);
+    }break;
     case wzDescription:
-        {
-            pElement->m_sDescription = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2 - 1);
-        }break;
+    {
+        pElement->m_sDescription = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2 - 1);
+    }break;
     case hspMaster:
-        {
-            pElement->m_lLayoutID = (LONG)pProperty->m_lValue;
-        }break;
+    {
+        pElement->m_lLayoutID = (LONG)pProperty->m_lValue;
+    }break;
     case ePropertyId_rotation:
-        {
-            pElement->m_dRotate = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pElement->m_dRotate = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ePropertyId_fFlipH:
-        {
-            BYTE flag1 = (BYTE)pProperty->m_lValue;
-            BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
+    {
+        BYTE flag1 = (BYTE)pProperty->m_lValue;
+        BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
 
-            bool bFlipH = (0x01 == (0x01 & flag1));
-            bool bFlipV = (0x02 == (0x02 & flag1));
+        bool bFlipH = (0x01 == (0x01 & flag1));
+        bool bFlipV = (0x02 == (0x02 & flag1));
 
-            bool bUseFlipH = (0x01 == (0x01 & flag3));
-            bool bUseFlipV = (0x02 == (0x02 & flag3));
+        bool bUseFlipH = (0x01 == (0x01 & flag3));
+        bool bUseFlipV = (0x02 == (0x02 & flag3));
 
-            if (bUseFlipH)
-                pElement->m_bFlipH = bFlipH;
+        if (bUseFlipH)
+            pElement->m_bFlipH = bFlipH;
 
-            if (bUseFlipV)
-                pElement->m_bFlipV = bFlipV;
-        }break;
+        if (bUseFlipV)
+            pElement->m_bFlipV = bFlipV;
+    }break;
     case fillType:
+    {
+        _UINT32 dwType = pProperty->m_lValue;
+        switch(dwType)
         {
-            _UINT32 dwType = pProperty->m_lValue;
-            switch(dwType)
-            {
-                case ODRAW::fillPattern:
-                {
-                    pElement->m_oBrush.Type = c_BrushTypePattern;
-                    //texture + change black to color2, white to color1
-                }break;
-                case ODRAW::fillTexture :
-                case ODRAW::fillPicture :
-                {
-                    pElement->m_oBrush.Type			= c_BrushTypeTexture;
-                    pElement->m_oBrush.TextureMode	= (ODRAW::fillPicture == dwType) ? c_BrushTextureModeStretch : c_BrushTextureModeTile;
-                }break;
-                case ODRAW::fillShadeCenter://1 color
-                case ODRAW::fillShadeShape:
-                {
-                    pElement->m_oBrush.Type = c_BrushTypeCenter;
-                }break;//
-                case ODRAW::fillShadeTitle://2 colors and more
-                case ODRAW::fillShade :
-                case ODRAW::fillShadeScale:
-                {
-                    pElement->m_oBrush.Type = c_BrushTypePathGradient1;
-                }break;
-                case ODRAW::fillBackground:
-                {
-                    pElement->m_oBrush.Type = c_BrushTypeNoFill;
-                }break;
-            }
+        case ODRAW::fillPattern:
+        {
+            pElement->m_oBrush.Type = c_BrushTypePattern;
+            //texture + change black to color2, white to color1
         }break;
+        case ODRAW::fillTexture :
+        case ODRAW::fillPicture :
+        {
+            pElement->m_oBrush.Type			= c_BrushTypeTexture;
+            pElement->m_oBrush.TextureMode	= (ODRAW::fillPicture == dwType) ? c_BrushTextureModeStretch : c_BrushTextureModeTile;
+        }break;
+        case ODRAW::fillShadeCenter://1 color
+        case ODRAW::fillShadeShape:
+        {
+            pElement->m_oBrush.Type = c_BrushTypeCenter;
+        }break;//
+        case ODRAW::fillShadeTitle://2 colors and more
+        case ODRAW::fillShade :
+        case ODRAW::fillShadeScale:
+        {
+            pElement->m_oBrush.Type = c_BrushTypePathGradient1;
+        }break;
+        case ODRAW::fillBackground:
+        {
+            pElement->m_oBrush.Type = c_BrushTypeNoFill;
+        }break;
+        }
+    }break;
     case fillBlip:
-        {
-            int dwOffset = 0 ;
+    {
+        int dwOffset = 0 ;
 
-            if (pProperty->m_bComplex)
+        if (pProperty->m_bComplex)
+        {
+            //inline
+            dwOffset = -1;
+        }
+        else
+        {
+            dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
+        }
+        int nLen	= pElement->m_oBrush.TexturePath.length() - 1;
+        int nIndex	= pElement->m_oBrush.TexturePath.rfind(FILE_SEPARATOR_CHAR);
+        if (nLen != nIndex)
+        {
+            pElement->m_oBrush.TexturePath.erase(nIndex + 1, nLen - nIndex);
+        }
+
+        pElement->m_oBrush.TexturePath = pElement->m_oBrush.TexturePath + pInfo->GetFileNamePicture(dwOffset);
+        if (pElement->m_oBrush.Type == c_BrushTypePattern)
+        {
+            int rgbColor1 = 0xFFFFFF;
+            int rgbColor2 = 0;
+
+            if (pElement->m_oBrush.Color1.m_lSchemeIndex == -1)
             {
-                //inline
-                dwOffset = -1;
+                rgbColor1 = pElement->m_oBrush.Color1.GetLONG_RGB();
             }
             else
             {
-                dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
+                if ((pSlide) && (pSlide->m_arColorScheme.size() > 0))
+                {
+                    rgbColor1 = pSlide->m_arColorScheme[pElement->m_oBrush.Color1.m_lSchemeIndex].GetLONG_RGB();
+                }
+                else if ((pTheme) && (pTheme->m_arColorScheme.size() > 0))
+                {
+                    rgbColor1 = pTheme->m_arColorScheme[pElement->m_oBrush.Color1.m_lSchemeIndex].GetLONG_RGB();
+                }
             }
-            int nLen	= pElement->m_oBrush.TexturePath.length() - 1;
-            int nIndex	= pElement->m_oBrush.TexturePath.rfind(FILE_SEPARATOR_CHAR);
-            if (nLen != nIndex)
+            if (pElement->m_oBrush.Color2.m_lSchemeIndex == -1)
             {
-                pElement->m_oBrush.TexturePath.erase(nIndex + 1, nLen - nIndex);
+                rgbColor2 = pElement->m_oBrush.Color2.GetLONG_RGB();
             }
-
-            pElement->m_oBrush.TexturePath = pElement->m_oBrush.TexturePath + pInfo->GetFileNamePicture(dwOffset);
-            if (pElement->m_oBrush.Type == c_BrushTypePattern)
+            else
             {
-                int rgbColor1 = 0xFFFFFF;
-                int rgbColor2 = 0;
-
-                if (pElement->m_oBrush.Color1.m_lSchemeIndex == -1)
+                if ((pSlide) && (pSlide->m_arColorScheme.size() > 0))
                 {
-                    rgbColor1 = pElement->m_oBrush.Color1.GetLONG_RGB();
+                    rgbColor2 = pSlide->m_arColorScheme[pElement->m_oBrush.Color2.m_lSchemeIndex].GetLONG_RGB();
                 }
-                else
+                else if ((pTheme) && (pTheme->m_arColorScheme.size() > 0))
                 {
-                    if ((pSlide) && (pSlide->m_arColorScheme.size() > 0))
-                    {
-                        rgbColor1 = pSlide->m_arColorScheme[pElement->m_oBrush.Color1.m_lSchemeIndex].GetLONG_RGB();
-                    }
-                    else if ((pTheme) && (pTheme->m_arColorScheme.size() > 0))
-                    {
-                        rgbColor1 = pTheme->m_arColorScheme[pElement->m_oBrush.Color1.m_lSchemeIndex].GetLONG_RGB();
-                    }
+                    rgbColor2 = pTheme->m_arColorScheme[pElement->m_oBrush.Color2.m_lSchemeIndex].GetLONG_RGB();
                 }
-                if (pElement->m_oBrush.Color2.m_lSchemeIndex == -1)
-                {
-                    rgbColor2 = pElement->m_oBrush.Color2.GetLONG_RGB();
-                }
-                else
-                {
-                    if ((pSlide) && (pSlide->m_arColorScheme.size() > 0))
-                    {
-                        rgbColor2 = pSlide->m_arColorScheme[pElement->m_oBrush.Color2.m_lSchemeIndex].GetLONG_RGB();
-                    }
-                    else if ((pTheme) && (pTheme->m_arColorScheme.size() > 0))
-                    {
-                        rgbColor2 = pTheme->m_arColorScheme[pElement->m_oBrush.Color2.m_lSchemeIndex].GetLONG_RGB();
-                    }
-                }
-                ChangeBlack2ColorImage(pElement->m_oBrush.TexturePath, rgbColor2, rgbColor1);
-
-                pElement->m_oBrush.Type			= c_BrushTypeTexture;
-                pElement->m_oBrush.TextureMode	= c_BrushTextureModeTile;
             }
-        }break;
+            ChangeBlack2ColorImage(pElement->m_oBrush.TexturePath, rgbColor2, rgbColor1);
+
+            pElement->m_oBrush.Type			= c_BrushTypeTexture;
+            pElement->m_oBrush.TextureMode	= c_BrushTextureModeTile;
+        }
+    }break;
     case fillColor:
-        {
-            SColorAtom oAtom;
-            oAtom.FromValue(pProperty->m_lValue);
+    {
+        SColorAtom oAtom;
+        oAtom.FromValue(pProperty->m_lValue);
 
-            if(oAtom.bSysIndex)
-                pElement->m_oBrush.Color1 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-            else
-                oAtom.ToColor(&pElement->m_oBrush.Color1);
+        if(oAtom.bSysIndex)
+            pElement->m_oBrush.Color1 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+        else
+            oAtom.ToColor(&pElement->m_oBrush.Color1);
 
-            if (pElement->m_oBrush.Type == c_BrushTypeNotSet )
-                pElement->m_oBrush.Type = c_BrushTypeSolid;
+        if (pElement->m_oBrush.Type == c_BrushTypeNotSet )
+            pElement->m_oBrush.Type = c_BrushTypeSolid;
 
-        }break;
+    }break;
     case fillBackColor:
+    {
+        SColorAtom oAtom;
+        oAtom.FromValue(pProperty->m_lValue);
+
+        if(oAtom.bSysIndex)
+            pElement->m_oBrush.Color2 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+        else
+            oAtom.ToColor(&pElement->m_oBrush.Color2);
+
+        if (pElement->m_bIsBackground && pElement->m_oBrush.Type == c_BrushTypeNotSet )
         {
-            SColorAtom oAtom;
-            oAtom.FromValue(pProperty->m_lValue);
-
-            if(oAtom.bSysIndex)
-                pElement->m_oBrush.Color2 = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-            else
-                oAtom.ToColor(&pElement->m_oBrush.Color2);
-
-            if (pElement->m_bIsBackground && pElement->m_oBrush.Type == c_BrushTypeNotSet )
-            {
-                pElement->m_oBrush.Type = c_BrushTypeSolid;
-            }
-        }break;
+            pElement->m_oBrush.Type = c_BrushTypeSolid;
+        }
+    }break;
     case fillOpacity:
-        {
-            pElement->m_oBrush.Alpha1 = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
-        }break;
+    {
+        pElement->m_oBrush.Alpha1 = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
+    }break;
     case fillBackOpacity:
-        {
-            pElement->m_oBrush.Alpha2 = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
-        }break;
+    {
+        pElement->m_oBrush.Alpha2 = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
+    }break;
     case fillAngle:
-        {
-            pElement->m_oBrush.LinearAngle = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pElement->m_oBrush.LinearAngle = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case fillRectLeft:
-        {
-            pElement->m_oBrush.Rect.X	= pProperty->m_lValue;
-            pElement->m_oBrush.Rectable = true;
-        }break;
+    {
+        pElement->m_oBrush.Rect.X	= pProperty->m_lValue;
+        pElement->m_oBrush.Rectable = true;
+    }break;
     case fillRectRight:
-        {
-            pElement->m_oBrush.Rect.Width	= pProperty->m_lValue - pElement->m_oBrush.Rect.X;
-            pElement->m_oBrush.Rectable		= true;
-        }break;
+    {
+        pElement->m_oBrush.Rect.Width	= pProperty->m_lValue - pElement->m_oBrush.Rect.X;
+        pElement->m_oBrush.Rectable		= true;
+    }break;
     case fillRectTop:
-        {
-            pElement->m_oBrush.Rect.Y	= pProperty->m_lValue;
-            pElement->m_oBrush.Rectable = true;
-        }break;
+    {
+        pElement->m_oBrush.Rect.Y	= pProperty->m_lValue;
+        pElement->m_oBrush.Rectable = true;
+    }break;
     case fillRectBottom:
-        {
-            pElement->m_oBrush.Rect.Height	= pProperty->m_lValue - pElement->m_oBrush.Rect.Y;
-            pElement->m_oBrush.Rectable		= true;
-        }break;
+    {
+        pElement->m_oBrush.Rect.Height	= pProperty->m_lValue - pElement->m_oBrush.Rect.Y;
+        pElement->m_oBrush.Rectable		= true;
+    }break;
     case fillBackground:
-        {
-        }break;
+    {
+    }break;
     case fillShadeType:
-        {
-            bool bShadeNone		= GETBIT(pProperty->m_lValue, 31);
-            bool bShadeGamma	= GETBIT(pProperty->m_lValue, 30);
-            bool bShadeSigma	= GETBIT(pProperty->m_lValue, 29);
-            bool bShadeBand		= GETBIT(pProperty->m_lValue, 28);
-            bool bShadeOneColor	= GETBIT(pProperty->m_lValue, 27);
+    {
+        bool bShadeNone		= GETBIT(pProperty->m_lValue, 31);
+        bool bShadeGamma	= GETBIT(pProperty->m_lValue, 30);
+        bool bShadeSigma	= GETBIT(pProperty->m_lValue, 29);
+        bool bShadeBand		= GETBIT(pProperty->m_lValue, 28);
+        bool bShadeOneColor	= GETBIT(pProperty->m_lValue, 27);
 
-        }break;
+    }break;
     case fillFocus://relative position of the last color in the shaded fill
-        {
-        }break;
+    {
+    }break;
     case fillShadePreset:
-        {//value (int) from 0x00000088 through 0x0000009F or complex
-        }break;
+    {//value (int) from 0x00000088 through 0x0000009F or complex
+    }break;
     case fillShadeColors:
+    {
+        unsigned short nElems = pProperty->m_lValue/8;
+        _INT32* pCompl = (_INT32*)pProperty->m_pOptions;
+
+        while(nElems--)
         {
-            unsigned short nElems = pProperty->m_lValue/8;
-            _INT32* pCompl = (_INT32*)pProperty->m_pOptions;
+            CColor color;
+            SColorAtom oAtom;
+            oAtom.FromValue(*pCompl);	pCompl++;
+            oAtom.ToColor(&color);
 
-            while(nElems--)
-            {
-                CColor color;
-                SColorAtom oAtom;
-                oAtom.FromValue(*pCompl);	pCompl++;
-                oAtom.ToColor(&color);
-
-                _UINT32 dwPosition = *pCompl; pCompl++;
-                pElement->m_oBrush.ColorsPosition.push_back(std::pair<CColor, double>(color, 100. * FIXED_POINT_unsigned(dwPosition)));
-            }
-        }break;
+            _UINT32 dwPosition = *pCompl; pCompl++;
+            pElement->m_oBrush.ColorsPosition.push_back(std::pair<CColor, double>(color, 100. * FIXED_POINT_unsigned(dwPosition)));
+        }
+    }break;
     case fillStyleBooleanProperties:
-        {
-            BYTE flag1 = (BYTE)(pProperty->m_lValue);
-            BYTE flag2 = (BYTE)(pProperty->m_lValue >> 16);
+    {
+        BYTE flag1 = (BYTE)(pProperty->m_lValue);
+        BYTE flag2 = (BYTE)(pProperty->m_lValue >> 16);
 
-            bool bNoFillHitTest			= (0x01 == (0x01 & flag1));
-            bool bFillUseRect			= (0x02 == (0x02 & flag1));
-            bool bFillShape				= (0x04 == (0x04 & flag1));
-            bool bHitTestFill			= (0x08 == (0x08 & flag1));
-            bool bFilled				= (0x10 == (0x10 & flag1));
-            bool bUseShapeAnchor		= (0x20 == (0x20 & flag1));
-            bool bRecolorFillAsPictures = (0x40 == (0x40 & flag1));
+        bool bNoFillHitTest			= (0x01 == (0x01 & flag1));
+        bool bFillUseRect			= (0x02 == (0x02 & flag1));
+        bool bFillShape				= (0x04 == (0x04 & flag1));
+        bool bHitTestFill			= (0x08 == (0x08 & flag1));
+        bool bFilled				= (0x10 == (0x10 & flag1));
+        bool bUseShapeAnchor		= (0x20 == (0x20 & flag1));
+        bool bRecolorFillAsPictures = (0x40 == (0x40 & flag1));
 
-            bool bUsebNoFillHitTest			= (0x01 == (0x01 & flag2));
-            bool bUsebFillUseRect			= (0x02 == (0x02 & flag2));
-            bool bUsebFillShape				= (0x04 == (0x04 & flag2));
-            bool bUsebHitTestFill			= (0x08 == (0x08 & flag2));
-            bool bUsebFilled				= (0x10 == (0x10 & flag2));
-            bool bUsebUseShapeAnchor		= (0x20 == (0x20 & flag2));
-            bool bUsebRecolorFillAsPictures = (0x40 == (0x40 & flag2));
+        bool bUsebNoFillHitTest			= (0x01 == (0x01 & flag2));
+        bool bUsebFillUseRect			= (0x02 == (0x02 & flag2));
+        bool bUsebFillShape				= (0x04 == (0x04 & flag2));
+        bool bUsebHitTestFill			= (0x08 == (0x08 & flag2));
+        bool bUsebFilled				= (0x10 == (0x10 & flag2));
+        bool bUsebUseShapeAnchor		= (0x20 == (0x20 & flag2));
+        bool bUsebRecolorFillAsPictures = (0x40 == (0x40 & flag2));
 
-            if (bUsebFilled)
-                pElement->m_bIsFilled = bFilled;
+        if (bUsebFilled)
+            pElement->m_bIsFilled = bFilled;
 
-            break;
-        }
+        break;
+    }
     case ODRAW::geometryBooleanProperties:
-        {
-            BYTE flag1 = (BYTE)(pProperty->m_lValue);
-            BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
-            BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
-            BYTE flag4 = (BYTE)(pProperty->m_lValue >> 24);
+    {
+        BYTE flag1 = (BYTE)(pProperty->m_lValue);
+        BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
+        BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
+        BYTE flag4 = (BYTE)(pProperty->m_lValue >> 24);
 
-            bool bFillOk					= (0x01 == (0x01 & flag1));
-            bool bFillShadeShapeOk			= (0x02 == (0x02 & flag1));
-            bool bGTextOk					= (0x04 == (0x04 & flag1));
-            bool bLineOk					= (0x08 == (0x08 & flag1));
-            bool b3DOk						= (0x10 == (0x10 & flag1));
-            bool bShadowOk					= (0x20 == (0x20 & flag1));
+        bool bFillOk					= (0x01 == (0x01 & flag1));
+        bool bFillShadeShapeOk			= (0x02 == (0x02 & flag1));
+        bool bGTextOk					= (0x04 == (0x04 & flag1));
+        bool bLineOk					= (0x08 == (0x08 & flag1));
+        bool b3DOk						= (0x10 == (0x10 & flag1));
+        bool bShadowOk					= (0x20 == (0x20 & flag1));
 
-            bool bUseFillOk					= (0x01 == (0x01 & flag3));
-            bool bUseFillShadeShapeOk		= (0x02 == (0x02 & flag3));
-            bool bUseGTextOk				= (0x04 == (0x04 & flag3));
-            bool bUseLineOk					= (0x08 == (0x08 & flag3));
-            bool bUse3DOk					= (0x10 == (0x10 & flag3));
-            bool bUseShadowOk				= (0x20 == (0x20 & flag3));
+        bool bUseFillOk					= (0x01 == (0x01 & flag3));
+        bool bUseFillShadeShapeOk		= (0x02 == (0x02 & flag3));
+        bool bUseGTextOk				= (0x04 == (0x04 & flag3));
+        bool bUseLineOk					= (0x08 == (0x08 & flag3));
+        bool bUse3DOk					= (0x10 == (0x10 & flag3));
+        bool bUseShadowOk				= (0x20 == (0x20 & flag3));
 
-            //if (bUseLineOk)
-            //	pElement->m_bLine = bLineOk;//?? todooo проверить - не сраюатывает ! 1 (82).ppt
+        //if (bUseLineOk)
+        //	pElement->m_bLine = bLineOk;//?? todooo проверить - не сраюатывает ! 1 (82).ppt
 
-            if (bUseFillOk)
-                pElement->m_bIsFilled = bFillOk;
+        if (bUseFillOk)
+            pElement->m_bIsFilled = bFillOk;
 
-            break;
-        }
-// line --------------------------------------------------------
+        break;
+    }
+        // line --------------------------------------------------------
     case lineStyleBooleanProperties: //Line Style Boolean Properties
     {
         bool bUsefLineOpaqueBackColor = GETBIT(pProperty->m_lValue, 25);
@@ -694,8 +696,8 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
 
     }break;
     case shadowWeight:
-        {
-        }break;
+    {
+    }break;
     case shadowOpacity:
     {
         pElement->m_oShadow.Alpha = (BYTE)(std::min)(255, (int)CDirectory::NormFixedPoint(pProperty->m_lValue, 255));
@@ -705,114 +707,120 @@ void CPPTElement::SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo
         //оттенок двойной тени
     }break;
     case shadowOffsetX:
-        {//signed
-            pElement->m_oShadow.DistanceX = (_INT32)pProperty->m_lValue;
-        }break;
+    {//signed
+        pElement->m_oShadow.DistanceX = (_INT32)pProperty->m_lValue;
+    }break;
     case shadowOffsetY:
-        {//signed
-            pElement->m_oShadow.DistanceY = (_INT32)pProperty->m_lValue;
-        }break;
+    {//signed
+        pElement->m_oShadow.DistanceY = (_INT32)pProperty->m_lValue;
+    }break;
     case shadowScaleXToX:
-        {
-            pElement->m_oShadow.ScaleXToX = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pElement->m_oShadow.ScaleXToX = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case shadowScaleYToX:
-        {
-            pElement->m_oShadow.ScaleYToX = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pElement->m_oShadow.ScaleYToX = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case shadowScaleXToY:
-        {
-            pElement->m_oShadow.ScaleXToY = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pElement->m_oShadow.ScaleXToY = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case shadowScaleYToY:
-        {
-            pElement->m_oShadow.ScaleYToY = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pElement->m_oShadow.ScaleYToY = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case shadowPerspectiveX:
-        {
-            pElement->m_oShadow.PerspectiveX = pProperty->m_lValue;
-        }break;
+    {
+        pElement->m_oShadow.PerspectiveX = pProperty->m_lValue;
+    }break;
     case shadowPerspectiveY:
-        {
-            pElement->m_oShadow.PerspectiveY = pProperty->m_lValue;
-        }break;
+    {
+        pElement->m_oShadow.PerspectiveY = pProperty->m_lValue;
+    }break;
     case shadowStyleBooleanProperties:
+    {
+        bool fshadowObscured		= GETBIT(pProperty->m_lValue, 0);
+        bool fShadow				= GETBIT(pProperty->m_lValue, 1);
+        bool fUsefshadowObscured	= GETBIT(pProperty->m_lValue, 16);
+        bool fUsefShadow			= GETBIT(pProperty->m_lValue, 17);
+
+        if (fUsefShadow)
+            pElement->m_oShadow.Visible = fShadow;
+
+        if (!fUsefShadow && fUsefshadowObscured)
         {
-            bool fshadowObscured		= GETBIT(pProperty->m_lValue, 0);
-            bool fShadow				= GETBIT(pProperty->m_lValue, 1);
-            bool fUsefshadowObscured	= GETBIT(pProperty->m_lValue, 16);
-            bool fUsefShadow			= GETBIT(pProperty->m_lValue, 17);
-
-            if (fUsefShadow)
-                pElement->m_oShadow.Visible = fShadow;
-
-            if (!fUsefShadow && fUsefshadowObscured)
-            {
-                //контурная
-                pElement->m_oShadow.Visible = fshadowObscured;
-            }
-        }break;
+            //контурная
+            pElement->m_oShadow.Visible = fshadowObscured;
+        }
+    }break;
     case shapeBoolean:
-        {
-            bool fUsefPolicyLabel	= GETBIT(pProperty->m_lValue, 25);
-            bool fUsefPolicyBarcode	= GETBIT(pProperty->m_lValue, 24);
-            bool fUsefFlipHOverride	= GETBIT(pProperty->m_lValue, 23);
-            bool fUsefFlipVOverride	= GETBIT(pProperty->m_lValue, 22);
-            bool fUsefOleIcon		= GETBIT(pProperty->m_lValue, 21);
-            bool fUsefPreferRelativeResize	= GETBIT(pProperty->m_lValue, 20);
-            bool fUsefLockShapeType		= GETBIT(pProperty->m_lValue, 19);
-            bool fUsefInitiator		= GETBIT(pProperty->m_lValue, 18);
-            bool fUsefBackground	= GETBIT(pProperty->m_lValue, 16);
+    {
+        bool fUsefPolicyLabel	= GETBIT(pProperty->m_lValue, 25);
+        bool fUsefPolicyBarcode	= GETBIT(pProperty->m_lValue, 24);
+        bool fUsefFlipHOverride	= GETBIT(pProperty->m_lValue, 23);
+        bool fUsefFlipVOverride	= GETBIT(pProperty->m_lValue, 22);
+        bool fUsefOleIcon		= GETBIT(pProperty->m_lValue, 21);
+        bool fUsefPreferRelativeResize	= GETBIT(pProperty->m_lValue, 20);
+        bool fUsefLockShapeType		= GETBIT(pProperty->m_lValue, 19);
+        bool fUsefInitiator		= GETBIT(pProperty->m_lValue, 18);
+        bool fUsefBackground	= GETBIT(pProperty->m_lValue, 16);
 
-            bool fPolicyLabel		= fUsefPolicyLabel		? GETBIT(pProperty->m_lValue, 9) : false;
-            bool fPolicyBarcode		= fUsefPolicyBarcode	? GETBIT(pProperty->m_lValue, 8) : false;
-            bool fFlipHOverride		= fUsefFlipHOverride	? GETBIT(pProperty->m_lValue, 7) : false;
-            bool fFlipVOverride		= fUsefFlipVOverride	? GETBIT(pProperty->m_lValue, 6) : false;
-            bool fOleIcon			= fUsefOleIcon			? GETBIT(pProperty->m_lValue, 5) : false;
-            bool fPreferRelativeResize = fUsefPreferRelativeResize ? GETBIT(pProperty->m_lValue, 4) : false;
-            bool fLockShapeType		= fUsefLockShapeType	? GETBIT(pProperty->m_lValue, 3) : false;
-            bool fInitiator			= fUsefInitiator		? GETBIT(pProperty->m_lValue, 2) : false;
-            bool fBackground		= fUsefBackground		? GETBIT(pProperty->m_lValue, 0) : false;
-        }break;
+        bool fPolicyLabel		= fUsefPolicyLabel		? GETBIT(pProperty->m_lValue, 9) : false;
+        bool fPolicyBarcode		= fUsefPolicyBarcode	? GETBIT(pProperty->m_lValue, 8) : false;
+        bool fFlipHOverride		= fUsefFlipHOverride	? GETBIT(pProperty->m_lValue, 7) : false;
+        bool fFlipVOverride		= fUsefFlipVOverride	? GETBIT(pProperty->m_lValue, 6) : false;
+        bool fOleIcon			= fUsefOleIcon			? GETBIT(pProperty->m_lValue, 5) : false;
+        bool fPreferRelativeResize = fUsefPreferRelativeResize ? GETBIT(pProperty->m_lValue, 4) : false;
+        bool fLockShapeType		= fUsefLockShapeType	? GETBIT(pProperty->m_lValue, 3) : false;
+        bool fInitiator			= fUsefInitiator		? GETBIT(pProperty->m_lValue, 2) : false;
+        bool fBackground		= fUsefBackground		? GETBIT(pProperty->m_lValue, 0) : false;
+    }break;
     case groupShapeBooleanProperties:
-        {
-            bool fUsefLayoutInCell		= GETBIT(pProperty->m_lValue, 31);
-            bool fUsefIsBullet			= GETBIT(pProperty->m_lValue, 30);
-            bool fUsefStandardHR		= GETBIT(pProperty->m_lValue, 29);
-            bool fUsefNoshadeHR			= GETBIT(pProperty->m_lValue, 28);
-            bool fUsefHorizRule			= GETBIT(pProperty->m_lValue, 27);
-            bool fUsefUserDrawn			= GETBIT(pProperty->m_lValue, 26);
-            bool fUsefAllowOverlap		= GETBIT(pProperty->m_lValue, 25);
-            bool fUsefReallyHidden		= GETBIT(pProperty->m_lValue, 24);
-            bool fUsefScriptAnchor		= GETBIT(pProperty->m_lValue, 23);
-            bool fUsefEditedWrap		= GETBIT(pProperty->m_lValue, 22);
-            bool fUsefBehindDocument	= GETBIT(pProperty->m_lValue, 21);
-            bool fUsefOnDblClickNotify	= GETBIT(pProperty->m_lValue, 20);
-            bool fUsefIsButton			= GETBIT(pProperty->m_lValue, 19);
-            bool fUsefOneD				= GETBIT(pProperty->m_lValue, 18);
-            bool fUsefHidden			= GETBIT(pProperty->m_lValue, 17);
-            bool fUsefPrint				= GETBIT(pProperty->m_lValue, 16);
+    {
+        bool fUsefLayoutInCell		= GETBIT(pProperty->m_lValue, 31);
+        bool fUsefIsBullet			= GETBIT(pProperty->m_lValue, 30);
+        bool fUsefStandardHR		= GETBIT(pProperty->m_lValue, 29);
+        bool fUsefNoshadeHR			= GETBIT(pProperty->m_lValue, 28);
+        bool fUsefHorizRule			= GETBIT(pProperty->m_lValue, 27);
+        bool fUsefUserDrawn			= GETBIT(pProperty->m_lValue, 26);
+        bool fUsefAllowOverlap		= GETBIT(pProperty->m_lValue, 25);
+        bool fUsefReallyHidden		= GETBIT(pProperty->m_lValue, 24);
+        bool fUsefScriptAnchor		= GETBIT(pProperty->m_lValue, 23);
+        bool fUsefEditedWrap		= GETBIT(pProperty->m_lValue, 22);
+        bool fUsefBehindDocument	= GETBIT(pProperty->m_lValue, 21);
+        bool fUsefOnDblClickNotify	= GETBIT(pProperty->m_lValue, 20);
+        bool fUsefIsButton			= GETBIT(pProperty->m_lValue, 19);
+        bool fUsefOneD				= GETBIT(pProperty->m_lValue, 18);
+        bool fUsefHidden			= GETBIT(pProperty->m_lValue, 17);
+        bool fUsefPrint				= GETBIT(pProperty->m_lValue, 16);
 
-            bool fLayoutInCell		= fUsefLayoutInCell	? GETBIT(pProperty->m_lValue, 15)	: true;
-            bool fIsBullet			= fUsefIsBullet		? GETBIT(pProperty->m_lValue, 14)	: false;
-            bool fStandardHR		= fUsefStandardHR	? GETBIT(pProperty->m_lValue, 13)	: false;
-            bool fNoshadeHR			= fUsefNoshadeHR	? GETBIT(pProperty->m_lValue, 12)	: false;
-            bool fHorizRule			= fUsefHorizRule	? GETBIT(pProperty->m_lValue, 11)	: false;
-            bool fUserDrawn			= fUsefUserDrawn	? GETBIT(pProperty->m_lValue, 10)	: false;
-            bool fAllowOverlap		= fUsefAllowOverlap	? GETBIT(pProperty->m_lValue, 9)	: true;
-            bool fReallyHidden 		= fUsefReallyHidden		? GETBIT(pProperty->m_lValue, 8) : false;
-            bool fScriptAnchor		= fUsefScriptAnchor		? GETBIT(pProperty->m_lValue, 7) : false;
-            bool fEditedWrap		= fUsefEditedWrap		? GETBIT(pProperty->m_lValue, 6) : false;
-            bool fBehindDocument	= fUsefBehindDocument	? GETBIT(pProperty->m_lValue, 5) : false;
-            bool fOnDblClickNotify	= fUsefOnDblClickNotify ? GETBIT(pProperty->m_lValue, 4) : false;
-            bool fIsButton			= fUsefIsButton		? GETBIT(pProperty->m_lValue, 3)	: false;
-            bool fOneD				= fUsefOneD			? GETBIT(pProperty->m_lValue, 2)	: false;
-            bool fHidden			= fUsefHidden		? GETBIT(pProperty->m_lValue, 1)	: false;
-            bool fPrint				= fUsefPrint		? GETBIT(pProperty->m_lValue, 0)	: true;
+        bool fLayoutInCell		= fUsefLayoutInCell	? GETBIT(pProperty->m_lValue, 15)	: true;
+        bool fIsBullet			= fUsefIsBullet		? GETBIT(pProperty->m_lValue, 14)	: false;
+        bool fStandardHR		= fUsefStandardHR	? GETBIT(pProperty->m_lValue, 13)	: false;
+        bool fNoshadeHR			= fUsefNoshadeHR	? GETBIT(pProperty->m_lValue, 12)	: false;
+        bool fHorizRule			= fUsefHorizRule	? GETBIT(pProperty->m_lValue, 11)	: false;
+        bool fUserDrawn			= fUsefUserDrawn	? GETBIT(pProperty->m_lValue, 10)	: false;
+        bool fAllowOverlap		= fUsefAllowOverlap	? GETBIT(pProperty->m_lValue, 9)	: true;
+        bool fReallyHidden 		= fUsefReallyHidden		? GETBIT(pProperty->m_lValue, 8) : false;
+        bool fScriptAnchor		= fUsefScriptAnchor		? GETBIT(pProperty->m_lValue, 7) : false;
+        bool fEditedWrap		= fUsefEditedWrap		? GETBIT(pProperty->m_lValue, 6) : false;
+        bool fBehindDocument	= fUsefBehindDocument	? GETBIT(pProperty->m_lValue, 5) : false;
+        bool fOnDblClickNotify	= fUsefOnDblClickNotify ? GETBIT(pProperty->m_lValue, 4) : false;
+        bool fIsButton			= fUsefIsButton		? GETBIT(pProperty->m_lValue, 3)	: false;
+        bool fOneD				= fUsefOneD			? GETBIT(pProperty->m_lValue, 2)	: false;
+        bool fHidden			= fUsefHidden		? GETBIT(pProperty->m_lValue, 1)	: false;
+        bool fPrint				= fUsefPrint		? GETBIT(pProperty->m_lValue, 0)	: true;
 
-            pElement->m_bHidden = fHidden || fIsBullet;
-                            //presentation_ticio_20100610.ppt
-        }break;
+        pElement->m_bHidden = fHidden || fIsBullet;
+        //presentation_ticio_20100610.ppt
+    }break;
+    case tableProperties:
+    case tableRowProperties:
+    {
+        pElement->m_etType = etTable;
+        break;
+    }
     default:
         break;
     }
@@ -835,46 +843,46 @@ void CPPTElement::SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlid
     switch(pProperty->m_ePID)
     {
     case pib:
+    {
+        int dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
+        if (dwOffset >=0)
         {
-            int dwOffset = pInfo->GetIndexPicture(pProperty->m_lValue);
-            if (dwOffset >=0)
-            {
-                image_element->m_strImageFileName	+=  pInfo->GetFileNamePicture(dwOffset);
-                image_element->m_bImagePresent		= true;
-            }
-        }break;
+            image_element->m_strImageFileName	+=  pInfo->GetFileNamePicture(dwOffset);
+            image_element->m_bImagePresent		= true;
+        }
+    }break;
     case pictureId://OLE identifier of the picture.
-        {
-            image_element->m_bOLE	= true;
-        }break;
+    {
+        image_element->m_bOLE	= true;
+    }break;
     case pibName:
-        {
-            image_element->m_sImageName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2-1);
-            // TextMining05.ppt, слайд 20  - некорректное имя ( - todooo потом подчистить его
-        }break;
+    {
+        image_element->m_sImageName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2-1);
+        // TextMining05.ppt, слайд 20  - некорректное имя ( - todooo потом подчистить его
+    }break;
     case cropFromTop:
-        {
-            image_element->m_lcropFromTop = (_INT32)pProperty->m_lValue;
-            image_element->m_bCropEnabled = true;
-        }break;
+    {
+        image_element->m_lcropFromTop = (_INT32)pProperty->m_lValue;
+        image_element->m_bCropEnabled = true;
+    }break;
     case cropFromBottom:
-        {
-            image_element->m_lcropFromBottom = (_INT32)pProperty->m_lValue;
-            image_element->m_bCropEnabled = true;
-        }break;
+    {
+        image_element->m_lcropFromBottom = (_INT32)pProperty->m_lValue;
+        image_element->m_bCropEnabled = true;
+    }break;
     case cropFromLeft:
-        {
-            image_element->m_lcropFromLeft = (_INT32)pProperty->m_lValue;
-            image_element->m_bCropEnabled = true;
-        }break;
+    {
+        image_element->m_lcropFromLeft = (_INT32)pProperty->m_lValue;
+        image_element->m_bCropEnabled = true;
+    }break;
     case cropFromRight:
-        {
-            image_element->m_lcropFromRight = (_INT32)pProperty->m_lValue;
-            image_element->m_bCropEnabled = true;
-        }break;
+    {
+        image_element->m_lcropFromRight = (_INT32)pProperty->m_lValue;
+        image_element->m_bCropEnabled = true;
+    }break;
     case pibFlags:
-        {
-        }break;
+    {
+    }break;
     }
 }
 void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
@@ -1000,491 +1008,491 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
     case ODRAW::adjust8Value:
     case ODRAW::adjust9Value:
     case ODRAW::adjust10Value:
+    {
+        LONG lIndexAdj = pProperty->m_ePID - ODRAW::adjustValue;
+        if (lIndexAdj >= 0 && lIndexAdj < (LONG)pShape->m_arAdjustments.size())
         {
-            LONG lIndexAdj = pProperty->m_ePID - ODRAW::adjustValue;
-            if (lIndexAdj >= 0 && lIndexAdj < (LONG)pShape->m_arAdjustments.size())
-            {
-                pShape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
-            }
-            else
-            {
-                pShape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
-            }
-        }break;
-//--------------------------------------------------------------------------------------------------------------------
+            pShape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
+        }
+        else
+        {
+            pShape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
+        }
+    }break;
+        //--------------------------------------------------------------------------------------------------------------------
     case lTxid:
-        {
-        }break;
+    {
+    }break;
     case ODRAW::dxTextLeft:
-        {
-            pParentShape->m_dTextMarginX = pProperty->m_lValue;
-        }break;
+    {
+        pParentShape->m_dTextMarginX = pProperty->m_lValue;
+    }break;
     case ODRAW::dxTextRight:
-        {
-            pParentShape->m_dTextMarginRight = pProperty->m_lValue;
-        }break;
+    {
+        pParentShape->m_dTextMarginRight = pProperty->m_lValue;
+    }break;
     case ODRAW::dyTextTop:
-        {
-            pParentShape->m_dTextMarginY = pProperty->m_lValue;
-        }break;
+    {
+        pParentShape->m_dTextMarginY = pProperty->m_lValue;
+    }break;
     case ODRAW::dyTextBottom:
-        {
-            pParentShape->m_dTextMarginBottom = pProperty->m_lValue;
-        }break;
+    {
+        pParentShape->m_dTextMarginBottom = pProperty->m_lValue;
+    }break;
     case ODRAW::WrapText:
-        {
-            pParentShape->m_oText.m_lWrapMode = (LONG)pProperty->m_lValue;
-        }break;
+    {
+        pParentShape->m_oText.m_lWrapMode = (LONG)pProperty->m_lValue;
+    }break;
     case ODRAW::gtextUNICODE://word art text
+    {
+        if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
         {
-            if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
+            std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2-1);
+
+            if (!str.empty() && pParentShape->m_oText.m_arParagraphs.empty())
             {
-                std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2-1);
+                int length = str.length();
 
-                if (!str.empty() && pParentShape->m_oText.m_arParagraphs.empty())
+                for (int i = length-1; i>=0; i--)
                 {
-                    int length = str.length();
-
-                    for (int i = length-1; i>=0; i--)
-                    {
-                        if (str.at(i) > 13 ) break;
-                        length--;
-                    }
-                    PPT_FORMAT::CParagraph p;
-                    PPT_FORMAT::CSpan s;
-                    s.m_strText = str.substr(0,length);
-                    p.m_arSpans.push_back(s);
-                    pParentShape->m_oText.m_arParagraphs.push_back(p);
+                    if (str.at(i) > 13 ) break;
+                    length--;
                 }
+                PPT_FORMAT::CParagraph p;
+                PPT_FORMAT::CSpan s;
+                s.m_strText = str.substr(0,length);
+                p.m_arSpans.push_back(s);
+                pParentShape->m_oText.m_arParagraphs.push_back(p);
             }
-        }break;
+        }
+    }break;
     case ODRAW::gtextFont:
+    {
+        if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
         {
-            if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
-            {
-                std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2-1);
-                pParentShape->m_oText.m_oAttributes.m_oFont.Name = str;
-            }
-        }break;
+            std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2-1);
+            pParentShape->m_oText.m_oAttributes.m_oFont.Name = str;
+        }
+    }break;
     case ODRAW::gtextSize:
-        {
-            pParentShape->m_oText.m_oAttributes.m_oFont.Size = (INT)((pProperty->m_lValue >> 16) & 0x0000FFFF);
-            break;
-        }
+    {
+        pParentShape->m_oText.m_oAttributes.m_oFont.Size = (INT)((pProperty->m_lValue >> 16) & 0x0000FFFF);
+        break;
+    }
     case ODRAW::anchorText:
+    {
+        switch (pProperty->m_lValue)
         {
-            switch (pProperty->m_lValue)
-            {
-            case ODRAW::anchorTop:
-            case ODRAW::anchorTopBaseline:
-                {
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 0;
-                    break;
-                }
-            case ODRAW::anchorMiddle:
-                {
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 1;
-                    break;
-                }
-            case ODRAW::anchorBottom:
-            case ODRAW::anchorBottomBaseline:
-                {
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 2;
-                    break;
-                }
-            case ODRAW::anchorTopCentered:
-            case ODRAW::anchorTopCenteredBaseline:
-                {
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 0;
-                    break;
-                }
-            case ODRAW::anchorMiddleCentered:
-                {
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 1;
-                    break;
-                }
-            case ODRAW::anchorBottomCentered:
-            case ODRAW::anchorBottomCenteredBaseline:
-                {
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 2;
-                    break;
-                }
-            default:
-                {
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = -1; // not set
-                    break;
-                }
-            };
+        case ODRAW::anchorTop:
+        case ODRAW::anchorTopBaseline:
+        {
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 0;
             break;
         }
+        case ODRAW::anchorMiddle:
+        {
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 1;
+            break;
+        }
+        case ODRAW::anchorBottom:
+        case ODRAW::anchorBottomBaseline:
+        {
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 2;
+            break;
+        }
+        case ODRAW::anchorTopCentered:
+        case ODRAW::anchorTopCenteredBaseline:
+        {
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 0;
+            break;
+        }
+        case ODRAW::anchorMiddleCentered:
+        {
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 1;
+            break;
+        }
+        case ODRAW::anchorBottomCentered:
+        case ODRAW::anchorBottomCenteredBaseline:
+        {
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 2;
+            break;
+        }
+        default:
+        {
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = -1; // not set
+            break;
+        }
+        };
+        break;
+    }
     case ODRAW::gtextAlign:
+    {
+        switch (pProperty->m_lValue)
         {
-            switch (pProperty->m_lValue)
-            {
-            case ODRAW::alignTextLeft:
-                {
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;
-                }break;
-            case ODRAW::alignTextCenter:
-                {
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-                }break;
-            case ODRAW::alignTextRight:
-                {
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 2;
-                }break;
-            default:
-                {
-                    pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-                }break;
-            };
+        case ODRAW::alignTextLeft:
+        {
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 0;
+        }break;
+        case ODRAW::alignTextCenter:
+        {
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
+        }break;
+        case ODRAW::alignTextRight:
+        {
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 2;
+        }break;
+        default:
+        {
+            pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
+        }break;
+        };
+        break;
+    }
+    case ODRAW::geometryTextBooleanProperties:
+    {
+        // вот здесь - нужно единицы перевести в пикселы
+        BYTE flag1 = (BYTE)(pProperty->m_lValue);
+        BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
+        BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
+        BYTE flag4 = (BYTE)(pProperty->m_lValue >> 24);
+
+        bool bStrikethrought			= (0x01 == (0x01 & flag1));
+        bool bSmallCaps					= (0x02 == (0x02 & flag1));
+        bool bShadow					= (0x04 == (0x04 & flag1));
+        bool bUnderline					= (0x08 == (0x08 & flag1));
+        bool bItalic					= (0x10 == (0x10 & flag1));
+        bool bBold						= (0x20 == (0x20 & flag1));
+
+        bool bUseStrikethrought			= (0x01 == (0x01 & flag3));
+        bool bUseSmallCaps				= (0x02 == (0x02 & flag3));
+        bool bUseShadow					= (0x04 == (0x04 & flag3));
+        bool bUseUnderline				= (0x08 == (0x08 & flag3));
+        bool bUseItalic					= (0x10 == (0x10 & flag3));
+        bool bUseBold					= (0x20 == (0x20 & flag3));
+
+        bool bVertical					= (0x20 == (0x20 & flag2));
+        bool bUseVertical				= (0x20 == (0x20 & flag4));
+
+        if (bUseStrikethrought)
+        {
+            pParentShape->m_oText.m_oAttributes.m_oFont.Strikeout = (BYTE)bStrikethrought;
+        }
+        if (bUseShadow)
+        {
+            pParentShape->m_oText.m_oAttributes.m_oTextShadow.Visible = true;
+        }
+        if (bUseUnderline)
+        {
+            pParentShape->m_oText.m_oAttributes.m_oFont.Underline = (BYTE)bUnderline;
+        }
+        if (bUseItalic)
+        {
+            pParentShape->m_oText.m_oAttributes.m_oFont.Italic = bItalic;
+        }
+        if (bUseBold)
+        {
+            pParentShape->m_oText.m_oAttributes.m_oFont.Bold = bBold;
+        }
+        if (bUseVertical)
+        {
+            pParentShape->m_oText.m_bVertical = (true == bVertical) ? true : false;
+        }
+    }break;
+    case ODRAW::cdirFont:
+    {
+        switch (pProperty->m_lValue)
+        {
+        case 1:
+            pParentShape->m_oText.m_bVertical = true;
+            break;
+        case 2:
+            pParentShape->m_oText.m_oAttributes.m_dTextRotate = 180;
+            break;
+        case 3:
+            pParentShape->m_oText.m_bVertical = true;
+            pParentShape->m_oText.m_oAttributes.m_dTextRotate = 180;
             break;
         }
-    case ODRAW::geometryTextBooleanProperties:
-        {
-            // вот здесь - нужно единицы перевести в пикселы
-            BYTE flag1 = (BYTE)(pProperty->m_lValue);
-            BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
-            BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
-            BYTE flag4 = (BYTE)(pProperty->m_lValue >> 24);
-
-            bool bStrikethrought			= (0x01 == (0x01 & flag1));
-            bool bSmallCaps					= (0x02 == (0x02 & flag1));
-            bool bShadow					= (0x04 == (0x04 & flag1));
-            bool bUnderline					= (0x08 == (0x08 & flag1));
-            bool bItalic					= (0x10 == (0x10 & flag1));
-            bool bBold						= (0x20 == (0x20 & flag1));
-
-            bool bUseStrikethrought			= (0x01 == (0x01 & flag3));
-            bool bUseSmallCaps				= (0x02 == (0x02 & flag3));
-            bool bUseShadow					= (0x04 == (0x04 & flag3));
-            bool bUseUnderline				= (0x08 == (0x08 & flag3));
-            bool bUseItalic					= (0x10 == (0x10 & flag3));
-            bool bUseBold					= (0x20 == (0x20 & flag3));
-
-            bool bVertical					= (0x20 == (0x20 & flag2));
-            bool bUseVertical				= (0x20 == (0x20 & flag4));
-
-            if (bUseStrikethrought)
-            {
-                pParentShape->m_oText.m_oAttributes.m_oFont.Strikeout = (BYTE)bStrikethrought;
-            }
-            if (bUseShadow)
-            {
-                pParentShape->m_oText.m_oAttributes.m_oTextShadow.Visible = true;
-            }
-            if (bUseUnderline)
-            {
-                pParentShape->m_oText.m_oAttributes.m_oFont.Underline = (BYTE)bUnderline;
-            }
-            if (bUseItalic)
-            {
-                pParentShape->m_oText.m_oAttributes.m_oFont.Italic = bItalic;
-            }
-            if (bUseBold)
-            {
-                pParentShape->m_oText.m_oAttributes.m_oFont.Bold = bBold;
-            }
-            if (bUseVertical)
-            {
-                pParentShape->m_oText.m_bVertical = (true == bVertical) ? true : false;
-            }
-        }break;
-    case ODRAW::cdirFont:
-        {
-            switch (pProperty->m_lValue)
-            {
-            case 1:
-                pParentShape->m_oText.m_bVertical = true;
-                break;
-            case 2:
-                pParentShape->m_oText.m_oAttributes.m_dTextRotate = 180;
-                break;
-            case 3:
-                pParentShape->m_oText.m_bVertical = true;
-                pParentShape->m_oText.m_oAttributes.m_dTextRotate = 180;
-                break;
-            }
-        }break;
+    }break;
     case ODRAW::txflTextFlow:
-        {
-            pParentShape->m_oText.m_nTextFlow = pProperty->m_lValue;
-        }break;
+    {
+        pParentShape->m_oText.m_nTextFlow = pProperty->m_lValue;
+    }break;
     case ODRAW::textBooleanProperties:
+    {
+        BYTE flag1 = (BYTE)(pProperty->m_lValue);
+        BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
+        BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
+        BYTE flag4 = (BYTE)(pProperty->m_lValue >> 24);
+
+        bool bFitShapeToText		= (0x02 == (0x02 & flag1));
+        bool bAutoTextMargin		= (0x08 == (0x08 & flag1));
+        bool bSelectText			= (0x10 == (0x10 & flag1));
+
+        bool bUseFitShapeToText		= (0x02 == (0x02 & flag3));
+        bool bUseAutoTextMargin		= (0x08 == (0x08 & flag3));
+        bool bUseSelectText			= (0x10 == (0x10 & flag3));
+
+        if (bUseAutoTextMargin)
         {
-            BYTE flag1 = (BYTE)(pProperty->m_lValue);
-            BYTE flag2 = (BYTE)(pProperty->m_lValue >> 8);
-            BYTE flag3 = (BYTE)(pProperty->m_lValue >> 16);
-            BYTE flag4 = (BYTE)(pProperty->m_lValue >> 24);
-
-            bool bFitShapeToText		= (0x02 == (0x02 & flag1));
-            bool bAutoTextMargin		= (0x08 == (0x08 & flag1));
-            bool bSelectText			= (0x10 == (0x10 & flag1));
-
-            bool bUseFitShapeToText		= (0x02 == (0x02 & flag3));
-            bool bUseAutoTextMargin		= (0x08 == (0x08 & flag3));
-            bool bUseSelectText			= (0x10 == (0x10 & flag3));
-
-            if (bUseAutoTextMargin)
+            if (bAutoTextMargin)
             {
-                if (bAutoTextMargin)
-                {
-                    pParentShape->m_dTextMarginX		= 2.54;
-                    pParentShape->m_dTextMarginRight	= 1.27;
-                    pParentShape->m_dTextMarginY		= 2.54;
-                    pParentShape->m_dTextMarginBottom	= 1.27;
-                }
+                pParentShape->m_dTextMarginX		= 2.54;
+                pParentShape->m_dTextMarginRight	= 1.27;
+                pParentShape->m_dTextMarginY		= 2.54;
+                pParentShape->m_dTextMarginBottom	= 1.27;
             }
-            if (bUseFitShapeToText)
-                pParentShape->m_oText.m_bAutoFit = bFitShapeToText;
+        }
+        if (bUseFitShapeToText)
+            pParentShape->m_oText.m_bAutoFit = bFitShapeToText;
 
-        }break;
+    }break;
     case ODRAW::c3DSpecularAmt:
-        {
-            pShape->m_o3dOptions.dSpecularAmt = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dSpecularAmt = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DDiffuseAmt:
-        {
-            pShape->m_o3dOptions.dDiffuseAmt = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dDiffuseAmt = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DShininess:
-        {
-            pShape->m_o3dOptions.dShininess = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dShininess = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DEdgeThickness:
-        {
-            pShape->m_o3dOptions.nEdgeThickness = pProperty->m_lValue;
-        }break;
+    {
+        pShape->m_o3dOptions.nEdgeThickness = pProperty->m_lValue;
+    }break;
     case ODRAW::C3DExtrudeForward:
-        {
-            pShape->m_o3dOptions.nExtrudeForward = pProperty->m_lValue;
-        }break;
+    {
+        pShape->m_o3dOptions.nExtrudeForward = pProperty->m_lValue;
+    }break;
     case ODRAW::c3DExtrudeBackward:
-        {
-            pShape->m_o3dOptions.nExtrudeBackward = pProperty->m_lValue;
-        }break;
+    {
+        pShape->m_o3dOptions.nExtrudeBackward = pProperty->m_lValue;
+    }break;
     case ODRAW::c3DExtrudePlane:
-        {
-            //ExtrudePlane = 0;
-        }break;
+    {
+        //ExtrudePlane = 0;
+    }break;
     case ODRAW::c3DExtrusionColor:
-        {
-            SColorAtom oAtom;
-            oAtom.FromValue(pProperty->m_lValue);
+    {
+        SColorAtom oAtom;
+        oAtom.FromValue(pProperty->m_lValue);
 
-            CColor tmp;
-            if(oAtom.bSysIndex)	tmp = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-            else				oAtom.ToColor(&tmp);
+        CColor tmp;
+        if(oAtom.bSysIndex)	tmp = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+        else				oAtom.ToColor(&tmp);
 
-            pShape->m_o3dOptions.oExtrusionColor = tmp;
-        }break;
+        pShape->m_o3dOptions.oExtrusionColor = tmp;
+    }break;
     case ODRAW::c3DCrMod:
-        {
-            SColorAtom oAtom;
-            oAtom.FromValue(pProperty->m_lValue);
+    {
+        SColorAtom oAtom;
+        oAtom.FromValue(pProperty->m_lValue);
 
-            CColor tmp;
-            if(oAtom.bSysIndex)	tmp = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-            else				oAtom.ToColor(&tmp);
+        CColor tmp;
+        if(oAtom.bSysIndex)	tmp = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+        else				oAtom.ToColor(&tmp);
 
-            pShape->m_o3dOptions.oCrMod = tmp;
-        }break;
+        pShape->m_o3dOptions.oCrMod = tmp;
+    }break;
     case ODRAW::c3DExtrusionColorExt:
-        {
-            SColorAtom oAtom;
-            oAtom.FromValue(pProperty->m_lValue);
+    {
+        SColorAtom oAtom;
+        oAtom.FromValue(pProperty->m_lValue);
 
-            CColor tmp;
-            if(oAtom.bSysIndex)	tmp = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
-            else				oAtom.ToColor(&tmp);
-            pShape->m_o3dOptions.oExtrusionColorExt = tmp;
-        }break;
+        CColor tmp;
+        if(oAtom.bSysIndex)	tmp = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
+        else				oAtom.ToColor(&tmp);
+        pShape->m_o3dOptions.oExtrusionColorExt = tmp;
+    }break;
     case ODRAW::c3DExtrusionColorExtMod:
-        {
-            pShape->m_o3dOptions.nTypeExtrusionColorExt = (pProperty->m_lValue & 0x00000300) >> 8;
-        }break;
+    {
+        pShape->m_o3dOptions.nTypeExtrusionColorExt = (pProperty->m_lValue & 0x00000300) >> 8;
+    }break;
     case ODRAW::c3DBottomBevelWidth:
-        {
-            pShape->m_o3dOptions.dBottomBevelWidth = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dBottomBevelWidth = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DBottomBevelHeight:
-        {
-            pShape->m_o3dOptions.dBottomBevelHeight = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dBottomBevelHeight = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DBottomBevelType:
-        {
-            pShape->m_o3dOptions.nBottomBevelType = pProperty->m_lValue;
-        }break;
+    {
+        pShape->m_o3dOptions.nBottomBevelType = pProperty->m_lValue;
+    }break;
     case ODRAW::c3DTopBevelWidth:
-        {
-            pShape->m_o3dOptions.dTopBevelWidth = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dTopBevelWidth = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DTopBevelHeight:
-        {
-            pShape->m_o3dOptions.dTopBevelHeight = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dTopBevelHeight = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DTopBevelType:
-        {
-            pShape->m_o3dOptions.nTopBevelType = pProperty->m_lValue;
-        }break;
+    {
+        pShape->m_o3dOptions.nTopBevelType = pProperty->m_lValue;
+    }break;
     case ODRAW::threeDObjectBooleanProperties:
-        {
-            bool fUsef3D					= GETBIT(pProperty->m_lValue, 19);
-            bool fUsefc3DMetallic			= GETBIT(pProperty->m_lValue, 18);
-            bool fUsefc3DUseExtrusionColor	= GETBIT(pProperty->m_lValue, 17);
-            bool fUsefc3DLightFace			= GETBIT(pProperty->m_lValue, 16);
+    {
+        bool fUsef3D					= GETBIT(pProperty->m_lValue, 19);
+        bool fUsefc3DMetallic			= GETBIT(pProperty->m_lValue, 18);
+        bool fUsefc3DUseExtrusionColor	= GETBIT(pProperty->m_lValue, 17);
+        bool fUsefc3DLightFace			= GETBIT(pProperty->m_lValue, 16);
 
-            pShape->m_o3dOptions.bEnabled		= fUsef3D					? GETBIT(pProperty->m_lValue, 3)	: false;
-            pShape->m_o3dOptions.bMetallic		= fUsefc3DMetallic			? GETBIT(pProperty->m_lValue, 2)	: false;
-            pShape->m_o3dOptions.bExtrusionColor= fUsefc3DUseExtrusionColor	? GETBIT(pProperty->m_lValue, 1)	: false;
-            pShape->m_o3dOptions.bLightFace		= fUsefc3DLightFace			? GETBIT(pProperty->m_lValue, 0)	: true;
+        pShape->m_o3dOptions.bEnabled		= fUsef3D					? GETBIT(pProperty->m_lValue, 3)	: false;
+        pShape->m_o3dOptions.bMetallic		= fUsefc3DMetallic			? GETBIT(pProperty->m_lValue, 2)	: false;
+        pShape->m_o3dOptions.bExtrusionColor= fUsefc3DUseExtrusionColor	? GETBIT(pProperty->m_lValue, 1)	: false;
+        pShape->m_o3dOptions.bLightFace		= fUsefc3DLightFace			? GETBIT(pProperty->m_lValue, 0)	: true;
 
-        }break;
+    }break;
     case ODRAW::c3DYRotationAngle:
-        {
-            double val = FixedPointToDouble(pProperty->m_lValue);
-            if (val < 0) val += 360;
-            pShape->m_o3dOptions.dYRotationAngle = val;
-        }break;
+    {
+        double val = FixedPointToDouble(pProperty->m_lValue);
+        if (val < 0) val += 360;
+        pShape->m_o3dOptions.dYRotationAngle = val;
+    }break;
     case ODRAW::c3DXRotationAngle:
-        {
-            double val = FixedPointToDouble(pProperty->m_lValue);
-            if (val < 0) val += 360;
-            pShape->m_o3dOptions.dXRotationAngle = val;
-        }break;
+    {
+        double val = FixedPointToDouble(pProperty->m_lValue);
+        if (val < 0) val += 360;
+        pShape->m_o3dOptions.dXRotationAngle = val;
+    }break;
     case ODRAW::c3DRotationAxisX:
-        {
-            pShape->m_o3dOptions.dRotationAxisX = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dRotationAxisX = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DRotationAxisY:
-        {
-            pShape->m_o3dOptions.dRotationAxisY = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dRotationAxisY = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DRotationAxisZ:
-        {
-            pShape->m_o3dOptions.dRotationAxisZ = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dRotationAxisZ = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DRotationAngle:
-        {
-            pShape->m_o3dOptions.dRotationAngle = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dRotationAngle = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DRotationCenterX:
-        {
-            pShape->m_o3dOptions.dRotationCenterX = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dRotationCenterX = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DRotationCenterY:
-        {
-            pShape->m_o3dOptions.dRotationCenterY = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dRotationCenterY = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DRotationCenterZ:
-        {
-            pShape->m_o3dOptions.dRotationCenterZ = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dRotationCenterZ = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DRenderMode:
-        {
-            pShape->m_o3dOptions.nRenderMode = pProperty->m_lValue;
-        }break;
+    {
+        pShape->m_o3dOptions.nRenderMode = pProperty->m_lValue;
+    }break;
     case ODRAW::c3DTolerance:
-        {
-            pShape->m_o3dOptions.dTolerance = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dTolerance = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DXViewpoint:
-        {
-            pShape->m_o3dOptions.dXViewpoint = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dXViewpoint = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DYViewpoint:
-        {
-            pShape->m_o3dOptions.dYViewpoint = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dYViewpoint = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DZViewpoint:
-        {
-            pShape->m_o3dOptions.dZViewpoint = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dZViewpoint = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DOriginX:
-        {
-            pShape->m_o3dOptions.dOriginX = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dOriginX = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DOriginY:
-        {
-            pShape->m_o3dOptions.dOriginY = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dOriginY = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DSkewAngle:
-        {
-            double val = FixedPointToDouble(pProperty->m_lValue);
-            if (val <= 0) val += 360;
-            pShape->m_o3dOptions.dSkewAngle = val;
-        }break;
+    {
+        double val = FixedPointToDouble(pProperty->m_lValue);
+        if (val <= 0) val += 360;
+        pShape->m_o3dOptions.dSkewAngle = val;
+    }break;
     case ODRAW::c3DSkewAmount:
-        {
-            pShape->m_o3dOptions.nSkewAmount = pProperty->m_lValue;
-        }break;
+    {
+        pShape->m_o3dOptions.nSkewAmount = pProperty->m_lValue;
+    }break;
     case ODRAW::c3DAmbientIntensity:
-        {
-            pShape->m_o3dOptions.dAmbientIntensity = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dAmbientIntensity = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DKeyX:
-        {
-            pShape->m_o3dOptions.dKeyX = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dKeyX = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DKeyY:
-        {
-            pShape->m_o3dOptions.dKeyY = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dKeyY = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DKeyZ:
-        {
-            pShape->m_o3dOptions.dKeyZ = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dKeyZ = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DKeyIntensity:
-        {
-            pShape->m_o3dOptions.dKeyIntensity = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dKeyIntensity = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DFillX:
-        {
-            pShape->m_o3dOptions.dFillX = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dFillX = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DFillY:
-        {
-            pShape->m_o3dOptions.dFillY = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dFillY = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DFillZ:
-        {
-            pShape->m_o3dOptions.dFillZ = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dFillZ = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::c3DFillIntensity:
-        {
-            pShape->m_o3dOptions.dFillIntensity = FixedPointToDouble(pProperty->m_lValue);
-        }break;
+    {
+        pShape->m_o3dOptions.dFillIntensity = FixedPointToDouble(pProperty->m_lValue);
+    }break;
     case ODRAW::threeDStyleBooleanProperties:
-        {
-            bool fUsefc3DConstrainRotation	= GETBIT(pProperty->m_lValue, 20);
-            bool fUsefc3DRotationCenterAuto	= GETBIT(pProperty->m_lValue, 19);
-            bool fUsefc3DParallel			= GETBIT(pProperty->m_lValue, 18);
-            bool fUsefc3DKeyHarsh			= GETBIT(pProperty->m_lValue, 17);
-            bool fUsefc3DFillHarsh			= GETBIT(pProperty->m_lValue, 16);
+    {
+        bool fUsefc3DConstrainRotation	= GETBIT(pProperty->m_lValue, 20);
+        bool fUsefc3DRotationCenterAuto	= GETBIT(pProperty->m_lValue, 19);
+        bool fUsefc3DParallel			= GETBIT(pProperty->m_lValue, 18);
+        bool fUsefc3DKeyHarsh			= GETBIT(pProperty->m_lValue, 17);
+        bool fUsefc3DFillHarsh			= GETBIT(pProperty->m_lValue, 16);
 
-            pShape->m_o3dOptions.bConstrainRotation	= fUsefc3DConstrainRotation	? GETBIT(pProperty->m_lValue, 4)	: true;
-            pShape->m_o3dOptions.bRotationCenterAuto= fUsefc3DRotationCenterAuto? GETBIT(pProperty->m_lValue, 3)	: false;
-            pShape->m_o3dOptions.bParallel			= fUsefc3DParallel			? GETBIT(pProperty->m_lValue, 2)	: true;
-            pShape->m_o3dOptions.bKeyHarsh			= fUsefc3DKeyHarsh			? GETBIT(pProperty->m_lValue, 1)	: true;
-            pShape->m_o3dOptions.bFillHarsh			= fUsefc3DFillHarsh			? GETBIT(pProperty->m_lValue, 0)	: true;
-        }break;
+        pShape->m_o3dOptions.bConstrainRotation	= fUsefc3DConstrainRotation	? GETBIT(pProperty->m_lValue, 4)	: true;
+        pShape->m_o3dOptions.bRotationCenterAuto= fUsefc3DRotationCenterAuto? GETBIT(pProperty->m_lValue, 3)	: false;
+        pShape->m_o3dOptions.bParallel			= fUsefc3DParallel			? GETBIT(pProperty->m_lValue, 2)	: true;
+        pShape->m_o3dOptions.bKeyHarsh			= fUsefc3DKeyHarsh			? GETBIT(pProperty->m_lValue, 1)	: true;
+        pShape->m_o3dOptions.bFillHarsh			= fUsefc3DFillHarsh			? GETBIT(pProperty->m_lValue, 0)	: true;
+    }break;
     default:
-        {
-            int unknown_value = pProperty->m_lValue;
-            unknown_value = unknown_value;
-        }break;
+    {
+        int unknown_value = pProperty->m_lValue;
+        unknown_value = unknown_value;
+    }break;
     }
 }
 
 
 CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
-                        CTheme* pTheme, CLayout* pLayout,
-                        CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide)
+                                               CTheme* pTheme, CLayout* pLayout,
+                                               CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide)
 {
     CElementPtr pElement;
 
@@ -1529,8 +1537,8 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
                         for (size_t nIndex = 0; nIndex < nIndexMem; ++nIndex)
                         {
                             if ((placeholder_type == pLayout->m_arElements[nIndex]->m_lPlaceholderType )  &&
-                                (	placeholder_id < 0 || pLayout->m_arElements[nIndex]->m_lPlaceholderID < 0 ||
-                                    placeholder_id == pLayout->m_arElements[nIndex]->m_lPlaceholderID))
+                                    (	placeholder_id < 0 || pLayout->m_arElements[nIndex]->m_lPlaceholderID < 0 ||
+                                        placeholder_id == pLayout->m_arElements[nIndex]->m_lPlaceholderID))
                             {
                                 if (pLayout->m_arElements[nIndex]->m_bPlaceholderSet == false)
                                 {
@@ -1567,93 +1575,100 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         case sptNil:
             break;
         case sptPictureFrame:
-            {
-                std::vector<CRecordExObjRefAtom*> oArrayEx;
-                GetRecordsByType(&oArrayEx, true, true);
+        {
+            std::vector<CRecordExObjRefAtom*> oArrayEx;
+            GetRecordsByType(&oArrayEx, true, true);
 
-                CExFilesInfo oInfo;
-                CExFilesInfo oInfoDefault;
-                // по умолчанию картинка (или оле объект)
-                CExFilesInfo::ExFilesType exType = CExFilesInfo::eftNone;
-                CExFilesInfo* pInfo = pMapIDs->Lock(0xFFFFFFFF, exType);
+            CExFilesInfo oInfo;
+            CExFilesInfo oInfoDefault;
+            // по умолчанию картинка (или оле объект)
+            CExFilesInfo::ExFilesType exType = CExFilesInfo::eftNone;
+            CExFilesInfo* pInfo = pMapIDs->Lock(0xFFFFFFFF, exType);
+            if (NULL != pInfo)
+            {
+                oInfo			= *pInfo;
+                oInfoDefault	= oInfo;
+            }
+
+            if (0 != oArrayEx.size())
+            {
+                pInfo = pMapIDs->Lock(oArrayEx[0]->m_nExObjID, exType);
                 if (NULL != pInfo)
                 {
-                    oInfo			= *pInfo;
-                    oInfoDefault	= oInfo;
+                    oInfo = *pInfo;
                 }
+            }
 
-                if (0 != oArrayEx.size())
-                {
-                    pInfo = pMapIDs->Lock(oArrayEx[0]->m_nExObjID, exType);
-                    if (NULL != pInfo)
-                    {
-                        oInfo = *pInfo;
-                    }
-                }
-
-                if (CExFilesInfo::eftVideo == exType)
-                {
-                    CVideoElement* pVideoElem		= new CVideoElement();
-
-                    pVideoElem->m_strVideoFileName	= oInfo.m_strFilePath ;
-                    pVideoElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
-
-                    pElement = CElementPtr(pVideoElem);
-                }
-                else if (CExFilesInfo::eftAudio == exType)
-                {
-                    CAudioElement* pAudioElem		= new CAudioElement();
-                    pElement = CElementPtr(pAudioElem);
-
-                    pAudioElem->m_strAudioFileName	= oInfo.m_strFilePath;
-                    pAudioElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
-
-                    pAudioElem->m_dClipStartTime	= oInfo.m_dStartTime;
-                    pAudioElem->m_dClipEndTime		= oInfo.m_dEndTime;
-
-                    pAudioElem->m_bLoop				= oInfo.m_bLoop;
-
-                    if (NULL != pSlide)
-                    {
-                        pAudioElem->m_dStartTime	= pSlide->m_dStartTime;
-                        pAudioElem->m_dEndTime		= pSlide->m_dEndTime;
-
-                    }
-                    else
-                    {
-                        if (pLayout)
-                            pLayout->m_arElements.push_back(pElement);
-                    }
-
-                }
-                else
-                {
-                    CImageElement* pImageElem		= new CImageElement();
-                    pImageElem->m_strImageFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
-
-                    pElement = CElementPtr(pImageElem);
-                }
-            }break;
-        default:
+            if (CExFilesInfo::eftVideo == exType)
             {
-                if (bGroupShape)
+                CVideoElement* pVideoElem		= new CVideoElement();
+
+                pVideoElem->m_strVideoFileName	= oInfo.m_strFilePath ;
+                pVideoElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
+
+                pElement = CElementPtr(pVideoElem);
+            }
+            else if (CExFilesInfo::eftAudio == exType)
+            {
+                CAudioElement* pAudioElem		= new CAudioElement();
+                pElement = CElementPtr(pAudioElem);
+
+                pAudioElem->m_strAudioFileName	= oInfo.m_strFilePath;
+                pAudioElem->m_strImageFileName	= oInfoDefault.m_strFilePath + FILE_SEPARATOR_STR;
+
+                pAudioElem->m_dClipStartTime	= oInfo.m_dStartTime;
+                pAudioElem->m_dClipEndTime		= oInfo.m_dEndTime;
+
+                pAudioElem->m_bLoop				= oInfo.m_bLoop;
+
+                if (NULL != pSlide)
                 {
-                    CGroupElement* pGroupElem = new CGroupElement();
-                    pElement = CElementPtr(pGroupElem);
+                    pAudioElem->m_dStartTime	= pSlide->m_dStartTime;
+                    pAudioElem->m_dEndTime		= pSlide->m_dEndTime;
+
                 }
                 else
                 {
-                    // shape
-                    CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, eType);
-                    CPPTShape *ppt_shape = dynamic_cast<CPPTShape *>(pShape->m_pShape->getBaseShape().get());
-
-                    if ( (ppt_shape) && (OOXMLShapes::sptCustom == ppt_shape->m_eType))
-                    {
-                        pShape->m_bShapePreset = true;
-                    }
-                    pElement = CElementPtr(pShape);
+                    if (pLayout)
+                        pLayout->m_arElements.push_back(pElement);
                 }
-            }break;
+
+            }
+            else
+            {
+                CImageElement* pImageElem		= new CImageElement();
+                pImageElem->m_strImageFileName	= oInfo.m_strFilePath + FILE_SEPARATOR_STR;
+
+                pElement = CElementPtr(pImageElem);
+            }
+        }break;
+        default:
+        {
+            if (isTable())
+            {
+                CTableElement* pTableElem = new CTableElement();
+                pTableElem->m_xmlRawData = getTableXmlStr();
+                pTableElem->m_etType = etGroup;
+                pElement = CElementPtr(pTableElem);
+            }
+            else if (bGroupShape)
+            {
+                CGroupElement* pGroupElem = new CGroupElement();
+                pElement = CElementPtr(pGroupElem);
+            }
+            else
+            {
+                // shape
+                CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, eType);
+                CPPTShape *ppt_shape = dynamic_cast<CPPTShape *>(pShape->m_pShape->getBaseShape().get());
+
+                if ( (ppt_shape) && (OOXMLShapes::sptCustom == ppt_shape->m_eType))
+                {
+                    pShape->m_bShapePreset = true;
+                }
+                pElement = CElementPtr(pShape);
+            }
+        }break;
         }
     }
 
@@ -1663,7 +1678,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     pElement->m_lID			= oArrayShape[0]->m_nID;
     pElement->m_lLayoutID	= lMasterID;
 
-//---------внешние ссылки
+    //---------внешние ссылки
     {
         CExFilesInfo::ExFilesType exType		= CExFilesInfo::eftNone;
         CExFilesInfo			* pTextureInfo	= pMapIDs->Lock(0xFFFFFFFF, exType);
@@ -1686,7 +1701,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         }
     }
     std::wstring strShapeText;
-//------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------
     // placeholders
     if (0 < oArrayPlaceHolder.size())
     {
@@ -1750,7 +1765,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
             pElement->m_nFormatDate			= 2;
         }
     }
-//------------- привязки ---------------------------------------------------------------------------------
+    //------------- привязки ---------------------------------------------------------------------------------
     std::vector<CRecordGroupShape*> oArrayGroupShape;
     this->GetRecordsByType(&oArrayGroupShape, true, true);
 
@@ -1804,7 +1819,25 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         pElementLayout->m_bAnchorEnabled		= pElement->m_bAnchorEnabled;
         pElementLayout->m_bChildAnchorEnabled	= pElement->m_bChildAnchorEnabled;
     }
-//--------- наличие текста --------------------------------------------------------------------------
+
+    std::vector<CRecordOfficeArtClientData*> oArrayArtClient;
+    GetRecordsByType(&oArrayArtClient, false, true);
+    std::vector<CRecordMouseInteractiveInfoContainer*> oArrayInteractive;
+
+    if (oArrayArtClient.size())
+        oArrayArtClient[0]->GetRecordsByType(&oArrayInteractive, true, false);
+
+    for (auto const* interactiveCont : oArrayInteractive)
+    {
+        CInteractiveInfo interactiveInfo;
+        ConvertInteractiveInfo(interactiveInfo, interactiveCont, pMapIDs);
+
+        pElement->m_arrActions.push_back(interactiveInfo);
+    }
+
+
+
+    //--------- наличие текста --------------------------------------------------------------------------
     CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
     if (NULL != pShapeElem)
     {
@@ -1863,7 +1896,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
             if (pos < 0) pElement->m_lPlaceholderType = PT_MasterFooter; ///???? 1-(33).ppt
         }
 
-//------ shape properties ----------------------------------------------------------------------------------------
+        //------ shape properties ----------------------------------------------------------------------------------------
         CPPTElement oElement;
         for (size_t nIndexProp = 0; nIndexProp < oArrayOptions.size(); ++nIndexProp)
         {
@@ -1893,46 +1926,25 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
             pShapeElem->m_pShape->m_oText.m_oRuler = oArrayTextRuler[0]->m_oTextRuler;
         }
 
-        std::vector<CRecordInteractiveInfoAtom*> oArrayInteractive;
-        GetRecordsByType(&oArrayInteractive, true, false);
-        if (oArrayInteractive.size() == 2)
-            oArrayInteractive[1]->m_oHeader.RecInstance = 1;
 
-        for (auto const* interactiveAtom : oArrayInteractive)
+        std::vector<CRecordOfficeArtClientTextbox*> oArrayTextBox;
+        std::vector<CRecordMouseInteractiveInfoContainer*> oArrayInteractiveCont;
+        std::vector<CRecordTextInteractiveInfoAtom*> oArrayTextInteractive;
+        this->GetRecordsByType(&oArrayTextBox, false);
+
+        if (oArrayTextBox.size())
         {
-            CInteractiveInfo interactiveInfo;
-            interactiveInfo.m_bPresent = true;
-            interactiveInfo.m_eActivation = (bool)interactiveAtom->m_oHeader.RecInstance;
-
-            if (pMapIDs)
-            {
-                CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(interactiveAtom->m_nSoundIdRef);
-                if (NULL != pInfo1)
-                {
-                    interactiveInfo.m_strAudioFileName = pInfo1->m_strFilePath;
-                }
-                CExFilesInfo* pInfo2 = pMapIDs->LockHyperlink(interactiveAtom->m_nExHyperlinkIdRef);
-                if (NULL != pInfo2)
-                {
-                    interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
-                }
-            }
-
-            interactiveInfo.m_lType				= interactiveAtom->m_nAction;
-            interactiveInfo.m_lOleVerb			= interactiveAtom->m_nOleVerb;
-            interactiveInfo.m_lJump				= interactiveAtom->m_nJump;
-            interactiveInfo.m_lHyperlinkType	= interactiveAtom->m_nHyperlinkType;
-
-            interactiveInfo.m_bAnimated			= interactiveAtom->m_bAnimated;
-            interactiveInfo.m_bStopSound		= interactiveAtom->m_bStopSound;
-            interactiveInfo.m_bCustomShowReturn	= interactiveAtom->m_bCustomShowReturn;
-            interactiveInfo.m_bVisited			= interactiveAtom->m_bVisited;
-
-            pShapeElem->m_arrActions.push_back(interactiveInfo);
+            // It's differance records
+            oArrayTextBox[0]->GetRecordsByType(&oArrayTextInteractive, false);
+            oArrayTextBox[0]->GetRecordsByType(&oArrayInteractiveCont, false);
         }
 
-        std::vector<CRecordTextInteractiveInfoAtom*> oArrayTextInteractive;
-        this->GetRecordsByType(&oArrayTextInteractive, true);
+        for (const auto* pInerAtom : oArrayInteractiveCont)
+        {
+            CInteractiveInfo interactive;
+            ConvertInteractiveInfo(interactive, pInerAtom, pMapIDs);
+            pShapeElem->m_textHyperlinks.push_back(interactive);
+        }
 
         if (!oArrayTextInteractive.empty())
         {
@@ -2013,7 +2025,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
 
         pElement->m_lLayoutID = lMasterID;
     }
-//----------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------
     if (NULL != pSlide)
     {
         pElement->m_dStartTime		= pSlide->m_dStartTime;
@@ -2026,6 +2038,65 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     }
 
     return pElement;
+}
+
+bool CRecordShapeContainer::isTable() const
+{
+    std::vector<CRecordShapeProperties*> oArrayOptions;
+    GetRecordsByType(&oArrayOptions, true, false);
+
+    for (const auto* option : oArrayOptions)
+    {
+        for (const auto& prop : option->m_oProperties.m_arProperties)
+        {
+            if ((prop.m_ePID == tableProperties ||
+                 prop.m_ePID == tableRowProperties) &&
+                bGroupShape)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+std::wstring CRecordShapeContainer::getTableXmlStr() const
+{
+    std::vector<CRecordShapeProperties*> oArrayOptions;
+    GetRecordsByType(&oArrayOptions, true, false);
+    std::wstring xmlStr;
+
+    if (oArrayOptions.size() > 1 &&
+            oArrayOptions[1]->m_oProperties.m_arProperties.size() > 2)
+    {
+        COfficeUtils officeUtils(NULL);
+        BYTE *utf8Data = NULL;
+        ULONG utf8DataSize = 0;
+        auto& xmlProp = oArrayOptions[1]->m_oProperties.m_arProperties[2]; //id == 0x2065 ?
+
+		if (xmlProp.m_pOptions && xmlProp.m_lValue > 0) // file513.ppt
+		{
+			std::wstring temp = NSDirectory::GetTempPath();
+			std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
+
+			NSFile::CFileBinary file;
+			if (file.CreateFileW(tempFileName))
+			{
+				file.WriteFile(xmlProp.m_pOptions, xmlProp.m_lValue);
+				file.CloseFile();
+			}
+
+			if (S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"drs/e2oDoc.xml", &utf8Data, utf8DataSize))
+			{
+				xmlStr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+			}
+
+			delete[] utf8Data;
+			NSFile::CFileBinary::Remove(tempFileName);
+		}
+    }
+
+    return xmlStr;
 }
 
 void CRecordShapeContainer::ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels)
@@ -2137,7 +2208,6 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
         if ((0 != pSettings->m_arRanges.size()) && (0 == pShape->m_oTextActions.m_arRanges.size()))
         {
             pShape->m_oTextActions.m_bPresent = true;
-
             pShape->m_oTextActions.m_arRanges = pSettings->m_arRanges;
         }
 
@@ -2184,34 +2254,34 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
             case PT_Title:
             case PT_MasterTitle:
             case PT_VerticalTitle:
-                {
-                    pTextSettings->m_lStyleThemeIndex = 1;
+            {
+                pTextSettings->m_lStyleThemeIndex = 1;
 
-                    if (Tx_TYPE_TITLE != eTypeMaster)
+                if (Tx_TYPE_TITLE != eTypeMaster)
+                {
+                    if (0 <= nTextMasterType && nTextMasterType < 9)
                     {
-                        if (0 <= nTextMasterType && nTextMasterType < 9)
-                        {
-                            if (pThemeWrapper->m_pStyles[nTextMasterType].is_init())
-                                pTextSettings->m_oStyles = pThemeWrapper->m_pStyles[nTextMasterType].get();
-                        }
+                        if (pThemeWrapper->m_pStyles[nTextMasterType].is_init())
+                            pTextSettings->m_oStyles = pThemeWrapper->m_pStyles[nTextMasterType].get();
                     }
-                    break;
                 }
+                break;
+            }
             case PT_CenterTitle:
             case PT_MasterCenterTitle:
-                {
-                    pTextSettings->m_lStyleThemeIndex = 1;
+            {
+                pTextSettings->m_lStyleThemeIndex = 1;
 
-                    if (Tx_TYPE_TITLE != eTypeMaster)
+                if (Tx_TYPE_TITLE != eTypeMaster)
+                {
+                    if (0 <= nTextMasterType && nTextMasterType < 9)
                     {
-                        if (0 <= nTextMasterType && nTextMasterType < 9)
-                        {
-                            if (pThemeWrapper->m_pStyles[nTextMasterType].is_init())
-                                pTextSettings->m_oStyles = pThemeWrapper->m_pStyles[nTextMasterType].get();
-                        }
+                        if (pThemeWrapper->m_pStyles[nTextMasterType].is_init())
+                            pTextSettings->m_oStyles = pThemeWrapper->m_pStyles[nTextMasterType].get();
                     }
-                    break;
                 }
+                break;
+            }
             case PT_Body:
             case PT_MasterBody:
             case PT_NotesBody:
@@ -2219,35 +2289,35 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
             case PT_VerticalBody:
             case PT_MasterSubTitle:
             case PT_SubTitle:
-                {
-                    pTextSettings->m_lStyleThemeIndex = 2;
+            {
+                pTextSettings->m_lStyleThemeIndex = 2;
 
-                    if ((Tx_TYPE_BODY != eTypeMaster) || !pLayout)
+                if ((Tx_TYPE_BODY != eTypeMaster) || !pLayout)
+                {
+                    if (0 <= nTextMasterType && nTextMasterType < 9)
                     {
-                        if (0 <= nTextMasterType && nTextMasterType < 9)
-                        {
-                            if (pThemeWrapper->m_pStyles[nTextMasterType].is_init())
-                                pTextSettings->m_oStyles = pThemeWrapper->m_pStyles[nTextMasterType].get();
-                        }
+                        if (pThemeWrapper->m_pStyles[nTextMasterType].is_init())
+                            pTextSettings->m_oStyles = pThemeWrapper->m_pStyles[nTextMasterType].get();
                     }
-                    break;
                 }
+                break;
+            }
             default:
-                {
-                    pTextSettings->m_lStyleThemeIndex = 3;
+            {
+                pTextSettings->m_lStyleThemeIndex = 3;
 
-                    if ((Tx_TYPE_OTHER != eTypeMaster) || !pLayout)
+                if ((Tx_TYPE_OTHER != eTypeMaster) || !pLayout)
+                {
+                    if (0 <= nTextMasterType && nTextMasterType < 9)
                     {
-                        if (0 <= nTextMasterType && nTextMasterType < 9)
+                        if (pThemeWrapper->m_pStyles[nTextMasterType].is_init())
                         {
-                            if (pThemeWrapper->m_pStyles[nTextMasterType].is_init())
-                            {
-                                pTextSettings->m_oStyles = pThemeWrapper->m_pStyles[nTextMasterType].get();
-                            }
+                            pTextSettings->m_oStyles = pThemeWrapper->m_pStyles[nTextMasterType].get();
                         }
                     }
-                    break;
                 }
+                break;
+            }
             }
         }
         else
@@ -2301,30 +2371,30 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
                 case PT_Title:
                 case PT_MasterTitle:
                 case PT_VerticalTitle:
-                    {
-                        pTextSettings->m_lStyleThemeIndex = 1;
-                        break;
-                    }
+                {
+                    pTextSettings->m_lStyleThemeIndex = 1;
+                    break;
+                }
                 case PT_CenterTitle:
                 case PT_MasterCenterTitle:
-                    {
-                        pTextSettings->m_lStyleThemeIndex = 1;
-                        break;
-                    }
+                {
+                    pTextSettings->m_lStyleThemeIndex = 1;
+                    break;
+                }
                 case PT_Body:
                 case PT_MasterBody:
                 case PT_NotesBody:
                 case PT_MasterNotesBody:
                 case PT_VerticalBody:
-                    {
-                        pTextSettings->m_lStyleThemeIndex = 2;
-                        break;
-                    }
+                {
+                    pTextSettings->m_lStyleThemeIndex = 2;
+                    break;
+                }
                 default:
-                    {
-                        pTextSettings->m_lStyleThemeIndex = 3;
-                        break;
-                    }
+                {
+                    pTextSettings->m_lStyleThemeIndex = 3;
+                    break;
+                }
                 }
             }
         }
@@ -2470,15 +2540,15 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
         case sptTextSlantDown:
         case sptTextCanUp:
         case sptTextCanDown:
-            {
-                pShape->m_pShape->m_oText.m_oAttributes.m_oTextBrush = pShape->m_oBrush;
+        {
+            pShape->m_pShape->m_oText.m_oAttributes.m_oTextBrush = pShape->m_oBrush;
 
-                pShape->m_pShape->m_oText.m_oAttributes.m_nTextAlignHorizontal	= 1;
-                pShape->m_pShape->m_oText.m_oAttributes.m_nTextAlignVertical	= 1;
+            pShape->m_pShape->m_oText.m_oAttributes.m_nTextAlignHorizontal	= 1;
+            pShape->m_pShape->m_oText.m_oAttributes.m_nTextAlignVertical	= 1;
 
-                pShape->m_pShape->m_lDrawType = c_ShapeDrawType_Text;
-                break;
-            }
+            pShape->m_pShape->m_lDrawType = c_ShapeDrawType_Text;
+            break;
+        }
         default:
             break;
         };
@@ -2487,63 +2557,169 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 
 void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor)
 {
-    std::vector<CTextRange>* pRanges	= &pShape->m_oTextActions.m_arRanges;
-    CTextAttributesEx* pTextAttributes	= &pShape->m_pShape->m_oText;
+    auto& oTextAttributes = pShape->m_pShape->m_oText;
+    const auto& originalText = oTextAttributes.m_originalText;
 
-    int lCountHyper	= pRanges->size();
 
-    if (0 == lCountHyper)
+    // lenght these ones shoud be equal
+    const auto& arrRanges	= pShape->m_oTextActions.m_arRanges;
+    const auto arrSplitedInteractive = splitInteractive(pShape->m_textHyperlinks);
+
+    // It cannot be changed
+    if (arrRanges.empty() || arrSplitedInteractive.empty() || originalText.empty())
         return;
 
-    size_t nCountPars = pTextAttributes->m_arParagraphs.size();
-    for (int nIndexRange = 0; nIndexRange < lCountHyper; ++nIndexRange)
+    size_t posOrigText(0);
+    auto iterRange = arrRanges.begin();
+    auto iterInteractive = arrSplitedInteractive.begin();
+    for (auto& paragraph : oTextAttributes.m_arParagraphs)
     {
-        int lStart = (*pRanges)[nIndexRange].m_lStart;
-        int lEnd	= (*pRanges)[nIndexRange].m_lEnd;
-
-        int lCurrentStart = 0;
-        for (size_t nIndexPar = 0; nIndexPar < nCountPars; ++nIndexPar)
+        auto& arrSpans = paragraph.m_arSpans;
+        for (auto iterSpan = arrSpans.begin(); iterSpan != arrSpans.end(); iterSpan++)
         {
-            CParagraph* pParagraph = &pTextAttributes->m_arParagraphs[nIndexPar];
-
-            for (size_t nIndexSpan = 0; nIndexSpan < pParagraph->m_arSpans.size(); ++nIndexSpan)
+            // if there isn't needed changes in next spans & paragraps
+            if (iterRange == arrRanges.end())
             {
-                int lCurrentEnd = lCurrentStart + pParagraph->m_arSpans[nIndexSpan].m_strText.length() - 1;
+                return;
+            }
 
-                if (lCurrentStart > lEnd || lCurrentEnd < lStart)
+            const bool isHyperlink = iterRange->inRange(posOrigText);
+
+            const int posBlockStart = posOrigText;
+            const int posOrigSpanEnd = posBlockStart + iterSpan->m_strText.length();
+            const int posBlockEnd = isHyperlink ?
+				(std::min)(posOrigSpanEnd, iterRange->m_lEnd)  :
+				(std::min)(posOrigSpanEnd, iterRange->m_lStart);
+            const size_t blockLen = posBlockEnd - posBlockStart;
+
+            const bool isNeedToSplit = posBlockEnd < posOrigSpanEnd && isHyperlink;
+
+            // Skiping span with '\r'
+            if (iterSpan->m_strText.size() && (int)iterSpan->m_strText.find(L"\r") != -1)
+                continue;
+
+            posOrigText += blockLen;
+            // Skipping span
+            if (iterRange->m_lStart > posBlockEnd)
+            {
+                continue;
+            }
+
+            // HYPERLINK
+            if (isHyperlink)
+            {
+                // case: HYPERLINK & text(or next HYPERLINK inside original span)
+                if (isNeedToSplit)
                 {
-                    lCurrentStart = lCurrentEnd + 1;
-                    continue;
+                    // HYPERLINK
+                    iterSpan->m_strText = originalText.substr(posBlockStart, blockLen);
+
+                    const size_t nextBlockLen = posOrigSpanEnd - posBlockEnd;
+                    iterSpan = arrSpans.insert(iterSpan, *iterSpan);
+                    // Go to next new span and correct text
+                    iterSpan++;
+                    iterSpan->m_strText = originalText.substr(posBlockEnd, nextBlockLen);
+                    iterSpan->m_arrInteractive.clear();
+                    // Return to current span
+					iterSpan--;
                 }
 
-                int lStart_	= (std::max)(lStart, lCurrentStart);
-                int lEnd_	= (std::min)(lEnd, lCurrentEnd);
+				if (iterSpan != arrSpans.end() && iterInteractive != arrSplitedInteractive.end())
+					addHyperlinkToSpan(*iterSpan, *iterInteractive, oColor);
+				else
+					break; //GZoabli_PhD.ppt
 
-                CSpan oRunProp = pParagraph->m_arSpans[nIndexSpan];
-
-                std::wstring strText = pParagraph->m_arSpans[nIndexSpan].m_strText;
-                if (lStart_ > lCurrentStart)
+                if (posBlockEnd == iterRange->m_lEnd)
                 {
-                    pParagraph->m_arSpans.insert(pParagraph->m_arSpans.begin()  + nIndexSpan, oRunProp);
-                    pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(0, lStart_ - lCurrentStart);
-
-                    ++nIndexSpan;
+                    iterRange++;
+                    iterInteractive++;
                 }
-                pParagraph->m_arSpans[nIndexSpan].m_oRun.Color = oColor;
-                pParagraph->m_arSpans[nIndexSpan].m_oRun.FontUnderline = (bool)true;
-                pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(lStart_ - lCurrentStart, lEnd_ - lStart_ + 1);
-                if (lEnd_ < lCurrentEnd)
-                {
-                    pParagraph->m_arSpans.insert(pParagraph->m_arSpans.begin() + nIndexSpan + 1, oRunProp);
-                    ++nIndexSpan;
+            }
+            // Hyperlink will be written in the next iteration
+            // case: text & HYPERLINK
+            else
+            {
+                iterSpan = arrSpans.insert(iterSpan, *iterSpan);
+                iterSpan->m_strText = originalText.substr(posBlockStart, blockLen);
+                iterSpan->m_arrInteractive.clear();
 
-                    pParagraph->m_arSpans[nIndexSpan].m_strText = strText.substr(lEnd_ - lCurrentStart + 1, lCurrentEnd - lEnd_);
-                }
+                // Go to next new span and correct text
+                iterSpan++;
+                const size_t nextBlockLen = posOrigSpanEnd - posBlockEnd;
+                iterSpan->m_strText = originalText.substr(posBlockEnd, nextBlockLen);
+                iterSpan->m_arrInteractive.clear();
+                 // Return to current span
+                iterSpan--;
+            }
+        }
+        // skipping '\r'
+        posOrigText++;
+    }
+}
 
-                lCurrentStart = lCurrentEnd + 1;
+void CRecordShapeContainer::addHyperlinkToSpan(CSpan &oSpan, const std::vector<CInteractiveInfo> &arrInteractive, const CColor &oColor)
+{
+    oSpan.m_oRun.Color = oColor;
+    oSpan.m_oRun.FontUnderline = (bool)true;
+    oSpan.m_arrInteractive = arrInteractive;
+}
+
+std::vector<std::vector<CInteractiveInfo> > CRecordShapeContainer::splitInteractive(const std::vector<CInteractiveInfo> &arrInteractive)
+{
+    std::vector<std::vector<CInteractiveInfo> > splited;
+    std::vector<CInteractiveInfo> inserting;
+    for (const auto& interactive : arrInteractive)
+    {
+        if (interactive.m_eActivation == interactive.click && !inserting.empty())
+            splited.push_back(std::move(inserting));
+        inserting.push_back(interactive);
+    }
+    if (!inserting.empty())
+        splited.push_back(std::move(inserting));
+
+    return splited;
+}
+
+void CRecordShapeContainer::ConvertInteractiveInfo(CInteractiveInfo &interactiveInfo, const CRecordMouseInteractiveInfoContainer *interactiveCont, CExMedia *pMapIDs)
+{
+
+    auto& interactiveAtom = interactiveCont->interactiveInfoAtom;
+    interactiveInfo.m_bPresent = true;
+    interactiveInfo.m_eActivation = interactiveCont->isOver;
+
+    if (pMapIDs)
+    {
+        CExFilesInfo* pInfo1 = pMapIDs->LockAudioFromCollection(interactiveAtom.m_nSoundIdRef);
+        if (NULL != pInfo1)
+        {
+            interactiveInfo.m_strAudioFileName = pInfo1->m_strFilePath;
+            interactiveInfo.m_strAudioName = pInfo1->m_name;
+        }
+        CExFilesInfo* pInfo2 = pMapIDs->LockSlide(interactiveAtom.m_nExHyperlinkIdRef);
+        if (NULL != pInfo2)
+        {
+            interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
+        } else {
+            pInfo2 = pMapIDs->LockHyperlink(interactiveAtom.m_nExHyperlinkIdRef);
+            if (NULL != pInfo2)
+            {
+                interactiveInfo.m_strHyperlink = pInfo2->m_strFilePath;
             }
         }
     }
+    if (interactiveCont->macroNameAtom.is_init())
+        interactiveInfo.m_macro = interactiveCont->macroNameAtom->m_strText;
+
+    interactiveInfo.m_lType				= interactiveAtom.m_nAction;
+    interactiveInfo.m_lOleVerb			= interactiveAtom.m_nOleVerb;
+    interactiveInfo.m_lJump				= interactiveAtom.m_nJump;
+    interactiveInfo.m_lHyperlinkType	= interactiveAtom.m_nHyperlinkType;
+
+    interactiveInfo.m_bAnimated			= interactiveAtom.m_bAnimated;
+    interactiveInfo.m_bStopSound		= interactiveAtom.m_bStopSound;
+    interactiveInfo.m_bCustomShowReturn	= interactiveAtom.m_bCustomShowReturn;
+    interactiveInfo.m_bVisited			= interactiveAtom.m_bVisited;
+
 }
 
 void CRecordGroupShapeContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)

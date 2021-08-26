@@ -31,6 +31,8 @@
  */
 #pragma once
 #include "../Reader/Records.h"
+#include <iostream>
+
 
 class CRecordMetafileBlob : public CUnknownRecord
 {
@@ -40,17 +42,26 @@ public:
 	SHORT m_nExtY;
 	BYTE* m_pData;
 	
-	CRecordMetafileBlob()
+    CRecordMetafileBlob() :
+        m_nMM(-1), m_nExtX(-1), m_nExtY(-1), m_pData(nullptr)
 	{
+
 	}
 
 	~CRecordMetafileBlob()
 	{
+        RELEASEOBJECT (m_pData)
 	}
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+        m_oHeader = oHeader;
+
+        m_nMM = StreamUtils::ReadSHORT(pStream);
+        m_nExtX = StreamUtils::ReadSHORT(pStream);
+        m_nExtY = StreamUtils::ReadSHORT(pStream);
+        pStream->read(m_pData, m_oHeader.RecLen - 6);
+        std::cout << m_pData << "\n\n";
 	}
 
 };

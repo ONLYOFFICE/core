@@ -51,25 +51,22 @@ namespace PPTX
 	{		
 	}
 
-	Document::Document(const OOX::CPath& path, IPPTXEvent* Event) : FileContainer(this)
+	Document::Document(const OOX::CPath& path) : FileContainer(this)
 	{
-		read(path, Event);
+		read(path);
 	}
 
-	void Document::read(const OOX::CPath& path, IPPTXEvent* Event)
+	bool Document::read(const OOX::CPath& path)
 	{
 		OOX::CRels rels(path);
 		PPTX::FileMap map;
         long files = CountFiles(path);
 		if(files == 0)
-            return;
-        m_lPercent = (long)floor(1000000. / files);
-		FileContainer::read(rels, path, map, Event);
+            return false;
 
-		long percent = Event ? Event->GetPercent() : 0;
+		m_sDocumentPath = path.GetPath();
 
-        if(m_bCancelled  && percent < 1000000)
-			return;
+		FileContainer::read(rels, path, map);
 
 		smart_ptr<PPTX::Presentation> _presentation = FileContainer::Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 		if (_presentation.is_init())
@@ -161,9 +158,7 @@ namespace PPTX
                     pointer->ApplyRels();
             }
         }
-
-		if (Event)
-			Event->Progress(0, 1000000);
+		return true;
 	}
 
 	void Document::write(const OOX::CPath& path)

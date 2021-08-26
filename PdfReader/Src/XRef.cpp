@@ -229,6 +229,8 @@ namespace PdfReader
 	{
 		m_oCS.InitializeCriticalSection();
 
+		m_arrDecryptKey = NULL;
+
 		m_bValidXref = true;
 		m_eErrorCode = errorNone;
 		m_nEntrySize = 0;
@@ -313,6 +315,9 @@ namespace PdfReader
 		{
 			delete m_pObjectStream;
 		}
+
+		if (NULL != m_arrDecryptKey)
+			MemUtilsFree(m_arrDecryptKey);		
 
 		m_oCS.DeleteCriticalSection();
 	}
@@ -926,6 +931,10 @@ namespace PdfReader
 		m_bOwnerPassword = bOwnerPassword;
 		m_nKeyLength = nKeyLength;
 
+		if (NULL != m_arrDecryptKey)
+			MemUtilsFree(m_arrDecryptKey);
+		m_arrDecryptKey = (unsigned char*)MemUtilsMalloc(m_nKeyLength);
+
 		for (int nIndex = 0; nIndex < m_nKeyLength; ++nIndex)
 		{
 			m_arrDecryptKey[nIndex] = sDecryptKey[nIndex];
@@ -1081,6 +1090,77 @@ namespace PdfReader
 		}
 		*pnStreamEnd = m_punStreamEnds[nEnd];
 		return true;
+	}
+	void XRef::AllObjectsToXml(std::wstring &wsXml, bool bParseStreams)
+	{
+		for (int nNum = 0; nNum < m_nEntrySize; ++nNum)
+		{
+			XRefEntry* pEntry = &m_arrEntries[nNum];
+			if (xrefEntryFree != pEntry->eType)
+			{
+
+				Object oTemp;
+				Fetch(nNum, 0/*pEntry->nGen*/, &oTemp);
+
+				if (oTemp.IsDict() || oTemp.IsStream())
+				{
+					if (xrefEntryCompressed == pEntry->eType)
+						wsXml += L"<Obj num=\"" + std::to_wstring(nNum) + L"\" gen=\"" + std::to_wstring(0/*pEntry->nGen*/) + L"\" compressed=\"true\">";
+					else
+						wsXml += L"<Obj num=\"" + std::to_wstring(nNum) + L"\" gen=\"" + std::to_wstring(0/*pEntry->nGen*/) + L"\">";
+
+					if (oTemp.IsDict())
+					{
+						oTemp.ToXml(wsXml);
+					}
+					else if (oTemp.IsStream())
+					{
+						Dict* pStreamDict = oTemp.StreamGetDict();
+						pStreamDict->ToXml(wsXml);
+						wsXml += L"<Stream>";
+
+						if (bParseStreams)
+						{
+							std::wstring wsTemp;
+							Stream* pStream = oTemp.GetStream();
+							pStream->Reset();
+
+							Object oFilter;
+							pStreamDict->Search("Filter", &oFilter);
+							if (oFilter.IsNull() || oFilter.IsName("FlateDecode"))
+							{
+								int nChar;
+								while (EOF != (nChar = pStream->GetChar()))
+								{
+									char sTemp[1] = {(char)nChar};
+
+									switch (sTemp[0])
+									{
+									case '\"': wsTemp += L"&quot;"; break;
+									case '&':  wsTemp += L"&amp;";  break;
+									case '<':  wsTemp += L"&lt;";   break;
+									case '>':  wsTemp += L"&gt;";   break;
+									default: Object::AppendStringToXml(wsTemp, std::string(sTemp));
+									}
+								}
+							}
+							else
+							{
+								wsXml += L"BinaryData";
+							}
+
+							wsXml += wsTemp;
+						}
+
+						wsXml += L"</Stream>";
+					}
+
+					wsXml += L"</Obj>";
+				}
+
+				oTemp.Free();
+			}
+		}
 	}
 
 	unsigned int XRef::StrintToUInt(char *sString)

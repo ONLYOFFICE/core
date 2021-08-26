@@ -83,7 +83,7 @@ int DXFFntD::serialize(std::wostream & stream)
 			{
 				CP_XML_NODE(L"sz")
 				{
-					CP_XML_ATTR(L"val", stxp.twpHeight/20);
+					CP_XML_ATTR(L"val", stxp.twpHeight/20.f);
 				}
 			}
 		   if (icvFore < 0x7fff) 

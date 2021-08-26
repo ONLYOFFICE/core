@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+#include <unordered_map>
 
 #include "../../DesktopEditor/common/StreamWriter.h"
 
@@ -50,6 +51,7 @@ namespace OOX
 	namespace Spreadsheet
 	{
 		class CPersonList;
+		class CPerson;
 		class CThreadedComment;
 		class CDxf;
 		class CSortCondition;
@@ -180,6 +182,7 @@ namespace BinXlsxRW
 		int ReadCellXfs(BYTE type, long length, void* poResult);
 		int ReadXfs(BYTE type, long length, void* poResult);
 		int ReadAligment(BYTE type, long length, void* poResult);
+		int ReadProtection(BYTE type, long length, void* poResult);
 		int ReadDxfs(BYTE type, long length, void* poResult);
 		int ReadDxf(BYTE type, long length, void* poResult);
 		int ReadDxfExternal(OOX::Spreadsheet::CDxf* pDxf);
@@ -250,8 +253,9 @@ namespace BinXlsxRW
 		int ReadThreadedComment(BYTE type, long length, void* poResult);
 		int ReadThreadedCommentMention(BYTE type, long length, void* poResult);
 		void parseCommentData(SerializeCommon::CommentData* pCommentData, OOX::Spreadsheet::CSi& oSi);
-		void addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::wstring& text, bool isBold);
-		static void addThreadedComment(OOX::Spreadsheet::CSi& oSi, OOX::Spreadsheet::CThreadedComment* pThreadedComment);
+		static int addCommentRun(OOX::Spreadsheet::CSi& oSi, const std::wstring& text, bool isBold, int nLimit);
+		static void addThreadedComment(OOX::Spreadsheet::CSi& oSi, OOX::Spreadsheet::CThreadedComment* pThreadedComment, nullable<std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>>& mapPersonList);
+		static std::wstring getThreadedCommentAuthor(nullable<std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>>& mapPersonList, nullable<SimpleTypes::CGuid>& personId, const std::wstring& sDefault);
 	};
 	class BinaryWorksheetsTableReader : public Binary_CommonReader
 	{
@@ -294,6 +298,8 @@ namespace BinXlsxRW
 		int ReadWorksheetProp(BYTE type, long length, void* poResult);
 		int ReadWorksheetCols(BYTE type, long length, void* poResult);
 		int ReadWorksheetCol(BYTE type, long length, void* poResult);
+		int ReadProtectedRanges(BYTE type, long length, void* poResult);
+		int ReadProtectedRange(BYTE type, long length, void* poResult);
 		int ReadSheetViews(BYTE type, long length, void* poResult);
 		int ReadSheetView(BYTE type, long length, void* poResult);
 		int ReadPane(BYTE type, long length, void* poResult);
@@ -385,7 +391,7 @@ namespace BinXlsxRW
 	{
 	public: 
 		BinaryFileReader();
-        int ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions);
+        int ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bMacro = false);
         int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW::CBinaryFileReader& oBufferedStream, const std::wstring& sFileInDir, const std::wstring& sOutDir, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
 		void initWorkbook(OOX::Spreadsheet::CWorkbook* pWorkbook);
 	};

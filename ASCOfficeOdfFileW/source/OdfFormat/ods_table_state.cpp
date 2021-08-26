@@ -1630,14 +1630,14 @@ void ods_table_state::end_conditional_format()
 {
 	current_level_.pop_back();
 }
-void ods_table_state::start_conditional_rule(int rule_type)
+void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent)
 {
-	office_element_ptr		elm;
+	office_element_ptr elm;
 
-	if (rule_type == 3)		create_element(L"calcext", L"color-scale",  elm, context_); 
-	else if (rule_type == 7)create_element(L"calcext", L"data-bar", elm ,context_);
-	else if (rule_type ==10)create_element(L"calcext", L"icon-set", elm, context_);
-	else if (rule_type ==14)create_element(L"calcext", L"date-is", elm, context_);
+		 if (rule_type == 3) create_element(L"calcext", L"color-scale", elm, context_); 
+	else if (rule_type == 7) create_element(L"calcext", L"data-bar", elm ,context_);
+	else if (rule_type == 10)create_element(L"calcext", L"icon-set", elm, context_);
+	else if (rule_type == 14)create_element(L"calcext", L"date-is", elm, context_);
 	else
 	{
 		create_element(L"calcext", L"condition", elm, context_);
@@ -1680,10 +1680,20 @@ void ods_table_state::start_conditional_rule(int rule_type)
 				case 11: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
 				case 12: condition->attr_.calcext_value_	= L"is-no-error";		break;
 				case 13: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
-				case 15: condition->attr_.calcext_value_	= L"top-elements()";	break;//bottom-elements ???
-				case 16: condition->attr_.calcext_value_	= L"unique";			break;
+				case 15:
+				{
+					if ((bottom) && (*bottom)) 	condition->attr_.calcext_value_ = L"bottom";
+					else 						condition->attr_.calcext_value_ = L"top";
+					
+					if (percent && (*percent))	*condition->attr_.calcext_value_ += L"-percent(";
+					else						*condition->attr_.calcext_value_ += L"-elements(";
+
+					*condition->attr_.calcext_value_ += std::to_wstring(rank.get_value_or(10)) + L")";
+				}break;
+				case 16: condition->attr_.calcext_value_ = L"unique"; break;
+				case 17:	condition->attr_.calcext_value_ = L"ends-with()";break;
 				case 2: /*cellIs*/
-				default:	break;							
+				default: break;
 			}
 		}
 	}
@@ -1719,9 +1729,15 @@ void ods_table_state::set_conditional_formula(std::wstring formula)
 		s = true; 
 		operator_ = operator_.substr(0, f_end);
 	}
-	operator_ += (split ? L"," : L"") + odfFormula + (s ? L")" : L"");
+	if (operator_.empty())
+		operator_ = odfFormula;
+	else
+		operator_ += (split ? L"," : L" ") + odfFormula + (s ? L")" : L"");
 
-	if (std::wstring::npos == operator_.find(L"contains-text") || !split)
+	if ((std::wstring::npos == operator_.find(L"contains-text") &&
+		std::wstring::npos == operator_.find(L"begins-with") && 
+		std::wstring::npos == operator_.find(L"ends-with"))
+		|| !split )
 		condition->attr_.calcext_value_= operator_;
 }
 void ods_table_state::set_conditional_style_name(const std::wstring &style_name)
@@ -1732,11 +1748,20 @@ void ods_table_state::set_conditional_style_name(const std::wstring &style_name)
 	if (condition)	condition->attr_.calcext_apply_style_name_	= style_name;
 	if (date_is)	date_is->attr_.calcext_style_				= style_name;
 }
+void ods_table_state::set_conditional_time(const std::wstring &period)
+{
+	calcext_date_is* date_is = dynamic_cast<calcext_date_is*>(current_level_.back().get());
+	if (date_is)
+		date_is->attr_.calcext_date_ = period;
+}
 void ods_table_state::set_conditional_text(const std::wstring &text)
 {
-	calcext_condition*	condition	 = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
+	calcext_condition* condition = dynamic_cast<calcext_condition*>(current_level_.back().get());
 
-	if ((condition->attr_.calcext_value_) && (std::wstring::npos != condition->attr_.calcext_value_->find(L"contains-text")))
+	if ((condition->attr_.calcext_value_) && 
+		(std::wstring::npos != condition->attr_.calcext_value_->find(L"contains-text") || 
+		 std::wstring::npos != condition->attr_.calcext_value_->find(L"ends-with") ||
+		 std::wstring::npos != condition->attr_.calcext_value_->find(L"begins-with")))
 	{
 		std::wstring operator_;
 		bool s = false;
@@ -1795,11 +1820,13 @@ void ods_table_state::set_conditional_value(int type, std::wstring value )
 		{
 			switch(type)
 			{
-				case 0: //Formula	
-				case 1: entry->calcext_type_ = calcext_type(calcext_type::AutoMaximum); break;
-				case 2: entry->calcext_type_ = calcext_type(calcext_type::AutoMinimum); break;
+				case 1: entry->calcext_type_ = calcext_type(calcext_type::Maximum); break;
+				case 2: entry->calcext_type_ = calcext_type(calcext_type::Minimum); break;
 				case 4: entry->calcext_type_ = calcext_type(calcext_type::Percent); break;
-				case 5: //Percentile		
+				case 5: entry->calcext_type_ = calcext_type(calcext_type::Percentile); break;
+				case 6: entry->calcext_type_ = calcext_type(calcext_type::AutoMinimum); break;
+				case 7: entry->calcext_type_ = calcext_type(calcext_type::AutoMaximum); break;
+				case 0: //Formula	
 				case 3: //Number
 				default: entry->calcext_type_ = calcext_type(calcext_type::Number);
 			}

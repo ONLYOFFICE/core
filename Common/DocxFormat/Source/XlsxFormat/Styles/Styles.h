@@ -354,6 +354,12 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 								index = 0;
 							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"General Number")
 								index = 0;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"0")
+								index = 0;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"0.0")
+								index = 0;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"0.00")
+								index = 2;
 							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"General Date")
 								index = 22;
 							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Long Date")
@@ -362,16 +368,19 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 								index = 14;
 							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Short Date")
 								index = 16;
+							else if (std::wstring::npos != 
+								m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode->find(L"d/m/yy"))
+								index = 16;
 							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Long Time")
 								index = 21;
 							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Medium Time")
 								index = 20;
 							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Short Time")
-								index = 2;
+								index = 20;
 							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Fixed")
 								index = 2;
 							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Standard")
-								index = (unsigned int)0;
+								index = 0;
 							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Percent")
 								index = 10;
 							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Scientific")
@@ -379,13 +388,25 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 							//Yes/No, True/False, or On/Off
 							else
 							{
-								index = 168 + m_oNumFmts->m_arrItems.size();								
-								m_oNumFmts->m_arrItems.push_back(m_arrStyles2003[i]->m_oNumFmt.GetPointerEmptyNullable());
-							}
-							if (false == m_arrStyles2003[i]->m_oNumFmt.IsInit())
-								m_arrStyles2003[i]->m_oNumFmt.Init();
-							m_arrStyles2003[i]->m_oNumFmt->m_oNumFmtId = index;
-							
+								std::map<std::wstring, int>::iterator pFind = 
+									m_oNumFmts->m_mapFormatCode.find(*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode);
+
+								if (pFind == m_oNumFmts->m_mapFormatCode.end())
+								{
+									index = 168 + m_oNumFmts->m_arrItems.size();	
+									
+									m_arrStyles2003[i]->m_oNumFmt->m_oNumFmtId = index;
+
+									m_oNumFmts->m_mapFormatCode.insert(std::make_pair(*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode, index));
+									m_oNumFmts->m_arrItems.push_back(m_arrStyles2003[i]->m_oNumFmt.GetPointerEmptyNullable());
+
+									m_arrStyles2003[i]->m_oNumFmt.Init(); //repair
+								}
+								else
+								{
+									index = pFind->second;
+								}
+							}					
 							pStyleXfs->m_oApplyNumberFormat.Init();
 							pStyleXfs->m_oApplyNumberFormat->FromBool(true);
 						}						

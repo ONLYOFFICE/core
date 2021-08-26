@@ -43,11 +43,11 @@ class PtgAreaErr3d: public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgAreaErr3d)
 public:
+	PtgAreaErr3d(const unsigned short full_ptg_id);
 	BiffStructurePtr clone();
 
 	virtual void loadFields(CFRecord& record);
 	
-
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 
 	unsigned short ixti;

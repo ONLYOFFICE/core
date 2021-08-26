@@ -35,19 +35,20 @@
 
 namespace XLS
 {
+PtgMemFunc::PtgMemFunc(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
+{
 
+}
 
 BiffStructurePtr PtgMemFunc::clone()
 {
 	return BiffStructurePtr(new PtgMemFunc(*this));
 }
 
-
 void PtgMemFunc::loadFields(CFRecord& record)
 {
 	record >> cce;
 }
-
 
 void PtgMemFunc::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

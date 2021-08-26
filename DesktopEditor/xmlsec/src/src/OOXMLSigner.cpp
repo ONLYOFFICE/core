@@ -1,5 +1,6 @@
 #include "./../include/OOXMLSigner.h"
-#include "./../src/XmlTransform.h"
+#include "./ZipFolder.h"
+#include "./XmlTransform.h"
 #include <cstdio>
 #include <ctime>
 #include <time.h>
@@ -8,7 +9,7 @@ class COOXMLSigner_private
 {
 public:
     ICertificate*                           m_certificate;
-    std::wstring                            m_sFolder;
+    IFolder*                                m_pFolder;
 
     std::wstring                            m_date;
 
@@ -26,9 +27,21 @@ public:
 public:
     COOXMLSigner_private(const std::wstring& sFolder, ICertificate* pContext)
     {
-        m_sFolder = sFolder;
+        m_pFolder = new CFolderSystem(sFolder);
         m_certificate = pContext;
 
+        OpenFolder();
+    }
+    COOXMLSigner_private(BYTE* data, DWORD length, ICertificate* pContext)
+    {
+        m_pFolder = new CZipFolderMemory(data, length);
+        m_certificate = pContext;
+
+        OpenFolder();
+    }
+
+    void OpenFolder()
+    {
         m_date = L"2017-04-21T08:30:21Z";
 
         std::time_t rawtime;
@@ -50,17 +63,18 @@ public:
         m_signed_info.WriteString(ICertificate::GetSignatureMethodA(m_certificate->GetHashAlg()));
         m_signed_info.WriteString("\"/>");
     }
+
     ~COOXMLSigner_private()
     {
+        RELEASEOBJECT(m_pFolder);
     }
 
     std::wstring GetReference(const std::wstring& file, const std::wstring& content_type)
     {
-        std::wstring sXml = L"<Reference URI=\"" + file + L"?ContentType=" + content_type + L"\">";
+        std::wstring sXml = L"<Reference URI=\"/" + file + L"?ContentType=" + content_type + L"\">";
         sXml += (L"<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/>");
         sXml += L"<DigestValue>";
-        std::string sTmp = m_certificate->GetHash(m_sFolder + file, m_certificate->GetHashAlg());
-        sXml += UTF8_TO_U(sTmp);
+        sXml += m_pFolder->getFileHashW(file, m_certificate);
         sXml += L"</DigestValue>";
         sXml += L"</Reference>";
         return sXml;
@@ -101,18 +115,17 @@ public:
             return file.substr(file.find(L",") + 1);
         }
 
-        BYTE* pData = NULL;
-        DWORD dwLen = 0;
-        if (!NSFile::CFileBinary::ReadAllBytes(file, &pData, dwLen))
-            return L"";
-
+        std::string sRet = m_pFolder->getFileBase64(file);
+        return UTF8_TO_U(sRet);
+    }
+    std::wstring GetImageBase64(BYTE* data, DWORD length)
+    {
         char* pDataC = NULL;
         int nLen = 0;
-        NSFile::CBase64Converter::Encode(pData, (int)dwLen, pDataC, nLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
+        NSFile::CBase64Converter::Encode(data, (int)length, pDataC, nLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
         std::wstring sReturn = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pDataC, (LONG)nLen, FALSE);
 
-        RELEASEARRAYOBJECTS(pData);
         RELEASEARRAYOBJECTS(pDataC);
 
         return sReturn;
@@ -120,13 +133,13 @@ public:
 
     std::wstring GetRelsReference(const std::wstring& file)
     {
-        COOXMLRelationships oRels(m_sFolder + file, true);
+        COOXMLRelationships oRels(file, m_pFolder);
         if (oRels.rels.size() == 0)
             return L"";
 
-        if (L"/_rels/.rels" == file)
+        if (L"_rels/.rels" == file)
         {
-            oRels.CheckOriginSigs(m_sFolder + file);
+            oRels.CheckOriginSigs(file);
 
             // удалим все лишнее
             std::vector<COOXMLRelationship>::iterator i = oRels.rels.begin();
@@ -142,7 +155,7 @@ public:
         }
 
         NSStringUtils::CStringBuilder builder;
-        builder.WriteString(L"<Reference URI=\"");
+        builder.WriteString(L"<Reference URI=\"/");
         builder.WriteString(file);
         builder.WriteString(L"?ContentType=application/vnd.openxmlformats-package.relationships+xml\">");
         builder.WriteString(oRels.GetTransforms());
@@ -163,13 +176,13 @@ public:
     {
         std::wstring sRelsFolder = folder + L"/_rels";
 
-        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(sRelsFolder, false);
+        std::vector<std::wstring> arFiles = m_pFolder->getFiles(sRelsFolder, false);
         std::map<std::wstring, bool> arSigFiles;
 
         for (std::vector<std::wstring>::iterator iter = arFiles.begin(); iter != arFiles.end(); iter++)
         {
-            XmlUtils::CXmlNode oNodeRels;
-            if (!oNodeRels.FromXmlFile(*iter))
+            XmlUtils::CXmlNode oNodeRels = m_pFolder->getNodeFromFile(*iter);
+            if (!oNodeRels.IsValid())
                 continue;
             XmlUtils::CXmlNodes oNodesRels = oNodeRels.GetNodes(L"Relationship");
             int nCount = oNodesRels.GetCount();
@@ -179,10 +192,10 @@ public:
                 oNodesRels.GetAt(nIndex, oNodeRel);
 
                 std::wstring sTarget = oNodeRel.GetAttribute(L"Target");
-                if (!sTarget.empty() && arSigFiles.find(sTarget) == arSigFiles.end() && NSFile::CFileBinary::Exists(folder + L"/" + sTarget))
+                if (!sTarget.empty() && arSigFiles.find(sTarget) == arSigFiles.end() && m_pFolder->exists(folder + L"/" + sTarget))
                     arSigFiles.insert(std::pair<std::wstring, bool>(sTarget, true));
             }
-            NSFile::CFileBinary::Remove(*iter);
+            m_pFolder->remove(*iter);
         }
 
         int nCountSigs = (int)arSigFiles.size();
@@ -202,17 +215,13 @@ public:
 
         oBuilder.WriteString(L"</Relationships>");
 
-        NSFile::CFileBinary::Remove(sFile);
-        NSFile::CFileBinary oFile;
-        oFile.CreateFileW(sFile);
-        oFile.WriteStringUTF8(oBuilder.GetData());
-        oFile.CloseFile();
+        m_pFolder->writeXml(sFile, oBuilder.GetData());
 
         // теперь перебьем все имена файлов
 
         std::vector<std::wstring> arSigs;
 
-        std::vector<std::wstring> arFilesXml = NSDirectory::GetFiles(folder, false);
+        std::vector<std::wstring> arFilesXml = m_pFolder->getFiles(folder, false);
         for (std::vector<std::wstring>::iterator iter = arFilesXml.begin(); iter != arFilesXml.end(); iter++)
         {
             std::wstring sXmlFileName = NSFile::GetFileName(*iter);
@@ -223,7 +232,7 @@ public:
             if (find == arSigFiles.end())
             {
                 // ненужная xml
-                NSFile::CFileBinary::Remove(*iter);
+                m_pFolder->remove(*iter);
                 continue;
             }
 
@@ -233,12 +242,12 @@ public:
         std::sort(arSigs.begin(), arSigs.end());
         for (std::vector<std::wstring>::iterator iter = arSigs.begin(); iter != arSigs.end(); iter++)
         {
-            NSFile::CFileBinary::Move(folder + L"/" + *iter, folder + L"/onlyoffice_" + *iter);
+            m_pFolder->move(folder + L"/" + *iter, folder + L"/onlyoffice_" + *iter);
         }
         int nSigNumber = 1;
         for (std::vector<std::wstring>::iterator iter = arSigs.begin(); iter != arSigs.end(); iter++)
         {
-            NSFile::CFileBinary::Move(folder + L"/onlyoffice_" + *iter, folder + L"/sig" + std::to_wstring(nSigNumber++) + L".xml");
+            m_pFolder->move(folder + L"/onlyoffice_" + *iter, folder + L"/sig" + std::to_wstring(nSigNumber++) + L".xml");
         }
 
         return (int)arSigs.size();
@@ -246,9 +255,7 @@ public:
 
     void ParseContentTypes()
     {
-        std::wstring file = m_sFolder + L"/[Content_Types].xml";
-        XmlUtils::CXmlNode oNode;
-        oNode.FromXmlFile(file);
+        XmlUtils::CXmlNode oNode = m_pFolder->getNodeFromFile(L"/[Content_Types].xml");
 
         XmlUtils::CXmlNodes nodesDefaults;
         oNode.GetNodes(L"Default", nodesDefaults);
@@ -281,27 +288,22 @@ public:
         ParseContentTypes();
 
         // 2) Parse files in directory
-        std::vector<std::wstring> files = NSDirectory::GetFiles(m_sFolder, true);
+        std::vector<std::wstring> files = m_pFolder->getFiles(L"", true);
 
         // 3) Check each file
-        std::wstring sFolder = m_sFolder;
-        NSStringUtils::string_replace(sFolder, L"\\", L"/");
+        std::wstring sFolder = L"";
         for (std::vector<std::wstring>::iterator i = files.begin(); i != files.end(); i++)
         {
             std::wstring sCheckFile = *i;
-            NSStringUtils::string_replace(sCheckFile, L"\\", L"/");
-
-            if (0 != sCheckFile.find(sFolder))
-                continue;
 
             // make cool filename
-            sCheckFile = sCheckFile.substr(sFolder.length());
+            sCheckFile = m_pFolder->getLocalFilePath(sCheckFile);
 
             // check needed file
-            if (0 == sCheckFile.find(L"/_xmlsignatures") ||
-                0 == sCheckFile.find(L"/docProps") ||
-                0 == sCheckFile.find(L"/[Content_Types].xml") ||
-                0 == sCheckFile.find(L"/[trash]"))
+            if (0 == sCheckFile.find(L"_xmlsignatures") ||
+                0 == sCheckFile.find(L"docProps") ||
+                0 == sCheckFile.find(L"[Content_Types].xml") ||
+                0 == sCheckFile.find(L"[trash]"))
                 continue;
 
             // check rels and add to needed array
@@ -367,9 +369,8 @@ public:
 
     void CorrectContentTypes(int nCountSignatures)
     {
-        std::wstring file = m_sFolder + L"/[Content_Types].xml";
-        XmlUtils::CXmlNode oNode;
-        oNode.FromXmlFile(file);
+        std::wstring file = L"[Content_Types].xml";
+        XmlUtils::CXmlNode oNode = m_pFolder->getNodeFromFile(file);
 
         NSStringUtils::CStringBuilder oBuilder;
         oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
@@ -416,11 +417,7 @@ public:
 
         oBuilder.WriteNodeEnd(oNode.GetName());
 
-        NSFile::CFileBinary::Remove(file);
-        NSFile::CFileBinary oFile;
-        oFile.CreateFileW(file);
-        oFile.WriteStringUTF8(oBuilder.GetData());
-        oFile.CloseFile();
+        m_pFolder->writeXml(file, oBuilder.GetData());
     }
 
     void SetGuid(const std::wstring& guid)
@@ -431,9 +428,17 @@ public:
     {
         m_image_valid = GetImageBase64(file);
     }
+    void SetImageValid(BYTE* data, DWORD length)
+    {
+        m_image_valid = GetImageBase64(data, length);
+    }
     void SetImageInvalid(const std::wstring& file)
     {
         m_image_invalid = GetImageBase64(file);
+    }
+    void SetImageInvalid(BYTE* data, DWORD length)
+    {
+        m_image_invalid = GetImageBase64(data, length);
     }
 
     std::wstring GeneratePackageObject()
@@ -583,31 +588,25 @@ public:
 
     int AddSignatureReference()
     {
-        std::wstring sDirectory = m_sFolder + L"/_xmlsignatures";
+        std::wstring sDirectory = L"/_xmlsignatures";
 
-        if (!NSDirectory::Exists(sDirectory))
-            NSDirectory::CreateDirectory(sDirectory);
+        m_pFolder->createDirectory(sDirectory);
 
         // remove old .sig file
-        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(sDirectory, false);
+        std::vector<std::wstring> arFiles = m_pFolder->getFiles(sDirectory, false);
         for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
         {
             if (NSFile::GetFileExtention(*i) == L"sigs")
             {
-                NSFile::CFileBinary::Remove(*i);
+                m_pFolder->remove(*i);
             }
         }
 
         std::wstring sOriginName = L"origin.sigs";
-        if (!NSFile::CFileBinary::Exists(sDirectory + L"/" + sOriginName))
-        {
-            NSFile::CFileBinary oFile;
-            oFile.CreateFileW(sDirectory + L"/" + sOriginName);
-            oFile.CloseFile();
-        }
+        if (!m_pFolder->exists(sDirectory + L"/" + sOriginName))
+            m_pFolder->write(sDirectory + L"/" + sOriginName, NULL, 0);
 
-        if (!NSDirectory::Exists(sDirectory + L"/_rels"))
-            NSDirectory::CreateDirectory(sDirectory + L"/_rels");
+        m_pFolder->createDirectory(sDirectory + L"/_rels");
 
         int nSignNum = GetCountSigns(sDirectory);
 
@@ -615,7 +614,7 @@ public:
         return nSignNum;
     }
 
-    int Sign()
+    int Sign(BYTE*& pFiletoWrite, DWORD& dwLenFiletoWrite)
     {
         Parse();
 
@@ -649,7 +648,16 @@ public:
 
         int nSignNum = AddSignatureReference();
 
-        NSFile::CFileBinary::SaveToFile(m_sFolder + L"/_xmlsignatures/sig" + std::to_wstring(nSignNum + 1) + L".xml", builderResult.GetData(), false);
+        m_pFolder->writeXml(L"_xmlsignatures/sig" + std::to_wstring(nSignNum + 1) + L".xml", builderResult.GetData());
+
+        IFolder::CBuffer* buffer = m_pFolder->finalize();
+        if (buffer)
+        {
+            pFiletoWrite = buffer->Buffer;
+            dwLenFiletoWrite = buffer->Size;
+            buffer->UnsetDestroy();
+            delete buffer;
+        }
 
         return (sSignedXml.empty()) ? 1 : 0;
     }
@@ -658,6 +666,11 @@ public:
 COOXMLSigner::COOXMLSigner(const std::wstring& sFolder, ICertificate* pContext)
 {
     m_internal = new COOXMLSigner_private(sFolder, pContext);
+}
+
+COOXMLSigner::COOXMLSigner(BYTE* data, DWORD length, ICertificate* pContext)
+{
+    m_internal = new COOXMLSigner_private(data, length, pContext);
 }
 
 COOXMLSigner::~COOXMLSigner()
@@ -675,12 +688,30 @@ void COOXMLSigner::SetImageValid(const std::wstring& file)
     m_internal->SetImageValid(file);
 }
 
+void COOXMLSigner::SetImageValid(BYTE* data, DWORD length)
+{
+    m_internal->SetImageValid(data, length);
+}
+
 void COOXMLSigner::SetImageInvalid(const std::wstring& file)
 {
     m_internal->SetImageInvalid(file);
 }
 
+void COOXMLSigner::SetImageInvalid(BYTE* data, DWORD length)
+{
+    m_internal->SetImageInvalid(data, length);
+}
+
 int COOXMLSigner::Sign()
 {
-    return m_internal->Sign();
+    BYTE* pData = NULL; unsigned long lLen = 0;
+    int nResult = m_internal->Sign(pData, lLen);
+    RELEASEARRAYOBJECTS(pData);
+    return nResult;
+}
+
+int COOXMLSigner::Sign(BYTE*& pFiletoWrite, DWORD& dwLenFiletoWrite)
+{
+    return m_internal->Sign(pFiletoWrite, dwLenFiletoWrite);
 }

@@ -32,8 +32,8 @@
 #ifndef _BUILD_XMLLIGHT_PRIVATE_CROSSPLATFORM_H_
 #define _BUILD_XMLLIGHT_PRIVATE_CROSSPLATFORM_H_
 
-#include "../../../DesktopEditor/common/File.h"
-#include "../../../DesktopEditor/common/StringExt.h"
+#include "../../common/File.h"
+#include "../../common/StringExt.h"
 
 #ifdef _IOS
     #include <libxml2/libxml/xmlreader.h>

@@ -1262,7 +1262,7 @@ namespace NSCSS
 
                 std::wstring GetTopSide() const
                 {
-                    if (fTopSide == fNoneValue || !bPermission)
+                    if (fTopSide < 0 || !bPermission)
                         return std::wstring();
 
                     return std::to_wstring(static_cast<short int>(fTopSide  * 10.0f + 0.5f));
@@ -1270,7 +1270,7 @@ namespace NSCSS
 
                 std::wstring GetRightSide() const
                 {
-                    if (fRightSide == fNoneValue || !bPermission)
+                    if (fRightSide < 0 || !bPermission)
                         return std::wstring();
 
                     return (fRightSide >= -128.0f) ? std::to_wstring(static_cast<short int>(fRightSide  * 10.0f + ((fLeftSide > 0) ? 0.5f : -0.5f))) : L"-1280";
@@ -1278,7 +1278,7 @@ namespace NSCSS
 
                 std::wstring GetBottomSide() const
                 {
-                    if (fBottomSide == fNoneValue || !bPermission)
+                    if (fBottomSide < 0 || !bPermission)
                         return std::wstring();
 
                     return std::to_wstring(static_cast<short int>(fBottomSide  * 10.0f + 0.5f));
@@ -1286,7 +1286,7 @@ namespace NSCSS
 
                 std::wstring GetLeftSide() const
                 {
-                    if (fLeftSide == fNoneValue || !bPermission)
+                    if (fLeftSide < 0 || !bPermission)
                         return std::wstring();
 
                     return (fLeftSide >= -128.0f) ? std::to_wstring(static_cast<short int>(fLeftSide  * 10.0f + ((fLeftSide > 0) ? 0.5f : -0.5f))) : L"-1280";

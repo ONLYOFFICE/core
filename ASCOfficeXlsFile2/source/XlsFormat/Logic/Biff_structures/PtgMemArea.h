@@ -31,22 +31,22 @@
  */
 #pragma once
 
-#include "Ptg.h"
+#include "OperandPtg.h"
 
 namespace XLS
 {
 
 class CFRecord;
 
-class PtgMemArea : public Ptg
+class PtgMemArea : public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgMemArea)
 public:
-	BiffStructurePtr clone();
+	PtgMemArea(const unsigned short full_ptg_id);
 
+	BiffStructurePtr clone();
 	
-	virtual void loadFields(CFRecord& record);
-	
+	virtual void loadFields(CFRecord& record);	
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 

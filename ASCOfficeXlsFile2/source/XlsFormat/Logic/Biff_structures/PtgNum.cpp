@@ -36,7 +36,7 @@
 namespace XLS
 {
 
-PtgNum::PtgNum()
+PtgNum::PtgNum(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
 {
 }
 

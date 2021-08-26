@@ -153,8 +153,8 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-		//public:
-		private:
+        public:
+//		private:
 			smart_ptr<WrapperWritingElement> m_Typeface;
 		protected:
 			virtual void FillParentPointersForChilds(){};

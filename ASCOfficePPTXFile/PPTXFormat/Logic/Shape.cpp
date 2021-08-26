@@ -44,8 +44,8 @@ namespace PPTX
 	{
 		Shape::Shape(std::wstring name_)
 		{
-			m_name				= name_;
-			m_pLevelUp			= NULL;
+			m_name = name_;
+			m_pLevelUp = NULL;
 		}
 
 		Shape::~Shape()
@@ -54,26 +54,26 @@ namespace PPTX
 
 		Shape::Shape(XmlUtils::CXmlNode& node)
 		{
-			m_pLevelUp			= NULL;
+			m_pLevelUp = NULL;
 			
 			fromXML(node);
 		}
 		Shape::Shape(XmlUtils::CXmlLiteReader& oReader)
 		{
-			m_pLevelUp			= NULL;
+			m_pLevelUp = NULL;
 			
 			fromXML(oReader);
 		}		
 		const Shape& Shape::operator =(XmlUtils::CXmlNode& node)
 		{
-			m_pLevelUp			= NULL;
+			m_pLevelUp = NULL;
 
 			fromXML(node);
 			return *this;
 		}
 		const Shape& Shape::operator =(XmlUtils::CXmlLiteReader& oReader)
 		{
-			m_pLevelUp			= NULL;
+			m_pLevelUp = NULL;
 
 			fromXML(oReader);
 			return *this;
@@ -92,17 +92,17 @@ namespace PPTX
 			{
 				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if (_T("nvSpPr") == strName)
+				if (L"nvSpPr" == strName)
 					nvSpPr = oReader;
-				else if (_T("spPr") == strName)
+				else if (L"spPr" == strName)
 					spPr = oReader;
-				else if (_T("style") == strName)
+				else if (L"style" == strName)
 					style = oReader;
-				else if (_T("txBody") == strName)
+				else if (L"txBody" == strName)
 					txBody = oReader;
-				else if (_T("txXfrm")  == strName)
+				else if (L"txXfrm" == strName)
 					txXfrm = oReader;
-				else if (_T("txbx") == strName || _T("textbox") == strName)
+				else if (L"txbx" == strName || L"textbox" == strName)
 				{
 					if ( oReader.IsEmptyNode() )
 						continue;
@@ -119,11 +119,11 @@ namespace PPTX
 						}
 					}
 				}
-				else if (_T("cNvPr") == strName)
+				else if (L"cNvPr" == strName)
 					nvSpPr.cNvPr = oReader;
-				else if (_T("cNvSpPr") == strName)
+				else if (L"cNvSpPr" == strName)
 					nvSpPr.cNvSpPr = oReader;
-				else if (_T("txSp") == strName)
+				else if (L"txSp" == strName)
 				{
 					if ( oReader.IsEmptyNode() )
 						continue;
@@ -140,7 +140,7 @@ namespace PPTX
 						}
 					}
 				}
-				else if (_T("bodyPr") == strName)
+				else if (L"bodyPr" == strName)
 					oTextBoxBodyPr = oReader;
 			}
 			FillParentPointersForChilds();
@@ -149,10 +149,11 @@ namespace PPTX
 		{
 			m_name = node.GetName();
 
-            XmlMacroReadAttributeBase(node,L"useBgFill", attrUseBgFill);
+            XmlMacroReadAttributeBase(node,L"useBgFill", useBgFill);
+			XmlMacroReadAttributeBase(node, L"macro", macro);
 
 			XmlUtils::CXmlNodes oNodes;
-			if (node.GetNodes(_T("*"), oNodes))
+			if (node.GetNodes(L"*", oNodes))
 			{
 				int nCount = oNodes.GetCount();
 				for (int i = 0; i < nCount; ++i)
@@ -162,25 +163,25 @@ namespace PPTX
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
-					if (_T("nvSpPr") == strName)
+					if (L"nvSpPr" == strName)
 						nvSpPr = oNode;
-					else if (_T("spPr") == strName)
+					else if (L"spPr" == strName)
 						spPr = oNode;
-					else if (_T("style") == strName)
+					else if (L"style" == strName)
 						style = oNode;
-					else if (_T("txBody") == strName)
+					else if (L"txBody" == strName)
 						txBody = oNode;
-					else if (_T("txXfrm")  == strName)
+					else if (L"txXfrm" == strName)
 						txXfrm = oNode;
-					else if (_T("txbx") == strName || _T("textbox") == strName)
-						oTextBoxShape = oNode.ReadNode(_T("w:txbxContent"));
-					else if (_T("cNvPr") == strName)
+					else if (L"txbx" == strName || L"textbox" == strName)
+						oTextBoxShape = oNode.ReadNode(L"w:txbxContent");
+					else if (L"cNvPr" == strName)
 						nvSpPr.cNvPr = oNode;
-					else if (_T("cNvSpPr") == strName)
+					else if (L"cNvSpPr" == strName)
 						nvSpPr.cNvSpPr = oNode;
-					else if (_T("txSp") == strName)
-						txBody = oNode.ReadNodeNoNS(_T("txBody"));
-					else if (_T("bodyPr") == strName)
+					else if (L"txSp" == strName)
+						txBody = oNode.ReadNodeNoNS(L"txBody");
+					else if (L"bodyPr" == strName)
 						oTextBoxBodyPr = oNode;
 				}
 			}
@@ -190,7 +191,8 @@ namespace PPTX
 		std::wstring Shape::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("useBgFill"), attrUseBgFill);
+			oAttr.Write(L"useBgFill", useBgFill);
+			oAttr.Write(L"macro", macro);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(nvSpPr);
@@ -214,13 +216,14 @@ namespace PPTX
 			pWriter->StartNode(name_);
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("useBgFill"), attrUseBgFill);
+			pWriter->WriteAttribute(L"macro", macro);
+			pWriter->WriteAttribute(L"useBgFill", useBgFill);
 			pWriter->EndAttributes();
 
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
 				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
-				nvSpPr.cNvSpPr.toXmlWriter2(_T("wps"), pWriter);
+				nvSpPr.cNvSpPr.toXmlWriter2(L"wps", pWriter);
 			}
 			else
 				nvSpPr.toXmlWriter(pWriter);
@@ -255,27 +258,27 @@ namespace PPTX
 				bool bIsWritedBodyPr = false;
 				if (strTextBoxShape.is_init())
 				{
-					pWriter->WriteString(_T("<wps:txbx>"));					
+					pWriter->WriteString(L"<wps:txbx>");					
 					//pWriter->WriteString(oTextBoxShape->toXML());
 					pWriter->WriteString(*strTextBoxShape);
-					pWriter->WriteString(_T("</wps:txbx>"));
+					pWriter->WriteString(L"</wps:txbx>");
 
 					if (oTextBoxBodyPr.is_init())
 					{
-						oTextBoxBodyPr->m_namespace = _T("wps");
+						oTextBoxBodyPr->m_namespace = L"wps";
 						oTextBoxBodyPr->toXmlWriter(pWriter);
 						bIsWritedBodyPr = true;
 					}
 				}
 				else if (txBody.is_init())
 				{
-					txBody->m_name = _T("wps:txBody");
+					txBody->m_name = L"wps:txBody";
 					pWriter->Write(txBody);
 				}
 
                 if (!bIsWritedBodyPr)
 				{
-					pWriter->WriteString(_T("<wps:bodyPr rot=\"0\"><a:prstTxWarp prst=\"textNoShape\"><a:avLst/></a:prstTxWarp><a:noAutofit/></wps:bodyPr>"));
+					pWriter->WriteString(L"<wps:bodyPr rot=\"0\"><a:prstTxWarp prst=\"textNoShape\"><a:avLst/></a:prstTxWarp><a:noAutofit/></wps:bodyPr>");
 				}
 			}
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)
@@ -319,9 +322,8 @@ namespace PPTX
 				{
 					case 0:
 					{
-						attrUseBgFill = pReader->GetBool();
-						break;
-					}
+						useBgFill = pReader->GetBool();						
+					}break;
 					default:
 						break;
 				}
@@ -367,9 +369,9 @@ namespace PPTX
 							std::wstring sXmlContent;
 							pReader->m_pMainDocument->getXmlContent(*pReader, lLenRec, sXmlContent);
 
-							std::wstring strC = _T("<w:txbxContent>");
+							std::wstring strC = L"<w:txbxContent>";
 							strC += sXmlContent;
-							strC += _T("</w:txbxContent>");
+							strC += L"</w:txbxContent>";
 							strTextBoxShape = strC;
 
 							//pReader->Seek(lPosition + lLenRec);
@@ -399,6 +401,11 @@ namespace PPTX
 						signatureLine->fromPPTY(pReader);
 						break;
 					}
+					case SPTREE_TYPE_MACRO:
+					{
+						pReader->Skip(5); // type + size
+						macro = pReader->GetString2();
+					}break;
 					default:
 					{
 						pReader->SkipRecord();
@@ -409,8 +416,6 @@ namespace PPTX
 
 			pReader->Seek(_end_rec);
 		}
-
-
 
 		void Shape::FillParentPointersForChilds()
 		{
@@ -428,7 +433,7 @@ namespace PPTX
 			pWriter->StartRecord(SPTREE_TYPE_SHAPE);
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteBool2(0, attrUseBgFill);
+			pWriter->WriteBool2(0, useBgFill);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord1(0, nvSpPr);
@@ -495,6 +500,12 @@ namespace PPTX
 			pWriter->WriteRecord2(6, txXfrm);
 			pWriter->WriteRecord2(7, signatureLine);
 			
+			if (macro.IsInit())
+			{
+				pWriter->StartRecord(SPTREE_TYPE_MACRO);
+				pWriter->WriteString1(0, *macro);
+				pWriter->EndRecord();
+			}
 			pWriter->EndRecord();
 		}
 
@@ -727,7 +738,7 @@ namespace PPTX
 						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"top");
 					else if (_strAnchor == L"b")
 						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"bottom");
-					else if (_strAnchor == _T("ctr"))
+					else if (_strAnchor == L"ctr")
 						oStylesWriter.WriteAttributeCSS(L"v-text-anchor", L"middle");
 				}
 			}

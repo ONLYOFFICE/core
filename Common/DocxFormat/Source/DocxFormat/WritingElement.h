@@ -729,6 +729,7 @@ namespace OOX
 		et_w_cols, // <w:cols>
 		et_w_comboBox, // <w:comboBox>
 		et_w_textFormPr, // <w:textFormPr> custom!
+		et_w_formPr,// <w:formPr> custom!
 		et_w_comment, // <w:comment>
 		et_w_commentRangeEnd, // <w:commentRangeEnd>
 		et_w_commentRangeStart, // <w:commentRangeStart>
@@ -832,6 +833,7 @@ namespace OOX
 		et_w_sdtEndPr, // <w:sdtEndPr>
 		et_w_sdtPr, // <w:sdtPr>
 		et_w_sdtCheckbox, // <w:checkbox>
+		et_w_sdtPicture, // <w:picture>
 		et_w_sdtCheckboxSymbol, // <w:checkedState>
 		et_w_sectPr, // <w:sectPr>
 		et_w_sectPrChange, // <w:sectPrChange>
@@ -1215,6 +1217,8 @@ namespace OOX
 		et_x_CalcCell,
 		et_x_SheetViews,
 		et_x_SheetView,
+		et_x_ProtectedRanges,
+		et_x_ProtectedRange,
 		et_x_GraphicFrame,
 		et_x_Graphic,
 		et_x_GraphicData,
@@ -1412,6 +1416,8 @@ namespace OOX
 	public:
 		Document() {}
 		virtual ~Document() {}
+
+		std::wstring m_sDocumentPath;
 	};
 
 	class WritingElement

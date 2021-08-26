@@ -78,7 +78,8 @@ namespace PPTX
 
 		virtual void FillParentPointersForChilds(){}
 	public:
-		virtual void SetParentPointer(const WrapperWritingElement* pParent)
+        virtual void
+        SetParentPointer(const WrapperWritingElement* pParent)
 		{
 			parentElement	= pParent;
 			parentFile		= parentElement->parentFile;

@@ -154,7 +154,11 @@ void table_table_protection::add_attributes( const xml::attributes_wc_ptr & Attr
 	//CP_APPLY_ATTR(L"loext:format-rows",			format_rows);
 	//CP_APPLY_ATTR(L"loext:format-cells",			format_cells);
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------------------------------------
+// table:table
+const wchar_t * table_sub_table::ns = L"table";
+const wchar_t * table_sub_table::name = L"sub-table";
+//---------------------------------------------------------------------------------------------------------
 // table:table
 const wchar_t * table_table::ns = L"table";
 const wchar_t * table_table::name = L"table";

@@ -47,13 +47,17 @@ static std::wstring replace_zero (const std::wstring &str, const std::wstring &d
 	{
 		if (pos >= str.size()) break;
 
-		if (str[pos] == '\0')
+		if (str[pos] == 0)
 		{
 			out += delimetr;
 		}
 		else if (str[pos] >= 0x20)
 		{
 			out += str[pos];
+		}
+		else
+		{
+			
 		}
 		pos++;
 	}
@@ -140,6 +144,12 @@ int Dv::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"error", Error.value());
 			}
+			if (formula1.IsVolatile())
+				formula1.set_base_ref(sqref.getLocationFirstCell());
+			
+			if (formula2.IsVolatile())
+				formula2.set_base_ref(sqref.getLocationFirstCell());
+
 			std::wstring sFormula1 = formula1.getAssembledFormula();
 			std::wstring sFormula2 = formula2.getAssembledFormula();
 

@@ -117,6 +117,7 @@ namespace BinXlsxRW
 		void WriteCellXfs(const OOX::Spreadsheet::CCellXfs& cellXfs);
 		void WriteXfs(const OOX::Spreadsheet::CXfs& xfs);
 		void WriteAligment(const OOX::Spreadsheet::CAligment& aligment);
+		void WriteProtection(const OOX::Spreadsheet::CProtection& protection);
 		void WriteFills(const OOX::Spreadsheet::CFills& fills, OOX::Spreadsheet::CIndexedColors* pIndexedColors, PPTX::Theme* pTheme);
 		void WriteFill(const OOX::Spreadsheet::CFill& fill, OOX::Spreadsheet::CIndexedColors* pIndexedColors);
 		void WritePatternFill(const OOX::Spreadsheet::CPatternFill& fill, OOX::Spreadsheet::CIndexedColors* pIndexedColors);
@@ -218,6 +219,8 @@ namespace BinXlsxRW
 		
 		void WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet);
 		void WriteProtection(const OOX::Spreadsheet::CSheetProtection& protection);
+		void WriteProtectedRanges(const OOX::Spreadsheet::CProtectedRanges& protectedRanges);
+		void WriteProtectedRange(const OOX::Spreadsheet::CProtectedRange& protectedRanges);
 		void WriteCols(const OOX::Spreadsheet::CCols& oCols);
 		void WriteCol(const OOX::Spreadsheet::CCol& oCol);
 		void WriteSheetViews(const OOX::Spreadsheet::CSheetViews& oSheetViews);
@@ -266,11 +269,11 @@ namespace BinXlsxRW
 		void WritemRowColBreaks(const OOX::Spreadsheet::CRowColBreaks& oRowColBreaks);		
 		void WritemBreak(const OOX::Spreadsheet::CBreak& oBreak);
 		void WriteConditionalFormattings(std::vector<OOX::Spreadsheet::CConditionalFormatting*>& arrConditionalFormatting,
-			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx);
+			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
 		void WriteConditionalFormatting(const OOX::Spreadsheet::CConditionalFormatting& oConditionalFormatting,
-			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx);
+			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
 		void WriteConditionalFormattingRule(const OOX::Spreadsheet::CConditionalFormattingRule& oConditionalFormattingRule,
-			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx);
+			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
 		void WriteColorScale(const OOX::Spreadsheet::CColorScale& oColorScale);
 		void WriteDataBar(const OOX::Spreadsheet::CDataBar& oDataBar);
 		void WriteIconSet(const OOX::Spreadsheet::CIconSet& oIconSet);

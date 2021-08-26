@@ -32,6 +32,7 @@
 #pragma once
 
 #include "DocProgTagsContainer.h"
+#include "VBAInfoAtom.h"
 
 namespace PPT_FORMAT
 {
@@ -46,7 +47,13 @@ public:
         {
         case RT_ProgTags:
         {
-            m_record = new CRecordDocProgTagsContainer;
+            m_record.reset(new CRecordDocProgTagsContainer);
+            m_record->ReadFromStream(oHeader, pStream);
+            break;
+        }
+        case RT_VbaInfo:
+        {
+            m_record.reset(new CRecordVBAInfoContainer);
             m_record->ReadFromStream(oHeader, pStream);
             break;
         }
@@ -104,6 +111,21 @@ public:
             m_rgChildRec.push_back(pRec);
         }
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
+    }
+
+    CRecordVBAInfoAtom* getVBAInfoAtom()const
+    {
+        for (const auto* pChild : m_rgChildRec)
+        {
+            if (!pChild || !pChild->m_record.IsInit())
+                continue;
+            IRecord* pRecord = pChild->m_record.GetPointer();
+            auto* pVBA = dynamic_cast<CRecordVBAInfoContainer*>(pRecord);
+            if (pVBA)
+                return static_cast<CRecordVBAInfoAtom*>(pVBA->m_arRecords[0]);
+        }
+
+        return nullptr;
     }
 };
 }

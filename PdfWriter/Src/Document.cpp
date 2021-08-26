@@ -45,6 +45,9 @@
 #include "FontCidTT.h"
 #include "Shading.h"
 #include "Pattern.h"
+#include "AcroForm.h"
+#include "Field.h"
+#include "ResourcesDictionary.h"
 
 #include "../../DesktopEditor/agg-2.4/include/agg_span_hatch.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
@@ -78,6 +81,8 @@ namespace PdfWriter
 		memset((void*)m_sTTFontTag, 0x00, 8);
 		m_pTransparencyGroup = NULL;
 		m_pFreeTypeLibrary  = NULL;
+		m_pAcroForm         = NULL;
+		m_pFieldsResources  = NULL;
 
 		m_bPDFAConformance	= false;
 	}
@@ -142,6 +147,7 @@ namespace PdfWriter
 		m_vExtGrStates.clear();
 		m_vFillAlpha.clear();
 		m_vStrokeAlpha.clear();
+		m_vRadioGroups.clear();
 
 		m_pTransparencyGroup = NULL;
 
@@ -165,6 +171,8 @@ namespace PdfWriter
 		m_unCompressMode    = COMP_NONE;
 		m_pJbig2            = NULL;
 		m_pTransparencyGroup= NULL;
+		m_pAcroForm         = NULL;
+		m_pFieldsResources  = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
 
 		m_vPages.clear();
@@ -814,5 +822,119 @@ namespace PdfWriter
 	{
 		double pPattern[] ={ dX0, dY0, dR0, dX1, dY1, dR1 };
 		return CreateShading(pPage, pPattern, false, pColors, pAlphas, pPoints, nCount, pExtGrState);
+	}
+	CResourcesDict* CDocument::GetFieldsResources()
+	{
+		if (!m_pFieldsResources)
+			m_pFieldsResources = new CResourcesDict(m_pXref, false, true);
+
+		return m_pFieldsResources;
+	}
+	CTextField* CDocument::CreateTextField()
+	{
+		if (!CheckAcroForm())
+			return NULL;
+
+		CTextField* pField = new CTextField(m_pXref, this);
+		if (!pField)
+			return NULL;
+
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pField);
+
+		return pField;
+	}
+	CChoiceField* CDocument::CreateChoiceField()
+	{
+		if (!CheckAcroForm())
+			return NULL;
+
+		CChoiceField* pField = new CChoiceField(m_pXref, this);
+		if (!pField)
+			return NULL;
+
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pField);
+
+		return pField;
+	}
+	CCheckBoxField* CDocument::CreateCheckBoxField()
+	{
+		if (!CheckAcroForm())
+			return NULL;
+
+		CCheckBoxField* pField = new CCheckBoxField(m_pXref, this);
+		if (!pField)
+			return NULL;
+
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pField);
+
+		return pField;
+	}
+	CRadioGroupField* CDocument::GetRadioGroupField(const std::wstring& wsGroupName)
+	{
+		CRadioGroupField* pField = FindRadioGroupField(wsGroupName);
+		if (!pField)
+		{
+			if (!CheckAcroForm())
+				return NULL;
+
+			pField = new CRadioGroupField(m_pXref, this);
+			if (!pField)
+				return NULL;
+
+			m_vRadioGroups.push_back(pField);
+
+			pField->SetFieldName(wsGroupName);
+			CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+			ppFields->Add(pField);
+		}
+
+		return pField;
+	}
+	CRadioGroupField* CDocument::FindRadioGroupField(const std::wstring& wsGroupName)
+	{
+		CRadioGroupField* pField = NULL;
+		for (unsigned int unIndex = 0, unCount = m_vRadioGroups.size(); unIndex < unCount; ++unIndex)
+		{
+			pField = m_vRadioGroups.at(unIndex);
+
+			if (pField->GetFieldName() == wsGroupName)
+				return pField;
+		}
+
+		return NULL;
+	}
+	CPictureField* CDocument::CreatePictureField()
+	{
+		if (!CheckAcroForm())
+			return NULL;
+
+		CPictureField* pField = new CPictureField(m_pXref, this);
+		if (!pField)
+			return NULL;
+
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pField);
+
+		return pField;
+	}
+	bool CDocument::CheckAcroForm()
+	{
+		if (!m_pXref || !m_pCatalog)
+			return false;
+
+		if (!m_pAcroForm)
+		{
+			m_pAcroForm = new CAcroForm(m_pXref);
+			if (!m_pAcroForm)
+				return false;
+
+			m_pCatalog->Add("AcroForm", m_pAcroForm);
+			m_pAcroForm->Add("Fields", new CArrayObject());
+		}
+
+		return (!!m_pAcroForm);
 	}
 }

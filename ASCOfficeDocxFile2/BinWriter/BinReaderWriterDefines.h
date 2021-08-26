@@ -110,7 +110,7 @@ const double g_dKoef_mm_to_hps = 2 * g_dKoef_mm_to_pt;
 
 const static wchar_t* g_sFormatSignature = L"DOCY";
 const int g_nFormatVersion = 5;
-const int g_nFormatVersionNoBase64 = 10;
+const int g_nFormatVersionNoBase64 = 10; 
 extern int g_nCurFormatVersion;
 	namespace c_oAscWrapStyle{enum c_oSerFormat
 	{
@@ -1166,7 +1166,8 @@ extern int g_nCurFormatVersion;
 		Name = 1,
 		Hidden = 2,
 		Title	= 3,
-		Descr = 4
+		Descr = 4,
+		Form = 5
 	};}
 	namespace c_oSerEmbedded{enum c_oSerEmbedded
 	{
@@ -1232,7 +1233,17 @@ extern int g_nCurFormatVersion;
 		TextFormPrCombSym = 53,
 		TextFormPrCombFont = 54,
 		TextFormPrMaxCharacters = 55,
-		TextFormPrCombBorder = 56
+		TextFormPrCombBorder = 56,
+		TextFormPrAutoFit = 57,
+		TextFormPrMultiLine = 58,
+		PictureFormPr = 60,
+		PictureFormPrScaleFlag = 61,
+		PictureFormPrLockProportions = 62,
+		PictureFormPrRespectBorders = 63,
+		PictureFormPrShiftX = 64,
+		PictureFormPrShiftY = 65,
+		FormPrBorder = 70,
+		FormPrShd = 71
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

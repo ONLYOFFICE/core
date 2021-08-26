@@ -57,6 +57,8 @@ public:
     unsigned short          RecInstance;
     PPT_FORMAT::RecordType	RecType;
     _UINT32                 RecLen;
+
+	bool bBadHeader;
 	
 	void Clear()
 	{
@@ -64,6 +66,8 @@ public:
 		RecInstance = 0;
         RecType = RT_NONE;
 		RecLen = 0;
+
+		bBadHeader = false;
 	}
 	SRecordHeader()
 	{
@@ -86,9 +90,10 @@ public:
 
 		unsigned long sz = pStream->getStreamSize() - pStream->getStreamPointer();
 
-		if (RecLen > sz )
+		if (RecLen > sz)
 		{
-			RecLen = sz;
+			RecLen = (UINT)sz;
+			bBadHeader = true; // GZoabli_PhD.ppt ... RecLen & 0xffff ????
 		}
 
         return true;
@@ -115,9 +120,10 @@ public:
 
 		POLE::uint64 sz = pStream->size() - pStream->tell();
 
-		if (RecLen > sz )
+		if (RecLen > sz)
 		{
 			RecLen = (UINT)sz;
+			bBadHeader = true; // GZoabli_PhD.ppt ... RecLen & 0xffff ????
 		}
 
         return true;
@@ -225,7 +231,7 @@ public:
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
 	template <typename T>
-	void GetRecordsByType(std::vector<T>* pArray, bool bIsChild, bool bOnlyFirst = false)
+    void GetRecordsByType(std::vector<T>* pArray, bool bIsChild, bool bOnlyFirst = false) const
 	{
 		if (NULL == pArray)
 			return;

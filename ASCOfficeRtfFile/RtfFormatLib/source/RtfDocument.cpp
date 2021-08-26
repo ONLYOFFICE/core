@@ -41,6 +41,7 @@
 
 RtfDocument::RtfDocument() : m_pAppFonts(NULL)
 {
+	m_bStartRead = false;
 	m_nUserLCID = -1;
     _section section;
 	section.props = RtfSectionPtr(new RtfSection());

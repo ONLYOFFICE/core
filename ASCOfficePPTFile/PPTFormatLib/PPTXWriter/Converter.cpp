@@ -36,35 +36,54 @@
 #include "../../../ASCOfficePPTXFile/Editor/DefaultNotesMaster.h"
 #include "../../../ASCOfficePPTXFile/Editor/DefaultNotesTheme.h"
 
-#include "../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"
-#include "../../../DesktopEditor/common/Directory.h"
-#include "../../../DesktopEditor/common/SystemUtils.h"
-
+#include "TableWriter.h"
 #include "../Reader/PPTDocumentInfo.h"
 
 #include "ShapeWriter.h"
 #include "StylesWriter.h"
 
 #include "Converter.h"
+#include "Animation.h"
+
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/Transition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/TransitionBase.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/EmptyTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/OrientationTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/EightDirectionTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/OptionalBlackTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/SideDirectionTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/CornerDirectionTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/WheelTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/SplitTransition.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/ZoomTransition.h"
+
+#include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"
+
+#include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/common/SystemUtils.h"
+
+#include <unordered_set>
+#include <boost/uuid/detail/md5.hpp>
+
+typedef boost::uuids::detail::md5 MD5;
 
 namespace PPT_FORMAT
 {
-    namespace NSPPTXWriterConst
-    {
-        static std::wstring g_string_rels_presentation = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
-<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/>\
-<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"ppt/presentation.xml\"/>\
-<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>\
-</Relationships>");
+namespace NSPPTXWriterConst
+{
+static std::wstring g_string_rels_presentation = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+                                                    <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
+        <Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/>\
+        <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"ppt/presentation.xml\"/>\
+        <Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>\
+        </Relationships>");
 
         static std::wstring g_string_core = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\
-<dc:title>Slide 1</dc:title>\
-<cp:revision>1</cp:revision>\
-</cp:coreProperties>");
-    }
+                                               <cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\
+        <dc:title>Slide 1</dc:title>\
+        <cp:revision>1</cp:revision>\
+        </cp:coreProperties>");
+}
 }
 
 
@@ -96,13 +115,13 @@ void PPT_FORMAT::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo	)
     m_pShapeWriter->InitNextId();
 
     NSDirectory::CreateDirectory(m_strTempDirectory);
-    CFile oFile;
+	NSFile::CFileBinary oFile;
     std::wstring strMemory = _T("");
 
     // _rels
     NSDirectory::CreateDirectory(m_strTempDirectory + FILE_SEPARATOR_STR + _T("_rels"));
 
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("_rels")  + FILE_SEPARATOR_STR + _T(".rels"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("_rels")  + FILE_SEPARATOR_STR + _T(".rels"));
     strMemory = NSPPTXWriterConst::g_string_rels_presentation;
     oFile.WriteStringUTF8(strMemory);
     oFile.CloseFile();
@@ -111,13 +130,13 @@ void PPT_FORMAT::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo	)
     NSDirectory::CreateDirectory(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps"));
 
     // core
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml"));
     strMemory = NSPPTXWriterConst::g_string_core;
     oFile.WriteStringUTF8(strMemory);
     oFile.CloseFile();
 
     // app
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("app.xml"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("app.xml"));
     WriteApp(oFile);
     oFile.CloseFile();
 
@@ -140,13 +159,13 @@ void PPT_FORMAT::CPPTXWriter::CreateFile(CDocument* pDocument)
     m_pShapeWriter->InitNextId();
 
     NSDirectory::CreateDirectory(m_strTempDirectory);
-    CFile oFile;
+	NSFile::CFileBinary oFile;
     std::wstring strMemory = _T("");
 
     // _rels
     NSDirectory::CreateDirectory(m_strTempDirectory + FILE_SEPARATOR_STR + _T("_rels"));
 
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("_rels")  + FILE_SEPARATOR_STR + _T(".rels"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("_rels")  + FILE_SEPARATOR_STR + _T(".rels"));
     strMemory = NSPPTXWriterConst::g_string_rels_presentation;
     oFile.WriteStringUTF8(strMemory);
     oFile.CloseFile();
@@ -155,13 +174,13 @@ void PPT_FORMAT::CPPTXWriter::CreateFile(CDocument* pDocument)
     NSDirectory::CreateDirectory(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps"));
 
     // core
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml"));
     strMemory = NSPPTXWriterConst::g_string_core;
     oFile.WriteStringUTF8(strMemory);
     oFile.CloseFile();
 
     // app
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("app.xml"));
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("app.xml"));
     WriteApp(oFile);
     oFile.CloseFile();
 
@@ -184,43 +203,43 @@ void PPT_FORMAT::CPPTXWriter::CloseFile()
 void PPT_FORMAT::CPPTXWriter::WriteContentTypes()
 {
     std::wstring strContentTypes = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
-<Default Extension=\"bmp\" ContentType=\"image/bmp\"/>\
-<Default Extension=\"png\" ContentType=\"image/png\"/>\
-<Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/>\
-<Default Extension=\"wmf\" ContentType=\"image/x-wmf\"/>\
-<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>\
-<Default Extension=\"xml\" ContentType=\"application/xml\"/>\
-<Default Extension=\"gif\" ContentType=\"image/gif\"/>\
-<Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
-<Default Extension=\"wav\" ContentType=\"audio/wav\"/>\
-<Default Extension=\"wma\" ContentType=\"audio/x-ms-wma\"/>\
-<Default Extension=\"mp3\" ContentType=\"audio/unknown\"/>\
-<Default Extension=\"m4a\" ContentType=\"audio/unknown\"/>\
-<Default Extension=\"wmv\" ContentType=\"video/x-ms-wmv\"/>\
-<Default Extension=\"avi\" ContentType=\"video/avi\"/>\
-<Default Extension=\"m4v\" ContentType=\"video/unknown\"/>\
-<Default Extension=\"mp4\" ContentType=\"video/unknown\"/>\
-<Default Extension=\"mov\" ContentType=\"video/unknown\"/>\
-<Default Extension=\"xls\" ContentType=\"application/vnd.ms-excel\"/>\
-<Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>\
-<Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\" />\
-<Default Extension=\"jpg\" ContentType=\"image/jpeg\"/>";
+            <Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
+            <Default Extension=\"bmp\" ContentType=\"image/bmp\"/>\
+            <Default Extension=\"png\" ContentType=\"image/png\"/>\
+            <Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/>\
+            <Default Extension=\"wmf\" ContentType=\"image/x-wmf\"/>\
+            <Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>\
+            <Default Extension=\"xml\" ContentType=\"application/xml\"/>\
+            <Default Extension=\"gif\" ContentType=\"image/gif\"/>\
+            <Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
+            <Default Extension=\"wav\" ContentType=\"audio/wav\"/>\
+            <Default Extension=\"wma\" ContentType=\"audio/x-ms-wma\"/>\
+            <Default Extension=\"mp3\" ContentType=\"audio/unknown\"/>\
+            <Default Extension=\"m4a\" ContentType=\"audio/unknown\"/>\
+            <Default Extension=\"wmv\" ContentType=\"video/x-ms-wmv\"/>\
+            <Default Extension=\"avi\" ContentType=\"video/avi\"/>\
+            <Default Extension=\"m4v\" ContentType=\"video/unknown\"/>\
+            <Default Extension=\"mp4\" ContentType=\"video/unknown\"/>\
+            <Default Extension=\"mov\" ContentType=\"video/unknown\"/>\
+            <Default Extension=\"xls\" ContentType=\"application/vnd.ms-excel\"/>\
+            <Default Extension=\"xlsx\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\"/>\
+            <Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\" />\
+            <Default Extension=\"jpg\" ContentType=\"image/jpeg\"/>";
 
     if (m_pDocument->m_bMacros)
     {
         strContentTypes += L"<Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml\" />\
-<Override PartName=\"/ppt/vbaProject.bin\" ContentType=\"application/vnd.ms-office.vbaProject\" />";
+                <Override PartName=\"/ppt/vbaProject.bin\" ContentType=\"application/vnd.ms-office.vbaProject\" />";
     }
     else
     {
         strContentTypes += L"<Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml\" />";
     }
     strContentTypes += L"<Override PartName=\"/ppt/presProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml\" />\
-<Override PartName=\"/ppt/viewProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml\" />\
-<Override PartName=\"/ppt/tableStyles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml\"/>\
-<Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\" />\
-<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />";
+            <Override PartName=\"/ppt/viewProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml\" />\
+            <Override PartName=\"/ppt/tableStyles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml\"/>\
+            <Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\" />\
+            <Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />";
 
     int nIndexLayout = 1, nIndexTheme = 1;
 
@@ -236,20 +255,20 @@ void PPT_FORMAT::CPPTXWriter::WriteContentTypes()
         for (size_t nL = 0; nL < m_pDocument->m_arThemes[nT]->m_arLayouts.size(); nL++, nIndexLayout++)
         {
             strContentTypes += L"<Override PartName=\"/ppt/slideLayouts/slideLayout" + std::to_wstring(nIndexLayout) +
-                L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml\"/>";
+                    L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml\"/>";
         }
     }
 
     if (m_pDocument->m_pNotesMaster)
     {
         strContentTypes += L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring(nIndexTheme++) + L".xml\" \
-    ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>";
+                ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>";
         strContentTypes += L"<Override PartName=\"/ppt/notesMasters/notesMaster1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml\"/>";
     }
     if (m_pDocument->m_pHandoutMaster)
     {
         strContentTypes += L"<Override PartName=\"/ppt/theme/theme" + std::to_wstring(nIndexTheme++) + L".xml\" \
-    ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>";
+                ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>";
         strContentTypes += L"<Override PartName=\"/ppt/handoutMasters/handoutMaster1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.handoutMaster+xml\"/>";
     }
 
@@ -262,18 +281,18 @@ void PPT_FORMAT::CPPTXWriter::WriteContentTypes()
     for (size_t nS = 0; nS < m_pDocument->m_arNotes.size(); ++nS)
     {
         strContentTypes += L"<Override PartName=\"/ppt/notesSlides/notesSlide" + std::to_wstring( nS + 1)
-                    + L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml\"/>";
+                + L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml\"/>";
     }
     strContentTypes += _T("</Types>");
 
-    CFile oFile;
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("[Content_Types].xml"));
+	NSFile::CFileBinary oFile;
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("[Content_Types].xml"));
     oFile.WriteStringUTF8(strContentTypes);
     oFile.CloseFile();
 }
 
 
-void PPT_FORMAT::CPPTXWriter::WriteApp(CFile& oFile)
+void PPT_FORMAT::CPPTXWriter::WriteApp(NSFile::CFileBinary& oFile)
 {
     std::wstringstream strm;
 
@@ -295,10 +314,10 @@ void PPT_FORMAT::CPPTXWriter::WriteApp(CFile& oFile)
             std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
             if (sApplication.empty())
                 sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-    #if defined(INTVER)
+#if defined(INTVER)
             std::string s = VALUE2STR(INTVER);
             sApplication += L"/" + std::wstring(s.begin(), s.end());
-    #endif
+#endif
             CP_XML_NODE(L"Application")
             {
                 CP_XML_STREAM() << sApplication;
@@ -366,7 +385,7 @@ void PPT_FORMAT::CPPTXWriter::WriteApp(CFile& oFile)
                     CP_XML_NODE(L"vt:variant")
                     {
                         CP_XML_NODE(L"vt:i4")
-                            CP_XML_STREAM() << m_pDocument->m_arSlides.size();
+                                CP_XML_STREAM() << m_pDocument->m_arSlides.size();
                     }
                 }
             }
@@ -415,34 +434,34 @@ void PPT_FORMAT::CPPTXWriter::WriteApp(CFile& oFile)
 
 void PPT_FORMAT::CPPTXWriter::WritePresInfo()
 {
-    CFile oFile;
+	NSFile::CFileBinary oFile;
 
-// tableStyles.xml
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("tableStyles.xml"));
+    // tableStyles.xml
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("tableStyles.xml"));
 
     oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
                           <a:tblStyleLst xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" def=\"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}\"/>");
     oFile.CloseFile();
 
-// presProps.xml
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("presProps.xml"));
+    // presProps.xml
+    oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("presProps.xml"));
     oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
                           <p:presentationPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">\
-                          <p:extLst><p:ext uri=\"{E76CE94A-603C-4142-B9EB-6D1370010A27}\">\
-                          <p14:discardImageEditData xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"0\" /></p:ext>\
-                          <p:ext uri=\"{D31A062A-798A-4329-ABDD-BBA856620510}\">\
-                          <p14:defaultImageDpi xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"220\" />\
-                          </p:ext></p:extLst></p:presentationPr>");
-    oFile.CloseFile();
+            <p:extLst><p:ext uri=\"{E76CE94A-603C-4142-B9EB-6D1370010A27}\">\
+            <p14:discardImageEditData xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"0\" /></p:ext>\
+            <p:ext uri=\"{D31A062A-798A-4329-ABDD-BBA856620510}\">\
+            <p14:defaultImageDpi xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"220\" />\
+            </p:ext></p:extLst></p:presentationPr>");
+            oFile.CloseFile();
 
-// viewProps.xml
-    oFile.CreateFile(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("viewProps.xml"));
+            // viewProps.xml
+            oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("viewProps.xml"));
     oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
                           <p:viewPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">\
-                          <p:normalViewPr><p:restoredLeft sz=\"15620\"/><p:restoredTop sz=\"94660\"/></p:normalViewPr><p:slideViewPr><p:cSldViewPr><p:cViewPr varScale=\"1\">\
-                          <p:scale><a:sx n=\"104\" d=\"100\"/><a:sy n=\"104\" d=\"100\"/></p:scale><p:origin x=\"-1236\" y=\"-90\"/></p:cViewPr><p:guideLst>\
-                          <p:guide orient=\"horz\" pos=\"2160\"/><p:guide pos=\"2880\"/></p:guideLst></p:cSldViewPr></p:slideViewPr><p:notesTextViewPr><p:cViewPr><p:scale>\
-                          <a:sx n=\"1\" d=\"1\"/><a:sy n=\"1\" d=\"1\"/></p:scale><p:origin x=\"0\" y=\"0\"/></p:cViewPr></p:notesTextViewPr><p:gridSpacing cx=\"72008\" cy=\"72008\"/></p:viewPr>");
+            <p:normalViewPr><p:restoredLeft sz=\"15620\"/><p:restoredTop sz=\"94660\"/></p:normalViewPr><p:slideViewPr><p:cSldViewPr><p:cViewPr varScale=\"1\">\
+            <p:scale><a:sx n=\"104\" d=\"100\"/><a:sy n=\"104\" d=\"100\"/></p:scale><p:origin x=\"-1236\" y=\"-90\"/></p:cViewPr><p:guideLst>\
+            <p:guide orient=\"horz\" pos=\"2160\"/><p:guide pos=\"2880\"/></p:guideLst></p:cSldViewPr></p:slideViewPr><p:notesTextViewPr><p:cViewPr><p:scale>\
+            <a:sx n=\"1\" d=\"1\"/><a:sy n=\"1\" d=\"1\"/></p:scale><p:origin x=\"0\" y=\"0\"/></p:cViewPr></p:notesTextViewPr><p:gridSpacing cx=\"72008\" cy=\"72008\"/></p:viewPr>");
     oFile.CloseFile();
 
     // presentation.xml + _rels/presentation.xml.rels
@@ -488,8 +507,8 @@ void PPT_FORMAT::CPPTXWriter::WritePresInfo()
     for (size_t nIndexSlide = 0; nIndexSlide < m_pDocument->m_arSlides.size(); ++nIndexSlide, ++nCurrentRels)
     {
         strPresRels += L"<Relationship Id=\"rId" + std::to_wstring(nCurrentRels) +
-                       L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"slides/slide" +
-                       std::to_wstring(nIndexSlide + 1) + L".xml\" />";
+                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"slides/slide" +
+                std::to_wstring(nIndexSlide + 1) + L".xml\" />";
 
         strPresSlides += L"<p:sldId id=\"" + std::to_wstring(256 + nIndexSlide) + L"\" r:id=\"rId" + std::to_wstring(nCurrentRels) + L"\"/>";
     }
@@ -508,17 +527,17 @@ void PPT_FORMAT::CPPTXWriter::WritePresInfo()
         }
     }
     strPresRels = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"
-        + strPresRels + L"</Relationships>";
+            + strPresRels + L"</Relationships>";
 
     std::wstring strPptRels = m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("_rels");
 
     NSDirectory::CreateDirectory(strPptRels);
-    oFile.CreateFile(strPptRels + FILE_SEPARATOR_STR + _T("presentation.xml.rels"));
+    oFile.CreateFileW(strPptRels + FILE_SEPARATOR_STR + _T("presentation.xml.rels"));
     oFile.WriteStringUTF8(strPresRels);
     oFile.CloseFile();
 
     std::wstring strSizePres = L"<p:sldSz cx=\"" + std::to_wstring(m_pDocument->m_lSlideWidth) +
-                                L"\" cy=\"" + std::to_wstring(m_pDocument->m_lSlideHeight) +
+            L"\" cy=\"" + std::to_wstring(m_pDocument->m_lSlideHeight) +
             L"\" type=\"screen4x3\" /><p:notesSz cx=\"" + std::to_wstring(m_pDocument->m_lNotesWidth) +
             L"\" cy=\"" + std::to_wstring(m_pDocument->m_lNotesHeight) + L"\"/>";
 
@@ -533,20 +552,20 @@ void PPT_FORMAT::CPPTXWriter::WritePresInfo()
 
     std::wstring strPres = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
     strPres += _T("<p:presentation xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" saveSubsetFonts=\"1\"");
-        if ((m_pUserInfo) && (m_pUserInfo->m_bRtl))
-        {
-            strPres += _T(" rtl=\"1\"");
-        }
-        strPres += _T(">");
-        strPres += _T("<p:sldMasterIdLst>") + strPresMasters + _T("</p:sldMasterIdLst>");
-        strPres += strNotesIDs ;
-        strPres += strHandoutIDs ;
-        strPres +=_T("<p:sldIdLst>") + strPresSlides + _T("</p:sldIdLst>");
-        strPres += strSizePres;
-        strPres += strDefaultTextStyle;
+    if ((m_pUserInfo) && (m_pUserInfo->m_bRtl))
+    {
+        strPres += _T(" rtl=\"1\"");
+    }
+    strPres += _T(">");
+    strPres += _T("<p:sldMasterIdLst>") + strPresMasters + _T("</p:sldMasterIdLst>");
+    strPres += strNotesIDs ;
+    strPres += strHandoutIDs ;
+    strPres +=_T("<p:sldIdLst>") + strPresSlides + _T("</p:sldIdLst>");
+    strPres += strSizePres;
+    strPres += strDefaultTextStyle;
     strPres +=_T("</p:presentation>");
 
-    oFile.CreateFile(m_strTempDirectory+ FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR + _T("presentation.xml"));
+    oFile.CreateFileW(m_strTempDirectory+ FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR + _T("presentation.xml"));
     oFile.WriteStringUTF8(strPres);
     oFile.CloseFile();
 }
@@ -588,16 +607,125 @@ void PPT_FORMAT::CPPTXWriter::WriteAll()
 void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
     int nStartLayout = 0, nIndexTheme = 0;
+    auto arrRT = m_pDocument->getArrRoundTripTheme();
 
-    for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
+    //if (arrRT.empty()) - см баг 52046
     {
-        m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i].get();
+        for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
+        {
+            m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i].get();
             WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
-        m_pShapeWriter->m_pTheme = NULL;
+            m_pShapeWriter->m_pTheme = NULL;
+        }
     }
+    //else
+    //{
+    //    WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
+    //}
 
     WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
     WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
+}
+
+void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom*>& arrRTThemes, int& nIndexTheme, int & nStartLayout)
+{
+    PPT_FORMAT::CRelsGenerator themeRels(&m_oManager);
+    std::unordered_set<std::string> writedFilesHash;
+    for (const auto* pRTT : arrRTThemes)
+    {
+        if (pRTT == nullptr)
+            continue;
+
+        std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
+        std::wstring tempPath = NSDirectory::GetTempPath();
+
+        auto& zipAtom = *pRTT;
+        BYTE* zipData = zipAtom.data.first.get();
+        ULONG zipDataLen = zipAtom.data.second;
+
+
+        NSFile::CFileBinary binFile;
+        std::wstring tempZipPath = tempPath + FILE_SEPARATOR_STR + L"tempTheme.zip";
+        if (!binFile.CreateFileW(tempZipPath))
+            continue;
+
+        binFile.WriteFile(zipData, zipDataLen);
+        binFile.CloseFile();
+
+        COfficeUtils officeUtils(NULL);
+        std::wstring tempUnZipPath = tempPath + FILE_SEPARATOR_STR + L"tempTheme";
+        NSDirectory::CreateDirectory(tempUnZipPath);
+        officeUtils.ExtractToDirectory(tempZipPath, tempUnZipPath, NULL, 0);
+        NSFile::CFileBinary::Remove(tempZipPath);
+
+        auto arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"theme");
+        auto arrThemesPaths = NSDirectory::GrepPaths(arrPaths, L".*theme[0-9]+.xml");
+
+        arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"media");
+        auto arrImagesPaths = NSDirectory::GrepPaths(arrPaths, L".*image[0-9]+.*");
+
+        arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"_rels");
+        auto arrRelsPaths = NSDirectory::GrepPaths(arrPaths, L".*theme[0-9]+.xml.rels");
+
+        BYTE *utf8Data = NULL;
+        ULONG utf8DataSize = 0;
+        bool wasThemeWrite = false;
+
+        // write themes
+        for (auto& strThemePath : arrThemesPaths)
+        {
+            // read file bytes
+            NSFile::CFileBinary::ReadAllBytes(strThemePath, &utf8Data, utf8DataSize);
+            // compare hash
+            char* pointerToThemeElems = strstr((char*)utf8Data, "<a:themeElements>");
+            UINT hashShift = pointerToThemeElems ? pointerToThemeElems - (char*)utf8Data : 0;
+            auto strHash = CFile::md5(utf8Data+hashShift, utf8DataSize-hashShift);
+
+            // cp file with new name or write bytes
+            if (writedFilesHash.find(strHash) == writedFilesHash.end())
+            {
+                std::wstring strThemeFile = L"theme" + std::to_wstring(++nIndexTheme) + L".xml";
+                strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
+				NSFile::CFileBinary oFile;
+                oFile.CreateFileW(strThemeFile);
+                oFile.WriteFile(utf8Data, utf8DataSize);
+                wasThemeWrite = true;
+
+                // clear bytes
+                writedFilesHash.insert(strHash);
+                RELEASEOBJECT(utf8Data);
+                utf8DataSize = 0;
+                oFile.CloseFile();
+            }
+        }
+        if (wasThemeWrite == false)
+            continue;
+
+        for (auto& strImagePath : arrImagesPaths)
+        {
+            themeRels.WriteImage(strImagePath);
+        }
+        // write _rels
+        if (!arrRelsPaths.empty())
+        {
+            std::wstring relsFolder = strPptDirectory + L"theme" + FILE_SEPARATOR_STR  + L"_rels" + FILE_SEPARATOR_STR;
+            std::wstring relsName = L"theme" + std::to_wstring(nIndexTheme) + L".xml.rels";
+            std::wstring themeRelsPath = arrRelsPaths[0];
+            NSDirectory::CreateDirectory(relsFolder);
+
+            NSFile::CFileBinary::ReadAllBytes(arrRelsPaths[0], &utf8Data, utf8DataSize);
+			NSFile::CFileBinary oFile;
+            oFile.CreateFileW(relsFolder + relsName);
+            oFile.WriteFile(utf8Data, utf8DataSize);
+
+            oFile.CloseFile();
+            RELEASEOBJECT(utf8Data);
+//            utf8DataSize = 0;
+        }
+    }
+
+    if (!m_pDocument->m_arThemes.empty())
+        WriteLayoutAfterTheme(m_pDocument->m_arThemes[0], nIndexTheme, nStartLayout);
 }
 
 void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout)
@@ -609,8 +737,8 @@ void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, in
     std::wstring strThemeFile = L"theme" + std::to_wstring(nIndexTheme + 1) + L".xml";
     strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
 
-    CFile oFile;
-    oFile.CreateFile(strThemeFile);
+    NSFile::CFileBinary oFile;
+    oFile.CreateFileW(strThemeFile);
 
     PPT_FORMAT::CStringWriter oStringWriter;
 
@@ -632,32 +760,32 @@ void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, in
     oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:minorFont>"));
     oStringWriter.WriteString(std::wstring(L"</a:fontScheme>"));
 
-        oStringWriter.WriteString(std::wstring(L"<a:fmtScheme name=\"Default\">\
-<a:fillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\">\
-<a:tint val=\"50000\"/><a:satMod val=\"300000\"/></a:schemeClr></a:gs><a:gs pos=\"35000\"><a:schemeClr val=\"phClr\"><a:tint val=\"37000\"/>\
-<a:satMod val=\"300000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:tint val=\"15000\"/><a:satMod val=\"350000\"/>\
-</a:schemeClr></a:gs></a:gsLst><a:lin ang=\"16200000\" scaled=\"1\"/></a:gradFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\">\
-<a:schemeClr val=\"phClr\"><a:shade val=\"51000\"/><a:satMod val=\"130000\"/></a:schemeClr></a:gs><a:gs pos=\"80000\"><a:schemeClr val=\"phClr\">\
-<a:shade val=\"93000\"/><a:satMod val=\"130000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:shade val=\"94000\"/>\
-<a:satMod val=\"135000\"/></a:schemeClr></a:gs></a:gsLst><a:lin ang=\"16200000\" scaled=\"0\"/></a:gradFill></a:fillStyleLst><a:lnStyleLst>\
-<a:ln w=\"9525\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill><a:schemeClr val=\"phClr\"><a:shade val=\"95000\"/><a:satMod val=\"105000\"/>\
-</a:schemeClr></a:solidFill><a:prstDash val=\"solid\"/></a:ln><a:ln w=\"25400\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill>\
-<a:schemeClr val=\"phClr\"/></a:solidFill><a:prstDash val=\"solid\"/></a:ln><a:ln w=\"38100\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\">\
-<a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:prstDash val=\"solid\"/></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst>\
-<a:outerShdw blurRad=\"40000\" dist=\"20000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"38000\"/></a:srgbClr>\
-</a:outerShdw></a:effectLst></a:effectStyle><a:effectStyle><a:effectLst><a:outerShdw blurRad=\"40000\" dist=\"23000\" dir=\"5400000\" rotWithShape=\"0\">\
-<a:srgbClr val=\"000000\"><a:alpha val=\"35000\"/></a:srgbClr></a:outerShdw></a:effectLst></a:effectStyle><a:effectStyle><a:effectLst>\
-<a:outerShdw blurRad=\"40000\" dist=\"23000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"35000\"/></a:srgbClr>\
-</a:outerShdw></a:effectLst><a:scene3d><a:camera prst=\"orthographicFront\"><a:rot lat=\"0\" lon=\"0\" rev=\"0\"/></a:camera>\
-<a:lightRig rig=\"threePt\" dir=\"t\"><a:rot lat=\"0\" lon=\"0\" rev=\"1200000\"/></a:lightRig></a:scene3d><a:sp3d><a:bevelT w=\"63500\" h=\"25400\"/>\
-</a:sp3d></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:gradFill rotWithShape=\"1\">\
-<a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:tint val=\"40000\"/><a:satMod val=\"350000\"/></a:schemeClr></a:gs><a:gs pos=\"40000\">\
-<a:schemeClr val=\"phClr\"><a:tint val=\"45000\"/><a:shade val=\"99000\"/><a:satMod val=\"350000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\">\
-<a:schemeClr val=\"phClr\"><a:shade val=\"20000\"/><a:satMod val=\"255000\"/></a:schemeClr></a:gs></a:gsLst><a:path path=\"circle\">\
-<a:fillToRect l=\"50000\" t=\"-80000\" r=\"50000\" b=\"180000\"/></a:path></a:gradFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\">\
-<a:schemeClr val=\"phClr\"><a:tint val=\"80000\"/><a:satMod val=\"300000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\">\
-<a:shade val=\"30000\"/><a:satMod val=\"200000\"/></a:schemeClr></a:gs></a:gsLst><a:path path=\"circle\">\
-<a:fillToRect l=\"50000\" t=\"50000\" r=\"50000\" b=\"50000\"/></a:path></a:gradFill></a:bgFillStyleLst></a:fmtScheme>"));
+    oStringWriter.WriteString(std::wstring(L"<a:fmtScheme name=\"Default\">\
+                                           <a:fillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\">\
+            <a:tint val=\"50000\"/><a:satMod val=\"300000\"/></a:schemeClr></a:gs><a:gs pos=\"35000\"><a:schemeClr val=\"phClr\"><a:tint val=\"37000\"/>\
+            <a:satMod val=\"300000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:tint val=\"15000\"/><a:satMod val=\"350000\"/>\
+            </a:schemeClr></a:gs></a:gsLst><a:lin ang=\"16200000\" scaled=\"1\"/></a:gradFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\">\
+            <a:schemeClr val=\"phClr\"><a:shade val=\"51000\"/><a:satMod val=\"130000\"/></a:schemeClr></a:gs><a:gs pos=\"80000\"><a:schemeClr val=\"phClr\">\
+            <a:shade val=\"93000\"/><a:satMod val=\"130000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:shade val=\"94000\"/>\
+            <a:satMod val=\"135000\"/></a:schemeClr></a:gs></a:gsLst><a:lin ang=\"16200000\" scaled=\"0\"/></a:gradFill></a:fillStyleLst><a:lnStyleLst>\
+            <a:ln w=\"9525\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill><a:schemeClr val=\"phClr\"><a:shade val=\"95000\"/><a:satMod val=\"105000\"/>\
+            </a:schemeClr></a:solidFill><a:prstDash val=\"solid\"/></a:ln><a:ln w=\"25400\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill>\
+            <a:schemeClr val=\"phClr\"/></a:solidFill><a:prstDash val=\"solid\"/></a:ln><a:ln w=\"38100\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\">\
+            <a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:prstDash val=\"solid\"/></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst>\
+            <a:outerShdw blurRad=\"40000\" dist=\"20000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"38000\"/></a:srgbClr>\
+            </a:outerShdw></a:effectLst></a:effectStyle><a:effectStyle><a:effectLst><a:outerShdw blurRad=\"40000\" dist=\"23000\" dir=\"5400000\" rotWithShape=\"0\">\
+            <a:srgbClr val=\"000000\"><a:alpha val=\"35000\"/></a:srgbClr></a:outerShdw></a:effectLst></a:effectStyle><a:effectStyle><a:effectLst>\
+            <a:outerShdw blurRad=\"40000\" dist=\"23000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"35000\"/></a:srgbClr>\
+            </a:outerShdw></a:effectLst><a:scene3d><a:camera prst=\"orthographicFront\"><a:rot lat=\"0\" lon=\"0\" rev=\"0\"/></a:camera>\
+            <a:lightRig rig=\"threePt\" dir=\"t\"><a:rot lat=\"0\" lon=\"0\" rev=\"1200000\"/></a:lightRig></a:scene3d><a:sp3d><a:bevelT w=\"63500\" h=\"25400\"/>\
+            </a:sp3d></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:gradFill rotWithShape=\"1\">\
+            <a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:tint val=\"40000\"/><a:satMod val=\"350000\"/></a:schemeClr></a:gs><a:gs pos=\"40000\">\
+            <a:schemeClr val=\"phClr\"><a:tint val=\"45000\"/><a:shade val=\"99000\"/><a:satMod val=\"350000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\">\
+            <a:schemeClr val=\"phClr\"><a:shade val=\"20000\"/><a:satMod val=\"255000\"/></a:schemeClr></a:gs></a:gsLst><a:path path=\"circle\">\
+            <a:fillToRect l=\"50000\" t=\"-80000\" r=\"50000\" b=\"180000\"/></a:path></a:gradFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\">\
+            <a:schemeClr val=\"phClr\"><a:tint val=\"80000\"/><a:satMod val=\"300000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\">\
+            <a:shade val=\"30000\"/><a:satMod val=\"200000\"/></a:schemeClr></a:gs></a:gsLst><a:path path=\"circle\">\
+            <a:fillToRect l=\"50000\" t=\"50000\" r=\"50000\" b=\"50000\"/></a:path></a:gradFill></a:bgFillStyleLst></a:fmtScheme>"));
 
     oStringWriter.WriteString(std::wstring(L"</a:themeElements><a:objectDefaults/>"));
     oStringWriter.WriteString(std::wstring(L"<a:extraClrSchemeLst>"));
@@ -778,7 +906,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, in
         oWriter.WriteString(std::wstring(L"<p:hf"));
         if (!pTheme->m_bHasDate)		oWriter.WriteString(std::wstring(L" dt=\"0\""));
         if (!pTheme->m_bHasSlideNumber) oWriter.WriteString(std::wstring(L" sldNum=\"0\""));
-                                        oWriter.WriteString(std::wstring(L" hdr=\"0\""));
+        oWriter.WriteString(std::wstring(L" hdr=\"0\""));
         if (!pTheme->m_bHasFooter)		oWriter.WriteString(std::wstring(L" ftr=\"0\""));
         oWriter.WriteString(std::wstring(L"/>"));
     }
@@ -842,9 +970,9 @@ void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, in
         strSlideMasterRelsFile = L"handoutMaster1.xml.rels";
         strSlideMasterRelsFile = strPptDirectory + _T("handoutMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
     }
-    oFile.CreateFile(strSlideMasterFile);
-        std::wstring strMaster = oWriter.GetData();
-        oFile.WriteStringUTF8(strMaster);
+    oFile.CreateFileW(strSlideMasterFile);
+    std::wstring strMaster = oWriter.GetData();
+    oFile.WriteStringUTF8(strMaster);
     oFile.CloseFile();
 
     oRels.CloseRels();
@@ -859,11 +987,11 @@ void PPT_FORMAT::CPPTXWriter::WriteColorScheme(CStringWriter& oStringWriter, con
     if (colors.size() < 1)
     {
         oStringWriter.WriteString(L"<a:clrScheme name=\"Default\"><a:dk1><a:sysClr val=\"windowText\" lastClr=\"000000\"/>\
-        </a:dk1><a:lt1><a:sysClr val=\"window\" lastClr=\"FFFFFF\"/></a:lt1><a:dk2><a:srgbClr val=\"1F497D\"/></a:dk2><a:lt2>\
-        <a:srgbClr val=\"EEECE1\"/></a:lt2><a:accent1><a:srgbClr val=\"4F81BD\"/></a:accent1><a:accent2><a:srgbClr val=\"C0504D\"/>\
-        </a:accent2><a:accent3><a:srgbClr val=\"9BBB59\"/></a:accent3><a:accent4><a:srgbClr val=\"8064A2\"/></a:accent4><a:accent5>\
-        <a:srgbClr val=\"4BACC6\"/></a:accent5><a:accent6><a:srgbClr val=\"F79646\"/></a:accent6><a:hlink><a:srgbClr val=\"0000FF\"/>\
-        </a:hlink><a:folHlink><a:srgbClr val=\"800080\"/></a:folHlink></a:clrScheme>");
+                                  </a:dk1><a:lt1><a:sysClr val=\"window\" lastClr=\"FFFFFF\"/></a:lt1><a:dk2><a:srgbClr val=\"1F497D\"/></a:dk2><a:lt2>\
+                <a:srgbClr val=\"EEECE1\"/></a:lt2><a:accent1><a:srgbClr val=\"4F81BD\"/></a:accent1><a:accent2><a:srgbClr val=\"C0504D\"/>\
+                </a:accent2><a:accent3><a:srgbClr val=\"9BBB59\"/></a:accent3><a:accent4><a:srgbClr val=\"8064A2\"/></a:accent4><a:accent5>\
+                <a:srgbClr val=\"4BACC6\"/></a:accent5><a:accent6><a:srgbClr val=\"F79646\"/></a:accent6><a:hlink><a:srgbClr val=\"0000FF\"/>\
+                </a:hlink><a:folHlink><a:srgbClr val=\"800080\"/></a:folHlink></a:clrScheme>");
         return;
     }
 
@@ -903,7 +1031,7 @@ void PPT_FORMAT::CPPTXWriter::WriteColorScheme(CStringWriter& oStringWriter, con
     if (extra)
     {
         oStringWriter.WriteString(L"<a:clrMap bg1=\"lt1\" tx1=\"dk1\" bg2=\"lt2\" tx2=\"dk2\" accent1=\"accent1\" \
-accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" hlink=\"hlink\" folHlink=\"folHlink\"/>");
+                                  accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" hlink=\"hlink\" folHlink=\"folHlink\"/>");
         oStringWriter.WriteString(L"</a:extraClrScheme>");
     }
 }
@@ -931,12 +1059,35 @@ void PPT_FORMAT::CPPTXWriter::WriteGroup(CStringWriter& oWriter, CRelsGenerator&
     }
     oWriter.WriteString(L"</p:grpSp>");
 }
+void PPT_FORMAT::CPPTXWriter::WriteTable(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
+{
+    CTableElement *pTableElement = dynamic_cast<CTableElement*>(pElement.get());
+
+
+    PPTX::Logic::GraphicFrame gf;
+    TableWriter table(pTableElement, &oRels);
+    if (pTableElement->m_xmlRawData.empty())
+    {
+        table.Convert(gf);
+        oWriter.WriteString(gf.toXML());
+    } else
+    {
+        oWriter.WriteString(table.getXmlForGraphicFrame(pElement->m_lID, pElement->m_lPlaceholderID));
+    }
+}
+
 void PPT_FORMAT::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {
     if (!pElement) return;
 
-    CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
 
+    CTableElement *pTableElement = dynamic_cast<CTableElement*>(pElement.get());
+    if (pTableElement)
+    {
+        return WriteTable(oWriter, oRels, pElement, pLayout);
+    }
+
+    CGroupElement *pGroupElement = dynamic_cast<CGroupElement*>(pElement.get());
     if (pGroupElement)
     {
         return WriteGroup(oWriter, oRels, pElement, pLayout);
@@ -956,12 +1107,12 @@ void PPT_FORMAT::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerato
                 for (size_t nIndex = 0; nIndex < nCountElements; ++nIndex)
                 {
                     if ((pElement->m_lPlaceholderType == pLayout->m_arElements[nIndex]->m_lPlaceholderType) &&
-                        (pElement->m_lPlaceholderID == pLayout->m_arElements[nIndex]->m_lPlaceholderID))
+                            (pElement->m_lPlaceholderID == pLayout->m_arElements[nIndex]->m_lPlaceholderID))
                     {
                         CElementPtr pElLayout = pLayout->m_arElements[nIndex];
 
                         bool bIsEqualTransform = ((pElement->m_dRotate == pElLayout->m_dRotate)
-                            && (pElement->m_bFlipH == pElLayout->m_bFlipH) && (pElement->m_bFlipV == pElLayout->m_bFlipV));
+                                                  && (pElement->m_bFlipH == pElLayout->m_bFlipH) && (pElement->m_bFlipV == pElLayout->m_bFlipV));
 
                         if (bIsEqualTransform)
                         {
@@ -1004,7 +1155,7 @@ void PPT_FORMAT::CPPTXWriter::WriteLayout(CLayoutPtr pLayout, int nIndexLayout, 
 
     if ( pLayout->m_sName.empty() == false)
         oWriter.WriteString(std::wstring(L" name=\"") + pLayout->m_sName + std::wstring(L"\""));
-     oWriter.WriteString(std::wstring(L">"));
+    oWriter.WriteString(std::wstring(L">"));
 
     if (pLayout->m_bIsBackground)
     {
@@ -1046,9 +1197,9 @@ void PPT_FORMAT::CPPTXWriter::WriteLayout(CLayoutPtr pLayout, int nIndexLayout, 
     std::wstring strXml = oWriter.GetData();
     std::wstring strFile = L"slideLayout" + std::to_wstring(nIndexLayout + nStartLayout + 1) + L".xml";
 
-    CFile oFile;
+	NSFile::CFileBinary oFile;
     std::wstring strFileLayoutPath= m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("slideLayouts") + FILE_SEPARATOR_STR;
-    oFile.CreateFile(strFileLayoutPath  + strFile);
+    oFile.CreateFileW(strFileLayoutPath  + strFile);
     oFile.WriteStringUTF8(strXml);
     oFile.CloseFile();
 
@@ -1110,14 +1261,9 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
         start_index = 1;
     }
 
-    // I don't know: why do u need to write empty text box for footer and date
-    // If it exist he write it as shape.
     for (size_t i = start_index; i < pSlide->m_arElements.size(); ++i)
     {
-        auto pElement = pSlide->m_arElements[i];
-        auto type = pElement.get()->m_lPlaceholderType;
-        if (type != 7 && type != 9) // to fix date and footer empty box
-            WriteElement(oWriter, oRels, pElement);
+        WriteElement(oWriter, oRels, pSlide->m_arElements[i]);
     }
 
     oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
@@ -1127,7 +1273,7 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     WriteTransition(oWriter, pSlide->m_oSlideShow);
 
     // TODO write new method and class for timing
-   WriteTiming(oWriter, oRels, nIndexSlide);
+    WriteTiming(oWriter, oRels, nIndexSlide);
 
 
     oWriter.WriteString(std::wstring(L"</p:sld>"));
@@ -1141,8 +1287,8 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     std::wstring strFile = L"slide" + std::to_wstring(nIndexSlide + 1) + L".xml";
     std::wstring strFileSlidePath= m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("slides")  + FILE_SEPARATOR_STR;
 
-    CFile oFile;
-    oFile.CreateFile(strFileSlidePath + strFile);
+	NSFile::CFileBinary oFile;
+    oFile.CreateFileW(strFileSlidePath + strFile);
     oFile.WriteStringUTF8(strXml);
     oFile.CloseFile();
 
@@ -1153,201 +1299,181 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShowInfo &oSSInfo)
 {
     CTransition& transition = oSSInfo.m_oTransition;
-
-    if (transition.m_nEffectType == 0xFF)	return;
-
-    std::wstring type;
+    PPTX::Logic::Transition Tr;
 
     std::wstring param_name, param_value;
     std::wstring param_name2, param_value2;
 
     switch(transition.m_nEffectType)
     {
-    case 0:
-        {
-            type		= L"p:cut";
-            param_name	= L"thruBlk";
-            param_value = transition.m_nEffectDirection ? L"true" : L"false";
-        }break;
     case 1:
+    case 17:
+    case 18:
+    case 19:
+    case 22:
+    case 23:
+    case 27:
+    {
+        auto pTrBase = new PPTX::Logic::EmptyTransition();
+        switch (transition.m_nEffectType)
         {
-            type		= L"p:random";
-        }break;
+        case 1:  pTrBase->name = L"random"; break;
+        case 17: pTrBase->name = L"diamond"; break;
+        case 18: pTrBase->name = L"plus"; break;
+        case 19: pTrBase->name = L"wedge"; break;
+        case 22: pTrBase->name = L"newsflash"; break;
+        case 23: pTrBase->name = L"fade"; break;
+        case 27: pTrBase->name = L"circle"; break;
+        }
+        Tr.base.base.reset(pTrBase);
+    }break;
     case 2:
-        {
-            type		= L"p:blinds";
-            param_name	= L"dir";
-            param_value = transition.m_nEffectDirection ? L"horz" : L"vert";
-        }break;
     case 3:
+    case 8:
+    case 21:
+    {
+        auto pTrBase = new PPTX::Logic::OrientationTransition;
+        switch (transition.m_nEffectType)
         {
-            type		= L"p:checker";
-            param_name	= L"dir";
-            param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
-        }break;
+        case 2:  pTrBase->name = L"blinds"; break;
+        case 3:  pTrBase->name = L"checker"; break;
+        case 8:  pTrBase->name = L"randomBar"; break;
+        case 21: pTrBase->name = L"comb"; break;
+        }
+        pTrBase->dir = new PPTX::Limit::Orient;
+        pTrBase->dir->SetBYTECode(transition.m_nEffectDirection);
+        Tr.base.base.reset(pTrBase);
+    }break;
+    case 0:
     case 5:
-        {
-            type		= L"p:dissolve";
-            param_name	= L"thruBlk";
-            param_value = transition.m_nEffectDirection ? L"true" : L"false";
-        }break;
     case 6:
-        {
-            type		= L"p:fade";
-            param_name	= L"thruBlk";
-            param_value = transition.m_nEffectDirection ? L"true" : L"false";
-        }break;
+    {
+        // case was not documented
+        if ((UINT)transition.m_nEffectDirection > 1)
+            break;
+
+        auto pTrBase = new PPTX::Logic::OptionalBlackTransition;
+        if      (transition.m_nEffectType == 0) pTrBase->name	= L"cut";
+        else if (transition.m_nEffectType == 5) pTrBase->name	= L"dissolve";
+        else if (transition.m_nEffectType == 6) pTrBase->name	= L"fade";
+        pTrBase->thruBlk = (bool)transition.m_nEffectDirection;
+        Tr.base.base.reset(pTrBase);
+    }break;
     case 4:
     case 7:
+    {
+        auto pTrBase = new PPTX::Logic::EightDirectionTransition;
+        if      (transition.m_nEffectType == 4)	pTrBase->name = L"cover";
+        else if (transition.m_nEffectType == 7)	pTrBase->name = L"pull";
+
+        pTrBase->dir = new PPTX::Limit::EightDirectionVal;
+        switch(transition.m_nEffectDirection)
         {
-            if (transition.m_nEffectType == 4)	type = L"p:cover";
-            if (transition.m_nEffectType == 7)	type = L"p:pull";
-            param_name	= L"dir";
-            switch(transition.m_nEffectDirection)
-            {
-                case 0:	param_value = L"r"; break;
-                case 1:	param_value = L"b"; break;
-                case 2:	param_value = L"l"; break;
-                case 3:	param_value = L"t"; break;
-                case 4:	param_value = L"br"; break;
-                case 5:	param_value = L"bl"; break;
-                case 6:	param_value = L"tr"; break;
-                case 7:	param_value = L"tl"; break;
-            }
-        }break;
-    case 8:
-        {
-            type		= L"p:randomBars";
-            param_name	= L"dir";
-            param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
-        }break;
+        case 0:	param_value = L"r"; break;
+        case 1:	param_value = L"b"; break;
+        case 2:	param_value = L"l"; break;
+        case 3:	param_value = L"t"; break;
+        case 4:	param_value = L"br"; break;
+        case 5:	param_value = L"bl"; break;
+        case 6:	param_value = L"tr"; break;
+        case 7:	param_value = L"tl"; break;
+        }
+        pTrBase->dir->set(param_value);
+        Tr.base.base.reset(pTrBase);
+    }break;
     case 9:
+    {
+
+        auto pTrBase = new PPTX::Logic::CornerDirectionTransition;
+        pTrBase->name = L"strips";
+        pTrBase->dir = new PPTX::Limit::CornerDirectionVal;
+        switch(transition.m_nEffectDirection)
         {
-            type		= L"p:strips";
-            param_name	= L"dir";
-            switch(transition.m_nEffectDirection)
-            {
-                case 5:	param_value = L"ru"; break;
-                case 4:	param_value = L"lu"; break;
-                case 7:	param_value = L"rd"; break;
-                case 6:	param_value = L"ld"; break;
-            }
-        }break;
+        case 0:	param_value = L"ru"; break;
+        case 1:	param_value = L"lu"; break;
+        case 2:	param_value = L"rd"; break;
+        case 3:	param_value = L"ld"; break;
+        }
+        pTrBase->dir->set(param_value);
+        Tr.base.base.reset(pTrBase);
+    }break;
     case 10:
     case 20:
-        {
-            if (transition.m_nEffectType == 10)	type = L"p:wipe";
-            if (transition.m_nEffectType == 20)	type = L"p:push";
+    {
+        auto pTrBase = new PPTX::Logic::SideDirectionTransition;
+        if (transition.m_nEffectType == 10)	pTrBase->name = L"wipe";
+        if (transition.m_nEffectType == 20)	pTrBase->name = L"push";
 
-            param_name	= L"dir";
-            switch(transition.m_nEffectDirection)
-            {
-                case 0:	param_value = L"l"; break;
-                case 1:	param_value = L"u"; break;
-                case 2:	param_value = L"r"; break;
-                case 3:	param_value = L"d"; break;
-            }
-        }break;
+        pTrBase->dir = new PPTX::Limit::SideDirectionVal;
+        switch(transition.m_nEffectDirection)
+        {
+        case 0:	param_value = L"l"; break;
+        case 1:	param_value = L"u"; break;
+        case 2:	param_value = L"r"; break;
+        case 3:	param_value = L"d"; break;
+        }
+        pTrBase->dir->set(param_value);
+        Tr.base.base.reset(pTrBase);
+    }break;
     case 11:
-        {
-            type		= L"p:zoom";
-            param_name	= L"dir";
-            param_value = transition.m_nEffectDirection ? L"in" : L"out";
-        }break;
+    {
+        auto pTrBase = new PPTX::Logic::ZoomTransition;
+        pTrBase->dir = new PPTX::Limit::InOutDirectionVal;
+        pTrBase->dir->SetBYTECode(!transition.m_nEffectDirection);
+        Tr.base.base.reset(pTrBase);
+    }break;
     case 13:
-        {
-            type		= L"p:split";
-            param_name	= L"dir";
-            param_name2	= L"orient";
-            switch(transition.m_nEffectDirection)
-            {
-                case 0:	param_value2 = L"horz";	param_value = L"out";	break;
-                case 1:	param_value2 = L"horz";	param_value = L"in";	break;
-                case 2:	param_value2 = L"vert";	param_value = L"out";	break;
-                case 3:	param_value2 = L"vert";	param_value = L"in";	break;
-            }
-        }break;
-    case 17:
-        {
-            type = L"p:diamond";
-        }break;
-    case 18:
-        {
-            type = L"p:plus";
-        }break;
-    case 19:
-        {
-            type = L"p:wedge";
-        }break;
+    {
+        auto pTrBase = new PPTX::Logic::SplitTransition;
+        pTrBase->dir = new PPTX::Limit::InOutDirectionVal;
+        pTrBase->orient = new PPTX::Limit::Orient;
 
-    case 21:
+        switch(transition.m_nEffectDirection)
         {
-            type		= L"p:comb";
-            param_name	= L"dir";
-            param_value = transition.m_nEffectDirection ? L"vert" : L"horz";
-        }break;
-    case 22:
-        {
-            type = L"p:newsflash";
-        }break;
-    case 23:
-        {
-            type = L"p:fade";
-            // p:alphaFade
-        }break;
+        case 0:	param_value2 = L"horz";	param_value = L"out";	break;
+        case 1:	param_value2 = L"horz";	param_value = L"in";	break;
+        case 2:	param_value2 = L"vert";	param_value = L"out";	break;
+        case 3:	param_value2 = L"vert";	param_value = L"in";	break;
+        }
+        pTrBase->dir->set(param_value);
+        pTrBase->orient->set(param_value2);
+
+        Tr.base.base.reset(pTrBase);
+    }break;
     case 26:
-        {
-            type		= L"p:wheel";
-            param_name	= L"spokes";
-            param_value = std::to_wstring(transition.m_nEffectDirection);
-        }break;
-    case 27:
-        {
-            type = L"p:circle";
-        }break;
+    {
+        auto pTrBase = new PPTX::Logic::WheelTransition;
+        pTrBase->spokes = transition.m_nEffectDirection;
+        Tr.base.base.reset(pTrBase);
+    }break;
     default:
         break;
     }
 
-    if (type.empty()) return;
-    oWriter.WriteString(std::wstring(L"<p:transition"));
-        switch (transition.m_nSpeed)
-        {
-        // TODO check this moment. Always write fast
-        case 0x00:	oWriter.WriteString(L" spd=\"slow\"");	break;
-        case 0x01:	oWriter.WriteString(L" spd=\"med\"");	break;
-        case 0x02:
-        default:	oWriter.WriteString(L" spd=\"fast\"");	break;
-        }
-        if (oSSInfo.m_bOnlyClick == false)
-        {
-            oWriter.WriteString(L" advClick=\"0\"");
-        }
-        if (oSSInfo.m_dSlideDuration != 0)
-        {
-            std::wstring sAdvTm = std::to_wstring((long)(oSSInfo.m_dSlideDuration));
-            oWriter.WriteString(L" advTm=\"" + sAdvTm + L"\"");
-        }
-    oWriter.WriteString(L">");
-    oWriter.WriteString(L"<" + type);
-        if (!param_name.empty() && !param_value.empty())
-        {
-            oWriter.WriteString(L" " + param_name + L"=\"" + param_value + L"\"");
-        }
-        if (!param_name2.empty() && !param_value2.empty())
-        {
-            oWriter.WriteString(L" " + param_name2 + L"=\"" + param_value2 + L"\"");
-        }
-    oWriter.WriteString(L"/>");
+    Tr.spd = new PPTX::Limit::TransitionSpeed;
+    // "2 -" переворот числа
+    Tr.spd->SetBYTECode(2 - transition.m_nSpeed);
+
+    Tr.advClick = oSSInfo.m_bManulClick;
+
+    if (oSSInfo.m_bAdvClick &&
+            oSSInfo.m_dSlideDuration >= 0 &&
+            oSSInfo.m_dSlideDuration <= 86399000)
+    {
+        Tr.advTm = oSSInfo.m_dSlideDuration;
+    }
     if (transition.m_bAudioPresent)
     {
         bool bExternal = false;
         std::wstring rId = m_pShapeWriter->m_pRels->WriteAudio(transition.m_oAudio.m_strAudioFileName, bExternal);
-        oWriter.WriteString(std::wstring(L"<p:sndAc><p:stSnd>"));
-        oWriter.WriteString(L"<p:snd r:embed=\"" + rId + L"\" name=\"" + XmlUtils::EncodeXmlString(transition.m_oAudio.m_sImageName) + L"\"/>");
-        oWriter.WriteString(std::wstring(L"</p:stSnd></p:sndAc>"));
+        Tr.sndAc = new PPTX::Logic::SndAc;
+        Tr.sndAc->stSnd = new PPTX::Logic::StSnd;
+        Tr.sndAc->stSnd->embed = rId;
+
+        if (!transition.m_oAudio.m_sImageName.empty())
+            Tr.sndAc->stSnd->name = XmlUtils::EncodeXmlString(transition.m_oAudio.m_sImageName);
     }
-    oWriter.WriteString(std::wstring(L"</p:transition>"));
+    oWriter.WriteString(Tr.toXML());
 }
 
 void PPT_FORMAT::CPPTXWriter::WriteNotes(int nIndexNotes)
@@ -1405,8 +1531,8 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes(int nIndexNotes)
     std::wstring strFile = L"notesSlide" + std::to_wstring(nIndexNotes + 1) + L".xml";
     std::wstring strFileSlidePath = m_strTempDirectory + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("notesSlides")  + FILE_SEPARATOR_STR;
 
-    CFile oFile;
-    oFile.CreateFile(strFileSlidePath + strFile);
+	NSFile::CFileBinary oFile;
+    oFile.CreateFileW(strFileSlidePath + strFile);
     oFile.WriteStringUTF8(strXml);
     oFile.CloseFile();
 
@@ -1428,6 +1554,191 @@ void PPT_FORMAT::CPPTXWriter::WriteNotes()
     {
         WriteNotes((int)nIndexS);
     }
+}
+
+void CPPTXWriter::WriteLayoutAfterTheme(CThemePtr pTheme, const int nIndexTheme, int &nStartLayout)
+{//nIndexTheme тут уже +1
+    CRelsGenerator oRels(&m_oManager);
+    int nCountLayouts = (int)pTheme->m_arLayouts.size();
+    oRels.StartMaster(nIndexTheme - 1, nStartLayout, nCountLayouts);
+
+    CStringWriter oWriter;
+    oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
+
+    if (pTheme->m_eType == typeMaster)
+    {
+        oWriter.WriteString(L"<p:sldMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
+    }
+    else if (pTheme->m_eType == typeNotesMaster)
+    {
+        oWriter.WriteString(L"<p:notesMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
+    }
+    else if (pTheme->m_eType == typeHandoutMaster)
+    {
+        oWriter.WriteString(L"<p:handoutMaster xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">");
+    }
+    oWriter.WriteString(L"<p:cSld>");
+
+    if (pTheme->m_bIsBackground)
+    {
+        WriteBackground(oWriter, oRels, pTheme->m_oBackground);
+    }
+    oWriter.WriteString(L"<p:spTree><p:nvGrpSpPr><p:cNvPr id=\"1\" name=\"\"/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr>\
+<a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>");
+
+    CGroupElement *pGroupElement = !pTheme->m_arElements.empty() ? dynamic_cast<CGroupElement *>(pTheme->m_arElements[0].get()) : NULL;
+
+    size_t start_index = 0;
+    if (pGroupElement)
+    {
+        for (size_t i = 0; i < pGroupElement->m_pChildElements.size(); ++i)
+        {
+            if (isBodyPlaceholder(pGroupElement->m_pChildElements[i]->m_lPlaceholderType))
+                pGroupElement->m_pChildElements[i]->m_lPlaceholderType = 100; //body тип прописывать !!
+
+            //if (pGroupElement->m_pChildElements[i]->m_bAnchorEnabled == false &&
+            //	pGroupElement->m_pChildElements[i]->m_bChildAnchorEnabled == false)
+            //	continue;
+
+            //if (pTheme->m_eType == typeNotesMaster)
+            //{
+            //	pGroupElement->m_pChildElements[i]->m_lPlaceholderID = -1;
+            //}
+            //else if (pTheme->m_eType == typeHandoutMaster)
+            //{
+            //	pGroupElement->m_pChildElements[i]->m_lPlaceholderID = -1;
+            //	pGroupElement->m_pChildElements[i]->m_lPlaceholderSizePreset = -1;
+            //}
+            WriteElement(oWriter, oRels, pGroupElement->m_pChildElements[i]);
+        }
+
+        start_index = 1;
+    }
+
+    for (size_t i = start_index; i < pTheme->m_arElements.size(); ++i)
+    {
+        if (isBodyPlaceholder(pTheme->m_arElements[i]->m_lPlaceholderType))
+            pTheme->m_arElements[i]->m_lPlaceholderType = 100; //body тип прописывать !!
+
+        //if (pTheme->m_arElements[i]->m_bAnchorEnabled == false &&
+        //	pTheme->m_arElements[i]->m_bChildAnchorEnabled == false)
+        //	continue;
+
+        //if (pTheme->m_eType == typeNotesMaster)
+        //{
+        //	pTheme->m_arElements[i]->m_lPlaceholderID = -1;
+        //}
+        //else if (pTheme->m_eType == typeHandoutMaster)
+        //{
+        //	pTheme->m_arElements[i]->m_lPlaceholderID = -1;
+        //	pTheme->m_arElements[i]->m_lPlaceholderSizePreset = -1;
+        //}
+
+        WriteElement(oWriter, oRels, pTheme->m_arElements[i]);
+    }
+
+    oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
+
+    std::wstring strOverrideColorScheme = _T("<p:clrMap bg1=\"lt1\" tx1=\"dk1\" bg2=\"lt2\" tx2=\"dk2\" accent1=\"accent1\" accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" hlink=\"hlink\" folHlink=\"folHlink\"/>");
+    oWriter.WriteString(strOverrideColorScheme);
+
+    if (pTheme->m_eType == typeMaster)
+    {
+        oWriter.WriteString(std::wstring(L"<p:sldLayoutIdLst>"));
+
+        size_t __nCountLayouts = 0;
+        for (int nIndexLayout = 0; nIndexLayout < nCountLayouts; ++nIndexLayout)
+        {
+            oWriter.WriteString(L"<p:sldLayoutId id=\"" + std::to_wstring(0x80000000 + nIndexTheme + 1 + nStartLayout + nIndexLayout) + L"\" r:id=\"rId" + std::to_wstring(nIndexLayout + 1) + L"\"/>");
+
+            WriteLayout(pTheme->m_arLayouts[nIndexLayout], nIndexLayout, nStartLayout, nIndexTheme - 1);
+        }
+
+        oWriter.WriteString(std::wstring(L"</p:sldLayoutIdLst>"));
+    }
+
+    if (pTheme->m_bHasDate || pTheme->m_bHasFooter || pTheme->m_bHasSlideNumber)
+    {
+        oWriter.WriteString(std::wstring(L"<p:hf"));
+        if (!pTheme->m_bHasDate)		oWriter.WriteString(std::wstring(L" dt=\"0\""));
+        if (!pTheme->m_bHasSlideNumber) oWriter.WriteString(std::wstring(L" sldNum=\"0\""));
+        oWriter.WriteString(std::wstring(L" hdr=\"0\""));
+        if (!pTheme->m_bHasFooter)		oWriter.WriteString(std::wstring(L" ftr=\"0\""));
+        oWriter.WriteString(std::wstring(L"/>"));
+    }
+    CStylesWriter styleWriter;
+    styleWriter.m_pTheme = pTheme.get();
+
+    if (pTheme->m_eType == typeMaster)
+    {
+        oWriter.WriteString(std::wstring(L"<p:txStyles>"));
+
+        oWriter.WriteString(std::wstring(L"<p:titleStyle>"));
+        styleWriter.ConvertStyles(pTheme->m_pStyles[1], oWriter, 9);
+        oWriter.WriteString(std::wstring(L"</p:titleStyle>"));
+
+        oWriter.WriteString(std::wstring(L"<p:bodyStyle>"));
+        styleWriter.ConvertStyles(pTheme->m_pStyles[2], oWriter, 9);
+        oWriter.WriteString(std::wstring(L"</p:bodyStyle>"));
+
+        oWriter.WriteString(std::wstring(L"<p:otherStyle>"));
+        styleWriter.ConvertStyles(pTheme->m_pStyles[3], oWriter, 9);
+        oWriter.WriteString(std::wstring(L"</p:otherStyle>"));
+
+        oWriter.WriteString(std::wstring(L"</p:txStyles>"));
+    }
+    else if (pTheme->m_eType == typeNotesMaster)
+    {
+        oWriter.WriteString(std::wstring(L"<p:notesStyle>"));
+        styleWriter.ConvertStyles(pTheme->m_pStyles[1], oWriter, 9);
+        oWriter.WriteString(std::wstring(L"</p:notesStyle>"));
+    }
+
+    std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
+
+    std::wstring strSlideMasterFile;
+    std::wstring strSlideMasterRelsFile;
+    if (pTheme->m_eType == typeMaster)
+    {
+        oWriter.WriteString(std::wstring(L"</p:sldMaster>"));
+
+        strSlideMasterFile = L"slideMaster" + std::to_wstring(nIndexTheme) + L".xml";
+        strSlideMasterFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+
+        strSlideMasterRelsFile = L"slideMaster" + std::to_wstring(nIndexTheme) + L".xml.rels";
+        strSlideMasterRelsFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
+    }
+    else if (pTheme->m_eType == typeNotesMaster)
+    {
+        oWriter.WriteString(std::wstring(L"</p:notesMaster>"));
+
+        strSlideMasterFile = L"notesMaster1.xml";
+        strSlideMasterFile = strPptDirectory + _T("notesMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+
+        strSlideMasterRelsFile = L"notesMaster1.xml.rels";
+        strSlideMasterRelsFile = strPptDirectory + _T("notesMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
+    }
+    else if (pTheme->m_eType == typeHandoutMaster)
+    {
+        oWriter.WriteString(std::wstring(L"</p:handoutMaster>"));
+
+        strSlideMasterFile = L"handoutMaster1.xml";
+        strSlideMasterFile = strPptDirectory + _T("handoutMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+
+        strSlideMasterRelsFile = L"handoutMaster1.xml.rels";
+        strSlideMasterRelsFile = strPptDirectory + _T("handoutMasters") + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + strSlideMasterRelsFile;
+    }
+
+	NSFile::CFileBinary oFile;
+    oFile.CreateFileW(strSlideMasterFile);
+    std::wstring strMaster = oWriter.GetData();
+    oFile.WriteStringUTF8(strMaster);
+    oFile.CloseFile();
+
+    oRels.CloseRels();
+    oRels.SaveRels(strSlideMasterRelsFile);
+
+    nStartLayout += nCountLayouts;
 }
 
 
@@ -1461,26 +1772,10 @@ void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator
     if (!pPP10SlideBinaryTag && arrOldAnim.empty())
         return;
 
-    Animation animation(pPP10SlideBinaryTag, arrOldAnim);
-    std::vector<CRecordSoundCollectionContainer*> sound;
-    m_pUserInfo->m_oDocument.GetRecordsByType(&sound, false);
-    if (!sound.empty())
-    {
-        animation.m_pSoundContainer = sound[0];
-        m_oManager.m_ridManager.setRIDfromAnimation(animation);
-        m_oManager.m_ridManager.setRID(oRels.getRId());
-        auto paths = m_oManager.m_ridManager.getPathesForSlideRels();
-        for (auto& path : paths)
-        {
-            oRels.WriteHyperlinkMedia(path, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
-        }
-
-        animation.setNextRId(oRels.getRId());
-    }
+    Animation animation(pPP10SlideBinaryTag, arrOldAnim, &(m_pUserInfo->m_oExMedia), &oRels);
 
     animation.Convert(oTiming);
-    if (oTiming.tnLst.is_init())
-        oWriter.WriteString(oTiming.toXML());
+    oWriter.WriteString(oTiming.toXML());
     //oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
 
 }

@@ -706,8 +706,11 @@ namespace XmlUtils
 		std::wstring sRes;
 		if (!GetAttributeIfExist(strAttributeName, sRes))
 		{
-			if (!GetTextIfExist(sRes))
-				sRes = strDefaultValue;
+            CXmlNode oTemp;
+            if (GetNode(strAttributeName, oTemp))
+                sRes = oTemp.GetText();
+            else
+                sRes = strDefaultValue;
 		}
 		return sRes;
 	}

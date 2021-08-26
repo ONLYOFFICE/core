@@ -61,6 +61,11 @@ CImageFileFormatChecker::CImageFileFormatChecker(std::wstring sFileName)
     eFileType = _CXIMAGE_FORMAT_UNKNOWN;
     isImageFile(sFileName);
 }
+CImageFileFormatChecker::CImageFileFormatChecker(BYTE* pBuffer, DWORD dwBytes)
+{
+    eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+    isImageFile(pBuffer, dwBytes);
+}
 
 //bmp ( http://ru.wikipedia.org/wiki/BMP )
 bool CImageFileFormatChecker::isBmpFile(BYTE* pBuffer,DWORD dwBytes)
@@ -530,6 +535,115 @@ bool CImageFileFormatChecker::isImageFile(std::wstring& fileName)
 	if (eFileType)return true;
 	return false;
 }
+bool CImageFileFormatChecker::isImageFile(BYTE* buffer, DWORD sizeRead)
+{
+    eFileType  = _CXIMAGE_FORMAT_UNKNOWN;
+///////////////////////////////////////////////////////////////////////
+    if (!buffer || sizeRead <= 0)
+        return false;
+/////////////////////////////////////////////////////////////////////////////////
+    if (isBmpFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_BMP;
+    }
+    if (isGifFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_GIF;
+    }
+    if (isPngFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_PNG;
+    }
+    if (isTgaFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_TGA;
+    }
+    if (isPcxFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_PCX;
+    }
+    if (isJpgFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_JPG;
+    }
+    if (isEmfFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_EMF;
+    }
+    if (isWmfFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_WMF;
+    }
+    if (isTiffFile(buffer,sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_TIF;
+    }
+    if (isIcoFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_ICO;
+    }
+    if (isWbFile(buffer,  sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_WB;
+    }
+    if (isPsdFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_PSD;
+    }
+    if (isRasFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_RAS;
+    }
+
+    if (isIpodFile(buffer,sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+    }
+    if (isJ2kFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_JP2;
+    }
+    if (isJp2File(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_JP2;
+    }
+    if (isMj2File(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_JP2;
+    }
+    if (isSfwFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+    }
+    if (isSvmFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+    }
+    if (isSwfFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+    }
+    if (isWbcFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+    }
+    if (isWbzFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+    }
+///////////////////////////////////////////////////////////////////////
+    if (isSvgFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_SVG;
+    }
+    if (isRawFile(buffer, sizeRead))
+    {
+        eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+    }
+///////////////////////////////////////////////////////////////////////
+    if (eFileType) return true;
+    return false;
+}
 bool CImageFileFormatChecker::isSvmFile(std::wstring & fileName)
 {
 	eFileType = _CXIMAGE_FORMAT_UNKNOWN;
@@ -596,6 +710,11 @@ bool CImageFileFormatChecker::isRawFile(std::wstring& fileName)
 {
 	// TODO:
 	return false;
+}
+bool CImageFileFormatChecker::isRawFile(BYTE* pBuffer, DWORD dwBytes)
+{
+    // TODO:
+    return false;
 }
 bool CImageFileFormatChecker::isSvgFile(std::wstring& fileName)
 {

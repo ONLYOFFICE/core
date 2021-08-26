@@ -47,11 +47,12 @@ using namespace OOX::Spreadsheet;
 
 namespace BinXlsxRW
 {
-	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter::CCSVWriter* _pCSVWriter)
+	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter::CCSVWriter* _pCSVWriter, bool bMacro)
 	{
-		pContentTypes	= _pContentTypes;
-        sThemePath		= _sThemePath;
-		sDrawingsPath	= _sDrawingsPath;
+		bMacroEnabled = bMacro;
+		pContentTypes = _pContentTypes;
+        sThemePath = _sThemePath;
+		sDrawingsPath = _sDrawingsPath;
 		sEmbeddingsPath = _sEmbeddingsPath;
 
 		nThemeOverrideCount = 1;
@@ -12635,9 +12636,12 @@ namespace BinXlsxRW
 			WriteCT_StyleEntry(*oVal.m_oChartStyle.m_arStyleEntries[i]);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartstyleMARKERLAYOUT);
-		WriteCT_MarkerLayout(*oVal.m_oChartStyle.m_dataPointMarkerLayout);
-		m_oBcw.WriteItemEnd(nCurPos);
+		if (oVal.m_oChartStyle.m_dataPointMarkerLayout.IsInit())
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oserct_chartstyleMARKERLAYOUT);
+			WriteCT_MarkerLayout(*oVal.m_oChartStyle.m_dataPointMarkerLayout);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
 	}
 	void BinaryChartWriter::WriteCT_StyleEntry(OOX::Spreadsheet::ChartEx::CStyleEntry & oVal)
 	{

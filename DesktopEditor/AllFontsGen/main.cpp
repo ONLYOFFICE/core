@@ -396,18 +396,19 @@ namespace NSCommon
             pCache->SetStreams(applicationFonts->GetStreams());
             pManager->SetOwnerCache(pCache);
 
-            #define COUNT_FONTS_SCALE 3
-            double support_scales[COUNT_FONTS_SCALE] = { 1, 1.5, 2 };
+            #define COUNT_FONTS_SCALE 5
+            double support_scales[COUNT_FONTS_SCALE] = { 1, 1.25, 1.5, 1.75, 2 };
 
             for (int iX = 0; iX < COUNT_FONTS_SCALE; ++iX)
             {
                 double dScale = support_scales[iX];
                 // создаем картинку для табнейлов
                 double dDpi = 96 * dScale;
-                double dW_mm = 80;
-                LONG lH1_px = LONG(7 * dDpi / 25.4);
-                LONG lWidthPix = (LONG)(dW_mm * dDpi / 25.4);
+                LONG lH1_px = (LONG)(28 * dScale);
+                LONG lWidthPix = (LONG)(300 * dScale);
                 LONG lHeightPix = (LONG)(nCountFonts * lH1_px);
+                double dW_mm = 25.4 * lWidthPix / dDpi;
+                double dH1_mm = 25.4 * lH1_px / dDpi;
 
                 LONG lCountPixels = 4 * lWidthPix * lHeightPix;
                 BYTE* pImageData = new BYTE[lCountPixels];
@@ -536,14 +537,16 @@ namespace NSCommon
                 }
 
                 std::wstring strThumbnailPath = strFolderThumbnails + L"/fonts_thumbnail";
-                int nScaleOut = (int)(dScale * 10 + 0.5);
+                int nScaleOut = (int)(dScale * 100 + 0.5);
 
-                if (nScaleOut == 10)
+                if (nScaleOut == 100)
                     strThumbnailPath += L".png";
+                else if ((nScaleOut % 100) == 0)
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"x.png";
                 else if ((nScaleOut % 10) == 0)
-                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"x.png";
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"." + std::to_wstring((int)((nScaleOut / 10) % 10)) + L"x.png";
                 else
-                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 10)) + L"." + std::to_wstring((int)(nScaleOut % 10)) + L"x.png";
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"." + std::to_wstring((int)(nScaleOut % 100)) + L"x.png";
 
                 oFrame.SaveFile(strThumbnailPath, 4);
 

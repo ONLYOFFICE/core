@@ -41,8 +41,7 @@ Ptg::Ptg()
 {
 }
 
-Ptg::Ptg(const unsigned short ptg_id_init)
-:	ptg_id(ptg_id_init)
+Ptg::Ptg(const unsigned short ptg_id_init) : ptg_id(ptg_id_init)
 {
 }
 

@@ -63,7 +63,6 @@ namespace OOX
 		//<customProperties>
 		//<extLst>
 		//<phoneticPr>
-		//<protectedRanges>
 		//<scenarios>
 		//<sheetCalcPr>
 		//<smartTags>
@@ -159,6 +158,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CDataValidations>			m_oDataValidations;
 			nullable<OOX::Spreadsheet::CDataConsolidate>			m_oDataConsolidate;
 			nullable<OOX::Spreadsheet::CSortState>					m_oSortState;
+			nullable<OOX::Spreadsheet::CProtectedRanges>			m_oProtectedRanges;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 

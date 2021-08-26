@@ -85,6 +85,8 @@ namespace PPTX
 		{
 			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
+			ReadAttributes(oReader);
+
 			if ( oReader.IsEmptyNode() )
 				return;
 
@@ -370,6 +372,8 @@ namespace PPTX
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());
 
+			XmlMacroReadAttributeBase(node, L"macro",macro);
+
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(L"*", oNodes))
 			{
@@ -453,7 +457,7 @@ namespace PPTX
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)									namespace_ = L"cdr";
 
 			pWriter->StartNode(namespace_ + L":graphicFrame");
-
+			pWriter->WriteAttribute(L"macro", macro);
 			pWriter->EndAttributes();
 			
 			toXmlWriter2(pWriter);
@@ -608,7 +612,12 @@ namespace PPTX
 			{
 				//????
 			}
-
+			if (macro.IsInit())
+			{
+				pWriter->StartRecord(SPTREE_TYPE_MACRO);
+				pWriter->WriteString1(0, *macro);
+				pWriter->EndRecord();
+			}
 			pWriter->EndRecord();
 		}
 
@@ -627,9 +636,8 @@ namespace PPTX
 				{
 					case 0:
 					{
-						vmlSpid = pReader->GetString2();
-						break;
-					}	
+						vmlSpid = pReader->GetString2();						
+					}break;	
 					default:
 						break;
 				}
@@ -680,6 +688,11 @@ namespace PPTX
 						chartRec = new Logic::ChartRec();
 						chartRec->m_bChartEx = true;
 						chartRec->fromPPTY(pReader);
+					}break;
+					case SPTREE_TYPE_MACRO:
+					{
+						pReader->Skip(5); // type + size
+						macro = pReader->GetString2();
 					}break;
 					default:
 						pReader->SkipRecord();
@@ -752,7 +765,12 @@ namespace PPTX
 		{
 			std::wstring sXml;
 			
-			sXml += L"<" + m_namespace + L":graphicFrame macro=\"\">";
+			sXml += L"<" + m_namespace + L":graphicFrame";
+
+			sXml += L" macro=\"" + (macro.IsInit() ? *macro : L"") + L"\">";
+
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"macro", macro);
 
 			sXml += toXML2();
 

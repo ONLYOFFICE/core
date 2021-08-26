@@ -100,6 +100,12 @@ public:
                 m_rgShapeClientRoundtripData.push_back(pRec);
                 break;
             }
+            case RT_VbaInfo:
+            {
+                auto pRec = new CRecordsContainer;
+                pRec->ReadFromStream(ReadHeader, pStream);
+                break;
+            }
             default:
                 IRecord* pRecord = CreateByType(ReadHeader);
                 pRecord->ReadFromStream(ReadHeader, pStream);

@@ -53,6 +53,7 @@ LIBS += -lgdi32 \
 }
 
 HEADERS += \
+    Src/AcroForm.h \
     Src/Annotation.h \
     Src/Catalog.h \
     Src/Consts.h \
@@ -60,6 +61,7 @@ HEADERS += \
     Src/Document.h \
     Src/Encrypt.h \
     Src/EncryptDictionary.h \
+    Src/Field.h \
     Src/Font.h \
     Src/Font14.h \
     Src/FontCidTT.h \
@@ -71,6 +73,7 @@ HEADERS += \
     Src/Outline.h \
     Src/Pages.h \
     Src/Pattern.h \
+    Src/ResourcesDictionary.h \
     Src/Shading.h \
     Src/Streams.h \
     Src/Types.h \
@@ -81,12 +84,14 @@ HEADERS += \
     Src/ICCProfile.h
 
 SOURCES += \
+    Src/AcroForm.cpp \
     Src/Annotation.cpp \
     Src/Catalog.cpp \
     Src/Destination.cpp \
     Src/Document.cpp \
     Src/Encrypt.cpp \
     Src/EncryptDictionary.cpp \
+    Src/Field.cpp \
     Src/Font.cpp \
     Src/Font14.cpp \
     Src/FontCidTT.cpp \
@@ -98,6 +103,7 @@ SOURCES += \
     Src/Outline.cpp \
     Src/Pages.cpp \
     Src/Pattern.cpp \
+    Src/ResourcesDictionary.cpp \
     Src/Shading.cpp \
     Src/Streams.cpp \
     Src/Utils.cpp \

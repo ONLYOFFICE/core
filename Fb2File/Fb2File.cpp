@@ -1589,7 +1589,7 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     return S_OK;
 }
 
-void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasTable);
+void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasP, bool bWasTable);
 void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bWasP, bool bWasTable)
 {
     int nDeath = oIndexHtml.GetDepth();
@@ -1744,18 +1744,26 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         }
         else if (sName == L"a")
         {
-            oIndexHtml.MoveToNextAttribute();
-            oXml.WriteString(L"<a l:href=\"");
-            oXml.WriteEncodeXmlString(oIndexHtml.GetText());
-            oXml.WriteString(L"\">");
+            oXml.WriteString(L"<a ");
+            while (oIndexHtml.MoveToNextAttribute())
+            {
+                std::wstring sName = oIndexHtml.GetName();
+                if (sName == L"name")
+                    sName = L"id";
+                oXml.WriteString(sName + L"=\"");
+                oXml.WriteString(oIndexHtml.GetText());
+                oXml.WriteString(L"\" ");
+            }
             oIndexHtml.MoveToElement();
+            oXml.WriteString(L">");
+
             readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</a>");
         }
         else if (sName == L"ul")
-            readLi(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            readLi(oXml, oIndexHtml, arrBinary, true, bWasP, bWasTable);
         else if (sName == L"ol")
-            readLi(oXml, oIndexHtml, arrBinary, false, bWasTable);
+            readLi(oXml, oIndexHtml, arrBinary, false, bWasP, bWasTable);
         else if (sName == L"img")
         {
             std::wstring sBinary;
@@ -1764,7 +1772,7 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
                 if (oIndexHtml.GetName() == L"src")
                 {
                     sBinary = oIndexHtml.GetText();
-                    sBinary.erase(0, sBinary.find(L',') + 2);
+                    sBinary.erase(0, sBinary.find(L',') + 1);
                     arrBinary.push_back(sBinary);
                 }
             }
@@ -1816,7 +1824,7 @@ std::wstring ToLowerRoman(int number)
     return L"";
 }
 
-void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasTable)
+void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasP, bool bWasTable)
 {
     int nNum = 1;
     while (oIndexHtml.MoveToNextAttribute())
@@ -1830,7 +1838,8 @@ void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oInde
     {
         if (oIndexHtml.GetName() == L"li")
         {
-            oXml.WriteString(L"<p>");
+            if (!bWasP)
+                oXml.WriteString(L"<p>");
             if (bUl)
                 oXml.AddCharSafe(183);
             else
@@ -1868,7 +1877,8 @@ void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oInde
             }
             oXml.WriteString(L" ");
             readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
-            oXml.WriteString(L"</p>");
+            if (!bWasP)
+                oXml.WriteString(L"</p>");
         }
     } while (oIndexHtml.ReadNextSiblingNode2(nDeath));
 }

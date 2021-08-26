@@ -960,6 +960,7 @@ namespace NSEditorApi
 
 		js_wrapper<bool>			m_bCanFill;
 		js_wrapper<bool>			m_bFromChart;
+        js_wrapper<bool>            m_bFromGroup;
         
         js_wrapper<int>             m_nInsertPageNum;
 
@@ -968,6 +969,7 @@ namespace NSEditorApi
 		{
 			m_bCanFill = true;
 			m_bFromChart = false;
+            m_bFromGroup = false;
 		}
 		virtual ~CAscShapeProp()
 		{
@@ -976,6 +978,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_STRING_JS(Type)
 		LINK_PROPERTY_BOOL_JS(CanFill)
 		LINK_PROPERTY_BOOL_JS(FromChart)
+        LINK_PROPERTY_BOOL_JS(FromGroup)
 
 		LINK_PROPERTY_OBJECT_JS(CAscFill, Fill)
 		LINK_PROPERTY_OBJECT_JS(CAscStroke, Stroke)
@@ -2494,10 +2497,11 @@ namespace NSEditorApi
 	class CAscMenuController
 	{
 		// release memory in sdk
-		virtual void Apply(CAscMenuEvent* pEvent)
+		virtual NSEditorApi::CAscMenuEvent* Apply(CAscMenuEvent* pEvent)
 		{
 			if (NULL != pEvent)
                 pEvent->Release();
+            return NULL;
 		}
 	};
 

@@ -392,21 +392,16 @@ public:
             if(nFindEnd != std::string::npos)
                 sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
         }
-
-        if(NSFile::GetFileExtention(sSrc) != L"xhtml")
+        /*
+        std::wstring sRes = htmlToXhtml(sFileContent);
+        NSFile::CFileBinary oWriter;
+        if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
         {
-            /*
-            std::wstring sRes = htmlToXhtml(sFileContent);
-            NSFile::CFileBinary oWriter;
-            if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
-            {
-                oWriter.WriteStringUTF8(sRes);
-                oWriter.CloseFile();
-            }
-            */
-            return m_oLightReader.FromString(htmlToXhtml(sFileContent));
+            oWriter.WriteStringUTF8(sRes);
+            oWriter.CloseFile();
         }
-        return m_oLightReader.FromStringA(sFileContent);
+        */
+        return m_oLightReader.FromString(htmlToXhtml(sFileContent));
     }
 
     // Конвертирует mht в xhtml
@@ -850,7 +845,7 @@ private:
             readStream(oXml, sSelectors, oTSR, bWasP);
         }
         // Векторная картинка
-        else if(sName == L"svg")
+        else if(sName == L"svg" || (sName.length() > 3 && sName.compare(sName.length() - 3, 3, L"svg") == 0))
         {
             readSVG(oXml);
             bWasP = false;
@@ -1531,17 +1526,17 @@ private:
         oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
         
         std::vector<std::pair<size_t, NSCSS::CNode>> temporary;
-		size_t i = 0;
-		while(i != sSelectors.size())
-		{
+        size_t i = 0;
+        while(i != sSelectors.size())
+        {
             if(rStyle.find(L' ' + sSelectors[i].m_sName + L' ') != std::wstring::npos)
-			{
-				temporary.push_back(std::make_pair(i, sSelectors[i]));
-				sSelectors.erase(sSelectors.begin() + i);
-			}
-			else
-				i++;
-		}
+            {
+                temporary.push_back(std::make_pair(i, sSelectors[i]));
+                sSelectors.erase(sSelectors.begin() + i);
+            }
+            else
+                i++;
+        }
         NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
@@ -1554,7 +1549,7 @@ private:
         m_oXmlStyle.Clear();
 
         for(int i = temporary.size() - 1; i >= 0; i--)
-			sSelectors.insert(sSelectors.begin() + temporary[i].first, temporary[i].second);
+            sSelectors.insert(sSelectors.begin() + temporary[i].first, temporary[i].second);
 
         // Если в таблице
         bool bInTable = false;
@@ -1648,7 +1643,7 @@ private:
         else
         {
             int nH = nHy * 9525;
-            nH = (nH > 8500000 ? 8500000 : nH);
+            nH = (nH > 8000000 ? 8000000 : nH);
             int nW = (int)((double)nWx * (double)nH / (double)nHy);
             if(nW > 7000000)
             {
@@ -1701,7 +1696,7 @@ private:
         while(m_oLightReader.MoveToNextAttribute())
         {
             std::wstring sName = m_oLightReader.GetName();
-            if(sName == L"xmlns")
+            if(sName.find(L"xmlns") != std::wstring::npos)
                 continue;
             oSVG.WriteString(sName);
             oSVG.WriteString(L"=\"");
@@ -1715,11 +1710,21 @@ private:
         size_t nRef = sSVG.find(L"image");
         while(nRef != std::wstring::npos)
         {
+            size_t nRefBegin = sSVG.rfind(L'<', nRef);
+            if (nRefBegin != std::wstring::npos)
+            {
+                if (sSVG[nRefBegin + 1] == L'/')
+                    nRefBegin++;
+                sSVG.erase(nRefBegin + 1, nRef - nRefBegin - 1);
+                nRef = nRefBegin + 1;
+            }
+
+            size_t nRefEnd = sSVG.find(L'>', nRef);
             size_t nHRef = sSVG.find(L"href", nRef);
-            if(nHRef == std::wstring::npos)
+            if(nHRef == std::wstring::npos || nRefEnd == std::wstring::npos)
                 break;
             nHRef += 6;
-            if(sSVG.compare(nHRef, 4, L"http") == 0)
+            if(nHRef > nRefEnd || sSVG.compare(nHRef, 4, L"http") == 0)
             {
                 nRef = sSVG.find(L"image", nRef + 5);
                 continue;

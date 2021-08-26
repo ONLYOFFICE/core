@@ -52,6 +52,7 @@ enum ElementType
     typeTextReferenceMarkStart,
     typeTextReferenceMarkEnd,
 	typeTextReferenceRef,
+	typeTextTabStop,
 
 	typeFieldFieldmarkStart,
 	typeFieldFieldmarkEnd,
@@ -260,6 +261,8 @@ enum ElementType
     typeStyleFooterLeft,
     typeStyleFootnoteSep,
 
+	typeStyleProperties,
+
 	typeLoextHeaderFirst,
 	typeLoextFooterFirst,
 
@@ -279,6 +282,7 @@ enum ElementType
 
     typeStylePageLayout,
     typeStyleMap,
+	typeStylePageMaster, // openoffice xml 1.0
 
 	typeTableTemplate,
 	typeTableTemplateElement,
@@ -344,6 +348,7 @@ enum ElementType
 	typeTableTableRowNoGroup,
     typeTableTableSource,
 	typeTableTableProtection,
+	typeTableSubTable, //openoffice xml 1.0
 
 	typeTableDataPilotTables,
 	typeTableDataPilotTable,

@@ -553,6 +553,8 @@ namespace PPTX
 		{
 			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 			
+			ReadAttributes(oReader);
+
 			if ( oReader.IsEmptyNode() )
 				return;
 					
@@ -576,6 +578,8 @@ namespace PPTX
 		void Pic::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());
+
+			XmlMacroReadAttributeBase(node, L"macro", macro);
 
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
@@ -620,13 +624,16 @@ namespace PPTX
 
 		std::wstring Pic::toXML() const
 		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"macro", macro);
+
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(nvPicPr);
 			oValue.Write(blipFill);
 			oValue.Write(spPr);
 			oValue.WriteNullable(style);
 
-			return XmlUtils::CreateNode(m_namespace + L":pic", oValue);
+			return XmlUtils::CreateNode(m_namespace + L":pic", oAttr, oValue);
 		}
 		
 		void Pic::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -746,6 +753,12 @@ namespace PPTX
 			pWriter->WriteRecord1(2, spPr);
 			pWriter->WriteRecord2(3, style);
 
+			if (macro.IsInit())
+			{
+				pWriter->StartRecord(SPTREE_TYPE_MACRO);
+				pWriter->WriteString1(0, *macro);
+				pWriter->EndRecord();
+			}
 			pWriter->EndRecord();
 		}
 
@@ -807,6 +820,7 @@ namespace PPTX
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("xmlns:pic"), (std::wstring)_T("http://schemas.openxmlformats.org/drawingml/2006/picture"));
 			}
+			pWriter->WriteAttribute(L"macro", macro);
 			pWriter->EndAttributes();
 
 			nvPicPr.toXmlWriter(pWriter);
@@ -839,6 +853,7 @@ namespace PPTX
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			nvPicPr.cNvPr.id = -1;
+
 			while (pReader->GetPos() < _end_rec)
 			{
 				BYTE _at = pReader->GetUChar();
@@ -924,6 +939,11 @@ namespace PPTX
 						}
 						pReader->Seek(_end_rec1);
 					}
+					case SPTREE_TYPE_MACRO:
+					{
+						pReader->Skip(5); // type + size
+						macro = pReader->GetString2();
+					}break;
 					default:
 					{
 						break;

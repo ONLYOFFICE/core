@@ -52,21 +52,17 @@ office_element_ptr office_element_creator::create(const std::wstring & ns, const
     const std::wstring fullName = ns + (ns.size() > 0 ? L":" : L"") + name;
 
 	MapType::const_iterator i = map_.find( fullName );
-    if (i != map_.end() )
-    {
-        office_element_ptr element = (i->second)();
-        
-        if (element)
-        {
-            element->setContext(Context);
-        }
-        
-        if (element && isRoot)
-            element->set_root(true);
+	if (i != map_.end())
+	{
+		office_element_ptr element = (i->second)();
 
-        if (element)
-            element->afterCreate();        
+		if (element)
+		{
+			element->setContext(Context);
 
+			if ( isRoot)
+				element->set_root(true);
+		}
         return element;
     }
     else

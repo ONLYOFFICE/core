@@ -36,7 +36,10 @@
 namespace XLS
 {
 
+PtgMemNoMem::PtgMemNoMem(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
+{
 
+}
 BiffStructurePtr PtgMemNoMem::clone()
 {
 	return BiffStructurePtr(new PtgMemNoMem(*this));

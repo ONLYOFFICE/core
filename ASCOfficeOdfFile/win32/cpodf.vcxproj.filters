@@ -484,6 +484,9 @@
       <Filter>elements</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ConvertOO2OOX.cpp" />
+    <ClCompile Include="..\src\odf\style_properties.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\odf\abstract_xml.h">
@@ -949,5 +952,8 @@
       <Filter>elements</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ConvertOO2OOX.h" />
+    <ClInclude Include="..\src\odf\style_properties.h">
+      <Filter>style</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

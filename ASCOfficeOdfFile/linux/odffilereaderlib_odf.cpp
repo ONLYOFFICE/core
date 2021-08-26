@@ -75,6 +75,7 @@
 #include "../src/odf/style_chart_properties.cpp"
 #include "../src/odf/style_graphic_properties.cpp"
 #include "../src/odf/style_map.cpp"
+#include "../src/odf/style_properties.cpp"
 #include "../src/odf/style_paragraph_properties.cpp"
 #include "../src/odf/style_paragraph_properties_docx.cpp"
 #include "../src/odf/style_paragraph_properties_pptx.cpp"

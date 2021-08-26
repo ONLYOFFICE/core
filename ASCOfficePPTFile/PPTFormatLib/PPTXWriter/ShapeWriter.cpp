@@ -709,8 +709,10 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
     {
         m_oWriter.WriteString(std::wstring(L"<p:ph"));
 
-        if (pImageElement->m_lPlaceholderType > 0 && pImageElement->m_lPlaceholderType != PT_Body_Empty)
-            m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(pImageElement->m_lPlaceholderType) + L"\"");
+		if (pImageElement->m_lPlaceholderType > 0 && pImageElement->m_lPlaceholderType != PT_Body_Empty)
+			m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(pImageElement->m_lPlaceholderType) + L"\"");
+		else if (pImageElement->m_lPlaceholderID == -1)
+			m_oWriter.WriteString(std::wstring(L" type=\"obj\""));
 
         if (-1 != pImageElement->m_lPlaceholderID)
         {
@@ -932,6 +934,8 @@ void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
 
         if (pShapeElement->m_lPlaceholderType > 0 && pShapeElement->m_lPlaceholderType != PT_Body_Empty)
             m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(pShapeElement->m_lPlaceholderType) + _T("\""));
+		else if (pShapeElement->m_lPlaceholderID == -1)
+			m_oWriter.WriteString(std::wstring(L" type=\"obj\""));
 
         if ( pShapeElement->m_lPlaceholderID != -1)
         {
@@ -1411,12 +1415,15 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 {
                     m_oWriter.WriteString(L"<a:buAutoNum type=\"");
                     m_oWriter.WriteString(pPF->bulletAutoNum->type.get());
-                    if (pPF->bulletAutoNum->startAt.get2() != 1)
+					m_oWriter.WriteString(L"\"");
+					
+					if ((pPF->bulletAutoNum->startAt.IsInit()) && (pPF->bulletAutoNum->startAt.get2() != 1))
                     {
                         m_oWriter.WriteString(L" startAt=\"");
                         m_oWriter.WriteString(std::to_wstring(pPF->bulletAutoNum->startAt.get2()));
+						m_oWriter.WriteString(L"\"");
                     }
-                    m_oWriter.WriteString(L"\"/>");
+                    m_oWriter.WriteString(L"/>");
                 }
 
                 bool set = true;

@@ -44,13 +44,10 @@ namespace OOX
     {
     public:
         WritingElement_AdditionConstructors(CCalcPr)
+        WritingElement_XlsbConstructors(CCalcPr)
             CCalcPr()
 			{
 			}
-            CCalcPr(XLS::BaseObjectPtr& obj)
-            {
-                fromBin(obj);
-            }
             virtual ~CCalcPr()
 			{
 			}
@@ -123,19 +120,19 @@ namespace OOX
 
             void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
-                auto ptr = dynamic_cast<XLSB::CalcProp*>(obj.get());
+                auto ptr = static_cast<XLSB::CalcProp*>(obj.get());
                 m_oCalcId                   = ptr->recalcID;
                 m_oCalcMode                 = (SimpleTypes::Spreadsheet::ECalcMode)ptr->fAutoRecalc;
                 m_oFullCalcOnLoad           = ptr->fFullCalcOnLoad;
                 m_oRefMode                  = (SimpleTypes::Spreadsheet::ERefMode)!ptr->fRefA1;
                 m_oIterate                  = ptr->fIter;
                 m_oIterateCount             = ptr->cCalcCount;
-                m_oIterateDelta->SetValue(ptr->xnumDelta.data.value);
+                m_oIterateDelta             = ptr->xnumDelta.data.value;
                 m_oFullPrecision            = ptr->fFullPrec;
                 m_oCalcCompleted            = ptr->fSomeUncalced;
                 m_oCalcOnSave               = ptr->fSaveRecalc;
                 m_oConcurrentCalc           = ptr->fMTREnabled;
-                m_oConcurrentManualCount->SetValue(ptr->cUserThreadCount);
+                m_oConcurrentManualCount    = ptr->cUserThreadCount;
                 m_oForceFullCalc            = ptr->fNoDeps;
 
             }

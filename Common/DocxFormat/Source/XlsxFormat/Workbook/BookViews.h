@@ -46,12 +46,9 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CWorkbookView)
+            WritingElement_XlsbConstructors(CWorkbookView)
 			CWorkbookView()
 			{
-			}            
-            CWorkbookView(XLS::BaseObjectPtr& obj)
-            {
-                fromBin(obj);
             }
 			virtual ~CWorkbookView()
 			{
@@ -117,7 +114,7 @@ namespace OOX
 
             void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
-                auto ptr = dynamic_cast<XLSB::BookView*>(obj.get());
+                auto ptr = static_cast<XLSB::BookView*>(obj.get());
                 m_oActiveTab                = ptr->itabCur;
                 m_oAutoFilterDateGrouping   = ptr->fNoAFDateGroup;
                 m_oFirstSheet               = ptr->itabFirst;
@@ -128,8 +125,8 @@ namespace OOX
                 m_oTabRatio                 = ptr->wTabRatio;
                 m_oWindowHeight             = ptr->dyWn;
                 m_oWindowWidth              = ptr->dxWn;
-                m_oXWindow                  = (int)ptr->xWn;//                 = ptr->xWn;
-                m_oYWindow                  = (int)ptr->yWn;//                  = ptr->yWn;
+                m_oXWindow                  = (int)ptr->xWn;
+                m_oYWindow                  = (int)ptr->yWn;
 
                 if(ptr->fHidden)
                     m_oVisibility = SimpleTypes::Spreadsheet::EVisibleType::visibleHidden;
@@ -161,13 +158,10 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CBookViews)
+            WritingElement_XlsbVectorConstructors(CBookViews)
 			CBookViews()
 			{
-			}
-            CBookViews(std::vector<XLS::BaseObjectPtr>& obj)
-            {
-                fromBin(obj);
-            }
+			}            
 			virtual ~CBookViews()
 			{
 			}

@@ -70,6 +70,8 @@ namespace XLSB
         BaseObjectPtr               m_BrtFileVersion;
         BaseObjectPtr               m_BrtFileSharingIso;
         BaseObjectPtr               m_BrtFileSharing;
+        BaseObjectPtr               m_BrtBookProtectionIso;
+        BaseObjectPtr               m_BrtBookProtection;
         BaseObjectPtr               m_BrtWbProp;
         BaseObjectPtr               m_ACABSPATH;
         BaseObjectPtr               m_BOOKVIEWS;

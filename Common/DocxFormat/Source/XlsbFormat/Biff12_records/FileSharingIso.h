@@ -32,7 +32,7 @@
 #pragma once
 
 #include <Logic/Biff_records/BiffRecord.h>
-#include "../Source/XlsxFormat/WritingElement.h"
+#include "../../XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
 #include "../Biff12_structures/XLWideString.h"
 #include "../Biff12_structures/LPByteBuf.h"

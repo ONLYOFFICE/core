@@ -92,7 +92,7 @@ namespace OOX
 
             void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
-                auto ptr = dynamic_cast<XLSB::Name*>(obj.get());
+                auto ptr = static_cast<XLSB::Name*>(obj.get());
                 m_oComment                  = ptr->comment.value();
                // m_oCustomMenu               = ptr->.value();
                 m_oDescription              = ptr->description.value();
@@ -136,13 +136,10 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDefinedNames)
+            WritingElement_XlsbVectorConstructors(CDefinedNames)
 			CDefinedNames(OOX::Document *pMain = NULL) : WritingElementWithChilds<CDefinedName>(pMain)
 			{
-			}
-            CDefinedNames(std::vector<XLS::BaseObjectPtr>& obj)
-            {
-                fromBin(obj);
-            }
+			}            
 			virtual ~CDefinedNames()
 			{
 			}

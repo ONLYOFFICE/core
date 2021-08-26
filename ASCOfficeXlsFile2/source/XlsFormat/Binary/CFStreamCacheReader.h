@@ -118,7 +118,7 @@ private:
 class BinaryStreamCacheReader : public StreamCacheReader
 {
 public:
-    BinaryStreamCacheReader(std::shared_ptr<NSBinPptxRW::CBinaryFileReader>& binaryStream, const GlobalWorkbookInfoPtr global_info);
+    BinaryStreamCacheReader(std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream, const GlobalWorkbookInfoPtr global_info);
     virtual ~BinaryStreamCacheReader();
 
     CFRecordPtr getNextRecord(const CFRecordType::TypeId desirable_type, const bool gen_except = false) override;

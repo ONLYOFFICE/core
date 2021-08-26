@@ -39,6 +39,8 @@
 #include "../Base/Base.h"
 #include "../../../Base64.h"
 
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BaseObject.h"
+
 namespace NSCommon
 {
     template<class Type>
@@ -136,7 +138,7 @@ namespace NSCommon
                 this->m_pPointer = new Type(oNode);
             else
                 this->m_pPointer = NULL;
-        }
+        }     
         
         nullable(XmlUtils::CXmlLiteReader& oReader)
         {
@@ -145,6 +147,39 @@ namespace NSCommon
             else
                 this->m_pPointer = NULL;
         }
+
+        nullable(XLS::BaseObjectPtr& obj)
+        {
+            if (obj != nullptr)
+                this->m_pPointer = new Type(obj);
+            else
+                this->m_pPointer = NULL;
+        }
+
+        nullable(std::vector<XLS::BaseObjectPtr>& obj)
+        {
+            if (!obj.empty())
+                this->m_pPointer = new Type(obj);
+            else
+                this->m_pPointer = NULL;
+        }
+
+        nullable<Type>& operator=(XLS::BaseObjectPtr& obj)
+        {
+            RELEASEOBJECT(this->m_pPointer);
+            if (obj != nullptr)
+                this->m_pPointer = new Type(obj);
+            return *this;
+        }
+
+        nullable<Type>& operator=(std::vector<XLS::BaseObjectPtr>& obj)
+        {
+            RELEASEOBJECT(this->m_pPointer);
+            if (!obj.empty())
+                this->m_pPointer = new Type(obj);
+            return *this;
+        }
+
 		nullable<Type>& operator=(XmlUtils::CXmlNode& oNode)
 		{
             RELEASEOBJECT(this->m_pPointer);
@@ -774,7 +809,7 @@ namespace NSCommon
 		nullable_string() : nullable_base<std::wstring>()
 		{
 		}
-		nullable_string(const nullable_string& oOther)
+        nullable_string(const nullable_string& oOther)
 		{
 			if (NULL == oOther.m_pPointer)
 				m_pPointer = NULL;

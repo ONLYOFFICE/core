@@ -51,6 +51,9 @@
 #include "../../XlsbFormat/WorkBookStream.h"
 
 #include "../../XlsbFormat/Biff12_unions/BOOKVIEWS.h"
+#include "../../XlsbFormat/Biff12_unions/BUNDLESHS.h"
+#include "../../XlsbFormat/Biff12_unions/EXTERNALS.h"
+#include "../../XlsbFormat/Biff12_records/FileVersion.h"
 
 namespace OOX
 {
@@ -120,7 +123,7 @@ namespace OOX
 
                 XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
                 //auto xls_document = std::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
-                XLSB::WorkBookStreamPtr workBookStream(new XLSB::WorkBookStream(workbook_code_page));
+                XLSB::WorkBookStreamPtr workBookStream = std::make_shared<XLSB::WorkBookStream>(workbook_code_page);
                 XLS::BinReaderProcessor proc(reader, workBookStream.get(), true);
 
                 proc.mandatory(*workBookStream.get());
@@ -129,29 +132,28 @@ namespace OOX
                 {
                     if (workBookStream->m_BOOKVIEWS != nullptr)
                         m_oBookViews = static_cast<XLSB::BOOKVIEWS*>(workBookStream->m_BOOKVIEWS.get())->m_arBrtBookView;
-                    else if (workBookStream->m_BrtCalcProp != nullptr)
+                    if (workBookStream->m_BrtCalcProp != nullptr)
                         m_oCalcPr = workBookStream->m_BrtCalcProp;
-                    else if (!workBookStream->m_arBrtName.empty())
+                    if (!workBookStream->m_arBrtName.empty())
                         m_oDefinedNames = workBookStream->m_arBrtName;
+                    if (workBookStream->m_BUNDLESHS != nullptr)
+                        m_oSheets = static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh;
+                    if (workBookStream->m_BrtWbProp != nullptr)
+                        m_oWorkbookPr = workBookStream->m_BrtWbProp;
+                    if (workBookStream->m_BrtBookProtectionIso != nullptr)
+                        m_oWorkbookProtection = workBookStream->m_BrtBookProtectionIso;
+                    if (workBookStream->m_EXTERNALS != nullptr)
+                        m_oExternalReferences = static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP;
+                    if (workBookStream->m_BrtFileVersion != nullptr )
+                    {
+                        m_oAppName = static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName.value();
+                    }
                      /*
-                    else if ( L"definedNames" == sName )
-                        m_oDefinedNames = oReader;
-                    else if ( L"sheets" == sName )
-                        m_oSheets = oReader;
-                    else if ( L"workbookPr" == sName )
-                        m_oWorkbookPr = oReader;
-                    else if (L"workbookProtection" == sName)
-                        m_oWorkbookProtection = oReader;
-                    else if ( L"externalReferences" == sName )
-                        m_oExternalReferences = oReader;
+
+
                     else if ( L"extLst" == sName )
                         m_oExtLst = oReader;
-                    else if ( L"fileVersion" == sName )
-                    {
-                        WritingElement_ReadAttributes_Start( oReader )
-                            WritingElement_ReadAttributes_Read_if( oReader, L"appName", m_oAppName )
-                        WritingElement_ReadAttributes_End( oReader )
-                    }*/
+                   */
 
                 }
             }
@@ -354,7 +356,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 
 			nullable<OOX::Spreadsheet::CWorkbookProtection>	m_oWorkbookProtection;
 			nullable<OOX::Spreadsheet::CBookViews>			m_oBookViews;
-			nullable<OOX::Spreadsheet::CDefinedNames>		m_oDefinedNames;
+            nullable<OOX::Spreadsheet::CDefinedNames>		m_oDefinedNames;
 			nullable<OOX::Spreadsheet::CSheets>				m_oSheets;
 			nullable<OOX::Spreadsheet::CWorkbookPr>			m_oWorkbookPr;
 			nullable<OOX::Spreadsheet::CExternalReferences>	m_oExternalReferences;

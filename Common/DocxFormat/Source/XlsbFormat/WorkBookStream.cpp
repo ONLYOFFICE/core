@@ -46,6 +46,8 @@
 #include "Biff12_records/CalcProp.h"
 #include "Biff12_records/OleSize.h"
 #include "Biff12_records/EndBook.h"
+#include "Biff12_records/BookProtection.h"
+#include "Biff12_records/BookProtectionIso.h"
 
 
 namespace XLSB
@@ -157,6 +159,24 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                 if (proc.optional<WbProp>())
                 {
                     m_BrtWbProp = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BookProtectionIso:
+            {
+                if (proc.optional<BookProtectionIso>())
+                {
+                    m_BrtBookProtectionIso = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BookProtection:
+            {
+                if (proc.optional<BookProtection>())
+                {
+                    m_BrtBookProtection = elements_.back();
                     elements_.pop_back();
                 }
             }break;

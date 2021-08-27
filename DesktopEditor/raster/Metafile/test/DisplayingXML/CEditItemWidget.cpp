@@ -65,14 +65,14 @@ void CEditItemWidget::on_Save_clicked()
         {
                 const QTextEdit* pTextEdit = m_oBind.key(oStandardItem);
 
-                unsigned int unFirstQuotationMark, unFirstSlash;
+                unsigned int unFirstQuotationMark, unLastSlash;
 
                 const QString qsStandardItemValue = oStandardItem->data(0).toString();
 
                 unFirstQuotationMark = qsStandardItemValue.indexOf('>');
-                unFirstSlash = qsStandardItemValue.indexOf('/');
+                unLastSlash = qsStandardItemValue.lastIndexOf('/');
 
-                const QString qsName = qsStandardItemValue.mid(1, ((unFirstSlash > unFirstQuotationMark) ? (unFirstQuotationMark) : (unFirstSlash)) - 1);
+                const QString qsName = qsStandardItemValue.mid(1, ((unLastSlash > unFirstQuotationMark) ? (unFirstQuotationMark) : (unLastSlash)) - 1);
                 const QString qsValue = pTextEdit->toPlainText();
 
                 if (qsValue.size() == 0)
@@ -83,9 +83,9 @@ void CEditItemWidget::on_Save_clicked()
 
         if (NULL != m_pMainWindow)
         {
-                m_pMainWindow->SaveInXmlFile(L"Temp.xml");
-                m_pMainWindow->ConvertToEmf(L"Temp.xml");
-                m_pMainWindow->DisplayingFile(L"TempFile.emf", false);
+                if (m_pMainWindow->SaveInXmlFile(L"Temp.xml") &&
+                    m_pMainWindow->ConvertToEmf(L"Temp.xml"))
+                        m_pMainWindow->DisplayingFile(L"TempFile.emf", false);
         }
 
         on_Cancel_clicked();
@@ -133,12 +133,12 @@ void CEditItemWidget::ParsingAttachments(QStandardItem *pStandardItem, unsigned 
 {
         const unsigned int unCountRow           = pStandardItem->rowCount();
         const QString qsStandardItemValue       = pStandardItem->data(0).toString();
-        unsigned int unFirstQuotationMark, unFirstSlash;
+        unsigned int unFirstQuotationMark, unLastSlash;
 
         unFirstQuotationMark = qsStandardItemValue.indexOf('>');
-        unFirstSlash = qsStandardItemValue.indexOf('/');
+        unLastSlash = qsStandardItemValue.lastIndexOf('/');
 
-        const QString qsName = qsStandardItemValue.mid(1, ((unFirstSlash > unFirstQuotationMark) ? (unFirstQuotationMark) : (unFirstSlash)) - 1);
+        const QString qsName = qsStandardItemValue.mid(1, ((unLastSlash > unFirstQuotationMark) ? (unFirstQuotationMark) : (unLastSlash)) - 1);
 
         if (unCountRow == 0)
         {
@@ -146,8 +146,8 @@ void CEditItemWidget::ParsingAttachments(QStandardItem *pStandardItem, unsigned 
 
                 QString qsValue;
 
-                if (unFirstSlash > unFirstQuotationMark)
-                      qsValue = qsStandardItemValue.mid(unFirstQuotationMark + 1, unFirstSlash - unFirstQuotationMark - 2);
+                if (unLastSlash > unFirstQuotationMark)
+                      qsValue = qsStandardItemValue.mid(unFirstQuotationMark + 1, unLastSlash - unFirstQuotationMark - 2);
 
                 QLabel *pNameLabel = new QLabel(qsName);
                 QTextEdit *pValueEdit = new QTextEdit(qsValue);

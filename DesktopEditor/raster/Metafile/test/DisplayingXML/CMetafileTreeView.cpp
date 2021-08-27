@@ -96,6 +96,8 @@ bool CMetafileTreeView::SaveInXmlFile(const std::wstring& wsSaveFilePath)
 
         XmlUtils::CXmlWriter oXmlWriter;
 
+        oXmlWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+
         WriteXmlNode(oXmlWriter, pRootNode);
 
         return oXmlWriter.SaveToFile(wsSaveFilePath);
@@ -130,20 +132,10 @@ void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem*
                         XmlUtils::CXmlNode oXmlChild;
                         if (oXmlChilds.GetAt(i, oXmlChild))
                         {
-                                QString qsArguments;
-                                if (0 < oXmlChild.GetAttributesCount())
-                                {
-                                        std::vector<std::wstring> arNameArguments, arValueArguments;
-                                        oXmlChild.GetAllAttributes(arNameArguments, arValueArguments);
-
-                                        for (unsigned int i = 0; i < arNameArguments.size(); ++i)
-                                                qsArguments += QString(" %1=\"%2\"").arg(QString::fromStdWString(arNameArguments[i]), QString::fromStdWString(arValueArguments[i]));
-                                }
-
-                                QStandardItem *pStandardItem = new QStandardItem(QString("<%1%2>").arg(QString::fromStdWString(oXmlChild.GetName()), qsArguments));
+                                QStandardItem *pStandardItem = new QStandardItem(QString("<%1>").arg(QString::fromStdWString(oXmlChild.GetName())));
 
                                 if (unLevel > 1)
-                                pStandardItem->setEditable(false);
+                                        pStandardItem->setEditable(false);
 
                                 ReadXmlNode(oXmlChild, pStandardItem, unLevel + 1);
                                 oStandartItem->appendRow(pStandardItem);
@@ -161,22 +153,49 @@ void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem*
         }
 }
 
+std::wstring StringNormalization(std::wstring wsString)
+{
+    std::wstring wsText;
+    for (wchar_t wChar : wsString)
+        if (wChar == L'<')
+               wsText += L"&lt;";
+        else if (wChar == L'>')
+               wsText += L"&gt;";
+        else if (wChar == L'&')
+               wsText += L"&amp;";
+        else if (wChar == L'\'')
+               wsText += L"&apos;";
+        else if (wChar == L'"')
+               wsText += L"&quot;";
+
+        else wsText += wChar;
+    return wsText;
+}
+
 void CMetafileTreeView::WriteXmlNode(XmlUtils::CXmlWriter &oXmlWriter, QStandardItem *oStandartItem)
 {
         unsigned int unCountNodes = oStandartItem->rowCount();
 
-        std::wstring wsNodeText = oStandartItem->text().toStdWString();
+        QString qsNodeText = oStandartItem->text();
+
+        unsigned int unFirstQuotationMark = qsNodeText.indexOf(L'>');
+        unsigned int unLastSlash = qsNodeText.lastIndexOf(L'/');
+
+        std::wstring wsName = qsNodeText.mid(1, ((unLastSlash > unFirstQuotationMark) ? (unFirstQuotationMark) : (unLastSlash)) - 1).toStdWString();
 
         if (oStandartItem->rowCount() == 0)
         {
-                if (wsNodeText.find_last_of(L'/') != std::wstring::npos)
-                        oXmlWriter.WriteString(wsNodeText);
-                else
-                        oXmlWriter.WriteString(wsNodeText.substr(0, wsNodeText.size() - 1) + L"/>");
+                std::wstring wsValue;
+
+                if (unLastSlash > unFirstQuotationMark)
+                        wsValue = qsNodeText.mid(unFirstQuotationMark + 1, unLastSlash - unFirstQuotationMark - 2).toStdWString();
+
+                oXmlWriter.WriteNode(wsName, StringNormalization(wsValue));
+
                 return;
         }
 
-        oXmlWriter.WriteString(wsNodeText);
+        oXmlWriter.WriteNodeBegin(wsName);
 
         for (unsigned int unIndexNode = 0; unIndexNode < unCountNodes; ++unIndexNode)
         {
@@ -184,7 +203,7 @@ void CMetafileTreeView::WriteXmlNode(XmlUtils::CXmlWriter &oXmlWriter, QStandard
                 WriteXmlNode(oXmlWriter, pNode);
         }
 
-        oXmlWriter.WriteString(L"</" + wsNodeText.substr(1));
+        oXmlWriter.WriteNodeEnd(wsName);
 }
 
 void CMetafileTreeView::EditItem(QStandardItem *pStandardItem)

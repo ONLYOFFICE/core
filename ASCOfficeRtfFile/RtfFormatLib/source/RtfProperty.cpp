@@ -810,7 +810,7 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		RtfStylePtr oStyle;
 		if( true == poRtfDocument->m_oStyleTable.GetStyle( m_nCharStyle, oStyle ) )
 		{
-			sResult += L"<w:pStyle w:val=\"";
+			sResult += L"<w:rStyle w:val=\"";
 			sResult += L"Style_" + std::to_wstring(m_nCharStyle); //oStyle->m_sName;
 			sResult += L"\"/>";
 		}

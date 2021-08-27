@@ -31,39 +31,53 @@
  */
 #pragma once
 
-#include <CPOptional.h>
-#include <CPScopedPtr.h>
+
+#include <iosfwd>
 #include <string>
+#include "odfattributes.h"
 
-namespace cpdoccore {
-namespace oox {
 
-class xlsx_conditionalFormatting_context
+namespace cpdoccore { namespace odf_types { 
+
+class time_period
 {
 public:
-    xlsx_conditionalFormatting_context();
-    ~xlsx_conditionalFormatting_context();
+    enum type
+    {
+		today = 0,
+		yesterday = 1,
+		tomorrow = 2,
+		last7Days = 3,
+		thisMonth = 4,
+		lastMonth = 5,
+		nextMonth = 6,
+		thisWeek = 7,
+		lastWeek = 8,
+		nextWeek = 9
 
-	void start(std::wstring ref);
-	void end(){}
+    };
 
-	void add_rule(int type);
+	time_period() {}
 
-	void set_formula(std::wstring f);
-	void set_dataBar(_CP_OPT(int) min, _CP_OPT(int) max);
+	time_period(type _Type) : type_(_Type)
+    {}
 
-	void set_dxf	(int dxf_id);
-	void set_showVal(bool val);
-	void set_time_period(int val);
+    type get_type() const
+    {
+        return type_;
+    };
+    static time_period parse(const std::wstring & Str);
 
-	void add_sfv	(int type, std::wstring value);
-	void add_color	(std::wstring col);
-
-    void serialize(std::wostream & _Wostream);
 private:
-    class Impl;
-    _CP_SCOPED_PTR(Impl) impl_;
+    type type_;
+
 };
 
+std::wostream & operator << (std::wostream & _Wostream, const time_period & _Val);
+
+} 
+
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::time_period);
+
 }
-}
+

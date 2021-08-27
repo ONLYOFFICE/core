@@ -709,8 +709,10 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
     {
         m_oWriter.WriteString(std::wstring(L"<p:ph"));
 
-        if (pImageElement->m_lPlaceholderType > 0 && pImageElement->m_lPlaceholderType != PT_Body_Empty)
-            m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(pImageElement->m_lPlaceholderType) + L"\"");
+		if (pImageElement->m_lPlaceholderType > 0 && pImageElement->m_lPlaceholderType != PT_Body_Empty)
+			m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(pImageElement->m_lPlaceholderType) + L"\"");
+		else if (pImageElement->m_lPlaceholderID == -1)
+			m_oWriter.WriteString(std::wstring(L" type=\"obj\""));
 
         if (-1 != pImageElement->m_lPlaceholderID)
         {
@@ -794,10 +796,13 @@ void PPT_FORMAT::CShapeWriter::WriteGroupInfo()
     {
         std::wstring rId = m_pRels->WriteHyperlink(pGroupElement->m_sHyperlink);
 
-        m_oWriter.WriteString(std::wstring(L"<a:hlinkClick"));
-        m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
-        m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId ));
-        m_oWriter.WriteString(std::wstring(L"\"></a:hlinkClick>"));
+		if (false == rId.empty())
+		{
+			m_oWriter.WriteString(std::wstring(L"<a:hlinkClick"));
+			m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
+			m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId));
+			m_oWriter.WriteString(std::wstring(L"\"></a:hlinkClick>"));
+		}
     }
     m_oWriter.WriteString(std::wstring(L"</p:cNvPr>"));
 
@@ -844,10 +849,13 @@ void PPT_FORMAT::CShapeWriter::WriteTableInfo()
     {
         std::wstring rId = m_pRels->WriteHyperlink(pGroupElement->m_sHyperlink);
 
-        m_oWriter.WriteString(std::wstring(L"<a:hlinkClick"));
-        m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
-        m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId ));
-        m_oWriter.WriteString(std::wstring(L"\"></a:hlinkClick>"));
+		if (false == rId.empty())
+		{
+			m_oWriter.WriteString(std::wstring(L"<a:hlinkClick"));
+			m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
+			m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId));
+			m_oWriter.WriteString(std::wstring(L"\"></a:hlinkClick>"));
+		}
     }
     m_oWriter.WriteString(std::wstring(L"</p:cNvPr>"));
 
@@ -895,10 +903,13 @@ void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
     {
         std::wstring rId = m_pRels->WriteHyperlink(pShapeElement->m_sHyperlink);
 
-        m_oWriter.WriteString(std::wstring(L"<a:hlinkClick"));
-        m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
-        m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId ));
-        m_oWriter.WriteString(std::wstring(L"\"></a:hlinkClick>"));
+		if (false == rId.empty())
+		{
+			m_oWriter.WriteString(std::wstring(L"<a:hlinkClick"));
+			m_oWriter.WriteString(std::wstring(L" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""));
+			m_oWriter.WriteString(std::wstring(L" r:id=\"" + rId));
+			m_oWriter.WriteString(std::wstring(L"\"></a:hlinkClick>"));
+		}
     }
     m_oWriter.WriteString(std::wstring(L"</p:cNvPr>"));
 
@@ -923,6 +934,8 @@ void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
 
         if (pShapeElement->m_lPlaceholderType > 0 && pShapeElement->m_lPlaceholderType != PT_Body_Empty)
             m_oWriter.WriteString(std::wstring(L" type=\"") + GetPhType(pShapeElement->m_lPlaceholderType) + _T("\""));
+		else if (pShapeElement->m_lPlaceholderID == -1)
+			m_oWriter.WriteString(std::wstring(L" type=\"obj\""));
 
         if ( pShapeElement->m_lPlaceholderID != -1)
         {
@@ -1402,12 +1415,15 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 {
                     m_oWriter.WriteString(L"<a:buAutoNum type=\"");
                     m_oWriter.WriteString(pPF->bulletAutoNum->type.get());
-                    if (pPF->bulletAutoNum->startAt.get2() != 1)
+					m_oWriter.WriteString(L"\"");
+					
+					if ((pPF->bulletAutoNum->startAt.IsInit()) && (pPF->bulletAutoNum->startAt.get2() != 1))
                     {
                         m_oWriter.WriteString(L" startAt=\"");
                         m_oWriter.WriteString(std::to_wstring(pPF->bulletAutoNum->startAt.get2()));
+						m_oWriter.WriteString(L"\"");
                     }
-                    m_oWriter.WriteString(L"\"/>");
+                    m_oWriter.WriteString(L"/>");
                 }
 
                 bool set = true;
@@ -1704,6 +1720,9 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
                 && actions[i].m_strAudioFileName.empty()
                 && actions[i].m_lType == II_NoAction)
             continue;
+
+		if (actions[i].m_strHyperlink.empty())
+			continue;
 
         PPTX::Logic::Hyperlink hlink;
         if (actions[i].m_strHyperlink.size() && m_pRels)

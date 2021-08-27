@@ -39,10 +39,10 @@
 
 #include "office_elements_create.h"
 
-
-#include "color.h"
-#include "iconset_type.h"
-#include "calcext_type.h"
+#include "../datatypes/color.h"
+#include "../datatypes/iconset_type.h"
+#include "../datatypes/calcext_type.h"
+#include "../datatypes/timeperiod.h"
 
 namespace cpdoccore { 
 namespace odf_writer {
@@ -83,7 +83,7 @@ public:
    	void serialize(CP_ATTR_NODE);   
 
 	_CP_OPT(std::wstring)	calcext_style_;
-	_CP_OPT(std::wstring)	calcext_date_;
+	_CP_OPT(odf_types::time_period)	calcext_date_;
 
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////

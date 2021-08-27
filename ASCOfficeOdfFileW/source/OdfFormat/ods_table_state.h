@@ -275,7 +275,7 @@ struct data_validation_state
 		{
 			if (row < refs[i].row_start || row > refs[i].row_end) continue;
 
-			if (col + repeate_col <= refs[i].col_start ||  col > refs[i].col_end) continue;
+			if (col + (int)repeate_col <= refs[i].col_start ||  col > refs[i].col_end) continue;
 			
 			ref = refs[i];
 			return true;
@@ -286,7 +286,7 @@ struct data_validation_state
 	{
 		for (size_t i = 0; i < refs.size(); i++)
 		{
-			if (row + repeate_row <= refs[i].row_start || row > refs[i].row_end) continue;
+			if (row + (int)repeate_row <= refs[i].row_start || row > refs[i].row_end) continue;
 
 			ref = refs[i];
 			return true;
@@ -387,7 +387,7 @@ public:
 
 				void set_conditional_text(const std::wstring &text);
 				
-				void set_conditional_time(const std::wstring &period);
+				void set_conditional_time(int period);
 			void end_conditional_rule();
 		void end_conditional_format();
 	void end_conditional_formats();

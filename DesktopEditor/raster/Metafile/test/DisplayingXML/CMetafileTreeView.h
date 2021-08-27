@@ -20,7 +20,7 @@ class CMetafileTreeView : public QTreeView
         void Clear();
         QMap<QString, unsigned int>* GetStatistics();
 
-        bool SaveInFile(const QString& sSaveFilePath);
+        bool SaveInXmlFile(const std::wstring& wsSaveFilePath);
 
         void mousePressEvent(QMouseEvent *event) override;
 

@@ -89,7 +89,7 @@ QMap<QString, unsigned int>* CMetafileTreeView::GetStatistics()
         return &m_mStatistics;
 }
 
-bool CMetafileTreeView::SaveInFile(const QString &sSaveFilePath)
+bool CMetafileTreeView::SaveInXmlFile(const std::wstring& wsSaveFilePath)
 {
         QStandardItemModel *pStandardItemModel = (QStandardItemModel*)model();
         QStandardItem *pRootNode = pStandardItemModel->item(0);
@@ -98,9 +98,7 @@ bool CMetafileTreeView::SaveInFile(const QString &sSaveFilePath)
 
         WriteXmlNode(oXmlWriter, pRootNode);
 
-        oXmlWriter.SaveToFile(sSaveFilePath.toStdWString());
-
-        return true;
+        return oXmlWriter.SaveToFile(wsSaveFilePath);
 }
 
 void CMetafileTreeView::mousePressEvent(QMouseEvent *event)
@@ -195,7 +193,7 @@ void CMetafileTreeView::EditItem(QStandardItem *pStandardItem)
                 return;
 
         CEditItemWidget *pEditItemWidget = new CEditItemWidget;
-        pEditItemWidget->SetMainWindow((QWidget*)parent()->parent()->parent());
+        pEditItemWidget->SetMainWindow((MainWindow*)parent()->parent()->parent());
         pEditItemWidget->SetItem(pStandardItem);
         pEditItemWidget->show();
 }

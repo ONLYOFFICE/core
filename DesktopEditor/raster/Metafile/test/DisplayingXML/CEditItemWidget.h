@@ -2,9 +2,10 @@
 #define CEDITITEMWIDGET_H
 
 #include <QWidget>
+#include <QTextEdit>
 #include <QStandardItem>
 
-#include <QTextEdit>
+#include "MainWindow.h"
 
 namespace Ui {
         class CEditItemWidget;
@@ -17,7 +18,7 @@ class CEditItemWidget : public QWidget
         explicit CEditItemWidget(QWidget *parent = nullptr);
         ~CEditItemWidget();
 
-        void SetMainWindow(QWidget *pMainWidget);
+        void SetMainWindow(MainWindow *pMainWindow);
         void SetItem(QStandardItem *pStandardItem);
 
     private slots:
@@ -33,7 +34,7 @@ class CEditItemWidget : public QWidget
         void closeEvent(QCloseEvent *event) override;
 
         Ui::CEditItemWidget *ui;
-        QWidget *m_pMainWindow;
+        MainWindow *m_pMainWindow;
         QStandardItem *m_pStandardItem;
 
         QMap<QTextEdit*, QStandardItem*> m_oBind;

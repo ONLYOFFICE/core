@@ -18,6 +18,13 @@ class MainWindow : public QMainWindow
         MainWindow(QWidget *parent = nullptr);
         ~MainWindow();
 
+        bool ConvertToRaster(const std::wstring& wsPathToFile, bool bWithXmlFile = true);
+        bool ConvertToEmf(const std::wstring& wsPathToXmlFile);
+
+        bool SaveInXmlFile(const std::wstring& wsPathToFile);
+
+        void DisplayingFile(const std::wstring& wsPathToFile, bool bWithXmlFile = true);
+
     private slots:
         void on_expandButton_clicked();
         void on_ModButton_clicked();
@@ -28,11 +35,8 @@ class MainWindow : public QMainWindow
 
     private:
         Ui::MainWindow      *ui;
-        std::wstring        m_wsPathToFile;
-        std::wstring        m_wsPathToXmlFile;
 
-        bool ReadFile();
-        bool ConvertToRaster();
+        bool ReadXmlFile(const std::wstring& wsPathToXmlFile);
         void Clear();
     protected:
         virtual void resizeEvent(QResizeEvent *);

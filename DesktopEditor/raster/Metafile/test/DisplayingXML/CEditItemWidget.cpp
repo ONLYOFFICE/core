@@ -7,6 +7,8 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 
+#include <MainWindow.h>
+
 CEditItemWidget::CEditItemWidget(QWidget *parent) :
         QWidget(parent),
         ui(new Ui::CEditItemWidget),
@@ -40,7 +42,7 @@ CEditItemWidget::~CEditItemWidget()
         delete ui;
 }
 
-void CEditItemWidget::SetMainWindow(QWidget *pMainWidget)
+void CEditItemWidget::SetMainWindow(MainWindow *pMainWidget)
 {
         m_pMainWindow = pMainWidget;
 
@@ -56,6 +58,9 @@ void CEditItemWidget::SetItem(QStandardItem *pStandardItem)
 
 void CEditItemWidget::on_Save_clicked()
 {
+        if (m_oBind.size() == 0)
+                on_Cancel_clicked();
+
         for (QStandardItem* oStandardItem : m_oBind)
         {
                 const QTextEdit* pTextEdit = m_oBind.key(oStandardItem);
@@ -74,6 +79,13 @@ void CEditItemWidget::on_Save_clicked()
                         oStandardItem->setText(QString("<%1/>").arg(qsName));
                 else
                         oStandardItem->setText(QString("<%1>%2</%1>").arg(qsName, qsValue));
+        }
+
+        if (NULL != m_pMainWindow)
+        {
+                m_pMainWindow->SaveInXmlFile(L"Temp.xml");
+                m_pMainWindow->ConvertToEmf(L"Temp.xml");
+                m_pMainWindow->DisplayingFile(L"TempFile.emf", false);
         }
 
         on_Cancel_clicked();

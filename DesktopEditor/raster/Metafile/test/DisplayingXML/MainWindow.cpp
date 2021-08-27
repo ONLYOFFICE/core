@@ -38,18 +38,24 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
         delete ui;
+
+        NSFile::CFileBinary oFileBinary;
+
+        oFileBinary.Remove(L"Temp.png");
+        oFileBinary.Remove(L"Temp.xml");
+        oFileBinary.Remove(L"TempFile.emf");
 }
 
-bool MainWindow::ReadFile()
+bool MainWindow::ReadXmlFile(const std::wstring& wsPathToXmlFile)
 {
-        ui->treeView->SetMetafile(m_wsPathToXmlFile);
+        ui->treeView->SetMetafile(wsPathToXmlFile);
 
         return true;
 }
 
-bool MainWindow::ConvertToRaster()
+bool MainWindow::ConvertToRaster(const std::wstring& wsPathToFile, bool bWithXmlFile)
 {
-        if (m_wsPathToFile.empty())
+        if (wsPathToFile.empty())
                 return false;
 
         CApplicationFontsWorker oWorker;
@@ -62,15 +68,21 @@ bool MainWindow::ConvertToRaster()
         NSFonts::IApplicationFonts* pFonts = oWorker.Check();
 
         MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
-        if (!pMetafile->LoadFromFile(m_wsPathToFile.c_str()))
+        if (!pMetafile->LoadFromFile(wsPathToFile.c_str()))
                 return false;
 
-        std::wstring wsPathToRasterFile = NSFile::GetProcessDirectory() + L"/test.png";
-        std::wstring wsPathToXmlFile    = NSFile::GetProcessDirectory() + L"/test.xml";
+        std::wstring wsPathToRasterFile = NSFile::GetProcessDirectory() + L"/Temp.png";
 
-        m_wsPathToXmlFile = NSFile::GetProcessDirectory() + L"/test.xml";
-
-        pMetafile->ConvertToXmlAndRaster(wsPathToXmlFile.c_str(), wsPathToRasterFile.c_str(), 4, ui->customView->GetWidthMetafile(),  ui->customView->GetHeightMetafile());
+        if (bWithXmlFile)
+        {
+                std::wstring wsPathToXmlFile    = NSFile::GetProcessDirectory() + L"/Temp.xml";
+                pMetafile->ConvertToXmlAndRaster(wsPathToXmlFile.c_str(), wsPathToRasterFile.c_str(), 4, ui->customView->GetWidthMetafile(),  ui->customView->GetHeightMetafile());
+                ReadXmlFile(wsPathToXmlFile);
+        }
+        else
+        {
+                pMetafile->ConvertToRaster(wsPathToRasterFile.c_str(), 4, ui->customView->GetWidthMetafile(),  ui->customView->GetHeightMetafile());
+        }
 
         pMetafile->Release();
         pFonts->Release();
@@ -83,12 +95,60 @@ bool MainWindow::ConvertToRaster()
         return true;
 }
 
+bool MainWindow::ConvertToEmf(const std::wstring &wsPathToXmlFile)
+{
+        if (wsPathToXmlFile.empty())
+                return false;
+
+        CApplicationFontsWorker oWorker;
+        oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
+        oWorker.m_bIsNeedThumbnails = false;
+
+        if (!NSDirectory::Exists(oWorker.m_sDirectory))
+                NSDirectory::CreateDirectory(oWorker.m_sDirectory);
+
+        NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+
+        MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+        if (!pMetafile->LoadFromXmlFile(wsPathToXmlFile.c_str()))
+                return false;
+
+        std::wstring wsPathToEmfFile = NSFile::GetProcessDirectory() + L"/TempFile.emf";
+
+        pMetafile->ConvertToEmf(wsPathToEmfFile.c_str());
+
+        pMetafile->Release();
+        pFonts->Release();
+
+        return true;
+}
+
+bool MainWindow::SaveInXmlFile(const std::wstring &wsPathToFile)
+{
+        return ui->treeView->SaveInXmlFile(wsPathToFile);
+}
+
+void MainWindow::DisplayingFile(const std::wstring &wsPathToFile, bool bWithXmlFile)
+{
+        if (!ui->customView->DrawMetafile(wsPathToFile))
+        {
+                Clear();
+                QMessageBox::warning(this, "Warning", "Couldn't open EMF file");
+                return;
+        }
+
+        if (!ConvertToRaster(wsPathToFile, bWithXmlFile))
+        {
+                Clear();
+                QMessageBox::warning(this, "Warning", "Couldn't open EMF file");
+                return;
+        }
+}
+
 void MainWindow::Clear()
 {
-        m_wsPathToFile.clear();
-        m_wsPathToXmlFile.clear();
-
         ui->actionStatistics->setEnabled(false);
+        ui->actionSave_XML_as->setEnabled(false);
         ui->customView->Clear();
 
         QGraphicsScene *pGVScene = ui->graphicsView->scene();
@@ -155,26 +215,12 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::on_actionChange_File_triggered()
 {
-        m_wsPathToFile = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Metafile (*.emf *.wmf)")).toStdWString();
+        std::wstring wsPathToFile = QFileDialog::getOpenFileName(this, tr("Open file"), "", tr("Metafile (*.emf *.wmf)")).toStdWString();
 
-        if (m_wsPathToFile.empty())
+        if (wsPathToFile.empty())
                 return;
 
-        if (!ui->customView->DrawMetafile(m_wsPathToFile))
-        {
-                Clear();
-                QMessageBox::warning(this, "Warning", "Couldn't open EMF file");
-                return;
-        }
-
-        if (!ConvertToRaster())
-        {
-                Clear();
-                QMessageBox::warning(this, "Warning", "Couldn't open EMF file");
-                return;
-        }
-
-        ReadFile();
+        DisplayingFile(wsPathToFile);
 
         ui->actionStatistics->setEnabled(true);
         ui->actionSave_XML_as->setEnabled(true);
@@ -193,6 +239,6 @@ void MainWindow::on_actionStatistics_triggered()
 void MainWindow::on_actionSave_XML_as_triggered()
 {
         QString sSaveFilePath = QFileDialog::getSaveFileName(this, tr("Save file"), "", tr("XML file (*.xml)"));
-        ui->treeView->SaveInFile(sSaveFilePath);
+        SaveInXmlFile(sSaveFilePath.toStdWString());
 }
 

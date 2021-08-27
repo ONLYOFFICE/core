@@ -36,6 +36,15 @@ WASM_EXPORT CGraphicsFileDrawing* DJVU_Load(BYTE* data, LONG size)
     pGraphics->LoadFromMemory(data, size);
     return pGraphics;
 }
+WASM_EXPORT CGraphicsFileDrawing* PDF_Load (BYTE* data, LONG size)
+{
+    CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing();
+    pGraphics->CreatePDF();
+    if (!CApplicationFontStreams::m_pMemoryStorage)
+        CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
+    pGraphics->LoadFromMemory(data, size);
+    return pGraphics;
+}
 WASM_EXPORT void  XPS_Close     (CGraphicsFileDrawing* pGraphics)
 {
     delete pGraphics;
@@ -105,7 +114,49 @@ static DWORD GetLength(BYTE* x)
 int main()
 {
 #define XPS_TEST  0
-#define DJVU_TEST 1
+#define DJVU_TEST 0
+#define PDF_TEST  1
+#if PDF_TEST
+    BYTE* pPdfData = NULL;
+    DWORD nPdfBytesCount;
+    NSFile::CFileBinary oFile;
+    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.pdf", &pPdfData, nPdfBytesCount))
+    {
+        RELEASEARRAYOBJECTS(pPdfData);
+        return 1;
+    }
+    oFile.CloseFile();
+
+    CGraphicsFileDrawing* test = PDF_Load(pPdfData, nPdfBytesCount);
+    XPS_Delete(pPdfData);
+    int* info = XPS_GetInfo(test);
+    int pages_count = *info;
+    int width  = info[1] * 96 / info[3];
+    int height = info[2] * 96 / info[3];
+
+    BYTE* res = NULL;
+    if (pages_count > 0)
+        res = XPS_GetPixmap(test, 0, width, height);
+
+    for (int i = 0; i < 100; i++)
+        std::cout << (int)res[i] << " ";
+    std::cout << std::endl;
+
+    CBgraFrame* resFrame = new CBgraFrame();
+    resFrame->put_Data(res);
+    resFrame->put_Width(width);
+    resFrame->put_Height(height);
+    resFrame->put_Stride(-4 * width);
+    resFrame->put_IsRGBA(true);
+    resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
+    resFrame->ClearNoAttack();
+
+    XPS_Close(test);
+    RELEASEARRAYOBJECTS(info);
+    RELEASEARRAYOBJECTS(res);
+    RELEASEOBJECT(resFrame);
+    return 0;
+#endif
 #if XPS_TEST
     BYTE* pXpsData = NULL;
     DWORD nXpsBytesCount;

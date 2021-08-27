@@ -6,6 +6,7 @@
 #include "../../../../../common/officedrawingfile.h"
 #include "../../../../../../XpsFile/XpsFile.h"
 #include "../../../../../../DjVuFile/DjVu.h"
+#include "../../../../../../PdfReader/PdfReader.h"
 
 class CGraphicsFileDrawing
 {
@@ -29,6 +30,10 @@ public:
     void CreateDjVu()
     {
         pReader = new CDjVuFile(pApplicationFonts);
+    }
+    void CreatePDF()
+    {
+        //pReader = new PdfReader::CPdfReader(pApplicationFonts);
     }
 
     bool LoadFromMemory(BYTE* data, DWORD length)

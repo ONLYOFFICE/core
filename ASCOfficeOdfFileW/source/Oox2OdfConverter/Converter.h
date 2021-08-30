@@ -662,7 +662,7 @@ public:
 		void resizeBrackets();
 		void convert(OOX::Logic::COMath					*oox_math);
 		void convert(OOX::Logic::CMathPr				*oox_math_pr);
-		void convert(OOX::Logic::CCtrlPr				*oox_ctrl_pr);
+		bool convert(OOX::Logic::CCtrlPr				*oox_ctrl_pr);
 		void convert(OOX::Logic::CAcc					*oox_acc);
 		void convert(OOX::Logic::CAccPr					*oox_acc_pr);
 		void convert(OOX::Logic::CArgPr					*oox_arg_pr);
@@ -740,6 +740,7 @@ public:
 		void convert(OOX::Logic::CCount					*oox_count);
 		void convert(OOX::Logic::CMcJc					*oox_mc_jc);
 		void convert(OOX::Logic::CPlcHide				*oox_plc_hide);
+		bool convert(OOX::Logic::CRunProperty			*oox_r_pr);
 	};
 
 } // namespace Oox2Odf

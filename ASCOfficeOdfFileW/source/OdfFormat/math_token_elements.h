@@ -130,6 +130,8 @@ private:
 
 	virtual void serialize(std::wostream & _Wostream);
 
+	virtual void add_text(const std::wstring & Text);
+
 	odf_types::common_math_style_attlist	common_attlist_;
 
 	office_element_ptr_array    content_;

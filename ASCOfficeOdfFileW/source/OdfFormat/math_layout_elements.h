@@ -144,6 +144,7 @@ namespace cpdoccore {
 			static const ElementType type = typeMStyle;
 
 
+			_CP_OPT(color)				color_;
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -155,7 +156,6 @@ namespace cpdoccore {
 
 			common_math_style_attlist	common_attlist_;
 			_CP_OPT(font_size)			mathsize_;
-			_CP_OPT(color)				color_;
 			_CP_OPT(font_weight)		fontweight_;
 		};
 		CP_REGISTER_OFFICE_ELEMENT2(math_mstyle);

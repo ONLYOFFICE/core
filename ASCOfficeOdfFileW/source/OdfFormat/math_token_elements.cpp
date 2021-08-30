@@ -228,13 +228,18 @@ void math_mtext::add_child_element(const office_element_ptr & child_element)
 	content_.push_back(child_element);
 }
 
+void math_mtext::add_text(const std::wstring & Text)
+{
+	text_ = Text;
+}
+
 void math_mtext::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
-			CP_XML_ATTR_OPT(L"math:text", text_);
+			CP_XML_CONTENT(text_);
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
 			{

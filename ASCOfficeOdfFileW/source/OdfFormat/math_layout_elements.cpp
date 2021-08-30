@@ -195,15 +195,15 @@ void math_mstyle::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
+			CP_XML_ATTR_OPT(L"math:mathsize", mathsize_);
+			CP_XML_ATTR_OPT(L"mathcolor", color_);
+			CP_XML_ATTR_OPT(L"math:fontweight", fontweight_);
 			common_attlist_.serialize(CP_GET_XML_NODE());
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
 				content_[i]->serialize(CP_XML_STREAM());
 			}
-			CP_XML_ATTR_OPT(L"math:mathsize", mathsize_);
-			CP_XML_ATTR_OPT(L"math:color", color_);
-			CP_XML_ATTR_OPT(L"math:fontweight", fontweight_);
 		}				
 	}
 }

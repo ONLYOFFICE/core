@@ -101,15 +101,15 @@ namespace Oox2Odf
 		CLOSE_MATH_TAG*/
 	}
 
-	void OoxConverter::convert(OOX::Logic::CCtrlPr *oox_ctrl_pr)
+	bool OoxConverter::convert(OOX::Logic::CCtrlPr *oox_ctrl_pr)
 	{
-		if (!oox_ctrl_pr) return;		
+		if (!oox_ctrl_pr) return false;		
 
 		convert(oox_ctrl_pr->m_oARPr.GetPointer());
 		convert(oox_ctrl_pr->m_oDel.GetPointer());
 		convert(oox_ctrl_pr->m_oIns.GetPointer());
-		//convert(oox_ctrl_pr->m_oRPr.GetPointer()); // TODO <w:rPr>
-		
+		bool flag = convert(oox_ctrl_pr->m_oRPr.GetPointer()); // TODO <w:rPr>	
+		return flag;
 	}
 
 	void OoxConverter::convert(OOX::Logic::CAcc *oox_acc)
@@ -773,12 +773,12 @@ namespace Oox2Odf
 		convert(oox_mrun->m_oMonthLong.GetPointer());
 		convert(oox_mrun->m_oMonthShort.GetPointer());
 		//convert(oox_mrun->m_oMRPr.GetPointer());
+		bool clrFlag = convert(oox_mrun->m_oRPr.GetPointer()); // тут падает
 		convert(oox_mrun->m_oMText.GetPointer());
 		convert(oox_mrun->m_oNoBreakHyphen.GetPointer());
 		convert(oox_mrun->m_oObject.GetPointer());
 		convert(oox_mrun->m_oPgNum.GetPointer());
 		convert(oox_mrun->m_oPtab.GetPointer());
-		//convert(oox_mrun->m_oRPr.GetPointer()); // тут падает
 		convert(oox_mrun->m_oRuby.GetPointer());
 		convert(oox_mrun->m_oSeparator.GetPointer());
 		convert(oox_mrun->m_oSoftHyphen.GetPointer());
@@ -787,10 +787,33 @@ namespace Oox2Odf
 		convert(oox_mrun->m_oText.GetPointer());
 		convert(oox_mrun->m_oYearLong.GetPointer());
 		convert(oox_mrun->m_oYearShort.GetPointer());
-
+		if (clrFlag)
+			CLOSE_MATH_TAG;
 	}
 
+	bool OoxConverter::convert(OOX::Logic::CRunProperty *oox_r_pr)
+	{
+		if (!oox_r_pr) return false;
 
+		if (oox_r_pr->m_oColor.IsInit())
+		{
+			if (oox_r_pr->m_oColor->m_oVal.IsInit())
+			{
+				std::wstring clr = oox_r_pr->m_oColor->m_oVal.GetPointer()->ToString();
+				std::wstring clr2(L"#");
+				clr.erase(0, 2);
+				clr2 += clr;
+				CREATE_MATH_TAG(L"mstyle");
+				typedef odf_writer::math_mstyle * T;
+
+				T tmp = dynamic_cast<T>(elm.get());
+				tmp->color_ = clr2;
+				OPEN_MATH_TAG(elm);
+				return true;
+			}
+		}
+		return false;
+	}
 
 	void OoxConverter::convert(OOX::Logic::CMText *oox_text)
 	{
@@ -809,43 +832,60 @@ namespace Oox2Odf
 		{
 			wchar_t w_val = s_val[i];			
 
-			if (w_val <= 57 && w_val >= 48)
+			if (w_val == L'=')
 			{
 				if (sub_s_val.size() != 0)
 				{
-					//odf_writer::office_element_ptr elm_mi;
-					CREATE_MATH_TAG(L"mi")
+					CREATE_MATH_TAG(L"mi");
 					elm->add_text(sub_s_val);
-					OPEN_MATH_TAG(elm)
-					CLOSE_MATH_TAG
+					OPEN_MATH_TAG(elm);
+					CLOSE_MATH_TAG;
 					sub_s_val.clear();
 				}
-				
-				CREATE_MATH_TAG(L"mn")
+				CREATE_MATH_TAG(L"mtext");
 
 				elm->add_text(std::wstring(1, s_val[i]));
 
-				OPEN_MATH_TAG(elm)
-				CLOSE_MATH_TAG
+				OPEN_MATH_TAG(elm);
+				CLOSE_MATH_TAG;
+			}
+
+			else if (w_val <= 57 && w_val >= 48)
+			{
+				if (sub_s_val.size() != 0)
+				{
+					CREATE_MATH_TAG(L"mi");
+					elm->add_text(sub_s_val);
+					OPEN_MATH_TAG(elm);
+					CLOSE_MATH_TAG;
+					sub_s_val.clear();
+				}
+				
+				CREATE_MATH_TAG(L"mn");
+
+				elm->add_text(std::wstring(1, s_val[i]));
+
+				OPEN_MATH_TAG(elm);
+				CLOSE_MATH_TAG;
 			}
 			else if (mo.find(w_val) != mo.end())
 			{
 				if (sub_s_val.size() != 0)
 				{
-					CREATE_MATH_TAG(L"mi")
+					CREATE_MATH_TAG(L"mi");
 					elm->add_text(sub_s_val);
-					OPEN_MATH_TAG(elm)
-					CLOSE_MATH_TAG
+					OPEN_MATH_TAG(elm);
+					CLOSE_MATH_TAG;
 					sub_s_val.clear();
 				}
 
 				
-				CREATE_MATH_TAG(L"mo")
+				CREATE_MATH_TAG(L"mo");
 
 				elm->add_text(std::wstring(1, s_val[i]));
 
-				OPEN_MATH_TAG(elm)
-				CLOSE_MATH_TAG
+				OPEN_MATH_TAG(elm);
+				CLOSE_MATH_TAG;
 			}
 			else // <mi>
 			{				
@@ -854,10 +894,10 @@ namespace Oox2Odf
 
 			if ((i == s_val.size() - 1) && (sub_s_val.size() != 0))
 			{				
-				CREATE_MATH_TAG(L"mi")
+				CREATE_MATH_TAG(L"mi");
 				elm->add_text(sub_s_val);
-				OPEN_MATH_TAG(elm)
-				CLOSE_MATH_TAG				
+				OPEN_MATH_TAG(elm);
+				CLOSE_MATH_TAG;
 			}
 		}	
 	}
@@ -919,8 +959,10 @@ namespace Oox2Odf
 		if (!oox_nary_pr) return result;		
 
 
+		bool flag = convert(oox_nary_pr->m_oCtrlPr.GetPointer());
 		convert(oox_nary_pr->m_oChr.GetPointer());
-		convert(oox_nary_pr->m_oCtrlPr.GetPointer());
+		if (flag)
+			CLOSE_MATH_TAG;
 		convert(oox_nary_pr->m_oGrow.GetPointer());
 		//convert(oox_nary_pr->m_oLimLoc.GetPointer());
 		result.first = convert(oox_nary_pr->m_oSubHide.GetPointer());
@@ -996,20 +1038,38 @@ namespace Oox2Odf
 	{
 		if (!oox_rad) return;
 
-		
-		bool flag = convert(oox_rad->m_oRadPr.GetPointer());
-
-		if (flag)
+		nullable<ComplexTypes::Word::CColor> p = oox_rad->m_oRadPr->m_oCtrlPr->m_oRPr->m_oColor;
+		if (p.IsInit())
 		{
-			CREATE_MATH_TAG(L"msqrt");
+			std::wstring clr = p->m_oVal.GetPointer()->ToString();
+			std::wstring clr2(L"#");
+			clr.erase(0, 2);
+			clr2 += clr;
+			CREATE_MATH_TAG(L"mstyle");
+			typedef odf_writer::math_mstyle * T;
+
+			T tmp = dynamic_cast<T>(elm.get());
+			tmp->color_ = clr2;
 			OPEN_MATH_TAG(elm);
-			mrow();
-				convert(oox_rad->m_oElement.GetPointer());
-			endOfMrow();
-			CLOSE_MATH_TAG;
 		}
-		else
-			convert(oox_rad->m_oDeg.GetPointer(), oox_rad->m_oElement.GetPointer());
+
+		{
+			bool flag = convert(oox_rad->m_oRadPr.GetPointer());
+			if (flag)
+			{
+				CREATE_MATH_TAG(L"msqrt");
+				OPEN_MATH_TAG(elm);
+				mrow();
+					convert(oox_rad->m_oElement.GetPointer());
+				endOfMrow();
+				CLOSE_MATH_TAG;
+			}
+			else
+				convert(oox_rad->m_oDeg.GetPointer(), oox_rad->m_oElement.GetPointer());
+		}
+
+		if (p.IsInit())
+			CLOSE_MATH_TAG;
 
 	}
 

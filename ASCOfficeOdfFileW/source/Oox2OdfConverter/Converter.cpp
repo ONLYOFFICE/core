@@ -740,6 +740,11 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				convert(dynamic_cast<OOX::Logic::CElement*>(oox_unknown));
 			}break;
+			case OOX::et_w_rPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CRunProperty*>(oox_unknown));
+			}
+			break;
 			default:
 			{
                 _CP_LOG << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";

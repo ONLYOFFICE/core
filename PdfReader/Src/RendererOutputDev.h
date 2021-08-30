@@ -230,7 +230,7 @@ namespace PdfReader
 		virtual bool AxialShadedFill(GfxState *pGState, GfxAxialShading    *pShading);
 		virtual bool RadialShadedFill(GfxState *pGState, GfxRadialShading   *pShading);
 		virtual bool GouraundTriangleFill(GfxState *pGState, const std::vector<GfxColor*> &colors, const std::vector<NSStructures::Point> &points);
-		virtual bool PatchMeshFill(GfxState *pGState, GfxPatch* pPatch);
+		virtual bool PatchMeshFill(GfxState *pGState, GfxPatch* pPatch, GfxPatchMeshShading *pShading);
 		virtual void StartShadedFill(GfxState *pGState);
 		virtual void EndShadedFill();
 		virtual void StartTilingFillIteration();

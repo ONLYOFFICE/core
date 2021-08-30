@@ -2612,21 +2612,51 @@ namespace PdfReader
 
     GBool RendererOutputDev::shadedFill(GfxState *pGState, GfxShading *pShading)
     {
-        double xmin, xmax, ymin, ymax;
-
+        double x0, y0, x1, x2, y1, y2, r1, r2;
+        double xmin, xmax, ymin, ymax, r;
+        double *matrix;
         switch (pShading->getType())
         {
             case 1:
+
+                ((GfxFunctionShading *)pShading)->getDomain(&x0, &y0, &x1, &y1);
+                matrix = ((GfxFunctionShading *)pShading)->getMatrix();
+                pGState->moveTo(x0 * matrix[0] + y0 * matrix[2] + matrix[4],
+                              x0 * matrix[1] + y0 * matrix[3] + matrix[5]);
+                pGState->lineTo(x1 * matrix[0] + y0 * matrix[2] + matrix[4],
+                              x1 * matrix[1] + y0 * matrix[3] + matrix[5]);
+                pGState->lineTo(x1 * matrix[0] + y1 * matrix[2] + matrix[4],
+                              x1 * matrix[1] + y1 * matrix[3] + matrix[5]);
+                pGState->lineTo(x0 * matrix[0] + y1 * matrix[2] + matrix[4],
+                              x0 * matrix[1] + y1 * matrix[3] + matrix[5]);
+                pGState->closePath();
+                break;
             case 2:
+
+                ((GfxRadialShading *)pShading)->getCoords(&x1, &y1, &r1, &x2, &y2, &r2);
+
+                r = std::max(r1,r2);
+                xmin = std::min(x1, x2) - r;
+                ymin = std::min(y1, y2) - r;
+                xmax = std::max(x1, x2) + r;
+                ymax = std::max(y1, y2) + r;
+
+                pGState->moveTo(xmin, ymin);
+                pGState->lineTo(xmin, ymax);
+                pGState->lineTo(xmax, ymax);
+                pGState->lineTo(xmax, ymin);
+                pGState->closePath();
+
+                break;
             case 3:
+                return false;
                 pGState->clearPath();
                 pGState->getClipBBox(&xmin, &ymin, &xmax, &ymax);
 
-                pGState->moveTo(xmin, ymin);
-                pGState->lineTo(xmax, ymin);
-                pGState->lineTo(xmax, ymax);
-                pGState->lineTo(xmin, ymax);
-                pGState->clip();
+                pGState->moveTo(0, 0);
+                pGState->lineTo(0, pGState->getPageHeight());
+                pGState->lineTo(pGState->getPageWidth(), pGState->getPageHeight());
+                pGState->lineTo(pGState->getPageWidth(), 0);
                 pGState->closePath();
         }
         int nTriangles = 0, nPatches = 0;
@@ -2675,7 +2705,28 @@ namespace PdfReader
                 return true;
             case 6:
             case 7:
-                return false;
+                int nComps = ((GfxPatchMeshShading *) pShading)->getNComps();
+                int nPatches = ((GfxPatchMeshShading *) pShading)->getNPatches();
+                for (int i = 0; i < nPatches; i++) {
+                    GfxPatch *patch = ((GfxPatchMeshShading *) pShading)->getPatch(i);
+                    pGState->clearPath();
+                    pGState->moveTo(patch->x[0][0], patch->y[0][0]);
+                    pGState->curveTo(patch->x[0][1], patch->y[0][1],
+                                   patch->x[0][2], patch->y[0][2],
+                                   patch->x[0][3], patch->y[0][3]);
+                    pGState->curveTo(patch->x[1][3], patch->y[1][3],
+                                   patch->x[2][3], patch->y[2][3],
+                                   patch->x[3][3], patch->y[3][3]);
+                    pGState->curveTo(patch->x[3][2], patch->y[3][2],
+                                   patch->x[3][1], patch->y[3][1],
+                                   patch->x[3][0], patch->y[3][0]);
+                    pGState->curveTo(patch->x[2][0], patch->y[2][0],
+                                   patch->x[1][0], patch->y[1][0],
+                                   patch->x[0][0], patch->y[0][0]);
+                    pGState->closePath();
+                    PatchMeshFill(pGState, patch, (GfxPatchMeshShading *) pShading);
+                }
+                return true;
 
         }
         return false;
@@ -2735,7 +2786,7 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
-
+		pGState->clearPath();
 		return true;
 	}
 	bool RendererOutputDev::AxialShadedFill(GfxState *pGState, GfxAxialShading *pShading)
@@ -2766,10 +2817,10 @@ namespace PdfReader
 		t0 = pShading->getDomain0();
 		t1 = pShading->getDomain1();
 
-//        x1 = PDFCoordsToMM(x1);
-//        x2 = PDFCoordsToMM(x2);
-//        y1 = PDFCoordsToMM(y1);
-//        y2 = PDFCoordsToMM(y2);
+        x1 = PDFCoordsToMM(x1);
+        x2 = PDFCoordsToMM(x2);
+        y1 = PDFCoordsToMM(y1);
+        y2 = PDFCoordsToMM(y2);
 
 
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_linear({x1, y1}, {x2, y2}, t0, t1,
@@ -2906,12 +2957,12 @@ namespace PdfReader
 			GRenderer->put_BrushGradInfo(info);
 			m_pRenderer->DrawPath(c_nWindingFillMode);
 		}
-
+		pGState->clearPath();
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
 		return true;
 	}
-	bool RendererOutputDev::PatchMeshFill(GfxState *pGState, GfxPatch *patch)
+	bool RendererOutputDev::PatchMeshFill(GfxState *pGState, GfxPatch *patch, GfxPatchMeshShading *pShading)
 	{
 		if (m_bDrawOnlyText)
 			return true;
@@ -2946,12 +2997,12 @@ namespace PdfReader
 		{
 			for (int j = 0; j < 2; j++)
 			{
-			    // todo patch colors
-//			    GfxColor c = patch->color[i][j];
-//                GfxRGB draw_color;
-//                // RenderingIntent in this case does nothing but it's an obligatory arguments
-//                ColorSpace.getRGB(&c, &draw_color, gfxRenderingIntentAbsoluteColorimetric);
-//				colors[j][i] = {colToByte(draw_color.b), colToByte(draw_color.g), colToByte(draw_color.r), (unsigned)alpha};
+			    GfxColor c;
+			    pShading->getColor(patch->color[i][j], &c);
+                GfxRGB draw_color;
+                // RenderingIntent in this case does nothing but it's an obligatory arguments
+                ColorSpace.getRGB(&c, &draw_color, gfxRenderingIntentAbsoluteColorimetric);
+				colors[j][i] = {colToByte(draw_color.b), colToByte(draw_color.g), colToByte(draw_color.r), (unsigned)alpha};
 			}
 		}
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_tensor_curve(points,
@@ -2968,7 +3019,7 @@ namespace PdfReader
 
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
-
+		pGState->clearPath();
 		return true;
 	}
 	void RendererOutputDev::StartShadedFill(GfxState *pGState)

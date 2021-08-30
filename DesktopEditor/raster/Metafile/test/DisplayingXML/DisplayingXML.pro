@@ -14,6 +14,7 @@ SOURCES += \
     CItemWidget.cpp \
     CMapModel.cpp \
     CMetafileTreeView.cpp \
+    CRecordCreator.cpp \
     CStatisticsWidget.cpp \
     CTextEditDelegate.cpp \
     CXMLHighlighter.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
     CItemWidget.h \
     CMapModel.h \
     CMetafileTreeView.h \
+    CRecordCreator.h \
     CStatisticsWidget.h \
     CTextEditDelegate.h \
     CXMLHighlighter.h \
@@ -35,6 +37,7 @@ HEADERS += \
 FORMS += \
     EditItem.ui \
     MainWindow.ui \
+    RecordCreator.ui \
     Statistics.ui
 
 # Default rules for deployment.

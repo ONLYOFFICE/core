@@ -103,21 +103,6 @@ bool CMetafileTreeView::SaveInXmlFile(const std::wstring& wsSaveFilePath)
         return oXmlWriter.SaveToFile(wsSaveFilePath);
 }
 
-void CMetafileTreeView::mousePressEvent(QMouseEvent *event)
-{
-        if (event->button() == Qt::RightButton)
-        {
-                QModelIndex index =  this->indexAt(event->pos());
-                QStandardItem *pStandardItem = static_cast<QStandardItem*>(index.internalPointer());                
-                QStandardItem *pItem = pStandardItem->child(index.row(), index.column());
-
-                if (pStandardItem->data(0).isValid())
-                        EditItem(pItem);
-        }
-
-        QTreeView::mousePressEvent(event);
-}
-
 void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem* oStandartItem, unsigned int unLevel)
 {
         XmlUtils::CXmlNodes oXmlChilds;

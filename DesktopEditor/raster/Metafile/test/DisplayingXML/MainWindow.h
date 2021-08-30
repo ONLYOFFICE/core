@@ -33,6 +33,11 @@ class MainWindow : public QMainWindow
         void on_actionStatistics_triggered();
         void on_actionSave_XML_as_triggered();
 
+        void slotShowContextMenu(QPoint oPos);
+        void on_actionEdidRecord_triggered();
+        void on_actionInsertBRecord_triggered();
+        void on_actionInsertARecord_triggered();
+
     private:
         Ui::MainWindow      *ui;
 

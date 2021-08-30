@@ -12,6 +12,8 @@
 #include "../../../../raster/BgraFrame.h"
 #include "../../../../common/Directory.h"
 
+#include "CRecordCreator.h"
+
 #include "CStatisticsWidget.h"
 
 #include "CMetafileTreeView.h"
@@ -27,6 +29,10 @@ MainWindow::MainWindow(QWidget *parent)
         ui->setupUi(this);
         CTextEditDelegate *pTextEditDelegate = new CTextEditDelegate(this);
         ui->treeView->setItemDelegate(pTextEditDelegate);
+
+        ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+
+        connect(ui->treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(slotShowContextMenu(QPoint)));
 
         QFont *pFont = new QFont;
         pFont->setPointSize(13);
@@ -240,5 +246,53 @@ void MainWindow::on_actionSave_XML_as_triggered()
 {
         QString sSaveFilePath = QFileDialog::getSaveFileName(this, tr("Save file"), "", tr("XML file (*.xml)"));
         SaveInXmlFile(sSaveFilePath.toStdWString());
+}
+
+void MainWindow::slotShowContextMenu(QPoint oPos)
+{
+        if (NULL == ui->treeView->model())
+                return;
+
+        QMenu oContextMenu;
+
+        oContextMenu.addAction("Edit", this, SLOT(on_actionEdidRecord_triggered()));
+
+        oContextMenu.addAction("Insert before", this, SLOT(on_actionInsertBRecord_triggered()));
+        oContextMenu.addAction("Insert after", this, SLOT(on_actionInsertARecord_triggered()));
+
+        oContextMenu.exec(ui->treeView->mapToGlobal(oPos));
+}
+
+void MainWindow::on_actionEdidRecord_triggered()
+{
+        QModelIndex index =  ui->treeView->selectionModel()->currentIndex();
+        QStandardItem *pStandardItem = static_cast<QStandardItem*>(index.internalPointer());
+        QStandardItem *pItem = pStandardItem->child(index.row(), index.column());
+
+        if (pStandardItem->data(0).isValid())
+                ui->treeView->EditItem(pItem);
+}
+
+void MainWindow::on_actionInsertBRecord_triggered()
+{
+        QModelIndex index =  ui->treeView->selectionModel()->currentIndex();
+        QStandardItem *pStandardItem = static_cast<QStandardItem*>(index.internalPointer());
+
+        CRecordCreator *pRecordCreator = new CRecordCreator();
+        pRecordCreator->SetMainWindow(this);
+
+        QStandardItem *pItem = pRecordCreator->CreateRecord();
+
+        if (NULL != pItem)
+                pStandardItem->insertRow(index.row(), pItem);
+}
+
+void MainWindow::on_actionInsertARecord_triggered()
+{
+        QModelIndex index =  ui->treeView->selectionModel()->currentIndex();
+        QStandardItem *pStandardItem = static_cast<QStandardItem*>(index.internalPointer());
+        QStandardItem *pItem = new QStandardItem("<Test>");
+
+        pStandardItem->insertRow(index.row() + 1, pItem);
 }
 

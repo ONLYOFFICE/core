@@ -938,7 +938,7 @@ namespace PPTX
 							mediaFile->set_filename(strMediaFileMask, isExternal);
 						}
 						pReader->Seek(_end_rec1);
-					}
+					}break;
 					case SPTREE_TYPE_MACRO:
 					{
 						pReader->Skip(5); // type + size

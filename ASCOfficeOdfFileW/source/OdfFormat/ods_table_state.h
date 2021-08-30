@@ -136,24 +136,30 @@ namespace utils
 		std::reverse(col.begin(), col.end());
 		std::reverse(row.begin(), row.end());
 	}
-    static void parsing_ref (std::wstring ref, int & col,int & row)
+    static void parsing_ref (std::wstring ref, int & col, int & row)
 	{
-		int pos = (int)ref.rfind(L"!");//oox table name
-		if (pos >= 0)
+		if (std::wstring::npos != ref.find(L" "))
+			return;
+
+		size_t pos = ref.rfind(L"!");//oox table name
+		if (pos != std::wstring::npos)
 			ref = ref.substr(pos + 1);
 		else
 		{
-			pos = (int)ref.rfind(L".");//odf table name
-			if (pos >= 0)
+			pos = ref.rfind(L".");//odf table name
+			if (pos != std::wstring::npos)
 				ref = ref.substr(pos + 1);
 		}
 		
 		std::wstring strCol, strRow;
-		splitCellAddress(ref,strCol,strRow);
+		splitCellAddress(ref, strCol, strRow);
 
 		if (strCol.empty() || strRow.empty()) 
 			return;
 		
+		if (strCol.size() > 3 || strRow.size() > 7)// 1048576 & 16384(xfd)
+			return;
+			
 		col = getColAddressInv(strCol) + 1;
 		row = getRowAdderssInv(strRow) + 1;
 

@@ -1881,7 +1881,7 @@ int odf_chart_context::Impl::create_local_table_rows(int curr_row, ods_table_sta
 			create_element(L"table", L"table-row", row_elm, odf_context_);
 			table_state->add_row(row_elm, 1, style_null);
 			curr_row++;
-			curr_cell=0;
+			curr_cell = 0;
 		}
 
 		if (curr_cell + 1 < cells[i].col)
@@ -1955,6 +1955,7 @@ void odf_chart_context::Impl::create_local_table()
 			if (std::wstring::npos != r)
 				refs[1] = refs[1].substr(r + 1, refs[1].size() - r);
 			utils::parsing_ref( refs[1], col2, row2);
+
 			
 			if (col2 < min_col)	min_col = col2;
 			if (row2 < min_row)	min_row = row2;
@@ -1963,6 +1964,9 @@ void odf_chart_context::Impl::create_local_table()
 		{
 			col2 = col1; row2 = row1;
 		}
+			
+		if (row2 < 1 || row1 < 1 || col1 < 1 || col2 < 1)
+			continue;
 
 		if (cash_[i].categories || cash_[i].label) 
 		{

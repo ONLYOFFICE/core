@@ -8552,37 +8552,38 @@ int Binary_DocumentTableReader::ReadEmbedded(BYTE type, long length, void* poRes
 			NSDirectory::CreateDirectory(strDstEmbedded);
 
 			std::wstring strDstEmbeddedTemp = strDstEmbedded + FILE_SEPARATOR_STR + L"Temp";
-			NSDirectory::CreateDirectory(strDstEmbeddedTemp);
+			if (true == NSDirectory::CreateDirectory(strDstEmbeddedTemp))
+			{
+				std::wstring strDstEmbeddedTempXl = strDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl";
+				NSDirectory::CreateDirectory(strDstEmbeddedTempXl);
 
-			std::wstring strDstEmbeddedTempXl = strDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl";
-			NSDirectory::CreateDirectory(strDstEmbeddedTempXl);
+				std::wstring strDstEmbeddedTempThemePath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"theme";
+				std::wstring strDstEmbeddedTempDrawingPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"drawings";
+				std::wstring strDstEmbeddedTempEmbeddingsPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"embeddings";
 
-			std::wstring strDstEmbeddedTempThemePath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"theme";
-			std::wstring strDstEmbeddedTempDrawingPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"drawings";
-			std::wstring strDstEmbeddedTempEmbeddingsPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"embeddings";
+				int id = m_oFileWriter.m_oChartWriter.nEmbeddedCount++;
 
-			int id = m_oFileWriter.m_oChartWriter.nEmbeddedCount++;
+				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id + 1) + L".xlsx";
+				BinXlsxRW::SaveParams oSaveParams(strDstEmbeddedTempDrawingPath, strDstEmbeddedTempEmbeddingsPath, strDstEmbeddedTempThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???
 
-			std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring( id + 1) + L".xlsx";
-			BinXlsxRW::SaveParams oSaveParams(strDstEmbeddedTempDrawingPath, strDstEmbeddedTempEmbeddingsPath, strDstEmbeddedTempThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???
-			
-			OOX::Spreadsheet::CXlsx oXlsx;
+				OOX::Spreadsheet::CXlsx oXlsx;
 
-			BinXlsxRW::BinaryFileReader embeddedReader;				
-			embeddedReader.ReadMainTable(oXlsx, m_oBufferedStream, L"", strDstEmbeddedTemp, oSaveParams, m_oFileWriter.m_pDrawingConverter);
+				BinXlsxRW::BinaryFileReader embeddedReader;
+				embeddedReader.ReadMainTable(oXlsx, m_oBufferedStream, L"", strDstEmbeddedTemp, oSaveParams, m_oFileWriter.m_pDrawingConverter);
 
-			oXlsx.PrepareToWrite();
+				oXlsx.PrepareToWrite();
 
-			oXlsx.Write(strDstEmbeddedTemp, *oSaveParams.pContentTypes);
+				oXlsx.Write(strDstEmbeddedTemp, *oSaveParams.pContentTypes);
 
-			COfficeUtils oOfficeUtils(NULL);
-			oOfficeUtils.CompressFileOrDirectory(strDstEmbeddedTemp, strDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, true);
+				COfficeUtils oOfficeUtils(NULL);
+				oOfficeUtils.CompressFileOrDirectory(strDstEmbeddedTemp, strDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, true);
 
-			std::wstring sEmbWorksheetRelsName = L"embeddings/" + sXlsxFilename;
-            std::wstring bstrEmbWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
-            m_oFileWriter.m_pDrawingConverter->WriteRels(bstrEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring(), &pDrawingProperty->nObjectId);
+				std::wstring sEmbWorksheetRelsName = L"embeddings/" + sXlsxFilename;
+				std::wstring bstrEmbWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
+				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring(), &pDrawingProperty->nObjectId);
 
-			NSDirectory::DeleteDirectory(strDstEmbeddedTemp);
+				NSDirectory::DeleteDirectory(strDstEmbeddedTemp);
+			}
 		}
 		m_oBufferedStream.Seek( pos + length); 
 	}		

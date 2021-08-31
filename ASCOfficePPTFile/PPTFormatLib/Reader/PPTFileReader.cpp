@@ -84,7 +84,7 @@ CPPTFileReader::CPPTFileReader(POLE::Storage *pStorage, std::wstring strTemp):
 	
 	RELEASEOBJECT(pStm);
 
-    if (0 == m_strTmpDirectory.length())
+    if (m_strTmpDirectory.empty())
 	{
         m_strTmpDirectory = NSDirectory::GetTempPath();
 	}

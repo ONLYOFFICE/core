@@ -3416,82 +3416,83 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CS
 	std::wstring sResultDocxDir = NSDirectory::CreateDirectoryWithUniqueName(oAltChunkFile.filename().GetDirectory()); 
 
 	bool result = false;
-	
+
+	if (sResultDocxDir.empty() || sTempDir.empty()) return;
+
 	COfficeFileFormatChecker OfficeFileFormatChecker;
 	if (OfficeFileFormatChecker.isOfficeFile(file_name_inp))
-    {
-		switch(OfficeFileFormatChecker.nFileType)
-        {
+	{
+		switch (OfficeFileFormatChecker.nFileType)
+		{
 #ifndef DONT_USED_EXTRA_LIBRARY
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
-            case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
-            {
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
+		{
 #ifndef _IOS
-                COfficeDocFile docFile;
-                docFile.m_sTempFolder = sTempDir;
-                
-                bool bMacros = false;
-                
-                result = (S_OK == docFile.LoadFromFile( file_name_inp, sResultDocxDir, NULL, bMacros, NULL));
+			COfficeDocFile docFile;
+			docFile.m_sTempFolder = sTempDir;
+
+			bool bMacros = false;
+
+			result = (S_OK == docFile.LoadFromFile(file_name_inp, sResultDocxDir, NULL, bMacros, NULL));
 #else
-                result = S_FALSE;
+			result = S_FALSE;
 #endif
-            }break;
-            case AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF:
-            {
-                RtfConvertationManager rtfConvert;
-                rtfConvert.m_sTempFolder = sTempDir;
-                
-                result = (S_OK == rtfConvert.ConvertRtfToOOX(file_name_inp, sResultDocxDir));
-            }break;
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
+		}break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF:
+		{
+			RtfConvertationManager rtfConvert;
+			rtfConvert.m_sTempFolder = sTempDir;
+
+			result = (S_OK == rtfConvert.ConvertRtfToOOX(file_name_inp, sResultDocxDir));
+		}break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
+		{
+			CHtmlFile2 htmlConvert;
+			CHtmlParams	paramsHtml;
+
+			htmlConvert.SetTmpDirectory(sTempDir);
+
+			if (styles)
 			{
-                CHtmlFile2 htmlConvert;
-  				CHtmlParams	paramsHtml;
-
-				htmlConvert.SetTmpDirectory(sTempDir);
-
-				if (styles)
+				if (styles->m_oDocDefaults.IsInit())
 				{
-					if (styles->m_oDocDefaults.IsInit())
+					paramsHtml.m_sdocDefaults = styles->m_oDocDefaults->toXML();
+				}
+				std::map<SimpleTypes::EStyleType, size_t>::iterator pFind = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeParagraph);
+				if (pFind != styles->m_mapStyleDefaults.end())
+				{
+					if (styles->m_arrStyle[pFind->second])
 					{
-						paramsHtml.m_sdocDefaults = styles->m_oDocDefaults->toXML();
-					}
-					std::map<SimpleTypes::EStyleType, size_t>::iterator pFind = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeParagraph);
-					if (pFind != styles->m_mapStyleDefaults.end())
-					{
-						if (styles->m_arrStyle[pFind->second])
-						{
-							//change styleId
+						//change styleId
 
-							OOX::CStyle updateStyle (*styles->m_arrStyle[pFind->second]);
-							updateStyle.m_sStyleId = L"normal";
-							paramsHtml.m_sNormal = updateStyle.toXML();
-						}
+						OOX::CStyle updateStyle(*styles->m_arrStyle[pFind->second]);
+						updateStyle.m_sStyleId = L"normal";
+						paramsHtml.m_sNormal = updateStyle.toXML();
 					}
 				}
+			}
 
-                result = (S_OK == htmlConvert.OpenHtml(file_name_inp, sResultDocxDir, &paramsHtml));
-			}break;
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT:
-			{
-				CHtmlFile2 htmlConvert;
-				htmlConvert.SetTmpDirectory(sTempDir);
+			result = (S_OK == htmlConvert.OpenHtml(file_name_inp, sResultDocxDir, &paramsHtml));
+		}break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT:
+		{
+			CHtmlFile2 htmlConvert;
+			htmlConvert.SetTmpDirectory(sTempDir);
 
-				result = (S_OK == htmlConvert.OpenMht(file_name_inp, sResultDocxDir));
-			}break; 
+			result = (S_OK == htmlConvert.OpenMht(file_name_inp, sResultDocxDir));
+		}break;
 #endif
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
-			{
-				COfficeUtils oCOfficeUtils(NULL);
-				result = (S_OK == oCOfficeUtils.ExtractToDirectory(file_name_inp, sResultDocxDir, NULL, 0));
-			}break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			result = (S_OK == oCOfficeUtils.ExtractToDirectory(file_name_inp, sResultDocxDir, NULL, 0));
+		}break;
 		}
 	}
-
 	NSDirectory::DeleteDirectory(sTempDir);
 
 	if (result)

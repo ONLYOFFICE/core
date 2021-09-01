@@ -474,9 +474,6 @@
     <ClCompile Include="..\src\odf\table_xlsx.cpp">
       <Filter>elements</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\odf\datatypes\tablefunction.cpp">
-      <Filter>elements</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\odf\text_content.cpp">
       <Filter>elements</Filter>
     </ClCompile>
@@ -937,9 +934,6 @@
       <Filter>elements</Filter>
     </ClInclude>
     <ClInclude Include="..\src\odf\table_named_expressions.h">
-      <Filter>elements</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\odf\datatypes\tablefunction.h">
       <Filter>elements</Filter>
     </ClInclude>
     <ClInclude Include="..\src\odf\text_content.h">

@@ -672,7 +672,27 @@ int xlsx_conversion_context::get_current_cell_style_id()
 {
     return get_table_context().get_current_cell_style_id();
 }
+int xlsx_conversion_context::get_dxfId_style(const std::wstring &style_name)
+{
+	if (style_name.empty()) return -1;
 
+	int dxfId = -1;
+	odf_reader::style_instance * instStyle =
+		root()->odf_context().styleContainer().style_by_name(style_name, odf_types::style_family::TableCell, false);
+	
+	if (!instStyle)
+		instStyle = root()->odf_context().styleContainer().style_by_display_name(style_name, odf_types::style_family::TableCell, false);
+	
+	if (instStyle)
+	{
+		odf_reader::text_format_properties_content_ptr	textFormats = calc_text_properties_content(instStyle);
+		odf_reader::graphic_format_properties			graphicFormats = calc_graphic_properties_content(instStyle);
+		odf_reader::style_table_cell_properties_attlist	cellFormats = calc_table_cell_properties(instStyle);
+
+		dxfId = get_style_manager().dxfId(textFormats, &graphicFormats, &cellFormats);
+	}
+	return dxfId;
+}
 std::pair<double, double> xlsx_conversion_context::getMaxDigitSize()
 {
     if (maxDigitSize_.first <= 0.1)
@@ -739,7 +759,10 @@ xlsx_drawing_context & xlsx_conversion_context::get_drawing_context()
 {
     return get_table_context().get_drawing_context();
 }
-
+xlsx_conditionalFormatting_context	& xlsx_conversion_context::get_conditionalFormatting_context()
+{
+	return get_table_context().state()->get_conditionalFormatting_context();
+}
 xlsx_drawing_context_handle_ptr & xlsx_conversion_context::get_drawing_context_handle()
 {
     return drawing_context_handle_;
@@ -790,39 +813,6 @@ void xlsx_conversion_context::end_hyperlink(std::wstring const & href)
 void xlsx_conversion_context::add_pivot_sheet_source (const std::wstring & sheet_name, int index_table_view)
 {//ващето в либре жесткая привязка что на одном листе тока одна сводная может быть ..
 	mapPivotsTableView_.insert(std::make_pair(sheet_name, index_table_view));
-}
-
-void xlsx_conversion_context::start_conditional_format(std::wstring ref)
-{
-	get_table_context().state()->get_conditionalFormatting_context().add(ref);
-}
-void xlsx_conversion_context::start_conditional_format_rule(int type)
-{
-	get_table_context().state()->get_conditionalFormatting_context().add_rule(type);
-}
-void xlsx_conversion_context::set_conditional_format_formula (std::wstring f)
-{
-	get_table_context().state()->get_conditionalFormatting_context().set_formula(f);
-}
-void xlsx_conversion_context::set_conditional_format_dxf (int dxfId)
-{
-	get_table_context().state()->get_conditionalFormatting_context().set_dxf(dxfId);
-}
-void xlsx_conversion_context::add_conditional_format_entry (int type, std::wstring value)
-{
-	get_table_context().state()->get_conditionalFormatting_context().add_sfv(type, value);
-}
-void xlsx_conversion_context::set_conditional_format_showval (bool val)
-{
-	get_table_context().state()->get_conditionalFormatting_context().set_showVal(val);
-}
-void xlsx_conversion_context::add_conditional_format_color (std::wstring col)
-{
-	get_table_context().state()->get_conditionalFormatting_context().add_color(col);
-}
-void xlsx_conversion_context::set_conditional_format_dataBar (_CP_OPT(int) min, _CP_OPT(int) max)
-{
-	get_table_context().state()->get_conditionalFormatting_context().set_dataBar(min, max);
 }
 void xlsx_conversion_context::add_jsaProject(const std::string &content)
 {

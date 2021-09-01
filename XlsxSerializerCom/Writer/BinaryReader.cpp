@@ -6352,10 +6352,14 @@ int BinaryWorksheetsTableReader::ReadConditionalFormattingRule(BYTE type, long l
 		pConditionalFormattingRule->m_oText.Init();
 		pConditionalFormattingRule->m_oText->append(m_oBufferedStream.GetString4(length));
 	}
-	else if(c_oSer_ConditionalFormattingRule::TimePeriod == type)
+	else if(c_oSer_ConditionalFormattingRule::strTimePeriod == type)
+	{
+		pConditionalFormattingRule->m_oTimePeriod = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_ConditionalFormattingRule::TimePeriod == type)
 	{
 		pConditionalFormattingRule->m_oTimePeriod.Init();
-		pConditionalFormattingRule->m_oTimePeriod->append(m_oBufferedStream.GetString4(length));
+		pConditionalFormattingRule->m_oTimePeriod->SetValue((SimpleTypes::Spreadsheet::ETimePeriod)m_oBufferedStream.GetUChar());
 	}
 	else if(c_oSer_ConditionalFormattingRule::Type == type)
 	{

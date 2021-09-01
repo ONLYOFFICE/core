@@ -6334,8 +6334,11 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Sprea
 	}
 	if (oConditionalFormattingRule.m_oTimePeriod.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::TimePeriod);
-		m_oBcw.m_oStream.WriteStringW(oConditionalFormattingRule.m_oTimePeriod.get2());
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::strTimePeriod);
+		m_oBcw.m_oStream.WriteStringW(oConditionalFormattingRule.m_oTimePeriod->ToString());
+		
+		//m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::TimePeriod);
+		//m_oBcw.m_oStream.WriteBYTE(oConditionalFormattingRule.m_oTimePeriod->GetValue());
 	}
 	if (oConditionalFormattingRule.m_oType.IsInit())
 	{

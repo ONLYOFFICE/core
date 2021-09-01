@@ -1017,6 +1017,10 @@ namespace OOX
 					else if ( _T("w:tblStyleColBandSize") == sName ) m_oTblStyleColBandSize = oReader;
 					else if ( _T("w:tblStyleRowBandSize") == sName ) m_oTblStyleRowBandSize = oReader;
 					else if ( _T("w:tblW")                == sName ) m_oTblW = oReader;
+					else if ( _T("w:tblPr") == sName)
+					{//387.docx
+						fromXML(oReader);
+					}
 				}
 			}
 			virtual std::wstring toXML() const                     

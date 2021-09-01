@@ -429,34 +429,34 @@ namespace PPTX
 					OOX::CPath oox_file = oMediaFile->filename();
 					OOX::CPath embed_folder = oox_file.GetDirectory(true);
 					OOX::CPath oox_unpacked = embed_folder + L"Temp_unpacked";
-					NSDirectory::CreateDirectory(oox_unpacked.GetPath());
-
-					COfficeUtils oOfficeUtils(NULL);
-					oOfficeUtils.ExtractToDirectory(oox_file.GetPath(), oox_unpacked.GetPath(), NULL, 0);
-
-					COfficeFileFormatChecker office_checker;
-					office_checker.isOOXFormatFile(oox_file.GetPath());
-
-					if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX ||
-						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
+					
+					if (true == NSDirectory::CreateDirectory(oox_unpacked.GetPath()))
 					{
-						DocWrapper::FontProcessor oFontProcessor;
-						NSBinPptxRW::CDrawingConverter oDrawingConverter;
+						COfficeUtils oOfficeUtils(NULL);
+						oOfficeUtils.ExtractToDirectory(oox_file.GetPath(), oox_unpacked.GetPath(), NULL, 0);
+						COfficeFileFormatChecker office_checker;
+						office_checker.isOOXFormatFile(oox_file.GetPath());
+
+						if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX ||
+							office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
+						{
+							DocWrapper::FontProcessor oFontProcessor;
+							NSBinPptxRW::CDrawingConverter oDrawingConverter;
 
 						NSCommon::smart_ptr<OOX::IFileContainer>	old_rels = pWriter->GetRels();
-						NSCommon::smart_ptr<PPTX::Theme>            old_theme = *pWriter->m_pTheme;
+							NSCommon::smart_ptr<PPTX::Theme>            old_theme = *pWriter->m_pTheme;
 
-						NSShapeImageGen::CMediaManager* old_manager = oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager;
-						oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
+							NSShapeImageGen::CMediaManager* old_manager = oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager;
+							oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
 
-						oDrawingConverter.SetFontPicker(pWriter->m_pCommon->m_pFontPicker);
+							oDrawingConverter.SetFontPicker(pWriter->m_pCommon->m_pFontPicker);
 
-						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor);
+							BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor);
 //----------------------------
-						OOX::Spreadsheet::CXlsx oXlsxEmbedded(oox_unpacked);
+							OOX::Spreadsheet::CXlsx oXlsxEmbedded(oox_unpacked);
 
-						//startheader for test
-						//oDrawingConverter.m_pBinaryWriter->WriteStringUtf8(xlsxBinaryWriter.WriteFileHeader(0, BinXlsxRW::g_nFormatVersionNoBase64));
+							//startheader for test
+							//oDrawingConverter.m_pBinaryWriter->WriteStringUtf8(xlsxBinaryWriter.WriteFileHeader(0, BinXlsxRW::g_nFormatVersionNoBase64));
 						
 						xlsxBinaryWriter.intoBindoc(&oXlsxEmbedded, *oDrawingConverter.m_pBinaryWriter, NULL, &oDrawingConverter);
 //------------------------------
@@ -480,7 +480,8 @@ namespace PPTX
 						//oFile.CloseFile();
 					}
 
-					NSDirectory::DeleteDirectory(oox_unpacked.GetPath());
+						NSDirectory::DeleteDirectory(oox_unpacked.GetPath());
+					}
 				}
 			}
 	//----------------------------------------------------------------

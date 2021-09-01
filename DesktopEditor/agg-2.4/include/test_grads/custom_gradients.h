@@ -880,15 +880,31 @@ namespace agg
             xmax_curve = xmin_curve = start_p.x;
             ymax_curve = ymin_curve = start_p.y;
             precalc = std::vector<std::vector<ColorT>>(RES, std::vector<ColorT>(RES, {0, 0, 0, 0}));
-            for (; u <= 1; u += delta )
+
+            /*
+             * Небольшая оптимизация основанная на том, что данная фигура не выходит за границы своих опорных точек.
+             * */
+
+            for (int i = 0; i < 4; i++)
             {
-                for (v = 0; v <= 1; v += delta)
+                for (int j = 0; j < 4; j++)
                 {
-                    auto p = get_p_curve(u, v);
-                    xmax_curve = std::max(p.x, xmax_curve);
-                    ymax_curve = std::max(p.y, ymax_curve);
-                    xmin_curve = std::min(p.x, xmin_curve);
-                    ymin_curve = std::min(p.y, ymin_curve);
+                    if (m_oGradientInfo.shading.patch[i][j].x > xmax_curve)
+                    {
+                        xmax_curve = m_oGradientInfo.shading.patch[i][j].x;
+                    }
+                    if (m_oGradientInfo.shading.patch[i][j].y > ymax_curve)
+                    {
+                        ymax_curve = m_oGradientInfo.shading.patch[i][j].y;
+                    }
+                    if (m_oGradientInfo.shading.patch[i][j].x < xmin_curve)
+                    {
+                        xmin_curve = m_oGradientInfo.shading.patch[i][j].x;
+                    }
+                    if (m_oGradientInfo.shading.patch[i][j].y < ymin_curve)
+                    {
+                        ymin_curve = m_oGradientInfo.shading.patch[i][j].y;
+                    }
                 }
             }
             int nRES = (int)std::max(ymax - ymin, xmax - xmin);

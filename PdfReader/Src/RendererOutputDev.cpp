@@ -1213,7 +1213,23 @@ namespace PdfReader
                 case fontType1C:
                 case fontType1COT:
                 {
-                    if (L"" != wsFileName)
+                    if (fofiType == fofiIdTrueType)
+                    {
+                        if ((pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0)))
+                        {
+                            pCodeToGID = ((Gfx8BitFont *)pFont)->getCodeToGIDMap(pTTFontFile);
+                            nLen = 256;
+
+                            delete pTTFontFile;
+                            pTTFontFile = NULL;
+                        }
+                        else
+                        {
+                            pCodeToGID = NULL;
+                            nLen = 0;
+                        }
+                    }
+                    else if (L"" != wsFileName)
                     {
                         char **ppEncoding = ((Gfx8BitFont *)pFont)->getEncoding();
                         if (!ppEncoding)
@@ -2632,14 +2648,27 @@ namespace PdfReader
                 pGState->closePath();
                 break;
             case 2:
+                return false;
+                pGState->getUserClipBBox(&xmin, &ymin, &xmax, &ymax);
+                pGState->clearPath();
+
+
+                pGState->moveTo(xmin, ymin);
+                pGState->lineTo(xmin, ymax);
+                pGState->lineTo(xmax, ymax);
+                pGState->lineTo(xmax, ymin);
+                pGState->closePath();
+                break;
+            case 3:
+
 
                 ((GfxRadialShading *)pShading)->getCoords(&x1, &y1, &r1, &x2, &y2, &r2);
 
                 r = std::max(r1,r2);
-                xmin = std::min(x1, x2) - r;
-                ymin = std::min(y1, y2) - r;
-                xmax = std::max(x1, x2) + r;
-                ymax = std::max(y1, y2) + r;
+                xmin = std::min(x1, x2) - 2 * r;
+                ymin = std::min(y1, y2) - 2 * r;
+                xmax = std::max(x1, x2) + 2 * r;
+                ymax = std::max(y1, y2) + 2 * r;
 
                 pGState->moveTo(xmin, ymin);
                 pGState->lineTo(xmin, ymax);
@@ -2648,16 +2677,6 @@ namespace PdfReader
                 pGState->closePath();
 
                 break;
-            case 3:
-                return false;
-                pGState->clearPath();
-                pGState->getClipBBox(&xmin, &ymin, &xmax, &ymax);
-
-                pGState->moveTo(0, 0);
-                pGState->lineTo(0, pGState->getPageHeight());
-                pGState->lineTo(pGState->getPageWidth(), pGState->getPageHeight());
-                pGState->lineTo(pGState->getPageWidth(), 0);
-                pGState->closePath();
         }
         int nTriangles = 0, nPatches = 0;
         switch (pShading->getType())
@@ -2798,7 +2817,6 @@ namespace PdfReader
 			return true;
 		double x1, x2, y1, y2;
 		double t0, t1;
-		pShading->getCoords(&x1, &y1, &x2, &y2);
 
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -2811,8 +2829,6 @@ namespace PdfReader
 		m_pRenderer->get_BrushType(&brush);
 		m_pRenderer->put_BrushType(c_BrushTypePathNewLinearGradient);
 
-		//double x1, x2, y1, y2;
-		//double t0, t1;
         pShading->getCoords(&x1, &y1, &x2, &y2);
 		t0 = pShading->getDomain0();
 		t1 = pShading->getDomain1();
@@ -2879,9 +2895,6 @@ namespace PdfReader
 		t0 = pShading->getDomain0();
 		t1 = pShading->getDomain1();
 
-		double xdpi;
-		m_pRenderer->get_DpiX(&xdpi);
-
 		x1 = PDFCoordsToMM(x1);
         x2 = PDFCoordsToMM(x2);
         y1 = PDFCoordsToMM(y1);
@@ -2895,7 +2908,7 @@ namespace PdfReader
 		GfxColorSpace *ColorSpace = pShading->getColorSpace();;
 		float delta = (t1 - t0) / info.shading.function.get_resolution();
 		float t = t0;
-		for (size_t i = 0; i < info.shading.function.get_resolution(); i++, t += delta)
+		for (size_t i = 0; i < info.shading.function.get_resolution(); i++)
 		{
             GfxColor c;
             pShading->getColor(t, &c);
@@ -3480,7 +3493,7 @@ namespace PdfReader
         if (4 <= nRenderMode)
         {
             std::wstring wsTempFontName, wsTempFontPath;
-            std::wstring wsClipText; wsClipText += wsUnicodeText;
+            std::wstring wsClipText; wsClipText += (wchar_t)(unGid);
             double dTempFontSize;
             long lTempFontStyle;
             m_pRenderer->get_FontName(&wsTempFontName);

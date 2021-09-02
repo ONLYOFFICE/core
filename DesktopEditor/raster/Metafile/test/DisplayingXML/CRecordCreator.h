@@ -5,8 +5,7 @@
 #include <QStandardItem>
 
 #include "MainWindow.h"
-
-#include <QTextEdit>
+#include "Common/CSharedWidget.h"
 
 namespace Ui {
         class CRecordCreator;
@@ -18,20 +17,43 @@ class CRecordCreator : public QDialog
 
 public:
         explicit CRecordCreator(QWidget *parent = nullptr);
-        ~CRecordCreator();
+        virtual ~CRecordCreator();
 
         void SetMainWindow(MainWindow *pMainWindow);
         QStandardItem* CreateRecord();
 private slots:
         void on_selectButton_clicked();
-
 private:
-        void Create_EMR_SELECTOBJECT_boxs();
-        void Convert_EMR_SELECTOBJECT();
+        //EMR_POLYBEZIER
+        void Create_Widgets_EMR_POLYBEZIER();
+        void Convert_Widgets_EMR_POLYBEZIER();
+        //EMR_POLYGON
+        void Create_Widgets_EMR_POLYGON();
+        void Convert_Widgets_EMR_POLYGON();
+        //EMR_POLYLINE
+        void Create_Widgets_EMR_POLYLINE();
+        void Convert_Widgets_EMR_POLYLINE();
+        //EMR_POLYBEZIERTO
+        void Create_Widgets_EMR_POLYBEZIERTO();
+        void Convert_Widgets_EMR_POLYBEZIERTO();
+        //EMR_POLYLINETO
+        void Create_Widgets_EMR_POLYLINETO();
+        void Convert_Widgets_EMR_POLYLINETO();
+        //EMR_POLYPOLYLINE
+        void Create_Widgets_EMR_POLYPOLYLINE();
+        void Convert_Widgets_EMR_POLYPOLYLINE();
+        //EMR_SELECTOBJECT
+        void Create_Widgets_EMR_SELECTOBJECT();
+        void Convert_Widgets_EMR_SELECTOBJECT();
+
+        void CreateBoundsWidget();
+        void CreatePointsWidget();
+        void CreatePolyWidget();
+
+        void ConvertWidgets();
 
         void ClearData();
-
-        void AlignTextEdit(QTextEdit* pTextEdit);
+        void Close();
 
         Ui::CRecordCreator *ui;
         MainWindow *m_pMainWindow;
@@ -39,7 +61,7 @@ private:
 
         int m_nSelectedRecord;
 
-        QMap<QString, QTextEdit*> m_mData;
+        std::vector<CSharedWidget*> m_arWidgets;
 };
 
 #endif // CRECORDCREATOR_H

@@ -291,8 +291,13 @@ void MainWindow::on_actionInsertARecord_triggered()
 {
         QModelIndex index =  ui->treeView->selectionModel()->currentIndex();
         QStandardItem *pStandardItem = static_cast<QStandardItem*>(index.internalPointer());
-        QStandardItem *pItem = new QStandardItem("<Test>");
 
-        pStandardItem->insertRow(index.row() + 1, pItem);
+        CRecordCreator *pRecordCreator = new CRecordCreator();
+        pRecordCreator->SetMainWindow(this);
+
+        QStandardItem *pItem = pRecordCreator->CreateRecord();
+
+        if (NULL != pItem)
+                pStandardItem->insertRow(index.row() + 1, pItem);
 }
 

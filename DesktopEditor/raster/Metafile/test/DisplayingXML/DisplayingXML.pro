@@ -18,6 +18,10 @@ SOURCES += \
     CStatisticsWidget.cpp \
     CTextEditDelegate.cpp \
     CXMLHighlighter.cpp \
+    Common/CBoundsWidget.cpp \
+    Common/CFormWidget.cpp \
+    Common/CPointsWidget.cpp \
+    Common/CPolyWidget.cpp \
     MainWindow.cpp \
     CCustomView.cpp \
     main.cpp
@@ -31,14 +35,20 @@ HEADERS += \
     CStatisticsWidget.h \
     CTextEditDelegate.h \
     CXMLHighlighter.h \
+    Common/CBoundsWidget.h \
+    Common/CFormWidget.h \
+    Common/CPointsWidget.h \
+    Common/CPolyWidget.h \
+    Common/CSharedWidget.h \
+    Common/Common.h \
     MainWindow.h \
     CCustomView.h
 
 FORMS += \
-    EditItem.ui \
-    MainWindow.ui \
-    RecordCreator.ui \
-    Statistics.ui
+    Ui/EditItem.ui \
+    Ui/MainWindow.ui \
+    Ui/RecordCreator.ui \
+    Ui/Statistics.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

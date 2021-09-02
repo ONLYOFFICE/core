@@ -39,6 +39,8 @@
 
 using namespace PdfWriter;
 
+std::wstring g_wsOutFolder = L"D:\\Work\\Test\\";
+
 void TestDocument1()
 {
 	// PageLabels and Encryption
@@ -52,7 +54,7 @@ void TestDocument1()
 	
 	oPdf.SetPasswords(L"123", L"qwe");
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test1.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test1.pdf");
 	oPdf.Close();
 }
 void TestField()
@@ -67,7 +69,7 @@ void TestField()
 	pField1->SetRequiredFlag(true);
 	pField1->AddPageRect(pPage, TRect(0, 100, 100, 0));
 	pField1->SetFieldName(L"Test");
-	pField1->SetFieldHint(L"Ïîäñêàçêà");
+	pField1->SetFieldHint(L"Ð˜Ð»ÑŒÑ");
 
 	CTextField* pField2 = oPdf.CreateTextField();
 	pField2->SetRequiredFlag(false);
@@ -101,11 +103,11 @@ void TestField()
 	pComboBox->SetRequiredFlag(false);
 	pComboBox->AddPageRect(pPage, TRect(200, 600, 500, 550));
 	pComboBox->SetFieldName(L"ComboBox1");
-	pComboBox->SetFieldHint(L"Êîìáî áîêñ");
+	pComboBox->SetFieldHint(L"ÐšÐ°ÐºÐ¾Ð¹-Ñ‚Ð¾ Ñ‚ÐµÐºÑÑ‚");
 	pComboBox->SetTextValue(L"Ilya");
-	pComboBox->AddOption(L"Ñèíèé");
+	pComboBox->AddOption(L"Ð—ÐµÐ»ÐµÐ½Ñ‹Ð¹");
 	pComboBox->AddOption(L"Green");
-	pComboBox->AddOption(L"Êðàñíûé");
+	pComboBox->AddOption(L"Ð—ÐµÐ»ÐµÐ½Ñ‹Ð¹");
 	pComboBox->SetComboFlag(true);
 	pComboBox->SetEditFlag(false);
 	pComboBox->SetFieldBorder(border_subtype_Solid, TRgb(0, 255, 0), 1, 0, 0, 0);
@@ -139,12 +141,12 @@ void TestField()
 	pPictureField->SetRequiredFlag(false);
 	pPictureField->AddPageRect(pPage, TRect(100, 500, 200, 450));
 	pPictureField->SetFieldName(L"Pic");
-	pPictureField->SetFieldHint(L"Êàðòèíêà");
+	pPictureField->SetFieldHint(L"ÐšÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ°");
 	pPictureField->SetAppearance();
 	
 
 
-	oPdf.SaveToFile(L"D:/Test/PDF/TestField1.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"TestField1.pdf");
 	oPdf.Close();
 }
 void TestDocument2()
@@ -176,7 +178,7 @@ void TestDocument2()
 	pOutline11->SetDestination(pDest);
 
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test2.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test2.pdf");
 	oPdf.Close();
 }
 void TestDocument3()
@@ -345,7 +347,7 @@ void TestDocument3()
 
 
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test3.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test3.pdf");
 	oPdf.Close();
 }
 void TestDocument4()
@@ -365,7 +367,7 @@ void TestDocument4()
 	//CAnnotation* pAnnot = oPdf.CreateLinkAnnot(0, TRect(0, 100, 100, 0), pDest);
 	//pAnnot = oPdf.CreateUriLinkAnnot(0, TRect(0, 200, 100, 100), "www.rbc.ru");
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test4.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test4.pdf");
 	oPdf.Close();
 }
 void TestDocument5()
@@ -509,7 +511,7 @@ void TestDocument5()
 	//pPage->DrawImage(pRawImage, 300, 300, 200, 200);
 	//delete[] pBgra;
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test5.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test5.pdf");
 	oPdf.Close();
 }
 void TestDocument6()
@@ -583,7 +585,7 @@ void TestDocument6()
 	pPage->ClosePath();
 	pPage->Fill();
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test6.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test6.pdf");
 	oPdf.Close();
 }
 void TestDocument7()
@@ -648,7 +650,7 @@ void TestDocument7()
 
 	pPage->EndText();
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test7.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test7.pdf");
 	oPdf.Close();
 }
 void TestDocument8()
@@ -727,7 +729,7 @@ void TestDocument8()
 	pPage->GrRestore();
 
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test8.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test8.pdf");
 	oPdf.Close();
 }
 void TestDocument9()
@@ -755,7 +757,7 @@ void TestDocument9()
 	pPage->GrRestore();
 
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test9.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test9.pdf");
 	oPdf.Close();
 }
 

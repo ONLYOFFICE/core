@@ -32,7 +32,7 @@ HEADERS += \
     XpsLib/ContextState.h \
     XpsLib/Document.h \
     XpsLib/FontList.h \
-    XpsLib/Page.h \
+    XpsLib/XpsPage.h \
     XpsLib/StaticResources.h \
     XpsLib/Utils.h \
     XpsLib/WString.h
@@ -41,7 +41,7 @@ SOURCES += \
     XpsFile.cpp \
     XpsLib/ContextState.cpp \
     XpsLib/Document.cpp \
-    XpsLib/Page.cpp \
+    XpsLib/XpsPage.cpp \
     XpsLib/StaticResources.cpp \
     XpsLib/Utils.cpp \
     XpsLib/WString.cpp

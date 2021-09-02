@@ -33,7 +33,7 @@ public:
     }
     void CreatePDF()
     {
-        //pReader = new PdfReader::CPdfReader(pApplicationFonts);
+        pReader = new PdfReader::CPdfReader(pApplicationFonts);
     }
 
     bool LoadFromMemory(BYTE* data, DWORD length)

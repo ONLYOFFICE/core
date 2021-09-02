@@ -33,7 +33,7 @@
 #define _XPS_XPSLIB_DOCUMENT_H
 
 #include "FontList.h"
-#include "Page.h"
+#include "XpsPage.h"
 #include <map>
 #include <vector>
 

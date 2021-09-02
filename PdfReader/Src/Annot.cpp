@@ -35,7 +35,7 @@
 #include "List.h"
 #include "Object.h"
 #include "Catalog.h"
-#include "Graphics.h"
+#include "PDFGraphics.h"
 #include "GFont.h"
 #include "Lexer.h"
 #include "Annot.h"

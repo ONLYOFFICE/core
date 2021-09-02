@@ -38,7 +38,7 @@
 #include "Link.h"
 #include "RendererOutputDev.h"
 #include "OutputDevice.h"
-#include "Graphics.h"
+#include "PDFGraphics.h"
 #include "GState.h"
 #include "Annot.h"
 #include "Catalog.h"

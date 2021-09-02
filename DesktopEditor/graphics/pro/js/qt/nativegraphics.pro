@@ -9,7 +9,8 @@ CONFIG -= app_bundle
 
 DEFINES += TEST_AS_EXECUTABLE \
     GRAPHICS_NO_USE_DYNAMIC_LIBRARY \
-    BUILDING_WASM_MODULE
+    BUILDING_WASM_MODULE \
+    _QT
 
 CORE_ROOT_DIR = $$PWD/../../../../..
 PWD_ROOT_DIR = $$PWD
@@ -27,9 +28,6 @@ INCLUDEPATH += \
     $$CORE_ROOT_DIR/DesktopEditor/freetype-2.10.4/include \
     $$CORE_ROOT_DIR/DesktopEditor/freetype-2.10.4/include/freetype
 
-DEFINES += \
-    _QT
-
 win32 {
 DEFINES += \
     JAS_WIN_MSVC_BUILD \
@@ -43,125 +41,6 @@ LIBS += -lgdi32 \
         -luser32 \
         -lshell32
 }
-
-# PdfReader
-
-DEFINES += CRYPTOPP_DISABLE_ASM
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
-PDF_ROOT_DIR = $$PWD/../../../../../PdfReader
-
-#SOURCES += \
-#    $$PDF_ROOT_DIR/Src/Annot.cpp \
-#    $$PDF_ROOT_DIR/Src/Array.cpp \
-#    $$PDF_ROOT_DIR/Src/Catalog.cpp \
-#    $$PDF_ROOT_DIR/Src/CharCodeToUnicode.cpp \
-#    $$PDF_ROOT_DIR/Src/CMap.cpp \
-#    $$PDF_ROOT_DIR/Src/Decrypt.cpp \
-#    $$PDF_ROOT_DIR/Src/Dict.cpp \
-#    $$PDF_ROOT_DIR/Src/ExtractImageOutputDev.cpp \
-#    $$PDF_ROOT_DIR/Src/FontFileBase.cpp \
-#    $$PDF_ROOT_DIR/Src/FontFileTrueType.cpp \
-#    $$PDF_ROOT_DIR/Src/FontFileType1.cpp \
-#    $$PDF_ROOT_DIR/Src/FontFileType1C.cpp \
-#    $$PDF_ROOT_DIR/Src/Function.cpp \
-#    $$PDF_ROOT_DIR/Src/GFont.cpp \
-#    $$PDF_ROOT_DIR/Src/GlobalParams.cpp \
-#    $$PDF_ROOT_DIR/Src/Graphics.cpp \
-#    $$PDF_ROOT_DIR/Src/GState.cpp \
-#    $$PDF_ROOT_DIR/Src/Hash.cpp \
-#    $$PDF_ROOT_DIR/Src/JArithmeticDecoder.cpp \
-#    $$PDF_ROOT_DIR/Src/JBIG2Stream.cpp \
-#    $$PDF_ROOT_DIR/Src/JPXStream.cpp \
-#    $$PDF_ROOT_DIR/Src/Lexer.cpp \
-#    $$PDF_ROOT_DIR/Src/Link.cpp \
-#    $$PDF_ROOT_DIR/Src/List.cpp \
-#    $$PDF_ROOT_DIR/Src/NameToCharCode.cpp \
-#    $$PDF_ROOT_DIR/Src/Object.cpp \
-#    $$PDF_ROOT_DIR/Src/Outline.cpp \
-#    $$PDF_ROOT_DIR/Src/OutputDevice.cpp \
-#    $$PDF_ROOT_DIR/Src/Page.cpp \
-#    $$PDF_ROOT_DIR/Src/PageLabels.cpp \
-#    $$PDF_ROOT_DIR/Src/Parser.cpp \
-#    $$PDF_ROOT_DIR/Src/PDFDoc.cpp \
-#    $$PDF_ROOT_DIR/Src/PSLexer.cpp \
-#    $$PDF_ROOT_DIR/Src/RendererOutputDev.cpp \
-#    $$PDF_ROOT_DIR/Src/SecurityHandler.cpp \
-#    $$PDF_ROOT_DIR/Src/Stream.cpp \
-#    $$PDF_ROOT_DIR/Src/StringExt.cpp \
-#    $$PDF_ROOT_DIR/Src/UnicodeMap.cpp \
-#    $$PDF_ROOT_DIR/Src/XRef.cpp \
-#    $$PDF_ROOT_DIR/PdfReader.cpp
-#
-#HEADERS +=\
-#    $$PDF_ROOT_DIR/Resources/Fontd050000l.h \
-#    $$PDF_ROOT_DIR/Resources/Fontn019003l.h \
-#    $$PDF_ROOT_DIR/Resources/Fontn019004l.h \
-#    $$PDF_ROOT_DIR/Resources/Fontn019023l.h \
-#    $$PDF_ROOT_DIR/Resources/Fontn019024l.h \
-#    $$PDF_ROOT_DIR/Resources/Fontn021003l.h \
-#    $$PDF_ROOT_DIR/Resources/Fontn021004l.h \
-#    $$PDF_ROOT_DIR/Resources/Fontn021023l.h \
-#    $$PDF_ROOT_DIR/Resources/Fontn021024l.h \
-#    $$PDF_ROOT_DIR/Resources/Fontn022003l.h \
-#    $$PDF_ROOT_DIR/Resources/Fontn022004l.h \
-#    $$PDF_ROOT_DIR/Resources/Fontn022023l.h \
-#    $$PDF_ROOT_DIR/Resources/Fontn022024l.h \
-#    $$PDF_ROOT_DIR/Resources/Fonts050000l.h \
-#    $$PDF_ROOT_DIR/Src/Annot.h \
-#    $$PDF_ROOT_DIR/Src/Array.h \
-#    $$PDF_ROOT_DIR/Src/BuiltinFont.h \
-#    $$PDF_ROOT_DIR/Src/BuiltinFontTables.h \
-#    $$PDF_ROOT_DIR/Src/Catalog.h \
-#    $$PDF_ROOT_DIR/Src/CCITT-Tables.h \
-#    $$PDF_ROOT_DIR/Src/CharCodeToUnicode.h \
-#    $$PDF_ROOT_DIR/Src/CharTypes.h \
-#    $$PDF_ROOT_DIR/Src/CMap.h \
-#    $$PDF_ROOT_DIR/Src/Constants.h \
-#    $$PDF_ROOT_DIR/Src/Decrypt.h \
-#    $$PDF_ROOT_DIR/Src/Dict.h \
-#    $$PDF_ROOT_DIR/Src/EncodingTables.h \
-#    $$PDF_ROOT_DIR/Src/ErrorConstants.h \
-#    $$PDF_ROOT_DIR/Src/ExtractImageOutputDev.h \
-#    $$PDF_ROOT_DIR/Src/File.h \
-#    $$PDF_ROOT_DIR/Src/FontFileBase.h \
-#    $$PDF_ROOT_DIR/Src/FontFileEncodings.h \
-#    $$PDF_ROOT_DIR/Src/FontFileTrueType.h \
-#    $$PDF_ROOT_DIR/Src/FontFileType1.h \
-#    $$PDF_ROOT_DIR/Src/FontFileType1C.h \
-#    $$PDF_ROOT_DIR/Src/Function.h \
-#    $$PDF_ROOT_DIR/Src/GFont.h \
-#    $$PDF_ROOT_DIR/Src/GlobalParams.h \
-#    $$PDF_ROOT_DIR/Src/Graphics.h \
-#    $$PDF_ROOT_DIR/Src/GState.h \
-#    $$PDF_ROOT_DIR/Src/Hash.h \
-#    $$PDF_ROOT_DIR/Src/JArithmeticDecoder.h \
-#    $$PDF_ROOT_DIR/Src/JBIG2Stream.h \
-#    $$PDF_ROOT_DIR/Src/JPXStream.h \
-#    $$PDF_ROOT_DIR/Src/Lexer.h \
-#    $$PDF_ROOT_DIR/Src/Link.h \
-#    $$PDF_ROOT_DIR/Src/List.h \
-#    $$PDF_ROOT_DIR/Src/MemoryUtils.h \
-#    $$PDF_ROOT_DIR/Src/NameToCharCode.h \
-#    $$PDF_ROOT_DIR/Src/NameToUnicodeTable.h \
-#    $$PDF_ROOT_DIR/Src/Object.h \
-#    $$PDF_ROOT_DIR/Src/Outline.h \
-#    $$PDF_ROOT_DIR/Src/OutputDevice.h \
-#    $$PDF_ROOT_DIR/Src/Page.h \
-#    $$PDF_ROOT_DIR/Src/PageLabels.h \
-#    $$PDF_ROOT_DIR/Src/Parser.h \
-#    $$PDF_ROOT_DIR/Src/PDFDoc.h \
-#    $$PDF_ROOT_DIR/Src/PDFDocEncoding.h \
-#    $$PDF_ROOT_DIR/Src/PSLexer.h \
-#    $$PDF_ROOT_DIR/Src/RendererOutputDev.h \
-#    $$PDF_ROOT_DIR/Src/SecurityHandler.h \
-#    $$PDF_ROOT_DIR/Src/Stream.h \
-#    $$PDF_ROOT_DIR/Src/StringExt.h \
-#    $$PDF_ROOT_DIR/Src/UnicodeMap.h \
-#    $$PDF_ROOT_DIR/Src/UnicodeMapTables.h \
-#    $$PDF_ROOT_DIR/Src/UTF8.h \
-#    $$PDF_ROOT_DIR/Src/XmlUtils.h \
-#    $$PDF_ROOT_DIR/Src/XRef.h \
-#    $$PDF_ROOT_DIR/PdfReader.h
 
 # graphics
 
@@ -254,13 +133,13 @@ SOURCES += \
     ../../../../agg-2.4/src/agg_vcgen_smooth_poly1.cpp \
     ../../../../agg-2.4/src/agg_vcgen_stroke.cpp \
     \
-    ../../../../fontengine/fontconverter/StringExt.cpp \
-    ../../../../fontengine/fontconverter/Hash.cpp \
-    ../../../../fontengine/fontconverter/FontConverter.cpp \
-    ../../../../fontengine/fontconverter/FontFileEncodings.cpp \
-    ../../../../fontengine/fontconverter/FontFileTrueType.cpp \
-    ../../../../fontengine/fontconverter/FontFileType1.cpp \
-    ../../../../fontengine/fontconverter/FontFileType1C.cpp \
+    #../../../../fontengine/fontconverter/StringExt.cpp \
+    #../../../../fontengine/fontconverter/Hash.cpp \
+    #../../../../fontengine/fontconverter/FontConverter.cpp \
+    #../../../../fontengine/fontconverter/FontFileEncodings.cpp \
+    #../../../../fontengine/fontconverter/FontFileTrueType.cpp \
+    #../../../../fontengine/fontconverter/FontFileType1.cpp \
+    #../../../../fontengine/fontconverter/FontFileType1C.cpp \
     \
     ../../../../raster/Jp2/J2kFile.cpp \
     ../../../../raster/Jp2/Reader.cpp \
@@ -567,12 +446,13 @@ SOURCES += \
 # XpsFile
 
 XPS_ROOT_DIR = $$PWD/../../../../../XpsFile
+
 HEADERS += \
     $$XPS_ROOT_DIR/XpsFile.h \
     $$XPS_ROOT_DIR/XpsLib/ContextState.h \
     $$XPS_ROOT_DIR/XpsLib/Document.h \
     $$XPS_ROOT_DIR/XpsLib/FontList.h \
-    $$XPS_ROOT_DIR/XpsLib/Page.h \
+    $$XPS_ROOT_DIR/XpsLib/XpsPage.h \
     $$XPS_ROOT_DIR/XpsLib/StaticResources.h \
     $$XPS_ROOT_DIR/XpsLib/Utils.h \
     $$XPS_ROOT_DIR/XpsLib/WString.h
@@ -581,7 +461,7 @@ SOURCES += \
     $$XPS_ROOT_DIR/XpsFile.cpp \
     $$XPS_ROOT_DIR/XpsLib/ContextState.cpp \
     $$XPS_ROOT_DIR/XpsLib/Document.cpp \
-    $$XPS_ROOT_DIR/XpsLib/Page.cpp \
+    $$XPS_ROOT_DIR/XpsLib/XpsPage.cpp \
     $$XPS_ROOT_DIR/XpsLib/StaticResources.cpp \
     $$XPS_ROOT_DIR/XpsLib/Utils.cpp \
     $$XPS_ROOT_DIR/XpsLib/WString.cpp
@@ -594,6 +474,60 @@ DEFINES += WASM_MODE \
 
 DJVU_ROOT_DIR = $$PWD/../../../../../DjVuFile
 DJVU_WRAPPER  = $$PWD/../../../../../DjVuFile/wasm/libdjvu
+
+HEADERS += \
+    $$DJVU_ROOT_DIR/DjVu.h \
+    $$DJVU_ROOT_DIR/DjVuFileImplementation.h \
+    $$DJVU_ROOT_DIR/libdjvu/Arrays.h \
+    $$DJVU_ROOT_DIR/libdjvu/atomic.h \
+    $$DJVU_ROOT_DIR/libdjvu/BSByteStream.h \
+    $$DJVU_ROOT_DIR/libdjvu/ByteStream.h \
+    $$DJVU_ROOT_DIR/libdjvu/DataPool.h \
+    $$DJVU_ROOT_DIR/libdjvu/debug.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVmDir.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVmDir0.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVmDoc.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVmNav.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuAnno.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuDocEditor.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuDocument.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuDumpHelper.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuErrorList.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuFile.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuFileCache.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuGlobal.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuImage.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuInfo.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuMessage.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuMessageLite.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuNavDir.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuPalette.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuPort.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuText.h \
+    $$DJVU_ROOT_DIR/libdjvu/DjVuToPS.h \
+    $$DJVU_ROOT_DIR/libdjvu/GBitmap.h \
+    $$DJVU_ROOT_DIR/libdjvu/GContainer.h \
+    $$DJVU_ROOT_DIR/libdjvu/GException.h \
+    $$DJVU_ROOT_DIR/libdjvu/GIFFManager.h \
+    $$DJVU_ROOT_DIR/libdjvu/GMapAreas.h \
+    $$DJVU_ROOT_DIR/libdjvu/GOS.h \
+    $$DJVU_ROOT_DIR/libdjvu/GPixmap.h \
+    $$DJVU_ROOT_DIR/libdjvu/GRect.h \
+    $$DJVU_ROOT_DIR/libdjvu/GScaler.h \
+    $$DJVU_ROOT_DIR/libdjvu/GSmartPointer.h \
+    $$DJVU_ROOT_DIR/libdjvu/GString.h \
+    $$DJVU_ROOT_DIR/libdjvu/GThreads.h \
+    $$DJVU_ROOT_DIR/libdjvu/GURL.h \
+    $$DJVU_ROOT_DIR/libdjvu/IFFByteStream.h \
+    $$DJVU_ROOT_DIR/libdjvu/IW44Image.h \
+    $$DJVU_ROOT_DIR/libdjvu/JB2Image.h \
+    $$DJVU_ROOT_DIR/libdjvu/JPEGDecoder.h \
+    $$DJVU_ROOT_DIR/libdjvu/MMRDecoder.h \
+    $$DJVU_ROOT_DIR/libdjvu/MMX.h \
+    $$DJVU_ROOT_DIR/libdjvu/UnicodeByteStream.h \
+    $$DJVU_ROOT_DIR/libdjvu/XMLParser.h \
+    $$DJVU_ROOT_DIR/libdjvu/XMLTags.h \
+    $$DJVU_ROOT_DIR/libdjvu/ZPCodec.h
 
 SOURCES += \
     $$DJVU_ROOT_DIR/DjVu.cpp \
@@ -660,59 +594,124 @@ SOURCES += \
     $$DJVU_WRAPPER/GOS.cpp \
     $$DJVU_WRAPPER/GURL.cpp
 
-HEADERS += \
-    $$DJVU_ROOT_DIR/DjVu.h \
-    $$DJVU_ROOT_DIR/DjVuFileImplementation.h \
-    $$DJVU_ROOT_DIR/libdjvu/Arrays.h \
-    $$DJVU_ROOT_DIR/libdjvu/atomic.h \
-    $$DJVU_ROOT_DIR/libdjvu/BSByteStream.h \
-    $$DJVU_ROOT_DIR/libdjvu/ByteStream.h \
-    $$DJVU_ROOT_DIR/libdjvu/DataPool.h \
-    $$DJVU_ROOT_DIR/libdjvu/debug.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVmDir.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVmDir0.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVmDoc.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVmNav.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuAnno.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuDocEditor.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuDocument.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuDumpHelper.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuErrorList.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuFile.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuFileCache.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuGlobal.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuImage.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuInfo.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuMessage.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuMessageLite.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuNavDir.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuPalette.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuPort.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuText.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuToPS.h \
-    $$DJVU_ROOT_DIR/libdjvu/GBitmap.h \
-    $$DJVU_ROOT_DIR/libdjvu/GContainer.h \
-    $$DJVU_ROOT_DIR/libdjvu/GException.h \
-    $$DJVU_ROOT_DIR/libdjvu/GIFFManager.h \
-    $$DJVU_ROOT_DIR/libdjvu/GMapAreas.h \
-    $$DJVU_ROOT_DIR/libdjvu/GOS.h \
-    $$DJVU_ROOT_DIR/libdjvu/GPixmap.h \
-    $$DJVU_ROOT_DIR/libdjvu/GRect.h \
-    $$DJVU_ROOT_DIR/libdjvu/GScaler.h \
-    $$DJVU_ROOT_DIR/libdjvu/GSmartPointer.h \
-    $$DJVU_ROOT_DIR/libdjvu/GString.h \
-    $$DJVU_ROOT_DIR/libdjvu/GThreads.h \
-    $$DJVU_ROOT_DIR/libdjvu/GURL.h \
-    $$DJVU_ROOT_DIR/libdjvu/IFFByteStream.h \
-    $$DJVU_ROOT_DIR/libdjvu/IW44Image.h \
-    $$DJVU_ROOT_DIR/libdjvu/JB2Image.h \
-    $$DJVU_ROOT_DIR/libdjvu/JPEGDecoder.h \
-    $$DJVU_ROOT_DIR/libdjvu/MMRDecoder.h \
-    $$DJVU_ROOT_DIR/libdjvu/MMX.h \
-    $$DJVU_ROOT_DIR/libdjvu/UnicodeByteStream.h \
-    $$DJVU_ROOT_DIR/libdjvu/XMLParser.h \
-    $$DJVU_ROOT_DIR/libdjvu/XMLTags.h \
-    $$DJVU_ROOT_DIR/libdjvu/ZPCodec.h
+# PdfReader
+
+DEFINES += CRYPTOPP_DISABLE_ASM
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+PDF_ROOT_DIR = $$PWD/../../../../../PdfReader
+
+HEADERS +=\
+    $$PDF_ROOT_DIR/Resources/Fontd050000l.h \
+    $$PDF_ROOT_DIR/Resources/Fontn019003l.h \
+    $$PDF_ROOT_DIR/Resources/Fontn019004l.h \
+    $$PDF_ROOT_DIR/Resources/Fontn019023l.h \
+    $$PDF_ROOT_DIR/Resources/Fontn019024l.h \
+    $$PDF_ROOT_DIR/Resources/Fontn021003l.h \
+    $$PDF_ROOT_DIR/Resources/Fontn021004l.h \
+    $$PDF_ROOT_DIR/Resources/Fontn021023l.h \
+    $$PDF_ROOT_DIR/Resources/Fontn021024l.h \
+    $$PDF_ROOT_DIR/Resources/Fontn022003l.h \
+    $$PDF_ROOT_DIR/Resources/Fontn022004l.h \
+    $$PDF_ROOT_DIR/Resources/Fontn022023l.h \
+    $$PDF_ROOT_DIR/Resources/Fontn022024l.h \
+    $$PDF_ROOT_DIR/Resources/Fonts050000l.h \
+    $$PDF_ROOT_DIR/Src/Annot.h \
+    $$PDF_ROOT_DIR/Src/Array.h \
+    $$PDF_ROOT_DIR/Src/BuiltinFont.h \
+    $$PDF_ROOT_DIR/Src/BuiltinFontTables.h \
+    $$PDF_ROOT_DIR/Src/Catalog.h \
+    $$PDF_ROOT_DIR/Src/CCITT-Tables.h \
+    $$PDF_ROOT_DIR/Src/CharCodeToUnicode.h \
+    $$PDF_ROOT_DIR/Src/CharTypes.h \
+    $$PDF_ROOT_DIR/Src/CMap.h \
+    $$PDF_ROOT_DIR/Src/Constants.h \
+    $$PDF_ROOT_DIR/Src/Decrypt.h \
+    $$PDF_ROOT_DIR/Src/Dict.h \
+    $$PDF_ROOT_DIR/Src/EncodingTables.h \
+    $$PDF_ROOT_DIR/Src/ErrorConstants.h \
+    $$PDF_ROOT_DIR/Src/ExtractImageOutputDev.h \
+    $$PDF_ROOT_DIR/Src/File.h \
+    $$PDF_ROOT_DIR/Src/FontFileBase.h \
+    $$PDF_ROOT_DIR/Src/FontFileEncodings.h \
+    $$PDF_ROOT_DIR/Src/FontFileTrueType.h \
+    $$PDF_ROOT_DIR/Src/FontFileType1.h \
+    $$PDF_ROOT_DIR/Src/FontFileType1C.h \
+    $$PDF_ROOT_DIR/Src/Function.h \
+    $$PDF_ROOT_DIR/Src/GFont.h \
+    $$PDF_ROOT_DIR/Src/GlobalParams.h \
+    $$PDF_ROOT_DIR/Src/PDFGraphics.h \
+    $$PDF_ROOT_DIR/Src/GState.h \
+    $$PDF_ROOT_DIR/Src/Hash.h \
+    $$PDF_ROOT_DIR/Src/JArithmeticDecoder.h \
+    $$PDF_ROOT_DIR/Src/JBIG2Stream.h \
+    $$PDF_ROOT_DIR/Src/JPXStream.h \
+    $$PDF_ROOT_DIR/Src/Lexer.h \
+    $$PDF_ROOT_DIR/Src/Link.h \
+    $$PDF_ROOT_DIR/Src/List.h \
+    $$PDF_ROOT_DIR/Src/MemoryUtils.h \
+    $$PDF_ROOT_DIR/Src/NameToCharCode.h \
+    $$PDF_ROOT_DIR/Src/NameToUnicodeTable.h \
+    $$PDF_ROOT_DIR/Src/Object.h \
+    $$PDF_ROOT_DIR/Src/Outline.h \
+    $$PDF_ROOT_DIR/Src/OutputDevice.h \
+    $$PDF_ROOT_DIR/Src/Page.h \
+    $$PDF_ROOT_DIR/Src/PageLabels.h \
+    $$PDF_ROOT_DIR/Src/Parser.h \
+    $$PDF_ROOT_DIR/Src/PDFDoc.h \
+    $$PDF_ROOT_DIR/Src/PDFDocEncoding.h \
+    $$PDF_ROOT_DIR/Src/PSLexer.h \
+    $$PDF_ROOT_DIR/Src/RendererOutputDev.h \
+    $$PDF_ROOT_DIR/Src/SecurityHandler.h \
+    $$PDF_ROOT_DIR/Src/Stream.h \
+    $$PDF_ROOT_DIR/Src/StringExt.h \
+    $$PDF_ROOT_DIR/Src/UnicodeMap.h \
+    $$PDF_ROOT_DIR/Src/UnicodeMapTables.h \
+    $$PDF_ROOT_DIR/Src/UTF8.h \
+    $$PDF_ROOT_DIR/Src/XmlUtils.h \
+    $$PDF_ROOT_DIR/Src/XRef.h \
+    $$PDF_ROOT_DIR/PdfReader.h
+
+SOURCES += \
+    $$PDF_ROOT_DIR/Src/Annot.cpp \
+    $$PDF_ROOT_DIR/Src/Array.cpp \
+    $$PDF_ROOT_DIR/Src/Catalog.cpp \
+    $$PDF_ROOT_DIR/Src/CharCodeToUnicode.cpp \
+    $$PDF_ROOT_DIR/Src/CMap.cpp \
+    $$PDF_ROOT_DIR/Src/Decrypt.cpp \
+    $$PDF_ROOT_DIR/Src/Dict.cpp \
+    $$PDF_ROOT_DIR/Src/ExtractImageOutputDev.cpp \
+    $$PDF_ROOT_DIR/Src/FontFileBase.cpp \
+    $$PDF_ROOT_DIR/Src/FontFileTrueType.cpp \
+    $$PDF_ROOT_DIR/Src/FontFileType1.cpp \
+    $$PDF_ROOT_DIR/Src/FontFileType1C.cpp \
+    $$PDF_ROOT_DIR/Src/Function.cpp \
+    $$PDF_ROOT_DIR/Src/GFont.cpp \
+    $$PDF_ROOT_DIR/Src/GlobalParams.cpp \
+    $$PDF_ROOT_DIR/Src/PDFGraphics.cpp \
+    $$PDF_ROOT_DIR/Src/GState.cpp \
+    $$PDF_ROOT_DIR/Src/Hash.cpp \
+    $$PDF_ROOT_DIR/Src/JArithmeticDecoder.cpp \
+    $$PDF_ROOT_DIR/Src/JBIG2Stream.cpp \
+    $$PDF_ROOT_DIR/Src/JPXStream.cpp \
+    $$PDF_ROOT_DIR/Src/Lexer.cpp \
+    $$PDF_ROOT_DIR/Src/Link.cpp \
+    $$PDF_ROOT_DIR/Src/List.cpp \
+    $$PDF_ROOT_DIR/Src/NameToCharCode.cpp \
+    $$PDF_ROOT_DIR/Src/Object.cpp \
+    $$PDF_ROOT_DIR/Src/Outline.cpp \
+    $$PDF_ROOT_DIR/Src/OutputDevice.cpp \
+    $$PDF_ROOT_DIR/Src/Page.cpp \
+    $$PDF_ROOT_DIR/Src/PageLabels.cpp \
+    $$PDF_ROOT_DIR/Src/Parser.cpp \
+    $$PDF_ROOT_DIR/Src/PDFDoc.cpp \
+    $$PDF_ROOT_DIR/Src/PSLexer.cpp \
+    $$PDF_ROOT_DIR/Src/RendererOutputDev.cpp \
+    $$PDF_ROOT_DIR/Src/SecurityHandler.cpp \
+    $$PDF_ROOT_DIR/Src/Stream.cpp \
+    $$PDF_ROOT_DIR/Src/StringExt.cpp \
+    $$PDF_ROOT_DIR/Src/UnicodeMap.cpp \
+    $$PDF_ROOT_DIR/Src/XRef.cpp \
+    $$PDF_ROOT_DIR/PdfReader.cpp
 
 HEADERS += ../wasm/src/wasmgraphics.h
 SOURCES += ../wasm/src/wasmgraphics.cpp

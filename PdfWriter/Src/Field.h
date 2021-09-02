@@ -67,6 +67,10 @@ namespace PdfWriter
 		bool HaveBorder() const;
 		const double& GetBorderSize() const;
 		const TRgb& GetBorderColor() const;
+		const bool& IsAutoFit() const;
+		void SetAutoFit(const bool& isAutoFit);
+		void SetParent(CFieldBase* pParent);
+		void AddChild(CFieldBase* pChild);
 
 	protected:
 
@@ -74,12 +78,14 @@ namespace PdfWriter
 
 	protected:
 
-		CXref*     m_pXref;
-		TRect      m_oRect;
-		CDocument* m_pDocument;
-		int        m_nBorderType;
-		double     m_dBorderSize;
-		TRgb       m_oBorderColor;
+		CXref*      m_pXref;
+		TRect       m_oRect;
+		CDocument*  m_pDocument;
+		int         m_nBorderType;
+		double      m_dBorderSize;
+		TRgb        m_oBorderColor;
+		bool        m_bAutoFit;
+		CFieldBase* m_pParent;
 	};
 
 	class CTextField : public CFieldBase
@@ -94,13 +100,15 @@ namespace PdfWriter
 		void SetDoNotScrollFlag(bool isDoNotScroll);
 		void SetCombFlag(bool isFlag);
 		void SetRichTextFlag(bool isRichText);
-
+		
 		void SetMaxLen(int nMaxLen);	
 
 		int  GetMaxLen() const;
 		bool IsCombFlag() const;
 
 	private:
+
+		bool m_bAutoFit;
 	};
 
 	class CChoiceField : public CFieldBase

@@ -61,6 +61,8 @@ namespace PdfWriter
 
 		m_nBorderType = 0;
 		m_dBorderSize = 0;
+
+		m_bAutoFit = false;
 	}
 	void CFieldBase::SetReadOnlyFlag(bool isReadOnly)
 	{
@@ -188,9 +190,17 @@ namespace PdfWriter
 		sDA.append(std::to_string(oColor.b));
 		sDA.append(" rg /");
 		sDA.append(sFontName);
-		sDA.append(" ");
-		sDA.append(std::to_string(dFontSize));
-		sDA.append(" Tf");
+
+		if (IsAutoFit())
+		{
+			sDA.append(" 0 Tf");
+		}
+		else
+		{
+			sDA.append(" ");
+			sDA.append(std::to_string(dFontSize));
+			sDA.append(" Tf");
+		}
 
 		const char* sExtGrStateName = NULL;
 		if (fabs(dAlpha - 1.0) > 0.001)
@@ -274,12 +284,30 @@ namespace PdfWriter
 	{
 		return m_oBorderColor;
 	}
+	const bool& CFieldBase::IsAutoFit() const
+	{
+		return m_bAutoFit;
+	}
+	void CFieldBase::SetAutoFit(const bool& isAutoFit)
+	{
+		m_bAutoFit = isAutoFit;
+	}
+	void CFieldBase::SetParent(CFieldBase* pParent)
+	{
+
+	}
+	void CFieldBase::AddChild(CFieldBase* pChild)
+	{
+
+	}
 	//----------------------------------------------------------------------------------------
 	// CTextField
 	//----------------------------------------------------------------------------------------
 	CTextField::CTextField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
 	{
 		Add("FT", "Tx");
+
+		m_bAutoFit = false;
 	}
 	void CTextField::SetMultilineFlag(bool isMultiLine)
 	{

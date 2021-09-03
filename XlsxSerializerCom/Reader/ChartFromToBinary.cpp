@@ -1297,6 +1297,8 @@ namespace BinXlsxRW
 		std::wstring sDstEmbedded = m_oSaveParams.sEmbeddingsPath;
 
 		std::wstring sDstEmbeddedTemp = NSDirectory::CreateDirectoryWithUniqueName(sDstEmbedded);
+		
+		if (false == sDstEmbeddedTemp.empty())
 		{
 			file = new OOX::OleObject(NULL, true, m_pOfficeDrawingConverter->m_pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 
@@ -1342,8 +1344,9 @@ namespace BinXlsxRW
 			file->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, false);
 
 			m_pOfficeDrawingConverter->m_pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
+		
+			NSDirectory::DeleteDirectory(sDstEmbeddedTemp);
 		}
-		NSDirectory::DeleteDirectory(sDstEmbeddedTemp);
 
 		return c_oSerConstants::ReadOk;
 	}

@@ -274,7 +274,6 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\src\odf\createandread.cpp" />
-    <ClCompile Include="..\src\odf\datatypes\tablefunction.cpp" />
     <ClCompile Include="..\src\odf\documentcontext.cpp" />
     <ClCompile Include="..\src\odf\draw_common.cpp" />
     <ClCompile Include="..\src\odf\draw_frame.cpp" />
@@ -464,7 +463,6 @@
     <ClInclude Include="..\src\odf\chart_build_oox.h" />
     <ClInclude Include="..\src\odf\chart_objects.h" />
     <ClInclude Include="..\src\odf\datatypes\custom_shape_types_convert.h" />
-    <ClInclude Include="..\src\odf\datatypes\tablefunction.h" />
     <ClInclude Include="..\src\odf\documentcontext.h" />
     <ClInclude Include="..\src\odf\draw_common.h" />
     <ClInclude Include="..\src\odf\draw_frame.h" />

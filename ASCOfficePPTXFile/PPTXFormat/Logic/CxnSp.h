@@ -139,29 +139,25 @@ namespace PPTX
 					{
 						case 0:
 						{
-							nvCxnSpPr.fromPPTY(pReader);
-							break;
-						}
+							nvCxnSpPr.fromPPTY(pReader);							
+						}break;
 						case 1:
 						{
-							spPr.fromPPTY(pReader);
-							break;
-						}
+							spPr.fromPPTY(pReader);							
+						}break;
 						case 2:
 						{
 							style = new ShapeStyle(L"p");
-							style->fromPPTY(pReader);
-							break;
-						}
+							style->fromPPTY(pReader);							
+						}break;
 						case SPTREE_TYPE_MACRO:
 						{
 							pReader->Skip(5); // type + size
 							macro = pReader->GetString2();
 						}break;
-						default:
-						{
-							break;
-						}
+						default:						
+						{							
+						}break;
 					}
 				}
 

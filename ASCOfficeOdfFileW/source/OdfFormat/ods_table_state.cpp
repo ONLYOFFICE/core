@@ -120,11 +120,11 @@ std::wstring convert_time(const std::wstring & oox_time)
 
 
 	sec		= millisec /1000.;
-	hours	= sec/60./60.;
-	minutes = (sec - (hours * 60 * 60))/60.;
+	hours	= (int)(sec/60./60.);
+	minutes = (int)((sec - (hours * 60 * 60))/60.);
 	sec		= sec - (hours *60 + minutes) * 60.;
 
-	int sec1 = sec;
+	int sec1 = (int)sec;
 
 	std::wstring time_str = std::wstring(L"PT") +
 							(hours < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(hours)
@@ -363,7 +363,7 @@ std::wstring ods_table_state::get_column_default_cell_style(int column)
 
     for (size_t i=0; i < columns_.size(); i++)
 	{
-		if (curr + columns_[i].repeated < column + 1)continue;
+		if (curr + (int)columns_[i].repeated < column + 1)continue;
 		else
 		{
 			return columns_[i].cell_style_name;
@@ -552,7 +552,7 @@ int ods_table_state::is_cell_comment(int col, int row, unsigned int repeate_col)
 {
 	for (size_t i = 0; i < comments_.size(); i++)
 	{
-		if ((comments_[i].col < col + repeate_col && comments_[i].col >= col) && comments_[i].row == row && comments_[i].used == false)
+		if ((comments_[i].col < col + (int)repeate_col && comments_[i].col >= col) && comments_[i].row == row && comments_[i].used == false)
 		{
             return  (int)i;
 		}
@@ -961,9 +961,9 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 		std::wstring refExternal = result[1].str();
 		int idExternal = XmlUtils::GetInteger(refExternal.substr(1, refExternal.length() - 1)) - 1;
 
-		bExternal = idExternal >= 0 && idExternal < ods_context->externals_.size();
+		bExternal = (idExternal >= 0 && idExternal < (int)ods_context->externals_.size());
 
-		while(idExternal >= 0 && idExternal < ods_context->externals_.size())
+		while(idExternal >= 0 && idExternal < (int)ods_context->externals_.size())
 		{
 			size_t pos = formula.find(refExternal);
 			if (pos == std::wstring::npos)
@@ -1180,7 +1180,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 	
 	for (i = 0; i < columns_.size(); i++)
 	{
-		if (oox_pos.col > columns_[i].repeated +  curr_col)
+		if (oox_pos.col >(int)(columns_[i].repeated +  curr_col))
 		{
 			sz_col += (columns_[i].repeated ) * columns_[i].size;
 		}
@@ -1193,7 +1193,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 		curr_col += columns_[i].repeated;
 	}
 	
-	if (curr_col  < oox_pos.col && columns_.size() > 0)
+	if ((int)curr_col  < oox_pos.col && false == columns_.empty())
 	{
 		sz_col += (oox_pos.col - curr_col) * columns_[columns_.size() - 1].size;
 	}
@@ -1205,7 +1205,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 	size_t curr_row =0 ;
 	for (i = 0; i < rows_.size(); i++)
 	{
-		if (oox_pos.row > rows_[i].repeated + curr_row)
+		if (oox_pos.row >(int)(rows_[i].repeated + curr_row))
 		{
 			sz_row += (rows_[i].repeated ) * rows_[i].size;
 		}
@@ -1219,7 +1219,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 		curr_row += rows_[i].repeated;
 	}
 
-	if (curr_row < oox_pos.row && rows_.size() > 0)
+	if ((int)curr_row < oox_pos.row && false == rows_.empty())
 	{
 		sz_row += (oox_pos.row - curr_row ) * rows_[rows_.size() - 1].size;
 	}
@@ -1745,14 +1745,30 @@ void ods_table_state::set_conditional_style_name(const std::wstring &style_name)
 	calcext_condition*	condition	 = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
 	calcext_date_is*	date_is		 = dynamic_cast<calcext_date_is*>	 (current_level_.back().get());
 
-	if (condition)	condition->attr_.calcext_apply_style_name_	= style_name;
-	if (date_is)	date_is->attr_.calcext_style_				= style_name;
+	if (condition)	condition->attr_.calcext_apply_style_name_ = style_name;
+	if (date_is)	date_is->attr_.calcext_style_ = style_name;
 }
-void ods_table_state::set_conditional_time(const std::wstring &period)
+void ods_table_state::set_conditional_time(int period)
 {
 	calcext_date_is* date_is = dynamic_cast<calcext_date_is*>(current_level_.back().get());
 	if (date_is)
-		date_is->attr_.calcext_date_ = period;
+	{
+		switch (period)
+		{
+		case 1: date_is->attr_.calcext_date_ = odf_types::time_period::yesterday; break;
+		case 2: date_is->attr_.calcext_date_ = odf_types::time_period::tomorrow; break;
+		case 3: date_is->attr_.calcext_date_ = odf_types::time_period::last7Days; break;
+		case 4: date_is->attr_.calcext_date_ = odf_types::time_period::thisMonth; break;
+		case 5: date_is->attr_.calcext_date_ = odf_types::time_period::lastMonth; break;
+		case 6: date_is->attr_.calcext_date_ = odf_types::time_period::nextMonth; break;
+		case 7: date_is->attr_.calcext_date_ = odf_types::time_period::thisWeek; break;
+		case 8: date_is->attr_.calcext_date_ = odf_types::time_period::lastWeek; break;
+		case 9: date_is->attr_.calcext_date_ = odf_types::time_period::nextWeek; break;
+		case 0:
+		default:
+			date_is->attr_.calcext_date_ = odf_types::time_period::today;
+		}
+	}
 }
 void ods_table_state::set_conditional_text(const std::wstring &text)
 {
@@ -1874,7 +1890,7 @@ void ods_table_state::add_conditional_colorscale(int index, _CP_OPT(color) color
 	calcext_color_scale *scale = dynamic_cast<calcext_color_scale*>(current_level_.back().get());
 
 	if (!scale) return;
-	if (index >= scale->content_.size() || index < 0) return;
+	if (index >= (int)scale->content_.size() || index < 0) return;
 
 	calcext_color_scale_entry* color_scale_entry = dynamic_cast<calcext_color_scale_entry*>(scale->content_[index].get());
 

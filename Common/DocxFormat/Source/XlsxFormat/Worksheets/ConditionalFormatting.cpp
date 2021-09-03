@@ -567,7 +567,7 @@ void CConditionalFormattingRule::toXML2(NSStringUtils::CStringBuilder& writer, b
 		if (m_oStopIfTrue.IsInit() && true == m_oStopIfTrue->ToBool())
 			writer.WriteString(L" stopIfTrue=\"1\"");
 		WritingStringNullableAttrEncodeXmlString(L"text", m_oText, m_oText.get());
-		WritingStringNullableAttrString(L"timePeriod", m_oTimePeriod, m_oTimePeriod.get());
+		WritingStringNullableAttrString(L"timePeriod", m_oTimePeriod, m_oTimePeriod->ToString());
 
 		if (bExtendedWrite)
 		{

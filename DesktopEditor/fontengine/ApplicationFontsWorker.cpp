@@ -43,7 +43,7 @@
 #include "../raster/BgraFrame.h"
 #include "../graphics/pro/Graphics.h"
 
-#define ONLYOFFICE_FONTS_VERSION_ 5
+#define ONLYOFFICE_FONTS_VERSION_ 6
 
 class CApplicationFontsWorker_private
 {

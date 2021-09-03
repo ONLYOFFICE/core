@@ -65,6 +65,8 @@ namespace NSThreads
         int                 m_lError;
         int                 m_lThreadPriority;
 
+        bool                m_bIsNeedDestroy;
+
 	public:
         CBaseThread();
         virtual ~CBaseThread();
@@ -74,6 +76,7 @@ namespace NSThreads
         virtual void Resume();
         virtual void Stop();
         virtual void StopNoJoin();
+        virtual void DestroyOnFinish();
 
         INT IsSuspended();
         INT IsRunned();

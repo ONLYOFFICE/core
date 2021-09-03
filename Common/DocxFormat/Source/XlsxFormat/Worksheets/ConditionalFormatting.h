@@ -355,8 +355,8 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>						m_oStopIfTrue;
 			nullable<std::wstring>								m_oId;
 			nullable<std::wstring>								m_oText;
-			nullable<std::wstring>								m_oTimePeriod;	// ToDo переделать на тип ST_TimePeriod (18.18.82)
-			nullable<SimpleTypes::Spreadsheet::ST_CfType<>>		m_oType;	
+			nullable<SimpleTypes::Spreadsheet::CTimePeriod<>>	m_oTimePeriod;
+			nullable<SimpleTypes::Spreadsheet::ST_CfType<>>		m_oType;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 			nullable<std::wstring>								m_oExtId;

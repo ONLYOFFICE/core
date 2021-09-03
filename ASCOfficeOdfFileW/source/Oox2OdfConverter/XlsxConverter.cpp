@@ -418,22 +418,70 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	//условное форматирование
 	if (!oox_sheet->m_arrConditionalFormatting.empty() || oox_sheet->m_oExtLst.IsInit())
 	{
-		ods_context->start_conditional_formats();
-		
-		for (size_t fmt =0; fmt < oox_sheet->m_arrConditionalFormatting.size(); fmt++)
+		std::multimap<int, OOX::Spreadsheet::CConditionalFormatting*> mapSorted;
+
+		std::vector<OOX::Spreadsheet::CConditionalFormatting*> arUnsorted;
+
+		// sort by prioritet
+		for (size_t fmt = 0; fmt < oox_sheet->m_arrConditionalFormatting.size(); fmt++)
 		{
-			convert(oox_sheet->m_arrConditionalFormatting[fmt]);
+			OOX::Spreadsheet::CConditionalFormatting* cond_fmt = oox_sheet->m_arrConditionalFormatting[fmt];
+			if (cond_fmt)
+			{
+				int priority = -1;
+				for (size_t r = 0; r < cond_fmt->m_arrItems.size(); ++r)
+				{
+					if (cond_fmt->m_arrItems[r]->m_oPriority.IsInit())
+					{
+						priority = cond_fmt->m_arrItems[r]->m_oPriority->GetValue();
+						break;
+					}
+				}
+				if (priority >= 0)
+					mapSorted.insert(std::make_pair(priority, cond_fmt));
+				else
+					arUnsorted.push_back(cond_fmt);
+			}
 		}
-		
+
 		if (oox_sheet->m_oExtLst.IsInit())
 		{
 			for (size_t ext = 0; ext < oox_sheet->m_oExtLst->m_arrExt.size(); ext++)
 			{
-				for (size_t i = 0; (oox_sheet->m_oExtLst->m_arrExt[ext]) && (i < oox_sheet->m_oExtLst->m_arrExt[ext]->m_arrConditionalFormatting.size()); i++)
+				for (size_t fmt = 0; (oox_sheet->m_oExtLst->m_arrExt[ext]) && (fmt < oox_sheet->m_oExtLst->m_arrExt[ext]->m_arrConditionalFormatting.size()); fmt++)
 				{
-					convert(oox_sheet->m_oExtLst->m_arrExt[ext]->m_arrConditionalFormatting[i]);
-				}	
+					OOX::Spreadsheet::CConditionalFormatting* cond_fmt = oox_sheet->m_oExtLst->m_arrExt[ext]->m_arrConditionalFormatting[fmt];
+					if (cond_fmt)
+					{
+						int priority = -1;
+						for (size_t r = 0; r < cond_fmt->m_arrItems.size(); ++r)
+						{
+							if (cond_fmt->m_arrItems[r]->m_oPriority.IsInit())
+							{
+								priority = cond_fmt->m_arrItems[r]->m_oPriority->GetValue();
+								break;
+							}
+						}
+						if (priority >= 0)
+							mapSorted.insert(std::make_pair(priority, cond_fmt));
+						else
+							arUnsorted.push_back(cond_fmt);
+					}
+				}
 			}
+		}
+//--------------------------------------------------------------------------
+		ods_context->start_conditional_formats();
+		
+		for (size_t fmt =0; fmt < arUnsorted.size(); fmt++)
+		{
+			convert(arUnsorted[fmt]);
+		}
+		
+		for (std::multimap<int, OOX::Spreadsheet::CConditionalFormatting*>::iterator it = mapSorted.begin(); 
+			it != mapSorted.end(); ++it)
+		{
+			convert(it->second);
 		}
 		ods_context->end_conditional_formats();
 	}
@@ -3259,7 +3307,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 			ods_context->current_table()->set_conditional_text(*oox_cond_rule->m_oText);
 
 		if (oox_cond_rule->m_oTimePeriod.IsInit())
-			ods_context->current_table()->set_conditional_time(*oox_cond_rule->m_oTimePeriod);
+			ods_context->current_table()->set_conditional_time(oox_cond_rule->m_oTimePeriod->GetValue());
 		
 		convert(oox_cond_rule->m_oIconSet.GetPointer());
 		convert(oox_cond_rule->m_oColorScale.GetPointer());

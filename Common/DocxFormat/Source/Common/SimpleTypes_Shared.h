@@ -705,6 +705,11 @@ namespace SimpleTypes
 				default:		return L"0";
 			}
 		}
+		virtual EOnOff FromString(std::wstring &sValue)
+		{
+			return COnOff<>::FromString(sValue);
+		}
+		
 		SimpleType_FromString(EOnOff)
 		SimpleType_Operator_Equal(CBool)
 	};

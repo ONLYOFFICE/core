@@ -72,6 +72,15 @@ _UINT32 RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
     oReader.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(sTempFolder);
     oWriter.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(sTempFolder);
 
+	if (oReader.m_sTempFolder.empty())
+	{
+		oReader.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
+	}
+	if (oWriter.m_sTempFolder.empty())
+	{
+		oWriter.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
+	}
+
     m_poRtfReader = &oReader;
     m_poOOXWriter = &oWriter;
 
@@ -117,7 +126,15 @@ _UINT32 RtfConvertationManager::ConvertOOXToRtf( std::wstring sDstFileName, std:
     oReader.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(sTempFolder);
     oWriter.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(sTempFolder);
 
-    m_poOOXReader = &oReader;
+	if (oReader.m_sTempFolder.empty())
+	{
+		oReader.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
+	}
+	if (oWriter.m_sTempFolder.empty())
+	{
+		oWriter.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
+	}
+	m_poOOXReader = &oReader;
     m_poRtfWriter = &oWriter;
 
     m_poOOXReader->m_convertationManager = this;

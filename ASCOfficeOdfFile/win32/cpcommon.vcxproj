@@ -275,6 +275,7 @@
     <ClInclude Include="..\src\odf\datatypes\textposition.h" />
     <ClInclude Include="..\src\odf\datatypes\textrotationscale.h" />
     <ClInclude Include="..\src\odf\datatypes\texttransform.h" />
+    <ClInclude Include="..\src\odf\datatypes\timeperiod.h" />
     <ClInclude Include="..\src\odf\datatypes\underlinecolor.h" />
     <ClInclude Include="..\src\odf\datatypes\verticalalign.h" />
     <ClInclude Include="..\src\odf\datatypes\wrapoption.h" />
@@ -402,6 +403,7 @@
     <ClCompile Include="..\src\odf\datatypes\textposition.cpp" />
     <ClCompile Include="..\src\odf\datatypes\textrotationscale.cpp" />
     <ClCompile Include="..\src\odf\datatypes\texttransform.cpp" />
+    <ClCompile Include="..\src\odf\datatypes\timeperiod.cpp" />
     <ClCompile Include="..\src\odf\datatypes\underlinecolor.cpp" />
     <ClCompile Include="..\src\odf\datatypes\verticalalign.cpp" />
     <ClCompile Include="..\src\odf\datatypes\wrapoption.cpp" />

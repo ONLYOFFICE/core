@@ -64,13 +64,20 @@ void CTextEditDelegate::updateEditorGeometry(QWidget *editor, const QStyleOption
 
 void CTextEditDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+        QString qsValue;
+
+        if (index.data(1) == true)
+                qsValue = "<Buffer>...<Buffer>";
+        else
+                qsValue = index.data(0).toString();
+
         if (bLightMode)
-                painter->drawText(option.rect, index.data().toString());
+                painter->drawText(option.rect, qsValue);
         else
         {
                 QTextDocument oEmptyDocument;
                 CXMLHighlighter oXMLHighlighter(&oEmptyDocument);
-                oXMLHighlighter.PaintByRegex(index.data().toString(), painter, option.rect, pFont);
+                oXMLHighlighter.PaintByRegex(qsValue, painter, option.rect, pFont);
         }
 }
 

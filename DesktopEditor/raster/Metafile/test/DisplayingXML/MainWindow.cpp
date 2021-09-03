@@ -37,6 +37,8 @@ MainWindow::MainWindow(QWidget *parent)
         QFont *pFont = new QFont;
         pFont->setPointSize(13);
 
+        ui->treeView->setFont(*pFont);
+
         pTextEditDelegate->SetFont(pFont);
         ui->treeView->setFont(*pFont);
 }

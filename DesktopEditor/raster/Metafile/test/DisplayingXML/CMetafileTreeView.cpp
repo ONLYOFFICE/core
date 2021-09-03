@@ -129,12 +129,18 @@ void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem*
         }
         else
         {
-                std::wstring wsText = oXmlNode.GetText();
-                if (!wsText.empty())
+                QString qsName  = QString::fromWCharArray(oXmlNode.GetName().c_str());
+                QString qsValue = QString::fromWCharArray(oXmlNode.GetText().c_str());
+
+                if (qsName == "Buffer")
                 {
-                        QString qsText = oStandartItem->text();
-                        oStandartItem->setText(qsText + (QString::fromStdWString(wsText)) + qsText[0] + '/' + qsText.mid(1));
+                        oStandartItem->setData(true, 1);
+                        QFontMetrics oFontMetrics(font()) ;
+                        oStandartItem->setSizeHint(QSize(oFontMetrics.width("<Buffer>...</Buffer>"), oFontMetrics.height()));
                 }
+
+                if (qsValue.size() != 0)
+                        oStandartItem->setText(QString("<%1>%2</%1>").arg(qsName, qsValue));
         }
 }
 
@@ -161,7 +167,7 @@ void CMetafileTreeView::WriteXmlNode(XmlUtils::CXmlWriter &oXmlWriter, QStandard
 {
         unsigned int unCountNodes = oStandartItem->rowCount();
 
-        QString qsNodeText = oStandartItem->text();
+        QString qsNodeText = oStandartItem->data(0).toString();
 
         unsigned int unFirstQuotationMark = qsNodeText.indexOf(L'>');
         unsigned int unLastSlash = qsNodeText.lastIndexOf(L'/');

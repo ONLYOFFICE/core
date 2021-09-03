@@ -172,12 +172,6 @@ namespace PPTX
 
 					COfficeFileFormatChecker office_checker;
 					office_checker.isOOXFormatFile(oox_file.GetPath());
-					//-----------------------------------------------------------------------------------------
-					DocWrapper::FontProcessor oFontProcessor;
-					NSBinPptxRW::CDrawingConverter oDrawingConverter;
-
-					COfficeFileFormatChecker office_checker;
-					office_checker.isOOXFormatFile(oox_file.GetPath());
 	//-----------------------------------------------------------------------------------------
 					DocWrapper::FontProcessor oFontProcessor;
 					NSBinPptxRW::CDrawingConverter oDrawingConverter;

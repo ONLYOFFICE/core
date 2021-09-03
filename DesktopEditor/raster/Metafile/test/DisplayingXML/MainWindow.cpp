@@ -61,6 +61,20 @@ bool MainWindow::ReadXmlFile(const std::wstring& wsPathToXmlFile)
         return true;
 }
 
+void MainWindow::InsertRecord(bool bAfterRecord)
+{
+        QModelIndex index =  ui->treeView->selectionModel()->currentIndex();
+        QStandardItem *pStandardItem = static_cast<QStandardItem*>(index.internalPointer());
+
+        CRecordCreator *pRecordCreator = new CRecordCreator();
+        pRecordCreator->SetMainWindow(this);
+
+        QStandardItem *pItem = pRecordCreator->CreateRecord();
+
+        if (NULL != pItem)
+                pStandardItem->insertRow(index.row() + ((bAfterRecord) ? 0 : 1), pItem);
+}
+
 bool MainWindow::ConvertToRaster(const std::wstring& wsPathToFile, bool bWithXmlFile)
 {
         if (wsPathToFile.empty())
@@ -103,7 +117,7 @@ bool MainWindow::ConvertToRaster(const std::wstring& wsPathToFile, bool bWithXml
         return true;
 }
 
-bool MainWindow::ConvertToEmf(const std::wstring &wsPathToXmlFile)
+bool MainWindow::ConvertToEmf(const std::wstring &wsPathToXmlFile, const std::wstring& wsPathToNewEmfFile)
 {
         if (wsPathToXmlFile.empty())
                 return false;
@@ -121,7 +135,9 @@ bool MainWindow::ConvertToEmf(const std::wstring &wsPathToXmlFile)
         if (!pMetafile->LoadFromXmlFile(wsPathToXmlFile.c_str()))
                 return false;
 
-        std::wstring wsPathToEmfFile = NSFile::GetProcessDirectory() + L"/TempFile.emf";
+        std::wstring wsPathToEmfFile = (wsPathToNewEmfFile.empty())
+                                        ?  NSFile::GetProcessDirectory() + L"/TempFile.emf"
+                                        :  wsPathToNewEmfFile;
 
         pMetafile->ConvertToEmf(wsPathToEmfFile.c_str());
 
@@ -232,6 +248,7 @@ void MainWindow::on_actionChange_File_triggered()
 
         ui->actionStatistics->setEnabled(true);
         ui->actionSave_XML_as->setEnabled(true);
+        ui->actionSave_EMF_as->setEnabled(true);
 }
 
 
@@ -277,29 +294,18 @@ void MainWindow::on_actionEdidRecord_triggered()
 
 void MainWindow::on_actionInsertBRecord_triggered()
 {
-        QModelIndex index =  ui->treeView->selectionModel()->currentIndex();
-        QStandardItem *pStandardItem = static_cast<QStandardItem*>(index.internalPointer());
-
-        CRecordCreator *pRecordCreator = new CRecordCreator();
-        pRecordCreator->SetMainWindow(this);
-
-        QStandardItem *pItem = pRecordCreator->CreateRecord();
-
-        if (NULL != pItem)
-                pStandardItem->insertRow(index.row(), pItem);
+        InsertRecord();
 }
 
 void MainWindow::on_actionInsertARecord_triggered()
 {
-        QModelIndex index =  ui->treeView->selectionModel()->currentIndex();
-        QStandardItem *pStandardItem = static_cast<QStandardItem*>(index.internalPointer());
+        InsertRecord(false);
+}
 
-        CRecordCreator *pRecordCreator = new CRecordCreator();
-        pRecordCreator->SetMainWindow(this);
+void MainWindow::on_actionSave_EMF_as_triggered()
+{
+        QString qsSaveFilePath = QFileDialog::getSaveFileName(this, tr("Save file"), "", tr("EMF file (*.emf)"));
 
-        QStandardItem *pItem = pRecordCreator->CreateRecord();
-
-        if (NULL != pItem)
-                pStandardItem->insertRow(index.row() + 1, pItem);
+        ConvertToEmf(NSFile::GetProcessDirectory() + L"/Temp.xml", qsSaveFilePath.toStdWString());
 }
 

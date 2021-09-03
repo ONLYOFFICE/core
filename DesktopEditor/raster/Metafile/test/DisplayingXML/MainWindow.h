@@ -19,7 +19,7 @@ class MainWindow : public QMainWindow
         ~MainWindow();
 
         bool ConvertToRaster(const std::wstring& wsPathToFile, bool bWithXmlFile = true);
-        bool ConvertToEmf(const std::wstring& wsPathToXmlFile);
+        bool ConvertToEmf(const std::wstring& wsPathToXmlFile, const std::wstring& wsPathToNewEmfFile = L"");
 
         bool SaveInXmlFile(const std::wstring& wsPathToFile);
 
@@ -38,10 +38,13 @@ class MainWindow : public QMainWindow
         void on_actionInsertBRecord_triggered();
         void on_actionInsertARecord_triggered();
 
-    private:
+        void on_actionSave_EMF_as_triggered();
+
+private:
         Ui::MainWindow      *ui;
 
         bool ReadXmlFile(const std::wstring& wsPathToXmlFile);
+        void InsertRecord(bool bAfterRecord = true);
         void Clear();
     protected:
         virtual void resizeEvent(QResizeEvent *);

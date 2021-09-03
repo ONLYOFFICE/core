@@ -2648,7 +2648,6 @@ namespace PdfReader
                 pGState->closePath();
                 break;
             case 2:
-                return false;
                 pGState->getUserClipBBox(&xmin, &ymin, &xmax, &ymax);
                 pGState->clearPath();
 

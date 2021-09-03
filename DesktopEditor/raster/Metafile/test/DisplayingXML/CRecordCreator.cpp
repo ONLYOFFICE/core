@@ -49,14 +49,15 @@ QStandardItem* CRecordCreator::CreateRecord()
                 switch (m_nSelectedRecord)
                 {
                         case -1: break;
-                        case 0: Convert_Widgets_EMR_POLYBEZIER(); break;
-                        case 1: Convert_Widgets_EMR_POLYGON();break;
-                        case 2: Convert_Widgets_EMR_POLYLINE(); break;
-                        case 3: Convert_Widgets_EMR_POLYBEZIERTO(); break;
-                        case 4: Convert_Widgets_EMR_POLYLINETO(); break;
-                        case 5: Convert_Widgets_EMR_POLYPOLYLINE(); break;
-                        case 34: Convert_Widgets_EMR_SELECTOBJECT(); break;
-                }
+                        case 0: ConvertWidgets("EMR_POLYBEZIER");       break;
+                        case 1: ConvertWidgets("EMR_POLYGON");          break;
+                        case 2: ConvertWidgets("EMR_POLYLINE");         break;
+                        case 3: ConvertWidgets("EMR_POLYBEZIERTO");     break;
+                        case 4: ConvertWidgets("EMR_POLYLINETO");       break;
+                        case 5: ConvertWidgets("EMR_POLYPOLYLINE");     break;
+                        case 6: ConvertWidgets("EMR_POLYPOLYGON");      break;
+                        case 34: ConvertWidgets("EMR_SELECTOBJECT");    break;
+                };
         }
 
         Close();
@@ -71,13 +72,14 @@ void CRecordCreator::on_selectButton_clicked()
 
         switch (m_nSelectedRecord)
         {
-                case 0: Create_Widgets_EMR_POLYBEZIER(); break;
-                case 1: Create_Widgets_EMR_POLYGON();break;
-                case 2: Create_Widgets_EMR_POLYLINE(); break;
-                case 3: Create_Widgets_EMR_POLYBEZIERTO(); break;
-                case 4: Create_Widgets_EMR_POLYLINETO(); break;
-                case 5: Create_Widgets_EMR_POLYPOLYLINE(); break;
-                case 34: Create_Widgets_EMR_SELECTOBJECT(); break;
+                case 0: CreatePointWidgets("EMR_POLYBEZIER");   break;
+                case 1: CreatePointWidgets("EMR_POLYGON");      break;
+                case 2: CreatePointWidgets("EMR_POLYLINE");     break;
+                case 3: CreatePointWidgets("EMR_POLYBEZIERTO"); break;
+                case 4: CreatePointWidgets("EMR_POLYLINETO");   break;
+                case 5: CreatePolyWidgets("EMR_POLYPOLYLINE");  break;
+                case 6: CreatePolyWidgets("EMR_POLYPOLYGON");  break;
+                case 34: Create_Widgets_EMR_SELECTOBJECT();     break;
         }
 
         QPushButton *pOkButton =  ui->buttonBox->button(QDialogButtonBox::Ok);
@@ -85,94 +87,12 @@ void CRecordCreator::on_selectButton_clicked()
                 pOkButton->setEnabled(true);
 }
 
-void CRecordCreator::Create_Widgets_EMR_POLYBEZIER()
+void CRecordCreator::CreatePointWidgets(QString qsName)
 {
-        this->setWindowTitle("Create: EMR_POLYBEZIER");
+        this->setWindowTitle(QString("Create: %1").arg(qsName));
 
         CreateBoundsWidget();
         CreatePointsWidget();
-}
-
-void CRecordCreator::Convert_Widgets_EMR_POLYBEZIER()
-{
-        m_pNewItem = new QStandardItem("<EMR_POLYBEZIER>");
-
-        ConvertWidgets();
-}
-
-void CRecordCreator::Create_Widgets_EMR_POLYGON()
-{
-        this->setWindowTitle("Create: EMR_POLYGON");
-
-        CreateBoundsWidget();
-        CreatePointsWidget();
-}
-
-void CRecordCreator::Convert_Widgets_EMR_POLYGON()
-{
-        m_pNewItem = new QStandardItem("<EMR_POLYGON>");
-
-        ConvertWidgets();
-}
-
-void CRecordCreator::Create_Widgets_EMR_POLYLINE()
-{
-        this->setWindowTitle("Create: EMR_POLYLINE");
-
-        CreateBoundsWidget();
-        CreatePointsWidget();
-}
-
-void CRecordCreator::Convert_Widgets_EMR_POLYLINE()
-{
-        m_pNewItem = new QStandardItem("<EMR_POLYLINE>");
-
-        ConvertWidgets();
-}
-
-void CRecordCreator::Create_Widgets_EMR_POLYBEZIERTO()
-{
-        this->setWindowTitle("Create: EMR_POLYBEZIERTO");
-
-        CreateBoundsWidget();
-        CreatePointsWidget();
-}
-
-void CRecordCreator::Convert_Widgets_EMR_POLYBEZIERTO()
-{
-        m_pNewItem = new QStandardItem("<EMR_POLYBEZIERTO>");
-
-        ConvertWidgets();
-}
-
-void CRecordCreator::Create_Widgets_EMR_POLYLINETO()
-{
-        this->setWindowTitle("Create: EMR_POLYLINETO");
-
-        CreateBoundsWidget();
-        CreatePointsWidget();
-}
-
-void CRecordCreator::Convert_Widgets_EMR_POLYLINETO()
-{
-        m_pNewItem = new QStandardItem("<EMR_POLYLINETO>");
-
-        ConvertWidgets();
-}
-
-void CRecordCreator::Create_Widgets_EMR_POLYPOLYLINE()
-{
-        this->setWindowTitle("Create: EMR_POLYPOLYLINE");
-
-        CreateBoundsWidget();
-        CreatePolyWidget();
-}
-
-void CRecordCreator::Convert_Widgets_EMR_POLYPOLYLINE()
-{
-        m_pNewItem = new QStandardItem("<EMR_POLYPOLYLINE>");
-
-        ConvertWidgets();
 }
 
 void CRecordCreator::Create_Widgets_EMR_SELECTOBJECT()
@@ -185,10 +105,12 @@ void CRecordCreator::Create_Widgets_EMR_SELECTOBJECT()
         m_arWidgets.push_back(pFormWidget);
 }
 
-void CRecordCreator::Convert_Widgets_EMR_SELECTOBJECT()
+void CRecordCreator::CreatePolyWidgets(QString qsName)
 {
-        m_pNewItem = new QStandardItem("<EMR_SELECTOBJECT>");
-        ConvertWidgets();
+        this->setWindowTitle(QString("Create: %1").arg(qsName));
+
+        CreateBoundsWidget();
+        CreatePolyWidget();
 }
 
 void CRecordCreator::CreateBoundsWidget()
@@ -215,10 +137,12 @@ void CRecordCreator::CreatePolyWidget()
         m_arWidgets.push_back(pPolyWidget);
 }
 
-void CRecordCreator::ConvertWidgets()
+void CRecordCreator::ConvertWidgets(QString qsName)
 {
-        if (NULL == m_pNewItem)
+        if (qsName.size() == 0)
                 return;
+
+        m_pNewItem = new QStandardItem(QString("<%1>").arg(qsName));
 
         for (const CSharedWidget* pWidget : m_arWidgets)
                 m_pNewItem->appendRows(pWidget->GetData());

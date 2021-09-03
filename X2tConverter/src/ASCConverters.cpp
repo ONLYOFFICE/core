@@ -3020,19 +3020,18 @@ namespace NExtractTools
 	{
         std::wstring password = params.getPassword();
 
-        if (password.empty())
+		std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
+		
+        _UINT32 nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, params);
+
+		if (!SUCCEEDED_X2T(nRes) && password.empty()) // qiaoshemei1 (1).xlsx - запрокченный xlsx 
         {
             if(!params.getDontSaveAdditional())
             {
                 copyOrigin(sFrom, sTo);
             }
             return AVS_FILEUTILS_ERROR_CONVERT_DRM;
-        }
-
-		std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
-		
-        _UINT32 nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, params);
- 
+        } 
 		nRes = processEncryptionError(nRes, sFrom, params);
         if (SUCCEEDED_X2T(nRes))
         {

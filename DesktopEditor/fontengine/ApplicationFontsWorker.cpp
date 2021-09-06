@@ -38,6 +38,7 @@
 #include "../common/Directory.h"
 #include "../common/Array.h"
 #include "../common/StringBuilder.h"
+#include "../common/StringExt.h"
 #include "../common/ByteBuilder.h"
 #include "../graphics/pro/Fonts.h"
 #include "../raster/BgraFrame.h"
@@ -97,6 +98,8 @@ public:
 
     std::vector<CFontThumbnail> m_arFonts;
     bool m_bIsCheckThumbnailsMode;
+
+    std::map<std::wstring, std::wstring> m_mapAlternateEA;
 
     class CFontInfoJS
     {
@@ -375,6 +378,163 @@ public:
         return false;
     }
 
+    bool IsEastAsianScript(const unsigned int& value)
+    {
+        // Bopomofo (3100–312F)
+        // Bopomofo Extended (31A0–31BF)
+        // CJK Unified Ideographs (4E00–9FEA)
+        // CJK Unified Ideographs Extension A (3400–4DB5)
+        // CJK Unified Ideographs Extension B (20000–2A6D6)
+        // CJK Unified Ideographs Extension C (2A700–2B734)
+        // CJK Unified Ideographs Extension D (2B740–2B81D)
+        // CJK Unified Ideographs Extension E (2B820–2CEA1)
+        // CJK Unified Ideographs Extension F (2CEB0–2EBE0)
+        // CJK Compatibility Ideographs (F900–FAFF)
+        // CJK Compatibility Ideographs Supplement (2F800–2FA1F)
+        // Kangxi Radicals (2F00–2FDF)
+        // CJK Radicals Supplement (2E80–2EFF)
+        // CJK Strokes (31C0–31EF)
+        // Ideographic Description Characters (2FF0–2FFF)
+        // Hangul Jamo (1100–11FF)
+        // Hangul Jamo Extended-A (A960–A97F)
+        // Hangul Jamo Extended-B (D7B0–D7FF)
+        // Hangul Compatibility Jamo (3130–318F)
+        // Halfwidth and Fullwidth Forms (FF00–FFEF)
+        // Hangul Syllables (AC00–D7AF)
+        // Hiragana (3040–309F)
+        // Kana Extended-A (1B100–1B12F)
+        // Kana Supplement (1B000–1B0FF)
+        // Kanbun (3190–319F)
+        // Katakana (30A0–30FF)
+        // Katakana Phonetic Extensions (31F0–31FF)
+        // Lisu (A4D0–A4FF)
+        // Miao (16F00–16F9F)
+        // Nushu (1B170–1B2FF)
+        // Tangut (17000–187EC)
+        // Tangut Components (18800–18AFF)
+        // Yi Syllables (A000–A48F)
+        // Yi Radicals (A490–A4CF)
+
+        return ((0x3100 <= value && value <= 0x312F)
+            || (0x31A0 <= value && value <= 0x31BF)
+            || (0x4E00 <= value && value <= 0x9FEA)
+            || (0x3400 <= value && value <= 0x4DB5)
+            || (0x20000 <= value && value <= 0x2A6D6)
+            || (0x2A700 <= value && value <= 0x2B734)
+            || (0x2B740 <= value && value <= 0x2B81D)
+            || (0x2B820 <= value && value <= 0x2CEA1)
+            || (0x2CEB0 <= value && value <= 0x2EBE0)
+            || (0xF900 <= value && value <= 0xFAFF)
+            || (0x2F800 <= value && value <= 0x2FA1F)
+            || (0x2F00 <= value && value <= 0x2FDF)
+            || (0x2E80 <= value && value <= 0x2EFF)
+            || (0x31C0 <= value && value <= 0x31EF)
+            || (0x2FF0 <= value && value <= 0x2FFF)
+            || (0x1100 <= value && value <= 0x11FF)
+            || (0xA960 <= value && value <= 0xA97F)
+            || (0xD7B0 <= value && value <= 0xD7FF)
+            || (0x3130 <= value && value <= 0x318F)
+            || (0xFF00 <= value && value <= 0xFFEF)
+            || (0xAC00 <= value && value <= 0xD7AF)
+            || (0x3040 <= value && value <= 0x309F)
+            || (0x1B100 <= value && value <= 0x1B12F)
+            || (0x1B000 <= value && value <= 0x1B0FF)
+            || (0x3190 <= value && value <= 0x319F)
+            || (0x30A0 <= value && value <= 0x30FF)
+            || (0x31F0 <= value && value <= 0x31FF)
+            || (0xA4D0 <= value && value <= 0xA4FF)
+            || (0x16F00 <= value && value <= 0x16F9F)
+            || (0x1B170 <= value && value <= 0x1B2FF)
+            || (0x17000 <= value && value <= 0x187EC)
+            || (0x18800 <= value && value <= 0x18AFF)
+            || (0xA000 <= value && value <= 0xA48F)
+            || (0xA490 <= value && value <= 0xA4CF));
+    }
+
+    bool IsEastAsianName(const std::wstring& sName)
+    {
+        for (NSStringExt::CStringUnicodeIterator oIterator(sName); oIterator.Check(); oIterator.Next())
+        {
+            if (IsEastAsianScript(oIterator.Value()))
+                return true;
+        }
+        return false;
+    }
+
+    void CheckFontAlternateName(NSFonts::CFontInfo* info, std::map<std::wstring, std::wstring>& mapAlternate)
+    {
+        if (info->names.empty())
+            return;
+
+        if (!IsEastAsianName(info->m_wsFontName) && IsEastAsianName(info->names[0]))
+        {
+            mapAlternate.insert(std::pair<std::wstring, std::wstring>(info->m_wsFontName, info->names[0]));
+        }
+    }
+
+    std::wstring SaveWebFonts(const std::map<std::wstring, LONG>& mapFontFiles)
+    {
+        int nCountFiles = (int)mapFontFiles.size();
+        BYTE correct16[16] = {0xA0, 0x66, 0xD6, 0x20, 0x14, 0x96, 0x47, 0xfa, 0x95, 0x69, 0xB8, 0x50, 0xB0, 0x41, 0x49, 0x48};
+        int nCountIdSymbols = (nCountFiles >= 1000) ? 4 : 3;
+        BYTE encode[32];
+
+        std::wstring* pMassFiles2 = new std::wstring[nCountFiles];
+
+        int nCurrentId = 0;
+        for (std::map<std::wstring, LONG>::const_iterator pos = mapFontFiles.begin(); pos != mapFontFiles.end(); pos++)
+        {
+            std::wstring strFontId = pos->first;
+
+            std::wstring sId = std::to_wstring(nCurrentId++);
+            int nLenId = (int)sId.length();
+            while (nLenId < nCountIdSymbols)
+            {
+                sId = L"0" + sId;
+                ++nLenId;
+            }
+
+            pMassFiles2[pos->second] = sId;
+            std::wstring sOutputFile = m_pMain->m_sWebFontsDirectory + L"/" + sId;
+            NSFile::CFileBinary::Copy(strFontId, sOutputFile);
+
+            NSFile::CFileBinary oFileDst;
+            if (oFileDst.OpenFile(sOutputFile, true))
+            {
+                DWORD dwRead = (DWORD)(oFileDst.GetFileSize());
+                if (dwRead > 32)
+                    dwRead = 32;
+
+                DWORD dwWorked = 0;
+                oFileDst.SeekFile(0);
+                oFileDst.ReadFile(encode, dwRead, dwWorked);
+
+                for (DWORD k = 0; k < dwRead; ++k)
+                    encode[k] ^= correct16[k & 0x0F];
+
+                oFileDst.SeekFile(0);
+                oFileDst.WriteFile(encode, dwRead);
+                oFileDst.CloseFile();
+            }
+        }
+
+        NSStringUtils::CStringBuilder oWriterJS;
+        oWriterJS.WriteString(L"window[\"__fonts_files\"] = [\n");
+        for (size_t nIndex = 0; nIndex < nCountFiles; ++nIndex)
+        {
+            oWriterJS.WriteString(L"\"");
+            oWriterJS.WriteString(pMassFiles2[nIndex]);
+            if (nIndex != (nCountFiles - 1))
+                oWriterJS.WriteString(L"\",\n");
+            else
+                oWriterJS.WriteString(L"\"");
+        }
+        oWriterJS.WriteString(L"\n];\n\n");
+
+        delete [] pMassFiles2;
+        return oWriterJS.GetData();
+    }
+
     void SaveAllFontsJS(NSFonts::IApplicationFonts* applicationFonts, int nVersion = -1)
     {
         if (CheckBreak()) return;
@@ -389,6 +549,9 @@ public:
         for (std::vector<NSFonts::CFontInfo*>::iterator i = pList->begin(); i != pList->end(); i++)
         {
             NSFonts::CFontInfo* pInfo = *i;
+
+            if (m_pMain->m_bIsGenerateThumbnailsEA)
+                CheckFontAlternateName(pInfo, m_mapAlternateEA);
 
             if (mapFontFiles.find(pInfo->m_wsFontPath) == mapFontFiles.end())
             {
@@ -534,11 +697,22 @@ public:
         // и самое главное. Здесь должен скидываться скрипт для работы со всеми шрифтами.
         // все объекты, которые позволят не знать о существующих фонтах
         std::wstring sAllFontsPath = m_pMain->m_sDirectory + L"/AllFonts.js";
+        if (!m_pMain->m_sAllFontsJSPath.empty())
+            sAllFontsPath = m_pMain->m_sAllFontsJSPath;
         if (nVersion != -1)
             sAllFontsPath += (L"." + std::to_wstring((int)(nVersion + 1)));
 
         if (m_bIsCheckThumbnailsMode)
             sAllFontsPath = L"";
+
+        // AllFonts.js для веба точно такой же, но с другими путями
+        std::wstring sFontFilesWeb = L"";
+        size_t nFontFilesWeb1 = 0;
+        size_t nFontFilesWeb2 = 0;
+        if (!m_pMain->m_sWebFontsDirectory.empty() && !m_pMain->m_sWebAllFontsJSPath.empty())
+        {
+            sFontFilesWeb = SaveWebFonts(mapFontFiles);
+        }
 
         if (!sAllFontsPath.empty())
         {
@@ -549,6 +723,8 @@ public:
             oWriterJS.WriteString(L"window[\"__all_fonts_js_version__\"] = ");
             oWriterJS.AddInt(nAllFontsVersion);
             oWriterJS.WriteString(L";\n\n");
+
+            nFontFilesWeb1 = oWriterJS.GetCurSize();
 
             // сначала все файлы
             size_t nCountFiles = mapFontFiles.size();
@@ -578,6 +754,8 @@ public:
                         oWriterJS.WriteString(L"\"");
                 }
                 oWriterJS.WriteString(L"\n];\n\n");
+
+                nFontFilesWeb2 = oWriterJS.GetCurSize();
 
                 delete [] pMassFiles;
             }
@@ -915,7 +1093,16 @@ public:
             oFile.CreateFileW(sAllFontsPath);
             oFile.WriteStringUTF8(oWriterJS.GetData(), true);
             oFile.CloseFile();
-        }
+
+            if (!sFontFilesWeb.empty())
+            {
+                NSFile::CFileBinary oFile;
+                oFile.CreateFileW(m_pMain->m_sWebAllFontsJSPath);
+                std::wstring sWebAllFonts = oWriterJS.GetSubData(0, nFontFilesWeb1) + sFontFilesWeb + oWriterJS.GetSubData(nFontFilesWeb2);
+                oFile.WriteStringUTF8(sWebAllFonts, true);
+                oFile.CloseFile();
+            }
+        }        
 
         if (!strFontSelectionBin.empty())
         {
@@ -1013,32 +1200,49 @@ public:
     void SaveThumbnails(NSFonts::IApplicationFonts* applicationFonts)
     {
         std::vector<std::wstring> arrFiles;
+        std::vector<double> arrScales;
+        std::vector<bool> arrEA;
+
         bool bIsNeedCheck = false;
-
         int nCountScales = m_pMain->m_arThumbnailsScales.size();
-        for (int iX = 0; iX < nCountScales; ++iX)
+        bool bIsEA = false;
+
+        while (true)
         {
-            if (CheckBreak()) return;
+            for (int iX = 0; iX < nCountScales; ++iX)
+            {
+                if (CheckBreak()) return;
 
-            double dScale = m_pMain->m_arThumbnailsScales[iX];
+                double dScale = m_pMain->m_arThumbnailsScales[iX];
 
-            std::wstring strThumbnailPath = m_pMain->m_sDirectory + L"/fonts_thumbnail";
+                std::wstring strThumbnailPath = (m_pMain->m_sThumbnailsDirectory.empty() ?
+                                                     m_pMain->m_sDirectory : m_pMain->m_sThumbnailsDirectory) + L"/fonts_thumbnail";
+                if (bIsEA)
+                    strThumbnailPath += L"_ea";
 
-            int nScaleOut = (int)(dScale * 100 + 0.5);
+                int nScaleOut = (int)(dScale * 100 + 0.5);
 
-            if (nScaleOut == 100)
-                strThumbnailPath += L".png";
-            else if ((nScaleOut % 100) == 0)
-                strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"x.png";
-            else if ((nScaleOut % 10) == 0)
-                strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"." + std::to_wstring((int)((nScaleOut / 10) % 10)) + L"x.png";
-            else
-                strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"." + std::to_wstring((int)(nScaleOut % 100)) + L"x.png";
+                if (nScaleOut == 100)
+                    strThumbnailPath += L".png";
+                else if ((nScaleOut % 100) == 0)
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"x.png";
+                else if ((nScaleOut % 10) == 0)
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"." + std::to_wstring((int)((nScaleOut / 10) % 10)) + L"x.png";
+                else
+                    strThumbnailPath += L"@" + std::to_wstring((int)(nScaleOut / 100)) + L"." + std::to_wstring((int)(nScaleOut % 100)) + L"x.png";
 
-            arrFiles.push_back(strThumbnailPath);
+                arrScales.push_back(dScale);
+                arrFiles.push_back(strThumbnailPath);
+                arrEA.push_back(bIsEA);
 
-            if (!NSFile::CFileBinary::Exists(strThumbnailPath))
-                bIsNeedCheck = true;
+                if (!NSFile::CFileBinary::Exists(strThumbnailPath))
+                    bIsNeedCheck = true;
+            }
+
+            if (bIsEA || !m_pMain->m_bIsGenerateThumbnailsEA)
+                break;
+
+            bIsEA = true;
         }
 
         if (!bIsNeedCheck)
@@ -1059,11 +1263,12 @@ public:
         PrepareForThumbnails(applicationFontsGood);
 
         int nCountFonts = (int)m_arFonts.size();
+        nCountScales = arrScales.size();
         for (int iX = 0; iX < nCountScales; ++iX)
         {
             if (CheckBreak()) return;
 
-            double dScale = m_pMain->m_arThumbnailsScales[iX];
+            double dScale = arrScales[iX];
             std::wstring strThumbnailPath = arrFiles[iX];
 
             if (NSFile::CFileBinary::Exists(strThumbnailPath))
@@ -1100,6 +1305,8 @@ public:
             pRenderer->put_Width(lWidthPix * 25.4 / dDpi);
             pRenderer->put_Height(lHeightPix * 25.4 / dDpi);
 
+            bIsEA = arrEA[iX];
+
             for (int index = 0; index < nCountFonts; ++index)
             {
                 if (CheckBreak()) return;
@@ -1117,6 +1324,15 @@ public:
                     bIsSymbol = pFile->IsSymbolic(false);
 
                 std::wstring sFontName = font.m_sName;
+
+                if (bIsEA)
+                {
+                    std::map<std::wstring, std::wstring>::const_iterator iter = m_mapAlternateEA.find(sFontName);
+                    if (iter != m_mapAlternateEA.end())
+                    {
+                        sFontName = iter->second;
+                    }
+                }
 
                 if (bIsSymbol)
                 {
@@ -1136,13 +1352,11 @@ public:
                     // у нас режим "без квадратов"
                     // но есть шрифты, в которых символы есть, но нулевой ширины.
                     // только из-за таких шрифтов делаем заглушку
-                    int nFontNameLen = (int)sFontName.length();
-                    bool bIsExistEmpty = false;
-
-                    for (int nC = 0; nC < nFontNameLen; nC++)
+                    bool bIsExistEmpty = false;                 
+                    for (NSStringExt::CStringUnicodeIterator oIterator(sFontName); oIterator.Check(); oIterator.Next())
                     {
                         int nCMapIndex = 0;
-                        int nGid = pFile->SetCMapForCharCode(sFontName.at(nC), &nCMapIndex);
+                        int nGid = pFile->SetCMapForCharCode(oIterator.Value(), &nCMapIndex);
                         if (0 < nGid && 0.0001 > pFile->GetCharWidth(nGid))
                         {
                             bIsExistEmpty = true;
@@ -1203,6 +1417,8 @@ CApplicationFontsWorker::CApplicationFontsWorker()
     m_bIsUseOpenType    = true;
     m_bIsUseAllVersions = false;
     m_bSeparateThumbnails = false;
+    m_bIsGenerateThumbnailsEA = true;
+    m_bIsCleanDirectory = true;
 
     m_arThumbnailsScales.clear();
     m_arThumbnailsScales.push_back(1);
@@ -1229,6 +1445,7 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
     std::vector<std::string> strFonts;
     std::wstring strFontsCheckPath = m_sDirectory + L"/fonts.log";
     
+    // читаем "старый" набор шрифтов
     if (true)
     {
         NSFile::CFileBinary oFile;
@@ -1281,6 +1498,7 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
 #endif
     }
     
+    // читаем "новый" набор шрифтов
     NSFonts::IApplicationFonts* pApplicationF = NSFonts::NSApplication::Create();
     std::vector<std::wstring> strFontsW_Cur;
     
@@ -1292,14 +1510,18 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
         NSDirectory::GetFiles2(*i, strFontsW_Cur, true);
     }
     
+    // сортируем (нужно для сравнения для старого набора)
     std::sort(strFontsW_Cur.begin(), strFontsW_Cur.end());
     
     bool bIsEqual = true;
+
+    // если количество шрифтов в наборах не совпадают - то нужно перегенерировать
     if (strFonts.size() != strFontsW_Cur.size())
         bIsEqual = false;
     
     if (bIsEqual)
     {
+        // если наборы не совпадают - то нужно перегенерировать
         int nCount = (int)strFonts.size();
         for (int i = 0; i < nCount; ++i)
         {
@@ -1313,22 +1535,28 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
     
     if (bIsEqual)
     {
+        // наборы совпадают - скинут ли font_selection.bin
+        // если нет - нужно перегенерировать
         if (!NSFile::CFileBinary::Exists(strFontsSelectionBin))
             bIsEqual = false;
     }
     
     if (!bIsEqual)
     {
-        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sDirectory, false);
-        for (std::vector<std::wstring>::iterator fileIter = arFiles.begin(); fileIter != arFiles.end(); fileIter++)
+        if (m_bIsCleanDirectory)
         {
-            NSFile::CFileBinary::Remove(*fileIter);
+            std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sDirectory, false);
+            for (std::vector<std::wstring>::iterator fileIter = arFiles.begin(); fileIter != arFiles.end(); fileIter++)
+            {
+                NSFile::CFileBinary::Remove(*fileIter);
+            }
         }
         
         int nFlag = 3;
         if (!m_bIsUseOpenType)
             nFlag = 2;
 
+        // формируем новый набор шрифтов
         NSStringUtils::CStringBuilder oFontsLog;
 #ifdef ONLYOFFICE_FONTS_VERSION_
         oFontsLog.WriteString(L"ONLYOFFICE_FONTS_VERSION_");
@@ -1342,13 +1570,17 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
             oFontsLog.WriteString(L"\n");
         }
         
+        // читаем шрифты
         pApplicationF->InitializeFromArrayFiles(strFontsW_Cur, nFlag);
 
+        // скидываем все
         m_pInternal->SaveAllFontsJS(pApplicationF, -1);
 
+        // поддержка старой версии AllFonts.js
         if (m_bIsUseAllVersions)
             m_pInternal->SaveAllFontsJS(pApplicationF, 0);
 
+        // скидываем новый набор шрифтов
         if (!m_pInternal->CheckBreak())
             NSFile::CFileBinary::SaveToFile(strFontsCheckPath, oFontsLog.GetData());
     }
@@ -1358,15 +1590,20 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
 
     if (!m_pInternal->m_pBreaker || m_pInternal->m_pBreaker->IsFontsWorkerRunned())
     {
+        // никаких прерываний не было
         pApplicationF = NSFonts::NSApplication::Create();
         pApplicationF->InitializeFromFolder(m_sDirectory);
     }
     else
     {
-        std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sDirectory, false);
-        for (std::vector<std::wstring>::iterator fileIter = arFiles.begin(); fileIter != arFiles.end(); fileIter++)
+        // прервали - подчищаем рабочую директорию
+        if (m_bIsCleanDirectory)
         {
-            NSFile::CFileBinary::Remove(*fileIter);
+            std::vector<std::wstring> arFiles = NSDirectory::GetFiles(m_sDirectory, false);
+            for (std::vector<std::wstring>::iterator fileIter = arFiles.begin(); fileIter != arFiles.end(); fileIter++)
+            {
+                NSFile::CFileBinary::Remove(*fileIter);
+            }
         }
     }
     

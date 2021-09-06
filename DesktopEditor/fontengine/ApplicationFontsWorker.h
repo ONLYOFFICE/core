@@ -66,6 +66,18 @@ public:
     bool                        m_bSeparateThumbnails;
     // какие масштабы нудны для табнейлов
     std::vector<double>         m_arThumbnailsScales;
+    bool                        m_bIsGenerateThumbnailsEA;
+
+    // WEB версия ----
+    std::wstring                m_sThumbnailsDirectory;
+
+    std::wstring                m_sAllFontsJSPath;
+    std::wstring                m_sWebAllFontsJSPath;
+
+    std::wstring                m_sWebFontsDirectory;
+    // ---------------
+
+    bool                        m_bIsCleanDirectory;
 
 private:
     CApplicationFontsWorker_private* m_pInternal;

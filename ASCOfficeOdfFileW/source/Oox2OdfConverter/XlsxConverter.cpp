@@ -2025,14 +2025,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 				column_properties->style_table_column_properties_attlist_.common_break_attlist_.fo_break_before_ = odf_types::fo_break(odf_types::fo_break::Auto);
 				if (oox_sheet_format_pr->m_oDefaultColWidth.IsInit())
 				{			
-					width =  oox_sheet_format_pr->m_oDefaultColWidth->GetValue();
+					width = *oox_sheet_format_pr->m_oDefaultColWidth;
 					width = ods_context->convert_symbol_width(width) + 5 * 3 / 4.;
 					//defaultColWidth = baseColumnWidth + {margin padding (2 pixels on each side, totalling 4 pixels)} + {gridline (1pixel)}
 				}
 				else if (oox_sheet_format_pr->m_oBaseColWidth.IsInit())
 				{
-					width =  oox_sheet_format_pr->m_oBaseColWidth->GetValue();
-					width = ods_context->convert_symbol_width(width);
+					width = ods_context->convert_symbol_width(*oox_sheet_format_pr->m_oBaseColWidth);
 				}
 				else
 				{
@@ -2055,7 +2054,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetFormatPr *oox_sheet_format_p
 			{
 				if (oox_sheet_format_pr->m_oDefaultRowHeight.IsInit())
 				{
-					double height = oox_sheet_format_pr->m_oDefaultRowHeight->GetValue();
+					double height = *oox_sheet_format_pr->m_oDefaultRowHeight;
 
 					ods_context->current_table()->defaut_row_height_ = height;//pt
 					row_properties->style_table_row_properties_attlist_.style_row_height_ = odf_types::length(odf_types::length(height,odf_types::length::pt).get_value_unit(odf_types::length::cm),odf_types::length::cm);

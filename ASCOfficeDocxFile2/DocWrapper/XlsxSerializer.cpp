@@ -108,7 +108,7 @@ namespace BinXlsxRW{
 		fp.setFontManager(pFontManager);
 		
 		NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager = NULL;
-        if(false == m_sEmbeddedFontsDir.empty())
+        if (false == m_sEmbeddedFontsDir.empty())
 		{
 			NSDirectory::CreateDirectory(m_sEmbeddedFontsDir);
 

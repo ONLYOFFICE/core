@@ -350,7 +350,8 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 						int index = 0;
 						if (m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode.IsInit())
 						{
-								if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"General")
+								if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"General"|| 
+									*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"@")
 								index = 0;
 							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"General Number")
 								index = 0;

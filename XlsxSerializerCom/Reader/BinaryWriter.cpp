@@ -4003,49 +4003,49 @@ void BinaryWorksheetTableWriter::WriteSheetFormatPr(const OOX::Spreadsheet::CShe
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::DefaultColWidth);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
-		m_oBcw.m_oStream.WriteDoubleReal(oSheetFormatPr.m_oDefaultColWidth->GetValue());
+		m_oBcw.m_oStream.WriteDoubleReal(*oSheetFormatPr.m_oDefaultColWidth);
 	}
 	//DefaultRowHeight
 	if(oSheetFormatPr.m_oDefaultRowHeight.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::DefaultRowHeight);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
-		m_oBcw.m_oStream.WriteDoubleReal(oSheetFormatPr.m_oDefaultRowHeight->GetValue());
+		m_oBcw.m_oStream.WriteDoubleReal(*oSheetFormatPr.m_oDefaultRowHeight);
 	}
 	//BaseColWidth
 	if(oSheetFormatPr.m_oBaseColWidth.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::BaseColWidth);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(oSheetFormatPr.m_oBaseColWidth->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*oSheetFormatPr.m_oBaseColWidth);
 	}
 	//CustomHeight
 	if(oSheetFormatPr.m_oCustomHeight.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::CustomHeight);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBYTE(oSheetFormatPr.m_oCustomHeight->ToBool());
+		m_oBcw.m_oStream.WriteBYTE(*oSheetFormatPr.m_oCustomHeight);
 	}
 	//ZeroHeight
 	if(oSheetFormatPr.m_oZeroHeight.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::ZeroHeight);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBYTE(oSheetFormatPr.m_oZeroHeight->ToBool());
+		m_oBcw.m_oStream.WriteBYTE(*oSheetFormatPr.m_oZeroHeight);
 	}
 	//OutlineLevelCol
 	if(oSheetFormatPr.m_oOutlineLevelCol.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::OutlineLevelCol);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(oSheetFormatPr.m_oOutlineLevelCol->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*oSheetFormatPr.m_oOutlineLevelCol);
 	}
 	//OutlineLevelRow
 	if(oSheetFormatPr.m_oOutlineLevelRow.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::OutlineLevelRow);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(oSheetFormatPr.m_oOutlineLevelRow->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*oSheetFormatPr.m_oOutlineLevelRow);
 	}
 }
 void BinaryWorksheetTableWriter::WritePageMargins(const OOX::Spreadsheet::CPageMargins& oPageMargins)

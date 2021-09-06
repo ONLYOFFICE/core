@@ -3698,8 +3698,7 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	SEEK_TO_POS_END2();
 	if(!oSheetFormatPr.m_oDefaultRowHeight.IsInit())
 	{
-		oSheetFormatPr.m_oDefaultRowHeight.Init();
-		oSheetFormatPr.m_oDefaultRowHeight->SetValue(15);
+		oSheetFormatPr.m_oDefaultRowHeight = 15.;
 	}
 	oSheetFormatPr.toXML(oStreamWriter);
 //-------------------------------------------------------------------------------------------------------------
@@ -4637,23 +4636,19 @@ int BinaryWorksheetsTableReader::ReadSheetFormatPr(BYTE type, long length, void*
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerSheetFormatPrTypes::DefaultColWidth == type)
 	{
-		pSheetFormatPr->m_oDefaultColWidth.Init();
-		pSheetFormatPr->m_oDefaultColWidth->SetValue(m_oBufferedStream.GetDoubleReal());
+		pSheetFormatPr->m_oDefaultColWidth = m_oBufferedStream.GetDoubleReal();
 	}
 	else if(c_oSerSheetFormatPrTypes::DefaultRowHeight == type)
 	{
-		pSheetFormatPr->m_oDefaultRowHeight.Init();
-		pSheetFormatPr->m_oDefaultRowHeight->SetValue(m_oBufferedStream.GetDoubleReal());
+		pSheetFormatPr->m_oDefaultRowHeight = m_oBufferedStream.GetDoubleReal();
 	}
 	else if (c_oSerSheetFormatPrTypes::BaseColWidth == type)
 	{
-		pSheetFormatPr->m_oBaseColWidth.Init();
-		pSheetFormatPr->m_oBaseColWidth->SetValue(m_oBufferedStream.GetLong());
+		pSheetFormatPr->m_oBaseColWidth = m_oBufferedStream.GetLong();
 	}
 	else if (c_oSerSheetFormatPrTypes::CustomHeight == type)
 	{
-		pSheetFormatPr->m_oCustomHeight.Init();
-		pSheetFormatPr->m_oCustomHeight->FromBool(m_oBufferedStream.GetBool());
+		pSheetFormatPr->m_oCustomHeight = m_oBufferedStream.GetBool();
 	}
 	else if (c_oSerSheetFormatPrTypes::ZeroHeight == type)
 	{

@@ -8,12 +8,13 @@
 #include <QTextEdit>
 #include <QLabel>
 
-CBoundsWidget::CBoundsWidget(QWidget *pParent) :
-        CSharedWidget(pParent)
+CReactangleWidget::CReactangleWidget(const QString& qsName, QWidget *pParent) :
+        CSharedWidget(pParent),
+        m_qsName(qsName)
 {
         QGridLayout *pLayout = new QGridLayout;
 
-        QLabel *pName = new QLabel("Bounds:");
+        QLabel *pName = new QLabel(QString("%1:").arg(m_qsName));
         pName->setStyleSheet("QLabel { text-decoration: underline; }");
 
         CFormWidget *pLeftWidget    = new CFormWidget("Left",   "0");
@@ -36,14 +37,14 @@ CBoundsWidget::CBoundsWidget(QWidget *pParent) :
         setLayout(pLayout);
 }
 
-CBoundsWidget::~CBoundsWidget()
+CReactangleWidget::~CReactangleWidget()
 {
 
 }
 
-QList<QStandardItem*> CBoundsWidget::GetData() const
+QList<QStandardItem*> CReactangleWidget::GetData() const
 {
-        QStandardItem *pStandardItem = new QStandardItem("<Bounds>");
+        QStandardItem *pStandardItem = new QStandardItem(QString("<%1>").arg(m_qsName));
         ConvertWidgets(pStandardItem);
         return {pStandardItem};
 }

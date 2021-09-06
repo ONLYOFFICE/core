@@ -139,8 +139,8 @@ void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem*
                         oStandartItem->setSizeHint(QSize(oFontMetrics.width("<Buffer>...</Buffer>"), oFontMetrics.height()));
                 }
 
-                if (qsValue.size() != 0)
-                        oStandartItem->setText(QString("<%1>%2</%1>").arg(qsName, qsValue));
+                if (!qsValue.isEmpty())
+                        oStandartItem->setText(QString("<%1>%2</%1>").arg(qsName).arg(qsValue));
         }
 }
 

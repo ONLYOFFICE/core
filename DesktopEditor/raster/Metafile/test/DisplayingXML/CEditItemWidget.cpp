@@ -78,7 +78,7 @@ void CEditItemWidget::on_Save_clicked()
                 if (qsValue.size() == 0)
                         oStandardItem->setText(QString("<%1/>").arg(qsName));
                 else
-                        oStandardItem->setText(QString("<%1>%2</%1>").arg(qsName, qsValue));
+                        oStandardItem->setText(QString("<%1>%2</%1>").arg(qsName).arg(qsValue));
         }
 
         if (NULL != m_pMainWindow)

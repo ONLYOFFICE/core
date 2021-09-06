@@ -1,5 +1,6 @@
 #include "CPointsWidget.h"
 
+#include "CPointWidget.h"
 #include "CFormWidget.h"
 #include "Common.h"
 
@@ -9,9 +10,8 @@
 #include <QFormLayout>
 #include <QPushButton>
 
-CPointsWidget::CPointsWidget(unsigned int unIndex, QWidget *pParent):
+CPointsWidget::CPointsWidget(QWidget *pParent):
         CSharedWidget(pParent),
-        m_unIndex(unIndex),
         m_unCounter(0)
 {
         QVBoxLayout *pLayout = new QVBoxLayout;
@@ -37,14 +37,8 @@ QList<QStandardItem*> CPointsWidget::GetData() const
 
         QList<QStandardItem*> oListItem;
 
-        for (unsigned int unIndex = 0; unIndex < m_arWidgets.size();)
-        {
-                QStandardItem *pPoint = new QStandardItem(QString("<Point%1>").arg(unIndex / 2 + 1));
-                pPoint->appendRows(m_arWidgets[unIndex++]->GetData());
-                pPoint->appendRows(m_arWidgets[unIndex++]->GetData());
-
-                oListItem.append(pPoint);
-        }
+        for (const CSharedWidget* pWidget : m_arWidgets)
+                oListItem.append(pWidget->GetData());
 
         return oListItem;
 }
@@ -53,21 +47,9 @@ void CPointsWidget::on_createPoint_clicked()
 {
         ++m_unCounter;
 
-        QHBoxLayout *pLayout = new QHBoxLayout;
-
-        QLabel *pName = new QLabel(QString("Point %1: ").arg(m_unCounter));
-        pName->setStyleSheet("QLabel {text-decoration: underline; }");
-
-        CFormWidget *pXForm = new CFormWidget("x", "0");
-        CFormWidget *pYForm = new CFormWidget("y", "0");
-
-        pLayout->addWidget(pName);
-        pLayout->addWidget(pXForm);
-        pLayout->addWidget(pYForm);
-
-        m_arWidgets.push_back(pXForm);
-        m_arWidgets.push_back(pYForm);
+        CPointWidget *pPoint = new CPointWidget("Point", m_unCounter);
+        m_arWidgets.push_back(pPoint);
 
         QBoxLayout *pMainLayout = (QBoxLayout*)layout();
-        pMainLayout->insertLayout(pMainLayout->count() - 1, pLayout);
+        pMainLayout->insertWidget(pMainLayout->count() - 1, pPoint);
 }

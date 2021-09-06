@@ -6,7 +6,7 @@
 #include <QTextEdit>
 #include <QLabel>
 
-CFormWidget::CFormWidget(QString qsName, QString qsDefaultValue, QWidget *pParent):
+CFormWidget::CFormWidget(const QString& qsName, const QString& qsDefaultValue, QWidget *pParent):
         CSharedWidget(pParent),
         m_qsName(qsName),
         m_pValue(NULL)
@@ -30,8 +30,8 @@ CFormWidget::~CFormWidget()
 
 QList<QStandardItem*> CFormWidget::GetData() const
 {
-        if (m_pValue->toPlainText().size() == 0)
+        if (m_pValue->toPlainText().isEmpty())
                 return {new QStandardItem(QString("<%1/>").arg(m_qsName))};
         else
-                return {new QStandardItem(QString("<%1>%2</%1>").arg(m_qsName, m_pValue->toPlainText()))};
+                return {new QStandardItem(QString("<%1>%2</%1>").arg(m_qsName).arg(m_pValue->toPlainText()))};
 }

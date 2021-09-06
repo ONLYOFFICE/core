@@ -13,8 +13,12 @@ public:
 
         virtual QList<QStandardItem*> GetData() const = 0;
 private:
-        friend class CBoundsWidget;
+        friend class CLogBrushExWidget;
+        friend class CReactangleWidget;
+        friend class CLogPenWidget;
         friend class CPointsWidget;
+        friend class CPointWidget;
+        friend class CSizeWidget;
         friend class CPolyWidget;
 
         void ConvertWidgets(QStandardItem* pParentItem) const

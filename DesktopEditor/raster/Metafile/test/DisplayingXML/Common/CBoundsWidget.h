@@ -3,13 +3,15 @@
 
 #include "CSharedWidget.h"
 
-class CBoundsWidget : public CSharedWidget
+class CReactangleWidget : public CSharedWidget
 {
 public:
-        explicit CBoundsWidget(QWidget *pParent = NULL);
-        virtual ~CBoundsWidget();
+        explicit CReactangleWidget(const QString& qsName, QWidget *pParent = NULL);
+        virtual ~CReactangleWidget();
 
         virtual QList<QStandardItem*> GetData() const override;
+private:
+        QString m_qsName;
 };
 
 #endif // CBOUNDSWIDGET_H

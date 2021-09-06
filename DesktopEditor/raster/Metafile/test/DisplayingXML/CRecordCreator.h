@@ -24,18 +24,29 @@ public:
 private slots:
         void on_selectButton_clicked();
 private:
-        //EMR_POLYBEZIER, EMR_POLYGON, EMR_POLYLINE, EMR_POLYBEZIERTO, EMR_POLYLINETO
-        void CreatePointWidgets(QString qsName);
-        //EMR_POLYPOLYLINE
-        void CreatePolyWidgets(QString qsName);
-        //EMR_SELECTOBJECT
-        void Create_Widgets_EMR_SELECTOBJECT();
+        void CreatePointWidgets(const QString& qsName);
+        void CreatePolyWidgets(const QString& qsName);
+        void CreateEXTEX(const QString& qsName);
+        void CreateORGEX(const QString& qsName);
+        void CreateFormWidget(const QString& qsName, const QString& qsFormName);
+        void CreateColorWidgets(const QString& qsName, bool bBounds = false);
+        void CreateEmptyWidgets(const QString& qsName);
+        void CreateRectangleWidgets(const QString& qsName, const QString& qsReactangleName);
+        void CreateScaleWidgets(const QString& qsName);
 
-        void CreateBoundsWidget();
+        void Create_Widgets_EMR_SETCOLORADJUSTMENT();
+        void Create_Widgets_EMR_SETWORLDTRANSFORM();
+        void Create_Widgets_EMR_MODIFYWORLDTRANSFORM();
+        void Create_Widgets_EMR_CREATEPEN();
+        void Create_Widgets_EMR_CREATEBRUSHINDIRECT();
+
+        void CreateRectangleWidget(const QString& qsName);
         void CreatePointsWidget();
+        void CreateColorWidget();
         void CreatePolyWidget();
+        void CreateXForm();
 
-        void ConvertWidgets(QString qsName);
+        void ConvertWidgets(const QString& qsName);
 
         void ClearData();
         void Close();

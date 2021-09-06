@@ -19,9 +19,15 @@ SOURCES += \
     CTextEditDelegate.cpp \
     CXMLHighlighter.cpp \
     Common/CBoundsWidget.cpp \
+    Common/CColorWidget.cpp \
+    Common/CEmptyWidget.cpp \
     Common/CFormWidget.cpp \
+    Common/CLogBrushExWidget.cpp \
+    Common/CLogPenWidget.cpp \
+    Common/CPointWidget.cpp \
     Common/CPointsWidget.cpp \
     Common/CPolyWidget.cpp \
+    Common/CSizeWidget.cpp \
     MainWindow.cpp \
     CCustomView.cpp \
     main.cpp
@@ -36,10 +42,16 @@ HEADERS += \
     CTextEditDelegate.h \
     CXMLHighlighter.h \
     Common/CBoundsWidget.h \
+    Common/CColorWidget.h \
+    Common/CEmptyWidget.h \
     Common/CFormWidget.h \
+    Common/CLogBrushExWidget.h \
+    Common/CLogPenWidget.h \
+    Common/CPointWidget.h \
     Common/CPointsWidget.h \
     Common/CPolyWidget.h \
     Common/CSharedWidget.h \
+    Common/CSizeWidget.h \
     Common/Common.h \
     MainWindow.h \
     CCustomView.h

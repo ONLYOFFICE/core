@@ -8,7 +8,7 @@
 class CFormWidget : public CSharedWidget
 {
 public:
-        explicit CFormWidget(QString qsName, QString qsDefaultValue = QString(), QWidget *pParent = NULL);
+        explicit CFormWidget(const QString& qsName, const QString& qsDefaultValue = QString(), QWidget *pParent = NULL);
         virtual ~CFormWidget();
 
         virtual QList<QStandardItem*> GetData() const override;

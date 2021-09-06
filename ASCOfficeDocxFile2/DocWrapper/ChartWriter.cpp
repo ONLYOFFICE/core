@@ -516,8 +516,7 @@ namespace BinXlsxRW{
 		{
 			pWorksheet = new OOX::Spreadsheet::CWorksheet(NULL);
 			pWorksheet->m_oSheetFormatPr.Init();
-			pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight.Init();
-			pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight->SetValue(15);
+			pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight = 15.;
 			pWorksheet->m_oPageMargins.Init();
 			pWorksheet->m_oPageMargins.Init();
 			pWorksheet->m_oPageMargins->m_oLeft.Init();

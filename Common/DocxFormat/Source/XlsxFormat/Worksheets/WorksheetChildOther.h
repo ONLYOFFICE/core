@@ -471,22 +471,22 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString((L"<sheetFormatPr"));
-				WritingStringNullableAttrInt(L"baseColWidth", m_oBaseColWidth, m_oBaseColWidth->GetValue());
-				WritingStringNullableAttrBool(L"customHeight", m_oCustomHeight);
-				WritingStringNullableAttrDouble(L"defaultColWidth", m_oDefaultColWidth, m_oDefaultColWidth->GetValue());
-				WritingStringNullableAttrDouble(L"defaultRowHeight", m_oDefaultRowHeight, m_oDefaultRowHeight->GetValue());
-				WritingStringNullableAttrInt(L"outlineLevelCol", m_oOutlineLevelCol, m_oOutlineLevelCol->GetValue());
-				WritingStringNullableAttrInt(L"outlineLevelRow", m_oOutlineLevelRow, m_oOutlineLevelRow->GetValue());
-				WritingStringNullableAttrBool(L"thickBottom", m_oThickBottom);
-				WritingStringNullableAttrBool(L"thickTop", m_oThickTop);
-				WritingStringNullableAttrBool(L"zeroHeight", m_oZeroHeight);
+				WritingStringNullableAttrInt2(L"baseColWidth", m_oBaseColWidth);
+				WritingStringNullableAttrBool2(L"customHeight", m_oCustomHeight);
+				WritingStringNullableAttrDouble2(L"defaultColWidth", m_oDefaultColWidth);
+				WritingStringNullableAttrDouble2(L"defaultRowHeight", m_oDefaultRowHeight);
+				WritingStringNullableAttrInt2(L"outlineLevelCol", m_oOutlineLevelCol);
+				WritingStringNullableAttrInt2(L"outlineLevelRow", m_oOutlineLevelRow);
+				WritingStringNullableAttrBool2(L"thickBottom", m_oThickBottom);
+				WritingStringNullableAttrBool2(L"thickTop", m_oThickTop);
+				WritingStringNullableAttrBool2(L"zeroHeight", m_oZeroHeight);
 				writer.WriteString((L"/>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -520,15 +520,15 @@ namespace OOX
 			}
 
 		public:
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBaseColWidth;
-				nullable<SimpleTypes::COnOff<>>					m_oCustomHeight;
-				nullable<SimpleTypes::CDouble>					m_oDefaultColWidth;
-				nullable<SimpleTypes::CDouble>					m_oDefaultRowHeight;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevelCol;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevelRow;
-				nullable<SimpleTypes::COnOff<>>					m_oThickBottom;
-				nullable<SimpleTypes::COnOff<>>					m_oThickTop;
-				nullable<SimpleTypes::COnOff<>>					m_oZeroHeight;
+				nullable_uint		m_oBaseColWidth;
+				nullable_bool		m_oCustomHeight;
+				nullable_double		m_oDefaultColWidth;
+				nullable_double		m_oDefaultRowHeight;
+				nullable_uint		m_oOutlineLevelCol;
+				nullable_uint		m_oOutlineLevelRow;
+				nullable_bool		m_oThickBottom;
+				nullable_bool		m_oThickTop;
+				nullable_bool		m_oZeroHeight;
 		};
 		class CPane : public WritingElement
 		{

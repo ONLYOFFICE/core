@@ -38,6 +38,7 @@
 #include "../common/Directory.h"
 #include "../graphics/Timer.h"
 #include "../common/StringBuilder.h"
+#include "../common/StringExt.h"
 
 //#define _GENERATE_FONT_MAP_
 
@@ -348,47 +349,10 @@ namespace NSCommon
 
     bool IsEastAsianName(const std::wstring& sName)
     {
-        size_t nLen = sName.length();
-        const wchar_t* pData = sName.c_str();
-        if (4 == sizeof(wchar_t))
+        for (NSStringExt::CStringUnicodeIterator oIterator(sName); oIterator.Check(); oIterator.Next())
         {
-            for (size_t i = 0; i < nLen; ++i)
-            {
-                if (IsEastAsianScript((unsigned int)pData[i]))
-                    return true;
-            }
-        }
-        else
-        {
-            for (size_t i = 0; i < nLen; ++i)
-            {
-                unsigned int wLeading = (unsigned int)pData[i];
-                if (wLeading < 0xD800 || wLeading > 0xDFFF)
-                {
-                    if (IsEastAsianScript(wLeading))
-                        return true;
-                }
-                else if (wLeading >= 0xDC00)
-                {
-                    // Такого не должно быть
-                    continue;
-                }
-                else
-                {
-                    ++i;
-                    if (i >= nLen)
-                        return false;
-                    unsigned int wTrailing = (unsigned int)pData[i];
-                    if (wTrailing < 0xDC00 || wTrailing > 0xDFFF)
-                    {
-                        // Такого не должно быть
-                        continue;
-                    }
-
-                    if (IsEastAsianScript(((wLeading & 0x3FF) << 10) | (wTrailing & 0x3FF) + 0x10000))
-                        return true;
-                }
-            }
+            if (IsEastAsianScript(oIterator.Value()))
+                return true;
         }
         return false;
     }
@@ -639,13 +603,11 @@ namespace NSCommon
                     }
                     else if (pFile)
                     {
-                        int nFontNameLen = (int)sFontName.length();
                         bool bIsPresentAll = true;
-
-                        for (int nC = 0; nC < nFontNameLen; nC++)
+                        for (NSStringExt::CStringUnicodeIterator oIterator(sFontName); oIterator.Check(); oIterator.Next())
                         {
                             int nCMapIndex = 0;
-                            if (0 >= pFile->SetCMapForCharCode(sFontName.at(nC), &nCMapIndex))
+                            if (0 >= pFile->SetCMapForCharCode(oIterator.Value(), &nCMapIndex))
                             {
                                 bIsPresentAll = false;
                                 break;
@@ -673,7 +635,7 @@ namespace NSCommon
                     pRenderer->put_FontCharSpace(0);
                     pRenderer->put_FontSize(14);
 
-                    pRenderer->CommandDrawText(pPair->second.m_sName, 5, 25.4 * (index * lH1_px + lH1_px) / dDpi - 2, 0, 0);
+                    pRenderer->CommandDrawText(sFontName, 5, 25.4 * (index * lH1_px + lH1_px) / dDpi - 2, 0, 0);
 
                     if (isUseMapForStreams)
                         applicationFonts->GetStreams()->CheckStreams(mapUsedFiles);
@@ -1507,7 +1469,7 @@ int main(int argc, char** argv)
     }
 
     /*
-    --input="D:\OO_FONTS" --allfonts="D:\123\gen\AllFonts.js" --allfonts-web="D:\123\gen\AllFonts2.js" --images="D:\123\gen" --selection="D:\123\gen\font_selection.bin" --output-web="D:\123" --use-system="true"
+    --allfonts="./fonts/AllFonts.js" --allfonts-web="./fonts/AllFonts2.js" --images="./fonts" --selection="./fonts/font_selection.bin" --output-web="./fonts" --use-system="true"
     */
 
     NSFonts::IApplicationFonts* pApplicationF = NSFonts::NSApplication::Create();

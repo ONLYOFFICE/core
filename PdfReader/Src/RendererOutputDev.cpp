@@ -2631,25 +2631,27 @@ namespace PdfReader
         double x0, y0, x1, x2, y1, y2, r1, r2;
         double xmin, xmax, ymin, ymax, r;
         double *matrix;
+
+        int nTriangles = 0, nPatches = 0;
         switch (pShading->getType())
         {
             case 1:
-
                 ((GfxFunctionShading *)pShading)->getDomain(&x0, &y0, &x1, &y1);
                 matrix = ((GfxFunctionShading *)pShading)->getMatrix();
                 pGState->moveTo(x0 * matrix[0] + y0 * matrix[2] + matrix[4],
-                              x0 * matrix[1] + y0 * matrix[3] + matrix[5]);
+                                x0 * matrix[1] + y0 * matrix[3] + matrix[5]);
                 pGState->lineTo(x1 * matrix[0] + y0 * matrix[2] + matrix[4],
-                              x1 * matrix[1] + y0 * matrix[3] + matrix[5]);
+                                x1 * matrix[1] + y0 * matrix[3] + matrix[5]);
                 pGState->lineTo(x1 * matrix[0] + y1 * matrix[2] + matrix[4],
-                              x1 * matrix[1] + y1 * matrix[3] + matrix[5]);
+                                x1 * matrix[1] + y1 * matrix[3] + matrix[5]);
                 pGState->lineTo(x0 * matrix[0] + y1 * matrix[2] + matrix[4],
-                              x0 * matrix[1] + y1 * matrix[3] + matrix[5]);
+                                x0 * matrix[1] + y1 * matrix[3] + matrix[5]);
                 pGState->closePath();
-                break;
+                FunctionShadedFill(pGState, (GfxFunctionShading *) pShading);
+                return true;
             case 2:
                 pGState->getUserClipBBox(&xmin, &ymin, &xmax, &ymax);
-                pGState->clearPath();
+                //pGState->clearPath();
 
 
                 pGState->moveTo(xmin, ymin);
@@ -2657,10 +2659,9 @@ namespace PdfReader
                 pGState->lineTo(xmax, ymax);
                 pGState->lineTo(xmax, ymin);
                 pGState->closePath();
-                break;
+                AxialShadedFill(pGState, (GfxAxialShading* )pShading);
+                return true;
             case 3:
-
-
                 ((GfxRadialShading *)pShading)->getCoords(&x1, &y1, &r1, &x2, &y2, &r2);
 
                 r = std::max(r1,r2);
@@ -2674,19 +2675,6 @@ namespace PdfReader
                 pGState->lineTo(xmax, ymax);
                 pGState->lineTo(xmax, ymin);
                 pGState->closePath();
-
-                break;
-        }
-        int nTriangles = 0, nPatches = 0;
-        switch (pShading->getType())
-        {
-            case 1:
-                FunctionShadedFill(pGState, (GfxFunctionShading *) pShading);
-                return true;
-            case 2:
-                AxialShadedFill(pGState, (GfxAxialShading* )pShading);
-                return true;
-            case 3:
                 RadialShadedFill(pGState, (GfxRadialShading*) pShading);
                 return true;
             case 4:
@@ -4229,7 +4217,8 @@ namespace PdfReader
                 m_arrMatrix[4] = 0;          m_arrMatrix[5] = 0;
             }
         }
-        else if (m_arrMatrix[0] == pMatrix[0] && m_arrMatrix[1] == pMatrix[1] && m_arrMatrix[2] == pMatrix[2] && m_arrMatrix[3] == pMatrix[3] && !bText)
+        else if (m_arrMatrix[0] == pMatrix[0] && m_arrMatrix[1] == pMatrix[1] && m_arrMatrix[2] == pMatrix[2] && m_arrMatrix[3] == pMatrix[3]
+        && m_arrMatrix[4] == pMatrix[4]  && m_arrMatrix[5] == pMatrix[5] && !bText)
         {
             double dNewX = pMatrix[4], dNewY = pMatrix[5];
             double dIDet = 1 / (pMatrix[0] * pMatrix[3] - pMatrix[1] * pMatrix[2]);

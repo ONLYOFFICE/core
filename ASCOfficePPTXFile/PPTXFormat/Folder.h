@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_FOLDER_INCLUDE_H_
-#define PPTX_FOLDER_INCLUDE_H_
 
 #include "FileContainer.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/RId.h"
@@ -42,19 +40,15 @@ namespace PPTX
 	{
 	public:
 		Document();
-		Document(const OOX::CPath& path, IPPTXEvent* Event);
+		Document(const OOX::CPath& path);
 
-		void read(const OOX::CPath& path, IPPTXEvent* Event);
+		bool read(const OOX::CPath& path);
 		void write(const OOX::CPath& path);
 		void createFromTemplate(const OOX::CPath& path);
 
 		const bool isValid(const OOX::CPath& path) const;
 
-		//void extractPictures(const OOX::CPath& path);
-		//void extractPictures(const OOX::CPath& source, const OOX::CPath& path);
 	private:
 		long CountFiles(const OOX::CPath& path);
 	};
 } // namespace PPTX
-
-#endif //PPTX_FOLDER_INCLUDE_H_

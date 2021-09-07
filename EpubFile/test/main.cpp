@@ -21,7 +21,7 @@ int main()
         std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../FromHtmlTest/test3";
         CEpubFile oEpub;
         oEpub.SetTempDirectory(sTmp);
-        oEpub.FromHtml(sFile + L"/index.html", sFile + L"/docx_unpacked/docProps/core.xml", sOutputDirectory + L"/res.epub");
+        oEpub.FromHtml(sFile, sFile, sOutputDirectory + L"/res.epub", L"");
         NSDirectory::DeleteDirectory(sTmp);
         return 0;
     }

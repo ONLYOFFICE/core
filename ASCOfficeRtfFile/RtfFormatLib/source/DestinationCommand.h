@@ -2485,34 +2485,6 @@ public:
 	}
 };
 
-class RtfParagraphReader : public RtfAbstractReader
-{
-private: 
-    std::string m_sHeader;
-public: 
-	RtfParagraphPropDestination m_oParPropDest;
-
-    RtfParagraphReader( std::string sHeader, RtfReader& oReader ): m_sHeader(sHeader)
-	{
-		if( PROP_DEF != oReader.m_oState->m_oParagraphProp.m_nItap )
-			m_oParPropDest.nTargetItap = oReader.m_oState->m_oParagraphProp.m_nItap;
-	}
-    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
-	{
-		if( m_sHeader == sCommand )
-			return true;
-		else
-			return m_oParPropDest.ExecuteCommand( oDocument, oReader, (*this), sCommand, hasParameter, parameter );
-	}
-    void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
-	{
-		m_oParPropDest.ExecuteText( oDocument, oReader, sText );
-	}
-	void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
-	{
-		m_oParPropDest.Finalize( oReader );
-	}
-};
 
 class RtfDocumentCommand
 {
@@ -2631,6 +2603,44 @@ private:
 	 }
 };
 
+class RtfParagraphReader : public RtfAbstractReader
+{
+private:
+	std::string m_sHeader;
+public:
+	RtfParagraphPropDestination m_oParPropDest;
+
+	RtfParagraphReader(std::string sHeader, RtfReader& oReader) : m_sHeader(sHeader)
+	{
+		if (PROP_DEF != oReader.m_oState->m_oParagraphProp.m_nItap)
+			m_oParPropDest.nTargetItap = oReader.m_oState->m_oParagraphProp.m_nItap;
+	}
+	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
+	{
+		if (m_sHeader == sCommand)
+			return true;
+		else if ("rtf" == sCommand)
+		{
+			RtfNormalReader oRtfReader(oDocument, oReader);
+			oDocument.m_bStartRead = false;
+			oRtfReader.oParagraphReaderDestination = m_oParPropDest;
+			StartSubReader(oRtfReader, oDocument, oReader);
+
+			m_oParPropDest = oRtfReader.oParagraphReaderDestination;
+			return true;
+		}
+		else
+			return m_oParPropDest.ExecuteCommand(oDocument, oReader, (*this), sCommand, hasParameter, parameter);
+	}
+	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
+	{
+		m_oParPropDest.ExecuteText(oDocument, oReader, sText);
+	}
+	void ExitReader(RtfDocument& oDocument, RtfReader& oReader)
+	{
+		m_oParPropDest.Finalize(oReader);
+	}
+};
 
 class RtfFieldInstReader : public RtfAbstractReader, public RtfParagraphPropDestination
 {

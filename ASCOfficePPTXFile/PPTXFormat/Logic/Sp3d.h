@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_SP3D_INCLUDE_H_
-#define PPTX_LOGIC_SP3D_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Limit/Material.h"
@@ -104,6 +102,7 @@ namespace PPTX
 				XmlMacroReadAttributeBase(node, L"extrusionH", extrusionH);
 				XmlMacroReadAttributeBase(node, L"prstMaterial", prstMaterial);
 				XmlMacroReadAttributeBase(node, L"z", z);
+				XmlMacroReadAttributeBase(node, L"macro", macro);
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -140,6 +139,7 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("extrusionH"), extrusionH)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("prstMaterial"), prstMaterial)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("z"), z)
+					WritingElement_ReadAttributes_Read_else_if  (oReader, _T("macro"), macro)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -148,6 +148,7 @@ namespace PPTX
 				pWriter->StartNode(_T("a:sp3d"));
 
 				pWriter->StartAttributes();
+				pWriter->WriteAttribute(_T("macro"), macro);
 				pWriter->WriteAttribute(_T("contourW"), contourW);
 				pWriter->WriteAttribute(_T("extrusionH"), extrusionH);
 				pWriter->WriteAttribute(_T("prstMaterial"), prstMaterial);
@@ -178,16 +179,23 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, contourW);
-				pWriter->WriteInt2(1, extrusionH);
-				pWriter->WriteLimit2(2, prstMaterial);
-				pWriter->WriteInt2(3, z);
+					pWriter->WriteInt2(0, contourW);
+					pWriter->WriteInt2(1, extrusionH);
+					pWriter->WriteLimit2(2, prstMaterial);
+					pWriter->WriteInt2(3, z);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->WriteRecord2(0, bevelT);
 				pWriter->WriteRecord2(1, bevelB);
 				pWriter->WriteRecord1(2, extrusionClr);
 				pWriter->WriteRecord1(3, contourClr);
+				
+				if (macro.IsInit())
+				{
+					pWriter->StartRecord(SPTREE_TYPE_MACRO);
+					pWriter->WriteString1(0, *macro);
+					pWriter->EndRecord();
+				}
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -236,14 +244,19 @@ namespace PPTX
 							contourClr.fromPPTY(pReader);
 							break;
 						}
+						case SPTREE_TYPE_MACRO:
+						{
+							pReader->Skip(5); // type + size
+							macro = pReader->GetString2();
+						}break;
 						default:
 							break;
 					}
 				}
-
 				pReader->Seek(_end_rec);
 			}
 			
+			nullable_string					macro;
 			nullable_int					contourW;
 			nullable_int					extrusionH;
 			nullable_limit<Limit::Material> prstMaterial;
@@ -273,4 +286,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_SP3D_INCLUDE_H_

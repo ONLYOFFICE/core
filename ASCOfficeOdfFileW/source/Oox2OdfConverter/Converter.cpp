@@ -124,15 +124,18 @@ bool OoxConverter::write(const std::wstring & out_path, const std::wstring & tem
 	{
 		//encrypt files
 		std::wstring temp_folder = NSDirectory::CreateDirectoryWithUniqueName(temp_path);
-		output_document->write(temp_folder, true);
-	
-		encrypt_document(password, temp_folder, out_path);
 
-		output_document->write_manifest(out_path);
-		
-		NSDirectory::DeleteDirectory(temp_folder);
+		if (false == temp_folder.empty())
+		{
+			output_document->write(temp_folder, true);
+
+			encrypt_document(password, temp_folder, out_path);
+
+			output_document->write_manifest(out_path);
+
+			NSDirectory::DeleteDirectory(temp_folder);
+		}
 	}
-
 	return true;
 }
 std::wstring EncodeBase64(const std::string & value)

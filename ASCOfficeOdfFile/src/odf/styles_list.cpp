@@ -69,12 +69,18 @@ void text_list_style::add_attributes( const xml::attributes_wc_ptr & Attributes 
 
 void text_list_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if		(L"text" == Ns && L"list-level-style-number" == Name)
-        CP_CREATE_ELEMENT(content_);
-    else if (L"text" == Ns && L"list-level-style-bullet" == Name)
-        CP_CREATE_ELEMENT(content_);    
-     else if (L"text" == Ns && L"list-level-style-image" == Name)
-        CP_CREATE_ELEMENT(content_);    
+	if (L"text" == Ns && L"list-level-style-number" == Name)
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
+	else if (L"text" == Ns && L"list-level-style-bullet" == Name)
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
+	else if (L"text" == Ns && L"list-level-style-image" == Name)
+	{
+		CP_CREATE_ELEMENT(content_);
+	}
    else
     {
          CP_NOT_APPLICABLE_ELM();
@@ -132,12 +138,14 @@ void text_list_level_style_number::add_attributes( const xml::attributes_wc_ptr 
     text_list_level_style_number_attr_.add_attributes(Attributes);
 }
 
-void text_list_level_style_number::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+void text_list_level_style_number::add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if		(L"style" == Ns && L"list-level-properties" == Name)
+    if (L"style" == Ns && L"list-level-properties" == Name)
         CP_CREATE_ELEMENT(list_level_properties_);    
 	else if (L"style" == Ns && L"text-properties" == Name)
-        CP_CREATE_ELEMENT(style_text_properties_); 
+	{
+		CP_CREATE_ELEMENT(style_text_properties_);
+	}
 	else
     {
          CP_NOT_APPLICABLE_ELM();
@@ -157,10 +165,12 @@ void text_list_level_style_image::add_attributes( const xml::attributes_wc_ptr &
 
 void text_list_level_style_image::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if		(L"style" == Ns && L"list-level-properties" == Name)
+    if (L"style" == Ns && L"list-level-properties" == Name)
         CP_CREATE_ELEMENT(list_level_properties_);    
 	else if (L"style" == Ns && L"text-properties" == Name)
-        CP_CREATE_ELEMENT(style_text_properties_); 
+	{
+        CP_CREATE_ELEMENT(style_text_properties_);
+	}
 	else
     {
          CP_NOT_APPLICABLE_ELM();
@@ -230,10 +240,18 @@ void text_list_level_style_bullet::add_attributes( const xml::attributes_wc_ptr 
 
 void text_list_level_style_bullet::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if (L"style" == Ns && L"list-level-properties" == Name)
-        CP_CREATE_ELEMENT(list_level_properties_);
-    else if (L"style" == Ns && L"text-properties" == Name)
-        CP_CREATE_ELEMENT(style_text_properties_);    
+	if (L"style" == Ns && L"list-level-properties" == Name)
+	{
+		CP_CREATE_ELEMENT(list_level_properties_);
+	}
+	else if (L"style" == Ns && L"properties" == Name)
+	{
+		create_element_and_read(Reader, L"style", L"list-level-properties", list_level_properties_, getContext());
+	}
+	else if (L"style" == Ns && L"text-properties" == Name)
+	{
+		CP_CREATE_ELEMENT(style_text_properties_);
+	}
     else
     {
          CP_NOT_APPLICABLE_ELM();
@@ -259,12 +277,12 @@ std::wstring GetLevelText(unsigned int displayLevels,
     return res;
 }
 
-void docx_serialize_label_alignment_props(std::wostream & strm, style_list_level_label_alignment * labelAlignment)
+void docx_serialize_label_alignment_props(std::wostream & strm, style_list_level_label_alignment * labelAlignment, bool bTabs = true)
 {
-	double position = labelAlignment->get_text_list_tab_stop_position() ? labelAlignment->get_text_list_tab_stop_position()->get_value_unit(length::pt) : 0;
+	double position = labelAlignment->text_list_tab_stop_position_ ? labelAlignment->text_list_tab_stop_position_->get_value_unit(length::pt) : 0;
 	CP_XML_WRITER(strm)
 	{
-		if (position >0)
+		if (position > 0 && bTabs)
 		{
 			CP_XML_NODE(L"w:tabs")
 			{
@@ -275,8 +293,8 @@ void docx_serialize_label_alignment_props(std::wostream & strm, style_list_level
 				}
 			}
 		}
-		int w_hanging = (int)( 0.5 - 20.0 * labelAlignment->get_fo_text_indent().get_value_or( length(0, length::pt) ).get_value_unit(length::pt) );
-		int w_left = (int)( 0.5 + 20.0 * labelAlignment->get_fo_margin_left().get_value_or( length(0, length::pt) ).get_value_unit(length::pt) );
+		int w_hanging = (int)( 0.5 - 20.0 * labelAlignment->fo_text_indent_.get_value_or( length(0, length::pt) ).get_value_unit(length::pt) );
+		int w_left = (int)( 0.5 + 20.0 * labelAlignment->fo_margin_left_.get_value_or( length(0, length::pt) ).get_value_unit(length::pt) );
 
 		CP_XML_NODE(L"w:ind")
 		{
@@ -348,13 +366,32 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
 					{
 						switch(text_list_level_style_number_attr_.common_num_format_attlist_.style_num_format_->get_type())
 						{
-							case style_numformat::romanUc:	num_format= L"upperRoman"; break;
-							case style_numformat::romanLc:	num_format= L"lowerRoman"; break;
-							case style_numformat::alphaUc:	num_format= L"upperLetter"; break;
-							case style_numformat::alphaLc:	num_format= L"lowerLetter"; break;
+							case style_numformat::romanUc:		num_format= L"upperRoman"; break;
+							case style_numformat::romanLc:		num_format= L"lowerRoman"; break;
+							
+							case style_numformat::alphaUc:		num_format= L"upperLetter"; break;
+							case style_numformat::alphaLc:		num_format= L"lowerLetter"; break;
+							
+							case style_numformat::russianUp:	num_format = L"russianUpper"; break;
+							case style_numformat::russianLo:	num_format = L"russianLower"; break;
+							
+							case style_numformat::aiueo:		num_format = L"russianLower"; break;
+							
+							case style_numformat::chineseCounting:	num_format = L"chineseCounting"; break;
+							case style_numformat::chineseLegal:		num_format = L"chineseLegalSimplified"; break;
+							
+							case style_numformat::ideographLegal:		num_format = L"ideographLegalTraditional"; break;
+							case style_numformat::ideographTraditional:	num_format = L"ideographTraditional"; break;
+							case style_numformat::ideographZodiac:		num_format = L"ideographZodiac"; break;
+							case style_numformat::ideographZodiacTraditional:	num_format = L"ideographZodiacTraditional"; break;
+							
+							case style_numformat::iroha:			num_format = L"iroha"; break;
+							
+							case style_numformat::koreanDigital:	num_format = L"koreanDigital"; break;
+							
 							case style_numformat::arabic:
 							default:
-																		num_format= L"decimal"; break;
+									num_format= L"decimal"; break;
 						}
 					}
 					CP_XML_ATTR(L"w:val", num_format);
@@ -530,25 +567,31 @@ void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & C
 namespace 
 {
 
-wchar_t convert_bullet_char(wchar_t c)
+std::wstring convert_bullet_char(std::wstring c)
 {
     //return c;
-    wchar_t res = c;
-    switch(c)
-    {
-    case L'\xE00C': res = L'\xF075';/*L'\xF0A8'*/; break; 
-    case L'\xE00A': res = L'\xF0A7'; break; 
-    case L'\x2611': res = L'\xF0FE'; break; 
-    case L'\x2022': res = L'\x2022'; break; 
-    case L'\x25CF': res = L'\xF0B7'; break; 
-    case L'\x27A2': res = L'\xF0D8'; break; 
-    case L'\x2714': res = L'\xF0FC'; break; 
-    /*case L'\x25A0': res = L'\xF0A7'; break; */
-    case L'\x25CB': res = L'\x006F'; break; 
-    case L'\x2794': res = L'\xF0DA'; break; 
-    case L'\x2717': res = L'\xF04F'; break; 
-    case L'\x2013': res = L'\x2013'; break;
-    default:break;
+	std::wstring res;
+
+	for(size_t i = 0; i < c.size(); ++i)
+	{
+		switch (c[i])
+		{
+		case L'\xE00C': res += L'\xF075';/*L'\xF0A8'*/; break;
+		case L'\xE00A': res += L'\xF0A7'; break;
+		case L'\x2611': res += L'\xF0FE'; break;
+		case L'\x2022': res += L'\x2022'; res += L'\x20'; break;
+		case L'\x25CF': res += L'\xF0B7'; break;
+		case L'\x27A2': res += L'\xF0D8'; break;
+		case L'\x2714': res += L'\xF0FC'; break;
+			/*case L'\x25A0': res = L'\xF0A7'; break; */
+		case L'\x25CB': res += L'\x006F'; break;
+		case L'\x2794': res += L'\xF0DA'; break;
+		case L'\x2717': res += L'\xF04F'; break;
+		case L'\x2013': res += L'\x2013'; break;
+		default:
+			res += c[i];
+			break;
+		}
     }
     return res;
 }
@@ -573,20 +616,19 @@ void text_list_level_style_bullet::docx_convert(oox::docx_conversion_context & C
 			CP_XML_ATTR(L"w:ilvl",(text_list_level_style_attr_.get_text_level() - 1));
 			CP_XML_NODE(L"w:numFmt"){CP_XML_ATTR(L"w:val",L"bullet");}
 
-			CP_XML_NODE(L"w:suff")
-			{   
-				if ((labelAlignment) && (labelAlignment->text_label_followed_by_))
+			if ((labelAlignment) && (labelAlignment->text_label_followed_by_))
+			{
+				CP_XML_NODE(L"w:suff")
 				{
-					CP_XML_ATTR(L"w:val",labelAlignment->text_label_followed_by_.get() );
+					CP_XML_ATTR(L"w:val", labelAlignment->text_label_followed_by_.get());
 				}
-				else 
-					CP_XML_ATTR(L"w:val", L"tab");
 			}
 
-			const wchar_t bullet = text_list_level_style_bullet_attr_.text_bullet_char_.get_value_or(L'\x2022');
+			std::wstring bullet = text_list_level_style_bullet_attr_.text_bullet_char_.get_value_or(L"\x2022");
 			CP_XML_NODE(L"w:lvlText")
 			{
-				CP_XML_ATTR(L"w:val",convert_bullet_char(bullet));
+				std::wstring out = convert_bullet_char(bullet);
+				CP_XML_ATTR(L"w:val", out);
 			}
 
 			docx_serialize_level_justification(CP_XML_STREAM(), listLevelProperties);
@@ -611,7 +653,7 @@ void text_list_level_style_bullet::docx_convert(oox::docx_conversion_context & C
 
 				if (labelAlignment)
 				{
-					docx_serialize_label_alignment_props(CP_XML_STREAM(), labelAlignment);                                 
+					docx_serialize_label_alignment_props(CP_XML_STREAM(), labelAlignment, false);                                 
 				}
 				else
 				{    
@@ -671,7 +713,7 @@ void text_list_level_style_bullet::pptx_convert(oox::pptx_conversion_context & C
 	CP_XML_WRITER(strm)
 	{ 	
 		style_text_properties * textProperties = dynamic_cast<style_text_properties *>(style_text_properties_.get());
-		wchar_t bullet = text_list_level_style_bullet_attr_.text_bullet_char_.get_value_or(L'\x2022');
+		std::wstring bullet = text_list_level_style_bullet_attr_.text_bullet_char_.get_value_or(L"\x2022");
 	    
 		if (textProperties)///эти свойства относятся 
 			// к отрисовки значков !!! а не самого текста
@@ -686,7 +728,7 @@ void text_list_level_style_bullet::pptx_convert(oox::pptx_conversion_context & C
 			//{
 			//	if (textProperties->content().style_font_charset_.get() == L"x-xsymbol")bullet = bullet + 0xf000;
 			//}
-			CP_XML_ATTR(L"char",bullet/*convert_bullet_char(bullet)*/);
+			CP_XML_ATTR(L"char", bullet/*convert_bullet_char(bullet)*/);
 		}
 	}
 }
@@ -710,21 +752,19 @@ void text_list_level_style_image::docx_convert(oox::docx_conversion_context & Co
 		{
 			CP_XML_ATTR(L"w:ilvl",(text_list_level_style_attr_.get_text_level() - 1));
 			CP_XML_NODE(L"w:numFmt"){CP_XML_ATTR(L"w:val",L"bullet");}
-
-			CP_XML_NODE(L"w:suff")
-			{   
-				if ((labelAlignment) && (labelAlignment->text_label_followed_by_))
+   
+			if ((labelAlignment) && (labelAlignment->text_label_followed_by_))
+			{
+				CP_XML_NODE(L"w:suff")
 				{
 					CP_XML_ATTR(L"w:val",labelAlignment->text_label_followed_by_.get() );
 				}
-				else 
-					CP_XML_ATTR(L"w:val", L"tab");
 			}
 
-			const wchar_t bullet = L'\x2022';
+			std::wstring bullet = L"\x2022";
 			CP_XML_NODE(L"w:lvlText")
 			{
-				CP_XML_ATTR(L"w:val",convert_bullet_char(bullet));
+				CP_XML_ATTR(L"w:val", bullet/*convert_bullet_char(bullet)*/);
 			}
 
 			docx_serialize_level_justification(CP_XML_STREAM(), listLevelProperties);
@@ -749,7 +789,7 @@ void text_list_level_style_image::docx_convert(oox::docx_conversion_context & Co
 
 				if (labelAlignment)
 				{
-					docx_serialize_label_alignment_props(CP_XML_STREAM(), labelAlignment);                                 
+					docx_serialize_label_alignment_props(CP_XML_STREAM(), labelAlignment, false);                                 
 				}
 				else
 				{    
@@ -865,10 +905,18 @@ void text_outline_level_style::add_attributes( const xml::attributes_wc_ptr & At
 
 void text_outline_level_style::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-    if (L"style" == Ns && L"list-level-properties" == Name)
-        CP_CREATE_ELEMENT(list_level_properties_);    
-    else if (L"style" == Ns && L"text-properties" == Name)
-        CP_CREATE_ELEMENT(text_properties_);    
+	if (L"style" == Ns && L"list-level-properties" == Name)
+	{
+		CP_CREATE_ELEMENT(list_level_properties_);
+	}
+	else if (L"style" == Ns && L"properties" == Name)
+	{
+		create_element_and_read(Reader, L"style", L"list-level-properties", list_level_properties_, getContext());
+	}
+	else if (L"style" == Ns && L"text-properties" == Name)
+	{
+		CP_CREATE_ELEMENT(text_properties_);
+	}
 	else
     {
          CP_NOT_APPLICABLE_ELM();

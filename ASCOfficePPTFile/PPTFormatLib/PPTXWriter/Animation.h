@@ -51,7 +51,7 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Video.h"
 
 #include "../Records/SlideProgTagsContainer.h"
-#include "../Records/SoundCollectionContainer.h"
+#include "ImageManager.h"
 #include "../Records/Animations/AnimationInfoContainer.h"
 
 namespace PPT_FORMAT
@@ -62,16 +62,35 @@ struct SOldAnimation
     CRecordAnimationInfoContainer* anim;
 
     // There will be additional records for animation here;
+    unsigned getAnimDur()const;
+};
+
+// struct for the params in class PPTX::Logic::Val
+struct SValue
+{
+    enum
+    {
+        str,
+        dbl
+    };
+    SValue(const std::wstring& str) : strVal(str), type(SValue::str) {}
+    SValue(const wchar_t* str) : strVal(str), type(SValue::str) {}
+    SValue(const double& dbl) : dblVal(dbl), type(SValue::dbl) {}
+
+    std::wstring strVal;
+    double dblVal;
+    const int type;
 };
 
 // Extenstion for CRecordExtTimeNodeContainer
 class Animation
 {
 public:
-    Animation(CRecordPP10SlideBinaryTagExtension *pPPT10Ext, const std::vector<SOldAnimation> &oldAnim) :
+    Animation(CRecordPP10SlideBinaryTagExtension *pPPT10Ext, const std::vector<SOldAnimation> &oldAnim, CExMedia* pExMedia, CRelsGenerator* pRels) :
         m_pPPT10(pPPT10Ext),
         m_arrOldAnim(oldAnim),
-        m_pSoundContainer(nullptr),
+        m_pExMedia(pExMedia),
+        m_pRels(pRels),
         m_cTnId(1),
         m_pBldLst(nullptr),
         m_currentBldP(nullptr)
@@ -79,11 +98,6 @@ public:
 
     }
 
-    // Not delete any pointers
-    CRecordPP10SlideBinaryTagExtension *m_pPPT10;       // Must be it xor (maybe 'or' i dunno)
-    std::vector<SOldAnimation>          m_arrOldAnim;   // this one
-
-    CRecordSoundCollectionContainer *m_pSoundContainer; // Optional
 
     // Call it and only it to convert animation
     void Convert(PPTX::Logic::Timing &oTiming);
@@ -95,6 +109,8 @@ private:
     void FillCTn(
             CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::CTn &oCTn);
+    void FillStCondLst(const std::vector<CRecordTimeConditionContainer*>& timeCondCont,
+                       PPTX::Logic::CondLst& stCondLst);
     void FillTnChild(
             CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::TimeNodeBase &oChild);
@@ -117,8 +133,9 @@ private:
     void FillAnimScale(
             CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::AnimScale &oAnim);
-    void FillAudio(
-            PPT_FORMAT::CRecordClientVisualElementContainer *pCVEC,
+    void FillAudio(CRecordExtTimeNodeContainer *pETNC,
+            PPTX::Logic::Audio &oAudio);
+    void FillAudio(CRecordClientVisualElementContainer *pCVEC,
             PPTX::Logic::Audio &oAudio);
     void FillCmd(
             CRecordExtTimeNodeContainer *pETNC,
@@ -138,11 +155,9 @@ private:
     void FillCBhvr(
             CRecordTimeBehaviorContainer *pBhvr,
             PPTX::Logic::CBhvr &oBhvr);
-    void FillCBhvr(
-            int dur, UINT spid, std::wstring attrname, int delay,
-            PPTX::Logic::CBhvr &oBhvr);
-    void FillCond(
-            PPT_FORMAT::CRecordTimeConditionContainer *oldCond,
+    void FillCBhvr(PPTX::Logic::CBhvr &oBhvr,
+            int dur, UINT spid, std::wstring attrname, int delay);
+    void FillCond(PPT_FORMAT::CRecordTimeConditionContainer *oldCond,
             PPTX::Logic::Cond &cond);
     void FillBldLst(
             PPT_FORMAT::CRecordBuildListContainer *pBLC,
@@ -152,6 +167,9 @@ private:
             PPTX::Logic::BldP &oBP);
     void FillSet(
             PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
+            PPTX::Logic::Set& oSet);
+    void FillSet(
+            PPT_FORMAT::CRecordTimeSetBehaviorContainer *pTSBC,
             PPTX::Logic::Set& oSet);
     void FillSubTnLst (
             std::vector<CRecordSubEffectContainer*> &vecSEC,
@@ -169,11 +187,75 @@ private:
     // For old animation.
     void InitTimingTags(PPTX::Logic::Timing &oTiming); // Initialize non-exist (in 95-97 format) struct
     void FillOldAnim(SOldAnimation& oldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase);
+    void SplitAnim(std::list<std::list<SOldAnimation*> >& arrClickPar);
+
+    // erase first oldAnim and fill new timeNodeBase. After filling call next method with same list
+    void FillClickPar   (std::list<SOldAnimation*>& clickPar, PPTX::Logic::TimeNodeBase &oTimeNodeBase);
+    void FillGroup      (SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32& groupDelay, std::wstring nodeType);
+    void FillAfterEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32& groupDelay);
+    void FillClickEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32& groupDelay);
+    void FillCBhvr      (PPTX::Logic::CBhvr &oCBhvr, SOldAnimation* pOldAnim, int delay = 499);
+
+    void FillCTnParams  (PPTX::Logic::CTn &oCTN, std::wstring nodeType, std::wstring condDelay = L"0",
+                         std::wstring fill = L"hold", SOldAnimation *pOldAnim = NULL);
+    void FillCTnAnimation  (PPTX::Logic::CTn &oCTN, SOldAnimation *pOldAnim);
+
+    void FillAnim       (PPTX::Logic::Anim& oAnim, SOldAnimation* pOldAnim, int dur, std::wstring attrname,
+                         SValue val1, SValue val2, std::wstring fmla = L"");
+    void FillAnimEffect (PPTX::Logic::AnimEffect& oAnimEffect, SOldAnimation* pOldAnim, std::wstring filter, std::wstring transition = L"in");
+
+    void FillCBhvrForAnim (PPTX::Logic::Anim& oAnim, SOldAnimation* pOldAnim, int dur, std::wstring attrname);
+    void FillSetAndAnim (SOldAnimation* pOldAnim, PPTX::Logic::ChildTnLst& oParent);
+
+    // This methods fill ChildTnLst with anim nodes
+    void ConvertAppear(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+    void ConvertFlyIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertBlinds(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertShape(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertCheckerboard(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+    void ConvertCrawlIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertDissolveIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+    void ConvertFlashOnce(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertPeekIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertRandomBars(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertSpiralIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+    void ConvertSplit(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertStretch(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertStrips(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertBasicSwivel(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertWipe(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertBasicZoom(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
+    void ConvertRandomEffect(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+
+    void PushAnim(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int dur,
+                  std::wstring attrname1, SValue val1, SValue val2,
+                  std::wstring attrname2, SValue val3, SValue val4,
+                  std::wstring fmla1 = L"", std::wstring fmla2 = L"");
+    void PushAnim(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim,
+             std::wstring attrname1, SValue val1, SValue val2,std::wstring fmla1 = L"");
+
+    void PushAnimEffect(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, std::wstring filter, std::wstring transition = L"in");
+    void PushSet(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int dur = 0);
+
+public:
+    // Not delete any pointers
+    CRecordPP10SlideBinaryTagExtension *m_pPPT10;       // For new animation
+    std::vector<SOldAnimation>          m_arrOldAnim;   // this one can dublicate new animation
+
+public:
+    inline void setNextRId(int nextRId)
+    {
+        m_nextRID = nextRId;
+    }
 
 private:
+    CExMedia            *m_pExMedia;
+    CRelsGenerator      *m_pRels;
     unsigned m_cTnId;
     PPTX::Logic::BldLst *m_pBldLst; // Do not delete
     PPTX::Logic::BldP   *m_currentBldP;
+
+    int m_nextRID; // it needs for audio maybe video for compisation id number;
 };
 
 }

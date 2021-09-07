@@ -46,7 +46,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCol)
-			CCol(OOX::Document *pMain = NULL) : WritingElement(pMain)
+				CCol(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
 			virtual ~CCol()
@@ -55,7 +55,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -76,60 +76,20 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( !oReader.IsEmptyNode() )
+				if (!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 			}
 
-			virtual EElementType getType () const
+			virtual EElementType getType() const
 			{
 				return et_x_Col;
 			}
 
 		private:
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				nullable_double ptWidth;
-				nullable_bool bAutoFit;
-
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("bestFit"),		m_oBestFit)
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("collapsed"),	m_oCollapsed )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("customWidth"),	m_oCustomWidth )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hidden"),		m_oHidden )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("max"),			m_oMax )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("min"),			m_oMin )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outlineLevel"),m_oOutlineLevel )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("phonetic"),	m_oPhonetic )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("style"),		m_oStyle )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("width"),		m_oWidth )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Width"),	ptWidth )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:AutoFitWidth"),	bAutoFit )
-				WritingElement_ReadAttributes_End( oReader )
-
-				if (ptWidth.IsInit())
-				{
-					m_oWidth.Init();
-					double pixDpi = *ptWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
-					double maxDigitSize = 4.25;
-					m_oWidth->SetValue((int(( pixDpi /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9);
-					
-					m_oCustomWidth.Init();
-					m_oCustomWidth->FromBool(true);
-				}
-
-				if (bAutoFit.IsInit() && (*bAutoFit == false))
-				{
-				}
-				else
-				{
-					m_oBestFit.Init();
-					m_oBestFit->FromBool(true);
-				}
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader); // -> Worksheet.cpp
 
 		public:
 				nullable<SimpleTypes::COnOff<>>					m_oBestFit;

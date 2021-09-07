@@ -39,7 +39,7 @@
 namespace cpdoccore { 
 namespace odf_reader {
 
-class document_context;
+
 
 bool create_element_and_read(xml::sax * Reader,
                              const std::wstring & Ns,
@@ -50,7 +50,8 @@ bool create_element_and_read(xml::sax * Reader,
 {
     if (office_element_ptr elm = office_element_creator::get()->create(Ns, Name, Context, isRoot))
     {
-		elm->read_sax( Reader );
+		elm->afterCreate();
+			elm->read_sax( Reader );
         elm->afterReadContent();
         
         if (_Element) // элемент читается повторно
@@ -63,7 +64,7 @@ bool create_element_and_read(xml::sax * Reader,
     }
     else
     {
-        _CP_LOG << L"[error] : create element failed (" << Ns << L":" << Name << L")\n";
+		_CP_LOG << L"[error] : create element failed (" << Ns << L":" << Name << L")\n";
 
         not_applicable_element(L"[!!!]", Reader, Ns, Name);
     }
@@ -85,8 +86,37 @@ bool create_element_and_read(xml::sax * Reader,
     }
     return false;
 }
+//----------------------------------------------------------------------------------------------------
 
+void office_element::afterCreate()
+{
+	if (!context_) return;
 
+	ElementType type_ = this->get_type();
+
+	context_->levels.push_back(this);
+}
+void office_element::afterReadContent()
+{
+	if (!context_) return;
+
+	ElementType type_ = this->get_type();
+
+	std::wstring style = element_style_name.get_value_or(L"");
+
+	if ((type_ == typeTextH || type_ == typeTextP) && element_style_name)
+	{
+		if ((context_->last_paragraph) && (!context_->last_paragraph->next_element_style_name))
+		{
+			context_->last_paragraph->next_element_style_name = element_style_name;
+		}
+
+		context_->last_paragraph = this;
+	}
+
+	if (false == context_->levels.empty())
+		context_->levels.pop_back();
+}
 
 }
 }

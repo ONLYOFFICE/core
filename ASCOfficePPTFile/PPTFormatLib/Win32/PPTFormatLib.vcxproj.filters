@@ -652,54 +652,6 @@
     <ClInclude Include="..\Records\Slide\SlideTime10Atom.h">
       <Filter>Records\Slide</Filter>
     </ClInclude>
-    <ClInclude Include="..\Records\Text\CFMasks.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\FontCollection10Container.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\FontEmbedFlags10Atom.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\OutlineTextProps9Container.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\OutlineTextPropsHeaderExAtom.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\PFMasks.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\StyleTextProp9Atom.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\StyleTextProp10Atom.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\StyleTextProp11Atom.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\TextCFException9.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\TextCFException10.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\TextDefaults9Atom.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\TextMasterStyle9Atom.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\TextMasterStyle9Level.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\TextPFException9.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Text\TextSIException.h">
-      <Filter>Records\Text</Filter>
-    </ClInclude>
     <ClInclude Include="..\Reader\Slide.h">
       <Filter>Reader</Filter>
     </ClInclude>
@@ -742,11 +694,50 @@
     <ClInclude Include="..\PPTXWriter\Animation.h">
       <Filter>OOXWriter</Filter>
     </ClInclude>
-    <ClInclude Include="..\PPTXWriter\ridmanager.h">
-      <Filter>OOXWriter</Filter>
-    </ClInclude>
     <ClInclude Include="..\Structures\ColorIndex.h">
       <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\OutlineTextProps9Container.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\OutlineTextPropsHeaderExAtom.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\TextCFException9.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\TextCFException10.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\TextDefaults9Atom.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\TextMasterStyle9Atom.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\TextMasterStyle9Level.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\TextPFException9.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\TextSIException.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\StyleTextProp11Atom.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\StyleTextProp9Atom.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\StyleTextProp10Atom.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\FontCollection10Container.h">
+      <Filter>Records\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\FontEmbedFlags10Atom.h">
+      <Filter>Records\Text</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -790,7 +781,10 @@
     <ClCompile Include="..\PPTXWriter\Animation.cpp">
       <Filter>OOXWriter</Filter>
     </ClCompile>
-    <ClCompile Include="..\PPTXWriter\ridmanager.cpp">
+    <ClCompile Include="..\PPTXWriter\TableWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PPTXWriter\TxBodyConverter.cpp">
       <Filter>OOXWriter</Filter>
     </ClCompile>
   </ItemGroup>

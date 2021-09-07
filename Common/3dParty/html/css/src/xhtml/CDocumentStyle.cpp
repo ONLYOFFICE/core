@@ -293,7 +293,12 @@ namespace NSCSS
             oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_ContextualSpacing, L"true");
         }
 
-        oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Shd, oStyle.m_pBackground.GetColor());
+        if (!oStyle.m_pBackground.Empty())
+        {
+            const std::wstring wsColor = oStyle.m_pBackground.GetColorHex();
+            if (wsColor != L"ffffff")
+                oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_Shd, wsColor);
+        }
 
         if (!oStyle.m_pBorder.Empty())
         {
@@ -370,8 +375,8 @@ namespace NSCSS
         if (oStyle.Empty() && oXmlElement.Empty())
             return;
 
+        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Highlight, oStyle.m_pBackground.GetColor());
         oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Color, oStyle.m_pText.GetColor());
-        oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Shd, oStyle.m_pBackground.GetColor());
         oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_U, oStyle.m_pText.GetDecoration());
         oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Sz, oStyle.m_pFont.GetSizeW());
         oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_RFonts, oStyle.m_pFont.GetFamily());

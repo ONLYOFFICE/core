@@ -75,11 +75,23 @@ BiffStructurePtr CellRef::clone()
 
 const std::wstring CellRef::toString() const
 {
-	if(to_string_cache.empty())
+	if (to_string_cache.empty())
 	{
-		to_string_cache = AUX::loc2str(row, rowRelative, column, colRelative);
+		int row_norm = AUX::normalizeRow(row);
+		int column_norm = AUX::normalizeColumn(column);
+
+		if (0 == row_norm && 65535 == row_norm) // whole column or range of columns
+		{
+			row_norm = 1048575;
+		}
+		if (0 == column_norm && 255 == column_norm) // whole row or range of rows
+		{
+			column_norm = 16383;
+		}
+		return to_string_cache = AUX::loc2str(row_norm, rowRelative, column_norm, colRelative);
 	}
 	return to_string_cache;
+
 }
 
 

@@ -90,7 +90,14 @@ const wchar_t * draw_image::name = L"image";
 
 void draw_image::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    draw_image_attlist_.add_attributes(Attributes);
+	office_element*  last_element = getContext()->get_last_element();
+	if ((!last_element) || (last_element->get_type() != typeDrawFrame))
+	{
+		draw_frame_ptr = office_element_creator::get()->create(L"draw", L"frame", getContext(), false);
+		draw_frame_ptr->add_attributes(Attributes);
+	}
+	
+	draw_image_attlist_.add_attributes(Attributes);
     xlink_attlist_.add_attributes(Attributes);
 }
 
@@ -325,6 +332,12 @@ std::wostream & draw_text_box::text_to_stream(std::wostream & _Wostream, bool bX
 
 void draw_text_box::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
+	office_element*  last_element = getContext()->get_last_element();
+	if ((!last_element) || (last_element->get_type() != typeDrawFrame))
+	{
+		draw_frame_ptr = office_element_creator::get()->create(L"draw", L"frame", getContext(), false);
+		draw_frame_ptr->add_attributes(Attributes);
+	}
     draw_text_box_attlist_.add_attributes(Attributes);
 }
 
@@ -340,7 +353,14 @@ const wchar_t * draw_object::name = L"object";
 
 void draw_object::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    draw_object_attlist_.add_attributes(Attributes);
+	office_element*  last_element = getContext()->get_last_element();
+	if ((!last_element) || (last_element->get_type() != typeDrawFrame))
+	{
+		draw_frame_ptr = office_element_creator::get()->create(L"draw", L"frame", getContext(), false);
+		draw_frame_ptr->add_attributes(Attributes);
+	}
+	
+	draw_object_attlist_.add_attributes(Attributes);
     xlink_attlist_.add_attributes(Attributes);
 }
 
@@ -390,7 +410,7 @@ void draw_object_ole::detectObject(const std::wstring &fileName, std::wstring &p
 
 			std::vector<std::string> str;
 			
-			while (sz_obj > 0)
+			while (sz_obj > 4)
 			{
 				_UINT32 sz = 0;			
 				pStream->read((unsigned char*)&sz, 4); sz_obj-= 4;
@@ -440,6 +460,8 @@ std::wstring draw_object::office_convert(odf_document_ptr odfDocument, int type)
 	std::wstring folderPath		= odfDocument->get_folder();	
     std::wstring objectOutPath	= NSDirectory::CreateDirectoryWithUniqueName(folderPath);
 	
+	if (objectOutPath.empty()) return L"";
+
 	if (type == 1)
 	{
 		oox::package::docx_document	outputDocx;

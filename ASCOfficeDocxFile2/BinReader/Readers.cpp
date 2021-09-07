@@ -313,6 +313,10 @@ int Binary_CommonReader2::ReadShd(BYTE type, long length, void* poResult)
 		pShd->bFill = true;
 		pShd->Fill = ReadColor();
 		break;
+	case c_oSerShdType::FillTheme:
+		pShd->bThemeFill = true;
+		ReadThemeColor(length, pShd->ThemeFill);
+		break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
@@ -327,18 +331,6 @@ template<typename T> int Binary_CommonReader2::ReadTrackRevisionInner(BYTE type,
 	else
 	 res = c_oSerConstants::ReadUnknown;
 	return res;
-}
-
-Binary_VbaProjectTableReader::Binary_VbaProjectTableReader (NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
-		: Binary_CommonReader(poBufferedStream), m_oFileWriter(oFileWriter)
-{
-}
-int Binary_VbaProjectTableReader::Read()
-{
-	m_oFileWriter.m_pVbaProject = new OOX::VbaProject(NULL);
-    m_oFileWriter.m_pVbaProject->fromPPTY(&m_oBufferedStream);
-
-    return c_oSerConstants::ReadOk;
 }
 Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments)
 	:
@@ -3558,7 +3550,7 @@ int Binary_CustomsTableReader::ReadCustom(BYTE type, long length, void* poResult
 		int res = c_oSerConstants::ReadOk;
 		READ1_DEF(length, res, this->ReadCustomContent, &oCustomXmlProps);
 
-		m_oFileWriter.m_oCustomXmlWriter.WriteCustom(oCustomXmlProps.toXML(), oCustomXmlProps.m_oCustomXmlContent);
+		m_oFileWriter.m_oCustomXmlWriter.WriteCustom(oCustomXmlProps.toXML(), oCustomXmlProps.m_oCustomXmlContent, m_oFileWriter.m_bGlossaryMode);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8560,37 +8552,38 @@ int Binary_DocumentTableReader::ReadEmbedded(BYTE type, long length, void* poRes
 			NSDirectory::CreateDirectory(strDstEmbedded);
 
 			std::wstring strDstEmbeddedTemp = strDstEmbedded + FILE_SEPARATOR_STR + L"Temp";
-			NSDirectory::CreateDirectory(strDstEmbeddedTemp);
+			if (true == NSDirectory::CreateDirectory(strDstEmbeddedTemp))
+			{
+				std::wstring strDstEmbeddedTempXl = strDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl";
+				NSDirectory::CreateDirectory(strDstEmbeddedTempXl);
 
-			std::wstring strDstEmbeddedTempXl = strDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl";
-			NSDirectory::CreateDirectory(strDstEmbeddedTempXl);
+				std::wstring strDstEmbeddedTempThemePath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"theme";
+				std::wstring strDstEmbeddedTempDrawingPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"drawings";
+				std::wstring strDstEmbeddedTempEmbeddingsPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"embeddings";
 
-			std::wstring strDstEmbeddedTempThemePath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"theme";
-			std::wstring strDstEmbeddedTempDrawingPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"drawings";
-			std::wstring strDstEmbeddedTempEmbeddingsPath = strDstEmbeddedTempXl + FILE_SEPARATOR_STR + L"embeddings";
+				int id = m_oFileWriter.m_oChartWriter.nEmbeddedCount++;
 
-			int id = m_oFileWriter.m_oChartWriter.nEmbeddedCount++;
+				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id + 1) + L".xlsx";
+				BinXlsxRW::SaveParams oSaveParams(strDstEmbeddedTempDrawingPath, strDstEmbeddedTempEmbeddingsPath, strDstEmbeddedTempThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???
 
-			std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring( id + 1) + L".xlsx";
-			BinXlsxRW::SaveParams oSaveParams(strDstEmbeddedTempDrawingPath, strDstEmbeddedTempEmbeddingsPath, strDstEmbeddedTempThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???
-			
-			OOX::Spreadsheet::CXlsx oXlsx;
+				OOX::Spreadsheet::CXlsx oXlsx;
 
-			BinXlsxRW::BinaryFileReader embeddedReader;				
-			embeddedReader.ReadMainTable(oXlsx, m_oBufferedStream, L"", strDstEmbeddedTemp, oSaveParams, m_oFileWriter.m_pDrawingConverter);
+				BinXlsxRW::BinaryFileReader embeddedReader;
+				embeddedReader.ReadMainTable(oXlsx, m_oBufferedStream, L"", strDstEmbeddedTemp, oSaveParams, m_oFileWriter.m_pDrawingConverter);
 
-			oXlsx.PrepareToWrite();
+				oXlsx.PrepareToWrite();
 
-			oXlsx.Write(strDstEmbeddedTemp, *oSaveParams.pContentTypes);
+				oXlsx.Write(strDstEmbeddedTemp, *oSaveParams.pContentTypes);
 
-			COfficeUtils oOfficeUtils(NULL);
-			oOfficeUtils.CompressFileOrDirectory(strDstEmbeddedTemp, strDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, true);
+				COfficeUtils oOfficeUtils(NULL);
+				oOfficeUtils.CompressFileOrDirectory(strDstEmbeddedTemp, strDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, true);
 
-			std::wstring sEmbWorksheetRelsName = L"embeddings/" + sXlsxFilename;
-            std::wstring bstrEmbWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
-            m_oFileWriter.m_pDrawingConverter->WriteRels(bstrEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring(), &pDrawingProperty->nObjectId);
+				std::wstring sEmbWorksheetRelsName = L"embeddings/" + sXlsxFilename;
+				std::wstring bstrEmbWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
+				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring(), &pDrawingProperty->nObjectId);
 
-			NSDirectory::DeleteDirectory(strDstEmbeddedTemp);
+				NSDirectory::DeleteDirectory(strDstEmbeddedTemp);
+			}
 		}
 		m_oBufferedStream.Seek( pos + length); 
 	}		
@@ -8657,6 +8650,10 @@ int Binary_DocumentTableReader::ReadDocPr(BYTE type, long length, void* poResult
 	else if ( c_oSerDocPr::Descr == type )
 	{
         pNonVisualDrawingProps->descr = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerDocPr::Form == type)
+	{
+		pNonVisualDrawingProps->form = m_oBufferedStream.GetBool();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -9141,6 +9138,11 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 		pSdtPr->m_oTextFormPr.Init();
 		READ1_DEF(length, res, this->ReadSdtTextFormPr, pSdtPr->m_oTextFormPr.GetPointer());
 	}
+	else if (c_oSerSdt::PictureFormPr == type)
+	{
+		pSdtPr->m_oPicture.Init();
+		READ1_DEF(length, res, this->ReadSdtPicture, pSdtPr->m_oPicture.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -9326,10 +9328,40 @@ int Binary_DocumentTableReader::ReadDropDownList(BYTE type, long length, void* p
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int Binary_DocumentTableReader::ReadSdtPicture(BYTE type, long length, void* poResult)
+{
+	OOX::Logic::CSdtPicture* pPicture = static_cast<OOX::Logic::CSdtPicture*>(poResult);
+
+	int res = 0;
+	if (c_oSerSdt::PictureFormPrScaleFlag == type)
+	{
+		pPicture->m_oScaleFlag = m_oBufferedStream.GetLong();
+	}
+	else if (c_oSerSdt::PictureFormPrLockProportions == type)
+	{
+		pPicture->m_oLockProportions = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerSdt::PictureFormPrRespectBorders == type)
+	{
+		pPicture->m_oRespectBorders = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerSdt::PictureFormPrShiftX == type)
+	{
+		pPicture->m_oShiftX = m_oBufferedStream.GetDoubleReal();
+	}
+	else if (c_oSerSdt::PictureFormPrShiftY == type)
+	{
+		pPicture->m_oShiftY = m_oBufferedStream.GetDoubleReal();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poResult)
 {
 	int res = 0;
-	ComplexTypes::Word::CFormPr* pFormPr = static_cast<ComplexTypes::Word::CFormPr*>(poResult);
+	OOX::Logic::CFormPr* pFormPr = static_cast<OOX::Logic::CFormPr*>(poResult);
+	
 	if (c_oSerSdt::FormPrKey == type)
 	{
 		pFormPr->m_oKey = m_oBufferedStream.GetString3(length);
@@ -9345,6 +9377,16 @@ int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poRe
 	else if (c_oSerSdt::FormPrRequired == type)
 	{
 		pFormPr->m_oRequired = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerSdt::FormPrBorder == type)
+	{
+		pFormPr->m_oBorder.Init();
+		READ2_DEF(length, res, oBinary_pPrReader.ReadBorder2, pFormPr->m_oBorder.GetPointer());
+	}
+	else if (c_oSerSdt::FormPrShd == type)
+	{
+		pFormPr->m_oShd.Init();
+		READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, pFormPr->m_oShd.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -9368,6 +9410,14 @@ int Binary_DocumentTableReader::ReadSdtTextFormPr(BYTE type, long length, void* 
 	{
 		pTextFormPr->m_oCombBorder.Init();
 		READ2_DEF(length, res, oBinary_pPrReader.ReadBorder2, pTextFormPr->m_oCombBorder.GetPointer());
+	}
+	else if (c_oSerSdt::TextFormPrAutoFit == type)
+	{
+		pTextFormPr->m_oAutoFit = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerSdt::TextFormPrMultiLine == type)
+	{
+		pTextFormPr->m_oMultiLine = m_oBufferedStream.GetBool();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -9505,8 +9555,12 @@ int Binary_NotesTableReader::ReadNoteContent(BYTE type, long length, void* poRes
 };
 
 
-BinaryFileReader::BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter) : 
-	m_sFileInDir(sFileInDir), m_oBufferedStream(oBufferedStream), m_oFileWriter(oFileWriter)
+BinaryFileReader::BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro)
+	: 
+	m_sFileInDir(sFileInDir), 
+	m_oBufferedStream(oBufferedStream), 
+	m_oFileWriter(oFileWriter),
+	m_bMacro(bMacro)
 {
 }
 int BinaryFileReader::ReadFile()
@@ -9605,7 +9659,7 @@ int BinaryFileReader::ReadMainTable()
 		
 		if (!oSettingsCustom.IsEmpty())
 		{
-			m_oFileWriter.m_oCustomXmlWriter.WriteCustomSettings(oSettingsCustom.GetSchemaUrl(), oSettingsCustom.ToXml());
+			m_oFileWriter.m_oCustomXmlWriter.WriteCustomSettings(oSettingsCustom.GetSchemaUrl(), oSettingsCustom.ToXml(), m_oFileWriter.m_bGlossaryMode);
 		}
 	}
 	else
@@ -9705,7 +9759,14 @@ int BinaryFileReader::ReadMainTable()
 		}break;
 		case c_oSerTableTypes::VbaProject:
 		{
-			res = Binary_VbaProjectTableReader(m_oBufferedStream, m_oFileWriter).Read();
+			m_oBufferedStream.Skip(1); //skip type
+			if (m_bMacro)
+			{
+				m_oFileWriter.m_pVbaProject = new OOX::VbaProject(NULL);
+				m_oFileWriter.m_pVbaProject->fromPPTY(&m_oBufferedStream);
+			}
+			else
+				m_oBufferedStream.SkipRecord();
 		}break;
 		case c_oSerTableTypes::Glossary:
 		{
@@ -9833,9 +9894,11 @@ int BinaryFileReader::ReadMainTable()
 					L"/word" + (m_oFileWriter.m_bGlossaryMode ? std::wstring(L"/glossary") : L""), pFooter->m_sFilename);
 			}
 		}
-		for (size_t i = 0; (false == m_oFileWriter.m_bGlossaryMode) && (i < m_oFileWriter.m_oCustomXmlWriter.arItems.size()); ++i)
+		for (size_t i = 0; i < m_oFileWriter.m_oCustomXmlWriter.arItems.size(); ++i)
 		{
-			std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + m_oFileWriter.m_oCustomXmlWriter.arItems[i];
+			if (m_oFileWriter.m_oCustomXmlWriter.arItems[i].second != m_oFileWriter.m_bGlossaryMode) continue;
+
+			std::wstring sRelsPath = L"../" + OOX::FileTypes::CustomXml.DefaultDirectory().GetPath() + L"/" + m_oFileWriter.m_oCustomXmlWriter.arItems[i].first;
 			unsigned int rId;
 			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXml.RelationType(), sRelsPath, L"", &rId);
 		}

@@ -93,8 +93,10 @@ void FormFieldData::_FFData::read(VirtualStreamReader *reader)
 	{
 		xstzTextDef = readXstz(reader);
 	}
-	
-	wDef = reader->ReadUInt16();
+	else if (iType == 1 || iType == 2)
+	{
+		wDef = reader->ReadUInt16();
+	}
 	
 	xstzTextFormat	= readXstz(reader);
 	xstzHelpText	= readXstz(reader);

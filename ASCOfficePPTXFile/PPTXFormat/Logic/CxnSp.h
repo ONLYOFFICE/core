@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_CXNSP_INCLUDE_H_
-#define PPTX_LOGIC_CXNSP_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "NvCxnSpPr.h"
@@ -82,9 +80,20 @@ namespace PPTX
 				pWriter->WriteRecord1(1, spPr);
 				pWriter->WriteRecord2(2, style);
 
+				if (macro.IsInit())
+				{
+					pWriter->StartRecord(SPTREE_TYPE_MACRO);
+					pWriter->WriteString1(0, *macro);
+					pWriter->EndRecord();
+				}
 				pWriter->EndRecord();
 			}
-
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("macro"),macro)
+				WritingElement_ReadAttributes_End(oReader)
+			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				std::wstring namespace_ = m_namespace;
@@ -96,7 +105,7 @@ namespace PPTX
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
                    
 				pWriter->StartNode(namespace_ + L":cxnSp");
-
+					pWriter->WriteAttribute(L"macro", macro);
                 pWriter->EndAttributes();
 
                 nvCxnSpPr.toXmlWriter(pWriter);
@@ -126,24 +135,25 @@ namespace PPTX
 					{
 						case 0:
 						{
-							nvCxnSpPr.fromPPTY(pReader);
-							break;
-						}
+							nvCxnSpPr.fromPPTY(pReader);							
+						}break;
 						case 1:
 						{
-							spPr.fromPPTY(pReader);
-							break;
-						}
+							spPr.fromPPTY(pReader);							
+						}break;
 						case 2:
 						{
 							style = new ShapeStyle(L"p");
-							style->fromPPTY(pReader);
-							break;
-						}
-						default:
+							style->fromPPTY(pReader);							
+						}break;
+						case SPTREE_TYPE_MACRO:
 						{
-							break;
-						}
+							pReader->Skip(5); // type + size
+							macro = pReader->GetString2();
+						}break;
+						default:						
+						{							
+						}break;
 					}
 				}
 
@@ -151,6 +161,8 @@ namespace PPTX
 			}
 
 			std::wstring			m_namespace;
+
+			nullable_string			macro;
 
 			NvCxnSpPr				nvCxnSpPr;
 			SpPr					spPr;
@@ -161,4 +173,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_CXNSP_INCLUDE_H

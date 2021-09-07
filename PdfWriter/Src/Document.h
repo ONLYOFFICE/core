@@ -76,6 +76,13 @@ namespace PdfWriter
 	class CShading;
 	class CImageTilePattern;
 	class CPattern;
+	class CAcroForm;
+	class CTextField;
+	class CResourcesDict;
+	class CChoiceField;
+	class CCheckBoxField;
+	class CRadioGroupField;
+	class CPictureField;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -125,6 +132,13 @@ namespace PdfWriter
 		CImageTilePattern*CreateHatchPattern(double dW, double dH, const BYTE& nR1, const BYTE& nG1, const BYTE& nB1, const BYTE& nAlpha1, const BYTE& nR2, const BYTE& nG2, const BYTE& nB2, const BYTE& nAlpha2, const std::wstring& wsHatch);
 		CShading*         CreateAxialShading(CPage* pPage, double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);
 		CShading*         CreateRadialShading(CPage* pPage, double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);
+
+		CResourcesDict*   GetFieldsResources();
+		CTextField*       CreateTextField();	
+		CChoiceField*     CreateChoiceField();
+		CCheckBoxField*   CreateCheckBoxField();
+		CRadioGroupField* GetRadioGroupField(const std::wstring& wsGroupName);
+		CPictureField*    CreatePictureField();
 					  
 	private:		  
 					  
@@ -138,6 +152,8 @@ namespace PdfWriter
 		CShading*         CreateShading(CPage* pPage, double *pPattern, bool bAxial, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);
 		CShading*         CreateAxialShading(double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, double* pPoints, int nCount);
 		CShading*         CreateRadialShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount);
+		bool              CheckAcroForm();
+		CRadioGroupField* FindRadioGroupField(const std::wstring& wsGroupName);
 
 	private:
 
@@ -180,6 +196,9 @@ namespace PdfWriter
 		FT_Library                     m_pFreeTypeLibrary;
 		bool                           m_bPDFAConformance;
 		std::wstring				   m_wsDocumentID;
+		CAcroForm*                     m_pAcroForm;
+		CResourcesDict*                m_pFieldsResources;
+		std::vector<CRadioGroupField*> m_vRadioGroups;
 
 		friend class CFontCidTrueType;
 	};

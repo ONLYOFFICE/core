@@ -54,12 +54,23 @@ void ParsedFormula::setCCE(const size_t cce_val)
 	rgce.setCCE(cce_val);
 }
 
-
 const size_t ParsedFormula::getCCE() const
 {
 	return rgce.getCCE();
 }
 
+const bool ParsedFormula::IsVolatile() const
+{
+	const PtgVector& ptgs = rgce.getPtgs();
+	for (PtgVectorIterator it = ptgs.begin(), itEnd = ptgs.end(); it != itEnd; ++it)
+	{
+		if (0x0119/*PtgAttrSemi*/ == (*it)->getPtgId())
+		{
+			return true;
+		}
+	}
+	return false;
+}
 const bool ParsedFormula::HasPtgTbl() const
 {
 	const PtgVector& ptgs = rgce.getPtgs();

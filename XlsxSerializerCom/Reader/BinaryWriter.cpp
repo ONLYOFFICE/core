@@ -1258,7 +1258,7 @@ void BinaryStyleTableWriter::WriteXfs(const OOX::Spreadsheet::CXfs& xfs)
 {
 	int nCurPos = 0;
 	//ApplyAlignment
-	if(false != xfs.m_oApplyAlignment.IsInit())
+	if (false != xfs.m_oApplyAlignment.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::ApplyAlignment);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
@@ -1272,7 +1272,7 @@ void BinaryStyleTableWriter::WriteXfs(const OOX::Spreadsheet::CXfs& xfs)
 		m_oBcw.m_oStream.WriteBOOL(xfs.m_oApplyBorder->ToBool());
 	}
 	//ApplyFill
-	if(false != xfs.m_oApplyFill.IsInit())
+	if (false != xfs.m_oApplyFill.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::ApplyFill);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
@@ -1286,49 +1286,56 @@ void BinaryStyleTableWriter::WriteXfs(const OOX::Spreadsheet::CXfs& xfs)
 		m_oBcw.m_oStream.WriteBOOL(xfs.m_oApplyFont->ToBool());
 	}
 	//ApplyNumberFormat
-	if(false != xfs.m_oApplyNumberFormat.IsInit())
+	if (false != xfs.m_oApplyNumberFormat.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::ApplyNumberFormat);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(xfs.m_oApplyNumberFormat->ToBool());
 	}
+	//ApplyProtection
+	if (false != xfs.m_oApplyProtection.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::ApplyProtection);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(xfs.m_oApplyProtection->ToBool());
+	}
 	//BorderId
-	if(false != xfs.m_oBorderId.IsInit())
+	if (false != xfs.m_oBorderId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::BorderId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oBorderId->GetValue());
 	}
 	//FillId
-	if(false != xfs.m_oFillId.IsInit())
+	if (false != xfs.m_oFillId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::FillId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oFillId->GetValue());
 	}
 	//FontId
-	if(false != xfs.m_oFontId.IsInit())
+	if (false != xfs.m_oFontId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::FontId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oFontId->GetValue());
 	}
 	//NumFmtId
-	if(false != xfs.m_oNumFmtId.IsInit())
+	if (false != xfs.m_oNumFmtId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::NumFmtId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oNumFmtId->GetValue());
 	}
 	//QuotePrefix
-	if(false != xfs.m_oQuotePrefix.IsInit())
+	if (false != xfs.m_oQuotePrefix.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::QuotePrefix);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(xfs.m_oQuotePrefix->ToBool());
 	}
 	//PivotButton
-	if(false != xfs.m_oPivotButton.IsInit())
+	if (false != xfs.m_oPivotButton.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::PivotButton);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
@@ -1342,13 +1349,38 @@ void BinaryStyleTableWriter::WriteXfs(const OOX::Spreadsheet::CXfs& xfs)
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oXfId->GetValue());
 	}
 	//Aligment
-	if(false != xfs.m_oAligment.IsInit())
+	if (false != xfs.m_oAligment.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::Aligment);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		nCurPos = m_oBcw.WriteItemWithLengthStart();
 		WriteAligment(xfs.m_oAligment.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	//Protection 
+	if (false != xfs.m_oProtection.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::Protection);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		nCurPos = m_oBcw.WriteItemWithLengthStart();
+		WriteProtection(xfs.m_oProtection.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryStyleTableWriter::WriteProtection(const OOX::Spreadsheet::CProtection& protection)
+{
+	int nCurPos = 0;
+	if (false != protection.m_oHidden.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectionTypes::Hidden);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oHidden->ToBool());
+	}
+	if (false != protection.m_oLocked.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectionTypes::Locked);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oLocked->ToBool());
 	}
 }
 void BinaryStyleTableWriter::WriteAligment(const OOX::Spreadsheet::CAligment& aligment)
@@ -2137,6 +2169,18 @@ void BinaryWorkbookTableWriter::WriteProtection(const OOX::Spreadsheet::CWorkboo
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::SaltValue);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		m_oBcw.m_oStream.WriteStringW(*protection.m_oWorkbookSaltValue);
+	}
+	if (protection.m_oLockStructure.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::LockStructure);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oLockStructure->ToBool());
+	}
+	if (protection.m_oLockWindows.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::LockWindows);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oLockWindows->ToBool());
 	}
 }
 void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr)
@@ -3191,6 +3235,12 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::SheetViews);
 		WriteSheetViews(oWorksheet.m_oSheetViews.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
+	if (oWorksheet.m_oProtectedRanges.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::ProtectedRanges);
+		WriteProtectedRanges(oWorksheet.m_oProtectedRanges.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	//SheetFormatPr
 	if(oWorksheet.m_oSheetFormatPr.IsInit())
@@ -3470,6 +3520,62 @@ void BinaryWorksheetTableWriter::WriteWorksheetProp(OOX::Spreadsheet::CSheet& oS
 		m_oBcw.m_oStream.WriteBYTE(oSheet.m_oState->GetValue());
 	}
 }
+void BinaryWorksheetTableWriter::WriteProtectedRanges(const OOX::Spreadsheet::CProtectedRanges& protectedRanges)
+{
+	int nCurPos = 0;
+	for (size_t nIndex = 0, nLength = protectedRanges.m_arrItems.size(); nIndex < nLength; ++nIndex)
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::ProtectedRange);
+		WriteProtectedRange(*protectedRanges.m_arrItems[nIndex]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+
+void BinaryWorksheetTableWriter::WriteProtectedRange(const OOX::Spreadsheet::CProtectedRange& protectedRange)
+{
+	if (protectedRange.m_oAlgorithmName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::AlgorithmName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(protectedRange.m_oAlgorithmName->GetValue());
+	}
+	if (protectedRange.m_oSpinCount.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SpinCount);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteULONG(protectedRange.m_oSpinCount->GetValue());
+	}
+	if (protectedRange.m_oHashValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::HashValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oHashValue);
+	}
+	if (protectedRange.m_oSaltValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SaltValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oSaltValue);
+	}
+	if (protectedRange.m_oName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::Name);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oName);
+	}
+	if (protectedRange.m_oSqref.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SqRef);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oSqref);
+	}
+	for (size_t i = 0; i < protectedRange.m_arSecurityDescriptors.size(); ++i)
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SecurityDescriptor);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(protectedRange.m_arSecurityDescriptors[i]);
+	}
+}
 void BinaryWorksheetTableWriter::WriteProtection(const OOX::Spreadsheet::CSheetProtection& protection)
 {
 	if (protection.m_oAlgorithmName.IsInit())
@@ -3586,11 +3692,11 @@ void BinaryWorksheetTableWriter::WriteProtection(const OOX::Spreadsheet::CSheetP
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(protection.m_oSelectLockedCells->ToBool());
 	}
-	if (protection.m_oSelectUnlockedCell.IsInit())
+	if (protection.m_oSelectUnlockedCells.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::SelectUnlockedCell);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBOOL(protection.m_oSelectUnlockedCell->ToBool());
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oSelectUnlockedCells->ToBool());
 	}
 	if (protection.m_oSheet.IsInit())
 	{
@@ -6206,8 +6312,11 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Sprea
 	}
 	if (oConditionalFormattingRule.m_oTimePeriod.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::TimePeriod);
-		m_oBcw.m_oStream.WriteStringW(oConditionalFormattingRule.m_oTimePeriod.get2());
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::strTimePeriod);
+		m_oBcw.m_oStream.WriteStringW(oConditionalFormattingRule.m_oTimePeriod->ToString());
+		
+		//m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::TimePeriod);
+		//m_oBcw.m_oStream.WriteBYTE(oConditionalFormattingRule.m_oTimePeriod->GetValue());
 	}
 	if (oConditionalFormattingRule.m_oType.IsInit())
 	{

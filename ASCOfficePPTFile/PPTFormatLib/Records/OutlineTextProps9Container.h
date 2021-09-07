@@ -45,8 +45,16 @@ public:
     void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
     {
         CRecordOutlineTextPropsHeaderExAtom::ReadFromStream(oHeader, pStream);
-        SRecordHeader ReadHeader;
+        
+		SRecordHeader ReadHeader;
         ReadHeader.ReadFromStream(pStream);
+
+		if (ReadHeader.bBadHeader)
+		{
+			oHeader.bBadHeader = true; // GZoabli_PhD.ppt
+			return;
+		}
+
         m_styleTextProp9Atom.ReadFromStream(ReadHeader, pStream);
     }
 };
@@ -66,25 +74,29 @@ public:
         }
     }
 
-    virtual void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
-    {
-        m_oHeader			=	oHeader;
-        LONG lPos			=	0;
-        StreamUtils::StreamPosition ( lPos, pStream );
+	virtual void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+	{
+		m_oHeader = oHeader;
+		LONG lPos = 0;
+		StreamUtils::StreamPosition(lPos, pStream);
 
-        UINT lCurLen		=	0;
+		UINT lCurLen = 0;
 
-        SRecordHeader ReadHeader;
+		SRecordHeader ReadHeader;
 
-        while ( lCurLen < m_oHeader.RecLen )
-        {
-            if ( ReadHeader.ReadFromStream(pStream) == false)
+		while (lCurLen < m_oHeader.RecLen)
+		{
+			if (ReadHeader.ReadFromStream(pStream) == false || ReadHeader.bBadHeader)
                 break;
 
             lCurLen += 8 + ReadHeader.RecLen;
 
             auto pRec = new CRecordOutlineTextProps9Entry;
             pRec->ReadFromStream(ReadHeader, pStream);
+
+			if (ReadHeader.bBadHeader)
+				break;
+
             m_rgOutlineTextProps9Entry.push_back(pRec);
         }
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);

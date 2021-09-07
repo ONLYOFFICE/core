@@ -65,6 +65,10 @@ SOURCES += \
     embed/NativeControlEmbed.cpp \
     embed/NativeBuilderEmbed.cpp
 
+core_mac {
+    !use_v8:CONFIG += use_javascript_core
+}
+
 !use_javascript_core {
     HEADERS += js_internal/v8/v8_base.h
     SOURCES += js_internal/v8/v8_base.cpp

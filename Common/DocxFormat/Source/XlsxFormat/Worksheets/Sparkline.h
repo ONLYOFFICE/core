@@ -65,13 +65,13 @@ namespace OOX
 				if(m_oRef.IsInit())
 				{
 					writer.WriteString(_T("<xm:f>"));
-					writer.WriteString(m_oRef.get());
+					writer.WriteEncodeXmlString(m_oRef.get());
 					writer.WriteString(_T("</xm:f>"));
 				}
 				if(m_oSqRef.IsInit())
 				{
 					writer.WriteString(_T("<xm:sqref>"));
-					writer.WriteString(m_oSqRef.get());
+					writer.WriteEncodeXmlString(m_oSqRef.get());
 					writer.WriteString(_T("</xm:sqref>"));
 				}
 				writer.WriteString(_T("</x14:sparkline>"));

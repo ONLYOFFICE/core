@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "Ptg.h"
+#include "OperandPtg.h"
 #include "Ftab_Cetab.h"
 
 namespace XLS
@@ -39,12 +39,12 @@ namespace XLS
 
 class CFRecord;
 
-class PtgFunc : public Ptg
+class PtgFunc : public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgFunc)
 	PtgFunc(const unsigned short func_index, const unsigned char data_type);
 public:
-	PtgFunc();
+	PtgFunc(const unsigned short full_ptg_id);
 	BiffStructurePtr clone();
 
 	static PtgPtr create(const std::wstring& word, const unsigned char data_type);

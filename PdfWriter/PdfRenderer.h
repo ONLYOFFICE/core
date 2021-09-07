@@ -211,6 +211,7 @@ public:
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip);
 	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage);
+	virtual HRESULT AddFormField(const CFormFieldInfo& oInfo);
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции Pdf рендерера
 	//----------------------------------------------------------------------------------------
@@ -234,6 +235,9 @@ private:
 	bool DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
 	bool PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
 	void UpdateFont();
+	void GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);
+	PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontPath, const LONG& lFontIndex);
+	PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic);
 	void UpdateTransform();
 	void UpdatePen();
 	void UpdateBrush();
@@ -1563,6 +1567,26 @@ private:
 		double       dDestY;
 		unsigned int unDestPage;
 	};
+	class CFieldsManager
+	{
+	public:
+
+		CFieldsManager()
+		{
+			m_unCounter = 0;
+		}
+
+		std::string GetNewFieldName()
+		{
+			std::string sName("F");
+			sName.append(std::to_string(++m_unCounter));
+			return sName;
+		}
+
+	private:
+
+		unsigned int m_unCounter;
+	};
 
 private:
 
@@ -1596,6 +1620,7 @@ private:
 	LONG                         m_lClipDepth;
 	std::vector<TFontInfo>       m_vFonts;
 	std::vector<TDestinationInfo>m_vDestinations;
+	CFieldsManager               m_oFieldsManager;
 								 
 	bool                         m_bValid;
 								 

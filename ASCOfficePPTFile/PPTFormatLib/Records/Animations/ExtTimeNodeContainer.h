@@ -78,6 +78,7 @@ public:
     CRecordTimeSequenceDataAtom*					m_pTimeSequenceDataAtom;		// OPTIONAL
 
     std::vector<CRecordTimeConditionContainer*>     m_arrRgBeginTimeCondition;      // OPTIONAL
+    std::vector<CRecordTimeConditionContainer*>     m_arrRgNextTimeCondition;      // OPTIONAL // Same as m_arrRgBeginTimeCondition in ms-ppt
     std::vector<CRecordTimeConditionContainer*>     m_arrRgEndTimeCondition;        // OPTIONAL
     CRecordTimeConditionContainer*                  m_pTimeEndSyncTimeCondition;    // OPTIONAL
 
@@ -162,6 +163,9 @@ public:
         for ( size_t i = 0; i < m_arrRgBeginTimeCondition.size(); ++i )
             RELEASEOBJECT ( m_arrRgBeginTimeCondition[i] );
 
+        for ( size_t i = 0; i < m_arrRgNextTimeCondition.size(); ++i )
+            RELEASEOBJECT ( m_arrRgNextTimeCondition[i] );
+
         for ( size_t i = 0; i < m_arrRgEndTimeCondition.size(); ++i )
             RELEASEOBJECT ( m_arrRgEndTimeCondition[i] );
 
@@ -193,13 +197,14 @@ public:
 
         while ( lCurLen < m_oHeader.RecLen )
         {
-            LONG lPosLoop = 0;
-            StreamUtils::StreamPosition ( lPosLoop, pStream );
+            LONG lPosExpected = 0;
+            StreamUtils::StreamPosition ( lPosExpected, pStream );
 
             if ( ReadHeader.ReadFromStream(pStream) == false)
                 break;
 
             lCurLen +=	8 + ReadHeader.RecLen;
+            lPosExpected +=	8 + ReadHeader.RecLen;
 
             switch (ReadHeader.RecType)
             {
@@ -331,13 +336,24 @@ public:
                 pTimeCondition->ReadFromStream(ReadHeader, pStream);
                 unsigned short recInst = ReadHeader.RecInstance;
 
-                if (recInst == TL_CT_Begin || recInst == TL_CT_Next)
+                if (recInst == TL_CT_Begin)
+                {
                     m_arrRgBeginTimeCondition.push_back(pTimeCondition);
+                }
+                else if (recInst == TL_CT_Next)
+                {
+                    m_arrRgNextTimeCondition.push_back(pTimeCondition);
+                }
 
                 else if (recInst == TL_CT_End || recInst == TL_CT_Previous)
+                {
                     m_arrRgEndTimeCondition.push_back(pTimeCondition);
+                }
                 else
+                {
+                    m_haveTimeEndSyncTime = true;
                     m_pTimeEndSyncTimeCondition = pTimeCondition;
+                }
 
 
                 break; // A lot of records. Look at instance
@@ -378,6 +394,12 @@ public:
             default:
                 break;
 //                throw ;
+            }
+            LONG lPosCurrent = 0;
+            StreamUtils::StreamPosition ( lPosCurrent, pStream );
+            if (lPosExpected != lPosCurrent)
+            {
+                StreamUtils::StreamSeek ( lPosExpected, pStream );
             }
 
         }

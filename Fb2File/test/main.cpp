@@ -91,7 +91,7 @@ int main()
         CFb2File oFile;
 
         // Файл, который открываем
-        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/8-sezon-groz.fb2";
+        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../examples/res.fb2";
 
         // Директория, где будем создавать docx
         std::wstring sOutputDirectory = NSFile::GetProcessDirectory() + L"/res";
@@ -102,7 +102,7 @@ int main()
         if (bFromHtml)
         {
             sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test3";
-            oFile.FromHtml(sFile, sOutputDirectory + L"/res.fb2");
+            oFile.FromHtml(sFile, sFile, sOutputDirectory + L"/res.fb2", L"Test Title");
             return 0;
         }
 

@@ -88,8 +88,12 @@ namespace BinDocxRW
 		OOX::IFileContainer*	m_pCurRels;
 		std::map<int, bool>		m_mapIgnoreComments;
 
-		ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream, DocWrapper::FontProcessor* pFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):
-				m_pCBufferedStream(pCBufferedStream), m_pFontProcessor(pFontProcessor), m_pOfficeDrawingConverter(pOfficeDrawingConverter), m_pEmbeddedFontsManager(pEmbeddedFontsManager)
+		ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream, DocWrapper::FontProcessor* pFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager)
+			:
+			m_pCBufferedStream(pCBufferedStream), 
+			m_pFontProcessor(pFontProcessor), 
+			m_pOfficeDrawingConverter(pOfficeDrawingConverter), 
+			m_pEmbeddedFontsManager(pEmbeddedFontsManager)
 		{
 			m_pMain		= NULL;
 			m_pSettings = NULL;
@@ -331,7 +335,6 @@ namespace BinDocxRW
 
 		void WriteAltChunk(OOX::Media& oAltChunk, OOX::CStyles* styles);
 
-		void WriteVbaProject(OOX::VbaProject& oVbaProject);
 		void Write(std::vector<OOX::WritingElement*> & aElems);
 		void WriteDocumentContent(const std::vector<OOX::WritingElement*> & aElems);
 		void WriteBackground (OOX::WritingElement* pBackground);
@@ -495,9 +498,10 @@ namespace BinDocxRW
 		void WriteSdtPrDate(const OOX::Logic::CDate& oDate);
 		void WriteDocPartList(const OOX::Logic::CSdtDocPart& oSdtDocPart);
 		void WriteDropDownList(const OOX::Logic::CSdtDropDownList& oDropDownList);
-		void WriteSdtFormPr(const ComplexTypes::Word::CFormPr& oFormPr);
+		void WriteSdtFormPr(const OOX::Logic::CFormPr& oFormPr);
 		void WriteSdtTextFormPr(const OOX::Logic::CTextFormPr& oTextFormPr);
 		void WriteSdtTextFormPrComb(const ComplexTypes::Word::CComb& oComb);
+		void WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture);
 	};
 	class BinaryCustomsTableWriter
 	{

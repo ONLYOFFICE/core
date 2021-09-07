@@ -32,7 +32,6 @@
 #pragma once
 #include "Theme.h"
 #include "Shapes/Shape.h"
-
 #include "Shapes/BaseShape/PPTShape/Ppt2PptxShapeConverter.h"
 
 namespace PPTX2EditorAdvanced
@@ -731,7 +730,8 @@ namespace PPT_FORMAT
 			return pElement;
 		}
 	};
-	class CVideoElement : public CImageElement
+
+        class CVideoElement : public CImageElement
 	{
 	public:
 		std::wstring	m_strVideoFileName;
@@ -780,33 +780,62 @@ namespace PPT_FORMAT
 		}
 	};
 
-	class CGroupElement : public CElement
-	{
-	public:
-		CGroupElement() : CElement()
-		{
-			m_etType = etGroup;
-		}
-		virtual ~CGroupElement()
-		{
-		}
-		virtual CElementPtr CreateDublicate()
-		{
-			CGroupElement* pGroupElement = new CGroupElement();
+        class CGroupElement : public CElement
+        {
+        public:
 
-			CElementPtr	pElement = CElementPtr(	pGroupElement );
-			
-			SetProperiesToDublicate(pElement);
+        public:
+            CGroupElement() : CElement()
+            {
+                m_etType = etGroup;
+            }
+            virtual ~CGroupElement()
+            {
+            }
+            virtual CElementPtr CreateDublicate()
+            {
+                CGroupElement* pGroupElement = new CGroupElement();
 
-			return pElement;
-		}
-        AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
-		{
+                CElementPtr	pElement = CElementPtr(	pGroupElement );
 
-			return L"";		
-		}
-	};
+                SetProperiesToDublicate(pElement);
 
+                return pElement;
+            }
+            AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
+            {
 
+                return L"";
+            }
+        };
+
+        class CTableElement : public CElement
+        {
+        public:
+            std::wstring m_xmlRawData;
+        public:
+            CTableElement() : CElement()
+            {
+                m_etType = etTable;
+            }
+            virtual ~CTableElement()
+            {
+            }
+            virtual CElementPtr CreateDublicate()
+            {
+                CTableElement* pTableElement = new CTableElement();
+
+                CElementPtr	pElement = CElementPtr(	pTableElement );
+
+                SetProperiesToDublicate(pElement);
+
+                return pElement;
+            }
+            AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
+            {
+
+                return L"";
+            }
+        };
 }
 

@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "Ptg.h"
+#include "OperandPtg.h"
 #include <Logic/Biff_structures/BitMarkedStructs.h>
 
 namespace XLS
@@ -39,16 +39,16 @@ namespace XLS
 
 class CFRecord;
 
-class PtgMemErr : public Ptg
+class PtgMemErr : public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgMemErr)
 public:
-	BiffStructurePtr clone();
+	PtgMemErr(const unsigned short full_ptg_id);
 
-	
+	BiffStructurePtr clone();
+		
 	virtual void loadFields(CFRecord& record);
 	
-
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 
 private:

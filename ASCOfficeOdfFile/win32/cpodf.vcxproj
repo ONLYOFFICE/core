@@ -69,8 +69,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>C:\Repos-Projects\RK-Tech\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Repos-Projects\RK-Tech\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
@@ -274,7 +274,6 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\src\odf\createandread.cpp" />
-    <ClCompile Include="..\src\odf\datatypes\tablefunction.cpp" />
     <ClCompile Include="..\src\odf\documentcontext.cpp" />
     <ClCompile Include="..\src\odf\draw_common.cpp" />
     <ClCompile Include="..\src\odf\draw_frame.cpp" />
@@ -464,7 +463,6 @@
     <ClInclude Include="..\src\odf\chart_build_oox.h" />
     <ClInclude Include="..\src\odf\chart_objects.h" />
     <ClInclude Include="..\src\odf\datatypes\custom_shape_types_convert.h" />
-    <ClInclude Include="..\src\odf\datatypes\tablefunction.h" />
     <ClInclude Include="..\src\odf\documentcontext.h" />
     <ClInclude Include="..\src\odf\draw_common.h" />
     <ClInclude Include="..\src\odf\draw_frame.h" />

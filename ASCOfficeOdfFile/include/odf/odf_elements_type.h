@@ -282,6 +282,7 @@ enum ElementType
 
     typeStylePageLayout,
     typeStyleMap,
+	typeStylePageMaster, // openoffice xml 1.0
 
 	typeTableTemplate,
 	typeTableTemplateElement,
@@ -347,6 +348,7 @@ enum ElementType
 	typeTableTableRowNoGroup,
     typeTableTableSource,
 	typeTableTableProtection,
+	typeTableSubTable, //openoffice xml 1.0
 
 	typeTableDataPilotTables,
 	typeTableDataPilotTable,

@@ -41,6 +41,7 @@
 #include "Src/FontCidTT.h"
 #include "Src/Annotation.h"
 #include "Src/Destination.h"
+#include "Src/Field.h"
 
 #include "../DesktopEditor/graphics/Image.h"
 #include "../DesktopEditor/graphics/structures.h"
@@ -364,6 +365,7 @@ void CPdfRenderer::CCommandManager::Flush()
 			ETextRenderingMode eMode = textrenderingmode_Fill;
 			bool        isNeedDoBold = false;
 			bool      isNeedDoItalic = false;
+			double        dLineWidth = -1;
 
 			double dPrevX = -1000;
 			double dPrevY = -1000;
@@ -415,9 +417,20 @@ void CPdfRenderer::CCommandManager::Flush()
 					isNeedDoBold = pText->IsNeedDoBold();
 
 					if (isNeedDoBold && eMode == textrenderingmode_Fill)
+					{
+						double dNewLineWidth = dTextSize / 12 * 0.343;
+						if (fabs(dLineWidth - dNewLineWidth) > 0.001)
+						{
+							dLineWidth = dNewLineWidth;
+							pPage->SetLineWidth(dLineWidth);
+						}
+
 						pPage->SetTextRenderingMode(textrenderingmode_FillThenStroke);
+					}
 					else
+					{
 						pPage->SetTextRenderingMode(eMode);
+					}
 				}
 
 				if (fabs(dHorScaling - pText->GetHorScaling()) > 0.001)
@@ -456,8 +469,8 @@ void CPdfRenderer::CCommandManager::Flush()
 					}
 				}
 			}
-			oTextLine.Flush(pPage);
 
+			oTextLine.Flush(pPage);
 			pPage->EndText();
 		}
 
@@ -1503,6 +1516,200 @@ HRESULT CPdfRenderer::AddLink(const double& dX, const double& dY, const double& 
 
 	return S_OK;
 }
+HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
+{
+	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
+	if (!m_pDocument || 0 == unPagesCount)
+		return S_OK;
+
+	if (m_bNeedUpdateTextFont)
+		UpdateFont();
+
+	if (!m_pFont)
+		return S_OK;
+
+	double dX, dY, dW, dH;
+	oInfo.GetBounds(dX, dY, dW, dH);
+
+	CFieldBase* pFieldBase = NULL;
+
+	bool bRadioButton = false;
+	if (oInfo.IsTextField())
+	{
+		std::wstring wsValue = oInfo.GetTextValue();
+
+		unsigned int unLen;
+		unsigned int* pUnicodes = WStringToUtf32(wsValue, unLen);
+		if (!pUnicodes)
+			return S_FALSE;
+
+		unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
+
+		CTextField* pField = m_pDocument->CreateTextField();
+		pFieldBase = static_cast<CFieldBase*>(pField);
+
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+
+		pField->SetMaxLen(oInfo.GetMaxCharacters());
+		pField->SetCombFlag(oInfo.IsComb());
+
+		if (oInfo.HaveBorder())
+		{
+			unsigned char unR, unG, unB, unA;
+			oInfo.GetBorderColor(unR, unG, unB, unA);
+
+			pFieldBase->SetFieldBorder(EBorderSubtype::border_subtype_Solid, TRgb(unR, unG, unB), MM_2_PT(oInfo.GetBorderSize()), 0, 0, 0);
+		}
+
+		double* pShifts = NULL;
+		unsigned int unShiftsCount = 0;
+		if (oInfo.IsComb())
+		{
+			unShiftsCount = unLen;
+			pShifts = new double[unShiftsCount];
+			if (pShifts && unShiftsCount)
+			{
+				double dShift = 0;
+				double dPrevW = 0;
+				double dCellW = MM_2_PT(dW) / unShiftsCount;
+				for (unsigned int unIndex = 0; unIndex < unShiftsCount; ++unIndex)
+				{
+					unsigned short ushCode = (static_cast<unsigned short>((pCodes[unIndex * 2] << 8) & 0xFFFF) | static_cast<unsigned short>((pCodes[unIndex * 2 + 1])));
+					double dLetterWidth = m_pFont->GetWidth(ushCode) / 1000.0 * m_oFont.GetSize();
+
+					double dTempShift = (dCellW - dLetterWidth) / 2;
+					pShifts[unIndex] = dPrevW + dTempShift;
+					dPrevW = dLetterWidth + dTempShift;
+				}
+			}
+			else
+			{
+				unShiftsCount = 0;
+			}
+		}
+
+		TColor oColor = m_oBrush.GetTColor1();
+		if (oInfo.IsPlaceHolder())
+		{
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 0.5, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()), pShifts, unShiftsCount);
+		}
+		else
+		{
+			pField->SetTextValue(wsValue);
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()), pShifts, unShiftsCount);
+		}
+
+		if (pShifts)
+			delete[] pShifts;
+
+		delete[] pCodes;				
+	}
+	else if (oInfo.IsComboBox())
+	{
+		// Во всех PDF-ридерах кнопка выпадающего списка рисуется внутри поля, поэтому под неё немного места выделяем
+		dW += 5;
+
+		std::wstring wsValue = oInfo.GetTextValue();
+
+		unsigned int unLen;
+		unsigned int* pUnicodes = WStringToUtf32(wsValue, unLen);
+		if (!pUnicodes)
+			return S_FALSE;
+
+		unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
+
+		CChoiceField* pField = m_pDocument->CreateChoiceField();
+		pFieldBase = static_cast<CFieldBase*>(pField);
+
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+
+		TColor oColor = m_oBrush.GetTColor1();
+		if (oInfo.IsPlaceHolder())
+		{
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 0.5, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
+		}
+		else
+		{
+			pField->SetTextValue(wsValue);
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
+		}
+		delete[] pCodes;
+
+		for (unsigned int unIndex = 0, unItemsCount = oInfo.GetComboBoxItemsCount(); unIndex < unItemsCount; ++unIndex)
+		{
+			pField->AddOption(oInfo.GetComboBoxItem(unIndex));
+		}
+
+		pField->SetComboFlag(true);
+		pField->SetEditFlag(!oInfo.IsEditComboBox());
+	}
+	else if (oInfo.IsCheckBox())
+	{
+		CCheckBoxField* pField = NULL;
+		std::wstring wsGroupName = oInfo.GetGroupKey();
+		if (L"" != wsGroupName)
+		{
+			bRadioButton = true;
+			CRadioGroupField* pRadioGroup = m_pDocument->GetRadioGroupField(wsGroupName);
+			if (pRadioGroup)
+				pField = pRadioGroup->CreateKid();
+		}
+		else
+		{
+			pField = m_pDocument->CreateCheckBoxField();
+		}
+
+		if (pField)
+		{
+			pFieldBase = static_cast<CFieldBase*>(pField);
+
+			pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+			pField->SetValue(oInfo.IsChecked());
+
+			CFontCidTrueType* pCheckedFont   = GetFont(oInfo.GetCheckedFontName(), false, false);
+			CFontCidTrueType* pUncheckedFont = GetFont(oInfo.GetUncheckedFontName(), false, false);
+			if (!pCheckedFont)
+				pCheckedFont = m_pFont;
+
+			if (!pUncheckedFont)
+				pUncheckedFont = m_pFont;
+
+			unsigned int unCheckedSymbol   = oInfo.GetCheckedSymbol();
+			unsigned int unUncheckedSymbol = oInfo.GetUncheckedSymbol();
+
+			unsigned char* pCheckedCodes   = pCheckedFont->EncodeString(&unCheckedSymbol, 1);
+			unsigned char* pUncheckedCodes = pUncheckedFont->EncodeString(&unUncheckedSymbol, 1);
+
+			TColor oColor = m_oBrush.GetTColor1();
+			pField->SetAppearance(L"", pCheckedCodes, 2, pCheckedFont, L"", pUncheckedCodes, 2, pUncheckedFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
+
+		}
+	}
+	else if (oInfo.IsPicture())
+	{
+		CPictureField* pField = m_pDocument->CreatePictureField();
+		pFieldBase = static_cast<CFieldBase*>(pField);
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+		pField->SetAppearance();
+	}
+
+	if (pFieldBase)
+	{
+		if (!bRadioButton)
+		{
+			std::wstring wsKey = oInfo.GetKey();
+			if (L"" != wsKey)
+				pFieldBase->SetFieldName(wsKey);
+			else
+				pFieldBase->SetFieldName(m_oFieldsManager.GetNewFieldName());
+		}
+
+		pFieldBase->SetRequiredFlag(oInfo.IsRequired());
+		pFieldBase->SetFieldHint(oInfo.GetHelpText());		
+	}
+
+	return S_OK;
+}
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера
 //----------------------------------------------------------------------------------------
@@ -1718,39 +1925,9 @@ void CPdfRenderer::UpdateFont()
 {
 	m_bNeedUpdateTextFont = false;
     std::wstring wsFontPath = m_oFont.GetPath();
-	LONG lFaceIndex = m_oFont.GetFaceIndex();
+	LONG lFaceIndex         = m_oFont.GetFaceIndex();
 	if (L"" == wsFontPath)
-	{
-        std::wstring wsFontName = m_oFont.GetName();
-		bool bBold   = m_oFont.IsBold();
-		bool bItalic = m_oFont.IsItalic();
-		bool bFind = false;
-		for (int nIndex = 0, nCount = m_vFonts.size(); nIndex < nCount; nIndex++)
-		{
-			TFontInfo& oInfo = m_vFonts.at(nIndex);
-			if (oInfo.wsFontName == wsFontName && oInfo.bBold == bBold && oInfo.bItalic == bItalic)
-			{
-				wsFontPath = oInfo.wsFontPath;
-				lFaceIndex = oInfo.lFaceIndex;
-				bFind = true;
-				break;
-			}
-		}
-
-		if (!bFind)
-		{
-            NSFonts::CFontSelectFormat oFontSelect;
-			oFontSelect.wsName = new std::wstring(m_oFont.GetName());
-			oFontSelect.bItalic = new INT(m_oFont.IsItalic() ? 1 : 0);
-			oFontSelect.bBold   = new INT(m_oFont.IsBold() ? 1 : 0);
-            NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
-
-			wsFontPath = pFontInfo->m_wsFontPath;
-			lFaceIndex = pFontInfo->m_lIndex;
-
-			m_vFonts.push_back(TFontInfo(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex));
-		}
-	}
+		GetFontPath(m_oFont.GetName(), m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex);
 
 	m_oFont.SetNeedDoBold(false);
 	m_oFont.SetNeedDoItalic(false);
@@ -1758,16 +1935,7 @@ void CPdfRenderer::UpdateFont()
 	m_pFont = NULL;
 	if (L"" != wsFontPath)
 	{
-		// TODO: Пока мы здесь предполагаем, что шрифты только либо TrueType, либо OpenType
-		if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72))
-		{
-			std::wcout << L"PDF Writer: Can't load fontfile " << wsFontPath.c_str() << "\n";
-			return;
-		}
-
-		std::wstring wsFontType = m_pFontManager->GetFontType();
-		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
-			m_pFont = m_pDocument->CreateTrueTypeFont(wsFontPath, lFaceIndex);
+		m_pFont = GetFont(wsFontPath, lFaceIndex);
 
         NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
 		if (pFontFile)
@@ -1779,6 +1947,62 @@ void CPdfRenderer::UpdateFont()
 				m_oFont.SetNeedDoBold(true);
 		}
 	}
+}
+void CPdfRenderer::GetFontPath(const std::wstring &wsFontName, const bool &bBold, const bool &bItalic, std::wstring& wsFontPath, LONG& lFaceIndex)
+{
+	bool bFind = false;
+	for (int nIndex = 0, nCount = m_vFonts.size(); nIndex < nCount; nIndex++)
+	{
+		TFontInfo& oInfo = m_vFonts.at(nIndex);
+		if (oInfo.wsFontName == wsFontName && oInfo.bBold == bBold && oInfo.bItalic == bItalic)
+		{
+			wsFontPath = oInfo.wsFontPath;
+			lFaceIndex = oInfo.lFaceIndex;
+			bFind = true;
+			break;
+		}
+	}
+
+	if (!bFind)
+	{
+		NSFonts::CFontSelectFormat oFontSelect;
+		oFontSelect.wsName  = new std::wstring(wsFontName);
+		oFontSelect.bItalic = new INT(bItalic ? 1 : 0);
+		oFontSelect.bBold   = new INT(bBold ? 1 : 0);
+		NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
+
+		wsFontPath = pFontInfo->m_wsFontPath;
+		lFaceIndex = pFontInfo->m_lIndex;
+
+		m_vFonts.push_back(TFontInfo(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex));
+	}
+}
+PdfWriter::CFontCidTrueType* CPdfRenderer::GetFont(const std::wstring& wsFontPath, const LONG& lFaceIndex)
+{
+	PdfWriter::CFontCidTrueType* pFont = NULL;
+	if (L"" != wsFontPath)
+	{
+		// TODO: Пока мы здесь предполагаем, что шрифты только либо TrueType, либо OpenType
+		if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72))
+		{
+			std::wcout << L"PDF Writer: Can't load fontfile " << wsFontPath.c_str() << "\n";
+			return NULL;
+		}
+
+		std::wstring wsFontType = m_pFontManager->GetFontType();
+		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
+			pFont = m_pDocument->CreateTrueTypeFont(wsFontPath, lFaceIndex);
+	}
+
+	return pFont;
+}
+PdfWriter::CFontCidTrueType* CPdfRenderer::GetFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic)
+{
+	std::wstring wsFontPath;
+	LONG lFaceIndex;
+
+	GetFontPath(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex);
+	return GetFont(wsFontPath, lFaceIndex);
 }
 void CPdfRenderer::UpdateTransform()
 {

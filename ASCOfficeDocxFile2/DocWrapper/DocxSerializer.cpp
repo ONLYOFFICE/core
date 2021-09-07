@@ -122,6 +122,9 @@ namespace BinDocxRW
 				if (L"pkg:xmlData" == sName)
 				{
 					std::wstring data = oReader.GetInnerXml();
+					XmlUtils::replace_all(data, L"&#xA;", L"");
+					XmlUtils::replace_all(data, L"&#x9;", L"");
+					//todooo убрать "красивую" разметку xml
 					WriteXmlFile(*name, data);
 				}
 				if (L"pkg:binaryData" == sName)
@@ -142,6 +145,7 @@ namespace BinDocxRW
 			NSFile::CFileBinary file;
 			if (file.CreateFileW(path.GetPath()))
 			{
+				file.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
 				file.WriteStringUTF8(data);
 				file.CloseFile();
 			}
@@ -175,13 +179,10 @@ namespace BinDocxRW
 	};
 }
 
-BinDocxRW::CDocxSerializer::CDocxSerializer()
+BinDocxRW::CDocxSerializer::CDocxSerializer() : m_bIsMacro(false), m_bIsNoBase64Save(false), m_bIsNoBase64(false)
 {
 	m_pParamsWriter		= NULL;
 	m_pCurFileWriter	= NULL;
-
-	m_bIsNoBase64Save	= false;
-	m_bIsNoBase64		= false;
 }
 BinDocxRW::CDocxSerializer::~CDocxSerializer()
 {
@@ -414,7 +415,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 
                 oDrawingConverter.SetSrcPath(sFileInDir);
 				
-				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
+				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter, m_bIsMacro);
 				oBinaryFileReader.ReadFile();
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//themes
@@ -591,13 +592,17 @@ void BinDocxRW::CDocxSerializer::setEmbeddedFontsDir(const std::wstring& sEmbedd
 {
 	m_sEmbeddedFontsDir = sEmbeddedFontsDir;
 }
-void BinDocxRW::CDocxSerializer::setIsNoBase64Save(bool bIsNoBase64Save)
+void BinDocxRW::CDocxSerializer::setIsNoBase64Save(bool val)
 {
-	m_bIsNoBase64Save = bIsNoBase64Save;
+	m_bIsNoBase64Save = val;
 }
-void BinDocxRW::CDocxSerializer::setIsNoBase64(bool bIsNoBase64)
+void BinDocxRW::CDocxSerializer::setIsNoBase64(bool val)
 {
-	m_bIsNoBase64 = bIsNoBase64;
+	m_bIsNoBase64 = val;
+}
+void BinDocxRW::CDocxSerializer::setMacroEnabled(bool val)
+{
+	m_bIsMacro = val;
 }
 bool BinDocxRW::CDocxSerializer::unpackageFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath)
 {

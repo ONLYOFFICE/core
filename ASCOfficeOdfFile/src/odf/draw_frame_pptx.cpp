@@ -213,9 +213,32 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 void draw_image::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    const std::wstring href = xlink_attlist_.href_.get_value_or(L"");
+	if (draw_frame_ptr)
+	{
+		draw_frame *frame = dynamic_cast<draw_frame *>(draw_frame_ptr.get());
+		if (frame)
+		{
+			office_element_ptr elm = office_element_ptr(new draw_image(*this));
+			draw_image *image = dynamic_cast<draw_image *>(elm.get());
+			image->draw_frame_ptr = office_element_ptr();
 
-    Context.get_slide_context().set_image(href);
+			frame->content_.push_back(elm);
+			frame->pptx_convert(Context);
+		}
+		return;
+	}
+//-----------------------------------------------------------------------------------------------
+	std::wstring href = xlink_attlist_.href_.get_value_or(L"");
+
+	if (true == href.empty())
+	{
+
+	}
+	else
+	{
+		if (href[0] == L'#') href = href.substr(1);
+	}
+	Context.get_slide_context().set_image(href);
 ////////////////////////////////////в принципе достаточно общая часть ...	
 	Context.get_text_context().start_object();
 
@@ -243,6 +266,22 @@ void draw_chart::pptx_convert(oox::pptx_conversion_context & Context)
 
 void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 {
+	if (draw_frame_ptr)
+	{
+		draw_frame *frame = dynamic_cast<draw_frame *>(draw_frame_ptr.get());
+		if (frame)
+		{
+			office_element_ptr elm = office_element_ptr(new draw_text_box(*this));
+			draw_text_box *text_box = dynamic_cast<draw_text_box *>(elm.get());
+			text_box->draw_frame_ptr = office_element_ptr();
+
+			frame->content_.push_back(elm);
+			frame->pptx_convert(Context);
+
+		}
+		return;
+	}
+//---------------------------------------------------------------------------------------------------------------
 	Context.get_slide_context().set_text_box();	//rect с наваротами
 	Context.get_text_context().start_object();
 
@@ -260,14 +299,31 @@ void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 {
-    try 
+	if (draw_frame_ptr)
+	{
+		draw_frame *frame = dynamic_cast<draw_frame *>(draw_frame_ptr.get());
+		if (frame)
+		{
+			office_element_ptr elm = office_element_ptr(new draw_object(*this));
+			draw_object *object = dynamic_cast<draw_object *>(elm.get());
+			object->draw_frame_ptr = office_element_ptr();
+
+			frame->content_.push_back(elm);
+			frame->pptx_convert(Context);
+		}
+		return;
+	}
+//-----------------------------------------------------------------------------------------------
+	try 
 	{
 		std::wstring tempPath	= Context.root()->get_temp_folder();
 		std::wstring odfPath	= Context.root()->get_folder();
         std::wstring href		= xlink_attlist_.href_.get_value_or(L"");
 		
-		if (!odf_document_ && !href.empty())
+		if (!odf_document_ && false == href.empty())
 		{			
+			if (href[0] == L'#') href = href.substr(1);
+			
 			std::wstring objectPath = odfPath + FILE_SEPARATOR_STR + href;
 
 			// normalize path ???? todooo

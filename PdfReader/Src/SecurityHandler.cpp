@@ -151,7 +151,12 @@ namespace PdfReader
 				if (oCryptCurFilter.DictLookup("Length", &oCFLength)->IsInt())
 				{
 					// Согласно спецификации, должно быть oCFLength / 8
-					m_nFileKeyLength = oCFLength.GetInt();
+                    m_nFileKeyLength = oCFLength.GetInt();
+
+                    // для AES256 приходят 32 и 256. Т.е. иногда нажо делить на 8, а иногда нет.
+                    // мы все равно кинем exception, если длина не 32
+                    if (cryptAES256 == m_eCryptType)
+                        m_nFileKeyLength = 32;
 				}
 				oCFLength.Free();	
 

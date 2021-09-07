@@ -76,6 +76,9 @@ mc:Ignorable=\"w14 w15 w16se wp14\">";
 
 	if (m_oDocument.m_pBackground)
 	{
+		if (PROP_DEF == m_oDocument.m_pBackground->m_nFillColor)
+			m_oDocument.m_pBackground->m_nFillColor = 0xFFFFFF;
+		
 		RtfColor color(m_oDocument.m_pBackground->m_nFillColor);
 
 		sResult += L"<w:background w:color=\"" + color.ToHexColor() + L"\">";

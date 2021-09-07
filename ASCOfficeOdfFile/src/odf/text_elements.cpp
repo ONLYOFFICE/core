@@ -253,7 +253,7 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 	}
 	return index;
 }
-void paragraph::docx_convert(oox::docx_conversion_context & Context)
+void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std::wstring) next_element_style_name)
 {
     std::wstring styleName = attrs_.text_style_name_;
 	
@@ -319,7 +319,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
 			}
         }
     } 
-	if (next_section_/* || next_end_section_*/)//remove in text::section 
+	if (next_section_ || next_end_section_) // remove in text::section  - GreekSynopsis.odt
 	{
 		Context.get_section_context().get_last().is_dump_ = true;
 		is_empty = false;
@@ -460,6 +460,7 @@ void h::add_attributes( const xml::attributes_wc_ptr & Attributes )
     CP_APPLY_ATTR(L"text:restart-numbering"	, restart_numbering_);
     CP_APPLY_ATTR(L"text:start-value"		, start_value_);
     CP_APPLY_ATTR(L"text:is-list-header"	, is_list_header_);
+	CP_APPLY_ATTR(L"text:level"				, outline_level_); // openoffice xml 1.0
 
     paragraph_.add_attributes(Attributes);
 
@@ -475,12 +476,6 @@ void h::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std
 void h::add_text(const std::wstring & Text)
 {
     paragraph_.add_text(Text);
-}
-
-void h::afterReadContent()
-{
-	office_element::afterReadContent();
-	paragraph_.next_element_style_name = next_element_style_name;
 }
 
 void h::docx_convert(oox::docx_conversion_context & Context) 
@@ -500,7 +495,7 @@ void h::docx_convert(oox::docx_conversion_context & Context)
 			Context.start_bookmark(bookmark);
 		}
 	}
-    paragraph_.docx_convert(Context);
+    paragraph_.docx_convert(Context, next_element_style_name);
 
 	if (false == bookmark.empty())
 	{
@@ -549,7 +544,7 @@ void p::add_space(const std::wstring & Text)
 
 void p::docx_convert(oox::docx_conversion_context & Context)
 {
-    paragraph_.docx_convert(Context);
+    paragraph_.docx_convert(Context, next_element_style_name);
 }
 
 void p::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -561,11 +556,7 @@ void p::pptx_convert(oox::pptx_conversion_context & Context)
 {
     paragraph_.pptx_convert(Context);
 }
-void p::afterReadContent()
-{
-	office_element::afterReadContent();
-	paragraph_.next_element_style_name = next_element_style_name;
-}
+
 // text:list
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * list::ns = L"text";
@@ -660,37 +651,35 @@ std::wostream & section::text_to_stream(std::wostream & _Wostream, bool bXmlEnco
 
 void section::afterCreate()
 {
-	office_element::afterCreate();
-	
 	if (document_context * context = getContext())
     {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(dynamic_cast<p*>(context->get_last_paragraph())))
         {
             lastPar->paragraph_.set_next_section(true);        
         }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+		else if (h *lastPar = dynamic_cast<h*>(dynamic_cast<p*>(context->get_last_paragraph())))
         {
             lastPar->paragraph_.set_next_section(true);        
         }
 	}
+	office_element::afterCreate();
 }
 
 void section::afterReadContent()
 {
 	if (document_context * context = getContext())
-    {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_end_section(true);        
-        }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
-        {
-            lastPar->paragraph_.set_next_end_section(true);        
-        }
-    }
- 	office_element::afterReadContent();
+	{
+		if (p *lastPar = dynamic_cast<p*>(dynamic_cast<p*>(context->get_last_paragraph())))
+		{
+			lastPar->paragraph_.set_next_end_section(true);
+		}
+		else if (h *lastPar = dynamic_cast<h*>(dynamic_cast<p*>(context->get_last_paragraph())))
+		{
+			lastPar->paragraph_.set_next_end_section(true);
+		}
+	}
+	office_element::afterReadContent();
 }
-
 void section::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     section_attr_.add_attributes(Attributes);
@@ -1136,32 +1125,32 @@ const wchar_t * table_index_entry_template::name = L"table-index-entry-template"
 const wchar_t * illustration_index::ns = L"text";
 const wchar_t * illustration_index::name = L"illustration-index";
 
-//void illustration_index::afterCreate()
-//{
-// 	office_element::afterCreate();
-//
+void illustration_index::afterCreate()
+{
+ 	office_element::afterCreate();
+
 //	if (document_context * context = getContext())
 //    {
-//        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+//        if (p *lastPar = dynamic_cast<p*>(context->get_last_paragraph()))
 //        {
 //            lastPar->paragraph_.set_next_section(true);        
 //        }
-//		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+//		else if (h *lastPar = dynamic_cast<h*>(context->get_last_paragraph()))
 //        {
 //            lastPar->paragraph_.set_next_section(true);        
 //        }
 //    }
-//}
+}
 
 void illustration_index::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_end_section(true);        
         }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_end_section(true);        
         }
@@ -1293,31 +1282,31 @@ void alphabetical_index::add_child_element( xml::sax * Reader, const std::wstrin
         CP_CREATE_ELEMENT(alphabetical_index_source_);
 	}
 }
-//void alphabetical_index::afterCreate()
-//{
-//	office_element::afterCreate();
-//	
+void alphabetical_index::afterCreate()
+{
+	office_element::afterCreate();
+	
 //	if (document_context * context = getContext())
 //    {
-//        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+//        if (p *lastPar = dynamic_cast<p*>(context->get_last_paragraph()))
 //        {
 //            lastPar->paragraph_.set_next_section(true);        
 //        }
-//		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+//		else if (h *lastPar = dynamic_cast<h*>(context->get_last_paragraph()))
 //        {
 //            lastPar->paragraph_.set_next_section(true);        
 //        }
 //    }
-//}
+}
 void alphabetical_index::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_end_section(true);        
         }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_end_section(true);        
         }
@@ -1412,31 +1401,31 @@ void alphabetical_index_entry_template::docx_convert(oox::docx_conversion_contex
 const wchar_t * object_index::ns = L"text";
 const wchar_t * object_index::name = L"object-index";
 
-//void object_index::afterCreate()
-//{
-//	office_element::afterCreate();
-//
+void object_index::afterCreate()
+{
+	office_element::afterCreate();
+
 //	if (document_context * context = getContext())
 //    {
-//        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+//        if (p *lastPar = dynamic_cast<p*>(context->get_last_paragraph()))
 //        {
 //            lastPar->paragraph_.set_next_section(true);        
 //        }
-//		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+//		else if (h *lastPar = dynamic_cast<h*>(context->get_last_paragraph()))
 //        {
 //            lastPar->paragraph_.set_next_section(true);        
 //        }
 //    }
-//}
+}
 void object_index::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_end_section(true);        
         }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_end_section(true);        
         }
@@ -1531,11 +1520,11 @@ void user_index::afterCreate()
 
 	if (document_context * context = getContext())
     {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_section(true);        
         }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_section(true);        
         }
@@ -1545,11 +1534,11 @@ void user_index::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_end_section(true);        
         }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_end_section(true);        
         }
@@ -1683,11 +1672,11 @@ void bibliography::afterCreate()
 
 	if (document_context * context = getContext())
     {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_section(true);        
         }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_section(true);        
         }
@@ -1698,11 +1687,11 @@ void bibliography::afterReadContent()
 {
     if (document_context * context = getContext())
     {
-        if (p *lastPar = dynamic_cast<p*>(context->get_last_element()))
+        if (p *lastPar = dynamic_cast<p*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_end_section(true);        
         }
-		else if (h *lastPar = dynamic_cast<h*>(context->get_last_element()))
+		else if (h *lastPar = dynamic_cast<h*>(context->get_last_paragraph()))
         {
             lastPar->paragraph_.set_next_end_section(true);        
         }

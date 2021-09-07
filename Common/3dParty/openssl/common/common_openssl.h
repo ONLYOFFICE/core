@@ -89,6 +89,13 @@ namespace NSOpenSSL
 
     // serialize
     OPENSSL_DECL std::string Serialize(const unsigned char* data, const unsigned int& size, const int& alg);
+
+    // GCM
+    OPENSSL_DECL unsigned char* PBKDF2_desktop_GCM(const std::string& pass, const std::string& salt = "");
+    OPENSSL_DECL bool AES_Decrypt_desktop_GCM(const unsigned char* key, const std::string& input, std::string& output, const int header_offset = 0);
+    OPENSSL_DECL bool AES_Decrypt_desktop_GCM(const std::string& pass, const std::string& input, std::string& output, const std::string& salt = "", const int header_offset = 0);
+    OPENSSL_DECL bool AES_Encrypt_desktop_GCM(const unsigned char* key, const std::string& input, std::string& output);
+    OPENSSL_DECL bool AES_Encrypt_desktop_GCM(const std::string& pass, const std::string& input, std::string& output, const std::string& salt = "");
 }
 
 #endif // COMMON_OPENSSL_H

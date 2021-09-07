@@ -70,6 +70,8 @@ namespace PPTX
 		{
 			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
+			ReadAttributes(oReader);
+
 			if ( oReader.IsEmptyNode() )
 				return;
 					
@@ -92,6 +94,8 @@ namespace PPTX
 		void CxnSp::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());
+
+			XmlMacroReadAttributeBase(node, L"macro", macro);
 
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(_T("*"), oNodes))
@@ -118,12 +122,15 @@ namespace PPTX
 
 		std::wstring CxnSp::toXML() const
 		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"macro", macro);
+
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(nvCxnSpPr);
 			oValue.Write(spPr);
 			oValue.WriteNullable(style);
 
-			return XmlUtils::CreateNode(m_namespace + L":cxnSp", oValue);
+			return XmlUtils::CreateNode(m_namespace + L":cxnSp", oAttr, oValue);
 		}
 
 		void CxnSp::FillParentPointersForChilds()

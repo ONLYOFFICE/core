@@ -34,7 +34,7 @@ namespace NSCSS
     CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
     {
         m_pBackground   += oElement.m_pBackground;
-        m_pBorder       += oElement.m_pBorder;
+        m_pBorder        = oElement.m_pBorder;
         m_pFont         += oElement.m_pFont;
         m_pMargin       += oElement.m_pMargin;
         m_pText         += oElement.m_pText;
@@ -891,6 +891,10 @@ namespace NSCSS
                         m_pBackground.SetColor(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBackground.SetImportantBackground(true);
                     }
+
+                    if (bIsThereBorder)
+                        m_pBackground.InBorder();
+
                     break;
                 }
                 CASE(L"background"):
@@ -905,6 +909,10 @@ namespace NSCSS
                         m_pBackground.SetBackground(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
                         m_pBackground.SetImportantAll(true);
                     }
+
+                    if (bIsThereBorder)
+                        m_pBackground.InBorder();
+
                     break;
                 }
             }
@@ -999,7 +1007,7 @@ namespace NSCSS
 
                 size_t nPosGrid = sValueTemp.find(L'#');
 
-                if (nPosGrid != std::wstring::npos || !NS_STATIC_FUNCTIONS::ThereIsNumber(sValueTemp))
+                if (nPosGrid != std::wstring::npos || !NS_STATIC_FUNCTIONS::NumberInWString(sValueTemp))
                 {
                     if (!NS_STATIC_FUNCTIONS::ConvertAbsoluteValue(sValueTemp, fPreviousValue))
                     {

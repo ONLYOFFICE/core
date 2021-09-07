@@ -52,18 +52,13 @@ public:
         m_nObjectIdRef                  =	StreamUtils::ReadDWORD ( pStream );
         m_nData1			=	StreamUtils::ReadDWORD ( pStream );
         m_nData2			=	StreamUtils::ReadDWORD ( pStream );
-
-        m_nOldIdRef = m_nObjectIdRef;
     }
 
 public:
 
     TimeVisualElementEnum	m_Type;
     ElementTypeEnum			m_RefType;
-    // Warning! It used by RIDManager to change
     _UINT32					m_nObjectIdRef;		//	ShapeIdRef || SoundIdRef
-    // This is it's copy
-    _UINT32					m_nOldIdRef;
     _UINT32					m_nData1;
     _UINT32					m_nData2;
 };

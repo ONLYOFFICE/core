@@ -969,8 +969,12 @@ namespace OOX
 		{
 			ReadAttributes( oReader );
 
-			if ( oReader.IsEmptyNode() )
+			if (oReader.IsEmptyNode())
+			{
+				After2003Read();
+				AfterRead();
 				return;
+			}
 
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
@@ -1013,8 +1017,9 @@ namespace OOX
 				}
 //o:SmartTags, x:PhoneticText
 			}
-
+			After2003Read();
 			PrepareForBinaryWriter();
+			AfterRead();
 		}
 		void CCell::ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment)
 		{
@@ -1180,21 +1185,148 @@ namespace OOX
 				}
 			}
 		}
+		void CCell::After2003Read()
+		{
+			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+			if (!xlsx_flat) return;
+			
+			CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
+
+			if (iColIndex.IsInit())
+			{
+				xlsx_flat->m_nLastReadCol = *iColIndex;
+			}
+			else
+			{
+				xlsx_flat->m_nLastReadCol = (xlsx_flat->m_nLastReadCol < 0 ? 1 : xlsx_flat->m_nLastReadCol + 1);
+			}
+
+			std::map<int, unsigned int>::iterator it = sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.begin();
+			while (it != sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.end())
+			{
+				if (it->first > xlsx_flat->m_nLastReadCol)
+					break;
+				else if (it->first == xlsx_flat->m_nLastReadCol)
+				{
+					m_oStyle = it->second;
+					break;
+				}
+				{
+					CCell *pCell = new CCell();
+					pCell->m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, it->first);
+					pCell->m_oStyle = it->second;
+					pCell->m_oCol = it->first;
+					pCell->m_oRow = xlsx_flat->m_nLastReadRow;
+
+					size_t pos = sheet->m_oSheetData->m_arrItems.back()->m_arrItems.size() - 2;
+					sheet->m_oSheetData->m_arrItems.back()->m_arrItems.insert(
+						sheet->m_oSheetData->m_arrItems.back()->m_arrItems.begin() + pos, pCell);
+				}
+
+				sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.erase(it);
+				it = sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.begin();
+			}
+			//m_oRef = "R" + std::to_string(xlsx_flat->m_nLastReadRow) + "C" + std::to_string(xlsx_flat->m_nLastReadCol);
+			m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
+
+			setRowCol(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol - 1);
+
+			if (m_oFormula.IsInit())
+			{
+				r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
+				r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
+
+				r1c1_formula_convert convert;
+
+				m_oFormula->m_sText = convert.convert(m_oFormula->m_sText);
+			}
+
+			if (sStyleId.IsInit() && xlsx_flat->m_pStyles.IsInit())
+			{
+				std::map<std::wstring, size_t>::iterator pFind = xlsx_flat->m_pStyles->m_mapStyles2003.find(*sStyleId);
+				if (pFind != xlsx_flat->m_pStyles->m_mapStyles2003.end())
+				{
+					m_oStyle = pFind->second;
+				}
+			}
+
+			if (sHyperlink.IsInit())
+			{
+				if (false == sheet->m_oHyperlinks.IsInit())
+				{
+					sheet->m_oHyperlinks.Init();
+				}
+				CHyperlink *pHyperlink = new CHyperlink(m_pMainDocument);
+
+				pHyperlink->m_oRef = std::wstring(m_oRef->begin(), m_oRef->end());
+				pHyperlink->m_oDisplay = sHyperlink;
+
+				if (sHyperlink->find(L"#") == 0)
+				{
+					sHyperlink = sHyperlink->substr(1);
+					pHyperlink->m_oLocation = sHyperlink;
+				}
+				else
+				{
+					pHyperlink->m_oLink = sHyperlink;
+				}
+
+				sheet->m_oHyperlinks->m_arrItems.push_back(pHyperlink);
+			}
+			if (iAcross.IsInit() || iDown.IsInit())
+			{
+				//std::string Ref = m_oRef.get2() + ":R" + std::to_string(xlsx_flat->m_nLastReadRow + 1 + iDown.get_value_or(0)) + "C" + std::to_string(xlsx_flat->m_nLastReadCol + 1 + iAcross.get_value_or(0));
+				std::string Ref = m_oRef.get2() + ":" + getCellAddressA(xlsx_flat->m_nLastReadRow + iDown.get_value_or(0),
+					xlsx_flat->m_nLastReadCol + iAcross.get_value_or(0));
+
+				if (false == sheet->m_oMergeCells.IsInit())
+				{
+					sheet->m_oMergeCells.Init();
+				}
+				CMergeCell *pMergeCell = new CMergeCell(m_pMainDocument);
+				pMergeCell->m_oRef = std::wstring(Ref.begin(), Ref.end());
+
+				sheet->m_oMergeCells->m_arrItems.push_back(pMergeCell);
+
+				if (m_oStyle.IsInit())
+				{
+					std::map<unsigned int, bool>::iterator pFind = xlsx_flat->m_pStyles->m_mapStylesContinues2003.find(*m_oStyle);
+					if (pFind != xlsx_flat->m_pStyles->m_mapStylesContinues2003.end())
+					{
+						for (int i = 0; i < iDown.get_value_or(0); ++i)
+						{
+							//sheet->m_mapStyleMergesRow2003 (xlsx_flat->m_nLastReadRow + i), (xlsx_flat->m_nLastReadCol), *m_oStyle
+						}
+						for (int i = 0; i < iAcross.get_value_or(0); ++i)
+						{
+							sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.insert(std::make_pair(xlsx_flat->m_nLastReadCol + i, *m_oStyle));
+						}
+					}
+				}
+				xlsx_flat->m_nLastReadCol += iAcross.get_value_or(0);
+			}
+		}
 		void CCell::PrepareForBinaryWriter()
 		{
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
-			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+			if (!xlsx) return;
 
+			//for xml with empty cell reference
+			int nRow = 0;
+			int nCol = 0;
+			getRowCol(nRow, nCol);
+			xlsx->m_nLastReadCol = nCol > xlsx->m_nLastReadCol ? nCol : xlsx->m_nLastReadCol + 1;
+			setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
+		}
+		void CCell::AfterRead()
+		{
 			CSharedStrings *pSharedStrings = NULL;
+			
+			CXlsx* xlsx = dynamic_cast<CXlsx*>(m_pMainDocument);
+			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+			
 			if (xlsx)
 			{
-				//for xml with empty cell reference
-				int nRow = 0;
-				int nCol = 0;
-				getRowCol(nRow, nCol);
-				xlsx->m_nLastReadCol = nCol > xlsx->m_nLastReadCol ? nCol : xlsx->m_nLastReadCol + 1;
-				setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
-
 				if (false == xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter) return;
 
 				if (!xlsx->m_pSharedStrings)
@@ -1202,125 +1334,11 @@ namespace OOX
 					xlsx->m_arWorksheets.back()->m_bPrepareForBinaryWriter = false;
 					return;
 				}
+
 				pSharedStrings = xlsx->m_pSharedStrings;
 			}
 			else if (xlsx_flat)
 			{
-				CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
-
-				if (iColIndex.IsInit())
-				{
-					xlsx_flat->m_nLastReadCol = *iColIndex;
-				}
-				else
-				{
-					xlsx_flat->m_nLastReadCol = (xlsx_flat->m_nLastReadCol < 0 ? 1 : xlsx_flat->m_nLastReadCol + 1);
-				}
-
-				std::map<int, unsigned int>::iterator it = sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.begin();
-				while (it != sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.end())
-				{
-					if (it->first > xlsx_flat->m_nLastReadCol)
-						break;
-					else if (it->first == xlsx_flat->m_nLastReadCol)
-					{
-						m_oStyle = it->second;
-						break;
-					}
-					{
-						CCell *pCell = new CCell();
-						pCell->m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, it->first);
-						pCell->m_oStyle = it->second;
-						pCell->m_oCol = it->first;
-						pCell->m_oRow = xlsx_flat->m_nLastReadRow;
-
-						size_t pos = sheet->m_oSheetData->m_arrItems.back()->m_arrItems.size() - 2;
-						sheet->m_oSheetData->m_arrItems.back()->m_arrItems.insert(
-							sheet->m_oSheetData->m_arrItems.back()->m_arrItems.begin() + pos, pCell);
-					}
-
-					sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.erase(it);
-					it = sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.begin();
-				}
-				//m_oRef = "R" + std::to_string(xlsx_flat->m_nLastReadRow) + "C" + std::to_string(xlsx_flat->m_nLastReadCol);
-				m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
-
-				setRowCol(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol - 1);
-
-				if (m_oFormula.IsInit())
-				{
-					r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
-					r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
-
-					r1c1_formula_convert convert;
-
-					m_oFormula->m_sText = convert.convert(m_oFormula->m_sText);
-				}
-
-				if (sStyleId.IsInit() && xlsx_flat->m_pStyles.IsInit())
-				{
-					std::map<std::wstring, size_t>::iterator pFind = xlsx_flat->m_pStyles->m_mapStyles2003.find(*sStyleId);
-					if (pFind != xlsx_flat->m_pStyles->m_mapStyles2003.end())
-					{
-						m_oStyle = pFind->second;
-					}
-				}
-
-				if (sHyperlink.IsInit())
-				{
-					if (false == sheet->m_oHyperlinks.IsInit())
-					{
-						sheet->m_oHyperlinks.Init();
-					}
-					CHyperlink *pHyperlink = new CHyperlink(m_pMainDocument);
-
-					pHyperlink->m_oRef = std::wstring(m_oRef->begin(), m_oRef->end());
-					pHyperlink->m_oDisplay = sHyperlink;
-
-					if (sHyperlink->find(L"#") == 0)
-					{
-						sHyperlink = sHyperlink->substr(1);
-						pHyperlink->m_oLocation = sHyperlink;
-					}
-					else
-					{
-						pHyperlink->m_oLink = sHyperlink;
-					}
-
-					sheet->m_oHyperlinks->m_arrItems.push_back(pHyperlink);
-				}
-				if (iAcross.IsInit() || iDown.IsInit())
-				{
-					//std::string Ref = m_oRef.get2() + ":R" + std::to_string(xlsx_flat->m_nLastReadRow + 1 + iDown.get_value_or(0)) + "C" + std::to_string(xlsx_flat->m_nLastReadCol + 1 + iAcross.get_value_or(0));
-					std::string Ref = m_oRef.get2() + ":" + getCellAddressA(xlsx_flat->m_nLastReadRow + iDown.get_value_or(0),
-						xlsx_flat->m_nLastReadCol + iAcross.get_value_or(0));
-
-					if (false == sheet->m_oMergeCells.IsInit())
-					{
-						sheet->m_oMergeCells.Init();
-					}
-					CMergeCell *pMergeCell = new CMergeCell(m_pMainDocument);
-					pMergeCell->m_oRef = std::wstring(Ref.begin(), Ref.end());
-
-					sheet->m_oMergeCells->m_arrItems.push_back(pMergeCell);
-
-					if (m_oStyle.IsInit())
-					{
-						std::map<unsigned int, bool>::iterator pFind = xlsx_flat->m_pStyles->m_mapStylesContinues2003.find(*m_oStyle);
-						if (pFind != xlsx_flat->m_pStyles->m_mapStylesContinues2003.end())
-						{
-							for (int i = 0; i < iDown.get_value_or(0); ++i)
-							{
-								//sheet->m_mapStyleMergesRow2003 (xlsx_flat->m_nLastReadRow + i), (xlsx_flat->m_nLastReadCol), *m_oStyle
-							}
-							for (int i = 0; i < iAcross.get_value_or(0); ++i)
-							{
-								sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.insert(std::make_pair(xlsx_flat->m_nLastReadCol + i, *m_oStyle));
-							}
-						}
-					}
-					xlsx_flat->m_nLastReadCol += iAcross.get_value_or(0);					
-				}
 				if (false == xlsx_flat->m_pSharedStrings.IsInit())
 				{
 					xlsx_flat->m_pSharedStrings = new CSharedStrings(m_pMainDocument);
@@ -1328,17 +1346,14 @@ namespace OOX
 				pSharedStrings = xlsx_flat->m_pSharedStrings.GetPointer();
 			}
 
-			if(m_oType.IsInit())
+			if (!pSharedStrings) return;
+//-----------------------------------------------------------------------------
+			if (m_oType.IsInit())
 			{
-				if(m_oRichText.IsInit()/*SimpleTypes::Spreadsheet::celltypeInlineStr == m_oType->GetValue()*/)
+				if (m_oRichText.IsInit()/*SimpleTypes::Spreadsheet::celltypeInlineStr == m_oType->GetValue()*/)
 				{
-					if(xlsx && !xlsx->m_pSharedStrings)
-					{
-						xlsx->CreateSharedStrings();
-						pSharedStrings = xlsx->m_pSharedStrings;
-					}
 					OOX::Spreadsheet::CSi* pSi = m_oRichText.GetPointerEmptyNullable();
-					if(NULL != pSi)
+					if (NULL != pSi)
 					{
 						int nIndex = pSharedStrings->AddSi(pSi);
 						//меняем значение ячейки
@@ -1349,29 +1364,29 @@ namespace OOX
 						m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
 					}
 				}
-				else if(SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeError == m_oType->GetValue())
+				else if (SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue() || SimpleTypes::Spreadsheet::celltypeError == m_oType->GetValue())
 				{
 					if (m_oValue.IsInit())
 					{
-						if(xlsx && !xlsx->m_pSharedStrings)
+						if (xlsx && !xlsx->m_pSharedStrings)
 						{
 							xlsx->CreateSharedStrings();
 							pSharedStrings = xlsx->m_pSharedStrings;
 						}
 						//добавляем в SharedStrings
 						CSi* pSi = new CSi();
-						CText* pText =  new CText();
-						
+						CText* pText = new CText();
+
 						pText->m_sText = m_oValue->ToString();
 						pSi->m_arrItems.push_back(pText);
-						
+
 						int nIndex = pSharedStrings->AddSi(pSi);
-						
+
 						//меняем значение ячейки
 						m_oValue.Init();
 						m_oValue->m_sText = std::to_wstring(nIndex);
 						//меняем тип ячейки
-						if(SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue())
+						if (SimpleTypes::Spreadsheet::celltypeStr == m_oType->GetValue())
 						{
 							m_oType.Init();
 							m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
@@ -1383,16 +1398,16 @@ namespace OOX
 						m_oType.reset();
 					}
 				}
-				else if(SimpleTypes::Spreadsheet::celltypeBool == m_oType->GetValue())
+				else if (SimpleTypes::Spreadsheet::celltypeBool == m_oType->GetValue())
 				{
 					//обычно пишется 1/0, но встречается, что пишут true/false
-					if(m_oValue.IsInit())
+					if (m_oValue.IsInit())
 					{
 						SimpleTypes::COnOff<> oOnOff;
 						std::wstring sVal = m_oValue->ToString();
 						oOnOff.FromString(sVal.c_str());
 						m_oValue.Init();
-						if(oOnOff.ToBool())
+						if (oOnOff.ToBool())
 							m_oValue->m_sText = _T("1");
 						else
 							m_oValue->m_sText = _T("0");
@@ -1761,6 +1776,14 @@ namespace OOX
 				}
 			WritingElement_ReadAttributes_EndChar( oReader )
 		}
+		void CSheetData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"ss:StyleID", m_sStyleID)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:DefaultColumnWidth", m_dDefaultColumnWidth)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:DefaultRowHeight", m_dDefaultRowHeight)
+			WritingElement_ReadAttributes_End(oReader)
+		}
 		void CSheetData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -1846,6 +1869,28 @@ namespace OOX
 							pColumn->m_oMax.Init();
 							pColumn->m_oMax->SetValue(pWorksheet->m_oCols->m_arrItems.size());
 						}
+					}
+				}
+				if (xlsx_flat)
+				{
+					CWorksheet* pWorksheet = xlsx_flat->m_arWorksheets.back();
+
+					if (false == pWorksheet->m_oCols.IsInit() && m_dDefaultColumnWidth.IsInit())
+					{
+						pWorksheet->m_oCols.Init();
+						
+						CCol *pColumn = new CCol(m_pMainDocument);
+
+						pColumn->m_oMin = 1;
+						pColumn->m_oMax = 16384;
+
+						double pixDpi = *m_dDefaultColumnWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
+						double maxDigitSize = 1;
+
+						pColumn->m_oWidth.Init();
+						pColumn->m_oWidth->SetValue((int((pixDpi /*/ 0.75*/ - 5) / maxDigitSize * 100. + 0.5)) / 100. * 0.9);
+
+						pWorksheet->m_oCols->m_arrItems.push_back(pColumn);
 					}
 				}
 			}
@@ -2096,8 +2141,14 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 							
 							r1c1_formula_convert convert;
 
+							std::wstring ref = convert.convert(oReader.GetText2());;
+
 							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());							
-							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = convert.convert(oReader.GetText2());
+							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = ref;
+
+							size_t pos_split = ref.find(L":");
+							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell =
+								pos_split != std::wstring::npos ? ref.substr(0, pos_split) : ref;
 						}
 					}
 					if (col.IsInit() && row.IsInit())
@@ -2106,6 +2157,7 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());
 
 						m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell = getCellAddress(*row + 1, *col + 1);
+						
 						if (false == m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref.IsInit())
 						{
 							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell;

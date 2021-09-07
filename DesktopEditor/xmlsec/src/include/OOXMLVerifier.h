@@ -39,6 +39,7 @@ class Q_DECL_EXPORT COOXMLVerifier
 {
 public:
     COOXMLVerifier(const std::wstring& sFolder);
+    COOXMLVerifier(unsigned char* data, unsigned long length);
     ~COOXMLVerifier();
 
     int GetSignatureCount();

@@ -316,6 +316,8 @@ void BinaryCommonWriter::WriteShd(const ComplexTypes::Word::CShading& Shd)
 	//Fill
 	if (false != Shd.m_oFill.IsInit())
 		WriteColor(c_oSerShdType::Fill, Shd.m_oFill.get());
+
+	WriteThemeColor(c_oSerShdType::FillTheme, Shd.m_oColor, Shd.m_oThemeColor, Shd.m_oThemeTint, Shd.m_oThemeShade);
 }
 void BinaryCommonWriter::WritePaddings(const nullable<SimpleTypes::CTwipsMeasure>& left, const nullable<SimpleTypes::CTwipsMeasure>& top,
 	const nullable<SimpleTypes::CTwipsMeasure>& right, const nullable<SimpleTypes::CTwipsMeasure>& bottom)
@@ -3088,13 +3090,6 @@ BinaryDocumentTableWriter::BinaryDocumentTableWriter(ParamsWriter& oParamsWriter
 	pJsaProject		= NULL;
 	m_bWriteSectPr	= false;
 }
-void BinaryDocumentTableWriter::WriteVbaProject(OOX::VbaProject& oVbaProject)
-{
-	m_oBcw.m_oStream.StartRecord(0);
-	oVbaProject.toPPTY(&m_oBcw.m_oStream);
-	m_oBcw.m_oStream.EndRecord();
-
-}
 void BinaryDocumentTableWriter::Write(OOX::Logic::CDocPartPr* pDocPartPr)
 {
 	if (!pDocPartPr) return;
@@ -3421,82 +3416,83 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CS
 	std::wstring sResultDocxDir = NSDirectory::CreateDirectoryWithUniqueName(oAltChunkFile.filename().GetDirectory()); 
 
 	bool result = false;
-	
+
+	if (sResultDocxDir.empty() || sTempDir.empty()) return;
+
 	COfficeFileFormatChecker OfficeFileFormatChecker;
 	if (OfficeFileFormatChecker.isOfficeFile(file_name_inp))
-    {
-		switch(OfficeFileFormatChecker.nFileType)
-        {
+	{
+		switch (OfficeFileFormatChecker.nFileType)
+		{
 #ifndef DONT_USED_EXTRA_LIBRARY
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
-            case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
-            {
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
+		{
 #ifndef _IOS
-                COfficeDocFile docFile;
-                docFile.m_sTempFolder = sTempDir;
-                
-                bool bMacros = false;
-                
-                result = (S_OK == docFile.LoadFromFile( file_name_inp, sResultDocxDir, NULL, bMacros, NULL));
+			COfficeDocFile docFile;
+			docFile.m_sTempFolder = sTempDir;
+
+			bool bMacros = false;
+
+			result = (S_OK == docFile.LoadFromFile(file_name_inp, sResultDocxDir, NULL, bMacros, NULL));
 #else
-                result = S_FALSE;
+			result = S_FALSE;
 #endif
-            }break;
-            case AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF:
-            {
-                RtfConvertationManager rtfConvert;
-                rtfConvert.m_sTempFolder = sTempDir;
-                
-                result = (S_OK == rtfConvert.ConvertRtfToOOX(file_name_inp, sResultDocxDir));
-            }break;
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
+		}break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF:
+		{
+			RtfConvertationManager rtfConvert;
+			rtfConvert.m_sTempFolder = sTempDir;
+
+			result = (S_OK == rtfConvert.ConvertRtfToOOX(file_name_inp, sResultDocxDir));
+		}break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:
+		{
+			CHtmlFile2 htmlConvert;
+			CHtmlParams	paramsHtml;
+
+			htmlConvert.SetTmpDirectory(sTempDir);
+
+			if (styles)
 			{
-                CHtmlFile2 htmlConvert;
-  				CHtmlParams	paramsHtml;
-
-				htmlConvert.SetTmpDirectory(sTempDir);
-
-				if (styles)
+				if (styles->m_oDocDefaults.IsInit())
 				{
-					if (styles->m_oDocDefaults.IsInit())
+					paramsHtml.m_sdocDefaults = styles->m_oDocDefaults->toXML();
+				}
+				std::map<SimpleTypes::EStyleType, size_t>::iterator pFind = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeParagraph);
+				if (pFind != styles->m_mapStyleDefaults.end())
+				{
+					if (styles->m_arrStyle[pFind->second])
 					{
-						paramsHtml.m_sdocDefaults = styles->m_oDocDefaults->toXML();
-					}
-					std::map<SimpleTypes::EStyleType, size_t>::iterator pFind = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeParagraph);
-					if (pFind != styles->m_mapStyleDefaults.end())
-					{
-						if (styles->m_arrStyle[pFind->second])
-						{
-							//change styleId
+						//change styleId
 
-							OOX::CStyle updateStyle (*styles->m_arrStyle[pFind->second]);
-							updateStyle.m_sStyleId = L"normal";
-							paramsHtml.m_sNormal = updateStyle.toXML();
-						}
+						OOX::CStyle updateStyle(*styles->m_arrStyle[pFind->second]);
+						updateStyle.m_sStyleId = L"normal";
+						paramsHtml.m_sNormal = updateStyle.toXML();
 					}
 				}
+			}
 
-                result = (S_OK == htmlConvert.OpenHtml(file_name_inp, sResultDocxDir, &paramsHtml));
-			}break;
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT:
-			{
-				CHtmlFile2 htmlConvert;
-				htmlConvert.SetTmpDirectory(sTempDir);
+			result = (S_OK == htmlConvert.OpenHtml(file_name_inp, sResultDocxDir, &paramsHtml));
+		}break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT:
+		{
+			CHtmlFile2 htmlConvert;
+			htmlConvert.SetTmpDirectory(sTempDir);
 
-				result = (S_OK == htmlConvert.OpenMht(file_name_inp, sResultDocxDir));
-			}break; 
+			result = (S_OK == htmlConvert.OpenMht(file_name_inp, sResultDocxDir));
+		}break;
 #endif
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
-			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
-			{
-				COfficeUtils oCOfficeUtils(NULL);
-				result = (S_OK == oCOfficeUtils.ExtractToDirectory(file_name_inp, sResultDocxDir, NULL, 0));
-			}break;
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
+		case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			result = (S_OK == oCOfficeUtils.ExtractToDirectory(file_name_inp, sResultDocxDir, NULL, 0));
+		}break;
 		}
 	}
-
 	NSDirectory::DeleteDirectory(sTempDir);
 
 	if (result)
@@ -6692,6 +6688,12 @@ void BinaryDocumentTableWriter::WriteDocPr(const PPTX::Logic::CNvPr& oDocPr)
 		m_oBcw.m_oStream.WriteStringW3(oDocPr.descr.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+	if (oDocPr.form.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerDocPr::Form);
+		m_oBcw.m_oStream.WriteBOOL(oDocPr.form.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteEffectExtent(const OOX::Drawing::CEffectExtent& oEffectExtent)
 {
@@ -7629,6 +7631,46 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 		WriteSdtTextFormPr(oStdPr.m_oTextFormPr.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oStdPr.m_oPicture.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPr);
+		WriteSdtPicture(oStdPr.m_oPicture.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}	
+}
+void BinaryDocumentTableWriter::WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture)
+{
+	int nCurPos = 0;
+	if (oSdtPicture.m_oScaleFlag.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrScaleFlag);
+		m_oBcw.m_oStream.WriteLONG(*oSdtPicture.m_oScaleFlag);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSdtPicture.m_oLockProportions.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrLockProportions);
+		m_oBcw.m_oStream.WriteBOOL(*oSdtPicture.m_oLockProportions);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSdtPicture.m_oRespectBorders.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrRespectBorders);
+		m_oBcw.m_oStream.WriteBOOL(*oSdtPicture.m_oRespectBorders);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSdtPicture.m_oShiftX.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrShiftX);
+		m_oBcw.m_oStream.WriteDoubleReal(*oSdtPicture.m_oShiftX);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSdtPicture.m_oShiftY.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrShiftY);
+		m_oBcw.m_oStream.WriteDoubleReal(*oSdtPicture.m_oShiftY);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtCheckBox(const OOX::Logic::CSdtCheckBox& oSdtCheckBox)
 {
@@ -7802,7 +7844,7 @@ void BinaryDocumentTableWriter::WriteDropDownList(const OOX::Logic::CSdtDropDown
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
-void BinaryDocumentTableWriter::WriteSdtFormPr(const ComplexTypes::Word::CFormPr& oFormPr)
+void BinaryDocumentTableWriter::WriteSdtFormPr(const OOX::Logic::CFormPr& oFormPr)
 {
 	int nCurPos = 0;
 	if(oFormPr.m_oKey.IsInit())
@@ -7829,6 +7871,18 @@ void BinaryDocumentTableWriter::WriteSdtFormPr(const ComplexTypes::Word::CFormPr
 		m_oBcw.m_oStream.WriteBOOL(oFormPr.m_oRequired.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oFormPr.m_oBorder.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrBorder);
+		m_oBcw.WriteBorder(oFormPr.m_oBorder.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oFormPr.m_oShd.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrShd);
+		m_oBcw.WriteShd(oFormPr.m_oShd.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr& oTextFormPr)
 {
@@ -7849,6 +7903,18 @@ void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombBorder);
 		m_oBcw.WriteBorder(oTextFormPr.m_oCombBorder.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oTextFormPr.m_oAutoFit.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrAutoFit);
+		m_oBcw.m_oStream.WriteBOOL(oTextFormPr.m_oAutoFit.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oTextFormPr.m_oMultiLine.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrMultiLine);
+		m_oBcw.m_oStream.WriteBOOL(oTextFormPr.m_oMultiLine.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
@@ -9068,7 +9134,11 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		if ((pDocx) && (pDocx->m_pVbaProject))
 		{
 			nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::VbaProject);
-			oBinaryDocumentTableWriter.WriteVbaProject(*pDocx->m_pVbaProject);
+
+			m_oBcw.m_oStream.StartRecord(0);
+			pDocx->m_pVbaProject->toPPTY(&m_oBcw.m_oStream);
+			m_oBcw.m_oStream.EndRecord();
+
 			this->WriteTableEnd(nCurPos);
 		}
 	}

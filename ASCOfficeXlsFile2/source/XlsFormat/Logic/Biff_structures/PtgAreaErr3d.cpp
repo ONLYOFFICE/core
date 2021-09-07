@@ -36,7 +36,9 @@
 
 namespace XLS
 {
-
+PtgAreaErr3d::PtgAreaErr3d(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
+{
+}
 
 BiffStructurePtr PtgAreaErr3d::clone()
 {
@@ -63,7 +65,7 @@ void PtgAreaErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, boo
 		extra_data.pop();
 		return;
 	}
-	std::wstring link = global_info->arXti_External[ixti].link;
+	std::wstring link = (ixti < global_info->arXti_External.size()) ? global_info->arXti_External[ixti].link : L"";
 	if (!link.empty()) 
 		link += L"!";
 	

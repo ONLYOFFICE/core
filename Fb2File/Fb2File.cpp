@@ -24,6 +24,21 @@
 #define VALUE2STR(x) VALUE_TO_STRING(x)
 #endif
 
+// Ячейка таблицы
+struct CTc
+{
+    int i;
+    int j;
+    std::wstring sGridSpan = L"1";
+
+    CTc(int _i, int _j, const std::wstring& sColspan) : i(_i), j(_j), sGridSpan(sColspan) {}
+
+    bool operator==(const CTc& c2)
+    {
+        return (i == c2.i && j == c2.j && sGridSpan == c2.sGridSpan);
+    }
+};
+
 // Информация об авторе книги. Тэг author, translator
 struct SAuthor
 {
@@ -44,11 +59,11 @@ struct STitleInfo
     std::vector<std::wstring> m_arGenres; // Жанры
     std::vector<SAuthor> m_arAuthors;     // Авторы
     std::wstring m_sBookTitle;            // Название
-
+    std::wstring m_pKeywords;             // Ключевые слова
     /*
     std::vector<SAuthor> m_arTranslator;  // Переводчики
     std::wstring m_sLang;      // Язык после перевода
-    std::wstring* m_pKeywords;                      // Ключевые слова
+
     std::pair<std::wstring, std::wstring>* m_pDate; // Дата
     std::wstring* m_pSrcLang;                       // Язык до перевода
     std::map<std::wstring, std::wstring> m_mSequence; // Серии книг
@@ -68,7 +83,6 @@ struct STitleInfo
         /*
         m_arTranslator.clear();
         m_mSequence.clear();
-        RELEASEARRAYOBJECTS(m_pKeywords);
         RELEASEARRAYOBJECTS(m_pDate);
         RELEASEARRAYOBJECTS(m_pSrcLang);
         */
@@ -88,15 +102,25 @@ struct STitleInfo
     // Разделитель не важен ,
     std::wstring getGenres()
     {
-        return std::accumulate(m_arGenres.begin(), m_arGenres.end(), std::wstring(),
-            [] (std::wstring& sRes, const std::wstring& vElem) { return sRes += vElem + L", "; });
+        std::wstring sRes = std::accumulate(m_arGenres.begin(), m_arGenres.end(), std::wstring(),
+            [] (std::wstring& sRes, const std::wstring& vElem) { return sRes += (vElem.empty() ? L"" : (vElem + L", ")); });
+        if (!sRes.empty())
+            sRes.erase(sRes.end() - 2, sRes.end());
+        return sRes;
     }
 
     // Разделитель ;
     std::wstring getAuthors()
     {
-        return std::accumulate(m_arAuthors.begin(), m_arAuthors.end(), std::wstring(),
-            [] (std::wstring& sRes, const SAuthor& vElem) { return sRes += vElem.middle_name + L' ' + vElem.first_name + L' ' + vElem.last_name + L' ' + vElem.nickname + L';'; });
+        std::wstring sRes = std::accumulate(m_arAuthors.begin(), m_arAuthors.end(), std::wstring(),
+            [] (std::wstring& sRes, const SAuthor& vElem) { return sRes +=
+               (vElem.middle_name.empty() ? L"" : (vElem.middle_name + L' ')) +
+               (vElem.first_name.empty()  ? L"" : (vElem.first_name  + L' ')) +
+               (vElem.last_name.empty()   ? L"" : (vElem.last_name   + L' ')) +
+               vElem.nickname + L';'; });
+        if (!sRes.empty())
+            sRes.erase(sRes.end() - 1);
+        return sRes;
     }
 };
 
@@ -201,8 +225,6 @@ public:
         m_oLightReader.Clear();
         m_mFootnotes.clear();
         m_mImages.clear();
-        m_oTitleInfo.m_arAuthors.clear();
-        m_oTitleInfo.m_arGenres.clear();
         /*
         m_mCustomInfo.clear();
         if(m_pSrcTitleInfo)
@@ -582,7 +604,9 @@ public:
         oBuilder += L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table-t\"/><w:tblW w:w=\"0\" w:type=\"auto\"/><w:tblLayout w:type=\"fixed\"/></w:tblPr>";
 
         NSStringUtils::CStringBuilder oTmpBuilder;
+        std::vector<CTc> mTable;
         int nGridCol = 0;
+        int i = 1; // Строка
         int nDeath = m_oLightReader.GetDepth();
         while (m_oLightReader.ReadNextSiblingNode(nDeath))
         {
@@ -590,11 +614,55 @@ public:
             if (m_oLightReader.GetName() != L"tr" || m_oLightReader.IsEmptyNode())
                 continue;
             int nTCol = 0;
+            int j = 1; // Столбец
             oTmpBuilder += L"<w:tr>";
             int nTrDeath = m_oLightReader.GetDepth();
             while (m_oLightReader.ReadNextSiblingNode(nTrDeath))
             {
-                oTmpBuilder += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/></w:tcPr><w:p>";
+                int nColspan = 1;
+                int nRowspan = 1;
+                while(m_oLightReader.MoveToNextAttribute())
+                {
+                    if(m_oLightReader.GetName() == L"colspan")
+                        nColspan = stoi(m_oLightReader.GetText());
+                    else if(m_oLightReader.GetName() == L"rowspan")
+                        nRowspan = stoi(m_oLightReader.GetText());
+                }
+                m_oLightReader.MoveToElement();
+
+                // Вставляем ячейки до
+                std::vector<CTc>::iterator it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
+                std::vector<CTc>::iterator it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
+                while(it1 != mTable.end() || it2 != mTable.end())
+                {
+                    oTmpBuilder.WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
+                    std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
+                    oTmpBuilder.WriteString(sCol);
+                    oTmpBuilder.WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
+                    j += stoi(sCol);
+                    it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
+                    it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
+                }
+
+                oTmpBuilder += L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/>";
+                if (nRowspan != 1)
+                {
+                    oTmpBuilder.WriteString(L"<w:vMerge w:val=\"restart\"/>");
+                    std::wstring sColspan = std::to_wstring(nColspan);
+                    if (nRowspan == 0)
+                        mTable.push_back({0, j, sColspan});
+                    else
+                        for (int k = i + 1; k < i + nRowspan; k++)
+                            mTable.push_back({k, j, sColspan});
+                }
+                if (nColspan != 1)
+                {
+                    oTmpBuilder.WriteString(L"<w:gridSpan w:val=\"");
+                    oTmpBuilder.WriteString(std::to_wstring(nColspan));
+                    oTmpBuilder.WriteString(L"\"/>");
+                    j += nColspan - 1;
+                }
+                oTmpBuilder.WriteString(L"</w:tcPr><w:p>");
                 // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
                 if (m_oLightReader.GetName() == L"th")
                 {
@@ -612,8 +680,24 @@ public:
                     readP(L"", oTmpBuilder);
                 }
                 oTmpBuilder += L"</w:p></w:tc>";
+                j++;
+
+                // Вставляем ячейки после
+                it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
+                it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
+                while(it1 != mTable.end() || it2 != mTable.end())
+                {
+                    oTmpBuilder.WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:vMerge w:val=\"continue\"/><w:gridSpan w:val=\"");
+                    std::wstring sCol = (it1 != mTable.end() ? it1->sGridSpan : it2->sGridSpan);
+                    oTmpBuilder.WriteString(sCol);
+                    oTmpBuilder.WriteString(L"\"/></w:tcPr><w:p></w:p></w:tc>");
+                    j += stoi(sCol);
+                    it1 = std::find_if(mTable.begin(), mTable.end(), [i, j](const CTc& item){ return item.i == i && item.j == j; });
+                    it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
+                }
             }
             oTmpBuilder += L"</w:tr>";
+            i++;
         }
         // Размеры таблицы
         std::wstring sGridCol;
@@ -1240,15 +1324,10 @@ public:
                getAuthor(oTitleInfo.m_arAuthors);
             else if (sName == L"book-title")
                 oTitleInfo.m_sBookTitle = content();
-            /*
             // Читаем keywords (ноль или один)
             else if(sName == L"keywords")
-            {
-                if(oTitleInfo.m_pKeywords)
-                    delete[] oTitleInfo.m_pKeywords;
-                oTitleInfo.m_pKeywords = new std::wstring[1];
-                *oTitleInfo.m_pKeywords = content();
-            }
+                oTitleInfo.m_pKeywords = content();
+            /*
             // Читаем date (ноль или один)
             else if(sName == L"date")
             {
@@ -1458,8 +1537,16 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     // Авторы
     oCore += L"</dc:subject><dc:creator>";
     oCore.WriteEncodeXmlString(m_internal->m_oTitleInfo.getAuthors());
+    oCore.WriteString(L"</dc:creator>");
+    // Ключевые слова
+    if (!m_internal->m_oTitleInfo.m_pKeywords.empty())
+    {
+        oCore.WriteString(L"<cp:keywords>");
+        oCore.WriteEncodeXmlString(m_internal->m_oTitleInfo.m_pKeywords);
+        oCore.WriteString(L"</cp:keywords>");
+    }
     // Конец core
-    oCore += L"</dc:creator><cp:revision>1</cp:revision></cp:coreProperties>";
+    oCore += L"<cp:revision>1</cp:revision></cp:coreProperties>";
     // Пишем core в файл
     NSFile::CFileBinary oCoreWriter;
     if (oCoreWriter.CreateFileW(sDocPropsDirectory + L"/core.xml"))
@@ -1502,8 +1589,8 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     return S_OK;
 }
 
-void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl);
-void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bWasP)
+void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasP, bool bWasTable);
+void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bWasP, bool bWasTable)
 {
     int nDeath = oIndexHtml.GetDepth();
     if (oIndexHtml.IsEmptyNode() || !oIndexHtml.ReadNextSiblingNode2(nDeath))
@@ -1512,50 +1599,62 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
     {
         std::wstring sName = oIndexHtml.GetName();
         if (sName == L"#text")
-            oXml.WriteString(oIndexHtml.GetText());
+            oXml.WriteEncodeXmlString(oIndexHtml.GetText());
         else if (sName == L"p")
         {
             if (!bWasP)
                 oXml.WriteString(L"<p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
             if (!bWasP)
                 oXml.WriteString(L"</p>");
         }
         else if (sName == L"h1")
         {
-            oXml.WriteString(L"<section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title></section>");
+            if (!bWasP)
+                oXml.WriteString(L"<section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p></title></section>");
         }
         else if (sName == L"h2")
         {
-            oXml.WriteString(L"<section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title></section></section>");
+            if (!bWasP)
+                oXml.WriteString(L"<section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p></title></section></section>");
         }
         else if (sName == L"h3")
         {
-            oXml.WriteString(L"<section><section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title></section></section></section>");
+            if (!bWasP)
+                oXml.WriteString(L"<section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p></title></section></section></section>");
         }
         else if (sName == L"h4")
         {
-            oXml.WriteString(L"<section><section><section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title></section></section></section></section>");
+            if (!bWasP)
+                oXml.WriteString(L"<section><section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p></title></section></section></section></section>");
         }
         else if (sName == L"h5")
         {
-            oXml.WriteString(L"<section><section><section><section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title></section></section></section></section></section>");
+            if (!bWasP)
+                oXml.WriteString(L"<section><section><section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p></title></section></section></section></section></section>");
         }
         else if (sName == L"h6")
         {
-            oXml.WriteString(L"<section><section><section><section><section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p></title></section></section></section></section></section></section>");
+            if (!bWasP)
+                oXml.WriteString(L"<section><section><section><section><section><section><title><p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p></title></section></section></section></section></section></section>");
         }
         else if (sName == L"span")
         {
@@ -1575,83 +1674,96 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
                 if (sAlign == L"super")
                 {
                     oXml.WriteString(L"<sup>");
-                    readStream(oXml, oIndexHtml, arrBinary, bWasP);
+                    readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
                     oXml.WriteString(L"</sup>");
                 }
                 else if (sAlign == L"sub")
                 {
                     oXml.WriteString(L"<sub>");
-                    readStream(oXml, oIndexHtml, arrBinary, bWasP);
+                    readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
                     oXml.WriteString(L"</sub>");
                 }
                 else
-                    readStream(oXml, oIndexHtml, arrBinary, bWasP);
+                    readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             }
             else
-                readStream(oXml, oIndexHtml, arrBinary, bWasP);
+                readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
         }
         else if (sName == L"s")
         {
             oXml.WriteString(L"<strikethrough>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</strikethrough>");
         }
         else if (sName == L"i")
         {
             oXml.WriteString(L"<emphasis>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</emphasis>");
         }
         else if (sName == L"b")
         {
             oXml.WriteString(L"<strong>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</strong>");
         }
         else if (sName == L"table")
         {
-            oXml.WriteString(L"<table>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
-            oXml.WriteString(L"</table>");
+            if (!bWasTable)
+                oXml.WriteString(L"<table>");
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+            if (!bWasTable)
+                oXml.WriteString(L"</table>");
         }
         else if (sName == L"tr")
         {
-            oXml.WriteString(L"<tr>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
-            oXml.WriteString(L"</tr>");
+            if (!bWasTable)
+                oXml.WriteString(L"<tr>");
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+            if (!bWasTable)
+                oXml.WriteString(L"</tr>");
         }
-        else if (sName == L"th")
+        else if (sName == L"td" || sName == L"th")
         {
-            oXml.WriteString(L"<th>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</th>");
-        }
-        else if (sName == L"td")
-        {
-            oXml.WriteString(L"<td>");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</td>");
+            if (!bWasTable)
+            {
+                oXml.WriteString(L"<td");
+                while (oIndexHtml.MoveToNextAttribute())
+                {
+                    if (oIndexHtml.GetName() == L"colspan")
+                        oXml.WriteString(L" colspan=\"" + oIndexHtml.GetText() + L"\"");
+                    else if (oIndexHtml.GetName() == L"rowspan")
+                        oXml.WriteString(L" rowspan=\"" + oIndexHtml.GetText() + L"\"");
+                }
+                oIndexHtml.MoveToElement();
+                oXml.WriteString(L">");
+            }
+            readStream(oXml, oIndexHtml, arrBinary, true, true);
+            if (!bWasTable)
+                oXml.WriteString(L"</td>");
         }
         else if (sName == L"a")
         {
-            oIndexHtml.MoveToNextAttribute();
-            oXml.WriteString(L"<a l:href=\"" + oIndexHtml.GetText() + L"\">");
+            oXml.WriteString(L"<a ");
+            while (oIndexHtml.MoveToNextAttribute())
+            {
+                std::wstring sName = oIndexHtml.GetName();
+                if (sName == L"name")
+                    sName = L"id";
+                oXml.WriteString(sName + L"=\"");
+                oXml.WriteString(oIndexHtml.GetText());
+                oXml.WriteString(L"\" ");
+            }
             oIndexHtml.MoveToElement();
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            oXml.WriteString(L">");
+
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</a>");
         }
         else if (sName == L"ul")
-        {
-            oXml.WriteString(L"<ul>");
-            readLi(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</ul>");
-        }
+            readLi(oXml, oIndexHtml, arrBinary, true, bWasP, bWasTable);
         else if (sName == L"ol")
-        {
-            oXml.WriteString(L"<ol>");
-            readLi(oXml, oIndexHtml, arrBinary, false);
-            oXml.WriteString(L"</ol>");
-        }
+            readLi(oXml, oIndexHtml, arrBinary, false, bWasP, bWasTable);
         else if (sName == L"img")
         {
             std::wstring sBinary;
@@ -1660,7 +1772,7 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
                 if (oIndexHtml.GetName() == L"src")
                 {
                     sBinary = oIndexHtml.GetText();
-                    sBinary.erase(0, sBinary.find(L',') + 2);
+                    sBinary.erase(0, sBinary.find(L',') + 1);
                     arrBinary.push_back(sBinary);
                 }
             }
@@ -1668,13 +1780,57 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
             oXml.WriteString(L"<image l:href=\"#img" + std::to_wstring(arrBinary.size()) + L".png\"/>");
         }
         else
-            readStream(oXml, oIndexHtml, arrBinary, bWasP);
+            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
     } while (oIndexHtml.ReadNextSiblingNode2(nDeath));
 }
 
-void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl)
+std::wstring ToUpperRoman(int number)
+{
+    if (number < 0 || number > 3999) return L"";
+    if (number < 1) return L"";
+    if (number >= 1000) return L"M" + ToUpperRoman(number - 1000);
+    if (number >= 900) return L"CM" + ToUpperRoman(number - 900);
+    if (number >= 500) return L"D"  + ToUpperRoman(number - 500);
+    if (number >= 400) return L"CD" + ToUpperRoman(number - 400);
+    if (number >= 100) return L"C"  + ToUpperRoman(number - 100);
+    if (number >= 90) return L"XC"  + ToUpperRoman(number - 90);
+    if (number >= 50) return L"L"   + ToUpperRoman(number - 50);
+    if (number >= 40) return L"XL"  + ToUpperRoman(number - 40);
+    if (number >= 10) return L"X"   + ToUpperRoman(number - 10);
+    if (number >= 9) return L"IX"   + ToUpperRoman(number - 9);
+    if (number >= 5) return L"V"    + ToUpperRoman(number - 5);
+    if (number >= 4) return L"IV"   + ToUpperRoman(number - 4);
+    if (number >= 1) return L"I"    + ToUpperRoman(number - 1);
+    return L"";
+}
+
+std::wstring ToLowerRoman(int number)
+{
+    if (number < 0 || number > 3999) return L"";
+    if (number < 1) return L"";
+    if (number >= 1000) return L"m" + ToLowerRoman(number - 1000);
+    if (number >= 900) return L"cm" + ToLowerRoman(number - 900);
+    if (number >= 500) return L"d"  + ToLowerRoman(number - 500);
+    if (number >= 400) return L"cd" + ToLowerRoman(number - 400);
+    if (number >= 100) return L"c"  + ToLowerRoman(number - 100);
+    if (number >= 90) return L"xc"  + ToLowerRoman(number - 90);
+    if (number >= 50) return L"l"   + ToLowerRoman(number - 50);
+    if (number >= 40) return L"xl"  + ToLowerRoman(number - 40);
+    if (number >= 10) return L"x"   + ToLowerRoman(number - 10);
+    if (number >= 9) return L"ix"   + ToLowerRoman(number - 9);
+    if (number >= 5) return L"v"    + ToLowerRoman(number - 5);
+    if (number >= 4) return L"iv"   + ToLowerRoman(number - 4);
+    if (number >= 1) return L"i"    + ToLowerRoman(number - 1);
+    return L"";
+}
+
+void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasP, bool bWasTable)
 {
     int nNum = 1;
+    while (oIndexHtml.MoveToNextAttribute())
+        if (oIndexHtml.GetName() == L"start")
+            nNum = std::stoi(oIndexHtml.GetText());
+    oIndexHtml.MoveToElement();
     int nDeath = oIndexHtml.GetDepth();
     if (oIndexHtml.IsEmptyNode() || !oIndexHtml.ReadNextSiblingNode2(nDeath))
         return;
@@ -1682,11 +1838,47 @@ void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oInde
     {
         if (oIndexHtml.GetName() == L"li")
         {
-            oXml.WriteString(L"<p>");
-            bUl ? oXml.AddCharSafe(183) : oXml.AddInt(nNum++);
+            if (!bWasP)
+                oXml.WriteString(L"<p>");
+            if (bUl)
+                oXml.AddCharSafe(183);
+            else
+            {
+                std::wstring sPoint = std::to_wstring(nNum) + L'.';
+                while (oIndexHtml.MoveToNextAttribute())
+                {
+                    if (oIndexHtml.GetName() == L"style")
+                    {
+                        std::wstring sText = oIndexHtml.GetText();
+                        size_t nListType = sText.find(L"list-style-type: ");
+                        if (nListType != std::wstring::npos)
+                        {
+                            nListType += 17;
+                            size_t nListTypeEnd = sText.find(L';', nListType);
+                            std::wstring sListType = sText.substr(nListType, nListTypeEnd - nListType);
+                            if (sListType == L"decimal")
+                                break;
+                            else if (sListType == L"upper-alpha")
+                                sPoint = std::wstring((nNum - 1) / 26 + 1, L'A' + (nNum - 1) % 26);
+                            else if (sListType == L"lower-alpha")
+                                sPoint = std::wstring((nNum - 1) / 26 + 1, L'a' + (nNum - 1) % 26);
+                            else if (sListType == L"lower-roman")
+                                sPoint = ToLowerRoman(nNum);
+                            else if (sListType == L"upper-roman")
+                                sPoint = ToUpperRoman(nNum);
+                            sPoint += L'.';
+                        }
+                    }
+                }
+                oIndexHtml.MoveToElement();
+
+                nNum++;
+                oXml.WriteString(sPoint);
+            }
             oXml.WriteString(L" ");
-            readStream(oXml, oIndexHtml, arrBinary, true);
-            oXml.WriteString(L"</p>");
+            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            if (!bWasP)
+                oXml.WriteString(L"</p>");
         }
     } while (oIndexHtml.ReadNextSiblingNode2(nDeath));
 }
@@ -1707,57 +1899,67 @@ std::wstring GenerateUUID()
     return sstream.str();
 }
 
-HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDst)
+HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDst, const std::wstring& sInpTitle)
 {
     NSStringUtils::CStringBuilder oDocument;
     oDocument.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><FictionBook xmlns=\"http://www.gribuser.ru/xml/fictionbook/2.0\" xmlns:l=\"http://www.w3.org/1999/xlink\"><description>");
     // description
-    std::wstring sCoreXml;
-    if (NSFile::CFileBinary::ReadAllTextUtf8(sCoreFile, sCoreXml))
+    // title-info
+    oDocument.WriteString(L"<title-info>");
+    std::wstring sBookTitle = sInpTitle.empty() ? NSFile::GetFileName(sDst) : sInpTitle;
+    std::wstring sAuthor, sAnnotation, sKeywords, sGenre;
+    std::wstring sLanguage = L"en-EN", sVersion = L"1.0";
+    std::wstring sIdentifier = GenerateUUID();
+    XmlUtils::CXmlLiteReader oCoreReader;
+    oCoreReader.FromString(sCoreFile);
+    oCoreReader.ReadNextNode();
+    int nDeath = oCoreReader.GetDepth();
+    while (oCoreReader.ReadNextSiblingNode(nDeath))
     {
-        // title-info
-        oDocument.WriteString(L"<title-info>");
-        std::wstring sBookTitle = NSFile::GetFileName(sDst);
-        std::wstring sAuthor = sBookTitle;
-        std::wstring sAnnotation;
-        std::wstring sKeywords;
-
-        XmlUtils::CXmlLiteReader oCoreReader;
-        oCoreReader.FromString(sCoreXml);
-        oCoreReader.ReadNextNode();
-        int nDeath = oCoreReader.GetDepth();
-        while (oCoreReader.ReadNextSiblingNode(nDeath))
+        std::wstring sName = oCoreReader.GetName();
+        std::wstring sText = oCoreReader.GetText2();
+        if (!sText.empty())
         {
-            if (oCoreReader.GetNamespacePrefix() == L"dc")
-            {
-                std::wstring sName = oCoreReader.GetName();
-                if (sName == L"dc:creator")
-                    sAuthor = oCoreReader.GetText2();
-                else if (sName == L"dc:title")
-                    sBookTitle = oCoreReader.GetText2();
-                else if (sName == L"dc:description")
-                    sAnnotation = oCoreReader.GetText2();
-                else if (sName == L"dc:subject")
-                    sKeywords += oCoreReader.GetText2() + L' ';
-            }
+            if (sName == L"dc:creator")
+                sAuthor     = sText;
+            else if (sName == L"dc:title")
+                sBookTitle  = sText;
+            else if (sName == L"dc:description")
+                sAnnotation = sText;
+            else if (sName == L"dc:subject")
+                sGenre      = sText;
+            else if (sName == L"cp:keywords")
+                sKeywords   = sText;
+            else if (sName == L"dc:identifier")
+                sIdentifier = sText;
+            else if (sName == L"dc:language")
+                sLanguage   = sText;
+            else if (sName == L"cp:version")
+                sVersion    = sText;
         }
-
-        oDocument.WriteString(L"<genre>dramaturgy</genre><author><nickname>");
-        oDocument.WriteString(sAuthor);
-        oDocument.WriteString(L"</nickname></author><book-title>");
-        oDocument.WriteString(sBookTitle);
-        oDocument.WriteString(L"</book-title>");
-        if (!sAnnotation.empty())
-            oDocument.WriteString(L"<annotation><p>" + sAnnotation + L"</p></annotation>");
-        if (!sKeywords.empty())
-            oDocument.WriteString(L"<keywords>" + sKeywords + L"</keywords>");
-        oDocument.WriteString(L"<lang>en</lang></title-info><document-info><author><nickname>");
-        // document-info
-        oDocument.WriteString(sAuthor);
-        oDocument.WriteString(L"</nickname></author><date></date><id>");
-        oDocument.WriteString(GenerateUUID());
-        oDocument.WriteString(L"</id><version>1.0</version></document-info>");
     }
+
+    oDocument.WriteString(L"<genre>");
+    oDocument.WriteString(sGenre);
+    oDocument.WriteString(L"</genre><author><nickname>");
+    oDocument.WriteString(sAuthor);
+    oDocument.WriteString(L"</nickname></author><book-title>");
+    oDocument.WriteString(sBookTitle);
+    oDocument.WriteString(L"</book-title>");
+    if (!sAnnotation.empty())
+        oDocument.WriteString(L"<annotation><p>" + sAnnotation + L"</p></annotation>");
+    if (!sKeywords.empty())
+        oDocument.WriteString(L"<keywords>" + sKeywords + L"</keywords>");
+    oDocument.WriteString(L"<lang>");
+    oDocument.WriteString(sLanguage);
+    oDocument.WriteString(L"</lang></title-info><document-info><author><nickname>");
+    // document-info
+    oDocument.WriteString(sAuthor);
+    oDocument.WriteString(L"</nickname></author><date></date><id>");
+    oDocument.WriteString(sIdentifier);
+    oDocument.WriteString(L"</id><version>");
+    oDocument.WriteString(sVersion);
+    oDocument.WriteString(L"</version></document-info>");
     // body
     oDocument.WriteString(L"</description><body><section>");
     std::string sContent;
@@ -1770,7 +1972,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
         int nDepth = oIndexHtml.GetDepth();
         oIndexHtml.ReadNextSiblingNode(nDepth); // head
         oIndexHtml.ReadNextSiblingNode(nDepth); // body
-        readStream(oDocument, oIndexHtml, arrBinary, false);
+        readStream(oDocument, oIndexHtml, arrBinary, false, false);
     }
     oDocument.WriteString(L"</section></body>");
     // binary

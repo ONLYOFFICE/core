@@ -39,10 +39,10 @@
 #include "../graphics/Timer.h"
 #include "../common/Directory.h"
 #include "../common/Array.h"
+#include "../common/StringBuilder.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
 #include "js_internal/js_base.h"
-#include "../fontengine/application_generate_fonts_common.h"
 
 #if defined(CreateDirectory)
 #undef CreateDirectory
@@ -55,6 +55,31 @@
 #if defined(CreateFile)
 #undef CreateFile
 #endif
+
+class CV8Params
+{
+public:
+    bool IsServerSaveVersion;
+    std::wstring DocumentDirectory;
+
+public:
+    CV8Params()
+    {
+        IsServerSaveVersion = false;
+        DocumentDirectory = L"";
+    }
+    CV8Params(const CV8Params& src)
+    {
+        IsServerSaveVersion = src.IsServerSaveVersion;
+        DocumentDirectory = src.DocumentDirectory;
+    }
+    CV8Params& operator=(const CV8Params& src)
+    {
+        IsServerSaveVersion = src.IsServerSaveVersion;
+        DocumentDirectory = src.DocumentDirectory;
+        return *this;
+    }
+};
 
 class CZipWorker
 {
@@ -157,7 +182,7 @@ private:
 
     void url_correct2(std::wstring& url)
     {
-        NSCommon::string_replace(url, L"/./", L"/");
+        NSStringUtils::string_replace(url, L"/./", L"/");
 
         size_t posn = 0;
         while (std::wstring::npos != (posn = url.find(L"/../")))
@@ -170,9 +195,9 @@ private:
             }
         }
 
-        NSCommon::string_replace(url, L"\\\\", L"\\");
-        NSCommon::string_replace(url, L"//", L"/");
-        NSCommon::string_replace(url, L"\\", L"/");
+        NSStringUtils::string_replace(url, L"\\\\", L"\\");
+        NSStringUtils::string_replace(url, L"//", L"/");
+        NSStringUtils::string_replace(url, L"\\", L"/");
     }
 };
 
@@ -232,6 +257,10 @@ public:
     // для добавления картинок -------------------------------------
     CImagesWorker* m_pWorker;
 
+    // серверная версия билдера
+    CV8Params m_oParams;
+    std::map<std::wstring, bool> m_map_access_directories;
+
 public:
     CNativeControl() :
         m_pChanges(NULL),
@@ -290,6 +319,20 @@ public:
 public:
     void getFileData(const std::wstring& strFile, BYTE*& pData, DWORD& dwLen)
     {
+        if (m_oParams.IsServerSaveVersion)
+        {
+            // check access directories
+            std::wstring sFileCorrect = strFile;
+            NSStringUtils::string_replace(sFileCorrect, L"\\", L"/");
+
+            if (m_map_access_directories.end() == m_map_access_directories.find(NSFile::GetDirectoryName(strFile)))
+            {
+                *pData = NULL;
+                dwLen = 0;
+                return;
+            }
+        }
+
         NSFile::CFileBinary oFile;
         oFile.OpenFile(strFile);
         dwLen = (DWORD)oFile.GetFileSize();
@@ -303,7 +346,7 @@ public:
     {
         m_strFilePath = strPath;
 
-        m_oZipWorker.m_sWorkerFolder = NSCommon::GetDirectoryName(strPath);
+        m_oZipWorker.m_sWorkerFolder = NSFile::GetDirectoryName(strPath);
     }
     std::wstring GetFilePath()
     {
@@ -406,28 +449,12 @@ public:
             {
                 NSFonts::CFontInfo* pCurrent = i;
 
-                size_t pos1 = pCurrent->m_wsFontPath.find_last_of(wchar_t('/'));
-                size_t pos2 = pCurrent->m_wsFontPath.find_last_of(wchar_t('\\'));
+                std::wstring sFileName = NSFile::GetFileName(pCurrent->m_wsFontPath);
+                m_map_fonts[sFileName] = pCurrent->m_wsFontPath;
 
-                size_t pos = std::wstring::npos;
-                if (pos1 != std::wstring::npos)
-                    pos = pos1;
-
-                if (pos2 != std::wstring::npos)
+                if (m_oParams.IsServerSaveVersion)
                 {
-                    if (pos == std::wstring::npos)
-                        pos = pos2;
-                    else if (pos2 > pos)
-                        pos = pos2;
-                }
-
-                if (pos != std::wstring::npos)
-                {
-                    m_map_fonts[pCurrent->m_wsFontPath.substr(pos + 1)] = pCurrent->m_wsFontPath;
-                }
-                else
-                {
-                    m_map_fonts[pCurrent->m_wsFontPath] = pCurrent->m_wsFontPath;
+                    CheckAccessDirectory(NSFile::GetDirectoryName(pCurrent->m_wsFontPath));
                 }
             }
 
@@ -442,7 +469,20 @@ public:
 
             RELEASEINTERFACE(pManager);
             RELEASEOBJECT(pApplication);
+
+            CheckAccessDirectory(m_oParams.DocumentDirectory);
         }
+    }
+
+    void CheckAccessDirectory(std::wstring sDirectory)
+    {
+        if (!m_oParams.IsServerSaveVersion || sDirectory.empty())
+            return;
+
+        NSStringUtils::string_replace(sDirectory, L"\\", L"/");
+        std::map<std::wstring, bool>::iterator findDir = m_map_access_directories.find(sDirectory);
+        if (findDir == m_map_access_directories.end())
+            m_map_access_directories.insert(std::make_pair(sDirectory, true));
     }
 };
 }
@@ -1117,6 +1157,6 @@ bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFi
                                NSNativeControl::CNativeControl* pNative,
                                JSSmart<CJSContext> context,
                                JSSmart<CJSValue>* args,
-                               std::wstring& strError);
+                               std::wstring& strError, const std::wstring& jsonParams = L"");
 
 #endif // NATIVECONTROL

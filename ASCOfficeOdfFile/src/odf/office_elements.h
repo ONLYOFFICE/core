@@ -73,40 +73,8 @@ public:
     void set_root(bool isRoot) { is_root_ = isRoot; }
     bool is_root() const { return is_root_; }
 
-    virtual void afterCreate()
-	{
-		if (!context_) return;
-
-		ElementType type_ = this->get_type();
-
-		if (type_ != typeTextSection)
-		{
-			context_->level++;
-		}
-	}
-	virtual void afterReadContent()
-	{
-		if (!context_) return;
-
-		ElementType type_ = this->get_type();
-
-		if (type_ != typeTextSection)
-		{
-			if (context_->level == 4) 
-			{
-				if (office_element * prev= context_->get_last_element())
-				{
-					if (element_style_name)
-					{
-						prev->next_element_style_name = element_style_name;
-					}
-				}
-		        
-				context_->set_last_element(this);
-			}
-			context_->level--;
-		}
-	}
+	virtual void afterCreate();
+	virtual void afterReadContent(); // -> createandread.cpp
    
     CPDOCCORE_DEFINE_VISITABLE();
 

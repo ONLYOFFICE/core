@@ -741,6 +741,11 @@ public:
 		void convert(OOX::Logic::CMcJc					*oox_mc_jc);
 		void convert(OOX::Logic::CPlcHide				*oox_plc_hide);
 		bool convert(OOX::Logic::CRunProperty			*oox_r_pr);
+
+//-----------------------------------
+		void RGB2HSL(DWORD argb, double& dH, double& dS, double& dL);
+		DWORD HSL2RGB(double dH, double dS, double dL);
+
 	};
 
 } // namespace Oox2Odf

@@ -102,7 +102,7 @@ namespace PdfReader
 		m_oRef = *pRef;
 		m_seType = NULL;
 		m_seAppBuffer = NULL;
-		m_pBorderStyle = NULL;
+		m_pBorderStyle = NULL;				
 
 		// SubType
 		Object oDictItem;
@@ -174,7 +174,6 @@ namespace PdfReader
 		oDictItem.Free();
 
 		//Border style
-
 		AnnotBorderType eBorderType = annotBorderSolid;
 		double dBorderWidth = 1;
 		double *pBorderDash = NULL;

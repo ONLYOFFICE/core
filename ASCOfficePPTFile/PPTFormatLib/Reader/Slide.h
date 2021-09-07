@@ -241,7 +241,7 @@ public:
 			pShape->m_oShape.m_oText.ApplyProperties(this);
 		}
 
-		if ((pShape->m_oActions.m_bPresent) && (7 < m_arColorScheme.GetSize()))
+        if ((pShape->m_arrActions[0].m_bPresent) && (7 < m_arColorScheme.GetSize()))
 		{
 			ApplyHyperlink(pShape, m_arColorScheme[6]);
 		}
@@ -424,7 +424,7 @@ private:
 
 	void ApplyHyperlink(CShapeElement* pShape, SColorAtom& oColor)
 	{
-		CAtlArray<CInteractiveInfo::CTextRange>* pRanges	= &pShape->m_oActions.m_arRanges;
+        CAtlArray<CInteractiveInfo::CTextRange>* pRanges	= &pShape->m_arrActions[0].m_arRanges;
 		CTextAttributesEx* pTextAttributes					= &pShape->m_oShape.m_oText;
 
 		LONG lCountHyper	= (LONG)pRanges->GetCount();

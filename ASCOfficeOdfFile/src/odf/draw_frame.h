@@ -83,9 +83,10 @@ private:
     draw_image_attlist				draw_image_attlist_;
 	odf_types::common_xlink_attlist xlink_attlist_;
     
-	office_element_ptr				office_binary_data_;
-
     office_element_ptr_array		content_;
+	office_element_ptr				office_binary_data_;
+	
+	office_element_ptr			draw_frame_ptr; //openoffice xml 1.0
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_image);
@@ -172,10 +173,9 @@ public:
     office_element_ptr_array				content_;
 
     office_element_ptr						office_event_listeners_; 
-	// в content перенести нельзя - иначе событи будет добавляться не к этому объекту а следующему
-    office_element_ptr						draw_glue_point_;
+
+	office_element_ptr						draw_glue_point_;
     office_element_ptr						draw_image_map_;
-    //office_element_ptr draw_chart_map_;
 
     office_element_ptr						draw_contour_; // draw-contour-polygon or draw-contour-path
 
@@ -189,8 +189,10 @@ public:
 private:
     virtual void add_attributes		( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+	
+	void docx_convert_start(oox::docx_conversion_context & Context);
+	void docx_convert_end(oox::docx_conversion_context & Context);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(draw_frame);
 
 //-------------------------------------------------------------------------------------------------------------
@@ -270,13 +272,14 @@ public:
     draw_text_box_attlist		draw_text_box_attlist_;
     office_element_ptr_array	content_;
 
+	office_element_ptr draw_frame_ptr; //openoffice xml 1.0
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_text(const std::wstring & Text){}
 	virtual void add_space(const std::wstring & Text){}
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(draw_text_box);
 
 //-------------------------------------------------------------------------------------------------------------
@@ -315,6 +318,8 @@ private:
     virtual void add_child_element	( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 	std::wstring office_convert(odf_document_ptr odfDocument, int type);
+	
+	office_element_ptr draw_frame_ptr; //openoffice xml 1.0
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object);

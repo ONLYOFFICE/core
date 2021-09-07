@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_SLIDE_PIC_INCLUDE_H_
-#define PPTX_LOGIC_SLIDE_PIC_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "NvPicPr.h"
@@ -269,13 +267,21 @@ namespace PPTX
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId = NULL, bool in_group = false);
+			
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("macro"), macro)
+				WritingElement_ReadAttributes_End(oReader)
+			}
 //----------------------------------------------------------------------
 			Shape*					m_pLevelUp;
 			NvPicPr					nvPicPr;
 			BlipFill				blipFill;
 			SpPr					spPr;
 			nullable<ShapeStyle>	style;
-		//internal
+			nullable_string			macro;
+			//internal
 			nullable<COLEObject>	oleObject; 
 
 			std::wstring			m_namespace;
@@ -286,4 +292,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_SLIDE_PIC_INCLUDE_H_

@@ -485,6 +485,24 @@ namespace NSDoctRenderer
                 {
                     std::string sHTML_Utf8 = js_result2->toStringA();
 
+                    JSSmart<CJSObject> js_objectCore = js_objectApi->call_func("asc_getCoreProps", 1, args)->toObject();
+                    if(try_catch->Check())
+                    {
+                        strError = L"code=\"core_props\"";
+                        bIsBreak = true;
+                    }
+                    else if (js_objectCore->isObject())
+                    {
+                        JSSmart<CJSValue> js_results = js_objectCore->call_func("asc_getTitle", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_title\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull() && sHTML_Utf8.find("<title>") == std::string::npos)
+                            sHTML_Utf8.insert(sHTML_Utf8.find("</head>"), "<title>" + js_results->toStringA() + "</title>");
+                    }
+
                     NSFile::CFileBinary oFile;
                     if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
                     {
@@ -706,7 +724,7 @@ namespace NSDoctRenderer
                     JSSmart<CJSValue> args_open[4];
                     args_open[0] = oWorkerLoader.GetDataFull()->toValue();
                     args_open[1] = CJSContext::createInt(nVersion);
-                    std::wstring sXlsx = NSCommon::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
+                    std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
                     args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
                     JSSmart<CJSObject> globalParams = CJSContext::createObject();
                     if (0 < m_oParams.m_nLcid)
@@ -898,6 +916,126 @@ namespace NSDoctRenderer
                 if (!bIsBreak && !bIsMailMerge)
                 {
                     bIsBreak = Doct_renderer_SaveFile(&m_oParams, pNative, context, args, strError, js_objectApi);
+                }
+
+                // CORE PARAMS
+                if (!bIsBreak && m_oParams.m_eDstFormat == DoctRendererFormat::HTML && !bIsMailMerge)
+                {
+                    JSSmart<CJSObject> js_objectCore = js_objectApi->call_func("asc_getCoreProps", 1, args)->toObject();
+                    if(try_catch->Check())
+                    {
+                        strError = L"code=\"core_props\"";
+                        bIsBreak = true;
+                    }
+                    else if (js_objectCore->isObject())
+                    {
+                        JSSmart<CJSValue> js_results = js_objectCore->call_func("asc_getTitle", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_title\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<dc:title>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</dc:title>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getCreator", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_creator\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            if (!js_results->toStringW().empty())
+                            {
+                                strReturnParams += L"<dc:creator>";
+                                strReturnParams += js_results->toStringW();
+                                strReturnParams += L"</dc:creator>";
+                            }
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getDescription", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_description\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<dc:description>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</dc:description>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getSubject", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_subject\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<dc:subject>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</dc:subject>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getIdentifier", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_identifier\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<dc:identifier>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</dc:identifier>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getLanguage", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_language\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<dc:language>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</dc:language>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getKeywords", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_keywords\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<cp:keywords>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</cp:keywords>";
+                        }
+
+                        js_results = js_objectCore->call_func("asc_getVersion", 1, args);
+                        if(try_catch->Check())
+                        {
+                            strError = L"code=\"get_version\"";
+                            bIsBreak = true;
+                        }
+                        else if (!js_results->isNull())
+                        {
+                            strReturnParams += L"<cp:version>";
+                            strReturnParams += js_results->toStringW();
+                            strReturnParams += L"</cp:version>";
+                        }
+                    }
                 }
 
                 LOGGER_SPEED_LAP("save")
@@ -1093,11 +1231,12 @@ bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFi
                                        NSNativeControl::CNativeControl* pNative,
                                        JSSmart<CJSContext> context,
                                        JSSmart<CJSValue>* args,
-                                       std::wstring& strError)
+                                       std::wstring& strError, const std::wstring& jsonParams)
 {
     NSDoctRenderer::CExecuteParams oParams;
     oParams.m_eDstFormat = (NSDoctRenderer::DoctRendererFormat::FormatFile)nFormat;
     oParams.m_strDstFilePath = strDstFile;
+    oParams.m_sJsonParams = jsonParams;
 
     JSSmart<CJSObject> js_objectApi; // empty
     return NSDoctRenderer::CDoctRenderer_Private::Doct_renderer_SaveFile(&oParams,

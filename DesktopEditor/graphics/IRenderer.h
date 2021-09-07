@@ -35,6 +35,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "../common/IGrObject.h"
 #include "Matrix.h"
 
@@ -118,6 +119,7 @@ const long c_nVifFormat			= 0x0009;
 const long c_nGrRenderer		= 0x0010;
 const long c_nHtmlRendrerer3            = 0x0011;
 
+class CFormFieldInfo;
 
 // IRenderer
 class IRenderer : public IGrObject
@@ -300,6 +302,267 @@ public:
 	}
 	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) {return S_OK;};
 	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) {return S_OK;};
+	virtual HRESULT AddFormField(const CFormFieldInfo& oInfo) {return S_OK;};
+};
+
+class CFormFieldInfo
+{
+public:
+	CFormFieldInfo()
+	{
+		m_nType = 0;
+
+		m_dX = 0;
+		m_dY = 0;
+		m_dW = 0;
+		m_dH = 0;
+
+		m_dBaseLineOffset = 0;
+
+		m_bRequired    = false;
+		m_bPlaceHolder = false;
+
+		m_nBorderType = 0;
+	}
+
+	void SetType(int nType)
+	{
+		m_nType = nType;
+	}
+	bool IsValid() const
+	{
+		return 0 != m_nType;
+	}
+
+	// Common
+	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH)
+	{
+		m_dX = dX;
+		m_dY = dY;
+		m_dW = dW;
+		m_dH = dH;
+	}
+	void GetBounds(double& dX, double& dY, double& dW, double& dH) const
+	{
+		dX = m_dX;
+		dY = m_dY;
+		dW = m_dW;
+		dH = m_dH;
+	}
+	void SetBaseLineOffset(const double& dOffset)
+	{
+		m_dBaseLineOffset = dOffset;
+	}
+	double GetBaseLineOffset() const
+	{
+		return m_dBaseLineOffset;
+	}
+	void SetKey(const std::wstring& wsKey)
+	{
+		m_wsKey = wsKey;
+	}
+	const std::wstring& GetKey() const
+	{
+		return m_wsKey;
+	}
+	void SetHelpText(const std::wstring& wsHelpText)
+	{
+		m_wsHelpText = wsHelpText;
+	}
+	const std::wstring& GetHelpText() const
+	{
+		return m_wsHelpText;
+	}
+	void SetRequired(const bool& bRequired)
+	{
+		m_bRequired = bRequired;
+	}
+	bool IsRequired() const
+	{
+		return m_bRequired;
+	}
+	void SetPlaceHolder(const bool& bPlaceHolder)
+	{
+		m_bPlaceHolder = bPlaceHolder;
+	}
+	bool IsPlaceHolder() const
+	{
+		return m_bPlaceHolder;
+	}
+	void SetBorder(const int& nType, const double& dSize, const unsigned char& unR, const unsigned char& unG, const unsigned char& unB, const unsigned char& unA)
+	{
+		m_nBorderType = nType;
+		m_dBorderSize = dSize;
+		m_lBorderColor =  (((LONG)(unA << 24)) & 0xFFFFFF) | (((LONG)(unR << 16)) & 0xFFFFFF) | (((LONG)(unG << 8)) & 0xFFFFFF) | (LONG)(unB);
+	}
+	bool HaveBorder() const
+	{
+		return (0 != m_nBorderType);
+	}
+	double GetBorderSize() const
+	{
+		return m_dBorderSize;
+	}
+	void GetBorderColor(unsigned char& unR, unsigned char& unG, unsigned char& unB, unsigned char& unA) const
+	{
+		unA = ((m_lBorderColor >> 24) & 0xFF);
+		unR = ((m_lBorderColor >> 16) & 0xFF);
+		unG = ((m_lBorderColor >>  8) & 0xFF);
+		unB = ((m_lBorderColor)       & 0xFF);
+	}
+
+	// TextFields
+	bool IsTextField() const
+	{
+		return (m_nType == 1);
+	}
+	void SetTextValue(const std::wstring& wsValue)
+	{
+		m_wsTextValue = wsValue;
+	}
+	const std::wstring& GetTextValue() const
+	{
+		return m_wsTextValue;
+	}
+	void SetMaxCharacters(const unsigned int unMax)
+	{
+		m_unMaxCharacters = unMax;
+	}
+	unsigned int GetMaxCharacters() const
+	{
+		return m_unMaxCharacters;
+	}
+	void SetComb(const bool& bComb)
+	{
+		m_bComb = bComb;
+	}
+	bool IsComb() const
+	{
+		return m_bComb;
+	}
+
+	// ComboBox/DropDownList
+	bool IsComboBox() const
+	{
+		return (m_nType == 2);
+	}
+	bool IsEditComboBox() const
+	{
+		return m_bEditComboBox;
+	}
+	void SetEditComboBox(const bool& bEdit)
+	{
+		m_bEditComboBox = bEdit;
+	}
+	unsigned int GetComboBoxItemsCount() const
+	{
+		return m_vComboBoxItems.size();
+	}
+	const std::wstring& GetComboBoxItem(const unsigned int& unIndex) const
+	{
+		return m_vComboBoxItems.at(unIndex);
+	}
+	void AddComboBoxItem(const std::wstring& wsItem)
+	{
+		m_vComboBoxItems.push_back(wsItem);
+	}
+
+	// CheckBox
+	bool IsCheckBox() const
+	{
+		return (m_nType == 3);
+	}
+	bool IsChecked() const
+	{
+		return m_bChecked;
+	}
+	void SetChecked(const bool& bChecked)
+	{
+		m_bChecked = bChecked;
+	}
+	unsigned int GetCheckedSymbol() const
+	{
+		return m_unCheckedSymbol;
+	}
+	void SetCheckedSymbol(const unsigned int& unCheckedSymbol)
+	{
+		m_unCheckedSymbol = unCheckedSymbol;
+	}
+	unsigned int GetUncheckedSymbol() const
+	{
+		return m_unUncheckedSymbol;
+	}
+	void SetUncheckedSymbol(const unsigned int& unUncheckedSymbol)
+	{
+		m_unUncheckedSymbol = unUncheckedSymbol;
+	}
+	void SetCheckedFont(const std::wstring& wsFontName)
+	{
+		m_wsCheckedFont = wsFontName;
+	}
+	const std::wstring& GetCheckedFontName() const
+	{
+		return m_wsCheckedFont;
+	}
+	void SetUncheckedFont(const std::wstring& wsFontName)
+	{
+		m_wsUncheckedFont = wsFontName;
+	}
+	const std::wstring& GetUncheckedFontName() const
+	{
+		return m_wsUncheckedFont;
+	}
+	bool IsRadioButton() const
+	{
+		return (0 == m_wsGroupKey.length());
+	}
+	void SetGroupKey(const std::wstring& wsGroupKey)
+	{
+		m_wsGroupKey = wsGroupKey;
+	}
+	const std::wstring& GetGroupKey() const
+	{
+		return m_wsGroupKey;
+	}
+
+	// Picture
+	bool IsPicture() const
+	{
+		return (m_nType == 4);
+	}
+
+private:
+
+	int          m_nType;
+	double       m_dX;
+	double       m_dY;
+	double       m_dW;
+	double       m_dH;
+	double       m_dBaseLineOffset;
+	std::wstring m_wsKey;
+	std::wstring m_wsHelpText;
+	bool         m_bRequired;
+	bool         m_bPlaceHolder;
+	int          m_nBorderType;
+	double       m_dBorderSize;
+	LONG         m_lBorderColor;
+
+	// Поля для текстовых форм
+	std::wstring m_wsTextValue;
+	unsigned int m_unMaxCharacters;
+	bool         m_bComb;
+
+	// Поля для выпадающих списков
+	bool                      m_bEditComboBox;
+	std::vector<std::wstring> m_vComboBoxItems;
+
+	// Поля для чекбокса
+	bool         m_bChecked;
+	unsigned int m_unCheckedSymbol;
+	unsigned int m_unUncheckedSymbol;
+	std::wstring m_wsCheckedFont;
+	std::wstring m_wsUncheckedFont;
+	std::wstring m_wsGroupKey;
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)			\

@@ -194,6 +194,8 @@ namespace NSBinPptxRW
 #define SPTREE_TYPE_AUDIO				8
 #define SPTREE_TYPE_LOCKED_CANVAS		9
 
+#define SPTREE_TYPE_MACRO				0xA1
+
 static BYTE SchemeClr_GetBYTECode(const std::wstring& sValue)
 {
     if ((L"accent1") == sValue)

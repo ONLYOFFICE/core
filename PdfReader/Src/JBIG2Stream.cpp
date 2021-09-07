@@ -3182,7 +3182,8 @@ namespace PdfReader
 					}
 					if (bLtp)
 					{
-						pBitmap->DuplicateRow(nY, nY - 1);
+                        if (nY > 0)
+                            pBitmap->DuplicateRow(nY, nY - 1);
 						continue;
 					}
 				}

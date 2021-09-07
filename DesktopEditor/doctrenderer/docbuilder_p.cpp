@@ -118,7 +118,7 @@ std::string CV8RealTimeWorker::GetGlobalVariable()
 std::wstring CV8RealTimeWorker::GetJSVariable(std::wstring sParam)
 {
     std::string sParamA = U_TO_UTF8(sParam);
-    NSCommon::string_replaceA(sParamA, "\\\"", "\"");
+    NSStringUtils::string_replaceA(sParamA, "\\\"", "\"");
     std::string commandA = "(function(){ return (" + sParamA + "); })()";
 
     JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
@@ -132,7 +132,7 @@ std::wstring CV8RealTimeWorker::GetJSVariable(std::wstring sParam)
     return L"jsValue(" + sParam + L")";
 }
 
-bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath)
+bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams)
 {
     LOGGER_SPEED_START
 
@@ -152,8 +152,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         std::string sArg = m_sUtf8ArgumentJSON;
         if (sArg.empty())
             sArg = "{}";
-        NSCommon::string_replaceA(sArg, "\\", "\\\\");
-        NSCommon::string_replaceA(sArg, "\"", "\\\"");
+        NSStringUtils::string_replaceA(sArg, "\\", "\\\\");
+        NSStringUtils::string_replaceA(sArg, "\"", "\\\"");
         std::string sArgument = "var Argument = JSON.parse(\"" + sArg + "\");";
 
         m_context->runScript(sArgument, try_catch);
@@ -166,8 +166,8 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         std::string sArg = m_sGlobalVariable;
         if (sArg.empty())
             sArg = "{}";
-        NSCommon::string_replaceA(sArg, "\\", "\\\\");
-        NSCommon::string_replaceA(sArg, "\"", "\\\"");
+        NSStringUtils::string_replaceA(sArg, "\\", "\\\\");
+        NSStringUtils::string_replaceA(sArg, "\"", "\\\"");
 
         std::string sScriptVar = "var GlobalVariable = JSON.parse(\"" + sArg + "\");";
 
@@ -192,12 +192,17 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         else
         {
             JSSmart<CJSObject> objNative = js_result2->toObject();
-            pNative = (NSNativeControl::CNativeControl*)objNative->getNative()->getObject();
+            pNative = (NSNativeControl::CNativeControl*)objNative->getNative()->getObject();            
         }
     }
 
     if (pNative != NULL)
     {
+        if (pParams)
+        {
+            pNative->m_oParams = *pParams;
+        }
+
         pNative->m_strFontsDirectory = sBasePath + L"/sdkjs/common";
         pNative->m_strImagesDirectory = path + L"/media";
 
@@ -226,7 +231,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         JSSmart<CJSValue> args_open[3];
         args_open[0] = oWorkerLoader.GetDataFull()->toObject()->toValue();
         args_open[1] = CJSContext::createInt(nVersion);
-        std::wstring sXlsx = NSCommon::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
+        std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
         args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
 
         global_js->call_func("NativeOpenFileData", 3, args_open);
@@ -244,7 +249,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
     return !bIsBreak;
 }
 
-bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path)
+bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams)
 {
     NSDoctRenderer::DoctRendererFormat::FormatFile _formatDst = NSDoctRenderer::DoctRendererFormat::DOCT;
     if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)
@@ -286,7 +291,8 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path)
                                                       pNative,
                                                       m_context,
                                                       args,
-                                                      strError);
+                                                      strError,
+                                                      sJsonParams);
 
     if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
         this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
@@ -711,6 +717,14 @@ namespace NSDoctRenderer
         {
             std::wstring sArg(value);
             m_pInternal->m_oParams.m_sArgumentJSON = U_TO_UTF8(sArg);
+        }
+        else if (sParam == "--fonts-system")
+        {
+            m_pInternal->m_oParams.m_bIsSystemFonts = (std::wstring(value) == L"true");
+        }
+        else if (sParam == "--fonts-dir")
+        {
+            m_pInternal->m_oParams.m_arFontDirs.push_back(std::wstring(value));
         }
     }
     void CDocBuilder::SetPropertyW(const wchar_t* param, const wchar_t* value)

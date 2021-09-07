@@ -1,10 +1,10 @@
 #ifndef _XML_RELS_H_
 #define _XML_RELS_H_
 
-#include "../../../xml/include/xmlutils.h"
 #include "../../../common/StringBuilder.h"
 #include "../../../common/File.h"
 #include "../../../common/Directory.h"
+#include "./ZipFolder.h"
 
 class COOXMLRelationship
 {
@@ -67,11 +67,13 @@ class COOXMLRelationships
 {
 public:
     std::vector<COOXMLRelationship> rels;
+    IFolder* m_pFolder;
 
 public:
 
     COOXMLRelationships()
     {
+        m_pFolder = NULL;
     }
 
     COOXMLRelationships(const std::string& xml, std::map<std::wstring, bool>* check_need = NULL)
@@ -83,18 +85,20 @@ public:
         FromXmlNode(oNode, check_need);
     }
 
-    COOXMLRelationships(const std::wstring& xml, const bool& is_file, std::map<std::wstring, bool>* check_need = NULL)
+    COOXMLRelationships(const std::wstring& xml, IFolder* pFolder, std::map<std::wstring, bool>* check_need = NULL)
     {
         XmlUtils::CXmlNode oNode;
 
-        if (!is_file)
+        if (NULL == pFolder)
         {
             if (!oNode.FromXmlString(xml))
                 return;
         }
         else
         {
-            if (!oNode.FromXmlFile(xml))
+            m_pFolder = pFolder;
+            oNode = pFolder->getNodeFromFile(xml);
+            if (!oNode.IsValid())
                 return;
         }
 
@@ -190,20 +194,13 @@ public:
             if (sReplace == "_xmlsignatures/origin.sigs")
                 return;
 
-            std::string sXmlA;
-            NSFile::CFileBinary::ReadAllTextUtf8A(file, sXmlA);
+            std::string sXmlA = m_pFolder->readXml(file);
             NSStringUtils::string_replaceA(sXmlA, sReplace, "_xmlsignatures/origin.sigs");
-
-            NSFile::CFileBinary::Remove(file);
-            NSFile::CFileBinary oFile;
-            oFile.CreateFileW(file);
-            oFile.WriteFile((BYTE*)sXmlA.c_str(), (DWORD)sXmlA.length());
-            oFile.CloseFile();
+            m_pFolder->writeXmlA(file, sXmlA);
             return;
         }
 
-        std::string sXmlA;
-        NSFile::CFileBinary::ReadAllTextUtf8A(file, sXmlA);
+        std::string sXmlA = m_pFolder->readXml(file);
 
         std::string::size_type pos = sXmlA.rfind("</Relationships>");
         if (pos == std::string::npos)
@@ -214,12 +211,7 @@ public:
         sRet += ("<Relationship Id=\"rId" + std::to_string(rId) + "\" \
 Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/origin\" Target=\"_xmlsignatures/origin.sigs\"/>\
 </Relationships>");
-
-        NSFile::CFileBinary::Remove(file);
-        NSFile::CFileBinary oFile;
-        oFile.CreateFileW(file);
-        oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());
-        oFile.CloseFile();
+        m_pFolder->writeXmlA(file, sRet);
     }
 };
 

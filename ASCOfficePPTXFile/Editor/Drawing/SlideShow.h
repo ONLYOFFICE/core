@@ -98,13 +98,15 @@ namespace PPT_FORMAT
 
 		CTransition	m_oTransition;	// переход
 
-		bool	m_bOnlyClick;		// переход на следующий по щелчку
+                bool	m_bAdvClick;        // разрешить автопереход по времени
+                bool    m_bManulClick;      // переход на следующий по щелчку
 
 		CSlideShowInfo() : m_oTransition()
 		{
-			m_dSlideDuration	= 30000.0;
-			m_bHidden			= false;
-			m_bOnlyClick		= false;
+                        m_dSlideDuration	= -1.0;
+                        m_bHidden		= false;
+                        m_bAdvClick		= false;
+                        m_bManulClick           = true;
 		}
 		~CSlideShowInfo()
 		{
@@ -114,7 +116,7 @@ namespace PPT_FORMAT
 		{
 			m_dSlideDuration	= oSrc.m_dSlideDuration;
 			m_bHidden			= oSrc.m_bHidden;
-			m_bOnlyClick		= oSrc.m_bOnlyClick;
+                        m_bAdvClick		= oSrc.m_bAdvClick;
 
 			m_oTransition		= oSrc.m_oTransition;
 			return *this;

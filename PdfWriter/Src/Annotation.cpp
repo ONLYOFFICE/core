@@ -32,7 +32,9 @@
 #include "Annotation.h"
 #include "Pages.h"
 
+#ifndef BS_DEF_WIDTH
 #define BS_DEF_WIDTH 1
+#endif
 
 namespace PdfWriter
 {

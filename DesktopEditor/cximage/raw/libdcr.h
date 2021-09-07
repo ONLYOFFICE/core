@@ -35,6 +35,14 @@
 #ifndef __LIBDCR
 #define __LIBDCR
 
+#if defined(BUILDING_WASM_MODULE)
+#include <setjmp.h>
+#include <time.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#define _swab   swab
+#endif
+
 #if defined(WIN32) || defined(_WIN32_WCE)
  #include <io.h>
  #include <direct.h>

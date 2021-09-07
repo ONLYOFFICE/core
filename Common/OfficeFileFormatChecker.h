@@ -64,7 +64,7 @@ public:
 	std::wstring GetExtensionByType(int type);
 	static int GetFormatByExtension(const std::wstring& ext);
 
-	bool isOOXFormatFile		(const std::wstring & fileName);
+	bool isOOXFormatFile		(const std::wstring & fileName, bool unpacked = false);
 	bool isOpenOfficeFormatFile	(const std::wstring & fileName, std::wstring & documentID);
 	bool isOnlyOfficeFormatFile	(const std::wstring & fileName);
 

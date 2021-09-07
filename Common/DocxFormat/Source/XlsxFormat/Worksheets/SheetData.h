@@ -384,7 +384,10 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);
 
-//----------- 2003			
+			void AfterRead();
+			//----------- 2003			
+			void After2003Read();
+
 			nullable_string sStyleId;
 			nullable_string sArrayRange;
 			nullable_string sHyperlink;
@@ -524,9 +527,12 @@ namespace OOX
 			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+	// spreadsheets 2003
+			nullable_string m_sStyleID;
+			nullable_double m_dDefaultColumnWidth;
+			nullable_double m_dDefaultRowHeight;
 		};
 	} //Spreadsheet
 } // namespace OOX

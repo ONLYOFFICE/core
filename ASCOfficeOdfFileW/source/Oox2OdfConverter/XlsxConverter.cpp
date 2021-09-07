@@ -418,22 +418,70 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 	//условное форматирование
 	if (!oox_sheet->m_arrConditionalFormatting.empty() || oox_sheet->m_oExtLst.IsInit())
 	{
-		ods_context->start_conditional_formats();
-		
-		for (size_t fmt =0; fmt < oox_sheet->m_arrConditionalFormatting.size(); fmt++)
+		std::multimap<int, OOX::Spreadsheet::CConditionalFormatting*> mapSorted;
+
+		std::vector<OOX::Spreadsheet::CConditionalFormatting*> arUnsorted;
+
+		// sort by prioritet
+		for (size_t fmt = 0; fmt < oox_sheet->m_arrConditionalFormatting.size(); fmt++)
 		{
-			convert(oox_sheet->m_arrConditionalFormatting[fmt]);
+			OOX::Spreadsheet::CConditionalFormatting* cond_fmt = oox_sheet->m_arrConditionalFormatting[fmt];
+			if (cond_fmt)
+			{
+				int priority = -1;
+				for (size_t r = 0; r < cond_fmt->m_arrItems.size(); ++r)
+				{
+					if (cond_fmt->m_arrItems[r]->m_oPriority.IsInit())
+					{
+						priority = cond_fmt->m_arrItems[r]->m_oPriority->GetValue();
+						break;
+					}
+				}
+				if (priority >= 0)
+					mapSorted.insert(std::make_pair(priority, cond_fmt));
+				else
+					arUnsorted.push_back(cond_fmt);
+			}
 		}
-		
+
 		if (oox_sheet->m_oExtLst.IsInit())
 		{
 			for (size_t ext = 0; ext < oox_sheet->m_oExtLst->m_arrExt.size(); ext++)
 			{
-				for (size_t i = 0; (oox_sheet->m_oExtLst->m_arrExt[ext]) && (i < oox_sheet->m_oExtLst->m_arrExt[ext]->m_arrConditionalFormatting.size()); i++)
+				for (size_t fmt = 0; (oox_sheet->m_oExtLst->m_arrExt[ext]) && (fmt < oox_sheet->m_oExtLst->m_arrExt[ext]->m_arrConditionalFormatting.size()); fmt++)
 				{
-					convert(oox_sheet->m_oExtLst->m_arrExt[ext]->m_arrConditionalFormatting[i]);
-				}	
+					OOX::Spreadsheet::CConditionalFormatting* cond_fmt = oox_sheet->m_oExtLst->m_arrExt[ext]->m_arrConditionalFormatting[fmt];
+					if (cond_fmt)
+					{
+						int priority = -1;
+						for (size_t r = 0; r < cond_fmt->m_arrItems.size(); ++r)
+						{
+							if (cond_fmt->m_arrItems[r]->m_oPriority.IsInit())
+							{
+								priority = cond_fmt->m_arrItems[r]->m_oPriority->GetValue();
+								break;
+							}
+						}
+						if (priority >= 0)
+							mapSorted.insert(std::make_pair(priority, cond_fmt));
+						else
+							arUnsorted.push_back(cond_fmt);
+					}
+				}
 			}
+		}
+//--------------------------------------------------------------------------
+		ods_context->start_conditional_formats();
+		
+		for (size_t fmt =0; fmt < arUnsorted.size(); fmt++)
+		{
+			convert(arUnsorted[fmt]);
+		}
+		
+		for (std::multimap<int, OOX::Spreadsheet::CConditionalFormatting*>::iterator it = mapSorted.begin(); 
+			it != mapSorted.end(); ++it)
+		{
+			convert(it->second);
 		}
 		ods_context->end_conditional_formats();
 	}
@@ -862,9 +910,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetProtection *oox_prot)
 	{
 		ods_context->current_table()->set_table_protection_protected_cells(oox_prot->m_oSelectLockedCells->ToBool());
 	}
-	if (oox_prot->m_oSelectUnlockedCell.IsInit())
+	if (oox_prot->m_oSelectUnlockedCells.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_unprotected_cells(oox_prot->m_oSelectUnlockedCell->ToBool());
+		ods_context->current_table()->set_table_protection_unprotected_cells(oox_prot->m_oSelectUnlockedCells->ToBool());
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDataValidations *oox_validations)
@@ -2279,24 +2327,36 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 			cell_properties->content_.style_direction_ = odf_types::direction(odf_types::direction::Ttb);
 
 	}
+	_CP_OPT(odf_types::length) indent;
+	if (aligment->m_oIndent.IsInit())
+	{
+		indent = odf_types::length(ods_context->convert_symbol_width(*aligment->m_oIndent), odf_types::length::pt);
+	}
 	if(aligment->m_oHorizontal.IsInit())
 	{
-		switch(aligment->m_oHorizontal->GetValue())
+		switch (aligment->m_oHorizontal->GetValue())
 		{
-		case SimpleTypes::Spreadsheet::horizontalalignmentCenter:	
-			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Center); break;
-		case SimpleTypes::Spreadsheet::horizontalalignmentFill:	
-			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Start); break;
-		case SimpleTypes::Spreadsheet::horizontalalignmentJustify:	
-			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify); break;
-		case SimpleTypes::Spreadsheet::horizontalalignmentRight:	
-			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::End); break;
-		
-		case SimpleTypes::Spreadsheet::horizontalalignmentLeft:	
-		default:
-			paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Start); break;		
+			case SimpleTypes::Spreadsheet::horizontalalignmentCenter:
+			{
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Center);
+			}break;
+			case SimpleTypes::Spreadsheet::horizontalalignmentJustify:
+			{
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify);
+			}break;
+			case SimpleTypes::Spreadsheet::horizontalalignmentRight:
+			{
+				paragraph_properties->content_.fo_margin_right_ = indent;
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::End);
+			}break;
+			case SimpleTypes::Spreadsheet::horizontalalignmentFill:
+			case SimpleTypes::Spreadsheet::horizontalalignmentLeft:
+			default:
+			{
+				paragraph_properties->content_.fo_margin_left_ = indent;
+				paragraph_properties->content_.fo_text_align_ = odf_types::text_align(odf_types::text_align::Start); 
+			}break;
 		}
-		
 		cell_properties->content_.style_text_align_source_ = odf_types::text_align_source(odf_types::text_align_source::Fix);
 	}
 
@@ -2309,9 +2369,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 	{
 		cell_properties->content_.style_shrink_to_fit_ = aligment->m_oShrinkToFit->ToBool();
 	}
-	if (aligment->m_oIndent.IsInit())
-	{
-	}
+
 		//nullable<SimpleTypes::COnOff<>>									m_oJustifyLastLine;
 		//nullable<SimpleTypes::CDecimalNumber<>>							m_oRelativeIndent;
 
@@ -3219,8 +3277,15 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 	if (!oox_cond_rule)return;
 
 	if (false == oox_cond_rule->m_oType.IsInit()) return;
+
+	_CP_OPT(unsigned int) rank; 
+	_CP_OPT(bool) bottom, percent;
 	
-	ods_context->current_table()->start_conditional_rule(oox_cond_rule->m_oType->GetValue());
+	if (oox_cond_rule->m_oRank.IsInit()) rank = oox_cond_rule->m_oRank->GetValue();
+	if (oox_cond_rule->m_oBottom.IsInit()) bottom = oox_cond_rule->m_oBottom->ToBool();
+	if (oox_cond_rule->m_oPercent.IsInit()) percent = oox_cond_rule->m_oPercent->ToBool();
+
+	ods_context->current_table()->start_conditional_rule(oox_cond_rule->m_oType->GetValue(), rank, bottom, percent);
 	{
 		if (oox_cond_rule->m_oDxfId.IsInit()) 
 		{
@@ -3239,7 +3304,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormattingRule *oox_co
 			ods_context->current_table()->set_conditional_operator(oox_cond_rule->m_oOperator->GetValue());
 
 		if (oox_cond_rule->m_oText.IsInit()) 
-			ods_context->current_table()->set_conditional_text(oox_cond_rule->m_oText.get2());
+			ods_context->current_table()->set_conditional_text(*oox_cond_rule->m_oText);
+
+		if (oox_cond_rule->m_oTimePeriod.IsInit())
+			ods_context->current_table()->set_conditional_time(oox_cond_rule->m_oTimePeriod->GetValue());
 		
 		convert(oox_cond_rule->m_oIconSet.GetPointer());
 		convert(oox_cond_rule->m_oColorScale.GetPointer());
@@ -3305,7 +3373,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CConditionalFormatValueObject *oox
 	if (oox_cond_value->m_oType.IsInit())	type = oox_cond_value->m_oType->GetValue();
 	
 	if (oox_cond_value->m_oFormula.IsInit())	val = oox_cond_value->m_oFormula->m_sText;
-	else if (oox_cond_value->m_oVal.IsInit())	val = oox_cond_value->m_oVal.get2();
+	else if (oox_cond_value->m_oVal.IsInit())	val = *oox_cond_value->m_oVal;
 	
 	ods_context->current_table()->set_conditional_value(type, val);
 }

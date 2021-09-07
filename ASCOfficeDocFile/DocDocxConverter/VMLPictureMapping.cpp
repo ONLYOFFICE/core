@@ -228,7 +228,7 @@ namespace DocFileFormat
 		style +=( L";" );
 	}
 
-	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture) : PropertiesMapping(writer)
+	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, bool olePreview, IMapping* caller, bool isInlinePicture, bool inGroup) : PropertiesMapping(writer)
 	{
 		m_context			=	ctx;
 		m_isOlePreview		=	olePreview;
@@ -236,6 +236,7 @@ namespace DocFileFormat
 		m_nImageId			=	0;
 		m_caller			=	caller;
 		m_isInlinePicture	=	isInlinePicture;
+		m_inGroup			=	inGroup;
 		
 		m_isBullete			=	false;
 		m_isEquation		=	false;

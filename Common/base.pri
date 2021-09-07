@@ -291,6 +291,11 @@ message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 # COMPILER
 CONFIG += c++11
 
+greaterThan(QT_MAJOR_VERSION, 5) {
+    QMAKE_CXXFLAGS += -Wno-register
+    QMAKE_CFLAGS += -Wno-register
+}
+
 core_linux {
 core_static_link_libstd {
     QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
@@ -315,6 +320,10 @@ core_windows {
 plugin {
     TARGET_EXT = .dll
 }
+}
+
+core_disable_all_warnings {
+    CONFIG += warn_off
 }
 
 # BUILD_PATHS
@@ -367,6 +376,10 @@ core_windows {
 
 DEFINES += CRYPTOPP_DISABLE_ASM
 }
+
+core_ios:CONFIG+=support_bundle_dylibs
+
+!support_bundle_dylibs:CONFIG-=bundle_dylibs
 
 core_ios {
     bundle_dylibs {

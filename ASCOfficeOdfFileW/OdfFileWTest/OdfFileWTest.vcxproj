@@ -70,8 +70,8 @@
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Repos-Projects\RK-Tech\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Repos-Projects\RK-Tech\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
@@ -167,7 +167,7 @@ Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\ASCOfficeDocxFile2\BinReader\CustormXmlWriter.cpp" />
+    <ClCompile Include="..\..\ASCOfficeDocxFile2\BinReader\CustomXmlWriter.cpp" />
     <ClCompile Include="..\..\ASCOfficeDocxFile2\BinReader\FileWriter.cpp" />
     <ClCompile Include="..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp" />
     <ClCompile Include="..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp" />
@@ -228,6 +228,33 @@ Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Project>{bee01b53-244a-44e6-8947-ed9342d9247e}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\ChartWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\CustomXmlWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\DefaultThemeWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\DocumentWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\FileWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\fontTableWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\HeaderFooterWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\MediaWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\NumberingWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\ReaderClasses.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\Readers.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\SettingWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\StylesWriter.h" />
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\webSettingsWriter.h" />
+    <ClInclude Include="..\..\XlsxSerializerCom\Common\BinReaderWriterDefines.h" />
+    <ClInclude Include="..\..\XlsxSerializerCom\Common\Common.h" />
+    <ClInclude Include="..\..\XlsxSerializerCom\Reader\BinaryWriter.h" />
+    <ClInclude Include="..\..\XlsxSerializerCom\Reader\ChartFromToBinary.h" />
+    <ClInclude Include="..\..\XlsxSerializerCom\Reader\CommonWriter.h" />
+    <ClInclude Include="..\..\XlsxSerializerCom\Reader\CSVReader.h" />
+    <ClInclude Include="..\..\XlsxSerializerCom\Writer\BinaryCommonReader.h" />
+    <ClInclude Include="..\..\XlsxSerializerCom\Writer\BinaryReader.h" />
+    <ClInclude Include="..\..\XlsxSerializerCom\Writer\CSVWriter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

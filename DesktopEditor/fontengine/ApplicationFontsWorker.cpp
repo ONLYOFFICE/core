@@ -44,7 +44,7 @@
 #include "../raster/BgraFrame.h"
 #include "../graphics/pro/Graphics.h"
 
-#define ONLYOFFICE_FONTS_VERSION_ 6
+#define ONLYOFFICE_FONTS_VERSION_ 7
 
 bool g_sort_font_names(const std::wstring& i, const std::wstring& j)
 {
@@ -1266,7 +1266,14 @@ public:
                 arrFiles.push_back(strThumbnailPath);
                 arrEA.push_back(bIsEA);
 
-                if (!NSFile::CFileBinary::Exists(strThumbnailPath))
+                bool bIsFileExist = NSFile::CFileBinary::Exists(strThumbnailPath);
+                if (bIsFileExist && m_pMain->m_bIsRemoveOldThumbnails)
+                {
+                    NSFile::CFileBinary::Remove(strThumbnailPath);
+                    bIsFileExist = false;
+                }
+
+                if (!bIsFileExist)
                     bIsNeedCheck = true;
             }
 
@@ -1450,6 +1457,7 @@ CApplicationFontsWorker::CApplicationFontsWorker()
     m_bSeparateThumbnails = false;
     m_bIsGenerateThumbnailsEA = true;
     m_bIsCleanDirectory = true;
+    m_bIsRemoveOldThumbnails = false;
 
     m_arThumbnailsScales.clear();
     m_arThumbnailsScales.push_back(1);

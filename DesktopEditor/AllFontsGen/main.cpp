@@ -187,6 +187,7 @@ int main(int argc, char** argv)
     CApplicationFontsWorker oWorker;
     // это не рабочая папка, где только шрифты
     oWorker.m_bIsCleanDirectory = false;
+    oWorker.m_bIsRemoveOldThumbnails = true;
 
     // input fonts
     oWorker.m_bIsUseSystemFonts = bIsUseSystemFonts;

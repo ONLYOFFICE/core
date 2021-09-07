@@ -1,8 +1,12 @@
 #include "CRecordCreator.h"
 #include "ui_RecordCreator.h"
 
+#include "Common/CPaletteEntriesWidget.h"
 #include "Common/CLogBrushExWidget.h"
-#include "Common/CBoundsWidget.h"
+#include "Common/CLogPaletteWidget.h"
+#include "Common/CRectangleWidget.h"
+#include "Common/CPolyDrawWidget.h"
+#include "Common/CFillRgnWidget.h"
 #include "Common/CPointsWidget.h"
 #include "Common/CLogPenWidget.h"
 #include "Common/CPointWidget.h"
@@ -11,6 +15,7 @@
 #include "Common/CSizeWidget.h"
 #include "Common/CPolyWidget.h"
 #include "Common/CFormWidget.h"
+#include "Common/CFrameRgn.h"
 #include "Common/Common.h"
 
 #include <QLabel>
@@ -93,6 +98,36 @@ QStandardItem* CRecordCreator::CreateRecord()
                         case 35: ConvertWidgets("EMR_CREATEPEN");               break;
                         case 36: ConvertWidgets("EMR_CREATEBRUSHINDIRECT");     break;
                         case 37: ConvertWidgets("EMR_DELETEOBJECT");            break;
+                        case 38: ConvertWidgets("EMR_ANGLEARC");                break;
+                        case 39: ConvertWidgets("EMR_ELLIPSE");                 break;
+                        case 40: ConvertWidgets("EMR_RECTANGLE");               break;
+                        case 41: ConvertWidgets("EMR_ROUNDRECT");               break;
+                        case 42: ConvertWidgets("EMR_ARC");                     break;
+                        case 43: ConvertWidgets("EMR_CHORD");                   break;
+                        case 44: ConvertWidgets("EMR_PIE");                     break;
+                        case 45: ConvertWidgets("EMR_SELECTPALETTE");           break;
+                        case 46: ConvertWidgets("EMR_CREATEPALETTE");           break;
+                        case 47: ConvertWidgets("EMR_SETPALETTEENTRIES");       break;
+                        case 48: ConvertWidgets("EMR_RESIZEPALETTE");           break;
+                        case 49: ConvertWidgets("EMR_REALIZEPALETTE");          break;
+                        case 50: ConvertWidgets("EMR_EXTFLOODFILL");            break;
+                        case 51: ConvertWidgets("EMR_LINETO");                  break;
+                        case 52: ConvertWidgets("EMR_ARCTO");                   break;
+                        case 53: ConvertWidgets("EMR_POLYDRAW");                break;
+                        case 54: ConvertWidgets("EMR_SETARCDIRECTION");         break;
+                        case 55: ConvertWidgets("EMR_SETMITERLIMIT");           break;
+                        case 56: ConvertWidgets("EMR_BEGINPATH");               break;
+                        case 57: ConvertWidgets("EMR_ENDPATH");                 break;
+                        case 58: ConvertWidgets("EMR_CLOSEFIGURE");             break;
+                        case 59: ConvertWidgets("EMR_FILLPATH");                break;
+                        case 60: ConvertWidgets("EMR_STROKEANDFILLPATH");       break;
+                        case 61: ConvertWidgets("EMR_STROKEPATH");              break;
+                        case 62: ConvertWidgets("EMR_FLATTENPATH");             break;
+                        case 63: ConvertWidgets("EMR_WIDENPATH");               break;
+                        case 64: ConvertWidgets("EMR_SELECTCLIPPATH");          break;
+                        case 65: ConvertWidgets("EMR_ABORTPATH");               break;
+                        case 66: ConvertWidgets("EMR_FILLRGN");                 break;
+                        case 67: ConvertWidgets("EMR_FRAMERGN");                break;
                 };
         }
 
@@ -146,6 +181,36 @@ void CRecordCreator::on_selectButton_clicked()
                 case 35: Create_Widgets_EMR_CREATEPEN();                                break;
                 case 36: Create_Widgets_EMR_CREATEBRUSHINDIRECT();                      break;
                 case 37: CreateFormWidget("EMR_DELETEOBJECT", "ihObject");              break;
+                case 38: Create_Widgets_EMR_ANGLEARC();                                 break;
+                case 39: CreateRectangleWidgets("EMR_ELLIPSE", "Box");                  break;
+                case 40: CreateRectangleWidgets("EMR_RECTANGLE", "Box");                break;
+                case 41: Create_Widgets_EMR_ROUNDRECT();                                break;
+                case 42: CreateArcWidgets("EMR_ARC");                                   break;
+                case 43: CreateArcWidgets("EMR_CHORD");                                 break;
+                case 44: CreateArcWidgets("EMR_PIE");                                   break;
+                case 45: CreateFormWidget("EMR_SELECTPALETTE", "ihPal");                break;
+                case 46: Create_Widgets_EMR_CREATEPALETTE();                            break;
+                case 47: Create_Widgets_EMR_SETPALETTEENTRIES();                        break;
+                case 48: Create_Widgets_EMR_RESIZEPALETTE();                            break;
+                case 49: CreateEmptyWidgets("EMR_REALIZEPALETTE");                      break;
+                case 50: Create_Widgets_EMR_EXTFLOODFILL();                             break;
+                case 51: Create_Widgets_EMR_LINETO();                                   break;
+                case 52: CreateArcWidgets("EMR_ARCTO");                                 break;
+                case 53: CreatePolyDrawWidgets("EMR_POLYDRAW");                         break;
+                case 54: CreateFormWidget("EMR_SETARCDIRECTION", "ArcDirection");       break;
+                case 55: CreateFormWidget("EMR_SETMITERLIMIT",   "MiterLimit");         break;
+                case 56: CreateEmptyWidgets("EMR_BEGINPATH");                           break;
+                case 57: CreateEmptyWidgets("EMR_ENDPATH");                             break;
+                case 58: CreateEmptyWidgets("EMR_CLOSEFIGURE");                         break;
+                case 59: CreateRectangleWidgets("EMR_FILLPATH",          "Bounds");     break;
+                case 60: CreateRectangleWidgets("EMR_STROKEANDFILLPATH", "Bounds");     break;
+                case 61: CreateRectangleWidgets("EMR_STROKEPATH",        "Bounds");     break;
+                case 62: CreateEmptyWidgets("EMR_FLATTENPATH");                         break;
+                case 63: CreateEmptyWidgets("EMR_WIDENPATH");                           break;
+                case 64: CreateFormWidget("EMR_SELECTCLIPPATH", "RegionMode");          break;
+                case 65: CreateEmptyWidgets("EMR_ABORTPATH");                           break;
+                case 66: Create_Widgets_EMR_FILLRGN();                                  break;
+                case 67: Create_Widgets_EMR_FRAMERGN();                                 break;
         }
 
         QPushButton *pOkButton =  ui->buttonBox->button(QDialogButtonBox::Ok);
@@ -197,7 +262,7 @@ void CRecordCreator::CreateRectangleWidgets(const QString &qsName, const QString
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
 
-        CReactangleWidget *pRectangleWidget = new CReactangleWidget(qsReactangleName);
+        CRectangleWidget *pRectangleWidget = new CRectangleWidget(qsReactangleName);
         ui->dataLayout->addWidget(pRectangleWidget);
 
         m_arWidgets.push_back(pRectangleWidget);
@@ -232,6 +297,23 @@ void CRecordCreator::CreateScaleWidgets(const QString &qsName)
         pLayout->addWidget(new QLabel("≠0"), 3, 1);
 
         ui->dataLayout->addLayout(pLayout);
+}
+
+void CRecordCreator::CreateArcWidgets(const QString &qsName)
+{
+        this->setWindowTitle(QString("Create: %1").arg(qsName));
+
+        CRectangleWidget *pBoxWidget    = new CRectangleWidget("Box");
+        CPointWidget *pStartPointWidget = new CPointWidget("Start");
+        CPointWidget *pEndPointWidget   = new CPointWidget("End");
+
+        m_arWidgets.push_back(pBoxWidget);
+        m_arWidgets.push_back(pStartPointWidget);
+        m_arWidgets.push_back(pEndPointWidget);
+
+        ui->dataLayout->addWidget(pBoxWidget);
+        ui->dataLayout->addWidget(pStartPointWidget);
+        ui->dataLayout->addWidget(pEndPointWidget);
 }
 
 void CRecordCreator::Create_Widgets_EMR_SETCOLORADJUSTMENT()
@@ -325,6 +407,125 @@ void CRecordCreator::Create_Widgets_EMR_CREATEBRUSHINDIRECT()
         m_arWidgets.push_back(pLogBrushExWidget);
 }
 
+void CRecordCreator::Create_Widgets_EMR_ANGLEARC()
+{
+        this->setWindowTitle("Create: EMR_ANGLEARC");
+
+        CPointWidget *pCenterPointWidget    = new CPointWidget("Center");
+        CFormWidget *pRadiusWidget          = new CFormWidget("Radius");
+        CFormWidget *pStartAngleWidget      = new CFormWidget("StartAngle");
+        CFormWidget *pSweepAngleWidget      = new CFormWidget("SweepAngle");
+
+        m_arWidgets.push_back(pCenterPointWidget);
+        m_arWidgets.push_back(pRadiusWidget);
+        m_arWidgets.push_back(pStartAngleWidget);
+        m_arWidgets.push_back(pSweepAngleWidget);
+
+        ui->dataLayout->addWidget(pCenterPointWidget);
+        ui->dataLayout->addWidget(pRadiusWidget);
+        ui->dataLayout->addWidget(pStartAngleWidget);
+        ui->dataLayout->addWidget(pSweepAngleWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_ROUNDRECT()
+{
+        this->setWindowTitle("Create: EMR_ROUNDRECT");
+
+        CRectangleWidget *pBoxWidget = new CRectangleWidget("Box");
+        CSizeWidget *pCornerWidget = new CSizeWidget("Corner");
+
+        m_arWidgets.push_back(pBoxWidget);
+        m_arWidgets.push_back(pCornerWidget);
+
+        ui->dataLayout->addWidget(pBoxWidget);
+        ui->dataLayout->addWidget(pCornerWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_CREATEPALETTE()
+{
+        this->setWindowTitle("Create: EMR_CREATEPALETTE");
+
+        CFormWidget *pIhPalWidget = new CFormWidget("ihPal", "1");
+        CLogPaletteWidget *pLogPaletteWidget = new CLogPaletteWidget();
+
+        m_arWidgets.push_back(pIhPalWidget);
+        m_arWidgets.push_back(pLogPaletteWidget);
+
+        ui->dataLayout->addWidget(pIhPalWidget);
+        ui->dataLayout->addWidget(pLogPaletteWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_SETPALETTEENTRIES()
+{
+        this->setWindowTitle("Create: EMR_SETPALETTEENTRIES");
+
+        CPaletteEntriesWidget *pPaletteEntriesWidget = new CPaletteEntriesWidget();
+        ui->dataLayout->addWidget(pPaletteEntriesWidget);
+
+        m_arWidgets.push_back(pPaletteEntriesWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_RESIZEPALETTE()
+{
+        this->setWindowTitle("Create: EMR_RESIZEPALETTE");
+
+        CFormWidget *pIhPalWidget = new CFormWidget("ihPal", "1");
+        CFormWidget *pCountNumber = new CFormWidget("NumberOfEntries", "1");
+
+        m_arWidgets.push_back(pIhPalWidget);
+        m_arWidgets.push_back(pCountNumber);
+
+        ui->dataLayout->addWidget(pIhPalWidget);
+        ui->dataLayout->addWidget(pCountNumber);
+}
+
+void CRecordCreator::Create_Widgets_EMR_EXTFLOODFILL()
+{
+        this->setWindowTitle("Create: EMR_EXTFLOODFILL");
+
+        CPointWidget *pStartPointWidget = new CPointWidget("Start");
+        CColorWidget *pColorWidget      = new CColorWidget("Color");
+        CFormWidget *pModeWidget        = new CFormWidget("FloodFillMode", "1");
+
+        m_arWidgets.push_back(pStartPointWidget);
+        m_arWidgets.push_back(pColorWidget);
+        m_arWidgets.push_back(pModeWidget);
+
+        ui->dataLayout->addWidget(pStartPointWidget);
+        ui->dataLayout->addWidget(pColorWidget);
+        ui->dataLayout->addWidget(pModeWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_LINETO()
+{
+        this->setWindowTitle("Create: EMR_LINETO");
+
+        CPointWidget *pPointWidget = new CPointWidget("Point");
+
+        m_arWidgets.push_back(pPointWidget);
+        ui->dataLayout->addWidget(pPointWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_FILLRGN()
+{
+        this->setWindowTitle("Create: EMR_FILLRGN");
+
+        CFillRgnWidget *pFillRgnWidget = new CFillRgnWidget();
+        m_arWidgets.push_back(pFillRgnWidget);
+
+        ui->dataLayout->addWidget(pFillRgnWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_FRAMERGN()
+{
+        this->setWindowTitle("Create: EMR_FRAMERGN");
+
+        CFrameRgn *pFrameRgnWidget = new CFrameRgn();
+        m_arWidgets.push_back(pFrameRgnWidget);
+
+        ui->dataLayout->addWidget(pFrameRgnWidget);
+}
+
 void CRecordCreator::CreatePolyWidgets(const QString& qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
@@ -333,9 +534,19 @@ void CRecordCreator::CreatePolyWidgets(const QString& qsName)
         CreatePolyWidget();
 }
 
+void CRecordCreator::CreatePolyDrawWidgets(const QString &qsName)
+{
+        this->setWindowTitle(QString("Create: %1").arg(qsName));
+
+        CPolyDrawWidget *pPolyDrawWidget = new CPolyDrawWidget();
+        m_arWidgets.push_back(pPolyDrawWidget);
+
+        ui->dataLayout->addWidget(pPolyDrawWidget);
+}
+
 void CRecordCreator::CreateRectangleWidget(const QString& qsName)
 {
-        CReactangleWidget *pRectanleWidget = new CReactangleWidget(qsName);
+        CRectangleWidget *pRectanleWidget = new CRectangleWidget(qsName);
         ui->dataLayout->addWidget(pRectanleWidget);
 
         m_arWidgets.push_back(pRectanleWidget);
@@ -393,7 +604,7 @@ void CRecordCreator::CreateEXTEX(const QString& qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
 
-        CSizeWidget *pSizeWidget = new CSizeWidget;
+        CSizeWidget *pSizeWidget = new CSizeWidget("Size");
         ui->dataLayout->addWidget(pSizeWidget);
 
         m_arWidgets.push_back(pSizeWidget);

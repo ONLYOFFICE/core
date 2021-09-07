@@ -6,11 +6,12 @@
 class CSizeWidget : public CSharedWidget
 {
 public:
-        explicit CSizeWidget(QWidget *pParent = NULL);
+        explicit CSizeWidget(const QString& qsName, QWidget *pParent = NULL);
         virtual ~CSizeWidget();
 
         virtual QList<QStandardItem*> GetData() const override;
-
+private:
+        QString m_qsName;
 };
 
 #endif // CSIZEWIDGET_H

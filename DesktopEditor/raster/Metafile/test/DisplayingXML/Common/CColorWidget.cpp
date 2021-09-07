@@ -8,7 +8,8 @@
 CColorWidget::CColorWidget(const QString& qsName, QWidget *pParent) :
         CSharedWidget(pParent),
         m_qsName(qsName),
-        m_pColorLayout(NULL)
+        m_pColorLayout(NULL),
+        m_bReverseOrder(false)
 {
         QVBoxLayout *pLayout = new QVBoxLayout;
 
@@ -30,16 +31,32 @@ CColorWidget::~CColorWidget()
 
 }
 
+void CColorWidget::setReverseOrder(bool bReverseOrder)
+{
+        m_bReverseOrder = bReverseOrder;
+}
+
 QList<QStandardItem *> CColorWidget::GetData() const
 {
         if (!m_oColor.isValid())
                 return {};
 
         QStandardItem *pItem = new QStandardItem(QString("<%1>").arg(m_qsName));
-        pItem->appendRow(new QStandardItem(QString("<r>%1</r>").arg(m_oColor.red())));
-        pItem->appendRow(new QStandardItem(QString("<g>%1</g>").arg(m_oColor.green())));
-        pItem->appendRow(new QStandardItem(QString("<b>%1</b>").arg(m_oColor.blue())));
-        pItem->appendRow(new QStandardItem("<a>0</a>"));
+
+        if (m_bReverseOrder)
+        {
+                pItem->appendRow(new QStandardItem("<a>0</a>"));
+                pItem->appendRow(new QStandardItem(QString("<b>%1</b>").arg(m_oColor.blue())));
+                pItem->appendRow(new QStandardItem(QString("<g>%1</g>").arg(m_oColor.green())));
+                pItem->appendRow(new QStandardItem(QString("<r>%1</r>").arg(m_oColor.red())));
+        }
+        else
+        {
+                pItem->appendRow(new QStandardItem(QString("<r>%1</r>").arg(m_oColor.red())));
+                pItem->appendRow(new QStandardItem(QString("<g>%1</g>").arg(m_oColor.green())));
+                pItem->appendRow(new QStandardItem(QString("<b>%1</b>").arg(m_oColor.blue())));
+                pItem->appendRow(new QStandardItem("<a>0</a>"));
+        }
 
         return {pItem};
 }

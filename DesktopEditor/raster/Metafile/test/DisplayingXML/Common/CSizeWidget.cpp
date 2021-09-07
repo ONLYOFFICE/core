@@ -4,12 +4,13 @@
 #include <QBoxLayout>
 #include <QLabel>
 
-CSizeWidget::CSizeWidget(QWidget *pParent) :
-        CSharedWidget(pParent)
+CSizeWidget::CSizeWidget(const QString& qsName, QWidget *pParent) :
+        CSharedWidget(pParent),
+        m_qsName(qsName)
 {
         QHBoxLayout *pLayout = new QHBoxLayout;
 
-        QLabel *pName = new QLabel("Size");
+        QLabel *pName = new QLabel(m_qsName);
         pName->setStyleSheet("QLabel {text-decoration: underline; }");
 
         CFormWidget *pXForm = new CFormWidget("cx", "0");
@@ -32,7 +33,7 @@ CSizeWidget::~CSizeWidget()
 
 QList<QStandardItem *> CSizeWidget::GetData() const
 {
-        QStandardItem *pSize = new QStandardItem("<Extent>");
+        QStandardItem *pSize = new QStandardItem(QString("<%1>").arg(m_qsName));
         pSize->appendRows(m_arWidgets[0]->GetData());
         pSize->appendRows(m_arWidgets[1]->GetData());
 

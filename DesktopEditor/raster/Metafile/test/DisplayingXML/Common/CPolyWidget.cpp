@@ -45,9 +45,7 @@ QList<QStandardItem*> CPolyWidget::GetData() const
 
 void CPolyWidget::on_createPoly_clicked()
 {
-        ++m_unCounter;
-
-        QLabel *pName = new QLabel(QString("Poly %1:").arg(m_unCounter));
+        QLabel *pName = new QLabel(QString("Poly %1:").arg(++m_unCounter));
         CPointsWidget *pPointsWiget = new CPointsWidget();
 
         m_arWidgets.push_back(pPointsWiget);

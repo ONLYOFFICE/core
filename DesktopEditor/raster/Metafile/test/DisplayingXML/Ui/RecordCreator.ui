@@ -365,11 +365,6 @@
           </item>
           <item>
            <property name="text">
-            <string>EMR_COMMENT</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
             <string>EMR_FILLRGN</string>
            </property>
           </item>

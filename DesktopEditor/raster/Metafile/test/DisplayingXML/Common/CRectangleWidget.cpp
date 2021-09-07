@@ -1,4 +1,4 @@
-#include "CBoundsWidget.h"
+#include "CRectangleWidget.h"
 
 #include "CFormWidget.h"
 #include "Common.h"
@@ -8,7 +8,7 @@
 #include <QTextEdit>
 #include <QLabel>
 
-CReactangleWidget::CReactangleWidget(const QString& qsName, QWidget *pParent) :
+CRectangleWidget::CRectangleWidget(const QString& qsName, QWidget *pParent) :
         CSharedWidget(pParent),
         m_qsName(qsName)
 {
@@ -37,12 +37,12 @@ CReactangleWidget::CReactangleWidget(const QString& qsName, QWidget *pParent) :
         setLayout(pLayout);
 }
 
-CReactangleWidget::~CReactangleWidget()
+CRectangleWidget::~CRectangleWidget()
 {
 
 }
 
-QList<QStandardItem*> CReactangleWidget::GetData() const
+QList<QStandardItem*> CRectangleWidget::GetData() const
 {
         QStandardItem *pStandardItem = new QStandardItem(QString("<%1>").arg(m_qsName));
         ConvertWidgets(pStandardItem);

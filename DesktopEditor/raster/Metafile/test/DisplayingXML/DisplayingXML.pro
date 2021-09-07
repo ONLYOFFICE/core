@@ -18,15 +18,20 @@ SOURCES += \
     CStatisticsWidget.cpp \
     CTextEditDelegate.cpp \
     CXMLHighlighter.cpp \
-    Common/CBoundsWidget.cpp \
     Common/CColorWidget.cpp \
     Common/CEmptyWidget.cpp \
+    Common/CFillRgnWidget.cpp \
     Common/CFormWidget.cpp \
+    Common/CFrameRgn.cpp \
     Common/CLogBrushExWidget.cpp \
+    Common/CLogPaletteWidget.cpp \
     Common/CLogPenWidget.cpp \
+    Common/CPaletteEntriesWidget.cpp \
     Common/CPointWidget.cpp \
     Common/CPointsWidget.cpp \
+    Common/CPolyDrawWidget.cpp \
     Common/CPolyWidget.cpp \
+    Common/CRectangleWidget.cpp \
     Common/CSizeWidget.cpp \
     MainWindow.cpp \
     CCustomView.cpp \
@@ -41,15 +46,20 @@ HEADERS += \
     CStatisticsWidget.h \
     CTextEditDelegate.h \
     CXMLHighlighter.h \
-    Common/CBoundsWidget.h \
     Common/CColorWidget.h \
     Common/CEmptyWidget.h \
+    Common/CFillRgnWidget.h \
     Common/CFormWidget.h \
+    Common/CFrameRgn.h \
     Common/CLogBrushExWidget.h \
+    Common/CLogPaletteWidget.h \
     Common/CLogPenWidget.h \
+    Common/CPaletteEntriesWidget.h \
     Common/CPointWidget.h \
     Common/CPointsWidget.h \
+    Common/CPolyDrawWidget.h \
     Common/CPolyWidget.h \
+    Common/CRectangleWidget.h \
     Common/CSharedWidget.h \
     Common/CSizeWidget.h \
     Common/Common.h \

@@ -26,6 +26,7 @@ private slots:
 private:
         void CreatePointWidgets(const QString& qsName);
         void CreatePolyWidgets(const QString& qsName);
+        void CreatePolyDrawWidgets(const QString& qsName);
         void CreateEXTEX(const QString& qsName);
         void CreateORGEX(const QString& qsName);
         void CreateFormWidget(const QString& qsName, const QString& qsFormName);
@@ -33,12 +34,21 @@ private:
         void CreateEmptyWidgets(const QString& qsName);
         void CreateRectangleWidgets(const QString& qsName, const QString& qsReactangleName);
         void CreateScaleWidgets(const QString& qsName);
+        void CreateArcWidgets(const QString& qsName);
 
         void Create_Widgets_EMR_SETCOLORADJUSTMENT();
         void Create_Widgets_EMR_SETWORLDTRANSFORM();
         void Create_Widgets_EMR_MODIFYWORLDTRANSFORM();
         void Create_Widgets_EMR_CREATEPEN();
         void Create_Widgets_EMR_CREATEBRUSHINDIRECT();
+        void Create_Widgets_EMR_ANGLEARC();
+        void Create_Widgets_EMR_ROUNDRECT();
+        void Create_Widgets_EMR_CREATEPALETTE();
+        void Create_Widgets_EMR_SETPALETTEENTRIES();
+        void Create_Widgets_EMR_RESIZEPALETTE();
+        void Create_Widgets_EMR_EXTFLOODFILL();
+        void Create_Widgets_EMR_LINETO();
+        void Create_Widgets_EMR_FILLRGN();
 
         void CreateRectangleWidget(const QString& qsName);
         void CreatePointsWidget();

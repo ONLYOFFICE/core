@@ -16,7 +16,7 @@ CPointsWidget::CPointsWidget(QWidget *pParent):
 {
         QVBoxLayout *pLayout = new QVBoxLayout;
 
-        QPushButton *pButtonAddPoint = new QPushButton("Add Point");
+        QPushButton *pButtonAddPoint = new QPushButton("Добавить точку");
 
         connect(pButtonAddPoint, &QPushButton::clicked, this, &CPointsWidget::on_createPoint_clicked);
 
@@ -45,9 +45,7 @@ QList<QStandardItem*> CPointsWidget::GetData() const
 
 void CPointsWidget::on_createPoint_clicked()
 {
-        ++m_unCounter;
-
-        CPointWidget *pPoint = new CPointWidget("Point", m_unCounter);
+        CPointWidget *pPoint = new CPointWidget("Point", ++m_unCounter);
         m_arWidgets.push_back(pPoint);
 
         QBoxLayout *pMainLayout = (QBoxLayout*)layout();

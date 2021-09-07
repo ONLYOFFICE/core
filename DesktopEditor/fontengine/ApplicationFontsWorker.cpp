@@ -46,6 +46,32 @@
 
 #define ONLYOFFICE_FONTS_VERSION_ 6
 
+bool g_sort_font_names(const std::wstring& i, const std::wstring& j)
+{
+    std::wstring s1 = i;
+    std::wstring s2 = j;
+
+    wchar_t symbol;
+
+    size_t len = s1.length();
+    for (size_t c = 0; c < len; ++c)
+    {
+        symbol = s1[c];
+        if (symbol >= 'A' && symbol <= 'Z')
+            s1[c] = symbol + 'a' - 'A';
+    }
+
+    len = s2.length();
+    for (size_t c = 0; c < len; ++c)
+    {
+        symbol = s2[c];
+        if (symbol >= 'A' && symbol <= 'Z')
+            s2[c] = symbol + 'a' - 'A';
+    }
+
+    return s1 < s2;
+}
+
 class CApplicationFontsWorker_private
 {
 public:
@@ -666,6 +692,10 @@ public:
 
         // теперь сортируем шрифты по имени ----------
         size_t nCountFonts = arrFonts.size();
+
+#if 1
+        std::sort(arrFonts.begin(), arrFonts.end(), g_sort_font_names);
+#else
         for (size_t i = 0; i < nCountFonts; ++i)
         {
             for (size_t j = i + 1; j < nCountFonts; ++j)
@@ -678,6 +708,7 @@ public:
                 }
             }
         }
+#endif
 
         std::wstring strFontSelectionBin = L"";
         // нужно ли скидывать font_selection.bin

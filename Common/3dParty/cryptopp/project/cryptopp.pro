@@ -17,6 +17,7 @@ core_ios:DEFINES -= MAC
 core_windows:DEFINES -= UNICODE _UNICODE
 
 DEFINES += CRYPTOPP_DISABLE_ASM
+DEFINES += DISABLE_TYPE_MISMATCH
 
 core_android {
     INCLUDEPATH += $$(ANDROID_NDK_ROOT)/sources/android/cpufeatures

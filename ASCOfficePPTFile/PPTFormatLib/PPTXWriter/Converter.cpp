@@ -671,6 +671,7 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
         BYTE *utf8Data = NULL;
         ULONG utf8DataSize = 0;
         bool wasThemeWrite = false;
+        bool needRels = false;
 
         // write themes
         for (auto& strThemePath : arrThemesPaths)
@@ -681,6 +682,8 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
             char* pointerToThemeElems = strstr((char*)utf8Data, "<a:themeElements>");
             UINT hashShift = pointerToThemeElems ? pointerToThemeElems - (char*)utf8Data : 0;
             auto strHash = CFile::md5(utf8Data+hashShift, utf8DataSize-hashShift);
+
+            needRels = (int)std::string(utf8Data, utf8Data + utf8DataSize).find("rId") != -1;
 
             // cp file with new name or write bytes
             if (writedFilesHash.find(strHash) == writedFilesHash.end())
@@ -738,7 +741,7 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
             themeRels.WriteImage(strImagePath);
         }
         // write _rels
-        if (!arrRelsPaths.empty())
+        if (!arrRelsPaths.empty() && needRels)
         {
             std::wstring relsFolder = strPptDirectory + L"theme" + FILE_SEPARATOR_STR  + L"_rels" + FILE_SEPARATOR_STR;
             std::wstring relsName = L"theme" + std::to_wstring(nIndexTheme) + L".xml.rels";
@@ -746,7 +749,7 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
             NSDirectory::CreateDirectory(relsFolder);
 
             NSFile::CFileBinary::ReadAllBytes(arrRelsPaths[0], &utf8Data, utf8DataSize);
-			NSFile::CFileBinary oFile;
+            NSFile::CFileBinary oFile;
             oFile.CreateFileW(relsFolder + relsName);
             oFile.WriteFile(utf8Data, utf8DataSize);
 

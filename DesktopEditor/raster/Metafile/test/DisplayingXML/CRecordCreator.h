@@ -35,6 +35,7 @@ private:
         void CreateRectangleWidgets(const QString& qsName, const QString& qsReactangleName);
         void CreateScaleWidgets(const QString& qsName);
         void CreateArcWidgets(const QString& qsName);
+        void CreateNotSupportedWidgets(const QString &qsName);
 
         void Create_Widgets_EMR_SETCOLORADJUSTMENT();
         void Create_Widgets_EMR_SETWORLDTRANSFORM();
@@ -49,6 +50,11 @@ private:
         void Create_Widgets_EMR_EXTFLOODFILL();
         void Create_Widgets_EMR_LINETO();
         void Create_Widgets_EMR_FILLRGN();
+        void Create_Widgets_EMR_FRAMERGN();
+        void Create_Widgets_EMR_INVERTRGN();
+        void Create_Widgets_EMR_PAINTRGN();
+        void Create_Widgets_EMR_EXTSELECTCLIPRGN();
+        void Create_Widgets_EMR_EXTCREATEFONTINDIRECTW();
 
         void CreateRectangleWidget(const QString& qsName);
         void CreatePointsWidget();

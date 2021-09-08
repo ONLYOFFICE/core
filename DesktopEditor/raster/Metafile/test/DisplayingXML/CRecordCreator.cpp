@@ -1,6 +1,7 @@
 #include "CRecordCreator.h"
 #include "ui_RecordCreator.h"
 
+#include "Common/CExtSelectClipRgnWidget.h"
 #include "Common/CPaletteEntriesWidget.h"
 #include "Common/CLogBrushExWidget.h"
 #include "Common/CLogPaletteWidget.h"
@@ -9,12 +10,14 @@
 #include "Common/CFillRgnWidget.h"
 #include "Common/CPointsWidget.h"
 #include "Common/CLogPenWidget.h"
+#include "Common/CLogFontExDv.h"
 #include "Common/CPointWidget.h"
 #include "Common/CColorWidget.h"
 #include "Common/CEmptyWidget.h"
 #include "Common/CSizeWidget.h"
 #include "Common/CPolyWidget.h"
 #include "Common/CFormWidget.h"
+#include "Common/CInvertRgn.h"
 #include "Common/CFrameRgn.h"
 #include "Common/Common.h"
 
@@ -128,6 +131,16 @@ QStandardItem* CRecordCreator::CreateRecord()
                         case 65: ConvertWidgets("EMR_ABORTPATH");               break;
                         case 66: ConvertWidgets("EMR_FILLRGN");                 break;
                         case 67: ConvertWidgets("EMR_FRAMERGN");                break;
+                        case 68: ConvertWidgets("EMR_INVERTRGN");               break;
+                        case 69: ConvertWidgets("EMR_PAINTRGN");                break;
+                        case 70: ConvertWidgets("EMR_EXTSELECTCLIPRGN");        break;
+                        case 71: ConvertWidgets("EMR_BITBLT");                  break;
+                        case 72: ConvertWidgets("EMR_STRETCHBLT");              break;
+                        case 73: ConvertWidgets("EMR_MASKBLT");                 break;
+                        case 74: ConvertWidgets("EMR_PLGBLT");                  break;
+                        case 75: ConvertWidgets("EMR_SETDIBITSTODEVICE");       break;
+                        case 76: ConvertWidgets("EMR_STRETCHDIBITS");           break;
+                        case 77: ConvertWidgets("EMR_EXTCREATEFONTINDIRECTW");  break;
                 };
         }
 
@@ -211,6 +224,16 @@ void CRecordCreator::on_selectButton_clicked()
                 case 65: CreateEmptyWidgets("EMR_ABORTPATH");                           break;
                 case 66: Create_Widgets_EMR_FILLRGN();                                  break;
                 case 67: Create_Widgets_EMR_FRAMERGN();                                 break;
+                case 68: Create_Widgets_EMR_INVERTRGN();                                break;
+                case 69: Create_Widgets_EMR_PAINTRGN();                                 break;
+                case 70: Create_Widgets_EMR_EXTSELECTCLIPRGN();                         break;
+                case 71: CreateNotSupportedWidgets("EMR_BITBLT");                       break;
+                case 72: CreateNotSupportedWidgets("EMR_STRETCHBLT");                   break;
+                case 73: CreateNotSupportedWidgets("EMR_MASKBLT");                      break;
+                case 74: CreateNotSupportedWidgets("EMR_PLGBLT");                       break;
+                case 75: CreateNotSupportedWidgets("EMR_SETDIBITSTODEVICE");            break;
+                case 76: CreateNotSupportedWidgets("EMR_STRETCHDIBITS");                break;
+                case 77: Create_Widgets_EMR_EXTCREATEFONTINDIRECTW();                   break;
         }
 
         QPushButton *pOkButton =  ui->buttonBox->button(QDialogButtonBox::Ok);
@@ -314,6 +337,15 @@ void CRecordCreator::CreateArcWidgets(const QString &qsName)
         ui->dataLayout->addWidget(pBoxWidget);
         ui->dataLayout->addWidget(pStartPointWidget);
         ui->dataLayout->addWidget(pEndPointWidget);
+}
+
+void CRecordCreator::CreateNotSupportedWidgets(const QString &qsName)
+{
+        this->setWindowTitle(QString("Create: %1").arg(qsName));
+
+        QLabel *pLabel = new QLabel("На данный момент создание данной записи не поддерживается");
+
+        ui->dataLayout->addWidget(pLabel);
 }
 
 void CRecordCreator::Create_Widgets_EMR_SETCOLORADJUSTMENT()
@@ -526,6 +558,50 @@ void CRecordCreator::Create_Widgets_EMR_FRAMERGN()
         ui->dataLayout->addWidget(pFrameRgnWidget);
 }
 
+void CRecordCreator::Create_Widgets_EMR_INVERTRGN()
+{
+        this->setWindowTitle("Create: EMR_INVERTRGN");
+
+        CInvertRgn *pInvertRgnWidget = new CInvertRgn();
+        m_arWidgets.push_back(pInvertRgnWidget);
+
+        ui->dataLayout->addWidget(pInvertRgnWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_PAINTRGN()
+{
+        this->setWindowTitle("Create: EMR_PAINTRGN");
+
+        CPaintRgn *pPaintRgnWidget = new CPaintRgn();
+        m_arWidgets.push_back(pPaintRgnWidget);
+
+        ui->dataLayout->addWidget(pPaintRgnWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_EXTSELECTCLIPRGN()
+{
+        this->setWindowTitle("Create: EMR_EXTSELECTCLIPRGN");
+
+        CExtSelectClipRgnWidget *pExtSelectClipRgnWidget = new CExtSelectClipRgnWidget();
+        m_arWidgets.push_back(pExtSelectClipRgnWidget);
+
+        ui->dataLayout->addWidget(pExtSelectClipRgnWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_EXTCREATEFONTINDIRECTW()
+{
+        this->setWindowTitle("Create: EMR_EXTCREATEFONTINDIRECTW");
+
+        CFormWidget *pIhFonts       = new CFormWidget("ihFonts", "1");
+        CLogFontExDv *pLogFontExDv  = new CLogFontExDv();
+
+        m_arWidgets.push_back(pIhFonts);
+        m_arWidgets.push_back(pLogFontExDv);
+
+        ui->dataLayout->addWidget(pIhFonts);
+        ui->dataLayout->addWidget(pLogFontExDv);
+}
+
 void CRecordCreator::CreatePolyWidgets(const QString& qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
@@ -622,7 +698,7 @@ void CRecordCreator::CreateORGEX(const QString& qsName)
 
 void CRecordCreator::ConvertWidgets(const QString& qsName)
 {
-        if (qsName.isEmpty())
+        if (qsName.isEmpty() || m_arWidgets.empty())
                 return;
 
         m_pNewItem = new QStandardItem(QString("<%1>").arg(qsName));

@@ -567,10 +567,10 @@ namespace MetaFile
 	{
 	    WriteNodeBegin(L"DesignVector");
 		WriteNode(L"Signature",  oEmfLogFont.DesignVector.Signature);
-		WriteNode(L"NumAxes",    oEmfLogFont.DesignVector.NumAxes);
+//		WriteNode(L"NumAxes",    oEmfLogFont.DesignVector.NumAxes);
 
 		for (unsigned int i = 0; i <oEmfLogFont.DesignVector.NumAxes; ++i)
-		    WriteNode(L"NumAxes" + std::to_wstring(i + 1),	oEmfLogFont.DesignVector.Values[i]);
+		    WriteNode(L"Value" + std::to_wstring(i + 1),	oEmfLogFont.DesignVector.Values[i]);
 
 		WriteNodeEnd(L"DesignVector");
 		WriteNodeEnd(L"LogFontExDv");
@@ -827,18 +827,35 @@ namespace MetaFile
             return;
 
         *this >> oTEmfDesignVector.Signature;
-        *this >> oTEmfDesignVector.NumAxes;
+//        *this >> oTEmfDesignVector.NumAxes;
 
-        if (oTEmfDesignVector.NumAxes > 0)
+        unsigned int unDepth = m_pXmlLiteReader->GetDepth();
+        std::vector<int> arValues;
+
+        while (m_pXmlLiteReader->ReadNextSiblingNode(unDepth - 1))
+                arValues.push_back(std::stoi(m_pXmlLiteReader->GetText2()));
+
+        oTEmfDesignVector.NumAxes = arValues.size();
+
+        if (!arValues.empty())
         {
-            oTEmfDesignVector.Values = new int[oTEmfDesignVector.NumAxes];
-            int nValue;
-            for (unsigned int i = 0; i < oTEmfDesignVector.NumAxes; ++i)
-            {
-                *this >> nValue;
-                oTEmfDesignVector.Values[i] = nValue;
-            }
+                unsigned int unSize = arValues.size();
+                oTEmfDesignVector.Values = new int[unSize];
+
+                for (unsigned int unIndex = 0; unIndex < unSize; ++unIndex)
+                        oTEmfDesignVector.Values[unIndex] = arValues[unIndex];
         }
+
+//        if (oTEmfDesignVector.NumAxes > 0)
+//        {
+//            oTEmfDesignVector.Values = new int[oTEmfDesignVector.NumAxes];
+//            int nValue;
+//            for (unsigned int i = 0; i < oTEmfDesignVector.NumAxes; ++i)
+//            {
+//                *this >> nValue;
+//                oTEmfDesignVector.Values[i] = nValue;
+//            }
+//        }
     }
 
     void CXmlOutput::operator>>(TEmfLogPaletteEntry &oTEmfLogPaletteEntry)
@@ -1156,7 +1173,7 @@ namespace MetaFile
 
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
 
-        unsigned int unSize;
+        unsigned int unSize = 0;
         unsigned short *pTemp = NSStringExt::CConverter::GetUtf16FromUnicode(wsValue, unSize);
 
         for (unsigned int i = 0; i < unSize; ++i)

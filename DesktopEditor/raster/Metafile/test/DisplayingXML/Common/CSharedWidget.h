@@ -13,6 +13,7 @@ public:
 
         virtual QList<QStandardItem*> GetData() const = 0;
 private:
+        friend class CExtSelectClipRgnWidget;
         friend class CPaletteEntriesWidget;
         friend class CLogBrushExWidget;
         friend class CLogPaletteWidget;
@@ -21,10 +22,15 @@ private:
         friend class CFillRgnWidget;
         friend class CLogPenWidget;
         friend class CPointsWidget;
+        friend class CDesignVector;
         friend class CPointWidget;
+        friend class CLogFontExDv;
         friend class CSizeWidget;
         friend class CPolyWidget;
+        friend class CInvertRgn;
+        friend class CLogFontEx;
         friend class CFrameRgn;
+        friend class CLogFont;
 
         void ConvertWidgets(QStandardItem* pParentItem) const
         {

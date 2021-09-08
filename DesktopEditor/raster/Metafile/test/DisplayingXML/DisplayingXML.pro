@@ -20,10 +20,13 @@ SOURCES += \
     CXMLHighlighter.cpp \
     Common/CColorWidget.cpp \
     Common/CEmptyWidget.cpp \
+    Common/CExtSelectClipRgnWidget.cpp \
     Common/CFillRgnWidget.cpp \
     Common/CFormWidget.cpp \
     Common/CFrameRgn.cpp \
+    Common/CInvertRgn.cpp \
     Common/CLogBrushExWidget.cpp \
+    Common/CLogFontExDv.cpp \
     Common/CLogPaletteWidget.cpp \
     Common/CLogPenWidget.cpp \
     Common/CPaletteEntriesWidget.cpp \
@@ -48,10 +51,13 @@ HEADERS += \
     CXMLHighlighter.h \
     Common/CColorWidget.h \
     Common/CEmptyWidget.h \
+    Common/CExtSelectClipRgnWidget.h \
     Common/CFillRgnWidget.h \
     Common/CFormWidget.h \
     Common/CFrameRgn.h \
+    Common/CInvertRgn.h \
     Common/CLogBrushExWidget.h \
+    Common/CLogFontExDv.h \
     Common/CLogPaletteWidget.h \
     Common/CLogPenWidget.h \
     Common/CPaletteEntriesWidget.h \

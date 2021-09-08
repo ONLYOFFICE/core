@@ -474,6 +474,7 @@ namespace MetaFile
 
         void CEmfxParser::Read_EMR_EXTCREATEFONTINDIRECTW()
         {
+                //TODO: переделать чтение из-за отсутствия m_ulRecordSize
                 unsigned int unSize = m_ulRecordSize - 4;
                 bool bFixedLength = unSize <= 0x0140 ? true : false;
 
@@ -526,6 +527,8 @@ namespace MetaFile
 
         void CEmfxParser::Read_EMR_EXTCREATEPEN()
         {
+                //TODO: переделать чтение из-за отсутствия m_ulRecordSize
+
                 unsigned int ulPenIndex;
 
                 *m_pOutput >> ulPenIndex;

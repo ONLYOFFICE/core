@@ -21,6 +21,7 @@ SOURCES += \
     Common/CColorWidget.cpp \
     Common/CEmptyWidget.cpp \
     Common/CExtSelectClipRgnWidget.cpp \
+    Common/CExtTextOutWidget.cpp \
     Common/CFillRgnWidget.cpp \
     Common/CFormWidget.cpp \
     Common/CFrameRgn.cpp \
@@ -52,6 +53,7 @@ HEADERS += \
     Common/CColorWidget.h \
     Common/CEmptyWidget.h \
     Common/CExtSelectClipRgnWidget.h \
+    Common/CExtTextOutWidget.h \
     Common/CFillRgnWidget.h \
     Common/CFormWidget.h \
     Common/CFrameRgn.h \

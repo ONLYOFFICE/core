@@ -5,6 +5,7 @@
 #include "Common/CPaletteEntriesWidget.h"
 #include "Common/CLogBrushExWidget.h"
 #include "Common/CLogPaletteWidget.h"
+#include "Common/CExtTextOutWidget.h"
 #include "Common/CRectangleWidget.h"
 #include "Common/CPolyDrawWidget.h"
 #include "Common/CFillRgnWidget.h"
@@ -141,6 +142,7 @@ QStandardItem* CRecordCreator::CreateRecord()
                         case 75: ConvertWidgets("EMR_SETDIBITSTODEVICE");       break;
                         case 76: ConvertWidgets("EMR_STRETCHDIBITS");           break;
                         case 77: ConvertWidgets("EMR_EXTCREATEFONTINDIRECTW");  break;
+                        case 78: ConvertWidgets("EMR_EXTTEXTOUTA");             break;
                 };
         }
 
@@ -234,6 +236,7 @@ void CRecordCreator::on_selectButton_clicked()
                 case 75: CreateNotSupportedWidgets("EMR_SETDIBITSTODEVICE");            break;
                 case 76: CreateNotSupportedWidgets("EMR_STRETCHDIBITS");                break;
                 case 77: Create_Widgets_EMR_EXTCREATEFONTINDIRECTW();                   break;
+                case 78: Create_Widgets_EMR_EXTTEXTOUT();                               break;
         }
 
         QPushButton *pOkButton =  ui->buttonBox->button(QDialogButtonBox::Ok);
@@ -600,6 +603,16 @@ void CRecordCreator::Create_Widgets_EMR_EXTCREATEFONTINDIRECTW()
 
         ui->dataLayout->addWidget(pIhFonts);
         ui->dataLayout->addWidget(pLogFontExDv);
+}
+
+void CRecordCreator::Create_Widgets_EMR_EXTTEXTOUT()
+{
+        this->setWindowTitle("Create: EMR_EXTTEXTOUTA");
+
+        CExtTextOutWidget *pEmrTextWidget = new CExtTextOutWidget();
+        m_arWidgets.push_back(pEmrTextWidget);
+
+        ui->dataLayout->addWidget(pEmrTextWidget);
 }
 
 void CRecordCreator::CreatePolyWidgets(const QString& qsName)

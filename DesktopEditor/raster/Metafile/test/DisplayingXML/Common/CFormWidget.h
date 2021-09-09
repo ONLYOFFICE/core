@@ -12,6 +12,7 @@ public:
         virtual ~CFormWidget();
 
         virtual QList<QStandardItem*> GetData() const override;
+        QTextEdit* GetTextEditWidget() const;
 private:
         QString m_qsName;
         QTextEdit *m_pValue;

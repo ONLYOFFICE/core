@@ -55,6 +55,7 @@ private:
         void Create_Widgets_EMR_PAINTRGN();
         void Create_Widgets_EMR_EXTSELECTCLIPRGN();
         void Create_Widgets_EMR_EXTCREATEFONTINDIRECTW();
+        void Create_Widgets_EMR_EXTTEXTOUT();
 
         void CreateRectangleWidget(const QString& qsName);
         void CreatePointsWidget();

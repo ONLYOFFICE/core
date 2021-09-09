@@ -17,18 +17,21 @@ private:
         friend class CPaletteEntriesWidget;
         friend class CLogBrushExWidget;
         friend class CLogPaletteWidget;
+        friend class CExtTextOutWidget;
         friend class CRectangleWidget;
         friend class CPolyDrawWidget;
         friend class CFillRgnWidget;
         friend class CLogPenWidget;
         friend class CPointsWidget;
         friend class CDesignVector;
+        friend class CEmrTextWidget;
         friend class CPointWidget;
         friend class CLogFontExDv;
         friend class CSizeWidget;
         friend class CPolyWidget;
         friend class CInvertRgn;
         friend class CLogFontEx;
+        friend class CDxWidget;
         friend class CFrameRgn;
         friend class CLogFont;
 

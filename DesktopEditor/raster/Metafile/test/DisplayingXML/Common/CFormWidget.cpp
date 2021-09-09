@@ -35,3 +35,8 @@ QList<QStandardItem*> CFormWidget::GetData() const
         else
                 return {new QStandardItem(QString("<%1>%2</%1>").arg(m_qsName).arg(m_pValue->toPlainText()))};
 }
+
+QTextEdit *CFormWidget::GetTextEditWidget() const
+{
+        return m_pValue;
+}

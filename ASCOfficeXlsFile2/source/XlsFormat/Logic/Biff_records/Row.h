@@ -32,52 +32,60 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include <Biff12_structures/ColSpan.h>
 
 namespace XLS
 {
+// Logical representation of Row record in BIFF8 and BrtRowHdr in BIFF12
+    class Row: public BiffRecord
+    {
+            BIFF_RECORD_DEFINE_TYPE_INFO(Row)
+            BASE_OBJECT_DEFINE_CLASS_NAME(Row)
+        public:
+            Row();
+            ~Row();
 
-class Row: public BiffRecord
-{
-	BIFF_RECORD_DEFINE_TYPE_INFO(Row)
-	BASE_OBJECT_DEFINE_CLASS_NAME(Row)
-public:
-	Row();
-	~Row();
+            BaseObjectPtr clone();
 
-	BaseObjectPtr clone();
-	
-	void readFields(CFRecord& record);
+            void readFields(CFRecord& record);
 
-	int serialize(std::wostream & stream);
+            int serialize(std::wostream & stream);
 
-	static const ElementType type = typeRow;
+            static const ElementType type = typeRow;
 
-	GlobalWorkbookInfoPtr global_info_;
+            GlobalWorkbookInfoPtr global_info_;
 
-//-----------------------------
-	Rw			rw;
-	//BackwardOnlyParam<unsigned short> colMic;
-	//BackwardOnlyParam<unsigned short> colMac;
+        //-----------------------------
+            //Rw			rw;
+            UncheckedRw     rw;
 
-	unsigned short colMic;
-	unsigned short colMac;
-	
-	_UINT16		miyRw;
+            //BackwardOnlyParam<unsigned short> colMic;
+            //BackwardOnlyParam<unsigned short> colMac;
 
-	unsigned char	iOutLevel;
-	bool			fCollapsed;
-	bool			fDyZero;
-	bool			fUnsynced;
-	bool			fGhostDirty;
-	
-	_UINT16			ixfe_val;
-	bool			fExAsc;
-	bool			fExDes;
-	bool			fPhonetic;
+            unsigned short          colMic;
+            unsigned short          colMac;
 
-	bool			bValid;
-	
-};
+            _UINT16                 miyRw;
+
+            unsigned char           iOutLevel;
+            bool			fCollapsed;
+            bool			fDyZero;
+            bool			fUnsynced;
+            bool			fGhostDirty;
+
+            //_UINT16			ixfe_val;
+            _UINT32			ixfe_val;
+            bool			fExAsc; //fExtraAsc in biff12
+            bool			fExDes; //fExtraDsc in biff12
+            bool			fPhonetic; //fPhShow in biff12
+
+            bool			bValid;
+
+            //xlsb
+            _UINT32                              ccolspan;
+            std::vector<XLSB::ColSpan>           rgBrtColspan;
+
+    };
 
 } // namespace XLS
 

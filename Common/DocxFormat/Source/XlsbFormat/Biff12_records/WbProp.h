@@ -39,7 +39,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of WbProp record in BIFF12
+    // Logical representation of BrtWbProp record in BIFF12
     class WbProp: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(WbProp)

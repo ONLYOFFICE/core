@@ -217,8 +217,8 @@ namespace XLSB
         rt_PcdiaDatetime =							32,
         rt_PcrRecord =								33,
         rt_PcrRecordDt =							34,
-        rt_Frt_Begin =								35,
-        rt_Frt_End =								36,
+        rt_FRTBegin =								35,
+        rt_FRTEnd =                                 36,
         rt_ACBegin =								37,
         rt_ACEnd =									38,
         rt_Name =									39,
@@ -961,6 +961,7 @@ namespace XLSB
         rt_FieldListActiveItem =					2134,
         rt_PivotCacheIdVersion =					2135,
         rt_Sxdi15 =									2136,
+        rt_Uid =                                    3072,
         rt_RevisionPtr =							3073,
         rt_Unknown =								0xffff
     } RecordType;

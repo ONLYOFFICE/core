@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef BIFF12RECORDBASE_H
-#define BIFF12RECORDBASE_H
+#ifndef WORKBOOKSTREAM_H
+#define WORKBOOKSTREAM_H
 
 
 #include "../../../../DesktopEditor/common/Types.h"
@@ -95,5 +95,5 @@ namespace XLSB
 
 }
 
-#endif // BIFF12RECORDBASE_H
+#endif // WORKBOOKSTREAM_H
 

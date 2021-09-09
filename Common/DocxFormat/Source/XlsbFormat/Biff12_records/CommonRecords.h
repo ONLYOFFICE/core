@@ -38,6 +38,11 @@
 #include <Logic/Biff_records/UserBView.h>
 #include <Logic/Biff_records/WOpt.h>
 #include <Logic/Biff_records/BookExt.h>
+#include <Logic/Biff_records/ColInfo.h>
+#include <Logic/Biff_records/Row.h>
+#include <Logic/Biff_records/Table.h>
+#include <Logic/Biff_records/ShrFmla.h>
+#include <Logic/Biff_records/Array.h>
 #include "../../XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
 
@@ -116,5 +121,58 @@ namespace XLSB
             return BaseObjectPtr(new FileRecover(*this));
         }
     };
+
+    class ColInfo: public XLS::ColInfo
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(ColInfo)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new ColInfo(*this));
+        }
+    };
+
+    class RowHdr: public XLS::Row
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(RowHdr)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new RowHdr(*this));
+        }
+    };
+
+    class Table: public XLS::Table
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(Table)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new Table(*this));
+        }
+    };
+
+    class ShrFmla: public XLS::ShrFmla
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(ShrFmla)
+        ShrFmla(const CellRef& cell_base_ref_init) : XLS::ShrFmla(cell_base_ref_init) {}
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new ShrFmla(*this));
+        }
+    };
+
+    class ArrFmla: public XLS::Array
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(ArrFmla)
+        ArrFmla(const CellRef& cell_base_ref_init) : XLS::Array(cell_base_ref_init) {}
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new ArrFmla(*this));
+        }
+    };
+
 } // namespace XLSB
 

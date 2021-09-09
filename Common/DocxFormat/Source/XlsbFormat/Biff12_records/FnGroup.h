@@ -40,7 +40,7 @@ using namespace XLS;
 namespace XLSB
 {
 
-    // Logical representation of FnGroup record in BIFF12
+    // Logical representation of BrtFnGroup record in BIFF12
     class FnGroup: public BiffRecord
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(FnGroup)

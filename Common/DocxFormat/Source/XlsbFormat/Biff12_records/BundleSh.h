@@ -41,7 +41,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BundleSh record in BIFF12
+    // Logical representation of BrtBundleSh record in BIFF12
     class BundleSh: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BundleSh)

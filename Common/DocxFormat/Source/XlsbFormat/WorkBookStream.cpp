@@ -48,6 +48,7 @@
 #include "Biff12_records/EndBook.h"
 #include "Biff12_records/BookProtection.h"
 #include "Biff12_records/BookProtectionIso.h"
+#include "Biff12_unions/FRT.h"
 
 
 namespace XLSB
@@ -258,12 +259,20 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
 
             case rt_UserBookView:
             {
-                count = proc.repeated<UserBookView>(0, 0);
-                while(count > 0)
+                while (true)
                 {
-                    m_arBrtUserBookView.insert(m_arBrtUserBookView.begin(), elements_.back());
-                    elements_.pop_back();
-                    count--;
+                    if(proc.optional<UserBookView>())
+                    {
+                        m_arBrtUserBookView.push_back(elements_.back());
+                        elements_.pop_back();
+
+                        while (proc.optional<FRT>())
+                        {
+                            //m_arFRT.push_back(elements_.back());
+                            elements_.pop_back();
+                        }
+                    }
+                    else break;
                 }
             }break;
 

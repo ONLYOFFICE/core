@@ -67,6 +67,8 @@ typedef unsigned char	ColunByte;
 typedef unsigned char	ColunByteU;
 
 typedef _INT32			Rw12;
+typedef _INT32			UncheckedRw; // in biff12
+typedef _INT32			UncheckedCol; // in biff12
 typedef _INT32			Col12;
 typedef unsigned short	Rwx;
 typedef unsigned short	Colx;
@@ -155,6 +157,10 @@ struct BErr : public BiffStructure_NoVtbl
 		{
 			err = 0x2A;
 		}
+        else if(std::wstring (L"#GETTING_DATA") == str) // in biff12
+        {
+            err = 0x2B;
+        }
 		else
 		{
 			// EXCEPT::RT::WrongBiffRecord("Unsupported type of BErr.", "unknown");
@@ -179,6 +185,8 @@ struct BErr : public BiffStructure_NoVtbl
 			return L"#NUM!";
 		case 0x2A:
 			return L"#N/A";
+        case 0x2B:
+            return L"#GETTING_DATA"; // in biff12
 		default:
 			// EXCEPT::RT::WrongBiffRecord("Unsupported type of BErr.", "unknown");
 			break;

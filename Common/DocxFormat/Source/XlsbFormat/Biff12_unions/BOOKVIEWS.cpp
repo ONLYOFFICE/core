@@ -34,6 +34,8 @@
 #include "../Biff12_records/BeginBookViews.h"
 #include "../Biff12_records/CommonRecords.h"
 #include "../Biff12_records/EndBookViews.h"
+#include "../Biff12_unions/ACUID.h"
+#include "../Biff12_unions/FRT.h"
 
 namespace XLSB
 {
@@ -46,28 +48,71 @@ namespace XLSB
     {
     }
 
+    class Parenthesis_BOOKVIEWS: public CompositeObject
+    {
+        BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_BOOKVIEWS)
+    public:
+        BaseObjectPtr clone()
+        {
+            return BaseObjectPtr(new Parenthesis_BOOKVIEWS(*this));
+        }
+
+        const bool loadContent(BinProcessor& proc)
+        {
+            if (proc.optional<ACUID>())
+            {
+                m_ACUID = elements_.back();
+                elements_.pop_back();
+            }
+            if(proc.mandatory<BookView>())
+            {
+                m_BrtBookView = elements_.back();
+                elements_.pop_back();
+            }
+            else return false;
+
+            int count = proc.repeated<FRT>(0, 0);
+
+            while(count > 0)
+            {
+                m_arFRT.insert(m_arFRT.begin(), elements_.back());
+                elements_.pop_back();
+                count--;
+            }
+
+            return true;
+        };
+
+        BaseObjectPtr               m_ACUID;
+        BaseObjectPtr               m_BrtBookView;
+        std::vector<BaseObjectPtr>  m_arFRT;
+    };
+
     BaseObjectPtr BOOKVIEWS::clone()
     {
         return BaseObjectPtr(new BOOKVIEWS(*this));
     }
 
-    // BOOKVIEWS = m_BrtBeginBookViews ...
+    // BOOKVIEWS = BrtBeginBookViews 1*([ACUID] BrtBookView *FRT) BrtEndBookViews
     const bool BOOKVIEWS::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<BeginBookViews>())
+        if (proc.mandatory<BeginBookViews>())
         {
             m_BrtBeginBookViews = elements_.back();
             elements_.pop_back();
         }
 
-        while (proc.optional<BookView>())
+        int count = proc.repeated<Parenthesis_BOOKVIEWS>(0, 0);
+
+        while(count > 0)
         {
-            m_arBrtBookView.push_back(elements_.back());
+            m_arBrtBookView.insert(m_arBrtBookView.begin(), static_cast<Parenthesis_BOOKVIEWS*>(elements_.back().get())->m_BrtBookView);
             elements_.pop_back();
+            count--;
         }
 
 
-        if (proc.optional<EndBookViews>())
+        if (proc.mandatory<EndBookViews>())
         {
             m_BrtEndBookViews = elements_.back();
             elements_.pop_back();

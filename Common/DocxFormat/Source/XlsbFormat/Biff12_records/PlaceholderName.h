@@ -39,7 +39,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of PlaceholderName record in BIFF12
+    // Logical representation of BrtPlaceholderName record in BIFF12
     class PlaceholderName: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(PlaceholderName)

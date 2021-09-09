@@ -41,7 +41,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of FileSharingIso record in BIFF12
+    // Logical representation of BrtFileSharingIso record in BIFF12
     class FileSharingIso: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(FileSharingIso)

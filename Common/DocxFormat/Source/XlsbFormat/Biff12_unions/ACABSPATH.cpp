@@ -54,17 +54,17 @@ namespace XLSB
     // ACABSPATH = m_BrtACBegin m_BrtAbsPath15 m_BrtACEnd
     const bool ACABSPATH::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<ACBegin>())
+        if (proc.mandatory<ACBegin>())
         {
             m_BrtACBegin = elements_.back();
             elements_.pop_back();
         }
-        if (proc.optional<AbsPath15>())
+        if (proc.mandatory<AbsPath15>())
         {
             m_BrtAbsPath15 = elements_.back();
             elements_.pop_back();
         }
-        if (proc.optional<ACEnd>())
+        if (proc.mandatory<ACEnd>())
         {
             m_BrtACEnd = elements_.back();
             elements_.pop_back();

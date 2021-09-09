@@ -39,7 +39,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of EndBookViews record in BIFF12
+    // Logical representation of BrtEndBookViews record in BIFF12
     class EndBookViews: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(EndBookViews)

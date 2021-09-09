@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../CommonInclude.h"
+#include "../../XlsbFormat/Biff12_records/WsDim.h"
 
 namespace OOX
 {
@@ -417,6 +418,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDimension)
+            WritingElement_XlsbConstructors(CDimension)
 			CDimension()
 			{
 			}
@@ -440,6 +442,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            virtual void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -454,6 +460,11 @@ namespace OOX
 					WritingElement_ReadAttributes_ReadSingle( oReader, (L"ref"), m_oRef)
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::WsDim*>(obj.get());
+                m_oRef                  = ptr->rfx.toString();
+            }
 
 		public:
 			nullable_string	m_oRef;

@@ -39,7 +39,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BeginBundleShs record in BIFF12
+    // Logical representation of BrtBeginBundleShs record in BIFF12
     class BeginBundleShs: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BeginBundleShs)

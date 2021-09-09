@@ -38,7 +38,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of EndBook record in BIFF12
+    // Logical representation of BrtEndBook record in BIFF12
     class EndBook: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(EndBook)

@@ -59,7 +59,7 @@ SOURCES += \
     ../Source/DocxFormat/DocxFlat.cpp \
     ../Source/DocxFormat/Comments.cpp \
     ../Source/DocxFormat/Document.cpp \
-   ../Source/DocxFormat/VmlDrawing.cpp \
+    ../Source/DocxFormat/VmlDrawing.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Chart/ChartSerializeEx.cpp \
     ../Source/XlsxFormat/Common.cpp \
@@ -104,8 +104,12 @@ SOURCES += \
     ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
 ### XLSB
     ../Source/XlsbFormat/WorkBookStream.cpp \
+    ../Source/XlsbFormat/WorkSheetStream.cpp \
 ### Biff12_records
     ../Source/XlsbFormat/Biff12_records/BeginBook.cpp \
+    ../Source/XlsbFormat/Biff12_records/FRTBegin.cpp \
+    ../Source/XlsbFormat/Biff12_records/FRTEnd.cpp \
+    ../Source/XlsbFormat/Biff12_records/Uid.cpp \
     ../Source/XlsbFormat/Biff12_records/FileVersion.cpp \
     ../Source/XlsbFormat/Biff12_records/FileSharingIso.cpp \
     ../Source/XlsbFormat/Biff12_records/WbProp.cpp \
@@ -132,14 +136,38 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndBook.cpp \
     ../Source/XlsbFormat/Biff12_records/BookProtectionIso.cpp \
     ../Source/XlsbFormat/Biff12_records/BookProtection.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSheet.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginColInfos.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndColInfos.cpp \
+    ../Source/XlsbFormat/Biff12_records/WsDim.cpp \
+    ../Source/XlsbFormat/Biff12_records/Drawing.cpp \
+    ../Source/XlsbFormat/Biff12_records/HLink.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginMergeCells.cpp \
+    ../Source/XlsbFormat/Biff12_records/MergeCell.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndMergeCells.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSheetData.cpp \
+    ../Source/XlsbFormat/Biff12_records/RwDescent.cpp \
+    ../Source/XlsbFormat/Biff12_records/CellMeta.cpp \
+    ../Source/XlsbFormat/Biff12_records/ValueMeta.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSheetData.cpp \
+    #
+    ../Source/XlsbFormat/Biff12_records/EndSheet.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
     ../Source/XlsbFormat/Biff12_structures/CodeName.cpp \
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.cpp \
+    ../Source/XlsbFormat/Biff12_structures/FRTProductVersion.cpp \
     ../Source/XlsbFormat/Biff12_structures/RelID.cpp \
     ../Source/XlsbFormat/Biff12_structures/BookProtectionFlags.cpp \
+    ../Source/XlsbFormat/Biff12_structures/ColSpan.cpp \
+    ../Source/XlsbFormat/Biff12_structures/Cell.cpp \
+    ../Source/XlsbFormat/Biff12_structures/GrbitFmla.cpp \
+    ../Source/XlsbFormat/Biff12_structures/SxOs.cpp \
+    ../Source/XlsbFormat/Biff12_structures/SxSu.cpp \
 ### Biff12_unions
+    ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.cpp \
     ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.cpp \
     ../Source/XlsbFormat/Biff12_unions/BUNDLESHS.cpp \
@@ -148,7 +176,17 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/SUP.cpp \
     ../Source/XlsbFormat/Biff12_unions/SUPSAME.cpp \
     ../Source/XlsbFormat/Biff12_unions/SUPADDIN.cpp \
-
+    ../Source/XlsbFormat/Biff12_unions/COLINFOS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/HLINKS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/MERGECELLS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CELLTABLE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CELL.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DATACELL.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FMLACELL.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SHRFMLACELL.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TABLECELL.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CELLMETA.cpp \
 }
 
 
@@ -158,7 +196,6 @@ SOURCES += docxformatlib.cpp \
     ../Source/Utility/TxtFile.cpp \
     ../Source/Base/unicode_util.cpp \
     ../../3dParty/pole/pole.cpp \
-    ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp
 
 HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \
@@ -260,12 +297,6 @@ HEADERS += docxformatlib.h \
     ../Source/Utility/TxtFile.h \
     ../Source/Utility/Unit.h \
     ../Source/Utility/Utility.h \
-    ../Source/XlsbFormat/Biff12RecordBase.h \
-    ../Source/XlsbFormat/Biff12StreamReader.h \
-    ../Source/XlsbFormat/Biff12Structures/Biff12StructType.h \
-    ../Source/XlsbFormat/Biff12Structures/Biff12StructureBase.h \
-    ../Source/XlsbFormat/Biff12_records/BeginBook.h \
-    ../Source/XlsbFormat/WorkBookStream.h \
     ../Source/XlsxFormat/CalcChain/CalcChain.h \
     ../Source/XlsxFormat/Chart/Chart.h \
     ../Source/XlsxFormat/Chart/ChartSerialize.h \
@@ -347,8 +378,12 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.h \
 ### XLSB
     ../Source/XlsbFormat/WorkBookStream.h \
+    ../Source/XlsbFormat/WorkSheetStream.h \
 ### Biff12_records
     ../Source/XlsbFormat/Biff12_records/CommonRecords.h \
+    ../Source/XlsbFormat/Biff12_records/FRTBegin.h \
+    ../Source/XlsbFormat/Biff12_records/FRTEnd.h \
+    ../Source/XlsbFormat/Biff12_records/Uid.h \
     ../Source/XlsbFormat/Biff12_records/BeginBook.h \
     ../Source/XlsbFormat/Biff12_records/FileVersion.h \
     ../Source/XlsbFormat/Biff12_records/FileSharingIso.h \
@@ -376,16 +411,43 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/EndBook.h \
     ../Source/XlsbFormat/Biff12_records/BookProtectionIso.h \
     ../Source/XlsbFormat/Biff12_records/BookProtection.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSheet.h \
+    ../Source/XlsbFormat/Biff12_records/BeginColInfos.h \
+    ../Source/XlsbFormat/Biff12_records/EndColInfos.h \
+    ../Source/XlsbFormat/Biff12_records/WsDim.h \
+    ../Source/XlsbFormat/Biff12_records/Drawing.h \
+    ../Source/XlsbFormat/Biff12_records/HLink.h \
+    ../Source/XlsbFormat/Biff12_records/BeginMergeCells.h \
+    ../Source/XlsbFormat/Biff12_records/MergeCell.h \
+    ../Source/XlsbFormat/Biff12_records/EndMergeCells.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSheetData.h \
+    ../Source/XlsbFormat/Biff12_records/RwDescent.h \
+    ../Source/XlsbFormat/Biff12_records/CellMeta.h \
+    ../Source/XlsbFormat/Biff12_records/ValueMeta.h \
+    ../Source/XlsbFormat/Biff12_records/Fmla.h \
+    ../Source/XlsbFormat/Biff12_records/Cell.h \
+    ../Source/XlsbFormat/Biff12_records/EndSheetData.h \
+    #
+    ../Source/XlsbFormat/Biff12_records/EndSheet.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.h \
     ../Source/XlsbFormat/Biff12_structures/CodeName.h \
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
+    ../Source/XlsbFormat/Biff12_structures/FRTProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/RelID.h \
-    ../Source/XlsbFormat/Biff12_structures/UncheckedRfx.h \
+    ../Source/XlsbFormat/Biff12_structures/CellRangeRef.h \
+    ../Source/XlsbFormat/Biff12_structures/CellRef.h \
     ../Source/XlsbFormat/Biff12_structures/BookProtectionFlags.h \
+    ../Source/XlsbFormat/Biff12_structures/ColSpan.h \
+    ../Source/XlsbFormat/Biff12_structures/Cell.h \
+    ../Source/XlsbFormat/Biff12_structures/GrbitFmla.h \
+    ../Source/XlsbFormat/Biff12_structures/SxOs.h \
+    ../Source/XlsbFormat/Biff12_structures/SxSu.h \
 ### Biff12_unions
+    ../Source/XlsbFormat/Biff12_unions/FRT.h \
+    ../Source/XlsbFormat/Biff12_unions/ACUID.h \
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
     ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.h \
     ../Source/XlsbFormat/Biff12_unions/BUNDLESHS.h \
@@ -394,3 +456,15 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/SUP.h \
     ../Source/XlsbFormat/Biff12_unions/SUPSAME.h \
     ../Source/XlsbFormat/Biff12_unions/SUPADDIN.h \
+    ../Source/XlsbFormat/Biff12_unions/COLINFOS.h \
+    ../Source/XlsbFormat/Biff12_unions/HLINKS.h \
+    ../Source/XlsbFormat/Biff12_unions/MERGECELLS.h \
+    ../Source/XlsbFormat/Biff12_unions/CELLTABLE.h \
+    ../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.h \
+    ../Source/XlsbFormat/Biff12_unions/CELL.h \
+    ../Source/XlsbFormat/Biff12_unions/DATACELL.h \
+    ../Source/XlsbFormat/Biff12_unions/FMLACELL.h \
+    ../Source/XlsbFormat/Biff12_unions/SHRFMLACELL.h \
+    ../Source/XlsbFormat/Biff12_unions/TABLECELL.h \
+    ../Source/XlsbFormat/Biff12_unions/CELLMETA.h \
+

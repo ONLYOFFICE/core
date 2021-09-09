@@ -59,10 +59,25 @@ BiffStructurePtr PtgStr::clone()
 
 void PtgStr::loadFields(CFRecord& record)
 {
-	ShortXLUnicodeString s;	
-	record >> s;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        ShortXLUnicodeString s;
+        record >> s;
+        string_ = s;
+    }
 
-	string_ = s;
+    else
+    {
+        _UINT16 cch;
+        record >> cch;
+        WCHAR value;
+        for(int i = 0; i < cch; ++i)
+        {
+            record.loadAnyData(value);
+            string_.push_back(value);
+        }
+    }
+
 	
 	int pos1 = string_.find(L"\"");
 	int pos2 = string_.rfind(L"\"");

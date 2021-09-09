@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,14 +30,42 @@
  *
  */
 
-#pragma once
+#include "CELLMETA.h"
+#include "../Biff12_records/CellMeta.h"
+#include "../Biff12_records/ValueMeta.h"
 
-#include <Logic/Biff_structures/CellRangeRef.h>
-
-using namespace XLS;
 namespace XLSB
 {
-    DEFINE_NAME_CLASS(UncheckedRfX)
-    typedef CellRangeRef_T<UncheckedRfX_name, int, int, rel_Absent> UncheckedRfX;
 
-}   // namespace XLSB
+    CELLMETA::CELLMETA()
+    {
+    }
+
+    CELLMETA::~CELLMETA()
+    {
+    }
+
+    BaseObjectPtr CELLMETA::clone()
+    {
+        return BaseObjectPtr(new CELLMETA(*this));
+    }
+
+    //CELLMETA = [BrtCellMeta] [BrtValueMeta]
+    const bool CELLMETA::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<CellMeta>())
+        {
+            m_BrtCellMeta = elements_.back();
+            elements_.pop_back();
+        }       
+        if (proc.optional<ValueMeta>())
+        {
+            m_BrtValueMeta = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtCellMeta || m_BrtValueMeta;
+    }
+
+} // namespace XLSB
+

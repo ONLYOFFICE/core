@@ -39,7 +39,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of SupBookSrc record in BIFF12
+    // Logical representation of BrtSupBookSrc record in BIFF12
     class SupBookSrc: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(SupBookSrc)

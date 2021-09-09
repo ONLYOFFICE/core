@@ -34,12 +34,12 @@
 #include <Logic/Biff_records/BiffRecord.h>
 #include "../../XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
-#include "../Biff12_structures/CodeName.h"
+#include "../Biff12_structures/XLWideString.h"
 using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of AbsPath15 record in BIFF12
+    // Logical representation of BrtAbsPath15 record in BIFF12
     class AbsPath15: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(AbsPath15)

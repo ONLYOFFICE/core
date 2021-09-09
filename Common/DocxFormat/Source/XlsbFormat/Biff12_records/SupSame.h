@@ -38,7 +38,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of SupSame record in BIFF12
+    // Logical representation of BrtSupSame record in BIFF12
     class SupSame: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(SupSame)

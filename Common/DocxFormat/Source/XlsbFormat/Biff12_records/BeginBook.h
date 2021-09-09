@@ -38,7 +38,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BeginBook record in BIFF12
+    // Logical representation of BrtBeginBook record in BIFF12
     class BeginBook: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BeginBook)

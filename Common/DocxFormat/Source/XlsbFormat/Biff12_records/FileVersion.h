@@ -39,7 +39,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of FileVersion record in BIFF12
+    // Logical representation of BrtFileVersion record in BIFF12
     class FileVersion: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(FileVersion)

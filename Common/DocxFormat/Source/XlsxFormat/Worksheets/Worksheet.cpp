@@ -40,6 +40,11 @@
 #include "../../DocxFormat/Media/Image.h"
 #include "../../DocxFormat/VmlDrawing.h"
 
+#include "../../XlsbFormat/WorkSheetStream.h"
+
+#include "../../XlsbFormat/Biff12_unions/HLINKS.h"
+#include "../../XlsbFormat/Biff12_unions/MERGECELLS.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -86,10 +91,57 @@ namespace OOX
 		{
 			ClearItems();
 		}
+
+        void CWorksheet::readBin(const CPath& oPath)
+        {
+            auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
+            XLS::GlobalWorkbookInfoPtr xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
+            xls_global_info->Version = 0x0800;
+            NSFile::CFileBinary oFile;
+            if (oFile.OpenFile(oPath.GetPath()) == false)
+                return;
+
+            auto m_lStreamLen = (LONG)oFile.GetFileSize();
+            auto m_pStream = new BYTE[m_lStreamLen];
+            DWORD dwRead = 0;
+            oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
+            oFile.CloseFile();
+            std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
+            binaryReader->Init(m_pStream, 0, dwRead);
+
+            XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
+            XLSB::WorkSheetStreamPtr workSheetStream = std::make_shared<XLSB::WorkSheetStream>(workbook_code_page);
+            XLS::BinReaderProcessor proc(reader, workSheetStream.get(), true);
+
+            proc.mandatory(*workSheetStream.get());
+
+            if (workSheetStream != nullptr)
+            {
+                if (!workSheetStream->m_arCOLINFOS.empty())
+                    m_oCols = workSheetStream->m_arCOLINFOS;
+                if (workSheetStream->m_BrtWsDim != nullptr)
+                    m_oDimension = workSheetStream->m_BrtWsDim;
+                if (workSheetStream->m_BrtDrawing != nullptr)
+                    m_oDrawing = workSheetStream->m_BrtDrawing;
+                if (workSheetStream->m_HLINKS != nullptr)
+                    m_oHyperlinks = static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks;
+                if (workSheetStream->m_HLINKS != nullptr)
+                    m_oMergeCells = static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell;
+
+
+            }
+        }
+
 		void CWorksheet::read(const CPath& oRootPath, const CPath& oPath)
 		{
 			m_oReadPath = oPath;
 			IFileContainer::Read( oRootPath, oPath );
+
+            if( m_oReadPath.GetExtention() == _T(".bin"))
+            {
+                readBin(m_oReadPath);
+                return;
+            }
 
 			XmlUtils::CXmlLiteReader oReader;
 

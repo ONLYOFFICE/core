@@ -39,7 +39,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of CalcProp record in BIFF12
+    // Logical representation of BrtCalcProp record in BIFF12
     class CalcProp: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(CalcProp)

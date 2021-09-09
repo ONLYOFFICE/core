@@ -45,7 +45,6 @@
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalsSubstream.h"
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
 
 #include "../../XlsbFormat/WorkBookStream.h"
@@ -122,7 +121,6 @@ namespace OOX
                 binaryReader->Init(m_pStream, 0, dwRead);
 
                 XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
-                //auto xls_document = std::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
                 XLSB::WorkBookStreamPtr workBookStream = std::make_shared<XLSB::WorkBookStream>(workbook_code_page);
                 XLS::BinReaderProcessor proc(reader, workBookStream.get(), true);
 
@@ -144,13 +142,9 @@ namespace OOX
                         m_oWorkbookProtection = workBookStream->m_BrtBookProtectionIso;
                     if (workBookStream->m_EXTERNALS != nullptr)
                         m_oExternalReferences = static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP;
-                    if (workBookStream->m_BrtFileVersion != nullptr )
-                    {
+                    if (workBookStream->m_BrtFileVersion != nullptr )                    
                         m_oAppName = static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName.value();
-                    }
-                     /*
-
-
+                    /*
                     else if ( L"extLst" == sName )
                         m_oExtLst = oReader;
                    */

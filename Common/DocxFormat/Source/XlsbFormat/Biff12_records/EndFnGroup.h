@@ -39,7 +39,7 @@ using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of EndFnGroup record in BIFF12
+    // Logical representation of BrtEndFnGroup record in BIFF12
     class EndFnGroup: public BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(EndFnGroup)

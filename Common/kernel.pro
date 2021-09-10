@@ -15,6 +15,10 @@ DEFINES += KERNEL_USE_DYNAMIC_LIBRARY_BUILDING
 # CONFIG
 HEADERS += ./kernel_config.h
 
+#BOOST
+include($$PWD/../../../Common/3dParty/boost/boost.pri)
+
+
 CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)

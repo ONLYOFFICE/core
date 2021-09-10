@@ -609,7 +609,7 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
     int nStartLayout = 0, nIndexTheme = 0;
     auto arrRT = m_pDocument->getArrRoundTripTheme();
 
-    if (arrRT.empty()) // - см баг 52046
+//    if (arrRT.empty()) // - см баг 52046
     {
         for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
         {
@@ -618,10 +618,10 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
             m_pShapeWriter->m_pTheme = NULL;
         }
     }
-    else
-    {
-        WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
-    }
+//    else
+//    {
+//        WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
+//    }
 
     WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
     WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
@@ -631,8 +631,12 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
 {
     PPT_FORMAT::CRelsGenerator themeRels(&m_oManager);
     std::unordered_set<std::string> writedFilesHash;
+    int i = 0;
     for (const auto* pRTT : arrRTThemes)
     {
+        if ((int)m_pDocument->m_arThemes.size() > i)
+            m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i++].get();
+
         if (pRTT == nullptr)
             continue;
 
@@ -757,6 +761,7 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
             RELEASEOBJECT(utf8Data);
 //            utf8DataSize = 0;
         }
+        m_pShapeWriter->m_pTheme = NULL;
     }
 
 //    for (auto& oldTheme : m_pDocument->m_arThemes)
@@ -823,15 +828,21 @@ void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, in
             <a:fillToRect l=\"50000\" t=\"50000\" r=\"50000\" b=\"50000\"/></a:path></a:gradFill></a:bgFillStyleLst></a:fmtScheme>"));
 
     oStringWriter.WriteString(std::wstring(L"</a:themeElements><a:objectDefaults/>"));
-    oStringWriter.WriteString(std::wstring(L"<a:extraClrSchemeLst>"));
 
-    for (size_t i = 0 ; i < pTheme->m_arExtraColorScheme.size(); i++)
+    if (pTheme->m_arExtraColorScheme.size())
     {
-        std::wstring str = L" " + std::to_wstring(i + 1);
-        WriteColorScheme(oStringWriter, pTheme->m_sThemeName + str, pTheme->m_arExtraColorScheme[i], true); //extra
-    }
+        oStringWriter.WriteString(std::wstring(L"<a:extraClrSchemeLst>"));
 
-    oStringWriter.WriteString(std::wstring(L"</a:extraClrSchemeLst>"));
+        for (size_t i = 0 ; i < pTheme->m_arExtraColorScheme.size(); i++)
+        {
+            std::wstring str = L" " + std::to_wstring(i + 1);
+            WriteColorScheme(oStringWriter, pTheme->m_sThemeName + str, pTheme->m_arExtraColorScheme[i], true); //extra
+        }
+
+        oStringWriter.WriteString(std::wstring(L"</a:extraClrSchemeLst>"));
+    } else
+        oStringWriter.WriteString(std::wstring(L"<a:extraClrSchemeLst/>"));
+
     oStringWriter.WriteString(std::wstring(L"</a:theme>"));
 
     oFile.WriteStringUTF8(oStringWriter.GetData());

@@ -17,13 +17,14 @@ class CDxWidget;
 class CEmrTextWidget : public CSharedWidget
 {
 public:
-        explicit CEmrTextWidget(QWidget *pParent = NULL);
+        explicit CEmrTextWidget(unsigned int unIndex = 0, QWidget *pParent = NULL);
         virtual ~CEmrTextWidget();
 
         virtual QList<QStandardItem*> GetData() const override;
 private slots:
         void on_createDx_clicked();
 private:
+        unsigned int m_unIndex;
         CFormWidget* m_pTextWidget;
         CDxWidget* m_pDxWidget;
 };

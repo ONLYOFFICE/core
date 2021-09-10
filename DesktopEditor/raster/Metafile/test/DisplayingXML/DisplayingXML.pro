@@ -34,6 +34,7 @@ SOURCES += \
     Common/CPointWidget.cpp \
     Common/CPointsWidget.cpp \
     Common/CPolyDrawWidget.cpp \
+    Common/CPolyTextOut.cpp \
     Common/CPolyWidget.cpp \
     Common/CRectangleWidget.cpp \
     Common/CSizeWidget.cpp \
@@ -66,6 +67,7 @@ HEADERS += \
     Common/CPointWidget.h \
     Common/CPointsWidget.h \
     Common/CPolyDrawWidget.h \
+    Common/CPolyTextOut.h \
     Common/CPolyWidget.h \
     Common/CRectangleWidget.h \
     Common/CSharedWidget.h \

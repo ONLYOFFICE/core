@@ -27,6 +27,7 @@ private:
         friend class CEmrTextWidget;
         friend class CPointWidget;
         friend class CLogFontExDv;
+        friend class CPolyTextOut;
         friend class CSizeWidget;
         friend class CPolyWidget;
         friend class CInvertRgn;

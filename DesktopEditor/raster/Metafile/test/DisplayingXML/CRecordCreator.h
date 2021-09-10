@@ -36,6 +36,8 @@ private:
         void CreateScaleWidgets(const QString& qsName);
         void CreateArcWidgets(const QString& qsName);
         void CreateNotSupportedWidgets(const QString &qsName);
+        void CreateExtTextOutWidget(const QString& qsName);
+        void CreatePolyTextOutWidget(const QString& qsName);
 
         void Create_Widgets_EMR_SETCOLORADJUSTMENT();
         void Create_Widgets_EMR_SETWORLDTRANSFORM();
@@ -55,7 +57,6 @@ private:
         void Create_Widgets_EMR_PAINTRGN();
         void Create_Widgets_EMR_EXTSELECTCLIPRGN();
         void Create_Widgets_EMR_EXTCREATEFONTINDIRECTW();
-        void Create_Widgets_EMR_EXTTEXTOUT();
 
         void CreateRectangleWidget(const QString& qsName);
         void CreatePointsWidget();

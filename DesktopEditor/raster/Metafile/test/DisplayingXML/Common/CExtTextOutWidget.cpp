@@ -48,14 +48,15 @@ QList<QStandardItem *> CExtTextOutWidget::GetData() const
         return arDatas;
 }
 
-CEmrTextWidget::CEmrTextWidget(QWidget *pParent)
+CEmrTextWidget::CEmrTextWidget(unsigned int unIndex, QWidget *pParent)
         : CSharedWidget(pParent),
+          m_unIndex(unIndex),
           m_pTextWidget(NULL),
           m_pDxWidget(NULL)
 {
         QVBoxLayout *pLayout = new QVBoxLayout();
 
-        QLabel *pName = new QLabel("EmrText:");
+        QLabel *pName = new QLabel(((m_unIndex == 0) ? "EmrText:" : QString("EmrText%1:").arg(m_unIndex)));
         pName->setStyleSheet("QLabel { text-decoration: underline; }");
 
         CPointWidget *pReferenceWidget          = new CPointWidget("Reference");
@@ -89,7 +90,7 @@ CEmrTextWidget::~CEmrTextWidget()
 
 QList<QStandardItem *> CEmrTextWidget::GetData() const
 {
-        QStandardItem *pItem = new QStandardItem("<EmrText>");
+        QStandardItem *pItem = new QStandardItem(((m_unIndex == 0) ? "<EmrText>" : QString("<ExtText%1>").arg(m_unIndex)));
 
         for (const CSharedWidget *pWidget : m_arWidgets)
                 pItem->appendRows(pWidget->GetData());

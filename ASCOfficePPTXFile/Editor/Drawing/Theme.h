@@ -77,7 +77,9 @@ namespace PPT_FORMAT
 		
 		std::vector<std::vector<CColor>>m_arExtraColorScheme;
 
-        std::vector<CRecordRoundTripThemeAtom*> m_arrZipXml;
+        std::vector<CRecordRoundTripThemeAtom*> m_arrZipXmlMaster;
+        std::vector<CRecordRoundTripThemeAtom*> m_arrZipXmlNote;
+        std::vector<CRecordRoundTripThemeAtom*> m_arrZipXmlHandout;
 	
 		bool							m_bHasDate;
 		bool							m_bHasSlideNumber;
@@ -104,7 +106,7 @@ namespace PPT_FORMAT
 			m_mapTitleLayout.clear();
 			m_mapGeomToLayout.clear();
 			m_mapPlaceholders.clear();
-            m_arrZipXml.clear();
+            m_arrZipXmlMaster.clear();
 
 			m_sThemeName		= L"Default";
 			

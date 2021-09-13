@@ -150,17 +150,51 @@ public:
             };
         }
     }
-    std::vector<CRecordRoundTripThemeAtom*> getArrRoundTripTheme()const
+    // 1 - master
+    // 2 - Note
+    // 3 - Handout
+    std::vector<CRecordRoundTripThemeAtom*> getArrRoundTripTheme(int type = 1)const
     {
         std::vector<CRecordRoundTripThemeAtom*> arrRoundTripThemes;
         for (const auto& theme : m_arThemes)
         {
-            for (auto* pRoundTripAtom : theme->m_arrZipXml)
-                arrRoundTripThemes.push_back(pRoundTripAtom);
+            switch (type)
+            {
+            case 1:
+            {
+                for (auto* pRoundTripAtom : theme->m_arrZipXmlMaster)
+                    arrRoundTripThemes.push_back(pRoundTripAtom);
+                break;
+            }
+            case 2:
+            {
+                for (auto* pRoundTripAtom : theme->m_arrZipXmlNote)
+                    arrRoundTripThemes.push_back(pRoundTripAtom);
+                break;
+            }
+            case 3:
+            {
+                for (auto* pRoundTripAtom : theme->m_arrZipXmlHandout)
+                    arrRoundTripThemes.push_back(pRoundTripAtom);
+                break;
+            }
+            }
+
         }
 
         return arrRoundTripThemes;
     }
+//    std::vector<CRecordRoundTripContentMasterInfo12Atom*> getArrRoundTripLayout()const
+//    {
+//        std::vector<CRecordRoundTripContentMasterInfo12Atom*> arrRoundTripLayout;
+//        for (const auto& theme : m_arThemes)
+//        {
+//            for (auto* pRoundTripAtom : theme->m_arrZipXmlMaster)
+//                arrRoundTripLayout.push_back(pRoundTripAtom);
+//        }
+
+//        return arrRoundTripLayout;
+//    }
 
     void ResetAutoText(CElementPtr pElement, vector_string const (&placeholdersReplaceString)[3])
     {

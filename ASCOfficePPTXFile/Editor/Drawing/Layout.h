@@ -32,7 +32,7 @@
 #pragma once
 #include "Element.h"
 #include "../../../ASCOfficePPTFile/PPTFormatLib/Enums/_includer.h"
-
+#include "../../../ASCOfficePPTFile/PPTFormatLib/Records/RoundTripCompositeMainMasterId12Atom.h"
 
 namespace PPT_FORMAT
 {

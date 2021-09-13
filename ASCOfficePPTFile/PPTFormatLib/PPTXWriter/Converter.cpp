@@ -64,6 +64,7 @@
 
 #include <unordered_set>
 #include <boost/uuid/detail/md5.hpp>
+#include <boost/regex.hpp>
 
 typedef boost::uuids::detail::md5 MD5;
 
@@ -663,14 +664,14 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
         NSFile::CFileBinary::Remove(tempZipPath);
 
         auto arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"theme");
-        auto arrThemesPaths = NSDirectory::GrepPaths(arrPaths, L".*theme[0-9]+.xml");
-        auto arrOverridePaths = NSDirectory::GrepPaths(arrPaths, L".*themeOverride[0-9]+.xml");
+        auto arrThemesPaths = GrepPaths(arrPaths, L".*theme[0-9]+.xml");
+        auto arrOverridePaths = GrepPaths(arrPaths, L".*themeOverride[0-9]+.xml");
 
         arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"media");
-        auto arrImagesPaths = NSDirectory::GrepPaths(arrPaths, L".*image[0-9]+.*");
+        auto arrImagesPaths = GrepPaths(arrPaths, L".*image[0-9]+.*");
 
         arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"_rels");
-        auto arrRelsPaths = NSDirectory::GrepPaths(arrPaths, L".*theme[0-9]+.xml.rels");
+        auto arrRelsPaths = GrepPaths(arrPaths, L".*theme[0-9]+.xml.rels");
 
         BYTE *utf8Data = NULL;
         ULONG utf8DataSize = 0;
@@ -1824,4 +1825,21 @@ void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator
     oWriter.WriteString(oTiming.toXML());
     //oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
 
+}
+
+std::vector<std::wstring> PPT_FORMAT::CPPTXWriter::GrepPaths(const std::vector<std::wstring> &paths, const std::wstring &strRegEx)
+{
+    std::vector<std::wstring> filtredPaths;
+    try
+    {
+        boost::wregex regEx(strRegEx);
+        boost::wsmatch wSmath;
+        for (const auto& path : paths)
+        {
+            if (boost::regex_match(path, wSmath, regEx))
+                filtredPaths.push_back(path);
+        }
+    } catch(...) {}
+
+    return filtredPaths;
 }

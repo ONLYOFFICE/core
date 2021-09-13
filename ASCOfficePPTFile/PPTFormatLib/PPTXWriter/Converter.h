@@ -92,7 +92,7 @@ namespace PPT_FORMAT
 		void WriteElement		(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
 		void WriteGroup			(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
         void WriteTable			(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
-		
+        static std::vector<std::wstring> GrepPaths(const std::vector<std::wstring> &paths, const std::wstring &strRegEx);
 
 	};
 }

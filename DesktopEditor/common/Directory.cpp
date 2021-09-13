@@ -53,7 +53,6 @@
 #endif
 
 #include <string.h>
-#include <boost/regex.hpp>
 #include "Directory.h"
 
 namespace NSDirectory
@@ -584,19 +583,4 @@ namespace NSDirectory
     {
         return Exists(pathName);
     }
-
-    std::vector<std::wstring> GrepPaths(const std::vector<std::wstring> &paths, const std::wstring &strRegEx)
-    {
-        std::vector<std::wstring> filtredPaths;
-        boost::wregex regEx(strRegEx);
-        boost::wsmatch wSmath;
-        for (const auto& path : paths)
-        {
-            if (boost::regex_match(path, wSmath, regEx))
-                filtredPaths.push_back(path);
-        }
-
-        return filtredPaths;
-    }
-
 }

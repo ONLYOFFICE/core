@@ -264,7 +264,14 @@ namespace PdfReader
 		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate);
 		virtual void drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate);
 		virtual void drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate);
-		virtual void drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, unsigned char *pMatte, GBool interpolate);
+		//virtual void drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, unsigned char *pMatte, GBool interpolate);
+		virtual void drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream,
+                                         int nWidth, int nHeight,
+                                         GfxImageColorMap *pColorMap,
+                                         Object *maskRef, Stream *pMaskStream,
+                                         int nMaskWidth, int nMaskHeight,
+                                         GfxImageColorMap *pMaskColorMap,
+                                         double *pMatte, GBool interpolate);
 		//----- Transparency groups и SMasks
 		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bForSoftMask);
 		virtual void endTransparencyGroup(GfxState *pGState);

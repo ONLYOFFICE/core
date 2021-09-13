@@ -3789,7 +3789,13 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
-    void RendererOutputDev::drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, unsigned char *pMatteColor, GBool interpolate)
+    void RendererOutputDev::drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream,
+                                                int nWidth, int nHeight,
+                                                GfxImageColorMap *pColorMap,
+                                                Object *maskRef, Stream *pMaskStream,
+                                                int nMaskWidth, int nMaskHeight,
+                                                GfxImageColorMap *pMaskColorMap,
+                                                double *pMatteColor, GBool interpolate)
     {
         if (m_bDrawOnlyText)
             return;
@@ -3968,7 +3974,11 @@ namespace PdfReader
         if (pMatteColor)
         {
             GfxRGB oMatteRGB;
-            pColorMap->getRGB(pMatteColor, &oMatteRGB, gfxRenderingIntentAbsoluteColorimetric);
+            GfxColor oColor;
+            for (int i = 0; i < pColorMap->getNumPixelComps(); ++i) {
+                oColor.c[i] = dblToCol(pMatteColor[i]);
+            }
+            pColorMap->getColorSpace()->getRGB(&oColor, &oMatteRGB, gfxRenderingIntentAbsoluteColorimetric);
 
             unsigned char unMatteR = colToByte(oMatteRGB.r);
             unsigned char unMatteG = colToByte(oMatteRGB.g);

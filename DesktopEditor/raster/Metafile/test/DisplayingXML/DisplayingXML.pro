@@ -18,6 +18,7 @@ SOURCES += \
     CStatisticsWidget.cpp \
     CTextEditDelegate.cpp \
     CXMLHighlighter.cpp \
+    Common/CCIEXYZTripleWidget.cpp \
     Common/CColorWidget.cpp \
     Common/CEmptyWidget.cpp \
     Common/CExtSelectClipRgnWidget.cpp \
@@ -25,12 +26,15 @@ SOURCES += \
     Common/CFillRgnWidget.cpp \
     Common/CFormWidget.cpp \
     Common/CFrameRgn.cpp \
+    Common/CGradientFillWidget.cpp \
     Common/CInvertRgn.cpp \
     Common/CLogBrushExWidget.cpp \
+    Common/CLogColorSpaceWidget.cpp \
     Common/CLogFontExDv.cpp \
     Common/CLogPaletteWidget.cpp \
     Common/CLogPenWidget.cpp \
     Common/CPaletteEntriesWidget.cpp \
+    Common/CPixelFormatDescriptorWidget.cpp \
     Common/CPointWidget.cpp \
     Common/CPointsWidget.cpp \
     Common/CPolyDrawWidget.cpp \
@@ -38,6 +42,7 @@ SOURCES += \
     Common/CPolyWidget.cpp \
     Common/CRectangleWidget.cpp \
     Common/CSizeWidget.cpp \
+    Common/CSmallTextOutWidget.cpp \
     MainWindow.cpp \
     CCustomView.cpp \
     main.cpp
@@ -51,6 +56,7 @@ HEADERS += \
     CStatisticsWidget.h \
     CTextEditDelegate.h \
     CXMLHighlighter.h \
+    Common/CCIEXYZTripleWidget.h \
     Common/CColorWidget.h \
     Common/CEmptyWidget.h \
     Common/CExtSelectClipRgnWidget.h \
@@ -58,12 +64,15 @@ HEADERS += \
     Common/CFillRgnWidget.h \
     Common/CFormWidget.h \
     Common/CFrameRgn.h \
+    Common/CGradientFillWidget.h \
     Common/CInvertRgn.h \
     Common/CLogBrushExWidget.h \
+    Common/CLogColorSpaceWidget.h \
     Common/CLogFontExDv.h \
     Common/CLogPaletteWidget.h \
     Common/CLogPenWidget.h \
     Common/CPaletteEntriesWidget.h \
+    Common/CPixelFormatDescriptorWidget.h \
     Common/CPointWidget.h \
     Common/CPointsWidget.h \
     Common/CPolyDrawWidget.h \
@@ -72,6 +81,7 @@ HEADERS += \
     Common/CRectangleWidget.h \
     Common/CSharedWidget.h \
     Common/CSizeWidget.h \
+    Common/CSmallTextOutWidget.h \
     Common/Common.h \
     MainWindow.h \
     CCustomView.h

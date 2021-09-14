@@ -1,8 +1,12 @@
 #include "CRecordCreator.h"
 #include "ui_RecordCreator.h"
 
+#include "Common/CPixelFormatDescriptorWidget.h"
 #include "Common/CExtSelectClipRgnWidget.h"
 #include "Common/CPaletteEntriesWidget.h"
+#include "Common/CLogColorSpaceWidget.h"
+#include "Common/CGradientFillWidget.h"
+#include "Common/CSmallTextOutWidget.h"
 #include "Common/CLogBrushExWidget.h"
 #include "Common/CLogPaletteWidget.h"
 #include "Common/CExtTextOutWidget.h"
@@ -61,104 +65,7 @@ QStandardItem* CRecordCreator::CreateRecord()
         this->show();
 
         if (exec() == QDialog::Accepted)
-        {
-                switch (m_nSelectedRecord)
-                {
-                        case -1: break;
-                        case 0: ConvertWidgets("EMR_POLYBEZIER");               break;
-                        case 1: ConvertWidgets("EMR_POLYGON");                  break;
-                        case 2: ConvertWidgets("EMR_POLYLINE");                 break;
-                        case 3: ConvertWidgets("EMR_POLYBEZIERTO");             break;
-                        case 4: ConvertWidgets("EMR_POLYLINETO");               break;
-                        case 5: ConvertWidgets("EMR_POLYPOLYLINE");             break;
-                        case 6: ConvertWidgets("EMR_POLYPOLYGON");              break;
-                        case 7: ConvertWidgets("EMR_SETWINDOWEXTEX");           break;
-                        case 8: ConvertWidgets("EMR_SETWINDOWORGEX");           break;
-                        case 9: ConvertWidgets("EMR_SETVIEWPORTEXTEX");         break;
-                        case 10: ConvertWidgets("EMR_SETVIEWPORTEXTEX");        break;
-                        case 11: ConvertWidgets("EMR_SETBRUSHORGEX");           break;
-                        case 12: ConvertWidgets("EMR_SETPIXELV");               break;
-                        case 13: ConvertWidgets("EMR_SETMAPPERFLAGS");          break;
-                        case 14: ConvertWidgets("EMR_SETMAPMODE");              break;
-                        case 15: ConvertWidgets("EMR_SETBKMODE");               break;
-                        case 16: ConvertWidgets("EMR_SETPOLYFILLMODE");         break;
-                        case 17: ConvertWidgets("EMR_SETROP2");                 break;
-                        case 18: ConvertWidgets("EMR_SETSTRETCHBLTMODE");       break;
-                        case 19: ConvertWidgets("EMR_SETTEXTALIGN");            break;
-                        case 20: ConvertWidgets("EMR_SETCOLORADJUSTMENT");      break;
-                        case 21: ConvertWidgets("EMR_SETTEXTCOLOR");            break;
-                        case 22: ConvertWidgets("EMR_SETBKCOLOR");              break;
-                        case 23: ConvertWidgets("EMR_OFFSETCLIPRGN");           break;
-                        case 24: ConvertWidgets("EMR_MOVETOEX");                break;
-                        case 25: ConvertWidgets("EMR_SETMETARGN");              break;
-                        case 26: ConvertWidgets("EMR_EXCLUDECLIPRECT");         break;
-                        case 27: ConvertWidgets("EMR_INTERSECTCLIPRECT");       break;
-                        case 28: ConvertWidgets("EMR_SCALEVIEWPORTEXTEX");      break;
-                        case 29: ConvertWidgets("EMR_SCALEWINDOWEXTEX");        break;
-                        case 30: ConvertWidgets("EMR_SAVEDC");                  break;
-                        case 31: ConvertWidgets("EMR_RESTOREDC");               break;
-                        case 32: ConvertWidgets("EMR_SETWORLDTRANSFORM");       break;
-                        case 33: ConvertWidgets("EMR_MODIFYWORLDTRANSFORM");    break;
-                        case 34: ConvertWidgets("EMR_SELECTOBJECT");            break;
-                        case 35: ConvertWidgets("EMR_CREATEPEN");               break;
-                        case 36: ConvertWidgets("EMR_CREATEBRUSHINDIRECT");     break;
-                        case 37: ConvertWidgets("EMR_DELETEOBJECT");            break;
-                        case 38: ConvertWidgets("EMR_ANGLEARC");                break;
-                        case 39: ConvertWidgets("EMR_ELLIPSE");                 break;
-                        case 40: ConvertWidgets("EMR_RECTANGLE");               break;
-                        case 41: ConvertWidgets("EMR_ROUNDRECT");               break;
-                        case 42: ConvertWidgets("EMR_ARC");                     break;
-                        case 43: ConvertWidgets("EMR_CHORD");                   break;
-                        case 44: ConvertWidgets("EMR_PIE");                     break;
-                        case 45: ConvertWidgets("EMR_SELECTPALETTE");           break;
-                        case 46: ConvertWidgets("EMR_CREATEPALETTE");           break;
-                        case 47: ConvertWidgets("EMR_SETPALETTEENTRIES");       break;
-                        case 48: ConvertWidgets("EMR_RESIZEPALETTE");           break;
-                        case 49: ConvertWidgets("EMR_REALIZEPALETTE");          break;
-                        case 50: ConvertWidgets("EMR_EXTFLOODFILL");            break;
-                        case 51: ConvertWidgets("EMR_LINETO");                  break;
-                        case 52: ConvertWidgets("EMR_ARCTO");                   break;
-                        case 53: ConvertWidgets("EMR_POLYDRAW");                break;
-                        case 54: ConvertWidgets("EMR_SETARCDIRECTION");         break;
-                        case 55: ConvertWidgets("EMR_SETMITERLIMIT");           break;
-                        case 56: ConvertWidgets("EMR_BEGINPATH");               break;
-                        case 57: ConvertWidgets("EMR_ENDPATH");                 break;
-                        case 58: ConvertWidgets("EMR_CLOSEFIGURE");             break;
-                        case 59: ConvertWidgets("EMR_FILLPATH");                break;
-                        case 60: ConvertWidgets("EMR_STROKEANDFILLPATH");       break;
-                        case 61: ConvertWidgets("EMR_STROKEPATH");              break;
-                        case 62: ConvertWidgets("EMR_FLATTENPATH");             break;
-                        case 63: ConvertWidgets("EMR_WIDENPATH");               break;
-                        case 64: ConvertWidgets("EMR_SELECTCLIPPATH");          break;
-                        case 65: ConvertWidgets("EMR_ABORTPATH");               break;
-                        case 66: ConvertWidgets("EMR_FILLRGN");                 break;
-                        case 67: ConvertWidgets("EMR_FRAMERGN");                break;
-                        case 68: ConvertWidgets("EMR_INVERTRGN");               break;
-                        case 69: ConvertWidgets("EMR_PAINTRGN");                break;
-                        case 70: ConvertWidgets("EMR_EXTSELECTCLIPRGN");        break;
-                        case 71: ConvertWidgets("EMR_BITBLT");                  break;
-                        case 72: ConvertWidgets("EMR_STRETCHBLT");              break;
-                        case 73: ConvertWidgets("EMR_MASKBLT");                 break;
-                        case 74: ConvertWidgets("EMR_PLGBLT");                  break;
-                        case 75: ConvertWidgets("EMR_SETDIBITSTODEVICE");       break;
-                        case 76: ConvertWidgets("EMR_STRETCHDIBITS");           break;
-                        case 77: ConvertWidgets("EMR_EXTCREATEFONTINDIRECTW");  break;
-                        case 78: ConvertWidgets("EMR_EXTTEXTOUTA");             break;
-                        case 79: ConvertWidgets("EMR_EXTTEXTOUTW");             break;
-                        case 80: ConvertWidgets("EMR_POLYBEZIER16");            break;
-                        case 81: ConvertWidgets("EMR_POLYGON16");               break;
-                        case 82: ConvertWidgets("EMR_POLYLINE16");              break;
-                        case 83: ConvertWidgets("EMR_POLYBEZIERTO16");          break;
-                        case 84: ConvertWidgets("EMR_POLYLINETO16");            break;
-                        case 85: ConvertWidgets("EMR_POLYPOLYLINE16");          break;
-                        case 86: ConvertWidgets("EMR_POLYPOLYGON16");           break;
-                        case 87: ConvertWidgets("EMR_POLYDRAW16");              break;
-                        case 88: ConvertWidgets("EMR_CREATEMONOBRUSH");         break;
-                        case 89: ConvertWidgets("EMR_EXTCREATEPEN");            break;
-                        case 90: ConvertWidgets("EMR_POLYTEXTOUTA");            break;
-                        case 91: ConvertWidgets("EMR_POLYTEXTOUTW");            break;
-                };
-        }
+                ConvertWidgets(ui->recordsBox->currentText().toUpper());
 
         Close();
 
@@ -170,7 +77,7 @@ void CRecordCreator::on_selectButton_clicked()
         m_nSelectedRecord = ui->recordsBox->currentIndex();
         ClearData();
 
-        switch (m_nSelectedRecord)
+        switch (m_nSelectedRecord) //TODO: исправить пустые виджеты
         {
                 case 0: CreatePointWidgets("EMR_POLYBEZIER");                           break;
                 case 1: CreatePointWidgets("EMR_POLYGON");                              break;
@@ -265,6 +172,25 @@ void CRecordCreator::on_selectButton_clicked()
                 case 90: CreateEmptyWidgets("EMR_EXTCREATEPEN");                        break;
                 case 91: CreatePolyTextOutWidget("EMR_POLYTEXTOUTA");                   break;
                 case 92: CreatePolyTextOutWidget("EMR_POLYTEXTOUTW");                   break;
+                case 93: CreateFormWidget("EMR_SETICMMODE", "ICMMode");                 break;
+                case 94: Create_Widgets_EMR_CREATECOLORSPACE();                         break;
+                case 95: CreateFormWidget("EMR_SETCOLORSPACE",      "ihCS");            break;
+                case 96: CreateFormWidget("EMR_DELETECOLORSPACE",   "ihCS");            break;
+                case 97: CreateFormWidget("EMR_GLSRECORD",          "Data");            break;
+                case 98: Create_Widgets_EMR_GLSBOUNDEDRECORD();                         break;
+                case 99: Create_Widgets_EMR_PIXELFORMAT();                              break;
+                case 100: CreateFormWidget("EMR_DRAWESCAPE",    "Data");                break;
+                case 101: CreateFormWidget("EMR_EXTESCAPE",     "Data");                break;
+                case 102: Create_Widgets_EMR_SMALLTEXTOUT();                            break;
+                case 103: Create_Widgets_EMR_FORCEUFIMAPPING();                         break;
+                case 104: Create_Widgets_EMR_NAMEDESCAPE();                             break;
+                case 105: Create_Widgets_EMR_COLORCORRECTPALETTE();                     break;
+                case 106: CreateSetICMPRrofileWidget("EMR_SETICMPROFILEA");             break;
+                case 107: CreateSetICMPRrofileWidget("EMR_SETICMPROFILEW");             break;
+                case 108: CreateEmptyWidgets("EMR_ALPHABLEND");                         break;
+                case 109: CreateFormWidget("EMR_SETLAYOUT", "LayoutMode");              break;
+                case 110: CreateEmptyWidgets("EMR_TRANSPARENTBLT");                     break;
+                case 111: Create_Widgets_EMR_GRADIENTFILL();                            break;
         }
 
         QPushButton *pOkButton =  ui->buttonBox->button(QDialogButtonBox::Ok);
@@ -397,6 +323,26 @@ void CRecordCreator::CreatePolyTextOutWidget(const QString &qsName)
         m_arWidgets.push_back(pPolyTextWidget);
 
         ui->dataLayout->addWidget(pPolyTextWidget);
+}
+
+void CRecordCreator::CreateSetICMPRrofileWidget(const QString &qsName)
+{
+        this->setWindowTitle(QString("Create: %1").arg(qsName));
+
+        CFormWidget *pDwFlagsWidget = new CFormWidget("dwFlags","0");
+        CFormWidget *pCbNameWidget  = new CFormWidget("cbName", "0");
+        CFormWidget *pCbDataWidget  = new CFormWidget("cbData", "0");
+        CFormWidget *pDataWidget    = new CFormWidget("Data",   "0");
+
+        m_arWidgets.push_back(pDwFlagsWidget);
+        m_arWidgets.push_back(pCbNameWidget);
+        m_arWidgets.push_back(pCbDataWidget);
+        m_arWidgets.push_back(pDataWidget);
+
+        ui->dataLayout->addWidget(pDwFlagsWidget);
+        ui->dataLayout->addWidget(pCbNameWidget);
+        ui->dataLayout->addWidget(pCbDataWidget);
+        ui->dataLayout->addWidget(pDataWidget);
 }
 
 void CRecordCreator::Create_Widgets_EMR_SETCOLORADJUSTMENT()
@@ -651,6 +597,109 @@ void CRecordCreator::Create_Widgets_EMR_EXTCREATEFONTINDIRECTW()
 
         ui->dataLayout->addWidget(pIhFonts);
         ui->dataLayout->addWidget(pLogFontExDv);
+}
+
+void CRecordCreator::Create_Widgets_EMR_CREATECOLORSPACE()
+{
+        this->setWindowTitle("Create: EMR_CREATECOLORSPACE");
+
+        CFormWidget *pIhCS = new CFormWidget("ihCS", "1");
+        CLogColorSpaceWidget *pLogColorSpaceWidget = new CLogColorSpaceWidget();
+
+        m_arWidgets.push_back(pIhCS);
+        m_arWidgets.push_back(pLogColorSpaceWidget);
+
+        ui->dataLayout->addWidget(pIhCS);
+        ui->dataLayout->addWidget(pLogColorSpaceWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_GLSBOUNDEDRECORD()
+{
+        this->setWindowTitle("Create: EMR_GLSBOUNDEDRECORD");
+
+        CRectangleWidget *pRectangleWidget  = new CRectangleWidget("Bounds");
+        CFormWidget *pDataWidget            = new CFormWidget("Data");
+
+        m_arWidgets.push_back(pRectangleWidget);
+        m_arWidgets.push_back(pDataWidget);
+
+        ui->dataLayout->addWidget(pRectangleWidget);
+        ui->dataLayout->addWidget(pDataWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_PIXELFORMAT()
+{
+        this->setWindowTitle("Create: EMR_PIXELFORMAT");
+
+        CPixelFormatDescriptorWidget *pPixelFormatDescriptorWidget = new CPixelFormatDescriptorWidget();
+
+        m_arWidgets.push_back(pPixelFormatDescriptorWidget);
+
+        ui->dataLayout->addWidget(pPixelFormatDescriptorWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_SMALLTEXTOUT()
+{
+        this->setWindowTitle("Create: EMR_SMALLTEXTOUT");
+
+        CSmallTextOutWidget *pSmallTextOutWidget = new CSmallTextOutWidget();
+
+        m_arWidgets.push_back(pSmallTextOutWidget);
+
+        ui->dataLayout->addWidget(pSmallTextOutWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_FORCEUFIMAPPING()
+{
+        this->setWindowTitle("Create: EMR_FORCEUFIMAPPING");
+
+        CUniversalFontIdWidget *pUniversalFontIdWidget = new CUniversalFontIdWidget();
+
+        m_arWidgets.push_back(pUniversalFontIdWidget);
+
+        ui->dataLayout->addWidget(pUniversalFontIdWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_NAMEDESCAPE()
+{
+        this->setWindowTitle("Create: EMR_NAMEDESCAPE");
+
+        CFormWidget *pDriverNameWidget  = new CFormWidget("DriverName");
+        CFormWidget *pDataWidget        = new CFormWidget("Data");
+
+        m_arWidgets.push_back(pDriverNameWidget);
+        m_arWidgets.push_back(pDataWidget);
+
+        ui->dataLayout->addWidget(pDriverNameWidget);
+        ui->dataLayout->addWidget(pDataWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_COLORCORRECTPALETTE()
+{
+        this->setWindowTitle("Create: EMR_COLORCORRECTPALETTE");
+
+        CFormWidget *pIhPaletteWidget   = new CFormWidget("ihPalette",  "0");
+        CFormWidget *pNFirstEntryWidget = new CFormWidget("nFirstEntry","0");
+        CFormWidget *pNPalEntriesWidget = new CFormWidget("nPalEntries","0");
+
+        m_arWidgets.push_back(pIhPaletteWidget);
+        m_arWidgets.push_back(pNFirstEntryWidget);
+        m_arWidgets.push_back(pNPalEntriesWidget);
+
+        ui->dataLayout->addWidget(pIhPaletteWidget);
+        ui->dataLayout->addWidget(pNFirstEntryWidget);
+        ui->dataLayout->addWidget(pNPalEntriesWidget);
+}
+
+void CRecordCreator::Create_Widgets_EMR_GRADIENTFILL()
+{
+        this->setWindowTitle("Create: EMR_GRADIENTFILL");
+
+        CGradientFillWidget *pGradientFillWidget = new CGradientFillWidget();
+
+        m_arWidgets.push_back(pGradientFillWidget);
+
+        ui->dataLayout->addWidget(pGradientFillWidget);
 }
 
 void CRecordCreator::CreatePolyWidgets(const QString& qsName)

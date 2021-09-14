@@ -13,21 +13,31 @@ public:
 
         virtual QList<QStandardItem*> GetData() const = 0;
 private:
+        friend class CPixelFormatDescriptorWidget;
+        friend class CGradientRectangleWidget;
+        friend class CGradientTriangleWidget;
         friend class CExtSelectClipRgnWidget;
+        friend class CUniversalFontIdWidget;
         friend class CPaletteEntriesWidget;
+        friend class CLogColorSpaceWidget;
+        friend class CSmallTextOutWidget;
+        friend class CCIEXYZTripleWidget;
+        friend class CGradientFillWidget;
         friend class CLogBrushExWidget;
         friend class CLogPaletteWidget;
         friend class CExtTextOutWidget;
+        friend class CTriVertexWidget;
         friend class CRectangleWidget;
         friend class CPolyDrawWidget;
         friend class CFillRgnWidget;
+        friend class CEmrTextWidget;
         friend class CLogPenWidget;
         friend class CPointsWidget;
         friend class CDesignVector;
-        friend class CEmrTextWidget;
         friend class CPointWidget;
         friend class CLogFontExDv;
         friend class CPolyTextOut;
+        friend class CIEXYZWidget;
         friend class CSizeWidget;
         friend class CPolyWidget;
         friend class CInvertRgn;

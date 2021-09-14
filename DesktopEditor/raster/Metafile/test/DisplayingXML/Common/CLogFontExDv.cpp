@@ -199,3 +199,39 @@ void CDesignVector::on_createValue_clicked()
         QBoxLayout *pMainLayout = (QBoxLayout*)layout();
         pMainLayout->insertWidget(pMainLayout->count() - 1, pDataItem);
 }
+
+CUniversalFontIdWidget::CUniversalFontIdWidget(QWidget *pParent)
+        : CSharedWidget(pParent)
+{
+        QVBoxLayout *pLayout = new QVBoxLayout();
+
+        QLabel *pName = new QLabel("UniversalFontId:");
+        pName->setStyleSheet("QLabel { text-decoration: underline; }");
+
+        CFormWidget *pChecksumWidget = new CFormWidget("Checksum", "0");
+        CFormWidget *pIndexWidget = new CFormWidget("Index", "0");
+
+        m_arWidgets.push_back(pChecksumWidget);
+        m_arWidgets.push_back(pIndexWidget);
+
+        pLayout->addWidget(pName);
+        pLayout->addWidget(pChecksumWidget);
+        pLayout->addWidget(pIndexWidget);
+
+        setLayout(pLayout);
+}
+
+CUniversalFontIdWidget::~CUniversalFontIdWidget()
+{
+
+}
+
+QList<QStandardItem *> CUniversalFontIdWidget::GetData() const
+{
+        QStandardItem *pItem = new QStandardItem("<UniversalFontId>");
+
+        for (const CSharedWidget* pWidget : m_arWidgets)
+                pItem->appendRows(pWidget->GetData());
+
+        return {pItem};
+}

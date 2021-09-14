@@ -43,4 +43,13 @@ private:
         unsigned int m_unCounter;
 };
 
+class CUniversalFontIdWidget : public CSharedWidget
+{
+public:
+        explicit CUniversalFontIdWidget(QWidget *pParent = NULL);
+        virtual ~CUniversalFontIdWidget();
+
+        virtual QList<QStandardItem*> GetData() const override;
+};
+
 #endif // CLOGFONTEXDV_H

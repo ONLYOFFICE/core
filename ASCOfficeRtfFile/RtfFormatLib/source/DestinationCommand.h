@@ -469,11 +469,21 @@ public:
 
     void ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
 	{
-        XmlUtils::replace_all(sText, L";", L"");
-		oDocument.m_oRevisionTable.AddItem( sText );
+		if (std::wstring::npos != sText.find(L";"))
+		{
+			m_sCurrent += sText;
+			XmlUtils::replace_all(m_sCurrent, L";", L"");
+			oDocument.m_oRevisionTable.AddItem(m_sCurrent);
+
+			m_sCurrent.clear();
+		}
+		else
+		{
+			m_sCurrent += sText;
+		}
 	}
-
-
+private:
+	std::wstring m_sCurrent;
 };
 
 class RtfInfoReader: public RtfAbstractReader

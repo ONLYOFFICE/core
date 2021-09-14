@@ -28,15 +28,17 @@ int main(int argc, char *argv[])
 		limit_memory(lMemoryLimit);
 	}
 	cout << "limit_memory:" <<lMemoryLimit<< endl;
+	char* alloc;
 	if(lAllocSize > 0)
 	{
-		new unsigned char[lAllocSize];
+		alloc = new char[lAllocSize];
 	}
-	cout << "Allocated:" <<lAllocSize<< endl;
+	cout << "Allocated:" <<strlen(alloc)<< endl;
 
 	cout << "Start system:" <<proc.c_str()<< endl;
 	std::system(proc.c_str());
 	cout << "End system:" <<proc.c_str()<< endl;
+	cout << "Allocated:" <<strlen(alloc)<< endl;
 	cout << "End" << endl;
 	return 0;
 }

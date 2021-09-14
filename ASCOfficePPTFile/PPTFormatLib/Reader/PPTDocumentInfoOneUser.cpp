@@ -1175,6 +1175,19 @@ std::vector<CRecordRoundTripThemeAtom *> CPPTUserInfo::getRoundTripTheme(int typ
     return arrRTTheme;
 }
 
+std::vector<CRecordRoundTripContentMasterInfo12Atom *> CPPTUserInfo::getRoundTripLayout()
+{
+    std::vector<CRecordRoundTripContentMasterInfo12Atom *> arrRTLayout;
+    for (const auto& slideIter : m_mapMasters)
+    {
+        auto* slideContainer = slideIter.second;
+        if (!slideContainer) continue;
+        slideContainer->GetRecordsByType(&arrRTLayout, false);
+    }
+
+    return arrRTLayout;
+}
+
 CElementPtr CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placeholderType, CLayout *pLayout, bool idx_only)
 {
     CElementPtr pElement;

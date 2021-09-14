@@ -449,25 +449,7 @@ public:
 class RtfRevisionTable : public IDocumentElement, public ItemContainer<std::wstring>
 {
 public:
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-		if (m_aArray.empty()) return L"";
-
-        std::wstring sResult;
-
-		sResult += _T("{\\*\\revtbl ");
-
-		sResult += L"{Unknown;}";
-		for (size_t i = 0; i < m_aArray.size(); i++)
-        {
-			sResult += _T("{");
-			sResult += m_aArray[i] + L";";
-			sResult += _T("}");
-       }
-		sResult += _T("}");
-
-		return sResult;
-	}
+    std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter)
 	{
 		return L"";
@@ -485,7 +467,7 @@ public:
 		if (ind == PROP_DEF || ind > (int)m_aArray.size())
 			return L"";
 		
-		return m_aArray[ind];
+		return XmlUtils::EncodeXmlStringExtend(m_aArray[ind]);
 	}
 	
 };

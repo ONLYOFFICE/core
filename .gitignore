@@ -148,3 +148,9 @@ HtmlFile2/Makefile
 
 XpsFile/Makefile
 
+
+*.sln
+
+*.vcxproj
+*.vcxproj
+ASCOfficeDocFile/DocFormatLib/Win32/DocFormatLib.vcxproj

@@ -9,8 +9,8 @@
 #include "../../ASCOfficeOdfFileW/source/OdfFormat/math_limit_elements.h"
 #include <set>
 #include <vector>
-
-
+#include <fstream>
+#include <string>
 namespace Oox2Odf
 {
 
@@ -32,8 +32,7 @@ namespace Oox2Odf
 	void OoxConverter::mrow() // обертка для тега <mrow>
 	{
 		CREATE_MATH_TAG(L"mrow");
-		OPEN_MATH_TAG(elm);
-		
+		OPEN_MATH_TAG(elm);		
 	}
 
 	void OoxConverter::endOfMrow() // закрывашка тега <mrow>
@@ -108,8 +107,8 @@ namespace Oox2Odf
 		convert(oox_ctrl_pr->m_oARPr.GetPointer());
 		convert(oox_ctrl_pr->m_oDel.GetPointer());
 		convert(oox_ctrl_pr->m_oIns.GetPointer());
-		bool flag = convert(oox_ctrl_pr->m_oRPr.GetPointer()); // TODO <w:rPr>	
-		return flag;
+		//bool flag = convert(oox_ctrl_pr->m_oRPr.GetPointer()); // TODO <w:rPr>	
+		return true;
 	}
 
 	void OoxConverter::convert(OOX::Logic::CAcc *oox_acc)
@@ -510,8 +509,8 @@ namespace Oox2Odf
 		if (flag) tag = L"mover";
 		else tag = L"munder";
 		
-
-		CREATE_MATH_TAG(tag);
+		
+		CREATE_MATH_TAG(tag.c_str());
 		OPEN_MATH_TAG(elm);
 		convert(oox_group_ch->m_oElement.GetPointer());
 		convert(oox_group_ch->m_oGroupChrPr->m_oChr.GetPointer());
@@ -906,32 +905,50 @@ namespace Oox2Odf
 	{
 		if (!oox_nary) return;
 
+		nullable<SimpleTypes::CHexColor<>>* ref = &(oox_nary->m_oNaryPr->m_oCtrlPr->m_oRPr->m_oColor->m_oVal);
+		bool flag_color = false;
+		if (ref->IsInit())
+		{
+			std::wstring clr = ref->GetPointer()->ToString();
+			std::wstring clr2(L"#");
+			clr.erase(0, 2);
+			clr2 += clr;
+			CREATE_MATH_TAG(L"mstyle");
+			typedef odf_writer::math_mstyle* T;
+
+			T tmp = dynamic_cast<T>(elm.get());
+			tmp->color_ = clr2;
+			OPEN_MATH_TAG(elm);	
+			flag_color = true;
+		}
+
 		mrow();
-		bool flag = false;
+
+		bool flag_nary = false; // TODO REFAC
 		if ((oox_nary->m_oSub.GetPointer()->m_arrItems.size() != 0) && (oox_nary->m_oSup.GetPointer()->m_arrItems.size() != 0))
 		{
 			CREATE_MATH_TAG(L"munderover");
 			OPEN_MATH_TAG(elm);
-			flag = true;
+			flag_nary = true;
 		}
 		else if ((oox_nary->m_oSub.GetPointer()->m_arrItems.size() != 0) && (oox_nary->m_oSup.GetPointer()->m_arrItems.size() == 0))
 		{
 			CREATE_MATH_TAG(L"munder");
 			OPEN_MATH_TAG(elm);
-			flag = true;
+			flag_nary = true;
 		}
 
 		else if ((oox_nary->m_oSub.GetPointer()->m_arrItems.size() == 0) && (oox_nary->m_oSup.GetPointer()->m_arrItems.size() != 0))
 		{
 			CREATE_MATH_TAG(L"mover");
 			OPEN_MATH_TAG(elm);
-			flag = true;
+			flag_nary = true;
 		}		
 		
-
-		std::pair<bool, bool> flags;
-
+		std::pair<bool,bool>	flags;
 		flags = convert(oox_nary->m_oNaryPr.GetPointer());
+
+		
 		if (!flags.first)
 		{
 			mrow();
@@ -944,25 +961,29 @@ namespace Oox2Odf
 			convert(oox_nary->m_oSup.GetPointer());
 			endOfMrow();
 		}
-		
-		if (flag)
+
+
+		if (flag_nary)
+		{
 			CLOSE_MATH_TAG;
-		
-		convert(oox_nary->m_oElement.GetPointer());
+		}
 
 		endOfMrow();
+
+		if(flag_color)
+			CLOSE_MATH_TAG;
+		convert(oox_nary->m_oElement.GetPointer());
+
 	}
 
 	std::pair<bool, bool> OoxConverter::convert(OOX::Logic::CNaryPr *oox_nary_pr)
 	{
-		std::pair<bool, bool> result(false, false);
+		std::pair<bool, bool> result = { false, false};
 		if (!oox_nary_pr) return result;		
 
 
-		bool flag = convert(oox_nary_pr->m_oCtrlPr.GetPointer());
-		convert(oox_nary_pr->m_oChr.GetPointer());
-		if (flag)
-			CLOSE_MATH_TAG;
+		convert(oox_nary_pr->m_oCtrlPr.GetPointer());
+		convert(oox_nary_pr->m_oChr.GetPointer());		
 		convert(oox_nary_pr->m_oGrow.GetPointer());
 		//convert(oox_nary_pr->m_oLimLoc.GetPointer());
 		result.first = convert(oox_nary_pr->m_oSubHide.GetPointer());

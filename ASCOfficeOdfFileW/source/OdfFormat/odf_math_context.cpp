@@ -121,10 +121,12 @@ namespace odf_writer
 				L'∫', L'∬', 'L∭', L'∮', L'∯', L'∰',
 				L'∑', L'∏', L'∐', L'⋃', L'⋂', L'⋀', L'⋁', L'≝', L'≞', L'≜'
 		};
+		debug_stream.open("LogCounter.txt");
 	}
 
 	odf_math_context::~odf_math_context()
 	{
+		debug_stream.close();
 	}
 
 	void odf_math_context::set_styles_context(odf_style_context * style_context)

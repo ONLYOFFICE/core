@@ -35,26 +35,29 @@
 #include <vector>
 #include <set>
 #include <CPOptional.h>
-
 #include "office_elements_create.h"
+#include <fstream>
 //#include "../../../ASCOfficeOdfFile/src/odf/datatypes/mathclass.h"
+
 
 #define CREATE_MATH_TAG(tag)\
 	odf_writer::office_element_ptr elm;\
-	odf_writer::create_element(L"math", tag, elm, odf_context());
+	odf_writer::create_element(L"math", tag, elm, odf_context());\
+	odf_context()->math_context()->debug_stream << tag << "\n";
 
 #define OPEN_MATH_TAG(elm)\
 	odf_context()->math_context()->start_element(elm); \
-	odf_context()->math_context()->counter++;
+	odf_context()->math_context()->counter++; \
+	odf_context()->math_context()->debug_stream << L"open, counter is " << odf_context()->math_context()->counter << "\n";
 
 #define CLOSE_MATH_TAG\
 	odf_context()->math_context()->end_element();\
-	odf_context()->math_context()->counter--;
+	odf_context()->math_context()->counter--; \
+	odf_context()->math_context()->debug_stream /*std::wcout*/ << L"close, counter is " << odf_context()->math_context()->counter << "\n";
 
 namespace cpdoccore {
 	namespace odf_writer
 	{
-
 		class odf_conversion_context;
 		class odf_style_context;
 		class odf_text_context;
@@ -89,6 +92,7 @@ namespace cpdoccore {
 
 			void end_math();
 
+			std::ofstream debug_stream;
 
 			bool isEmpty();
 		private:

@@ -96,7 +96,8 @@ namespace OOX
                         {
                             auto ptr = static_cast<XLSB::SUP*>(obj.get());
 
-                            if(ptr != nullptr && ptr->m_source != nullptr && static_cast<XLSB::SupBookSrc*>(ptr->m_source.get()) != nullptr)
+                            if(ptr != nullptr && ptr->m_source != nullptr && static_cast<XLSB::SupBookSrc*>(ptr->m_source.get()) != nullptr
+                                    && static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.getSize() != 0)
                                 m_oRid = static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value();
                         }
 

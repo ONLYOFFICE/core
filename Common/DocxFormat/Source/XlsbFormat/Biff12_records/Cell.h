@@ -42,8 +42,15 @@ using namespace XLS;
 namespace XLSB
 {
 
+class CellBase
+{
+   public:
+
+        Cell               cell;
+};
+
 template <class T, CF_RECORD_TYPE id>
-class Cell_T: public BiffRecord
+class Cell_T: public CellBase, public BiffRecord
 {
    public:
         const CFRecordType::TypeId getTypeId() const
@@ -79,11 +86,6 @@ class Cell_T: public BiffRecord
             }
 
         }
-        virtual XLS::ElementType get_type() { return type; }
-
-        Cell_T()
-        {
-        }
 
         virtual ~Cell_T()
         {
@@ -101,13 +103,12 @@ class Cell_T: public BiffRecord
                 record >> value;
         }
 
-        Cell                   cell;
         T                      value;
 };
 
 typedef Cell_T<int,                                 rt_CellBlank>               CellBlank;
 typedef Cell_T<RkNumber,                            rt_CellRk>                  CellRk;
-typedef Cell_T<BErr,                                rt_CellError>               CellError;
+typedef Cell_T<unsigned char,                       rt_CellError>               CellError;
 typedef Cell_T<XLS::Boolean<unsigned char>,         rt_CellBool>                CellBool;
 typedef Cell_T<Xnum,                                rt_CellReal>                CellReal;
 typedef Cell_T<_UINT32,                             rt_CellIsst>                CellIsst;

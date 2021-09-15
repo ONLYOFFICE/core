@@ -56,7 +56,7 @@ namespace XLSB
         BaseObjectPtr                m_CELLMETA;
         std::vector<BaseObjectPtr>   m_arFRT;
         _INT32                       m_Row;
-        _INT32                       m_Col;
+        //_INT32                       m_Col;
 
     };
 

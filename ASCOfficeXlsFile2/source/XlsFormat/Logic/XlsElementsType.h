@@ -739,7 +739,7 @@ enum ElementType
 	typeOfficeArtSplitMenuColorContainer,
 	typeOfficeArtTertiaryFOPT,
 	typeOfficeArtClientData,
-	typeOfficeArtClientTextbox
+        typeOfficeArtClientTextbox
 
 
 };

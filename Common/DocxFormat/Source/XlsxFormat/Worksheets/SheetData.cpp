@@ -42,6 +42,20 @@
 #include "../../../../../XlsxSerializerCom/Writer/CSVWriter.h"
 #include "../../../../../DesktopEditor/common/StreamWriter.h"
 
+#include "../../XlsbFormat/Biff12_unions/ACCELLTABLE.h"
+#include "../../XlsbFormat/Biff12_records/RwDescent.h"
+#include "../../XlsbFormat/Biff12_unions/CELL.h"
+#include "../../XlsbFormat/Biff12_unions/CELLMETA.h"
+#include "../../XlsbFormat/Biff12_unions/DATACELL.h"
+#include "../../XlsbFormat/Biff12_unions/FMLACELL.h"
+#include "../../XlsbFormat/Biff12_unions/SHRFMLACELL.h"
+#include "../../XlsbFormat/Biff12_unions/TABLECELL.h"
+#include "../../XlsbFormat/Biff12_records/CellMeta.h"
+#include "../../XlsbFormat/Biff12_records/ValueMeta.h"
+#include "../../XlsbFormat/Biff12_records/Cell.h"
+#include "../../XlsbFormat/Biff12_records/Fmla.h"
+#include "../../XlsbFormat/Biff12_structures/CellRef.h"
+
 #include <boost/regex.hpp>
 
 namespace OOX
@@ -872,7 +886,89 @@ namespace OOX
 			}
 		}
 
-		bool CCell::parseRef(std::wstring sRef, int& nRow, int& nCol)
+        void CFormula::fromBin(BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType)
+        {
+            /*nullable<SimpleTypes::COnOff<>>							m_oAca;
+                        nullable<SimpleTypes::COnOff<>>							m_oBx;
+                        nullable<SimpleTypes::COnOff<>>							m_oCa;
+                        nullable<SimpleTypes::COnOff<>>							m_oDel1;
+                        nullable<SimpleTypes::COnOff<>>							m_oDel2;
+                        nullable<SimpleTypes::COnOff<>>							m_oDt2D;
+                        nullable<SimpleTypes::COnOff<>>							m_oDtr;
+                        nullable<std::wstring>									m_oR1;
+                        nullable<std::wstring>									m_oR2;
+                        nullable<std::wstring>									m_oRef;
+                        nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oSi;
+                        nullable<SimpleTypes::Spreadsheet::CCellFormulaType<>>	m_oT;
+
+                        std::wstring m_sText;*/
+
+            m_oT.Init();
+            m_oT->SetValue(eType);
+
+            switch (eType)
+            {
+                case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal:
+                    {
+                        auto formula = dynamic_cast<XLSB::FmlaBase*>(obj.get());
+                        m_sText = formula->formula.getAssembledFormula();
+                        m_oCa.Init();
+                        m_oCa = formula->grbitFlags.fAlwaysCalc;
+                    }
+                    break;
+                case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared:
+                    {
+                        auto formula = dynamic_cast<XLSB::ShrFmla*>(obj.get());
+                        m_sText = formula->formula.getAssembledFormula();
+                        m_oRef.Init();
+                        m_oRef = formula->rfx.toString();
+                    }
+                    break;
+                case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray:
+                    {
+                        auto formula = dynamic_cast<XLSB::ArrFmla*>(obj.get());
+                        m_sText = formula->formula.getAssembledFormula();
+                        m_oAca.Init();
+                        m_oAca = formula->fAlwaysCalc;
+                        m_oRef.Init();
+                        m_oRef = formula->rfx.toString();
+                    }
+                    break;
+                case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable:
+                    {
+                        auto dataTable = dynamic_cast<XLSB::Table*>(obj.get());
+                        //m_sText = dataTable->formula.getAssembledFormula();
+
+                        m_oCa.Init();
+                        m_oCa = dataTable->fAlwaysCalc;
+
+                        m_oRef.Init();
+                        m_oRef = dataTable->rfx.toString();
+
+                        m_oDtr.Init();
+                        m_oDtr = dataTable->fRw;
+
+                        m_oDt2D.Init();
+                        m_oDt2D = dataTable->fTbl2;
+
+                        m_oDel1.Init();
+                        m_oDel1 = dataTable->fDeleted1;
+
+                        m_oDel2.Init();
+                        m_oDel2 = dataTable->fDeleted2;
+
+                        m_oR1.Init();
+                        m_oR1 = dataTable->r1;
+
+                        m_oR2.Init();
+                        m_oR2 = dataTable->r2;
+                    }
+                    break;
+
+            }
+        }
+
+        bool CCell::parseRef(std::wstring sRef, int& nRow, int& nCol)
 		{
 			std::string sResA(sRef.begin(), sRef.end());
 			return parseRefA(sResA.c_str(), nRow, nCol);
@@ -1515,6 +1611,12 @@ namespace OOX
 
 			oStream.Seek(nEnd);
 		}
+
+        void CCell::fromBin(XLS::BaseObjectPtr& obj)
+        {
+            ReadAttributes(obj);           
+        }
+
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_StartChar( oReader )
@@ -1546,6 +1648,217 @@ namespace OOX
 			WritingElement_ReadAttributes_EndChar( oReader )
 
 		}
+
+        void CCell::ReadAttributes(BaseObjectPtr& obj)
+        {
+            auto ptr = static_cast<XLSB::CELL*>(obj.get());
+            if(ptr != nullptr)
+            {
+                m_oRow = ptr->m_Row;
+                auto pCELLMETA = static_cast<XLSB::CELLMETA*>(ptr->m_CELLMETA.get());
+                if(pCELLMETA != nullptr)
+                {
+                    auto pCellMeta = static_cast<XLSB::CellMeta*>(pCELLMETA->m_BrtCellMeta.get());
+                    if(pCellMeta != nullptr)
+                        m_oCellMetadata = pCellMeta->icmb;
+
+                    auto pValueMeta = static_cast<XLSB::ValueMeta*>(pCELLMETA->m_BrtValueMeta.get());
+                    if(pValueMeta != nullptr)
+                        m_oCellMetadata = pValueMeta->ivmb;
+                }
+
+                auto pDATACELL = static_cast<XLSB::DATACELL*>(ptr->m_DATACELL.get());
+                auto pTABLECELL = static_cast<XLSB::TABLECELL*>(ptr->m_TABLECELL.get());
+                auto pFMLACELL = static_cast<XLSB::FMLACELL*>(ptr->m_FMLACELL.get());
+                auto pSHRFMLACELL = static_cast<XLSB::SHRFMLACELL*>(ptr->m_SHRFMLACELL.get());
+
+                if(pDATACELL != nullptr || pTABLECELL != nullptr || pFMLACELL != nullptr)
+                {
+                    BiffRecord* pSource = nullptr;
+                    XLSB::Cell oCell;
+                    if(pDATACELL != nullptr)
+                    {                                     
+                        m_oCol = pDATACELL->m_Col;
+                        pSource = static_cast<BiffRecord*>(pDATACELL->m_source.get());
+                        if(pSource != nullptr)
+                            oCell = dynamic_cast<XLSB::CellBase*>(pSource)->cell;
+                    }
+                    else if(pTABLECELL != nullptr)
+                    {
+                        m_oCol = pTABLECELL->m_Col;
+                        pSource = static_cast<BiffRecord*>(pTABLECELL->m_source.get());
+                        if(pSource != nullptr)
+                            oCell = dynamic_cast<XLSB::CellBase*>(pSource)->cell;
+                        if(pTABLECELL->m_BrtTable != nullptr)
+                        {
+                            m_oFormula.Init();
+                            m_oFormula->fromBin(pTABLECELL->m_BrtTable, SimpleTypes::Spreadsheet::cellformulatypeDataTable);
+                        }
+                    }
+                    else if(pFMLACELL != nullptr)
+                    {
+                        m_oCol = pFMLACELL->m_Col;                       
+                        pSource = static_cast<BiffRecord*>(pFMLACELL->m_source.get());
+                        if(pSource != nullptr)
+                            oCell = dynamic_cast<XLSB::FmlaBase*>(pSource)->cell;
+                        if(pFMLACELL->m_source != nullptr)
+                        {
+                            m_oFormula.Init();
+                            m_oFormula->fromBin(pFMLACELL->m_source, SimpleTypes::Spreadsheet::cellformulatypeNormal);
+                        }
+
+                        if(pSHRFMLACELL != nullptr)
+                        {
+                            if(pSHRFMLACELL->m_source != nullptr)
+                            {
+                                m_oFormula.Init();
+                                if(static_cast<BiffRecord*>(pSHRFMLACELL->m_source.get())->getTypeId() == XLSB::rt_ArrFmla)
+                                    m_oFormula->fromBin(pSHRFMLACELL->m_source, SimpleTypes::Spreadsheet::cellformulatypeArray);
+                                else if(static_cast<BiffRecord*>(pSHRFMLACELL->m_source.get())->getTypeId() == XLSB::rt_ShrFmla)
+                                    m_oFormula->fromBin(pSHRFMLACELL->m_source, SimpleTypes::Spreadsheet::cellformulatypeShared);
+                            }
+
+                        }
+
+                    }
+
+                    auto wRef = XLSB::RgceLoc(m_oRow.get(), m_oCol.get(), true, true).toString();
+                    m_oRef = std::string(wRef.begin(), wRef.end());
+
+                    if(pSource != nullptr)
+                    {
+                        m_oShowPhonetic = oCell.fPhShow;
+                        m_oStyle        = oCell.iStyleRef;
+                        auto nType = pSource->getTypeId();
+                        switch (nType)
+                        {
+                            case XLSB::rt_CellBlank:
+                                break;
+                            case XLSB::rt_CellRk:
+                                {
+                                    auto pCellRk = static_cast<XLSB::CellRk*>(pSource);
+                                    m_oType.Init();
+                                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+                                    m_oValue.Init();
+                                    m_oValue->m_sText         = pCellRk->value.value();
+                                }
+                                break;
+                            case XLSB::rt_CellError:
+                            case XLSB::rt_FmlaError:
+                                {
+                                    auto pError = XLSB::rt_CellError == nType ? reinterpret_cast<XLSB::CellError*>(pSource)->value : reinterpret_cast<XLSB::FmlaError*>(pSource)->value;
+                                    m_oType.Init();
+                                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeError);
+                                    m_oValue.Init();
+                                    switch(pError)
+                                    {
+                                        case 0x00: m_oValue->m_sText = L"#NULL!"; break;
+                                        case 0x07: m_oValue->m_sText = L"#DIV/0!"; break;
+                                        case 0x0F: m_oValue->m_sText = L"#VALUE!"; break;
+                                        case 0x17: m_oValue->m_sText = L"#REF!"; break;
+                                        case 0x1D: m_oValue->m_sText = L"#NAME?"; break;
+                                        case 0x24: m_oValue->m_sText = L"#NUM!"; break;
+                                        case 0x2A: m_oValue->m_sText = L"#N/A"; break;
+                                        case 0x2B: m_oValue->m_sText = L"#GETTING_DATA"; break;
+                                    }
+                                }
+                                break;
+                            case XLSB::rt_CellBool:
+                            case XLSB::rt_FmlaBool:
+                                {
+                                    auto pBool = XLSB::rt_CellBool == nType ? reinterpret_cast<XLSB::CellBool*>(pSource)->value : reinterpret_cast<XLSB::FmlaBool*>(pSource)->value;
+                                    m_oType.Init();
+                                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
+                                    m_oValue.Init();
+                                    m_oValue->m_sText = pBool ? L"1" : L"0";
+                                }
+                               break;
+                            case XLSB::rt_CellReal:
+                            case XLSB::rt_FmlaNum:
+                                {
+                                    std::wstring str;
+                                    auto pRealNum = XLSB::rt_CellReal == nType ? reinterpret_cast<XLSB::CellReal*>(pSource)->value.data.value : reinterpret_cast<XLSB::FmlaNum*>(pSource)->value.data.value;
+                                    if(XLSB::rt_FmlaNum == nType)
+                                    {
+                                        str = reinterpret_cast<XLSB::FmlaNum*>(pSource)->formula.getAssembledFormula();
+                                    }
+                                    m_oType.Init();
+                                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeDate);
+                                    m_oValue.Init();
+                                    m_oValue->m_sText = OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(pRealNum);
+                                }
+                                break;
+                            case XLSB::rt_CellIsst:
+                                {
+                                    auto pCellIsst = static_cast<XLSB::CellIsst*>(pSource);
+                                    m_oType.Init();
+                                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+                                    m_oValue.Init();
+                                    m_oValue->m_sText = std::to_wstring(pCellIsst->value);
+                                }
+                                break;
+                            case XLSB::rt_CellSt:
+                            case XLSB::rt_FmlaString:
+                                {
+                                    auto pSt = XLSB::rt_CellSt == nType ? reinterpret_cast<XLSB::CellSt*>(pSource)->value.value() : reinterpret_cast<XLSB::FmlaString*>(pSource)->value.value();
+                                    m_oType.Init();
+                                    m_oType->SetValue(XLSB::rt_CellSt == nType ? SimpleTypes::Spreadsheet::celltypeInlineStr : SimpleTypes::Spreadsheet::celltypeStr);
+                                    m_oValue.Init();
+                                    m_oValue->m_sText = pSt;
+                                }
+                               break;
+                        }
+                    }
+
+                }
+
+
+            }
+
+            /*
+
+
+            if (XLSB::rt_FmlaString <= nType && nType <= XLSB::rt_FmlaError)
+            {
+                m_oFormula.Init();
+                m_oFormula->fromXLSB(oStream);
+            }
+            //todo it breaks xslb format
+            _UINT16 nFlags = oStream.GetUShort();
+            if(0 != (nFlags & 0x4))
+            {
+                if(!m_oFormula.IsInit())
+                {
+                    m_oFormula.Init();
+                }
+                m_oFormula->fromXLSBExt(oStream, nFlags);
+                if(0 != (nFlags & 0x4000))
+                {
+                    m_oType.reset(NULL);
+                    m_oValue.reset(NULL);
+                }
+            }
+            if(0 != (nFlags & 0x2000))
+            {
+                m_oType.Init();
+                m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
+
+                m_oRichText.Init();
+                m_oRichText->fromXLSBExt(oStream);
+            }
+
+            nullable<CFormula>		m_oFormula;
+            nullable<CSi>			m_oRichText;
+            nullable<CText>			m_oValue;
+            else if (strcmp("ss:Formula", wsName) == 0)
+            {
+                m_oFormula.Init();
+                m_oFormula->m_sText = oReader.GetText();
+                m_oFormula->m_sText = m_oFormula->m_sText.substr(1);
+                //convert R1C1 to ..
+            }*/
+
+        }
 
 		void CRow::toXMLStart(NSStringUtils::CStringBuilder& writer) const
 		{
@@ -1605,6 +1918,20 @@ namespace OOX
 			}
 			m_mapStyleMerges2003.clear();
 		}
+
+        void CRow::fromBin(XLSB::CELLTABLE::_data& obj)
+        {
+            ReadAttributes(obj);
+
+            for(auto &CELL : obj.m_arCELL)
+            {
+                CCell *pCell = new CCell(m_pMainDocument);
+                pCell->fromBin(CELL);
+
+                m_arrItems.push_back(pCell);
+            }
+        }
+
 		void CRow::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
 		{
 			LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
@@ -1776,7 +2103,34 @@ namespace OOX
 				}
 			WritingElement_ReadAttributes_EndChar( oReader )
 		}
-		void CSheetData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+
+        void CRow::ReadAttributes(XLSB::CELLTABLE::_data& obj)
+        {
+            auto ptr = static_cast<XLSB::RowHdr*>(obj.m_BrtRowHdr.get());
+            if(ptr != nullptr)
+            {
+                m_oCollapsed                = ptr->fCollapsed;
+                m_oCustomFormat             = ptr->fGhostDirty;
+                m_oCustomHeight             = ptr->fUnsynced;
+                m_oHidden                   = ptr->fDyZero;
+                m_oHt                       = ptr->miyRw;
+                m_oOutlineLevel             = ptr->iOutLevel;
+                m_oPh                       = ptr->fPhonetic;
+                m_oR                        = ptr->rw;
+                m_oS                        = ptr->ixfe_val;
+                m_oThickBot                 = ptr->fExDes;
+                m_oThickTop                 = ptr->fExAsc;
+            }
+
+
+            if(static_cast<XLSB::ACCELLTABLE*>(obj.m_ACCELLTABLE.get()) != nullptr && static_cast<XLSB::ACCELLTABLE*>(obj.m_ACCELLTABLE.get())->m_BrtRwDescent != nullptr)
+            {
+                auto ptr1 = static_cast<XLSB::RwDescent*>(static_cast<XLSB::ACCELLTABLE*>(obj.m_ACCELLTABLE.get())->m_BrtRwDescent.get());
+                m_oDyDescent                = ptr1->dyDescent;
+            }
+        }
+
+        void CSheetData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start(oReader)
 				WritingElement_ReadAttributes_Read_if(oReader, L"ss:StyleID", m_sStyleID)
@@ -1784,6 +2138,12 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:DefaultRowHeight", m_dDefaultRowHeight)
 			WritingElement_ReadAttributes_End(oReader)
 		}
+
+        void CSheetData::ReadAttributes(XLS::BaseObjectPtr& obj)
+        {
+            //auto ptr = static_cast<XLSB::CalcProp*>(obj.get());
+        }
+
 		void CSheetData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -1971,7 +2331,23 @@ namespace OOX
 				}
 			}
 		}
-//---------------------------------------------------------------------------------------------------------------------
+
+        void CSheetData::fromBin(XLS::BaseObjectPtr& obj)
+        {
+            //ReadAttributes(obj);
+            auto ptr = static_cast<XLSB::CELLTABLE*>(obj.get());
+
+            for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
+            {
+
+                CRow *pRow = new CRow(m_pMainDocument);
+                pRow->fromBin(Parenthesis_CELLTABLE);
+
+                m_arrItems.push_back(pRow);
+            }
+        }
+
+        //---------------------------------------------------------------------------------------------------------------------
 		void CDefinedName::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			nullable_string oRefersTo;

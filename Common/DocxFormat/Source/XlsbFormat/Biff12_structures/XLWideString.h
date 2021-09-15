@@ -38,7 +38,7 @@ using namespace XLS;
 namespace XLSB
 {
    typedef XLUnicodeString_T<unsigned int,	aw_NAME_WIDE,               cch_READ_FROM_RECORD>		XLNameWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_NULLABLE_WIDE,			cch_READ_FROM_RECORD>		XLNullableWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_WIDE,					cch_READ_FROM_RECORD>		XLWideString;
+   typedef XLUnicodeString_T<unsigned int,	aw_NULLABLE_WIDE,	    cch_READ_FROM_RECORD>		XLNullableWideString;
+   typedef XLUnicodeString_T<unsigned int,	aw_WIDE,		    cch_READ_FROM_RECORD>		XLWideString;
 
 }   // namespace XLSB

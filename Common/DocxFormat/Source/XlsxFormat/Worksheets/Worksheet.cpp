@@ -117,8 +117,8 @@ namespace OOX
 
             if (workSheetStream != nullptr)
             {
-                if (!workSheetStream->m_arCOLINFOS.empty())
-                    m_oCols = workSheetStream->m_arCOLINFOS;
+                //if (!workSheetStream->m_arCOLINFOS.empty())
+                  //  m_oCols = workSheetStream->m_arCOLINFOS;
                 if (workSheetStream->m_BrtWsDim != nullptr)
                     m_oDimension = workSheetStream->m_BrtWsDim;
                 if (workSheetStream->m_BrtDrawing != nullptr)
@@ -127,6 +127,8 @@ namespace OOX
                     m_oHyperlinks = static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks;
                 if (workSheetStream->m_HLINKS != nullptr)
                     m_oMergeCells = static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell;
+                if (workSheetStream->m_CELLTABLE != nullptr)
+                    m_oSheetData = workSheetStream->m_CELLTABLE;
 
 
             }

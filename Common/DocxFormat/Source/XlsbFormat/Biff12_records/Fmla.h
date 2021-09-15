@@ -44,8 +44,17 @@ using namespace XLS;
 namespace XLSB
 {
 
+    class FmlaBase
+    {
+       public:
+            FmlaBase(bool flag) : formula(flag) {}
+            Cell               cell;
+            GrbitFmla          grbitFlags;
+            CellParsedFormula  formula;
+    };
+
     template <class T, CF_RECORD_TYPE id>
-    class Fmla_T: public BiffRecord
+    class Fmla_T: public FmlaBase, public BiffRecord
     {
        public:
             const CFRecordType::TypeId getTypeId() const
@@ -74,8 +83,8 @@ namespace XLSB
             }
             virtual XLS::ElementType get_type() { return type; }
 
-            Fmla_T(): formula(false)
-            {
+            Fmla_T() : FmlaBase(false)
+            {                
             }
 
             virtual ~Fmla_T()
@@ -92,16 +101,13 @@ namespace XLSB
                 record >> cell >> value >> grbitFlags >> formula;
             }
 
-            Cell                   cell;
-            T                      value;
-            GrbitFmla              grbitFlags;
-            CellParsedFormula      formula;
+            T   value;
     };
 
     typedef Fmla_T<XLWideString,                rt_FmlaString>		FmlaString;
     typedef Fmla_T<XLS::Boolean<unsigned char>, rt_FmlaBool>		FmlaBool;
-    typedef Fmla_T<Xnum,                        rt_FmlaNum>         FmlaNum;
-    typedef Fmla_T<BErr,                        rt_FmlaError>		FmlaError;
+    typedef Fmla_T<Xnum,                        rt_FmlaNum>             FmlaNum;
+    typedef Fmla_T<unsigned char,               rt_FmlaError>		FmlaError;
 
 } // namespace XLSB
 

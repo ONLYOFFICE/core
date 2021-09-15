@@ -53,11 +53,11 @@ public:
 	static const ElementType	type = typeTable;
 
 	Ref ref_;
-        RFX rfx; //biff12
+    RFX rfx; //biff12
 
 	bool fAlwaysCalc;
-        bool fRw; //fRow in biff12
-        bool fTbl2; //fTable2 in biff12
+    bool fRw; //fRow in biff12
+    bool fTbl2; //fTable2 in biff12
 	bool fDeleted1;
 	bool fDeleted2;
 

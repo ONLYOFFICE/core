@@ -76,7 +76,8 @@ namespace PPT_FORMAT
 		void WriteAll			();
 		void WriteThemes		();
         void WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom *> &arrRTThemes, int& nIndexTheme, int &nStartLayout);
-		void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
+        void WriteRoundTripLayouts(const std::vector<CRecordRoundTripContentMasterInfo12Atom *> &arrRTLayouts, int &nStartLayout);
+        void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
         void WriteTheme         (CRecordRoundTripThemeAtom *pTheme, int &nIndexTheme);
         void WriteSlides		();
 		void WriteNotes			();

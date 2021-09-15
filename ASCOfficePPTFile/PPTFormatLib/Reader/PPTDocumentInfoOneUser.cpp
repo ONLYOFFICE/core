@@ -1141,6 +1141,53 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
         m_current_elements =  m_current_elements->front()->m_pParentElements;
     }
 }
+
+std::vector<CRecordRoundTripThemeAtom *> CPPTUserInfo::getRoundTripTheme(int type) const
+{
+    std::vector<CRecordRoundTripThemeAtom *> arrRTTheme;
+    switch (type)
+    {
+    case 1:
+        for (const auto& slideIter : m_mapMasters)
+        {
+            auto* slideContainer = slideIter.second;
+            if (!slideContainer) continue;
+            slideContainer->GetRecordsByType(&arrRTTheme, false);
+        }
+        break;
+    case 2:
+        for (const auto& slideIter : m_mapNotesMasters)
+        {
+            auto* slideContainer = slideIter.second;
+            if (!slideContainer) continue;
+            slideContainer->GetRecordsByType(&arrRTTheme, false);
+        }
+        break;
+    case 3:
+        for (const auto& slideIter : m_mapHandoutMasters)
+        {
+            auto* slideContainer = slideIter.second;
+            if (!slideContainer) continue;
+            slideContainer->GetRecordsByType(&arrRTTheme, false);
+        }
+        break;
+    }
+    return arrRTTheme;
+}
+
+std::vector<CRecordRoundTripContentMasterInfo12Atom *> CPPTUserInfo::getRoundTripLayout()
+{
+    std::vector<CRecordRoundTripContentMasterInfo12Atom *> arrRTLayout;
+    for (const auto& slideIter : m_mapMasters)
+    {
+        auto* slideContainer = slideIter.second;
+        if (!slideContainer) continue;
+        slideContainer->GetRecordsByType(&arrRTLayout, false);
+    }
+
+    return arrRTLayout;
+}
+
 CElementPtr CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placeholderType, CLayout *pLayout, bool idx_only)
 {
     CElementPtr pElement;
@@ -1632,18 +1679,6 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
         }
     }
     int lLayoutID = AddNewLayout(pTheme, pMaster, false, true);
-
-
-    for (auto& oMaster : m_mapMasters)
-        if (oMaster.second != nullptr)
-            oMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
-//    for (auto& oNoteMaster : m_mapNotesMasters)
-//        if (oNoteMaster.second != nullptr)
-//            oNoteMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
-
-//    for (auto& oHandoutMaster : m_mapHandoutMasters)
-//        if (oHandoutMaster.second != nullptr)
-//        oHandoutMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
 
     if (lLayoutID >= 0 && false == pTheme->m_arLayouts.empty())
     {

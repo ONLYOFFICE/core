@@ -608,9 +608,13 @@ void PPT_FORMAT::CPPTXWriter::WriteAll()
 void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
     int nStartLayout = 0, nIndexTheme = 0;
-    auto arrRT = m_pDocument->getArrRoundTripTheme();
+    auto arrRT = m_pUserInfo->getRoundTripTheme(1);
+    auto arrRTNote = m_pUserInfo->getRoundTripTheme(2);
+    auto arrRTHandout = m_pUserInfo->getRoundTripTheme(3);
 
-//    if (arrRT.empty()) // - см баг 52046
+    auto arrRTLayouts = m_pUserInfo->getRoundTripLayout();
+
+    if (arrRT.empty()) // - см баг 52046
     {
         for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
         {
@@ -618,25 +622,26 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
             WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
             m_pShapeWriter->m_pTheme = NULL;
         }
-    }
-//    else
-//    {
-//        WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
-//    }
 
-    WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
-    WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
+        WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
+        WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
+    }
+    else
+    {
+            WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
+            WriteRoundTripThemes(arrRTNote, nIndexTheme, nStartLayout);
+            WriteRoundTripThemes(arrRTHandout, nIndexTheme, nStartLayout);
+    }
 }
 
 void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom*>& arrRTThemes, int& nIndexTheme, int & nStartLayout)
 {
     PPT_FORMAT::CRelsGenerator themeRels(&m_oManager);
     std::unordered_set<std::string> writedFilesHash;
-    int i = 0;
     for (const auto* pRTT : arrRTThemes)
     {
-        if ((int)m_pDocument->m_arThemes.size() > i)
-            m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i++].get();
+        if ((int)m_pDocument->m_arThemes.size() >= nIndexTheme)
+            m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[nIndexTheme-1].get();
 
         if (pRTT == nullptr)
             continue;
@@ -700,35 +705,9 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
                 oFile.WriteFile(utf8Data, utf8DataSize);
                 wasThemeWrite = true;
 
-                WriteLayoutAfterTheme(m_pDocument->m_arThemes[nIndexTheme-1], nIndexTheme, nStartLayout);
-
-                // clear bytes
-                writedFilesHash.insert(strHash);
-                RELEASEOBJECT(utf8Data);
-                utf8DataSize = 0;
-                oFile.CloseFile();
-            }
-        }
-
-        // write themeOverride
-        UINT nIndexOverride = 0;
-        for (auto& strOverridePath : arrOverridePaths)
-        {
-            // read file bytes
-            NSFile::CFileBinary::ReadAllBytes(strOverridePath, &utf8Data, utf8DataSize);
-
-            // compare hash
-            auto strHash = CFile::md5(utf8Data, utf8DataSize);
-
-            // cp file with new name or write bytes
-            if (writedFilesHash.find(strHash) == writedFilesHash.end())
-            {
-                std::wstring strThemeFile = L"themeOverride" + std::to_wstring(++nIndexOverride) + L".xml";
-                strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
-                NSFile::CFileBinary oFile;
-                oFile.CreateFileW(strThemeFile);
-                oFile.WriteFile(utf8Data, utf8DataSize);
-                wasThemeWrite = true;
+                // need to rewrite layout. To add roundTripCompositeMasterId12Atom
+                if (nIndexTheme < (int)m_pDocument->m_arThemes.size())
+                    WriteLayoutAfterTheme(m_pDocument->m_arThemes[nIndexTheme-1], nIndexTheme, nStartLayout);
 
                 // clear bytes
                 writedFilesHash.insert(strHash);

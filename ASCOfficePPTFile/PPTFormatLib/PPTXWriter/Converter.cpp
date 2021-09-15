@@ -608,29 +608,24 @@ void PPT_FORMAT::CPPTXWriter::WriteAll()
 void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
     int nStartLayout = 0, nIndexTheme = 0;
-    auto arrRT = m_pDocument->getArrRoundTripTheme(1);
-    auto arrRTNote = m_pDocument->getArrRoundTripTheme(2);
-    auto arrRTHandout = m_pDocument->getArrRoundTripTheme(3);
+    auto arrRT = m_pDocument->getArrRoundTripTheme();
 
-    if (arrRT.empty() && arrRTNote.empty() && arrRTHandout.empty()) // - см баг 52046
+//    if (arrRT.empty()) // - см баг 52046
     {
         for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
         {
             m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i].get();
             WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
             m_pShapeWriter->m_pTheme = NULL;
-
-            WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
-            WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
         }
     }
-    else
-    {
-        WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
+//    else
+//    {
+//        WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
+//    }
 
-        WriteRoundTripThemes(arrRTNote, nIndexTheme, nStartLayout);
-        WriteRoundTripThemes(arrRTHandout, nIndexTheme, nStartLayout);
-    }
+    WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
+    WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
 }
 
 void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom*>& arrRTThemes, int& nIndexTheme, int & nStartLayout)
@@ -705,8 +700,7 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
                 oFile.WriteFile(utf8Data, utf8DataSize);
                 wasThemeWrite = true;
 
-                if (m_pDocument->m_arThemes.size() > (UINT)nIndexTheme)
-                    WriteLayoutAfterTheme(m_pDocument->m_arThemes[nIndexTheme-1], nIndexTheme, nStartLayout);
+                WriteLayoutAfterTheme(m_pDocument->m_arThemes[nIndexTheme-1], nIndexTheme, nStartLayout);
 
                 // clear bytes
                 writedFilesHash.insert(strHash);

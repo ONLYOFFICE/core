@@ -1636,15 +1636,14 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 
     for (auto& oMaster : m_mapMasters)
         if (oMaster.second != nullptr)
-            oMaster.second->GetRecordsByType(&pTheme->m_arrZipXmlMaster, false);
+            oMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
+//    for (auto& oNoteMaster : m_mapNotesMasters)
+//        if (oNoteMaster.second != nullptr)
+//            oNoteMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
 
-    for (auto& oNoteMaster : m_mapNotesMasters)
-        if (oNoteMaster.second != nullptr)
-            oNoteMaster.second->GetRecordsByType(&pTheme->m_arrZipXmlNote, false);
-
-    for (auto& oHandoutMaster : m_mapHandoutMasters)
-        if (oHandoutMaster.second != nullptr)
-        oHandoutMaster.second->GetRecordsByType(&pTheme->m_arrZipXmlHandout, false);
+//    for (auto& oHandoutMaster : m_mapHandoutMasters)
+//        if (oHandoutMaster.second != nullptr)
+//        oHandoutMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
 
     if (lLayoutID >= 0 && false == pTheme->m_arLayouts.empty())
     {

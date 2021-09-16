@@ -53,8 +53,8 @@
 #define c_oAscNumFormatType_Fraction                        10
 	 
 #define c_oAscDrawingLayerType_BringToFront                 0
-#define c_oAscDrawingLayerType_SendToBack                   1
-#define c_oAscDrawingLayerType_BringForward                 2
+#define c_oAscDrawingLayerType_BringForward                 1
+#define c_oAscDrawingLayerType_SendToBack                   2
 #define c_oAscDrawingLayerType_SendBackward                 3
 
 #define c_oAscTransactionState_No                           -1

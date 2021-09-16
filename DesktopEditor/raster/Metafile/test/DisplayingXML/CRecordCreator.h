@@ -66,14 +66,14 @@ private:
         void Create_Widgets_EMR_NAMEDESCAPE();
         void Create_Widgets_EMR_COLORCORRECTPALETTE();
         void Create_Widgets_EMR_GRADIENTFILL();
-
-        void CreateRectangleWidget(const QString& qsName);
-        void CreatePointsWidget();
-        void CreateColorWidget();
-        void CreatePolyWidget();
-        void CreateXForm();
+        void Create_Widgets_EMR_SETLINKEDUFIS();
+        void Create_Widgets_EMR_SETTEXTJUSTIFICATION();
+        void Create_Widgets_EMR_COLORMATCHTOTARGETW();
+        void Create_Widgets_EMR_CREATECOLORSPACEW();
 
         void ConvertWidgets(const QString& qsName);
+        void AddSharedWidget(CSharedWidget* pWidget);
+        void AddSharedWidgets(std::vector<CSharedWidget*> arWidgets);
 
         void ClearData();
         void Close();

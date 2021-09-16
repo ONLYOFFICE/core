@@ -11,8 +11,6 @@ class CGradientFillWidget : public CSharedWidget
 public:
         explicit CGradientFillWidget(QWidget *pParent = NULL);
         virtual ~CGradientFillWidget();
-
-        virtual QList<QStandardItem*> GetData() const override;
 private slots:
         void on_createObjects_clicked();
 private:

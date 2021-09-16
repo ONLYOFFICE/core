@@ -30,19 +30,6 @@ CPointsWidget::~CPointsWidget()
 
 }
 
-QList<QStandardItem*> CPointsWidget::GetData() const
-{
-        if (m_arWidgets.empty())
-                return {};
-
-        QList<QStandardItem*> oListItem;
-
-        for (const CSharedWidget* pWidget : m_arWidgets)
-                oListItem.append(pWidget->GetData());
-
-        return oListItem;
-}
-
 void CPointsWidget::on_createPoint_clicked()
 {
         CPointWidget *pPoint = new CPointWidget("Point", ++m_unCounter);

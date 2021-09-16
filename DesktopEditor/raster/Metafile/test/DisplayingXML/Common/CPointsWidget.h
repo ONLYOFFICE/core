@@ -9,8 +9,6 @@ class CPointsWidget : public CSharedWidget
 public:
         explicit CPointsWidget(QWidget *pParent = NULL);
         virtual ~CPointsWidget();
-
-        virtual QList<QStandardItem*> GetData() const override;
 private slots:
         void on_createPoint_clicked();
 private:

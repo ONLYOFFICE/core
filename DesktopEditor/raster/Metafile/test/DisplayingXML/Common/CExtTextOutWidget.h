@@ -8,8 +8,6 @@ class CExtTextOutWidget : public CSharedWidget
 public:
         explicit CExtTextOutWidget(QWidget *pParent = NULL);
         virtual ~CExtTextOutWidget();
-
-        virtual QList<QStandardItem*> GetData() const override;
 };
 
 class CDxWidget;

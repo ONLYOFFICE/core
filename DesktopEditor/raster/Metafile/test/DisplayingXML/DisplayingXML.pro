@@ -25,24 +25,26 @@ SOURCES += \
     Common/CExtTextOutWidget.cpp \
     Common/CFillRgnWidget.cpp \
     Common/CFormWidget.cpp \
-    Common/CFrameRgn.cpp \
+    Common/CFrameRgnWidget.cpp \
     Common/CGradientFillWidget.cpp \
-    Common/CInvertRgn.cpp \
+    Common/CInvertRgnWidget.cpp \
     Common/CLogBrushExWidget.cpp \
     Common/CLogColorSpaceWidget.cpp \
-    Common/CLogFontExDv.cpp \
+    Common/CLogFontExDvWidget.cpp \
     Common/CLogPaletteWidget.cpp \
     Common/CLogPenWidget.cpp \
+    Common/CPaintRgnWidget.cpp \
     Common/CPaletteEntriesWidget.cpp \
     Common/CPixelFormatDescriptorWidget.cpp \
     Common/CPointWidget.cpp \
     Common/CPointsWidget.cpp \
     Common/CPolyDrawWidget.cpp \
-    Common/CPolyTextOut.cpp \
+    Common/CPolyTextOutWidget.cpp \
     Common/CPolyWidget.cpp \
     Common/CRectangleWidget.cpp \
     Common/CSizeWidget.cpp \
     Common/CSmallTextOutWidget.cpp \
+    Common/CXFormWidget.cpp \
     MainWindow.cpp \
     CCustomView.cpp \
     main.cpp
@@ -63,25 +65,27 @@ HEADERS += \
     Common/CExtTextOutWidget.h \
     Common/CFillRgnWidget.h \
     Common/CFormWidget.h \
-    Common/CFrameRgn.h \
+    Common/CFrameRgnWidget.h \
     Common/CGradientFillWidget.h \
-    Common/CInvertRgn.h \
+    Common/CInvertRgnWidget.h \
     Common/CLogBrushExWidget.h \
     Common/CLogColorSpaceWidget.h \
-    Common/CLogFontExDv.h \
+    Common/CLogFontExDvWidget.h \
     Common/CLogPaletteWidget.h \
     Common/CLogPenWidget.h \
+    Common/CPaintRgnWidget.h \
     Common/CPaletteEntriesWidget.h \
     Common/CPixelFormatDescriptorWidget.h \
     Common/CPointWidget.h \
     Common/CPointsWidget.h \
     Common/CPolyDrawWidget.h \
-    Common/CPolyTextOut.h \
+    Common/CPolyTextOutWidget.h \
     Common/CPolyWidget.h \
     Common/CRectangleWidget.h \
     Common/CSharedWidget.h \
     Common/CSizeWidget.h \
     Common/CSmallTextOutWidget.h \
+    Common/CXFormWidget.h \
     Common/Common.h \
     MainWindow.h \
     CCustomView.h

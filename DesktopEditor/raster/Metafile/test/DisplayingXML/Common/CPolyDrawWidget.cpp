@@ -12,14 +12,12 @@ CPolyDrawWidget::CPolyDrawWidget(QWidget *pParent)
 {
         QVBoxLayout *pLayout = new QVBoxLayout;
 
-        CRectangleWidget *pBoundsWidget = new CRectangleWidget("Bounds");
         QPushButton *pAddedPoint        = new QPushButton("Добавить точку");
 
         connect(pAddedPoint, &QPushButton::clicked, this, &CPolyDrawWidget::on_createPoint_clicked);
 
-        m_arWidgets.push_back(pBoundsWidget);
+        AddWidget(new CRectangleWidget("Bounds"), pLayout);
 
-        pLayout->addWidget(pBoundsWidget);
         pLayout->addWidget(pAddedPoint);
 
         setLayout(pLayout);

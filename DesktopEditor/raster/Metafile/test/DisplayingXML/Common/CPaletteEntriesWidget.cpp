@@ -11,18 +11,13 @@ CPaletteEntriesWidget::CPaletteEntriesWidget(QWidget *pParent)
 {
         QVBoxLayout *pLayout = new QVBoxLayout;
 
-        CFormWidget *pIhPalWidget = new CFormWidget("ihPal", "1");
-        CFormWidget *pStartWidget = new CFormWidget("Start", "1");
-
-        m_arWidgets.push_back(pIhPalWidget);
-        m_arWidgets.push_back(pStartWidget);
+        AddWidgets({new CFormWidget("ihPal", "1"),
+                    new CFormWidget("Start", "1")}, pLayout);
 
         QPushButton *pAddedButton = new QPushButton("Добавить цвет");
 
         connect(pAddedButton, &QPushButton::clicked, this, &CPaletteEntriesWidget::on_CreateColor_clicked);
 
-        pLayout->addWidget(pIhPalWidget);
-        pLayout->addWidget(pStartWidget);
         pLayout->addWidget(pAddedButton);
 
         setLayout(pLayout);
@@ -31,16 +26,6 @@ CPaletteEntriesWidget::CPaletteEntriesWidget(QWidget *pParent)
 CPaletteEntriesWidget::~CPaletteEntriesWidget()
 {
 
-}
-
-QList<QStandardItem *> CPaletteEntriesWidget::GetData() const
-{
-        QList<QStandardItem*> arDatas;
-
-        for (const CSharedWidget* oWidget : m_arWidgets)
-                arDatas.append(oWidget->GetData());
-
-        return arDatas;
 }
 
 void CPaletteEntriesWidget::on_CreateColor_clicked()

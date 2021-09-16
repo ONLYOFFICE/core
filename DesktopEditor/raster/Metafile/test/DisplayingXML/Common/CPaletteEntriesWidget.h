@@ -8,8 +8,6 @@ class CPaletteEntriesWidget : public CSharedWidget
 public:
         explicit CPaletteEntriesWidget(QWidget *pParent = NULL);
         virtual ~CPaletteEntriesWidget();
-
-        virtual QList<QStandardItem*> GetData() const override;
 private slots:
         void on_CreateColor_clicked();
 private:

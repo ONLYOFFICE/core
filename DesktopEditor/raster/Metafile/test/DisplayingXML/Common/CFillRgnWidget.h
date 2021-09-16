@@ -8,8 +8,6 @@ class CFillRgnWidget : public CSharedWidget
 public:
         explicit CFillRgnWidget(QWidget *pParent = NULL);
         virtual ~CFillRgnWidget();
-
-        virtual QList<QStandardItem*> GetData() const override;
 private slots:
         void on_createRgnData_clicked();
 private:

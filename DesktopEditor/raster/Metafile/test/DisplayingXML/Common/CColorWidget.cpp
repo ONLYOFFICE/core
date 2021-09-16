@@ -74,18 +74,15 @@ void CColorWidget::on_select_color_clicked()
                 ((QHBoxLayout*)layout())->addLayout(m_pColorLayout);
         }
         else
+        {
                 ClearLayout(m_pColorLayout);
-
-        QLabel *pRedValue       = new QLabel(QString("Red: %1").arg(m_oColor.red()));
-        QLabel *pGreenValue     = new QLabel(QString("Green: %1").arg(m_oColor.green()));
-        QLabel *pBlueValue      = new QLabel(QString("Blue: %1").arg(m_oColor.blue()));
+        }
 
         QFrame *pColorFrame = new QFrame;
         pColorFrame->setStyleSheet(QString("background-color: rgb(%1, %2, %3)").arg(m_oColor.red()).arg(m_oColor.green()).arg(m_oColor.blue()));
 
-        m_pColorLayout->addWidget(pRedValue);
-        m_pColorLayout->addWidget(pGreenValue);
-        m_pColorLayout->addWidget(pBlueValue);
+        m_pColorLayout->addWidget(new QLabel(QString("Red: %1").arg(m_oColor.red())));
+        m_pColorLayout->addWidget(new QLabel(QString("Green: %1").arg(m_oColor.green())));
+        m_pColorLayout->addWidget(new QLabel(QString("Blue: %1").arg(m_oColor.blue())));
         m_pColorLayout->addWidget(pColorFrame);
-
 }

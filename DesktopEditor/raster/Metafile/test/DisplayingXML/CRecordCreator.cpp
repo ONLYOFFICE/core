@@ -7,24 +7,26 @@
 #include "Common/CLogColorSpaceWidget.h"
 #include "Common/CGradientFillWidget.h"
 #include "Common/CSmallTextOutWidget.h"
+#include "Common/CPolyTextOutWidget.h"
+#include "Common/CLogFontExDvWidget.h"
 #include "Common/CLogBrushExWidget.h"
 #include "Common/CLogPaletteWidget.h"
 #include "Common/CExtTextOutWidget.h"
+#include "Common/CInvertRgnWidget.h"
 #include "Common/CRectangleWidget.h"
+#include "Common/CFrameRgnWidget.h"
 #include "Common/CPolyDrawWidget.h"
+#include "Common/CPaintRgnWidget.h"
 #include "Common/CFillRgnWidget.h"
 #include "Common/CPointsWidget.h"
 #include "Common/CLogPenWidget.h"
-#include "Common/CPolyTextOut.h"
-#include "Common/CLogFontExDv.h"
 #include "Common/CPointWidget.h"
 #include "Common/CColorWidget.h"
 #include "Common/CEmptyWidget.h"
+#include "Common/CXFormWidget.h"
 #include "Common/CSizeWidget.h"
 #include "Common/CPolyWidget.h"
 #include "Common/CFormWidget.h"
-#include "Common/CInvertRgn.h"
-#include "Common/CFrameRgn.h"
 #include "Common/Common.h"
 
 #include <QLabel>
@@ -191,6 +193,10 @@ void CRecordCreator::on_selectButton_clicked()
                 case 109: CreateFormWidget("EMR_SETLAYOUT", "LayoutMode");              break;
                 case 110: CreateEmptyWidgets("EMR_TRANSPARENTBLT");                     break;
                 case 111: Create_Widgets_EMR_GRADIENTFILL();                            break;
+                case 112: Create_Widgets_EMR_SETLINKEDUFIS();                           break;
+                case 113: Create_Widgets_EMR_SETTEXTJUSTIFICATION();                    break;
+                case 114: Create_Widgets_EMR_COLORMATCHTOTARGETW();                     break;
+                case 115: Create_Widgets_EMR_CREATECOLORSPACEW();                       break;
         }
 
         QPushButton *pOkButton =  ui->buttonBox->button(QDialogButtonBox::Ok);
@@ -202,18 +208,14 @@ void CRecordCreator::CreatePointWidgets(const QString& qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
 
-        CreateRectangleWidget("Bounds");
-        CreatePointsWidget();
+        AddSharedWidgets({new CRectangleWidget("Bounds"),
+                          new CPointsWidget()});
 }
 
 void CRecordCreator::CreateFormWidget(const QString& qsName, const QString& qsFormName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
-
-        CFormWidget *pFormWidget = new CFormWidget(qsFormName, "0");
-        ui->dataLayout->addWidget(pFormWidget);
-
-        m_arWidgets.push_back(pFormWidget);
+        AddSharedWidget(new CFormWidget(qsFormName, "0"));
 }
 
 void CRecordCreator::CreateColorWidgets(const QString& qsName, bool bBounds)
@@ -221,31 +223,21 @@ void CRecordCreator::CreateColorWidgets(const QString& qsName, bool bBounds)
         this->setWindowTitle(QString("Create: %1").arg(qsName));
 
         if (bBounds)
-                CreateRectangleWidget("Bounds");
+                AddSharedWidget(new CRectangleWidget("Bounds"));
 
-        CreateColorWidget();
+        AddSharedWidget(new CColorWidget("Color"));
 }
 
 void CRecordCreator::CreateEmptyWidgets(const QString& qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
-
-        CEmptyWidget *pEmptyWidget = new CEmptyWidget(qsName);
-
-        QLabel *pLabel = new QLabel("Запись не содержит параметров");
-        ui->dataLayout->addWidget(pLabel);
-
-        m_arWidgets.push_back(pEmptyWidget);
+        AddSharedWidget(new CEmptyWidget(qsName));
 }
 
 void CRecordCreator::CreateRectangleWidgets(const QString &qsName, const QString &qsReactangleName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
-
-        CRectangleWidget *pRectangleWidget = new CRectangleWidget(qsReactangleName);
-        ui->dataLayout->addWidget(pRectangleWidget);
-
-        m_arWidgets.push_back(pRectangleWidget);
+        AddSharedWidget(new CRectangleWidget(qsReactangleName));
 }
 
 void CRecordCreator::CreateScaleWidgets(const QString &qsName)
@@ -282,518 +274,277 @@ void CRecordCreator::CreateScaleWidgets(const QString &qsName)
 void CRecordCreator::CreateArcWidgets(const QString &qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
-
-        CRectangleWidget *pBoxWidget    = new CRectangleWidget("Box");
-        CPointWidget *pStartPointWidget = new CPointWidget("Start");
-        CPointWidget *pEndPointWidget   = new CPointWidget("End");
-
-        m_arWidgets.push_back(pBoxWidget);
-        m_arWidgets.push_back(pStartPointWidget);
-        m_arWidgets.push_back(pEndPointWidget);
-
-        ui->dataLayout->addWidget(pBoxWidget);
-        ui->dataLayout->addWidget(pStartPointWidget);
-        ui->dataLayout->addWidget(pEndPointWidget);
+        AddSharedWidgets({new CRectangleWidget("Box"),
+                          new CPointWidget("Start"),
+                          new CPointWidget("End")});
 }
 
 void CRecordCreator::CreateNotSupportedWidgets(const QString &qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
-
-        QLabel *pLabel = new QLabel("На данный момент создание данной записи не поддерживается");
-
-        ui->dataLayout->addWidget(pLabel);
+        ui->dataLayout->addWidget(new QLabel("На данный момент создание данной записи не поддерживается"));
 }
 
 void CRecordCreator::CreateExtTextOutWidget(const QString &qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
-
-        CExtTextOutWidget *pEmrTextWidget = new CExtTextOutWidget();
-        m_arWidgets.push_back(pEmrTextWidget);
-
-        ui->dataLayout->addWidget(pEmrTextWidget);
+        AddSharedWidget(new CExtTextOutWidget());
 }
 
 void CRecordCreator::CreatePolyTextOutWidget(const QString &qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
-
-        CPolyTextOut *pPolyTextWidget = new CPolyTextOut();
-        m_arWidgets.push_back(pPolyTextWidget);
-
-        ui->dataLayout->addWidget(pPolyTextWidget);
+        AddSharedWidget(new CPolyTextOutWidget());
 }
 
 void CRecordCreator::CreateSetICMPRrofileWidget(const QString &qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
-
-        CFormWidget *pDwFlagsWidget = new CFormWidget("dwFlags","0");
-        CFormWidget *pCbNameWidget  = new CFormWidget("cbName", "0");
-        CFormWidget *pCbDataWidget  = new CFormWidget("cbData", "0");
-        CFormWidget *pDataWidget    = new CFormWidget("Data",   "0");
-
-        m_arWidgets.push_back(pDwFlagsWidget);
-        m_arWidgets.push_back(pCbNameWidget);
-        m_arWidgets.push_back(pCbDataWidget);
-        m_arWidgets.push_back(pDataWidget);
-
-        ui->dataLayout->addWidget(pDwFlagsWidget);
-        ui->dataLayout->addWidget(pCbNameWidget);
-        ui->dataLayout->addWidget(pCbDataWidget);
-        ui->dataLayout->addWidget(pDataWidget);
+        AddSharedWidgets({new CFormWidget("dwFlags","0"),
+                          new CFormWidget("cbName", "0"),
+                          new CFormWidget("cbData", "0"),
+                          new CFormWidget("Data",   "0")});
 }
 
 void CRecordCreator::Create_Widgets_EMR_SETCOLORADJUSTMENT()
 {
         this->setWindowTitle("Create: EMR_SETCOLORADJUSTMENT");
 
-        CFormWidget *pSizeWidget            = new CFormWidget("Size",                   "0");
-        CFormWidget *pValuesWidget          = new CFormWidget("Values",                 "0");
-        CFormWidget *pIndexWidget           = new CFormWidget("IlluminantIndex",        "0");
-        CFormWidget *pRGammaWidget          = new CFormWidget("RedGamma",               "0");
-        CFormWidget *pGGammaWidget          = new CFormWidget("GreenGamma",             "0");
-        CFormWidget *pBGammaWidget          = new CFormWidget("BlueGamma",              "0");
-        CFormWidget *pReferenceBWidget      = new CFormWidget("ReferenceBlack",         "0");
-        CFormWidget *pReferenceWWidget      = new CFormWidget("ReferenceWhite",         "0");
-        CFormWidget *pConstrastWidget       = new CFormWidget("Constrast",              "0");
-        CFormWidget *pBrightnessWidget      = new CFormWidget("Brightness",             "0");
-        CFormWidget *pColorfulnessWidget    = new CFormWidget("Colorfulness",           "0");
-        CFormWidget *pRedGreenTintWidget    = new CFormWidget("RedGreenTint",           "0");
-
-        ui->dataLayout->addWidget(pSizeWidget);
-        ui->dataLayout->addWidget(pValuesWidget);
-        ui->dataLayout->addWidget(pIndexWidget);
-        ui->dataLayout->addWidget(pRGammaWidget);
-        ui->dataLayout->addWidget(pGGammaWidget);
-        ui->dataLayout->addWidget(pBGammaWidget);
-        ui->dataLayout->addWidget(pReferenceBWidget);
-        ui->dataLayout->addWidget(pReferenceWWidget);
-        ui->dataLayout->addWidget(pConstrastWidget);
-        ui->dataLayout->addWidget(pBrightnessWidget);
-        ui->dataLayout->addWidget(pColorfulnessWidget);
-        ui->dataLayout->addWidget(pRedGreenTintWidget);
-
-        m_arWidgets.push_back(pSizeWidget);
-        m_arWidgets.push_back(pValuesWidget);
-        m_arWidgets.push_back(pIndexWidget);
-        m_arWidgets.push_back(pRGammaWidget);
-        m_arWidgets.push_back(pGGammaWidget);
-        m_arWidgets.push_back(pBGammaWidget);
-        m_arWidgets.push_back(pReferenceBWidget);
-        m_arWidgets.push_back(pReferenceWWidget);
-        m_arWidgets.push_back(pConstrastWidget);
-        m_arWidgets.push_back(pBrightnessWidget);
-        m_arWidgets.push_back(pColorfulnessWidget);
-        m_arWidgets.push_back(pRedGreenTintWidget);
+        AddSharedWidgets({new CFormWidget("Size",            "0"),
+                          new CFormWidget("Values",          "0"),
+                          new CFormWidget("IlluminantIndex", "0"),
+                          new CFormWidget("RedGamma",        "0"),
+                          new CFormWidget("GreenGamma",      "0"),
+                          new CFormWidget("BlueGamma",       "0"),
+                          new CFormWidget("ReferenceBlack",  "0"),
+                          new CFormWidget("ReferenceWhite",  "0"),
+                          new CFormWidget("Constrast",       "0"),
+                          new CFormWidget("Brightness",      "0"),
+                          new CFormWidget("Colorfulness",    "0"),
+                          new CFormWidget("RedGreenTint",    "0")});
 }
 
 void CRecordCreator::Create_Widgets_EMR_SETWORLDTRANSFORM()
 {
         this->setWindowTitle("Create: EMR_SETWORLDTRANSFORM");
-
-        CreateXForm();
+        AddSharedWidget(new CXFormWidget());
 }
 
 void CRecordCreator::Create_Widgets_EMR_MODIFYWORLDTRANSFORM()
 {
         this->setWindowTitle("Create: EMR_MODIFYWORLDTRANSFORM");
-
-        CreateXForm();
-
-        CFormWidget *pMode = new CFormWidget("ModifyWorldTransformMode", "1");
-        ui->dataLayout->addWidget(pMode);
-
-        m_arWidgets.push_back(pMode);
+        AddSharedWidgets({new CXFormWidget(),
+                          new CFormWidget("ModifyWorldTransformMode", "1")});
 }
 
 void CRecordCreator::Create_Widgets_EMR_CREATEPEN()
 {
         this->setWindowTitle("Create: EMR_CREATEPEN");
-
-        CFormWidget *pIhPen = new CFormWidget("ihPen", "1");
-        CLogPenWidget *pLogPenWidget = new CLogPenWidget();
-
-        ui->dataLayout->addWidget(pIhPen);
-        ui->dataLayout->addWidget(pLogPenWidget);
-
-        m_arWidgets.push_back(pIhPen);
-        m_arWidgets.push_back(pLogPenWidget);
+        AddSharedWidgets({new CFormWidget("ihPen", "1"),
+                          new CLogPenWidget()});
 }
 
 void CRecordCreator::Create_Widgets_EMR_CREATEBRUSHINDIRECT()
 {
         this->setWindowTitle("Create: EMR_CREATEBRUSHINDIRECT");
-
-        CFormWidget *pIhBrush  = new CFormWidget("ihBrush", "1");
-        CLogBrushExWidget *pLogBrushExWidget = new CLogBrushExWidget();
-
-        ui->dataLayout->addWidget(pIhBrush);
-        ui->dataLayout->addWidget(pLogBrushExWidget);
-
-        m_arWidgets.push_back(pIhBrush);
-        m_arWidgets.push_back(pLogBrushExWidget);
+        AddSharedWidgets({new CFormWidget("ihBrush", "1"),
+                          new CLogBrushExWidget()});
 }
 
 void CRecordCreator::Create_Widgets_EMR_ANGLEARC()
 {
         this->setWindowTitle("Create: EMR_ANGLEARC");
-
-        CPointWidget *pCenterPointWidget    = new CPointWidget("Center");
-        CFormWidget *pRadiusWidget          = new CFormWidget("Radius");
-        CFormWidget *pStartAngleWidget      = new CFormWidget("StartAngle");
-        CFormWidget *pSweepAngleWidget      = new CFormWidget("SweepAngle");
-
-        m_arWidgets.push_back(pCenterPointWidget);
-        m_arWidgets.push_back(pRadiusWidget);
-        m_arWidgets.push_back(pStartAngleWidget);
-        m_arWidgets.push_back(pSweepAngleWidget);
-
-        ui->dataLayout->addWidget(pCenterPointWidget);
-        ui->dataLayout->addWidget(pRadiusWidget);
-        ui->dataLayout->addWidget(pStartAngleWidget);
-        ui->dataLayout->addWidget(pSweepAngleWidget);
+        AddSharedWidgets({new CPointWidget("Center"),
+                          new CFormWidget("Radius"),
+                          new CFormWidget("StartAngle"),
+                          new CFormWidget("SweepAngle")});
 }
 
 void CRecordCreator::Create_Widgets_EMR_ROUNDRECT()
 {
         this->setWindowTitle("Create: EMR_ROUNDRECT");
-
-        CRectangleWidget *pBoxWidget = new CRectangleWidget("Box");
-        CSizeWidget *pCornerWidget = new CSizeWidget("Corner");
-
-        m_arWidgets.push_back(pBoxWidget);
-        m_arWidgets.push_back(pCornerWidget);
-
-        ui->dataLayout->addWidget(pBoxWidget);
-        ui->dataLayout->addWidget(pCornerWidget);
+        AddSharedWidgets({new CRectangleWidget("Box"),
+                          new CSizeWidget("Corner")});
 }
 
 void CRecordCreator::Create_Widgets_EMR_CREATEPALETTE()
 {
         this->setWindowTitle("Create: EMR_CREATEPALETTE");
-
-        CFormWidget *pIhPalWidget = new CFormWidget("ihPal", "1");
-        CLogPaletteWidget *pLogPaletteWidget = new CLogPaletteWidget();
-
-        m_arWidgets.push_back(pIhPalWidget);
-        m_arWidgets.push_back(pLogPaletteWidget);
-
-        ui->dataLayout->addWidget(pIhPalWidget);
-        ui->dataLayout->addWidget(pLogPaletteWidget);
+        AddSharedWidgets({new CFormWidget("ihPal", "1"),
+                          new CLogPaletteWidget()});
 }
 
 void CRecordCreator::Create_Widgets_EMR_SETPALETTEENTRIES()
 {
         this->setWindowTitle("Create: EMR_SETPALETTEENTRIES");
-
-        CPaletteEntriesWidget *pPaletteEntriesWidget = new CPaletteEntriesWidget();
-        ui->dataLayout->addWidget(pPaletteEntriesWidget);
-
-        m_arWidgets.push_back(pPaletteEntriesWidget);
+        AddSharedWidget(new CPaletteEntriesWidget());
 }
 
 void CRecordCreator::Create_Widgets_EMR_RESIZEPALETTE()
 {
         this->setWindowTitle("Create: EMR_RESIZEPALETTE");
-
-        CFormWidget *pIhPalWidget = new CFormWidget("ihPal", "1");
-        CFormWidget *pCountNumber = new CFormWidget("NumberOfEntries", "1");
-
-        m_arWidgets.push_back(pIhPalWidget);
-        m_arWidgets.push_back(pCountNumber);
-
-        ui->dataLayout->addWidget(pIhPalWidget);
-        ui->dataLayout->addWidget(pCountNumber);
+        AddSharedWidgets({new CFormWidget("ihPal", "1"),
+                          new CFormWidget("NumberOfEntries", "1")});
 }
 
 void CRecordCreator::Create_Widgets_EMR_EXTFLOODFILL()
 {
         this->setWindowTitle("Create: EMR_EXTFLOODFILL");
-
-        CPointWidget *pStartPointWidget = new CPointWidget("Start");
-        CColorWidget *pColorWidget      = new CColorWidget("Color");
-        CFormWidget *pModeWidget        = new CFormWidget("FloodFillMode", "1");
-
-        m_arWidgets.push_back(pStartPointWidget);
-        m_arWidgets.push_back(pColorWidget);
-        m_arWidgets.push_back(pModeWidget);
-
-        ui->dataLayout->addWidget(pStartPointWidget);
-        ui->dataLayout->addWidget(pColorWidget);
-        ui->dataLayout->addWidget(pModeWidget);
+        AddSharedWidgets({new CPointWidget("Start"),
+                          new CColorWidget("Color"),
+                          new CFormWidget("FloodFillMode", "1")});
 }
 
 void CRecordCreator::Create_Widgets_EMR_LINETO()
 {
         this->setWindowTitle("Create: EMR_LINETO");
-
-        CPointWidget *pPointWidget = new CPointWidget("Point");
-
-        m_arWidgets.push_back(pPointWidget);
-        ui->dataLayout->addWidget(pPointWidget);
+        AddSharedWidget(new CPointWidget("Point"));
 }
 
 void CRecordCreator::Create_Widgets_EMR_FILLRGN()
 {
         this->setWindowTitle("Create: EMR_FILLRGN");
-
-        CFillRgnWidget *pFillRgnWidget = new CFillRgnWidget();
-        m_arWidgets.push_back(pFillRgnWidget);
-
-        ui->dataLayout->addWidget(pFillRgnWidget);
+        AddSharedWidget(new CFillRgnWidget());
 }
 
 void CRecordCreator::Create_Widgets_EMR_FRAMERGN()
 {
         this->setWindowTitle("Create: EMR_FRAMERGN");
-
-        CFrameRgn *pFrameRgnWidget = new CFrameRgn();
-        m_arWidgets.push_back(pFrameRgnWidget);
-
-        ui->dataLayout->addWidget(pFrameRgnWidget);
+        AddSharedWidget(new CFrameRgnWidget());
 }
 
 void CRecordCreator::Create_Widgets_EMR_INVERTRGN()
 {
         this->setWindowTitle("Create: EMR_INVERTRGN");
-
-        CInvertRgn *pInvertRgnWidget = new CInvertRgn();
-        m_arWidgets.push_back(pInvertRgnWidget);
-
-        ui->dataLayout->addWidget(pInvertRgnWidget);
+        AddSharedWidget(new CInvertRgnWidget());
 }
 
 void CRecordCreator::Create_Widgets_EMR_PAINTRGN()
 {
         this->setWindowTitle("Create: EMR_PAINTRGN");
-
-        CPaintRgn *pPaintRgnWidget = new CPaintRgn();
-        m_arWidgets.push_back(pPaintRgnWidget);
-
-        ui->dataLayout->addWidget(pPaintRgnWidget);
+        AddSharedWidget(new CPaintRgnWidget());
 }
 
 void CRecordCreator::Create_Widgets_EMR_EXTSELECTCLIPRGN()
 {
         this->setWindowTitle("Create: EMR_EXTSELECTCLIPRGN");
-
-        CExtSelectClipRgnWidget *pExtSelectClipRgnWidget = new CExtSelectClipRgnWidget();
-        m_arWidgets.push_back(pExtSelectClipRgnWidget);
-
-        ui->dataLayout->addWidget(pExtSelectClipRgnWidget);
+        AddSharedWidget(new CExtSelectClipRgnWidget());
 }
 
 void CRecordCreator::Create_Widgets_EMR_EXTCREATEFONTINDIRECTW()
 {
         this->setWindowTitle("Create: EMR_EXTCREATEFONTINDIRECTW");
-
-        CFormWidget *pIhFonts       = new CFormWidget("ihFonts", "1");
-        CLogFontExDv *pLogFontExDv  = new CLogFontExDv();
-
-        m_arWidgets.push_back(pIhFonts);
-        m_arWidgets.push_back(pLogFontExDv);
-
-        ui->dataLayout->addWidget(pIhFonts);
-        ui->dataLayout->addWidget(pLogFontExDv);
+        AddSharedWidgets({new CFormWidget("ihFonts", "1"),
+                          new CLogFontExDvWidget()});
 }
 
 void CRecordCreator::Create_Widgets_EMR_CREATECOLORSPACE()
 {
         this->setWindowTitle("Create: EMR_CREATECOLORSPACE");
-
-        CFormWidget *pIhCS = new CFormWidget("ihCS", "1");
-        CLogColorSpaceWidget *pLogColorSpaceWidget = new CLogColorSpaceWidget();
-
-        m_arWidgets.push_back(pIhCS);
-        m_arWidgets.push_back(pLogColorSpaceWidget);
-
-        ui->dataLayout->addWidget(pIhCS);
-        ui->dataLayout->addWidget(pLogColorSpaceWidget);
+        AddSharedWidgets({new CFormWidget("ihCS", "1"),
+                          new CLogColorSpaceWidget()});
 }
 
 void CRecordCreator::Create_Widgets_EMR_GLSBOUNDEDRECORD()
 {
         this->setWindowTitle("Create: EMR_GLSBOUNDEDRECORD");
-
-        CRectangleWidget *pRectangleWidget  = new CRectangleWidget("Bounds");
-        CFormWidget *pDataWidget            = new CFormWidget("Data");
-
-        m_arWidgets.push_back(pRectangleWidget);
-        m_arWidgets.push_back(pDataWidget);
-
-        ui->dataLayout->addWidget(pRectangleWidget);
-        ui->dataLayout->addWidget(pDataWidget);
+        AddSharedWidgets({new CRectangleWidget("Bounds"),
+                          new CFormWidget("Data")});
 }
 
 void CRecordCreator::Create_Widgets_EMR_PIXELFORMAT()
 {
         this->setWindowTitle("Create: EMR_PIXELFORMAT");
-
-        CPixelFormatDescriptorWidget *pPixelFormatDescriptorWidget = new CPixelFormatDescriptorWidget();
-
-        m_arWidgets.push_back(pPixelFormatDescriptorWidget);
-
-        ui->dataLayout->addWidget(pPixelFormatDescriptorWidget);
+        AddSharedWidget(new CPixelFormatDescriptorWidget());
 }
 
 void CRecordCreator::Create_Widgets_EMR_SMALLTEXTOUT()
 {
         this->setWindowTitle("Create: EMR_SMALLTEXTOUT");
-
-        CSmallTextOutWidget *pSmallTextOutWidget = new CSmallTextOutWidget();
-
-        m_arWidgets.push_back(pSmallTextOutWidget);
-
-        ui->dataLayout->addWidget(pSmallTextOutWidget);
+        AddSharedWidget(new CSmallTextOutWidget());
 }
 
 void CRecordCreator::Create_Widgets_EMR_FORCEUFIMAPPING()
 {
         this->setWindowTitle("Create: EMR_FORCEUFIMAPPING");
-
-        CUniversalFontIdWidget *pUniversalFontIdWidget = new CUniversalFontIdWidget();
-
-        m_arWidgets.push_back(pUniversalFontIdWidget);
-
-        ui->dataLayout->addWidget(pUniversalFontIdWidget);
+        AddSharedWidget(new CUniversalFontIdWidget());
 }
 
 void CRecordCreator::Create_Widgets_EMR_NAMEDESCAPE()
 {
         this->setWindowTitle("Create: EMR_NAMEDESCAPE");
-
-        CFormWidget *pDriverNameWidget  = new CFormWidget("DriverName");
-        CFormWidget *pDataWidget        = new CFormWidget("Data");
-
-        m_arWidgets.push_back(pDriverNameWidget);
-        m_arWidgets.push_back(pDataWidget);
-
-        ui->dataLayout->addWidget(pDriverNameWidget);
-        ui->dataLayout->addWidget(pDataWidget);
+        AddSharedWidgets({new CFormWidget("DriverName"),
+                          new CFormWidget("Data")});
 }
 
 void CRecordCreator::Create_Widgets_EMR_COLORCORRECTPALETTE()
 {
         this->setWindowTitle("Create: EMR_COLORCORRECTPALETTE");
-
-        CFormWidget *pIhPaletteWidget   = new CFormWidget("ihPalette",  "0");
-        CFormWidget *pNFirstEntryWidget = new CFormWidget("nFirstEntry","0");
-        CFormWidget *pNPalEntriesWidget = new CFormWidget("nPalEntries","0");
-
-        m_arWidgets.push_back(pIhPaletteWidget);
-        m_arWidgets.push_back(pNFirstEntryWidget);
-        m_arWidgets.push_back(pNPalEntriesWidget);
-
-        ui->dataLayout->addWidget(pIhPaletteWidget);
-        ui->dataLayout->addWidget(pNFirstEntryWidget);
-        ui->dataLayout->addWidget(pNPalEntriesWidget);
+        AddSharedWidgets({new CFormWidget("ihPalette",  "0"),
+                          new CFormWidget("nFirstEntry","0"),
+                          new CFormWidget("nPalEntries","0")});
 }
 
 void CRecordCreator::Create_Widgets_EMR_GRADIENTFILL()
 {
         this->setWindowTitle("Create: EMR_GRADIENTFILL");
+        AddSharedWidget(new CGradientFillWidget());
+}
 
-        CGradientFillWidget *pGradientFillWidget = new CGradientFillWidget();
+void CRecordCreator::Create_Widgets_EMR_SETLINKEDUFIS()
+{
+        this->setWindowTitle("Create: Create: EMR_GRADIENTFILL");
+        AddSharedWidget(new CLinkedUFISWidget());
+}
 
-        m_arWidgets.push_back(pGradientFillWidget);
+void CRecordCreator::Create_Widgets_EMR_SETTEXTJUSTIFICATION()
+{
+        this->setWindowTitle("Create: Create: EMR_SETTEXTJUSTIFICATION");
+        AddSharedWidgets({new CFormWidget("nBreakExtra", "0"),
+                          new CFormWidget("nBreakCount", "0")});
+}
 
-        ui->dataLayout->addWidget(pGradientFillWidget);
+void CRecordCreator::Create_Widgets_EMR_COLORMATCHTOTARGETW()
+{
+        this->setWindowTitle("Create: Create: EMR_SETTEXTJUSTIFICATION");
+        AddSharedWidgets({new CFormWidget("dwAction", "1"),
+                          new CFormWidget("dwFlags",  "0"),
+                          new CFormWidget("Name"),
+                          new CFormWidget("Data")});
+}
+
+void CRecordCreator::Create_Widgets_EMR_CREATECOLORSPACEW()
+{
+        this->setWindowTitle("Create: Create: EMR_SETTEXTJUSTIFICATION");
+        AddSharedWidgets({new CFormWidget("ihCS",   "1"),
+                          new CLogColorSpaceWidget(),
+                          new CFormWidget("dwFlags","0"),
+                          new CFormWidget("Data")});
 }
 
 void CRecordCreator::CreatePolyWidgets(const QString& qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
-
-        CreateRectangleWidget("Bounds");
-        CreatePolyWidget();
+        AddSharedWidgets({new CRectangleWidget("Bounds"),
+                          new CPolyWidget()});
 }
 
 void CRecordCreator::CreatePolyDrawWidgets(const QString &qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
-
-        CPolyDrawWidget *pPolyDrawWidget = new CPolyDrawWidget();
-        m_arWidgets.push_back(pPolyDrawWidget);
-
-        ui->dataLayout->addWidget(pPolyDrawWidget);
-}
-
-void CRecordCreator::CreateRectangleWidget(const QString& qsName)
-{
-        CRectangleWidget *pRectanleWidget = new CRectangleWidget(qsName);
-        ui->dataLayout->addWidget(pRectanleWidget);
-
-        m_arWidgets.push_back(pRectanleWidget);
-}
-
-void CRecordCreator::CreatePointsWidget()
-{
-        CPointsWidget *pPointsWidget = new CPointsWidget();
-        ui->dataLayout->addWidget(pPointsWidget);
-
-        m_arWidgets.push_back(pPointsWidget);
-}
-
-void CRecordCreator::CreateColorWidget()
-{
-        CColorWidget *pColorWidget = new CColorWidget("Color");
-        ui->dataLayout->addWidget(pColorWidget);
-
-        m_arWidgets.push_back(pColorWidget);
-}
-
-void CRecordCreator::CreatePolyWidget()
-{
-        CPolyWidget *pPolyWidget = new CPolyWidget;
-        ui->dataLayout->addWidget(pPolyWidget);
-
-        m_arWidgets.push_back(pPolyWidget);
-}
-
-void CRecordCreator::CreateXForm()
-{
-        CFormWidget *pM11 = new CFormWidget("M11", "0");
-        CFormWidget *pM12 = new CFormWidget("M12", "0");
-        CFormWidget *pM21 = new CFormWidget("M21", "0");
-        CFormWidget *pM22 = new CFormWidget("M22", "0");
-        CFormWidget *pDx  = new CFormWidget("Dx",  "0");
-        CFormWidget *pDy  = new CFormWidget("Dy",  "0");
-
-        m_arWidgets.push_back(pM11);
-        m_arWidgets.push_back(pM12);
-        m_arWidgets.push_back(pM21);
-        m_arWidgets.push_back(pM22);
-        m_arWidgets.push_back(pDx);
-        m_arWidgets.push_back(pDy);
-
-        ui->dataLayout->addWidget(pM11);
-        ui->dataLayout->addWidget(pM12);
-        ui->dataLayout->addWidget(pM21);
-        ui->dataLayout->addWidget(pM22);
-        ui->dataLayout->addWidget(pDx);
-        ui->dataLayout->addWidget(pDy);
+        AddSharedWidget(new CPolyDrawWidget());
 }
 
 void CRecordCreator::CreateEXTEX(const QString& qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
-
-        CSizeWidget *pSizeWidget = new CSizeWidget("Size");
-        ui->dataLayout->addWidget(pSizeWidget);
-
-        m_arWidgets.push_back(pSizeWidget);
+        AddSharedWidget(new CSizeWidget("Size"));
 }
 
 void CRecordCreator::CreateORGEX(const QString& qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
-
-        CPointWidget *pPointWidget = new CPointWidget("Extent");
-        ui->dataLayout->addWidget(pPointWidget);
-
-        m_arWidgets.push_back(pPointWidget);
+        AddSharedWidget(new CPointWidget("Extent"));
 }
 
 void CRecordCreator::ConvertWidgets(const QString& qsName)
@@ -805,6 +556,21 @@ void CRecordCreator::ConvertWidgets(const QString& qsName)
 
         for (const CSharedWidget* pWidget : m_arWidgets)
                 m_pNewItem->appendRows(pWidget->GetData());
+}
+
+void CRecordCreator::AddSharedWidget(CSharedWidget *pWidget)
+{
+        if (NULL == pWidget)
+                return;
+
+        ui->dataLayout->addWidget(pWidget);
+        m_arWidgets.push_back(pWidget);
+}
+
+void CRecordCreator::AddSharedWidgets(std::vector<CSharedWidget *> arWidgets)
+{
+        for (CSharedWidget* pWidget : arWidgets)
+                AddSharedWidget(pWidget);
 }
 
 void CRecordCreator::ClearData()

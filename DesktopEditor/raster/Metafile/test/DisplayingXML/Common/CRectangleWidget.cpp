@@ -17,12 +17,12 @@ CRectangleWidget::CRectangleWidget(const QString& qsName, QWidget *pParent) :
         QLabel *pName = new QLabel(QString("%1:").arg(m_qsName));
         pName->setStyleSheet("QLabel { text-decoration: underline; }");
 
+        pLayout->addWidget(pName);
+
         CFormWidget *pLeftWidget    = new CFormWidget("Left",   "0");
         CFormWidget *pTopWidget     = new CFormWidget("Top",    "0");
         CFormWidget *pRightWidget   = new CFormWidget("Right",  "0");
         CFormWidget *pBottomWidget  = new CFormWidget("Bottom", "0");
-
-        pLayout->addWidget(pName);
 
         pLayout->addWidget(pLeftWidget,   1, 0);
         pLayout->addWidget(pTopWidget,    2, 0);
@@ -45,6 +45,6 @@ CRectangleWidget::~CRectangleWidget()
 QList<QStandardItem*> CRectangleWidget::GetData() const
 {
         QStandardItem *pStandardItem = new QStandardItem(QString("<%1>").arg(m_qsName));
-        ConvertWidgets(pStandardItem);
+        pStandardItem->appendRows(CSharedWidget::GetData());
         return {pStandardItem};
 }

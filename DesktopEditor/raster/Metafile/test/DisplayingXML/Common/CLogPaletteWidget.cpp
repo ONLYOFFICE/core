@@ -33,10 +33,7 @@ QList<QStandardItem *> CLogPaletteWidget::GetData() const
 {
         QStandardItem *pStandardItem = new QStandardItem("<LogPalette>");
         pStandardItem->appendRow(new QStandardItem("<Version>768</Version>"));
-
-        for (const CSharedWidget* pWidget: m_arWidgets)
-                pStandardItem->appendRow(pWidget->GetData());
-
+        pStandardItem->appendRows(CSharedWidget::GetData());
         return {pStandardItem};
 }
 

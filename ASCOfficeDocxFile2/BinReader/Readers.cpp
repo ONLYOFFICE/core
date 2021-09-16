@@ -9852,6 +9852,10 @@ int BinaryFileReader::ReadMainTable()
 				m_oFileWriter.m_bGlossaryMode = false;
 
 				m_oFileWriter.m_pCurrentSettings = &oSettings;
+				
+				smart_ptr<PPTX::Logic::ClrMap> pClrMap = m_oFileWriter.m_pCurrentSettings->m_oClrSchemeMapping.GetPointer();
+				pClrMap.AddRef();
+				*m_oFileWriter.m_pDrawingConverter->m_pClrMap = pClrMap;
 			}
 			else res = c_oSerConstants::ReadUnknown;
 		}break;

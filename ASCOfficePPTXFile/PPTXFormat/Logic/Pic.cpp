@@ -172,12 +172,12 @@ namespace PPTX
 
 					COfficeFileFormatChecker office_checker;
 					office_checker.isOOXFormatFile(oox_file.GetPath());
-//-----------------------------------------------------------------------------------------
-				DocWrapper::FontProcessor oFontProcessor;
-				NSBinPptxRW::CDrawingConverter oDrawingConverter;
+	//-----------------------------------------------------------------------------------------
+					DocWrapper::FontProcessor oFontProcessor;
+					NSBinPptxRW::CDrawingConverter oDrawingConverter;
 				
-				NSCommon::smart_ptr<OOX::IFileContainer>	old_rels	= pWriter->GetRels();
-                NSCommon::smart_ptr<PPTX::Theme>            old_theme	= *pWriter->m_pTheme;
+					NSCommon::smart_ptr<OOX::IFileContainer>	old_rels	= pWriter->GetRels();
+					NSCommon::smart_ptr<PPTX::Theme>            old_theme	= *pWriter->m_pTheme;
 
 					NSShapeImageGen::CMediaManager* old_manager = oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager;
 					oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
@@ -202,25 +202,25 @@ namespace PPTX
 					}
 					else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX ||
 						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
-				{
-					type = 2;
+					{
+						type = 2;
 					
-					BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor); 
-					OOX::Spreadsheet::CXlsx oXlsxEmbedded(oox_unpacked);										
+						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor); 
+						OOX::Spreadsheet::CXlsx oXlsxEmbedded(oox_unpacked);										
 					
-					xlsxBinaryWriter.intoBindoc(&oXlsxEmbedded, *oDrawingConverter.m_pBinaryWriter , NULL, &oDrawingConverter);					
-                }
-				//else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX)
-				//{
-				//}
-				else
-				{//unknown ms package
-					oDrawingConverter.m_pBinaryWriter->WriteString1(2, ole_file->filename().GetFilename());
-				}		
-				pWriter->SetRels(old_rels);
-                *pWriter->m_pTheme = old_theme;
-				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = old_manager;
-
+						xlsxBinaryWriter.intoBindoc(&oXlsxEmbedded, *oDrawingConverter.m_pBinaryWriter , NULL, &oDrawingConverter);					
+					}
+					//else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX)
+					//{
+					//}
+					else
+					{//unknown ms package
+						oDrawingConverter.m_pBinaryWriter->WriteString1(2, ole_file->filename().GetFilename());
+					}
+		
+					pWriter->SetRels(old_rels);
+					*pWriter->m_pTheme = old_theme;
+					oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = old_manager;
 //---------------------------------------------------------------------------------------------------------------------					
 					pWriter->StartRecord(1);
 					pWriter->WriteBYTE(type);

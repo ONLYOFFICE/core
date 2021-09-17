@@ -10,6 +10,7 @@
 
 #include "v8.h"
 #include "libplatform/libplatform.h"
+#include "src/base/sys-info.h"
 
 #ifdef V8_VERSION_87_PLUS
 #define kV8NormalString v8::NewStringType::kNormal
@@ -130,6 +131,15 @@ public:
         m_pAllocator = new MallocArrayBufferAllocator();
     #endif
         create_params.array_buffer_allocator = m_pAllocator;
+
+        int64_t nMaxVirtualMemory = v8::base::SysInfo::AmountOfVirtualMemory();
+        if (0 == nMaxVirtualMemory)
+            nMaxVirtualMemory = 4000000000; // 4Gb
+
+        create_params.constraints.ConfigureDefaults(
+              v8::base::SysInfo::AmountOfPhysicalMemory(),
+              nMaxVirtualMemory);
+
         return v8::Isolate::New(create_params);
     }
 };

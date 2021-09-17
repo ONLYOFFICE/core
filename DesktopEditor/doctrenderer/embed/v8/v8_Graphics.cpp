@@ -124,7 +124,7 @@ namespace NSGraphics
     {
         v8::EscapableHandleScope handle_scope(isolate);
 
-        v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New();
+        v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New(isolate);
         result->SetInternalFieldCount(1);
 
         v8::Isolate* current = v8::Isolate::GetCurrent();

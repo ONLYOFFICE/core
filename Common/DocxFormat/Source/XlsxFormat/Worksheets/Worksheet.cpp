@@ -570,8 +570,7 @@ namespace OOX
 				m_oSheetFormatPr.Init();
 			if(false == m_oSheetFormatPr->m_oDefaultRowHeight.IsInit())
 			{
-				m_oSheetFormatPr->m_oDefaultRowHeight.Init();
-				m_oSheetFormatPr->m_oDefaultRowHeight->SetValue(15);
+				m_oSheetFormatPr->m_oDefaultRowHeight = 15.;
 			}
 			if(false == m_oSheetViews.IsInit())
 				m_oSheetViews.Init();

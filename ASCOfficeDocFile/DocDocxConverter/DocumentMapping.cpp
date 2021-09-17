@@ -630,8 +630,8 @@ namespace DocFileFormat
 						d = (int)_writeTocLink.find(L" ");
 						_writeTocLink = _writeTocLink.substr(0, d);
 						
-						_writeAfterRun	=	std::wstring (L"<w:hyperlink w:anchor = \"");
-						_writeAfterRun +=	_writeTocLink;
+						_writeAfterRun	=	std::wstring (L"<w:hyperlink w:anchor=\"");
+						_writeAfterRun +=	XmlUtils::EncodeXmlString(_writeTocLink);
 						_writeAfterRun +=	std::wstring (L"\" w:history=\"1\">");
 
 						break;								

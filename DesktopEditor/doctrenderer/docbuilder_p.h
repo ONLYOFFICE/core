@@ -179,9 +179,6 @@ namespace NSDoctRenderer
         {
             // Do not forget call СDocBuilder::Dispose() method!!!
             CJSContext::ExternalInitialize();
-            // под линуксом предыдущая функция создает файл!!!
-            if (NSFile::CFileBinary::Exists(m_sTmpFolder))
-                NSFile::CFileBinary::Remove(m_sTmpFolder);
         }
 
         void Init()

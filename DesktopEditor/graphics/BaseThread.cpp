@@ -86,7 +86,10 @@ namespace NSThreads
     DWORD WINAPI CBaseThread::__ThreadProc(void* pv)
     {
         CBaseThread* pThis = (CBaseThread*)pv;
-        return pThis->ThreadProc();
+        DWORD value = pThis->ThreadProc();
+        if (pThis->m_bIsNeedDestroy)
+            delete pThis;
+        return value;
     }
 
     class __native_thread : public CThreadDescriptor
@@ -119,6 +122,10 @@ namespace NSThreads
 
         CBaseThread* pThis = (CBaseThread*)pv;
         pThis->ThreadProc();
+
+        if (pThis->m_bIsNeedDestroy)
+            delete pThis;
+
         return NULL;
     }
     class __native_thread : public CThreadDescriptor
@@ -146,6 +153,8 @@ namespace NSThreads
 
         m_lError			= 0;
         m_lThreadPriority	= 0;
+
+        m_bIsNeedDestroy = false;
     }
     CBaseThread::~CBaseThread()
     {
@@ -191,6 +200,10 @@ namespace NSThreads
     {
         m_bRunThread = FALSE;
         RELEASEOBJECT(m_hThread);
+    }
+    void CBaseThread::DestroyOnFinish()
+    {
+        m_bIsNeedDestroy = true;
     }
 
     INT CBaseThread::IsSuspended() { return m_bSuspend; }

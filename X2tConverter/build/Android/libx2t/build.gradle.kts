@@ -76,9 +76,9 @@ android {
             val dh = file("${extra.get("PATH_LIB_BUILD_TOOLS")}/$abi")
             dh.listFiles().forEach {
                 if (it.name.contains(".so"))
-                    pickFirst("lib/$abi/${it.name}")
+                    jniLibs.pickFirsts.add("lib/$abi/${it.name}")
             }
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB")}.so")
         }
     }
 }

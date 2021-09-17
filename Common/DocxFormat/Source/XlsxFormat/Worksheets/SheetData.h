@@ -266,7 +266,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow);
-            virtual void fromBin(XLS::BaseObjectPtr& obj);
+            void fromBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const
 			{
@@ -525,7 +525,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 
-            virtual void fromBin(XLS::BaseObjectPtr& obj);
+            void fromBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const
 			{

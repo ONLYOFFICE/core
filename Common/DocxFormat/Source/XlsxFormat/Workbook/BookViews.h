@@ -78,7 +78,7 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-            virtual void fromBin(XLS::BaseObjectPtr& obj)
+            void fromBin(XLS::BaseObjectPtr& obj)
             {
                 ReadAttributes(obj);
             }
@@ -203,7 +203,7 @@ namespace OOX
 				}
 			}
 
-            virtual void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
             {
                 //ReadAttributes(obj);
 

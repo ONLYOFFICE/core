@@ -76,7 +76,7 @@ namespace OOX
 				m_oRef = oReader.GetText3();
 			}
 
-            virtual void fromBin(XLS::BaseObjectPtr& obj)
+            void fromBin(XLS::BaseObjectPtr& obj)
             {
                 ReadAttributes(obj);
             }
@@ -188,7 +188,7 @@ namespace OOX
 				}
 			}
 
-            virtual void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
             {
                 //ReadAttributes(obj);
 

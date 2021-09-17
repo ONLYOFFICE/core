@@ -117,8 +117,8 @@ namespace OOX
 
             if (workSheetStream != nullptr)
             {
-                //if (!workSheetStream->m_arCOLINFOS.empty())
-                  //  m_oCols = workSheetStream->m_arCOLINFOS;
+                if (!workSheetStream->m_arCOLINFOS.empty())
+                    m_oCols = workSheetStream->m_arCOLINFOS;
                 if (workSheetStream->m_BrtWsDim != nullptr)
                     m_oDimension = workSheetStream->m_BrtWsDim;
                 if (workSheetStream->m_BrtDrawing != nullptr)

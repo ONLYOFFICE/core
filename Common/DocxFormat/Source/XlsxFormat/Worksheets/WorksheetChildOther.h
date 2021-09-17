@@ -445,7 +445,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual void fromBin(XLS::BaseObjectPtr& obj)
+            void fromBin(XLS::BaseObjectPtr& obj)
             {
                 ReadAttributes(obj);
             }
@@ -512,7 +512,7 @@ namespace OOX
 					oReader.ReadTillEnd();
             }
 
-            virtual void fromBin(XLS::BaseObjectPtr& obj)
+            void fromBin(XLS::BaseObjectPtr& obj)
             {
                 ReadAttributes(obj);
             }
@@ -599,7 +599,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual void fromBin(XLS::BaseObjectPtr& obj)
+            void fromBin(XLS::BaseObjectPtr& obj)
             {
                 ReadAttributes(obj);
             }
@@ -620,7 +620,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"ySplit")		, m_oYSplit)	
 				WritingElement_ReadAttributes_End( oReader )
 			}
-            virtual void ReadAttributes(XLS::BaseObjectPtr& obj)
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
                 auto pPane = static_cast<XLSB::Pane*>(obj.get());
                 if(pPane != nullptr)
@@ -688,7 +688,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual void fromBin(XLS::BaseObjectPtr& obj)
+            void fromBin(XLS::BaseObjectPtr& obj)
             {
                 ReadAttributes(obj);
             }
@@ -708,7 +708,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"pane"),			m_oPane)
 				WritingElement_ReadAttributes_End( oReader )
 			}
-            virtual void ReadAttributes(XLS::BaseObjectPtr& obj)
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
                 auto pSel = static_cast<XLSB::Sel*>(obj.get());
                 if(pSel != nullptr)
@@ -813,7 +813,7 @@ namespace OOX
 					}
 				}
 			}
-            virtual void fromBin(XLS::BaseObjectPtr& obj)
+            void fromBin(XLS::BaseObjectPtr& obj)
             {
                 auto pWSVIEW2 = static_cast<XLSB::WSVIEW2*>(obj.get());
                 if (pWSVIEW2 == nullptr)
@@ -963,7 +963,7 @@ namespace OOX
 						m_arrItems.push_back( new CSheetView( oReader ));
 				}
 			}
-            virtual void fromBin(XLS::BaseObjectPtr& obj)
+            void fromBin(XLS::BaseObjectPtr& obj)
             {
                 auto arView = static_cast<XLSB::WSVIEWS2*>(obj.get())->m_arWSVIEW2;
                 if (arView.empty())

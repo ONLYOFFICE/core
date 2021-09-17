@@ -1380,7 +1380,7 @@ private:
             if(nSharp == std::wstring::npos)
                 oXml->WriteString(NSFile::GetFileName(sRef));
             else
-                oXml->WriteString(sRef.c_str() + nSharp + 1);
+                oXml->WriteEncodeXmlString(sRef.c_str() + nSharp + 1);
         }
         // Внешняя ссылка
         else

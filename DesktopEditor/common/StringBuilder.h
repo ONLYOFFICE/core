@@ -123,6 +123,7 @@ namespace NSStringUtils
         void ClearNoAttack();
 
         std::wstring GetData();
+        std::wstring GetSubData(const size_t& start = 0, const size_t& count = std::wstring::npos);
         wchar_t* GetBuffer();
 
         void RemoveLastSpaces();

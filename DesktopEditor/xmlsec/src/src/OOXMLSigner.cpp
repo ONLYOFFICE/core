@@ -337,7 +337,7 @@ public:
             std::wstring sFile = *i;
             std::wstring sContentType = L"application/xml";
 
-            std::map<std::wstring, std::wstring>::iterator _find = m_content_types.find(sFile);
+            std::map<std::wstring, std::wstring>::iterator _find = m_content_types.find(L"/" + sFile);
             if (_find != m_content_types.end())
             {
                 sContentType = _find->second;

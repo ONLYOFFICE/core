@@ -1093,8 +1093,6 @@ bool COfficeFileFormatChecker::isFB2FormatFile(unsigned char* pBuffer,int dwByte
 }
 bool COfficeFileFormatChecker::isXpsFile(const std::wstring & fileName)
 {
-    const char *xpsFormatLine = "http://schemas.microsoft.com/xps/2005/06/fixedrepresentation";
-
     COfficeUtils OfficeUtils(NULL);
 
     ULONG nBufferSize = 0;
@@ -1103,7 +1101,10 @@ bool COfficeFileFormatChecker::isXpsFile(const std::wstring & fileName)
     HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"_rels/.rels", &pBuffer, nBufferSize);
     if (hresult == S_OK && pBuffer != NULL)
     {
-        if ( NULL != strstr((char*)pBuffer, xpsFormatLine) )
+        // http://schemas.microsoft.com/xps/2005/06/fixedrepresentation
+        // http://schemas.openxps.org/oxps/v1.0/fixedrepresentation
+        if (NULL != strstr((char*)pBuffer, "fixedrepresentation") &&
+                (NULL != strstr((char*)pBuffer, "/xps/") || NULL != strstr((char*)pBuffer, "/oxps/")))
         {
             nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS;
         }
@@ -1112,7 +1113,8 @@ bool COfficeFileFormatChecker::isXpsFile(const std::wstring & fileName)
         pBuffer = NULL;
 
         if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
-    }else
+    }
+    else
     {
         HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"_rels/.rels/[0].piece", &pBuffer, nBufferSize);
         if (hresult == S_OK && pBuffer != NULL)

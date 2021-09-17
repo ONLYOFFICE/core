@@ -402,7 +402,13 @@ public:
 	/// \sa GetValue(), GetValueWithDefault(), GetIntValue(), GetIntValueWithDefault(),
 	///   GetRequiredParameter() and GetRequiredIntParameter()
 	CRYPTOPP_DLL static void CRYPTOPP_API ThrowIfTypeMismatch(const char *name, const std::type_info &stored, const std::type_info &retrieving)
-		{if (stored != retrieving) throw ValueTypeMismatch(name, stored, retrieving);}
+    {
+#ifdef DISABLE_TYPE_MISMATCH
+        return;
+#endif
+        if (stored != retrieving)
+            throw ValueTypeMismatch(name, stored, retrieving);
+    }
 
 	/// \brief Retrieves a required name/value pair
 	/// \tparam T class or type

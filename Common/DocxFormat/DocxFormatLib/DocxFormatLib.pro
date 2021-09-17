@@ -149,7 +149,11 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/RwDescent.cpp \
     ../Source/XlsbFormat/Biff12_records/CellMeta.cpp \
     ../Source/XlsbFormat/Biff12_records/ValueMeta.cpp \
+    ../Source/XlsbFormat/Biff12_records/WsFmtInfo.cpp \
     ../Source/XlsbFormat/Biff12_records/EndSheetData.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndWsView.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginWsViews.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndWsViews.cpp \
     #
     ../Source/XlsbFormat/Biff12_records/EndSheet.cpp \
 ### Biff12_structures
@@ -165,6 +169,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/GrbitFmla.cpp \
     ../Source/XlsbFormat/Biff12_structures/SxOs.cpp \
     ../Source/XlsbFormat/Biff12_structures/SxSu.cpp \
+    ../Source/XlsbFormat/Biff12_structures/UncheckedSqRfX.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -187,6 +192,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/SHRFMLACELL.cpp \
     ../Source/XlsbFormat/Biff12_unions/TABLECELL.cpp \
     ../Source/XlsbFormat/Biff12_unions/CELLMETA.cpp \
+    ../Source/XlsbFormat/Biff12_unions/WSVIEW2.cpp \
+    ../Source/XlsbFormat/Biff12_unions/WSVIEWS2.cpp \
 }
 
 
@@ -424,9 +431,13 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/RwDescent.h \
     ../Source/XlsbFormat/Biff12_records/CellMeta.h \
     ../Source/XlsbFormat/Biff12_records/ValueMeta.h \
+    ../Source/XlsbFormat/Biff12_records/WsFmtInfo.h \
     ../Source/XlsbFormat/Biff12_records/Fmla.h \
     ../Source/XlsbFormat/Biff12_records/Cell.h \
     ../Source/XlsbFormat/Biff12_records/EndSheetData.h \
+    ../Source/XlsbFormat/Biff12_records/EndWsView.h \
+    ../Source/XlsbFormat/Biff12_records/BeginWsViews.h \
+    ../Source/XlsbFormat/Biff12_records/EndWsViews.h \
     #
     ../Source/XlsbFormat/Biff12_records/EndSheet.h \
 ### Biff12_structures
@@ -445,6 +456,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_structures/GrbitFmla.h \
     ../Source/XlsbFormat/Biff12_structures/SxOs.h \
     ../Source/XlsbFormat/Biff12_structures/SxSu.h \
+    ../Source/XlsbFormat/Biff12_structures/UncheckedSqRfX.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.h \
     ../Source/XlsbFormat/Biff12_unions/ACUID.h \
@@ -467,4 +479,6 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/SHRFMLACELL.h \
     ../Source/XlsbFormat/Biff12_unions/TABLECELL.h \
     ../Source/XlsbFormat/Biff12_unions/CELLMETA.h \
+    ../Source/XlsbFormat/Biff12_unions/WSVIEW2.h \
+    ../Source/XlsbFormat/Biff12_unions/WSVIEWS2.h \
 

@@ -41,6 +41,8 @@
 #include "Biff12_unions/HLINKS.h"
 #include "Biff12_unions/MERGECELLS.h"
 #include "Biff12_unions/CELLTABLE.h"
+#include "Biff12_records/WsFmtInfo.h"
+#include "Biff12_unions/WSVIEWS2.h"
 #include "Biff12_records/EndSheet.h"
 
 namespace XLSB
@@ -171,6 +173,24 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                 if (proc.optional<CELLTABLE>())
                 {
                     m_CELLTABLE = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_WsFmtInfo:
+            {
+                if (proc.optional<WsFmtInfo>())
+                {
+                    m_BrtWsFmtInfo = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginWsViews:
+            {
+                if (proc.optional<WSVIEWS2>())
+                {
+                    m_WSVIEWS2 = elements_.back();
                     elements_.pop_back();
                 }
             }break;

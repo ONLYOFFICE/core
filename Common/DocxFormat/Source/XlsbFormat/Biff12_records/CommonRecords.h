@@ -43,6 +43,9 @@
 #include <Logic/Biff_records/Table.h>
 #include <Logic/Biff_records/ShrFmla.h>
 #include <Logic/Biff_records/Array.h>
+#include <Logic/Biff_records/Window2.h>
+#include <Logic/Biff_records/Pane.h>
+#include <Logic/Biff_records/Selection.h>
 #include "../../XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
 
@@ -171,6 +174,36 @@ namespace XLSB
         BaseObjectPtr clone() override
         {
             return BaseObjectPtr(new ArrFmla(*this));
+        }
+    };
+
+    class BeginWsView: public XLS::Window2
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(BeginWsView)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new BeginWsView(*this));
+        }
+    };
+
+    class Pane: public XLS::Pane
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(Pane)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new Pane(*this));
+        }
+    };
+
+    class Sel: public XLS::Selection
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(Sel)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new Sel(*this));
         }
     };
 

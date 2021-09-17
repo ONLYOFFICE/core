@@ -30,62 +30,30 @@
  *
  */
 
-#ifndef WORKSHEETSTREAM_H
-#define WORKSHEETSTREAM_H
+#pragma once
 
+#include <Logic/Biff_structures/BiffStructure.h>
+#include <Logic/Biff_records/BiffRecord.h>
+#include "CellRangeRef.h"
 
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-typedef BYTE *LPBYTE;
 using namespace XLS;
 namespace XLSB
 {
-    class StreamCacheReader;
-
-    class WorkSheetStream;
-    typedef std::shared_ptr<WorkSheetStream>		WorkSheetStreamPtr;
-
-    class WorkSheetStream: public CompositeObject
+    class UncheckedSqRfX : public BiffStructure
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(UncheckedSqRfX)
     public:
-        WorkSheetStream(const unsigned short code_page);
-        virtual ~WorkSheetStream();
+        UncheckedSqRfX();
+        UncheckedSqRfX(CFRecord& record);
+        virtual ~UncheckedSqRfX();
+        BiffStructurePtr clone();
 
-        BaseObjectPtr clone();
+        static const ElementType	type = typeBiffStructure;
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual void load(CFRecord& record);
 
-        static const XLS::ElementType type = typeWorksheetSubstream;
-
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
-
-        BaseObjectPtr               m_BrtBeginSheet;
-        std::vector<BaseObjectPtr>  m_arCOLINFOS;
-        BaseObjectPtr               m_BrtWsDim;
-        BaseObjectPtr               m_BrtDrawing;
-        BaseObjectPtr               m_HLINKS;
-        BaseObjectPtr               m_MERGECELLS;
-        BaseObjectPtr               m_CELLTABLE;
-        BaseObjectPtr               m_BrtWsFmtInfo;
-        BaseObjectPtr               m_WSVIEWS2;
-
-        BaseObjectPtr               m_BrtEndSheet;
-
-
-        unsigned short              code_page_;
-        GlobalWorkbookInfoPtr		global_info_;
-
-
+        _INT32                      crfx;
+        std::vector<UncheckedRfX>   rgrfx;
     };
 
-}
-
-#endif // WORKSHEETSTREAM_H
-
+}   // namespace XLSB

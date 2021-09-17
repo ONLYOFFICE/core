@@ -129,6 +129,11 @@ namespace OOX
                     m_oMergeCells = static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell;
                 if (workSheetStream->m_CELLTABLE != nullptr)
                     m_oSheetData = workSheetStream->m_CELLTABLE;
+                if (workSheetStream->m_BrtWsFmtInfo != nullptr)
+                    m_oSheetFormatPr = workSheetStream->m_BrtWsFmtInfo;
+                if (workSheetStream->m_WSVIEWS2 != nullptr)
+                    m_oSheetViews = workSheetStream->m_WSVIEWS2;
+
 
 
             }

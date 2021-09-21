@@ -612,7 +612,7 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
     auto arrRTNote = m_pUserInfo->getRoundTripTheme(2);
     auto arrRTHandout = m_pUserInfo->getRoundTripTheme(3);
 
-    if (!arrRT.empty()) // - см баг 52046
+    if (arrRT.empty()) // - см баг 52046
     {
         for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
         {
@@ -626,30 +626,30 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
     }
     else
     {
-//        WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
-//        WriteRoundTripThemes(arrRTNote, nIndexTheme, nStartLayout);
-//        WriteRoundTripThemes(arrRTHandout, nIndexTheme, nStartLayout);
+        WriteRoundTripThemes(arrRT, nIndexTheme);
+        WriteRoundTripThemes(arrRTNote, nIndexTheme);
+        WriteRoundTripThemes(arrRTHandout, nIndexTheme);
 
 //        WriteRoundTripLayouts(arrRTLayouts, nStartLayout);
     }
 }
 
-void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom*>& arrRTThemes, int& nIndexTheme, int & nStartLayout)
+void CPPTXWriter::WriteRoundTripThemes(const std::vector<CPPTUserInfo::SRoundTripsTheme> &arrRTThemes, int& nIndexTheme)
 {
     PPT_FORMAT::CRelsGenerator themeRels(&m_oManager);
     std::unordered_set<std::string> writedFilesHash;
-    for (const auto* pRTT : arrRTThemes)
+    for (const auto& oRTPackage : arrRTThemes)
     {
         if ((int)m_pDocument->m_arThemes.size() >= nIndexTheme)
             m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[nIndexTheme-1].get();
 
-        if (pRTT == nullptr)
+        if (oRTPackage.pRTTheme == nullptr)
             continue;
 
         std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
         std::wstring tempPath = NSDirectory::GetTempPath();
 
-        auto& zipAtom = *pRTT;
+        auto& zipAtom = *(oRTPackage.pRTTheme);
         BYTE* zipData = zipAtom.data.first.get();
         ULONG zipDataLen = zipAtom.data.second;
 
@@ -670,7 +670,6 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
 
         auto arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"theme");
         auto arrThemesPaths = GrepPaths(arrPaths, L".*theme[0-9]+.xml");
-        auto arrOverridePaths = GrepPaths(arrPaths, L".*themeOverride[0-9]+.xml");
 
         arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"media");
         auto arrImagesPaths = GrepPaths(arrPaths, L".*image[0-9]+.*");
@@ -735,7 +734,7 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
 
             oFile.CloseFile();
             RELEASEOBJECT(utf8Data);
-            //            utf8DataSize = 0;
+            utf8DataSize = 0;
         }
         m_pShapeWriter->m_pTheme = NULL;
     }

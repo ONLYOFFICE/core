@@ -32,6 +32,8 @@
 
 #include "cextracttools.h"
 #include "ASCConverters.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
+#include "../../DesktopEditor/common/proclimits.h"
 
 #include <iostream>
 
@@ -113,6 +115,13 @@ static std::wstring utf8_to_unicode(const char *src)
 
         return getReturnErrorCode(AVS_FILEUTILS_ERROR_CONVERT_PARAMS);
     }
+
+	//set memory limit
+	std::wstring sMemoryLimit = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvMemoryLimit);
+	if (sMemoryLimit.empty())
+		sMemoryLimit = NSSystemUtils::gc_EnvMemoryLimitDefault;
+	limit_memory((size_t)std::stoull(sMemoryLimit));
+
 	std::wstring sArg1, sArg2, sExePath;
 
 #if !defined(_WIN32) && !defined (_WIN64)

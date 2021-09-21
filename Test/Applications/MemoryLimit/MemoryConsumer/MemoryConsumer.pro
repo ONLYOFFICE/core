@@ -8,6 +8,3 @@ SOURCES += main.cpp
 win32 {
 	DEFINES += _RWSTD_NO_SETRLIMIT=1
 }
-
-HEADERS += \
-    ../proclimits.h

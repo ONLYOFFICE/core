@@ -131,19 +131,19 @@ public:
             bBadHeader = true; // GZoabli_PhD.ppt ... RecLen & 0xffff ????
         }
 
-        void** backTraceData = (void**)(new char*[40]);
-        int backTraceSize = backtrace(backTraceData, 40);
+//        void** backTraceData = (void**)(new char*[40]);
+//        int backTraceSize = backtrace(backTraceData, 40);
 
-        std::ofstream file("/home/ivaz28/pp/52046/ppt/pptRecords.txt", std::ios::out | std::ios::app);
+//        std::ofstream file("/home/ivaz28/pp/52046/ppt/pptRecords.txt", std::ios::out | std::ios::app);
 
-        file << std::string(backTraceSize - 11, ' ')
-             << "0x" << std::setw(4) << std::setfill('0') << std::hex << (int)RecType
-             << " " << std::setw(40) << std::setfill(' ') << std::left << GetRecordName(RecType)
-             << " " << std::setw(5) << std::dec << RecLen
-             << " " << backTraceSize << std::endl;
+//        file << std::string(backTraceSize - 11, ' ')
+//             << "0x" << std::setw(4) << std::setfill('0') << std::hex << (int)RecType
+//             << " " << std::setw(40) << std::setfill(' ') << std::left << GetRecordName(RecType)
+//             << " " << std::setw(5) << std::dec << RecLen
+//             << " " << backTraceSize << std::endl;
 
-        delete [] backTraceData;
-        file.close();
+//        delete [] backTraceData;
+//        file.close();
 
         return true;
     }

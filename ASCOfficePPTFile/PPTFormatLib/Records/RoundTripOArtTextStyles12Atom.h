@@ -35,13 +35,14 @@
 
 class CRecordRoundTripOArtTextStyles12Atom : public CUnknownRecord
 {
-    BYTE* m_pData;
+public:
+    BYTE* data;
 
 public:
 
     CRecordRoundTripOArtTextStyles12Atom()
     {
-        m_pData = NULL;
+        data = NULL;
     }
 
     ~CRecordRoundTripOArtTextStyles12Atom()
@@ -56,13 +57,13 @@ public:
 
         if (0 < lSize)
         {
-            m_pData = new BYTE[lSize];
-            pStream->read(m_pData, lSize);
+            data = new BYTE[lSize];
+            pStream->read(data, lSize);
         }
     }
 
     void ReleaseData()
     {
-        RELEASEARRAYOBJECTS(m_pData);
+        RELEASEARRAYOBJECTS(data);
     }
 };

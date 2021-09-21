@@ -85,6 +85,28 @@ static std::wstring g_string_rels_presentation = _T("<?xml version=\"1.0\" encod
         <cp:revision>1</cp:revision>\
         </cp:coreProperties>");
 }
+
+std::vector<CPPTUserInfo::SRoundTripsTheme *> SRoundTripsThemesPackage::getUnifiedArr()
+{
+    const auto sizeM = masters.size();
+    const auto sizeN = notes.size();
+    const auto sizeH = handouts.size();
+    const auto size = sizeM + sizeN + sizeH;
+    std::vector<CPPTUserInfo::SRoundTripsTheme *> arrRTs;
+
+    for (size_t i = 0; i < size; i++)
+    {
+        if (i < sizeM)
+            arrRTs.push_back(&(masters[i]));
+        else if (i < sizeM + sizeN)
+            arrRTs.push_back(&(notes[i-sizeM]));
+        else
+            arrRTs.push_back(&(handouts[i - sizeM - sizeN]));
+    }
+
+    return arrRTs;
+}
+
 }
 
 
@@ -607,14 +629,13 @@ void PPT_FORMAT::CPPTXWriter::WriteAll()
 
 void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
+    SRoundTripsThemesPackage RTPack;
     int nStartLayout = 0, nIndexTheme = 0;
-    auto arrRT = m_pUserInfo->getRoundTripTheme(1);
-    auto arrRTNote = m_pUserInfo->getRoundTripTheme(2);
-    auto arrRTHandout = m_pUserInfo->getRoundTripTheme(3);
+    RTPack.masters  = m_pUserInfo->getRoundTripTheme(1);
+    RTPack.notes    = m_pUserInfo->getRoundTripTheme(2);
+    RTPack.handouts = m_pUserInfo->getRoundTripTheme(3);
 
-    auto arrRTLayouts = m_pUserInfo->getRoundTripLayout();
-
-    if (arrRT.empty()) // - см баг 52046
+    if (RTPack.masters.empty()) // - см баг 52046
     {
         for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
         {
@@ -628,30 +649,30 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
     }
     else
     {
-        WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
-        WriteRoundTripThemes(arrRTNote, nIndexTheme, nStartLayout);
-        WriteRoundTripThemes(arrRTHandout, nIndexTheme, nStartLayout);
+        WriteRoundTripThemes(RTPack.masters, nIndexTheme);
+        WriteRoundTripThemes(RTPack.notes, nIndexTheme);
+        WriteRoundTripThemes(RTPack.handouts, nIndexTheme);
 
-        WriteRoundTripLayouts(arrRTLayouts, nStartLayout);
+        WriteRoundTripSlideMasters(RTPack);
     }
 }
 
-void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom*>& arrRTThemes, int& nIndexTheme, int & nStartLayout)
+void CPPTXWriter::WriteRoundTripThemes(const std::vector<CPPTUserInfo::SRoundTripsTheme> &arrRTThemes, int& nIndexTheme)
 {
     PPT_FORMAT::CRelsGenerator themeRels(&m_oManager);
     std::unordered_set<std::string> writedFilesHash;
-    for (const auto* pRTT : arrRTThemes)
+    for (const auto& oRTPackage : arrRTThemes)
     {
         if ((int)m_pDocument->m_arThemes.size() >= nIndexTheme)
             m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[nIndexTheme-1].get();
 
-        if (pRTT == nullptr)
+        if (oRTPackage.pRTTheme == nullptr)
             continue;
 
         std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
         std::wstring tempPath = NSDirectory::GetTempPath();
 
-        auto& zipAtom = *pRTT;
+        auto& zipAtom = *(oRTPackage.pRTTheme);
         BYTE* zipData = zipAtom.data.first.get();
         ULONG zipDataLen = zipAtom.data.second;
 
@@ -672,7 +693,6 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
 
         auto arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"theme");
         auto arrThemesPaths = GrepPaths(arrPaths, L".*theme[0-9]+.xml");
-        auto arrOverridePaths = GrepPaths(arrPaths, L".*themeOverride[0-9]+.xml");
 
         arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"theme" + FILE_SEPARATOR_STR + L"media");
         auto arrImagesPaths = GrepPaths(arrPaths, L".*image[0-9]+.*");
@@ -737,29 +757,30 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAt
 
             oFile.CloseFile();
             RELEASEOBJECT(utf8Data);
-            //            utf8DataSize = 0;
+            utf8DataSize = 0;
         }
         m_pShapeWriter->m_pTheme = NULL;
     }
 }
 
-void CPPTXWriter::WriteRoundTripLayouts(const std::vector<CRecordRoundTripContentMasterInfo12Atom *> &arrRTLayouts, int &nStartLayout)
+void CPPTXWriter::WriteRoundTripSlideMasters(PPT_FORMAT::SRoundTripsThemesPackage &themesPackeage)
 {
-    for (const auto* pRTL : arrRTLayouts)
-    {
-        if (pRTL == nullptr)
-            continue;
+    std::unordered_set<std::string> writedFilesHash;
+    UINT nMasterIndex = 0;
+    UINT nLayoutIndex = 0;
 
+    for (const auto& pack : themesPackeage.masters)
+    {
         std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
         std::wstring tempPath = NSDirectory::GetTempPath();
 
-        auto& zipAtom = *pRTL;
-        BYTE* zipData = zipAtom.data.first.get();
-        ULONG zipDataLen = zipAtom.data.second;
+        auto* zipAtom = pack.pRTSlideMaster;
+        BYTE* zipData = zipAtom->data;
+        ULONG zipDataLen = zipAtom->m_oHeader.RecLen;
 
 
         NSFile::CFileBinary binFile;
-        std::wstring tempZipPath = tempPath + FILE_SEPARATOR_STR + L"tempLayout.zip";
+        std::wstring tempZipPath = tempPath + FILE_SEPARATOR_STR + L"tempSlideMaster.zip";
         if (!binFile.CreateFileW(tempZipPath))
             continue;
 
@@ -767,57 +788,117 @@ void CPPTXWriter::WriteRoundTripLayouts(const std::vector<CRecordRoundTripConten
         binFile.CloseFile();
 
         COfficeUtils officeUtils(NULL);
-        std::wstring tempUnZipPath = tempPath + FILE_SEPARATOR_STR + L"tempLayout";
+        std::wstring tempUnZipPath = tempPath + FILE_SEPARATOR_STR + L"tempSlideMaster";
         NSDirectory::CreateDirectory(tempUnZipPath);
         officeUtils.ExtractToDirectory(tempZipPath, tempUnZipPath, NULL, 0);
         NSFile::CFileBinary::Remove(tempZipPath);
 
-        auto arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"drs" + FILE_SEPARATOR_STR + L"slideLayouts");
-        auto arrLayoutsPaths = GrepPaths(arrPaths, L".*slideLayout[0-9]+.xml");
-
         BYTE *utf8Data = NULL;
         ULONG utf8DataSize = 0;
-        bool wasThemeWrite = false;
 
-        // write layout
-        for (auto& strLayoutPath : arrLayoutsPaths)
+        // read file bytes
+        NSFile::CFileBinary::ReadAllBytes(tempUnZipPath + FILE_SEPARATOR_STR + L"drs" + FILE_SEPARATOR_STR + L"slideMasters" + FILE_SEPARATOR_STR + L"slideMaster1.xml", &utf8Data, utf8DataSize);
+        // compare hash
+        auto strHash = CFile::md5(utf8Data, utf8DataSize);
+        bool wasSlideMasterWrite = false;
+
+        // cp file with new name or write bytes
+        if (writedFilesHash.find(strHash) == writedFilesHash.end())
         {
-            // read file bytes
-            NSFile::CFileBinary::ReadAllBytes(strLayoutPath, &utf8Data, utf8DataSize);
-
-            std::wstring strLayoutFile = L"slideLayout" + std::to_wstring(++nStartLayout) + L".xml";
-            strLayoutFile = strPptDirectory + _T("slideLayouts") + FILE_SEPARATOR_STR + strLayoutFile;
+            std::wstring strSlideMasterFile = L"slideMaster" + std::to_wstring(++nMasterIndex) + L".xml";
+            strSlideMasterFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
             NSFile::CFileBinary oFile;
-            oFile.CreateFileW(strLayoutFile);
+            oFile.CreateFileW(strSlideMasterFile);
             oFile.WriteFile(utf8Data, utf8DataSize);
-            wasThemeWrite = true;
+            wasSlideMasterWrite = true;
 
             // clear bytes
+            writedFilesHash.insert(strHash);
             RELEASEOBJECT(utf8Data);
             utf8DataSize = 0;
             oFile.CloseFile();
+
+            // Write _rels
         }
     }
-
-
-    // write _rels
-//    if (!arrRelsPaths.empty() && needRels)
-//    {
-//        std::wstring relsFolder = strPptDirectory + L"theme" + FILE_SEPARATOR_STR  + L"_rels" + FILE_SEPARATOR_STR;
-//        std::wstring relsName = L"theme" + std::to_wstring(nIndexTheme) + L".xml.rels";
-//        std::wstring themeRelsPath = arrRelsPaths[0];
-//        NSDirectory::CreateDirectory(relsFolder);
-
-//        NSFile::CFileBinary::ReadAllBytes(arrRelsPaths[0], &utf8Data, utf8DataSize);
-//        NSFile::CFileBinary oFile;
-//        oFile.CreateFileW(relsFolder + relsName);
-//        oFile.WriteFile(utf8Data, utf8DataSize);
-
-//        oFile.CloseFile();
-//        RELEASEOBJECT(utf8Data);
-//        utf8DataSize = 0;
-//    }
 }
+
+
+//void CPPTXWriter::WriteRoundTripLayouts(const std::vector<CRecordRoundTripContentMasterInfo12Atom *> &arrRTLayouts, int &nStartLayout)
+//{
+//    for (const auto* pRTL : arrRTLayouts)
+//    {
+//        if (pRTL == nullptr)
+//            continue;
+
+//        std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
+//        std::wstring tempPath = NSDirectory::GetTempPath();
+
+//        auto& zipAtom = *pRTL;
+//        BYTE* zipData = zipAtom.data.first.get();
+//        ULONG zipDataLen = zipAtom.data.second;
+
+
+//        NSFile::CFileBinary binFile;
+//        std::wstring tempZipPath = tempPath + FILE_SEPARATOR_STR + L"tempLayout.zip";
+//        if (!binFile.CreateFileW(tempZipPath))
+//            continue;
+
+//        binFile.WriteFile(zipData, zipDataLen);
+//        binFile.CloseFile();
+
+//        COfficeUtils officeUtils(NULL);
+//        std::wstring tempUnZipPath = tempPath + FILE_SEPARATOR_STR + L"tempLayout";
+//        NSDirectory::CreateDirectory(tempUnZipPath);
+//        officeUtils.ExtractToDirectory(tempZipPath, tempUnZipPath, NULL, 0);
+//        NSFile::CFileBinary::Remove(tempZipPath);
+
+//        auto arrPaths = NSDirectory::GetFiles(tempUnZipPath + FILE_SEPARATOR_STR + L"drs" + FILE_SEPARATOR_STR + L"slideLayouts");
+//        auto arrLayoutsPaths = GrepPaths(arrPaths, L".*slideLayout[0-9]+.xml");
+
+//        BYTE *utf8Data = NULL;
+//        ULONG utf8DataSize = 0;
+//        bool wasThemeWrite = false;
+
+//        // write layout
+//        for (auto& strLayoutPath : arrLayoutsPaths)
+//        {
+//            // read file bytes
+//            NSFile::CFileBinary::ReadAllBytes(strLayoutPath, &utf8Data, utf8DataSize);
+
+//            std::wstring strLayoutFile = L"slideLayout" + std::to_wstring(++nStartLayout) + L".xml";
+//            strLayoutFile = strPptDirectory + _T("slideLayouts") + FILE_SEPARATOR_STR + strLayoutFile;
+//            NSFile::CFileBinary oFile;
+//            oFile.CreateFileW(strLayoutFile);
+//            oFile.WriteFile(utf8Data, utf8DataSize);
+//            wasThemeWrite = true;
+
+//            // clear bytes
+//            RELEASEOBJECT(utf8Data);
+//            utf8DataSize = 0;
+//            oFile.CloseFile();
+//        }
+//    }
+
+
+//    // write _rels
+//    //    if (!arrRelsPaths.empty() && needRels)
+//    //    {
+//    //        std::wstring relsFolder = strPptDirectory + L"theme" + FILE_SEPARATOR_STR  + L"_rels" + FILE_SEPARATOR_STR;
+//    //        std::wstring relsName = L"theme" + std::to_wstring(nIndexTheme) + L".xml.rels";
+//    //        std::wstring themeRelsPath = arrRelsPaths[0];
+//    //        NSDirectory::CreateDirectory(relsFolder);
+
+//    //        NSFile::CFileBinary::ReadAllBytes(arrRelsPaths[0], &utf8Data, utf8DataSize);
+//    //        NSFile::CFileBinary oFile;
+//    //        oFile.CreateFileW(relsFolder + relsName);
+//    //        oFile.WriteFile(utf8Data, utf8DataSize);
+
+//    //        oFile.CloseFile();
+//    //        RELEASEOBJECT(utf8Data);
+//    //        utf8DataSize = 0;
+//    //    }
+//}
 
 void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout)
 {

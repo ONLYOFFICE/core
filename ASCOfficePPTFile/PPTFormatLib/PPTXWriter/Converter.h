@@ -42,6 +42,14 @@ class CSlideShowInfo;
 
 namespace PPT_FORMAT
 {
+    struct SRoundTripsThemesPackage
+    {
+        std::vector<CPPTUserInfo::SRoundTripsTheme> masters;
+        std::vector<CPPTUserInfo::SRoundTripsTheme> notes;
+        std::vector<CPPTUserInfo::SRoundTripsTheme> handouts;
+        std::vector<CPPTUserInfo::SRoundTripsTheme *> getUnifiedArr();
+    };
+
 	class CDocument;
 	class CShapeWriter;
 
@@ -75,8 +83,8 @@ namespace PPT_FORMAT
 		void WritePresInfo		();
 		void WriteAll			();
 		void WriteThemes		();
-        void WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom *> &arrRTThemes, int& nIndexTheme, int &nStartLayout);
-        void WriteRoundTripLayouts(const std::vector<CRecordRoundTripContentMasterInfo12Atom *> &arrRTLayouts, int &nStartLayout);
+        void WriteRoundTripThemes(const std::vector<CPPTUserInfo::SRoundTripsTheme> &arrRTThemes, int& nIndexTheme);
+        void WriteRoundTripSlideMasters(SRoundTripsThemesPackage &themesPackeage);
         void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
         void WriteTheme         (CRecordRoundTripThemeAtom *pTheme, int &nIndexTheme);
         void WriteSlides		();

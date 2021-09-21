@@ -653,7 +653,10 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
         WriteRoundTripThemes(RTPack.notes, nIndexTheme);
         WriteRoundTripThemes(RTPack.handouts, nIndexTheme);
 
-        WriteRoundTripSlideMasters(RTPack);
+        int nIndexThemeMaster = 1;
+        WriteRoundTripSlideMasters(RTPack, nIndexThemeMaster, 1);
+        WriteRoundTripSlideMasters(RTPack, nIndexThemeMaster, 2);
+        WriteRoundTripSlideMasters(RTPack, nIndexThemeMaster, 3);
     }
 }
 
@@ -763,18 +766,34 @@ void CPPTXWriter::WriteRoundTripThemes(const std::vector<CPPTUserInfo::SRoundTri
     }
 }
 
-void CPPTXWriter::WriteRoundTripSlideMasters(PPT_FORMAT::SRoundTripsThemesPackage &themesPackeage)
+void CPPTXWriter::WriteRoundTripSlideMasters(PPT_FORMAT::SRoundTripsThemesPackage &themesPackeage, int& lastThemeIndex, int type)
 {
     std::unordered_set<std::string> writedFilesHash;
     UINT nMasterIndex = 0;
     UINT nLayoutIndex = 0;
 
-    for (const auto& pack : themesPackeage.masters)
+    std::wstring masterFolder = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
+    std::vector<CPPTUserInfo::SRoundTripsTheme>* arrRTMasters;
+    std::wstring unitBaseName;
+    switch (type)
     {
-        std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
+    case 2:  masterFolder += L"notesMasters";   unitBaseName = L"notesMaster";   arrRTMasters = &themesPackeage.notes;      break;
+    case 3:  masterFolder += L"handoutMasters"; unitBaseName = L"handoutMaster"; arrRTMasters = &themesPackeage.handouts;   break;
+    default: masterFolder += L"slideMasters";   unitBaseName = L"slideMaster";   arrRTMasters = &themesPackeage.masters;    break;
+    }
+    if (!arrRTMasters || arrRTMasters->empty())
+        return;
+
+    NSDirectory::CreateDirectory(masterFolder);
+    masterFolder += FILE_SEPARATOR_STR;
+    NSDirectory::CreateDirectory(masterFolder + L"_rels");
+
+    for (const auto& pack : *arrRTMasters)
+    {
         std::wstring tempPath = NSDirectory::GetTempPath();
 
         auto* zipAtom = pack.pRTSlideMaster;
+        if (!zipAtom) continue;
         BYTE* zipData = zipAtom->data;
         ULONG zipDataLen = zipAtom->m_oHeader.RecLen;
 
@@ -805,8 +824,8 @@ void CPPTXWriter::WriteRoundTripSlideMasters(PPT_FORMAT::SRoundTripsThemesPackag
         // cp file with new name or write bytes
         if (writedFilesHash.find(strHash) == writedFilesHash.end())
         {
-            std::wstring strSlideMasterFile = L"slideMaster" + std::to_wstring(++nMasterIndex) + L".xml";
-            strSlideMasterFile = strPptDirectory + _T("slideMasters") + FILE_SEPARATOR_STR + strSlideMasterFile;
+            std::wstring strSlideMasterFile = unitBaseName + std::to_wstring(++nMasterIndex) + L".xml";
+            strSlideMasterFile = masterFolder + FILE_SEPARATOR_STR + strSlideMasterFile;
             NSFile::CFileBinary oFile;
             oFile.CreateFileW(strSlideMasterFile);
             oFile.WriteFile(utf8Data, utf8DataSize);
@@ -820,6 +839,7 @@ void CPPTXWriter::WriteRoundTripSlideMasters(PPT_FORMAT::SRoundTripsThemesPackag
 
             // Write _rels
         }
+        lastThemeIndex++;
     }
 }
 

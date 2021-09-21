@@ -540,8 +540,8 @@ void CPPTUserInfo::FromDocument()
         if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
         {
             m_bHasDate			=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate/* ||
-                                                                    oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
-                                                                    oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
+                                                                            oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
+                                                                            oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
             m_bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
             m_bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
@@ -735,8 +735,8 @@ void CPPTUserInfo::LoadNotes(_UINT32 dwNoteID, CSlide* pNotes)
         if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
         {
             bHasDate		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate/* ||
-                                                                oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
-                                                                oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
+                                                                        oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
+                                                                        oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
             bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
             bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
@@ -967,8 +967,8 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
         if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
         {
             bHasDate		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate/* ||
-                                                                oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
-                                                                oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
+                                                                        oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
+                                                                        oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
             bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
             bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
@@ -1142,50 +1142,38 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
     }
 }
 
-std::vector<CRecordRoundTripThemeAtom *> CPPTUserInfo::getRoundTripTheme(int type) const
+std::vector<CPPTUserInfo::SRoundTripsTheme> CPPTUserInfo::getRoundTripTheme(int type) const
 {
-    std::vector<CRecordRoundTripThemeAtom *> arrRTTheme;
+    std::vector<SRoundTripsTheme> arrSRTThemes;
+    std::vector<CRecordSlide*> arrSlides;
+
     switch (type)
     {
-    case 1:
-        for (const auto& slideIter : m_mapMasters)
-        {
-            auto* slideContainer = slideIter.second;
-            if (!slideContainer) continue;
-            slideContainer->GetRecordsByType(&arrRTTheme, false);
-        }
-        break;
-    case 2:
-        for (const auto& slideIter : m_mapNotesMasters)
-        {
-            auto* slideContainer = slideIter.second;
-            if (!slideContainer) continue;
-            slideContainer->GetRecordsByType(&arrRTTheme, false);
-        }
-        break;
-    case 3:
-        for (const auto& slideIter : m_mapHandoutMasters)
-        {
-            auto* slideContainer = slideIter.second;
-            if (!slideContainer) continue;
-            slideContainer->GetRecordsByType(&arrRTTheme, false);
-        }
-        break;
+    case 2:  for (const auto& slideIter : m_mapNotesMasters)    arrSlides.push_back(slideIter.second); break;
+    case 3:  for (const auto& slideIter : m_mapHandoutMasters)  arrSlides.push_back(slideIter.second); break;
+    default: for (const auto& slideIter : m_mapMasters)         arrSlides.push_back(slideIter.second); break;
     }
-    return arrRTTheme;
-}
 
-std::vector<CRecordRoundTripContentMasterInfo12Atom *> CPPTUserInfo::getRoundTripLayout()
-{
-    std::vector<CRecordRoundTripContentMasterInfo12Atom *> arrRTLayout;
-    for (const auto& slideIter : m_mapMasters)
+    for (const auto* pSlide : arrSlides)
     {
-        auto* slideContainer = slideIter.second;
-        if (!slideContainer) continue;
-        slideContainer->GetRecordsByType(&arrRTLayout, false);
+        SRoundTripsTheme roundTripsTheme;
+        if (!pSlide) continue;
+
+        std::vector<CRecordRoundTripThemeAtom*> arrRTThemes;
+        std::vector<CRecordTripOriginalMasterId12Atom*> arrRTpMaster;
+        std::vector<CRecordRoundTripOArtTextStyles12Atom*> arrRTSlideMaster;
+        pSlide->GetRecordsByType(&arrRTThemes, true);
+        pSlide->GetRecordsByType(&arrRTpMaster, true);
+        pSlide->GetRecordsByType(&arrRTSlideMaster, true);
+        pSlide->GetRecordsByType(&roundTripsTheme.arrRTLayouts, false);
+
+        roundTripsTheme.pRTTheme = arrRTThemes.empty() ? nullptr : arrRTThemes[0];
+        roundTripsTheme.pRTpMaster = arrRTpMaster.empty() ? nullptr : arrRTpMaster[0];
+        roundTripsTheme.pRTSlideMaster = arrRTSlideMaster.empty() ? nullptr : arrRTSlideMaster[0];
+        arrSRTThemes.push_back(roundTripsTheme);
     }
 
-    return arrRTLayout;
+    return arrSRTThemes;
 }
 
 CElementPtr CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placeholderType, CLayout *pLayout, bool idx_only)
@@ -2431,7 +2419,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
         oInfo.m_dwID = pExHyperlink->m_exHyperlinkAtom.m_nHyperlinkID;
 
         bool wasSlide = false;
-//        bool wasLink = false;
+        //        bool wasLink = false;
 
         // it isn't normal that here we should catch slide number.
         if (pExHyperlink->m_friendlyNameAtom.IsInit())

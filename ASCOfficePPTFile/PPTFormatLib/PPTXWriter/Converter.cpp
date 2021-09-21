@@ -612,9 +612,7 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
     auto arrRTNote = m_pUserInfo->getRoundTripTheme(2);
     auto arrRTHandout = m_pUserInfo->getRoundTripTheme(3);
 
-    auto arrRTLayouts = m_pUserInfo->getRoundTripLayout();
-
-    if (arrRT.empty()) // - см баг 52046
+    if (!arrRT.empty()) // - см баг 52046
     {
         for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
         {
@@ -628,11 +626,11 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
     }
     else
     {
-        WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
-        WriteRoundTripThemes(arrRTNote, nIndexTheme, nStartLayout);
-        WriteRoundTripThemes(arrRTHandout, nIndexTheme, nStartLayout);
+//        WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
+//        WriteRoundTripThemes(arrRTNote, nIndexTheme, nStartLayout);
+//        WriteRoundTripThemes(arrRTHandout, nIndexTheme, nStartLayout);
 
-        WriteRoundTripLayouts(arrRTLayouts, nStartLayout);
+//        WriteRoundTripLayouts(arrRTLayouts, nStartLayout);
     }
 }
 

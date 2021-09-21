@@ -76,7 +76,8 @@ namespace PPT_FORMAT
 		void WriteAll			();
 		void WriteThemes		();
         void WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom *> &arrRTThemes, int& nIndexTheme, int &nStartLayout);
-		void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
+        void WriteRoundTripLayouts(const std::vector<CRecordRoundTripContentMasterInfo12Atom *> &arrRTLayouts, int &nStartLayout);
+        void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
         void WriteTheme         (CRecordRoundTripThemeAtom *pTheme, int &nIndexTheme);
         void WriteSlides		();
 		void WriteNotes			();
@@ -92,7 +93,7 @@ namespace PPT_FORMAT
 		void WriteElement		(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
 		void WriteGroup			(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
         void WriteTable			(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
-		
+        static std::vector<std::wstring> GrepPaths(const std::vector<std::wstring> &paths, const std::wstring &strRegEx);
 
 	};
 }

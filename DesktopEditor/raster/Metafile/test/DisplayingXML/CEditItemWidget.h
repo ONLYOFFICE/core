@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QTextEdit>
+#include <QBoxLayout>
 #include <QStandardItem>
 
 #include "MainWindow.h"
@@ -36,6 +37,8 @@ class CEditItemWidget : public QWidget
         Ui::CEditItemWidget *ui;
         MainWindow *m_pMainWindow;
         QStandardItem *m_pStandardItem;
+        QBoxLayout *m_pContentLayout;
+        QBoxLayout *m_pButtonsLayout;
 
         QMap<QTextEdit*, QStandardItem*> m_oBind;
 };

@@ -8,6 +8,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+
+#include <QStandardItem>
 #include "../../../../xml/include/xmlutils.h"
 
 class MainWindow : public QMainWindow
@@ -34,9 +36,6 @@ class MainWindow : public QMainWindow
         void on_actionSave_XML_as_triggered();
 
         void slotShowContextMenu(QPoint oPos);
-        void on_actionEdidRecord_triggered();
-        void on_actionInsertBRecord_triggered();
-        void on_actionInsertARecord_triggered();
 
         void on_actionSave_EMF_as_triggered();
 
@@ -44,7 +43,7 @@ private:
         Ui::MainWindow      *ui;
 
         bool ReadXmlFile(const std::wstring& wsPathToXmlFile);
-        void InsertRecord(bool bAfterRecord = true);
+        void InsertRecord(QStandardItem *pParentItem, unsigned int unRow, bool bAfterRecord = true);
         void Clear();
     protected:
         virtual void resizeEvent(QResizeEvent *);

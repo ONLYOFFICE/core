@@ -110,7 +110,10 @@ void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem*
         if (oXmlNode.GetChilds(oXmlChilds))
         {
                 if (unLevel == 2)
+                {
                         ++m_mStatistics[QString::fromStdWString(oXmlNode.GetName())];
+                        oStandartItem->setData("Record", 3);
+                }
 
                 for (unsigned int i = 0; i < oXmlChilds.GetCount(); ++i)
                 {

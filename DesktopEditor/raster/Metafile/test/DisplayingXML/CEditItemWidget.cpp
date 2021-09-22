@@ -6,6 +6,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QScrollArea>
 
 #include <MainWindow.h>
 
@@ -13,26 +14,36 @@ CEditItemWidget::CEditItemWidget(QWidget *parent) :
         QWidget(parent),
         ui(new Ui::CEditItemWidget),
         m_pMainWindow(NULL),
-        m_pStandardItem(NULL)
+        m_pStandardItem(NULL),
+        m_pContentLayout(NULL),
+        m_pButtonsLayout(NULL)
 {
         this->setWindowFlags(Qt::Window  | Qt::WindowCloseButtonHint);
         this->setWindowTitle("Edit");
 
-        QVBoxLayout *pVerticalLayout    = new QVBoxLayout;
-        QHBoxLayout *pButtonsLayout     = new QHBoxLayout;
+        QVBoxLayout *pMainLayout    = new QVBoxLayout(this);
+        QScrollArea *pScrollArea    = new QScrollArea();
+        QWidget *pMainWidget        = new QWidget();
+        m_pContentLayout            = new QVBoxLayout(pMainWidget);
 
-        QPushButton *pSaveButton        = new QPushButton("Save");
-        QPushButton *pCancelButton      = new QPushButton("Cancel");
+        pMainLayout->addWidget(pScrollArea);
+        pScrollArea->setWidget(pMainWidget);
 
-        connect(pSaveButton,    SIGNAL(clicked()), this, SLOT(on_Save_clicked()));
-        connect(pCancelButton,  SIGNAL(clicked()), this, SLOT(on_Cancel_clicked()));
+        m_pButtonsLayout     = new QHBoxLayout;
 
-        pButtonsLayout->addWidget(pSaveButton);
-        pButtonsLayout->addWidget(pCancelButton);
-        pButtonsLayout->setStretch(0, 1);
+        QPushButton *pSaveButton    = new QPushButton("Save");
+        QPushButton *pCancelButton  = new QPushButton("Cancel");
 
-        pVerticalLayout->addLayout(pButtonsLayout);
-        this->setLayout(pVerticalLayout);
+        connect(pSaveButton,    &QPushButton::clicked, this, &CEditItemWidget::on_Save_clicked);
+        connect(pCancelButton,  &QPushButton::clicked, this, &CEditItemWidget::on_Cancel_clicked);
+
+        m_pButtonsLayout->addWidget(pSaveButton);
+        m_pButtonsLayout->addWidget(pCancelButton);
+        m_pButtonsLayout->setStretch(0, 1);
+
+        pMainLayout->addLayout(m_pButtonsLayout);
+
+        m_pContentLayout->setSizeConstraint(QLayout::SetFixedSize);
 
         ui->setupUi(this);
 }
@@ -113,20 +124,16 @@ void CEditItemWidget::ParsingItem()
         if (NULL == m_pStandardItem)
                 return;
 
-        QHBoxLayout *pButtonsLayout = (QHBoxLayout*)layout()->takeAt(0);
-
-        ParsingAttachments(m_pStandardItem);
-
-        if (m_pStandardItem->parent()->data(0).toString() == "<EMF>")
+        if (true == m_pStandardItem->data(3))
         {
                 QPushButton *pDeleteButton = new QPushButton("Delete");
 
-                connect(pDeleteButton,  SIGNAL(clicked()), this, SLOT(on_DeleteItem_clicked()));
+                connect(pDeleteButton, &QPushButton::clicked, this, &CEditItemWidget::on_DeleteItem_clicked);
 
-                pButtonsLayout->addWidget(pDeleteButton);
+                m_pButtonsLayout->addWidget(pDeleteButton);
         }
 
-        ((QVBoxLayout*)layout())->addLayout(pButtonsLayout);
+        ParsingAttachments(m_pStandardItem);
 }
 
 void CEditItemWidget::ParsingAttachments(QStandardItem *pStandardItem, unsigned int unLevel)
@@ -157,13 +164,12 @@ void CEditItemWidget::ParsingAttachments(QStandardItem *pStandardItem, unsigned 
                 QFontMetrics oFontMEtrics(pValueEdit->font());
                 pValueEdit->setFixedHeight(oFontMEtrics.height() + 10);
                 pValueEdit->setStyleSheet("QTextEdit { vertical-align: middle }");
-
                 pLayout->addWidget(pNameLabel);
                 pLayout->addWidget(pValueEdit);
 
                 m_oBind.insert(pValueEdit, pStandardItem);
 
-                ((QVBoxLayout*)layout())->addLayout(pLayout);
+                m_pContentLayout->addLayout(pLayout);
         }
         else
         {
@@ -172,7 +178,7 @@ void CEditItemWidget::ParsingAttachments(QStandardItem *pStandardItem, unsigned 
                         QLabel *pLabel = new QLabel(qsName);
                         pLabel->setStyleSheet(QString("QLabel { font-style: italic; margin-left: %1 }").arg((unLevel - 1) * 20));
 
-                        layout()->addWidget(pLabel);
+                        m_pContentLayout->addWidget(pLabel);
                 }
                 else
                         this->setWindowTitle("Edit: " + qsName);

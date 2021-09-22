@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
 
         ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
 
-        connect(ui->treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(slotShowContextMenu(QPoint)));
+        connect(ui->treeView, &CMetafileTreeView::customContextMenuRequested, this, &MainWindow::slotShowContextMenu);
 
         QFont *pFont = new QFont;
         pFont->setPointSize(13);
@@ -61,18 +61,15 @@ bool MainWindow::ReadXmlFile(const std::wstring& wsPathToXmlFile)
         return true;
 }
 
-void MainWindow::InsertRecord(bool bAfterRecord)
+void MainWindow::InsertRecord(QStandardItem *pParentItem, unsigned int unRow, bool bAfterRecord)
 {
-        QModelIndex index =  ui->treeView->selectionModel()->currentIndex();
-        QStandardItem *pStandardItem = static_cast<QStandardItem*>(index.internalPointer());
-
         CRecordCreator *pRecordCreator = new CRecordCreator();
         pRecordCreator->SetMainWindow(this);
 
         QStandardItem *pItem = pRecordCreator->CreateRecord();
 
         if (NULL != pItem)
-                pStandardItem->insertRow(index.row() + ((bAfterRecord) ? 0 : 1), pItem);
+                pParentItem->insertRow(unRow + ((bAfterRecord) ? 0 : 1), pItem);
 }
 
 bool MainWindow::ConvertToRaster(const std::wstring& wsPathToFile, bool bWithXmlFile)
@@ -272,34 +269,21 @@ void MainWindow::slotShowContextMenu(QPoint oPos)
         if (NULL == ui->treeView->model())
                 return;
 
-        QMenu oContextMenu;
-
-        oContextMenu.addAction("Edit", this, SLOT(on_actionEdidRecord_triggered()));
-
-        oContextMenu.addAction("Insert before", this, SLOT(on_actionInsertBRecord_triggered()));
-        oContextMenu.addAction("Insert after", this, SLOT(on_actionInsertARecord_triggered()));
-
-        oContextMenu.exec(ui->treeView->mapToGlobal(oPos));
-}
-
-void MainWindow::on_actionEdidRecord_triggered()
-{
         QModelIndex index =  ui->treeView->selectionModel()->currentIndex();
         QStandardItem *pStandardItem = static_cast<QStandardItem*>(index.internalPointer());
         QStandardItem *pItem = pStandardItem->child(index.row(), index.column());
 
-        if (pStandardItem->data(0).isValid())
-                ui->treeView->EditItem(pItem);
-}
+        QMenu oContextMenu;
 
-void MainWindow::on_actionInsertBRecord_triggered()
-{
-        InsertRecord();
-}
+        oContextMenu.addAction("Edit", this, [this, pItem](){ui->treeView->EditItem(pItem);});
 
-void MainWindow::on_actionInsertARecord_triggered()
-{
-        InsertRecord(false);
+        if (true == pItem->data(3))
+        {
+                oContextMenu.addAction("Insert before", this, [this, pStandardItem, index](){InsertRecord(pStandardItem, index.row());});
+                oContextMenu.addAction("Insert after", this,  [this, pStandardItem, index](){InsertRecord(pStandardItem, index.row(), false);});
+        }
+
+        oContextMenu.exec(ui->treeView->mapToGlobal(oPos));
 }
 
 void MainWindow::on_actionSave_EMF_as_triggered()

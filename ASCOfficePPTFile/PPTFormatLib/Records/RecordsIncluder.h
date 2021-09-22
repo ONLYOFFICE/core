@@ -95,10 +95,6 @@
 #include "NoZoomViewInfoAtom.h"
 #include "OutlineTextRefAtom.h"
 #include "PlaceHolderAtom.h"
-#include "RoundTripColorMappingAtom.h"
-#include "RoundTripNewPlaceholderId12Atom.h"
-#include "RoundTripThemeAtom.h"
-#include "RoundTripNotesMasterTextStyles12Atom.h"
 #include "TextRulerAtom.h"
 #include "ShapeFlags10Atom.h"
 #include "ShapeFlagsAtom.h"
@@ -142,8 +138,4 @@
 #include "SoundContainer.h"
 
 #include "RoundTrip.h"
-#include "RoundTripOriginalMainMasterId12Atom.h"
-#include "RoundTripCompositeMainMasterId12Atom.h"
 
-// Meta data
-#include "RoundTripOArtTextStyles12Atom.h"

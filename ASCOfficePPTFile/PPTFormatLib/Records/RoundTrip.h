@@ -47,7 +47,15 @@ public:
     {
     }
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+
+        data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
+        pStream->read(data.first.get(), data.second);
+    }
+
+    void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
     {
         m_oHeader = oHeader;
 
@@ -58,11 +66,8 @@ public:
 
 class RoundTripTheme12Atom : public CUnknownRoundTrip {};
 class RoundTripColorMapping12Atom : public CUnknownRoundTrip {};
-class RoundTripOriginalMainMasterId12Atom : public CUnknownRoundTrip {};
-class RoundTripCompositeMasterId12Atom : public CUnknownRoundTrip {};
 class RoundTripContentMasterInfo12Atom : public CUnknownRoundTrip {};
 class RoundTripShapeId12Atom : public CUnknownRoundTrip {};
-class RoundTripHFPlaceholder12Atom : public CUnknownRoundTrip {};
 class RoundTripContentMasterId12Atom : public CUnknownRoundTrip {};
 class RoundTripOArtTextStyles12Atom : public CUnknownRoundTrip {};
 class RoundTripHeaderFooterDefaults12Atom : public CUnknownRoundTrip {};
@@ -76,4 +81,48 @@ class RoundTripAnimationHashAtom12Atom : public CUnknownRoundTrip {};
 class RoundTripSlideSyncInfo12 : public CUnknownRoundTrip {};
 class RoundTripSlideSyncInfoAtom12 : public CUnknownRoundTrip {};
 
+class RoundTripCompositeMasterId12Atom : public CUnknownRecord
+{
+public:
+    UINT m_dwID;
+
+    RoundTripCompositeMasterId12Atom(): m_dwID(-1){}
+    ~RoundTripCompositeMasterId12Atom(){}
+
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+        m_dwID = StreamUtils::ReadDWORD(pStream);
+    }
+};
+
+class RoundTripOriginalMainMasterId12Atom : public CUnknownRecord
+{
+public:
+    UINT m_dwID;
+
+    RoundTripOriginalMainMasterId12Atom(): m_dwID(-1){}
+    ~RoundTripOriginalMainMasterId12Atom(){}
+
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+        m_dwID = StreamUtils::ReadDWORD(pStream);
+    }
+};
+
+class RoundTripHFPlaceholder12Atom : public CUnknownRecord
+{
+public:
+    PlaceholderEnum m_nPlacementID;
+
+    RoundTripHFPlaceholder12Atom(): m_nPlacementID(PT_None){}
+    ~RoundTripHFPlaceholder12Atom(){}
+
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+        m_nPlacementID = (PlaceholderEnum)StreamUtils::ReadBYTE(pStream);
+    }
+};
 }

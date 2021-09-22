@@ -119,7 +119,6 @@ HEADERS += \
     ../Records/OfficeArtClientTextbox.h \
     ../Records/PlaceHolderAtom.h \
     ../Records/RoundTrip.h \
-    ../Records/RoundTripOArtTextStyles12Atom.h \
     ../Records/ShapeProgBinaryTagSubContainerOrAtom.h \
     ../Records/CFMasks.h \
     ../Records/ColorSchemeAtom.h \
@@ -172,11 +171,6 @@ HEADERS += \
     ../Records/PlaceHolderAtom.h \
     ../Records/ProgStringTagContainer.h \
     ../Records/RecordsIncluder.h \
-    ../Records/RoundTripColorMappingAtom.h \
-    ../Records/RoundTripCompositeMainMasterId12Atom.h \
-    ../Records/RoundTripNewPlaceholderId12Atom.h \
-    ../Records/RoundTripOriginalMainMasterId12Atom.h \
-    ../Records/RoundTripThemeAtom.h \
     ../Records/ShapeFlags10Atom.h \
     ../Records/ShapeFlagsAtom.h \
     ../Records/Comment10Container.h \

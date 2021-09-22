@@ -32,6 +32,7 @@
 #pragma once
 
 #include "ImageManager.h"
+#include "../Records/RoundTrip.h"
 
 
 class CStylesWriter;
@@ -86,7 +87,7 @@ namespace PPT_FORMAT
         void WriteRoundTripThemes(const std::vector<CPPTUserInfo::SRoundTripsTheme> &arrRTThemes, int& nIndexTheme);
         void WriteRoundTripSlideMasters(SRoundTripsThemesPackage &themesPackeage, int &lastThemeIndex, int type);
         void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
-        void WriteTheme         (CRecordRoundTripThemeAtom *pTheme, int &nIndexTheme);
+        void WriteTheme         (RoundTripTheme12Atom *pTheme, int &nIndexTheme);
         void WriteSlides		();
 		void WriteNotes			();
         void WriteLayoutAfterTheme (CThemePtr pTheme, const int nIndexTheme, int &nStartLayout);

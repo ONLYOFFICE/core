@@ -366,10 +366,10 @@ public:
 
     struct SRoundTripsTheme
     {
-        CRecordRoundTripThemeAtom* pRTTheme;
-        std::vector<CRecordRoundTripContentMasterInfo12Atom*> arrRTLayouts;
-        CRecordTripOriginalMasterId12Atom* pRTpMaster;
-        CRecordRoundTripOArtTextStyles12Atom* pRTSlideMaster;
+        RoundTripTheme12Atom* pRTTheme;
+        std::vector<RoundTripContentMasterInfo12Atom*> arrRTLayouts;
+        RoundTripOriginalMainMasterId12Atom* pRTpMaster;
+        RoundTripOArtTextStyles12Atom* pRTSlideMaster;
     };
 
     // 1 - master, 2 - note, 3 - handout

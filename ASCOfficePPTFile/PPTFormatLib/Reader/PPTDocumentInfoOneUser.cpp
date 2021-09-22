@@ -1159,9 +1159,9 @@ std::vector<CPPTUserInfo::SRoundTripsTheme> CPPTUserInfo::getRoundTripTheme(int 
         SRoundTripsTheme roundTripsTheme;
         if (!pSlide) continue;
 
-        std::vector<CRecordRoundTripThemeAtom*> arrRTThemes;
-        std::vector<CRecordTripOriginalMasterId12Atom*> arrRTpMaster;
-        std::vector<CRecordRoundTripOArtTextStyles12Atom*> arrRTSlideMaster;
+        std::vector<RoundTripTheme12Atom*> arrRTThemes;
+        std::vector<RoundTripOriginalMainMasterId12Atom*> arrRTpMaster;
+        std::vector<RoundTripOArtTextStyles12Atom*> arrRTSlideMaster;
         pSlide->GetRecordsByType(&arrRTThemes, true);
         pSlide->GetRecordsByType(&arrRTpMaster, true);
         pSlide->GetRecordsByType(&arrRTSlideMaster, true);
@@ -1464,7 +1464,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
         // title нужно грузить как обычный слайд.
         return;
     }
-    std::vector<CRecordTripCompositeMasterId12Atom*> oArrayCompId;
+    std::vector<RoundTripCompositeMasterId12Atom*> oArrayCompId;
     pMaster->GetRecordsByType(&oArrayCompId, false, true);
     if (0 != oArrayCompId.size())
     {
@@ -1478,7 +1478,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
     bool bMasterBackGround	= oArraySlideAtoms[0]->m_bMasterBackground;
     bool bMasterObjects		= oArraySlideAtoms[0]->m_bMasterObjects;
 
-    std::vector<CRecordTripOriginalMasterId12Atom*> oArrayOrigId;
+    std::vector<RoundTripOriginalMainMasterId12Atom*> oArrayOrigId;
     pMaster->GetRecordsByType(&oArrayOrigId, false, true);
 
     if (0 != oArrayOrigId.size())
@@ -1912,7 +1912,7 @@ void CPPTUserInfo::LoadNoMainMaster(_UINT32 dwMasterID)
 
     if (0 == dwID)
     {
-        std::vector<CRecordTripCompositeMasterId12Atom*> oArrayCompId;
+        std::vector<RoundTripCompositeMasterId12Atom*> oArrayCompId;
         pCurMaster->GetRecordsByType(&oArrayCompId, false, true);
         if (0 != oArrayCompId.size())
         {

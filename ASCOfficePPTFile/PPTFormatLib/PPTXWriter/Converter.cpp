@@ -792,10 +792,9 @@ void CPPTXWriter::WriteRoundTripSlideMasters(PPT_FORMAT::SRoundTripsThemesPackag
     {
         std::wstring tempPath = NSDirectory::GetTempPath();
 
-        auto* zipAtom = pack.pRTSlideMaster;
-        if (!zipAtom) continue;
-        BYTE* zipData = zipAtom->data;
-        ULONG zipDataLen = zipAtom->m_oHeader.RecLen;
+        auto& zipAtom = *(pack.pRTTheme);
+        BYTE* zipData = zipAtom.data.first.get();
+        ULONG zipDataLen = zipAtom.data.second;
 
 
         NSFile::CFileBinary binFile;

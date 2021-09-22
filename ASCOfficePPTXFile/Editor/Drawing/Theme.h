@@ -30,7 +30,6 @@
  *
  */
 #pragma once
-#include "../../../ASCOfficePPTFile/PPTFormatLib/Records/RoundTripThemeAtom.h"
 #include "Structures.h"
 #include "Layout.h"
 

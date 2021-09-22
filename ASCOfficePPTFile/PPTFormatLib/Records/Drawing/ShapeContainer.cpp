@@ -1716,7 +1716,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         CorrectPlaceholderType(pElement->m_lPlaceholderType);
     }
 
-    std::vector<CRecordRoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
+    std::vector<RoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
     GetRecordsByType(&oArrayHFPlaceholder, true, true);
     if (0 < oArrayHFPlaceholder.size())
     {

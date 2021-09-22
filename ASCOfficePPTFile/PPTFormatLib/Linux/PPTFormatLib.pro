@@ -42,6 +42,7 @@ HEADERS += \
     ../Reader/PPTFileReader.h \
     ../Reader/ReadStructures.h \
     ../Reader/Records.h \
+    ../Reader/RoundTripExtractor.h \
     ../Reader/Slide.h \
     ../Reader/SlideInfo.h \
     ../Reader/SlidePersist.h \
@@ -291,4 +292,5 @@ SOURCES += \
     ../PPTXWriter/Animation.cpp \
     ../PPTXWriter/TableWriter.cpp \
     ../PPTXWriter/TxBodyConverter.cpp \
+    ../Reader/RoundTripExtractor.cpp \
     ../Records/Animations/TimeVariant.cpp

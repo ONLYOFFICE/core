@@ -59,6 +59,7 @@
 
 #include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"
 
+#include "../Reader/RoundTripExtractor.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
 

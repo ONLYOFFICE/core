@@ -92,7 +92,8 @@ namespace PPT_FORMAT
 		void WriteNotes			();
         void WriteLayoutAfterTheme (CThemePtr pTheme, const int nIndexTheme, int &nStartLayout);
         void WriteLayout		(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);
-		void WriteSlide			(int nIndexSlide);
+//		void WriteRelsMaster    (std::wstring path, int type, )
+        void WriteSlide			(int nIndexSlide);
 		void WriteNotes			(int nIndexNotes);
         void WriteTiming        (CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide); // TODO write spec class for timing
 		

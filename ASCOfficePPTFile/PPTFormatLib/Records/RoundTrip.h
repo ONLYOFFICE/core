@@ -32,6 +32,9 @@
 #pragma once
 #include "../Reader/Records.h"
 
+#include <fstream>
+static UINT nRTCounter = 1;
+
 namespace PPT_FORMAT
 {
 class CUnknownRoundTrip : public IRecord
@@ -53,6 +56,11 @@ public:
 
         data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
         pStream->read(data.first.get(), data.second);
+
+        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".zip";
+        std::ofstream file("RoundTrips/" + filename, std::ios::out);
+        file.write((char*)data.first.get(), data.second);
+        file.close();
     }
 
     void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
@@ -65,7 +73,6 @@ public:
 };
 
 class RoundTripTheme12Atom : public CUnknownRoundTrip {};
-class RoundTripColorMapping12Atom : public CUnknownRoundTrip {};
 class RoundTripContentMasterInfo12Atom : public CUnknownRoundTrip {};
 class RoundTripShapeId12Atom : public CUnknownRoundTrip {};
 class RoundTripContentMasterId12Atom : public CUnknownRoundTrip {};
@@ -80,6 +87,26 @@ class RoundTripAnimationAtom12Atom : public CUnknownRoundTrip {};
 class RoundTripAnimationHashAtom12Atom : public CUnknownRoundTrip {};
 class RoundTripSlideSyncInfo12 : public CUnknownRoundTrip {};
 class RoundTripSlideSyncInfoAtom12 : public CUnknownRoundTrip {};
+
+class RoundTripColorMapping12Atom : public CUnknownRecord
+{
+public:
+    std::string m_colorMapping;
+
+    RoundTripColorMapping12Atom(){}
+    ~RoundTripColorMapping12Atom(){}
+
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+        m_colorMapping = StreamUtils::ReadStringA(pStream, m_oHeader.RecLen);
+
+        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".txt";
+        std::ofstream file("RoundTrips/" + filename, std::ios::out);
+        file << m_colorMapping;
+        file.close();
+    }
+};
 
 class RoundTripCompositeMasterId12Atom : public CUnknownRecord
 {

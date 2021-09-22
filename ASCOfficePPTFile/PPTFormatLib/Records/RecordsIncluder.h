@@ -141,6 +141,7 @@
 #include "SoundCollectionContainer.h"
 #include "SoundContainer.h"
 
+#include "RoundTrip.h"
 #include "RoundTripOriginalMainMasterId12Atom.h"
 #include "RoundTripCompositeMainMasterId12Atom.h"
 

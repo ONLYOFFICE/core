@@ -118,6 +118,7 @@ HEADERS += \
     ../Records/OfficeArtClientData.h \
     ../Records/OfficeArtClientTextbox.h \
     ../Records/PlaceHolderAtom.h \
+    ../Records/RoundTrip.h \
     ../Records/RoundTripOArtTextStyles12Atom.h \
     ../Records/ShapeProgBinaryTagSubContainerOrAtom.h \
     ../Records/CFMasks.h \

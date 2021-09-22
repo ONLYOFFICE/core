@@ -36,6 +36,8 @@
 #include "../../XlsbFormat/Biff12_records/WsFmtInfo.h"
 #include "../../XlsbFormat/Biff12_unions/WSVIEWS2.h"
 #include "../../XlsbFormat/Biff12_unions/WSVIEW2.h"
+#include "../../XlsbFormat/Biff12_records/SheetProtectionIso.h"
+#include "../../XlsbFormat/Biff12_records/SheetProtection.h"
 
 namespace OOX
 {
@@ -1647,6 +1649,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheetProtection)
+            WritingElement_XlsbConstructors(CSheetProtection)
 			CSheetProtection()
 			{
 			}
@@ -1694,6 +1697,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -1727,6 +1734,67 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"sort"),			m_oSort)
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptrRecord = static_cast<XLS::BiffRecord*>(obj.get());
+
+                if(ptrRecord->getTypeId() == XLSB::rt_SheetProtection)
+                {
+                    auto ptr = static_cast<XLSB::SheetProtection*>(obj.get());
+
+                    m_oPassword                = std::to_wstring(ptr->protpwd);
+                    m_oAutoFilter              = (bool)ptr->fAutoFilter;
+                    m_oContent                 = true;
+                    m_oDeleteColumns           = (bool)ptr->fDeleteColumns;
+                    m_oDeleteRows              = (bool)ptr->fDeleteRows;
+                    m_oFormatCells             = (bool)ptr->fFormatCells;
+                    m_oFormatColumns           = (bool)ptr->fFormatColumns;
+                    m_oFormatRows              = (bool)ptr->fFormatRows;
+                    m_oInsertColumns           = (bool)ptr->fInsertColumns;
+                    m_oInsertHyperlinks        = (bool)ptr->fInsertHyperlinks;
+                    m_oInsertRows              = (bool)ptr->fInsertRows;
+                    m_oObjects                 = (bool)ptr->fObjects;
+                    m_oPivotTables             = (bool)ptr->fPivotTables;
+                    m_oScenarios               = (bool)ptr->fScenarios;
+                    m_oSelectLockedCells       = (bool)ptr->fSelLockedCells;
+                    m_oSelectUnlockedCells     = (bool)ptr->fSelUnlockedCells;
+                    m_oSheet                   = (bool)ptr->fLocked;
+                    m_oSort                    = (bool)ptr->fSort;
+
+                }
+                else if(ptrRecord->getTypeId() == XLSB::rt_SheetProtectionIso)
+                {
+                    auto ptr = static_cast<XLSB::SheetProtectionIso*>(obj.get());
+
+                    m_oAlgorithmName           = ptr->ipdPasswordData.szAlgName.value();
+                    m_oSpinCount               = ptr->dwSpinCount;
+                    m_oHashValue               = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdPasswordData.rgbHash.rgbData),
+                                                              ptr->ipdPasswordData.rgbHash.cbLength/sizeof(wchar_t));
+                    m_oSaltValue               = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdPasswordData.rgbSalt.rgbData),
+                                                              ptr->ipdPasswordData.rgbSalt.cbLength/sizeof(wchar_t));
+                    m_oAutoFilter              = (bool)ptr->fAutoFilter;
+                    m_oContent                 = true;
+                    m_oDeleteColumns           = (bool)ptr->fDeleteColumns;
+                    m_oDeleteRows              = (bool)ptr->fDeleteRows;
+                    m_oFormatCells             = (bool)ptr->fFormatCells;
+                    m_oFormatColumns           = (bool)ptr->fFormatColumns;
+                    m_oFormatRows              = (bool)ptr->fFormatRows;
+                    m_oInsertColumns           = (bool)ptr->fInsertColumns;
+                    m_oInsertHyperlinks        = (bool)ptr->fInsertHyperlinks;
+                    m_oInsertRows              = (bool)ptr->fInsertRows;
+                    m_oObjects                 = (bool)ptr->fObjects;
+                    m_oPivotTables             = (bool)ptr->fPivotTables;
+                    m_oScenarios               = (bool)ptr->fScenarios;
+                    m_oSelectLockedCells       = (bool)ptr->fSelLockedCells;
+                    m_oSelectUnlockedCells     = (bool)ptr->fSelUnlockedCells;
+                    m_oSheet                   = (bool)ptr->fLocked;
+                    m_oSort                    = (bool)ptr->fSort;
+                }
+
+
+            }
+
 			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oAlgorithmName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
 			nullable_string		m_oHashValue;

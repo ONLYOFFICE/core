@@ -46,6 +46,7 @@
 #include <Logic/Biff_records/Window2.h>
 #include <Logic/Biff_records/Pane.h>
 #include <Logic/Biff_records/Selection.h>
+#include <Logic/Biff_records/SortData.h>
 #include "../../XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
 
@@ -204,6 +205,16 @@ namespace XLSB
         BaseObjectPtr clone() override
         {
             return BaseObjectPtr(new Sel(*this));
+        }
+    };
+
+    class BeginSortState: public XLS::SortData
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(BeginSortState)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new BeginSortState(*this));
         }
     };
 

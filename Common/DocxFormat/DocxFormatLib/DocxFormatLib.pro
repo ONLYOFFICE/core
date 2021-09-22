@@ -154,6 +154,18 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndWsView.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginWsViews.cpp \
     ../Source/XlsbFormat/Biff12_records/EndWsViews.cpp \
+    ../Source/XlsbFormat/Biff12_records/SheetProtectionIso.cpp \
+    ../Source/XlsbFormat/Biff12_records/SheetProtection.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginListParts.cpp \
+    ../Source/XlsbFormat/Biff12_records/ListPart.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndListParts.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSortCond.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSortCond.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSortCond14.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSortCond14.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginRichSortCondition.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndRichSortCondition.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSortState.cpp \
     #
     ../Source/XlsbFormat/Biff12_records/EndSheet.cpp \
 ### Biff12_structures
@@ -194,6 +206,13 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/CELLMETA.cpp \
     ../Source/XlsbFormat/Biff12_unions/WSVIEW2.cpp \
     ../Source/XlsbFormat/Biff12_unions/WSVIEWS2.cpp \
+    ../Source/XlsbFormat/Biff12_unions/LISTPARTS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/RICHSORTCONDITION.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SORTCOND14.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACSORTCONDS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SORTCOND.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SORTCONDS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SORTSTATE.cpp \
 }
 
 
@@ -438,6 +457,18 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/EndWsView.h \
     ../Source/XlsbFormat/Biff12_records/BeginWsViews.h \
     ../Source/XlsbFormat/Biff12_records/EndWsViews.h \
+    ../Source/XlsbFormat/Biff12_records/SheetProtectionIso.h \
+    ../Source/XlsbFormat/Biff12_records/SheetProtection.h \
+    ../Source/XlsbFormat/Biff12_records/BeginListParts.h \
+    ../Source/XlsbFormat/Biff12_records/ListPart.h \
+    ../Source/XlsbFormat/Biff12_records/EndListParts.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSortCond.h \
+    ../Source/XlsbFormat/Biff12_records/EndSortCond.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSortCond14.h \
+    ../Source/XlsbFormat/Biff12_records/EndSortCond14.h \
+    ../Source/XlsbFormat/Biff12_records/BeginRichSortCondition.h \
+    ../Source/XlsbFormat/Biff12_records/EndRichSortCondition.h \
+    ../Source/XlsbFormat/Biff12_records/EndSortState.h \
     #
     ../Source/XlsbFormat/Biff12_records/EndSheet.h \
 ### Biff12_structures
@@ -481,4 +512,10 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/CELLMETA.h \
     ../Source/XlsbFormat/Biff12_unions/WSVIEW2.h \
     ../Source/XlsbFormat/Biff12_unions/WSVIEWS2.h \
-
+    ../Source/XlsbFormat/Biff12_unions/LISTPARTS.h \
+    ../Source/XlsbFormat/Biff12_unions/RICHSORTCONDITION.h \
+    ../Source/XlsbFormat/Biff12_unions/SORTCOND14.h \
+    ../Source/XlsbFormat/Biff12_unions/ACSORTCONDS.h \
+    ../Source/XlsbFormat/Biff12_unions/SORTCOND.h \
+    ../Source/XlsbFormat/Biff12_unions/SORTCONDS.h \
+    ../Source/XlsbFormat/Biff12_unions/SORTSTATE.h \

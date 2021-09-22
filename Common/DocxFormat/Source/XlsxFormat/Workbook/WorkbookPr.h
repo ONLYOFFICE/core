@@ -37,7 +37,7 @@
 
 #include "../../XlsbFormat/Biff12_records/WbProp.h"
 #include "../../XlsbFormat/Biff12_records/BookProtectionIso.h"
-
+#include "../../XlsbFormat/Biff12_records/BookProtection.h"
 
 namespace OOX
 {
@@ -239,24 +239,36 @@ namespace OOX
 
             void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
-                auto ptr = static_cast<XLSB::BookProtectionIso*>(obj.get());
-                m_oLockRevision            = ptr->wFlags.fLockRevision;
-                m_oLockStructure           = ptr->wFlags.fLockStructure;
-                m_oLockWindows             = ptr->wFlags.fLockWindow;
+                auto ptrRecord = static_cast<XLS::BiffRecord*>(obj.get());
 
-                m_oWorkbookAlgorithmName   = ptr->ipdBookPasswordData.szAlgName.value();
-                m_oWorkbookSpinCount       = ptr->dwBookSpinCount;
-                m_oWorkbookHashValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdBookPasswordData.rgbHash.rgbData),
-                                                          ptr->ipdBookPasswordData.rgbHash.cbLength/sizeof(wchar_t));
-                m_oWorkbookSaltValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdBookPasswordData.rgbSalt.rgbData),
-                                                          ptr->ipdBookPasswordData.rgbSalt.cbLength/sizeof(wchar_t));
+                if(ptrRecord->getTypeId() == XLSB::rt_BookProtection)
+                {
+                    auto ptr = static_cast<XLSB::BookProtection*>(obj.get());
+                    m_oLockRevision            = ptr->wFlags.fLockRevision;
+                    m_oLockStructure           = ptr->wFlags.fLockStructure;
+                    m_oLockWindows             = ptr->wFlags.fLockWindow;
+                }
+                else if(ptrRecord->getTypeId() == XLSB::rt_BookProtectionIso)
+                {
+                    auto ptr = static_cast<XLSB::BookProtectionIso*>(obj.get());
+                    m_oLockRevision            = ptr->wFlags.fLockRevision;
+                    m_oLockStructure           = ptr->wFlags.fLockStructure;
+                    m_oLockWindows             = ptr->wFlags.fLockWindow;
 
-                m_oRevisionsAlgorithmName   = ptr->ipdRevPasswordData.szAlgName.value();
-                m_oRevisionsSpinCount       = ptr->dwRevSpinCount;
-                m_oRevisionsHashValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdRevPasswordData.rgbHash.rgbData),
-                                                          ptr->ipdRevPasswordData.rgbHash.cbLength/sizeof(wchar_t));
-                m_oRevisionsSaltValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdRevPasswordData.rgbSalt.rgbData),
-                                                          ptr->ipdRevPasswordData.rgbSalt.cbLength/sizeof(wchar_t));
+                    m_oWorkbookAlgorithmName   = ptr->ipdBookPasswordData.szAlgName.value();
+                    m_oWorkbookSpinCount       = ptr->dwBookSpinCount;
+                    m_oWorkbookHashValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdBookPasswordData.rgbHash.rgbData),
+                                                              ptr->ipdBookPasswordData.rgbHash.cbLength/sizeof(wchar_t));
+                    m_oWorkbookSaltValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdBookPasswordData.rgbSalt.rgbData),
+                                                              ptr->ipdBookPasswordData.rgbSalt.cbLength/sizeof(wchar_t));
+
+                    m_oRevisionsAlgorithmName   = ptr->ipdRevPasswordData.szAlgName.value();
+                    m_oRevisionsSpinCount       = ptr->dwRevSpinCount;
+                    m_oRevisionsHashValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdRevPasswordData.rgbHash.rgbData),
+                                                              ptr->ipdRevPasswordData.rgbHash.cbLength/sizeof(wchar_t));
+                    m_oRevisionsSaltValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdRevPasswordData.rgbSalt.rgbData),
+                                                              ptr->ipdRevPasswordData.rgbSalt.cbLength/sizeof(wchar_t));
+                }
 
 
             }

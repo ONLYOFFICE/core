@@ -134,6 +134,16 @@ namespace OOX
                 if (workSheetStream->m_WSVIEWS2 != nullptr)
                     m_oSheetViews = workSheetStream->m_WSVIEWS2;
 
+                if (workSheetStream->m_BrtSheetProtectionIso != nullptr)
+                    m_oSheetProtection = workSheetStream->m_BrtSheetProtectionIso;
+                else if(workSheetStream->m_BrtSheetProtection != nullptr)
+                    m_oSheetProtection = workSheetStream->m_BrtSheetProtection;
+
+                if (workSheetStream->m_LISTPARTS != nullptr)
+                    m_oTableParts = workSheetStream->m_LISTPARTS;
+                if (workSheetStream->m_SORTSTATE != nullptr)
+                    m_oSortState = workSheetStream->m_SORTSTATE;
+
 
 
             }

@@ -95,10 +95,18 @@ namespace OOX
                         void ReadAttributes(XLS::BaseObjectPtr& obj)
                         {
                             auto ptr = static_cast<XLSB::SUP*>(obj.get());
-
-                            if(ptr != nullptr && ptr->m_source != nullptr && static_cast<XLSB::SupBookSrc*>(ptr->m_source.get()) != nullptr
-                                    && static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.getSize() != 0)
-                                m_oRid = static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value();
+                            if(ptr != nullptr)
+                            {
+                                auto ptrRecord = static_cast<XLS::BiffRecord*>(ptr->m_source.get());
+                                if(ptrRecord != nullptr)
+                                {
+                                    if(ptrRecord->getTypeId() == XLSB::rt_SupBookSrc)
+                                    {
+                                        if(static_cast<XLSB::SupBookSrc*>(ptrRecord)->strRelID.value.getSize() != 0)
+                                            m_oRid = static_cast<XLSB::SupBookSrc*>(ptrRecord)->strRelID.value.value();
+                                    }
+                                }
+                            }
                         }
 
 		public:

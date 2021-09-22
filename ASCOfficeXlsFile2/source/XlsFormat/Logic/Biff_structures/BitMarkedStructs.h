@@ -316,11 +316,45 @@ struct KPISets : public BiffStructure_NoVtbl
 	};
 };
 
+struct KPISets14 : public BiffStructure_NoVtbl // in biff12
+{
+    _UINT32 set;
+    enum {
+        KPINIL_14 = 0xFFFFFFFF, // Sort by no-icon
+        KPI3ARROWS_14 = 0x00000000, // Kpi3 Arrows set
+        KPI3ARROWSGRAY_14 = 0x00000001, // Kpi3 Arrows Gray set
+        KPI3FLAGS_14 = 0x00000002, // Kpi3 Flags set
+        KPI3TRAFFICLIGHTS1_14 = 0x00000003, // Kpi3 Traffic Lights 1 set
+        KPI3TRAFFICLIGHTS2_14 = 0x00000004, // Kpi3 Traffic Lights 2 set
+        KPI3SIGNS_14 = 0x00000005, // Kpi3 Signs set
+        KPI3SYMBOLS_14 = 0x00000006, // Kpi3 Symbols set
+        KPI3SYMBOLS2_14 = 0x00000007, // Kpi3 Symbols 2 set
+        KPI4ARROWS_14 = 0x00000008, // Kpi4 Arrows set
+        KPI4ARROWSGRAY_14 = 0x00000009, // Kpi4 Arrows Gray set
+        KPI4REDTOBLACK_14 = 0x0000000A, // Kpi4 Red To Black set
+        KPI4RATING_14 = 0x0000000B, // Kpi4 Rating set
+        KPI4TRAFFICLIGHTS_14 = 0x0000000C, // Kpi4 Traffic Lights set
+        KPI5ARROWS_14 = 0x0000000D, // Kpi5 Arrows set
+        KPI5ARROWSGRAY_14 = 0x0000000E, // Kpi5 Arrows Gray set
+        KPI5RATING_14 = 0x0000000F, // Kpi5 Rating set
+        KPI5QUARTERS_14 = 0x00000010, // Kpi5 Quarters set
+        KPI3STARS_14 = 0x00000011, // Kpi3 Stars set
+        KPI3TRIANGLES_14 = 0x00000012, // Kpi3 Triangles set
+        KPI5BOXES_14 = 0x00000013 // Kpi5 Boxes set
+    };
+};
+
 
 struct CFFlag : public BiffStructure_NoVtbl
 {
 	KPISets iIconSet;
 	long iIcon;
+};
+
+struct CFFlag14 : public BiffStructure_NoVtbl // in biff12
+{
+    KPISets14 iIconSet;
+    long iIcon;
 };
 
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,67 +29,30 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#ifndef WORKSHEETSTREAM_H
-#define WORKSHEETSTREAM_H
+#include <Logic/CompositeObject.h>
 
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-typedef BYTE *LPBYTE;
 using namespace XLS;
+
 namespace XLSB
 {
-    class StreamCacheReader;
 
-    class WorkSheetStream;
-    typedef std::shared_ptr<WorkSheetStream>		WorkSheetStreamPtr;
-
-    class WorkSheetStream: public CompositeObject
+    class SORTCOND14: public CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
+        BASE_OBJECT_DEFINE_CLASS_NAME(SORTCOND14)
     public:
-        WorkSheetStream(const unsigned short code_page);
-        virtual ~WorkSheetStream();
+        SORTCOND14();
+        virtual ~SORTCOND14();
 
         BaseObjectPtr clone();
 
         virtual const bool loadContent(BinProcessor& proc);
 
-        static const XLS::ElementType type = typeWorksheetSubstream;
-
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
-
-        BaseObjectPtr               m_BrtBeginSheet;
-        std::vector<BaseObjectPtr>  m_arCOLINFOS;
-        BaseObjectPtr               m_BrtWsDim;
-        BaseObjectPtr               m_BrtDrawing;
-        BaseObjectPtr               m_HLINKS;
-        BaseObjectPtr               m_MERGECELLS;
-        BaseObjectPtr               m_CELLTABLE;
-        BaseObjectPtr               m_BrtWsFmtInfo;
-        BaseObjectPtr               m_WSVIEWS2;
-        BaseObjectPtr               m_BrtSheetProtectionIso;
-        BaseObjectPtr               m_BrtSheetProtection;
-        BaseObjectPtr               m_LISTPARTS;
-        BaseObjectPtr               m_SORTSTATE;
-
-        BaseObjectPtr               m_BrtEndSheet;
-
-
-        unsigned short              code_page_;
-        GlobalWorkbookInfoPtr		global_info_;
-
+        BaseObjectPtr	m_BrtBeginSortCond14;
+        BaseObjectPtr	m_BrtEndSortCond14;
 
     };
 
-}
-
-#endif // WORKSHEETSTREAM_H
+} // namespace XLSB
 

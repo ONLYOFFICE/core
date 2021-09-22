@@ -43,6 +43,10 @@
 #include "Biff12_unions/CELLTABLE.h"
 #include "Biff12_records/WsFmtInfo.h"
 #include "Biff12_unions/WSVIEWS2.h"
+#include "Biff12_records/SheetProtectionIso.h"
+#include "Biff12_records/SheetProtection.h"
+#include "Biff12_unions/LISTPARTS.h"
+#include "Biff12_unions/SORTSTATE.h"
 #include "Biff12_records/EndSheet.h"
 
 namespace XLSB
@@ -191,6 +195,42 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                 if (proc.optional<WSVIEWS2>())
                 {
                     m_WSVIEWS2 = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_SheetProtectionIso:
+            {
+                if (proc.optional<SheetProtectionIso>())
+                {
+                    m_BrtSheetProtectionIso = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_SheetProtection:
+            {
+                if (proc.optional<SheetProtection>())
+                {
+                    m_BrtSheetProtection = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginListParts:
+            {
+                if (proc.optional<LISTPARTS>())
+                {
+                    m_LISTPARTS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginSortState:
+            {
+                if (proc.optional<SORTSTATE>())
+                {
+                    m_SORTSTATE = elements_.back();
                     elements_.pop_back();
                 }
             }break;

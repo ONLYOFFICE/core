@@ -138,8 +138,12 @@ namespace OOX
                         m_oSheets = static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh;
                     if (workBookStream->m_BrtWbProp != nullptr)
                         m_oWorkbookPr = workBookStream->m_BrtWbProp;
+
                     if (workBookStream->m_BrtBookProtectionIso != nullptr)
                         m_oWorkbookProtection = workBookStream->m_BrtBookProtectionIso;
+                    else if(workBookStream->m_BrtBookProtection != nullptr)
+                        m_oWorkbookProtection = workBookStream->m_BrtBookProtection;
+
                     if (workBookStream->m_EXTERNALS != nullptr)
                         m_oExternalReferences = static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP;
                     if (workBookStream->m_BrtFileVersion != nullptr )                    

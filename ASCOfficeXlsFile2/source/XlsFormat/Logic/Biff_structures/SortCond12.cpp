@@ -46,12 +46,12 @@ BiffStructurePtr SortCond12::clone()
 void SortCond12::load(CFRecord& record)
 {
 	unsigned short flags;
-	record >> flags;
+    record >> flags;
 	
 	fSortDes	= GETBIT(flags, 0);
 	sortOn		= GETBITS(flags, 1, 4);
 
-	record >> rfx;
+    record >> rfx;
 
 	switch(sortOn)
 	{
@@ -61,16 +61,16 @@ void SortCond12::load(CFRecord& record)
 			record >> condDataValue;
 			break;
 		case 0x03:
-			record >> cfflag;
+            record >> cfflag;
 			break;
 	}
 
-	record >> cchSt;
-	if(cchSt)
-	{
-		stSslist.setSize(cchSt);
-		record >> stSslist;
-	}
+    record >> cchSt;
+    if(cchSt)
+    {
+        stSslist.setSize(cchSt);
+        record >> stSslist;
+    }
 }
 
 

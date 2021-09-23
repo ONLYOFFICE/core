@@ -172,9 +172,9 @@ namespace DocFileFormat
 							_gridSpan = 1;
 
 							nComputedCellWidths +=  (tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ 0 ]);
-							nComputedCellWidth	+= tdef.rgTc80[ _cellIndex].wWidth > 1 ? tdef.rgTc80[ _cellIndex].wWidth : (tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ _cellIndex ]);
+							nComputedCellWidth	+= /*tdef.rgTc80[ _cellIndex].wWidth > 1 ? tdef.rgTc80[ _cellIndex].wWidth :*/ // 1bc0f6c0-b226-4bcb-912c-e7f97b009d8a.doc
+													(tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ _cellIndex ]);
 							//Технические_Требования_1_287_ДИТ.DOC
-
 						}
 
 						if (!IsTableBordersDefined(tapx->grpprl))
@@ -349,7 +349,7 @@ namespace DocFileFormat
 		}
 
 		XMLTools::XMLElement    tcW     ( L"w:tcW" );
-		
+	
 
 		XMLTools::XMLAttribute  tcWVal  ( L"w:w", FormatUtils::IntToWideString( _width > 1 ? _width : nComputedCellWidth) );
 		XMLTools::XMLAttribute  tcWType ( L"w:type",  (_width > 1 || nComputedCellWidth > 0) ? FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ) : L"auto");

@@ -670,22 +670,39 @@ public:
 	{
 		return (m_nType == 4);
 	}
-	CTextFormPr& GetTextFormPr()
+	CTextFormPr* GetTextFormPr()
 	{
-		return m_oTextPr;
+		return &m_oTextPr;
 	}
-	CDropDownFormPr& GetDropDownFormPr()
+	const CTextFormPr* GetTextPr() const
 	{
-		return m_oDropDownPr;
+		return &m_oTextPr;
 	}
-	CCheckBoxFormPr& GetCheckBoxFormPr()
+	CDropDownFormPr* GetDropDownFormPr()
 	{
-		return m_oCheckBoxPr;
+		return &m_oDropDownPr;
 	}
-	CPictureFormPr& GetPictureFormPr()
+	const CDropDownFormPr* GetDropDownPr() const
 	{
-		return m_oPicturePr;
+		return &m_oDropDownPr;
 	}
+	CCheckBoxFormPr* GetCheckBoxFormPr()
+	{
+		return &m_oCheckBoxPr;
+	}
+	const CCheckBoxFormPr* GetCheckBoxPr() const
+	{
+		return &m_oCheckBoxPr;
+	}
+	CPictureFormPr* GetPictureFormPr()
+	{
+		return &m_oPicturePr;
+	}
+	const CPictureFormPr* GetPicturePr() const
+	{
+		return &m_oPicturePr;
+	}
+
 
 private:
 

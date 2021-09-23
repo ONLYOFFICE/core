@@ -913,47 +913,68 @@ namespace NSOnlineOfficeBinToPdf
 					oInfo.SetBorder(nBorderType, dBorderSize, unR, unG, unB, unA);
 				}
 
+				if (nFlags & (1 << 9))
+				{
+					unsigned char unR = ReadByte(current, curindex);
+					unsigned char unG = ReadByte(current, curindex);
+					unsigned char unB = ReadByte(current, curindex);
+					unsigned char unA = ReadByte(current, curindex);
+					oInfo.SetShd(unR, unG, unB, unA);
+				}
+
 				oInfo.SetType(ReadInt(current, curindex));
 
 				if (oInfo.IsTextField())
 				{
-					oInfo.SetComb(nFlags & (1 << 20));
+					CFormFieldInfo::CTextFormPr oPr = oInfo.GetTextFormPr();
+					oPr.SetComb(nFlags & (1 << 20));
 
 					if (nFlags & (1 << 21))
-						oInfo.SetMaxCharacters(ReadInt(current, curindex));
+						oPr.SetMaxCharacters(ReadInt(current, curindex));
 
 					if (nFlags & (1 << 22))
-						oInfo.SetTextValue(ReadString(current, curindex));
+						oPr.SetTextValue(ReadString(current, curindex));
+
+					oPr.SetAutoFit(nFlags & (1 << 23));
+					oPr.SetMultiLine(nFlags & (1 << 24));
 				}
-				else if (oInfo.IsComboBox())
+				else if (oInfo.IsDropDownList())
 				{
-					oInfo.SetEditComboBox(nFlags & (1 << 20));
+					CFormFieldInfo::CDropDownFormPr oPr = oInfo.GetDropDownFormPr();
+					oPr.SetEditComboBox(nFlags & (1 << 20));
 
 					int nItemsCount = ReadInt(current, curindex);
 					for (int nIndex = 0; nIndex < nItemsCount; ++nIndex)
 					{
-						oInfo.AddComboBoxItem(ReadString(current, curindex));
+						oPr.AddComboBoxItem(ReadString(current, curindex));
 					}
 
 					int nSelectedIndex = ReadInt(current, curindex);
 
 					if (nFlags & (1 << 22))
-						oInfo.SetTextValue(ReadString(current, curindex));
+						oPr.SetTextValue(ReadString(current, curindex));
 				}
 				else if (oInfo.IsCheckBox())
 				{
-					oInfo.SetChecked(nFlags & (1 << 20));
-					oInfo.SetCheckedSymbol(ReadInt(current, curindex));
-					oInfo.SetCheckedFont(ReadString(current, curindex));
-					oInfo.SetUncheckedSymbol(ReadInt(current, curindex));
-					oInfo.SetUncheckedFont(ReadString(current, curindex));
+					CFormFieldInfo::CCheckBoxFormPr oPr = oInfo.GetCheckBoxFormPr();
+					oPr.SetChecked(nFlags & (1 << 20));
+					oPr.SetCheckedSymbol(ReadInt(current, curindex));
+					oPr.SetCheckedFont(ReadString(current, curindex));
+					oPr.SetUncheckedSymbol(ReadInt(current, curindex));
+					oPr.SetUncheckedFont(ReadString(current, curindex));
 
 					if (nFlags & (1 << 21))
-						oInfo.SetGroupKey(ReadString(current, curindex));
+						oPr.SetGroupKey(ReadString(current, curindex));
 				}
 				else if (oInfo.IsPicture())
 				{
-
+					CFormFieldInfo::CPictureFormPr oPr = oInfo.GetPictureFormPr();
+					oPr.SetConstantProportions(nFlags & (1 << 20));
+					oPr.SetRespectBorders(nFlags & (1 << 21));
+					oPr.SetScaleType(CFormFieldInfo::EScaleType((nFlags >> 24) & 0xF));
+					LONG lShiftX = ReadInt(current, curindex);
+					LONG lShiftY = ReadInt(current, curindex);
+					oPr.SetShift(lShiftX, lShiftY);
 				}
 
 				if (oInfo.IsValid())

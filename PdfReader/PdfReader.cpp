@@ -219,9 +219,7 @@ namespace PdfReader
 	{
         std::wstring temp(wsDstPath);
         std::string prefix = U_TO_UTF8(temp);
-        char *pPrefix = new char[prefix.length() + 1];
-        strcpy_s(pPrefix, prefix.size() + 1, prefix.c_str());
-        ImageOutputDev *pOutputDev = new ImageOutputDev(pPrefix, true, false, false);
+        ImageOutputDev *pOutputDev = new ImageOutputDev((char*)prefix.c_str(), true, false, false);
 		if (!pOutputDev)
 			return false;
 

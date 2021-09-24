@@ -3,6 +3,8 @@
 #define CORE_GRCLIP_H
 
 #include <vector>
+#include <string>
+#include <math.h>
 #include "../lib/xpdf/GfxState.h"
 #include "MemoryUtils.h"
 

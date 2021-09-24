@@ -33,7 +33,7 @@
 #include "cextracttools.h"
 #include "ASCConverters.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
-#include "../../DesktopEditor/common/proclimits.h"
+#include "../../Common/3dParty/misc/proclimits.h"
 
 #include <iostream>
 
@@ -120,7 +120,9 @@ static std::wstring utf8_to_unicode(const char *src)
 	std::wstring sMemoryLimit = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvMemoryLimit);
 	if (sMemoryLimit.empty())
 		sMemoryLimit = NSSystemUtils::gc_EnvMemoryLimitDefault;
-	limit_memory((size_t)std::stoull(sMemoryLimit));
+	size_t nMemoryLimit = (size_t)std::stoull(sMemoryLimit);
+	if (nMemoryLimit > 0)
+		limit_memory(nMemoryLimit);
 
 	std::wstring sArg1, sArg2, sExePath;
 

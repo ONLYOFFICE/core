@@ -550,6 +550,7 @@ namespace agg
         float ymin, ymax;
         color_type m_color_table[MaxColorIndex + 1];
         bool m_valid_table[MaxColorIndex + 1];
+        bool m_bSwapRGB;
 
     private:
 
@@ -678,19 +679,19 @@ namespace agg
                     _x = _x * m_oGradientInfo.shading.inv_map[0] + _y * m_oGradientInfo.shading.inv_map[2];
                     _y = _x * m_oGradientInfo.shading.inv_map[1] + _y * m_oGradientInfo.shading.inv_map[3];
 
-                    *span++ = m_oGradientInfo.shading.function.get_color(_x, _y); //m_color_table[index];
+                    *span++ = ifswapRGB(m_oGradientInfo.shading.function.get_color(_x, _y)); //m_color_table[index];
                 }
                 else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::TriangleInterpolation)
                 {
-                    *span++ = this->triangle(x, y);
+                    *span++ = ifswapRGB(this->triangle(x, y));
                 }
                 else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::CurveInterpolation)
                 {
-                    *span++ = this->curve_eval(x, y); 
+                    *span++ = ifswapRGB(this->curve_eval(x, y));
                 }
                 else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::TensorCurveInterpolation)
                 {
-                    *span++ = this->curve_eval(x, y);
+                    *span++ = ifswapRGB(this->curve_eval(x, y));
                 }
                 else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::Parametric)
                 {
@@ -701,14 +702,14 @@ namespace agg
                     }
                     else if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseNew)
                     {
-                        *span++ = m_oGradientInfo.shading.function.get_color(t);
+                        *span++ = ifswapRGB(m_oGradientInfo.shading.function.get_color(t));
                     }
                     else if (m_oGradientInfo.shading.f_type == NSStructures::ShadingInfo::UseOld)
                     {
                         int index = int(t * MaxColorIndex + 0.5);
                         if (!m_valid_table[index])
                             CalcColor(index);
-                        *span++ = m_color_table[index];
+                        *span++ = ifswapRGB(m_color_table[index]);
                     }
                 }
             }
@@ -717,8 +718,9 @@ namespace agg
         /** 
          * Выставляем всякую инфу про наш градиент. 
          */
-        void SetDirection(const agg::rect_d &bounds, const agg::trans_affine &trans)
+        void SetDirection(const agg::rect_d &bounds, const agg::trans_affine &trans, bool bSwapRGB)
         {
+            m_bSwapRGB = bSwapRGB;
             m_trans = trans;
 
             xmax = std::max(bounds.x1, bounds.x2);
@@ -953,7 +955,20 @@ namespace agg
                 u += delta;
             }
         }
+        ColorT ifswapRGB(const ColorT &c)
+        {
 
+
+            if (m_bSwapRGB) {
+                return c;
+            }
+            ColorT newC;
+            newC.r = c.b;
+            newC.g = c.g;
+            newC.b = c.r;
+            newC.a = c.a;
+            return newC;
+        }
         ColorT curve_eval(float x, float y)
         {
             auto i = get_index_curve(x, y);

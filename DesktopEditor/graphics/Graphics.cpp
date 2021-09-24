@@ -2071,7 +2071,7 @@ namespace Aggplus
 		typedef agg::gradient_base<agg::rgba8> gradient_span_gen;
 		gradient_span_gen span_gen;
 
-		span_gen.SetDirection(rect, oMatrix.m_internal->m_agg_mtx);
+        span_gen.SetDirection(rect, oMatrix.m_internal->m_agg_mtx, m_bSwapRGB);
         span_gen.SetGradientInfo(pBrush->m_oGradientInfo, pBrush->GetType());
 		agg::rgba8* pSubColors = NULL;
 		float* pSubBlends = NULL;

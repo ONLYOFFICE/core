@@ -1553,14 +1553,8 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		pField->SetMaxLen(pPr->GetMaxCharacters());
 		pField->SetCombFlag(pPr->IsComb());
-
-		if (oInfo.HaveBorder())
-		{
-			unsigned char unR, unG, unB, unA;
-			oInfo.GetBorderColor(unR, unG, unB, unA);
-
-			pFieldBase->SetFieldBorder(EBorderSubtype::border_subtype_Solid, TRgb(unR, unG, unB), MM_2_PT(oInfo.GetBorderSize()), 0, 0, 0);
-		}
+		pField->SetAutoFit(pPr->IsAutoFit());
+		pField->SetMultilineFlag(pPr->IsMultiLine());
 
 		double* pShifts = NULL;
 		unsigned int unShiftsCount = 0;
@@ -1697,10 +1691,30 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		pFieldBase = static_cast<CFieldBase*>(pField);
 		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
 		pField->SetAppearance();
+		pField->SetConstantProportions(pPr->IsConstantProportions());
+		pField->SetRespectBorders(pPr->IsRespectBorders());
+		pField->SetScaleType(static_cast<CPictureField::EScaleType>(pPr->GetScaleType()));
+		pField->SetShift(pPr->GetShiftX() / 1000.0, (1000 - pPr->GetShiftY()) / 1000.0);
 	}
 
 	if (pFieldBase)
 	{
+		if (oInfo.HaveBorder())
+		{
+			unsigned char unR, unG, unB, unA;
+			oInfo.GetBorderColor(unR, unG, unB, unA);
+
+			pFieldBase->SetFieldBorder(EBorderSubtype::border_subtype_Solid, TRgb(unR, unG, unB), MM_2_PT(oInfo.GetBorderSize()), 0, 0, 0);
+		}
+
+		if (oInfo.HaveShd())
+		{
+			unsigned char unR, unG, unB, unA;
+			oInfo.GetShdColor(unR, unG, unB, unA);
+			pFieldBase->SetShd(TRgb(unR, unG, unB));
+		}
+
+
 		if (!bRadioButton)
 		{
 			std::wstring wsKey = oInfo.GetKey();

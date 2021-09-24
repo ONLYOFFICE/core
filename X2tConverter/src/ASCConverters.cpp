@@ -52,7 +52,6 @@
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
 #include "../../PdfReader/PdfReader.h"
-#include "../../PdfReader/Src/ErrorConstants.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../../XpsFile/XpsFile.h"
 #include "../../HtmlRenderer/include/HTMLRenderer3.h"

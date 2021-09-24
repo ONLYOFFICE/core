@@ -152,12 +152,15 @@ void TestField()
 
 	CPictureField* pPictureField = oPdf.CreatePictureField();
 	pPictureField->SetRequiredFlag(false);
-	pPictureField->AddPageRect(pPage, TRect(100, 500, 200, 450));
+	pPictureField->AddPageRect(pPage, TRect(100, 100, 500, 650));
 	pPictureField->SetFieldName(L"Pic");
 	pPictureField->SetFieldHint(L"Картинка");
 	pPictureField->SetAppearance();
-	
-
+	pPictureField->SetShift(0.25, 0.75);
+	pPictureField->SetScaleType(CPictureField::EScaleType::Smaller);	
+	pPictureField->SetFieldBorder(border_subtype_Solid, TRgb(255, 0, 0), 1, 0, 0, 0);
+	pPictureField->SetShd(TRgb(0, 0, 255));
+	pPictureField->SetRespectBorders(true);
 
 	oPdf.SaveToFile(g_wsOutFolder + L"TestField1.pdf");
 	oPdf.Close();
@@ -954,9 +957,9 @@ void TestOnlineBin()
 }
 void TestOnlineBin2()
 {
-	std::wstring wsFileName = L"111";
-	std::wstring wsFolderPath = L"D:/Test/PDF/TextOnline/";
-	std::wstring wsTempFolder = L"D:/Test/PDF/TextOnline/Temp/";
+	std::wstring wsFileName = L"1234";
+	std::wstring wsFolderPath = L"D:/Work/Test/TextOnline/";
+	std::wstring wsTempFolder = L"D:/Work/Test/TextOnline/Temp/";
 
 	NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
 	if (!pFonts)

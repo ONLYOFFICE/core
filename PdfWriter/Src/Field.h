@@ -71,21 +71,27 @@ namespace PdfWriter
 		void SetAutoFit(const bool& isAutoFit);
 		void SetParent(CFieldBase* pParent);
 		void AddChild(CFieldBase* pChild);
+		bool HaveShd() const;
+		void SetShd(const TRgb& oColor);
+		const TRgb& GetShdColor() const;
 
 	protected:
 
-		void SetFlag(bool isFlag, int nBitPosition);		
+		void SetFlag(bool isFlag, int nBitPosition);
 
 	protected:
 
-		CXref*      m_pXref;
-		TRect       m_oRect;
-		CDocument*  m_pDocument;
-		int         m_nBorderType;
-		double      m_dBorderSize;
-		TRgb        m_oBorderColor;
-		bool        m_bAutoFit;
-		CFieldBase* m_pParent;
+		CXref*       m_pXref;
+		TRect        m_oRect;
+		CDocument*   m_pDocument;
+		int          m_nBorderType;
+		double       m_dBorderSize;
+		TRgb         m_oBorderColor;
+		bool         m_bAutoFit;
+		CFieldBase*  m_pParent;
+		bool         m_bShd;
+		TRgb         m_oShdColor;
+		CDictObject* m_pMK;
 	};
 
 	class CTextField : public CFieldBase
@@ -166,10 +172,25 @@ namespace PdfWriter
 	class CPictureField : public CFieldBase
 	{
 	public:
+
+		enum EScaleType
+		{
+			Always  = 0x00,
+			Bigger  = 0x01,
+			Smaller = 0x02,
+			Never   = 0x03
+		};
+
+	public:
 		CPictureField(CXref* pXref, CDocument* pDocument);
 		void SetAppearance();
+		void SetScaleType(const EScaleType& eType);
+		void SetConstantProportions(const bool& bConstant);
+		void SetRespectBorders(const bool& bRespectBorders);
+		void SetShift(const double& dX, const double& dY);
 
 	private:
+		CDictObject* m_pIF;
 	};
 
 	class CAnnotAppearance : public CDictObject

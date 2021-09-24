@@ -63,6 +63,10 @@ namespace PdfWriter
 		m_dBorderSize = 0;
 
 		m_bAutoFit = false;
+
+		m_bShd = false;
+
+		m_pMK = NULL;
 	}
 	void CFieldBase::SetReadOnlyFlag(bool isReadOnly)
 	{
@@ -260,13 +264,20 @@ namespace PdfWriter
 			case border_subtype_Underlined: pBorderStyleDict->Add("S", "U"); break;
 		}
 
-		CDictObject* pMK = new CDictObject();
+		if (!m_pMK)
+		{
+			m_pMK = new CDictObject();
+			Add("MK", m_pMK);
+		}
+
+		if (!m_pMK)
+			return;
+
 		CArrayObject* pColor = new CArrayObject();
 		pColor->Add(oColor.r);
 		pColor->Add(oColor.g);
 		pColor->Add(oColor.b);
-		Add("MK", pMK);
-		pMK->Add("BC", pColor);
+		m_pMK->Add("BC", pColor);
 
 		m_nBorderType  = 1;
 		m_dBorderSize  = dWidth;
@@ -291,6 +302,36 @@ namespace PdfWriter
 	void CFieldBase::SetAutoFit(const bool& isAutoFit)
 	{
 		m_bAutoFit = isAutoFit;
+	}
+	bool CFieldBase::HaveShd() const
+	{
+		return m_bShd;
+	}
+	void CFieldBase::SetShd(const TRgb& oRgb)
+	{
+		m_oShdColor = oRgb;
+
+		if (!m_pMK)
+		{
+			m_pMK = new CDictObject();
+			Add("MK", m_pMK);
+		}
+
+		if (!m_pMK)
+			return;
+
+		CArrayObject* pBG = new CArrayObject();
+		if (pBG)
+		{
+			pBG->Add(oRgb.r);
+			pBG->Add(oRgb.g);
+			pBG->Add(oRgb.b);
+			m_pMK->Add("BG", pBG);
+		}
+	}
+	const TRgb& CFieldBase::GetShdColor() const
+	{
+		return m_oShdColor;
 	}
 	void CFieldBase::SetParent(CFieldBase* pParent)
 	{
@@ -517,6 +558,9 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CPictureField::CPictureField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
 	{
+		m_pMK = NULL;
+		m_pIF = NULL;
+
 		Add("FT", "Btn");
 		SetFlag(true, 1 << 16);
 		Add("H", "I");
@@ -533,43 +577,36 @@ namespace PdfWriter
 			pAction->Add("JS", new CStringObject("event.target.buttonImportIcon();"));
 		}
 
-		CDictObject* pMK = new CDictObject();
-		if (pMK)
+		m_pMK = new CDictObject();
+		if (!m_pMK)
+			return;
+
+		pXref->Add(m_pMK);
+		Add("MK", m_pMK);
+
+		m_pMK->Add("R", 0);
+
+		CArrayObject* pBG = new CArrayObject();
+		if (pBG)
 		{
-			pXref->Add(pMK);
-			Add("MK", pMK);
-
-			pMK->Add("R", 0);
-
-			CArrayObject* pBG = new CArrayObject();
-			if (pBG)
-			{
-				pBG->Add(0.909);
-				pBG->Add(0.941);
-				pBG->Add(0.992);
-				pMK->Add("BG", pBG);
-			}
-
-			pMK->Add("TP", 1);
-
-			CDictObject* pIF = new CDictObject();
-			if (pIF)
-			{
-				pMK->Add("IF", pIF);
-
-				pMK->Add("SW", "A");
-				pMK->Add("S", "P");
-				pMK->Add("FB", false);
-
-				CArrayObject* pA = new CArrayObject();
-				if (pA)
-				{
-					pMK->Add("A", pA);
-					pA->Add(0.5);
-					pA->Add(0.5);
-				}
-			}
+			pBG->Add(0.909);
+			pBG->Add(0.941);
+			pBG->Add(0.992);
+			m_pMK->Add("BG", pBG);
 		}
+
+		m_pMK->Add("TP", 1);
+
+		m_pIF = new CDictObject();
+		if (!m_pIF)
+			return;
+
+		m_pMK->Add("IF", m_pIF);
+
+		SetScaleType(EScaleType::Always);
+		SetRespectBorders(false);
+		SetConstantProportions(true);
+		SetShift(0.5, 0.5);
 	}
 	void CPictureField::SetAppearance()
 	{
@@ -587,8 +624,49 @@ namespace PdfWriter
 		Add("DA", new CStringObject(sDA.c_str()));
 
 		pNormal->DrawPicturePlaceholder();
+	}
+	void CPictureField::SetScaleType(const EScaleType& eType)
+	{
+		if (!m_pIF)
+			return;
 
+		switch (eType)
+		{
+			case EScaleType::Always: m_pIF->Add("SW", "A"); break;
+			case EScaleType::Bigger: m_pIF->Add("SW", "B"); break;
+			case EScaleType::Smaller: m_pIF->Add("SW", "S"); break;
+			case EScaleType::Never: m_pIF->Add("SW", "N"); break;
+		}
+	}
+	void CPictureField::SetConstantProportions(const bool& bConstant)
+	{
+		if (!m_pIF)
+			return;
 
+		if (bConstant)
+			m_pIF->Add("S", "P");
+		else
+			m_pIF->Add("S", "A");
+	}
+	void CPictureField::SetRespectBorders(const bool& bRespectBorders)
+	{
+		if (!m_pIF)
+			return;
+
+		m_pIF->Add("FB", !bRespectBorders);
+	}
+	void CPictureField::SetShift(const double& dX, const double& dY)
+	{
+		if (!m_pIF)
+			return;
+
+		CArrayObject* pA = new CArrayObject();
+		if (pA)
+		{
+			m_pIF->Add("A", pA);
+			pA->Add(dX);
+			pA->Add(dY);
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance

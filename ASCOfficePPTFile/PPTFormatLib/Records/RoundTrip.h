@@ -37,7 +37,7 @@ static UINT nRTCounter = 1;
 
 namespace PPT_FORMAT
 {
-class CUnknownRoundTrip : public IRecord
+class CUnknownRoundTrip : public CUnknownRecord
 {
 public:
     std::pair<boost::shared_array<unsigned char>, _INT32> data;
@@ -72,10 +72,29 @@ public:
     }
 };
 
+class CUnknownRoundTripID : public CUnknownRecord
+{
+public:
+    UINT m_dwID;
+
+    CUnknownRoundTripID(): m_dwID(-1){}
+    ~CUnknownRoundTripID(){}
+
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+        m_dwID = StreamUtils::ReadDWORD(pStream);
+
+        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + "_ID_" + std::to_string(m_dwID) + ".txt";
+        std::ofstream file("RoundTrips/" + filename, std::ios::out);
+        file << m_dwID;
+        file.close();
+    }
+};
+
+// .zip
 class RoundTripTheme12Atom : public CUnknownRoundTrip {};
 class RoundTripContentMasterInfo12Atom : public CUnknownRoundTrip {};
-class RoundTripShapeId12Atom : public CUnknownRoundTrip {};
-class RoundTripContentMasterId12Atom : public CUnknownRoundTrip {};
 class RoundTripOArtTextStyles12Atom : public CUnknownRoundTrip {};
 class RoundTripHeaderFooterDefaults12Atom : public CUnknownRoundTrip {};
 class RoundTripDocFlags12Atom : public CUnknownRoundTrip {};
@@ -88,6 +107,7 @@ class RoundTripAnimationHashAtom12Atom : public CUnknownRoundTrip {};
 class RoundTripSlideSyncInfo12 : public CUnknownRoundTrip {};
 class RoundTripSlideSyncInfoAtom12 : public CUnknownRoundTrip {};
 
+// .xml
 class RoundTripColorMapping12Atom : public CUnknownRecord
 {
 public:
@@ -101,44 +121,44 @@ public:
         m_oHeader = oHeader;
         m_colorMapping = StreamUtils::ReadStringA(pStream, m_oHeader.RecLen);
 
-        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".txt";
+        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".xml";
         std::ofstream file("RoundTrips/" + filename, std::ios::out);
         file << m_colorMapping;
         file.close();
     }
 };
 
-class RoundTripCompositeMasterId12Atom : public CUnknownRecord
+// ID
+class RoundTripContentMasterId12Atom : public CUnknownRecord
 {
 public:
-    UINT m_dwID;
+    UINT m_mainMasterId;
+    USHORT m_contentMasterInstanceId;
 
-    RoundTripCompositeMasterId12Atom(): m_dwID(-1){}
-    ~RoundTripCompositeMasterId12Atom(){}
+    RoundTripContentMasterId12Atom() :
+        m_mainMasterId(-1), m_contentMasterInstanceId(-1) {}
+    ~RoundTripContentMasterId12Atom(){}
 
     void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
     {
         m_oHeader = oHeader;
-        m_dwID = StreamUtils::ReadDWORD(pStream);
+
+        m_mainMasterId = StreamUtils::ReadDWORD(pStream);
+        m_contentMasterInstanceId = StreamUtils::ReadWORD(pStream);
+
+        StreamUtils::StreamSkip(2, pStream);
+
+        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) +
+                "_" + std::to_string(m_mainMasterId) + "_" + std::to_string(m_contentMasterInstanceId) + ".txt";
+        std::ofstream file("RoundTrips/" + filename, std::ios::out);
+        file << m_mainMasterId << "\t" << m_contentMasterInstanceId;
+        file.close();
     }
 };
-
-class RoundTripOriginalMainMasterId12Atom : public CUnknownRecord
-{
-public:
-    UINT m_dwID;
-
-    RoundTripOriginalMainMasterId12Atom(): m_dwID(-1){}
-    ~RoundTripOriginalMainMasterId12Atom(){}
-
-    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-        m_dwID = StreamUtils::ReadDWORD(pStream);
-    }
-};
-
-class RoundTripHFPlaceholder12Atom : public CUnknownRecord
+class RoundTripShapeId12Atom : public CUnknownRoundTripID {};
+class RoundTripCompositeMasterId12Atom : public CUnknownRoundTripID {};
+class RoundTripOriginalMainMasterId12Atom : public CUnknownRoundTripID{};
+class RoundTripHFPlaceholder12Atom : public CUnknownRoundTripID
 {
 public:
     PlaceholderEnum m_nPlacementID;

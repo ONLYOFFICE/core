@@ -33,6 +33,7 @@
 #include "cextracttools.h"
 #include "ASCConverters.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
+#include "../../DesktopEditor/common/StringExt.h"
 #include "../../Common/3dParty/misc/proclimits.h"
 
 #include <iostream>
@@ -45,10 +46,10 @@ using namespace NExtractTools;
 #if !defined(_WIN32) && !defined (_WIN64)
 static std::wstring utf8_to_unicode(const char *src)
 {
-    if (src == NULL) return _T("");
+	if (src == NULL) return _T("");
     std::string temp = src;
 
-    unsigned int nLength = temp.length();
+	unsigned int nLength = temp.length();
 
     UTF32 *pStrUtf32 = new UTF32 [nLength+1];
     memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength+1));
@@ -98,7 +99,7 @@ static std::wstring utf8_to_unicode(const char *src)
     {
         // print out help topic
 
-        std::cout << std::endl;
+		std::cout << std::endl;
         std::cout << std::endl;
         std::cout << "-------------------------------------------------------------------------------" << std::endl;
         std::cout << "\t\tOOX/binary file converter. Version: " VALUE(INTVER)  << std::endl;
@@ -120,9 +121,9 @@ static std::wstring utf8_to_unicode(const char *src)
 	std::wstring sMemoryLimit = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvMemoryLimit);
 	if (sMemoryLimit.empty())
 		sMemoryLimit = NSSystemUtils::gc_EnvMemoryLimitDefault;
-	size_t nMemoryLimit = (size_t)std::stoull(sMemoryLimit);
-	if (nMemoryLimit > 0)
-		limit_memory(nMemoryLimit);
+	long long nMemoryLimit;
+	if (NSStringExt::FromHumanReadableByteCount(sMemoryLimit, nMemoryLimit) && nMemoryLimit > 0)
+		limit_memory((size_t)nMemoryLimit);
 
 	std::wstring sArg1, sArg2, sExePath;
 

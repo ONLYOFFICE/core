@@ -48,7 +48,7 @@ namespace NSSystemUtils
 	static const wchar_t* gc_EnvLastModifiedBy = L"LAST_MODIFIED_BY";
 	static const wchar_t* gc_EnvModified = L"MODIFIED";
 	static const wchar_t* gc_EnvMemoryLimit = L"X2T_MEMORY_LIMIT";
-	static const wchar_t* gc_EnvMemoryLimitDefault = L"4294965097";//4GB
+	static const wchar_t* gc_EnvMemoryLimitDefault = L"4GiB";
 
 	KERNEL_DECL std::wstring GetEnvVariable(const std::wstring& strName);
 }

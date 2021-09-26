@@ -1536,7 +1536,8 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	bool bRadioButton = false;
 	if (oInfo.IsTextField())
 	{
-		std::wstring wsValue = oInfo.GetTextValue();
+		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextPr();
+		std::wstring wsValue = pPr->GetTextValue();
 
 		unsigned int unLen;
 		unsigned int* pUnicodes = WStringToUtf32(wsValue, unLen);
@@ -1550,20 +1551,14 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
 
-		pField->SetMaxLen(oInfo.GetMaxCharacters());
-		pField->SetCombFlag(oInfo.IsComb());
-
-		if (oInfo.HaveBorder())
-		{
-			unsigned char unR, unG, unB, unA;
-			oInfo.GetBorderColor(unR, unG, unB, unA);
-
-			pFieldBase->SetFieldBorder(EBorderSubtype::border_subtype_Solid, TRgb(unR, unG, unB), MM_2_PT(oInfo.GetBorderSize()), 0, 0, 0);
-		}
+		pField->SetMaxLen(pPr->GetMaxCharacters());
+		pField->SetCombFlag(pPr->IsComb());
+		pField->SetAutoFit(pPr->IsAutoFit());
+		pField->SetMultilineFlag(pPr->IsMultiLine());
 
 		double* pShifts = NULL;
 		unsigned int unShiftsCount = 0;
-		if (oInfo.IsComb())
+		if (pPr->IsComb())
 		{
 			unShiftsCount = unLen;
 			pShifts = new double[unShiftsCount];
@@ -1604,12 +1599,13 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		delete[] pCodes;				
 	}
-	else if (oInfo.IsComboBox())
+	else if (oInfo.IsDropDownList())
 	{
 		// Во всех PDF-ридерах кнопка выпадающего списка рисуется внутри поля, поэтому под неё немного места выделяем
 		dW += 5;
 
-		std::wstring wsValue = oInfo.GetTextValue();
+		const CFormFieldInfo::CDropDownFormPr* pPr = oInfo.GetDropDownPr();
+		std::wstring wsValue = pPr->GetTextValue();
 
 		unsigned int unLen;
 		unsigned int* pUnicodes = WStringToUtf32(wsValue, unLen);
@@ -1635,18 +1631,20 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		}
 		delete[] pCodes;
 
-		for (unsigned int unIndex = 0, unItemsCount = oInfo.GetComboBoxItemsCount(); unIndex < unItemsCount; ++unIndex)
+		for (unsigned int unIndex = 0, unItemsCount = pPr->GetComboBoxItemsCount(); unIndex < unItemsCount; ++unIndex)
 		{
-			pField->AddOption(oInfo.GetComboBoxItem(unIndex));
+			pField->AddOption(pPr->GetComboBoxItem(unIndex));
 		}
 
 		pField->SetComboFlag(true);
-		pField->SetEditFlag(!oInfo.IsEditComboBox());
+		pField->SetEditFlag(!pPr->IsEditComboBox());
 	}
 	else if (oInfo.IsCheckBox())
 	{
+		const CFormFieldInfo::CCheckBoxFormPr* pPr = oInfo.GetCheckBoxPr();
+
 		CCheckBoxField* pField = NULL;
-		std::wstring wsGroupName = oInfo.GetGroupKey();
+		std::wstring wsGroupName = pPr->GetGroupKey();
 		if (L"" != wsGroupName)
 		{
 			bRadioButton = true;
@@ -1664,18 +1662,18 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 			pFieldBase = static_cast<CFieldBase*>(pField);
 
 			pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
-			pField->SetValue(oInfo.IsChecked());
+			pField->SetValue(pPr->IsChecked());
 
-			CFontCidTrueType* pCheckedFont   = GetFont(oInfo.GetCheckedFontName(), false, false);
-			CFontCidTrueType* pUncheckedFont = GetFont(oInfo.GetUncheckedFontName(), false, false);
+			CFontCidTrueType* pCheckedFont   = GetFont(pPr->GetCheckedFontName(), false, false);
+			CFontCidTrueType* pUncheckedFont = GetFont(pPr->GetUncheckedFontName(), false, false);
 			if (!pCheckedFont)
 				pCheckedFont = m_pFont;
 
 			if (!pUncheckedFont)
 				pUncheckedFont = m_pFont;
 
-			unsigned int unCheckedSymbol   = oInfo.GetCheckedSymbol();
-			unsigned int unUncheckedSymbol = oInfo.GetUncheckedSymbol();
+			unsigned int unCheckedSymbol   = pPr->GetCheckedSymbol();
+			unsigned int unUncheckedSymbol = pPr->GetUncheckedSymbol();
 
 			unsigned char* pCheckedCodes   = pCheckedFont->EncodeString(&unCheckedSymbol, 1);
 			unsigned char* pUncheckedCodes = pUncheckedFont->EncodeString(&unUncheckedSymbol, 1);
@@ -1687,14 +1685,36 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	}
 	else if (oInfo.IsPicture())
 	{
+		const CFormFieldInfo::CPictureFormPr* pPr = oInfo.GetPicturePr();
+
 		CPictureField* pField = m_pDocument->CreatePictureField();
 		pFieldBase = static_cast<CFieldBase*>(pField);
 		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
 		pField->SetAppearance();
+		pField->SetConstantProportions(pPr->IsConstantProportions());
+		pField->SetRespectBorders(pPr->IsRespectBorders());
+		pField->SetScaleType(static_cast<CPictureField::EScaleType>(pPr->GetScaleType()));
+		pField->SetShift(pPr->GetShiftX() / 1000.0, (1000 - pPr->GetShiftY()) / 1000.0);
 	}
 
 	if (pFieldBase)
 	{
+		if (oInfo.HaveBorder())
+		{
+			unsigned char unR, unG, unB, unA;
+			oInfo.GetBorderColor(unR, unG, unB, unA);
+
+			pFieldBase->SetFieldBorder(EBorderSubtype::border_subtype_Solid, TRgb(unR, unG, unB), MM_2_PT(oInfo.GetBorderSize()), 0, 0, 0);
+		}
+
+		if (oInfo.HaveShd())
+		{
+			unsigned char unR, unG, unB, unA;
+			oInfo.GetShdColor(unR, unG, unB, unA);
+			pFieldBase->SetShd(TRgb(unR, unG, unB));
+		}
+
+
 		if (!bRadioButton)
 		{
 			std::wstring wsKey = oInfo.GetKey();

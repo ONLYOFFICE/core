@@ -3744,7 +3744,7 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 		}
 	}
 
-    if ((!oNodeWrap.IsValid() || strWrapType.empty()) && zIndex.is_init())
+    if (zIndex.is_init())
 	{
 		if (*zIndex > 0)
 		{

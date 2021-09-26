@@ -150,17 +150,6 @@ public:
             };
         }
     }
-    std::vector<CRecordRoundTripThemeAtom*> getArrRoundTripTheme()const
-    {
-        std::vector<CRecordRoundTripThemeAtom*> arrRoundTripThemes;
-        for (const auto& theme : m_arThemes)
-        {
-            for (auto* pRoundTripAtom : theme->m_arrZipXml)
-                arrRoundTripThemes.push_back(pRoundTripAtom);
-        }
-
-        return arrRoundTripThemes;
-    }
 
     void ResetAutoText(CElementPtr pElement, vector_string const (&placeholdersReplaceString)[3])
     {

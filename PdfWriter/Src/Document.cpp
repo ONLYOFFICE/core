@@ -920,6 +920,10 @@ namespace PdfWriter
 
 		return pField;
 	}
+	void CDocument::CheckFieldName(CFieldBase* pField)
+	{
+
+	}
 	bool CDocument::CheckAcroForm()
 	{
 		if (!m_pXref || !m_pCatalog)

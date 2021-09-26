@@ -64,11 +64,8 @@ namespace DocFileFormat
         XMLTools::XMLElement	tblCellMar	( L"w:tblCellMar");
         XMLTools::XMLElement	tblLayout	( L"w:tblLayout");
         XMLTools::XMLElement	tblpPr		( L"w:tblpPr");
-        XMLTools::XMLAttribute	layoutType	( L"w:type", L"");
+        XMLTools::XMLAttribute	layoutType	( L"w:type", L"fixed");
 		
-		bool bLayoutFixed = true;
-		//layoutType.SetValue(L"fixed");  
-
 		_CP_OPT(short) tblIndent;
 		short gabHalf		= 0;
 		short marginLeft	= 0;
@@ -192,7 +189,6 @@ namespace DocFileFormat
 					if ( iter->Arguments[0] == 1 )
 					{
                         layoutType.SetValue( L"auto" );
-						bLayoutFixed = false;
 					}
 				}break;	
 				case sprmTCellPadding:
@@ -505,31 +501,12 @@ namespace DocFileFormat
 		//append the grid
         _tblGrid = new XMLTools::XMLElement( L"w:tblGrid");
 
-		//Если _grid состоит из одних DocFormatUtils::gc_nZeroWidth и layout != "fixed", значит это doc полученный нами при конвертации из html. Таблицу размеров писать не нужно
-		
-		bool bWriteGridCol = false;
-		if (true == bLayoutFixed)
-			bWriteGridCol = true;
-		else
+		for (size_t i = 0; i < _grid->size(); i++)
 		{
-			for ( size_t i = 0, nSize = _grid->size(); i < nSize; i++ )
-			{
-				if(_grid->at(i) % DocFileFormat::gc_nZeroWidth != 0)
-				{
-					bWriteGridCol = true;
-					break;
-				}
-			}
-		}
-		if (true == bWriteGridCol)
-		{
-			for ( size_t i = 0; i < _grid->size(); i++ )		
-			{
-                XMLTools::XMLElement gridCol( L"w:gridCol");
-                XMLTools::XMLAttribute gridColW( L"w:w", FormatUtils::IntToWideString( _grid->at( i ) ) );
-				gridCol.AppendAttribute( gridColW );
-				_tblGrid->AppendChild( gridCol );
-			}
+			XMLTools::XMLElement gridCol(L"w:gridCol");
+			XMLTools::XMLAttribute gridColW(L"w:w", FormatUtils::IntToWideString(_grid->at(i)));
+			gridCol.AppendAttribute(gridColW);
+			_tblGrid->AppendChild(gridCol);
 		}
 
 		m_pXmlWriter->WriteString( _tblGrid->GetXMLString() );

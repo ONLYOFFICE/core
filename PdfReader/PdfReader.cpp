@@ -217,9 +217,20 @@ namespace PdfReader
 	}
     bool CPdfReader::ExtractAllImages(const wchar_t* wsDstPath, const wchar_t* wsPrefix)
 	{
-        std::wstring temp(wsDstPath);
-        std::string prefix = U_TO_UTF8(temp);
-        ImageOutputDev *pOutputDev = new ImageOutputDev((char*)prefix.c_str(), true, false, false);
+        std::wstring sDstPath(wsDstPath);
+        if (sDstPath.empty())
+            return false;
+
+        // check last symbol (directory)
+        wchar_t nLastSymbol = sDstPath[sDstPath.length() - 1];
+        if ('\\' != nLastSymbol && '/' != nLastSymbol)
+            sDstPath += '/';
+        // prefix for each file
+        if (NULL != wsPrefix)
+            sDstPath += std::wstring(wsPrefix);
+
+        std::string sDstPathA = U_TO_UTF8(sDstPath);
+        ImageOutputDev *pOutputDev = new ImageOutputDev((char*)sDstPathA.c_str(), true, false, false);
 		if (!pOutputDev)
 			return false;
 

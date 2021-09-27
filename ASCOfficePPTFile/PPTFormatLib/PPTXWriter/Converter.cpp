@@ -614,7 +614,7 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
 
     auto arrRTLayouts = m_pUserInfo->getRoundTripLayout();
 
-    if (arrRT.empty()) // - см баг 52046
+//    if (arrRT.empty()) // - см баг 52046
     {
         for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
         {
@@ -626,14 +626,14 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
         WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
         WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
     }
-    else
-    {
-        WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
-        WriteRoundTripThemes(arrRTNote, nIndexTheme, nStartLayout);
-        WriteRoundTripThemes(arrRTHandout, nIndexTheme, nStartLayout);
+//    else
+//    {
+//        WriteRoundTripThemes(arrRT, nIndexTheme, nStartLayout);
+//        WriteRoundTripThemes(arrRTNote, nIndexTheme, nStartLayout);
+//        WriteRoundTripThemes(arrRTHandout, nIndexTheme, nStartLayout);
 
-        WriteRoundTripLayouts(arrRTLayouts, nStartLayout);
-    }
+//        WriteRoundTripLayouts(arrRTLayouts, nStartLayout);
+//    }
 }
 
 void CPPTXWriter::WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom*>& arrRTThemes, int& nIndexTheme, int & nStartLayout)

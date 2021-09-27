@@ -538,7 +538,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RT_RoundTripNewPlaceholderId12Atom  		, RoundTripNewPlaceholderId12Atom)
     CREATE_BY_TYPE(RT_RoundTripAnimationAtom12Atom  		, RoundTripAnimationAtom12Atom)
     CREATE_BY_TYPE(RT_RoundTripAnimationHashAtom12Atom  	, RoundTripAnimationHashAtom12Atom)
-    CREATE_BY_TYPE(RT_RoundTripSlideSyncInfo12              , RoundTripSlideSyncInfo12)
+    CREATE_BY_TYPE(RT_RoundTripSlideSyncInfo12              , RoundTripSlideSyncInfo12Container)
     CREATE_BY_TYPE(RT_RoundTripSlideSyncInfoAtom12  		, RoundTripSlideSyncInfoAtom12)
 
             //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPDOCFLAGS12						, CRecordRoundTripDocFlags12Atom)

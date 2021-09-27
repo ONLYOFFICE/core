@@ -96,16 +96,10 @@ public:
 class RoundTripTheme12Atom : public CUnknownRoundTrip {};
 class RoundTripContentMasterInfo12Atom : public CUnknownRoundTrip {};
 class RoundTripOArtTextStyles12Atom : public CUnknownRoundTrip {};
-class RoundTripHeaderFooterDefaults12Atom : public CUnknownRoundTrip {};
-class RoundTripDocFlags12Atom : public CUnknownRoundTrip {};
-class RoundTripShapeCheckSumForCL12Atom : public CUnknownRoundTrip {};
 class RoundTripNotesMasterTextStyles12Atom : public CUnknownRoundTrip {};
 class RoundTripCustomTableStyles12Atom : public CUnknownRoundTrip {};
-class RoundTripNewPlaceholderId12Atom : public CUnknownRoundTrip {};
 class RoundTripAnimationAtom12Atom : public CUnknownRoundTrip {};
-class RoundTripAnimationHashAtom12Atom : public CUnknownRoundTrip {};
-class RoundTripSlideSyncInfo12 : public CUnknownRoundTrip {};
-class RoundTripSlideSyncInfoAtom12 : public CUnknownRoundTrip {};
+
 
 // .xml
 class RoundTripColorMapping12Atom : public CUnknownRecord
@@ -173,3 +167,111 @@ public:
     }
 };
 }
+
+class RoundTripHeaderFooterDefaults12Atom : public CUnknownRecord
+{
+public:
+    bool m_fIncludeDate;
+    bool m_fIncludeFooter;
+    bool m_fIncludeHeader;
+    bool m_fIncludeSlideNumber;
+
+    RoundTripHeaderFooterDefaults12Atom(){}
+    ~RoundTripHeaderFooterDefaults12Atom(){}
+
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+        BYTE flags = StreamUtils::ReadBYTE(pStream);
+
+        m_fIncludeDate          = flags & 0x01;
+        m_fIncludeFooter        = flags & 0x02;
+        m_fIncludeHeader        = flags & 0x04;
+        m_fIncludeSlideNumber   = flags & 0x08;
+    }
+};
+
+class RoundTripDocFlags12Atom : public CUnknownRecord
+{
+public:
+    bool m_fCompressPicturesOnSave;
+    RoundTripDocFlags12Atom(){}
+    ~RoundTripDocFlags12Atom(){}
+
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+
+        m_fCompressPicturesOnSave = StreamUtils::ReadBYTE(pStream) & 0x01;
+    }
+
+};
+
+class RoundTripShapeCheckSumForCL12Atom : public CUnknownRecord
+{
+public:
+    UINT m_shapeCheckSum;
+    UINT m_textCheckSum;
+
+    RoundTripShapeCheckSumForCL12Atom(){}
+    ~RoundTripShapeCheckSumForCL12Atom(){}
+
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+
+        m_shapeCheckSum = StreamUtils::ReadDWORD(pStream);
+        m_textCheckSum  = StreamUtils::ReadDWORD(pStream);
+    }
+};
+
+class RoundTripNewPlaceholderId12Atom : public CUnknownRecord
+{
+public:
+    PlaceholderEnum m_newPlaceholderId;
+
+    RoundTripNewPlaceholderId12Atom(): m_newPlaceholderId(PT_None){}
+    ~RoundTripNewPlaceholderId12Atom(){}
+
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+        m_newPlaceholderId = (PlaceholderEnum)StreamUtils::ReadBYTE(pStream);
+    }
+};
+
+class RoundTripAnimationHashAtom12Atom : public CUnknownRecord
+{
+public:
+    UINT m_animationChecksum;
+
+    RoundTripAnimationHashAtom12Atom(): m_animationChecksum(-1){}
+    ~RoundTripAnimationHashAtom12Atom(){}
+
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+        m_animationChecksum = StreamUtils::ReadDWORD(pStream);
+
+    }
+};
+
+class RoundTripSlideSyncInfoAtom12 : public CUnknownRecord
+{
+public:
+    UINT m_dateTimeModified;
+    UINT m_dateTimeInserted;
+
+    RoundTripSlideSyncInfoAtom12(){}
+    ~RoundTripSlideSyncInfoAtom12(){}
+
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_oHeader = oHeader;
+
+        m_dateTimeModified = StreamUtils::ReadDWORD(pStream);
+        m_dateTimeInserted  = StreamUtils::ReadDWORD(pStream);
+    }
+};
+
+class RoundTripSlideSyncInfo12Container : public CRecordsContainer {};

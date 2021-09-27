@@ -47,6 +47,10 @@ DXFId::DXFId(CFRecord& record)
 	load(record);
 }
 
+DXFId::~DXFId()
+{
+}
+
 
 BiffStructurePtr DXFId::clone()
 {

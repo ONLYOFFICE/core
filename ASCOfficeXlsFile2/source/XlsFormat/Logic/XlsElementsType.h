@@ -739,7 +739,12 @@ enum ElementType
 	typeOfficeArtSplitMenuColorContainer,
 	typeOfficeArtTertiaryFOPT,
 	typeOfficeArtClientData,
-        typeOfficeArtClientTextbox
+        typeOfficeArtClientTextbox,
+
+    //xlsb
+        typeCOLORSCALE = 4000,
+        typeDATABAR,
+        typeICONSET,
 
 
 };

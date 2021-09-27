@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,55 +30,33 @@
  *
  */
 
-#include "UncheckedSqRfX.h"
+#include "Color.h"
 
 namespace XLSB
 {
 
-    UncheckedSqRfX::UncheckedSqRfX()
+    Color::Color()
     {
     }
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
-
-    UncheckedSqRfX::~UncheckedSqRfX()
+    Color::~Color()
     {
     }
 
-    BiffStructurePtr UncheckedSqRfX::clone()
+    BaseObjectPtr Color::clone()
     {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
+        return BaseObjectPtr(new Color(*this));
     }
 
-    void UncheckedSqRfX::load(CFRecord& record)
+    void Color::readFields(CFRecord& record)
     {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
-        {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
-        }
-    }
+        unsigned char flags;
+        record >> flags;
 
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
+        fValidRGB       = GETBIT(flags, 0);
+        xColorType		= GETBITS(flags, 1, 7);
 
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
-        {
-            return CellRef();
-        }
-        else
-        {
-            return refs[0].getTopLeftCell();
-        }
+        record >> index >> nTintAndShade >> bRed >> bGreen >> bBlue >> bAlpha;
     }
 
 } // namespace XLSB

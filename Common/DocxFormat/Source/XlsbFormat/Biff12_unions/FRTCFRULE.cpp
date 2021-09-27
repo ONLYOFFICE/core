@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,55 +30,59 @@
  *
  */
 
-#include "UncheckedSqRfX.h"
+#include "FRTCFRULE.h"
+#include "../Biff12_records/FRTBegin.h"
+#include "../Biff12_records/CFRuleExt.h"
+#include "../Biff12_records/FRTEnd.h"
+#include "../Biff12_unions/FRT.h"
 
 namespace XLSB
 {
 
-    UncheckedSqRfX::UncheckedSqRfX()
+    FRTCFRULE::FRTCFRULE()
     {
     }
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
-
-    UncheckedSqRfX::~UncheckedSqRfX()
+    FRTCFRULE::~FRTCFRULE()
     {
     }
 
-    BiffStructurePtr UncheckedSqRfX::clone()
+    BaseObjectPtr FRTCFRULE::clone()
     {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
+        return BaseObjectPtr(new FRTCFRULE(*this));
     }
 
-    void UncheckedSqRfX::load(CFRecord& record)
+    // FRTCFRULE = [BrtFRTBegin BrtCFRuleExt BrtFRTEnd] *FRT
+    const bool FRTCFRULE::loadContent(BinProcessor& proc)
     {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
+        if (proc.optional<FRTBegin>())
         {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
+            m_BrtFRTBegin = elements_.back();
+            elements_.pop_back();
         }
-    }
 
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
-
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
+        if (proc.optional<CFRuleExt>())
         {
-            return CellRef();
+            m_BrtCFRuleExt = elements_.back();
+            elements_.pop_back();
         }
-        else
+
+        if (proc.optional<FRTEnd>())
         {
-            return refs[0].getTopLeftCell();
+            m_BrtFRTEnd = elements_.back();
+            elements_.pop_back();
         }
+
+        int count = proc.repeated<FRT>(0, 0);
+
+        while(count > 0)
+        {
+            m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }        
+
+        return m_BrtFRTBegin || m_BrtCFRuleExt || m_BrtFRTEnd || !m_arFRT.empty();
     }
 
 } // namespace XLSB

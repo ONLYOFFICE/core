@@ -30,56 +30,27 @@
  *
  */
 
-#include "UncheckedSqRfX.h"
+#pragma once
 
+#include <Logic/Biff_structures/BiffStructure.h>
+#include <Logic/Biff_records/BiffRecord.h>
+
+using namespace XLS;
 namespace XLSB
 {
-
-    UncheckedSqRfX::UncheckedSqRfX()
+    class FRTBlank : public BiffStructure
     {
-    }
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTBlank)
+    public:
+        FRTBlank();
+        FRTBlank(CFRecord& record);
+        virtual ~FRTBlank();
+        BiffStructurePtr clone();
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
+        static const ElementType	type = typeBiffStructure;
 
-    UncheckedSqRfX::~UncheckedSqRfX()
-    {
-    }
+        virtual void load(CFRecord& record);
 
-    BiffStructurePtr UncheckedSqRfX::clone()
-    {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
-    }
+    };
 
-    void UncheckedSqRfX::load(CFRecord& record)
-    {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
-        {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
-        }
-    }
-
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
-
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
-        {
-            return CellRef();
-        }
-        else
-        {
-            return refs[0].getTopLeftCell();
-        }
-    }
-
-} // namespace XLSB
-
+}   // namespace XLSB

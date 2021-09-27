@@ -93,7 +93,7 @@ int SORTDATA12::serialize(std::wostream & stream)
 
 				CP_XML_NODE(L"sortCondition")
 				{
-                    CP_XML_ATTR(L"ref", sortCond->rfx);
+                    CP_XML_ATTR(L"ref", sortCond->rfx.toString());
 				}
 			}
 		}

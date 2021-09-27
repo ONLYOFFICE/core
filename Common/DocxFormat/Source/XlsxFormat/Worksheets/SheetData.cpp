@@ -888,21 +888,6 @@ namespace OOX
 
         void CFormula::fromBin(BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType)
         {
-            /*nullable<SimpleTypes::COnOff<>>							m_oAca;
-                        nullable<SimpleTypes::COnOff<>>							m_oBx;
-                        nullable<SimpleTypes::COnOff<>>							m_oCa;
-                        nullable<SimpleTypes::COnOff<>>							m_oDel1;
-                        nullable<SimpleTypes::COnOff<>>							m_oDel2;
-                        nullable<SimpleTypes::COnOff<>>							m_oDt2D;
-                        nullable<SimpleTypes::COnOff<>>							m_oDtr;
-                        nullable<std::wstring>									m_oR1;
-                        nullable<std::wstring>									m_oR2;
-                        nullable<std::wstring>									m_oRef;
-                        nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oSi;
-                        nullable<SimpleTypes::Spreadsheet::CCellFormulaType<>>	m_oT;
-
-                        std::wstring m_sText;*/
-
             m_oT.Init();
             m_oT->SetValue(eType);
 

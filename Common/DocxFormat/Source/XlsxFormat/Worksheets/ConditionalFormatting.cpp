@@ -30,6 +30,21 @@
  *
  */
 #include "ConditionalFormatting.h"
+#include "../../XlsbFormat/Biff12_unions/CONDITIONALFORMATTING.h"
+#include "../../XlsbFormat/Biff12_unions/CFRULE.h"
+#include "../../XlsbFormat/Biff12_records/BeginConditionalFormatting.h"
+#include "../../XlsbFormat/Biff12_records/BeginCFRule.h"
+#include "../../XlsbFormat/Biff12_structures/CFOper.h"
+#include "../../XlsbFormat/Biff12_structures/CFTextOper.h"
+#include "../../XlsbFormat/Biff12_structures/CFDateOper.h"
+#include "../../XlsbFormat/Biff12_structures/CFVOtype.h"
+#include "../../XlsbFormat/Biff12_unions/COLORSCALE.h"
+#include "../../XlsbFormat/Biff12_unions/DATABAR.h"
+#include "../../XlsbFormat/Biff12_unions/ICONSET.h"
+#include "../../XlsbFormat/Biff12_unions/uCFVO.h"
+#include "../../XlsbFormat/Biff12_records/CFVO.h"
+#include "../../XlsbFormat/Biff12_records/BeginDatabar.h"
+#include "../../XlsbFormat/Biff12_records/BeginIconSet.h"
 
 namespace OOX
 {
@@ -137,7 +152,51 @@ void CConditionalFormatValueObject::fromXML(XmlUtils::CXmlLiteReader& oReader)
 			m_oFormula = oReader;
 	}
 }
+void CConditionalFormatValueObject::fromBin(XLS::BaseObjectPtr& obj)
+{
+    ReadAttributes(obj);
+}
+void CConditionalFormatValueObject::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::uCFVO*>(obj.get());
 
+    if(ptr != nullptr)
+    {
+        auto ptr1 = static_cast<XLSB::CFVO*>(ptr->m_BrtCFVO.get());
+        if(ptr1 != nullptr)
+        {
+            m_oGte  = (bool)ptr1->fGTE;
+            switch (ptr1->iType.value().get())
+            {
+                case CFVOtype::CFVONUM:
+                    m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Number;
+                    break;
+                case CFVOtype::CFVOMIN:
+                    m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Minimum;
+                    break;
+                case CFVOtype::CFVOMAX:
+                    m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Maximum;
+                    break;
+                case CFVOtype::CFVOPERCENT:
+                    m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Percent;
+                    break;
+                case CFVOtype::CFVOPERCENTILE:
+                    m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Percentile;
+                    break;
+                case CFVOtype::CFVOFMLA:
+                    m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Formula;
+                    break;
+                default:
+                    m_oType     = (SimpleTypes::Spreadsheet::ECfvoType)ptr1->iType.value().get();
+                    break;
+            }
+            m_oVal = std::to_wstring(ptr1->numParam.data.value);
+            m_oFormula->m_sNodeName = L"formula";
+            m_oFormula->m_sText = ptr1->formula.getAssembledFormula();
+        }
+
+    }
+}
 void CConditionalFormatIconSet::toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const
 {
 	if (!bExtendedWrite) return;
@@ -213,6 +272,27 @@ void CColorScale::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		}
 	}
 }
+
+void CColorScale::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::COLORSCALE*>(obj.get());
+
+    if(ptr != nullptr)
+    {
+        for(auto &cfvo : ptr->m_arCFVO)
+        {
+            nullable<CConditionalFormatValueObject> item(cfvo);
+            m_arrValues.push_back(item);
+        }
+        for(auto &color : ptr->m_arBrtColor)
+        {
+            nullable<CColor> item(color);
+            m_arrColors.push_back(item);
+        }
+
+    }
+}
+
 template<typename Type>
 nullable<Type> CColorScale::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 {
@@ -344,6 +424,35 @@ void CDataBar::fromXML(XmlUtils::CXmlLiteReader& oReader)
 			m_oNegativeBorderColor = oReader;
 	}
 }
+void CDataBar::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::DATABAR*>(obj.get());
+
+    if(ptr != nullptr)
+    {
+        ReadAttributes(ptr->m_BrtBeginDatabar);
+
+        for(auto &cfvo : ptr->m_arCFVO)
+        {
+            nullable<CConditionalFormatValueObject> item(cfvo);
+            m_arrValues.push_back(item);
+        }
+        m_oColor = ptr->m_BrtColor;
+    }
+
+}
+void CDataBar::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::BeginDatabar*>(obj.get());
+
+    if(ptr != nullptr)
+    {
+        m_oMaxLength = ptr->bLenMax;
+        m_oMinLength = ptr->bLenMin;
+        m_oShowValue = (bool)ptr->fShowValue;
+    }
+}
+
 template<typename Type>
 nullable<Type> CDataBar::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 {
@@ -468,6 +577,129 @@ void CIconSet::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		}
 	}
 }
+
+void CIconSet::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::ICONSET*>(obj.get());
+
+    if(ptr != nullptr)
+    {
+        ReadAttributes(ptr->m_BrtBeginIconSet);
+
+        for(auto &cfvo : ptr->m_arCFVO)
+        {
+            nullable<CConditionalFormatValueObject> item(cfvo);
+            m_arrValues.push_back(item);
+        }
+    }
+
+}
+void CIconSet::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::BeginIconSet*>(obj.get());
+
+    if(ptr != nullptr)
+    {
+        m_oShowValue = !ptr->fIcon;
+        m_oReverse = ptr->fReverse;
+
+        switch(ptr->iSet.set)
+        {
+            case KPISets::KPINIL:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::NoIcons;
+                break;
+            }
+            case KPISets::KPI3ARROWS:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Arrows3;
+                break;
+            }
+            case KPISets::KPI3ARROWSGRAY:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Arrows3Gray;
+                break;
+            }
+            case KPISets::KPI3FLAGS:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Flags3;
+                break;
+            }
+            case KPISets::KPI3TRAFFICLIGHTS1:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Traffic3Lights1;
+                break;
+            }
+            case KPISets::KPI3TRAFFICLIGHTS2:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Traffic3Lights2;
+                break;
+            }
+            case KPISets::KPI3SIGNS:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Signs3;
+                break;
+            }
+            case KPISets::KPI3SYMBOLS:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Symbols3;
+                break;
+            }
+            case KPISets::KPI3SYMBOLS2:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Symbols3_2;
+                break;
+            }
+            case KPISets::KPI4ARROWS:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Arrows4;
+                break;
+            }
+            case KPISets::KPI4ARROWSGRAY:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Arrows4Gray;
+                break;
+            }
+            case KPISets::KPI4REDTOBLACK:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::RedToBlack4;
+                break;
+            }
+            case KPISets::KPI4RATING:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Rating4;
+                break;
+            }
+            case KPISets::KPI4TRAFFICLIGHTS:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Traffic4Lights;
+                break;
+            }
+            case KPISets::KPI5ARROWS:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Arrows5;
+                break;
+            }
+            case KPISets::KPI5ARROWSGRAY:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Arrows5Gray;
+                break;
+            }
+            case KPISets::KPI5RATING:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Rating5;
+                break;
+            }
+            case KPISets::KPI5QUARTERS:
+            {
+                m_oIconSet = SimpleTypes::Spreadsheet::EIconSetType::Quarters5;
+                break;
+            }
+        }
+
+    }
+}
+
 template<typename Type>
 nullable<Type> CIconSet::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 {
@@ -567,7 +799,7 @@ void CConditionalFormattingRule::toXML2(NSStringUtils::CStringBuilder& writer, b
 		if (m_oStopIfTrue.IsInit() && true == m_oStopIfTrue->ToBool())
 			writer.WriteString(L" stopIfTrue=\"1\"");
 		WritingStringNullableAttrEncodeXmlString(L"text", m_oText, m_oText.get());
-		WritingStringNullableAttrString(L"timePeriod", m_oTimePeriod, m_oTimePeriod.get());
+        WritingStringAttrString(L"timePeriod", m_oTimePeriod->ToString());
 
 		if (bExtendedWrite)
 		{
@@ -646,6 +878,36 @@ void CConditionalFormattingRule::fromXML(XmlUtils::CXmlLiteReader& oReader)
 
 	}
 }
+
+void CConditionalFormattingRule::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::CFRULE*>(obj.get());
+
+    ReadAttributes(ptr->m_BrtBeginCFRule);
+
+    if(ptr->m_source != nullptr)
+    {
+        switch(ptr->m_source->get_type())
+        {
+            case typeCOLORSCALE:
+            {
+                m_oColorScale = ptr->m_source;
+                break;
+            }
+            case typeDATABAR:
+            {
+                m_oDataBar = ptr->m_source;
+                break;
+            }
+            case typeICONSET:
+            {
+                m_oIconSet = ptr->m_source;
+                break;
+            }
+        }
+    }
+}
+
 template<typename Type>
 nullable<Type> CConditionalFormattingRule::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 {
@@ -710,22 +972,244 @@ void CConditionalFormattingRule::ReadAttributes(XmlUtils::CXmlLiteReader& oReade
 {
 	WritingElement_ReadAttributes_Start(oReader)
 
-	WritingElement_ReadAttributes_Read_if		(oReader, L"aboveAverage"	, m_oAboveAverage)
-	WritingElement_ReadAttributes_Read_else_if	(oReader, L"bottom"			, m_oBottom)
-	WritingElement_ReadAttributes_Read_else_if	(oReader, L"dxfId"			, m_oDxfId)
-	WritingElement_ReadAttributes_Read_else_if	(oReader, L"equalAverage"	, m_oEqualAverage)
-	WritingElement_ReadAttributes_Read_else_if	(oReader, L"operator"		, m_oOperator)
-	WritingElement_ReadAttributes_Read_else_if	(oReader, L"percent"		, m_oPercent)
-	WritingElement_ReadAttributes_Read_else_if	(oReader, L"priority"		, m_oPriority)
-	WritingElement_ReadAttributes_Read_else_if	(oReader, L"rank"			, m_oRank)
-	WritingElement_ReadAttributes_Read_else_if	(oReader, L"stdDev"			, m_oStdDev)
-	WritingElement_ReadAttributes_Read_else_if	(oReader, L"stopIfTrue"		, m_oStopIfTrue)
-	WritingElement_ReadAttributes_Read_else_if	(oReader, L"text"			, m_oText)
-	WritingElement_ReadAttributes_Read_else_if	(oReader, L"timePeriod"		, m_oTimePeriod)
-	WritingElement_ReadAttributes_Read_else_if	(oReader, L"type"			, m_oType)
+    WritingElement_ReadAttributes_Read_if		(oReader, L"aboveAverage"	, m_oAboveAverage) //
+    WritingElement_ReadAttributes_Read_else_if	(oReader, L"bottom"			, m_oBottom) //
+    WritingElement_ReadAttributes_Read_else_if	(oReader, L"dxfId"			, m_oDxfId) //
+    WritingElement_ReadAttributes_Read_else_if	(oReader, L"equalAverage"	, m_oEqualAverage) //
+    WritingElement_ReadAttributes_Read_else_if	(oReader, L"operator"		, m_oOperator) //
+    WritingElement_ReadAttributes_Read_else_if	(oReader, L"percent"		, m_oPercent) //
+    WritingElement_ReadAttributes_Read_else_if	(oReader, L"priority"		, m_oPriority) //
+    WritingElement_ReadAttributes_Read_else_if	(oReader, L"rank"			, m_oRank) //
+    WritingElement_ReadAttributes_Read_else_if	(oReader, L"stdDev"			, m_oStdDev) //
+    WritingElement_ReadAttributes_Read_else_if	(oReader, L"stopIfTrue"		, m_oStopIfTrue) //
+    WritingElement_ReadAttributes_Read_else_if	(oReader, L"text"			, m_oText) //
+    WritingElement_ReadAttributes_Read_else_if	(oReader, L"timePeriod"		, m_oTimePeriod) //
+    WritingElement_ReadAttributes_Read_else_if	(oReader, L"type"			, m_oType) //
 	WritingElement_ReadAttributes_Read_else_if	(oReader, L"id"				, m_oId)
 
 	WritingElement_ReadAttributes_End(oReader)
+}
+
+void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::BeginCFRule*>(obj.get());
+
+    if(ptr != nullptr)
+    {
+        switch (ptr->iType.value().get())
+        {
+            case CFType::CF_TYPE_CELLIS:
+            {
+                m_oType = SimpleTypes::Spreadsheet::ECfType::cellIs;
+                switch (ptr->iParam)
+                {
+                    case CFOper::CF_OPER_BN:
+                        m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_between;
+                        break;
+                    case CFOper::CF_OPER_NB:
+                        m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_notBetween;
+                        break;
+                    case CFOper::CF_OPER_EQ:
+                        m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_equal;
+                        break;
+                    case CFOper::CF_OPER_NE:
+                        m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_notEqual;
+                        break;
+                    case CFOper::CF_OPER_GT:
+                        m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_greaterThan;
+                        break;
+                    case CFOper::CF_OPER_LT:
+                        m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_lessThan;
+                        break;
+                    case CFOper::CF_OPER_GE:
+                        m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_greaterThanOrEqual;
+                        break;
+                    case CFOper::CF_OPER_LE:
+                        m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_lessThanOrEqual;
+                        break;
+                }
+                break;
+            }
+            case CFType::CF_TYPE_EXPRIS:
+            {
+                switch (ptr->iTemplate.value().get())
+                {
+                    case CFTemp::CF_TEMPLATE_FMLA:
+                    {
+                        m_oType = SimpleTypes::Spreadsheet::ECfType::expression;
+                        break;
+                    }
+                    case CFTemp::CF_TEMPLATE_UNIQUEVALUES:
+                    {
+                        m_oType = SimpleTypes::Spreadsheet::ECfType::uniqueValues;
+                        break;
+                    }
+                    case CFTemp::CF_TEMPLATE_EQUALABOVEAVERAGE:
+                    case CFTemp::CF_TEMPLATE_EQUALBELOWAVERAGE:
+                    {
+                        m_oEqualAverage = true;
+                        break;
+                    }
+                    case CFTemp::CF_TEMPLATE_CONTAINSTEXT:
+                    {
+                        switch (ptr->iParam)
+                        {
+                            case CFTextOper::CF_TEXTOPER_CONTAINS:
+                                m_oType     = SimpleTypes::Spreadsheet::ECfType::containsText;
+                                m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_containsText;
+                                break;
+                            case CFTextOper::CF_TEXTOPER_NOTCONTAINS:
+                                m_oType     = SimpleTypes::Spreadsheet::ECfType::notContainsText;
+                                m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_notContains;
+                                break;
+                            case CFTextOper::CF_TEXTOPER_BEGINSWITH:
+                                m_oType     = SimpleTypes::Spreadsheet::ECfType::beginsWith;
+                                m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_beginsWith;
+                                break;
+                            case CFTextOper::CF_TEXTOPER_ENDSWITH:
+                                m_oType     = SimpleTypes::Spreadsheet::ECfType::endsWith;
+                                m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_endsWith;
+                                break;
+                        }
+                        break;
+                    }
+                    case CFTemp::CF_TEMPLATE_CONTAINSBLANKS:
+                    {
+                        m_oType = SimpleTypes::Spreadsheet::ECfType::containsBlanks;
+                        break;
+                    }
+                    case CFTemp::CF_TEMPLATE_CONTAINSNOBLANKS:
+                    {
+                        m_oType = SimpleTypes::Spreadsheet::ECfType::notContainsBlanks;
+                        break;
+                    }
+                    case CFTemp::CF_TEMPLATE_CONTAINSERRORS:
+                    {
+                        m_oType = SimpleTypes::Spreadsheet::ECfType::containsErrors;
+                        break;
+                    }
+                    case CFTemp::CF_TEMPLATE_CONTAINSNOERRORS:
+                    {
+                        m_oType = SimpleTypes::Spreadsheet::ECfType::notContainsErrors;
+                        break;
+                    }
+                    case CFTemp::CF_TEMPLATE_TIMEPERIODTODAY:
+                    case CFTemp::CF_TEMPLATE_TIMEPERIODTOMORROW:
+                    case CFTemp::CF_TEMPLATE_TIMEPERIODYESTERDAY:
+                    case CFTemp::CF_TEMPLATE_TIMEPERIODLAST7DAYS:
+                    case CFTemp::CF_TEMPLATE_TIMEPERIODLASTMONTH:
+                    case CFTemp::CF_TEMPLATE_TIMEPERIODNEXTMONTH:
+                    case CFTemp::CF_TEMPLATE_TIMEPERIODTHISWEEK:
+                    case CFTemp::CF_TEMPLATE_TIMEPERIODNEXTWEEK:
+                    case CFTemp::CF_TEMPLATE_TIMEPERIODLASTWEEK:
+                    case CFTemp::CF_TEMPLATE_TIMEPERIODTHISMONTH:
+                    {
+                        m_oType = SimpleTypes::Spreadsheet::ECfType::timePeriod;
+                        switch (ptr->iParam)
+                        {
+                            case CFDateOper::CF_TIMEPERIOD_TODAY:
+                                m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::today;
+                                break;
+                            case CFDateOper::CF_TIMEPERIOD_YESTERDAY:
+                                m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::yesterday;
+                                break;
+                            case CFDateOper::CF_TIMEPERIOD_LAST7DAYS:
+                                m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::last7Days;
+                                break;
+                            case CFDateOper::CF_TIMEPERIOD_THISWEEK:
+                                m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::thisWeek;
+                                break;
+                            case CFDateOper::CF_TIMEPERIOD_LASTWEEK:
+                                m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::lastWeek;
+                                break;
+                            case CFDateOper::CF_TIMEPERIOD_LASTMONTH:
+                                m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::lastMonth;
+                                break;
+                            case CFDateOper::CF_TIMEPERIOD_TOMORROW:
+                                m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::tomorrow;
+                                break;
+                            case CFDateOper::CF_TIMEPERIOD_NEXTWEEK:
+                                m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::nextWeek;
+                                break;
+                            case CFDateOper::CF_TIMEPERIOD_NEXTMONTH:
+                                m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::nextMonth;
+                                break;
+                            case CFDateOper::CF_TIMEPERIOD_THISMONTH:
+                                m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::thisMonth;
+                                break;
+                        }
+                        break;
+                    }
+                    case CFTemp::CF_TEMPLATE_ABOVEAVERAGE:
+                    case CFTemp::CF_TEMPLATE_BELOWAVERAGE:
+                    {
+                        m_oType = SimpleTypes::Spreadsheet::ECfType::aboveAverage;
+                        m_oStdDev = ptr->iParam;
+                        break;
+                    }
+                    case CFTemp::CF_TEMPLATE_DUPLICATEVALUES:
+                    {
+                        m_oType = SimpleTypes::Spreadsheet::ECfType::duplicateValues;
+                        break;
+                    }
+
+                }
+            }
+            case CFType::CF_TYPE_GRADIENT:
+            {
+                m_oType = SimpleTypes::Spreadsheet::ECfType::colorScale;
+                break;
+            }
+            case CFType::CF_TYPE_DATABAR:
+            {
+                m_oType = SimpleTypes::Spreadsheet::ECfType::dataBar;
+                break;
+            }
+            case CFType::CF_TYPE_MULTISTATE:
+            {
+                m_oType = SimpleTypes::Spreadsheet::ECfType::iconSet;
+                break;
+            }
+            case CFType::CF_TYPE_FILTER:
+            {
+                m_oType = SimpleTypes::Spreadsheet::ECfType::top10;
+                m_oRank = ptr->iParam;
+                break;
+            }
+        }
+
+        m_oDxfId           = ptr->dxfId;
+        m_oPriority        = ptr->iPri;
+        m_oStopIfTrue      = ptr->fStopTrue;
+        m_oAboveAverage    = ptr->fAbove;
+        m_oBottom          = ptr->fBottom;
+        m_oPercent         = ptr->fPercent;
+        m_oText            = ptr->strParam.value();
+
+        if(ptr->cbFmla1)
+        {
+            nullable<CFormulaCF> formula1;
+            formula1->m_sNodeName = L"formula";
+            formula1->m_sText = ptr->rgce1.getAssembledFormula();
+            m_arrFormula.push_back(formula1);
+        }
+        if(ptr->cbFmla2)
+        {
+            nullable<CFormulaCF> formula2;
+            formula2->m_sNodeName = L"formula";
+            formula2->m_sText = ptr->rgce2.getAssembledFormula();
+            m_arrFormula.push_back(formula2);
+        }
+        if(ptr->cbFmla3)
+        {
+            nullable<CFormulaCF> formula3;
+            formula3->m_sNodeName = L"formula";
+            formula3->m_sText = ptr->rgce3.getAssembledFormula();
+            m_arrFormula.push_back(formula3);
+        }
+
+
+    }
 }
 
 bool CConditionalFormatting::IsExtended()
@@ -799,6 +1283,20 @@ void CConditionalFormatting::fromXML(XmlUtils::CXmlLiteReader& oReader)
 			m_oSqRef = oReader.GetText2();
 	}
 }
+
+void CConditionalFormatting::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::CONDITIONALFORMATTING*>(obj.get());
+
+    ReadAttributes(ptr->m_BrtBeginConditionalFormatting);
+
+    if(ptr->m_arCFRULE.empty())
+        return;
+
+    for(auto &pCFRULE: ptr->m_arCFRULE)
+        m_arrItems.push_back(new CConditionalFormattingRule(pCFRULE));
+}
+
 bool CConditionalFormatting::IsUsage()
 {
     for ( size_t i = 0; i < m_arrItems.size(); ++i)
@@ -816,6 +1314,17 @@ void CConditionalFormatting::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	WritingElement_ReadAttributes_Read_else_if	(oReader, L"pivot"	, m_oPivot)
 
 	WritingElement_ReadAttributes_End(oReader)
+}
+
+void CConditionalFormatting::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+     auto ptr = static_cast<XLSB::BeginConditionalFormatting*>(obj.get());
+     if(ptr != nullptr)
+     {
+        m_oSqRef = ptr->sqrfx.strValue;
+        m_oPivot = (bool)ptr->fPivot;
+     }
+
 }
 
 } //Spreadsheet

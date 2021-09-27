@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,57 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "UncheckedSqRfX.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../../XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
+#include "../Biff12_structures/FRTBlank.h"
+using namespace XLS;
 
 namespace XLSB
 {
-
-    UncheckedSqRfX::UncheckedSqRfX()
+    // Logical representation of BrtCFRuleExt record in BIFF12
+    class CFRuleExt: public BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(CFRuleExt)
+            BASE_OBJECT_DEFINE_CLASS_NAME(CFRuleExt)
+        public:
+            CFRuleExt();
+            virtual ~CFRuleExt();
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
+            BaseObjectPtr clone();
 
-    UncheckedSqRfX::~UncheckedSqRfX()
-    {
-    }
+            void readFields(CFRecord& record);
 
-    BiffStructurePtr UncheckedSqRfX::clone()
-    {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
-    }
-
-    void UncheckedSqRfX::load(CFRecord& record)
-    {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
-        {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
-        }
-    }
-
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
-
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
-        {
-            return CellRef();
-        }
-        else
-        {
-            return refs[0].getTopLeftCell();
-        }
-    }
+            FRTBlank    FRTHeader;
+            _GUID_      guid;
+    };
 
 } // namespace XLSB
 

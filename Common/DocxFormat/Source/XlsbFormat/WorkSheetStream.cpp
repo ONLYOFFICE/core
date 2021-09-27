@@ -47,6 +47,7 @@
 #include "Biff12_records/SheetProtection.h"
 #include "Biff12_unions/LISTPARTS.h"
 #include "Biff12_unions/SORTSTATE.h"
+#include "Biff12_unions/CONDITIONALFORMATTING.h"
 #include "Biff12_records/EndSheet.h"
 
 namespace XLSB
@@ -232,6 +233,17 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                 {
                     m_SORTSTATE = elements_.back();
                     elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginConditionalFormatting:
+            {
+                count = proc.repeated<CONDITIONALFORMATTING>(0, 0);
+                while(count > 0)
+                {
+                    m_arCONDITIONALFORMATTING.insert(m_arCONDITIONALFORMATTING.begin(), elements_.back());
+                    elements_.pop_back();
+                    count--;
                 }
             }break;
 

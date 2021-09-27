@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,57 +29,52 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "UncheckedSqRfX.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../../XlsxFormat/WritingElement.h"
+#include "../XlsbElementsType.h"
+#include "../Biff12_structures/CFType.h"
+#include "../Biff12_structures/CFTemp.h"
+#include <Logic/Biff_structures/DXFId.h>
+#include "../Biff12_structures/XLWideString.h"
+#include <Logic/Biff_structures/CFParsedFormula.h>
+
+using namespace XLS;
 
 namespace XLSB
 {
-
-    UncheckedSqRfX::UncheckedSqRfX()
+    // Logical representation of BrtBeginCFRule record in BIFF12
+    class BeginCFRule: public BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginCFRule)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginCFRule)
+        public:
+            BeginCFRule(const CellRef& cell_base_ref);
+            virtual ~BeginCFRule();
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
+            BaseObjectPtr clone();
 
-    UncheckedSqRfX::~UncheckedSqRfX()
-    {
-    }
+            void readFields(CFRecord& record);
 
-    BiffStructurePtr UncheckedSqRfX::clone()
-    {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
-    }
-
-    void UncheckedSqRfX::load(CFRecord& record)
-    {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
-        {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
-        }
-    }
-
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
-
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
-        {
-            return CellRef();
-        }
-        else
-        {
-            return refs[0].getTopLeftCell();
-        }
-    }
+            CFType                  iType;
+            CFTemp                  iTemplate;
+            _UINT32                 dxfId;
+            _INT32                  iPri;
+            _UINT32                 iParam;
+            std::string             sTypeiParam;
+            bool                    fStopTrue;
+            bool                    fAbove;
+            bool                    fBottom;
+            bool                    fPercent;
+            _UINT32                 cbFmla1;
+            _UINT32                 cbFmla2;
+            _UINT32                 cbFmla3;
+            XLNullableWideString    strParam;
+            CFParsedFormula         rgce1;
+            CFParsedFormula         rgce2;
+            CFParsedFormula         rgce3;
+    };
 
 } // namespace XLSB
 

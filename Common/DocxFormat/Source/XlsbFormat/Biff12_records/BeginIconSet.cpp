@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,55 +30,31 @@
  *
  */
 
-#include "UncheckedSqRfX.h"
+#include "BeginIconSet.h"
 
 namespace XLSB
 {
 
-    UncheckedSqRfX::UncheckedSqRfX()
+    BeginIconSet::BeginIconSet()
     {
     }
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
-
-    UncheckedSqRfX::~UncheckedSqRfX()
+    BeginIconSet::~BeginIconSet()
     {
     }
 
-    BiffStructurePtr UncheckedSqRfX::clone()
+    BaseObjectPtr BeginIconSet::clone()
     {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
+        return BaseObjectPtr(new BeginIconSet(*this));
     }
 
-    void UncheckedSqRfX::load(CFRecord& record)
+    void BeginIconSet::readFields(CFRecord& record)
     {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
-        {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
-        }
-    }
+        unsigned short flags;
+        record >> iSet >> flags;
 
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
-
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
-        {
-            return CellRef();
-        }
-        else
-        {
-            return refs[0].getTopLeftCell();
-        }
+        fIcon			= GETBIT(flags, 1);
+        fReverse		= GETBIT(flags, 2);
     }
 
 } // namespace XLSB

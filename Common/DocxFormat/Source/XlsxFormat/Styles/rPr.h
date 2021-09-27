@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../CommonInclude.h"
+#include "../../XlsbFormat/Biff12_records/Color.h"
 
 namespace NSBinPptxRW
 {
@@ -368,6 +369,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CColor)
+                        WritingElement_XlsbConstructors(CColor)
 			CColor(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CColor()
 			{
@@ -418,6 +420,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+                        void fromBin(XLS::BaseObjectPtr& obj)
+                        {
+                            ReadAttributes(obj);
+                        }
 			virtual EElementType getType () const
 			{
 				return et_x_Color;
@@ -433,6 +439,22 @@ namespace OOX
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("tint"),    m_oTint )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+                        void ReadAttributes(XLS::BaseObjectPtr& obj)
+                        {
+                            auto ptr = static_cast<XLSB::Color*>(obj.get());
+
+                            if(ptr != nullptr)
+                            {
+                                m_oTint     = ptr->nTintAndShade;
+                                m_oAuto     = ptr->xColorType == 0;
+                                if(ptr->xColorType == 1)
+                                    m_oIndexed  = ptr->index;
+                                else if(ptr->xColorType == 3)
+                                    m_oThemeColor  = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index;
+                                m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue, ptr->bAlpha);
+
+                            }
+                        }
 		public:
 			nullable<SimpleTypes::COnOff<>>						m_oAuto;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oIndexed;

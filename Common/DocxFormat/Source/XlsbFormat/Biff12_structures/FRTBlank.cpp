@@ -30,55 +30,32 @@
  *
  */
 
-#include "UncheckedSqRfX.h"
+#include "FRTBlank.h"
 
 namespace XLSB
 {
 
-    UncheckedSqRfX::UncheckedSqRfX()
+    FRTBlank::FRTBlank()
     {
     }
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
+    FRTBlank::FRTBlank(CFRecord& record)
     {
         load(record);
     }
 
-    UncheckedSqRfX::~UncheckedSqRfX()
+    FRTBlank::~FRTBlank()
     {
     }
 
-    BiffStructurePtr UncheckedSqRfX::clone()
+    BiffStructurePtr FRTBlank::clone()
     {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
+        return BiffStructurePtr(new FRTBlank(*this));
     }
 
-    void UncheckedSqRfX::load(CFRecord& record)
+    void FRTBlank::load(CFRecord& record)
     {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
-        {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
-        }
-    }
-
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
-
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
-        {
-            return CellRef();
-        }
-        else
-        {
-            return refs[0].getTopLeftCell();
-        }
+        record.skipNunBytes(4); // reserved
     }
 
 } // namespace XLSB

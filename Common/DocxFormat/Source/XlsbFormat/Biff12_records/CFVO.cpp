@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,55 +30,27 @@
  *
  */
 
-#include "UncheckedSqRfX.h"
+#include "CFVO.h"
 
 namespace XLSB
 {
 
-    UncheckedSqRfX::UncheckedSqRfX()
+    CFVO::CFVO()
     {
     }
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
-
-    UncheckedSqRfX::~UncheckedSqRfX()
+    CFVO::~CFVO()
     {
     }
 
-    BiffStructurePtr UncheckedSqRfX::clone()
+    BaseObjectPtr CFVO::clone()
     {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
+        return BaseObjectPtr(new CFVO(*this));
     }
 
-    void UncheckedSqRfX::load(CFRecord& record)
+    void CFVO::readFields(CFRecord& record)
     {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
-        {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
-        }
-    }
-
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
-
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
-        {
-            return CellRef();
-        }
-        else
-        {
-            return refs[0].getTopLeftCell();
-        }
+        record >> iType >> numParam >> fSaveGTE >> fGTE >> cbFmla >> formula;
     }
 
 } // namespace XLSB

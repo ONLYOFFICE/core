@@ -54,6 +54,10 @@ namespace XLSB
 
         _INT32                      crfx;
         std::vector<UncheckedRfX>   rgrfx;
+
+        const CellRef getLocationFirstCell() const;
+
+        std::wstring  strValue;
     };
 
 }   // namespace XLSB

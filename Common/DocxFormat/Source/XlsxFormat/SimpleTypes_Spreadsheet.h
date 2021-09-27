@@ -2922,6 +2922,68 @@ namespace SimpleTypes
 			SimpleType_FromString     (ECfOperator)
 			SimpleType_Operator_Equal (ST_CfOperator)
 		};
+
+                //----------------------------------------------------
+                //	18.18.82 ST_TimePeriod (Conditional Format Value Object Type)
+                //----------------------------------------------------
+                        enum ETimePeriod
+                        {
+                                last7Days					= 0,
+                                lastMonth					= 1,
+                                lastWeek					= 2,
+                                nextMonth					= 3,
+                                nextWeek					= 4,
+                                thisMonth       				= 5,
+                                thisWeek					= 6,
+                                today                                           = 7,
+                                tomorrow                                        = 8,
+                                yesterday                                       = 9
+                        };
+                        template<ETimePeriod eDefValue = last7Days>
+                        class ST_TimePeriod : public CSimpleType<ETimePeriod, eDefValue>
+                        {
+                        public:
+                                ST_TimePeriod() {}
+                                ST_TimePeriod(const ETimePeriod & val)	{ this->m_eValue = val; }
+
+                    virtual ETimePeriod FromString(std::wstring &sValue)
+                                {
+                        if(_T("last7Days") == sValue)			this->m_eValue = last7Days;
+                        else if(_T("lastMonth") == sValue)		this->m_eValue = lastMonth;
+                        else if(_T("lastWeek") == sValue)		this->m_eValue = lastWeek;
+                        else if(_T("nextMonth") == sValue)		this->m_eValue = nextMonth;
+                        else if(_T("nextWeek") == sValue)               this->m_eValue = nextWeek;
+                        else if(_T("thisMonth") == sValue)              this->m_eValue = thisMonth;
+                        else if(_T("thisWeek") == sValue)               this->m_eValue = thisWeek;
+                        else if(_T("today") == sValue)                  this->m_eValue = today;
+                        else if(_T("tomorrow") == sValue)               this->m_eValue = tomorrow;
+                        else if(_T("yesterday") == sValue)              this->m_eValue = yesterday;
+                        else 								this->m_eValue = eDefValue;
+                        return this->m_eValue;
+                                }
+
+                                virtual std::wstring     ToString  () const
+                                {
+                        switch(this->m_eValue)
+                                        {
+                                                case last7Days:	return _T("last7Days");
+                                                case lastMonth:	return _T("lastMonth");
+                                                case lastWeek:	return _T("lastWeek");
+                                                case nextMonth:	return _T("nextMonth");
+                                                case nextWeek:	return _T("nextWeek");
+                                                case thisMonth: return _T("thisMonth");
+                                                case thisWeek:	return _T("thisWeek");
+                                                case today:	return _T("today");
+                                                case tomorrow:	return _T("tomorrow");
+                                                case yesterday:	return _T("yesterday");
+                                                default		:	return _T("num");
+                                        }
+                                }
+
+                                SimpleType_FromString     (ETimePeriod)
+                                SimpleType_Operator_Equal (ST_TimePeriod)
+                        };
+
 	//----------------------------------------------------
 	//	18.18.12 ST_CfType (Conditional Format Type)
 	//----------------------------------------------------

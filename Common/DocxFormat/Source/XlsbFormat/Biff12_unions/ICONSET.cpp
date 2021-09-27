@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,55 +30,52 @@
  *
  */
 
-#include "UncheckedSqRfX.h"
+#include "ICONSET.h"
+#include "../Biff12_records/BeginIconSet.h"
+#include "../Biff12_unions/uCFVO.h"
+#include "../Biff12_records/EndIconSet.h"
 
 namespace XLSB
 {
 
-    UncheckedSqRfX::UncheckedSqRfX()
+    ICONSET::ICONSET()
     {
     }
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
-
-    UncheckedSqRfX::~UncheckedSqRfX()
+    ICONSET::~ICONSET()
     {
     }
 
-    BiffStructurePtr UncheckedSqRfX::clone()
+    BaseObjectPtr ICONSET::clone()
     {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
+        return BaseObjectPtr(new ICONSET(*this));
     }
 
-    void UncheckedSqRfX::load(CFRecord& record)
+    // ICONSET = BrtBeginIconSet 3*5CFVO BrtEndIconSet
+    const bool ICONSET::loadContent(BinProcessor& proc)
     {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
+        if (proc.mandatory<BeginIconSet>())
         {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
-        }
-    }
+            m_BrtBeginIconSet = elements_.back();
+            elements_.pop_back();
+        }        
 
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
+        int count = proc.repeated<uCFVO>(3, 5);
 
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
+        while(count > 0)
         {
-            return CellRef();
+            m_arCFVO.insert(m_arCFVO.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
         }
-        else
+
+        if (proc.mandatory<EndIconSet>())
         {
-            return refs[0].getTopLeftCell();
+            m_BrtEndIconSet = elements_.back();
+            elements_.pop_back();
         }
+
+        return m_BrtBeginIconSet || !m_arCFVO.empty() || m_BrtEndIconSet;
     }
 
 } // namespace XLSB

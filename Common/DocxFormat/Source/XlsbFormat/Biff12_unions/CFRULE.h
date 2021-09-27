@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,57 +29,35 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "UncheckedSqRfX.h"
+#include <Logic/CompositeObject.h>
+#include <Logic/Biff_structures/CellRef.h>
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    UncheckedSqRfX::UncheckedSqRfX()
+    class CFRULE: public CompositeObject
     {
-    }
+        BASE_OBJECT_DEFINE_CLASS_NAME(CFRULE)
+    public:
+        CFRULE(const CellRef& cell_base_ref);
+        virtual ~CFRULE();
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
+        BaseObjectPtr clone();
 
-    UncheckedSqRfX::~UncheckedSqRfX()
-    {
-    }
+        virtual const bool loadContent(BinProcessor& proc);
 
-    BiffStructurePtr UncheckedSqRfX::clone()
-    {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
-    }
+        BaseObjectPtr               m_BrtBeginCFRule;
+        BaseObjectPtr               m_source;
+        BaseObjectPtr               m_FRTRULE;
+        BaseObjectPtr               m_BrtEndCFRule;
 
-    void UncheckedSqRfX::load(CFRecord& record)
-    {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
-        {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
-        }
-    }
+        CellRef                     ref;
 
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
-
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
-        {
-            return CellRef();
-        }
-        else
-        {
-            return refs[0].getTopLeftCell();
-        }
-    }
+    };
 
 } // namespace XLSB
 

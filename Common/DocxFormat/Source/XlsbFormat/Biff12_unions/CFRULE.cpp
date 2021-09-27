@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,55 +30,66 @@
  *
  */
 
-#include "UncheckedSqRfX.h"
+#include "CFRULE.h"
+#include "../Biff12_records/BeginCFRule.h"
+#include "../Biff12_unions/COLORSCALE.h"
+#include "../Biff12_unions/DATABAR.h"
+#include "../Biff12_unions/ICONSET.h"
+#include "../Biff12_unions/FRTCFRULE.h"
+#include "../Biff12_records/EndCFRule.h"
 
 namespace XLSB
 {
 
-    UncheckedSqRfX::UncheckedSqRfX()
+    CFRULE::CFRULE(const CellRef& cell_base_ref) : ref(cell_base_ref)
     {
     }
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
-
-    UncheckedSqRfX::~UncheckedSqRfX()
+    CFRULE::~CFRULE()
     {
     }
 
-    BiffStructurePtr UncheckedSqRfX::clone()
+    BaseObjectPtr CFRULE::clone()
     {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
+        return BaseObjectPtr(new CFRULE(*this));
     }
 
-    void UncheckedSqRfX::load(CFRecord& record)
+    // CFRULE = BrtBeginCFRule [COLORSCALE / DATABAR / ICONSET] FRTCFRULE BrtEndCFRule
+    const bool CFRULE::loadContent(BinProcessor& proc)
     {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
+        BeginCFRule bCFRule(ref);
+        if (proc.mandatory(bCFRule))
         {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
+            m_BrtBeginCFRule = elements_.back();
+            elements_.pop_back();
         }
-    }
 
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
-
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
+        if(!proc.optional<COLORSCALE>())
         {
-            return CellRef();
+            if(!proc.optional<DATABAR>())
+            {
+                if(!proc.optional<ICONSET>())
+                {
+                    return false;
+                }
+            }
         }
-        else
+        m_source = elements_.back();
+        elements_.pop_back();
+
+        if (proc.mandatory<FRTCFRULE>())
         {
-            return refs[0].getTopLeftCell();
+            m_FRTRULE = elements_.back();
+            elements_.pop_back();
         }
+
+        if (proc.mandatory<EndCFRule>())
+        {
+            m_BrtEndCFRule = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginCFRule || m_source || m_FRTRULE || m_BrtEndCFRule;
     }
 
 } // namespace XLSB

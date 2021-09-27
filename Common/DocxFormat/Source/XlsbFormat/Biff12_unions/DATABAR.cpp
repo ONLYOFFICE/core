@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,55 +30,59 @@
  *
  */
 
-#include "UncheckedSqRfX.h"
+#include "DATABAR.h"
+#include "../Biff12_records/BeginDatabar.h"
+#include "../Biff12_unions/uCFVO.h"
+#include "../Biff12_records/Color.h"
+#include "../Biff12_records/EndDatabar.h"
 
 namespace XLSB
 {
 
-    UncheckedSqRfX::UncheckedSqRfX()
+    DATABAR::DATABAR()
     {
     }
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
-
-    UncheckedSqRfX::~UncheckedSqRfX()
+    DATABAR::~DATABAR()
     {
     }
 
-    BiffStructurePtr UncheckedSqRfX::clone()
+    BaseObjectPtr DATABAR::clone()
     {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
+        return BaseObjectPtr(new DATABAR(*this));
     }
 
-    void UncheckedSqRfX::load(CFRecord& record)
+    // DATABAR = BrtBeginDatabar 2CFVO BrtColor BrtEndDatabar
+    const bool DATABAR::loadContent(BinProcessor& proc)
     {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
+        if (proc.mandatory<BeginDatabar>())
         {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
+            m_BrtBeginDatabar = elements_.back();
+            elements_.pop_back();
         }
-    }
 
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
+        int count = proc.repeated<uCFVO>(2, 2);
 
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
+        while(count > 0)
         {
-            return CellRef();
+            m_arCFVO.insert(m_arCFVO.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
         }
-        else
+
+        if (proc.mandatory<Color>())
         {
-            return refs[0].getTopLeftCell();
+            m_BrtColor = elements_.back();
+            elements_.pop_back();
         }
+
+        if (proc.mandatory<EndDatabar>())
+        {
+            m_BrtEndDatabar = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginDatabar || !m_arCFVO.empty() || m_BrtColor|| m_BrtEndDatabar;
     }
 
 } // namespace XLSB

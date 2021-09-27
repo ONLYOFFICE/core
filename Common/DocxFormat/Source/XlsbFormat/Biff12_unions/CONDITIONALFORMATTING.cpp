@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,55 +30,65 @@
  *
  */
 
-#include "UncheckedSqRfX.h"
+#include "CONDITIONALFORMATTING.h"
+#include "../Biff12_records/BeginConditionalFormatting.h"
+#include "../Biff12_unions/CFRULE.h"
+#include "../Biff12_unions/FRT.h"
+#include "../Biff12_records/EndConditionalFormatting.h"
 
 namespace XLSB
 {
-
-    UncheckedSqRfX::UncheckedSqRfX()
+BaseObjectPtr               m_BrtBeginConditionalFormatting;
+std::vector<BaseObjectPtr>  m_arCFRULE;
+std::vector<BaseObjectPtr>  m_arFRT;
+BaseObjectPtr               m_BrtEndConditionalFormatting;
+    CONDITIONALFORMATTING::CONDITIONALFORMATTING()
     {
     }
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
-
-    UncheckedSqRfX::~UncheckedSqRfX()
+    CONDITIONALFORMATTING::~CONDITIONALFORMATTING()
     {
     }
 
-    BiffStructurePtr UncheckedSqRfX::clone()
+    BaseObjectPtr CONDITIONALFORMATTING::clone()
     {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
+        return BaseObjectPtr(new CONDITIONALFORMATTING(*this));
     }
 
-    void UncheckedSqRfX::load(CFRecord& record)
+    // CONDITIONALFORMATTING = BrtBeginConditionalFormatting 1*65534CFRULE *FRT BrtEndConditionalFormatting
+    const bool CONDITIONALFORMATTING::loadContent(BinProcessor& proc)
     {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
+        BeginConditionalFormatting bCondFormat;
+        if (proc.mandatory(bCondFormat))
         {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
-        }
-    }
+            m_BrtBeginConditionalFormatting = elements_.back();
+            elements_.pop_back();
+        }        
 
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
+        CFRULE cfrule(bCondFormat.sqrfx.getLocationFirstCell());
 
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
+        while (proc.optional(cfrule))
         {
-            return CellRef();
+            m_arCFRULE.push_back(elements_.back());
+            elements_.pop_back();
         }
-        else
+
+        int count = proc.repeated<FRT>(0, 0);
+
+        while(count > 0)
         {
-            return refs[0].getTopLeftCell();
+            m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
         }
+
+        if (proc.mandatory<EndConditionalFormatting>())
+        {
+            m_BrtEndConditionalFormatting = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginConditionalFormatting || !m_arFRT.empty() || m_BrtEndConditionalFormatting;
     }
 
 } // namespace XLSB

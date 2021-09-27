@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,55 +30,45 @@
  *
  */
 
-#include "UncheckedSqRfX.h"
+#include "uCFVO.h"
+#include "../Biff12_records/CFVO.h"
+#include "../Biff12_unions/FRT.h"
 
 namespace XLSB
 {
 
-    UncheckedSqRfX::UncheckedSqRfX()
+    uCFVO::uCFVO()
     {
     }
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
-    {
-        load(record);
-    }
-
-    UncheckedSqRfX::~UncheckedSqRfX()
+    uCFVO::~uCFVO()
     {
     }
 
-    BiffStructurePtr UncheckedSqRfX::clone()
+    BaseObjectPtr uCFVO::clone()
     {
-        return BiffStructurePtr(new UncheckedSqRfX(*this));
+        return BaseObjectPtr(new uCFVO(*this));
     }
 
-    void UncheckedSqRfX::load(CFRecord& record)
+    // CFVO = BrtCFVO *FRT
+    const bool uCFVO::loadContent(BinProcessor& proc)
     {
-        record >> crfx;
-        UncheckedRfX rfx;
-        for(size_t i = 0; i < crfx; i++)
+        if (proc.optional<CFVO>())
         {
-            record >> rfx;
-            rgrfx.push_back(rfx);
-            strValue += std::wstring (rfx.toString(false).c_str()) + ((i == crfx - 1) ? L"" : L" ");
-        }
-    }
+            m_BrtCFVO = elements_.back();
+            elements_.pop_back();
+        }        
 
-    const CellRef UncheckedSqRfX::getLocationFirstCell() const
-    {
-        std::vector<CellRangeRef> refs;
+        int count = proc.repeated<FRT>(0, 0);
 
-        AUX::str2refs(strValue, refs);
-
-        if(!refs.size())
+        while(count > 0)
         {
-            return CellRef();
-        }
-        else
-        {
-            return refs[0].getTopLeftCell();
-        }
+            m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }        
+
+        return m_BrtCFVO != nullptr;
     }
 
 } // namespace XLSB

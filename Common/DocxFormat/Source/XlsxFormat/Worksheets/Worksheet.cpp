@@ -143,6 +143,9 @@ namespace OOX
                     m_oTableParts = workSheetStream->m_LISTPARTS;
                 if (workSheetStream->m_SORTSTATE != nullptr)
                     m_oSortState = workSheetStream->m_SORTSTATE;
+                if (!workSheetStream->m_arCONDITIONALFORMATTING.empty())
+                        for(auto &item : workSheetStream->m_arCONDITIONALFORMATTING)
+                            m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(item));
 
 
 

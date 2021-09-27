@@ -133,6 +133,32 @@ namespace PdfReader
 
 		m_bValid = Setup(ownerPassword, userPassword);
 	}
+    PDFDoc::PDFDoc(GlobalParams *pGlobalParams, BYTE* data, DWORD length,       const std::wstring &ownerPassword, const std::wstring &userPassword)
+    {
+        m_pGlobalParams = pGlobalParams;
+
+        m_bValid     = false;
+        m_eErrorCode = errorNone;
+
+        m_pFile       = NULL;
+        m_pFileBuffer = NULL;
+
+        m_pStream     = NULL;
+        m_pXref       = NULL;
+        m_pCatalog    = NULL;
+        m_pOutline    = NULL;
+        m_pPageLabels = NULL;
+
+        // Создаем поток
+        Object oTemp;
+        oTemp.InitNull();
+        m_pStream = new MemoryStream((char*)data, 0, length, &oTemp);
+
+        if (!m_pStream)
+            m_bValid = false;
+
+        m_bValid = Setup(ownerPassword, userPassword);
+    }
 	bool PDFDoc::Setup(const std::wstring &ownerPassword, const std::wstring &userPassword)
 	{
 		m_pStream->Reset();

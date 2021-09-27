@@ -36,15 +36,15 @@ public:
         pReader = new PdfReader::CPdfReader(pApplicationFonts);
     }
 
-    bool LoadFromMemory(BYTE* data, DWORD length)
+    bool  LoadFromMemory(BYTE* data, DWORD length)
     {
         return pReader->LoadFromMemory(data, length);
     }
-    int GetPagesCount()
+    int   GetPagesCount()
     {
         return pReader->GetPagesCount();
     }
-    void GetPageInfo(int nPageIndex, int& nWidth, int& nHeight, int& nPageDpiX)
+    void  GetPageInfo  (int nPageIndex, int& nWidth, int& nHeight, int& nPageDpiX)
     {
         double dPageDpiX, dPageDpiY;
         double dWidth, dHeight;
@@ -53,21 +53,7 @@ public:
         nHeight = dHeight;
         nPageDpiX = dPageDpiX;
     }
-    int GetPageHeight(int nPageIndex)
-    {
-        double dPageDpiX, dPageDpiY;
-        double dWidth, dHeight;
-        pReader->GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-        return dHeight * 96 / dPageDpiX;
-    }
-    int GetPageWidth (int nPageIndex)
-    {
-        double dPageDpiX, dPageDpiY;
-        double dWidth, dHeight;
-        pReader->GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-        return dWidth * 96 / dPageDpiX;
-    }
-    BYTE* GetPage    (int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* GetPage      (int nPageIndex, int nRasterW, int nRasterH)
     {
         BYTE* flipped = pReader->ConvertToPixels(nPageIndex, nRasterW, nRasterH);
         BYTE* pixmap_cur = flipped;
@@ -79,7 +65,7 @@ public:
         }
         return flipped;
     }
-    BYTE* GetXPSGlyphs(int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* GetXPSGlyphs (int nPageIndex, int nRasterW, int nRasterH)
     {
         return ((CXpsFile*)pReader)->GetGlyphs(nPageIndex, nRasterW, nRasterH);
     }
@@ -87,11 +73,11 @@ public:
     {
         return ((CDjVuFile*)pReader)->GetPageGlyphs(nPageIndex, nRasterW, nRasterH);
     }
-    BYTE* GetXPSLinks(int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* GetXPSLinks  (int nPageIndex, int nRasterW, int nRasterH)
     {
         return ((CXpsFile*)pReader)->GetLinks(nPageIndex, nRasterW, nRasterH);
     }
-    BYTE* GetDJVULinks(int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* GetDJVULinks (int nPageIndex, int nRasterW, int nRasterH)
     {
         return ((CDjVuFile*)pReader)->GetPageLinks(nPageIndex, nRasterW, nRasterH);
     }

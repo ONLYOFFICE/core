@@ -40,8 +40,8 @@ WASM_EXPORT CGraphicsFileDrawing* PDF_Load (BYTE* data, LONG size)
 {
     CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing();
     pGraphics->CreatePDF();
-    if (!CApplicationFontStreams::m_pMemoryStorage)
-        CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
+    //if (!CApplicationFontStreams::m_pMemoryStorage)
+    //    CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
     pGraphics->LoadFromMemory(data, size);
     return pGraphics;
 }
@@ -128,7 +128,6 @@ int main()
     oFile.CloseFile();
 
     CGraphicsFileDrawing* test = PDF_Load(pPdfData, nPdfBytesCount);
-    XPS_Delete(pPdfData);
     int* info = XPS_GetInfo(test);
     int pages_count = *info;
     int width  = info[1] * 96 / info[3];
@@ -152,6 +151,7 @@ int main()
     resFrame->ClearNoAttack();
 
     XPS_Close(test);
+    RELEASEARRAYOBJECTS(pPdfData);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
     RELEASEOBJECT(resFrame);

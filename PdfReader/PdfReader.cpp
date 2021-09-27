@@ -142,7 +142,30 @@ namespace PdfReader
     bool CPdfReader::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options,
                                     const std::wstring& owner_password, const std::wstring& user_password)
     {
-        return false;
+// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем
+//       FontManager, потому что сейчас в нем кэш без ограничения.
+//------------------------------------------------------
+        RELEASEINTERFACE((m_pInternal->m_pFontManager));
+        m_pInternal->m_pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
+        NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
+        pMeasurerCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
+        m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
+        pMeasurerCache->SetCacheSize(1);
+        m_pInternal->m_pGlobalParams->SetFontManager(m_pInternal->m_pFontManager);
+//------------------------------------------------------
+        RELEASEOBJECT(m_pInternal->m_pPDFDocument);
+        m_pInternal->m_pPDFDocument = new PDFDoc(m_pInternal->m_pGlobalParams, data, length, owner_password, user_password);
+        m_eError = m_pInternal->m_pPDFDocument ? m_pInternal->m_pPDFDocument->GetErrorCode() : errorMemory;
+
+        if (!m_pInternal->m_pPDFDocument || !m_pInternal->m_pPDFDocument->CheckValidation())
+        {
+            RELEASEOBJECT(m_pInternal->m_pPDFDocument);
+            return false;
+        }
+
+        m_pInternal->m_pFontList->Clear();
+
+        return (errorNone == m_eError);
     }
     void CPdfReader::Close()
 	{
@@ -267,7 +290,48 @@ namespace PdfReader
 	}
     BYTE* CPdfReader::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH)
     {
-        return NULL;
+        NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
+        NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
+        pFontCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
+        pFontManager->SetOwnerCache(pFontCache);
+
+        NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+        pRenderer->SetFontManager(pFontManager);
+
+        double dWidth, dHeight;
+        double dDpiX, dDpiY;
+        GetPageInfo(nPageIndex, &dWidth, &dHeight, &dDpiX, &dDpiY);
+
+        int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth  * 72 / 25.4);
+        int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 72 / 25.4);
+
+        BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+        if (!pBgraData)
+            return NULL;
+
+        memset(pBgraData, 0xff, nWidth * nHeight * 4);
+        CBgraFrame oFrame;
+        oFrame.put_Data(pBgraData);
+        oFrame.put_Width(nWidth);
+        oFrame.put_Height(nHeight);
+        oFrame.put_Stride(-4 * nWidth);
+
+        pRenderer->CreateFromBgraFrame(&oFrame);
+        pRenderer->SetSwapRGB(true);
+
+        dWidth  *= 25.4 / dDpiX;
+        dHeight *= 25.4 / dDpiY;
+
+        pRenderer->put_Width(dWidth);
+        pRenderer->put_Height(dHeight);
+
+        bool bBreak = false;
+        DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
+
+        oFrame.ClearNoAttack();
+        RELEASEINTERFACE(pFontManager);
+        RELEASEOBJECT(pRenderer);
+        return pBgraData;
     }
     void CPdfReader::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
 	{

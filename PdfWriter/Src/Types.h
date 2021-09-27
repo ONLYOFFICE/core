@@ -434,8 +434,8 @@ namespace PdfWriter
 		fontType1C,
 		fontType1COT,
 		fontType3,
-		fontTrueType,
-		fontTrueTypeOT,
+		fontTrueTypeLN,
+		fontTrueTypeLNOT,
 		//----- GrCIDFont
 		fontCIDType0,
 		fontCIDType0C,

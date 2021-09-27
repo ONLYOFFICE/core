@@ -18,12 +18,16 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "../../graphics/structures.h"
 #include "agg_math.h"
 #include "agg_array.h"
 #include "agg_trans_affine.h"
-
+#include <iostream>
+#include <cmath>
+#include "./test_grads/custom_gradients.h"
 namespace agg
 {
+    
 #if !defined(_LINUX) && !(defined(_WIN32) || defined (_WIN64)) && !defined(__APPLE__)
     double _hypot(double x, double y)
     {
@@ -230,7 +234,7 @@ namespace agg
 				double _y = y;
 				m_trans.transform(&_x, &_y);
 				double t = calculate_param(_x, _y);
-								
+                int a = 0;
 				int index = int( t * MaxColorIndex + 0.5 );
 				if( !m_valid_table[index] )
 					CalcColor( index );
@@ -713,8 +717,6 @@ namespace agg
     private:
         const GradientF* m_gradient;
     };
-
-
 }
 
 #endif

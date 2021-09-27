@@ -55,6 +55,7 @@ bool RoundTripExtractor::extract()
     ULONG zipDataLen = m_roundTripRecord->data.second;
 
     NSFile::CFileBinary binFile;
+    binFile.CreateFileW(tempZipPath);
     binFile.WriteFile(zipData, zipDataLen);
     binFile.CloseFile();
 
@@ -70,6 +71,20 @@ bool RoundTripExtractor::extract()
 bool RoundTripExtractor::hasError() const
 {
     return m_hasError;
+}
+
+std::string RoundTripExtractor::removeXMLAnnouncement(const std::string &strXMLFile)
+{
+    std::string strClearXML;
+    auto iter = strXMLFile.find("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+
+
+    return strClearXML;
+}
+
+std::string RoundTripExtractor::changeXMLTags(const std::string &strXML)
+{
+    return strXML;
 }
 
 std::wstring RoundTripExtractor::extractedFolderPath() const

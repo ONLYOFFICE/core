@@ -1142,40 +1142,6 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
     }
 }
 
-std::vector<CPPTUserInfo::SRoundTripsTheme> CPPTUserInfo::getRoundTripTheme(int type) const
-{
-    std::vector<SRoundTripsTheme> arrSRTThemes;
-    std::vector<CRecordSlide*> arrSlides;
-
-    switch (type)
-    {
-    case 2:  for (const auto& slideIter : m_mapNotesMasters)    arrSlides.push_back(slideIter.second); break;
-    case 3:  for (const auto& slideIter : m_mapHandoutMasters)  arrSlides.push_back(slideIter.second); break;
-    default: for (const auto& slideIter : m_mapMasters)         arrSlides.push_back(slideIter.second); break;
-    }
-
-    for (const auto* pSlide : arrSlides)
-    {
-        SRoundTripsTheme roundTripsTheme;
-        if (!pSlide) continue;
-
-        std::vector<RoundTripTheme12Atom*> arrRTThemes;
-        std::vector<RoundTripOriginalMainMasterId12Atom*> arrRTpMaster;
-        std::vector<RoundTripOArtTextStyles12Atom*> arrRTSlideMaster;
-        pSlide->GetRecordsByType(&arrRTThemes, true);
-        pSlide->GetRecordsByType(&arrRTpMaster, true);
-        pSlide->GetRecordsByType(&arrRTSlideMaster, true);
-        pSlide->GetRecordsByType(&roundTripsTheme.arrRTLayouts, false);
-
-        roundTripsTheme.pRTTheme = arrRTThemes.empty() ? nullptr : arrRTThemes[0];
-        roundTripsTheme.pRTpMaster = arrRTpMaster.empty() ? nullptr : arrRTpMaster[0];
-        roundTripsTheme.pRTSlideMaster = arrRTSlideMaster.empty() ? nullptr : arrRTSlideMaster[0];
-        arrSRTThemes.push_back(roundTripsTheme);
-    }
-
-    return arrSRTThemes;
-}
-
 CElementPtr CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placeholderType, CLayout *pLayout, bool idx_only)
 {
     CElementPtr pElement;

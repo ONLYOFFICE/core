@@ -46,6 +46,9 @@ public:
     std::wstring extractedFolderPath() const;
     bool hasError() const;
 
+    static std::string removeXMLAnnouncement(const std::string& strXMLFile);
+    static std::string changeXMLTags(const std::string& strXML);
+
 private:
     bool extract();
 

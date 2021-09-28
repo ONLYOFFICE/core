@@ -920,9 +920,39 @@ namespace PdfWriter
 
 		return pField;
 	}
-	void CDocument::CheckFieldName(CFieldBase* pField)
+	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{
+		CFieldBase* pBase = m_mFields[sName];
+		if (pBase)
+		{
+			if (!pBase->GetKidsCount())
+			{
+				CFieldBase* pParent = new CFieldBase(m_pXref, this);
+				pParent->SetFieldName(sName, true);
+				pParent->Add("Ff", pBase->GetFieldFlag());
+				pParent->Add("FT", pBase->GetFieldType());
 
+				pBase->SetParent(pParent);
+				pBase->RemoveFieldName();
+				pParent->AddKid(pBase);
+
+				m_mFields[sName] = pParent;
+				pField->SetParent(pParent);
+				pParent->AddKid(pField);
+			}
+			else
+			{
+				pField->SetParent(pBase);
+				pBase->AddKid(pField);
+			}
+
+			return true;
+		}
+		else
+		{
+			m_mFields[sName] = pField;
+			return false;
+		}
 	}
 	bool CDocument::CheckAcroForm()
 	{

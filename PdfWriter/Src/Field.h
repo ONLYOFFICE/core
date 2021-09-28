@@ -56,8 +56,9 @@ namespace PdfWriter
 		void SetRequiredFlag(bool isRequired);
 		void SetNoExportFlag(bool isNoExport);
 		void AddPageRect(CPage* pPage, const TRect& oRect);
-		virtual void SetFieldName(const std::string& sName);
-		virtual void SetFieldName(const std::wstring& wsName);
+		virtual void SetFieldName(const std::string& sName, bool isSkipCheck = false);
+		virtual void SetFieldName(const std::wstring& wsName, bool isSkipCheck = false);
+		void RemoveFieldName();
 		void SetFieldHint(const std::wstring& wsHint);
 		TRect& GetRect();
 		CResourcesDict* GetResourcesDict();
@@ -70,10 +71,13 @@ namespace PdfWriter
 		const bool& IsAutoFit() const;
 		void SetAutoFit(const bool& isAutoFit);
 		void SetParent(CFieldBase* pParent);
-		void AddChild(CFieldBase* pChild);
+		void AddKid(CFieldBase* pChild);
+		int GetKidsCount() const;
 		bool HaveShd() const;
 		void SetShd(const TRgb& oColor);
 		const TRgb& GetShdColor() const;
+		int GetFieldFlag() const;
+		const char* GetFieldType() const;
 
 	protected:
 
@@ -81,17 +85,18 @@ namespace PdfWriter
 
 	protected:
 
-		CXref*       m_pXref;
-		TRect        m_oRect;
-		CDocument*   m_pDocument;
-		int          m_nBorderType;
-		double       m_dBorderSize;
-		TRgb         m_oBorderColor;
-		bool         m_bAutoFit;
-		CFieldBase*  m_pParent;
-		bool         m_bShd;
-		TRgb         m_oShdColor;
-		CDictObject* m_pMK;
+		CXref*        m_pXref;
+		TRect         m_oRect;
+		CDocument*    m_pDocument;
+		int           m_nBorderType;
+		double        m_dBorderSize;
+		TRgb          m_oBorderColor;
+		bool          m_bAutoFit;
+		bool          m_bShd;
+		TRgb          m_oShdColor;
+		CDictObject*  m_pMK;
+		CFieldBase*   m_pParent;
+		CArrayObject* m_pKids;
 	};
 
 	class CTextField : public CFieldBase
@@ -159,7 +164,7 @@ namespace PdfWriter
 		const std::string& GetGroupName() const;
 		void SetGroupName(const std::string& sGroupName);
 		CCheckBoxField* CreateKid();
-		virtual void SetFieldName(const std::wstring& wsName) override;
+		virtual void SetFieldName(const std::wstring& wsName, bool isSkipCheck = false) override;
 		const std::wstring& GetFieldName() const;
 
 	private:

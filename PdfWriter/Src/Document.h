@@ -140,7 +140,7 @@ namespace PdfWriter
 		CCheckBoxField*   CreateCheckBoxField();
 		CRadioGroupField* GetRadioGroupField(const std::wstring& wsGroupName);
 		CPictureField*    CreatePictureField();
-		void              CheckFieldName(CFieldBase* pField);
+		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 					  
 	private:		  
 					  
@@ -173,34 +173,35 @@ namespace PdfWriter
 			CFontCidTrueType* pFont;
 		};
 
-		CCatalog*                      m_pCatalog;
-		COutline*                      m_pOutlines;
-		CXref*                         m_pXref;
-		CPageTree*                     m_pPageTree;
-		CPage*                         m_pCurPage;
-		int                            m_nCurPageNum;
-		CInfoDict*                     m_pInfo;
-		CDictObject*                   m_pTrailer;
-		CDictObject*                   m_pResources;
-		bool                           m_bEncrypt;
-		CEncryptDict*                  m_pEncryptDict;
-		unsigned int                   m_unCompressMode;
-		std::vector<CPage*>            m_vPages;
-		std::vector<CExtGrState*>      m_vExtGrStates;
-		std::vector<CExtGrState*>      m_vStrokeAlpha;
-		std::vector<CExtGrState*>      m_vFillAlpha;
-		char                           m_sTTFontTag[8]; // 6 символов + '+' + 0x00 ("BAAAAA+/0")
-		CJbig2Global*                  m_pJbig2;
-		std::vector<CShading*>         m_vShadings;
-		std::vector<TFontInfo>         m_vTTFonts;
-		CDictObject*                   m_pTransparencyGroup;
-		std::vector<CFontCidTrueType*> m_vFreeTypeFonts;
-		FT_Library                     m_pFreeTypeLibrary;
-		bool                           m_bPDFAConformance;
-		std::wstring				   m_wsDocumentID;
-		CAcroForm*                     m_pAcroForm;
-		CResourcesDict*                m_pFieldsResources;
-		std::vector<CRadioGroupField*> m_vRadioGroups;
+		CCatalog*                          m_pCatalog;
+		COutline*                          m_pOutlines;
+		CXref*                             m_pXref;
+		CPageTree*                         m_pPageTree;
+		CPage*                             m_pCurPage;
+		int                                m_nCurPageNum;
+		CInfoDict*                         m_pInfo;
+		CDictObject*                       m_pTrailer;
+		CDictObject*                       m_pResources;
+		bool                               m_bEncrypt;
+		CEncryptDict*                      m_pEncryptDict;
+		unsigned int                       m_unCompressMode;
+		std::vector<CPage*>                m_vPages;
+		std::vector<CExtGrState*>          m_vExtGrStates;
+		std::vector<CExtGrState*>          m_vStrokeAlpha;
+		std::vector<CExtGrState*>          m_vFillAlpha;
+		char                               m_sTTFontTag[8]; // 6 символов + '+' + 0x00 ("BAAAAA+/0")
+		CJbig2Global*                      m_pJbig2;
+		std::vector<CShading*>             m_vShadings;
+		std::vector<TFontInfo>             m_vTTFonts;
+		CDictObject*                       m_pTransparencyGroup;
+		std::vector<CFontCidTrueType*>     m_vFreeTypeFonts;
+		FT_Library                         m_pFreeTypeLibrary;
+		bool                               m_bPDFAConformance;
+		std::wstring				       m_wsDocumentID;
+		CAcroForm*                         m_pAcroForm;
+		CResourcesDict*                    m_pFieldsResources;
+		std::vector<CRadioGroupField*>     m_vRadioGroups;
+		std::map<std::string, CFieldBase*> m_mFields;
 
 		friend class CFontCidTrueType;
 	};

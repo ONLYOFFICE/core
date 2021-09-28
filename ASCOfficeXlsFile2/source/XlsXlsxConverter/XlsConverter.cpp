@@ -168,6 +168,8 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 				if (workbook)
 				{
 					workbook->m_arWorksheetSubstream.push_back(worksheet);			
+
+					workbook->m_GlobalsSubstream = XLS::BaseObjectPtr(new XLS::GlobalsSubstream(0));
 				}
 			}
 			else

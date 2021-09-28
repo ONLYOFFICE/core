@@ -102,6 +102,11 @@ void BOF::readFields(CFRecord& record)
 			stream_ptr = record.getStreamPointer();
 			record.skipNunBytes(2); // reserved
 		}
+		else
+		{ //ts_2500_06_gruzi 05 06 вып.xls
+			record.getGlobalWorkbookInfo()->Version = 0x601;
+			record.getGlobalWorkbookInfo()->CodePage = 0;
+		}
 	}
 	else
 	{

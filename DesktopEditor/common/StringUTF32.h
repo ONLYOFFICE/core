@@ -1,4 +1,6 @@
-﻿/*
+#ifndef STRINGUTF32_HPP
+#define STRINGUTF32_HPP
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,39 +31,46 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _OFFICE_DRAWING_FILE_H
-#define _OFFICE_DRAWING_FILE_H
 
 #include <string>
-class IRenderer;
+#include <vector>
+#include <stdint.h>
+#include "StringExt.h"
 
-enum OfficeDrawingFileType
+namespace NSStringUtils
 {
-    odftPDF = 0,
-    odftXPS = 1,
-    odftDJVU = 2,
-    odftUndefined = 255
-};
+    class KERNEL_DECL CStringUTF32
+    {
+        std::vector<uint32_t> m_vec;
+    public:
+        CStringUTF32();
+        CStringUTF32(const CStringUTF32 &other);
+        CStringUTF32(const wchar_t *other);
+        CStringUTF32(const std::wstring &other);
+        CStringUTF32(const std::vector<uint32_t> &other);
+        CStringUTF32(const uint32_t* data, const size_t& count);
+        virtual ~CStringUTF32();
 
-class IOfficeDrawingFile
-{
-public:
-    virtual ~IOfficeDrawingFile() {}
+        bool empty() const;
+        size_t length() const;
 
-    virtual bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",
-                                const std::wstring& owner_password = L"", const std::wstring& user_password = L"") = 0;
+        std::wstring ToStdWString() const;
 
-    virtual void Close() = 0;
+        bool        operator  == (const CStringUTF32 &right) const;
+        bool        operator  != (const CStringUTF32 &right) const;
+        uint32_t    &operator [] (size_t index);
 
-    virtual OfficeDrawingFileType GetType() = 0;
+        CStringUTF32 &operator  = (const CStringUTF32 &right);
+        CStringUTF32 &operator  = (const wchar_t *right);
+        CStringUTF32 &operator  = (const std::wstring &right);
+        CStringUTF32 &operator  = (const std::vector<uint32_t> &right);
 
-    virtual std::wstring GetTempDirectory() = 0;
-    virtual void SetTempDirectory(const std::wstring& directory) = 0;
+        CStringUTF32 operator   + (const CStringUTF32 &right) const;
+        CStringUTF32 &operator += (const CStringUTF32 &right);
+        CStringUTF32 &operator += (const uint32_t& symbol);
 
-    virtual int GetPagesCount() = 0;
-    virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) = 0;
-    virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak) = 0;
-    virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1) = 0;
-};
+        CStringUTF32 substr(size_t start, size_t count) const;
+    };
+}
 
-#endif // _OFFICE_DRAWING_FILE_H
+#endif // STRINGUTF32_HPP

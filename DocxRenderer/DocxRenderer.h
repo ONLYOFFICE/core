@@ -29,10 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _PDF_WRITER_PDFRENDERER_H
-#define _PDF_WRITER_PDFRENDERER_H
+#ifndef _DOCX_RENDERER_H
+#define _DOCX_RENDERER_H
 
 #include "../DesktopEditor/graphics/IRenderer.h"
+#include "../DesktopEditor/common/officedrawingfile.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -43,9 +45,6 @@
 #include "../DesktopEditor/common/base_export.h"
 #define DOCXRENDERER_DECL_EXPORT Q_DECL_EXPORT
 #endif
-
-class CFontManager;
-class CApplicationFonts;
 
 namespace NSDocxRenderer
 {
@@ -58,18 +57,17 @@ namespace NSDocxRenderer
     };
 }
 
+class CDocxRenderer_Private;
 class DOCXRENDERER_DECL_EXPORT CDocxRenderer : public IRenderer
 {
 public:
-    CDocxRenderer(CApplicationFonts* pAppFonts);
+    CDocxRenderer(NSFonts::IApplicationFonts* pAppFonts);
     ~CDocxRenderer();
 
-    void         CreateFile(const std::wstring& wsPath);
-    void         Close();
+    HRESULT      CreateNewFile(const std::wstring& wsPath);
+    HRESULT      Close();
 
-    void         SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType);
-
-	void         SetTempFolder(const std::wstring& wsPath);
+    HRESULT      SetTempFolder(const std::wstring& wsPath);
 	//----------------------------------------------------------------------------------------
 	// Тип рендерера
 	//----------------------------------------------------------------------------------------
@@ -202,8 +200,12 @@ public:
 	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand);
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 
+    // методы, которыми будет пользоваться конвертер
+    HRESULT SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType);
+    int Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile);
+
 private:
     CDocxRenderer_Private* m_pInternal;
 };
 
-#endif // _PDF_WRITER_PDFRENDERER_H
+#endif // _DOCX_RENDERER_H

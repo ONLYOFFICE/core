@@ -61,6 +61,9 @@ SOURCES += ./../DesktopEditor/common/StringBuilder.cpp
 HEADERS += ./../DesktopEditor/common/StringExt.h
 SOURCES += ./../DesktopEditor/common/StringExt.cpp
 
+HEADERS += ./../DesktopEditor/common/StringUTF32.h
+SOURCES += ./../DesktopEditor/common/StringUTF32.cpp
+
 # BYTE BUILDER
 HEADERS += ./../DesktopEditor/common/ByteBuilder.h
 SOURCES += ./../DesktopEditor/common/ByteBuilder.cpp

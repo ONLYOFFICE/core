@@ -72,6 +72,8 @@ namespace PdfReader
 
         virtual void Close();
 
+        virtual OfficeDrawingFileType GetType();
+
         virtual std::wstring GetTempDirectory();
         virtual void SetTempDirectory(const std::wstring& directory);
 

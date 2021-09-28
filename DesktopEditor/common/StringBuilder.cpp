@@ -829,6 +829,14 @@ namespace NSStringUtils
 		WriteHexByteNoSafe((value >> 8) & 0xFF);
 		WriteHexByteNoSafe(value & 0xFF);
 	}
+    void CStringBuilder::WriteHexInt4(const unsigned int& value)
+    {
+        AddSize(8);
+        WriteHexByteNoSafe((value >> 24) & 0xFF);
+        WriteHexByteNoSafe((value >> 16) & 0xFF);
+        WriteHexByteNoSafe((value >> 8) & 0xFF);
+        WriteHexByteNoSafe(value & 0xFF);
+    }
 	void CStringBuilder::WriteHexColor3(const unsigned char& r, const unsigned char& g, const unsigned char& b)
 	{
 		AddSize(7);

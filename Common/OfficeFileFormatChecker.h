@@ -79,6 +79,8 @@ public:
 	bool isOOXFlatFormatFile(unsigned char* pBuffer,int dwBytes);
 	
 	bool isDocFlatFormatFile(unsigned char* pBuffer,int dwBytes);
+	
+	bool isXlsFlatFormatFile(unsigned char* pBuffer, int dwBytes);
 
 	bool isRtfFormatFile	(unsigned char* pBuffer,int dwBytes);
 	bool isHtmlFormatFile	(unsigned char* pBuffer,int dwBytes, bool testCloseTag);

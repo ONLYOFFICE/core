@@ -15,15 +15,7 @@ include(../Common/base.pri)
 
 DEFINES += DOCXRENDERER_USE_DYNAMIC_LIBRARY
 
-CONFIG += build_all_zlib build_zlib_as_sources
-include(../OfficeUtils/OfficeUtils.pri)
-
-CONFIG += build_cximage_zlib_disable
-include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
-include(../DesktopEditor/xml/build/qt/libxml2.pri)
-
-#UnicodeConverter
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lUnicodeConverter
+ADD_DEPENDENCY(UnicodeConverter, kernel, graphics)
 
 core_windows {
 
@@ -34,20 +26,20 @@ LIBS += -lgdi32 \
 }
 
 HEADERS += \
-    src/resources/resources.h
-
-HEADERS += \
+    src/resources/resources.h \
+    \
     src/logic/Common.h \
+    src/logic/Page.h \
     src/logic/Document.h \
     src/logic/ElementImage.h \
     src/logic/ElementParagraph.h \
     src/logic/ElementShape.h \
     src/logic/FontManager.h \
     src/logic/FontManagerBase.h \
-    src/logic/Page.h
-
-HEADERS += \
+    \
     DocxRenderer.h
 
 SOURCES += \
+    src/resources/resources.cpp \
+    \
     DocxRenderer.cpp

@@ -163,6 +163,10 @@ namespace PdfReader
 	{
         RELEASEOBJECT((m_pInternal->m_pPDFDocument));
 	}
+    OfficeDrawingFileType CPdfReader::GetType()
+    {
+        return odftPDF;
+    }
     int CPdfReader::GetError()
 	{
         if (!m_pInternal->m_pPDFDocument)

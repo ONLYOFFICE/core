@@ -67,6 +67,9 @@ namespace PdfWriter
 		m_bShd = false;
 
 		m_pMK = NULL;
+		
+		m_pParent = NULL;
+		m_pKids   = NULL;
 	}
 	void CFieldBase::SetReadOnlyFlag(bool isReadOnly)
 	{
@@ -140,14 +143,20 @@ namespace PdfWriter
 
 		Add("F", 4);		
 	}
-	void CFieldBase::SetFieldName(const std::string& sName)
+	void CFieldBase::SetFieldName(const std::string& sName, bool isSkipCheck)
 	{
-		Add("T", new CStringObject(sName.c_str()));
+		if (isSkipCheck || !m_pDocument->CheckFieldName(this, sName))
+			Add("T", new CStringObject(sName.c_str()));
 	}
-	void CFieldBase::SetFieldName(const std::wstring& wsName) 
+	void CFieldBase::SetFieldName(const std::wstring& wsName, bool isSkipCheck) 
 	{
 		std::string sName = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsName);
-		Add("T", new CStringObject(sName.c_str(), true));
+		if (isSkipCheck || !m_pDocument->CheckFieldName(this, sName))
+			Add("T", new CStringObject(sName.c_str(), true));
+	}
+	void CFieldBase::RemoveFieldName()
+	{
+		Remove("T");
 	}
 	void CFieldBase::SetFieldHint(const std::wstring& wsHint)
 	{
@@ -335,11 +344,33 @@ namespace PdfWriter
 	}
 	void CFieldBase::SetParent(CFieldBase* pParent)
 	{
-
+		m_pParent = pParent;
+		Add("Parent", pParent);
 	}
-	void CFieldBase::AddChild(CFieldBase* pChild)
+	void CFieldBase::AddKid(CFieldBase* pChild)
 	{
+		if (!m_pKids)
+		{
+			m_pKids = new CArrayObject();
+			Add("Kids", m_pKids);
+		}
 
+		m_pKids->Add(pChild);
+	}
+	int CFieldBase::GetKidsCount() const
+	{
+		if (!m_pKids)
+			return 0;
+
+		return m_pKids->GetCount();
+	}
+	int CFieldBase::GetFieldFlag() const
+	{
+		return ((CNumberObject*)Get("Ff"))->Get();
+	}
+	const char* CFieldBase::GetFieldType() const
+	{
+		return ((CNameObject*)Get("FT"))->Get();
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextField
@@ -396,7 +427,6 @@ namespace PdfWriter
 		int nFlags = ((CNumberObject*)this->Get("Ff"))->Get();
 		return (nFlags & (1 << 24));
 	}
-
 	//----------------------------------------------------------------------------------------
 	// CChoiceField
 	//----------------------------------------------------------------------------------------
@@ -544,10 +574,10 @@ namespace PdfWriter
 		m_pKids->Add(pKid);
 		return pKid;
 	}
-	void CRadioGroupField::SetFieldName(const std::wstring& wsFieldName)
+	void CRadioGroupField::SetFieldName(const std::wstring& wsFieldName, bool isSkipCheck)
 	{
 		m_wsFieldName = wsFieldName;
-		CFieldBase::SetFieldName(wsFieldName);
+		CFieldBase::SetFieldName(wsFieldName, true);
 	}
 	const std::wstring& CRadioGroupField::GetFieldName() const
 	{

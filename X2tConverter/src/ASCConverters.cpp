@@ -3020,19 +3020,18 @@ namespace NExtractTools
 	{
         std::wstring password = params.getPassword();
 
-        if (password.empty())
+		std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
+		
+        _UINT32 nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, params);
+
+		if (!SUCCEEDED_X2T(nRes) && password.empty()) // qiaoshemei1 (1).xlsx - запрокченный xlsx 
         {
             if(!params.getDontSaveAdditional())
             {
                 copyOrigin(sFrom, sTo);
             }
             return AVS_FILEUTILS_ERROR_CONVERT_DRM;
-        }
-
-		std::wstring sResultDecryptFile = sTemp	+ FILE_SEPARATOR_STR + L"uncrypt_file.oox";
-		
-        _UINT32 nRes = mscrypt2oox(sFrom, sResultDecryptFile, sTemp, params);
- 
+        } 
 		nRes = processEncryptionError(nRes, sFrom, params);
         if (SUCCEEDED_X2T(nRes))
         {
@@ -3606,11 +3605,18 @@ namespace NExtractTools
 		else if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo))
 		{
 			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
-			NSDirectory::CreateDirectory(sDocxDir);
-			nRes = doct_bin2docx_dir(sFrom, sTo, sDocxDir, bFromChanges, sThemeDir, params);
-			if(SUCCEEDED_X2T(nRes))
+			
+			if (true == NSDirectory::CreateDirectory(sDocxDir))
 			{
-				nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
+				nRes = doct_bin2docx_dir(sFrom, sTo, sDocxDir, bFromChanges, sThemeDir, params);
+				if (SUCCEEDED_X2T(nRes))
+				{
+					nRes = fromDocxDir(sDocxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
+				}
+			}
+			else
+			{
+				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 			}
 		}
 		else
@@ -3835,16 +3841,22 @@ namespace NExtractTools
            NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::XLST;
            nRes = doct_bin2image(eFromType, sFrom, sTo, sTemp, bPaid, sThemeDir, params);
        }
-       else if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo))
-       {
-           std::wstring sXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
-           NSDirectory::CreateDirectory(sXlsxDir);
-           nRes = xlst_bin2xlsx_dir(sFrom, sTo, sXlsxDir, bFromChanges, sThemeDir, params);
-           if(SUCCEEDED_X2T(nRes))
-           {
-				std::wstring sXlsxFile;
-				nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params, sXlsxFile);
-           }
+	   else if (0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo))
+	   {
+		   std::wstring sXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
+		   if (true == NSDirectory::CreateDirectory(sXlsxDir))
+		   {
+			   nRes = xlst_bin2xlsx_dir(sFrom, sTo, sXlsxDir, bFromChanges, sThemeDir, params);
+			   if (SUCCEEDED_X2T(nRes))
+			   {
+				   std::wstring sXlsxFile;
+				   nRes = fromXlsxDir(sXlsxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params, sXlsxFile);
+			   }
+		   }
+		   else
+		   {
+			   nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		   }
        }
        else
            nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
@@ -4070,12 +4082,19 @@ namespace NExtractTools
        else if(0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & nFormatTo))
        {
            std::wstring sPptxDir = sTemp + FILE_SEPARATOR_STR + _T("pptx_unpacked");
-           NSDirectory::CreateDirectory(sPptxDir);
-           nRes = pptt_bin2pptx_dir(sFrom, sTo, sPptxDir, bFromChanges, sThemeDir, params);
-           if(SUCCEEDED_X2T(nRes))
-           {
-                nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
-           }
+		   
+		   if (true == NSDirectory::CreateDirectory(sPptxDir))
+		   {
+			   nRes = pptt_bin2pptx_dir(sFrom, sTo, sPptxDir, bFromChanges, sThemeDir, params);
+			   if (SUCCEEDED_X2T(nRes))
+			   {
+				   nRes = fromPptxDir(sPptxDir, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
+			   }
+		   }
+		   else
+		   {
+			   nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		   }
        }
        else
            nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;

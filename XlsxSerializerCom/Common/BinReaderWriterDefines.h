@@ -1062,8 +1062,9 @@ namespace BinXlsxRW
 		StdDev = 8,
 		StopIfTrue = 9,
 		Text = 10,
-		TimePeriod = 11,
+		strTimePeriod = 11,
 		Type = 12,
+		TimePeriod = 13,
 
 		ColorScale = 14,
 		DataBar = 15,

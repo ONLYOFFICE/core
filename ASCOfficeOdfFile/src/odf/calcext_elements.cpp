@@ -113,13 +113,13 @@ void calcext_conditional_format::xlsx_convert(oox::xlsx_conversion_context & Con
 {
 	if (!calcext_target_range_address_) return;
 
-	Context.start_conditional_format(*calcext_target_range_address_);
+	Context.get_conditionalFormatting_context().start(*calcext_target_range_address_);
 
 	for (size_t i = 0 ; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}
-	Context.end_conditional_format();
+	Context.get_conditionalFormatting_context().end();
 }
 	
 // calcext_data_bar
@@ -130,7 +130,7 @@ const wchar_t * calcext_data_bar::name	= L"data-bar";
 void calcext_data_bar::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	CP_APPLY_ATTR(L"calcext:show-value", calcext_show_value_);
-	calcext_data_bar_attr_.add_attributes(Attributes);
+	attr_.add_attributes(Attributes);
 
 }
 void calcext_data_bar::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
@@ -139,20 +139,19 @@ void calcext_data_bar::add_child_element( xml::sax * Reader, const std::wstring 
 }
 void calcext_data_bar::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.start_conditional_format_rule(2);
+	Context.get_conditionalFormatting_context().add_rule(2);
 	if (calcext_show_value_)
-		Context.set_conditional_format_showval(*calcext_show_value_);
+		Context.get_conditionalFormatting_context().set_showVal(*calcext_show_value_);
 
-	if (calcext_data_bar_attr_.calcext_positive_color_)
-		Context.add_conditional_format_color(L"ff" + calcext_data_bar_attr_.calcext_positive_color_->get_hex_value());
+	if (attr_.calcext_positive_color_)
+		Context.get_conditionalFormatting_context().add_color(L"ff" + attr_.calcext_positive_color_->get_hex_value());
 
-	Context.set_conditional_format_dataBar(calcext_data_bar_attr_.calcext_min_length_, calcext_data_bar_attr_.calcext_max_length_);
+	Context.get_conditionalFormatting_context().set_dataBar(attr_.calcext_min_length_, attr_.calcext_max_length_);
 
 	for (size_t i = 0 ; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}
-	Context.end_conditional_format_rule();	
 }
 // calcext_color_scale
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,12 +167,11 @@ void calcext_color_scale::add_child_element( xml::sax * Reader, const std::wstri
 }
 void calcext_color_scale::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.start_conditional_format_rule(3);
+	Context.get_conditionalFormatting_context().add_rule(3);
 	for (size_t i = 0 ; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}
-	Context.end_conditional_format_rule();
 }
 // calcext_icon_set
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,7 +181,7 @@ const wchar_t * calcext_icon_set::name	= L"icon-set";
 void calcext_icon_set::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	CP_APPLY_ATTR(L"calcext:show-value", calcext_show_value_);
-	calcext_icon_set_attr_.add_attributes(Attributes);
+	attr_.add_attributes(Attributes);
 }
 void calcext_icon_set::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
@@ -191,15 +189,15 @@ void calcext_icon_set::add_child_element( xml::sax * Reader, const std::wstring 
 }
 void calcext_icon_set::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.start_conditional_format_rule(4);
+	Context.get_conditionalFormatting_context().add_rule(4);
+	
 	if (calcext_show_value_)
-		Context.set_conditional_format_showval(*calcext_show_value_);
+		Context.get_conditionalFormatting_context().set_showVal(*calcext_show_value_);
 	
 	for (size_t i = 0 ; i < content_.size(); i++)
 	{
 		content_[i]->xlsx_convert(Context);
 	}
-	Context.end_conditional_format_rule();
 }
 	
 // calcext_formatting_entry
@@ -219,7 +217,7 @@ void calcext_formatting_entry::add_child_element( xml::sax * Reader, const std::
 void calcext_formatting_entry::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	calcext_type::type type_ = calcext_type_.get_value_or(calcext_type::Number).get_type();
-	Context.add_conditional_format_entry((int)type_, calcext_value_.get_value_or(L""));
+	Context.get_conditionalFormatting_context().add_sfv((int)type_, calcext_value_.get_value_or(L""));
 }
 
 // calcext_color_scale_entry
@@ -240,12 +238,12 @@ void calcext_color_scale_entry::add_child_element( xml::sax * Reader, const std:
 void calcext_color_scale_entry::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	if (calcext_color_)
-		Context.add_conditional_format_color(L"ff" + calcext_color_->get_hex_value());
+		Context.get_conditionalFormatting_context().add_color(L"ff" + calcext_color_->get_hex_value());
 	else 
-		Context.add_conditional_format_color(L"ffffffff");
+		Context.get_conditionalFormatting_context().add_color(L"ffffffff");
 
 	calcext_type::type type_ = calcext_type_.get_value_or(calcext_type::Number).get_type();
-	Context.add_conditional_format_entry((int)type_, calcext_value_.get_value_or(L""));
+	Context.get_conditionalFormatting_context().add_sfv((int)type_, calcext_value_.get_value_or(L""));
 }
 // calcext_condition
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -254,7 +252,7 @@ const wchar_t * calcext_condition::name = L"condition";
 
 void calcext_condition::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	calcext_condition_attr_.add_attributes(Attributes);
+	attr_.add_attributes(Attributes);
 }
 void calcext_condition::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
@@ -262,28 +260,18 @@ void calcext_condition::add_child_element( xml::sax * Reader, const std::wstring
 }
 void calcext_condition::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.start_conditional_format_rule(1);
+	Context.get_conditionalFormatting_context().add_rule(1);
 
-	if (calcext_condition_attr_.calcext_value_)
+	if (attr_.calcext_value_)
 	{
-		Context.set_conditional_format_formula(*calcext_condition_attr_.calcext_value_);
+		Context.get_conditionalFormatting_context().set_formula(*attr_.calcext_value_);
 	}
-	std::wstring style_name = calcext_condition_attr_.calcext_apply_style_name_.get_value_or(L"");
+	std::wstring style_name = attr_.calcext_apply_style_name_.get_value_or(L"");
 	
-	style_instance * instStyle = 
-				Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
-	if (!instStyle)
-		instStyle = Context.root()->odf_context().styleContainer().style_by_display_name(style_name, style_family::TableCell, false);
-	if (instStyle)
-	{
-		text_format_properties_content_ptr	textFormats		= calc_text_properties_content		(instStyle);
-		graphic_format_properties			graphicFormats	= calc_graphic_properties_content	(instStyle);
-		style_table_cell_properties_attlist	cellFormats		= calc_table_cell_properties		(instStyle);
-	
-		int dxfId = Context.get_style_manager().dxfId(textFormats, &graphicFormats, &cellFormats);
-		Context.set_conditional_format_dxf(dxfId);
-	}
-	Context.end_conditional_format_rule();
+	int dxfId = Context.get_dxfId_style(style_name);
+
+	if (dxfId >= 0)
+		Context.get_conditionalFormatting_context().set_dxf(dxfId);
 }
 // calcext_condition
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -292,7 +280,7 @@ const wchar_t * calcext_date_is::name	= L"date-is";
 
 void calcext_date_is::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	calcext_date_is_attr_.add_attributes(Attributes);
+	attr_.add_attributes(Attributes);
 }
 void calcext_date_is::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
@@ -300,8 +288,16 @@ void calcext_date_is::add_child_element( xml::sax * Reader, const std::wstring &
 }
 void calcext_date_is::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	//Context.start_conditional_format_rule(5);
-	//Context.end_conditional_format_rule();
+	Context.get_conditionalFormatting_context().add_rule(5);
+	
+	Context.get_conditionalFormatting_context().set_time_period(attr_.calcext_date_.get_value_or(odf_types::time_period::today).get_type());
+	
+	std::wstring style_name = attr_.calcext_style_.get_value_or(L"");
+
+	int dxfId = Context.get_dxfId_style(style_name);
+
+	if (dxfId >= 0)
+		Context.get_conditionalFormatting_context().set_dxf(dxfId);
 }
 
 }

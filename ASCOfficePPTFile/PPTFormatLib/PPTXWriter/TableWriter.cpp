@@ -389,17 +389,13 @@ void TableWriter::FillRow(PPTX::Logic::TableRow &oRow, ProtoTableRow& arrCells)
 
 std::wstring TableWriter::getXmlForGraphicFrame(int ID, int idx) const
 {
+	//в таблице могут быть линки и ссылки на другние объекты (картинки???)
+	// yliko_provolis.ppt (+ тут есть смарт арты)
+
     auto& rXml = m_pTableElement->m_xmlRawData;
 
-    auto startIter = rXml.find(L"<p:nvGraphicFramePr>");
-    auto endIter = rXml.find(L"</p:E2oFrame>");
-    std::wstring xml = L"<p:graphicFrame>";
-    xml += std::wstring(rXml.begin() + startIter, rXml.begin() + endIter);
-    xml += L"</p:graphicFrame>";
-
-	PPTX::Logic::GraphicFrame graphic_frame;
-	
-	graphic_frame.fromXMLString(xml);
+	PPTX::Logic::GraphicFrame graphic_frame;	
+	graphic_frame.fromXMLString(rXml);
 	
 	if (graphic_frame.nvGraphicFramePr.IsInit())
 	{

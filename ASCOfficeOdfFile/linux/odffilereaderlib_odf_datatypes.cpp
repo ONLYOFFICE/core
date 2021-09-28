@@ -135,3 +135,4 @@
 #include "../src/odf/datatypes/charttimeunit.cpp"
 #include "../src/odf/datatypes/drawangle.cpp"
 #include "../src/odf/datatypes/messagetype.cpp""
+#include "../src/odf/datatypes/timeperiod.cpp""

@@ -336,26 +336,22 @@ namespace PPTX
 				{
 					case 0:
 					{
-						nvSpPr.fromPPTY(pReader);
-						break;
-					}
+						nvSpPr.fromPPTY(pReader);						
+					}break;
 					case 1:
 					{
-						spPr.fromPPTY(pReader);
-						break;
-					}
+						spPr.fromPPTY(pReader);						
+					}break;
 					case 2:
 					{
 						style = new ShapeStyle(L"p");
-						style->fromPPTY(pReader);
-						break;
-					}
+						style->fromPPTY(pReader);						
+					}break;
 					case 3:
 					{
 						txBody = new TxBody();
-						txBody->fromPPTY(pReader);
-						break;
-					}
+						txBody->fromPPTY(pReader);						
+					}break;
 					case 4:
 					{
 						if (NULL != pReader->m_pMainDocument)
@@ -380,27 +376,23 @@ namespace PPTX
 						else
 						{
 							pReader->SkipRecord();
-						}
-						break;
-					}
+						}						
+					}break;
 					case 5:
 					{
 						oTextBoxBodyPr = new PPTX::Logic::BodyPr();
-						oTextBoxBodyPr->fromPPTY(pReader);
-						break;
-					}
+						oTextBoxBodyPr->fromPPTY(pReader);						
+					}break;
 					case 6:
 					{
 						txXfrm = new PPTX::Logic::Xfrm();
-						txXfrm->fromPPTY(pReader);
-						break;
-					}
+						txXfrm->fromPPTY(pReader);						
+					}break;
 					case 7:
 					{
 						signatureLine = new OOX::VmlOffice::CSignatureLine();
-						signatureLine->fromPPTY(pReader);
-						break;
-					}
+						signatureLine->fromPPTY(pReader);						
+					}break;
 					case SPTREE_TYPE_MACRO:
 					{
 						pReader->Skip(5); // type + size
@@ -408,9 +400,8 @@ namespace PPTX
 					}break;
 					default:
 					{
-						pReader->SkipRecord();
-						break;
-					}
+						pReader->SkipRecord();						
+					}break;
 				}
 			}
 

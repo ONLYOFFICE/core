@@ -950,7 +950,7 @@ namespace PPTX
 
 			std::wstring sUnpackedXlsx = sTempDirectory + FILE_SEPARATOR_STR + (L"xslx_unpacked");
 
-			NSDirectory::CreateDirectory(sUnpackedXlsx);
+			if (false == NSDirectory::CreateDirectory(sUnpackedXlsx)) return L"";
 
 			COfficeUtils oCOfficeUtils(NULL);
 			if (S_OK != oCOfficeUtils.ExtractToDirectory(pExternalXslxPackage->filename().GetPath(), sUnpackedXlsx, NULL, 0)) return L"";

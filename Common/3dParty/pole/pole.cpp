@@ -50,6 +50,7 @@
 #include <vector>
 #include <queue>
 #include <limits>
+#include <map>
 
 #include <cstring>
 
@@ -91,13 +92,19 @@ class Header
 class AllocTable
 {
   public:
+    AllocTable();
+
     static const uint64 Eof;
     static const uint64 Avail;
     static const uint64 Bat;
     static const uint64 MetaBat;
+
     uint64 blockSize;
-    AllocTable();
-    void clear();
+	void clear()
+	{
+		data.clear();
+		dirtyBlocks.clear();
+	}
     uint64 count();
     uint64 unusedCount();
     void resize( uint64 newsize );
@@ -116,7 +123,8 @@ class AllocTable
     void flush(std::vector<uint64> blocks, StorageIO *const io, int64 bigBlockSize);
   private:
     std::vector<uint64> data;
-    std::vector<uint64> dirtyBlocks;
+	std::map<uint64, char> dirtyBlocks;
+
     bool bMaybeFragmented;
     AllocTable( const AllocTable& );
     AllocTable& operator=( const AllocTable& );
@@ -168,8 +176,10 @@ class DirTree
     void deleteEntry(DirEntry *entry, const std::wstring& inFullName, int64 bigBlockSize);
   private:
     std::vector<DirEntry> entries;
-    std::vector<uint64> dirtyBlocks;
-    DirTree( const DirTree& );
+	
+	std::map<uint64, char> dirtyBlocks;
+	
+	DirTree( const DirTree& );
     DirTree& operator=( const DirTree& );
 };
 
@@ -454,8 +464,6 @@ const uint64 AllocTable::MetaBat = 0xfffffffc;
 
 AllocTable::AllocTable()
 :   blockSize(4096),
-    data(),
-    dirtyBlocks(),
     bMaybeFragmented(true)
 {
   // initial size
@@ -582,37 +590,30 @@ void AllocTable::save( unsigned char* buffer )
 
 bool AllocTable::isDirty()
 {
-    return (dirtyBlocks.size() > 0);
+    return (false == dirtyBlocks.empty());
 }
 
 void AllocTable::markAsDirty(uint64 dataIndex, int64 bigBlockSize)
 {
     uint64 dbidx = dataIndex / (bigBlockSize / sizeof(uint32));
-    for (uint64 idx = 0; idx < static_cast<uint64>(dirtyBlocks.size()); idx++)
-    {
-        if (dirtyBlocks[idx] == dbidx)
-            return;
-    }
-    dirtyBlocks.push_back(dbidx);
+	std::map<uint64, char>::iterator pFind = dirtyBlocks.find(dbidx);
+
+	if (pFind == dirtyBlocks.end())
+		dirtyBlocks.insert(std::make_pair(dbidx, 0));   
 }
 
 void AllocTable::flush(std::vector<uint64> blocks, StorageIO *const io, int64 bigBlockSize)
 {
     unsigned char *buffer = new unsigned char[bigBlockSize * blocks.size()];
-    save(buffer);
+	memset(buffer, 0, bigBlockSize * blocks.size());
+	
+	save(buffer);
     for (uint64 idx = 0; idx < static_cast<uint64>(blocks.size()); idx++)
     {
-        bool bDirty = false;
-        for (uint64 idx2 = 0; idx2 < static_cast<uint64>(dirtyBlocks.size()); idx2++)
-        {
-            if (dirtyBlocks[idx2] == idx)
-            {
-                bDirty = true;
-                break;
-            }
-        }
-        if (bDirty)
-            io->saveBigBlock(blocks[idx], 0, &buffer[bigBlockSize*idx], bigBlockSize);
+		std::map<uint64, char>::iterator pFind = dirtyBlocks.find(idx);
+
+		if (pFind != dirtyBlocks.end())
+            io->saveBigBlock(blocks[idx], 0, &buffer[bigBlockSize * idx], bigBlockSize);
     }
     dirtyBlocks.clear();
     delete[] buffer;
@@ -658,8 +659,6 @@ int DirEntry::compare(const std::wstring& name2)
 const uint64 DirTree::End = 0xffffffff;
 
 DirTree::DirTree(int64 bigBlockSize)
-:   entries(),
-    dirtyBlocks()
 {
   clear(bigBlockSize);
 }
@@ -833,7 +832,7 @@ DirEntry* DirTree::entry( const std::wstring& name, bool create, int64 bigBlockS
 		{
 		   return (DirEntry*)0;
 		}
-	   // create a new entry
+ // create a new entry
 	   uint64 parent2 = index;
 	   index = unused();
 	   DirEntry* e = entry( index );
@@ -1102,45 +1101,44 @@ void DirTree::save( unsigned char* buffer )
 
 bool DirTree::isDirty()
 {
-    return (dirtyBlocks.size() > 0);
+    return (dirtyBlocks.empty() == false);
 }
 
 
 void DirTree::markAsDirty(uint64 dataIndex, int64 bigBlockSize)
 {
     uint64 dbidx = dataIndex / (bigBlockSize / 128);
-    for (uint64 idx = 0; idx < static_cast<uint64>(dirtyBlocks.size()); idx++)
-    {
-        if (dirtyBlocks[idx] == dbidx)
-            return;
-    }
-    dirtyBlocks.push_back(dbidx);
+	
+	std::map<uint64, char>::iterator pFind = dirtyBlocks.find(dbidx);
+
+	if (pFind == dirtyBlocks.end())
+		dirtyBlocks.insert(std::make_pair(dbidx, 0));
 }
 
 void DirTree::flush(std::vector<uint64> blocks, StorageIO *const io, int64 bigBlockSize, uint64 sb_start, uint64 sb_size)
 {
     uint64 bufLen = size();
     unsigned char *buffer = new unsigned char[bufLen];
+	memset(buffer, 0, bufLen);
+
     save(buffer);
     writeU32( buffer + 0x74, (uint32) sb_start );
     writeU32( buffer + 0x78, (uint32) sb_size );
-    for (uint64 idx = 0; idx < static_cast<uint64>(blocks.size()); idx++)
+    
+	for (uint64 idx = 0; idx < static_cast<uint64>(blocks.size()); idx++)
     {
-        bool bDirty = false;
-        for (uint64 idx2 = 0; idx2 < static_cast<uint64>(dirtyBlocks.size()); idx2++)
-        {
-            if (dirtyBlocks[idx2] == idx)
-            {
-                bDirty = true;
-                break;
-            }
-        }
-        uint64 bytesToWrite = bigBlockSize;
-        uint64 pos = bigBlockSize*idx;
-        if ((bufLen - pos) < bytesToWrite)
-            bytesToWrite = bufLen - pos;
-        if (bDirty)
-            io->saveBigBlock(blocks[idx], 0, &buffer[pos], bytesToWrite);
+		std::map<uint64, char>::iterator pFind = dirtyBlocks.find(idx);
+
+		if (pFind != dirtyBlocks.end())
+		{
+			uint64 bytesToWrite = bigBlockSize;
+			uint64 pos = bigBlockSize * idx;
+
+			if ((bufLen - pos) < bytesToWrite)
+				bytesToWrite = bufLen - pos;
+
+			io->saveBigBlock(blocks[idx], 0, &buffer[pos], bytesToWrite);
+		}
     }
     dirtyBlocks.clear();
     delete[] buffer;
@@ -1496,7 +1494,9 @@ void StorageIO::flush()
     if (header->dirty)
     {
         unsigned char *buffer = new unsigned char[512];
-        header->save( buffer );
+		memset(buffer, 0, 512);
+		
+		header->save( buffer );
         file.seekp( 0 ); 
         file.write( (char*)buffer, 512 );
         fileCheck(file);
@@ -1519,11 +1519,14 @@ void StorageIO::flush()
     {
         uint64 nBytes = bbat->blockSize * static_cast<uint64>(mbat_blocks.size());
         unsigned char *buffer = new unsigned char[nBytes];
-        uint64 sIdx = 0;
+		memset(buffer, 0, nBytes);
+        
+		uint64 sIdx = 0;
         uint64 dcount = 0;
         uint64 blockCapacity = bbat->blockSize / sizeof(uint64) - 1;
         uint64 blockIdx = 0;
-        for (unsigned mdIdx = 0; mdIdx < mbat_data.size(); mdIdx++)
+        
+		for (size_t mdIdx = 0; mdIdx < mbat_data.size(); mdIdx++)
         {
             writeU32(buffer + sIdx, (uint32) mbat_data[mdIdx]);
             sIdx += 4;
@@ -1564,9 +1567,10 @@ void StorageIO::close()
 	  
 	  if (filesize % 512 != 0)
 	  {
-		  char padding[512];
-		  memset(padding, 0, 512);
-		  file.write(padding, (filesize / 512 + 1 ) * 512 - filesize);
+		  char padding[512] = {};
+
+		  POLE::uint64 sz = (filesize / 512 + 1) * 512 - filesize;
+		  file.write(padding, sz);
 		  fileCheck(file);
 	  }
   }
@@ -1718,10 +1722,10 @@ uint64 StorageIO::saveBigBlocks( std::vector<uint64> blocks, uint64 offset, unsi
 
   // write block one by one, seems fast enough
   uint64 bytes = 0;
-  for( size_t i=0; (i < blocks.size() ) & ( bytes<len ); i++ )
+  for ( size_t i = 0; (i < blocks.size() ) & ( bytes < len ); i++ )
   {
     uint64 block = blocks[i];
-    uint64 pos =  (bbat->blockSize * ( block+1 ) ) + offset;
+    uint64 pos =  (bbat->blockSize * ( block + 1 ) ) + offset;
     uint64 maxWrite = bbat->blockSize - offset;
     uint64 tobeWritten = len - bytes;
     if (tobeWritten > maxWrite)

@@ -88,6 +88,11 @@ namespace DocFileFormat
 		{
 			m_pBlipStore	=	static_cast<BlipStoreContainer*>(recBs);
 		}
+
+		for (int i = 0; i < 8; ++i)
+		{
+			m_nAdjValues[i] = 0x7fffffff;
+		}
 	}
 
 	VMLShapeMapping::~VMLShapeMapping()
@@ -957,12 +962,14 @@ namespace DocFileFormat
 		{
 			if (nAdjValues > 0)												
 			{
-				std::wstring adjTag	= std::to_wstring(m_nAdjValues[0]);
+				std::wstring adjTag;
 
-				for (int i = 1; i < nAdjValues; ++i)
-					adjTag += L"," + std::to_wstring(m_nAdjValues[i]);
+				for (int i = 0; i < nAdjValues; ++i)
+				{
+					adjTag += L"," + (m_nAdjValues[i] != 0x7fffffff ? std::to_wstring(m_nAdjValues[i]) : L"");
+				}
 
-				m_pXmlWriter->WriteAttribute(L"adj", adjTag);
+				m_pXmlWriter->WriteAttribute(L"adj", adjTag.substr(1));
 			}
 		}
 

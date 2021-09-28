@@ -73,15 +73,21 @@ namespace OOX
 			std::wstring toVmlXML() const
 			{
 				std::wstring sAnchor;
-				sAnchor += m_oFrom->m_oCol->ToString() + L",";
-				sAnchor += std::to_wstring(m_oFrom->m_oColOff->ToPx()) + L",";
-				sAnchor += m_oFrom->m_oRow->ToString() + L",";
-				sAnchor += std::to_wstring(m_oFrom->m_oRowOff->ToPx()) + L",";
-				sAnchor += m_oTo->m_oCol->ToString() + L",";
-				sAnchor += std::to_wstring(m_oTo->m_oColOff->ToPx()) + L",";
-				sAnchor += m_oTo->m_oRow->ToString() + L",";
-				sAnchor += std::to_wstring(m_oTo->m_oRowOff->ToPx());
 
+				if (m_oFrom.IsInit())
+				{
+					sAnchor += m_oFrom->m_oCol->ToString() + L",";
+					sAnchor += std::to_wstring(m_oFrom->m_oColOff->ToPx()) + L",";
+					sAnchor += m_oFrom->m_oRow->ToString() + L",";
+					sAnchor += std::to_wstring(m_oFrom->m_oRowOff->ToPx()) + L",";
+				}
+				if (m_oTo.IsInit())
+				{
+					sAnchor += m_oTo->m_oCol->ToString() + L",";
+					sAnchor += std::to_wstring(m_oTo->m_oColOff->ToPx()) + L",";
+					sAnchor += m_oTo->m_oRow->ToString() + L",";
+					sAnchor += std::to_wstring(m_oTo->m_oRowOff->ToPx());
+				}
 				return sAnchor;
 			}
 

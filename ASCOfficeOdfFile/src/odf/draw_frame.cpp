@@ -460,6 +460,8 @@ std::wstring draw_object::office_convert(odf_document_ptr odfDocument, int type)
 	std::wstring folderPath		= odfDocument->get_folder();	
     std::wstring objectOutPath	= NSDirectory::CreateDirectoryWithUniqueName(folderPath);
 	
+	if (objectOutPath.empty()) return L"";
+
 	if (type == 1)
 	{
 		oox::package::docx_document	outputDocx;

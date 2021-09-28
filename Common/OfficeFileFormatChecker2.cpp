@@ -871,7 +871,8 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 {
     switch (type)
     {
-    case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:		return L".docx";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM:		return L".oform";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:		return L".docx";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:		return L".docm";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:		return L".dotx";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:		return L".dotm";
@@ -950,7 +951,9 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
 {
     if (L".docx" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-    if (L".docm" == ext)
+	if (L".oform" == ext)
+		return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX; //AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM
+	if (L".docm" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM;
     if (L".dotx" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX;

@@ -128,7 +128,7 @@ namespace NExtractTools
 								res = TCD_DOTM2DOCX;
 						}
                         else if (0 == sExt2.compare(_T(".docm")))	res = TCD_DOTM2DOCM;
-						else if (0 == sExt2.compare(_T(".txt")))		res = TCD_DOCX2TXT;
+						else if (0 == sExt2.compare(_T(".txt")))	res = TCD_DOCX2TXT;
 				}break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_PACKAGE:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_PACKAGE:
@@ -206,6 +206,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOCT2DOCX;
+						else if (0 == sExt2.compare(_T(".oform")))		res = TCD_DOCT2DOCX;
 						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOCT2DOCM;
 						else if (0 == sExt2.compare(_T(".dotx")))		res = TCD_DOCT2DOTX;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_T2BIN;
@@ -229,7 +230,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_CANVAS_WORD:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOCT_BIN2DOCX;
-						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOCT_BIN2DOCX;
+						else if (0 == sExt2.compare(_T(".oform")))		res = TCD_DOCT_BIN2DOCX;
 						else if (0 == sExt2.compare(_T(".dotx")))		res = TCD_DOCT_BIN2DOCX;
 						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_BIN2T;
 						else if (0 == sExt2.compare(_T(".rtf")))		res = TCD_DOCT_BIN2RTF;

@@ -279,6 +279,15 @@ namespace MetaFile
 					fL = 0;
 					fW = (float)dTempTextW;
 				}
+				else if (unCharsCount == 1 && NULL != pDx)
+				{
+					fW = pDx[0] * m_dScaleX;
+
+					pFontManager->LoadString1(wsText, 0, 0);
+					TBBox oBox = pFontManager->MeasureString2();
+					fL = (float)dMmToPt * (oBox.fMinX);
+					fW += (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
+				}
 				else
 				{
 					pFontManager->LoadString1(wsText, 0, 0);

@@ -640,10 +640,12 @@ unsigned int CSvmDC::GetBgMode()
 void CSvmDC::SetTextBgColor(TSvmColor& oColor)
 {
 	m_oTextBgColor.Copy(oColor);
+	m_ulBgMode = OPAQUE;
 }
 void CSvmDC::SetTextBgColor(TSvmColor* oColor)
 {
 	m_oTextBgColor.Copy(*oColor);
+	m_ulBgMode = OPAQUE;
 }
 TSvmColor& CSvmDC::GetTextBgColor()
 {

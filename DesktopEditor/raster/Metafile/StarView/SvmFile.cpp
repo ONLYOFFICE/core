@@ -1081,7 +1081,7 @@ void CSvmFile::Read_META_BMP(TSvmBitmap & bitmap_info, BYTE** ppDstBuffer, unsig
 
         MetaFile::ReadImage(Header , nHeaderSize,  m_oStream.GetCurPtr(), bitmap_info.nSizeImage, ppDstBuffer, pulWidth, pulHeight);
         m_oStream.Skip(bitmap_info.nSizeImage);
-        delete Header;
+        delete[] Header;
     }
 }
 

@@ -1714,6 +1714,8 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 			pFieldBase->SetShd(TRgb(unR, unG, unB));
 		}
 
+		pFieldBase->SetRequiredFlag(oInfo.IsRequired());
+		pFieldBase->SetFieldHint(oInfo.GetHelpText());		
 
 		if (!bRadioButton)
 		{
@@ -1723,9 +1725,6 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 			else
 				pFieldBase->SetFieldName(m_oFieldsManager.GetNewFieldName());
 		}
-
-		pFieldBase->SetRequiredFlag(oInfo.IsRequired());
-		pFieldBase->SetFieldHint(oInfo.GetHelpText());		
 	}
 
 	return S_OK;
@@ -2011,7 +2010,7 @@ PdfWriter::CFontCidTrueType* CPdfRenderer::GetFont(const std::wstring& wsFontPat
 
 		std::wstring wsFontType = m_pFontManager->GetFontType();
 		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
-			pFont = m_pDocument->CreateTrueTypeFont(wsFontPath, lFaceIndex);
+			pFont = m_pDocument->CreateCidTrueTypeFont(wsFontPath, lFaceIndex);
 	}
 
 	return pFont;

@@ -63,7 +63,9 @@ void TestField()
 	oPdf.CreateNew();
 	CPage* pPage = oPdf.AddPage();
 
-	CFontDict* pFont = oPdf.CreateFont14(standard14fonts_Courier);
+	//CFontDict* pFont = oPdf.CreateFont14(standard14fonts_Courier);
+
+	CFontTrueType* pFont = oPdf.CreateTrueTypeFont(L"C:/Windows/Fonts/centaur.ttf", 0);
 
 	CTextField* pField1 = oPdf.CreateTextField();
 	pField1->SetRequiredFlag(true);
@@ -77,6 +79,7 @@ void TestField()
 	pField2->AddPageRect(pPage, TRect(200, 300, 300, 250));
 	pField2->SetFieldName(L"Test");
 	pField2->SetFieldHint(L"Hint");
+	pField2->SetTextAppearance(L"Enter text", NULL, 0, (CFontDict*)pFont, TRgb(0, 255, 0), 0.5, 40, 1, 14.3);
 
 	//CTextField* pField3 = oPdf.CreateTextField();
 	//pField3->SetRequiredFlag(false);
@@ -634,8 +637,8 @@ void TestDocument7()
 	pPage->SetHeight(600);
 	pPage->SetWidth(1000);
 
-	//CFontCidTrueType* pFont = oPdf.CreateTrueTypeFont(L"D:/test/_pdf/Test.ttf", 0);
-	CFontCidTrueType* pFont = oPdf.CreateTrueTypeFont(L"D:/test/_pdf/cambria.ttc", 1);
+	//CFontCidTrueType* pFont = oPdf.CreateCidTrueTypeFont(L"D:/test/_pdf/Test.ttf", 0);
+	CFontCidTrueType* pFont = oPdf.CreateCidTrueTypeFont(L"D:/test/_pdf/cambria.ttc", 1);
 
 	pPage->BeginText();
 

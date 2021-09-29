@@ -154,9 +154,11 @@ namespace PdfWriter
 		if (isSkipCheck || !m_pDocument->CheckFieldName(this, sName))
 			Add("T", new CStringObject(sName.c_str(), true));
 	}
-	void CFieldBase::RemoveFieldName()
+	void CFieldBase::ClearKidRecords()
 	{
 		Remove("T");
+		Remove("FT");
+		Remove("Ff");
 	}
 	void CFieldBase::SetFieldHint(const std::wstring& wsHint)
 	{
@@ -187,13 +189,10 @@ namespace PdfWriter
 		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
 
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
-
-		CResourcesDict* pResources = new CResourcesDict(m_pXref, true, false);
-		const char* sFontName = pResources->GetFontName(pFont);
+		
+		const char* sFontName = pFieldsResources->GetFontName(pFont);
 		if (!sFontName)
 			return;
-
-		Add("DR", pResources);
 
 		std::string sDA;
 		sDA.append(std::to_string(oColor.r));
@@ -504,12 +503,9 @@ namespace PdfWriter
 
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 
-		CResourcesDict* pResources = new CResourcesDict(m_pXref, true, false);
-		const char* sFontName = pResources->GetFontName(pYesFont);
+		const char* sFontName = pFieldsResources->GetFontName(pYesFont);
 		if (!sFontName)
 			return;
-
-		Add("DR", pResources);
 
 		std::string sDA;
 		sDA.append(std::to_string(oColor.r));
@@ -647,8 +643,6 @@ namespace PdfWriter
 		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
 
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
-
-		CResourcesDict* pResources = new CResourcesDict(m_pXref, true, false);
 
 		std::string sDA = "0.909 0.941 0.992 rg";
 		Add("DA", new CStringObject(sDA.c_str()));

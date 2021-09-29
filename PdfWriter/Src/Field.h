@@ -58,7 +58,7 @@ namespace PdfWriter
 		void AddPageRect(CPage* pPage, const TRect& oRect);
 		virtual void SetFieldName(const std::string& sName, bool isSkipCheck = false);
 		virtual void SetFieldName(const std::wstring& wsName, bool isSkipCheck = false);
-		void RemoveFieldName();
+		void ClearKidRecords();
 		void SetFieldHint(const std::wstring& wsHint);
 		TRect& GetRect();
 		CResourcesDict* GetResourcesDict();

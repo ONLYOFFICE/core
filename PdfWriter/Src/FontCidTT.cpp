@@ -48,47 +48,6 @@ namespace PdfWriter
 	static const char* c_sToUnicodeInfo = "/CIDSystemInfo\n<< /Registry (Adobe)\n /Ordering (UCS)\n /Supplement 0\n >> def\n/CMapName /Adobe-Identity-UCS def\n/CMapType 2 def\n1 begincodespacerange\n<0000> <FFFF>\nendcodespacerange\n";
 	static const char* c_sToUnicodeFooter = "endcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n";
 
-	static unsigned int GetGID(FT_Face pFace, unsigned int unUnicode)
-	{
-		int nCharIndex = 0;
-
-		if (!pFace)
-			return nCharIndex;
-
-		for (int nIndex = 0; nIndex < pFace->num_charmaps; nIndex++)
-		{
-			FT_CharMap pCharMap = pFace->charmaps[nIndex];
-
-			if (FT_Set_Charmap(pFace, pCharMap))
-				continue;
-			FT_Encoding pEncoding = pCharMap->encoding;
-
-			if (FT_ENCODING_UNICODE == pEncoding)
-			{
-				if (nCharIndex = FT_Get_Char_Index(pFace, unUnicode))
-					return nCharIndex;
-			}
-
-			if (FT_ENCODING_NONE == pEncoding || FT_ENCODING_MS_SYMBOL == pEncoding || FT_ENCODING_APPLE_ROMAN == pEncoding)
-			{
-				nCharIndex = FT_Get_Char_Index(pFace, unUnicode);
-			}
-			/*else if ( FT_ENCODING_ADOBE_STANDARD == pEncoding )
-			{
-			nCharIndex = FT_Get_Char_Index( pFace, unUnicode );
-			}
-			else if ( FT_ENCODING_ADOBE_CUSTOM == pEncoding )
-			{
-			nCharIndex = FT_Get_Char_Index( pFace, unUnicode );
-			}
-			else if ( FT_ENCODING_ADOBE_EXPERT == pEncoding )
-			{
-			nCharIndex = FT_Get_Char_Index( pFace, unUnicode );
-			}*/
-		}
-
-		return nCharIndex;
-	}
 	static int GetSymbolicCmapIndex(FT_Face pFace)
 	{
 		TT_OS2 *pOs2 = (TT_OS2 *)FT_Get_Sfnt_Table(pFace, ft_sfnt_os2);

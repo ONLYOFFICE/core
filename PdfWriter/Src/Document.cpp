@@ -43,6 +43,7 @@
 #include "Image.h"
 #include "Font14.h"
 #include "FontCidTT.h"
+#include "FontTT.h"
 #include "Shading.h"
 #include "Pattern.h"
 #include "AcroForm.h"
@@ -180,6 +181,7 @@ namespace PdfWriter
 		m_vStrokeAlpha.clear();
 		m_vFillAlpha.clear();
 		m_vShadings.clear();
+		m_vCidTTFonts.clear();
 		m_vTTFonts.clear();
 		m_vFreeTypeFonts.clear();
 		if (m_pFreeTypeLibrary)
@@ -547,13 +549,13 @@ namespace PdfWriter
 	{
 		return new CFont14(m_pXref, this, eType);
 	}
-	CFontCidTrueType* CDocument::CreateTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex)
+	CFontCidTrueType* CDocument::CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex)
 	{
-		for (int nIndex = 0, nCount = m_vTTFonts.size(); nIndex < nCount; nIndex++)
+		for (int nIndex = 0, nCount = m_vCidTTFonts.size(); nIndex < nCount; nIndex++)
 		{
-			TFontInfo& oInfo = m_vTTFonts.at(nIndex);
+			TFontInfo& oInfo = m_vCidTTFonts.at(nIndex);
 			if (wsFontPath == oInfo.wsPath && unIndex == oInfo.unIndex)
-				return oInfo.pFont;
+				return (CFontCidTrueType*)oInfo.pFont;
 		}
 
 		CFontCidTrueType* pFont = new CFontCidTrueType(m_pXref, this, wsFontPath, unIndex);
@@ -565,6 +567,22 @@ namespace PdfWriter
 		unsigned char* pString = pFont->EncodeString(&unUnicode, 1, &unGid);
 		if (pString)
 			delete pString;
+
+		m_vCidTTFonts.push_back(TFontInfo(wsFontPath, unIndex, pFont));
+		return pFont;
+	}
+	CFontTrueType* CDocument::CreateTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex)
+	{
+		for (int nIndex = 0, nCount = m_vTTFonts.size(); nIndex < nCount; nIndex++)
+		{
+			TFontInfo& oInfo = m_vTTFonts.at(nIndex);
+			if (wsFontPath == oInfo.wsPath && unIndex == oInfo.unIndex)
+				return (CFontTrueType*)oInfo.pFont;
+		}
+
+		CFontTrueType* pFont = new CFontTrueType(m_pXref, this, wsFontPath, unIndex);
+		if (!pFont)
+			return NULL;
 
 		m_vTTFonts.push_back(TFontInfo(wsFontPath, unIndex, pFont));
 		return pFont;
@@ -826,7 +844,13 @@ namespace PdfWriter
 	CResourcesDict* CDocument::GetFieldsResources()
 	{
 		if (!m_pFieldsResources)
+		{
+			if (!CheckAcroForm())
+				return NULL;
+			
 			m_pFieldsResources = new CResourcesDict(m_pXref, false, true);
+			m_pAcroForm->Add("DR", m_pFieldsResources);
+		}
 
 		return m_pFieldsResources;
 	}
@@ -933,15 +957,17 @@ namespace PdfWriter
 				pParent->Add("FT", pBase->GetFieldType());
 
 				pBase->SetParent(pParent);
-				pBase->RemoveFieldName();
+				pBase->ClearKidRecords();
 				pParent->AddKid(pBase);
 
 				m_mFields[sName] = pParent;
+				pField->ClearKidRecords();
 				pField->SetParent(pParent);
 				pParent->AddKid(pField);
 			}
 			else
 			{
+				pField->ClearKidRecords();
 				pField->SetParent(pBase);
 				pBase->AddKid(pField);
 			}

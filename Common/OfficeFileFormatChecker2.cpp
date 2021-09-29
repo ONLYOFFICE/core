@@ -231,7 +231,18 @@ bool COfficeFileFormatChecker::isDocFlatFormatFile	(unsigned char* pBuffer, int 
 
 	return false;
 }
+bool COfficeFileFormatChecker::isXlsFlatFormatFile(unsigned char* pBuffer, int dwBytes)
+{
+	if (pBuffer == NULL || dwBytes < 2) return false;
 
+	// BOF started
+	if ((pBuffer[1] == 0x08 && pBuffer[0] == 0x09) ||
+		(pBuffer[1] == 0x04 && pBuffer[0] == 0x09) ||
+		(pBuffer[1] == 0x02 && pBuffer[0] == 0x09))
+		return true;
+
+	return false;
+}
 bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)
 {
 	if (storage == NULL) return false;
@@ -467,7 +478,10 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 		{
             nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT; // without compaund container
 		}
-
+		else if (isXlsFlatFormatFile(buffer, sizeRead))// min size - 2
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS; // without compaund container
+		}
 //------------------------------------------------------------------------------------------------
 		file.CloseFile();
 
@@ -506,7 +520,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 	}
 	else if (0 == sExt.compare(L".mht"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
-    else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".xlsx") || 0 == sExt.compare(L".xls"))
+    else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".xlsx"))
 		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
     else if (0 == sExt.compare(L".html") || 0 == sExt.compare(L".htm"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
@@ -871,7 +885,8 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 {
     switch (type)
     {
-    case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:		return L".docx";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM:		return L".oform";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:		return L".docx";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:		return L".docm";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:		return L".dotx";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:		return L".dotm";
@@ -950,7 +965,9 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
 {
     if (L".docx" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-    if (L".docm" == ext)
+	if (L".oform" == ext)
+		return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX; //AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM
+	if (L".docm" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM;
     if (L".dotx" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX;

@@ -230,6 +230,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_CANVAS_WORD:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOCT_BIN2DOCX;
+						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOCT_BIN2DOCX;
 						else if (0 == sExt2.compare(_T(".oform")))		res = TCD_DOCT_BIN2DOCX;
 						else if (0 == sExt2.compare(_T(".dotx")))		res = TCD_DOCT_BIN2DOCX;
 						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_BIN2T;

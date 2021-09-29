@@ -3510,6 +3510,12 @@ namespace NExtractTools
 				if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo)
 				{
 					std::wstring sCTFrom = _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
+					switch(*params.m_nFormatFrom)
+					{
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM: sCTFrom = _T("application/vnd.ms-word.document.macroEnabled.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX: sCTFrom = _T("application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM: sCTFrom = _T("application/vnd.ms-word.template.macroEnabledTemplate.main+xml");break;
+					}
 					std::wstring sCTTo;
 					switch(nFormatTo)
 					{
@@ -3771,6 +3777,12 @@ namespace NExtractTools
 				if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo)
 				{
 					std::wstring sCTFrom = _T("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml");
+					switch(*params.m_nFormatFrom)
+					{
+					case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM: sCTFrom = _T("application/vnd.ms-excel.sheet.macroEnabled.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX: sCTFrom = _T("application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM: sCTFrom = _T("application/vnd.ms-excel.template.macroEnabled.main+xml");break;
+					}
 					std::wstring sCTTo;
 					switch(nFormatTo)
 					{
@@ -4022,6 +4034,14 @@ namespace NExtractTools
 					AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM == nFormatTo || AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM == nFormatTo)
 				{
 					std::wstring sCTFrom = _T("application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml");
+					switch(*params.m_nFormatFrom)
+					{
+					case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM: sCTFrom = _T("application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX: sCTFrom = _T("application/vnd.openxmlformats-officedocument.presentationml.slideshow.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX: sCTFrom = _T("application/vnd.openxmlformats-officedocument.presentationml.template.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM: sCTFrom = _T("application/vnd.ms-powerpoint.template.macroEnabled.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM: sCTFrom = _T("application/vnd.ms-powerpoint.slideshow.macroEnabled.main+xml");break;
+					}
 					std::wstring sCTTo;
 					switch(nFormatTo)
 					{
@@ -4154,7 +4174,7 @@ namespace NExtractTools
 		   }
 		   else
 		   {
-			   nRes = zip2dir(sFrom, sPptxDir);
+			   nRes = ppsm2pptm_dir(sFrom, sPptxDir, params);
 		   }
 	   }
 	   else if(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT == nFormatFrom)

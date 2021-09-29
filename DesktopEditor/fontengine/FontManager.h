@@ -49,7 +49,7 @@ public:
 
 public:
     virtual int CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse = NULL);
-    virtual int CreateFromMemory(BYTE* pData, LONG lSize);
+    virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear);
 };
 
 class CGlobalFontsMemoryStorage
@@ -75,7 +75,7 @@ public:
         m_mapStreams.clear();
     }
 
-    void Add(const std::wstring& id, BYTE* data, LONG size)
+    void Add(const std::wstring& id, BYTE* data, LONG size, bool bClear = false)
     {
         std::wstring sFile = id;
         string_replace(sFile, L"\\", L"/");
@@ -83,7 +83,7 @@ public:
         if (it == m_mapStreams.end())
         {
             CFontStream* pStream = (CFontStream*)NSFonts::NSStream::Create();
-            pStream->CreateFromMemory(data, size);
+            pStream->CreateFromMemory(data, size, bClear);
             m_mapStreams.insert({sFile, pStream});
         }
     }

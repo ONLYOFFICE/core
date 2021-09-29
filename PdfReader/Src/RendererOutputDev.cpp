@@ -50,6 +50,10 @@
 #include "../../HtmlRenderer/include/HTMLRenderer3.h"
 
 #include "../../PdfWriter/PdfRenderer.h"
+#ifdef BUILDING_WASM_MODULE
+#include <time.h>
+#include "../../DesktopEditor/graphics/GraphicsRenderer.h"
+#endif
 
 // TODO: 1. Реализовать по-нормальному градиентные заливки (Axial и Radial) 
 //       2. m_pRenderer->SetAdditionalParam(L"TilingHtmlPattern", oWriter.GetXmlString());
@@ -639,6 +643,33 @@ namespace PdfReader
 					case fontCIDType2OT:  wsExt = L".cid_2ot";   break;
 				}
 
+                #ifdef BUILDING_WASM_MODULE
+                std::wstring wsTemp = m_pGlobalParams->GetTempFolder() + L"/x";
+                int nTime = (int)time(NULL);
+                for (int nIndex = 0; nIndex < 1000; ++nIndex)
+                {
+                    wsTempFileName = wsTemp + std::to_wstring(nTime + nIndex) + wsExt;
+                    if (!CApplicationFontStreams::m_pMemoryStorage->Get(wsTempFileName))
+                        break;
+                }
+
+                if (CApplicationFontStreams::m_pMemoryStorage->Get(wsTempFileName))
+                {
+                    pEntry->bAvailable = true;
+                    return;
+                }
+                #else
+                FILE* pTempFile = NULL;
+                if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
+                {
+                    if (L"" != wsTempFileName)
+                        NSFile::CFileBinary::Remove(wsTempFileName);
+
+                    pEntry->bAvailable = true;
+                    return;
+                }
+                #endif
+
 				FILE* pTempFile = NULL;
 				if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
 				{
@@ -657,15 +688,27 @@ namespace PdfReader
 				{
 					// Внедренный шрифт неправильно записан
 					oStreamObject.Free();
+                    #ifndef BUILDING_WASM_MODULE
 					fclose(pTempFile);
 
 					if (L"" != wsTempFileName)
 						NSFile::CFileBinary::Remove(wsTempFileName);
+                    #endif
 
 					pEntry->bAvailable = true;
 					return;
 				}
 				oStreamObject.StreamReset();
+                #ifdef BUILDING_WASM_MODULE
+                CApplicationFontStreams::m_pMemoryStorage->Add(wsTempFileName, NULL, 0);
+                #else
+                int nChar;
+                while ((nChar = oStreamObject.StreamGetChar()) != EOF)
+                {
+                    fputc(nChar, pTempFile);
+                }
+                fclose(pTempFile);
+                #endif
 				int nChar;
 				while ((nChar = oStreamObject.StreamGetChar()) != EOF)
 				{

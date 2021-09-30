@@ -638,8 +638,6 @@ namespace MetaFile
 				nAdd++;
 			}
 
-			int nSize = nWidth * nHeight * 4;
-
 			pBgraBuffer = new BYTE[nWidth * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
 				return false;
@@ -688,8 +686,6 @@ namespace MetaFile
 		else if (BI_BITCOUNT_6 == ushBitCount)
 		{
 			unsigned int ulMaskR  = 0xff000000, ulMaskB = 0x00ff0000, ulMaskG = 0x0000ff00;
-			unsigned int ulShiftR = 24, ulShiftB = 16, ulShiftG = 8;
-			double dKoefR = 1.0, dKoefB = 1.0, dKoefG = 1.0;
 
 			if (BI_RGB == unCompression)
 			{
@@ -703,14 +699,6 @@ namespace MetaFile
 				oHeaderStream >> ulMaskB;
 				oHeaderStream >> ulMaskG;
 				oHeaderStream >> ulMaskR;
-
-				ulShiftR = GetLowestBit(ulMaskR);
-				ulShiftB = GetLowestBit(ulMaskB);
-				ulShiftG = GetLowestBit(ulMaskG);
-
-				dKoefR = 255.0 / (ulMaskR >> ulShiftR);
-				dKoefG = 255.0 / (ulMaskG >> ulShiftG);
-				dKoefB = 255.0 / (ulMaskB >> ulShiftB);
 			}
 			else
 				return false;
@@ -727,8 +715,6 @@ namespace MetaFile
 			{
 				nAdd++;
 			}
-
-			int nSize = nWidth * nHeight * 4;
 
 			pBgraBuffer = new BYTE[(nWidth + nAdd) * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)

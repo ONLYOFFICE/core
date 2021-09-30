@@ -264,27 +264,8 @@ class CSvmFile : virtual public IMetaFileBase
 	}
 	void TranslatePoint(int nX, int nY, double& dX, double &dY)
 	{
-		if (m_pDC->m_oMapMode.isSimple ) return;
-		//TSvmWindow* pWindow		= m_pDC->GetWindow();
-		//TSvmWindow* pViewport	= m_pDC->GetViewport();
-
-		//dX = (double)(nX) * m_pDC->m_dPixelWidth ;
-		//dY = (double)(nY) * m_pDC->m_dPixelHeight ;
-
-		//dX = (double)((double)(nX - pWindow->lX) * m_pDC->m_dPixelWidth) + pViewport->lX;
-		//dY = (double)((double)(nY - pWindow->lY) * m_pDC->m_dPixelHeight) + pViewport->lY;
-
-		TRect* pBounds = GetDCBounds();
-		
-		double dT = pBounds->nTop;
-		double dL = pBounds->nLeft;
-
-		TXForm* pInverse	= GetInverseTransform();
-		TXForm* pTransform	= GetTransform();
-		pTransform->Apply(dX, dY);
-		dX -= dL;
-		dY -= dT;
-		pInverse->Apply(dX, dY);
+		dX = (double)nX;
+		dY = (double)nY;
 	}
 
 	bool ReadImage(unsigned short ushColorUsage, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight);
@@ -325,7 +306,7 @@ class CSvmFile : virtual public IMetaFileBase
 	{
 		if (m_pOutput)
 		{
-			double dX=nX, dY=nY, dR=nX+nW, dB=nY+nH;
+			double dX, dY, dR, dB;
 			
 			TranslatePoint(nX, nY, dX, dY);
 			TranslatePoint(nX + nW, nY + nH, dR, dB);
@@ -531,8 +512,7 @@ class CSvmFile : virtual public IMetaFileBase
 
 		if (m_pOutput)
 		{
-
-			double dX = nX, dY = nY;
+			double dX, dY;
 			TranslatePoint(nX, nY, dX, dY);
 
 			double* pdDx = NULL;
@@ -549,8 +529,8 @@ class CSvmFile : virtual public IMetaFileBase
 
 					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount; unCharIndex++)
 					{
-                                                int nX1 = nCurXFirst + (unCharIndex < nDxSize ? pnDx[unCharIndex] : 0);
-						double dX1 = nX1, dY1;
+						int nX1 = nCurXFirst + (unCharIndex < nDxSize ? pnDx[unCharIndex] : 0);
+						double dX1, dY1;
 						
 						TranslatePoint(nX1, nY, dX1, dY1);
 						

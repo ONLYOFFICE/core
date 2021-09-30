@@ -507,7 +507,7 @@ void CSvmDC::SetMapMode(TSvmMapMode & mapMode, bool prefered )
 	}break;
 	case MAP_100TH_MM:
 	{
-		dPixel = 1. * 72 / 2540.;
+//		dPixel = 1. * 72 / 2540.;
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);	
 	}break;
@@ -640,12 +640,10 @@ unsigned int CSvmDC::GetBgMode()
 void CSvmDC::SetTextBgColor(TSvmColor& oColor)
 {
 	m_oTextBgColor.Copy(oColor);
-	m_ulBgMode = OPAQUE;
 }
 void CSvmDC::SetTextBgColor(TSvmColor* oColor)
 {
 	m_oTextBgColor.Copy(*oColor);
-	m_ulBgMode = OPAQUE;
 }
 TSvmColor& CSvmDC::GetTextBgColor()
 {

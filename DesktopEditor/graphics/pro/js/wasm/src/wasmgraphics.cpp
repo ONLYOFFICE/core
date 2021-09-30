@@ -40,8 +40,8 @@ WASM_EXPORT CGraphicsFileDrawing* PDF_Load (BYTE* data, LONG size)
 {
     CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing();
     pGraphics->CreatePDF();
-    //if (!CApplicationFontStreams::m_pMemoryStorage)
-    //    CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
+    if (!CApplicationFontStreams::m_pMemoryStorage)
+        CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
     pGraphics->LoadFromMemory(data, size);
     return pGraphics;
 }

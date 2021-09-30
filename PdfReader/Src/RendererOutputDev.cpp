@@ -643,33 +643,22 @@ namespace PdfReader
 					case fontCIDType2OT:  wsExt = L".cid_2ot";   break;
 				}
 
-                #ifdef BUILDING_WASM_MODULE
-                std::wstring wsTemp = m_pGlobalParams->GetTempFolder() + L"/x";
-                int nTime = (int)time(NULL);
-                for (int nIndex = 0; nIndex < 1000; ++nIndex)
-                {
-                    wsTempFileName = wsTemp + std::to_wstring(nTime + nIndex) + wsExt;
-                    if (!CApplicationFontStreams::m_pMemoryStorage->Get(wsTempFileName))
-                        break;
-                }
+				#ifdef BUILDING_WASM_MODULE
+				std::wstring wsTemp = m_pGlobalParams->GetTempFolder() + L"/x";
+				int nTime = (int)time(NULL);
+				for (int nIndex = 0; nIndex < 1000; ++nIndex)
+				{
+					wsTempFileName = wsTemp + std::to_wstring(nTime + nIndex) + wsExt;
+					if (!CApplicationFontStreams::m_pMemoryStorage->Get(wsTempFileName))
+						break;
+				}
 
-                if (CApplicationFontStreams::m_pMemoryStorage->Get(wsTempFileName))
-                {
-                    pEntry->bAvailable = true;
-                    return;
-                }
-                #else
-                FILE* pTempFile = NULL;
-                if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
-                {
-                    if (L"" != wsTempFileName)
-                        NSFile::CFileBinary::Remove(wsTempFileName);
-
-                    pEntry->bAvailable = true;
-                    return;
-                }
-                #endif
-
+				if (CApplicationFontStreams::m_pMemoryStorage->Get(wsTempFileName))
+				{
+					pEntry->bAvailable = true;
+					return;
+				}
+				#else
 				FILE* pTempFile = NULL;
 				if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(), (wchar_t*)m_pGlobalParams->GetTempFolder().c_str(), NULL))
 				{
@@ -679,6 +668,7 @@ namespace PdfReader
 					pEntry->bAvailable = true;
 					return;
 				}
+				#endif
 
 				Object oReferenceObject, oStreamObject;
 				oReferenceObject.InitRef(oEmbRef.nNum, oEmbRef.nGen);
@@ -688,35 +678,50 @@ namespace PdfReader
 				{
 					// Внедренный шрифт неправильно записан
 					oStreamObject.Free();
-                    #ifndef BUILDING_WASM_MODULE
+					#ifndef BUILDING_WASM_MODULE
 					fclose(pTempFile);
 
 					if (L"" != wsTempFileName)
 						NSFile::CFileBinary::Remove(wsTempFileName);
-                    #endif
+					#endif
 
 					pEntry->bAvailable = true;
 					return;
 				}
 				oStreamObject.StreamReset();
-                #ifdef BUILDING_WASM_MODULE
-                CApplicationFontStreams::m_pMemoryStorage->Add(wsTempFileName, NULL, 0);
-                #else
-                int nChar;
-                while ((nChar = oStreamObject.StreamGetChar()) != EOF)
-                {
-                    fputc(nChar, pTempFile);
-                }
-                fclose(pTempFile);
-                #endif
+				#ifdef BUILDING_WASM_MODULE
+				LONG nCurrentPos  = 0;
+				LONG nCurrentSize = 0xffff;
+				BYTE* pTempStream = new BYTE[nCurrentSize];
+				int nChar;
+				while ((nChar = oStreamObject.StreamGetChar()) != EOF)
+				{
+					if (nCurrentPos >= nCurrentSize)
+					{
+						LONG nNewSize = nCurrentSize + 0xffff;
+						BYTE* NewBuffer = new BYTE[nNewSize];
+						memcpy(NewBuffer, pTempStream, nCurrentSize);
+						RELEASEARRAYOBJECTS(pTempStream);
+						pTempStream = NewBuffer;
+						nCurrentSize = nNewSize;
+					}
+					pTempStream[nCurrentPos++] = nChar;
+				}
+				BYTE* pResBuffer = new BYTE[nCurrentPos];
+				memcpy(pResBuffer, pTempStream, nCurrentPos);
+				RELEASEARRAYOBJECTS(pTempStream);
+				CApplicationFontStreams::m_pMemoryStorage->Add(wsTempFileName, pResBuffer, nCurrentPos, true);
+				RELEASEARRAYOBJECTS(pResBuffer);
+				#else
 				int nChar;
 				while ((nChar = oStreamObject.StreamGetChar()) != EOF)
 				{
 					fputc(nChar, pTempFile);
 				}
+				fclose(pTempFile);
+				#endif
 				oStreamObject.StreamClose();
 				oStreamObject.Free();
-				fclose(pTempFile);
 				wsFileName = wsTempFileName;
 
 				// Для шрифтов типа Type1 нужно дописать Afm файл с метриками

@@ -84,11 +84,17 @@ int CFontStream::CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse)
 int CFontStream::CreateFromMemory(BYTE* pData, LONG lSize, bool bClear)
 {
     if (bClear)
+    {
+        m_pData = new BYTE[lSize];
         memcpy(m_pData, pData, lSize);
+        m_bIsAttach = false;
+    }
     else
+    {
         m_pData = pData;
+        m_bIsAttach = true;
+    }
     m_lSize = lSize;
-    m_bIsAttach = true;
 
     if (!m_pData)
     {

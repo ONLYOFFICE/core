@@ -308,6 +308,7 @@ namespace NSDoctRenderer
     }
     CDocBuilderValue::CDocBuilderValue(const CDocBuilderValue& src)
     {
+        m_internal = new CDocBuilderValue_Private();
         m_internal->m_value = src.m_internal->m_value;
     }
     CDocBuilderValue& CDocBuilderValue::operator=(const CDocBuilderValue& src)

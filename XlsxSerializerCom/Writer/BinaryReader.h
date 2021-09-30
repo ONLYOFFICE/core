@@ -284,7 +284,6 @@ namespace BinXlsxRW
 		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>&		m_mapWorksheets; // for fast find 
 
         boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>&	m_mapPivotCacheDefinitions;
-		
 	public:
 		BinaryWorksheetsTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook,
 			OOX::Spreadsheet::CSharedStrings* pSharedStrings, std::vector<OOX::Spreadsheet::CWorksheet*>& arWorksheets, std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
@@ -395,5 +394,7 @@ namespace BinXlsxRW
         int ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bMacro = false);
         int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW::CBinaryFileReader& oBufferedStream, const std::wstring& sFileInDir, const std::wstring& sOutDir, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
 		void initWorkbook(OOX::Spreadsheet::CWorkbook* pWorkbook);
+		
+		int Xml2Xlsx(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bMacro = false);
 	};
 }

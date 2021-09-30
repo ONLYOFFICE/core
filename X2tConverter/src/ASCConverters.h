@@ -77,6 +77,7 @@ namespace NExtractTools
 	_UINT32 xlsx2xlst_bin		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 xlsxflat2xlst		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 	_UINT32 xlsxflat2xlst_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 xlsxflat2xlsx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 	_UINT32 xlsx_dir2xlst_bin	(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params, bool bXmlOptions, const std::wstring &sXlsxFile);
 	_UINT32 xlst_bin2xlsx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
     _UINT32 xlst_bin2xlsx_dir	(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);

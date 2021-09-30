@@ -52,6 +52,7 @@ namespace PdfWriter
 	class CDocument;
 	class CPage;
 	class CFontCidTrueType;
+	class CFontTrueType;
 	class CImageDict;
 	class CShading;
 	class CExtGrState;

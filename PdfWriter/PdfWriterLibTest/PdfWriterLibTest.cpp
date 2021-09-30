@@ -63,12 +63,12 @@ void TestField()
 	oPdf.CreateNew();
 	CPage* pPage = oPdf.AddPage();
 
-	//CFontDict* pFont = oPdf.CreateFont14(standard14fonts_Courier);
+	CFontDict* pFont2 = oPdf.CreateFont14(standard14fonts_Courier);
 
 	CFontTrueType* pFont = oPdf.CreateTrueTypeFont(L"C:/Windows/Fonts/centaur.ttf", 0);
 
 	CTextField* pField1 = oPdf.CreateTextField();
-	pField1->SetRequiredFlag(true);
+	pField1->SetRequiredFlag(false);
 	pField1->AddPageRect(pPage, TRect(0, 100, 100, 0));
 	pField1->SetFieldName(L"Test");
 	pField1->SetFieldHint(L"Илья");
@@ -79,7 +79,8 @@ void TestField()
 	pField2->AddPageRect(pPage, TRect(200, 300, 300, 250));
 	pField2->SetFieldName(L"Test");
 	pField2->SetFieldHint(L"Hint");
-	pField2->SetTextAppearance(L"Enter text", NULL, 0, (CFontDict*)pFont, TRgb(0, 255, 0), 0.5, 40, 1, 14.3);
+	pField2->SetDefaultAppearance((CFontDict*)pFont, 40, TRgb(0, 255, 0));
+	pField2->SetTextAppearance(L"Enter text", NULL, 0, (CFontDict*)pFont2, TRgb(255, 0, 0), 0.5, 40, 1, 14.3);
 
 	//CTextField* pField3 = oPdf.CreateTextField();
 	//pField3->SetRequiredFlag(false);

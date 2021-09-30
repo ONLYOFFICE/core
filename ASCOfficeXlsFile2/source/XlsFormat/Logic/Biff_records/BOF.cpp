@@ -33,6 +33,7 @@
 #include "BOF.h"
 #include <Binary/CFStream.h>
 
+#include "../../../../../Common/MS-LCID.h"
 
 namespace XLS
 {
@@ -106,6 +107,11 @@ void BOF::readFields(CFRecord& record)
 		{ //ts_2500_06_gruzi 05 06 вып.xls
 			record.getGlobalWorkbookInfo()->Version = 0x601;
 			record.getGlobalWorkbookInfo()->CodePage = 0;
+			
+			if (record.getGlobalWorkbookInfo()->lcid_user > 0)
+			{
+				record.getGlobalWorkbookInfo()->CodePage = msLCID2DefCodePage(record.getGlobalWorkbookInfo()->lcid_user);
+			}
 		}
 	}
 	else

@@ -3929,14 +3929,10 @@ namespace NExtractTools
        {
            if(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo || AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
            {
-               if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
-                   nRes = csv2xlst_bin(sFrom, sTo, params);
-               else
-                   nRes = xlsxflat2xlst_bin(sFrom, sTo, sTemp, params);
+               nRes = csv2xlst_bin(sFrom, sTo, params);
            }
            else
            {
-			   nRes = xlsxflat2xlst_bin(sFrom, sTo, sTemp, params);
 			   std::wstring sXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
                NSDirectory::CreateDirectory(sXlstDir);
                std::wstring sTFile = sXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");

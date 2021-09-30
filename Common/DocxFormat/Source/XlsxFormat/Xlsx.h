@@ -104,6 +104,14 @@ namespace OOX
 
 			std::vector<CWorksheet*>								m_arWorksheets;	//order as is
 			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>	m_mapWorksheets; //copy, for fast find - order by rId(name) 
+			
+			bool bDeleteWorkbook;
+			bool bDeleteSharedStrings;
+			bool bDeleteStyles;
+			bool bDeleteCalcChain;
+			bool bDeleteWorksheets;
+			bool bDeleteVbaProject;
+			bool bDeleteJsaProject;
 		private:
 			void PrepareWorksheet(CWorksheet* pWorksheet);
 			void init()
@@ -135,14 +143,6 @@ namespace OOX
 			}
 
             boost::unordered_map<std::wstring, size_t>	m_mapXlsxEnumeratedGlobal;
-			
-			bool bDeleteWorkbook;
-			bool bDeleteSharedStrings;
-			bool bDeleteStyles;
-			bool bDeleteCalcChain;
-			bool bDeleteWorksheets;
-			bool bDeleteVbaProject;
-			bool bDeleteJsaProject;
 		};
 
 	} //Spreadsheet

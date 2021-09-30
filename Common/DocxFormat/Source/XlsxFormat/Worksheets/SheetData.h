@@ -388,6 +388,7 @@ namespace OOX
 	//----------- 2003			
 			void After2003Read();
 
+			nullable<CCommentItem> pCommentItem;
 			nullable_string sStyleId;
 			nullable_string sArrayRange;
 			nullable_string sHyperlink;

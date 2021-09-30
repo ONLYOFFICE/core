@@ -1037,7 +1037,8 @@ namespace SimpleTypes
 			horizontalalignmentGeneral			=  4,
 			horizontalalignmentJustify			=  5,
 			horizontalalignmentLeft				=  6,
-			horizontalalignmentRight			=  7
+			horizontalalignmentRight			=  7,
+			horizontalalignmentCenterContinuous	=  8
 		};
 		template<EHorizontalAlignment eDefValue = horizontalalignmentGeneral>
 		class CHorizontalAlignment : public CSimpleType<EHorizontalAlignment, eDefValue>
@@ -1048,10 +1049,12 @@ namespace SimpleTypes
 
             virtual EHorizontalAlignment FromString(std::wstring &sValue)
 			{
-				// CenterAcrossSelection, JustifyDistributed
+				// JustifyDistributed
 
 				if(L"center" == sValue || L"Center" == sValue)
                     this->m_eValue = horizontalalignmentCenter;
+				else if (L"centerContinuous" == sValue || L"CenterAcrossSelection" == sValue)
+					this->m_eValue = horizontalalignmentCenterContinuous;
 				else if(L"continuous" == sValue)
                     this->m_eValue = horizontalalignmentContinuous;
 				else if(L"distributed" == sValue || L"Distributed" == sValue)
@@ -1083,6 +1086,7 @@ namespace SimpleTypes
 				case horizontalalignmentJustify : return L"justify"; break;
 				case horizontalalignmentLeft : return L"left"; break;
 				case horizontalalignmentRight : return L"right"; break;
+				case horizontalalignmentCenterContinuous: return L"centerContinuous"; break;
 				default : return L"general";
 				}
 			}

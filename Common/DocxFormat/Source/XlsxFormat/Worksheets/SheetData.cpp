@@ -920,6 +920,10 @@ namespace OOX
 		}
 		void CCell::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
+			CXlsxFlat *pXlsxFlat = dynamic_cast<CXlsxFlat*>(this->m_pMainDocument);
+			
+			int nBaseRow = pXlsxFlat ? 0 : 1; // xml->xlsx
+
 			writer.WriteString(_T("<c"));
 			if (m_oRow.IsInit() && m_oCol.IsInit())
 			{
@@ -930,7 +934,7 @@ namespace OOX
 				}
 				writer.WriteString(L" r=\"");
 				writer.WriteString(m_aLetters[nCol]);
-				writer.AddInt(*m_oRow + 1);
+				writer.AddInt(*m_oRow + nBaseRow);
 				writer.WriteString(L"\"");
 			}
 			else
@@ -996,16 +1000,8 @@ namespace OOX
 					CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
 					if (xlsx_flat)
 					{
-						CCommentItem *pComment = new CCommentItem();
-						ReadComment(oReader, pComment);
-
-						pComment->m_nRow = xlsx_flat->m_nLastReadRow - 1;
-						pComment->m_nCol = xlsx_flat->m_nLastReadCol - 1;
-
-						std::wstring sId = std::to_wstring(*pComment->m_nRow) + L"-" + std::to_wstring(*pComment->m_nCol);
-						
-						CWorksheet* pWorksheet = xlsx_flat->m_arWorksheets.back();
-						pWorksheet->m_mapComments [sId] = pComment;
+						pCommentItem.Init();
+						ReadComment(oReader, pCommentItem.GetPointer());
 					}
 				}
 				else if ( strcmp("f", sName) == 0 )
@@ -1215,7 +1211,7 @@ namespace OOX
 						pFind = pFindRow->second.find(xlsx_flat->m_nLastReadCol);
 						if (pFind != pFindRow->second.end())
 						{
-							CCell *pCell = new CCell();
+							CCell *pCell = new CCell(this->m_pMainDocument);
 							pCell->m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
 							pCell->m_oStyle = pFind->second;
 							pCell->m_oCol = xlsx_flat->m_nLastReadCol - 1;
@@ -1230,6 +1226,16 @@ namespace OOX
 					pCurrentCell = NULL;
 				}
 				xlsx_flat->m_nLastReadCol = newCol;
+			}
+//---------------------------------------------------------------------------------------
+			if (pCommentItem.IsInit())
+			{
+				pCommentItem->m_nRow = xlsx_flat->m_nLastReadRow - 1;
+				pCommentItem->m_nCol = xlsx_flat->m_nLastReadCol - 1;
+
+				std::wstring sId = std::to_wstring(*pCommentItem->m_nRow) + L"-" + std::to_wstring(*pCommentItem->m_nCol);
+
+				sheet->m_mapComments[sId] = pCommentItem.GetPointerEmptyNullable();
 			}
 //---------------------------------------------------------------------------------------
 			if (pFindRow != sheet->m_oSheetData->m_mapStyleMerges2003.end())
@@ -1286,6 +1292,8 @@ namespace OOX
 				{
 					pHyperlink->m_oLink = sHyperlink;
 				}
+				pHyperlink->m_oRid.Init();
+				pHyperlink->m_oRid->FromString(sheet->AddHyperlink(*sHyperlink).get());
 
 				sheet->m_oHyperlinks->m_arrItems.push_back(pHyperlink);
 			}
@@ -1307,8 +1315,8 @@ namespace OOX
 
 				if (m_oStyle.IsInit())
 				{
-					std::map<unsigned int, bool>::iterator pFind = xlsx_flat->m_pStyles->m_mapStylesContinues2003.find(*m_oStyle);
-					if (pFind != xlsx_flat->m_pStyles->m_mapStylesContinues2003.end())
+					std::map<unsigned int, bool>::iterator pFindContinues = xlsx_flat->m_pStyles->m_mapStylesContinues2003.find(*m_oStyle);
+					if (pFindContinues != xlsx_flat->m_pStyles->m_mapStylesContinues2003.end())
 					{
 						for (int i = 0; i < iDown.get_value_or(0); ++i)
 						{
@@ -1331,9 +1339,9 @@ namespace OOX
 						{
 							xlsx_flat->m_nLastReadCol++;
 							
-							CCell *pCell = new CCell();
+							CCell *pCell = new CCell(this->m_pMainDocument);
 							pCell->m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
-							pCell->m_oStyle = pFind->second;
+							pCell->m_oStyle = pFindContinues->first;
 							pCell->m_oCol = xlsx_flat->m_nLastReadCol - 1;
 							pCell->m_oRow = xlsx_flat->m_nLastReadRow;
 							
@@ -2075,7 +2083,7 @@ namespace OOX
 			std::map<int, unsigned int>::iterator it = mapStyleMerges.begin();
 			while (it != mapStyleMerges.end())
 			{
-				CCell *pCell = new CCell();
+				CCell *pCell = new CCell(this->m_pMainDocument);
 				pCell->m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, it->first);
 				pCell->m_oStyle = it->second;
 				pCell->m_oCol = it->first - 1;

@@ -754,7 +754,28 @@ namespace NExtractTools
 
         return nRes;
     }
-    // xlsxflat -> xlst
+	// xlsxflat -> xlsx
+	_UINT32 xlsxflat2xlsx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sResultXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
+		NSDirectory::CreateDirectory(sResultXlsxDir);
+
+		BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
+
+		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
+		m_oCXlsxSerializer.setFontDir(params.getFontPath());
+
+		_UINT32 nRes = m_oCXlsxSerializer.xml2Xlsx(sFrom, sResultXlsxDir, params.getXmlOptions());
+
+		if (SUCCEEDED_X2T(nRes))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultXlsxDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+
+		return nRes;
+	}
+	// xlsxflat -> xlst
     _UINT32 xlsxflat2xlst (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
         std::wstring sResultXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
@@ -4656,6 +4677,10 @@ namespace NExtractTools
 			case TCD_XLSXFLAT2XLST_BIN:
 			{
 				result = xlsxflat2xlst_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_XLSXFLAT2XLSX:
+			{
+				result = xlsxflat2xlsx (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_XLST2XLSX:
 			{

@@ -39,6 +39,7 @@
 #include "Src/Image.h"
 #include "Src/Font.h"
 #include "Src/FontCidTT.h"
+#include "Src/FontTT.h"
 #include "Src/Annotation.h"
 #include "Src/Destination.h"
 #include "Src/Field.h"
@@ -1528,6 +1529,10 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	if (!m_pFont)
 		return S_OK;
 
+	PdfWriter::CFontTrueType* pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
+	if (!pFontTT)
+		return S_OK;
+
 	double dX, dY, dW, dH;
 	oInfo.GetBounds(dX, dY, dW, dH);
 
@@ -1597,7 +1602,9 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		if (pShifts)
 			delete[] pShifts;
 
-		delete[] pCodes;				
+		delete[] pCodes;
+
+		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), TRgb(oColor.r, oColor.g, oColor.b));
 	}
 	else if (oInfo.IsDropDownList())
 	{
@@ -1638,6 +1645,8 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		pField->SetComboFlag(true);
 		pField->SetEditFlag(!pPr->IsEditComboBox());
+
+		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), TRgb(oColor.r, oColor.g, oColor.b));
 	}
 	else if (oInfo.IsCheckBox())
 	{
@@ -1680,8 +1689,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 			TColor oColor = m_oBrush.GetTColor1();
 			pField->SetAppearance(L"", pCheckedCodes, 2, pCheckedFont, L"", pUncheckedCodes, 2, pUncheckedFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
-
-		}
+		}		
 	}
 	else if (oInfo.IsPicture())
 	{

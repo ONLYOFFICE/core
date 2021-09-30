@@ -62,6 +62,7 @@ namespace PdfWriter
 		void SetFieldHint(const std::wstring& wsHint);
 		TRect& GetRect();
 		CResourcesDict* GetResourcesDict();
+		void SetDefaultAppearance(CFontDict* pFont, const double& dFontSize, const TRgb& oColor);
 		void SetTextAppearance(const std::wstring& wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double* pShifts = NULL, unsigned int unShiftsCount = 0);
 		void SetTextValue(const std::wstring& wsValue);
 		void SetFieldBorder(const EBorderSubtype& eSubtype, const TRgb& oColor, const double& fWidth, const unsigned short& nDashOn, const unsigned short& nDashOff, const unsigned short& nDashPhase);

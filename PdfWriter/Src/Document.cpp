@@ -587,6 +587,19 @@ namespace PdfWriter
 		m_vTTFonts.push_back(TFontInfo(wsFontPath, unIndex, pFont));
 		return pFont;
 	}
+	CFontTrueType* CDocument::CreateTrueTypeFont(CFontCidTrueType* pCidFont)
+	{
+		for (int nIndex = 0, nCount = m_vCidTTFonts.size(); nIndex < nCount; nIndex++)
+		{
+			TFontInfo& oInfo = m_vCidTTFonts.at(nIndex);
+			if (pCidFont == (CFontCidTrueType*)oInfo.pFont)
+			{
+				return CreateTrueTypeFont(oInfo.wsPath, oInfo.unIndex);
+			}
+		}
+
+		return NULL;
+	}
     char* CDocument::GetTTFontTag()
 	{
 		if (0 == m_sTTFontTag[0])

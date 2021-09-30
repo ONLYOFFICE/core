@@ -180,16 +180,10 @@ namespace PdfWriter
 	{
 		return m_pDocument->GetFieldsResources();
 	}
-	void CFieldBase::SetTextAppearance(const std::wstring& wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY, double* pShifts, unsigned int unShiftsCount)
+	void CFieldBase::SetDefaultAppearance(CFontDict* pFont, const double& dFontSize, const TRgb& oColor)
 	{
-		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
-		Add("AP", pAppearance);
-
-
-		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
-
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
-		
+
 		const char* sFontName = pFieldsResources->GetFontName(pFont);
 		if (!sFontName)
 			return;
@@ -214,14 +208,23 @@ namespace PdfWriter
 			sDA.append(" Tf");
 		}
 
+		Add("DA", new CStringObject(sDA.c_str()));
+	}
+	void CFieldBase::SetTextAppearance(const std::wstring& wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY, double* pShifts, unsigned int unShiftsCount)
+	{
+		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
+		Add("AP", pAppearance);
+
+		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
+
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+		
 		const char* sExtGrStateName = NULL;
 		if (fabs(dAlpha - 1.0) > 0.001)
 		{
 			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(dAlpha);
 			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
 		}
-
-		Add("DA", new CStringObject(sDA.c_str()));
 
 		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), pShifts, unShiftsCount);
 	}

@@ -31,35 +31,29 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../../XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-#include "../Biff12_structures/CFVOtype.h"
-#include <Logic/Biff_structures/Xnum.h>
-#include <Logic/Biff_structures/CFVOParsedFormula.h>
+#include <Logic/CompositeObject.h>
+
 using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BrtCFVO record in BIFF12
-    class CFVO: public BiffRecord
+
+    class SHAREDSTRINGS: public CompositeObject
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(CFVO)
-            BASE_OBJECT_DEFINE_CLASS_NAME(CFVO)
-        public:
-            CFVO();
-            virtual ~CFVO();
+        BASE_OBJECT_DEFINE_CLASS_NAME(SHAREDSTRINGS)
+    public:
+        SHAREDSTRINGS();
+        virtual ~SHAREDSTRINGS();
 
-            BaseObjectPtr clone();
+        BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+        virtual const bool loadContent(BinProcessor& proc);
 
-            CFVOtype                        iType;
-            Xnum                            numParam;
-            XLS::Boolean<unsigned int>      fSaveGTE;
-            XLS::Boolean<unsigned int>      fGTE;
-            _UINT32                         cbFmla;
-            CFVOParsedFormula               formula;
+        BaseObjectPtr               m_BrtBeginSst;
+        std::vector<BaseObjectPtr>  m_arBrtSSTItem;
+        std::vector<BaseObjectPtr>  m_arFRT;
+        BaseObjectPtr               m_BrtEndSst;
+
     };
 
 } // namespace XLSB

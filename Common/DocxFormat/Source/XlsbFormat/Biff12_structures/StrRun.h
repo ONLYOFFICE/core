@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,36 +31,29 @@
  */
 #pragma once
 
+#include <Logic/Biff_structures/BiffStructure.h>
 #include <Logic/Biff_records/BiffRecord.h>
-#include "../../XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-#include "../Biff12_structures/CFVOtype.h"
-#include <Logic/Biff_structures/Xnum.h>
-#include <Logic/Biff_structures/CFVOParsedFormula.h>
-using namespace XLS;
 
-namespace XLSB
+namespace XLS
 {
-    // Logical representation of BrtCFVO record in BIFF12
-    class CFVO: public BiffRecord
-    {
-            BIFF_RECORD_DEFINE_TYPE_INFO(CFVO)
-            BASE_OBJECT_DEFINE_CLASS_NAME(CFVO)
-        public:
-            CFVO();
-            virtual ~CFVO();
 
-            BaseObjectPtr clone();
+class CFRecord;
 
-            void readFields(CFRecord& record);
+class StrRun : public BiffStructure
+{
+    BASE_STRUCTURE_DEFINE_CLASS_NAME(StrRun)
+public:
+    BiffStructurePtr clone();
 
-            CFVOtype                        iType;
-            Xnum                            numParam;
-            XLS::Boolean<unsigned int>      fSaveGTE;
-            XLS::Boolean<unsigned int>      fGTE;
-            _UINT32                         cbFmla;
-            CFVOParsedFormula               formula;
-    };
+    static const ElementType	type = typeBiffStructure;
 
-} // namespace XLSB
+	virtual void load(CFRecord& record);
 
+
+	unsigned short	ich;
+    unsigned short  ifnt;
+};
+
+typedef boost::shared_ptr<StrRun> StrRunPtr;
+
+} // namespace XLS

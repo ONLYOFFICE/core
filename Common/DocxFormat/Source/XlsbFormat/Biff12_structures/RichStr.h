@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,38 +29,40 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
+#include <Logic/Biff_structures/BiffStructure.h>
 #include <Logic/Biff_records/BiffRecord.h>
-#include "../../XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-#include "../Biff12_structures/CFVOtype.h"
-#include <Logic/Biff_structures/Xnum.h>
-#include <Logic/Biff_structures/CFVOParsedFormula.h>
-using namespace XLS;
+#include "XLWideString.h"
+#include "StrRun.h"
+#include "PhRun.h"
 
+using namespace XLS;
 namespace XLSB
 {
-    // Logical representation of BrtCFVO record in BIFF12
-    class CFVO: public BiffRecord
+    class RichStr : public BiffStructure
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(CFVO)
-            BASE_OBJECT_DEFINE_CLASS_NAME(CFVO)
-        public:
-            CFVO();
-            virtual ~CFVO();
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(RichStr)
+    public:
+        RichStr();
+        virtual ~RichStr();
+        BiffStructurePtr clone();
 
-            BaseObjectPtr clone();
+        static const ElementType	type = typeBiffStructure;
 
-            void readFields(CFRecord& record);
+        virtual void load(CFRecord& record);
 
-            CFVOtype                        iType;
-            Xnum                            numParam;
-            XLS::Boolean<unsigned int>      fSaveGTE;
-            XLS::Boolean<unsigned int>      fGTE;
-            _UINT32                         cbFmla;
-            CFVOParsedFormula               formula;
+        bool                fRichStr;
+        bool                fExtStr;
+        XLWideString        str;
+        _UINT32             dwSizeStrRun;
+        std::vector<StrRun> rgsStrRun;
+        XLWideString        phoneticStr;
+        _UINT32             dwPhoneticRun;
+        std::vector<PhRun>  rgsPhRun;
     };
 
-} // namespace XLSB
+typedef boost::shared_ptr<RichStr> RichStrPtr;
 
+}   // namespace XLSB

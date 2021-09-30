@@ -73,7 +73,7 @@ namespace XLSB
             else return false;
 
 
-            CELL cell(static_cast<RowHdr*>(m_BrtRowHdr.get())->rw);
+            CELL cell(static_cast<RowHdr*>(m_BrtRowHdr.get())->rw + 1);
 
             int countCELL = proc.repeated(cell, 0, 16384);
 

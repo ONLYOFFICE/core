@@ -2098,10 +2098,10 @@ namespace OOX
                 m_oCustomFormat             = ptr->fGhostDirty;
                 m_oCustomHeight             = ptr->fUnsynced;
                 m_oHidden                   = ptr->fDyZero;
-                m_oHt                       = ptr->miyRw;
+                m_oHt                       = ptr->miyRw/20.;
                 m_oOutlineLevel             = ptr->iOutLevel;
                 m_oPh                       = ptr->fPhonetic;
-                m_oR                        = ptr->rw;
+                m_oR                        = ptr->rw + 1;
                 m_oS                        = ptr->ixfe_val;
                 m_oThickBot                 = ptr->fExDes;
                 m_oThickTop                 = ptr->fExAsc;

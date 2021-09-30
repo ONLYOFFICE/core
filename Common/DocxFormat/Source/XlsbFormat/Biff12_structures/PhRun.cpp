@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,38 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../../XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-#include "../Biff12_structures/CFVOtype.h"
-#include <Logic/Biff_structures/Xnum.h>
-#include <Logic/Biff_structures/CFVOParsedFormula.h>
-using namespace XLS;
+#include "PhRun.h"
+#include <Binary/CFRecord.h>
 
 namespace XLSB
 {
-    // Logical representation of BrtCFVO record in BIFF12
-    class CFVO: public BiffRecord
-    {
-            BIFF_RECORD_DEFINE_TYPE_INFO(CFVO)
-            BASE_OBJECT_DEFINE_CLASS_NAME(CFVO)
-        public:
-            CFVO();
-            virtual ~CFVO();
 
-            BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+BiffStructurePtr PhRun::clone()
+{
+    return BiffStructurePtr(new PhRun(*this));
+}
 
-            CFVOtype                        iType;
-            Xnum                            numParam;
-            XLS::Boolean<unsigned int>      fSaveGTE;
-            XLS::Boolean<unsigned int>      fGTE;
-            _UINT32                         cbFmla;
-            CFVOParsedFormula               formula;
-    };
 
-} // namespace XLSB
+void PhRun::load(CFRecord& record)
+{
+    unsigned short flags;
+    record >> ichFirst >> ichMom >> cchMom >> ifnt >> flags;
+
+    phType  = GETBITS(flags, 0, 1);
+    alcH    = GETBITS(flags, 2, 3);
+}
+
+
+} // namespace XLS
 

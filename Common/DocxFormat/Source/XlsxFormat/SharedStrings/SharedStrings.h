@@ -36,13 +36,17 @@
 
 #include "Si.h"
 #include <map>
-//#include "../../XlsbFormat/Biff12StreamReader.h"
 #include <thread>
 #include <algorithm>
 
-//#include "../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
+#include "../../XlsbFormat/SharedStringsStream.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
 
-//#include "../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
+#include "../../XlsbFormat/Biff12_records/BeginSst.h"
+#include "../../XlsbFormat/Biff12_unions/SHAREDSTRINGS.h"
 
 namespace OOX
 {
@@ -78,70 +82,45 @@ namespace OOX
 
             void readBin(const CPath& oPath)
             {
+                auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
+                XLS::GlobalWorkbookInfoPtr xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
+                xls_global_info->Version = 0x0800;
+                NSFile::CFileBinary oFile;
+                if (oFile.OpenFile(oPath.GetPath()) == false)
+                    return;
 
-                /* XLSB::CBiff12StreamReader oReaderBin(oPath.GetPath());
+                auto m_lStreamLen = (LONG)oFile.GetFileSize();
+                auto m_pStream = new BYTE[m_lStreamLen];
+                DWORD dwRead = 0;
+                oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
+                oFile.CloseFile();
+                std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
+                binaryReader->Init(m_pStream, 0, dwRead);
 
-                if (oReaderBin.getNextRecordType() == XLSB::rt_BEGIN_SST)
+                XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
+                XLSB::SharedStringsStreamPtr sharedStringsStream = std::make_shared<XLSB::SharedStringsStream>(workbook_code_page);
+                XLS::BinReaderProcessor proc(reader, sharedStringsStream.get(), true);
+
+                proc.mandatory(*sharedStringsStream.get());
+
+                if (sharedStringsStream != nullptr)
                 {
-                    auto nextRecord = oReaderBin.getNextRecord();
-                    if (nextRecord == nullptr)
-                        return;
-                   // ReadAttributes(nextRecord);
-
-                    m_nCount = 0;
-
-                    while ((nextRecord = oReaderBin.getNextRecord()) != nullptr)
+                    auto ptr = static_cast<XLSB::SHAREDSTRINGS*>(sharedStringsStream->m_SHAREDSTRINGS.get());
+                    if (ptr != nullptr)
                     {
-                        if (nextRecord->GetRecordType() == XLSB::rt_SST_ITEM)
+                        ReadAttributes(ptr->m_BrtBeginSst);
+
+                        for(auto &sstItem : ptr->m_arBrtSSTItem)
                         {
-                           // CSi* pItem = new CSi(nextRecord);
+                            CSi* pItem = new CSi(sstItem);
                             m_arrItems.push_back(pItem );
                             m_nCount++;
                         }
+
                     }
+
                 }
 
-*/
-
-
-                //XLSB::CBIFF12Reader oReaderBin;
-
-               // XLSB::CBIFF12Reader::Buffer buf;
-               // buf._ptr = m_pStream;
-                //buf._len = m_lStreamLen;
-
-
-               // oReaderBin.readRecord(buf);
-                //std::shared_ptr<XLSB::BaseRecord> rec = nullptr;
-              //  while(!oReaderBin.records.empty())
-
-               // {
-
-                    /*rec = oReaderBin.records.front();
-                    oReaderBin.records.pop();
-                    if (("si") == rec->GetTag() )
-                    {
-                       CSi* pItem = new CSi();
-                       auto textItem = new CText();
-                       textItem->m_sText = std::dynamic_pointer_cast<XLSB::SIRecord>(rec)->GetText();
-                       pItem->m_arrItems.push_back(textItem);
-                       m_arrItems.push_back(pItem);
-                       m_nCount++;
-                    }
-
-                    else if (("sst") == rec->GetTag() )
-                    {
-                        m_oCount = std::dynamic_pointer_cast<XLSB::SSTRecord>(rec)->GetTotal();
-                        m_oUniqueCount = std::dynamic_pointer_cast<XLSB::SSTRecord>(rec)->GetUnique();
-                        m_nCount = 0;
-
-                    }
-
-                    else if (("/sst") == rec->GetTag() )
-                    {
-                       break;
-                    }*/
-               // }
             }
 
 			virtual void read(const CPath& oPath)
@@ -261,13 +240,17 @@ namespace OOX
                     WritingElement_ReadAttributes_Read_if ( oReader, _T("uniqueCount"),	m_oUniqueCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
-            /*void ReadAttributes(std::shared_ptr<XLSB::BaseRecord> pRecord)
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
-                auto oSSTRecord = std::dynamic_pointer_cast<XLSB::SSTRecord>(pRecord);
-                m_oCount = oSSTRecord->GetTotal();
-                m_oUniqueCount = oSSTRecord->GetUnique();
-            }*/
+                auto ptr = static_cast<XLSB::BeginSst*>(obj.get());
+
+                if(ptr != nullptr)
+                {
+                    m_oCount        = ptr->cstTotal;
+                    m_oUniqueCount  = ptr->cstUnique;
+                }
+
+            }
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;

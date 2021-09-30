@@ -164,6 +164,7 @@ public:
             case aw_NULLABLE_WIDE:
                 if(0xFFFFFFFF == cch)
                     cch = 0;
+                is_wide = true;
                 break;
             case aw_NAME_WIDE:
                 if(cch >= 255)

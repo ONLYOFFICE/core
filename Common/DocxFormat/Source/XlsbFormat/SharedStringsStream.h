@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,38 +29,50 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../../XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-#include "../Biff12_structures/CFVOtype.h"
-#include <Logic/Biff_structures/Xnum.h>
-#include <Logic/Biff_structures/CFVOParsedFormula.h>
+#ifndef SHAREDSTRINGSSTREAM_H
+#define SHAREDSTRINGSSTREAM_H
+
+
+#include "../../../../DesktopEditor/common/Types.h"
+#include "../Base/Types_32.h"
+#include "../XlsxFormat/WritingElement.h"
+#include <string>
+#include <memory.h>
+#include <iostream>
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+
 using namespace XLS;
-
 namespace XLSB
 {
-    // Logical representation of BrtCFVO record in BIFF12
-    class CFVO: public BiffRecord
+    class StreamCacheReader;
+
+    class SharedStringsStream;
+    typedef std::shared_ptr<SharedStringsStream>		SharedStringsStreamPtr;
+
+    class SharedStringsStream: public CompositeObject
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(CFVO)
-            BASE_OBJECT_DEFINE_CLASS_NAME(CFVO)
-        public:
-            CFVO();
-            virtual ~CFVO();
+        BASE_OBJECT_DEFINE_CLASS_NAME(SharedStringsStream)
+    public:
+        SharedStringsStream(const unsigned short code_page);
+        virtual ~SharedStringsStream();
 
-            BaseObjectPtr clone();
+        BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+        virtual const bool loadContent(BinProcessor& proc);
 
-            CFVOtype                        iType;
-            Xnum                            numParam;
-            XLS::Boolean<unsigned int>      fSaveGTE;
-            XLS::Boolean<unsigned int>      fGTE;
-            _UINT32                         cbFmla;
-            CFVOParsedFormula               formula;
+        int serialize_format(std::wostream & _stream);
+        int serialize_protection(std::wostream & _stream);
+
+        BaseObjectPtr               m_SHAREDSTRINGS;
+
+        unsigned short              code_page_;
+        GlobalWorkbookInfoPtr       global_info_;
+
+
     };
 
-} // namespace XLSB
+}
+
+#endif // SHAREDSTRINGSSTREAM_H
 

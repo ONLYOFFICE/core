@@ -29,38 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../../XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-#include "../Biff12_structures/CFVOtype.h"
-#include <Logic/Biff_structures/Xnum.h>
-#include <Logic/Biff_structures/CFVOParsedFormula.h>
-using namespace XLS;
+#include "BeginSst.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtCFVO record in BIFF12
-    class CFVO: public BiffRecord
+
+    BeginSst::BeginSst()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(CFVO)
-            BASE_OBJECT_DEFINE_CLASS_NAME(CFVO)
-        public:
-            CFVO();
-            virtual ~CFVO();
+    }
 
-            BaseObjectPtr clone();
+    BeginSst::~BeginSst()
+    {
+    }
 
-            void readFields(CFRecord& record);
+    BaseObjectPtr BeginSst::clone()
+    {
+        return BaseObjectPtr(new BeginSst(*this));
+    }
 
-            CFVOtype                        iType;
-            Xnum                            numParam;
-            XLS::Boolean<unsigned int>      fSaveGTE;
-            XLS::Boolean<unsigned int>      fGTE;
-            _UINT32                         cbFmla;
-            CFVOParsedFormula               formula;
-    };
+    void BeginSst::readFields(CFRecord& record)
+    {
+        record >> cstTotal >> cstUnique;
+    }
 
 } // namespace XLSB
 

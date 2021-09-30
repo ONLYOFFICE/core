@@ -107,12 +107,18 @@ namespace OOX
                 m_oName               = ptr->strName.value();
                 m_oSheetId            = ptr->iTabID;
 
-                if(ptr->hsState == XLSB::BundleSh::ST_SheetState::VISIBLE)
-                    m_oState = SimpleTypes::Spreadsheet::EVisibleType::visibleHidden;
-                else if(ptr->hsState == XLSB::BundleSh::ST_SheetState::HIDDEN)
-                    m_oState = SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden;
-                else if(ptr->hsState == XLSB::BundleSh::ST_SheetState::VERYHIDDEN)
-                    m_oState = SimpleTypes::Spreadsheet::EVisibleType::visibleVisible;;
+                switch(ptr->hsState)
+                {
+                    case XLSB::BundleSh::ST_SheetState::VISIBLE:
+                        m_oState = SimpleTypes::Spreadsheet::EVisibleType::visibleVisible;
+                        break;
+                    case XLSB::BundleSh::ST_SheetState::HIDDEN:
+                        m_oState = SimpleTypes::Spreadsheet::EVisibleType::visibleHidden;
+                        break;
+                    case XLSB::BundleSh::ST_SheetState::VERYHIDDEN:
+                        m_oState = SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden;
+                        break;
+                }
 
             }
 

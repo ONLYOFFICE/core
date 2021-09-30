@@ -29,38 +29,64 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../../XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-#include "../Biff12_structures/CFVOtype.h"
-#include <Logic/Biff_structures/Xnum.h>
-#include <Logic/Biff_structures/CFVOParsedFormula.h>
-using namespace XLS;
+#include "SHAREDSTRINGS.h"
+#include "../Biff12_records/CommonRecords.h"
+#include "../Biff12_records/BeginSst.h"
+#include "../Biff12_records/SSTItem.h"
+#include "FRT.h"
+#include "../Biff12_records/EndSst.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtCFVO record in BIFF12
-    class CFVO: public BiffRecord
+
+    SHAREDSTRINGS::SHAREDSTRINGS()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(CFVO)
-            BASE_OBJECT_DEFINE_CLASS_NAME(CFVO)
-        public:
-            CFVO();
-            virtual ~CFVO();
+    }
 
-            BaseObjectPtr clone();
+    SHAREDSTRINGS::~SHAREDSTRINGS()
+    {
+    }
 
-            void readFields(CFRecord& record);
+    BaseObjectPtr SHAREDSTRINGS::clone()
+    {
+        return BaseObjectPtr(new SHAREDSTRINGS(*this));
+    }
 
-            CFVOtype                        iType;
-            Xnum                            numParam;
-            XLS::Boolean<unsigned int>      fSaveGTE;
-            XLS::Boolean<unsigned int>      fGTE;
-            _UINT32                         cbFmla;
-            CFVOParsedFormula               formula;
-    };
+    // SHAREDSTRINGS = BrtBeginSst *BrtSSTItem *FRT BrtEndSst
+    const bool SHAREDSTRINGS::loadContent(BinProcessor& proc)
+    {
+        if (proc.mandatory<BeginSst>())
+        {
+            m_BrtBeginSst = elements_.back();
+            elements_.pop_back();
+        }
+
+        int countSstItem = proc.repeated<SSTItem>(0, 0);
+
+        while(countSstItem > 0)
+        {
+            m_arBrtSSTItem.insert(m_arBrtSSTItem.begin(), elements_.back());
+            elements_.pop_back();
+            countSstItem--;
+        }
+
+        int count = proc.repeated<FRT>(0, 0);
+
+        while(count > 0)
+        {
+            m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.mandatory<EndSst>())
+        {
+            m_BrtEndSst = elements_.back();
+            elements_.pop_back();
+        }
+        return m_BrtBeginSst || !m_arBrtSSTItem.empty() || m_BrtEndSst;
+    }
 
 } // namespace XLSB
 

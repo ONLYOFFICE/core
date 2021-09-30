@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,38 +29,56 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../../XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
-#include "../Biff12_structures/CFVOtype.h"
-#include <Logic/Biff_structures/Xnum.h>
-#include <Logic/Biff_structures/CFVOParsedFormula.h>
-using namespace XLS;
+#include "RichStr.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtCFVO record in BIFF12
-    class CFVO: public BiffRecord
+
+    RichStr::RichStr()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(CFVO)
-            BASE_OBJECT_DEFINE_CLASS_NAME(CFVO)
-        public:
-            CFVO();
-            virtual ~CFVO();
+    }
 
-            BaseObjectPtr clone();
+    RichStr::~RichStr()
+    {
+    }
 
-            void readFields(CFRecord& record);
+    BiffStructurePtr RichStr::clone()
+    {
+        return BiffStructurePtr(new RichStr(*this));
+    }
 
-            CFVOtype                        iType;
-            Xnum                            numParam;
-            XLS::Boolean<unsigned int>      fSaveGTE;
-            XLS::Boolean<unsigned int>      fGTE;
-            _UINT32                         cbFmla;
-            CFVOParsedFormula               formula;
-    };
+    void RichStr::load(CFRecord& record)
+    {
+        unsigned char flags;
+
+        record >> flags >> str;
+
+        fRichStr        = GETBIT(flags, 0);
+        fExtStr         = GETBIT(flags, 1);
+
+        if(fRichStr)
+        {
+            record >> dwSizeStrRun;
+            StrRun strRun;
+            for(size_t i = 0; i < dwSizeStrRun; ++i)
+            {
+                record >> strRun;
+                rgsStrRun.push_back(strRun);
+            }
+        }
+
+        if(fExtStr)
+        {
+            record >> phoneticStr >> dwPhoneticRun;
+            PhRun phRun;
+            for(size_t i = 0; i < dwPhoneticRun; ++i)
+            {
+                record >> phRun;
+                rgsPhRun.push_back(phRun);
+            }
+        }
+    }
 
 } // namespace XLSB
 

@@ -201,7 +201,7 @@ namespace XLSB
         rt_FmlaNum =								9,
         rt_FmlaBool =								10,
         rt_FmlaError =								11,
-        rt_SstItem =								19,
+        rt_SSTItem =								19,
         rt_PcdiMissing =							20,
         rt_PcdiNumber =								21,
         rt_PcdiBoolean =							22,

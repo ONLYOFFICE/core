@@ -34,32 +34,25 @@
 #include <Logic/Biff_records/BiffRecord.h>
 #include "../../XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
-#include "../Biff12_structures/CFVOtype.h"
-#include <Logic/Biff_structures/Xnum.h>
-#include <Logic/Biff_structures/CFVOParsedFormula.h>
+#include "../Biff12_structures/RichStr.h"
 using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BrtCFVO record in BIFF12
-    class CFVO: public BiffRecord
+    // Logical representation of BrtSSTItem record in BIFF12
+    class SSTItem: public BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(CFVO)
-            BASE_OBJECT_DEFINE_CLASS_NAME(CFVO)
+            BIFF_RECORD_DEFINE_TYPE_INFO(SSTItem)
+            BASE_OBJECT_DEFINE_CLASS_NAME(SSTItem)
         public:
-            CFVO();
-            virtual ~CFVO();
+            SSTItem();
+            virtual ~SSTItem();
 
             BaseObjectPtr clone();
 
             void readFields(CFRecord& record);
 
-            CFVOtype                        iType;
-            Xnum                            numParam;
-            XLS::Boolean<unsigned int>      fSaveGTE;
-            XLS::Boolean<unsigned int>      fGTE;
-            _UINT32                         cbFmla;
-            CFVOParsedFormula               formula;
+            RichStr                   richStr;
     };
 
 } // namespace XLSB

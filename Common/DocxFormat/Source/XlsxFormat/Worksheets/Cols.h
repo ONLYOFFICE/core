@@ -102,12 +102,16 @@ namespace OOX
                 m_oCollapsed                = ptr->fCollapsed;
                 m_oCustomWidth              = ptr->fUserSet;
                 m_oHidden                   = ptr->fHidden;
-                m_oMax                      = ptr->colLast;
-                m_oMin                      = ptr->colFirst;
+                m_oMax                      = ptr->colLast + 1;
+                m_oMin                      = ptr->colFirst + 1;
                 m_oOutlineLevel             = ptr->iOutLevel;
                 m_oPhonetic                 = ptr->fPhonetic;
                 m_oStyle                    = ptr->ixfeXLSB;
-                m_oWidth                    = (double)ptr->coldx;
+
+                if (ptr->coldx > 0)
+                {
+                        m_oWidth            = (double)ptr->coldx / 256.;
+                }
 
             }
 

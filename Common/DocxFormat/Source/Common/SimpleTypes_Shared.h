@@ -918,10 +918,10 @@ namespace SimpleTypes
 
         virtual EVerticalAlignRun FromString(std::wstring &sValue)
 		{
-            if      ( L"baseline"    == sValue ) this->m_eValue = verticalalignrunBaseline;
-            else if ( L"subscript"   == sValue ) this->m_eValue = verticalalignrunSubscript;
-            else if ( L"superscript" == sValue ) this->m_eValue = verticalalignrunSuperscript;
-            else                                    this->m_eValue = eDefValue;
+			if      ( L"baseline"    == sValue || L"None" == sValue)		this->m_eValue = verticalalignrunBaseline;
+            else if ( L"subscript"   == sValue || L"Subscript" == sValue)	this->m_eValue = verticalalignrunSubscript;
+            else if ( L"superscript" == sValue || L"Superscript" == sValue)	this->m_eValue = verticalalignrunSuperscript;
+            else this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
@@ -930,10 +930,10 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case verticalalignrunBaseline    : return L"baseline";
-			case verticalalignrunSubscript   : return L"subscript";
-			case verticalalignrunSuperscript : return L"superscript";
-			default                          : return L"baseline";
+				case verticalalignrunBaseline    : return L"baseline";
+				case verticalalignrunSubscript   : return L"subscript";
+				case verticalalignrunSuperscript : return L"superscript";
+				default                          : return L"baseline";
 			}
 		}
 

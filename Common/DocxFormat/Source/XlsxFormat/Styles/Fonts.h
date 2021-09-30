@@ -194,6 +194,7 @@ namespace OOX
 				nullable<SimpleTypes::Spreadsheet::CFontFamily<>> oFamily;
 				nullable<SimpleTypes::Spreadsheet::CUnderline<>> oUnderline;
 				nullable<SimpleTypes::Spreadsheet::CFontCharset<>> oCharset;
+				nullable<SimpleTypes::CVerticalAlignRun<>> oVerticalAlignment;
 				nullable_double dSz;
 
 				WritingElement_ReadAttributes_Start( oReader )
@@ -205,6 +206,8 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Underline"),oUnderline )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Bold"),		bBold )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Italic"),	bItalic )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Italic"),	bItalic )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("ss:VerticalAlign"), oVerticalAlignment)
 				WritingElement_ReadAttributes_End( oReader )
 				
 				if (sColor.IsInit())
@@ -246,6 +249,11 @@ namespace OOX
 				{
 					m_oItalic.Init();
 					m_oItalic->m_oVal.FromBool(*bItalic);
+				}
+				if (oVerticalAlignment.IsInit())
+				{
+					m_oVertAlign.Init();
+					m_oVertAlign->m_oVerticalAlign = oVerticalAlignment;
 				}
 			}
 		public:

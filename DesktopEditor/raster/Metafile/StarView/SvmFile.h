@@ -310,7 +310,11 @@ class CSvmFile : virtual public IMetaFileBase
 			
 			TranslatePoint(nX, nY, dX, dY);
 			TranslatePoint(nX + nW, nY + nH, dR, dB);
-			
+
+			//Если каждый 4-ый байт оставить 0, то получим черную картинку
+			for (int nIndex = 3, nSize = 4 * unImageW * unImageH; nIndex < nSize; nIndex += 4)
+				pImageBuffer[nIndex] = 255;
+
 			m_pOutput->DrawBitmap(dX, dY, dR - dX, dB - dY, pImageBuffer, unImageW, unImageH);
 		}
 	}

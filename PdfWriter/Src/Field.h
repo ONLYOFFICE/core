@@ -222,16 +222,19 @@ namespace PdfWriter
 	public:
 		CCheckBoxAnnotAppearance(CXref* pXref, CFieldBase* pField);
 		
-		CAnnotAppearanceObject* GetYes();
-		CAnnotAppearanceObject* GetOff();
+		CAnnotAppearanceObject* GetYesN();
+		CAnnotAppearanceObject* GetOffN();
+		CAnnotAppearanceObject* GetYesD();
+		CAnnotAppearanceObject* GetOffD();
 
 	private:
 
 		CXref*                  m_pXref;
 		CFieldBase*             m_pField;
-		CAnnotAppearanceObject* m_pYes;
-		CAnnotAppearanceObject* m_pOff;
-
+		CAnnotAppearanceObject* m_pYesN;
+		CAnnotAppearanceObject* m_pOffN;
+		CAnnotAppearanceObject* m_pYesD;
+		CAnnotAppearanceObject* m_pOffD;
 	};
 
 	class CAnnotAppearanceObject : public CDictObject

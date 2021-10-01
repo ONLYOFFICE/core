@@ -3,6 +3,7 @@
 #include <math.h>
 #include "../../../graphics/AggPlusEnums.h"
 #include "../../../graphics/structures.h"
+#include <cmath>
 #ifndef M_1_PI
 #define M_1_PI 0.318309886183790671538
 #endif
@@ -13,10 +14,6 @@
 #else
 #define NAN_FLOAT 0.0f/0.0f
 #endif
-#endif
-
-#ifdef _WIN32
-#define isnanf _isnanf
 #endif
 
 #ifndef SHADING_PDF
@@ -558,7 +555,7 @@ namespace agg
         inline float calculate_param(const float &x, const float &y)
         {
             float t = calculate->eval(x, y);
-            if(isnanf(t))
+            if(std::isnan(t))
                 return t;
             
             if (t < m_oGradientInfo.shading.function.get_x_min() && !m_oGradientInfo.continue_shading_b)

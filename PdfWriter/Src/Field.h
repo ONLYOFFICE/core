@@ -145,7 +145,7 @@ namespace PdfWriter
 	class CCheckBoxField : public CFieldBase
 	{
 	public:
-		CCheckBoxField(CXref* pXref, CDocument* pDocument, CRadioGroupField* pGroup = NULL);
+		CCheckBoxField(CXref* pXref, CDocument* pDocument, CRadioGroupField* pGroup = NULL, const char* sYesName = NULL);
 
 		void SetAppearance(const std::wstring& wsYesValue, unsigned char* pYesCodes, unsigned int unYesCount, CFontDict* pYesFont,
 						   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount, CFontDict* pOffFont,
@@ -155,6 +155,7 @@ namespace PdfWriter
 	private:
 
 		CRadioGroupField* m_pGroup;
+		std::string       m_sYesName;
 	};
 
 	class CRadioGroupField : public CFieldBase
@@ -162,15 +163,12 @@ namespace PdfWriter
 	public:
 		CRadioGroupField(CXref* pXref, CDocument* pDocument);
 
-		const std::string& GetGroupName() const;
-		void SetGroupName(const std::string& sGroupName);
-		CCheckBoxField* CreateKid();
+		CCheckBoxField* CreateKid(const wchar_t* wsChoiceName = NULL);
 		virtual void SetFieldName(const std::wstring& wsName, bool isSkipCheck = false) override;
 		const std::wstring& GetFieldName() const;
 
 	private:
 
-		std::string   m_sGroupName;
 		CArrayObject* m_pKids;
 		std::wstring  m_wsFieldName;
 	};
@@ -220,7 +218,7 @@ namespace PdfWriter
 	class CCheckBoxAnnotAppearance : public CDictObject
 	{
 	public:
-		CCheckBoxAnnotAppearance(CXref* pXref, CFieldBase* pField);
+		CCheckBoxAnnotAppearance(CXref* pXref, CFieldBase* pField, const char* sYesName = NULL);
 		
 		CAnnotAppearanceObject* GetYesN();
 		CAnnotAppearanceObject* GetOffN();

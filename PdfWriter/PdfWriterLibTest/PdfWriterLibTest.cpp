@@ -139,21 +139,21 @@ void TestField()
 	pCheckBox->SetValue(true);
 	pCheckBox->SetAppearance(L"1", NULL, 0, pFont2, L"2", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
 
-	//CRadioGroupField* pRadioGroup = oPdf.GetRadioGroupField(L"RadioGroup");
-	//CCheckBoxField* pRadio1 = pRadioGroup->CreateKid();
-	//pRadio1->AddPageRect(pPage, TRect(50, 700, 100, 650));
-	//pRadio1->SetValue(true);
-	//pRadio1->SetAppearance(L"3", NULL, 0, pFont, L"4", NULL, 0, pFont, TRgb(0, 0, 0), 1, 40, 0, 0);
+	CRadioGroupField* pRadioGroup = oPdf.GetRadioGroupField(L"RadioGroup");
+	CCheckBoxField* pRadio1 = pRadioGroup->CreateKid();
+	pRadio1->AddPageRect(pPage, TRect(50, 700, 100, 650));
+	pRadio1->SetValue(true);
+	pRadio1->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
 
-	//CCheckBoxField* pRadio2 = pRadioGroup->CreateKid();
-	//pRadio2->AddPageRect(pPage, TRect(150, 700, 200, 650));
-	//pRadio2->SetValue(false);
-	//pRadio2->SetAppearance(L"3", NULL, 0, pFont, L"4", NULL, 0, pFont, TRgb(0, 0, 0), 1, 40, 0, 0);
+	CCheckBoxField* pRadio2 = pRadioGroup->CreateKid(L"TestName");
+	pRadio2->AddPageRect(pPage, TRect(150, 700, 200, 650));
+	pRadio2->SetValue(true);
+	pRadio2->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
 
-	//CCheckBoxField* pRadio3 = pRadioGroup->CreateKid();
-	//pRadio3->AddPageRect(pPage, TRect(250, 700, 300, 650));
-	//pRadio3->SetValue(false);
-	//pRadio3->SetAppearance(L"3", NULL, 0, pFont, L"4", NULL, 0, pFont, TRgb(0, 0, 0), 1, 40, 0, 0);
+	CCheckBoxField* pRadio3 = pRadioGroup->CreateKid();
+	pRadio3->AddPageRect(pPage, TRect(250, 700, 300, 650));
+	pRadio3->SetValue(false);
+	pRadio3->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
 
 	//CPictureField* pPictureField = oPdf.CreatePictureField();
 	//pPictureField->SetRequiredFlag(false);

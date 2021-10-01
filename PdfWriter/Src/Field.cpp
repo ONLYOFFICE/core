@@ -473,9 +473,9 @@ namespace PdfWriter
 		m_pOpt->Add(new CStringObject(sOption.c_str(), true));
 	}
 	//----------------------------------------------------------------------------------------
-	// CChoiceField
+	// CCheckBoxField
 	//----------------------------------------------------------------------------------------
-	CCheckBoxField::CCheckBoxField(CXref* pXref, CDocument* pDocument, CRadioGroupField* pGroup) : CFieldBase(pXref, pDocument)
+	CCheckBoxField::CCheckBoxField(CXref* pXref, CDocument* pDocument, CRadioGroupField* pGroup, const char* sYesName) : CFieldBase(pXref, pDocument)
 	{
 		Add("FT", "Btn");
 
@@ -483,28 +483,31 @@ namespace PdfWriter
 
 		if (pGroup)
 			Add("Parent", pGroup);
+
+		m_sYesName = sYesName ? sYesName : "Yes";
+		Add("AS", "Off");
 	}
 	void CCheckBoxField::SetAppearance(const std::wstring& wsYesValue, unsigned char* pYesCodes, unsigned int unYesCount, CFontDict* pYesFont,
 									   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount, CFontDict* pOffFont,
 									   const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY)
 	{
-		if (!Get("AS"))
-		{
-			if (m_pGroup)
-				Add("AS", m_pGroup->GetGroupName().c_str());
-			else
-				Add("AS", "Yes");
-		}
-
 		if (!m_pMK)
 		{
 			m_pMK = new CDictObject();
 			m_pXref->Add(m_pMK);
 			Add("MK", m_pMK);
+
+			CArrayObject* pArray = new CArrayObject();
+			pArray->Add(0);
+			m_pMK->Add("BC", pArray);
+
+			pArray = new CArrayObject();
+			pArray->Add(1);
+			m_pMK->Add("BG", pArray);
 		}
 		//m_pMK->Add("CA", new CStringObject(" "));
 
-		CCheckBoxAnnotAppearance* pAppearance = new CCheckBoxAnnotAppearance(m_pXref, this);
+		CCheckBoxAnnotAppearance* pAppearance = new CCheckBoxAnnotAppearance(m_pXref, this, m_sYesName.c_str());
 		Add("AP", pAppearance);
 		
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
@@ -542,12 +545,12 @@ namespace PdfWriter
 	}
 	void CCheckBoxField::SetValue(const bool& isYes)
 	{
-		const char* sValue = (isYes ? (m_pGroup ? m_pGroup->GetGroupName().c_str() : "Yes") : "Off");
+		const char* sValue = (isYes ? m_sYesName.c_str() : "Off");
 		Add("AS", sValue);
 		Add("V", sValue);
 	}
 	//----------------------------------------------------------------------------------------
-	// CAnnotAppearance
+	// CRadioGroupField
 	//----------------------------------------------------------------------------------------
 	CRadioGroupField::CRadioGroupField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
 	{
@@ -559,23 +562,14 @@ namespace PdfWriter
 
 		if (m_pKids)
 			Add("Kids", m_pKids);
-
-		m_sGroupName = "Yes";
 	}
-	const std::string& CRadioGroupField::GetGroupName() const
-	{
-		return m_sGroupName;
-	}
-	void CRadioGroupField::SetGroupName(const std::string& sGroupName)
-	{
-		m_sGroupName = sGroupName;
-	}
-	CCheckBoxField* CRadioGroupField::CreateKid()
+	CCheckBoxField* CRadioGroupField::CreateKid(const wchar_t* wsChoiceName)
 	{
 		if (!m_pKids)
 			return NULL;
 
-		CCheckBoxField* pKid = new CCheckBoxField(m_pXref, m_pDocument, this);
+		std::string sName = wsChoiceName ? NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsChoiceName) : "Choice" + std::to_string(m_pKids->GetCount() + 1);
+		CCheckBoxField* pKid = new CCheckBoxField(m_pXref, m_pDocument, this, sName.c_str());
 		m_pKids->Add(pKid);
 		return pKid;
 	}
@@ -742,7 +736,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance
 	//----------------------------------------------------------------------------------------
-	CCheckBoxAnnotAppearance::CCheckBoxAnnotAppearance(CXref* pXref, CFieldBase* pField)
+	CCheckBoxAnnotAppearance::CCheckBoxAnnotAppearance(CXref* pXref, CFieldBase* pField, const char* sYesName)
 	{
 		m_pXref  = pXref;
 		m_pField = pField;
@@ -754,12 +748,12 @@ namespace PdfWriter
 
 		CDictObject* pDictN = new CDictObject();
 		Add("N", pDictN);
-		pDictN->Add("Yes", m_pYesN);
+		pDictN->Add(sYesName ? sYesName : "Yes", m_pYesN);
 		pDictN->Add("Off", m_pOffN);
 		
 		CDictObject* pDictD = new CDictObject();
 		Add("D", pDictD);
-		pDictD->Add("Yes", m_pYesD);
+		pDictD->Add(sYesName ? sYesName : "Yes", m_pYesD);
 		pDictD->Add("Off", m_pOffD);
 	}
 	CAnnotAppearanceObject* CCheckBoxAnnotAppearance::GetYesN()

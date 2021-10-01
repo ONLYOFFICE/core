@@ -9,19 +9,20 @@ base.configure_common_apps()
 if base.is_dir("./deploy"):
     base.delete_dir("./deploy")
 base.create_dir("./deploy")
-base.create_dir("./deploy/xps_djvu")
 
 # command
-base.cmd_in_dir("./../../DesktopEditor/graphics/pro/js", "python", ["xps_djvu_make.py"])
+base.cmd_in_dir("./../../DesktopEditor/graphics/pro/js", "python", ["make.py"])
 
 # finalize
-if base.is_exist("./../../DesktopEditor/graphics/pro/js/deploy/xps_djvu.wasm"):
-    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/xps.js", "./deploy/xps_djvu/xps.js")
-    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/djvu.js", "./deploy/xps_djvu/djvu.js")
-    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/xps_djvu.wasm", "./deploy/xps_djvu/xps_djvu.wasm")
+if base.is_exist("./../../DesktopEditor/graphics/pro/js/deploy/xps_djvu_pdf.wasm"):
+    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/xps.js", "./deploy/xps.js")
+    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/djvu.js", "./deploy/djvu.js")
+    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/pdf.js", "./deploy/pdf.js")
+    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/xps_djvu_pdf.wasm", "./deploy/xps_djvu_pdf.wasm")
 else:
-    print("xps_djvu_make.py error")
-    base.copy_dir("./all_files_test/xps_djvu", "./deploy/xps_djvu")
+    print("make.py error")
+    base.copy_dir("./all_files_test/xps_djvu", "./deploy")
+    base.copy_dir("./all_files_test/pdf", "./deploy")
 
 # write new version
 base.copy_file("./all_files_test/index.html", "./deploy/index.html")

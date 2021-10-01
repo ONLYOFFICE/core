@@ -75,7 +75,7 @@ libUnicodeConverter_src_path = "../../../../UnicodeConverter/"
 input_unicodeconverter_sources = ["UnicodeConverter.cpp"]
 
 libIcu_src_path = "../../../../Common/3dParty/icu/icu/source/common/"
-input_icu_sources = ["ucnv.c", "ustr_wcs.cpp", "ucnv_err.c", "ucnv_bld.cpp", "ustrtrns.cpp", "ucnv_cb.c", "udata.cpp", "ucnv_io.cpp", "uhash.c", "udatamem.c", "cmemory.c", "ustring.cpp", "umutex.cpp", "putil.cpp", "ustr_cnv.cpp", "ucnvmbcs.cpp", "ucnvlat1.c", "ucnv_u16.c", "ucnv_u8.c", "ucnv_u32.c", "ucnv_u7.c", "ucln_cmn.cpp", "ucnv2022.cpp", "ucnv_lmb.c", "ucnvhz.c", "ucnvscsu.c", "ucnvisci.c", "ucnvbocu.cpp", "ucnv_ct.c", "ucnv_cnv.c", "stringpiece.cpp", "charstr.cpp", "umapfile.c", "ucmndata.c", "ucnv_ext.cpp", "uobject.cpp", "umath.c"]
+input_icu_sources = ["ucnv.c", "ustr_wcs.cpp", "ucnv_err.c", "ucnv_bld.cpp", "ustrtrns.cpp", "ucnv_cb.c", "udata.cpp", "ucnv_io.cpp", "uhash.c", "udatamem.c", "cmemory.c", "ustring.cpp", "umutex.cpp", "putil.cpp", "ustr_cnv.cpp", "ucnvmbcs.cpp", "ucnvlat1.c", "ucnv_u16.c", "ucnv_u8.c", "ucnv_u32.c", "ucnv_u7.c", "ucln_cmn.cpp", "ucnv2022.cpp", "ucnv_lmb.c", "ucnvhz.c", "ucnvscsu.c", "ucnvisci.c", "ucnvbocu.cpp", "ucnv_ct.c", "ucnv_cnv.c", "stringpiece.cpp", "charstr.cpp", "umapfile.c", "ucmndata.c", "ucnv_ext.cpp", "uobject.cpp", "umath.c", "ubidi_props.c", "uchar.c", "uinvchar.c", "usprep.cpp", "unistr.cpp", "uniset_props.cpp", "loadednormalizer2impl.cpp", "filterednormalizer2.cpp", "utrie2.cpp", "normalizer2.cpp", "normalizer2impl.cpp", "utrie.cpp", "ucase.cpp", "uniset.cpp", "ruleiter.cpp", "parsepos.cpp", "util.cpp", "uprops.cpp", "uvector.cpp", "unames.cpp", "propname.cpp", "utrie2_builder.cpp", "unifunct.cpp", "bmpset.cpp", "unisetspan.cpp", "unifilt.cpp", "patternprops.cpp", "utf_impl.c", "ustrcase.cpp", "cstring.c", "bytestrie.cpp"]
 
 libXps_src_path = "../../../../XpsFile/XpsLib/"
 input_xps_sources = ["Document.cpp", "XpsPage.cpp", "StaticResources.cpp", "Utils.cpp", "WString.cpp", "ContextState.cpp"]
@@ -167,32 +167,32 @@ if base.host_platform() == "windows":
         libs += ("temp/" + os.path.basename(item) + ".o ")
     
     for item in input_icu_sources:
-        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libIcu_src_path + item)
-        libs += ("temp/" + item + ".o ")
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libIcu_src_path + item)
+        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
     for item in input_xps_sources:
-        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libXps_src_path + item)
-        libs += ("temp/" + item + ".o ")
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libXps_src_path + item)
+        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
     for item in input_djvu_sources:
-        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libDjVu_src_path + item)
-        libs += ("temp/" + item + ".o ")
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libDjVu_src_path + item)
+        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
     for item in input_minizip_sources:
-        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libMinizip_src_path + item)
-        libs += ("temp/" + item + ".o ")
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libMinizip_src_path + item)
+        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
     for item in input_zlib_sources:
-        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libZlib_src_path + item)
-        libs += ("temp/" + item + ".o ")
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libZlib_src_path + item)
+        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
     for item in input_cryptopp_sources:
-        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libCryptoPP_src_path + item)
-        libs += ("temp/" + item + ".o ")
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libCryptoPP_src_path + item)
+        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
     for item in input_pdfreader_sources:
-        windows_bat.append("call emcc -o temp/" + item + ".o -c " + arguments + libPdfReader_src_path + item)
-        libs += ("temp/" + item + ".o ")
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libPdfReader_src_path + item)
+        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
 
     arguments += "-s EXPORTED_FUNCTIONS=\"["
     for item in exported_functions:
@@ -203,7 +203,7 @@ if base.host_platform() == "windows":
     for item in sources:
         arguments += (item + " ")
 
-    windows_bat.append("call emcc -o xps_djvu.js " + arguments + libs)
+    windows_bat.append("call emcc -o xps_djvu_pdf.js " + arguments + libs)
 else:
     windows_bat.append("#!/bin/bash")
     windows_bat.append("source ./emsdk/emsdk_env.sh")
@@ -250,14 +250,14 @@ else:
     for item in sources:
         arguments += (item + " ")
     
-    windows_bat.append("emcc -o xps_djvu.js " + arguments + libs)
+    windows_bat.append("emcc -o xps_djvu_pdf.js " + arguments + libs)
 base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n    UDataMemory tData;", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;")
 base.run_as_bat(windows_bat)
 base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;", "\n{\n    UDataMemory tData;")
 
 # finalize
-base.replaceInFile("./xps_djvu.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
-graphics_js_content = base.readFile("./xps_djvu.js")
+base.replaceInFile("./xps_djvu_pdf.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
+graphics_js_content = base.readFile("./xps_djvu_pdf.js")
 engine_base_js_content = base.readFile("./wasm/js/xps_base.js")
 string_utf8_content    = base.readFile("./../../../../Common/js/string_utf8.js")
 engine_js_content = engine_base_js_content.replace("//module", graphics_js_content)
@@ -265,14 +265,18 @@ engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_conte
 engine_base_js_content = base.readFile("./../../../../DjVuFile/wasm/djvu_base.js")
 djvu_js_content = engine_base_js_content.replace("//module", graphics_js_content)
 djvu_js_content = djvu_js_content.replace("//string_utf8", string_utf8_content)
+engine_base_js_content = base.readFile("./wasm/js/pdf_base.js")
+pdf_js_content = engine_base_js_content.replace("//module", graphics_js_content)
+pdf_js_content = pdf_js_content.replace("//string_utf8", string_utf8_content)
 
 # write new version
 base.writeFile("./deploy/xps.js", engine_js_content)
 base.writeFile("./deploy/djvu.js", djvu_js_content)
-base.copy_file("./xps_djvu.wasm", "./deploy/xps_djvu.wasm")
+base.writeFile("./deploy/pdf.js", pdf_js_content)
+base.copy_file("./xps_djvu_pdf.wasm", "./deploy/xps_djvu_pdf.wasm")
 
-base.delete_file("xps_djvu.js")
-base.delete_file("xps_djvu.wasm")
+base.delete_file("xps_djvu_pdf.js")
+base.delete_file("xps_djvu_pdf.wasm")
 base.delete_dir("./temp")
 base.delete_dir("./xml")
 # base.delete_file("raster.o")

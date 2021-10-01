@@ -52,11 +52,39 @@ BaseObjectPtr WOpt::clone()
 
 void WOpt::readFields(CFRecord& record)
 {
-#pragma message("####################### WOpt record is not implemented")
-	Log::error("WOpt record is not implemented.");
-	
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+    unsigned short flags;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        record >> frtHeaderOld;
+        record >> flags;
+
+        fRelyOnCSS          = GETBIT(flags, 0);
+        fOrganizeInFolder	= GETBIT(flags, 1);
+        fUseLongFileNames   = GETBIT(flags, 2);
+        fDownloadComponents = GETBIT(flags, 3);
+        fRelyOnVML          = GETBIT(flags, 4);
+        fAllowPNG           = GETBIT(flags, 5);
+
+        record >> screenSize;
+        record >> dwPixelsPerInch;
+        record >> uiCodePage;
+        record >> rgbLocationOfComponents;
+    }
+    else
+    {
+        record >> flags;
+
+        fRelyOnCSS          = GETBIT(flags, 0);
+        fOrganizeInFolder	= GETBIT(flags, 1);
+        fUseLongFileNames   = GETBIT(flags, 2);
+        fRelyOnVML          = GETBIT(flags, 4);
+        fAllowPNG           = GETBIT(flags, 5);
+
+        record >> screenSize;
+        record >> dwPixelsPerInch;
+        record >> uiCodePage;
+    }
+    //record.skipNunBytes(record.getDataSize() - record.getRdPtr());
 }
 
 } // namespace XLS
-

@@ -512,7 +512,7 @@ namespace NSBinPptxRW
 
 	class CBinaryFileReader
 	{
-	private:
+	protected:
 		BYTE*	m_pData;
 		LONG	m_lSize;
 		LONG	m_lPos;
@@ -576,7 +576,7 @@ namespace NSBinPptxRW
 		std::wstring GetString3(_INT32 len, bool bDeleteZero = false);
 		std::wstring GetString4(_INT32 len);
 
-        bool GetArray(BYTE **pBuffer, _INT32 len);
+        bool GetArray(BYTE *pBuffer, _INT32 len);
 
 		std::string GetString2A();
 		void SkipRecord();

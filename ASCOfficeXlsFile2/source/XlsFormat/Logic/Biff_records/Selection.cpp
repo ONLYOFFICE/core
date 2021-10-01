@@ -52,17 +52,43 @@ BaseObjectPtr Selection::clone()
 
 void Selection::readFields(CFRecord& record)
 {
-	unsigned short cref;
-	record >> pnn >> rwAct >> colAct >> irefAct >> cref;
-	activeCell = static_cast<std::wstring >(CellRef(rwAct, colAct, true, true));
-	std::wstring  sqref_str;
-	for(int i = 0; i < cref; ++i)
-	{
-		RefU refu;
-		record >> refu;
-		sqref_str += std::wstring (refu.toString(false).c_str()) + ((i == cref - 1) ? L"" : L" ");
-	}
-	sqref = sqref_str;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        unsigned short cref;
+        R_RwU			rwAct_2b;
+        ColU			colAct_2b;
+        _INT16			irefAct_2b;
+
+        record >> pnn >> rwAct_2b >> colAct_2b >> irefAct_2b >> cref;
+
+        rwAct   = rwAct_2b;
+        colAct  = colAct_2b;
+        irefAct = irefAct_2b;
+
+        activeCell = static_cast<std::wstring >(CellRef(rwAct_2b, colAct_2b, true, true));
+        std::wstring  sqref_str;
+        for(int i = 0; i < cref; ++i)
+        {
+            RefU refu;
+            record >> refu;
+            sqref_str += std::wstring (refu.toString(false).c_str()) + ((i == cref - 1) ? L"" : L" ");
+        }
+        sqref = sqref_str;
+    }
+    else
+    {
+        XLSB::UncheckedSqRfX    sqrfx;
+        record >> pnn_xlsb >> rwAct >> colAct >> irefAct >> sqrfx;
+        activeCell = static_cast<std::wstring >(CellRef(rwAct, colAct, true, true));
+        std::wstring  sqref_str;
+        int i = 0, cref = sqrfx.rgrfx.size();
+
+        std::for_each(sqrfx.rgrfx.begin(), sqrfx.rgrfx.end(), [&](XLSB::UncheckedRfX &refu) {
+            sqref_str += std::wstring (refu.toString(false).c_str()) + ((i == cref - 1) ? L"" : L" ");
+        });
+
+        sqref = sqref_str;
+    }
 }
 
 int Selection::serialize(std::wostream & stream)

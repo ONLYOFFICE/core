@@ -157,6 +157,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
 					{
 							 if (0 == sExt2.compare(_T(".xlst")))		res = TCD_XLSX2XLST;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_XLSX2XLST_BIN;

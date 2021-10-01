@@ -37,6 +37,7 @@
 
 #include "PhoneticPr.h"
 #include "Run.h"
+#include "../../XlsbFormat/Biff12_records/SSTItem.h"
 
 namespace NSBinPptxRW
 {
@@ -54,6 +55,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSi)
+            WritingElement_XlsbConstructors(CSi)
 			CSi()
 			{
 			}
@@ -146,6 +148,40 @@ namespace OOX
 						m_arrItems.push_back( pItem );
 				}
 			}
+
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::SSTItem*>(obj.get());
+                CText* text             = nullptr;
+                CPhonetic* phoneticPr   = nullptr;
+                CRPh* rPh               = nullptr;
+                CRun* r                 = nullptr;
+                if(ptr != nullptr)
+                {
+                    text = new CText();
+                    text->fromBin(ptr->richStr.str.value());
+                    m_arrItems.push_back(text);
+
+                    for(auto &phRun : ptr->richStr.rgsPhRun)
+                    {
+                        phoneticPr = new CPhonetic();
+                        phoneticPr->fromBin(phRun);
+                        m_arrItems.push_back(phoneticPr);
+
+                        rPh = new CRPh();
+                        rPh->fromBin(phRun, ptr->richStr.phoneticStr.value());
+                        m_arrItems.push_back(rPh);
+                    }
+
+                    for(auto &strRun : ptr->richStr.rgsStrRun)
+                    {
+                        r = new CRun();
+                        r->fromBin(strRun, ptr->richStr.str.value());
+                        m_arrItems.push_back(r);
+                    }
+
+                }
+            }
 
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream);
 			void toXLSBExt (NSBinPptxRW::CXlsbBinaryWriter& oStream);

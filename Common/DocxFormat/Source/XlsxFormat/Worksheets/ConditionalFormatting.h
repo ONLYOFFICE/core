@@ -78,6 +78,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CConditionalFormatValueObject)
+            WritingElement_XlsbConstructors(CConditionalFormatValueObject)
 			CConditionalFormatValueObject()
 			{
 			}
@@ -97,6 +98,7 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_ConditionalFormatValueObject;
@@ -115,6 +117,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	(oReader, L"val"	, m_oVal)
 				WritingElement_ReadAttributes_End(oReader)
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
 			nullable<SimpleTypes::COnOff<>>						m_oGte;
@@ -161,6 +164,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CColorScale)
+            WritingElement_XlsbConstructors(CColorScale)
 			CColorScale()
 			{
 			}
@@ -180,6 +184,7 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_ColorScale;
@@ -199,6 +204,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataBar)
+            WritingElement_XlsbConstructors(CDataBar)
 			CDataBar()
 			{
 			}
@@ -219,6 +225,7 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_DataBar;
@@ -229,6 +236,7 @@ namespace OOX
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
@@ -258,6 +266,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CIconSet)
+            WritingElement_XlsbConstructors(CIconSet)
 			CIconSet()
 			{
 			}
@@ -277,6 +286,7 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_IconSet;
@@ -288,6 +298,7 @@ namespace OOX
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
 			nullable<SimpleTypes::COnOff<>>						m_oPercent;
@@ -305,7 +316,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CConditionalFormattingRule)
-			
+            WritingElement_XlsbConstructors(CConditionalFormattingRule)
 			CConditionalFormattingRule() : bUsage (false)
 			{
 			}
@@ -326,6 +337,7 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_ConditionalFormattingRule;
@@ -341,6 +353,7 @@ namespace OOX
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable<CDxf>										m_oDxf;
 			nullable<SimpleTypes::COnOff<>>						m_oAboveAverage;
@@ -373,6 +386,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CConditionalFormatting)
+            WritingElement_XlsbConstructors(CConditionalFormatting)
 			CConditionalFormatting(OOX::Document *pMain = NULL) : WritingElementWithChilds<CConditionalFormattingRule>(pMain), m_bIsExtended(false), m_bIsValid(false)
 			{
 			}
@@ -393,6 +407,7 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_ConditionalFormatting;
@@ -402,6 +417,7 @@ namespace OOX
 		
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 			mutable bool m_bIsExtended;
 			mutable bool m_bIsValid;

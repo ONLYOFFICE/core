@@ -34,10 +34,12 @@
 #include "BiffRecord.h"
 #include <Logic/Biff_structures/CellRangeRef.h>
 #include <Logic/Biff_structures/PaneType.h>
+#include <Biff12_structures/UncheckedSqRfX.h>
 
 namespace XLS
 {
 
+// Logical representation of Selection record in BIFF8 and BrtSel in BIFF12
 class Selection: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Selection)
@@ -54,14 +56,20 @@ public:
 
 	int serialize(std::wostream & stream);
 
-	PaneType	pnn;
+    PaneType	pnn;//4 byte in biff12
 
-	R_RwU			rwAct;
-	ColU			colAct;
-	_INT16			irefAct;
+    //R_RwU			rwAct;
+    UncheckedRw     rwAct;
+    //ColU			colAct;
+    UncheckedCol    colAct;
+    //_INT16			irefAct;
+    _UINT32			irefAct; //dwRfxAct in biff12
 	
 	std::wstring	sqref;
-	std::wstring	activeCell;
+    std::wstring	activeCell;
+
+    //biff12
+    _UINT32                 pnn_xlsb;    
 };
 
 } // namespace XLS

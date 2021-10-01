@@ -54,13 +54,13 @@ public:
 
 	bool					fSortDes;
 	unsigned short			sortOn;
-	RFX						rfx;
+    RFX						rfx;
 
 	CondDataValue			condDataValue;
-	CFFlag					cfflag;
+    CFFlag					cfflag;
 
     _INT32					cchSt;
-	XLUnicodeStringNoCch	stSslist;
+    XLUnicodeStringNoCch	stSslist;
 };
 
 typedef boost::shared_ptr<SortCond12> SortCond12Ptr;

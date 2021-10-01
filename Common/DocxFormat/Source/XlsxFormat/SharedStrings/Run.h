@@ -95,6 +95,15 @@ namespace OOX
 				}
 			}
 
+            void fromBin(XLS::BiffStructure& obj, std::wstring& str)
+            {
+                auto ptr = new CText();
+                ptr->fromBin(str);
+                m_arrItems.push_back(ptr);
+
+
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_r;

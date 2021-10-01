@@ -49,6 +49,11 @@ public:
 	virtual const std::wstring toString() const;
 
     XLUnicodeString string_;
+
+    // biff12
+    _UINT16         cch;
+    std::wstring   rgch;
+
 };
 
 

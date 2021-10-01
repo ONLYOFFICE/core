@@ -428,6 +428,7 @@ namespace NExtractTools
 		bool* m_bIsNoBase64;
 		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
 		bool* m_bIsPDFA;
+		bool* m_bConvertToOrigin;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
 		mutable bool m_bMacro;
@@ -459,6 +460,7 @@ namespace NExtractTools
 			m_sTempDir = NULL;
 			m_bIsNoBase64 = NULL;
 			m_bIsPDFA = NULL;
+			m_bConvertToOrigin = NULL;
 
 			m_bOutputConvertCorrupted = false;
 			m_bMacro = false;
@@ -490,6 +492,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sTempDir);
 			RELEASEOBJECT(m_bIsNoBase64);
 			RELEASEOBJECT(m_bIsPDFA);
+			RELEASEOBJECT(m_bConvertToOrigin);
 		}
 		
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -663,6 +666,11 @@ namespace NExtractTools
 									RELEASEOBJECT(m_bIsPDFA);
 									m_bIsPDFA = new bool(XmlUtils::GetBoolean2(sValue));
 								}
+								else if(_T("m_bConvertToOrigin") == sName)
+								{
+									RELEASEOBJECT(m_bConvertToOrigin);
+									m_bConvertToOrigin = new bool(XmlUtils::GetBoolean2(sValue));
+								}
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
 							{
@@ -746,6 +754,10 @@ namespace NExtractTools
 		bool getIsPDFA() const
 		{
 			return (NULL != m_bIsPDFA) ? (*m_bIsPDFA) : false;
+		}
+		bool getConvertToOrigin() const
+		{
+			return (NULL != m_bConvertToOrigin) ? (*m_bConvertToOrigin) : false;
 		}
         std::wstring getXmlOptions()
 		{

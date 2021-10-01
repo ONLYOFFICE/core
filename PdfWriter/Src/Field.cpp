@@ -496,14 +496,17 @@ namespace PdfWriter
 				Add("AS", "Yes");
 		}
 
+		if (!m_pMK)
+		{
+			m_pMK = new CDictObject();
+			m_pXref->Add(m_pMK);
+			Add("MK", m_pMK);
+		}
+		//m_pMK->Add("CA", new CStringObject(" "));
 
 		CCheckBoxAnnotAppearance* pAppearance = new CCheckBoxAnnotAppearance(m_pXref, this);
 		Add("AP", pAppearance);
-
-
-		CAnnotAppearanceObject* pYes = pAppearance->GetYes();
-		CAnnotAppearanceObject* pOff = pAppearance->GetOff();
-
+		
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 
 		const char* sFontName = pFieldsResources->GetFontName(pYesFont);
@@ -519,8 +522,9 @@ namespace PdfWriter
 		sDA.append(" rg /");
 		sDA.append(sFontName);
 		sDA.append(" ");
-		sDA.append(std::to_string(dFontSize));
+		sDA.append(std::to_string(0));
 		sDA.append(" Tf");
+		Add("DA", new CStringObject(sDA.c_str()));
 
 		const char* sExtGrStateName = NULL;
 		if (fabs(dAlpha - 1.0) > 0.001)
@@ -529,10 +533,12 @@ namespace PdfWriter
 			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
 		}
 
-		Add("DA", new CStringObject(sDA.c_str()));
 
-		pYes->DrawSimpleText(wsYesValue, pYesCodes, unYesCount, pFieldsResources->GetFontName(pYesFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
-		pOff->DrawSimpleText(wsOffValue, pOffCodes, unOffCount, pFieldsResources->GetFontName(pOffFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+		pAppearance->GetYesN()->DrawSimpleText(wsYesValue, pYesCodes, unYesCount, pFieldsResources->GetFontName(pYesFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+		pAppearance->GetOffN()->DrawSimpleText(wsOffValue, pOffCodes, unOffCount, pFieldsResources->GetFontName(pOffFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+
+		pAppearance->GetYesD()->DrawSimpleText(wsYesValue, pYesCodes, unYesCount, pFieldsResources->GetFontName(pYesFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+		pAppearance->GetOffD()->DrawSimpleText(wsOffValue, pOffCodes, unOffCount, pFieldsResources->GetFontName(pOffFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
 	}
 	void CCheckBoxField::SetValue(const bool& isYes)
 	{
@@ -741,21 +747,36 @@ namespace PdfWriter
 		m_pXref  = pXref;
 		m_pField = pField;
 
-		m_pYes = new CAnnotAppearanceObject(pXref, pField);
-		m_pOff = new CAnnotAppearanceObject(pXref, pField);
+		m_pYesN = new CAnnotAppearanceObject(pXref, pField);
+		m_pOffN = new CAnnotAppearanceObject(pXref, pField);
+		m_pYesD = new CAnnotAppearanceObject(pXref, pField);
+		m_pOffD = new CAnnotAppearanceObject(pXref, pField);
 
-		CDictObject* pDict = new CDictObject();
-		Add("N", pDict);
-		pDict->Add("Yes", m_pYes);
-		pDict->Add("Off", m_pOff);
+		CDictObject* pDictN = new CDictObject();
+		Add("N", pDictN);
+		pDictN->Add("Yes", m_pYesN);
+		pDictN->Add("Off", m_pOffN);
+		
+		CDictObject* pDictD = new CDictObject();
+		Add("D", pDictD);
+		pDictD->Add("Yes", m_pYesD);
+		pDictD->Add("Off", m_pOffD);
 	}
-	CAnnotAppearanceObject* CCheckBoxAnnotAppearance::GetYes()
+	CAnnotAppearanceObject* CCheckBoxAnnotAppearance::GetYesN()
 	{
-		return m_pYes;
+		return m_pYesN;
 	}
-	CAnnotAppearanceObject* CCheckBoxAnnotAppearance::GetOff()
+	CAnnotAppearanceObject* CCheckBoxAnnotAppearance::GetOffN()
 	{
-		return m_pOff;
+		return m_pOffN;
+	}
+	CAnnotAppearanceObject* CCheckBoxAnnotAppearance::GetYesD()
+	{
+		return m_pYesD;
+	}
+	CAnnotAppearanceObject* CCheckBoxAnnotAppearance::GetOffD()
+	{
+		return m_pOffD;
 	}
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearanceObject

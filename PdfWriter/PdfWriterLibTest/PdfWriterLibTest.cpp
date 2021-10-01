@@ -61,6 +61,7 @@ void TestField()
 {
 	CDocument oPdf;
 	oPdf.CreateNew();
+	oPdf.SetPDFAConformanceMode(true);
 	CPage* pPage = oPdf.AddPage();
 
 	CFontDict* pFont2 = oPdf.CreateFont14(standard14fonts_Courier);
@@ -131,12 +132,12 @@ void TestField()
 	//pComboBox->SetMultiSelectFlag(false);
 	//pComboBox->SetTextAppearance(L"Ilya", NULL, 0, pFont, TRgb(255, 0, 0), 0.5, 40, 1, 14.3);
 
-	//CCheckBoxField* pCheckBox = oPdf.CreateCheckBoxField();
-	//pCheckBox->SetFieldName(L"CheckBox");
-	//pCheckBox->SetRequiredFlag(false);
-	//pCheckBox->AddPageRect(pPage, TRect(50, 600, 100, 550));
-	//pCheckBox->SetValue(true);
-	//pCheckBox->SetAppearance(L"1", NULL, 0, pFont, L"2", NULL, 0, pFont, TRgb(0, 0, 0), 1, 40, 0, 0);
+	CCheckBoxField* pCheckBox = oPdf.CreateCheckBoxField();
+	pCheckBox->SetFieldName(L"CheckBox");
+	pCheckBox->SetRequiredFlag(false);
+	pCheckBox->AddPageRect(pPage, TRect(50, 600, 100, 550));
+	pCheckBox->SetValue(true);
+	pCheckBox->SetAppearance(L"1", NULL, 0, pFont2, L"2", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
 
 	//CRadioGroupField* pRadioGroup = oPdf.GetRadioGroupField(L"RadioGroup");
 	//CCheckBoxField* pRadio1 = pRadioGroup->CreateKid();
@@ -165,7 +166,7 @@ void TestField()
 	//pPictureField->SetFieldBorder(border_subtype_Solid, TRgb(255, 0, 0), 1, 0, 0, 0);
 	//pPictureField->SetShd(TRgb(0, 0, 255));
 	//pPictureField->SetRespectBorders(true);
-
+	
 	oPdf.SaveToFile(g_wsOutFolder + L"TestField1.pdf");
 	oPdf.Close();
 }

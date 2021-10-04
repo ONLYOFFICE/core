@@ -425,6 +425,14 @@ public:
 		void SetChecked(const bool& bChecked)
 		{
 			m_bChecked = bChecked;
+		}		
+		unsigned int GetType() const
+		{
+			return m_unType;
+		}
+		void SetType(const unsigned int& unType)
+		{
+			m_unType = unType;
 		}
 		unsigned int GetCheckedSymbol() const
 		{
@@ -474,6 +482,7 @@ public:
 	private:
 
 		bool         m_bChecked;
+		unsigned int m_unType;
 		unsigned int m_unCheckedSymbol;
 		unsigned int m_unUncheckedSymbol;
 		std::wstring m_wsCheckedFont;
@@ -652,7 +661,14 @@ public:
 		unG = ((m_lShdColor >>  8) & 0xFF);
 		unB = ((m_lShdColor)       & 0xFF);
 	}
-
+	void SetJc(const unsigned char& unJc)
+	{
+		m_nJc = unJc;
+	}
+	BYTE GetJc() const
+	{
+		return m_nJc;
+	}
 
 	bool IsTextField() const
 	{
@@ -721,6 +737,7 @@ private:
 	LONG         m_lBorderColor;
 	bool         m_bHaveShd;
 	LONG         m_lShdColor;
+	BYTE         m_nJc;
 
 	CTextFormPr     m_oTextPr;
 	CDropDownFormPr m_oDropDownPr;

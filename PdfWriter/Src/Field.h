@@ -50,6 +50,15 @@ namespace PdfWriter
 	class CFieldBase : public CDictObject
 	{
 	public:
+
+		enum EFieldAlignType
+		{
+			Left   = 0,
+			Center = 1,
+			Right  = 2
+		};
+
+	public:
 		CFieldBase(CXref* pXref, CDocument* pDocument);
 
 		void SetReadOnlyFlag(bool isReadOnly);
@@ -79,6 +88,7 @@ namespace PdfWriter
 		const TRgb& GetShdColor() const;
 		int GetFieldFlag() const;
 		const char* GetFieldType() const;
+		void SetAlign(const EFieldAlignType& eType);
 
 	protected:
 
@@ -150,7 +160,12 @@ namespace PdfWriter
 		void SetAppearance(const std::wstring& wsYesValue, unsigned char* pYesCodes, unsigned int unYesCount, CFontDict* pYesFont,
 						   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount, CFontDict* pOffFont,
 						   const TRgb& oColor, const double& dAlpha, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0);
+		void SetAppearance(const int& nType, const TRgb& oColor, const double& dAlpha, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0);
 		void SetValue(const bool& isYes);
+
+	private:
+
+		void SetDefaultCheckBoxAppearance(const std::string& sText);
 
 	private:
 
@@ -240,7 +255,7 @@ namespace PdfWriter
 	public:
 		CAnnotAppearanceObject(CXref* pXRef, CFieldBase* pField);
 		void DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double dR = 0.0, double dG = 0.0, double dB = 0.0, const char* sExtGrStateName = NULL, double dW = 1.0, double dH = 1.0, double* pShifts = NULL, unsigned int unShiftsCount = 0);
-		void DrawPicturePlaceholder();
+		void DrawPicturePlaceholder();		
 
 	private:
 

@@ -77,7 +77,7 @@ namespace PdfWriter
 		const char *sKey = m_pFonts->GetKey(pFont);
 		if (!sKey)
 		{
-			// если фонт не зарегистрирован в ресурсах, тогда регистрируем его
+			// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 			char sFontName[LIMIT_MAX_NAME_LEN + 1];
 			char *pPointer = NULL;
 			char *pEndPointer = sFontName + LIMIT_MAX_NAME_LEN;
@@ -105,7 +105,7 @@ namespace PdfWriter
 		const char* sKey = m_pExtGStates->GetKey(pState);
 		if (!sKey)
 		{
-			// Если ExtGState не зарегистрирован в Resource, регистрируем
+			// пїЅпїЅпїЅпїЅ ExtGState пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ Resource, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			char sExtGrStateName[LIMIT_MAX_NAME_LEN + 1];
 			char *pPointer;
 			char *pEndPointer = sExtGrStateName + LIMIT_MAX_NAME_LEN;

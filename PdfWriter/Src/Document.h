@@ -131,6 +131,7 @@ namespace PdfWriter
 		CFontCidTrueType* CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontTrueType*    CreateTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontTrueType*    CreateTrueTypeFont(CFontCidTrueType* pCidFont);
+		CFont14*          GetDefaultCheckboxFont();
 
 		CImageTilePattern*CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, CMatrix* pMatrix = NULL, EImageTilePatternType eType = imagetilepatterntype_Default, double dXStepSpacing = 0, double dYStepSpacing = 0);
 		CImageTilePattern*CreateHatchPattern(double dW, double dH, const BYTE& nR1, const BYTE& nG1, const BYTE& nB1, const BYTE& nAlpha1, const BYTE& nR2, const BYTE& nG2, const BYTE& nB2, const BYTE& nAlpha2, const std::wstring& wsHatch);
@@ -197,6 +198,7 @@ namespace PdfWriter
 		std::vector<CShading*>             m_vShadings;
 		std::vector<TFontInfo>             m_vCidTTFonts;
 		std::vector<TFontInfo>             m_vTTFonts;
+		CFont14*                           m_pDefaultCheckBoxFont;
 		CDictObject*                       m_pTransparencyGroup;
 		std::vector<CFontCidTrueType*>     m_vFreeTypeFonts;
 		FT_Library                         m_pFreeTypeLibrary;

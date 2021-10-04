@@ -110,7 +110,7 @@ const double g_dKoef_mm_to_hps = 2 * g_dKoef_mm_to_pt;
 
 const static wchar_t* g_sFormatSignature = L"DOCY";
 const int g_nFormatVersion = 5;
-const int g_nFormatVersionNoBase64 = 10;
+const int g_nFormatVersionNoBase64 = 10; 
 extern int g_nCurFormatVersion;
 	namespace c_oAscWrapStyle{enum c_oSerFormat
 	{
@@ -864,7 +864,10 @@ extern int g_nCurFormatVersion;
 		BookFoldPrinting = 15,
 		BookFoldPrintingSheets = 16,
 		BookFoldRevPrinting = 17,
-		SpecialFormsHighlight = 18
+		SpecialFormsHighlight = 18,
+		DocumentProtection = 19,
+		WriteProtection = 20
+
 	};}
 	namespace c_oSer_MathPrType{enum c_oSer_SettingsType
 	{
@@ -1233,7 +1236,17 @@ extern int g_nCurFormatVersion;
 		TextFormPrCombSym = 53,
 		TextFormPrCombFont = 54,
 		TextFormPrMaxCharacters = 55,
-		TextFormPrCombBorder = 56
+		TextFormPrCombBorder = 56,
+		TextFormPrAutoFit = 57,
+		TextFormPrMultiLine = 58,
+		PictureFormPr = 60,
+		PictureFormPrScaleFlag = 61,
+		PictureFormPrLockProportions = 62,
+		PictureFormPrRespectBorders = 63,
+		PictureFormPrShiftX = 64,
+		PictureFormPrShiftY = 65,
+		FormPrBorder = 70,
+		FormPrShd = 71
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{
@@ -1292,4 +1305,46 @@ extern int g_nCurFormatVersion;
 		Flags2 = 5,
 		Flags3 = 6
 	};}
+	namespace c_oDocProtect {
+		enum c_oDocProtect
+		{
+			AlgorithmName = 0,
+			Edit = 1,
+			Enforcment = 2,
+			Formatting = 3,
+			HashValue = 4,
+			SaltValue = 5,
+			SpinCount = 6,
+			
+			AlgIdExt = 7,
+			AlgIdExtSource = 8,
+			CryptAlgorithmClass = 9,
+			CryptAlgorithmSid = 10,
+			CryptAlgorithmType = 11,
+			CryptProvider = 12,
+			CryptProviderType = 13,
+			CryptProviderTypeExt = 14,
+			CryptProviderTypeExtSource = 15
+		};
+	}
+	namespace c_oWriteProtect {
+		enum c_oWriteProtect
+		{
+			AlgorithmName = 0,
+			Recommended = 1,
+			HashValue = 2,
+			SaltValue = 3,
+			SpinCount = 4,
+			
+			AlgIdExt = 7,
+			AlgIdExtSource = 8,
+			CryptAlgorithmClass = 9,
+			CryptAlgorithmSid = 10,
+			CryptAlgorithmType = 11,
+			CryptProvider = 12,
+			CryptProviderType = 13,
+			CryptProviderTypeExt = 14,
+			CryptProviderTypeExtSource = 15
+		};
+	}
 }

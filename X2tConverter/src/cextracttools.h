@@ -81,6 +81,7 @@ namespace NExtractTools
 
 		TCD_XLSXFLAT2XLST,
 		TCD_XLSXFLAT2XLST_BIN,
+		TCD_XLSXFLAT2XLSX,
 
         TCD_XLSX2XLST,
         TCD_XLST2XLSX,
@@ -427,8 +428,10 @@ namespace NExtractTools
 		bool* m_bIsNoBase64;
 		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
 		bool* m_bIsPDFA;
+		bool* m_bConvertToOrigin;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
+		mutable bool m_bMacro;
 	public:
 		InputParams()
 		{
@@ -457,8 +460,10 @@ namespace NExtractTools
 			m_sTempDir = NULL;
 			m_bIsNoBase64 = NULL;
 			m_bIsPDFA = NULL;
+			m_bConvertToOrigin = NULL;
 
 			m_bOutputConvertCorrupted = false;
+			m_bMacro = false;
 		}
 		~InputParams()
 		{
@@ -487,6 +492,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sTempDir);
 			RELEASEOBJECT(m_bIsNoBase64);
 			RELEASEOBJECT(m_bIsPDFA);
+			RELEASEOBJECT(m_bConvertToOrigin);
 		}
 		
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -660,6 +666,11 @@ namespace NExtractTools
 									RELEASEOBJECT(m_bIsPDFA);
 									m_bIsPDFA = new bool(XmlUtils::GetBoolean2(sValue));
 								}
+								else if(_T("m_bConvertToOrigin") == sName)
+								{
+									RELEASEOBJECT(m_bConvertToOrigin);
+									m_bConvertToOrigin = new bool(XmlUtils::GetBoolean2(sValue));
+								}
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
 							{
@@ -744,6 +755,10 @@ namespace NExtractTools
 		{
 			return (NULL != m_bIsPDFA) ? (*m_bIsPDFA) : false;
 		}
+		bool getConvertToOrigin() const
+		{
+			return (NULL != m_bConvertToOrigin) ? (*m_bConvertToOrigin) : false;
+		}
         std::wstring getXmlOptions()
 		{
             std::wstring sRes;
@@ -781,6 +796,8 @@ namespace NExtractTools
             }
             sRes  = L"<xmlOptions><fileOptions fileType='" + std::to_wstring(nFileType);
             sRes += L"' codePage='" + std::to_wstring(nCsvEncoding);
+			if (m_bMacro)
+				sRes += L"' macro='1";
 			sRes += L"' delimiter='" + XmlUtils::EncodeXmlStringExtend(cDelimiter) + L"' " + sSaveType;
             sRes += L"/><TXTOptions><Encoding>" + std::to_wstring(nCsvEncoding) + L"</Encoding></TXTOptions></xmlOptions>";
 
@@ -803,7 +820,7 @@ namespace NExtractTools
                                 FileFormatChecker.nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
                     {
                         nFormatFrom = FileFormatChecker.nFileType;
-                        changeFormatFrom(nFormatFrom);
+						changeFormatFrom(nFormatFrom, FileFormatChecker.bMacroEnabled);
                     }
                 }
                 eRes = processDownloadFile();
@@ -987,7 +1004,7 @@ namespace NExtractTools
             }
             return nRes;
         }
-        void changeFormatFrom(int formatFrom)
+		void changeFormatFrom(int formatFrom, bool bMacroEnabled)
         {
           *m_nFormatFrom = formatFrom;
           int toFormat = *m_nFormatTo;
@@ -1010,26 +1027,68 @@ namespace NExtractTools
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
             }
           } 
-		  else if ( AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat) 
+		  else if ( AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat || AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 		  {
             if ( AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || 
 				AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 
 				0 != ( AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) 
 			{
-              toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-            } 
+				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+				{
+					toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+				}
+				else
+				{
+					if (bMacroEnabled)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM;
+					}
+					else
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+					}
+				}
+			} 
 			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || 
 				AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 
 				0 != ( AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) 
 			{
-              toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-            } 
+				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+				{
+					toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
+				}
+				else
+				{
+					if (bMacroEnabled)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM;
+					}
+					else
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+					}
+				}
+			} 
 			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || 
 				AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
 				0 != ( AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
 			{
-              toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-            }
+				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+				{
+					toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+				}
+				else
+				{
+					if (bMacroEnabled)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM;
+					}
+					else
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+					}
+				}
+			}
             size_t nIndex = m_sFileTo->rfind('.');
             COfficeFileFormatChecker FileFormatChecker;
             if(-1 != nIndex)

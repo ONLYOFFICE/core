@@ -123,6 +123,7 @@ namespace NSStringUtils
         void ClearNoAttack();
 
         std::wstring GetData();
+        std::wstring GetSubData(const size_t& start = 0, const size_t& count = std::wstring::npos);
         wchar_t* GetBuffer();
 
         void RemoveLastSpaces();
@@ -144,6 +145,7 @@ namespace NSStringUtils
         void WriteHexByteNoSafe(const unsigned char& value);
         void WriteHexByte(const unsigned char& value);
         void WriteHexInt3(const unsigned int& value);
+        void WriteHexInt4(const unsigned int& value);
         void WriteHexColor3(const unsigned char& r, const unsigned char& g, const unsigned char& b);
         void WriteHexColor3(const unsigned int& value);
 

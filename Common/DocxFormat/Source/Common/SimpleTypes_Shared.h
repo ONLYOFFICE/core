@@ -487,41 +487,41 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------		
 
 	// TO DO: сделать парсер языка по спецификации RFC 4646/BCP 47
-	class CLang
-	{
-	public:
-		CLang() {}
+	//class CLang
+	//{
+	//public:
+	//	CLang() {}
 
-        std::wstring GetValue() const
-		{
-			return m_sValue;
-		}
+ //       std::wstring GetValue() const
+	//	{
+	//		return m_sValue;
+	//	}
 
-        void    SetValue(std::wstring &sValue)
-		{
-			m_sValue = sValue;
-		}
+ //       void    SetValue(std::wstring &sValue)
+	//	{
+	//		m_sValue = sValue;
+	//	}
 
 
-        std::wstring FromString(std::wstring &sValue)
-		{
-			m_sValue = sValue;
+ //       std::wstring FromString(std::wstring &sValue)
+	//	{
+	//		m_sValue = sValue;
 
-			return m_sValue;
-		}
+	//		return m_sValue;
+	//	}
 
-        std::wstring ToString  () const
-		{
-			return m_sValue;
-		}
+ //       std::wstring ToString  () const
+	//	{
+	//		return m_sValue;
+	//	}
 
-        SimpleType_FromString2    (std::wstring)
-		SimpleType_Operator_Equal (CLang)
+ //       SimpleType_FromString2    (std::wstring)
+	//	SimpleType_Operator_Equal (CLang)
 
-	private:
+	//private:
 
-        std::wstring m_sValue;
-	};
+ //       std::wstring m_sValue;
+	//};
 
 
 	//--------------------------------------------------------------------------------
@@ -580,7 +580,7 @@ namespace SimpleTypes
 			else if	(strcmp("false",	sValue) == 0) this->m_eValue = onoffFalse;
 			else if	(strcmp("False",	sValue) == 0) this->m_eValue = onoffFalse;
 			else if	(strcmp("off",		sValue) == 0) this->m_eValue = onoffFalse;
-			else                              this->m_eValue = eDefValue;
+			else this->m_eValue = eDefValue;
 
 			return this->m_eValue;
 		}
@@ -687,6 +687,33 @@ namespace SimpleTypes
 		SimpleType_Operator_Equal (COnOff)
 	};
 
+	class CBool : public COnOff<>
+	{
+	public:
+		CBool() {}
+
+		CBool(const bool & bVal)
+		{
+			this->m_eValue = (false != bVal) ? onoffTrue : onoffFalse;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (m_eValue)
+			{
+				case onoffTrue: return L"1";
+				case onoffFalse:
+				default:		return L"0";
+			}
+		}
+		virtual EOnOff FromString(std::wstring &sValue)
+		{
+			return COnOff<>::FromString(sValue);
+		}
+		
+		SimpleType_FromString(EOnOff)
+		SimpleType_Operator_Equal(CBool)
+	};
+
 	//--------------------------------------------------------------------------------
 	// Panose 22.9.2.8 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -778,8 +805,12 @@ namespace SimpleTypes
 
 			return m_dValue;
 		}
-
-        virtual std::wstring ToString  () const
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = FromTwips(dValue);
+		}
+        virtual std::wstring ToString() const
 		{
             std::wstring sResult;
 
@@ -887,10 +918,10 @@ namespace SimpleTypes
 
         virtual EVerticalAlignRun FromString(std::wstring &sValue)
 		{
-            if      ( L"baseline"    == sValue ) this->m_eValue = verticalalignrunBaseline;
-            else if ( L"subscript"   == sValue ) this->m_eValue = verticalalignrunSubscript;
-            else if ( L"superscript" == sValue ) this->m_eValue = verticalalignrunSuperscript;
-            else                                    this->m_eValue = eDefValue;
+			if      ( L"baseline"    == sValue || L"None" == sValue)		this->m_eValue = verticalalignrunBaseline;
+            else if ( L"subscript"   == sValue || L"Subscript" == sValue)	this->m_eValue = verticalalignrunSubscript;
+            else if ( L"superscript" == sValue || L"Superscript" == sValue)	this->m_eValue = verticalalignrunSuperscript;
+            else this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
@@ -899,10 +930,10 @@ namespace SimpleTypes
 		{
             switch(this->m_eValue)
 			{
-			case verticalalignrunBaseline    : return L"baseline";
-			case verticalalignrunSubscript   : return L"subscript";
-			case verticalalignrunSuperscript : return L"superscript";
-			default                          : return L"baseline";
+				case verticalalignrunBaseline    : return L"baseline";
+				case verticalalignrunSubscript   : return L"subscript";
+				case verticalalignrunSuperscript : return L"superscript";
+				default                          : return L"baseline";
 			}
 		}
 

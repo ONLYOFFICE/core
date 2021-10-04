@@ -630,8 +630,8 @@ namespace DocFileFormat
 						d = (int)_writeTocLink.find(L" ");
 						_writeTocLink = _writeTocLink.substr(0, d);
 						
-						_writeAfterRun	=	std::wstring (L"<w:hyperlink w:anchor = \"");
-						_writeAfterRun +=	_writeTocLink;
+						_writeAfterRun	=	std::wstring (L"<w:hyperlink w:anchor=\"");
+						_writeAfterRun +=	XmlUtils::EncodeXmlString(_writeTocLink);
 						_writeAfterRun +=	std::wstring (L"\" w:history=\"1\">");
 
 						break;								
@@ -823,8 +823,10 @@ namespace DocFileFormat
 			}
 			else if (TextMark::PageBreakOrSectionMark == code)
 			{
-				if (_isSectionPageBreak == 0)
+				if (_isSectionPageBreak == 0 || _isSectionPageBreak == 2)
 				{
+					_isSectionPageBreak = -1;
+
                     writeTextElement(text, textType);
 
                     text.clear();
@@ -1029,7 +1031,7 @@ namespace DocFileFormat
 						}
 						else
 						{
-							VMLShapeMapping oVmlMapper(m_context, &pictWriter, NULL, &oPicture,  _caller, isInline);
+							VMLShapeMapping oVmlMapper(m_context, &pictWriter, NULL, &oPicture,  _caller, isInline, false);
 							oPicture.shapeContainer->Convert(&oVmlMapper);
 						}
 						

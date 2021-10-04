@@ -47,11 +47,12 @@ using namespace OOX::Spreadsheet;
 
 namespace BinXlsxRW
 {
-	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter::CCSVWriter* _pCSVWriter)
+	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter::CCSVWriter* _pCSVWriter, bool bMacro)
 	{
-		pContentTypes	= _pContentTypes;
-        sThemePath		= _sThemePath;
-		sDrawingsPath	= _sDrawingsPath;
+		bMacroEnabled = bMacro;
+		pContentTypes = _pContentTypes;
+        sThemePath = _sThemePath;
+		sDrawingsPath = _sDrawingsPath;
 		sEmbeddingsPath = _sEmbeddingsPath;
 
 		nThemeOverrideCount = 1;
@@ -1296,6 +1297,8 @@ namespace BinXlsxRW
 		std::wstring sDstEmbedded = m_oSaveParams.sEmbeddingsPath;
 
 		std::wstring sDstEmbeddedTemp = NSDirectory::CreateDirectoryWithUniqueName(sDstEmbedded);
+		
+		if (false == sDstEmbeddedTemp.empty())
 		{
 			file = new OOX::OleObject(NULL, true, m_pOfficeDrawingConverter->m_pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
 
@@ -1341,8 +1344,9 @@ namespace BinXlsxRW
 			file->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, false);
 
 			m_pOfficeDrawingConverter->m_pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
+		
+			NSDirectory::DeleteDirectory(sDstEmbeddedTemp);
 		}
-		NSDirectory::DeleteDirectory(sDstEmbeddedTemp);
 
 		return c_oSerConstants::ReadOk;
 	}

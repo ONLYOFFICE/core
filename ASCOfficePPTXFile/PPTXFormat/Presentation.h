@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_PRESENTATION_FILE_INCLUDE_H_
-#define PPTX_PRESENTATION_FILE_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
@@ -345,14 +343,17 @@ namespace PPTX
 						sectionLst->fromPPTY(pReader);						
 					}break;
 					case 8:
-					{
-						m_pVbaProject = new OOX::VbaProject(File::m_pMainDocument);
-						m_pVbaProject->fromPPTY(pReader);
-						
-						smart_ptr<OOX::File> file = m_pVbaProject.smart_dynamic_cast<OOX::File>();
-						FileContainer::Add(file);
-
-						m_bMacroEnabled = true;
+					{						
+						if (m_bMacroEnabled)
+						{
+							m_pVbaProject = new OOX::VbaProject(File::m_pMainDocument);
+							m_pVbaProject->fromPPTY(pReader);
+							
+							smart_ptr<OOX::File> file = m_pVbaProject.smart_dynamic_cast<OOX::File>();
+							FileContainer::Add(file);
+						}
+						else
+							pReader->SkipRecord();
 					}break;
 					case 9:
 					{
@@ -514,5 +515,3 @@ namespace PPTX
 		}
 	};
 } // namespace PPTX
-
-#endif // PPTX_PRESENTATION_FILE_INCLUDE_H_

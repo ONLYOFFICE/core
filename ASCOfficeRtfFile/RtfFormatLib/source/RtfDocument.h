@@ -72,7 +72,7 @@ public:
 
 	RtfParagraphProperty	m_oDefaultParagraphProp;
 	RtfCharProperty			m_oDefaultCharProp;
-	RtfMath					m_oMathProp;
+	RtfMathPtr				m_pMathProp;
 
 	TextItemContainerPtr	m_oFootnoteSep;
 	TextItemContainerPtr	m_oFootnoteCon;

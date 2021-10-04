@@ -83,6 +83,7 @@ namespace PdfWriter
 	class CCheckBoxField;
 	class CRadioGroupField;
 	class CPictureField;
+	class CFieldBase;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -139,6 +140,7 @@ namespace PdfWriter
 		CCheckBoxField*   CreateCheckBoxField();
 		CRadioGroupField* GetRadioGroupField(const std::wstring& wsGroupName);
 		CPictureField*    CreatePictureField();
+		void              CheckFieldName(CFieldBase* pField);
 					  
 	private:		  
 					  

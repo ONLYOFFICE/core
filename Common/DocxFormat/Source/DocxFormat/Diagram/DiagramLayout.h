@@ -406,7 +406,7 @@ namespace OOX
 		public:
 			nullable_string m_sName;
 		};
-		class CChoose : public WritingElement
+		class CChoose : public WritingElementWithChilds<CIf>
 		{
 		public:
 			WritingElement_AdditionConstructors(CChoose)
@@ -435,7 +435,6 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			nullable_string m_sName;
-			nullable<Diagram::CIf> m_oIf;
 			nullable<Diagram::CElse> m_oElse;
 		};
 		class CPresOf : public WritingElement
@@ -472,7 +471,6 @@ namespace OOX
 			std::vector<int> m_arSt;
 			std::vector<int> m_arStep;
 			std::vector<bool> m_arHideLastTrans;
-			nullable_string m_sName;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};

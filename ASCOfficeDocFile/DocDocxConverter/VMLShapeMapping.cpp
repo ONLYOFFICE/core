@@ -48,8 +48,9 @@
 
 namespace DocFileFormat
 {
-	VMLShapeMapping::VMLShapeMapping (ConversionContext* pConv, XMLTools::CStringXmlWriter* pWriter, Spa* pSpa, PictureDescriptor* pPicture, IMapping* pCaller, bool isInlineShape) : PropertiesMapping(pWriter)
+	VMLShapeMapping::VMLShapeMapping (ConversionContext* pConv, XMLTools::CStringXmlWriter* pWriter, Spa* pSpa, PictureDescriptor* pPicture, IMapping* pCaller, bool isInlineShape, bool inGroup) : PropertiesMapping(pWriter)
 	{		
+		m_inGroup			=	inGroup;
 		m_isInlineShape		=	isInlineShape;
 		m_isBullete			=	false;
 		m_isPictureBroken	=	false;
@@ -86,6 +87,11 @@ namespace DocFileFormat
 		if (recBs)
 		{
 			m_pBlipStore	=	static_cast<BlipStoreContainer*>(recBs);
+		}
+
+		for (int i = 0; i < 8; ++i)
+		{
+			m_nAdjValues[i] = 0x7fffffff;
 		}
 	}
 
@@ -191,7 +197,7 @@ namespace DocFileFormat
 						ShapeContainer* pChildShape	= static_cast<ShapeContainer*>(container->Children[i]);
 						if (pChildShape)
 						{
-							VMLShapeMapping vmlShapeMapping(m_context, m_pXmlWriter, m_pSpa, NULL,  m_pCaller);
+							VMLShapeMapping vmlShapeMapping(m_context, m_pXmlWriter, m_pSpa, NULL,  m_pCaller, false, true);
 							pChildShape->Convert(&vmlShapeMapping);
 						}
 					}
@@ -956,12 +962,14 @@ namespace DocFileFormat
 		{
 			if (nAdjValues > 0)												
 			{
-				std::wstring adjTag	= std::to_wstring(m_nAdjValues[0]);
+				std::wstring adjTag;
 
-				for (int i = 1; i < nAdjValues; ++i)
-					adjTag += L"," + std::to_wstring(m_nAdjValues[i]);
+				for (int i = 0; i < nAdjValues; ++i)
+				{
+					adjTag += L"," + (m_nAdjValues[i] != 0x7fffffff ? std::to_wstring(m_nAdjValues[i]) : L"");
+				}
 
-				m_pXmlWriter->WriteAttribute(L"adj", adjTag);
+				m_pXmlWriter->WriteAttribute(L"adj", adjTag.substr(1));
 			}
 		}
 
@@ -1731,7 +1739,8 @@ namespace DocFileFormat
 			case ODRAW::posrelh:
 				{
 					nRelH = iter->op;
-					appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
+					if (false == m_inGroup)
+						appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
 				}break;
 			case ODRAW::posv:
 				{
@@ -1740,7 +1749,8 @@ namespace DocFileFormat
 			case ODRAW::posrelv:
 				{
 					nRelV = iter->op;
-					appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
+					if (false == m_inGroup)
+						appendStyleProperty(oStyle, L"mso-position-vertical-relative", mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
 				}break;
 //	BOOLEANS
 			case ODRAW::groupShapeBooleanProperties:
@@ -1752,7 +1762,7 @@ namespace DocFileFormat
 						//за текстом (The shape is behind the text, so the z-index must be negative.)
 						m_isInlineShape = false;
 
-						if (!bZIndex)
+						if (false == bZIndex && false == m_inGroup)
 						{
 							appendStyleProperty(oStyle, L"z-index", FormatUtils::IntToWideString(-zIndex - 0x7ffff));
 							bZIndex = true;
@@ -1837,12 +1847,12 @@ namespace DocFileFormat
 		{
 			m_isInlineShape = true;
 		}	
-		if (!m_isInlineShape && !bZIndex)
+		if (false == m_isInlineShape && false == bZIndex  && false == m_inGroup)
 		{
 			appendStyleProperty( oStyle, L"z-index", FormatUtils::IntToWideString(zIndex + 0x7ffff));
 			bZIndex = true;
 		}
-		if (false == m_isInlineShape)
+		if (false == m_isInlineShape && false == m_inGroup)
 		{
 			if (nPosH >= 0)
 			{
@@ -2306,16 +2316,19 @@ namespace DocFileFormat
 				strStyle += L"margin-left:"	+ FormatUtils::IntToWideString( (int)x.ToPoints()) + L"pt;";
 				strStyle +=	L"margin-top:"	+ FormatUtils::IntToWideString( (int)y.ToPoints()) + L"pt;";
 
-				std::wstring xMargin;
-				std::wstring yMargin;
-				if (m_pSpa->bx == PAGE) xMargin = L"page;";
-				if (m_pSpa->by == PAGE) yMargin = L"page;";
-				
-				if (m_pSpa->bx == MARGIN) xMargin = L"margin;";
-				if (m_pSpa->by == MARGIN) yMargin = L"margin;";
+				if (false == m_inGroup)
+				{
+					std::wstring xMargin;
+					std::wstring yMargin;
+					if (m_pSpa->bx == PAGE) xMargin = L"page;";
+					if (m_pSpa->by == PAGE) yMargin = L"page;";
 
-				if (!xMargin.empty()) strStyle += L"mso-position-horizontal-relative:" + xMargin;
-				if (!yMargin.empty()) strStyle += L"mso-position-vertical-relative:" + yMargin;
+					if (m_pSpa->bx == MARGIN) xMargin = L"margin;";
+					if (m_pSpa->by == MARGIN) yMargin = L"margin;";
+
+					if (!xMargin.empty()) strStyle += L"mso-position-horizontal-relative:" + xMargin;
+					if (!yMargin.empty()) strStyle += L"mso-position-vertical-relative:" + yMargin;
+				}
 
 				std::wstring strSize = FormatUtils::IntToWideString(primitive->dxa) + L"," + FormatUtils::IntToWideString(primitive->dya);
 				std::wstring strOrigin = FormatUtils::IntToWideString(primitive->xa) + L"," + FormatUtils::IntToWideString(primitive->ya);

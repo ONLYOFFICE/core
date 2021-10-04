@@ -70,15 +70,19 @@ namespace PPT_FORMAT
 		}
 
 	protected:
-		void WriteApp			(CFile& oFile);
+		void WriteApp			(NSFile::CFileBinary& oFile);
 		void WriteContentTypes	();
 		void WritePresInfo		();
 		void WriteAll			();
 		void WriteThemes		();
-		void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
-		void WriteSlides		();
+        void WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom *> &arrRTThemes, int& nIndexTheme, int &nStartLayout);
+        void WriteRoundTripLayouts(const std::vector<CRecordRoundTripContentMasterInfo12Atom *> &arrRTLayouts, int &nStartLayout);
+        void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
+        void WriteTheme         (CRecordRoundTripThemeAtom *pTheme, int &nIndexTheme);
+        void WriteSlides		();
 		void WriteNotes			();
-		void WriteLayout		(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);
+        void WriteLayoutAfterTheme (CThemePtr pTheme, const int nIndexTheme, int &nStartLayout);
+        void WriteLayout		(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);
 		void WriteSlide			(int nIndexSlide);
 		void WriteNotes			(int nIndexNotes);
         void WriteTiming        (CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide); // TODO write spec class for timing
@@ -89,7 +93,7 @@ namespace PPT_FORMAT
 		void WriteElement		(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
 		void WriteGroup			(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
         void WriteTable			(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
-		
+        static std::vector<std::wstring> GrepPaths(const std::vector<std::wstring> &paths, const std::wstring &strRegEx);
 
 	};
 }

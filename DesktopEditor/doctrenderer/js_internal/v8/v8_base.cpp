@@ -152,6 +152,9 @@ namespace NSJSBase
     }
     void CJSContext::Dispose()
     {
+#ifdef V8_INSPECTOR
+        v8_debug::disposeInspector(m_internal->m_context);
+#endif
         m_internal->m_isolate->Dispose();
         m_internal->m_isolate = NULL;
         if (!CV8Worker::IsUseExternalInitialize())
@@ -268,6 +271,9 @@ namespace NSJSBase
 
     JSSmart<CJSValue> CJSContext::runScript(const std::string& script, JSSmart<CJSTryCatch> exception, const std::wstring& scriptPath)
     {
+#ifdef V8_INSPECTOR
+        v8_debug::before(m_internal->m_context, CV8Worker::getInitializer()->getPlatform(), "");
+#endif
         v8::Local<v8::String> _source = CreateV8String(CV8Worker::GetCurrent(), script.c_str());
         
         v8::Local<v8::Script> _script;

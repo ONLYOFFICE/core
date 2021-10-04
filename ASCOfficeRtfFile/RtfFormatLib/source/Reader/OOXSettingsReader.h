@@ -52,8 +52,10 @@ public:
 		
 		if (m_ooxSettings->m_oMathPr.IsInit())
 		{
-			OOXMathReader oMathProp(m_ooxSettings->m_oMathPr.GetPointer());
-			oMathProp.Parse( oParam, oParam.oRtf->m_oMathProp );
+			oParam.oRtf->m_pMathProp = RtfMathPtr(new RtfMath());
+			
+			OOXMathReader oMathReader(NULL);
+			oMathReader.ParseElement( oParam, m_ooxSettings->m_oMathPr.GetPointer(), oParam.oRtf->m_pMathProp );
 		}
 
 		if (m_ooxSettings->m_oDoNotHyphenateCaps.IsInit())

@@ -363,4 +363,8 @@ public:
 
 	void LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroup, std::vector<CElementPtr>* pParentElements, 
 		CTheme* pTheme, CLayout* pLayout, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL);
+
+    // 1 - master, 2 - note, 3 - handout
+    std::vector<CRecordRoundTripThemeAtom*> getRoundTripTheme(int type = 1)const;
+    std::vector<CRecordRoundTripContentMasterInfo12Atom*> getRoundTripLayout();
 };

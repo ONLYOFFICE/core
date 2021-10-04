@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_FROMTO_FILE_INCLUDE_H_
-#define OOX_FROMTO_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -54,7 +52,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
@@ -96,13 +94,13 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("col") == sName )
+					if ( L"col" == sName )
 						m_oCol = oReader.GetText2();
-					else if ( _T("colOff") == sName )
+					else if ( L"colOff" == sName )
 						m_oColOff = oReader.GetText2();
-					else if ( _T("row") == sName )
+					else if ( L"row" == sName )
 						m_oRow = oReader.GetText2();
-					else if ( _T("rowOff") == sName )
+					else if ( L"rowOff" == sName )
 						m_oRowOff = oReader.GetText2();
 				}
 			}
@@ -117,10 +115,10 @@ namespace OOX
 			{
 			}
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCol;
-			nullable<SimpleTypes::CEmu>			m_oColOff;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRow;
-			nullable<SimpleTypes::CEmu>			m_oRowOff;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCol;
+			nullable<SimpleTypes::CEmu> m_oColOff;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oRow;
+			nullable<SimpleTypes::CEmu> m_oRowOff;
 		};
 		class CExt : public WritingElement
 		{
@@ -137,14 +135,14 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				writer.WriteString(_T("<xdr:ext"));
+				writer.WriteString(L"<xdr:ext");
 				WritingStringNullableAttrInt64(L"cx", m_oCx, m_oCx->ToEmu());
 				WritingStringNullableAttrInt64(L"cy", m_oCy, m_oCy->ToEmu());
-				writer.WriteString(_T("/>"));
+				writer.WriteString(L"/>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -162,19 +160,15 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cx"),      m_oCx )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("cy"),      m_oCy )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if( oReader, L"cx", m_oCx )
+					WritingElement_ReadAttributes_Read_if( oReader, L"cy", m_oCy )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CEmu>			m_oCx;
-			nullable<SimpleTypes::CEmu>			m_oCy;
+			nullable<SimpleTypes::CEmu> m_oCx;
+			nullable<SimpleTypes::CEmu> m_oCy;
 		};
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_FROMTO_FILE_INCLUDE_H_

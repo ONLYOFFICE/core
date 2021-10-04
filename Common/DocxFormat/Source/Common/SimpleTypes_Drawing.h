@@ -143,7 +143,11 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 		} 
-
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = FromEmu(dValue);
+		}
         virtual double  FromString(std::wstring &sValue)
 		{
             m_sGuide.clear();
@@ -877,13 +881,11 @@ namespace SimpleTypes
 		{
 			return m_dValue;
 		}
-
-		void   SetValue(double dValue)
+		virtual void SetValue(double dValue)
 		{
-			m_bUnit  = false;
+			m_bUnit = false;
 			m_dValue = dValue;
 		}
-
         virtual double  FromString(std::wstring &sValue)
         {
             Parse(sValue, 12700);
@@ -6697,7 +6699,7 @@ namespace SimpleTypes
 		parameterId_nodeVertAlign = 16,
 		parameterId_fallback = 17,
 		parameterId_txDir = 18,
-		parameterId_775_pyraAcctPos = 19,
+		parameterId_pyraAcctPos = 19,
 		parameterId_pyraAcctTxMar = 20,
 		parameterId_txBlDir = 21,
 		parameterId_txAnchorHorz = 22,
@@ -6725,7 +6727,7 @@ namespace SimpleTypes
 		parameterId_lnSpCh = 44,
 		parameterId_lnSpAfChP = 45,
 		parameterId_rtShortDist = 46,
-		parameterId_lignTx = 47,
+		parameterId_alignTx = 47,
 		parameterId_pyraLvlNode = 48,
 		parameterId_pyraAcctBkgdNode = 49,
 		parameterId_pyraAcctTxNode = 50,
@@ -6761,7 +6763,7 @@ namespace SimpleTypes
 			else if (L"nodeVertAlign" == sValue) this->m_eValue = parameterId_nodeVertAlign;
 			else if (L"fallback" == sValue) this->m_eValue = parameterId_fallback;
 			else if (L"txDir" == sValue) this->m_eValue = parameterId_txDir;
-			else if (L"77 pyraAcctPos" == sValue) this->m_eValue = parameterId_775_pyraAcctPos;
+			else if (L"pyraAcctPos" == sValue) this->m_eValue = parameterId_pyraAcctPos;
 			else if (L"pyraAcctTxMar" == sValue) this->m_eValue = parameterId_pyraAcctTxMar;
 			else if (L"txBlDir" == sValue) this->m_eValue = parameterId_txBlDir;
 			else if (L"txAnchorHorz" == sValue) this->m_eValue = parameterId_txAnchorHorz;
@@ -6789,7 +6791,7 @@ namespace SimpleTypes
 			else if (L"lnSpCh" == sValue) this->m_eValue = parameterId_lnSpCh;
 			else if (L"lnSpAfChP" == sValue) this->m_eValue = parameterId_lnSpAfChP;
 			else if (L"rtShortDist" == sValue) this->m_eValue = parameterId_rtShortDist;
-			else if (L"lignTx" == sValue) this->m_eValue = parameterId_lignTx;
+			else if (L"alignTx" == sValue) this->m_eValue = parameterId_alignTx;
 			else if (L"pyraLvlNode" == sValue) this->m_eValue = parameterId_pyraLvlNode;
 			else if (L"pyraAcctBkgdNode" == sValue) this->m_eValue = parameterId_pyraAcctBkgdNode;
 			else if (L"pyraAcctTxNode" == sValue) this->m_eValue = parameterId_pyraAcctTxNode;
@@ -6826,7 +6828,7 @@ namespace SimpleTypes
 				case parameterId_nodeVertAlign: return L"nodeVertAlign";
 				case parameterId_fallback: return L"fallback";
 				case parameterId_txDir: return L"txDir";
-				case parameterId_775_pyraAcctPos: return L"775 pyraAcctPos";
+				case parameterId_pyraAcctPos: return L"pyraAcctPos";
 				case parameterId_pyraAcctTxMar: return L"pyraAcctTxMar";
 				case parameterId_txBlDir: return L"txBlDir";
 				case parameterId_txAnchorHorz: return L"txAnchorHorz";
@@ -6854,7 +6856,7 @@ namespace SimpleTypes
 				case parameterId_lnSpCh: return L"lnSpCh";
 				case parameterId_lnSpAfChP: return L"lnSpAfChP";
 				case parameterId_rtShortDist: return L"rtShortDist";
-				case parameterId_lignTx: return L"lignTx";
+				case parameterId_alignTx: return L"alignTx";
 				case parameterId_pyraLvlNode: return L"pyraLvlNode";
 				case parameterId_pyraAcctBkgdNode: return L"pyraAcctBkgdNode";
 				case parameterId_pyraAcctTxNode: return L"pyraAcctTxNode";

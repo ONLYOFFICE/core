@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+#include "../../../ASCOfficePPTFile/PPTFormatLib/Records/RoundTripThemeAtom.h"
 #include "Structures.h"
 #include "Layout.h"
 
@@ -75,7 +76,7 @@ namespace PPT_FORMAT
 		std::wstring					m_sThemeName;
 		
 		std::vector<std::vector<CColor>>m_arExtraColorScheme;
-	
+
 		bool							m_bHasDate;
 		bool							m_bHasSlideNumber;
 		bool							m_bHasFooter;

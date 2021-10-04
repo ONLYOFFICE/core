@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_SLIDES_HANDOUTMASTER_INCLUDE_H_
-#define PPTX_SLIDES_HANDOUTMASTER_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
@@ -102,5 +100,3 @@ namespace PPTX
 		nullable<Logic::HF> hf;
 	};
 } // namespace PPTX
-
-#endif // PPTX_SLIDES_HANDOUTMASTER_INCLUDE_H_

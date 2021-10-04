@@ -920,6 +920,10 @@ namespace OOX
 		}
 		void CCell::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
+			CXlsxFlat *pXlsxFlat = dynamic_cast<CXlsxFlat*>(this->m_pMainDocument);
+			
+			int nBaseRow = pXlsxFlat ? 0 : 1; // xml->xlsx
+
 			writer.WriteString(_T("<c"));
 			if (m_oRow.IsInit() && m_oCol.IsInit())
 			{
@@ -930,7 +934,7 @@ namespace OOX
 				}
 				writer.WriteString(L" r=\"");
 				writer.WriteString(m_aLetters[nCol]);
-				writer.AddInt(*m_oRow + 1);
+				writer.AddInt(*m_oRow + nBaseRow);
 				writer.WriteString(L"\"");
 			}
 			else
@@ -996,16 +1000,8 @@ namespace OOX
 					CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
 					if (xlsx_flat)
 					{
-						CCommentItem *pComment = new CCommentItem();
-						ReadComment(oReader, pComment);
-
-						pComment->m_nRow = xlsx_flat->m_nLastReadRow - 1;
-						pComment->m_nCol = xlsx_flat->m_nLastReadCol - 1;
-
-						std::wstring sId = std::to_wstring(*pComment->m_nRow) + L"-" + std::to_wstring(*pComment->m_nCol);
-						
-						CWorksheet* pWorksheet = xlsx_flat->m_arWorksheets.back();
-						pWorksheet->m_mapComments [sId] = pComment;
+						pCommentItem.Init();
+						ReadComment(oReader, pCommentItem.GetPointer());
 					}
 				}
 				else if ( strcmp("f", sName) == 0 )
@@ -1191,41 +1187,67 @@ namespace OOX
 			if (!xlsx_flat) return;
 			
 			CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
+			
+			std::map<int, std::map<int, unsigned int>>::iterator pFindRow = sheet->m_oSheetData->m_mapStyleMerges2003.find(xlsx_flat->m_nLastReadRow);
+			std::map<int, unsigned int>::iterator pFind;
 
-			if (iColIndex.IsInit())
-			{
-				xlsx_flat->m_nLastReadCol = *iColIndex;
-			}
-			else
+			if (false == iColIndex.IsInit())
 			{
 				xlsx_flat->m_nLastReadCol = (xlsx_flat->m_nLastReadCol < 0 ? 1 : xlsx_flat->m_nLastReadCol + 1);
 			}
-
-			std::map<int, unsigned int>::iterator it = sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.begin();
-			while (it != sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.end())
+			else
 			{
-				if (it->first > xlsx_flat->m_nLastReadCol)
-					break;
-				else if (it->first == xlsx_flat->m_nLastReadCol)
+				int newCol = *iColIndex;			
+				
+				if (pFindRow != sheet->m_oSheetData->m_mapStyleMerges2003.end())
 				{
-					m_oStyle = it->second;
-					break;
-				}
-				{
-					CCell *pCell = new CCell();
-					pCell->m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, it->first);
-					pCell->m_oStyle = it->second;
-					pCell->m_oCol = it->first;
-					pCell->m_oRow = xlsx_flat->m_nLastReadRow;
+					CCell *pCurrentCell = sheet->m_oSheetData->m_arrItems.back()->m_arrItems.back(); // == this
+					sheet->m_oSheetData->m_arrItems.back()->m_arrItems.pop_back();
 
-					size_t pos = sheet->m_oSheetData->m_arrItems.back()->m_arrItems.size() - 2;
-					sheet->m_oSheetData->m_arrItems.back()->m_arrItems.insert(
-						sheet->m_oSheetData->m_arrItems.back()->m_arrItems.begin() + pos, pCell);
-				}
+					while (xlsx_flat->m_nLastReadCol < newCol)
+					{
+						xlsx_flat->m_nLastReadCol = (xlsx_flat->m_nLastReadCol < 0 ? 1 : xlsx_flat->m_nLastReadCol + 1);
 
-				sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.erase(it);
-				it = sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.begin();
+						pFind = pFindRow->second.find(xlsx_flat->m_nLastReadCol);
+						if (pFind != pFindRow->second.end())
+						{
+							CCell *pCell = new CCell(this->m_pMainDocument);
+							pCell->m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
+							pCell->m_oStyle = pFind->second;
+							pCell->m_oCol = xlsx_flat->m_nLastReadCol - 1;
+							pCell->m_oRow = xlsx_flat->m_nLastReadRow;
+
+							sheet->m_oSheetData->m_arrItems.back()->m_arrItems.push_back(pCell);
+
+							pFindRow->second.erase(pFind);
+						}
+					}
+					sheet->m_oSheetData->m_arrItems.back()->m_arrItems.push_back(pCurrentCell);
+					pCurrentCell = NULL;
+				}
+				xlsx_flat->m_nLastReadCol = newCol;
 			}
+//---------------------------------------------------------------------------------------
+			if (pCommentItem.IsInit())
+			{
+				pCommentItem->m_nRow = xlsx_flat->m_nLastReadRow - 1;
+				pCommentItem->m_nCol = xlsx_flat->m_nLastReadCol - 1;
+
+				std::wstring sId = std::to_wstring(*pCommentItem->m_nRow) + L"-" + std::to_wstring(*pCommentItem->m_nCol);
+
+				sheet->m_mapComments[sId] = pCommentItem.GetPointerEmptyNullable();
+			}
+//---------------------------------------------------------------------------------------
+			if (pFindRow != sheet->m_oSheetData->m_mapStyleMerges2003.end())
+			{
+				pFind = pFindRow->second.find(xlsx_flat->m_nLastReadCol);
+				if (pFind != pFindRow->second.end())
+				{
+					m_oStyle = pFind->second;
+					pFindRow->second.erase(pFind);
+				}
+			}
+//---------------------------------------------------------------------------------------
 			//m_oRef = "R" + std::to_string(xlsx_flat->m_nLastReadRow) + "C" + std::to_string(xlsx_flat->m_nLastReadCol);
 			m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
 
@@ -1270,9 +1292,12 @@ namespace OOX
 				{
 					pHyperlink->m_oLink = sHyperlink;
 				}
+				pHyperlink->m_oRid.Init();
+				pHyperlink->m_oRid->FromString(sheet->AddHyperlink(*sHyperlink).get());
 
 				sheet->m_oHyperlinks->m_arrItems.push_back(pHyperlink);
 			}
+//---------------------------------------------------------------------------------------
 			if (iAcross.IsInit() || iDown.IsInit())
 			{
 				//std::string Ref = m_oRef.get2() + ":R" + std::to_string(xlsx_flat->m_nLastReadRow + 1 + iDown.get_value_or(0)) + "C" + std::to_string(xlsx_flat->m_nLastReadCol + 1 + iAcross.get_value_or(0));
@@ -1290,20 +1315,42 @@ namespace OOX
 
 				if (m_oStyle.IsInit())
 				{
-					std::map<unsigned int, bool>::iterator pFind = xlsx_flat->m_pStyles->m_mapStylesContinues2003.find(*m_oStyle);
-					if (pFind != xlsx_flat->m_pStyles->m_mapStylesContinues2003.end())
+					std::map<unsigned int, bool>::iterator pFindContinues = xlsx_flat->m_pStyles->m_mapStylesContinues2003.find(*m_oStyle);
+					if (pFindContinues != xlsx_flat->m_pStyles->m_mapStylesContinues2003.end())
 					{
 						for (int i = 0; i < iDown.get_value_or(0); ++i)
 						{
-							//sheet->m_mapStyleMergesRow2003 (xlsx_flat->m_nLastReadRow + i), (xlsx_flat->m_nLastReadCol), *m_oStyle
+							std::map<int, std::map<int, unsigned int>>::iterator pFind = sheet->m_oSheetData->m_mapStyleMerges2003.find(xlsx_flat->m_nLastReadRow + i + 1);
+
+							if (pFind == sheet->m_oSheetData->m_mapStyleMerges2003.end())
+							{
+								std::map<int, unsigned int> mapColsStyle;
+								mapColsStyle.insert(std::make_pair(xlsx_flat->m_nLastReadCol, *m_oStyle));
+								
+								sheet->m_oSheetData->m_mapStyleMerges2003.insert(std::make_pair(xlsx_flat->m_nLastReadRow + i + 1, mapColsStyle));
+							}
+							else
+							{
+								pFind->second.insert(std::make_pair(xlsx_flat->m_nLastReadCol, *m_oStyle));
+							}
 						}
+
 						for (int i = 0; i < iAcross.get_value_or(0); ++i)
 						{
-							sheet->m_oSheetData->m_arrItems.back()->m_mapStyleMerges2003.insert(std::make_pair(xlsx_flat->m_nLastReadCol + i, *m_oStyle));
+							xlsx_flat->m_nLastReadCol++;
+							
+							CCell *pCell = new CCell(this->m_pMainDocument);
+							pCell->m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, xlsx_flat->m_nLastReadCol);
+							pCell->m_oStyle = pFindContinues->first;
+							pCell->m_oCol = xlsx_flat->m_nLastReadCol - 1;
+							pCell->m_oRow = xlsx_flat->m_nLastReadRow;
+							
+							sheet->m_oSheetData->m_arrItems.back()->m_arrItems.push_back(pCell);
 						}
 					}
 				}
-				xlsx_flat->m_nLastReadCol += iAcross.get_value_or(0);
+				else
+					xlsx_flat->m_nLastReadCol += iAcross.get_value_or(0);
 			}
 		}
 		void CCell::PrepareForBinaryWriter()
@@ -1593,17 +1640,19 @@ namespace OOX
 			}
 //----------------- 2003
 			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
-			for (std::map<int, unsigned int>::iterator it = m_mapStyleMerges2003.begin(); xlsx_flat && it != m_mapStyleMerges2003.end(); ++it)
-			{
-				CCell *pCell = new CCell();
-				pCell->m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, it->first);
-				pCell->m_oStyle = it->second;
-				pCell->m_oCol = it->first;
-				pCell->m_oRow = xlsx_flat->m_nLastReadRow;
 
-				m_arrItems.push_back(pCell);
+			if (xlsx_flat)
+			{
+				CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
+				
+				std::map<int, std::map<int, unsigned int>>::iterator pFind = sheet->m_oSheetData->m_mapStyleMerges2003.find(xlsx_flat->m_nLastReadRow);
+
+				if (pFind != sheet->m_oSheetData->m_mapStyleMerges2003.end())
+				{
+					sheet->m_oSheetData->StyleFromMapStyleMerges2003(pFind->second);
+					sheet->m_oSheetData->m_mapStyleMerges2003.erase(pFind);
+				}
 			}
-			m_mapStyleMerges2003.clear();
 		}
 		void CRow::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
 		{
@@ -1690,6 +1739,8 @@ namespace OOX
 			}
 			else if (xlsx_flat)
 			{
+				CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
+
 				if (!m_oR.IsInit() || m_oR->GetValue() <= xlsx_flat->m_nLastReadRow)
 				{
 					xlsx_flat->m_nLastReadRow = xlsx_flat->m_nLastReadRow + 1;
@@ -1698,7 +1749,34 @@ namespace OOX
 				}
 				else
 				{
-					xlsx_flat->m_nLastReadRow = m_oR->GetValue();
+					unsigned int newRow = m_oR->GetValue();
+
+					if (false == sheet->m_oSheetData->m_mapStyleMerges2003.empty())
+					{
+						CRow *pCurrentRow = sheet->m_oSheetData->m_arrItems.back(); // == this
+						sheet->m_oSheetData->m_arrItems.pop_back();
+						
+						while (xlsx_flat->m_nLastReadRow < newRow)
+						{
+							xlsx_flat->m_nLastReadRow++;
+							
+							CRow *pRow = new CRow(m_pMainDocument);
+							pRow->m_oR = xlsx_flat->m_nLastReadRow;
+
+							sheet->m_oSheetData->m_arrItems.push_back(pRow);
+
+							std::map<int, std::map<int, unsigned int>>::iterator pFind = sheet->m_oSheetData->m_mapStyleMerges2003.find(xlsx_flat->m_nLastReadRow);
+							
+							if (pFind != sheet->m_oSheetData->m_mapStyleMerges2003.end())
+							{
+								sheet->m_oSheetData->StyleFromMapStyleMerges2003(pFind->second);
+								sheet->m_oSheetData->m_mapStyleMerges2003.erase(pFind);
+							}
+						}
+						sheet->m_oSheetData->m_arrItems.push_back(pCurrentRow);
+						pCurrentRow = NULL;
+					}					
+					xlsx_flat->m_nLastReadRow = newRow;
 				}
 				xlsx_flat->m_nLastReadCol = -1;
 			}
@@ -1782,6 +1860,10 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if(oReader, L"ss:StyleID", m_sStyleID)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:DefaultColumnWidth", m_dDefaultColumnWidth)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:DefaultRowHeight", m_dDefaultRowHeight)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:ExpandedColumnCount", m_nExpandedColumnCount)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:ExpandedRowCount", m_nExpandedRowCount)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"x:FullColumns", m_nFullColumns)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"x:FullRows", m_nFullRows)
 			WritingElement_ReadAttributes_End(oReader)
 		}
 		void CSheetData::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1874,6 +1956,18 @@ namespace OOX
 				if (xlsx_flat)
 				{
 					CWorksheet* pWorksheet = xlsx_flat->m_arWorksheets.back();
+					pWorksheet->m_oSheetFormatPr.Init();
+					
+					if (m_dDefaultColumnWidth.IsInit())
+					{
+						double pixDpi = *m_dDefaultColumnWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
+						double maxDigitSize = 4.1;
+
+						m_dDefaultColumnWidth = (int((pixDpi /*/ 0.75*/ - 5) / maxDigitSize * 100. + 0.5)) / 100. * 0.9;
+					}
+
+					pWorksheet->m_oSheetFormatPr->m_oDefaultColWidth = m_dDefaultColumnWidth;
+					pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight = m_dDefaultRowHeight;
 
 					if (false == pWorksheet->m_oCols.IsInit() && m_dDefaultColumnWidth.IsInit())
 					{
@@ -1884,14 +1978,22 @@ namespace OOX
 						pColumn->m_oMin = 1;
 						pColumn->m_oMax = 16384;
 
-						double pixDpi = *m_dDefaultColumnWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
-						double maxDigitSize = 1;
-
 						pColumn->m_oWidth.Init();
-						pColumn->m_oWidth->SetValue((int((pixDpi /*/ 0.75*/ - 5) / maxDigitSize * 100. + 0.5)) / 100. * 0.9);
+						pColumn->m_oWidth->SetValue(*m_dDefaultColumnWidth);
 
 						pWorksheet->m_oCols->m_arrItems.push_back(pColumn);
 					}
+					for (std::map<int, std::map<int, unsigned int>>::iterator it = m_mapStyleMerges2003.begin(); it != m_mapStyleMerges2003.end(); ++it)
+					{
+						xlsx_flat->m_nLastReadRow = it->first;
+
+						CRow *pRow = new CRow(m_pMainDocument);
+						pRow->m_oR = xlsx_flat->m_nLastReadRow;
+
+						pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+						StyleFromMapStyleMerges2003(it->second);
+					}
+					m_mapStyleMerges2003.clear();
 				}
 			}
 		}
@@ -1971,29 +2073,51 @@ namespace OOX
 				}
 			}
 		}
+		void CSheetData::StyleFromMapStyleMerges2003(std::map<int, unsigned int> &mapStyleMerges)
+		{
+			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+			if (!xlsx_flat) return;
+
+			CWorksheet* sheet = xlsx_flat->m_arWorksheets.back();
+
+			std::map<int, unsigned int>::iterator it = mapStyleMerges.begin();
+			while (it != mapStyleMerges.end())
+			{
+				CCell *pCell = new CCell(this->m_pMainDocument);
+				pCell->m_oRef = getCellAddressA(xlsx_flat->m_nLastReadRow, it->first);
+				pCell->m_oStyle = it->second;
+				pCell->m_oCol = it->first - 1;
+				pCell->m_oRow = xlsx_flat->m_nLastReadRow;
+
+				sheet->m_oSheetData->m_arrItems.back()->m_arrItems.push_back(pCell);
+
+				mapStyleMerges.erase(it);
+				it = mapStyleMerges.begin();
+			}
+		}
 //---------------------------------------------------------------------------------------------------------------------
 		void CDefinedName::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			nullable_string oRefersTo;
 			WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"comment",		m_oComment )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"customMenu",		m_oCustomMenu )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"description",	m_oDescription )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"function",		m_oFunction )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"functionGroupId",m_oFunctionGroupId )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"help",			m_oHelp )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"hidden",			m_oHidden )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"localSheetId",	m_oLocalSheetId )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"name",			m_oName )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"publishToServer",m_oPublishToServer )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"shortcutKey ",	m_oShortcutKey  )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"statusBar",		m_oStatusBar  )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"vbProcedure",	m_oVbProcedure  )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"workbookParameter",	m_oWorkbookParameter  )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"xlm",			m_oXlm  )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"customMenu",		m_oCustomMenu )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"description",	m_oDescription )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"function",		m_oFunction )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"functionGroupId",m_oFunctionGroupId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"help",			m_oHelp )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"hidden",			m_oHidden )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"localSheetId",	m_oLocalSheetId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"name",			m_oName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"publishToServer",m_oPublishToServer )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"shortcutKey ",	m_oShortcutKey  )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"statusBar",		m_oStatusBar  )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"vbProcedure",	m_oVbProcedure  )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"workbookParameter",	m_oWorkbookParameter  )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"xlm",			m_oXlm  )
 
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"ss:Name",		m_oName )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"ss:RefersTo",	oRefersTo )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"ss:Name",		m_oName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"ss:RefersTo",	oRefersTo )
 			WritingElement_ReadAttributes_End( oReader )
 
 			if (oRefersTo.IsInit())
@@ -2097,6 +2221,8 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 	nullable_int active_pane_number;
 	std::map<int, nullable<CPane>> mapPanes;
 
+	nullable_string sDataHeader, sDataFooter;
+
 	int nDocumentDepth = oReader.GetDepth();
 	while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
 	{
@@ -2104,6 +2230,45 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 
 		if ( L"PageSetup" == sName )
 		{
+			int nDocumentDepth1 = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nDocumentDepth1))
+			{
+				std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (L"Header" == sName1)
+				{
+					if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
+					
+					WritingElement_ReadAttributes_Start_No_NS(oReader)
+						WritingElement_ReadAttributes_Read_if(oReader, L"Margin", m_oPageMargins->m_oHeader)
+						WritingElement_ReadAttributes_Read_else_if(oReader, L"Data", sDataHeader)
+					WritingElement_ReadAttributes_End_No_NS(oReader)
+				}
+				else if (L"Footer" == sName1)
+				{
+					if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
+					
+					WritingElement_ReadAttributes_Start_No_NS(oReader)
+						WritingElement_ReadAttributes_Read_if(oReader, L"Margin", m_oPageMargins->m_oFooter)
+						WritingElement_ReadAttributes_Read_else_if(oReader, L"Data", sDataFooter)
+					WritingElement_ReadAttributes_End_No_NS(oReader)
+				}
+				else if (L"Layout" == sName1)
+				{
+				}
+				else if (L"PageMargins" == sName1)
+				{
+					if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
+					
+					WritingElement_ReadAttributes_Start_No_NS(oReader)
+						WritingElement_ReadAttributes_Read_if(oReader, L"Top", m_oPageMargins->m_oTop)
+						WritingElement_ReadAttributes_Read_else_if(oReader, L"Left", m_oPageMargins->m_oLeft)
+						WritingElement_ReadAttributes_Read_else_if(oReader, L"Right", m_oPageMargins->m_oRight)
+						WritingElement_ReadAttributes_Read_else_if(oReader, L"Bottom", m_oPageMargins->m_oBottom)
+					WritingElement_ReadAttributes_End_No_NS(oReader)
+				}
+			}
+
 		}
 		else if ( L"Panes" == sName )
 		{
@@ -2141,7 +2306,7 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 							
 							r1c1_formula_convert convert;
 
-							std::wstring ref = convert.convert(oReader.GetText2());;
+							std::wstring ref = convert.convert(oReader.GetText2());
 
 							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());							
 							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = ref;
@@ -2196,6 +2361,9 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 		{
 			active_pane_number = oReader.GetText2();
 		}	
+		else if (L"Print" == sName)
+		{
+		}
 	}
 
 	if (active_pane_number.IsInit())

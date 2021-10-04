@@ -1449,10 +1449,10 @@ public:
             oRight.Write(L"w:right", pCStringWriter, bCell);
 		if(bBottom)
             oBottom.Write(L"w:bottom", pCStringWriter, bCell);
-		if(bInsideV)
-            oInsideV.Write(L"w:insideV", pCStringWriter, bCell);
 		if(bInsideH)
             oInsideH.Write(L"w:insideH", pCStringWriter, bCell);
+		if(bInsideV)
+            oInsideV.Write(L"w:insideV", pCStringWriter, bCell);
 		if(bBetween)
             oBetween.Write(L"w:between", pCStringWriter, bCell);
 	}

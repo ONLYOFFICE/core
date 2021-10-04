@@ -149,10 +149,11 @@ namespace PPTX
 		{
 			m_name = node.GetName();
 
-            XmlMacroReadAttributeBase(node,L"useBgFill", attrUseBgFill);
-			XmlMacroReadAttributeBase(node, L"macro", attrMacro);
-			XmlMacroReadAttributeBase(node, L"modelId", attrModelId);
-
+            XmlMacroReadAttributeBase(node,L"useBgFill", useBgFill);
+			XmlMacroReadAttributeBase(node, L"modelId", modelId);
+			XmlMacroReadAttributeBase(node, L"macro", macro);
+			XmlMacroReadAttributeBase(node, L"fLocksText", fLocksText);
+			
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(L"*", oNodes))
 			{
@@ -192,9 +193,11 @@ namespace PPTX
 		std::wstring Shape::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(L"useBgFill", attrUseBgFill);
-			oAttr.Write(L"macro", attrMacro);
-			oAttr.Write(L"modelId", attrModelId);
+
+			oAttr.Write(L"useBgFill", useBgFill);
+			oAttr.Write(L"modelId", modelId);
+			oAttr.Write(L"macro", macro);
+			oAttr.Write(L"fLocksText", fLocksText);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(nvSpPr);
@@ -221,9 +224,11 @@ namespace PPTX
 			pWriter->StartNode(name_);
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(L"macro", attrMacro);
-			pWriter->WriteAttribute(L"useBgFill", attrUseBgFill);
-			pWriter->WriteAttribute(L"modelId", attrModelId);
+
+			pWriter->WriteAttribute(L"useBgFill", useBgFill);
+			pWriter->WriteAttribute(L"macro", macro);
+			pWriter->WriteAttribute(L"modelId", modelId);
+			pWriter->WriteAttribute(L"fLocksText", fLocksText);
 			pWriter->EndAttributes();
 
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
@@ -338,16 +343,8 @@ namespace PPTX
 				{
 					case 0:
 					{
-						attrUseBgFill = pReader->GetBool();						
-					}break;
-					case 1:
-					{
-						attrMacro = pReader->GetString2();						
-					}break;
-					case 2:
-					{
-						attrModelId = pReader->GetString2();
-					}break;					
+						useBgFill = pReader->GetBool();						
+					}break;			
 					default:
 						break;
 				}
@@ -360,26 +357,22 @@ namespace PPTX
 				{
 					case 0:
 					{
-						nvSpPr.fromPPTY(pReader);
-						break;
-					}
+						nvSpPr.fromPPTY(pReader);						
+					}break;
 					case 1:
 					{
-						spPr.fromPPTY(pReader);
-						break;
-					}
+						spPr.fromPPTY(pReader);						
+					}break;
 					case 2:
 					{
 						style = new ShapeStyle(L"p");
-						style->fromPPTY(pReader);
-						break;
-					}
+						style->fromPPTY(pReader);						
+					}break;
 					case 3:
 					{
 						txBody = new TxBody();
-						txBody->fromPPTY(pReader);
-						break;
-					}
+						txBody->fromPPTY(pReader);						
+					}break;
 					case 4:
 					{
 						if (NULL != pReader->m_pMainDocument)
@@ -404,37 +397,48 @@ namespace PPTX
 						else
 						{
 							pReader->SkipRecord();
-						}
-						break;
-					}
+						}						
+					}break;
 					case 5:
 					{
 						oTextBoxBodyPr = new PPTX::Logic::BodyPr();
-						oTextBoxBodyPr->fromPPTY(pReader);
-						break;
-					}
+						oTextBoxBodyPr->fromPPTY(pReader);						
+					}break;
 					case 6:
 					{
 						txXfrm = new PPTX::Logic::Xfrm(); txXfrm->node_name = L"dsp:txXfrm";
-						txXfrm->fromPPTY(pReader);
-						break;
-					}
+						txXfrm->fromPPTY(pReader);						
+					}break;
 					case 7:
 					{
 						signatureLine = new OOX::VmlOffice::CSignatureLine();
-						signatureLine->fromPPTY(pReader);
-						break;
-					}
+						signatureLine->fromPPTY(pReader);						
+					}break;
+					case 8:
+					{
+						pReader->Skip(5); // type + size
+						modelId = pReader->GetString2();
+					}break;
+					case 9:
+					{
+						pReader->Skip(5); // type + size
+						fLocksText = pReader->GetBool();
+					}break;
+					case SPTREE_TYPE_MACRO:
+					{
+						pReader->Skip(5); // type + size
+						macro = pReader->GetString2();
+					}break;
 					default:
 					{
-						pReader->SkipRecord();
-						break;
-					}
+						pReader->SkipRecord();						
+					}break;
 				}
 			}
 
 			pReader->Seek(_end_rec);
 		}
+
 		void Shape::FillParentPointersForChilds()
 		{
 			nvSpPr.SetParentPointer(this);
@@ -450,9 +454,7 @@ namespace PPTX
 			pWriter->StartRecord(SPTREE_TYPE_SHAPE);
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteBool2(0, attrUseBgFill);
-			pWriter->WriteString2(1, attrMacro);
-			pWriter->WriteString2(2, attrModelId);
+				pWriter->WriteBool2(0, useBgFill);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord1(0, nvSpPr);
@@ -519,6 +521,24 @@ namespace PPTX
 			pWriter->WriteRecord2(6, txXfrm);
 			pWriter->WriteRecord2(7, signatureLine);
 			
+			if (modelId.IsInit())
+			{
+				pWriter->StartRecord(8);
+				pWriter->WriteString1(0, *modelId);
+				pWriter->EndRecord();
+			}
+			if (fLocksText.IsInit())
+			{
+				pWriter->StartRecord(9);
+				pWriter->WriteBool1(0, *fLocksText);
+				pWriter->EndRecord();
+			}
+			if (macro.IsInit())
+			{
+				pWriter->StartRecord(SPTREE_TYPE_MACRO);
+				pWriter->WriteString1(0, *macro);
+				pWriter->EndRecord();
+			}
 			pWriter->EndRecord();
 		}
 

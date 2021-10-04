@@ -475,7 +475,8 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 	}
     else if ( "mmathPr" == sCommand )
 	{
-		RtfMathReader oMathPropReader(oDocument.m_oMathProp);
+		oDocument.m_pMathProp = RtfMathPtr(new RtfMath());
+		RtfMathReader oMathPropReader(oDocument.m_pMathProp);
 		return StartSubReader( oMathPropReader, oDocument, oReader );
 	}
     else if ( "ftnsep" == sCommand || "ftnsepc" == sCommand ||
@@ -2850,11 +2851,11 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 //Math
     else if ( "mmath" == sCommand )
 	{
-		RtfMathPtr		oNewMath	( new RtfMath() );
-		RtfMathReader	oMathReader	( *oNewMath );
+		RtfMathPtr		pNewMath	( new RtfMath() );
+		RtfMathReader	oMathReader	( pNewMath );
 		
 		oAbstrReader.StartSubReader( oMathReader, oDocument, oReader );
-		m_oCurParagraph->AddItem( oNewMath );
+		m_oCurParagraph->AddItem(pNewMath);
 	}
 //Drawing
     else if ( "shp" == sCommand )

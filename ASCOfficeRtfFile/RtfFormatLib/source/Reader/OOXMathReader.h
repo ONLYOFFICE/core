@@ -40,10 +40,10 @@
 class OOXMathReader
 {
 private:
-	OOX::WritingElementWithChilds<OOX::WritingElement>	*m_ooxElem;
+	OOX::WritingElementWithChilds<OOX::WritingElement> *m_ooxElem;
 
 public: 
-	RtfCharProperty										m_oCharProperty;
+	RtfCharProperty m_oCharProperty;
 
 	OOXMathReader(OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElem)
 	{
@@ -53,19 +53,5 @@ public:
 
 	bool ParseElement(ReaderParameter oParam , OOX::WritingElement * ooxMath, RtfMathPtr & rtfMath);
 
-	bool Parse( ReaderParameter oParam , RtfMath& oOutput)
-	{
-		if (m_ooxElem == NULL) return false;
-
-        for (std::vector<OOX::WritingElement*>::iterator it = m_ooxElem->m_arrItems.begin(); it != m_ooxElem->m_arrItems.end(); ++it)
-		{
-			RtfMathPtr pNewMath;
-			
-			if (ParseElement(oParam, *it, pNewMath))
-			{
-				oOutput.AddItem( pNewMath );
-			}
-		}
-		return true;
-	}
+	bool Parse(ReaderParameter oParam, RtfMath& oOutput);
 };

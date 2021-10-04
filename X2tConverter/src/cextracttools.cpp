@@ -128,9 +128,11 @@ namespace NExtractTools
 								res = TCD_DOTM2DOCX;
 						}
                         else if (0 == sExt2.compare(_T(".docm")))	res = TCD_DOTM2DOCM;
-						else if (0 == sExt2.compare(_T(".txt")))		res = TCD_DOCX2TXT;
+						else if (0 == sExt2.compare(_T(".txt")))	res = TCD_DOCX2TXT;
 				}break;
-				case AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE:
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_PACKAGE:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_PACKAGE:
+				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX_PACKAGE:
 					{
 							 if (0 == sExt2.compare(_T(".doct")))		res = TCD_PKG2BIN_T;
 						else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_PKG2BIN_T;
@@ -149,7 +151,8 @@ namespace NExtractTools
 					{
 							 if (0 == sExt2.compare(_T(".xlst")))		res = TCD_XLSXFLAT2XLST;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_XLSXFLAT2XLST_BIN;
-					}break;
+						else if (0 == sExt2.compare(_T(".xlsx")))		res = TCD_XLSXFLAT2XLSX;
+				}break;
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
@@ -204,6 +207,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY:
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOCT2DOCX;
+						else if (0 == sExt2.compare(_T(".oform")))		res = TCD_DOCT2DOCX;
 						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOCT2DOCM;
 						else if (0 == sExt2.compare(_T(".dotx")))		res = TCD_DOCT2DOTX;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_T2BIN;
@@ -228,6 +232,7 @@ namespace NExtractTools
 					{
 							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOCT_BIN2DOCX;
 						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOCT_BIN2DOCX;
+						else if (0 == sExt2.compare(_T(".oform")))		res = TCD_DOCT_BIN2DOCX;
 						else if (0 == sExt2.compare(_T(".dotx")))		res = TCD_DOCT_BIN2DOCX;
 						else if (0 == sExt2.compare(_T(".doct")))		res = TCD_BIN2T;
 						else if (0 == sExt2.compare(_T(".rtf")))		res = TCD_DOCT_BIN2RTF;

@@ -143,6 +143,10 @@ void CXpsFile::Close()
         m_pInternal->m_wsTempFolder = NULL;
 	}
 }
+OfficeDrawingFileType CXpsFile::GetType()
+{
+    return odftXPS;
+}
 int CXpsFile::GetPagesCount()
 {
     if (!m_pInternal->m_pDocument)

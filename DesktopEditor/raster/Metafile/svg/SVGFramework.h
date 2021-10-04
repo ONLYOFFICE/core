@@ -2834,16 +2834,20 @@ public:
                 std::vector<double> Values;
                 if (StrUtils::DoubleValues(Source, Values))
                 {
-                    PointPath oPoint;
-                    oPoint.code	=	symbol;
+                    int Size	=	( Values.size () / 4 ) * 4;
+                    for ( int j = 0; j < Size; j += 4 )
+                    {
+                        PointPath oPoint;
+                        oPoint.code	=	symbol;
 
-                    oPoint.oPoint	=	Point ( Values [ 0 ], Values [ 1 ] );
-                    m_Points.push_back ( oPoint );
+                        oPoint.oPoint	=	Point ( Values [ j ], Values [ j + 1 ] );
+                        m_Points.push_back ( oPoint );
 
-                    oPoint.oPoint	=	Point ( Values [ 2 ], Values [ 3 ] );
-                    m_Points.push_back ( oPoint );
+                        oPoint.oPoint	=	Point ( Values [ j + 2 ], Values [ j + 3 ] );
+                        m_Points.push_back ( oPoint );
 
-                    // ATLTRACE ( _T("LineTo : %f, %f "), oPoint.oPoint.X, oPoint.oPoint.Y );
+                        // ATLTRACE ( _T("LineTo : %f, %f "), oPoint.oPoint.X, oPoint.oPoint.Y );
+                    }
                 }
 
                 if ( To == std::wstring::npos )
@@ -5687,6 +5691,22 @@ public:
             m_oUs.SetViewBox(m_nWidth, m_nHeight, m_oViewBox, m_Metrics);
 
             SetDefaultSizes ();
+
+            m_oStyle.SetDefault();
+            m_oStyle.ClearFillColor();
+            std::wstring css = oXml.GetAttribute(L"style");
+            if (!css.empty())
+            {
+                m_oFontStyle.SetStyle (css, true);
+                m_oStyle.SetStyle (css, true, m_oUs, m_model, m_oColTable);
+            }
+            else
+            {
+                m_oFontStyle.UpdateStyle (oXml);
+                m_oStyle.UpdateStyle (oXml, m_oUs, m_model, m_oColTable);
+            }
+
+            m_oStyles.Push(m_oStyle);
         }
         else if (L"g" == strXmlNode)
         {

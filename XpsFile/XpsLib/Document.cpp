@@ -74,7 +74,10 @@ namespace XPS
 				std::wstring wsAttr;
 				ReadAttribute(oReader, L"Type", wsAttr);
 
-				if (L"http://schemas.microsoft.com/xps/2005/06/fixedrepresentation" == wsAttr)
+                // http://schemas.microsoft.com/xps/2005/06/fixedrepresentation
+                // http://schemas.openxps.org/oxps/v1.0/fixedrepresentation
+                if (wsAttr.find(L"fixedrepresentation") != std::wstring::npos &&
+                    ((wsAttr.find(L"/xps/") != std::wstring::npos) || (wsAttr.find(L"/oxps/") != std::wstring::npos)))
 				{
 					ReadAttribute(oReader, L"Target", wsTargetFile);
 					break;

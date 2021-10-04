@@ -33,6 +33,11 @@
 
 #include "./SpTree.h"
 
+namespace OOX
+{
+	class CDiagramData;
+}
+
 namespace PPTX
 {
 	namespace Logic
@@ -57,16 +62,6 @@ namespace PPTX
 			virtual OOX::EElementType getType () const
 			{
 				return OOX::et_dgm_DiagrammParts;
-			}
-			
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_Read_if	  ( oReader, (L"r:cs"), id_color)
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:dm"), id_data)
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:lo"), id_layout)
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:qs"), id_style)
-				WritingElement_ReadAttributes_End	( oReader )
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -99,6 +94,17 @@ namespace PPTX
 			virtual void FillParentPointersForChilds()
 			{
 			}
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, (L"r:cs"), id_color)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:dm"), id_data)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:lo"), id_layout)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:qs"), id_style)
+				WritingElement_ReadAttributes_End(oReader)
+			}
+			smart_ptr<OOX::File> FindDiagramDrawing(OOX::CDiagramData* pDiagramData) const;
 		};
 
 		class ChartRec : public WrapperWritingElement

@@ -2666,6 +2666,7 @@ public:
 	{
 		SetDefault();
 		
+		m_nSpaceBefore = 0; // 137.rtf
 		//4.1 Наряд_R7_M133.rtf
 		m_nSpaceAfter = 0;
 		m_nSpaceBetween = 240;

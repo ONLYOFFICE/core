@@ -37,9 +37,9 @@ QMAKE_TARGET_COPYRIGHT = Copyright (C) $${PUBLISHER_NAME} $${CURRENT_YEAR}. All 
 # CONFIGURATION
 CONFIG(debug, debug|release) {
     CONFIG += core_debug
-} else {
-    CONFIG += core_release
 }
+force_debug_info:CONFIG += core_debug
+!core_debug:CONFIG += core_release
 
 not_use_dynamic_libs {
 shared {
@@ -320,6 +320,10 @@ core_windows {
 plugin {
     TARGET_EXT = .dll
 }
+}
+
+core_disable_all_warnings {
+    CONFIG += warn_off
 }
 
 # BUILD_PATHS

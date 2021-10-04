@@ -385,9 +385,10 @@ namespace OOX
 			void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);
 
 			void AfterRead();
-			//----------- 2003			
+	//----------- 2003			
 			void After2003Read();
 
+			nullable<CCommentItem> pCommentItem;
 			nullable_string sStyleId;
 			nullable_string sArrayRange;
 			nullable_string sHyperlink;
@@ -471,10 +472,6 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>					m_oThickBot;
 			nullable<SimpleTypes::COnOff<>>					m_oThickTop;
 			nullable<SimpleTypes::CDouble>					m_oDyDescent;
-
-//-------------------------------------------------------------------------
-			std::map<int, unsigned int>	m_mapStyleMerges2003;
-
 		};
 
 		class CSheetData  : public WritingElementWithChilds<CRow>
@@ -522,6 +519,9 @@ namespace OOX
 			}
 		
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oXlsbPos;
+		
+			std::map<int, std::map<int, unsigned int>>	m_mapStyleMerges2003; // map(row, map(col, style))
+			void StyleFromMapStyleMerges2003(std::map<int, unsigned int> &mapStyleMerges);
 		private:
 			void fromXLSBToXmlCell (CCell& pCell, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
@@ -530,9 +530,15 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 	// spreadsheets 2003
+
 			nullable_string m_sStyleID;
 			nullable_double m_dDefaultColumnWidth;
 			nullable_double m_dDefaultRowHeight;
+			nullable_int m_nExpandedColumnCount;
+			nullable_int m_nExpandedRowCount;
+			nullable_int m_nFullColumns;
+			nullable_int m_nFullRows;
+
 		};
 	} //Spreadsheet
 } // namespace OOX

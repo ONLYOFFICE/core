@@ -69,8 +69,8 @@
 
 #include "GThreads.h"
 #include "GContainer.h"
-#include "GString.h"
-#include "GString.h"
+#include "DjVuGString.h"
+#include "DjVuGString.h"
 #include "ByteStream.h"
 #include "GURL.h"
 

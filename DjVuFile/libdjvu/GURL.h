@@ -66,7 +66,7 @@
 #endif
 
 
-#include "GString.h"
+#include "DjVuGString.h"
 #include "Arrays.h"
 #include "GThreads.h"
 

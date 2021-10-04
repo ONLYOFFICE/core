@@ -55,6 +55,10 @@
 #include "../../HtmlRenderer/include/HTMLRenderer3.h"
 
 #include "../../PdfWriter/PdfRenderer.h"
+#ifdef BUILDING_WASM_MODULE
+#include <time.h>
+#include "../../DesktopEditor/graphics/GraphicsRenderer.h"
+#endif
 
 // TODO: 1. Реализовать по-нормальному градиентные заливки (Axial и Radial)
 //       2. m_pRenderer->SetAdditionalParam(L"TilingHtmlPattern", oWriter.GetXmlString());
@@ -655,6 +659,22 @@ namespace PdfReader
                     case fontCIDType2OT:  wsExt = L".cid_2ot";   break;
                 }
 
+                #ifdef BUILDING_WASM_MODULE
+                std::wstring wsTemp = ((GlobalParamsAdaptor *)globalParams)->GetTempFolder() + L"/x";
+                int nTime = (int)time(NULL);
+                for (int nIndex = 0; nIndex < 1000; ++nIndex)
+                {
+                    wsTempFileName = wsTemp + std::to_wstring(nTime + nIndex) + wsExt;
+                    if (!CApplicationFontStreams::m_pMemoryStorage->Get(wsTempFileName))
+                        break;
+                }
+
+                if (CApplicationFontStreams::m_pMemoryStorage->Get(wsTempFileName))
+                {
+                    pEntry->bAvailable = true;
+                    return;
+                }
+                #else
                 FILE* pTempFile = NULL;
                 if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(),
                                                        (wchar_t*)((GlobalParamsAdaptor *)globalParams)->GetTempFolder().c_str(), NULL))
@@ -665,6 +685,7 @@ namespace PdfReader
                     pEntry->bAvailable = true;
                     return;
                 }
+                #endif
 
                 Object oReferenceObject, oStreamObject;
                 oReferenceObject.initRef(oEmbRef.num, oEmbRef.gen);
@@ -674,23 +695,50 @@ namespace PdfReader
                 {
                     // Внедренный шрифт неправильно записан
                     oStreamObject.free();
+                    #ifndef BUILDING_WASM_MODULE
                     fclose(pTempFile);
 
                     if (L"" != wsTempFileName)
                         NSFile::CFileBinary::Remove(wsTempFileName);
+                    #endif
 
                     pEntry->bAvailable = true;
                     return;
                 }
                 oStreamObject.streamReset();
+                #ifdef BUILDING_WASM_MODULE
+                LONG nCurrentPos  = 0;
+                LONG nCurrentSize = 0xffff;
+                BYTE* pTempStream = new BYTE[nCurrentSize];
+                int nChar;
+                while ((nChar = oStreamObject.streamGetChar()) != EOF)
+                {
+                    if (nCurrentPos >= nCurrentSize)
+                    {
+                        LONG nNewSize = nCurrentSize + 0xffff;
+                        BYTE* NewBuffer = new BYTE[nNewSize];
+                        memcpy(NewBuffer, pTempStream, nCurrentSize);
+                        RELEASEARRAYOBJECTS(pTempStream);
+                        pTempStream = NewBuffer;
+                        nCurrentSize = nNewSize;
+                    }
+                    pTempStream[nCurrentPos++] = nChar;
+                }
+                BYTE* pResBuffer = new BYTE[nCurrentPos];
+                memcpy(pResBuffer, pTempStream, nCurrentPos);
+                RELEASEARRAYOBJECTS(pTempStream);
+                CApplicationFontStreams::m_pMemoryStorage->Add(wsTempFileName, pResBuffer, nCurrentPos, true);
+                RELEASEARRAYOBJECTS(pResBuffer);
+                #else
                 int nChar;
                 while ((nChar = oStreamObject.streamGetChar()) != EOF)
                 {
                     fputc(nChar, pTempFile);
                 }
+                fclose(pTempFile);
+                #endif
                 oStreamObject.streamClose();
                 oStreamObject.free();
-                fclose(pTempFile);
                 wsFileName = wsTempFileName;
 
                 // Для шрифтов типа Type1 нужно дописать Afm файл с метриками

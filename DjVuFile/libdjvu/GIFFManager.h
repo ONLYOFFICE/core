@@ -70,7 +70,7 @@
 #include "GContainer.h"
 #include "Arrays.h"
 #include "GSmartPointer.h"
-#include "GString.h"
+#include "DjVuGString.h"
 
 #ifdef HAVE_NAMESPACES
 namespace DJVU {

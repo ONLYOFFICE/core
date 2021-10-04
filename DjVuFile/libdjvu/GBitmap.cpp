@@ -66,7 +66,7 @@
 #include "GBitmap.h"
 #include "ByteStream.h"
 #include "GRect.h"
-#include "GString.h"
+#include "DjVuGString.h"
 #include "GThreads.h"
 #include "GException.h"
 #include <string.h>

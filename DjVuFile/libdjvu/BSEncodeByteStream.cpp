@@ -68,7 +68,7 @@
 
 
 #include "BSByteStream.h"
-#include "GString.h"
+#include "DjVuGString.h"
 #undef BSORT_TIMER
 #ifdef BSORT_TIMER
 #include "GOS.h"

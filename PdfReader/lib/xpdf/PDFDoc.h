@@ -50,6 +50,8 @@ public:
   // Windows).
   PDFDoc(char *fileNameA, GString *ownerPassword = NULL,
 	 GString *userPassword = NULL, PDFCore *coreA = NULL);
+  PDFDoc(BYTE* data, DWORD length, GString *ownerPassword = NULL,
+         GString *userPassword = NULL, PDFCore *coreA = NULL);
 
   PDFDoc(BaseStream *strA, GString *ownerPassword = NULL,
 	 GString *userPassword = NULL, PDFCore *coreA = NULL);

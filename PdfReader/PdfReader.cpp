@@ -171,13 +171,21 @@ namespace PdfReader
         pMeasurerCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
         m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(1);
-        m_pInternal->m_pGlobalParams->SetFontManager(m_pInternal->m_pFontManager);
+        ((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pInternal->m_pFontManager);
 //------------------------------------------------------
-        RELEASEOBJECT(m_pInternal->m_pPDFDocument);
-        m_pInternal->m_pPDFDocument = new PDFDoc(m_pInternal->m_pGlobalParams, data, length, owner_password, user_password);
-        m_eError = m_pInternal->m_pPDFDocument ? m_pInternal->m_pPDFDocument->GetErrorCode() : errorMemory;
 
-        if (!m_pInternal->m_pPDFDocument || !m_pInternal->m_pPDFDocument->CheckValidation())
+        RELEASEOBJECT(m_pInternal->m_pPDFDocument);
+        m_eError = errNone;
+        GString* owner_pswd = NSStrings::CreateString(owner_password);
+        GString* user_pswd = NSStrings::CreateString(user_password);
+        m_pInternal->m_pPDFDocument = new PDFDoc(data, length, owner_pswd, user_pswd);
+
+        delete owner_pswd;
+        delete user_pswd;
+
+        m_eError = m_pInternal->m_pPDFDocument ? m_pInternal->m_pPDFDocument->getErrorCode() : errMemory;
+
+        if (!m_pInternal->m_pPDFDocument || !m_pInternal->m_pPDFDocument->isOk())
         {
             RELEASEOBJECT(m_pInternal->m_pPDFDocument);
             return false;
@@ -185,7 +193,7 @@ namespace PdfReader
 
         m_pInternal->m_pFontList->Clear();
 
-        return (errorNone == m_eError);
+        return (errNone == m_eError);
     }
     void CPdfReader::Close()
 	{

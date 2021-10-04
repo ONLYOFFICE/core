@@ -65,7 +65,7 @@
 
 #include "DataPool.h"
 #include "IFFByteStream.h"
-#include "GString.h"
+#include "DjVuGString.h"
 #include "GOS.h"
 #include "GURL.h"
 #include "debug.h"

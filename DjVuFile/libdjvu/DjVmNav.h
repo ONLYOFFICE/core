@@ -66,7 +66,7 @@
 #endif
 
 #include "DjVuGlobal.h"
-#include "GString.h"
+#include "DjVuGString.h"
 #include "GThreads.h"
 
 #ifdef HAVE_NAMESPACES

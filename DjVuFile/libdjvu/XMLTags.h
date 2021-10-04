@@ -69,7 +69,7 @@
 // This is purely Lizardtech stuff.
 
 #include "GContainer.h"
-#include "GString.h"
+#include "DjVuGString.h"
 
 #ifdef HAVE_NAMESPACES
 namespace DJVU {

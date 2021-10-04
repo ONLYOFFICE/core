@@ -99,7 +99,7 @@ extern "C" {
 #include "GPixmap.h"
 #ifdef LIBJPEGNAME
 #include "DjVuDynamic.h"
-#include "GString.h"
+#include "DjVuGString.h"
 #endif // LIBJPEGNAME
 
 

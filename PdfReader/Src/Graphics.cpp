@@ -49,7 +49,7 @@
 #include "OutputDevice.h"
 #include "Page.h"
 #include "Annot.h"
-#include "PDFGraphics.h"
+#include "Graphics.h"
 
 // Под виндой переопределяется
 #ifdef GetObject

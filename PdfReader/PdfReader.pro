@@ -45,7 +45,7 @@ SOURCES += \
     Src/Function.cpp \
     Src/GFont.cpp \
     Src/GlobalParams.cpp \
-    Src/PDFGraphics.cpp \
+    Src/Graphics.cpp \
     Src/GState.cpp \
     Src/Hash.cpp \
     Src/JArithmeticDecoder.cpp \
@@ -110,7 +110,7 @@ HEADERS +=\
     Src/Function.h \
     Src/GFont.h \
     Src/GlobalParams.h \
-    Src/PDFGraphics.h \
+    Src/Graphics.h \
     Src/GState.h \
     Src/Hash.h \
     Src/JArithmeticDecoder.h \

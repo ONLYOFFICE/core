@@ -218,7 +218,7 @@ PDFDoc::PDFDoc(char *fileNameA, GString *ownerPassword,
   ok = setup(ownerPassword, userPassword);
 }
 
-PDFDoc::PDFDoc(BYTE* data, DWORD length, GString *ownerPassword,
+PDFDoc::PDFDoc(unsigned char* data, unsigned long length, GString *ownerPassword,
            GString *userPassword, PDFCore *coreA)
 {
     Object obj;

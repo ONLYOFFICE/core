@@ -76,7 +76,7 @@ libXps_src_path = "../../../../XpsFile/XpsLib/"
 input_xps_sources = ["Document.cpp", "XpsPage.cpp", "StaticResources.cpp", "Utils.cpp", "WString.cpp", "ContextState.cpp"]
 
 libDjVu_src_path = "../../../../DjVuFile/libdjvu/"
-input_djvu_sources = ["Arrays.cpp", "BSByteStream.cpp", "BSEncodeByteStream.cpp", "ByteStream.cpp", "DataPool.cpp", "debug.cpp", "DjVmDir.cpp", "DjVmDir0.cpp", "DjVmDoc.cpp", "DjVmNav.cpp", "DjVuAnno.cpp", "DjVuDocEditor.cpp", "DjVuDocument.cpp", "DjVuDumpHelper.cpp", "DjVuErrorList.cpp", "DjVuFile.cpp", "DjVuFileCache.cpp", "DjVuGlobal.cpp", "DjVuGlobalMemory.cpp", "DjVuImage.cpp", "DjVuInfo.cpp", "DjVuMessageLite.cpp", "DjVuNavDir.cpp", "DjVuPalette.cpp", "DjVuPort.cpp", "DjVuText.cpp", "DjVuToPS.cpp", "GBitmap.cpp", "GContainer.cpp", "GException.cpp", "GIFFManager.cpp", "GMapAreas.cpp", "GPixmap.cpp", "GRect.cpp", "GScaler.cpp", "GSmartPointer.cpp", "GString.cpp", "GThreads.cpp", "GUnicode.cpp", "IFFByteStream.cpp", "IW44EncodeCodec.cpp", "IW44Image.cpp", "JB2EncodeCodec.cpp", "JB2Image.cpp", "JPEGDecoder.cpp", "MMRDecoder.cpp", "MMX.cpp", "UnicodeByteStream.cpp", "XMLParser.cpp", "XMLTags.cpp", "ZPCodec.cpp"]
+input_djvu_sources = ["Arrays.cpp", "BSByteStream.cpp", "BSEncodeByteStream.cpp", "ByteStream.cpp", "DataPool.cpp", "debug.cpp", "DjVmDir.cpp", "DjVmDir0.cpp", "DjVmDoc.cpp", "DjVmNav.cpp", "DjVuAnno.cpp", "DjVuDocEditor.cpp", "DjVuDocument.cpp", "DjVuDumpHelper.cpp", "DjVuErrorList.cpp", "DjVuFile.cpp", "DjVuFileCache.cpp", "DjVuGlobal.cpp", "DjVuGlobalMemory.cpp", "DjVuImage.cpp", "DjVuInfo.cpp", "DjVuMessageLite.cpp", "DjVuNavDir.cpp", "DjVuPalette.cpp", "DjVuPort.cpp", "DjVuText.cpp", "DjVuToPS.cpp", "GBitmap.cpp", "GContainer.cpp", "GException.cpp", "GIFFManager.cpp", "GMapAreas.cpp", "GPixmap.cpp", "GRect.cpp", "GScaler.cpp", "GSmartPointer.cpp", "DjVuGString.cpp", "GThreads.cpp", "GUnicode.cpp", "IFFByteStream.cpp", "IW44EncodeCodec.cpp", "IW44Image.cpp", "JB2EncodeCodec.cpp", "JB2Image.cpp", "JPEGDecoder.cpp", "MMRDecoder.cpp", "MMX.cpp", "UnicodeByteStream.cpp", "XMLParser.cpp", "XMLTags.cpp", "ZPCodec.cpp"]
 
 libWasmDjVu_src_path = "../../../../DjVuFile/wasm/libdjvu/"
 input_wasmdjvu_sources = ["atomic.cpp", "DjVuMessage.cpp", "GOS.cpp", "GURL.cpp"]
@@ -104,8 +104,8 @@ input_cryptopp_sources = ["cryptlib.cpp", #"cpu.cpp",
 "rdtables.cpp", "rijndael.cpp", #"ripemd.cpp", "rng.cpp", "rsa.cpp", "rw.cpp", "safer.cpp", "salsa.cpp", "seal.cpp", "seed.cpp", "serpent.cpp", "sha-simd.cpp", 
 "sha.cpp"] #"sha3.cpp", "shacal2-simd.cpp", "shacal2.cpp", "shark.cpp", "sharkbox.cpp", "skipjack.cpp", "socketft.cpp", "sosemanuk.cpp", "square.cpp", "squaretb.cpp", "sse-simd.cpp", "strciphr.cpp", "tea.cpp", "tftables.cpp", "threefish.cpp", "tiger.cpp", "tigertab.cpp", "trdlocal.cpp", "ttmac.cpp", "twofish.cpp", "vmac.cpp", "wait.cpp", "wake.cpp", "whrlpool.cpp", "xtr.cpp", "xtrcrypt.cpp", "zdeflate.cpp", "zinflate.cpp", "zlib.cpp"]
 
-libPdfReader_src_path = "../../../../PdfReader/Src/"
-input_pdfreader_sources = ["Annot.cpp", "Array.cpp", "Catalog.cpp", "CharCodeToUnicode.cpp", "CMap.cpp", "Decrypt.cpp", "Dict.cpp", "ExtractImageOutputDev.cpp", "FontFileBase.cpp", "FontFileTrueType.cpp", "FontFileType1.cpp", "FontFileType1C.cpp", "Function.cpp", "GFont.cpp", "GlobalParams.cpp", "Graphics.cpp", "GState.cpp", "Hash.cpp", "JArithmeticDecoder.cpp", "JBIG2Stream.cpp", "JPXStream.cpp", "Lexer.cpp", "Link.cpp", "List.cpp", "NameToCharCode.cpp", "Object.cpp", "Outline.cpp", "OutputDevice.cpp", "Page.cpp", "PageLabels.cpp", "Parser.cpp", "PDFDoc.cpp", "PSLexer.cpp", "RendererOutputDev.cpp", "SecurityHandler.cpp", "Stream.cpp", "StringExt.cpp", "UnicodeMap.cpp", "XRef.cpp"]
+libPdfReader_src_path = "../../../../PdfReader/"
+input_pdfreader_sources = ["Src/Adaptors.cpp", "Src/GfxClip.cpp", "Src/RendererOutputDev.cpp", "lib/fofi/FofiBase.cc", "lib/fofi/FofiEncodings.cc", "lib/fofi/FofiIdentifier.cc", "lib/fofi/FofiTrueType.cc", "lib/fofi/FofiType1.cc", "lib/fofi/FofiType1C.cc", "lib/goo/FixedPoint.cc", "lib/goo/gfile.cc", "lib/goo/GHash.cc", "lib/goo/GList.cc", "lib/goo/gmem.cc", "lib/goo/gmempp.cc", "lib/goo/GString.cc", "lib/goo/parseargs.c", "lib/goo/Trace.cc", "lib/splash/Splash.cc", "lib/splash/SplashBitmap.cc", "lib/splash/SplashClip.cc", "lib/splash/SplashFont.cc", "lib/splash/SplashFontEngine.cc", "lib/splash/SplashFontFile.cc", "lib/splash/SplashFontFileID.cc", "lib/splash/SplashFTFont.cc", "lib/splash/SplashFTFontEngine.cc", "lib/splash/SplashFTFontFile.cc", "lib/splash/SplashPath.cc", "lib/splash/SplashPattern.cc", "lib/splash/SplashScreen.cc", "lib/splash/SplashState.cc", "lib/splash/SplashXPath.cc", "lib/splash/SplashXPathScanner.cc", "lib/xpdf/AcroForm.cc", "lib/xpdf/Annot.cc", "lib/xpdf/Array.cc", "lib/xpdf/BuiltinFont.cc", "lib/xpdf/BuiltinFontTables.cc", "lib/xpdf/Catalog.cc", "lib/xpdf/CharCodeToUnicode.cc", "lib/xpdf/CMap.cc", "lib/xpdf/Decrypt.cc", "lib/xpdf/Dict.cc", "lib/xpdf/DisplayState.cc", "lib/xpdf/Error.cc", "lib/xpdf/FontEncodingTables.cc", "lib/xpdf/Function.cc", "lib/xpdf/Gfx.cc", "lib/xpdf/GfxFont.cc", "lib/xpdf/GfxState.cc", "lib/xpdf/GlobalParams.cc", "lib/xpdf/ImageOutputDev.cc", "lib/xpdf/JArithmeticDecoder.cc", "lib/xpdf/JBIG2Stream.cc", "lib/xpdf/JPXStream.cc", "lib/xpdf/Lexer.cc", "lib/xpdf/Link.cc", "lib/xpdf/NameToCharCode.cc", "lib/xpdf/Object.cc", "lib/xpdf/OptionalContent.cc", "lib/xpdf/Outline.cc", "lib/xpdf/OutputDev.cc", "lib/xpdf/Page.cc", "lib/xpdf/Parser.cc", "lib/xpdf/PDF417Barcode.cc", "lib/xpdf/PDFCore.cc", "lib/xpdf/PDFDoc.cc", "lib/xpdf/PDFDocEncoding.cc", "lib/xpdf/PreScanOutputDev.cc", "lib/xpdf/PSOutputDev.cc", "lib/xpdf/PSTokenizer.cc", "lib/xpdf/SecurityHandler.cc", "lib/xpdf/ShadingImage.cc", "lib/xpdf/SplashOutputDev.cc", "lib/xpdf/Stream.cc", "lib/xpdf/TextOutputDev.cc", "lib/xpdf/TextString.cc", "lib/xpdf/TileCache.cc", "lib/xpdf/TileCompositor.cc", "lib/xpdf/TileMap.cc", "lib/xpdf/UnicodeMap.cc", "lib/xpdf/UnicodeRemapping.cc", "lib/xpdf/UnicodeTypeTable.cc", "lib/xpdf/UTF8.cc", "lib/xpdf/WebFont.cc", "lib/xpdf/XFAScanner.cc", "lib/xpdf/XRef.cc", "lib/xpdf/Zoox.cc"]
 
 # sources
 sources = []
@@ -113,8 +113,7 @@ for item in input_graphics_sources:
     sources.append(libGraphics_src_path + item)
 for item in input_fontengine_sources:
     sources.append(libFontEngine_src_path + item)
-for item in input_agg_sources:
-    sources.append(libAgg_src_path + item)
+# agg
 # freetype
 for item in input_common_sources:
     sources.append(libCommon_src_path + item)
@@ -124,8 +123,7 @@ for item in input_unicodeconverter_sources:
 sources.append("../../../../XpsFile/XpsFile.cpp")
 # xps
 # djvu
-for item in input_wasmdjvu_sources:
-    sources.append(libWasmDjVu_src_path + item)
+# wasm djvu
 sources.append("../../../../DjVuFile/DjVu.cpp ../../../../DjVuFile/DjVuFileImplementation.cpp")
 for item in input_officeutils_sources:
     sources.append(libOfficeUtils_src_path + item)
@@ -141,7 +139,7 @@ sources.append("../../../../PdfReader/PdfReader.cpp")
 sources.append("raster.o")
 sources.append("wasm/src/drawingfile.cpp")
 
-compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common -I../../../xml/libxml2/include -I../../../xml/build/qt -I../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip -I../../../../OfficeUtils/src/zlib-1.2.11")
+compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common -I../../../xml/libxml2/include -I../../../xml/build/qt -I../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../PdfReader/lib/goo -I../../../../PdfReader/lib/fofi -I../../../../PdfReader/lib/splash -I../../../../PdfReader/lib")
 compiler_flags.append("-D__linux__ -D_LINUX -DUNIX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE -DU_COMMON_IMPLEMENTATION")
 compiler_flags.append("-DWASM_MODE -Derrno=0 -DTHREADMODEL=0 -DDEBUGLVL=0 -DHAVE_MBSTATE_T -DHAVE_STDINCLUDES -DHAS_WCHAR")
 compiler_flags.append("-DHAVE_VA_COPY -DLIBXML_READER_ENABLED -DLIBXML_PUSH_ENABLED -DLIBXML_HTML_ENABLED -DLIBXML_XPATH_ENABLED -DLIBXML_OUTPUT_ENABLED -DLIBXML_C14N_ENABLED -DLIBXML_SAX1_ENABLED -DLIBXML_TREE_ENABLED -DLIBXML_XPTR_ENABLED -DIN_LIBXML -DLIBXML_STATIC -DBUILD_ZLIB_AS_SOURCES -DCRYPTOPP_DISABLE_ASM")
@@ -157,9 +155,13 @@ if base.host_platform() == "windows":
     windows_bat.append("call emsdk/emsdk_env.bat") 
 
     libs = ""
+    for item in input_agg_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(os.path.basename(item))[0] + ".o -c " + arguments + libAgg_src_path + item)
+        libs += ("temp/" + os.path.splitext(os.path.basename(item))[0] + ".o ")
+    
     for item in input_freetype_sources:
-        windows_bat.append("call emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + libFreetype_src_path + item)
-        libs += ("temp/" + os.path.basename(item) + ".o ")
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(os.path.basename(item))[0] + ".o -c " + arguments + libFreetype_src_path + item)
+        libs += ("temp/" + os.path.splitext(os.path.basename(item))[0] + ".o ")
     
     for item in input_icu_sources:
         windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libIcu_src_path + item)
@@ -171,6 +173,10 @@ if base.host_platform() == "windows":
     
     for item in input_djvu_sources:
         windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libDjVu_src_path + item)
+        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
+    
+    for item in input_wasmdjvu_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libWasmDjVu_src_path + item)
         libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
     for item in input_minizip_sources:
@@ -186,8 +192,8 @@ if base.host_platform() == "windows":
         libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
     for item in input_pdfreader_sources:
-        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libPdfReader_src_path + item)
-        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(os.path.basename(item))[0] + ".o -c " + arguments + libPdfReader_src_path + item)
+        libs += ("temp/" + os.path.splitext(os.path.basename(item))[0] + ".o ")
 
     arguments += "-s EXPORTED_FUNCTIONS=\"["
     for item in exported_functions:
@@ -233,8 +239,8 @@ else:
         libs += ("temp/" + item + ".o ")
     
     for item in input_pdfreader_sources:
-        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libPdfReader_src_path + item)
-        libs += ("temp/" + item + ".o ")
+        windows_bat.append("emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + libPdfReader_src_path + item)
+        libs += ("temp/" + os.path.basename(item) + ".o ")
     
     arguments += "-s EXPORTED_FUNCTIONS=\"["
     for item in exported_functions:

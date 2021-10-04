@@ -1559,7 +1559,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		pField->SetMaxLen(pPr->GetMaxCharacters());
 		pField->SetCombFlag(pPr->IsComb());
 		pField->SetAutoFit(pPr->IsAutoFit());
-		pField->SetMultilineFlag(pPr->IsMultiLine());
+		pField->SetMultilineFlag(pPr->IsMultiLine());		
 
 		double* pShifts = NULL;
 		unsigned int unShiftsCount = 0;
@@ -1707,6 +1707,17 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 	if (pFieldBase)
 	{
+		// 0 - Right
+		// 1 - Left
+		// 2 - Center
+		// 3 - Justify
+		// 4 - Distributed
+		unsigned int unAlign = oInfo.GetJc();
+		if (0 == unAlign)
+			pFieldBase->SetAlign(CFieldBase::EFieldAlignType::Right);
+		else if (2 == unAlign)
+			pFieldBase->SetAlign(CFieldBase::EFieldAlignType::Center);
+
 		if (oInfo.HaveBorder())
 		{
 			unsigned char unR, unG, unB, unA;

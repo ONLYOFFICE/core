@@ -84,6 +84,7 @@ namespace PdfWriter
 		m_pFreeTypeLibrary  = NULL;
 		m_pAcroForm         = NULL;
 		m_pFieldsResources  = NULL;
+		m_pDefaultCheckBoxFont = NULL;
 
 		m_bPDFAConformance	= false;
 	}
@@ -175,6 +176,7 @@ namespace PdfWriter
 		m_pAcroForm         = NULL;
 		m_pFieldsResources  = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
+		m_pDefaultCheckBoxFont = NULL;
 
 		m_vPages.clear();
 		m_vExtGrStates.clear();
@@ -600,7 +602,14 @@ namespace PdfWriter
 
 		return NULL;
 	}
-    char* CDocument::GetTTFontTag()
+	CFont14* CDocument::GetDefaultCheckboxFont()
+	{
+		if (!m_pDefaultCheckBoxFont)
+			m_pDefaultCheckBoxFont = new CFont14(m_pXref, this, EStandard14Fonts::standard14fonts_ZapfDingbats);
+
+		return m_pDefaultCheckBoxFont;
+	}
+	char* CDocument::GetTTFontTag()
 	{
 		if (0 == m_sTTFontTag[0])
 		{

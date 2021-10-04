@@ -922,6 +922,11 @@ namespace NSOnlineOfficeBinToPdf
 					oInfo.SetShd(unR, unG, unB, unA);
 				}
 
+				if (nFlags & (1 << 10))
+				{
+					oInfo.SetJc(ReadByte(current, curindex));
+				}
+
 				oInfo.SetType(ReadInt(current, curindex));
 
 				if (oInfo.IsTextField())
@@ -958,6 +963,7 @@ namespace NSOnlineOfficeBinToPdf
 				{
 					CFormFieldInfo::CCheckBoxFormPr* pPr = oInfo.GetCheckBoxFormPr();
 					pPr->SetChecked(nFlags & (1 << 20));
+					pPr->SetType(ReadInt(current, curindex));
 					pPr->SetCheckedSymbol(ReadInt(current, curindex));
 					pPr->SetCheckedFont(ReadString(current, curindex));
 					pPr->SetUncheckedSymbol(ReadInt(current, curindex));

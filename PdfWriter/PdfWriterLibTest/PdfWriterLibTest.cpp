@@ -68,20 +68,21 @@ void TestField()
 
 	CFontTrueType* pFont = oPdf.CreateTrueTypeFont(L"C:/Windows/Fonts/centaur.ttf", 0);
 
-	CTextField* pField1 = oPdf.CreateTextField();
-	pField1->SetRequiredFlag(false);
-	pField1->AddPageRect(pPage, TRect(0, 100, 100, 0));
-	pField1->SetFieldName(L"Test");
-	pField1->SetFieldHint(L"Илья");
+	//CTextField* pField1 = oPdf.CreateTextField();
+	//pField1->SetRequiredFlag(false);
+	//pField1->AddPageRect(pPage, TRect(0, 100, 100, 0));
+	//pField1->SetFieldName(L"Test");
+	//pField1->SetFieldHint(L"Илья");
+	//pField1->SetAlign(CFieldBase::EFieldAlignType::Center);
 
-	CTextField* pField2 = oPdf.CreateTextField();
-	pField2->SetRequiredFlag(false);
-	pField2->SetCombFlag(true);
-	pField2->AddPageRect(pPage, TRect(200, 300, 300, 250));
-	pField2->SetFieldName(L"Test");
-	pField2->SetFieldHint(L"Hint");
-	pField2->SetDefaultAppearance((CFontDict*)pFont, 40, TRgb(0, 255, 0));
-	pField2->SetTextAppearance(L"Enter text", NULL, 0, (CFontDict*)pFont2, TRgb(255, 0, 0), 0.5, 40, 1, 14.3);
+	//CTextField* pField2 = oPdf.CreateTextField();
+	//pField2->SetRequiredFlag(false);
+	//pField2->SetCombFlag(true);
+	//pField2->AddPageRect(pPage, TRect(200, 300, 300, 250));
+	//pField2->SetFieldName(L"Test");
+	//pField2->SetFieldHint(L"Hint");
+	//pField2->SetDefaultAppearance((CFontDict*)pFont, 40, TRgb(0, 255, 0));
+	//pField2->SetTextAppearance(L"Enter text", NULL, 0, (CFontDict*)pFont2, TRgb(255, 0, 0), 0.5, 40, 1, 14.3);
 
 	//CTextField* pField3 = oPdf.CreateTextField();
 	//pField3->SetRequiredFlag(false);
@@ -137,23 +138,27 @@ void TestField()
 	pCheckBox->SetRequiredFlag(false);
 	pCheckBox->AddPageRect(pPage, TRect(50, 600, 100, 550));
 	pCheckBox->SetValue(true);
-	pCheckBox->SetAppearance(L"1", NULL, 0, pFont2, L"2", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//pCheckBox->SetAppearance(L"1", NULL, 0, pFont2, L"2", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	pCheckBox->SetAppearance(1, TRgb(0, 0, 0), 1, 40, 0, 0);
 
 	CRadioGroupField* pRadioGroup = oPdf.GetRadioGroupField(L"RadioGroup");
 	CCheckBoxField* pRadio1 = pRadioGroup->CreateKid();
 	pRadio1->AddPageRect(pPage, TRect(50, 700, 100, 650));
 	pRadio1->SetValue(true);
-	pRadio1->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//pRadio1->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	pRadio1->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
 
 	CCheckBoxField* pRadio2 = pRadioGroup->CreateKid(L"TestName");
 	pRadio2->AddPageRect(pPage, TRect(150, 700, 200, 650));
 	pRadio2->SetValue(true);
-	pRadio2->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//pRadio2->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	pRadio2->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
 
 	CCheckBoxField* pRadio3 = pRadioGroup->CreateKid();
 	pRadio3->AddPageRect(pPage, TRect(250, 700, 300, 650));
 	pRadio3->SetValue(false);
-	pRadio3->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//pRadio3->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	pRadio3->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
 
 	//CPictureField* pPictureField = oPdf.CreatePictureField();
 	//pPictureField->SetRequiredFlag(false);

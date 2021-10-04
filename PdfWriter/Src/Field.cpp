@@ -374,6 +374,10 @@ namespace PdfWriter
 	{
 		return ((CNameObject*)Get("FT"))->Get();
 	}
+	void CFieldBase::SetAlign(const EFieldAlignType& eType)
+	{
+		Add("Q", (int)eType);
+	}
 	//----------------------------------------------------------------------------------------
 	// CTextField
 	//----------------------------------------------------------------------------------------
@@ -491,24 +495,23 @@ namespace PdfWriter
 									   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount, CFontDict* pOffFont,
 									   const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY)
 	{
+		CCheckBoxAnnotAppearance* pAppearance = new CCheckBoxAnnotAppearance(m_pXref, this, m_sYesName.c_str());
+		Add("AP", pAppearance);
+
 		if (!m_pMK)
 		{
 			m_pMK = new CDictObject();
 			m_pXref->Add(m_pMK);
 			Add("MK", m_pMK);
-
-			CArrayObject* pArray = new CArrayObject();
-			pArray->Add(0);
-			m_pMK->Add("BC", pArray);
-
-			pArray = new CArrayObject();
-			pArray->Add(1);
-			m_pMK->Add("BG", pArray);
 		}
-		//m_pMK->Add("CA", new CStringObject(" "));
 
-		CCheckBoxAnnotAppearance* pAppearance = new CCheckBoxAnnotAppearance(m_pXref, this, m_sYesName.c_str());
-		Add("AP", pAppearance);
+		CArrayObject* pArray = new CArrayObject();
+		pArray->Add(0);
+		m_pMK->Add("BC", pArray);
+
+		pArray = new CArrayObject();
+		pArray->Add(1);
+		m_pMK->Add("BG", pArray);
 		
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 
@@ -542,6 +545,81 @@ namespace PdfWriter
 
 		pAppearance->GetYesD()->DrawSimpleText(wsYesValue, pYesCodes, unYesCount, pFieldsResources->GetFontName(pYesFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
 		pAppearance->GetOffD()->DrawSimpleText(wsOffValue, pOffCodes, unOffCount, pFieldsResources->GetFontName(pOffFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+	}
+	void CCheckBoxField::SetAppearance(const int& nType, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY)
+	{
+		if (!m_pMK)
+		{
+			m_pMK = new CDictObject();
+			m_pXref->Add(m_pMK);
+			Add("MK", m_pMK);
+		}
+
+		CArrayObject* pArray = new CArrayObject();
+		pArray->Add(3);
+		m_pMK->Add("BC", pArray);
+
+		pArray = new CArrayObject();
+		pArray->Add(1);
+		pArray->Add(1);
+		pArray->Add(1);
+		m_pMK->Add("BG", pArray);
+
+		CCheckBoxAnnotAppearance* pAppearance = new CCheckBoxAnnotAppearance(m_pXref, this, m_sYesName.c_str());
+		Add("AP", pAppearance);
+
+		CFontDict* pFont = (CFontDict*)m_pDocument->GetDefaultCheckboxFont();
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+
+		const char* sFontName = pFieldsResources->GetFontName(pFont);
+		if (!sFontName)
+			return;
+
+		std::string sDA;
+		sDA.append(std::to_string(oColor.r));
+		sDA.append(" ");
+		sDA.append(std::to_string(oColor.g));
+		sDA.append(" ");
+		sDA.append(std::to_string(oColor.b));
+		sDA.append(" rg /");
+		sDA.append(sFontName);
+		sDA.append(" ");
+		sDA.append(std::to_string(0));
+		sDA.append(" Tf");
+		Add("DA", new CStringObject(sDA.c_str()));
+
+		const char* sExtGrStateName = NULL;
+		if (fabs(dAlpha - 1.0) > 0.001)
+		{
+			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(dAlpha);
+			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
+		}
+
+		double dW = fabs(m_oRect.fRight - m_oRect.fLeft);
+		double dH = fabs(m_oRect.fBottom - m_oRect.fTop);
+
+		dFontSize = dH * 31.014 / 33.8712;
+		dX        = 5.4407 * dW / 37.119000;
+		dY        = 6.4375 * dH / 33.8712;
+
+		SetFieldBorder(border_subtype_Solid, TRgb(0, 0, 0), 1, 0, 0, 0);
+		Remove("BS");
+
+		if (1 == nType)
+		{
+			m_pMK->Add("CA", new CStringObject("4"));
+
+			pAppearance->GetYesN()->DrawSimpleText(L"4", NULL, 0, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, dW, dH);
+			pAppearance->GetOffN()->DrawSimpleText(L"", NULL, 0, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, dW, dH);
+		}
+		else if (2 == nType)
+		{
+			m_pMK->Add("CA", new CStringObject("1"));
+
+			pAppearance->GetYesN()->DrawSimpleText(L"1", NULL, 0, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, dW, dH);
+			pAppearance->GetOffN()->DrawSimpleText(L"", NULL, 0, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, dW, dH);
+		}
+
 	}
 	void CCheckBoxField::SetValue(const bool& isYes)
 	{
@@ -810,15 +888,11 @@ namespace PdfWriter
 			return;
 
 		m_pStream->WriteEscapeName("Tx");
-		m_pStream->WriteStr(" BMC\012q\012");
+		m_pStream->WriteStr(" BMC\012");
 
-		m_pStream->WriteStr("0 0 ");
-		m_pStream->WriteReal(std::max(dWidth, 0.0));
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(std::max(dHeight, 0.0));
-		m_pStream->WriteStr(" re\012W\012n\012");
-
-
+		double dBorderSize   = 0;
+		double dBorderSize_2 = 0;
+		double dBorderSize2  = 0;
 		if (m_pField && m_pField->HaveBorder())
 		{
 			TRgb oColor = m_pField->GetBorderColor();
@@ -831,10 +905,11 @@ namespace PdfWriter
 			m_pStream->WriteReal(oColor.b);
 			m_pStream->WriteStr(" RG\012");
 
-			double dBorderSize = m_pField->GetBorderSize();
-			double dBorderSize_2 = dBorderSize / 2;
+			dBorderSize   = m_pField->GetBorderSize();
+			dBorderSize_2 = dBorderSize / 2;
+			dBorderSize_2 = dBorderSize * 2;
 			m_pStream->WriteReal(dBorderSize);
-			m_pStream->WriteStr(" W\0120 j\0120 J\012");
+			m_pStream->WriteStr(" w\0120 j\0120 J\012");
 
 			m_pStream->WriteReal(dBorderSize_2);
 			m_pStream->WriteChar(' ');
@@ -873,6 +948,17 @@ namespace PdfWriter
 
 			m_pStream->WriteStr("Q\012");
 		}
+
+		m_pStream->WriteStr("q\012");
+
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::max(dWidth - dBorderSize2, 0.0));
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::max(dHeight - dBorderSize2, 0.0));
+		m_pStream->WriteStr(" re\012W\012n\012");
 
 		m_pStream->WriteStr("BT\012");
 
@@ -965,5 +1051,5 @@ namespace PdfWriter
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(std::max(dH, 0.0));
 		m_pStream->WriteStr(" re\012f\012q");
-	}
+	}	
 }

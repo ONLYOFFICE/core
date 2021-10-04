@@ -97,7 +97,7 @@
         var data = new Uint8Array(arrayBuffer);
         var _stream = Module["_malloc"](data.length);
         Module["HEAP8"].set(data, _stream);
-        this.nativeFile = Module["_PDF_Load"](_stream, data.length);
+        this.nativeFile = Module["_Open"](_stream, data.length);
         this.stream = _stream;
         return this.getInfo();
     };
@@ -106,7 +106,7 @@
         if (!this.nativeFile)
             return false;
         
-        var _info = Module["_XPS_GetInfo"](this.nativeFile);
+        var _info = Module["_GetInfo"](this.nativeFile);
         if (!_info)
             return false;
         
@@ -124,12 +124,22 @@
     };
     CFile.prototype.getPagePixmap = function(pageIndex, width, height)
     {
-        return Module["_XPS_GetPixmap"](this.nativeFile, pageIndex, width, height);
+        return Module["_GetPixmap"](this.nativeFile, pageIndex, width, height);
     };
-    
+    CFile.prototype.getGlyphs = function(pageIndex, width, height)
+	{
+	};
+	CFile.prototype.getLinks = function(pageIndex, width, height)
+	{
+		return [];
+	};
+	CFile.prototype.structure = function()
+	{
+		return [];
+	};
     CFile.prototype.close = function()
     {
-        Module["_XPS_Close"](this.nativeFile);
+        Module["_Close"](this.nativeFile);
         this.nativeFile = 0;
         this.pages = [];
 		if (this.stream > 0)
@@ -142,7 +152,7 @@
     };
     CFile.prototype.free = function(pointer)
     {
-        Module["_XPS_Delete"](pointer);
+        Module["_free"](pointer);
     };
 
     window["AscViewer"].PdfFile = CFile;

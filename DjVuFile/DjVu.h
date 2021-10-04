@@ -67,13 +67,13 @@ public:
     virtual int GetPagesCount();
     virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
     virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
-    virtual BYTE* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH);
+    virtual BYTE* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip = false);
     virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1);
 
     void ConvertToPdf(const std::wstring& path);
-    #ifdef WASM_MODE
-    BYTE* GetStructure();
-    BYTE* GetPageGlyphs(int nPageIndex, int nRasterW, int nRasterH);
-    BYTE* GetPageLinks (int nPageIndex, int nRasterW, int nRasterH);
+    #ifdef BUILDING_WASM_MODULE
+    virtual BYTE* GetStructure();
+    virtual BYTE* GetGlyphs(int nPageIndex, int nRasterW, int nRasterH);
+    virtual BYTE* GetLinks (int nPageIndex, int nRasterW, int nRasterH);
     #endif
 };

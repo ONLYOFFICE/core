@@ -68,7 +68,6 @@ HEADERS += \
     ../../../MetafileToRendererCheck.h \
     ../../../MetafileToGraphicsRenderer.h \
     ../../../structures.h \
-    ../../../Graphics.h \
     ../../../GraphicsRenderer.h \
     \
     ../../../../fontengine/ApplicationFonts.h \
@@ -639,7 +638,7 @@ HEADERS +=\
     $$PDF_ROOT_DIR/Src/Function.h \
     $$PDF_ROOT_DIR/Src/GFont.h \
     $$PDF_ROOT_DIR/Src/GlobalParams.h \
-    $$PDF_ROOT_DIR/Src/PDFGraphics.h \
+    $$PDF_ROOT_DIR/Src/Graphics.h \
     $$PDF_ROOT_DIR/Src/GState.h \
     $$PDF_ROOT_DIR/Src/Hash.h \
     $$PDF_ROOT_DIR/Src/JArithmeticDecoder.h \
@@ -687,7 +686,7 @@ SOURCES += \
     $$PDF_ROOT_DIR/Src/Function.cpp \
     $$PDF_ROOT_DIR/Src/GFont.cpp \
     $$PDF_ROOT_DIR/Src/GlobalParams.cpp \
-    $$PDF_ROOT_DIR/Src/PDFGraphics.cpp \
+    $$PDF_ROOT_DIR/Src/Graphics.cpp \
     $$PDF_ROOT_DIR/Src/GState.cpp \
     $$PDF_ROOT_DIR/Src/Hash.cpp \
     $$PDF_ROOT_DIR/Src/JArithmeticDecoder.cpp \
@@ -713,5 +712,5 @@ SOURCES += \
     $$PDF_ROOT_DIR/Src/XRef.cpp \
     $$PDF_ROOT_DIR/PdfReader.cpp
 
-HEADERS += ../wasm/src/wasmgraphics.h
-SOURCES += ../wasm/src/wasmgraphics.cpp
+HEADERS += ../wasm/src/drawingfile.h
+SOURCES += ../wasm/src/drawingfile.cpp

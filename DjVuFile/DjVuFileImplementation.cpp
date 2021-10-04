@@ -223,7 +223,7 @@ void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRende
 		// белая страница
 	}
 }
-BYTE*              CDjVuFileImplementation::ConvertToPixels(int nPageIndex, const int& nRasterW, const int& nRasterH)
+BYTE*              CDjVuFileImplementation::ConvertToPixels(int nPageIndex, const int& nRasterW, const int& nRasterH, bool bIsFlip)
 {
     if (!m_pApplicationFonts)
         return NULL;
@@ -252,7 +252,7 @@ BYTE*              CDjVuFileImplementation::ConvertToPixels(int nPageIndex, cons
     oFrame.put_Data(pBgraData);
     oFrame.put_Width(nWidth);
     oFrame.put_Height(nHeight);
-    oFrame.put_Stride(-4 * nWidth);
+    oFrame.put_Stride((bIsFlip ? 4 : -4) * nWidth);
 
     pRenderer->CreateFromBgraFrame(&oFrame);
     pRenderer->SetSwapRGB(true);

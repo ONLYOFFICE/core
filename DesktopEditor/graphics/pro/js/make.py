@@ -42,19 +42,14 @@ compiler_flags = ["-O3",
 
 exported_functions = ["_malloc",
                       "_free",
-                      "_XPS_Load",
-                      "_DJVU_Load",
-                      "_PDF_Load",
-                      "_XPS_Close",
-                      "_XPS_GetInfo",
-                      "_XPS_GetPixmap",
-                      "_XPS_GetGlyphs",
-                      "_DJVU_GetGlyphs",
-                      "_XPS_GetLinks",
-                      "_DJVU_GetLinks",
-                      "_XPS_GetStructure",
-                      "_DJVU_GetStructure",
-                      "_XPS_Delete"]
+                      "_GetType",
+                      "_Open",
+                      "_Close",
+                      "_GetInfo",
+                      "_GetPixmap",
+                      "_GetGlyphs",
+                      "_GetLinks",
+                      "_GetStructure"]
 
 libGraphics_src_path = "../../"
 input_graphics_sources = ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp"]
@@ -110,7 +105,7 @@ input_cryptopp_sources = ["cryptlib.cpp", #"cpu.cpp",
 "sha.cpp"] #"sha3.cpp", "shacal2-simd.cpp", "shacal2.cpp", "shark.cpp", "sharkbox.cpp", "skipjack.cpp", "socketft.cpp", "sosemanuk.cpp", "square.cpp", "squaretb.cpp", "sse-simd.cpp", "strciphr.cpp", "tea.cpp", "tftables.cpp", "threefish.cpp", "tiger.cpp", "tigertab.cpp", "trdlocal.cpp", "ttmac.cpp", "twofish.cpp", "vmac.cpp", "wait.cpp", "wake.cpp", "whrlpool.cpp", "xtr.cpp", "xtrcrypt.cpp", "zdeflate.cpp", "zinflate.cpp", "zlib.cpp"]
 
 libPdfReader_src_path = "../../../../PdfReader/Src/"
-input_pdfreader_sources = ["Annot.cpp", "Array.cpp", "Catalog.cpp", "CharCodeToUnicode.cpp", "CMap.cpp", "Decrypt.cpp", "Dict.cpp", "ExtractImageOutputDev.cpp", "FontFileBase.cpp", "FontFileTrueType.cpp", "FontFileType1.cpp", "FontFileType1C.cpp", "Function.cpp", "GFont.cpp", "GlobalParams.cpp", "PDFGraphics.cpp", "GState.cpp", "Hash.cpp", "JArithmeticDecoder.cpp", "JBIG2Stream.cpp", "JPXStream.cpp", "Lexer.cpp", "Link.cpp", "List.cpp", "NameToCharCode.cpp", "Object.cpp", "Outline.cpp", "OutputDevice.cpp", "Page.cpp", "PageLabels.cpp", "Parser.cpp", "PDFDoc.cpp", "PSLexer.cpp", "RendererOutputDev.cpp", "SecurityHandler.cpp", "Stream.cpp", "StringExt.cpp", "UnicodeMap.cpp", "XRef.cpp"]
+input_pdfreader_sources = ["Annot.cpp", "Array.cpp", "Catalog.cpp", "CharCodeToUnicode.cpp", "CMap.cpp", "Decrypt.cpp", "Dict.cpp", "ExtractImageOutputDev.cpp", "FontFileBase.cpp", "FontFileTrueType.cpp", "FontFileType1.cpp", "FontFileType1C.cpp", "Function.cpp", "GFont.cpp", "GlobalParams.cpp", "Graphics.cpp", "GState.cpp", "Hash.cpp", "JArithmeticDecoder.cpp", "JBIG2Stream.cpp", "JPXStream.cpp", "Lexer.cpp", "Link.cpp", "List.cpp", "NameToCharCode.cpp", "Object.cpp", "Outline.cpp", "OutputDevice.cpp", "Page.cpp", "PageLabels.cpp", "Parser.cpp", "PDFDoc.cpp", "PSLexer.cpp", "RendererOutputDev.cpp", "SecurityHandler.cpp", "Stream.cpp", "StringExt.cpp", "UnicodeMap.cpp", "XRef.cpp"]
 
 # sources
 sources = []
@@ -144,7 +139,7 @@ sources.append("../../../../HtmlRenderer/src/HTMLRenderer3.cpp")
 sources.append("../../../../PdfReader/PdfReader.cpp")
 # pdfReader
 sources.append("raster.o")
-sources.append("wasm/src/wasmgraphics.cpp")
+sources.append("wasm/src/drawingfile.cpp")
 
 compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common -I../../../xml/libxml2/include -I../../../xml/build/qt -I../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip -I../../../../OfficeUtils/src/zlib-1.2.11")
 compiler_flags.append("-D__linux__ -D_LINUX -DUNIX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE -DU_COMMON_IMPLEMENTATION")
@@ -203,7 +198,7 @@ if base.host_platform() == "windows":
     for item in sources:
         arguments += (item + " ")
 
-    windows_bat.append("call emcc -o xps_djvu_pdf.js " + arguments + libs)
+    windows_bat.append("call emcc -o drawingfile.js " + arguments + libs)
 else:
     windows_bat.append("#!/bin/bash")
     windows_bat.append("source ./emsdk/emsdk_env.sh")
@@ -250,14 +245,14 @@ else:
     for item in sources:
         arguments += (item + " ")
     
-    windows_bat.append("emcc -o xps_djvu_pdf.js " + arguments + libs)
+    windows_bat.append("emcc -o drawingfile.js " + arguments + libs)
 base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n    UDataMemory tData;", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;")
 base.run_as_bat(windows_bat)
 base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;", "\n{\n    UDataMemory tData;")
 
 # finalize
-base.replaceInFile("./xps_djvu_pdf.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
-graphics_js_content = base.readFile("./xps_djvu_pdf.js")
+base.replaceInFile("./drawingfile.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
+graphics_js_content = base.readFile("./drawingfile.js")
 engine_base_js_content = base.readFile("./wasm/js/xps_base.js")
 string_utf8_content    = base.readFile("./../../../../Common/js/string_utf8.js")
 engine_js_content = engine_base_js_content.replace("//module", graphics_js_content)
@@ -273,10 +268,10 @@ pdf_js_content = pdf_js_content.replace("//string_utf8", string_utf8_content)
 base.writeFile("./deploy/xps.js", engine_js_content)
 base.writeFile("./deploy/djvu.js", djvu_js_content)
 base.writeFile("./deploy/pdf.js", pdf_js_content)
-base.copy_file("./xps_djvu_pdf.wasm", "./deploy/xps_djvu_pdf.wasm")
+base.copy_file("./drawingfile.wasm", "./deploy/drawingfile.wasm")
 
-base.delete_file("xps_djvu_pdf.js")
-base.delete_file("xps_djvu_pdf.wasm")
+base.delete_file("drawingfile.js")
+base.delete_file("drawingfile.wasm")
 base.delete_dir("./temp")
 base.delete_dir("./xml")
 # base.delete_file("raster.o")

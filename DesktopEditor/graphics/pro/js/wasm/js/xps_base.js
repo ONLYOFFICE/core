@@ -97,7 +97,7 @@
         var data = new Uint8Array(arrayBuffer);
         var _stream = Module["_malloc"](data.length);
         Module["HEAP8"].set(data, _stream);
-        this.nativeFile = Module["_XPS_Load"](_stream, data.length);
+        this.nativeFile = Module["_Open"](_stream, data.length);
         Module["_free"](_stream);
         return this.getInfo();
     };
@@ -106,7 +106,7 @@
         if (!this.nativeFile)
             return false;
         
-        var _info = Module["_XPS_GetInfo"](this.nativeFile);
+        var _info = Module["_GetInfo"](this.nativeFile);
         if (!_info)
             return false;
         
@@ -124,11 +124,11 @@
     };
     CFile.prototype.getPagePixmap = function(pageIndex, width, height)
     {
-        return Module["_XPS_GetPixmap"](this.nativeFile, pageIndex, width, height);
+        return Module["_GetPixmap"](this.nativeFile, pageIndex, width, height);
     };
     CFile.prototype.getGlyphs = function(pageIndex, width, height)
     {
-        var glyphs = Module["_XPS_GetGlyphs"](this.nativeFile, pageIndex, width, height);
+        var glyphs = Module["_GetGlyphs"](this.nativeFile, pageIndex, width, height);
         if (glyphs == null)
             return;
         var lenArray = new Int32Array(Module["HEAP8"].buffer, glyphs, 4);
@@ -208,12 +208,12 @@
                     prevY = glyph.Y;
             }
         }
-        Module["_XPS_Delete"](glyphs);
+        Module["_free"](glyphs);
     };
     CFile.prototype.getLinks = function(pageIndex, width, height)
     {
         var res = [];
-        var ext = Module["_XPS_GetLinks"](this.nativeFile, pageIndex, width, height);
+        var ext = Module["_GetLinks"](this.nativeFile, pageIndex, width, height);
         var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
         if (lenArray == null)
             return res;
@@ -250,13 +250,13 @@
             res.push({ X : _X * 1.015, Y : _Y * 1.015, W : _W, H : _H, Link : _Link});
         }
 
-        Module["_XPS_Delete"](ext);
+        Module["_free"](ext);
         return res;
     };
     CFile.prototype.structure = function()
     {
         var res = [];
-        var str = Module["_XPS_GetStructure"](this.nativeFile);
+        var str = Module["_GetStructure"](this.nativeFile);
         var lenArray = new Int32Array(Module["HEAP8"].buffer, str, 4);
         if (lenArray == null)
             return res;
@@ -289,12 +289,12 @@
             res.push({ page : _Page, level : _Level, Y : _Y, description : _Description});
         }
 
-        Module["_XPS_Delete"](str);
+        Module["_free"](str);
         return res;
     };
     CFile.prototype.close = function()
     {
-        Module["_XPS_Close"](this.nativeFile);
+        Module["_Close"](this.nativeFile);
         this.nativeFile = 0;
         this.pages = [];
     };
@@ -304,7 +304,7 @@
     };
     CFile.prototype.free = function(pointer)
     {
-        Module["_XPS_Delete"](pointer);
+        Module["_free"](pointer);
     };
 
     window["AscViewer"].XpsFile = CFile;

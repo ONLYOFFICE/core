@@ -89,10 +89,10 @@ void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* p
 	if (m_pImplementation)
 		m_pImplementation->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
 }
-BYTE* CDjVuFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH)
+BYTE* CDjVuFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip)
 {
     if (m_pImplementation)
-        return m_pImplementation->ConvertToPixels(nPageIndex, nRasterW, nRasterH);
+        return m_pImplementation->ConvertToPixels(nPageIndex, nRasterW, nRasterH, bIsFlip);
     return NULL;
 }
 void CDjVuFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
@@ -112,13 +112,13 @@ BYTE* CDjVuFile::GetStructure()
         return m_pImplementation->GetStructure();
     return NULL;
 }
-BYTE* CDjVuFile::GetPageGlyphs(int nPageIndex, int nRasterW, int nRasterH)
+BYTE* CDjVuFile::GetGlyphs(int nPageIndex, int nRasterW, int nRasterH)
 {
     if (m_pImplementation)
         return m_pImplementation->GetPageGlyphs(nPageIndex, nRasterW, nRasterH);
     return NULL;
 }
-BYTE* CDjVuFile::GetPageLinks (int nPageIndex, int nRasterW, int nRasterH)
+BYTE* CDjVuFile::GetLinks (int nPageIndex, int nRasterW, int nRasterH)
 {
     if (m_pImplementation)
         return m_pImplementation->GetPageLinks(nPageIndex, nRasterW, nRasterH);

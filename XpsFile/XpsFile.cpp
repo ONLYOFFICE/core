@@ -169,7 +169,7 @@ void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 
     m_pInternal->m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak, nLastW, nLastH);
 }
-BYTE* CXpsFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH)
+BYTE* CXpsFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip)
 {
     nLastW = nRasterW, nLastH = nRasterH;
     NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
@@ -196,7 +196,7 @@ BYTE* CXpsFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH)
     oFrame.put_Data(pBgraData);
     oFrame.put_Width(nWidth);
     oFrame.put_Height(nHeight);
-    oFrame.put_Stride(-4 * nWidth);
+    oFrame.put_Stride((bIsFlip ? 4 : -4) * nWidth);
 
     pRenderer->CreateFromBgraFrame(&oFrame);
     pRenderer->SetSwapRGB(true);

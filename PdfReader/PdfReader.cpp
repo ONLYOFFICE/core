@@ -288,7 +288,7 @@ namespace PdfReader
             m_pInternal->m_pPDFDocument->DisplayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, false, true, false);
 		}
 	}
-    BYTE* CPdfReader::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* CPdfReader::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip)
     {
         NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
         NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
@@ -314,7 +314,7 @@ namespace PdfReader
         oFrame.put_Data(pBgraData);
         oFrame.put_Width(nWidth);
         oFrame.put_Height(nHeight);
-        oFrame.put_Stride(-4 * nWidth);
+        oFrame.put_Stride((bIsFlip ? 4 : -4) * nWidth);
 
         pRenderer->CreateFromBgraFrame(&oFrame);
         pRenderer->SetSwapRGB(true);
@@ -449,4 +449,18 @@ namespace PdfReader
 
 		return wsXml;
 	}
+#ifdef BUILDING_WASM_MODULE
+    BYTE* CPdfReader::GetStructure()
+    {
+        return NULL;
+    }
+    BYTE* CPdfReader::GetGlyphs(int nPageIndex, int nRasterW, int nRasterH)
+    {
+        return NULL;
+    }
+    BYTE* CPdfReader::GetLinks (int nPageIndex, int nRasterW, int nRasterH)
+    {
+        return NULL;
+    }
+#endif
 }

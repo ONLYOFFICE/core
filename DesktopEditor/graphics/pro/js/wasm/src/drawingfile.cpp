@@ -4,7 +4,7 @@
 #include "../../../../GraphicsRenderer.h"
 #include "../../../../pro/Graphics.h"
 #include "../../../../../common/Base64.h"
-#include "wasmgraphics.h"
+#include "drawingfile.h"
 
 #ifdef _WIN32
 #define WASM_EXPORT __declspec(dllexport)
@@ -18,39 +18,37 @@ CGlobalFontsMemoryStorage* CApplicationFontStreams::m_pMemoryStorage = NULL;
 extern "C" {
 #endif
 
-WASM_EXPORT CGraphicsFileDrawing* XPS_Load (BYTE* data, LONG size)
+WASM_EXPORT int   GetType   (BYTE* data, LONG size)
+{
+    // 0 - PDF
+    // 1 - DJVU
+    // 2 - XPS
+    char* pFirst = strstr((char*)data, "%PDF-" );
+    if (pFirst)
+        return 0;
+    if ( (8 <= size) && (0x41 == data[0] && 0x54 == data[1] && 0x26 == data[2] && 0x54 == data[3] &&
+                         0x46 == data[4] && 0x4f == data[5] && 0x52 == data[6] && 0x4d == data[7]))
+        return 1;
+    return 2;
+}
+WASM_EXPORT CGraphicsFileDrawing* Open(BYTE* data, LONG size)
 {
     CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing();
-    pGraphics->CreateXPS();
-    if (!CApplicationFontStreams::m_pMemoryStorage)
-        CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
-    pGraphics->LoadFromMemory(data, size);
-    return pGraphics;
+    if (pGraphics->Open(data, size, GetType(data, size)))
+    {
+        if (!CApplicationFontStreams::m_pMemoryStorage)
+            CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
+        return pGraphics;
+    }
+    delete pGraphics;
+    return NULL;
 }
-WASM_EXPORT CGraphicsFileDrawing* DJVU_Load(BYTE* data, LONG size)
-{
-    CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing();
-    pGraphics->CreateDjVu();
-    if (!CApplicationFontStreams::m_pMemoryStorage)
-        CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
-    pGraphics->LoadFromMemory(data, size);
-    return pGraphics;
-}
-WASM_EXPORT CGraphicsFileDrawing* PDF_Load (BYTE* data, LONG size)
-{
-    CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing();
-    pGraphics->CreatePDF();
-    if (!CApplicationFontStreams::m_pMemoryStorage)
-        CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
-    pGraphics->LoadFromMemory(data, size);
-    return pGraphics;
-}
-WASM_EXPORT void  XPS_Close     (CGraphicsFileDrawing* pGraphics)
+WASM_EXPORT void  Close     (CGraphicsFileDrawing* pGraphics)
 {
     delete pGraphics;
     RELEASEOBJECT(CApplicationFontStreams::m_pMemoryStorage);
 }
-WASM_EXPORT int*  XPS_GetInfo   (CGraphicsFileDrawing* pGraphics)
+WASM_EXPORT int*  GetInfo   (CGraphicsFileDrawing* pGraphics)
 {
     int pages_count = pGraphics->GetPagesCount();
     int* buffer = new int[pages_count * 3 + 1];
@@ -68,37 +66,21 @@ WASM_EXPORT int*  XPS_GetInfo   (CGraphicsFileDrawing* pGraphics)
     }
     return buffer;
 }
-WASM_EXPORT BYTE* XPS_GetPixmap (CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+WASM_EXPORT BYTE* GetPixmap (CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
     return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH);
 }
-WASM_EXPORT BYTE* XPS_GetGlyphs (CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+WASM_EXPORT BYTE* GetGlyphs (CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
-    return pGraphics->GetXPSGlyphs(nPageIndex, nRasterW, nRasterH);
+    return pGraphics->GetGlyphs(nPageIndex, nRasterW, nRasterH);
 }
-WASM_EXPORT BYTE* DJVU_GetGlyphs(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+WASM_EXPORT BYTE* GetLinks  (CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
-    return pGraphics->GetDJVUGlyphs(nPageIndex, nRasterW, nRasterH);
+    return pGraphics->GetLinks(nPageIndex, nRasterW, nRasterH);
 }
-WASM_EXPORT BYTE* XPS_GetLinks(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+WASM_EXPORT BYTE* GetStructure(CGraphicsFileDrawing* pGraphics)
 {
-    return pGraphics->GetXPSLinks(nPageIndex, nRasterW, nRasterH);
-}
-WASM_EXPORT BYTE* DJVU_GetLinks(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
-{
-    return pGraphics->GetDJVULinks(nPageIndex, nRasterW, nRasterH);
-}
-WASM_EXPORT BYTE* XPS_GetStructure(CGraphicsFileDrawing* pGraphics)
-{
-    return pGraphics->GetXPSStructure();
-}
-WASM_EXPORT BYTE* DJVU_GetStructure(CGraphicsFileDrawing* pGraphics)
-{
-    return pGraphics->GetDJVUStructure();
-}
-WASM_EXPORT void  XPS_Delete(BYTE* pData)
-{
-    RELEASEARRAYOBJECTS(pData);
+    return pGraphics->GetStructure();
 }
 
 #ifdef __cplusplus
@@ -127,15 +109,15 @@ int main()
     }
     oFile.CloseFile();
 
-    CGraphicsFileDrawing* test = PDF_Load(pPdfData, nPdfBytesCount);
-    int* info = XPS_GetInfo(test);
+    CGraphicsFileDrawing* test = Open(pPdfData, nPdfBytesCount);
+    int* info = GetInfo(test);
     int pages_count = *info;
     int width  = info[1] * 96 / info[3];
     int height = info[2] * 96 / info[3];
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = XPS_GetPixmap(test, 0, width, height);
+        res = GetPixmap(test, 0, width, height);
 
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";
@@ -150,7 +132,7 @@ int main()
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
-    XPS_Close(test);
+    Close(test);
     RELEASEARRAYOBJECTS(pPdfData);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
@@ -168,14 +150,14 @@ int main()
     }
     oFile.CloseFile();
 
-    CGraphicsFileDrawing* test = XPS_Load(pXpsData, nXpsBytesCount);
-    XPS_Delete(pXpsData);
-    int* info = XPS_GetInfo(test);
+    CGraphicsFileDrawing* test = Open(pXpsData, nXpsBytesCount);
+    RELEASEARRAYOBJECTS(pXpsData);
+    int* info = GetInfo(test);
     int pages_count = *info;
     int width  = info[1] * 96 / info[3];
     int height = info[2] * 96 / info[3];
 
-    BYTE* pGlyphs = XPS_GetGlyphs(test, 22, width, height);
+    BYTE* pGlyphs = GetGlyphs(test, 22, width, height);
     DWORD nLength = GetLength(pGlyphs);
     DWORD i = 4;
     nLength -= 4;
@@ -209,7 +191,7 @@ int main()
         }
     }
 
-    BYTE* pLinks = XPS_GetLinks(test, 22, width, height);
+    BYTE* pLinks = GetLinks(test, 22, width, height);
     nLength = GetLength(pLinks);
     i = 4;
     nLength -= 4;
@@ -237,7 +219,7 @@ int main()
         i += nPathLength;
     }
 
-    BYTE* pStructure = XPS_GetStructure(test);
+    BYTE* pStructure = GetStructure(test);
     nLength = GetLength(pStructure);
     i = 4;
     nLength -= 4;
@@ -261,7 +243,7 @@ int main()
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = XPS_GetPixmap(test, 22, width, height);
+        res = GetPixmap(test, 22, width, height);
 
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";
@@ -276,7 +258,7 @@ int main()
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
-    XPS_Close(test);
+    Close(test);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
     RELEASEARRAYOBJECTS(pGlyphs);
@@ -296,16 +278,16 @@ int main()
     }
     oFile.CloseFile();
 
-    CGraphicsFileDrawing* test = DJVU_Load(pDjVuData, nDjVuBytesCount);
-    XPS_Delete(pDjVuData);
-    int* info = XPS_GetInfo(test);
+    CGraphicsFileDrawing* test = Open(pDjVuData, nDjVuBytesCount);
+    RELEASEARRAYOBJECTS(pDjVuData);
+    int* info = GetInfo(test);
     int pages_count = *info;
     int width  = info[1] * 96 / info[3];
     int height = info[2] * 96 / info[3];
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = XPS_GetPixmap(test, 0, width, height);
+        res = GetPixmap(test, 0, width, height);
 
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";
@@ -319,7 +301,7 @@ int main()
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
-    BYTE* pGlyphs = DJVU_GetGlyphs(test, 0, width, height);
+    BYTE* pGlyphs = GetGlyphs(test, 0, width, height);
     DWORD nLength = GetLength(pGlyphs);
     DWORD i = 4;
     nLength -= 4;
@@ -348,7 +330,7 @@ int main()
         i += nPathLength;
     }
 
-    BYTE* pLinks = DJVU_GetLinks(test, 0, width, height);
+    BYTE* pLinks = GetLinks(test, 0, width, height);
     nLength = GetLength(pLinks);
     i = 4;
     nLength -= 4;
@@ -376,7 +358,7 @@ int main()
         i += nPathLength;
     }
 
-    BYTE* pStructure = DJVU_GetStructure(test);
+    BYTE* pStructure = GetStructure(test);
     nLength = GetLength(pStructure);
     i = 4;
     nLength -= 4;
@@ -395,7 +377,7 @@ int main()
         i += nPathLength;
     }
 
-    XPS_Close(test);
+    Close(test);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
     RELEASEARRAYOBJECTS(pGlyphs);

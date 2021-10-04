@@ -52,8 +52,13 @@ public:
     virtual int GetPagesCount() = 0;
     virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) = 0;
     virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak) = 0;
-    virtual unsigned char* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH) = 0;
+    virtual unsigned char* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip = false) = 0;
     virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1) = 0;
+#ifdef BUILDING_WASM_MODULE
+    virtual unsigned char* GetStructure() = 0;
+    virtual unsigned char* GetGlyphs(int nPageIndex, int nRasterW, int nRasterH) = 0;
+    virtual unsigned char* GetLinks (int nPageIndex, int nRasterW, int nRasterH) = 0;
+#endif
 };
 
 #endif // _OFFICE_DRAWING_FILE_H

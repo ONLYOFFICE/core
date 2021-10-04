@@ -14,11 +14,11 @@ base.create_dir("./deploy")
 base.cmd_in_dir("./../../DesktopEditor/graphics/pro/js", "python", ["make.py"])
 
 # finalize
-if base.is_exist("./../../DesktopEditor/graphics/pro/js/deploy/xps_djvu_pdf.wasm"):
+if base.is_exist("./../../DesktopEditor/graphics/pro/js/deploy/drawingfile.wasm"):
     base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/xps.js", "./deploy/xps.js")
     base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/djvu.js", "./deploy/djvu.js")
     base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/pdf.js", "./deploy/pdf.js")
-    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/xps_djvu_pdf.wasm", "./deploy/xps_djvu_pdf.wasm")
+    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/drawingfile.wasm", "./deploy/drawingfile.wasm")
 else:
     print("make.py error")
     base.copy_dir("./all_files_test/xps_djvu", "./deploy")

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import sys
 sys.path.append("../../../../../build_tools/scripts")
 import base
@@ -89,22 +92,10 @@ input_zlib_sources = ["adler32.c", "crc32.c", "deflate.c", "infback.c", "inffast
 
 input_xml_sources = ["xml/src/xmllight.cpp", "xml/src/xmldom.cpp", "xml/build/qt/libxml2_all.c", "xml/build/qt/libxml2_all2.c"]
 
-libCryptoPP_src_path = "../../../../Common/3dParty/cryptopp/"
-input_cryptopp_sources = ["cryptlib.cpp", #"cpu.cpp", 
-"integer.cpp", #"3way.cpp", "adler32.cpp", "algebra.cpp", 
-"algparam.cpp", "arc4.cpp", #"aria-simd.cpp", "aria.cpp", "ariatab.cpp", 
-"asn.cpp", #"authenc.cpp", "base32.cpp", "base64.cpp", "basecode.cpp", "bfinit.cpp", "blake2-simd.cpp", "blake2.cpp", "blowfish.cpp", "blumshub.cpp", "camellia.cpp", "cast.cpp", "casts.cpp", "cbcmac.cpp", "ccm.cpp", "chacha.cpp", "channels.cpp", "cmac.cpp", "crc-simd.cpp", "crc.cpp", "default.cpp", "des.cpp", "dessp.cpp", "dh.cpp", "dh2.cpp", "dll.cpp", "dsa.cpp", "eax.cpp", "ec2n.cpp", "eccrypto.cpp", "ecp.cpp", "elgamal.cpp", "emsa2.cpp", "eprecomp.cpp", "esign.cpp", "files.cpp", 
-"filters.cpp", "fips140.cpp", #"fipstest.cpp", "gcm-simd.cpp", "gcm.cpp", "gf256.cpp", "gf2_32.cpp", "gf2n.cpp", "gfpcrypt.cpp", "gost.cpp", "gzip.cpp", "hex.cpp", "hmac.cpp", "hrtimer.cpp", "ida.cpp", "idea.cpp", 
-"iterhash.cpp", #"kalyna.cpp", "kalynatab.cpp", "keccak.cpp", "luc.cpp", "mars.cpp", "marss.cpp", "md2.cpp", "md4.cpp", 
-"md5.cpp", "misc.cpp", "modes.cpp", "mqueue.cpp", #"mqv.cpp", "nbtheory.cpp", "neon-simd.cpp", "network.cpp", "oaep.cpp", "osrng.cpp", "panama.cpp", "pkcspad.cpp", "poly1305.cpp", "polynomi.cpp", "pssr.cpp", "pubkey.cpp", 
-"queue.cpp", #"rabin.cpp", "randpool.cpp", "rc2.cpp", "rc5.cpp", "rc6.cpp", "rdrand.cpp", 
-"rdtables.cpp", "rijndael.cpp", #"ripemd.cpp", "rng.cpp", "rsa.cpp", "rw.cpp", "safer.cpp", "salsa.cpp", "seal.cpp", "seed.cpp", "serpent.cpp", "sha-simd.cpp", 
-"sha.cpp"] #"sha3.cpp", "shacal2-simd.cpp", "shacal2.cpp", "shark.cpp", "sharkbox.cpp", "skipjack.cpp", "socketft.cpp", "sosemanuk.cpp", "square.cpp", "squaretb.cpp", "sse-simd.cpp", "strciphr.cpp", "tea.cpp", "tftables.cpp", "threefish.cpp", "tiger.cpp", "tigertab.cpp", "trdlocal.cpp", "ttmac.cpp", "twofish.cpp", "vmac.cpp", "wait.cpp", "wake.cpp", "whrlpool.cpp", "xtr.cpp", "xtrcrypt.cpp", "zdeflate.cpp", "zinflate.cpp", "zlib.cpp"]
-
 libPdfReader_src_path = "../../../../PdfReader/"
 input_pdfreader_sources = ["Src/Adaptors.cpp", "Src/GfxClip.cpp", "Src/RendererOutputDev.cpp", "lib/fofi/FofiBase.cc", "lib/fofi/FofiEncodings.cc", "lib/fofi/FofiIdentifier.cc", "lib/fofi/FofiTrueType.cc", "lib/fofi/FofiType1.cc", "lib/fofi/FofiType1C.cc", "lib/goo/FixedPoint.cc", "lib/goo/gfile.cc", "lib/goo/GHash.cc", "lib/goo/GList.cc", "lib/goo/gmem.cc", "lib/goo/gmempp.cc", "lib/goo/GString.cc", "lib/goo/parseargs.c", "lib/goo/Trace.cc", "lib/splash/Splash.cc", "lib/splash/SplashBitmap.cc", "lib/splash/SplashClip.cc", "lib/splash/SplashFont.cc", "lib/splash/SplashFontEngine.cc", "lib/splash/SplashFontFile.cc", "lib/splash/SplashFontFileID.cc", "lib/splash/SplashFTFont.cc", "lib/splash/SplashFTFontEngine.cc", "lib/splash/SplashFTFontFile.cc", "lib/splash/SplashPath.cc", "lib/splash/SplashPattern.cc", "lib/splash/SplashScreen.cc", "lib/splash/SplashState.cc", "lib/splash/SplashXPath.cc", "lib/splash/SplashXPathScanner.cc", "lib/xpdf/AcroForm.cc", "lib/xpdf/Annot.cc", "lib/xpdf/Array.cc", "lib/xpdf/BuiltinFont.cc", "lib/xpdf/BuiltinFontTables.cc", "lib/xpdf/Catalog.cc", "lib/xpdf/CharCodeToUnicode.cc", "lib/xpdf/CMap.cc", "lib/xpdf/Decrypt.cc", "lib/xpdf/Dict.cc", "lib/xpdf/DisplayState.cc", "lib/xpdf/Error.cc", "lib/xpdf/FontEncodingTables.cc", "lib/xpdf/Function.cc", "lib/xpdf/Gfx.cc", "lib/xpdf/GfxFont.cc", "lib/xpdf/GfxState.cc", "lib/xpdf/GlobalParams.cc", "lib/xpdf/ImageOutputDev.cc", "lib/xpdf/JArithmeticDecoder.cc", "lib/xpdf/JBIG2Stream.cc", "lib/xpdf/JPXStream.cc", "lib/xpdf/Lexer.cc", "lib/xpdf/Link.cc", "lib/xpdf/NameToCharCode.cc", "lib/xpdf/Object.cc", "lib/xpdf/OptionalContent.cc", "lib/xpdf/Outline.cc", "lib/xpdf/OutputDev.cc", "lib/xpdf/Page.cc", "lib/xpdf/Parser.cc", "lib/xpdf/PDF417Barcode.cc", "lib/xpdf/PDFCore.cc", "lib/xpdf/PDFDoc.cc", "lib/xpdf/PDFDocEncoding.cc", "lib/xpdf/PreScanOutputDev.cc", "lib/xpdf/PSOutputDev.cc", "lib/xpdf/PSTokenizer.cc", "lib/xpdf/SecurityHandler.cc", "lib/xpdf/ShadingImage.cc", "lib/xpdf/SplashOutputDev.cc", "lib/xpdf/Stream.cc", "lib/xpdf/TextOutputDev.cc", "lib/xpdf/TextString.cc", "lib/xpdf/TileCache.cc", "lib/xpdf/TileCompositor.cc", "lib/xpdf/TileMap.cc", "lib/xpdf/UnicodeMap.cc", "lib/xpdf/UnicodeRemapping.cc", "lib/xpdf/UnicodeTypeTable.cc", "lib/xpdf/UTF8.cc", "lib/xpdf/WebFont.cc", "lib/xpdf/XFAScanner.cc", "lib/xpdf/XRef.cc", "lib/xpdf/Zoox.cc"]
 
-input_libs_sources = ["../../../../UnicodeConverter/UnicodeConverter.cpp", "../../../../XpsFile/XpsFile.cpp", "../../../../DjVuFile/DjVu.cpp", "../../../../DjVuFile/DjVuFileImplementation.cpp", "../../../../PdfWriter/PdfRenderer.cpp", "../../../../HtmlRenderer/src/HTMLRenderer3.cpp", "../../../../PdfReader/PdfReader.cpp"]
+input_libs_sources = ["../../../../UnicodeConverter/UnicodeConverter.cpp", "../../../../XpsFile/XpsFile.cpp", "../../../../DjVuFile/DjVu.cpp", "../../../../DjVuFile/DjVuFileImplementation.cpp", "../../../../PdfReader/PdfReader.cpp"]
 
 # sources
 sources = []
@@ -121,7 +112,6 @@ sources = []
 # minizip
 # zlib
 # xml
-# cryptopp
 # pdfReader
 # libs
 sources.append("raster.o")
@@ -130,7 +120,7 @@ sources.append("wasm/src/drawingfile.cpp")
 compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common -I../../../xml/libxml2/include -I../../../xml/build/qt -I../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip -I../../../../PdfReader/lib/goo -I../../../../PdfReader/lib/fofi -I../../../../PdfReader/lib/splash -I../../../../PdfReader/lib")
 compiler_flags.append("-D__linux__ -D_LINUX -DUNIX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE -DU_COMMON_IMPLEMENTATION")
 compiler_flags.append("-DWASM_MODE -Derrno=0 -DTHREADMODEL=0 -DDEBUGLVL=0 -DHAVE_MBSTATE_T -DHAVE_STDINCLUDES -DHAS_WCHAR")
-compiler_flags.append("-DHAVE_VA_COPY -DLIBXML_READER_ENABLED -DLIBXML_PUSH_ENABLED -DLIBXML_HTML_ENABLED -DLIBXML_XPATH_ENABLED -DLIBXML_OUTPUT_ENABLED -DLIBXML_C14N_ENABLED -DLIBXML_SAX1_ENABLED -DLIBXML_TREE_ENABLED -DLIBXML_XPTR_ENABLED -DIN_LIBXML -DLIBXML_STATIC -DBUILD_ZLIB_AS_SOURCES -DCRYPTOPP_DISABLE_ASM")
+compiler_flags.append("-DHAVE_VA_COPY -DLIBXML_READER_ENABLED -DLIBXML_PUSH_ENABLED -DLIBXML_HTML_ENABLED -DLIBXML_XPATH_ENABLED -DLIBXML_OUTPUT_ENABLED -DLIBXML_C14N_ENABLED -DLIBXML_SAX1_ENABLED -DLIBXML_TREE_ENABLED -DLIBXML_XPTR_ENABLED -DIN_LIBXML -DLIBXML_STATIC -DBUILD_ZLIB_AS_SOURCES -DDISABLE_PDF_CONVERTATION")
 
 # arguments
 arguments = ""
@@ -194,10 +184,6 @@ if base.host_platform() == "windows":
     for item in input_xml_sources:
         windows_bat.append("call emcc -o temp/" + os.path.splitext(os.path.basename(item))[0] + ".o -c " + arguments + item)
         libs += ("temp/" + os.path.splitext(os.path.basename(item))[0] + ".o ")
-    
-    for item in input_cryptopp_sources:
-        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libCryptoPP_src_path + item)
-        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
     for item in input_pdfreader_sources:
         windows_bat.append("call emcc -o temp/" + os.path.splitext(os.path.basename(item))[0] + ".o -c " + arguments + libPdfReader_src_path + item)
@@ -273,10 +259,6 @@ else:
     for item in input_xml_sources:
         windows_bat.append("emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + item)
         libs += ("temp/" + os.path.basename(item) + ".o ")
-    
-    for item in input_cryptopp_sources:
-        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libCryptoPP_src_path + item)
-        libs += ("temp/" + item + ".o ")
     
     for item in input_pdfreader_sources:
         windows_bat.append("emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + libPdfReader_src_path + item)

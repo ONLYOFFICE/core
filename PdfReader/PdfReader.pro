@@ -15,12 +15,8 @@ PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)
 
 DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
-DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, HtmlRenderer)
-
-DEFINES += CRYPTOPP_DISABLE_ASM
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 
 core_windows {
 LIBS += -lgdi32 \

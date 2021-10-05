@@ -52,9 +52,10 @@
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 
-#include "../../HtmlRenderer/include/HTMLRenderer3.h"
-
+#ifndef DISABLE_PDF_CONVERTATION
 #include "../../PdfWriter/PdfRenderer.h"
+#endif
+
 #ifdef BUILDING_WASM_MODULE
 #include <time.h>
 #include "../../DesktopEditor/graphics/GraphicsRenderer.h"
@@ -461,7 +462,7 @@ namespace PdfReader
         m_pTransparentGroupSoftMask = NULL;
 
         if (c_nHtmlRendrerer2 == m_lRendererType)
-            m_bDrawOnlyText = ((NSHtmlRenderer::CASCHTMLRenderer3*)m_pRenderer)->GetOnlyTextMode();
+            m_bDrawOnlyText = (S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0)) ? true : false;
         else
             m_bDrawOnlyText = false;
     }
@@ -3496,8 +3497,10 @@ namespace PdfReader
         {
             if (c_nPDFWriter == m_lRendererType)
             {
+                #ifndef DISABLE_PDF_CONVERTATION
                 CPdfRenderer* pPdfRenderer = (CPdfRenderer*)m_pRenderer;
                 //pPdfRenderer->CommandDrawTextPdf(wsUnicodeText, &unGid, unGidsCount, wsSrcCodeText, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+                #endif
             }
             else
             {

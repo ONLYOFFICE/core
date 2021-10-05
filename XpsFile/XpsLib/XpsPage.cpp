@@ -34,7 +34,6 @@
 #include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/graphics/structures.h"
 #include "../../DesktopEditor/fontengine/FontManager.h"
-#include "../../PdfWriter/PdfRenderer.h"
 
 #include "Document.h"
 #include "StaticResources.h"

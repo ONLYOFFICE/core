@@ -67,7 +67,10 @@ public:
     virtual BYTE* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip = false);
     virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1);
 
+    #ifndef DISABLE_PDF_CONVERTATION
 	void         ConvertToPdf(const std::wstring& wsDstPath);
+    #endif
+
     #ifdef BUILDING_WASM_MODULE
     virtual BYTE* GetStructure();
     virtual BYTE* GetGlyphs(int nPageIndex, int nRasterW, int nRasterH);

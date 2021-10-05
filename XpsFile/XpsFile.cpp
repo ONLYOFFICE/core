@@ -36,7 +36,10 @@
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
-#include "../PdfWriter/PdfRenderer.h"
+
+#ifndef DISABLE_PDF_CONVERTATION
+#include "../../PdfWriter/PdfRenderer.h"
+#endif
 
 #include "../OfficeUtils/src/OfficeUtils.h"
 #include "../OfficeUtils/src/ZipFolder.h"
@@ -256,6 +259,8 @@ void CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, in
 	RELEASEINTERFACE(pFontManager);
     RELEASEOBJECT(pRenderer);
 }
+
+#ifndef DISABLE_PDF_CONVERTATION
 void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 {
     CPdfRenderer oPdf(m_pInternal->m_pAppFonts);
@@ -288,6 +293,8 @@ void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 
 	oPdf.SaveToFile(wsPath);
 }
+#endif
+
 #ifdef BUILDING_WASM_MODULE
 BYTE* CXpsFile::GetStructure()
 {

@@ -34,8 +34,11 @@
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/structures.h"
-#include "../../PdfWriter/PdfRenderer.h"
 #include "../../DesktopEditor/common/File.h"
+
+#ifndef DISABLE_PDF_CONVERTATION
+#include "../../PdfWriter/PdfRenderer.h"
+#endif
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846
@@ -186,8 +189,10 @@ namespace XPS
 		if (!m_pColors || !m_pPositions || !m_lCount)
 			return false;
 
+#ifndef DISABLE_PDF_CONVERTATION
 		LONG lRendererType = c_nUnknownRenderer;
 		pRenderer->get_Type(&lRendererType);
+
 		if (c_nPDFWriter == lRendererType)
 		{
 			CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
@@ -195,6 +200,7 @@ namespace XPS
 			pPdf->SetLinearGradient(m_dX0, m_dY0, m_dX1, m_dY1);
 		}
 		else
+#endif
 		{
 			double dX = m_dX1 - m_dX0, dY = m_dY1 - m_dY0;
 			double dHyp = sqrt(dX * dX + dY * dY);
@@ -210,8 +216,10 @@ namespace XPS
 		if (!m_pColors || !m_pPositions || !m_lCount)
 			return false;
 
+#ifndef DISABLE_PDF_CONVERTATION
 		LONG lRendererType = c_nUnknownRenderer;
 		pRenderer->get_Type(&lRendererType);
+
 		if (c_nPDFWriter == lRendererType)
 		{
 			CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
@@ -219,6 +227,7 @@ namespace XPS
             pPdf->SetRadialGradient(m_dXo, m_dYo, 0, m_dXc, m_dYc, std::max(m_dRadX, m_dRadY));
 		}
 		else
+#endif
 		{
 			pRenderer->put_BrushType(c_BrushTypePathGradient2);
 			pRenderer->put_BrushGradientColors(m_pColors, m_pPositions, m_lCount);

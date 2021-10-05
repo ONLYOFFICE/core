@@ -1,7 +1,6 @@
 #include <malloc.h>
 #include <iostream>
 
-#include "../../../../GraphicsRenderer.h"
 #include "../../../../pro/Graphics.h"
 #include "../../../../../common/Base64.h"
 #include "drawingfile.h"
@@ -11,8 +10,6 @@
 #else
 #define WASM_EXPORT __attribute__((visibility("default")))
 #endif
-
-CGlobalFontsMemoryStorage* CApplicationFontStreams::m_pMemoryStorage = NULL;
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,20 +30,20 @@ WASM_EXPORT int   GetType   (BYTE* data, LONG size)
 }
 WASM_EXPORT CGraphicsFileDrawing* Open(BYTE* data, LONG size)
 {
+	// всегда пересоздаем сторадж
+	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
+	
     CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing();
     if (pGraphics->Open(data, size, GetType(data, size)))
-    {
-        if (!CApplicationFontStreams::m_pMemoryStorage)
-            CApplicationFontStreams::m_pMemoryStorage = new CGlobalFontsMemoryStorage();
         return pGraphics;
-    }
-    delete pGraphics;
+    
+	delete pGraphics;
     return NULL;
 }
 WASM_EXPORT void  Close     (CGraphicsFileDrawing* pGraphics)
 {
     delete pGraphics;
-    RELEASEOBJECT(CApplicationFontStreams::m_pMemoryStorage);
+    NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NULL);
 }
 WASM_EXPORT int*  GetInfo   (CGraphicsFileDrawing* pGraphics)
 {

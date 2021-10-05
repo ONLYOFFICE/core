@@ -33,7 +33,6 @@
 #include <stdio.h>
 #include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/graphics/structures.h"
-#include "../../DesktopEditor/fontengine/FontManager.h"
 
 #include "Document.h"
 #include "StaticResources.h"
@@ -47,9 +46,6 @@
 #endif
 
 #define IsFromResource(String) (!String.empty() && '{' == String[0])
-#ifndef BUILDING_WASM_MODULE
-CGlobalFontsMemoryStorage* CApplicationFontStreams::m_pMemoryStorage = NULL;
-#endif
 
 namespace XPS
 {
@@ -515,8 +511,8 @@ namespace XPS
 						IFolder::CBuffer* buffer = NULL;
 						m_wsRootPath->read(wsFontPath, buffer);
 						m_pFontList->Check(wsFontName, buffer->Buffer, buffer->Size);
-						if (CApplicationFontStreams::m_pMemoryStorage)
-							CApplicationFontStreams::m_pMemoryStorage->Add(wsFontPath, buffer->Buffer, buffer->Size);
+                        if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
+                            NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontPath, buffer->Buffer, buffer->Size);
 						m_wsRootPath->write(wsFontPath, buffer->Buffer, buffer->Size);
 						RELEASEOBJECT(buffer);
 					}

@@ -79,7 +79,7 @@ public:
     BYTE*        ConvertToPixels(int nPageIndex, const int& nRasterW = -1, const int& nRasterH = -1, bool bIsFlip = false);
     void         ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int& nRasterW = -1, const int& nRasterH = -1);
     void         ConvertToPdf(const std::wstring& wsDstPath);
-    #ifdef WASM_MODE
+    #ifdef BUILDING_WASM_MODULE
     BYTE*        GetStructure();
     BYTE*        GetPageGlyphs(int nPageIndex, const int& nRasterW, const int& nRasterH);
     BYTE*        GetPageLinks (int nPageIndex, const int& nRasterW, const int& nRasterH);

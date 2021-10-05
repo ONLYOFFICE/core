@@ -43,13 +43,11 @@
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/common/Directory.h"
 
-//#include "Src/StringExt.h"
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/GlobalParams.h"
 #include "lib/xpdf/ErrorCodes.h"
 #include "lib/xpdf/ImageOutputDev.h"
 #include "Src/RendererOutputDev.h"
-//#include "Src/PageLabels.h"
 
 namespace PdfReader
 {

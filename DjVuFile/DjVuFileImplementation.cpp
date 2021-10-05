@@ -336,7 +336,7 @@ void               CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsD
 
 	oPdf.SaveToFile(wsDstPath);
 }
-#ifdef WASM_MODE
+#ifdef BUILDING_WASM_MODULE
 class              CData
 {
 protected:

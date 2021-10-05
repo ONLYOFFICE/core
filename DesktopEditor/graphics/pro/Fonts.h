@@ -429,6 +429,20 @@ namespace NSFonts
         virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear) = 0;
     };
 
+    class GRAPHICS_DECL IFontsMemoryStorage : public NSBase::CBaseRefCounter
+    {
+    public:
+        IFontsMemoryStorage();
+        virtual ~IFontsMemoryStorage();
+
+        virtual bool Add(const std::wstring& id, BYTE* data, LONG size, bool bClear = false) = 0;
+        virtual bool Remove(const std::wstring& id) = 0;
+        virtual IFontStream* Get(const std::wstring& id) = 0;
+
+        virtual std::wstring GenerateId() = 0;
+        virtual void Clear() = 0;
+    };
+
     class GRAPHICS_DECL IApplicationFontStreams : public NSBase::CBaseRefCounter
     {
     public:
@@ -449,6 +463,13 @@ namespace NSFonts
     namespace NSApplicationFontStream
     {
         GRAPHICS_DECL IApplicationFontStreams* Create();
+
+        // create default
+        GRAPHICS_DECL IFontsMemoryStorage* CreateDefaultGlobalMemoryStorage();
+
+        // without AddRef!!!
+        GRAPHICS_DECL IFontsMemoryStorage* GetGlobalMemoryStorage();
+        GRAPHICS_DECL void SetGlobalMemoryStorage(IFontsMemoryStorage* pStorage);
     }
 }
 

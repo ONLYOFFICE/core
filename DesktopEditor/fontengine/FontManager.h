@@ -52,70 +52,13 @@ public:
     virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear);
 };
 
-class CGlobalFontsMemoryStorage
-{
-private:
-    std::map<std::wstring, CFontStream*> m_mapStreams;
-
-    void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
-    {
-        size_t posn = 0;
-        while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
-        {
-            text.replace(posn, replaceFrom.length(), replaceTo);
-            posn += replaceTo.length();
-        }
-    }
-public:
-    CGlobalFontsMemoryStorage(){}
-    ~CGlobalFontsMemoryStorage()
-    {
-        for (std::map<std::wstring, CFontStream*>::iterator it = m_mapStreams.begin(); it != m_mapStreams.end(); it++)
-            RELEASEOBJECT(it->second);
-        m_mapStreams.clear();
-    }
-
-    void Add(const std::wstring& id, BYTE* data, LONG size, bool bClear = false)
-    {
-        std::wstring sFile = id;
-        string_replace(sFile, L"\\", L"/");
-        std::map<std::wstring, CFontStream*>::iterator it = m_mapStreams.find(sFile);
-        if (it == m_mapStreams.end())
-        {
-            CFontStream* pStream = (CFontStream*)NSFonts::NSStream::Create();
-            pStream->CreateFromMemory(data, size, bClear);
-            m_mapStreams.insert({sFile, pStream});
-        }
-    }
-    void Remove(const std::wstring& id)
-    {
-        std::wstring sFile = id;
-        string_replace(sFile, L"\\", L"/");
-        std::map<std::wstring, CFontStream*>::iterator it = m_mapStreams.find(sFile);
-        if (it != m_mapStreams.end())
-        {
-            RELEASEOBJECT(it->second);
-            m_mapStreams.erase(it);
-        }
-    }
-
-    CFontStream* Get(const std::wstring& id)
-    {
-        std::wstring sFile = id;
-        string_replace(sFile, L"\\", L"/");
-        std::map<std::wstring, CFontStream*>::iterator it = m_mapStreams.find(sFile);
-        return it != m_mapStreams.end() ? it->second : NULL;
-    }
-};
-
 class CApplicationFontStreams : public NSFonts::IApplicationFontStreams
 {
 private:
 	// этот мап нужно периодически опрашивать и удалять неиспользуемые стримы
 	std::map<std::wstring, CFontStream*> m_mapStreams;
-public:
-	static CGlobalFontsMemoryStorage* m_pMemoryStorage;
 
+public:
 	CApplicationFontStreams();
     virtual ~CApplicationFontStreams();
 

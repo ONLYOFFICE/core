@@ -110,7 +110,7 @@ void CDjVuFile::ConvertToPdf(const std::wstring& wsDstPath)
 	if (m_pImplementation)
         m_pImplementation->ConvertToPdf(wsDstPath);
 }
-#ifdef WASM_MODE
+#ifdef BUILDING_WASM_MODULE
 BYTE* CDjVuFile::GetStructure()
 {
     if (m_pImplementation)

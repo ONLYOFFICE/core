@@ -66,9 +66,6 @@ input_freetype_sources = ["base/ftinit.c", "base/ftlcdfil.c", "base/ftobjs.c", "
 libCommon_src_path = "../../../common/"
 input_common_sources = ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp", "StringExt.cpp"]
 
-libUnicodeConverter_src_path = "../../../../UnicodeConverter/"
-input_unicodeconverter_sources = ["UnicodeConverter.cpp"]
-
 libIcu_src_path = "../../../../Common/3dParty/icu/icu/source/common/"
 input_icu_sources = ["ucnv.c", "ustr_wcs.cpp", "ucnv_err.c", "ucnv_bld.cpp", "ustrtrns.cpp", "ucnv_cb.c", "udata.cpp", "ucnv_io.cpp", "uhash.c", "udatamem.c", "cmemory.c", "ustring.cpp", "umutex.cpp", "putil.cpp", "ustr_cnv.cpp", "ucnvmbcs.cpp", "ucnvlat1.c", "ucnv_u16.c", "ucnv_u8.c", "ucnv_u32.c", "ucnv_u7.c", "ucln_cmn.cpp", "ucnv2022.cpp", "ucnv_lmb.c", "ucnvhz.c", "ucnvscsu.c", "ucnvisci.c", "ucnvbocu.cpp", "ucnv_ct.c", "ucnv_cnv.c", "stringpiece.cpp", "charstr.cpp", "umapfile.c", "ucmndata.c", "ucnv_ext.cpp", "uobject.cpp", "umath.c", "ubidi_props.c", "uchar.c", "uinvchar.c", "usprep.cpp", "unistr.cpp", "uniset_props.cpp", "loadednormalizer2impl.cpp", "filterednormalizer2.cpp", "utrie2.cpp", "normalizer2.cpp", "normalizer2impl.cpp", "utrie.cpp", "ucase.cpp", "uniset.cpp", "ruleiter.cpp", "parsepos.cpp", "util.cpp", "uprops.cpp", "uvector.cpp", "unames.cpp", "propname.cpp", "utrie2_builder.cpp", "unifunct.cpp", "bmpset.cpp", "unisetspan.cpp", "unifilt.cpp", "patternprops.cpp", "utf_impl.c", "ustrcase.cpp", "cstring.c", "bytestrie.cpp"]
 
@@ -107,39 +104,30 @@ input_cryptopp_sources = ["cryptlib.cpp", #"cpu.cpp",
 libPdfReader_src_path = "../../../../PdfReader/"
 input_pdfreader_sources = ["Src/Adaptors.cpp", "Src/GfxClip.cpp", "Src/RendererOutputDev.cpp", "lib/fofi/FofiBase.cc", "lib/fofi/FofiEncodings.cc", "lib/fofi/FofiIdentifier.cc", "lib/fofi/FofiTrueType.cc", "lib/fofi/FofiType1.cc", "lib/fofi/FofiType1C.cc", "lib/goo/FixedPoint.cc", "lib/goo/gfile.cc", "lib/goo/GHash.cc", "lib/goo/GList.cc", "lib/goo/gmem.cc", "lib/goo/gmempp.cc", "lib/goo/GString.cc", "lib/goo/parseargs.c", "lib/goo/Trace.cc", "lib/splash/Splash.cc", "lib/splash/SplashBitmap.cc", "lib/splash/SplashClip.cc", "lib/splash/SplashFont.cc", "lib/splash/SplashFontEngine.cc", "lib/splash/SplashFontFile.cc", "lib/splash/SplashFontFileID.cc", "lib/splash/SplashFTFont.cc", "lib/splash/SplashFTFontEngine.cc", "lib/splash/SplashFTFontFile.cc", "lib/splash/SplashPath.cc", "lib/splash/SplashPattern.cc", "lib/splash/SplashScreen.cc", "lib/splash/SplashState.cc", "lib/splash/SplashXPath.cc", "lib/splash/SplashXPathScanner.cc", "lib/xpdf/AcroForm.cc", "lib/xpdf/Annot.cc", "lib/xpdf/Array.cc", "lib/xpdf/BuiltinFont.cc", "lib/xpdf/BuiltinFontTables.cc", "lib/xpdf/Catalog.cc", "lib/xpdf/CharCodeToUnicode.cc", "lib/xpdf/CMap.cc", "lib/xpdf/Decrypt.cc", "lib/xpdf/Dict.cc", "lib/xpdf/DisplayState.cc", "lib/xpdf/Error.cc", "lib/xpdf/FontEncodingTables.cc", "lib/xpdf/Function.cc", "lib/xpdf/Gfx.cc", "lib/xpdf/GfxFont.cc", "lib/xpdf/GfxState.cc", "lib/xpdf/GlobalParams.cc", "lib/xpdf/ImageOutputDev.cc", "lib/xpdf/JArithmeticDecoder.cc", "lib/xpdf/JBIG2Stream.cc", "lib/xpdf/JPXStream.cc", "lib/xpdf/Lexer.cc", "lib/xpdf/Link.cc", "lib/xpdf/NameToCharCode.cc", "lib/xpdf/Object.cc", "lib/xpdf/OptionalContent.cc", "lib/xpdf/Outline.cc", "lib/xpdf/OutputDev.cc", "lib/xpdf/Page.cc", "lib/xpdf/Parser.cc", "lib/xpdf/PDF417Barcode.cc", "lib/xpdf/PDFCore.cc", "lib/xpdf/PDFDoc.cc", "lib/xpdf/PDFDocEncoding.cc", "lib/xpdf/PreScanOutputDev.cc", "lib/xpdf/PSOutputDev.cc", "lib/xpdf/PSTokenizer.cc", "lib/xpdf/SecurityHandler.cc", "lib/xpdf/ShadingImage.cc", "lib/xpdf/SplashOutputDev.cc", "lib/xpdf/Stream.cc", "lib/xpdf/TextOutputDev.cc", "lib/xpdf/TextString.cc", "lib/xpdf/TileCache.cc", "lib/xpdf/TileCompositor.cc", "lib/xpdf/TileMap.cc", "lib/xpdf/UnicodeMap.cc", "lib/xpdf/UnicodeRemapping.cc", "lib/xpdf/UnicodeTypeTable.cc", "lib/xpdf/UTF8.cc", "lib/xpdf/WebFont.cc", "lib/xpdf/XFAScanner.cc", "lib/xpdf/XRef.cc", "lib/xpdf/Zoox.cc"]
 
+input_libs_sources = ["../../../../UnicodeConverter/UnicodeConverter.cpp", "../../../../XpsFile/XpsFile.cpp", "../../../../DjVuFile/DjVu.cpp", "../../../../DjVuFile/DjVuFileImplementation.cpp", "../../../../PdfWriter/PdfRenderer.cpp", "../../../../HtmlRenderer/src/HTMLRenderer3.cpp", "../../../../PdfReader/PdfReader.cpp"]
+
 # sources
 sources = []
-for item in input_graphics_sources:
-    sources.append(libGraphics_src_path + item)
-for item in input_fontengine_sources:
-    sources.append(libFontEngine_src_path + item)
+# graphics
+# fontengine
 # agg
 # freetype
-for item in input_common_sources:
-    sources.append(libCommon_src_path + item)
-for item in input_unicodeconverter_sources:
-    sources.append(libUnicodeConverter_src_path + item)
+# common
 # icu
-sources.append("../../../../XpsFile/XpsFile.cpp")
 # xps
 # djvu
 # wasm djvu
-sources.append("../../../../DjVuFile/DjVu.cpp ../../../../DjVuFile/DjVuFileImplementation.cpp")
-for item in input_officeutils_sources:
-    sources.append(libOfficeUtils_src_path + item)
+# officeutils
 # minizip
 # zlib
-for item in input_xml_sources:
-    sources.append(item)
-sources.append("../../../../PdfWriter/PdfRenderer.cpp")
-sources.append("../../../../HtmlRenderer/src/HTMLRenderer3.cpp")
+# xml
 # cryptopp
-sources.append("../../../../PdfReader/PdfReader.cpp")
 # pdfReader
+# libs
 sources.append("raster.o")
 sources.append("wasm/src/drawingfile.cpp")
 
-compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common -I../../../xml/libxml2/include -I../../../xml/build/qt -I../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../PdfReader/lib/goo -I../../../../PdfReader/lib/fofi -I../../../../PdfReader/lib/splash -I../../../../PdfReader/lib")
+compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common -I../../../xml/libxml2/include -I../../../xml/build/qt -I../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip -I../../../../PdfReader/lib/goo -I../../../../PdfReader/lib/fofi -I../../../../PdfReader/lib/splash -I../../../../PdfReader/lib")
 compiler_flags.append("-D__linux__ -D_LINUX -DUNIX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE -DU_COMMON_IMPLEMENTATION")
 compiler_flags.append("-DWASM_MODE -Derrno=0 -DTHREADMODEL=0 -DDEBUGLVL=0 -DHAVE_MBSTATE_T -DHAVE_STDINCLUDES -DHAS_WCHAR")
 compiler_flags.append("-DHAVE_VA_COPY -DLIBXML_READER_ENABLED -DLIBXML_PUSH_ENABLED -DLIBXML_HTML_ENABLED -DLIBXML_XPATH_ENABLED -DLIBXML_OUTPUT_ENABLED -DLIBXML_C14N_ENABLED -DLIBXML_SAX1_ENABLED -DLIBXML_TREE_ENABLED -DLIBXML_XPTR_ENABLED -DIN_LIBXML -DLIBXML_STATIC -DBUILD_ZLIB_AS_SOURCES -DCRYPTOPP_DISABLE_ASM")
@@ -155,13 +143,25 @@ if base.host_platform() == "windows":
     windows_bat.append("call emsdk/emsdk_env.bat") 
 
     libs = ""
-    for item in input_agg_sources:
-        windows_bat.append("call emcc -o temp/" + os.path.splitext(os.path.basename(item))[0] + ".o -c " + arguments + libAgg_src_path + item)
+    for item in input_graphics_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(os.path.basename(item))[0] + ".o -c " + arguments + libGraphics_src_path + item)
         libs += ("temp/" + os.path.splitext(os.path.basename(item))[0] + ".o ")
+    
+    for item in input_fontengine_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libFontEngine_src_path + item)
+        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
+    
+    for item in input_agg_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libAgg_src_path + item)
+        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
     for item in input_freetype_sources:
         windows_bat.append("call emcc -o temp/" + os.path.splitext(os.path.basename(item))[0] + ".o -c " + arguments + libFreetype_src_path + item)
         libs += ("temp/" + os.path.splitext(os.path.basename(item))[0] + ".o ")
+    
+    for item in input_common_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libCommon_src_path + item)
+        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
     for item in input_icu_sources:
         windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libIcu_src_path + item)
@@ -179,6 +179,10 @@ if base.host_platform() == "windows":
         windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libWasmDjVu_src_path + item)
         libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
+    for item in input_officeutils_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libOfficeUtils_src_path + item)
+        libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
+    
     for item in input_minizip_sources:
         windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libMinizip_src_path + item)
         libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
@@ -187,12 +191,20 @@ if base.host_platform() == "windows":
         windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libZlib_src_path + item)
         libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
+    for item in input_xml_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(os.path.basename(item))[0] + ".o -c " + arguments + item)
+        libs += ("temp/" + os.path.splitext(os.path.basename(item))[0] + ".o ")
+    
     for item in input_cryptopp_sources:
         windows_bat.append("call emcc -o temp/" + os.path.splitext(item)[0] + ".o -c " + arguments + libCryptoPP_src_path + item)
         libs += ("temp/" + os.path.splitext(item)[0] + ".o ")
     
     for item in input_pdfreader_sources:
         windows_bat.append("call emcc -o temp/" + os.path.splitext(os.path.basename(item))[0] + ".o -c " + arguments + libPdfReader_src_path + item)
+        libs += ("temp/" + os.path.splitext(os.path.basename(item))[0] + ".o ")
+
+    for item in input_libs_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.splitext(os.path.basename(item))[0] + ".o -c " + arguments + item)
         libs += ("temp/" + os.path.splitext(os.path.basename(item))[0] + ".o ")
 
     arguments += "-s EXPORTED_FUNCTIONS=\"["
@@ -210,9 +222,25 @@ else:
     windows_bat.append("source ./emsdk/emsdk_env.sh")
 
     libs = ""
+    for item in input_graphics_sources:
+        windows_bat.append("emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + libGraphics_src_path + item)
+        libs += ("temp/" + os.path.basename(item) + ".o ")
+    
+    for item in input_fontengine_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libFontEngine_src_path + item)
+        libs += ("temp/" + item + ".o ")
+    
+    for item in input_agg_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libAgg_src_path + item)
+        libs += ("temp/" + item + ".o ")
+    
     for item in input_freetype_sources:
         windows_bat.append("emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + libFreetype_src_path + item)
         libs += ("temp/" + os.path.basename(item) + ".o ")
+    
+    for item in input_common_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libCommon_src_path + item)
+        libs += ("temp/" + item + ".o ")
     
     for item in input_icu_sources:
         windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libIcu_src_path + item)
@@ -226,6 +254,14 @@ else:
         windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libDjVu_src_path + item)
         libs += ("temp/" + item + ".o ")
     
+    for item in input_wasmdjvu_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libWasmDjVu_src_path + item)
+        libs += ("temp/" + item + ".o ")
+    
+    for item in input_officeutils_sources:
+        windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libOfficeUtils_src_path + item)
+        libs += ("temp/" + item + ".o ")
+    
     for item in input_minizip_sources:
         windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libMinizip_src_path + item)
         libs += ("temp/" + item + ".o ")
@@ -234,12 +270,20 @@ else:
         windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libZlib_src_path + item)
         libs += ("temp/" + item + ".o ")
     
+    for item in input_xml_sources:
+        windows_bat.append("emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + item)
+        libs += ("temp/" + os.path.basename(item) + ".o ")
+    
     for item in input_cryptopp_sources:
         windows_bat.append("emcc -o temp/" + item + ".o -c " + arguments + libCryptoPP_src_path + item)
         libs += ("temp/" + item + ".o ")
     
     for item in input_pdfreader_sources:
         windows_bat.append("emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + libPdfReader_src_path + item)
+        libs += ("temp/" + os.path.basename(item) + ".o ")
+    
+    for item in input_libs_sources:
+        windows_bat.append("call emcc -o temp/" + os.path.basename(item) + ".o -c " + arguments + item)
         libs += ("temp/" + os.path.basename(item) + ".o ")
     
     arguments += "-s EXPORTED_FUNCTIONS=\"["

@@ -39,7 +39,8 @@ DEFINES -= _UNICODE
 LIBS += -lgdi32 \
         -ladvapi32 \
         -luser32 \
-        -lshell32
+        -lshell32 \
+        -lOle32
 }
 
 # graphics

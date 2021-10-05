@@ -142,6 +142,16 @@ namespace NSFonts
             std::map<std::wstring, IFontStream*> m_mapStreams;
             int m_nInternalCounter;
 
+            void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
+            {
+                size_t posn = 0;
+                while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
+                {
+                    text.replace(posn, replaceFrom.length(), replaceTo);
+                    posn += replaceTo.length();
+                }
+            }
+
         public:
             CDefaultGlobalFontsMemoryStorage()
             {
@@ -154,18 +164,22 @@ namespace NSFonts
 
             virtual bool Add(const std::wstring& id, BYTE* data, LONG size, bool bClear = false)
             {
-                std::map<std::wstring, IFontStream*>::iterator it = m_mapStreams.find(id);
+                std::wstring sFile = id;
+                string_replace(sFile, L"\\", L"/");
+                std::map<std::wstring, IFontStream*>::iterator it = m_mapStreams.find(sFile);
                 if (it != m_mapStreams.end())
                     return false;
 
                 IFontStream* pStream = NSFonts::NSStream::Create();
                 pStream->CreateFromMemory(data, size, bClear);
-                m_mapStreams.insert(std::pair<std::wstring, IFontStream*>(id, pStream));
+                m_mapStreams.insert(std::pair<std::wstring, IFontStream*>(sFile, pStream));
                 return true;
             }
             virtual bool Remove(const std::wstring& id)
             {
-                std::map<std::wstring, IFontStream*>::iterator it = m_mapStreams.find(id);
+                std::wstring sFile = id;
+                string_replace(sFile, L"\\", L"/");
+                std::map<std::wstring, IFontStream*>::iterator it = m_mapStreams.find(sFile);
                 if (it == m_mapStreams.end())
                     return false;
 
@@ -182,7 +196,9 @@ namespace NSFonts
 
             virtual IFontStream* Get(const std::wstring& id)
             {
-                std::map<std::wstring, IFontStream*>::iterator it = m_mapStreams.find(id);
+                std::wstring sFile = id;
+                string_replace(sFile, L"\\", L"/");
+                std::map<std::wstring, IFontStream*>::iterator it = m_mapStreams.find(sFile);
                 return it != m_mapStreams.end() ? it->second : NULL;
             }
 

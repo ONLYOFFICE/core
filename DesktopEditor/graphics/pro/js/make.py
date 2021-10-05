@@ -285,21 +285,13 @@ base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp",
 # finalize
 base.replaceInFile("./drawingfile.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
 graphics_js_content = base.readFile("./drawingfile.js")
-engine_base_js_content = base.readFile("./wasm/js/xps_base.js")
+engine_base_js_content = base.readFile("./wasm/js/drawingfile_base.js")
 string_utf8_content    = base.readFile("./../../../../Common/js/string_utf8.js")
 engine_js_content = engine_base_js_content.replace("//module", graphics_js_content)
 engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
-engine_base_js_content = base.readFile("./../../../../DjVuFile/wasm/djvu_base.js")
-djvu_js_content = engine_base_js_content.replace("//module", graphics_js_content)
-djvu_js_content = djvu_js_content.replace("//string_utf8", string_utf8_content)
-engine_base_js_content = base.readFile("./wasm/js/pdf_base.js")
-pdf_js_content = engine_base_js_content.replace("//module", graphics_js_content)
-pdf_js_content = pdf_js_content.replace("//string_utf8", string_utf8_content)
 
 # write new version
-base.writeFile("./deploy/xps.js", engine_js_content)
-base.writeFile("./deploy/djvu.js", djvu_js_content)
-base.writeFile("./deploy/pdf.js", pdf_js_content)
+base.writeFile("./deploy/drawingfile.js", engine_js_content)
 base.copy_file("./drawingfile.wasm", "./deploy/drawingfile.wasm")
 
 base.delete_file("drawingfile.js")

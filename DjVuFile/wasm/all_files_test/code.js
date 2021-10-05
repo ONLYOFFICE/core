@@ -114,7 +114,7 @@ window.onload = function()
 		this.documentHeight = 0;
 		this.Selection = { IsSelection : false, Image : null, page : -1 };
 
-		this.file = new AscViewer.DjVuFile();
+		this.file = new AscViewer.CDrawingFile();
 
 		/*
 			[TIMER START]
@@ -373,7 +373,7 @@ window.onload = function()
 		
 		this.getStructure = function()
 		{
-			var res = this.file.structure();
+			var res = this.file.getStructure();
 			return res;
 		};
 
@@ -469,7 +469,7 @@ window.onload = function()
 				if (!page.Image)
 				{
 					page.Image = this.file.getPage(i, w, h);
-					this.getGlyphs(i, w, h);
+					//this.getGlyphs(i, w, h);
 					this.links = this.getLinks(i, w, h);
 					this.links.Page = i;
 				}
@@ -487,7 +487,7 @@ window.onload = function()
 					for (let j = 0; j < this.links.length; j++)
 					{
 						let Link = this.links[j];
-						ctx.fillRect(x + Link.X, y + Link.Y, Link.W, Link.H);
+						ctx.fillRect(x + Link.x, y + Link.y, Link.w, Link.h);
 					}
 				}
 

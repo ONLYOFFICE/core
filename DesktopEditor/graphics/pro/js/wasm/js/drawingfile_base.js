@@ -92,7 +92,7 @@
     };
     CBinaryReader.prototype.readDouble = function()
     {
-        return readInt() / 100;
+        return this.readInt() / 100;
     };
     CBinaryReader.prototype.readString = function()
     {
@@ -112,13 +112,14 @@
         this.pages = [];
     }
 
-    CFile.prototype["load"] = function(arrayBuffer)
+    CFile.prototype["loadFromData"] = function(arrayBuffer)
     {
         var data = new Uint8Array(arrayBuffer);
         var _stream = Module["_malloc"](data.length);
         Module["HEAP8"].set(data, _stream);
         this.nativeFile = Module["_Open"](_stream, data.length);
-        Module["_free"](_stream);
+		this.stream = _stream;
+		this.type = Module["_GetType"](_stream, data.length);
         return this.getInfo();
     };
     CFile.prototype["getInfo"] = function()
@@ -151,6 +152,9 @@
         Module["_Close"](this.nativeFile);
         this.nativeFile = 0;
         this.pages = [];
+		if (this.stream > 0)
+        	Module["_free"](this.stream);
+        this.stream = -1;
     };
 
     CFile.prototype["getPages"] = function()
@@ -168,7 +172,46 @@
         if (glyphs == null)
             return;
 
-        // TODO:
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, glyphs, 4);
+        var len = lenArray[0];
+        len -= 4;
+        if (len <= 0)
+            return;
+
+        this.pages[pageIndex].Lines = [];
+        var buffer = new Uint8Array(Module["HEAP8"].buffer, glyphs + 4, len);
+		var reader = new CBinaryReader(buffer, 0, len);
+		
+		var Line = -1;
+		while (reader.isValid())
+        {
+            var rec = {};
+            rec["word"] = reader.readString();
+			if (this.type == 2)
+			{
+				rec["x"] = 1.015 * reader.readDouble();
+				rec["y"] = 1.015 * reader.readDouble();
+			}
+            else
+			{
+				rec["x"] = reader.readDouble();
+				rec["y"] = reader.readDouble();
+			}
+            rec["w"] = reader.readDouble();
+            rec["h"] = reader.readDouble();
+            
+			Line++;
+            this.pages[pageIndex].Lines.push({ Glyphs : [] });
+            for (let i = 0; i < _Word.length; i++)
+            {
+                this.pages[pageIndex].Lines[Line].Glyphs.push({
+                    X : _X + _W / (_Word.length - 1) * i,
+                    UChar : _Word[i]
+                });
+            }
+            this.pages[pageIndex].Lines[Line].Glyphs[0].Y = _Y + _H;
+            this.pages[pageIndex].Lines[Line].Glyphs[0].fontSize = _H;
+        }
 
         Module["_free"](glyphs);
     };
@@ -192,8 +235,16 @@
         {
             var rec = {};
             rec["link"] = reader.readString();
-            rec["x"] = 1.015 * reader.readDouble();
-            rec["y"] = 1.015 * reader.readDouble();
+            if (this.type == 2)
+			{
+				rec["x"] = 1.015 * reader.readDouble();
+				rec["y"] = 1.015 * reader.readDouble();
+			}
+            else
+			{
+				rec["x"] = reader.readDouble();
+				rec["y"] = reader.readDouble();
+			}
             rec["w"] = reader.readDouble();
             rec["h"] = reader.readDouble();
             res.push(rec);
@@ -222,7 +273,14 @@
             var rec = {};
             rec["page"] = reader.readInt();
             rec["level"] = reader.readInt();
-            rec["y"] = reader.readDouble();
+			if (this.type == 2)
+			{
+				rec["y"] = reader.readDouble();
+			}
+            else
+			{
+				rec["y"] = reader.readInt();
+			}
             rec["description"] = reader.readString();
             res.push(rec);
         }
@@ -239,7 +297,193 @@
     {
         Module["_free"](pointer);
     };
+	CFile.prototype.isValid = function()
+	{
+		return this.pages.length > 0;
+	};
+	CFile.prototype.getPage = function(pageIndex, width, height)
+	{
+		if (pageIndex < 0 || pageIndex >= this.pages.length)
+			return null;
+		if (!width) width = this.pages[pageIndex].W;
+		if (!height) height = this.pages[pageIndex].H;
+		var t0 = performance.now();
+		var pixels = this.getPagePixmap(pageIndex, width, height);
+		if (!pixels)
+			return null;
+		
+		if (!this.logging)
+		{
+			var image = this._pixelsToCanvas(pixels, width, height);
+		}
+		else
+		{
+			var t1 = performance.now();
+			var image = this._pixelsToCanvas(pixels, width, height);
+			var t2 = performance.now();
+			//console.log("time: " + (t1 - t0) + ", " + (t2 - t1));
+		}
+        /*
+        if (this.pages[pageIndex].Lines)
+        {
+            var ctx = image.getContext("2d");
+            for (let i = 0; i < this.pages[pageIndex].Lines.length; i++)
+            {
+                for (let j = 0; j < this.pages[pageIndex].Lines[i].Glyphs.length; j++)
+                {
+                    let glyph = this.pages[pageIndex].Lines[i].Glyphs[j];
+                    ctx.font = glyph.fontSize + 'px ' + glyph.fontName;
+                    ctx.fillText(glyph.UChar, glyph.X, glyph.Y);
+                }
+            }
+        }
+        */
+        this.free(pixels);
+        return image;
+	};
+	CFile.prototype._pixelsToCanvas = function(pixels, width, height)
+    {
+        if (!this.isUse3d)
+        {
+            return this._pixelsToCanvas2d(pixels, width, height);
+        }
 
+        try
+        {
+            return this._pixelsToCanvas3d(pixels, width, height);
+        }
+        catch (err)
+        {
+            this.isUse3d = false;
+            if (this.cacheManager)
+                this.cacheManager.clear();
+            return this._pixelsToCanvas(pixels, width, height);
+        }
+    };
+	CFile.prototype._pixelsToCanvas2d = function(pixels, width, height)
+    {        
+        var canvas = null;
+        if (this.cacheManager)
+        {
+            canvas = this.cacheManager.lock(width, height);
+        }
+        else
+        {
+            canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+        }
+        
+        var mappedBuffer = new Uint8ClampedArray(this.memory().buffer, pixels, 4 * width * height);
+        var imageData = new ImageData(mappedBuffer, width, height);
+        var ctx = canvas.getContext("2d");
+        if (ctx)
+            ctx.putImageData(imageData, 0, 0);
+        return canvas;
+    };
+
+	CFile.prototype._pixelsToCanvas3d = function(pixels, width, height) 
+    {
+        var vs_source = "\
+attribute vec2 aVertex;\n\
+attribute vec2 aTex;\n\
+varying vec2 vTex;\n\
+void main() {\n\
+	gl_Position = vec4(aVertex, 0.0, 1.0);\n\
+	vTex = aTex;\n\
+}";
+
+        var fs_source = "\
+precision mediump float;\n\
+uniform sampler2D uTexture;\n\
+varying vec2 vTex;\n\
+void main() {\n\
+	gl_FragColor = texture2D(uTexture, vTex);\n\
+}";
+        var canvas = null;
+        if (this.cacheManager)
+        {
+            canvas = this.cacheManager.lock(width, height);
+        }
+        else
+        {
+            canvas = document.createElement("canvas");
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        var gl = canvas.getContext('webgl', { preserveDrawingBuffer : true });
+        if (!gl)
+            throw new Error('FAIL: could not create webgl canvas context');
+
+        var colorCorrect = gl.BROWSER_DEFAULT_WEBGL;
+        gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, colorCorrect);
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.clearColor(0, 0, 0, 1);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        if (gl.getError() != gl.NONE)
+            throw new Error('FAIL: webgl canvas context setup failed');
+
+        function createShader(source, type) {
+            var shader = gl.createShader(type);
+            gl.shaderSource(shader, source);
+            gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+                throw new Error('FAIL: shader ' + id + ' compilation failed');
+            return shader;
+        }
+
+        var program = gl.createProgram();
+        gl.attachShader(program, createShader(vs_source, gl.VERTEX_SHADER));
+        gl.attachShader(program, createShader(fs_source, gl.FRAGMENT_SHADER));
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+            throw new Error('FAIL: webgl shader program linking failed');
+        gl.useProgram(program);
+
+        var texture = gl.createTexture();
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(this.memory().buffer, pixels, 4 * width * height));
+
+        if (gl.getError() != gl.NONE)
+            throw new Error('FAIL: creating webgl image texture failed');
+
+        function createBuffer(data) {
+            var buffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+            return buffer;
+        }
+
+        var vertexCoords = new Float32Array([-1, 1, -1, -1, 1, -1, 1, 1]);
+        var vertexBuffer = createBuffer(vertexCoords);
+        var location = gl.getAttribLocation(program, 'aVertex');
+        gl.enableVertexAttribArray(location);
+        gl.vertexAttribPointer(location, 2, gl.FLOAT, false, 0, 0);
+
+        if (gl.getError() != gl.NONE)
+            throw new Error('FAIL: vertex-coord setup failed');
+
+        var texCoords = new Float32Array([0, 1, 0, 0, 1, 0, 1, 1]);
+        var texBuffer = createBuffer(texCoords);
+        var location = gl.getAttribLocation(program, 'aTex');
+        gl.enableVertexAttribArray(location);
+        gl.vertexAttribPointer(location, 2, gl.FLOAT, false, 0, 0);
+
+        if (gl.getError() != gl.NONE)
+            throw new Error('FAIL: tex-coord setup setup failed');
+
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+        return canvas;
+    };
     window["AscViewer"]["CDrawingFile"] = CFile;
 
 })(window, undefined);

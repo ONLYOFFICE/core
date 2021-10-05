@@ -37,7 +37,7 @@ WASM_EXPORT CGraphicsFileDrawing* Open(BYTE* data, LONG size)
     if (pGraphics->Open(data, size, GetType(data, size)))
         return pGraphics;
     
-	delete pGraphics;
+    delete pGraphics;
     return NULL;
 }
 WASM_EXPORT void  Close     (CGraphicsFileDrawing* pGraphics)

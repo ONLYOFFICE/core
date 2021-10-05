@@ -784,6 +784,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   residentUnicodeMaps->add(map->getEncodingName(), map);
 
   // look for a user config file, then a system-wide config file
+#ifndef BUILDING_WASM_MODULE
   f = NULL;
   fileName = NULL;
   if (cfgFileName && cfgFileName[0]) {
@@ -820,6 +821,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
     delete fileName;
     fclose(f);
   }
+#endif // BUILDING_WASM_MODULE
 }
 
 void GlobalParams::setDataDirVar() {
@@ -2239,6 +2241,8 @@ void GlobalParams::setupBaseFonts(const char *dir) {
 #ifdef __APPLE__
   dfontFontNames = NULL;
 #endif
+
+#ifndef BUILDING_WASM_MODULE
   for (i = 0; displayFontTab[i].name; ++i) {
     if (fontFiles->lookup(displayFontTab[i].name)) {
       continue;
@@ -2363,6 +2367,7 @@ void GlobalParams::setupBaseFonts(const char *dir) {
       }
     }
   }
+#endif // BUILDING_WASM_MODULE
 #ifdef _WIN32
   if (winFontDir[0]) {
     sysFonts->scanWindowsFonts(winFontDir);

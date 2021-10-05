@@ -489,8 +489,8 @@ namespace MetaFile
 		{
 			CheckEndPath();
 
-			UpdateClip();
 			UpdateTransform();
+			UpdateClip();
 
 			m_lDrawPathType = -1;
 			if (true == UpdateBrush())

@@ -1333,7 +1333,7 @@ namespace MetaFile
 			if (m_pOutput)
 			{
 				BYTE* pBgra = NULL;
-				unsigned int unWidth, unHeight;
+				unsigned int unWidth = 0, unHeight = 0;
 				if (ReadImage(ushColorUsage, &pBgra, &unWidth, &unHeight))
 				{
 					pBrush->SetDibPattern(pBgra, unWidth, unHeight);

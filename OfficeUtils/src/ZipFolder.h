@@ -9,6 +9,13 @@
 class IFolder
 {
 public:
+    enum IFolderType
+    {
+        iftFolder = 0,
+        iftZip = 1
+    };
+
+public:
     class CBuffer
     {
     public:
@@ -43,6 +50,8 @@ public:
 
 public:
     virtual ~IFolder() {}
+
+    virtual IFolderType getType() = 0;
     // полный путь по локальному
     virtual std::wstring getFullFilePath(const std::wstring& path) = 0;
     // локальный путь по полному (без первого '/')
@@ -121,6 +130,10 @@ public:
         NSStringUtils::string_replace(m_sFolder, L"\\", L"/");        
 #endif
         correct_folder(m_sFolder);
+    }
+    virtual IFolderType getType()
+    {
+        return iftFolder;
     }
 
     virtual std::wstring getFullFilePath(const std::wstring& path)
@@ -244,6 +257,11 @@ public:
     ~CZipFolderMemory()
     {
         delete m_zlib;
+    }
+
+    virtual IFolderType getType()
+    {
+        return iftZip;
     }
 
     // Относительный путь до файла в архиве

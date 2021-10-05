@@ -34,8 +34,6 @@
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../OfficeUtils/src/ZipFolder.h"
 
 #include "FontList.h"
 #include "Utils.h"

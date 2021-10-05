@@ -39,6 +39,8 @@
 #include "../../DesktopEditor/graphics/TemporaryCS.h"
 #include "../../DesktopEditor/common/File.h"
 #include "Utils.h"
+#include "../../OfficeUtils/src/ZipFolder.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace XPS
 {
@@ -58,7 +60,7 @@ namespace XPS
 		{
 			m_mList.clear();
 		}
-		void Check(const std::wstring& wsName, BYTE* data, DWORD length)
+        void Check(const std::wstring& wsName, const std::wstring& wsFontPath, IFolder* pFolder)
 		{
 			m_oCS.Enter();
 			if (!Find(wsName))
@@ -68,9 +70,46 @@ namespace XPS
 				unsigned char sKey[16];
 				GetFontKey(wsName, sKey);
 
-				if (length >= 32)
-					for (int nIndex = 0; nIndex < 32; nIndex++)
-						data[nIndex] ^= sKey[nIndex % 16];
+                // нужно одменить первые 32 байта файла
+                if (IFolder::iftFolder == pFolder->getType())
+                {
+                    NSFile::CFileBinary oFile;
+                    oFile.OpenFile(wsFontPath, true);
+
+                    unsigned char sFontData[32];
+                    DWORD dwBytesRead;
+                    oFile.ReadFile(sFontData, 32, dwBytesRead);
+
+                    for (int nIndex = 0; nIndex < 32; nIndex++)
+                        sFontData[nIndex] ^= sKey[nIndex % 16];
+
+                    FILE* pFile = oFile.GetFileNative();
+                    if (pFile)
+                    {
+                        fseek(pFile, 0, SEEK_SET);
+                        fwrite(sFontData, 1, 32, pFile);
+                    }
+
+                    oFile.CloseFile();
+                }
+                else if (IFolder::iftZip == pFolder->getType())
+                {
+                    IFolder::CBuffer* buffer = NULL;
+                    pFolder->read(wsFontPath, buffer);
+
+                    if (buffer->Size >= 32)
+                    {
+                        unsigned char* sFontData = buffer->Buffer;
+                        for (int nIndex = 0; nIndex < 32; nIndex++)
+                            sFontData[nIndex] ^= sKey[nIndex % 16];
+                    }
+
+                    // если это режим,когда все в памяти - то сразу закидываем в сторадж измененный шрифт
+                    if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
+                        NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontPath, buffer->Buffer, buffer->Size);
+
+                    RELEASEOBJECT(buffer);
+                }
 			}
 			m_oCS.Leave();
 		}

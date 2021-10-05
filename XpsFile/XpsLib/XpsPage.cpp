@@ -508,14 +508,22 @@ namespace XPS
 					if (L"odttf" == wsExt)
 					{
 						NSStringExt::ToLower(wsFontName);
-						IFolder::CBuffer* buffer = NULL;
-						m_wsRootPath->read(wsFontPath, buffer);
-						m_pFontList->Check(wsFontName, buffer->Buffer, buffer->Size);
-                        if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
-                            NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontPath, buffer->Buffer, buffer->Size);
-						m_wsRootPath->write(wsFontPath, buffer->Buffer, buffer->Size);
-						RELEASEOBJECT(buffer);
+                        m_pFontList->Check(wsFontName, wsFontPath, m_wsRootPath);
 					}
+                    else
+                    {
+                        // шрифт не odttf - надо добавить его во внешний сторадж шрифтов, если нужно
+                        if (IFolder::iftZip == m_wsRootPath->getType() && NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
+                        {
+                            IFolder::CBuffer* buffer = NULL;
+                            m_wsRootPath->read(wsFontPath, buffer);
+
+                            if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
+                                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontPath, buffer->Buffer, buffer->Size);
+
+                            RELEASEOBJECT(buffer);
+                        }
+                    }
 					wsFontPath = NormalizePath(wsFontPath);
 					pRenderer->put_FontPath(wsFontPath);
 				}

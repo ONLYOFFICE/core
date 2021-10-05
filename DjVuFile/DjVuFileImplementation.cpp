@@ -337,129 +337,9 @@ void               CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsD
 	oPdf.SaveToFile(wsDstPath);
 }
 #ifdef BUILDING_WASM_MODULE
-class              CData
-{
-protected:
-    unsigned char* m_pData;
-    size_t m_lSize;
+#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 
-    unsigned char* m_pDataCur;
-    size_t m_lSizeCur;
-
-public:
-    CData()
-    {
-        m_pData = NULL;
-        m_lSize = 0;
-
-        m_pDataCur = m_pData;
-        m_lSizeCur = m_lSize;
-    }
-    virtual ~CData()
-    {
-        Clear();
-    }
-
-    inline void AddSize(size_t nSize)
-    {
-        if (NULL == m_pData)
-        {
-            m_lSize = 1000;
-            if (nSize > m_lSize)
-                m_lSize = nSize;
-
-            m_pData = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
-
-            m_lSizeCur = 0;
-            m_pDataCur = m_pData;
-            return;
-        }
-
-        if ((m_lSizeCur + nSize) > m_lSize)
-        {
-            while ((m_lSizeCur + nSize) > m_lSize)
-                m_lSize *= 2;
-
-            unsigned char* pRealloc = (unsigned char*)realloc(m_pData, m_lSize * sizeof(unsigned char));
-            if (NULL != pRealloc)
-            {
-                m_pData    = pRealloc;
-                m_pDataCur = m_pData + m_lSizeCur;
-            }
-            else
-            {
-                unsigned char* pMalloc = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
-                memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(unsigned char));
-
-                free(m_pData);
-                m_pData    = pMalloc;
-                m_pDataCur = m_pData + m_lSizeCur;
-            }
-        }
-    }
-
-public:
-    void AddInt(unsigned int value)
-    {
-        AddSize(4);
-        memcpy(m_pDataCur, &value, sizeof(unsigned int));
-        m_pDataCur += 4;
-        m_lSizeCur += 4;
-    }
-    void WriteString(unsigned char* value, unsigned int len)
-    {
-        AddSize(len + 4);
-        memcpy(m_pDataCur, &len, sizeof(unsigned int));
-        m_pDataCur += 4;
-        m_lSizeCur += 4;
-        memcpy(m_pDataCur, value, len);
-        m_pDataCur += len;
-        m_lSizeCur += len;
-    }
-    unsigned char* GetBuffer()
-    {
-        return m_pData;
-    }
-
-    void Clear()
-    {
-        if (m_pData) free(m_pData);
-
-        m_pData = NULL;
-        m_lSize = 0;
-
-        m_pDataCur = m_pData;
-        m_lSizeCur = 0;
-    }
-    void ClearWithoutAttack()
-    {
-        m_pData = NULL;
-        m_lSize = 0;
-
-        m_pDataCur = m_pData;
-        m_lSizeCur = 0;
-    }
-    void ClearNoAttack()
-    {
-        m_pDataCur = m_pData;
-        m_lSizeCur = 0;
-    }
-    unsigned int GetSize()
-    {
-        return (unsigned int)m_lSizeCur;
-    }
-
-    void SkipLen()
-    {
-        AddInt(0);
-    }
-    void WriteLen()
-    {
-        unsigned int len = (unsigned int)m_lSizeCur;
-        memcpy(m_pData, &len, sizeof(unsigned int));
-    }
-};
-void               getBookmars(const GP<DjVmNav>& nav, int& pos, int count, CData& out, int level)
+void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, NSWasm::CData& out, int level)
 {
     while (count > 0 && pos < nav->getBookMarkCount())
     {
@@ -473,6 +353,7 @@ void               getBookmars(const GP<DjVmNav>& nav, int& pos, int count, CDat
         {
             out.AddInt(nPage);
             out.AddInt(level);
+            out.AddInt(0); // Y position
             GUTF8String description = gpBookMark->displayname;
             out.WriteString((BYTE*)description.getbuf(), description.length());
         }
@@ -481,7 +362,7 @@ void               getBookmars(const GP<DjVmNav>& nav, int& pos, int count, CDat
         count--;
     }
 }
-BYTE*              CDjVuFileImplementation::GetStructure()
+BYTE* CDjVuFileImplementation::GetStructure()
 {
     GP<DjVmNav> nav = m_pDoc->get_djvm_nav();
     if (!nav)
@@ -492,7 +373,7 @@ BYTE*              CDjVuFileImplementation::GetStructure()
     if (count <= 0)
         return NULL;
 
-    CData oRes;
+    NSWasm::CData oRes;
     oRes.SkipLen();
     getBookmars(nav, pos, count, oRes, 1);
     oRes.WriteLen();
@@ -500,7 +381,7 @@ BYTE*              CDjVuFileImplementation::GetStructure()
     oRes.ClearWithoutAttack();
     return bRes;
 }
-BYTE*              CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const int& nRasterW, const int& nRasterH)
+BYTE* CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const int& nRasterW, const int& nRasterH)
 {
     double dPageDpiX, dPageDpiY;
     double dWidth, dHeight;
@@ -523,7 +404,7 @@ BYTE*              CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const 
         hiddenText.GetNode(L"PAGECOLUMN", pageColumn);
         pageColumn.GetNode(L"REGION", region);
 
-        CData oRes;
+        NSWasm::CData oRes;
         oRes.SkipLen();
         double dKoef = 25.4 / pPage->get_dpi();
         double dKoefX = (double)nRasterW * dPageDpiX / 25.4 / dWidth;
@@ -573,7 +454,7 @@ BYTE*              CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const 
     catch (...) {}
     return NULL;
 }
-BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex, const int& nRasterW, const int& nRasterH)
+BYTE* CDjVuFileImplementation::GetPageLinks (int nPageIndex, const int& nRasterW, const int& nRasterH)
 {
     double dPageDpiX, dPageDpiY;
     double dWidth, dHeight;
@@ -588,7 +469,7 @@ BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex, const 
             return NULL;
         GPList<GMapArea> map_areas = pAnno->ant->map_areas;
 
-        CData oRes;
+        NSWasm::CData oRes;
         oRes.SkipLen();
         double dKoefX = (double)nRasterW / dWidth;
         double dKoefY = (double)nRasterH / dHeight;
@@ -596,16 +477,14 @@ BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex, const 
         {
             GUTF8String str = map_areas[pos]->url;
             oRes.WriteString((BYTE*)str.getbuf(), str.length());
+
             double x = map_areas[pos]->get_xmin() * dKoefX;
-            std::string s = std::to_string(x);
-            oRes.WriteString((BYTE*)s.c_str(), s.length());
             double y = (double)nRasterH - map_areas[pos]->get_ymin() * dKoefY;
-            s = std::to_string(y);
-            oRes.WriteString((BYTE*)s.c_str(), s.length());
-            s = std::to_string(map_areas[pos]->get_xmax() * dKoefX - x);
-            oRes.WriteString((BYTE*)s.c_str(), s.length());
-            s = std::to_string((double)nRasterH - map_areas[pos]->get_ymax() * dKoefY - y);
-            oRes.WriteString((BYTE*)s.c_str(), s.length());
+
+            oRes.AddDouble(x);
+            oRes.AddDouble(y);
+            oRes.AddDouble(map_areas[pos]->get_xmax() * dKoefX - x);
+            oRes.AddDouble((double)nRasterH - map_areas[pos]->get_ymax() * dKoefY - y);
         }
         oRes.WriteLen();
 

@@ -122,6 +122,8 @@ NSFonts::IFontStream* CApplicationFontStreams::GetStream(const std::wstring &str
     if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
     {
         pStream = (CFontStream*)NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(strFile);
+        // чтобы удалить и из мапа и из стораджа
+        pStream->AddRef();
     }
 	else
 	{
@@ -153,13 +155,11 @@ void CApplicationFontStreams::Clear()
 {
     if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
         NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Clear();
-    else
+
+    for (std::map<std::wstring, CFontStream*>::iterator iter = m_mapStreams.begin(); iter != m_mapStreams.end(); ++iter)
     {
-        for (std::map<std::wstring, CFontStream*>::iterator iter = m_mapStreams.begin(); iter != m_mapStreams.end(); ++iter)
-        {
-            CFontStream* pFile = iter->second;
-            RELEASEINTERFACE(pFile);
-        }
+        CFontStream* pFile = iter->second;
+        RELEASEINTERFACE(pFile);
     }
     m_mapStreams.clear();
 }

@@ -171,7 +171,7 @@ namespace XPS
             nH = wsAttrName.tointeger();
 		}
 	}
-	#ifdef BUILDING_WASM_MODULE
+#ifdef BUILDING_WASM_MODULE
 	BYTE* Page::GetGlyphs()
 	{
 		if (m_pGlyphs)
@@ -185,20 +185,16 @@ namespace XPS
 	}
 	BYTE* Page::GetLinks()
 	{
-		CData oRes;
+        NSWasm::CData oRes;
 		oRes.SkipLen();
 		for (const CPageLink& link : m_vLinks)
 		{
 			std::string s = U_TO_UTF8(link.sLink);
 			oRes.WriteString((BYTE*)s.c_str(), s.length());
-			s = std::to_string(link.dX);
-			oRes.WriteString((BYTE*)s.c_str(), s.length());
-			s = std::to_string(link.dY);
-			oRes.WriteString((BYTE*)s.c_str(), s.length());
-			s = std::to_string(link.dW);
-			oRes.WriteString((BYTE*)s.c_str(), s.length());
-			s = std::to_string(link.dH);
-			oRes.WriteString((BYTE*)s.c_str(), s.length());
+            oRes.AddDouble(link.dX);
+            oRes.AddDouble(link.dY);
+            oRes.AddDouble(link.dW);
+            oRes.AddDouble(link.dH);
 		}
 		oRes.WriteLen();
 
@@ -206,11 +202,7 @@ namespace XPS
 		oRes.ClearWithoutAttack();
 		return res;
 	}
-	bool  Page::CompareWH(int nRasterW, int nRasterH)
-	{
-		return nRasterW == nLastW && nRasterH == nLastH;
-	}
-	#endif
+#endif
 	void Page::Draw(IRenderer* pRenderer, bool* pbBreak, int nRasterW, int nRasterH)
 	{
 		#ifdef BUILDING_WASM_MODULE
@@ -717,10 +709,10 @@ namespace XPS
 
 		if (!bIsSideways)
 		{
-            #ifdef BUILDING_WASM_MODULE
+#ifdef BUILDING_WASM_MODULE
             if (!m_pGlyphs)
             {
-                m_pGlyphs = new CData();
+                m_pGlyphs = new NSWasm::CData();
                 m_pGlyphs->SkipLen();
             }
 
@@ -733,7 +725,7 @@ namespace XPS
             std::string sFontSize = std::to_string(dFontSize * pdA + pdE);
             m_pGlyphs->WriteString((BYTE*)sFontSize.c_str(), sFontSize.length());
             m_pGlyphs->AddInt(unUtf16Len);
-            #endif
+#endif
 
 			while (GetNextGlyph(wsIndices.c_str(), nIndicesPos, nIndicesLen, pUtf16, nUtf16Pos, unUtf16Len, oEntry))
 			{
@@ -766,7 +758,7 @@ namespace XPS
 					pState->PushTransform(pTransform);
 				}
 
-				#ifdef BUILDING_WASM_MODULE
+#ifdef BUILDING_WASM_MODULE
 				double _dX = dXorigin;
 				double _dY = dYorigin;
 				oTransform.TransformPoint(_dX, _dY);
@@ -777,7 +769,7 @@ namespace XPS
 				m_pGlyphs->WriteString((BYTE*)sY.c_str(), sY.length());
 				m_pGlyphs->AddInt(oEntry.nUnicode);
 				m_pGlyphs->WriteLen();
-				#endif
+#endif
 
 				if (oEntry.bGid)
 					pRenderer->CommandDrawTextExCHAR(oEntry.nUnicode, oEntry.nGid, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0);

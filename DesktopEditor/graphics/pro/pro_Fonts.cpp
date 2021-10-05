@@ -32,6 +32,7 @@
 
 #include "Fonts.h"
 #include "../../common/File.h"
+#include "../../common/StringExt.h"
 #include "../../fontengine/ApplicationFonts.h"
 
 #ifdef __APPLE__
@@ -165,7 +166,7 @@ namespace NSFonts
             virtual bool Add(const std::wstring& id, BYTE* data, LONG size, bool bClear = false)
             {
                 std::wstring sFile = id;
-                string_replace(sFile, L"\\", L"/");
+                NSStringExt::Replace(sFile, L"\\", L"/");
                 std::map<std::wstring, IFontStream*>::iterator it = m_mapStreams.find(sFile);
                 if (it != m_mapStreams.end())
                     return false;
@@ -178,7 +179,7 @@ namespace NSFonts
             virtual bool Remove(const std::wstring& id)
             {
                 std::wstring sFile = id;
-                string_replace(sFile, L"\\", L"/");
+                NSStringExt::Replace(sFile, L"\\", L"/");
                 std::map<std::wstring, IFontStream*>::iterator it = m_mapStreams.find(sFile);
                 if (it == m_mapStreams.end())
                     return false;
@@ -197,7 +198,7 @@ namespace NSFonts
             virtual IFontStream* Get(const std::wstring& id)
             {
                 std::wstring sFile = id;
-                string_replace(sFile, L"\\", L"/");
+                NSStringExt::Replace(sFile, L"\\", L"/");
                 std::map<std::wstring, IFontStream*>::iterator it = m_mapStreams.find(sFile);
                 return it != m_mapStreams.end() ? it->second : NULL;
             }

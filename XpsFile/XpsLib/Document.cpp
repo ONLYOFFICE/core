@@ -286,17 +286,16 @@ namespace XPS
 		if (oIter != m_mPages.end())
 			oIter->second->GetSize(nW, nH);
 	}
-	#ifdef BUILDING_WASM_MODULE
+#ifdef BUILDING_WASM_MODULE
 	BYTE* CDocument::GetStructure()
 	{
-		XPS::Page::CData oRes;
+        NSWasm::CData oRes;
 		oRes.SkipLen();
 		for (const CDocumentStructure& str : m_vStructure)
 		{
-			std::string sY = std::to_string(str.dY);
 			oRes.AddInt(str.nPage);
 			oRes.AddInt(str.nLevel);
-			oRes.WriteString((BYTE*)sY.c_str(), sY.length());
+            oRes.AddDouble(str.dY);
 			oRes.WriteString((BYTE*)str.sDescription.c_str(), str.sDescription.length());
 		}
 		oRes.WriteLen();
@@ -318,14 +317,7 @@ namespace XPS
 			return oIter->second->GetLinks();
 		return NULL;
 	}
-	bool  CDocument::CompareWH(int nPageIndex, int nRasterW, int nRasterH)
-	{
-		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
-		if (oIter != m_mPages.end())
-			return oIter->second->CompareWH(nRasterW, nRasterH);
-		return false;
-	}
-	#endif
+#endif
 	void CDocument::DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak, int nRasterW, int nRasterH)
 	{
 		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);

@@ -70,7 +70,6 @@ namespace XPS
 		BYTE* GetStructure();
 		BYTE* GetPageGlyphs(int nPageIndex);
 		BYTE* GetPageLinks (int nPageIndex);
-		bool  CompareWH(int nPageIndex, int nRasterW, int nRasterH);
 		std::vector<CDocumentStructure>          m_vStructure;
 		std::map<std::wstring, int>              m_mInternalLinks;
 		#endif

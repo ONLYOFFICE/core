@@ -57,7 +57,7 @@ void Label::readFields(CFRecord& record)
 	
 	record >> cell;
 	
-	if (global_info_->Version < 0x0600 || global_info_->Version == 0x601)
+	if (global_info_->Version < 0x0600)
 	{
 		LPAnsiString name;
 		record >> name;

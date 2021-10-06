@@ -34,7 +34,7 @@
 #include <Logic/Biff_records/BiffRecord.h>
 #include <Logic/Biff_structures/Xnum.h>
 #include "../../XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
+
 using namespace XLS;
 
 namespace XLSB

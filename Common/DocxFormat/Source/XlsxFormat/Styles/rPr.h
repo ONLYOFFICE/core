@@ -420,10 +420,14 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            ReadAttributes(obj);
-                        }
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+            void fromBin(XLS::BaseObject* obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_Color;
@@ -442,6 +446,23 @@ namespace OOX
                         void ReadAttributes(XLS::BaseObjectPtr& obj)
                         {
                             auto ptr = static_cast<XLSB::Color*>(obj.get());
+
+                            if(ptr != nullptr)
+                            {
+                                m_oTint     = ptr->nTintAndShade;
+                                m_oAuto     = ptr->xColorType == 0;
+                                if(ptr->xColorType == 1)
+                                    m_oIndexed  = ptr->index;
+                                else if(ptr->xColorType == 3)
+                                    m_oThemeColor  = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index;
+                                m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue, ptr->bAlpha);
+
+                            }
+                        }
+
+                        void ReadAttributes(XLS::BaseObject* obj)
+                        {
+                            auto ptr = static_cast<XLSB::Color*>(obj);
 
                             if(ptr != nullptr)
                             {

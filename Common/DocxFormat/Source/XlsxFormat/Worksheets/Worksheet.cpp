@@ -160,6 +160,9 @@ namespace OOX
             if( m_oReadPath.GetExtention() == _T(".bin"))
             {
                 readBin(m_oReadPath);
+                PrepareComments(m_pComments, m_pThreadedComments, m_oLegacyDrawing.GetPointer());
+                PrepareConditionalFormatting();
+                PrepareDataValidations();
                 return;
             }
 

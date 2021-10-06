@@ -3072,65 +3072,7 @@ namespace SimpleTypes
 			SimpleType_FromString     (ECfType)
 			SimpleType_Operator_Equal (ST_CfType)
 		};
-		//----------------------------------------------------
-		//	18.18.82 ST_TimePeriod (Time Period Types)
-		//----------------------------------------------------
-		enum ETimePeriod
-		{
-			timePeriodToday = 0,
-			timePeriodYesterday = 1,
-			timePeriodTomorrow = 2,
-			timePeriodLast7Days = 3,
-			timePeriodThisMonth = 4,
-			timePeriodLastMonth = 5,
-			timePeriodNextMonth = 6,
-			timePeriodThisWeek = 7,
-			timePerioLastWeek = 8,
-			timePeriodNextWeek = 9
-		};
-		template<ETimePeriod eDefValue = timePeriodToday>
-		class CTimePeriod : public CSimpleType<ETimePeriod, eDefValue>
-		{
-		public:
-			CTimePeriod() {}
-			CTimePeriod(const ETimePeriod & val) { this->m_eValue = val; }
 
-			virtual ETimePeriod FromString(std::wstring &sValue)
-			{
-					 if (L"today" == sValue)		this->m_eValue = timePeriodToday;
-				else if (L"yesterday" == sValue)	this->m_eValue = timePeriodYesterday;
-				else if (L"tomorrow" == sValue)		this->m_eValue = timePeriodTomorrow;
-				else if (L"last7Days" == sValue)	this->m_eValue = timePeriodLast7Days;
-				else if (L"thisMonth" == sValue)	this->m_eValue = timePeriodThisMonth;
-				else if (L"lastMonth" == sValue)	this->m_eValue = timePeriodLastMonth;
-				else if (L"nextMonth" == sValue)	this->m_eValue = timePeriodNextMonth;
-				else if (L"thisWeek" == sValue)		this->m_eValue = timePeriodThisWeek;
-				else if (L"lastWeek" == sValue)		this->m_eValue = timePerioLastWeek;
-				else if (L"nextWeek" == sValue)		this->m_eValue = timePeriodNextWeek;
-				else 								this->m_eValue = eDefValue;
-				return this->m_eValue;
-			}
-			virtual std::wstring ToString() const
-			{
-				switch (this->m_eValue)
-				{
-					case timePeriodToday:		return L"today";		break;
-					case timePeriodYesterday:	return L"yesterday";	break;
-					case timePeriodTomorrow:	return L"tomorrow";		break;
-					case timePeriodLast7Days:	return L"last7Days";	break;
-					case timePeriodThisMonth:	return L"thisMonth";	break;
-					case timePeriodLastMonth:	return L"lastMonth";	break;
-					case timePeriodNextMonth:	return L"nextMonth";	break;
-					case timePeriodThisWeek:	return L"thisWeek";		break;
-					case timePerioLastWeek:		return L"lastWeek";		break;
-					case timePeriodNextWeek:	return L"nextWeek";		break;
-					default: return L"today";
-				}
-			}
-
-			SimpleType_FromString(ETimePeriod)
-			SimpleType_Operator_Equal(CTimePeriod)
-		};
 	//----------------------------------------------------
 	//	18.18.13 ST_CfvoType (Conditional Format Value Object Type)
 	//----------------------------------------------------

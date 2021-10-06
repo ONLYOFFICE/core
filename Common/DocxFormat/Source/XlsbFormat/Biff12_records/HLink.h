@@ -36,7 +36,7 @@
 #include "../Biff12_structures/RelID.h"
 #include "../Biff12_structures/XLWideString.h"
 #include "../../XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
+
 using namespace XLS;
 
 namespace XLSB

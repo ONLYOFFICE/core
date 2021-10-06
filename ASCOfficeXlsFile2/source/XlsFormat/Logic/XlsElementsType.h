@@ -745,6 +745,8 @@ enum ElementType
         typeCOLORSCALE = 4000,
         typeDATABAR,
         typeICONSET,
+        typeACFMT,
+        typeFmt
 
 
 };

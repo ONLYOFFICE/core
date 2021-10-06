@@ -368,7 +368,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>						m_oStopIfTrue;
 			nullable<std::wstring>								m_oId;
 			nullable<std::wstring>								m_oText;
-			nullable<SimpleTypes::Spreadsheet::CTimePeriod<>>	m_oTimePeriod;
+            nullable<SimpleTypes::Spreadsheet::ST_TimePeriod<>>	m_oTimePeriod;
 			nullable<SimpleTypes::Spreadsheet::ST_CfType<>>		m_oType;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;

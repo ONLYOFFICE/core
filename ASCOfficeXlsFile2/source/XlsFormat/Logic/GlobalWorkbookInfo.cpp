@@ -219,7 +219,7 @@ void GlobalWorkbookInfo::GetDigitFontSizePixels()
 	Font * font = dynamic_cast<Font*>(m_arFonts[0].get());
 	if (!font) return;
 
-	std::wstring	fontName = font->fontName.value();
+    std::wstring	fontName = font->fontName;
 	double			fontSize = font->dyHeight /20.;
 
     try 

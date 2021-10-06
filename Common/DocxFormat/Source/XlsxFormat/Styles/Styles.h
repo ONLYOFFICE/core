@@ -45,6 +45,16 @@
 #include "NumFmts.h"
 #include "TableStyles.h"
 
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
+
+#include "../../XlsbFormat/StylesStream.h"
+#include "../../XlsbFormat/Biff12_unions/FMTS.h"
+#include "../../XlsbFormat/Biff12_unions/FONTS.h"
+#include "../../XlsbFormat/Biff12_unions/FILLS.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -165,6 +175,44 @@ namespace OOX
 				}
 				m_arrStyles2003.clear();
 			}
+
+            void readBin(const CPath& oPath)
+            {
+                auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
+                XLS::GlobalWorkbookInfoPtr xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
+                xls_global_info->Version = 0x0800;
+                NSFile::CFileBinary oFile;
+                if (oFile.OpenFile(oPath.GetPath()) == false)
+                    return;
+
+                auto m_lStreamLen = (LONG)oFile.GetFileSize();
+                auto m_pStream = new BYTE[m_lStreamLen];
+                DWORD dwRead = 0;
+                oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
+                oFile.CloseFile();
+                std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
+                binaryReader->Init(m_pStream, 0, dwRead);
+
+                XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
+                XLSB::StylesStreamPtr stylesStream = std::make_shared<XLSB::StylesStream>(workbook_code_page);
+                XLS::BinReaderProcessor proc(reader, stylesStream.get(), true);
+
+                proc.mandatory(*stylesStream.get());
+
+                if (stylesStream != nullptr)
+                {
+                    if (stylesStream->m_FMTS != nullptr)
+                        m_oNumFmts = static_cast<XLSB::FMTS*>(stylesStream->m_FMTS.get())->m_arFmt;
+
+                    if (stylesStream->m_FONTS != nullptr)
+                        m_oFonts = static_cast<XLSB::FONTS*>(stylesStream->m_FONTS.get())->m_arBrtFont;
+
+                    if (stylesStream->m_FILLS != nullptr)
+                        m_oFills = static_cast<XLSB::FILLS*>(stylesStream->m_FILLS.get())->m_arBrtFill;
+
+                }
+            }
+
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -175,6 +223,12 @@ namespace OOX
 			{
 				m_oReadPath = oPath;
 				IFileContainer::Read( oRootPath, oPath );
+
+                if( m_oReadPath.GetExtention() == _T(".bin"))
+                {
+                    readBin(m_oReadPath);
+                    return;
+                }
 
 				XmlUtils::CXmlLiteReader oReader;
 

@@ -47,8 +47,9 @@
 #include <Logic/Biff_records/Pane.h>
 #include <Logic/Biff_records/Selection.h>
 #include <Logic/Biff_records/SortData.h>
+#include <Logic/Biff_records/Font.h>
 #include "../../XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
+
 
 
 namespace XLSB
@@ -215,6 +216,16 @@ namespace XLSB
         BaseObjectPtr clone() override
         {
             return BaseObjectPtr(new BeginSortState(*this));
+        }
+    };
+
+    class Font: public XLS::Font
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(Font)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new Font(*this));
         }
     };
 

@@ -33,7 +33,7 @@
 
 #include <Logic/Biff_records/BiffRecord.h>
 #include "../../XlsxFormat/WritingElement.h"
-#include "../XlsbElementsType.h"
+
 #include "../Biff12_structures/CFType.h"
 #include "../Biff12_structures/CFTemp.h"
 #include <Logic/Biff_structures/DXFId.h>

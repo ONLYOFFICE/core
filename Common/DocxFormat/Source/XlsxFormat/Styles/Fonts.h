@@ -34,6 +34,7 @@
 #include "../CommonInclude.h"
 
 #include "rPr.h"
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
 namespace OOX
 {
@@ -43,6 +44,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFont)
+            WritingElement_XlsbConstructors(CFont)
 			CFont()
 			{
 			}
@@ -179,6 +181,11 @@ namespace OOX
 				}
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_Font;
@@ -254,11 +261,96 @@ namespace OOX
 				{
 					m_oVertAlign.Init();
 					m_oVertAlign->m_oVerticalAlign = oVerticalAlignment;
-				}
+				}                
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::Font*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oSz.Init(); m_oSz->m_oVal.Init();
+                    m_oSz->m_oVal = (double)ptr->dyHeight/20.;
+
+                    m_oItalic.Init();
+                    m_oItalic->FromBool(ptr->fItalic);
+
+                    m_oStrike.Init();
+                    m_oStrike->FromBool(ptr->fStrikeOut);
+
+                    m_oOutline.Init();
+                    m_oOutline->FromBool(ptr->fOutline);
+
+                    m_oShadow.Init();
+                    m_oShadow->FromBool(ptr->fShadow);
+
+                    m_oCondense.Init();
+                    m_oCondense->FromBool(ptr->fCondense);
+
+                    m_oExtend.Init();
+                    m_oExtend->FromBool(ptr->fExtend);
+
+                    m_oBold.Init();
+                    m_oBold->FromBool(ptr->bls == 0x02BC);
+
+                    m_oUnderline.Init();
+                    m_oUnderline->m_oUnderline.Init();
+                    switch(ptr->uls)
+                    {
+                        case 0:
+                           m_oUnderline->m_oUnderline = SimpleTypes::Spreadsheet::EUnderline::underlineNone; break;
+                        case 1:
+                            m_oUnderline->m_oUnderline = SimpleTypes::Spreadsheet::EUnderline::underlineSingle; break;
+                        case 2:
+                            m_oUnderline->m_oUnderline = SimpleTypes::Spreadsheet::EUnderline::underlineDouble; break;
+                        case 33:
+                            m_oUnderline->m_oUnderline = SimpleTypes::Spreadsheet::EUnderline::underlineSingleAccounting; break;
+                        case 34:
+                            m_oUnderline->m_oUnderline = SimpleTypes::Spreadsheet::EUnderline::underlineDoubleAccounting; break;
+                    }
+
+                    m_oFamily.Init();
+                    m_oFamily->m_oFontFamily = (SimpleTypes::Spreadsheet::EFontFamily)ptr->bFamily;
+
+                    m_oCharset.Init();
+                    m_oCharset->m_oCharset = (SimpleTypes::Spreadsheet::EFontCharset)ptr->bCharSet;
+
+                    m_oColor.Init();
+                    m_oColor->fromBin(dynamic_cast<XLS::BaseObject*>(&ptr->brtColor));
+
+                    m_oScheme.Init();
+                    m_oScheme->m_oFontScheme.Init();
+                    switch(ptr->bFontScheme)
+                    {
+                        case 0:
+                           m_oScheme->m_oFontScheme = SimpleTypes::Spreadsheet::EFontScheme::fontschemeNone; break;
+                        case 1:
+                            m_oScheme->m_oFontScheme = SimpleTypes::Spreadsheet::EFontScheme::fontschemeMajor; break;
+                        case 2:
+                            m_oScheme->m_oFontScheme = SimpleTypes::Spreadsheet::EFontScheme::fontschemeMinor; break;
+                    }
+
+                    m_oRFont.Init();
+                    m_oRFont->m_sVal = ptr->fontName;
+
+                    m_oVertAlign.Init();
+                    m_oVertAlign->m_oVerticalAlign.Init();
+                    switch(ptr->sss)
+                    {
+                        case 0:
+                            m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::EVerticalAlignRun::verticalalignrunBaseline); break;
+                        case 1:
+                            m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::EVerticalAlignRun::verticalalignrunSuperscript); break;
+                        case 2:
+                            m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::EVerticalAlignRun::verticalalignrunSubscript); break;
+                    }
+
+                }
+            }
+
 		public:
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oBold;
-			nullable<CCharset>														m_oCharset;
+            nullable<CCharset>														m_oCharset;
 			nullable<CColor>														m_oColor;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oCondense;
 			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oExtend;
@@ -277,6 +369,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFonts)
+            WritingElement_XlsbVectorConstructors(CFonts)
 			CFonts()
 			{
 			}
@@ -328,6 +421,20 @@ namespace OOX
 				}
 			}
 
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                ReadAttributes(obj);
+
+                int index = 0;
+
+                for(auto &font : obj)
+                {
+                    CFont *pFont = new CFont(font);
+                    m_arrItems.push_back(pFont);
+                    m_mapFonts.insert(std::make_pair(index++, pFont));
+                }
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_Fonts;
@@ -346,6 +453,11 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if ( oReader, L"count", m_oCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                m_oCount = (_UINT32)obj.size();
+            }
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
 			std::map<int, CFont*>							m_mapFonts;

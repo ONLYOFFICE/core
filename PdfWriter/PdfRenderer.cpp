@@ -1554,7 +1554,13 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		CTextField* pField = m_pDocument->CreateTextField();
 		pFieldBase = static_cast<CFieldBase*>(pField);
 
-		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+		double _dY = m_pPage->GetHeight() - MM_2_PT(dY);
+		double _dB = m_pPage->GetHeight() - MM_2_PT(dY + dH);
+
+		double dBaseLine = MM_2_PT(dH - oInfo.GetBaseLineOffset());
+		double dShiftX = MM_2_PT(0.7);
+
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX - 0.7), _dY, MM_2_PT(dX + dW + 0.7), _dB));
 
 		pField->SetMaxLen(pPr->GetMaxCharacters());
 		pField->SetCombFlag(pPr->IsComb());
@@ -1591,12 +1597,12 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		TColor oColor = m_oBrush.GetTColor1();
 		if (oInfo.IsPlaceHolder())
 		{
-			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 0.5, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()), pShifts, unShiftsCount);
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 0.5, m_oFont.GetSize(), dShiftX, dBaseLine, pShifts, unShiftsCount);
 		}
 		else
 		{
 			pField->SetTextValue(wsValue);
-			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()), pShifts, unShiftsCount);
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), dShiftX, dBaseLine, pShifts, unShiftsCount);
 		}
 
 		if (pShifts)

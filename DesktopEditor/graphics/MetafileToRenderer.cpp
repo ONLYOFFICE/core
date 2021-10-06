@@ -940,8 +940,8 @@ namespace NSOnlineOfficeBinToPdf
 					if (nFlags & (1 << 22))
 						pPr->SetTextValue(ReadString(current, curindex));
 
-					pPr->SetAutoFit(nFlags & (1 << 23));
-					pPr->SetMultiLine(nFlags & (1 << 24));
+					pPr->SetMultiLine(nFlags & (1 << 23));
+					pPr->SetAutoFit(nFlags & (1 << 24));
 				}
 				else if (oInfo.IsDropDownList())
 				{

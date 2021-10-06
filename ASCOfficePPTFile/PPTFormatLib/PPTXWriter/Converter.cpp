@@ -626,6 +626,13 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
         std::unordered_set<std::string> writedFilesHash;
         for (const auto& oIterSlide : m_pUserInfo->m_mapMasters)
             WriteRoundTripTheme(oIterSlide.second, writedFilesHash, nIndexTheme, nStartLayout);
+
+        writedFilesHash.clear();
+        for (const auto& oIterSlide : m_pUserInfo->m_mapNotesMasters)
+            WriteRoundTripTheme(oIterSlide.second, writedFilesHash, nIndexTheme, nStartLayout);
+        writedFilesHash.clear();
+        for (const auto& oIterSlide : m_pUserInfo->m_mapHandoutMasters)
+            WriteRoundTripTheme(oIterSlide.second, writedFilesHash, nIndexTheme, nStartLayout);
     }
 }
 
@@ -655,7 +662,7 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
     auto strThemePath = extractor.getOneFile(twoThemePathS + L"theme1.xml");
     if (strThemePath.empty())
         return;
-    auto themeRelsPath = extractor.getOneFile(twoThemePathS + L"_rels" + FILE_SEPARATOR_STR + L"themeManager.xml.rels");
+    auto themeRelsPath = extractor.getOneFile(twoThemePathS + L"_rels" + FILE_SEPARATOR_STR + L"theme1.xml.rels");
     auto arrImagesPaths = extractor.find( L".*image[0-9]+.*");
 
     BYTE *utf8Data = NULL;

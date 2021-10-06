@@ -388,8 +388,6 @@ window.onload = function()
 			return res;
 		};
 
-		this.links = null;
-
 		this._paint = function()
 		{
 			if (!this.isRepaint)
@@ -467,12 +465,7 @@ window.onload = function()
 				}
 				
 				if (!page.Image)
-				{
 					page.Image = this.file.getPage(i, w, h);
-					//this.getGlyphs(i, w, h);
-					this.links = this.getLinks(i, w, h);
-					this.links.Page = i;
-				}
 
 				let x = ((xCenter * this.retinaPixelRatio) >> 0) - (w >> 1);
 				let y = ((page.Y - yPos) * this.retinaPixelRatio) >> 0;
@@ -480,16 +473,6 @@ window.onload = function()
 				ctx.drawImage(page.Image, 0, 0, w, h, x, y, w, h);
 				if (this.Selection.page == i && this.Selection.IsSelection)
 					ctx.drawImage(this.Selection.Image, 0, 0, w, h, x, y, w, h);
-				
-				if (this.links && this.links.Page == i)
-				{
-					ctx.fillStyle = "#FF0000";
-					for (let j = 0; j < this.links.length; j++)
-					{
-						let Link = this.links[j];
-						ctx.fillRect(x + Link.x, y + Link.y, Link.w, Link.h);
-					}
-				}
 
 				ctx.strokeRect(x + lineW / 2, y + lineW / 2, w - lineW, h - lineW);
 			}

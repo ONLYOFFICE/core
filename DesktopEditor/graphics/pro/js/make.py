@@ -133,6 +133,7 @@ sources = []
 sources.append("raster.o")
 sources.append("wasm/src/drawingfile.cpp")
 
+# command
 compile_files_array_len = len(compile_files_array)
 external_file = []
 
@@ -166,7 +167,7 @@ arguments += "]\" "
 for item in sources:
   arguments += (item + " ")
 
-external_file.append("call emcc -o drawingfile.js " + arguments + libs)
+external_file.append(prefix_call + "emcc -o drawingfile.js " + arguments + libs)
 
 base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n    UDataMemory tData;", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;")
 base.run_as_bat(external_file)
@@ -186,8 +187,41 @@ engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_conte
 base.writeFile("./deploy/drawingfile.js", engine_js_content)
 base.copy_file("./drawingfile.wasm", "./deploy/drawingfile.wasm")
 
+# ie asm version
+arguments = arguments.replace("WASM=1", "WASM=0")
+
+# command
+external_file = []
+
+if base.host_platform() == "windows":
+  external_file.append("call emsdk/emsdk_env.bat")
+else:
+  external_file.append("#!/bin/bash")
+  external_file.append("source ./emsdk/emsdk_env.sh")
+
+external_file.append(prefix_call + "emcc -o drawingfile.js " + arguments + libs)
+base.run_as_bat(external_file)
+
+# finalize
+base.replaceInFile("./drawingfile.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
+base.replaceInFile("./drawingfile.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){window[\"AscViewer\"] && window[\"AscViewer\"][\"onLoadModule\"] && window[\"AscViewer\"][\"onLoadModule\"]();}];")
+
+module_js_content = base.readFile("./drawingfile.js")
+engine_base_js_content = base.readFile("./wasm/js/drawingfile_base.js")
+string_utf8_content    = base.readFile("./../../../../Common/js/string_utf8.js")
+polyfill_js_content    = base.readFile("./../../../../Common/3dParty/hunspell/wasm/js/polyfill.js")
+engine_js_content = engine_base_js_content.replace("//module", module_js_content)
+engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
+engine_js_content = engine_js_content.replace("//polyfill",    polyfill_js_content)
+
+# write new version
+base.writeFile("./deploy/drawingfile_ie.js", engine_js_content)
+base.copy_file("./drawingfile.js.mem", "./deploy/drawingfile.js.mem")
+
+# clear
 base.delete_file("drawingfile.js")
 base.delete_file("drawingfile.wasm")
+base.delete_file("drawingfile.js.mem")
 base.delete_dir("./o")
 base.delete_dir("./xml")
 # base.delete_file("./raster.o")

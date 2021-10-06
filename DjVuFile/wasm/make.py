@@ -17,6 +17,8 @@ base.cmd_in_dir("./../../DesktopEditor/graphics/pro/js", "python", ["make.py"])
 if base.is_exist("./../../DesktopEditor/graphics/pro/js/deploy/drawingfile.wasm"):
     base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/drawingfile.js", "./deploy/drawingfile.js")
     base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/drawingfile.wasm", "./deploy/drawingfile.wasm")
+    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/drawingfile_ie.js", "./deploy/drawingfile_ie.js")
+    base.copy_file("./../../DesktopEditor/graphics/pro/js/deploy/drawingfile.js.mem", "./deploy/drawingfile.js.mem")
 else:
     print("make.py error")
     base.copy_dir("./all_files_test/xps_djvu", "./deploy")

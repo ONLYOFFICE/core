@@ -36,6 +36,10 @@
 #include "../../../ASCOfficePPTXFile/Editor/DefaultNotesMaster.h"
 #include "../../../ASCOfficePPTXFile/Editor/DefaultNotesTheme.h"
 
+#include "../../../ASCOfficePPTXFile/PPTXFormat/NotesMaster.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/SlideMaster.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/HandoutMaster.h"
+
 #include "TableWriter.h"
 #include "../Reader/PPTDocumentInfo.h"
 
@@ -641,8 +645,15 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
     if (!pSlide)
         return;
 
+    // Write Theme
     PPT_FORMAT::CRelsGenerator themeRels(&m_oManager);
     std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
+    std::wstring strThemeDirectory = strPptDirectory + FILE_SEPARATOR + _T("theme");
+    if (nIndexTheme == 0)
+        NSDirectory::CreateDirectory(strThemeDirectory);
+
+    OOX::Document PPTXdocument;
+    PPTXdocument.m_sDocumentPath = strThemeDirectory;
 
     std::vector<RoundTripTheme12Atom*> arrRTTheme;
     std::vector<RoundTripColorMapping12Atom*> arrRTColor;
@@ -650,8 +661,14 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
     pSlide->GetRecordsByType(&arrRTColor, false, true);
 
 
-    if ((int)m_pDocument->m_arThemes.size() >= nIndexTheme)
-        m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[nIndexTheme-1].get();
+    if ((int)m_pDocument->m_arThemes.size() > nIndexTheme)
+        m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[nIndexTheme].get();
+    else if (m_pDocument->m_pNotesMaster.get())
+        m_pShapeWriter->m_pTheme = m_pDocument->m_pNotesMaster.get();
+    else
+        m_pShapeWriter->m_pTheme = m_pDocument->m_pHandoutMaster.get();
+
+    auto themeType = m_pShapeWriter->m_pTheme->m_eType;
 
     if (arrRTTheme.empty())
         return;
@@ -682,18 +699,18 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
     // cp file with new name or write bytes
     if (writedFilesHash.find(strHash) == writedFilesHash.end())
     {
+        PPTX::Theme PPTXtheme(&PPTXdocument);
+        OOX::CPath themePath(strThemePath);
+        PPTX::FileMap fileMap;
+        PPTXtheme.read(themePath, fileMap);
         std::wstring strThemeFile = L"theme" + std::to_wstring(++nIndexTheme) + L".xml";
-        strThemeFile = strPptDirectory + _T("theme") + FILE_SEPARATOR_STR + strThemeFile;
-        NSFile::CFileBinary oFile;
-        oFile.CreateFileW(strThemeFile);
-        oFile.WriteFile(utf8Data, utf8DataSize);
-        wasThemeWrite = true;
+        OOX::CContentTypes contentTypes;
+        PPTXtheme.write(strThemeFile, strThemeDirectory, contentTypes);
 
         // clear bytes
         writedFilesHash.insert(strHash);
         RELEASEOBJECT(utf8Data);
         utf8DataSize = 0;
-        oFile.CloseFile();
     }
 
     if (wasThemeWrite == false)
@@ -719,6 +736,10 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
         RELEASEOBJECT(utf8Data);
         utf8DataSize = 0;
     }
+
+    // Write Masters
+
+
     m_pShapeWriter->m_pTheme = NULL;
 }
 

@@ -80,7 +80,7 @@ namespace PPT_FORMAT
         void WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered_set<std::string> &writedFilesHash, int& nIndexTheme, int &nStartLayout);
         void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
         void WriteSlides		();
-		void WriteNotes			();
+        void WriteNotes			();
         void WriteLayoutAfterTheme (CThemePtr pTheme, const int nIndexTheme, int &nStartLayout);
         void WriteLayout		(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);
 //		void WriteRelsMaster    (std::wstring path, int type, )

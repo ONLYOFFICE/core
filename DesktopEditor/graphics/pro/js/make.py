@@ -187,6 +187,10 @@ engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_conte
 base.writeFile("./deploy/drawingfile.js", engine_js_content)
 base.copy_file("./drawingfile.wasm", "./deploy/drawingfile.wasm")
 
+# clear
+base.delete_file("drawingfile.js")
+base.delete_file("drawingfile.wasm")
+
 # ie asm version
 arguments = arguments.replace("WASM=1", "WASM=0")
 
@@ -220,7 +224,6 @@ base.copy_file("./drawingfile.js.mem", "./deploy/drawingfile.js.mem")
 
 # clear
 base.delete_file("drawingfile.js")
-base.delete_file("drawingfile.wasm")
 base.delete_file("drawingfile.js.mem")
 base.delete_dir("./o")
 base.delete_dir("./xml")

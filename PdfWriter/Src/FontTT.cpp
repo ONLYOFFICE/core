@@ -78,20 +78,6 @@ namespace PdfWriter
 
 		pFontDescriptor->Add("Flags", nFlags);
 
-		CArrayObject* pBBox = new CArrayObject();
-		int* pFontBBox = m_pFontFile->GetBBox();
-		pBBox->Add(pFontBBox[0]);
-		pBBox->Add(pFontBBox[1]);
-		pBBox->Add(pFontBBox[2]);
-		pBBox->Add(pFontBBox[3]);
-		pFontDescriptor->Add("FontBBox", pBBox);
-		pFontDescriptor->Add("ItalicAngle", 0);
-		pFontDescriptor->Add("Ascent", m_pFontFile->GetAscent());
-		pFontDescriptor->Add("Descent", m_pFontFile->GetDescent());
-		pFontDescriptor->Add("CapHeight", m_pFontFile->GetCapHeight());
-		pFontDescriptor->Add("StemV", 80);
-		pFontDescriptor->Add("FontWeight", m_pFontFile->GetWeight());
-
 		m_pFontFileDict = new CDictObject(m_pXref);
 		pFontDescriptor->Add("FontFile2", m_pFontFileDict);
 
@@ -151,6 +137,9 @@ namespace PdfWriter
 		CArrayObject* pWidths = new CArrayObject();
 		Add("Widths", pWidths);
 
+		unsigned int unUnitsPerEm = pFace->units_per_EM;
+		double dKoef = 1000.0 / unUnitsPerEm;
+
 		for (unsigned int unIndex = 0; unIndex < 255; ++unIndex)
 		{
 			unsigned int unGID = GetGID(pFace, c_arrWinAnsiEncoding[unIndex]);
@@ -158,14 +147,32 @@ namespace PdfWriter
 			if (0 == FT_Load_Glyph(pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
 			{
 				unsigned int unWidth = 0;
-				if (0 != pFace->units_per_EM)
-					unWidth = ((unsigned int)pFace->glyph->metrics.horiAdvance * 1000 / pFace->units_per_EM);
+				if (unUnitsPerEm)
+					unWidth = ((unsigned int)pFace->glyph->metrics.horiAdvance * 1000 / unUnitsPerEm);
 				else
 					unWidth = ((unsigned int)pFace->glyph->metrics.horiAdvance);
 
 				pWidths->Add(unWidth);
 			}
 		}
+
+		int xMin = (int)(unUnitsPerEm ? pFace->bbox.xMin * dKoef : pFace->bbox.xMin);
+		int yMin = (int)(unUnitsPerEm ? pFace->bbox.yMin * dKoef : pFace->bbox.yMin);
+		int xMax = (int)(unUnitsPerEm ? pFace->bbox.xMax * dKoef : pFace->bbox.xMax);
+		int yMax = (int)(unUnitsPerEm ? pFace->bbox.yMax * dKoef : pFace->bbox.yMax);
+
+		CArrayObject* pBBox = new CArrayObject();
+		pBBox->Add(xMin);
+		pBBox->Add(yMin);
+		pBBox->Add(xMax);
+		pBBox->Add(yMax);
+		m_pFontDescriptor->Add("FontBBox", pBBox);
+		m_pFontDescriptor->Add("Ascent", yMax);
+		m_pFontDescriptor->Add("Descent", yMin);
+		m_pFontDescriptor->Add("CapHeight", (int)(unUnitsPerEm ? m_pFontFile->GetCapHeight() * dKoef : m_pFontFile->GetCapHeight()));
+		m_pFontDescriptor->Add("ItalicAngle", 0);
+		m_pFontDescriptor->Add("StemV", 80);
+		m_pFontDescriptor->Add("FontWeight", m_pFontFile->GetWeight());
 
 		FT_Done_Face(pFace);
 		RELEASEARRAYOBJECTS(pFaceMemory);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,53 +30,53 @@
  *
  */
 
-#ifndef STYLESSTREAM_H
-#define STYLESSTREAM_H
+#include "BORDERS.h"
+#include "../Biff12_records/CommonRecords.h"
+#include "../Biff12_records/BeginBorders.h"
+#include "../Biff12_records/Border.h"
+#include "../Biff12_records/EndBorders.h"
 
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-using namespace XLS;
 namespace XLSB
 {
-    class StreamCacheReader;
 
-    class StylesStream;
-    typedef std::shared_ptr<StylesStream>		StylesStreamPtr;
-
-    class StylesStream: public CompositeObject
+    BORDERS::BORDERS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(StylesStream)
-    public:
-        StylesStream(const unsigned short code_page);
-        virtual ~StylesStream();
+    }
 
-        BaseObjectPtr clone();
+    BORDERS::~BORDERS()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr BORDERS::clone()
+    {
+        return BaseObjectPtr(new BORDERS(*this));
+    }
 
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
+    //BORDERS = BrtBeginBorders 1*65430BrtBorder BrtEndBorders
+    const bool BORDERS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginBorders>())
+        {
+            m_BrtBeginBorders = elements_.back();
+            elements_.pop_back();
+        }
 
-        BaseObjectPtr               m_BrtBeginStyleSheet;
-        BaseObjectPtr               m_FMTS;
-        BaseObjectPtr               m_FONTS;
-        BaseObjectPtr               m_FILLS;
-        BaseObjectPtr               m_BORDERS;
+        auto count = proc.repeated<Border>(1, 65430);
+        while(count > 0)
+        {
+            m_arBrtBorder.insert(m_arBrtBorder.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
 
-        unsigned short              code_page_;
-        GlobalWorkbookInfoPtr       global_info_;
+        if (proc.optional<EndBorders>())
+        {
+            m_BrtEndBorders = elements_.back();
+            elements_.pop_back();
+        }
 
+        return m_BrtBeginBorders || !m_arBrtBorder.empty() || m_BrtEndBorders;
+    }
 
-    };
-
-}
-
-#endif // STYLESSTREAM_H
+} // namespace XLSB
 

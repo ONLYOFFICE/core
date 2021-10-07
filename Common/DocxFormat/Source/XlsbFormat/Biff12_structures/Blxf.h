@@ -30,53 +30,30 @@
  *
  */
 
-#ifndef STYLESSTREAM_H
-#define STYLESSTREAM_H
+#pragma once
 
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include <Logic/Biff_structures/BiffStructure.h>
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../Biff12_records/Color.h"
 
 using namespace XLS;
 namespace XLSB
 {
-    class StreamCacheReader;
-
-    class StylesStream;
-    typedef std::shared_ptr<StylesStream>		StylesStreamPtr;
-
-    class StylesStream: public CompositeObject
+    class Blxf : public BiffStructure
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(StylesStream)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(Blxf)
     public:
-        StylesStream(const unsigned short code_page);
-        virtual ~StylesStream();
+        Blxf();
+        Blxf(CFRecord& record);
+        virtual ~Blxf();
+        BiffStructurePtr clone();
 
-        BaseObjectPtr clone();
+        static const ElementType	type = typeBiffStructure;
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual void load(CFRecord& record);
 
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
-
-        BaseObjectPtr               m_BrtBeginStyleSheet;
-        BaseObjectPtr               m_FMTS;
-        BaseObjectPtr               m_FONTS;
-        BaseObjectPtr               m_FILLS;
-        BaseObjectPtr               m_BORDERS;
-
-        unsigned short              code_page_;
-        GlobalWorkbookInfoPtr       global_info_;
-
-
+        BYTE     dg;
+        Color    brtColor;
     };
 
-}
-
-#endif // STYLESSTREAM_H
-
+}   // namespace XLSB

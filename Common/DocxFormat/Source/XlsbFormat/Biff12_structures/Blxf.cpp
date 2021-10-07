@@ -30,53 +30,35 @@
  *
  */
 
-#ifndef STYLESSTREAM_H
-#define STYLESSTREAM_H
+#include "Blxf.h"
 
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-using namespace XLS;
 namespace XLSB
 {
-    class StreamCacheReader;
 
-    class StylesStream;
-    typedef std::shared_ptr<StylesStream>		StylesStreamPtr;
-
-    class StylesStream: public CompositeObject
+    Blxf::Blxf()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(StylesStream)
-    public:
-        StylesStream(const unsigned short code_page);
-        virtual ~StylesStream();
+    }
 
-        BaseObjectPtr clone();
+    Blxf::Blxf(CFRecord& record)
+    {
+        load(record);
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    Blxf::~Blxf()
+    {
+    }
 
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
+    BiffStructurePtr Blxf::clone()
+    {
+        return BiffStructurePtr(new Blxf(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginStyleSheet;
-        BaseObjectPtr               m_FMTS;
-        BaseObjectPtr               m_FONTS;
-        BaseObjectPtr               m_FILLS;
-        BaseObjectPtr               m_BORDERS;
+    void Blxf::load(CFRecord& record)
+    {
+        record >> dg;
+        record.skipNunBytes(1);
+        brtColor.readFields(record);
+    }
 
-        unsigned short              code_page_;
-        GlobalWorkbookInfoPtr       global_info_;
-
-
-    };
-
-}
-
-#endif // STYLESSTREAM_H
+} // namespace XLSB
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,53 +30,28 @@
  *
  */
 
-#ifndef STYLESSTREAM_H
-#define STYLESSTREAM_H
+#include "BeginBorders.h"
 
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-using namespace XLS;
 namespace XLSB
 {
-    class StreamCacheReader;
 
-    class StylesStream;
-    typedef std::shared_ptr<StylesStream>		StylesStreamPtr;
-
-    class StylesStream: public CompositeObject
+    BeginBorders::BeginBorders()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(StylesStream)
-    public:
-        StylesStream(const unsigned short code_page);
-        virtual ~StylesStream();
+    }
 
-        BaseObjectPtr clone();
+    BeginBorders::~BeginBorders()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr BeginBorders::clone()
+    {
+        return BaseObjectPtr(new BeginBorders(*this));
+    }
 
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
+    void BeginBorders::readFields(CFRecord& record)
+    {
+        record >> cborders;
+    }
 
-        BaseObjectPtr               m_BrtBeginStyleSheet;
-        BaseObjectPtr               m_FMTS;
-        BaseObjectPtr               m_FONTS;
-        BaseObjectPtr               m_FILLS;
-        BaseObjectPtr               m_BORDERS;
-
-        unsigned short              code_page_;
-        GlobalWorkbookInfoPtr       global_info_;
-
-
-    };
-
-}
-
-#endif // STYLESSTREAM_H
+} // namespace XLSB
 

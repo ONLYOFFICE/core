@@ -195,6 +195,9 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/BeginFills.cpp \
     ../Source/XlsbFormat/Biff12_records/Fill.cpp \
     ../Source/XlsbFormat/Biff12_records/EndFills.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginBorders.cpp \
+    ../Source/XlsbFormat/Biff12_records/Border.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndBorders.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -220,6 +223,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/StrRun.cpp \
     ../Source/XlsbFormat/Biff12_structures/PhRun.cpp \
     ../Source/XlsbFormat/Biff12_structures/GradientStop.cpp \
+    ../Source/XlsbFormat/Biff12_structures/Blxf.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -262,6 +266,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/FMTS.cpp \
     ../Source/XlsbFormat/Biff12_unions/FONTS.cpp \
     ../Source/XlsbFormat/Biff12_unions/FILLS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/BORDERS.cpp \
 }
 
 
@@ -547,6 +552,9 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/BeginFills.h \
     ../Source/XlsbFormat/Biff12_records/Fill.h \
     ../Source/XlsbFormat/Biff12_records/EndFills.h \
+    ../Source/XlsbFormat/Biff12_records/BeginBorders.h \
+    ../Source/XlsbFormat/Biff12_records/Border.h \
+    ../Source/XlsbFormat/Biff12_records/EndBorders.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
@@ -575,6 +583,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_structures/StrRun.h \
     ../Source/XlsbFormat/Biff12_structures/PhRun.h \
     ../Source/XlsbFormat/Biff12_structures/GradientStop.h \
+    ../Source/XlsbFormat/Biff12_structures/Blxf.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.h \
     ../Source/XlsbFormat/Biff12_unions/ACUID.h \
@@ -617,3 +626,4 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/FMTS.h \
     ../Source/XlsbFormat/Biff12_unions/FONTS.h \
     ../Source/XlsbFormat/Biff12_unions/FILLS.h \
+    ../Source/XlsbFormat/Biff12_unions/BORDERS.h \

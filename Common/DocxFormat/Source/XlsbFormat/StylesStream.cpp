@@ -38,6 +38,7 @@
 #include "Biff12_unions/FMTS.h"
 #include "Biff12_unions/FONTS.h"
 #include "Biff12_unions/FILLS.h"
+#include "Biff12_unions/BORDERS.h"
 
 namespace XLSB
 {
@@ -136,6 +137,15 @@ const bool StylesStream::loadContent(BinProcessor& proc)
                 if (proc.optional<FILLS>())
                 {
                     m_FILLS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginBorders:
+            {
+                if (proc.optional<BORDERS>())
+                {
+                    m_BORDERS = elements_.back();
                     elements_.pop_back();
                 }
             }break;

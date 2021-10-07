@@ -245,8 +245,7 @@ namespace OOX
                 {
                     m_oPosition = ptr->xnumPosition.data.value;
                     m_oColor.Init();
-                    auto pColor = boost::shared_ptr<XLS::BaseObject>(dynamic_cast<XLS::BaseObject*>(&ptr->brtColor));
-                    m_oColor = pColor;
+                    m_oColor->fromBin(dynamic_cast<XLS::BaseObject*>(&ptr->brtColor));
                 }
             }
 			virtual EElementType getType () const

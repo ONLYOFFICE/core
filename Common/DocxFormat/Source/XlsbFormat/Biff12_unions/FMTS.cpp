@@ -63,13 +63,13 @@ namespace XLSB
 
         while(true)
         {
-            if (proc.optional<ACFMT>())
+            if (proc.optional<Fmt>())
             {
                 m_arFmt.push_back(elements_.back());
                 elements_.pop_back();
             }
 
-            else if (proc.optional<Fmt>())
+            else if (proc.optional<ACFMT>())
             {
                 m_arFmt.push_back(elements_.back());
                 elements_.pop_back();

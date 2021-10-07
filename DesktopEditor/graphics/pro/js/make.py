@@ -176,6 +176,7 @@ base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp",
 # finalize
 base.replaceInFile("./drawingfile.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
 base.replaceInFile("./drawingfile.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){window[\"AscViewer\"] && window[\"AscViewer\"][\"onLoadModule\"] && window[\"AscViewer\"][\"onLoadModule\"]();}];")
+base.replaceInFile("./drawingfile.js", "\"drawingfile.js.mem\"", "getMemoryPathIE(\"drawingfile.js.mem\")")
 
 module_js_content = base.readFile("./drawingfile.js")
 engine_base_js_content = base.readFile("./wasm/js/drawingfile_base.js")
@@ -209,6 +210,7 @@ base.run_as_bat(external_file)
 # finalize
 base.replaceInFile("./drawingfile.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
 base.replaceInFile("./drawingfile.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){window[\"AscViewer\"] && window[\"AscViewer\"][\"onLoadModule\"] && window[\"AscViewer\"][\"onLoadModule\"]();}];")
+base.replaceInFile("./drawingfile.js", "\"drawingfile.js.mem\"", "getMemoryPathIE(\"drawingfile.js.mem\")")
 
 module_js_content = base.readFile("./drawingfile.js")
 engine_base_js_content = base.readFile("./wasm/js/drawingfile_base.js")

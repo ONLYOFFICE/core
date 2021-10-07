@@ -73,6 +73,13 @@
             return getBinaryPromise2();
         }
     }
+	
+	function getMemoryPathIE(name)
+	{
+		if (self["AscViewer"] && self["AscViewer"]["baseUrl"])
+			return self["AscViewer"]["baseUrl"] + name;
+		return name;
+	}
 
     //polyfill
 

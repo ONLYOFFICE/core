@@ -692,16 +692,6 @@ namespace PdfWriter
 		Add("MK", m_pMK);
 
 		m_pMK->Add("R", 0);
-
-		CArrayObject* pBG = new CArrayObject();
-		if (pBG)
-		{
-			pBG->Add(0.909);
-			pBG->Add(0.941);
-			pBG->Add(0.992);
-			m_pMK->Add("BG", pBG);
-		}
-
 		m_pMK->Add("TP", 1);
 
 		m_pIF = new CDictObject();
@@ -715,6 +705,16 @@ namespace PdfWriter
 		SetConstantProportions(true);
 		SetShift(0.5, 0.5);
 	}
+	void CPictureField::SetFieldName(const std::string& sName, bool isSkipCheck)
+	{
+		std::string _sName = sName + "_af_image";
+		CFieldBase::SetFieldName(_sName, isSkipCheck);
+	}
+	void CPictureField::SetFieldName(const std::wstring& wsName, bool isSkipCheck)
+	{
+		std::string sName = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsName) + "_af_image";
+		CFieldBase::SetFieldName(sName, isSkipCheck);
+	}
 	void CPictureField::SetAppearance()
 	{
 		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
@@ -722,7 +722,6 @@ namespace PdfWriter
 
 
 		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
-
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 
 		std::string sDA = "0.909 0.941 0.992 rg";
@@ -1050,6 +1049,13 @@ namespace PdfWriter
 		m_pStream->WriteReal(std::max(dW, 0.0));
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(std::max(dH, 0.0));
-		m_pStream->WriteStr(" re\012f\012q");
+		m_pStream->WriteStr(" re\012f");
+
+		m_pStream->WriteStr("0.909 0.941 0.992 RG\012");
+		m_pStream->WriteStr("0.5 0.5 ");
+		m_pStream->WriteReal(std::max(dW - 1, 0.0));
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::max(dH - 1, 0.0));
+		m_pStream->WriteStr(" re\012s\012q");
 	}	
 }

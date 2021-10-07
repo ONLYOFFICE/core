@@ -202,6 +202,8 @@ namespace PdfWriter
 
 	public:
 		CPictureField(CXref* pXref, CDocument* pDocument);
+		virtual void SetFieldName(const std::string& sName, bool isSkipCheck = false);
+		virtual void SetFieldName(const std::wstring& wsName, bool isSkipCheck = false);
 		void SetAppearance();
 		void SetScaleType(const EScaleType& eType);
 		void SetConstantProportions(const bool& bConstant);

@@ -110,10 +110,11 @@
 
     function CFile()
     {
-        AscViewer.IFile.call(this);
+        this.nativeFile = 0;
+        this.stream = -1;
+        this.type = -1;
+        this.pages = [];
     }
-    CFile.prototype = Object.create(AscViewer.IFile.prototype);
-    CFile.prototype.constructor = CFile;
 
     CFile.prototype["loadFromData"] = function(arrayBuffer)
     {

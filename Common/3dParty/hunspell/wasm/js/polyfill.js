@@ -34,3 +34,9 @@ Math.imul = Math.imul || function(a, b) {
   // окончательный |0 преобразует беззнаковое значение обратно в знаковое значение
   return ((al * bl) + (((ah * bl + al * bh) << 16) >>> 0)|0);
 };
+
+Uint8Array.prototype.copyWithin = Uint8Array.prototype.copyWithin || function(target, start, end) {
+    var tmpArray = this.subarray(start, end);
+	this.set(tmpArray, target);
+	return this;
+};

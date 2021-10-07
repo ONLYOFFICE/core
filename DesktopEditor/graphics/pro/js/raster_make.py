@@ -26,6 +26,7 @@ if not base.is_dir("emsdk"):
 # compile
 compiler_flags = ["-O3",
                   "-fno-rtti",
+				  "-Wno-unused-command-line-argument",
                   "-s WASM=1",
                   "-s ALLOW_MEMORY_GROWTH=1",
                   "-s FILESYSTEM=0",

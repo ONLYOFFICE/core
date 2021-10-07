@@ -15,6 +15,10 @@ if not base.is_file("./raster.o"):
 
 base.configure_common_apps()
 
+# remove previous version
+if base.is_dir("./deploy"):
+  base.delete_dir("./deploy")
+base.create_dir("./deploy")
 if base.is_dir("./o"):
   base.delete_dir("./o")
 base.create_dir("./o")

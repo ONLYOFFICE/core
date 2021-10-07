@@ -194,34 +194,58 @@
         var reader = new CBinaryReader(buffer, 0, len);
 
         var Line = -1;
+        var prevY = -1;
         while (reader.isValid())
         {
-            var rec = {};
-            rec["word"] = reader.readString();
-            if (this.type == 2)
-            {
-                rec["x"] = 1.015 * reader.readDouble();
-                rec["y"] = 1.015 * reader.readDouble();
-            }
-            else
-            {
-                rec["x"] = reader.readDouble();
-                rec["y"] = reader.readDouble();
-            }
-            rec["w"] = reader.readDouble();
-            rec["h"] = reader.readDouble();
-
-            Line++;
-            this.pages[pageIndex].Lines.push({ Glyphs : [] });
-            for (let i = 0; i < _Word.length; i++)
-            {
-                this.pages[pageIndex].Lines[Line].Glyphs.push({
-                    X : _X + _W / (_Word.length - 1) * i,
-                    UChar : _Word[i]
-                });
-            }
-            this.pages[pageIndex].Lines[Line].Glyphs[0].Y = _Y + _H;
-            this.pages[pageIndex].Lines[Line].Glyphs[0].fontSize = _H;
+			// xps
+			if (this.type == 2)
+			{
+				let _fontName = reader.readString();
+				let _fontSize = reader.readDouble();
+				let amount = reader.readInt();
+				for (var i = 0; i < amount; i++)
+				{
+					let _X = reader.readDouble();
+					let _Y = reader.readDouble();
+					if (_Y != prevY)
+                    {
+                        if (Line >= 0)
+                            this.pages[pageIndex].Lines[Line].Glyphs.sort((prev, next) => prev.X - next.X);
+                        Line++;
+                        this.pages[pageIndex].Lines.push({ Glyphs : [] });
+                        prevY = _Y;
+                    }
+					let _Char = reader.readInt();
+					this.pages[pageIndex].Lines[Line].Glyphs.push({
+                        fontName : _fontName,
+                        fontSize : _fontSize,
+                        X : _X * 1.015,
+                        Y : _Y * 1.015,
+                        UChar : String.fromCharCode(_Char)
+                    });
+				}
+			}
+			// djvu
+			else
+			{
+                let _Word = reader.readString();
+                let _X = reader.readDouble();
+                let _Y = reader.readDouble();
+                let _W = reader.readDouble();
+                let _H = reader.readDouble();
+			    
+                Line++;
+                this.pages[pageIndex].Lines.push({ Glyphs : [] });
+                for (let i = 0; i < _Word.length; i++)
+                {
+                    this.pages[pageIndex].Lines[Line].Glyphs.push({
+                        X : _X + _W / (_Word.length - 1) * i,
+                        UChar : _Word[i]
+                    });
+                }
+                this.pages[pageIndex].Lines[Line].Glyphs[0].Y = _Y + _H;
+                this.pages[pageIndex].Lines[Line].Glyphs[0].fontSize = _H;
+			}
         }
 
         Module["_free"](glyphs);
@@ -246,16 +270,8 @@
         {
             var rec = {};
             rec["link"] = reader.readString();
-            if (this.type == 2)
-            {
-                rec["x"] = 1.015 * reader.readDouble();
-                rec["y"] = 1.015 * reader.readDouble();
-            }
-            else
-            {
-                rec["x"] = reader.readDouble();
-                rec["y"] = reader.readDouble();
-            }
+            rec["x"] = (this.type == 2 ? 1.015 : 1) * reader.readDouble();
+            rec["y"] = (this.type == 2 ? 1.015 : 1) * reader.readDouble();
             rec["w"] = reader.readDouble();
             rec["h"] = reader.readDouble();
             res.push(rec);
@@ -282,16 +298,9 @@
         while (reader.isValid())
         {
             var rec = {};
-            rec["page"] = reader.readInt();
+            rec["page"]  = reader.readInt();
             rec["level"] = reader.readInt();
-            if (this.type == 2)
-            {
-                rec["y"] = reader.readDouble();
-            }
-            else
-            {
-                rec["y"] = reader.readInt();
-            }
+            rec["y"]  = reader.readDouble();
             rec["description"] = reader.readString();
             res.push(rec);
         }

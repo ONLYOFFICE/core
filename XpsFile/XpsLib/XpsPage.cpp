@@ -722,8 +722,7 @@ namespace XPS
 
             std::string sFontName = U_TO_UTF8(m_pFontManager->GetName());
             m_pGlyphs->WriteString((BYTE*)sFontName.c_str(), sFontName.length());
-            std::string sFontSize = std::to_string(dFontSize * pdA + pdE);
-            m_pGlyphs->WriteString((BYTE*)sFontSize.c_str(), sFontSize.length());
+            m_pGlyphs->AddDouble(dFontSize * pdA + pdE);
             m_pGlyphs->AddInt(unUtf16Len);
 #endif
 
@@ -763,10 +762,8 @@ namespace XPS
 				double _dY = dYorigin;
 				oTransform.TransformPoint(_dX, _dY);
 
-				std::string sX = std::to_string(_dX);
-				m_pGlyphs->WriteString((BYTE*)sX.c_str(), sX.length());
-				std::string sY = std::to_string(_dY);
-				m_pGlyphs->WriteString((BYTE*)sY.c_str(), sY.length());
+                m_pGlyphs->AddDouble(_dX);
+                m_pGlyphs->AddDouble(_dY);
 				m_pGlyphs->AddInt(oEntry.nUnicode);
 				m_pGlyphs->WriteLen();
 #endif

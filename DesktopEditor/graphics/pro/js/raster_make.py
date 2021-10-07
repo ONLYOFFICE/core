@@ -7,9 +7,6 @@ import json
 base.configure_common_apps()
 
 # remove previous version
-if base.is_dir("./deploy"):
-    base.delete_dir("./deploy")
-base.create_dir("./deploy")
 if base.is_dir("./o"):
     base.delete_dir("./o")
 base.create_dir("./o")
@@ -25,12 +22,12 @@ if not base.is_dir("emsdk"):
 
 # compile
 compiler_flags = ["-O3",
-                  "-fno-rtti",
-				  "-Wno-unused-command-line-argument",
+                  # "-fno-rtti"
+                  "-Wno-unused-command-line-argument",
                   "-s WASM=1",
                   "-s ALLOW_MEMORY_GROWTH=1",
                   "-s FILESYSTEM=0",
-                  "-s ENVIRONMENT='web,worker'"]
+                  "-s ENVIRONMENT='web'"]
                   #"-s LLD_REPORT_UNDEFINED"]
 
 compile_files_array = []

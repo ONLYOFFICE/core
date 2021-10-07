@@ -353,7 +353,7 @@ void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, NSWasm::CData& out
         {
             out.AddInt(nPage);
             out.AddInt(level);
-            out.AddInt(0); // Y position
+            out.AddDouble(0.0);
             GUTF8String description = gpBookMark->displayname;
             out.WriteString((BYTE*)description.getbuf(), description.length());
         }
@@ -434,14 +434,10 @@ BYTE* CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const int& nRasterW
 
                     std::string sText = U_TO_UTF8(csWord);
                     oRes.WriteString((BYTE*)sText.c_str(), sText.length());
-                    std::string sX = std::to_string(arrCoords[0] * dKoefX);
-                    oRes.WriteString((BYTE*)sX.c_str(), sX.length());
-                    std::string sY = std::to_string(arrCoords[3] * dKoefY);
-                    oRes.WriteString((BYTE*)sY.c_str(), sY.length());
-                    std::string sW = std::to_string((arrCoords[2] - arrCoords[0]) * dKoefX);
-                    oRes.WriteString((BYTE*)sW.c_str(), sW.length());
-                    std::string sH = std::to_string((arrCoords[1] - arrCoords[3]) * dKoefY);
-                    oRes.WriteString((BYTE*)sH.c_str(), sH.length());
+                    oRes.AddDouble(arrCoords[0] * dKoefX);
+                    oRes.AddDouble(arrCoords[3] * dKoefY);
+                    oRes.AddDouble((arrCoords[2] - arrCoords[0]) * dKoefX);
+                    oRes.AddDouble((arrCoords[1] - arrCoords[3]) * dKoefY);
                 }
             }
         }

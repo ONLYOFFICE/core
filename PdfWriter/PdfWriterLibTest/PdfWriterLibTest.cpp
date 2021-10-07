@@ -133,44 +133,44 @@ void TestField()
 	//pComboBox->SetMultiSelectFlag(false);
 	//pComboBox->SetTextAppearance(L"Ilya", NULL, 0, pFont, TRgb(255, 0, 0), 0.5, 40, 1, 14.3);
 
-	CCheckBoxField* pCheckBox = oPdf.CreateCheckBoxField();
-	pCheckBox->SetFieldName(L"CheckBox");
-	pCheckBox->SetRequiredFlag(false);
-	pCheckBox->AddPageRect(pPage, TRect(50, 600, 100, 550));
-	pCheckBox->SetValue(true);
-	//pCheckBox->SetAppearance(L"1", NULL, 0, pFont2, L"2", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
-	pCheckBox->SetAppearance(1, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//CCheckBoxField* pCheckBox = oPdf.CreateCheckBoxField();
+	//pCheckBox->SetFieldName(L"CheckBox");
+	//pCheckBox->SetRequiredFlag(false);
+	//pCheckBox->AddPageRect(pPage, TRect(50, 600, 100, 550));
+	//pCheckBox->SetValue(true);
+	////pCheckBox->SetAppearance(L"1", NULL, 0, pFont2, L"2", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//pCheckBox->SetAppearance(1, TRgb(0, 0, 0), 1, 40, 0, 0);
 
-	CRadioGroupField* pRadioGroup = oPdf.GetRadioGroupField(L"RadioGroup");
-	CCheckBoxField* pRadio1 = pRadioGroup->CreateKid();
-	pRadio1->AddPageRect(pPage, TRect(50, 700, 100, 650));
-	pRadio1->SetValue(true);
-	//pRadio1->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
-	pRadio1->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//CRadioGroupField* pRadioGroup = oPdf.GetRadioGroupField(L"RadioGroup");
+	//CCheckBoxField* pRadio1 = pRadioGroup->CreateKid();
+	//pRadio1->AddPageRect(pPage, TRect(50, 700, 100, 650));
+	//pRadio1->SetValue(true);
+	////pRadio1->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//pRadio1->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
 
-	CCheckBoxField* pRadio2 = pRadioGroup->CreateKid(L"TestName");
-	pRadio2->AddPageRect(pPage, TRect(150, 700, 200, 650));
-	pRadio2->SetValue(true);
-	//pRadio2->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
-	pRadio2->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//CCheckBoxField* pRadio2 = pRadioGroup->CreateKid(L"TestName");
+	//pRadio2->AddPageRect(pPage, TRect(150, 700, 200, 650));
+	//pRadio2->SetValue(true);
+	////pRadio2->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//pRadio2->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
 
-	CCheckBoxField* pRadio3 = pRadioGroup->CreateKid();
-	pRadio3->AddPageRect(pPage, TRect(250, 700, 300, 650));
-	pRadio3->SetValue(false);
-	//pRadio3->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
-	pRadio3->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//CCheckBoxField* pRadio3 = pRadioGroup->CreateKid();
+	//pRadio3->AddPageRect(pPage, TRect(250, 700, 300, 650));
+	//pRadio3->SetValue(false);
+	////pRadio3->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//pRadio3->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
 
-	//CPictureField* pPictureField = oPdf.CreatePictureField();
-	//pPictureField->SetRequiredFlag(false);
-	//pPictureField->AddPageRect(pPage, TRect(100, 100, 500, 650));
-	//pPictureField->SetFieldName(L"Pic");
-	//pPictureField->SetFieldHint(L"Картинка");
-	//pPictureField->SetAppearance();
-	//pPictureField->SetShift(0.25, 0.75);
-	//pPictureField->SetScaleType(CPictureField::EScaleType::Smaller);	
-	//pPictureField->SetFieldBorder(border_subtype_Solid, TRgb(255, 0, 0), 1, 0, 0, 0);
-	//pPictureField->SetShd(TRgb(0, 0, 255));
-	//pPictureField->SetRespectBorders(true);
+	CPictureField* pPictureField = oPdf.CreatePictureField();
+	pPictureField->SetRequiredFlag(false);
+	pPictureField->AddPageRect(pPage, TRect(100, 100, 500, 650));
+	pPictureField->SetFieldName(L"Pic");
+	pPictureField->SetFieldHint(L"Картинка");
+	pPictureField->SetAppearance();
+	pPictureField->SetShift(0.25, 0.75);
+	pPictureField->SetScaleType(CPictureField::EScaleType::Smaller);	
+	pPictureField->SetFieldBorder(border_subtype_Solid, TRgb(255, 0, 0), 1, 0, 0, 0);
+	pPictureField->SetShd(TRgb(0, 0, 255));
+	pPictureField->SetRespectBorders(true);
 	
 	oPdf.SaveToFile(g_wsOutFolder + L"TestField1.pdf");
 	oPdf.Close();

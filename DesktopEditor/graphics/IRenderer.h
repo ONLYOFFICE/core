@@ -557,6 +557,13 @@ public:
 
 		m_nBorderType = 0;
 
+		// 0 - Right
+		// 1 - Left
+		// 2 - Center
+		// 3 - Justify
+		// 4 - Distributed
+		m_nJc = 1;
+
 		m_bHaveShd = false;
 	}
 

@@ -385,14 +385,13 @@ namespace MetaFile
 
 				if (dM22 < - 0.00001)
 				{
-					dY += fabs(fH);
 					if (m_pFile->IsWindowFlippedY())
 					{
-						dShiftY = (2 * dY + fabs(fH)) * dM22;
+						dShiftY = (2 * dY) * dM22;
 					}
 					else
 					{
-						dShiftY = (2 * dY - fabs(fH)) * dM22;
+						dShiftY = (2 * dY) * dM22;
 					}
 				}
 

@@ -34,9 +34,8 @@
 
 namespace DocFileFormat
 {
-	MainDocumentMapping::MainDocumentMapping (ConversionContext* ctx, const ProgressCallback* ffCallBack) : DocumentMapping( ctx, this ), m_ffCallBack(NULL)
+	MainDocumentMapping::MainDocumentMapping (ConversionContext* ctx) : DocumentMapping( ctx, this )
 	{
-		m_ffCallBack	=	ffCallBack;
 	}
 
 	MainDocumentMapping::~MainDocumentMapping()
@@ -167,24 +166,6 @@ namespace DocFileFormat
 				writeParagraph(cp, countTextRel, false, true );
 
 				cp = m_document->FIB->m_RgLw97.ccpText;
-			}
-
-			if (m_ffCallBack)
-			{
-				if (( (unsigned int) cp > (progressStep * index)  ) && (m_ffCallBack))
-				{
-					double progress = ( double( 800000 - 500000 ) / m_document->FIB->m_RgLw97.ccpText * cp );
-
-					m_ffCallBack->OnProgress (m_ffCallBack->caller, DOC_ONPROGRESSEVENT_ID, long( 500000 + progress ));
-
-					short bCancel = 0;
-					m_ffCallBack->OnProgressEx (m_ffCallBack->caller, DOC_ONPROGRESSEVENT_ID, long( 500000 + progress ), &bCancel);
-
-					if (0 != bCancel)
-						return;
-
-					++index;
-				}
 			}
 		}
 

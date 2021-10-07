@@ -114,7 +114,7 @@ namespace DocFileFormat
 						TC80 oTC80;
 						
 						oTC80.ftsWidth		=	Global::dxa;
-						oTC80.wWidth		=	3190;
+						oTC80.wWidth		=	0;
 
 						oTC80.brcTop		=	new BorderCode();
 						oTC80.brcLeft		=	new BorderCode();

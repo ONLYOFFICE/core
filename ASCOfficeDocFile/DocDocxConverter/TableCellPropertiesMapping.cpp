@@ -111,6 +111,18 @@ namespace DocFileFormat
 						bPresentDefTable = true;
 
 						SprmTDefTable tdef(iter->Arguments, iter->argumentsSize);
+
+						bool bUseWidth = true;
+
+						for (size_t j = 0; j < tdef.rgTc80.size(); ++j)
+						{ // 1bc0f6c0-b226-4bcb-912c-e7f97b009d8a.doc
+						  // Технические_Требования_1_287_ДИТ.DOC
+							if (tdef.rgTc80[j].horzMerge == 0 && tdef.rgTc80[j].wWidth < 1)
+							{
+								bUseWidth = false; 
+								break;
+							}
+						}
 						int cc = tdef.numberOfColumns;
 
 						_tGrid = tdef.rgdxaCenter;
@@ -172,9 +184,8 @@ namespace DocFileFormat
 							_gridSpan = 1;
 
 							nComputedCellWidths +=  (tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ 0 ]);
-							nComputedCellWidth	+= /*tdef.rgTc80[ _cellIndex].wWidth > 1 ? tdef.rgTc80[ _cellIndex].wWidth :*/ // 1bc0f6c0-b226-4bcb-912c-e7f97b009d8a.doc
+							nComputedCellWidth	+= bUseWidth ? tdef.rgTc80[ _cellIndex].wWidth :
 													(tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ _cellIndex ]);
-							//Технические_Требования_1_287_ДИТ.DOC
 						}
 
 						if (!IsTableBordersDefined(tapx->grpprl))

@@ -34,7 +34,7 @@
 #include "../DocDocxConverter/Converter.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
-_UINT32 COfficeDocFile::LoadFromFile(const std::wstring &  docFile, const std::wstring & docxDirectory, const std::wstring & password, bool &bMacros, ProgressCallback *ffCallBack)
+_UINT32 COfficeDocFile::LoadFromFile(const std::wstring &  docFile, const std::wstring & docxDirectory, const std::wstring & password, bool &bMacros)
 {
 	_UINT32 hr = 0;
 
@@ -43,12 +43,12 @@ _UINT32 COfficeDocFile::LoadFromFile(const std::wstring &  docFile, const std::w
 	docToDocx.m_sTempFolder = m_sTempFolder;
 	docToDocx.m_nUserLCID = m_nUserLCID;
 
-    hr= docToDocx.LoadAndConvert(docFile, docxDirectory, password, ffCallBack, bMacros);
+    hr= docToDocx.LoadAndConvert(docFile, docxDirectory, password, bMacros);
 
 	return hr;
 }
 
-_UINT32 COfficeDocFile::SaveToFile (const std::wstring &  sDstFileName, const std::wstring &   sSrcFileName, ProgressCallback *ffCallBack )
+_UINT32 COfficeDocFile::SaveToFile (const std::wstring &  sDstFileName, const std::wstring &   sSrcFileName)
 {
     return 0;
 }

@@ -29,16 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef DOC_FORMAT_LIB
-#define DOC_FORMAT_LIB
+#pragma once 
 
 #if defined(_WIN32) || defined(_WIN64)
 	#include <windows.h>
 #endif
 
 #include "../../DesktopEditor/common/ASCVariant.h"
-
-struct ProgressCallback;
 
 class COfficeDocFile 
 {
@@ -49,9 +46,8 @@ public:
 	std::wstring	m_sTempFolder;
 	int				m_nUserLCID;
 
-    _UINT32 LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstFileName, const std::wstring & password, bool &bMacros, ProgressCallback *ffCallBack = NULL);
-    _UINT32 SaveToFile(const std::wstring &  sDstFileName, const std::wstring &  sSrcFileName, ProgressCallback *ffCallBack = NULL);
+    _UINT32 LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstFileName, const std::wstring & password, bool &bMacros);
+    _UINT32 SaveToFile(const std::wstring &  sDstFileName, const std::wstring &  sSrcFileName);
 
 };
 
-#endif //DOC_FORMAT_LIB

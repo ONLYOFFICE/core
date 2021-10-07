@@ -122,10 +122,14 @@ NSFonts::IFontStream* CApplicationFontStreams::GetStream(const std::wstring &str
     if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
     {
         pStream = (CFontStream*)NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(strFile);
-        // чтобы удалить и из мапа и из стораджа
-        pStream->AddRef();
+        if (pStream)
+        {
+            // чтобы удалить и из мапа и из стораджа
+            pStream->AddRef();
+        }
     }
-	else
+
+    if (!pStream)
 	{
 		pStream = new CFontStream();
 		pStream->CreateFromFile(strFile);

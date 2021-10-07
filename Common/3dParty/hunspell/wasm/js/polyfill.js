@@ -35,6 +35,15 @@ Math.imul = Math.imul || function(a, b) {
   return ((al * bl) + (((ah * bl + al * bh) << 16) >>> 0)|0);
 };
 
+Math.fround = Math.fround || function(x) {
+  return new Float32Array([x])[0];
+};
+
+Math.clz32 = Math.clz32 || function(value) {
+  value = Number(value) >>> 0;
+  return value !== 0 ? 31 - Math.floor(Math.log(value + 0.5) / Math.log(2)) : 32;
+};
+
 Uint8Array.prototype.copyWithin = Uint8Array.prototype.copyWithin || function(target, start, end) {
     var tmpArray = this.subarray(start, end);
 	this.set(tmpArray, target);

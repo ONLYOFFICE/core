@@ -64,7 +64,7 @@ compile_files_array = []
 
 compile_files_array.append("g")
 compile_files_array.append("../../")
-compile_files_array.append(["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp"])
+compile_files_array.append(["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp", "pro/js/wasm/src/metafile.cpp"])
 
 compile_files_array.append("fe")
 compile_files_array.append("../../../fontengine/")
@@ -178,8 +178,9 @@ base.run_as_bat(external_file)
 base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;", "\n{\n    UDataMemory tData;")
 
 # finalize
-base.replaceInFile("./drawingfile.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
+base.replaceInFile("./drawingfile.js", "function getBinaryPromise()", "function getBinaryPromise2()")
 base.replaceInFile("./drawingfile.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){window[\"AscViewer\"] && window[\"AscViewer\"][\"onLoadModule\"] && window[\"AscViewer\"][\"onLoadModule\"]();}];")
+base.replaceInFile("./drawingfile.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){window[\"AscViewer\"] && window[\"AscViewer\"][\"onLoadModule\"] && window[\"AscViewer\"][\"onLoadModule\"]();}];")
 base.replaceInFile("./drawingfile.js", "\"drawingfile.js.mem\"", "getMemoryPathIE(\"drawingfile.js.mem\")")
 
 module_js_content = base.readFile("./drawingfile.js")
@@ -212,8 +213,9 @@ external_file.append(prefix_call + "emcc -o drawingfile.js " + arguments + libs)
 base.run_as_bat(external_file)
 
 # finalize
-base.replaceInFile("./drawingfile.js", "function getBinaryPromise(){", "function getBinaryPromise2(){")
+base.replaceInFile("./drawingfile.js", "function getBinaryPromise()", "function getBinaryPromise2()")
 base.replaceInFile("./drawingfile.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){window[\"AscViewer\"] && window[\"AscViewer\"][\"onLoadModule\"] && window[\"AscViewer\"][\"onLoadModule\"]();}];")
+base.replaceInFile("./drawingfile.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){window[\"AscViewer\"] && window[\"AscViewer\"][\"onLoadModule\"] && window[\"AscViewer\"][\"onLoadModule\"]();}];")
 base.replaceInFile("./drawingfile.js", "\"drawingfile.js.mem\"", "getMemoryPathIE(\"drawingfile.js.mem\")")
 
 module_js_content = base.readFile("./drawingfile.js")

@@ -180,7 +180,7 @@
     CFile.prototype["getGlyphs"] = function(pageIndex, width, height)
     {
         var glyphs = Module["_GetGlyphs"](this.nativeFile, pageIndex, width, height);
-        if (glyphs == null)
+        if (glyphs == 0)
             return;
 
         var lenArray = new Int32Array(Module["HEAP8"].buffer, glyphs, 4);
@@ -209,6 +209,8 @@
 					let _Y = reader.readDouble();
 					if (_Y != prevY)
                     {
+                        if (Line >= 0)
+                            this.pages[pageIndex].Lines[Line].Glyphs.sort(function(prev, next) { return prev.X - next.X; });
                         Line++;
                         this.pages[pageIndex].Lines.push({ Glyphs : [] });
                         prevY = _Y;
@@ -252,6 +254,9 @@
     {
         var res = [];
         var ext = Module["_GetLinks"](this.nativeFile, pageIndex, width, height);
+		if (ext == 0)
+			return res;
+		
         var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
         if (lenArray == null)
             return res;
@@ -282,6 +287,8 @@
     {
         var res = [];
         var str = Module["_GetStructure"](this.nativeFile);
+		if (str == 0)
+			return res;
         var lenArray = new Int32Array(Module["HEAP8"].buffer, str, 4);
         if (lenArray == null)
             return res;

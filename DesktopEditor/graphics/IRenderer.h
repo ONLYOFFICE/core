@@ -322,6 +322,10 @@ public:
 	public:
 		CTextFormPr()
 		{
+			m_unMaxCharacters = 0;
+			m_bComb           = false;
+			m_bAutoFit        = false;
+			m_bMultiLine      = false;
 		}
 		void SetTextValue(const std::wstring& wsValue)
 		{
@@ -376,7 +380,9 @@ public:
 	{
 	public:
 		CDropDownFormPr()
-		{}
+		{
+			m_bEditComboBox = false;
+		}
 
 		void SetTextValue(const std::wstring& wsValue)
 		{
@@ -417,7 +423,12 @@ public:
 	{
 	public:
 		CCheckBoxFormPr()
-		{}
+		{
+			m_bChecked          = false;
+			m_unType            = 0;
+			m_unCheckedSymbol   = 0x2612;
+			m_unUncheckedSymbol = 0x2610;
+		}
 		bool IsChecked() const
 		{
 			return m_bChecked;
@@ -493,7 +504,13 @@ public:
 	{
 	public:
 		CPictureFormPr()
-		{}
+		{
+			m_eScaleType           = EScaleType::Always;
+			m_bRespectBorders      = false;
+			m_bConstantProportions = true;
+			m_lShiftX              = 500;
+			m_lShiftY              = 500;
+		}
 		bool IsConstantProportions() const
 		{
 			return m_bConstantProportions;

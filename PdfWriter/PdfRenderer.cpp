@@ -1594,6 +1594,24 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 			}
 		}
 
+		unsigned int unAlign = oInfo.GetJc();
+		if (0 == unAlign || 2 == unAlign)
+		{
+			double dSumWidth = 0;
+			for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+			{
+				unsigned short ushCode = (static_cast<unsigned short>((pCodes[unIndex * 2] << 8) & 0xFFFF) | static_cast<unsigned short>((pCodes[unIndex * 2 + 1])));
+				double dLetterWidth = m_pFont->GetWidth(ushCode) / 1000.0 * m_oFont.GetSize();
+				dSumWidth += dLetterWidth;
+			}
+
+
+			if (0 == unAlign && MM_2_PT(dW) - dSumWidth > 0)
+				dShiftX += MM_2_PT(dW) - dSumWidth;
+			else if (2 == unAlign && (MM_2_PT(dW) - dSumWidth) / 2 > 0)
+				dShiftX += (MM_2_PT(dW) - dSumWidth) / 2;
+		}
+
 		TColor oColor = m_oBrush.GetTColor1();
 		if (oInfo.IsPlaceHolder())
 		{

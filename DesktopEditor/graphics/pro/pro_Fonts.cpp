@@ -143,16 +143,6 @@ namespace NSFonts
             std::map<std::wstring, IFontStream*> m_mapStreams;
             int m_nInternalCounter;
 
-            void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
-            {
-                size_t posn = 0;
-                while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
-                {
-                    text.replace(posn, replaceFrom.length(), replaceTo);
-                    posn += replaceTo.length();
-                }
-            }
-
         public:
             CDefaultGlobalFontsMemoryStorage()
             {

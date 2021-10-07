@@ -634,6 +634,11 @@ namespace PdfReader
             std::wstring wsTempFileName = L"";
             Ref oEmbRef;
             bool bFontSubstitution = false;
+            #ifdef BUILDING_WASM_MODULE
+            LONG nCurrentPos  = 0;
+            LONG nCurrentSize = 0xffff;
+            BYTE* pTempStream = new BYTE[nCurrentSize];
+            #endif
             // 1. Если шрифт внедренный, тогда скидываем его в темповый файл.
             // 2. Если шрифт лежит вне пдф, а в самом пдф есть ссылка на него, тогда используем эту ссылку.
             // 3. В противном случае подбираем шрифт.
@@ -655,12 +660,12 @@ namespace PdfReader
                     case fontCIDType2OT:  wsExt = L".cid_2ot";   break;
                 }
 
-            #ifdef BUILDING_WASM_MODULE
+                #ifdef BUILDING_WASM_MODULE
                 if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
                 {
                      wsTempFileName = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->GenerateId();
                 }
-            #else
+                #else
                 FILE* pTempFile = NULL;
                 if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(),
                                                        (wchar_t*)((GlobalParamsAdaptor *)globalParams)->GetTempFolder().c_str(), NULL))
@@ -671,7 +676,7 @@ namespace PdfReader
                     pEntry->bAvailable = true;
                     return;
                 }
-            #endif
+                #endif
 
 
                 Object oReferenceObject, oStreamObject;
@@ -683,22 +688,19 @@ namespace PdfReader
                     // Внедренный шрифт неправильно записан
                     oStreamObject.free();
 
-                #ifndef BUILDING_WASM_MODULE
+                    #ifndef BUILDING_WASM_MODULE
                     fclose(pTempFile);
 
                     if (L"" != wsTempFileName)
                         NSFile::CFileBinary::Remove(wsTempFileName);
-                #endif
+                    #endif
 
                     pEntry->bAvailable = true;
                     return;
                 }
                 oStreamObject.streamReset();
 
-#ifdef BUILDING_WASM_MODULE
-                LONG nCurrentPos  = 0;
-                LONG nCurrentSize = 0xffff;
-                BYTE* pTempStream = new BYTE[nCurrentSize];
+                #ifdef BUILDING_WASM_MODULE
                 int nChar;
                 while ((nChar = oStreamObject.streamGetChar()) != EOF)
                 {
@@ -713,17 +715,15 @@ namespace PdfReader
                     }
                     pTempStream[nCurrentPos++] = nChar;
                 }
-
                 NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsTempFileName, pTempStream, (LONG)nCurrentPos, true);
-                RELEASEARRAYOBJECTS(pTempStream);
-#else
+                #else
                 int nChar;
                 while ((nChar = oStreamObject.streamGetChar()) != EOF)
                 {
                     fputc(nChar, pTempFile);
                 }
                 fclose(pTempFile);
-#endif
+                #endif
                 oStreamObject.streamClose();
                 oStreamObject.free();
                 wsFileName = wsTempFileName;
@@ -1241,7 +1241,13 @@ namespace PdfReader
             int nLen = 0;
             FoFiTrueType *pTTFontFile  = NULL;
             FoFiType1C   *pT1CFontFile = NULL;
-            FoFiIdentifierType fofiType =  FoFiIdentifier::identifyFile((char*)U_TO_UTF8(wsFileName).c_str());
+            #ifdef BUILDING_WASM_MODULE
+            FoFiIdentifierType fofiType = FoFiIdentifier::identifyMem((char*)pTempStream, nCurrentPos);
+            RELEASEARRAYOBJECTS(pTempStream);
+            #else
+            FoFiIdentifierType fofiType = FoFiIdentifier::identifyFile((char*)U_TO_UTF8(wsFileName).c_str());
+            #endif
+
             switch (eFontType)
             {
                 case fontType1:

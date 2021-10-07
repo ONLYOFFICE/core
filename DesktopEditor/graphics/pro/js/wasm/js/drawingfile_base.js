@@ -209,8 +209,6 @@
 					let _Y = reader.readDouble();
 					if (_Y != prevY)
                     {
-                        if (Line >= 0)
-                            this.pages[pageIndex].Lines[Line].Glyphs.sort((prev, next) => prev.X - next.X);
                         Line++;
                         this.pages[pageIndex].Lines.push({ Glyphs : [] });
                         prevY = _Y;

@@ -758,6 +758,11 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			orPr->rPrChange = oRPrChange.ToString(L"w:rPrChange");
 		}
 		break;
+	case c_oSerProp_rPrType::CompressText:
+	{
+		orPr->CompressText = m_oBufferedStream.GetLong();
+	}
+	break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;

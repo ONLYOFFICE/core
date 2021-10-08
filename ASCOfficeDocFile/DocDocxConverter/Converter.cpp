@@ -61,7 +61,7 @@ namespace DocFileFormat
 
 namespace DocFileFormat
 {
-	_UINT32 Converter::Convert(WordDocument* doc, WordprocessingDocument* docx, const ProgressCallback* progress)
+	_UINT32 Converter::Convert(WordDocument* doc, WordprocessingDocument* docx)
 	{
 		if (!doc || !docx) return S_FALSE;
 		
@@ -81,21 +81,9 @@ namespace DocFileFormat
 		}
 
 		//write document.xml and the header and footers
-		MainDocumentMapping mainDocMapping( &context, progress );
+		MainDocumentMapping mainDocMapping( &context);
 		doc->Convert( &mainDocMapping );
 
-		if ( progress != NULL )
-		{
-			progress->OnProgress( progress->caller, DOC_ONPROGRESSEVENT_ID, 810000 );
-
-			short cancel = 0;
-			progress->OnProgressEx( progress->caller, DOC_ONPROGRESSEVENT_ID, 810000, &cancel );
-
-			if ( cancel != 0 )
-			{
-				return S_FALSE;
-			}
-		}
 	//Write numbering.xml
 		if (doc->listTable)
 		{
@@ -103,81 +91,18 @@ namespace DocFileFormat
 			doc->listTable->Convert( &numberingMapping );
 		}
 
-		if ( progress != NULL )
-		{
-			progress->OnProgress( progress->caller, DOC_ONPROGRESSEVENT_ID, 850000 );
-
-			short cancel = 0;
-			progress->OnProgressEx( progress->caller, DOC_ONPROGRESSEVENT_ID, 850000, &cancel );
-
-			if ( cancel != 0 )
-			{
-				return S_FALSE;
-			}
-		}
-		if ( progress != NULL )
-		{
-			progress->OnProgress( progress->caller, DOC_ONPROGRESSEVENT_ID, 875000 );
-
-			short cancel = 0;
-			progress->OnProgressEx( progress->caller, DOC_ONPROGRESSEVENT_ID, 875000, &cancel );
-
-			if ( cancel != 0 )
-			{
-				return S_FALSE;
-			}
-		}
 
 	//write the footnotes
 		FootnotesMapping footnotesMapping( &context );
 		doc->Convert( &footnotesMapping );
 
-		if ( progress != NULL )
-		{
-			progress->OnProgress( progress->caller, DOC_ONPROGRESSEVENT_ID, 900000 );
-
-			short cancel = 0;
-			progress->OnProgressEx( progress->caller, DOC_ONPROGRESSEVENT_ID, 900000, &cancel );
-
-			if ( cancel != 0 )
-			{
-				return S_FALSE;
-			}
-		}
-
 	//write the endnotes
 		EndnotesMapping endnotesMapping( &context );
 		doc->Convert( &endnotesMapping );
 
-		if ( progress != NULL )
-		{
-			progress->OnProgress( progress->caller, DOC_ONPROGRESSEVENT_ID, 925000 );
-
-			short cancel = 0;
-			progress->OnProgressEx( progress->caller, DOC_ONPROGRESSEVENT_ID, 925000, &cancel );
-
-			if ( cancel != 0 )
-			{
-				return S_FALSE;
-			}
-		}
-
 	//write the comments
 		CommentsMapping commentsMapping( &context );
 		doc->Convert( &commentsMapping );
-
-		if ( progress != NULL )
-		{
-			progress->OnProgress( progress->caller, DOC_ONPROGRESSEVENT_ID, 950000 );
-
-			short cancel = 0;
-			progress->OnProgressEx( progress->caller, DOC_ONPROGRESSEVENT_ID, 950000, &cancel );
-
-			if ( cancel != 0 )
-			{
-				return S_FALSE;
-			}
-		}
 
 	//write settings.xml at last because of the rsid list
 		if (doc->DocProperties)
@@ -185,47 +110,24 @@ namespace DocFileFormat
 			SettingsMapping settingsMapping( &context );
 			doc->DocProperties->Convert( &settingsMapping );
 		}
-		
-		if ( progress != NULL )
-		{
-			progress->OnProgress( progress->caller, DOC_ONPROGRESSEVENT_ID, 975000 );
-
-			short cancel = 0;
-			progress->OnProgressEx( progress->caller, DOC_ONPROGRESSEVENT_ID, 975000, &cancel );
-
-			if ( cancel != 0 )
-			{
-				return S_FALSE;
-			}
-		}
 
 		return S_OK;
 	}
 
-	_UINT32 Converter::LoadAndConvert(const std::wstring& strSrcFile, const std::wstring& strDstDirectory, const std::wstring& password, const ProgressCallback* progress, bool &bMacros)
+	_UINT32 Converter::LoadAndConvert(const std::wstring& strSrcFile, const std::wstring& strDstDirectory, const std::wstring& password, bool &bMacros)
 	{
-		WordDocument			doc(progress, m_sTempFolder, m_nUserLCID);
+		WordDocument			doc(m_sTempFolder, m_nUserLCID);
 		WordprocessingDocument	docx(strDstDirectory, &doc);
 		
 		_UINT32 result = doc.LoadDocument(strSrcFile, password);
 
         if (result == 0)
 		{
-			result = Convert(&doc, &docx, progress);
+			result = Convert(&doc, &docx);
 
             if (result == 0)
 			{
-				docx.SaveDocument(bMacros);
-
-                if (progress)progress->OnProgress(progress->caller, DOC_ONPROGRESSEVENT_ID, 1000000);
-
-				short cancel = 0;
-                if (progress)progress->OnProgressEx(progress->caller, DOC_ONPROGRESSEVENT_ID, 1000000, &cancel);
-
-				if (0 != cancel)
-				{
-					return S_FALSE;
-				}
+				result = docx.SaveDocument(bMacros);
 			}
 		}
 

@@ -565,6 +565,7 @@ namespace DocFileFormat
 			case ODRAW::fillFocus:
 			{
 				appendValueAttribute(&m_fill, L"focus", (FormatUtils::IntToWideString(iter->op) + L"%"));
+				appendValueAttribute(&m_fill, L"focusposition", L".5, .5");
 				appendValueAttribute(&m_fill, L"focussize", L"");
 			}break;
 			case ODRAW::fillType:
@@ -602,12 +603,14 @@ namespace DocFileFormat
 			}break;
 			case ODRAW::fillOpacity:
 			{
-				appendValueAttribute(&m_fill, L"opacity", (FormatUtils::IntToWideString(iter->op) + L"f"));
+				double opa = (iter->op / pow((double)2, (double)16));
+				appendValueAttribute(&m_fill, L"opacity", FormatUtils::DoubleToFormattedWideString(opa, L"%.2f"));
 			}
 			break;
 			case ODRAW::fillBackOpacity:
 			{
-				appendValueAttribute(&m_fill, L"o:opacity2", (FormatUtils::IntToWideString(iter->op) + L"f"));
+				double opa = (iter->op / pow((double)2, (double)16));
+				appendValueAttribute(&m_fill, L"o:opacity2", FormatUtils::DoubleToFormattedWideString(opa, L"%.2f"));
 			}break;
 	// SHADOW
 			case ODRAW::shadowType:
@@ -652,8 +655,14 @@ namespace DocFileFormat
 			}break;
 			case ODRAW::shadowStyleBooleanProperties:
 			{
-				//ODRAW::ShadowStyleBooleanProperties
-
+				ODRAW::ShadowStyleBooleanProperties* booleans = dynamic_cast<ODRAW::ShadowStyleBooleanProperties*>(iter.get());
+				if (booleans)
+				{
+					if (booleans->fUsefShadow && booleans->fShadow)
+					{
+						bShadow = true;
+					}
+				}
 			}break;
 	// OLE
 			case ODRAW::pictureId:
@@ -1020,13 +1029,6 @@ namespace DocFileFormat
 			appendValueAttribute(&m_shadow, L"origin", FormatUtils::DoubleToWideString(*ShadowOriginX) + std::wstring(L"," ) + FormatUtils::DoubleToWideString(*ShadowOriginY));
 		}
 
-// write shadow
-		if (m_shadow.GetAttributeCount() > 0)
-		{
-			appendValueAttribute(&m_shadow, L"on", bShadow ? L"t" : L"f" );
-			m_pXmlWriter->WriteString(m_shadow.GetXMLString());
-		}
-
 //write the viewpoint
 		if ( ViewPointX || ViewPointY || ViewPointZ )
 		{
@@ -1095,6 +1097,13 @@ namespace DocFileFormat
 		{
 			m_pXmlWriter->WriteString(m_fill.GetXMLString());
 		}		
+
+// write shadow
+		if (m_shadow.GetAttributeCount() > 0)
+		{
+			appendValueAttribute(&m_shadow, L"on", bShadow ? L"t" : L"f");
+			m_pXmlWriter->WriteString(m_shadow.GetXMLString());
+		}
 // write imagedata
 		if (m_imagedata.GetAttributeCount())
 		{
@@ -2029,8 +2038,12 @@ namespace DocFileFormat
 		std::wstring result;
 		for (size_t i = 0; i < pColors->complex.data.size(); ++i)
 		{
-			result += FormatUtils::IntToWideString((int)pColors->complex.data[i].dPosition);
-			result += L"f #";
+			if (pColors->complex.data[i].position.Fractional == 0)
+				result += FormatUtils::IntToWideString(pColors->complex.data[i].position.Integral);
+			else
+				result += FormatUtils::IntToWideString(pColors->complex.data[i].position.Fractional) +L"f";
+
+			result += L" #";
 			result += pColors->complex.data[i].color.sColorRGB;
 			result += L";";
 		}

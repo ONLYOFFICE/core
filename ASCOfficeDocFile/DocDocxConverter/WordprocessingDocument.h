@@ -79,6 +79,6 @@ namespace DocFileFormat
 		WordprocessingDocument(const std::wstring & _docxDirectory, const WordDocument* _docFile);
 		virtual ~WordprocessingDocument();
 		
-		void SaveDocument(bool &bMacros);
+		_UINT32 SaveDocument(bool &bMacros);
 	};
 }

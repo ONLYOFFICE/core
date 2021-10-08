@@ -416,7 +416,8 @@ extern int g_nCurFormatVersion;
 		FontAsciiTheme = 40,
 		FontHAnsiTheme = 41,
 		FontAETheme = 42,
-		FontCSTheme = 43
+		FontCSTheme = 43,
+		CompressText = 44
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{

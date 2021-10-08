@@ -157,6 +157,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 			xls_global_info->fontsDirectory = fontsPath;
 			xls_global_info->password = password;
 			xls_global_info->tempDirectory = tempPath;
+			xls_global_info->CodePage = 0;
 
 			XLS::GlobalWorkbookInfo::_sheet_info sheet_info;
 			xls_global_info->sheets_info.push_back(sheet_info);
@@ -1082,7 +1083,8 @@ void XlsConverter::convert(XLS::IMDATA * imdata)
 	std::wstring type_image;
 
 	if (imdata->cf == 0x09 && imdata->env == 0x01)	type_image = L".wmf";
-	if (imdata->cf == 0x09 && imdata->env == 0x02)	type_image = L".pict";
+	if ((imdata->cf == 0x09 || imdata->cf == 0x02)
+							&& imdata->env == 0x02)	type_image = L".pict";
 	if (imdata->cf == 0x09)							type_image = L"dib_data";
 	if (imdata->cf == 0x0e)							type_image = L"";			//native aka unknown
 

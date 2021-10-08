@@ -2336,6 +2336,7 @@ namespace NExtractTools
         RtfConvertationManager rtfConvert;
 
         rtfConvert.m_sTempFolder = sTemp;
+		rtfConvert.m_nUserLCID = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
 
         if ( rtfConvert.ConvertRtfToOOX(sFrom, sResultDocxDir) == 0)
         {
@@ -2371,6 +2372,7 @@ namespace NExtractTools
        RtfConvertationManager rtfConvert;
 
        rtfConvert.m_sTempFolder = sTemp;
+	   rtfConvert.m_nUserLCID = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
 
        if (rtfConvert.ConvertOOXToRtf(sTo, sDocxDir) == 0)
            return 0;
@@ -2414,7 +2416,7 @@ namespace NExtractTools
 	
 		params.m_bMacro = false;
 
-		_UINT32 hRes = docFile.LoadFromFile( sFrom, sTo, params.getPassword(), params.m_bMacro, NULL);
+		_UINT32 hRes = docFile.LoadFromFile( sFrom, sTo, params.getPassword(), params.m_bMacro);
 		if (AVS_ERROR_DRM == hRes)
 		{
 			if(!params.getDontSaveAdditional())
@@ -2462,10 +2464,11 @@ namespace NExtractTools
 	{
         COfficeDocFile docFile;
 		docFile.m_sTempFolder = sTemp;
-		
+		docFile.m_nUserLCID = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
+
 		params.m_bMacro = true;
 
-		_UINT32 hRes = docFile.LoadFromFile( sFrom, sTo, params.getPassword(), params.m_bMacro, NULL);
+		_UINT32 hRes = docFile.LoadFromFile( sFrom, sTo, params.getPassword(), params.m_bMacro);
 		if (AVS_ERROR_DRM == hRes)
 		{
 			if(!params.getDontSaveAdditional())
@@ -2510,10 +2513,11 @@ namespace NExtractTools
 
         COfficeDocFile docFile;
 		docFile.m_sTempFolder = sTemp;
+		docFile.m_nUserLCID = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;;
 
 		params.m_bMacro = true;
 
-		_UINT32 nRes = docFile.LoadFromFile( sFrom, sResultDocxDir, params.getPassword(), params.m_bMacro, NULL);
+		_UINT32 nRes = docFile.LoadFromFile( sFrom, sResultDocxDir, params.getPassword(), params.m_bMacro);
  		
 		nRes = processEncryptionError(nRes, sFrom, params);
         if (SUCCEEDED_X2T(nRes))
@@ -2533,8 +2537,6 @@ namespace NExtractTools
 	_UINT32 docx_dir2doc (const std::wstring &sDocxDir, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
        return AVS_FILEUTILS_ERROR_CONVERT;
-       COfficeDocFile docFile;
-       return /*S_OK == docFile.SaveToFile(sTo, sDocxDir, NULL) ? 0 : */AVS_FILEUTILS_ERROR_CONVERT;
 	}
 
 	// doct -> rtf
@@ -2587,7 +2589,8 @@ namespace NExtractTools
                //docx folder to rtf
                RtfConvertationManager rtfConvert;
 
-               rtfConvert.m_sTempFolder = sTemp;
+			   rtfConvert.m_sTempFolder = sTemp;
+			   rtfConvert.m_nUserLCID = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
 
                nRes = rtfConvert.ConvertOOXToRtf(sTo, sResultDocxDir);
            }
@@ -4400,8 +4403,10 @@ namespace NExtractTools
 	_UINT32 xls2xlsm_dir (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
 		params.m_bMacro = true;
+
+		int lcid = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
 		
-		_UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, NULL, params.m_bMacro);
+		_UINT32 nRes = ConvertXls2Xlsx( sFrom, sTo, params.getPassword(), params.getFontPath(), sTemp, lcid, params.m_bMacro);
 
 		nRes = processEncryptionError(nRes, sFrom, params);
 		return nRes;
@@ -4434,7 +4439,10 @@ namespace NExtractTools
 		NSDirectory::CreateDirectory(sResultXlsxDir);
 
 		params.m_bMacro = true;
-		_UINT32 nRes = ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), params.getFontPath(), sTemp, NULL, params.m_bMacro);
+		
+		int lcid = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
+		
+		_UINT32 nRes = ConvertXls2Xlsx( sFrom, sResultXlsxDir, params.getPassword(), params.getFontPath(), sTemp, lcid, params.m_bMacro);
 
 		nRes = processEncryptionError(nRes, sFrom, params);
 		if (SUCCEEDED_X2T(nRes))

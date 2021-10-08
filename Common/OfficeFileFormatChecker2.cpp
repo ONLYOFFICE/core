@@ -70,6 +70,12 @@ bool COfficeFileFormatChecker::isHtmlFormatFile(unsigned char* pBuffer, int dwBy
 			{
 				return true;
 			}
+			else if ((0x3C == pBuffer[i]) && (0x2F == pBuffer[i + 1]) && (0x62 == pBuffer[i + 2])
+					&& (0x6f == pBuffer[i + 3])	&& (0x64 == pBuffer[i + 4])	&& (0x79 == pBuffer[i + 5])
+					&& (0x3e == pBuffer[i + 6]))
+			{//</body>
+				return true;
+			}
 		}
 	}
 	else if (dwBytes > 3)

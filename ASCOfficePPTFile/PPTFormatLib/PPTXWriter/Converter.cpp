@@ -652,9 +652,6 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
     if (nIndexTheme == 0)
         NSDirectory::CreateDirectory(strThemeDirectory);
 
-    OOX::Document PPTXdocument;
-    PPTXdocument.m_sDocumentPath = strThemeDirectory;
-
     std::vector<RoundTripTheme12Atom*> arrRTTheme;
     std::vector<RoundTripColorMapping12Atom*> arrRTColor;
     pSlide->GetRecordsByType(&arrRTTheme, false, true);
@@ -699,28 +696,29 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
     // cp file with new name or write bytes
     if (writedFilesHash.find(strHash) == writedFilesHash.end())
     {
-        PPTX::Theme PPTXtheme(&PPTXdocument);
-        OOX::CPath themePath(strThemePath);
-        PPTX::FileMap fileMap;
-        PPTXtheme.read(themePath, fileMap);
         std::wstring strThemeFile = L"theme" + std::to_wstring(++nIndexTheme) + L".xml";
-        OOX::CContentTypes contentTypes;
-        PPTXtheme.write(strThemeFile, strThemeDirectory, contentTypes);
+        std::wstring outputThemePath = strThemeDirectory + FILE_SEPARATOR_STR + strThemeFile;
+        NSFile::CFileBinary file;
+        file.CreateFileW(outputThemePath);
+        file.WriteFile(utf8Data, utf8DataSize);
+        file.CloseFile();
 
         // clear bytes
-        writedFilesHash.insert(strHash);
         RELEASEOBJECT(utf8Data);
         utf8DataSize = 0;
+
+        writedFilesHash.insert(strHash);
+        wasThemeWrite = true;
     }
 
-    if (wasThemeWrite == false)
-        return;
+//    if (wasThemeWrite == false)
+//        return;
 
     for (auto& strImagePath : arrImagesPaths)
     {
         themeRels.WriteImage(strImagePath);
     }
-    // write _rels
+    // write theme _rels
     if (!themeRelsPath.empty() && needRels)
     {
         std::wstring relsFolder = strPptDirectory + L"theme" + FILE_SEPARATOR_STR  + L"_rels" + FILE_SEPARATOR_STR;
@@ -735,6 +733,50 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
         oFile.CloseFile();
         RELEASEOBJECT(utf8Data);
         utf8DataSize = 0;
+    }
+
+    // get slide master ID
+    std::vector<RoundTripOriginalMainMasterId12Atom*> arrMasterID;
+    pSlide->GetRecordsByType(&arrMasterID, false, true);
+
+    // Write layouts
+    if (themeType == _typeMaster::typeMaster && arrMasterID.size())
+    {
+        std::wstring strOutputLayoutsPath = strPptDirectory + FILE_SEPARATOR_STR + L"slideLayouts" + FILE_SEPARATOR_STR;
+        std::wstring strOutputRelsLayoutsPath = strOutputLayoutsPath + L"_rels" + FILE_SEPARATOR_STR;
+        std::vector<RoundTripContentMasterInfo12Atom*> arrLayouts;
+        pSlide->GetRecordsByType(&arrLayouts, false, false);
+//        std::wcout << std::to_wstring(arrLayouts.size()) << L" " << arrMasterID[0]->getStrID() << L"\n";
+        if (nIndexTheme == 1)
+        {
+            NSDirectory::CreateDirectory(strOutputLayoutsPath);
+            NSDirectory::CreateDirectory(strOutputRelsLayoutsPath);
+        }
+
+        for (const auto* RTLayout : arrLayouts)
+        {
+            RoundTripExtractor extractorLayout(RTLayout);
+            const std::wstring strZipLayoutPath = std::wstring(L"drs") + FILE_SEPARATOR_STR +
+                    L"slideLayouts" + FILE_SEPARATOR_STR + L"slideLayout1.xml";
+            std::wstring inputLayoutPath = extractorLayout.getOneFile(strZipLayoutPath);
+            if (inputLayoutPath.empty())
+                continue;
+            std::wstring layoutName = std::wstring(L"slideLayout") + std::to_wstring(++nStartLayout) +  L".xml";
+            std::wstring outputLayoutPath = strOutputLayoutsPath + layoutName;
+            NSFile::CFileBinary::Copy(inputLayoutPath, outputLayoutPath);
+
+            // _rels
+            NSFile::CFileBinary fileLR;
+            std::wstring layoutRelsName = std::wstring(L"slideLayout") + std::to_wstring(nStartLayout) +  L".xml.rels";
+            std::wstring outputFileRelsFile = strOutputRelsLayoutsPath + layoutRelsName;
+            fileLR.CreateFileW(outputFileRelsFile);
+            CStringWriter oWriterLR;
+            oWriterLR.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"../slideMasters/slideMaster");
+            oWriterLR.WriteString(arrMasterID[0]->getStrID());
+            oWriterLR.WriteString(L".xml\"/></Relationships>");
+            fileLR.WriteStringUTF8(oWriterLR.GetData());
+            fileLR.CloseFile();
+        }
     }
 
     // Write Masters

@@ -80,6 +80,8 @@ public:
     CUnknownRoundTripID(): m_dwID(-1){}
     ~CUnknownRoundTripID(){}
 
+    virtual inline std::wstring getStrID()const
+    { return std::to_wstring(m_dwID);}
     virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
     {
         m_oHeader = oHeader;

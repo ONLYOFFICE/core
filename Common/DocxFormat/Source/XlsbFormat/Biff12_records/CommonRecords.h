@@ -48,6 +48,7 @@
 #include <Logic/Biff_records/Selection.h>
 #include <Logic/Biff_records/SortData.h>
 #include <Logic/Biff_records/Font.h>
+#include <Logic/Biff_records/XF.h>
 #include "../../XlsxFormat/WritingElement.h"
 
 
@@ -226,6 +227,19 @@ namespace XLSB
         BaseObjectPtr clone() override
         {
             return BaseObjectPtr(new Font(*this));
+        }
+    };
+
+    class XF: public XLS::XF
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(XF)
+
+        XF(size_t& cell_xf_current_id, size_t& style_xf_current_id) :
+            XLS::XF(cell_xf_current_id, style_xf_current_id) {}
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new XF(*this));
         }
     };
 

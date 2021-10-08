@@ -198,6 +198,10 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/BeginBorders.cpp \
     ../Source/XlsbFormat/Biff12_records/Border.cpp \
     ../Source/XlsbFormat/Biff12_records/EndBorders.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginCellStyleXFs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndCellStyleXFs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginCellXFs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndCellXFs.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -267,6 +271,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/FONTS.cpp \
     ../Source/XlsbFormat/Biff12_unions/FILLS.cpp \
     ../Source/XlsbFormat/Biff12_unions/BORDERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CELLSTYLEXFS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CELLXFS.cpp \
 }
 
 
@@ -555,6 +561,10 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/BeginBorders.h \
     ../Source/XlsbFormat/Biff12_records/Border.h \
     ../Source/XlsbFormat/Biff12_records/EndBorders.h \
+    ../Source/XlsbFormat/Biff12_records/BeginCellStyleXFs.h \
+    ../Source/XlsbFormat/Biff12_records/EndCellStyleXFs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginCellXFs.h \
+    ../Source/XlsbFormat/Biff12_records/EndCellXFs.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
@@ -627,3 +637,5 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/FONTS.h \
     ../Source/XlsbFormat/Biff12_unions/FILLS.h \
     ../Source/XlsbFormat/Biff12_unions/BORDERS.h \
+    ../Source/XlsbFormat/Biff12_unions/CELLSTYLEXFS.h \
+    ../Source/XlsbFormat/Biff12_unions/CELLXFS.h \

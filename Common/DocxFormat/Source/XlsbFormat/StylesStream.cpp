@@ -39,6 +39,8 @@
 #include "Biff12_unions/FONTS.h"
 #include "Biff12_unions/FILLS.h"
 #include "Biff12_unions/BORDERS.h"
+#include "Biff12_unions/CELLSTYLEXFS.h"
+#include "Biff12_unions/CELLXFS.h"
 
 namespace XLSB
 {
@@ -146,6 +148,24 @@ const bool StylesStream::loadContent(BinProcessor& proc)
                 if (proc.optional<BORDERS>())
                 {
                     m_BORDERS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginCellStyleXFs:
+            {
+                if (proc.optional<CELLSTYLEXFS>())
+                {
+                    m_CELLSTYLEXFS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginCellXFs:
+            {
+                if (proc.optional<CELLXFS>())
+                {
+                    m_CELLXFS = elements_.back();
                     elements_.pop_back();
                 }
             }break;

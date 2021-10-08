@@ -153,7 +153,7 @@ void XF::readFields(CFRecord& record)
 		border.icvBottom	= (0 != border.dgBottom)? static_cast<unsigned char>(GETBITS(flags2, 25, 31))	: 0;
 		border.icvDiag		= 0;
 	}
-	else
+    else if(global_info->Version < 0x0800)
 	{
 		_UINT32 flags1;
 		_UINT32 flags2;
@@ -209,6 +209,35 @@ void XF::readFields(CFRecord& record)
 			fsxButton		= GETBIT(flags4, 14);
 		}
 	}
+
+    else
+    {
+        record >> ixfParent >> ifmt >> font_index >> iFill >> ixBorder >> trot >> cIndent;
+
+        _UINT32 flags;
+
+        record >> flags;
+
+        alc             = GETBITS(flags, 0, 2);
+        alcV            = GETBITS(flags, 3, 5);
+        fWrap           = GETBIT(flags, 6);
+        fJustLast       = GETBIT(flags, 7);
+        fShrinkToFit    = GETBIT(flags, 8);
+        fMergeCell      = GETBIT(flags, 9);
+        iReadOrder      = GETBITS(flags, 10, 11);
+        fLocked         = GETBIT(flags, 12);
+        fHidden         = GETBIT(flags, 13);
+        fsxButton       = GETBIT(flags, 14);
+        f123Prefix      = GETBIT(flags, 15);
+        xfGrbitAtr      = GETBITS(flags, 16, 21);
+
+        fAtrNum         = !GETBIT(xfGrbitAtr, 0);
+        fAtrFnt         = !GETBIT(xfGrbitAtr, 1);
+        fAtrAlc         = !GETBIT(xfGrbitAtr, 2);
+        fAtrBdr         = !GETBIT(xfGrbitAtr, 3);
+        fAtrPat         = !GETBIT(xfGrbitAtr, 4);
+        fAtrProt        = !GETBIT(xfGrbitAtr, 5);
+    }
 }
 void XF::Update(ExtProp* ext_prop)
 {

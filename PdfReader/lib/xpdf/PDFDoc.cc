@@ -218,23 +218,6 @@ PDFDoc::PDFDoc(char *fileNameA, GString *ownerPassword,
   ok = setup(ownerPassword, userPassword);
 }
 
-PDFDoc::PDFDoc(unsigned char* data, unsigned long length, GString *ownerPassword,
-           GString *userPassword, PDFCore *coreA)
-{
-    Object obj;
-
-    init(coreA);
-
-    fileName = NULL;
-#ifdef _WIN32
-    fileNameU = NULL;
-#endif
-
-    obj.initNull();
-    str = new MemStream((char*)data, 0, length, &obj);
-    ok = setup(ownerPassword, userPassword);
-}
-
 PDFDoc::PDFDoc(BaseStream *strA, GString *ownerPassword,
 	       GString *userPassword, PDFCore *coreA) {
 #ifdef _WIN32

@@ -2242,7 +2242,6 @@ void GlobalParams::setupBaseFonts(const char *dir) {
   dfontFontNames = NULL;
 #endif
 
-#ifndef BUILDING_WASM_MODULE
   for (i = 0; displayFontTab[i].name; ++i) {
     if (fontFiles->lookup(displayFontTab[i].name)) {
       continue;
@@ -2367,7 +2366,6 @@ void GlobalParams::setupBaseFonts(const char *dir) {
       }
     }
   }
-#endif // BUILDING_WASM_MODULE
 #ifdef _WIN32
   if (winFontDir[0]) {
     sysFonts->scanWindowsFonts(winFontDir);

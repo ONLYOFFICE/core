@@ -64,7 +64,7 @@ compile_files_array = []
 
 compile_files_array.append("g")
 compile_files_array.append("../../")
-compile_files_array.append(["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp", "pro/js/wasm/src/metafile.cpp"])
+compile_files_array.append(["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp"])
 
 compile_files_array.append("fe")
 compile_files_array.append("../../../fontengine/")
@@ -133,9 +133,7 @@ for item in compiler_flags:
   arguments += (item + " ")
 
 # sources
-sources = []
-sources.append("raster.o")
-sources.append("wasm/src/drawingfile.cpp")
+sources = ["raster.o", "wasm/src/drawingfile.cpp", "wasm/src/metafile.cpp"]
 
 # command
 compile_files_array_len = len(compile_files_array)

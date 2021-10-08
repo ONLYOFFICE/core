@@ -114,7 +114,7 @@ int main()
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = GetPixmap(test, 0, width, height);
+        res = GetPixmap(test, 2, width, height);
 
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";
@@ -129,8 +129,55 @@ int main()
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
+    BYTE* pLinks = GetLinks(test, 2, width, height);
+    DWORD nLength = GetLength(pLinks);
+    DWORD i = 4;
+    nLength -= 4;
+    while (i < nLength)
+    {
+        DWORD nPathLength = GetLength(pLinks + i);
+        i += 4;
+        std::cout <<  "Link "<< std::string((char*)(pLinks + i), nPathLength);
+        i += nPathLength;
+        nPathLength = GetLength(pLinks + i);
+        i += 4;
+        std::cout << " X " << (double)nPathLength / 100.0;
+        nPathLength = GetLength(pLinks + i);
+        i += 4;
+        std::cout << " Y " << (double)nPathLength / 100.0;
+        nPathLength = GetLength(pLinks + i);
+        i += 4;
+        std::cout << " W " << (double)nPathLength / 100.0;
+        nPathLength = GetLength(pLinks + i);
+        i += 4;
+        std::cout << " H " << (double)nPathLength / 100.0 << std::endl;
+    }
+
+    BYTE* pStructure = GetStructure(test);
+    nLength = GetLength(pStructure);
+    i = 4;
+    nLength -= 4;
+    while (i < nLength)
+    {
+        DWORD nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Page " << nPathLength << ", ";
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Level " << nPathLength << ", ";
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Description " << std::string((char*)(pStructure + i), nPathLength) << std::endl;
+        i += nPathLength;
+    }
+
     Close(test);
     RELEASEARRAYOBJECTS(pPdfData);
+    RELEASEARRAYOBJECTS(pLinks);
+    RELEASEARRAYOBJECTS(pStructure);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
     RELEASEOBJECT(resFrame);
@@ -166,8 +213,7 @@ int main()
         i += nPathLength;
         nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout << "Size " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
-        i += nPathLength;
+        std::cout << "Size " << (double)nPathLength / 100.0 << " ";
         nPathLength = GetLength(pGlyphs + i);
         i += 4;
         std::cout << "Amount " << nPathLength << std::endl;
@@ -176,12 +222,10 @@ int main()
         {
             nPathLength = GetLength(pGlyphs + i);
             i += 4;
-            std::cout << "X " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
-            i += nPathLength;
+            std::cout << "X " << (double)nPathLength / 100.0 << " ";
             nPathLength = GetLength(pGlyphs + i);
             i += 4;
-            std::cout << "Y " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
-            i += nPathLength;
+            std::cout << "Y " << (double)nPathLength / 100.0 << " ";
             nPathLength = GetLength(pGlyphs + i);
             i += 4;
             std::cout << "Symbol " << nPathLength << std::endl;
@@ -200,20 +244,16 @@ int main()
         i += nPathLength;
         nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout << " X "<< std::string((char*)(pLinks + i), nPathLength);
-        i += nPathLength;
+        std::cout << " X " << (double)nPathLength / 100.0;
         nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout << " Y "<< std::string((char*)(pLinks + i), nPathLength);
-        i += nPathLength;
+        std::cout << " Y " << (double)nPathLength / 100.0;
         nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout << " W "<< std::string((char*)(pLinks + i), nPathLength);
-        i += nPathLength;
+        std::cout << " W " << (double)nPathLength / 100.0;
         nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout << " H "<< std::string((char*)(pLinks + i), nPathLength) << std::endl;
-        i += nPathLength;
+        std::cout << " H " << (double)nPathLength / 100.0 << std::endl;
     }
 
     BYTE* pStructure = GetStructure(test);
@@ -230,11 +270,10 @@ int main()
         std::cout << "Level " << nPathLength << ", ";
         nPathLength = GetLength(pStructure + i);
         i += 4;
-        std::cout << "Y "<< std::string((char*)(pStructure + i), nPathLength) << ", ";
-        i += nPathLength;
+        std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
         nPathLength = GetLength(pStructure + i);
         i += 4;
-        std::cout << "Description "<< std::string((char*)(pStructure + i), nPathLength) << std::endl;
+        std::cout << "Description " << std::string((char*)(pStructure + i), nPathLength) << std::endl;
         i += nPathLength;
     }
 

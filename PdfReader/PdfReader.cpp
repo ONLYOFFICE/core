@@ -49,6 +49,13 @@
 #include "lib/xpdf/ImageOutputDev.h"
 #include "Src/RendererOutputDev.h"
 
+#ifdef BUILDING_WASM_MODULE
+#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#include "lib/xpdf/Outline.h"
+#include "lib/xpdf/Link.h"
+#include "lib/goo/GList.h"
+#endif
+
 namespace PdfReader
 {
     class CPdfReader_Private
@@ -84,7 +91,9 @@ namespace PdfReader
         m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(1);
         ((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pInternal->m_pFontManager);
+    #ifndef BUILDING_WASM_MODULE
         globalParams->setupBaseFonts(NULL);
+    #endif
 
         m_eError = errNone;
 	}
@@ -176,7 +185,12 @@ namespace PdfReader
         m_eError = errNone;
         GString* owner_pswd = NSStrings::CreateString(owner_password);
         GString* user_pswd = NSStrings::CreateString(user_password);
-        m_pInternal->m_pPDFDocument = new PDFDoc(data, length, owner_pswd, user_pswd);
+
+        Object obj;
+        obj.initNull();
+        // будет освобожден в деструкторе PDFDoc
+        BaseStream *str = new MemStream((char*)data, 0, length, &obj);
+        m_pInternal->m_pPDFDocument = new PDFDoc(str, owner_pswd, user_pswd);
 
         delete owner_pswd;
         delete user_pswd;
@@ -497,6 +511,41 @@ return 0;
 #ifdef BUILDING_WASM_MODULE
     BYTE* CPdfReader::GetStructure()
     {
+        Outline* pOutline = m_pInternal->m_pPDFDocument->getOutline();
+        if (!pOutline)
+            return NULL;
+        // Выдает оглавление верхнего уровня
+        GList* pList = pOutline->getItems();
+        if (!pList)
+            return NULL;
+
+        int num = pList->getLength();
+        for (int i = 0; i < num; i++)
+        {
+            OutlineItem* pOutlineItem = (OutlineItem*)pList->get(i);
+            if (!pOutlineItem)
+                continue;
+            LinkAction* pLinkAction = pOutlineItem->getAction();
+            if (!pLinkAction)
+                continue;
+            LinkActionKind kind = pLinkAction->getKind();
+            if (kind != actionGoTo)
+                continue;
+
+            GString* str = ((LinkGoTo*)pLinkAction)->getNamedDest();
+            LinkDest* pLinkDest = m_pInternal->m_pPDFDocument->findDest(str);
+            if (!pLinkDest)
+                continue;
+            int pg;
+            if (pLinkDest->isPageRef())
+            {
+                Ref pageRef = pLinkDest->getPageRef();
+                pg = m_pInternal->m_pPDFDocument->findPage(pageRef.num, pageRef.gen);
+            }
+            else
+                pg = pLinkDest->getPageNum();
+            RELEASEOBJECT(pLinkDest);
+        }
         return NULL;
     }
     BYTE* CPdfReader::GetGlyphs(int nPageIndex, int nRasterW, int nRasterH)
@@ -505,7 +554,70 @@ return 0;
     }
     BYTE* CPdfReader::GetLinks (int nPageIndex, int nRasterW, int nRasterH)
     {
-        return NULL;
+        if (!m_pInternal->m_pPDFDocument)
+            return NULL;
+
+        nPageIndex++;
+        NSWasm::CData oRes;
+        oRes.SkipLen();
+
+        Links* pLinks = m_pInternal->m_pPDFDocument->getLinks(nPageIndex);
+        if (!pLinks)
+            return NULL;
+
+        int num = pLinks->getNumLinks();
+        for (int i = 0; i < num; i++)
+        {
+            Link* pLink = pLinks->getLink(i);
+            if (!pLink)
+                continue;
+
+            GString* str = NULL;
+            double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;
+            pLink->getRect(&x1, &y1, &x2, &y2);
+
+            LinkAction* pLinkAction = pLink->getAction();
+            if (!pLinkAction)
+                continue;
+            LinkActionKind kind = pLinkAction->getKind();
+            if (kind == actionGoTo)
+            {
+                str = ((LinkGoTo*)pLinkAction)->getNamedDest();
+                LinkDest* pLinkDest = m_pInternal->m_pPDFDocument->findDest(str);
+                if (pLinkDest)
+                {
+                    int pg;
+                    if (pLinkDest->isPageRef())
+                    {
+                        Ref pageRef = pLinkDest->getPageRef();
+                        pg = m_pInternal->m_pPDFDocument->findPage(pageRef.num, pageRef.gen);
+                    }
+                    else
+                        pg = pLinkDest->getPageNum();
+                    std::string sLink = "#" + std::to_string(pg - 1);
+                    str = new GString(sLink.c_str());
+                }
+                RELEASEOBJECT(pLinkDest);
+            }
+            else if (kind == actionURI)
+                str = ((LinkURI*)pLinkAction)->getURI()->copy();
+
+            if (str)
+                oRes.WriteString((BYTE*)str->getCString(), str->getLength());
+            else
+                oRes.WriteString(NULL, 0);
+            // TODO: домножение координат
+            oRes.AddDouble(x1);
+            oRes.AddDouble(y1);
+            oRes.AddDouble(x2 - x1);
+            oRes.AddDouble(y2 - y1);
+            RELEASEOBJECT(str);
+        }
+        oRes.WriteLen();
+
+        BYTE* res = oRes.GetBuffer();
+        oRes.ClearWithoutAttack();
+        return res;
     }
 #endif
 }

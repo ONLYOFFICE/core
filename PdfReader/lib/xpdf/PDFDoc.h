@@ -49,8 +49,6 @@ public:
   // This version takes a UTF-8 file name (which is only relevant on
   // Windows).
   PDFDoc(char *fileNameA, GString *ownerPassword = NULL,
-	 GString *userPassword = NULL, PDFCore *coreA = NULL);
-  PDFDoc(unsigned char* data, unsigned long length, GString *ownerPassword = NULL,
          GString *userPassword = NULL, PDFCore *coreA = NULL);
 
   PDFDoc(BaseStream *strA, GString *ownerPassword = NULL,

@@ -568,8 +568,6 @@ namespace MetaFile
 		TXForm oViewportXForm((double)GetPixelWidth(), 0, 0, (double)GetPixelHeight(), pViewPort->x, pViewPort->y);
 
 		m_oFinalTransform.Init();
-		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
-		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);

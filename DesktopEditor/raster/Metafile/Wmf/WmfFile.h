@@ -1568,7 +1568,7 @@ namespace MetaFile
 		{
 			short shX, shY;
 			m_oStream >> shY >> shX;
-	    	m_pDC->SetWindowExt(fabs(shX), fabs(shY));
+			m_pDC->SetWindowExt(shX, shY);
 			UpdateOutputDC();
 		}
 		void Read_META_SETWINDOWORG()

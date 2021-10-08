@@ -45,7 +45,7 @@
 
 #include "odf_conversion_context.h"
 
-#include "ods_table_state.h"//???
+#include "ods_table_state.h"
 
 #include "math_elements.h"
 #include "math_layout_elements.h"
@@ -199,11 +199,5 @@ namespace odf_writer
 
 		impl_->clear_current();
 	}
-
-
-	//void odf_math_context::start_group_series()
-	//{
-	//}
-
 }
 }

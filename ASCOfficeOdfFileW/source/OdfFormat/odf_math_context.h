@@ -43,17 +43,17 @@
 #define CREATE_MATH_TAG(tag)\
 	odf_writer::office_element_ptr elm;\
 	odf_writer::create_element(L"math", tag, elm, odf_context());\
-	odf_context()->math_context()->debug_stream << tag << "\n";
+	//odf_context()->math_context()->debug_stream << tag << "\n";
 
 #define OPEN_MATH_TAG(elm)\
 	odf_context()->math_context()->start_element(elm); \
 	odf_context()->math_context()->counter++; \
-	odf_context()->math_context()->debug_stream << L"open, counter is " << odf_context()->math_context()->counter << "\n";
+	//odf_context()->math_context()->debug_stream << L"open, counter is " << odf_context()->math_context()->counter << "\n";
 
 #define CLOSE_MATH_TAG\
 	odf_context()->math_context()->end_element();\
 	odf_context()->math_context()->counter--; \
-	odf_context()->math_context()->debug_stream /*std::wcout*/ << L"close, counter is " << odf_context()->math_context()->counter << "\n";
+	//odf_context()->math_context()->debug_stream /*std::wcout*/ << L"close, counter is " << odf_context()->math_context()->counter << "\n";
 
 namespace cpdoccore {
 	namespace odf_writer
@@ -75,24 +75,20 @@ namespace cpdoccore {
 			odf_text_context	*text_context();
 
 			void start_math(office_element_ptr & root);
-			
-			//void start_series();
-			//void start_group_series();			
+						
 			void start_element(office_element_ptr & elm); // office_math_element TODO
 			
-			//void end_series();
 			void end_element();
-			//void end_group_series();
 
-			std::vector<std::vector<std::wstring>> brackets; // контейнер для скобочек
-			int lvl_of_me; // уровень вложенности <m:e>
-			std::vector<int> end_counter; // не помню зачем сделал массив вместо переменной, сделал на будущее
-			int counter; // счетчик в define OPEN и CLOSE. 
+			std::vector<std::vector<std::wstring>> brackets;
+			int lvl_of_me;
+			std::vector<int> end_counter;
+			int counter; 
 			std::set<wchar_t> mo;
 
 			void end_math();
 
-			std::ofstream debug_stream;
+			std::wofstream debug_stream;
 
 			bool isEmpty();
 		private:

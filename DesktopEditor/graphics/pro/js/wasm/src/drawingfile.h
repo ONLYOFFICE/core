@@ -14,15 +14,16 @@ private:
     IOfficeDrawingFile* pReader;
     NSFonts::IApplicationFonts* pApplicationFonts;
 public:
-    CGraphicsFileDrawing()
+    CGraphicsFileDrawing(NSFonts::IApplicationFonts* pFonts)
     {
         pReader = NULL;
-        pApplicationFonts = NSFonts::NSApplication::Create();
+        pApplicationFonts = pFonts;
+		pApplicationFonts->AddRef();
     }
     ~CGraphicsFileDrawing()
     {
         RELEASEOBJECT(pReader);
-        RELEASEOBJECT(pApplicationFonts);
+        RELEASEINTERFACE(pApplicationFonts);
     }
     bool  Open   (BYTE* data, DWORD length, int nType)
     {

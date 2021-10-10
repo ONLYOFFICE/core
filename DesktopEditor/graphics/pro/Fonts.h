@@ -645,6 +645,7 @@ namespace NSFonts
 
         virtual void InitializeFromFolder(std::wstring strFolder, bool bIsCheckSelection = true) = 0;
         virtual void Initialize(bool bIsCheckSelection = true) = 0;
+        virtual void InitializeFromBin(BYTE* pData, unsigned int nLen) = 0;
         virtual void InitializeRanges(unsigned char* data) = 0;
 
         virtual std::vector<std::wstring> GetSetupFontFiles() = 0;

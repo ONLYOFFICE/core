@@ -324,5 +324,14 @@
     };
 
     window["AscViewer"]["CDrawingFile"] = CFile;
+	window["AscViewer"]["InitializeFonts"] = function() {
+		if (!window["g_fonts_selection_bin"])
+			return;
+		var memoryBuffer = window["g_fonts_selection_bin"].toUtf8();
+		var pointer = Module["_malloc"](memoryBuffer.length);
+    	Module.HEAP8.set(memoryBuffer, pointer);
+		Module["_InitializeFontsBase64"](pointer, memoryBuffer.length);
+		Module["_free"](pointer);
+	};
 
 })(window, undefined);

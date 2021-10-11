@@ -40,9 +40,6 @@
     <ClCompile Include="..\..\XlsxSerializerCom\Writer\CSVWriter.cpp">
       <Filter>Source Files\oox</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ASCOfficeDocxFile2\BinReader\CustormXmlWriter.cpp">
-      <Filter>Source Files\oox</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp">
       <Filter>Source Files\oox</Filter>
     </ClCompile>
@@ -64,5 +61,85 @@
     <ClCompile Include="OdfFileWTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\ASCOfficeDocxFile2\BinReader\CustomXmlWriter.cpp">
+      <Filter>Source Files\oox</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\ChartWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\CustomXmlWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\DefaultThemeWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\DocumentWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\FileWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\fontTableWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\HeaderFooterWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\MediaWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\NumberingWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\ReaderClasses.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\Readers.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\SettingWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\StylesWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ASCOfficeDocxFile2\BinReader\webSettingsWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XlsxSerializerCom\Common\BinReaderWriterDefines.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XlsxSerializerCom\Common\Common.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XlsxSerializerCom\Reader\BinaryWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XlsxSerializerCom\Reader\ChartFromToBinary.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XlsxSerializerCom\Reader\CommonWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XlsxSerializerCom\Reader\CSVReader.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XlsxSerializerCom\Writer\BinaryCommonReader.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XlsxSerializerCom\Writer\BinaryReader.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XlsxSerializerCom\Writer\CSVWriter.h">
+      <Filter>Source Files\oox</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -102,6 +102,7 @@ std::wstring RtfPicture::RenderToRtf(RenderParameter oRenderParameter)
 		case dt_wmf: sResult += L"\\wmetafile8";	break;
 		case dt_png: sResult += L"\\pngblip";		break;
 		case dt_jpg: sResult += L"\\jpegblip";		break;
+		case dt_svg: sResult += L"\\svgblip";		break;
 		//case dt_bmp: sResult += L"wbitmap8";		break;
 	}
 	sResult += L" ";
@@ -128,6 +129,7 @@ std::wstring RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 		case dt_wmf:	sExtension = L"wmf"; sMime = L"image/x-wmf";	break;
 		case dt_emf:	sExtension = L"emf"; sMime = L"image/x-emf";	break;
 		case dt_macpict:sExtension = L"pct"; sMime = L"image/x-pict";	break;
+		case dt_svg:	sExtension = L"svg"; sMime = L"image/svg+xml";	break;
 	}
 	if (poOOXWriter->m_sTargetFolder.empty()) return L"rIdtemp"; //test from fields
 

@@ -66,11 +66,27 @@ namespace Oox2Odf
 	{
 		if (!oox_math_pr) return;
 
-		for (size_t i = 0; i < oox_math_pr->m_arrItems.size(); ++i)
-		{
-			convert(oox_math_pr->m_arrItems[i]);
-		}
-	}
+//		for (size_t i = 0; i < oox_math_pr->m_arrItems.size(); ++i)
+//		{
+//			convert(oox_math_pr->m_arrItems[i]);
+//		}
+        convert(oox_math_pr->m_oBrkBin.GetPointer());
+        convert(oox_math_pr->m_oBrkBinSub.GetPointer());
+        convert(oox_math_pr->m_oDefJc.GetPointer());
+        convert(oox_math_pr->m_oDispDef.GetPointer());
+        convert(oox_math_pr->m_oInterSp.GetPointer());
+        convert(oox_math_pr->m_oIntLim.GetPointer());
+        convert(oox_math_pr->m_oIntraSp.GetPointer());
+        convert(oox_math_pr->m_oLMargin.GetPointer());
+        convert(oox_math_pr->m_oMathFont.GetPointer());
+        convert(oox_math_pr->m_oNaryLim.GetPointer());
+        convert(oox_math_pr->m_oPostSp.GetPointer());
+        convert(oox_math_pr->m_oPreSp.GetPointer());
+        convert(oox_math_pr->m_oRMargin.GetPointer());
+        convert(oox_math_pr->m_oSmallFrac.GetPointer());
+        convert(oox_math_pr->m_oWrapIndent.GetPointer());
+        convert(oox_math_pr->m_oWrapRight.GetPointer());
+    }
 
 	void OoxConverter::convert(OOX::Logic::COMathPara *oox_math_para)
 	{

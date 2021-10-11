@@ -49,6 +49,7 @@
 #include <Logic/Biff_records/SortData.h>
 #include <Logic/Biff_records/Font.h>
 #include <Logic/Biff_records/XF.h>
+#include <Logic/Biff_records/DXF.h>
 #include "../../XlsxFormat/WritingElement.h"
 
 
@@ -240,6 +241,16 @@ namespace XLSB
         BaseObjectPtr clone() override
         {
             return BaseObjectPtr(new XF(*this));
+        }
+    };
+
+    class DXF: public XLS::DXF
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(DXF)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new DXF(*this));
         }
     };
 

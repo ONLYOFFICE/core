@@ -71,6 +71,8 @@ namespace XLSB
         BaseObjectPtr               m_BORDERS;
         BaseObjectPtr               m_CELLSTYLEXFS;
         BaseObjectPtr               m_CELLXFS;
+        BaseObjectPtr               m_STYLES;
+        BaseObjectPtr               m_DXFS;
 
         unsigned short              code_page_;
         GlobalWorkbookInfoPtr       global_info_;

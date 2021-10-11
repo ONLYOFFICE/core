@@ -58,7 +58,9 @@ namespace XLSB
         {
             m_BrtBeginIconSet = elements_.back();
             elements_.pop_back();
-        }        
+        }
+        else
+            return false;
 
         int count = proc.repeated<uCFVO>(3, 5);
 

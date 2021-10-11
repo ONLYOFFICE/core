@@ -30,61 +30,67 @@
  *
  */
 
-#include "DATABAR.h"
-#include "../Biff12_records/BeginDatabar.h"
-#include "../Biff12_unions/uCFVO.h"
-#include "../Biff12_records/Color.h"
-#include "../Biff12_records/EndDatabar.h"
+#include "STYLES.h"
+#include "../Biff12_records/Style.h"
+#include "../Biff12_records/BeginStyles.h"
+#include "../Biff12_unions/ACUID.h"
+#include "../Biff12_unions/FRT.h"
+#include "../Biff12_records/EndStyles.h"
 
 namespace XLSB
 {
 
-    DATABAR::DATABAR()
+    STYLES::STYLES()
     {
     }
 
-    DATABAR::~DATABAR()
+    STYLES::~STYLES()
     {
     }
 
-    BaseObjectPtr DATABAR::clone()
+    BaseObjectPtr STYLES::clone()
     {
-        return BaseObjectPtr(new DATABAR(*this));
+        return BaseObjectPtr(new STYLES(*this));
     }
 
-    // DATABAR = BrtBeginDatabar 2CFVO BrtColor BrtEndDatabar
-    const bool DATABAR::loadContent(BinProcessor& proc)
+    //STYLES = BrtBeginStyles 1*65430([ACUID] BrtStyle *FRT) BrtEndStyles
+    const bool STYLES::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginDatabar>())
+        if (proc.optional<BeginStyles>())
         {
-            m_BrtBeginDatabar = elements_.back();
-            elements_.pop_back();
-        }
-        else
-            return false;
-
-        int count = proc.repeated<uCFVO>(2, 2);
-
-        while(count > 0)
-        {
-            m_arCFVO.insert(m_arCFVO.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.mandatory<Color>())
-        {
-            m_BrtColor = elements_.back();
+            m_BrtBeginStyles = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.mandatory<EndDatabar>())
+        while (true)
         {
-            m_BrtEndDatabar = elements_.back();
+            if (proc.optional<ACUID>())
+            {
+                m_arACUID.push_back(elements_.back());
+                elements_.pop_back();
+            }
+
+            if(proc.optional<Style>())
+            {
+                m_arBrtStyle.push_back(elements_.back());
+                elements_.pop_back();
+
+                while (proc.optional<FRT>())
+                {
+                    m_arFRT.push_back(elements_.back());
+                    elements_.pop_back();
+                }
+            }
+            else break;
+        }
+
+        if (proc.optional<EndStyles>())
+        {
+            m_BrtEndStyles = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginDatabar || !m_arCFVO.empty() || m_BrtColor|| m_BrtEndDatabar;
+        return m_BrtBeginStyles && !m_arBrtStyle.empty() && m_BrtEndStyles;
     }
 
 } // namespace XLSB

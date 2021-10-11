@@ -30,61 +30,65 @@
  *
  */
 
-#include "DATABAR.h"
-#include "../Biff12_records/BeginDatabar.h"
-#include "../Biff12_unions/uCFVO.h"
-#include "../Biff12_records/Color.h"
-#include "../Biff12_records/EndDatabar.h"
+#include "DXF.h"
+#include "../Biff12_records/CommonRecords.h"
+#include "../Biff12_records/ACBegin.h"
+#include "../Biff12_records/ACEnd.h"
+#include "../Biff12_unions/FRTDXF.h"
 
 namespace XLSB
 {
 
-    DATABAR::DATABAR()
+    uDXF::uDXF()
     {
     }
 
-    DATABAR::~DATABAR()
+    uDXF::~uDXF()
     {
     }
 
-    BaseObjectPtr DATABAR::clone()
+    BaseObjectPtr uDXF::clone()
     {
-        return BaseObjectPtr(new DATABAR(*this));
+        return BaseObjectPtr(new uDXF(*this));
     }
 
-    // DATABAR = BrtBeginDatabar 2CFVO BrtColor BrtEndDatabar
-    const bool DATABAR::loadContent(BinProcessor& proc)
+    //DXF = ((BrtACBegin BrtDXF BrtACEnd BrtACBegin FRTDXF BrtACEnd) / (FRTDXF))
+    const bool uDXF::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginDatabar>())
-        {
-            m_BrtBeginDatabar = elements_.back();
+        if (proc.optional<ACBegin>())
+        {            
             elements_.pop_back();
-        }
-        else
-            return false;
+        }        
 
-        int count = proc.repeated<uCFVO>(2, 2);
-
-        while(count > 0)
+        if (proc.optional<DXF>())
         {
-            m_arCFVO.insert(m_arCFVO.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.mandatory<Color>())
-        {
-            m_BrtColor = elements_.back();
+            m_source = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.mandatory<EndDatabar>())
+        if (proc.optional<ACEnd>())
         {
-            m_BrtEndDatabar = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginDatabar || !m_arCFVO.empty() || m_BrtColor|| m_BrtEndDatabar;
+        if (proc.optional<ACBegin>())
+        {
+            elements_.pop_back();
+        }
+
+        if (proc.optional<FRTDXF>())
+        {
+            m_source = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<ACEnd>())
+        {
+            elements_.pop_back();
+        }
+
+
+        return m_source != nullptr;
     }
 
 } // namespace XLSB

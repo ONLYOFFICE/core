@@ -746,8 +746,8 @@ enum ElementType
         typeDATABAR,
         typeICONSET,
         typeACFMT,
-        typeFmt
-
+        typeFmt,
+        typeFRTDXF
 
 };
 

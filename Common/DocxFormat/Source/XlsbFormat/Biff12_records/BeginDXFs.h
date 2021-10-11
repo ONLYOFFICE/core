@@ -29,63 +29,30 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "DATABAR.h"
-#include "../Biff12_records/BeginDatabar.h"
-#include "../Biff12_unions/uCFVO.h"
-#include "../Biff12_records/Color.h"
-#include "../Biff12_records/EndDatabar.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../../XlsxFormat/WritingElement.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-
-    DATABAR::DATABAR()
+    // Logical representation of BrtBeginDXFs record in BIFF12
+    class BeginDXFs: public BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginDXFs)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginDXFs)
+        public:
+            BeginDXFs();
+            virtual ~BeginDXFs();
 
-    DATABAR::~DATABAR()
-    {
-    }
+            BaseObjectPtr clone();
 
-    BaseObjectPtr DATABAR::clone()
-    {
-        return BaseObjectPtr(new DATABAR(*this));
-    }
+            void readFields(CFRecord& record);
 
-    // DATABAR = BrtBeginDatabar 2CFVO BrtColor BrtEndDatabar
-    const bool DATABAR::loadContent(BinProcessor& proc)
-    {
-        if (proc.mandatory<BeginDatabar>())
-        {
-            m_BrtBeginDatabar = elements_.back();
-            elements_.pop_back();
-        }
-        else
-            return false;
-
-        int count = proc.repeated<uCFVO>(2, 2);
-
-        while(count > 0)
-        {
-            m_arCFVO.insert(m_arCFVO.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.mandatory<Color>())
-        {
-            m_BrtColor = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.mandatory<EndDatabar>())
-        {
-            m_BrtEndDatabar = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginDatabar || !m_arCFVO.empty() || m_BrtColor|| m_BrtEndDatabar;
-    }
+            _UINT32     cdxfs;
+    };
 
 } // namespace XLSB
 

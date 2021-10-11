@@ -39,7 +39,7 @@ namespace XLS
 {
 
 
-// Logical representation of DXF record in BIFF8
+// Logical representation of DXF record in BIFF8 and BIFF12
 class DXF: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(DXF)

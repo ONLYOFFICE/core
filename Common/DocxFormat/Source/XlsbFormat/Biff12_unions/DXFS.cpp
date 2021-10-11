@@ -30,61 +30,52 @@
  *
  */
 
-#include "DATABAR.h"
-#include "../Biff12_records/BeginDatabar.h"
-#include "../Biff12_unions/uCFVO.h"
-#include "../Biff12_records/Color.h"
-#include "../Biff12_records/EndDatabar.h"
+#include "DXFS.h"
+#include "../Biff12_records/CommonRecords.h"
+#include "../Biff12_records/BeginDXFs.h"
+#include "../Biff12_unions/DXF.h"
+#include "../Biff12_records/EndDXFs.h"
 
 namespace XLSB
 {
 
-    DATABAR::DATABAR()
+    DXFS::DXFS()
     {
     }
 
-    DATABAR::~DATABAR()
+    DXFS::~DXFS()
     {
     }
 
-    BaseObjectPtr DATABAR::clone()
+    BaseObjectPtr DXFS::clone()
     {
-        return BaseObjectPtr(new DATABAR(*this));
+        return BaseObjectPtr(new DXFS(*this));
     }
 
-    // DATABAR = BrtBeginDatabar 2CFVO BrtColor BrtEndDatabar
-    const bool DATABAR::loadContent(BinProcessor& proc)
+    //BORDERS = BrtBeginDXFs *2147483647DXF BrtEndDXFs
+    const bool DXFS::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginDatabar>())
+        if (proc.optional<BeginDXFs>())
         {
-            m_BrtBeginDatabar = elements_.back();
+            m_BrtBeginDXFs = elements_.back();
             elements_.pop_back();
         }
-        else
-            return false;
 
-        int count = proc.repeated<uCFVO>(2, 2);
-
+        auto count = proc.repeated<uDXF>(0, 2147483647);
         while(count > 0)
         {
-            m_arCFVO.insert(m_arCFVO.begin(), elements_.back());
+            m_aruDXF.insert(m_aruDXF.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }
 
-        if (proc.mandatory<Color>())
+        if (proc.optional<EndDXFs>())
         {
-            m_BrtColor = elements_.back();
+            m_BrtEndDXFs = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.mandatory<EndDatabar>())
-        {
-            m_BrtEndDatabar = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginDatabar || !m_arCFVO.empty() || m_BrtColor|| m_BrtEndDatabar;
+        return m_BrtBeginDXFs || !m_aruDXF.empty() || m_BrtEndDXFs;
     }
 
 } // namespace XLSB

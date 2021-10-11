@@ -255,7 +255,7 @@ namespace OOX
 					WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+            nullable<SimpleTypes::CUnsignedDecimalNumber<>>         m_oCount;
 			nullable<std::wstring>									m_oDefaultPivotStyle;
 			nullable<std::wstring>									m_oDefaultTableStyle;
 		};

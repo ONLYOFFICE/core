@@ -202,6 +202,11 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndCellStyleXFs.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginCellXFs.cpp \
     ../Source/XlsbFormat/Biff12_records/EndCellXFs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginStyles.cpp \
+    ../Source/XlsbFormat/Biff12_records/Style.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndStyles.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginDXFs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndDXFs.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -273,6 +278,10 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/BORDERS.cpp \
     ../Source/XlsbFormat/Biff12_unions/CELLSTYLEXFS.cpp \
     ../Source/XlsbFormat/Biff12_unions/CELLXFS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/STYLES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DXFS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DXF.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTDXF.cpp \
 }
 
 
@@ -565,6 +574,11 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/EndCellStyleXFs.h \
     ../Source/XlsbFormat/Biff12_records/BeginCellXFs.h \
     ../Source/XlsbFormat/Biff12_records/EndCellXFs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginStyles.h \
+    ../Source/XlsbFormat/Biff12_records/Style.h \
+    ../Source/XlsbFormat/Biff12_records/EndStyles.h \
+    ../Source/XlsbFormat/Biff12_records/BeginDXFs.h \
+    ../Source/XlsbFormat/Biff12_records/EndDXFs.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
@@ -639,3 +653,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/BORDERS.h \
     ../Source/XlsbFormat/Biff12_unions/CELLSTYLEXFS.h \
     ../Source/XlsbFormat/Biff12_unions/CELLXFS.h \
+    ../Source/XlsbFormat/Biff12_unions/STYLES.h \
+    ../Source/XlsbFormat/Biff12_unions/DXFS.h \
+    ../Source/XlsbFormat/Biff12_unions/DXF.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTDXF.h \

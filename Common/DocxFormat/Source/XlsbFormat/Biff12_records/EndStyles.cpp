@@ -30,61 +30,27 @@
  *
  */
 
-#include "DATABAR.h"
-#include "../Biff12_records/BeginDatabar.h"
-#include "../Biff12_unions/uCFVO.h"
-#include "../Biff12_records/Color.h"
-#include "../Biff12_records/EndDatabar.h"
+#include "EndStyles.h"
 
 namespace XLSB
 {
 
-    DATABAR::DATABAR()
+    EndStyles::EndStyles()
     {
     }
 
-    DATABAR::~DATABAR()
+    EndStyles::~EndStyles()
     {
     }
 
-    BaseObjectPtr DATABAR::clone()
+    BaseObjectPtr EndStyles::clone()
     {
-        return BaseObjectPtr(new DATABAR(*this));
+        return BaseObjectPtr(new EndStyles(*this));
     }
 
-    // DATABAR = BrtBeginDatabar 2CFVO BrtColor BrtEndDatabar
-    const bool DATABAR::loadContent(BinProcessor& proc)
+    void EndStyles::readFields(CFRecord& record)
     {
-        if (proc.mandatory<BeginDatabar>())
-        {
-            m_BrtBeginDatabar = elements_.back();
-            elements_.pop_back();
-        }
-        else
-            return false;
-
-        int count = proc.repeated<uCFVO>(2, 2);
-
-        while(count > 0)
-        {
-            m_arCFVO.insert(m_arCFVO.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.mandatory<Color>())
-        {
-            m_BrtColor = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.mandatory<EndDatabar>())
-        {
-            m_BrtEndDatabar = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginDatabar || !m_arCFVO.empty() || m_BrtColor|| m_BrtEndDatabar;
+        // No data in this record
     }
 
 } // namespace XLSB

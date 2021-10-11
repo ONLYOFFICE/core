@@ -32,6 +32,7 @@
 
 #include "XFPropGradient.h"
 #include <Binary/CFRecord.h>
+#include "Xnum.h"
 
 namespace XLS
 {
@@ -44,11 +45,32 @@ BiffStructurePtr XFPropGradient::clone()
 
 void XFPropGradient::load(CFRecord& record)
 {
-	_UINT32 temp;
-	
-	record >> temp >> numDegree >> numFillToLeft >> numFillToRight >> numFillToTop >> numFillToBottom;
-	
-	type1 = temp;
+	_UINT32 temp;	
+
+    if(record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        record >> temp >> numDegree >> numFillToLeft >> numFillToRight >> numFillToTop >> numFillToBottom;
+
+        type1 = temp;
+    }
+    else
+    {
+        Xnum numDegree_;
+        Xnum numFillToLeft_;
+        Xnum numFillToRight_;
+        Xnum numFillToTop_;
+        Xnum numFillToBottom_;
+
+        record >> temp >> numDegree_ >> numFillToLeft_ >> numFillToRight_ >> numFillToTop_ >> numFillToBottom_;
+
+        type1 = temp;
+
+        numDegree = numDegree_.data.value;
+        numFillToLeft = numFillToLeft_.data.value;
+        numFillToRight = numFillToRight_.data.value;
+        numFillToTop = numFillToTop_.data.value;
+        numFillToBottom = numFillToBottom_.data.value;
+    }
 }
 
 void XFPropGradient::serialize_attr(CP_ATTR_NODE)

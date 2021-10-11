@@ -59,7 +59,9 @@ namespace XLSB
         {
             m_BrtBeginColorScale = elements_.back();
             elements_.pop_back();
-        }
+        }        
+        else
+            return false;
 
         int countCFVO = proc.repeated<uCFVO>(2, 3);
 

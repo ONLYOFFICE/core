@@ -30,61 +30,44 @@
  *
  */
 
-#include "DATABAR.h"
-#include "../Biff12_records/BeginDatabar.h"
-#include "../Biff12_unions/uCFVO.h"
-#include "../Biff12_records/Color.h"
-#include "../Biff12_records/EndDatabar.h"
+#include "FRTDXF.h"
+#include "../Biff12_records/CommonRecords.h"
+#include "../Biff12_unions/FRT.h"
 
 namespace XLSB
 {
 
-    DATABAR::DATABAR()
+    FRTDXF::FRTDXF()
     {
     }
 
-    DATABAR::~DATABAR()
+    FRTDXF::~FRTDXF()
     {
     }
 
-    BaseObjectPtr DATABAR::clone()
+    BaseObjectPtr FRTDXF::clone()
     {
-        return BaseObjectPtr(new DATABAR(*this));
+        return BaseObjectPtr(new FRTDXF(*this));
     }
 
-    // DATABAR = BrtBeginDatabar 2CFVO BrtColor BrtEndDatabar
-    const bool DATABAR::loadContent(BinProcessor& proc)
+    //FRTDXF = BrtDXF *FRT
+    const bool FRTDXF::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginDatabar>())
+        if (proc.optional<DXF>())
         {
-            m_BrtBeginDatabar = elements_.back();
+            m_BrtDXF = elements_.back();
             elements_.pop_back();
         }
-        else
-            return false;
 
-        int count = proc.repeated<uCFVO>(2, 2);
-
+        auto count = proc.repeated<FRT>(0, 0);
         while(count > 0)
         {
-            m_arCFVO.insert(m_arCFVO.begin(), elements_.back());
+            m_arFRT.insert(m_arFRT.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }
 
-        if (proc.mandatory<Color>())
-        {
-            m_BrtColor = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.mandatory<EndDatabar>())
-        {
-            m_BrtEndDatabar = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginDatabar || !m_arCFVO.empty() || m_BrtColor|| m_BrtEndDatabar;
+        return m_BrtDXF != nullptr;
     }
 
 } // namespace XLSB

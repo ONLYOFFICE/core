@@ -57,6 +57,8 @@
 #include "../../XlsbFormat/Biff12_unions/BORDERS.h"
 #include "../../XlsbFormat/Biff12_unions/CELLSTYLEXFS.h"
 #include "../../XlsbFormat/Biff12_unions/CELLXFS.h"
+#include "../../XlsbFormat/Biff12_unions/STYLES.h"
+#include "../../XlsbFormat/Biff12_unions/DXFS.h"
 
 namespace OOX
 {
@@ -220,7 +222,14 @@ namespace OOX
                         m_oCellStyleXfs = static_cast<XLSB::CELLSTYLEXFS*>(stylesStream->m_CELLSTYLEXFS.get())->m_arBrtXF;
 
                     if (stylesStream->m_CELLXFS != nullptr)
-                        m_oCellXfs = static_cast<XLSB::CELLXFS*>(stylesStream->m_CELLSTYLEXFS.get())->m_arBrtXF;
+                        m_oCellXfs = static_cast<XLSB::CELLXFS*>(stylesStream->m_CELLXFS.get())->m_arBrtXF;
+
+                    if (stylesStream->m_STYLES != nullptr)
+                        m_oCellStyles = static_cast<XLSB::STYLES*>(stylesStream->m_STYLES.get())->m_arBrtStyle;
+
+                    if (stylesStream->m_DXFS != nullptr)
+                        m_oDxfs = static_cast<XLSB::DXFS*>(stylesStream->m_DXFS.get())->m_aruDXF;
+
                 }
             }
 

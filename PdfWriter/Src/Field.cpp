@@ -66,10 +66,10 @@ namespace PdfWriter
 
 		m_bShd = false;
 
-		m_pMK = NULL;
-		
-		m_pParent = NULL;
-		m_pKids   = NULL;
+		m_pMK         = NULL;
+		m_pParent     = NULL;
+		m_pKids       = NULL;
+		m_pAppearance = NULL;
 	}
 	void CFieldBase::SetReadOnlyFlag(bool isReadOnly)
 	{
@@ -227,6 +227,43 @@ namespace PdfWriter
 		}
 
 		pNormal->DrawSimpleText(wsValue, pCodes, unCount, pFieldsResources->GetFontName(pFont), dFontSize, dX, dY, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), pShifts, unShiftsCount);
+	}
+	void CFieldBase::StartTextAppearance(CFontDict* pFont, const double& dFontSize, const TRgb& oColor, const double& dAlpha)
+	{
+		m_pAppearance = new CAnnotAppearance(m_pXref, this);
+		if (!m_pAppearance)
+			return;
+
+		Add("AP", m_pAppearance);
+
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+
+		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+
+		const char* sExtGrStateName = NULL;
+		if (fabs(dAlpha - 1.0) > 0.001)
+		{
+			CExtGrState* pExtGrState = m_pDocument->GetFillAlpha(dAlpha);
+			sExtGrStateName = pFieldsResources->GetExtGrStateName(pExtGrState);
+		}
+
+		pNormal->StartDrawText(pFieldsResources->GetFontName(pFont), dFontSize, oColor.r, oColor.g, oColor.b, sExtGrStateName, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+	}
+	void CFieldBase::AddLineToTextAppearance(const double& dX, const double& dY, unsigned char* pCodes, const unsigned int& unCodesCount, const double* pShifts, const unsigned int& unShiftsCount)
+	{
+		if (!m_pAppearance)
+			return;
+
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+		pNormal->DrawTextLine(dX, dY, pCodes, unCodesCount, pShifts, unShiftsCount);
+	}
+	void CFieldBase::EndTextAppearance()
+	{
+		if (!m_pAppearance)
+			return;
+
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
+		pNormal->EndDrawText();
 	}
 	void CFieldBase::SetTextValue(const std::wstring &wsValue)
 	{
@@ -878,13 +915,23 @@ namespace PdfWriter
 		Add("Resources", pField->GetResourcesDict());
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
-		SetFilter(STREAM_FILTER_FLATE_DECODE);
+		//SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
 	}
 	void CAnnotAppearanceObject::DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFontName, double dFontSize, double dX, double dY, double dR, double dG, double dB, const char* sExtGStateName, double dWidth, double dHeight, double* pShifts, unsigned int unShiftsCount)
 	{
 		if (!m_pStream || !sFontName)
 			return;
+
+		StartDrawText(sFontName, dFontSize, dR, dG, dB, sExtGStateName, dWidth, dHeight);
+
+		if (pCodes)
+			DrawTextLine(dX, dY, pCodes, unCount, pShifts, unShiftsCount);
+		else
+			DrawTextLine(dX, dY, wsText);
+
+		EndDrawText();
+		return;
 
 		m_pStream->WriteEscapeName("Tx");
 		m_pStream->WriteStr(" BMC\012");
@@ -1058,4 +1105,159 @@ namespace PdfWriter
 		m_pStream->WriteReal(std::max(dH - 1, 0.0));
 		m_pStream->WriteStr(" re\012s\012q");
 	}	
+	void CAnnotAppearanceObject::StartDrawText(const char* sFontName, const double& dFontSize, const double& dR, const double& dG, const double& dB, const char* sExtGStateName, const double& dWidth, const double& dHeight)
+	{
+		if (!m_pStream || !sFontName)
+			return;
+
+		m_pStream->WriteEscapeName("Tx");
+		m_pStream->WriteStr(" BMC\012");
+
+		double dBorderSize   = 0;
+		double dBorderSize_2 = 0;
+		double dBorderSize2  = 0;
+		if (m_pField && m_pField->HaveBorder())
+		{
+			TRgb oColor = m_pField->GetBorderColor();
+			m_pStream->WriteStr("q\012");
+
+			m_pStream->WriteReal(oColor.r);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(oColor.g);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(oColor.b);
+			m_pStream->WriteStr(" RG\012");
+
+			dBorderSize   = m_pField->GetBorderSize();
+			dBorderSize_2 = dBorderSize / 2;
+			dBorderSize_2 = dBorderSize * 2;
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteStr(" w\0120 j\0120 J\012");
+
+			m_pStream->WriteReal(dBorderSize_2);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize_2);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dWidth - dBorderSize, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(std::max(dHeight - dBorderSize, 0.0));
+			m_pStream->WriteStr(" re\012S\012");
+
+			CTextField* pTextField = dynamic_cast<CTextField*>(m_pField);
+			if (pTextField && pTextField->IsCombFlag())
+			{
+				int nMaxLen = pTextField->GetMaxLen();
+				if (nMaxLen > 1)
+				{
+					double dStep = dWidth / nMaxLen;
+					double dX = dStep;
+					for (int nIndex = 0; nIndex < nMaxLen - 1; ++nIndex)
+					{
+						m_pStream->WriteReal(dX);
+						m_pStream->WriteChar(' ');
+						m_pStream->WriteInt(0);
+						m_pStream->WriteChar(' ');
+						m_pStream->WriteStr(" m\012");
+						m_pStream->WriteReal(dX);
+						m_pStream->WriteChar(' ');
+						m_pStream->WriteReal(dHeight);
+						m_pStream->WriteChar(' ');
+						m_pStream->WriteStr(" l\012S\012");
+
+						dX += dStep;
+					}
+				}
+			}
+
+			m_pStream->WriteStr("Q\012");
+		}
+
+		m_pStream->WriteStr("q\012");
+
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::max(dWidth - dBorderSize2, 0.0));
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::max(dHeight - dBorderSize2, 0.0));
+		m_pStream->WriteStr(" re\012W\012n\012");
+
+		m_pStream->WriteStr("BT\012");
+
+		m_pStream->WriteReal(dR);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dG);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dB);
+		m_pStream->WriteStr(" rg\012");
+
+		if (sExtGStateName)
+		{
+			m_pStream->WriteEscapeName(sExtGStateName);
+			m_pStream->WriteStr(" gs\012");
+		}
+
+		m_pStream->WriteEscapeName(sFontName);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(std::min(1000.0, std::max(0.0, dFontSize)));
+		m_pStream->WriteStr(" Tf\012");
+	}
+	void CAnnotAppearanceObject::DrawTextLine(const double& dX, const double& dY, const unsigned char* pCodes, const unsigned int& unCount, const double* pShifts, const unsigned int& unShiftsCount)
+	{
+		if (pCodes && pShifts && unShiftsCount > 0 && unShiftsCount == unCount / 2)
+		{
+			m_pStream->WriteReal(dX + pShifts[0]);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dY);
+			m_pStream->WriteStr(" Td\012");
+
+			for (unsigned int unIndex = 0; unIndex < unShiftsCount; ++unIndex)
+			{
+				m_pStream->WriteChar('[');
+				m_pStream->WriteChar('<');
+				m_pStream->WriteBinary(pCodes + 2 * unIndex, 2, NULL);
+				m_pStream->WriteChar('>');
+				m_pStream->WriteStr("]TJ\012");
+
+				if (unIndex != unShiftsCount - 1)
+				{
+					m_pStream->WriteReal(pShifts[unIndex + 1]);
+					m_pStream->WriteChar(' ');
+					m_pStream->WriteReal(0.0);
+					m_pStream->WriteStr(" Td\012");
+				}
+			}
+		}
+		else
+		{
+			m_pStream->WriteReal(dX);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dY);
+			m_pStream->WriteStr(" Td\012");
+
+			m_pStream->WriteChar('<');
+			m_pStream->WriteBinary(pCodes, unCount, NULL);
+			m_pStream->WriteChar('>');
+
+			m_pStream->WriteStr(" Tj\012");
+		}
+	}
+	void CAnnotAppearanceObject::DrawTextLine(const double &dX, const double &dY, const std::wstring& wsText)
+	{
+		m_pStream->WriteReal(dX);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteStr(" Td\012");
+
+		std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsText);
+		m_pStream->WriteEscapeText((BYTE*)(sText.c_str()), sText.length());
+
+		m_pStream->WriteStr(" Tj\012");
+	}
+	void CAnnotAppearanceObject::EndDrawText()
+	{
+		m_pStream->WriteStr("ET\012");
+		m_pStream->WriteStr("Q\012EMC\012");
+	}
 }

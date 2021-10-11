@@ -1587,6 +1587,153 @@ private:
 	private:
 
 		unsigned int m_unCounter;
+	};	
+	//----------------------------------------------------------------------------------------
+	//
+	// CMultiLineTextManager
+	//
+	//----------------------------------------------------------------------------------------
+	class CMultiLineTextManager
+	{
+	public:
+		CMultiLineTextManager()
+		{
+			m_pCodes       = NULL;
+			m_pWidths      = NULL;
+			m_unLen        = 0;
+			m_ushSpaceCode = 0;
+		}
+		void Init(unsigned short* pCodes, unsigned int* pWidths, const unsigned int& unLen, const unsigned short& ushSpaceCode, const unsigned int& unLineHeight)
+		{
+			m_pCodes       = pCodes;
+			m_pWidths      = pWidths;
+			m_unLen        = unLen;
+			m_ushSpaceCode = ushSpaceCode;
+		}
+		void Clear()
+		{
+			m_pCodes       = NULL;
+			m_pWidths      = NULL;
+			m_unLen        = 0;
+			m_ushSpaceCode = 0;
+		}
+		void CalculateLines(const double& dFontSize, const double& dW)
+		{
+			m_vBreaks.clear();
+
+			bool bLineStart = true, bWord = false, bFirstItemOnLine = true;
+
+			unsigned int unPos = 0, unWordStartPos = 0;
+			double dWordWidth = 0;
+			double dX = 0, dKoef = dFontSize / 1000.0;
+
+			while (unPos < m_unLen)
+			{
+				if (IsSpace(unPos))
+				{
+					dX += dWordWidth + m_pWidths[unPos] * dKoef;
+					bWord             = false;
+					dWordWidth        = 0;
+					bLineStart        = false;
+					bFirstItemOnLine  = false;
+				}
+				else
+				{
+					double dLetterWidth = m_pWidths[unPos] * dKoef;
+					if (dX + dWordWidth + dLetterWidth > dW)
+					{
+						if (bLineStart)
+						{
+							if (bFirstItemOnLine)
+							{
+								if (unPos != m_unLen - 1)
+									m_vBreaks.push_back(unPos + 1);
+
+								unPos++;
+							}
+							else
+							{
+								m_vBreaks.push_back(unPos);
+							}
+						}
+						else
+						{
+							if (bWord)
+							{
+								m_vBreaks.push_back(unWordStartPos);
+								unPos = unWordStartPos;
+							}
+							else
+							{
+								m_vBreaks.push_back(unPos);
+							}
+						}
+
+						dX               = 0;
+						bWord            = false;
+						dWordWidth       = 0;
+						bLineStart       = true;
+						bFirstItemOnLine = true;
+						continue;
+					}
+
+					if (bWord)
+					{
+						dWordWidth += m_pWidths[unPos] * dKoef;
+					}
+					else
+					{
+						unWordStartPos = unPos;
+						bWord          = true;
+						dWordWidth     = m_pWidths[unPos] * dKoef;
+					}
+
+					bFirstItemOnLine  = false;
+				}
+
+				unPos++;
+			}
+		}
+		void ProcessAutoFit(const double& dFontSize, const double& dW, const double& dH)
+		{
+
+		}
+		unsigned int GetLinesCount() const
+		{
+			return m_vBreaks.size() + 1;
+		}
+		unsigned int GetLineStartPos(const int& nLineIndex) const
+		{
+			if (!nLineIndex || nLineIndex >= m_vBreaks.size())
+				return 0;
+
+			return m_vBreaks[nLineIndex - 1];
+		}
+		unsigned int GetLineEndPos(const int& nLineIndex) const
+		{
+			if (nLineIndex >= m_vBreaks.size() - 1)
+				return m_unLen;
+
+			return m_vBreaks[nLineIndex];
+		}
+
+
+	private:
+
+		inline bool IsSpace(const unsigned int& unPos)
+		{
+			return (m_pCodes[unPos] == m_ushSpaceCode);
+		}
+
+
+	private:
+
+		unsigned short* m_pCodes;
+		unsigned int*   m_pWidths;
+		unsigned int    m_unLen;
+		unsigned short  m_ushSpaceCode;
+
+		std::vector<unsigned int> m_vBreaks;
 	};
 
 private:
@@ -1622,6 +1769,7 @@ private:
 	std::vector<TFontInfo>       m_vFonts;
 	std::vector<TDestinationInfo>m_vDestinations;
 	CFieldsManager               m_oFieldsManager;
+	CMultiLineTextManager        m_oLinesManager;
 								 
 	bool                         m_bValid;
 								 

@@ -1560,12 +1560,19 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		double dBaseLine = MM_2_PT(dH - oInfo.GetBaseLineOffset());
 		double dShiftX = MM_2_PT(0.7);
 
+		if (pPr->IsMultiLine())
+		{
+			_dY += MM_2_PT(2.45);
+			//_dB -= MM_2_PT(2.45);
+			//dBaseLine += MM_2_PT(2.15);
+		}
+
 		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX - 0.7), _dY, MM_2_PT(dX + dW + 0.7), _dB));
 
 		pField->SetMaxLen(pPr->GetMaxCharacters());
 		pField->SetCombFlag(pPr->IsComb());
 		pField->SetAutoFit(pPr->IsAutoFit());
-		pField->SetMultilineFlag(pPr->IsMultiLine());		
+		pField->SetMultilineFlag(pPr->IsMultiLine());
 
 		double* pShifts = NULL;
 		unsigned int unShiftsCount = 0;
@@ -1595,32 +1602,74 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		}
 
 		unsigned int unAlign = oInfo.GetJc();
-		if (0 == unAlign || 2 == unAlign)
+
+		TColor oColor      = m_oBrush.GetTColor1();
+		bool isPlaceHolder = oInfo.IsPlaceHolder();
+		double dAlpha      = isPlaceHolder ? 0.5 : 1;
+
+		if (!isPlaceHolder)
+			pField->SetTextValue(wsValue);
+
+		if (pPr->IsMultiLine())
 		{
-			double dSumWidth = 0;
+			double dFontSize        = m_oFont.GetSize();
+			unsigned short* pCodes2 = new unsigned short[unLen];
+			unsigned int* pWidths   = new unsigned int[unLen];
+
+			unsigned short ushSpaceCode = 0xFFFF;
 			for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
 			{
-				unsigned short ushCode = (static_cast<unsigned short>((pCodes[unIndex * 2] << 8) & 0xFFFF) | static_cast<unsigned short>((pCodes[unIndex * 2 + 1])));
-				double dLetterWidth = m_pFont->GetWidth(ushCode) / 1000.0 * m_oFont.GetSize();
-				dSumWidth += dLetterWidth;
+				pCodes2[unIndex] = (static_cast<unsigned short>((pCodes[unIndex * 2] << 8) & 0xFFFF) | static_cast<unsigned short>((pCodes[unIndex * 2 + 1])));
+				pWidths[unIndex] = m_pFont->GetWidth(pCodes2[unIndex]);
+				if (0x0020 == pUnicodes[unIndex])
+					ushSpaceCode = pCodes2[unIndex];
 			}
 
+			double dLineHeight = m_pFont->GetLineHeight() / 1000 * dFontSize;
 
-			if (0 == unAlign && MM_2_PT(dW) - dSumWidth > 0)
-				dShiftX += MM_2_PT(dW) - dSumWidth;
-			else if (2 == unAlign && (MM_2_PT(dW) - dSumWidth) / 2 > 0)
-				dShiftX += (MM_2_PT(dW) - dSumWidth) / 2;
-		}
+			m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, 0);
+			m_oLinesManager.CalculateLines(dFontSize, MM_2_PT(dW));
 
-		TColor oColor = m_oBrush.GetTColor1();
-		if (oInfo.IsPlaceHolder())
-		{
-			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 0.5, m_oFont.GetSize(), dShiftX, dBaseLine, pShifts, unShiftsCount);
+			pField->StartTextAppearance(m_pFont, dFontSize, TRgb(oColor.r, oColor.g, oColor.b), dAlpha);
+
+			unsigned int unLinesCount = m_oLinesManager.GetLinesCount();
+			double dShiftY = dBaseLine;
+			for (unsigned int unIndex = 0; unIndex < unLinesCount; ++unIndex)
+			{
+				unsigned int unLineStart = m_oLinesManager.GetLineStartPos(unIndex);
+				int nInLineCount = m_oLinesManager.GetLineEndPos(unIndex) - m_oLinesManager.GetLineStartPos(unIndex);
+				if (nInLineCount > 0)
+					pField->AddLineToTextAppearance(dShiftX, dShiftY, (pCodes + 2 * unLineStart), nInLineCount * 2, pShifts ? pShifts + unLineStart : NULL, unShiftsCount ? nInLineCount : 0);
+
+				dShiftY -= dLineHeight;
+			}
+
+			pField->EndTextAppearance();
+
+			m_oLinesManager.Clear();
+
+			delete[] pCodes2;
+			delete[] pWidths;
 		}
 		else
 		{
-			pField->SetTextValue(wsValue);
-			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), dShiftX, dBaseLine, pShifts, unShiftsCount);
+			if (0 == unAlign || 2 == unAlign)
+			{
+				double dSumWidth = 0;
+				for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+				{
+					unsigned short ushCode = (static_cast<unsigned short>((pCodes[unIndex * 2] << 8) & 0xFFFF) | static_cast<unsigned short>((pCodes[unIndex * 2 + 1])));
+					double dLetterWidth = m_pFont->GetWidth(ushCode) / 1000.0 * m_oFont.GetSize();
+					dSumWidth += dLetterWidth;
+				}
+
+				if (0 == unAlign && MM_2_PT(dW) - dSumWidth > 0)
+					dShiftX += MM_2_PT(dW) - dSumWidth;
+				else if (2 == unAlign && (MM_2_PT(dW) - dSumWidth) / 2 > 0)
+					dShiftX += (MM_2_PT(dW) - dSumWidth) / 2;
+			}
+
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), dAlpha, m_oFont.GetSize(), dShiftX, dBaseLine, pShifts, unShiftsCount);
 		}
 
 		if (pShifts)

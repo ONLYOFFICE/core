@@ -174,9 +174,22 @@ int main()
         i += nPathLength;
     }
 
+    BYTE* pGlyphs = GetGlyphs(test, 0, width, height);
+    nLength = GetLength(pGlyphs);
+    i = 4;
+    nLength -= 4;
+    while (i < nLength)
+    {
+        DWORD nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout <<  std::string((char*)(pGlyphs + i), nPathLength) << " ";
+        i += nPathLength;
+    }
+
     Close(test);
     RELEASEARRAYOBJECTS(pPdfData);
     RELEASEARRAYOBJECTS(pLinks);
+    RELEASEARRAYOBJECTS(pGlyphs);
     RELEASEARRAYOBJECTS(pStructure);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);

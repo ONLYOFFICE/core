@@ -103,6 +103,7 @@ namespace PdfWriter
 		~CFontCidTrueType();
 		unsigned char* EncodeString(unsigned int* pUnicodes, unsigned int unLen, const unsigned int* pGids = NULL);
 		unsigned int   GetWidth(unsigned short ushCode);
+		unsigned int   GetLineHeight();
 		EFontType      GetFontType()
 		{
 			return fontCIDType2;

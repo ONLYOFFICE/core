@@ -53,6 +53,7 @@
 #include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #include "lib/xpdf/Outline.h"
 #include "lib/xpdf/Link.h"
+#include "lib/xpdf/TextOutputDev.h"
 #include "lib/goo/GList.h"
 #endif
 
@@ -509,48 +510,173 @@ return 0;
         return L"";
 	}
 #ifdef BUILDING_WASM_MODULE
+    std::string GetUtf8StringFromUnicode_4bytes(Unicode* pUnicodes, LONG lCount)
+    {
+        BYTE* pData = new BYTE[6 * lCount + 3 + 1];
+        BYTE* pCodesCur = pData;
+        LONG lOutputCount = 0;
+
+        for (int i = 0; i < lCount; i++)
+        {
+            unsigned int code = *pUnicodes++;
+
+            if (code < 0x80)
+            {
+                *pCodesCur++ = (BYTE)code;
+            }
+            else if (code < 0x0800)
+            {
+                *pCodesCur++ = 0xC0 | (code >> 6);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+            else if (code < 0x10000)
+            {
+                *pCodesCur++ = 0xE0 | (code >> 12);
+                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+            else if (code < 0x1FFFFF)
+            {
+                *pCodesCur++ = 0xF0 | (code >> 18);
+                *pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+            else if (code < 0x3FFFFFF)
+            {
+                *pCodesCur++ = 0xF8 | (code >> 24);
+                *pCodesCur++ = 0x80 | (code >> 18 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+            else if (code < 0x7FFFFFFF)
+            {
+                *pCodesCur++ = 0xFC | (code >> 30);
+                *pCodesCur++ = 0x80 | (code >> 24 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 18 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+        }
+
+        lOutputCount = (LONG)(pCodesCur - pData);
+        *pCodesCur++ = 0;
+        std::string s((char*)pData, lOutputCount);
+        RELEASEARRAYOBJECTS(pData);
+        return s;
+    }
+    void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
+    {
+        int nLengthTitle = pOutlineItem->getTitleLength();
+        Unicode* pTitle = pOutlineItem->getTitle();
+        std::string sTitle = GetUtf8StringFromUnicode_4bytes(pTitle, nLengthTitle);
+
+        LinkAction* pLinkAction = pOutlineItem->getAction();
+        if (!pLinkAction)
+            return;
+        LinkActionKind kind = pLinkAction->getKind();
+        if (kind != actionGoTo)
+            return;
+
+        GString* str = ((LinkGoTo*)pLinkAction)->getNamedDest();
+        LinkDest* pLinkDest = pdfDoc->findDest(str);
+        if (!pLinkDest)
+            return;
+        int pg;
+        if (pLinkDest->isPageRef())
+        {
+            Ref pageRef = pLinkDest->getPageRef();
+            pg = pdfDoc->findPage(pageRef.num, pageRef.gen);
+        }
+        else
+            pg = pLinkDest->getPageNum();
+        // TODO: домножение координат
+        double dy = pLinkDest->getTop();
+        RELEASEOBJECT(pLinkDest);
+
+        out.AddInt(pg - 1);
+        out.AddInt(level);
+        out.AddDouble(dy);
+        out.WriteString((BYTE*)sTitle.c_str(), sTitle.length());
+
+        pOutlineItem->open();
+        GList* pList = pOutlineItem->getKids();
+        if (!pList)
+            return;
+        int num = pList->getLength();
+        for (int i = 0; i < num; i++)
+        {
+            OutlineItem* pOutlineItemKid = (OutlineItem*)pList->get(i);
+            if (!pOutlineItemKid)
+                continue;
+            getBookmars(pdfDoc, pOutlineItemKid, out, level + 1);
+        }
+        pOutlineItem->close();
+    }
     BYTE* CPdfReader::GetStructure()
     {
+        if (!m_pInternal->m_pPDFDocument)
+            return NULL;
         Outline* pOutline = m_pInternal->m_pPDFDocument->getOutline();
         if (!pOutline)
             return NULL;
-        // Выдает оглавление верхнего уровня
         GList* pList = pOutline->getItems();
         if (!pList)
             return NULL;
 
+        NSWasm::CData oRes;
+        oRes.SkipLen();
         int num = pList->getLength();
         for (int i = 0; i < num; i++)
         {
             OutlineItem* pOutlineItem = (OutlineItem*)pList->get(i);
             if (!pOutlineItem)
                 continue;
-            LinkAction* pLinkAction = pOutlineItem->getAction();
-            if (!pLinkAction)
-                continue;
-            LinkActionKind kind = pLinkAction->getKind();
-            if (kind != actionGoTo)
-                continue;
-
-            GString* str = ((LinkGoTo*)pLinkAction)->getNamedDest();
-            LinkDest* pLinkDest = m_pInternal->m_pPDFDocument->findDest(str);
-            if (!pLinkDest)
-                continue;
-            int pg;
-            if (pLinkDest->isPageRef())
-            {
-                Ref pageRef = pLinkDest->getPageRef();
-                pg = m_pInternal->m_pPDFDocument->findPage(pageRef.num, pageRef.gen);
-            }
-            else
-                pg = pLinkDest->getPageNum();
-            RELEASEOBJECT(pLinkDest);
+            getBookmars(m_pInternal->m_pPDFDocument, pOutlineItem, oRes, 1);
         }
-        return NULL;
+        oRes.WriteLen();
+
+        BYTE* bRes = oRes.GetBuffer();
+        oRes.ClearWithoutAttack();
+        return bRes;
+    }
+    static void outputToCData(void* stream, const char* text, int len)
+    {
+        NSWasm::CData* oRes = (NSWasm::CData*)stream;
+        oRes->WriteString((BYTE*)text, len);
     }
     BYTE* CPdfReader::GetGlyphs(int nPageIndex, int nRasterW, int nRasterH)
     {
-        return NULL;
+        if (!m_pInternal->m_pPDFDocument)
+            return NULL;
+        nPageIndex++;
+        TextOutputControl *pControl = new TextOutputControl();
+        pControl->mode = textOutPhysLayout;
+        TextOutputDev* pTextDev = new TextOutputDev(NULL, pControl, gFalse);
+        if (!pTextDev->isOk())
+        {
+            RELEASEOBJECT(pTextDev);
+            RELEASEOBJECT(pControl);
+            return NULL;
+        }
+
+        m_pInternal->m_pPDFDocument->displayPage(pTextDev, nPageIndex, 72.0, 72.0, 0, gFalse, gFalse, gTrue);
+        TextPage* pPage = pTextDev->takeText();
+        if (!pPage)
+            return NULL;
+
+        NSWasm::CData oRes;
+        oRes.SkipLen();
+        pPage->write(&oRes, outputToCData);
+        oRes.WriteLen();
+
+        RELEASEOBJECT(pTextDev);
+        RELEASEOBJECT(pControl);
+        BYTE* res = oRes.GetBuffer();
+        oRes.ClearWithoutAttack();
+        return res;
     }
     BYTE* CPdfReader::GetLinks (int nPageIndex, int nRasterW, int nRasterH)
     {

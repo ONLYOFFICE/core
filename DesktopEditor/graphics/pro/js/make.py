@@ -129,7 +129,7 @@ compile_files_array.append(["UnicodeConverter.cpp"])
 compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common -I../../../xml/libxml2/include -I../../../xml/build/qt -I../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip -I../../../../PdfReader/lib/goo -I../../../../PdfReader/lib/fofi -I../../../../PdfReader/lib/splash -I../../../../PdfReader/lib")
 compiler_flags.append("-D__linux__ -D_LINUX -DUNIX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE -DU_COMMON_IMPLEMENTATION")
 compiler_flags.append("-DWASM_MODE -Derrno=0 -DTHREADMODEL=0 -DDEBUGLVL=0 -DHAVE_MBSTATE_T -DHAVE_STDINCLUDES -DHAS_WCHAR")
-compiler_flags.append("-DHAVE_VA_COPY -DLIBXML_READER_ENABLED -DLIBXML_PUSH_ENABLED -DLIBXML_HTML_ENABLED -DLIBXML_XPATH_ENABLED -DLIBXML_OUTPUT_ENABLED -DLIBXML_C14N_ENABLED -DLIBXML_SAX1_ENABLED -DLIBXML_TREE_ENABLED -DLIBXML_XPTR_ENABLED -DIN_LIBXML -DLIBXML_STATIC -DBUILD_ZLIB_AS_SOURCES -DDISABLE_PDF_CONVERTATION")
+compiler_flags.append("-DHAVE_VA_COPY -DLIBXML_READER_ENABLED -DLIBXML_PUSH_ENABLED -DLIBXML_HTML_ENABLED -DLIBXML_XPATH_ENABLED -DLIBXML_OUTPUT_ENABLED -DLIBXML_C14N_ENABLED -DLIBXML_SAX1_ENABLED -DLIBXML_TREE_ENABLED -DLIBXML_XPTR_ENABLED -DIN_LIBXML -DLIBXML_STATIC -DBUILD_ZLIB_AS_SOURCES -DDISABLE_PDF_CONVERTATION -D_ARM_ALIGN_")
 
 # arguments
 arguments = ""

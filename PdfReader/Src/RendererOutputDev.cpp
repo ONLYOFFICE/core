@@ -65,7 +65,7 @@
 EM_JS(char*, js_get_stream_id, (unsigned char* data, unsigned char* status), {
     return self.AscViewer.CheckStreamId(data, status);
 });
-EM_JS(int, js_free, (unsigned char* data), {
+EM_JS(int, js_free_id, (unsigned char* data), {
     self.AscViewer.Free(data);
     return 1;
 });
@@ -78,17 +78,32 @@ public:
     BYTE* m_pData;
     int m_nSize;
     int m_nPos;
+    bool m_bIsAttach;
 
     CMemoryFontStream()
     {
         m_pData = NULL;
         m_nSize = 0;
         m_nPos = 0;
+        m_bIsAttach = false;
     }
     ~CMemoryFontStream()
     {
-        if (NULL != m_pData)
+        if (NULL != m_pData && !m_bIsAttach)
             RELEASEARRAYOBJECTS(m_pData);
+    }
+
+    void fromStream(std::wstring& sStreamName)
+    {
+        NSFonts::IFontStream* pStream = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(sStreamName);
+        if (pStream)
+        {
+            LONG lSize = 0;
+            pStream->GetMemory(m_pData, lSize);
+            m_nSize = (int)lSize;
+            m_nPos = 0;
+            m_bIsAttach = true;
+        }
     }
 
     void load(Object& oStreamObject)
@@ -1174,13 +1189,16 @@ namespace PdfReader
                     {
                         // шрифт не загружен.
                         m_pFontList->Remove(*pFont->getID());
+                        js_free_id((unsigned char*)pFontId);
+                        return;
                     }
                     else
                     {
                         std::string wsFileNameA(pFontId);
                         wsFileName = UTF8_TO_U(wsFileNameA);
+                        oMemoryFontStream.fromStream(wsFileName);
                     }
-                    js_free(pFontId);
+                    js_free_id((unsigned char*)pFontId);
                 #else
                 #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
                     // пока заглушка - тут надо прочитать в стрим, чтобы дальше правильно сработать с кодировками

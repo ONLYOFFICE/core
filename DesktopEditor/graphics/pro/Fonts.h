@@ -427,6 +427,7 @@ namespace NSFonts
     public:
         virtual int CreateFromFile(const std::wstring& strFileName, unsigned char* pDataUse = NULL) = 0;
         virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear) = 0;
+        virtual void GetMemory(BYTE*& pData, LONG& lSize) = 0;
     };
 
     class GRAPHICS_DECL IFontsMemoryStorage : public NSBase::CBaseRefCounter

@@ -63,7 +63,7 @@ WASM_EXPORT int IsFontBinaryExist(char* path)
 	if (pStorage)
 	{
 		std::string sPathA(path);
-		NSFont::IFontStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
+		NSFonts::IFontStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
 		if (pStream)
 			return 1;
 	}

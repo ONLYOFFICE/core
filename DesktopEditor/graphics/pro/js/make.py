@@ -58,7 +58,11 @@ exported_functions = ["_malloc",
                       "_GetPixmap",
                       "_GetGlyphs",
                       "_GetLinks",
-                      "_GetStructure"]
+                      "_GetStructure",
+					  "_InitializeFontsBin",
+					  "_InitializeFontsBase64",
+					  "_SetFontBinary",
+					  "_IsFontBinaryExist"]
 
 compile_files_array = []
 

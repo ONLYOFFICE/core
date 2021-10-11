@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
 
         ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
 
-        connect(ui->treeView, &CMetafileTreeView::customContextMenuRequested, this, &MainWindow::slotShowContextMenu);
+        connect(ui->treeView, &CMetafileTreeView::clickedRightMouseButton, this, &MainWindow::slotRBClickedOnMetafileTree);
 
         QFont *pFont = new QFont;
         pFont->setPointSize(13);
@@ -262,6 +262,32 @@ void MainWindow::on_actionSave_XML_as_triggered()
 {
         QString sSaveFilePath = QFileDialog::getSaveFileName(this, tr("Save file"), "", tr("XML file (*.xml)"));
         SaveInXmlFile(sSaveFilePath.toStdWString());
+}
+
+void MainWindow::slotRBClickedOnMetafileTree(QPoint oPoint)
+{
+        if (NULL == ui->treeView->model())
+                return;
+
+        QModelIndex oModelIndex = ui->treeView->indexAt(oPoint);
+
+        if (!oModelIndex.isValid())
+                return;
+
+        QStandardItem *pStandardItem = static_cast<QStandardItem*>(oModelIndex.internalPointer());
+        QStandardItem *pItem = pStandardItem->child(oModelIndex.row(), oModelIndex.column());
+
+        QMenu oContextMenu;
+
+        oContextMenu.addAction("Edit", this, [this, pItem](){ui->treeView->EditItem(pItem);});
+
+        if (true == pItem->data(3))
+        {
+                oContextMenu.addAction("Insert before", this, [this, pStandardItem, oModelIndex](){InsertRecord(pStandardItem, oModelIndex.row());});
+                oContextMenu.addAction("Insert after", this,  [this, pStandardItem, oModelIndex](){InsertRecord(pStandardItem, oModelIndex.row(), false);});
+        }
+
+        oContextMenu.exec(ui->treeView->mapToGlobal(oPoint));
 }
 
 void MainWindow::slotShowContextMenu(QPoint oPos)

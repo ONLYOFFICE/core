@@ -34,8 +34,8 @@ CEditItemWidget::CEditItemWidget(QWidget *parent) :
         QPushButton *pSaveButton    = new QPushButton("Save");
         QPushButton *pCancelButton  = new QPushButton("Cancel");
 
-        connect(pSaveButton,    &QPushButton::clicked, this, &CEditItemWidget::on_Save_clicked);
-        connect(pCancelButton,  &QPushButton::clicked, this, &CEditItemWidget::on_Cancel_clicked);
+        connect(pSaveButton,    &QPushButton::clicked, this, &CEditItemWidget::slotSaveButtonCliked);
+        connect(pCancelButton,  &QPushButton::clicked, this, &CEditItemWidget::slotCancelButtonClicked);
 
         m_pButtonsLayout->addWidget(pSaveButton);
         m_pButtonsLayout->addWidget(pCancelButton);
@@ -67,10 +67,10 @@ void CEditItemWidget::SetItem(QStandardItem *pStandardItem)
         ParsingItem();
 }
 
-void CEditItemWidget::on_Save_clicked()
+void CEditItemWidget::slotSaveButtonCliked()
 {
         if (m_oBind.size() == 0)
-                on_Cancel_clicked();
+                slotCancelButtonClicked();
 
         for (QStandardItem* oStandardItem : m_oBind)
         {
@@ -99,10 +99,10 @@ void CEditItemWidget::on_Save_clicked()
                         m_pMainWindow->DisplayingFile(L"TempFile.emf", false);
         }
 
-        on_Cancel_clicked();
+        slotCancelButtonClicked();
 }
 
-void CEditItemWidget::on_Cancel_clicked()
+void CEditItemWidget::slotCancelButtonClicked()
 {
         if (NULL != m_pMainWindow)
                 m_pMainWindow->setEnabled(true);
@@ -110,13 +110,13 @@ void CEditItemWidget::on_Cancel_clicked()
         this->close();
 }
 
-void CEditItemWidget::on_DeleteItem_clicked()
+void CEditItemWidget::slotDeleteButtonClicked()
 {
         QStandardItem *pParent = m_pStandardItem->parent();
 
         pParent->removeRow(m_pStandardItem->index().row());
 
-        on_Cancel_clicked();
+        slotCancelButtonClicked();
 }
 
 void CEditItemWidget::ParsingItem()
@@ -128,7 +128,7 @@ void CEditItemWidget::ParsingItem()
         {
                 QPushButton *pDeleteButton = new QPushButton("Delete");
 
-                connect(pDeleteButton, &QPushButton::clicked, this, &CEditItemWidget::on_DeleteItem_clicked);
+                connect(pDeleteButton, &QPushButton::clicked, this, &CEditItemWidget::slotDeleteButtonClicked);
 
                 m_pButtonsLayout->addWidget(pDeleteButton);
         }
@@ -190,5 +190,5 @@ void CEditItemWidget::ParsingAttachments(QStandardItem *pStandardItem, unsigned 
 
 void CEditItemWidget::closeEvent(QCloseEvent *event)
 {
-        on_Cancel_clicked();
+        slotCancelButtonClicked();
 }

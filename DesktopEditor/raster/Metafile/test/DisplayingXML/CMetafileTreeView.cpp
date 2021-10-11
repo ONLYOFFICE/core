@@ -210,3 +210,10 @@ void CMetafileTreeView::EditItem(QStandardItem *pStandardItem)
         pEditItemWidget->SetItem(pStandardItem);
         pEditItemWidget->show();
 }
+
+void CMetafileTreeView::mouseReleaseEvent(QMouseEvent *event)
+{
+        if (event->button() == Qt::RightButton)
+                emit clickedRightMouseButton(event->pos());
+}
+

@@ -23,10 +23,10 @@ class CEditItemWidget : public QWidget
         void SetItem(QStandardItem *pStandardItem);
 
     private slots:
-        void on_Save_clicked();
-        void on_Cancel_clicked();
+        void slotSaveButtonCliked();
+        void slotCancelButtonClicked();
 
-        void on_DeleteItem_clicked();
+        void slotDeleteButtonClicked();
 
     private:
         void ParsingItem();

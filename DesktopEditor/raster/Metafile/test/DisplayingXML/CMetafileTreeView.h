@@ -3,12 +3,12 @@
 
 #include <QTreeView>
 #include <QStandardItemModel>
-#include <QFont>
 
 #include "../../../../xml/include/xmlutils.h"
 
 class CMetafileTreeView : public QTreeView
 {
+        Q_OBJECT
     public:
         explicit CMetafileTreeView(QWidget *parent);
         virtual ~CMetafileTreeView();
@@ -22,6 +22,12 @@ class CMetafileTreeView : public QTreeView
         bool SaveInXmlFile(const std::wstring& wsSaveFilePath);
 
         void EditItem(QStandardItem* pStandardItem);
+    signals:
+        void clickedRightMouseButton(QPoint oPoint);
+        void clickedLeftMouseButton(QModelIndex oModelInde);
+
+    protected:
+        virtual void mouseReleaseEvent(QMouseEvent* event) override;
 
     private:
         void ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem* oStandartItem, unsigned int unLevel = 0);

@@ -35,6 +35,8 @@ class MainWindow : public QMainWindow
         void on_actionStatistics_triggered();
         void on_actionSave_XML_as_triggered();
 
+        void slotRBClickedOnMetafileTree(QPoint oPoint);
+
         void slotShowContextMenu(QPoint oPos);
 
         void on_actionSave_EMF_as_triggered();

@@ -117,10 +117,21 @@ public:
         m_oHeader = oHeader;
         m_colorMapping = StreamUtils::ReadStringA(pStream, m_oHeader.RecLen);
 
-        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".xml";
-        std::ofstream file("RoundTrips/" + filename, std::ios::out);
-        file << m_colorMapping;
-        file.close();
+//        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".xml";
+//        std::ofstream file("RoundTrips/" + filename, std::ios::out);
+//        file << m_colorMapping;
+//        file.close();
+    }
+    std::wstring getPClrMap()const
+    {
+        auto iter = m_colorMapping.find("<a:clrMap");
+        if (iter == (UINT)-1)
+            return std::wstring(L"");
+
+        auto subStr = m_colorMapping.substr(iter);
+        subStr[1] = 'p';
+
+        return std::wstring(subStr.begin(), subStr.end());
     }
 };
 

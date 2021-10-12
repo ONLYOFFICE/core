@@ -654,15 +654,21 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
 
     std::vector<RoundTripTheme12Atom*> arrRTTheme;
     std::vector<RoundTripColorMapping12Atom*> arrRTColor;
-    std::vector<RoundTripContentMasterInfo12Atom*> arrLayouts;
-    pSlide->GetRecordsByType(&arrLayouts, false, false);
+    std::vector<RoundTripContentMasterInfo12Atom*> arrRTLayouts;
+    std::vector<RoundTripOArtTextStyles12Atom*> arrRTMaster;
+    std::vector<RoundTripNotesMasterTextStyles12Atom*> arrRTNotes;
+    pSlide->GetRecordsByType(&arrRTLayouts, false, false);
     pSlide->GetRecordsByType(&arrRTTheme, false, true);
     pSlide->GetRecordsByType(&arrRTColor, false, true);
+    pSlide->GetRecordsByType(&arrRTMaster, false, true);
+    pSlide->GetRecordsByType(&arrRTNotes, false, true);
+//    std::wcout << std::to_wstring(arrRTLayouts.size()) << L"\n";
 
-
-    if ((int)m_pDocument->m_arThemes.size() > nIndexTheme)
-        m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[nIndexTheme].get();
-    else if (m_pDocument->m_pNotesMaster.get())
+    const int oldThemeSize = m_pDocument->m_arThemes.size();
+    const unsigned oldThemeIndex = nIndexTheme < oldThemeSize ? nIndexTheme : oldThemeSize-1;
+    if (arrRTLayouts.size())
+        m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[oldThemeIndex].get();
+    else if (arrRTNotes.size())
         m_pShapeWriter->m_pTheme = m_pDocument->m_pNotesMaster.get();
     else
         m_pShapeWriter->m_pTheme = m_pDocument->m_pHandoutMaster.get();
@@ -743,19 +749,19 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
     auto oldStartLayout = nStartLayout;
 
     // Write layouts
-    if (themeType == _typeMaster::typeMaster && arrMasterID.size())
+    if (themeType == _typeMaster::typeMaster)
     {
         std::wstring strOutputLayoutsPath = strPptDirectory + FILE_SEPARATOR_STR + L"slideLayouts" + FILE_SEPARATOR_STR;
         std::wstring strOutputRelsLayoutsPath = strOutputLayoutsPath + L"_rels" + FILE_SEPARATOR_STR;
 
-//        std::wcout << std::to_wstring(arrLayouts.size()) << L" " << arrMasterID[0]->getStrID() << L"\n";
+//        std::wcout << std::to_wstring(arrRTLayouts.size()) << L" " << arrMasterID[0]->getStrID() << L"\n";
         if (nIndexTheme == 1)
         {
             NSDirectory::CreateDirectory(strOutputLayoutsPath);
             NSDirectory::CreateDirectory(strOutputRelsLayoutsPath);
         }
 
-        for (const auto* RTLayout : arrLayouts)
+        for (const auto* RTLayout : arrRTLayouts)
         {
             RoundTripExtractor extractorLayout(RTLayout);
             const std::wstring strZipLayoutPath = std::wstring(L"drs") + FILE_SEPARATOR_STR +
@@ -774,7 +780,8 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
             fileLR.CreateFileW(outputFileRelsFile);
             CStringWriter oWriterLR;
             oWriterLR.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"../slideMasters/slideMaster");
-            oWriterLR.WriteString(arrMasterID[0]->getStrID());
+//            oWriterLR.WriteString(arrMasterID[0]->getStrID());
+            oWriterLR.WriteString(std::to_wstring(oldThemeIndex+1));
             oWriterLR.WriteString(L".xml\"/></Relationships>");
             fileLR.WriteStringUTF8(oWriterLR.GetData());
             fileLR.CloseFile();
@@ -785,7 +792,7 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
     // Write Masters
     CStringWriter oWriter;
     CRelsGenerator oRels(&m_oManager);
-    oRels.StartMaster(nIndexTheme-1, oldStartLayout, arrLayouts.size());
+    oRels.StartMaster(nIndexTheme-1, oldStartLayout, arrRTLayouts.size());
     auto* pTheme = m_pShapeWriter->m_pTheme;
     oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>");
 
@@ -863,15 +870,14 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
 
     oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
 
-    // todo insert roundtrip color
-    std::wstring strOverrideColorScheme = _T("<p:clrMap bg1=\"lt1\" tx1=\"dk1\" bg2=\"lt2\" tx2=\"dk2\" accent1=\"accent1\" accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" hlink=\"hlink\" folHlink=\"folHlink\"/>");
-    oWriter.WriteString(strOverrideColorScheme);
+//    std::wstring strOverrideColorScheme = _T("<p:clrMap bg1=\"lt1\" tx1=\"dk1\" bg2=\"lt2\" tx2=\"dk2\" accent1=\"accent1\" accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" accent6=\"accent6\" hlink=\"hlink\" folHlink=\"folHlink\"/>");
+    oWriter.WriteString(arrRTColor[0]->getPClrMap());
 
     if (pTheme->m_eType == typeMaster)
     {
         oWriter.WriteString(std::wstring(L"<p:sldLayoutIdLst>"));
 
-        for (UINT nIndexLayout = 0; nIndexLayout < arrLayouts.size(); ++nIndexLayout)
+        for (UINT nIndexLayout = 0; nIndexLayout < arrRTLayouts.size(); ++nIndexLayout)
         {
             oWriter.WriteString(L"<p:sldLayoutId id=\"" + std::to_wstring(0x80000000 + nIndexTheme + nStartLayout + nIndexLayout) + L"\" r:id=\"rId" + std::to_wstring(nIndexLayout + 1) + L"\"/>");
         }
@@ -893,23 +899,16 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
 
 
     // TODO insert roundtrip master
-    if (pTheme->m_eType == typeMaster)
+    if (pTheme->m_eType == typeMaster && arrRTMaster.size())
     {
-        oWriter.WriteString(std::wstring(L"<p:txStyles>"));
 
-        oWriter.WriteString(std::wstring(L"<p:titleStyle>"));
-        styleWriter.ConvertStyles(pTheme->m_pStyles[1], oWriter, 9);
-        oWriter.WriteString(std::wstring(L"</p:titleStyle>"));
-
-        oWriter.WriteString(std::wstring(L"<p:bodyStyle>"));
-        styleWriter.ConvertStyles(pTheme->m_pStyles[2], oWriter, 9);
-        oWriter.WriteString(std::wstring(L"</p:bodyStyle>"));
-
-        oWriter.WriteString(std::wstring(L"<p:otherStyle>"));
-        styleWriter.ConvertStyles(pTheme->m_pStyles[3], oWriter, 9);
-        oWriter.WriteString(std::wstring(L"</p:otherStyle>"));
-
-        oWriter.WriteString(std::wstring(L"</p:txStyles>"));
+        RoundTripExtractor extractorMaster(arrRTMaster[0]);
+        auto masterPath = extractorMaster.getOneFile(std::wstring(L"drs") + FILE_SEPARATOR_STR + L"slideMasters" + FILE_SEPARATOR_STR + L"slideMaster1.xml");
+        std::wstring utf8strMaster;
+        NSFile::CFileBinary::ReadAllTextUtf8(masterPath, utf8strMaster);
+        auto txStylesIter = utf8strMaster.find(L"<p:txStyles");
+        if (txStylesIter != (UINT)-1)
+            oWriter.WriteString(utf8strMaster.substr(txStylesIter));
     }
     else if (pTheme->m_eType == typeNotesMaster)
     {

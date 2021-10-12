@@ -355,6 +355,7 @@
     	Module.HEAP8.set(memoryBuffer, pointer);
 		Module["_InitializeFontsBase64"](pointer, memoryBuffer.length);
 		Module["_free"](pointer);
+		delete window["g_fonts_selection_bin"];
 	};
     self["AscViewer"]["Free"] = function(pointer) {
 		Module["_free"](pointer);

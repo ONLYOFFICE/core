@@ -103,6 +103,11 @@ int CFontStream::CreateFromMemory(BYTE* pData, LONG lSize, bool bClear)
     }
     return TRUE;
 }
+void CFontStream::GetMemory(BYTE*& pData, LONG& lSize)
+{
+    pData = m_pData;
+    lSize = m_lSize;
+}
 
 CApplicationFontStreams::CApplicationFontStreams() : NSFonts::IApplicationFontStreams()
 {

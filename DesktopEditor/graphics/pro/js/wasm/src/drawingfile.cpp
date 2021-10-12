@@ -3,6 +3,7 @@
 
 #include "../../../../pro/Graphics.h"
 #include "../../../../../common/Base64.h"
+#include "../../../../../common/File.h"
 #include "drawingfile.h"
 
 #ifdef _WIN32
@@ -15,7 +16,61 @@
 extern "C" {
 #endif
 
-WASM_EXPORT int   GetType   (BYTE* data, LONG size)
+NSFonts::IApplicationFonts* g_applicationFonts = NULL;
+
+WASM_EXPORT void InitializeFontsBin(BYTE* data, int size)
+{
+    if (!g_applicationFonts)
+	{
+		g_applicationFonts = NSFonts::NSApplication::Create();
+		g_applicationFonts->InitializeFromBin(data, (unsigned int)size);
+	}
+}
+
+WASM_EXPORT void InitializeFontsBase64(BYTE* pDataSrc, int nLenSrc)
+{
+    if (!g_applicationFonts)
+	{
+		g_applicationFonts = NSFonts::NSApplication::Create();
+		
+		int nLenDst = NSBase64::Base64DecodeGetRequiredLength(nLenSrc);
+        BYTE* pDataDst = new BYTE[nLenDst];
+
+        if (FALSE == NSBase64::Base64Decode((const char*)pDataSrc, nLenSrc, pDataDst, &nLenDst))
+        {
+            RELEASEARRAYOBJECTS(pDataDst);
+            return;
+        }
+		
+		g_applicationFonts->InitializeFromBin(pDataDst, (unsigned int)nLenDst);
+		RELEASEARRAYOBJECTS(pDataDst);
+	}
+}
+
+WASM_EXPORT void SetFontBinary(char* path, BYTE* data, int size)
+{
+	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+	if (pStorage)
+	{
+		std::string sPathA(path);
+		pStorage->Add(UTF8_TO_U(sPathA), data, size, true);
+	}
+}
+
+WASM_EXPORT int IsFontBinaryExist(char* path)
+{
+	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+	if (pStorage)
+	{
+		std::string sPathA(path);
+		NSFonts::IFontStream* pStream = pStorage->Get(UTF8_TO_U(sPathA));
+		if (pStream)
+			return 1;
+	}
+	return 0;
+}
+
+WASM_EXPORT int GetType(BYTE* data, LONG size)
 {
     // 0 - PDF
     // 1 - DJVU
@@ -30,10 +85,13 @@ WASM_EXPORT int   GetType   (BYTE* data, LONG size)
 }
 WASM_EXPORT CGraphicsFileDrawing* Open(BYTE* data, LONG size)
 {
+	if (!g_applicationFonts)
+		g_applicationFonts = NSFonts::NSApplication::Create();
+		
 	// всегда пересоздаем сторадж
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 	
-    CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing();
+    CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing(g_applicationFonts);
     if (pGraphics->Open(data, size, GetType(data, size)))
         return pGraphics;
     

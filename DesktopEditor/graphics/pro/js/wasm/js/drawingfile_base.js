@@ -87,6 +87,10 @@
 
     //module
 
+    self.drawingFileCurrentPageIndex = -1;
+    self.fontStreams = {};
+    self.drawingFile = null;
+
     function CBinaryReader(data, start, size)
     {
         this.data = data;
@@ -131,6 +135,7 @@
         this.nativeFile = Module["_Open"](_stream, data.length);
         this.stream = _stream;
         this.type = Module["_GetType"](_stream, data.length);
+        self.drawingFile = this;
         return this.getInfo();
     };
     CFile.prototype["getInfo"] = function()
@@ -151,7 +156,8 @@
             this.pages.push({ 
                 "W" : _buffer[_cur++], 
                 "H" : _buffer[_cur++], 
-                "Dpi" : _buffer[_cur++] 
+                "Dpi" : _buffer[_cur++],
+                fonts : []
             });
         }
 
@@ -166,6 +172,7 @@
         if (this.stream > 0)
             Module["_free"](this.stream);
         this.stream = -1;
+        self.drawingFile = null;
     };
 
     CFile.prototype["getPages"] = function()
@@ -175,7 +182,23 @@
 
     CFile.prototype["getPagePixmap"] = function(pageIndex, width, height)
     {
-        return Module["_GetPixmap"](this.nativeFile, pageIndex, width, height);
+        if (this.pages[pageIndex].fonts.length > 0)
+        {
+            // ждем загрузки шрифтов для этой страницы
+            return null;
+        }
+
+        self.drawingFileCurrentPageIndex = pageIndex;
+        var retValue = Module["_GetPixmap"](this.nativeFile, pageIndex, width, height);
+        self.drawingFileCurrentPageIndex = -1;
+		
+		if (this.pages[pageIndex].fonts.length > 0)
+        {
+            // ждем загрузки шрифтов для этой страницы
+            Module["_free"](retValue);
+			retValue = null;
+        }
+        return retValue;
     };
     CFile.prototype["getGlyphs"] = function(pageIndex, width, height)
     {
@@ -323,6 +346,143 @@
         Module["_free"](pointer);
     };
 
-    window["AscViewer"]["CDrawingFile"] = CFile;
+    self["AscViewer"]["CDrawingFile"] = CFile;
+	self["AscViewer"]["InitializeFonts"] = function() {
+		if (!window["g_fonts_selection_bin"])
+			return;
+		var memoryBuffer = window["g_fonts_selection_bin"].toUtf8();
+		var pointer = Module["_malloc"](memoryBuffer.length);
+    	Module.HEAP8.set(memoryBuffer, pointer);
+		Module["_InitializeFontsBase64"](pointer, memoryBuffer.length);
+		Module["_free"](pointer);
+		delete window["g_fonts_selection_bin"];
+	};
+    self["AscViewer"]["Free"] = function(pointer) {
+		Module["_free"](pointer);
+	};
+	
+	function addToArrayAsDictionary(arr, value)
+	{
+		var isFound = false;
+		for (var i = 0, len = arr.length; i < len; i++)
+		{
+			if (arr[i] == value)
+			{
+				isFound = true;
+				break;
+			}
+		}
+		if (!isFound)
+			arr.push(value);
+		return isFound;
+	}
+
+    self["AscViewer"]["CheckStreamId"] = function(data, status) {
+		var lenArray = new Int32Array(Module["HEAP8"].buffer, data, 4);
+        var len = lenArray[0];
+        len -= 4;
+
+        var buffer = new Uint8Array(Module["HEAP8"].buffer, data + 4, len);
+        var reader = new CBinaryReader(buffer, 0, len);
+
+        var name = reader.readString();
+        var style = 0;
+        if (reader.readInt() != 0)
+            style |= AscFonts.FontStyle.FontStyleBold;
+        if (reader.readInt() != 0)
+            style |= AscFonts.FontStyle.FontStyleItalic;
+
+        var info = AscFonts.g_fontApplication.GetFontInfo(name, style);
+        var fontId = info.GetFontID(AscCommon.g_font_loader, style);
+        var file = fontId.file;
+
+        if (file.Status == 0)
+        {
+            // шрифт загружен.
+            fontToMemory(file, true);
+        }
+        else
+        {
+            self.fontStreams[file.Id] = self.fontStreams[file.Id] || {};
+            self.fontStreams[file.Id].pages = self.fontStreams[file.Id].pages || [];
+			addToArrayAsDictionary(self.fontStreams[file.Id].pages, self.drawingFileCurrentPageIndex);
+
+            if (self.drawingFile)
+            {
+				addToArrayAsDictionary(self.drawingFile.pages[self.drawingFileCurrentPageIndex].fonts, file.Id);
+            }
+
+            if (file.Status != 2)
+            {
+                // шрифт не грузится - надо загрузить
+                var _t = file;
+                file.LoadFontAsync("../../../../fonts/", function(){
+                    fontToMemory(_t, true);
+
+                    var pages = self.fontStreams[_t.Id].pages;
+                    delete self.fontStreams[_t.Id];
+                    var pagesRepaint = [];
+                    for (var i = 0, len = pages.length; i < len; i++)
+                    {
+                        var pageObj = self.drawingFile.pages[pages[i]];
+                        var fonts = pageObj.fonts;
+                        
+                        for (var j = 0, len_fonts = fonts.length; j < len_fonts; j++)
+                        {
+                            if (fonts[j] == _t.Id)
+                            {
+                                fonts.splice(j, 1);
+                                break;
+                            }
+                        }
+                        if (0 == fonts.length)
+                            pagesRepaint.push(pages[i]);
+                    }
+
+                    if (pagesRepaint.length > 0)
+                    {
+                        if (self.drawingFile.onRepaintPages)
+                            self.drawingFile.onRepaintPages(pagesRepaint);
+                    }
+                });
+            }
+        }
+
+        var memoryBuffer = file.Id.toUtf8();
+        var pointer = Module["_malloc"](memoryBuffer.length);
+    	Module.HEAP8.set(memoryBuffer, pointer);
+        Module["HEAP8"][status] = (file.Status == 0) ? 1 : 0;
+        return pointer;
+	};
+
+    function fontToMemory(file, isCheck)
+    {
+        var idBuffer = file.Id.toUtf8();
+        var idPointer = Module["_malloc"](idBuffer.length);
+        Module["HEAP8"].set(idBuffer, idPointer);
+
+        if (isCheck)
+        {
+            var nExist = Module["_IsFontBinaryExist"](idPointer);
+            if (nExist != 0)
+            {
+                Module["_free"](idPointer);
+                return;
+            }
+        }
+
+		var stream_index =  file.stream_index;
+        var stream = AscFonts.g_fonts_streams[stream_index];
+        var streamPointer = Module["_malloc"](stream.size);
+        Module["HEAP8"].set(stream.data, streamPointer);
+
+        AscFonts.g_fonts_streams[stream_index] = null;
+        AscFonts.g_fonts_streams[stream_index] = streamPointer;
+
+        Module["_SetFontBinary"](idPointer, streamPointer, stream.size);
+
+		Module["_free"](streamPointer);
+        Module["_free"](idPointer);
+    }
 
 })(window, undefined);

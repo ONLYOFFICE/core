@@ -50,6 +50,7 @@ public:
 public:
     virtual int CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse = NULL);
     virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear);
+    virtual void GetMemory(BYTE*& pData, LONG& lSize);
 };
 
 class CApplicationFontStreams : public NSFonts::IApplicationFontStreams

@@ -77,7 +77,8 @@ namespace PdfReader
 		void SaveToFile(std::wstring wsDirPath);
 		bool Find(Ref oRef, TFontEntry *pEntry);
 		bool Find2(Ref oRef, TFontEntry **ppEntry);
-		TFontEntry *Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int nLenGID, unsigned int nLenUnicode);
+        void Remove(Ref oRef);
+        TFontEntry *Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int nLenGID, unsigned int nLenUnicode);
 		void Clear();
 		bool GetFont(Ref *pRef, TFontEntry *pEntry);
 	private:

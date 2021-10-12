@@ -55,6 +55,7 @@
 #include "lib/xpdf/Link.h"
 #include "lib/xpdf/TextOutputDev.h"
 #include "lib/goo/GList.h"
+#include "../DesktopEditor/common/StringExt.h"
 #endif
 
 namespace PdfReader
@@ -509,69 +510,12 @@ return 0;
 //		return wsXml;
         return L"";
 	}
-#ifdef BUILDING_WASM_MODULE
-    std::string GetUtf8StringFromUnicode_4bytes(Unicode* pUnicodes, LONG lCount)
-    {
-        BYTE* pData = new BYTE[6 * lCount + 3 + 1];
-        BYTE* pCodesCur = pData;
-        LONG lOutputCount = 0;
-
-        for (int i = 0; i < lCount; i++)
-        {
-            unsigned int code = *pUnicodes++;
-
-            if (code < 0x80)
-            {
-                *pCodesCur++ = (BYTE)code;
-            }
-            else if (code < 0x0800)
-            {
-                *pCodesCur++ = 0xC0 | (code >> 6);
-                *pCodesCur++ = 0x80 | (code & 0x3F);
-            }
-            else if (code < 0x10000)
-            {
-                *pCodesCur++ = 0xE0 | (code >> 12);
-                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
-                *pCodesCur++ = 0x80 | (code & 0x3F);
-            }
-            else if (code < 0x1FFFFF)
-            {
-                *pCodesCur++ = 0xF0 | (code >> 18);
-                *pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
-                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
-                *pCodesCur++ = 0x80 | (code & 0x3F);
-            }
-            else if (code < 0x3FFFFFF)
-            {
-                *pCodesCur++ = 0xF8 | (code >> 24);
-                *pCodesCur++ = 0x80 | (code >> 18 & 0x3F);
-                *pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
-                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
-                *pCodesCur++ = 0x80 | (code & 0x3F);
-            }
-            else if (code < 0x7FFFFFFF)
-            {
-                *pCodesCur++ = 0xFC | (code >> 30);
-                *pCodesCur++ = 0x80 | (code >> 24 & 0x3F);
-                *pCodesCur++ = 0x80 | (code >> 18 & 0x3F);
-                *pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
-                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
-                *pCodesCur++ = 0x80 | (code & 0x3F);
-            }
-        }
-
-        lOutputCount = (LONG)(pCodesCur - pData);
-        *pCodesCur++ = 0;
-        std::string s((char*)pData, lOutputCount);
-        RELEASEARRAYOBJECTS(pData);
-        return s;
-    }
+#ifdef BUILDING_WASM_MODULE    
     void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
     {
         int nLengthTitle = pOutlineItem->getTitleLength();
         Unicode* pTitle = pOutlineItem->getTitle();
-        std::string sTitle = GetUtf8StringFromUnicode_4bytes(pTitle, nLengthTitle);
+        std::string sTitle = NSStringExt::CConverter::GetUtf8FromUTF32(pTitle, nLengthTitle);
 
         LinkAction* pLinkAction = pOutlineItem->getAction();
         if (!pLinkAction)

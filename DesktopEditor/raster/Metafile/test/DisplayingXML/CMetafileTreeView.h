@@ -10,7 +10,7 @@ class CMetafileTreeView : public QTreeView
 {
         Q_OBJECT
     public:
-        explicit CMetafileTreeView(QWidget *parent);
+        explicit CMetafileTreeView(QWidget *parent = NULL);
         virtual ~CMetafileTreeView();
 
         void SetMetafile(const std::wstring& wsXmlFilePath);

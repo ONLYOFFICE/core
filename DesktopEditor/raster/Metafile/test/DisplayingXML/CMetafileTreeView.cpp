@@ -215,5 +215,7 @@ void CMetafileTreeView::mouseReleaseEvent(QMouseEvent *event)
 {
         if (event->button() == Qt::RightButton)
                 emit clickedRightMouseButton(event->pos());
+        else
+                QTreeView::mouseReleaseEvent(event);
 }
 

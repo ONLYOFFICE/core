@@ -12,8 +12,6 @@
 #include "../../../../raster/BgraFrame.h"
 #include "../../../../common/Directory.h"
 
-#include "CRecordCreator.h"
-
 #include "CStatisticsWidget.h"
 
 #include "CMetafileTreeView.h"
@@ -31,8 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
         ui->treeView->setItemDelegate(pTextEditDelegate);
 
         ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
-
-        connect(ui->treeView, &CMetafileTreeView::clickedRightMouseButton, this, &MainWindow::slotRBClickedOnMetafileTree);
+        ui->treeView->SetMainWindow(this);
 
         QFont *pFont = new QFont;
         pFont->setPointSize(13);
@@ -59,17 +56,6 @@ bool MainWindow::ReadXmlFile(const std::wstring& wsPathToXmlFile)
         ui->treeView->SetMetafile(wsPathToXmlFile);
 
         return true;
-}
-
-void MainWindow::InsertRecord(QStandardItem *pParentItem, unsigned int unRow, bool bAfterRecord)
-{
-        CRecordCreator *pRecordCreator = new CRecordCreator();
-        pRecordCreator->SetMainWindow(this);
-
-        QStandardItem *pItem = pRecordCreator->CreateRecord();
-
-        if (NULL != pItem)
-                pParentItem->insertRow(unRow + ((bAfterRecord) ? 0 : 1), pItem);
 }
 
 bool MainWindow::ConvertToRaster(const std::wstring& wsPathToFile, bool bWithXmlFile)
@@ -179,7 +165,7 @@ void MainWindow::Clear()
                 ui->graphicsView->setScene(NULL);
         }
 
-        ui->treeView->Clear();
+        ui->treeView->ClearTree();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *pResizeEvent)
@@ -193,7 +179,7 @@ void MainWindow::resizeEvent(QResizeEvent *pResizeEvent)
 
 void MainWindow::on_expandButton_clicked()
 {
-        if (ui->treeView->IsClear())
+        if (ui->treeView->IsClearTree())
                 return;
 
         if (ui->expandButton->text() == "Expand All")
@@ -211,7 +197,7 @@ void MainWindow::on_expandButton_clicked()
 
 void MainWindow::on_ModButton_clicked()
 {
-        if (ui->treeView->IsClear())
+        if (ui->treeView->IsClearTree())
                 return;
 
         if (ui->ModButton->text() == "Use a light Mod")
@@ -262,54 +248,6 @@ void MainWindow::on_actionSave_XML_as_triggered()
 {
         QString sSaveFilePath = QFileDialog::getSaveFileName(this, tr("Save file"), "", tr("XML file (*.xml)"));
         SaveInXmlFile(sSaveFilePath.toStdWString());
-}
-
-void MainWindow::slotRBClickedOnMetafileTree(QPoint oPoint)
-{
-        if (NULL == ui->treeView->model())
-                return;
-
-        QModelIndex oModelIndex = ui->treeView->indexAt(oPoint);
-
-        if (!oModelIndex.isValid())
-                return;
-
-        QStandardItem *pStandardItem = static_cast<QStandardItem*>(oModelIndex.internalPointer());
-        QStandardItem *pItem = pStandardItem->child(oModelIndex.row(), oModelIndex.column());
-
-        QMenu oContextMenu;
-
-        oContextMenu.addAction("Edit", this, [this, pItem](){ui->treeView->EditItem(pItem);});
-
-        if (true == pItem->data(3))
-        {
-                oContextMenu.addAction("Insert before", this, [this, pStandardItem, oModelIndex](){InsertRecord(pStandardItem, oModelIndex.row());});
-                oContextMenu.addAction("Insert after", this,  [this, pStandardItem, oModelIndex](){InsertRecord(pStandardItem, oModelIndex.row(), false);});
-        }
-
-        oContextMenu.exec(ui->treeView->mapToGlobal(oPoint));
-}
-
-void MainWindow::slotShowContextMenu(QPoint oPos)
-{
-        if (NULL == ui->treeView->model())
-                return;
-
-        QModelIndex index =  ui->treeView->selectionModel()->currentIndex();
-        QStandardItem *pStandardItem = static_cast<QStandardItem*>(index.internalPointer());
-        QStandardItem *pItem = pStandardItem->child(index.row(), index.column());
-
-        QMenu oContextMenu;
-
-        oContextMenu.addAction("Edit", this, [this, pItem](){ui->treeView->EditItem(pItem);});
-
-        if (true == pItem->data(3))
-        {
-                oContextMenu.addAction("Insert before", this, [this, pStandardItem, index](){InsertRecord(pStandardItem, index.row());});
-                oContextMenu.addAction("Insert after", this,  [this, pStandardItem, index](){InsertRecord(pStandardItem, index.row(), false);});
-        }
-
-        oContextMenu.exec(ui->treeView->mapToGlobal(oPos));
 }
 
 void MainWindow::on_actionSave_EMF_as_triggered()

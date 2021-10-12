@@ -71,6 +71,25 @@ void CTextEditDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
         else
                 qsValue = index.data(0).toString();
 
+        if (index.data(5) == true)
+        {
+                QRect oRect(option.rect);
+
+                oRect.setTop(oRect.top() + 3);
+                oRect.setBottom(oRect.bottom() - 3);
+
+                QPen oOldPen = painter->pen();
+
+                QPen oNewPen = oOldPen;
+                oNewPen.setStyle(Qt::DashLine);
+
+                painter->setPen(oNewPen);
+
+                painter->drawRect(oRect);
+
+                painter->setPen(oOldPen);
+        }
+
         if (bLightMode)
                 painter->drawText(option.rect, qsValue);
         else

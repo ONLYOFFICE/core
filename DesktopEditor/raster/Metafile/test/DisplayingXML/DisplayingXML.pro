@@ -14,6 +14,7 @@ SOURCES += \
     CItemWidget.cpp \
     CMapModel.cpp \
     CMetafileTreeView.cpp \
+    CMetafileTreeWidget.cpp \
     CRecordCreator.cpp \
     CStatisticsWidget.cpp \
     CTextEditDelegate.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     CItemWidget.h \
     CMapModel.h \
     CMetafileTreeView.h \
+    CMetafileTreeWidget.h \
     CRecordCreator.h \
     CStatisticsWidget.h \
     CTextEditDelegate.h \

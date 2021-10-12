@@ -46,7 +46,7 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="CMetafileTreeView" name="treeView">
+        <widget class="CMetafileTreeWidget" name="treeView">
          <property name="inputMethodHints">
           <set>Qt::ImhNone</set>
          </property>
@@ -177,9 +177,9 @@
    <header location="global">CCustomView.h</header>
   </customwidget>
   <customwidget>
-   <class>CMetafileTreeView</class>
+   <class>CMetafileTreeWidget</class>
    <extends>QTreeView</extends>
-   <header>CMetafileTreeView.h</header>
+   <header location="global">CMetafileTreeWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

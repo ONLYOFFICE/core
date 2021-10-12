@@ -29,32 +29,54 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "TABLESTYLES.h"
+#include "../Biff12_records/CommonRecords.h"
+#include "../Biff12_unions/TABLESTYLE.h"
+#include "../Biff12_records/EndTableStyles.h"
 
 namespace XLSB
 {
 
-    class CELLXFS: public CompositeObject
+    TABLESTYLES::TABLESTYLES()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(CELLXFS)
-    public:
-        CELLXFS();
-        virtual ~CELLXFS();
+    }
 
-        BaseObjectPtr clone();
+    TABLESTYLES::~TABLESTYLES()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr TABLESTYLES::clone()
+    {
+        return BaseObjectPtr(new TABLESTYLES(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginCellXFs;
-        std::vector<BaseObjectPtr>	m_arBrtXF;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndCellXFs;
+    //TABLESTYLES = BrtBeginTableStyles *TABLESTYLE BrtEndTableStyles
+    const bool TABLESTYLES::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginTableStyles>())
+        {
+            m_BrtBeginTableStyles = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        int count = proc.repeated<TABLESTYLE>(0, 0);
+
+        while(count > 0)
+        {
+            m_arTABLESTYLE.insert(m_arTABLESTYLE.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndTableStyles>())
+        {
+            m_BrtEndTableStyles = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginTableStyles && !m_arTABLESTYLE.empty() && m_BrtEndTableStyles;
+    }
 
 } // namespace XLSB
 

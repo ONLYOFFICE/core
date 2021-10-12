@@ -43,6 +43,8 @@
 #include "Biff12_unions/CELLXFS.h"
 #include "Biff12_unions/STYLES.h"
 #include "Biff12_unions/DXFS.h"
+#include "Biff12_unions/TABLESTYLES.h"
+#include "Biff12_unions/COLORPALETTE.h"
 
 namespace XLSB
 {
@@ -186,6 +188,24 @@ const bool StylesStream::loadContent(BinProcessor& proc)
                 if (proc.optional<DXFS>())
                 {
                     m_DXFS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginTableStyles:
+            {
+                if (proc.optional<TABLESTYLES>())
+                {
+                    m_TABLESTYLES = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginColorPalette:
+            {
+                if (proc.optional<COLORPALETTE>())
+                {
+                    m_COLORPALETTE = elements_.back();
                     elements_.pop_back();
                 }
             }break;

@@ -40,7 +40,7 @@ namespace XLSB
 
     class STYLES: public CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BORDERS)
+        BASE_OBJECT_DEFINE_CLASS_NAME(STYLES)
     public:
         STYLES();
         virtual ~STYLES();

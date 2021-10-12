@@ -29,32 +29,55 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "MRUCOLORS.h"
+#include "../Biff12_records/BeginMRUColors.h"
+#include "../Biff12_records/MRUColor.h"
+#include "../Biff12_records/EndMRUColors.h"
 
 namespace XLSB
 {
 
-    class CELLXFS: public CompositeObject
+    MRUCOLORS::MRUCOLORS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(CELLXFS)
-    public:
-        CELLXFS();
-        virtual ~CELLXFS();
+    }
 
-        BaseObjectPtr clone();
+    MRUCOLORS::~MRUCOLORS()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr MRUCOLORS::clone()
+    {
+        return BaseObjectPtr(new MRUCOLORS(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginCellXFs;
-        std::vector<BaseObjectPtr>	m_arBrtXF;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndCellXFs;
+    //MRUCOLORS = BrtBeginMRUColors 1*10BrtMRUColor BrtEndMRUColors
+    const bool MRUCOLORS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginMRUColors>())
+        {
+            m_BrtBeginMRUColors = elements_.back();
+            elements_.pop_back();
+        }
+        else return false;
 
-    };
+        int count = proc.repeated<MRUColor>(1, 10);
+
+        while(count > 0)
+        {
+            m_arMRUColor.insert(m_arMRUColor.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndMRUColors>())
+        {
+            m_BrtEndMRUColors = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginMRUColors && !m_arMRUColor.empty() && m_BrtEndMRUColors;
+    }
 
 } // namespace XLSB
 

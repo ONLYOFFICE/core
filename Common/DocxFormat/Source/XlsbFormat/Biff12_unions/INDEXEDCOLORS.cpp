@@ -29,32 +29,54 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "INDEXEDCOLORS.h"
+#include "../Biff12_records/BeginIndexedColors.h"
+#include "../Biff12_records/IndexedColor.h"
+#include "../Biff12_records/EndIndexedColors.h"
 
 namespace XLSB
 {
 
-    class CELLXFS: public CompositeObject
+    INDEXEDCOLORS::INDEXEDCOLORS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(CELLXFS)
-    public:
-        CELLXFS();
-        virtual ~CELLXFS();
+    }
 
-        BaseObjectPtr clone();
+    INDEXEDCOLORS::~INDEXEDCOLORS()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr INDEXEDCOLORS::clone()
+    {
+        return BaseObjectPtr(new INDEXEDCOLORS(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginCellXFs;
-        std::vector<BaseObjectPtr>	m_arBrtXF;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndCellXFs;
+    //INDEXEDCOLORS = BrtIndexedColors 64BrtIndexedColor BrtEndIndexedColors
+    const bool INDEXEDCOLORS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginIndexedColors>())
+        {
+            m_BrtBeginIndexedColors = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        int count = proc.repeated<IndexedColor>(64, 64);
+
+        while(count > 0)
+        {
+            m_arIndexedColor.insert(m_arIndexedColor.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndIndexedColors>())
+        {
+            m_BrtEndIndexedColors = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginIndexedColors && !m_arIndexedColor.empty() && m_BrtEndIndexedColors;
+    }
 
 } // namespace XLSB
 

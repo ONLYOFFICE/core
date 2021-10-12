@@ -38,21 +38,20 @@ using namespace XLS;
 namespace XLSB
 {
 
-    class CELLXFS: public CompositeObject
+    class INDEXEDCOLORS: public CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(CELLXFS)
+        BASE_OBJECT_DEFINE_CLASS_NAME(INDEXEDCOLORS)
     public:
-        CELLXFS();
-        virtual ~CELLXFS();
+        INDEXEDCOLORS();
+        virtual ~INDEXEDCOLORS();
 
         BaseObjectPtr clone();
 
         virtual const bool loadContent(BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginCellXFs;
-        std::vector<BaseObjectPtr>	m_arBrtXF;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndCellXFs;
+        BaseObjectPtr               m_BrtBeginIndexedColors;
+        std::vector<BaseObjectPtr>  m_arIndexedColor;
+        BaseObjectPtr               m_BrtEndIndexedColors;
 
     };
 

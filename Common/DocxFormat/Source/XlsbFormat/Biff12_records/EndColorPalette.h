@@ -31,28 +31,25 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../../XlsxFormat/WritingElement.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
-
-    class CELLXFS: public CompositeObject
+    // Logical representation of BrtEndColorPalette record in BIFF12
+    class EndColorPalette: public BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(CELLXFS)
-    public:
-        CELLXFS();
-        virtual ~CELLXFS();
+            BIFF_RECORD_DEFINE_TYPE_INFO(EndColorPalette)
+            BASE_OBJECT_DEFINE_CLASS_NAME(EndColorPalette)
+        public:
+            EndColorPalette();
+            virtual ~EndColorPalette();
 
-        BaseObjectPtr clone();
+            BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
-
-        BaseObjectPtr               m_BrtBeginCellXFs;
-        std::vector<BaseObjectPtr>	m_arBrtXF;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndCellXFs;
+            void readFields(CFRecord& record);
 
     };
 

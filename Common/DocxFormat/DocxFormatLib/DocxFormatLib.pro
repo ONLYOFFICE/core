@@ -207,6 +207,16 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndStyles.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginDXFs.cpp \
     ../Source/XlsbFormat/Biff12_records/EndDXFs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndTableStyles.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndTableStyle.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginColorPalette.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndColorPalette.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginIndexedColors.cpp \
+    ../Source/XlsbFormat/Biff12_records/IndexedColor.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndIndexedColors.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginMRUColors.cpp \
+    ../Source/XlsbFormat/Biff12_records/MRUColor.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndMRUColors.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -282,6 +292,11 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/DXFS.cpp \
     ../Source/XlsbFormat/Biff12_unions/DXF.cpp \
     ../Source/XlsbFormat/Biff12_unions/FRTDXF.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TABLESTYLES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TABLESTYLE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/MRUCOLORS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/INDEXEDCOLORS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/COLORPALETTE.cpp \
 }
 
 
@@ -579,6 +594,16 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/EndStyles.h \
     ../Source/XlsbFormat/Biff12_records/BeginDXFs.h \
     ../Source/XlsbFormat/Biff12_records/EndDXFs.h \
+    ../Source/XlsbFormat/Biff12_records/EndTableStyles.h \
+    ../Source/XlsbFormat/Biff12_records/EndTableStyle.h \
+    ../Source/XlsbFormat/Biff12_records/BeginColorPalette.h \
+    ../Source/XlsbFormat/Biff12_records/EndColorPalette.h \
+    ../Source/XlsbFormat/Biff12_records/BeginIndexedColors.h \
+    ../Source/XlsbFormat/Biff12_records/IndexedColor.h \
+    ../Source/XlsbFormat/Biff12_records/EndIndexedColors.h \
+    ../Source/XlsbFormat/Biff12_records/BeginMRUColors.h \
+    ../Source/XlsbFormat/Biff12_records/MRUColor.h \
+    ../Source/XlsbFormat/Biff12_records/EndMRUColors.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
@@ -657,3 +682,8 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/DXFS.h \
     ../Source/XlsbFormat/Biff12_unions/DXF.h \
     ../Source/XlsbFormat/Biff12_unions/FRTDXF.h \
+    ../Source/XlsbFormat/Biff12_unions/TABLESTYLES.h \
+    ../Source/XlsbFormat/Biff12_unions/TABLESTYLE.h \
+    ../Source/XlsbFormat/Biff12_unions/MRUCOLORS.h \
+    ../Source/XlsbFormat/Biff12_unions/INDEXEDCOLORS.h \
+    ../Source/XlsbFormat/Biff12_unions/COLORPALETTE.h \

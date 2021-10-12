@@ -38,21 +38,21 @@ using namespace XLS;
 namespace XLSB
 {
 
-    class CELLXFS: public CompositeObject
+    class TABLESTYLE: public CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(CELLXFS)
+        BASE_OBJECT_DEFINE_CLASS_NAME(TABLESTYLE)
     public:
-        CELLXFS();
-        virtual ~CELLXFS();
+        TABLESTYLE();
+        virtual ~TABLESTYLE();
 
         BaseObjectPtr clone();
 
         virtual const bool loadContent(BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginCellXFs;
-        std::vector<BaseObjectPtr>	m_arBrtXF;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndCellXFs;
+        BaseObjectPtr               m_BrtBeginTableStyle;
+        BaseObjectPtr               m_ACUID;
+        std::vector<BaseObjectPtr>	m_arBrtTableStyleElement;
+        BaseObjectPtr               m_BrtEndTableStyle;
 
     };
 

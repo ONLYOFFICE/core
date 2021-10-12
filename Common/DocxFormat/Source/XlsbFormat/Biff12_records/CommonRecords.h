@@ -50,8 +50,10 @@
 #include <Logic/Biff_records/Font.h>
 #include <Logic/Biff_records/XF.h>
 #include <Logic/Biff_records/DXF.h>
+#include <Logic/Biff_records/TableStyles.h>
+#include <Logic/Biff_records/TableStyle.h>
+#include <Logic/Biff_records/TableStyleElement.h>
 #include "../../XlsxFormat/WritingElement.h"
-
 
 
 namespace XLSB
@@ -251,6 +253,36 @@ namespace XLSB
         BaseObjectPtr clone() override
         {
             return BaseObjectPtr(new DXF(*this));
+        }
+    };
+
+    class BeginTableStyles: public XLS::TableStyles
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(BeginTableStyles)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new BeginTableStyles(*this));
+        }
+    };
+
+    class BeginTableStyle: public XLS::TableStyle
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(BeginTableStyle)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new BeginTableStyle(*this));
+        }
+    };
+
+    class TableStyleElement: public XLS::TableStyleElement
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(TableStyleElement)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new TableStyleElement(*this));
         }
     };
 

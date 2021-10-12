@@ -29,32 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "MRUColor.h"
 
 namespace XLSB
 {
 
-    class CELLXFS: public CompositeObject
+    MRUColor::MRUColor()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(CELLXFS)
-    public:
-        CELLXFS();
-        virtual ~CELLXFS();
+    }
 
-        BaseObjectPtr clone();
+    MRUColor::~MRUColor()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr MRUColor::clone()
+    {
+        return BaseObjectPtr(new MRUColor(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginCellXFs;
-        std::vector<BaseObjectPtr>	m_arBrtXF;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndCellXFs;
-
-    };
+    void MRUColor::readFields(CFRecord& record)
+    {
+        colorMRU.readFields(record);
+    }
 
 } // namespace XLSB
 

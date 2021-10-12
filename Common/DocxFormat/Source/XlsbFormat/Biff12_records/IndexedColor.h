@@ -31,29 +31,29 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../../XlsxFormat/WritingElement.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
-
-    class CELLXFS: public CompositeObject
+    // Logical representation of BrtIndexedColor record in BIFF12
+    class IndexedColor: public BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(CELLXFS)
-    public:
-        CELLXFS();
-        virtual ~CELLXFS();
+            BIFF_RECORD_DEFINE_TYPE_INFO(IndexedColor)
+            BASE_OBJECT_DEFINE_CLASS_NAME(IndexedColor)
+        public:
+            IndexedColor();
+            virtual ~IndexedColor();
 
-        BaseObjectPtr clone();
+            BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+            void readFields(CFRecord& record);
 
-        BaseObjectPtr               m_BrtBeginCellXFs;
-        std::vector<BaseObjectPtr>	m_arBrtXF;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndCellXFs;
-
+            BYTE    bRed;
+            BYTE    bGreen;
+            BYTE    bBlue;
     };
 
 } // namespace XLSB

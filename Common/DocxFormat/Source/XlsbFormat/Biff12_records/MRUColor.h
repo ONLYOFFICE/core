@@ -31,29 +31,30 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../../XlsxFormat/WritingElement.h"
+#include "Color.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
-
-    class CELLXFS: public CompositeObject
+    // Logical representation of BrtMRUColor record in BIFF12
+    class MRUColor: public BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(CELLXFS)
-    public:
-        CELLXFS();
-        virtual ~CELLXFS();
+            BIFF_RECORD_DEFINE_TYPE_INFO(MRUColor)
+            BASE_OBJECT_DEFINE_CLASS_NAME(MRUColor)
+        public:
+            MRUColor();
+            virtual ~MRUColor();
 
-        BaseObjectPtr clone();
+            BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+            void readFields(CFRecord& record);
 
-        BaseObjectPtr               m_BrtBeginCellXFs;
-        std::vector<BaseObjectPtr>	m_arBrtXF;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndCellXFs;
+            //static const ElementType	type = typeMRUColor;
 
+            Color       colorMRU;
     };
 
 } // namespace XLSB

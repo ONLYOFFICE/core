@@ -29,32 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "BeginColorPalette.h"
 
 namespace XLSB
 {
 
-    class CELLXFS: public CompositeObject
+    BeginColorPalette::BeginColorPalette()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(CELLXFS)
-    public:
-        CELLXFS();
-        virtual ~CELLXFS();
+    }
 
-        BaseObjectPtr clone();
+    BeginColorPalette::~BeginColorPalette()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr BeginColorPalette::clone()
+    {
+        return BaseObjectPtr(new BeginColorPalette(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginCellXFs;
-        std::vector<BaseObjectPtr>	m_arBrtXF;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndCellXFs;
-
-    };
+    void BeginColorPalette::readFields(CFRecord& record)
+    {
+        // No data in this record
+    }
 
 } // namespace XLSB
 

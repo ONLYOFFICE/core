@@ -40,7 +40,7 @@ namespace XLSB
 
     class uDXF: public CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BORDERS)
+        BASE_OBJECT_DEFINE_CLASS_NAME(uDXF)
     public:
         uDXF();
         virtual ~uDXF();

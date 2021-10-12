@@ -73,6 +73,8 @@ namespace XLSB
         BaseObjectPtr               m_CELLXFS;
         BaseObjectPtr               m_STYLES;
         BaseObjectPtr               m_DXFS;
+        BaseObjectPtr               m_TABLESTYLES;
+        BaseObjectPtr               m_COLORPALETTE;
 
         unsigned short              code_page_;
         GlobalWorkbookInfoPtr       global_info_;

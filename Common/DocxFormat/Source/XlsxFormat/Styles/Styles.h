@@ -230,6 +230,12 @@ namespace OOX
                     if (stylesStream->m_DXFS != nullptr)
                         m_oDxfs = static_cast<XLSB::DXFS*>(stylesStream->m_DXFS.get())->m_aruDXF;
 
+                    if (stylesStream->m_TABLESTYLES != nullptr)
+                        m_oTableStyles = stylesStream->m_TABLESTYLES;
+
+                    if (stylesStream->m_COLORPALETTE != nullptr)
+                        m_oColors = stylesStream->m_COLORPALETTE;
+
                 }
             }
 

@@ -29,32 +29,58 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "COLORPALETTE.h"
+#include "../Biff12_records/BeginColorPalette.h"
+#include "../Biff12_unions/INDEXEDCOLORS.h"
+#include "../Biff12_unions/MRUCOLORS.h"
+#include "../Biff12_records/EndColorPalette.h"
 
 namespace XLSB
 {
 
-    class CELLXFS: public CompositeObject
+    COLORPALETTE::COLORPALETTE()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(CELLXFS)
-    public:
-        CELLXFS();
-        virtual ~CELLXFS();
+    }
 
-        BaseObjectPtr clone();
+    COLORPALETTE::~COLORPALETTE()
+    {
+    }
 
-        virtual const bool loadContent(BinProcessor& proc);
+    BaseObjectPtr COLORPALETTE::clone()
+    {
+        return BaseObjectPtr(new COLORPALETTE(*this));
+    }
 
-        BaseObjectPtr               m_BrtBeginCellXFs;
-        std::vector<BaseObjectPtr>	m_arBrtXF;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndCellXFs;
+    //COLORPALETTE = BrtBeginColorPalette [INDEXEDCOLORS] [MRUCOLORS] BrtEndColorPalette
+    const bool COLORPALETTE::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginColorPalette>())
+        {
+            m_BrtBeginColorPalette = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        if (proc.optional<INDEXEDCOLORS>())
+        {
+            m_INDEXEDCOLORS = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<MRUCOLORS>())
+        {
+            m_MRUCOLORS = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<EndColorPalette>())
+        {
+            m_BrtEndColorPalette = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginColorPalette || m_INDEXEDCOLORS || m_MRUCOLORS || m_BrtEndColorPalette;
+    }
 
 } // namespace XLSB
 

@@ -33,6 +33,8 @@
 
 #include "../CommonInclude.h"
 #include "../../XlsbFormat/Biff12_records/Color.h"
+#include "../../XlsbFormat/Biff12_records/IndexedColor.h"
+#include "../../XlsbFormat/Biff12_records/MRUColor.h"
 
 namespace NSBinPptxRW
 {
@@ -48,6 +50,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRgbColor)
+            WritingElement_XlsbConstructors(CRgbColor)
 			CRgbColor()
 			{
 			}
@@ -64,6 +67,14 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::IndexedColor*>(obj.get());
+                if(ptr != nullptr)
+                {
+                     m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue);
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_RgbColor;
@@ -90,6 +101,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CIndexedColors)
+            WritingElement_XlsbVectorConstructors(CIndexedColors)
 			CIndexedColors()
 			{
 			}
@@ -127,6 +139,18 @@ namespace OOX
 					}
 				}
 			}
+
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                int index = 0;
+
+                for(auto &indexedColor : obj)
+                {
+                    CRgbColor *pRgbColor = new CRgbColor(indexedColor);
+                    mapIndexedColors.insert(std::make_pair(index++, pRgbColor));
+                    m_arrItems.push_back(pRgbColor);
+                }
+            }
 
 			virtual EElementType getType () const
 			{
@@ -488,6 +512,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMruColors)
+            WritingElement_XlsbVectorConstructors(CMruColors)
 			CMruColors()
 			{
 			}
@@ -520,7 +545,15 @@ namespace OOX
 						m_arrItems.push_back( new CColor( oReader ));
 				}
 			}
-
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                for(auto &MRUColor : obj)
+                {
+                    auto color = new CColor();
+                    color->fromBin(dynamic_cast<XLS::BaseObject*>(&(static_cast<XLSB::MRUColor*>(MRUColor.get())->colorMRU)));
+                    m_arrItems.push_back(color);
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_MruColors;

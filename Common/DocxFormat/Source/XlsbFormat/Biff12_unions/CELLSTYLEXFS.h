@@ -40,7 +40,7 @@ namespace XLSB
 
     class CELLSTYLEXFS: public CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(BORDERS)
+        BASE_OBJECT_DEFINE_CLASS_NAME(CELLSTYLEXFS)
     public:
         CELLSTYLEXFS();
         virtual ~CELLSTYLEXFS();

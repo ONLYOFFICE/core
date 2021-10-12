@@ -272,6 +272,9 @@ namespace PdfWriter
 		CXref*      m_pXref;
 		CStream*    m_pStream;
 		CFieldBase* m_pField;
+		double      m_dCurX;
+		double      m_dCurY;
+		bool        m_bStart;
 	};
 
 }

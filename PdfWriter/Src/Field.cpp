@@ -1202,14 +1202,32 @@ namespace PdfWriter
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(std::min(1000.0, std::max(0.0, dFontSize)));
 		m_pStream->WriteStr(" Tf\012");
+
+		m_bStart = true;
 	}
 	void CAnnotAppearanceObject::DrawTextLine(const double& dX, const double& dY, const unsigned char* pCodes, const unsigned int& unCount, const double* pShifts, const unsigned int& unShiftsCount)
 	{
 		if (pCodes && pShifts && unShiftsCount > 0 && unShiftsCount == unCount / 2)
 		{
-			m_pStream->WriteReal(dX + pShifts[0]);
+			double _dX = dX + pShifts[0], _dY = dY;
+
+			if (!m_bStart)
+			{
+				_dX -= m_dCurX;
+				_dY -= m_dCurY;
+
+				m_dCurX += _dX;
+				m_dCurY += _dY;
+			}
+			else
+			{
+				m_dCurX = _dX;
+				m_dCurY = _dY;
+			}
+
+			m_pStream->WriteReal(_dX);
 			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(dY);
+			m_pStream->WriteReal(_dY);
 			m_pStream->WriteStr(" Td\012");
 
 			for (unsigned int unIndex = 0; unIndex < unShiftsCount; ++unIndex)
@@ -1231,9 +1249,25 @@ namespace PdfWriter
 		}
 		else
 		{
-			m_pStream->WriteReal(dX);
+			double _dX = dX, _dY = dY;
+
+			if (!m_bStart)
+			{
+				_dX -= m_dCurX;
+				_dY -= m_dCurY;
+
+				m_dCurX += _dX;
+				m_dCurY += _dY;
+			}
+			else
+			{
+				m_dCurX = _dX;
+				m_dCurY = _dY;
+			}
+
+			m_pStream->WriteReal(_dX);
 			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(dY);
+			m_pStream->WriteReal(_dY);
 			m_pStream->WriteStr(" Td\012");
 
 			m_pStream->WriteChar('<');
@@ -1242,6 +1276,8 @@ namespace PdfWriter
 
 			m_pStream->WriteStr(" Tj\012");
 		}
+
+		m_bStart = false;
 	}
 	void CAnnotAppearanceObject::DrawTextLine(const double &dX, const double &dY, const std::wstring& wsText)
 	{

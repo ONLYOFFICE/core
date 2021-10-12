@@ -1560,13 +1560,6 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		double dBaseLine = MM_2_PT(dH - oInfo.GetBaseLineOffset());
 		double dShiftX = MM_2_PT(0.7);
 
-		if (pPr->IsMultiLine())
-		{
-			_dY += MM_2_PT(2.45);
-			//_dB -= MM_2_PT(2.45);
-			//dBaseLine += MM_2_PT(2.15);
-		}
-
 		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX - 0.7), _dY, MM_2_PT(dX + dW + 0.7), _dB));
 
 		pField->SetMaxLen(pPr->GetMaxCharacters());
@@ -1625,7 +1618,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 					ushSpaceCode = pCodes2[unIndex];
 			}
 
-			double dLineHeight = m_pFont->GetLineHeight() / 1000 * dFontSize;
+			double dLineHeight = pFontTT->GetLineHeight() * dFontSize / 1000.0;
 
 			m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, 0);
 			m_oLinesManager.CalculateLines(dFontSize, MM_2_PT(dW));
@@ -1633,15 +1626,22 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 			pField->StartTextAppearance(m_pFont, dFontSize, TRgb(oColor.r, oColor.g, oColor.b), dAlpha);
 
 			unsigned int unLinesCount = m_oLinesManager.GetLinesCount();
-			double dShiftY = dBaseLine;
+			double dLineShiftY = MM_2_PT(dH) - pFontTT->GetLineHeight() * dFontSize / 1000.0 - MM_2_PT(0.7);
 			for (unsigned int unIndex = 0; unIndex < unLinesCount; ++unIndex)
 			{
 				unsigned int unLineStart = m_oLinesManager.GetLineStartPos(unIndex);
+				double dLineShiftX = dShiftX;
+				double dLineWidth = m_oLinesManager.GetLineWidth(unIndex, dFontSize);
+				if (0 == unAlign)
+					dLineShiftX += MM_2_PT(dW) - dLineWidth;
+				else if (2 == unAlign)
+					dLineShiftX += (MM_2_PT(dW) - dLineWidth) / 2;
+
 				int nInLineCount = m_oLinesManager.GetLineEndPos(unIndex) - m_oLinesManager.GetLineStartPos(unIndex);
 				if (nInLineCount > 0)
-					pField->AddLineToTextAppearance(dShiftX, dShiftY, (pCodes + 2 * unLineStart), nInLineCount * 2, pShifts ? pShifts + unLineStart : NULL, unShiftsCount ? nInLineCount : 0);
+					pField->AddLineToTextAppearance(dLineShiftX, dLineShiftY, pCodes + (2 * unLineStart), nInLineCount * 2, pShifts ? (pShifts + unLineStart) : NULL, unShiftsCount ? nInLineCount : 0);
 
-				dShiftY -= dLineHeight;
+				dLineShiftY -= dLineHeight;
 			}
 
 			pField->EndTextAppearance();

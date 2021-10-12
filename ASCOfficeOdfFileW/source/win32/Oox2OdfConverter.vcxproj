@@ -145,6 +145,7 @@
     <ClCompile Include="..\Oox2OdfConverter\ConverterChart.cpp" />
     <ClCompile Include="..\Oox2OdfConverter\ConvertVml.cpp" />
     <ClCompile Include="..\Oox2OdfConverter\DocxConverter.cpp" />
+    <ClCompile Include="..\Oox2OdfConverter\MathConverter.cpp" />
     <ClCompile Include="..\Oox2OdfConverter\PptxConverter.cpp" />
     <ClCompile Include="..\Oox2OdfConverter\XlsxConverter.cpp" />
   </ItemGroup>

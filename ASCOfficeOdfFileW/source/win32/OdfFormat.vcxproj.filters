@@ -252,6 +252,9 @@
     <ClCompile Include="..\OdfFormat\oox_shape_defines.cpp">
       <Filter>odf_shapes_defines</Filter>
     </ClCompile>
+    <ClCompile Include="..\OdfFormat\odf_math_context.cpp">
+      <Filter>odf common</Filter>
+    </ClCompile>
     <ClCompile Include="..\OdfFormat\math_elementaries.cpp">
       <Filter>elements</Filter>
     </ClCompile>
@@ -269,9 +272,6 @@
     </ClCompile>
     <ClCompile Include="..\OdfFormat\math_token_elements.cpp">
       <Filter>elements</Filter>
-    </ClCompile>
-    <ClCompile Include="..\OdfFormat\odf_math_context.cpp">
-      <Filter>odf common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -527,6 +527,9 @@
     <ClInclude Include="..\OdfFormat\Shapes\oox_shapeWordArt.h">
       <Filter>odf_shapes_defines</Filter>
     </ClInclude>
+    <ClInclude Include="..\OdfFormat\odf_math_context.h">
+      <Filter>odf common</Filter>
+    </ClInclude>
     <ClInclude Include="..\OdfFormat\math_elementaries.h">
       <Filter>elements</Filter>
     </ClInclude>
@@ -544,9 +547,6 @@
     </ClInclude>
     <ClInclude Include="..\OdfFormat\math_token_elements.h">
       <Filter>elements</Filter>
-    </ClInclude>
-    <ClInclude Include="..\OdfFormat\odf_math_context.h">
-      <Filter>odf common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

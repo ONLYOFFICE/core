@@ -220,8 +220,8 @@
         var prevY = -1;
         while (reader.isValid())
         {
-            // xps
-            if (this.type == 2)
+            // xps и pdf
+            if (this.type == 2 || this.type == 0)
             {
                 let _fontName = reader.readString();
                 let _fontSize = reader.readDouble();
@@ -248,7 +248,7 @@
                     });
                 }
             }
-            // djvu и pdf
+            // djvu
             else
             {
                 let _Word = reader.readString();

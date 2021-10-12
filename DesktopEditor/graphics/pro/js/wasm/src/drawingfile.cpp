@@ -17,7 +17,6 @@ extern "C" {
 #endif
 
 NSFonts::IApplicationFonts* g_applicationFonts = NULL;
-
 WASM_EXPORT void InitializeFontsBin(BYTE* data, int size)
 {
     if (!g_applicationFonts)
@@ -26,7 +25,6 @@ WASM_EXPORT void InitializeFontsBin(BYTE* data, int size)
 		g_applicationFonts->InitializeFromBin(data, (unsigned int)size);
 	}
 }
-
 WASM_EXPORT void InitializeFontsBase64(BYTE* pDataSrc, int nLenSrc)
 {
     if (!g_applicationFonts)
@@ -46,7 +44,6 @@ WASM_EXPORT void InitializeFontsBase64(BYTE* pDataSrc, int nLenSrc)
 		RELEASEARRAYOBJECTS(pDataDst);
 	}
 }
-
 WASM_EXPORT void SetFontBinary(char* path, BYTE* data, int size)
 {
 	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
@@ -56,7 +53,6 @@ WASM_EXPORT void SetFontBinary(char* path, BYTE* data, int size)
 		pStorage->Add(UTF8_TO_U(sPathA), data, size, true);
 	}
 }
-
 WASM_EXPORT int IsFontBinaryExist(char* path)
 {
 	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
@@ -157,7 +153,7 @@ int main()
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
     NSFile::CFileBinary oFile;
-    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.pdf", &pPdfData, nPdfBytesCount))
+    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test2.pdf", &pPdfData, nPdfBytesCount))
     {
         RELEASEARRAYOBJECTS(pPdfData);
         return 1;
@@ -172,7 +168,7 @@ int main()
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = GetPixmap(test, 2, width, height);
+        res = GetPixmap(test, 0, width, height);
 
     for (int i = 0; i < 100; i++)
         std::cout << (int)res[i] << " ";
@@ -187,7 +183,7 @@ int main()
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
-    BYTE* pLinks = GetLinks(test, 2, width, height);
+    BYTE* pLinks = GetLinks(test, 0, width, height);
     DWORD nLength = GetLength(pLinks);
     DWORD i = 4;
     nLength -= 4;
@@ -232,12 +228,40 @@ int main()
         i += nPathLength;
     }
 
-    BYTE* pGlyphs = GetGlyphs(test, 1, width, height);
+    BYTE* pGlyphs = GetGlyphs(test, 0, width, height);
     nLength = GetLength(pGlyphs);
     i = 4;
     nLength -= 4;
     while (i < nLength)
     {
+        // Как в XPS
+        DWORD nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout << "Font " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
+        i += nPathLength;
+        nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout << "Size " << (double)nPathLength / 100.0 << " ";
+        nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout << "Rotation " << nPathLength * 90 << " ";
+        nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout << "Amount " << nPathLength << std::endl;
+        DWORD nAmount = nPathLength;
+        for (DWORD j = 0; j < nAmount; j++)
+        {
+            nPathLength = GetLength(pGlyphs + i);
+            i += 4;
+            std::cout << "X " << (double)nPathLength / 100.0 << " ";
+            nPathLength = GetLength(pGlyphs + i);
+            i += 4;
+            std::cout << "Y " << (double)nPathLength / 100.0 << " ";
+            nPathLength = GetLength(pGlyphs + i);
+            i += 4;
+            std::cout << "Symbol " << nPathLength << std::endl;
+        }
+        /* Как в DjVu
         DWORD nPathLength = GetLength(pGlyphs + i);
         i += 4;
         std::string oWord = std::string((char*)(pGlyphs + i), nPathLength);
@@ -255,6 +279,7 @@ int main()
         nPathLength = GetLength(pGlyphs + i);
         i += 4;
         std::cout << "H " << (double)nPathLength / 100.0 << std::endl;
+        */
     }
 
     Close(test);

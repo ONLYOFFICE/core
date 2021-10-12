@@ -612,9 +612,36 @@ return 0;
                 TextWord* pWord = pWordList->get(i);
                 if (!pWord)
                     continue;
+                // Как в XPS
+                GString* sFont = pWord->getFontName();
+                double dFontSize = pWord->getFontSize();
+                // rotation, multiple of 90 degrees
+                int rot = pWord->getRotation();
+                int amount = pWord->getLength();
+
+                oRes.WriteString((BYTE*)sFont->getCString(), sFont->getLength());
+                oRes.AddDouble(dFontSize);
+                oRes.AddInt(rot);
+                oRes.AddInt(amount);
+                for (int j = 0; j < amount; j++)
+                {
+                    double x1, y1, x2, y2;
+                    pWord->getCharBBox(j, &x1, &y1, &x2, &y2);
+                    Unicode ch = pWord->getChar(j);
+
+                    // TODO: домножение координат
+                    oRes.AddDouble(x1);
+                    oRes.AddDouble(y1);
+                    oRes.AddInt(ch);
+                }
+
+                /* Как в DjVu
                 GString* sWord = pWord->getText();
                 double x1, y1, x2, y2;
                 pWord->getBBox(&x1, &y1, &x2, &y2);
+                int rot;
+                if (pWord->isRotated())
+                    rot = pWord->getRotation();
 
                 oRes.WriteString((BYTE*)sWord->getCString(), sWord->getLength());
                 // TODO: домножение координат
@@ -622,6 +649,7 @@ return 0;
                 oRes.AddDouble(y1);
                 oRes.AddDouble(x2 - x1);
                 oRes.AddDouble(y2 - y1);
+                */
             }
         }
         RELEASEOBJECT(pWordList);

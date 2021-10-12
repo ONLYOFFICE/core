@@ -892,6 +892,7 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
     switch (type)
     {
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM:		return L".oform";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF:		return L".docxf";
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:		return L".docx";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:		return L".docm";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:		return L".dotx";
@@ -954,7 +955,7 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
     case AVS_OFFICESTUDIO_FILE_IMAGE_PSD:           return L".psd";
     case AVS_OFFICESTUDIO_FILE_IMAGE_ICO:           return L".ico";
 
-    case AVS_OFFICESTUDIO_FILE_CANVAS_WORD:
+	case AVS_OFFICESTUDIO_FILE_CANVAS_WORD:
     case AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET:
     case AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION:	return L".bin";
     case AVS_OFFICESTUDIO_FILE_OTHER_OLD_DOCUMENT:
@@ -973,6 +974,8 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 	if (L".oform" == ext)
 		return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX; //AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM
+	if (L".docxf" == ext)
+		return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX; //AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF
 	if (L".docm" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM;
     if (L".dotx" == ext)

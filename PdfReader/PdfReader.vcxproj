@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{4EA2BD9F-7F41-482B-9BD8-2102C703D912}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>PdfReader</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>../DesktopEditor/cximage/zlib;$(IncludePath)</IncludePath>
+    <LibraryPath>../DesktopEditor/cximage/zlib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;NOMINMAX</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <DisableSpecificWarnings>4267;4018;4244;4005;</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>..\DesktopEditor\agg-2.4\include;..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;NOMINMAX</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\DesktopEditor\agg-2.4\include;..\DesktopEditor\freetype-2.5.2\include;..\DesktopEditor\cximage\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PdfReader.h" />
+    <ClInclude Include="Resources\Fontd050000l.h" />
+    <ClInclude Include="Resources\Fontn019003l.h" />
+    <ClInclude Include="Resources\Fontn019004l.h" />
+    <ClInclude Include="Resources\Fontn019023l.h" />
+    <ClInclude Include="Resources\Fontn019024l.h" />
+    <ClInclude Include="Resources\Fontn021003l.h" />
+    <ClInclude Include="Resources\Fontn021004l.h" />
+    <ClInclude Include="Resources\Fontn021023l.h" />
+    <ClInclude Include="Resources\Fontn021024l.h" />
+    <ClInclude Include="Resources\Fontn022003l.h" />
+    <ClInclude Include="Resources\Fontn022004l.h" />
+    <ClInclude Include="Resources\Fontn022023l.h" />
+    <ClInclude Include="Resources\Fontn022024l.h" />
+    <ClInclude Include="Resources\Fonts050000l.h" />
+    <ClInclude Include="Src\Annot.h" />
+    <ClInclude Include="Src\Array.h" />
+    <ClInclude Include="Src\BuiltinFont.h" />
+    <ClInclude Include="Src\BuiltinFontTables.h" />
+    <ClInclude Include="Src\Catalog.h" />
+    <ClInclude Include="Src\CCITT-Tables.h" />
+    <ClInclude Include="Src\CharCodeToUnicode.h" />
+    <ClInclude Include="Src\CharTypes.h" />
+    <ClInclude Include="Src\CMap.h" />
+    <ClInclude Include="Src\Constants.h" />
+    <ClInclude Include="Src\Decrypt.h" />
+    <ClInclude Include="Src\Dict.h" />
+    <ClInclude Include="Src\EncodingTables.h" />
+    <ClInclude Include="Src\ErrorConstants.h" />
+    <ClInclude Include="Src\ExtractImageOutputDev.h" />
+    <ClInclude Include="Src\File.h" />
+    <ClInclude Include="Src\FontFileBase.h" />
+    <ClInclude Include="Src\FontFileEncodings.h" />
+    <ClInclude Include="Src\FontFileTrueType.h" />
+    <ClInclude Include="Src\FontFileType1.h" />
+    <ClInclude Include="Src\FontFileType1C.h" />
+    <ClInclude Include="Src\Function.h" />
+    <ClInclude Include="Src\GFont.h" />
+    <ClInclude Include="Src\GlobalParams.h" />
+    <ClInclude Include="Src\Graphics.h" />
+    <ClInclude Include="Src\GState.h" />
+    <ClInclude Include="Src\Hash.h" />
+    <ClInclude Include="Src\JArithmeticDecoder.h" />
+    <ClInclude Include="Src\JBIG2Stream.h" />
+    <ClInclude Include="Src\JPXStream.h" />
+    <ClInclude Include="Src\Lexer.h" />
+    <ClInclude Include="Src\Link.h" />
+    <ClInclude Include="Src\List.h" />
+    <ClInclude Include="Src\MemoryUtils.h" />
+    <ClInclude Include="Src\NameToCharCode.h" />
+    <ClInclude Include="Src\NameToUnicodeTable.h" />
+    <ClInclude Include="Src\Object.h" />
+    <ClInclude Include="Src\Outline.h" />
+    <ClInclude Include="Src\OutputDevice.h" />
+    <ClInclude Include="Src\Page.h" />
+    <ClInclude Include="Src\Parser.h" />
+    <ClInclude Include="Src\PDFDoc.h" />
+    <ClInclude Include="Src\PDFDocEncoding.h" />
+    <ClInclude Include="Src\PSLexer.h" />
+    <ClInclude Include="Src\RendererOutputDev.h" />
+    <ClInclude Include="Src\SecurityHandler.h" />
+    <ClInclude Include="Src\Stream.h" />
+    <ClInclude Include="Src\StringExt.h" />
+    <ClInclude Include="Src\UnicodeMap.h" />
+    <ClInclude Include="Src\UnicodeMapTables.h" />
+    <ClInclude Include="Src\UTF8.h" />
+    <ClInclude Include="Src\XmlUtils.h" />
+    <ClInclude Include="Src\XRef.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PdfReader.cpp" />
+    <ClCompile Include="Src\Annot.cpp" />
+    <ClCompile Include="Src\Array.cpp" />
+    <ClCompile Include="Src\Catalog.cpp" />
+    <ClCompile Include="Src\CharCodeToUnicode.cpp" />
+    <ClCompile Include="Src\CMap.cpp" />
+    <ClCompile Include="Src\Decrypt.cpp" />
+    <ClCompile Include="Src\Dict.cpp" />
+    <ClCompile Include="Src\ExtractImageOutputDev.cpp" />
+    <ClCompile Include="Src\FontFileBase.cpp" />
+    <ClCompile Include="Src\FontFileTrueType.cpp" />
+    <ClCompile Include="Src\FontFileType1.cpp" />
+    <ClCompile Include="Src\FontFileType1C.cpp" />
+    <ClCompile Include="Src\Function.cpp" />
+    <ClCompile Include="Src\GFont.cpp" />
+    <ClCompile Include="Src\GlobalParams.cpp" />
+    <ClCompile Include="Src\Graphics.cpp" />
+    <ClCompile Include="Src\GState.cpp" />
+    <ClCompile Include="Src\Hash.cpp" />
+    <ClCompile Include="Src\JArithmeticDecoder.cpp" />
+    <ClCompile Include="Src\JBIG2Stream.cpp" />
+    <ClCompile Include="Src\JPXStream.cpp" />
+    <ClCompile Include="Src\Lexer.cpp" />
+    <ClCompile Include="Src\Link.cpp" />
+    <ClCompile Include="Src\List.cpp" />
+    <ClCompile Include="Src\NameToCharCode.cpp" />
+    <ClCompile Include="Src\Object.cpp" />
+    <ClCompile Include="Src\Outline.cpp" />
+    <ClCompile Include="Src\OutputDevice.cpp" />
+    <ClCompile Include="Src\Page.cpp" />
+    <ClCompile Include="Src\Parser.cpp" />
+    <ClCompile Include="Src\PDFDoc.cpp" />
+    <ClCompile Include="Src\PSLexer.cpp" />
+    <ClCompile Include="Src\RendererOutputDev.cpp" />
+    <ClCompile Include="Src\SecurityHandler.cpp" />
+    <ClCompile Include="Src\Stream.cpp" />
+    <ClCompile Include="Src\StringExt.cpp" />
+    <ClCompile Include="Src\UnicodeMap.cpp" />
+    <ClCompile Include="Src\XRef.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

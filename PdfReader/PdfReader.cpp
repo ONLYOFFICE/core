@@ -586,11 +586,6 @@ return 0;
         oRes.ClearWithoutAttack();
         return bRes;
     }
-    static void outputToCData(void* stream, const char* text, int len)
-    {
-        NSWasm::CData* oRes = (NSWasm::CData*)stream;
-        oRes->WriteString((BYTE*)text, len);
-    }
     BYTE* CPdfReader::GetGlyphs(int nPageIndex, int nRasterW, int nRasterH)
     {
         if (!m_pInternal->m_pPDFDocument)
@@ -598,6 +593,8 @@ return 0;
         nPageIndex++;
         TextOutputControl *pControl = new TextOutputControl();
         pControl->mode = textOutPhysLayout;
+        NSWasm::CData oRes;
+        oRes.SkipLen();
         TextOutputDev* pTextDev = new TextOutputDev(NULL, pControl, gFalse);
         if (!pTextDev->isOk())
         {
@@ -605,15 +602,29 @@ return 0;
             RELEASEOBJECT(pControl);
             return NULL;
         }
+        m_pInternal->m_pPDFDocument->displayPage(pTextDev, nPageIndex, 72.0, 72.0, 0, gFalse, gTrue, gTrue);
 
-        m_pInternal->m_pPDFDocument->displayPage(pTextDev, nPageIndex, 72.0, 72.0, 0, gFalse, gFalse, gTrue);
-        TextPage* pPage = pTextDev->takeText();
-        if (!pPage)
-            return NULL;
+        TextWordList* pWordList = pTextDev->makeWordList();
+        if (pWordList)
+        {
+            for (int i = 0; i < pWordList->getLength(); i++)
+            {
+                TextWord* pWord = pWordList->get(i);
+                if (!pWord)
+                    continue;
+                GString* sWord = pWord->getText();
+                double x1, y1, x2, y2;
+                pWord->getBBox(&x1, &y1, &x2, &y2);
 
-        NSWasm::CData oRes;
-        oRes.SkipLen();
-        pPage->write(&oRes, outputToCData);
+                oRes.WriteString((BYTE*)sWord->getCString(), sWord->getLength());
+                // TODO: домножение координат
+                oRes.AddDouble(x1);
+                oRes.AddDouble(y1);
+                oRes.AddDouble(x2 - x1);
+                oRes.AddDouble(y2 - y1);
+            }
+        }
+        RELEASEOBJECT(pWordList);
         oRes.WriteLen();
 
         RELEASEOBJECT(pTextDev);

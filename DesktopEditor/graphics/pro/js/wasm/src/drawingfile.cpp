@@ -232,7 +232,7 @@ int main()
         i += nPathLength;
     }
 
-    BYTE* pGlyphs = GetGlyphs(test, 0, width, height);
+    BYTE* pGlyphs = GetGlyphs(test, 1, width, height);
     nLength = GetLength(pGlyphs);
     i = 4;
     nLength -= 4;
@@ -240,8 +240,21 @@ int main()
     {
         DWORD nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout <<  std::string((char*)(pGlyphs + i), nPathLength) << " ";
+        std::string oWord = std::string((char*)(pGlyphs + i), nPathLength);
+        std::wcout << L"Word " << UTF8_TO_U(oWord) << L" ";
         i += nPathLength;
+        nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout << "X " << (double)nPathLength / 100.0 << " ";
+        nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout << "Y " << (double)nPathLength / 100.0 << " ";
+        nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout << "W " << (double)nPathLength / 100.0 << " ";
+        nPathLength = GetLength(pGlyphs + i);
+        i += 4;
+        std::cout << "H " << (double)nPathLength / 100.0 << std::endl;
     }
 
     Close(test);

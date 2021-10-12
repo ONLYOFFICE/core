@@ -248,7 +248,7 @@
                     });
                 }
             }
-            // djvu
+            // djvu и pdf
             else
             {
                 let _Word = reader.readString();

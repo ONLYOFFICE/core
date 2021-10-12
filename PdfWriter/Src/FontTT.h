@@ -59,6 +59,10 @@ namespace PdfWriter
 		CFontTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex);
 		~CFontTrueType();
 		unsigned int   GetWidth(unsigned short ushCode);
+		int            GetLineHeight() const
+		{
+			return m_nLineHeight;
+		}
 		EFontType      GetFontType()
 		{
 			return fontTrueType;
@@ -71,13 +75,14 @@ namespace PdfWriter
 
 	private:
 
-		std::wstring                             m_wsFontPath;
-		unsigned int                             m_unFontIndex;
+		std::wstring       m_wsFontPath;
+		unsigned int       m_unFontIndex;
 
-		CFontFileTrueType*                       m_pFontFile;
-		CDictObject*                             m_pFontFileDict;
-		CDictObject*                             m_pFont;
-		CDictObject*                             m_pFontDescriptor;
+		CFontFileTrueType* m_pFontFile;
+		CDictObject*       m_pFontFileDict;
+		CDictObject*       m_pFont;
+		CDictObject*       m_pFontDescriptor;
+		int                m_nLineHeight;
 
 
 		friend class CDocument;

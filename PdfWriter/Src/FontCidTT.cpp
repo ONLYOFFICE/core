@@ -270,11 +270,6 @@ namespace PdfWriter
 
 		return m_vWidths.at(ushCode);
 	}
-	unsigned int CFontCidTrueType::GetLineHeight()
-	{
-		int* pFontBBox = m_pFontFile->GetBBox();
-		return abs(pFontBBox[3] - pFontBBox[1]) / 2048 * 1000; // TODO: Временно, передалть на em
-	}
 	void CFontCidTrueType::BeforeWrite()
 	{
 		if (m_pFontDescriptor)

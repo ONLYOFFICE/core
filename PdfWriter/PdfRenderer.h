@@ -1704,17 +1704,51 @@ private:
 		}
 		unsigned int GetLineStartPos(const int& nLineIndex) const
 		{
-			if (!nLineIndex || nLineIndex >= m_vBreaks.size())
+			if (!nLineIndex || nLineIndex > m_vBreaks.size())
 				return 0;
 
 			return m_vBreaks[nLineIndex - 1];
 		}
 		unsigned int GetLineEndPos(const int& nLineIndex) const
 		{
-			if (nLineIndex >= m_vBreaks.size() - 1)
+			if (nLineIndex >= m_vBreaks.size())
 				return m_unLen;
 
 			return m_vBreaks[nLineIndex];
+		}
+		double GetLineWidth(const int& nLineIndex, const double& dFontSize = 10.0)
+		{
+			if (nLineIndex < 0 || nLineIndex > m_vBreaks.size())
+				return 0;
+
+			unsigned int unStart = GetLineStartPos(nLineIndex);
+			unsigned int unEnd   = GetLineEndPos(nLineIndex);
+
+			double dWidth = 0;
+			double dKoef  = dFontSize / 1000.0;
+
+			while (unStart < unEnd)
+			{
+				if (IsSpace(unStart))
+					unStart++;
+				else
+					break;
+			}
+
+			while (unEnd > unStart && unEnd > 0)
+			{
+				if (IsSpace(unEnd - 1))
+					unEnd--;
+				else
+					break;
+			}
+
+			for (unsigned int unPos = unStart; unPos < unEnd; ++unPos)
+			{
+				dWidth += m_pWidths[unPos] * dKoef;
+			}
+
+			return dWidth;
 		}
 
 

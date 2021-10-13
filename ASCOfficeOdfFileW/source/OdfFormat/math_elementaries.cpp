@@ -75,21 +75,21 @@ void math_mstack::serialize(std::wostream & _Wostream)
 
 
 //----------------------------------------------------------------------------------------------------
-const wchar_t * math_mrow::ns		= L"math";
-const wchar_t * math_mrow::name	= L"mrow";
+const wchar_t * math_msrow::ns	= L"math";
+const wchar_t * math_msrow::name	= L"msrow";
 //----------------------------------------------------------------------------------------------------
 
-void math_mrow::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+void math_msrow::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
 }
 
-void math_mrow::add_child_element(const office_element_ptr & child_element)
+void math_msrow::add_child_element(const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
 
-void math_mrow::serialize(std::wostream & _Wostream)
+void math_msrow::serialize(std::wostream & _Wostream)
 {
 	CP_XML_WRITER(_Wostream)
 	{

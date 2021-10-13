@@ -5,7 +5,7 @@ CONFIG -= qt
 QT -= core gui
 CONFIG += plugin
 
-CORE_ROOT_DIR = $$PWD/../../../core
+CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include(../base.pri)
 

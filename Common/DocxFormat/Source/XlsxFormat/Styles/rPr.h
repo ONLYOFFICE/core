@@ -46,6 +46,8 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+        class CFont;
+
 		class CRgbColor : public WritingElement
 		{
 		public:
@@ -898,6 +900,7 @@ namespace OOX
 				}
 			}
 
+            void fromFont(CFont* font);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 			_UINT32 getXLSBSize() const;

@@ -85,9 +85,23 @@ namespace OOX
             {
                 auto ptr = static_cast<XLSB::COLORPALETTE*>(obj.get());
 
-                m_oIndexedColors = static_cast<XLSB::INDEXEDCOLORS*>(ptr->m_INDEXEDCOLORS.get())->m_arIndexedColor;
+                if(ptr->m_INDEXEDCOLORS != nullptr)
+                {
+                    auto arIndexColor = static_cast<XLSB::INDEXEDCOLORS*>(ptr->m_INDEXEDCOLORS.get())->m_arIndexedColor;
+                    if(!arIndexColor.empty())
+                    {
+                        m_oIndexedColors = arIndexColor;
+                    }
+                }
 
-                m_oMruColors = static_cast<XLSB::MRUCOLORS*>(ptr->m_MRUCOLORS.get())->m_arMRUColor;
+                if(ptr->m_MRUCOLORS != nullptr)
+                {
+                    auto arMruColors = static_cast<XLSB::MRUCOLORS*>(ptr->m_MRUCOLORS.get())->m_arMRUColor;
+                    if(!arMruColors.empty())
+                    {
+                        m_oMruColors = arMruColors;
+                    }
+                }
             }
 
 			virtual EElementType getType () const

@@ -137,7 +137,7 @@ namespace OOX
 			nullable_string		m_sId;
 			nullable_string		m_sParentId;
 
-			nullable<OOX::Spreadsheet::CBorder>		m_oBorder;
+            nullable<OOX::Spreadsheet::CBorder>		m_oBorder;
 			nullable<OOX::Spreadsheet::CFill>		m_oFill;
 			nullable<OOX::Spreadsheet::CFont>		m_oFont;
 			nullable<OOX::Spreadsheet::CNumFmt>		m_oNumFmt;
@@ -237,6 +237,8 @@ namespace OOX
                         m_oColors = stylesStream->m_COLORPALETTE;
 
                 }
+
+                AfterRead();
             }
 
 			virtual void read(const CPath& oPath)

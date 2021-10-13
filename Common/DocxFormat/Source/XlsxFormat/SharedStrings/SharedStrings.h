@@ -47,6 +47,7 @@
 
 #include "../../XlsbFormat/Biff12_records/BeginSst.h"
 #include "../../XlsbFormat/Biff12_unions/SHAREDSTRINGS.h"
+#include "../Styles/Styles.h"
 
 namespace OOX
 {
@@ -110,10 +111,16 @@ namespace OOX
                     {
                         ReadAttributes(ptr->m_BrtBeginSst);
 
+                        CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+                        std::map<int, CFont*> fonts;
+                        if ((xlsx) && (xlsx->m_pStyles) && (xlsx->m_pStyles->m_oFonts.IsInit()))
+                            fonts = xlsx->m_pStyles->m_oFonts->m_mapFonts;
+
                         for(auto &sstItem : ptr->m_arBrtSSTItem)
                         {
-                            CSi* pItem = new CSi(sstItem);
-                            m_arrItems.push_back(pItem );
+                            CSi* pItem = new CSi();
+                            pItem->fromBin(sstItem, fonts);
+                            m_arrItems.push_back(pItem);
                             m_nCount++;
                         }
 

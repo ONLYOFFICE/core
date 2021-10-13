@@ -55,7 +55,6 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSi)
-            WritingElement_XlsbConstructors(CSi)
 			CSi()
 			{
 			}
@@ -149,7 +148,7 @@ namespace OOX
 				}
 			}
 
-            void fromBin(XLS::BaseObjectPtr& obj)
+            void fromBin(XLS::BaseObjectPtr& obj, std::map<int, CFont*> fonts)
             {
                 auto ptr = static_cast<XLSB::SSTItem*>(obj.get());
                 CText* text             = nullptr;
@@ -176,7 +175,14 @@ namespace OOX
                     for(auto &strRun : ptr->richStr.rgsStrRun)
                     {
                         r = new CRun();
-                        r->fromBin(strRun, ptr->richStr.str.value());
+                        CFont* font = nullptr;
+                        std::wstring str;
+                        if(fonts.find(strRun.ifnt) != fonts.end())
+                            font = fonts.find(strRun.ifnt)->second;
+
+                        if(strRun.ich < ptr->richStr.str.value().size())
+                            str = ptr->richStr.str.value()[strRun.ich];
+                        r->fromBin(str, font);
                         m_arrItems.push_back(r);
                     }
 

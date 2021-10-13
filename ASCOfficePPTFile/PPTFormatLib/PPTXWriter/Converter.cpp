@@ -898,7 +898,7 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
     styleWriter.m_pTheme = pTheme;
 
 
-    // TODO insert roundtrip master
+    // inserted roundtrip master
     if (pTheme->m_eType == typeMaster && arrRTMaster.size())
     {
 
@@ -913,7 +913,16 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
     else if (pTheme->m_eType == typeNotesMaster)
     {
         oWriter.WriteString(std::wstring(L"<p:notesStyle>"));
-        styleWriter.ConvertStyles(pTheme->m_pStyles[1], oWriter, 9);
+
+        RoundTripExtractor extractorNotes(arrRTNotes[0]);
+        auto masterPath = extractorNotes.getOneFile(std::wstring(L"drs") + FILE_SEPARATOR_STR + L"slideMasters" + FILE_SEPARATOR_STR + L"slideMaster1.xml");
+        std::wstring utf8strNotes;
+        NSFile::CFileBinary::ReadAllTextUtf8(masterPath, utf8strNotes);
+        auto lvl1pPrIter = utf8strNotes.find(L"<a:lvl1pPr");
+        auto bodyStyleIter = utf8strNotes.find(L"</p:bodyStyle>");
+        if (lvl1pPrIter != (UINT)-1 && bodyStyleIter != (UINT)-1)
+            oWriter.WriteString(utf8strNotes.substr(lvl1pPrIter, bodyStyleIter - lvl1pPrIter));
+
         oWriter.WriteString(std::wstring(L"</p:notesStyle>"));
     }
 

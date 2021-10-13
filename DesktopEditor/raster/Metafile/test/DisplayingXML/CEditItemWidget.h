@@ -28,11 +28,15 @@ class CEditItemWidget : public QWidget
 
         void slotDeleteButtonClicked();
 
+    signals:
+        void signalDeleteItem(QStandardItem *pDeletedItem);
+
     private:
         void ParsingItem();
         void ParsingAttachments(QStandardItem* pStandardItem, unsigned int unLevel = 0);
 
         void closeEvent(QCloseEvent *event) override;
+        void DeleteItem(QStandardItem *pStandardItem);
 
         Ui::CEditItemWidget *ui;
         MainWindow *m_pMainWindow;

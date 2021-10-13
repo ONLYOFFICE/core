@@ -24,7 +24,11 @@ class CMetafileTreeView : public QTreeView
         void EditItem(QStandardItem* pStandardItem);
     signals:
         void clickedRightMouseButton(QPoint oPoint);
-        void clickedLeftMouseButton(QModelIndex oModelInde);
+        void clickedLeftMouseButton(QPoint oPoint);
+        void signalDeleteItem(QStandardItem *pDeletedItem);
+
+    private slots:
+        void slotDeleteItem(QStandardItem *pDeletedItem);
 
     protected:
         virtual void mouseReleaseEvent(QMouseEvent* event) override;

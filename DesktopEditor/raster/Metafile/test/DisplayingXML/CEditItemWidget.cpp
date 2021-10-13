@@ -112,11 +112,7 @@ void CEditItemWidget::slotCancelButtonClicked()
 
 void CEditItemWidget::slotDeleteButtonClicked()
 {
-        QStandardItem *pParent = m_pStandardItem->parent();
-
-        pParent->removeRow(m_pStandardItem->index().row());
-
-        slotCancelButtonClicked();
+        DeleteItem(m_pStandardItem);
 }
 
 void CEditItemWidget::ParsingItem()
@@ -190,5 +186,26 @@ void CEditItemWidget::ParsingAttachments(QStandardItem *pStandardItem, unsigned 
 
 void CEditItemWidget::closeEvent(QCloseEvent *event)
 {
+        slotCancelButtonClicked();
+}
+
+void CEditItemWidget::DeleteItem(QStandardItem *pStandardItem)
+{
+        QStandardItem *pParent = pStandardItem->parent();
+
+        if (NULL == pParent)
+                return;
+
+        emit signalDeleteItem(pStandardItem);
+
+        pParent->removeRow(pStandardItem->index().row());
+
+        if (NULL != m_pMainWindow)
+        {
+                if (m_pMainWindow->SaveInXmlFile(L"Temp.xml") &&
+                    m_pMainWindow->ConvertToEmf(L"Temp.xml"))
+                        m_pMainWindow->DisplayingFile(L"TempFile.emf", false);
+        }
+
         slotCancelButtonClicked();
 }

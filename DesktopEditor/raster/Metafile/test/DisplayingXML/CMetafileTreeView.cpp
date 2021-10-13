@@ -206,9 +206,17 @@ void CMetafileTreeView::EditItem(QStandardItem *pStandardItem)
                 return;
 
         CEditItemWidget *pEditItemWidget = new CEditItemWidget;
-        pEditItemWidget->SetMainWindow((MainWindow*)parent()->parent()->parent());
+
+        connect(pEditItemWidget, &CEditItemWidget::signalDeleteItem, this, &CMetafileTreeView::slotDeleteItem);
+
+        pEditItemWidget->SetMainWindow((MainWindow*)parent()->parent()->parent()->parent());
         pEditItemWidget->SetItem(pStandardItem);
         pEditItemWidget->show();
+}
+
+void CMetafileTreeView::slotDeleteItem(QStandardItem *pDeletedItem)
+{
+        emit signalDeleteItem(pDeletedItem);
 }
 
 void CMetafileTreeView::mouseReleaseEvent(QMouseEvent *event)

@@ -44,10 +44,14 @@ class CMetafileTreeWidget : public QWidget
 
         void EditItem(QStandardItem* pStandardItem);
 
+    protected:
+        virtual void mouseReleaseEvent(QMouseEvent* event) override;
+
     private slots:
         void slotFindNext();
         void slotFindPrev();
         void slotRBClickedOnMetafileTree(QPoint oPoint);
+        void slotDeleteItem(QStandardItem *pDeletedItem);
 
     private:
         void InsertRecord(QStandardItem *pParentItem, unsigned int unRow, bool bAfterRecord = true);

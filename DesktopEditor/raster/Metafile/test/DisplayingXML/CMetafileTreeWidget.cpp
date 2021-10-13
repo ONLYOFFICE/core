@@ -42,6 +42,7 @@ CMetafileTreeWidget::CMetafileTreeWidget(QWidget *parent)
         m_pMetafileTreeView = new CMetafileTreeView();
 
         connect(m_pMetafileTreeView, &CMetafileTreeView::clickedRightMouseButton, this, &CMetafileTreeWidget::slotRBClickedOnMetafileTree);
+        connect(m_pMetafileTreeView, &CMetafileTreeView::signalDeleteItem, this,  &CMetafileTreeWidget::slotDeleteItem);
 
         pLayout->addWidget(m_pMetafileTreeView);
 }
@@ -188,6 +189,12 @@ void CMetafileTreeWidget::EditItem(QStandardItem *pStandardItem)
                 m_pMetafileTreeView->EditItem(pStandardItem);
 }
 
+void CMetafileTreeWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+        m_pSelectedItem = NULL;
+        QWidget::mouseReleaseEvent(event);
+}
+
 void CMetafileTreeWidget::slotFindNext()
 {
         if (NULL == m_pFindText || NULL == m_pMetafileTreeView || IsClearTree())
@@ -289,6 +296,17 @@ void CMetafileTreeWidget::slotRBClickedOnMetafileTree(QPoint oPoint)
         }
 
         oContextMenu.exec(m_pMetafileTreeView->mapToGlobal(oPoint));
+}
+
+void CMetafileTreeWidget::slotDeleteItem(QStandardItem *pDeletedItem)
+{
+        if (pDeletedItem == m_pSelectedItem)
+        {
+                m_pSelectedItem = NULL;
+                m_nIndexSelectedItem = 0;
+        }
+        else
+                --m_nIndexSelectedItem;
 }
 
 void CMetafileTreeWidget::InsertRecord(QStandardItem *pParentItem, unsigned int unRow, bool bAfterRecord)

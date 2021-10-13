@@ -36,7 +36,7 @@
 class RtfPicture : public IDocumentElement
 {
 public: 
-	typedef enum {dt_none, dt_png, dt_jpg, dt_emf, dt_wmf, dt_apm, dt_macpict}DataType;
+	typedef enum {dt_none, dt_png, dt_jpg, dt_emf, dt_wmf, dt_apm, dt_macpict, dt_svg}DataType;
 
 	DataType eDataType;
 
@@ -117,13 +117,13 @@ public:
 	
     static DataType GetPictureType( std::wstring sFilename )
 	{
-		BYTE	pBuffer[ 16 ];
+		BYTE	pBuffer[ 100 ];
 		DWORD	dwBytesRead = 0;
 
         CFile file;
 		if (file.OpenFile(sFilename) != S_OK) return dt_none;
 
-		file.ReadFile(pBuffer, 16);
+		file.ReadFile(pBuffer, 100);
 		dwBytesRead = (DWORD)file.GetPosition();
 		file.CloseFile();
 
@@ -161,6 +161,26 @@ public:
 		if ( (4 <= dwBytesRead) && (0x01 == pBuffer[0]) && (0x00 == pBuffer[1]) && (0x00 == pBuffer[2]) && (0x00 == pBuffer[3]) )
 			return dt_emf;
 
+		if ('<' == pBuffer[0] &&
+			's' == pBuffer[1] &&
+			'v' == pBuffer[2] &&
+			'g' == pBuffer[3])
+		{
+			return dt_svg;;
+		}
+
+		if ('<' == pBuffer[0] &&
+			'?' == pBuffer[1] &&
+			'x' == pBuffer[2] &&
+			'm' == pBuffer[3] &&
+			'l' == pBuffer[4])
+		{
+			std::string test((char*)pBuffer, dwBytesRead);
+			if (std::string::npos != test.find("<svg"))
+			{
+				return dt_svg;;
+			}
+		}
 		return dt_none;
 	}
 };

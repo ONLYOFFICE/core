@@ -1647,6 +1647,7 @@ bool RtfPictureReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader
     else if ( "pngblip" == sCommand )	m_oShape.m_oPicture->eDataType = RtfPicture::dt_png;
     else if ( "jpegblip" == sCommand )	m_oShape.m_oPicture->eDataType = RtfPicture::dt_jpg;
     else if ( "macpict" == sCommand )	m_oShape.m_oPicture->eDataType = RtfPicture::dt_macpict;
+	else if ( "svgpict" == sCommand)	m_oShape.m_oPicture->eDataType = RtfPicture::dt_svg;
 
     else if ( "wmetafile" == sCommand )
 	{

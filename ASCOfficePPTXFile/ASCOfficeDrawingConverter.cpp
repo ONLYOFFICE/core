@@ -3398,6 +3398,10 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
 	bool bIsInline = false;
 	bool bIsMargin = false;
+	bool bZIndex = false;
+
+	if (oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"z-index"))
+		bZIndex = true;
 
 	if (oProps.IsTop == true)
 	{
@@ -3421,8 +3425,9 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 		{
 			pFind = oCssStyles.m_mapSettings.find(L"mso-position-vertical-relative");
 			if (oCssStyles.m_mapSettings.end() != pFind && ((pFind->second == L"text" && !bIsMargin) || pFind->second == L"line"))
-			{		
-				bIsInline = true;
+			{	
+				if (!bZIndex || !bIsMargin) //Liturgie Homberg 2017 mit Abendmahlsteil.docx
+					bIsInline = true;
 			}
 		}	
 

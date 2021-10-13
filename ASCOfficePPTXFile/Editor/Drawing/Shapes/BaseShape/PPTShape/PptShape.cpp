@@ -66,15 +66,12 @@ CBaseShapePtr CPPTShape::CreateByType(PPTShapes::ShapeType type)
 // msosptNotchedCircularArrow	0x00000064 A value that SHOULD NOT be used.
 // msosptHostControl			0x000000C9 A value that SHOULD NOT be used.
 
-	//case sptNotchedCircularArrow:
-
 	case sptHostControl:		
 			{ pShape = new CPPTShape();  pShape->m_eType = type; break; }
 	case 0: { pShape = new CRectangleType(); break; }
 	
+	case sptNotchedCircularArrow:
 	case sptPictureFrame: { pShape = new CRectangleType(); pShape->m_eType = type; break; }
-
-		CREATE_BY_SPT(0x00000064, CArcType)
 
 		CREATE_BY_SPT(sptAccentBorderCallout90, CAccentBorderCallout90Type)
 		CREATE_BY_SPT(sptAccentBorderCallout1, CAccentBorderCallout1Type)

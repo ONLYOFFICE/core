@@ -63,6 +63,10 @@ namespace PdfWriter
 		{
 			return m_nLineHeight;
 		}
+		int            GetAscent() const
+		{
+			return m_nAscent;
+		}
 		EFontType      GetFontType()
 		{
 			return fontTrueType;
@@ -83,6 +87,7 @@ namespace PdfWriter
 		CDictObject*       m_pFont;
 		CDictObject*       m_pFontDescriptor;
 		int                m_nLineHeight;
+		int                m_nAscent;
 
 
 		friend class CDocument;

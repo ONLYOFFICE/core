@@ -1602,13 +1602,19 @@ private:
 			m_pWidths      = NULL;
 			m_unLen        = 0;
 			m_ushSpaceCode = 0;
+			m_unLineHeight = 0;
+			m_nAscent      = 0;
+			m_nDescent     = 0;
 		}
-		void Init(unsigned short* pCodes, unsigned int* pWidths, const unsigned int& unLen, const unsigned short& ushSpaceCode, const unsigned int& unLineHeight)
+		void Init(unsigned short* pCodes, unsigned int* pWidths, const unsigned int& unLen, const unsigned short& ushSpaceCode, const unsigned int& unLineHeight, const int& nAscent)
 		{
 			m_pCodes       = pCodes;
 			m_pWidths      = pWidths;
 			m_unLen        = unLen;
 			m_ushSpaceCode = ushSpaceCode;
+			m_unLineHeight = unLineHeight;
+			m_nAscent      = nAscent;
+			m_nDescent     = unLineHeight - nAscent;
 		}
 		void Clear()
 		{
@@ -1616,6 +1622,9 @@ private:
 			m_pWidths      = NULL;
 			m_unLen        = 0;
 			m_ushSpaceCode = 0;
+			m_unLineHeight = 0;
+			m_nAscent      = 0;
+			m_nDescent     = 0;
 		}
 		void CalculateLines(const double& dFontSize, const double& dW)
 		{
@@ -1694,9 +1703,46 @@ private:
 				unPos++;
 			}
 		}
-		void ProcessAutoFit(const double& dFontSize, const double& dW, const double& dH)
+		double ProcessAutoFit(const double& dW, const double& dH)
 		{
+			double dGoodFontSize = 0;
 
+			// Параметры подобраны для совместимости с AdobeReader
+			double dFontSize     = 4;
+			double dFontSizeStep = 0.797 / 3.0;
+
+			while (true)
+			{
+				CalculateLines(dFontSize,  dW);
+				if (CheckHeight(dH, dFontSize))
+				{
+					dGoodFontSize = dFontSize;
+					dFontSize += dFontSizeStep;
+
+					if (dFontSize > 12)
+					{
+						dFontSize = 12;
+						break;
+					}
+				}
+				else
+				{
+					if (dGoodFontSize > 0.001)
+					{
+						dFontSize = dGoodFontSize;
+						break;
+					}
+
+					dFontSize -= dFontSizeStep;
+					if (dFontSize < 4)
+					{
+						dFontSize = 4;
+						break;
+					}
+				}
+			}
+
+			return (floor(dFontSize * 1000.0 + 0.5) / 1000.0);
 		}
 		unsigned int GetLinesCount() const
 		{
@@ -1754,9 +1800,17 @@ private:
 
 	private:
 
-		inline bool IsSpace(const unsigned int& unPos)
+		inline bool IsSpace(const unsigned int& unPos) const
 		{
 			return (m_pCodes[unPos] == m_ushSpaceCode);
+		}
+		inline bool CheckHeight(const double& dH, const double& dFontSize) const
+		{
+			double dKoef = dFontSize / 1000.0;
+			double dTest1 = dH - (m_nDescent * dKoef);
+			double dTest2 = GetLinesCount() * (m_unLineHeight * dKoef);
+
+			return (GetLinesCount() * (m_unLineHeight * dKoef) < (dH - (m_nDescent * dKoef)));
 		}
 
 
@@ -1766,6 +1820,9 @@ private:
 		unsigned int*   m_pWidths;
 		unsigned int    m_unLen;
 		unsigned short  m_ushSpaceCode;
+		unsigned int    m_unLineHeight;
+		int             m_nAscent;
+		int             m_nDescent;
 
 		std::vector<unsigned int> m_vBreaks;
 	};

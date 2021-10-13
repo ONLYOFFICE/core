@@ -162,6 +162,7 @@ namespace PdfWriter
 		int yMax = (int)(unUnitsPerEm ? pFace->bbox.yMax * dKoef : pFace->bbox.yMax);
 
 		m_nLineHeight = yMax - yMin;
+		m_nAscent     = yMax;
 
 		CArrayObject* pBBox = new CArrayObject();
 		pBBox->Add(xMin);

@@ -1557,10 +1557,11 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		double _dY = m_pPage->GetHeight() - MM_2_PT(dY);
 		double _dB = m_pPage->GetHeight() - MM_2_PT(dY + dH);
 
+		double dMargin   = 2; // такой отступ используется в AdobeReader
 		double dBaseLine = MM_2_PT(dH - oInfo.GetBaseLineOffset());
-		double dShiftX = MM_2_PT(0.7);
+		double dShiftX   = dMargin;
 
-		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX - 0.7), _dY, MM_2_PT(dX + dW + 0.7), _dB));
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX) - dMargin, _dY, MM_2_PT(dX + dW) + dMargin, _dB));
 
 		pField->SetMaxLen(pPr->GetMaxCharacters());
 		pField->SetCombFlag(pPr->IsComb());
@@ -1618,15 +1619,21 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 					ushSpaceCode = pCodes2[unIndex];
 			}
 
+			m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
+
+			// TODO: Разобраться более детально по какой именно высоте идет в Adobe расчет
+			//       пока временно оставим (H - 3 * margin)
+			if (pPr->IsAutoFit())
+				dFontSize = m_oLinesManager.ProcessAutoFit(MM_2_PT(dW), (MM_2_PT(dH) - 3 * dMargin));
+
 			double dLineHeight = pFontTT->GetLineHeight() * dFontSize / 1000.0;
 
-			m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, 0);
 			m_oLinesManager.CalculateLines(dFontSize, MM_2_PT(dW));
 
 			pField->StartTextAppearance(m_pFont, dFontSize, TRgb(oColor.r, oColor.g, oColor.b), dAlpha);
 
 			unsigned int unLinesCount = m_oLinesManager.GetLinesCount();
-			double dLineShiftY = MM_2_PT(dH) - pFontTT->GetLineHeight() * dFontSize / 1000.0 - MM_2_PT(0.7);
+			double dLineShiftY = MM_2_PT(dH) - pFontTT->GetLineHeight() * dFontSize / 1000.0 - dMargin;
 			for (unsigned int unIndex = 0; unIndex < unLinesCount; ++unIndex)
 			{
 				unsigned int unLineStart = m_oLinesManager.GetLineStartPos(unIndex);

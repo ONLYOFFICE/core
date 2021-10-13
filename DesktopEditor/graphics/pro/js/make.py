@@ -7,6 +7,17 @@ import base
 import os
 import json
 
+def apply_patch(file, patch):
+  file_content = base.readFile(file)
+  patch_content = base.readFile(patch)
+  index1 = patch_content.find("<<<<<<<")
+  index2 = patch_content.find("=======")
+  index3 = patch_content.find(">>>>>>>")
+  file_content_old = patch_content[index1 + 7:index2]
+  file_content_new = "\n#if 0" + file_content_old + "#else" + patch_content[index2 + 7:index3] + "#endif\n"
+  base.replaceInFile(file, file_content_old, file_content_new)
+  return
+
 if not base.is_file("./raster.o"):
   base.cmd("python", ["raster_make.py"])
 if not base.is_file("./raster.o"):
@@ -38,16 +49,35 @@ if not base.is_dir("xml"):
   base.replaceInFile("./xml/libxml2/xmlIO.c", "xmlNop(void)", "xmlNop(void* context, char* buffer, int len)")
   base.replaceInFile("./xml/src/xmllight_private.h", "#include \"../../common/", "#include \"../../../../../common/")
   base.replaceInFile("./xml/include/xmlutils.h", "#include \"../../common/", "#include \"../../../../../common/")
+  
+if not base.is_dir("freetype-2.10.4"):
+  base.copy_dir("../../../freetype-2.10.4", "./freetype-2.10.4")
+  # smooth
+  base.copy_file("./freetype-2.10.4/src/smooth/ftgrays.c", "./freetype-2.10.4/src/smooth/ftgrays.cpp");
+  apply_patch("./freetype-2.10.4/src/smooth/ftgrays.cpp", "./wasm/patches/ftgrays1.patch")
+  apply_patch("./freetype-2.10.4/src/smooth/ftgrays.cpp", "./wasm/patches/ftgrays2.patch")
+  apply_patch("./freetype-2.10.4/src/smooth/ftgrays.cpp", "./wasm/patches/ftgrays3.patch")
+  base.copy_file("./freetype-2.10.4/src/smooth/smooth.c", "./freetype-2.10.4/src/smooth/smooth.cpp");
+  apply_patch("./freetype-2.10.4/src/smooth/smooth.cpp", "./wasm/patches/smooth.patch")
+  # ftobjs
+  apply_patch("./freetype-2.10.4/src/base/ftobjs.c", "./wasm/patches/ftobjs1.patch")
+  apply_patch("./freetype-2.10.4/src/base/ftobjs.c", "./wasm/patches/ftobjs2.patch")
+  # ttcmap
+  base.copy_file("./freetype-2.10.4/src/sfnt/ttcmap.c", "./freetype-2.10.4/src/sfnt/ttcmap.cpp");
+  apply_patch("./freetype-2.10.4/src/sfnt/ttcmap.cpp", "./wasm/patches/ttcmap.patch")
+  base.copy_file("./freetype-2.10.4/src/sfnt/sfnt.c", "./freetype-2.10.4/src/sfnt/sfnt.cpp");
+  apply_patch("./freetype-2.10.4/src/sfnt/sfnt.cpp", "./wasm/patches/sfnt.patch")
 
 # compile
 compiler_flags = ["-O3",
                   # "-fno-rtti", cryptopp использует typeid
+                  "-fexceptions",
                   "-Wno-unused-command-line-argument",
                   "-s WASM=1",
                   "-s ALLOW_MEMORY_GROWTH=1",
                   "-s FILESYSTEM=0",
-                  "-s ENVIRONMENT='web'"]
-                  #"-s LLD_REPORT_UNDEFINED"]
+                  "-s ENVIRONMENT='web'",
+                  "-s LLD_REPORT_UNDEFINED"]
 
 exported_functions = ["_malloc",
                       "_free",
@@ -59,12 +89,22 @@ exported_functions = ["_malloc",
                       "_GetGlyphs",
                       "_GetLinks",
                       "_GetStructure",
-					  "_InitializeFontsBin",
-					  "_InitializeFontsBase64",
-					  "_SetFontBinary",
-					  "_IsFontBinaryExist"]
+                      "_InitializeFontsBin",
+                      "_InitializeFontsBase64",
+                      "_SetFontBinary",
+                      "_IsFontBinaryExist"]
 
 compile_files_array = []
+
+compile_files_array.append("lib")
+compile_files_array.append("./")
+compile_files_array.append(["wasm/src/lib/wasm_jmp.cpp"])
+
+compile_files_array.append("f")
+compile_files_array.append("freetype-2.10.4/src/")
+#compile_files_array.append(["base/ftinit.c", "base/ftlcdfil.c", "base/ftobjs.c", "base/ftglyph.c", "base/ftoutln.c", "base/ftutil.c", "base/ftgloadr.c", "base/ftfntfmt.c", "base/ftcalc.c", "base/ftbitmap.c", "base/ftstream.c", "base/fthash.c", "base/ftdebug.c", "base/fttrigon.c", "base/ftadvanc.c", "base/ftpsprop.c", "base/ftrfork.c", "bdf/bdfdrivr.c", "bdf/bdflib.c", "smooth/ftsmooth.c", "smooth/ftgrays.c", "../builds/unix/ftsystem.c", "autofit/afmodule.c", "autofit/afhints.c", "autofit/afloader.c", "autofit/afglobal.c", "autofit/afshaper.c", "autofit/afranges.c", "autofit/afdummy.c", "autofit/aflatin.c", "autofit/afcjk.c", "autofit/afindic.c", "autofit/afangles.c", "autofit/afblue.c", "autofit/afwarp.c", "truetype/ttdriver.c", "truetype/ttgload.c", "truetype/ttpload.c", "truetype/ttobjs.c", "truetype/ttgxvar.c", "truetype/ttinterp.c", "type1/t1driver.c", "type1/t1afm.c", "type1/t1load.c", "type1/t1gload.c", "type1/t1objs.c", "type1/t1parse.c", "cff/cffdrivr.c", "cff/cffgload.c", "cff/cffload.c", "cff/cffcmap.c", "cff/cffparse.c", "cff/cffobjs.c", "cid/cidriver.c", "cid/cidobjs.c", "cid/cidgload.c", "cid/cidload.c", "cid/cidparse.c", "pfr/pfrdrivr.c", "pfr/pfrobjs.c", "pfr/pfrload.c", "pfr/pfrgload.c", "pfr/pfrcmap.c", "pfr/pfrsbit.c", "type42/t42drivr.c", "type42/t42objs.c", "type42/t42parse.c", "winfonts/winfnt.c", "pcf/pcfdrivr.c", "pcf/pcfread.c", "pcf/pcfutil.c", "psaux/psauxmod.c", "psaux/psobjs.c", "psaux/t1decode.c", "psaux/psft.c", "psaux/afmparse.c", "psaux/t1cmap.c", "psaux/cffdecode.c", "psaux/psconv.c", "psaux/psfont.c", "psaux/psblues.c", "psaux/psintrp.c", "psaux/pserror.c", "psaux/psstack.c", "psaux/pshints.c", "psaux/psarrst.c", "psaux/psread.c", "psnames/psmodule.c", "pshinter/pshmod.c", "pshinter/pshrec.c", "pshinter/pshglob.c", "pshinter/pshalgo.c", "raster/ftrend1.c", "raster/ftraster.c", "sfnt/sfdriver.c", "sfnt/ttpost.c", "sfnt/sfobjs.c", "sfnt/ttload.c", "sfnt/ttbdf.c", "sfnt/ttmtx.c", "sfnt/ttkern.c", "sfnt/sfwoff.c", "sfnt/ttcmap.c", "sfnt/ttsbit.c", "sfnt/sfwoff2.c", "sfnt/ttcolr.c", "sfnt/woff2tags.c", "sfnt/ttcpal.c", "gzip/ftgzip.c", "lzw/ftlzw.c"])
+
+compile_files_array.append(["base/ftdebug.c","autofit/autofit.c","bdf/bdf.c","cff/cff.c","base/ftbase.c","base/ftbitmap.c","base/ftfstype.c","base/ftgasp.c","cache/ftcache.c","base/ftglyph.c","gzip/ftgzip.c","base/ftinit.c","lzw/ftlzw.c","base/ftstroke.c","base/ftsystem.c","smooth/smooth.cpp","base/ftbbox.c","base/ftbdf.c","base/ftcid.c","base/ftmm.c","base/ftpfr.c","base/ftsynth.c","base/fttype1.c","base/ftwinfnt.c","base/ftgxval.c","base/ftotval.c","base/ftpatent.c","pcf/pcf.c","pfr/pfr.c","psaux/psaux.c","pshinter/pshinter.c","psnames/psmodule.c","raster/raster.c","sfnt/sfnt.cpp","truetype/truetype.c","type1/type1.c","cid/type1cid.c","type42/type42.c","winfonts/winfnt.c"])
 
 compile_files_array.append("g")
 compile_files_array.append("../../")
@@ -77,10 +117,6 @@ compile_files_array.append(["GlyphString.cpp", "FontManager.cpp", "FontFile.cpp"
 compile_files_array.append("a")
 compile_files_array.append("../../../agg-2.4/src/")
 compile_files_array.append(["agg_arc.cpp", "agg_vcgen_stroke.cpp", "agg_vcgen_dash.cpp", "agg_trans_affine.cpp", "agg_curves.cpp"])
-
-compile_files_array.append("f")
-compile_files_array.append("../../../freetype-2.10.4/src/")
-compile_files_array.append(["base/ftinit.c", "base/ftlcdfil.c", "base/ftobjs.c", "base/ftglyph.c", "base/ftoutln.c", "base/ftutil.c", "base/ftgloadr.c", "base/ftfntfmt.c", "base/ftcalc.c", "base/ftbitmap.c", "base/ftstream.c", "base/fthash.c", "base/ftdebug.c", "base/fttrigon.c", "base/ftadvanc.c", "base/ftpsprop.c", "base/ftrfork.c", "bdf/bdfdrivr.c", "bdf/bdflib.c", "smooth/ftsmooth.c", "smooth/ftgrays.c", "../builds/unix/ftsystem.c", "autofit/afmodule.c", "autofit/afhints.c", "autofit/afloader.c", "autofit/afglobal.c", "autofit/afshaper.c", "autofit/afranges.c", "autofit/afdummy.c", "autofit/aflatin.c", "autofit/afcjk.c", "autofit/afindic.c", "autofit/afangles.c", "autofit/afblue.c", "autofit/afwarp.c", "truetype/ttdriver.c", "truetype/ttgload.c", "truetype/ttpload.c", "truetype/ttobjs.c", "truetype/ttgxvar.c", "truetype/ttinterp.c", "type1/t1driver.c", "type1/t1afm.c", "type1/t1load.c", "type1/t1gload.c", "type1/t1objs.c", "type1/t1parse.c", "cff/cffdrivr.c", "cff/cffgload.c", "cff/cffload.c", "cff/cffcmap.c", "cff/cffparse.c", "cff/cffobjs.c", "cid/cidriver.c", "cid/cidobjs.c", "cid/cidgload.c", "cid/cidload.c", "cid/cidparse.c", "pfr/pfrdrivr.c", "pfr/pfrobjs.c", "pfr/pfrload.c", "pfr/pfrgload.c", "pfr/pfrcmap.c", "pfr/pfrsbit.c", "type42/t42drivr.c", "type42/t42objs.c", "type42/t42parse.c", "winfonts/winfnt.c", "pcf/pcfdrivr.c", "pcf/pcfread.c", "pcf/pcfutil.c", "psaux/psauxmod.c", "psaux/psobjs.c", "psaux/t1decode.c", "psaux/psft.c", "psaux/afmparse.c", "psaux/t1cmap.c", "psaux/cffdecode.c", "psaux/psconv.c", "psaux/psfont.c", "psaux/psblues.c", "psaux/psintrp.c", "psaux/pserror.c", "psaux/psstack.c", "psaux/pshints.c", "psaux/psarrst.c", "psaux/psread.c", "psnames/psmodule.c", "pshinter/pshmod.c", "pshinter/pshrec.c", "pshinter/pshglob.c", "pshinter/pshalgo.c", "raster/ftrend1.c", "raster/ftraster.c", "sfnt/sfdriver.c", "sfnt/ttpost.c", "sfnt/sfobjs.c", "sfnt/ttload.c", "sfnt/ttbdf.c", "sfnt/ttmtx.c", "sfnt/ttkern.c", "sfnt/sfwoff.c", "sfnt/ttcmap.c", "sfnt/ttsbit.c", "sfnt/sfwoff2.c", "sfnt/ttcolr.c", "sfnt/woff2tags.c", "sfnt/ttcpal.c", "gzip/ftgzip.c", "lzw/ftlzw.c"])
 
 compile_files_array.append("c")
 compile_files_array.append("../../../common/")
@@ -126,7 +162,7 @@ compile_files_array.append("u")
 compile_files_array.append("../../../../UnicodeConverter/")
 compile_files_array.append(["UnicodeConverter.cpp"])
 
-compiler_flags.append("-I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common -I../../../xml/libxml2/include -I../../../xml/build/qt -I../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip -I../../../../PdfReader/lib/goo -I../../../../PdfReader/lib/fofi -I../../../../PdfReader/lib/splash -I../../../../PdfReader/lib")
+compiler_flags.append("-Iwasm/src/lib -I../../../agg-2.4/include -I../../../cximage/jasper/include -I../../../cximage/jpeg -I../../../cximage/png -I../../../freetype-2.10.4/include -I../../../freetype-2.10.4/include/freetype -I../../../../OfficeUtils/src/zlib-1.2.11 -I../../../../Common/3dParty/icu/icu/source/common -I../../../xml/libxml2/include -I../../../xml/build/qt -I../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip -I../../../../PdfReader/lib/goo -I../../../../PdfReader/lib/fofi -I../../../../PdfReader/lib/splash -I../../../../PdfReader/lib")
 compiler_flags.append("-D__linux__ -D_LINUX -DUNIX -DFT2_BUILD_LIBRARY -DHAVE_FCNTL_H -DFT_CONFIG_OPTION_SYSTEM_ZLIB -DBUILDING_WASM_MODULE -DU_COMMON_IMPLEMENTATION")
 compiler_flags.append("-DWASM_MODE -Derrno=0 -DTHREADMODEL=0 -DDEBUGLVL=0 -DHAVE_MBSTATE_T -DHAVE_STDINCLUDES -DHAS_WCHAR")
 compiler_flags.append("-DHAVE_VA_COPY -DLIBXML_READER_ENABLED -DLIBXML_PUSH_ENABLED -DLIBXML_HTML_ENABLED -DLIBXML_XPATH_ENABLED -DLIBXML_OUTPUT_ENABLED -DLIBXML_C14N_ENABLED -DLIBXML_SAX1_ENABLED -DLIBXML_TREE_ENABLED -DLIBXML_XPTR_ENABLED -DIN_LIBXML -DLIBXML_STATIC -DBUILD_ZLIB_AS_SOURCES -DDISABLE_PDF_CONVERTATION -D_ARM_ALIGN_")

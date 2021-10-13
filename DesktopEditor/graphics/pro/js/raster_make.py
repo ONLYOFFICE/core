@@ -27,8 +27,8 @@ compiler_flags = ["-O3",
                   "-s WASM=1",
                   "-s ALLOW_MEMORY_GROWTH=1",
                   "-s FILESYSTEM=0",
-                  "-s ENVIRONMENT='web'"]
-                  #"-s LLD_REPORT_UNDEFINED"]
+                  "-s ENVIRONMENT='web'",
+                  "-s LLD_REPORT_UNDEFINED"]
 
 compile_files_array = []
 

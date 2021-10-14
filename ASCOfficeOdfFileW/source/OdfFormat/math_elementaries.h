@@ -47,7 +47,6 @@ public:
 	
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -73,8 +72,7 @@ public:
 	
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
@@ -101,7 +99,6 @@ public:
 	
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -127,7 +124,6 @@ public:
 	
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
@@ -152,8 +148,7 @@ public:
 	
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
+     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
@@ -177,7 +172,6 @@ public:
 	
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -203,7 +197,6 @@ public:
 	
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);

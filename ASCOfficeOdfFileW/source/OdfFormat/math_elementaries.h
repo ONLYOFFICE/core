@@ -44,7 +44,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMStack;
 
-	
+    CPDOCCORE_DEFINE_VISITABLE();
+
 
 private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -69,7 +70,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMSRow;
 
-	
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
      virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -96,8 +97,6 @@ public:
 
 	CPDOCCORE_DEFINE_VISITABLE();
 
-	
-
 private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
@@ -121,7 +120,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMSLongDiv;
 
-	
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -145,7 +144,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMSCarries;
 
-	
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
      virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -169,7 +168,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMSGroup;
 
-	
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -194,7 +193,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMSCarry;
 
-	
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);

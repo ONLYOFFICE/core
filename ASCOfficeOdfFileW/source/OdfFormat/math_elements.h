@@ -96,6 +96,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMathSemantics;	
 
+    CPDOCCORE_DEFINE_VISITABLE();
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
@@ -117,7 +118,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMathAnnotation;
 
-	
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -141,6 +142,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMathAnnotationXml;
 
+    CPDOCCORE_DEFINE_VISITABLE();
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);

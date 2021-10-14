@@ -45,6 +45,8 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMI;
+
+    CPDOCCORE_DEFINE_VISITABLE();
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
@@ -70,7 +72,9 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMO;
 
-	_CP_OPT(bool)				fence_;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    _CP_OPT(bool)				fence_;
 	_CP_OPT(bool)				stretchy_;
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -97,7 +101,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMN;
 
-	
+    CPDOCCORE_DEFINE_VISITABLE();
+
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
@@ -123,6 +128,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMText;
 
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -149,6 +155,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMSpace;
 
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -173,6 +180,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMS;
 
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -197,6 +205,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMGlyph;
 
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);

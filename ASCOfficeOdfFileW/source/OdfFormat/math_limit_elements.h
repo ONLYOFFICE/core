@@ -46,6 +46,7 @@ namespace cpdoccore {
 		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMSub;
 	
+        CPDOCCORE_DEFINE_VISITABLE();
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -67,6 +68,7 @@ namespace cpdoccore {
 		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMSup;
 
+        CPDOCCORE_DEFINE_VISITABLE();
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -89,6 +91,7 @@ namespace cpdoccore {
 		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMSubSup;
 
+        CPDOCCORE_DEFINE_VISITABLE();
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -111,6 +114,7 @@ namespace cpdoccore {
 		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMNone;
 
+        CPDOCCORE_DEFINE_VISITABLE();
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -133,6 +137,7 @@ namespace cpdoccore {
 		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMPreScripts;
 
+        CPDOCCORE_DEFINE_VISITABLE();
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -153,6 +158,7 @@ namespace cpdoccore {
 		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMMultiScripts;
 
+        CPDOCCORE_DEFINE_VISITABLE();
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -177,6 +183,7 @@ namespace cpdoccore {
 		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMUnderOver;
 
+        CPDOCCORE_DEFINE_VISITABLE();
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -199,7 +206,9 @@ namespace cpdoccore {
 		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMOver;
 
-		_CP_OPT(Bool)	accent;
+        CPDOCCORE_DEFINE_VISITABLE();
+
+        _CP_OPT(Bool)	accent;
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 		virtual void add_child_element(const office_element_ptr & child_element);
@@ -221,6 +230,7 @@ namespace cpdoccore {
 		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMUnder;
 
+        CPDOCCORE_DEFINE_VISITABLE();
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);

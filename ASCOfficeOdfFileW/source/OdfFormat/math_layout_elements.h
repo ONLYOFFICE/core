@@ -54,6 +54,7 @@ namespace cpdoccore {
 
 			math_mrow();
 
+            CPDOCCORE_DEFINE_VISITABLE();
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -76,7 +77,9 @@ namespace cpdoccore {
 			static const xml::NodeType xml_type = xml::typeElement;
 			static const ElementType type = typeMFrac;
 
-			_CP_OPT(Bool)				bevelled;
+            CPDOCCORE_DEFINE_VISITABLE();
+
+            _CP_OPT(Bool)				bevelled;
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 			virtual void add_child_element(const office_element_ptr & child_element);
@@ -101,6 +104,7 @@ namespace cpdoccore {
 			static const xml::NodeType xml_type = xml::typeElement;
 			static const ElementType type = typeMSqrt;
 
+            CPDOCCORE_DEFINE_VISITABLE();
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -122,6 +126,7 @@ namespace cpdoccore {
 			static const xml::NodeType xml_type = xml::typeElement;
 			static const ElementType type = typeMRoot;
 
+            CPDOCCORE_DEFINE_VISITABLE();
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -143,6 +148,7 @@ namespace cpdoccore {
 			static const xml::NodeType xml_type = xml::typeElement;
 			static const ElementType type = typeMStyle;
 
+            CPDOCCORE_DEFINE_VISITABLE();
 
 			_CP_OPT(color)				color_;
 
@@ -170,6 +176,7 @@ namespace cpdoccore {
 			static const xml::NodeType xml_type = xml::typeElement;
 			static const ElementType type = typeMEnClose;
 
+            CPDOCCORE_DEFINE_VISITABLE();
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -191,6 +198,7 @@ namespace cpdoccore {
 			static const xml::NodeType xml_type = xml::typeElement;
 			static const ElementType type = typeMFenced;
 
+            CPDOCCORE_DEFINE_VISITABLE();
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -212,6 +220,7 @@ namespace cpdoccore {
 			static const xml::NodeType xml_type = xml::typeElement;
 			static const ElementType type = typeMPadded;
 
+            CPDOCCORE_DEFINE_VISITABLE();
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);

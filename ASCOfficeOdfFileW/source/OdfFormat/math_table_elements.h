@@ -44,6 +44,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMTable;
 
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -66,6 +67,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMAlignMark;
 
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -88,6 +90,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMAlignGroup;
 
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -110,6 +113,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMTd;
 
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -132,6 +136,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMLabelEdTr;
 
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -154,6 +159,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMTr;
 
+    CPDOCCORE_DEFINE_VISITABLE();
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);

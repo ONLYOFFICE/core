@@ -388,39 +388,39 @@
         var name = reader.readString();
         var style = 0;
         if (reader.readInt() != 0)
-            style |= AscFonts.FontStyle.FontStyleBold;
+            style |= 1;//AscFonts.FontStyle.FontStyleBold;
         if (reader.readInt() != 0)
-            style |= AscFonts.FontStyle.FontStyleItalic;
+            style |= 2;//AscFonts.FontStyle.FontStyleItalic;
 
-        var info = AscFonts.g_fontApplication.GetFontInfo(name, style);
-        var fontId = info.GetFontID(AscCommon.g_font_loader, style);
-        var file = fontId.file;
+        var file = AscFonts.pickFont(name, style);
+        var fileId = file.GetID();
+        var fileStatus = file.GetStatus();
 
-        if (file.Status == 0)
+        if (fileStatus == 0)
         {
             // шрифт загружен.
             fontToMemory(file, true);
         }
         else
         {
-            self.fontStreams[file.Id] = self.fontStreams[file.Id] || {};
-            self.fontStreams[file.Id].pages = self.fontStreams[file.Id].pages || [];
-			addToArrayAsDictionary(self.fontStreams[file.Id].pages, self.drawingFileCurrentPageIndex);
+            self.fontStreams[fileId] = self.fontStreams[fileId] || {};
+            self.fontStreams[fileId].pages = self.fontStreams[fileId].pages || [];
+			addToArrayAsDictionary(self.fontStreams[fileId].pages, self.drawingFileCurrentPageIndex);
 
             if (self.drawingFile)
             {
-				addToArrayAsDictionary(self.drawingFile.pages[self.drawingFileCurrentPageIndex].fonts, file.Id);
+				addToArrayAsDictionary(self.drawingFile.pages[self.drawingFileCurrentPageIndex].fonts, fileId);
             }
 
-            if (file.Status != 2)
+            if (fileStatus != 2)
             {
                 // шрифт не грузится - надо загрузить
                 var _t = file;
                 file.LoadFontAsync("../../../../fonts/", function(){
                     fontToMemory(_t, true);
 
-                    var pages = self.fontStreams[_t.Id].pages;
-                    delete self.fontStreams[_t.Id];
+                    var pages = self.fontStreams[fileId].pages;
+                    delete self.fontStreams[fileId];
                     var pagesRepaint = [];
                     for (var i = 0, len = pages.length; i < len; i++)
                     {
@@ -429,7 +429,7 @@
                         
                         for (var j = 0, len_fonts = fonts.length; j < len_fonts; j++)
                         {
-                            if (fonts[j] == _t.Id)
+                            if (fonts[j] == fileId)
                             {
                                 fonts.splice(j, 1);
                                 break;
@@ -448,16 +448,16 @@
             }
         }
 
-        var memoryBuffer = file.Id.toUtf8();
+        var memoryBuffer = fileId.toUtf8();
         var pointer = Module["_malloc"](memoryBuffer.length);
     	Module.HEAP8.set(memoryBuffer, pointer);
-        Module["HEAP8"][status] = (file.Status == 0) ? 1 : 0;
+        Module["HEAP8"][status] = (fileStatus == 0) ? 1 : 0;
         return pointer;
 	};
 
     function fontToMemory(file, isCheck)
     {
-        var idBuffer = file.Id.toUtf8();
+        var idBuffer = file.GetID().toUtf8();
         var idPointer = Module["_malloc"](idBuffer.length);
         Module["HEAP8"].set(idBuffer, idPointer);
 
@@ -471,13 +471,15 @@
             }
         }
 
-		var stream_index =  file.stream_index;
-        var stream = AscFonts.g_fonts_streams[stream_index];
+		var stream_index = file.GetStreamIndex();
+        var streams = AscFonts.getFontStreams();
+
+        var stream = AscFonts.getFontStream(stream_index);
         var streamPointer = Module["_malloc"](stream.size);
         Module["HEAP8"].set(stream.data, streamPointer);
 
-        AscFonts.g_fonts_streams[stream_index] = null;
-        AscFonts.g_fonts_streams[stream_index] = streamPointer;
+        streams[stream_index] = null;
+        streams[stream_index] = streamPointer;
 
         Module["_SetFontBinary"](idPointer, streamPointer, stream.size);
 

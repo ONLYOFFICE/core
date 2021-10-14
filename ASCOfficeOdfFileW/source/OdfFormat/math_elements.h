@@ -61,7 +61,9 @@ public:
 
 
 	CPDOCCORE_DEFINE_VISITABLE();
-	friend class odf_document;
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+
+    friend class odf_document;
 };
 
 //-------------------------------------------------------------------------------------------------------------------
@@ -85,7 +87,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(office_math);
-//CP_REGISTER_OFFICE_ELEMENT3(office_math);
 //--------------------------------------------------------------------
 
 class math_semantics : public office_math_element
@@ -97,7 +98,8 @@ public:
     static const ElementType type = typeMathSemantics;	
 
     CPDOCCORE_DEFINE_VISITABLE();
-private:
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+ private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
 	virtual void serialize(std::wostream & _Wostream);
@@ -107,7 +109,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_semantics);
-//CP_REGISTER_OFFICE_ELEMENT3(math_semantics);
 //-------------------------------------------------------------------------------------------
 
 class math_annotation : public office_math_element
@@ -119,7 +120,7 @@ public:
     static const ElementType type = typeMathAnnotation;
 
     CPDOCCORE_DEFINE_VISITABLE();
-
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
@@ -132,7 +133,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_annotation);
-//CP_REGISTER_OFFICE_ELEMENT3(math_annotation);
 //--------------------------------------------------------------------
 class math_annotation_xml : public office_math_element
 {
@@ -143,6 +143,7 @@ public:
     static const ElementType type = typeMathAnnotationXml;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
@@ -154,7 +155,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_annotation_xml);
-//CP_REGISTER_OFFICE_ELEMENT3(math_annotation_xml);
 //--------------------------------------------------------------------
 }
 }

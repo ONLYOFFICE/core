@@ -47,6 +47,7 @@ namespace cpdoccore {
 		static const ElementType type = typeMSub;
 	
         CPDOCCORE_DEFINE_VISITABLE();
+        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -58,7 +59,6 @@ namespace cpdoccore {
 	};
 
 	CP_REGISTER_OFFICE_ELEMENT2(math_msub);
-	//CP_REGISTER_OFFICE_ELEMENT3(math_msub);
 	//--------------------------------------------------------------------
 	class math_msup : public office_math_element
 	{
@@ -69,6 +69,7 @@ namespace cpdoccore {
 		static const ElementType type = typeMSup;
 
         CPDOCCORE_DEFINE_VISITABLE();
+        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -80,7 +81,6 @@ namespace cpdoccore {
 	};
 
 	CP_REGISTER_OFFICE_ELEMENT2(math_msup);
-	//CP_REGISTER_OFFICE_ELEMENT3(math_msup);
 
 	//--------------------------------------------------------------------
 	class math_msubsup : public office_math_element
@@ -92,6 +92,7 @@ namespace cpdoccore {
 		static const ElementType type = typeMSubSup;
 
         CPDOCCORE_DEFINE_VISITABLE();
+        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -101,11 +102,8 @@ namespace cpdoccore {
 
 		office_element_ptr_array    content_;
 	};
-
 	CP_REGISTER_OFFICE_ELEMENT2(math_msubsup);
-	//CP_REGISTER_OFFICE_ELEMENT3(math_msubsup);
-
-	//--------------------------------------------------------------------
+//--------------------------------------------------------------------
 	class math_none : public office_math_element
 	{
 	public:
@@ -115,6 +113,7 @@ namespace cpdoccore {
 		static const ElementType type = typeMNone;
 
         CPDOCCORE_DEFINE_VISITABLE();
+        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -124,7 +123,6 @@ namespace cpdoccore {
 
 		office_element_ptr_array    content_;
 	};
-
 	CP_REGISTER_OFFICE_ELEMENT2(math_none);
 	//CP_REGISTER_OFFICE_ELEMENT3(math_none);
 
@@ -138,6 +136,7 @@ namespace cpdoccore {
 		static const ElementType type = typeMPreScripts;
 
         CPDOCCORE_DEFINE_VISITABLE();
+        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -145,11 +144,8 @@ namespace cpdoccore {
 
 		virtual void serialize(std::wostream & _Wostream);
 	};
-
 	CP_REGISTER_OFFICE_ELEMENT2(math_mprescripts);
-	//CP_REGISTER_OFFICE_ELEMENT3(math_mprescripts);
-
-	//--------------------------------------------------------------------
+//--------------------------------------------------------------------
 	class math_mmultiscripts : public office_math_element
 	{
 	public:
@@ -159,6 +155,7 @@ namespace cpdoccore {
 		static const ElementType type = typeMMultiScripts;
 
         CPDOCCORE_DEFINE_VISITABLE();
+        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -170,11 +167,8 @@ namespace cpdoccore {
 		office_element_ptr_array pre_content_;
 		bool bSeparate = false;
 	};
-
 	CP_REGISTER_OFFICE_ELEMENT2(math_mmultiscripts);
-	//CP_REGISTER_OFFICE_ELEMENT3(math_mmultiscripts);
-
-	//--------------------------------------------------------------------
+//--------------------------------------------------------------------
 	class math_munderover : public office_math_element
 	{
 	public:
@@ -184,6 +178,7 @@ namespace cpdoccore {
 		static const ElementType type = typeMUnderOver;
 
         CPDOCCORE_DEFINE_VISITABLE();
+        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -193,11 +188,8 @@ namespace cpdoccore {
 
 		office_element_ptr_array    content_; //3 exact - base, under, over
 	};
-
 	CP_REGISTER_OFFICE_ELEMENT2(math_munderover);
-	//CP_REGISTER_OFFICE_ELEMENT3(math_munderover);
-
-	//--------------------------------------------------------------------
+//--------------------------------------------------------------------
 	class math_mover : public office_math_element
 	{
 	public:
@@ -207,6 +199,7 @@ namespace cpdoccore {
 		static const ElementType type = typeMOver;
 
         CPDOCCORE_DEFINE_VISITABLE();
+        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
         _CP_OPT(Bool)	accent;
 	private:
@@ -217,11 +210,8 @@ namespace cpdoccore {
 
 		office_element_ptr_array    content_;
 	};
-
 	CP_REGISTER_OFFICE_ELEMENT2(math_mover);
-	//CP_REGISTER_OFFICE_ELEMENT3(math_mover);
-
-	//--------------------------------------------------------------------
+//--------------------------------------------------------------------
 	class math_munder : public office_math_element
 	{
 	public:
@@ -231,6 +221,7 @@ namespace cpdoccore {
 		static const ElementType type = typeMUnder;
 
         CPDOCCORE_DEFINE_VISITABLE();
+        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -240,9 +231,7 @@ namespace cpdoccore {
 
 		office_element_ptr_array    content_;
 	};
-
 	CP_REGISTER_OFFICE_ELEMENT2(math_munder);
-	//CP_REGISTER_OFFICE_ELEMENT3(math_munder);
-	//--------------------------------------------------------------------
+//--------------------------------------------------------------------
 	}
 }

@@ -139,12 +139,6 @@ const wchar_t * math_msgroup::ns	= L"math";
 const wchar_t * math_msgroup::name	= L"msgroup";
 //----------------------------------------------------------------------------------------------------
 
-
-void math_msgroup::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-	CP_CREATE_ELEMENT(content_);
-}
-
 void math_msgroup::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
@@ -177,12 +171,6 @@ const wchar_t * math_mlongdiv::ns	= L"math";
 const wchar_t * math_mlongdiv::name	= L"mlongdiv";
 //----------------------------------------------------------------------------------------------------
 
-
-void math_mlongdiv::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-	CP_CREATE_ELEMENT(content_);
-}
-
 void math_mlongdiv::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
 	CP_CREATE_ELEMENT(content_);
@@ -212,12 +200,6 @@ void math_mlongdiv::serialize(std::wostream & _Wostream)
 const wchar_t * math_mscarry::ns	= L"math";
 const wchar_t * math_mscarry::name	= L"mscarry";
 //----------------------------------------------------------------------------------------------------
-
-
-void math_mscarry::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-	CP_CREATE_ELEMENT(content_);
-}
 
 void math_mscarry::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
@@ -249,12 +231,6 @@ void math_mscarry::serialize(std::wostream & _Wostream)
 const wchar_t * math_mscarries::ns		= L"math";
 const wchar_t * math_mscarries::name	= L"mscarries";
 //----------------------------------------------------------------------------------------------------
-
-
-void math_mscarries::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
-{
-	CP_CREATE_ELEMENT(content_);
-}
 
 void math_mscarries::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {

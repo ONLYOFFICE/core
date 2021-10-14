@@ -55,6 +55,7 @@ namespace cpdoccore {
 			math_mrow();
 
             CPDOCCORE_DEFINE_VISITABLE();
+            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -65,10 +66,8 @@ namespace cpdoccore {
 			office_element_ptr_array    content_;
 			bool						next_element_to_prev_;
 		};
-
 		CP_REGISTER_OFFICE_ELEMENT2(math_mrow);
-		//CP_REGISTER_OFFICE_ELEMENT3(math_mrow);
-		//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 		class math_mfrac : public office_math_element
 		{
 		public:
@@ -78,6 +77,7 @@ namespace cpdoccore {
 			static const ElementType type = typeMFrac;
 
             CPDOCCORE_DEFINE_VISITABLE();
+            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
             _CP_OPT(Bool)				bevelled;
 		private:
@@ -92,10 +92,8 @@ namespace cpdoccore {
 			//numalign left, central,right
 			//denomalign
 		};
-
 		CP_REGISTER_OFFICE_ELEMENT2(math_mfrac);
-		//CP_REGISTER_OFFICE_ELEMENT3(math_mfrac);
-		//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 		class math_msqrt : public office_math_element
 		{
 		public:
@@ -105,6 +103,7 @@ namespace cpdoccore {
 			static const ElementType type = typeMSqrt;
 
             CPDOCCORE_DEFINE_VISITABLE();
+            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -115,9 +114,7 @@ namespace cpdoccore {
 			office_element_ptr_array    content_;
 		};
 		CP_REGISTER_OFFICE_ELEMENT2(math_msqrt);
-		//CP_REGISTER_OFFICE_ELEMENT3(math_msqrt);
-
-		//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 		class math_mroot : public office_math_element
 		{
 		public:
@@ -127,6 +124,7 @@ namespace cpdoccore {
 			static const ElementType type = typeMRoot;
 
             CPDOCCORE_DEFINE_VISITABLE();
+            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -137,9 +135,7 @@ namespace cpdoccore {
 			office_element_ptr_array    content_;
 		};
 		CP_REGISTER_OFFICE_ELEMENT2(math_mroot);
-		//CP_REGISTER_OFFICE_ELEMENT3(math_mroot);
-
-		//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 		class math_mstyle : public office_math_element
 		{
 		public:
@@ -149,6 +145,7 @@ namespace cpdoccore {
 			static const ElementType type = typeMStyle;
 
             CPDOCCORE_DEFINE_VISITABLE();
+            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 			_CP_OPT(color)				color_;
 
@@ -165,8 +162,7 @@ namespace cpdoccore {
 			_CP_OPT(font_weight)		fontweight_;
 		};
 		CP_REGISTER_OFFICE_ELEMENT2(math_mstyle);
-		//CP_REGISTER_OFFICE_ELEMENT3(math_mstyle);
-		//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 
 		class math_menclose : public office_math_element
 		{
@@ -187,9 +183,7 @@ namespace cpdoccore {
 			office_element_ptr_array    content_;
 		};
 		CP_REGISTER_OFFICE_ELEMENT2(math_menclose);
-		//CP_REGISTER_OFFICE_ELEMENT3(math_menclose);
-		//--------------------------------------------------------------------------------------
-
+//--------------------------------------------------------------------------------------
 		class math_mfenced : public office_math_element
 		{
 		public:
@@ -199,6 +193,7 @@ namespace cpdoccore {
 			static const ElementType type = typeMFenced;
 
             CPDOCCORE_DEFINE_VISITABLE();
+            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -209,9 +204,7 @@ namespace cpdoccore {
 			office_element_ptr_array    content_;
 		};
 		CP_REGISTER_OFFICE_ELEMENT2(math_mfenced);
-		//CP_REGISTER_OFFICE_ELEMENT3(math_mfenced);
-		//--------------------------------------------------------------------------------------
-
+  //--------------------------------------------------------------------------------------
 		class math_mpadded : public office_math_element
 		{
 		public:
@@ -221,6 +214,7 @@ namespace cpdoccore {
 			static const ElementType type = typeMPadded;
 
             CPDOCCORE_DEFINE_VISITABLE();
+            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -231,8 +225,7 @@ namespace cpdoccore {
 			office_element_ptr_array    content_;
 		};
 		CP_REGISTER_OFFICE_ELEMENT2(math_mpadded);
-		//CP_REGISTER_OFFICE_ELEMENT3(math_mpadded);
-		//--------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 		//merror
 		//mphantom
 	}

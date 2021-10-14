@@ -45,6 +45,7 @@ public:
     static const ElementType type = typeMTable;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -56,7 +57,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mtable);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mtable);
 //--------------------------------------------------------------------
 
 class math_malignmark : public office_math_element
@@ -68,6 +68,7 @@ public:
     static const ElementType type = typeMAlignMark;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -79,7 +80,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_malignmark);
-//CP_REGISTER_OFFICE_ELEMENT3(math_malignmark);
 //--------------------------------------------------------------------
 
 class math_maligngroup : public office_math_element
@@ -91,6 +91,7 @@ public:
     static const ElementType type = typeMAlignGroup;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -102,7 +103,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_maligngroup);
-//CP_REGISTER_OFFICE_ELEMENT3(math_maligngroup);
 //--------------------------------------------------------------------
 
 class math_mtd : public office_math_element
@@ -114,6 +114,7 @@ public:
     static const ElementType type = typeMTd;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -125,7 +126,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mtd);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mtd);
 //--------------------------------------------------------------------
 
 class math_mlabeledtr : public office_math_element
@@ -137,6 +137,7 @@ public:
     static const ElementType type = typeMLabelEdTr;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -148,7 +149,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mlabeledtr);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mlabeledtr);
 //--------------------------------------------------------------------
 
 class math_mtr : public office_math_element
@@ -160,6 +160,7 @@ public:
     static const ElementType type = typeMTr;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -171,7 +172,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mtr);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mtr);
 //--------------------------------------------------------------------
 }
 }

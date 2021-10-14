@@ -47,6 +47,7 @@ public:
     static const ElementType type = typeMI;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
@@ -62,7 +63,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mi);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mi);
 //--------------------------------------------------------------------
 class math_mo : public office_math_element
 {
@@ -73,6 +73,7 @@ public:
     static const ElementType type = typeMO;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
     _CP_OPT(bool)				fence_;
 	_CP_OPT(bool)				stretchy_;
@@ -91,7 +92,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mo);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mo);
 //--------------------------------------------------------------------
 class math_mn : public office_math_element
 {
@@ -102,6 +102,7 @@ public:
     static const ElementType type = typeMN;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -118,7 +119,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mn);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mn);
 //--------------------------------------------------------------------
 class math_mtext : public office_math_element
 {
@@ -129,6 +129,7 @@ public:
     static const ElementType type = typeMText;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -145,7 +146,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mtext);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mtext);
 //--------------------------------------------------------------------
 class math_mspace : public office_math_element
 {
@@ -156,6 +156,7 @@ public:
     static const ElementType type = typeMSpace;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -170,7 +171,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mspace);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mspace);
 //--------------------------------------------------------------------
 class math_ms : public office_math_element
 {
@@ -181,6 +181,7 @@ public:
     static const ElementType type = typeMS;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -195,7 +196,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_ms);
-//CP_REGISTER_OFFICE_ELEMENT3(math_ms);
 //--------------------------------------------------------------------
 class math_mglyph : public office_math_element
 {
@@ -206,6 +206,7 @@ public:
     static const ElementType type = typeMGlyph;
 
     CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -220,7 +221,6 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_mglyph);
-//CP_REGISTER_OFFICE_ELEMENT3(math_mglyph);
 //--------------------------------------------------------------------
 }
 }

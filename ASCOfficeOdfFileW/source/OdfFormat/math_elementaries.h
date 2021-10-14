@@ -48,8 +48,6 @@ public:
 
 
 private:
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
 	virtual void serialize(std::wostream & _Wostream);
@@ -73,8 +71,6 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 private:
-     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
 	virtual void serialize(std::wostream & _Wostream);
@@ -98,8 +94,6 @@ public:
 	CPDOCCORE_DEFINE_VISITABLE();
 
 private:
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
 	virtual void serialize(std::wostream & _Wostream);
@@ -123,7 +117,6 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 private:
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
 	virtual void serialize(std::wostream & _Wostream);
@@ -147,8 +140,6 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 private:
-     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
 	virtual void serialize(std::wostream & _Wostream);
@@ -171,8 +162,6 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 private:
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
 	virtual void serialize(std::wostream & _Wostream);
@@ -194,11 +183,9 @@ public:
     static const ElementType type = typeMSCarry;
 
     CPDOCCORE_DEFINE_VISITABLE();
-
+    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 private:
-    virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+    virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
 	virtual void serialize(std::wostream & _Wostream);
 

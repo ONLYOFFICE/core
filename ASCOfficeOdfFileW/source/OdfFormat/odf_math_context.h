@@ -88,7 +88,7 @@ namespace cpdoccore {
 
 			void end_math();
 
-			std::wofstream debug_stream;
+            //std::wofstream debug_stream;
 
 			bool isEmpty();
 		private:

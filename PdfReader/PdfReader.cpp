@@ -590,6 +590,11 @@ return 0;
     {
         if (!m_pInternal->m_pPDFDocument)
             return NULL;
+        double dWidth, dHeight;
+        double dDpiX, dDpiY;
+        GetPageInfo(nPageIndex, &dWidth, &dHeight, &dDpiX, &dDpiY);
+        double dKoefX = (double)nRasterW / dWidth;
+        double dKoefY = (double)nRasterH / dHeight;
         nPageIndex++;
         TextOutputControl *pControl = new TextOutputControl();
         pControl->mode = textOutPhysLayout;
@@ -620,7 +625,7 @@ return 0;
                 int amount = pWord->getLength();
 
                 oRes.WriteString((BYTE*)sFont->getCString(), sFont->getLength());
-                oRes.AddDouble(dFontSize);
+                oRes.AddDouble(dFontSize * dKoefY);
                 oRes.AddInt(rot);
                 oRes.AddInt(amount);
                 for (int j = 0; j < amount; j++)
@@ -629,9 +634,8 @@ return 0;
                     pWord->getCharBBox(j, &x1, &y1, &x2, &y2);
                     Unicode ch = pWord->getChar(j);
 
-                    // TODO: домножение координат
-                    oRes.AddDouble(x1);
-                    oRes.AddDouble(y1);
+                    oRes.AddDouble(x1 * dKoefX);
+                    oRes.AddDouble(y1 * dKoefY);
                     oRes.AddInt(ch);
                 }
 
@@ -644,11 +648,10 @@ return 0;
                     rot = pWord->getRotation();
 
                 oRes.WriteString((BYTE*)sWord->getCString(), sWord->getLength());
-                // TODO: домножение координат
-                oRes.AddDouble(x1);
-                oRes.AddDouble(y1);
-                oRes.AddDouble(x2 - x1);
-                oRes.AddDouble(y2 - y1);
+                oRes.AddDouble(x1 * dKoefX);
+                oRes.AddDouble(y1 * dKoefY);
+                oRes.AddDouble((x2 - x1) * dKoefX);
+                oRes.AddDouble((y2 - y1) * dKoefY);
                 */
             }
         }
@@ -666,6 +669,11 @@ return 0;
         if (!m_pInternal->m_pPDFDocument)
             return NULL;
 
+        double dWidth, dHeight;
+        double dDpiX, dDpiY;
+        GetPageInfo(nPageIndex, &dWidth, &dHeight, &dDpiX, &dDpiY);
+        double dKoefX = (double)nRasterW / dWidth;
+        double dKoefY = (double)nRasterH / dHeight;
         nPageIndex++;
         NSWasm::CData oRes;
         oRes.SkipLen();
@@ -715,11 +723,10 @@ return 0;
                 oRes.WriteString((BYTE*)str->getCString(), str->getLength());
             else
                 oRes.WriteString(NULL, 0);
-            // TODO: домножение координат
-            oRes.AddDouble(x1);
-            oRes.AddDouble(y1);
-            oRes.AddDouble(x2 - x1);
-            oRes.AddDouble(y2 - y1);
+            oRes.AddDouble(x1 * dKoefX);
+            oRes.AddDouble(y1 * dKoefY);
+            oRes.AddDouble((x2 - x1) * dKoefX);
+            oRes.AddDouble((y2 - y1) * dKoefY);
             RELEASEOBJECT(str);
         }
         oRes.WriteLen();

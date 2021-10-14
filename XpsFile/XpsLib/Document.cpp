@@ -318,11 +318,11 @@ namespace XPS
 		return NULL;
 	}
 #endif
-	void CDocument::DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak, int nRasterW, int nRasterH)
+	void CDocument::DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak)
 	{
 		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
 		if (oIter != m_mPages.end())
-			oIter->second->Draw(pRenderer, pbBreak, nRasterW, nRasterH);
+			oIter->second->Draw(pRenderer, pbBreak);
 	}
 	void CDocument::Close()
 	{

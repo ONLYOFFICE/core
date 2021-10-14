@@ -77,7 +77,6 @@ public:
 
 CXpsFile::CXpsFile(NSFonts::IApplicationFonts* pAppFonts)
 {
-    nLastW = -1, nLastH = -1;
     m_pInternal = new CXpsFile_Private(pAppFonts);
 }
 CXpsFile::~CXpsFile()
@@ -174,11 +173,10 @@ void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
     if (!m_pInternal->m_pDocument)
 		return;
 
-    m_pInternal->m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak, nLastW, nLastH);
+    m_pInternal->m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak);
 }
 BYTE* CXpsFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip)
 {
-    nLastW = nRasterW, nLastH = nRasterH;
     NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
     NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
     pFontCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());

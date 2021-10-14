@@ -84,7 +84,6 @@ namespace XPS
 		m_pDocument    = pDocument;
 		#ifdef BUILDING_WASM_MODULE
 		m_pGlyphs      = NULL;
-		nLastW = -1, nLastH = -1;
 		#endif
 	}
 	Page::~Page()
@@ -203,10 +202,9 @@ namespace XPS
 		return res;
 	}
 #endif
-	void Page::Draw(IRenderer* pRenderer, bool* pbBreak, int nRasterW, int nRasterH)
+	void Page::Draw(IRenderer* pRenderer, bool* pbBreak)
 	{
 		#ifdef BUILDING_WASM_MODULE
-		nLastW = nRasterW, nLastH = nRasterH;
 		RELEASEOBJECT(m_pGlyphs);
 		m_vLinks.clear();
 		#endif

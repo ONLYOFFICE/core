@@ -55,7 +55,7 @@ namespace XPS
 		~Page();
 
 		void GetSize(int& nW, int& nH) const;
-		void Draw(IRenderer* pRenderer, bool* pbBreak, int nRasterW, int nRasterH);
+		void Draw(IRenderer* pRenderer, bool* pbBreak);
 
     #ifdef BUILDING_WASM_MODULE
 		BYTE* GetGlyphs();
@@ -73,7 +73,6 @@ namespace XPS
             std::wstring sLink;
         };
         std::vector<CPageLink> m_vLinks;
-        int nLastW, nLastH;
     #endif
 
 	private:

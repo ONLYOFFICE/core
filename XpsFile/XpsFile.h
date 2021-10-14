@@ -78,7 +78,6 @@ public:
     #endif
 
 private:
-    int nLastW, nLastH;
     CXpsFile_Private* m_pInternal;
 };
 

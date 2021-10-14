@@ -54,7 +54,7 @@ namespace XPS
 		bool Read(IFolder* pFolder);
 		int  GetPageCount() const;
 		void GetPageSize(int nPageIndex, int& nW, int& nH);
-		void DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak, int nRasterW, int nRasterH);
+		void DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak);
 		void Close();
 		CStaticResource* GetStaticResource(const wchar_t* wsPath);
 

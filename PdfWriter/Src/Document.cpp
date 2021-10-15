@@ -316,6 +316,10 @@ namespace PdfWriter
 	{
 		m_unCompressMode = unMode;
 	}
+	unsigned int CDocument::GetCompressionMode() const
+	{
+		return m_unCompressMode;
+	}
 	void CDocument::SetPDFAConformanceMode(bool isPDFA)
 	{
 		m_bPDFAConformance = isPDFA;		

@@ -46,6 +46,7 @@ namespace PdfWriter
 	class CResourcesDict;
 	class CFontDict;
 	class CRadioGroupField;
+	class CImageDict;
 
 	class CFieldBase : public CDictObject
 	{
@@ -208,7 +209,7 @@ namespace PdfWriter
 		CPictureField(CXref* pXref, CDocument* pDocument);
 		virtual void SetFieldName(const std::string& sName, bool isSkipCheck = false);
 		virtual void SetFieldName(const std::wstring& wsName, bool isSkipCheck = false);
-		void SetAppearance();
+		void SetAppearance(CImageDict* pImage = NULL);
 		void SetScaleType(const EScaleType& eType);
 		void SetConstantProportions(const bool& bConstant);
 		void SetRespectBorders(const bool& bRespectBorders);
@@ -216,6 +217,11 @@ namespace PdfWriter
 
 	private:
 		CDictObject* m_pIF;
+		EScaleType   m_eScaleType;
+		bool         m_bConstantProportions;
+		bool         m_bRespectBorders;
+		double       m_dShiftX;
+		double       m_dShiftY;
 	};
 
 	class CAnnotAppearance : public CDictObject
@@ -261,7 +267,7 @@ namespace PdfWriter
 	public:
 		CAnnotAppearanceObject(CXref* pXRef, CFieldBase* pField);
 		void DrawSimpleText(const std::wstring& wsText, unsigned char* pCodes, unsigned int unCount, const char* sFont, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0, double dR = 0.0, double dG = 0.0, double dB = 0.0, const char* sExtGrStateName = NULL, double dW = 1.0, double dH = 1.0, double* pShifts = NULL, unsigned int unShiftsCount = 0);
-		void DrawPicturePlaceholder();		
+		void DrawPicture(const char* sImageName = NULL, const double& dX = 0.0, const double& dY = 0.0, const double& dW = 0.0, const double& dH = 0.0, const bool& bRespectBorder = false);
 		void StartDrawText(const char* sFontName, const double& dFontSize, const double& dR, const double& dG, const double& dB, const char* sExtGStateName, const double& dWidth, const double& dHeight);
 		void DrawTextLine(const double& dX, const double& dY, const unsigned char* pCodes, const unsigned int& unCount, const double* pShifts, const unsigned int& unShiftsCount);
 		void DrawTextLine(const double &dX, const double &dY, const std::wstring& wsText);

@@ -422,6 +422,14 @@ namespace PdfWriter
 
 		Add("Mask", pMask);
 	}
+	unsigned int CImageDict::GetWidth() const
+	{
+		return ((unsigned int)((CNumberObject*)this->Get("Width"))->Get());
+	}
+	unsigned int CImageDict::GetHeight() const
+	{
+		return ((unsigned int)((CNumberObject*)this->Get("Height"))->Get());
+	}
 	//----------------------------------------------------------------------------------------
 	// CJbig2Global
 	//----------------------------------------------------------------------------------------

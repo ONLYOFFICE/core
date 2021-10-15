@@ -102,6 +102,7 @@ namespace PdfWriter
         void              SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword);
 		void              SetPermission(unsigned int unPermission);
 		void              SetCompressionMode(unsigned int unMode);
+		unsigned int      GetCompressionMode() const;
 		void			  SetDocumentID(const std::wstring & wsDocumentID);
 
 		void              SetPDFAConformanceMode(bool isPDFA);

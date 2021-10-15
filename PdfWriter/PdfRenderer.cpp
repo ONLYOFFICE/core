@@ -1777,8 +1777,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		CPictureField* pField = m_pDocument->CreatePictureField();
 		pFieldBase = static_cast<CFieldBase*>(pField);
-		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
-		pField->SetAppearance();
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));		
 		pField->SetConstantProportions(pPr->IsConstantProportions());
 		pField->SetRespectBorders(pPr->IsRespectBorders());
 		pField->SetScaleType(static_cast<CPictureField::EScaleType>(pPr->GetScaleType()));
@@ -1814,7 +1813,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		}
 
 		pFieldBase->SetRequiredFlag(oInfo.IsRequired());
-		pFieldBase->SetFieldHint(oInfo.GetHelpText());		
+		pFieldBase->SetFieldHint(oInfo.GetHelpText());
 
 		if (!bRadioButton)
 		{
@@ -1823,6 +1822,13 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 				pFieldBase->SetFieldName(wsKey);
 			else
 				pFieldBase->SetFieldName(m_oFieldsManager.GetNewFieldName());
+		}
+
+		if (oInfo.IsPicture())
+		{
+			CPictureField* pField = dynamic_cast<CPictureField*>(pFieldBase);
+			if (pField)
+				pField->SetAppearance();
 		}
 	}
 

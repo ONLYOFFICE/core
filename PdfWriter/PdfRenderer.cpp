@@ -1781,7 +1781,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		pField->SetConstantProportions(pPr->IsConstantProportions());
 		pField->SetRespectBorders(pPr->IsRespectBorders());
 		pField->SetScaleType(static_cast<CPictureField::EScaleType>(pPr->GetScaleType()));
-		pField->SetShift(pPr->GetShiftX() / 1000.0, (1000 - pPr->GetShiftY()) / 1000.0);
+		pField->SetShift(pPr->GetShiftX() / 1000.0, (1000 - pPr->GetShiftY()) / 1000.0);		
 	}
 
 	if (pFieldBase)
@@ -1828,7 +1828,18 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		{
 			CPictureField* pField = dynamic_cast<CPictureField*>(pFieldBase);
 			if (pField)
-				pField->SetAppearance();
+			{
+				const CFormFieldInfo::CPictureFormPr* pPr = oInfo.GetPicturePr();
+				std::wstring wsPath = pPr->GetPicturePath();
+				CImageDict* pImage = NULL;
+				if (wsPath.length())
+				{
+					Aggplus::CImage oImage(wsPath);
+					pImage = LoadImage(&oImage, 255);
+				}
+
+				pField->SetAppearance(pImage);
+			}
 		}
 	}
 

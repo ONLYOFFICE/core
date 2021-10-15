@@ -548,13 +548,22 @@ public:
 		{
 			return m_lShiftY;
 		}
+		void SetPicturePath(const std::wstring& wsPath)
+		{
+			m_wsPicturePath = wsPath;
+		}
+		const std::wstring& GetPicturePath() const
+		{
+			return m_wsPicturePath;
+		}
 
 	private:
-		EScaleType m_eScaleType;
-		bool       m_bRespectBorders;
-		bool       m_bConstantProportions;
-		LONG       m_lShiftX;
-		LONG       m_lShiftY;
+		EScaleType   m_eScaleType;
+		bool         m_bRespectBorders;
+		bool         m_bConstantProportions;
+		LONG         m_lShiftX;
+		LONG         m_lShiftY;
+		std::wstring m_wsPicturePath;
 	};
 
 public:

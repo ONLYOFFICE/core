@@ -536,7 +536,7 @@ return 0;
         }
         else
             pg = pLinkDest->getPageNum();
-        double dy = pLinkDest->getTop();
+        double dy = pdfDoc->getPageCropHeight(pg) - pLinkDest->getTop();
         RELEASEOBJECT(pLinkDest);
 
         out.AddInt(pg - 1);
@@ -681,6 +681,9 @@ return 0;
             GString* str = NULL;
             double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;
             pLink->getRect(&x1, &y1, &x2, &y2);
+            double height = m_pInternal->m_pPDFDocument->getPageCropHeight(nPageIndex);
+            y1 = height - y1;
+            y2 = height - y2;
 
             LinkAction* pLinkAction = pLink->getAction();
             if (!pLinkAction)

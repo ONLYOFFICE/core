@@ -153,7 +153,7 @@ int main()
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
     NSFile::CFileBinary oFile;
-    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test2.pdf", &pPdfData, nPdfBytesCount))
+    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.pdf", &pPdfData, nPdfBytesCount))
     {
         RELEASEARRAYOBJECTS(pPdfData);
         return 1;
@@ -163,12 +163,10 @@ int main()
     CGraphicsFileDrawing* test = Open(pPdfData, nPdfBytesCount);
     int* info = GetInfo(test);
     int pages_count = *info;
-    int test_page = 0;
+    int test_page = 1;
     int width  = info[test_page * 3 + 1];
     int height = info[test_page * 3 + 2];
     std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
-    width  *= 96.0 / (double)info[test_page * 3 + 3];
-    height *= 96.0 / (double)info[test_page * 3 + 3];
 
     BYTE* res = NULL;
     if (pages_count > 0)
@@ -178,7 +176,7 @@ int main()
     resFrame->put_Data(res);
     resFrame->put_Width(width);
     resFrame->put_Height(height);
-    resFrame->put_Stride(-4 * width);
+    resFrame->put_Stride(4 * width);
     resFrame->put_IsRGBA(true);
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();

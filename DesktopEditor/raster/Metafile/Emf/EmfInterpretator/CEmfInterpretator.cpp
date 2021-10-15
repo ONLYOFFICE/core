@@ -1608,7 +1608,7 @@ namespace MetaFile
         void CEmfInterpretator::HANDLE_EMR_SETPIXELV(const TEmfPointL &oPoint, const TEmfColor &oColor)
         {
                 int unExplicitRecordSize    = 20;
-                int unType                  = EMR_ROUNDRECT;
+                int unType                  = EMR_SETPIXELV;
 
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;

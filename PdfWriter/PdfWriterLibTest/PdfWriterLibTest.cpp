@@ -160,17 +160,24 @@ void TestField()
 	////pRadio3->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
 	//pRadio3->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
 
+	CImageDict* pImage = oPdf.CreateImage();
+	pImage->LoadJpeg(L"D:/1429799187_5060172-vinni-puh-idet-v-gosti.jpg", 3872, 2592);
+	//pImage->LoadJpeg(L"D:/Fry.jpg", 240, 240);
+
+	pPage->DrawImage(pImage, 0, 0, 10, 10);
+
 	CPictureField* pPictureField = oPdf.CreatePictureField();
 	pPictureField->SetRequiredFlag(false);
 	pPictureField->AddPageRect(pPage, TRect(100, 100, 500, 650));
 	pPictureField->SetFieldName(L"Pic");
 	pPictureField->SetFieldHint(L"Картинка");
-	pPictureField->SetAppearance();
 	pPictureField->SetShift(0.25, 0.75);
-	pPictureField->SetScaleType(CPictureField::EScaleType::Smaller);	
-	pPictureField->SetFieldBorder(border_subtype_Solid, TRgb(255, 0, 0), 1, 0, 0, 0);
+	pPictureField->SetScaleType(CPictureField::EScaleType::Bigger);	
+	pPictureField->SetFieldBorder(border_subtype_Solid, TRgb(255, 0, 0), 3, 0, 0, 0);
 	pPictureField->SetShd(TRgb(0, 0, 255));
 	pPictureField->SetRespectBorders(true);
+	pPictureField->SetAppearance(pImage);
+
 	
 	oPdf.SaveToFile(g_wsOutFolder + L"TestField1.pdf");
 	oPdf.Close();

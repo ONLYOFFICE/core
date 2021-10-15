@@ -35,6 +35,7 @@
 #include "Document.h"
 #include "ResourcesDictionary.h"
 #include "Types.h"
+#include "Image.h"
 
 #include <algorithm>
 #include <math.h>
@@ -376,6 +377,7 @@ namespace PdfWriter
 			pBG->Add(oRgb.b);
 			m_pMK->Add("BG", pBG);
 		}
+		m_bShd = true;
 	}
 	const TRgb& CFieldBase::GetShdColor() const
 	{
@@ -752,11 +754,10 @@ namespace PdfWriter
 		std::string sName = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsName) + "_af_image";
 		CFieldBase::SetFieldName(sName, isSkipCheck);
 	}
-	void CPictureField::SetAppearance()
+	void CPictureField::SetAppearance(CImageDict* pImage)
 	{
 		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
 		Add("AP", pAppearance);
-
 
 		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
@@ -764,7 +765,103 @@ namespace PdfWriter
 		std::string sDA = "0.909 0.941 0.992 rg";
 		Add("DA", new CStringObject(sDA.c_str()));
 
-		pNormal->DrawPicturePlaceholder();
+		if (pImage)
+		{			
+			TRect oRect = GetRect();
+
+			double dH = fabs(oRect.fTop - oRect.fBottom);
+			double dW = fabs(oRect.fRight - oRect.fLeft);
+
+			double dOriginW = pImage->GetWidth() * 72 / 96.0;
+			double dOriginH = pImage->GetHeight() * 72 / 96.0;
+
+			bool bNeedScale = (EScaleType::Always == m_eScaleType
+				|| (EScaleType::Bigger == m_eScaleType && (dOriginH > dH || dOriginW > dW))
+				|| (EScaleType::Smaller == m_eScaleType && dOriginH < dH && dOriginW < dW));
+
+			double dDstW = dOriginW;
+			double dDstH = dOriginH;
+			double dDstX = 0;
+			double dDstY = 0;
+
+			if (m_bRespectBorders && HaveBorder())
+			{
+				double dBorderSize = GetBorderSize();
+				dDstX += 2 * dBorderSize;
+				dDstY += 2 * dBorderSize;
+				dH -= 4 * dBorderSize;
+				dW -= 4 * dBorderSize;
+			}
+
+			if (bNeedScale)
+			{
+				if (!m_bConstantProportions)
+				{
+					dDstH = dH;
+					dDstW = dW;
+				}
+				else
+				{
+					double dScaleKoef = fmin(dW / dOriginW, dH / dOriginH);
+					dDstW = dScaleKoef * dOriginW;
+					dDstH = dScaleKoef * dOriginH;
+				}
+			}
+
+			dDstX += (dW - dDstW) * m_dShiftX;
+			dDstY += (dH - dDstH) * m_dShiftY;
+
+			CXObject* pForm = new CXObject();
+			CStream* pStream = new CMemoryStream();
+			pForm->SetStream(m_pXref, pStream);
+			
+#ifndef FILTER_FLATE_DECODE_DISABLED
+			if (m_pDocument->GetCompressionMode() & COMP_TEXT)
+				pForm->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+			CArrayObject* pBBox = new CArrayObject();
+			pForm->Add("BBox", pBBox);
+			pBBox->Add(0);
+			pBBox->Add(0);
+			pBBox->Add(dOriginW);
+			pBBox->Add(dOriginH);
+			pForm->Add("FormType", 1);
+			CArrayObject* pFormMatrix = new CArrayObject();
+			pForm->Add("Matrix", pFormMatrix);
+			pFormMatrix->Add(1);
+			pFormMatrix->Add(0);
+			pFormMatrix->Add(0);
+			pFormMatrix->Add(1);
+			pFormMatrix->Add(0);
+			pFormMatrix->Add(0);
+			pForm->Add("Name", "FRM");
+
+			CDictObject* pFormRes = new CDictObject();
+			CArrayObject* pFormResProcset = new CArrayObject();
+			pFormRes->Add("ProcSet", pFormResProcset);
+			pFormResProcset->Add(new CNameObject("PDF"));
+			pFormResProcset->Add(new CNameObject("ImageC"));
+			CDictObject* pFormResXObject = new CDictObject();
+			pFormRes->Add("XObject", pFormResXObject);
+			pFormResXObject->Add("Img", pImage);
+			pForm->Add("Resources", pFormRes);
+
+			pForm->Add("Subtype", "Form");
+			pForm->Add("Type", "XObject");			
+
+			pStream->WriteStr("q\012");
+			pStream->WriteReal(dOriginW);
+			pStream->WriteStr(" 0 0 ");
+			pStream->WriteReal(dOriginH);
+			pStream->WriteStr(" 0 0 cm\012/Img Do\012Q");
+
+			pFieldsResources->AddXObjectWithName("FRM", pForm);
+			pNormal->DrawPicture("FRM", dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
+		}
+		else
+		{
+			pNormal->DrawPicture();
+		}		
 	}
 	void CPictureField::SetScaleType(const EScaleType& eType)
 	{
@@ -777,7 +874,9 @@ namespace PdfWriter
 			case EScaleType::Bigger: m_pIF->Add("SW", "B"); break;
 			case EScaleType::Smaller: m_pIF->Add("SW", "S"); break;
 			case EScaleType::Never: m_pIF->Add("SW", "N"); break;
-		}
+		}		
+
+		m_eScaleType = eType;
 	}
 	void CPictureField::SetConstantProportions(const bool& bConstant)
 	{
@@ -788,6 +887,8 @@ namespace PdfWriter
 			m_pIF->Add("S", "P");
 		else
 			m_pIF->Add("S", "A");
+
+		m_bConstantProportions = bConstant;
 	}
 	void CPictureField::SetRespectBorders(const bool& bRespectBorders)
 	{
@@ -795,6 +896,8 @@ namespace PdfWriter
 			return;
 
 		m_pIF->Add("FB", !bRespectBorders);
+
+		m_bRespectBorders = bRespectBorders;
 	}
 	void CPictureField::SetShift(const double& dX, const double& dY)
 	{
@@ -808,6 +911,9 @@ namespace PdfWriter
 			pA->Add(dX);
 			pA->Add(dY);
 		}
+
+		m_dShiftX = dX;
+		m_dShiftY = dY;
 	}
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance
@@ -1078,7 +1184,7 @@ namespace PdfWriter
 		
 		m_pStream->WriteStr("Q\012EMC\012");
 	}
-	void CAnnotAppearanceObject::DrawPicturePlaceholder()
+	void CAnnotAppearanceObject::DrawPicture(const char* sImageName, const double& dX, const double& dY, const double& dImageW, const double& dImageH, const bool& bRespectBorder)
 	{
 		if (!m_pStream)
 			return;
@@ -1091,19 +1197,100 @@ namespace PdfWriter
 			dH = fabs(oRect.fBottom - oRect.fTop);
 		}
 
-		m_pStream->WriteStr("Q\0120.909 0.941 0.992 rg\0121 0 0 1 0 0 cm\012");
-		m_pStream->WriteStr("0 0 ");
-		m_pStream->WriteReal(std::max(dW, 0.0));
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(std::max(dH, 0.0));
-		m_pStream->WriteStr(" re\012f");
+		m_pStream->WriteStr("q\012");
 
-		m_pStream->WriteStr("0.909 0.941 0.992 RG\012");
-		m_pStream->WriteStr("0.5 0.5 ");
-		m_pStream->WriteReal(std::max(dW - 1, 0.0));
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(std::max(dH - 1, 0.0));
-		m_pStream->WriteStr(" re\012s\012q");
+		if (m_pField->HaveShd())
+		{
+			TRgb oColor = m_pField->GetShdColor();
+			m_pStream->WriteReal(oColor.r);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(oColor.g);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(oColor.b);
+			m_pStream->WriteStr(" rg\012");
+
+			m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
+			m_pStream->WriteStr("0 0 ");
+			m_pStream->WriteReal(fmax(dW, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(fmax(dH, 0.0));
+			m_pStream->WriteStr(" re\012f\012");
+		}
+		else if (!sImageName)
+		{
+			m_pStream->WriteStr("0.909 0.941 0.992 rg\0121 0 0 1 0 0 cm\012");
+			m_pStream->WriteStr("0 0 ");
+			m_pStream->WriteReal(fmax(dW, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(fmax(dH, 0.0));
+			m_pStream->WriteStr(" re\012f\012");
+		}
+
+		if (m_pField->HaveBorder())
+		{
+			TRgb oColor = m_pField->GetBorderColor();
+
+			m_pStream->WriteReal(oColor.r);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(oColor.g);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(oColor.b);
+			m_pStream->WriteStr(" RG\012");
+
+			double dBorderSize   = m_pField->GetBorderSize();
+			double dBorderSize_2 = dBorderSize / 2;
+			m_pStream->WriteReal(dBorderSize);
+			m_pStream->WriteStr(" w\0120 j\0120 J\012");
+
+			m_pStream->WriteReal(dBorderSize_2);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dBorderSize_2);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(fmax(dW - dBorderSize, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(fmax(dH - dBorderSize, 0.0));
+			m_pStream->WriteStr(" re\012S\012");
+
+			if (bRespectBorder && sImageName)
+			{
+				m_pStream->WriteReal(2 * dBorderSize);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(2 * dBorderSize);
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(fmax(dW - 4 * dBorderSize, 0.0));
+				m_pStream->WriteChar(' ');
+				m_pStream->WriteReal(fmax(dH - 4 * dBorderSize, 0.0));
+				m_pStream->WriteStr(" re\012W\012n\012");
+			}
+
+		}
+		else if (!sImageName)
+		{
+			m_pStream->WriteStr("0.909 0.941 0.992 RG\012");
+			m_pStream->WriteStr("0.5 0.5 ");
+			m_pStream->WriteReal(fmax(dW - 1, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(fmax(dH - 1, 0.0));
+			m_pStream->WriteStr(" re\012s\012");
+		}
+
+		if (sImageName)
+		{
+
+			m_pStream->WriteReal(dImageW);
+			m_pStream->WriteStr(" 0 0 ");
+			m_pStream->WriteReal(dImageH);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dX);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dY);
+			m_pStream->WriteStr(" cm\012");
+
+			m_pStream->WriteEscapeName(sImageName);
+			m_pStream->WriteStr(" Do\012");
+		}
+
+		m_pStream->WriteStr("Q");
 	}	
 	void CAnnotAppearanceObject::StartDrawText(const char* sFontName, const double& dFontSize, const double& dR, const double& dG, const double& dB, const char* sExtGStateName, const double& dWidth, const double& dHeight)
 	{

@@ -25,7 +25,7 @@ void CStatisticsWidget::SetMainWindow(QWidget *pMainWidget)
                 pMainWidget->setEnabled(false);
 }
 
-void CStatisticsWidget::SetStatistics(QMap<QString, unsigned int>* mStaticstics)
+void CStatisticsWidget::SetStatistics(const QMap<QString, unsigned int>& mStaticstics)
 {
         CMapModel *pMapModel = new CMapModel;
         pMapModel->SetMap(mStaticstics);

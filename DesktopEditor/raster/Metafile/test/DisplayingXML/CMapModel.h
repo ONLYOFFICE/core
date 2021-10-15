@@ -14,10 +14,10 @@ class CMapModel : public QAbstractTableModel
         int rowCount(const QModelIndex& parent = QModelIndex()) const;
         int columnCount(const QModelIndex& parent = QModelIndex()) const;
         QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-        void SetMap(QMap<QString, unsigned int>* map);
+        void SetMap(const QMap<QString, unsigned int>& map);
 
     private:
-        QMap<QString, unsigned int> *m_pMap;
+        QMap<QString, unsigned int> m_pMap;
 };
 
 #endif // CMAPMODEL_H

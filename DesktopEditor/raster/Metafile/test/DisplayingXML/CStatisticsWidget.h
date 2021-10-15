@@ -16,7 +16,7 @@ class CStatisticsWidget : public QWidget
         ~CStatisticsWidget();
 
         void SetMainWindow(QWidget *pMainWidget);
-        void SetStatistics(QMap<QString, unsigned int>* mStaticstics);
+        void SetStatistics(const QMap<QString, unsigned int>& mStaticstics);
 
     private:
         Ui::CStatisticsWidget *ui;

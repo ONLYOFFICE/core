@@ -80,13 +80,6 @@ void CMetafileTreeView::Clear()
                 delete pModel;
                 setModel(NULL);
         }
-
-        m_mStatistics.clear();
-}
-
-QMap<QString, unsigned int>* CMetafileTreeView::GetStatistics()
-{
-        return &m_mStatistics;
 }
 
 bool CMetafileTreeView::SaveInXmlFile(const std::wstring& wsSaveFilePath)
@@ -110,10 +103,7 @@ void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem*
         if (oXmlNode.GetChilds(oXmlChilds))
         {
                 if (unLevel == 2)
-                {
-                        ++m_mStatistics[QString::fromStdWString(oXmlNode.GetName())];
                         oStandartItem->setData("Record", 3);
-                }
 
                 for (unsigned int i = 0; i < oXmlChilds.GetCount(); ++i)
                 {

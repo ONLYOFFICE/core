@@ -167,10 +167,26 @@ void CMetafileTreeWidget::ClearTree()
                 m_pMetafileTreeView->Clear();
 }
 
-QMap<QString, unsigned int> *CMetafileTreeWidget::GetStatistics()
+QMap<QString, unsigned int> CMetafileTreeWidget::GetStatistics()
 {
         if (NULL != m_pMetafileTreeView)
-                return m_pMetafileTreeView->GetStatistics();
+        {
+                QMap<QString, unsigned int> mStatictics;
+                unsigned int unIndexRecord = 0;
+
+                QModelIndex oMainIndex = m_pMetafileTreeView->model()->index(0, 0);
+                QModelIndex oIndex = oMainIndex.child(unIndexRecord++, 0);
+
+                while (oIndex.isValid())
+                {
+                        QString qsNameRecord = oIndex.data(2).toString();
+                        qsNameRecord = qsNameRecord.mid(1, qsNameRecord.length() - 2);
+                        ++mStatictics[qsNameRecord];
+                        oIndex = oMainIndex.child(unIndexRecord++, 0);
+                }
+
+                return mStatictics;
+        }
 
         return {};
 }

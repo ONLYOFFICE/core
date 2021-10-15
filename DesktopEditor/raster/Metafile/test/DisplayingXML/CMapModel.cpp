@@ -1,8 +1,7 @@
 #include "CMapModel.h"
 
 CMapModel::CMapModel(QObject *parent) :
-    QAbstractTableModel(parent),
-    m_pMap(NULL)
+    QAbstractTableModel(parent)
 {}
 
 CMapModel::~CMapModel()
@@ -10,10 +9,7 @@ CMapModel::~CMapModel()
 
 int CMapModel::rowCount(const QModelIndex &parent) const
 {
-        if (NULL != m_pMap)
-                return m_pMap->count();
-
-        return 0;
+        return m_pMap.count();
 }
 
 int CMapModel::columnCount(const QModelIndex &parent) const
@@ -23,10 +19,10 @@ int CMapModel::columnCount(const QModelIndex &parent) const
 
 QVariant CMapModel::data(const QModelIndex &index, int role) const
 {
-        if (!m_pMap || !index.isValid() || index.row() >= m_pMap->count() || role != Qt::DisplayRole)
+        if (m_pMap.isEmpty() || !index.isValid() || index.row() >= m_pMap.count() || role != Qt::DisplayRole)
                 return QVariant();
 
-        QMap<class QString,unsigned int>::const_iterator it = m_pMap->cbegin();
+        QMap<class QString,unsigned int>::const_iterator it = m_pMap.cbegin();
         it += index.row();
 
         if (index.column() == 0)
@@ -37,7 +33,7 @@ QVariant CMapModel::data(const QModelIndex &index, int role) const
         return QVariant();
 }
 
-void CMapModel::SetMap(QMap<QString, unsigned int> *map)
+void CMapModel::SetMap(const QMap<QString, unsigned int>& map)
 {
         m_pMap = map;
 }

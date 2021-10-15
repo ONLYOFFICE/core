@@ -38,7 +38,7 @@ class CMetafileTreeWidget : public QWidget
         bool IsClearTree();
         void SetMode(bool bLightMode);
         void ClearTree();
-        QMap<QString, unsigned int>* GetStatistics();
+        QMap<QString, unsigned int> GetStatistics();
 
         bool SaveInXmlFile(const std::wstring& wsSaveFilePath);
 

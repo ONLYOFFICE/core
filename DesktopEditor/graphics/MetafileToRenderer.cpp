@@ -981,6 +981,9 @@ namespace NSOnlineOfficeBinToPdf
 					LONG lShiftX = ReadInt(current, curindex);
 					LONG lShiftY = ReadInt(current, curindex);
 					pPr->SetShift(lShiftX, lShiftY);
+
+					if (nFlags & (1 << 22))
+						pPr->SetPicturePath(pCorrector->GetImagePath(ReadString(current, curindex)));
 				}
 
 				if (oInfo.IsValid())

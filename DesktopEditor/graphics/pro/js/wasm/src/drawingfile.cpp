@@ -79,7 +79,7 @@ WASM_EXPORT int GetType(BYTE* data, LONG size)
         return 1;
     return 2;
 }
-WASM_EXPORT CGraphicsFileDrawing* Open(BYTE* data, LONG size)
+WASM_EXPORT CGraphicsFileDrawing* Open(BYTE* data, LONG size, const char* password)
 {
 	if (!g_applicationFonts)
 		g_applicationFonts = NSFonts::NSApplication::Create();
@@ -88,7 +88,7 @@ WASM_EXPORT CGraphicsFileDrawing* Open(BYTE* data, LONG size)
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 	
     CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing(g_applicationFonts);
-    if (pGraphics->Open(data, size, GetType(data, size)))
+    if (pGraphics->Open(data, size, GetType(data, size), password))
         return pGraphics;
     
     delete pGraphics;
@@ -153,14 +153,19 @@ int main()
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
     NSFile::CFileBinary oFile;
-    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.pdf", &pPdfData, nPdfBytesCount))
+    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test3.pdf", &pPdfData, nPdfBytesCount))
     {
         RELEASEARRAYOBJECTS(pPdfData);
         return 1;
     }
     oFile.CloseFile();
 
-    CGraphicsFileDrawing* test = Open(pPdfData, nPdfBytesCount);
+    CGraphicsFileDrawing* test = Open(pPdfData, nPdfBytesCount, "");
+    if (!test)
+    {
+        std::string sPassword = "Test123";
+        test = Open(pPdfData, nPdfBytesCount, sPassword.c_str());
+    }
     int* info = GetInfo(test);
     int pages_count = *info;
     int test_page = 1;
@@ -307,7 +312,7 @@ int main()
     }
     oFile.CloseFile();
 
-    CGraphicsFileDrawing* test = Open(pXpsData, nXpsBytesCount);
+    CGraphicsFileDrawing* test = Open(pXpsData, nXpsBytesCount, "");
     int* info = GetInfo(test);
     int pages_count = *info;
     int test_page = 22;
@@ -439,7 +444,7 @@ int main()
     }
     oFile.CloseFile();
 
-    CGraphicsFileDrawing* test = Open(pDjVuData, nDjVuBytesCount);
+    CGraphicsFileDrawing* test = Open(pDjVuData, nDjVuBytesCount, "");
 
     int* info = GetInfo(test);
     int pages_count = *info;

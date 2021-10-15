@@ -25,7 +25,7 @@ public:
         RELEASEOBJECT(pReader);
         RELEASEINTERFACE(pApplicationFonts);
     }
-    bool  Open   (BYTE* data, DWORD length, int nType)
+    bool  Open   (BYTE* data, DWORD length, int nType, const char* password = NULL)
     {
         if (nType == 0)
             pReader = new PdfReader::CPdfReader(pApplicationFonts);
@@ -35,7 +35,13 @@ public:
             pReader = new CXpsFile(pApplicationFonts);
         if (!pReader)
             return false;
-        return pReader->LoadFromMemory(data, length);
+        std::wstring sPassword = L"";
+        if (password)
+        {
+            std::string sPass(password);
+            sPassword = UTF8_TO_U(sPass);
+        }
+        return pReader->LoadFromMemory(data, length, L"", sPassword, sPassword);
     }
     int   GetPagesCount()
     {

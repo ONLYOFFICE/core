@@ -41,7 +41,7 @@ public:
     {
         return pReader->GetPagesCount();
     }
-    void  GetPageInfo  (int nPageIndex, int& nWidth, int& nHeight, int& nPageDpiX)
+    void  GetPageInfo(int nPageIndex, int& nWidth, int& nHeight, int& nPageDpiX)
     {
         double dPageDpiX, dPageDpiY;
         double dWidth, dHeight;
@@ -50,17 +50,17 @@ public:
         nHeight = dHeight;
         nPageDpiX = dPageDpiX;
     }
-    BYTE* GetPage      (int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* GetPage    (int nPageIndex, int nRasterW, int nRasterH)
     {
         return pReader->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true);
     }
-    BYTE* GetGlyphs    (int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* GetGlyphs  (int nPageIndex)
     {
-        return pReader->GetGlyphs(nPageIndex, nRasterW, nRasterH);
+        return pReader->GetGlyphs(nPageIndex);
     }
-    BYTE* GetLinks     (int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* GetLinks   (int nPageIndex)
     {
-        return pReader->GetLinks(nPageIndex, nRasterW, nRasterH);
+        return pReader->GetLinks(nPageIndex);
     }
     BYTE* GetStructure()
     {

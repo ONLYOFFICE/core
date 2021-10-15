@@ -536,7 +536,6 @@ return 0;
         }
         else
             pg = pLinkDest->getPageNum();
-        // TODO: домножение координат
         double dy = pLinkDest->getTop();
         RELEASEOBJECT(pLinkDest);
 
@@ -586,15 +585,10 @@ return 0;
         oRes.ClearWithoutAttack();
         return bRes;
     }
-    BYTE* CPdfReader::GetGlyphs(int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* CPdfReader::GetGlyphs(int nPageIndex)
     {
         if (!m_pInternal->m_pPDFDocument)
             return NULL;
-        double dWidth, dHeight;
-        double dDpiX, dDpiY;
-        GetPageInfo(nPageIndex, &dWidth, &dHeight, &dDpiX, &dDpiY);
-        double dKoefX = (double)nRasterW / dWidth;
-        double dKoefY = (double)nRasterH / dHeight;
         nPageIndex++;
         TextOutputControl *pControl = new TextOutputControl();
         pControl->mode = textOutPhysLayout;
@@ -625,7 +619,7 @@ return 0;
                 int amount = pWord->getLength();
 
                 oRes.WriteString((BYTE*)sFont->getCString(), sFont->getLength());
-                oRes.AddDouble(dFontSize * dKoefY);
+                oRes.AddDouble(dFontSize);
                 oRes.AddInt(rot);
                 oRes.AddInt(amount);
                 for (int j = 0; j < amount; j++)
@@ -634,8 +628,8 @@ return 0;
                     pWord->getCharBBox(j, &x1, &y1, &x2, &y2);
                     Unicode ch = pWord->getChar(j);
 
-                    oRes.AddDouble(x1 * dKoefX);
-                    oRes.AddDouble(y1 * dKoefY);
+                    oRes.AddDouble(x1);
+                    oRes.AddDouble(y1);
                     oRes.AddInt(ch);
                 }
 
@@ -648,10 +642,10 @@ return 0;
                     rot = pWord->getRotation();
 
                 oRes.WriteString((BYTE*)sWord->getCString(), sWord->getLength());
-                oRes.AddDouble(x1 * dKoefX);
-                oRes.AddDouble(y1 * dKoefY);
-                oRes.AddDouble((x2 - x1) * dKoefX);
-                oRes.AddDouble((y2 - y1) * dKoefY);
+                oRes.AddDouble(x1);
+                oRes.AddDouble(y1);
+                oRes.AddDouble(x2 - x1);
+                oRes.AddDouble(y2 - y1);
                 */
             }
         }
@@ -664,16 +658,11 @@ return 0;
         oRes.ClearWithoutAttack();
         return res;
     }
-    BYTE* CPdfReader::GetLinks (int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* CPdfReader::GetLinks (int nPageIndex)
     {
         if (!m_pInternal->m_pPDFDocument)
             return NULL;
 
-        double dWidth, dHeight;
-        double dDpiX, dDpiY;
-        GetPageInfo(nPageIndex, &dWidth, &dHeight, &dDpiX, &dDpiY);
-        double dKoefX = (double)nRasterW / dWidth;
-        double dKoefY = (double)nRasterH / dHeight;
         nPageIndex++;
         NSWasm::CData oRes;
         oRes.SkipLen();
@@ -723,14 +712,16 @@ return 0;
                 oRes.WriteString((BYTE*)str->getCString(), str->getLength());
             else
                 oRes.WriteString(NULL, 0);
-            oRes.AddDouble(x1 * dKoefX);
-            oRes.AddDouble(y1 * dKoefY);
-            oRes.AddDouble((x2 - x1) * dKoefX);
-            oRes.AddDouble((y2 - y1) * dKoefY);
+            oRes.AddDouble(0.0);
+            oRes.AddDouble(x1);
+            oRes.AddDouble(y1);
+            oRes.AddDouble(x2 - x1);
+            oRes.AddDouble(y2 - y1);
             RELEASEOBJECT(str);
         }
         oRes.WriteLen();
 
+        RELEASEOBJECT(pLinks);
         BYTE* res = oRes.GetBuffer();
         oRes.ClearWithoutAttack();
         return res;

@@ -73,8 +73,8 @@ public:
 
     #ifdef BUILDING_WASM_MODULE
     virtual BYTE* GetStructure();
-    virtual BYTE* GetGlyphs(int nPageIndex, int nRasterW, int nRasterH);
-    virtual BYTE* GetLinks (int nPageIndex, int nRasterW, int nRasterH);
+    virtual BYTE* GetGlyphs(int nPageIndex);
+    virtual BYTE* GetLinks (int nPageIndex);
     #endif
 
 private:

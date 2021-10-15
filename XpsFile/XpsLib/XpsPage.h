@@ -62,7 +62,6 @@ namespace XPS
         BYTE* GetLinks();
 
     private:
-
         NSWasm::CData* m_pGlyphs;
         struct CPageLink
         {
@@ -70,7 +69,7 @@ namespace XPS
             double dY;
             double dW;
             double dH;
-            std::wstring sLink;
+            std::string sLink;
         };
         std::vector<CPageLink> m_vLinks;
     #endif

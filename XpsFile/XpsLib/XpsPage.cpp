@@ -82,15 +82,15 @@ namespace XPS
 		m_pFontList    = pFontList;
 		m_pFontManager = pFontManager;
 		m_pDocument    = pDocument;
-		#ifdef BUILDING_WASM_MODULE
+	#ifdef BUILDING_WASM_MODULE
 		m_pGlyphs      = NULL;
-		#endif
+	#endif
 	}
 	Page::~Page()
 	{
-		#ifdef BUILDING_WASM_MODULE
+	#ifdef BUILDING_WASM_MODULE
 		RELEASEOBJECT(m_pGlyphs);
-		#endif
+	#endif
 	}
 	void Page::GetSize(int& nW, int& nH) const
 	{
@@ -184,16 +184,16 @@ namespace XPS
 	}
 	BYTE* Page::GetLinks()
 	{
-        NSWasm::CData oRes;
+		NSWasm::CData oRes;
 		oRes.SkipLen();
 		for (const CPageLink& link : m_vLinks)
 		{
-			std::string s = U_TO_UTF8(link.sLink);
-			oRes.WriteString((BYTE*)s.c_str(), s.length());
-            oRes.AddDouble(link.dX);
-            oRes.AddDouble(link.dY);
-            oRes.AddDouble(link.dW);
-            oRes.AddDouble(link.dH);
+			oRes.WriteString((BYTE*)link.sLink.c_str(), link.sLink.length());
+			oRes.AddDouble(0.0);
+			oRes.AddDouble(link.dX);
+			oRes.AddDouble(link.dY);
+			oRes.AddDouble(link.dW);
+			oRes.AddDouble(link.dH);
 		}
 		oRes.WriteLen();
 
@@ -707,22 +707,18 @@ namespace XPS
 
 		if (!bIsSideways)
 		{
-#ifdef BUILDING_WASM_MODULE
+        #ifdef BUILDING_WASM_MODULE
             if (!m_pGlyphs)
             {
                 m_pGlyphs = new NSWasm::CData();
                 m_pGlyphs->SkipLen();
             }
 
-            double pdA, pdB, pdC, pdD, pdE, pdF;
-            pRenderer->GetTransform(&pdA, &pdB, &pdC, &pdD, &pdE, &pdF);
-            Aggplus::CMatrix oTransform(pdA, pdB, pdC, pdD, pdE, pdF);
-
             std::string sFontName = U_TO_UTF8(m_pFontManager->GetName());
             m_pGlyphs->WriteString((BYTE*)sFontName.c_str(), sFontName.length());
-            m_pGlyphs->AddDouble(dFontSize * pdA + pdE);
+            m_pGlyphs->AddDouble(dFontSize);
             m_pGlyphs->AddInt(unUtf16Len);
-#endif
+        #endif
 
 			while (GetNextGlyph(wsIndices.c_str(), nIndicesPos, nIndicesLen, pUtf16, nUtf16Pos, unUtf16Len, oEntry))
 			{
@@ -755,16 +751,12 @@ namespace XPS
 					pState->PushTransform(pTransform);
 				}
 
-#ifdef BUILDING_WASM_MODULE
-				double _dX = dXorigin;
-				double _dY = dYorigin;
-				oTransform.TransformPoint(_dX, _dY);
-
-                m_pGlyphs->AddDouble(_dX);
-                m_pGlyphs->AddDouble(_dY);
+			#ifdef BUILDING_WASM_MODULE
+				m_pGlyphs->AddDouble(dXorigin);
+				m_pGlyphs->AddDouble(dYorigin);
 				m_pGlyphs->AddInt(oEntry.nUnicode);
 				m_pGlyphs->WriteLen();
-#endif
+			#endif
 
 				if (oEntry.bGid)
 					pRenderer->CommandDrawTextExCHAR(oEntry.nUnicode, oEntry.nGid, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0);
@@ -992,12 +984,9 @@ namespace XPS
 				}
 				else if (L"FixedPage.NavigateUri" == wsAttrName)
 				{
-					double pdA, pdB, pdC, pdD, pdE, pdF;
-					pRenderer->GetTransform(&pdA, &pdB, &pdC, &pdD, &pdE, &pdF);
-					Aggplus::CMatrix oTransform(pdA, pdB, pdC, pdD, pdE, pdF);
 					double x1 = 0, y1 = 0, x2 = 0, y2 = 0, x3 = 0, y3 = 0;
 
-					CPageLink oLink = {0, 0, 0, 0, L""};
+					CPageLink oLink = {0, 0, 0, 0, ""};
 					std::wstring wsPath = wsPathData.c_stdstr();
 					size_t nFindX = wsPath.find(L"M ");
 					if (nFindX != std::wstring::npos)
@@ -1011,7 +1000,6 @@ namespace XPS
 							size_t nFindEndY = wsPath.find(L' ', nFindY);
 							if (nFindEndY != std::wstring::npos)
 								y1 = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
-							oTransform.TransformPoint(x1, y1);
 						}
 					}
 					nFindX = wsPath.find(L"L ");
@@ -1026,7 +1014,6 @@ namespace XPS
 							size_t nFindEndY = wsPath.find(L' ', nFindY);
 							if (nFindEndY != std::wstring::npos)
 								y2 = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
-							oTransform.TransformPoint(x2, y2);
 						}
 					}
 					nFindX = wsPath.find(L"L ", nFindX);
@@ -1041,7 +1028,6 @@ namespace XPS
 							size_t nFindEndY = wsPath.find(L' ', nFindY);
 							if (nFindEndY != std::wstring::npos)
 								y3 = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
-							oTransform.TransformPoint(x3, y3);
 						}
 					}
 					oLink.dX = x1 == x2 ? fmin(x1, x3) : fmin(x1, x2);
@@ -1052,18 +1038,19 @@ namespace XPS
 					std::wstring wsNameTarget = oReader.GetText();
 					if (wsNameTarget.find(L"http") == 0)
 					{
-						oLink.sLink = wsNameTarget;
+						oLink.sLink = U_TO_UTF8(wsNameTarget);
 						m_vLinks.push_back(oLink);
 					}
 					else
 					{
+						// координата назначения на странице назначения
 						size_t nSharp = wsNameTarget.find(L'#');
 						if (nSharp != std::wstring::npos)
 						{
 							std::map<std::wstring, int>::iterator find = m_pDocument->m_mInternalLinks.find(wsNameTarget.substr(nSharp + 1));
 							if (find != m_pDocument->m_mInternalLinks.end())
 							{
-								oLink.sLink = L'#' + std::to_wstring(find->second);
+								oLink.sLink = '#' + std::to_string(find->second);
 								m_vLinks.push_back(oLink);
 							}
 						}
@@ -1088,6 +1075,7 @@ namespace XPS
 				nFindY++;
 				size_t nFindEndY = wsPath.find(L' ', nFindY);
 				if (nFindEndY != std::wstring::npos)
+					// координата назначения на странице назначения
 					find->dY = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
 			}
 		}

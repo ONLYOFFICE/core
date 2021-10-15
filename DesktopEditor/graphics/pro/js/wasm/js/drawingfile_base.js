@@ -296,6 +296,7 @@
         {
             var rec = {};
             rec["link"] = reader.readString();
+            rec["dest"] = reader.readDouble();
             rec["x"] = (this.type == 2 ? 1.015 : 1) * reader.readDouble();
             rec["y"] = (this.type == 2 ? 1.015 : 1) * reader.readDouble();
             rec["w"] = reader.readDouble();

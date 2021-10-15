@@ -46,6 +46,9 @@
 #define HOR_DPI		96
 
 #include <vector>
+#ifdef BUILDING_WASM_MODULE
+#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#endif
 
 namespace NSDjvu
 {
@@ -337,8 +340,6 @@ void               CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsD
 	oPdf.SaveToFile(wsDstPath);
 }
 #ifdef BUILDING_WASM_MODULE
-#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
-
 void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, NSWasm::CData& out, int level)
 {
     while (count > 0 && pos < nav->getBookMarkCount())
@@ -362,7 +363,7 @@ void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, NSWasm::CData& out
         count--;
     }
 }
-BYTE* CDjVuFileImplementation::GetStructure()
+BYTE*              CDjVuFileImplementation::GetStructure()
 {
     GP<DjVmNav> nav = m_pDoc->get_djvm_nav();
     if (!nav)
@@ -381,12 +382,8 @@ BYTE* CDjVuFileImplementation::GetStructure()
     oRes.ClearWithoutAttack();
     return bRes;
 }
-BYTE* CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const int& nRasterW, const int& nRasterH)
+BYTE*              CDjVuFileImplementation::GetPageGlyphs(int nPageIndex)
 {
-    double dPageDpiX, dPageDpiY;
-    double dWidth, dHeight;
-    GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
     try
     {
         GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
@@ -406,9 +403,6 @@ BYTE* CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const int& nRasterW
 
         NSWasm::CData oRes;
         oRes.SkipLen();
-        double dKoef = 25.4 / pPage->get_dpi();
-        double dKoefX = (double)nRasterW * dPageDpiX / 25.4 / dWidth;
-        double dKoefY = (double)nRasterH * dPageDpiY / 25.4 / dHeight;
         XmlUtils::CXmlNodes oParagraphsNodes;
         region.GetNodes(L"PARAGRAPH", oParagraphsNodes);
         for (int nParagraphIndex = 0; nParagraphIndex < oParagraphsNodes.GetCount(); nParagraphIndex++)
@@ -430,14 +424,14 @@ BYTE* CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const int& nRasterW
                     std::wstring csWord   = oWordNode.GetText();
                     std::wstring csCoords = oWordNode.GetAttribute(L"coords");
                     double arrCoords[4];
-                    ParseCoords(csCoords, arrCoords, dKoef);
+                    ParseCoords(csCoords, arrCoords, 1);
 
                     std::string sText = U_TO_UTF8(csWord);
                     oRes.WriteString((BYTE*)sText.c_str(), sText.length());
-                    oRes.AddDouble(arrCoords[0] * dKoefX);
-                    oRes.AddDouble(arrCoords[3] * dKoefY);
-                    oRes.AddDouble((arrCoords[2] - arrCoords[0]) * dKoefX);
-                    oRes.AddDouble((arrCoords[1] - arrCoords[3]) * dKoefY);
+                    oRes.AddDouble(arrCoords[0]);
+                    oRes.AddDouble(arrCoords[3]);
+                    oRes.AddDouble(arrCoords[2] - arrCoords[0]);
+                    oRes.AddDouble(arrCoords[1] - arrCoords[3]);
                 }
             }
         }
@@ -450,7 +444,7 @@ BYTE* CDjVuFileImplementation::GetPageGlyphs(int nPageIndex, const int& nRasterW
     catch (...) {}
     return NULL;
 }
-BYTE* CDjVuFileImplementation::GetPageLinks (int nPageIndex, const int& nRasterW, const int& nRasterH)
+BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex)
 {
     double dPageDpiX, dPageDpiY;
     double dWidth, dHeight;
@@ -467,20 +461,18 @@ BYTE* CDjVuFileImplementation::GetPageLinks (int nPageIndex, const int& nRasterW
 
         NSWasm::CData oRes;
         oRes.SkipLen();
-        double dKoefX = (double)nRasterW / dWidth;
-        double dKoefY = (double)nRasterH / dHeight;
         for (GPosition pos(map_areas); pos; ++pos)
         {
             GUTF8String str = map_areas[pos]->url;
             oRes.WriteString((BYTE*)str.getbuf(), str.length());
 
-            double x = map_areas[pos]->get_xmin() * dKoefX;
-            double y = (double)nRasterH - map_areas[pos]->get_ymin() * dKoefY;
-
+            double x = map_areas[pos]->get_xmin();
+            double y = dHeight - map_areas[pos]->get_ymin();
+            oRes.AddDouble(0.0);
             oRes.AddDouble(x);
             oRes.AddDouble(y);
-            oRes.AddDouble(map_areas[pos]->get_xmax() * dKoefX - x);
-            oRes.AddDouble((double)nRasterH - map_areas[pos]->get_ymax() * dKoefY - y);
+            oRes.AddDouble(map_areas[pos]->get_xmax() - x);
+            oRes.AddDouble(dHeight - map_areas[pos]->get_ymax() - y);
         }
         oRes.WriteLen();
 

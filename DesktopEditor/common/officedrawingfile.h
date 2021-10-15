@@ -67,8 +67,8 @@ public:
     virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1) = 0;
 #ifdef BUILDING_WASM_MODULE
     virtual unsigned char* GetStructure() = 0;
-    virtual unsigned char* GetGlyphs(int nPageIndex, int nRasterW, int nRasterH) = 0;
-    virtual unsigned char* GetLinks (int nPageIndex, int nRasterW, int nRasterH) = 0;
+    virtual unsigned char* GetGlyphs(int nPageIndex) = 0;
+    virtual unsigned char* GetLinks (int nPageIndex) = 0;
 #endif
 };
 

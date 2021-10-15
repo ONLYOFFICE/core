@@ -298,11 +298,11 @@ BYTE* CXpsFile::GetStructure()
 {
 	return m_pInternal->m_pDocument->GetStructure();
 }
-BYTE* CXpsFile::GetGlyphs       (int nPageIndex, int nRasterW, int nRasterH)
+BYTE* CXpsFile::GetGlyphs(int nPageIndex)
 {
 	return m_pInternal->m_pDocument->GetPageGlyphs(nPageIndex);
 }
-BYTE* CXpsFile::GetLinks(int nPageIndex, int nRasterW, int nRasterH)
+BYTE* CXpsFile::GetLinks (int nPageIndex)
 {
 	return m_pInternal->m_pDocument->GetPageLinks(nPageIndex);
 }

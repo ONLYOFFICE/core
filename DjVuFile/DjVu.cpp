@@ -117,16 +117,16 @@ BYTE* CDjVuFile::GetStructure()
         return m_pImplementation->GetStructure();
     return NULL;
 }
-BYTE* CDjVuFile::GetGlyphs(int nPageIndex, int nRasterW, int nRasterH)
+BYTE* CDjVuFile::GetGlyphs(int nPageIndex)
 {
     if (m_pImplementation)
-        return m_pImplementation->GetPageGlyphs(nPageIndex, nRasterW, nRasterH);
+        return m_pImplementation->GetPageGlyphs(nPageIndex);
     return NULL;
 }
-BYTE* CDjVuFile::GetLinks (int nPageIndex, int nRasterW, int nRasterH)
+BYTE* CDjVuFile::GetLinks (int nPageIndex)
 {
     if (m_pImplementation)
-        return m_pImplementation->GetPageLinks(nPageIndex, nRasterW, nRasterH);
+        return m_pImplementation->GetPageLinks(nPageIndex);
     return NULL;
 }
 #endif

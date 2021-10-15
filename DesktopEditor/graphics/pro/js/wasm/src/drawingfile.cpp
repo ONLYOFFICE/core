@@ -121,13 +121,13 @@ WASM_EXPORT BYTE* GetPixmap (CGraphicsFileDrawing* pGraphics, int nPageIndex, in
 {
     return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH);
 }
-WASM_EXPORT BYTE* GetGlyphs (CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+WASM_EXPORT BYTE* GetGlyphs (CGraphicsFileDrawing* pGraphics, int nPageIndex)
 {
-    return pGraphics->GetGlyphs(nPageIndex, nRasterW, nRasterH);
+    return pGraphics->GetGlyphs(nPageIndex);
 }
-WASM_EXPORT BYTE* GetLinks  (CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+WASM_EXPORT BYTE* GetLinks  (CGraphicsFileDrawing* pGraphics, int nPageIndex)
 {
-    return pGraphics->GetLinks(nPageIndex, nRasterW, nRasterH);
+    return pGraphics->GetLinks(nPageIndex);
 }
 WASM_EXPORT BYTE* GetStructure(CGraphicsFileDrawing* pGraphics)
 {
@@ -163,16 +163,16 @@ int main()
     CGraphicsFileDrawing* test = Open(pPdfData, nPdfBytesCount);
     int* info = GetInfo(test);
     int pages_count = *info;
-    int width  = info[1] * 96 / info[3];
-    int height = info[2] * 96 / info[3];
+    int test_page = 0;
+    int width  = info[test_page * 3 + 1];
+    int height = info[test_page * 3 + 2];
+    std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
+    width  *= 96.0 / (double)info[test_page * 3 + 3];
+    height *= 96.0 / (double)info[test_page * 3 + 3];
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = GetPixmap(test, 0, width, height);
-
-    for (int i = 0; i < 100; i++)
-        std::cout << (int)res[i] << " ";
-    std::cout << std::endl;
+        res = GetPixmap(test, test_page, width, height);
 
     CBgraFrame* resFrame = new CBgraFrame();
     resFrame->put_Data(res);
@@ -183,7 +183,8 @@ int main()
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
-    BYTE* pLinks = GetLinks(test, 0, width, height);
+    std::cout << std::endl;
+    BYTE* pLinks = GetLinks(test, test_page);
     DWORD nLength = GetLength(pLinks);
     DWORD i = 4;
     nLength -= 4;
@@ -193,6 +194,9 @@ int main()
         i += 4;
         std::cout <<  "Link "<< std::string((char*)(pLinks + i), nPathLength);
         i += nPathLength;
+        nPathLength = GetLength(pLinks + i);
+        i += 4;
+        std::cout << " Ydest " << (double)nPathLength / 100.0;
         nPathLength = GetLength(pLinks + i);
         i += 4;
         std::cout << " X " << (double)nPathLength / 100.0;
@@ -207,6 +211,7 @@ int main()
         std::cout << " H " << (double)nPathLength / 100.0 << std::endl;
     }
 
+    std::cout << std::endl;
     BYTE* pStructure = GetStructure(test);
     nLength = GetLength(pStructure);
     i = 4;
@@ -228,7 +233,8 @@ int main()
         i += nPathLength;
     }
 
-    BYTE* pGlyphs = GetGlyphs(test, 0, width, height);
+    std::cout << std::endl;
+    BYTE* pGlyphs = GetGlyphs(test, test_page);
     nLength = GetLength(pGlyphs);
     i = 4;
     nLength -= 4;
@@ -304,13 +310,36 @@ int main()
     oFile.CloseFile();
 
     CGraphicsFileDrawing* test = Open(pXpsData, nXpsBytesCount);
-    RELEASEARRAYOBJECTS(pXpsData);
     int* info = GetInfo(test);
     int pages_count = *info;
-    int width  = info[1] * 96 / info[3];
-    int height = info[2] * 96 / info[3];
+    int test_page = 22;
+    int width  = info[test_page * 3 + 1];
+    int height = info[test_page * 3 + 2];
+    std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
+    width  *= 96.0 / (double)info[test_page * 3 + 3];
+    height *= 96.0 / (double)info[test_page * 3 + 3];
 
-    BYTE* pGlyphs = GetGlyphs(test, 22, width, height);
+    BYTE* res = NULL;
+    if (pages_count > 0)
+        res = GetPixmap(test, test_page, width, height);
+    if (!res)
+    {
+        RELEASEARRAYOBJECTS(pXpsData);
+        RELEASEARRAYOBJECTS(info);
+        return 1;
+    }
+
+    CBgraFrame* resFrame = new CBgraFrame();
+    resFrame->put_Data(res);
+    resFrame->put_Width(width);
+    resFrame->put_Height(height);
+    resFrame->put_Stride(4 * width);
+    resFrame->put_IsRGBA(true);
+    resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
+    resFrame->ClearNoAttack();
+
+    std::cout << std::endl;
+    BYTE* pGlyphs = GetGlyphs(test, test_page);
     DWORD nLength = GetLength(pGlyphs);
     DWORD i = 4;
     nLength -= 4;
@@ -341,7 +370,8 @@ int main()
         }
     }
 
-    BYTE* pLinks = GetLinks(test, 22, width, height);
+    std::cout << std::endl;
+    BYTE* pLinks = GetLinks(test, test_page);
     nLength = GetLength(pLinks);
     i = 4;
     nLength -= 4;
@@ -351,6 +381,9 @@ int main()
         i += 4;
         std::cout <<  "Link "<< std::string((char*)(pLinks + i), nPathLength);
         i += nPathLength;
+        nPathLength = GetLength(pLinks + i);
+        i += 4;
+        std::cout << " Ydest " << (double)nPathLength / 100.0;
         nPathLength = GetLength(pLinks + i);
         i += 4;
         std::cout << " X " << (double)nPathLength / 100.0;
@@ -365,6 +398,7 @@ int main()
         std::cout << " H " << (double)nPathLength / 100.0 << std::endl;
     }
 
+    std::cout << std::endl;
     BYTE* pStructure = GetStructure(test);
     nLength = GetLength(pStructure);
     i = 4;
@@ -386,24 +420,8 @@ int main()
         i += nPathLength;
     }
 
-    BYTE* res = NULL;
-    if (pages_count > 0)
-        res = GetPixmap(test, 22, width, height);
-
-    for (int i = 0; i < 100; i++)
-        std::cout << (int)res[i] << " ";
-    std::cout << std::endl;
-
-    CBgraFrame* resFrame = new CBgraFrame();
-    resFrame->put_Data(res);
-    resFrame->put_Width(width);
-    resFrame->put_Height(height);
-    resFrame->put_Stride(-4 * width);
-    resFrame->put_IsRGBA(true);
-    resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
-    resFrame->ClearNoAttack();
-
     Close(test);
+    RELEASEARRAYOBJECTS(pXpsData);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
     RELEASEARRAYOBJECTS(pGlyphs);
@@ -424,29 +442,31 @@ int main()
     oFile.CloseFile();
 
     CGraphicsFileDrawing* test = Open(pDjVuData, nDjVuBytesCount);
-    RELEASEARRAYOBJECTS(pDjVuData);
+
     int* info = GetInfo(test);
     int pages_count = *info;
-    int width  = info[1] * 96 / info[3];
-    int height = info[2] * 96 / info[3];
+    int test_page = 0;
+    int width  = info[test_page * 3 + 1];
+    int height = info[test_page * 3 + 2];
+    std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
+    width  *= 96.0 / (double)info[test_page * 3 + 3];
+    height *= 96.0 / (double)info[test_page * 3 + 3];
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = GetPixmap(test, 0, width, height);
-
-    for (int i = 0; i < 100; i++)
-        std::cout << (int)res[i] << " ";
+        res = GetPixmap(test, test_page, width, height);
 
     CBgraFrame* resFrame = new CBgraFrame();
     resFrame->put_Data(res);
     resFrame->put_Width(width);
     resFrame->put_Height(height);
-    resFrame->put_Stride(-4 * width);
+    resFrame->put_Stride(4 * width);
     resFrame->put_IsRGBA(true);
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
-    BYTE* pGlyphs = GetGlyphs(test, 0, width, height);
+    std::cout << std::endl;
+    BYTE* pGlyphs = GetGlyphs(test, test_page);
     DWORD nLength = GetLength(pGlyphs);
     DWORD i = 4;
     nLength -= 4;
@@ -455,27 +475,24 @@ int main()
         DWORD nPathLength = GetLength(pGlyphs + i);
         i += 4;
         std::string oWord = std::string((char*)(pGlyphs + i), nPathLength);
-        std::wcout << L"Word " << UTF8_TO_U(oWord) << L" ";
+        std::wcout << L"Word " << UTF8_TO_U(oWord);
         i += nPathLength;
         nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout << "X " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
-        i += nPathLength;
+        std::cout << " X " << (double)nPathLength / 100.0;
         nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout << "Y " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
-        i += nPathLength;
+        std::cout << " Y " << (double)nPathLength / 100.0;
         nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout << "W " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
-        i += nPathLength;
+        std::cout << " W " << (double)nPathLength / 100.0;
         nPathLength = GetLength(pGlyphs + i);
         i += 4;
-        std::cout << "H " << std::string((char*)(pGlyphs + i), nPathLength) << std::endl;
-        i += nPathLength;
+        std::cout << " H " << (double)nPathLength / 100.0 << std::endl;
     }
 
-    BYTE* pLinks = GetLinks(test, 0, width, height);
+    std::cout << std::endl;
+    BYTE* pLinks = GetLinks(test, test_page);
     nLength = GetLength(pLinks);
     i = 4;
     nLength -= 4;
@@ -483,26 +500,26 @@ int main()
     {
         DWORD nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout <<  "Link "<< std::string((char*)(pLinks + i), nPathLength) << " ";
+        std::cout <<  "Link "<< std::string((char*)(pLinks + i), nPathLength);
         i += nPathLength;
         nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout << "X " << std::string((char*)(pLinks + i), nPathLength) << " ";
-        i += nPathLength;
+        std::cout << " Ydest " << (double)nPathLength / 100.0;
         nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout << "Y " << std::string((char*)(pLinks + i), nPathLength) << " ";
-        i += nPathLength;
+        std::cout << " X " << (double)nPathLength / 100.0;
         nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout << "W " << std::string((char*)(pLinks + i), nPathLength) << " ";
-        i += nPathLength;
+        std::cout << " Y " << (double)nPathLength / 100.0;
         nPathLength = GetLength(pLinks + i);
         i += 4;
-        std::cout << "H " << std::string((char*)(pLinks + i), nPathLength) << std::endl;
-        i += nPathLength;
+        std::cout << " W " << (double)nPathLength / 100.0;
+        nPathLength = GetLength(pLinks + i);
+        i += 4;
+        std::cout << " H " << (double)nPathLength / 100.0 << std::endl;
     }
 
+    std::cout << std::endl;
     BYTE* pStructure = GetStructure(test);
     nLength = GetLength(pStructure);
     i = 4;
@@ -511,18 +528,20 @@ int main()
     {
         DWORD nPathLength = GetLength(pStructure + i);
         i += 4;
-        std::cout << "Page " << nPathLength << ", ";
+        std::cout << "Page " << nPathLength;
         nPathLength = GetLength(pStructure + i);
         i += 4;
-        std::cout << "Level " << nPathLength << ", ";
+        std::cout << " Level " << nPathLength;
+        i += 4; // y 0.0
         nPathLength = GetLength(pStructure + i);
         i += 4;
         std::string oDs = std::string((char*)(pStructure + i), nPathLength);
-        std::wcout << L"Description "<< UTF8_TO_U(oDs) << std::endl;
+        std::wcout << L" Description "<< UTF8_TO_U(oDs) << std::endl;
         i += nPathLength;
     }
 
     Close(test);
+    RELEASEARRAYOBJECTS(pDjVuData);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
     RELEASEARRAYOBJECTS(pGlyphs);

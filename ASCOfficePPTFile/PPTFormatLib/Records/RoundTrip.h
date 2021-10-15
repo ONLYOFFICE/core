@@ -57,10 +57,10 @@ public:
         data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
         pStream->read(data.first.get(), data.second);
 
-        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".zip";
-        std::ofstream file("RoundTrips/" + filename, std::ios::out);
-        file.write((char*)data.first.get(), data.second);
-        file.close();
+//        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".zip";
+//        std::ofstream file("RoundTrips/" + filename, std::ios::out);
+//        file.write((char*)data.first.get(), data.second);
+//        file.close();
     }
 
     void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
@@ -87,10 +87,10 @@ public:
         m_oHeader = oHeader;
         m_dwID = StreamUtils::ReadDWORD(pStream);
 
-        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + "_ID_" + std::to_string(m_dwID) + ".txt";
-        std::ofstream file("RoundTrips/" + filename, std::ios::out);
-        file << m_dwID;
-        file.close();
+//        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + "_ID_" + std::to_string(m_dwID) + ".txt";
+//        std::ofstream file("RoundTrips/" + filename, std::ios::out);
+//        file << m_dwID;
+//        file.close();
     }
 };
 
@@ -117,10 +117,10 @@ public:
         m_oHeader = oHeader;
         m_colorMapping = StreamUtils::ReadStringA(pStream, m_oHeader.RecLen);
 
-//        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".xml";
-//        std::ofstream file("RoundTrips/" + filename, std::ios::out);
-//        file << m_colorMapping;
-//        file.close();
+        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".xml";
+        std::ofstream file("RoundTrips/" + filename, std::ios::out);
+        file << m_colorMapping;
+        file.close();
     }
     std::wstring getPClrMap()const
     {
@@ -155,11 +155,11 @@ public:
 
         StreamUtils::StreamSkip(2, pStream);
 
-        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) +
-                "_" + std::to_string(m_mainMasterId) + "_" + std::to_string(m_contentMasterInstanceId) + ".txt";
-        std::ofstream file("RoundTrips/" + filename, std::ios::out);
-        file << m_mainMasterId << "\t" << m_contentMasterInstanceId;
-        file.close();
+//        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) +
+//                "_" + std::to_string(m_mainMasterId) + "_" + std::to_string(m_contentMasterInstanceId) + ".txt";
+//        std::ofstream file("RoundTrips/" + filename, std::ios::out);
+//        file << m_mainMasterId << "\t" << m_contentMasterInstanceId;
+//        file.close();
     }
 };
 class RoundTripShapeId12Atom : public CUnknownRoundTripID {};

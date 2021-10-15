@@ -613,7 +613,7 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
     int nStartLayout = 0, nIndexTheme = 0;
 
-    if (false) // - см баг 52046
+    if (true) // - см баг 52046
     {
         for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
         {

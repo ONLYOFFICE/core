@@ -679,7 +679,7 @@ return 0;
                 continue;
 
             GString* str = NULL;
-            double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0;
+            double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0, dy = 0.0;
             pLink->getRect(&x1, &y1, &x2, &y2);
             double height = m_pInternal->m_pPDFDocument->getPageCropHeight(nPageIndex);
             y1 = height - y1;
@@ -705,6 +705,7 @@ return 0;
                         pg = pLinkDest->getPageNum();
                     std::string sLink = "#" + std::to_string(pg - 1);
                     str = new GString(sLink.c_str());
+                    dy = m_pInternal->m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
                 }
                 RELEASEOBJECT(pLinkDest);
             }
@@ -715,11 +716,12 @@ return 0;
                 oRes.WriteString((BYTE*)str->getCString(), str->getLength());
             else
                 oRes.WriteString(NULL, 0);
-            oRes.AddDouble(0.0);
+            // Верхний левый угол
+            oRes.AddDouble(dy);
             oRes.AddDouble(x1);
-            oRes.AddDouble(y1);
+            oRes.AddDouble(y2);
             oRes.AddDouble(x2 - x1);
-            oRes.AddDouble(y2 - y1);
+            oRes.AddDouble(y1 - y2);
             RELEASEOBJECT(str);
         }
         oRes.WriteLen();

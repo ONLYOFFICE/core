@@ -13,20 +13,24 @@ class CGraphicsFileDrawing
 private:
     IOfficeDrawingFile* pReader;
     NSFonts::IApplicationFonts* pApplicationFonts;
+    int nType;
 public:
     CGraphicsFileDrawing(NSFonts::IApplicationFonts* pFonts)
     {
         pReader = NULL;
         pApplicationFonts = pFonts;
 		pApplicationFonts->AddRef();
+        nType = -1;
     }
     ~CGraphicsFileDrawing()
     {
         RELEASEOBJECT(pReader);
         RELEASEINTERFACE(pApplicationFonts);
+        nType = -1;
     }
-    bool  Open   (BYTE* data, DWORD length, int nType, const char* password = NULL)
+    bool  Open   (BYTE* data, DWORD length, int _nType, const char* password = NULL)
     {
+        nType = _nType;
         if (nType == 0)
             pReader = new PdfReader::CPdfReader(pApplicationFonts);
         else if (nType == 1)
@@ -52,6 +56,11 @@ public:
         double dPageDpiX, dPageDpiY;
         double dWidth, dHeight;
         pReader->GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+        if (nType == 2)
+        {
+            dWidth  = dWidth  / 25.4 * 96.0;
+            dHeight = dHeight / 25.4 * 96.0;
+        }
         nWidth = dWidth;
         nHeight = dHeight;
         nPageDpiX = dPageDpiX;

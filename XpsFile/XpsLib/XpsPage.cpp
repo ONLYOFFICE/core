@@ -713,10 +713,12 @@ namespace XPS
                 m_pGlyphs = new NSWasm::CData();
                 m_pGlyphs->SkipLen();
             }
-
+            double pdA, pdB, pdC, pdD, pdE, pdF;
+            pRenderer->GetTransform(&pdA, &pdB, &pdC, &pdD, &pdE, &pdF);
+            Aggplus::CMatrix oTransform(pdA, pdB, pdC, pdD, pdE, pdF);
             std::string sFontName = U_TO_UTF8(m_pFontManager->GetName());
             m_pGlyphs->WriteString((BYTE*)sFontName.c_str(), sFontName.length());
-            m_pGlyphs->AddDouble(dFontSize);
+            m_pGlyphs->AddDouble(dFontSize * pdA + pdE);
             m_pGlyphs->AddInt(unUtf16Len);
         #endif
 
@@ -752,8 +754,12 @@ namespace XPS
 				}
 
 			#ifdef BUILDING_WASM_MODULE
-				m_pGlyphs->AddDouble(dXorigin);
-				m_pGlyphs->AddDouble(dYorigin);
+				double _dX = dXorigin;
+				double _dY = dYorigin;
+				oTransform.TransformPoint(_dX, _dY);
+				// Верхний левый угол
+				m_pGlyphs->AddDouble(_dX);
+				m_pGlyphs->AddDouble(_dY - dFontSize * pdA + pdE);
 				m_pGlyphs->AddInt(oEntry.nUnicode);
 				m_pGlyphs->WriteLen();
 			#endif
@@ -984,6 +990,9 @@ namespace XPS
 				}
 				else if (L"FixedPage.NavigateUri" == wsAttrName)
 				{
+					double pdA, pdB, pdC, pdD, pdE, pdF;
+					pRenderer->GetTransform(&pdA, &pdB, &pdC, &pdD, &pdE, &pdF);
+					Aggplus::CMatrix oTransform(pdA, pdB, pdC, pdD, pdE, pdF);
 					double x1 = 0, y1 = 0, x2 = 0, y2 = 0, x3 = 0, y3 = 0;
 
 					CPageLink oLink = {0, 0, 0, 0, ""};
@@ -1000,6 +1009,7 @@ namespace XPS
 							size_t nFindEndY = wsPath.find(L' ', nFindY);
 							if (nFindEndY != std::wstring::npos)
 								y1 = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+							oTransform.TransformPoint(x1, y1);
 						}
 					}
 					nFindX = wsPath.find(L"L ");
@@ -1014,6 +1024,7 @@ namespace XPS
 							size_t nFindEndY = wsPath.find(L' ', nFindY);
 							if (nFindEndY != std::wstring::npos)
 								y2 = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+							oTransform.TransformPoint(x2, y2);
 						}
 					}
 					nFindX = wsPath.find(L"L ", nFindX);
@@ -1028,8 +1039,10 @@ namespace XPS
 							size_t nFindEndY = wsPath.find(L' ', nFindY);
 							if (nFindEndY != std::wstring::npos)
 								y3 = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
+							oTransform.TransformPoint(x3, y3);
 						}
 					}
+					// Верхний левый угол
 					oLink.dX = x1 == x2 ? fmin(x1, x3) : fmin(x1, x2);
 					oLink.dY = y1 == y2 ? fmin(y1, y3) : fmin(y1, y2);
 					oLink.dH = x1 == x2 ? abs(y1 - y2) : abs(y1 - y3);

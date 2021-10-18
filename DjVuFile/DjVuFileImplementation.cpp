@@ -465,14 +465,14 @@ BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex)
         {
             GUTF8String str = map_areas[pos]->url;
             oRes.WriteString((BYTE*)str.getbuf(), str.length());
-
+            // Верхний левый угол
             double x = map_areas[pos]->get_xmin();
-            double y = dHeight - map_areas[pos]->get_ymin();
+            double y = dHeight - map_areas[pos]->get_ymax();
             oRes.AddDouble(0.0);
             oRes.AddDouble(x);
             oRes.AddDouble(y);
             oRes.AddDouble(map_areas[pos]->get_xmax() - x);
-            oRes.AddDouble(dHeight - map_areas[pos]->get_ymax() - y);
+            oRes.AddDouble(map_areas[pos]->get_ymax() - map_areas[pos]->get_ymin());
         }
         oRes.WriteLen();
 

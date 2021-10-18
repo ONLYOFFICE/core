@@ -153,7 +153,7 @@ int main()
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
     NSFile::CFileBinary oFile;
-    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test3.pdf", &pPdfData, nPdfBytesCount))
+    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.pdf", &pPdfData, nPdfBytesCount))
     {
         RELEASEARRAYOBJECTS(pPdfData);
         return 1;
@@ -168,7 +168,7 @@ int main()
     }
     int* info = GetInfo(test);
     int pages_count = *info;
-    int test_page = 1;
+    int test_page = 2;
     int width  = info[test_page * 3 + 1];
     int height = info[test_page * 3 + 2];
     std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
@@ -319,8 +319,6 @@ int main()
     int width  = info[test_page * 3 + 1];
     int height = info[test_page * 3 + 2];
     std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
-    width  *= 96.0 / (double)info[test_page * 3 + 3];
-    height *= 96.0 / (double)info[test_page * 3 + 3];
 
     BYTE* res = NULL;
     if (pages_count > 0)
@@ -452,8 +450,6 @@ int main()
     int width  = info[test_page * 3 + 1];
     int height = info[test_page * 3 + 2];
     std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
-    width  *= 96.0 / (double)info[test_page * 3 + 3];
-    height *= 96.0 / (double)info[test_page * 3 + 3];
 
     BYTE* res = NULL;
     if (pages_count > 0)

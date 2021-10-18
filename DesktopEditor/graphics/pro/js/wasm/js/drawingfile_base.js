@@ -242,8 +242,8 @@
                     this.pages[pageIndex].Lines[Line].Glyphs.push({
                         fontName : _fontName,
                         fontSize : _fontSize,
-                        X : _X * 1.015,
-                        Y : _Y * 1.015,
+                        X : _X,
+                        Y : _Y,
                         UChar : String.fromCharCode(_Char)
                     });
                 }
@@ -297,8 +297,8 @@
             var rec = {};
             rec["link"] = reader.readString();
             rec["dest"] = reader.readDouble();
-            rec["x"] = (this.type == 2 ? 1.015 : 1) * reader.readDouble();
-            rec["y"] = (this.type == 2 ? 1.015 : 1) * reader.readDouble();
+            rec["x"] = reader.readDouble();
+            rec["y"] = reader.readDouble();
             rec["w"] = reader.readDouble();
             rec["h"] = reader.readDouble();
             res.push(rec);

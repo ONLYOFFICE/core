@@ -1683,14 +1683,15 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertGroup()
         }
         m_oWriter.WriteString(std::wstring(L">"));
 
-        m_oWriter.WriteString(L"<a:off x=\"" +
-                              std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.left : (int)pGroupElement->m_rcAnchor.left)
-                              + L"\" y=\"" +
-                              std::to_wstring(pGroupElement->m_bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.top : (int)pGroupElement->m_rcAnchor.top) +
-                              L"\"/>");
+        const bool bChildAnchorEnabled = pGroupElement->m_bChildAnchorEnabled;
+        int x = bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.left : (int)pGroupElement->m_rcAnchor.left;
+        int y = bChildAnchorEnabled ? (int)pGroupElement->m_rcChildAnchor.top : (int)pGroupElement->m_rcAnchor.top;
 
-        double width	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetWidth() : pGroupElement->m_rcAnchor.GetWidth();
-        double height	= pGroupElement->m_bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetHeight() : pGroupElement->m_rcAnchor.GetHeight();
+        m_oWriter.WriteString(L"<a:off x=\"" + std::to_wstring(x)
+                              + L"\" y=\"" + std::to_wstring(y) + L"\"/>");
+
+        double width	= bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetWidth() : pGroupElement->m_rcAnchor.GetWidth();
+        double height	= bChildAnchorEnabled ? pGroupElement->m_rcChildAnchor.GetHeight() : pGroupElement->m_rcAnchor.GetHeight();
 
         if ( width > 0 || height > 0 )
         {

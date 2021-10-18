@@ -54,7 +54,7 @@ namespace XLSB
     // ICONSET = BrtBeginIconSet 3*5CFVO BrtEndIconSet
     const bool ICONSET::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginIconSet>())
+        if (proc.optional<BeginIconSet>())
         {
             m_BrtBeginIconSet = elements_.back();
             elements_.pop_back();
@@ -71,13 +71,13 @@ namespace XLSB
             count--;
         }
 
-        if (proc.mandatory<EndIconSet>())
+        if (proc.optional<EndIconSet>())
         {
             m_BrtEndIconSet = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginIconSet || !m_arCFVO.empty() || m_BrtEndIconSet;
+        return m_BrtBeginIconSet && !m_arCFVO.empty() && m_BrtEndIconSet;
     }
 
 } // namespace XLSB

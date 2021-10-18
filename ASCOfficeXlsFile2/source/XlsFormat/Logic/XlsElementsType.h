@@ -743,8 +743,11 @@ enum ElementType
 
     //xlsb
         typeCOLORSCALE = 4000,
+        typeCOLORSCALE14,
         typeDATABAR,
+        typeDATABAR14,
         typeICONSET,
+        typeICONSET14,
         typeACFMT,
         typeFmt,
         typeFRTDXF

@@ -57,7 +57,7 @@ namespace XLSB
     // SORTSTATE = BrtBeginSortState (SORTCONDS / ACSORTCONDS / RICHSORTCONDITION) *FRT BrtEndSortState
     const bool SORTSTATE::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginSortState>())
+        if (proc.optional<BeginSortState>())
         {
             m_BrtBeginSortState = elements_.back();
             elements_.pop_back();
@@ -85,12 +85,12 @@ namespace XLSB
             count--;
         }
 
-        if (proc.mandatory<EndSortState>())
+        if (proc.optional<EndSortState>())
         {
             m_BrtEndSortState = elements_.back();
             elements_.pop_back();
         }
-        return m_BrtBeginSortState || m_source || m_BrtEndSortState;
+        return m_BrtBeginSortState && m_source && m_BrtEndSortState;
     }
 
 } // namespace XLSB

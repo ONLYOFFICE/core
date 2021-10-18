@@ -45,6 +45,7 @@
 #include "../../XlsbFormat/Biff12_records/CFVO.h"
 #include "../../XlsbFormat/Biff12_records/BeginDatabar.h"
 #include "../../XlsbFormat/Biff12_records/BeginIconSet.h"
+#include "../../XlsbFormat/Biff12_unions/FRTCFRULE.h"
 
 namespace OOX
 {
@@ -191,6 +192,7 @@ void CConditionalFormatValueObject::ReadAttributes(XLS::BaseObjectPtr& obj)
                     break;
             }
             m_oVal = std::to_wstring(ptr1->numParam.data.value);
+            m_oFormula.Init();
             m_oFormula->m_sNodeName = L"formula";
             m_oFormula->m_sText = ptr1->formula.getAssembledFormula();
         }
@@ -906,6 +908,12 @@ void CConditionalFormattingRule::fromBin(XLS::BaseObjectPtr& obj)
             }
         }
     }
+
+    if(ptr->m_FRTRULE != nullptr)
+    {
+        auto ptrFRTCFRULE = static_cast<XLSB::FRTCFRULE*>(ptr->m_FRTRULE.get());
+        //ptrFRTCFRULE
+    }
 }
 
 template<typename Type>
@@ -1154,6 +1162,7 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
                     }
 
                 }
+                break;
             }
             case CFType::CF_TYPE_GRADIENT:
             {
@@ -1189,6 +1198,7 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
         if(ptr->cbFmla1)
         {
             nullable<CFormulaCF> formula1;
+            formula1.Init();
             formula1->m_sNodeName = L"formula";
             formula1->m_sText = ptr->rgce1.getAssembledFormula();
             m_arrFormula.push_back(formula1);
@@ -1196,6 +1206,7 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
         if(ptr->cbFmla2)
         {
             nullable<CFormulaCF> formula2;
+            formula2.Init();
             formula2->m_sNodeName = L"formula";
             formula2->m_sText = ptr->rgce2.getAssembledFormula();
             m_arrFormula.push_back(formula2);
@@ -1203,6 +1214,7 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
         if(ptr->cbFmla3)
         {
             nullable<CFormulaCF> formula3;
+            formula3.Init();
             formula3->m_sNodeName = L"formula";
             formula3->m_sText = ptr->rgce3.getAssembledFormula();
             m_arrFormula.push_back(formula3);

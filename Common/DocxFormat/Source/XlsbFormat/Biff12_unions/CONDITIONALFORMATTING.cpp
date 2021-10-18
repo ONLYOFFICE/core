@@ -38,10 +38,7 @@
 
 namespace XLSB
 {
-BaseObjectPtr               m_BrtBeginConditionalFormatting;
-std::vector<BaseObjectPtr>  m_arCFRULE;
-std::vector<BaseObjectPtr>  m_arFRT;
-BaseObjectPtr               m_BrtEndConditionalFormatting;
+
     CONDITIONALFORMATTING::CONDITIONALFORMATTING()
     {
     }
@@ -59,7 +56,7 @@ BaseObjectPtr               m_BrtEndConditionalFormatting;
     const bool CONDITIONALFORMATTING::loadContent(BinProcessor& proc)
     {
         BeginConditionalFormatting bCondFormat;
-        if (proc.mandatory(bCondFormat))
+        if (proc.optional(bCondFormat))
         {
             m_BrtBeginConditionalFormatting = elements_.back();
             elements_.pop_back();
@@ -71,6 +68,7 @@ BaseObjectPtr               m_BrtEndConditionalFormatting;
         {
             m_arCFRULE.push_back(elements_.back());
             elements_.pop_back();
+            cfrule = CFRULE(bCondFormat.sqrfx.getLocationFirstCell());
         }
 
         int count = proc.repeated<FRT>(0, 0);
@@ -82,13 +80,13 @@ BaseObjectPtr               m_BrtEndConditionalFormatting;
             count--;
         }
 
-        if (proc.mandatory<EndConditionalFormatting>())
+        if (proc.optional<EndConditionalFormatting>())
         {
             m_BrtEndConditionalFormatting = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginConditionalFormatting || !m_arFRT.empty() || m_BrtEndConditionalFormatting;
+        return m_BrtBeginConditionalFormatting && !m_arCFRULE.empty() && m_BrtEndConditionalFormatting;
     }
 
 } // namespace XLSB

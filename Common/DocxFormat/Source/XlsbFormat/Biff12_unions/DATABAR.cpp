@@ -55,7 +55,7 @@ namespace XLSB
     // DATABAR = BrtBeginDatabar 2CFVO BrtColor BrtEndDatabar
     const bool DATABAR::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginDatabar>())
+        if (proc.optional<BeginDatabar>())
         {
             m_BrtBeginDatabar = elements_.back();
             elements_.pop_back();
@@ -72,19 +72,19 @@ namespace XLSB
             count--;
         }
 
-        if (proc.mandatory<Color>())
+        if (proc.optional<Color>())
         {
             m_BrtColor = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.mandatory<EndDatabar>())
+        if (proc.optional<EndDatabar>())
         {
             m_BrtEndDatabar = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginDatabar || !m_arCFVO.empty() || m_BrtColor|| m_BrtEndDatabar;
+        return m_BrtBeginDatabar && !m_arCFVO.empty() && m_BrtColor && m_BrtEndDatabar;
     }
 
 } // namespace XLSB

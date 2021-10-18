@@ -70,7 +70,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtACBegin || m_BrtRwDescent || m_BrtACEnd;
+        return m_BrtACBegin && m_BrtRwDescent && m_BrtACEnd;
     }
 
 } // namespace XLSB

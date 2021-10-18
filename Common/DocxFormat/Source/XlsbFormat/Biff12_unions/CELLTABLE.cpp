@@ -65,7 +65,7 @@ namespace XLSB
                 m_ACCELLTABLE = elements_.back();
                 elements_.pop_back();
             }
-            if(proc.mandatory<RowHdr>())
+            if(proc.optional<RowHdr>())
             {
                 m_BrtRowHdr = elements_.back();
                 elements_.pop_back();
@@ -133,7 +133,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtBeginSheetData || countParenthesis_CELLTABLE > 0 || m_BrtEndSheetData;
+        return m_BrtBeginSheetData && countParenthesis_CELLTABLE > 0 && m_BrtEndSheetData;
     }
 
 } // namespace XLSB

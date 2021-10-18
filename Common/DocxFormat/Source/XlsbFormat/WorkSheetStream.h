@@ -80,6 +80,7 @@ namespace XLSB
         BaseObjectPtr               m_LISTPARTS;
         BaseObjectPtr               m_SORTSTATE;
         std::vector<BaseObjectPtr>  m_arCONDITIONALFORMATTING;
+        BaseObjectPtr               m_FRTWORKSHEET;
 
         BaseObjectPtr               m_BrtEndSheet;
 

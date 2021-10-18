@@ -79,7 +79,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtBeginColorPalette || m_INDEXEDCOLORS || m_MRUCOLORS || m_BrtEndColorPalette;
+        return m_BrtBeginColorPalette && m_BrtEndColorPalette;
     }
 
 } // namespace XLSB

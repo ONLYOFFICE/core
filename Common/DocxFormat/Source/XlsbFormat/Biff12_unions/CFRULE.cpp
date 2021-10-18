@@ -58,38 +58,41 @@ namespace XLSB
     const bool CFRULE::loadContent(BinProcessor& proc)
     {
         BeginCFRule bCFRule(ref);
-        if (proc.mandatory(bCFRule))
+        if (proc.optional(bCFRule))
         {
             m_BrtBeginCFRule = elements_.back();
             elements_.pop_back();
         }
 
-        if(!proc.optional<COLORSCALE>())
+        if(proc.optional<COLORSCALE>())
         {
-            if(!proc.optional<DATABAR>())
-            {
-                if(!proc.optional<ICONSET>())
-                {
-                    return false;
-                }
-            }
+            m_source = elements_.back();
+            elements_.pop_back();
         }
-        m_source = elements_.back();
-        elements_.pop_back();
+        else if(proc.optional<DATABAR>())
+        {
+            m_source = elements_.back();
+            elements_.pop_back();
+        }
+        else if(proc.optional<ICONSET>())
+        {
+            m_source = elements_.back();
+            elements_.pop_back();
+        }
 
-        if (proc.mandatory<FRTCFRULE>())
+        if (proc.optional<FRTCFRULE>())
         {
             m_FRTRULE = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.mandatory<EndCFRule>())
+        if (proc.optional<EndCFRule>())
         {
             m_BrtEndCFRule = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginCFRule || m_source || m_FRTRULE || m_BrtEndCFRule;
+        return m_BrtBeginCFRule && m_BrtEndCFRule;
     }
 
 } // namespace XLSB

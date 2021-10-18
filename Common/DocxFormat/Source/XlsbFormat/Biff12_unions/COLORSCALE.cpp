@@ -55,7 +55,7 @@ namespace XLSB
     // COLORSCALE = BrtBeginColorScale ((2CFVO 2BrtColor) / (3CFVO 3BrtColor)) BrtEndColorScale
     const bool COLORSCALE::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginColorScale>())
+        if (proc.optional<BeginColorScale>())
         {
             m_BrtBeginColorScale = elements_.back();
             elements_.pop_back();
@@ -81,13 +81,13 @@ namespace XLSB
             countColor--;
         }
 
-        if (proc.mandatory<EndColorScale>())
+        if (proc.optional<EndColorScale>())
         {
             m_BrtEndColorScale = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginColorScale || !m_arCFVO.empty() || !m_arBrtColor.empty()|| m_BrtEndColorScale;
+        return m_BrtBeginColorScale && !m_arCFVO.empty() && !m_arBrtColor.empty() && m_BrtEndColorScale;
     }
 
 } // namespace XLSB

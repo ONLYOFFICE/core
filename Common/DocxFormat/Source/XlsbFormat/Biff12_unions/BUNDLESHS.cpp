@@ -54,25 +54,25 @@ namespace XLSB
     // BUNDLESHS = m_BrtBeginBUNDLESHS ...
     const bool BUNDLESHS::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginBundleShs>())
+        if (proc.optional<BeginBundleShs>())
         {
             m_BrtBeginBundleShs = elements_.back();
             elements_.pop_back();
         }
 
-        while (proc.mandatory<BundleSh>())
+        while (proc.optional<BundleSh>())
         {
             m_arBrtBundleSh.push_back(elements_.back());
             elements_.pop_back();
         }
 
-        if (proc.mandatory<EndBundleShs>())
+        if (proc.optional<EndBundleShs>())
         {
             m_BrtEndBundleShs = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginBundleShs || !m_arBrtBundleSh.empty() || m_BrtEndBundleShs;
+        return m_BrtBeginBundleShs && !m_arBrtBundleSh.empty() && m_BrtEndBundleShs;
     }
 
 } // namespace XLSB

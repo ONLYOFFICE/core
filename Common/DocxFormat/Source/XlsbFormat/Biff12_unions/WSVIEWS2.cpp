@@ -55,7 +55,7 @@ namespace XLSB
     // WSVIEWS2 = BrtBeginWsViews 1*WSVIEW2 *FRT BrtEndWsViews
     const bool WSVIEWS2::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginWsViews>())
+        if (proc.optional<BeginWsViews>())
         {
             m_BrtBeginWsViews = elements_.back();
             elements_.pop_back();
@@ -79,13 +79,13 @@ namespace XLSB
             count--;
         }
 
-        if (proc.mandatory<EndWsViews>())
+        if (proc.optional<EndWsViews>())
         {
             m_BrtEndWsViews = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginWsViews || !m_arWSVIEW2.empty() || m_BrtEndWsViews;
+        return m_BrtBeginWsViews && !m_arWSVIEW2.empty() && m_BrtEndWsViews;
     }
 
 } // namespace XLSB

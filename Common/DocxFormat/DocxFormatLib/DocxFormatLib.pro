@@ -60,7 +60,6 @@ SOURCES += \
     ../Source/DocxFormat/Comments.cpp \
     ../Source/DocxFormat/Document.cpp \
     ../Source/DocxFormat/VmlDrawing.cpp \
-    ../Source/XlsbFormat/Biff12_unions/uCFVO.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Chart/ChartSerializeEx.cpp \
     ../Source/XlsxFormat/Common.cpp \
@@ -182,6 +181,21 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/BeginColorScale.cpp \
     ../Source/XlsbFormat/Biff12_records/EndColorScale.cpp \
     ../Source/XlsbFormat/Biff12_records/CFRuleExt.cpp \
+    ##
+    ../Source/XlsbFormat/Biff12_records/BeginCFRule14.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndCFRule14.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginConditionalFormatting14.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndConditionalFormatting14.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginColorScale14.cpp \
+    ../Source/XlsbFormat/Biff12_records/Color14.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndColorScale14.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginDatabar14.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndDatabar14.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginIconSet14.cpp \
+    ../Source/XlsbFormat/Biff12_records/CFIcon.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndIconSet14.cpp \
+    ../Source/XlsbFormat/Biff12_records/CFVO14.cpp \
+    ###
     ../Source/XlsbFormat/Biff12_records/EndSheet.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginSst.cpp \
     ../Source/XlsbFormat/Biff12_records/SSTItem.cpp \
@@ -217,6 +231,9 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/BeginMRUColors.cpp \
     ../Source/XlsbFormat/Biff12_records/MRUColor.cpp \
     ../Source/XlsbFormat/Biff12_records/EndMRUColors.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndStyleSheet.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginConditionalFormattings.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndConditionalFormattings.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -237,12 +254,22 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/CFTextOper.cpp \
     ../Source/XlsbFormat/Biff12_structures/CFDateOper.cpp \
     ../Source/XlsbFormat/Biff12_structures/CFVOtype.cpp \
+    ../Source/XlsbFormat/Biff12_structures/CFVOType14.cpp \
     ../Source/XlsbFormat/Biff12_structures/FRTBlank.cpp \
     ../Source/XlsbFormat/Biff12_structures/RichStr.cpp \
     ../Source/XlsbFormat/Biff12_structures/StrRun.cpp \
     ../Source/XlsbFormat/Biff12_structures/PhRun.cpp \
     ../Source/XlsbFormat/Biff12_structures/GradientStop.cpp \
     ../Source/XlsbFormat/Biff12_structures/Blxf.cpp \
+    ../Source/XlsbFormat/Biff12_structures/FRTHeader.cpp \
+    ../Source/XlsbFormat/Biff12_structures/FRTRefs.cpp \
+    ../Source/XlsbFormat/Biff12_structures/FRTRef.cpp \
+    ../Source/XlsbFormat/Biff12_structures/FRTSqrefs.cpp \
+    ../Source/XlsbFormat/Biff12_structures/FRTSqref.cpp \
+    ../Source/XlsbFormat/Biff12_structures/FRTFormulas.cpp \
+    ../Source/XlsbFormat/Biff12_structures/FRTFormula.cpp \
+    ../Source/XlsbFormat/Biff12_structures/FRTParsedFormula.cpp \
+    ../Source/XlsbFormat/Biff12_structures/FRTRelID.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -274,12 +301,19 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/SORTCOND.cpp \
     ../Source/XlsbFormat/Biff12_unions/SORTCONDS.cpp \
     ../Source/XlsbFormat/Biff12_unions/SORTSTATE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/uCFVO.cpp \
     ../Source/XlsbFormat/Biff12_unions/ICONSET.cpp \
     ../Source/XlsbFormat/Biff12_unions/DATABAR.cpp \
     ../Source/XlsbFormat/Biff12_unions/COLORSCALE.cpp \
     ../Source/XlsbFormat/Biff12_unions/FRTCFRULE.cpp \
     ../Source/XlsbFormat/Biff12_unions/CFRULE.cpp \
     ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTING.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CFRULE14.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTING14.cpp \
+    ../Source/XlsbFormat/Biff12_unions/COLORSCALE14.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DATABAR14.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ICONSET14.cpp \
+    ../Source/XlsbFormat/Biff12_unions/uCFVO14.cpp \
     ../Source/XlsbFormat/Biff12_unions/SHAREDSTRINGS.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACFMT.cpp \
     ../Source/XlsbFormat/Biff12_unions/FMTS.cpp \
@@ -297,6 +331,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/MRUCOLORS.cpp \
     ../Source/XlsbFormat/Biff12_unions/INDEXEDCOLORS.cpp \
     ../Source/XlsbFormat/Biff12_unions/COLORPALETTE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTINGS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTWORKSHEET.cpp \
 }
 
 
@@ -407,7 +443,6 @@ HEADERS += docxformatlib.h \
     ../Source/Utility/TxtFile.h \
     ../Source/Utility/Unit.h \
     ../Source/Utility/Utility.h \
-    ../Source/XlsbFormat/Biff12_unions/uCFVO.h \
     ../Source/XlsxFormat/CalcChain/CalcChain.h \
     ../Source/XlsxFormat/Chart/Chart.h \
     ../Source/XlsxFormat/Chart/ChartSerialize.h \
@@ -569,6 +604,21 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/BeginColorScale.h \
     ../Source/XlsbFormat/Biff12_records/EndColorScale.h \
     ../Source/XlsbFormat/Biff12_records/CFRuleExt.h \
+    ##
+    ../Source/XlsbFormat/Biff12_records/BeginCFRule14.h \
+    ../Source/XlsbFormat/Biff12_records/EndCFRule14.h \
+    ../Source/XlsbFormat/Biff12_records/BeginConditionalFormatting14.h \
+    ../Source/XlsbFormat/Biff12_records/EndConditionalFormatting14.h \
+    ../Source/XlsbFormat/Biff12_records/BeginColorScale14.h \
+    ../Source/XlsbFormat/Biff12_records/Color14.h \
+    ../Source/XlsbFormat/Biff12_records/EndColorScale14.h \
+    ../Source/XlsbFormat/Biff12_records/BeginDatabar14.h \
+    ../Source/XlsbFormat/Biff12_records/EndDatabar14.h \
+    ../Source/XlsbFormat/Biff12_records/BeginIconSet14.h \
+    ../Source/XlsbFormat/Biff12_records/CFIcon.h \
+    ../Source/XlsbFormat/Biff12_records/EndIconSet14.h \
+    ../Source/XlsbFormat/Biff12_records/CFVO14.h \
+    ###
     ../Source/XlsbFormat/Biff12_records/EndSheet.h \
     ../Source/XlsbFormat/Biff12_records/BeginSst.h \
     ../Source/XlsbFormat/Biff12_records/SSTItem.h \
@@ -604,6 +654,9 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/BeginMRUColors.h \
     ../Source/XlsbFormat/Biff12_records/MRUColor.h \
     ../Source/XlsbFormat/Biff12_records/EndMRUColors.h \
+    ../Source/XlsbFormat/Biff12_records/EndStyleSheet.h \
+    ../Source/XlsbFormat/Biff12_records/BeginConditionalFormattings.h \
+    ../Source/XlsbFormat/Biff12_records/EndConditionalFormattings.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
@@ -627,12 +680,22 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_structures/CFTextOper.h \
     ../Source/XlsbFormat/Biff12_structures/CFDateOper.h \
     ../Source/XlsbFormat/Biff12_structures/CFVOtype.h \
+    ../Source/XlsbFormat/Biff12_structures/CFVOType14.h \
     ../Source/XlsbFormat/Biff12_structures/FRTBlank.h \
     ../Source/XlsbFormat/Biff12_structures/RichStr.h \
     ../Source/XlsbFormat/Biff12_structures/StrRun.h \
     ../Source/XlsbFormat/Biff12_structures/PhRun.h \
     ../Source/XlsbFormat/Biff12_structures/GradientStop.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
+    ../Source/XlsbFormat/Biff12_structures/FRTHeader.h \
+    ../Source/XlsbFormat/Biff12_structures/FRTRefs.h \
+    ../Source/XlsbFormat/Biff12_structures/FRTRef.h \
+    ../Source/XlsbFormat/Biff12_structures/FRTSqrefs.h \
+    ../Source/XlsbFormat/Biff12_structures/FRTSqref.h \
+    ../Source/XlsbFormat/Biff12_structures/FRTFormulas.h \
+    ../Source/XlsbFormat/Biff12_structures/FRTFormula.h \
+    ../Source/XlsbFormat/Biff12_structures/FRTParsedFormula.h \
+    ../Source/XlsbFormat/Biff12_structures/FRTRelID.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.h \
     ../Source/XlsbFormat/Biff12_unions/ACUID.h \
@@ -664,12 +727,19 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/SORTCOND.h \
     ../Source/XlsbFormat/Biff12_unions/SORTCONDS.h \
     ../Source/XlsbFormat/Biff12_unions/SORTSTATE.h \
+    ../Source/XlsbFormat/Biff12_unions/uCFVO.h \
     ../Source/XlsbFormat/Biff12_unions/ICONSET.h \
     ../Source/XlsbFormat/Biff12_unions/DATABAR.h \
     ../Source/XlsbFormat/Biff12_unions/COLORSCALE.h \
     ../Source/XlsbFormat/Biff12_unions/FRTCFRULE.h \
     ../Source/XlsbFormat/Biff12_unions/CFRULE.h \
     ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTING.h \
+    ../Source/XlsbFormat/Biff12_unions/CFRULE14.h \
+    ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTING14.h \
+    ../Source/XlsbFormat/Biff12_unions/COLORSCALE14.h \
+    ../Source/XlsbFormat/Biff12_unions/DATABAR14.h \
+    ../Source/XlsbFormat/Biff12_unions/ICONSET14.h \
+    ../Source/XlsbFormat/Biff12_unions/uCFVO14.h \
     ../Source/XlsbFormat/Biff12_unions/SHAREDSTRINGS.h \
     ../Source/XlsbFormat/Biff12_unions/ACFMT.h \
     ../Source/XlsbFormat/Biff12_unions/FMTS.h \
@@ -687,3 +757,5 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/MRUCOLORS.h \
     ../Source/XlsbFormat/Biff12_unions/INDEXEDCOLORS.h \
     ../Source/XlsbFormat/Biff12_unions/COLORPALETTE.h \
+    ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTINGS.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTWORKSHEET.h \

@@ -229,11 +229,12 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-                    if ( _T("ext") == sName )
+                                        std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+                                        if ( _T("ext") == sName )
 					{
                                                 OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension(oReader);
-                        if (oExt) m_arrExt.push_back( oExt );
+                                                if (oExt)
+                                                    m_arrExt.push_back( oExt );
 					}
 				}
 			}

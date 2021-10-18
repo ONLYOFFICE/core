@@ -54,7 +54,7 @@ namespace XLSB
     // LISTPARTS = BrtBeginListParts *BrtListPart BrtEndListParts
     const bool LISTPARTS::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginListParts>())
+        if (proc.optional<BeginListParts>())
         {
             m_BrtBeginListParts = elements_.back();
             elements_.pop_back();
@@ -71,13 +71,13 @@ namespace XLSB
             countListPart--;
         }
 
-        if (proc.mandatory<EndListParts>())
+        if (proc.optional<EndListParts>())
         {
             m_BrtEndListParts = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginListParts || !m_arBrtListPart.empty() || m_BrtEndListParts;
+        return m_BrtBeginListParts && !m_arBrtListPart.empty() && m_BrtEndListParts;
     }
 
 } // namespace XLSB

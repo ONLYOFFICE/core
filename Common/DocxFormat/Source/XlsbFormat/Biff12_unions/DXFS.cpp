@@ -75,7 +75,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtBeginDXFs || !m_aruDXF.empty() || m_BrtEndDXFs;
+        return m_BrtBeginDXFs && m_BrtEndDXFs;
     }
 
 } // namespace XLSB

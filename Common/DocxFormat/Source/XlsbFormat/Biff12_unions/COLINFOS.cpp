@@ -73,7 +73,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtBeginColInfos || !m_arBrtColInfo.empty() || m_BrtEndColInfos;
+        return m_BrtBeginColInfos && !m_arBrtColInfo.empty() && m_BrtEndColInfos;
     }
 
 } // namespace XLSB

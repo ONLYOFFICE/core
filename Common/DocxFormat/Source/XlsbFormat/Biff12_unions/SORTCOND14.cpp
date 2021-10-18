@@ -53,13 +53,13 @@ namespace XLSB
     //SORTCOND14 = BrtBeginSortCond14 BrtEndSortCond14
     const bool SORTCOND14::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginSortCond14>())
+        if (proc.optional<BeginSortCond14>())
         {
             m_BrtBeginSortCond14 = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.mandatory<EndSortCond14>())
+        if (proc.optional<EndSortCond14>())
         {
             m_BrtEndSortCond14 = elements_.back();
             elements_.pop_back();

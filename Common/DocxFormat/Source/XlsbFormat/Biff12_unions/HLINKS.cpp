@@ -61,7 +61,7 @@ namespace XLSB
                     //m_ACUID = elements_.back();
                     elements_.pop_back();
                 }
-                if(proc.mandatory<HLink>())
+                if(proc.optional<HLink>())
                 {
                     m_BrtHLink = elements_.back();
                     elements_.pop_back();

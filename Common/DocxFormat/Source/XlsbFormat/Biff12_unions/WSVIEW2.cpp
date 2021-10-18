@@ -61,7 +61,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        if (proc.mandatory<BeginWsView>())
+        if (proc.optional<BeginWsView>())
         {
             m_BrtBeginWsView = elements_.back();
             elements_.pop_back();
@@ -91,13 +91,13 @@ namespace XLSB
             count--;
         }
 
-        if (proc.mandatory<EndWsView>())
+        if (proc.optional<EndWsView>())
         {
             m_BrtEndWsView = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginWsView || !m_arBrtSel.empty() || m_BrtPane || m_BrtEndWsView;
+        return m_BrtBeginWsView && (!m_arBrtSel.empty() || m_BrtPane) && m_BrtEndWsView;
     }
 
 } // namespace XLSB

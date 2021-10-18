@@ -56,7 +56,7 @@ namespace XLSB
     // SHAREDSTRINGS = BrtBeginSst *BrtSSTItem *FRT BrtEndSst
     const bool SHAREDSTRINGS::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginSst>())
+        if (proc.optional<BeginSst>())
         {
             m_BrtBeginSst = elements_.back();
             elements_.pop_back();
@@ -80,12 +80,12 @@ namespace XLSB
             count--;
         }
 
-        if (proc.mandatory<EndSst>())
+        if (proc.optional<EndSst>())
         {
             m_BrtEndSst = elements_.back();
             elements_.pop_back();
         }
-        return m_BrtBeginSst || !m_arBrtSSTItem.empty() || m_BrtEndSst;
+        return m_BrtBeginSst && m_BrtEndSst;
     }
 
 } // namespace XLSB

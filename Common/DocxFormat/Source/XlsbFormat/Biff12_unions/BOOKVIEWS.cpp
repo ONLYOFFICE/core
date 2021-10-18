@@ -64,7 +64,7 @@ namespace XLSB
                 m_ACUID = elements_.back();
                 elements_.pop_back();
             }
-            if(proc.mandatory<BookView>())
+            if(proc.optional<BookView>())
             {
                 m_BrtBookView = elements_.back();
                 elements_.pop_back();
@@ -96,7 +96,7 @@ namespace XLSB
     // BOOKVIEWS = BrtBeginBookViews 1*([ACUID] BrtBookView *FRT) BrtEndBookViews
     const bool BOOKVIEWS::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginBookViews>())
+        if (proc.optional<BeginBookViews>())
         {
             m_BrtBeginBookViews = elements_.back();
             elements_.pop_back();
@@ -112,13 +112,13 @@ namespace XLSB
         }
 
 
-        if (proc.mandatory<EndBookViews>())
+        if (proc.optional<EndBookViews>())
         {
             m_BrtEndBookViews = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginBookViews || !m_arBrtBookView.empty() || m_BrtEndBookViews;
+        return m_BrtBeginBookViews && !m_arBrtBookView.empty() && m_BrtEndBookViews;
     }
 
 } // namespace XLSB

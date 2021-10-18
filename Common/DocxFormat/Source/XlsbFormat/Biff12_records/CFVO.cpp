@@ -50,7 +50,10 @@ namespace XLSB
 
     void CFVO::readFields(CFRecord& record)
     {
-        record >> iType >> numParam >> fSaveGTE >> fGTE >> cbFmla >> formula;
+        record >> iType >> numParam >> fSaveGTE >> fGTE >> cbFmla;
+
+        if(cbFmla)
+            record >> formula;
     }
 
 } // namespace XLSB

@@ -48,6 +48,7 @@
 #include "Biff12_unions/LISTPARTS.h"
 #include "Biff12_unions/SORTSTATE.h"
 #include "Biff12_unions/CONDITIONALFORMATTING.h"
+#include "Biff12_unions/FRTWORKSHEET.h"
 #include "Biff12_records/EndSheet.h"
 
 namespace XLSB
@@ -245,6 +246,15 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                     elements_.pop_back();
                     count--;
                 }
+            }break;           
+
+            case rt_FRTBegin:
+            {
+                if (proc.optional<FRTWORKSHEET>())
+                {
+                    m_FRTWORKSHEET = elements_.back();
+                    elements_.pop_back();
+                }
             }break;
 
             case rt_EndSheet:
@@ -255,7 +265,6 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                     elements_.pop_back();
                 }
             }break;
-
 
 			default://skip					
 			{

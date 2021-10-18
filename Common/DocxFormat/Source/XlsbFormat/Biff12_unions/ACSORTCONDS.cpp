@@ -54,7 +54,7 @@ namespace XLSB
     // ACSORTCONDS = BrtACBegin *64SORTCOND14 BrtACEnd
     const bool ACSORTCONDS::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<ACBegin>())
+        if (proc.optional<ACBegin>())
         {
             m_BrtACBegin = elements_.back();
             elements_.pop_back();
@@ -68,13 +68,13 @@ namespace XLSB
             --countSORTCOND14;
         }
 
-        if (proc.mandatory<ACEnd>())
+        if (proc.optional<ACEnd>())
         {
             m_BrtACEnd = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtACBegin || !m_arSORTCOND14.empty() || m_BrtACEnd;
+        return m_BrtACBegin && !m_arSORTCOND14.empty() && m_BrtACEnd;
     }
 
 } // namespace XLSB

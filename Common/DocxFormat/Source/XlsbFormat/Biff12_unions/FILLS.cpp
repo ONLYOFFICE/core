@@ -75,7 +75,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtBeginFills || !m_arBrtFill.empty() || m_BrtEndFills;
+        return m_BrtBeginFills && !m_arBrtFill.empty() && m_BrtEndFills;
     }
 
 } // namespace XLSB

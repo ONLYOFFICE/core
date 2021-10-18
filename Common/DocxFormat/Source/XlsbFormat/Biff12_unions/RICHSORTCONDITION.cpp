@@ -53,13 +53,13 @@ namespace XLSB
     //RICHSORTCONDITION = BrtBeginRichSortCondition BrtEndRichSortCondition
     const bool RICHSORTCONDITION::loadContent(BinProcessor& proc)
     {
-        if (proc.mandatory<BeginRichSortCondition>())
+        if (proc.optional<BeginRichSortCondition>())
         {
             m_BrtBeginRichSortCondition = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.mandatory<EndRichSortCondition>())
+        if (proc.optional<EndRichSortCondition>())
         {
             m_BrtEndRichSortCondition = elements_.back();
             elements_.pop_back();

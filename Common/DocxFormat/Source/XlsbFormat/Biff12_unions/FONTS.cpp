@@ -74,7 +74,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtBeginFonts || !m_arBrtFont.empty() || m_BrtEndFonts;
+        return m_BrtBeginFonts && !m_arBrtFont.empty() && m_BrtEndFonts;
     }
 
 } // namespace XLSB

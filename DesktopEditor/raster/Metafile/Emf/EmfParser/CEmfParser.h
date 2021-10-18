@@ -17,8 +17,9 @@ namespace MetaFile
 
                 EmfParserType   GetType()				    override;
         private:
-                bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
+                friend class CEmfPlusParser;
 
+                bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
                 void Read_EMR_HEADER();
                 void Read_EMR_ALPHABLEND();
                 void Read_EMR_STRETCHDIBITS();
@@ -113,6 +114,8 @@ namespace MetaFile
                 void Read_EMR_SMALLTEXTOUT();
                 void Read_EMR_STROKEANDFILLPATH();
                 void Read_EMR_STROKEPATH();
+
+                void Read_EMR_COMMENT();
         };
 }
 

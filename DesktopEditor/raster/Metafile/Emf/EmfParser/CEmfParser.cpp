@@ -1,4 +1,5 @@
 #include "CEmfParser.h"
+#include "CEmfPlusParser.h"
 
 namespace MetaFile
 {
@@ -1274,5 +1275,20 @@ namespace MetaFile
                 m_oStream >> oBounds;
 
                 HANDLE_EMR_STROKEPATH(oBounds);
+        }
+
+        void CEmfParser::Read_EMR_COMMENT()
+        {
+                m_oStream.Skip(4);
+
+                std::string sType = std::string((char*)m_oStream.GetCurPtr(), 4);
+
+                if (sType == "EMF+" && NULL != m_pInterpretator)
+                {
+                        m_oStream.Skip(4);
+                        CEmfPlusParser oEmfPlusParser(this);
+                        oEmfPlusParser.SetStream(m_oStream.GetCurPtr(), m_ulRecordSize - 8);
+                        oEmfPlusParser.PlayFile();
+                }
         }
 }

@@ -35,6 +35,7 @@
 #include "MetaFileTypes.h"
 
 #include "../Emf/EmfTypes.h"
+#include "../Emf/EmfPlusTypes.h"
 #include "../Wmf/WmfTypes.h"
 #include "../Emf/EmfObjects.h"
 #include "../Wmf/WmfObjects.h"
@@ -658,6 +659,33 @@ namespace MetaFile
 			*this >> oBitmap.cbBitsSrc;
 			*this >> oBitmap.cxSrc;
 			*this >> oBitmap.cySrc;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusRect& oRect)
+		{
+			*this >> oRect.shX;
+			*this >> oRect.shY;
+			*this >> oRect.shWidth;
+			*this >> oRect.shHeight;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusRectF& oRect)
+		{
+			*this >> oRect.dX;
+			*this >> oRect.dY;
+			*this >> oRect.dWidth;
+			*this >> oRect.dHeight;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusARGB &oARGB)
+		{
+			*this >> oARGB.chBlue;
+			*this >> oARGB.chGreen;
+			*this >> oARGB.chRed;
+			*this >> oARGB.chAlpha;
 
 			return *this;
 		}

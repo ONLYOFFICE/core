@@ -673,10 +673,10 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(TEmfPlusRectF& oRect)
 		{
-			*this >> oRect.dX;
-			*this >> oRect.dY;
-			*this >> oRect.dWidth;
-			*this >> oRect.dHeight;
+			oRect.fX	= (float)ReadDouble();
+			oRect.fY	= (float)ReadDouble();
+			oRect.fWidth	= (float)ReadDouble();
+			oRect.fHeight	= (float)ReadDouble();
 
 			return *this;
 		}
@@ -686,6 +686,51 @@ namespace MetaFile
 			*this >> oARGB.chGreen;
 			*this >> oARGB.chRed;
 			*this >> oARGB.chAlpha;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusRectR &oTEmfPlusRectR)
+		{
+			*this >> oTEmfPlusRectR.chX;
+			*this >> oTEmfPlusRectR.chY;
+			*this >> oTEmfPlusRectR.chWidth;
+			*this >> oTEmfPlusRectR.chHeight;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusTransformMatrix &oTEmfPlusTransformMatrix)
+		{
+			oTEmfPlusTransformMatrix.fM11 = (float)ReadDouble();
+			oTEmfPlusTransformMatrix.fM12 = (float)ReadDouble();
+			oTEmfPlusTransformMatrix.fM21 = (float)ReadDouble();
+			oTEmfPlusTransformMatrix.fM22 = (float)ReadDouble();
+			oTEmfPlusTransformMatrix.fdX  = (float)ReadDouble();
+			oTEmfPlusTransformMatrix.fdY  = (float)ReadDouble();
+
+			return *this;
+		}
+		CDataStream& operator>>(TGUID& oTGUID)
+		{
+			*this >> oTGUID.nData1;
+			*this >> oTGUID.shData2;
+			*this >> oTGUID.shData3;
+
+			BYTE *arBytes = new BYTE[8];
+
+			ReadBytes(arBytes, 8);
+
+			long long int llnValue;
+
+			*((unsigned char*)(&llnValue) + 0) = pCur[0];
+			*((unsigned char*)(&llnValue) + 1) = pCur[1];
+			*((unsigned char*)(&llnValue) + 2) = pCur[2];
+			*((unsigned char*)(&llnValue) + 3) = pCur[3];
+			*((unsigned char*)(&llnValue) + 4) = pCur[4];
+			*((unsigned char*)(&llnValue) + 5) = pCur[5];
+			*((unsigned char*)(&llnValue) + 6) = pCur[6];
+			*((unsigned char*)(&llnValue) + 7) = pCur[7];
+
+			oTGUID.llnData4 = llnValue;
 
 			return *this;
 		}

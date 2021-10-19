@@ -3,6 +3,30 @@
 
 namespace MetaFile
 {
+        struct TEmfPlusRectR
+        {
+                char chX;
+                char chY;
+                char chWidth;
+                char chHeight;
+
+                TEmfPlusRectR()
+                {
+                        chX      = 0;
+                        chY      = 0;
+                        chWidth  = 0;
+                        chHeight = 0;
+                }
+
+                TEmfPlusRectR(const TEmfPlusRectR& oRect)
+                {
+                        chX      = oRect.chX;
+                        chY      = oRect.chY;
+                        chWidth  = oRect.chWidth;
+                        chHeight = oRect.chHeight;
+                }
+        };
+
         struct TEmfPlusRect
         {
                 short shX;
@@ -29,24 +53,24 @@ namespace MetaFile
 
         struct TEmfPlusRectF
         {
-              double dX;
-              double dY;
-              double dWidth;
-              double dHeight;
+              float fX;
+              float fY;
+              float fWidth;
+              float fHeight;
 
               TEmfPlusRectF()
               {
-                      dX        = 0;
-                      dY        = 0;
-                      dWidth    = 0;
-                      dHeight   = 0;
+                      fX        = 0;
+                      fY        = 0;
+                      fWidth    = 0;
+                      fHeight   = 0;
               }
               TEmfPlusRectF(const TEmfPlusRectF& oRect)
               {
-                      dX        = oRect.dX;
-                      dY        = oRect.dY;
-                      dWidth    = oRect.dWidth;
-                      dHeight   = oRect.dHeight;
+                      fX        = oRect.fX;
+                      fY        = oRect.fY;
+                      fWidth    = oRect.fWidth;
+                      fHeight   = oRect.fHeight;
               }
         };
 
@@ -82,19 +106,19 @@ namespace MetaFile
 
         struct TEmfPlusPointF
         {
-                double dX;
-                double dY;
+                float fX;
+                float fY;
 
                 TEmfPlusPointF()
                 {
-                        dX = 0;
-                        dY = 0;
+                        fX = 0;
+                        fY = 0;
                 }
 
                 TEmfPlusPointF(const TEmfPlusPointF& oPoint)
                 {
-                        dX = oPoint.dX;
-                        dY = oPoint.dY;
+                        fX = oPoint.fX;
+                        fY = oPoint.fY;
                 }
         };
 
@@ -113,6 +137,60 @@ namespace MetaFile
                 {
                         shX = oPoint.shX;
                         shY = oPoint.shY;
+                }
+        };
+
+        struct TGUID
+        {
+                int nData1;
+                short shData2;
+                short shData3;
+                long long int llnData4;
+
+                TGUID()
+                {
+                        nData1   = 0;
+                        shData2  = 0;
+                        shData3  = 0;
+                        llnData4 = 0;
+                }
+
+                TGUID(const TGUID& oTGUID)
+                {
+                        nData1   = oTGUID.nData1;
+                        shData2  = oTGUID.shData2;
+                        shData3  = oTGUID.shData3;
+                        llnData4 = oTGUID.llnData4;
+                }
+        };
+
+        struct TEmfPlusTransformMatrix
+        {
+                float fM11;
+                float fM12;
+                float fM21;
+                float fM22;
+                float fdX;
+                float fdY;
+
+                TEmfPlusTransformMatrix()
+                {
+                        fM11 = 0;
+                        fM12 = 0;
+                        fM21 = 0;
+                        fM22 = 0;
+                        fdX  = 0;
+                        fdY  = 0;
+                }
+
+                TEmfPlusTransformMatrix(const TEmfPlusTransformMatrix& oTEmfPlusTransformMatrix)
+                {
+                        fM11 = oTEmfPlusTransformMatrix.fM11;
+                        fM12 = oTEmfPlusTransformMatrix.fM12;
+                        fM21 = oTEmfPlusTransformMatrix.fM21;
+                        fM22 = oTEmfPlusTransformMatrix.fM22;
+                        fdX  = oTEmfPlusTransformMatrix.fdX;
+                        fdY  = oTEmfPlusTransformMatrix.fdY;
                 }
         };
 }

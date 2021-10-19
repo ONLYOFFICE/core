@@ -151,7 +151,7 @@ public:
 	style_text_properties* get_drop_cap_properties();
 	int get_drop_cap_lines() {return drop_cap_state_.lines;}
 
-	bool start_comment			(int oox_comment_id);
+	int start_comment			(int oox_comment_id);
 	void end_comment			(int oox_comment_id);
 	void start_comment_content	();
 	void end_comment_content	();

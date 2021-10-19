@@ -1303,7 +1303,7 @@ void odt_conversion_context::end_run()
 	//}
 }
 //--------------------------------------------------------------------------------------------------------
-bool odt_conversion_context::start_comment(int oox_comm_id)
+int odt_conversion_context::start_comment(int oox_comm_id)
 {
 	int comm_state = comment_context_.find_by_id(oox_comm_id);
 
@@ -1314,15 +1314,21 @@ bool odt_conversion_context::start_comment(int oox_comm_id)
 
 		comment_context_.start_comment(comm_elm, oox_comm_id);
 		
-		if (text_context()->current_level_.size() > 0)
-			text_context()->current_level_.back().elm->add_child_element(comm_elm);
+		if (text_context()->current_level_.empty())
+		{
+			comm_state = 2;
+			
+			start_paragraph();
+			text_context()->set_KeepNextParagraph(true);
+
+			//аннотацию нельзя добавить на верхний уровень - нет поддержки в open_format
+		}
+		text_context()->current_level_.back().elm->add_child_element(comm_elm);
 
 		odf_element_state state(comm_elm, L"", office_element_ptr(), text_context()->current_level_.size());
 		text_context()->current_level_.push_back(state);
-
-		return false; //типо новый
 	}
-	return true;
+	return comm_state; 
 }
 void odt_conversion_context::start_comment_content()
 {

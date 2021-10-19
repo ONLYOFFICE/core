@@ -3222,6 +3222,16 @@ void BinaryDocumentTableWriter::WriteDocumentContent(const std::vector<OOX::Writ
 
 		switch(item->getType())
 		{
+			case OOX::et_w_commentRangeStart:
+			{
+				OOX::Logic::CCommentRangeStart* pCommentRangeStart = static_cast<OOX::Logic::CCommentRangeStart*>(item);
+				WriteComment(OOX::et_w_commentRangeStart, pCommentRangeStart->m_oId);			
+			}break;
+			case OOX::et_w_commentRangeEnd:
+			{
+				OOX::Logic::CCommentRangeEnd* pCommentRangeEnd = static_cast<OOX::Logic::CCommentRangeEnd*>(item);
+				WriteComment(OOX::et_w_commentRangeEnd, pCommentRangeEnd->m_oId);			
+			}break;
 			case OOX::et_w_altChunk:
 			{
 				OOX::Logic::CAltChunk* pAltChunk = static_cast<OOX::Logic::CAltChunk*>(item);

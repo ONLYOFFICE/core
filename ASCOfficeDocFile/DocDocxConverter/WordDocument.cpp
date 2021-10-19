@@ -80,7 +80,7 @@ namespace DocFileFormat
 		254,	437,//PC 437
 		255,	850//OEM
 	};
-	WordDocument::WordDocument (const ProgressCallback* pCallFunc, const std::wstring & sTempFolder, const int userLCID) :	
+	WordDocument::WordDocument (const std::wstring & sTempFolder, const int userLCID) :	
 		m_PieceTable(NULL), WordDocumentStream(NULL), TableStream(NULL), DataStream(NULL),  FIB(NULL), 
 		Text(NULL), RevisionAuthorTable(NULL), FontTable(NULL), BookmarkNames(NULL), AutoTextNames(NULL), 
 		IndividualFootnotesPlex(NULL), FootnoteReferenceCharactersPlex(NULL), IndividualEndnotesPlex(NULL),
@@ -93,7 +93,6 @@ namespace DocFileFormat
 		AnnotationOwners(NULL), DocProperties(NULL), listFormatOverrideTable(NULL), headerAndFooterTable(NULL),
 		AnnotStartPlex(NULL), AnnotEndPlex(NULL), encryptionHeader(NULL)
 	{
-		m_pCallFunc			= pCallFunc;	
 		m_sTempFolder		= sTempFolder;
 		m_nUserLCID			= userLCID;
 		
@@ -315,21 +314,7 @@ namespace DocFileFormat
 
 		BookmarkAnnotNames	=	new StringTable<WideString>		(TableStream, FIB->m_FibWord97.fcSttbfAtnBkmk,		FIB->m_FibWord97.lcbSttbfAtnBkmk,		nWordVersion, true);
 		
-		if (m_pCallFunc)
-		{
-			m_pCallFunc->OnProgress (m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 100000);
-
-			SHORT bCancel = 0;
-			m_pCallFunc->OnProgressEx(m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 100000, &bCancel);
-
-			if (bCancel)
-			{
-				Clear();
-				return AVS_ERROR_FILEFORMAT;
-			}
-		}
-
-		// Read all needed PLCFs
+	// Read all needed PLCFs
 		if (FIB->m_RgLw97.ccpFtn > 0)
 		{
 			FootnoteReferenceCharactersPlex	=	new Plex<FootnoteDescriptor>(FootnoteDescriptor::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcffndRef, FIB->m_FibWord97.lcbPlcffndRef, nWordVersion);
@@ -422,20 +407,6 @@ namespace DocFileFormat
 		
 		ListPlex							=	new Plex<ListNumCache>	(ListNumCache::STRUCTURE_SIZE,	TableStream, FIB->m_FibWord97.fcPlcfBteLvc, FIB->m_FibWord97.lcbPlcfBteLvc, nWordVersion);
 		
-		if (m_pCallFunc)
-		{
-			m_pCallFunc->OnProgress(m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 200000 );
-
-			SHORT bCancel = 0;
-			m_pCallFunc->OnProgressEx(m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 200000, &bCancel);
-
-			if (bCancel)
-			{
-				Clear();
-				return AVS_ERROR_FILEFORMAT;
-			}
-		}
-
 // Read the FKPs
 		AllPapxFkps				=	FormattedDiskPagePAPX::GetAllPAPXFKPs (FIB, WordDocumentStream, TableStream, DataStream);
 		AllChpxFkps				=	FormattedDiskPageCHPX::GetAllCHPXFKPs (FIB, WordDocumentStream, TableStream);
@@ -452,19 +423,6 @@ namespace DocFileFormat
 			AnnotationOwners		=	new AnnotationOwnerList		(FIB, TableStream);
 		}
 
-        if (m_pCallFunc)
-		{
-			m_pCallFunc->OnProgress(m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 300000 );
-
-			SHORT bCancel = 0;
-			m_pCallFunc->OnProgressEx(m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 300000, &bCancel);
-
-			if (bCancel)
-			{
-				Clear();
-				return AVS_ERROR_FILEFORMAT;
-			}
-		}
 		if (FontTable)
 		{
 			std::unordered_map<int, int> fonts_charsets;
@@ -556,20 +514,6 @@ namespace DocFileFormat
 
 		std::sort (AllPapxVector->begin(), AllPapxVector->end());
 
-		if (m_pCallFunc)
-		{
-			m_pCallFunc->OnProgress(m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 400000 );
-
-			SHORT bCancel = 0;
-			m_pCallFunc->OnProgressEx(m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 400000, &bCancel);
-
-			if (bCancel)
-			{
-				Clear();
-				return AVS_ERROR_FILEFORMAT;
-			}
-		}
-
 		//build a dictionary of all SEPX
 		if ( !SectionPlex->Elements.empty() )
 		{
@@ -591,20 +535,6 @@ namespace DocFileFormat
 				AllSepx->insert( std::pair<int, SectionPropertyExceptions*>( cp, new SectionPropertyExceptions( bytes, ( cbSepx /*- 2*/ ), nWordVersion ) ) );
 
 				RELEASEARRAYOBJECTS( bytes );
-			}
-		}
-
-		if (m_pCallFunc)
-		{
-			m_pCallFunc->OnProgress(m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 500000 );
-
-			SHORT bCancel = 0;
-			m_pCallFunc->OnProgressEx(m_pCallFunc->caller, DOC_ONPROGRESSEVENT_ID, 500000, &bCancel);
-
-			if (bCancel)
-			{
-				Clear();
-				return AVS_ERROR_FILEFORMAT;
 			}
 		}
 

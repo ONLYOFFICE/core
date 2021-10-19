@@ -922,6 +922,11 @@ namespace NSOnlineOfficeBinToPdf
 					oInfo.SetShd(unR, unG, unB, unA);
 				}
 
+				if (nFlags & (1 << 10))
+				{
+					oInfo.SetJc(ReadByte(current, curindex));
+				}
+
 				oInfo.SetType(ReadInt(current, curindex));
 
 				if (oInfo.IsTextField())
@@ -935,8 +940,8 @@ namespace NSOnlineOfficeBinToPdf
 					if (nFlags & (1 << 22))
 						pPr->SetTextValue(ReadString(current, curindex));
 
-					pPr->SetAutoFit(nFlags & (1 << 23));
-					pPr->SetMultiLine(nFlags & (1 << 24));
+					pPr->SetMultiLine(nFlags & (1 << 23));
+					pPr->SetAutoFit(nFlags & (1 << 24));
 				}
 				else if (oInfo.IsDropDownList())
 				{
@@ -958,6 +963,7 @@ namespace NSOnlineOfficeBinToPdf
 				{
 					CFormFieldInfo::CCheckBoxFormPr* pPr = oInfo.GetCheckBoxFormPr();
 					pPr->SetChecked(nFlags & (1 << 20));
+					pPr->SetType(ReadInt(current, curindex));
 					pPr->SetCheckedSymbol(ReadInt(current, curindex));
 					pPr->SetCheckedFont(ReadString(current, curindex));
 					pPr->SetUncheckedSymbol(ReadInt(current, curindex));
@@ -975,6 +981,9 @@ namespace NSOnlineOfficeBinToPdf
 					LONG lShiftX = ReadInt(current, curindex);
 					LONG lShiftY = ReadInt(current, curindex);
 					pPr->SetShift(lShiftX, lShiftY);
+
+					if (nFlags & (1 << 22))
+						pPr->SetPicturePath(pCorrector->GetImagePath(ReadString(current, curindex)));
 				}
 
 				if (oInfo.IsValid())

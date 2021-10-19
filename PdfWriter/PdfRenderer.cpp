@@ -39,6 +39,7 @@
 #include "Src/Image.h"
 #include "Src/Font.h"
 #include "Src/FontCidTT.h"
+#include "Src/FontTT.h"
 #include "Src/Annotation.h"
 #include "Src/Destination.h"
 #include "Src/Field.h"
@@ -1528,6 +1529,10 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	if (!m_pFont)
 		return S_OK;
 
+	PdfWriter::CFontTrueType* pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
+	if (!pFontTT)
+		return S_OK;
+
 	double dX, dY, dW, dH;
 	oInfo.GetBounds(dX, dY, dW, dH);
 
@@ -1549,7 +1554,14 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		CTextField* pField = m_pDocument->CreateTextField();
 		pFieldBase = static_cast<CFieldBase*>(pField);
 
-		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+		double _dY = m_pPage->GetHeight() - MM_2_PT(dY);
+		double _dB = m_pPage->GetHeight() - MM_2_PT(dY + dH);
+
+		double dMargin   = 2; // такой отступ используется в AdobeReader
+		double dBaseLine = MM_2_PT(dH - oInfo.GetBaseLineOffset());
+		double dShiftX   = dMargin;
+
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX) - dMargin, _dY, MM_2_PT(dX + dW) + dMargin, _dB));
 
 		pField->SetMaxLen(pPr->GetMaxCharacters());
 		pField->SetCombFlag(pPr->IsComb());
@@ -1583,21 +1595,96 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 			}
 		}
 
-		TColor oColor = m_oBrush.GetTColor1();
-		if (oInfo.IsPlaceHolder())
+		unsigned int unAlign = oInfo.GetJc();
+
+		TColor oColor      = m_oBrush.GetTColor1();
+		bool isPlaceHolder = oInfo.IsPlaceHolder();
+		double dAlpha      = isPlaceHolder ? 0.5 : 1;
+
+		if (!isPlaceHolder)
+			pField->SetTextValue(wsValue);
+
+		if (pPr->IsMultiLine())
 		{
-			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 0.5, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()), pShifts, unShiftsCount);
+			double dFontSize        = m_oFont.GetSize();
+			unsigned short* pCodes2 = new unsigned short[unLen];
+			unsigned int* pWidths   = new unsigned int[unLen];
+
+			unsigned short ushSpaceCode = 0xFFFF;
+			for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+			{
+				pCodes2[unIndex] = (static_cast<unsigned short>((pCodes[unIndex * 2] << 8) & 0xFFFF) | static_cast<unsigned short>((pCodes[unIndex * 2 + 1])));
+				pWidths[unIndex] = m_pFont->GetWidth(pCodes2[unIndex]);
+				if (0x0020 == pUnicodes[unIndex])
+					ushSpaceCode = pCodes2[unIndex];
+			}
+
+			m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
+
+			// TODO: Разобраться более детально по какой именно высоте идет в Adobe расчет
+			//       пока временно оставим (H - 3 * margin)
+			if (pPr->IsAutoFit())
+				dFontSize = m_oLinesManager.ProcessAutoFit(MM_2_PT(dW), (MM_2_PT(dH) - 3 * dMargin));
+
+			double dLineHeight = pFontTT->GetLineHeight() * dFontSize / 1000.0;
+
+			m_oLinesManager.CalculateLines(dFontSize, MM_2_PT(dW));
+
+			pField->StartTextAppearance(m_pFont, dFontSize, TRgb(oColor.r, oColor.g, oColor.b), dAlpha);
+
+			unsigned int unLinesCount = m_oLinesManager.GetLinesCount();
+			double dLineShiftY = MM_2_PT(dH) - pFontTT->GetLineHeight() * dFontSize / 1000.0 - dMargin;
+			for (unsigned int unIndex = 0; unIndex < unLinesCount; ++unIndex)
+			{
+				unsigned int unLineStart = m_oLinesManager.GetLineStartPos(unIndex);
+				double dLineShiftX = dShiftX;
+				double dLineWidth = m_oLinesManager.GetLineWidth(unIndex, dFontSize);
+				if (0 == unAlign)
+					dLineShiftX += MM_2_PT(dW) - dLineWidth;
+				else if (2 == unAlign)
+					dLineShiftX += (MM_2_PT(dW) - dLineWidth) / 2;
+
+				int nInLineCount = m_oLinesManager.GetLineEndPos(unIndex) - m_oLinesManager.GetLineStartPos(unIndex);
+				if (nInLineCount > 0)
+					pField->AddLineToTextAppearance(dLineShiftX, dLineShiftY, pCodes + (2 * unLineStart), nInLineCount * 2, pShifts ? (pShifts + unLineStart) : NULL, unShiftsCount ? nInLineCount : 0);
+
+				dLineShiftY -= dLineHeight;
+			}
+
+			pField->EndTextAppearance();
+
+			m_oLinesManager.Clear();
+
+			delete[] pCodes2;
+			delete[] pWidths;
 		}
 		else
 		{
-			pField->SetTextValue(wsValue);
-			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()), pShifts, unShiftsCount);
+			if (0 == unAlign || 2 == unAlign)
+			{
+				double dSumWidth = 0;
+				for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)
+				{
+					unsigned short ushCode = (static_cast<unsigned short>((pCodes[unIndex * 2] << 8) & 0xFFFF) | static_cast<unsigned short>((pCodes[unIndex * 2 + 1])));
+					double dLetterWidth = m_pFont->GetWidth(ushCode) / 1000.0 * m_oFont.GetSize();
+					dSumWidth += dLetterWidth;
+				}
+
+				if (0 == unAlign && MM_2_PT(dW) - dSumWidth > 0)
+					dShiftX += MM_2_PT(dW) - dSumWidth;
+				else if (2 == unAlign && (MM_2_PT(dW) - dSumWidth) / 2 > 0)
+					dShiftX += (MM_2_PT(dW) - dSumWidth) / 2;
+			}
+
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), dAlpha, m_oFont.GetSize(), dShiftX, dBaseLine, pShifts, unShiftsCount);
 		}
 
 		if (pShifts)
 			delete[] pShifts;
 
-		delete[] pCodes;				
+		delete[] pCodes;
+
+		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), TRgb(oColor.r, oColor.g, oColor.b));
 	}
 	else if (oInfo.IsDropDownList())
 	{
@@ -1638,6 +1725,8 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		pField->SetComboFlag(true);
 		pField->SetEditFlag(!pPr->IsEditComboBox());
+
+		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), TRgb(oColor.r, oColor.g, oColor.b));
 	}
 	else if (oInfo.IsCheckBox())
 	{
@@ -1680,8 +1769,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 			TColor oColor = m_oBrush.GetTColor1();
 			pField->SetAppearance(L"", pCheckedCodes, 2, pCheckedFont, L"", pUncheckedCodes, 2, pUncheckedFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
-
-		}
+		}		
 	}
 	else if (oInfo.IsPicture())
 	{
@@ -1689,16 +1777,26 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		CPictureField* pField = m_pDocument->CreatePictureField();
 		pFieldBase = static_cast<CFieldBase*>(pField);
-		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
-		pField->SetAppearance();
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));		
 		pField->SetConstantProportions(pPr->IsConstantProportions());
 		pField->SetRespectBorders(pPr->IsRespectBorders());
 		pField->SetScaleType(static_cast<CPictureField::EScaleType>(pPr->GetScaleType()));
-		pField->SetShift(pPr->GetShiftX() / 1000.0, (1000 - pPr->GetShiftY()) / 1000.0);
+		pField->SetShift(pPr->GetShiftX() / 1000.0, (1000 - pPr->GetShiftY()) / 1000.0);		
 	}
 
 	if (pFieldBase)
 	{
+		// 0 - Right
+		// 1 - Left
+		// 2 - Center
+		// 3 - Justify
+		// 4 - Distributed
+		unsigned int unAlign = oInfo.GetJc();
+		if (0 == unAlign)
+			pFieldBase->SetAlign(CFieldBase::EFieldAlignType::Right);
+		else if (2 == unAlign)
+			pFieldBase->SetAlign(CFieldBase::EFieldAlignType::Center);
+
 		if (oInfo.HaveBorder())
 		{
 			unsigned char unR, unG, unB, unA;
@@ -1714,6 +1812,8 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 			pFieldBase->SetShd(TRgb(unR, unG, unB));
 		}
 
+		pFieldBase->SetRequiredFlag(oInfo.IsRequired());
+		pFieldBase->SetFieldHint(oInfo.GetHelpText());
 
 		if (!bRadioButton)
 		{
@@ -1724,8 +1824,23 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 				pFieldBase->SetFieldName(m_oFieldsManager.GetNewFieldName());
 		}
 
-		pFieldBase->SetRequiredFlag(oInfo.IsRequired());
-		pFieldBase->SetFieldHint(oInfo.GetHelpText());		
+		if (oInfo.IsPicture())
+		{
+			CPictureField* pField = dynamic_cast<CPictureField*>(pFieldBase);
+			if (pField)
+			{
+				const CFormFieldInfo::CPictureFormPr* pPr = oInfo.GetPicturePr();
+				std::wstring wsPath = pPr->GetPicturePath();
+				CImageDict* pImage = NULL;
+				if (wsPath.length())
+				{
+					Aggplus::CImage oImage(wsPath);
+					pImage = LoadImage(&oImage, 255);
+				}
+
+				pField->SetAppearance(pImage);
+			}
+		}
 	}
 
 	return S_OK;
@@ -2011,7 +2126,7 @@ PdfWriter::CFontCidTrueType* CPdfRenderer::GetFont(const std::wstring& wsFontPat
 
 		std::wstring wsFontType = m_pFontManager->GetFontType();
 		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
-			pFont = m_pDocument->CreateTrueTypeFont(wsFontPath, lFaceIndex);
+			pFont = m_pDocument->CreateCidTrueTypeFont(wsFontPath, lFaceIndex);
 	}
 
 	return pFont;

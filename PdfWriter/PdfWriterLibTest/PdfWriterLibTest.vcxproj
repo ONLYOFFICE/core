@@ -160,12 +160,14 @@
     <ClInclude Include="..\Src\Consts.h" />
     <ClInclude Include="..\Src\Destination.h" />
     <ClInclude Include="..\Src\Document.h" />
+    <ClInclude Include="..\Src\Encodings.h" />
     <ClInclude Include="..\Src\Encrypt.h" />
     <ClInclude Include="..\Src\EncryptDictionary.h" />
     <ClInclude Include="..\Src\Field.h" />
     <ClInclude Include="..\Src\Font.h" />
     <ClInclude Include="..\Src\Font14.h" />
     <ClInclude Include="..\Src\FontCidTT.h" />
+    <ClInclude Include="..\Src\FontTT.h" />
     <ClInclude Include="..\Src\FontTTWriter.h" />
     <ClInclude Include="..\Src\GState.h" />
     <ClInclude Include="..\Src\ICCProfile.h" />
@@ -248,6 +250,7 @@
     <ClCompile Include="..\Src\Font.cpp" />
     <ClCompile Include="..\Src\Font14.cpp" />
     <ClCompile Include="..\Src\FontCidTT.cpp" />
+    <ClCompile Include="..\Src\FontTT.cpp" />
     <ClCompile Include="..\Src\FontTTWriter.cpp" />
     <ClCompile Include="..\Src\GState.cpp" />
     <ClCompile Include="..\Src\Image.cpp" />

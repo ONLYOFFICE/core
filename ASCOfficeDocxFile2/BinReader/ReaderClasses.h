@@ -579,6 +579,7 @@ public:
 	bool bThemeColor;
 	bool bVanish;
 
+	long CompressText;
 	bool bDoNotWriteNullProp;
 public:
     rPr(boost::unordered_map<std::wstring, int>& mapFonts) : m_mapFonts(mapFonts)
@@ -636,6 +637,8 @@ public:
 		MoveFrom.clear();
 		MoveTo.clear();
         rPrChange.clear();
+		
+		CompressText = -1; //not set
 	}
 	bool IsNoEmpty()
 	{
@@ -700,6 +703,10 @@ public:
 			}
 			sFont += _T("/>");
 			pCStringWriter->WriteString(sFont);
+		}
+		if (CompressText >= 0 && CompressText <= 600)
+		{
+			pCStringWriter->WriteString(L"<w:w w:val=\"" + std::to_wstring(CompressText) + L"\"/>"); 
 		}
 		if(bBold)
 		{
@@ -798,8 +805,8 @@ public:
 		}
 		if(bFontSizeCs)
 		{
-			if(false == bFontSize)
-				pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
+			//if(false == bFontSize) - Sample Doc.docx
+			//	pCStringWriter->WriteString(L"<w:sz w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
 			pCStringWriter->WriteString(L"<w:szCs w:val=\"" + std::to_wstring(FontSizeCs) + L"\"/>");
 		}
 		if(nHighLight > 0)

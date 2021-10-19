@@ -700,28 +700,28 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		m_oBcw.m_oStream.WriteBOOL(italicCs);
 	}
 	//FontSizeCs
-	if(rPr->m_oSzCs.IsInit() && rPr->m_oSzCs->m_oVal.IsInit())
+	if (rPr->m_oSzCs.IsInit() && rPr->m_oSzCs->m_oVal.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::FontSizeCs);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(rPr->m_oSzCs.get().m_oVal.get().ToHps());
 	}
 	//Cs
-	if(false != rPr->m_oCs.IsInit())
+	if (false != rPr->m_oCs.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Cs);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(rPr->m_oCs->m_oVal.ToBool());
 	}
 	//Rtl
-	if(false != rPr->m_oRtL.IsInit())
+	if (false != rPr->m_oRtL.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Rtl);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(rPr->m_oRtL->m_oVal.ToBool());
 	}
 	//Lang
-	if(false != rPr->m_oLang.IsInit())
+	if (false != rPr->m_oLang.IsInit())
 	{
 		if(rPr->m_oLang->m_oVal.IsInit())
 		{
@@ -743,7 +743,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		}
 	}
 	//Vanish
-	if(false != rPr->m_oVanish.IsInit())
+	if (false != rPr->m_oVanish.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Vanish);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
@@ -767,7 +767,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		m_oBcw.m_oStream.WriteRecord1(0, rPr->m_oTextFill);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	if(rPr->m_oDel.IsInit())
+	if (rPr->m_oDel.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Del);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
@@ -775,7 +775,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		m_oBcw.WriteTrackRevision(rPr->m_oDel.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	if(rPr->m_oIns.IsInit())
+	if (rPr->m_oIns.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Ins);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
@@ -799,13 +799,19 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		m_oBcw.WriteTrackRevision(rPr->m_oMoveFrom.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	if(rPr->m_oMoveTo.IsInit())
+	if (rPr->m_oMoveTo.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::MoveTo);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		nCurPos = m_oBcw.WriteItemWithLengthStart();
 		m_oBcw.WriteTrackRevision(rPr->m_oMoveTo.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (rPr->m_oW.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::CompressText);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(rPr->m_oW->m_oVal->GetValue());
 	}
 }
 void Binary_rPrWriter::Write_rPrChange(const OOX::Logic::CRPrChange& rPrChange)
@@ -3216,6 +3222,16 @@ void BinaryDocumentTableWriter::WriteDocumentContent(const std::vector<OOX::Writ
 
 		switch(item->getType())
 		{
+			case OOX::et_w_commentRangeStart:
+			{
+				OOX::Logic::CCommentRangeStart* pCommentRangeStart = static_cast<OOX::Logic::CCommentRangeStart*>(item);
+				WriteComment(OOX::et_w_commentRangeStart, pCommentRangeStart->m_oId);			
+			}break;
+			case OOX::et_w_commentRangeEnd:
+			{
+				OOX::Logic::CCommentRangeEnd* pCommentRangeEnd = static_cast<OOX::Logic::CCommentRangeEnd*>(item);
+				WriteComment(OOX::et_w_commentRangeEnd, pCommentRangeEnd->m_oId);			
+			}break;
 			case OOX::et_w_altChunk:
 			{
 				OOX::Logic::CAltChunk* pAltChunk = static_cast<OOX::Logic::CAltChunk*>(item);
@@ -3433,7 +3449,7 @@ void BinaryDocumentTableWriter::WriteAltChunk(OOX::Media& oAltChunkFile, OOX::CS
 
 			bool bMacros = false;
 
-			result = (S_OK == docFile.LoadFromFile(file_name_inp, sResultDocxDir, NULL, bMacros, NULL));
+			result = (S_OK == docFile.LoadFromFile(file_name_inp, sResultDocxDir, NULL, bMacros));
 #else
 			result = S_FALSE;
 #endif

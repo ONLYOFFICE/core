@@ -2180,7 +2180,7 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 	}
 	else
 	{
-		if (pOutput.eDataType == RtfPicture::dt_emf || pOutput.eDataType == RtfPicture::dt_wmf)
+		if (pOutput.eDataType == RtfPicture::dt_emf || pOutput.eDataType == RtfPicture::dt_wmf || pOutput.eDataType == RtfPicture::dt_svg)
 		{
 			if (!oParam.oRtf->m_pAppFonts)
 			{

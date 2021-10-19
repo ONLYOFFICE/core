@@ -1,3 +1,5 @@
+OPENSSL_LIBS_DIRECTORY = $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
+
 core_android {
 
     ABI_PATH = $$replace(CORE_BUILDS_PLATFORM_PREFIX, "android_", "")
@@ -8,8 +10,10 @@ core_android {
 		ABI_PATH = $$replace(ABI_PATH, "arm64_v8a", "arm64-v8a")
 	}
 
-    INCLUDEPATH += $$PWD/../ixwebsocket/IXWebSocket/build/android/$$ABI_PATH/include
-    LIBS        += $$PWD/../ixwebsocket/IXWebSocket/build/android/$$ABI_PATH/lib/libixwebsocket.a
+    INCLUDEPATH += $$PWD/../ixwebsocket/IXWebSocket/build/android/$$ABI_PATH/usr/include
+    LIBS        += $$PWD/../ixwebsocket/IXWebSocket/build/android/$$ABI_PATH/usr/lib/libixwebsocket.a
+
+    OPENSSL_LIBS_DIRECTORY = $$PWD/../openssl/build/android/$$ABI_PATH/lib
 }
 
 core_ios {
@@ -50,9 +54,9 @@ core_windows {
 }
 
 core_windows {
-    LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libssl.lib
-    LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libcrypto.lib
+    LIBS += $$OPENSSL_LIBS_DIRECTORY/libssl.lib
+    LIBS += $$OPENSSL_LIBS_DIRECTORY/libcrypto.lib
 } else {
-    LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libssl.a
-    LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libcrypto.a
+    LIBS += $$OPENSSL_LIBS_DIRECTORY/libssl.a
+    LIBS += $$OPENSSL_LIBS_DIRECTORY/libcrypto.a
 }

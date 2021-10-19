@@ -33,6 +33,7 @@
 #include "Font.h"
 #include "Utils.h"
 #include "GState.h"
+#include "Image.h"
 
 namespace PdfWriter
 {
@@ -45,6 +46,8 @@ namespace PdfWriter
 		m_pFonts            = NULL;
 		m_unExtGStatesCount = 0;
 		m_pExtGStates       = NULL;
+		m_unXObjectsCount   = 0;
+		m_pXObjects         = NULL;
 		
 		if (!bInline)
 			pXref->Add(this);
@@ -77,7 +80,7 @@ namespace PdfWriter
 		const char *sKey = m_pFonts->GetKey(pFont);
 		if (!sKey)
 		{
-			// если фонт не зарегистрирован в ресурсах, тогда регистрируем его
+			// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
 			char sFontName[LIMIT_MAX_NAME_LEN + 1];
 			char *pPointer = NULL;
 			char *pEndPointer = sFontName + LIMIT_MAX_NAME_LEN;
@@ -105,7 +108,7 @@ namespace PdfWriter
 		const char* sKey = m_pExtGStates->GetKey(pState);
 		if (!sKey)
 		{
-			// Если ExtGState не зарегистрирован в Resource, регистрируем
+			// пїЅпїЅпїЅпїЅ ExtGState пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ Resource, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			char sExtGrStateName[LIMIT_MAX_NAME_LEN + 1];
 			char *pPointer;
 			char *pEndPointer = sExtGrStateName + LIMIT_MAX_NAME_LEN;
@@ -118,5 +121,45 @@ namespace PdfWriter
 		}
 
 		return sKey;
+	}
+	const char* CResourcesDict::GetXObjectName(CXObject* pObject)
+	{
+		if (!m_pXObjects)
+		{
+			m_pXObjects = new CDictObject();
+			if (!m_pXObjects)
+				return NULL;
+
+			Add("XObject", m_pXObjects);
+		}
+
+		const char* sKey = m_pXObjects->GetKey(pObject);
+		if (!sKey)
+		{
+			char sXObjName[LIMIT_MAX_NAME_LEN + 1];
+			char *pPointer;
+			char *pEndPointer = sXObjName + LIMIT_MAX_NAME_LEN;
+
+			pPointer = (char*)StrCpy(sXObjName, "X", pEndPointer);
+			ItoA(pPointer, m_unXObjectsCount + 1, pEndPointer);
+			m_unXObjectsCount++;
+			m_pXObjects->Add(sXObjName, pObject);
+			sKey = m_pXObjects->GetKey(pObject);
+		}
+
+		return sKey;
+	}
+	void CResourcesDict::AddXObjectWithName(const char* sXObjName, CXObject* pObject)
+	{
+		if (!m_pXObjects)
+		{
+			m_pXObjects = new CDictObject();
+			if (!m_pXObjects)
+				return;
+
+			Add("XObject", m_pXObjects);
+		}
+
+		m_pXObjects->Add(sXObjName, pObject);
 	}
 }

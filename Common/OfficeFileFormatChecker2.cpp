@@ -70,6 +70,12 @@ bool COfficeFileFormatChecker::isHtmlFormatFile(unsigned char* pBuffer, int dwBy
 			{
 				return true;
 			}
+			else if ((0x3C == pBuffer[i]) && (0x2F == pBuffer[i + 1]) && (0x62 == pBuffer[i + 2])
+					&& (0x6f == pBuffer[i + 3])	&& (0x64 == pBuffer[i + 4])	&& (0x79 == pBuffer[i + 5])
+					&& (0x3e == pBuffer[i + 6]))
+			{//</body>
+				return true;
+			}
 		}
 	}
 	else if (dwBytes > 3)
@@ -886,6 +892,7 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
     switch (type)
     {
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM:		return L".oform";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF:		return L".docxf";
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:		return L".docx";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:		return L".docm";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:		return L".dotx";
@@ -948,7 +955,7 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
     case AVS_OFFICESTUDIO_FILE_IMAGE_PSD:           return L".psd";
     case AVS_OFFICESTUDIO_FILE_IMAGE_ICO:           return L".ico";
 
-    case AVS_OFFICESTUDIO_FILE_CANVAS_WORD:
+	case AVS_OFFICESTUDIO_FILE_CANVAS_WORD:
     case AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET:
     case AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION:	return L".bin";
     case AVS_OFFICESTUDIO_FILE_OTHER_OLD_DOCUMENT:
@@ -967,6 +974,8 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 	if (L".oform" == ext)
 		return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX; //AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM
+	if (L".docxf" == ext)
+		return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX; //AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF
 	if (L".docm" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM;
     if (L".dotx" == ext)

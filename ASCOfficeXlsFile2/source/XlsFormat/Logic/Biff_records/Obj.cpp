@@ -243,8 +243,19 @@ void Obj::readFields(CFRecord& record)
 			//pictFmla.load(record, nLinkSize);
 			record.skipNunBytes(nLinkSize);
 
+			int size = record.getDataSize() - record.getRdPtr();
+			const char* data = record.getData() + record.getRdPtr();
+
+			ShortXLAnsiString name1;
+			if (size > 0)
+			{
+				record >> name1;
+
+				if (old_version.name.value().empty())
+					old_version.name = name1;
+			}
 			if (continue_records.size() > 0)
-			{//embedded
+			{//embedded data 
 				std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
 
 				if (recs.size())

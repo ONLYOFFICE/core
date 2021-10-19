@@ -37,6 +37,7 @@ SOURCES += \
     ./../DesktopEditor/graphics/TemporaryCS.cpp
 
 # THREAD
+core_android:DEFINES += NOT_USE_PTHREAD_CANCEL
 HEADERS += \
     ./../DesktopEditor/graphics/BaseThread.h
 

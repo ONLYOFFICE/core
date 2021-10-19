@@ -41,6 +41,4 @@ core_android {
     SOURCES += $$PWD/src/FileTransporter_curl.cpp
 
     !use_external_transport:include($$PWD/../../3dParty/curl/curl.pri)
-
-    DEFINES += NOT_USE_PTHREAD_CANCEL
 }

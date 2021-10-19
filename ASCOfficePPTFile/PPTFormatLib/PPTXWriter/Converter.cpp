@@ -890,11 +890,39 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
 
             RoundTripExtractor extractorMaster(arrRTMaster[0]);
             auto masterPath = extractorMaster.getOneFile(std::wstring(L"drs") + FILE_SEPARATOR_STR + L"slideMasters" + FILE_SEPARATOR_STR + L"slideMaster1.xml");
+            auto mediaPathes = extractorMaster.find(L".*image[0-9]+.*");
+            int rIdShift = oRels.getRId() - 1;
+            for (auto& strMediaPath : mediaPathes)
+            {
+                oRels.WriteImage(strMediaPath);
+            }
+
             std::wstring utf8strMaster;
             NSFile::CFileBinary::ReadAllTextUtf8(masterPath, utf8strMaster);
             auto txStylesIter = utf8strMaster.find(L"<p:txStyles");
             if (txStylesIter != (UINT)-1)
-                oWriter.WriteString(utf8strMaster.substr(txStylesIter));
+            {
+                auto strTxStyles = utf8strMaster.substr(txStylesIter);
+                UINT proccesed = 0;
+                UINT rIdIter = 0;
+                UINT rIdIterEnd = 0;
+                const std::wstring searchStrEmbed = L"<a:blip r:embed=\"rId";
+                while (true)
+                {
+                    rIdIter = strTxStyles.find(searchStrEmbed, proccesed);
+                    if (rIdIter == (UINT)-1) break;
+                    proccesed = rIdIter + searchStrEmbed.size();
+                    rIdIterEnd = strTxStyles.find(L"\"", proccesed);
+                    auto strId = strTxStyles.substr(proccesed, rIdIterEnd - proccesed);
+                    unsigned numId = std::stoi(strId) + rIdShift;
+                    strId = std::to_wstring(numId);
+
+                    strTxStyles.erase(proccesed, rIdIterEnd - proccesed);
+                    // todo fix empty rId
+                    strTxStyles.insert(rIdIter, strId, strId.size());
+                }
+                oWriter.WriteString(strTxStyles);
+            }
         }
         else if (pTheme->m_eType == typeNotesMaster)
         {

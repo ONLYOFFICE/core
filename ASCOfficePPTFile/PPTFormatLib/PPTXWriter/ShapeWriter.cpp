@@ -1625,7 +1625,11 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 m_oWriter.WriteString(strT1);
 
                 std::wstring strT = pParagraph->m_arSpans[nSpan].m_strText;
-                CorrectXmlString(strT);
+                // check it
+                if (strT != L"<#>")
+                    CorrectXmlString(strT);
+                else
+                    strT = L"‹#›";
                 m_oWriter.WriteString(strT);
 
                 std::wstring strT2 = _T("</a:t>");

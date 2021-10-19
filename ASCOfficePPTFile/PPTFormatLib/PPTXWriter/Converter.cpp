@@ -884,6 +884,7 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
 
 
         // inserted roundtrip master
+        // add media here rId
         if (pTheme->m_eType == typeMaster && arrRTMaster.size())
         {
 

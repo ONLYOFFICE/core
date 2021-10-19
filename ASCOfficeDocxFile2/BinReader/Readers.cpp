@@ -4624,6 +4624,32 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		READ1_DEF(length, res, this->ReadParagraph, NULL);
         m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:p>"));
 	}
+	else if (c_oSerParType::CommentStart == type)
+	{
+		long nId = 0;
+		READ1_DEF(length, res, this->ReadComment, &nId);
+		if (NULL != m_oFileWriter.m_pComments)
+		{
+			CComment* pComment = m_oFileWriter.m_pComments->get(nId);
+			if (NULL != pComment)
+			{
+				int nNewId = m_oFileWriter.m_pComments->getNextId(pComment->getCount());
+				pComment->setFormatStart(nNewId);
+				GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeStart")), std::wstring(_T(""))));
+			}
+		}
+	}
+	else if (c_oSerParType::CommentEnd == type)
+	{
+		long nId = 0;
+		READ1_DEF(length, res, this->ReadComment, &nId);
+		if (NULL != m_oFileWriter.m_pComments)
+		{
+			CComment* pComment = m_oFileWriter.m_pComments->get(nId);
+			if (NULL != pComment && pComment->bIdFormat)
+				GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeEnd")), std::wstring(_T(""))));
+		}
+	}
 	else if(c_oSerParType::Table == type)
 	{
 		m_byteLastElemType = c_oSerParType::Table;

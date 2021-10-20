@@ -446,7 +446,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertBrush(CBrush & brush)
                 brush.Type == c_BrushTypePathGradient2	||
                 brush.Type == c_BrushTypeCenter			||
                 brush.Type == c_BrushTypeHorizontal		||
-                brush.Type == c_BrushTypeVertical		)
+                brush.Type == c_BrushTypeVertical		 && false)
     {
         brush_writer.WriteString(L"<a:gradFill><a:gsLst>");
         if (brush.ColorsPosition.empty() == false)
@@ -1625,11 +1625,9 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 m_oWriter.WriteString(strT1);
 
                 std::wstring strT = pParagraph->m_arSpans[nSpan].m_strText;
-                // check it
-                if (strT != L"<#>")
-                    CorrectXmlString(strT);
-                else
-                    strT = L"‹#›";
+
+                CorrectXmlString(strT);
+
                 m_oWriter.WriteString(strT);
 
                 std::wstring strT2 = _T("</a:t>");
@@ -2145,10 +2143,16 @@ void PPT_FORMAT::CShapeWriter::ParseXmlAlternative(const std::wstring & xml)
             shape->spPr.Geometry.toXmlWriter(&writer);
 
             if (shape->spPr.scene3d.IsInit())
+            {
+                shape->spPr.scene3d->m_namespace = L"a";
                 shape->spPr.scene3d->toXmlWriter(&writer);
+            }
 
             if (shape->spPr.sp3d.IsInit())
+            {
+                shape->spPr.sp3d->m_namespace = L"a";
                 shape->spPr.sp3d->toXmlWriter(&writer);
+            }
 
             m_xmlGeomAlternative = writer.GetXmlString();
 

@@ -903,6 +903,7 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
             if (txStylesIter != (UINT)-1)
             {
                 auto strTxStyles = utf8strMaster.substr(txStylesIter);
+
                 UINT proccesed = 0;
                 UINT rIdIter = 0;
                 UINT rIdIterEnd = 0;
@@ -913,13 +914,13 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
                     if (rIdIter == (UINT)-1) break;
                     proccesed = rIdIter + searchStrEmbed.size();
                     rIdIterEnd = strTxStyles.find(L"\"", proccesed);
+
                     auto strId = strTxStyles.substr(proccesed, rIdIterEnd - proccesed);
                     unsigned numId = std::stoi(strId) + rIdShift;
                     strId = std::to_wstring(numId);
 
                     strTxStyles.erase(proccesed, rIdIterEnd - proccesed);
-                    // todo fix empty rId
-                    strTxStyles.insert(rIdIter, strId, strId.size());
+                    strTxStyles.insert(proccesed, strId);
                 }
                 oWriter.WriteString(strTxStyles);
             }

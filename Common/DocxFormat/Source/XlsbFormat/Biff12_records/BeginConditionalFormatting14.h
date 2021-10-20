@@ -53,6 +53,8 @@ namespace XLSB
 
             void readFields(CFRecord& record);
 
+            static const ElementType	type = typeBeginConditionalFormatting14;
+
             FRTHeader                   FRTheader;
             _UINT32                     ccf;
             XLS::Boolean<unsigned int>  fPivot;

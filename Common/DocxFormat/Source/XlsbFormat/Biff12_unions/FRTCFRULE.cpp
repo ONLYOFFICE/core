@@ -82,7 +82,7 @@ namespace XLSB
             count--;
         }        
 
-        return m_BrtCFRuleExt && m_BrtFRTEnd && !m_arFRT.empty();
+        return m_BrtFRTBegin && m_BrtCFRuleExt && m_BrtFRTEnd;
     }
 
 } // namespace XLSB

@@ -52,6 +52,8 @@ namespace XLSB
 
             void readFields(CFRecord& record);
 
+            static const ElementType	type = typeBeginDatabar14;
+
             FRTBlank                    FRTheader;
             BYTE                        bLenMin;
             BYTE                        bLenMax;

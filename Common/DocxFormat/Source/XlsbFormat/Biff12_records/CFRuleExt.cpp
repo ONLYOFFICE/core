@@ -50,7 +50,9 @@ namespace XLSB
 
     void CFRuleExt::readFields(CFRecord& record)
     {
-        record >> FRTHeader >> guid;
+        _GUID_  guid_;
+        record >> FRTHeader >> guid_;
+        guid = STR::guid2bstr(guid_);
     }
 
 } // namespace XLSB

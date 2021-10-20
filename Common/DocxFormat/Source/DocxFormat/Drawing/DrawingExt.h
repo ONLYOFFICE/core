@@ -205,6 +205,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COfficeArtExtensionList)
+                        WritingElement_XlsbConstructors(COfficeArtExtensionList)
 			COfficeArtExtensionList()
 			{
 			}
@@ -259,6 +260,9 @@ namespace OOX
 
 				return sResult;
 			}
+
+            void fromBin(XLS::BaseObjectPtr& obj);
+
 			virtual EElementType getType() const
 			{
 				return OOX::et_a_extLst;

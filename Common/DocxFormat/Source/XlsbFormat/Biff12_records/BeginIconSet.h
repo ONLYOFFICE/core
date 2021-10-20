@@ -51,6 +51,8 @@ namespace XLSB
 
             void readFields(CFRecord& record);
 
+            static const ElementType	type = typeBeginIconSet;
+
             KPISets      iSet;
             bool         fIcon;
             bool         fReverse;

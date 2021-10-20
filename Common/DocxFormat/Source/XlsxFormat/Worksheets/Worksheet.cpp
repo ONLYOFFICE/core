@@ -147,8 +147,8 @@ namespace OOX
                         for(auto &item : workSheetStream->m_arCONDITIONALFORMATTING)
                             m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(item));
 
-                //if (workSheetStream->m_FRTWORKSHEET != nullptr)
-                    //m_oExtLst = workSheetStream->m_FRTWORKSHEET;
+                if (workSheetStream->m_FRTWORKSHEET != nullptr)
+                    m_oExtLst = workSheetStream->m_FRTWORKSHEET;
 
             }
         }

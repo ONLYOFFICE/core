@@ -52,6 +52,8 @@ namespace XLSB
 
             void readFields(CFRecord& record);
 
+            static const ElementType	type = typeBeginIconSet14;
+
             FRTBlank     FRTheader;
             KPISets14    iSet;
             bool         fCustom;

@@ -54,6 +54,8 @@ namespace XLSB
 
             void readFields(CFRecord& record);
 
+            static const ElementType	type = typeCFVO;
+
             CFVOtype                        iType;
             Xnum                            numParam;
             XLS::Boolean<unsigned int>      fSaveGTE;

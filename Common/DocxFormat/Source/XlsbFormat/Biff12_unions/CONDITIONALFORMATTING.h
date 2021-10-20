@@ -49,6 +49,8 @@ namespace XLSB
 
         virtual const bool loadContent(BinProcessor& proc);
 
+        static const ElementType	type = typeCONDITIONALFORMATTING;
+
         BaseObjectPtr               m_BrtBeginConditionalFormatting;
         std::vector<BaseObjectPtr>  m_arCFRULE;
         std::vector<BaseObjectPtr>  m_arFRT;

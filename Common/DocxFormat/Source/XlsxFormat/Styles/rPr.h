@@ -475,14 +475,37 @@ namespace OOX
 
                             if(ptr != nullptr)
                             {
-                                m_oTint     = ptr->nTintAndShade;
-                                m_oAuto     = ptr->xColorType == 0;
-                                if(ptr->xColorType == 1)
-                                    m_oIndexed  = ptr->index;
-                                else if(ptr->xColorType == 3)
-                                    m_oThemeColor  = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index;
-                                m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue, ptr->bAlpha);
-
+                                switch(ptr->xColorType)
+                                {
+                                    case 0: m_oAuto     = true;		break;
+                                    case 1: m_oIndexed  = ptr->index;	break;
+                                    case 3:
+                                        switch (ptr->index)
+                                        {
+                                            case 0:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark1;
+                                                break;
+                                            case 1:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorLight1;
+                                                break;
+                                            case 2:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark2;
+                                                break;
+                                            case 3:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorLight2;
+                                                break;
+                                            default:
+                                                m_oThemeColor = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index;
+                                        }
+                                        break;
+                                    default:
+                                        m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue, ptr->bAlpha);
+                                        break;
+                                }
+                                if (ptr->nTintAndShade != 0)
+                                {
+                                     m_oTint     = ptr->nTintAndShade/32767.0;
+                                }
                             }
                         }
 
@@ -492,14 +515,37 @@ namespace OOX
 
                             if(ptr != nullptr)
                             {
-                                m_oTint     = ptr->nTintAndShade;
-                                m_oAuto     = ptr->xColorType == 0;
-                                if(ptr->xColorType == 1)
-                                    m_oIndexed  = ptr->index;
-                                else if(ptr->xColorType == 3)
-                                    m_oThemeColor  = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index;
-                                m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue, ptr->bAlpha);
-
+                                switch(ptr->xColorType)
+                                {
+                                    case 0: m_oAuto     = true;		break;
+                                    case 1: m_oIndexed  = ptr->index;	break;
+                                    case 3:
+                                        switch (ptr->index)
+                                        {
+                                            case 0:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark1;
+                                                break;
+                                            case 1:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorLight1;
+                                                break;
+                                            case 2:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark2;
+                                                break;
+                                            case 3:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorLight2;
+                                                break;
+                                            default:
+                                                m_oThemeColor = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index;
+                                        }
+                                        break;
+                                    default:
+                                        m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue, ptr->bAlpha);
+                                        break;
+                                }
+                                if (ptr->nTintAndShade != 0)
+                                {
+                                     m_oTint     = ptr->nTintAndShade/32767.0;
+                                }
                             }
                         }
 		public:

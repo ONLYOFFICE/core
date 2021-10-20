@@ -52,8 +52,8 @@ namespace XLSB
 
             void readFields(CFRecord& record);
 
-            FRTBlank    FRTHeader;
-            _GUID_      guid;
+            FRTBlank          FRTHeader;
+            std::wstring      guid;
     };
 
 } // namespace XLSB

@@ -50,6 +50,8 @@ namespace XLSB
 
         virtual const bool loadContent(BinProcessor& proc);
 
+        static const ElementType	type = typeCFRULE;
+
         BaseObjectPtr               m_BrtBeginCFRule;
         BaseObjectPtr               m_source;
         BaseObjectPtr               m_FRTRULE;

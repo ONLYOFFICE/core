@@ -56,6 +56,8 @@ namespace XLSB
 
             void readFields(CFRecord& record);
 
+            static const ElementType	type = typeCFVO14;
+
             FRTHeader                       FRTheader;
             CFVOType14                      iType;
             Xnum                            numParam;

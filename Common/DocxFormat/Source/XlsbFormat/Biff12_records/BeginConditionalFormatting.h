@@ -53,6 +53,8 @@ namespace XLSB
 
             void readFields(CFRecord& record);
 
+            static const ElementType	type = typeBeginConditionalFormatting;
+
             _UINT32                     ccf;
             XLS::Boolean<unsigned int>  fPivot;
             UncheckedSqRfX              sqrfx;

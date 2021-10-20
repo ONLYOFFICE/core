@@ -131,6 +131,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CConditionalFormatIconSet)
+            WritingElement_XlsbConstructors(CConditionalFormatIconSet)
 			CConditionalFormatIconSet()
 			{
 			}
@@ -150,7 +151,9 @@ namespace OOX
 			}
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
+            void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_ConditionalFormatIconSet;

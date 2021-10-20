@@ -51,6 +51,8 @@ namespace XLSB
 
             void readFields(CFRecord& record);
 
+            static const ElementType	type = typeBeginDatabar;
+
             BYTE                        bLenMin;
             BYTE                        bLenMax;
             XLS::Boolean<unsigned char> fShowValue;

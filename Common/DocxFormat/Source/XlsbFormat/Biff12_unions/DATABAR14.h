@@ -56,6 +56,8 @@ namespace XLSB
         std::vector<BaseObjectPtr>              m_arBrtColor14;
         BaseObjectPtr                           m_BrtEndDatabar14;
 
+        _INT32                                  iPri;
+
     };
 
 } // namespace XLSB

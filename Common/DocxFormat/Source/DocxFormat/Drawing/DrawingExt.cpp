@@ -44,6 +44,10 @@
 #include "../../XlsxFormat/Slicer/SlicerCacheExt.h"
 #include "../Comments.h"
 
+#include "../../XlsbFormat/Biff12_unions/FRTWORKSHEET.h"
+#include "../../XlsbFormat/Biff12_unions/CONDITIONALFORMATTINGS.h"
+#include "../../XlsbFormat/Biff12_unions/CONDITIONALFORMATTING14.h"
+
 namespace OOX
 {
 	namespace Drawing
@@ -1008,5 +1012,28 @@ namespace OOX
 
 			pWriter->WriteNodeEnd(ns + L"extLst");
 		}	
+
+        void COfficeArtExtensionList::fromBin(XLS::BaseObjectPtr& obj)
+        {
+            auto ptr = static_cast<XLSB::FRTWORKSHEET*>(obj.get());
+
+            if(ptr != nullptr)
+            {
+                if(ptr->m_CONDITIONALFORMATTINGS != nullptr)
+                {
+                    OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                    oExt->m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}";
+
+                    auto arCF14 = static_cast<XLSB::CONDITIONALFORMATTINGS*>(ptr->m_CONDITIONALFORMATTINGS.get())->m_arCONDITIONALFORMATTING14;
+                    for(auto &item : arCF14)
+                            oExt->m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(item));
+
+                    if (oExt)
+                        m_arrExt.push_back( oExt );
+                }
+
+            }
+
+        }
 	}
 }

@@ -50,6 +50,8 @@ namespace XLSB
 
         virtual const bool loadContent(BinProcessor& proc);
 
+        static const ElementType	type = typeCFRULE14;
+
         BaseObjectPtr               m_BrtBeginCFRule14;
         BaseObjectPtr               m_source;
         std::vector<BaseObjectPtr>  m_arFRT;

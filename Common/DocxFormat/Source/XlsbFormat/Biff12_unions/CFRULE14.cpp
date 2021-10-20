@@ -63,20 +63,27 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        if(!proc.optional<COLORSCALE14>())
+        if(proc.optional<COLORSCALE14>())
         {
-            if(!proc.optional<DATABAR14>())
-            {
-                if(!proc.optional<ICONSET14>())
-                {
-                    return false;
-                }
-            }
+            m_source = elements_.back();
+            elements_.pop_back();
         }
-        m_source = elements_.back();
-        elements_.pop_back();
-
+        else if(proc.optional<DATABAR14>())
+        {
+            m_source = elements_.back();
+            elements_.pop_back();
+        }
+        else if(proc.optional<ICONSET14>())
+        {
+            m_source = elements_.back();
+            elements_.pop_back();
+        }
         int count = proc.repeated<FRT>(0, 0);
+
+        if(m_source && m_source->get_type() == XLS::typeDATABAR14 && m_BrtBeginCFRule14)
+        {
+            static_cast<DATABAR14*>(m_source.get())->iPri = static_cast<BeginCFRule14*>(m_BrtBeginCFRule14.get())->iPri;
+        }
 
         while(count > 0)
         {
@@ -91,7 +98,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtBeginCFRule14 && m_source && m_BrtEndCFRule14;
+        return m_BrtBeginCFRule14 && m_BrtEndCFRule14;
     }
 
 } // namespace XLSB

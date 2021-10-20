@@ -57,6 +57,8 @@ namespace XLSB
 
             void readFields(CFRecord& record);
 
+            static const ElementType	type = typeBeginCFRule;
+
             CFType                  iType;
             CFTemp                  iTemplate;
             _UINT32                 dxfId;

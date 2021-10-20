@@ -58,6 +58,8 @@ namespace XLSB
 
             void readFields(CFRecord& record);
 
+             static const ElementType	type = typeBeginCFRule14;
+
             FRTHeader               FRTheader;
             CFType                  iType;
             CFTemp                  iTemplate;
@@ -72,7 +74,7 @@ namespace XLSB
             _UINT32                 cbFmla1;
             _UINT32                 cbFmla2;
             _UINT32                 cbFmla3;
-            _GUID_                  guid;
+            std::wstring            guid;
             XLS::Boolean<unsigned int>  fGuid;
             XLNullableWideString    strParam;
 

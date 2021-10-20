@@ -82,7 +82,9 @@ namespace XLSB
 
         record.skipNunBytes(4);
 
-        record >> guid >> fGuid >> strParam;
+        _GUID_  guid_;
+        record >> guid_ >> fGuid >> strParam;
+        guid = STR::guid2bstr(guid_);
     }
 
 } // namespace XLSB

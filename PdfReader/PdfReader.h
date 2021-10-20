@@ -101,6 +101,116 @@ namespace PdfReader
         virtual BYTE* GetStructure();
         virtual BYTE* GetGlyphs(int nPageIndex);
         virtual BYTE* GetLinks (int nPageIndex);
+
+        struct CHChar
+        {
+            int 	unicode;	// юникодное значение
+            int 	gid;		// индекс глифа в файле
+            double	x;			// сдвиг по baseline
+            double	width;		// ширина символа (сдвиг до след буквы)
+            double* matrix;		// матрица преобразования (!!! без сдвига)
+
+            CHChar()
+            {
+                unicode = 0;
+                gid = 0;
+                width = 0;
+                matrix = NULL;
+            }
+            ~CHChar()
+            {
+                RELEASEARRAYOBJECTS(matrix);
+            }
+
+            inline void Clear()
+            {
+                unicode = 0;
+                gid = 0;
+                width = 0;
+
+                RELEASEARRAYOBJECTS(matrix);
+            }
+        };
+        struct CHLine
+        {
+            double m_dAscent;
+            double m_dDescent;
+            double m_dX;
+            double m_dY;
+
+            double m_dEndX;
+            double m_dEndY;
+
+            double m_dK;
+            double m_dB;
+            double m_ex;
+            double m_ey;
+            bool m_bIsConstX;
+
+            CHChar*	m_pChars;
+            LONG m_lSizeChars;
+            LONG m_lCharsTail;
+
+            CHLine()
+            {
+                m_dAscent	= 0;
+                m_dDescent	= 0;
+                m_dX		= 0;
+                m_dY		= 0;
+
+                m_dK		= 0;
+                m_dB		= 0;
+                m_bIsConstX	= false;
+
+                m_ex		= 0;
+                m_ey		= 0;
+
+                m_lSizeChars = 1000;
+                m_lCharsTail = 0;
+                m_pChars = new CHChar[m_lSizeChars];
+            }
+            ~CHLine()
+            {
+                RELEASEARRAYOBJECTS(m_pChars);
+            }
+
+            inline CHChar* AddTail()
+            {
+                if (m_lCharsTail >= m_lSizeChars)
+                {
+                    CHChar* pNews = new CHChar[2 * m_lSizeChars];
+                    for (LONG i = 0; i < m_lSizeChars; ++i)
+                    {
+                        pNews[i] = m_pChars[i];
+                    }
+
+                    RELEASEARRAYOBJECTS(m_pChars);
+                    m_pChars = pNews;
+                    m_lSizeChars *= 2;
+                }
+
+                CHChar* pChar = &m_pChars[m_lCharsTail];
+                ++m_lCharsTail;
+                pChar->Clear();
+
+                return pChar;
+            }
+
+            inline CHChar* GetTail()
+            {
+                if (0 == m_lCharsTail)
+                    return NULL;
+
+                return &m_pChars[m_lCharsTail - 1];
+            }
+
+            inline LONG GetCountChars()
+            {
+                return m_lCharsTail;
+            }
+        };
+        BYTE* GetGlyphs2(int nPageIndex);
+        void DumpLine(const CPdfReader::CHLine& m_oLine);
         #endif
 
     private:

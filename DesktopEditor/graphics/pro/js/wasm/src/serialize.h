@@ -16,6 +16,7 @@ namespace NSWasm
         unsigned char* m_pDataCur;
         size_t m_lSizeCur;
 
+        LONG m_lSizeofBYTE;
     public:
         CData()
         {
@@ -24,6 +25,8 @@ namespace NSWasm
 
             m_pDataCur = m_pData;
             m_lSizeCur = m_lSize;
+
+            m_lSizeofBYTE = sizeof(BYTE);
         }
         virtual ~CData()
         {
@@ -80,6 +83,17 @@ namespace NSWasm
         {
             // такой точности хватит
             AddInt(value * 100);
+        }
+        void WriteBYTE(BYTE value)
+        {
+            AddSize(m_lSizeofBYTE);
+            memcpy(m_pDataCur, &value, m_lSizeofBYTE);
+            m_pDataCur += m_lSizeofBYTE;
+            m_lSizeCur += m_lSizeofBYTE;
+        }
+        void WriteDouble(BYTE value)
+        {
+            AddInt(value * 10000);
         }
         void WriteString(unsigned char* value, unsigned int len)
         {

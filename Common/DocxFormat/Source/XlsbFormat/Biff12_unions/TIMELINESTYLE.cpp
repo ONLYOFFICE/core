@@ -30,52 +30,67 @@
  *
  */
 
-#include "DXFS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginDXFs.h"
-#include "../Biff12_unions/DXF.h"
-#include "../Biff12_records/EndDXFs.h"
+#include "TIMELINESTYLE.h"
+#include "../Biff12_records/BeginTimelineStyle.h"
+#include "../Biff12_records/BeginTimelineStyleElements.h"
+#include "../Biff12_records/TimelineStyleElement.h"
+#include "../Biff12_records/EndTimelineStyleElements.h"
+#include "../Biff12_records/EndTimelineStyle.h"
 
 namespace XLSB
 {
 
-    DXFS::DXFS()
+    TIMELINESTYLE::TIMELINESTYLE()
     {
     }
 
-    DXFS::~DXFS()
+    TIMELINESTYLE::~TIMELINESTYLE()
     {
     }
 
-    BaseObjectPtr DXFS::clone()
+    BaseObjectPtr TIMELINESTYLE::clone()
     {
-        return BaseObjectPtr(new DXFS(*this));
+        return BaseObjectPtr(new TIMELINESTYLE(*this));
     }
 
-    //DXFS = BrtBeginDXFs *2147483647DXF BrtEndDXFs
-    const bool DXFS::loadContent(BinProcessor& proc)
-    {
-        if (proc.optional<BeginDXFs>())
+    //TIMELINESTYLE = BrtBeginTimelineStyle BrtBeginTimelineStyleElements *7BrtTimelineStyleElement
+                //BrtEndTimelineStyleElements BrtEndTimelineStyle
+    const bool TIMELINESTYLE::loadContent(BinProcessor& proc)
+    {       
+        if (proc.optional<BeginTimelineStyle>())
         {
-            m_BrtBeginDXFs = elements_.back();
+            m_BrtBeginTimelineStyle = elements_.back();
             elements_.pop_back();
         }
 
-        auto count = proc.repeated<uDXF>(0, 2147483647);
+        if (proc.optional<BeginTimelineStyleElements>())
+        {
+            m_BrtBeginTimelineStyleElements = elements_.back();
+            elements_.pop_back();
+        }
+
+        int count = proc.repeated<TimelineStyleElement>(0, 7);
+
         while(count > 0)
         {
-            m_aruDXF.insert(m_aruDXF.begin(), elements_.back());
+            m_arBrtTimelineStyleElement.insert(m_arBrtTimelineStyleElement.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }
 
-        if (proc.optional<EndDXFs>())
+        if (proc.optional<EndTimelineStyleElements>())
         {
-            m_BrtEndDXFs = elements_.back();
+            m_BrtEndTimelineStyleElements = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginDXFs && m_BrtEndDXFs;
+        if (proc.optional<EndTimelineStyle>())
+        {
+            m_BrtEndTimelineStyle = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginTimelineStyle && m_BrtBeginTimelineStyleElements && m_BrtEndTimelineStyleElements && m_BrtEndTimelineStyle;
     }
 
 } // namespace XLSB

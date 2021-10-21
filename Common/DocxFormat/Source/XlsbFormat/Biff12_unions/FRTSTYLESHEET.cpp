@@ -30,52 +30,53 @@
  *
  */
 
-#include "DXFS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginDXFs.h"
-#include "../Biff12_unions/DXF.h"
-#include "../Biff12_records/EndDXFs.h"
+#include "FRTSTYLESHEET.h"
+#include "../Biff12_unions/STYLESHEET14.h"
+#include "../Biff12_unions/DXF14S.h"
+#include "../Biff12_unions/STYLESHEET15.h"
+#include "../Biff12_unions/DXFS15.h"
 
 namespace XLSB
 {
 
-    DXFS::DXFS()
+    FRTSTYLESHEET::FRTSTYLESHEET()
     {
     }
 
-    DXFS::~DXFS()
+    FRTSTYLESHEET::~FRTSTYLESHEET()
     {
     }
 
-    BaseObjectPtr DXFS::clone()
+    BaseObjectPtr FRTSTYLESHEET::clone()
     {
-        return BaseObjectPtr(new DXFS(*this));
+        return BaseObjectPtr(new FRTSTYLESHEET(*this));
     }
 
-    //DXFS = BrtBeginDXFs *2147483647DXF BrtEndDXFs
-    const bool DXFS::loadContent(BinProcessor& proc)
-    {
-        if (proc.optional<BeginDXFs>())
+    // FRTSTYLESHEET = [STYLESHEET14] [DXF14S] [STYLESHEET15] [DXFS15] *FRT
+    const bool FRTSTYLESHEET::loadContent(BinProcessor& proc)
+    {       
+        if (proc.optional<STYLESHEET14>())
         {
-            m_BrtBeginDXFs = elements_.back();
+            m_STYLESHEET14 = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<DXF14S>())
+        {
+            m_DXF14S = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<STYLESHEET15>())
+        {
+            m_STYLESHEET15 = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<DXFS15>())
+        {
+            m_DXFS15 = elements_.back();
             elements_.pop_back();
         }
 
-        auto count = proc.repeated<uDXF>(0, 2147483647);
-        while(count > 0)
-        {
-            m_aruDXF.insert(m_aruDXF.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.optional<EndDXFs>())
-        {
-            m_BrtEndDXFs = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginDXFs && m_BrtEndDXFs;
+        return m_STYLESHEET14 != nullptr || m_DXF14S != nullptr || m_STYLESHEET15 != nullptr || m_DXFS15 != nullptr;
     }
 
 } // namespace XLSB

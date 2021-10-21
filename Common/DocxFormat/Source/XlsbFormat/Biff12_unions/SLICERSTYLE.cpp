@@ -30,52 +30,67 @@
  *
  */
 
-#include "DXFS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginDXFs.h"
-#include "../Biff12_unions/DXF.h"
-#include "../Biff12_records/EndDXFs.h"
+#include "SLICERSTYLE.h"
+#include "../Biff12_records/BeginSlicerStyle.h"
+#include "../Biff12_records/BeginSlicerStyleElements.h"
+#include "../Biff12_records/SlicerStyleElement.h"
+#include "../Biff12_records/EndSlicerStyleElements.h"
+#include "../Biff12_records/EndSlicerStyle.h"
 
 namespace XLSB
 {
 
-    DXFS::DXFS()
+    SLICERSTYLE::SLICERSTYLE()
     {
     }
 
-    DXFS::~DXFS()
+    SLICERSTYLE::~SLICERSTYLE()
     {
     }
 
-    BaseObjectPtr DXFS::clone()
+    BaseObjectPtr SLICERSTYLE::clone()
     {
-        return BaseObjectPtr(new DXFS(*this));
+        return BaseObjectPtr(new SLICERSTYLE(*this));
     }
 
-    //DXFS = BrtBeginDXFs *2147483647DXF BrtEndDXFs
-    const bool DXFS::loadContent(BinProcessor& proc)
-    {
-        if (proc.optional<BeginDXFs>())
+    //SLICERSTYLE = BrtBeginSlicerStyle BrtBeginSlicerStyleElements *8BrtSlicerStyleElement
+            //BrtEndSlicerStyleElements BrtEndSlicerStyle
+    const bool SLICERSTYLE::loadContent(BinProcessor& proc)
+    {       
+        if (proc.optional<BeginSlicerStyle>())
         {
-            m_BrtBeginDXFs = elements_.back();
+            m_BrtBeginSlicerStyle = elements_.back();
             elements_.pop_back();
         }
 
-        auto count = proc.repeated<uDXF>(0, 2147483647);
+        if (proc.optional<BeginSlicerStyleElements>())
+        {
+            m_BrtBeginSlicerStyleElements = elements_.back();
+            elements_.pop_back();
+        }
+
+        int count = proc.repeated<SlicerStyleElement>(0, 8);
+
         while(count > 0)
         {
-            m_aruDXF.insert(m_aruDXF.begin(), elements_.back());
+            m_arBrtSlicerStyleElement.insert(m_arBrtSlicerStyleElement.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }
 
-        if (proc.optional<EndDXFs>())
+        if (proc.optional<EndSlicerStyleElements>())
         {
-            m_BrtEndDXFs = elements_.back();
+            m_BrtEndSlicerStyleElements = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginDXFs && m_BrtEndDXFs;
+        if (proc.optional<EndSlicerStyle>())
+        {
+            m_BrtEndSlicerStyle = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginSlicerStyle && m_BrtBeginSlicerStyleElements && m_BrtEndSlicerStyleElements && m_BrtEndSlicerStyle;
     }
 
 } // namespace XLSB

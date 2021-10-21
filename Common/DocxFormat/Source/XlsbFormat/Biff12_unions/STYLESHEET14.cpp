@@ -30,52 +30,65 @@
  *
  */
 
-#include "DXFS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginDXFs.h"
-#include "../Biff12_unions/DXF.h"
-#include "../Biff12_records/EndDXFs.h"
+#include "STYLESHEET14.h"
+#include "../Biff12_records/FRTBegin.h"
+#include "../Biff12_records/BeginStyleSheetExt14.h"
+#include "../Biff12_unions/SLICERSTYLES.h"
+#include "../Biff12_records/EndStyleSheetExt14.h"
+#include "../Biff12_records/FRTEnd.h"
 
 namespace XLSB
 {
 
-    DXFS::DXFS()
+    STYLESHEET14::STYLESHEET14()
     {
     }
 
-    DXFS::~DXFS()
+    STYLESHEET14::~STYLESHEET14()
     {
     }
 
-    BaseObjectPtr DXFS::clone()
+    BaseObjectPtr STYLESHEET14::clone()
     {
-        return BaseObjectPtr(new DXFS(*this));
+        return BaseObjectPtr(new STYLESHEET14(*this));
     }
 
-    //DXFS = BrtBeginDXFs *2147483647DXF BrtEndDXFs
-    const bool DXFS::loadContent(BinProcessor& proc)
+    // STYLESHEET14 = BrtFRTBegin BrtBeginStyleSheetExt14 [SLICERSTYLES]
+            //BrtEndStyleSheetExt14 BrtFRTEnd
+    const bool STYLESHEET14::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<BeginDXFs>())
+        if (proc.optional<FRTBegin>())
         {
-            m_BrtBeginDXFs = elements_.back();
+            m_BrtFRTBegin = elements_.back();
+            elements_.pop_back();
+        }        
+
+        if (proc.optional<BeginStyleSheetExt14>())
+        {
+            m_BrtBeginStyleSheetExt14 = elements_.back();
             elements_.pop_back();
         }
 
-        auto count = proc.repeated<uDXF>(0, 2147483647);
-        while(count > 0)
+        if (proc.optional<SLICERSTYLES>())
         {
-            m_aruDXF.insert(m_aruDXF.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.optional<EndDXFs>())
-        {
-            m_BrtEndDXFs = elements_.back();
+            m_SLICERSTYLES = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginDXFs && m_BrtEndDXFs;
+        if (proc.optional<EndStyleSheetExt14>())
+        {
+            m_BrtEndStyleSheetExt14 = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<FRTEnd>())
+        {
+            m_BrtFRTEnd = elements_.back();
+            elements_.pop_back();
+        }
+
+
+        return m_BrtFRTBegin && m_BrtBeginStyleSheetExt14 && m_BrtEndStyleSheetExt14 && m_BrtFRTEnd;
     }
 
 } // namespace XLSB

@@ -45,6 +45,7 @@
 #include "Biff12_unions/DXFS.h"
 #include "Biff12_unions/TABLESTYLES.h"
 #include "Biff12_unions/COLORPALETTE.h"
+#include "Biff12_unions/FRTSTYLESHEET.h"
 #include "Biff12_records/EndStyleSheet.h"
 
 namespace XLSB
@@ -207,6 +208,15 @@ const bool StylesStream::loadContent(BinProcessor& proc)
                 if (proc.optional<COLORPALETTE>())
                 {
                     m_COLORPALETTE = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_FRTBegin:
+            {
+                if (proc.optional<FRTSTYLESHEET>())
+                {
+                    m_FRTSTYLESHEET = elements_.back();
                     elements_.pop_back();
                 }
             }break;

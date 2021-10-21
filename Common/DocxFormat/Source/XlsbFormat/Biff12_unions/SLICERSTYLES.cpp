@@ -30,52 +30,52 @@
  *
  */
 
-#include "DXFS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginDXFs.h"
-#include "../Biff12_unions/DXF.h"
-#include "../Biff12_records/EndDXFs.h"
+#include "SLICERSTYLES.h"
+#include "../Biff12_records/BeginSlicerStyles.h"
+#include "../Biff12_unions/SLICERSTYLE.h"
+#include "../Biff12_records/EndSlicerStyles.h"
 
 namespace XLSB
 {
 
-    DXFS::DXFS()
+    SLICERSTYLES::SLICERSTYLES()
     {
     }
 
-    DXFS::~DXFS()
+    SLICERSTYLES::~SLICERSTYLES()
     {
     }
 
-    BaseObjectPtr DXFS::clone()
+    BaseObjectPtr SLICERSTYLES::clone()
     {
-        return BaseObjectPtr(new DXFS(*this));
+        return BaseObjectPtr(new SLICERSTYLES(*this));
     }
 
-    //DXFS = BrtBeginDXFs *2147483647DXF BrtEndDXFs
-    const bool DXFS::loadContent(BinProcessor& proc)
+    //SLICERSTYLES = BrtBeginSlicerStyles *2147483647SLICERSTYLE BrtEndSlicerStyles
+    const bool SLICERSTYLES::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<BeginDXFs>())
+        if (proc.optional<BeginSlicerStyles>())
         {
-            m_BrtBeginDXFs = elements_.back();
+            m_BrtBeginSlicerStyles = elements_.back();
             elements_.pop_back();
         }
 
-        auto count = proc.repeated<uDXF>(0, 2147483647);
+        int count = proc.repeated<SLICERSTYLE>(0, 2147483647);
+
         while(count > 0)
         {
-            m_aruDXF.insert(m_aruDXF.begin(), elements_.back());
+            m_arSLICERSTYLE.insert(m_arSLICERSTYLE.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }
 
-        if (proc.optional<EndDXFs>())
+        if (proc.optional<EndSlicerStyles>())
         {
-            m_BrtEndDXFs = elements_.back();
+            m_BrtEndSlicerStyles = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginDXFs && m_BrtEndDXFs;
+        return m_BrtBeginSlicerStyles && m_BrtEndSlicerStyles;
     }
 
 } // namespace XLSB

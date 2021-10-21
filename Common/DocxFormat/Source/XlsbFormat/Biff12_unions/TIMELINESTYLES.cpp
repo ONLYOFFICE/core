@@ -30,52 +30,52 @@
  *
  */
 
-#include "DXFS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginDXFs.h"
-#include "../Biff12_unions/DXF.h"
-#include "../Biff12_records/EndDXFs.h"
+#include "TIMELINESTYLES.h"
+#include "../Biff12_records/BeginTimelineStyles.h"
+#include "../Biff12_unions/TIMELINESTYLE.h"
+#include "../Biff12_records/EndTimelineStyles.h"
 
 namespace XLSB
 {
 
-    DXFS::DXFS()
+    TIMELINESTYLES::TIMELINESTYLES()
     {
     }
 
-    DXFS::~DXFS()
+    TIMELINESTYLES::~TIMELINESTYLES()
     {
     }
 
-    BaseObjectPtr DXFS::clone()
+    BaseObjectPtr TIMELINESTYLES::clone()
     {
-        return BaseObjectPtr(new DXFS(*this));
+        return BaseObjectPtr(new TIMELINESTYLES(*this));
     }
 
-    //DXFS = BrtBeginDXFs *2147483647DXF BrtEndDXFs
-    const bool DXFS::loadContent(BinProcessor& proc)
+    //TIMELINESTYLES = BrtBeginTimelineStyles *2147483647TIMELINESTYLE BrtEndTimelineStyles
+    const bool TIMELINESTYLES::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<BeginDXFs>())
+        if (proc.optional<BeginTimelineStyles>())
         {
-            m_BrtBeginDXFs = elements_.back();
+            m_BrtBeginTimelineStyles = elements_.back();
             elements_.pop_back();
         }
 
-        auto count = proc.repeated<uDXF>(0, 2147483647);
+        int count = proc.repeated<TIMELINESTYLE>(0, 2147483647);
+
         while(count > 0)
         {
-            m_aruDXF.insert(m_aruDXF.begin(), elements_.back());
+            m_arTIMELINESTYLE.insert(m_arTIMELINESTYLE.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }
 
-        if (proc.optional<EndDXFs>())
+        if (proc.optional<EndTimelineStyles>())
         {
-            m_BrtEndDXFs = elements_.back();
+            m_BrtEndTimelineStyles = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginDXFs && m_BrtEndDXFs;
+        return m_BrtBeginTimelineStyles && m_BrtEndTimelineStyles;
     }
 
 } // namespace XLSB

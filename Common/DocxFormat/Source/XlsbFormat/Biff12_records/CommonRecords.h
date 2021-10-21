@@ -286,5 +286,32 @@ namespace XLSB
         }
     };
 
+    class DXF14: public XLS::DXF
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(DXF14)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new DXF14(*this));
+        }
+
+        void readFields(CFRecord& record) override
+        {
+            record.skipNunBytes(4);
+            XLS::DXF::readFields(record);
+        }
+    };
+
+    class DXF15: public DXF14
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(DXF15)
+
+        BaseObjectPtr clone() override
+        {
+            return BaseObjectPtr(new DXF15(*this));
+        }
+    };
+
+
 } // namespace XLSB
 

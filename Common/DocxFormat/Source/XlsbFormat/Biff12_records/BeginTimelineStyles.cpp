@@ -30,52 +30,27 @@
  *
  */
 
-#include "DXFS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginDXFs.h"
-#include "../Biff12_unions/DXF.h"
-#include "../Biff12_records/EndDXFs.h"
+#include "BeginTimelineStyles.h"
 
 namespace XLSB
 {
 
-    DXFS::DXFS()
+    BeginTimelineStyles::BeginTimelineStyles()
     {
     }
 
-    DXFS::~DXFS()
+    BeginTimelineStyles::~BeginTimelineStyles()
     {
     }
 
-    BaseObjectPtr DXFS::clone()
+    BaseObjectPtr BeginTimelineStyles::clone()
     {
-        return BaseObjectPtr(new DXFS(*this));
+        return BaseObjectPtr(new BeginTimelineStyles(*this));
     }
 
-    //DXFS = BrtBeginDXFs *2147483647DXF BrtEndDXFs
-    const bool DXFS::loadContent(BinProcessor& proc)
+    void BeginTimelineStyles::readFields(CFRecord& record)
     {
-        if (proc.optional<BeginDXFs>())
-        {
-            m_BrtBeginDXFs = elements_.back();
-            elements_.pop_back();
-        }
-
-        auto count = proc.repeated<uDXF>(0, 2147483647);
-        while(count > 0)
-        {
-            m_aruDXF.insert(m_aruDXF.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.optional<EndDXFs>())
-        {
-            m_BrtEndDXFs = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginDXFs && m_BrtEndDXFs;
+        record >> FRTheader >> stDefTimelineStyle;
     }
 
 } // namespace XLSB

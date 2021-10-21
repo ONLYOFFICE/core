@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,62 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#ifndef STYLESSTREAM_H
-#define STYLESSTREAM_H
-
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
-#include "../XlsxFormat/WritingElement.h"
-#include <string>
-#include <memory.h>
-#include <iostream>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../../XlsxFormat/WritingElement.h"
+#include "../Biff12_structures/FRTBlank.h"
 
 using namespace XLS;
+
 namespace XLSB
 {
-    class StreamCacheReader;
-
-    class StylesStream;
-    typedef std::shared_ptr<StylesStream>		StylesStreamPtr;
-
-    class StylesStream: public CompositeObject
+    // Logical representation of BrtBeginDXF14s record in BIFF12
+    class BeginDXF14s: public BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(StylesStream)
-    public:
-        StylesStream(const unsigned short code_page);
-        virtual ~StylesStream();
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginDXF14s)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginDXF14s)
+        public:
+            BeginDXF14s();
+            virtual ~BeginDXF14s();
 
-        BaseObjectPtr clone();
+            BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+            void readFields(CFRecord& record);
 
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
-
-        BaseObjectPtr               m_BrtBeginStyleSheet;
-        BaseObjectPtr               m_FMTS;
-        BaseObjectPtr               m_FONTS;
-        BaseObjectPtr               m_FILLS;
-        BaseObjectPtr               m_BORDERS;
-        BaseObjectPtr               m_CELLSTYLEXFS;
-        BaseObjectPtr               m_CELLXFS;
-        BaseObjectPtr               m_STYLES;
-        BaseObjectPtr               m_DXFS;
-        BaseObjectPtr               m_TABLESTYLES;
-        BaseObjectPtr               m_COLORPALETTE;
-        BaseObjectPtr               m_BrtEndStyleSheet;
-        BaseObjectPtr               m_FRTSTYLESHEET;
-
-        unsigned short              code_page_;
-        GlobalWorkbookInfoPtr       global_info_;
-
-
+            FRTBlank    FRTheader;
+            _UINT32     cdxfs;
     };
 
-}
-
-#endif // STYLESSTREAM_H
+} // namespace XLSB
 

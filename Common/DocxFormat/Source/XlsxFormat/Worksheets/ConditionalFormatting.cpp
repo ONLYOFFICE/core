@@ -1650,7 +1650,13 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
                 }
             }
 
-            m_oDxfId           = ptr->dxfId;
+            if(ptr->iType.value().get() != CFType::CF_TYPE_GRADIENT
+                    && ptr->iType.value().get() != CFType::CF_TYPE_DATABAR
+                    && ptr->iType.value().get() != CFType::CF_TYPE_MULTISTATE
+                    && ptr->dxfId != 0xFFFFFFFF)
+            {
+                m_oDxfId           = ptr->dxfId - 1;
+            }
             m_oPriority        = ptr->iPri;
             m_oStopIfTrue      = ptr->fStopTrue;
             m_oAboveAverage    = ptr->fAbove;
@@ -1872,7 +1878,13 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
                 }
             }
 
-            m_oDxfId           = ptr->dxfId;
+            if(ptr->iType.value().get() != CFType::CF_TYPE_GRADIENT
+                    && ptr->iType.value().get() != CFType::CF_TYPE_DATABAR
+                    && ptr->iType.value().get() != CFType::CF_TYPE_MULTISTATE
+                    && ptr->dxfId != 0xFFFFFFFF)
+            {
+                m_oDxfId           = ptr->dxfId - 1;
+            }
             m_oPriority        = ptr->iPri;
             m_oStopIfTrue      = ptr->fStopTrue;
             m_oAboveAverage    = ptr->fAbove;

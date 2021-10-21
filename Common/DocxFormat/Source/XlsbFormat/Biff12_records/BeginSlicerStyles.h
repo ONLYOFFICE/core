@@ -29,54 +29,35 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "DXFS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginDXFs.h"
-#include "../Biff12_unions/DXF.h"
-#include "../Biff12_records/EndDXFs.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../../XlsxFormat/WritingElement.h"
+#include "../Biff12_structures/FRTBlank.h"
+#include "../Biff12_structures/XLWideString.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-
-    DXFS::DXFS()
+    // Logical representation of BrtBeginSlicerStyles record in BIFF12
+    class BeginSlicerStyles: public BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginSlicerStyles)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginSlicerStyles)
+        public:
+            BeginSlicerStyles();
+            virtual ~BeginSlicerStyles();
 
-    DXFS::~DXFS()
-    {
-    }
+            BaseObjectPtr clone();
 
-    BaseObjectPtr DXFS::clone()
-    {
-        return BaseObjectPtr(new DXFS(*this));
-    }
+            void readFields(CFRecord& record);
 
-    //DXFS = BrtBeginDXFs *2147483647DXF BrtEndDXFs
-    const bool DXFS::loadContent(BinProcessor& proc)
-    {
-        if (proc.optional<BeginDXFs>())
-        {
-            m_BrtBeginDXFs = elements_.back();
-            elements_.pop_back();
-        }
+            //static const ElementType	type = typeBeginSlicerStyles;
 
-        auto count = proc.repeated<uDXF>(0, 2147483647);
-        while(count > 0)
-        {
-            m_aruDXF.insert(m_aruDXF.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.optional<EndDXFs>())
-        {
-            m_BrtEndDXFs = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginDXFs && m_BrtEndDXFs;
-    }
+            FRTBlank                FRTheader;
+            XLWideString            stDefSlicer;
+    };
 
 } // namespace XLSB
 

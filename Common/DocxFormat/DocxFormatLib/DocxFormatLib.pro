@@ -181,7 +181,6 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/BeginColorScale.cpp \
     ../Source/XlsbFormat/Biff12_records/EndColorScale.cpp \
     ../Source/XlsbFormat/Biff12_records/CFRuleExt.cpp \
-    ##
     ../Source/XlsbFormat/Biff12_records/BeginCFRule14.cpp \
     ../Source/XlsbFormat/Biff12_records/EndCFRule14.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginConditionalFormatting14.cpp \
@@ -195,7 +194,6 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/CFIcon.cpp \
     ../Source/XlsbFormat/Biff12_records/EndIconSet14.cpp \
     ../Source/XlsbFormat/Biff12_records/CFVO14.cpp \
-    ###
     ../Source/XlsbFormat/Biff12_records/EndSheet.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginSst.cpp \
     ../Source/XlsbFormat/Biff12_records/SSTItem.cpp \
@@ -234,6 +232,28 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndStyleSheet.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginConditionalFormattings.cpp \
     ../Source/XlsbFormat/Biff12_records/EndConditionalFormattings.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginDXF14s.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndDXF14s.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginDXFs15.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndDXFs15.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginTimelineStyle.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginTimelineStyleElements.cpp \
+    ../Source/XlsbFormat/Biff12_records/TimelineStyleElement.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndTimelineStyleElements.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndTimelineStyle.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginTimelineStyles.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndTimelineStyles.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginTimelineStyleSheetExt15.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndTimelineStyleSheetExt15.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerStyle.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerStyleElements.cpp \
+    ../Source/XlsbFormat/Biff12_records/SlicerStyleElement.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerStyleElements.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerStyle.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerStyles.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerStyles.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginStyleSheetExt14.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndStyleSheetExt14.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -314,6 +334,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/DATABAR14.cpp \
     ../Source/XlsbFormat/Biff12_unions/ICONSET14.cpp \
     ../Source/XlsbFormat/Biff12_unions/uCFVO14.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTINGS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTWORKSHEET.cpp \
     ../Source/XlsbFormat/Biff12_unions/SHAREDSTRINGS.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACFMT.cpp \
     ../Source/XlsbFormat/Biff12_unions/FMTS.cpp \
@@ -331,8 +353,15 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/MRUCOLORS.cpp \
     ../Source/XlsbFormat/Biff12_unions/INDEXEDCOLORS.cpp \
     ../Source/XlsbFormat/Biff12_unions/COLORPALETTE.cpp \
-    ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTINGS.cpp \
-    ../Source/XlsbFormat/Biff12_unions/FRTWORKSHEET.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DXF14S.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DXFS15.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TIMELINESTYLE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TIMELINESTYLES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/STYLESHEET15.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERSTYLE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERSTYLES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/STYLESHEET14.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTSTYLESHEET.cpp \
 }
 
 
@@ -604,7 +633,6 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/BeginColorScale.h \
     ../Source/XlsbFormat/Biff12_records/EndColorScale.h \
     ../Source/XlsbFormat/Biff12_records/CFRuleExt.h \
-    ##
     ../Source/XlsbFormat/Biff12_records/BeginCFRule14.h \
     ../Source/XlsbFormat/Biff12_records/EndCFRule14.h \
     ../Source/XlsbFormat/Biff12_records/BeginConditionalFormatting14.h \
@@ -618,7 +646,6 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/CFIcon.h \
     ../Source/XlsbFormat/Biff12_records/EndIconSet14.h \
     ../Source/XlsbFormat/Biff12_records/CFVO14.h \
-    ###
     ../Source/XlsbFormat/Biff12_records/EndSheet.h \
     ../Source/XlsbFormat/Biff12_records/BeginSst.h \
     ../Source/XlsbFormat/Biff12_records/SSTItem.h \
@@ -657,6 +684,28 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/EndStyleSheet.h \
     ../Source/XlsbFormat/Biff12_records/BeginConditionalFormattings.h \
     ../Source/XlsbFormat/Biff12_records/EndConditionalFormattings.h \
+    ../Source/XlsbFormat/Biff12_records/BeginDXF14s.h \
+    ../Source/XlsbFormat/Biff12_records/EndDXF14s.h \
+    ../Source/XlsbFormat/Biff12_records/BeginDXFs15.h \
+    ../Source/XlsbFormat/Biff12_records/EndDXFs15.h \
+    ../Source/XlsbFormat/Biff12_records/BeginTimelineStyle.h \
+    ../Source/XlsbFormat/Biff12_records/BeginTimelineStyleElements.h \
+    ../Source/XlsbFormat/Biff12_records/TimelineStyleElement.h \
+    ../Source/XlsbFormat/Biff12_records/EndTimelineStyleElements.h \
+    ../Source/XlsbFormat/Biff12_records/EndTimelineStyle.h \
+    ../Source/XlsbFormat/Biff12_records/BeginTimelineStyles.h \
+    ../Source/XlsbFormat/Biff12_records/EndTimelineStyles.h \
+    ../Source/XlsbFormat/Biff12_records/BeginTimelineStyleSheetExt15.h \
+    ../Source/XlsbFormat/Biff12_records/EndTimelineStyleSheetExt15.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerStyle.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerStyleElements.h \
+    ../Source/XlsbFormat/Biff12_records/SlicerStyleElement.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerStyleElements.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerStyle.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerStyles.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerStyles.h \
+    ../Source/XlsbFormat/Biff12_records/BeginStyleSheetExt14.h \
+    ../Source/XlsbFormat/Biff12_records/EndStyleSheetExt14.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
@@ -740,6 +789,8 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/DATABAR14.h \
     ../Source/XlsbFormat/Biff12_unions/ICONSET14.h \
     ../Source/XlsbFormat/Biff12_unions/uCFVO14.h \
+    ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTINGS.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTWORKSHEET.h \
     ../Source/XlsbFormat/Biff12_unions/SHAREDSTRINGS.h \
     ../Source/XlsbFormat/Biff12_unions/ACFMT.h \
     ../Source/XlsbFormat/Biff12_unions/FMTS.h \
@@ -757,5 +808,12 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/MRUCOLORS.h \
     ../Source/XlsbFormat/Biff12_unions/INDEXEDCOLORS.h \
     ../Source/XlsbFormat/Biff12_unions/COLORPALETTE.h \
-    ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTINGS.h \
-    ../Source/XlsbFormat/Biff12_unions/FRTWORKSHEET.h \
+    ../Source/XlsbFormat/Biff12_unions/DXF14S.h \
+    ../Source/XlsbFormat/Biff12_unions/DXFS15.h \
+    ../Source/XlsbFormat/Biff12_unions/TIMELINESTYLE.h \
+    ../Source/XlsbFormat/Biff12_unions/TIMELINESTYLES.h \
+    ../Source/XlsbFormat/Biff12_unions/STYLESHEET15.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERSTYLE.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERSTYLES.h \
+    ../Source/XlsbFormat/Biff12_unions/STYLESHEET14.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTSTYLESHEET.h \

@@ -30,52 +30,65 @@
  *
  */
 
-#include "DXFS.h"
+#include "DXF14S.h"
 #include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginDXFs.h"
-#include "../Biff12_unions/DXF.h"
-#include "../Biff12_records/EndDXFs.h"
+#include "../Biff12_records/BeginDXF14s.h"
+#include "../Biff12_records/FRTBegin.h"
+#include "../Biff12_records/FRTEnd.h"
+#include "../Biff12_records/EndDXF14s.h"
 
 namespace XLSB
 {
 
-    DXFS::DXFS()
+    DXF14S::DXF14S()
     {
     }
 
-    DXFS::~DXFS()
+    DXF14S::~DXF14S()
     {
     }
 
-    BaseObjectPtr DXFS::clone()
+    BaseObjectPtr DXF14S::clone()
     {
-        return BaseObjectPtr(new DXFS(*this));
+        return BaseObjectPtr(new DXF14S(*this));
     }
 
-    //DXFS = BrtBeginDXFs *2147483647DXF BrtEndDXFs
-    const bool DXFS::loadContent(BinProcessor& proc)
+    //DXF14S = BrtFRTBegin BrtBeginDXF14s 1*2147483647BrtDXF14 BrtEndDXF14s BrtFRTEnd
+    const bool DXF14S::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<BeginDXFs>())
+        if (proc.optional<FRTBegin>())
         {
-            m_BrtBeginDXFs = elements_.back();
+            m_BrtFRTBegin = elements_.back();
             elements_.pop_back();
         }
 
-        auto count = proc.repeated<uDXF>(0, 2147483647);
+        if (proc.optional<BeginDXF14s>())
+        {
+            m_BrtBeginDXF14s = elements_.back();
+            elements_.pop_back();
+        }
+
+        auto count = proc.repeated<DXF14>(0, 2147483647);
         while(count > 0)
         {
-            m_aruDXF.insert(m_aruDXF.begin(), elements_.back());
+            m_arDXF14.insert(m_arDXF14.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }
 
-        if (proc.optional<EndDXFs>())
+        if (proc.optional<EndDXF14s>())
         {
-            m_BrtEndDXFs = elements_.back();
+            m_BrtEndDXF14s = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginDXFs && m_BrtEndDXFs;
+        if (proc.optional<FRTEnd>())
+        {
+            m_BrtFRTEnd = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginDXF14s && !m_arDXF14.empty() && m_BrtEndDXF14s;
     }
 
 } // namespace XLSB

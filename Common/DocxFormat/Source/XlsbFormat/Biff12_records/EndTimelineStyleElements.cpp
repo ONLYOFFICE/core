@@ -30,52 +30,27 @@
  *
  */
 
-#include "DXFS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginDXFs.h"
-#include "../Biff12_unions/DXF.h"
-#include "../Biff12_records/EndDXFs.h"
+#include "EndTimelineStyleElements.h"
 
 namespace XLSB
 {
 
-    DXFS::DXFS()
+    EndTimelineStyleElements::EndTimelineStyleElements()
     {
     }
 
-    DXFS::~DXFS()
+    EndTimelineStyleElements::~EndTimelineStyleElements()
     {
     }
 
-    BaseObjectPtr DXFS::clone()
+    BaseObjectPtr EndTimelineStyleElements::clone()
     {
-        return BaseObjectPtr(new DXFS(*this));
+        return BaseObjectPtr(new EndTimelineStyleElements(*this));
     }
 
-    //DXFS = BrtBeginDXFs *2147483647DXF BrtEndDXFs
-    const bool DXFS::loadContent(BinProcessor& proc)
+    void EndTimelineStyleElements::readFields(CFRecord& record)
     {
-        if (proc.optional<BeginDXFs>())
-        {
-            m_BrtBeginDXFs = elements_.back();
-            elements_.pop_back();
-        }
-
-        auto count = proc.repeated<uDXF>(0, 2147483647);
-        while(count > 0)
-        {
-            m_aruDXF.insert(m_aruDXF.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.optional<EndDXFs>())
-        {
-            m_BrtEndDXFs = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginDXFs && m_BrtEndDXFs;
+        // No data in this record
     }
 
 } // namespace XLSB

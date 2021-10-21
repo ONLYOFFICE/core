@@ -368,6 +368,11 @@ namespace MetaFile
 	{
 		return m_ulMapMode;
 	}
+
+	void CEmfDC::ResetTransform()
+	{
+		m_oTransform.Init();
+	}
 	TEmfXForm*      CEmfDC::GetTransform()
 	{
 		return &m_oTransform;

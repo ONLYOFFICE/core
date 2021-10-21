@@ -29,6 +29,7 @@ namespace MetaFile
         enum EmfParserType
         {
                 EmfParser,
+                EmfPlusParser,
                 EmfxParser
         };
 
@@ -117,6 +118,7 @@ namespace MetaFile
 
                 friend class CEmfParser;
                 friend class CEmfxParser;
+                friend class CEmfPlusParser;
 
                 TEmfHeader        m_oHeader;
                 unsigned int      m_ulRecordSize;

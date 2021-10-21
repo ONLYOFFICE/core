@@ -2,6 +2,7 @@
 #define CEMFPARSER_H
 
 #include "CEmfParserBase.h"
+#include "CEmfPlusParser.h"
 
 namespace MetaFile
 {
@@ -17,7 +18,7 @@ namespace MetaFile
 
                 EmfParserType   GetType()				    override;
         private:
-                friend class CEmfPlusParser;
+                CEmfPlusParser *m_pEmfPlusParser;
 
                 bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
                 void Read_EMR_HEADER();

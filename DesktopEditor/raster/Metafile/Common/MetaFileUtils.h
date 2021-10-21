@@ -231,6 +231,15 @@ namespace MetaFile
 			nValue = ReadLong();
 			return *this;
 		}
+		CDataStream& operator>>(TRectD& oRect)
+		{
+			*this >> oRect.dLeft;
+			*this >> oRect.dTop;
+			*this >> oRect.dRight;
+			*this >> oRect.dBottom;
+
+			return *this;
+		}
 		CDataStream& operator>>(TEmfRect& oRect)
 		{
 			*this >> oRect.shLeft;
@@ -671,15 +680,6 @@ namespace MetaFile
 
 			return *this;
 		}
-		CDataStream& operator>>(TEmfPlusRectF& oRect)
-		{
-			oRect.fX	= (float)ReadDouble();
-			oRect.fY	= (float)ReadDouble();
-			oRect.fWidth	= (float)ReadDouble();
-			oRect.fHeight	= (float)ReadDouble();
-
-			return *this;
-		}
 		CDataStream& operator>>(TEmfPlusARGB &oARGB)
 		{
 			*this >> oARGB.chBlue;
@@ -695,17 +695,6 @@ namespace MetaFile
 			*this >> oTEmfPlusRectR.chY;
 			*this >> oTEmfPlusRectR.chWidth;
 			*this >> oTEmfPlusRectR.chHeight;
-
-			return *this;
-		}
-		CDataStream& operator>>(TEmfPlusTransformMatrix &oTEmfPlusTransformMatrix)
-		{
-			oTEmfPlusTransformMatrix.fM11 = (float)ReadDouble();
-			oTEmfPlusTransformMatrix.fM12 = (float)ReadDouble();
-			oTEmfPlusTransformMatrix.fM21 = (float)ReadDouble();
-			oTEmfPlusTransformMatrix.fM22 = (float)ReadDouble();
-			oTEmfPlusTransformMatrix.fdX  = (float)ReadDouble();
-			oTEmfPlusTransformMatrix.fdY  = (float)ReadDouble();
 
 			return *this;
 		}

@@ -1,5 +1,4 @@
 #include "CEmfPlusParser.h"
-#include "../EmfPlusTypes.h"
 
 #define EMRPLUS_OFFSETCLIP              0x4035
 #define EMRPLUS_RESETCLIP               0x4031
@@ -65,6 +64,9 @@
 #define EMFPLUS_TRANSLATEWORLDTRANSFORM 0x402D
 
 #include <map>
+#include <iostream>
+
+#include "CEmfParser.h"
 
 namespace MetaFile
 {
@@ -133,932 +135,987 @@ namespace MetaFile
                 {0x402A, L"EMFPLUS_SETWORLDTRANSFORM"},
                 {0x402D, L"EMFPLUS_TRANSLATEWORLDTRANSFORM"}
         };
-}
 
-MetaFile::CEmfPlusParser::CEmfPlusParser(CEmfParser *pEmfParser) :
-        m_pEmfParser(pEmfParser)
-{
-        m_oDataStream.SetStream(NULL, 0);
-}
-
-void MetaFile::CEmfPlusParser::SetStream(BYTE *pBytes, unsigned int unSize)
-{
-        m_oDataStream.SetStream(pBytes, unSize);
-}
-
-void MetaFile::CEmfPlusParser::PlayFile()
-{
-        if (NULL == m_pEmfParser || m_oDataStream.CanRead() < 28)
-                return;
-
-        unsigned short unShType, unShFlags;
-        unsigned int unSize, unDataSize;
-        do
+        CEmfPlusParser::CEmfPlusParser(CEmfParserBase* pParentParser) :
+                m_pParentParser(pParentParser)
         {
-                unsigned int unRecordPos = m_oDataStream.Tell();
+                m_bBanEmfProcessing = false;
+        }
 
-                m_oDataStream >> unShType;
-                m_oDataStream >> unShFlags;
+        CEmfPlusParser::~CEmfPlusParser()
+        {
+                ClearFile();
+        }
 
-                m_oDataStream >> unSize;
-                m_oDataStream >> unDataSize;
+        bool CEmfPlusParser::OpenFromFile(const wchar_t *wsFilePath)
+        {
+                return false;
+        }
 
-                switch (unShType)
+        void CEmfPlusParser::SetStream(BYTE *pBytes, unsigned int unSize)
+        {
+                m_oStream.SetStream(pBytes, unSize);
+        }
+
+        bool CEmfPlusParser::GetBanEMFProcesses()
+        {
+                return m_bBanEmfProcessing;
+        }
+
+        void CEmfPlusParser::PlayFile()
+        {
+                if (m_oStream.CanRead() < 12)
+                        return;
+
+                unsigned short unShType, unShFlags;
+                unsigned int unSize, unDataSize;
+                do
                 {
-                        //Clipping Record Types (Типы записей отсечения)
-                        case EMRPLUS_OFFSETCLIP:    Read_EMRPLUS_OFFSETCLIP();              break;
-                        case EMRPLUS_RESETCLIP:     Read_EMRPLUS_RESETCLIP();               break;
-                        case EMFPLUS_SETCLIPPATH:   Read_EMFPLUS_SETCLIPPATH(unShFlags);    break;
-                        case EMFPLUS_SETCLIPRECT:   Read_EMFPLUS_SETCLIPRECT(unShFlags);    break;
-                        case EMFPLUS_SETCLIPREGION: Read_EMFPLUS_SETCLIPREGION(unShFlags);  break;
+                        unsigned int unRecordPos = m_oStream.Tell();
 
-                        //Comment Record Types (Типы записей комментариев)
-                        case EMFPLUS_COMMENT: Read_EMFPLUS_COMMENT(unDataSize); break;
+                        m_oStream >> unShType;
+                        m_oStream >> unShFlags;
 
-                        //Control Record Types (Типы управляющих записей)
-                        case EMFPLUS_ENDOFFILE: Read_EMFPLUS_ENDOFFILE();       break;
-                        case EMFPLUS_GETDC:     Read_EMFPLUS_GETDC();           break;
-                        case EMFPLUS_HEADER:    Read_EMRPLUS_HEADER(unShFlags); break;
+                        m_oStream >> unSize;
+                        m_oStream >> unDataSize;
 
-                        //Drawing Record Types (Типы записей чертежа)
-                        case EMFPLUS_CLEAR:             Read_EMFPLUS_CLEAR();                           break;
-                        case EMFPLUS_DRAWARC:           Read_EMFPLUS_DRAWARC(unShFlags);                break;
-                        case EMFPLUS_DRAWBEZIERS:       Read_EMFPLUS_DRAWBEZIERS(unShFlags);            break;
-                        case EMFPLUS_DRAWCLOSEDCURVE:   Read_EMFPLUS_DRAWCLOSEDCURVE(unShFlags);        break;
-                        case EMFPLUS_DRAWCURVE:         Read_EMFPLUS_DRAWCURVE(unShFlags);              break;
-                        case EMFPLUS_DRAWDRIVERSTRING:  Read_EMFPLUS_DRAWDRIVERSTRING(unShFlags);       break;
-                        case EMFPLUS_DRAWELLIPSE:       Read_EMFPLUS_DRAWELLIPSE(unShFlags);            break;
-                        case EMFPLUS_DRAWIMAGE:         Read_EMFPLUS_DRAWIMAGEPOINTS(unShFlags);        break;
-                        case EMFPLUS_DRAWLINES:         Read_EMFPLUS_DRAWLINES(unShFlags);              break;
-                        case EMFPLUS_DRAWPATH:          Read_EMFPLUS_DRAWPATH(unShFlags);               break;
-                        case EMFPLUS_DRAWPIE:           Read_EMFPLUS_DRAWPIE(unShFlags);                break;
-                        case EMFPLUS_DRAWRECTS:         Read_EMFPLUS_DRAWRECTS(unShFlags);              break;
-                        case EMFPLUS_DRAWSTRING:        Read_EMFPLUS_DRAWSTRING(unShFlags);             break;
-                        case EMFPLUS_FILLCLOSEDCURVE:   Read_EMFPLUS_FILLCLOSEDCURVE(unShFlags);        break;
-                        case EMFPLUS_FILLELLIPSE:       Read_EMFPLUS_FILLELLIPSE(unShFlags);            break;
-                        case EMFPLUS_FILLPATH:          Read_EMFPLUS_FILLPATH(unShFlags);               break;
-                        case EMFPLUS_FILLPIE:           Read_EMFPLUS_FILLPIE(unShFlags);                break;
-                        case EMFPLUS_FILLPOLYGON:       Read_EMFPLUS_FILLPOLYGON(unShFlags);            break;
-                        case EMFPLUS_FILLRECTS:         Read_EMFPLUS_FILLRECTS(unShFlags);              break;
-                        case EMFPLUS_FILLREGION:        Read_EMFPLUS_FILLREGION(unShFlags);             break;
+                        switch (unShType)
+                        {
+                                //Clipping Record Types (Типы записей отсечения)
+                                case EMRPLUS_OFFSETCLIP:    Read_EMRPLUS_OFFSETCLIP();              break;
+                                case EMRPLUS_RESETCLIP:     Read_EMRPLUS_RESETCLIP();               break;
+                                case EMFPLUS_SETCLIPPATH:   Read_EMFPLUS_SETCLIPPATH(unShFlags);    break;
+                                case EMFPLUS_SETCLIPRECT:   Read_EMFPLUS_SETCLIPRECT(unShFlags);    break;
+                                case EMFPLUS_SETCLIPREGION: Read_EMFPLUS_SETCLIPREGION(unShFlags);  break;
 
-                        //Object Record Types (Типы записей объектов)
-                        case EMFPLUS_OBJECT:            Read_EMFPLUS_OBJECT(unShFlags);                 break;
-                        case EMFPLUS_SERIALIZABLEOBJECT:Read_EMFPLUS_SERIALIZABLEOBJECT(unShFlags);     break;
+                                //Comment Record Types (Типы записей комментариев)
+                                case EMFPLUS_COMMENT: Read_EMFPLUS_COMMENT(unDataSize); break;
 
-                        //Property Record Types (Типы записей свойств)
-                        case EMFPLUS_SETANTIALIASMODE:          Read_EMFPLUS_SETANTIALIASMODE(unShFlags);       break;
-                        case EMFPLUS_SETCOMPOSITINGMODE:        Read_EMFPLUS_SETCOMPOSITINGMODE(unShFlags);     break;
-                        case EMFPLUS_SETCOMPOSITINGQUALITY:     Read_EMFPLUS_SETCOMPOSITINGQUALITY(unShFlags);  break;
-                        case EMFPLUS_SETINTERPOLATIONMODE:      Read_EMFPLUS_SETINTERPOLATIONMODE(unShFlags);   break;
-                        case EMFPLUS_SETPIXELOFFSETMODE:        Read_EMFPLUS_SETPIXELOFFSETMODE(unShFlags);     break;
-                        case EMFPLUS_SETRENDERINGORIGIN:        Read_EMFPLUS_SETRENDERINGORIGIN();              break;
-                        case EMFPLUS_SETTEXTCONTRAST:           Read_EMFPLUS_SETTEXTCONTRAST(unShFlags);        break;
-                        case EMFPLUS_SETTEXTRENDERINGHINT:      Read_EMRPLUS_SETTEXTRENDERINGHINT(unShFlags);   break;
+                                //Control Record Types (Типы управляющих записей)
+                                case EMFPLUS_ENDOFFILE: Read_EMFPLUS_ENDOFFILE();       break;
+                                case EMFPLUS_GETDC:     Read_EMFPLUS_GETDC();           break;
+                                case EMFPLUS_HEADER:    Read_EMRPLUS_HEADER(unShFlags); break;
 
-                        //State Record Types (Типы записей состояния)
-                        case EMFPLUS_BEGINCONTAINER:            Read_EMFPLUS_BEGINCONTAINER(unShFlags); break;
-                        case EMFPLUS_BEGINCONTAINERNOPARAMS:    Read_EMFPLUS_BEGINCONTAINERNOPARAMS();  break;
-                        case EMFPLUS_ENDCONTAINER:              Read_EMFPLUS_ENDCONTAINER();            break;
-                        case EMFPLUS_RESTORE:                   Read_EMFPLUS_RESTORE();                 break;
-                        case EMFPLUS_SAVE:                      Read_EMFPLUS_SAVE();                    break;
+                                //Drawing Record Types (Типы записей чертежа)
+                                case EMFPLUS_CLEAR:             Read_EMFPLUS_CLEAR();                           break;
+                                case EMFPLUS_DRAWARC:           Read_EMFPLUS_DRAWARC(unShFlags);                break;
+                                case EMFPLUS_DRAWBEZIERS:       Read_EMFPLUS_DRAWBEZIERS(unShFlags);            break;
+                                case EMFPLUS_DRAWCLOSEDCURVE:   Read_EMFPLUS_DRAWCLOSEDCURVE(unShFlags);        break;
+                                case EMFPLUS_DRAWCURVE:         Read_EMFPLUS_DRAWCURVE(unShFlags);              break;
+                                case EMFPLUS_DRAWDRIVERSTRING:  Read_EMFPLUS_DRAWDRIVERSTRING(unShFlags);       break;
+                                case EMFPLUS_DRAWELLIPSE:       Read_EMFPLUS_DRAWELLIPSE(unShFlags);            break;
+                                case EMFPLUS_DRAWIMAGE:         Read_EMFPLUS_DRAWIMAGEPOINTS(unShFlags);        break;
+                                case EMFPLUS_DRAWLINES:         Read_EMFPLUS_DRAWLINES(unShFlags);              break;
+                                case EMFPLUS_DRAWPATH:          Read_EMFPLUS_DRAWPATH(unShFlags);               break;
+                                case EMFPLUS_DRAWPIE:           Read_EMFPLUS_DRAWPIE(unShFlags);                break;
+                                case EMFPLUS_DRAWRECTS:         Read_EMFPLUS_DRAWRECTS(unShFlags);              break;
+                                case EMFPLUS_DRAWSTRING:        Read_EMFPLUS_DRAWSTRING(unShFlags);             break;
+                                case EMFPLUS_FILLCLOSEDCURVE:   Read_EMFPLUS_FILLCLOSEDCURVE(unShFlags);        break;
+                                case EMFPLUS_FILLELLIPSE:       Read_EMFPLUS_FILLELLIPSE(unShFlags);            break;
+                                case EMFPLUS_FILLPATH:          Read_EMFPLUS_FILLPATH(unShFlags);               break;
+                                case EMFPLUS_FILLPIE:           Read_EMFPLUS_FILLPIE(unShFlags);                break;
+                                case EMFPLUS_FILLPOLYGON:       Read_EMFPLUS_FILLPOLYGON(unShFlags);            break;
+                                case EMFPLUS_FILLRECTS:         Read_EMFPLUS_FILLRECTS(unShFlags);              break;
+                                case EMFPLUS_FILLREGION:        Read_EMFPLUS_FILLREGION(unShFlags);             break;
 
-                        //Terminal Server Record (Запись сервера Терминалов)
-                        case EMFPLUS_SETTSCLIP:         Read_EMFPLUS_SETTSCLIP(unShFlags);      break;
-                        case EMFPLUS_SETTSGRAPHICS:     Read_EMFPLUS_SETTSGRAPHICS(unShFlags);  break;
+                                //Object Record Types (Типы записей объектов)
+                                case EMFPLUS_OBJECT:            Read_EMFPLUS_OBJECT(unShFlags);                 break;
+                                case EMFPLUS_SERIALIZABLEOBJECT:Read_EMFPLUS_SERIALIZABLEOBJECT(unShFlags);     break;
 
-                        //Transform Record Types (Преобразование Типов записей)
-                        case EMFPLUS_MULTIPLYWORLDTRANSFORM:    Read_EMFPLUS_MULTIPLYWORLDTRANSFORM(unShFlags); break;
-                        case EMFPLUS_RESETWORLDTRANSFORM:       Read_EMFPLUS_RESETWORLDTRANSFORM();             break;
-                        case EMFPLUS_ROTATEWORLDTRANSFORM:      Read_EMFPLUS_ROTATEWORLDTRANSFORM(unShFlags);   break;
-                        case EMFPLUS_SCALEWORLDTRANSFORM:       Read_EMFPLUS_SCALEWORLDTRANSFORM(unShFlags);    break;
-                        case EMFPLUS_SETPAGETRANSFORM:          Read_EMFPLUS_SETPAGETRANSFORM(unShFlags);       break;
-                        case EMFPLUS_SETWORLDTRANSFORM:         Read_EMFPLUS_SETWORLDTRANSFORM();               break;
-                        case EMFPLUS_TRANSLATEWORLDTRANSFORM:   Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unShFlags);break;
+                                //Property Record Types (Типы записей свойств)
+                                case EMFPLUS_SETANTIALIASMODE:          Read_EMFPLUS_SETANTIALIASMODE(unShFlags);       break;
+                                case EMFPLUS_SETCOMPOSITINGMODE:        Read_EMFPLUS_SETCOMPOSITINGMODE(unShFlags);     break;
+                                case EMFPLUS_SETCOMPOSITINGQUALITY:     Read_EMFPLUS_SETCOMPOSITINGQUALITY(unShFlags);  break;
+                                case EMFPLUS_SETINTERPOLATIONMODE:      Read_EMFPLUS_SETINTERPOLATIONMODE(unShFlags);   break;
+                                case EMFPLUS_SETPIXELOFFSETMODE:        Read_EMFPLUS_SETPIXELOFFSETMODE(unShFlags);     break;
+                                case EMFPLUS_SETRENDERINGORIGIN:        Read_EMFPLUS_SETRENDERINGORIGIN();              break;
+                                case EMFPLUS_SETTEXTCONTRAST:           Read_EMFPLUS_SETTEXTCONTRAST(unShFlags);        break;
+                                case EMFPLUS_SETTEXTRENDERINGHINT:      Read_EMRPLUS_SETTEXTRENDERINGHINT(unShFlags);   break;
 
-                        default: m_oDataStream.Skip(unSize - 12);     break;
+                                //State Record Types (Типы записей состояния)
+                                case EMFPLUS_BEGINCONTAINER:            Read_EMFPLUS_BEGINCONTAINER(unShFlags); break;
+                                case EMFPLUS_BEGINCONTAINERNOPARAMS:    Read_EMFPLUS_BEGINCONTAINERNOPARAMS();  break;
+                                case EMFPLUS_ENDCONTAINER:              Read_EMFPLUS_ENDCONTAINER();            break;
+                                case EMFPLUS_RESTORE:                   Read_EMFPLUS_RESTORE();                 break;
+                                case EMFPLUS_SAVE:                      Read_EMFPLUS_SAVE();                    break;
+
+                                //Terminal Server Record (Запись сервера Терминалов)
+                                case EMFPLUS_SETTSCLIP:         Read_EMFPLUS_SETTSCLIP(unShFlags);      break;
+                                case EMFPLUS_SETTSGRAPHICS:     Read_EMFPLUS_SETTSGRAPHICS(unShFlags);  break;
+
+                                //Transform Record Types (Преобразование Типов записей)
+                                case EMFPLUS_MULTIPLYWORLDTRANSFORM:    Read_EMFPLUS_MULTIPLYWORLDTRANSFORM(unShFlags); break;
+                                case EMFPLUS_RESETWORLDTRANSFORM:       Read_EMFPLUS_RESETWORLDTRANSFORM();             break;
+                                case EMFPLUS_ROTATEWORLDTRANSFORM:      Read_EMFPLUS_ROTATEWORLDTRANSFORM(unShFlags);   break;
+                                case EMFPLUS_SCALEWORLDTRANSFORM:       Read_EMFPLUS_SCALEWORLDTRANSFORM(unShFlags);    break;
+                                case EMFPLUS_SETPAGETRANSFORM:          Read_EMFPLUS_SETPAGETRANSFORM(unShFlags);       break;
+                                case EMFPLUS_SETWORLDTRANSFORM:         Read_EMFPLUS_SETWORLDTRANSFORM();               break;
+                                case EMFPLUS_TRANSLATEWORLDTRANSFORM:   Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unShFlags);break;
+
+                                default: m_oStream.Skip(unSize - 12);     break;
+                        }
+
+                        int need_skip = (unRecordPos + unSize) - m_oStream.Tell();
+                        m_oStream.Skip(need_skip);
+
+                }while(m_oStream.CanRead() > 4);
+        }
+
+        void CEmfPlusParser::Scan()
+        {
+                return;
+        }
+
+        EmfParserType CEmfPlusParser::GetType()
+        {
+                return EmfParserType::EmfPlusParser;
+        }
+
+        bool CEmfPlusParser::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)
+        {
+                return false;
+        }
+
+        void CEmfPlusParser::Read_EMRPLUS_HEADER(unsigned short unShFlags)
+        {
+                m_oStream.Skip(4); //Version
+
+                unsigned int unEmfPlusFlags, unLogicalDpiX, unLogicalDpiY;
+
+                m_oStream >> unEmfPlusFlags;
+                m_oStream >> unLogicalDpiX;
+                m_oStream >> unLogicalDpiY;
+
+                //TODO: добавить установление нового Dpi
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_CLEAR()
+        {
+                TEmfPlusARGB oARGB;
+
+                m_oStream >> oARGB;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_DRAWARC(unsigned short unShFlags)
+        {
+                if ((unShFlags >>(14)) & 1 )
+                        Read_EMFPLUS_DRAWARC_BASE<TEmfPlusRect>(unShFlags);
+                else
+                        Read_EMFPLUS_DRAWARC_BASE<TEmfPlusRectF>(unShFlags);
+        }
+
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_DRAWARC_BASE(unsigned short unShFlags)
+        {
+                char chOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                double dStartAngle, dSweepAngle;
+                T oRect;
+
+                m_oStream >> dStartAngle;
+                m_oStream >> dSweepAngle;
+                m_oStream >> oRect;
+                //TODO: реализовать
+        }
+
+
+        void CEmfPlusParser::Read_EMFPLUS_DRAWBEZIERS(unsigned short unShFlags)
+        {
+                if ((unShFlags >>(11)) & 1 )
+                {
+                        //Определен флаг P (С игнорируется)
+                        Read_EMFPLUS_DRAWBEZIERS_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+                }
+                else if ((unShFlags >>(14)) & 1 )
+                {
+                        //Не определен флаг P, но определен флаг С
+                        Read_EMFPLUS_DRAWBEZIERS_BASE<TEmfPlusPoint>(unShFlags);  // относительное расположение
+                }
+                else
+                {
+                        //Оба флага не определены
+                        Read_EMFPLUS_DRAWBEZIERS_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение
                 }
 
-                int need_skip = (unRecordPos + unSize) - m_oDataStream.Tell();
-                m_oDataStream.Skip(need_skip);
-
-        }while(m_oDataStream.CanRead() > 4);
-}
-
-void MetaFile::CEmfPlusParser::Read_EMRPLUS_HEADER(unsigned short unShFlags)
-{
-        m_oDataStream.Skip(4); //Version
-
-        unsigned int unEmfPlusFlags, unLogicalDpiX, unLogicalDpiY;
-
-        m_oDataStream >> unEmfPlusFlags;
-        m_oDataStream >> unLogicalDpiX;
-        m_oDataStream >> unLogicalDpiY;
-
-        //TODO: добавить установление нового Dpi
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_CLEAR()
-{
-        TEmfPlusARGB oARGB;
-
-        m_oDataStream >> oARGB;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWARC(unsigned short unShFlags)
-{
-        if ((unShFlags >>(14)) & 1 )
-                Read_EMFPLUS_DRAWARC_BASE<TEmfPlusRect>(unShFlags);
-        else
-                Read_EMFPLUS_DRAWARC_BASE<TEmfPlusRectF>(unShFlags);
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWARC_BASE(unsigned short unShFlags)
-{
-        char chOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        double dStartAngle, dSweepAngle;
-        T oRect;
-
-        m_oDataStream >> dStartAngle;
-        m_oDataStream >> dSweepAngle;
-        m_oDataStream >> oRect;
-        //TODO: реализовать
-}
-
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWBEZIERS(unsigned short unShFlags)
-{
-        if ((unShFlags >>(11)) & 1 )
-        {
-                //Определен флаг P (С игнорируется)
-                Read_EMFPLUS_DRAWBEZIERS_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
-        }
-        else if ((unShFlags >>(14)) & 1 )
-        {
-                //Не определен флаг P, но определен флаг С
-                Read_EMFPLUS_DRAWBEZIERS_BASE<TEmfPlusPoint>(unShFlags);  // относительное расположение
-        }
-        else
-        {
-                //Оба флага не определены
-                Read_EMFPLUS_DRAWBEZIERS_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение
         }
 
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWBEZIERS_BASE(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        unsigned int unCountPoints;
-
-        m_oDataStream >> unCountPoints;
-
-        std::vector<T> arPoints(unCountPoints);
-
-        for (unsigned int unIndex = 0; unIndex < unCountPoints; ++unIndex)
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_DRAWBEZIERS_BASE(unsigned short unShFlags)
         {
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                unsigned int unCountPoints;
 
+                m_oStream >> unCountPoints;
+
+                std::vector<T> arPoints(unCountPoints);
+
+                for (unsigned int unIndex = 0; unIndex < unCountPoints; ++unIndex)
+                {
+
+                }
+
+                //TODO: реализовать
+                //TODO: для EmfPlusPointR опредилиться с реализацией
         }
 
-        //TODO: реализовать
-        //TODO: для EmfPlusPointR опредилиться с реализацией
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWCLOSEDCURVE(unsigned short unShFlags)
-{
-        if ((unShFlags >>(11)) & 1 )
+        void CEmfPlusParser::Read_EMFPLUS_DRAWCLOSEDCURVE(unsigned short unShFlags)
         {
-                //Определен флаг P (С игнорируется)
-                Read_EMFPLUS_DRAWCLOSEDCURVE_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+                if ((unShFlags >>(11)) & 1 )
+                {
+                        //Определен флаг P (С игнорируется)
+                        Read_EMFPLUS_DRAWCLOSEDCURVE_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+                }
+                else if ((unShFlags >>(14)) & 1 )
+                {
+                        //Не определен флаг P, но определен флаг С
+                        Read_EMFPLUS_DRAWCLOSEDCURVE_BASE<TEmfPlusPoint>(unShFlags);  // абсолютное расположение с 16-разрядными координатами
+                }
+                else
+                {
+                        //Оба флага не определены
+                        Read_EMFPLUS_DRAWCLOSEDCURVE_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами.
+                }
         }
-        else if ((unShFlags >>(14)) & 1 )
+
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_DRAWCLOSEDCURVE_BASE(unsigned short unShFlags)
         {
-                //Не определен флаг P, но определен флаг С
-                Read_EMFPLUS_DRAWCLOSEDCURVE_BASE<TEmfPlusPoint>(unShFlags);  // абсолютное расположение с 16-разрядными координатами
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                double dTension;
+                unsigned int unCount;
+
+                m_oStream >> dTension;
+                m_oStream >> unCount;
+
+                std::vector<T> arPoints(unCount);
+
+                for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
+                {
+                        //TODO: реализовать
+                }
         }
-        else
+
+        void CEmfPlusParser::Read_EMFPLUS_DRAWCURVE(unsigned short unShFlags)
         {
-                //Оба флага не определены
-                Read_EMFPLUS_DRAWCLOSEDCURVE_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами.
+                if ((unShFlags >>(14)) & 1 )
+                        Read_EMFPLUS_DRAWCURVE_BASE<TEmfPlusPoint>(unShFlags);
+                else
+                        Read_EMFPLUS_DRAWCURVE_BASE<TEmfPlusPointF>(unShFlags);
         }
-}
 
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWCLOSEDCURVE_BASE(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        double dTension;
-        unsigned int unCount;
-
-        m_oDataStream >> dTension;
-        m_oDataStream >> unCount;
-
-        std::vector<T> arPoints(unCount);
-
-        for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_DRAWCURVE_BASE(unsigned short unShFlags)
         {
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                double dTension;
+                unsigned int unOffset, unNumSegments, unCountPoints;
+
+                m_oStream >> dTension;
+                m_oStream >> unOffset;
+                m_oStream >> unNumSegments;
+                m_oStream >> unCountPoints;
+
+                std::vector<T> arPoints(unCountPoints);
+
+                for (unsigned int unIndex = 0; unIndex < unCountPoints; ++unIndex)
+                {
+                        //TODO: реализовать
+                }
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_DRAWDRIVERSTRING(unsigned short unShFlags)
+        {
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                unsigned int unBrushId, unDriverStringOptionsFlags, unMatrixPresent, unGlyphCount;
+
+                m_oStream >> unBrushId;
+                m_oStream >> unDriverStringOptionsFlags;
+                m_oStream >> unMatrixPresent;
+                m_oStream >> unGlyphCount;
+
                 //TODO: реализовать
         }
-}
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWCURVE(unsigned short unShFlags)
-{
-        if ((unShFlags >>(14)) & 1 )
-                Read_EMFPLUS_DRAWCURVE_BASE<TEmfPlusPoint>(unShFlags);
-        else
-                Read_EMFPLUS_DRAWCURVE_BASE<TEmfPlusPointF>(unShFlags);
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWCURVE_BASE(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        double dTension;
-        unsigned int unOffset, unNumSegments, unCountPoints;
-
-        m_oDataStream >> dTension;
-        m_oDataStream >> unOffset;
-        m_oDataStream >> unNumSegments;
-        m_oDataStream >> unCountPoints;
-
-        std::vector<T> arPoints(unCountPoints);
-
-        for (unsigned int unIndex = 0; unIndex < unCountPoints; ++unIndex)
+        void CEmfPlusParser::Read_EMFPLUS_DRAWELLIPSE(unsigned short unShFlags)
         {
-                //TODO: реализовать
+                if ((unShFlags >>(14)) & 1 )
+                        Read_EMFPLUS_DRAWELLIPSE_BASE<TEmfPlusRect>(unShFlags);
+                else
+                        Read_EMFPLUS_DRAWELLIPSE_BASE<TEmfPlusRectF>(unShFlags);
         }
-}
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWDRIVERSTRING(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        unsigned int unBrushId, unDriverStringOptionsFlags, unMatrixPresent, unGlyphCount;
-
-        m_oDataStream >> unBrushId;
-        m_oDataStream >> unDriverStringOptionsFlags;
-        m_oDataStream >> unMatrixPresent;
-        m_oDataStream >> unGlyphCount;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWELLIPSE(unsigned short unShFlags)
-{
-        if ((unShFlags >>(14)) & 1 )
-                Read_EMFPLUS_DRAWELLIPSE_BASE<TEmfPlusRect>(unShFlags);
-        else
-                Read_EMFPLUS_DRAWELLIPSE_BASE<TEmfPlusRectF>(unShFlags);
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWELLIPSE_BASE(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-
-        T oRect;
-
-        m_oDataStream >> oRect;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWIMAGE(unsigned short unShFlags)
-{
-        if ((unShFlags >>(14)) & 1 )
-                Read_EMFPLUS_DRAWIMAGE_BASE<TEmfPlusRect>(unShFlags);
-        else
-                Read_EMFPLUS_DRAWIMAGE_BASE<TEmfPlusRectF>(unShFlags);
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWIMAGE_BASE(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        unsigned int unImageAttributesID;
-        int nSrcUnit;
-        TEmfPlusRectF oSrcRect;
-
-        m_oDataStream >> unImageAttributesID;
-        m_oDataStream >> nSrcUnit;
-        m_oDataStream >> oSrcRect;
-
-        T oRectData;
-
-        m_oDataStream >> oRectData;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWIMAGEPOINTS(unsigned short unShFlags)
-{
-        if ((unShFlags >>(11)) & 1 )
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_DRAWELLIPSE_BASE(unsigned short unShFlags)
         {
-                //Определен флаг P (С игнорируется)
-                Read_EMFPLUS_DRAWIMAGEPOINTS_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
-        }
-        else if ((unShFlags >>(14)) & 1 )
-        {
-                //Не определен флаг P, но определен флаг С
-                Read_EMFPLUS_DRAWIMAGEPOINTS_BASE<TEmfPlusPoint>(unShFlags);  // абсолютное расположение с 16-разрядными целочисленными координатами
-        }
-        else
-        {
-                //Оба флага не определены
-                Read_EMFPLUS_DRAWIMAGEPOINTS_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами с плавующей запятой
-        }
-}
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
 
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWIMAGEPOINTS_BASE(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        unsigned int unImageAttributesID, unCount;
-        int nSrcUnit;
-        TEmfPlusRectF oSrcRect;
-
-        m_oDataStream >> unImageAttributesID;
-        m_oDataStream >> nSrcUnit;
-        m_oDataStream >> oSrcRect;
-        m_oDataStream >> unCount;
-
-        std::vector<T> arPoints(unCount);
-
-        for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
-        {
-                //TODO: реализовать
-        }
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWLINES(unsigned short unShFlags)
-{
-        if ((unShFlags >>(11)) & 1 )
-        {
-                //Определен флаг P (С игнорируется)
-                Read_EMFPLUS_DRAWLINES_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
-        }
-        else if ((unShFlags >>(14)) & 1 )
-        {
-                //Не определен флаг P, но определен флаг С
-                Read_EMFPLUS_DRAWLINES_BASE<TEmfPlusPoint>(unShFlags);  // абсолютное расположение с 16-разрядными целочисленными координатами
-        }
-        else
-        {
-                //Оба флага не определены
-                Read_EMFPLUS_DRAWLINES_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами с плавующей запятой
-        }
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWLINES_BASE(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        unsigned int unCount;
-
-        m_oDataStream >> unCount;
-
-        std::vector<T> arPoints(unCount);
-
-        for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
-        {
-                //TODO: реализовать
-        }
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWPATH(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        unsigned int unPenId;
-
-        m_oDataStream >> unPenId;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWPIE(unsigned short unShFlags)
-{
-        if ((unShFlags >>(14)) & 1 )
-                Read_EMFPLUS_DRAWPIE_BASE<TEmfPlusRect>(unShFlags);
-        else
-                Read_EMFPLUS_DRAWPIE_BASE<TEmfPlusRectF>(unShFlags);
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWPIE_BASE(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        double dStartAngle, dSweepAngle;
-        T oRect;
-
-        m_oDataStream >> dStartAngle;
-        m_oDataStream >> dSweepAngle;
-        m_oDataStream >> oRect;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWRECTS(unsigned short unShFlags)
-{
-        if ((unShFlags >>(14)) & 1 )
-                Read_EMFPLUS_DRAWRECTS_BASE<TEmfPlusRect>(unShFlags);
-        else
-                Read_EMFPLUS_DRAWRECTS_BASE<TEmfPlusRectF>(unShFlags);
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWRECTS_BASE(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        unsigned int unCount;
-
-        m_oDataStream >> unCount;
-
-        std::vector<T> arRects(unCount);
-
-        for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
-        {
                 T oRect;
 
-                m_oDataStream >> oRect;
+                m_oStream >> oRect;
 
-                arRects.push_back(oRect);
-        }
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_DRAWSTRING(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        unsigned int unBrushId, unFormatID, unLength;
-        TEmfPlusRectF oRect;
-
-        m_oDataStream >> unBrushId;
-        m_oDataStream >> unFormatID;
-        m_oDataStream >> unLength;
-        m_oDataStream >> oRect;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_FILLCLOSEDCURVE(unsigned short unShFlags)
-{
-        if ((unShFlags >>(11)) & 1 )
-        {
-                //Определен флаг P (С игнорируется)
-                Read_EMFPLUS_FILLCLOSEDCURVE_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
-        }
-        else if ((unShFlags >>(14)) & 1 )
-        {
-                //Не определен флаг P, но определен флаг С
-                Read_EMFPLUS_FILLCLOSEDCURVE_BASE<TEmfPlusPoint>(unShFlags);  // абсолютное расположение с 16-разрядными целочисленными координатами
-        }
-        else
-        {
-                //Оба флага не определены
-                Read_EMFPLUS_FILLCLOSEDCURVE_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами с плавующей запятой
-        }
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_FILLCLOSEDCURVE_BASE(unsigned short unShFlags)
-{
-        unsigned int unBrushId, unCount;
-        double dTension;
-
-        m_oDataStream >> unBrushId;
-        m_oDataStream >> dTension;
-        m_oDataStream >> unCount;
-
-        std::vector<T> arPoints(unCount);
-
-        for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
-        {
-
+                //TODO: реализовать
         }
 
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_FILLELLIPSE(unsigned short unShFlags)
-{
-        if ((unShFlags >>(14)) & 1 )
-                Read_EMFPLUS_FILLELLIPSE_BASE<TEmfPlusRect>(unShFlags);
-        else
-                Read_EMFPLUS_FILLELLIPSE_BASE<TEmfPlusRectF>(unShFlags);
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_FILLELLIPSE_BASE(unsigned short unShFlags)
-{
-        unsigned int unBrushId;
-        T oRect;
-
-        m_oDataStream >> unBrushId;
-        m_oDataStream >> oRect;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_FILLPATH(unsigned short unShFlags)
-{
-        unsigned int unBrushId;
-
-        m_oDataStream >> unBrushId;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_FILLPIE(unsigned short unShFlags)
-{
-        if ((unShFlags >>(14)) & 1 )
-                Read_EMFPLUS_FILLPIE_BASE<TEmfPlusRect>(unShFlags);
-        else
-                Read_EMFPLUS_FILLPIE_BASE<TEmfPlusRectF>(unShFlags);
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_FILLPIE_BASE(unsigned short unShFlags)
-{
-        unsigned int unBrushId;
-        double dStartAngle, dSweepAngle;
-        T oRect;
-
-        m_oDataStream >> unBrushId;
-        m_oDataStream >> dStartAngle;
-        m_oDataStream >> dSweepAngle;
-        m_oDataStream >> oRect;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_FILLPOLYGON(unsigned short unShFlags)
-{
-        if ((unShFlags >>(11)) & 1 )
+        void CEmfPlusParser::Read_EMFPLUS_DRAWIMAGE(unsigned short unShFlags)
         {
-                //Определен флаг P (С игнорируется)
-                Read_EMFPLUS_FILLPOLYGON_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+                if ((unShFlags >>(14)) & 1 )
+                        Read_EMFPLUS_DRAWIMAGE_BASE<TEmfPlusRect>(unShFlags);
+                else
+                        Read_EMFPLUS_DRAWIMAGE_BASE<TEmfPlusRectF>(unShFlags);
         }
-        else if ((unShFlags >>(14)) & 1 )
+
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_DRAWIMAGE_BASE(unsigned short unShFlags)
         {
-                //Не определен флаг P, но определен флаг С
-                Read_EMFPLUS_FILLPOLYGON_BASE<TEmfPlusPoint>(unShFlags);  // абсолютное расположение с 16-разрядными целочисленными координатами
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                unsigned int unImageAttributesID;
+                int nSrcUnit;
+                TEmfPlusRectF oSrcRect;
+
+                m_oStream >> unImageAttributesID;
+                m_oStream >> nSrcUnit;
+                m_oStream >> oSrcRect;
+
+                T oRectData;
+
+                m_oStream >> oRectData;
+
+                //TODO: реализовать
         }
-        else
+
+        void CEmfPlusParser::Read_EMFPLUS_DRAWIMAGEPOINTS(unsigned short unShFlags)
         {
-                //Оба флага не определены
-                Read_EMFPLUS_FILLPOLYGON_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами с плавующей запятой
+                if ((unShFlags >>(11)) & 1 )
+                {
+                        //Определен флаг P (С игнорируется)
+                        Read_EMFPLUS_DRAWIMAGEPOINTS_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+                }
+                else if ((unShFlags >>(14)) & 1 )
+                {
+                        //Не определен флаг P, но определен флаг С
+                        Read_EMFPLUS_DRAWIMAGEPOINTS_BASE<TEmfPlusPoint>(unShFlags);  // абсолютное расположение с 16-разрядными целочисленными координатами
+                }
+                else
+                {
+                        //Оба флага не определены
+                        Read_EMFPLUS_DRAWIMAGEPOINTS_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами с плавующей запятой
+                }
         }
-}
 
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_FILLPOLYGON_BASE(unsigned short unShFlags)
-{
-        unsigned int unBrushId, unCount;
-
-        m_oDataStream >> unBrushId;
-        m_oDataStream >> unCount;
-
-        std::vector<T> arPoints(unCount);
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_FILLRECTS(unsigned short unShFlags)
-{
-        if ((unShFlags >>(14)) & 1 )
-                Read_EMFPLUS_FILLRECTS_BASE<TEmfPlusRect>(unShFlags);
-        else
-                Read_EMFPLUS_FILLRECTS_BASE<TEmfPlusRectF>(unShFlags);
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_FILLRECTS_BASE(unsigned short unShFlags)
-{
-        unsigned int unBrushId, unCount;
-
-        m_oDataStream >> unBrushId;
-        m_oDataStream >> unCount;
-
-        std::vector<T> arRects(unCount);
-
-        for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_DRAWIMAGEPOINTS_BASE(unsigned short unShFlags)
         {
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                unsigned int unImageAttributesID, unCount;
+                int nSrcUnit;
+                TEmfPlusRectF oSrcRect;
+
+                m_oStream >> unImageAttributesID;
+                m_oStream >> nSrcUnit;
+                m_oStream >> oSrcRect;
+                m_oStream >> unCount;
+
+                std::vector<T> arPoints(unCount);
+
+                for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
+                {
+                        //TODO: реализовать
+                }
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_DRAWLINES(unsigned short unShFlags)
+        {
+                if ((unShFlags >>(11)) & 1 )
+                {
+                        //Определен флаг P (С игнорируется)
+                        Read_EMFPLUS_DRAWLINES_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+                }
+                else if ((unShFlags >>(14)) & 1 )
+                {
+                        //Не определен флаг P, но определен флаг С
+                        Read_EMFPLUS_DRAWLINES_BASE<TEmfPlusPoint>(unShFlags);  // абсолютное расположение с 16-разрядными целочисленными координатами
+                }
+                else
+                {
+                        //Оба флага не определены
+                        Read_EMFPLUS_DRAWLINES_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами с плавующей запятой
+                }
+        }
+
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_DRAWLINES_BASE(unsigned short unShFlags)
+        {
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                unsigned int unCount;
+
+                m_oStream >> unCount;
+
+                std::vector<T> arPoints(unCount);
+
+                for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
+                {
+                        //TODO: реализовать
+                }
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_DRAWPATH(unsigned short unShFlags)
+        {
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                unsigned int unPenId;
+
+                m_oStream >> unPenId;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_DRAWPIE(unsigned short unShFlags)
+        {
+                if ((unShFlags >>(14)) & 1 )
+                        Read_EMFPLUS_DRAWPIE_BASE<TEmfPlusRect>(unShFlags);
+                else
+                        Read_EMFPLUS_DRAWPIE_BASE<TEmfPlusRectF>(unShFlags);
+        }
+
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_DRAWPIE_BASE(unsigned short unShFlags)
+        {
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                double dStartAngle, dSweepAngle;
                 T oRect;
 
-                m_oDataStream >> oRect;
+                m_oStream >> dStartAngle;
+                m_oStream >> dSweepAngle;
+                m_oStream >> oRect;
 
-                arRects.push_back(oRect);
+                //TODO: реализовать
         }
-        //TODO: реализовать
-}
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_FILLREGION(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        unsigned int unBrushId;
-
-        m_oDataStream >> unBrushId;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_OBJECT(unsigned short unShFlags)
-{
-        short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-        short shOgjectType  = ExpressValue(unShFlags, 8, 14);
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SERIALIZABLEOBJECT(unsigned short unShFlags)
-{
-        TGUID oGUID;
-        unsigned int unBufferSize;
-
-        m_oDataStream >> oGUID;
-        m_oDataStream >> unBufferSize;
-
-        m_oDataStream.Skip(unBufferSize);
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETANTIALIASMODE(unsigned short unShFlags)
-{
-        short shSmoothingMode = ExpressValue(unShFlags, 1,  7);
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETCOMPOSITINGMODE(unsigned short unShFlags)
-{
-        short shCompositingMode = ExpressValue(unShFlags, 0, 7);
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETCOMPOSITINGQUALITY(unsigned short unShFlags)
-{
-        short shCompositingQuality = ExpressValue(unShFlags, 0, 7);
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETINTERPOLATIONMODE(unsigned short unShFlags)
-{
-        short shInterpolationMode = ExpressValue(unShFlags, 0, 7);
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETPIXELOFFSETMODE(unsigned short unShFlags)
-{
-        short shPixelOffsetMode = ExpressValue(unShFlags, 0, 7);
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETRENDERINGORIGIN()
-{
-        int nX, nY;
-
-        m_oDataStream >> nX;
-        m_oDataStream >> nY;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETTEXTCONTRAST(unsigned short unShFlags)
-{
-        short shTextContrast  = ExpressValue(unShFlags, 0, 11);
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMRPLUS_SETTEXTRENDERINGHINT(unsigned short unShFlags)
-{
-        short shTextRenderingHint = ExpressValue(unShFlags, 0, 7);
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_BEGINCONTAINER(unsigned short unShFlags)
-{
-        short shPageUnit = ExpressValue(unShFlags, 8, 15);
-        TEmfPlusRectF oDestRect, oSrcRect;
-        unsigned int unStackIndex;
-
-        m_oDataStream >> oDestRect;
-        m_oDataStream >> oSrcRect;
-        m_oDataStream >> unStackIndex;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_BEGINCONTAINERNOPARAMS()
-{
-        unsigned int unStackIndex;
-
-        m_oDataStream >> unStackIndex;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_ENDCONTAINER()
-{
-        unsigned int unStackIndex;
-
-        m_oDataStream >> unStackIndex;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_RESTORE()
-{
-        unsigned int unStackIndex;
-
-        m_oDataStream >> unStackIndex;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SAVE()
-{
-        unsigned int unStackIndex;
-
-        m_oDataStream >> unStackIndex;
-
-        //TODO: реализовать
-}
-
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETTSCLIP(unsigned short unShFlags)
-{
-        if ((unShFlags >>(15)) & 1 )
-                Read_EMFPLUS_SETTSCLIP_BASE<TEmfPlusRectR>(unShFlags);
-        else
-                Read_EMFPLUS_SETTSCLIP_BASE<TEmfPlusRect>(unShFlags);
-}
-
-template<typename T>
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETTSCLIP_BASE(unsigned short unShFlags)
-{
-        short shNumRects = ExpressValue(unShFlags, 0, 14);
-
-        std::vector<T> arRects(shNumRects);
-
-        for (unsigned int unIndex = 0; unIndex < shNumRects; ++unIndex)
+        void CEmfPlusParser::Read_EMFPLUS_DRAWRECTS(unsigned short unShFlags)
         {
+                if ((unShFlags >>(14)) & 1 )
+                        Read_EMFPLUS_DRAWRECTS_BASE<TEmfPlusRect>(unShFlags);
+                else
+                        Read_EMFPLUS_DRAWRECTS_BASE<TEmfPlusRectF>(unShFlags);
+        }
+
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_DRAWRECTS_BASE(unsigned short unShFlags)
+        {
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                unsigned int unCount;
+
+                m_oStream >> unCount;
+
+                std::vector<T> arRects(unCount);
+
+                for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
+                {
+                        T oRect;
+
+                        m_oStream >> oRect;
+
+                        arRects.push_back(oRect);
+                }
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_DRAWSTRING(unsigned short unShFlags)
+        {
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                unsigned int unBrushId, unFormatID, unLength;
+                TEmfPlusRectF oRect;
+
+                m_oStream >> unBrushId;
+                m_oStream >> unFormatID;
+                m_oStream >> unLength;
+                m_oStream >> oRect;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_FILLCLOSEDCURVE(unsigned short unShFlags)
+        {
+                if ((unShFlags >>(11)) & 1 )
+                {
+                        //Определен флаг P (С игнорируется)
+                        Read_EMFPLUS_FILLCLOSEDCURVE_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+                }
+                else if ((unShFlags >>(14)) & 1 )
+                {
+                        //Не определен флаг P, но определен флаг С
+                        Read_EMFPLUS_FILLCLOSEDCURVE_BASE<TEmfPlusPoint>(unShFlags);  // абсолютное расположение с 16-разрядными целочисленными координатами
+                }
+                else
+                {
+                        //Оба флага не определены
+                        Read_EMFPLUS_FILLCLOSEDCURVE_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами с плавующей запятой
+                }
+        }
+
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_FILLCLOSEDCURVE_BASE(unsigned short unShFlags)
+        {
+                unsigned int unBrushId, unCount;
+                double dTension;
+
+                m_oStream >> unBrushId;
+                m_oStream >> dTension;
+                m_oStream >> unCount;
+
+                std::vector<T> arPoints(unCount);
+
+                for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
+                {
+
+                }
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_FILLELLIPSE(unsigned short unShFlags)
+        {
+                if ((unShFlags >>(14)) & 1 )
+                        Read_EMFPLUS_FILLELLIPSE_BASE<TEmfPlusRect>(unShFlags);
+                else
+                        Read_EMFPLUS_FILLELLIPSE_BASE<TEmfPlusRectF>(unShFlags);
+        }
+
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_FILLELLIPSE_BASE(unsigned short unShFlags)
+        {
+                unsigned int unBrushId;
                 T oRect;
 
-                m_oDataStream >> oRect;
+                m_oStream >> unBrushId;
+                m_oStream >> oRect;
 
-                arRects.push_back(oRect);
+                //TODO: реализовать
         }
 
-        //TODO: реализовать
-}
+        void CEmfPlusParser::Read_EMFPLUS_FILLPATH(unsigned short unShFlags)
+        {
+                unsigned int unBrushId;
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETTSGRAPHICS(unsigned short unShFlags)
-{
-        unsigned char unChAntiAliasMode, unChTextRenderHint, unChCompositingMode, unChCompositingQuality, unChFilterType, unChPixelOffset;
-        short shRenderOriginX, shRenderOriginY;
-        unsigned short unShTextContrast;
-        TEmfPlusTransformMatrix oMatrix;
+                m_oStream >> unBrushId;
 
-        m_oDataStream >> unChAntiAliasMode;
-        m_oDataStream >> unChTextRenderHint;
-        m_oDataStream >> unChCompositingMode;
-        m_oDataStream >> unChCompositingQuality;
-        m_oDataStream >> shRenderOriginX;
-        m_oDataStream >> shRenderOriginY;
-        m_oDataStream >> unShTextContrast;
-        m_oDataStream >> unChFilterType;
-        m_oDataStream >> unChPixelOffset;
-        m_oDataStream >> oMatrix;
+                //TODO: реализовать
+        }
 
-        //TODO: реализовать
-}
+        void CEmfPlusParser::Read_EMFPLUS_FILLPIE(unsigned short unShFlags)
+        {
+                if ((unShFlags >>(14)) & 1 )
+                        Read_EMFPLUS_FILLPIE_BASE<TEmfPlusRect>(unShFlags);
+                else
+                        Read_EMFPLUS_FILLPIE_BASE<TEmfPlusRectF>(unShFlags);
+        }
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_MULTIPLYWORLDTRANSFORM(unsigned short unShFlags)
-{
-        TEmfPlusTransformMatrix oMatrix;
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_FILLPIE_BASE(unsigned short unShFlags)
+        {
+                unsigned int unBrushId;
+                double dStartAngle, dSweepAngle;
+                T oRect;
 
-        m_oDataStream >> oMatrix;
+                m_oStream >> unBrushId;
+                m_oStream >> dStartAngle;
+                m_oStream >> dSweepAngle;
+                m_oStream >> oRect;
 
-        //TODO: реализовать
-}
+                //TODO: реализовать
+        }
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_RESETWORLDTRANSFORM()
-{
-        //TODO: реализовать
-}
+        void CEmfPlusParser::Read_EMFPLUS_FILLPOLYGON(unsigned short unShFlags)
+        {
+                if ((unShFlags >>(11)) & 1 )
+                {
+                        //Определен флаг P (С игнорируется)
+                        Read_EMFPLUS_FILLPOLYGON_BASE<TEmfPlusPointR>(unShFlags); // относительное расположение
+                }
+                else if ((unShFlags >>(14)) & 1 )
+                {
+                        //Не определен флаг P, но определен флаг С
+                        Read_EMFPLUS_FILLPOLYGON_BASE<TEmfPlusPoint>(unShFlags);  // абсолютное расположение с 16-разрядными целочисленными координатами
+                }
+                else
+                {
+                        //Оба флага не определены
+                        Read_EMFPLUS_FILLPOLYGON_BASE<TEmfPlusPointF>(unShFlags); // абсолютное расположение с 32-разрядными координатами с плавующей запятой
+                }
+        }
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_ROTATEWORLDTRANSFORM(unsigned short unShFlags)
-{
-        double dAngle;
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_FILLPOLYGON_BASE(unsigned short unShFlags)
+        {
+                unsigned int unBrushId, unCount;
 
-        m_oDataStream >> dAngle;
-        //TODO: реализовать
-}
+                m_oStream >> unBrushId;
+                m_oStream >> unCount;
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SCALEWORLDTRANSFORM(unsigned short unShFlags)
-{
-        double dSx, dSy;
+                std::vector<T> arPoints(unCount);
 
-        m_oDataStream >> dSx;
-        m_oDataStream >> dSy;
+                //TODO: реализовать
+        }
 
-        //TODO: реализовать
-}
+        void CEmfPlusParser::Read_EMFPLUS_FILLRECTS(unsigned short unShFlags)
+        {
+                if ((unShFlags >>(14)) & 1 )
+                        Read_EMFPLUS_FILLRECTS_BASE<TEmfPlusRect>(unShFlags);
+                else
+                        Read_EMFPLUS_FILLRECTS_BASE<TEmfPlusRectF>(unShFlags);
+        }
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETPAGETRANSFORM(unsigned short unShFlags)
-{
-        short shPageUnit = ExpressValue(unShFlags, 0, 7);
-        double dPageScale;
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_FILLRECTS_BASE(unsigned short unShFlags)
+        {
+                unsigned int unBrushId, unCount;
 
-        m_oDataStream >> dPageScale;
+                m_oStream >> unBrushId;
+                m_oStream >> unCount;
 
-        //TODO: реализовать
-}
+                std::vector<T> arRects(unCount);
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETWORLDTRANSFORM()
-{
-        TEmfPlusTransformMatrix oMatrix;
+                for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
+                {
+                        T oRect;
 
-        m_oDataStream >> oMatrix;
+                        m_oStream >> oRect;
 
-        //TODO: реализовать
-}
+                        arRects.push_back(oRect);
+                }
+                //TODO: реализовать
+        }
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unsigned short unShFlags)
-{
-        double dX, dY;
+        void CEmfPlusParser::Read_EMFPLUS_FILLREGION(unsigned short unShFlags)
+        {
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                unsigned int unBrushId;
 
-        m_oDataStream >> dX;
-        m_oDataStream >> dY;
+                m_oStream >> unBrushId;
 
-        //TODO: реализовать
-}
+                //TODO: реализовать
+        }
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_ENDOFFILE()
-{
-        //TODO: реализовать
-}
+        void CEmfPlusParser::Read_EMFPLUS_OBJECT(unsigned short unShFlags)
+        {
+                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                short shOgjectType  = ExpressValue(unShFlags, 8, 14);
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_GETDC()
-{
-        //TODO: реализовать
-}
+                //TODO: реализовать
+        }
 
-void MetaFile::CEmfPlusParser::Read_EMRPLUS_OFFSETCLIP()
-{
-        double dX, dY;
+        void CEmfPlusParser::Read_EMFPLUS_SERIALIZABLEOBJECT(unsigned short unShFlags)
+        {
+                TGUID oGUID;
+                unsigned int unBufferSize;
 
-        m_oDataStream >> dX;
-        m_oDataStream >> dY;
+                m_oStream >> oGUID;
+                m_oStream >> unBufferSize;
 
-        //TODO: реализовать
-}
+                m_oStream.Skip(unBufferSize);
 
-void MetaFile::CEmfPlusParser::Read_EMRPLUS_RESETCLIP()
-{
-        //TODO: реализовать
-}
+                //TODO: реализовать
+        }
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETCLIPPATH(unsigned short unShFlags)
-{
-        //TODO: реализовать
-}
+        void CEmfPlusParser::Read_EMFPLUS_SETANTIALIASMODE(unsigned short unShFlags)
+        {
+                short shSmoothingMode = ExpressValue(unShFlags, 1,  7);
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETCLIPRECT(unsigned short unShFlags)
-{
-        TEmfPlusRectF oRect;
+                //TODO: реализовать
+        }
 
-        m_oDataStream >> oRect;
-        //TODO: реализовать
-}
+        void CEmfPlusParser::Read_EMFPLUS_SETCOMPOSITINGMODE(unsigned short unShFlags)
+        {
+                short shCompositingMode = ExpressValue(unShFlags, 0, 7);
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_SETCLIPREGION(unsigned short unShFlags)
-{
-        //TODO: реализовать
-}
+                //TODO: реализовать
+        }
 
-void MetaFile::CEmfPlusParser::Read_EMFPLUS_COMMENT(unsigned int unDataSize)
-{
-        m_oDataStream.Skip(unDataSize);
-}
+        void CEmfPlusParser::Read_EMFPLUS_SETCOMPOSITINGQUALITY(unsigned short unShFlags)
+        {
+                short shCompositingQuality = ExpressValue(unShFlags, 0, 7);
 
-short MetaFile::CEmfPlusParser::ExpressValue(unsigned short unShFlags, unsigned int unStartIndex, unsigned int unEndIndex) const
-{
-        if (unStartIndex >= unEndIndex || unStartIndex > 14 || unEndIndex > 15)
-                return 0;
+                //TODO: реализовать
+        }
 
-        short shValue = 0;
-        unsigned int unValueIndex = 0;
+        void CEmfPlusParser::Read_EMFPLUS_SETINTERPOLATIONMODE(unsigned short unShFlags)
+        {
+                short shInterpolationMode = ExpressValue(unShFlags, 0, 7);
 
-        for (unsigned int unIndex = unStartIndex; unIndex <= unEndIndex; ++unIndex, ++unValueIndex)
-                shValue |= (((unShFlags >> unIndex) & 1) << unValueIndex);
+                //TODO: реализовать
+        }
 
-        return shValue;
+        void CEmfPlusParser::Read_EMFPLUS_SETPIXELOFFSETMODE(unsigned short unShFlags)
+        {
+                short shPixelOffsetMode = ExpressValue(unShFlags, 0, 7);
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_SETRENDERINGORIGIN()
+        {
+                int nX, nY;
+
+                m_oStream >> nX;
+                m_oStream >> nY;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_SETTEXTCONTRAST(unsigned short unShFlags)
+        {
+                short shTextContrast  = ExpressValue(unShFlags, 0, 11);
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMRPLUS_SETTEXTRENDERINGHINT(unsigned short unShFlags)
+        {
+                short shTextRenderingHint = ExpressValue(unShFlags, 0, 7);
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_BEGINCONTAINER(unsigned short unShFlags)
+        {
+                short shPageUnit = ExpressValue(unShFlags, 8, 15);
+                TEmfPlusRectF oDestRect, oSrcRect;
+                unsigned int unStackIndex;
+
+                m_oStream >> oDestRect;
+                m_oStream >> oSrcRect;
+                m_oStream >> unStackIndex;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_BEGINCONTAINERNOPARAMS()
+        {
+                unsigned int unStackIndex;
+
+                m_oStream >> unStackIndex;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_ENDCONTAINER()
+        {
+                unsigned int unStackIndex;
+
+                m_oStream >> unStackIndex;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_RESTORE()
+        {
+                unsigned int unStackIndex;
+
+                m_oStream >> unStackIndex;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_SAVE()
+        {
+                unsigned int unStackIndex;
+
+                m_oStream >> unStackIndex;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_SETTSCLIP(unsigned short unShFlags)
+        {
+                if ((unShFlags >>(15)) & 1 )
+                        Read_EMFPLUS_SETTSCLIP_BASE<TEmfPlusRectR>(unShFlags);
+                else
+                        Read_EMFPLUS_SETTSCLIP_BASE<TEmfPlusRect>(unShFlags);
+        }
+
+        template<typename T>
+        void CEmfPlusParser::Read_EMFPLUS_SETTSCLIP_BASE(unsigned short unShFlags)
+        {
+                short shNumRects = ExpressValue(unShFlags, 0, 14);
+
+                std::vector<T> arRects(shNumRects);
+
+                for (unsigned int unIndex = 0; unIndex < shNumRects; ++unIndex)
+                {
+                        T oRect;
+
+                        m_oStream >> oRect;
+
+                        arRects.push_back(oRect);
+                }
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_SETTSGRAPHICS(unsigned short unShFlags)
+        {
+                unsigned char unChAntiAliasMode, unChTextRenderHint, unChCompositingMode, unChCompositingQuality, unChFilterType, unChPixelOffset;
+                short shRenderOriginX, shRenderOriginY;
+                unsigned short unShTextContrast;
+                TEmfPlusXForm oMatrix;
+
+                m_oStream >> unChAntiAliasMode;
+                m_oStream >> unChTextRenderHint;
+                m_oStream >> unChCompositingMode;
+                m_oStream >> unChCompositingQuality;
+                m_oStream >> shRenderOriginX;
+                m_oStream >> shRenderOriginY;
+                m_oStream >> unShTextContrast;
+                m_oStream >> unChFilterType;
+                m_oStream >> unChPixelOffset;
+                m_oStream >> oMatrix;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_MULTIPLYWORLDTRANSFORM(unsigned short unShFlags)
+        {
+                TEmfPlusXForm oMatrix;
+
+                m_oStream >> oMatrix;
+
+                //TODO: проверить правильность действий
+                m_pDC->MultiplyTransform(oMatrix, (((unShFlags >>(14)) & 1 )) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
+                UpdateOutputDC();
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_RESETWORLDTRANSFORM()
+        {
+                m_pDC->ResetTransform();
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_ROTATEWORLDTRANSFORM(unsigned short unShFlags)
+        {
+                double dAngle;
+
+                m_oStream >> dAngle;
+
+                TEmfPlusXForm oMatrix(sinf(dAngle), cosf(dAngle), cosf(dAngle), -sinf(dAngle), 0, 0);
+                m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
+                UpdateOutputDC();
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_SCALEWORLDTRANSFORM(unsigned short unShFlags)
+        {
+                double dSx, dSy;
+
+                m_oStream >> dSx;
+                m_oStream >> dSy;
+
+                TEmfPlusXForm oMatrix(dSx, 0, 0, dSy, 0, 0);
+                m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
+                UpdateOutputDC();
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_SETPAGETRANSFORM(unsigned short unShFlags)
+        {
+                short shPageUnit = ExpressValue(unShFlags, 0, 7);
+                double dPageScale;
+
+                m_oStream >> dPageScale;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_SETWORLDTRANSFORM()
+        {
+                TEmfPlusXForm oMatrix;
+
+                m_oStream >> oMatrix;
+
+                m_pDC->MultiplyTransform(oMatrix, 4);
+                UpdateOutputDC();
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unsigned short unShFlags)
+        {
+                double dX, dY;
+
+                m_oStream >> dX;
+                m_oStream >> dY;
+
+                TEmfPlusXForm oMatrix(1, 0, 0, 1, dX, dY);
+                m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
+                UpdateOutputDC();
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_ENDOFFILE()
+        {
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_GETDC()
+        {
+                m_bBanEmfProcessing = false;
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMRPLUS_OFFSETCLIP()
+        {
+                m_bBanEmfProcessing = true;
+
+                double dX, dY;
+
+                m_oStream >> dX;
+                m_oStream >> dY;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMRPLUS_RESETCLIP()
+        {
+                m_bBanEmfProcessing = true;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_SETCLIPPATH(unsigned short unShFlags)
+        {
+                m_bBanEmfProcessing = true;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_SETCLIPRECT(unsigned short unShFlags)
+        {
+                m_bBanEmfProcessing = true;
+
+                short shCM = ExpressValue(unShFlags, 8, 11);
+                TEmfPlusRectF oRect;
+
+                m_oStream >> oRect;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_SETCLIPREGION(unsigned short unShFlags)
+        {
+                m_bBanEmfProcessing = true;
+
+                //TODO: реализовать
+        }
+
+        void CEmfPlusParser::Read_EMFPLUS_COMMENT(unsigned int unDataSize)
+        {
+                m_oStream.Skip(unDataSize);
+        }
+
+        short CEmfPlusParser::ExpressValue(unsigned short unShFlags, unsigned int unStartIndex, unsigned int unEndIndex) const
+        {
+                if (unStartIndex >= unEndIndex || unStartIndex > 14 || unEndIndex > 15)
+                        return 0;
+
+                short shValue = 0;
+                unsigned int unValueIndex = 0;
+
+                for (unsigned int unIndex = unStartIndex; unIndex <= unEndIndex; ++unIndex, ++unValueIndex)
+                        shValue |= (((unShFlags >> unIndex) & 1) << unValueIndex);
+
+                return shValue;
+        }
+
 }

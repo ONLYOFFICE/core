@@ -2,17 +2,31 @@
 #define CEMFPLUSPARSER_H
 
 #include "../../Common/MetaFileUtils.h"
+#include "../../Common/MetaFile.h"
+#include "CEmfParserBase.h"
+#include "../EmfPlusTypes.h"
+#include "../EmfPlayer.h"
 
 namespace MetaFile
 {
-        class CEmfParser;
-        class CEmfPlusParser
+        class CEmfPlusParser : public CEmfParserBase
         {
             public:
-                CEmfPlusParser(CEmfParser *pEmfParser);
+                CEmfPlusParser(CEmfParserBase* pParentParser);
+                virtual ~CEmfPlusParser();
+
+                bool            OpenFromFile(const wchar_t* wsFilePath)     override;
+                void            PlayFile()                                  override;
+                void            Scan()                                      override;
+
+                EmfParserType   GetType()				    override;
+
                 void SetStream(BYTE *pBytes, unsigned int unSize);
-                void PlayFile();
+                bool GetBanEMFProcesses();
+
             private:
+                bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
+
                 void Read_EMRPLUS_OFFSETCLIP();
                 void Read_EMRPLUS_RESETCLIP();
                 void Read_EMFPLUS_SETCLIPPATH(unsigned short unShFlags);
@@ -94,8 +108,8 @@ namespace MetaFile
 
                 virtual short ExpressValue(unsigned short unShFlags, unsigned int unStartIndex, unsigned int unEndIndex) const;
 
-                CEmfParser *m_pEmfParser;
-                CDataStream m_oDataStream;
+                CEmfParserBase* m_pParentParser;
+                bool m_bBanEmfProcessing;
         };
 }
 

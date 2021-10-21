@@ -1,6 +1,8 @@
 #ifndef EMFPLUSTYPES_H
 #define EMFPLUSTYPES_H
 
+#include "EmfTypes.h"
+
 namespace MetaFile
 {
         struct TEmfPlusRectR
@@ -38,8 +40,8 @@ namespace MetaFile
                 {
                         shX      = 0;
                         shY      = 0;
-                        shWidth  = 0;
-                        shHeight = 0;
+                        shWidth  = 1024;
+                        shHeight = 1024;
                 }
 
                 TEmfPlusRect(const TEmfPlusRect& oRect)
@@ -49,29 +51,6 @@ namespace MetaFile
                         shWidth  = oRect.shWidth;
                         shHeight = oRect.shHeight;
                 }
-        };
-
-        struct TEmfPlusRectF
-        {
-              float fX;
-              float fY;
-              float fWidth;
-              float fHeight;
-
-              TEmfPlusRectF()
-              {
-                      fX        = 0;
-                      fY        = 0;
-                      fWidth    = 0;
-                      fHeight   = 0;
-              }
-              TEmfPlusRectF(const TEmfPlusRectF& oRect)
-              {
-                      fX        = oRect.fX;
-                      fY        = oRect.fY;
-                      fWidth    = oRect.fWidth;
-                      fHeight   = oRect.fHeight;
-              }
         };
 
         struct TEmfPlusARGB
@@ -104,42 +83,6 @@ namespace MetaFile
 
         };
 
-        struct TEmfPlusPointF
-        {
-                float fX;
-                float fY;
-
-                TEmfPlusPointF()
-                {
-                        fX = 0;
-                        fY = 0;
-                }
-
-                TEmfPlusPointF(const TEmfPlusPointF& oPoint)
-                {
-                        fX = oPoint.fX;
-                        fY = oPoint.fY;
-                }
-        };
-
-        struct TEmfPlusPoint
-        {
-                short shX;
-                short shY;
-
-                TEmfPlusPoint()
-                {
-                        shX = 0;
-                        shY = 0;
-                }
-
-                TEmfPlusPoint(const TEmfPlusPoint& oPoint)
-                {
-                        shX = oPoint.shX;
-                        shY = oPoint.shY;
-                }
-        };
-
         struct TGUID
         {
                 int nData1;
@@ -164,35 +107,10 @@ namespace MetaFile
                 }
         };
 
-        struct TEmfPlusTransformMatrix
-        {
-                float fM11;
-                float fM12;
-                float fM21;
-                float fM22;
-                float fdX;
-                float fdY;
-
-                TEmfPlusTransformMatrix()
-                {
-                        fM11 = 0;
-                        fM12 = 0;
-                        fM21 = 0;
-                        fM22 = 0;
-                        fdX  = 0;
-                        fdY  = 0;
-                }
-
-                TEmfPlusTransformMatrix(const TEmfPlusTransformMatrix& oTEmfPlusTransformMatrix)
-                {
-                        fM11 = oTEmfPlusTransformMatrix.fM11;
-                        fM12 = oTEmfPlusTransformMatrix.fM12;
-                        fM21 = oTEmfPlusTransformMatrix.fM21;
-                        fM22 = oTEmfPlusTransformMatrix.fM22;
-                        fdX  = oTEmfPlusTransformMatrix.fdX;
-                        fdY  = oTEmfPlusTransformMatrix.fdY;
-                }
-        };
+        #define TEmfPlusRectF   TRectD
+        #define TEmfPlusPoint   TEmfPointS
+        #define TEmfPlusPointF  TEmfPointD
+        #define TEmfPlusXForm   TEmfXForm
 }
 
 #endif // EMFPLUSTYPES_H

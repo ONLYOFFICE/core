@@ -88,6 +88,7 @@ namespace MetaFile
 
 		void            SetMapMode(unsigned int ulMapMode);
 		unsigned int    GetMapMode();
+		void		ResetTransform();
 		TEmfXForm*      GetTransform();
 		TEmfXForm*      GetInverseTransform();
 		TEmfXForm*      GetFinalTransform(int iGraphicsMode);

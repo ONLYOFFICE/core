@@ -12,7 +12,7 @@
 #include "libplatform/libplatform.h"
 #include "src/base/sys-info.h"
 
-#ifdef V8_VERSION_87_PLUS
+#ifdef V8_VERSION_89_PLUS
 #define kV8NormalString v8::NewStringType::kNormal
 #define kV8ProduceCodeCache v8::ScriptCompiler::kEagerCompile
 #define V8ContextFirstArg CV8Worker::GetCurrentContext(),
@@ -65,7 +65,7 @@ public:
 class CV8Initializer
 {
 private:
-#ifdef V8_VERSION_87_PLUS
+#ifdef V8_VERSION_89_PLUS
     std::unique_ptr<v8::Platform> m_platform;
 #else
     v8::Platform* m_platform;
@@ -75,7 +75,7 @@ private:
 public:
     v8::Platform* getPlatform()
     {
-#ifdef V8_VERSION_87_PLUS
+#ifdef V8_VERSION_89_PLUS
         return m_platform.get();
 #else
         return m_platform;
@@ -91,7 +91,7 @@ public:
     #ifndef V8_OS_XP
         v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
         v8::V8::InitializeExternalStartupData(sPrA.c_str());
-        #ifdef V8_VERSION_87_PLUS
+        #ifdef V8_VERSION_89_PLUS
         m_platform = v8::platform::NewDefaultPlatform();
         v8::V8::InitializePlatform(m_platform.get());
         #else
@@ -110,7 +110,7 @@ public:
     {
         v8::V8::Dispose();
         v8::V8::ShutdownPlatform();
-        #ifndef V8_VERSION_87_PLUS
+        #ifndef V8_VERSION_89_PLUS
         delete m_platform;
         #endif
         if (m_pAllocator)
@@ -329,7 +329,7 @@ namespace NSJSBase
 
         virtual bool toBool()
         {
-#ifdef V8_VERSION_87_PLUS
+#ifdef V8_VERSION_89_PLUS
             return value.IsEmpty() ? false : value->BooleanValue(V8IsolateOneArg);
 #else
             return value.IsEmpty() ? false : value->BooleanValue(V8ContextOneArg).V8ToChecked();

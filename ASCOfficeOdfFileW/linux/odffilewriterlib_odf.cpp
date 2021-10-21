@@ -30,13 +30,6 @@
  *
  */
 
-#ifndef min
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#endif
-#ifndef max
-#define max(a,b) ((a) > (b) ? (a) : (b))
-#endif
-
 #include "../source/OdfFormat/office_document.cpp"
 #include "../source/OdfFormat/office_forms.cpp"
 #include "../source/OdfFormat/calcext_elements.cpp"

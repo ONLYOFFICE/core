@@ -10,30 +10,33 @@ core_android {
 		ABI_PATH = $$replace(ABI_PATH, "arm64_v8a", "arm64-v8a")
 	}
 
-    INCLUDEPATH += $$PWD/../ixwebsocket/IXWebSocket/build/android/$$ABI_PATH/usr/include
-    LIBS        += $$PWD/../ixwebsocket/IXWebSocket/build/android/$$ABI_PATH/usr/lib/libixwebsocket.a
+    INSTALL_FOLDER = $$PWD/IXWebSocket/build/android/$$ABI_PATH
+    exists($$INSTALL_FOLDER/usr):INSTALL_FOLDER=$$INSTALL_FOLDER/usr
+
+    INCLUDEPATH += $$INSTALL_FOLDER/include
+    LIBS        += $$INSTALL_FOLDER/lib/libixwebsocket.a
 
     OPENSSL_LIBS_DIRECTORY = $$PWD/../openssl/build/android/$$ABI_PATH/lib
 }
 
 core_ios {
 
-    INCLUDEPATH += $$PWD/../ixwebsocket/IXWebSocket/build/ios/openssl-universal/include
-    LIBS        += $$PWD/../ixwebsocket/IXWebSocket/build/ios/ixwebsocket-universal/lib/libixwebsocket.a
+    INCLUDEPATH += $$PWD/IXWebSocket/build/ios/openssl-universal/include
+    LIBS        += $$PWD/IXWebSocket/build/ios/ixwebsocket-universal/lib/libixwebsocket.a
 
 }
 
 core_linux {
 
-    INCLUDEPATH += $$PWD/../ixwebsocket/IXWebSocket/build/linux/$$CORE_BUILDS_PLATFORM_PREFIX/include
-    LIBS        += $$PWD/../ixwebsocket/IXWebSocket/build/linux/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libixwebsocket.a
+    INCLUDEPATH += $$PWD/IXWebSocket/build/linux/$$CORE_BUILDS_PLATFORM_PREFIX/include
+    LIBS        += $$PWD/IXWebSocket/build/linux/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libixwebsocket.a
 
 }
 
 core_mac {
 
-    INCLUDEPATH += $$PWD/../ixwebsocket/IXWebSocket/build/mac/$$CORE_BUILDS_PLATFORM_PREFIX/include
-    LIBS        += $$PWD/../ixwebsocket/IXWebSocket/build/mac/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libixwebsocket.a \
+    INCLUDEPATH += $$PWD/IXWebSocket/build/mac/$$CORE_BUILDS_PLATFORM_PREFIX/include
+    LIBS        += $$PWD/IXWebSocket/build/mac/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libixwebsocket.a \
 }
 
 core_windows {

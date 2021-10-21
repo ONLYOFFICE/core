@@ -48,7 +48,8 @@ echo "https://www.openssl.org/source/${LIB_NAME}.tar.gz"
 DEVELOPER=$(xcode-select -print-path)
 SDK_VERSION=$(xcrun -sdk iphoneos --show-sdk-version)
 rm -rf "${LIB_DEST_DIR}" "${LIB_NAME}"
-[ -f "${LIB_NAME}.tar.gz" ] || curl -L -o ${LIB_NAME}.tar.gz https://www.openssl.org/source/${LIB_NAME}.tar.gz
+[ -f "${LIB_NAME}.tar.gz" ] || curl -L -o ${LIB_NAME}.tar.gz https://www.openssl.org/source/${LIB_NAME}.tar.gz -s
+[ -f "${LIB_NAME}.tar.gz" ] || log_error "openssl download error!"
 
 function configure_make() {
 

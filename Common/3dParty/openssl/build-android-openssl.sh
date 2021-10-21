@@ -44,7 +44,8 @@ echo "https://www.openssl.org/source/${LIB_NAME}.tar.gz"
 
 # https://github.com/openssl/openssl/archive/OpenSSL_1_1_1d.tar.gz
 # https://github.com/openssl/openssl/archive/OpenSSL_1_1_1f.tar.gz
-[ -f "${LIB_NAME}.tar.gz" ] || curl -L -o ${LIB_NAME}.tar.gz https://www.openssl.org/source/${LIB_NAME}.tar.gz
+[ -f "${LIB_NAME}.tar.gz" ] || curl -L -o ${LIB_NAME}.tar.gz https://www.openssl.org/source/${LIB_NAME}.tar.gz -s
+[ -f "${LIB_NAME}.tar.gz" ] || log_error "openssl download error!"
 
 set_android_toolchain_bin
 

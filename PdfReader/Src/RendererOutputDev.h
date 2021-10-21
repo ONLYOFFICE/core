@@ -48,6 +48,9 @@
 #include "MemoryUtils.h"
 #include "GfxClip.h"
 #include <stack>
+#ifdef BUILDING_WASM_MODULE
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#endif
 
 namespace PdfReader
 {
@@ -286,6 +289,14 @@ namespace PdfReader
 			m_pbBreak = pbBreak;
 		}
 
+    #ifdef BUILDING_WASM_MODULE
+        BYTE* GetGlyphs(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
+        std::wstring m_lCurrentFont;
+        double m_dCurrentFontSize = 0.0;
+        NSWasm::CHLine m_oLine;
+        NSWasm::CData  m_oMeta;
+        Aggplus::CMatrix m_pLastTransform;
+    #endif
 
 	private:
 

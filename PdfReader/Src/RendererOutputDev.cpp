@@ -3491,6 +3491,9 @@ namespace PdfReader
         }
 
         m_pRenderer->CommandDrawTextEx(wsUnicodeText, pGids, unGidsCount, PDFCoordsToMM(100), PDFCoordsToMM(100), 0, PDFCoordsToMM(0));
+    #ifdef BUILDING_WASM_MODULE
+        GetGlyphs(wsUnicodeText, pGids, unGidsCount, PDFCoordsToMM(100), PDFCoordsToMM(100), 0, PDFCoordsToMM(0));
+    #endif
         RELEASEARRAYOBJECTS(pGids);
     }
     void RendererOutputDev::drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
@@ -3652,6 +3655,9 @@ namespace PdfReader
             else
             {
                 m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+            #ifdef BUILDING_WASM_MODULE
+                GetGlyphs(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+            #endif
             }
         }
 
@@ -4443,5 +4449,181 @@ namespace PdfReader
         }
         return;
     }
+#ifdef BUILDING_WASM_MODULE
+    BYTE* RendererOutputDev::GetGlyphs(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
+    {
+        // m_pInternal->GetUnicodes(bsUnicodeText);
+        int nLen = (int)bsUnicodeText.length();
+        int m_nTempUnicodesAlloc = nLen;
+        int* m_pTempUnicodes = new int[m_nTempUnicodesAlloc];
+        int m_nTempUnicodesLen = 0;
+        const wchar_t* pWchars = bsUnicodeText.c_str();
 
+        if (sizeof(wchar_t) == 2)
+        {
+            for (int nIndex = 0, nGlyphIndex = 0; nIndex < nLen; ++nIndex, ++nGlyphIndex)
+            {
+                int code = (int)pWchars[nIndex];
+                if (code >= 0xD800 && code <= 0xDFFF && (nIndex + 1) < nLen)
+                {
+                    ++nIndex;
+                    code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & pWchars[nIndex]));
+                }
+
+                m_pTempUnicodes[m_nTempUnicodesLen++] = code;
+            }
+        }
+        else
+        {
+            for ( int nIndex = 0; nIndex < nLen; ++nIndex )
+            {
+                m_pTempUnicodes[m_nTempUnicodesLen++] = (int)pWchars[nIndex];
+            }
+        }
+
+        // m_pInternal->m_oWriter.WriteText(m_pInternal->m_pTempUnicodes, (const int*)pGids, m_pInternal->m_nTempUnicodesLen, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
+        bool bIsDumpFont = false;
+        std::wstring lCurrentFontName; double dFontSize;
+        m_pRenderer->get_FontPath(&lCurrentFontName);
+        m_pRenderer->get_FontSize(&dFontSize);
+        if ((lCurrentFontName != m_lCurrentFont) || (dFontSize != m_dCurrentFontSize))
+        {
+            m_lCurrentFont     = lCurrentFontName;
+            m_dCurrentFontSize = dFontSize;
+
+            bIsDumpFont = true;
+        }
+
+        // m_oSmartText.CommandText(m_pTempUnicodes, (const int*)pGids, m_nTempUnicodesLen, x, y, w, h, bIsDumpFont, this);
+        // 1) сначала определяем точку отсчета и направление baseline
+        double _x1 = x;
+        double _y1 = y;
+        double _x2 = x + 1;
+        double _y2 = y;
+        double sx, shy, shx, sy, tx, ty, tmp;
+        m_pRenderer->GetTransform(&sx, &shy, &shx, &sy, &tx, &ty);
+        // m_pTransform->TransformPoint(_x1, _y1);
+        tmp = _x1;
+        _x1 = tmp * sx  + _y1 * shx + tx;
+        _y1 = tmp * shy + _y1 * sy  + ty;
+        // m_pTransform->TransformPoint(_x2, _y2);
+        tmp = _x2;
+        _x2 = tmp * sx  + _y2 * shx + tx;
+        _y2 = tmp * shy + _y2 * sy  + ty;
+
+        double _k = 0;
+        double _b = 0;
+        bool _isConstX = false;
+        if (fabs(_x1 - _x2) < 0.001)
+        {
+            _isConstX = true;
+            _b = _x1;
+        }
+        else
+        {
+            _k = (_y1 - _y2) / (_x1 - _x2);
+            _b = _y1 - _k * _x1;
+        }
+
+        double dAbsVec = sqrt((_x1 - _x2) * (_x1 - _x2) + (_y1 - _y2) * (_y1 - _y2));
+        if (dAbsVec == 0)
+            dAbsVec = 1;
+
+        LONG nCountChars = m_oLine.GetCountChars();
+
+        bool bIsNewLine = true;
+
+        if (0 != nCountChars)
+        {
+            if (_isConstX && m_oLine.m_bIsConstX && fabs(_b - m_oLine.m_dB) < 0.001)
+                bIsNewLine = false;
+            else if (!_isConstX && !m_oLine.m_bIsConstX && fabs(_k - m_oLine.m_dK) < 0.001 && fabs(_b - m_oLine.m_dB) < 0.001)
+                bIsNewLine = false;
+        }
+
+        if (bIsNewLine && (0 != nCountChars))
+        {
+            // не совпала baseline. поэтому просто скидываем линию в поток
+            // DumpLine();
+        }
+
+        // теперь нужно определить сдвиг по baseline относительно destination точки
+        nCountChars = m_oLine.GetCountChars();
+        double dOffsetX = 0;
+        if (0 == nCountChars)
+        {
+            m_oLine.m_bIsConstX = _isConstX;
+            m_oLine.m_dK = _k;
+            m_oLine.m_dB = _b;
+
+            m_oLine.m_dX = _x1;
+            m_oLine.m_dY = _y1;
+
+            m_oLine.m_ex = (_x2 - _x1) / dAbsVec;
+            m_oLine.m_ey = (_y2 - _y1) / dAbsVec;
+
+            m_oLine.m_dEndX = _x1;
+            m_oLine.m_dEndY = _y1;
+        }
+        else
+        {
+            double sx = _x1 - m_oLine.m_dEndX;
+            double sy = _y1 - m_oLine.m_dEndY;
+            double len = sqrt(sx*sx + sy*sy);
+
+            if (sx*m_oLine.m_ex >= 0 && sy*m_oLine.m_ey >= 0)
+            {
+                // продолжаем линию
+                dOffsetX = len;
+
+                // теперь посмотрим, может быть нужно вставить пробел??
+                NSWasm::CHChar* pLastChar = m_oLine.GetTail();
+                if (dOffsetX > (pLastChar->width + 0.5))
+                {
+                    // вставляем пробел. Пробел у нас будет не совсем пробел. А специфический
+                    NSWasm::CHChar* pSpaceChar = m_oLine.AddTail();
+                    pSpaceChar->x = pLastChar->width;
+                    pSpaceChar->width = dOffsetX - pLastChar->width;
+                    pSpaceChar->unicode = 0xFFFF;
+                    pSpaceChar->gid = 0xFFFF;
+                    dOffsetX -= pLastChar->width;
+
+                    m_oMeta.WriteBYTE(0);
+                }
+            }
+            else
+            {
+                // буква сдвинута влево относительно предыдущей буквы
+                // на такую ситуацию реагируем просто - просто начинаем новую линию,
+                // предварительно сбросив старую
+                // DumpLine();
+
+                m_oLine.m_bIsConstX = _isConstX;
+
+                m_oLine.m_dX = _x1;
+                m_oLine.m_dY = _y1;
+
+                m_oLine.m_dK = _k;
+                m_oLine.m_dB = _b;
+
+                m_oLine.m_ex = (_x2 - _x1) / dAbsVec;
+                m_oLine.m_ey = (_y2 - _y1) / dAbsVec;
+            }
+
+            m_oLine.m_dEndX = _x1;
+            m_oLine.m_dEndY = _y1;
+        }
+
+        // смотрим, совпадает ли главная часть матрицы.
+        bool bIsTransform = !(fabs(m_pLastTransform.sx()  - sx)  < 0.001 &&
+                              fabs(m_pLastTransform.sy()  - sy)  < 0.001 &&
+                              fabs(m_pLastTransform.shx() - shx) < 0.001 &&
+                              fabs(m_pLastTransform.shy() - shy) < 0.001);
+        if (bIsTransform)
+            bIsDumpFont = true;
+
+        RELEASEARRAYOBJECTS(m_pTempUnicodes);
+        return NULL;
+    }
+#endif
 }

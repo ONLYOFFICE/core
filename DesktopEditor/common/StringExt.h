@@ -37,6 +37,7 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include <math.h>
 
 #include "../../Common/kernel_config.h"
 

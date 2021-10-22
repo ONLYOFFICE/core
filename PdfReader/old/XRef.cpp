@@ -1121,13 +1121,14 @@ namespace PdfReader
 
 						if (bParseStreams)
 						{
-							std::wstring wsTemp;
 							Stream* pStream = oTemp.GetStream();
 							pStream->Reset();
 
-							Object oFilter;
+							Object oFilter, oTempFilter;
 							pStreamDict->Search("Filter", &oFilter);
-							if (oFilter.IsNull() || oFilter.IsName("FlateDecode"))
+							std::string sStream;
+							if (oFilter.IsNull() || oFilter.IsName("FlateDecode")
+									|| (oFilter.IsArray() && 1 == oFilter.GetArray()->GetCount() && oFilter.GetArray()->Get(0, &oTempFilter) && oTempFilter.IsName("FlateDecode")))
 							{
 								int nChar;
 								while (EOF != (nChar = pStream->GetChar()))
@@ -1136,11 +1137,11 @@ namespace PdfReader
 
 									switch (sTemp[0])
 									{
-									case '\"': wsTemp += L"&quot;"; break;
-									case '&':  wsTemp += L"&amp;";  break;
-									case '<':  wsTemp += L"&lt;";   break;
-									case '>':  wsTemp += L"&gt;";   break;
-									default: Object::AppendStringToXml(wsTemp, std::string(sTemp));
+									case '\"': sStream += "&quot;"; break;
+									case '&':  sStream += "&amp;";  break;
+									case '<':  sStream += "&lt;";   break;
+									case '>':  sStream += "&gt;";   break;
+									default: sStream += sTemp; break;
 									}
 								}
 							}
@@ -1149,7 +1150,7 @@ namespace PdfReader
 								wsXml += L"BinaryData";
 							}
 
-							wsXml += wsTemp;
+							Object::AppendStringToXml(wsXml, sStream);
 						}
 
 						wsXml += L"</Stream>";

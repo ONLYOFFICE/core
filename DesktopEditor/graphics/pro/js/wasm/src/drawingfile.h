@@ -47,6 +47,15 @@ public:
         }
         return pReader->LoadFromMemory(data, length, L"", sPassword, sPassword);
     }
+    int   GetErrorCode()
+    {
+        if (!pReader)
+            return -1;
+        if (nType == 0)
+            // диапозон ошибки от 0 до 10
+            return ((PdfReader::CPdfReader*)pReader)->GetError();
+        return 0; // errNone
+    }
     int   GetPagesCount()
     {
         return pReader->GetPagesCount();

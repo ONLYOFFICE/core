@@ -133,6 +133,16 @@
         var _stream = Module["_malloc"](data.length);
         Module["HEAP8"].set(data, _stream);
         this.nativeFile = Module["_Open"](_stream, data.length);
+        var nCodeError = Module["_GetErrorCode"](this.nativeFile);
+        // 4 - нужен пароль
+        if (nCodeError == 4)
+            return null;
+        // 0 - ошибки нет
+        if (nCodeError != 0)
+        {
+            this.close();
+            return null;
+        }
         this.stream = _stream;
         this.type = Module["_GetType"](_stream, data.length);
         self.drawingFile = this;

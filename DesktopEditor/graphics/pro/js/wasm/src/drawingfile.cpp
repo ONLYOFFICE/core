@@ -88,11 +88,14 @@ WASM_EXPORT CGraphicsFileDrawing* Open(BYTE* data, LONG size, const char* passwo
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 	
     CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing(g_applicationFonts);
-    if (pGraphics->Open(data, size, GetType(data, size), password))
-        return pGraphics;
-    
-    delete pGraphics;
-    return NULL;
+    pGraphics->Open(data, size, GetType(data, size), password);
+    return pGraphics;
+}
+WASM_EXPORT int GetErrorCode(CGraphicsFileDrawing* pGraphics)
+{
+    if (!pGraphics)
+        return -1;
+    return pGraphics->GetErrorCode();
 }
 WASM_EXPORT void  Close     (CGraphicsFileDrawing* pGraphics)
 {
@@ -161,10 +164,20 @@ int main()
     oFile.CloseFile();
 
     CGraphicsFileDrawing* test = Open(pPdfData, nPdfBytesCount, "");
-    if (!test)
+    int nError = GetErrorCode(test);
+    if (nError != 0)
     {
-        std::string sPassword = "Test123";
-        test = Open(pPdfData, nPdfBytesCount, sPassword.c_str());
+        Close(test);
+        if (nError == 4)
+        {
+            std::string sPassword = "Test123";
+            test = Open(pPdfData, nPdfBytesCount, sPassword.c_str());
+        }
+        else
+        {
+            RELEASEARRAYOBJECTS(pPdfData);
+            return 1;
+        }
     }
     int* info = GetInfo(test);
     int pages_count = *info;

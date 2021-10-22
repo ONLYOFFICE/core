@@ -38,6 +38,7 @@
 #include "../Emf/EmfPlusTypes.h"
 #include "../Wmf/WmfTypes.h"
 #include "../Emf/EmfObjects.h"
+#include "../Emf/EmfPlusObjects.h"
 #include "../Wmf/WmfObjects.h"
 
 #include <algorithm>
@@ -720,6 +721,100 @@ namespace MetaFile
 			*((unsigned char*)(&llnValue) + 7) = pCur[7];
 
 			oTGUID.llnData4 = llnValue;
+
+			return *this;
+		}
+		CDataStream& operator>>(CEmfPlusBrush& oEmfPlusBrush)
+		{
+			unsigned int unVersion, unType;
+
+			*this >> unVersion;
+			*this >> unType;
+
+			switch (unType)
+			{
+				case BrushTypeSolidColor:
+				{
+					oEmfPlusBrush.m_enType = BrushTypeSolidColor;
+
+					*this >> oEmfPlusBrush.m_oARGB;
+
+					break;
+				}
+				case BrushTypeHatchFill:
+				{
+					oEmfPlusBrush.m_enType = BrushTypeHatchFill;
+
+					*this >> oEmfPlusBrush.m_unBrushStyle;
+					*this >> oEmfPlusBrush.m_oARGB;
+					*this >> oEmfPlusBrush.m_oBackARGB;
+
+					break;
+				}
+				case BrushTypeTextureFill:
+				{
+					oEmfPlusBrush.m_enType = BrushTypeTextureFill;
+
+					//TODO: реализовать
+
+					break;
+				}
+				case BrushTypePathGradient:
+				{
+					oEmfPlusBrush.m_enType = BrushTypePathGradient;
+
+					//TODO: реализовать
+
+					break;
+				}
+				case BrushTypeLinearGradient:
+				{
+					oEmfPlusBrush.m_enType = BrushTypeLinearGradient;
+
+					//TODO: реализовать
+
+					break;
+				}
+			}
+
+			return *this;
+		}
+		CDataStream& operator>>(CEmfPlusPen& oEmfPlusPen)
+		{
+			unsigned int unVersion, unType;
+
+			*this >> unVersion;
+			*this >> unType;
+
+			if(unType != 0)
+				return *this;
+
+			unsigned int unFlags, unUnitType;
+
+			*this >> unFlags;
+			*this >> oEmfPlusPen.m_dWidth;
+
+			oEmfPlusPen.m_enUnit = static_cast<EEmfPlusPenUnitType>(unUnitType);
+
+			//TODO: реализовать
+			switch (unFlags)
+			{
+				case PenDataTransform: break;
+				case PenDataStartCap: break;
+				case PenDataEndCap: break;
+				case PenDataJoin: break;
+				case PenDataMiterLimit: break;
+				case PenDataLineStyle: break;
+				case PenDataDashedLineCap: break;
+				case PenDataDashedLineOffset: break;
+				case PenDataDashedLine: break;
+				case PenDataNonCenter: break;
+				case PenDataCompoundLine: break;
+				case PenDataCustomStartCap: break;
+				case PenDataCustomEndCap: break;
+			}
+
+			//Ещё чтение BrushObject
 
 			return *this;
 		}

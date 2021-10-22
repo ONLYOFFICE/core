@@ -3,6 +3,7 @@
 
 #include "../../Common/MetaFileUtils.h"
 #include "../../Common/MetaFile.h"
+#include "../EmfPlusObjects.h"
 #include "CEmfParserBase.h"
 #include "../EmfPlusTypes.h"
 #include "../EmfPlayer.h"

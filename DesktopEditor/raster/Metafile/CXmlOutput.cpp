@@ -1163,7 +1163,7 @@ namespace MetaFile
             return;
 
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
-        ucValue = (wsValue.empty()) ? 0 : (unsigned char)stoul(wsValue);
+        ucValue = (wsValue.empty()) ? 0 : (unsigned char)_wtoi(wsValue.c_str());
     }
 
     void CXmlOutput::operator>>(unsigned short arushValue[])

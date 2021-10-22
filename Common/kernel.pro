@@ -89,3 +89,8 @@ core_windows {
     LIBS += -lRpcrt4
     LIBS += -lShell32
 }
+
+core_ios {
+    OBJECTIVE_SOURCES += ./../DesktopEditor/common/File_ios.mm
+    LIBS += -framework Foundation
+}

@@ -21,8 +21,10 @@ core_android {
 
 core_ios {
 
-    INCLUDEPATH += $$PWD/IXWebSocket/build/ios/openssl-universal/include
+    INCLUDEPATH += $$PWD/IXWebSocket/build/ios/ixwebsocket-universal/include
     LIBS        += $$PWD/IXWebSocket/build/ios/ixwebsocket-universal/lib/libixwebsocket.a
+
+    OPENSSL_LIBS_DIRECTORY = $$PWD/../openssl/build/ios/openssl-universal/lib
 
 }
 

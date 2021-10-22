@@ -33,7 +33,7 @@
 #include "../Reader/Records.h"
 
 #include <fstream>
-static UINT nRTCounter = 1;
+//static UINT nRTCounter = 1;
 
 namespace PPT_FORMAT
 {
@@ -117,10 +117,10 @@ public:
         m_oHeader = oHeader;
         m_colorMapping = StreamUtils::ReadStringA(pStream, m_oHeader.RecLen);
 
-        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".xml";
-        std::ofstream file("RoundTrips/" + filename, std::ios::out);
-        file << m_colorMapping;
-        file.close();
+//        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".xml";
+//        std::ofstream file("RoundTrips/" + filename, std::ios::out);
+//        file << m_colorMapping;
+//        file.close();
     }
     std::wstring getPClrMap()const
     {

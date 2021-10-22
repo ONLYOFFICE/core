@@ -326,6 +326,13 @@ int main()
     oFile.CloseFile();
 
     CGraphicsFileDrawing* test = Open(pXpsData, nXpsBytesCount, "");
+    int nError = GetErrorCode(test);
+    if (nError != 0)
+    {
+        Close(test);
+        RELEASEARRAYOBJECTS(pPdfData);
+        return 1;
+    }
     int* info = GetInfo(test);
     int pages_count = *info;
     int test_page = 22;
@@ -456,7 +463,13 @@ int main()
     oFile.CloseFile();
 
     CGraphicsFileDrawing* test = Open(pDjVuData, nDjVuBytesCount, "");
-
+    int nError = GetErrorCode(test);
+    if (nError != 0)
+    {
+        Close(test);
+        RELEASEARRAYOBJECTS(pPdfData);
+        return 1;
+    }
     int* info = GetInfo(test);
     int pages_count = *info;
     int test_page = 0;

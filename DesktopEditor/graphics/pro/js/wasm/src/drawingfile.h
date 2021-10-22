@@ -28,7 +28,7 @@ public:
         RELEASEINTERFACE(pApplicationFonts);
         nType = -1;
     }
-    bool  Open   (BYTE* data, DWORD length, int _nType, const char* password = NULL)
+    bool  Open   (BYTE* data, DWORD length, int _nType, const char* password)
     {
         nType = _nType;
         if (nType == 0)

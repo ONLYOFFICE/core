@@ -10,13 +10,12 @@ namespace NSWasm
     class CData
     {
     protected:
-        unsigned char* m_pData;
+        BYTE* m_pData;
         size_t m_lSize;
 
-        unsigned char* m_pDataCur;
+        BYTE* m_pDataCur;
         size_t m_lSizeCur;
 
-        LONG m_lSizeofBYTE;
     public:
         CData()
         {
@@ -25,8 +24,6 @@ namespace NSWasm
 
             m_pDataCur = m_pData;
             m_lSizeCur = m_lSize;
-
-            m_lSizeofBYTE = sizeof(BYTE);
         }
         virtual ~CData()
         {
@@ -41,7 +38,7 @@ namespace NSWasm
                 if (nSize > m_lSize)
                     m_lSize = nSize;
 
-                m_pData = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
+                m_pData = (BYTE*)malloc(m_lSize * sizeof(BYTE));
 
                 m_lSizeCur = 0;
                 m_pDataCur = m_pData;
@@ -53,7 +50,7 @@ namespace NSWasm
                 while ((m_lSizeCur + nSize) > m_lSize)
                     m_lSize *= 2;
 
-                unsigned char* pRealloc = (unsigned char*)realloc(m_pData, m_lSize * sizeof(unsigned char));
+                BYTE* pRealloc = (BYTE*)realloc(m_pData, m_lSize * sizeof(BYTE));
                 if (NULL != pRealloc)
                 {
                     m_pData    = pRealloc;
@@ -61,8 +58,8 @@ namespace NSWasm
                 }
                 else
                 {
-                    unsigned char* pMalloc = (unsigned char*)malloc(m_lSize * sizeof(unsigned char));
-                    memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(unsigned char));
+                    BYTE* pMalloc = (BYTE*)malloc(m_lSize * sizeof(BYTE));
+                    memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(BYTE));
 
                     free(m_pData);
                     m_pData    = pMalloc;
@@ -86,16 +83,39 @@ namespace NSWasm
         }
         void WriteBYTE(BYTE value)
         {
-            AddSize(m_lSizeofBYTE);
-            memcpy(m_pDataCur, &value, m_lSizeofBYTE);
-            m_pDataCur += m_lSizeofBYTE;
-            m_lSizeCur += m_lSizeofBYTE;
+            AddSize(sizeof(BYTE));
+            memcpy(m_pDataCur, &value, sizeof(BYTE));
+            m_pDataCur += sizeof(BYTE);
+            m_lSizeCur += sizeof(BYTE);
         }
-        void WriteDouble(BYTE value)
+        void WriteDouble(double value)
         {
             AddInt(value * 10000);
         }
-        void WriteString(unsigned char* value, unsigned int len)
+        void WriteWCHAR(int value)
+        {
+            if (value < 0x10000)
+                WriteUSHORT(value);
+            else
+            {
+                AddSize(4);
+                int code = value - 0x10000;
+                USHORT c1 = 0xD800 | ((code >> 10) & 0x03FF);
+                USHORT c2 = 0xDC00 | (code & 0x03FF);
+                memcpy(m_pDataCur,     &c1, sizeof(USHORT));
+                memcpy(m_pDataCur + 2, &c2, sizeof(USHORT));
+                m_pDataCur += 4;
+                m_lSizeCur += 4;
+            }
+        }
+        void WriteUSHORT(USHORT value)
+        {
+            AddSize(sizeof(USHORT));
+            memcpy(m_pDataCur, &value, sizeof(USHORT));
+            m_pDataCur += sizeof(USHORT);
+            m_lSizeCur += sizeof(USHORT);
+        }
+        void WriteString(BYTE* value, unsigned int len)
         {
             AddSize(len + 4);
             memcpy(m_pDataCur, &len, sizeof(unsigned int));
@@ -105,7 +125,13 @@ namespace NSWasm
             m_pDataCur += len;
             m_lSizeCur += len;
         }
-        unsigned char* GetBuffer()
+        void Write(BYTE* value, unsigned int len)
+        {
+            memcpy(m_pDataCur, value, len);
+            m_pDataCur += len;
+            m_lSizeCur += len;
+        }
+        BYTE* GetBuffer()
         {
             return m_pData;
         }

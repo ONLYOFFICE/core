@@ -4450,6 +4450,13 @@ namespace PdfReader
         return;
     }
 #ifdef BUILDING_WASM_MODULE
+    int GetCurrentFont(const std::wstring& sFont)
+    {
+        size_t nLast = sFont.rfind(L'_');
+        if (nLast == std::wstring::npos)
+            return -1;
+        return std::stoi(sFont.substr(nLast + 1)) - 1;
+    }
     BYTE* RendererOutputDev::GetGlyphs(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
     {
         // m_pInternal->GetUnicodes(bsUnicodeText);
@@ -4481,14 +4488,15 @@ namespace PdfReader
             }
         }
 
-        // m_pInternal->m_oWriter.WriteText(m_pInternal->m_pTempUnicodes, (const int*)pGids, m_pInternal->m_nTempUnicodesLen, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
+        // m_pInternal->m_oWriter.WriteText(m_pTempUnicodes, (const int*)pGids, m_nTempUnicodesLen, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
         bool bIsDumpFont = false;
-        std::wstring lCurrentFontName; double dFontSize;
-        m_pRenderer->get_FontPath(&lCurrentFontName);
+        std::wstring sCurrentFontName; double dFontSize;
+        m_pRenderer->get_FontPath(&sCurrentFontName);
         m_pRenderer->get_FontSize(&dFontSize);
-        if ((lCurrentFontName != m_lCurrentFont) || (dFontSize != m_dCurrentFontSize))
+        int nCurrentFont = GetCurrentFont(sCurrentFontName);
+        if ((nCurrentFont != m_lCurrentFont) || (dFontSize != m_dCurrentFontSize))
         {
-            m_lCurrentFont     = lCurrentFontName;
+            m_lCurrentFont     = nCurrentFont;
             m_dCurrentFontSize = dFontSize;
 
             bIsDumpFont = true;
@@ -4544,7 +4552,7 @@ namespace PdfReader
         if (bIsNewLine && (0 != nCountChars))
         {
             // не совпала baseline. поэтому просто скидываем линию в поток
-            // DumpLine();
+            DumpLine();
         }
 
         // теперь нужно определить сдвиг по baseline относительно destination точки
@@ -4596,7 +4604,7 @@ namespace PdfReader
                 // буква сдвинута влево относительно предыдущей буквы
                 // на такую ситуацию реагируем просто - просто начинаем новую линию,
                 // предварительно сбросив старую
-                // DumpLine();
+                DumpLine();
 
                 m_oLine.m_bIsConstX = _isConstX;
 
@@ -4622,8 +4630,274 @@ namespace PdfReader
         if (bIsTransform)
             bIsDumpFont = true;
 
+        LONG nColor1, nAlpha1;
+        m_pRenderer->get_BrushColor1(&nColor1);
+        m_pRenderer->get_BrushAlpha1(&nAlpha1);
+        bool bIsColor = ((nColor1 != m_nLastBrushColor1) || (nAlpha1 != m_nLastBrushAlpha1));
+
+        BYTE nLenMetaCommands = 0;
+        if (bIsColor)
+            nLenMetaCommands += 5;
+        if (bIsTransform)
+            nLenMetaCommands += 17;
+        if (bIsDumpFont)
+            nLenMetaCommands += 13;
+
+        m_oMeta.WriteBYTE(nLenMetaCommands);
+
+        double _dumpSize = dFontSize;
+        double _dumpMtx[4];
+        _dumpMtx[0] = sx;
+        _dumpMtx[1] = shy;
+        _dumpMtx[2] = shx;
+        _dumpMtx[3] = sy;
+
+        double dTextScale = std::min( sqrt( _dumpMtx[2] * _dumpMtx[2] + _dumpMtx[3] * _dumpMtx[3] ), sqrt( _dumpMtx[0] * _dumpMtx[0] + _dumpMtx[1] * _dumpMtx[1] ) );
+
+        if ((_dumpSize < 0.1 && dTextScale > 10) || (_dumpSize > 10 && dTextScale < 0.1))
+        {
+            _dumpSize *= dTextScale;
+
+            _dumpMtx[0] /= dTextScale;
+            _dumpMtx[1] /= dTextScale;
+            _dumpMtx[2] /= dTextScale;
+            _dumpMtx[3] /= dTextScale;
+        }
+
+        if (bIsDumpFont)
+        {
+            LONG nFontStyle;
+            m_pRenderer->get_FontStyle(&nFontStyle);
+
+            m_oMeta.WriteBYTE(41); // CMetafile::ctFontName
+            m_oMeta.AddInt(nCurrentFont);
+            m_oMeta.AddInt(nFontStyle);
+            m_oMeta.WriteDouble(_dumpSize);
+        }
+        if (bIsTransform)
+        {
+            m_pLastTransform.SetElements(sx, shy, shx, sy);
+
+            m_oLine.m_bIsSetUpTransform = true;
+            m_oLine.m_sx  = sx;
+            m_oLine.m_shx = shx;
+            m_oLine.m_shy = shy;
+            m_oLine.m_sy  = sy;
+
+            m_oMeta.WriteBYTE(161); // CMetafile::ctCommandTextTransform
+            m_oMeta.WriteDouble(_dumpMtx[0]);
+            m_oMeta.WriteDouble(_dumpMtx[1]);
+            m_oMeta.WriteDouble(_dumpMtx[2]);
+            m_oMeta.WriteDouble(_dumpMtx[3]);
+        }
+        if (bIsColor)
+        {
+            m_nLastBrushColor1 = nColor1;
+            m_nLastBrushAlpha1 = nAlpha1;
+
+            m_oMeta.WriteBYTE(22); // CMetafile::ctBrushColor1
+
+            LONG lBGR = nColor1;
+            m_oMeta.WriteBYTE((BYTE)(lBGR & 0xFF));
+            m_oMeta.WriteBYTE((BYTE)((lBGR >> 8) & 0xFF));
+            m_oMeta.WriteBYTE((BYTE)((lBGR >> 16) & 0xFF));
+            m_oMeta.WriteBYTE((BYTE)nAlpha1);
+        }
+
+        // все, baseline установлен. теперь просто продолжаем линию
+        LONG lTextLen = m_nTempUnicodesLen;
+
+        if (bIsDumpFont)
+            m_pFontManager->AfterLoad();
+
+        double dKoef = dFontSize * 25.4 / (72 * abs(m_pFontManager->GetUnitsPerEm()));
+        double dKoefMetr = dAbsVec;
+        double dAscender  = abs(m_pFontManager->GetAscender())  * dKoef * dKoefMetr;
+        double dDescender = abs(m_pFontManager->GetDescender()) * dKoef * dKoefMetr;
+
+        if (m_oLine.m_dAscent < dAscender)
+            m_oLine.m_dAscent = dAscender;
+        if (m_oLine.m_dDescent < dDescender)
+            m_oLine.m_dDescent = dDescender;
+
+        double dPlusOffset = 0;
+
+        const int* input = NULL;
+        if (NULL != pGids)
+        {
+            input = (const int*)pGids;
+            m_pFontManager->SetStringGID(TRUE);
+        }
+        else
+        {
+            input = m_pTempUnicodes;
+            m_pFontManager->SetStringGID(FALSE);
+        }
+
+        double dBoxW = 0;
+        double dPrevW = dOffsetX;
+        for (LONG lIndex = 0; lIndex < lTextLen; ++lIndex)
+        {
+            // double dW = m_oFontManager.MeasureString((const unsigned int*)(input + lIndex), 1, 0, 0, dBoxX, dBoxY, dBoxW, dBoxH);
+            m_pFontManager->LoadString1((const unsigned int*)(input + lIndex), 1, 0, 0);
+            TBBox _box  = m_pFontManager->MeasureString2();
+            dBoxW = abs(_box.fMaxX - _box.fMinX) * 25.4 / 72.0;
+
+            NSWasm::CHChar* pChar = m_oLine.AddTail();
+            pChar->unicode = m_pTempUnicodes[lIndex];
+            pChar->gid = (NULL == pGids) ? 0xFFFF : pGids[lIndex];
+
+            pChar->x = dPrevW;
+            if (lIndex != 0)
+                dPlusOffset += dPrevW;
+            dPrevW = dBoxW;
+
+            pChar->width = dBoxW * dAbsVec;
+
+            if (0 != lIndex)
+                m_oMeta.WriteBYTE(0);
+
+            if (lIndex == (lTextLen - 1))
+            {
+                m_oLine.m_dEndX += dPlusOffset * m_oLine.m_ex;
+                m_oLine.m_dEndY += dPlusOffset * m_oLine.m_ey;
+            }
+        }
+
         RELEASEARRAYOBJECTS(m_pTempUnicodes);
         return NULL;
+    }
+    void RendererOutputDev::DumpLine()
+    {
+        if (m_oLine.m_bIsSetUpTransform)
+        {
+            // выставится трансформ!!!
+            // cравнивать нужно с ним!!!
+            m_pLastTransform.SetElements(m_oLine.m_sx, m_oLine.m_shy, m_oLine.m_shx, m_oLine.m_sy);
+        }
+
+        // скидываем линию в поток pMeta
+        BYTE mask = 0;
+        if (fabs(m_oLine.m_ex - 1.0) < 0.001 && fabs(m_oLine.m_ey) < 0.001)
+            mask |= 0x01;
+
+        LONG lCountSpaces = 0;
+        LONG lCountSymbols = 0;
+        LONG lCountWords = 0;
+        bool bIsLastSymbol = false;
+
+        bool bIsGidExist = false;
+
+        LONG nCount = m_oLine.GetCountChars();
+        for (LONG i = 0; i < nCount; ++i)
+        {
+            NSWasm::CHChar* pChar = &m_oLine.m_pChars[i];
+            if (pChar->gid != 0xFFFF)
+            {
+                mask |= 0x02;
+                bIsGidExist = true;
+            }
+
+            if (0xFFFF == pChar->unicode || ((WCHAR)' ') == pChar->unicode || ((WCHAR)'\t') == pChar->unicode)
+            {
+                lCountSpaces++;
+                if (bIsLastSymbol)
+                {
+                    bIsLastSymbol = false;
+                    lCountWords++;
+                }
+            }
+            else
+            {
+                lCountSymbols++;
+                bIsLastSymbol = true;
+            }
+        }
+
+        if (bIsLastSymbol)
+            lCountWords++;
+
+        if (0 == nCount)
+        {
+            m_oLine.Clear();
+            m_oMeta.ClearNoAttack();
+            return;
+        }
+
+        if (nCount > 1)
+            mask |= 0x04;
+
+        m_pPageMeta.WriteBYTE(160); // CMetafile::ctCommandTextLine
+        m_pPageMeta.WriteBYTE(mask);
+
+        m_pPageMeta.WriteDouble(m_oLine.m_dX);
+        m_pPageMeta.WriteDouble(m_oLine.m_dY);
+
+        if ((mask & 0x01) == 0)
+        {
+            m_pPageMeta.WriteDouble(m_oLine.m_ex);
+            m_pPageMeta.WriteDouble(m_oLine.m_ey);
+        }
+
+        m_pPageMeta.WriteDouble(m_oLine.m_dAscent);
+        m_pPageMeta.WriteDouble(m_oLine.m_dDescent);
+
+        LONG _position = 0;
+        if (nCount > 1)
+        {
+            _position = m_pPageMeta.GetSize();
+            m_pPageMeta.AddInt(0);
+        }
+
+        BYTE* pBufferMeta = m_oMeta.GetBuffer();
+        double dWidthLine = 0;
+
+        double dCurrentGlyphLineOffset = 0;
+        for (LONG lIndexChar = 0; lIndexChar < nCount; ++lIndexChar)
+        {
+            NSWasm::CHChar* pChar = &m_oLine.m_pChars[lIndexChar];
+
+            // все настроки буквы (m_oMeta)
+            BYTE lLen = *pBufferMeta;
+            ++pBufferMeta;
+            if (lLen > 0)
+            {
+                m_pPageMeta.Write(pBufferMeta, lLen);
+            }
+            pBufferMeta += lLen;
+            // смещение относительно предыдущей буквы (у всех, кроме первой)
+            // юникодное значение
+            // гид (если bIsGidExist == true)
+            // ширина буквы
+
+            m_pPageMeta.WriteBYTE(80); // CMetafile::ctDrawText
+            if (0 != lIndexChar)
+            {
+                m_pPageMeta.AddDouble(pChar->x);
+            }
+
+            m_pPageMeta.WriteWCHAR(pChar->unicode);
+            if (bIsGidExist)
+                m_pPageMeta.WriteUSHORT(pChar->gid);
+            m_pPageMeta.AddDouble(pChar->width);
+
+            if (lIndexChar != 0)
+                dCurrentGlyphLineOffset += pChar->x;
+
+            if (lIndexChar == (nCount - 1))
+                dWidthLine = dCurrentGlyphLineOffset + pChar->width;
+        }
+
+        if (nCount > 1)
+        {
+            int* pWidthBuf = (int*)(m_pPageMeta.GetBuffer() + _position);
+            *pWidthBuf = (int)(dWidthLine * 10000);
+        }
+
+        m_oLine.Clear();
+        m_oMeta.ClearNoAttack();
+
+        m_pPageMeta.WriteBYTE(162); // CMetafile::ctCommandTextLineEnd
     }
 #endif
 }

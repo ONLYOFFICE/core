@@ -124,51 +124,109 @@ namespace OOX
 
             void fromBin(XLS::BaseObjectPtr& obj)
             {
-                auto ptruDXF = static_cast<XLSB::uDXF*>(obj.get());
-
-                XLSB::DXF* ptr = nullptr;
-                if(ptruDXF->m_source->get_type() == XLS::typeFRTDXF)
+                if(obj->get_type() == XLS::typeuDXF)
                 {
-                    ptr = static_cast<XLSB::DXF*>(static_cast<XLSB::FRTDXF*>(ptruDXF->m_source.get())->m_BrtDXF.get());
-                }
-                else if(ptruDXF->m_source->get_type() == XLS::typeDXF)
-                {
-                    ptr = static_cast<XLSB::DXF*>(ptruDXF->m_source.get());
-                }
+                    auto ptruDXF = static_cast<XLSB::uDXF*>(obj.get());
 
-                if(ptr != nullptr)
-                {
-                    //if(ptr->xfprops.arXFPropAlignment.size() > 0)
-                    std::wstringstream strm;
-                    ptr->serialize(strm);
-
-                    XmlUtils::CXmlLiteReader oReader;
-                    std::wstring str = strm.str();
-
-                    if ( !oReader.FromString(str))
-                        return;
-
-                    //fromXML(oReader);
-                    int nCurDepth = oReader.GetDepth();
-                    while( oReader.ReadNextSiblingNode( nCurDepth ) )
+                    if(ptruDXF && ptruDXF->m_BrtFRTDXF != nullptr)
                     {
-                        std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+                        auto ptr = static_cast<XLSB::DXF*>(static_cast<XLSB::FRTDXF*>(ptruDXF->m_BrtFRTDXF.get())->m_BrtDXF.get());
+                        std::wstringstream strm;
+                        ptr->serialize(strm);
 
-                        if ( _T("alignment") == sName )
-                            m_oAlignment = oReader;
-                        else if ( _T("border") == sName )
-                            m_oBorder = oReader;
-                        else if ( _T("fill") == sName )
-                            m_oFill = oReader;
-                        else if ( _T("font") == sName )
-                            m_oFont = oReader;
-                        else if ( _T("numFmt") == sName )
-                            m_oNumFmt = oReader;
-                        else if ( _T("protection") == sName )
-                            m_oProtection = oReader;
+                        XmlUtils::CXmlLiteReader oReader;
+                        std::wstring str = strm.str();
+
+                        if ( !oReader.FromString(str))
+                            return;
+
+                        int nCurDepth = oReader.GetDepth();
+                        while( oReader.ReadNextSiblingNode( nCurDepth ) )
+                        {
+                            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                            if ( _T("alignment") == sName )
+                                m_oAlignment = oReader;
+                            else if ( _T("border") == sName )
+                                m_oBorder = oReader;
+                            else if ( _T("fill") == sName )
+                                m_oFill = oReader;
+                            else if ( _T("font") == sName )
+                                m_oFont = oReader;
+                            else if ( _T("numFmt") == sName )
+                                m_oNumFmt = oReader;
+                            else if ( _T("protection") == sName )
+                                m_oProtection = oReader;
+                        }
+
                     }
+                    if(ptruDXF && ptruDXF->m_BrtDXF != nullptr)
+                    {
+                        auto ptr = static_cast<XLSB::DXF*>(ptruDXF->m_BrtDXF.get());
+                        std::wstringstream strm;
+                        ptr->serialize(strm);
 
+                        XmlUtils::CXmlLiteReader oReader;
+                        std::wstring str = strm.str();
+
+                        if ( !oReader.FromString(str))
+                            return;
+
+                        int nCurDepth = oReader.GetDepth();
+                        while( oReader.ReadNextSiblingNode( nCurDepth ) )
+                        {
+                            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                            if ( _T("alignment") == sName )
+                                m_oAlignment = oReader;
+                            else if ( _T("border") == sName )
+                                m_oBorder = oReader;
+                            else if ( _T("fill") == sName )
+                                m_oFill = oReader;
+                            else if ( _T("font") == sName )
+                                m_oFont = oReader;
+                            else if ( _T("numFmt") == sName )
+                                m_oNumFmt = oReader;
+                            else if ( _T("protection") == sName )
+                                m_oProtection = oReader;
+                        }
+                    }
                 }
+                else if(obj->get_type() == XLS::typeDXF14)
+                {
+                    auto ptrDXF14 = static_cast<XLSB::DXF14*>(obj.get());
+                    if(ptrDXF14 != nullptr)
+                    {
+                        std::wstringstream strm;
+                        ptrDXF14->serialize(strm);
+
+                        XmlUtils::CXmlLiteReader oReader;
+                        std::wstring str = strm.str();
+
+                        if ( !oReader.FromString(str))
+                            return;
+
+                        int nCurDepth = oReader.GetDepth();
+                        while( oReader.ReadNextSiblingNode( nCurDepth ) )
+                        {
+                            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                            if ( _T("alignment") == sName )
+                                m_oAlignment = oReader;
+                            else if ( _T("border") == sName )
+                                m_oBorder = oReader;
+                            else if ( _T("fill") == sName )
+                                m_oFill = oReader;
+                            else if ( _T("font") == sName )
+                                m_oFont = oReader;
+                            else if ( _T("numFmt") == sName )
+                                m_oNumFmt = oReader;
+                            else if ( _T("protection") == sName )
+                                m_oProtection = oReader;
+                        }
+                    }
+                }
+
             }
 
 			virtual EElementType getType () const

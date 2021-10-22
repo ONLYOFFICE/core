@@ -49,7 +49,8 @@ namespace XLSB
 
         virtual const bool loadContent(BinProcessor& proc);
 
-        BaseObjectPtr	m_source;
+        BaseObjectPtr	m_BrtDXF;
+        BaseObjectPtr	m_BrtFRTDXF;
     };
 
 } // namespace XLSB

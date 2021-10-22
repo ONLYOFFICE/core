@@ -1655,7 +1655,7 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
                     && ptr->iType.value().get() != CFType::CF_TYPE_MULTISTATE
                     && ptr->dxfId != 0xFFFFFFFF)
             {
-                m_oDxfId           = ptr->dxfId - 1;
+                m_oDxfId           = ptr->dxfId;
             }
             m_oPriority        = ptr->iPri;
             m_oStopIfTrue      = ptr->fStopTrue;
@@ -1883,7 +1883,7 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
                     && ptr->iType.value().get() != CFType::CF_TYPE_MULTISTATE
                     && ptr->dxfId != 0xFFFFFFFF)
             {
-                m_oDxfId           = ptr->dxfId - 1;
+                m_oDxfId           = ptr->dxfId;
             }
             m_oPriority        = ptr->iPri;
             m_oStopIfTrue      = ptr->fStopTrue;

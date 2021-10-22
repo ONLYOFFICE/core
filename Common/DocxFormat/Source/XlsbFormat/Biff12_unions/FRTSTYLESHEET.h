@@ -49,6 +49,8 @@ namespace XLSB
 
         virtual const bool loadContent(BinProcessor& proc);
 
+        static const ElementType	type = typeFRTSTYLESHEET;
+
         BaseObjectPtr               m_STYLESHEET14;
         BaseObjectPtr               m_DXF14S;
         BaseObjectPtr               m_STYLESHEET15;

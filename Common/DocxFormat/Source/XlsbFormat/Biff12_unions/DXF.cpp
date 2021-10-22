@@ -62,7 +62,7 @@ namespace XLSB
 
         if (proc.optional<DXF>())
         {
-            m_source = elements_.back();
+            m_BrtDXF = elements_.back();
             elements_.pop_back();
         }
 
@@ -78,7 +78,7 @@ namespace XLSB
 
         if (proc.optional<FRTDXF>())
         {
-            m_source = elements_.back();
+            m_BrtFRTDXF = elements_.back();
             elements_.pop_back();
         }
 
@@ -88,7 +88,7 @@ namespace XLSB
         }
 
 
-        return m_source != nullptr;
+        return m_BrtDXF || m_BrtFRTDXF;
     }
 
 } // namespace XLSB

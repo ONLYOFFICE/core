@@ -236,6 +236,9 @@ namespace OOX
                     if (stylesStream->m_COLORPALETTE != nullptr)
                         m_oColors = stylesStream->m_COLORPALETTE;
 
+                    if (stylesStream->m_FRTSTYLESHEET != nullptr)
+                        m_oExtLst = stylesStream->m_FRTSTYLESHEET;
+
                 }
 
                 AfterRead();

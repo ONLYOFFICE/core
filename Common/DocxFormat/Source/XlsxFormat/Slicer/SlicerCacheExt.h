@@ -113,6 +113,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSlicerStyleElement)
+            WritingElement_XlsbConstructors(CSlicerStyleElement)
 			CSlicerStyleElement(){}
 			virtual ~CSlicerStyleElement(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -121,8 +122,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
+            virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+            virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType() const
 			{
 				return et_x_SlicerStyleElement;
@@ -177,6 +180,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSlicerStyle)
+            WritingElement_XlsbConstructors(CSlicerStyle)
 			CSlicerStyle(){}
 			virtual ~CSlicerStyle(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -185,8 +189,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
+            virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+            virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType() const
 			{
 				return et_x_SlicerStyle;
@@ -238,6 +244,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSlicerStyles)
+            WritingElement_XlsbConstructors(CSlicerStyles)
 			CSlicerStyles(){}
 			virtual ~CSlicerStyles(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -246,8 +253,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType() const
 			{
 				return et_x_SlicerStyles;

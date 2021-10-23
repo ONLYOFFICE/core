@@ -1,6 +1,11 @@
-CONFIG += ixwebsocket
-core_mac:CONFIG += socketrocket
-core_ios:CONFIG += socketrocket
+core_mac:CONFIG += apple_platform
+core_ios:CONFIG += apple_platform
+
+apple_platform {
+	CONFIG += socketrocket
+} else {
+	CONFIG += ixwebsocket
+}
 
 HEADERS += \
 	$$PWD/include/websocket.h \

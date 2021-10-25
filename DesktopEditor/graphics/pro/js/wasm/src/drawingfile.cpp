@@ -149,9 +149,9 @@ static DWORD GetLength(BYTE* x)
 
 int main()
 {
-#define XPS_TEST  0
+#define XPS_TEST  1
 #define DJVU_TEST 0
-#define PDF_TEST  1
+#define PDF_TEST  0
 #if PDF_TEST
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
@@ -286,7 +286,7 @@ int main()
     if (nError != 0)
     {
         Close(test);
-        RELEASEARRAYOBJECTS(pPdfData);
+        RELEASEARRAYOBJECTS(pXpsData);
         return 1;
     }
     int* info = GetInfo(test);

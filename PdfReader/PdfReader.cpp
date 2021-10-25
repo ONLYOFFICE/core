@@ -118,6 +118,9 @@ namespace PdfReader
         RELEASEOBJECT((m_pInternal->m_pPDFDocument));
         RELEASEOBJECT((globalParams));
         RELEASEINTERFACE((m_pInternal->m_pFontManager));
+    #ifdef BUILDING_WASM_MODULE
+        RELEASEARRAYOBJECTS(m_pGlyphs);
+    #endif
 	}
     bool CPdfReader::LoadFromFile(const std::wstring& wsSrcPath, const std::wstring& wsOptions,
                                     const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)

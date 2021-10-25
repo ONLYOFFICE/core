@@ -210,9 +210,9 @@
         }
         return retValue;
     };
-    CFile.prototype["getGlyphs"] = function(pageIndex, width, height)
+    CFile.prototype["getGlyphs"] = function(pageIndex)
     {
-        var glyphs = Module["_GetGlyphs"](this.nativeFile, pageIndex, width, height);
+        var glyphs = Module["_GetGlyphs"](this.nativeFile, pageIndex);
         if (glyphs == 0)
             return;
 
@@ -224,69 +224,14 @@
 
         this.pages[pageIndex].Lines = [];
         var buffer = new Uint8Array(Module["HEAP8"].buffer, glyphs + 4, len);
-        var reader = new CBinaryReader(buffer, 0, len);
-
-        var Line = -1;
-        var prevY = -1;
-        while (reader.isValid())
-        {
-            // xps и pdf
-            if (this.type == 2 || this.type == 0)
-            {
-                let _fontName = reader.readString();
-                let _fontSize = reader.readDouble();
-                let amount = reader.readInt();
-                for (var i = 0; i < amount; i++)
-                {
-                    let _X = reader.readDouble();
-                    let _Y = reader.readDouble();
-                    if (_Y != prevY)
-                    {
-                        if (Line >= 0)
-                            this.pages[pageIndex].Lines[Line].Glyphs.sort(function(prev, next) { return prev.X - next.X; });
-                        Line++;
-                        this.pages[pageIndex].Lines.push({ Glyphs : [] });
-                        prevY = _Y;
-                    }
-                    let _Char = reader.readInt();
-                    this.pages[pageIndex].Lines[Line].Glyphs.push({
-                        fontName : _fontName,
-                        fontSize : _fontSize,
-                        X : _X,
-                        Y : _Y,
-                        UChar : String.fromCharCode(_Char)
-                    });
-                }
-            }
-            // djvu
-            else
-            {
-                let _Word = reader.readString();
-                let _X = reader.readDouble();
-                let _Y = reader.readDouble();
-                let _W = reader.readDouble();
-                let _H = reader.readDouble();
-
-                Line++;
-                this.pages[pageIndex].Lines.push({ Glyphs : [] });
-                for (let i = 0; i < _Word.length; i++)
-                {
-                    this.pages[pageIndex].Lines[Line].Glyphs.push({
-                        X : _X + _W / (_Word.length - 1) * i,
-                        UChar : _Word[i]
-                    });
-                }
-                this.pages[pageIndex].Lines[Line].Glyphs[0].Y = _Y + _H;
-                this.pages[pageIndex].Lines[Line].Glyphs[0].fontSize = _H;
-            }
-        }
 
         Module["_free"](glyphs);
+        return buffer;
     };
-    CFile.prototype["getLinks"] = function(pageIndex, width, height)
+    CFile.prototype["getLinks"] = function(pageIndex)
     {
         var res = [];
-        var ext = Module["_GetLinks"](this.nativeFile, pageIndex, width, height);
+        var ext = Module["_GetLinks"](this.nativeFile, pageIndex);
         if (ext == 0)
             return res;
 

@@ -290,7 +290,7 @@ namespace PdfReader
 		}
 
     #ifdef BUILDING_WASM_MODULE
-        BYTE* GetGlyphs(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
+        void GetGlyphs(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
         void DumpLine();
         double m_dCurrentFontSize = 0.0;
         NSWasm::CHLine m_oLine;

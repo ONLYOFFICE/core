@@ -101,6 +101,7 @@ namespace PdfReader
         virtual BYTE* GetStructure();
         virtual BYTE* GetGlyphs(int nPageIndex);
         virtual BYTE* GetLinks (int nPageIndex);
+        BYTE* m_pGlyphs = NULL;
         #endif
 
     private:

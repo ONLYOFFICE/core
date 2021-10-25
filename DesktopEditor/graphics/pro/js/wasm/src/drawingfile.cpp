@@ -256,52 +256,8 @@ int main()
     nLength -= 4;
     while (i < nLength)
     {
-        // Как в XPS
-        DWORD nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << "Font " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
-        i += nPathLength;
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << "Size " << (double)nPathLength / 100.0 << " ";
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << "Rotation " << nPathLength * 90 << " ";
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << "Amount " << nPathLength << std::endl;
-        DWORD nAmount = nPathLength;
-        for (DWORD j = 0; j < nAmount; j++)
-        {
-            nPathLength = GetLength(pGlyphs + i);
-            i += 4;
-            std::cout << "X " << (double)nPathLength / 100.0 << " ";
-            nPathLength = GetLength(pGlyphs + i);
-            i += 4;
-            std::cout << "Y " << (double)nPathLength / 100.0 << " ";
-            nPathLength = GetLength(pGlyphs + i);
-            i += 4;
-            std::cout << "Symbol " << nPathLength << std::endl;
-        }
-        /* Как в DjVu
-        DWORD nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::string oWord = std::string((char*)(pGlyphs + i), nPathLength);
-        std::wcout << L"Word " << UTF8_TO_U(oWord) << L" ";
-        i += nPathLength;
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << "X " << (double)nPathLength / 100.0 << " ";
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << "Y " << (double)nPathLength / 100.0 << " ";
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << "W " << (double)nPathLength / 100.0 << " ";
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << "H " << (double)nPathLength / 100.0 << std::endl;
-        */
+        std::cout << (int)*(pGlyphs + i) << " ";
+        i++;
     }
 
     Close(test);

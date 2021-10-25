@@ -341,9 +341,29 @@ namespace PdfReader
         if (m_pInternal->m_pPDFDocument && pRenderer)
 		{
             RendererOutputDev oRendererOut(pRenderer, m_pInternal->m_pFontManager, m_pInternal->m_pFontList);
+        #ifdef BUILDING_WASM_MODULE
+            oRendererOut.m_pPageMeta.SkipLen();
+            RELEASEARRAYOBJECTS(m_pGlyphs);
+        #endif
             oRendererOut.NewPDF(m_pInternal->m_pPDFDocument->getXRef());
 			oRendererOut.SetBreak(pbBreak);
             m_pInternal->m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, false, true, false);
+        #ifdef BUILDING_WASM_MODULE
+            oRendererOut.m_pPageMeta.WriteLen();
+            m_pGlyphs = oRendererOut.m_pPageMeta.GetBuffer();
+            oRendererOut.m_pPageMeta.ClearWithoutAttack();
+            /* С конвертацией в Base64
+            char* pDst = NULL;
+            int nDst = 0;
+            NSFile::CBase64Converter::Encode(oRendererOut.m_pPageMeta.GetBuffer(), oRendererOut.m_pPageMeta.GetSize(), pDst, nDst, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+            if (0 < nDst)
+                sBase64Data = std::string(pDst);
+
+            sBase64Data = std::to_string(oRendererOut.m_pPageMeta.GetSize()) + ";" + sBase64Data;
+            RELEASEARRAYOBJECTS(pDst);
+            */
+        #endif
 		}
 	}
     BYTE* CPdfReader::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip)
@@ -587,75 +607,9 @@ return 0;
     }
     BYTE* CPdfReader::GetGlyphs(int nPageIndex)
     {
-        if (!m_pInternal->m_pPDFDocument)
-            return NULL;
-        nPageIndex++;
-        TextOutputControl *pControl = new TextOutputControl();
-        pControl->mode = textOutPhysLayout;
-        NSWasm::CData oRes;
-        oRes.SkipLen();
-        TextOutputDev* pTextDev = new TextOutputDev(NULL, pControl, gFalse);
-        if (!pTextDev->isOk())
-        {
-            RELEASEOBJECT(pTextDev);
-            RELEASEOBJECT(pControl);
-            return NULL;
-        }
-        m_pInternal->m_pPDFDocument->displayPage(pTextDev, nPageIndex, 72.0, 72.0, 0, gFalse, gTrue, gTrue);
-
-        TextWordList* pWordList = pTextDev->makeWordList();
-        if (pWordList)
-        {
-            for (int i = 0; i < pWordList->getLength(); i++)
-            {
-                TextWord* pWord = pWordList->get(i);
-                if (!pWord)
-                    continue;
-                // Как в XPS
-                GString* sFont = pWord->getFontName();
-                double dFontSize = pWord->getFontSize();
-                // rotation, multiple of 90 degrees
-                int rot = pWord->getRotation();
-                int amount = pWord->getLength();
-
-                oRes.WriteString((BYTE*)sFont->getCString(), sFont->getLength());
-                oRes.AddDouble(dFontSize);
-                oRes.AddInt(rot);
-                oRes.AddInt(amount);
-                for (int j = 0; j < amount; j++)
-                {
-                    double x1, y1, x2, y2;
-                    pWord->getCharBBox(j, &x1, &y1, &x2, &y2);
-                    Unicode ch = pWord->getChar(j);
-
-                    oRes.AddDouble(x1);
-                    oRes.AddDouble(y1);
-                    oRes.AddInt(ch);
-                }
-
-                /* Как в DjVu
-                GString* sWord = pWord->getText();
-                double x1, y1, x2, y2;
-                pWord->getBBox(&x1, &y1, &x2, &y2);
-                int rot;
-                if (pWord->isRotated())
-                    rot = pWord->getRotation();
-
-                oRes.WriteString((BYTE*)sWord->getCString(), sWord->getLength());
-                oRes.AddDouble(x1);
-                oRes.AddDouble(y1);
-                oRes.AddDouble(x2 - x1);
-                oRes.AddDouble(y2 - y1);
-                */
-            }
-        }
-        RELEASEOBJECT(pWordList);
-        oRes.WriteLen();
-
-        RELEASEOBJECT(pTextDev);
-        RELEASEOBJECT(pControl);
-        BYTE* res = oRes.GetBuffer();
-        oRes.ClearWithoutAttack();
+        // Будет освобожден в js
+        BYTE* res = m_pGlyphs;
+        m_pGlyphs = NULL;
         return res;
     }
     BYTE* CPdfReader::GetLinks (int nPageIndex)

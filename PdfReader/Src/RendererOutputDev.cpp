@@ -572,6 +572,11 @@ namespace PdfReader
     }
     void RendererOutputDev::endPage()
     {
+    #ifdef BUILDING_WASM_MODULE
+        LONG nCount = m_oLine.GetCountChars();
+        if (0 != nCount)
+            DumpLine();
+    #endif
         m_pRenderer->EndCommand(c_nPageType);
     }
     void RendererOutputDev::saveState(GfxState *pGState)
@@ -4457,7 +4462,7 @@ namespace PdfReader
             return -1;
         return std::stoi(sFont.substr(nLast + 1)) - 1;
     }
-    BYTE* RendererOutputDev::GetGlyphs(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
+    void RendererOutputDev::GetGlyphs(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
     {
         // m_pInternal->GetUnicodes(bsUnicodeText);
         int nLen = (int)bsUnicodeText.length();
@@ -4489,6 +4494,8 @@ namespace PdfReader
         }
 
         // m_pInternal->m_oWriter.WriteText(m_pTempUnicodes, (const int*)pGids, m_nTempUnicodesLen, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
+        // TODO: CheckTectClipRect();
+
         bool bIsDumpFont = false;
         std::wstring sCurrentFontName; double dFontSize;
         m_pRenderer->get_FontPath(&sCurrentFontName);
@@ -4708,7 +4715,10 @@ namespace PdfReader
         LONG lTextLen = m_nTempUnicodesLen;
 
         if (bIsDumpFont)
+        {
+            m_pFontManager->LoadFontFromFile(sCurrentFontName, 0, dFontSize, 72.0, 72.0);
             m_pFontManager->AfterLoad();
+        }
 
         double dKoef = dFontSize * 25.4 / (72 * abs(m_pFontManager->GetUnitsPerEm()));
         double dKoefMetr = dAbsVec;
@@ -4765,7 +4775,6 @@ namespace PdfReader
         }
 
         RELEASEARRAYOBJECTS(m_pTempUnicodes);
-        return NULL;
     }
     void RendererOutputDev::DumpLine()
     {

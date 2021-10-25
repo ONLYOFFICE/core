@@ -79,6 +79,7 @@ android {
                     jniLibs.pickFirsts.add("lib/$abi/${it.name}")
             }
             jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL_NETWORK")}.so")
         }
     }
 }

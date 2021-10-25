@@ -547,10 +547,12 @@ void TxBodyConverter::FillRPr(PPTX::Logic::RunProperties &oRPr, CTextCFRun &oCFR
 
     if (oCFRun.font.font.is_init())
     {
+        auto charset = oCFRun.font.font->Charset;
         oRPr.latin = new PPTX::Logic::TextFont;
         oRPr.latin->m_name = L"a:latin";
         oRPr.latin->typeface = oCFRun.font.font->Name;
-        oRPr.latin->charset = std::to_wstring(oCFRun.font.font->Charset);
+        if (charset != 128)
+            oRPr.latin->charset = std::to_wstring(charset);
         oRPr.latin->pitchFamily = std::to_wstring(oCFRun.font.font->PitchFamily + 2);
     } // todo else for fontRef.is_init() // it's theme
 

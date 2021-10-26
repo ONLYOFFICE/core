@@ -82,15 +82,9 @@ namespace XPS
 		m_pFontList    = pFontList;
 		m_pFontManager = pFontManager;
 		m_pDocument    = pDocument;
-	#ifdef BUILDING_WASM_MODULE
-		m_pGlyphs      = NULL;
-	#endif
 	}
 	Page::~Page()
 	{
-	#ifdef BUILDING_WASM_MODULE
-		RELEASEOBJECT(m_pGlyphs);
-	#endif
 	}
 	void Page::GetSize(int& nW, int& nH) const
 	{
@@ -173,14 +167,10 @@ namespace XPS
 #ifdef BUILDING_WASM_MODULE
 	BYTE* Page::GetGlyphs()
 	{
-		if (m_pGlyphs)
-		{
-			BYTE* res = m_pGlyphs->GetBuffer();
-			m_pGlyphs->ClearWithoutAttack();
-			RELEASEOBJECT(m_pGlyphs);
-			return res;
-		}
-		return NULL;
+		// Будет освобожден в js
+		BYTE* res = m_pPageMeta.GetBuffer();
+		m_pPageMeta.ClearWithoutAttack();
+		return res;
 	}
 	BYTE* Page::GetLinks()
 	{
@@ -201,7 +191,7 @@ namespace XPS
 		oRes.ClearWithoutAttack();
 		return res;
 	}
-    int GetCurrentFont(const std::wstring& sFont)
+    int  GetCurrentFont(const std::wstring& sFont)
     {
         size_t nLast = sFont.rfind(L'_');
         if (nLast == std::wstring::npos)
@@ -628,13 +618,13 @@ namespace XPS
             m_pPageMeta.WriteBYTE(80); // CMetafile::ctDrawText
             if (0 != lIndexChar)
             {
-                m_pPageMeta.AddDouble(pChar->x);
+                m_pPageMeta.WriteDouble2(pChar->x);
             }
 
             m_pPageMeta.WriteWCHAR(pChar->unicode);
             if (bIsGidExist)
                 m_pPageMeta.WriteUSHORT(pChar->gid);
-            m_pPageMeta.AddDouble(pChar->width);
+            m_pPageMeta.WriteDouble2(pChar->width);
 
             if (lIndexChar != 0)
                 dCurrentGlyphLineOffset += pChar->x;
@@ -658,7 +648,8 @@ namespace XPS
 	void Page::Draw(IRenderer* pRenderer, bool* pbBreak)
 	{
 		#ifdef BUILDING_WASM_MODULE
-		RELEASEOBJECT(m_pGlyphs);
+		m_pPageMeta.Clear();
+		m_pPageMeta.SkipLen();
 		m_vLinks.clear();
 		#endif
 		XmlUtils::CXmlLiteReader oReader;
@@ -725,6 +716,12 @@ namespace XPS
 		{
 			DrawCanvas(oReader, pRenderer, &oState, pbBreak);
 		}
+	#ifdef BUILDING_WASM_MODULE
+		LONG nCount = m_oLine.GetCountChars();
+		if (0 != nCount)
+			DumpLine();
+		m_pPageMeta.WriteLen();
+	#endif
 	}
 	void Page::DrawCanvas(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState, bool* pbBreak)
 	{
@@ -1160,21 +1157,6 @@ namespace XPS
 
 		if (!bIsSideways)
 		{
-        #ifdef BUILDING_WASM_MODULE
-            if (!m_pGlyphs)
-            {
-                m_pGlyphs = new NSWasm::CData();
-                m_pGlyphs->SkipLen();
-            }
-            double pdA, pdB, pdC, pdD, pdE, pdF;
-            pRenderer->GetTransform(&pdA, &pdB, &pdC, &pdD, &pdE, &pdF);
-            Aggplus::CMatrix oTransform(pdA, pdB, pdC, pdD, pdE, pdF);
-            std::string sFontName = U_TO_UTF8(m_pFontManager->GetName());
-            m_pGlyphs->WriteString((BYTE*)sFontName.c_str(), sFontName.length());
-            m_pGlyphs->AddDouble(dFontSize * pdA + pdE);
-            m_pGlyphs->AddInt(unUtf16Len);
-        #endif
-
 			while (GetNextGlyph(wsIndices.c_str(), nIndicesPos, nIndicesLen, pUtf16, nUtf16Pos, unUtf16Len, oEntry))
 			{
 				double dAdvance, dRealAdvance;
@@ -1205,17 +1187,6 @@ namespace XPS
 					double pTransform[] ={ 1, 0, dAlpha, 1, -dAlpha * dYorigin, 0 };
 					pState->PushTransform(pTransform);
 				}
-
-			#ifdef BUILDING_WASM_MODULE
-				double _dX = dXorigin;
-				double _dY = dYorigin;
-				oTransform.TransformPoint(_dX, _dY);
-				// Верхний левый угол
-				m_pGlyphs->AddDouble(_dX);
-				m_pGlyphs->AddDouble(_dY - dFontSize * pdA + pdE);
-				m_pGlyphs->AddInt(oEntry.nUnicode);
-				m_pGlyphs->WriteLen();
-			#endif
 
 				if (oEntry.bGid)
                 {

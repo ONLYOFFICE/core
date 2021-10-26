@@ -322,29 +322,8 @@ int main()
     nLength -= 4;
     while (i < nLength)
     {
-        DWORD nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << "Font " << std::string((char*)(pGlyphs + i), nPathLength) << " ";
-        i += nPathLength;
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << "Size " << (double)nPathLength / 100.0 << " ";
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << "Amount " << nPathLength << std::endl;
-        DWORD nAmount = nPathLength;
-        for (DWORD j = 0; j < nAmount; j++)
-        {
-            nPathLength = GetLength(pGlyphs + i);
-            i += 4;
-            std::cout << "X " << (double)nPathLength / 100.0 << " ";
-            nPathLength = GetLength(pGlyphs + i);
-            i += 4;
-            std::cout << "Y " << (double)nPathLength / 100.0 << " ";
-            nPathLength = GetLength(pGlyphs + i);
-            i += 4;
-            std::cout << "Symbol " << nPathLength << std::endl;
-        }
+        std::cout << (int)*(pGlyphs + i) << " ";
+        i++;
     }
 
     std::cout << std::endl;

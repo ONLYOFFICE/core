@@ -38,7 +38,7 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 
 #ifndef DISABLE_PDF_CONVERTATION
-#include "../../PdfWriter/PdfRenderer.h"
+#include "../PdfWriter/PdfRenderer.h"
 #endif
 
 #include "../OfficeUtils/src/OfficeUtils.h"

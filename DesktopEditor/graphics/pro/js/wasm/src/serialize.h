@@ -92,6 +92,14 @@ namespace NSWasm
         {
             AddInt(value * 10000);
         }
+        void WriteDouble2(double value)
+        {
+            SHORT lValue = (SHORT)(value * 100);
+            AddSize(sizeof(SHORT));
+            memcpy(m_pDataCur, &lValue, sizeof(SHORT));
+            m_pDataCur += sizeof(SHORT);
+            m_lSizeCur += sizeof(SHORT);
+        }
         void WriteWCHAR(int value)
         {
             if (value < 0x10000)

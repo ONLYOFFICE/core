@@ -4882,13 +4882,13 @@ namespace PdfReader
             m_pPageMeta.WriteBYTE(80); // CMetafile::ctDrawText
             if (0 != lIndexChar)
             {
-                m_pPageMeta.AddDouble(pChar->x);
+                m_pPageMeta.WriteDouble2(pChar->x);
             }
 
             m_pPageMeta.WriteWCHAR(pChar->unicode);
             if (bIsGidExist)
                 m_pPageMeta.WriteUSHORT(pChar->gid);
-            m_pPageMeta.AddDouble(pChar->width);
+            m_pPageMeta.WriteDouble2(pChar->width);
 
             if (lIndexChar != 0)
                 dCurrentGlyphLineOffset += pChar->x;

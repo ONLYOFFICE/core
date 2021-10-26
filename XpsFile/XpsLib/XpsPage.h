@@ -58,13 +58,12 @@ namespace XPS
 		void Draw(IRenderer* pRenderer, bool* pbBreak);
 
     #ifdef BUILDING_WASM_MODULE
-		BYTE* GetGlyphs();
+        BYTE* GetGlyphs();
         BYTE* GetLinks();
         void  GetGlyphs(IRenderer* pRenderer, const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
         void  DumpLine();
 
     private:
-        NSWasm::CData* m_pGlyphs;
         struct CPageLink
         {
             double dX;

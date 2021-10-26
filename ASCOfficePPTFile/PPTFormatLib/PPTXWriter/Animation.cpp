@@ -1504,7 +1504,7 @@ void Animation::FillAfterEffect(SOldAnimation* pOldAnim, PPTX::Logic::TimeNodeBa
     groupDelay += pOldAnim->getAnimDur(); // Effect time
 
     FillCTnParams(par->cTn, L"afterEffect", delay, L"hold", pOldAnim);
-    par->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
+//    par->cTn.childTnLst = new PPTX::Logic::ChildTnLst; bug #52374, was fixed
 
     oTimeNodeBase.m_node = par;
 }

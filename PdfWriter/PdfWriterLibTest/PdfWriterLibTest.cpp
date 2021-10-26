@@ -68,13 +68,14 @@ void TestField()
 
 	CFontTrueType* pFont = oPdf.CreateTrueTypeFont(L"C:/Windows/Fonts/centaur.ttf", 0);
 
-	//CTextField* pField1 = oPdf.CreateTextField();
-	//pField1->SetRequiredFlag(false);
-	//pField1->AddPageRect(pPage, TRect(0, 100, 100, 0));
-	//pField1->SetFieldName(L"Test");
-	//pField1->SetFieldHint(L"Илья");
-	//pField1->SetAlign(CFieldBase::EFieldAlignType::Center);
 
+	CTextField* pField1 = oPdf.CreateTextField();
+	pField1->SetRequiredFlag(false);
+	pField1->AddPageRect(pPage, TRect(200, 400, 600, 200));
+	pField1->SetFieldName(L"Test");
+	pField1->SetFieldHint(L"Илья");
+	pField1->SetPlaceHolderText(L"123", TRgb(255, 0, 0), TRgb(254, 0, 0));
+	pField1->SetAlign(CFieldBase::EFieldAlignType::Center);
 	//CTextField* pField2 = oPdf.CreateTextField();
 	//pField2->SetRequiredFlag(false);
 	//pField2->SetCombFlag(true);
@@ -166,17 +167,17 @@ void TestField()
 
 	pPage->DrawImage(pImage, 0, 0, 10, 10);
 
-	CPictureField* pPictureField = oPdf.CreatePictureField();
-	pPictureField->SetRequiredFlag(false);
-	pPictureField->AddPageRect(pPage, TRect(100, 100, 500, 650));
-	pPictureField->SetFieldName(L"Pic");
-	pPictureField->SetFieldHint(L"Картинка");
-	pPictureField->SetShift(0.25, 0.75);
-	pPictureField->SetScaleType(CPictureField::EScaleType::Bigger);	
-	pPictureField->SetFieldBorder(border_subtype_Solid, TRgb(255, 0, 0), 3, 0, 0, 0);
-	pPictureField->SetShd(TRgb(0, 0, 255));
-	pPictureField->SetRespectBorders(true);
-	pPictureField->SetAppearance(pImage);
+	//CPictureField* pPictureField = oPdf.CreatePictureField();
+	//pPictureField->SetRequiredFlag(false);
+	//pPictureField->AddPageRect(pPage, TRect(100, 100, 500, 650));
+	//pPictureField->SetFieldName(L"Pic");
+	//pPictureField->SetFieldHint(L"Картинка");
+	//pPictureField->SetShift(0.25, 0.75);
+	//pPictureField->SetScaleType(CPictureField::EScaleType::Bigger);	
+	//pPictureField->SetFieldBorder(border_subtype_Solid, TRgb(255, 0, 0), 3, 0, 0, 0);
+	//pPictureField->SetShd(TRgb(0, 0, 255));
+	//pPictureField->SetRespectBorders(true);
+	//pPictureField->SetAppearance(pImage);
 
 	
 	oPdf.SaveToFile(g_wsOutFolder + L"TestField1.pdf");

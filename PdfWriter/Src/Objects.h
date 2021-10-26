@@ -232,7 +232,7 @@ namespace PdfWriter
 	class CStringObject : public CObjectBase
 	{
 	public:
-        CStringObject(const char* sValue, bool isUTF16 = false);
+        CStringObject(const char* sValue, bool isUTF16 = false, bool isDictValue = false);
 		virtual ~CStringObject();
 		void Set(const char* sValue);
 		const BYTE*  GetString() const
@@ -251,11 +251,16 @@ namespace PdfWriter
         {
             return m_bUTF16;
         }
+		bool         IsDictValue() const
+		{
+			return m_bDictValue;
+		}
 
 	private:
 		BYTE*        m_pValue;
 		unsigned int m_unLen;
         bool         m_bUTF16;
+		bool         m_bDictValue;
 	};
 	class CBinaryObject : public CObjectBase
 	{

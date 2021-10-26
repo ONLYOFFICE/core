@@ -29,60 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "FONTS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginFonts.h"
-#include "../Biff12_records/EndFonts.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include "../../XlsxFormat/WritingElement.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-
-    FONTS::FONTS()
+    // Logical representation of BrtEndComment record in BIFF12
+    class EndComment: public BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(EndComment)
+            BASE_OBJECT_DEFINE_CLASS_NAME(EndComment)
+        public:
+            EndComment();
+            virtual ~EndComment();
 
-    FONTS::~FONTS()
-    {
-    }
+            BaseObjectPtr clone();
 
-    BaseObjectPtr FONTS::clone()
-    {
-        return BaseObjectPtr(new FONTS(*this));
-    }
+            void readFields(CFRecord& record);
 
-    //FONTS = BrtBeginFonts 1*65491BrtFont [ACFONTS] BrtEndFonts
-    const bool FONTS::loadContent(BinProcessor& proc)
-    {        
-        //global_info = proc.getGlobalWorkbookInfo();
-
-        if (proc.optional<BeginFonts>())
-        {
-            m_BrtBeginFonts = elements_.back();
-            elements_.pop_back();
-        }
-
-        auto count = proc.repeated<XLSB::Font>(1, 65491);
-        while(count > 0)
-        {
-            //XLSB::Font *font = dynamic_cast<XLSB::Font *>(elements_.back().get());
-            //if ((font) && (font->correct))
-            //{
-               // global_info->m_arFonts.push_back(elements_.back());
-            //}
-            m_arBrtFont.insert(m_arBrtFont.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.optional<EndFonts>())
-        {
-            m_BrtEndFonts = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginFonts && !m_arBrtFont.empty() && m_BrtEndFonts;
-    }
+    };
 
 } // namespace XLSB
 

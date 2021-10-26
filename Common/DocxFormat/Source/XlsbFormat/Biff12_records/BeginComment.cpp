@@ -30,58 +30,29 @@
  *
  */
 
-#include "FONTS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginFonts.h"
-#include "../Biff12_records/EndFonts.h"
+#include "BeginComment.h"
 
 namespace XLSB
 {
 
-    FONTS::FONTS()
+    BeginComment::BeginComment()
     {
     }
 
-    FONTS::~FONTS()
+    BeginComment::~BeginComment()
     {
     }
 
-    BaseObjectPtr FONTS::clone()
+    BaseObjectPtr BeginComment::clone()
     {
-        return BaseObjectPtr(new FONTS(*this));
+        return BaseObjectPtr(new BeginComment(*this));
     }
 
-    //FONTS = BrtBeginFonts 1*65491BrtFont [ACFONTS] BrtEndFonts
-    const bool FONTS::loadContent(BinProcessor& proc)
-    {        
-        //global_info = proc.getGlobalWorkbookInfo();
-
-        if (proc.optional<BeginFonts>())
-        {
-            m_BrtBeginFonts = elements_.back();
-            elements_.pop_back();
-        }
-
-        auto count = proc.repeated<XLSB::Font>(1, 65491);
-        while(count > 0)
-        {
-            //XLSB::Font *font = dynamic_cast<XLSB::Font *>(elements_.back().get());
-            //if ((font) && (font->correct))
-            //{
-               // global_info->m_arFonts.push_back(elements_.back());
-            //}
-            m_arBrtFont.insert(m_arBrtFont.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.optional<EndFonts>())
-        {
-            m_BrtEndFonts = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginFonts && !m_arBrtFont.empty() && m_BrtEndFonts;
+    void BeginComment::readFields(CFRecord& record)
+    {
+        _GUID_          guid_;
+        record >> iauthor >> rfx >> guid_;
+        guid = STR::guid2bstr(guid_);
     }
 
 } // namespace XLSB

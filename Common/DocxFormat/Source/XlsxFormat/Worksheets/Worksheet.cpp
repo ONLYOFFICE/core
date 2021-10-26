@@ -123,6 +123,10 @@ namespace OOX
                     m_oDimension = workSheetStream->m_BrtWsDim;
                 if (workSheetStream->m_BrtDrawing != nullptr)
                     m_oDrawing = workSheetStream->m_BrtDrawing;
+                if (workSheetStream->m_BrtLegacyDrawing != nullptr)
+                    m_oLegacyDrawing = workSheetStream->m_BrtLegacyDrawing;
+                if (workSheetStream->m_BrtLegacyDrawingHF != nullptr)
+                    m_oLegacyDrawingHF = workSheetStream->m_BrtLegacyDrawingHF;
                 if (workSheetStream->m_HLINKS != nullptr)
                     m_oHyperlinks = static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks;
                 if (workSheetStream->m_HLINKS != nullptr)

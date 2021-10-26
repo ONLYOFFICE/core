@@ -29,60 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "FONTS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginFonts.h"
-#include "../Biff12_records/EndFonts.h"
+#include <Logic/CompositeObject.h>
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    FONTS::FONTS()
+    class COMMENTLIST: public CompositeObject
     {
-    }
+        BASE_OBJECT_DEFINE_CLASS_NAME(COMMENTLIST)
+    public:
+        COMMENTLIST();
+        virtual ~COMMENTLIST();
 
-    FONTS::~FONTS()
-    {
-    }
+        BaseObjectPtr clone();
 
-    BaseObjectPtr FONTS::clone()
-    {
-        return BaseObjectPtr(new FONTS(*this));
-    }
+        virtual const bool loadContent(BinProcessor& proc);
 
-    //FONTS = BrtBeginFonts 1*65491BrtFont [ACFONTS] BrtEndFonts
-    const bool FONTS::loadContent(BinProcessor& proc)
-    {        
-        //global_info = proc.getGlobalWorkbookInfo();
+        BaseObjectPtr               m_BrtBeginCommentList;
+        std::vector<BaseObjectPtr>	m_arCOMMENT;
+        BaseObjectPtr               m_BrtEndCommentList;
 
-        if (proc.optional<BeginFonts>())
-        {
-            m_BrtBeginFonts = elements_.back();
-            elements_.pop_back();
-        }
-
-        auto count = proc.repeated<XLSB::Font>(1, 65491);
-        while(count > 0)
-        {
-            //XLSB::Font *font = dynamic_cast<XLSB::Font *>(elements_.back().get());
-            //if ((font) && (font->correct))
-            //{
-               // global_info->m_arFonts.push_back(elements_.back());
-            //}
-            m_arBrtFont.insert(m_arBrtFont.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.optional<EndFonts>())
-        {
-            m_BrtEndFonts = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginFonts && !m_arBrtFont.empty() && m_BrtEndFonts;
-    }
+    };
 
 } // namespace XLSB
 

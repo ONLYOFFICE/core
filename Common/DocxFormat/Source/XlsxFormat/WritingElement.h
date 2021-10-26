@@ -656,7 +656,7 @@ namespace XLSB
         rt_OleSize =								549,
         rt_Drawing =								550,
         rt_LegacyDrawing =							551,
-        rt_LegacyDrawingHf =						552,
+        rt_LegacyDrawingHF =						552,
         rt_WebOpt =									553,
         rt_BeginWebPubItems =						554,
         rt_EndWebPubItems =							555,

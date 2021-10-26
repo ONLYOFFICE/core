@@ -119,7 +119,11 @@ namespace OOX
                         for(auto &sstItem : ptr->m_arBrtSSTItem)
                         {
                             CSi* pItem = new CSi();
-                            pItem->fromBin(sstItem, fonts);
+                            auto ptr = static_cast<XLSB::SSTItem*>(sstItem.get());
+                            if(ptr != nullptr)
+                            {
+                                pItem->fromBin(ptr->richStr, fonts);
+                            }
                             m_arrItems.push_back(pItem);
                             m_nCount++;
                         }

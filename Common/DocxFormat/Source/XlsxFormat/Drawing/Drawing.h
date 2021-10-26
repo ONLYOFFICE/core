@@ -79,10 +79,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            ReadAttributes(obj);
-                        }
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -96,11 +96,12 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oId )
 				WritingElement_ReadAttributes_End_No_NS ( oReader )
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::Drawing*>(obj.get());
-                            m_oId                  = ptr->stRelId.value.value();
-                        }
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::Drawing*>(obj.get());
+                if(ptr != nullptr)
+                    m_oId = ptr->stRelId.value.value();
+            }
 		public:
             nullable<SimpleTypes::CRelationshipId > m_oId;
 		};

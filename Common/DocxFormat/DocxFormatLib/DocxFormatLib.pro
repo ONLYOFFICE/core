@@ -107,6 +107,7 @@ SOURCES += \
     ../Source/XlsbFormat/WorkSheetStream.cpp \
     ../Source/XlsbFormat/SharedStringsStream.cpp \
     ../Source/XlsbFormat/StylesStream.cpp \
+    ../Source/XlsbFormat/CommentsStream.cpp \
 ### Biff12_records
     ../Source/XlsbFormat/Biff12_records/BeginBook.cpp \
     ../Source/XlsbFormat/Biff12_records/FRTBegin.cpp \
@@ -143,6 +144,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndColInfos.cpp \
     ../Source/XlsbFormat/Biff12_records/WsDim.cpp \
     ../Source/XlsbFormat/Biff12_records/Drawing.cpp \
+    ../Source/XlsbFormat/Biff12_records/LegacyDrawing.cpp \
+    ../Source/XlsbFormat/Biff12_records/LegacyDrawingHF.cpp \
     ../Source/XlsbFormat/Biff12_records/HLink.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginMergeCells.cpp \
     ../Source/XlsbFormat/Biff12_records/MergeCell.cpp \
@@ -254,6 +257,16 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndSlicerStyles.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginStyleSheetExt14.cpp \
     ../Source/XlsbFormat/Biff12_records/EndStyleSheetExt14.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginComment.cpp \
+    ../Source/XlsbFormat/Biff12_records/CommentText.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndComment.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginCommentList.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndCommentList.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginCommentAuthors.cpp \
+    ../Source/XlsbFormat/Biff12_records/CommentAuthor.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndCommentAuthors.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginComments.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndComments.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -362,6 +375,10 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/SLICERSTYLES.cpp \
     ../Source/XlsbFormat/Biff12_unions/STYLESHEET14.cpp \
     ../Source/XlsbFormat/Biff12_unions/FRTSTYLESHEET.cpp \
+    ../Source/XlsbFormat/Biff12_unions/COMMENT.cpp \
+    ../Source/XlsbFormat/Biff12_unions/COMMENTLIST.cpp \
+    ../Source/XlsbFormat/Biff12_unions/COMMENTAUTHORS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/COMMENTS.cpp \
 }
 
 
@@ -556,6 +573,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/WorkSheetStream.h \
     ../Source/XlsbFormat/SharedStringsStream.h \
     ../Source/XlsbFormat/StylesStream.h \
+    ../Source/XlsbFormat/CommentsStream.h \
 ### Biff12_records
     ../Source/XlsbFormat/Biff12_records/CommonRecords.h \
     ../Source/XlsbFormat/Biff12_records/FRTBegin.h \
@@ -593,6 +611,8 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/EndColInfos.h \
     ../Source/XlsbFormat/Biff12_records/WsDim.h \
     ../Source/XlsbFormat/Biff12_records/Drawing.h \
+    ../Source/XlsbFormat/Biff12_records/LegacyDrawing.h \
+    ../Source/XlsbFormat/Biff12_records/LegacyDrawingHF.h \
     ../Source/XlsbFormat/Biff12_records/HLink.h \
     ../Source/XlsbFormat/Biff12_records/BeginMergeCells.h \
     ../Source/XlsbFormat/Biff12_records/MergeCell.h \
@@ -706,6 +726,16 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/EndSlicerStyles.h \
     ../Source/XlsbFormat/Biff12_records/BeginStyleSheetExt14.h \
     ../Source/XlsbFormat/Biff12_records/EndStyleSheetExt14.h \
+    ../Source/XlsbFormat/Biff12_records/BeginComment.h \
+    ../Source/XlsbFormat/Biff12_records/CommentText.h \
+    ../Source/XlsbFormat/Biff12_records/EndComment.h \
+    ../Source/XlsbFormat/Biff12_records/BeginCommentList.h \
+    ../Source/XlsbFormat/Biff12_records/EndCommentList.h \
+    ../Source/XlsbFormat/Biff12_records/BeginCommentAuthors.h \
+    ../Source/XlsbFormat/Biff12_records/CommentAuthor.h \
+    ../Source/XlsbFormat/Biff12_records/EndCommentAuthors.h \
+    ../Source/XlsbFormat/Biff12_records/BeginComments.h \
+    ../Source/XlsbFormat/Biff12_records/EndComments.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
@@ -817,3 +847,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/SLICERSTYLES.h \
     ../Source/XlsbFormat/Biff12_unions/STYLESHEET14.h \
     ../Source/XlsbFormat/Biff12_unions/FRTSTYLESHEET.h \
+    ../Source/XlsbFormat/Biff12_unions/COMMENT.h \
+    ../Source/XlsbFormat/Biff12_unions/COMMENTLIST.h \
+    ../Source/XlsbFormat/Biff12_unions/COMMENTAUTHORS.h \
+    ../Source/XlsbFormat/Biff12_unions/COMMENTS.h \

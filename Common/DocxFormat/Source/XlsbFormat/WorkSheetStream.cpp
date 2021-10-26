@@ -37,7 +37,9 @@
 #include "Biff12_records/BeginSheet.h""
 #include "Biff12_unions/COLINFOS.h"
 #include "Biff12_records/WsDim.h"
-#include "Biff12_records/Drawing.h"
+#include "Biff12_records/Drawing.h""
+#include "Biff12_records/LegacyDrawing.h"
+#include "Biff12_records/LegacyDrawingHF.h"
 #include "Biff12_unions/HLINKS.h"
 #include "Biff12_unions/MERGECELLS.h"
 #include "Biff12_unions/CELLTABLE.h"
@@ -152,6 +154,24 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                 if (proc.optional<Drawing>())
                 {
                     m_BrtDrawing = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_LegacyDrawing:
+            {
+                if (proc.optional<LegacyDrawing>())
+                {
+                    m_BrtLegacyDrawing = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_LegacyDrawingHF:
+            {
+                if (proc.optional<LegacyDrawingHF>())
+                {
+                    m_BrtLegacyDrawingHF = elements_.back();
                     elements_.pop_back();
                 }
             }break;

@@ -53,6 +53,8 @@ namespace XLSB
         std::vector<BaseObjectPtr>	m_arBrtFont;
         BaseObjectPtr               m_BrtEndFonts;
 
+        //GlobalWorkbookInfoPtr		global_info;
+
     };
 
 } // namespace XLSB

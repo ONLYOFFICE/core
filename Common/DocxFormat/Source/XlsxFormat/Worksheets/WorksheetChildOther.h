@@ -38,6 +38,7 @@
 #include "../../XlsbFormat/Biff12_unions/WSVIEW2.h"
 #include "../../XlsbFormat/Biff12_records/SheetProtectionIso.h"
 #include "../../XlsbFormat/Biff12_records/SheetProtection.h"
+#include "../../XlsbFormat/Biff12_records/LegacyDrawingHF.h"
 
 namespace OOX
 {
@@ -1361,6 +1362,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CLegacyDrawingHFWorksheet)
+            WritingElement_XlsbConstructors(CLegacyDrawingHFWorksheet)
 			CLegacyDrawingHFWorksheet()
 			{
 			}
@@ -1408,7 +1410,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_LegacyDrawingHFWorksheet;
@@ -1440,6 +1445,12 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"rho"),     m_oRho )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::LegacyDrawingHF*>(obj.get());
+                if(ptr != nullptr)
+                    m_oId = ptr->stRelId.value.value();
+            }
 		public:
 			nullable<SimpleTypes::CRelationshipId >				m_oId;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCfe;

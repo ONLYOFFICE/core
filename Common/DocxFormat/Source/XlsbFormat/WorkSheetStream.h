@@ -70,6 +70,8 @@ namespace XLSB
         std::vector<BaseObjectPtr>  m_arCOLINFOS;
         BaseObjectPtr               m_BrtWsDim;
         BaseObjectPtr               m_BrtDrawing;
+        BaseObjectPtr               m_BrtLegacyDrawing;
+        BaseObjectPtr               m_BrtLegacyDrawingHF;
         BaseObjectPtr               m_HLINKS;
         BaseObjectPtr               m_MERGECELLS;
         BaseObjectPtr               m_CELLTABLE;

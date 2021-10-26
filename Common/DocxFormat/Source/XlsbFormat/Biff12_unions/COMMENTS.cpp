@@ -30,58 +30,62 @@
  *
  */
 
-#include "FONTS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginFonts.h"
-#include "../Biff12_records/EndFonts.h"
+#include "COMMENTS.h"
+#include "../Biff12_records/BeginComments.h"
+#include "../Biff12_unions/COMMENTAUTHORS.h"
+#include "../Biff12_unions/COMMENTLIST.h"
+#include "../Biff12_unions/FRT.h"
+#include "../Biff12_records/EndComments.h"
 
 namespace XLSB
 {
 
-    FONTS::FONTS()
+    COMMENTS::COMMENTS()
     {
     }
 
-    FONTS::~FONTS()
+    COMMENTS::~COMMENTS()
     {
     }
 
-    BaseObjectPtr FONTS::clone()
+    BaseObjectPtr COMMENTS::clone()
     {
-        return BaseObjectPtr(new FONTS(*this));
+        return BaseObjectPtr(new COMMENTS(*this));
     }
 
-    //FONTS = BrtBeginFonts 1*65491BrtFont [ACFONTS] BrtEndFonts
-    const bool FONTS::loadContent(BinProcessor& proc)
-    {        
-        //global_info = proc.getGlobalWorkbookInfo();
-
-        if (proc.optional<BeginFonts>())
+    //COMMENTS = BrtBeginComments COMMENTAUTHORS COMMENTLIST *FRT BrtEndComments
+    const bool COMMENTS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginComments>())
         {
-            m_BrtBeginFonts = elements_.back();
+            m_BrtBeginComments = elements_.back();
             elements_.pop_back();
         }
+        if (proc.optional<COMMENTAUTHORS>())
+        {
+            m_COMMENTAUTHORS = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<COMMENTLIST>())
+        {
+            m_COMMENTLIST = elements_.back();
+            elements_.pop_back();
+        }
+        int count = proc.repeated<FRT>(0, 0);
 
-        auto count = proc.repeated<XLSB::Font>(1, 65491);
         while(count > 0)
         {
-            //XLSB::Font *font = dynamic_cast<XLSB::Font *>(elements_.back().get());
-            //if ((font) && (font->correct))
-            //{
-               // global_info->m_arFonts.push_back(elements_.back());
-            //}
-            m_arBrtFont.insert(m_arBrtFont.begin(), elements_.back());
+            m_arFRT.insert(m_arFRT.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }
-
-        if (proc.optional<EndFonts>())
+        if (proc.optional<EndComments>())
         {
-            m_BrtEndFonts = elements_.back();
+            m_BrtEndComments = elements_.back();
             elements_.pop_back();
         }
 
-        return m_BrtBeginFonts && !m_arBrtFont.empty() && m_BrtEndFonts;
+        return m_BrtBeginComments && m_BrtEndComments;
     }
 
 } // namespace XLSB

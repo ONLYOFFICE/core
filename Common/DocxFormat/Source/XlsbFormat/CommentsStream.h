@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,59 +30,49 @@
  *
  */
 
-#include "FONTS.h"
-#include "../Biff12_records/CommonRecords.h"
-#include "../Biff12_records/BeginFonts.h"
-#include "../Biff12_records/EndFonts.h"
+#ifndef CommentsSTREAM_H
+#define CommentsSTREAM_H
 
+
+#include "../../../../DesktopEditor/common/Types.h"
+#include "../Base/Types_32.h"
+#include "../XlsxFormat/WritingElement.h"
+#include <string>
+#include <memory.h>
+#include <iostream>
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+
+using namespace XLS;
 namespace XLSB
 {
+    class StreamCacheReader;
 
-    FONTS::FONTS()
+    class CommentsStream;
+    typedef std::shared_ptr<CommentsStream>		CommentsStreamPtr;
+
+    class CommentsStream: public CompositeObject
     {
-    }
+        BASE_OBJECT_DEFINE_CLASS_NAME(CommentsStream)
+    public:
+        CommentsStream(const unsigned short code_page);
+        virtual ~CommentsStream();
 
-    FONTS::~FONTS()
-    {
-    }
+        BaseObjectPtr clone();
 
-    BaseObjectPtr FONTS::clone()
-    {
-        return BaseObjectPtr(new FONTS(*this));
-    }
+        virtual const bool loadContent(BinProcessor& proc);
 
-    //FONTS = BrtBeginFonts 1*65491BrtFont [ACFONTS] BrtEndFonts
-    const bool FONTS::loadContent(BinProcessor& proc)
-    {        
-        //global_info = proc.getGlobalWorkbookInfo();
+        int serialize_format(std::wostream & _stream);
+        int serialize_protection(std::wostream & _stream);
 
-        if (proc.optional<BeginFonts>())
-        {
-            m_BrtBeginFonts = elements_.back();
-            elements_.pop_back();
-        }
+        BaseObjectPtr               m_COMMENTS;
 
-        auto count = proc.repeated<XLSB::Font>(1, 65491);
-        while(count > 0)
-        {
-            //XLSB::Font *font = dynamic_cast<XLSB::Font *>(elements_.back().get());
-            //if ((font) && (font->correct))
-            //{
-               // global_info->m_arFonts.push_back(elements_.back());
-            //}
-            m_arBrtFont.insert(m_arBrtFont.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
+        unsigned short              code_page_;
+        GlobalWorkbookInfoPtr       global_info_;
 
-        if (proc.optional<EndFonts>())
-        {
-            m_BrtEndFonts = elements_.back();
-            elements_.pop_back();
-        }
 
-        return m_BrtBeginFonts && !m_arBrtFont.empty() && m_BrtEndFonts;
-    }
+    };
 
-} // namespace XLSB
+}
+
+#endif // CommentsSTREAM_H
 

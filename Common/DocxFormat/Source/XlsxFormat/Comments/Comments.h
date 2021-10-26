@@ -35,6 +35,25 @@
 #include "../Worksheets/Worksheet.h"
 #include "../SharedStrings/Si.h"
 
+#include "../../XlsbFormat/CommentsStream.h"
+
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
+
+#include "../../XlsbFormat/Biff12_unions/COMMENTS.h"
+#include "../../XlsbFormat/Biff12_unions/COMMENTAUTHORS.h"
+#include "../../XlsbFormat/Biff12_unions/COMMENTLIST.h"
+#include "../../XlsbFormat/Biff12_unions/COMMENT.h"
+
+#include "../../XlsbFormat/Biff12_records/CommentAuthor.h"
+#include "../../XlsbFormat/Biff12_records/BeginComment.h"
+#include "../../XlsbFormat/Biff12_records/CommentText.h"
+#include "../../XlsbFormat/Biff12_records/LegacyDrawing.h"
+
+#include "../Styles/Styles.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -80,6 +99,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CAuthors)
+            WritingElement_XlsbConstructors(CAuthors)
 			CAuthors()
 			{
 			}
@@ -128,6 +148,17 @@ namespace OOX
 					}
 				}
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::COMMENTAUTHORS*>(obj.get());
+                if (ptr != nullptr)
+                {
+                    for(auto author : ptr->m_arBrtCommentAuthor)
+                    {
+                        m_arrItems.push_back(static_cast<XLSB::CommentAuthor*>(author.get())->author.value());
+                    }
+                }
+            }
 
 			virtual EElementType getType () const
 			{
@@ -145,6 +176,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CComment)
+            WritingElement_XlsbConstructors(CComment)
 			CComment()
 			{
 			}
@@ -187,9 +219,27 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("text") == sName )
-						m_oText  =oReader;
+                        m_oText = oReader;
 				}
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::COMMENT*>(obj.get());
+                if (ptr != nullptr)
+                {
+                    ReadAttributes(ptr->m_BrtBeginComment);
+
+                    auto ptrCommentText = static_cast<XLSB::CommentText*>(ptr->m_BrtCommentText.get());
+                    if(ptrCommentText != nullptr)
+                    {
+                        CSi* pItem = new CSi();
+                        auto text = new CText();
+                        text->fromBin(ptrCommentText->text.str.value());
+                        pItem->m_arrItems.push_back(text);
+                        m_oText = pItem;
+                    }
+                }
+            }
 
 			virtual EElementType getType () const
 			{
@@ -205,17 +255,28 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if ( oReader, L"xr:uid", m_oUid )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BeginComment*>(obj.get());
+                if (ptr != nullptr)
+                {
+                    m_oRef      = ptr->rfx.toString();
+                    m_oAuthorId = ptr->iauthor;
+                    m_oUid      = ptr->guid;
+                }
+            }
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oAuthorId;
 			nullable<SimpleTypes::CGuid > m_oUid;
 
-			nullable<CSi> m_oText;
+            nullable<CSi> m_oText;
 		};
 		class CCommentList : public WritingElementWithChilds<CComment>
 		{
 		public:
 			WritingElement_AdditionConstructors(CCommentList)
+            WritingElement_XlsbConstructors(CCommentList)
 			CCommentList()
 			{
 			}
@@ -259,17 +320,28 @@ namespace OOX
 						m_arrItems.push_back(new CComment(oReader));
 				}
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::COMMENTLIST*>(obj.get());
+                if (ptr != nullptr)
+                {
+                    for(auto comment : ptr->m_arCOMMENT)
+                    {
+                        m_arrItems.push_back(new CComment(comment));
+                    }
+                }
+            }
 
 			virtual EElementType getType () const
 			{
 				return et_x_CommentList;
 			}
 
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
-		};
+        private:
+            void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+            {
+            }
+        };
 		class CComments : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
@@ -291,12 +363,49 @@ namespace OOX
 				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
 				{
 					xlsx->m_arWorksheets.back()->m_pComments = this;
-				}
+                }
 				read( oRootPath, oPath );
 			}
 			virtual ~CComments()
 			{
 			}
+            void readBin(const CPath& oPath)
+            {
+                auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
+                XLS::GlobalWorkbookInfoPtr xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
+                xls_global_info->Version = 0x0800;
+                NSFile::CFileBinary oFile;
+                if (oFile.OpenFile(oPath.GetPath()) == false)
+                    return;
+
+                auto m_lStreamLen = (LONG)oFile.GetFileSize();
+                auto m_pStream = new BYTE[m_lStreamLen];
+                DWORD dwRead = 0;
+                oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
+                oFile.CloseFile();
+                std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
+                binaryReader->Init(m_pStream, 0, dwRead);
+
+                XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
+                XLSB::CommentsStreamPtr commentsStream = std::make_shared<XLSB::CommentsStream>(workbook_code_page);
+                XLS::BinReaderProcessor proc(reader, commentsStream.get(), true);
+
+                proc.mandatory(*commentsStream.get());
+
+                if (commentsStream != nullptr)
+                {
+                    auto ptr = static_cast<XLSB::COMMENTS*>(commentsStream->m_COMMENTS.get());
+                    if (ptr != nullptr)
+                    {
+                        if(ptr->m_COMMENTAUTHORS != nullptr)
+                            m_oAuthors = ptr->m_COMMENTAUTHORS;
+
+                        if(ptr->m_COMMENTLIST != nullptr)
+                            m_oCommentList = ptr->m_COMMENTLIST;
+                    }
+                }
+
+            }
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -307,6 +416,12 @@ namespace OOX
 			{
 				m_oReadPath = oPath;
 				IFileContainer::Read( oRootPath, oPath );
+
+                if( m_oReadPath.GetExtention() == _T(".bin"))
+                {
+                    readBin(m_oReadPath);
+                    return;
+                }
 
 				XmlUtils::CXmlLiteReader oReader;
 
@@ -382,6 +497,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CLegacyDrawingWorksheet)
+            WritingElement_XlsbConstructors(CLegacyDrawingWorksheet)
 			CLegacyDrawingWorksheet()
 			{
 			}
@@ -412,7 +528,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_LegacyDrawingWorksheet;
@@ -425,6 +544,12 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oId )
 				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::LegacyDrawing*>(obj.get());
+                if(ptr != nullptr)
+                    m_oId = ptr->stRelId.value.value();
+            }
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oId;
 		};

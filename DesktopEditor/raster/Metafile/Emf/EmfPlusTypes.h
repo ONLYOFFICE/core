@@ -68,6 +68,13 @@ namespace MetaFile
                         chAlpha = 0;
                 }
 
+                TEmfPlusARGB(unsigned char chBlue, unsigned char chGreen, unsigned char chRed)
+                {
+                        this->chBlue  = chBlue;
+                        this->chGreen = chGreen;
+                        this->chRed   = chRed;
+                }
+
                 TEmfPlusARGB(const TEmfPlusARGB& oARGB)
                 {
                         chBlue  = oARGB.chBlue;

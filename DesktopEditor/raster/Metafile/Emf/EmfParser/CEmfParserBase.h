@@ -90,11 +90,15 @@ namespace MetaFile
                 void UpdateOutputDC();
                 void ClosePath();
 
+                void MoveTo(double dX, double dY);
                 void MoveTo(int nX, int nY);
+                void MoveTo(TEmfPointD &oPoint);
                 void MoveTo(TEmfPointL &oPoint);
                 void MoveTo(TEmfPointS &oPoint);
 
+                void LineTo(double dX, double dY);
                 void LineTo(int nX, int nY);
+                void LineTo(TEmfPointD &oPoint);
                 void LineTo(TEmfPointL &oPoint);
                 void LineTo(TEmfPointS &oPoint);
 

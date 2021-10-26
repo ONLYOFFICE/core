@@ -297,6 +297,13 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(TEmfPointD& oPoint)
+		{
+			*this >> oPoint.x;
+			*this >> oPoint.y;
+
+			return *this;
+		}
 		CDataStream& operator>>(TEmfEmrText& oText)
 		{
 			*this >> oText.Reference;
@@ -735,42 +742,36 @@ namespace MetaFile
 			{
 				case BrushTypeSolidColor:
 				{
-					oEmfPlusBrush.m_enType = BrushTypeSolidColor;
+					oEmfPlusBrush.Style = BS_SOLID;
 
-					*this >> oEmfPlusBrush.m_oARGB;
+					*this >> oEmfPlusBrush.Color;
 
 					break;
 				}
 				case BrushTypeHatchFill:
 				{
-					oEmfPlusBrush.m_enType = BrushTypeHatchFill;
+					oEmfPlusBrush.Style = BS_HATCHED;
 
-					*this >> oEmfPlusBrush.m_unBrushStyle;
-					*this >> oEmfPlusBrush.m_oARGB;
-					*this >> oEmfPlusBrush.m_oBackARGB;
+					*this >> oEmfPlusBrush.Hatch;
+					*this >> oEmfPlusBrush.Color;
+					*this >> oEmfPlusBrush.ColorBack;
 
 					break;
 				}
 				case BrushTypeTextureFill:
 				{
-					oEmfPlusBrush.m_enType = BrushTypeTextureFill;
-
 					//TODO: реализовать
 
 					break;
 				}
 				case BrushTypePathGradient:
 				{
-					oEmfPlusBrush.m_enType = BrushTypePathGradient;
-
 					//TODO: реализовать
 
 					break;
 				}
 				case BrushTypeLinearGradient:
 				{
-					oEmfPlusBrush.m_enType = BrushTypeLinearGradient;
-
 					//TODO: реализовать
 
 					break;
@@ -792,29 +793,145 @@ namespace MetaFile
 			unsigned int unFlags, unUnitType;
 
 			*this >> unFlags;
-			*this >> oEmfPlusPen.m_dWidth;
+			*this >> unUnitType;
+			*this >> oEmfPlusPen.Width;
 
-			oEmfPlusPen.m_enUnit = static_cast<EEmfPlusPenUnitType>(unUnitType);
-
-			//TODO: реализовать
-			switch (unFlags)
+			if (unFlags & PEN_DATA_TRANSFORM)
+				Skip(24); // TransformMatrix (24 bytes) - EmfPlusTransformMatrix object
+			if (unFlags & PEN_DATA_STARTCAP)
+				Skip(4); // StartCap (4 bytes) - signed integer
+			if (unFlags & PEN_DATA_ENDCAP)
+				Skip(4); // EndCap (4 bytes) - signed integer
+			if (unFlags & PEN_DATA_JOIN)
+				Skip(4); // Join (4 bytes) - signed integer
+			if (unFlags & PEN_DATA_MITERLIMIT)
+				Skip(4); // MiterLimit (4 bytes) - floating-point value
+			if (unFlags & PEN_DATA_LINESTYLE)
+				Skip(4); // LineStyle (4 bytes) - signed integer
+			if (unFlags & PEN_DATA_DASHEDLINECAP)
+				Skip(4); // DashedLineCapType (4 bytes) - signed integer
+			if (unFlags & PEN_DATA_DASHEDLINEOFFSET)
+				Skip(4); // DashOffset  (4 bytes) - floating-point value
+			if (unFlags & PEN_DATA_DASHEDLINE)
 			{
-				case PenDataTransform: break;
-				case PenDataStartCap: break;
-				case PenDataEndCap: break;
-				case PenDataJoin: break;
-				case PenDataMiterLimit: break;
-				case PenDataLineStyle: break;
-				case PenDataDashedLineCap: break;
-				case PenDataDashedLineOffset: break;
-				case PenDataDashedLine: break;
-				case PenDataNonCenter: break;
-				case PenDataCompoundLine: break;
-				case PenDataCustomStartCap: break;
-				case PenDataCustomEndCap: break;
+				unsigned int unDashedLineDataSize;
+
+				*this >> unDashedLineDataSize;
+
+				Skip(4 * unDashedLineDataSize); // EmfPlusDashedLineData object
+			}
+			if (unFlags & PEN_DATA_NONCENTER)
+				Skip(4); // PenAlignment (4 bytes) - signed integer
+			if (unFlags & PEN_DATA_COMPOUNDLINE)
+			{
+				unsigned int unCompoundLineDataSize;
+
+				*this >> unCompoundLineDataSize;
+
+				Skip(4 * unCompoundLineDataSize); // EmfPlusCompoundLineData object
+			}
+			if (unFlags & PEN_DATA_CUSTOMSTARTCAP)
+			{
+				unsigned int unCustomStartCapSize;
+
+				*this >> unCustomStartCapSize;
+
+				Skip(unCustomStartCapSize); // EmfPlusCustomStartCapData object
+			}
+			if (unFlags & PEN_DATA_CUSTOMENDCAP)
+			{
+				unsigned int unCustomEndCapSize;
+
+				*this >> unCustomEndCapSize;
+
+				Skip(unCustomEndCapSize); // EmfPlusCustomEndCapData object
 			}
 
-			//Ещё чтение BrushObject
+			CEmfPlusBrush *pBrush = new CEmfPlusBrush;
+
+			*this >> *pBrush;
+
+			oEmfPlusPen.Brush = pBrush;
+
+			return *this;
+		}
+		CDataStream& operator>>(CEmfPlusRegion& oEmfPlusRegion)
+		{
+			unsigned int unVersion, unRegionCount;
+
+			*this >> unVersion;
+			*this >> unRegionCount;
+
+			if (unRegionCount == 0)
+				return *this;
+
+			//TODO: реализовать
+
+			return *this;
+		}
+		CDataStream& operator>>(CEmfPlusImage& oImage)
+		{
+			unsigned int unVersion, unType;
+
+			*this >> unVersion;
+			*this >> unType;
+
+			if (!oImage.InitData(unType))
+				return *this;
+
+			*this >> *oImage.pData;
+
+			return *this;
+		}
+		CDataStream& operator>>(CImageDataBitmap& oImageDataBitmap)
+		{
+			*this >> oImageDataBitmap.nWidth;
+			*this >> oImageDataBitmap.nHeight;
+			*this >> oImageDataBitmap.nStride;
+			*this >> oImageDataBitmap.nPixelFormat;
+
+			unsigned int unType;
+
+			*this >> unType;
+
+			if (!oImageDataBitmap.InitData(unType))
+				return *this;
+
+			*this >> *oImageDataBitmap.pData;
+
+			return *this;
+		}
+		CDataStream& operator>>(CEmfPlusBitmapDataBase& oEmfPlusBitmapDataBase)
+		{
+			if (oEmfPlusBitmapDataBase.GetType() == BitmapDataTypeUnknow)
+				return *this;
+			else if (oEmfPlusBitmapDataBase.GetType() == BitmapDataTypePixel)
+				*this >> static_cast<CEmfPlusBitmapData&>(oEmfPlusBitmapDataBase);
+			else if (oEmfPlusBitmapDataBase.GetType() == BitmapDataTypeCompressed)
+				*this >> static_cast<CEmfPlusCompressedImage&>(oEmfPlusBitmapDataBase);
+
+			return *this;
+		}
+		CDataStream& operator>>(CEmfPlusBitmapData& oEmfPlusBitmapData)
+		{
+			return *this;
+		}
+		CDataStream& operator>>(CEmfPlusCompressedImage& oEmfPlusCompressedImage)
+		{
+			return *this;
+		}
+		CDataStream& operator>>(CImageDataMetafile& oImageDataMetafile)
+		{
+			return *this;
+		}
+		CDataStream& operator>>(CImageDataBase& oImageDataBase)
+		{
+			if (oImageDataBase.GetType() == ImageDataTypeUnknown)
+				return *this;
+			else if (oImageDataBase.GetType() == ImageDataTypeBitmap)
+				*this >> static_cast<CImageDataBitmap&>(oImageDataBase);
+			else if (oImageDataBase.GetType() == ImageDataTypeMetafile)
+				*this >> static_cast<CImageDataMetafile&>(oImageDataBase);
 
 			return *this;
 		}

@@ -13,7 +13,10 @@ namespace MetaFile
                 ClearFile();
 
                 if (NULL != m_pEmfPlusParser)
+                {
+                        m_pEmfPlusParser->m_pInterpretator = NULL;
                         delete m_pEmfPlusParser;
+                }
         }
 
         bool CEmfParser::OpenFromFile(const wchar_t *wsFilePath)
@@ -1373,7 +1376,7 @@ namespace MetaFile
                         m_oStream.Skip(4);
 
                         if (NULL == m_pEmfPlusParser)
-                                m_pEmfPlusParser = new CEmfPlusParser(this);
+                                m_pEmfPlusParser = new CEmfPlusParser(m_pInterpretator);
 
                         m_pEmfPlusParser->SetStream(m_oStream.GetCurPtr(), m_ulRecordSize - 8);
                         m_pEmfPlusParser->PlayFile();

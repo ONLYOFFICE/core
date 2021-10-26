@@ -276,11 +276,8 @@ namespace MetaFile
                         m_pInterpretator->ClosePath();
         }
 
-        void CEmfParserBase::MoveTo(int nX, int nY)
+        void CEmfParserBase::MoveTo(double dX, double dY)
         {
-                double dX, dY;
-                TranslatePoint(nX, nY, dX, dY);
-
                 if (m_pPath)
                 {
                         if (!m_pPath->MoveTo(dX, dY))
@@ -291,7 +288,19 @@ namespace MetaFile
                         m_pInterpretator->MoveTo(dX, dY);
                 }
 
-                m_pDC->SetCurPos(nX, nY);
+                m_pDC->SetCurPos((int)dX, (int)dY);
+        }
+
+        void CEmfParserBase::MoveTo(int nX, int nY)
+        {
+                double dX, dY;
+                TranslatePoint(nX, nY, dX, dY);
+                MoveTo(dX, dY);
+        }
+
+        void CEmfParserBase::MoveTo(TEmfPointD &oPoint)
+        {
+                MoveTo(oPoint.x, oPoint.y);
         }
 
 
@@ -305,11 +314,8 @@ namespace MetaFile
                 MoveTo(oPoint.x, oPoint.y);
         }
 
-        void CEmfParserBase::LineTo(int nX, int nY)
+        void CEmfParserBase::LineTo(double dX, double dY)
         {
-                double dX, dY;
-                TranslatePoint(nX, nY, dX, dY);
-
                 if (m_pPath)
                 {
                         if (!m_pPath->LineTo(dX, dY))
@@ -320,7 +326,19 @@ namespace MetaFile
                         m_pInterpretator->LineTo(dX, dY);
                 }
 
-                m_pDC->SetCurPos(nX, nY);
+                m_pDC->SetCurPos((int)dX, (int)dY);
+        }
+
+        void CEmfParserBase::LineTo(int nX, int nY)
+        {
+                double dX, dY;
+                TranslatePoint(nX, nY, dX, dY);
+                LineTo(dX, dY);
+        }
+
+        void CEmfParserBase::LineTo(TEmfPointD &oPoint)
+        {
+                LineTo(oPoint.x, oPoint.y);
         }
 
         void CEmfParserBase::LineTo(TEmfPointL &oPoint)

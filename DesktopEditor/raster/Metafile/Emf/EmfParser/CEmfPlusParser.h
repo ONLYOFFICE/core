@@ -13,7 +13,7 @@ namespace MetaFile
         class CEmfPlusParser : public CEmfParserBase
         {
             public:
-                CEmfPlusParser(CEmfParserBase* pParentParser);
+                CEmfPlusParser(CEmfInterpretatorBase* pEmfInterpretator);
                 virtual ~CEmfPlusParser();
 
                 bool            OpenFromFile(const wchar_t* wsFilePath)     override;
@@ -27,6 +27,8 @@ namespace MetaFile
 
             private:
                 bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
+                void ReadPath();
+                std::vector<TEmfPlusPointF> ReadPointsF(unsigned int unPointCount);
 
                 void Read_EMRPLUS_OFFSETCLIP();
                 void Read_EMRPLUS_RESETCLIP();
@@ -34,7 +36,7 @@ namespace MetaFile
                 void Read_EMFPLUS_SETCLIPRECT(unsigned short unShFlags);
                 void Read_EMFPLUS_SETCLIPREGION(unsigned short unShFlags);
 
-                void Read_EMFPLUS_COMMENT(unsigned int unDataSize);
+                void Read_EMFPLUS_COMMENT();
 
                 void Read_EMFPLUS_ENDOFFILE();
                 void Read_EMFPLUS_GETDC();
@@ -107,10 +109,11 @@ namespace MetaFile
                 void Read_EMFPLUS_SETWORLDTRANSFORM();
                 void Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unsigned short unShFlags);
 
-                virtual short ExpressValue(unsigned short unShFlags, unsigned int unStartIndex, unsigned int unEndIndex) const;
+                template<typename T> short ExpressValue(T Flags, unsigned int unStartIndex, unsigned int unEndIndex) const;
 
-                CEmfParserBase* m_pParentParser;
-                bool m_bBanEmfProcessing;
+                bool            m_bBanEmfProcessing;
+                unsigned int    m_unLogicalDpiX;
+                unsigned int    m_unLogicalDpiY;
         };
 }
 

@@ -137,11 +137,12 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CStringObject
 	//----------------------------------------------------------------------------------------
-    CStringObject::CStringObject(const char* sValue, bool isUTF16)
+    CStringObject::CStringObject(const char* sValue, bool isUTF16, bool isDictValue)
 	{
-		m_pValue   = NULL;
-		m_unLen    = 0;
-        m_bUTF16   = isUTF16;
+		m_pValue     = NULL;
+		m_unLen      = 0;
+        m_bUTF16     = isUTF16;
+		m_bDictValue = isDictValue;
 		Set(sValue);
 	}
 	CStringObject::~CStringObject()

@@ -93,6 +93,7 @@ namespace PdfWriter
 		int GetFieldFlag() const;
 		const char* GetFieldType() const;
 		void SetAlign(const EFieldAlignType& eType);
+		void SetPlaceHolderText(const std::wstring& wsText, const TRgb& oNormalColor, const TRgb& oPlaceHolderColor);
 
 	protected:
 

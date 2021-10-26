@@ -417,6 +417,47 @@ namespace PdfWriter
 	{
 		Add("Q", (int)eType);
 	}
+	void CFieldBase::SetPlaceHolderText(const std::wstring& wsText, const TRgb& oNormalColor, const TRgb& oPlaceHolderColor)
+	{
+		CDictObject* pAA = new CDictObject();
+		if (!pAA)
+			return;
+
+		Add("AA", pAA);
+
+		CDictObject* pFocus = new CDictObject();
+		CDictObject* pBlur = new CDictObject();
+		if (!pFocus || !pBlur)
+			return;
+
+		std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsText);
+
+		std::string sFocus = "\nvar	curColor = color.convert(event.target.textColor, \"RGB\");\nif (event.target.value == \"" + \
+			sText + "\" && Math.abs(curColor[1] - " + std::to_string(oPlaceHolderColor.r) +
+			") < 0.001 && Math.abs(curColor[2] - " + std::to_string(oPlaceHolderColor.g) +
+			") < 0.001 && Math.abs(curColor[3] - " + std::to_string(oPlaceHolderColor.b) +
+			") < 0.001)\n{	event.target.value = \"\";\n	event.target.textColor =[\"RGB\", " + 
+			std::to_string(oNormalColor.r) + ", " +
+			std::to_string(oNormalColor.g) + ", " +
+			std::to_string(oNormalColor.b) + "];\n}";
+		
+		std::string sBlur = "\nif (event.target.value == \"\")\n{	event.target.value = \"" + sText + "\";\n	event.target.textColor =[\"RGB\", " +
+			std::to_string(oPlaceHolderColor.r) + ", " +
+			std::to_string(oPlaceHolderColor.g) + ", " +
+			std::to_string(oPlaceHolderColor.b) + "];\n}";
+
+		m_pXref->Add(pFocus);
+		m_pXref->Add(pBlur);
+
+		pFocus->Add("S", "JavaScript");
+		pFocus->Add("JS", new CStringObject(sFocus.c_str(), false, true));
+
+		pBlur->Add("S", "JavaScript");
+		pBlur->Add("JS", new CStringObject(sBlur.c_str(), false, true));
+
+		pAA->Add("Bl", pBlur);
+		pAA->Add("Fo", pFocus);
+	}
 	//----------------------------------------------------------------------------------------
 	// CTextField
 	//----------------------------------------------------------------------------------------

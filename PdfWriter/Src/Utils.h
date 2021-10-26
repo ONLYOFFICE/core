@@ -49,6 +49,15 @@
                             c == '{' || \
                             c == '}')  \
 
+#define NEEDS_ESCAPE_DICTVALUE(c) (c != 0x9 && \
+                            c != 0xA && \
+                           (c < 0x20 || \
+                            c > 0x7e || \
+                            c == '\\' || \
+                            c == '%' || \
+                            c == '#' || \
+							c == '/' ))  \
+
 #define IS_WHITE_SPACE(c)   (c == 0x00 || \
                              c == 0x09 || \
                              c == 0x0A || \

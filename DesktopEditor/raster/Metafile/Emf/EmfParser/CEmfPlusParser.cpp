@@ -138,6 +138,7 @@ namespace MetaFile
         };
 
         CEmfPlusParser::CEmfPlusParser(CEmfInterpretatorBase* pEmfInterpretator)
+                : m_pContineudObject(NULL)
         {
                 m_pInterpretator = pEmfInterpretator;
                 m_bBanEmfProcessing = false;
@@ -870,18 +871,16 @@ namespace MetaFile
                 short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
                 short shOgjectType  = ExpressValue(unShFlags, 8, 14);
 
-                if ((unShFlags >>(15)) & 1 )
+                if ((unShFlags >>(15)) & 1)
                 {
                         //TODO: определиться как с этим работать
-                        m_oStream.SeekBack(8);
                         unsigned int unTotalSize;
-
                         m_oStream >> unTotalSize;
-                        m_oStream >> m_ulRecordSize;
 
-                        std::wcout << unTotalSize << L" _  " << m_ulRecordSize << std::endl;
+                        std::wcout << L"Total Size: " << unTotalSize << std::endl;
 
-                        return;
+                        if (InitContineudObject())
+                                m_pContineudObject->SetDataSize(unTotalSize);
                 }
 
                 CEmfPlusObjectBase *pEmfPlusObject = NULL;
@@ -918,8 +917,49 @@ namespace MetaFile
                         }
                         case ObjectTypeImage:
                         {
-                                CEmfPlusImage *pImage = new CEmfPlusImage;
-                                m_oStream >> *pImage;
+                                if (NULL == m_pContineudObject)
+                                {
+                                        CEmfPlusImage *pImage = new CEmfPlusImage(m_ulRecordSize - (((unShFlags >>(15)) & 1) ? 4 : 0));
+
+                                        m_oStream >> *pImage;
+                                }
+                                else
+                                {
+                                        if (m_pContineudObject->IsFirstReading())
+                                        {
+                                                CEmfPlusImage *pImage = new CEmfPlusImage(m_ulRecordSize - (((unShFlags >>(15)) & 1) ? 4 : 0));
+
+                                                m_oStream >> *pImage;
+
+                                                if (!pImage->ValidData())
+                                                        return;
+
+                                                if (NULL != m_pContineudObject)
+                                                        m_pContineudObject->SetEmfPlusImage(pImage);
+
+                                                m_pContineudObject->SetNeedReadSize(pImage->pData->GetRemainderRecordSize());
+
+                                                m_oStream >> *m_pContineudObject;
+                                        }
+                                        else
+                                        {
+                                                m_pContineudObject->SetNeedReadSize(m_ulRecordSize - 4);
+
+                                                m_oStream >> *m_pContineudObject;
+                                        }
+
+                                        if (m_pContineudObject->IsLastReading())
+                                        {
+                                                //TODO: добавить возможность обработки
+                                                CEmfParser oEmfParser;
+//                                                oEmfParser.SetStream(m_pContineudObject->GetData(), m_pContineudObject->GetSize());
+//                                                oEmfParser.PlayFile();
+
+                                                delete m_pContineudObject;
+                                                m_pContineudObject = NULL;
+                                        }
+                                }
+
                                 break;
                         }
                         default: return;
@@ -1167,6 +1207,16 @@ namespace MetaFile
                 TEmfPlusXForm oMatrix(1, 0, 0, 1, dX, dY);
                 m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
                 UpdateOutputDC();
+        }
+
+        bool CEmfPlusParser::InitContineudObject()
+        {
+                if (NULL != m_pContineudObject)
+                        return false;
+
+                m_pContineudObject = new CEmfPlusContineudObjectRecord();
+
+                return true;
         }
 
         void CEmfPlusParser::Read_EMFPLUS_ENDOFFILE()

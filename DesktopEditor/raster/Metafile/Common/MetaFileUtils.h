@@ -869,6 +869,18 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(CEmfPlusContineudObjectRecord & oContineudObjectRecord)
+		{
+			unsigned int unNeedRead = oContineudObjectRecord.GetNeedReadSize();
+
+			BYTE* pBytes = new BYTE[unNeedRead];
+			ReadBytes(pBytes, unNeedRead);
+
+			oContineudObjectRecord.AddData(pBytes, unNeedRead);
+			oContineudObjectRecord.SetNeedReadSize(0);
+
+			return *this;
+		}
 		CDataStream& operator>>(CEmfPlusImage& oImage)
 		{
 			unsigned int unVersion, unType;
@@ -918,10 +930,21 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(CEmfPlusCompressedImage& oEmfPlusCompressedImage)
 		{
+			if (!oEmfPlusCompressedImage.ThereIsContinuation())
+				Skip(oEmfPlusCompressedImage.GetRemainderRecordSize());
+
 			return *this;
 		}
 		CDataStream& operator>>(CImageDataMetafile& oImageDataMetafile)
 		{
+			unsigned int unType, unMetafileDataSize;
+
+			*this >> unType;
+			*this >> unMetafileDataSize;
+
+			oImageDataMetafile.SetRemainderRecordSize(oImageDataMetafile.GetRemainderRecordSize() - 8);
+			oImageDataMetafile.SetMetafileSize(unMetafileDataSize);
+
 			return *this;
 		}
 		CDataStream& operator>>(CImageDataBase& oImageDataBase)

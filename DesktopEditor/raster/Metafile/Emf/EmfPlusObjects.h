@@ -158,21 +158,45 @@ namespace MetaFile
                 BitmapDataTypeUnknow      = 0x02
         } EEmfPlusBitmapDataType;
 
+        typedef  enum
+        {
+                MetafileDataTypeWmf             = 0x01,
+                MetafileDataTypeWmfPlaceable    = 0x02,
+                MetafileDataTypeEmf             = 0x03,
+                MetafileDataTypeEmfPlusOnly     = 0x04,
+                MetafileDataTypeEmfPlusDual     = 0x05
+        } EEmfPlusMetafileDataType;
+
         class CEmfPlusBitmapDataBase
         {
             public:
-                CEmfPlusBitmapDataBase() {};
-                virtual ~CEmfPlusBitmapDataBase() {};
+                CEmfPlusBitmapDataBase(unsigned int unSize, bool ThereIsContinuation) : Data(NULL), unRemainderRecordSize(unSize), bThereIsContinuation(ThereIsContinuation) {};
+                virtual ~CEmfPlusBitmapDataBase() { if (NULL != Data) delete Data; };
                 virtual EEmfPlusBitmapDataType GetType() const
                 {
                         return BitmapDataTypeUnknow;
                 }
+
+               virtual unsigned int GetRemainderRecordSize() const
+                {
+                        return unRemainderRecordSize;
+                }
+
+                bool ThereIsContinuation() const
+                {
+                        return bThereIsContinuation;
+                }
+
+                BYTE*   Data;
+            private:
+                unsigned int    unRemainderRecordSize;
+                bool            bThereIsContinuation;
         };
 
         class CEmfPlusBitmapData : public CEmfPlusBitmapDataBase
         {
             public:
-                CEmfPlusBitmapData() {};
+                CEmfPlusBitmapData(unsigned int unSize, bool ThereIsContinuation) : CEmfPlusBitmapDataBase(unSize, ThereIsContinuation) {};
                 virtual ~CEmfPlusBitmapData() {};
                 virtual EEmfPlusBitmapDataType GetType() const
                 {
@@ -183,7 +207,7 @@ namespace MetaFile
         class CEmfPlusCompressedImage : public CEmfPlusBitmapDataBase
         {
             public:
-                CEmfPlusCompressedImage() {};
+                CEmfPlusCompressedImage(unsigned int unSize, bool ThereIsContinuation) : CEmfPlusBitmapDataBase(unSize, ThereIsContinuation) {};
                 virtual ~CEmfPlusCompressedImage() {};
                 virtual EEmfPlusBitmapDataType GetType() const
                 {
@@ -194,18 +218,30 @@ namespace MetaFile
         class CImageDataBase
         {
             public:
-                CImageDataBase(){};
+                CImageDataBase(unsigned int unSize, bool ThereIsContinuation) : unRemainderRecordSize(unSize), bThereIsContinuation(ThereIsContinuation) {};
                 virtual ~CImageDataBase(){};
                 virtual EEmfPlusImageDataType GetType() const
                 {
                         return ImageDataTypeUnknown;
                 };
+
+                virtual unsigned int GetRemainderRecordSize() const
+                {
+                        return unRemainderRecordSize;
+                }
+
+            private:
+                unsigned int    unRemainderRecordSize;
+                bool            bThereIsContinuation;
+
+                friend class CImageDataBitmap;
+                friend class CImageDataMetafile;
         };
 
         class CImageDataBitmap : public CImageDataBase
         {
             public:
-                CImageDataBitmap() : pData(NULL) {};
+                CImageDataBitmap(unsigned int unSize, bool ThereIsContinuation) : CImageDataBase(unSize, ThereIsContinuation), pData(NULL) {};
                 virtual ~CImageDataBitmap() { if (NULL != pData) delete pData; };
                 virtual EEmfPlusImageDataType GetType() const
                 {
@@ -220,13 +256,21 @@ namespace MetaFile
                         if (unType == BitmapDataTypeUnknow)
                                 return false;
                         else if (unType == BitmapDataTypePixel)
-                                pData = new CEmfPlusBitmapData;
+                                pData = new CEmfPlusBitmapData(unRemainderRecordSize - 20, bThereIsContinuation);
                         else if (unType == BitmapDataTypeCompressed)
-                                pData = new CEmfPlusCompressedImage;
+                                pData = new CEmfPlusCompressedImage(unRemainderRecordSize - 20, bThereIsContinuation);
                         else
                                 return false;
 
                         return true;
+                }
+
+                virtual unsigned int GetRemainderRecordSize() const
+                {
+                        if (NULL == pData)
+                                return CImageDataBase::GetRemainderRecordSize();
+
+                        return pData->GetRemainderRecordSize();
                 }
 
                 int nWidth;
@@ -240,18 +284,37 @@ namespace MetaFile
         class CImageDataMetafile : public CImageDataBase
         {
             public:
-                CImageDataMetafile(){};
+                CImageDataMetafile(unsigned int unSize, bool ThereIsContinuation) : CImageDataBase(unSize, ThereIsContinuation) {};
                 virtual ~CImageDataMetafile(){};
                 virtual EEmfPlusImageDataType GetType() const
                 {
                         return ImageDataTypeMetafile;
                 };
+
+                void SetRemainderRecordSize(unsigned int unSize)
+                {
+                        unRemainderRecordSize = unSize;
+                }
+
+                void SetMetafileSize(unsigned int unSize)
+                {
+                        unMetafileSize = unSize;
+                }
+
+                unsigned int GetMetafileSize() const
+                {
+                        return unMetafileSize;
+                }
+
+            private:
+                unsigned int    unMetafileSize;
         };
 
         class CEmfPlusImage
         {
             public:
-                CEmfPlusImage() : pData(NULL) {};
+                CEmfPlusImage(unsigned int unSize) : pData(NULL), unRemainderRecordSize(unSize), bThereIsContinuation(false) {};
+                CEmfPlusImage(unsigned int unSize, bool ThereIsContinuation) : pData(NULL), unRemainderRecordSize(unSize), bThereIsContinuation(ThereIsContinuation) {};
                 virtual ~CEmfPlusImage(){ if (NULL != pData) delete pData; };
 
                 bool InitData(unsigned int unType)
@@ -262,16 +325,110 @@ namespace MetaFile
                         if (unType == ImageDataTypeUnknown)
                                 return false;
                         else if (unType == ImageDataTypeBitmap)
-                                pData = new CImageDataBitmap;
+                                pData = new CImageDataBitmap(unRemainderRecordSize - 8, bThereIsContinuation);
                         else if (unType == ImageDataTypeMetafile)
-                                pData = new CImageDataMetafile;
+                                pData = new CImageDataMetafile(unRemainderRecordSize - 8, bThereIsContinuation);
                         else
                                 return false;
 
                         return true;
                 }
 
+                unsigned int GetRemainderRecordSize()
+                {
+                        if (NULL != pData)
+                                return pData->GetRemainderRecordSize();
+
+                        return 0;
+                }
+
+                bool ValidData() const
+                {
+                        return (NULL != pData);
+                }
+
                 CImageDataBase *pData;
+            private:
+                unsigned int    unRemainderRecordSize;
+                bool            bThereIsContinuation;
+        };
+
+        class CEmfPlusContineudObjectRecord
+        {
+            public:
+                CEmfPlusContineudObjectRecord() : pImage(NULL) { unPosition = 0; };
+                ~CEmfPlusContineudObjectRecord() {};
+
+                void SetDataSize(unsigned int unSize)
+                {
+                        arData.reserve(unSize);
+                        unDataSize = unSize;
+                }
+
+                void SetNeedReadSize(unsigned int unSize)
+                {
+                        unNeedRead = unSize;
+                }
+
+                void AddData(BYTE *pData, unsigned int unSize)
+                {
+                        std::vector<BYTE> arNewData(pData, pData + unSize);
+                        arData.insert(arData.begin() + unPosition, arNewData.begin(), arNewData.end());
+                        unPosition += arNewData.size();
+                }
+
+                BYTE* GetData() const
+                {
+                        return (BYTE*)arData.data();
+                }
+
+                unsigned int GetNeedReadSize() const
+                {
+                        return unNeedRead;
+                }
+
+                bool IsFirstReading() const
+                {
+                        return (unPosition == 0);
+                }
+
+                bool IsLastReading()
+                {
+                        return ((unPosition + unNeedRead) >= unDataSize);
+                }
+
+                void SetEmfPlusImage(CEmfPlusImage* pImage)
+                {
+                        this->pImage = pImage;
+
+                        if (NULL != pImage && NULL != pImage->pData && pImage->pData->GetType() == ImageDataTypeMetafile)
+                        {
+                               SetDataSize(((CImageDataMetafile*)pImage->pData)->GetMetafileSize());
+                        }
+                }
+
+                CEmfPlusImage* GetEmfPlusImage() const
+                {
+                        return pImage;
+                }
+
+                unsigned int GetSize() const
+                {
+                        return arData.size();
+                }
+
+                unsigned int GetMaxSize() const
+                {
+                        return unDataSize;
+                }
+
+            private:
+                std::vector<BYTE>       arData;
+                unsigned int            unPosition;
+                unsigned int            unNeedRead;
+                unsigned int            unDataSize;
+
+                CEmfPlusImage*          pImage;
         };
 }
 

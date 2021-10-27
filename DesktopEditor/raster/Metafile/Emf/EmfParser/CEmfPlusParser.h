@@ -110,10 +110,13 @@ namespace MetaFile
                 void Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unsigned short unShFlags);
 
                 template<typename T> short ExpressValue(T Flags, unsigned int unStartIndex, unsigned int unEndIndex) const;
+                bool InitContineudObject();
 
                 bool            m_bBanEmfProcessing;
                 unsigned int    m_unLogicalDpiX;
                 unsigned int    m_unLogicalDpiY;
+
+                CEmfPlusContineudObjectRecord *m_pContineudObject;
         };
 }
 

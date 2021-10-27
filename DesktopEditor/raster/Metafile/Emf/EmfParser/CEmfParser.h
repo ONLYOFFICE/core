@@ -17,6 +17,7 @@ namespace MetaFile
                 void            Scan()                                      override;
 
                 EmfParserType   GetType()				    override;
+                void            SetStream(BYTE* pBuf, unsigned int unSize);
         private:
                 CEmfPlusParser *m_pEmfPlusParser;
 

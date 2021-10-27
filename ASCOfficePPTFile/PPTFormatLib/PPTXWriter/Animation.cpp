@@ -809,6 +809,19 @@ void Animation::FillCTn(
     if (pETNC->m_haveTimePropertyList && !pETNC->m_pTimePropertyList->m_bEmtyNode)
     {
         FillCTn(pETNC->m_pTimePropertyList, oCTn);
+    } else if (pETNC->m_haveTimePropertyList)
+    {
+        // TODO not work
+        oCTn.nodeType = new PPTX::Limit::TLNodeType;
+        if (m_cTnState == 0){
+            oCTn.nodeType->set(L"clickPar");
+            m_cTnState = 1;
+        }
+        else
+        {
+            oCTn.nodeType->set(L"withGroup");
+            m_cTnState = 0;
+        }
     }
 
     if (!pETNC->m_haveSequenceAtom)

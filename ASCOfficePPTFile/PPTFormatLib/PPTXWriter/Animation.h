@@ -256,6 +256,7 @@ private:
     PPTX::Logic::BldP   *m_currentBldP;
 
     int m_nextRID; // it needs for audio maybe video for compisation id number;
+    UINT m_cTnState = 0;
 };
 
 }

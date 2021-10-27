@@ -209,7 +209,7 @@ namespace PdfWriter
 			sDA.append(" Tf");
 		}
 
-		Add("DA", new CStringObject(sDA.c_str()));
+		Add("DA", new CStringObject(sDA.c_str(), false, true));
 	}
 	void CFieldBase::SetTextAppearance(const std::wstring& wsValue, unsigned char* pCodes, unsigned int unCount, CFontDict* pFont, const TRgb& oColor, const double& dAlpha, double dFontSize, double dX, double dY, double* pShifts, unsigned int unShiftsCount)
 	{
@@ -542,7 +542,7 @@ namespace PdfWriter
 	{
 		SetFlag(isDoNotSpellCheck, 1 << 22);
 	}
-	void CChoiceField::AddOption(const std::wstring& wsOption)
+	void CChoiceField::AddOption(const std::wstring& wsOption, const bool& bPushBack)
 	{
 		if (!m_pOpt)
 		{
@@ -554,7 +554,92 @@ namespace PdfWriter
 			return;
 
 		std::string sOption = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsOption);
-		m_pOpt->Add(new CStringObject(sOption.c_str(), true));
+		m_pOpt->Add(new CStringObject(sOption.c_str(), true), bPushBack);
+	}
+	void CChoiceField::SetPlaceHolderText(const std::wstring& wsText, const TRgb& oNormalColor, const TRgb& oPlaceHolderColor)
+	{
+		CDictObject* pAA = new CDictObject();
+		if (!pAA)
+			return;
+
+		Add("AA", pAA);
+
+		CDictObject* pFocus = new CDictObject();
+		CDictObject* pBlur = new CDictObject();
+		if (!pFocus || !pBlur)
+			return;
+
+		bool bCanEdit = GetFieldFlag() & (1 << 18);
+
+		
+		std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsText);
+		std::string sFocus, sBlur;
+
+		if (!bCanEdit)
+		{
+			CDictObject* pChange = new CDictObject();
+			if (!pChange)
+			{
+				delete pFocus;
+				delete pBlur;
+				return;
+			}
+
+			// Если текст плейсхолдера не добавить как опцию, тогда AdobeAcrobat не дает выставлять такое текстовое значение
+			AddOption(wsText, false);
+
+			sFocus = "event.target.textColor = [\"RGB\", " +
+				std::to_string(oNormalColor.r) + ", " +
+				std::to_string(oNormalColor.g) + ", " +
+				std::to_string(oNormalColor.b) + "];";
+
+			sBlur = "\nif (event.target.value == \"" + sText + "\")\n	event.target.textColor = [\"RGB\", " +
+				std::to_string(oPlaceHolderColor.r) + ", " +
+				std::to_string(oPlaceHolderColor.g) + ", " +
+				std::to_string(oPlaceHolderColor.b) + "];\nelse\n	event.target.textColor = [\"RGB\", " +
+				std::to_string(oNormalColor.r) + ", " +
+				std::to_string(oNormalColor.g) + ", " +
+				std::to_string(oNormalColor.b) + "];";
+
+			std::string sChange = "\n	if (event.value == \"" + sText + "\")\n		event.target.textColor =[\"RGB\", " +
+				std::to_string(oPlaceHolderColor.r) + ", " +
+				std::to_string(oPlaceHolderColor.g) + ", " +
+				std::to_string(oPlaceHolderColor.b) + "];\n	else\n		event.target.textColor = [\"RGB\", " +
+				std::to_string(oNormalColor.r) + ", " +
+				std::to_string(oNormalColor.g) + ", " +
+				std::to_string(oNormalColor.b) + "];\n}";
+
+			m_pXref->Add(pChange);
+			pChange->Add("S", "JavaScript");
+			pChange->Add("JS", new CStringObject(sChange.c_str(), false, true));
+			pAA->Add("K", pChange);
+		}
+		else
+		{
+			sFocus = "var curColor = color.convert(event.target.textColor, \"RGB\");\nevent.target.textColor = [\"RGB\", " +
+				std::to_string(oNormalColor.r) + ", " +
+				std::to_string(oNormalColor.g) + ", " +
+				std::to_string(oNormalColor.b) + "];\nif (event.target.value == \"" + \
+				sText + "\" && Math.abs(curColor[1] - " + std::to_string(oPlaceHolderColor.r) +
+				") < 0.001 && Math.abs(curColor[2] - " + std::to_string(oPlaceHolderColor.g) +
+				") < 0.001 && Math.abs(curColor[3] - " + std::to_string(oPlaceHolderColor.b) +
+				") < 0.001)\n	event.target.value = \"\";";
+
+			sBlur = "\nif (event.target.value == \"\")\n{	event.target.value = \"" + sText + "\";\n	event.target.textColor = [\"RGB\", " +
+				std::to_string(oPlaceHolderColor.r) + ", " +
+				std::to_string(oPlaceHolderColor.g) + ", " +
+				std::to_string(oPlaceHolderColor.b) + "];\n}";
+		}
+
+		m_pXref->Add(pFocus);
+		pFocus->Add("S", "JavaScript");
+		pFocus->Add("JS", new CStringObject(sFocus.c_str(), false, true));
+		pAA->Add("Fo", pFocus);
+
+		m_pXref->Add(pBlur);
+		pBlur->Add("S", "JavaScript");
+		pBlur->Add("JS", new CStringObject(sBlur.c_str(), false, true));
+		pAA->Add("Bl", pBlur);
 	}
 	//----------------------------------------------------------------------------------------
 	// CCheckBoxField
@@ -706,7 +791,7 @@ namespace PdfWriter
 		const char* sValue = (isYes ? m_sYesName.c_str() : "Off");
 		Add("AS", sValue);
 		Add("V", sValue);
-	}
+	}	
 	//----------------------------------------------------------------------------------------
 	// CRadioGroupField
 	//----------------------------------------------------------------------------------------

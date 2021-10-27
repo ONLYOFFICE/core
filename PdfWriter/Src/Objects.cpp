@@ -198,7 +198,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CArrayObject
 	//----------------------------------------------------------------------------------------
-    void CArrayObject::Add(CObjectBase* pObject)
+    void CArrayObject::Add(CObjectBase* pObject, bool bPushBack)
 	{
 		if (!pObject)
 			return;
@@ -227,7 +227,10 @@ namespace PdfWriter
 
 		pObject->SetDirect();
 
-		m_arrList.push_back(pObject);
+		if (bPushBack)
+			m_arrList.push_back(pObject);
+		else
+			m_arrList.insert(m_arrList.begin(), pObject);
 	}
     void CArrayObject::Add(bool bValue)
 	{

@@ -54,21 +54,14 @@ namespace XLSB
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(CommentsStream)
     public:
-        CommentsStream(const unsigned short code_page);
+        CommentsStream();
         virtual ~CommentsStream();
 
         BaseObjectPtr clone();
 
         virtual const bool loadContent(BinProcessor& proc);
 
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
-
         BaseObjectPtr               m_COMMENTS;
-
-        unsigned short              code_page_;
-        GlobalWorkbookInfoPtr       global_info_;
-
 
     };
 

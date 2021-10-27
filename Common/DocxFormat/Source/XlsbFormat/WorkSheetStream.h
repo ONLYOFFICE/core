@@ -54,7 +54,7 @@ namespace XLSB
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
     public:
-        WorkSheetStream(const unsigned short code_page);
+        WorkSheetStream();
         virtual ~WorkSheetStream();
 
         BaseObjectPtr clone();
@@ -62,9 +62,6 @@ namespace XLSB
         virtual const bool loadContent(BinProcessor& proc);
 
         static const XLS::ElementType type = typeWorksheetSubstream;
-
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
 
         BaseObjectPtr               m_BrtBeginSheet;
         std::vector<BaseObjectPtr>  m_arCOLINFOS;
@@ -85,11 +82,6 @@ namespace XLSB
         BaseObjectPtr               m_FRTWORKSHEET;
 
         BaseObjectPtr               m_BrtEndSheet;
-
-
-        unsigned short              code_page_;
-        GlobalWorkbookInfoPtr		global_info_;
-
 
     };
 

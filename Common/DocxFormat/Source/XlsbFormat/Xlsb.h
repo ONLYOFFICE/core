@@ -29,55 +29,52 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "SharedStringsStream.h"
+#pragma once
 
-#include "Biff12_records/CommonRecords.h"
-#include "Biff12_unions/SHAREDSTRINGS.h"
+#include "../XlsxFormat/Xlsx.h"
+#include "../../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
+#include "../../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
+#include "../../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
+#include "../../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
 
-namespace XLSB
-{
-
-SharedStringsStream::SharedStringsStream()
-{
-}
-
-SharedStringsStream::~SharedStringsStream()
-{
-}
-
-
-BaseObjectPtr SharedStringsStream::clone()
-{
-        return BaseObjectPtr(new SharedStringsStream(*this));
-}
-
-const bool SharedStringsStream::loadContent(BinProcessor& proc)
+namespace OOX
 {	
-	while (true)
-	{
-		CFRecordType::TypeId type = proc.getNextRecordType();
-		
-		if (type == rt_NONE) break;
+	namespace Spreadsheet
+    {
 
-		switch(type)
+        class CXlsb : public CXlsx
 		{
-            case rt_BeginSst:
-            {
-                if (proc.optional<SHAREDSTRINGS>())
-                {
-                    m_SHAREDSTRINGS = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
+		public:
 
-			default://skip					
+            CXlsb() : CXlsx()
 			{
-				proc.SkipRecord();	
-            }break;
-		}
-	}
+                init();
+			}
+            CXlsb(const CPath& oFilePath) : CXlsx(oFilePath)
+			{
+                init();
+			}
+            virtual ~CXlsb();
 
-	return true;
-}
+            bool ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream);
+			
+            void PrepareSi() {}
 
-} // namespace XLSB
+        private:
+
+            void init()
+            {
+                workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
+                xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
+                xls_global_info->Version = 0x0800;
+            }
+
+            XLS::GlobalWorkbookInfoPtr xls_global_info;            
+
+            unsigned short workbook_code_page;
+
+		};
+
+	} //Spreadsheet
+} // OOX
+

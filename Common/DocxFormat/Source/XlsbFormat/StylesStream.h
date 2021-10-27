@@ -54,15 +54,12 @@ namespace XLSB
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(StylesStream)
     public:
-        StylesStream(const unsigned short code_page);
+        StylesStream();
         virtual ~StylesStream();
 
         BaseObjectPtr clone();
 
         virtual const bool loadContent(BinProcessor& proc);
-
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
 
         BaseObjectPtr               m_BrtBeginStyleSheet;
         BaseObjectPtr               m_FMTS;
@@ -77,10 +74,6 @@ namespace XLSB
         BaseObjectPtr               m_COLORPALETTE;
         BaseObjectPtr               m_BrtEndStyleSheet;
         BaseObjectPtr               m_FRTSTYLESHEET;
-
-        unsigned short              code_page_;
-        GlobalWorkbookInfoPtr       global_info_;
-
 
     };
 

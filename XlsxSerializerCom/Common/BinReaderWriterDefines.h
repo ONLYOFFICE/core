@@ -47,8 +47,9 @@ namespace BinXlsxRW
 	namespace c_oFileTypes{enum c_oFileTypes
 	{
 		XLSX	= 1,
-        CSV		= 2,
-		JSON	= 3
+                CSV	= 2,
+                JSON	= 3,
+                XLSB	= 4
 	};} 
 
 

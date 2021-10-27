@@ -4680,6 +4680,11 @@ namespace NExtractTools
 			{
 				result =  xlsx2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
+            case TCD_XLSB2XLST:
+            {
+                oInputParams.m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB);
+                result =  xlsx2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);
+            }break;
 			case TCD_XLSXFLAT2XLST:
 			{
 				result = xlsxflat2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);

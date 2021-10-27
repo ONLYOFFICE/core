@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../Xlsx.h"
+#include "../XlsbFormat/Xlsb.h"
 #include "../Worksheets/Worksheet.h"
 #include "../SharedStrings/Si.h"
 
@@ -371,40 +372,26 @@ namespace OOX
 			}
             void readBin(const CPath& oPath)
             {
-                auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
-                XLS::GlobalWorkbookInfoPtr xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
-                xls_global_info->Version = 0x0800;
-                NSFile::CFileBinary oFile;
-                if (oFile.OpenFile(oPath.GetPath()) == false)
-                    return;
-
-                auto m_lStreamLen = (LONG)oFile.GetFileSize();
-                auto m_pStream = new BYTE[m_lStreamLen];
-                DWORD dwRead = 0;
-                oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
-                oFile.CloseFile();
-                std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
-                binaryReader->Init(m_pStream, 0, dwRead);
-
-                XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
-                XLSB::CommentsStreamPtr commentsStream = std::make_shared<XLSB::CommentsStream>(workbook_code_page);
-                XLS::BinReaderProcessor proc(reader, commentsStream.get(), true);
-
-                proc.mandatory(*commentsStream.get());
-
-                if (commentsStream != nullptr)
+                CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+                if (xlsb)
                 {
-                    auto ptr = static_cast<XLSB::COMMENTS*>(commentsStream->m_COMMENTS.get());
-                    if (ptr != nullptr)
-                    {
-                        if(ptr->m_COMMENTAUTHORS != nullptr)
-                            m_oAuthors = ptr->m_COMMENTAUTHORS;
+                    XLSB::CommentsStreamPtr commentsStream = std::make_shared<XLSB::CommentsStream>();
 
-                        if(ptr->m_COMMENTLIST != nullptr)
-                            m_oCommentList = ptr->m_COMMENTLIST;
+                    xlsb->ReadBin(oPath, commentsStream.get());
+
+                    if (commentsStream != nullptr)
+                    {
+                        auto ptr = static_cast<XLSB::COMMENTS*>(commentsStream->m_COMMENTS.get());
+                        if (ptr != nullptr)
+                        {
+                            if(ptr->m_COMMENTAUTHORS != nullptr)
+                                m_oAuthors = ptr->m_COMMENTAUTHORS;
+
+                            if(ptr->m_COMMENTLIST != nullptr)
+                                m_oCommentList = ptr->m_COMMENTLIST;
+                        }
                     }
                 }
-
             }
 			virtual void read(const CPath& oPath)
 			{

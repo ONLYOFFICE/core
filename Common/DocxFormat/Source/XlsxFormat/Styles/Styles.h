@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../Xlsx.h"
+#include "../XlsbFormat/Xlsb.h"
 #include "../XlsxFlat.h"
 #include "../CommonInclude.h"
 
@@ -45,10 +46,6 @@
 #include "NumFmts.h"
 #include "TableStyles.h"
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
 
 #include "../../XlsbFormat/StylesStream.h"
 #include "../../XlsbFormat/Biff12_unions/FMTS.h"
@@ -183,65 +180,51 @@ namespace OOX
 
             void readBin(const CPath& oPath)
             {
-                auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
-                XLS::GlobalWorkbookInfoPtr xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
-                xls_global_info->Version = 0x0800;
-                NSFile::CFileBinary oFile;
-                if (oFile.OpenFile(oPath.GetPath()) == false)
-                    return;
+                CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+                if (xlsb)
+                {                    
+                    XLSB::StylesStreamPtr stylesStream = std::make_shared<XLSB::StylesStream>();
 
-                auto m_lStreamLen = (LONG)oFile.GetFileSize();
-                auto m_pStream = new BYTE[m_lStreamLen];
-                DWORD dwRead = 0;
-                oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
-                oFile.CloseFile();
-                std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
-                binaryReader->Init(m_pStream, 0, dwRead);
+                    xlsb->ReadBin(oPath, stylesStream.get());
 
-                XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
-                XLSB::StylesStreamPtr stylesStream = std::make_shared<XLSB::StylesStream>(workbook_code_page);
-                XLS::BinReaderProcessor proc(reader, stylesStream.get(), true);
+                    if (stylesStream != nullptr)
+                    {
+                        if (stylesStream->m_FMTS != nullptr)
+                            m_oNumFmts = static_cast<XLSB::FMTS*>(stylesStream->m_FMTS.get())->m_arFmt;
 
-                proc.mandatory(*stylesStream.get());
+                        if (stylesStream->m_FONTS != nullptr)
+                            m_oFonts = static_cast<XLSB::FONTS*>(stylesStream->m_FONTS.get())->m_arBrtFont;
 
-                if (stylesStream != nullptr)
-                {
-                    if (stylesStream->m_FMTS != nullptr)
-                        m_oNumFmts = static_cast<XLSB::FMTS*>(stylesStream->m_FMTS.get())->m_arFmt;
+                        if (stylesStream->m_FILLS != nullptr)
+                            m_oFills = static_cast<XLSB::FILLS*>(stylesStream->m_FILLS.get())->m_arBrtFill;
 
-                    if (stylesStream->m_FONTS != nullptr)
-                        m_oFonts = static_cast<XLSB::FONTS*>(stylesStream->m_FONTS.get())->m_arBrtFont;
+                        if (stylesStream->m_BORDERS != nullptr)
+                            m_oBorders = static_cast<XLSB::BORDERS*>(stylesStream->m_BORDERS.get())->m_arBrtBorder;
 
-                    if (stylesStream->m_FILLS != nullptr)
-                        m_oFills = static_cast<XLSB::FILLS*>(stylesStream->m_FILLS.get())->m_arBrtFill;
+                        if (stylesStream->m_CELLSTYLEXFS != nullptr)
+                            m_oCellStyleXfs = static_cast<XLSB::CELLSTYLEXFS*>(stylesStream->m_CELLSTYLEXFS.get())->m_arBrtXF;
 
-                    if (stylesStream->m_BORDERS != nullptr)
-                        m_oBorders = static_cast<XLSB::BORDERS*>(stylesStream->m_BORDERS.get())->m_arBrtBorder;
+                        if (stylesStream->m_CELLXFS != nullptr)
+                            m_oCellXfs = static_cast<XLSB::CELLXFS*>(stylesStream->m_CELLXFS.get())->m_arBrtXF;
 
-                    if (stylesStream->m_CELLSTYLEXFS != nullptr)
-                        m_oCellStyleXfs = static_cast<XLSB::CELLSTYLEXFS*>(stylesStream->m_CELLSTYLEXFS.get())->m_arBrtXF;
+                        if (stylesStream->m_STYLES != nullptr)
+                            m_oCellStyles = static_cast<XLSB::STYLES*>(stylesStream->m_STYLES.get())->m_arBrtStyle;
 
-                    if (stylesStream->m_CELLXFS != nullptr)
-                        m_oCellXfs = static_cast<XLSB::CELLXFS*>(stylesStream->m_CELLXFS.get())->m_arBrtXF;
+                        if (stylesStream->m_DXFS != nullptr)
+                            m_oDxfs = static_cast<XLSB::DXFS*>(stylesStream->m_DXFS.get())->m_aruDXF;
 
-                    if (stylesStream->m_STYLES != nullptr)
-                        m_oCellStyles = static_cast<XLSB::STYLES*>(stylesStream->m_STYLES.get())->m_arBrtStyle;
+                        if (stylesStream->m_TABLESTYLES != nullptr)
+                            m_oTableStyles = stylesStream->m_TABLESTYLES;
 
-                    if (stylesStream->m_DXFS != nullptr)
-                        m_oDxfs = static_cast<XLSB::DXFS*>(stylesStream->m_DXFS.get())->m_aruDXF;
+                        if (stylesStream->m_COLORPALETTE != nullptr)
+                            m_oColors = stylesStream->m_COLORPALETTE;
 
-                    if (stylesStream->m_TABLESTYLES != nullptr)
-                        m_oTableStyles = stylesStream->m_TABLESTYLES;
+                        if (stylesStream->m_FRTSTYLESHEET != nullptr)
+                            m_oExtLst = stylesStream->m_FRTSTYLESHEET;
 
-                    if (stylesStream->m_COLORPALETTE != nullptr)
-                        m_oColors = stylesStream->m_COLORPALETTE;
-
-                    if (stylesStream->m_FRTSTYLESHEET != nullptr)
-                        m_oExtLst = stylesStream->m_FRTSTYLESHEET;
-
+                        AfterRead();
+                    }
                 }
-
-                AfterRead();
             }
 
 			virtual void read(const CPath& oPath)

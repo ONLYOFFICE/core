@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../Xlsx.h"
+#include "../XlsbFormat/Xlsb.h"
 #include "../CommonInclude.h"
 
 #include "Si.h"
@@ -83,53 +84,40 @@ namespace OOX
 
             void readBin(const CPath& oPath)
             {
-                auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
-                XLS::GlobalWorkbookInfoPtr xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
-                xls_global_info->Version = 0x0800;
-                NSFile::CFileBinary oFile;
-                if (oFile.OpenFile(oPath.GetPath()) == false)
-                    return;
-
-                auto m_lStreamLen = (LONG)oFile.GetFileSize();
-                auto m_pStream = new BYTE[m_lStreamLen];
-                DWORD dwRead = 0;
-                oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
-                oFile.CloseFile();
-                std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
-                binaryReader->Init(m_pStream, 0, dwRead);
-
-                XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
-                XLSB::SharedStringsStreamPtr sharedStringsStream = std::make_shared<XLSB::SharedStringsStream>(workbook_code_page);
-                XLS::BinReaderProcessor proc(reader, sharedStringsStream.get(), true);
-
-                proc.mandatory(*sharedStringsStream.get());
-
-                if (sharedStringsStream != nullptr)
+                CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+                if (xlsb)
                 {
-                    auto ptr = static_cast<XLSB::SHAREDSTRINGS*>(sharedStringsStream->m_SHAREDSTRINGS.get());
-                    if (ptr != nullptr)
+                    XLSB::SharedStringsStreamPtr sharedStringsStream = std::make_shared<XLSB::SharedStringsStream>();
+
+                    xlsb->ReadBin(oPath, sharedStringsStream.get());
+
+                    if (sharedStringsStream != nullptr)
                     {
-                        ReadAttributes(ptr->m_BrtBeginSst);
-
-                        CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-                        std::map<int, CFont*> fonts;
-                        if ((xlsx) && (xlsx->m_pStyles) && (xlsx->m_pStyles->m_oFonts.IsInit()))
-                            fonts = xlsx->m_pStyles->m_oFonts->m_mapFonts;
-
-                        for(auto &sstItem : ptr->m_arBrtSSTItem)
+                        auto ptr = static_cast<XLSB::SHAREDSTRINGS*>(sharedStringsStream->m_SHAREDSTRINGS.get());
+                        if (ptr != nullptr)
                         {
-                            CSi* pItem = new CSi();
-                            auto ptr = static_cast<XLSB::SSTItem*>(sstItem.get());
-                            if(ptr != nullptr)
+                            ReadAttributes(ptr->m_BrtBeginSst);
+
+                            CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
+                            std::map<int, CFont*> fonts;
+                            if ((xlsx) && (xlsx->m_pStyles) && (xlsx->m_pStyles->m_oFonts.IsInit()))
+                                fonts = xlsx->m_pStyles->m_oFonts->m_mapFonts;
+
+                            for(auto &sstItem : ptr->m_arBrtSSTItem)
                             {
-                                pItem->fromBin(ptr->richStr, fonts);
+                                CSi* pItem = new CSi();
+                                auto ptr = static_cast<XLSB::SSTItem*>(sstItem.get());
+                                if(ptr != nullptr)
+                                {
+                                    pItem->fromBin(ptr->richStr, fonts);
+                                }
+                                m_arrItems.push_back(pItem);
+                                m_nCount++;
                             }
-                            m_arrItems.push_back(pItem);
-                            m_nCount++;
+
                         }
 
                     }
-
                 }
 
             }

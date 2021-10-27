@@ -40,6 +40,8 @@
 #include "../../DocxFormat/Media/Image.h"
 #include "../../DocxFormat/VmlDrawing.h"
 
+#include "../XlsbFormat/Xlsb.h"
+
 #include "../../XlsbFormat/WorkSheetStream.h"
 
 #include "../../XlsbFormat/Biff12_unions/HLINKS.h"
@@ -94,65 +96,52 @@ namespace OOX
 
         void CWorksheet::readBin(const CPath& oPath)
         {
-            auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
-            XLS::GlobalWorkbookInfoPtr xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
-            xls_global_info->Version = 0x0800;
-            NSFile::CFileBinary oFile;
-            if (oFile.OpenFile(oPath.GetPath()) == false)
-                return;
-
-            auto m_lStreamLen = (LONG)oFile.GetFileSize();
-            auto m_pStream = new BYTE[m_lStreamLen];
-            DWORD dwRead = 0;
-            oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
-            oFile.CloseFile();
-            std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
-            binaryReader->Init(m_pStream, 0, dwRead);
-
-            XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
-            XLSB::WorkSheetStreamPtr workSheetStream = std::make_shared<XLSB::WorkSheetStream>(workbook_code_page);
-            XLS::BinReaderProcessor proc(reader, workSheetStream.get(), true);
-
-            proc.mandatory(*workSheetStream.get());
-
-            if (workSheetStream != nullptr)
+            CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+            if (xlsb)
             {
-                if (!workSheetStream->m_arCOLINFOS.empty())
-                    m_oCols = workSheetStream->m_arCOLINFOS;
-                if (workSheetStream->m_BrtWsDim != nullptr)
-                    m_oDimension = workSheetStream->m_BrtWsDim;
-                if (workSheetStream->m_BrtDrawing != nullptr)
-                    m_oDrawing = workSheetStream->m_BrtDrawing;
-                if (workSheetStream->m_BrtLegacyDrawing != nullptr)
-                    m_oLegacyDrawing = workSheetStream->m_BrtLegacyDrawing;
-                if (workSheetStream->m_BrtLegacyDrawingHF != nullptr)
-                    m_oLegacyDrawingHF = workSheetStream->m_BrtLegacyDrawingHF;
-                if (workSheetStream->m_HLINKS != nullptr)
-                    m_oHyperlinks = static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks;
-                if (workSheetStream->m_HLINKS != nullptr)
-                    m_oMergeCells = static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell;
-                if (workSheetStream->m_CELLTABLE != nullptr)
-                    m_oSheetData = workSheetStream->m_CELLTABLE;
-                if (workSheetStream->m_BrtWsFmtInfo != nullptr)
-                    m_oSheetFormatPr = workSheetStream->m_BrtWsFmtInfo;
-                if (workSheetStream->m_WSVIEWS2 != nullptr)
-                    m_oSheetViews = workSheetStream->m_WSVIEWS2;
+                XLSB::WorkSheetStreamPtr workSheetStream = std::make_shared<XLSB::WorkSheetStream>();
 
-                if (workSheetStream->m_BrtSheetProtectionIso != nullptr)
-                    m_oSheetProtection = workSheetStream->m_BrtSheetProtectionIso;
-                else if(workSheetStream->m_BrtSheetProtection != nullptr)
-                    m_oSheetProtection = workSheetStream->m_BrtSheetProtection;
+                xlsb->ReadBin(oPath, workSheetStream.get());
 
-                if (workSheetStream->m_LISTPARTS != nullptr)
-                    m_oTableParts = workSheetStream->m_LISTPARTS;
-                if (workSheetStream->m_SORTSTATE != nullptr)
-                    m_oSortState = workSheetStream->m_SORTSTATE;
-                if (!workSheetStream->m_arCONDITIONALFORMATTING.empty())
-                        for(auto &item : workSheetStream->m_arCONDITIONALFORMATTING)
-                            m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(item));
+                if (workSheetStream != nullptr)
+                {
+                    if (!workSheetStream->m_arCOLINFOS.empty())
+                        m_oCols = workSheetStream->m_arCOLINFOS;
+                    if (workSheetStream->m_BrtWsDim != nullptr)
+                        m_oDimension = workSheetStream->m_BrtWsDim;
+                    if (workSheetStream->m_BrtDrawing != nullptr)
+                        m_oDrawing = workSheetStream->m_BrtDrawing;
+                    if (workSheetStream->m_BrtLegacyDrawing != nullptr)
+                        m_oLegacyDrawing = workSheetStream->m_BrtLegacyDrawing;
+                    if (workSheetStream->m_BrtLegacyDrawingHF != nullptr)
+                        m_oLegacyDrawingHF = workSheetStream->m_BrtLegacyDrawingHF;
+                    if (workSheetStream->m_HLINKS != nullptr)
+                        m_oHyperlinks = static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks;
+                    if (workSheetStream->m_HLINKS != nullptr)
+                        m_oMergeCells = static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell;
+                    if (workSheetStream->m_CELLTABLE != nullptr)
+                        m_oSheetData = workSheetStream->m_CELLTABLE;
+                    if (workSheetStream->m_BrtWsFmtInfo != nullptr)
+                        m_oSheetFormatPr = workSheetStream->m_BrtWsFmtInfo;
+                    if (workSheetStream->m_WSVIEWS2 != nullptr)
+                        m_oSheetViews = workSheetStream->m_WSVIEWS2;
 
-                if (workSheetStream->m_FRTWORKSHEET != nullptr)
-                    m_oExtLst = workSheetStream->m_FRTWORKSHEET;
+                    if (workSheetStream->m_BrtSheetProtectionIso != nullptr)
+                        m_oSheetProtection = workSheetStream->m_BrtSheetProtectionIso;
+                    else if(workSheetStream->m_BrtSheetProtection != nullptr)
+                        m_oSheetProtection = workSheetStream->m_BrtSheetProtection;
+
+                    if (workSheetStream->m_LISTPARTS != nullptr)
+                        m_oTableParts = workSheetStream->m_LISTPARTS;
+                    if (workSheetStream->m_SORTSTATE != nullptr)
+                        m_oSortState = workSheetStream->m_SORTSTATE;
+                    if (!workSheetStream->m_arCONDITIONALFORMATTING.empty())
+                            for(auto &item : workSheetStream->m_arCONDITIONALFORMATTING)
+                                m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(item));
+
+                    if (workSheetStream->m_FRTWORKSHEET != nullptr)
+                        m_oExtLst = workSheetStream->m_FRTWORKSHEET;
+                }
 
             }
         }

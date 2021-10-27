@@ -156,24 +156,27 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
-				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
-				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
-					{
-							 if (0 == sExt2.compare(_T(".xlst")))		res = TCD_XLSX2XLST;
-						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_XLSX2XLST_BIN;
-						else if (0 == sExt2.compare(_T(".csv")))		res = TCD_XLSX2CSV;
-                        else if (0 == sExt2.compare(_T(".ods")))		res = TCD_XLSX2ODS;
-                        else if (0 == sExt2.compare(_T(".xlsx")))
-						{
-							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX)
-								res = TCD_XLTX2XLSX;
-							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
-								res = TCD_XLSM2XLSX;
-							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM)
-								res = TCD_XLTM2XLSX;
-						}
-                        else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_XLTM2XLSM;
-                    }break;
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:				
+                {
+                         if (0 == sExt2.compare(_T(".xlst")))		res = TCD_XLSX2XLST;
+                    else if (0 == sExt2.compare(_T(".bin")))		res = TCD_XLSX2XLST_BIN;
+                    else if (0 == sExt2.compare(_T(".csv")))		res = TCD_XLSX2CSV;
+                    else if (0 == sExt2.compare(_T(".ods")))		res = TCD_XLSX2ODS;
+                    else if (0 == sExt2.compare(_T(".xlsx")))
+                    {
+                        if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX)
+                            res = TCD_XLTX2XLSX;
+                        if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
+                            res = TCD_XLSM2XLSX;
+                        if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM)
+                            res = TCD_XLTM2XLSX;
+                    }
+                    else if (0 == sExt2.compare(_T(".xlsm")))		res = TCD_XLTM2XLSM;
+                }break;
+                case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
+                {
+                    if (0 == sExt2.compare(_T(".xlst")))		res = TCD_XLSB2XLST;
+                }
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM:
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:

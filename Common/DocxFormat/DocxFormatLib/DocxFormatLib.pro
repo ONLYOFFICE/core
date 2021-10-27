@@ -103,6 +103,7 @@ SOURCES += \
     ../Source/XlsxFormat/Slicer/Slicer.cpp \
     ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
 ### XLSB
+    ../Source/XlsbFormat/Xlsb.cpp \
     ../Source/XlsbFormat/WorkBookStream.cpp \
     ../Source/XlsbFormat/WorkSheetStream.cpp \
     ../Source/XlsbFormat/SharedStringsStream.cpp \
@@ -569,6 +570,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Slicer/Slicer.h \
     ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.h \
 ### XLSB
+    ../Source/XlsbFormat/Xlsb.h \
     ../Source/XlsbFormat/WorkBookStream.h \
     ../Source/XlsbFormat/WorkSheetStream.h \
     ../Source/XlsbFormat/SharedStringsStream.h \

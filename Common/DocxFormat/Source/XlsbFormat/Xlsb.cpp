@@ -29,55 +29,35 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "SharedStringsStream.h"
+#include "Xlsb.h"
 
-#include "Biff12_records/CommonRecords.h"
-#include "Biff12_unions/SHAREDSTRINGS.h"
 
-namespace XLSB
+#include "../../../../DesktopEditor/common/SystemUtils.h"
+
+OOX::Spreadsheet::CXlsb::~CXlsb()
 {
 
-SharedStringsStream::SharedStringsStream()
+}	
+
+bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream)
 {
+    NSFile::CFileBinary oFile;
+    if (oFile.OpenFile(oFilePath.GetPath()) == false)
+        return false;
+
+    auto m_lStreamLen = (LONG)oFile.GetFileSize();
+    auto m_pStream = new BYTE[m_lStreamLen];
+    DWORD dwRead = 0;
+    oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
+    oFile.CloseFile();
+
+    std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
+    binaryReader->Init(m_pStream, 0, dwRead);
+
+    XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
+    //std::shared_ptr<Type> typeStream = std::make_shared<Type>();
+    XLS::BinReaderProcessor proc(reader, objStream, true);
+    proc.mandatory(*objStream);
+    return true;
 }
 
-SharedStringsStream::~SharedStringsStream()
-{
-}
-
-
-BaseObjectPtr SharedStringsStream::clone()
-{
-        return BaseObjectPtr(new SharedStringsStream(*this));
-}
-
-const bool SharedStringsStream::loadContent(BinProcessor& proc)
-{	
-	while (true)
-	{
-		CFRecordType::TypeId type = proc.getNextRecordType();
-		
-		if (type == rt_NONE) break;
-
-		switch(type)
-		{
-            case rt_BeginSst:
-            {
-                if (proc.optional<SHAREDSTRINGS>())
-                {
-                    m_SHAREDSTRINGS = elements_.back();
-                    elements_.pop_back();
-                }
-            }break;
-
-			default://skip					
-			{
-				proc.SkipRecord();	
-            }break;
-		}
-	}
-
-	return true;
-}
-
-} // namespace XLSB

@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../Xlsx.h"
+#include "../XlsbFormat/Xlsb.h"
 #include "../XlsxFlat.h"
 #include "../CommonInclude.h"
 
@@ -105,53 +106,40 @@ namespace OOX
 			}
             void readBin(const CPath& oPath)
             {
-                auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
-                XLS::GlobalWorkbookInfoPtr xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
-                xls_global_info->Version = 0x0800;
-                NSFile::CFileBinary oFile;
-                if (oFile.OpenFile(oPath.GetPath()) == false)
-                    return;
-
-                auto m_lStreamLen = (LONG)oFile.GetFileSize();
-                auto m_pStream = new BYTE[m_lStreamLen];
-                DWORD dwRead = 0;
-                oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
-                oFile.CloseFile();
-                std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
-                binaryReader->Init(m_pStream, 0, dwRead);
-
-                XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
-                XLSB::WorkBookStreamPtr workBookStream = std::make_shared<XLSB::WorkBookStream>(workbook_code_page);
-                XLS::BinReaderProcessor proc(reader, workBookStream.get(), true);
-
-                proc.mandatory(*workBookStream.get());
-
-                if (workBookStream != nullptr)
+                CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+                if (xlsb)
                 {
-                    if (workBookStream->m_BOOKVIEWS != nullptr)
-                        m_oBookViews = static_cast<XLSB::BOOKVIEWS*>(workBookStream->m_BOOKVIEWS.get())->m_arBrtBookView;
-                    if (workBookStream->m_BrtCalcProp != nullptr)
-                        m_oCalcPr = workBookStream->m_BrtCalcProp;
-                    if (!workBookStream->m_arBrtName.empty())
-                        m_oDefinedNames = workBookStream->m_arBrtName;
-                    if (workBookStream->m_BUNDLESHS != nullptr)
-                        m_oSheets = static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh;
-                    if (workBookStream->m_BrtWbProp != nullptr)
-                        m_oWorkbookPr = workBookStream->m_BrtWbProp;
+                    XLSB::WorkBookStreamPtr workBookStream = std::make_shared<XLSB::WorkBookStream>();
 
-                    if (workBookStream->m_BrtBookProtectionIso != nullptr)
-                        m_oWorkbookProtection = workBookStream->m_BrtBookProtectionIso;
-                    else if(workBookStream->m_BrtBookProtection != nullptr)
-                        m_oWorkbookProtection = workBookStream->m_BrtBookProtection;
+                    xlsb->ReadBin(oPath, workBookStream.get());
 
-                    if (workBookStream->m_EXTERNALS != nullptr)
-                        m_oExternalReferences = static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP;
-                    if (workBookStream->m_BrtFileVersion != nullptr )                    
-                        m_oAppName = static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName.value();
-                    /*
-                    else if ( L"extLst" == sName )
-                        m_oExtLst = oReader;
-                   */
+                    if (workBookStream != nullptr)
+                    {
+                        if (workBookStream->m_BOOKVIEWS != nullptr)
+                            m_oBookViews = static_cast<XLSB::BOOKVIEWS*>(workBookStream->m_BOOKVIEWS.get())->m_arBrtBookView;
+                        if (workBookStream->m_BrtCalcProp != nullptr)
+                            m_oCalcPr = workBookStream->m_BrtCalcProp;
+                        if (!workBookStream->m_arBrtName.empty())
+                            m_oDefinedNames = workBookStream->m_arBrtName;
+                        if (workBookStream->m_BUNDLESHS != nullptr)
+                            m_oSheets = static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh;
+                        if (workBookStream->m_BrtWbProp != nullptr)
+                            m_oWorkbookPr = workBookStream->m_BrtWbProp;
+
+                        if (workBookStream->m_BrtBookProtectionIso != nullptr)
+                            m_oWorkbookProtection = workBookStream->m_BrtBookProtectionIso;
+                        else if(workBookStream->m_BrtBookProtection != nullptr)
+                            m_oWorkbookProtection = workBookStream->m_BrtBookProtection;
+
+                        if (workBookStream->m_EXTERNALS != nullptr)
+                            m_oExternalReferences = static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP;
+                        if (workBookStream->m_BrtFileVersion != nullptr )
+                            m_oAppName = static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName.value();
+                        /*
+                        else if ( L"extLst" == sName )
+                            m_oExtLst = oReader;
+                       */
+                    }
 
                 }
             }

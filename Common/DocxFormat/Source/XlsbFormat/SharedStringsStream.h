@@ -54,21 +54,14 @@ namespace XLSB
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(SharedStringsStream)
     public:
-        SharedStringsStream(const unsigned short code_page);
+        SharedStringsStream();
         virtual ~SharedStringsStream();
 
         BaseObjectPtr clone();
 
         virtual const bool loadContent(BinProcessor& proc);
 
-        int serialize_format(std::wostream & _stream);
-        int serialize_protection(std::wostream & _stream);
-
         BaseObjectPtr               m_SHAREDSTRINGS;
-
-        unsigned short              code_page_;
-        GlobalWorkbookInfoPtr       global_info_;
-
 
     };
 

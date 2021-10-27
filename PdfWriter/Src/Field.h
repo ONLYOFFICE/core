@@ -93,7 +93,7 @@ namespace PdfWriter
 		int GetFieldFlag() const;
 		const char* GetFieldType() const;
 		void SetAlign(const EFieldAlignType& eType);
-		void SetPlaceHolderText(const std::wstring& wsText, const TRgb& oNormalColor, const TRgb& oPlaceHolderColor);
+		virtual void SetPlaceHolderText(const std::wstring& wsText, const TRgb& oNormalColor, const TRgb& oPlaceHolderColor);
 
 	protected:
 
@@ -150,7 +150,8 @@ namespace PdfWriter
 		void SetMultiSelectFlag(const bool& isMultiSelect);
 		void SetDoNotSpellCheck(const bool& isDoNotSpellCheck);
 
-		void AddOption(const std::wstring& wsOption);
+		void AddOption(const std::wstring& wsOption, const bool& bPushBack = true);
+		virtual void SetPlaceHolderText(const std::wstring& wsText, const TRgb& oNormalColor, const TRgb& oPlaceHolderColor);
 
 	private:
 
@@ -167,7 +168,7 @@ namespace PdfWriter
 						   const std::wstring& wsOffValue, unsigned char* pOffCodes, unsigned int unOffCount, CFontDict* pOffFont,
 						   const TRgb& oColor, const double& dAlpha, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0);
 		void SetAppearance(const int& nType, const TRgb& oColor, const double& dAlpha, double dFontSize = 10.0, double dX = 0.0, double dY = 0.0);
-		void SetValue(const bool& isYes);
+		void SetValue(const bool& isYes);		
 
 	private:
 

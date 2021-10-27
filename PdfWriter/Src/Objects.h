@@ -317,7 +317,7 @@ namespace PdfWriter
 		{
 			return m_arrList.size();
 		}
-		void         Add(CObjectBase* pObject);
+		void         Add(CObjectBase* pObject, bool bPushBack = true);
 		void         Add(bool bValue);
 		void         Add(int nValue);
 		void         Add(unsigned int unValue);

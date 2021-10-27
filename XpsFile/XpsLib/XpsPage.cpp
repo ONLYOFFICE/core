@@ -191,13 +191,6 @@ namespace XPS
 		oRes.ClearWithoutAttack();
 		return res;
 	}
-    int  GetCurrentFont(const std::wstring& sFont)
-    {
-        size_t nLast = sFont.rfind(L'_');
-        if (nLast == std::wstring::npos)
-            return -1;
-        return std::stoi(sFont.substr(nLast + 1)) - 1;
-    }
     void Page::GetGlyphs(IRenderer* m_pRenderer, const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
     {
         // m_pInternal->GetUnicodes(bsUnicodeText);
@@ -236,7 +229,11 @@ namespace XPS
         std::wstring sCurrentFontName; double dFontSize;
         m_pRenderer->get_FontPath(&sCurrentFontName);
         m_pRenderer->get_FontSize(&dFontSize);
-        int nCurrentFont = GetCurrentFont(sCurrentFontName);
+        std::wstring wsFontName = sCurrentFontName;
+        NSStringExt::Replace(wsFontName, L"\\", L"/");
+        wsFontName = GetFileName(wsFontName);
+        NSStringExt::ToLower(wsFontName);
+        int nCurrentFont = m_pFontList->GetFontId(wsFontName);
         if ((nCurrentFont != m_lCurrentFont) || (dFontSize != m_dCurrentFontSize))
         {
             m_lCurrentFont     = nCurrentFont;

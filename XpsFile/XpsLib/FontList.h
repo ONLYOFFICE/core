@@ -32,9 +32,11 @@
 #ifndef _XPS_XPSLIB_FONTLIST_H
 #define _XPS_XPSLIB_FONTLIST_H
 
-#include <map>
+#include <vector>
 #include <string>
 #include <sstream>
+#include <algorithm>
+#include <iterator>
 
 #include "../../DesktopEditor/graphics/TemporaryCS.h"
 #include "../../DesktopEditor/common/File.h"
@@ -113,19 +115,23 @@ namespace XPS
 			}
 			m_oCS.Leave();
 		}
+		int  GetFontId(const std::wstring& wsName)
+		{
+			std::vector<std::wstring>::iterator oIter = std::find(m_mList.begin(), m_mList.end(), wsName);
+			if (oIter != m_mList.end())
+				return std::distance(m_mList.begin(), oIter);
+			return -1;
+		}
 	private:
 
 		bool Find(const std::wstring& wsName)
 		{
-			std::map<std::wstring, bool>::iterator oIter = m_mList.find(wsName);
-			if (oIter != m_mList.end())
-				return oIter->second;
-
-			return false;
+			std::vector<std::wstring>::iterator oIter = std::find(m_mList.begin(), m_mList.end(), wsName);
+			return oIter != m_mList.end();
 		}
 		void Add(const std::wstring& wsName)
 		{
-			m_mList.insert(std::pair<std::wstring, bool>(wsName, true));
+			m_mList.push_back(wsName);
 		}
 		void GetFontKey(const std::wstring& wsName, unsigned char* sKey)
 		{
@@ -155,7 +161,7 @@ namespace XPS
 	private:
 
 		NSCriticalSection::CRITICAL_SECTION m_oCS;
-		std::map<std::wstring, bool>        m_mList;
+		std::vector<std::wstring>         m_mList;
 	};
 }
 

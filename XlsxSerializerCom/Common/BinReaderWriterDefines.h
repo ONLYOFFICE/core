@@ -83,7 +83,8 @@ namespace BinXlsxRW
 		App = 6,
 		Core = 7,
 		PersonList = 8,
-		CustomProperties = 9
+		CustomProperties = 9,
+		Customs = 10
 	};}
 
 	namespace c_oSerStylesTypes{enum c_oSerStylesTypes
@@ -623,6 +624,13 @@ namespace BinXlsxRW
 		Ref = 4,
 		ChildChain = 5,
 		NewThread = 6
+	};}
+	namespace c_oSerCustoms {enum c_oSerCustoms
+	{
+		Custom = 0,
+		ItemId = 1,
+		Uri = 2,
+		Content = 3
 	};}
 	namespace c_oSer_ChartType{enum c_oSer_ChartType
 	{

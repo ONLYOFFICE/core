@@ -42,7 +42,7 @@ namespace OOX
 	//--------------------------------------------------------------------------------
 	// CCustomXML 22.5
 	//--------------------------------------------------------------------------------	
-	class CCustomXMLProps : public OOX::File, public WritingElement
+	class CCustomXMLProps : public OOX::FileGlobalEnumerated, public WritingElement
 	{
 	public:
 
@@ -132,10 +132,10 @@ namespace OOX
 			}
 		};
 	//----------------------------------------------------------------------	
-		CCustomXMLProps(OOX::Document *pMain): OOX::File(pMain)
+		CCustomXMLProps(OOX::Document *pMain) : OOX::FileGlobalEnumerated(pMain)
 		{
 		}
-		CCustomXMLProps(OOX::Document *pMain, const OOX::CPath& oFilePath): OOX::File(pMain)
+		CCustomXMLProps(OOX::Document *pMain, const OOX::CPath& oFilePath): OOX::FileGlobalEnumerated(pMain)
 		{
 			read( oFilePath );
 		}
@@ -182,7 +182,7 @@ namespace OOX
 		{
 			NSFile::CFileBinary::SaveToFile(oFilePath.GetPath(), toXML());
 
-			oContent.Registration( type().OverrideType(), type().DefaultDirectory(), oFilePath.GetFilename() );
+			oContent.Registration( type().OverrideType(), OOX::CPath(L"customXml"), oFilePath.GetFilename() );
 		}
 		virtual EElementType getType() const
 		{
@@ -206,18 +206,21 @@ namespace OOX
 
 	// Childs
 		nullable<CShemaRefs> m_oShemaRefs;
-//-------------
+//------------- for write from binary
 		std::wstring m_oCustomXmlContent;
+		std::string m_oCustomXmlContentA;
 	};
 
-	class CCustomXML : public OOX::File, public OOX::IFileContainer
+	class CCustomXML : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 	{
 	public:
-		CCustomXML(OOX::Document *pMain): OOX::File(pMain), OOX::IFileContainer(pMain)
+		CCustomXML(OOX::Document *pMain, bool bDocument = true) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 		{
+			m_bDocument = bDocument;
 		}
-		CCustomXML(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath): OOX::File(pMain), OOX::IFileContainer(pMain)
+		CCustomXML(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 		{
+			m_bDocument = false;
 			read( oRootPath, oPath );
 		}
 		virtual ~CCustomXML()
@@ -232,13 +235,19 @@ namespace OOX
 		{
 			IFileContainer::Read( oRootPath, oFilePath );
 
-			NSFile::CFileBinary::ReadAllTextUtf8(oFilePath.GetPath(), m_sXml);
+			NSFile::CFileBinary::ReadAllTextUtf8A(oFilePath.GetPath(), m_sXmlA);
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			NSFile::CFileBinary::SaveToFile( oFilePath.GetPath(), m_sXml );
-
-			oContent.Registration( type().OverrideType(), oDirectory, oFilePath.GetFilename() );
+			NSFile::CFileBinary oFile;
+			if (true == oFile.CreateFileW(oFilePath.GetPath()))
+			{
+				if (false == m_sXmlA.empty())
+					oFile.WriteFile((BYTE*)m_sXmlA.c_str(), m_sXmlA.length());
+				oFile.CloseFile();
+			}
+			
+			IFileContainer::Write(oFilePath, oDirectory, oContent);
 		}
 		virtual const OOX::FileType type() const
 		{
@@ -246,7 +255,9 @@ namespace OOX
 		}
 		virtual const CPath DefaultDirectory() const
 		{
-			return type().DefaultDirectory();
+			//if (m_bDocument) return type().DefaultDirectory();
+			//else 
+				return L"../" + type().DefaultDirectory();
 		}
 		virtual const CPath DefaultFileName() const
 		{
@@ -273,9 +284,10 @@ namespace OOX
 			return L"";
 		}
 		
-		std::wstring m_sXml;
-		
-		bool bUsed = false;
+		std::string m_sXmlA;
+
+		bool m_bUsed = false;
+		bool m_bDocument = false;
 	};
 
 } // namespace OOX

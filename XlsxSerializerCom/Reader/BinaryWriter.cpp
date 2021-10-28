@@ -52,6 +52,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/CustomXml.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinkPath.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Comments/ThreadedComments.h"
@@ -6943,7 +6944,7 @@ void BinaryWorksheetTableWriter::WriteSlicers(OOX::Spreadsheet::CWorksheet& oWor
 		}
 	}
 }
-
+//---------------------------------------------------------------------------------------------------------------------
 BinaryCalcChainTableWriter::BinaryCalcChainTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream) : m_oBcw(oCBufferedStream)
 {
 }
@@ -7009,7 +7010,60 @@ void BinaryCalcChainTableWriter::WriteCalcChain(OOX::Spreadsheet::CCalcCell& oCa
 		m_oBcw.m_oStream.WriteBOOL(oCalcCell.m_oNewThread->ToBool());
 	}
 }
+//-----------------------------------------------------------------------------------------------------
+BinaryCustomsTableWriter::BinaryCustomsTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream) : m_oBcw(oCBufferedStream)
+{
+}
+void BinaryCustomsTableWriter::Write(OOX::IFileContainer *pContainer)
+{
+	if (!pContainer) return;
 
+	int nStart = m_oBcw.WriteItemWithLengthStart();
+
+	std::vector<smart_ptr<OOX::File>>& container = pContainer->GetContainer();
+	for (size_t i = 0; i < container.size(); ++i)
+	{
+		if (OOX::FileTypes::CustomXml == container[i]->type())
+		{
+			OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
+			if (pCustomXml->m_bUsed) continue;
+
+			int nCurPos = m_oBcw.WriteItemStart(c_oSerCustoms::Custom);
+
+			std::vector<smart_ptr<OOX::File>>& containerCustom = pCustomXml->GetContainer();
+			for (size_t i = 0; i < containerCustom.size(); ++i)
+			{
+				if (OOX::FileTypes::CustomXmlProps == containerCustom[i]->type())
+				{
+					OOX::CCustomXMLProps* pCustomXmlProps = dynamic_cast<OOX::CCustomXMLProps*>(containerCustom[i].GetPointer());
+
+					int nCurPos1 = m_oBcw.WriteItemStart(c_oSerCustoms::ItemId);
+					m_oBcw.m_oStream.WriteStringW3(pCustomXmlProps->m_oItemID.ToString());
+					m_oBcw.WriteItemEnd(nCurPos1);
+
+					if (pCustomXmlProps->m_oShemaRefs.IsInit())
+					{
+						for (size_t j = 0; j < pCustomXmlProps->m_oShemaRefs->m_arrItems.size(); ++j)
+						{
+							nCurPos1 = m_oBcw.WriteItemStart(c_oSerCustoms::Uri);
+							m_oBcw.m_oStream.WriteStringW3(pCustomXmlProps->m_oShemaRefs->m_arrItems[j]->m_sUri);
+							m_oBcw.WriteItemEnd(nCurPos1);
+						}
+					}
+				}
+			}
+
+			int nCurPos2 = m_oBcw.WriteItemStart(c_oSerCustoms::Content);
+			m_oBcw.m_oStream.WriteStringA(pCustomXml->m_sXmlA);
+			m_oBcw.WriteItemEnd(nCurPos2);
+
+			m_oBcw.WriteItemEnd(nCurPos);
+			pCustomXml->m_bUsed = true;
+		}
+	}
+	m_oBcw.WriteItemWithLengthEnd(nStart);
+}
+//------------------------------------------------------------------------------------------------------
 BinaryOtherTableWriter::BinaryOtherTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, PPTX::Theme* pTheme, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
 	:	m_oBcw					(oCBufferedStream), 
 		m_pEmbeddedFontsManager	(pEmbeddedFontsManager),
@@ -7319,6 +7373,12 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 		nCurPos = WriteTableStart(c_oSerTableTypes::Other);
 		BinaryOtherTableWriter oBinaryOtherTableWriter(oBufferedStream, pEmbeddedFontsManager, pXlsx->GetTheme(), pOfficeDrawingConverter);
 		oBinaryOtherTableWriter.Write();
+		WriteTableEnd(nCurPos);
+
+	//Customs from Workbook (todooo - другие)
+		nCurPos = WriteTableStart(c_oSerTableTypes::Customs);
+		BinaryCustomsTableWriter oBinaryCustomsTableWriter(oBufferedStream);
+		oBinaryCustomsTableWriter.Write(pXlsx->m_pWorkbook);
 		WriteTableEnd(nCurPos);
 	}
 	else if (pXlsxFlat)

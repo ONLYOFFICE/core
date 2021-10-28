@@ -990,12 +990,21 @@ namespace PdfWriter
 				pField->ClearKidRecords();
 				pField->SetParent(pParent);
 				pParent->AddKid(pField);
+
+
+				CChoiceField* pChoice = dynamic_cast<CChoiceField*>(pBase);
+				if (pChoice)
+					pChoice->UpdateSelectedIndexToParent();
 			}
 			else
 			{
 				pField->ClearKidRecords();
 				pField->SetParent(pBase);
 				pBase->AddKid(pField);
+
+				CChoiceField* pChoice = dynamic_cast<CChoiceField*>(pBase);
+				if (pChoice)
+					pChoice->UpdateSelectedIndexToParent();
 			}
 
 			return true;

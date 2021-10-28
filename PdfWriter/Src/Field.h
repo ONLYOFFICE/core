@@ -151,6 +151,8 @@ namespace PdfWriter
 		void SetDoNotSpellCheck(const bool& isDoNotSpellCheck);
 
 		void AddOption(const std::wstring& wsOption, const bool& bPushBack = true);
+		void SetSelectedIndex(const unsigned int& unIndex);
+		void UpdateSelectedIndexToParent();
 		virtual void SetPlaceHolderText(const std::wstring& wsText, const TRgb& oNormalColor, const TRgb& oPlaceHolderColor);
 
 	private:

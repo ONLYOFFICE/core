@@ -1599,7 +1599,12 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		TColor oColor      = m_oBrush.GetTColor1();
 		bool isPlaceHolder = oInfo.IsPlaceHolder();
-		double dAlpha      = isPlaceHolder ? 0.5 : 1;
+
+		TRgb oNormalColor(oColor.r, oColor.g, oColor.b);
+		TRgb oPlaceHolderColor;
+		oPlaceHolderColor.r = oNormalColor.r + (1.0 - oNormalColor.r) / 2.0;
+		oPlaceHolderColor.g = oNormalColor.g + (1.0 - oNormalColor.g) / 2.0;
+		oPlaceHolderColor.b = oNormalColor.b + (1.0 - oNormalColor.b) / 2.0;
 
 		if (!isPlaceHolder)
 			pField->SetTextValue(wsValue);
@@ -1630,7 +1635,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 			m_oLinesManager.CalculateLines(dFontSize, MM_2_PT(dW));
 
-			pField->StartTextAppearance(m_pFont, dFontSize, TRgb(oColor.r, oColor.g, oColor.b), dAlpha);
+			pField->StartTextAppearance(m_pFont, dFontSize, isPlaceHolder ? oPlaceHolderColor : oNormalColor, 1.0);
 
 			unsigned int unLinesCount = m_oLinesManager.GetLinesCount();
 			double dLineShiftY = MM_2_PT(dH) - pFontTT->GetLineHeight() * dFontSize / 1000.0 - dMargin;
@@ -1676,7 +1681,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 					dShiftX += (MM_2_PT(dW) - dSumWidth) / 2;
 			}
 
-			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), dAlpha, m_oFont.GetSize(), dShiftX, dBaseLine, pShifts, unShiftsCount);
+			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, isPlaceHolder ? oPlaceHolderColor : oNormalColor, 1.0, m_oFont.GetSize(), dShiftX, dBaseLine, pShifts, unShiftsCount);
 		}
 
 		if (pShifts)
@@ -1685,6 +1690,9 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		delete[] pCodes;
 
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), TRgb(oColor.r, oColor.g, oColor.b));
+
+		if (!pPr->GetPlaceHolder().empty())
+			pField->SetPlaceHolderText(pPr->GetPlaceHolder(), oNormalColor, oPlaceHolderColor);
 	}
 	else if (oInfo.IsDropDownList())
 	{
@@ -1707,26 +1715,47 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
 
 		TColor oColor = m_oBrush.GetTColor1();
-		if (oInfo.IsPlaceHolder())
-		{
-			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 0.5, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
-		}
-		else
-		{
-			pField->SetTextValue(wsValue);
-			pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
-		}
+
+		TRgb oNormalColor(oColor.r, oColor.g, oColor.b);
+		TRgb oPlaceHolderColor;
+		oPlaceHolderColor.r = oNormalColor.r + (1.0 - oNormalColor.r) / 2.0;
+		oPlaceHolderColor.g = oNormalColor.g + (1.0 - oNormalColor.g) / 2.0;
+		oPlaceHolderColor.b = oNormalColor.b + (1.0 - oNormalColor.b) / 2.0;
+
+		pField->SetTextValue(wsValue);
+		pField->SetTextAppearance(wsValue, pCodes, unLen * 2, m_pFont, oInfo.IsPlaceHolder() ? oPlaceHolderColor : oNormalColor, 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
 		delete[] pCodes;
 
+		unsigned int unSelectedIndex = 0xFFFF;
 		for (unsigned int unIndex = 0, unItemsCount = pPr->GetComboBoxItemsCount(); unIndex < unItemsCount; ++unIndex)
 		{
-			pField->AddOption(pPr->GetComboBoxItem(unIndex));
+			std::wstring wsItem = pPr->GetComboBoxItem(unIndex);
+			pField->AddOption(wsItem);
+			if (wsItem == wsValue)
+				unSelectedIndex = unIndex;
 		}
 
 		pField->SetComboFlag(true);
-		pField->SetEditFlag(!pPr->IsEditComboBox());
+		pField->SetEditFlag(pPr->IsEditComboBox());
 
-		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), TRgb(oColor.r, oColor.g, oColor.b));
+		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), oInfo.IsPlaceHolder() ? oPlaceHolderColor : oNormalColor);
+
+		if (!pPr->GetPlaceHolder().empty())
+		{
+			pField->SetPlaceHolderText(pPr->GetPlaceHolder(), oNormalColor, oPlaceHolderColor);
+
+			if (!pPr->IsEditComboBox())
+			{
+				// Для drop-down list в 0 позиции мы добавили плейсхолдер
+				if (oInfo.IsPlaceHolder())
+					unSelectedIndex = 0;
+				else if (0xFFFF != unSelectedIndex)
+					unSelectedIndex++;
+			}
+		}
+
+		if (!pPr->IsEditComboBox() && 0xFFFF != unSelectedIndex)
+			pField->SetSelectedIndex(unSelectedIndex);
 	}
 	else if (oInfo.IsCheckBox())
 	{

@@ -97,6 +97,10 @@ namespace PdfWriter
 		{
 			return object_type_UNKNOWN;
 		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CObjectBase();
+		}
 		bool IsHidden() const;
 		bool IsDirect() const;
 		bool IsIndirect() const;
@@ -121,6 +125,11 @@ namespace PdfWriter
 	{
 	public:
 
+		virtual CObjectBase* Copy() const
+		{
+			return new CNullObject();
+		}
+
 		EObjectType GetType() const
 		{
 			return object_type_NULL;
@@ -133,6 +142,10 @@ namespace PdfWriter
 		CBoolObject(const bool& bValue)
 		{
 			m_bValue = bValue;
+		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CBoolObject(m_bValue);
 		}
 		EObjectType GetType() const
 		{
@@ -156,6 +169,10 @@ namespace PdfWriter
 		CNumberObject(const int& nValue)
 		{
 			m_nValue = nValue;
+		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CNumberObject(m_nValue);
 		}
 		EObjectType GetType() const
 		{
@@ -187,6 +204,10 @@ namespace PdfWriter
 		CRealObject(double dValue)
 		{
 			Set((float)dValue);
+		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CRealObject(m_fValue);
 		}
 		EObjectType GetType() const
 		{
@@ -221,6 +242,10 @@ namespace PdfWriter
 		{
 			return m_sValue;
 		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CNameObject(m_sValue);
+		}
 		EObjectType GetType() const
 		{
 			return object_type_NAME;
@@ -242,6 +267,10 @@ namespace PdfWriter
 		unsigned int GetLength() const
 		{
 			return m_unLen;
+		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CStringObject((const char*)m_pValue, m_bUTF16, m_bDictValue);
 		}
 		EObjectType  GetType() const
 		{
@@ -276,6 +305,10 @@ namespace PdfWriter
 		{
 			return m_unLen;
 		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CBinaryObject(m_pValue, m_unLen);
+		}
 		EObjectType  GetType() const
 		{
 			return object_type_BINARY;
@@ -295,6 +328,10 @@ namespace PdfWriter
 		CObjectBase* Get() const
 		{
 			return m_pObject;
+		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CProxyObject(m_pObject);
 		}
 		EObjectType GetType() const
 		{
@@ -333,6 +370,8 @@ namespace PdfWriter
 		}
 		static CArrayObject* CreateBox(const TBox& oBox);
 		static CArrayObject* CreateBox(double dL, double dB, double dR, double dT);
+		virtual CObjectBase* Copy() const;
+
 	protected:
 		std::vector<CObjectBase*> m_arrList;
 	};
@@ -377,6 +416,7 @@ namespace PdfWriter
 		virtual void      BeforeWrite(){}
 		virtual void      Write(CStream* pStream){}
 		virtual void      AfterWrite(){}
+		virtual CObjectBase* Copy() const;
 		virtual EDictType GetDictType() const
 		{
 			return dict_type_UNKNOWN;

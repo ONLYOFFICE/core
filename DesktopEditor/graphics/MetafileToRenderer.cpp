@@ -942,6 +942,9 @@ namespace NSOnlineOfficeBinToPdf
 
 					pPr->SetMultiLine(nFlags & (1 << 23));
 					pPr->SetAutoFit(nFlags & (1 << 24));
+
+					if (nFlags & (1 << 25))
+						pPr->SetPlaceHolder(ReadString(current, curindex));
 				}
 				else if (oInfo.IsDropDownList())
 				{
@@ -958,6 +961,9 @@ namespace NSOnlineOfficeBinToPdf
 
 					if (nFlags & (1 << 22))
 						pPr->SetTextValue(ReadString(current, curindex));
+
+					if (nFlags & (1 << 23))
+						pPr->SetPlaceHolder(ReadString(current, curindex));
 				}
 				else if (oInfo.IsCheckBox())
 				{

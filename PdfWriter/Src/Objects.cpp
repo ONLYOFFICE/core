@@ -363,6 +363,19 @@ namespace PdfWriter
 
 		return pArray;
 	}
+	CObjectBase* CArrayObject::Copy() const
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return NULL;
+
+		for (unsigned int unIndex = 0, unCount = GetCount(); unIndex < unCount; ++unIndex)
+		{
+			pArray->Add(Get(unIndex)->Copy());
+		}
+
+		return pArray;
+	}
 	//----------------------------------------------------------------------------------------
 	// CDictObject
 	//----------------------------------------------------------------------------------------
@@ -525,6 +538,16 @@ namespace PdfWriter
 		}
 
 		m_pStream = pStream;
+	}
+	CObjectBase* CDictObject::Copy() const
+	{
+		CDictObject* pDict = new CDictObject();
+		if (!pDict)
+			return NULL;
+
+		// TODO: Сделать копирование (пока нигде не используется)
+
+		return pDict;
 	}
 	//----------------------------------------------------------------------------------------
 	// CXref

@@ -124,7 +124,7 @@ void TestField()
 	pComboBox->AddPageRect(pPage, TRect(200, 600, 500, 550));
 	pComboBox->SetFieldName(L"ComboBox1");
 	pComboBox->SetFieldHint(L"Какой-то текст");
-	pComboBox->SetTextValue(L"Enter color");
+	pComboBox->SetTextValue(L"Введите цвет");
 	pComboBox->AddOption(L"Зеленый");
 	pComboBox->AddOption(L"Green");
 	pComboBox->AddOption(L"Зеленый");
@@ -132,8 +132,8 @@ void TestField()
 	pComboBox->SetEditFlag(true);
 	pComboBox->SetFieldBorder(border_subtype_Solid, TRgb(0, 255, 0), 1, 0, 0, 0);
 	pComboBox->SetMultiSelectFlag(false);
-	pComboBox->SetPlaceHolderText(L"Enter color", TRgb(0, 0, 0), TRgb(122, 122, 122));
-	pComboBox->SetTextAppearance(L"Enter color", NULL, 0, (CFontDict*)pFont, TRgb(122, 122, 122), 0.5, 40, 1, 14.3);
+	pComboBox->SetPlaceHolderText(L"Введите цвет", TRgb(0, 0, 0), TRgb(122, 122, 122));
+	pComboBox->SetTextAppearance(L"Введите цвет", NULL, 0, (CFontDict*)pFont, TRgb(122, 122, 122), 0.5, 40, 1, 14.3);
 	pComboBox->SetDefaultAppearance((CFontDict*)pFont, 40, TRgb(122, 122, 122));
 
 	//CCheckBoxField* pCheckBox = oPdf.CreateCheckBoxField();

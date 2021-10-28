@@ -450,10 +450,10 @@ namespace PdfWriter
 		m_pXref->Add(pBlur);
 
 		pFocus->Add("S", "JavaScript");
-		pFocus->Add("JS", new CStringObject(sFocus.c_str(), false, true));
+		pFocus->Add("JS", new CStringObject(sFocus.c_str(), true, true));
 
 		pBlur->Add("S", "JavaScript");
-		pBlur->Add("JS", new CStringObject(sBlur.c_str(), false, true));
+		pBlur->Add("JS", new CStringObject(sBlur.c_str(), true, true));
 
 		pAA->Add("Bl", pBlur);
 		pAA->Add("Fo", pFocus);
@@ -556,6 +556,58 @@ namespace PdfWriter
 		std::string sOption = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsOption);
 		m_pOpt->Add(new CStringObject(sOption.c_str(), true), bPushBack);
 	}
+	void CChoiceField::SetSelectedIndex(const unsigned int& unSelectedIndex)
+	{
+		if (m_pParent)
+		{
+			CChoiceField* pParent = dynamic_cast<CChoiceField*>(m_pParent);
+			if (pParent)
+			{
+				pParent->SetSelectedIndex(unSelectedIndex);
+				return;
+			}
+		}
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		pArray->Add(unSelectedIndex);
+		Add("I", pArray);
+
+		if (m_pKids)
+		{
+			for (unsigned int unIndex = 0, unCount = m_pKids->GetCount(); unIndex < unCount; ++unIndex)
+			{
+				CFieldBase* pKid = dynamic_cast<CFieldBase*>(m_pKids->Get(unIndex));
+				if (pKid)
+					pKid->Remove("I");
+			}
+		}
+	}
+	void CChoiceField::UpdateSelectedIndexToParent()
+	{
+		if (m_pParent)
+		{
+			CObjectBase* pSelectedArray = Get("I");
+			if (pSelectedArray)
+				m_pParent->Add("I", pSelectedArray->Copy());
+
+			Remove("I");
+
+			CObjectBase* pValue = Get("V");
+			if (pValue)
+				m_pParent->Add("V", pValue->Copy());
+
+			Remove("V");
+
+			CObjectBase* pOpt = Get("Opt");
+			if (pOpt)
+				m_pParent->Add("Opt", pOpt->Copy());
+
+			Remove("Opt");
+		}
+	}
 	void CChoiceField::SetPlaceHolderText(const std::wstring& wsText, const TRgb& oNormalColor, const TRgb& oPlaceHolderColor)
 	{
 		CDictObject* pAA = new CDictObject();
@@ -611,7 +663,7 @@ namespace PdfWriter
 
 			m_pXref->Add(pChange);
 			pChange->Add("S", "JavaScript");
-			pChange->Add("JS", new CStringObject(sChange.c_str(), false, true));
+			pChange->Add("JS", new CStringObject(sChange.c_str(), true, true));
 			pAA->Add("K", pChange);
 		}
 		else
@@ -633,12 +685,12 @@ namespace PdfWriter
 
 		m_pXref->Add(pFocus);
 		pFocus->Add("S", "JavaScript");
-		pFocus->Add("JS", new CStringObject(sFocus.c_str(), false, true));
+		pFocus->Add("JS", new CStringObject(sFocus.c_str(), true, true));
 		pAA->Add("Fo", pFocus);
 
 		m_pXref->Add(pBlur);
 		pBlur->Add("S", "JavaScript");
-		pBlur->Add("JS", new CStringObject(sBlur.c_str(), false, true));
+		pBlur->Add("JS", new CStringObject(sBlur.c_str(), true, true));
 		pAA->Add("Bl", pBlur);
 	}
 	//----------------------------------------------------------------------------------------
@@ -767,7 +819,7 @@ namespace PdfWriter
 		dX        = 5.4407 * dW / 37.119000;
 		dY        = 6.4375 * dH / 33.8712;
 
-		SetFieldBorder(border_subtype_Solid, TRgb(0, 0, 0), 1, 0, 0, 0);
+		SetFieldBorder(border_subtype_Solid, TRgb(0.0, 0.0, 0.0), 1, 0, 0, 0);
 		Remove("BS");
 
 		if (1 == nType)

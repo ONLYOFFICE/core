@@ -6,13 +6,17 @@ namespace MetaFile
                 m_pOutputXml(new CXmlOutput(TypeXmlOutput::IsWriter)),
                 m_wsXmlFilePath(wsFilePath){}
 
+        CEmfInterpretatorXml::CEmfInterpretatorXml(const CEmfInterpretatorXml &oInterpretator)
+                : m_pOutputXml(oInterpretator.m_pOutputXml),
+                  m_wsXmlFilePath(oInterpretator.m_wsXmlFilePath){}
+
         CEmfInterpretatorXml::~CEmfInterpretatorXml()
         {
                 if (NULL != m_pOutputXml)
                         delete m_pOutputXml;
         }
 
-        InterpretatorType CEmfInterpretatorXml::GetType()
+        InterpretatorType CEmfInterpretatorXml::GetType() const
         {
                 return InterpretatorType::XML;
         }

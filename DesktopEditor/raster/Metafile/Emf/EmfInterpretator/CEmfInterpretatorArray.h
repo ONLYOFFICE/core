@@ -9,13 +9,14 @@ namespace MetaFile
         {
             public:
                 CEmfInterpretatorArray();
+                CEmfInterpretatorArray(const CEmfInterpretatorArray& oInterpretator);
                 virtual ~CEmfInterpretatorArray();
 
                 void AddEmfInterpretator(const wchar_t* wsFilepath);
                 void AddXmlInterpretator(const wchar_t* wsFilepath);
                 void AddRenderInterpretator(IOutputDevice* pIOutputDevice);
 
-                InterpretatorType GetType() override;
+                InterpretatorType GetType() const override;
 
                 void Begin() override;
                 void End() override;

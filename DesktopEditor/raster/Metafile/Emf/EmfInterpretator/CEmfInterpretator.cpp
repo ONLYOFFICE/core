@@ -10,13 +10,25 @@ namespace MetaFile
                 m_pOutStream(new std::ofstream(wsFilepath, std::ios::binary | std::ios::out)),
                 unFileSize(0), unNumberRecords(0), ushNuberDescriptors(0){}
 
+        CEmfInterpretator::CEmfInterpretator(const CEmfInterpretator& oEmfInterpretator, const bool bIsLite)
+                : m_pOutStream(oEmfInterpretator.m_pOutStream),
+                  unFileSize(0), unNumberRecords(0), ushNuberDescriptors(0)
+        {
+                if (!bIsLite)
+                {
+                        unFileSize              = oEmfInterpretator.unFileSize;
+                        unNumberRecords         = oEmfInterpretator.unNumberRecords;
+                        ushNuberDescriptors     = oEmfInterpretator.ushNuberDescriptors;
+                }
+        }
+
         CEmfInterpretator::~CEmfInterpretator()
         {
                 m_pOutStream->close();
                 delete m_pOutStream;
         }
 
-        InterpretatorType CEmfInterpretator::GetType()
+        InterpretatorType CEmfInterpretator::GetType() const
         {
                 return InterpretatorType::Emf;
         }

@@ -80,14 +80,7 @@ namespace MetaFile
 
 			m_pRenderer = pRenderer;
 
-			TRect* pBounds = m_pFile->GetDCBounds();
-			int nL = pBounds->nLeft;
-			int nR = pBounds->nRight;
-			int nT = pBounds->nTop;
-			int nB = pBounds->nBottom;
-
-			m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
-			m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
+			UpdateScale();
 
 			m_bStartedPath = false;
 
@@ -108,23 +101,52 @@ namespace MetaFile
 			//m_pRenderer->EndCommand(c_nPathType);
 			//m_pRenderer->PathCommandEnd();
 		}
+
+		CMetaFileRenderer(const CMetaFileRenderer &oMetaFileRenderer)
+		{
+			m_pFile = oMetaFileRenderer.m_pFile;
+
+			m_dX = oMetaFileRenderer.m_dX;
+			m_dY = oMetaFileRenderer.m_dY;
+			m_dW = oMetaFileRenderer.m_dW;
+			m_dH = oMetaFileRenderer.m_dH;
+
+			m_pRenderer = oMetaFileRenderer.m_pRenderer;
+
+			UpdateScale();
+
+			m_bStartedPath = false;
+		}
+
+		void SetFile(IMetaFileBase *pFile)
+		{
+			m_pFile = pFile;
+
+			UpdateScale();
+		}
+
+		void UpdateScale()
+		{
+			if (NULL == m_pFile)
+				return;
+
+			TRect* pBounds = m_pFile->GetDCBounds();
+			int nL = pBounds->nLeft;
+			int nR = pBounds->nRight;
+			int nT = pBounds->nTop;
+			int nB = pBounds->nBottom;
+
+			m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
+			m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
+		 }
+
 		~CMetaFileRenderer()
 		{
 		}
 
 		void Begin()
 		{
-			if (m_pFile)
-			{
-				TRect* pBounds = m_pFile->GetDCBounds();
-				int nL = pBounds->nLeft;
-				int nR = pBounds->nRight;
-				int nT = pBounds->nTop;
-				int nB = pBounds->nBottom;
-
-				m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
-				m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
-			}
+			UpdateScale();
 		}
 		void End()
 		{

@@ -6,10 +6,10 @@
 
 namespace MetaFile
 {
-        CEmfInterpretatorArray::CEmfInterpretatorArray()
-        {
+        CEmfInterpretatorArray::CEmfInterpretatorArray(){}
 
-        }
+        CEmfInterpretatorArray::CEmfInterpretatorArray(const CEmfInterpretatorArray &oInterpretator)
+                : m_arInterpretators(oInterpretator.m_arInterpretators){}
 
         CEmfInterpretatorArray::~CEmfInterpretatorArray()
         {
@@ -46,7 +46,7 @@ namespace MetaFile
                 m_arInterpretators.push_back(pRenderInterpretator);
         }
 
-        InterpretatorType CEmfInterpretatorArray::GetType()
+        InterpretatorType CEmfInterpretatorArray::GetType() const
         {
                 return InterpretatorType::Array;
         }

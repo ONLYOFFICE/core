@@ -9,9 +9,10 @@ namespace MetaFile
         {
         public:
                 CEmfInterpretator(const wchar_t* wsFilepath);
+                CEmfInterpretator(const CEmfInterpretator& oEmfInterpretator, const bool bIsLite = false);
                 virtual ~CEmfInterpretator();
 
-                InterpretatorType GetType() override;
+                InterpretatorType GetType() const override;
 
                 void HANDLE_EMR_HEADER(const TEmfHeader& oTEmfHeader) override ;
                 void HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend& oTEmfAlphaBlend, CDataStream &oDataStream) override ;

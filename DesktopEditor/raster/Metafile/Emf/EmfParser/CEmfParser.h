@@ -10,6 +10,7 @@ namespace MetaFile
         {
         public:
                 CEmfParser();
+                CEmfParser(const CEmfInterpretatorBase *pEmfInterpretatorBase);
                 virtual ~CEmfParser();
 
                 bool            OpenFromFile(const wchar_t* wsFilePath)     override;

@@ -5,9 +5,19 @@ namespace MetaFile
         CEmfInterpretatorRender::CEmfInterpretatorRender(IOutputDevice* pIOutputDevice) :
                 m_pMetaFileRenderer(static_cast<CMetaFileRenderer*>(pIOutputDevice)){}
 
-        InterpretatorType CEmfInterpretatorRender::GetType()
+        CEmfInterpretatorRender::CEmfInterpretatorRender(const CEmfInterpretatorRender &oInterpretator)
+                : m_pMetaFileRenderer( new CMetaFileRenderer(*oInterpretator.m_pMetaFileRenderer))
+        {}
+
+        InterpretatorType CEmfInterpretatorRender::GetType() const
         {
                 return InterpretatorType::Render;
+        }
+
+        void CEmfInterpretatorRender::SetFileRender(IMetaFileBase *pFile)
+        {
+                if (NULL != m_pMetaFileRenderer && NULL != pFile)
+                        m_pMetaFileRenderer->SetFile(pFile);
         }
 
         void CEmfInterpretatorRender::Begin()

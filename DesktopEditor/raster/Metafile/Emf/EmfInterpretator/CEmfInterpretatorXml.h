@@ -25,9 +25,10 @@ namespace MetaFile
 
         public:
                 CEmfInterpretatorXml(const wchar_t* wsFilePath);
+                CEmfInterpretatorXml(const CEmfInterpretatorXml& oInterpretator);
                 virtual ~CEmfInterpretatorXml();
 
-                InterpretatorType   GetType()   override;
+                InterpretatorType   GetType() const override;
 
                 void SetOutputDevice(const wchar_t *wsFilePath);
 

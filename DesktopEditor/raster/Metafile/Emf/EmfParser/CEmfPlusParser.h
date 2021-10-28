@@ -13,7 +13,7 @@ namespace MetaFile
         class CEmfPlusParser : public CEmfParserBase
         {
             public:
-                CEmfPlusParser(CEmfInterpretatorBase* pEmfInterpretator);
+                CEmfPlusParser(const CEmfInterpretatorBase *pEmfInterpretatorBase, const TEmfHeader& oHeader);
                 virtual ~CEmfPlusParser();
 
                 bool            OpenFromFile(const wchar_t* wsFilePath)     override;
@@ -116,7 +116,7 @@ namespace MetaFile
                 unsigned int    m_unLogicalDpiX;
                 unsigned int    m_unLogicalDpiY;
 
-                CEmfPlusContineudObjectRecord *m_pContineudObject;
+                CEmfPlusContineudObjectRecord*  m_pContineudObject;
         };
 }
 

@@ -1,22 +1,46 @@
 #include "CEmfParser.h"
 #include "CEmfPlusParser.h"
 
+#include "../EmfInterpretator/CEmfInterpretator.h"
+#include "../EmfInterpretator/CEmfInterpretatorXml.h"
+#include "../EmfInterpretator/CEmfInterpretatorArray.h"
+#include "../EmfInterpretator/CEmfInterpretatorRender.h"
+
 namespace MetaFile
 {
         CEmfParser::CEmfParser() :
                 m_pEmfPlusParser(NULL)
+        {}
+
+        CEmfParser::CEmfParser(const CEmfInterpretatorBase *pEmfInterpretatorBase) :
+                m_pEmfPlusParser(NULL)
         {
+                if (NULL != pEmfInterpretatorBase)
+                {
+                        if (pEmfInterpretatorBase->GetType() == Emf)
+                        {
+                                m_pInterpretator = new CEmfInterpretator(*(CEmfInterpretator*)pEmfInterpretatorBase);
+                        }
+                        else if (pEmfInterpretatorBase->GetType() == Render)
+                        {
+                                m_pInterpretator = new CEmfInterpretatorRender(*(CEmfInterpretatorRender*)pEmfInterpretatorBase);
+                                ((CEmfInterpretatorRender*)m_pInterpretator)->SetFileRender(this);
+                        }
+                        else if (pEmfInterpretatorBase->GetType() == XML)
+                        {
+                                m_pInterpretator = new CEmfInterpretatorXml(*(CEmfInterpretatorXml*)pEmfInterpretatorBase);
+                        }
+                        else if (pEmfInterpretatorBase->GetType() == Array)
+                        {
+                                m_pInterpretator = new CEmfInterpretatorArray(*(CEmfInterpretatorArray*)pEmfInterpretatorBase);
+                        }
+                }
         }
 
         CEmfParser::~CEmfParser()
         {
                 ClearFile();
-
-                if (NULL != m_pEmfPlusParser)
-                {
-                        m_pEmfPlusParser->m_pInterpretator = NULL;
-                        delete m_pEmfPlusParser;
-                }
+                RELEASEOBJECT(m_pEmfPlusParser);
         }
 
         bool CEmfParser::OpenFromFile(const wchar_t *wsFilePath)
@@ -1381,8 +1405,9 @@ namespace MetaFile
                         m_oStream.Skip(4);
 
                         if (NULL == m_pEmfPlusParser)
-                                m_pEmfPlusParser = new CEmfPlusParser(m_pInterpretator);
+                                m_pEmfPlusParser = new CEmfPlusParser(m_pInterpretator, m_oHeader);
 
+                        m_pEmfPlusParser->SetFontManager(GetFontManager());
                         m_pEmfPlusParser->SetStream(m_oStream.GetCurPtr(), m_ulRecordSize - 8);
                         m_pEmfPlusParser->PlayFile();
                 }

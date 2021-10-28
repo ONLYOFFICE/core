@@ -19,7 +19,7 @@ namespace MetaFile
         class CEmfInterpretatorBase : public IOutputDevice
         {
         public:
-                virtual InterpretatorType   GetType()   = 0;
+                virtual InterpretatorType   GetType() const = 0;
 
                 virtual void HANDLE_EMR_HEADER(const TEmfHeader&) = 0;
                 virtual void HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend&, CDataStream&) = 0;

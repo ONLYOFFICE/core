@@ -67,6 +67,9 @@
 #include <iostream>
 
 #include "CEmfParser.h"
+#include "../EmfInterpretator/CEmfInterpretator.h"
+#include "../EmfInterpretator/CEmfInterpretatorXml.h"
+#include "../EmfInterpretator/CEmfInterpretatorArray.h"
 #include "../EmfInterpretator/CEmfInterpretatorRender.h"
 
 namespace MetaFile
@@ -137,17 +140,40 @@ namespace MetaFile
                 {0x402D, L"EMFPLUS_TRANSLATEWORLDTRANSFORM"}
         };
 
-        CEmfPlusParser::CEmfPlusParser(CEmfInterpretatorBase* pEmfInterpretator)
-                : m_pContineudObject(NULL)
+        CEmfPlusParser::CEmfPlusParser(const CEmfInterpretatorBase *pEmfInterpretatorBase, const TEmfHeader& oHeader)
+                : m_bBanEmfProcessing(false),
+                  m_unLogicalDpiX(0),
+                  m_unLogicalDpiY(0),
+                  m_pContineudObject(NULL)
         {
-                m_pInterpretator = pEmfInterpretator;
-                m_bBanEmfProcessing = false;
-                m_unLogicalDpiX = m_unLogicalDpiY = 0;
+                if (NULL != pEmfInterpretatorBase)
+                {
+                        m_oHeader = oHeader;
+
+                        if (pEmfInterpretatorBase->GetType() == Emf)
+                        {
+                                m_pInterpretator = new CEmfInterpretator(*(CEmfInterpretator*)pEmfInterpretatorBase);
+                        }
+                        else if (pEmfInterpretatorBase->GetType() == Render)
+                        {
+                                m_pInterpretator = new CEmfInterpretatorRender(*(CEmfInterpretatorRender*)pEmfInterpretatorBase);
+                                ((CEmfInterpretatorRender*)m_pInterpretator)->SetFileRender(this);
+                        }
+                        else if (pEmfInterpretatorBase->GetType() == XML)
+                        {
+                                m_pInterpretator = new CEmfInterpretatorXml(*(CEmfInterpretatorXml*)pEmfInterpretatorBase);
+                        }
+                        else if (pEmfInterpretatorBase->GetType() == Array)
+                        {
+                                m_pInterpretator = new CEmfInterpretatorArray(*(CEmfInterpretatorArray*)pEmfInterpretatorBase);
+                        }
+                }
         }
 
         CEmfPlusParser::~CEmfPlusParser()
         {
                 ClearFile();
+                RELEASEOBJECT(m_pInterpretator);
         }
 
         bool CEmfPlusParser::OpenFromFile(const wchar_t *wsFilePath)
@@ -170,6 +196,9 @@ namespace MetaFile
                 if (m_oStream.CanRead() < 12)
                         return;
 
+                if(NULL != m_pInterpretator)
+                        m_pInterpretator->Begin();
+
                 unsigned short unShType, unShFlags;
                 unsigned int unSize;
                 do
@@ -182,7 +211,9 @@ namespace MetaFile
 
                         unsigned int unRecordPos = m_oStream.Tell();
 
-                        std::wcout << ActionNamesEmfPlus[unShType] << L"  DataSize = " << m_ulRecordSize << std::endl;
+                        #ifdef _DEBUG
+                                std::wcout << ActionNamesEmfPlus[unShType] << L"  DataSize = " << m_ulRecordSize << std::endl;
+                        #endif
 
                         switch (unShType)
                         {
@@ -262,11 +293,20 @@ namespace MetaFile
 
                         int nNeedSkip = (unRecordPos + m_ulRecordSize) - m_oStream.Tell();
                         m_oStream.Skip(nNeedSkip);
-                        std::wcout << L"Skip: " << nNeedSkip << std::endl;
+
+                        #ifdef _DEBUG
+                                std::wcout << L"Skip: " << nNeedSkip << std::endl;
+                        #endif
+
                         m_ulRecordSize = 0;
                 }while(m_oStream.CanRead() > 4);
 
-                std::wcout << L"___________________________" << std::endl;
+                if(NULL != m_pInterpretator)
+                        m_pInterpretator->End();
+
+                #ifdef _DEBUG
+                        std::wcout << L"___________________________" << std::endl;
+                #endif
         }
 
         void CEmfPlusParser::Scan()
@@ -877,17 +917,11 @@ namespace MetaFile
                         unsigned int unTotalSize;
                         m_oStream >> unTotalSize;
 
-                        std::wcout << L"Total Size: " << unTotalSize << std::endl;
-
                         if (InitContineudObject())
                                 m_pContineudObject->SetDataSize(unTotalSize);
                 }
 
                 CEmfPlusObjectBase *pEmfPlusObject = NULL;
-
-                #ifdef _DEBUG
-                        std::wcout << shOgjectType << std::endl;
-                #endif
 
                 switch (shOgjectType)
                 {
@@ -950,13 +984,13 @@ namespace MetaFile
 
                                         if (m_pContineudObject->IsLastReading())
                                         {
-                                                //TODO: добавить возможность обработки
-                                                CEmfParser oEmfParser;
-//                                                oEmfParser.SetStream(m_pContineudObject->GetData(), m_pContineudObject->GetSize());
-//                                                oEmfParser.PlayFile();
+                                                //При создании нового объекта нужно передавать преобразования протранства
+                                                CEmfParser oEmfParser(m_pInterpretator);
+                                                oEmfParser.SetStream(m_pContineudObject->GetData(), m_pContineudObject->GetSize());
+                                                oEmfParser.SetFontManager(GetFontManager());
+                                                oEmfParser.PlayFile();
 
-                                                delete m_pContineudObject;
-                                                m_pContineudObject = NULL;
+                                                RELEASEOBJECT(m_pContineudObject);
                                         }
                                 }
 

@@ -356,8 +356,8 @@ namespace MetaFile
         class CEmfPlusContineudObjectRecord
         {
             public:
-                CEmfPlusContineudObjectRecord() : pImage(NULL) { unPosition = 0; };
-                ~CEmfPlusContineudObjectRecord() {};
+                CEmfPlusContineudObjectRecord() : pImage(NULL), unPosition(0) {};
+                virtual ~CEmfPlusContineudObjectRecord() { if (NULL != pImage) delete pImage; };
 
                 void SetDataSize(unsigned int unSize)
                 {

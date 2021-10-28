@@ -251,14 +251,6 @@ int main()
 
     std::cout << std::endl;
     BYTE* pGlyphs = GetGlyphs(test, test_page);
-    nLength = GetLength(pGlyphs);
-    i = 4;
-    nLength -= 4;
-    while (i < nLength)
-    {
-        std::cout << (int)*(pGlyphs + i) << " ";
-        i++;
-    }
 
     Close(test);
     RELEASEARRAYOBJECTS(pPdfData);
@@ -291,7 +283,7 @@ int main()
     }
     int* info = GetInfo(test);
     int pages_count = *info;
-    int test_page = 22;
+    int test_page = 0;
     int width  = info[test_page * 3 + 1];
     int height = info[test_page * 3 + 2];
     std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
@@ -317,14 +309,8 @@ int main()
 
     std::cout << std::endl;
     BYTE* pGlyphs = GetGlyphs(test, test_page);
-    DWORD nLength = GetLength(pGlyphs);
+    DWORD nLength;
     DWORD i = 4;
-    nLength -= 4;
-    while (i < nLength)
-    {
-        std::cout << (int)*(pGlyphs + i) << " ";
-        i++;
-    }
 
     std::cout << std::endl;
     BYTE* pLinks = GetLinks(test, test_page);

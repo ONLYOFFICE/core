@@ -191,7 +191,7 @@ namespace XPS
 		oRes.ClearWithoutAttack();
 		return res;
 	}
-    void Page::GetGlyphs(IRenderer* m_pRenderer, const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
+    void Page::GetGlyphs(IRenderer* m_pRenderer, const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h, bool bChangeFont)
     {
         // m_pInternal->GetUnicodes(bsUnicodeText);
         int nLen = (int)bsUnicodeText.length();
@@ -447,7 +447,7 @@ namespace XPS
         // все, baseline установлен. теперь просто продолжаем линию
         LONG lTextLen = m_nTempUnicodesLen;
 
-        if (bIsDumpFont)
+        if (bIsDumpFont || bChangeFont)
         {
             m_pFontManager->LoadFontFromFile(sCurrentFontName, 0, dFontSize, 72.0, 72.0);
             m_pFontManager->AfterLoad();
@@ -1133,7 +1133,7 @@ namespace XPS
 		m_pFontManager->LoadFontFromFile(m_wsRootPath->getFullFilePath(wsFontPath), 0, (float)(dFontSize * 0.75), 96, 96);
 		double dFontKoef = dFontSize / 100.0;
 
-		bool bNeedItalic = false, bNeedBold = false;
+		bool bNeedItalic = false, bNeedBold = false, bChangeFont = true;
         NSFonts::IFontFile* pFile = m_pFontManager->GetFile();
         if (pFile)
 		{
@@ -1191,7 +1191,8 @@ namespace XPS
                 #ifdef BUILDING_WASM_MODULE
                     std::wstring sUnicode;
                     sUnicode += wchar_t(oEntry.nUnicode);
-                    GetGlyphs(pRenderer, sUnicode, (unsigned int*)&oEntry.nGid, 1, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0);
+                    GetGlyphs(pRenderer, sUnicode, (unsigned int*)&oEntry.nGid, 1, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0, bChangeFont);
+                    bChangeFont = false;
                 #endif
                 }
 				else
@@ -1205,7 +1206,8 @@ namespace XPS
                 #ifdef BUILDING_WASM_MODULE
                     std::wstring sUnicode;
                     sUnicode += wchar_t(oEntry.nUnicode);
-                    GetGlyphs(pRenderer, sUnicode, NULL, 0, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0);
+                    GetGlyphs(pRenderer, sUnicode, NULL, 0, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0, bChangeFont);
+                    bChangeFont = false;
                 #endif
                 }
 
@@ -1263,7 +1265,8 @@ namespace XPS
                 #ifdef BUILDING_WASM_MODULE
                     std::wstring sUnicode;
                     sUnicode += wchar_t(oEntry.nUnicode);
-                    GetGlyphs(pRenderer, sUnicode, (unsigned int*)&oEntry.nGid, 1, 0, 0, 0, 0);
+                    GetGlyphs(pRenderer, sUnicode, (unsigned int*)&oEntry.nGid, 1, 0, 0, 0, 0, bChangeFont);
+                    bChangeFont = false;
                 #endif
                 }
 				else
@@ -1272,7 +1275,8 @@ namespace XPS
                 #ifdef BUILDING_WASM_MODULE
                     std::wstring sUnicode;
                     sUnicode += wchar_t(oEntry.nUnicode);
-                    GetGlyphs(pRenderer, sUnicode, NULL, 0, 0, 0, 0, 0);
+                    GetGlyphs(pRenderer, sUnicode, NULL, 0, 0, 0, 0, 0, bChangeFont);
+                    bChangeFont = false;
                 #endif
                 }
 

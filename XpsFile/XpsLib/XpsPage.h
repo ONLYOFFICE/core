@@ -60,7 +60,7 @@ namespace XPS
     #ifdef BUILDING_WASM_MODULE
         BYTE* GetGlyphs();
         BYTE* GetLinks();
-        void  GetGlyphs(IRenderer* pRenderer, const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
+        void  GetGlyphs(IRenderer* pRenderer, const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h, bool bChangeFont);
         void  DumpLine();
 
     private:

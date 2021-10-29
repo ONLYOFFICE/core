@@ -31,16 +31,14 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 #include "../Biff12_structures/FRTBlank.h"
-
-using namespace XLS;
 
 namespace XLSB
 {
     // Logical representation of BrtBeginDXF14s record in BIFF12
-    class BeginDXF14s: public BiffRecord
+    class BeginDXF14s: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BeginDXF14s)
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginDXF14s)
@@ -48,9 +46,9 @@ namespace XLSB
             BeginDXF14s();
             virtual ~BeginDXF14s();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             FRTBlank    FRTheader;
             _UINT32     cdxfs;

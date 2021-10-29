@@ -32,17 +32,16 @@
 
 #pragma once
 
-#include <Logic/Biff_structures/CellRangeRef.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CellRangeRef.h"
 
-using namespace XLS;
 namespace XLSB
 {
     DEFINE_NAME_CLASS(UncheckedRfX)
     DEFINE_NAME_CLASS(RgceArea)
     DEFINE_NAME_CLASS(RgceAreaRel)
 
-    typedef CellRangeRef_T<UncheckedRfX_name, int, int, rel_Absent> UncheckedRfX;
-    typedef CellRangeRef_T<RgceArea_name, int, unsigned short, rel_Present> RgceArea;
-    typedef CellRangeRef_T<RgceAreaRel_name, int, unsigned short, rel_Present> RgceAreaRel;
+    typedef XLS::CellRangeRef_T<UncheckedRfX_name, int, int, XLS::rel_Absent> UncheckedRfX;
+    typedef XLS::CellRangeRef_T<RgceArea_name, int, unsigned short, XLS::rel_Present> RgceArea;
+    typedef XLS::CellRangeRef_T<RgceAreaRel_name, int, unsigned short, XLS::rel_Present> RgceAreaRel;
 
 }   // namespace XLSB

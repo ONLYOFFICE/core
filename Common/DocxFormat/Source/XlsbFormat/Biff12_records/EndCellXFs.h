@@ -31,15 +31,15 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtEndCellXFs record in BIFF12
-    class EndCellXFs: public BiffRecord
+    class EndCellXFs: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(EndCellXFs)
             BASE_OBJECT_DEFINE_CLASS_NAME(EndCellXFs)
@@ -47,11 +47,11 @@ namespace XLSB
             EndCellXFs();
             virtual ~EndCellXFs();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-            //static const ElementType	type = typeEndCellXFs;
+            //static const XLS::ElementType	type = XLS::typeEndCellXFs;
     };
 
 } // namespace XLSB

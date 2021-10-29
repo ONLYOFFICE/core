@@ -31,16 +31,16 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 #include "../Biff12_structures/XLWideString.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtCommentAuthor record in BIFF12
-    class CommentAuthor: public BiffRecord
+    class CommentAuthor: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(CommentAuthor)
             BASE_OBJECT_DEFINE_CLASS_NAME(CommentAuthor)
@@ -48,9 +48,9 @@ namespace XLSB
             CommentAuthor();
             virtual ~CommentAuthor();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             XLWideString        author;
     };

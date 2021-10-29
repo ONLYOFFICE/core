@@ -31,36 +31,34 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/CFType.h"
 #include "../Biff12_structures/CFTemp.h"
-#include <Logic/Biff_structures/DXFId.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/DXFId.h"
 #include "../Biff12_structures/XLWideString.h"
-#include <Logic/Biff_structures/CFParsedFormula.h>
-
-using namespace XLS;
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CFParsedFormula.h"
 
 namespace XLSB
 {
     // Logical representation of BrtBeginCFRule record in BIFF12
-    class BeginCFRule: public BiffRecord
+    class BeginCFRule: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BeginCFRule)
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginCFRule)
         public:
-            BeginCFRule(const CellRef& cell_base_ref);
+            BeginCFRule(const XLS::CellRef& cell_base_ref);
             virtual ~BeginCFRule();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-            static const ElementType	type = typeBeginCFRule;
+            static const XLS::ElementType	type = XLS::typeBeginCFRule;
 
-            CFType                  iType;
-            CFTemp                  iTemplate;
+			XLS::CFType                  iType;
+			XLS::CFTemp                  iTemplate;
             _UINT32                 dxfId;
             _INT32                  iPri;
             _UINT32                 iParam;
@@ -73,9 +71,9 @@ namespace XLSB
             _UINT32                 cbFmla2;
             _UINT32                 cbFmla3;
             XLNullableWideString    strParam;
-            CFParsedFormula         rgce1;
-            CFParsedFormula         rgce2;
-            CFParsedFormula         rgce3;
+			XLS::CFParsedFormula         rgce1;
+			XLS::CFParsedFormula         rgce2;
+			XLS::CFParsedFormula         rgce3;
     };
 
 } // namespace XLSB

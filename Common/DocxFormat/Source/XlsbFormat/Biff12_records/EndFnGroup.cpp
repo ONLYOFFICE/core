@@ -32,6 +32,8 @@
 
 #include "EndFnGroup.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndFnGroup(*this));
     }
 
-    void EndFnGroup::readFields(CFRecord& record)
+    void EndFnGroup::readFields(XLS::CFRecord& record)
     {
         //empty data
     }

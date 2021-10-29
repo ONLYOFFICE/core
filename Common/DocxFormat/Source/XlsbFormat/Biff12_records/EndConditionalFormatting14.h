@@ -31,16 +31,16 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtEndConditionalFormatting14 record in BIFF12
-    class EndConditionalFormatting14: public BiffRecord
+    class EndConditionalFormatting14: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(EndConditionalFormatting14)
             BASE_OBJECT_DEFINE_CLASS_NAME(EndConditionalFormatting14)
@@ -48,9 +48,9 @@ namespace XLSB
             EndConditionalFormatting14();
             virtual ~EndConditionalFormatting14();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
     };
 
 } // namespace XLSB

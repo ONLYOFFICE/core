@@ -31,18 +31,17 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
 #include "../../XlsxFormat/WritingElement.h"
-#include <Logic/Biff_structures/Xnum.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
 #include "Color.h"
 #include "../Biff12_structures/GradientStop.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtFill record in BIFF12
-    class Fill: public BiffRecord
+    class Fill: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(Fill)
             BASE_OBJECT_DEFINE_CLASS_NAME(Fill)
@@ -50,21 +49,21 @@ namespace XLSB
             Fill();
             virtual ~Fill();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-            //static const ElementType	type = typeFill;
+            //static const XLS::ElementType	type = XLS::typeFill;
 
             _UINT32                      fls;
             Color                        brtColorFore;
             Color                        brtColorBack;
             _UINT32                      iGradientType;
-            Xnum                         xnumDegree;
-            Xnum                         xnumFillToLeft;
-            Xnum                         xnumFillToRight;
-            Xnum                         xnumFillToTop;
-            Xnum                         xnumFillToBottom;
+			XLS::Xnum                         xnumDegree;
+			XLS::Xnum                         xnumFillToLeft;
+			XLS::Xnum                         xnumFillToRight;
+			XLS::Xnum                         xnumFillToTop;
+			XLS::Xnum                         xnumFillToBottom;
             _UINT32                      cNumStop;
             std::vector<GradientStop>    xfillGradientStop;
 

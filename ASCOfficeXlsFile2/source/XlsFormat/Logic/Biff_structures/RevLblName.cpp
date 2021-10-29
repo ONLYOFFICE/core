@@ -31,9 +31,8 @@
  */
 
 #include "RevLblName.h"
-#include <Binary/CFRecord.h>
-#include <Biff12_structures/XLWideString.h>
-//#include <Exception/WrongBiffRecord.h>
+#include "../../Binary/CFRecord.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
 
 namespace XLS
 {

@@ -31,15 +31,15 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtEndDatabar record in BIFF12
-    class EndDatabar: public BiffRecord
+    class EndDatabar: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(EndDatabar)
             BASE_OBJECT_DEFINE_CLASS_NAME(EndDatabar)
@@ -47,11 +47,11 @@ namespace XLSB
             EndDatabar();
             virtual ~EndDatabar();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-            //static const ElementType	type = typeEndDatabar;
+            //static const XLS::ElementType	type = XLS::typeEndDatabar;
     };
 
 } // namespace XLSB

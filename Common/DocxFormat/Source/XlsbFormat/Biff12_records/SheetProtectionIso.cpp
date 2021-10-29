@@ -32,6 +32,8 @@
 
 #include "SheetProtectionIso.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -51,7 +53,7 @@ namespace XLSB
     }
 
 
-    void SheetProtectionIso::readFields(CFRecord& record)
+    void SheetProtectionIso::readFields(XLS::CFRecord& record)
     {
         record >> dwSpinCount;
         record >> fLocked >> fObjects >> fScenarios >> fFormatCells >> fFormatColumns >> fFormatRows >> fInsertColumns >> fInsertRows;

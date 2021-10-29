@@ -31,16 +31,16 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 #include "../Biff12_structures/FRTBlank.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtTimelineStyleElement record in BIFF12
-    class TimelineStyleElement: public BiffRecord
+    class TimelineStyleElement: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(TimelineStyleElement)
             BASE_OBJECT_DEFINE_CLASS_NAME(TimelineStyleElement)
@@ -48,9 +48,9 @@ namespace XLSB
             TimelineStyleElement();
             virtual ~TimelineStyleElement();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             FRTBlank            FRTheader;
             _UINT32		tseType;

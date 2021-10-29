@@ -36,6 +36,8 @@
 #include "../Biff12_unions/DXF.h"
 #include "../Biff12_records/EndDXFs.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

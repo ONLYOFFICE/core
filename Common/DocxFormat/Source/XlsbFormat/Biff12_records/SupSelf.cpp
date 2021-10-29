@@ -32,6 +32,8 @@
 
 #include "SupSelf.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new SupSelf(*this));
     }
 
-    void SupSelf::readFields(CFRecord& record)
+    void SupSelf::readFields(XLS::CFRecord& record)
     {
        //empty data
     }

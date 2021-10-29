@@ -37,6 +37,8 @@
 #include "../Biff12_records/EndSlicerStyleElements.h"
 #include "../Biff12_records/EndSlicerStyle.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

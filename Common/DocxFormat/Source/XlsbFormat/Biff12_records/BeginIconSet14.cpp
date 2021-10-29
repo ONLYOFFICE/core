@@ -32,6 +32,8 @@
 
 #include "BeginIconSet14.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginIconSet14(*this));
     }
 
-    void BeginIconSet14::readFields(CFRecord& record)
+    void BeginIconSet14::readFields(XLS::CFRecord& record)
     {
         record >> FRTheader;
         unsigned short flags;

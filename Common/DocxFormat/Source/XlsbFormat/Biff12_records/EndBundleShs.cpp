@@ -32,6 +32,8 @@
 
 #include "EndBundleShs.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndBundleShs(*this));
     }
 
-    void EndBundleShs::readFields(CFRecord& record)
+    void EndBundleShs::readFields(XLS::CFRecord& record)
     {
         //empty data
     }

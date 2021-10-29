@@ -34,6 +34,8 @@
 #include "../Biff12_records/CommonRecords.h"
 #include "../Biff12_records/Fmla.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

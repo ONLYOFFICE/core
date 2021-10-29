@@ -31,17 +31,17 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/XLWideString.h"
 #include "../Biff12_structures/CellRangeRef.h"
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtBeginSortCond14 record in BIFF12
-    class BeginSortCond14: public BiffRecord
+    class BeginSortCond14: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BeginSortCond14)
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSortCond14)
@@ -49,16 +49,16 @@ namespace XLSB
             BeginSortCond14();
             virtual ~BeginSortCond14();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             bool                        fSortDes;
             unsigned short              sortOn;
             XLSB::UncheckedRfX          rfx;
 
-            CondDataValue               condDataValue;
-            CFFlag14                    cfflag14;
+			XLS::CondDataValue               condDataValue;
+			XLS::CFFlag14                    cfflag14;
 
             XLSB::XLNullableWideString  stSslist;
     };

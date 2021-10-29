@@ -31,30 +31,30 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class DATABAR14: public CompositeObject
+    class DATABAR14: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(DATABAR14)
     public:
         DATABAR14();
         virtual ~DATABAR14();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        static const ElementType	type = typeDATABAR14;
+        static const XLS::ElementType	type = XLS::typeDATABAR14;
 
-        BaseObjectPtr                           m_BrtBeginDatabar14;
-        std::vector<BaseObjectPtr>              m_arCFVO14;
-        std::vector<BaseObjectPtr>              m_arBrtColor14;
-        BaseObjectPtr                           m_BrtEndDatabar14;
+        XLS::BaseObjectPtr                           m_BrtBeginDatabar14;
+        std::vector<XLS::BaseObjectPtr>              m_arCFVO14;
+        std::vector<XLS::BaseObjectPtr>              m_arBrtColor14;
+        XLS::BaseObjectPtr                           m_BrtEndDatabar14;
 
         _INT32                                  iPri;
 

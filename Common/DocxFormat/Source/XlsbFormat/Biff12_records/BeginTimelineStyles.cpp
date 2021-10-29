@@ -32,6 +32,8 @@
 
 #include "BeginTimelineStyles.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginTimelineStyles(*this));
     }
 
-    void BeginTimelineStyles::readFields(CFRecord& record)
+    void BeginTimelineStyles::readFields(XLS::CFRecord& record)
     {
         record >> FRTheader >> stDefTimelineStyle;
     }

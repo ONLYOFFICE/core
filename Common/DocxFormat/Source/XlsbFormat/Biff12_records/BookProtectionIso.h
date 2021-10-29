@@ -31,17 +31,17 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/BookProtectionFlags.h"
 #include "../Biff12_structures/IsoPasswordData.h"
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtBookProtectionIso record in BIFF12
-    class BookProtectionIso: public BiffRecord
+    class BookProtectionIso: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BookProtectionIso)
             BASE_OBJECT_DEFINE_CLASS_NAME(BookProtectionIso)
@@ -49,9 +49,9 @@ namespace XLSB
             BookProtectionIso();
             virtual ~BookProtectionIso();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             _UINT32                 dwBookSpinCount;
             _UINT32                 dwRevSpinCount;

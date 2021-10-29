@@ -35,6 +35,8 @@
 #include "../Biff12_unions/ACUID.h"
 #include "../Biff12_records/EndTableStyle.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

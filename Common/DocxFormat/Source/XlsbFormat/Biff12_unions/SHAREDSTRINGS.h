@@ -31,28 +31,28 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class SHAREDSTRINGS: public CompositeObject
+    class SHAREDSTRINGS: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(SHAREDSTRINGS)
     public:
         SHAREDSTRINGS();
         virtual ~SHAREDSTRINGS();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginSst;
-        std::vector<BaseObjectPtr>  m_arBrtSSTItem;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndSst;
+        XLS::BaseObjectPtr               m_BrtBeginSst;
+        std::vector<XLS::BaseObjectPtr>  m_arBrtSSTItem;
+        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        XLS::BaseObjectPtr               m_BrtEndSst;
 
     };
 

@@ -32,6 +32,8 @@
 
 #include "BeginComment.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginComment(*this));
     }
 
-    void BeginComment::readFields(CFRecord& record)
+    void BeginComment::readFields(XLS::CFRecord& record)
     {
         _GUID_          guid_;
         record >> iauthor >> rfx >> guid_;

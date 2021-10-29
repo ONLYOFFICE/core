@@ -32,6 +32,8 @@
 
 #include "EndWsViews.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndWsViews(*this));
     }
 
-    void EndWsViews::readFields(CFRecord& record)
+    void EndWsViews::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

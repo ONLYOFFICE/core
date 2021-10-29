@@ -32,6 +32,8 @@
 
 #include "EndIndexedColors.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndIndexedColors(*this));
     }
 
-    void EndIndexedColors::readFields(CFRecord& record)
+    void EndIndexedColors::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

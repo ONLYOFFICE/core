@@ -36,6 +36,8 @@
 #include "../Biff12_records/CommentText.h"
 #include "../Biff12_records/EndComment.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <Logic/Biff_structures/ParsedFormula.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/ParsedFormula.h"
 
 namespace XLS
 {
@@ -42,7 +42,7 @@ class FRTParsedFormula : public ParsedFormula
 public:
     FRTParsedFormula();
 	BiffStructurePtr clone();
-	virtual void load(CFRecord& record);
+	virtual void load(XLS::CFRecord& record);
 
 };
 

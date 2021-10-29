@@ -32,16 +32,16 @@
 
 #pragma once
 
-#include <Logic/Biff_structures/CellRef.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CellRef.h"
 
-using namespace XLS;
+
 namespace XLSB
 {
     DEFINE_NAME_CLASS(RgceLoc)
     DEFINE_NAME_CLASS(RgceLocRel)
 
-    typedef CellRef_T<RgceLoc_name, int, unsigned short, rel_Present>			RgceLoc;
-    typedef CellRef_T<RgceLocRel_name, int, unsigned short, rel_Present>        RgceLocRel;
+    typedef XLS::CellRef_T<XLS::RgceLoc_name, int, unsigned short, XLS::rel_Present>			RgceLoc;
+    typedef XLS::CellRef_T<XLS::RgceLocRel_name, int, unsigned short, XLS::rel_Present>        RgceLocRel;
     //typedef CellRef_T<RgceElfLocExtra_name, unsigned short, unsigned short, rel_Present>	RgceElfLocExtra;
     //typedef CellRef_T<RgceElfLoc_name, unsigned short, unsigned short, rel_PresentQuoted>	RgceElfLoc;
 

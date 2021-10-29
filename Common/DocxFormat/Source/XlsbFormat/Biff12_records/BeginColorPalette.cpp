@@ -32,6 +32,8 @@
 
 #include "BeginColorPalette.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginColorPalette(*this));
     }
 
-    void BeginColorPalette::readFields(CFRecord& record)
+    void BeginColorPalette::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

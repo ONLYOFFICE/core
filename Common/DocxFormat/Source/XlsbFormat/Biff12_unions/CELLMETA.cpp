@@ -34,6 +34,8 @@
 #include "../Biff12_records/CellMeta.h"
 #include "../Biff12_records/ValueMeta.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

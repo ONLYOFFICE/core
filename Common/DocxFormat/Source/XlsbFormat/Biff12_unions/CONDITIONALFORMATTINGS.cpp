@@ -37,6 +37,8 @@
 #include "../Biff12_records/FRTEnd.h"
 #include "../Biff12_records/EndConditionalFormattings.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

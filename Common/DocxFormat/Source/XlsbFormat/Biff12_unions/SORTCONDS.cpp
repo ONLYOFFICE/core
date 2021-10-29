@@ -33,6 +33,8 @@
 #include "SORTCONDS.h"
 #include "../Biff12_unions/SORTCOND.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

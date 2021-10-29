@@ -37,6 +37,8 @@
 #include "../Biff12_unions/ACUID.h"
 #include "../Biff12_unions/FRT.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
     {
     }
 
-    class Parenthesis_BOOKVIEWS: public CompositeObject
+    class Parenthesis_BOOKVIEWS: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_BOOKVIEWS)
     public:
@@ -57,7 +59,7 @@ namespace XLSB
             return BaseObjectPtr(new Parenthesis_BOOKVIEWS(*this));
         }
 
-        const bool loadContent(BinProcessor& proc)
+        const bool loadContent(XLS::BinProcessor& proc)
         {
             if (proc.optional<ACUID>())
             {
@@ -85,7 +87,7 @@ namespace XLSB
 
         BaseObjectPtr               m_ACUID;
         BaseObjectPtr               m_BrtBookView;
-        std::vector<BaseObjectPtr>  m_arFRT;
+        std::vector<XLS::BaseObjectPtr>  m_arFRT;
     };
 
     BaseObjectPtr BOOKVIEWS::clone()

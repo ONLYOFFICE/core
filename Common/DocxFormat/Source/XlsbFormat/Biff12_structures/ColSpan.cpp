@@ -32,6 +32,8 @@
 
 #include "ColSpan.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    ColSpan::ColSpan(CFRecord& record)
+    ColSpan::ColSpan(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new ColSpan(*this));
     }
 
-    void ColSpan::load(CFRecord& record)
+    void ColSpan::load(XLS::CFRecord& record)
     {
         record >> colMic >> colLast;
     }

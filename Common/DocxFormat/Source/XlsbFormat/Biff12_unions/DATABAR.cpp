@@ -36,6 +36,8 @@
 #include "../Biff12_records/Color.h"
 #include "../Biff12_records/EndDatabar.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

@@ -32,6 +32,8 @@
 
 #include "EndFonts.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndFonts(*this));
     }
 
-    void EndFonts::readFields(CFRecord& record)
+    void EndFonts::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

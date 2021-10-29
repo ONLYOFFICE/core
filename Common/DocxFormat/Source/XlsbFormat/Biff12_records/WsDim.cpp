@@ -32,6 +32,8 @@
 
 #include "WsDim.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new WsDim(*this));
     }
 
-    void WsDim::readFields(CFRecord& record)
+    void WsDim::readFields(XLS::CFRecord& record)
     { 
         record >> rfx;
     }

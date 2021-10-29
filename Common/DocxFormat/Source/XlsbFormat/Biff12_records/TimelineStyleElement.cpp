@@ -32,6 +32,8 @@
 
 #include "TimelineStyleElement.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new TimelineStyleElement(*this));
     }
 
-    void TimelineStyleElement::readFields(CFRecord& record)
+    void TimelineStyleElement::readFields(XLS::CFRecord& record)
     {
         record >> FRTheader >> tseType >> dxfId;
     }

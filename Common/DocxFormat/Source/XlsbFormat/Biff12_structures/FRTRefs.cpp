@@ -32,6 +32,8 @@
 
 #include "FRTRefs.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    FRTRefs::FRTRefs(CFRecord& record)
+    FRTRefs::FRTRefs(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new FRTRefs(*this));
     }
 
-    void FRTRefs::load(CFRecord& record)
+    void FRTRefs::load(XLS::CFRecord& record)
     {
         record >> cref;
         FRTRef frtref;

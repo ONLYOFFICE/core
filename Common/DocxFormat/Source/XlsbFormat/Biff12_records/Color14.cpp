@@ -32,6 +32,8 @@
 
 #include "Color14.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new Color14(*this));
     }
 
-    void Color14::readFields(CFRecord& record)
+    void Color14::readFields(XLS::CFRecord& record)
     {        
         record >> FRTheader;
 

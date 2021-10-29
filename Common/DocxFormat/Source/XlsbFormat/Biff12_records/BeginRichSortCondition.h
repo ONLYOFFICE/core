@@ -31,16 +31,16 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/XLWideString.h"
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtBeginRichSortCondition record in BIFF12
-    class BeginRichSortCondition: public BiffRecord
+    class BeginRichSortCondition: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BeginRichSortCondition)
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginRichSortCondition)
@@ -48,9 +48,9 @@ namespace XLSB
             BeginRichSortCondition();
             virtual ~BeginRichSortCondition();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             XLNullableWideString    stSsList;
             XLWideString            key;

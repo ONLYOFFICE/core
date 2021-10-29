@@ -32,6 +32,8 @@
 
 #include "FRTFormula.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    FRTFormula::FRTFormula(CFRecord& record)
+    FRTFormula::FRTFormula(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new FRTFormula(*this));
     }
 
-    void FRTFormula::load(CFRecord& record)
+    void FRTFormula::load(XLS::CFRecord& record)
     {
         record.skipNunBytes(4);
         record >> formula;

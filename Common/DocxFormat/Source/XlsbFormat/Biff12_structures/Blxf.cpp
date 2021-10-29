@@ -32,6 +32,8 @@
 
 #include "Blxf.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    Blxf::Blxf(CFRecord& record)
+    Blxf::Blxf(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new Blxf(*this));
     }
 
-    void Blxf::load(CFRecord& record)
+    void Blxf::load(XLS::CFRecord& record)
     {
         record >> dg;
         record.skipNunBytes(1);

@@ -31,31 +31,29 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
-#include <Logic/Biff_structures/CellRef.h>
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CellRef.h"
 
 namespace XLSB
 {
 
-    class CFRULE14: public CompositeObject
+    class CFRULE14: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(CFRULE)
     public:
         CFRULE14();
         virtual ~CFRULE14();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        static const ElementType	type = typeCFRULE14;
+        static const XLS::ElementType	type = XLS::typeCFRULE14;
 
-        BaseObjectPtr               m_BrtBeginCFRule14;
-        BaseObjectPtr               m_source;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndCFRule14;
+        XLS::BaseObjectPtr               m_BrtBeginCFRule14;
+        XLS::BaseObjectPtr               m_source;
+        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        XLS::BaseObjectPtr               m_BrtEndCFRule14;
     };
 
 } // namespace XLSB

@@ -31,29 +31,29 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class STYLESHEET14: public CompositeObject
+    class STYLESHEET14: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(STYLESHEET14)
     public:
         STYLESHEET14();
         virtual ~STYLESHEET14();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtFRTBegin;
-        BaseObjectPtr               m_BrtBeginStyleSheetExt14;
-        BaseObjectPtr               m_SLICERSTYLES;
-        BaseObjectPtr               m_BrtEndStyleSheetExt14;
-        BaseObjectPtr               m_BrtFRTEnd;
+		XLS::BaseObjectPtr               m_BrtFRTBegin;
+		XLS::BaseObjectPtr               m_BrtBeginStyleSheetExt14;
+		XLS::BaseObjectPtr               m_SLICERSTYLES;
+		XLS::BaseObjectPtr               m_BrtEndStyleSheetExt14;
+		XLS::BaseObjectPtr               m_BrtFRTEnd;
 
     };
 

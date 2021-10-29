@@ -35,6 +35,8 @@
 #include "../Biff12_records/RwDescent.h"
 #include "../Biff12_records/ACEnd.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

@@ -31,28 +31,26 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
 namespace XLSB
 {
 
-    class WSVIEWS2: public CompositeObject
+    class WSVIEWS2: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(WSVIEWS2)
     public:
         WSVIEWS2();
         virtual ~WSVIEWS2();
 
-        BaseObjectPtr clone();
+		XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginWsViews;
-        std::vector<BaseObjectPtr>  m_arWSVIEW2;
-        std::vector<BaseObjectPtr>  m_arFRT;
-        BaseObjectPtr               m_BrtEndWsViews;
+		XLS::BaseObjectPtr               m_BrtBeginWsViews;
+        std::vector<XLS::BaseObjectPtr>  m_arWSVIEW2;
+        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+		XLS::BaseObjectPtr               m_BrtEndWsViews;
 
     };
 

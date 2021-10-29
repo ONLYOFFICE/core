@@ -32,6 +32,8 @@
 
 #include "BeginSortCond.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginSortCond(*this));
     }
 
-    void BeginSortCond::readFields(CFRecord& record)
+    void BeginSortCond::readFields(XLS::CFRecord& record)
     {
         unsigned short flags;
         record >> flags;

@@ -31,26 +31,26 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class CELLMETA: public CompositeObject
+    class CELLMETA: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(CELLMETA)
     public:
         CELLMETA();
         virtual ~CELLMETA();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr	m_BrtCellMeta;
-        BaseObjectPtr	m_BrtValueMeta;
+        XLS::BaseObjectPtr	m_BrtCellMeta;
+        XLS::BaseObjectPtr	m_BrtValueMeta;
 
     };
 

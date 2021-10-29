@@ -37,6 +37,8 @@
 #include "../Biff12_unions/FRT.h"
 #include "../Biff12_records/EndStyles.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

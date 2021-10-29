@@ -32,6 +32,8 @@
 
 #include "BookView.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -51,7 +53,7 @@ namespace XLSB
     }
 
 
-    void BookView::readFields(CFRecord& record)
+    void BookView::readFields(XLS::CFRecord& record)
     {
         unsigned short flags;
         record >> xWn >> yWn >> dxWn >> dyWn >> iTabRatio >> itabFirst >> itabCur >> flags;

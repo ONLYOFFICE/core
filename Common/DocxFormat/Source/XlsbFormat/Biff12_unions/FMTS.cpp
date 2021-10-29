@@ -36,6 +36,8 @@
 #include "../Biff12_records/Fmt.h"
 #include "../Biff12_records/EndFmts.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

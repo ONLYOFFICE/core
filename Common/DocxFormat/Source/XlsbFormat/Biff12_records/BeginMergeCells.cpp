@@ -32,6 +32,8 @@
 
 #include "BeginMergeCells.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginMergeCells(*this));
     }
 
-    void BeginMergeCells::readFields(CFRecord& record)
+    void BeginMergeCells::readFields(XLS::CFRecord& record)
     {
         record >> cmcs;
     }

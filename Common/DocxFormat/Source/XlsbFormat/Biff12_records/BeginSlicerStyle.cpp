@@ -32,6 +32,8 @@
 
 #include "BeginSlicerStyle.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginSlicerStyle(*this));
     }
 
-    void BeginSlicerStyle::readFields(CFRecord& record)
+    void BeginSlicerStyle::readFields(XLS::CFRecord& record)
     {
         record >> FRTheader >> stName;
     }

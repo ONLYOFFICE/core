@@ -31,15 +31,15 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtBeginStyleSheet record in BIFF12
-    class BeginStyleSheet: public BiffRecord
+    class BeginStyleSheet: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BeginStyleSheet)
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginStyleSheet)
@@ -47,11 +47,11 @@ namespace XLSB
             BeginStyleSheet();
             virtual ~BeginStyleSheet();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-            //static const ElementType	type = typeBeginStyleSheet;
+            //static const XLS::ElementType	type = XLS::typeBeginStyleSheet;
     };
 
 } // namespace XLSB

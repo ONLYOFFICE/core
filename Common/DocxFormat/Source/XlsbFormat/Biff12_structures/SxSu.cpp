@@ -32,6 +32,8 @@
 
 #include "SxSu.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    SxSu::SxSu(CFRecord& record)
+    SxSu::SxSu(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new SxSu(*this));
     }
 
-    void SxSu::load(CFRecord& record)
+    void SxSu::load(XLS::CFRecord& record)
     {
         record.skipNunBytes(2); // reserved
         record >> csxos >> sxosFirst >> sxosLast;

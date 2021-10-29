@@ -38,6 +38,8 @@
 #include "../Biff12_unions/CELLMETA.h"
 #include "../Biff12_unions/FRT.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

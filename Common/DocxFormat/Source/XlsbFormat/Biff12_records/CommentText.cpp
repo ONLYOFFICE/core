@@ -32,6 +32,8 @@
 
 #include "CommentText.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new CommentText(*this));
     }
 
-    void CommentText::readFields(CFRecord& record)
+    void CommentText::readFields(XLS::CFRecord& record)
     {
         record >> text;
     }

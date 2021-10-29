@@ -32,6 +32,8 @@
 
 #include "FRTRelID.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    FRTRelID::FRTRelID(CFRecord& record)
+    FRTRelID::FRTRelID(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new FRTRelID(*this));
     }
 
-    void FRTRelID::load(CFRecord& record)
+    void FRTRelID::load(XLS::CFRecord& record)
     {
         record >> relId;
     }

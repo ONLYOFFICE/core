@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
-#include <Biff12_structures/XLWideString.h>
+#include "../Biff_structures/BiffString.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
 
 namespace XLS
 {

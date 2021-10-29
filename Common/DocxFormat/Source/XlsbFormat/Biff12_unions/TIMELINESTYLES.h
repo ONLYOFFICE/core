@@ -31,27 +31,27 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class TIMELINESTYLES: public CompositeObject
+    class TIMELINESTYLES: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(TIMELINESTYLES)
     public:
         TIMELINESTYLES();
         virtual ~TIMELINESTYLES();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginTimelineStyles;
-        std::vector<BaseObjectPtr>  m_arTIMELINESTYLE;
-        BaseObjectPtr               m_BrtEndTimelineStyles;
+        XLS::BaseObjectPtr               m_BrtBeginTimelineStyles;
+        std::vector<XLS::BaseObjectPtr>  m_arTIMELINESTYLE;
+        XLS::BaseObjectPtr               m_BrtEndTimelineStyles;
 
     };
 

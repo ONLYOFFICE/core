@@ -42,7 +42,7 @@
 #include <iostream>
 #include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 namespace XLSB
 {
     class StreamCacheReader;
@@ -50,18 +50,18 @@ namespace XLSB
     class SharedStringsStream;
     typedef std::shared_ptr<SharedStringsStream>		SharedStringsStreamPtr;
 
-    class SharedStringsStream: public CompositeObject
+    class SharedStringsStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(SharedStringsStream)
     public:
         SharedStringsStream();
         virtual ~SharedStringsStream();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_SHAREDSTRINGS;
+		XLS::BaseObjectPtr               m_SHAREDSTRINGS;
 
     };
 

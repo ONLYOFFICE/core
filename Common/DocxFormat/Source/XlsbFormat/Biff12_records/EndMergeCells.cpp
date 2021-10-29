@@ -32,6 +32,8 @@
 
 #include "EndMergeCells.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndMergeCells(*this));
     }
 
-    void EndMergeCells::readFields(CFRecord& record)
+    void EndMergeCells::readFields(XLS::CFRecord& record)
     {
         //empty data
     }

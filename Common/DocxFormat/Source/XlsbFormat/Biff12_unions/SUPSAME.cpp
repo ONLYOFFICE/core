@@ -34,6 +34,8 @@
 #include "../Biff12_records/SupSame.h"
 #include "../Biff12_records/PlaceholderName.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

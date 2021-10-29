@@ -31,16 +31,14 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
-#include "../../XlsxFormat/WritingElement.h"
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../Biff12_structures/FRTBlank.h"
-
-using namespace XLS;
+#include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
     // Logical representation of BrtCFIcon record in BIFF12
-    class CFIcon: public BiffRecord
+    class CFIcon: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(CFIcon)
             BASE_OBJECT_DEFINE_CLASS_NAME(CFIcon)
@@ -48,12 +46,12 @@ namespace XLSB
             CFIcon();
             virtual ~CFIcon();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             FRTBlank                        FRTheader;
-            KPISets14                       iconSet;
+            XLS::KPISets14					iconSet;
             _INT32                          index;
     };
 

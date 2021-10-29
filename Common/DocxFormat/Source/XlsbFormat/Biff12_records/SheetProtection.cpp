@@ -32,6 +32,8 @@
 
 #include "SheetProtection.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new SheetProtection(*this));
     }
 
-    void SheetProtection::readFields(CFRecord& record)
+    void SheetProtection::readFields(XLS::CFRecord& record)
     {
         record >> protpwd;
         record >> fLocked >> fObjects >> fScenarios >> fFormatCells >> fFormatColumns >> fFormatRows >> fInsertColumns >> fInsertRows;

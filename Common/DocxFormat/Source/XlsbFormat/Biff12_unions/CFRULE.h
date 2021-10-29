@@ -31,33 +31,30 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
-#include <Logic/Biff_structures/CellRef.h>
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CellRef.h"
 
 namespace XLSB
 {
-
-    class CFRULE: public CompositeObject
+    class CFRULE: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(CFRULE)
     public:
-        CFRULE(const CellRef& cell_base_ref);
+        CFRULE(const XLS::CellRef& cell_base_ref);
         virtual ~CFRULE();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        static const ElementType	type = typeCFRULE;
+        static const XLS::ElementType	type = XLS::typeCFRULE;
 
-        BaseObjectPtr               m_BrtBeginCFRule;
-        BaseObjectPtr               m_source;
-        BaseObjectPtr               m_FRTRULE;
-        BaseObjectPtr               m_BrtEndCFRule;
+        XLS::BaseObjectPtr               m_BrtBeginCFRule;
+        XLS::BaseObjectPtr               m_source;
+        XLS::BaseObjectPtr               m_FRTRULE;
+        XLS::BaseObjectPtr               m_BrtEndCFRule;
 
-        CellRef                     ref;
+        XLS::CellRef                     ref;
 
     };
 

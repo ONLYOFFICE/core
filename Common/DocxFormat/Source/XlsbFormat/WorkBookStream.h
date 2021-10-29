@@ -42,7 +42,7 @@
 #include <iostream>
 #include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 typedef BYTE *LPBYTE;
-using namespace XLS;
+
 namespace XLSB
 {
     class StreamCacheReader;
@@ -50,39 +50,39 @@ namespace XLSB
     class WorkBookStream;
     typedef std::shared_ptr<WorkBookStream>		WorkBookStreamPtr;
 
-    class WorkBookStream: public CompositeObject
+    class WorkBookStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
     public:
         WorkBookStream();
         virtual ~WorkBookStream();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        static const XLS::ElementType type = typeWorkbookStreamObject;
+        static const XLS::ElementType type = XLS::typeWorkbookStreamObject;
 
-        BaseObjectPtr               m_BrtBeginBook;
-        BaseObjectPtr               m_BrtFileVersion;
-        BaseObjectPtr               m_BrtFileSharingIso;
-        BaseObjectPtr               m_BrtFileSharing;
-        BaseObjectPtr               m_BrtBookProtectionIso;
-        BaseObjectPtr               m_BrtBookProtection;
-        BaseObjectPtr               m_BrtWbProp;
-        BaseObjectPtr               m_ACABSPATH;
-        BaseObjectPtr               m_BOOKVIEWS;
-        BaseObjectPtr               m_BUNDLESHS;
-        BaseObjectPtr               m_FNGROUP;
-        BaseObjectPtr               m_EXTERNALS;
-        BaseObjectPtr               m_BrtCalcProp;
-        BaseObjectPtr               m_BrtOleSize;
-        BaseObjectPtr               m_BrtWebOpt;
-        BaseObjectPtr               m_BrtEndBook;
+		XLS::BaseObjectPtr               m_BrtBeginBook;
+		XLS::BaseObjectPtr               m_BrtFileVersion;
+		XLS::BaseObjectPtr               m_BrtFileSharingIso;
+		XLS::BaseObjectPtr               m_BrtFileSharing;
+		XLS::BaseObjectPtr               m_BrtBookProtectionIso;
+		XLS::BaseObjectPtr               m_BrtBookProtection;
+		XLS::BaseObjectPtr               m_BrtWbProp;
+		XLS::BaseObjectPtr               m_ACABSPATH;
+		XLS::BaseObjectPtr               m_BOOKVIEWS;
+		XLS::BaseObjectPtr               m_BUNDLESHS;
+		XLS::BaseObjectPtr               m_FNGROUP;
+		XLS::BaseObjectPtr               m_EXTERNALS;
+		XLS::BaseObjectPtr               m_BrtCalcProp;
+		XLS::BaseObjectPtr               m_BrtOleSize;
+		XLS::BaseObjectPtr               m_BrtWebOpt;
+		XLS::BaseObjectPtr               m_BrtEndBook;
 
-        std::vector<BaseObjectPtr>  m_arBrtName;
-        std::vector<BaseObjectPtr>  m_arBrtUserBookView;
-        std::vector<BaseObjectPtr>  m_arBrtFileRecover;
+        std::vector<XLS::BaseObjectPtr>  m_arBrtName;
+        std::vector<XLS::BaseObjectPtr>  m_arBrtUserBookView;
+        std::vector<XLS::BaseObjectPtr>  m_arBrtFileRecover;
 
     };
 

@@ -38,6 +38,8 @@
 #include "FRT.h"
 #include "../Biff12_records/EndSortState.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

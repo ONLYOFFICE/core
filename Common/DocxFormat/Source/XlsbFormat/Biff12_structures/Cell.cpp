@@ -32,6 +32,8 @@
 
 #include "Cell.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    Cell::Cell(CFRecord& record)
+    Cell::Cell(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new Cell(*this));
     }
 
-    void Cell::load(CFRecord& record)
+    void Cell::load(XLS::CFRecord& record)
     {
         unsigned int flags;
         record >> column >> flags;

@@ -49,6 +49,7 @@
 #include "Biff12_records/BookProtectionIso.h"
 #include "Biff12_unions/FRT.h"
 
+using namespace XLS;
 
 namespace XLSB
 {

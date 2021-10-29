@@ -156,7 +156,7 @@ namespace OOX
 			}
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream);
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nFlags);
-            void fromBin(BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType);
+            void fromBin(XLS::BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType);
 			virtual EElementType getType () const
 			{
 				return et_x_Formula;

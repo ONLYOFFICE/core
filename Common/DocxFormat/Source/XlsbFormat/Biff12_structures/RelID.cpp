@@ -32,6 +32,8 @@
 
 #include "RelID.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    RelID::RelID(CFRecord& record)
+    RelID::RelID(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new RelID(*this));
     }
 
-    void RelID::load(CFRecord& record)
+    void RelID::load(XLS::CFRecord& record)
     {
         record >> value;
     }

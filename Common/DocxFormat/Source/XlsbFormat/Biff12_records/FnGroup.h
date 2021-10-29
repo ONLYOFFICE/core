@@ -31,17 +31,17 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/XLWideString.h"
-using namespace XLS;
+
 
 namespace XLSB
 {
 
     // Logical representation of BrtFnGroup record in BIFF12
-    class FnGroup: public BiffRecord
+    class FnGroup: public XLS::BiffRecord
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(FnGroup)
         BASE_OBJECT_DEFINE_CLASS_NAME(FnGroup)
@@ -49,9 +49,9 @@ namespace XLSB
         FnGroup();
         ~FnGroup();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        void readFields(CFRecord& record);
+        void readFields(XLS::CFRecord& record);
 
         XLWideString    stGroup;
 

@@ -35,6 +35,8 @@
 #include "../Biff12_unions/uCFVO.h"
 #include "../Biff12_records/EndIconSet.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

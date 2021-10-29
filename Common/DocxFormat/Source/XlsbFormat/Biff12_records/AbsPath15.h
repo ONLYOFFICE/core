@@ -31,16 +31,15 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/XLWideString.h"
-using namespace XLS;
 
 namespace XLSB
 {
     // Logical representation of BrtAbsPath15 record in BIFF12
-    class AbsPath15: public BiffRecord
+    class AbsPath15: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(AbsPath15)
             BASE_OBJECT_DEFINE_CLASS_NAME(AbsPath15)
@@ -48,9 +47,9 @@ namespace XLSB
             AbsPath15();
             virtual ~AbsPath15();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             XLWideString    stAbsPath;
     };

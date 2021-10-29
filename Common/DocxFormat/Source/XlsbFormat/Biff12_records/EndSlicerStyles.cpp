@@ -32,6 +32,8 @@
 
 #include "EndSlicerStyles.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndSlicerStyles(*this));
     }
 
-    void EndSlicerStyles::readFields(CFRecord& record)
+    void EndSlicerStyles::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

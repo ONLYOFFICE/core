@@ -33,6 +33,8 @@
 #include "ACBegin.h"
 #include "../Biff12_structures/ACProductVersion.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -49,7 +51,7 @@ namespace XLSB
         return BaseObjectPtr(new ACBegin(*this));
     }
 
-    void ACBegin::readFields(CFRecord& record)
+    void ACBegin::readFields(XLS::CFRecord& record)
     {
         record >> cver;
         for(int i = 0; i < cver; ++i)

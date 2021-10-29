@@ -32,6 +32,8 @@
 
 #include "BundleSh.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BundleSh(*this));
     }
 
-    void BundleSh::readFields(CFRecord& record)
+    void BundleSh::readFields(XLS::CFRecord& record)
     {
         record >> hsState >> iTabID >> strRelID >> strName;
     }

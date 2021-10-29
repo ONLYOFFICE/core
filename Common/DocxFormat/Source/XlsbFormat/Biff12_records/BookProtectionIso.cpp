@@ -32,6 +32,8 @@
 
 #include "BookProtectionIso.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -51,7 +53,7 @@ namespace XLSB
     }
 
 
-    void BookProtectionIso::readFields(CFRecord& record)
+    void BookProtectionIso::readFields(XLS::CFRecord& record)
     {
         record >> dwBookSpinCount;
         record >> dwRevSpinCount;

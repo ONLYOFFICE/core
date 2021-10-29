@@ -31,16 +31,16 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/FRTProductVersion.h"
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtFRTBegin record in BIFF12
-    class FRTBegin: public BiffRecord
+    class FRTBegin: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(FRTBegin)
             BASE_OBJECT_DEFINE_CLASS_NAME(FRTBegin)
@@ -48,9 +48,9 @@ namespace XLSB
             FRTBegin();
             virtual ~FRTBegin();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             FRTProductVersion   productVersion;
     };

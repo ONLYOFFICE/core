@@ -31,15 +31,15 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtEndSortCond record in BIFF12
-    class EndSortCond: public BiffRecord
+    class EndSortCond: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(EndSortCond)
             BASE_OBJECT_DEFINE_CLASS_NAME(EndSortCond)
@@ -47,11 +47,11 @@ namespace XLSB
             EndSortCond();
             virtual ~EndSortCond();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-            //static const ElementType	type = typeEndSortCond;
+            //static const XLS::ElementType	type = XLS::typeEndSortCond;
     };
 
 } // namespace XLSB

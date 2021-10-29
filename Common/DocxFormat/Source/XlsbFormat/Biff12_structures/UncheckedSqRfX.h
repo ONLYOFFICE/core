@@ -32,30 +32,29 @@
 
 #pragma once
 
-#include <Logic/Biff_structures/BiffStructure.h>
-#include <Logic/Biff_records/BiffRecord.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "CellRangeRef.h"
 
-using namespace XLS;
 namespace XLSB
 {
-    class UncheckedSqRfX : public BiffStructure
+    class UncheckedSqRfX : public XLS::BiffStructure
     {
         BASE_STRUCTURE_DEFINE_CLASS_NAME(UncheckedSqRfX)
     public:
         UncheckedSqRfX();
-        UncheckedSqRfX(CFRecord& record);
+        UncheckedSqRfX(XLS::CFRecord& record);
         virtual ~UncheckedSqRfX();
-        BiffStructurePtr clone();
+        XLS::BiffStructurePtr clone();
 
-        static const ElementType	type = typeBiffStructure;
+        static const XLS::ElementType type = XLS::typeBiffStructure;
 
-        virtual void load(CFRecord& record);
+        virtual void load(XLS::CFRecord& record);
 
         _INT32                      crfx;
         std::vector<UncheckedRfX>   rgrfx;
 
-        const CellRef getLocationFirstCell() const;
+        const XLS::CellRef getLocationFirstCell() const;
 
         std::wstring  strValue;
     };

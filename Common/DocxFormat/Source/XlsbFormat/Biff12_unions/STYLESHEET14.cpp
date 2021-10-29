@@ -37,6 +37,8 @@
 #include "../Biff12_records/EndStyleSheetExt14.h"
 #include "../Biff12_records/FRTEnd.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

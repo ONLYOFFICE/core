@@ -32,6 +32,8 @@
 
 #include "BeginDatabar.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginDatabar(*this));
     }
 
-    void BeginDatabar::readFields(CFRecord& record)
+    void BeginDatabar::readFields(XLS::CFRecord& record)
     {
         record >> bLenMin >> bLenMax >> fShowValue;
     }

@@ -32,6 +32,8 @@
 
 #include "EndColorScale.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndColorScale(*this));
     }
 
-    void EndColorScale::readFields(CFRecord& record)
+    void EndColorScale::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

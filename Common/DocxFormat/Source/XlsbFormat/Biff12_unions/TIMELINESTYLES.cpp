@@ -35,6 +35,8 @@
 #include "../Biff12_unions/TIMELINESTYLE.h"
 #include "../Biff12_records/EndTimelineStyles.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

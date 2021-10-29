@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <Logic/Biff_structures/BiffAttribute.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffAttribute.h"
 
 namespace XLS
 {

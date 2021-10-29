@@ -31,30 +31,30 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class CELL: public CompositeObject
+    class CELL: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(CELL)
     public:
         CELL(_INT32 row);
         virtual ~CELL();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr                m_TABLECELL;
-        BaseObjectPtr                m_DATACELL;
-        BaseObjectPtr                m_FMLACELL;
-        BaseObjectPtr                m_SHRFMLACELL;
-        BaseObjectPtr                m_CELLMETA;
-        std::vector<BaseObjectPtr>   m_arFRT;
+        XLS::BaseObjectPtr                m_TABLECELL;
+        XLS::BaseObjectPtr                m_DATACELL;
+        XLS::BaseObjectPtr                m_FMLACELL;
+        XLS::BaseObjectPtr                m_SHRFMLACELL;
+        XLS::BaseObjectPtr                m_CELLMETA;
+        std::vector<XLS::BaseObjectPtr>   m_arFRT;
         _INT32                       m_Row;
         //_INT32                       m_Col;
 

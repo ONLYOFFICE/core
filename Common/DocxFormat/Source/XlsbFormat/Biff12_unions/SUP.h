@@ -31,25 +31,25 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class SUP: public CompositeObject
+    class SUP: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(SUP)
     public:
         SUP();
         virtual ~SUP();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr   m_source;
+		XLS::BaseObjectPtr   m_source;
 
     };
 

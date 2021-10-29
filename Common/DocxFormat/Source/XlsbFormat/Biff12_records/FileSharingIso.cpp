@@ -32,6 +32,8 @@
 
 #include "FileSharingIso.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -51,7 +53,7 @@ namespace XLSB
     }
 
 
-    void FileSharingIso::readFields(CFRecord& record)
+    void FileSharingIso::readFields(XLS::CFRecord& record)
     {
         record >> dwSpinCount;
         record >> fReadOnlyRec;

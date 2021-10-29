@@ -35,6 +35,8 @@
 #include "../Biff12_records/IndexedColor.h"
 #include "../Biff12_records/EndIndexedColors.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

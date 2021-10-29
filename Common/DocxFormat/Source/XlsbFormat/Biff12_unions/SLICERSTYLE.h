@@ -31,29 +31,29 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class SLICERSTYLE: public CompositeObject
+    class SLICERSTYLE: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(SLICERSTYLE)
     public:
         SLICERSTYLE();
         virtual ~SLICERSTYLE();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginSlicerStyle;
-        BaseObjectPtr               m_BrtBeginSlicerStyleElements;
-        std::vector<BaseObjectPtr>  m_arBrtSlicerStyleElement;
-        BaseObjectPtr               m_BrtEndSlicerStyleElements;
-        BaseObjectPtr               m_BrtEndSlicerStyle;
+        XLS::BaseObjectPtr               m_BrtBeginSlicerStyle;
+        XLS::BaseObjectPtr               m_BrtBeginSlicerStyleElements;
+        std::vector<XLS::BaseObjectPtr>  m_arBrtSlicerStyleElement;
+        XLS::BaseObjectPtr               m_BrtEndSlicerStyleElements;
+        XLS::BaseObjectPtr               m_BrtEndSlicerStyle;
 
     };
 

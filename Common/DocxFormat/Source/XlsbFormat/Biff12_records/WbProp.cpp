@@ -32,6 +32,8 @@
 
 #include "WbProp.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new WbProp(*this));
     }
 
-    void WbProp::readFields(CFRecord& record)
+    void WbProp::readFields(XLS::CFRecord& record)
     {
         unsigned int flags;
         record >> flags;

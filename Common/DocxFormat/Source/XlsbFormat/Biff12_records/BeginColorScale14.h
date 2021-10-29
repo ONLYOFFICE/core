@@ -31,15 +31,13 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
-
-using namespace XLS;
 
 namespace XLSB
 {
     // Logical representation of BrtBeginColorScale14 record in BIFF12
-    class BeginColorScale14: public BiffRecord
+    class BeginColorScale14: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BeginColorScale14)
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginColorScale14)
@@ -47,11 +45,11 @@ namespace XLSB
             BeginColorScale14();
             virtual ~BeginColorScale14();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-            //static const ElementType	type = typeBeginColorScale14;
+            //static const XLS::ElementType	type = XLS::typeBeginColorScale14;
     };
 
 } // namespace XLSB

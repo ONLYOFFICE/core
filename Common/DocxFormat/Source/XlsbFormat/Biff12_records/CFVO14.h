@@ -31,20 +31,18 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/CFVOType14.h"
-#include <Logic/Biff_structures/Xnum.h>
-#include <Logic/Biff_structures/CFVOParsedFormula.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CFVOParsedFormula.h"
 #include "../Biff12_structures/FRTHeader.h"
-
-using namespace XLS;
 
 namespace XLSB
 {
     // Logical representation of BrtCFVO14 record in BIFF12
-    class CFVO14: public BiffRecord
+    class CFVO14: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(CFVO14)
             BASE_OBJECT_DEFINE_CLASS_NAME(CFVO14)
@@ -52,15 +50,15 @@ namespace XLSB
             CFVO14();
             virtual ~CFVO14();
 
-            BaseObjectPtr clone();
+			XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-            static const ElementType	type = typeCFVO14;
+            static const XLS::ElementType	type = XLS::typeCFVO14;
 
             FRTHeader                       FRTheader;
-            CFVOType14                      iType;
-            Xnum                            numParam;
+			XLS::CFVOType14					iType;
+			XLS::Xnum						numParam;
             XLS::Boolean<unsigned int>      fSaveGTE;
             XLS::Boolean<unsigned int>      fGTE;
             _UINT32                         cbFmla;

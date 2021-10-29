@@ -37,6 +37,8 @@
 #include "../Biff12_records/EndTimelineStyleSheetExt15.h"
 #include "../Biff12_records/FRTEnd.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

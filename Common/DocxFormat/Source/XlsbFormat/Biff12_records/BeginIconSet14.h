@@ -31,16 +31,14 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 #include "../Biff12_structures/FRTBlank.h"
-
-using namespace XLS;
 
 namespace XLSB
 {
     // Logical representation of BrtBeginIconSet14 record in BIFF12
-    class BeginIconSet14: public BiffRecord
+    class BeginIconSet14: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BeginIconSet14)
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginIconSet14)
@@ -48,14 +46,14 @@ namespace XLSB
             BeginIconSet14();
             virtual ~BeginIconSet14();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-            static const ElementType	type = typeBeginIconSet14;
+            static const XLS::ElementType	type = XLS::typeBeginIconSet14;
 
             FRTBlank     FRTheader;
-            KPISets14    iSet;
+			XLS::KPISets14    iSet;
             bool         fCustom;
             bool         fIcon;
             bool         fReverse;

@@ -32,6 +32,8 @@
 
 #include "BeginRichSortCondition.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginRichSortCondition(*this));
     }
 
-    void BeginRichSortCondition::readFields(CFRecord& record)
+    void BeginRichSortCondition::readFields(XLS::CFRecord& record)
     {
         record.skipNunBytes(26); // unused
         record >> stSsList >> key;

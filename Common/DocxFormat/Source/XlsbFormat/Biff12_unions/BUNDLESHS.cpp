@@ -35,6 +35,8 @@
 #include "../Biff12_records/BundleSh.h"
 #include "../Biff12_records/EndBundleShs.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

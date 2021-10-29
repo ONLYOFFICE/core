@@ -31,29 +31,29 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class ICONSET: public CompositeObject
+    class ICONSET: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(ICONSET)
     public:
         ICONSET();
         virtual ~ICONSET();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        static const ElementType	type = typeICONSET;
+        static const XLS::ElementType	type = XLS::typeICONSET;
 
-        BaseObjectPtr               m_BrtBeginIconSet;
-        std::vector<BaseObjectPtr>  m_arCFVO;
-        BaseObjectPtr               m_BrtEndIconSet;
+        XLS::BaseObjectPtr               m_BrtBeginIconSet;
+        std::vector<XLS::BaseObjectPtr>  m_arCFVO;
+        XLS::BaseObjectPtr               m_BrtEndIconSet;
 
     };
 

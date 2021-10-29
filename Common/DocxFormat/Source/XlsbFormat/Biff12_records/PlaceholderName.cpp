@@ -32,6 +32,8 @@
 
 #include "PlaceholderName.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new PlaceholderName(*this));
     }
 
-    void PlaceholderName::readFields(CFRecord& record)
+    void PlaceholderName::readFields(XLS::CFRecord& record)
     {
        record >> name;
     }

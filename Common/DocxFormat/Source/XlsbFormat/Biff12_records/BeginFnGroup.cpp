@@ -32,6 +32,8 @@
 
 #include "BeginFnGroup.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginFnGroup(*this));
     }
 
-    void BeginFnGroup::readFields(CFRecord& record)
+    void BeginFnGroup::readFields(XLS::CFRecord& record)
     {
         record >> iMac;
     }

@@ -31,7 +31,6 @@
  */
 
 #include "FRTParsedFormula.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -45,7 +44,7 @@ BiffStructurePtr FRTParsedFormula::clone()
     return BiffStructurePtr(new FRTParsedFormula(*this));
 }
 
-void FRTParsedFormula::load(CFRecord& record)
+void FRTParsedFormula::load(XLS::CFRecord& record)
 {   
     unsigned int cce;
     unsigned int cb;

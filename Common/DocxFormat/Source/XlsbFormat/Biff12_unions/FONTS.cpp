@@ -35,6 +35,8 @@
 #include "../Biff12_records/BeginFonts.h"
 #include "../Biff12_records/EndFonts.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

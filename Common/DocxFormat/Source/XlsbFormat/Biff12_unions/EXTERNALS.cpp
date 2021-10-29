@@ -31,10 +31,13 @@
  */
 
 #include "EXTERNALS.h"
-#include "../Biff12_records/BeginExternals.h"
 #include "SUP.h"
+
+#include "../Biff12_records/BeginExternals.h"
 #include "../Biff12_records/EndExternals.h"
-#include "Biff12_records/CommonRecords.h"
+#include "../Biff12_records/CommonRecords.h"
+
+using namespace XLS;
 
 namespace XLSB
 {

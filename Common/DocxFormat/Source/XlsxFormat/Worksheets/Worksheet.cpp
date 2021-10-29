@@ -40,7 +40,7 @@
 #include "../../DocxFormat/Media/Image.h"
 #include "../../DocxFormat/VmlDrawing.h"
 
-#include "../XlsbFormat/Xlsb.h"
+#include "../../XlsbFormat/Xlsb.h"
 
 #include "../../XlsbFormat/WorkSheetStream.h"
 

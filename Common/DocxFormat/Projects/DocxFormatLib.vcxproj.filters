@@ -97,9 +97,6 @@
     <Filter Include="Utility\FileSys">
       <UniqueIdentifier>{547fea33-88e2-4642-9c2a-c290c3405e3e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{548a010c-e7a5-43ed-ae81-770c2e93141a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Comments">
       <UniqueIdentifier>{bf396d1c-4838-484f-bbc6-1398bb363c27}</UniqueIdentifier>
     </Filter>
@@ -344,63 +341,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\SystemUtility\SystemUtility.h">
       <Filter>Utility\FileSys</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\AbstractConverter.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Align.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Color.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Common.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\ComplexTypes.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Encoding.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Index.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\NumFormat.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Point.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Position.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Base.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Drawing.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Shared.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Vml.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Word.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Size.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Unit.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Wrap.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\ZIndex.h">
-      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\DocxFormat\Comments.h">
       <Filter>Comments</Filter>
@@ -1171,6 +1111,405 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\WsFmtInfo.h">
       <Filter>XlsxFormat\Xlsb Format\Records</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\CommentsStream.h">
+      <Filter>XlsxFormat\Xlsb Format</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\StylesStream.h">
+      <Filter>XlsxFormat\Xlsb Format</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Xlsb.h">
+      <Filter>XlsxFormat\Xlsb Format</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginBorders.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginCellStyleXFs.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginCellXFs.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginCFRule14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginColorPalette.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginColorScale14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginComment.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginCommentAuthors.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginCommentList.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginComments.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginConditionalFormatting14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginConditionalFormattings.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginDatabar14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginDXF14s.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginDXFs.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginDXFs15.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginFills.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginFmts.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginFonts.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginIconSet14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginIndexedColors.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginMRUColors.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerStyle.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerStyleElements.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerStyles.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginStyles.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginStyleSheet.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginStyleSheetExt14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginTimelineStyle.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginTimelineStyleElements.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginTimelineStyles.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginTimelineStyleSheetExt15.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Border.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\CFIcon.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\CFVO14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Color14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\CommentAuthor.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\CommentText.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndBorders.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndCellStyleXFs.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndCellXFs.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndCFRule14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndColorPalette.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndColorScale14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndComment.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndCommentAuthors.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndCommentList.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndComments.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndConditionalFormatting14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndConditionalFormattings.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndDatabar14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndDXF14s.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndDXFs.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndDXFs15.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndFills.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndFmts.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndFonts.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndIconSet14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndIndexedColors.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndMRUColors.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerStyle.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerStyleElements.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerStyles.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndStyles.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndStyleSheet.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndStyleSheetExt14.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndTableStyle.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndTableStyles.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndTimelineStyle.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndTimelineStyleElements.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndTimelineStyles.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndTimelineStyleSheetExt15.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Fill.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Fmt.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\IndexedColor.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\LegacyDrawing.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\LegacyDrawingHF.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\MRUColor.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SlicerStyleElement.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Style.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\TimelineStyleElement.h">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\Blxf.h">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\CFVOType14.h">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\FRTFormula.h">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\FRTFormulas.h">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\FRTHeader.h">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\FRTParsedFormula.h">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\FRTRef.h">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\FRTRefs.h">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\FRTRelID.h">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\FRTSqref.h">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\FRTSqrefs.h">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\GradientStop.h">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ACFMT.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\BORDERS.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\CELLSTYLEXFS.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\CELLXFS.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\CFRULE14.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\COLORPALETTE.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\COLORSCALE14.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\COMMENT.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\COMMENTAUTHORS.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\COMMENTLIST.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\COMMENTS.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\CONDITIONALFORMATTING14.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\CONDITIONALFORMATTINGS.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\DATABAR14.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\DXF.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\DXF14S.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\DXFS.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\DXFS15.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FILLS.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FMTS.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FONTS.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTDXF.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTSTYLESHEET.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTWORKSHEET.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ICONSET14.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\INDEXEDCOLORS.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\MRUCOLORS.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERSTYLE.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERSTYLES.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\STYLES.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\STYLESHEET14.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\STYLESHEET15.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESTYLE.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESTYLES.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TIMELINESTYLE.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TIMELINESTYLES.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\uCFVO14.h">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\DocxFormat\Logic\Table.cpp">
@@ -1232,30 +1571,6 @@
     </ClCompile>
     <ClCompile Include="..\Source\SystemUtility\SystemUtility.cpp">
       <Filter>Utility\FileSys</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Align.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Color.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Index.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\NumFormat.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Position.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\SimpleTypes_Word.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Wrap.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\ZIndex.cpp">
-      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Comments.cpp">
       <Filter>Comments</Filter>
@@ -1806,6 +2121,405 @@
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\WsFmtInfo.cpp">
       <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\CommentsStream.cpp">
+      <Filter>XlsxFormat\Xlsb Format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\StylesStream.cpp">
+      <Filter>XlsxFormat\Xlsb Format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Xlsb.cpp">
+      <Filter>XlsxFormat\Xlsb Format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginBorders.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginCellStyleXFs.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginCellXFs.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginCFRule14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginColorPalette.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginColorScale14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginComment.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginCommentAuthors.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginCommentList.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginComments.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginConditionalFormatting14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginConditionalFormattings.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginDatabar14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginDXF14s.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginDXFs.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginDXFs15.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginFills.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginFmts.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginFonts.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginIconSet14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginIndexedColors.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginMRUColors.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerStyle.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerStyleElements.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerStyles.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginStyles.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginStyleSheet.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginStyleSheetExt14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginTimelineStyle.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginTimelineStyleElements.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginTimelineStyles.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginTimelineStyleSheetExt15.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Border.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\CFIcon.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\CFVO14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Color14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\CommentAuthor.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\CommentText.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndBorders.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndCellStyleXFs.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndCellXFs.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndCFRule14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndColorPalette.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndColorScale14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndComment.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndCommentAuthors.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndCommentList.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndComments.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndConditionalFormatting14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndConditionalFormattings.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndDatabar14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndDXF14s.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndDXFs.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndDXFs15.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndFills.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndFmts.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndFonts.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndIconSet14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndIndexedColors.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndMRUColors.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerStyle.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerStyleElements.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerStyles.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndStyles.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndStyleSheet.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndStyleSheetExt14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndTableStyle.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndTableStyles.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndTimelineStyle.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndTimelineStyleElements.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndTimelineStyles.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndTimelineStyleSheetExt15.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Fill.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Fmt.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\IndexedColor.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\LegacyDrawing.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\LegacyDrawingHF.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\MRUColor.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SlicerStyleElement.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Style.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\TimelineStyleElement.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\Blxf.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\CFVOType14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\FRTFormula.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\FRTFormulas.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\FRTHeader.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\FRTParsedFormula.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\FRTRef.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\FRTRefs.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\FRTRelID.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\FRTSqref.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\FRTSqrefs.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\GradientStop.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ACFMT.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BORDERS.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELLSTYLEXFS.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELLXFS.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CFRULE14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COLORPALETTE.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COLORSCALE14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COMMENT.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COMMENTAUTHORS.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COMMENTLIST.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COMMENTS.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CONDITIONALFORMATTING14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CONDITIONALFORMATTINGS.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\DATABAR14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\DXF.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\DXF14S.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\DXFS.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\DXFS15.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FILLS.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FMTS.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FONTS.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTDXF.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTSTYLESHEET.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTWORKSHEET.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ICONSET14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\INDEXEDCOLORS.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\MRUCOLORS.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERSTYLE.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERSTYLES.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\STYLES.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\STYLESHEET14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\STYLESHEET15.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESTYLE.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESTYLES.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TIMELINESTYLE.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TIMELINESTYLES.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\uCFVO14.cpp">
+      <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

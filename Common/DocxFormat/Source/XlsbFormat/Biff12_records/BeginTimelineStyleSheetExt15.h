@@ -31,15 +31,15 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtBeginTimelineStyleSheetExt15 record in BIFF12
-    class BeginTimelineStyleSheetExt15: public BiffRecord
+    class BeginTimelineStyleSheetExt15: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BeginTimelineStyleSheetExt15)
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginTimelineStyleSheetExt15)
@@ -47,9 +47,9 @@ namespace XLSB
             BeginTimelineStyleSheetExt15();
             virtual ~BeginTimelineStyleSheetExt15();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
     };
 

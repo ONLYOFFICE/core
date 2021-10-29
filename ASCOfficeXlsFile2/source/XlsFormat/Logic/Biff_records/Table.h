@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CellRangeRef.h>
+#include "../Biff_structures/CellRangeRef.h"
 
 namespace XLS
 {

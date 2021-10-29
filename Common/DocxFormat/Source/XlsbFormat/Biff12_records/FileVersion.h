@@ -31,16 +31,16 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/XLWideString.h"
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtFileVersion record in BIFF12
-    class FileVersion: public BiffRecord
+    class FileVersion: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(FileVersion)
             BASE_OBJECT_DEFINE_CLASS_NAME(FileVersion)
@@ -48,9 +48,9 @@ namespace XLSB
             FileVersion();
             virtual ~FileVersion();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             _GUID_ guidCodeName;
 

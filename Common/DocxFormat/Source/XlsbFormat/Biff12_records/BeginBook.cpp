@@ -32,6 +32,8 @@
 
 #include "BeginBook.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginBook(*this));
     }
 
-    void BeginBook::readFields(CFRecord& record)
+    void BeginBook::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

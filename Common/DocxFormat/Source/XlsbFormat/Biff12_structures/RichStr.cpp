@@ -32,6 +32,8 @@
 
 #include "RichStr.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BiffStructurePtr(new RichStr(*this));
     }
 
-    void RichStr::load(CFRecord& record)
+    void RichStr::load(XLS::CFRecord& record)
     {
         unsigned char flags;
 

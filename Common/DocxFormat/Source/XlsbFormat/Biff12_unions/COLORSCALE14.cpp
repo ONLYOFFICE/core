@@ -36,6 +36,8 @@
 #include "../Biff12_records/Color14.h"
 #include "../Biff12_records/EndColorScale14.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

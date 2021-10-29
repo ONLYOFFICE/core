@@ -32,6 +32,8 @@
 
 #include "BeginDatabar14.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginDatabar14(*this));
     }
 
-    void BeginDatabar14::readFields(CFRecord& record)
+    void BeginDatabar14::readFields(XLS::CFRecord& record)
     {
         record >> FRTheader >> bLenMin >> bLenMax >> fShowValue >> bDirection >> bAxisPosType;
 

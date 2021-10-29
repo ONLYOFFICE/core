@@ -31,28 +31,28 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/FileSharing.h>
-#include <Logic/Biff_records/ExternSheet.h>
-#include <Logic/Biff_records/Window1.h>
-#include <Logic/Biff_records/Lbl.h>
-#include <Logic/Biff_records/UserBView.h>
-#include <Logic/Biff_records/WOpt.h>
-#include <Logic/Biff_records/BookExt.h>
-#include <Logic/Biff_records/ColInfo.h>
-#include <Logic/Biff_records/Row.h>
-#include <Logic/Biff_records/Table.h>
-#include <Logic/Biff_records/ShrFmla.h>
-#include <Logic/Biff_records/Array.h>
-#include <Logic/Biff_records/Window2.h>
-#include <Logic/Biff_records/Pane.h>
-#include <Logic/Biff_records/Selection.h>
-#include <Logic/Biff_records/SortData.h>
-#include <Logic/Biff_records/Font.h>
-#include <Logic/Biff_records/XF.h>
-#include <Logic/Biff_records/DXF.h>
-#include <Logic/Biff_records/TableStyles.h>
-#include <Logic/Biff_records/TableStyle.h>
-#include <Logic/Biff_records/TableStyleElement.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/FileSharing.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/ExternSheet.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Window1.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Lbl.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/UserBView.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/WOpt.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BookExt.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/ColInfo.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Row.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Table.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/ShrFmla.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Array.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Window2.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Pane.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Selection.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/SortData.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Font.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/XF.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/DXF.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/TableStyles.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/TableStyle.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/TableStyleElement.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 
@@ -63,9 +63,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(FileSharing)
 
-        BaseObjectPtr clone() override
+        XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new FileSharing(*this));
+            return XLS::BaseObjectPtr(new FileSharing(*this));
         }
 
     };
@@ -74,9 +74,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(ExternSheet)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new ExternSheet(*this));
+            return XLS::BaseObjectPtr(new ExternSheet(*this));
         }
 
     };
@@ -85,9 +85,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BookView)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new BookView(*this));
+            return XLS::BaseObjectPtr(new BookView(*this));
         }
     };
 
@@ -95,9 +95,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(Name)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new Name(*this));
+            return XLS::BaseObjectPtr(new Name(*this));
         }
     };
 
@@ -105,9 +105,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(UserBookView)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new UserBookView(*this));
+            return XLS::BaseObjectPtr(new UserBookView(*this));
         }
     };
 
@@ -115,9 +115,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(WebOpt)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new WebOpt(*this));
+            return XLS::BaseObjectPtr(new WebOpt(*this));
         }
     };
 
@@ -125,9 +125,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(FileRecover)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new FileRecover(*this));
+            return XLS::BaseObjectPtr(new FileRecover(*this));
         }
     };
 
@@ -135,9 +135,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(ColInfo)
 
-        BaseObjectPtr clone() override
+        XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new ColInfo(*this));
+            return XLS::BaseObjectPtr(new ColInfo(*this));
         }
     };
 
@@ -145,9 +145,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(RowHdr)
 
-        BaseObjectPtr clone() override
+        XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new RowHdr(*this));
+            return XLS::BaseObjectPtr(new RowHdr(*this));
         }
     };
 
@@ -155,31 +155,31 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(Table)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new Table(*this));
+            return XLS::BaseObjectPtr(new Table(*this));
         }
     };
 
     class ShrFmla: public XLS::ShrFmla
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(ShrFmla)
-        ShrFmla(const CellRef& cell_base_ref_init) : XLS::ShrFmla(cell_base_ref_init) {}
+        ShrFmla(const XLS::CellRef& cell_base_ref_init) : XLS::ShrFmla(cell_base_ref_init) {}
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new ShrFmla(*this));
+            return XLS::BaseObjectPtr(new ShrFmla(*this));
         }
     };
 
     class ArrFmla: public XLS::Array
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(ArrFmla)
-        ArrFmla(const CellRef& cell_base_ref_init) : XLS::Array(cell_base_ref_init) {}
+        ArrFmla(const XLS::CellRef& cell_base_ref_init) : XLS::Array(cell_base_ref_init) {}
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new ArrFmla(*this));
+            return XLS::BaseObjectPtr(new ArrFmla(*this));
         }
     };
 
@@ -187,9 +187,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BeginWsView)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new BeginWsView(*this));
+            return XLS::BaseObjectPtr(new BeginWsView(*this));
         }
     };
 
@@ -197,9 +197,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(Pane)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new Pane(*this));
+            return XLS::BaseObjectPtr(new Pane(*this));
         }
     };
 
@@ -207,9 +207,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(Sel)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new Sel(*this));
+            return XLS::BaseObjectPtr(new Sel(*this));
         }
     };
 
@@ -217,9 +217,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BeginSortState)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new BeginSortState(*this));
+            return XLS::BaseObjectPtr(new BeginSortState(*this));
         }
     };
 
@@ -227,9 +227,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(Font)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new Font(*this));
+            return XLS::BaseObjectPtr(new Font(*this));
         }
     };
 
@@ -240,9 +240,9 @@ namespace XLSB
         XF(size_t& cell_xf_current_id, size_t& style_xf_current_id) :
             XLS::XF(cell_xf_current_id, style_xf_current_id) {}
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new XF(*this));
+            return XLS::BaseObjectPtr(new XF(*this));
         }
     };
 
@@ -250,9 +250,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(DXF)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new DXF(*this));
+            return XLS::BaseObjectPtr(new DXF(*this));
         }
     };
 
@@ -260,9 +260,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BeginTableStyles)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new BeginTableStyles(*this));
+            return XLS::BaseObjectPtr(new BeginTableStyles(*this));
         }
     };
 
@@ -270,19 +270,19 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BeginTableStyle)
 
-        BaseObjectPtr clone() override
-        {
-            return BaseObjectPtr(new BeginTableStyle(*this));
-        }
+		XLS::BaseObjectPtr clone() override
+		{
+			return XLS::BaseObjectPtr(new BeginTableStyle(*this));
+		}
     };
 
     class TableStyleElement: public XLS::TableStyleElement
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(TableStyleElement)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new TableStyleElement(*this));
+            return XLS::BaseObjectPtr(new TableStyleElement(*this));
         }
     };
 
@@ -290,14 +290,14 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(DXF14)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new DXF14(*this));
+            return XLS::BaseObjectPtr(new DXF14(*this));
         }
 
-        static const ElementType	type = typeDXF14;
+        static const XLS::ElementType	type = XLS::typeDXF14;
 
-        void readFields(CFRecord& record) override
+        void readFields(XLS::CFRecord& record) override
         {
             record.skipNunBytes(4);
             XLS::DXF::readFields(record);
@@ -308,9 +308,9 @@ namespace XLSB
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(DXF15)
 
-        BaseObjectPtr clone() override
+		XLS::BaseObjectPtr clone() override
         {
-            return BaseObjectPtr(new DXF15(*this));
+            return XLS::BaseObjectPtr(new DXF15(*this));
         }
     };
 

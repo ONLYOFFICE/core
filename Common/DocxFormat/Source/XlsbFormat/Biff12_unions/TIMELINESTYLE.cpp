@@ -37,6 +37,8 @@
 #include "../Biff12_records/EndTimelineStyleElements.h"
 #include "../Biff12_records/EndTimelineStyle.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

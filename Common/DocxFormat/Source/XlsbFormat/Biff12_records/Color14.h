@@ -31,17 +31,17 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 #include "../Biff12_structures/FRTBlank.h"
 #include "Color.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtColor14 record in BIFF12
-    class Color14: public BiffRecord
+    class Color14: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(Color14)
             BASE_OBJECT_DEFINE_CLASS_NAME(Color14)
@@ -49,9 +49,9 @@ namespace XLSB
             Color14();
             virtual ~Color14();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             FRTBlank        FRTheader;
             Color           color;

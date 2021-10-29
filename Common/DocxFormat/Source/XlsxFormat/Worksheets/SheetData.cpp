@@ -58,6 +58,8 @@
 
 #include <boost/regex.hpp>
 
+using namespace XLS;
+
 namespace OOX
 {
 	namespace Spreadsheet

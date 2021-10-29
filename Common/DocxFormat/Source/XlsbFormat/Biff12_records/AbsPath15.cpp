@@ -32,6 +32,8 @@
 
 #include "AbsPath15.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new AbsPath15(*this));
     }
 
-    void AbsPath15::readFields(CFRecord& record)
+    void AbsPath15::readFields(XLS::CFRecord& record)
     {
         record >> stAbsPath;
     }

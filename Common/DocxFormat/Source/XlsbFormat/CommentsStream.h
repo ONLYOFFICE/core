@@ -42,7 +42,7 @@
 #include <iostream>
 #include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 namespace XLSB
 {
     class StreamCacheReader;
@@ -50,18 +50,18 @@ namespace XLSB
     class CommentsStream;
     typedef std::shared_ptr<CommentsStream>		CommentsStreamPtr;
 
-    class CommentsStream: public CompositeObject
+    class CommentsStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(CommentsStream)
     public:
         CommentsStream();
         virtual ~CommentsStream();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_COMMENTS;
+		XLS::BaseObjectPtr m_COMMENTS;
 
     };
 

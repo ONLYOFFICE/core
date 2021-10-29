@@ -31,27 +31,27 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class INDEXEDCOLORS: public CompositeObject
+    class INDEXEDCOLORS: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(INDEXEDCOLORS)
     public:
         INDEXEDCOLORS();
         virtual ~INDEXEDCOLORS();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginIndexedColors;
-        std::vector<BaseObjectPtr>  m_arIndexedColor;
-        BaseObjectPtr               m_BrtEndIndexedColors;
+		XLS::BaseObjectPtr               m_BrtBeginIndexedColors;
+        std::vector<XLS::BaseObjectPtr>  m_arIndexedColor;
+		XLS::BaseObjectPtr               m_BrtEndIndexedColors;
 
     };
 

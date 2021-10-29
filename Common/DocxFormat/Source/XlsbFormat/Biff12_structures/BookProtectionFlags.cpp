@@ -32,6 +32,8 @@
 
 #include "BookProtectionFlags.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    BookProtectionFlags::BookProtectionFlags(CFRecord& record)
+    BookProtectionFlags::BookProtectionFlags(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new BookProtectionFlags(*this));
     }
 
-    void BookProtectionFlags::load(CFRecord& record)
+    void BookProtectionFlags::load(XLS::CFRecord& record)
     {
         unsigned short flags;
         record >> flags;

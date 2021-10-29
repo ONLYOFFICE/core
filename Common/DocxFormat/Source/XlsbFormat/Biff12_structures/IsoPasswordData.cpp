@@ -32,13 +32,15 @@
 
 #include "IsoPasswordData.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
     IsoPasswordData::IsoPasswordData()
     {
     }
 
-    IsoPasswordData::IsoPasswordData(CFRecord& record)
+    IsoPasswordData::IsoPasswordData(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -48,7 +50,7 @@ namespace XLSB
         return BiffStructurePtr(new IsoPasswordData(*this));
     }
 
-    void IsoPasswordData::load(CFRecord& record)
+    void IsoPasswordData::load(XLS::CFRecord& record)
     {
         record >> rgbHash;
         record >> rgbSalt;

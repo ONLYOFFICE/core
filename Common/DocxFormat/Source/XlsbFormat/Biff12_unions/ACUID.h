@@ -31,27 +31,27 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class ACUID: public CompositeObject
+    class ACUID: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(ACUID)
     public:
         ACUID();
         virtual ~ACUID();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr	m_BrtACBegin;
-        BaseObjectPtr	m_BrtUid;
-        BaseObjectPtr	m_BrtACEnd;
+		XLS::BaseObjectPtr	m_BrtACBegin;
+		XLS::BaseObjectPtr	m_BrtUid;
+		XLS::BaseObjectPtr	m_BrtACEnd;
 
     };
 

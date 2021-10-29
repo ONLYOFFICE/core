@@ -34,6 +34,8 @@
 #include "../Biff12_records/FRTBegin.h"
 #include "../Biff12_records/FRTEnd.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

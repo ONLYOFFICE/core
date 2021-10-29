@@ -32,6 +32,8 @@
 
 #include "GrbitFmla.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    GrbitFmla::GrbitFmla(CFRecord& record)
+    GrbitFmla::GrbitFmla(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new GrbitFmla(*this));
     }
 
-    void GrbitFmla::load(CFRecord& record)
+    void GrbitFmla::load(XLS::CFRecord& record)
     {
         unsigned short flags;
         record >> flags;

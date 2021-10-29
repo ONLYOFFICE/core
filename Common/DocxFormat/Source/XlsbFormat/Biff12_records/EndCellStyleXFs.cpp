@@ -32,6 +32,8 @@
 
 #include "EndCellStyleXFs.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndCellStyleXFs(*this));
     }
 
-    void EndCellStyleXFs::readFields(CFRecord& record)
+    void EndCellStyleXFs::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

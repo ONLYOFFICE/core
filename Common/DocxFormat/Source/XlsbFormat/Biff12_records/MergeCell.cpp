@@ -32,6 +32,8 @@
 
 #include "MergeCell.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new MergeCell(*this));
     }
 
-    void MergeCell::readFields(CFRecord& record)
+    void MergeCell::readFields(XLS::CFRecord& record)
     {
         record >> rfx;
     }

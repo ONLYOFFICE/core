@@ -32,6 +32,8 @@
 
 #include "SxOs.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    SxOs::SxOs(CFRecord& record)
+    SxOs::SxOs(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new SxOs(*this));
     }
 
-    void SxOs::load(CFRecord& record)
+    void SxOs::load(XLS::CFRecord& record)
     {
         record >> notLast;
         record.skipNunBytes(2); // reserved

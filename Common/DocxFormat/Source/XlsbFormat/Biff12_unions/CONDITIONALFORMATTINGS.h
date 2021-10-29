@@ -31,29 +31,29 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class CONDITIONALFORMATTINGS: public CompositeObject
+    class CONDITIONALFORMATTINGS: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(CONDITIONALFORMATTINGS)
     public:
         CONDITIONALFORMATTINGS();
         virtual ~CONDITIONALFORMATTINGS();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtFRTBegin;
-        BaseObjectPtr               m_BrtBeginConditionalFormattings;
-        std::vector<BaseObjectPtr>  m_arCONDITIONALFORMATTING14;
-        BaseObjectPtr               m_BrtEndConditionalFormattings;
-        BaseObjectPtr               m_BrtFRTEnd;
+        XLS::BaseObjectPtr               m_BrtFRTBegin;
+        XLS::BaseObjectPtr               m_BrtBeginConditionalFormattings;
+        std::vector<XLS::BaseObjectPtr>  m_arCONDITIONALFORMATTING14;
+        XLS::BaseObjectPtr               m_BrtEndConditionalFormattings;
+        XLS::BaseObjectPtr               m_BrtFRTEnd;
 
     };
 

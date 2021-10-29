@@ -36,6 +36,8 @@
 #include "../Biff12_records/Fill.h"
 #include "../Biff12_records/EndFills.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

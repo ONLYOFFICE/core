@@ -32,6 +32,8 @@
 
 #include "EndBorders.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndBorders(*this));
     }
 
-    void EndBorders::readFields(CFRecord& record)
+    void EndBorders::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

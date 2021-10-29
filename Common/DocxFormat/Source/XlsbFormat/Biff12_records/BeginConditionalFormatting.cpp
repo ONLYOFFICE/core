@@ -32,6 +32,8 @@
 
 #include "BeginConditionalFormatting.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginConditionalFormatting(*this));
     }
 
-    void BeginConditionalFormatting::readFields(CFRecord& record)
+    void BeginConditionalFormatting::readFields(XLS::CFRecord& record)
     {
         record >> ccf >> fPivot >> sqrfx;
     }

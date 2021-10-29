@@ -32,6 +32,8 @@
 
 #include "ValueMeta.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new ValueMeta(*this));
     }
 
-    void ValueMeta::readFields(CFRecord& record)
+    void ValueMeta::readFields(XLS::CFRecord& record)
     {
         record >> ivmb;
     }

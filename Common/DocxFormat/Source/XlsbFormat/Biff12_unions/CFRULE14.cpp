@@ -38,6 +38,8 @@
 #include "../Biff12_unions/FRT.h"
 #include "../Biff12_records/EndCFRule14.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

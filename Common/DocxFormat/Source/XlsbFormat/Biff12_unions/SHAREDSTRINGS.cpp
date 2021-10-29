@@ -37,6 +37,8 @@
 #include "FRT.h"
 #include "../Biff12_records/EndSst.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

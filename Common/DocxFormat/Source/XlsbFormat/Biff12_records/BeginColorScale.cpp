@@ -32,6 +32,8 @@
 
 #include "BeginColorScale.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginColorScale(*this));
     }
 
-    void BeginColorScale::readFields(CFRecord& record)
+    void BeginColorScale::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

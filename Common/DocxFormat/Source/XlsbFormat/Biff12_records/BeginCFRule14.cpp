@@ -32,6 +32,8 @@
 
 #include "BeginCFRule14.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginCFRule14(*this));
     }
 
-    void BeginCFRule14::readFields(CFRecord& record)
+    void BeginCFRule14::readFields(XLS::CFRecord& record)
     {
         record >> FRTheader >> iType >> iTemplate >> dxfId >> iPri >> iParam;
 

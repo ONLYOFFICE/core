@@ -32,6 +32,8 @@
 
 #include "MRUColor.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new MRUColor(*this));
     }
 
-    void MRUColor::readFields(CFRecord& record)
+    void MRUColor::readFields(XLS::CFRecord& record)
     {
         colorMRU.readFields(record);
     }

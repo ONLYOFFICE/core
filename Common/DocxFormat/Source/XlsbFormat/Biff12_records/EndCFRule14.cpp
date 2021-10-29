@@ -32,6 +32,8 @@
 
 #include "EndCFRule14.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndCFRule14(*this));
     }
 
-    void EndCFRule14::readFields(CFRecord& record)
+    void EndCFRule14::readFields(XLS::CFRecord& record)
     {
         //empty data
     }

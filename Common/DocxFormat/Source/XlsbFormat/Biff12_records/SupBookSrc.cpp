@@ -32,6 +32,8 @@
 
 #include "SupBookSrc.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new SupBookSrc(*this));
     }
 
-    void SupBookSrc::readFields(CFRecord& record)
+    void SupBookSrc::readFields(XLS::CFRecord& record)
     {
         record >> strRelID;
     }

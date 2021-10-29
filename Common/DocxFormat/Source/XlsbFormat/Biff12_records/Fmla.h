@@ -31,15 +31,15 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/Cell.h"
 #include "../Biff12_structures/XLWideString.h"
 #include "../Biff12_structures/GrbitFmla.h"
-#include <Logic/Biff_structures/CellParsedFormula.h>
-#include <Logic/Biff_structures/Xnum.h>
-using namespace XLS;
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CellParsedFormula.h"
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
+
 
 namespace XLSB
 {
@@ -50,14 +50,14 @@ namespace XLSB
             FmlaBase(bool flag) : formula(flag) {}
             Cell               cell;
             GrbitFmla          grbitFlags;
-            CellParsedFormula  formula;
+			XLS::CellParsedFormula  formula;
     };
 
     template <class T, CF_RECORD_TYPE id>
-    class Fmla_T: public FmlaBase, public BiffRecord
+    class Fmla_T: public FmlaBase, public XLS::BiffRecord
     {
        public:
-            const CFRecordType::TypeId getTypeId() const
+            const XLS::CFRecordType::TypeId getTypeId() const
             {
                 return id;
             }
@@ -91,12 +91,12 @@ namespace XLSB
             {
             }
 
-            BaseObjectPtr clone()
+			XLS::BaseObjectPtr clone()
             {
-                return BaseObjectPtr(new Fmla_T<T, id>(*this));
+                return XLS::BaseObjectPtr(new Fmla_T<T, id>(*this));
             }
 
-            void readFields(CFRecord& record)
+            void readFields(XLS::CFRecord& record)
             {
                 record >> cell >> value >> grbitFlags >> formula;
             }
@@ -106,7 +106,7 @@ namespace XLSB
 
     typedef Fmla_T<XLWideString,                rt_FmlaString>		FmlaString;
     typedef Fmla_T<XLS::Boolean<unsigned char>, rt_FmlaBool>		FmlaBool;
-    typedef Fmla_T<Xnum,                        rt_FmlaNum>             FmlaNum;
+    typedef Fmla_T<XLS::Xnum,					rt_FmlaNum>			FmlaNum;
     typedef Fmla_T<unsigned char,               rt_FmlaError>		FmlaError;
 
 } // namespace XLSB

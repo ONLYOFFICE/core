@@ -32,13 +32,12 @@
 
 #pragma once
 
-#include <Logic/Biff_structures/BiffString.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffString.h"
 
-using namespace XLS;
 namespace XLSB
 {
-   typedef XLUnicodeString_T<unsigned int,	aw_NAME_WIDE,               cch_READ_FROM_RECORD>		XLNameWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_NULLABLE_WIDE,	    cch_READ_FROM_RECORD>		XLNullableWideString;
-   typedef XLUnicodeString_T<unsigned int,	aw_WIDE,		    cch_READ_FROM_RECORD>		XLWideString;
+   typedef XLS::XLUnicodeString_T<unsigned int,	XLS::aw_NAME_WIDE,	XLS::cch_READ_FROM_RECORD>	XLNameWideString;
+   typedef XLS::XLUnicodeString_T<unsigned int,	XLS::aw_NULLABLE_WIDE,	XLS::cch_READ_FROM_RECORD>	XLNullableWideString;
+   typedef XLS::XLUnicodeString_T<unsigned int,	XLS::aw_WIDE,		XLS::cch_READ_FROM_RECORD>	XLWideString;
 
 }   // namespace XLSB

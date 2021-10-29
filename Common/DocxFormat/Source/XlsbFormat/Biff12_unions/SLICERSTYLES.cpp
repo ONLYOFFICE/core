@@ -35,6 +35,8 @@
 #include "../Biff12_unions/SLICERSTYLE.h"
 #include "../Biff12_records/EndSlicerStyles.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

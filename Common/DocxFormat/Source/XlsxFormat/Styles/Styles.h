@@ -32,7 +32,7 @@
 #pragma once
 
 #include "../Xlsx.h"
-#include "../XlsbFormat/Xlsb.h"
+#include "../../XlsbFormat/Xlsb.h"
 #include "../XlsxFlat.h"
 #include "../CommonInclude.h"
 

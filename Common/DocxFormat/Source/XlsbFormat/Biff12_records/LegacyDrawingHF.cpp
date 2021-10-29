@@ -32,6 +32,8 @@
 
 #include "LegacyDrawingHF.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new LegacyDrawingHF(*this));
     }
 
-    void LegacyDrawingHF::readFields(CFRecord& record)
+    void LegacyDrawingHF::readFields(XLS::CFRecord& record)
     {
         record >> stRelId;
     }

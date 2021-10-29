@@ -34,6 +34,8 @@
 #include "../Biff12_records/HLink.h"
 #include "../Biff12_unions/ACUID.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -45,7 +47,7 @@ namespace XLSB
     {
     }
 
-    class Parenthesis_HLINKS: public CompositeObject
+    class Parenthesis_HLINKS: public XLS::CompositeObject
         {
             BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_HLINKS)
         public:
@@ -54,7 +56,7 @@ namespace XLSB
                 return BaseObjectPtr(new Parenthesis_HLINKS(*this));
             }
 
-            const bool loadContent(BinProcessor& proc)
+            const bool loadContent(XLS::BinProcessor& proc)
             {
                 if (proc.optional<ACUID>())
                 {

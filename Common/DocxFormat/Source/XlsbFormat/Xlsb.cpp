@@ -30,18 +30,37 @@
  *
  */
 #include "Xlsb.h"
+
+#include "../XlsxFormat/Workbook/Workbook.h"
 #include "../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../XlsxFormat/Styles/Styles.h"
 #include "../XlsxFormat/Worksheets/Worksheet.h"
-#include "../XlsxFormat/Comments/Comments.h"
+#include "../XlsxFormat/CalcChain/CalcChain.h"
+#include "../XlsxFormat/ExternalLinks/ExternalLinks.h"
+#include "../XlsxFormat/ExternalLinks/ExternalLinkPath.h"
+#include "../XlsxFormat/Pivot/PivotTable.h"
+#include "../XlsxFormat/Pivot/PivotCacheDefinition.h"
+#include "../XlsxFormat/Pivot/PivotCacheRecords.h"
+
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
 
 #include "../../../../DesktopEditor/common/SystemUtils.h"
+
+using namespace XLS;
 
 OOX::Spreadsheet::CXlsb::~CXlsb()
 {
 
 }	
-
+void OOX::Spreadsheet::CXlsb::init()
+{
+	workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
+	xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
+	xls_global_info->Version = 0x0800;
+}
 bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream)
 {
     NSFile::CFileBinary oFile;

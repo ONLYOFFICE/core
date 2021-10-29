@@ -32,6 +32,8 @@
 
 #include "BeginDXF14s.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginDXF14s(*this));
     }
 
-    void BeginDXF14s::readFields(CFRecord& record)
+    void BeginDXF14s::readFields(XLS::CFRecord& record)
     {
         record >> FRTheader >> cdxfs;
     }

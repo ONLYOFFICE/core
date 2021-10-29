@@ -32,6 +32,8 @@
 
 #include "FRTRef.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    FRTRef::FRTRef(CFRecord& record)
+    FRTRef::FRTRef(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new FRTRef(*this));
     }
 
-    void FRTRef::load(CFRecord& record)
+    void FRTRef::load(XLS::CFRecord& record)
     {
         unsigned int flags;
 

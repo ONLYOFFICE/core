@@ -32,6 +32,8 @@
 
 #include "GradientStop.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    GradientStop::GradientStop(CFRecord& record)
+    GradientStop::GradientStop(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new GradientStop(*this));
     }
 
-    void GradientStop::load(CFRecord& record)
+    void GradientStop::load(XLS::CFRecord& record)
     {
         brtColor.readFields(record);
         record >> xnumPosition;

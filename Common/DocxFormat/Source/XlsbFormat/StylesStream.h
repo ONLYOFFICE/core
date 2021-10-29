@@ -42,7 +42,7 @@
 #include <iostream>
 #include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 namespace XLSB
 {
     class StreamCacheReader;
@@ -50,30 +50,30 @@ namespace XLSB
     class StylesStream;
     typedef std::shared_ptr<StylesStream>		StylesStreamPtr;
 
-    class StylesStream: public CompositeObject
+    class StylesStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(StylesStream)
     public:
         StylesStream();
         virtual ~StylesStream();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginStyleSheet;
-        BaseObjectPtr               m_FMTS;
-        BaseObjectPtr               m_FONTS;
-        BaseObjectPtr               m_FILLS;
-        BaseObjectPtr               m_BORDERS;
-        BaseObjectPtr               m_CELLSTYLEXFS;
-        BaseObjectPtr               m_CELLXFS;
-        BaseObjectPtr               m_STYLES;
-        BaseObjectPtr               m_DXFS;
-        BaseObjectPtr               m_TABLESTYLES;
-        BaseObjectPtr               m_COLORPALETTE;
-        BaseObjectPtr               m_BrtEndStyleSheet;
-        BaseObjectPtr               m_FRTSTYLESHEET;
+        XLS::BaseObjectPtr               m_BrtBeginStyleSheet;
+        XLS::BaseObjectPtr               m_FMTS;
+        XLS::BaseObjectPtr               m_FONTS;
+        XLS::BaseObjectPtr               m_FILLS;
+        XLS::BaseObjectPtr               m_BORDERS;
+        XLS::BaseObjectPtr               m_CELLSTYLEXFS;
+        XLS::BaseObjectPtr               m_CELLXFS;
+        XLS::BaseObjectPtr               m_STYLES;
+        XLS::BaseObjectPtr               m_DXFS;
+        XLS::BaseObjectPtr               m_TABLESTYLES;
+        XLS::BaseObjectPtr               m_COLORPALETTE;
+        XLS::BaseObjectPtr               m_BrtEndStyleSheet;
+        XLS::BaseObjectPtr               m_FRTSTYLESHEET;
 
     };
 

@@ -35,6 +35,8 @@
 #include "../Biff12_records/ListPart.h"
 #include "../Biff12_records/EndListParts.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

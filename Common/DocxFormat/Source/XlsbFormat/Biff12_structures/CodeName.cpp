@@ -32,6 +32,8 @@
 
 #include "CodeName.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    CodeName::CodeName(CFRecord& record)
+    CodeName::CodeName(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new CodeName(*this));
     }
 
-    void CodeName::load(CFRecord& record)
+    void CodeName::load(XLS::CFRecord& record)
     {
         record >> value;
     }

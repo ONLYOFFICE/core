@@ -32,6 +32,8 @@
 
 #include "EndCommentAuthors.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndCommentAuthors(*this));
     }
 
-    void EndCommentAuthors::readFields(CFRecord& record)
+    void EndCommentAuthors::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

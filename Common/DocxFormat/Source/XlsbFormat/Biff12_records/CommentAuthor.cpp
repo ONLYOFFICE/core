@@ -32,6 +32,8 @@
 
 #include "CommentAuthor.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new CommentAuthor(*this));
     }
 
-    void CommentAuthor::readFields(CFRecord& record)
+    void CommentAuthor::readFields(XLS::CFRecord& record)
     {
         record >> author;
     }

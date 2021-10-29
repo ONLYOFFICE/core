@@ -36,6 +36,8 @@
 #include "SUPSAME.h"
 #include "SUPADDIN.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

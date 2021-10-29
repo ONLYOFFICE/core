@@ -329,7 +329,7 @@ namespace OOX
                     for(auto &gradStop : ptr->xfillGradientStop)
                     {
                         auto ptrGradStop = new CGradientStop();
-                        auto ptrBiffStruct = dynamic_cast<BiffStructure*>(&gradStop);
+                        auto ptrBiffStruct = dynamic_cast<XLS::BiffStructure*>(&gradStop);
                         ptrGradStop->fromBin(ptrBiffStruct);
                         m_arrItems.push_back(ptrGradStop);
                     }

@@ -32,6 +32,8 @@
 
 #include "UncheckedSqRfX.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    UncheckedSqRfX::UncheckedSqRfX(CFRecord& record)
+    UncheckedSqRfX::UncheckedSqRfX(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new UncheckedSqRfX(*this));
     }
 
-    void UncheckedSqRfX::load(CFRecord& record)
+    void UncheckedSqRfX::load(XLS::CFRecord& record)
     {
         record >> crfx;
         UncheckedRfX rfx;

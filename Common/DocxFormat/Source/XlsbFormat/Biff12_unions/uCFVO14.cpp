@@ -34,6 +34,8 @@
 #include "../Biff12_records/CFVO14.h"
 #include "../Biff12_unions/FRT.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

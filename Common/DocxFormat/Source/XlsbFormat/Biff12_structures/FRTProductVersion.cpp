@@ -32,6 +32,8 @@
 
 #include "FRTProductVersion.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    FRTProductVersion::FRTProductVersion(CFRecord& record)
+    FRTProductVersion::FRTProductVersion(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new FRTProductVersion(*this));
     }
 
-    void FRTProductVersion::load(CFRecord& record)
+    void FRTProductVersion::load(XLS::CFRecord& record)
     {
         unsigned short flags;
 

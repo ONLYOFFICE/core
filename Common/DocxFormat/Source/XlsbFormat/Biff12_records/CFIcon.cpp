@@ -32,6 +32,8 @@
 
 #include "CFIcon.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new CFIcon(*this));
     }
 
-    void CFIcon::readFields(CFRecord& record)
+    void CFIcon::readFields(XLS::CFRecord& record)
     {
         record >> FRTheader >> iconSet >> index;
     }

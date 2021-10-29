@@ -33,8 +33,8 @@
 
 #include "BiffRecord.h"
 #include "../Biff_structures/BiffString.h"
-#include <Biff12_structures/XLWideString.h>
-#include <../XlsxFormat/WritingElement.h>
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
+#include "../../../../../Common/DocxFormat/Source/XlsxFormat/WritingElement.h"
 
 namespace XLS
 {

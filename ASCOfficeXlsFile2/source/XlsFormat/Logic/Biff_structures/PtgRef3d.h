@@ -33,7 +33,7 @@
 
 #include "OperandPtg.h"
 #include "Logic/GlobalWorkbookInfo.h"
-#include <Biff12_structures/CellRef.h>
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRef.h"
 
 namespace XLS
 {

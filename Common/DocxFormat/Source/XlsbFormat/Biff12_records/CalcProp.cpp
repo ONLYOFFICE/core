@@ -32,6 +32,8 @@
 
 #include "CalcProp.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new CalcProp(*this));
     }
 
-    void CalcProp::readFields(CFRecord& record)
+    void CalcProp::readFields(XLS::CFRecord& record)
     {
         unsigned int flags;
         record >> recalcID >> fAutoRecalc >> cCalcCount >> xnumDelta >> cUserThreadCount;

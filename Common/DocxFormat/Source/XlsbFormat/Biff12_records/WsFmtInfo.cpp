@@ -32,6 +32,8 @@
 
 #include "WsFmtInfo.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -51,7 +53,7 @@ namespace XLSB
     }
 
 
-    void WsFmtInfo::readFields(CFRecord& record)
+    void WsFmtInfo::readFields(XLS::CFRecord& record)
     {
         unsigned short flags;
         record >> dxGCol >> cchDefColWidth >> miyDefRwHeight >> flags >> iOutLevelRw >> iOutLevelCol;

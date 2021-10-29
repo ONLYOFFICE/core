@@ -32,10 +32,14 @@
 #pragma once
 
 #include "../XlsxFormat/Xlsx.h"
-#include "../../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
-#include "../../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
-#include "../../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
-#include "../../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
+
+namespace XLS
+{
+	class GlobalWorkbookInfo;
+	typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
+
+	class BaseObject;
+}
 
 namespace OOX
 {	
@@ -62,18 +66,11 @@ namespace OOX
 
         private:
 
-            void init()
-            {
-                auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
-                xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
-                xls_global_info->Version = 0x0800;
-
-                m_binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
-            }
-
+			void init();
             XLS::GlobalWorkbookInfoPtr xls_global_info;
             std::shared_ptr<NSBinPptxRW::CBinaryFileReader> m_binaryReader;
 
+            unsigned short workbook_code_page;
 		};
 
 	} //Spreadsheet

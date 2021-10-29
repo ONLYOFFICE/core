@@ -31,16 +31,16 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/Window1.h>
-#include "../Source/XlsxFormat/WritingElement.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Window1.h"
+#include "../../XlsxFormat/WritingElement.h"
 #include "../XlsbElementsType.h"
-using namespace XLS;
+
 
 namespace XLSB
 {
 
     // Logical representation of BookView record in BIFF12
-    class BookView: public Window1
+    class BookView: public XLS::Window1
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BookView)
         BASE_OBJECT_DEFINE_CLASS_NAME(BookView)
@@ -48,9 +48,9 @@ namespace XLSB
         BookView();
         ~BookView();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        void readFields(CFRecord& record);
+        void readFields(XLS::CFRecord& record);
 
     //-----------------------------
         _INT32 xWn;

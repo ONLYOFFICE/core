@@ -31,27 +31,27 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class COLINFOS: public CompositeObject
+    class COLINFOS: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(COLINFOS)
     public:
         COLINFOS();
         virtual ~COLINFOS();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginColInfos;
-        std::vector<BaseObjectPtr>	m_arBrtColInfo;
-        BaseObjectPtr               m_BrtEndColInfos;
+        XLS::BaseObjectPtr               m_BrtBeginColInfos;
+        std::vector<XLS::BaseObjectPtr>	m_arBrtColInfo;
+        XLS::BaseObjectPtr               m_BrtEndColInfos;
 
     };
 

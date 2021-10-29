@@ -32,6 +32,8 @@
 
 #include "BeginSst.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginSst(*this));
     }
 
-    void BeginSst::readFields(CFRecord& record)
+    void BeginSst::readFields(XLS::CFRecord& record)
     {
         record >> cstTotal >> cstUnique;
     }

@@ -32,6 +32,8 @@
 
 #include "ListPart.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new ListPart(*this));
     }
 
-    void ListPart::readFields(CFRecord& record)
+    void ListPart::readFields(XLS::CFRecord& record)
     {
         record >> stRelID;
     }

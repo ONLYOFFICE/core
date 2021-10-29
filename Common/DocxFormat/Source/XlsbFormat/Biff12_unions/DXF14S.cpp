@@ -37,6 +37,8 @@
 #include "../Biff12_records/FRTEnd.h"
 #include "../Biff12_records/EndDXF14s.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

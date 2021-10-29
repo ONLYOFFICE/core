@@ -32,6 +32,8 @@
 
 #include "EndTimelineStyle.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndTimelineStyle(*this));
     }
 
-    void EndTimelineStyle::readFields(CFRecord& record)
+    void EndTimelineStyle::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

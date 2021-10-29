@@ -31,16 +31,15 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/RichStr.h"
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtSSTItem record in BIFF12
-    class SSTItem: public BiffRecord
+    class SSTItem: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(SSTItem)
             BASE_OBJECT_DEFINE_CLASS_NAME(SSTItem)
@@ -48,11 +47,11 @@ namespace XLSB
             SSTItem();
             virtual ~SSTItem();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-            RichStr                   richStr;
+            RichStr richStr;
     };
 
 } // namespace XLSB

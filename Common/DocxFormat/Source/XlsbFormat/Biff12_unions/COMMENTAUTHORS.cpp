@@ -35,6 +35,8 @@
 #include "../Biff12_records/CommentAuthor.h"
 #include "../Biff12_records/EndCommentAuthors.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

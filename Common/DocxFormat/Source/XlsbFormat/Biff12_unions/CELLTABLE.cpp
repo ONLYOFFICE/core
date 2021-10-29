@@ -36,7 +36,9 @@
 #include "../Biff12_unions/FRT.h"
 #include "../Biff12_unions/CELL.h"
 #include "../Biff12_records/EndSheetData.h"
-#include "Biff12_records/CommonRecords.h"
+#include "../Biff12_records/CommonRecords.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
@@ -49,7 +51,7 @@ namespace XLSB
     {
     }
 
-    class Parenthesis_CELLTABLE: public CompositeObject
+    class Parenthesis_CELLTABLE: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_CELLTABLE)
     public:
@@ -58,7 +60,7 @@ namespace XLSB
             return BaseObjectPtr(new Parenthesis_CELLTABLE(*this));
         }
 
-        const bool loadContent(BinProcessor& proc)
+        const bool loadContent(XLS::BinProcessor& proc)
         {
             if (proc.optional<ACCELLTABLE>())
             {
@@ -98,8 +100,8 @@ namespace XLSB
 
         BaseObjectPtr               m_ACCELLTABLE;
         BaseObjectPtr               m_BrtRowHdr;
-        std::vector<BaseObjectPtr>  m_arCELL;
-        std::vector<BaseObjectPtr>  m_arFRT;
+        std::vector<XLS::BaseObjectPtr>  m_arCELL;
+        std::vector<XLS::BaseObjectPtr>  m_arFRT;
     };
 
     BaseObjectPtr CELLTABLE::clone()

@@ -32,13 +32,15 @@
 
 #include "LPByteBuf.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
     LPByteBuf::LPByteBuf()
     {
     }
 
-    LPByteBuf::LPByteBuf(CFRecord& record)
+    LPByteBuf::LPByteBuf(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new LPByteBuf(*this));
     }
 
-    void LPByteBuf::load(CFRecord& record)
+    void LPByteBuf::load(XLS::CFRecord& record)
     {
         record >> cbLength;
         if(cbLength > 0)

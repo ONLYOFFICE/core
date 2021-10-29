@@ -32,6 +32,8 @@
 
 #include "Fmt.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new Fmt(*this));
     }
 
-    void Fmt::readFields(CFRecord& record)
+    void Fmt::readFields(XLS::CFRecord& record)
     {
         record >> ifmt >> stFmtCode;
     }

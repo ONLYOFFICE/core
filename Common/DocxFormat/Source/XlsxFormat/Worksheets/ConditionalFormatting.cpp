@@ -63,6 +63,8 @@
 #include "../../XlsbFormat/Biff12_records/BeginDatabar14.h"
 #include "../../XlsbFormat/Biff12_records/BeginIconSet14.h"
 
+using namespace XLS;
+
 namespace OOX
 {
 namespace Spreadsheet

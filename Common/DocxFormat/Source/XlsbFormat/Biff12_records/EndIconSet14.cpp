@@ -32,6 +32,8 @@
 
 #include "EndIconSet14.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndIconSet14(*this));
     }
 
-    void EndIconSet14::readFields(CFRecord& record)
+    void EndIconSet14::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

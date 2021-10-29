@@ -32,6 +32,8 @@
 
 #include "Color.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new Color(*this));
     }
 
-    void Color::readFields(CFRecord& record)
+    void Color::readFields(XLS::CFRecord& record)
     {
         unsigned char flags;
         record >> flags;

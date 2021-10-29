@@ -36,6 +36,8 @@
 #include "../Biff12_records/CFIcon.h"
 #include "../Biff12_records/EndIconSet14.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

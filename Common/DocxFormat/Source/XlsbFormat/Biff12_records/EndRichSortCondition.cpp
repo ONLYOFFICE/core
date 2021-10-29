@@ -32,6 +32,8 @@
 
 #include "EndRichSortCondition.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndRichSortCondition(*this));
     }
 
-    void EndRichSortCondition::readFields(CFRecord& record)
+    void EndRichSortCondition::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

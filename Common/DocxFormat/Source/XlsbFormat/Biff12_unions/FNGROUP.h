@@ -31,27 +31,27 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class FNGROUP: public CompositeObject
+    class FNGROUP: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(FNGROUP)
     public:
         FNGROUP();
         virtual ~FNGROUP();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginFnGroup;
-        std::vector<BaseObjectPtr>	m_arBrtFnGroup;
-        BaseObjectPtr               m_BrtEndFnGroup;
+		XLS::BaseObjectPtr               m_BrtBeginFnGroup;
+        std::vector<XLS::BaseObjectPtr>	m_arBrtFnGroup;
+		XLS::BaseObjectPtr               m_BrtEndFnGroup;
 
     };
 

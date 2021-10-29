@@ -31,18 +31,18 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../Biff12_structures/CellRangeRef.h"
 #include "../Biff12_structures/RelID.h"
 #include "../Biff12_structures/XLWideString.h"
 #include "../../XlsxFormat/WritingElement.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtHLink record in BIFF12
-    class HLink: public BiffRecord
+    class HLink: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(HLink)
             BASE_OBJECT_DEFINE_CLASS_NAME(HLink)
@@ -50,9 +50,9 @@ namespace XLSB
             HLink();
             virtual ~HLink();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             UncheckedRfX    rfx;
             RelID           relId;

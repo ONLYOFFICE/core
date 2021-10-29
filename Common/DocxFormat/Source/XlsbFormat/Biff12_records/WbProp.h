@@ -31,16 +31,16 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/CodeName.h"
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtWbProp record in BIFF12
-    class WbProp: public BiffRecord
+    class WbProp: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(WbProp)
             BASE_OBJECT_DEFINE_CLASS_NAME(WbProp)
@@ -48,9 +48,9 @@ namespace XLSB
             WbProp();
             virtual ~WbProp();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             bool        f1904;
             bool        fHideBorderUnselLists;

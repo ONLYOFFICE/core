@@ -32,6 +32,8 @@
 
 #include "Border.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new Border(*this));
     }
 
-    void Border::readFields(CFRecord& record)
+    void Border::readFields(XLS::CFRecord& record)
     {
         unsigned char flags;
 

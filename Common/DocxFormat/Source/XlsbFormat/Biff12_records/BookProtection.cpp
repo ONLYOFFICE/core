@@ -32,6 +32,8 @@
 
 #include "BookProtection.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BookProtection(*this));
     }
 
-    void BookProtection::readFields(CFRecord& record)
+    void BookProtection::readFields(XLS::CFRecord& record)
     {
         record >> protpwdBook;
         record >> protpwdRev;

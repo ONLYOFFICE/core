@@ -35,6 +35,8 @@
 #include "../Biff12_unions/SORTCOND14.h"
 #include "../Biff12_records/ACEnd.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

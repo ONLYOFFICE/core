@@ -32,6 +32,8 @@
 
 #include "BeginStyles.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginStyles(*this));
     }
 
-    void BeginStyles::readFields(CFRecord& record)
+    void BeginStyles::readFields(XLS::CFRecord& record)
     {
         record >> cstyles;
     }

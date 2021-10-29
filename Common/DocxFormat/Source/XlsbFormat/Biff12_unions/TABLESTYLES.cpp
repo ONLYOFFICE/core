@@ -35,6 +35,8 @@
 #include "../Biff12_unions/TABLESTYLE.h"
 #include "../Biff12_records/EndTableStyles.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

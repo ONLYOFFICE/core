@@ -31,22 +31,20 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/CFType.h"
 #include "../Biff12_structures/CFTemp.h"
-#include <Logic/Biff_structures/DXFId.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/DXFId.h"
 #include "../Biff12_structures/XLWideString.h"
-#include <Logic/Biff_structures/CFParsedFormula.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CFParsedFormula.h"
 #include "../Biff12_structures/FRTHeader.h"
-
-using namespace XLS;
 
 namespace XLSB
 {
     // Logical representation of BrtBeginCFRule14 record in BIFF12
-    class BeginCFRule14: public BiffRecord
+    class BeginCFRule14: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BeginCFRule14)
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginCFRule14)
@@ -54,15 +52,15 @@ namespace XLSB
             BeginCFRule14();
             virtual ~BeginCFRule14();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-             static const ElementType	type = typeBeginCFRule14;
+             static const XLS::ElementType	type = XLS::typeBeginCFRule14;
 
-            FRTHeader               FRTheader;
-            CFType                  iType;
-            CFTemp                  iTemplate;
+			FRTHeader               FRTheader;
+			XLS::CFType				iType;
+			XLS::CFTemp				iTemplate;
             _UINT32                 dxfId;
             _INT32                  iPri;
             _UINT32                 iParam;

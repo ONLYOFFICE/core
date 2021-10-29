@@ -32,6 +32,8 @@
 
 #include "FRTEnd.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new FRTEnd(*this));
     }
 
-    void FRTEnd::readFields(CFRecord& record)
+    void FRTEnd::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

@@ -31,26 +31,26 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class SUPSAME: public CompositeObject
+    class SUPSAME: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(SUPSAME)
     public:
         SUPSAME();
         virtual ~SUPSAME();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtSupSame;
-        std::vector<BaseObjectPtr>  m_arBrtPlaceholderName;
+		XLS::BaseObjectPtr               m_BrtSupSame;
+        std::vector<XLS::BaseObjectPtr>  m_arBrtPlaceholderName;
 
     };
 

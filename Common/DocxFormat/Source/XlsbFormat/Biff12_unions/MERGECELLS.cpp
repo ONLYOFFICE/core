@@ -35,6 +35,8 @@
 #include "../Biff12_records/MergeCell.h"
 #include "../Biff12_records/EndMergeCells.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

@@ -32,8 +32,9 @@
 #pragma once
 
 #include "../Xlsx.h"
-#include "../XlsbFormat/Xlsb.h"
 #include "../XlsxFlat.h"
+#include "../../XlsbFormat/Xlsb.h"
+
 #include "../CommonInclude.h"
 
 #include "BookViews.h"

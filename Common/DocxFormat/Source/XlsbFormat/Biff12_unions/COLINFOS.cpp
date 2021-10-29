@@ -35,6 +35,8 @@
 #include "../Biff12_records/CommonRecords.h"
 #include "../Biff12_records/EndColInfos.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

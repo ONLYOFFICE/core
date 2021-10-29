@@ -31,29 +31,29 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class ACFMT: public CompositeObject
+    class ACFMT: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(ACFMT)
     public:
         ACFMT();
         virtual ~ACFMT();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        static const ElementType	type = typeACFMT;
+        static const XLS::ElementType	type = XLS::typeACFMT;
 
-        BaseObjectPtr	m_BrtACBegin;
-        BaseObjectPtr	m_BrtFmt;
-        BaseObjectPtr	m_BrtACEnd;
+		XLS::BaseObjectPtr	m_BrtACBegin;
+		XLS::BaseObjectPtr	m_BrtFmt;
+		XLS::BaseObjectPtr	m_BrtACEnd;
 
     };
 

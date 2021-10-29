@@ -32,6 +32,8 @@
 
 #include "BeginExternals.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginExternals(*this));
     }
 
-    void BeginExternals::readFields(CFRecord& record)
+    void BeginExternals::readFields(XLS::CFRecord& record)
     {
         //empty data
     }

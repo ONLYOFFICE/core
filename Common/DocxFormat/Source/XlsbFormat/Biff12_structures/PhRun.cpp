@@ -31,7 +31,8 @@
  */
 
 #include "PhRun.h"
-#include <Binary/CFRecord.h>
+
+using namespace XLS;
 
 namespace XLSB
 {
@@ -43,7 +44,7 @@ BiffStructurePtr PhRun::clone()
 }
 
 
-void PhRun::load(CFRecord& record)
+void PhRun::load(XLS::CFRecord& record)
 {
     unsigned short flags;
     record >> ichFirst >> ichMom >> cchMom >> ifnt >> flags;

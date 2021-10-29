@@ -36,6 +36,8 @@
 #include "../Biff12_records/Border.h"
 #include "../Biff12_records/EndBorders.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

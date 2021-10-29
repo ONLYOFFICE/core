@@ -36,6 +36,8 @@
 #include "../Biff12_records/ACEnd.h"
 #include "../Biff12_unions/FRTDXF.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

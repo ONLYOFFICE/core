@@ -33,7 +33,7 @@
 
 #include "BiffRecord.h"
 #include "../Biff_structures/BorderFillInfo.h"
-#include <Biff12_records/Color.h>
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_records/Color.h"
 
 namespace XLS
 {

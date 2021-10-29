@@ -32,6 +32,8 @@
 
 #include "RwDescent.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new RwDescent(*this));
     }
 
-    void RwDescent::readFields(CFRecord& record)
+    void RwDescent::readFields(XLS::CFRecord& record)
     {
         record >> dyDescent;
     }

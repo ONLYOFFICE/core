@@ -36,6 +36,8 @@
 #include "../Biff12_unions/ACUID.h"
 #include "../Biff12_unions/FRT.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

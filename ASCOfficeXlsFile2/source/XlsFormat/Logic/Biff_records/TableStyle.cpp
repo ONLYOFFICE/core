@@ -31,7 +31,7 @@
  */
 
 #include "TableStyle.h"
-#include <Biff12_structures/XLWideString.h>
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
 
 namespace XLS
 {

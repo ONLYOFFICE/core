@@ -36,6 +36,8 @@
 #include "../Biff12_unions/STYLESHEET15.h"
 #include "../Biff12_unions/DXFS15.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

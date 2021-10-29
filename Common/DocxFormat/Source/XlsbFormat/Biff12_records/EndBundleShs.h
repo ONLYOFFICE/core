@@ -31,16 +31,16 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtEndBundleShs record in BIFF12
-    class EndBundleShs: public BiffRecord
+    class EndBundleShs: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(EndBundleShs)
             BASE_OBJECT_DEFINE_CLASS_NAME(EndBundleShs)
@@ -48,9 +48,9 @@ namespace XLSB
             EndBundleShs();
             virtual ~EndBundleShs();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
     };
 
 } // namespace XLSB

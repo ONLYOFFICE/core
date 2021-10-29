@@ -32,6 +32,8 @@
 
 #include "FRTBlank.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    FRTBlank::FRTBlank(CFRecord& record)
+    FRTBlank::FRTBlank(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new FRTBlank(*this));
     }
 
-    void FRTBlank::load(CFRecord& record)
+    void FRTBlank::load(XLS::CFRecord& record)
     {
         record.skipNunBytes(4); // reserved
     }

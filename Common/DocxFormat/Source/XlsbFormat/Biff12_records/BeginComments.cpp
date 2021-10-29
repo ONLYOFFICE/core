@@ -32,6 +32,8 @@
 
 #include "BeginComments.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginComments(*this));
     }
 
-    void BeginComments::readFields(CFRecord& record)
+    void BeginComments::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

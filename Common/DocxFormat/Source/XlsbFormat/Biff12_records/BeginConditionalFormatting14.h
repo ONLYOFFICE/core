@@ -31,17 +31,15 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/FRTHeader.h"
 
-using namespace XLS;
-
 namespace XLSB
 {
     // Logical representation of BrtBeginConditionalFormatting14 record in BIFF12
-    class BeginConditionalFormatting14: public BiffRecord
+    class BeginConditionalFormatting14: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(BeginConditionalFormatting14)
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginConditionalFormatting14)
@@ -49,11 +47,11 @@ namespace XLSB
             BeginConditionalFormatting14();
             virtual ~BeginConditionalFormatting14();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-            static const ElementType	type = typeBeginConditionalFormatting14;
+            static const XLS::ElementType	type = XLS::typeBeginConditionalFormatting14;
 
             FRTHeader                   FRTheader;
             _UINT32                     ccf;

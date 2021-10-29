@@ -32,6 +32,8 @@
 
 #include "SSTItem.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new SSTItem(*this));
     }
 
-    void SSTItem::readFields(CFRecord& record)
+    void SSTItem::readFields(XLS::CFRecord& record)
     {
         record >> richStr;
     }

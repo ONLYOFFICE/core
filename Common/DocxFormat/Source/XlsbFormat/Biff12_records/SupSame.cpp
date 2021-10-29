@@ -32,6 +32,8 @@
 
 #include "SupSame.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new SupSame(*this));
     }
 
-    void SupSame::readFields(CFRecord& record)
+    void SupSame::readFields(XLS::CFRecord& record)
     {
        //empty data
     }

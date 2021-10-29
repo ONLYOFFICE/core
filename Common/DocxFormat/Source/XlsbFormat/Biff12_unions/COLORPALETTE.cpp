@@ -36,6 +36,8 @@
 #include "../Biff12_unions/MRUCOLORS.h"
 #include "../Biff12_records/EndColorPalette.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

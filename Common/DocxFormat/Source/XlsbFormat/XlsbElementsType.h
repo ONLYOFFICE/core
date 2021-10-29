@@ -30,16 +30,4 @@
  *
  */
 #pragma once
-#include "../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/XlsElementsType.h"
-//namespace XLS
-//{
-
-//enum class ElementType
-//{
-//    typeBrtBeginBook = typeOfficeArtClientTextbox + 1,
-
-//};
-
-
-
-//}
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/XlsElementsType.h"

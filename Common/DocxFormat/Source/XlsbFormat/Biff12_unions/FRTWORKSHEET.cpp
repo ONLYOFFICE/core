@@ -33,6 +33,8 @@
 #include "FRTWORKSHEET.h"
 #include "../Biff12_unions/CONDITIONALFORMATTINGS.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

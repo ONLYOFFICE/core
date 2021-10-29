@@ -31,18 +31,18 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/CFVOtype.h"
-#include <Logic/Biff_structures/Xnum.h>
-#include <Logic/Biff_structures/CFVOParsedFormula.h>
-using namespace XLS;
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CFVOParsedFormula.h"
+
 
 namespace XLSB
 {
     // Logical representation of BrtCFVO record in BIFF12
-    class CFVO: public BiffRecord
+    class CFVO: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(CFVO)
             BASE_OBJECT_DEFINE_CLASS_NAME(CFVO)
@@ -50,18 +50,18 @@ namespace XLSB
             CFVO();
             virtual ~CFVO();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-            static const ElementType	type = typeCFVO;
+            static const XLS::ElementType	type = XLS::typeCFVO;
 
-            CFVOtype                        iType;
-            Xnum                            numParam;
+			XLS::CFVOtype					iType;
+			XLS::Xnum						numParam;
             XLS::Boolean<unsigned int>      fSaveGTE;
             XLS::Boolean<unsigned int>      fGTE;
             _UINT32                         cbFmla;
-            CFVOParsedFormula               formula;
+			XLS::CFVOParsedFormula               formula;
     };
 
 } // namespace XLSB

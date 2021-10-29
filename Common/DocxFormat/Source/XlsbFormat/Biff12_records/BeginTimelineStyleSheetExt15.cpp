@@ -32,6 +32,8 @@
 
 #include "BeginTimelineStyleSheetExt15.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginTimelineStyleSheetExt15(*this));
     }
 
-    void BeginTimelineStyleSheetExt15::readFields(CFRecord& record)
+    void BeginTimelineStyleSheetExt15::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

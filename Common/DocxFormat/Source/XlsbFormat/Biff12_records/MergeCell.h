@@ -31,17 +31,17 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/CellRangeRef.h"
-using namespace XLS;
+
 
 namespace XLSB
 {
 
     // Logical representation of BrtMergeCell record in BIFF12
-    class MergeCell: public BiffRecord
+    class MergeCell: public XLS::BiffRecord
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(MergeCell)
         BASE_OBJECT_DEFINE_CLASS_NAME(MergeCell)
@@ -49,9 +49,9 @@ namespace XLSB
         MergeCell();
         ~MergeCell();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        void readFields(CFRecord& record);
+        void readFields(XLS::CFRecord& record);
 
         UncheckedRfX rfx;
 

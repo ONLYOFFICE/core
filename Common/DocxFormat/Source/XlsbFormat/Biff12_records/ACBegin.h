@@ -31,15 +31,13 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
-
-using namespace XLS;
 
 namespace XLSB
 {
     // Logical representation of BrtACBegin record in BIFF12
-    class ACBegin: public BiffRecord
+    class ACBegin: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(ACBegin)
             BASE_OBJECT_DEFINE_CLASS_NAME(ACBegin)
@@ -47,12 +45,12 @@ namespace XLSB
             ACBegin();
             virtual ~ACBegin();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
             _UINT16                   cver;
-            BiffStructurePtrVector    RgACVer;
+			XLS::BiffStructurePtrVector    RgACVer;
     };
 
 } // namespace XLSB

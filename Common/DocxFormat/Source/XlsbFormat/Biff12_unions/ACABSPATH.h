@@ -31,27 +31,27 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class ACABSPATH: public CompositeObject
+    class ACABSPATH: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(ACABSPATH)
     public:
         ACABSPATH();
         virtual ~ACABSPATH();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr	m_BrtACBegin;
-        BaseObjectPtr	m_BrtAbsPath15;
-        BaseObjectPtr	m_BrtACEnd;
+		XLS::BaseObjectPtr	m_BrtACBegin;
+		XLS::BaseObjectPtr	m_BrtAbsPath15;
+		XLS::BaseObjectPtr	m_BrtACEnd;
     };
 
 } // namespace XLSB

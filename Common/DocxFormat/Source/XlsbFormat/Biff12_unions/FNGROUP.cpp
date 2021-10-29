@@ -35,6 +35,8 @@
 #include "../Biff12_records/FnGroup.h"
 #include "../Biff12_records/EndFnGroup.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

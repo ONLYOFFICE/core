@@ -32,6 +32,8 @@
 
 #include "FRTBegin.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new FRTBegin(*this));
     }
 
-    void FRTBegin::readFields(CFRecord& record)
+    void FRTBegin::readFields(XLS::CFRecord& record)
     {
         record >> productVersion;
     }

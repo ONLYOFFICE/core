@@ -32,6 +32,8 @@
 
 #include "BeginStyleSheet.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginStyleSheet(*this));
     }
 
-    void BeginStyleSheet::readFields(CFRecord& record)
+    void BeginStyleSheet::readFields(XLS::CFRecord& record)
     {
         // No data in this record
     }

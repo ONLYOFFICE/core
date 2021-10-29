@@ -32,7 +32,9 @@
 
 #include "StrRun.h"
 
-namespace XLS
+using namespace XLS;
+
+namespace XLSB
 {
 
 
@@ -41,10 +43,10 @@ BiffStructurePtr StrRun::clone()
     return BiffStructurePtr(new StrRun(*this));
 }
 
-void StrRun::load(CFRecord& record)
+void StrRun::load(XLS::CFRecord& record)
 {
 	record >> ich >> ifnt;
 }
 
 
-} // namespace XLS
+} // namespace XLSB

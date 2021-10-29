@@ -32,6 +32,8 @@
 
 #include "HLink.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new HLink(*this));
     }
 
-    void HLink::readFields(CFRecord& record)
+    void HLink::readFields(XLS::CFRecord& record)
     {
         record >> rfx >> relId >> location >> tooltip >> display;
     }

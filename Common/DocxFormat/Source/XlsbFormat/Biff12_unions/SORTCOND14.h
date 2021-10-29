@@ -31,26 +31,26 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class SORTCOND14: public CompositeObject
+    class SORTCOND14: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(SORTCOND14)
     public:
         SORTCOND14();
         virtual ~SORTCOND14();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr	m_BrtBeginSortCond14;
-        BaseObjectPtr	m_BrtEndSortCond14;
+		XLS::BaseObjectPtr	m_BrtBeginSortCond14;
+		XLS::BaseObjectPtr	m_BrtEndSortCond14;
 
     };
 

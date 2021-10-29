@@ -33,6 +33,8 @@
 #include "DATACELL.h"
 #include "../Biff12_records/Cell.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

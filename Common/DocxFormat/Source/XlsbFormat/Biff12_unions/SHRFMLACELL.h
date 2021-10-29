@@ -31,25 +31,25 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class SHRFMLACELL: public CompositeObject
+    class SHRFMLACELL: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(SHRFMLACELL)
     public:
         SHRFMLACELL(_INT32 row, _INT32 col);
         virtual ~SHRFMLACELL();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr   m_source;
+		XLS::BaseObjectPtr   m_source;
         _INT32          m_Row;
         _INT32          m_Col;
 

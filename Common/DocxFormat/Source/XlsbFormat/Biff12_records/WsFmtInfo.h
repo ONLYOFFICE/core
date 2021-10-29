@@ -31,16 +31,16 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
     // Logical representation of BrtWsFmtInfo record in BIFF12
-    class WsFmtInfo: public BiffRecord
+    class WsFmtInfo: public XLS::BiffRecord
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(WsFmtInfo)
         BASE_OBJECT_DEFINE_CLASS_NAME(WsFmtInfo)
@@ -48,9 +48,9 @@ namespace XLSB
         WsFmtInfo();
         ~WsFmtInfo();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        void readFields(CFRecord& record);
+        void readFields(XLS::CFRecord& record);
 
     //-----------------------------
         _UINT32     dxGCol;

@@ -31,15 +31,15 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
     // Logical representation of BrtEndStyleSheetExt14 record in BIFF12
-    class EndStyleSheetExt14: public BiffRecord
+    class EndStyleSheetExt14: public XLS::BiffRecord
     {
             BIFF_RECORD_DEFINE_TYPE_INFO(EndStyleSheetExt14)
             BASE_OBJECT_DEFINE_CLASS_NAME(EndStyleSheetExt14)
@@ -47,9 +47,9 @@ namespace XLSB
             EndStyleSheetExt14();
             virtual ~EndStyleSheetExt14();
 
-            BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
     };
 

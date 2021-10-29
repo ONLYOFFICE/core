@@ -32,24 +32,24 @@
 
 #pragma once
 
-#include <Logic/Biff_structures/BiffStructure.h>
-#include <Logic/Biff_records/BiffRecord.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 
-using namespace XLS;
+
 namespace XLSB
 {
-    class FRTBlank : public BiffStructure
+    class FRTBlank : public XLS::BiffStructure
     {
         BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTBlank)
     public:
         FRTBlank();
-        FRTBlank(CFRecord& record);
+        FRTBlank(XLS::CFRecord& record);
         virtual ~FRTBlank();
-        BiffStructurePtr clone();
+		XLS::BiffStructurePtr clone();
 
-        static const ElementType	type = typeBiffStructure;
+        static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-        virtual void load(CFRecord& record);
+        virtual void load(XLS::CFRecord& record);
 
     };
 

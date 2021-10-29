@@ -32,6 +32,8 @@
 
 #include "BeginConditionalFormattings.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginConditionalFormattings(*this));
     }
 
-    void BeginConditionalFormattings::readFields(CFRecord& record)
+    void BeginConditionalFormattings::readFields(XLS::CFRecord& record)
     {
 
     }

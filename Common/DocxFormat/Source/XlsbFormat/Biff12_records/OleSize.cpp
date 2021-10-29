@@ -32,6 +32,8 @@
 
 #include "OleSize.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new OleSize(*this));
     }
 
-    void OleSize::readFields(CFRecord& record)
+    void OleSize::readFields(XLS::CFRecord& record)
     { 
         record >> rfx;
     }

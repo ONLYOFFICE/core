@@ -34,7 +34,7 @@
 #include "BiffStructure.h"
 #include "BiffString.h"
 #include "CellRangeRef.h"
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "BitMarkedStructs.h"
 
 namespace XLS
 {

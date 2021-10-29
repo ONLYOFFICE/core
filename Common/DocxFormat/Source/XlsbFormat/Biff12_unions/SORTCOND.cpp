@@ -34,6 +34,8 @@
 #include "../Biff12_records/BeginSortCond.h"
 #include "../Biff12_records/EndSortCond.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

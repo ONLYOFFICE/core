@@ -33,6 +33,8 @@
 #include "Style.h"
 #include "../Biff12_structures/XLWideString.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -49,7 +51,7 @@ namespace XLSB
         return BaseObjectPtr(new Style(*this));
     }
 
-    void Style::readFields(CFRecord& record)
+    void Style::readFields(XLS::CFRecord& record)
     {
         record >> ixf;
 

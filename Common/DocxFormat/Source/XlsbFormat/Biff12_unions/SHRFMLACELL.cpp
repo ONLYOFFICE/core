@@ -32,7 +32,10 @@
 
 #include "SHRFMLACELL.h"
 #include "../Biff12_records/CommonRecords.h"
-#include <Biff12_structures/CellRef.h>
+#include "../Biff12_structures/CellRef.h"
+
+using namespace XLS;
+
 namespace XLSB
 {
 

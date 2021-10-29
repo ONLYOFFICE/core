@@ -32,6 +32,8 @@
 
 #include "FileVersion.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new FileVersion(*this));
     }
 
-    void FileVersion::readFields(CFRecord& record)
+    void FileVersion::readFields(XLS::CFRecord& record)
     {
         record >> guidCodeName;
         record >> stAppName;

@@ -32,9 +32,10 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CellRangeRef.h>
-#include <Logic/Biff_structures/SharedParsedFormula.h>
-#include <Biff12_structures/CellRangeRef.h>
+#include "../Biff_structures/CellRangeRef.h"
+#include "../Biff_structures/SharedParsedFormula.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRangeRef.h"
+
 namespace XLS
 {
 

@@ -52,6 +52,8 @@
 #include "Biff12_unions/FRTWORKSHEET.h"
 #include "Biff12_records/EndSheet.h"
 
+using namespace XLS;
+
 namespace XLSB
 {;
 

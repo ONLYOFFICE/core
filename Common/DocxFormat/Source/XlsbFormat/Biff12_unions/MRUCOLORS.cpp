@@ -35,6 +35,8 @@
 #include "../Biff12_records/MRUColor.h"
 #include "../Biff12_records/EndMRUColors.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 

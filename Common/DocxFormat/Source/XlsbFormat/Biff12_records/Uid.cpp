@@ -32,6 +32,8 @@
 
 #include "Uid.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new Uid(*this));
     }
 
-    void Uid::readFields(CFRecord& record)
+    void Uid::readFields(XLS::CFRecord& record)
     {
         record >> value;
     }

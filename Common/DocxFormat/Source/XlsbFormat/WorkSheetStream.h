@@ -42,7 +42,7 @@
 #include <iostream>
 #include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 typedef BYTE *LPBYTE;
-using namespace XLS;
+
 namespace XLSB
 {
     class StreamCacheReader;
@@ -50,38 +50,38 @@ namespace XLSB
     class WorkSheetStream;
     typedef std::shared_ptr<WorkSheetStream>		WorkSheetStreamPtr;
 
-    class WorkSheetStream: public CompositeObject
+    class WorkSheetStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
     public:
         WorkSheetStream();
         virtual ~WorkSheetStream();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        static const XLS::ElementType type = typeWorksheetSubstream;
+        static const XLS::ElementType type = XLS::typeWorksheetSubstream;
 
-        BaseObjectPtr               m_BrtBeginSheet;
-        std::vector<BaseObjectPtr>  m_arCOLINFOS;
-        BaseObjectPtr               m_BrtWsDim;
-        BaseObjectPtr               m_BrtDrawing;
-        BaseObjectPtr               m_BrtLegacyDrawing;
-        BaseObjectPtr               m_BrtLegacyDrawingHF;
-        BaseObjectPtr               m_HLINKS;
-        BaseObjectPtr               m_MERGECELLS;
-        BaseObjectPtr               m_CELLTABLE;
-        BaseObjectPtr               m_BrtWsFmtInfo;
-        BaseObjectPtr               m_WSVIEWS2;
-        BaseObjectPtr               m_BrtSheetProtectionIso;
-        BaseObjectPtr               m_BrtSheetProtection;
-        BaseObjectPtr               m_LISTPARTS;
-        BaseObjectPtr               m_SORTSTATE;
-        std::vector<BaseObjectPtr>  m_arCONDITIONALFORMATTING;
-        BaseObjectPtr               m_FRTWORKSHEET;
+		XLS::BaseObjectPtr               m_BrtBeginSheet;
+        std::vector<XLS::BaseObjectPtr>  m_arCOLINFOS;
+		XLS::BaseObjectPtr               m_BrtWsDim;
+		XLS::BaseObjectPtr               m_BrtDrawing;
+		XLS::BaseObjectPtr               m_BrtLegacyDrawing;
+		XLS::BaseObjectPtr               m_BrtLegacyDrawingHF;
+		XLS::BaseObjectPtr               m_HLINKS;
+		XLS::BaseObjectPtr               m_MERGECELLS;
+		XLS::BaseObjectPtr               m_CELLTABLE;
+		XLS::BaseObjectPtr               m_BrtWsFmtInfo;
+		XLS::BaseObjectPtr               m_WSVIEWS2;
+		XLS::BaseObjectPtr               m_BrtSheetProtectionIso;
+		XLS::BaseObjectPtr               m_BrtSheetProtection;
+		XLS::BaseObjectPtr               m_LISTPARTS;
+		XLS::BaseObjectPtr               m_SORTSTATE;
+        std::vector<XLS::BaseObjectPtr>  m_arCONDITIONALFORMATTING;
+		XLS::BaseObjectPtr               m_FRTWORKSHEET;
 
-        BaseObjectPtr               m_BrtEndSheet;
+		XLS::BaseObjectPtr               m_BrtEndSheet;
 
     };
 

@@ -32,6 +32,8 @@
 
 #include "BeginFonts.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new BeginFonts(*this));
     }
 
-    void BeginFonts::readFields(CFRecord& record)
+    void BeginFonts::readFields(XLS::CFRecord& record)
     {
         record >> cfonts;
     }

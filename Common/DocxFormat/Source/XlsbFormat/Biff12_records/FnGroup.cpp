@@ -32,6 +32,8 @@
 
 #include "FnGroup.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -51,7 +53,7 @@ namespace XLSB
     }
 
 
-    void FnGroup::readFields(CFRecord& record)
+    void FnGroup::readFields(XLS::CFRecord& record)
     {
         record >> stGroup;
     }

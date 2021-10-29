@@ -31,13 +31,11 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/Cell.h"
-#include <Logic/Biff_structures/Xnum.h>
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
 #include "../Biff12_structures/XLWideString.h"
-using namespace XLS;
 
 namespace XLSB
 {
@@ -45,15 +43,14 @@ namespace XLSB
 class CellBase
 {
    public:
-
-        Cell               cell;
+        Cell cell;
 };
 
 template <class T, CF_RECORD_TYPE id>
-class Cell_T: public CellBase, public BiffRecord
+class Cell_T: public CellBase, public XLS::BiffRecord
 {
    public:
-        const CFRecordType::TypeId getTypeId() const
+        const XLS::CFRecordType::TypeId getTypeId() const
         {
             return id;
         }
@@ -86,31 +83,30 @@ class Cell_T: public CellBase, public BiffRecord
             }
 
         }
-
         virtual ~Cell_T()
         {
         }
 
-        BaseObjectPtr clone()
+		XLS::BaseObjectPtr clone()
         {
-            return BaseObjectPtr(new Cell_T<T, id>(*this));
+            return XLS::BaseObjectPtr(new Cell_T<T, id>(*this));
         }
 
-        void readFields(CFRecord& record)
+        void readFields(XLS::CFRecord& record)
         {
             record >> cell;
             if(id != rt_CellBlank)
                 record >> value;
         }
 
-        T                      value;
+        T value;
 };
 
 typedef Cell_T<int,                                 rt_CellBlank>               CellBlank;
-typedef Cell_T<RkNumber,                            rt_CellRk>                  CellRk;
+typedef Cell_T<XLS::RkNumber,                       rt_CellRk>                  CellRk;
 typedef Cell_T<unsigned char,                       rt_CellError>               CellError;
 typedef Cell_T<XLS::Boolean<unsigned char>,         rt_CellBool>                CellBool;
-typedef Cell_T<Xnum,                                rt_CellReal>                CellReal;
+typedef Cell_T<XLS::Xnum,                           rt_CellReal>                CellReal;
 typedef Cell_T<_UINT32,                             rt_CellIsst>                CellIsst;
 typedef Cell_T<XLWideString,                        rt_CellSt>                  CellSt;
 

@@ -32,6 +32,8 @@
 
 #include "IndexedColor.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new IndexedColor(*this));
     }
 
-    void IndexedColor::readFields(CFRecord& record)
+    void IndexedColor::readFields(XLS::CFRecord& record)
     {
         record >> bRed >> bGreen >> bBlue;
 

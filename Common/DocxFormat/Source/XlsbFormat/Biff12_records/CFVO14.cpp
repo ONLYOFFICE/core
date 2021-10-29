@@ -32,6 +32,8 @@
 
 #include "CFVO14.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new CFVO14(*this));
     }
 
-    void CFVO14::readFields(CFRecord& record)
+    void CFVO14::readFields(XLS::CFRecord& record)
     {
         record >> FRTheader >> iType >> numParam >> fSaveGTE >> fGTE >> cbFmla;
     }

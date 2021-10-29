@@ -32,6 +32,8 @@
 
 #include "EndConditionalFormatting.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new EndConditionalFormatting(*this));
     }
 
-    void EndConditionalFormatting::readFields(CFRecord& record)
+    void EndConditionalFormatting::readFields(XLS::CFRecord& record)
     {
         //empty data
     }

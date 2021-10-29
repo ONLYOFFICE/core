@@ -32,6 +32,8 @@
 
 #include "FRTHeader.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    FRTHeader::FRTHeader(CFRecord& record)
+    FRTHeader::FRTHeader(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new FRTHeader(*this));
     }
 
-    void FRTHeader::load(CFRecord& record)
+    void FRTHeader::load(XLS::CFRecord& record)
     {
         unsigned int flags;
         record >> flags;

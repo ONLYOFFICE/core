@@ -31,28 +31,28 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-using namespace XLS;
+
 
 namespace XLSB
 {
 
-    class COLORPALETTE: public CompositeObject
+    class COLORPALETTE: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(COLORPALETTE)
     public:
         COLORPALETTE();
         virtual ~COLORPALETTE();
 
-        BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(BinProcessor& proc);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        BaseObjectPtr               m_BrtBeginColorPalette;
-        BaseObjectPtr               m_INDEXEDCOLORS;
-        BaseObjectPtr               m_MRUCOLORS;
-        BaseObjectPtr               m_BrtEndColorPalette;
+		XLS::BaseObjectPtr               m_BrtBeginColorPalette;
+		XLS::BaseObjectPtr               m_INDEXEDCOLORS;
+		XLS::BaseObjectPtr               m_MRUCOLORS;
+		XLS::BaseObjectPtr               m_BrtEndColorPalette;
 
     };
 

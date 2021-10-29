@@ -32,6 +32,8 @@
 
 #include "ACProductVersion.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -39,7 +41,7 @@ namespace XLSB
     {
     }
 
-    ACProductVersion::ACProductVersion(CFRecord& record)
+    ACProductVersion::ACProductVersion(XLS::CFRecord& record)
     {
         load(record);
     }
@@ -53,7 +55,7 @@ namespace XLSB
         return BiffStructurePtr(new ACProductVersion(*this));
     }
 
-    void ACProductVersion::load(CFRecord& record)
+    void ACProductVersion::load(XLS::CFRecord& record)
     {
         unsigned short flags;
 

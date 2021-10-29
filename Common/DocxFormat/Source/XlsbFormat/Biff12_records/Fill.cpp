@@ -32,6 +32,8 @@
 
 #include "Fill.h"
 
+using namespace XLS;
+
 namespace XLSB
 {
 
@@ -48,7 +50,7 @@ namespace XLSB
         return BaseObjectPtr(new Fill(*this));
     }
 
-    void Fill::readFields(CFRecord& record)
+    void Fill::readFields(XLS::CFRecord& record)
     {
         record >> fls;
         brtColorFore.readFields(record);

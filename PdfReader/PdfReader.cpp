@@ -652,7 +652,11 @@ return 0;
             if (!sLink)
                 continue;
             std::string link(sLink->getCString(), sLink->getLength());
-            size_t find = link.find("http");
+            size_t find = link.find("http://");
+            if (find == std::string::npos)
+                find = link.find("https://");
+            if (find == std::string::npos)
+                find = link.find("www.");
             if (find != std::string::npos)
             {
                 link.erase(0, find);

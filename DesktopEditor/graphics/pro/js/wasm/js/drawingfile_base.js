@@ -123,8 +123,10 @@
     {
         this.nativeFile = 0;
         this.stream = -1;
+        this.stream_size = 0;
         this.type = -1;
         this.pages = [];
+        this._isNeedPassword = false;
     }
 
     CFile.prototype["loadFromData"] = function(arrayBuffer)
@@ -132,21 +134,44 @@
         var data = new Uint8Array(arrayBuffer);
         var _stream = Module["_malloc"](data.length);
         Module["HEAP8"].set(data, _stream);
-        this.nativeFile = Module["_Open"](_stream, data.length);
-        var nCodeError = Module["_GetErrorCode"](this.nativeFile);
-        // 4 - нужен пароль
-        if (nCodeError == 4)
-            return null;
-        // 0 - ошибки нет
-        if (nCodeError != 0)
-        {
-            this.close();
-            return null;
-        }
+        this.nativeFile = Module["_Open"](_stream, data.length, 0);
+        var error = Module["_GetErrorCode"](this.nativeFile);
         this.stream = _stream;
+        this.stream_size = data.length;
         this.type = Module["_GetType"](_stream, data.length);
         self.drawingFile = this;
-        return this.getInfo();
+        this.getInfo();
+        this._isNeedPassword = (4 === error) ? true : false;
+
+        // 0 - ok
+        // 4 - password
+        // else - error
+        return error;
+    };
+    CFile.prototype["loadFromDataWithPassword"] = function(password)
+    {
+        if (0 != this.nativeFile)
+            Module["_Close"](this.nativeFile);
+
+        var passBuffer = password.toUtf8();
+        var passPointer = Module["_malloc"](passBuffer.length);
+        Module["HEAP8"].set(passBuffer, passPointer);
+        this.nativeFile = Module["_Open"](this.stream, this.stream_size, passPointer);
+        Module["_free"](passPointer);
+        var error = Module["_GetErrorCode"](this.nativeFile);
+        this.type = Module["_GetType"](this.stream, this.stream_size);
+        self.drawingFile = this;
+        this.getInfo();
+        this._isNeedPassword = (4 === error) ? true : false;
+
+        // 0 - ok
+        // 4 - password
+        // else - error
+        return error;
+    };
+    CFile.prototype["isNeedPassword"] = function()
+    {
+        return this._isNeedPassword;
     };
     CFile.prototype["getInfo"] = function()
     {

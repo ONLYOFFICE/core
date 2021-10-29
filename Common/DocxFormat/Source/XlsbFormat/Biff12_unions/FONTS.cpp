@@ -33,6 +33,7 @@
 #include "FONTS.h"
 #include "../Biff12_records/CommonRecords.h"
 #include "../Biff12_records/BeginFonts.h"
+#include "../Biff12_unions/ACFONTS.h"
 #include "../Biff12_records/EndFonts.h"
 
 using namespace XLS;
@@ -75,6 +76,12 @@ namespace XLSB
             m_arBrtFont.insert(m_arBrtFont.begin(), elements_.back());
             elements_.pop_back();
             count--;
+        }
+
+        if (proc.optional<ACFONTS>())
+        {
+            m_ACFONTS = elements_.back();
+            elements_.pop_back();
         }
 
         if (proc.optional<EndFonts>())

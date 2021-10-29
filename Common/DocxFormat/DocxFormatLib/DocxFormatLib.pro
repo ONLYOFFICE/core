@@ -84,13 +84,6 @@ SOURCES += \
     ../Source/DocxFormat/Diagram/DiagramDrawing.cpp \
     ../Source/DocxFormat/Diagram/DiagramLayout.cpp \
     ../Source/DocxFormat/Diagram/DiagramQuickStyle.cpp \
-    ../Source/Common/Align.cpp \
-    ../Source/Common/Color.cpp \
-    ../Source/Common/Index.cpp \
-    ../Source/Common/NumFormat.cpp \
-    ../Source/Common/Position.cpp \
-    ../Source/Common/Wrap.cpp \
-    ../Source/Common/ZIndex.cpp \
     ../Source/DocxFormat/WritingElement.cpp \
     ../Source/Common/SimpleTypes_Word.cpp \
     ../Source/SystemUtility/SystemUtility.cpp \
@@ -207,6 +200,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/BeginFmts.cpp \
     ../Source/XlsbFormat/Biff12_records/EndFmts.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginFonts.cpp \
+    ../Source/XlsbFormat/Biff12_records/KnownFonts.cpp \
     ../Source/XlsbFormat/Biff12_records/EndFonts.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginFills.cpp \
     ../Source/XlsbFormat/Biff12_records/Fill.cpp \
@@ -354,6 +348,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/ACFMT.cpp \
     ../Source/XlsbFormat/Biff12_unions/FMTS.cpp \
     ../Source/XlsbFormat/Biff12_unions/FONTS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACFONTS.cpp \
     ../Source/XlsbFormat/Biff12_unions/FILLS.cpp \
     ../Source/XlsbFormat/Biff12_unions/BORDERS.cpp \
     ../Source/XlsbFormat/Biff12_unions/CELLSTYLEXFS.cpp \
@@ -394,15 +389,7 @@ HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \
     ../Source/Base/Nullable.h \
     ../Source/Base/SmartPtr.h \
-    ../Source/Common/AbstractConverter.h \
-    ../Source/Common/Align.h \
-    ../Source/Common/Color.h \
-    ../Source/Common/Common.h \
     ../Source/Common/ComplexTypes.h \
-    ../Source/Common/Index.h \
-    ../Source/Common/NumFormat.h \
-    ../Source/Common/Point.h \
-    ../Source/Common/Position.h \
     ../Source/Common/SimpleTypes_Base.h \
     ../Source/Common/SimpleTypes_Drawing.h \
     ../Source/Common/SimpleTypes_OMath.h \
@@ -677,6 +664,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/BeginFmts.h \
     ../Source/XlsbFormat/Biff12_records/EndFmts.h \
     ../Source/XlsbFormat/Biff12_records/BeginFonts.h \
+    ../Source/XlsbFormat/Biff12_records/KnownFonts.h \
     ../Source/XlsbFormat/Biff12_records/EndFonts.h \
     ../Source/XlsbFormat/Biff12_records/BeginFills.h \
     ../Source/XlsbFormat/Biff12_records/Fill.h \
@@ -827,6 +815,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/ACFMT.h \
     ../Source/XlsbFormat/Biff12_unions/FMTS.h \
     ../Source/XlsbFormat/Biff12_unions/FONTS.h \
+    ../Source/XlsbFormat/Biff12_unions/ACFONTS.h \
     ../Source/XlsbFormat/Biff12_unions/FILLS.h \
     ../Source/XlsbFormat/Biff12_unions/BORDERS.h \
     ../Source/XlsbFormat/Biff12_unions/CELLSTYLEXFS.h \

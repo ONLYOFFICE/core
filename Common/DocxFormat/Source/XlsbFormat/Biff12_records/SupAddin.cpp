@@ -43,9 +43,9 @@ namespace XLSB
     {
     }
 
-    BaseObjectPtr SupAddin::clone()
+    XLS::BaseObjectPtr SupAddin::clone()
     {
-        return BaseObjectPtr(new SupAddin(*this));
+        return XLS::BaseObjectPtr(new SupAddin(*this));
     }
 
     void SupAddin::readFields(XLS::CFRecord& record)

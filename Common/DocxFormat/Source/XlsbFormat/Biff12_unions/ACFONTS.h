@@ -33,26 +33,25 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
+
+
 namespace XLSB
 {
 
-    class FONTS: public XLS::CompositeObject
+    class ACFONTS: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FONTS)
+        BASE_OBJECT_DEFINE_CLASS_NAME(ACFONTS)
     public:
-        FONTS();
-        virtual ~FONTS();
+        ACFONTS();
+        virtual ~ACFONTS();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        XLS::BaseObjectPtr               m_BrtBeginFonts;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFont;
-        XLS::BaseObjectPtr               m_ACFONTS;
-        XLS::BaseObjectPtr               m_BrtEndFonts;
-
-        //GlobalWorkbookInfoPtr		global_info;
+		XLS::BaseObjectPtr	m_BrtACBegin;
+        XLS::BaseObjectPtr	m_BrtKnownFonts;
+		XLS::BaseObjectPtr	m_BrtACEnd;
 
     };
 

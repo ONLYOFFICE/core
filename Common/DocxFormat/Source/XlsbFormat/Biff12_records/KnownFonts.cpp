@@ -29,32 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "KnownFonts.h"
+#include "../Biff12_structures/ACProductVersion.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FONTS: public XLS::CompositeObject
+    KnownFonts::KnownFonts()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FONTS)
-    public:
-        FONTS();
-        virtual ~FONTS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    KnownFonts::~KnownFonts()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr KnownFonts::clone()
+    {
+        return BaseObjectPtr(new KnownFonts(*this));
+    }
 
-        XLS::BaseObjectPtr               m_BrtBeginFonts;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFont;
-        XLS::BaseObjectPtr               m_ACFONTS;
-        XLS::BaseObjectPtr               m_BrtEndFonts;
-
-        //GlobalWorkbookInfoPtr		global_info;
-
-    };
+    void KnownFonts::readFields(XLS::CFRecord& record)
+    {
+    }
 
 } // namespace XLSB
 

@@ -59,7 +59,8 @@ void OOX::Spreadsheet::CXlsb::init()
 {
 	workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
 	xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
-	xls_global_info->Version = 0x0800;
+	xls_global_info->Version = 0x0800;    
+    m_binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
 }
 bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream)
 {

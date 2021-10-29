@@ -29,32 +29,51 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ACFONTS.h"
+#include "../Biff12_records/ACBegin.h"
+#include "../Biff12_records/KnownFonts.h"
+#include "../Biff12_records/ACEnd.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FONTS: public XLS::CompositeObject
+    ACFONTS::ACFONTS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FONTS)
-    public:
-        FONTS();
-        virtual ~FONTS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ACFONTS::~ACFONTS()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr ACFONTS::clone()
+    {
+        return BaseObjectPtr(new ACFONTS(*this));
+    }
 
-        XLS::BaseObjectPtr               m_BrtBeginFonts;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFont;
-        XLS::BaseObjectPtr               m_ACFONTS;
-        XLS::BaseObjectPtr               m_BrtEndFonts;
+    //ACFONTS = BrtACBegin BrtKnownFonts BrtACEnd
+    const bool ACFONTS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<ACBegin>())
+        {
+            m_BrtACBegin = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<KnownFonts>())
+        {
+            m_BrtKnownFonts = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<ACEnd>())
+        {
+            m_BrtACEnd = elements_.back();
+            elements_.pop_back();
+        }
 
-        //GlobalWorkbookInfoPtr		global_info;
-
-    };
+        return m_BrtACBegin && m_BrtKnownFonts && m_BrtACEnd;
+    }
 
 } // namespace XLSB
 

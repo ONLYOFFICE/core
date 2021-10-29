@@ -31,28 +31,23 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
-
-    class FONTS: public XLS::CompositeObject
+    // Logical representation of BrtKnownFonts record in BIFF12
+    class KnownFonts: public XLS::BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FONTS)
-    public:
-        FONTS();
-        virtual ~FONTS();
+            BIFF_RECORD_DEFINE_TYPE_INFO(KnownFonts)
+            BASE_OBJECT_DEFINE_CLASS_NAME(KnownFonts)
+        public:
+            KnownFonts();
+            virtual ~KnownFonts();
 
-        XLS::BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
-
-        XLS::BaseObjectPtr               m_BrtBeginFonts;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFont;
-        XLS::BaseObjectPtr               m_ACFONTS;
-        XLS::BaseObjectPtr               m_BrtEndFonts;
-
-        //GlobalWorkbookInfoPtr		global_info;
+            void readFields(XLS::CFRecord& record);
 
     };
 

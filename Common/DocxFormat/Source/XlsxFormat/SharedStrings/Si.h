@@ -170,6 +170,18 @@ namespace OOX
                         for(auto &strRun : ptr->rgsStrRun)
                         {
                             ++index;
+                            //если сначала пробелы (может, не только для пробелов так)
+                            if(index == 1 && strRun.ich != 0)
+                            {
+                                auto r0 = new CRun();
+                                str = ptr->str.value().substr(0, strRun.ich);
+
+                                auto text = new CText();
+                                text->fromBin(str);
+                                r0->m_arrItems.push_back(text);
+
+                                m_arrItems.push_back(r0);
+                            }
                             r = new CRun();
                             if(strRun.ich < ptr->str.value().size())
                             {

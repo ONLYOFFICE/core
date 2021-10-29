@@ -293,7 +293,7 @@ namespace NExtractTools
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_TXT2DOCT_BIN;
 					}break;
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT:
-                    {
+                    {//pot,pps - by extension - potx(potm), ppsx(ppsm)
                              if (0 == sExt2.compare(_T(".pptx")))		res = TCD_PPT2PPTX;
                         else if (0 == sExt2.compare(_T(".pptm")))		res = TCD_PPT2PPTM;
                         else if (0 == sExt2.compare(_T(".bin")))		res = TCD_PPT2PPTT_BIN;

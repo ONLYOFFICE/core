@@ -252,7 +252,7 @@ namespace OOX
 		}
 
 
-		if (fileContent.length() > 0)
+		if (false == fileContent.empty())
 		{
 			// элементы вида <br> без </br>
 			// test_vml4.xlsx

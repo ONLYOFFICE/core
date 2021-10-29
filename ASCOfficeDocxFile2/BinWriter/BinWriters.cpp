@@ -9026,7 +9026,7 @@ void BinaryCustomsTableWriter::Write(OOX::CDocument* pDocument)
 		if (OOX::FileTypes::CustomXml == container[i]->type())
 		{
 			OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
-			if (pCustomXml->bUsed) continue;
+			if (pCustomXml->m_bUsed) continue;
 
 			int nCurPos = m_oBcw.WriteItemStart(BinDocxRW::c_oSerCustoms::Custom);
 			
@@ -9054,11 +9054,14 @@ void BinaryCustomsTableWriter::Write(OOX::CDocument* pDocument)
 			}
 			
 			int nCurPos2 = m_oBcw.WriteItemStart(c_oSerCustoms::Content);
-			m_oBcw.m_oStream.WriteStringW3(pCustomXml->m_sXml);
+			
+			std::wstring sXml = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pCustomXml->m_sXmlA.c_str(), pCustomXml->m_sXmlA.length());
+			m_oBcw.m_oStream.WriteStringW3(sXml);
+			
 			m_oBcw.WriteItemEnd(nCurPos2);
 			
 			m_oBcw.WriteItemEnd(nCurPos);
-			pCustomXml->bUsed = true;
+			pCustomXml->m_bUsed = true;
 		}
 	}
 	m_oBcw.WriteItemWithLengthEnd(nStart);

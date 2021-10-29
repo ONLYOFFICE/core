@@ -37,7 +37,7 @@ SOURCES += \
     ./../DesktopEditor/graphics/TemporaryCS.cpp
 
 # THREAD
-core_android:DEFINES += NOT_USE_PTHREAD_CANCEL
+core_android:DEFINES += NOT_USE_PTHREAD_CANCEL USE_FILE32API
 HEADERS += \
     ./../DesktopEditor/graphics/BaseThread.h
 
@@ -91,4 +91,9 @@ SOURCES += ./../DesktopEditor/common/SystemUtils.cpp
 core_windows {
     LIBS += -lRpcrt4
     LIBS += -lShell32
+}
+
+core_ios {
+    OBJECTIVE_SOURCES += ./../DesktopEditor/common/File_ios.mm
+    LIBS += -framework Foundation
 }

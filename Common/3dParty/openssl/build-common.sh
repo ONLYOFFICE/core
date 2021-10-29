@@ -31,6 +31,10 @@ function get_cpu_count() {
 }
 
 function init_log_color() {
+    bold_color=
+    warn_color=
+    error_color=
+    reset_color=
     if test -t 1 && which tput >/dev/null 2>&1; then
         ncolors=$(tput colors)
         if test -n "$ncolors" && test $ncolors -ge 8; then

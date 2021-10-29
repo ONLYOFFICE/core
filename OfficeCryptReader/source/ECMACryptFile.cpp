@@ -45,6 +45,8 @@
 
 //CRYPT::_ecmaCryptData cryptDataGlobal; for Test
 
+#define USE_MSSTORAGE
+
 using namespace CRYPT;
 
 #define GETBIT(from, num)				((from & (1 << num)) != 0)
@@ -741,7 +743,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	
 
 //-------------------------------------------------------------------
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
 	IStorage *winStorage = NULL;
 	StgCreateDocfile(file_name_out.c_str(), STGM_CREATE|STGM_SHARE_EXCLUSIVE|STGM_READWRITE,  0, &winStorage);
 	
@@ -759,7 +761,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	POLE::Stream *pStream = NULL;
 #endif
 //-------------------------------------------------------------------
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
 	ULONG nWritten;
 	winStorage->CreateStream(L"EncryptedPackage", STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, 0, &winStream);
 	winStream->Write(data_out, lengthData, &nWritten);
@@ -782,7 +784,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	
 	cryptor.GetCryptData(cryptData);
 
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
 	winStorage->CreateStream(L"EncryptionInfo", STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, 0, &winStream);
 	if (cryptData.bAgile)
 	{
@@ -876,7 +878,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	if (false == documentID.empty())
 	{
 		std::string utfDocumentID = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(documentID);
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
 		winStorage->CreateStream(L"DocumentID", STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, 0, &winStream);
 		winStream->Write((BYTE*)utfDocumentID.c_str(), utfDocumentID.length(), &nWritten);
 		winStream->Release();
@@ -890,7 +892,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 #endif
 	}
 //-------------------------------------------------------------------
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
 	if (winStorage)
 		winStorage->Release();
 #else

@@ -245,9 +245,9 @@ void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
 		case SimpleTypes::Vml::cssptRotation:
 			{
 				if (group)
-					odf_context()->drawing_context()->set_group_rotate(180 + vml_style->m_arrProperties[i]->get_Value().dValue);
+					odf_context()->drawing_context()->set_group_rotate(180 + vml_style->m_arrProperties[i]->get_Value().oValue.dValue);
 				else
-					odf_context()->drawing_context()->set_rotate(360 - vml_style->m_arrProperties[i]->get_Value().dValue);
+					odf_context()->drawing_context()->set_rotate(360 - vml_style->m_arrProperties[i]->get_Value().oValue.dValue);
 			}break;
 		case SimpleTypes::Vml::cssptFlip:
 			{
@@ -779,7 +779,8 @@ void OoxConverter::convert(OOX::Vml::CTextPath *vml_textpath)
 				//height = vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().oValue.dValue;
 				break;
 			case SimpleTypes::Vml::cssptFontSize:
-				text_properties->content_.fo_font_size_ = odf_types::length(vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().dValue, odf_types::length::pt);
+				//todooo проверять на размерность
+				text_properties->content_.fo_font_size_ = odf_types::length(vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().oValue.dValue, odf_types::length::pt);
 			break;
 			case SimpleTypes::Vml::cssptFontStyle:
 				//width = vml_textpath->m_oStyle->m_arrProperties[i]->get_Value().oValue.dValue;

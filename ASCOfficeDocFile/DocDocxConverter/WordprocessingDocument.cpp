@@ -49,6 +49,7 @@ namespace DocFileFormat
 
 	WordprocessingDocument::~WordprocessingDocument()
 	{
+		_isSectionPageBreak = 0;
 	}
 
 	_UINT32 WordprocessingDocument::SaveDocument(bool &bMacros)

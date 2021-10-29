@@ -3,6 +3,8 @@ TEMPLATE = lib
 
 CONFIG -= qt
 QT -= core gui
+
+CONFIG += shared
 CONFIG += plugin
 
 CORE_ROOT_DIR = $$PWD/../..

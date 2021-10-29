@@ -490,7 +490,10 @@ namespace PPTX
 
 				pWriter->Write(ln);
 				Fill.toXmlWriter(pWriter);
-				EffectList.toXmlWriter(pWriter);
+				EffectList.toXmlWriter(pWriter);				
+				pWriter->Write(highlight);
+				pWriter->Write(uFill);
+				pWriter->Write(uFillTx);
 				pWriter->Write(latin);
 				pWriter->Write(ea);
 				pWriter->Write(cs);
@@ -498,9 +501,6 @@ namespace PPTX
 				pWriter->Write(hlinkClick);
 				pWriter->Write(hlinkMouseOver);
 				pWriter->Write(rtl);
-				pWriter->Write(uFill);
-				pWriter->Write(uFillTx);
-				pWriter->Write(highlight);
 
 				pWriter->EndNode(m_name);
 			}
@@ -523,7 +523,6 @@ namespace PPTX
 					highlight->Merge(props->highlight);
 
 	//			EffectProperties EffectList;
-				//highlight (Highlight Color)  §21.1.2.3.4 
 				//uLn (Underline Stroke)  §21.1.2.3.14 
 				//uLnTx (Underline Follows Text)  §21.1.2.3.15 
 

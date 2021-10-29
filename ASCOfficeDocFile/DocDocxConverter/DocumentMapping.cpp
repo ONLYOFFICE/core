@@ -52,9 +52,9 @@ namespace DocFileFormat
 		m_bInternalXmlWriter	=	false;
 
 		_writeWebHidden			=	false;
-		_isSectionPageBreak		=	0;
 		_isTextBoxContent		=	false;
 
+		m_context->_docx->_isSectionPageBreak =	0;
 //--------------------------------------------
 		_embeddedObject			=	false;
 	}
@@ -68,11 +68,12 @@ namespace DocFileFormat
 		m_bInternalXmlWriter	=	false;
 	
 		_writeWebHidden			=	false;
-		_isSectionPageBreak		=	0;
 		_isTextBoxContent		=	false;
 		_embeddedObject			=	false;
 
 		_cacheListNum			= -1;
+		
+		m_context->_docx->_isSectionPageBreak =	0;
 	}
 
 	DocumentMapping::~DocumentMapping()
@@ -233,7 +234,7 @@ namespace DocFileFormat
 		}
 //-----------------------------------------------------------		
 		//_cacheListNum		= getListNumCache(fc, fcEnd);
-		_isSectionPageBreak = 0;
+		m_context->_docx->_isSectionPageBreak = 0;
 		if (sectionEnd)
 		{
 			// this is the last paragraph of this section
@@ -244,7 +245,7 @@ namespace DocFileFormat
 				ParagraphPropertiesMapping oMapping(m_pXmlWriter, m_context, m_document, paraEndChpx, isBidi, findValidSepx(cpEnd), _sectionNr);
 				papx->Convert(&oMapping);
 
-				_isSectionPageBreak = oMapping.get_section_page_break();
+				m_context->_docx->_isSectionPageBreak = oMapping.get_section_page_break();
 			}
 
 			++_sectionNr;
@@ -360,8 +361,10 @@ namespace DocFileFormat
 
 		RELEASEOBJECT(chpxFcs);
 		RELEASEOBJECT(chpxs);
+		
+		return cpEnd;
 
-		return cpEnd++;
+		return (std::max)(cp, cpEnd); //ralph_scovile.doc
 	}
 
 	void DocumentMapping::writeParagraphRsid (const ParagraphPropertyExceptions* papx)
@@ -823,9 +826,9 @@ namespace DocFileFormat
 			}
 			else if (TextMark::PageBreakOrSectionMark == code)
 			{
-				if (_isSectionPageBreak == 0 || _isSectionPageBreak == 2)
+				if (m_context->_docx->_isSectionPageBreak == 0 || m_context->_docx->_isSectionPageBreak == 2)
 				{
-					_isSectionPageBreak = -1;
+					m_context->_docx->_isSectionPageBreak = -1;
 
                     writeTextElement(text, textType);
 
@@ -914,10 +917,14 @@ namespace DocFileFormat
 
 				//<w:sym w:font="Symbol" w:char="F062"/>
 
-                m_pXmlWriter->WriteNodeBegin(L"w:sym", true);
-                m_pXmlWriter->WriteAttribute(L"w:font", FormatUtils::XmlEncode(s.FontName));
-                m_pXmlWriter->WriteAttribute(L"w:char", FormatUtils::XmlEncode(s.HexValue));
-                m_pXmlWriter->WriteNodeEnd(L"", true);
+				if (false == s.HexValue.empty()) //09FluGuide.doc - поврежденный
+				{
+					m_pXmlWriter->WriteNodeBegin(L"w:sym", true);
+					if (false == s.FontName.empty()) // ??? default
+						m_pXmlWriter->WriteAttribute(L"w:font", FormatUtils::XmlEncode(s.FontName));
+					m_pXmlWriter->WriteAttribute(L"w:char", FormatUtils::XmlEncode(s.HexValue));
+					m_pXmlWriter->WriteNodeEnd(L"", true);
+				}
 			}
 			else if ((TextMark::DrawnObject == code) && fSpec)
 			{

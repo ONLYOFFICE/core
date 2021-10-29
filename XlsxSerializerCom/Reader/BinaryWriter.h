@@ -289,6 +289,13 @@ namespace BinXlsxRW
 		void WriteDataValidation(const OOX::Spreadsheet::CDataValidation& oDataValidation);
 		void WriteSlicers(OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CSlicerRefs& oSlicers);
 	};
+	class BinaryCustomsTableWriter
+	{
+		BinaryCommonWriter m_oBcw;
+	public:
+		BinaryCustomsTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream);
+		void Write(OOX::IFileContainer *pContainer);
+	};
 	class BinaryCalcChainTableWriter
 	{
 		BinaryCommonWriter m_oBcw;

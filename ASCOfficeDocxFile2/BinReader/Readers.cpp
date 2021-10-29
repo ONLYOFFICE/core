@@ -3484,8 +3484,6 @@ Binary_CustomsTableReader::Binary_CustomsTableReader(NSBinPptxRW::CBinaryFileRea
 }
 int Binary_CustomsTableReader::Read()
 {
-	OOX::CCustomXMLProps oCustomXmlProps(NULL);
-
 	int res = c_oSerConstants::ReadOk;
 	READ_TABLE_DEF(res, this->ReadCustom, NULL);
 

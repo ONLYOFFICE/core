@@ -3980,7 +3980,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 
 					m_oValue.oValue.dValue = Inch_To_Pt(dValue);
 				}
@@ -3989,7 +3989,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 
 					   m_oValue.oValue.dValue = Cm_To_Pt(dValue);
 				}
@@ -3998,7 +3998,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 
 					   m_oValue.oValue.dValue = Mm_To_Pt(dValue);
 				}
@@ -4015,7 +4015,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 
 					   m_oValue.oValue.dValue = dValue;
 				}
@@ -4024,7 +4024,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 
 					   m_oValue.oValue.dValue = dValue * 12;
 				}
@@ -4040,7 +4040,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 
 					   m_oValue.oValue.dValue = Px_To_Pt(dValue);
 				}
@@ -4049,7 +4049,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeAbsolute;
 					try
 					{
-                        m_oValue.oValue.dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
+                        m_oValue.oValue.dValue = XmlUtils::GetDouble(sValue);
 					}
 					catch(...)
 					{

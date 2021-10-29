@@ -1771,7 +1771,7 @@ namespace DocFileFormat
 						//за текстом (The shape is behind the text, so the z-index must be negative.)
 						m_isInlineShape = false;
 
-						if (false == bZIndex && false == m_inGroup)
+						if (false == bZIndex/* && false == m_inGroup*/) // Пример.doc
 						{
 							appendStyleProperty(oStyle, L"z-index", FormatUtils::IntToWideString(-zIndex - 0x7ffff));
 							bZIndex = true;
@@ -1826,7 +1826,7 @@ namespace DocFileFormat
 			}
 		}
 		
-		if (nRelH < 0 && m_pSpa)
+		if (nRelH < 0 && m_pSpa && false == m_inGroup)
 		{
 			//if (m_pSpa->bx == TEXT && bZIndex)
 			//{
@@ -1839,7 +1839,7 @@ namespace DocFileFormat
 			else if (m_pSpa->bx == TEXT)
 				appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative(msoprhText));
 		}
-		if (nRelV < 0 && m_pSpa)
+		if (nRelV < 0 && m_pSpa && false == m_inGroup)
 		{
 			//if (m_pSpa->by == TEXT && bZIndex) 
 			//{

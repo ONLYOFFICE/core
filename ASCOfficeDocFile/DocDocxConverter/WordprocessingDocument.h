@@ -76,6 +76,8 @@ namespace DocFileFormat
 		std::list<std::wstring> FooterXMLList;
 
 	public:
+		int _isSectionPageBreak; //0 - not set, 1 -page break, 2 - continues, -1 - already
+
 		WordprocessingDocument(const std::wstring & _docxDirectory, const WordDocument* _docFile);
 		virtual ~WordprocessingDocument();
 		

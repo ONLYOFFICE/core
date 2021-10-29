@@ -158,11 +158,13 @@ namespace OOX
 
 		const FileType CustomXml		(L"customXml", L"item.xml",
 												L"",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml",
+												L"customXml/item", true, true);
 
-		const FileType CustomXmlProps	(L"customXml", L"itemProps.xml",
+		const FileType CustomXmlProps	(L"", L"itemProps.xml",
 												L"application/vnd.openxmlformats-officedocument.customXmlProperties+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps",
+												L"customXml/itemProps", true, true);
 
 		const FileType HyperLink		(L"", L"", 
 												L"", 

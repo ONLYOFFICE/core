@@ -97,7 +97,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:locked",         m_oLocked )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",           m_sName )
@@ -653,23 +652,27 @@ namespace OOX
 
 			sResult += L">";
 
-			WritingElement_WriteNode_1( L"<w:aliases ",         m_oAliases );
-			WritingElement_WriteNode_1( L"<w:autoRedefine ",    m_oAutoRedefine );
-			WritingElement_WriteNode_1( L"<w:basedOn ",         m_oBasedOn );
-			WritingElement_WriteNode_1( L"<w:hidden ",          m_oHidden );
-			WritingElement_WriteNode_1( L"<w:link ",            m_oLink );
-			WritingElement_WriteNode_1( L"<w:locked ",          m_oLocked );
-			WritingElement_WriteNode_1( L"<w:name ",            m_oName );
-			WritingElement_WriteNode_1( L"<w:next ",            m_oNext );
-			WritingElement_WriteNode_1( L"<w:personal ",        m_oPersonal );
+			WritingElement_WriteNode_1( L"<w:name ", m_oName );
+			WritingElement_WriteNode_1( L"<w:aliases ", m_oAliases );
+			WritingElement_WriteNode_1( L"<w:basedOn ", m_oBasedOn );
+			WritingElement_WriteNode_1( L"<w:next ", m_oNext );
+			WritingElement_WriteNode_1( L"<w:link ", m_oLink );
+			WritingElement_WriteNode_1( L"<w:autoRedefine ", m_oAutoRedefine );
+			WritingElement_WriteNode_1( L"<w:hidden ", m_oHidden );
+			WritingElement_WriteNode_1( L"<w:uiPriority ", m_oUiPriority );
+			WritingElement_WriteNode_1( L"<w:semiHidden ", m_oSemiHidden );
+			WritingElement_WriteNode_1( L"<w:unhideWhenUsed ",  m_oUnhideWhenUsed );
+			WritingElement_WriteNode_1( L"<w:qFormat ", m_oQFormat );
+			WritingElement_WriteNode_1( L"<w:locked ", m_oLocked );
+			WritingElement_WriteNode_1( L"<w:personal ", m_oPersonal );
 			WritingElement_WriteNode_1( L"<w:personalCompose ", m_oPersonalCompose );
-			WritingElement_WriteNode_1( L"<w:personalReply ",   m_oPersonalReply );
+			WritingElement_WriteNode_1( L"<w:personalReply ", m_oPersonalReply );
+			WritingElement_WriteNode_1( L"<w:rsid ", m_oRsid );
 			WritingElement_WriteNode_2( m_oParPr );
-			WritingElement_WriteNode_1( L"<w:qFormat ",         m_oQFormat );
 			WritingElement_WriteNode_2( m_oRunPr );
-			WritingElement_WriteNode_1( L"<w:rsid ",            m_oRsid );
-			WritingElement_WriteNode_1( L"<w:semiHidden ",      m_oSemiHidden );
 			WritingElement_WriteNode_2( m_oTblPr );
+			WritingElement_WriteNode_2( m_oTrPr );
+			WritingElement_WriteNode_2( m_oTcPr );
 
 			for ( unsigned int nIndex = 0; nIndex < m_arrTblStylePr.size(); nIndex++ )
 			{
@@ -677,10 +680,6 @@ namespace OOX
 					sResult += m_arrTblStylePr[nIndex]->toXML();
 			}
 
-			WritingElement_WriteNode_2( m_oTcPr );
-			WritingElement_WriteNode_2( m_oTrPr );
-			WritingElement_WriteNode_1( L"<w:uiPriority ",      m_oUiPriority );
-			WritingElement_WriteNode_1( L"<w:unhideWhenUsed ",  m_oUnhideWhenUsed );
 
 			sResult += L"</w:style>";
 

@@ -56,6 +56,7 @@
 #include "lib/xpdf/TextOutputDev.h"
 #include "lib/goo/GList.h"
 #include "../DesktopEditor/common/StringExt.h"
+#include <vector>
 #endif
 
 namespace PdfReader
@@ -623,7 +624,56 @@ return 0;
         nPageIndex++;
         NSWasm::CData oRes;
         oRes.SkipLen();
+        double height = m_pInternal->m_pPDFDocument->getPageCropHeight(nPageIndex);
 
+        struct _link
+        {
+            std::string link;
+            double x;
+            double y;
+            double w;
+            double h;
+        };
+        std::vector<_link> arrLinks;
+
+        // Текст-ссылка
+        TextOutputControl textOutControl;
+        textOutControl.mode = textOutReadingOrder;
+        TextOutputDev* pTextOut = new TextOutputDev(NULL, &textOutControl, gFalse);
+        m_pInternal->m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72, 72, 0, gFalse, gTrue, gFalse);
+        m_pInternal->m_pPDFDocument->processLinks(pTextOut, nPageIndex);
+        TextWordList* pWordList = pTextOut->makeWordList();
+        for (int i = 0; i < pWordList->getLength(); i++)
+        {
+            TextWord* pWord = pWordList->get(i);
+            if (!pWord)
+                continue;
+            GString* sLink = pWord->getText();
+            if (!sLink)
+                continue;
+            std::string link(sLink->getCString(), sLink->getLength());
+            size_t find = link.find("http");
+            if (find != std::string::npos)
+            {
+                link.erase(0, find);
+                double x1, y1, x2, y2;
+                pWord->getBBox(&x1, &y1, &x2, &y2);
+                arrLinks.push_back({link, x1, y1, x2 - x1, y2 - y1});
+            }
+        }
+        RELEASEOBJECT(pTextOut);
+        for (_link& l : arrLinks)
+        {
+            oRes.WriteString((BYTE*)l.link.c_str(), l.link.length());
+            // Верхний левый угол
+            oRes.AddDouble(0.0);
+            oRes.AddDouble(l.x);
+            oRes.AddDouble(l.y);
+            oRes.AddDouble(l.w);
+            oRes.AddDouble(l.h);
+        }
+
+        // Гиперссылка
         Links* pLinks = m_pInternal->m_pPDFDocument->getLinks(nPageIndex);
         if (!pLinks)
             return NULL;
@@ -638,7 +688,6 @@ return 0;
             GString* str = NULL;
             double x1 = 0.0, y1 = 0.0, x2 = 0.0, y2 = 0.0, dy = 0.0;
             pLink->getRect(&x1, &y1, &x2, &y2);
-            double height = m_pInternal->m_pPDFDocument->getPageCropHeight(nPageIndex);
             y1 = height - y1;
             y2 = height - y2;
 

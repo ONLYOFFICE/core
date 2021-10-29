@@ -51,7 +51,7 @@ namespace XLSB
 
         static const ElementType	type = typeFRTDXF;
 
-        BaseObjectPtr               m_BrtDXF;
+        BaseObjectPtr                   m_BrtDXF;
         std::vector<BaseObjectPtr>	m_arFRT;
 
     };

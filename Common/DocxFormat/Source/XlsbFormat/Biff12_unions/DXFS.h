@@ -50,7 +50,7 @@ namespace XLSB
         virtual const bool loadContent(BinProcessor& proc);
 
         BaseObjectPtr               m_BrtBeginDXFs;
-        std::vector<BaseObjectPtr>	m_aruDXF;
+        std::vector<BaseObjectPtr>  m_aruDXF;
         BaseObjectPtr               m_BrtEndDXFs;
 
     };

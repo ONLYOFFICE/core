@@ -60,7 +60,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        int count = proc.repeated<IndexedColor>(64, 64);
+        int count = proc.repeated<IndexedColor>(0, 64);
 
         while(count > 0)
         {

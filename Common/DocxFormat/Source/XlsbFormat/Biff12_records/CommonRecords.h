@@ -295,6 +295,8 @@ namespace XLSB
             return BaseObjectPtr(new DXF14(*this));
         }
 
+        static const ElementType	type = typeDXF14;
+
         void readFields(CFRecord& record) override
         {
             record.skipNunBytes(4);

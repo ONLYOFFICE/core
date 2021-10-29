@@ -124,15 +124,14 @@ namespace OOX
 
             void fromBin(XLS::BaseObjectPtr& obj)
             {
-                if(obj->get_type() == XLS::typeuDXF)
+                if(obj->get_type() == XLS::typeDXF)
                 {
-                    auto ptruDXF = static_cast<XLSB::uDXF*>(obj.get());
+                    auto ptrDXF = static_cast<XLSB::DXF*>(obj.get());
 
-                    if(ptruDXF && ptruDXF->m_BrtFRTDXF != nullptr)
-                    {
-                        auto ptr = static_cast<XLSB::DXF*>(static_cast<XLSB::FRTDXF*>(ptruDXF->m_BrtFRTDXF.get())->m_BrtDXF.get());
+                    if(ptrDXF != nullptr)
+                    {                       
                         std::wstringstream strm;
-                        ptr->serialize(strm);
+                        ptrDXF->serialize(strm);
 
                         XmlUtils::CXmlLiteReader oReader;
                         std::wstring str = strm.str();
@@ -158,40 +157,9 @@ namespace OOX
                             else if ( _T("protection") == sName )
                                 m_oProtection = oReader;
                         }
-
-                    }
-                    if(ptruDXF && ptruDXF->m_BrtDXF != nullptr)
-                    {
-                        auto ptr = static_cast<XLSB::DXF*>(ptruDXF->m_BrtDXF.get());
-                        std::wstringstream strm;
-                        ptr->serialize(strm);
-
-                        XmlUtils::CXmlLiteReader oReader;
-                        std::wstring str = strm.str();
-
-                        if ( !oReader.FromString(str))
-                            return;
-
-                        int nCurDepth = oReader.GetDepth();
-                        while( oReader.ReadNextSiblingNode( nCurDepth ) )
-                        {
-                            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-                            if ( _T("alignment") == sName )
-                                m_oAlignment = oReader;
-                            else if ( _T("border") == sName )
-                                m_oBorder = oReader;
-                            else if ( _T("fill") == sName )
-                                m_oFill = oReader;
-                            else if ( _T("font") == sName )
-                                m_oFont = oReader;
-                            else if ( _T("numFmt") == sName )
-                                m_oNumFmt = oReader;
-                            else if ( _T("protection") == sName )
-                                m_oProtection = oReader;
-                        }
-                    }
+                    }              
                 }
+
                 else if(obj->get_type() == XLS::typeDXF14)
                 {
                     auto ptrDXF14 = static_cast<XLSB::DXF14*>(obj.get());
@@ -327,8 +295,22 @@ namespace OOX
 
                 for(auto &dxf : obj)
                 {
-                    CDxf *pDxf = new CDxf(dxf);
-                    m_arrItems.push_back(pDxf);
+                    if(dxf->get_type() == XLS::typeuDXF)
+                    {
+                        auto ptruDXF = static_cast<XLSB::uDXF*>(dxf.get());
+
+                        if(ptruDXF && ptruDXF->m_BrtDXF != nullptr)
+                        {
+                            m_arrItems.push_back(new CDxf(ptruDXF->m_BrtDXF));
+                        }
+                        if(ptruDXF && ptruDXF->m_BrtFRTDXF != nullptr)
+                        {
+                            auto ptr = static_cast<XLSB::FRTDXF*>(ptruDXF->m_BrtFRTDXF.get())->m_BrtDXF;
+                            m_arrItems.push_back(new CDxf(ptr));
+                        }
+                    }
+                    else
+                        m_arrItems.push_back(new CDxf(dxf));
                 }
             }
 

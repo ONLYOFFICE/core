@@ -61,7 +61,7 @@ namespace XLSB
         }
         else return false;
 
-        int count = proc.repeated<MRUColor>(1, 10);
+        int count = proc.repeated<MRUColor>(0, 10);
 
         while(count > 0)
         {

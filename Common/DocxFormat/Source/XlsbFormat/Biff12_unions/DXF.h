@@ -49,6 +49,8 @@ namespace XLSB
 
         virtual const bool loadContent(BinProcessor& proc);
 
+        static const ElementType	type = typeuDXF;
+
         BaseObjectPtr	m_BrtDXF;
         BaseObjectPtr	m_BrtFRTDXF;
     };

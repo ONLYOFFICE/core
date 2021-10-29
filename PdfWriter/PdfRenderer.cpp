@@ -1576,9 +1576,10 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 			pShifts = new double[unShiftsCount];
 			if (pShifts && unShiftsCount)
 			{
+				unsigned int unCellsCount = std::max(unShiftsCount, pPr->GetMaxCharacters());
 				double dShift = 0;
 				double dPrevW = 0;
-				double dCellW = MM_2_PT(dW) / unShiftsCount;
+				double dCellW = MM_2_PT(dW) / unCellsCount;
 				for (unsigned int unIndex = 0; unIndex < unShiftsCount; ++unIndex)
 				{
 					unsigned short ushCode = (static_cast<unsigned short>((pCodes[unIndex * 2] << 8) & 0xFFFF) | static_cast<unsigned short>((pCodes[unIndex * 2 + 1])));

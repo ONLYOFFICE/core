@@ -7144,7 +7144,12 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 		{
 			RELEASEOBJECT(pXlsx);
 			return AVS_FILEUTILS_ERROR_CONVERT;
-		}	
+        }
+
+        if (fileType == BinXlsxRW::c_oFileTypes::XLSB)
+        {
+            dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsx)->PrepareSi();
+        }
 	}
 
 	if (BinXlsxRW::c_oFileTypes::JSON == saveFileType)

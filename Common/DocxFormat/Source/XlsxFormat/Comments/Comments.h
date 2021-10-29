@@ -234,9 +234,10 @@ namespace OOX
                     if(ptrCommentText != nullptr)
                     {
                         CSi* pItem = new CSi();
-                        auto text = new CText();
-                        text->fromBin(ptrCommentText->text.str.value());
-                        pItem->m_arrItems.push_back(text);
+                        pItem->fromBin(ptrCommentText->text, true);
+                        //auto text = new CText();
+                        //text->fromBin(ptrCommentText->text.str.value());
+                        //pItem->m_arrItems.push_back(text);
                         m_oText = pItem;
                     }
                 }

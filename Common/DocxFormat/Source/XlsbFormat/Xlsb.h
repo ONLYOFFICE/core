@@ -46,7 +46,7 @@ namespace OOX
 		{
 		public:
 
-            CXlsb() : CXlsx()
+            CXlsb()
 			{
                 init();
 			}
@@ -58,20 +58,21 @@ namespace OOX
 
             bool ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream);
 			
-            void PrepareSi() {}
+            void PrepareSi();
 
         private:
 
             void init()
             {
-                workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
+                auto workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
                 xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
                 xls_global_info->Version = 0x0800;
+
+                m_binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
             }
 
-            XLS::GlobalWorkbookInfoPtr xls_global_info;            
-
-            unsigned short workbook_code_page;
+            XLS::GlobalWorkbookInfoPtr xls_global_info;
+            std::shared_ptr<NSBinPptxRW::CBinaryFileReader> m_binaryReader;
 
 		};
 

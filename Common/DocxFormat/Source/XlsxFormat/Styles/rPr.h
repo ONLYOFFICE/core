@@ -519,8 +519,8 @@ namespace OOX
                                 {
                                     case 0: m_oAuto     = true;		break;
                                     case 1: m_oIndexed  = ptr->index;	break;
-                                    case 3:
-                                        switch (ptr->index)
+                                    case 3: m_oThemeColor = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index; break;
+                                        /*switch (ptr->index)
                                         {
                                             case 0:
                                                 m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark1;
@@ -537,7 +537,7 @@ namespace OOX
                                             default:
                                                 m_oThemeColor = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index;
                                         }
-                                        break;
+                                        break;*/
                                     default:
                                         m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue, ptr->bAlpha);
                                         break;
@@ -976,6 +976,9 @@ namespace OOX
 			nullable<ComplexTypes::Spreadsheet::CDouble>							m_oSz;
             nullable<CUnderline>                                                    m_oUnderline;
             nullable<CVerticalAlign>                                                m_oVertAlign;
+
+            //////
+            nullable<SimpleTypes::CDecimalNumber<>>                                 m_nFontIndex;
 		};
 	} //Spreadsheet
 } // namespace OOX

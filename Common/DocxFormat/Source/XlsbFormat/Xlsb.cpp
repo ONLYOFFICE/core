@@ -30,7 +30,10 @@
  *
  */
 #include "Xlsb.h"
-
+#include "../XlsxFormat/SharedStrings/SharedStrings.h"
+#include "../XlsxFormat/Styles/Styles.h"
+#include "../XlsxFormat/Worksheets/Worksheet.h"
+#include "../XlsxFormat/Comments/Comments.h"
 
 #include "../../../../DesktopEditor/common/SystemUtils.h"
 
@@ -51,13 +54,58 @@ bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* o
     oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
     oFile.CloseFile();
 
-    std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
-    binaryReader->Init(m_pStream, 0, dwRead);
+    m_binaryReader->Init(m_pStream, 0, dwRead);
 
-    XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(binaryReader, xls_global_info));
-    //std::shared_ptr<Type> typeStream = std::make_shared<Type>();
+    XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
     XLS::BinReaderProcessor proc(reader, objStream, true);
     proc.mandatory(*objStream);
     return true;
 }
+
+void OOX::Spreadsheet::CXlsb::PrepareSi()
+{
+    if(m_pStyles && m_pStyles->m_oFonts.IsInit())
+    {
+        auto lambdaSi = [&](OOX::Spreadsheet::CSi* si) {
+            for(size_t i = 0, length = si->m_arrItems.size(); i < length; ++i)
+            {
+                OOX::Spreadsheet::WritingElement* we = si->m_arrItems[i];
+                if(OOX::et_x_r == we->getType())
+                {
+                    OOX::Spreadsheet::CRun* pRun = static_cast<OOX::Spreadsheet::CRun*>(we);
+                    if(pRun->m_oRPr.IsInit() && pRun->m_oRPr->m_nFontIndex.IsInit())
+                    {
+                        CFont* font = nullptr;
+                        auto findFont = m_pStyles->m_oFonts->m_mapFonts.find(pRun->m_oRPr->m_nFontIndex->GetValue());
+                        if(findFont != m_pStyles->m_oFonts->m_mapFonts.end())
+                            font = findFont->second;
+
+                        if(font != nullptr)
+                            pRun->m_oRPr->fromFont(font);
+                    }
+                }
+            }
+        };
+        if(m_pSharedStrings)
+        {
+            for(auto &si : m_pSharedStrings->m_arrItems)
+            {
+                lambdaSi(si);
+            }
+        }
+
+        /*if(!m_arWorksheets.empty())
+        {
+            for(auto &wsheet : m_arWorksheets)
+            {
+                for(auto &comment : wsheet->m_mapComments)
+                {
+                    auto si = comment.second->m_oText;
+                    lambdaSi(si.GetPointer());
+                }
+            }
+        }*/
+    }
+}
+
 

@@ -148,7 +148,7 @@ namespace OOX
 				}
 			}
 
-            void fromBin(XLS::BiffStructure& obj, std::map<int, CFont*> fonts)
+            void fromBin(XLS::BiffStructure& obj, bool flagIsComment = false)
             {
                 auto ptr = static_cast<XLSB::RichStr*>(&obj);
                 CText* text             = nullptr;
@@ -157,9 +157,28 @@ namespace OOX
                 CRun* r                 = nullptr;
                 if(ptr != nullptr)
                 {
-                    text = new CText();
-                    text->fromBin(ptr->str.value());
-                    m_arrItems.push_back(text);
+                    if(ptr->rgsStrRun.empty() || flagIsComment)
+                    {
+                        text = new CText();
+                        text->fromBin(ptr->str.value());
+                        m_arrItems.push_back(text);
+                    }
+                    else
+                    {
+                        int index = 0;
+                        std::wstring str;
+                        for(auto &strRun : ptr->rgsStrRun)
+                        {
+                            ++index;
+                            r = new CRun();
+                            if(strRun.ich < ptr->str.value().size())
+                            {
+                                str = ptr->str.value().substr(strRun.ich, index == ptr->rgsStrRun.size()?ptr->str.value().size() - strRun.ich:ptr->rgsStrRun[index].ich - strRun.ich);
+                            }
+                            r->fromBin(str, strRun.ifnt);
+                            m_arrItems.push_back(r);
+                        }
+                    }
 
                     for(auto &phRun : ptr->rgsPhRun)
                     {
@@ -171,21 +190,6 @@ namespace OOX
                         rPh->fromBin(phRun, ptr->phoneticStr.value());
                         m_arrItems.push_back(rPh);
                     }
-
-                    for(auto &strRun : ptr->rgsStrRun)
-                    {
-                        r = new CRun();
-                        CFont* font = nullptr;
-                        std::wstring str;
-                        if(fonts.find(strRun.ifnt) != fonts.end())
-                            font = fonts.find(strRun.ifnt)->second;
-
-                        if(strRun.ich < ptr->str.value().size())
-                            str = ptr->str.value()[strRun.ich];
-                        r->fromBin(str, font);
-                        m_arrItems.push_back(r);
-                    }
-
                 }
             }
 

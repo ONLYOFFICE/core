@@ -98,18 +98,13 @@ namespace OOX
                         {
                             ReadAttributes(ptr->m_BrtBeginSst);
 
-                            CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
-                            std::map<int, CFont*> fonts;
-                            if ((xlsx) && (xlsx->m_pStyles) && (xlsx->m_pStyles->m_oFonts.IsInit()))
-                                fonts = xlsx->m_pStyles->m_oFonts->m_mapFonts;
-
                             for(auto &sstItem : ptr->m_arBrtSSTItem)
                             {
                                 CSi* pItem = new CSi();
                                 auto ptr = static_cast<XLSB::SSTItem*>(sstItem.get());
                                 if(ptr != nullptr)
                                 {
-                                    pItem->fromBin(ptr->richStr, fonts);
+                                    pItem->fromBin(ptr->richStr);
                                 }
                                 m_arrItems.push_back(pItem);
                                 m_nCount++;

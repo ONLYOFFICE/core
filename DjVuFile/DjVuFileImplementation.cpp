@@ -384,6 +384,7 @@ BYTE*              CDjVuFileImplementation::GetStructure()
 }
 BYTE*              CDjVuFileImplementation::GetPageGlyphs(int nPageIndex)
 {
+    return NULL;
     try
     {
         GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);

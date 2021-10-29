@@ -191,36 +191,30 @@ namespace XPS
 		oRes.ClearWithoutAttack();
 		return res;
 	}
-    void Page::GetGlyphs(IRenderer* m_pRenderer, const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h, bool bChangeFont)
+    void Page::GetGlyphs(IRenderer* m_pRenderer, const std::wstring& bsUnicodeText, unsigned short* pGids, double x, double y, bool bChangeFont)
     {
         // m_pInternal->GetUnicodes(bsUnicodeText);
-        int nLen = (int)bsUnicodeText.length();
-        int m_nTempUnicodesAlloc = nLen;
-        int* m_pTempUnicodes = new int[m_nTempUnicodesAlloc];
-        int m_nTempUnicodesLen = 0;
+        int nUnicodeLen = (int)bsUnicodeText.length();
+        unsigned int* pTempUnicodes = new unsigned int[nUnicodeLen];
+        int nTempUnicodesLen = 0;
         const wchar_t* pWchars = bsUnicodeText.c_str();
 
         if (sizeof(wchar_t) == 2)
         {
-            for (int nIndex = 0, nGlyphIndex = 0; nIndex < nLen; ++nIndex, ++nGlyphIndex)
+            for (int i = 0; i < nUnicodeLen; i++)
             {
-                int code = (int)pWchars[nIndex];
-                if (code >= 0xD800 && code <= 0xDFFF && (nIndex + 1) < nLen)
+                unsigned int code = (unsigned int)pWchars[i];
+                if (code >= 0xD800 && code <= 0xDFFF && (i + 1) < nUnicodeLen)
                 {
-                    ++nIndex;
-                    code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & pWchars[nIndex]));
+                    i++;
+                    code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & pWchars[i]));
                 }
-
-                m_pTempUnicodes[m_nTempUnicodesLen++] = code;
+                pTempUnicodes[nTempUnicodesLen++] = code;
             }
         }
         else
-        {
-            for ( int nIndex = 0; nIndex < nLen; ++nIndex )
-            {
-                m_pTempUnicodes[m_nTempUnicodesLen++] = (int)pWchars[nIndex];
-            }
-        }
+            for (int i = 0; i < nUnicodeLen; i++)
+                pTempUnicodes[nTempUnicodesLen++] = (unsigned int)pWchars[i];
 
         // m_pInternal->m_oWriter.WriteText(m_pTempUnicodes, (const int*)pGids, m_nTempUnicodesLen, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
         // TODO: CheckTectClipRect();
@@ -234,11 +228,10 @@ namespace XPS
         wsFontName = GetFileName(wsFontName);
         NSStringExt::ToLower(wsFontName);
         int nCurrentFont = m_pFontList->GetFontId(wsFontName);
-        if ((nCurrentFont != m_lCurrentFont) || (dFontSize != m_dCurrentFontSize))
+        if ((nCurrentFont != m_nCurrentFont) || (dFontSize != m_dCurrentFontSize))
         {
-            m_lCurrentFont     = nCurrentFont;
+            m_nCurrentFont     = nCurrentFont;
             m_dCurrentFontSize = dFontSize;
-
             bIsDumpFont = true;
         }
 
@@ -278,18 +271,15 @@ namespace XPS
             dAbsVec = 1;
 
         LONG nCountChars = m_oLine.GetCountChars();
-
         bool bIsNewLine = true;
-
-        if (0 != nCountChars)
+        if (nCountChars != 0)
         {
             if (_isConstX && m_oLine.m_bIsConstX && fabs(_b - m_oLine.m_dB) < 0.001)
                 bIsNewLine = false;
             else if (!_isConstX && !m_oLine.m_bIsConstX && fabs(_k - m_oLine.m_dK) < 0.001 && fabs(_b - m_oLine.m_dB) < 0.001)
                 bIsNewLine = false;
         }
-
-        if (bIsNewLine && (0 != nCountChars))
+        if (bIsNewLine && (nCountChars != 0))
         {
             // не совпала baseline. поэтому просто скидываем линию в поток
             DumpLine();
@@ -298,7 +288,7 @@ namespace XPS
         // теперь нужно определить сдвиг по baseline относительно destination точки
         nCountChars = m_oLine.GetCountChars();
         double dOffsetX = 0;
-        if (0 == nCountChars)
+        if (nCountChars == 0)
         {
             m_oLine.m_bIsConstX = _isConstX;
             m_oLine.m_dK = _k;
@@ -315,11 +305,11 @@ namespace XPS
         }
         else
         {
-            double sx = _x1 - m_oLine.m_dEndX;
-            double sy = _y1 - m_oLine.m_dEndY;
-            double len = sqrt(sx*sx + sy*sy);
+            double _sx = _x1 - m_oLine.m_dEndX;
+            double _sy = _y1 - m_oLine.m_dEndY;
+            double len = sqrt(_sx * _sx + _sy * _sy);
 
-            if (sx*m_oLine.m_ex >= 0 && sy*m_oLine.m_ey >= 0)
+            if (_sx * m_oLine.m_ex >= 0 && _sy * m_oLine.m_ey >= 0)
             {
                 // продолжаем линию
                 dOffsetX = len;
@@ -330,10 +320,10 @@ namespace XPS
                 {
                     // вставляем пробел. Пробел у нас будет не совсем пробел. А специфический
                     NSWasm::CHChar* pSpaceChar = m_oLine.AddTail();
-                    pSpaceChar->x = pLastChar->width;
-                    pSpaceChar->width = dOffsetX - pLastChar->width;
+                    pSpaceChar->x       = pLastChar->width;
+                    pSpaceChar->width   = dOffsetX - pLastChar->width;
                     pSpaceChar->unicode = 0xFFFF;
-                    pSpaceChar->gid = 0xFFFF;
+                    pSpaceChar->gid     = 0xFFFF;
                     dOffsetX -= pLastChar->width;
 
                     m_oMeta.WriteBYTE(0);
@@ -385,14 +375,15 @@ namespace XPS
 
         m_oMeta.WriteBYTE(nLenMetaCommands);
 
-        double _dumpSize = dFontSize;
+        double _dumpSize = m_dCurrentFontSize;
         double _dumpMtx[4];
         _dumpMtx[0] = sx;
         _dumpMtx[1] = shy;
         _dumpMtx[2] = shx;
         _dumpMtx[3] = sy;
 
-        double dTextScale = std::min( sqrt( _dumpMtx[2] * _dumpMtx[2] + _dumpMtx[3] * _dumpMtx[3] ), sqrt( _dumpMtx[0] * _dumpMtx[0] + _dumpMtx[1] * _dumpMtx[1] ) );
+        double dTextScale = std::min(sqrt(_dumpMtx[2] * _dumpMtx[2] + _dumpMtx[3] * _dumpMtx[3]),
+                                     sqrt(_dumpMtx[0] * _dumpMtx[0] + _dumpMtx[1] * _dumpMtx[1]));
 
         if ((_dumpSize < 0.1 && dTextScale > 10) || (_dumpSize > 10 && dTextScale < 0.1))
         {
@@ -410,7 +401,7 @@ namespace XPS
             m_pRenderer->get_FontStyle(&nFontStyle);
 
             m_oMeta.WriteBYTE(41); // CMetafile::ctFontName
-            m_oMeta.AddInt(nCurrentFont);
+            m_oMeta.AddInt(m_nCurrentFont);
             m_oMeta.AddInt(nFontStyle);
             m_oMeta.WriteDouble(_dumpSize);
         }
@@ -437,26 +428,23 @@ namespace XPS
 
             m_oMeta.WriteBYTE(22); // CMetafile::ctBrushColor1
 
-            LONG lBGR = nColor1;
+            LONG lBGR = m_nLastBrushColor1;
             m_oMeta.WriteBYTE((BYTE)(lBGR & 0xFF));
             m_oMeta.WriteBYTE((BYTE)((lBGR >> 8) & 0xFF));
             m_oMeta.WriteBYTE((BYTE)((lBGR >> 16) & 0xFF));
-            m_oMeta.WriteBYTE((BYTE)nAlpha1);
+            m_oMeta.WriteBYTE((BYTE)m_nLastBrushAlpha1);
         }
 
         // все, baseline установлен. теперь просто продолжаем линию
-        LONG lTextLen = m_nTempUnicodesLen;
-
         if (bIsDumpFont || bChangeFont)
         {
-            m_pFontManager->LoadFontFromFile(sCurrentFontName, 0, dFontSize, 72.0, 72.0);
+            m_pFontManager->LoadFontFromFile(sCurrentFontName, 0, m_dCurrentFontSize, 72.0, 72.0);
             m_pFontManager->AfterLoad();
         }
 
-        double dKoef = dFontSize * 25.4 / (72 * abs(m_pFontManager->GetUnitsPerEm()));
-        double dKoefMetr = dAbsVec;
-        double dAscender  = abs(m_pFontManager->GetAscender())  * dKoef * dKoefMetr;
-        double dDescender = abs(m_pFontManager->GetDescender()) * dKoef * dKoefMetr;
+        double dKoef = m_dCurrentFontSize * 25.4 / (72 * abs(m_pFontManager->GetUnitsPerEm()));
+        double dAscender  = abs(m_pFontManager->GetAscender())  * dKoef * dAbsVec;
+        double dDescender = abs(m_pFontManager->GetDescender()) * dKoef * dAbsVec;
 
         if (m_oLine.m_dAscent < dAscender)
             m_oLine.m_dAscent = dAscender;
@@ -464,50 +452,47 @@ namespace XPS
             m_oLine.m_dDescent = dDescender;
 
         double dPlusOffset = 0;
-
-        const int* input = NULL;
-        if (NULL != pGids)
+        unsigned int* input = NULL;
+        if (pGids)
         {
-            input = (const int*)pGids;
+            input = (unsigned int*)pGids;
             m_pFontManager->SetStringGID(TRUE);
         }
         else
         {
-            input = m_pTempUnicodes;
+            input = pTempUnicodes;
             m_pFontManager->SetStringGID(FALSE);
         }
 
-        double dBoxW = 0;
-        double dPrevW = dOffsetX;
-        for (LONG lIndex = 0; lIndex < lTextLen; ++lIndex)
+        for (int i = 0; i < nTempUnicodesLen; i++)
         {
             // double dW = m_oFontManager.MeasureString((const unsigned int*)(input + lIndex), 1, 0, 0, dBoxX, dBoxY, dBoxW, dBoxH);
-            m_pFontManager->LoadString1((const unsigned int*)(input + lIndex), 1, 0, 0);
+            m_pFontManager->LoadString1(input + i, 1, 0, 0);
             TBBox _box  = m_pFontManager->MeasureString2();
-            dBoxW = abs(_box.fMaxX - _box.fMinX) * 25.4 / 72.0;
+            double dBoxW = abs(_box.fMaxX - _box.fMinX) * 25.4 / 72.0;
 
             NSWasm::CHChar* pChar = m_oLine.AddTail();
-            pChar->unicode = m_pTempUnicodes[lIndex];
-            pChar->gid = (NULL == pGids) ? 0xFFFF : pGids[lIndex];
+            pChar->unicode = pTempUnicodes[i];
+            pChar->gid = (pGids) ? pGids[i] : 0xFFFF;
 
-            pChar->x = dPrevW;
-            if (lIndex != 0)
-                dPlusOffset += dPrevW;
-            dPrevW = dBoxW;
+            pChar->x = dOffsetX;
+            if (i != 0)
+                dPlusOffset += dOffsetX;
+            dOffsetX = dBoxW;
 
             pChar->width = dBoxW * dAbsVec;
 
-            if (0 != lIndex)
+            if (i != 0)
                 m_oMeta.WriteBYTE(0);
 
-            if (lIndex == (lTextLen - 1))
+            if (i == (nTempUnicodesLen - 1))
             {
                 m_oLine.m_dEndX += dPlusOffset * m_oLine.m_ex;
                 m_oLine.m_dEndY += dPlusOffset * m_oLine.m_ey;
             }
         }
 
-        RELEASEARRAYOBJECTS(m_pTempUnicodes);
+        RELEASEARRAYOBJECTS(pTempUnicodes);
     }
     void Page::DumpLine()
     {
@@ -1191,7 +1176,7 @@ namespace XPS
                 #ifdef BUILDING_WASM_MODULE
                     std::wstring sUnicode;
                     sUnicode += wchar_t(oEntry.nUnicode);
-                    GetGlyphs(pRenderer, sUnicode, (unsigned int*)&oEntry.nGid, 1, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0, bChangeFont);
+                    GetGlyphs(pRenderer, sUnicode, &oEntry.nGid, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), bChangeFont);
                     bChangeFont = false;
                 #endif
                 }
@@ -1206,7 +1191,7 @@ namespace XPS
                 #ifdef BUILDING_WASM_MODULE
                     std::wstring sUnicode;
                     sUnicode += wchar_t(oEntry.nUnicode);
-                    GetGlyphs(pRenderer, sUnicode, NULL, 0, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0, bChangeFont);
+                    GetGlyphs(pRenderer, sUnicode, NULL, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), bChangeFont);
                     bChangeFont = false;
                 #endif
                 }
@@ -1265,7 +1250,7 @@ namespace XPS
                 #ifdef BUILDING_WASM_MODULE
                     std::wstring sUnicode;
                     sUnicode += wchar_t(oEntry.nUnicode);
-                    GetGlyphs(pRenderer, sUnicode, (unsigned int*)&oEntry.nGid, 1, 0, 0, 0, 0, bChangeFont);
+                    GetGlyphs(pRenderer, sUnicode, &oEntry.nGid, 0, 0, bChangeFont);
                     bChangeFont = false;
                 #endif
                 }
@@ -1275,7 +1260,7 @@ namespace XPS
                 #ifdef BUILDING_WASM_MODULE
                     std::wstring sUnicode;
                     sUnicode += wchar_t(oEntry.nUnicode);
-                    GetGlyphs(pRenderer, sUnicode, NULL, 0, 0, 0, 0, 0, bChangeFont);
+                    GetGlyphs(pRenderer, sUnicode, NULL, 0, 0, bChangeFont);
                     bChangeFont = false;
                 #endif
                 }

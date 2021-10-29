@@ -60,7 +60,7 @@ namespace XPS
     #ifdef BUILDING_WASM_MODULE
         BYTE* GetGlyphs();
         BYTE* GetLinks();
-        void  GetGlyphs(IRenderer* pRenderer, const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h, bool bChangeFont);
+        void  GetGlyphs(IRenderer* pRenderer, const std::wstring& bsUnicodeText, unsigned short* pGids, double x, double y, bool bChangeFont);
         void  DumpLine();
 
     private:
@@ -79,7 +79,7 @@ namespace XPS
         NSWasm::CData  m_oMeta;
         NSWasm::CData  m_pPageMeta;
         Aggplus::CMatrix m_pLastTransform;
-        LONG m_lCurrentFont     = -1;
+        LONG m_nCurrentFont     = -1;
         LONG m_nLastBrushColor1 = -1;
         LONG m_nLastBrushAlpha1 = -1;
     #endif

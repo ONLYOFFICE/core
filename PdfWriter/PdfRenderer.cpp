@@ -1570,7 +1570,10 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		double* pShifts = NULL;
 		unsigned int unShiftsCount = 0;
-		if (pPr->IsComb())
+		bool isComb = pPr->IsComb();
+		unsigned int unAlign = oInfo.GetJc();
+
+		if (isComb)
 		{
 			unShiftsCount = unLen;
 			pShifts = new double[unShiftsCount];
@@ -1580,6 +1583,10 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 				double dShift = 0;
 				double dPrevW = 0;
 				double dCellW = MM_2_PT(dW) / unCellsCount;
+
+				if (0 == unAlign && unShiftsCount)
+					dPrevW = (unCellsCount - unShiftsCount) * dCellW;
+
 				for (unsigned int unIndex = 0; unIndex < unShiftsCount; ++unIndex)
 				{
 					unsigned short ushCode = (static_cast<unsigned short>((pCodes[unIndex * 2] << 8) & 0xFFFF) | static_cast<unsigned short>((pCodes[unIndex * 2 + 1])));
@@ -1596,8 +1603,6 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 			}
 		}
 
-		unsigned int unAlign = oInfo.GetJc();
-
 		TColor oColor      = m_oBrush.GetTColor1();
 		bool isPlaceHolder = oInfo.IsPlaceHolder();
 
@@ -1610,7 +1615,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		if (!isPlaceHolder)
 			pField->SetTextValue(wsValue);
 
-		if (pPr->IsMultiLine())
+		if (!isComb && pPr->IsMultiLine())
 		{
 			double dFontSize        = m_oFont.GetSize();
 			unsigned short* pCodes2 = new unsigned short[unLen];
@@ -1666,7 +1671,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		}
 		else
 		{
-			if (0 == unAlign || 2 == unAlign)
+			if (!isComb && (0 == unAlign || 2 == unAlign))
 			{
 				double dSumWidth = 0;
 				for (unsigned int unIndex = 0; unIndex < unLen; ++unIndex)

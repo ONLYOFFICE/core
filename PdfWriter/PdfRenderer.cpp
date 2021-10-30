@@ -1608,15 +1608,6 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	pFieldBase->SetRequiredFlag(oInfo.IsRequired());
 	pFieldBase->SetFieldHint(oInfo.GetHelpText());
 
-	if (!bRadioButton)
-	{
-		std::wstring wsKey = oInfo.GetKey();
-		if (L"" != wsKey)
-			pFieldBase->SetFieldName(wsKey);
-		else
-			pFieldBase->SetFieldName(m_oFieldsManager.GetNewFieldName());
-	}
-
 	if (oInfo.IsTextField())
 	{
 		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextPr();
@@ -1903,6 +1894,18 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		}
 
 		pField->SetAppearance(pImage);
+	}
+
+
+	// Выставляем имя в конце, потому что там возможно копирование настроек поля в новое родительское поле, поэтому к текущему моменту
+	// все настройки должны быть выставлены
+	if (!bRadioButton)
+	{
+		std::wstring wsKey = oInfo.GetKey();
+		if (L"" != wsKey)
+			pFieldBase->SetFieldName(wsKey);
+		else
+			pFieldBase->SetFieldName(m_oFieldsManager.GetNewFieldName());
 	}
 
 	return S_OK;

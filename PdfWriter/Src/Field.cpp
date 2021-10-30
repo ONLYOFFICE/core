@@ -925,6 +925,8 @@ namespace PdfWriter
 		SetRespectBorders(false);
 		SetConstantProportions(true);
 		SetShift(0.5, 0.5);
+
+		m_pResources = NULL;
 	}
 	void CPictureField::SetFieldName(const std::string& sName, bool isSkipCheck)
 	{
@@ -942,7 +944,7 @@ namespace PdfWriter
 		Add("AP", pAppearance);
 
 		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
-		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
+		CResourcesDict* pFieldsResources = GetResourcesDict();
 
 		std::string sDA = "0.909 0.941 0.992 rg";
 		Add("DA", new CStringObject(sDA.c_str()));
@@ -1096,6 +1098,13 @@ namespace PdfWriter
 
 		m_dShiftX = dX;
 		m_dShiftY = dY;
+	}
+	CResourcesDict* CPictureField::GetResourcesDict()
+	{
+		if (!m_pResources)
+			m_pResources = new CResourcesDict(m_pXref, false, true);
+
+		return m_pResources;
 	}
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance

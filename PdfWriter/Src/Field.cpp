@@ -272,22 +272,26 @@ namespace PdfWriter
 		Add("V", new CStringObject(sValue.c_str(), true));
 	}
 	void CFieldBase::SetFieldBorder(const EBorderSubtype& eSubtype, const TRgb& oColor, const double& dWidth, const unsigned short& nDashOn, const unsigned short& nDashOff, const unsigned short& nDashPhase)
-	{		
+	{
+		if (dWidth < 0.01)
+		{
+			m_nBorderType = 0;
+			Remove("BS");
+			return;
+		}
+
 		CDictObject* pBorderStyleDict = new CDictObject();
 		if (!pBorderStyleDict)
 			return;
 
 		Add("BS", pBorderStyleDict);
 
-		// Почему то некоторые PDF-ридеры плохо воспринимают значения от 0 до 1, поэтому ставим 1
-		if (dWidth < 0.01)
-			pBorderStyleDict->Add("W", 0);
-		else if (dWidth < 1.01)
-			pBorderStyleDict->Add("W", 1);
-		else
-			pBorderStyleDict->Add("W", dWidth);
-		if (dWidth < 0.01)
-			return;
+		// PDF ридеры воспринимают только целочисленные значения толщины линии
+		int nWidth = (int)(dWidth + 0.5);
+		if (nWidth < 1)
+			nWidth = 1;
+
+		pBorderStyleDict->Add("W", nWidth);
 
 		if (border_subtype_Dashed == eSubtype)
 		{
@@ -329,7 +333,7 @@ namespace PdfWriter
 		m_pMK->Add("BC", pColor);
 
 		m_nBorderType  = 1;
-		m_dBorderSize  = dWidth;
+		m_dBorderSize  = nWidth;
 		m_oBorderColor = oColor;
 	}
 	bool CFieldBase::HaveBorder() const
@@ -1237,7 +1241,7 @@ namespace PdfWriter
 
 			dBorderSize   = m_pField->GetBorderSize();
 			dBorderSize_2 = dBorderSize / 2;
-			dBorderSize_2 = dBorderSize * 2;
+			dBorderSize2  = dBorderSize * 2;
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
 
@@ -1495,7 +1499,7 @@ namespace PdfWriter
 
 			dBorderSize   = m_pField->GetBorderSize();
 			dBorderSize_2 = dBorderSize / 2;
-			dBorderSize_2 = dBorderSize * 2;
+			dBorderSize2  = dBorderSize * 2;
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteStr(" w\0120 j\0120 J\012");
 

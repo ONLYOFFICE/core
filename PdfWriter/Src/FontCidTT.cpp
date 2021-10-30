@@ -253,9 +253,15 @@ namespace PdfWriter
 					}
 
 					if (0 != m_pFace->units_per_EM)
+					{
 						m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance * 1000 / m_pFace->units_per_EM);
+						m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
+					}
 					else
+					{
 						m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance);
+						m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
+					}
 				}
 			}
 			pEncodedString[2 * unIndex + 0] = (ushCode >> 8) & 0xFF;
@@ -269,6 +275,13 @@ namespace PdfWriter
 			return 0;
 
 		return m_vWidths.at(ushCode);
+	}
+	unsigned int   CFontCidTrueType::GetGlyphWidth(unsigned short ushCode)
+	{
+		if (ushCode >= m_vGlypWidths.size())
+			return 0;
+
+		return m_vGlypWidths.at(ushCode);
 	}
 	void CFontCidTrueType::BeforeWrite()
 	{

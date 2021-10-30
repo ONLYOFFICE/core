@@ -103,6 +103,7 @@ namespace PdfWriter
 		~CFontCidTrueType();
 		unsigned char* EncodeString(unsigned int* pUnicodes, unsigned int unLen, const unsigned int* pGids = NULL);
 		unsigned int   GetWidth(unsigned short ushCode);
+		unsigned int   GetGlyphWidth(unsigned short ushCode);
 		EFontType      GetFontType()
 		{
 			return fontCIDType2;
@@ -134,8 +135,9 @@ namespace PdfWriter
 		std::vector<unsigned int>                m_vUnicodes;       // Обратный мап код символа -> юникод
 
 		std::vector<unsigned int>                m_vCodeToGid;
-		std::vector<unsigned int>                m_vWidths;
+		std::vector<unsigned int>                m_vWidths;     // glyph.advance
 		std::map<unsigned short, bool>           m_mGlyphs;
+		std::vector<unsigned int>                m_vGlypWidths; // glyph.width
 
 		FT_Face                                  m_pFace;
 		FT_Byte*                                 m_pFaceMemory;

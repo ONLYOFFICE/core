@@ -1539,6 +1539,84 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	CFieldBase* pFieldBase = NULL;
 
 	bool bRadioButton = false;
+
+	if (oInfo.IsTextField())
+	{
+		CTextField* pField = m_pDocument->CreateTextField();
+		pFieldBase = static_cast<CFieldBase*>(pField);
+	}
+	else if (oInfo.IsDropDownList())
+	{
+		CChoiceField* pField = m_pDocument->CreateChoiceField();
+		pFieldBase = static_cast<CFieldBase*>(pField);
+	}
+	else if (oInfo.IsCheckBox())
+	{
+		const CFormFieldInfo::CCheckBoxFormPr* pPr = oInfo.GetCheckBoxPr();
+
+		CCheckBoxField* pField = NULL;
+		std::wstring wsGroupName = pPr->GetGroupKey();
+		if (L"" != wsGroupName)
+		{
+			bRadioButton = true;
+			CRadioGroupField* pRadioGroup = m_pDocument->GetRadioGroupField(wsGroupName);
+			if (pRadioGroup)
+				pField = pRadioGroup->CreateKid();
+		}
+		else
+		{
+			pField = m_pDocument->CreateCheckBoxField();
+		}
+
+		pFieldBase = static_cast<CFieldBase*>(pField);
+	}
+	else if (oInfo.IsPicture())
+	{
+		CPictureField* pField = m_pDocument->CreatePictureField();
+		pFieldBase = static_cast<CFieldBase*>(pField);
+	}
+
+	if (!pFieldBase)
+		return S_FALSE;
+
+	// 0 - Right
+	// 1 - Left
+	// 2 - Center
+	// 3 - Justify
+	// 4 - Distributed
+	unsigned int unAlign = oInfo.GetJc();
+	if (0 == unAlign)
+		pFieldBase->SetAlign(CFieldBase::EFieldAlignType::Right);
+	else if (2 == unAlign)
+		pFieldBase->SetAlign(CFieldBase::EFieldAlignType::Center);
+
+	if (oInfo.HaveBorder())
+	{
+		unsigned char unR, unG, unB, unA;
+		oInfo.GetBorderColor(unR, unG, unB, unA);
+
+		pFieldBase->SetFieldBorder(EBorderSubtype::border_subtype_Solid, TRgb(unR, unG, unB), MM_2_PT(oInfo.GetBorderSize()), 0, 0, 0);
+	}
+
+	if (oInfo.HaveShd())
+	{
+		unsigned char unR, unG, unB, unA;
+		oInfo.GetShdColor(unR, unG, unB, unA);
+		pFieldBase->SetShd(TRgb(unR, unG, unB));
+	}
+
+	pFieldBase->SetRequiredFlag(oInfo.IsRequired());
+	pFieldBase->SetFieldHint(oInfo.GetHelpText());
+
+	if (!bRadioButton)
+	{
+		std::wstring wsKey = oInfo.GetKey();
+		if (L"" != wsKey)
+			pFieldBase->SetFieldName(wsKey);
+		else
+			pFieldBase->SetFieldName(m_oFieldsManager.GetNewFieldName());
+	}
+
 	if (oInfo.IsTextField())
 	{
 		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextPr();
@@ -1551,8 +1629,9 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
 
-		CTextField* pField = m_pDocument->CreateTextField();
-		pFieldBase = static_cast<CFieldBase*>(pField);
+		CTextField* pField = dynamic_cast<CTextField*>(pFieldBase);
+		if (!pField)
+			return S_FALSE;
 
 		double _dY = m_pPage->GetHeight() - MM_2_PT(dY);
 		double _dB = m_pPage->GetHeight() - MM_2_PT(dY + dH);
@@ -1572,17 +1651,23 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		unsigned int unShiftsCount = 0;
 		bool isComb = pPr->IsComb();
 		unsigned int unAlign = oInfo.GetJc();
+		double dFontSize = m_oFont.GetSize();
 
 		if (isComb)
 		{
+			pField->SetDoNotScrollFlag(true);
+			pField->SetDoNotSpellCheckFlag(true);
+			pField->SetMultilineFlag(false);
+
 			unShiftsCount = unLen;
 			pShifts = new double[unShiftsCount];
 			if (pShifts && unShiftsCount)
 			{
+				// Сдвиг нулевой для comb форм и не забываем, что мы к ширине добавили 2 * dMargin
+				dShiftX = 0;
 				unsigned int unCellsCount = std::max(unShiftsCount, pPr->GetMaxCharacters());
-				double dShift = 0;
 				double dPrevW = 0;
-				double dCellW = MM_2_PT(dW) / unCellsCount;
+				double dCellW = (MM_2_PT(dW) + 2 * dMargin) / unCellsCount;
 
 				if (0 == unAlign && unShiftsCount)
 					dPrevW = (unCellsCount - unShiftsCount) * dCellW;
@@ -1590,11 +1675,11 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 				for (unsigned int unIndex = 0; unIndex < unShiftsCount; ++unIndex)
 				{
 					unsigned short ushCode = (static_cast<unsigned short>((pCodes[unIndex * 2] << 8) & 0xFFFF) | static_cast<unsigned short>((pCodes[unIndex * 2 + 1])));
-					double dLetterWidth = m_pFont->GetWidth(ushCode) / 1000.0 * m_oFont.GetSize();
-
-					double dTempShift = (dCellW - dLetterWidth) / 2;
+					double dGlyphWidth = m_pFont->GetGlyphWidth(ushCode) / 1000.0 * dFontSize;
+					double dTempShift = (dCellW - dGlyphWidth) / 2;
 					pShifts[unIndex] = dPrevW + dTempShift;
-					dPrevW = dLetterWidth + dTempShift;
+					dPrevW = dCellW - dTempShift;
+
 				}
 			}
 			else
@@ -1617,7 +1702,6 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		if (!isComb && pPr->IsMultiLine())
 		{
-			double dFontSize        = m_oFont.GetSize();
 			unsigned short* pCodes2 = new unsigned short[unLen];
 			unsigned int* pWidths   = new unsigned int[unLen];
 
@@ -1715,8 +1799,9 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
 
-		CChoiceField* pField = m_pDocument->CreateChoiceField();
-		pFieldBase = static_cast<CFieldBase*>(pField);
+		CChoiceField* pField = dynamic_cast<CChoiceField*>(pFieldBase);
+		if (!pField)
+			return S_FALSE;
 
 		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
 
@@ -1767,115 +1852,50 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	{
 		const CFormFieldInfo::CCheckBoxFormPr* pPr = oInfo.GetCheckBoxPr();
 
-		CCheckBoxField* pField = NULL;
-		std::wstring wsGroupName = pPr->GetGroupKey();
-		if (L"" != wsGroupName)
-		{
-			bRadioButton = true;
-			CRadioGroupField* pRadioGroup = m_pDocument->GetRadioGroupField(wsGroupName);
-			if (pRadioGroup)
-				pField = pRadioGroup->CreateKid();
-		}
-		else
-		{
-			pField = m_pDocument->CreateCheckBoxField();
-		}
+		CCheckBoxField* pField = dynamic_cast<CCheckBoxField*>(pFieldBase);
+		if (!pField)
+			return S_FALSE;
 
-		if (pField)
-		{
-			pFieldBase = static_cast<CFieldBase*>(pField);
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+		pField->SetValue(pPr->IsChecked());
 
-			pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
-			pField->SetValue(pPr->IsChecked());
+		CFontCidTrueType* pCheckedFont   = GetFont(pPr->GetCheckedFontName(), false, false);
+		CFontCidTrueType* pUncheckedFont = GetFont(pPr->GetUncheckedFontName(), false, false);
+		if (!pCheckedFont)
+			pCheckedFont = m_pFont;
 
-			CFontCidTrueType* pCheckedFont   = GetFont(pPr->GetCheckedFontName(), false, false);
-			CFontCidTrueType* pUncheckedFont = GetFont(pPr->GetUncheckedFontName(), false, false);
-			if (!pCheckedFont)
-				pCheckedFont = m_pFont;
+		if (!pUncheckedFont)
+			pUncheckedFont = m_pFont;
 
-			if (!pUncheckedFont)
-				pUncheckedFont = m_pFont;
+		unsigned int unCheckedSymbol   = pPr->GetCheckedSymbol();
+		unsigned int unUncheckedSymbol = pPr->GetUncheckedSymbol();
 
-			unsigned int unCheckedSymbol   = pPr->GetCheckedSymbol();
-			unsigned int unUncheckedSymbol = pPr->GetUncheckedSymbol();
+		unsigned char* pCheckedCodes   = pCheckedFont->EncodeString(&unCheckedSymbol, 1);
+		unsigned char* pUncheckedCodes = pUncheckedFont->EncodeString(&unUncheckedSymbol, 1);
 
-			unsigned char* pCheckedCodes   = pCheckedFont->EncodeString(&unCheckedSymbol, 1);
-			unsigned char* pUncheckedCodes = pUncheckedFont->EncodeString(&unUncheckedSymbol, 1);
-
-			TColor oColor = m_oBrush.GetTColor1();
-			pField->SetAppearance(L"", pCheckedCodes, 2, pCheckedFont, L"", pUncheckedCodes, 2, pUncheckedFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
-		}		
+		TColor oColor = m_oBrush.GetTColor1();
+		pField->SetAppearance(L"", pCheckedCodes, 2, pCheckedFont, L"", pUncheckedCodes, 2, pUncheckedFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
 	}
 	else if (oInfo.IsPicture())
 	{
 		const CFormFieldInfo::CPictureFormPr* pPr = oInfo.GetPicturePr();
 
-		CPictureField* pField = m_pDocument->CreatePictureField();
-		pFieldBase = static_cast<CFieldBase*>(pField);
+		CPictureField* pField = dynamic_cast<CPictureField*>(pFieldBase);
 		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));		
 		pField->SetConstantProportions(pPr->IsConstantProportions());
 		pField->SetRespectBorders(pPr->IsRespectBorders());
 		pField->SetScaleType(static_cast<CPictureField::EScaleType>(pPr->GetScaleType()));
-		pField->SetShift(pPr->GetShiftX() / 1000.0, (1000 - pPr->GetShiftY()) / 1000.0);		
-	}
+		pField->SetShift(pPr->GetShiftX() / 1000.0, (1000 - pPr->GetShiftY()) / 1000.0);
 
-	if (pFieldBase)
-	{
-		// 0 - Right
-		// 1 - Left
-		// 2 - Center
-		// 3 - Justify
-		// 4 - Distributed
-		unsigned int unAlign = oInfo.GetJc();
-		if (0 == unAlign)
-			pFieldBase->SetAlign(CFieldBase::EFieldAlignType::Right);
-		else if (2 == unAlign)
-			pFieldBase->SetAlign(CFieldBase::EFieldAlignType::Center);
-
-		if (oInfo.HaveBorder())
+		std::wstring wsPath = pPr->GetPicturePath();
+		CImageDict* pImage = NULL;
+		if (wsPath.length())
 		{
-			unsigned char unR, unG, unB, unA;
-			oInfo.GetBorderColor(unR, unG, unB, unA);
-
-			pFieldBase->SetFieldBorder(EBorderSubtype::border_subtype_Solid, TRgb(unR, unG, unB), MM_2_PT(oInfo.GetBorderSize()), 0, 0, 0);
+			Aggplus::CImage oImage(wsPath);
+			pImage = LoadImage(&oImage, 255);
 		}
 
-		if (oInfo.HaveShd())
-		{
-			unsigned char unR, unG, unB, unA;
-			oInfo.GetShdColor(unR, unG, unB, unA);
-			pFieldBase->SetShd(TRgb(unR, unG, unB));
-		}
-
-		pFieldBase->SetRequiredFlag(oInfo.IsRequired());
-		pFieldBase->SetFieldHint(oInfo.GetHelpText());
-
-		if (!bRadioButton)
-		{
-			std::wstring wsKey = oInfo.GetKey();
-			if (L"" != wsKey)
-				pFieldBase->SetFieldName(wsKey);
-			else
-				pFieldBase->SetFieldName(m_oFieldsManager.GetNewFieldName());
-		}
-
-		if (oInfo.IsPicture())
-		{
-			CPictureField* pField = dynamic_cast<CPictureField*>(pFieldBase);
-			if (pField)
-			{
-				const CFormFieldInfo::CPictureFormPr* pPr = oInfo.GetPicturePr();
-				std::wstring wsPath = pPr->GetPicturePath();
-				CImageDict* pImage = NULL;
-				if (wsPath.length())
-				{
-					Aggplus::CImage oImage(wsPath);
-					pImage = LoadImage(&oImage, 255);
-				}
-
-				pField->SetAppearance(pImage);
-			}
-		}
+		pField->SetAppearance(pImage);
 	}
 
 	return S_OK;

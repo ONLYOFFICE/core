@@ -176,6 +176,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new OOX::ActiveX_bin( pMain, oFileName ));
 			else if (	oRelation.Type() == FileTypes::CtrlProp)
 				return smart_ptr<OOX::File>(new CCtrlPropFile( pMain, oRootPath, oFileName ));
+			else if (	oRelation.Type() == FileTypes::XlBinaryIndex)
+				return smart_ptr<OOX::File>(new UnknowTypeFile(pMain)); // ????
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}
@@ -304,6 +306,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CCtrlPropFile( pMain, oRootPath, oFileName ));
 			else if (pRelation->Type() == FileTypes::WorkbookComments)
 				return smart_ptr<OOX::File>(new WorkbookComments( pMain, oRootPath, oFileName));
+			else if (pRelation->Type() == FileTypes::XlBinaryIndex)
+				return smart_ptr<OOX::File>(new UnknowTypeFile(pMain)); // ????
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}

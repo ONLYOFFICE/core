@@ -34,6 +34,14 @@
 #define OOX_AUTOFILTER_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
+#include "../../XlsbFormat/Biff12_unions/SORTSTATE.h"
+#include "../../XlsbFormat/Biff12_unions/SORTCONDS.h"
+#include "../../XlsbFormat/Biff12_unions/SORTCOND.h"
+#include "../../XlsbFormat/Biff12_records/BeginSortCond.h"
+#include "../../XlsbFormat/Biff12_unions/ACSORTCONDS.h"
+#include "../../XlsbFormat/Biff12_unions/SORTCOND14.h"
+#include "../../XlsbFormat/Biff12_records/BeginSortCond14.h"
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
 namespace OOX
 {
@@ -44,6 +52,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSortCondition)
+                        WritingElement_XlsbConstructors(CSortCondition)
 			CSortCondition()
 			{
 			}
@@ -83,6 +92,11 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
+                        void fromBin(XLS::BaseObjectPtr& obj)
+                        {
+                            ReadAttributes(obj);
+                        }
+
 			virtual EElementType getType () const
 			{
 				return et_x_SortCondition;
@@ -101,6 +115,68 @@ namespace OOX
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
+
+                        void ReadAttributes(XLS::BaseObjectPtr& obj)
+                        {
+                            auto ptrRecord = static_cast<XLS::BiffRecord*>(obj.get());
+
+                            if(ptrRecord->getTypeId() == XLSB::rt_BeginSortCond)
+                            {
+                                auto ptr = static_cast<XLSB::BeginSortCond*>(obj.get());
+                                if(ptr != nullptr)
+                                {
+                                    m_oDescending           = ptr->fSortDes;
+                                    m_oRef                  = ptr->rfx.toString();
+                                    switch (ptr->sortOn)
+                                    {
+                                        case 0:
+                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyValue;
+                                            break;
+                                        case 1:
+                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor;
+                                            m_oDxfId  = ptr->condDataValue.condDataValue;
+                                            break;
+                                        case 2:
+                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor;
+                                            m_oDxfId  = ptr->condDataValue.condDataValue;
+                                            break;
+                                        case 3:
+                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyIcon;
+                                            //m_oDxfId  = ptr->cfflag;
+                                            break;
+                                    }
+
+                                }
+                            }
+                            else if(ptrRecord->getTypeId() == XLSB::rt_BeginSortCond14)
+                            {
+                                auto ptr = static_cast<XLSB::BeginSortCond14*>(obj.get());
+                                if(ptr != nullptr)
+                                {
+                                    m_oDescending           = ptr->fSortDes;
+                                    m_oRef                  = ptr->rfx.toString();
+                                    switch (ptr->sortOn)
+                                    {
+                                        case 0:
+                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyValue;
+                                            break;
+                                        case 1:
+                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor;
+                                            m_oDxfId  = ptr->condDataValue.condDataValue;
+                                            break;
+                                        case 2:
+                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor;
+                                            m_oDxfId  = ptr->condDataValue.condDataValue;
+                                            break;
+                                        case 3:
+                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyIcon;
+                                            //m_oDxfId  = ptr->cfflag;
+                                            break;
+                                    }
+                                }
+                            }
+
+                        }
 		public:
 			nullable<SimpleTypes::COnOff<> > m_oDescending;
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
@@ -111,6 +187,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSortState)
+                        WritingElement_XlsbConstructors(CSortState)
 			CSortState()
 			{
 			}
@@ -120,7 +197,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+                        virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -163,13 +240,34 @@ namespace OOX
 				}
 			}
 
+                        void fromBin(XLS::BaseObjectPtr& obj)
+                        {
+                            auto ptr = static_cast<XLSB::SORTSTATE*>(obj.get());
+
+                            ReadAttributes(ptr->m_BrtBeginSortState);
+
+                            auto ptrSORTCONDS = static_cast<XLSB::SORTCONDS*>(ptr->m_source.get());
+                            auto ptrACSORTCONDS = static_cast<XLSB::ACSORTCONDS*>(ptr->m_source.get());
+
+                            if(ptrSORTCONDS != nullptr || ptrACSORTCONDS != nullptr)
+                            {
+                                if(ptrSORTCONDS != nullptr)
+                                    for(auto &pSORTCOND : ptrSORTCONDS->m_arSORTCOND)
+                                        m_arrItems.push_back(new CSortCondition(static_cast<XLSB::SORTCOND*>(pSORTCOND.get())->m_BrtBeginSortCond));
+                                else if(ptrACSORTCONDS != nullptr)
+                                    for(auto &pSORTCOND14 : ptrACSORTCONDS->m_arSORTCOND14)
+                                        m_arrItems.push_back(new CSortCondition(static_cast<XLSB::SORTCOND14*>(pSORTCOND14.get())->m_BrtBeginSortCond14));
+                            }
+
+
+                        }
 			virtual EElementType getType () const
 			{
 				return et_x_SortState;
 			}
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+                        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
@@ -181,6 +279,20 @@ namespace OOX
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
+                        void ReadAttributes(XLS::BaseObjectPtr& obj)
+                        {
+                            auto ptr = static_cast<XLSB::BeginSortState*>(obj.get());
+                            if(ptr != nullptr)
+                            {
+                                m_oRef           = ptr->rfx;
+                                m_oCaseSensitive = ptr->fCaseSensitive;
+                                m_oColumnSort    = ptr->fCol;
+                                if(ptr->fAltMethod)
+                                    m_oSortMethod = SimpleTypes::Spreadsheet::ESortMethod::sortmethodStroke;
+                                else
+                                    m_oSortMethod = SimpleTypes::Spreadsheet::ESortMethod::sortmethodNone;
+                            }
+                        }
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
 			nullable<SimpleTypes::COnOff<> > m_oCaseSensitive;

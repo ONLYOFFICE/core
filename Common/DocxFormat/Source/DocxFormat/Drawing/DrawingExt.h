@@ -205,6 +205,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COfficeArtExtensionList)
+                        WritingElement_XlsbConstructors(COfficeArtExtensionList)
 			COfficeArtExtensionList()
 			{
 			}
@@ -229,11 +230,12 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-                    if ( _T("ext") == sName )
+                                        std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+                                        if ( _T("ext") == sName )
 					{
-						OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension(oReader);
-                        if (oExt) m_arrExt.push_back( oExt );
+                                                OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension(oReader);
+                                                if (oExt)
+                                                    m_arrExt.push_back( oExt );
 					}
 				}
 			}
@@ -258,6 +260,9 @@ namespace OOX
 
 				return sResult;
 			}
+
+            void fromBin(XLS::BaseObjectPtr& obj);
+
 			virtual EElementType getType() const
 			{
 				return OOX::et_a_extLst;

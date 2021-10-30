@@ -31,6 +31,7 @@
  */
 #pragma once
 #include "../CommonInclude.h"
+#include "../../XlsbFormat/Biff12_records/MergeCell.h"
 
 namespace OOX
 {
@@ -67,7 +68,11 @@ namespace OOX
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
-			}
+			}            
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -82,6 +87,11 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"), m_oRef )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::MergeCell*>(obj.get());
+                m_oRef  = ptr->rfx.toString();
+            }
 
 		public:
 			nullable_string m_oRef;
@@ -91,6 +101,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMergeCells)
+            WritingElement_XlsbVectorConstructors(CMergeCells)
 			CMergeCells(OOX::Document *pMain = NULL) : WritingElementWithChilds<CMergeCell>(pMain)
 			{
 			}
@@ -144,6 +155,22 @@ namespace OOX
 				}
 			}
 
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                ReadAttributes(obj);
+
+                if (obj.empty())
+                    return;
+
+                for(auto &mergeCell : obj)
+                {
+                    CMergeCell *pMergeCell = new CMergeCell(m_pMainDocument);
+                    m_arrItems.push_back(pMergeCell);
+
+                    pMergeCell->fromBin(mergeCell);
+                }
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_MergeCells;
@@ -156,6 +183,10 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"), m_oCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                m_oCount = (_UINT32)obj.size();
+            }
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
 		};

@@ -31,6 +31,7 @@
  */
 
 #include "TableStyle.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
 
 namespace XLS
 {
@@ -52,17 +53,35 @@ BaseObjectPtr TableStyle::clone()
 
 void TableStyle::readFields(CFRecord& record)
 {
-	unsigned short flags;
+	unsigned short flags;	
 
-	record >> frtHeader >> flags;
+    if(record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        record >> frtHeader >> flags;
 
-	fIsPivot = GETBIT(flags, 1);
-	fIsTable = GETBIT(flags, 2);
+        fIsPivot = GETBIT(flags, 1);
+        fIsTable = GETBIT(flags, 2);
 
-	unsigned short cchName;
-	record >> ctse >> cchName;
-	rgchName.setSize(cchName);
-	record >> rgchName;
+        unsigned short cchName;
+        record >> ctse >> cchName;
+        LPWideStringNoCch	rgchName_;
+        rgchName_.setSize(cchName);
+        record >> rgchName_;
+
+        rgchName = rgchName_.value();
+    }
+    else
+    {
+        record >> flags >> ctse;
+
+        fIsPivot = GETBIT(flags, 1);
+        fIsTable = GETBIT(flags, 2);
+
+        XLSB::XLNullableWideString    strName;
+        record >> strName;
+
+        rgchName = strName.value();
+    }
 }
 
 } // namespace XLS

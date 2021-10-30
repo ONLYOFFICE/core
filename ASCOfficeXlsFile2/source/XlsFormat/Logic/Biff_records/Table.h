@@ -32,11 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CellRangeRef.h>
+#include "../Biff_structures/CellRangeRef.h"
 
 namespace XLS
 {
-
+// Logical representation of Table record in BIFF8 and BrtTable record in BIFF12
 class Table: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Table)
@@ -53,10 +53,11 @@ public:
 	static const ElementType	type = typeTable;
 
 	Ref ref_;
+    RFX rfx; //biff12
 
 	bool fAlwaysCalc;
-	bool fRw;
-	bool fTbl2;
+    bool fRw; //fRow in biff12
+    bool fTbl2; //fTable2 in biff12
 	bool fDeleted1;
 	bool fDeleted2;
 

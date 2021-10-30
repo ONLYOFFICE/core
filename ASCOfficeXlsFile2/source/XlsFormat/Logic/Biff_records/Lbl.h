@@ -32,13 +32,15 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/NameParsedFormula.h>
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/NameParsedFormula.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
 
 
 namespace XLS
 {
 
+// Logical representation of Lbl record in BIFF8 and BrtName in BIFF12
 class Lbl: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Lbl)
@@ -59,15 +61,25 @@ public:
 	bool fProc;
 	bool fCalcExp;
 	bool fBuiltin;
-	unsigned char	fGrp;
+    //unsigned char	fGrp;
+    unsigned short	fGrp;
 	bool fPublished;
 	bool fWorkbookParam;
+
+    bool fFutureFunction; //biff12
 	
-	unsigned char			chKey;
-	_UINT16					itab;
-	XLUnicodeStringNoCch	Name_bin;
-	std::wstring			Name;
-	NameParsedFormula		rgce;
+    unsigned char   chKey;
+    //_UINT16					itab;
+    _UINT32 itab;
+    XLUnicodeStringNoCch        Name_bin;
+    std::wstring                Name;
+    XLSB::XLNameWideString      name; //biff12
+    NameParsedFormula           rgce; //formula in biff12
+    XLSB::XLNullableWideString  comment; //biff12
+    XLSB::XLNullableWideString  unusedstring1; //biff12
+    XLSB::XLNullableWideString  description; //biff12
+    XLSB::XLNullableWideString  helpTopic; //biff12
+    XLSB::XLNullableWideString  unusedstring2; //biff12
 
 };
 

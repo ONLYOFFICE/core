@@ -49,8 +49,13 @@ BaseObjectPtr TableStyleElement::clone()
 }
 
 void TableStyleElement::readFields(CFRecord& record)
-{
-	record >> frtHeader >> tseType >> size >> index;
+{	
+    if(record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        record >> frtHeader;
+    }
+
+    record >> tseType >> size >> index;
 }
 
 } // namespace XLS

@@ -2049,14 +2049,14 @@ namespace NSBinPptxRW
         return res;
 	}
 
-    bool CBinaryFileReader::GetArray(BYTE **pBuffer, _INT32 len)
+    bool CBinaryFileReader::GetArray(BYTE *pBuffer, _INT32 len)
 	{
 		if (0 == len)
             return false;
 		if (m_lPos + len > m_lSize)
             return false;
 
-        *pBuffer = new BYTE [len];
+        //*pBuffer = new BYTE [len];
 
         memcpy(pBuffer, m_pDataCur, len);
 
@@ -2128,9 +2128,9 @@ namespace NSBinPptxRW
 	{
 		_UINT16 nValue = GetUChar();
 		if(0 != (nValue & 0x80))
-		{
+                {
 			BYTE nPart = GetUChar();
-			nValue = (nValue & 0x7F) | ((nPart & 0x7F) << 7);
+                        nValue = (nValue & 0x7F) | ((nPart & 0x7F) << 7);
 		}
 		return nValue;
 	}
@@ -2140,7 +2140,7 @@ namespace NSBinPptxRW
 	}
 	_UINT32 CBinaryFileReader::XlsbReadRecordLength()
 	{
-		_UINT16 nValue = 0;
+                _UINT32 nValue = 0;
 		for (int i = 0; i < 4; ++i)
 		{
 			BYTE nPart = GetUChar();

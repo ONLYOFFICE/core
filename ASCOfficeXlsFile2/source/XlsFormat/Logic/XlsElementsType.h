@@ -739,8 +739,37 @@ enum ElementType
 	typeOfficeArtSplitMenuColorContainer,
 	typeOfficeArtTertiaryFOPT,
 	typeOfficeArtClientData,
-	typeOfficeArtClientTextbox
+        typeOfficeArtClientTextbox,
 
+    //xlsb static const ElementType	type = typeFRTWORKSHEET;
+    typeCONDITIONALFORMATTING = 4000,
+    typeCONDITIONALFORMATTING14,
+    typeBeginConditionalFormatting,
+    typeBeginConditionalFormatting14,
+    typeCFRULE,
+    typeCFRULE14,
+    typeBeginCFRule,
+    typeBeginCFRule14,
+    typeuCFVO,
+    typeuCFVO14,
+    typeCFVO14,
+    typeCOLORSCALE,
+    typeCOLORSCALE14,
+    typeDATABAR,
+    typeBeginDatabar,
+    typeDATABAR14,
+    typeBeginDatabar14,
+    typeICONSET,
+    typeBeginIconSet,
+    typeICONSET14,
+    typeBeginIconSet14,
+    typeACFMT,
+    typeFmt,
+    typeFRTDXF,
+    typeFRTWORKSHEET,
+    typeFRTSTYLESHEET,
+    typeuDXF,
+    typeDXF14,
 
 };
 

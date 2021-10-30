@@ -112,35 +112,11 @@ namespace OOX
 			bool bDeleteWorksheets;
 			bool bDeleteVbaProject;
 			bool bDeleteJsaProject;
+
 		private:
+
 			void PrepareWorksheet(CWorksheet* pWorksheet);
-			void init()
-			{
-				m_bSpreadsheets		= true;
-
-				m_pApp				= NULL;
-				m_pCore				= NULL;
-
-				m_pWorkbook			= NULL;
-				m_pSharedStrings	= NULL;
-				m_pStyles			= NULL;
-				m_pCalcChain		= NULL;
-				m_pVbaProject		= NULL;
-				m_pJsaProject		= NULL;
-				m_pWorkbookComments = NULL;
-				m_pXlsbWriter = NULL;
-				m_nLastReadRow = 0;
-				m_nLastReadCol = -1;
-				m_bNeedCalcChain = true;
-
-				bDeleteWorkbook			= false;
-				bDeleteSharedStrings	= false;
-				bDeleteStyles			= false;
-				bDeleteCalcChain		= false;
-				bDeleteWorksheets		= false;
-				bDeleteVbaProject		= false;
-				bDeleteJsaProject		= false;
-			}
+            void init();
 
             boost::unordered_map<std::wstring, size_t>	m_mapXlsxEnumeratedGlobal;
 		};

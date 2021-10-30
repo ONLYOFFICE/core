@@ -93,6 +93,7 @@ namespace NExtractTools
 		TCD_XLSM2XLSX,
 		TCD_XLTM2XLSX,
         TCD_XLTM2XLSM,
+        TCD_XLSB2XLST,
 
         TCD_PPTX2PPTT,
         TCD_PPTT2PPTX,
@@ -785,6 +786,8 @@ namespace NExtractTools
             int nFileType = 1;
             if(NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatFrom)
                 nFileType = 2;
+            else if(NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == *m_nFormatFrom)
+                nFileType = 4;
 
             std::wstring sSaveType;
             if(NULL != m_nFormatTo)

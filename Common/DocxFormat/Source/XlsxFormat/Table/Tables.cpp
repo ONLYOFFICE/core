@@ -31,6 +31,9 @@
  */
 #include "Table.h"
 #include "QueryTable.h"
+#include "../../XlsbFormat/Biff12_unions/LISTPARTS.h"
+#include "../../XlsbFormat/Biff12_records/BeginListParts.h"
+#include "../../XlsbFormat/Biff12_records/ListPart.h"
 
 namespace OOX
 {
@@ -347,12 +350,22 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		if ( !oReader.IsEmptyNode() )
 			oReader.ReadTillEnd();
 	}
+    void CTablePart::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        ReadAttributes(obj);
+    }
 	void CTablePart::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start_No_NS( oReader )
 			WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oRId )
 		WritingElement_ReadAttributes_End_No_NS( oReader )
 	}
+    void CTablePart::ReadAttributes(XLS::BaseObjectPtr &obj)
+    {
+        auto ptr = static_cast<XLSB::ListPart*>(obj.get());
+        if(ptr != nullptr)
+            m_oRId = ptr->stRelID.value.value();
+    }
 
 	void CTableParts::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -389,12 +402,31 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		}
 	}
 
+    void CTableParts::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::LISTPARTS*>(obj.get());
+
+        ReadAttributes(ptr->m_BrtBeginListParts);
+
+        for(auto &tablePart : ptr->m_arBrtListPart)
+        {
+            m_arrItems.push_back(new CTablePart(tablePart));
+        }
+    }
+
 	void CTableParts::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if ( oReader, (L"count"), m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+
+    void CTableParts::ReadAttributes(XLS::BaseObjectPtr &obj)
+    {
+        auto ptr = static_cast<XLSB::BeginListParts*>(obj.get());
+        if(ptr != nullptr)
+            m_oCount = ptr->cParts;
+    }
 
 	void CTableFile::read(const CPath& oRootPath, const CPath& oPath)
 	{

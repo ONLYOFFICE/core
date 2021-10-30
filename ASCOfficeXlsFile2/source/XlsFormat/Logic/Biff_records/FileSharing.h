@@ -33,16 +33,20 @@
 
 #include "BiffRecord.h"
 #include "../Biff_structures/BiffString.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
+#include "../../../../../Common/DocxFormat/Source/XlsxFormat/WritingElement.h"
 
 namespace XLS
 {
 
+// Logical representation of FileSharing record in BIFF8 and BrtFileSharing in BIFF12
 class FileSharing: public BiffRecord
 {
-	BIFF_RECORD_DEFINE_TYPE_INFO(FileSharing)
+
+    BIFF_RECORD_DEFINE_TYPE_INFO(FileSharing)
 	BASE_OBJECT_DEFINE_CLASS_NAME(FileSharing)
 public:
-	FileSharing();
+    FileSharing();
 	~FileSharing();
 
 	BaseObjectPtr clone();
@@ -51,11 +55,12 @@ public:
 
 	static const ElementType	type = typeFileSharing;
 
-	Boolean<unsigned short> fReadOnlyRec;
-	unsigned short			wResPassNum;
-	std::wstring			wResPass;
-	_UINT16					iNoResPass;
-	XLUnicodeString			stUNUsername;
+    Boolean<unsigned short>     fReadOnlyRec;
+    unsigned short              wResPassNum;
+    std::wstring                wResPass;
+    _UINT16                     iNoResPass;
+    XLUnicodeString             stUNUsername;
+    XLSB::XLNullableWideString	stUserName;
 
 };
 

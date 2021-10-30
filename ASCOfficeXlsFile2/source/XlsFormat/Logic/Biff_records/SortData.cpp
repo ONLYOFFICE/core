@@ -31,6 +31,7 @@
  */
 
 #include "SortData.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRangeRef.h"
 
 namespace XLS
 {
@@ -50,34 +51,52 @@ BaseObjectPtr SortData::clone()
 
 void SortData::readFields(CFRecord& record)
 {
-	unsigned short flags;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        unsigned short flags;
 
-	record >> frtHeader >> flags;
+        record >> frtHeader >> flags;
 
-	fCol			= GETBIT(flags, 0);
-	fCaseSensitive	= GETBIT(flags, 1);
-	fAltMethod		= GETBIT(flags, 2);
-	sfp				= GETBITS(flags, 3, 5);
-	
-	RFX rfx_orig;
-	record >> rfx_orig >> cconditions;
-	rfx = static_cast<std::wstring >(rfx_orig);
-	
-	record >> idParent;
-	
-	std::list<CFRecordPtr>& recs = continue_records[rt_ContinueFrt12];
-	while(!recs.empty())
-	{
-		record.appendRawData(recs.front()->getData() + 12, recs.front()->getDataSize() - 12);
-		recs.pop_front();
-	}
-	
-	for(unsigned int i = 0; i < cconditions; ++i)
-	{
-		SortCond12Ptr sort_cond(new SortCond12);
-		record >> *sort_cond;
-		sortCond12Array.push_back(sort_cond);
-	}
+        fCol			= GETBIT(flags, 0);
+        fCaseSensitive	= GETBIT(flags, 1);
+        fAltMethod		= GETBIT(flags, 2);
+        sfp				= GETBITS(flags, 3, 5);
+
+        RFX rfx_orig;
+        record >> rfx_orig >> cconditions;
+        rfx = static_cast<std::wstring >(rfx_orig);
+
+        record >> idParent;
+
+        std::list<CFRecordPtr>& recs = continue_records[rt_ContinueFrt12];
+        while(!recs.empty())
+        {
+            record.appendRawData(recs.front()->getData() + 12, recs.front()->getDataSize() - 12);
+            recs.pop_front();
+        }
+
+        for(unsigned int i = 0; i < cconditions; ++i)
+        {
+            SortCond12Ptr sort_cond(new SortCond12);
+            record >> *sort_cond;
+            sortCond12Array.push_back(sort_cond);
+        }
+    }
+    else
+    {
+        unsigned short flags;
+
+        record >> flags;
+
+        fCol			= GETBIT(flags, 0);
+        fCaseSensitive	= GETBIT(flags, 1);
+        fAltMethod		= GETBIT(flags, 2);
+
+        XLSB::UncheckedRfX rfx_orig;
+        record >> rfx_orig;
+        rfx = static_cast<std::wstring >(rfx_orig);
+
+    }
 
 }
 

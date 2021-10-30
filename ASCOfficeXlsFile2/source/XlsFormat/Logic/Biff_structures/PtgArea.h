@@ -33,7 +33,8 @@
 
 #include "OperandPtg.h"
 #include "CellRangeRef.h"
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "BitMarkedStructs.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRangeRef.h"
 
 namespace XLS
 {
@@ -42,9 +43,9 @@ class CFRecord;
 
 class PtgArea: public OperandPtg
 {
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgArea)
+    BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgArea)
 public:
-	PtgArea(const unsigned short full_ptg_id);
+    PtgArea(const unsigned short full_ptg_id);
 	PtgArea(const std::wstring& word, const PtgDataType data_type);
 	BiffStructurePtr clone();
 
@@ -55,7 +56,12 @@ public:
 
 	static const unsigned short fixed_id = 0x05;
 
-	RgceArea area;
+    GlobalWorkbookInfoPtr	global_info;
+
+    RgceArea area;
+
+    //biff12
+    XLSB::RgceArea areaXlsb;
 };
 
 } // namespace XLS

@@ -228,6 +228,8 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
+
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
 					nRes = xlsx_dir2xlst_bin(sResultOoxmlDir, sTo, params, true, L""); break;
                 case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM:
@@ -3029,6 +3031,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
 				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
 				{
 					const std::wstring & sXmlOptions = params.getXmlOptions();
 					return xlsx2xlst_bin(sResultDecryptFile, sTo, sTemp, params);
@@ -3112,6 +3115,7 @@ namespace NExtractTools
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
                 case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
+				case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
                 {
                     return fromSpreadsheet(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX, sTemp, params);
                 }break;
@@ -3832,7 +3836,8 @@ namespace NExtractTools
        if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV != nFormatTo)
        {
 			if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatTo ||
-				AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo)
+				AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo || 
+				AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == nFormatTo)
 			{
 				if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo)
 				{
@@ -4722,6 +4727,11 @@ namespace NExtractTools
 			{
 				result =  xlsx2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
+            case TCD_XLSB2XLST:
+            {
+                oInputParams.m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB);
+                result =  xlsx2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);
+            }break;
 			case TCD_XLSXFLAT2XLST:
 			{
 				result = xlsxflat2xlst (sFileFrom, sFileTo, sTempDir, oInputParams);

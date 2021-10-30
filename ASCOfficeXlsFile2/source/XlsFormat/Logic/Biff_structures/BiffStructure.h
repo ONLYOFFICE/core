@@ -82,7 +82,7 @@ public:
 
 #define BASE_STRUCTURE_DEFINE_CLASS_NAME(class_name)\
 	public: \
-        const std::string & getClassName() const { static std::string  str(#class_name); return str;};\
+        const std::string & getClassName() const { static std::string  str(#class_name); return str;}\
 		virtual XLS::ElementType get_type() { return type; }
 	
 

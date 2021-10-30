@@ -119,13 +119,13 @@ int TABLESTYLES::serialize(std::wostream & stream)
 		{
 			CP_XML_ATTR(L"count", m_arTableStyles.size());
 			
-			if (!styles->rgchDefPivotStyle.value().empty())
+            if (!styles->rgchDefPivotStyle.empty())
 			{
-				CP_XML_ATTR(L"defaultPivotStyle", styles->rgchDefPivotStyle.value());
+                CP_XML_ATTR(L"defaultPivotStyle", styles->rgchDefPivotStyle);
 			}
-			if (!styles->rgchDefTableStyle.value().empty())
+            if (!styles->rgchDefTableStyle.empty())
 			{
-				CP_XML_ATTR(L"defaultTableStyle", styles->rgchDefTableStyle.value());
+                CP_XML_ATTR(L"defaultTableStyle", styles->rgchDefTableStyle);
 			}
 
 			for (size_t i = 0; i < m_arTableStyles.size(); i++)
@@ -136,7 +136,7 @@ int TABLESTYLES::serialize(std::wostream & stream)
 				CP_XML_NODE(L"tableStyle")
 				{
 					CP_XML_ATTR(L"count", m_arTableStyles[i].elements_.size());
-					CP_XML_ATTR(L"name", style->rgchName.value());
+                    CP_XML_ATTR(L"name", style->rgchName);
 					CP_XML_ATTR(L"pivot", style->fIsPivot);
 					
 					for (size_t j = 0; j < m_arTableStyles[i].elements_.size(); j++)

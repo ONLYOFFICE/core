@@ -38,6 +38,7 @@
 namespace XLS
 {
 
+// Logical representation of TableStyles record in BIFF8 and BrtBeginTableStyles BIFF12
 class TableStyles: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(TableStyles)
@@ -54,8 +55,10 @@ public:
 
 //-----------------------------
 	_UINT32				cts;
-	LPWideStringNoCch	rgchDefTableStyle;
-	LPWideStringNoCch	rgchDefPivotStyle;
+    //LPWideStringNoCch	rgchDefTableStyle;
+    //LPWideStringNoCch	rgchDefPivotStyle;
+    std::wstring        rgchDefTableStyle; //strDefList in biff12
+    std::wstring        rgchDefPivotStyle; //strDefPivot in biff12
 	FrtHeader			frtHeader;
 };
 

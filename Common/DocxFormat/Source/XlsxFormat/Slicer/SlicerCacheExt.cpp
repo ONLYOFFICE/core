@@ -30,6 +30,12 @@
  *
  */
 #include "SlicerCacheExt.h"
+#include "../../XlsbFormat/Biff12_unions/STYLESHEET14.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERSTYLES.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERSTYLE.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicerStyles.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicerStyle.h"
+#include "../../XlsbFormat/Biff12_records/SlicerStyleElement.h"
 
 namespace OOX
 {
@@ -378,6 +384,46 @@ void CSlicerStyleElement::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	}
 	pReader->Seek(_end_rec);
 }
+void CSlicerStyleElement::fromBin(XLS::BaseObjectPtr &obj)
+{
+    ReadAttributes(obj);
+}
+void CSlicerStyleElement::ReadAttributes(XLS::BaseObjectPtr &obj)
+{
+    auto ptr = static_cast<XLSB::SlicerStyleElement*>(obj.get());
+    if(ptr != nullptr)
+    {
+        m_oDxfId = ptr->dxfId;
+        switch(ptr->tseType)
+        {
+            case 0x0000001C:
+                m_oType.Init();
+                m_oType->SetValue(SimpleTypes::Spreadsheet::ESlicerStyleType::cslicerstyletypeUnselectedItemWithData); break;
+            case 0x0000001D:
+                m_oType.Init();
+                m_oType->SetValue(SimpleTypes::Spreadsheet::ESlicerStyleType::cslicerstyletypeUnselectedItemWithNoData); break;
+            case 0x0000001E:
+                m_oType.Init();
+                m_oType->SetValue(SimpleTypes::Spreadsheet::ESlicerStyleType::cslicerstyletypeSelectedItemWithData); break;
+            case 0x0000001F:
+                m_oType.Init();
+                m_oType->SetValue(SimpleTypes::Spreadsheet::ESlicerStyleType::cslicerstyletypeSelectedItemWithNoData); break;
+            case 0x00000020:
+                m_oType.Init();
+                m_oType->SetValue(SimpleTypes::Spreadsheet::ESlicerStyleType::cslicerstyletypeHoveredUnselectedItemWithData); break;
+            case 0x00000021:
+                m_oType.Init();
+                m_oType->SetValue(SimpleTypes::Spreadsheet::ESlicerStyleType::cslicerstyletypeHoveredSelectedItemWithData); break;
+            case 0x00000022:
+                m_oType.Init();
+                m_oType->SetValue(SimpleTypes::Spreadsheet::ESlicerStyleType::cslicerstyletypeHoveredUnselectedItemWithNoData); break;
+            case 0x00000023:
+                m_oType.Init();
+                m_oType->SetValue(SimpleTypes::Spreadsheet::ESlicerStyleType::cslicerstyletypeHoveredSelectedItemWithNoData); break;
+        }
+
+    }
+}
 void CSlicerCache::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
@@ -536,6 +582,26 @@ void CSlicerStyle::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		}
 	}
 	pReader->Seek(_end_rec);
+}
+void CSlicerStyle::fromBin(XLS::BaseObjectPtr &obj)
+{
+    auto ptr = static_cast<XLSB::SLICERSTYLE*>(obj.get());
+    if(ptr != nullptr)
+    {
+        ReadAttributes(ptr->m_BrtBeginSlicerStyle);
+        for(auto slicerStyleElement : ptr->m_arBrtSlicerStyleElement)
+        {
+            m_oSlicerStyleElements.emplace_back();
+            m_oSlicerStyleElements.back() = slicerStyleElement;
+        }
+
+    }
+}
+void CSlicerStyle::ReadAttributes(XLS::BaseObjectPtr &obj)
+{
+    auto ptr = static_cast<XLSB::BeginSlicerStyle*>(obj.get());
+    if(ptr != nullptr)
+        m_oName = ptr->stName.value();
 }
 void CSlicerCaches::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -702,6 +768,29 @@ void CSlicerStyles::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		}
 	}
 	pReader->Seek(_end_rec);
+}
+void CSlicerStyles::fromBin(XLS::BaseObjectPtr &obj)
+{
+    auto ptr = static_cast<XLSB::STYLESHEET14*>(obj.get());
+    if(ptr != nullptr)
+    {
+        auto ptrSlicerStyles = static_cast<XLSB::SLICERSTYLES*>(ptr->m_SLICERSTYLES.get());
+        if(ptrSlicerStyles != nullptr)
+        {
+            ReadAttributes(ptrSlicerStyles->m_BrtBeginSlicerStyles);
+            for(auto slicerStyle : ptrSlicerStyles->m_arSLICERSTYLE)
+            {
+                m_oSlicerStyle.emplace_back();
+                m_oSlicerStyle.back() = slicerStyle;
+            }
+        }
+    }
+}
+void CSlicerStyles::ReadAttributes(XLS::BaseObjectPtr &obj)
+{
+    auto ptr = static_cast<XLSB::BeginSlicerStyles*>(obj.get());
+    if(ptr != nullptr)
+        m_oDefaultSlicerStyle = ptr->stDefSlicer.value();
 }
 void CDrawingSlicer::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {

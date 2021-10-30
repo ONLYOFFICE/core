@@ -57,7 +57,11 @@ BiffStructurePtr SerErr::clone()
 void SerErr::load(CFRecord& record)
 {
 	record >> err;
-	record.skipNunBytes(7); // reserved/unused
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        record.skipNunBytes(7); // reserved/unused
+    else
+        record.skipNunBytes(3); // reserved
+
 }
 
 

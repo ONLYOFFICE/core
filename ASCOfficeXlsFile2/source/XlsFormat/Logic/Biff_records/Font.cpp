@@ -31,6 +31,8 @@
  */
 
 #include "Font.h"
+#include "../Biff_structures/BiffString.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
 
 namespace XLS
 {
@@ -67,7 +69,7 @@ void Font::set(FontInfo & info)
 	info.uls		= uls;
 	info.bFamily	= bFamily;
 	info.bCharSet	= bCharSet;
-	info.name		= fontName.value();
+    info.name		= fontName;
 }
 
 void Font::readFields(CFRecord& record)
@@ -86,26 +88,52 @@ void Font::readFields(CFRecord& record)
 	fCondense	= GETBIT(flags, 6);
 	fExtend		= GETBIT(flags, 7);
 
-	record >> icv >> bls >> sss >> uls >> bFamily >> bCharSet;
+    if(global_info->Version < 0x0800)
+    {
+        record >> icv;
+    }
+
+    record >> bls >> sss >> uls >> bFamily >> bCharSet;
 	
 	unsigned char reserved;
 
 	record >> reserved; 
 
-	if ((bls >=100 && bls <= 1000) || bls == 0)
-		correct = true;
-	
-	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+    if(global_info->Version < 0x0800)
+    {
+        if ((bls >=100 && bls <= 1000) || bls == 0)
+            correct = true;
+    }
+    else
+    {
+        if (bls >=400 && bls <= 1000)
+            correct = true;
+    }
+
+    if (global_info->Version < 0x0600)
 	{
 		ShortXLAnsiString name;
 		record >> name;
 		
 		fontName = name;
 	}
-	else
+    else if(global_info->Version < 0x0800)
 	{
-		record >> fontName;
+        ShortXLUnicodeString	name;
+
+        record >> name;
+        fontName = name;
 	}
+    else
+    {
+        brtColor.readFields(record);
+        record >> bFontScheme;
+
+        XLSB::XLWideString	name;
+
+        record >> name;
+        fontName = name;
+    }
 
 	if (global_info->fonts_charsets.find(bCharSet) == global_info->fonts_charsets.end() && bCharSet != 0)
 	{
@@ -218,19 +246,19 @@ int Font::serialize_rPr(std::wostream & stream, bool rtl, bool defRPr, std::wstr
 					}
 				}
 			}
-			if (!fontName.value().empty())
+            if (!fontName.empty())
 			{
 				CP_XML_NODE(namespace_ + L"latin")
 				{
-					CP_XML_ATTR(L"typeface", fontName.value());
+                    CP_XML_ATTR(L"typeface", fontName);
 				}
 				CP_XML_NODE(namespace_ + L"ea")
 				{
-					CP_XML_ATTR(L"typeface", fontName.value());
+                    CP_XML_ATTR(L"typeface", fontName);
 				}
 				CP_XML_NODE(namespace_ + L"cs")
 				{
-					CP_XML_ATTR(L"typeface", fontName.value());
+                    CP_XML_ATTR(L"typeface", fontName);
 				}
 			}
 			if (rtl)
@@ -324,20 +352,20 @@ int Font::serialize_properties(std::wostream & stream, bool isRPr)
             }
         }
 
-		if (!fontName.value().empty())
+        if (!fontName.empty())
 		{
 			if (isRPr)
 			{
 				CP_XML_NODE(L"rFont")
 				{
-					CP_XML_ATTR(L"val", fontName.value());
+                    CP_XML_ATTR(L"val", fontName);
 				}
 			}
 			else
 			{
 				CP_XML_NODE(L"name")
 				{
-					CP_XML_ATTR(L"val", fontName.value());
+                    CP_XML_ATTR(L"val", fontName);
 				}
 			}
 		}

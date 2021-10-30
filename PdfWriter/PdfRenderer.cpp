@@ -1781,8 +1781,15 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), TRgb(oColor.r, oColor.g, oColor.b));
 
-		if (!pPr->GetPlaceHolder().empty())
-			pField->SetPlaceHolderText(pPr->GetPlaceHolder(), oNormalColor, oPlaceHolderColor);
+		std::wstring wsPlaceHolder = pPr->GetPlaceHolder();
+		if (!wsPlaceHolder.empty())
+		{
+			unsigned int unMaxLen = pPr->GetMaxCharacters();
+			if (unMaxLen && wsPlaceHolder.length() > unMaxLen)
+				wsPlaceHolder = wsPlaceHolder.substr(0, unMaxLen);
+
+			pField->SetPlaceHolderText(wsPlaceHolder, oNormalColor, oPlaceHolderColor);
+		}
 	}
 	else if (oInfo.IsDropDownList())
 	{

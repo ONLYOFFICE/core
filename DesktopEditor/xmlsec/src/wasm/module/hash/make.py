@@ -34,7 +34,8 @@ compiler_flags = ["-o hash.js",
 
 exported_functions = ["_malloc",
                       "_free",
-                      "_hash"]
+                      "_hash",
+					  "_hash2"]
 
 sources = []
 sources.append("./../openssl/crypto/sha/keccak1600.c")

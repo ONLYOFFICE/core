@@ -117,6 +117,55 @@
 		}
 		
 		return result;
-	};    
+	};
+	
+	window.AscCommon.Hash["hashOffice"] = window.AscCommon.Hash.hash = function(password, salt, spinCount, alg)
+	{
+		if (typeof alg === "string")
+		{
+			switch (alg)
+			{
+				case "md2" : alg = HashAlgs.MD2; break;
+				case "md4" : alg = HashAlgs.MD4; break;
+				case "md5" : alg = HashAlgs.MD5; break;
+				case "rmd160" : alg = HashAlgs.RMD160; break;
+				case "sha1" : alg = HashAlgs.SHA1; break;
+				case "sha256" : alg = HashAlgs.SHA256; break;
+				case "sha384" : alg = HashAlgs.SHA384; break;
+				case "sha512" : alg = HashAlgs.SHA512; break;
+				case "whirlpool" : alg = HashAlgs.WHIRLPOOL; break;
+				default:
+					alg = HashAlgs.SHA256;
+			}
+		}
+
+		var passwordData = password.toUtf8();
+		var passwordPointer = Module["_malloc"](passwordData.length);
+		Module["HEAPU8"].set(passwordData, passwordPointer);
+
+		var saltData = salt.toUtf8();
+		var saltPointer = Module["_malloc"](saltData.length);
+		Module["HEAPU8"].set(saltData, saltPointer);
+
+		var resultPointer = Module["_hash2"](passwordPointer, saltPointer, spinCount, alg);
+
+		Module["_free"](passwordPointer);
+		Module["_free"](saltPointer);
+
+		var result = new HashObj();
+		if (0 != resultPointer)
+		{
+			var tmp = new Uint8Array(Module["HEAPU8"].buffer, resultPointer, HashSizes[alg]);
+			result.buf = new Uint8Array(tmp.length);
+			result.buf.set(tmp, 0);
+			Module["_free"](resultPointer);
+		}
+		else
+		{
+			result.buf = [];
+		}
+
+		return result;
+	};
 
 })(window, undefined);

@@ -24,10 +24,10 @@ compiler_flags = ["-o hash.js",
                   "-O3",
                   "-fno-exceptions",
                   "-fno-rtti",
-                  "-s WASM=0",
+                  "-s WASM=1",
                   "-s ALLOW_MEMORY_GROWTH=1",
                   "-s FILESYSTEM=0",
-                  "-s ENVIRONMENT='web'",
+                  "-s ENVIRONMENT='worker'",
                   "-s TOTAL_STACK=1MB",
                   "-s TOTAL_MEMORY=2MB",
                   "--memory-init-file 0"]
@@ -93,6 +93,44 @@ else:
   windows_bat.append("emcc " + arguments)  
 base.run_as_bat(windows_bat)
 
+# finalize
+base.replaceInFile("./hash.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+base.replaceInFile("./hash.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+base.replaceInFile("./hash.js", "function getBinaryPromise()", "function getBinaryPromise2()")
+
+module_js_content = base.readFile("./hash.js")
+engine_base_js_content = base.readFile("./hash_base.js")
+string_utf8_content    = base.readFile("./../../../../../../Common/js/string_utf8.js")
+polyfill_js_content    = base.readFile("./../../../../../../Common/3dParty/hunspell/wasm/js/polyfill.js")
+base64_js_content      = base.readFile("./../../../../../../../sdkjs/common/stringserialize.js")
+engine_js_content = engine_base_js_content.replace("//module", module_js_content)
+engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
+engine_js_content = engine_js_content.replace("//polyfill",    polyfill_js_content)
+engine_js_content = engine_js_content.replace("//base64",      base64_js_content)
+
+base.writeFile("./deploy/hash.js", engine_js_content)
+base.copy_file("./hash.wasm", "./deploy/hash.wasm")
+
+# ie asm version
+arguments = arguments.replace("WASM=1", "WASM=0")
+
+# command
+windows_bat = []
+if (base.host_platform() == "windows"):
+  windows_bat.append("call emsdk/emsdk_env.bat")
+  windows_bat.append("call emcc " + arguments)  
+  #windows_bat.append("emcc --help")
+else:
+  windows_bat.append("#!/bin/bash")
+  windows_bat.append("source ./emsdk/emsdk_env.sh")
+  windows_bat.append("emcc " + arguments)  
+base.run_as_bat(windows_bat)
+
+# finalize
+base.replaceInFile("./hash.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+base.replaceInFile("./hash.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+base.replaceInFile("./hash.js", "function getBinaryPromise()", "function getBinaryPromise2()")
+
 module_js_content = base.readFile("./hash.js")
 engine_base_js_content = base.readFile("./hash_base.js")
 string_utf8_content    = base.readFile("./../../../../../../Common/js/string_utf8.js")
@@ -100,5 +138,6 @@ polyfill_js_content    = base.readFile("./../../../../../../Common/3dParty/hunsp
 engine_js_content = engine_base_js_content.replace("//module", module_js_content)
 engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
 engine_js_content = engine_js_content.replace("//polyfill",    polyfill_js_content)
+engine_js_content = engine_js_content.replace("//base64",      base64_js_content)
 
-base.writeFile("./deploy/hash.js", engine_js_content)
+base.writeFile("./deploy/hash_ie.js", engine_js_content)

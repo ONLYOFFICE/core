@@ -30,7 +30,93 @@
  *
  */
 
+//base64
+
 (function(window, undefined) {
+
+	window.messageData = null;
+	window.messagePort = null;
+	function onMessageEvent(data, port)
+	{
+	    if (data.type == "hash")
+	    {
+	        window.messageData = data.value;
+	        window.messagePort = port;
+	        if (!window.engineInit)
+	        	return;
+	        checkMessage();
+	    }
+	}
+
+	window.onconnect = function(e)
+	{
+	    var port = e.ports[0];
+	    port.onmessage = function(e) {
+	        onMessageEvent(e.data, port);
+	    }    
+	};
+	window.onmessage = function(e)
+	{
+	    onMessageEvent(e.data);
+	};
+	window.engineInit = false;
+	window.onEngineInit = function()
+	{
+		window.engineInit = true;
+		if (window.messageData)
+			checkMessage();
+	};
+
+	function checkMessage()
+	{
+		var data = window.messageData;
+		var res = AscCommon.Hash.hashOffice(data.password, data.salt, data.spinCount, data.alg).base64();
+
+		var sender = window.messagePort || window;
+		sender.postMessage({ hashValue : res });
+	}
+
+	var printErr = undefined;
+    var FS = undefined;
+    var print = undefined;
+
+    var getBinaryPromise = null;
+    if (window["AscDesktopEditor"] && document.currentScript && 0 == document.currentScript.src.indexOf("file:///"))
+    {
+        // fetch not support file:/// scheme
+        window.fetch = undefined;
+
+        getBinaryPromise = function() {
+
+            var wasmPath = "ascdesktop://fonts/" + wasmBinaryFile.substr(8);
+            return new Promise(function (resolve, reject) {
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', wasmPath, true);
+                xhr.responseType = 'arraybuffer';
+
+                if (xhr.overrideMimeType)
+                    xhr.overrideMimeType('text/plain; charset=x-user-defined');
+                else
+                    xhr.setRequestHeader('Accept-Charset', 'x-user-defined');
+
+                xhr.onload = function () {
+                    if (this.status == 200) {
+                        resolve(new Uint8Array(this.response));
+                    }
+                };
+
+                xhr.send(null);
+
+            });
+        }
+    }
+    else
+    {
+        getBinaryPromise = function() {
+            return getBinaryPromise2();
+        }
+    }
     
     //polyfill
 
@@ -168,4 +254,4 @@
 		return result;
 	};
 
-})(window, undefined);
+})(self, undefined);

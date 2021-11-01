@@ -65,8 +65,10 @@ void Animation::Convert(PPTX::Logic::Timing &oTiming)
             oTiming.tnLst = new PPTX::Logic::TnLst();
             FillTnLst(m_pPPT10->m_pExtTimeNodeContainer, *(oTiming.tnLst));
         }
-    } else if (!m_arrOldAnim.empty())
+    }
+    if (!m_arrOldAnim.empty() || m_isPPT10Broken)
     {
+        oTiming = PPTX::Logic::Timing();
         InitTimingTags(oTiming);
     }
 
@@ -649,11 +651,18 @@ void Animation::FillCBhvr(
 
     if (pBhvr->m_oClientVisualElement.m_bVisualShapeAtom)
     {
+        UINT spid = pBhvr->
+                m_oClientVisualElement.
+                m_oVisualShapeAtom.m_nObjectIdRef;
+
+        if (isSpidReal(spid) == false)
+        {
+            m_isPPT10Broken = true;
+        }
+
         oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt();
         oBhvr.tgtEl.spTgt->spid =
-                std::to_wstring(pBhvr->
-                                m_oClientVisualElement.
-                                m_oVisualShapeAtom.m_nObjectIdRef);
+                std::to_wstring(spid);
         if (m_currentBldP)
         {
             m_currentBldP->spid =
@@ -809,19 +818,6 @@ void Animation::FillCTn(
     if (pETNC->m_haveTimePropertyList && !pETNC->m_pTimePropertyList->m_bEmtyNode)
     {
         FillCTn(pETNC->m_pTimePropertyList, oCTn);
-    } else if (pETNC->m_haveTimePropertyList)
-    {
-        // TODO not work
-        oCTn.nodeType = new PPTX::Limit::TLNodeType;
-        if (m_cTnState == 0){
-            oCTn.nodeType->set(L"clickPar");
-            m_cTnState = 1;
-        }
-        else
-        {
-            oCTn.nodeType->set(L"withGroup");
-            m_cTnState = 0;
-        }
     }
 
     if (!pETNC->m_haveSequenceAtom)
@@ -2370,6 +2366,18 @@ void Animation::PushSet(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAni
 
     childTimeNode.m_node = set;
     oParent.list.push_back(childTimeNode);
+}
+
+bool Animation::isSpidReal(const UINT spid)
+{
+    if (m_arrOldAnim.empty())
+        return true;
+
+    for (const auto& oldAnim : m_arrOldAnim)
+        if (oldAnim.shapeId == spid)
+            return true;
+
+    return false;
 }
 
 

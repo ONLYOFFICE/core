@@ -237,6 +237,9 @@ private:
     void PushAnimEffect(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, std::wstring filter, std::wstring transition = L"in");
     void PushSet(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int dur = 0);
 
+    // To fix broken spids by using old animation struct
+    bool isSpidReal(const UINT spid);
+
 public:
     // Not delete any pointers
     CRecordPP10SlideBinaryTagExtension *m_pPPT10;       // For new animation
@@ -256,7 +259,7 @@ private:
     PPTX::Logic::BldP   *m_currentBldP;
 
     int m_nextRID; // it needs for audio maybe video for compisation id number;
-    UINT m_cTnState = 0;
+    bool m_isPPT10Broken = false;
 };
 
 }

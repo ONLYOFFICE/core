@@ -1784,9 +1784,6 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	}
 	else if (oInfo.IsDropDownList())
 	{
-		// Во всех PDF-ридерах кнопка выпадающего списка рисуется внутри поля, поэтому под неё немного места выделяем
-		dW += 5;
-
 		const CFormFieldInfo::CDropDownFormPr* pPr = oInfo.GetDropDownPr();
 		std::wstring wsValue = pPr->GetTextValue();
 

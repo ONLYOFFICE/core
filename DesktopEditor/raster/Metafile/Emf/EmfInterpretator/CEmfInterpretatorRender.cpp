@@ -17,7 +17,25 @@ namespace MetaFile
         void CEmfInterpretatorRender::SetFileRender(IMetaFileBase *pFile)
         {
                 if (NULL != m_pMetaFileRenderer && NULL != pFile)
+                {
                         m_pMetaFileRenderer->SetFile(pFile);
+                        }
+        }
+
+        double CEmfInterpretatorRender::GetDpiX() const
+        {
+                 if (NULL != m_pMetaFileRenderer)
+                         return m_pMetaFileRenderer->GetDpiX();
+
+                 return 96;
+        }
+
+        double CEmfInterpretatorRender::GetDpiY() const
+        {
+                 if (NULL != m_pMetaFileRenderer)
+                         return m_pMetaFileRenderer->GetDpiY();
+
+                 return 96;
         }
 
         void CEmfInterpretatorRender::Begin()

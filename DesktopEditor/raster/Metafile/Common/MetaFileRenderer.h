@@ -118,6 +118,26 @@ namespace MetaFile
 			m_bStartedPath = false;
 		}
 
+		double GetDpiX() const
+		{
+			double dDpi = 96;
+
+			if (NULL != m_pRenderer)
+				m_pRenderer->get_DpiX(&dDpi);
+
+			return dDpi;
+		}
+
+		double GetDpiY() const
+		{
+			double dDpi = 96;
+
+			if (NULL != m_pRenderer)
+				m_pRenderer->get_DpiY(&dDpi);
+
+			return dDpi;
+		}
+
 		void SetFile(IMetaFileBase *pFile)
 		{
 			m_pFile = pFile;

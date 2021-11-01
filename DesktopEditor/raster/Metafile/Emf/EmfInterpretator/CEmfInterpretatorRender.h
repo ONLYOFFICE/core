@@ -15,6 +15,9 @@ namespace MetaFile
                 InterpretatorType   GetType() const override;
                 void SetFileRender(IMetaFileBase *pFile);
 
+                double GetDpiX() const;
+                double GetDpiY() const;
+
                 void Begin() override;
                 void End() override;
 

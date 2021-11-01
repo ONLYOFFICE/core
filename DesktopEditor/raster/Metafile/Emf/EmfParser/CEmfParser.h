@@ -13,6 +13,9 @@ namespace MetaFile
                 CEmfParser(const CEmfInterpretatorBase *pEmfInterpretatorBase);
                 virtual ~CEmfParser();
 
+                void CopyDC(CEmfDC* pEmfDC);
+                void CopyTransform(TXForm& oTransform);
+
                 bool            OpenFromFile(const wchar_t* wsFilePath)     override;
                 void            PlayFile()                                  override;
                 void            Scan()                                      override;

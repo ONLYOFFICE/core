@@ -43,6 +43,22 @@ namespace MetaFile
                 RELEASEOBJECT(m_pEmfPlusParser);
         }
 
+        void CEmfParser::CopyDC(CEmfDC* pEmfDC)
+        {
+                if (NULL != pEmfDC)
+                {
+                        m_pDC = pEmfDC->Copy();
+                }
+        }
+
+        void CEmfParser::CopyTransform(TXForm &oTransform)
+        {
+//                if (NULL != m_pInterpretator)
+//                        m_pInterpretator->SetTransform(oTransform.M11, oTransform.M12, oTransform.M21, oTransform.M22, oTransform.Dx, oTransform.Dy);
+
+                m_oTransform.Copy(&oTransform);
+        }
+
         bool CEmfParser::OpenFromFile(const wchar_t *wsFilePath)
         {
                 return IMetaFileBase::OpenFromFile(wsFilePath);
@@ -1405,9 +1421,12 @@ namespace MetaFile
                         m_oStream.Skip(4);
 
                         if (NULL == m_pEmfPlusParser)
+                        {
                                 m_pEmfPlusParser = new CEmfPlusParser(m_pInterpretator, m_oHeader);
+                                m_pEmfPlusParser->SetFontManager(GetFontManager());
+                                m_pEmfPlusParser->CopyDC(m_pDC);
+                        }
 
-                        m_pEmfPlusParser->SetFontManager(GetFontManager());
                         m_pEmfPlusParser->SetStream(m_oStream.GetCurPtr(), m_ulRecordSize - 8);
                         m_pEmfPlusParser->PlayFile();
                 }

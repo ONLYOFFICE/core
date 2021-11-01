@@ -176,6 +176,12 @@ namespace MetaFile
                 RELEASEOBJECT(m_pInterpretator);
         }
 
+        void CEmfPlusParser::CopyDC(CEmfDC *pEmfDC)
+        {
+                if (NULL != pEmfDC)
+                        m_pDC = pEmfDC->Copy();
+        }
+
         bool CEmfPlusParser::OpenFromFile(const wchar_t *wsFilePath)
         {
                 return false;
@@ -301,9 +307,6 @@ namespace MetaFile
                         m_ulRecordSize = 0;
                 }while(m_oStream.CanRead() > 4);
 
-                if(NULL != m_pInterpretator)
-                        m_pInterpretator->End();
-
                 #ifdef _DEBUG
                         std::wcout << L"___________________________" << std::endl;
                 #endif
@@ -348,17 +351,36 @@ namespace MetaFile
                 {
                         std::vector<TEmfPlusPointF> arPoints = ReadPointsF(unPathPointCount);
 
-                        if (NULL != m_pPath)
-                                delete m_pPath;
-
-                        m_pPath = new CEmfPath;
+                        if (NULL == m_pPath)
+                                m_pPath = new CEmfPath;
 
                         MoveTo(arPoints[0]);
 
                         for (unsigned int unIndex = 1; unIndex < unPathPointCount; ++unIndex)
                                 LineTo(arPoints[unIndex]);
 
-//                        ClosePath();
+                        if ((unPathPointFlags >>(20)) & 1)
+                        {
+                                //Определен флаг R
+                                //TODO: реализовать
+                        }
+                        else
+                        {
+                                char chPointType;
+                                for (unsigned int unIndex = 0; unIndex < unPathPointCount; ++unIndex)
+                                {
+                                        m_oStream >> chPointType;
+                                        char chFlags, chType;
+                                        chType = ExpressValue(chPointType, 0, 3);
+                                        chFlags = ExpressValue(chPointType, 4, 7);
+
+                                        if (chFlags == 0x08 && NULL != m_pPath)
+                                        {
+                                                m_pPath->Draw(m_pInterpretator, false, true);
+                                                RELEASEOBJECT(m_pPath);
+                                        }
+                                }
+                        }
                         //Оба флага не определены
                 }
                 //TODO: реализовать
@@ -389,6 +411,24 @@ namespace MetaFile
                 m_oStream >> unEmfPlusFlags;
                 m_oStream >> m_unLogicalDpiX;
                 m_oStream >> m_unLogicalDpiY;
+
+                if(NULL != m_pInterpretator)
+                {
+                        m_pInterpretator->Begin();
+
+                        double dDpiX, dDpiY;
+                        dDpiX = dDpiY = 96;
+
+                        if (m_pInterpretator->GetType() == Render)
+                        {
+                                dDpiX = ((CEmfInterpretatorRender*)m_pInterpretator)->GetDpiX();
+                                dDpiY = ((CEmfInterpretatorRender*)m_pInterpretator)->GetDpiY();
+                        }
+
+                        TXForm oNewMatrix (dDpiX / m_unLogicalDpiX, 0, 0, dDpiY / m_unLogicalDpiY, 0, 0);
+                        m_oTransform.Multiply(oNewMatrix, MWT_RIGHTMULTIPLY);
+                }
+
 
                 //TODO: добавить установление нового Dpi
         }
@@ -988,6 +1028,8 @@ namespace MetaFile
                                                 CEmfParser oEmfParser(m_pInterpretator);
                                                 oEmfParser.SetStream(m_pContineudObject->GetData(), m_pContineudObject->GetSize());
                                                 oEmfParser.SetFontManager(GetFontManager());
+//                                                oEmfParser.CopyDC(m_pDC);
+//                                                oEmfParser.CopyTransform(m_oTransform);
                                                 oEmfParser.PlayFile();
 
                                                 RELEASEOBJECT(m_pContineudObject);
@@ -1255,6 +1297,8 @@ namespace MetaFile
 
         void CEmfPlusParser::Read_EMFPLUS_ENDOFFILE()
         {
+                if(NULL != m_pInterpretator)
+                        m_pInterpretator->End();
                 //TODO: реализовать
         }
 

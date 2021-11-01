@@ -59,29 +59,15 @@ class Cell_T: public CellBase, public XLS::BiffRecord
             static std::string str;
             switch(id)
             {
-                case rt_CellBlank:
-                    str = "CellBlank";
-                    return str;
-                case rt_CellRk:
-                    str = "CellRk";
-                    return str;
-                case rt_CellError:
-                    str = "CellError";
-                    return str;
-                case rt_CellBool:
-                    str = "CellBool";
-                    return str;
-                case rt_CellReal:
-                    str = "CellReal";
-                    return str;
-                case rt_CellIsst:
-                    str = "CellIsst";
-                    return str;
-                case rt_CellSt:
-                    str = "CellSt";
-                    return str;
+				case rt_CellBlank:	str = "CellBlank"; break;
+				case rt_CellRk:		str = "CellRk"; break;
+				case rt_CellError:	str = "CellError"; break; 
+				case rt_CellBool:	str = "CellBool"; break;
+				case rt_CellReal:	str = "CellReal"; break;
+				case rt_CellIsst:	str = "CellIsst"; break; 
+				case rt_CellSt:		str = "CellSt"; break;
             }
-
+			return str;
         }
         virtual ~Cell_T()
         {

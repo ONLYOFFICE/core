@@ -304,11 +304,11 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.cpp \
     ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.cpp \
     ../Source/XlsbFormat/Biff12_unions/BUNDLESHS.cpp \
-    ../Source/XlsbFormat/Biff12_unions/FNGROUP.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FNGROUP_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/EXTERNALS.cpp \
     ../Source/XlsbFormat/Biff12_unions/SUP.cpp \
     ../Source/XlsbFormat/Biff12_unions/SUPSAME.cpp \
-    ../Source/XlsbFormat/Biff12_unions/SUPADDIN.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SUPADDIN_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/COLINFOS.cpp \
     ../Source/XlsbFormat/Biff12_unions/HLINKS.cpp \
     ../Source/XlsbFormat/Biff12_unions/MERGECELLS.cpp \
@@ -319,7 +319,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/FMLACELL.cpp \
     ../Source/XlsbFormat/Biff12_unions/SHRFMLACELL.cpp \
     ../Source/XlsbFormat/Biff12_unions/TABLECELL.cpp \
-    ../Source/XlsbFormat/Biff12_unions/CELLMETA.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CELLMETA_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/WSVIEW2.cpp \
     ../Source/XlsbFormat/Biff12_unions/WSVIEWS2.cpp \
     ../Source/XlsbFormat/Biff12_unions/LISTPARTS.cpp \

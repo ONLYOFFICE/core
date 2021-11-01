@@ -135,6 +135,7 @@
     #include "../Source/XlsbFormat/Biff12_records/BeginFmts.cpp"
     #include "../Source/XlsbFormat/Biff12_records/EndFmts.cpp"
     #include "../Source/XlsbFormat/Biff12_records/BeginFonts.cpp"
+    #include "../Source/XlsbFormat/Biff12_records/KnownFonts.cpp"
     #include "../Source/XlsbFormat/Biff12_records/EndFonts.cpp"
     #include "../Source/XlsbFormat/Biff12_records/BeginFills.cpp"
     #include "../Source/XlsbFormat/Biff12_records/Fill.cpp"
@@ -233,6 +234,7 @@
     #include "../Source/XlsbFormat/Biff12_structures/FRTParsedFormula.cpp"
     #include "../Source/XlsbFormat/Biff12_structures/FRTRelID.cpp"
 // Biff12_unions
+    #include "../Source/XlsbFormat/Biff12_unions/ACFONTS.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/FRT.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/ACUID.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/ACABSPATH.cpp"

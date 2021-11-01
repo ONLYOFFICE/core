@@ -262,6 +262,36 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndCommentAuthors.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginComments.cpp \
     ../Source/XlsbFormat/Biff12_records/EndComments.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginCustomRichFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/CustomRichFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndCustomRichFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginRichFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/RichFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/RichFilterDateGroupItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndRichFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginRichFilterColumn.cpp \
+    ../Source/XlsbFormat/Biff12_records/DynamicRichFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/Top10RichFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndRichFilterColumn.cpp \
+    ../Source/XlsbFormat/Biff12_records/IconFilter14.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/Filter14.cpp \
+    ../Source/XlsbFormat/Biff12_records/Filter.cpp \
+    ../Source/XlsbFormat/Biff12_records/AFilterDateGroupItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginCustomFilters14.cpp \
+    ../Source/XlsbFormat/Biff12_records/CustomFilter14.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndCustomFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginCustomFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/CustomFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginFilterColumn.cpp \
+    ../Source/XlsbFormat/Biff12_records/DynamicFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/Top10Filter.cpp \
+    ../Source/XlsbFormat/Biff12_records/ColorFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/IconFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndFilterColumn.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginAFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndAFilter.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -375,6 +405,17 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/COMMENTLIST.cpp \
     ../Source/XlsbFormat/Biff12_unions/COMMENTAUTHORS.cpp \
     ../Source/XlsbFormat/Biff12_unions/COMMENTS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CUSTOMRICHFILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/RICHFILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/RICHFILTERCONTENT.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACICONFILTER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACFILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACCUSTOMFILTER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACFILTERCONTENT.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CUSTOMFILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FILTERCOLUMN.cpp \
+    ../Source/XlsbFormat/Biff12_unions/AUTOFILTER.cpp \
 }
 
 
@@ -726,6 +767,36 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_records/EndCommentAuthors.h \
     ../Source/XlsbFormat/Biff12_records/BeginComments.h \
     ../Source/XlsbFormat/Biff12_records/EndComments.h \
+    ../Source/XlsbFormat/Biff12_records/BeginCustomRichFilters.h \
+    ../Source/XlsbFormat/Biff12_records/CustomRichFilter.h \
+    ../Source/XlsbFormat/Biff12_records/EndCustomRichFilters.h \
+    ../Source/XlsbFormat/Biff12_records/BeginRichFilters.h \
+    ../Source/XlsbFormat/Biff12_records/RichFilter.h \
+    ../Source/XlsbFormat/Biff12_records/RichFilterDateGroupItem.h \
+    ../Source/XlsbFormat/Biff12_records/EndRichFilters.h \
+    ../Source/XlsbFormat/Biff12_records/BeginRichFilterColumn.h \
+    ../Source/XlsbFormat/Biff12_records/DynamicRichFilter.h \
+    ../Source/XlsbFormat/Biff12_records/Top10RichFilter.h \
+    ../Source/XlsbFormat/Biff12_records/EndRichFilterColumn.h \
+    ../Source/XlsbFormat/Biff12_records/IconFilter14.h \
+    ../Source/XlsbFormat/Biff12_records/BeginFilters.h \
+    ../Source/XlsbFormat/Biff12_records/Filter14.h \
+    ../Source/XlsbFormat/Biff12_records/Filter.h \
+    ../Source/XlsbFormat/Biff12_records/AFilterDateGroupItem.h \
+    ../Source/XlsbFormat/Biff12_records/EndFilters.h \
+    ../Source/XlsbFormat/Biff12_records/BeginCustomFilters14.h \
+    ../Source/XlsbFormat/Biff12_records/CustomFilter14.h \
+    ../Source/XlsbFormat/Biff12_records/EndCustomFilters.h \
+    ../Source/XlsbFormat/Biff12_records/BeginCustomFilters.h \
+    ../Source/XlsbFormat/Biff12_records/CustomFilter.h \
+    ../Source/XlsbFormat/Biff12_records/BeginFilterColumn.h \
+    ../Source/XlsbFormat/Biff12_records/DynamicFilter.h \
+    ../Source/XlsbFormat/Biff12_records/Top10Filter.h \
+    ../Source/XlsbFormat/Biff12_records/ColorFilter.h \
+    ../Source/XlsbFormat/Biff12_records/IconFilter.h \
+    ../Source/XlsbFormat/Biff12_records/EndFilterColumn.h \
+    ../Source/XlsbFormat/Biff12_records/BeginAFilter.h \
+    ../Source/XlsbFormat/Biff12_records/EndAFilter.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.h \
@@ -842,3 +913,14 @@ HEADERS += docxformatlib.h \
     ../Source/XlsbFormat/Biff12_unions/COMMENTLIST.h \
     ../Source/XlsbFormat/Biff12_unions/COMMENTAUTHORS.h \
     ../Source/XlsbFormat/Biff12_unions/COMMENTS.h \
+    ../Source/XlsbFormat/Biff12_unions/CUSTOMRICHFILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/RICHFILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/RICHFILTERCONTENT.h \
+    ../Source/XlsbFormat/Biff12_unions/ACICONFILTER.h \
+    ../Source/XlsbFormat/Biff12_unions/ACFILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/ACCUSTOMFILTER.h \
+    ../Source/XlsbFormat/Biff12_unions/ACFILTERCONTENT.h \
+    ../Source/XlsbFormat/Biff12_unions/FILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/CUSTOMFILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/FILTERCOLUMN.h \
+    ../Source/XlsbFormat/Biff12_unions/AUTOFILTER.h \

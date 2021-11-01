@@ -975,8 +975,19 @@ namespace XLSB
         rt_Sxdi15 =									2136,
         rt_Uid =                                    3072,
         rt_RevisionPtr =							3073,
-        rt_BeginRichSortCondition =							5092,
-        rt_EndRichSortCondition =							5093,
+        rt_BeginRichFilters =                       5081,
+        rt_EndRichFilters =                         5082,
+        rt_RichFilter =                             5083,
+        rt_BeginRichFilterColumn =                  5084,
+        rt_EndRichFilterColumn  =                   5085,
+        rt_BeginCustomRichFilters =                 5086,
+        rt_EndCustomRichFilters =               	5087,
+        rt_CustomRichFilter =                       5088,
+        rt_Top10RichFilter =                        5089,
+        rt_DynamicRichFilter =                      5090,
+        rt_BeginRichSortCondition =					5092,
+        rt_EndRichSortCondition =					5093,
+        rt_RichFilterDateGroupItem =				5094,
         rt_Unknown =								0xffff
     } RecordType;
 }

@@ -235,6 +235,14 @@
     <ClInclude Include="..\Source\Base\Nullable.h" />
     <ClInclude Include="..\Source\Base\SmartPtr.h" />
     <ClInclude Include="..\Source\Base\unicode_util.h" />
+    <ClInclude Include="..\Source\Common\ComplexTypes.h" />
+    <ClInclude Include="..\Source\Common\SimpleTypes_Base.h" />
+    <ClInclude Include="..\Source\Common\SimpleTypes_Drawing.h" />
+    <ClInclude Include="..\Source\Common\SimpleTypes_OMath.h" />
+    <ClInclude Include="..\Source\Common\SimpleTypes_Shared.h" />
+    <ClInclude Include="..\Source\Common\SimpleTypes_Vml.h" />
+    <ClInclude Include="..\Source\Common\SimpleTypes_Word.h" />
+    <ClInclude Include="..\Source\Common\Unit.h" />
     <ClInclude Include="..\Source\DocxFormat\App.h" />
     <ClInclude Include="..\Source\DocxFormat\Bibliography.h" />
     <ClInclude Include="..\Source\DocxFormat\Comments.h" />
@@ -697,6 +705,7 @@
     </ClCompile>
     <ClCompile Include="..\..\..\ASCOfficePPTXFile\PPTXFormat\Folder.cpp" />
     <ClCompile Include="..\Source\Base\unicode_util.cpp" />
+    <ClCompile Include="..\Source\Common\SimpleTypes_Word.cpp" />
     <ClCompile Include="..\Source\DocxFormat\App.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Comments.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Core.cpp" />

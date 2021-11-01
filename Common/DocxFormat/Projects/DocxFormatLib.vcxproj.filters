@@ -175,6 +175,9 @@
     <Filter Include="XlsxFormat\Xlsb Format\Records">
       <UniqueIdentifier>{c44b3a0c-c88d-4a2d-8f11-b037faaa346c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Logic\Common">
+      <UniqueIdentifier>{b119b15b-959b-4679-9848-0918f9d71193}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\DocxFormat\Rels.h">
@@ -1510,6 +1513,30 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\uCFVO14.h">
       <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\Common\ComplexTypes.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Base.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Drawing.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_OMath.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Shared.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Vml.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Word.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Unit.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\DocxFormat\Logic\Table.cpp">
@@ -2520,6 +2547,9 @@
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\uCFVO14.cpp">
       <Filter>XlsxFormat\Xlsb Format\Unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\SimpleTypes_Word.cpp">
+      <Filter>Logic\Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

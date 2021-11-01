@@ -3497,7 +3497,7 @@ namespace PdfReader
 
         m_pRenderer->CommandDrawTextEx(wsUnicodeText, pGids, unGidsCount, PDFCoordsToMM(100), PDFCoordsToMM(100), 0, PDFCoordsToMM(0));
     #ifdef BUILDING_WASM_MODULE
-        GetGlyphs(wsUnicodeText, pGids, unGidsCount, PDFCoordsToMM(100), PDFCoordsToMM(100), 0, PDFCoordsToMM(0));
+        GetGlyphs(wsUnicodeText, pGids, PDFCoordsToMM(100), PDFCoordsToMM(100));
     #endif
         RELEASEARRAYOBJECTS(pGids);
     }
@@ -3661,7 +3661,7 @@ namespace PdfReader
             {
                 m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
             #ifdef BUILDING_WASM_MODULE
-                GetGlyphs(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+                GetGlyphs(wsUnicodeText, &unGid, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY));
             #endif
             }
         }
@@ -4462,38 +4462,32 @@ namespace PdfReader
             return -1;
         return std::stoi(sFont.substr(nLast + 1)) - 1;
     }
-    void RendererOutputDev::GetGlyphs(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
+    void RendererOutputDev::GetGlyphs(const std::wstring& bsUnicodeText, unsigned int* pGids, double x, double y)
     {
         // m_pInternal->GetUnicodes(bsUnicodeText);
         int nLen = (int)bsUnicodeText.length();
-        int m_nTempUnicodesAlloc = nLen;
-        int* m_pTempUnicodes = new int[m_nTempUnicodesAlloc];
-        int m_nTempUnicodesLen = 0;
+        int* pTempUnicodes    = new int[nLen];
+        int  nTempUnicodesLen = 0;
         const wchar_t* pWchars = bsUnicodeText.c_str();
 
         if (sizeof(wchar_t) == 2)
         {
-            for (int nIndex = 0, nGlyphIndex = 0; nIndex < nLen; ++nIndex, ++nGlyphIndex)
+            for (int i = 0; i < nLen; i++)
             {
-                int code = (int)pWchars[nIndex];
-                if (code >= 0xD800 && code <= 0xDFFF && (nIndex + 1) < nLen)
+                int code = (int)pWchars[i];
+                if (code >= 0xD800 && code <= 0xDFFF && (i + 1) < nLen)
                 {
-                    ++nIndex;
-                    code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & pWchars[nIndex]));
+                    i++;
+                    code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & pWchars[i]));
                 }
-
-                m_pTempUnicodes[m_nTempUnicodesLen++] = code;
+                pTempUnicodes[nTempUnicodesLen++] = code;
             }
         }
         else
-        {
-            for ( int nIndex = 0; nIndex < nLen; ++nIndex )
-            {
-                m_pTempUnicodes[m_nTempUnicodesLen++] = (int)pWchars[nIndex];
-            }
-        }
+            for (int i = 0; i < nLen; i++)
+                pTempUnicodes[nTempUnicodesLen++] = (int)pWchars[i];
 
-        // m_pInternal->m_oWriter.WriteText(m_pTempUnicodes, (const int*)pGids, m_nTempUnicodesLen, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
+        // m_pInternal->m_oWriter.WriteText(pTempUnicodes, (const int*)pGids, nTempUnicodesLen, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
         // TODO: CheckTectClipRect();
 
         bool bIsDumpFont = false;
@@ -4505,11 +4499,10 @@ namespace PdfReader
         {
             m_lCurrentFont     = nCurrentFont;
             m_dCurrentFontSize = dFontSize;
-
             bIsDumpFont = true;
         }
 
-        // m_oSmartText.CommandText(m_pTempUnicodes, (const int*)pGids, m_nTempUnicodesLen, x, y, w, h, bIsDumpFont, this);
+        // m_oSmartText.CommandText(pTempUnicodes, (const int*)pGids, nTempUnicodesLen, x, y, w, h, bIsDumpFont, this);
         // 1) сначала определяем точку отсчета и направление baseline
         double _x1 = x;
         double _y1 = y;
@@ -4545,9 +4538,7 @@ namespace PdfReader
             dAbsVec = 1;
 
         LONG nCountChars = m_oLine.GetCountChars();
-
-        bool bIsNewLine = true;
-
+        bool bIsNewLine  = true;
         if (0 != nCountChars)
         {
             if (_isConstX && m_oLine.m_bIsConstX && fabs(_b - m_oLine.m_dB) < 0.001)
@@ -4555,8 +4546,7 @@ namespace PdfReader
             else if (!_isConstX && !m_oLine.m_bIsConstX && fabs(_k - m_oLine.m_dK) < 0.001 && fabs(_b - m_oLine.m_dB) < 0.001)
                 bIsNewLine = false;
         }
-
-        if (bIsNewLine && (0 != nCountChars))
+        if (bIsNewLine && (nCountChars != 0))
         {
             // не совпала baseline. поэтому просто скидываем линию в поток
             DumpLine();
@@ -4565,7 +4555,7 @@ namespace PdfReader
         // теперь нужно определить сдвиг по baseline относительно destination точки
         nCountChars = m_oLine.GetCountChars();
         double dOffsetX = 0;
-        if (0 == nCountChars)
+        if (nCountChars == 0)
         {
             m_oLine.m_bIsConstX = _isConstX;
             m_oLine.m_dK = _k;
@@ -4582,11 +4572,11 @@ namespace PdfReader
         }
         else
         {
-            double sx = _x1 - m_oLine.m_dEndX;
-            double sy = _y1 - m_oLine.m_dEndY;
-            double len = sqrt(sx*sx + sy*sy);
+            double _sx = _x1 - m_oLine.m_dEndX;
+            double _sy = _y1 - m_oLine.m_dEndY;
+            double len = sqrt(_sx * _sx + _sy * _sy);
 
-            if (sx*m_oLine.m_ex >= 0 && sy*m_oLine.m_ey >= 0)
+            if (_sx * m_oLine.m_ex >= 0 && _sy * m_oLine.m_ey >= 0)
             {
                 // продолжаем линию
                 dOffsetX = len;
@@ -4597,10 +4587,10 @@ namespace PdfReader
                 {
                     // вставляем пробел. Пробел у нас будет не совсем пробел. А специфический
                     NSWasm::CHChar* pSpaceChar = m_oLine.AddTail();
-                    pSpaceChar->x = pLastChar->width;
-                    pSpaceChar->width = dOffsetX - pLastChar->width;
+                    pSpaceChar->x       = pLastChar->width;
+                    pSpaceChar->width   = dOffsetX - pLastChar->width;
                     pSpaceChar->unicode = 0xFFFF;
-                    pSpaceChar->gid = 0xFFFF;
+                    pSpaceChar->gid     = 0xFFFF;
                     dOffsetX -= pLastChar->width;
 
                     m_oMeta.WriteBYTE(0);
@@ -4659,7 +4649,8 @@ namespace PdfReader
         _dumpMtx[2] = shx;
         _dumpMtx[3] = sy;
 
-        double dTextScale = std::min( sqrt( _dumpMtx[2] * _dumpMtx[2] + _dumpMtx[3] * _dumpMtx[3] ), sqrt( _dumpMtx[0] * _dumpMtx[0] + _dumpMtx[1] * _dumpMtx[1] ) );
+        double dTextScale = std::min(sqrt(_dumpMtx[2] * _dumpMtx[2] + _dumpMtx[3] * _dumpMtx[3]),
+                                     sqrt(_dumpMtx[0] * _dumpMtx[0] + _dumpMtx[1] * _dumpMtx[1]));
 
         if ((_dumpSize < 0.1 && dTextScale > 10) || (_dumpSize > 10 && dTextScale < 0.1))
         {
@@ -4712,8 +4703,6 @@ namespace PdfReader
         }
 
         // все, baseline установлен. теперь просто продолжаем линию
-        LONG lTextLen = m_nTempUnicodesLen;
-
         if (bIsDumpFont)
         {
             m_pFontManager->LoadFontFromFile(sCurrentFontName, 0, dFontSize, 72.0, 72.0);
@@ -4721,9 +4710,8 @@ namespace PdfReader
         }
 
         double dKoef = dFontSize * 25.4 / (72 * abs(m_pFontManager->GetUnitsPerEm()));
-        double dKoefMetr = dAbsVec;
-        double dAscender  = abs(m_pFontManager->GetAscender())  * dKoef * dKoefMetr;
-        double dDescender = abs(m_pFontManager->GetDescender()) * dKoef * dKoefMetr;
+        double dAscender  = abs(m_pFontManager->GetAscender())  * dKoef * dAbsVec;
+        double dDescender = abs(m_pFontManager->GetDescender()) * dKoef * dAbsVec;
 
         if (m_oLine.m_dAscent < dAscender)
             m_oLine.m_dAscent = dAscender;
@@ -4731,50 +4719,47 @@ namespace PdfReader
             m_oLine.m_dDescent = dDescender;
 
         double dPlusOffset = 0;
-
-        const int* input = NULL;
-        if (NULL != pGids)
+        int* input = NULL;
+        if (pGids)
         {
-            input = (const int*)pGids;
+            input = (int*)pGids;
             m_pFontManager->SetStringGID(TRUE);
         }
         else
         {
-            input = m_pTempUnicodes;
+            input = pTempUnicodes;
             m_pFontManager->SetStringGID(FALSE);
         }
 
-        double dBoxW = 0;
-        double dPrevW = dOffsetX;
-        for (LONG lIndex = 0; lIndex < lTextLen; ++lIndex)
+        for (int i = 0; i < nTempUnicodesLen; i++)
         {
             // double dW = m_oFontManager.MeasureString((const unsigned int*)(input + lIndex), 1, 0, 0, dBoxX, dBoxY, dBoxW, dBoxH);
-            m_pFontManager->LoadString1((const unsigned int*)(input + lIndex), 1, 0, 0);
+            m_pFontManager->LoadString1((unsigned int*)(input + i), 1, 0, 0);
             TBBox _box  = m_pFontManager->MeasureString2();
-            dBoxW = abs(_box.fMaxX - _box.fMinX) * 25.4 / 72.0;
+            double dBoxW = abs(_box.fMaxX - _box.fMinX) * 25.4 / 72.0;
 
             NSWasm::CHChar* pChar = m_oLine.AddTail();
-            pChar->unicode = m_pTempUnicodes[lIndex];
-            pChar->gid = (NULL == pGids) ? 0xFFFF : pGids[lIndex];
+            pChar->unicode = pTempUnicodes[i];
+            pChar->gid = pGids ? pGids[i] : 0xFFFF;
 
-            pChar->x = dPrevW;
-            if (lIndex != 0)
-                dPlusOffset += dPrevW;
-            dPrevW = dBoxW;
+            pChar->x = dOffsetX;
+            if (i != 0)
+                dPlusOffset += dOffsetX;
+            dOffsetX = dBoxW;
 
             pChar->width = dBoxW * dAbsVec;
 
-            if (0 != lIndex)
+            if (i != 0)
                 m_oMeta.WriteBYTE(0);
 
-            if (lIndex == (lTextLen - 1))
+            if (i == (nTempUnicodesLen - 1))
             {
                 m_oLine.m_dEndX += dPlusOffset * m_oLine.m_ex;
                 m_oLine.m_dEndY += dPlusOffset * m_oLine.m_ey;
             }
         }
 
-        RELEASEARRAYOBJECTS(m_pTempUnicodes);
+        RELEASEARRAYOBJECTS(pTempUnicodes);
     }
     void RendererOutputDev::DumpLine()
     {
@@ -4790,15 +4775,14 @@ namespace PdfReader
         if (fabs(m_oLine.m_ex - 1.0) < 0.001 && fabs(m_oLine.m_ey) < 0.001)
             mask |= 0x01;
 
-        LONG lCountSpaces = 0;
+        LONG lCountSpaces  = 0;
         LONG lCountSymbols = 0;
-        LONG lCountWords = 0;
+        LONG lCountWords   = 0;
         bool bIsLastSymbol = false;
-
-        bool bIsGidExist = false;
+        bool bIsGidExist   = false;
 
         LONG nCount = m_oLine.GetCountChars();
-        for (LONG i = 0; i < nCount; ++i)
+        for (LONG i = 0; i < nCount; i++)
         {
             NSWasm::CHChar* pChar = &m_oLine.m_pChars[i];
             if (pChar->gid != 0xFFFF)
@@ -4807,7 +4791,7 @@ namespace PdfReader
                 bIsGidExist = true;
             }
 
-            if (0xFFFF == pChar->unicode || ((WCHAR)' ') == pChar->unicode || ((WCHAR)'\t') == pChar->unicode)
+            if (0xFFFF == pChar->unicode || L' ' == pChar->unicode || L'\t' == pChar->unicode)
             {
                 lCountSpaces++;
                 if (bIsLastSymbol)
@@ -4818,8 +4802,8 @@ namespace PdfReader
             }
             else
             {
-                lCountSymbols++;
                 bIsLastSymbol = true;
+                lCountSymbols++;
             }
         }
 
@@ -4862,17 +4846,15 @@ namespace PdfReader
         double dWidthLine = 0;
 
         double dCurrentGlyphLineOffset = 0;
-        for (LONG lIndexChar = 0; lIndexChar < nCount; ++lIndexChar)
+        for (LONG lIndexChar = 0; lIndexChar < nCount; lIndexChar++)
         {
             NSWasm::CHChar* pChar = &m_oLine.m_pChars[lIndexChar];
 
             // все настроки буквы (m_oMeta)
             BYTE lLen = *pBufferMeta;
-            ++pBufferMeta;
+            pBufferMeta++;
             if (lLen > 0)
-            {
                 m_pPageMeta.Write(pBufferMeta, lLen);
-            }
             pBufferMeta += lLen;
             // смещение относительно предыдущей буквы (у всех, кроме первой)
             // юникодное значение
@@ -4880,17 +4862,15 @@ namespace PdfReader
             // ширина буквы
 
             m_pPageMeta.WriteBYTE(80); // CMetafile::ctDrawText
-            if (0 != lIndexChar)
-            {
+            if (lIndexChar)
                 m_pPageMeta.WriteDouble2(pChar->x);
-            }
 
             m_pPageMeta.WriteWCHAR(pChar->unicode);
             if (bIsGidExist)
                 m_pPageMeta.WriteUSHORT(pChar->gid);
             m_pPageMeta.WriteDouble2(pChar->width);
 
-            if (lIndexChar != 0)
+            if (lIndexChar)
                 dCurrentGlyphLineOffset += pChar->x;
 
             if (lIndexChar == (nCount - 1))
@@ -4905,7 +4885,6 @@ namespace PdfReader
 
         m_oLine.Clear();
         m_oMeta.ClearNoAttack();
-
         m_pPageMeta.WriteBYTE(162); // CMetafile::ctCommandTextLineEnd
     }
 #endif

@@ -191,7 +191,7 @@ namespace XPS
 		oRes.ClearWithoutAttack();
 		return res;
 	}
-    void Page::GetGlyphs(IRenderer* m_pRenderer, const std::wstring& bsUnicodeText, unsigned short* pGids, double x, double y, bool bChangeFont)
+    void  Page::GetGlyphs(IRenderer* m_pRenderer, const std::wstring& bsUnicodeText, unsigned short* pGids, double x, double y, bool bChangeFont)
     {
         // m_pInternal->GetUnicodes(bsUnicodeText);
         int nUnicodeLen = (int)bsUnicodeText.length();
@@ -271,7 +271,7 @@ namespace XPS
             dAbsVec = 1;
 
         LONG nCountChars = m_oLine.GetCountChars();
-        bool bIsNewLine = true;
+        bool bIsNewLine  = true;
         if (nCountChars != 0)
         {
             if (_isConstX && m_oLine.m_bIsConstX && fabs(_b - m_oLine.m_dB) < 0.001)
@@ -473,7 +473,7 @@ namespace XPS
 
             NSWasm::CHChar* pChar = m_oLine.AddTail();
             pChar->unicode = pTempUnicodes[i];
-            pChar->gid = (pGids) ? pGids[i] : 0xFFFF;
+            pChar->gid = pGids ? pGids[i] : 0xFFFF;
 
             pChar->x = dOffsetX;
             if (i != 0)
@@ -494,7 +494,7 @@ namespace XPS
 
         RELEASEARRAYOBJECTS(pTempUnicodes);
     }
-    void Page::DumpLine()
+    void  Page::DumpLine()
     {
         if (m_oLine.m_bIsSetUpTransform)
         {
@@ -508,15 +508,14 @@ namespace XPS
         if (fabs(m_oLine.m_ex - 1.0) < 0.001 && fabs(m_oLine.m_ey) < 0.001)
             mask |= 0x01;
 
-        LONG lCountSpaces = 0;
+        LONG lCountSpaces  = 0;
         LONG lCountSymbols = 0;
-        LONG lCountWords = 0;
+        LONG lCountWords   = 0;
         bool bIsLastSymbol = false;
-
-        bool bIsGidExist = false;
+        bool bIsGidExist   = false;
 
         LONG nCount = m_oLine.GetCountChars();
-        for (LONG i = 0; i < nCount; ++i)
+        for (LONG i = 0; i < nCount; i++)
         {
             NSWasm::CHChar* pChar = &m_oLine.m_pChars[i];
             if (pChar->gid != 0xFFFF)
@@ -525,7 +524,7 @@ namespace XPS
                 bIsGidExist = true;
             }
 
-            if (0xFFFF == pChar->unicode || ((WCHAR)' ') == pChar->unicode || ((WCHAR)'\t') == pChar->unicode)
+            if (0xFFFF == pChar->unicode || L' ' == pChar->unicode || L'\t' == pChar->unicode)
             {
                 lCountSpaces++;
                 if (bIsLastSymbol)
@@ -536,15 +535,15 @@ namespace XPS
             }
             else
             {
-                lCountSymbols++;
                 bIsLastSymbol = true;
+                lCountSymbols++;
             }
         }
 
         if (bIsLastSymbol)
             lCountWords++;
 
-        if (0 == nCount)
+        if (nCount == 0)
         {
             m_oLine.Clear();
             m_oMeta.ClearNoAttack();
@@ -580,17 +579,15 @@ namespace XPS
         double dWidthLine = 0;
 
         double dCurrentGlyphLineOffset = 0;
-        for (LONG lIndexChar = 0; lIndexChar < nCount; ++lIndexChar)
+        for (LONG lIndexChar = 0; lIndexChar < nCount; lIndexChar++)
         {
             NSWasm::CHChar* pChar = &m_oLine.m_pChars[lIndexChar];
 
             // все настроки буквы (m_oMeta)
             BYTE lLen = *pBufferMeta;
-            ++pBufferMeta;
+            pBufferMeta++;
             if (lLen > 0)
-            {
                 m_pPageMeta.Write(pBufferMeta, lLen);
-            }
             pBufferMeta += lLen;
             // смещение относительно предыдущей буквы (у всех, кроме первой)
             // юникодное значение
@@ -598,17 +595,15 @@ namespace XPS
             // ширина буквы
 
             m_pPageMeta.WriteBYTE(80); // CMetafile::ctDrawText
-            if (0 != lIndexChar)
-            {
+            if (lIndexChar)
                 m_pPageMeta.WriteDouble2(pChar->x);
-            }
 
             m_pPageMeta.WriteWCHAR(pChar->unicode);
             if (bIsGidExist)
                 m_pPageMeta.WriteUSHORT(pChar->gid);
             m_pPageMeta.WriteDouble2(pChar->width);
 
-            if (lIndexChar != 0)
+            if (lIndexChar)
                 dCurrentGlyphLineOffset += pChar->x;
 
             if (lIndexChar == (nCount - 1))
@@ -623,7 +618,6 @@ namespace XPS
 
         m_oLine.Clear();
         m_oMeta.ClearNoAttack();
-
         m_pPageMeta.WriteBYTE(162); // CMetafile::ctCommandTextLineEnd
     }
 #endif

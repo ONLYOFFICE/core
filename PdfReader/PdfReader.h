@@ -97,12 +97,14 @@ namespace PdfReader
         NSFonts::IFontManager* GetFontManager();
 
         std::wstring ToXml(const std::wstring& wsXmlPath);
-        #ifdef BUILDING_WASM_MODULE
+    #ifdef BUILDING_WASM_MODULE
         virtual BYTE* GetStructure();
         virtual BYTE* GetGlyphs(int nPageIndex);
         virtual BYTE* GetLinks (int nPageIndex);
-        BYTE* m_pGlyphs = NULL;
-        #endif
+
+    private:
+        std::pair<int, BYTE*> m_pGlyphs;
+    #endif
 
     private:
         CPdfReader_Private* m_pInternal;

@@ -96,6 +96,8 @@ namespace PdfReader
         ((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pInternal->m_pFontManager);
     #ifndef BUILDING_WASM_MODULE
         globalParams->setupBaseFonts(NULL);
+    #else
+        m_pGlyphs = {-1, NULL};
     #endif
 
         m_eError = errNone;
@@ -120,7 +122,7 @@ namespace PdfReader
         RELEASEOBJECT((globalParams));
         RELEASEINTERFACE((m_pInternal->m_pFontManager));
     #ifdef BUILDING_WASM_MODULE
-        RELEASEARRAYOBJECTS(m_pGlyphs);
+        RELEASEARRAYOBJECTS(m_pGlyphs.second);
     #endif
 	}
     bool CPdfReader::LoadFromFile(const std::wstring& wsSrcPath, const std::wstring& wsOptions,
@@ -347,14 +349,15 @@ namespace PdfReader
             RendererOutputDev oRendererOut(pRenderer, m_pInternal->m_pFontManager, m_pInternal->m_pFontList);
         #ifdef BUILDING_WASM_MODULE
             oRendererOut.m_pPageMeta.SkipLen();
-            RELEASEARRAYOBJECTS(m_pGlyphs);
+            m_pGlyphs.first = _nPageIndex;
+            RELEASEARRAYOBJECTS(m_pGlyphs.second);
         #endif
             oRendererOut.NewPDF(m_pInternal->m_pPDFDocument->getXRef());
 			oRendererOut.SetBreak(pbBreak);
             m_pInternal->m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, false, true, false);
         #ifdef BUILDING_WASM_MODULE
             oRendererOut.m_pPageMeta.WriteLen();
-            m_pGlyphs = oRendererOut.m_pPageMeta.GetBuffer();
+            m_pGlyphs.second = oRendererOut.m_pPageMeta.GetBuffer();
             oRendererOut.m_pPageMeta.ClearWithoutAttack();
             /* С конвертацией в Base64
             char* pDst = NULL;
@@ -611,9 +614,14 @@ return 0;
     }
     BYTE* CPdfReader::GetGlyphs(int nPageIndex)
     {
+        if (nPageIndex != m_pGlyphs.first)
+        {
+            BYTE* res = ConvertToPixels(nPageIndex, 0, 0);
+            RELEASEARRAYOBJECTS(res);
+        }
         // Будет освобожден в js
-        BYTE* res = m_pGlyphs;
-        m_pGlyphs = NULL;
+        BYTE* res = m_pGlyphs.second;
+        m_pGlyphs.second = NULL;
         return res;
     }
     BYTE* CPdfReader::GetLinks (int nPageIndex)
@@ -665,7 +673,6 @@ return 0;
                 arrLinks.push_back({link, x1, y1, x2 - x1, y2 - y1});
             }
         }
-        RELEASEOBJECT(pTextOut);
         for (_link& l : arrLinks)
         {
             oRes.WriteString((BYTE*)l.link.c_str(), l.link.length());
@@ -676,6 +683,8 @@ return 0;
             oRes.AddDouble(l.w);
             oRes.AddDouble(l.h);
         }
+        RELEASEOBJECT(pTextOut);
+        arrLinks.clear();
 
         // Гиперссылка
         Links* pLinks = m_pInternal->m_pPDFDocument->getLinks(nPageIndex);
@@ -715,7 +724,7 @@ return 0;
                         pg = pLinkDest->getPageNum();
                     std::string sLink = "#" + std::to_string(pg - 1);
                     str = new GString(sLink.c_str());
-                    dy = m_pInternal->m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
+                    dy  = m_pInternal->m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
                 }
                 RELEASEOBJECT(pLinkDest);
             }

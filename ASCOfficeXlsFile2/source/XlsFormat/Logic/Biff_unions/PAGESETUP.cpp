@@ -258,19 +258,20 @@ int PAGESETUP::serialize(std::wostream & stream)
 					CP_XML_ATTR(L"firstPageNumber", setup->iPageStart);
 					
 					CP_XML_ATTR(L"scale", setup->iScale);
-
-					CP_XML_ATTR(L"orientation", setup->fPortrait ? L"portrait" : L"landscape");
-					CP_XML_ATTR(L"horizontalDpi", setup->iRes);
-					CP_XML_ATTR(L"verticalDpi", setup->iVRes);
-
-					if (setup->fUsePage)
-						CP_XML_ATTR(L"useFirstPageNumber", true);
 					
 					if (setup->iFitWidth > 0 && setup->iFitWidth < 32767)
 						CP_XML_ATTR(L"fitToWidth", setup->iFitWidth);
 
 					if (setup->iFitHeight > 0 && setup->iFitHeight < 32767)
-						CP_XML_ATTR(L"fitToHeight", setup->iFitHeight);
+						CP_XML_ATTR(L"fitToHeight", setup->iFitHeight);					
+
+					CP_XML_ATTR(L"orientation", setup->fPortrait ? L"portrait" : L"landscape");
+
+					if (setup->fUsePage)
+						CP_XML_ATTR(L"useFirstPageNumber", true);
+					
+					CP_XML_ATTR(L"horizontalDpi", setup->iRes);
+					CP_XML_ATTR(L"verticalDpi", setup->iVRes);					
 				}
 			}
 		}

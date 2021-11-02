@@ -890,10 +890,10 @@ public:
         std::wstring sType;
 		switch(byteType)
 		{
-		case styletype_Character: sType = _T("character");break;
-		case styletype_Numbering: sType = _T("numbering");break;
-		case styletype_Table: sType = _T("table");break;
-		default: sType = _T("paragraph");break;
+			case styletype_Character: sType = _T("character");break;
+			case styletype_Numbering: sType = _T("numbering");break;
+			case styletype_Table: sType = _T("table");break;
+			default: sType = _T("paragraph");break;
 		}
         if(!Id.empty())
 		{
@@ -915,10 +915,29 @@ public:
 
             sStyle += L">";
             pCStringWriter->WriteString(sStyle);
-			if(!Aliases.empty())
+
+            if(!Name.empty())
+			{
+                pCStringWriter->WriteString(L"<w:name w:val=\"" + Name + L"\"/>");
+			}		
+			if (!Aliases.empty())
 			{
 				pCStringWriter->WriteString(L"<w:aliases w:val=\"");
 				pCStringWriter->WriteEncodeXmlString(Aliases);
+				pCStringWriter->WriteString(L"\"/>");
+			}
+			if (!BasedOn.empty())
+			{
+				pCStringWriter->WriteString(L"<w:basedOn w:val=\"" + BasedOn + L"\"/>");
+			}
+			if (!NextId.empty())
+			{
+				pCStringWriter->WriteString(L"<w:next w:val=\"" + NextId + L"\"/>");
+			}
+			if (!Link.empty())
+			{
+				pCStringWriter->WriteString(L"<w:link w:val=\"");
+				pCStringWriter->WriteEncodeXmlString(Link);
 				pCStringWriter->WriteString(L"\"/>");
 			}
 			if(bautoRedefine)
@@ -928,17 +947,44 @@ public:
 				else
 					pCStringWriter->WriteString(L"<w:autoRedefine val=\"false\"/>");
 			}
-            if(!Name.empty())
+			if (bhidden)
 			{
-                pCStringWriter->WriteString(L"<w:name w:val=\"" + Name + L"\"/>");
+				if (hidden)
+					pCStringWriter->WriteString(L"<w:hidden/>");
+				else
+					pCStringWriter->WriteString(L"<w:hidden val=\"false\"/>");
 			}
-            if(!BasedOn.empty())
+			if (buiPriority)
 			{
-                pCStringWriter->WriteString(L"<w:basedOn w:val=\"" + BasedOn + L"\"/>");
+				pCStringWriter->WriteString(L"<w:uiPriority w:val=\"" + std::to_wstring(uiPriority) + L"\"/>");
 			}
-            if(!NextId.empty())
+			if (bsemiHidden)
 			{
-                pCStringWriter->WriteString(L"<w:next w:val=\"" + NextId + L"\"/>");
+				if (semiHidden)
+					pCStringWriter->WriteString(L"<w:semiHidden/>");
+				else
+					pCStringWriter->WriteString(L"<w:semiHidden val=\"false\"/>");
+			}
+			if (bunhideWhenUsed)
+			{
+				if (unhideWhenUsed)
+					pCStringWriter->WriteString(L"<w:unhideWhenUsed/>");
+				else
+					pCStringWriter->WriteString(L"<w:unhideWhenUsed val=\"false\"/>");
+			}
+			if (bqFormat)
+			{
+				if (qFormat)
+					pCStringWriter->WriteString(L"<w:qFormat/>");
+				else
+					pCStringWriter->WriteString(L"<w:qFormat val=\"false\"/>");
+			}
+			if (blocked)
+			{
+				if (locked)
+					pCStringWriter->WriteString(L"<w:locked/>");
+				else
+					pCStringWriter->WriteString(L"<w:locked val=\"false\"/>");
 			}
 			if(bpersonal)
 			{
@@ -961,61 +1007,17 @@ public:
 				else
 					pCStringWriter->WriteString(L"<w:personalReply val=\"false\"/>");
 			}
-			if(!Link.empty())
-			{
-				pCStringWriter->WriteString(L"<w:link w:val=\"");
-				pCStringWriter->WriteEncodeXmlString(Link);
-				pCStringWriter->WriteString(L"\"/>");
-			}
-			if(blocked)
-			{
-				if(locked)
-					pCStringWriter->WriteString(L"<w:locked/>");
-				else
-					pCStringWriter->WriteString(L"<w:locked val=\"false\"/>");
-			}
-			if(bqFormat)
-			{
-				if(qFormat)
-                    pCStringWriter->WriteString(L"<w:qFormat/>");
-				else
-                    pCStringWriter->WriteString(L"<w:qFormat val=\"false\"/>");
-			}
-			if(buiPriority)
-			{
-                pCStringWriter->WriteString(L"<w:uiPriority w:val=\"" + std::to_wstring(uiPriority) + L"\"/>");
-			}
-			if(bhidden)
-			{
-				if(hidden)
-                    pCStringWriter->WriteString(L"<w:hidden/>");
-				else
-                    pCStringWriter->WriteString(L"<w:hidden val=\"false\"/>");
-			}
-			if(bsemiHidden)
-			{
-				if(semiHidden)
-                    pCStringWriter->WriteString(L"<w:semiHidden/>");
-				else
-                    pCStringWriter->WriteString(L"<w:semiHidden val=\"false\"/>");
-			}
-			if(bunhideWhenUsed)
-			{
-				if(unhideWhenUsed)
-                    pCStringWriter->WriteString(L"<w:unhideWhenUsed/>");
-				else
-                    pCStringWriter->WriteString(L"<w:unhideWhenUsed val=\"false\"/>");
-			}
-            if(!TextPr.empty())
-			{
-				pCStringWriter->WriteString(TextPr);
-			}
             if(!ParaPr.empty())
 			{
                 pCStringWriter->WriteString(L"<w:pPr>");
 				pCStringWriter->WriteString(ParaPr);
                 pCStringWriter->WriteString(L"</w:pPr>");
 			}
+            if(!TextPr.empty())
+			{
+				pCStringWriter->WriteString(TextPr);
+			}
+
             if(!TablePr.empty())
 				pCStringWriter->WriteString(TablePr);
             if(!RowPr.empty())

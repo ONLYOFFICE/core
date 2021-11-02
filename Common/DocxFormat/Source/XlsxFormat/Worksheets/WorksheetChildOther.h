@@ -273,8 +273,8 @@ namespace OOX
 					WritingStringNullableAttrString(L"paperSize", m_oPaperSize, m_oPaperSize->ToString());
 					WritingStringNullableAttrDouble(L"paperHeight", m_oPaperHeight, m_oPaperHeight->GetValue());
 					WritingStringNullableAttrDouble(L"paperWidth", m_oPaperWidth, m_oPaperWidth->GetValue());
-					WritingStringNullableAttrInt(L"scale", m_oScale, m_oScale->GetValue());
-					WritingStringNullableAttrInt(L"firstPageNumber", m_oFirstPageNumber, m_oFirstPageNumber->GetValue());
+					WritingStringNullableAttrUInt(L"scale", m_oScale, m_oScale->GetValue());
+					WritingStringNullableAttrUInt(L"firstPageNumber", m_oFirstPageNumber, m_oFirstPageNumber->GetValue());
 					WritingStringNullableAttrInt(L"fitToWidth", m_oFitToWidth, m_oFitToWidth->GetValue());
 					WritingStringNullableAttrInt(L"fitToHeight", m_oFitToHeight, m_oFitToHeight->GetValue());
 					WritingStringNullableAttrString(L"pageOrder", m_oPageOrder, m_oPageOrder->ToString());
@@ -285,9 +285,9 @@ namespace OOX
 					WritingStringNullableAttrString(L"cellComments", m_oCellComments, m_oCellComments->ToString());
 					WritingStringNullableAttrBool(L"useFirstPageNumber", m_oUseFirstPageNumber);
 					WritingStringNullableAttrString(L"errors", m_oErrors, m_oErrors->ToString());
-					WritingStringNullableAttrInt(L"horizontalDpi", m_oHorizontalDpi, m_oHorizontalDpi->GetValue());
-					WritingStringNullableAttrInt(L"verticalDpi", m_oVerticalDpi, m_oVerticalDpi->GetValue());
-					WritingStringNullableAttrInt(L"copies", m_oCopies, m_oCopies->GetValue());
+					WritingStringNullableAttrUInt(L"horizontalDpi", m_oHorizontalDpi, m_oHorizontalDpi->GetValue());
+					WritingStringNullableAttrUInt(L"verticalDpi", m_oVerticalDpi, m_oVerticalDpi->GetValue());
+					WritingStringNullableAttrUInt(L"copies", m_oCopies, m_oCopies->GetValue());
 					WritingStringNullableAttrString(L"paperUnits", m_oPaperUnits, m_oPaperUnits->ToString());
 					WritingStringNullableAttrString(L"r:id", m_oRId, m_oRId->ToString());
 					writer.WriteString(L"/>");

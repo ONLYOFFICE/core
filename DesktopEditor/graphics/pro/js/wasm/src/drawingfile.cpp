@@ -149,9 +149,9 @@ static DWORD GetLength(BYTE* x)
 
 int main()
 {
-#define XPS_TEST  0
+#define XPS_TEST  1
 #define DJVU_TEST 0
-#define PDF_TEST  1
+#define PDF_TEST  0
 #if PDF_TEST
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
@@ -181,10 +181,10 @@ int main()
     }
     int* info = GetInfo(test);
     int pages_count = *info;
-    int test_page = 1;
+    int test_page = 0;
     int width  = info[test_page * 3 + 1];
     int height = info[test_page * 3 + 2];
-    std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
+    std::cout << "Page " << test_page << " width " << width << " height " << height << " dpi " << info[test_page * 3 + 3] << std::endl;
 
     BYTE* res = NULL;
     if (pages_count > 0)
@@ -288,6 +288,28 @@ int main()
     int height = info[test_page * 3 + 2];
     std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
 
+    std::cout << std::endl;
+    BYTE* pStructure = GetStructure(test);
+    DWORD nLength = GetLength(pStructure);
+    DWORD i = 4;
+    nLength -= 4;
+    while (i < nLength)
+    {
+        DWORD nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Page " << nPathLength << ", ";
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Level " << nPathLength << ", ";
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Description " << std::string((char*)(pStructure + i), nPathLength) << std::endl;
+        i += nPathLength;
+    }
+
     BYTE* res = NULL;
     if (pages_count > 0)
         res = GetPixmap(test, test_page, width, height);
@@ -309,8 +331,6 @@ int main()
 
     std::cout << std::endl;
     BYTE* pGlyphs = GetGlyphs(test, test_page);
-    DWORD nLength;
-    DWORD i = 4;
 
     std::cout << std::endl;
     BYTE* pLinks = GetLinks(test, test_page);
@@ -340,27 +360,6 @@ int main()
         std::cout << " H " << (double)nPathLength / 100.0 << std::endl;
     }
 
-    std::cout << std::endl;
-    BYTE* pStructure = GetStructure(test);
-    nLength = GetLength(pStructure);
-    i = 4;
-    nLength -= 4;
-    while (i < nLength)
-    {
-        DWORD nPathLength = GetLength(pStructure + i);
-        i += 4;
-        std::cout << "Page " << nPathLength << ", ";
-        nPathLength = GetLength(pStructure + i);
-        i += 4;
-        std::cout << "Level " << nPathLength << ", ";
-        nPathLength = GetLength(pStructure + i);
-        i += 4;
-        std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
-        nPathLength = GetLength(pStructure + i);
-        i += 4;
-        std::cout << "Description " << std::string((char*)(pStructure + i), nPathLength) << std::endl;
-        i += nPathLength;
-    }
 
     Close(test);
     RELEASEARRAYOBJECTS(pXpsData);

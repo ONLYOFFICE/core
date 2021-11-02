@@ -67,11 +67,12 @@ public:
         pReader->GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
         if (nType == 2)
         {
-            dWidth  = dWidth  / 25.4 * 96.0;
-            dHeight = dHeight / 25.4 * 96.0;
+            dWidth    = dWidth    / 25.4 * 96.0;
+            dHeight   = dHeight   / 25.4 * 96.0;
+            dPageDpiX = dPageDpiX / 25.4 * 96.0;
         }
-        nWidth = dWidth;
-        nHeight = dHeight;
+        nWidth    = dWidth;
+        nHeight   = dHeight;
         nPageDpiX = dPageDpiX;
     }
     BYTE* GetPage    (int nPageIndex, int nRasterW, int nRasterH)

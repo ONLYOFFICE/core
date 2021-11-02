@@ -53,7 +53,7 @@ namespace XLSB
     void Top10RichFilter::readFields(XLS::CFRecord& record)
     {
         unsigned char flags;
-        record >> flags >> xNumValue >> xNumValueMax >> key;
+        record >> flags >> xNumValue >> xNumFilter >> key;
 
         fTop     = GETBIT(flags, 0);
         fPercent = GETBIT(flags, 1);

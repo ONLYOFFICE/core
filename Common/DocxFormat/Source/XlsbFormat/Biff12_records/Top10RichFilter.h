@@ -57,7 +57,7 @@ namespace XLSB
             bool                        fPercent;
             bool                        fApplied;
             XLS::Xnum                   xNumValue;
-            XLS::Xnum                   xNumValueMax;
+            XLS::Xnum                   xNumFilter;
             XLWideString                key;
     };
 

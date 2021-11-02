@@ -161,8 +161,9 @@ void Animation::FillAnim(
             }
             }
 
-        tav.tm = std::to_wstring(
-                    animValue->m_oTimeAnimationValueAtom.m_nTime  *100);
+        auto tavTime = animValue->m_oTimeAnimationValueAtom.m_nTime;
+        if (tavTime < 1000 && tavTime >= 0)
+                tav.tm = std::to_wstring((1000 - tavTime) * 100);
 
         if (!animValue->m_VarFormula.m_Value.empty())
         {
@@ -789,6 +790,7 @@ void Animation::FillCTn(
         PPTX::Logic::CTn &oCTn)
 {
     oCTn.id = m_cTnId++;
+    m_cTnDeep++;
 
     // Reading TimeNodeAtom
     const auto &oTimeNodeAtom = pETNC->m_oTimeNodeAtom;
@@ -975,6 +977,13 @@ void Animation::FillCTn(
         oCTn.stCondLst->node_name = L"stCondLst";
         FillStCondLst(pETNC->m_arrRgBeginTimeCondition, oCTn.stCondLst.get2());
     }
+
+    if (oCTn.nodeType.IsInit() == false && (m_cTnDeep == 3 || m_cTnDeep == 4))
+    {
+        oCTn.nodeType = new PPTX::Limit::TLNodeType();
+        oCTn.nodeType->set( m_cTnDeep == 3 ? L"clickPar" : L"withGroup");
+    }
+    m_cTnDeep--;
 }
 
 void Animation::FillStCondLst(const std::vector<CRecordTimeConditionContainer *> &timeCondCont,
@@ -1026,6 +1035,8 @@ void Animation::FillSeq(
         PPTX::Logic::Cond cond;
         cond.node_name = L"cond";
         FillCond(oldCond, cond);
+        if (m_cTnDeep == 1)
+            FillEmptyTargetCond(cond);
         oSec.prevCondLst->list.push_back(cond);
     }
 
@@ -1039,6 +1050,8 @@ void Animation::FillSeq(
         PPTX::Logic::Cond cond;
         cond.node_name = L"cond";
         FillCond(oldCond, cond);
+        if (m_cTnDeep == 1)
+            FillEmptyTargetCond(cond);
         oSec.nextCondLst->list.push_back(cond);
     }
 
@@ -1217,6 +1230,12 @@ void Animation::FillCondLst(
         FillCond(oldCond, cond);
         oCondLst.list.push_back(cond);
     }
+}
+
+void Animation::FillEmptyTargetCond(PPTX::Logic::Cond &cond)
+{
+    cond.tgtEl = new PPTX::Logic::TgtEl;
+    // p:sldTgt will be pasted by default
 }
 
 void Animation::FillCTn(

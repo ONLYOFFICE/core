@@ -177,6 +177,7 @@ private:
     void FillCondLst(
             std::vector<CRecordTimeConditionContainer*>& oCondVec,
             PPTX::Logic::CondLst &oCondLst);
+    void FillEmptyTargetCond(PPTX::Logic::Cond &cond);
     void FillCTn(
             CRecordTimePropertyList4TimeNodeContainer *pProp,
             PPTX::Logic::CTn &oCTn);
@@ -255,6 +256,7 @@ private:
     CExMedia            *m_pExMedia;
     CRelsGenerator      *m_pRels;
     unsigned m_cTnId;
+    int m_cTnDeep = 0;
     PPTX::Logic::BldLst *m_pBldLst; // Do not delete
     PPTX::Logic::BldP   *m_currentBldP;
 

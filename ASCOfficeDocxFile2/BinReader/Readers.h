@@ -56,11 +56,11 @@ class Binary_CommonReader2 : public Binary_CommonReader
 public:
 	Binary_CommonReader2(NSBinPptxRW::CBinaryFileReader& poBufferedStream);
 	docRGB ReadColor();
-	void ReadColor2(SimpleTypes::CHexColor<>& color);
+	void ReadHexColor(SimpleTypes::CHexColor<> *pColor);
 	void ReadThemeColor(int length, CThemeColor& oCThemeColor);
-	int _ReadThemeColor(BYTE type, long length, void* poResult);
+	int ReadThemeColorContent(BYTE type, long length, void* poResult);
 	template<typename T> int ReadTrackRevision(long length, T* poResult);
-	int ReadShd(BYTE type, long length, void* poResult);
+	int ReadShdComplexType(BYTE type, long length, void* poResult);
 private:
 	template<typename T> int ReadTrackRevisionInner(BYTE type, long length, T* poResult);
 };

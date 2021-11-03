@@ -394,7 +394,7 @@ namespace PdfWriter
 		void         Add(const std::string& sKey, float fReal);
 		void         Add(const std::string& sKey, double dReal);
 		void         Add(const std::string& sKey, bool bBool);
-		const char*  GetKey(CObjectBase* pObject);
+		const char*  GetKey(const CObjectBase* pObject);
 		CStream*     GetStream() const
 		{
 			return m_pStream;

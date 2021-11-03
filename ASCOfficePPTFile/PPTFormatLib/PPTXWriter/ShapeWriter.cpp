@@ -1525,10 +1525,6 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
             {
                 m_oWriter.WriteString(L" sz=\"" + std::to_wstring((int)(100 * pCF->Size.get())) + L"\"");
             }
-            if (pCF->BaseLineOffset.is_init())
-            {
-                m_oWriter.WriteString(L" baseline=\"" + std::to_wstring((int)(1000 * pCF->BaseLineOffset.get())) + L"\"");
-            }
             if (pCF->FontBold.is_init())
             {
                 if (pCF->FontBold.get())
@@ -1542,6 +1538,10 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     m_oWriter.WriteString(std::wstring(L" i=\"1\""));
                 else
                     m_oWriter.WriteString(std::wstring(L" i=\"0\""));
+            }
+            if (pCF->BaseLineOffset.is_init())
+            {
+                m_oWriter.WriteString(L" baseline=\"" + std::to_wstring((int)(1000 * pCF->BaseLineOffset.get())) + L"\"");
             }
 
             if (pCF->FontUnderline.is_init())

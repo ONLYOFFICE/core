@@ -1807,9 +1807,6 @@ private:
 		inline bool CheckHeight(const double& dH, const double& dFontSize) const
 		{
 			double dKoef = dFontSize / 1000.0;
-			double dTest1 = dH - (m_nDescent * dKoef);
-			double dTest2 = GetLinesCount() * (m_unLineHeight * dKoef);
-
 			return (GetLinesCount() * (m_unLineHeight * dKoef) < (dH - (m_nDescent * dKoef)));
 		}
 

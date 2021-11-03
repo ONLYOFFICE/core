@@ -485,7 +485,7 @@ namespace PdfWriter
 	{
 		Add(sKey, new CBoolObject(bBool));
 	}
-	const char*   CDictObject::GetKey(CObjectBase* pObject)
+	const char*   CDictObject::GetKey(const CObjectBase* pObject)
 	{
 		for (auto const &oIter : m_mList)
 		{

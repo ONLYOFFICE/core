@@ -36,7 +36,6 @@
 #include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "XLWideString.h"
 
-
 namespace XLSB
 {
     class FRTRelID : public XLS::BiffStructure
@@ -46,7 +45,7 @@ namespace XLSB
         FRTRelID();
         FRTRelID(XLS::CFRecord& record);
         virtual ~FRTRelID();
-       XLS::BiffStructurePtr clone();
+        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;
 

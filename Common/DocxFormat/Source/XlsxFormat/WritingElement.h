@@ -466,7 +466,7 @@ namespace XLSB
         rt_EndListCol =								348,
         rt_BeginListXmlCPr =						349,
         rt_EndListXmlCPr =							350,
-        rt_ListCcFmla =								351,
+        rt_ListCCFmla =								351,
         rt_ListTrFmla =								352,
         rt_BeginExternals =							353,
         rt_EndExternals =							354,

@@ -57,8 +57,8 @@ namespace XLSB
 
             static const XLS::ElementType	type = XLS::typeBeginCFRule;
 
-			XLS::CFType                  iType;
-			XLS::CFTemp                  iTemplate;
+            CFType                  iType;
+            CFTemp                  iTemplate;
             _UINT32                 dxfId;
             _INT32                  iPri;
             _UINT32                 iParam;
@@ -71,9 +71,9 @@ namespace XLSB
             _UINT32                 cbFmla2;
             _UINT32                 cbFmla3;
             XLNullableWideString    strParam;
-			XLS::CFParsedFormula         rgce1;
-			XLS::CFParsedFormula         rgce2;
-			XLS::CFParsedFormula         rgce3;
+            XLS::CFParsedFormula    rgce1;
+            XLS::CFParsedFormula    rgce2;
+            XLS::CFParsedFormula    rgce3;
     };
 
 } // namespace XLSB

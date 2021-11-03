@@ -56,12 +56,12 @@ namespace XLSB
 
             static const XLS::ElementType	type = XLS::typeCFVO;
 
-			XLS::CFVOtype					iType;
+            CFVOtype                        iType;
 			XLS::Xnum						numParam;
             XLS::Boolean<unsigned int>      fSaveGTE;
             XLS::Boolean<unsigned int>      fGTE;
             _UINT32                         cbFmla;
-			XLS::CFVOParsedFormula               formula;
+            XLS::CFVOParsedFormula          formula;
     };
 
 } // namespace XLSB

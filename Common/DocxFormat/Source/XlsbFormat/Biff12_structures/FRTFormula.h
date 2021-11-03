@@ -52,7 +52,7 @@ namespace XLSB
 
         virtual void load(XLS::CFRecord& record);
 
-		XLS::FRTParsedFormula    formula;
+        FRTParsedFormula    formula;
     };
 
 }   // namespace XLSB

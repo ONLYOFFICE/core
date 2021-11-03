@@ -56,4 +56,4 @@ public:
 
 typedef boost::shared_ptr<StrRun> StrRunPtr;
 
-} // namespace XLS
+} // namespace XLSB

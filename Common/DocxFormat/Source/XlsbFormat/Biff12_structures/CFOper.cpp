@@ -32,14 +32,15 @@
 
 #include "CFOper.h"
 
-namespace XLS
-{
+using namespace XLS;
 
+namespace XLSB
+{
 
 BiffStructurePtr CFOper::clone()
 {
     return BiffStructurePtr(new CFOper(*this));
 }
 
-} // namespace XLS
+} // namespace XLSB
 

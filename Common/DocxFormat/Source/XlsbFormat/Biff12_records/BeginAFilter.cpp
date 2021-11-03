@@ -31,7 +31,6 @@
  */
 
 #include "BeginAFilter.h"
-#include "../Biff12_structures/ACProductVersion.h"
 
 using namespace XLS;
 

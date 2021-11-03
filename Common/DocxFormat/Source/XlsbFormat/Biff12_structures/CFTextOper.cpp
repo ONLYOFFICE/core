@@ -32,7 +32,9 @@
 
 #include "CFTextOper.h"
 
-namespace XLS
+using namespace XLS;
+
+namespace XLSB
 {
 
 
@@ -41,5 +43,5 @@ BiffStructurePtr CFTextOper::clone()
     return BiffStructurePtr(new CFTextOper(*this));
 }
 
-} // namespace XLS
+} // namespace XLSB
 

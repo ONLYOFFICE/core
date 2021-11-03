@@ -36,7 +36,6 @@
 #include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "FRTFormula.h"
 
-
 namespace XLSB
 {
     class FRTFormulas : public XLS::BiffStructure

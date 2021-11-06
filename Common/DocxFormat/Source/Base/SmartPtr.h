@@ -65,13 +65,14 @@ namespace NSCommon
 
 		inline void Release()
 		{
-			if (!IsInit() || (NULL == m_pCountRef))
+			if (NULL == m_pCountRef)
 				return;
 
 			*m_pCountRef -= 1;
 			if (0 >= *m_pCountRef)
 			{
-				delete m_pData;
+				if (m_pData)
+					delete m_pData;
 				delete m_pCountRef;
 			}
 			m_pData		= NULL;

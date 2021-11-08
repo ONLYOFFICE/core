@@ -438,9 +438,9 @@ namespace PdfWriter
 
 		std::string sFocus = "\nvar	curColor = color.convert(event.target.textColor, \"RGB\");\nif (event.target.value == \"" + \
 			sText + "\" && Math.abs(curColor[1] - " + std::to_string(oPlaceHolderColor.r) +
-			") < 0.001 && Math.abs(curColor[2] - " + std::to_string(oPlaceHolderColor.g) +
-			") < 0.001 && Math.abs(curColor[3] - " + std::to_string(oPlaceHolderColor.b) +
-			") < 0.001)\n{	event.target.value = \"\";\n	event.target.textColor =[\"RGB\", " + 
+			") < 0.005 && Math.abs(curColor[2] - " + std::to_string(oPlaceHolderColor.g) +
+			") < 0.005 && Math.abs(curColor[3] - " + std::to_string(oPlaceHolderColor.b) +
+			") < 0.005)\n{	event.target.value = \"\";\n	event.target.textColor =[\"RGB\", " +
 			std::to_string(oNormalColor.r) + ", " +
 			std::to_string(oNormalColor.g) + ", " +
 			std::to_string(oNormalColor.b) + "];\n}";
@@ -677,9 +677,9 @@ namespace PdfWriter
 				std::to_string(oNormalColor.g) + ", " +
 				std::to_string(oNormalColor.b) + "];\nif (event.target.value == \"" + \
 				sText + "\" && Math.abs(curColor[1] - " + std::to_string(oPlaceHolderColor.r) +
-				") < 0.001 && Math.abs(curColor[2] - " + std::to_string(oPlaceHolderColor.g) +
-				") < 0.001 && Math.abs(curColor[3] - " + std::to_string(oPlaceHolderColor.b) +
-				") < 0.001)\n	event.target.value = \"\";";
+				") < 0.005 && Math.abs(curColor[2] - " + std::to_string(oPlaceHolderColor.g) +
+				") < 0.005 && Math.abs(curColor[3] - " + std::to_string(oPlaceHolderColor.b) +
+				") < 0.005)\n	event.target.value = \"\";";
 
 			sBlur = "\nif (event.target.value == \"\")\n{	event.target.value = \"" + sText + "\";\n	event.target.textColor = [\"RGB\", " +
 				std::to_string(oPlaceHolderColor.r) + ", " +

@@ -308,7 +308,7 @@ namespace PdfWriter
 			BYTE nChar = (BYTE)*sTxt++;
 
 
-			if ((isDictValue && NEEDS_ESCAPE_DICTVALUE(nChar)) || (!isDictValue && NEEDS_ESCAPE(nChar)))
+			if (!isUTF16 && ((isDictValue && NEEDS_ESCAPE_DICTVALUE(nChar)) || (!isDictValue && NEEDS_ESCAPE(nChar))))
 			{
 				sBuf[nIndex++] = '\\';
 

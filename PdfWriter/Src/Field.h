@@ -95,9 +95,14 @@ namespace PdfWriter
 		const char* GetFieldType() const;
 		void SetAlign(const EFieldAlignType& eType);
 		virtual void SetPlaceHolderText(const std::wstring& wsText, const TRgb& oNormalColor, const TRgb& oPlaceHolderColor);
+		void UpdateKidsPlaceHolder();
+		const std::wstring& GetPlaceHolderText();
+		const TRgb& GetNormalColor();
+		const TRgb& GetPlaceHolderColor();
 
 	protected:
 
+		virtual void SetPlaceHolderText(const std::vector<std::wstring>& vPlaceHolders, const std::vector<TRgb>& vNormalColors, const std::vector<TRgb>& vPlaceHolderColors);
 		void SetFlag(bool isFlag, int nBitPosition);
 
 	protected:
@@ -115,6 +120,11 @@ namespace PdfWriter
 		CFieldBase*       m_pParent;
 		CArrayObject*     m_pKids;
 		CAnnotAppearance* m_pAppearance;
+		std::wstring      m_wsPlaceHolderText;
+		TRgb              m_oNormalColor;
+		TRgb              m_oPlaceHolderColor;
+		CDictObject*      m_pFocus;
+		CDictObject*      m_pBlur;
 	};
 
 	class CTextField : public CFieldBase

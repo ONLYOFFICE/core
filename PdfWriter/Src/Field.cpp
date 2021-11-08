@@ -72,6 +72,8 @@ namespace PdfWriter
 		m_pParent     = NULL;
 		m_pKids       = NULL;
 		m_pAppearance = NULL;
+		m_pFocus      = NULL;
+		m_pBlur       = NULL;
 	}
 	void CFieldBase::SetReadOnlyFlag(bool isReadOnly)
 	{
@@ -423,44 +425,166 @@ namespace PdfWriter
 	}
 	void CFieldBase::SetPlaceHolderText(const std::wstring& wsText, const TRgb& oNormalColor, const TRgb& oPlaceHolderColor)
 	{
-		CDictObject* pAA = new CDictObject();
-		if (!pAA)
+		m_wsPlaceHolderText = wsText;
+		m_oNormalColor      = oNormalColor;
+		m_oPlaceHolderColor = oPlaceHolderColor;
+
+		SetPlaceHolderText(std::vector<std::wstring>{wsText}, {oNormalColor}, {oPlaceHolderColor});
+
+		if (m_pParent)
+			m_pParent->UpdateKidsPlaceHolder();
+	}
+	void CFieldBase::SetPlaceHolderText(const std::vector<std::wstring>& vPlaceHolders, const std::vector<TRgb>& vNormalColors, const std::vector<TRgb>& vPlaceHolderColors)
+	{
+		if (!vPlaceHolders.size() || !vNormalColors.size() || !vPlaceHolderColors.size())
 			return;
 
-		Add("AA", pAA);
+		std::string sFocus = "\nvar	curColor = color.convert(event.target.textColor, \"RGB\");\nif ((";
 
-		CDictObject* pFocus = new CDictObject();
-		CDictObject* pBlur = new CDictObject();
-		if (!pFocus || !pBlur)
-			return;
+		for (unsigned int unIndex = 0, unCount = vPlaceHolders.size(); unIndex < unCount; ++unIndex)
+		{
+			if (unIndex)
+				sFocus += " || ";
 
-		std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsText);
+			std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(vPlaceHolders[unIndex]);
+			sFocus += "event.target.value==\"" + sText + "\"";
+		}
 
-		std::string sFocus = "\nvar	curColor = color.convert(event.target.textColor, \"RGB\");\nif (event.target.value == \"" + \
-			sText + "\" && Math.abs(curColor[1] - " + std::to_string(oPlaceHolderColor.r) +
-			") < 0.005 && Math.abs(curColor[2] - " + std::to_string(oPlaceHolderColor.g) +
-			") < 0.005 && Math.abs(curColor[3] - " + std::to_string(oPlaceHolderColor.b) +
-			") < 0.005)\n{	event.target.value = \"\";\n	event.target.textColor =[\"RGB\", " +
-			std::to_string(oNormalColor.r) + ", " +
-			std::to_string(oNormalColor.g) + ", " +
-			std::to_string(oNormalColor.b) + "];\n}";
-		
+		sFocus += ") && (";
+
+		for (unsigned int unIndex = 0, unCount = vPlaceHolderColors.size(); unIndex < unCount; ++unIndex)
+		{
+			if (unIndex)
+				sFocus += " || ";
+
+			const TRgb& oColor = vPlaceHolderColors[unIndex];
+
+			sFocus += "(Math.abs(curColor[1] - " + std::to_string(oColor.r) +
+					") < 0.005 && Math.abs(curColor[2] - " + std::to_string(oColor.g) +
+					") < 0.005 && Math.abs(curColor[3] - " + std::to_string(oColor.b) +
+					") < 0.005)";
+		}
+
+		sFocus += "))\n{	event.target.value = \"\";\n	event.target.textColor =[\"RGB\", " +
+				std::to_string(vNormalColors[vNormalColors.size() - 1].r) + ", " +
+				std::to_string(vNormalColors[vNormalColors.size() - 1].g) + ", " +
+				std::to_string(vNormalColors[vNormalColors.size() - 1].b) + "];\n}";
+
+
+
+		std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(vPlaceHolders[vPlaceHolders.size() - 1]);
+		const TRgb& oColor = vPlaceHolderColors[vPlaceHolderColors.size() - 1];
 		std::string sBlur = "\nif (event.target.value == \"\")\n{	event.target.value = \"" + sText + "\";\n	event.target.textColor =[\"RGB\", " +
-			std::to_string(oPlaceHolderColor.r) + ", " +
-			std::to_string(oPlaceHolderColor.g) + ", " +
-			std::to_string(oPlaceHolderColor.b) + "];\n}";
+			std::to_string(oColor.r) + ", " +
+			std::to_string(oColor.g) + ", " +
+			std::to_string(oColor.b) + "];\n}";
 
-		m_pXref->Add(pFocus);
-		m_pXref->Add(pBlur);
+		if (!m_pFocus || !m_pBlur)
+		{
+			CDictObject* pAA = new CDictObject();
+			if (!pAA)
+				return;
 
-		pFocus->Add("S", "JavaScript");
-		pFocus->Add("JS", new CStringObject(sFocus.c_str(), true, true));
+			Add("AA", pAA);
 
-		pBlur->Add("S", "JavaScript");
-		pBlur->Add("JS", new CStringObject(sBlur.c_str(), true, true));
+			CDictObject* pFocus = new CDictObject();
+			CDictObject* pBlur = new CDictObject();
+			if (!pFocus || !pBlur)
+				return;
 
-		pAA->Add("Bl", pBlur);
-		pAA->Add("Fo", pFocus);
+			m_pXref->Add(pFocus);
+			m_pXref->Add(pBlur);
+
+			m_pFocus = pFocus;
+			m_pBlur  = pBlur;
+
+			pAA->Add("Bl", pBlur);
+			pAA->Add("Fo", pFocus);
+		}
+
+		m_pFocus->Add("S", "JavaScript");
+		m_pFocus->Add("JS", new CStringObject(sFocus.c_str(), true, true));
+
+		m_pBlur->Add("S", "JavaScript");
+		m_pBlur->Add("JS", new CStringObject(sBlur.c_str(), true, true));
+	}
+	void CFieldBase::UpdateKidsPlaceHolder()
+	{
+		std::vector<std::wstring> vText;
+		std::vector<TRgb> vPlaceHolderColor, vNormalColor;
+
+		if (m_pKids)
+		{
+			for (unsigned int unKidIndex = 0, unKidsCount = GetKidsCount(); unKidIndex < unKidsCount; ++unKidIndex)
+			{
+				CFieldBase* pKid = (CFieldBase*)m_pKids->Get(unKidIndex);
+
+				const std::wstring& wsText = pKid->GetPlaceHolderText();
+
+				if (wsText.empty())
+					continue;
+
+				const TRgb& oPColor = pKid->GetPlaceHolderColor();
+				const TRgb& oNColor = pKid->GetNormalColor();
+
+				bool isAdd = true;
+				for (unsigned int unIndex = 0, unCount = vText.size(); unIndex < unCount; ++unIndex)
+				{
+					if (vText[unIndex] == wsText)
+					{
+						isAdd = false;
+						break;
+					}
+				}
+
+				if (isAdd)
+					vText.push_back(wsText);
+
+				isAdd = true;
+				for (unsigned int unIndex = 0, unCount = vPlaceHolderColor.size(); unIndex < unCount; ++unIndex)
+				{
+					if (vPlaceHolderColor[unIndex] == oPColor)
+					{
+						isAdd = false;
+						break;
+					}
+				}
+
+				if (isAdd)
+					vPlaceHolderColor.push_back(oPColor);
+
+				isAdd = true;
+				for (unsigned int unIndex = 0, unCount = vNormalColor.size(); unIndex < unCount; ++unIndex)
+				{
+					if (vNormalColor[unIndex] == oNColor)
+					{
+						isAdd = false;
+						break;
+					}
+				}
+
+				if (isAdd)
+					vNormalColor.push_back(oNColor);
+			}
+
+			for (unsigned int unKidIndex = 0, unKidsCount = GetKidsCount(); unKidIndex < unKidsCount; ++unKidIndex)
+			{
+				CFieldBase* pKid = (CFieldBase*)m_pKids->Get(unKidIndex);
+				pKid->SetPlaceHolderText(vText, vNormalColor, vPlaceHolderColor);
+			}
+		}
+	}
+	const std::wstring& CFieldBase::GetPlaceHolderText()
+	{
+		return m_wsPlaceHolderText;
+	}
+	const TRgb& CFieldBase::GetNormalColor()
+	{
+		return m_oNormalColor;
+	}
+	const TRgb& CFieldBase::GetPlaceHolderColor()
+	{
+		return m_oPlaceHolderColor;
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextField

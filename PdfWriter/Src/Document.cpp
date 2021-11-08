@@ -1003,6 +1003,8 @@ namespace PdfWriter
 				CChoiceField* pChoice = dynamic_cast<CChoiceField*>(pBase);
 				if (pChoice)
 					pChoice->UpdateSelectedIndexToParent();
+
+				pParent->UpdateKidsPlaceHolder();
 			}
 			else
 			{
@@ -1013,6 +1015,8 @@ namespace PdfWriter
 				CChoiceField* pChoice = dynamic_cast<CChoiceField*>(pBase);
 				if (pChoice)
 					pChoice->UpdateSelectedIndexToParent();
+
+				pBase->UpdateKidsPlaceHolder();
 			}
 
 			return true;

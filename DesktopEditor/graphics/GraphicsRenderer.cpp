@@ -902,8 +902,8 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 						bool bIsOnlyOfficeHatch = false;
 						if (m_oBrush.TexturePath.find(L"onlyoffice_hatch") != std::wstring::npos)
 							bIsOnlyOfficeHatch = true;
-						m_oBrush.TexturePath.erase(0, m_oBrush.TexturePath.find(L',') + 1);
 						std::string sBase64MultyByte(m_oBrush.TexturePath.begin(), m_oBrush.TexturePath.end());
+						sBase64MultyByte.erase(0, sBase64MultyByte.find(',') + 1);
 						int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(sBase64MultyByte.length());
 						BYTE* pImageData = new BYTE[nDecodeLen + 64];
 						if (TRUE == NSBase64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), pImageData, &nDecodeLen))
@@ -931,6 +931,8 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 							pTextureBrush = new Aggplus::CBrushTexture(pImage, oMode);
 							pTextureBrush->m_bReleaseImage = TRUE;
 						}
+						else
+							RELEASEARRAYOBJECTS(pImageData);
 					}
 				#else
 					pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, oMode);
@@ -998,8 +1000,8 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 						bool bIsOnlyOfficeHatch = false;
 						if (m_oBrush.TexturePath.find(L"onlyoffice_hatch") != std::wstring::npos)
 							bIsOnlyOfficeHatch = true;
-						m_oBrush.TexturePath.erase(0, m_oBrush.TexturePath.find(L',') + 1);
 						std::string sBase64MultyByte(m_oBrush.TexturePath.begin(), m_oBrush.TexturePath.end());
+						sBase64MultyByte.erase(0, sBase64MultyByte.find(',') + 1);
 						int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(sBase64MultyByte.length());
 						BYTE* pImageData = new BYTE[nDecodeLen + 64];
 						if (TRUE == NSBase64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), pImageData, &nDecodeLen))
@@ -1027,6 +1029,8 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 							pTextureBrush = new Aggplus::CBrushTexture(pImage, oMode);
 							pTextureBrush->m_bReleaseImage = TRUE;
 						}
+						else
+							RELEASEARRAYOBJECTS(pImageData);
 					}
 				#else
 					pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, oMode);

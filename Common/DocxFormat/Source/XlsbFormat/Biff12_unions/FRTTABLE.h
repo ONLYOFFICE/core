@@ -47,6 +47,8 @@ namespace XLSB
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
+        static const XLS::ElementType	type = XLS::typeFRTTABLE;
+
         XLS::BaseObjectPtr               m_BrtFRTBegin;
         XLS::BaseObjectPtr               m_BrtList14;
         XLS::BaseObjectPtr               m_BrtFRTEnd;

@@ -43,6 +43,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CAltTextTable)
+            WritingElement_XlsbConstructors(CAltTextTable)
 			CAltTextTable()
 			{
 			}
@@ -58,6 +59,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const
 			{
@@ -66,6 +68,7 @@ namespace OOX
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable<std::wstring > m_oAltText;
 			nullable<std::wstring > m_oAltTextSummary;

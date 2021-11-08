@@ -785,6 +785,7 @@ enum ElementType
         typeTop10Filter,
         typeColorFilter,
         typeIconFilter,
+        typeFRTTABLE,
 };
 
 

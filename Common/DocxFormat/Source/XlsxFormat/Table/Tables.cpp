@@ -44,6 +44,7 @@
 #include "../../XlsbFormat/Biff12_records/BeginListCol.h"
 #include "../../XlsbFormat/Biff12_records/ListCCFmla.h"
 #include "../../XlsbFormat/Biff12_records/ListTrFmla.h"
+#include "../../XlsbFormat/Biff12_records/List14.h"
 
 namespace OOX
 {
@@ -63,6 +64,10 @@ namespace Spreadsheet
 		if ( !oReader.IsEmptyNode() )
 			oReader.ReadTillEnd();
 	}
+    void CAltTextTable::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        ReadAttributes(obj);
+    }
 	void CAltTextTable::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -70,6 +75,15 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_Read_if     ( oReader, (L"altTextSummary"),      m_oAltTextSummary )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+    void CAltTextTable::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::List14*>(obj.get());
+        if(ptr != nullptr)
+        {
+            m_oAltText              = ptr->stAltText.value();
+            m_oAltTextSummary       = ptr->stAltTextSummary.value();
+        }
+    }
 
 	void CTableStyleInfo::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -215,17 +229,36 @@ namespace Spreadsheet
         auto ptr = static_cast<XLSB::BeginListCol*>(obj.get());
         if(ptr != nullptr)
         {
-            m_oDataCellStyle        = ptr->stStyleInsertRow;
-            m_oDataDxfId            = ptr->nDxfInsertRow;
-            m_oHeaderRowCellStyle   = ptr->stStyleHeader;
-            m_oHeaderRowDxfId       = ptr->nDxfHdr;
-            m_oTotalsRowCellStyle   = ptr->stStyleAgg;
-            m_oTotalsRowDxfId       = ptr->nDxfAgg;
-            m_oId                   = ptr->idField;
-            m_oName                 = ptr->stName.value();
-            m_oQueryTableFieldId    = ptr->idqsif;
-            m_oTotalsRowLabel       = ptr->stTotal.value();
-            m_oUniqueName           = ptr->stCaption.value();
+            if(!ptr->stStyleInsertRow.value().empty())
+                m_oDataCellStyle        = ptr->stStyleInsertRow.value();
+
+            if(ptr->nDxfInsertRow != 0xFFFFFFFF)
+                m_oTotalsRowDxfId       = ptr->nDxfInsertRow;
+
+            if(!ptr->stStyleHeader.value().empty())
+                m_oHeaderRowCellStyle   = ptr->stStyleHeader.value();
+
+            if(ptr->nDxfHdr != 0xFFFFFFFF)
+                m_oHeaderRowDxfId       = ptr->nDxfHdr;
+
+            if(!ptr->stStyleAgg.value().empty())
+                m_oTotalsRowCellStyle   = ptr->stStyleAgg.value();
+
+            if(ptr->nDxfAgg != 0xFFFFFFFF)
+                m_oDataDxfId            = ptr->nDxfAgg;
+
+            m_oId                       = ptr->idField;
+
+            if(!ptr->stCaption.value().empty())
+                m_oName                 = ptr->stCaption.value();
+
+            m_oQueryTableFieldId        = ptr->idqsif;
+
+            if(!ptr->stTotal.value().empty())
+                m_oTotalsRowLabel       = ptr->stTotal.value();
+
+            if(!ptr->stName.value().empty())
+                m_oUniqueName           = ptr->stName.value();
 
             switch (ptr->ilta.value().get())
             {
@@ -434,6 +467,9 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 
         if(ptr->m_BrtTableStyleClient != nullptr)
             m_oTableStyleInfo = ptr->m_BrtTableStyleClient;
+
+        if(ptr->m_FRTTABLE != nullptr)
+            m_oExtLst = ptr->m_FRTTABLE;
     }
 	void CTable::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
@@ -468,23 +504,44 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
         auto ptr = static_cast<XLSB::BeginList*>(obj.get());
         if(ptr != nullptr)
         {
-            m_oRef                  = ptr->rfxList.toString();
-            m_oName                 = ptr->stName.value();
-            m_oHeaderRowCount       = (unsigned int)ptr->crwHeader;
-            m_oTotalsRowCount       = (unsigned int)ptr->crwTotals;
-            m_oDisplayName          = ptr->stDisplayName.value();
-            m_oTableBorderDxfId     = ptr->nDxfBorder;
-            m_oComment              = ptr->stComment.value();
-            m_oConnectionId         = ptr->dwConnID;
-            m_oDataDxfId            = ptr->nDxfData;
-            m_oDataCellStyle        = ptr->stStyleData.value();
-            m_oHeaderRowBorderDxfId = ptr->nDxfHeaderBorder;
-            m_oHeaderRowCellStyle   = ptr->stStyleHeader.value();
-            m_oHeaderRowDxfId       = ptr->nDxfHeader;
-            m_oInsertRow            = ptr->fForceInsertToBeVisible;
-            m_oInsertRowShift       = ptr->fInsertRowInsCells;
-            m_oPublished            = ptr->fPublished;
-            m_oId                   = ptr->idList;
+            m_oRef                      = ptr->rfxList.toString();
+
+            if(!ptr->stName.value().empty())
+                m_oName                 = ptr->stName.value();
+
+            m_oHeaderRowCount           = (unsigned int)ptr->crwHeader;
+            m_oTotalsRowCount           = (unsigned int)ptr->crwTotals;
+
+            if(!ptr->stDisplayName.value().empty())
+                m_oDisplayName          = ptr->stDisplayName.value();
+
+            if(ptr->nDxfBorder != 0xFFFFFFFF)
+                m_oTableBorderDxfId     = ptr->nDxfBorder;
+
+            if(!ptr->stComment.value().empty())
+                m_oComment              = ptr->stComment.value();
+
+            m_oConnectionId             = ptr->dwConnID;
+
+            if(ptr->nDxfData != 0xFFFFFFFF)
+                m_oDataDxfId            = ptr->nDxfData;
+
+            if(!ptr->stStyleData.value().empty())
+                m_oDataCellStyle        = ptr->stStyleData.value();
+
+            if(ptr->nDxfHeaderBorder != 0xFFFFFFFF)
+                m_oHeaderRowBorderDxfId = ptr->nDxfHeaderBorder;
+
+            if(!ptr->stStyleHeader.value().empty())
+                m_oHeaderRowCellStyle   = ptr->stStyleHeader.value();
+
+            if(ptr->nDxfHeader != 0xFFFFFFFF)
+                m_oHeaderRowDxfId       = ptr->nDxfHeader;
+
+            m_oInsertRow                = ptr->fForceInsertToBeVisible;
+            m_oInsertRowShift           = ptr->fInsertRowInsCells;
+            m_oPublished                = ptr->fPublished;
+            m_oId                       = ptr->idList;
 
             switch (ptr->lt.value().get())
             {
@@ -496,10 +553,16 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
                     m_oTableType = SimpleTypes::Spreadsheet::ETableType::typeQueryTable; break;
             }
 
-            m_oTotalsRowBorderDxfId = ptr->nDxfAggBorder;
-            m_oTotalsRowCellStyle   = ptr->stStyleAgg.value();
-            m_oTotalsRowDxfId       = ptr->nDxfAgg;
-            m_oTotalsRowShown       = ptr->fShownTotalRow;
+            if(ptr->nDxfAggBorder != 0xFFFFFFFF)
+                m_oTotalsRowBorderDxfId = ptr->nDxfAggBorder;
+
+            if(!ptr->stStyleAgg.value().empty())
+                m_oTotalsRowCellStyle   = ptr->stStyleAgg.value();
+
+            if(ptr->nDxfAgg != 0xFFFFFFFF)
+                m_oTotalsRowDxfId       = ptr->nDxfAgg;
+
+            m_oTotalsRowShown           = ptr->fShownTotalRow;
 
         }
     }

@@ -444,77 +444,66 @@ namespace ComplexTypes
 			{
                 std::wstring sResult;
 
+				if (m_oVal.IsInit())
+				{
+					sResult += L"w:val=\"";
+					sResult += m_oVal->ToString();
+					sResult += L"\" ";
+				}
 				if ( m_oColor.IsInit() )
 				{
 					sResult += L"w:color=\"";
-					sResult += m_oColor->ToString();
+					sResult += m_oColor->ToStringNoAlpha();
 					sResult += L"\" ";
 				}
-
-				if ( m_oFill.IsInit() )
-				{
-					sResult += L"w:fill=\"";
-					sResult += m_oFill->ToString();
-					sResult += L"\" ";
-				}
-
 				if ( m_oThemeColor.IsInit() )
 				{
 					sResult += L"w:themeColor=\"";
 					sResult += m_oThemeColor->ToString();
 					sResult += L"\" ";
 				}
-
-				if ( m_oThemeFill.IsInit() )
-				{
-					sResult += L"w:themeFill=\"";
-					sResult += m_oThemeFill->ToString();
-					sResult += L"\" ";
-				}
-
-				if ( m_oThemeFillShade.IsInit() )
-				{
-					sResult += L"w:themeFillShade=\"";
-					sResult += m_oThemeFillShade->ToString();
-					sResult += L"\" ";
-				}
-
-				if ( m_oThemeFillTint.IsInit() )
-				{
-					sResult += L"w:themeFillTint=\"";
-					sResult += m_oThemeFillTint->ToString();
-					sResult += L"\" ";
-				}
-
-				if ( m_oThemeShade.IsInit() )
-				{
-					sResult += L"w:themeShade=\"";
-					sResult += m_oThemeShade->ToString();
-					sResult += L"\" ";
-				}
-
-
-				if ( m_oThemeTint.IsInit() )
+				if (m_oThemeTint.IsInit())
 				{
 					sResult += L"w:themeTint=\"";
 					sResult += m_oThemeTint->ToString();
 					sResult += L"\" ";
 				}
-
-				if ( m_oVal.IsInit() )
+				if (m_oThemeShade.IsInit())
 				{
-					sResult += L"w:val=\"";
-					sResult += m_oVal->ToString();
+					sResult += L"w:themeShade=\"";
+					sResult += m_oThemeShade->ToString();
 					sResult += L"\" ";
 				}
-
+				if (m_oFill.IsInit())
+				{
+					sResult += L"w:fill=\"";
+					sResult += m_oFill->ToStringNoAlpha();
+					sResult += L"\" ";
+				}
+				if (m_oThemeFill.IsInit())
+				{
+					sResult += L"w:themeFill=\"";
+					sResult += m_oThemeFill->ToString();
+					sResult += L"\" ";
+				}
+				if (m_oThemeFillTint.IsInit())
+				{
+					sResult += L"w:themeFillTint=\"";
+					sResult += m_oThemeFillTint->ToString();
+					sResult += L"\" ";
+				}
+				if (m_oThemeFillShade.IsInit())
+				{
+					sResult += L"w:themeFillShade=\"";
+					sResult += m_oThemeFillShade->ToString();
+					sResult += L"\" ";
+				}
 				return sResult;
 			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:color",          m_oColor )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:fill",           m_oFill )
@@ -527,9 +516,7 @@ namespace ComplexTypes
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:val",            m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-
 			nullable<SimpleTypes::CHexColor<>           > m_oColor;
 			nullable<SimpleTypes::CHexColor<>           > m_oFill;
 			nullable<SimpleTypes::CThemeColor<>         > m_oThemeColor;
@@ -539,7 +526,6 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeShade;
 			nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeTint;
 			nullable<SimpleTypes::CShd<>                > m_oVal;
-
 		};
 
 

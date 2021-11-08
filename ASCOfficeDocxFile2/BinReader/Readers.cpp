@@ -602,8 +602,13 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 		{
 			ComplexTypes::Word::CShading oShd;
 			READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, &oShd);
-			orPr->bShd = true;
-			orPr->Shd = oShd.ToString();
+			
+			std::wstring sShd = oShd.ToString();
+			if (false == sShd.empty())
+			{
+				orPr->bShd = true;
+				orPr->Shd = L"<w:shd " + sShd + L"/>";
+			}
 			break;
 		}
 	case c_oSerProp_rPrType::RStyle:
@@ -963,7 +968,10 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 		{
 			ComplexTypes::Word::CShading oShd;
 			READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, &oShd);
-			pCStringWriter->WriteString(oShd.ToString());
+
+			std::wstring sShd = oShd.ToString();
+			if (false == sShd.empty())
+				pCStringWriter->WriteString(L"<w:shd " + sShd + L"/>");
 			break;
 		}
 	case c_oSerProp_pPrType::WidowControl:
@@ -2108,7 +2116,12 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 	{
 		ComplexTypes::Word::CShading oShd;
 		READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, &oShd);
-		pWiterTblPr->Shd = oShd.ToString();
+
+		std::wstring sShd = oShd.ToString();
+		if (false == sShd.empty())
+		{
+			pWiterTblPr->Shd = L"<w:shd " + sShd + L"/>";
+		}
 	}
 	else if( c_oSerProp_tblPrType::tblpPr == type )
 	{
@@ -2577,7 +2590,10 @@ int Binary_tblPrReader::Read_CellPr(BYTE type, long length, void* poResult)
 	{
 		ComplexTypes::Word::CShading oShd;
 		READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, &oShd);
-		pCStringWriter->WriteString(oShd.ToString());
+		
+		std::wstring sShd = oShd.ToString();
+		if (false == sShd.empty())
+			pCStringWriter->WriteString(L"<w:shd " + sShd + L"/>");
 	}
 	else if( c_oSerProp_cellPrType::TableCellBorders == type )
 	{

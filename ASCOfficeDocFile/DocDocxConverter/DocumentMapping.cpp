@@ -116,7 +116,7 @@ namespace DocFileFormat
 		{
 			if ((fc >= m_document->ListPlex->CharacterPositions[i-1]) && (fc_end <= m_document->ListPlex->CharacterPositions[i]))
 			{
-				ListNumCache* listNum = dynamic_cast<ListNumCache*> (m_document->ListPlex->Elements[i-1]);
+				ListNumCache* listNum = dynamic_cast<ListNumCache*> (m_document->ListPlex->Elements[i - 1]);
 
 				return listNum->value;
 			}
@@ -362,7 +362,7 @@ namespace DocFileFormat
 		RELEASEOBJECT(chpxFcs);
 		RELEASEOBJECT(chpxs);
 		
-		return cpEnd;
+		return cpEnd++;
 
 		return (std::max)(cp, cpEnd); //ralph_scovile.doc
 	}
@@ -1795,7 +1795,11 @@ namespace DocFileFormat
 	{
 		if ((m_document->FootnoteReferenceCharactersPlex != NULL) && (m_document->FootnoteReferenceCharactersPlex->IsCpExists(cp)))
 		{
-			FootnoteDescriptor* desc = dynamic_cast<FootnoteDescriptor*>(m_document->FootnoteReferenceCharactersPlex->Elements[_footnoteNr]);
+			FootnoteDescriptor* desc = NULL;
+			
+			if (_footnoteNr < m_document->FootnoteReferenceCharactersPlex->Elements.size())
+				desc = dynamic_cast<FootnoteDescriptor*>(m_document->FootnoteReferenceCharactersPlex->Elements[_footnoteNr]);
+			
 			if ((desc) && (false == desc->bUsed))
 			{
 				desc->bUsed = true;

@@ -43,6 +43,7 @@
 #include "MetaFile.h"
 #include "MetaFileTypes.h"
 #include "MetaFileObjects.h"
+#include "../GraphicsRenderer.h"
 
 #include <cmath>
 
@@ -102,9 +103,9 @@ namespace MetaFile
 			//m_pRenderer->PathCommandEnd();
 		}
 
-		CMetaFileRenderer(const CMetaFileRenderer &oMetaFileRenderer)
+		CMetaFileRenderer(const CMetaFileRenderer &oMetaFileRenderer, IMetaFileBase *pFile)
 		{
-			m_pFile = oMetaFileRenderer.m_pFile;
+			m_pFile = pFile;
 
 			m_dX = oMetaFileRenderer.m_dX;
 			m_dY = oMetaFileRenderer.m_dY;
@@ -116,33 +117,6 @@ namespace MetaFile
 			UpdateScale();
 
 			m_bStartedPath = false;
-		}
-
-		double GetDpiX() const
-		{
-			double dDpi = 96;
-
-			if (NULL != m_pRenderer)
-				m_pRenderer->get_DpiX(&dDpi);
-
-			return dDpi;
-		}
-
-		double GetDpiY() const
-		{
-			double dDpi = 96;
-
-			if (NULL != m_pRenderer)
-				m_pRenderer->get_DpiY(&dDpi);
-
-			return dDpi;
-		}
-
-		void SetFile(IMetaFileBase *pFile)
-		{
-			m_pFile = pFile;
-
-			UpdateScale();
 		}
 
 		void UpdateScale()

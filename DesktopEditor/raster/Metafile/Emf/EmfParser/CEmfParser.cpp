@@ -23,8 +23,7 @@ namespace MetaFile
                         }
                         else if (pEmfInterpretatorBase->GetType() == Render)
                         {
-                                m_pInterpretator = new CEmfInterpretatorRender(*(CEmfInterpretatorRender*)pEmfInterpretatorBase);
-                                ((CEmfInterpretatorRender*)m_pInterpretator)->SetFileRender(this);
+                                m_pInterpretator = new CEmfInterpretatorRender(*(CEmfInterpretatorRender*)pEmfInterpretatorBase, this);
                         }
                         else if (pEmfInterpretatorBase->GetType() == XML)
                         {
@@ -41,22 +40,6 @@ namespace MetaFile
         {
                 ClearFile();
                 RELEASEOBJECT(m_pEmfPlusParser);
-        }
-
-        void CEmfParser::CopyDC(CEmfDC* pEmfDC)
-        {
-                if (NULL != pEmfDC)
-                {
-                        m_pDC = pEmfDC->Copy();
-                }
-        }
-
-        void CEmfParser::CopyTransform(TXForm &oTransform)
-        {
-//                if (NULL != m_pInterpretator)
-//                        m_pInterpretator->SetTransform(oTransform.M11, oTransform.M12, oTransform.M21, oTransform.M22, oTransform.Dx, oTransform.Dy);
-
-                m_oTransform.Copy(&oTransform);
         }
 
         bool CEmfParser::OpenFromFile(const wchar_t *wsFilePath)
@@ -252,7 +235,10 @@ namespace MetaFile
 
         void CEmfParser::Scan()
         {
+                CEmfInterpretatorBase *pInterpretator = m_pInterpretator;
+                m_pInterpretator = NULL;
                 PlayFile();
+                m_pInterpretator = pInterpretator;
                 this->ClearFile();
         }
 
@@ -1424,10 +1410,11 @@ namespace MetaFile
                         {
                                 m_pEmfPlusParser = new CEmfPlusParser(m_pInterpretator, m_oHeader);
                                 m_pEmfPlusParser->SetFontManager(GetFontManager());
-                                m_pEmfPlusParser->CopyDC(m_pDC);
+//                                m_pEmfPlusParser->CopyDC(m_pDC);
                         }
 
                         m_pEmfPlusParser->SetStream(m_oStream.GetCurPtr(), m_ulRecordSize - 8);
+//                        m_pEmfPlusParser->Scan();
                         m_pEmfPlusParser->PlayFile();
                 }
         }

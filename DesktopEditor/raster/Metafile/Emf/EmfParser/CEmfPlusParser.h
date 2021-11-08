@@ -13,10 +13,8 @@ namespace MetaFile
         class CEmfPlusParser : public CEmfParserBase
         {
             public:
-                CEmfPlusParser(const CEmfInterpretatorBase *pEmfInterpretatorBase, const TEmfHeader& oHeader);
+                CEmfPlusParser(const CEmfInterpretatorBase *pEmfInterpretator, const TEmfHeader& oHeader);
                 virtual ~CEmfPlusParser();
-
-                void CopyDC(CEmfDC *pEmfDC);
 
                 bool            OpenFromFile(const wchar_t* wsFilePath)     override;
                 void            PlayFile()                                  override;
@@ -31,6 +29,8 @@ namespace MetaFile
                 bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
                 void ReadPath();
                 std::vector<TEmfPlusPointF> ReadPointsF(unsigned int unPointCount);
+                void DrawRectangle(TEmfPlusRectF oRectangle, bool bStroke, bool bFill);
+                void DrawRectangle(TEmfPlusRect oRectangle, bool bStroke, bool bFill);
 
                 void Read_EMRPLUS_OFFSETCLIP();
                 void Read_EMRPLUS_RESETCLIP();

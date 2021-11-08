@@ -5,6 +5,17 @@
 
 namespace MetaFile
 {
+        typedef  enum
+        {
+                UnitTypeWorld           = 0x00,
+                UnitTypeDisplay         = 0x01,
+                UnitTypePixel           = 0x02,
+                UnitTypePoint           = 0x03,
+                UnitTypeInch            = 0x04,
+                UnitTypeDocument        = 0x05,
+                UnitTypeMillimeter      = 0x06
+        } EEmfPlusUnitType;
+
         struct TEmfPlusRectR
         {
                 char chX;

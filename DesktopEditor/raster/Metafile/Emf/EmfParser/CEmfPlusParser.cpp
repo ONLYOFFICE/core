@@ -140,32 +140,31 @@ namespace MetaFile
                 {0x402D, L"EMFPLUS_TRANSLATEWORLDTRANSFORM"}
         };
 
-        CEmfPlusParser::CEmfPlusParser(const CEmfInterpretatorBase *pEmfInterpretatorBase, const TEmfHeader& oHeader)
+        CEmfPlusParser::CEmfPlusParser(const CEmfInterpretatorBase *pEmfInterpretator, const TEmfHeader& oHeader)
                 : m_bBanEmfProcessing(false),
                   m_unLogicalDpiX(0),
                   m_unLogicalDpiY(0),
                   m_pContineudObject(NULL)
         {
-                if (NULL != pEmfInterpretatorBase)
+                if (NULL != pEmfInterpretator)
                 {
                         m_oHeader = oHeader;
 
-                        if (pEmfInterpretatorBase->GetType() == Emf)
+                        if (pEmfInterpretator->GetType() == Emf)
                         {
-                                m_pInterpretator = new CEmfInterpretator(*(CEmfInterpretator*)pEmfInterpretatorBase);
+                                m_pInterpretator = new CEmfInterpretator(*(CEmfInterpretator*)pEmfInterpretator);
                         }
-                        else if (pEmfInterpretatorBase->GetType() == Render)
+                        else if (pEmfInterpretator->GetType() == Render)
                         {
-                                m_pInterpretator = new CEmfInterpretatorRender(*(CEmfInterpretatorRender*)pEmfInterpretatorBase);
-                                ((CEmfInterpretatorRender*)m_pInterpretator)->SetFileRender(this);
+                                m_pInterpretator = new CEmfInterpretatorRender(*(CEmfInterpretatorRender*)pEmfInterpretator, this);
                         }
-                        else if (pEmfInterpretatorBase->GetType() == XML)
+                        else if (pEmfInterpretator->GetType() == XML)
                         {
-                                m_pInterpretator = new CEmfInterpretatorXml(*(CEmfInterpretatorXml*)pEmfInterpretatorBase);
+                                m_pInterpretator = new CEmfInterpretatorXml(*(CEmfInterpretatorXml*)pEmfInterpretator);
                         }
-                        else if (pEmfInterpretatorBase->GetType() == Array)
+                        else if (pEmfInterpretator->GetType() == Array)
                         {
-                                m_pInterpretator = new CEmfInterpretatorArray(*(CEmfInterpretatorArray*)pEmfInterpretatorBase);
+                                m_pInterpretator = new CEmfInterpretatorArray(*(CEmfInterpretatorArray*)pEmfInterpretator);
                         }
                 }
         }
@@ -174,12 +173,6 @@ namespace MetaFile
         {
                 ClearFile();
                 RELEASEOBJECT(m_pInterpretator);
-        }
-
-        void CEmfPlusParser::CopyDC(CEmfDC *pEmfDC)
-        {
-                if (NULL != pEmfDC)
-                        m_pDC = pEmfDC->Copy();
         }
 
         bool CEmfPlusParser::OpenFromFile(const wchar_t *wsFilePath)
@@ -199,16 +192,17 @@ namespace MetaFile
 
         void CEmfPlusParser::PlayFile()
         {
-                if (m_oStream.CanRead() < 12)
-                        return;
-
-                if(NULL != m_pInterpretator)
-                        m_pInterpretator->Begin();
-
                 unsigned short unShType, unShFlags;
                 unsigned int unSize;
+
                 do
                 {
+                        if (m_oStream.IsEof())
+                                break;
+
+                        if (m_oStream.CanRead() < 12)
+                                break;
+
                         m_oStream >> unShType;
                         m_oStream >> unShFlags;
 
@@ -217,9 +211,7 @@ namespace MetaFile
 
                         unsigned int unRecordPos = m_oStream.Tell();
 
-                        #ifdef _DEBUG
-                                std::wcout << ActionNamesEmfPlus[unShType] << L"  DataSize = " << m_ulRecordSize << std::endl;
-                        #endif
+                        LOGGING(ActionNamesEmfPlus[unShType] << L"  DataSize = " << m_ulRecordSize)
 
                         switch (unShType)
                         {
@@ -300,21 +292,24 @@ namespace MetaFile
                         int nNeedSkip = (unRecordPos + m_ulRecordSize) - m_oStream.Tell();
                         m_oStream.Skip(nNeedSkip);
 
-                        #ifdef _DEBUG
-                                std::wcout << L"Skip: " << nNeedSkip << std::endl;
-                        #endif
+                        LOGGING(L"Skip: " << nNeedSkip)
 
                         m_ulRecordSize = 0;
                 }while(m_oStream.CanRead() > 4);
 
-                #ifdef _DEBUG
-                        std::wcout << L"___________________________" << std::endl;
-                #endif
+                if (!CheckError())
+                        m_oStream.SeekToStart();
+
+                LOGGING(L"_____________________________________________________")
         }
 
         void CEmfPlusParser::Scan()
         {
-                return;
+                CEmfInterpretatorBase* pInterpretator = m_pInterpretator;
+                m_pInterpretator = NULL;
+                PlayFile();
+                m_pInterpretator = pInterpretator;
+                this->ClearFile();
         }
 
         EmfParserType CEmfPlusParser::GetType()
@@ -351,36 +346,14 @@ namespace MetaFile
                 {
                         std::vector<TEmfPlusPointF> arPoints = ReadPointsF(unPathPointCount);
 
-                        if (NULL == m_pPath)
-                                m_pPath = new CEmfPath;
+                        RELEASEOBJECT(m_pPath)
 
-                        MoveTo(arPoints[0]);
+                        m_pPath = new CEmfPath;
+
+                        m_pPath->MoveTo(arPoints[0].x, arPoints[0].y);
 
                         for (unsigned int unIndex = 1; unIndex < unPathPointCount; ++unIndex)
-                                LineTo(arPoints[unIndex]);
-
-                        if ((unPathPointFlags >>(20)) & 1)
-                        {
-                                //Определен флаг R
-                                //TODO: реализовать
-                        }
-                        else
-                        {
-                                char chPointType;
-                                for (unsigned int unIndex = 0; unIndex < unPathPointCount; ++unIndex)
-                                {
-                                        m_oStream >> chPointType;
-                                        char chFlags, chType;
-                                        chType = ExpressValue(chPointType, 0, 3);
-                                        chFlags = ExpressValue(chPointType, 4, 7);
-
-                                        if (chFlags == 0x08 && NULL != m_pPath)
-                                        {
-                                                m_pPath->Draw(m_pInterpretator, false, true);
-                                                RELEASEOBJECT(m_pPath);
-                                        }
-                                }
-                        }
+                                m_pPath->LineTo(arPoints[unIndex].x, arPoints[unIndex].y);
                         //Оба флага не определены
                 }
                 //TODO: реализовать
@@ -391,15 +364,39 @@ namespace MetaFile
                 std::vector<TEmfPlusPointF> arPoints(unPointCount);
 
                 for (unsigned int unIndex = 0; unIndex < unPointCount; ++unIndex)
-                {
-                        TEmfPlusPointF oPoint;
-
-                        m_oStream >> oPoint;
-
-                        arPoints[unIndex] = oPoint;
-                }
+                        m_oStream >> arPoints[unIndex];
 
                 return arPoints;
+        }
+
+        void CEmfPlusParser::DrawRectangle(TEmfPlusRectF oRectangle, bool bStroke, bool bFill)
+        {
+                if (NULL != m_pInterpretator)
+                {
+                        if (AD_COUNTERCLOCKWISE != m_pDC->GetArcDirection())
+                        {
+                                m_pInterpretator->MoveTo(oRectangle.dLeft,  oRectangle.dTop);
+                                m_pInterpretator->LineTo(oRectangle.dLeft,  oRectangle.dBottom);
+                                m_pInterpretator->LineTo(oRectangle.dRight, oRectangle.dBottom);
+                                m_pInterpretator->LineTo(oRectangle.dRight, oRectangle.dTop);
+                        }
+                        else
+                        {
+                                m_pInterpretator->MoveTo(oRectangle.dLeft,  oRectangle.dTop);
+                                m_pInterpretator->LineTo(oRectangle.dRight, oRectangle.dTop);
+                                m_pInterpretator->LineTo(oRectangle.dRight, oRectangle.dBottom);
+                                m_pInterpretator->LineTo(oRectangle.dLeft,  oRectangle.dBottom);
+                        }
+
+                        m_pInterpretator->ClosePath();
+                        m_pInterpretator->DrawPath((bStroke ? 1 : 0) + (bFill ? 2 : 0));
+                        m_pInterpretator->EndPath();
+                }
+        }
+
+        void CEmfPlusParser::DrawRectangle(TEmfPlusRect oRectangle, bool bStroke, bool bFill)
+        {
+
         }
 
         void CEmfPlusParser::Read_EMRPLUS_HEADER(unsigned short unShFlags)
@@ -413,22 +410,7 @@ namespace MetaFile
                 m_oStream >> m_unLogicalDpiY;
 
                 if(NULL != m_pInterpretator)
-                {
                         m_pInterpretator->Begin();
-
-                        double dDpiX, dDpiY;
-                        dDpiX = dDpiY = 96;
-
-                        if (m_pInterpretator->GetType() == Render)
-                        {
-                                dDpiX = ((CEmfInterpretatorRender*)m_pInterpretator)->GetDpiX();
-                                dDpiY = ((CEmfInterpretatorRender*)m_pInterpretator)->GetDpiY();
-                        }
-
-                        TXForm oNewMatrix (dDpiX / m_unLogicalDpiX, 0, 0, dDpiY / m_unLogicalDpiY, 0, 0);
-                        m_oTransform.Multiply(oNewMatrix, MWT_RIGHTMULTIPLY);
-                }
-
 
                 //TODO: добавить установление нового Dpi
         }
@@ -710,6 +692,13 @@ namespace MetaFile
 
                 m_oStream >> unPenId;
 
+                if (m_pPath)
+                {
+                        m_oPlayer.SelectObject(unPenId);
+                        m_pPath->Draw(m_pInterpretator, true, false);
+                        RELEASEOBJECT(m_pPath);
+                }
+
                 //TODO: реализовать
         }
 
@@ -746,22 +735,23 @@ namespace MetaFile
         template<typename T>
         void CEmfPlusParser::Read_EMFPLUS_DRAWRECTS_BASE(unsigned short unShFlags)
         {
-                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+                short shPenIndex = ExpressValue(unShFlags, 0, 7);
                 unsigned int unCount;
 
                 m_oStream >> unCount;
+
+                if (unCount == 0)
+                        return;
+
+                m_oPlayer.SelectObject(shPenIndex);
 
                 std::vector<T> arRects(unCount);
 
                 for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
                 {
-                        T oRect;
-
-                        m_oStream >> oRect;
-
-                        arRects.push_back(oRect);
+                        m_oStream >> arRects[unIndex];
+                        DrawRectangle(arRects[unIndex], true, false);
                 }
-                //TODO: реализовать
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWSTRING(unsigned short unShFlags)
@@ -839,17 +829,17 @@ namespace MetaFile
 
         void CEmfPlusParser::Read_EMFPLUS_FILLPATH(unsigned short unShFlags)
         {
-                unsigned int unBrushId;
+                int nFillPathLength;
 
-                m_oStream >> unBrushId;
+                m_oStream >> nFillPathLength;
 
-                if (m_pPath)
+                ReadPath();
+
+                if (NULL != m_pPath)
                 {
-                        m_pPath->Draw(m_pInterpretator, false, true);
+                        m_pPath->Draw(m_pInterpretator, true, true);
                         RELEASEOBJECT(m_pPath);
                 }
-
-                //TODO: реализовать
         }
 
         void CEmfPlusParser::Read_EMFPLUS_FILLPIE(unsigned short unShFlags)
@@ -923,17 +913,39 @@ namespace MetaFile
                 m_oStream >> unBrushId;
                 m_oStream >> unCount;
 
+                if (unCount == 0)
+                        return;
+
                 std::vector<T> arRects(unCount);
 
                 for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
                 {
                         T oRect;
-
-                        m_oStream >> oRect;
-
-                        arRects.push_back(oRect);
+                        m_oStream >> arRects[unIndex];
                 }
-                //TODO: реализовать
+
+                if ((unShFlags >>(15)) & 1 )//BrushId = Color
+                {
+                        unsigned int unBlue  = (unBrushId >> 0)  & 0xFF;
+                        unsigned int unGreen = (unBrushId >> 8)  & 0xFF;
+                        unsigned int unRed   = (unBrushId >> 16) & 0xFF;
+
+                        CEmfLogBrushEx oBrush;
+                        oBrush.Color.Set(unRed, unGreen, unBlue);
+
+                        m_pDC->SetBrush(&oBrush);
+
+                        for (T &oBox : arRects)
+                                DrawRectangle(oBox, false, true);
+
+                        m_pDC->RemoveBrush(&oBrush);
+                }
+                else //BrushId = Brush id
+                {
+                        m_oPlayer.SelectObject(unBrushId);
+                        for (T &oBox : arRects)
+                                DrawRectangle(oBox, false, true);
+                }
         }
 
         void CEmfPlusParser::Read_EMFPLUS_FILLREGION(unsigned short unShFlags)
@@ -961,36 +973,48 @@ namespace MetaFile
                                 m_pContineudObject->SetDataSize(unTotalSize);
                 }
 
-                CEmfPlusObjectBase *pEmfPlusObject = NULL;
-
                 switch (shOgjectType)
                 {
                         case ObjectTypeInvalid: return;
                         case ObjectTypeBrush:
                         {
-                                pEmfPlusObject = new CEmfPlusBrush;
-                                m_oStream >> (CEmfPlusBrush&)pEmfPlusObject;
+                                LOGGING(L"Object Brush with index: " << shOgjectIndex)
+                                CEmfPlusBrush *pEmfPlusBrush = new CEmfPlusBrush;
+                                m_oStream >> *pEmfPlusBrush;
+
+                                m_oPlayer.RegisterObject(shOgjectIndex, (CEmfObjectBase*)pEmfPlusBrush);
+
                                 break;
                         }
                         case ObjectTypePen:
                         {
-                                pEmfPlusObject = new CEmfPlusPen;
-                                m_oStream >> (CEmfPlusPen&)pEmfPlusObject;
+                                LOGGING(L"Object Pen with index: " << shOgjectIndex)
+                                CEmfPlusPen *pEmfPlusPen = new CEmfPlusPen;
+                                m_oStream >> *pEmfPlusPen;
+
+                                m_oPlayer.RegisterObject(shOgjectIndex, (CEmfObjectBase*)pEmfPlusPen);
+
                                 break;
                         }
                         case ObjectTypePath:
                         {
+                                LOGGING(L"Object Path")
                                 ReadPath();
                                 break;
                         }
                         case ObjectTypeRegion:
                         {
-                                pEmfPlusObject = new CEmfPlusRegion;
-                                m_oStream >> (CEmfPlusRegion&)pEmfPlusObject;
+                                LOGGING(L"Object Region")
+                                CEmfPlusRegion *pEmfPlusRegion = new CEmfPlusRegion;
+                                m_oStream >> *pEmfPlusRegion;
+
+                                RELEASEOBJECT(pEmfPlusRegion)
+
                                 break;
                         }
                         case ObjectTypeImage:
                         {
+                                LOGGING(L"Object Image")
                                 if (NULL == m_pContineudObject)
                                 {
                                         CEmfPlusImage *pImage = new CEmfPlusImage(m_ulRecordSize - (((unShFlags >>(15)) & 1) ? 4 : 0));
@@ -1024,13 +1048,15 @@ namespace MetaFile
 
                                         if (m_pContineudObject->IsLastReading())
                                         {
-                                                //При создании нового объекта нужно передавать преобразования протранства
-                                                CEmfParser oEmfParser(m_pInterpretator);
-                                                oEmfParser.SetStream(m_pContineudObject->GetData(), m_pContineudObject->GetSize());
-                                                oEmfParser.SetFontManager(GetFontManager());
-//                                                oEmfParser.CopyDC(m_pDC);
-//                                                oEmfParser.CopyTransform(m_oTransform);
-                                                oEmfParser.PlayFile();
+                                                if (NULL != m_pInterpretator)
+                                                {
+                                                        //При создании нового объекта нужно передавать преобразования протранства
+                                                        CEmfParser oEmfParser(m_pInterpretator);
+                                                        oEmfParser.SetStream(m_pContineudObject->GetData(), m_pContineudObject->GetSize());
+                                                        oEmfParser.SetFontManager(GetFontManager());
+                                                        oEmfParser.m_bView = true;
+                                                        oEmfParser.PlayFile();
+                                                }
 
                                                 RELEASEOBJECT(m_pContineudObject);
                                         }
@@ -1040,9 +1066,6 @@ namespace MetaFile
                         }
                         default: return;
                 }
-
-                if (NULL != pEmfPlusObject)
-                        m_oPlayer.RegisterObject(shOgjectIndex, (CEmfObjectBase*)pEmfPlusObject);
                 //TODO: реализовать
         }
 
@@ -1083,7 +1106,6 @@ namespace MetaFile
         void CEmfPlusParser::Read_EMFPLUS_SETINTERPOLATIONMODE(unsigned short unShFlags)
         {
                 short shInterpolationMode = ExpressValue(unShFlags, 0, 7);
-
                 //TODO: реализовать
         }
 
@@ -1184,10 +1206,7 @@ namespace MetaFile
                 for (unsigned int unIndex = 0; unIndex < shNumRects; ++unIndex)
                 {
                         T oRect;
-
-                        m_oStream >> oRect;
-
-                        arRects.push_back(oRect);
+                        m_oStream >> arRects[unIndex];
                 }
 
                 //TODO: реализовать
@@ -1228,6 +1247,7 @@ namespace MetaFile
         void CEmfPlusParser::Read_EMFPLUS_RESETWORLDTRANSFORM()
         {
                 m_pDC->ResetTransform();
+                UpdateOutputDC();
         }
 
         void CEmfPlusParser::Read_EMFPLUS_ROTATEWORLDTRANSFORM(unsigned short unShFlags)
@@ -1238,6 +1258,7 @@ namespace MetaFile
 
                 TEmfPlusXForm oMatrix(sinf(dAngle), cosf(dAngle), cosf(dAngle), -sinf(dAngle), 0, 0);
                 m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
+
                 UpdateOutputDC();
         }
 
@@ -1250,6 +1271,7 @@ namespace MetaFile
 
                 TEmfPlusXForm oMatrix(dSx, 0, 0, dSy, 0, 0);
                 m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
+
                 UpdateOutputDC();
         }
 
@@ -1350,6 +1372,8 @@ namespace MetaFile
         {
                 m_bBanEmfProcessing = true;
 
+                if (m_ulRecordSize == 0)
+                        return;
                 //TODO: реализовать
         }
 
@@ -1375,5 +1399,4 @@ namespace MetaFile
 
                 return shValue;
         }
-
 }

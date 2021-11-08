@@ -1608,7 +1608,7 @@ GStringRep::setat(int n, char ch) const
   return retval;
 }
 
-#ifndef WASM_MODE
+#ifndef BUILDING_WASM_MODULE
 #if defined(AUTOCONF) && defined(HAVE_VSNPRINTF)
 # define USE_VSNPRINTF vsnprintf
 #elif defined(WIN32) && !defined(__CYGWIN32__)

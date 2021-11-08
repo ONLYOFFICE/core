@@ -78,7 +78,7 @@
 
 #include "debug.h"
 
-#if defined(__linux__) || defined(LINUX) || defined(WASM_MODE)
+#if defined(__linux__) || defined(LINUX) || defined(BUILDING_WASM_MODULE)
 typedef unsigned int	UINT;
 #endif
 

@@ -70,7 +70,6 @@
 #include "GThreads.h"
 #include "GContainer.h"
 #include "DjVuGString.h"
-#include "DjVuGString.h"
 #include "ByteStream.h"
 #include "GURL.h"
 

@@ -174,14 +174,14 @@ namespace NSFonts
                 if (it == m_mapStreams.end())
                     return false;
 
-                it->second->Release();
+                RELEASEINTERFACE(it->second);
                 m_mapStreams.erase(it);
                 return true;
             }
             virtual void Clear()
             {
                 for (std::map<std::wstring, IFontStream*>::iterator it = m_mapStreams.begin(); it != m_mapStreams.end(); it++)
-                    it->second->Release();
+                    RELEASEINTERFACE(it->second);
                 m_mapStreams.clear();
             }
 
@@ -195,13 +195,12 @@ namespace NSFonts
 
             virtual std::wstring GenerateId()
             {
-                while (true)
+                std::wstring sKey;
+                do
                 {
-                    std::wstring sKey = L"storage_internal_" + std::to_wstring(m_nInternalCounter++);
-                    if (m_mapStreams.find(sKey) == m_mapStreams.end())
-                        return sKey;
-                }
-                return L"";
+                    sKey = L"storage_internal_" + std::to_wstring(m_nInternalCounter++);
+                } while (m_mapStreams.find(sKey) != m_mapStreams.end());
+                return sKey;
             }
         };
 
@@ -216,8 +215,8 @@ namespace NSFonts
         }
         GRAPHICS_DECL void SetGlobalMemoryStorage(IFontsMemoryStorage* pStorage)
         {
-            if (g_global_fonts_memory_storage && g_global_fonts_memory_storage != pStorage)
-                g_global_fonts_memory_storage->Release();
+            if (g_global_fonts_memory_storage != pStorage)
+                RELEASEINTERFACE(g_global_fonts_memory_storage);
 
             g_global_fonts_memory_storage = pStorage;
         }

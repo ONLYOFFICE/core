@@ -2241,7 +2241,6 @@ void GlobalParams::setupBaseFonts(const char *dir) {
 #ifdef __APPLE__
   dfontFontNames = NULL;
 #endif
-
   for (i = 0; displayFontTab[i].name; ++i) {
     if (fontFiles->lookup(displayFontTab[i].name)) {
       continue;

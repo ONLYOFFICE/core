@@ -57,7 +57,6 @@ namespace PdfReader
 	public:
 
 		PDFDoc(GlobalParams *pGlobalParams, const std::wstring &wsFileName, const std::wstring &ownerPassword, const std::wstring &userPassword);
-        PDFDoc(GlobalParams *pGlobalParams, BYTE* data, DWORD length,       const std::wstring &ownerPassword, const std::wstring &userPassword);
 		~PDFDoc();
 
 		// Нормально ли открылся PDF файл?

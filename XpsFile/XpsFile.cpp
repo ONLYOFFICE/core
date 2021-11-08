@@ -185,11 +185,11 @@ BYTE* CXpsFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool
     NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
     pRenderer->SetFontManager(pFontManager);
 
-    double dPageDpiX, dPageDpiY;
+    double dPageDpiX;
     double dWidth, dHeight;
-    GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+    GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiX);
 
-    int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth * 96 / dPageDpiX);
+    int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth  * 96 / dPageDpiX);
     int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 96 / dPageDpiX);
 
     BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];

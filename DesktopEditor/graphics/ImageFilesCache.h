@@ -77,7 +77,7 @@ public:
 
                 NSFile::CFileBinary::Remove(sTempFile);
             }
-            pMetafile->Release();
+            RELEASEINTERFACE(pMetafile);
         }
 	}
 

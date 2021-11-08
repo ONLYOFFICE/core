@@ -73,9 +73,9 @@ public:
     virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1);
 
     void ConvertToPdf(const std::wstring& path);
-    #ifdef BUILDING_WASM_MODULE
+#ifdef BUILDING_WASM_MODULE
     virtual BYTE* GetStructure();
     virtual BYTE* GetGlyphs(int nPageIndex);
     virtual BYTE* GetLinks (int nPageIndex);
-    #endif
+#endif
 };

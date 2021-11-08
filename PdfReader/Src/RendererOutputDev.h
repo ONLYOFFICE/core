@@ -80,8 +80,8 @@ namespace PdfReader
 		void SaveToFile(std::wstring wsDirPath);
 		bool Find(Ref oRef, TFontEntry *pEntry);
 		bool Find2(Ref oRef, TFontEntry **ppEntry);
-        void Remove(Ref oRef);
-        TFontEntry *Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int nLenGID, unsigned int nLenUnicode);
+		void Remove(Ref oRef);
+		TFontEntry *Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int nLenGID, unsigned int nLenUnicode);
 		void Clear();
 		bool GetFont(Ref *pRef, TFontEntry *pEntry);
 	private:
@@ -289,20 +289,20 @@ namespace PdfReader
 			m_pbBreak = pbBreak;
 		}
 
-    #ifdef BUILDING_WASM_MODULE
-        void GetGlyphs(const std::wstring& bsUnicodeText, unsigned int* pGids, double x, double y);
-        void DumpLine();
-        NSWasm::CData m_pPageMeta;
+	#ifdef BUILDING_WASM_MODULE
+		void GetGlyphs(const std::wstring& bsUnicodeText, unsigned int* pGids, double x, double y);
+		void DumpLine();
+		NSWasm::CData m_pPageMeta;
 
-    private:
-        double m_dCurrentFontSize = 0.0;
-        NSWasm::CHLine m_oLine;
-        NSWasm::CData  m_oMeta;
-        Aggplus::CMatrix m_pLastTransform;
-        LONG m_lCurrentFont     = -1;
-        LONG m_nLastBrushColor1 = -1;
-        LONG m_nLastBrushAlpha1 = -1;
-    #endif
+	private:
+		double m_dCurrentFontSize = 0.0;
+		NSWasm::CHLine m_oLine;
+		NSWasm::CData  m_oMeta;
+		Aggplus::CMatrix m_pLastTransform;
+		LONG m_lCurrentFont     = -1;
+		LONG m_nLastBrushColor1 = -1;
+		LONG m_nLastBrushAlpha1 = -1;
+	#endif
 
 	private:
 

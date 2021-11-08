@@ -192,7 +192,7 @@ namespace PdfReader
         RELEASEOBJECT(m_pInternal->m_pPDFDocument);
         m_eError = errNone;
         GString* owner_pswd = NSStrings::CreateString(owner_password);
-        GString* user_pswd = NSStrings::CreateString(user_password);
+        GString* user_pswd  = NSStrings::CreateString(user_password);
 
         Object obj;
         obj.initNull();
@@ -602,9 +602,8 @@ return 0;
         for (int i = 0; i < num; i++)
         {
             OutlineItem* pOutlineItem = (OutlineItem*)pList->get(i);
-            if (!pOutlineItem)
-                continue;
-            getBookmars(m_pInternal->m_pPDFDocument, pOutlineItem, oRes, 1);
+            if (pOutlineItem)
+                getBookmars(m_pInternal->m_pPDFDocument, pOutlineItem, oRes, 1);
         }
         oRes.WriteLen();
 

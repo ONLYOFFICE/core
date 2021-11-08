@@ -52,7 +52,7 @@ public:
     virtual bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",
                                     const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
     virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"",
-                        const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
+                                const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 
     virtual void Close();
 
@@ -67,15 +67,15 @@ public:
     virtual BYTE* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip = false);
     virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1);
 
-    #ifndef DISABLE_PDF_CONVERTATION
+#ifndef DISABLE_PDF_CONVERTATION
 	void         ConvertToPdf(const std::wstring& wsDstPath);
-    #endif
+#endif
 
-    #ifdef BUILDING_WASM_MODULE
+#ifdef BUILDING_WASM_MODULE
     virtual BYTE* GetStructure();
     virtual BYTE* GetGlyphs(int nPageIndex);
     virtual BYTE* GetLinks (int nPageIndex);
-    #endif
+#endif
 
 private:
     CXpsFile_Private* m_pInternal;

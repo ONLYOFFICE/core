@@ -203,7 +203,7 @@ void CZipBuffer::addFile   (const std::string& sPath, BYTE* data, DWORD length)
         if (it->m_pData != data)
         {
             RELEASEARRAYOBJECTS(it->m_pData);
-            it->m_pData   = data;
+            it->m_pData = data;
         }
         it->m_nLength = length;
     }

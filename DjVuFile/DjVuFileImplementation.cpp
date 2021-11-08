@@ -90,7 +90,7 @@ namespace NSDjvu
 CDjVuFileImplementation::CDjVuFileImplementation(NSFonts::IApplicationFonts* pFonts)
 {
 	m_pDoc = NULL;
-#ifndef WASM_MODE
+#ifndef BUILDING_WASM_MODULE
 	std::wstring wsTempPath = NSFile::CFileBinary::GetTempPath();
 	wsTempPath += L"DJVU\\";
 	m_wsTempDirectory = wsTempPath;
@@ -100,7 +100,7 @@ CDjVuFileImplementation::CDjVuFileImplementation(NSFonts::IApplicationFonts* pFo
 }
 CDjVuFileImplementation::~CDjVuFileImplementation()
 {
-#ifndef WASM_MODE
+#ifndef BUILDING_WASM_MODULE
 	NSDirectory::DeleteDirectory(m_wsTempDirectory);
 #endif
 }
@@ -208,7 +208,7 @@ void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRende
 		{
 			CreateGrFrame(pRenderer, pPage, pBreak);
 		}
-        #ifndef WASM_MODE
+        #ifndef BUILDING_WASM_MODULE
 		else if (c_nPDFWriter == lRendererType)
 		{
 			XmlUtils::CXmlNode oText = ParseText(pPage);
@@ -239,11 +239,11 @@ BYTE*              CDjVuFileImplementation::ConvertToPixels(int nPageIndex, cons
     NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
     pRenderer->SetFontManager(pFontManager);
 
-    double dPageDpiX, dPageDpiY;
+    double dPageDpiX;
     double dWidth, dHeight;
     GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiX);
 
-    int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth * 96 / dPageDpiX);
+    int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth  * 96 / dPageDpiX);
     int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 96 / dPageDpiX);
 
     BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
@@ -418,7 +418,7 @@ BYTE*              CDjVuFileImplementation::GetPageGlyphs(int nPageIndex)
                 oLinesNodes.GetAt(nLineIndex, oLineNode);
                 XmlUtils::CXmlNodes oWordsNodes;
                 oLineNode.GetNodes(L"WORD", oWordsNodes);
-                for (int nWordIndex = 0; nWordIndex < oWordsNodes.GetCount(); ++nWordIndex)
+                for (int nWordIndex = 0; nWordIndex < oWordsNodes.GetCount(); nWordIndex++)
                 {
                     XmlUtils::CXmlNode oWordNode;
                     oWordsNodes.GetAt(nWordIndex, oWordNode);

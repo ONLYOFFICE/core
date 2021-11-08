@@ -69,7 +69,7 @@ public:
 	~CDjVuFileImplementation();
 
 	bool         LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXmlOptions = L"");
-    bool         LoadFromMemory(BYTE* data, DWORD length, const std::wstring& wsXmlOptions = L"");
+	bool         LoadFromMemory(BYTE* data, DWORD length, const std::wstring& wsXmlOptions = L"");
 	void         Close();
 	std::wstring GetTempDirectory() const;
 	void         SetTempDirectory(const std::wstring& wsDirectory);

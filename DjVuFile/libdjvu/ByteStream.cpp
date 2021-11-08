@@ -78,7 +78,7 @@
 #include "DjVuMessage.h"
 #include <fcntl.h>
 #if defined(WIN32) || defined(__CYGWIN32__)
-#ifndef WASM_MODE
+#ifndef BUILDING_WASM_MODULE
 # include <io.h>
 #endif
 #endif
@@ -127,7 +127,7 @@ namespace DJVU {
 
 const char *ByteStream::EndOfFile=ERR_MSG("EOF");
 
-#ifndef WASM_MODE
+#ifndef BUILDING_WASM_MODULE
 /** ByteStream interface for stdio files. 
     The virtual member functions #read#, #write#, #tell# and #seek# are mapped
     to the well known stdio functions #fread#, #fwrite#, #ftell# and #fseek#.
@@ -184,7 +184,7 @@ ByteStream::Stdio::init(FILE * const f,const char mode[],const bool closeme)
   must_close=closeme;
   return init(mode);
 }
-#endif
+#endif // BUILDING_WASM_MODULE
 
 
 /** ByteStream interface managing a memory buffer.  
@@ -584,7 +584,7 @@ ByteStream::read32()
 }
 
 
-#ifndef WASM_MODE
+#ifndef BUILDING_WASM_MODULE
 //// CLASS ByteStream::Stdio
 
 ByteStream::Stdio::Stdio(void)
@@ -786,7 +786,7 @@ ByteStream::Stdio::seek(long offset, int whence, bool nothrow)
     }
   return tell();
 }
-#endif
+#endif // BUILDING_WASM_MODULE
 
 
 
@@ -1005,7 +1005,7 @@ ByteStream::create(void const * const buffer, const size_t size)
   return retval;
 }
 
-#ifndef WASM_MODE
+#ifndef BUILDING_WASM_MODULE
 GP<ByteStream>
 ByteStream::create(const GURL &url,char const * const xmode)
 {
@@ -1190,7 +1190,7 @@ ByteStream::create(FILE * const f,char const * const mode,const bool closeme)
 {
   return NULL;
 }
-#endif
+#endif // BUILDING_WASM_MODULE
 
 GP<ByteStream>
 ByteStream::create_static(const void * buffer, size_t sz)

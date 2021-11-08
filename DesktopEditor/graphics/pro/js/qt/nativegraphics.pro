@@ -468,7 +468,7 @@ SOURCES += \
 
 # DjVuFile
 
-DEFINES += WASM_MODE \
+DEFINES += \
     THREADMODEL=0 \
     DEBUGLVL=0
 
@@ -652,5 +652,7 @@ HEADERS +=\
     $$PDF_ROOT_DIR/Src/GfxClip.h \
     $$PDF_ROOT_DIR/PdfReader.h
 
-HEADERS += ../wasm/src/drawingfile.h
+HEADERS += \
+    ../wasm/src/drawingfile.h \
+    ../wasm/src/serialize.h
 SOURCES += ../wasm/src/drawingfile.cpp

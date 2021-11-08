@@ -30,39 +30,33 @@
  *
  */
 #pragma once
-#include "../Reader/Records.h"
-#include <iostream>
+#include "../Records/RoundTrip.h"
 
-class CRecordRoundTripOArtTextStyles12Atom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-    BYTE* m_pData;
-
+class RoundTripExtractor
+{
 public:
+    RoundTripExtractor(const CUnknownRoundTrip *rt);
+    ~RoundTripExtractor();
 
-    CRecordRoundTripOArtTextStyles12Atom()
-    {
-        m_pData = NULL;
-    }
+    vector_string find(const std::wstring& strRegEx) const;
+    std::wstring getOneFile(const std::wstring& shortPath) const;
 
-    ~CRecordRoundTripOArtTextStyles12Atom()
-    {
-        ReleaseData();
-    }
+    std::wstring extractedFolderPath() const;
+    bool hasError() const;
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-        unsigned lSize = m_oHeader.RecLen;
+    static std::string removeXMLAnnouncement(const std::string& strXMLFile);
+    static std::string changeXMLTags(const std::string& strXML);
 
-        if (0 < lSize)
-        {
-            m_pData = new BYTE[lSize];
-            pStream->read(m_pData, lSize);
-        }
-    }
+private:
+    bool extract();
 
-    void ReleaseData()
-    {
-        RELEASEARRAYOBJECTS(m_pData);
-    }
+private:
+    std::wstring m_extractedFolderPath;
+    const CUnknownRoundTrip *m_roundTripRecord;
+    bool m_hasError;
+
 };
+
+}

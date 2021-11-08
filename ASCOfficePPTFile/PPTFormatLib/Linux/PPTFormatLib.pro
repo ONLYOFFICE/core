@@ -42,6 +42,7 @@ HEADERS += \
     ../Reader/PPTFileReader.h \
     ../Reader/ReadStructures.h \
     ../Reader/Records.h \
+    ../Reader/RoundTripExtractor.h \
     ../Reader/Slide.h \
     ../Reader/SlideInfo.h \
     ../Reader/SlidePersist.h \
@@ -118,7 +119,7 @@ HEADERS += \
     ../Records/OfficeArtClientData.h \
     ../Records/OfficeArtClientTextbox.h \
     ../Records/PlaceHolderAtom.h \
-    ../Records/RoundTripOArtTextStyles12Atom.h \
+    ../Records/RoundTrip.h \
     ../Records/ShapeProgBinaryTagSubContainerOrAtom.h \
     ../Records/CFMasks.h \
     ../Records/ColorSchemeAtom.h \
@@ -171,11 +172,6 @@ HEADERS += \
     ../Records/PlaceHolderAtom.h \
     ../Records/ProgStringTagContainer.h \
     ../Records/RecordsIncluder.h \
-    ../Records/RoundTripColorMappingAtom.h \
-    ../Records/RoundTripCompositeMainMasterId12Atom.h \
-    ../Records/RoundTripNewPlaceholderId12Atom.h \
-    ../Records/RoundTripOriginalMainMasterId12Atom.h \
-    ../Records/RoundTripThemeAtom.h \
     ../Records/ShapeFlags10Atom.h \
     ../Records/ShapeFlagsAtom.h \
     ../Records/Comment10Container.h \
@@ -296,4 +292,5 @@ SOURCES += \
     ../PPTXWriter/Animation.cpp \
     ../PPTXWriter/TableWriter.cpp \
     ../PPTXWriter/TxBodyConverter.cpp \
+    ../Reader/RoundTripExtractor.cpp \
     ../Records/Animations/TimeVariant.cpp

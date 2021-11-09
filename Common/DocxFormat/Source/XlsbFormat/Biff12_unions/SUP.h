@@ -47,7 +47,9 @@ namespace XLSB
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-		XLS::BaseObjectPtr   m_source;
+        XLS::BaseObjectPtr              m_source;
+
+        std::vector<std::wstring>		arNames;
 
     };
 

@@ -786,6 +786,9 @@ enum ElementType
         typeColorFilter,
         typeIconFilter,
         typeFRTTABLE,
+        typeSUPSAME,
+        typeSUPADDIN,
+        typeSupBookSrc,
 };
 
 

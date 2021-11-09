@@ -60,8 +60,8 @@ namespace OOX
 			}
             virtual ~CXlsb();
 
-            bool ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream);
-			
+            bool ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream);			
+            XLS::GlobalWorkbookInfo* GetGlobalinfo();
             void PrepareSi();
 
         private:

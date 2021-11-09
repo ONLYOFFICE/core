@@ -49,6 +49,8 @@ namespace XLSB
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
+        static const XLS::ElementType	type = XLS::typeSUPSAME;
+
 		XLS::BaseObjectPtr               m_BrtSupSame;
         std::vector<XLS::BaseObjectPtr>  m_arBrtPlaceholderName;
 

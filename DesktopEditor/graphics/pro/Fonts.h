@@ -585,6 +585,8 @@ namespace NSFonts
         virtual unsigned int GetNameIndex(const std::wstring& wsName) = 0;
         
         virtual void GetFace(double& d0, double& d1, double& d2) = 0;
+        virtual void GetLimitsY(double& dMin, double& dMax) = 0;
+
 
     public:
         static IFontFile* LoadFontFile(CLibrary& library, IFontStream* pStream, int lFaceIndex);

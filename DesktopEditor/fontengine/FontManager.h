@@ -208,6 +208,7 @@ public:
     virtual void SetSubpixelRendering(const bool& hmul, const bool& vmul);
     
     virtual void GetFace(double& d0, double& d1, double& d2);
+    virtual void GetLimitsY(double& dMin, double& dMax);
 
     CFontFile* GetFontFileBySymbol(CFontFile* pFile, int code);
 };

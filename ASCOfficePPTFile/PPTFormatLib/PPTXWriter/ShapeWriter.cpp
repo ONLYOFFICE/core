@@ -158,12 +158,6 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
                 oWriter.WriteStringXML(std::wstring(&bu, 1));
                 oWriter.WriteString(L"\"/>");
             }
-            //            if (!pPF->bulletAutoNum.is_init())
-            //            {
-            //                oWriter.WriteString(L"<a:buAutoNum type=\"");
-            //                oWriter.WriteString(L"arabicPeriod");
-            //                oWriter.WriteString(L"\"/>");
-            //            }
         }
         else
         {
@@ -1448,10 +1442,18 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
                 if (!set)
                 {
-                    wchar_t bu = 0x2022;
-                    m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
-                    m_oWriter.WriteStringXML(std::wstring(&bu, 1));
-                    m_oWriter.WriteString(std::wstring(L"\"/>"));
+                    if (pPF->hasBullet.is_init() && *(pPF->hasBullet) && !pPF->bulletChar.is_init())
+                    {
+                        m_oWriter.WriteString(L"<a:buAutoNum type=\"");
+                        m_oWriter.WriteString(L"arabicPeriod");
+                        m_oWriter.WriteString(L"\"/>");
+                    } else
+                    {
+                        wchar_t bu = 0x2022;
+                        m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
+                        m_oWriter.WriteStringXML(std::wstring(&bu, 1));
+                        m_oWriter.WriteString(std::wstring(L"\"/>"));
+                    }
                 }
             }
             else

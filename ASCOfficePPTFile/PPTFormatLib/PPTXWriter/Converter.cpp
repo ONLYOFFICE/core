@@ -613,7 +613,7 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
     int nStartLayout = 0, nIndexTheme = 0;
 
-    if (!HasRoundTrips()) // - см баг 52046
+    if (!HasRoundTrips())
     {
         for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
         {
@@ -629,7 +629,9 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
     {
         std::unordered_set<std::string> writedFilesHash;
         for (const auto& oIterSlide : m_pUserInfo->m_mapMasters)
+        {
             WriteRoundTripTheme(oIterSlide.second, writedFilesHash, nIndexTheme, nStartLayout);
+        }
 
         writedFilesHash.clear();
         for (const auto& oIterSlide : m_pUserInfo->m_mapNotesMasters)
@@ -648,10 +650,10 @@ bool CPPTXWriter::HasRoundTrips() const
     return !arrRTTheme.empty();
 }
 
-void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered_set<std::string>& writedFilesHash, int & nIndexTheme, int & nStartLayout)
+bool CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered_set<std::string>& writedFilesHash, int & nIndexTheme, int & nStartLayout)
 {
     if (!pSlide)
-        return;
+        return false;
 
     // Write Theme
     PPT_FORMAT::CRelsGenerator themeRels(&m_oManager);
@@ -677,20 +679,23 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
         m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[oldThemeIndex].get();
     else if (arrRTNotes.size())
         m_pShapeWriter->m_pTheme = m_pDocument->m_pNotesMaster.get();
-    else
+    else if (m_pDocument->m_pHandoutMaster.get())
         m_pShapeWriter->m_pTheme = m_pDocument->m_pHandoutMaster.get();
+    if (m_pShapeWriter->m_pTheme == nullptr)
+        return false;
 
     auto themeType = m_pShapeWriter->m_pTheme->m_eType;
 
     if (arrRTTheme.empty())
-        return;
+        return false;
 
     RoundTripExtractor extractor(arrRTTheme[0]);
     std::wstring oneThemePathS = std::wstring (L"theme") + FILE_SEPARATOR_STR;
     std::wstring twoThemePathS = oneThemePathS + std::wstring (L"theme") + FILE_SEPARATOR_STR;
     auto strThemePath = extractor.getOneFile(twoThemePathS + L"theme1.xml");
     if (strThemePath.empty())
-        return;
+        return false;
+
     auto themeRelsPath = extractor.getOneFile(twoThemePathS + L"_rels" + FILE_SEPARATOR_STR + L"theme1.xml.rels");
     auto arrImagesPaths = extractor.find( L".*image[0-9]+.*");
 
@@ -986,6 +991,8 @@ void CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
     }
 
     m_pShapeWriter->m_pTheme = NULL;
+
+    return true;
 }
 
 void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout)

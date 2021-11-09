@@ -927,6 +927,10 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
         if (utf8Data && utf8DataSize > 0)
         {
             pParentShape->m_strXmlString = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+//            std::string filename = std::to_string(nRTCounter++) + "_shape.xml";
+//            std::ofstream file("data/" + filename, std::ios::out);
+//            file.write((char*)utf8Data, utf8DataSize);
+//            file.close();
 
             delete []utf8Data;
         }
@@ -1716,7 +1720,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         CorrectPlaceholderType(pElement->m_lPlaceholderType);
     }
 
-    std::vector<CRecordRoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
+    std::vector<RoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
     GetRecordsByType(&oArrayHFPlaceholder, true, true);
     if (0 < oArrayHFPlaceholder.size())
     {

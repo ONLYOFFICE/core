@@ -177,6 +177,7 @@ private:
     void FillCondLst(
             std::vector<CRecordTimeConditionContainer*>& oCondVec,
             PPTX::Logic::CondLst &oCondLst);
+    void FillEmptyTargetCond(PPTX::Logic::Cond &cond);
     void FillCTn(
             CRecordTimePropertyList4TimeNodeContainer *pProp,
             PPTX::Logic::CTn &oCTn);
@@ -237,6 +238,9 @@ private:
     void PushAnimEffect(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, std::wstring filter, std::wstring transition = L"in");
     void PushSet(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int dur = 0);
 
+    // To fix broken spids by using old animation struct
+    bool isSpidReal(const UINT spid);
+
 public:
     // Not delete any pointers
     CRecordPP10SlideBinaryTagExtension *m_pPPT10;       // For new animation
@@ -252,10 +256,12 @@ private:
     CExMedia            *m_pExMedia;
     CRelsGenerator      *m_pRels;
     unsigned m_cTnId;
+    int m_cTnDeep = 0;
     PPTX::Logic::BldLst *m_pBldLst; // Do not delete
     PPTX::Logic::BldP   *m_currentBldP;
 
     int m_nextRID; // it needs for audio maybe video for compisation id number;
+    bool m_isPPT10Broken = false;
 };
 
 }

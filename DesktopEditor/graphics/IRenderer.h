@@ -369,6 +369,14 @@ public:
 		{
 			return m_bMultiLine;
 		}
+		void SetPlaceHolder(const std::wstring& wsPlaceHolder)
+		{
+			m_wsPlaceHolder = wsPlaceHolder;
+		}
+		const std::wstring& GetPlaceHolder() const
+		{
+			return m_wsPlaceHolder;
+		}
 
 	private:
 
@@ -377,6 +385,7 @@ public:
 		bool         m_bComb;
 		bool         m_bAutoFit;
 		bool         m_bMultiLine;
+		std::wstring m_wsPlaceHolder;
 	};
 	class CDropDownFormPr
 	{
@@ -414,12 +423,21 @@ public:
 		{
 			m_vComboBoxItems.push_back(wsItem);
 		}
+		void SetPlaceHolder(const std::wstring& wsPlaceHolder)
+		{
+			m_wsPlaceHolder = wsPlaceHolder;
+		}
+		const std::wstring& GetPlaceHolder() const
+		{
+			return m_wsPlaceHolder;
+		}
 
 	private:
 
 		std::wstring              m_wsTextValue;
 		bool                      m_bEditComboBox;
 		std::vector<std::wstring> m_vComboBoxItems;
+		std::wstring              m_wsPlaceHolder;
 	};
 	class CCheckBoxFormPr
 	{

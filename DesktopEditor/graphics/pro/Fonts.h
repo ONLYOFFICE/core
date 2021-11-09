@@ -637,6 +637,8 @@ namespace NSFonts
     #endif
 
         virtual IFontManager* GenerateFontManager() = 0;
+
+        virtual std::wstring GetFontBySymbol(int symbol) = 0;
     };
 	
 	namespace NSApplication

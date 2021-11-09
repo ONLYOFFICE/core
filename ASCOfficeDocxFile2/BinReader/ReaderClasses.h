@@ -382,107 +382,6 @@ public:
     }
 };
 
-class Shd
-{
-public:
-    BYTE        Value;
-    docRGB      Color;
-	docRGB      Fill;
-	CThemeColor ThemeColor;
-	CThemeColor ThemeFill;
-
-	bool bValue = false;
-	bool bColor = false;
-	bool bThemeColor = false;
-	bool bThemeFill = false;
-	bool bFill = false;
-	
-	Shd(){}
-
-    std::wstring ToString()
-	{
-        std::wstring sShd;
-		if(bValue || bColor || (bThemeColor && ThemeColor.IsNoEmpty()) || (bThemeFill && ThemeFill.IsNoEmpty()))
-		{
-			sShd += L"<w:shd";
-			if(bValue)
-			{
-				switch(Value)
-				{
-					case SimpleTypes::shdClear                 : sShd += L" w:val=\"clear\"";		break;
-					case SimpleTypes::shdDiagCross             : sShd += L" w:val=\"diagCross\"";	break;
-					case SimpleTypes::shdDiagStripe            : sShd += L" w:val=\"diagStripe\"";	break;
-					case SimpleTypes::shdHorzCross             : sShd += L" w:val=\"horzCross\"";	break;
-					case SimpleTypes::shdHorzStripe            : sShd += L" w:val=\"horzStripe\"";	break;
-					case SimpleTypes::shdNil                   : sShd += L" w:val=\"nil\"";			break;
-					case SimpleTypes::shdPct10                 : sShd += L" w:val=\"pct10\"";	break;
-					case SimpleTypes::shdPct12                 : sShd += L" w:val=\"pct12\"";	break;
-					case SimpleTypes::shdPct15                 : sShd += L" w:val=\"pct15\"";	break;
-					case SimpleTypes::shdPct20                 : sShd += L" w:val=\"pct20\"";	break;
-					case SimpleTypes::shdPct25                 : sShd += L" w:val=\"pct25\"";	break;
-					case SimpleTypes::shdPct30                 : sShd += L" w:val=\"pct30\"";	break;
-					case SimpleTypes::shdPct35                 : sShd += L" w:val=\"pct35\"";	break;
-					case SimpleTypes::shdPct37                 : sShd += L" w:val=\"pct37\"";	break;
-					case SimpleTypes::shdPct40                 : sShd += L" w:val=\"pct40\"";	break;
-					case SimpleTypes::shdPct45                 : sShd += L" w:val=\"pct45\"";	break;
-					case SimpleTypes::shdPct5                  : sShd += L" w:val=\"pct5\"";	break;
-					case SimpleTypes::shdPct50                 : sShd += L" w:val=\"pct50\"";	break;
-					case SimpleTypes::shdPct55                 : sShd += L" w:val=\"pct55\"";	break;
-					case SimpleTypes::shdPct60                 : sShd += L" w:val=\"pct60\"";	break;
-					case SimpleTypes::shdPct62                 : sShd += L" w:val=\"pct62\"";	break;
-					case SimpleTypes::shdPct65                 : sShd += L" w:val=\"pct65\"";	break;
-					case SimpleTypes::shdPct70                 : sShd += L" w:val=\"pct70\"";	break;
-					case SimpleTypes::shdPct75                 : sShd += L" w:val=\"pct75\"";	break;
-					case SimpleTypes::shdPct80                 : sShd += L" w:val=\"pct80\"";	break;
-					case SimpleTypes::shdPct85                 : sShd += L" w:val=\"pct85\"";	break;
-					case SimpleTypes::shdPct87                 : sShd += L" w:val=\"pct87\"";	break;
-					case SimpleTypes::shdPct90                 : sShd += L" w:val=\"pct90\"";	break;
-					case SimpleTypes::shdPct95                 : sShd += L" w:val=\"pct95\"";	break;
-					case SimpleTypes::shdReverseDiagStripe     : sShd += L" w:val=\"reverseDiagStripe\"";		break;
-					case SimpleTypes::shdSolid                 : sShd += L" w:val=\"solid\"";					break;
-					case SimpleTypes::shdThinDiagCross         : sShd += L" w:val=\"thinDiagCross\"";			break;
-					case SimpleTypes::shdThinDiagStripe        : sShd += L" w:val=\"thinDiagStripe\"";			break;
-					case SimpleTypes::shdThinHorzCross         : sShd += L" w:val=\"thinHorzCross\"";			break;
-					case SimpleTypes::shdThinHorzStripe			: sShd += L" w:val=\"thinHorzStripe\"";			break;
-					case SimpleTypes::shdThinReverseDiagStripe	: sShd += L" w:val=\"thinReverseDiagStripe\"";	break;
-					case SimpleTypes::shdThinVertStripe			: sShd += L" w:val=\"thinVertStripe\"";			break;
-					case SimpleTypes::shdVertStripe				: sShd += L" w:val=\"vertStripe\"";				break;
-					default										: sShd += L" w:val=\"solid\"";					break;
-				}
-			}
-			if (bColor)
-				sShd += L" w:color=\"" + Color.ToString() + L"\"";
-
-			if (bFill)
-				sShd += L" w:fill=\"" + Fill.ToString() + L"\"";
-			
-			if(bThemeColor && ThemeColor.IsNoEmpty())
-			{
-				if(ThemeColor.Auto && !bFill)
-                    sShd += L" w:fill=\"auto\"";
-				if(ThemeColor.bColor)
-                    sShd += L" w:themeFill=\"" + ThemeColor.ToStringColor() + L"\"";
-                if(ThemeColor.bTint)
-                    sShd += L" w:themeFillTint=\"" + ThemeColor.ToStringTint() + L"\"";
-				if(ThemeColor.bShade)
-                    sShd += L" w:themeFillShade=\"" + ThemeColor.ToStringShade() + L"\"";
-			}
-			if(bThemeFill && ThemeFill.IsNoEmpty())
-			{
-				if(ThemeFill.Auto && !bColor)
-					sShd += L" w:color=\"auto\"";
-				if(ThemeFill.bColor)
-					sShd += L" w:themeColor=\"" + ThemeFill.ToStringColor() + L"\"";
-				if(ThemeFill.bTint)
-					sShd += L" w:themeTint=\"" + ThemeFill.ToStringTint() + L"\"";
-				if(ThemeFill.bShade)
-					sShd += L" w:themeShade=\"" + ThemeFill.ToStringShade() + L"\"";
-			}
-            sShd += L"/>";
-		}
-		return sShd;
-	}
-};
 class Tab
 {
 public:
@@ -991,10 +890,10 @@ public:
         std::wstring sType;
 		switch(byteType)
 		{
-		case styletype_Character: sType = _T("character");break;
-		case styletype_Numbering: sType = _T("numbering");break;
-		case styletype_Table: sType = _T("table");break;
-		default: sType = _T("paragraph");break;
+			case styletype_Character: sType = _T("character");break;
+			case styletype_Numbering: sType = _T("numbering");break;
+			case styletype_Table: sType = _T("table");break;
+			default: sType = _T("paragraph");break;
 		}
         if(!Id.empty())
 		{
@@ -1016,10 +915,29 @@ public:
 
             sStyle += L">";
             pCStringWriter->WriteString(sStyle);
-			if(!Aliases.empty())
+
+            if(!Name.empty())
+			{
+                pCStringWriter->WriteString(L"<w:name w:val=\"" + Name + L"\"/>");
+			}		
+			if (!Aliases.empty())
 			{
 				pCStringWriter->WriteString(L"<w:aliases w:val=\"");
 				pCStringWriter->WriteEncodeXmlString(Aliases);
+				pCStringWriter->WriteString(L"\"/>");
+			}
+			if (!BasedOn.empty())
+			{
+				pCStringWriter->WriteString(L"<w:basedOn w:val=\"" + BasedOn + L"\"/>");
+			}
+			if (!NextId.empty())
+			{
+				pCStringWriter->WriteString(L"<w:next w:val=\"" + NextId + L"\"/>");
+			}
+			if (!Link.empty())
+			{
+				pCStringWriter->WriteString(L"<w:link w:val=\"");
+				pCStringWriter->WriteEncodeXmlString(Link);
 				pCStringWriter->WriteString(L"\"/>");
 			}
 			if(bautoRedefine)
@@ -1029,17 +947,44 @@ public:
 				else
 					pCStringWriter->WriteString(L"<w:autoRedefine val=\"false\"/>");
 			}
-            if(!Name.empty())
+			if (bhidden)
 			{
-                pCStringWriter->WriteString(L"<w:name w:val=\"" + Name + L"\"/>");
+				if (hidden)
+					pCStringWriter->WriteString(L"<w:hidden/>");
+				else
+					pCStringWriter->WriteString(L"<w:hidden val=\"false\"/>");
 			}
-            if(!BasedOn.empty())
+			if (buiPriority)
 			{
-                pCStringWriter->WriteString(L"<w:basedOn w:val=\"" + BasedOn + L"\"/>");
+				pCStringWriter->WriteString(L"<w:uiPriority w:val=\"" + std::to_wstring(uiPriority) + L"\"/>");
 			}
-            if(!NextId.empty())
+			if (bsemiHidden)
 			{
-                pCStringWriter->WriteString(L"<w:next w:val=\"" + NextId + L"\"/>");
+				if (semiHidden)
+					pCStringWriter->WriteString(L"<w:semiHidden/>");
+				else
+					pCStringWriter->WriteString(L"<w:semiHidden val=\"false\"/>");
+			}
+			if (bunhideWhenUsed)
+			{
+				if (unhideWhenUsed)
+					pCStringWriter->WriteString(L"<w:unhideWhenUsed/>");
+				else
+					pCStringWriter->WriteString(L"<w:unhideWhenUsed val=\"false\"/>");
+			}
+			if (bqFormat)
+			{
+				if (qFormat)
+					pCStringWriter->WriteString(L"<w:qFormat/>");
+				else
+					pCStringWriter->WriteString(L"<w:qFormat val=\"false\"/>");
+			}
+			if (blocked)
+			{
+				if (locked)
+					pCStringWriter->WriteString(L"<w:locked/>");
+				else
+					pCStringWriter->WriteString(L"<w:locked val=\"false\"/>");
 			}
 			if(bpersonal)
 			{
@@ -1062,61 +1007,17 @@ public:
 				else
 					pCStringWriter->WriteString(L"<w:personalReply val=\"false\"/>");
 			}
-			if(!Link.empty())
-			{
-				pCStringWriter->WriteString(L"<w:link w:val=\"");
-				pCStringWriter->WriteEncodeXmlString(Link);
-				pCStringWriter->WriteString(L"\"/>");
-			}
-			if(blocked)
-			{
-				if(locked)
-					pCStringWriter->WriteString(L"<w:locked/>");
-				else
-					pCStringWriter->WriteString(L"<w:locked val=\"false\"/>");
-			}
-			if(bqFormat)
-			{
-				if(qFormat)
-                    pCStringWriter->WriteString(L"<w:qFormat/>");
-				else
-                    pCStringWriter->WriteString(L"<w:qFormat val=\"false\"/>");
-			}
-			if(buiPriority)
-			{
-                pCStringWriter->WriteString(L"<w:uiPriority w:val=\"" + std::to_wstring(uiPriority) + L"\"/>");
-			}
-			if(bhidden)
-			{
-				if(hidden)
-                    pCStringWriter->WriteString(L"<w:hidden/>");
-				else
-                    pCStringWriter->WriteString(L"<w:hidden val=\"false\"/>");
-			}
-			if(bsemiHidden)
-			{
-				if(semiHidden)
-                    pCStringWriter->WriteString(L"<w:semiHidden/>");
-				else
-                    pCStringWriter->WriteString(L"<w:semiHidden val=\"false\"/>");
-			}
-			if(bunhideWhenUsed)
-			{
-				if(unhideWhenUsed)
-                    pCStringWriter->WriteString(L"<w:unhideWhenUsed/>");
-				else
-                    pCStringWriter->WriteString(L"<w:unhideWhenUsed val=\"false\"/>");
-			}
-            if(!TextPr.empty())
-			{
-				pCStringWriter->WriteString(TextPr);
-			}
             if(!ParaPr.empty())
 			{
                 pCStringWriter->WriteString(L"<w:pPr>");
 				pCStringWriter->WriteString(ParaPr);
                 pCStringWriter->WriteString(L"</w:pPr>");
 			}
+            if(!TextPr.empty())
+			{
+				pCStringWriter->WriteString(TextPr);
+			}
+
             if(!TablePr.empty())
 				pCStringWriter->WriteString(TablePr);
             if(!RowPr.empty())

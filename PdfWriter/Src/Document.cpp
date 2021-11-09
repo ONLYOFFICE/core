@@ -557,14 +557,11 @@ namespace PdfWriter
 	}
 	CFontCidTrueType* CDocument::CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex)
 	{
-		for (int nIndex = 0, nCount = m_vCidTTFonts.size(); nIndex < nCount; nIndex++)
-		{
-			TFontInfo& oInfo = m_vCidTTFonts.at(nIndex);
-			if (wsFontPath == oInfo.wsPath && unIndex == oInfo.unIndex)
-				return (CFontCidTrueType*)oInfo.pFont;
-		}
+		CFontCidTrueType* pFont = FindCidTrueTypeFont(wsFontPath, unIndex);
+		if (pFont)
+			return pFont;
 
-		CFontCidTrueType* pFont = new CFontCidTrueType(m_pXref, this, wsFontPath, unIndex);
+		pFont = new CFontCidTrueType(m_pXref, this, wsFontPath, unIndex);
 		if (!pFont)
 			return NULL;
 
@@ -576,6 +573,17 @@ namespace PdfWriter
 
 		m_vCidTTFonts.push_back(TFontInfo(wsFontPath, unIndex, pFont));
 		return pFont;
+	}
+	CFontCidTrueType* CDocument::FindCidTrueTypeFont(const std::wstring &wsFontPath, unsigned int unIndex)
+	{
+		for (int nIndex = 0, nCount = m_vCidTTFonts.size(); nIndex < nCount; nIndex++)
+		{
+			TFontInfo& oInfo = m_vCidTTFonts.at(nIndex);
+			if (wsFontPath == oInfo.wsPath && unIndex == oInfo.unIndex)
+				return (CFontCidTrueType*)oInfo.pFont;
+		}
+
+		return NULL;
 	}
 	CFontTrueType* CDocument::CreateTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex)
 	{
@@ -990,12 +998,25 @@ namespace PdfWriter
 				pField->ClearKidRecords();
 				pField->SetParent(pParent);
 				pParent->AddKid(pField);
+
+
+				CChoiceField* pChoice = dynamic_cast<CChoiceField*>(pBase);
+				if (pChoice)
+					pChoice->UpdateSelectedIndexToParent();
+
+				pParent->UpdateKidsPlaceHolder();
 			}
 			else
 			{
 				pField->ClearKidRecords();
 				pField->SetParent(pBase);
 				pBase->AddKid(pField);
+
+				CChoiceField* pChoice = dynamic_cast<CChoiceField*>(pBase);
+				if (pChoice)
+					pChoice->UpdateSelectedIndexToParent();
+
+				pBase->UpdateKidsPlaceHolder();
 			}
 
 			return true;

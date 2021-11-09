@@ -130,6 +130,7 @@ namespace PdfWriter
 		CImageDict*       CreateImage();
 		CFont14*          CreateFont14(EStandard14Fonts eType);
 		CFontCidTrueType* CreateCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
+		CFontCidTrueType* FindCidTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontTrueType*    CreateTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 		CFontTrueType*    CreateTrueTypeFont(CFontCidTrueType* pCidFont);
 		CFont14*          GetDefaultCheckboxFont();

@@ -4746,22 +4746,22 @@ int BinaryWorksheetsTableReader::ReadPageSetup(BYTE type, long length, void* poR
 	else if(c_oSer_PageSetup::FirstPageNumber == type)
 	{
 		pPageSetup->m_oFirstPageNumber.Init();
-		pPageSetup->m_oFirstPageNumber->SetValue(m_oBufferedStream.GetLong());
+		pPageSetup->m_oFirstPageNumber->SetValue(m_oBufferedStream.GetULong());
 	}
 	else if(c_oSer_PageSetup::FitToHeight == type)
 	{
 		pPageSetup->m_oFitToHeight.Init();
-		pPageSetup->m_oFitToHeight->SetValue(m_oBufferedStream.GetLong());
+		pPageSetup->m_oFitToHeight->SetValue(m_oBufferedStream.GetULong());
 	}
 	else if(c_oSer_PageSetup::FitToWidth == type)
 	{
 		pPageSetup->m_oFitToWidth.Init();
-		pPageSetup->m_oFitToWidth->SetValue(m_oBufferedStream.GetLong());
+		pPageSetup->m_oFitToWidth->SetValue(m_oBufferedStream.GetULong());
 	}
 	else if(c_oSer_PageSetup::HorizontalDpi == type)
 	{
 		pPageSetup->m_oHorizontalDpi.Init();
-		pPageSetup->m_oHorizontalDpi->SetValue(m_oBufferedStream.GetLong());
+		pPageSetup->m_oHorizontalDpi->SetValue(m_oBufferedStream.GetULong());
 	}
 	else if(c_oSer_PageSetup::Orientation == type)
 	{
@@ -4796,7 +4796,7 @@ int BinaryWorksheetsTableReader::ReadPageSetup(BYTE type, long length, void* poR
 	else if(c_oSer_PageSetup::Scale == type)
 	{
 		pPageSetup->m_oScale.Init();
-		pPageSetup->m_oScale->SetValue(m_oBufferedStream.GetLong());
+		pPageSetup->m_oScale->SetValue(m_oBufferedStream.GetULong());
 	}
 	else if(c_oSer_PageSetup::UseFirstPageNumber == type)
 	{
@@ -4811,7 +4811,7 @@ int BinaryWorksheetsTableReader::ReadPageSetup(BYTE type, long length, void* poR
 	else if(c_oSer_PageSetup::VerticalDpi == type)
 	{
 		pPageSetup->m_oVerticalDpi.Init();
-		pPageSetup->m_oVerticalDpi->SetValue(m_oBufferedStream.GetLong());
+		pPageSetup->m_oVerticalDpi->SetValue(m_oBufferedStream.GetULong());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

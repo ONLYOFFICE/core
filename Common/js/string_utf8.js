@@ -54,7 +54,7 @@
 	 * Convert string to utf8 array
 	 * @returns {Uint8Array}
 	 */
-	String.prototype.toUtf8 = function() {
+	String.prototype.toUtf8 = function(isNoEndNull) {
 		var inputLen = this.length;
 		var testLen  = 6 * inputLen + 1;
 		var tmpStrings = new ArrayBuffer(testLen);
@@ -111,7 +111,8 @@
 			}
 		}
 
-		outputData[outputIndex++] = 0;
+		if (isNoEndNull !== true)
+			outputData[outputIndex++] = 0;
 
 		return new Uint8Array(tmpStrings, 0, outputIndex);
 	};

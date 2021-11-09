@@ -83,9 +83,10 @@ namespace PPTX
 				pWriter->StartAttributes();
                 pWriter->WriteAttribute2(_T("name"), name);
 				pWriter->WriteAttribute(_T("fmla"), fmla);
-				pWriter->EndAttributes();
+//				pWriter->EndAttributes();
+                                pWriter->WriteNodeEnd(_T(""), true, true);
 
-				pWriter->EndNode(_T("a:gd"));
+//				pWriter->EndNode(_T("a:gd"));
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

@@ -395,7 +395,8 @@ namespace DocFileFormat
 				int cb = fcEnd - (int)pcd.fc;
 				if (cb == 0) //ralph_scovile.doc
 				{
-					cb = pcdFcEnd - (int)pcd.fc;
+					if (pcd.cpEnd - pcd.cpStart < 2) // com2010_0624pl01.doc
+						cb = pcdFcEnd - (int)pcd.fc; 
 					if (cb <= 0)
 						break;
 				}

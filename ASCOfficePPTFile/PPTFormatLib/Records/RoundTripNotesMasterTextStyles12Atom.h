@@ -51,6 +51,11 @@ public:
 		
 		data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
 		pStream->read(data.first.get(), data.second);
+
+//                std::string filename = "notes/" + std::to_string(data.second) + ".zip";
+//                std::ofstream file(filename, std::ios::binary | std::ios::out);
+//                file.write((char*)data.first.get(), data.second);
+//                file.close();
 	}
 };
 

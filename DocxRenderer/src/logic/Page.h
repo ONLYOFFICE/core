@@ -528,7 +528,7 @@ namespace NSDocxRenderer
 		{
 			if (m_bIsDeleteTextClipPage)
 			{
-				// удалим все линии, которые выход¤т за границы страницы
+                // удалим все линии, которые выходят за границы страницы
                 size_t nCount = m_arTextLine.size();
 				for (size_t i = 0; i < nCount; ++i)
 				{
@@ -571,57 +571,59 @@ namespace NSDocxRenderer
 					// удалим все линии
                     m_arTextLine.clear();
 					break;
-				}
-			case TextAssociationTypeBlock:
-				{
-                    size_t nCount = m_arTextLine.size();
+                }
+                case TextAssociationTypeBlock:
+                    {
+                        size_t nCount = m_arTextLine.size();
 
-					if (0 == nCount)
-						break;
+                        if (0 == nCount)
+                            break;
 
-					CTextLine* pFirstLine = m_arTextLine[0];
+                        CTextLine* pFirstLine = m_arTextLine[0];
 
-					CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
-					pParagraph->m_pManagerLight = &m_oManagerLight;
-					pParagraph->m_bIsTextFrameProperties = true;
-					
-					pParagraph->m_dLeft	= pFirstLine->m_dX;
-					pParagraph->m_dTop	= pFirstLine->m_dBaselinePos - pFirstLine->m_dHeight + pFirstLine->m_dBaselineOffset;
+                        CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+                        pParagraph->m_pManagerLight = &m_oManagerLight;
+                        pParagraph->m_bIsTextFrameProperties = true;
 
-                    pParagraph->m_arLines.push_back(pFirstLine);
+                        pParagraph->m_dLeft	= pFirstLine->m_dX;
+                        pParagraph->m_dTop	= pFirstLine->m_dBaselinePos - pFirstLine->m_dHeight + pFirstLine->m_dBaselineOffset;
+                        double dCurrentTop = pParagraph->m_dTop;
 
-                    m_arParagraphs.push_back(pParagraph);
-					
-					for (size_t i = 1; i < nCount; ++i)
-					{
-						CTextLine* pTextLine = m_arTextLine[i];
+                        pParagraph->m_arLines.push_back(pFirstLine);
 
-						CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
-						pParagraph->m_pManagerLight = &m_oManagerLight;
-						pParagraph->m_bIsTextFrameProperties = true;
-
-						if (((fabs(pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pFirstLine->m_dBaselinePos) > STANDART_STRING_HEIGHT_MM) && (pTextLine->m_dX == pFirstLine->m_dX)) ||
-							((pTextLine->m_dX != pFirstLine->m_dX) && (pTextLine->m_dBaselinePos != pFirstLine->m_dBaselinePos)))
-						{
-							pParagraph->m_dLeft	= pTextLine->m_dX;
-							pParagraph->m_dTop	= pTextLine->m_dBaselinePos - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
-						}
-						else
-						{
-							pParagraph->m_dLeft	= pFirstLine->m_dX;
-							pParagraph->m_dTop	= pFirstLine->m_dBaselinePos - pFirstLine->m_dHeight + pFirstLine->m_dBaselineOffset;
-						}
-
-						pFirstLine = pTextLine;
-
-                        pParagraph->m_arLines.push_back(pTextLine);
                         m_arParagraphs.push_back(pParagraph);
-					}
 
-					// удалим все линии
-                    m_arTextLine.clear();
-					break;
-				}
+                        for (size_t i = 1; i < nCount; ++i)
+                        {
+                            CTextLine* pTextLine = m_arTextLine[i];
+
+                            CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+                            pParagraph->m_pManagerLight = &m_oManagerLight;
+                            pParagraph->m_bIsTextFrameProperties = true;
+
+                            if (((fabs(pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pFirstLine->m_dBaselinePos) > STANDART_STRING_HEIGHT_MM) && (pTextLine->m_dX == pFirstLine->m_dX)) ||
+                                ((pTextLine->m_dX != pFirstLine->m_dX) && (pTextLine->m_dBaselinePos != pFirstLine->m_dBaselinePos)))
+                            {
+                                pParagraph->m_dLeft	= pTextLine->m_dX;
+                                pParagraph->m_dTop	= pTextLine->m_dBaselinePos - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
+                                dCurrentTop = pParagraph->m_dTop;
+                            }
+                            else
+                            {
+                                pParagraph->m_dLeft	= pFirstLine->m_dX;
+                                pParagraph->m_dTop	= dCurrentTop;
+                            }
+
+                            pFirstLine = pTextLine;
+
+                            pParagraph->m_arLines.push_back(pTextLine);
+                            m_arParagraphs.push_back(pParagraph);
+                        }
+
+                        // удалим все линии
+                        m_arTextLine.clear();
+                        break;
+                    }
 			case TextAssociationTypeNoFrames:
 				{
 					SortElements(m_arTextLine);

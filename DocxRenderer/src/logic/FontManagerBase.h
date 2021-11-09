@@ -677,7 +677,11 @@ namespace NSFontManager
 			}
 
             NSFonts::CFontSelectFormat oFormat;
-            oFormat.wsName = new std::wstring(m_oFont.m_strFamilyName);
+
+            if (m_oFont.m_strFamilyName.empty() && !m_oFont.m_oFont.Path.empty())
+                oFormat.wsName = new std::wstring(m_strDefaultFont);
+            else
+                oFormat.wsName = new std::wstring(m_oFont.m_strFamilyName);
 
             if (!m_oFont.m_strPANOSE.empty())
             {

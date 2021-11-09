@@ -6,6 +6,7 @@ PWD_ROOT_DIR = $$PWD
 include(../../../Common/base.pri)
 
 SUBDIRS = \
+    XlsbFormatLib \
     DocxFormatLib \
     PPTXFormatLib \
     ASCOfficeDocxFile2Lib \
@@ -23,6 +24,7 @@ SUBDIRS = \
     doctrenderer \
     X2tConverter
 
+XlsbFormatLib.file = ../../../Common/DocxFormat/DocxFormatLib/XlsbFormatLib.pro
 DocxFormatLib.file = ../../../Common/DocxFormat/DocxFormatLib/DocxFormatLib.pro
 PPTXFormatLib.file = ../../../ASCOfficePPTXFile/PPTXLib/Linux/PPTXFormatLib/PPTXFormatLib.pro
 ASCOfficeDocxFile2Lib.file = ../../../ASCOfficeDocxFile2/Linux/ASCOfficeDocxFile2Lib.pro
@@ -40,6 +42,7 @@ kernel.file = ../../../Common/kernel.pro
 doctrenderer.file = ../../../DesktopEditor/doctrenderer/doctrenderer.pro
 
 X2tConverter.depends = \
+    XlsbFormatLib \
     DocxFormatLib \
     PPTXFormatLib \
     ASCOfficeDocxFile2Lib \

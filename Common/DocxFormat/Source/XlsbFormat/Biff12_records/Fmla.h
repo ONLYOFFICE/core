@@ -66,20 +66,12 @@ namespace XLSB
                 static std::string str;
                 switch(id)
                 {
-                    case rt_FmlaString:
-                        str = "FmlaString";
-                        return str;
-                    case rt_FmlaNum:
-                        str = "FmlaNum";
-                        return str;
-                    case rt_FmlaBool:
-                        str = "FmlaBool";
-                        return str;
-                    case rt_FmlaError:
-                        str = "FmlaError";
-                        return str;
+					case rt_FmlaString:	str = "FmlaString"; break;
+                    case rt_FmlaNum:	str = "FmlaNum"; break;
+                    case rt_FmlaBool:	str = "FmlaBool"; break;
+                    case rt_FmlaError:	str = "FmlaError"; break;
                 }
-
+				return str;
             }
             virtual XLS::ElementType get_type() { return type; }
 

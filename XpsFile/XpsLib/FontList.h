@@ -72,7 +72,7 @@ namespace XPS
 				unsigned char sKey[16];
 				GetFontKey(wsName, sKey);
 
-                // нужно одменить первые 32 байта файла
+                // Нужно подменить первые 32 байта файла
                 if (IFolder::iftFolder == pFolder->getType())
                 {
                     NSFile::CFileBinary oFile;
@@ -106,7 +106,6 @@ namespace XPS
                             sFontData[nIndex] ^= sKey[nIndex % 16];
                     }
 
-                    // если это режим,когда все в памяти - то сразу закидываем в сторадж измененный шрифт
                     if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
                         NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontPath, buffer->Buffer, buffer->Size);
 

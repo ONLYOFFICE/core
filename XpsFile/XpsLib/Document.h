@@ -58,7 +58,7 @@ namespace XPS
 		void Close();
 		CStaticResource* GetStaticResource(const wchar_t* wsPath);
 
-		#ifdef BUILDING_WASM_MODULE
+	#ifdef BUILDING_WASM_MODULE
 		struct CDocumentStructure
 		{
 			int nLevel;
@@ -72,7 +72,7 @@ namespace XPS
 		BYTE* GetPageLinks (int nPageIndex);
 		std::vector<CDocumentStructure>          m_vStructure;
 		std::map<std::wstring, int>              m_mInternalLinks;
-		#endif
+	#endif
 	private:
 									        
 		IFolder*                                 m_wsPath;

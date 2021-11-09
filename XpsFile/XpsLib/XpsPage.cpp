@@ -694,7 +694,7 @@ namespace XPS
 		}
 	#ifdef BUILDING_WASM_MODULE
 		LONG nCount = m_oLine.GetCountChars();
-		if (0 != nCount)
+		if (nCount)
 			DumpLine();
 		m_pPageMeta.WriteLen();
 	#endif
@@ -1320,9 +1320,9 @@ namespace XPS
 		CWString wsFill;
 
 		CWString wsClip, wsTransform, wsPathData, wsPathTransform;
-		#ifdef BUILDING_WASM_MODULE
+	#ifdef BUILDING_WASM_MODULE
 		std::vector<CDocument::CDocumentStructure>::iterator find = m_pDocument->m_vStructure.end();
-		#endif
+	#endif
 		if (oReader.MoveToFirstAttribute())
 		{
 			std::wstring wsAttrName = oReader.GetName();
@@ -1412,7 +1412,7 @@ namespace XPS
 				{
 					wsPathData.create(oReader.GetText(), true);
 				}
-				#ifdef BUILDING_WASM_MODULE
+			#ifdef BUILDING_WASM_MODULE
 				else if (L"Name" == wsAttrName)
 				{
 					std::wstring wsNameTarget = oReader.GetText();
@@ -1499,7 +1499,7 @@ namespace XPS
 						}
 					}
 				}
-				#endif
+			#endif
 
 				if (!oReader.MoveToNextAttribute())
 					break;
@@ -1508,21 +1508,20 @@ namespace XPS
 			}
 		}
 		oReader.MoveToElement();
-		#ifdef BUILDING_WASM_MODULE
+	#ifdef BUILDING_WASM_MODULE
 		if (find != m_pDocument->m_vStructure.end())
 		{
 			std::wstring wsPath = wsPathData.c_stdstr();
 			size_t nFindY = wsPath.find(L',');
 			if (nFindY != std::wstring::npos)
 			{
-				nFindY++;
-				size_t nFindEndY = wsPath.find(L' ', nFindY);
+				size_t nFindEndY = wsPath.find(L' ', ++nFindY);
 				if (nFindEndY != std::wstring::npos)
 					// координата назначения на странице назначения
 					find->dY = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
 			}
 		}
-		#endif
+	#endif
 
 		CBrush* pBrush = NULL;
 		bool bDeleteBrush = false;

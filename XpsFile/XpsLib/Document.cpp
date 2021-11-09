@@ -130,7 +130,7 @@ namespace XPS
 
 		std::wstring wsFilePath = GetPath(wsSourceFile);
 
-		#ifdef BUILDING_WASM_MODULE
+	#ifdef BUILDING_WASM_MODULE
 		// Оглавление, содержание, structure
 		oReader.Clear();
 
@@ -209,7 +209,7 @@ namespace XPS
 				}
 			}
 		}
-		#endif
+	#endif
 
 		oReader.Clear();
 
@@ -242,7 +242,7 @@ namespace XPS
 						continue;
 				}
 
-				#ifdef BUILDING_WASM_MODULE
+			#ifdef BUILDING_WASM_MODULE
 				int nDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nDepth))
 				{
@@ -267,7 +267,7 @@ namespace XPS
 						}
 					}
 				}
-				#endif
+			#endif
 
 				m_mPages.insert(std::pair<int, XPS::Page*>(nIndex++, new XPS::Page(wsPagePath, m_wsPath, &m_oFontList, m_pFontManager, this)));
 			}

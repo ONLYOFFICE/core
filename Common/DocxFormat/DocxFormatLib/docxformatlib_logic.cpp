@@ -31,7 +31,6 @@
  */
 #include "common_formatlib.cpp"
 #include "xlsxformatlib_logic.cpp"
-#include "xlsbformatlib_logic.cpp"
 
 #include "../Source/DocxFormat/Logic/AlternateContent.cpp"
 #include "../Source/DocxFormat/Logic/Annotations.cpp"

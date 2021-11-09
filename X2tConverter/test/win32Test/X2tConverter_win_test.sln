@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PPTXFormatLib", "..\..\..\ASCOfficePPTXFile\PPTXLib\PPTXFormat.vcxproj", "{36636678-AE25-4BE6-9A34-2561D1BCF302}"
 EndProject
@@ -36,6 +36,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cryptlib", "..\..\..\Common\3dParty\cryptopp\cryptlib.vcxproj", "{3423EC9A-52E4-4A4D-9753-EDEBC38785EF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormatLib", "..\..\..\Common\DocxFormat\Projects\DocxFormatLib.vcxproj", "{A100103A-353E-45E8-A9B8-90B87CC5C0B0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsbFormatLib", "..\..\..\Common\DocxFormat\Projects\XlsbFormatLib.vcxproj", "{13E13907-49DA-482E-AD58-026D06A5CD11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -248,6 +250,18 @@ Global
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.ReleaseOpenSource|Win32.Build.0 = ReleaseOpenSource|Win32
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.ReleaseOpenSource|x64.ActiveCfg = ReleaseOpenSource|x64
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0}.ReleaseOpenSource|x64.Build.0 = ReleaseOpenSource|x64
+		{13E13907-49DA-482E-AD58-026D06A5CD11}.Debug|Win32.ActiveCfg = Debug|Win32
+		{13E13907-49DA-482E-AD58-026D06A5CD11}.Debug|Win32.Build.0 = Debug|Win32
+		{13E13907-49DA-482E-AD58-026D06A5CD11}.Debug|x64.ActiveCfg = Debug|x64
+		{13E13907-49DA-482E-AD58-026D06A5CD11}.Debug|x64.Build.0 = Debug|x64
+		{13E13907-49DA-482E-AD58-026D06A5CD11}.Release|Win32.ActiveCfg = Release|Win32
+		{13E13907-49DA-482E-AD58-026D06A5CD11}.Release|Win32.Build.0 = Release|Win32
+		{13E13907-49DA-482E-AD58-026D06A5CD11}.Release|x64.ActiveCfg = Release|x64
+		{13E13907-49DA-482E-AD58-026D06A5CD11}.Release|x64.Build.0 = Release|x64
+		{13E13907-49DA-482E-AD58-026D06A5CD11}.ReleaseOpenSource|Win32.ActiveCfg = Release|Win32
+		{13E13907-49DA-482E-AD58-026D06A5CD11}.ReleaseOpenSource|Win32.Build.0 = Release|Win32
+		{13E13907-49DA-482E-AD58-026D06A5CD11}.ReleaseOpenSource|x64.ActiveCfg = Release|x64
+		{13E13907-49DA-482E-AD58-026D06A5CD11}.ReleaseOpenSource|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

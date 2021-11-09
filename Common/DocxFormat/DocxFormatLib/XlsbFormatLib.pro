@@ -35,6 +35,7 @@ SOURCES += \
     ../Source/XlsbFormat/SharedStringsStream.cpp \
     ../Source/XlsbFormat/StylesStream.cpp \
     ../Source/XlsbFormat/CommentsStream.cpp \
+    ../Source/XlsbFormat/TableStream.cpp \
 ### Biff12_records
     ../Source/XlsbFormat/Biff12_records/BeginBook.cpp \
     ../Source/XlsbFormat/Biff12_records/FRTBegin.cpp \
@@ -195,6 +196,48 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndCommentAuthors.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginComments.cpp \
     ../Source/XlsbFormat/Biff12_records/EndComments.cpp \
+    ../Source/XlsbFormat/Biff12_records/TableStyleClient.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginList.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndList.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginListCols.cpp \
+    ../Source/XlsbFormat/Biff12_records/ListCCFmla.cpp \
+    ../Source/XlsbFormat/Biff12_records/ListTrFmla.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginListXmlCPr.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginListCol.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndListCols.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndListCol.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginAFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndListXmlCPr.cpp \
+    ../Source/XlsbFormat/Biff12_records/List14.cpp \
+    ../Source/XlsbFormat/Biff12_records/Top10Filter.cpp \
+    ../Source/XlsbFormat/Biff12_records/Top10RichFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndAFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndFilterColumn.cpp \
+    ../Source/XlsbFormat/Biff12_records/IconFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/IconFilter14.cpp \
+    ../Source/XlsbFormat/Biff12_records/ColorFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/DynamicFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginFilterColumn.cpp \
+    ../Source/XlsbFormat/Biff12_records/AFilterDateGroupItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/RichFilterDateGroupItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/Filter.cpp \
+    ../Source/XlsbFormat/Biff12_records/CustomFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginCustomFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/CustomFilter14.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndCustomFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginCustomFilters14.cpp \
+    ../Source/XlsbFormat/Biff12_records/Filter14.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/DynamicRichFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginRichFilterColumn.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndRichFilterColumn.cpp \
+    ../Source/XlsbFormat/Biff12_records/RichFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginRichFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndRichFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/CustomRichFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginCustomRichFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndCustomRichFilters.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -231,6 +274,9 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/FRTFormula.cpp \
     ../Source/XlsbFormat/Biff12_structures/FRTParsedFormula.cpp \
     ../Source/XlsbFormat/Biff12_structures/FRTRelID.cpp \
+    ../Source/XlsbFormat/Biff12_structures/ListType.cpp \
+    ../Source/XlsbFormat/Biff12_structures/XmlDataType.cpp \
+    ../Source/XlsbFormat/Biff12_structures/ListTotalRowFunction.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -308,9 +354,33 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/COMMENTLIST.cpp \
     ../Source/XlsbFormat/Biff12_unions/COMMENTAUTHORS.cpp \
     ../Source/XlsbFormat/Biff12_unions/COMMENTS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTTABLE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TABLE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/LISTCOLS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/LISTCOL.cpp \
+    ../Source/XlsbFormat/Biff12_unions/LISTXMLCPR.cpp \
+    ../Source/XlsbFormat/Biff12_unions/AUTOFILTER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FILTERCOLUMN.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACICONFILTER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACFILTERCONTENT.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CUSTOMFILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACCUSTOMFILTER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACFILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/RICHFILTERCONTENT.cpp \
+    ../Source/XlsbFormat/Biff12_unions/RICHFILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CUSTOMRICHFILTERS.cpp \
 }
-
 HEADERS += \
+    ../Source/XlsbFormat/CommentsStream.h \
+    ../Source/XlsbFormat/SharedStringsStream.h \
+    ../Source/XlsbFormat/StylesStream.h \
+    ../Source/XlsbFormat/WorkBookStream.h \
+    ../Source/XlsbFormat/WorkSheetStream.h \
+    ../Source/XlsbFormat/TableStream.h \
+    ../Source/XlsbFormat/Xlsb.h \
+    ../Source/XlsbFormat/XlsbElementsType.h \
+### Biff12_records
     ../Source/XlsbFormat/Biff12_records/ACBegin.h \
     ../Source/XlsbFormat/Biff12_records/ACEnd.h \
     ../Source/XlsbFormat/Biff12_records/AbsPath15.h \
@@ -474,6 +544,49 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/WbProp.h \
     ../Source/XlsbFormat/Biff12_records/WsDim.h \
     ../Source/XlsbFormat/Biff12_records/WsFmtInfo.h \
+    ../Source/XlsbFormat/Biff12_records/TableStyleClient.h \
+    ../Source/XlsbFormat/Biff12_records/BeginList.h \
+    ../Source/XlsbFormat/Biff12_records/EndList.h \
+    ../Source/XlsbFormat/Biff12_records/BeginListCols.h \
+    ../Source/XlsbFormat/Biff12_records/ListCCFmla.h \
+    ../Source/XlsbFormat/Biff12_records/ListTrFmla.h \
+    ../Source/XlsbFormat/Biff12_records/BeginListXmlCPr.h \
+    ../Source/XlsbFormat/Biff12_records/BeginListCol.h \
+    ../Source/XlsbFormat/Biff12_records/EndListCols.h \
+    ../Source/XlsbFormat/Biff12_records/EndListCol.h \
+    ../Source/XlsbFormat/Biff12_records/BeginAFilter.h \
+    ../Source/XlsbFormat/Biff12_records/EndListXmlCPr.h \
+    ../Source/XlsbFormat/Biff12_records/List14.h \
+    ../Source/XlsbFormat/Biff12_records/Top10Filter.h \
+    ../Source/XlsbFormat/Biff12_records/Top10RichFilter.h \
+    ../Source/XlsbFormat/Biff12_records/EndAFilter.h \
+    ../Source/XlsbFormat/Biff12_records/EndFilterColumn.h \
+    ../Source/XlsbFormat/Biff12_records/IconFilter.h \
+    ../Source/XlsbFormat/Biff12_records/IconFilter14.h \
+    ../Source/XlsbFormat/Biff12_records/ColorFilter.h \
+    ../Source/XlsbFormat/Biff12_records/DynamicFilter.h \
+    ../Source/XlsbFormat/Biff12_records/BeginFilterColumn.h \
+    ../Source/XlsbFormat/Biff12_records/AFilterDateGroupItem.h \
+    ../Source/XlsbFormat/Biff12_records/RichFilterDateGroupItem.h \
+    ../Source/XlsbFormat/Biff12_records/Filter.h \
+    ../Source/XlsbFormat/Biff12_records/CustomFilter.h \
+    ../Source/XlsbFormat/Biff12_records/BeginCustomFilters.h \
+    ../Source/XlsbFormat/Biff12_records/CustomFilter14.h \
+    ../Source/XlsbFormat/Biff12_records/EndCustomFilters.h \
+    ../Source/XlsbFormat/Biff12_records/BeginCustomFilters14.h \
+    ../Source/XlsbFormat/Biff12_records/Filter14.h \
+    ../Source/XlsbFormat/Biff12_records/BeginFilters.h \
+    ../Source/XlsbFormat/Biff12_records/EndFilters.h \
+    ../Source/XlsbFormat/Biff12_records/DynamicRichFilter.h \
+    ../Source/XlsbFormat/Biff12_records/BeginRichFilterColumn.h \
+    ../Source/XlsbFormat/Biff12_records/EndRichFilterColumn.h \
+    ../Source/XlsbFormat/Biff12_records/RichFilter.h \
+    ../Source/XlsbFormat/Biff12_records/BeginRichFilters.h \
+    ../Source/XlsbFormat/Biff12_records/EndRichFilters.h \
+    ../Source/XlsbFormat/Biff12_records/CustomRichFilter.h \
+    ../Source/XlsbFormat/Biff12_records/BeginCustomRichFilters.h \
+    ../Source/XlsbFormat/Biff12_records/EndCustomRichFilters.h \
+### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
     ../Source/XlsbFormat/Biff12_structures/BookProtectionFlags.h \
@@ -512,6 +625,10 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_structures/SxSu.h \
     ../Source/XlsbFormat/Biff12_structures/UncheckedSqRfX.h \
     ../Source/XlsbFormat/Biff12_structures/XLWideString.h \
+    ../Source/XlsbFormat/Biff12_structures/ListType.h \
+    ../Source/XlsbFormat/Biff12_structures/XmlDataType.h \
+    ../Source/XlsbFormat/Biff12_structures/ListTotalRowFunction.h \
+### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
     ../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.h \
     ../Source/XlsbFormat/Biff12_unions/ACFMT.h \
@@ -588,10 +705,19 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/WSVIEWS2.h \
     ../Source/XlsbFormat/Biff12_unions/uCFVO.h \
     ../Source/XlsbFormat/Biff12_unions/uCFVO14.h \
-    ../Source/XlsbFormat/CommentsStream.h \
-    ../Source/XlsbFormat/SharedStringsStream.h \
-    ../Source/XlsbFormat/StylesStream.h \
-    ../Source/XlsbFormat/WorkBookStream.h \
-    ../Source/XlsbFormat/WorkSheetStream.h \
-    ../Source/XlsbFormat/Xlsb.h \
-    ../Source/XlsbFormat/XlsbElementsType.h
+    ../Source/XlsbFormat/Biff12_unions/FRTTABLE.h \
+    ../Source/XlsbFormat/Biff12_unions/TABLE.h \
+    ../Source/XlsbFormat/Biff12_unions/LISTCOLS.h \
+    ../Source/XlsbFormat/Biff12_unions/LISTCOL.h \
+    ../Source/XlsbFormat/Biff12_unions/LISTXMLCPR.h \
+    ../Source/XlsbFormat/Biff12_unions/AUTOFILTER.h \
+    ../Source/XlsbFormat/Biff12_unions/FILTERCOLUMN.h \
+    ../Source/XlsbFormat/Biff12_unions/ACICONFILTER.h \
+    ../Source/XlsbFormat/Biff12_unions/ACFILTERCONTENT.h \
+    ../Source/XlsbFormat/Biff12_unions/FILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/CUSTOMFILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/ACCUSTOMFILTER.h \
+    ../Source/XlsbFormat/Biff12_unions/ACFILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/RICHFILTERCONTENT.h \
+    ../Source/XlsbFormat/Biff12_unions/RICHFILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/CUSTOMRICHFILTERS.h \

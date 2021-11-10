@@ -697,6 +697,11 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(TEmfPlusPointR &oPoint)
+		{
+			//TODO: реализовать
+			return *this;
+		}
 		CDataStream& operator>>(TEmfPlusRectR &oTEmfPlusRectR)
 		{
 			*this >> oTEmfPlusRectR.chX;
@@ -888,14 +893,17 @@ namespace MetaFile
 			*this >> unVersion;
 			*this >> unType;
 
-			if (!oImage.InitData(unType))
+			if (unType < EEmfPlusImageDataType::ImageDataTypeUnknown || unType > EEmfPlusImageDataType::ImageDataTypeMetafile)
 				return *this;
 
-			*this >> *oImage.pData;
+			if (!oImage.InitData(EEmfPlusImageDataType(unType)))
+				return *this;
+
+			*this >> *oImage.pImageData;
 
 			return *this;
 		}
-		CDataStream& operator>>(CImageDataBitmap& oImageDataBitmap)
+		CDataStream& operator>>(CEmfPlusBitmap& oImageDataBitmap)
 		{
 			*this >> oImageDataBitmap.nWidth;
 			*this >> oImageDataBitmap.nHeight;
@@ -906,14 +914,17 @@ namespace MetaFile
 
 			*this >> unType;
 
+			if (unType > EEmfPlusBitmapDataType::BitmapDataTypeUnknow || unType < EEmfPlusBitmapDataType::BitmapDataTypePixel)
+				return *this;
+
 			if (!oImageDataBitmap.InitData(unType))
 				return *this;
 
-			*this >> *oImageDataBitmap.pData;
+			*this >> *oImageDataBitmap.pBitmapData;
 
 			return *this;
 		}
-		CDataStream& operator>>(CEmfPlusBitmapDataBase& oEmfPlusBitmapDataBase)
+		CDataStream& operator>>(CBitmapDataBase& oEmfPlusBitmapDataBase)
 		{
 			if (oEmfPlusBitmapDataBase.GetType() == BitmapDataTypeUnknow)
 				return *this;
@@ -930,20 +941,25 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(CEmfPlusCompressedImage& oEmfPlusCompressedImage)
 		{
-			if (!oEmfPlusCompressedImage.ThereIsContinuation())
-				Skip(oEmfPlusCompressedImage.GetRemainderRecordSize());
-
 			return *this;
 		}
-		CDataStream& operator>>(CImageDataMetafile& oImageDataMetafile)
+		CDataStream& operator>>(CEmfPlusMetafile& oImageDataMetafile)
 		{
 			unsigned int unType, unMetafileDataSize;
 
 			*this >> unType;
 			*this >> unMetafileDataSize;
 
-			oImageDataMetafile.SetRemainderRecordSize(oImageDataMetafile.GetRemainderRecordSize() - 8);
 			oImageDataMetafile.SetMetafileSize(unMetafileDataSize);
+
+			if (!oImageDataMetafile.IsContineudObject())
+			{
+				BYTE *pBuffer = new BYTE[unMetafileDataSize];
+
+				ReadBytes(pBuffer, unMetafileDataSize);
+
+				oImageDataMetafile.SetData(pBuffer, unMetafileDataSize);
+			}
 
 			return *this;
 		}
@@ -952,9 +968,9 @@ namespace MetaFile
 			if (oImageDataBase.GetType() == ImageDataTypeUnknown)
 				return *this;
 			else if (oImageDataBase.GetType() == ImageDataTypeBitmap)
-				*this >> static_cast<CImageDataBitmap&>(oImageDataBase);
+				*this >> static_cast<CEmfPlusBitmap&>(oImageDataBase);
 			else if (oImageDataBase.GetType() == ImageDataTypeMetafile)
-				*this >> static_cast<CImageDataMetafile&>(oImageDataBase);
+				*this >> static_cast<CEmfPlusMetafile&>(oImageDataBase);
 
 			return *this;
 		}

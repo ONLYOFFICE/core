@@ -27,10 +27,16 @@ namespace MetaFile
 
             private:
                 bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
+                void ReadImage(unsigned short shObjectIndex, bool bIsContineudObject);
+
                 void ReadPath();
+
                 std::vector<TEmfPlusPointF> ReadPointsF(unsigned int unPointCount);
+
                 void DrawRectangle(TEmfPlusRectF oRectangle, bool bStroke, bool bFill);
                 void DrawRectangle(TEmfPlusRect oRectangle, bool bStroke, bool bFill);
+
+                template<typename T>void DrawImagePoints(unsigned int unImageIndex, TEmfPlusRectF oSrcRect, std::vector<T> arPoints);
 
                 void Read_EMRPLUS_OFFSETCLIP();
                 void Read_EMRPLUS_RESETCLIP();
@@ -117,6 +123,9 @@ namespace MetaFile
                 bool            m_bBanEmfProcessing;
                 unsigned int    m_unLogicalDpiX;
                 unsigned int    m_unLogicalDpiY;
+
+                typedef std::map<unsigned int, CEmfPlusImage*> EmfPlusImageMap;
+                EmfPlusImageMap m_mImages;
 
                 CEmfPlusContineudObjectRecord*  m_pContineudObject;
         };

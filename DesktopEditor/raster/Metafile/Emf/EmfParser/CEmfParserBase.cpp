@@ -832,6 +832,9 @@ namespace MetaFile
                 m_oHeader.oFrameToBounds.nBottom = nB;
 
                 m_oHeader.oFramePx = m_oHeader.oFrameToBounds;
+
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->Begin();
         }
 
         void CEmfParserBase::HANDLE_EMR_ALPHABLEND(TEmfAlphaBlend &oTEmfAlphaBlend)

@@ -238,7 +238,7 @@ namespace MetaFile
                                 case EMFPLUS_DRAWCURVE:         Read_EMFPLUS_DRAWCURVE(unShFlags);              break;
                                 case EMFPLUS_DRAWDRIVERSTRING:  Read_EMFPLUS_DRAWDRIVERSTRING(unShFlags);       break;
                                 case EMFPLUS_DRAWELLIPSE:       Read_EMFPLUS_DRAWELLIPSE(unShFlags);            break;
-                                case EMFPLUS_DRAWIMAGE:         Read_EMFPLUS_DRAWIMAGEPOINTS(unShFlags);        break;
+                                case EMFPLUS_DRAWIMAGEPOINTS:   Read_EMFPLUS_DRAWIMAGEPOINTS(unShFlags);        break;
                                 case EMFPLUS_DRAWLINES:         Read_EMFPLUS_DRAWLINES(unShFlags);              break;
                                 case EMFPLUS_DRAWPATH:          Read_EMFPLUS_DRAWPATH(unShFlags);               break;
                                 case EMFPLUS_DRAWPIE:           Read_EMFPLUS_DRAWPIE(unShFlags);                break;
@@ -285,8 +285,6 @@ namespace MetaFile
                                 case EMFPLUS_SETPAGETRANSFORM:          Read_EMFPLUS_SETPAGETRANSFORM(unShFlags);       break;
                                 case EMFPLUS_SETWORLDTRANSFORM:         Read_EMFPLUS_SETWORLDTRANSFORM();               break;
                                 case EMFPLUS_TRANSLATEWORLDTRANSFORM:   Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unShFlags);break;
-
-                                default: m_oStream.Skip(m_ulRecordSize);     break;
                         }
 
                         int nNeedSkip = (unRecordPos + m_ulRecordSize) - m_oStream.Tell();
@@ -320,6 +318,54 @@ namespace MetaFile
         bool CEmfPlusParser::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)
         {
                 return false;
+        }
+
+        void CEmfPlusParser::ReadImage(unsigned short shObjectIndex, bool bIsContineudObject)
+        {
+                if (NULL == m_pContineudObject)
+                {
+                        CEmfPlusImage *pImage = new CEmfPlusImage(false);
+
+                        m_oStream >> *pImage;
+
+                        m_mImages[shObjectIndex] = pImage;
+                }
+                else
+                {
+                        if (m_pContineudObject->IsFirstReading())
+                        {
+                                CEmfPlusImage *pImage = new CEmfPlusImage(true);
+
+                                m_oStream >> *pImage;
+
+                                if (NULL == pImage->pImageData)
+                                {
+                                        RELEASEOBJECT(pImage)
+                                        RELEASEOBJECT(m_pContineudObject);
+                                        return;
+                                }
+
+                                m_mImages[shObjectIndex] = pImage;
+
+                                if (NULL != m_pContineudObject)
+                                        m_pContineudObject->SetEmfPlusImage(pImage);
+
+                                m_pContineudObject->SetNeedReadSize(m_ulRecordSize - pImage->GetSize() - ((bIsContineudObject) ? 4 : 0));
+                                m_oStream >> *m_pContineudObject;
+                        }
+                        else
+                        {
+                                m_pContineudObject->SetNeedReadSize(m_ulRecordSize - 4);
+
+                                m_oStream >> *m_pContineudObject;
+                        }
+
+                        if (m_pContineudObject->IsLastReading())
+                        {
+                                m_pContineudObject->UpdateImage();
+                                RELEASEOBJECT(m_pContineudObject);
+                        }
+                }
         }
 
         void CEmfPlusParser::ReadPath()
@@ -396,6 +442,35 @@ namespace MetaFile
 
         void CEmfPlusParser::DrawRectangle(TEmfPlusRect oRectangle, bool bStroke, bool bFill)
         {
+
+        }
+
+        template<typename T>
+        void CEmfPlusParser::DrawImagePoints(unsigned int unImageIndex, TEmfPlusRectF oSrcRect, std::vector<T> arPoints)
+        {
+                if (NULL == m_pInterpretator)
+                        return;
+
+                EmfPlusImageMap::const_iterator oPosition = m_mImages.find(unImageIndex);
+
+                if (m_mImages.end() == oPosition || NULL == oPosition->second)
+                        return;
+
+                CEmfPlusImage *pImage = oPosition->second;
+
+                unsigned int unMetafileSize = pImage->GetMetafileSize();
+
+                if (unMetafileSize == 0)
+                        return;
+
+                CEmfParser oEmfParser(m_pInterpretator);
+                oEmfParser.SetStream(pImage->GetMetafileData(), unMetafileSize);
+                oEmfParser.SetFontManager(GetFontManager());
+                oEmfParser.m_bView = true;
+                oEmfParser.Scan();
+
+                if (!oEmfParser.CheckError())
+                        oEmfParser.PlayFile();
 
         }
 
@@ -642,12 +717,15 @@ namespace MetaFile
                 m_oStream >> oSrcRect;
                 m_oStream >> unCount;
 
+                if (nSrcUnit != UnitTypePixel && unCount != 3)
+                        return;
+
                 std::vector<T> arPoints(unCount);
 
                 for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
-                {
-                        //TODO: реализовать
-                }
+                        m_oStream >> arPoints[unIndex];
+
+                DrawImagePoints(shOgjectIndex, oSrcRect, arPoints);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWLINES(unsigned short unShFlags)
@@ -960,12 +1038,11 @@ namespace MetaFile
 
         void CEmfPlusParser::Read_EMFPLUS_OBJECT(unsigned short unShFlags)
         {
-                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-                short shOgjectType  = ExpressValue(unShFlags, 8, 14);
+                short shObjectIndex = ExpressValue(unShFlags, 0, 7);
+                short shObjectType  = ExpressValue(unShFlags, 8, 14);
 
                 if ((unShFlags >>(15)) & 1)
                 {
-                        //TODO: определиться как с этим работать
                         unsigned int unTotalSize;
                         m_oStream >> unTotalSize;
 
@@ -973,26 +1050,26 @@ namespace MetaFile
                                 m_pContineudObject->SetDataSize(unTotalSize);
                 }
 
-                switch (shOgjectType)
+                switch (shObjectType)
                 {
                         case ObjectTypeInvalid: return;
                         case ObjectTypeBrush:
                         {
-                                LOGGING(L"Object Brush with index: " << shOgjectIndex)
+                                LOGGING(L"Object Brush with index: " << shObjectIndex)
                                 CEmfPlusBrush *pEmfPlusBrush = new CEmfPlusBrush;
                                 m_oStream >> *pEmfPlusBrush;
 
-                                m_oPlayer.RegisterObject(shOgjectIndex, (CEmfObjectBase*)pEmfPlusBrush);
+                                m_oPlayer.RegisterObject(shObjectIndex, (CEmfObjectBase*)pEmfPlusBrush);
 
                                 break;
                         }
                         case ObjectTypePen:
                         {
-                                LOGGING(L"Object Pen with index: " << shOgjectIndex)
+                                LOGGING(L"Object Pen with index: " << shObjectIndex)
                                 CEmfPlusPen *pEmfPlusPen = new CEmfPlusPen;
                                 m_oStream >> *pEmfPlusPen;
 
-                                m_oPlayer.RegisterObject(shOgjectIndex, (CEmfObjectBase*)pEmfPlusPen);
+                                m_oPlayer.RegisterObject(shObjectIndex, (CEmfObjectBase*)pEmfPlusPen);
 
                                 break;
                         }
@@ -1015,53 +1092,27 @@ namespace MetaFile
                         case ObjectTypeImage:
                         {
                                 LOGGING(L"Object Image")
-                                if (NULL == m_pContineudObject)
-                                {
-                                        CEmfPlusImage *pImage = new CEmfPlusImage(m_ulRecordSize - (((unShFlags >>(15)) & 1) ? 4 : 0));
-
-                                        m_oStream >> *pImage;
-                                }
-                                else
-                                {
-                                        if (m_pContineudObject->IsFirstReading())
-                                        {
-                                                CEmfPlusImage *pImage = new CEmfPlusImage(m_ulRecordSize - (((unShFlags >>(15)) & 1) ? 4 : 0));
-
-                                                m_oStream >> *pImage;
-
-                                                if (!pImage->ValidData())
-                                                        return;
-
-                                                if (NULL != m_pContineudObject)
-                                                        m_pContineudObject->SetEmfPlusImage(pImage);
-
-                                                m_pContineudObject->SetNeedReadSize(pImage->pData->GetRemainderRecordSize());
-
-                                                m_oStream >> *m_pContineudObject;
-                                        }
-                                        else
-                                        {
-                                                m_pContineudObject->SetNeedReadSize(m_ulRecordSize - 4);
-
-                                                m_oStream >> *m_pContineudObject;
-                                        }
-
-                                        if (m_pContineudObject->IsLastReading())
-                                        {
-                                                if (NULL != m_pInterpretator)
-                                                {
-                                                        //При создании нового объекта нужно передавать преобразования протранства
-                                                        CEmfParser oEmfParser(m_pInterpretator);
-                                                        oEmfParser.SetStream(m_pContineudObject->GetData(), m_pContineudObject->GetSize());
-                                                        oEmfParser.SetFontManager(GetFontManager());
-                                                        oEmfParser.m_bView = true;
-                                                        oEmfParser.PlayFile();
-                                                }
-
-                                                RELEASEOBJECT(m_pContineudObject);
-                                        }
-                                }
-
+                                ReadImage(shObjectIndex, ((unShFlags >>(15)) & 1));
+                                break;
+                        }
+                        case ObjectTypeFont:
+                        {
+                                LOGGING(L"Object Font")
+                                break;
+                        }
+                        case ObjectTypeStringFormat:
+                        {
+                                LOGGING(L"Object String Format")
+                                break;
+                        }
+                        case ObjectTypeImageAttributes:
+                        {
+                                LOGGING(L"Object Image Attributes")
+                                break;
+                        }
+                        case ObjectTypeCustomLineCap:
+                        {
+                                LOGGING(L"Object Custom Line Cap")
                                 break;
                         }
                         default: return;

@@ -4488,7 +4488,13 @@ namespace PdfReader
                 pTempUnicodes[nTempUnicodesLen++] = (int)pWchars[i];
 
         // m_pInternal->m_oWriter.WriteText(pTempUnicodes, (const int*)pGids, nTempUnicodesLen, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
-        // TODO: CheckTectClipRect();
+        /*
+         * CheckTectClipRect(); никогда не вызывает запись в m_oPage, т.к
+         * в текстовом режиме EndCommand(c_nClipType) не обрабатывается
+         * Аналогично: WriteDrawPath, Pattern, Image, Image2 и ImagePattrern
+         * WriteImageID_SVG(); не вызывается, т.к размер m_oSVGWriter.m_oDocument
+         * не изменяется в текстовом режиме
+        */
 
         bool bIsDumpFont = false;
         std::wstring sCurrentFontName; double dFontSize;

@@ -57,6 +57,7 @@
 #include "lib/goo/GList.h"
 #include "../DesktopEditor/common/StringExt.h"
 #include <vector>
+//#include <fstream>
 #endif
 
 namespace PdfReader
@@ -348,6 +349,7 @@ namespace PdfReader
 		{
             RendererOutputDev oRendererOut(pRenderer, m_pInternal->m_pFontManager, m_pInternal->m_pFontList);
         #ifdef BUILDING_WASM_MODULE
+            //oRendererOut.m_pPageMeta.SkipLen();
             oRendererOut.m_pPageMeta.SkipLen();
             m_pGlyphs.first = _nPageIndex;
             RELEASEARRAYOBJECTS(m_pGlyphs.second);
@@ -356,20 +358,25 @@ namespace PdfReader
 			oRendererOut.SetBreak(pbBreak);
             m_pInternal->m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, false, true, false);
         #ifdef BUILDING_WASM_MODULE
+            //oRendererOut.m_pPageMeta.WriteLen();
             oRendererOut.m_pPageMeta.WriteLen();
             m_pGlyphs.second = oRendererOut.m_pPageMeta.GetBuffer();
-            oRendererOut.m_pPageMeta.ClearWithoutAttack();
             /* С конвертацией в Base64
             char* pDst = NULL;
             int nDst = 0;
             NSFile::CBase64Converter::Encode(oRendererOut.m_pPageMeta.GetBuffer(), oRendererOut.m_pPageMeta.GetSize(), pDst, nDst, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
+            std::string sBase64Data;
             if (0 < nDst)
                 sBase64Data = std::string(pDst);
 
             sBase64Data = std::to_string(oRendererOut.m_pPageMeta.GetSize()) + ";" + sBase64Data;
+            std::ofstream fout("res.txt");
+            fout << sBase64Data;
+            fout.close();
             RELEASEARRAYOBJECTS(pDst);
             */
+            oRendererOut.m_pPageMeta.ClearWithoutAttack();
         #endif
 		}
 	}

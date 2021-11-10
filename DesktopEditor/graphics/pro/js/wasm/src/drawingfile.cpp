@@ -360,7 +360,6 @@ int main()
         std::cout << " H " << (double)nPathLength / 100.0 << std::endl;
     }
 
-
     Close(test);
     RELEASEARRAYOBJECTS(pXpsData);
     RELEASEARRAYOBJECTS(info);

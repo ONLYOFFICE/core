@@ -36,6 +36,7 @@
 
 #include "Document.h"
 #include "StaticResources.h"
+//#include <fstream>
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846
@@ -169,6 +170,20 @@ namespace XPS
 	{
 		// Будет освобожден в js
 		BYTE* res = m_pPageMeta.GetBuffer();
+		/*
+		char* pDst = NULL;
+		int nDst = 0;
+		NSFile::CBase64Converter::Encode(m_pPageMeta.GetBuffer(), m_pPageMeta.GetSize(), pDst, nDst, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+		std::string sBase64Data;
+		if (0 < nDst)
+			sBase64Data = std::string(pDst);
+
+		sBase64Data = std::to_string(m_pPageMeta.GetSize()) + ";" + sBase64Data;
+		std::ofstream fout("res.txt");
+		fout << sBase64Data;
+		fout.close();
+		*/
 		m_pPageMeta.ClearWithoutAttack();
 		return res;
 	}
@@ -625,6 +640,7 @@ namespace XPS
 	{
 		#ifdef BUILDING_WASM_MODULE
 		m_pPageMeta.Clear();
+		//m_pPageMeta.SkipLen();
 		m_pPageMeta.SkipLen();
 		m_vLinks.clear();
 		#endif
@@ -696,6 +712,7 @@ namespace XPS
 		LONG nCount = m_oLine.GetCountChars();
 		if (nCount)
 			DumpLine();
+		//m_pPageMeta.WriteLen();
 		m_pPageMeta.WriteLen();
 	#endif
 	}

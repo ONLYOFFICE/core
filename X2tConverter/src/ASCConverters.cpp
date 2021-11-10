@@ -62,6 +62,9 @@
 #include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
 #include "../../OfficeCryptReader/source/ECMACryptFile.h"
 
+#include "../../XlsxSerializerCom/Reader/CSVReader.h"
+#include "../../XlsxSerializerCom/Common/Common.h"
+
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Directory.h"
 
@@ -1307,36 +1310,30 @@ namespace NExtractTools
     // csv -> xslx
     _UINT32 csv2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
-        std::wstring sCSV = sFrom;
-        std::wstring sTempUnpackedXLSX = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
-        std::wstring sResultXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
-        std::wstring sResultXlstFileEditor = sResultXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+		OOX::Spreadsheet::CXlsx oXlsx;
 
-        NSDirectory::CreateDirectory(sTempUnpackedXLSX);
-        NSDirectory::CreateDirectory(sResultXlstDir);
+		BYTE fileType;
+		UINT nCodePage;
+		std::wstring sDelimiter;
+		BYTE saveFileType;
+		SerializeCommon::ReadFileType(params.getXmlOptions(), fileType, nCodePage, sDelimiter, saveFileType);
 
-        // Save to file (from temp dir)
-        BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
+		_UINT32 nRes = CSVReader::ReadFromCsvToXlsx(sFrom, oXlsx, nCodePage, sDelimiter);
 
-		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
-        m_oCXlsxSerializer.setFontDir(params.getFontPath());
+		std::wstring sResultXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
+		NSDirectory::CreateDirectory(sResultXlsxDir);
 
-        COfficeUtils oCOfficeUtils(NULL);
+		oXlsx.PrepareToWrite();
+		
+		OOX::CContentTypes oContentTypes;
+		nRes = oXlsx.Write(sResultXlsxDir, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 
-        std::wstring sMediaPath;
-        std::wstring sEmbedPath;
-
-        _UINT32 nRes = m_oCXlsxSerializer.saveToFile (sResultXlstFileEditor, sCSV, params.getXmlOptions());
-        if (SUCCEEDED_X2T(nRes))
-        {
-            nRes = m_oCXlsxSerializer.loadFromFile(sResultXlstFileEditor, sTempUnpackedXLSX, params.getXmlOptions(), sMediaPath, sEmbedPath);
-            if (SUCCEEDED_X2T(nRes))
-            {
-                nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedXLSX, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-            }
-        }
-
-        return nRes;
+		if (SUCCEEDED_X2T(nRes))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultXlsxDir, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		return nRes;
     }
     _UINT32 csv2xlst_bin (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params)
     {

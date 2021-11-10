@@ -1168,12 +1168,6 @@ void PPT_FORMAT::CShapeWriter::Write3dShape()
 }
 void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 {
-    //if (false == m_xmlTxBodyAlternative.empty())
-    //{
-    //	m_oWriter.WriteString(m_xmlTxBodyAlternative);
-
-    //	return;
-    //}
     CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
     if (!pShapeElement) return;
 
@@ -2007,7 +2001,6 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()
         ParseXmlAlternative(pShapeElement->m_pShape->m_strXmlString);
 
     }
-
     m_oWriter.WriteString(std::wstring(L"<p:sp>"));
 
     WriteShapeInfo();
@@ -2119,7 +2112,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()
 
     pShapeElement = NULL;
 
-    return m_xmlGeomAlternative.empty() ? m_oWriter.GetData() : m_xmlGeomAlternative;
+    return m_oWriter.GetData();
 }
 void PPT_FORMAT::CShapeWriter::ParseXmlAlternative(const std::wstring & xml)
 {

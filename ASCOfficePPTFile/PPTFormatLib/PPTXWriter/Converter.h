@@ -78,7 +78,7 @@ namespace PPT_FORMAT
 		void WriteAll			();
 		void WriteThemes		();
         bool HasRoundTrips      ()const;
-        void WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered_set<std::string> &writedFilesHash, int& nIndexTheme, int &nStartLayout);
+        bool WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered_set<std::string> &writedFilesHash, int& nIndexTheme, int &nStartLayout);
         void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
         void WriteSlides		();
         void WriteNotes			();

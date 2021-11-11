@@ -149,8 +149,8 @@ static DWORD GetLength(BYTE* x)
 
 int main()
 {
-#define XPS_TEST  1
-#define DJVU_TEST 0
+#define XPS_TEST  0
+#define DJVU_TEST 1
 #define PDF_TEST  0
 #if PDF_TEST
     BYTE* pPdfData = NULL;
@@ -386,7 +386,7 @@ int main()
     if (nError != 0)
     {
         Close(test);
-        RELEASEARRAYOBJECTS(pPdfData);
+        RELEASEARRAYOBJECTS(pDjVuData);
         return 1;
     }
     int* info = GetInfo(test);
@@ -395,6 +395,27 @@ int main()
     int width  = info[test_page * 3 + 1];
     int height = info[test_page * 3 + 2];
     std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
+
+    std::cout << std::endl;
+    BYTE* pStructure = GetStructure(test);
+    DWORD nLength = GetLength(pStructure);
+    DWORD i = 4;
+    nLength -= 4;
+    while (i < nLength)
+    {
+        DWORD nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << "Page " << nPathLength;
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::cout << " Level " << nPathLength;
+        i += 4; // y 0.0
+        nPathLength = GetLength(pStructure + i);
+        i += 4;
+        std::string oDs = std::string((char*)(pStructure + i), nPathLength);
+        std::wcout << L" Description "<< UTF8_TO_U(oDs) << std::endl;
+        i += nPathLength;
+    }
 
     BYTE* res = NULL;
     if (pages_count > 0)
@@ -411,29 +432,6 @@ int main()
 
     std::cout << std::endl;
     BYTE* pGlyphs = GetGlyphs(test, test_page);
-    DWORD nLength = GetLength(pGlyphs);
-    DWORD i = 4;
-    nLength -= 4;
-    while (i < nLength)
-    {
-        DWORD nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::string oWord = std::string((char*)(pGlyphs + i), nPathLength);
-        std::wcout << L"Word " << UTF8_TO_U(oWord);
-        i += nPathLength;
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << " X " << (double)nPathLength / 100.0;
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << " Y " << (double)nPathLength / 100.0;
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << " W " << (double)nPathLength / 100.0;
-        nPathLength = GetLength(pGlyphs + i);
-        i += 4;
-        std::cout << " H " << (double)nPathLength / 100.0 << std::endl;
-    }
 
     std::cout << std::endl;
     BYTE* pLinks = GetLinks(test, test_page);
@@ -461,27 +459,6 @@ int main()
         nPathLength = GetLength(pLinks + i);
         i += 4;
         std::cout << " H " << (double)nPathLength / 100.0 << std::endl;
-    }
-
-    std::cout << std::endl;
-    BYTE* pStructure = GetStructure(test);
-    nLength = GetLength(pStructure);
-    i = 4;
-    nLength -= 4;
-    while (i < nLength)
-    {
-        DWORD nPathLength = GetLength(pStructure + i);
-        i += 4;
-        std::cout << "Page " << nPathLength;
-        nPathLength = GetLength(pStructure + i);
-        i += 4;
-        std::cout << " Level " << nPathLength;
-        i += 4; // y 0.0
-        nPathLength = GetLength(pStructure + i);
-        i += 4;
-        std::string oDs = std::string((char*)(pStructure + i), nPathLength);
-        std::wcout << L" Description "<< UTF8_TO_U(oDs) << std::endl;
-        i += nPathLength;
     }
 
     Close(test);

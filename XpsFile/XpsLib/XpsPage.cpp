@@ -232,7 +232,6 @@ namespace XPS
                 pTempUnicodes[nTempUnicodesLen++] = (unsigned int)pWchars[i];
 
         // m_pInternal->m_oWriter.WriteText(m_pTempUnicodes, (const int*)pGids, m_nTempUnicodesLen, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
-        // TODO: CheckTectClipRect();
 
         bool bIsDumpFont = false;
         std::wstring sCurrentFontName; double dFontSize;

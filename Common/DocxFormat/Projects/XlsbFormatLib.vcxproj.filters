@@ -850,6 +850,190 @@
     <ClInclude Include="..\Source\XlsbFormat\WorkSheetStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\Xlsb.h" />
     <ClInclude Include="..\Source\XlsbFormat\XlsbElementsType.h" />
+    <ClInclude Include="..\Source\XlsbFormat\TableStream.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ACCUSTOMFILTER.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ACFILTERCONTENT.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ACFILTERS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ACICONFILTER.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\AUTOFILTER.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\CUSTOMFILTERS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\CUSTOMRICHFILTERS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FILTERCOLUMN.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FILTERS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTTABLE.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\LISTCOL.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\LISTCOLS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\LISTXMLCPR.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\RICHFILTERCONTENT.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\RICHFILTERS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLE.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\ListTotalRowFunction.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\ListType.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\XmlDataType.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\AFilterDateGroupItem.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginAFilter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginCustomFilters.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginCustomFilters14.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginCustomRichFilters.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginFilterColumn.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginFilters.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginList.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginListCol.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginListCols.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginListXmlCPr.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginRichFilterColumn.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginRichFilters.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\ColorFilter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\CustomFilter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\CustomFilter14.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\CustomRichFilter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\DynamicFilter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\DynamicRichFilter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndAFilter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndCustomFilters.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndCustomRichFilters.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndFilterColumn.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndFilters.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndList.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndListCol.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndListCols.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndListXmlCPr.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndRichFilterColumn.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndRichFilters.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Filter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Filter14.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\IconFilter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\IconFilter14.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\List14.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\ListCCFmla.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\ListTrFmla.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\RichFilter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\RichFilterDateGroupItem.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\TableStyleClient.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Top10Filter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Top10RichFilter.h">
+      <Filter>records</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ACProductVersion.cpp">
@@ -1670,6 +1854,190 @@
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELL_bu.cpp">
       <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\TableStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ACCUSTOMFILTER.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ACFILTERCONTENT.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ACFILTERS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ACICONFILTER.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\AUTOFILTER.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CUSTOMFILTERS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CUSTOMRICHFILTERS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FILTERCOLUMN.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FILTERS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTTABLE.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\LISTCOL.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\LISTCOLS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\LISTXMLCPR.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\RICHFILTERCONTENT.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\RICHFILTERS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLE.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ListTotalRowFunction.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ListType.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\XmlDataType.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\AFilterDateGroupItem.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginAFilter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginCustomFilters.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginCustomFilters14.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginCustomRichFilters.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginFilterColumn.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginFilters.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginList.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginListCol.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginListCols.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginListXmlCPr.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginRichFilterColumn.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginRichFilters.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\ColorFilter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\CustomFilter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\CustomFilter14.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\CustomRichFilter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\DynamicFilter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\DynamicRichFilter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndAFilter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndCustomFilters.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndCustomRichFilters.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndFilterColumn.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndFilters.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndList.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndListCol.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndListCols.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndListXmlCPr.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndRichFilterColumn.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndRichFilters.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Filter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Filter14.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\IconFilter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\IconFilter14.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\List14.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\ListCCFmla.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\ListTrFmla.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\RichFilter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\RichFilterDateGroupItem.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\TableStyleClient.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Top10Filter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Top10RichFilter.cpp">
+      <Filter>records</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

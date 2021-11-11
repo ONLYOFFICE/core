@@ -55,8 +55,8 @@ namespace XLSB
             XLS::RFX                    rfxList;
             ListType                    lt;
             _UINT32                     idList;
-            XLS::Boolean<unsigned int>  crwHeader;
-            XLS::Boolean<unsigned int>  crwTotals;
+            XLS::Boolean<_UINT32>		crwHeader;
+            XLS::Boolean<_UINT32>		crwTotals;
             bool                        fShownTotalRow;
             bool                        fSingleCell;
             bool                        fForceInsertToBeVisible;

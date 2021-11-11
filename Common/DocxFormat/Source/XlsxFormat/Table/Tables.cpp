@@ -509,8 +509,11 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
             if(!ptr->stName.value().empty())
                 m_oName                 = ptr->stName.value();
 
-            m_oHeaderRowCount           = (unsigned int)ptr->crwHeader;
-            m_oTotalsRowCount           = (unsigned int)ptr->crwTotals;
+			if (ptr->crwHeader.value())
+				m_oHeaderRowCount = ptr->crwHeader.value().get();
+			
+			if (ptr->crwTotals.value())
+				m_oTotalsRowCount = ptr->crwTotals.value().get();
 
             if(!ptr->stDisplayName.value().empty())
                 m_oDisplayName          = ptr->stDisplayName.value();

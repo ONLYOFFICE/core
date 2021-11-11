@@ -22,7 +22,9 @@ namespace MetaFile
                 ObjectTypeCustomLineCap     = 0x09
         } EEmfPlusObjectType;
 
-        #define CEmfPlusObjectBase CEmfObjectBase
+        #define CEmfPlusObjectBase      CEmfObjectBase
+        #define CEmfPlusPath            CEmfPath
+        #define CEmfPlusDC              CEmfDC
 
 	typedef  enum
 	{
@@ -117,6 +119,9 @@ namespace MetaFile
 
 		int GetColor()
 		{
+			if (NULL != Brush)
+				return Brush->GetColor();
+
 			return METAFILE_RGBA(Color.chRed, Color.chGreen, Color.chBlue);
 		};
 

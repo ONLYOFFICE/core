@@ -27,14 +27,20 @@ namespace MetaFile
 
             private:
                 bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
-                void ReadImage(unsigned short shObjectIndex, bool bIsContineudObject);
 
-                void ReadPath();
+                void ReadImage(unsigned short shObjectIndex, bool bIsContineudObject);
+                CEmfPlusImage GetImage(unsigned int unImageIndex);
+
+                CEmfPlusPath* ReadPath();
+                CEmfPlusPath* GetPath(unsigned int unPathIndex);
 
                 std::vector<TEmfPlusPointF> ReadPointsF(unsigned int unPointCount);
+                std::vector<char> ReadPointTypes(unsigned int unPointCount);
 
                 void DrawRectangle(TEmfPlusRectF oRectangle, bool bStroke, bool bFill);
                 void DrawRectangle(TEmfPlusRect oRectangle, bool bStroke, bool bFill);
+
+                template<typename T> void DrawLines(std::vector<T> arPoints, bool bCloseFigure);
 
                 template<typename T>void DrawImagePoints(unsigned int unImageIndex, TEmfPlusRectF oSrcRect, std::vector<T> arPoints);
 
@@ -124,8 +130,11 @@ namespace MetaFile
                 unsigned int    m_unLogicalDpiX;
                 unsigned int    m_unLogicalDpiY;
 
-                typedef std::map<unsigned int, CEmfPlusImage*> EmfPlusImageMap;
+                typedef std::map<unsigned int, CEmfPlusImage*>  EmfPlusImageMap;
+                typedef std::map<unsigned int, CEmfPlusPath*>   EmfPlusPathMap;
+
                 EmfPlusImageMap m_mImages;
+                EmfPlusPathMap  m_mPaths;
 
                 CEmfPlusContineudObjectRecord*  m_pContineudObject;
         };

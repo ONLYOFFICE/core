@@ -95,12 +95,14 @@ namespace MetaFile
                 void MoveTo(TEmfPointD &oPoint);
                 void MoveTo(TEmfPointL &oPoint);
                 void MoveTo(TEmfPointS &oPoint);
+                void MoveTo(TEmfPlusPointR &oPoint);
 
                 void LineTo(double dX, double dY);
                 void LineTo(int nX, int nY);
                 void LineTo(TEmfPointD &oPoint);
                 void LineTo(TEmfPointL &oPoint);
                 void LineTo(TEmfPointS &oPoint);
+                void LineTo(TEmfPlusPointR &oPoint);
 
                 void CurveTo(int nX1, int nY1, int nX2, int nY2, int nXe, int nYe);
                 void CurveTo(TEmfPointS &oPoint1, TEmfPointS &oPoint2, TEmfPointS &oPointE);

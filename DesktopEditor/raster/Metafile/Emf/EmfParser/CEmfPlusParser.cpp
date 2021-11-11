@@ -173,6 +173,12 @@ namespace MetaFile
         {
                 ClearFile();
                 RELEASEOBJECT(m_pInterpretator);
+
+                for (EmfPlusImageMap::const_iterator oIter = m_mImages.begin(); oIter != m_mImages.end(); ++oIter)
+                        delete oIter->second;
+
+                for (EmfPlusPathMap::const_iterator oIter = m_mPaths.begin(); oIter != m_mPaths.end(); ++oIter)
+                        delete oIter->second;
         }
 
         bool CEmfPlusParser::OpenFromFile(const wchar_t *wsFilePath)
@@ -365,10 +371,20 @@ namespace MetaFile
                                 m_pContineudObject->UpdateImage();
                                 RELEASEOBJECT(m_pContineudObject);
                         }
-                }
+                        }
         }
 
-        void CEmfPlusParser::ReadPath()
+        CEmfPlusImage CEmfPlusParser::GetImage(unsigned int unImageIndex)
+        {
+                EmfPlusImageMap::const_iterator oFoundElement = m_mImages.find(unImageIndex);
+
+                if (m_mImages.end() != oFoundElement)
+                        return oFoundElement->second;
+
+                return NULL;
+        }
+
+        CEmfPlusPath* CEmfPlusParser::ReadPath()
         {
                 unsigned int unVersion, unPathPointCount, unPathPointFlags;
 
@@ -376,33 +392,59 @@ namespace MetaFile
                 m_oStream >> unPathPointCount;
 
                 if (unPathPointCount == 0)
-                        return;
+                        return NULL;
 
                 m_oStream >> unPathPointFlags;
 
                 if ((unPathPointFlags >>(20)) & 1 )
                 {
                         //Определен флаг R (С игнорируется)
+                        return NULL;
                 }
                 else if ((unPathPointFlags >>(17)) & 1 )
                 {
                         //Не определен флаг R, но определен флаг С
+                        return NULL;
                 }
                 else
                 {
-                        std::vector<TEmfPlusPointF> arPoints = ReadPointsF(unPathPointCount);
+                        std::vector<TEmfPlusPointF> arPoints    = ReadPointsF(unPathPointCount);
+                        std::vector<char> arPointTypes          = ReadPointTypes(unPathPointCount);
 
-                        RELEASEOBJECT(m_pPath)
+                        if (unPathPointCount > 500)
+                        {
+                                std::wcout << L"TYT" << std::endl;
+                        }
 
-                        m_pPath = new CEmfPath;
+                        std::vector<std::pair<char, char>> arFlTp(unPathPointCount);
 
-                        m_pPath->MoveTo(arPoints[0].x, arPoints[0].y);
+                        CEmfPlusPath *pPath = new CEmfPlusPath();
+
+                        pPath->MoveTo(arPoints[0].x, arPoints[0].y);
 
                         for (unsigned int unIndex = 1; unIndex < unPathPointCount; ++unIndex)
-                                m_pPath->LineTo(arPoints[unIndex].x, arPoints[unIndex].y);
+                        {
+                                if (ExpressValue(arPointTypes[unIndex], 0, 3) == 0)
+                                        pPath->MoveTo(arPoints[unIndex].x, arPoints[unIndex].y);
+                                else
+                                        pPath->LineTo(arPoints[unIndex].x, arPoints[unIndex].y);
+                        }
+
+                        return pPath;
+
                         //Оба флага не определены
                 }
                 //TODO: реализовать
+        }
+
+        CEmfPlusPath *CEmfPlusParser::GetPath(unsigned int unPathIndex)
+        {
+                EmfPlusPathMap::const_iterator oFoundElement = m_mPaths.find(unPathIndex);
+
+                if (m_mPaths.end() != oFoundElement)
+                        return oFoundElement->second;
+
+                return NULL;
         }
 
         std::vector<TEmfPlusPointF> CEmfPlusParser::ReadPointsF(unsigned int unPointCount)
@@ -413,6 +455,16 @@ namespace MetaFile
                         m_oStream >> arPoints[unIndex];
 
                 return arPoints;
+        }
+
+        std::vector<char> CEmfPlusParser::ReadPointTypes(unsigned int unPointCount)
+        {
+                std::vector<char> arPointTypes(unPointCount);
+
+                for (unsigned int unIndex = 0; unIndex < unPointCount; ++unIndex)
+                        m_oStream >> arPointTypes[unIndex];
+
+                return arPointTypes;
         }
 
         void CEmfPlusParser::DrawRectangle(TEmfPlusRectF oRectangle, bool bStroke, bool bFill)
@@ -755,12 +807,18 @@ namespace MetaFile
 
                 m_oStream >> unCount;
 
+                if (unCount == 0)
+                        return;
+
                 std::vector<T> arPoints(unCount);
 
                 for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
-                {
-                        //TODO: реализовать
-                }
+                        m_oStream >> arPoints[unIndex];
+
+                m_oPlayer.SelectObject(shOgjectIndex);
+
+                DrawLines(arPoints, ((unShFlags >>(13)) & 1));
+                //TODO: реализовать
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWPATH(unsigned short unShFlags)
@@ -770,14 +828,13 @@ namespace MetaFile
 
                 m_oStream >> unPenId;
 
-                if (m_pPath)
+                CEmfPlusPath *pPath = GetPath(shOgjectIndex);
+
+                if (pPath)
                 {
                         m_oPlayer.SelectObject(unPenId);
-                        m_pPath->Draw(m_pInterpretator, true, false);
-                        RELEASEOBJECT(m_pPath);
+                        pPath->Draw(m_pInterpretator, true, false);
                 }
-
-                //TODO: реализовать
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWPIE(unsigned short unShFlags)
@@ -911,12 +968,12 @@ namespace MetaFile
 
                 m_oStream >> nFillPathLength;
 
-                ReadPath();
+                CEmfPlusPath* pPath = ReadPath();
 
-                if (NULL != m_pPath)
+                if (NULL != pPath)
                 {
-                        m_pPath->Draw(m_pInterpretator, true, true);
-                        RELEASEOBJECT(m_pPath);
+                        pPath->Draw(m_pInterpretator, true, true);
+                        RELEASEOBJECT(pPath);
                 }
         }
 
@@ -1076,7 +1133,11 @@ namespace MetaFile
                         case ObjectTypePath:
                         {
                                 LOGGING(L"Object Path")
-                                ReadPath();
+                                CEmfPlusPath* pPath = ReadPath();
+
+                                if (NULL != pPath)
+                                        m_mPaths[shObjectIndex] = pPath;
+
                                 break;
                         }
                         case ObjectTypeRegion:
@@ -1425,6 +1486,7 @@ namespace MetaFile
 
                 if (m_ulRecordSize == 0)
                         return;
+
                 //TODO: реализовать
         }
 
@@ -1450,4 +1512,19 @@ namespace MetaFile
 
                 return shValue;
         }
+
+        template<typename T>
+        void CEmfPlusParser::DrawLines(std::vector<T> arPoints, bool bCloseFigure)
+        {
+                MoveTo(arPoints[0]);
+
+                for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
+                        LineTo(arPoints[unIndex]);
+
+                if (bCloseFigure)
+                        ClosePath();
+
+                DrawPath(true, false);
+        }
+
 }

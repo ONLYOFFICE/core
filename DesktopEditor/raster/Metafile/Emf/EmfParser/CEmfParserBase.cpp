@@ -314,6 +314,11 @@ namespace MetaFile
                 MoveTo(oPoint.x, oPoint.y);
         }
 
+        void CEmfParserBase::MoveTo(TEmfPlusPointR &oPoint)
+        {
+                //TODO: реализовать
+        }
+
         void CEmfParserBase::LineTo(double dX, double dY)
         {
                 if (m_pPath)
@@ -349,6 +354,11 @@ namespace MetaFile
         void CEmfParserBase::LineTo(TEmfPointS &oPoint)
         {
                 LineTo(oPoint.x, oPoint.y);
+        }
+
+        void CEmfParserBase::LineTo(TEmfPlusPointR &oPoint)
+        {
+                //TODO: реализовать
         }
 
         void CEmfParserBase::CurveTo(int nX1, int nY1, int nX2, int nY2, int nXe, int nYe)

@@ -33,8 +33,6 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 
@@ -49,7 +47,9 @@ namespace XLSB
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-		XLS::BaseObjectPtr   m_source;
+        XLS::BaseObjectPtr              m_source;
+
+        std::vector<std::wstring>		arNames;
 
     };
 

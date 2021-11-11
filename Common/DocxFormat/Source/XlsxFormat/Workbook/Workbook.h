@@ -114,6 +114,8 @@ namespace OOX
 
                     xlsb->ReadBin(oPath, workBookStream.get());
 
+                    workBookStream->UpdateXti(xlsb->GetGlobalinfo());
+
                     if (workBookStream != nullptr)
                     {
                         if (workBookStream->m_BOOKVIEWS != nullptr)
@@ -153,13 +155,15 @@ namespace OOX
 			virtual void read(const CPath& oRootPath, const CPath& oPath)
 			{
 				m_oReadPath = oPath;
-				IFileContainer::Read( oRootPath, oPath );
 
                 if( m_oReadPath.GetExtention() == _T(".bin"))
                 {
                     readBin(m_oReadPath);
+                    IFileContainer::Read( oRootPath, oPath );
                     return;
                 }
+
+				IFileContainer::Read( oRootPath, oPath );
 
   				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
 				if ( (xlsx ) && (xlsx->m_pVbaProject) )

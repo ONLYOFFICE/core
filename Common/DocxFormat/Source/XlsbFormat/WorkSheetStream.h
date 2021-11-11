@@ -77,6 +77,7 @@ namespace XLSB
 		XLS::BaseObjectPtr               m_BrtSheetProtectionIso;
 		XLS::BaseObjectPtr               m_BrtSheetProtection;
 		XLS::BaseObjectPtr               m_LISTPARTS;
+        XLS::BaseObjectPtr               m_AUTOFILTER;
 		XLS::BaseObjectPtr               m_SORTSTATE;
         std::vector<XLS::BaseObjectPtr>  m_arCONDITIONALFORMATTING;
 		XLS::BaseObjectPtr               m_FRTWORKSHEET;

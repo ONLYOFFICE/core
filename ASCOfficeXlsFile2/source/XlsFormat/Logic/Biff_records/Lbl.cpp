@@ -187,6 +187,7 @@ void Lbl::readFields(CFRecord& record)
         fFutureFunction	= GETBIT(flags, 17);
 
         record >> chKey >> itab;
+        record >> name;
         rgce.load(record);
         record >> comment;
         if(fProc)

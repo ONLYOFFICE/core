@@ -189,22 +189,22 @@ void CConditionalFormatValueObject::ReadAttributes(XLS::BaseObjectPtr& obj)
                 m_oGte  = (bool)ptr1->fGTE;
                 switch (ptr1->iType.value().get())
                 {
-                    case CFVOtype::CFVONUM:
+                    case XLSB::CFVOtype::CFVONUM:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Number;
                         break;
-                    case CFVOtype::CFVOMIN:
+                    case XLSB::CFVOtype::CFVOMIN:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Minimum;
                         break;
-                    case CFVOtype::CFVOMAX:
+                    case XLSB::CFVOtype::CFVOMAX:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Maximum;
                         break;
-                    case CFVOtype::CFVOPERCENT:
+                    case XLSB::CFVOtype::CFVOPERCENT:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Percent;
                         break;
-                    case CFVOtype::CFVOPERCENTILE:
+                    case XLSB::CFVOtype::CFVOPERCENTILE:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Percentile;
                         break;
-                    case CFVOtype::CFVOFMLA:
+                    case XLSB::CFVOtype::CFVOFMLA:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Formula;
                         break;
                 }
@@ -231,28 +231,28 @@ void CConditionalFormatValueObject::ReadAttributes(XLS::BaseObjectPtr& obj)
                 m_oGte  = (bool)ptr1->fGTE;
                 switch (ptr1->iType.value().get())
                 {
-                    case CFVOType14::CFVONUM_14:
+                    case XLSB::CFVOType14::CFVONUM_14:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Number;
                         break;
-                    case CFVOType14::CFVOMIN_14:
+                    case XLSB::CFVOType14::CFVOMIN_14:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Minimum;
                         break;
-                    case CFVOType14::CFVOMAX_14:
+                    case XLSB::CFVOType14::CFVOMAX_14:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Maximum;
                         break;
-                    case CFVOType14::CFVOPERCENT_14:
+                    case XLSB::CFVOType14::CFVOPERCENT_14:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Percent;
                         break;
-                    case CFVOType14::CFVOPERCENTILE_14:
+                    case XLSB::CFVOType14::CFVOPERCENTILE_14:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Percentile;
                         break;
-                    case CFVOType14::CFVOFMLA_14:
+                    case XLSB::CFVOType14::CFVOFMLA_14:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::Formula;
                         break;
-                    case CFVOType14::CFVOAUTOMIN_14:
+                    case XLSB::CFVOType14::CFVOAUTOMIN_14:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::autoMin;
                         break;
-                    case CFVOType14::CFVOAUTOMAX_14:
+                    case XLSB::CFVOType14::CFVOAUTOMAX_14:
                         m_oType     = SimpleTypes::Spreadsheet::ECfvoType::autoMax;
                         break;
                 }
@@ -1471,156 +1471,156 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
         {
             switch (ptr->iType.value().get())
             {
-                case CFType::CF_TYPE_CELLIS:
+                case XLSB::CFType::CF_TYPE_CELLIS:
                 {
                     m_oType = SimpleTypes::Spreadsheet::ECfType::cellIs;
                     switch (ptr->iParam)
                     {
-                        case CFOper::CF_OPER_BN:
+                        case XLSB::CFOper::CF_OPER_BN:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_between;
                             break;
-                        case CFOper::CF_OPER_NB:
+                        case XLSB::CFOper::CF_OPER_NB:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_notBetween;
                             break;
-                        case CFOper::CF_OPER_EQ:
+                        case XLSB::CFOper::CF_OPER_EQ:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_equal;
                             break;
-                        case CFOper::CF_OPER_NE:
+                        case XLSB::CFOper::CF_OPER_NE:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_notEqual;
                             break;
-                        case CFOper::CF_OPER_GT:
+                        case XLSB::CFOper::CF_OPER_GT:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_greaterThan;
                             break;
-                        case CFOper::CF_OPER_LT:
+                        case XLSB::CFOper::CF_OPER_LT:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_lessThan;
                             break;
-                        case CFOper::CF_OPER_GE:
+                        case XLSB::CFOper::CF_OPER_GE:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_greaterThanOrEqual;
                             break;
-                        case CFOper::CF_OPER_LE:
+                        case XLSB::CFOper::CF_OPER_LE:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_lessThanOrEqual;
                             break;
                     }
                     break;
                 }
-                case CFType::CF_TYPE_EXPRIS:
+                case XLSB::CFType::CF_TYPE_EXPRIS:
                 {
                     switch (ptr->iTemplate.value().get())
                     {
-                        case CFTemp::CF_TEMPLATE_FMLA:
+                        case XLSB::CFTemp::CF_TEMPLATE_FMLA:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::expression;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_UNIQUEVALUES:
+                        case XLSB::CFTemp::CF_TEMPLATE_UNIQUEVALUES:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::uniqueValues;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_EQUALABOVEAVERAGE:
-                        case CFTemp::CF_TEMPLATE_EQUALBELOWAVERAGE:
+                        case XLSB::CFTemp::CF_TEMPLATE_EQUALABOVEAVERAGE:
+                        case XLSB::CFTemp::CF_TEMPLATE_EQUALBELOWAVERAGE:
                         {
                             m_oEqualAverage = true;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_CONTAINSTEXT:
+                        case XLSB::CFTemp::CF_TEMPLATE_CONTAINSTEXT:
                         {
                             switch (ptr->iParam)
                             {
-                                case CFTextOper::CF_TEXTOPER_CONTAINS:
+                                case XLSB::CFTextOper::CF_TEXTOPER_CONTAINS:
                                     m_oType     = SimpleTypes::Spreadsheet::ECfType::containsText;
                                     m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_containsText;
                                     break;
-                                case CFTextOper::CF_TEXTOPER_NOTCONTAINS:
+                                case XLSB::CFTextOper::CF_TEXTOPER_NOTCONTAINS:
                                     m_oType     = SimpleTypes::Spreadsheet::ECfType::notContainsText;
                                     m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_notContains;
                                     break;
-                                case CFTextOper::CF_TEXTOPER_BEGINSWITH:
+                                case XLSB::CFTextOper::CF_TEXTOPER_BEGINSWITH:
                                     m_oType     = SimpleTypes::Spreadsheet::ECfType::beginsWith;
                                     m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_beginsWith;
                                     break;
-                                case CFTextOper::CF_TEXTOPER_ENDSWITH:
+                                case XLSB::CFTextOper::CF_TEXTOPER_ENDSWITH:
                                     m_oType     = SimpleTypes::Spreadsheet::ECfType::endsWith;
                                     m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_endsWith;
                                     break;
                             }
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_CONTAINSBLANKS:
+                        case XLSB::CFTemp::CF_TEMPLATE_CONTAINSBLANKS:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::containsBlanks;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_CONTAINSNOBLANKS:
+                        case XLSB::CFTemp::CF_TEMPLATE_CONTAINSNOBLANKS:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::notContainsBlanks;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_CONTAINSERRORS:
+                        case XLSB::CFTemp::CF_TEMPLATE_CONTAINSERRORS:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::containsErrors;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_CONTAINSNOERRORS:
+                        case XLSB::CFTemp::CF_TEMPLATE_CONTAINSNOERRORS:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::notContainsErrors;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODTODAY:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODTOMORROW:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODYESTERDAY:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODLAST7DAYS:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODLASTMONTH:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODNEXTMONTH:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODTHISWEEK:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODNEXTWEEK:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODLASTWEEK:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODTHISMONTH:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTODAY:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTOMORROW:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODYESTERDAY:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLAST7DAYS:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLASTMONTH:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODNEXTMONTH:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTHISWEEK:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODNEXTWEEK:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLASTWEEK:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTHISMONTH:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::timePeriod;
                             switch (ptr->iParam)
                             {
-                                case CFDateOper::CF_TIMEPERIOD_TODAY:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_TODAY:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::today;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_YESTERDAY:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_YESTERDAY:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::yesterday;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_LAST7DAYS:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_LAST7DAYS:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::last7Days;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_THISWEEK:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_THISWEEK:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::thisWeek;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_LASTWEEK:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_LASTWEEK:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::lastWeek;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_LASTMONTH:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_LASTMONTH:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::lastMonth;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_TOMORROW:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_TOMORROW:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::tomorrow;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_NEXTWEEK:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_NEXTWEEK:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::nextWeek;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_NEXTMONTH:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_NEXTMONTH:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::nextMonth;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_THISMONTH:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_THISMONTH:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::thisMonth;
                                     break;
                             }
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_ABOVEAVERAGE:
-                        case CFTemp::CF_TEMPLATE_BELOWAVERAGE:
+                        case XLSB::CFTemp::CF_TEMPLATE_ABOVEAVERAGE:
+                        case XLSB::CFTemp::CF_TEMPLATE_BELOWAVERAGE:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::aboveAverage;
                             m_oStdDev = ptr->iParam;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_DUPLICATEVALUES:
+                        case XLSB::CFTemp::CF_TEMPLATE_DUPLICATEVALUES:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::duplicateValues;
                             break;
@@ -1629,22 +1629,22 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
                     }
                     break;
                 }
-                case CFType::CF_TYPE_GRADIENT:
+                case XLSB::CFType::CF_TYPE_GRADIENT:
                 {
                     m_oType = SimpleTypes::Spreadsheet::ECfType::colorScale;
                     break;
                 }
-                case CFType::CF_TYPE_DATABAR:
+                case XLSB::CFType::CF_TYPE_DATABAR:
                 {
                     m_oType = SimpleTypes::Spreadsheet::ECfType::dataBar;
                     break;
                 }
-                case CFType::CF_TYPE_MULTISTATE:
+                case XLSB::CFType::CF_TYPE_MULTISTATE:
                 {
                     m_oType = SimpleTypes::Spreadsheet::ECfType::iconSet;
                     break;
                 }
-                case CFType::CF_TYPE_FILTER:
+                case XLSB::CFType::CF_TYPE_FILTER:
                 {
                     m_oType = SimpleTypes::Spreadsheet::ECfType::top10;
                     m_oRank = ptr->iParam;
@@ -1652,9 +1652,9 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
                 }
             }
 
-            if(ptr->iType.value().get() != CFType::CF_TYPE_GRADIENT
-                    && ptr->iType.value().get() != CFType::CF_TYPE_DATABAR
-                    && ptr->iType.value().get() != CFType::CF_TYPE_MULTISTATE
+            if(ptr->iType.value().get() != XLSB::CFType::CF_TYPE_GRADIENT
+                    && ptr->iType.value().get() != XLSB::CFType::CF_TYPE_DATABAR
+                    && ptr->iType.value().get() != XLSB::CFType::CF_TYPE_MULTISTATE
                     && ptr->dxfId != 0xFFFFFFFF)
             {
                 m_oDxfId           = ptr->dxfId;
@@ -1699,156 +1699,156 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
         {
             switch (ptr->iType.value().get())
             {
-                case CFType::CF_TYPE_CELLIS:
+                case XLSB::CFType::CF_TYPE_CELLIS:
                 {
                     m_oType = SimpleTypes::Spreadsheet::ECfType::cellIs;
                     switch (ptr->iParam)
                     {
-                        case CFOper::CF_OPER_BN:
+                        case XLSB::CFOper::CF_OPER_BN:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_between;
                             break;
-                        case CFOper::CF_OPER_NB:
+                        case XLSB::CFOper::CF_OPER_NB:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_notBetween;
                             break;
-                        case CFOper::CF_OPER_EQ:
+                        case XLSB::CFOper::CF_OPER_EQ:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_equal;
                             break;
-                        case CFOper::CF_OPER_NE:
+                        case XLSB::CFOper::CF_OPER_NE:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_notEqual;
                             break;
-                        case CFOper::CF_OPER_GT:
+                        case XLSB::CFOper::CF_OPER_GT:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_greaterThan;
                             break;
-                        case CFOper::CF_OPER_LT:
+                        case XLSB::CFOper::CF_OPER_LT:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_lessThan;
                             break;
-                        case CFOper::CF_OPER_GE:
+                        case XLSB::CFOper::CF_OPER_GE:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_greaterThanOrEqual;
                             break;
-                        case CFOper::CF_OPER_LE:
+                        case XLSB::CFOper::CF_OPER_LE:
                             m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_lessThanOrEqual;
                             break;
                     }
                     break;
                 }
-                case CFType::CF_TYPE_EXPRIS:
+                case XLSB::CFType::CF_TYPE_EXPRIS:
                 {
                     switch (ptr->iTemplate.value().get())
                     {
-                        case CFTemp::CF_TEMPLATE_FMLA:
+                        case XLSB::CFTemp::CF_TEMPLATE_FMLA:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::expression;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_UNIQUEVALUES:
+                        case XLSB::CFTemp::CF_TEMPLATE_UNIQUEVALUES:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::uniqueValues;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_EQUALABOVEAVERAGE:
-                        case CFTemp::CF_TEMPLATE_EQUALBELOWAVERAGE:
+                        case XLSB::CFTemp::CF_TEMPLATE_EQUALABOVEAVERAGE:
+                        case XLSB::CFTemp::CF_TEMPLATE_EQUALBELOWAVERAGE:
                         {
                             m_oEqualAverage = true;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_CONTAINSTEXT:
+                        case XLSB::CFTemp::CF_TEMPLATE_CONTAINSTEXT:
                         {
                             switch (ptr->iParam)
                             {
-                                case CFTextOper::CF_TEXTOPER_CONTAINS:
+                                case XLSB::CFTextOper::CF_TEXTOPER_CONTAINS:
                                     m_oType     = SimpleTypes::Spreadsheet::ECfType::containsText;
                                     m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_containsText;
                                     break;
-                                case CFTextOper::CF_TEXTOPER_NOTCONTAINS:
+                                case XLSB::CFTextOper::CF_TEXTOPER_NOTCONTAINS:
                                     m_oType     = SimpleTypes::Spreadsheet::ECfType::notContainsText;
                                     m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_notContains;
                                     break;
-                                case CFTextOper::CF_TEXTOPER_BEGINSWITH:
+                                case XLSB::CFTextOper::CF_TEXTOPER_BEGINSWITH:
                                     m_oType     = SimpleTypes::Spreadsheet::ECfType::beginsWith;
                                     m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_beginsWith;
                                     break;
-                                case CFTextOper::CF_TEXTOPER_ENDSWITH:
+                                case XLSB::CFTextOper::CF_TEXTOPER_ENDSWITH:
                                     m_oType     = SimpleTypes::Spreadsheet::ECfType::endsWith;
                                     m_oOperator = SimpleTypes::Spreadsheet::ECfOperator::Operator_endsWith;
                                     break;
                             }
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_CONTAINSBLANKS:
+                        case XLSB::CFTemp::CF_TEMPLATE_CONTAINSBLANKS:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::containsBlanks;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_CONTAINSNOBLANKS:
+                        case XLSB::CFTemp::CF_TEMPLATE_CONTAINSNOBLANKS:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::notContainsBlanks;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_CONTAINSERRORS:
+                        case XLSB::CFTemp::CF_TEMPLATE_CONTAINSERRORS:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::containsErrors;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_CONTAINSNOERRORS:
+                        case XLSB::CFTemp::CF_TEMPLATE_CONTAINSNOERRORS:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::notContainsErrors;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODTODAY:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODTOMORROW:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODYESTERDAY:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODLAST7DAYS:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODLASTMONTH:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODNEXTMONTH:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODTHISWEEK:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODNEXTWEEK:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODLASTWEEK:
-                        case CFTemp::CF_TEMPLATE_TIMEPERIODTHISMONTH:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTODAY:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTOMORROW:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODYESTERDAY:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLAST7DAYS:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLASTMONTH:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODNEXTMONTH:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTHISWEEK:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODNEXTWEEK:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLASTWEEK:
+                        case XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTHISMONTH:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::timePeriod;
                             switch (ptr->iParam)
                             {
-                                case CFDateOper::CF_TIMEPERIOD_TODAY:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_TODAY:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::today;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_YESTERDAY:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_YESTERDAY:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::yesterday;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_LAST7DAYS:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_LAST7DAYS:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::last7Days;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_THISWEEK:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_THISWEEK:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::thisWeek;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_LASTWEEK:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_LASTWEEK:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::lastWeek;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_LASTMONTH:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_LASTMONTH:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::lastMonth;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_TOMORROW:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_TOMORROW:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::tomorrow;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_NEXTWEEK:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_NEXTWEEK:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::nextWeek;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_NEXTMONTH:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_NEXTMONTH:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::nextMonth;
                                     break;
-                                case CFDateOper::CF_TIMEPERIOD_THISMONTH:
+                                case XLSB::CFDateOper::CF_TIMEPERIOD_THISMONTH:
                                     m_oTimePeriod = SimpleTypes::Spreadsheet::ETimePeriod::thisMonth;
                                     break;
                             }
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_ABOVEAVERAGE:
-                        case CFTemp::CF_TEMPLATE_BELOWAVERAGE:
+                        case XLSB::CFTemp::CF_TEMPLATE_ABOVEAVERAGE:
+                        case XLSB::CFTemp::CF_TEMPLATE_BELOWAVERAGE:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::aboveAverage;
                             m_oStdDev = ptr->iParam;
                             break;
                         }
-                        case CFTemp::CF_TEMPLATE_DUPLICATEVALUES:
+                        case XLSB::CFTemp::CF_TEMPLATE_DUPLICATEVALUES:
                         {
                             m_oType = SimpleTypes::Spreadsheet::ECfType::duplicateValues;
                             break;
@@ -1857,22 +1857,22 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
                     }
                     break;
                 }
-                case CFType::CF_TYPE_GRADIENT:
+                case XLSB::CFType::CF_TYPE_GRADIENT:
                 {
                     m_oType = SimpleTypes::Spreadsheet::ECfType::colorScale;
                     break;
                 }
-                case CFType::CF_TYPE_DATABAR:
+                case XLSB::CFType::CF_TYPE_DATABAR:
                 {
                     m_oType = SimpleTypes::Spreadsheet::ECfType::dataBar;
                     break;
                 }
-                case CFType::CF_TYPE_MULTISTATE:
+                case XLSB::CFType::CF_TYPE_MULTISTATE:
                 {
                     m_oType = SimpleTypes::Spreadsheet::ECfType::iconSet;
                     break;
                 }
-                case CFType::CF_TYPE_FILTER:
+                case XLSB::CFType::CF_TYPE_FILTER:
                 {
                     m_oType = SimpleTypes::Spreadsheet::ECfType::top10;
                     m_oRank = ptr->iParam;
@@ -1880,9 +1880,9 @@ void CConditionalFormattingRule::ReadAttributes(XLS::BaseObjectPtr& obj)
                 }
             }
 
-            if(ptr->iType.value().get() != CFType::CF_TYPE_GRADIENT
-                    && ptr->iType.value().get() != CFType::CF_TYPE_DATABAR
-                    && ptr->iType.value().get() != CFType::CF_TYPE_MULTISTATE
+            if(ptr->iType.value().get() != XLSB::CFType::CF_TYPE_GRADIENT
+                    && ptr->iType.value().get() != XLSB::CFType::CF_TYPE_DATABAR
+                    && ptr->iType.value().get() != XLSB::CFType::CF_TYPE_MULTISTATE
                     && ptr->dxfId != 0xFFFFFFFF)
             {
                 m_oDxfId           = ptr->dxfId;

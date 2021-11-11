@@ -63,26 +63,28 @@ namespace XLSB
 
         static const XLS::ElementType type = XLS::typeWorkbookStreamObject;
 
-		XLS::BaseObjectPtr               m_BrtBeginBook;
-		XLS::BaseObjectPtr               m_BrtFileVersion;
-		XLS::BaseObjectPtr               m_BrtFileSharingIso;
-		XLS::BaseObjectPtr               m_BrtFileSharing;
-		XLS::BaseObjectPtr               m_BrtBookProtectionIso;
-		XLS::BaseObjectPtr               m_BrtBookProtection;
-		XLS::BaseObjectPtr               m_BrtWbProp;
-		XLS::BaseObjectPtr               m_ACABSPATH;
-		XLS::BaseObjectPtr               m_BOOKVIEWS;
-		XLS::BaseObjectPtr               m_BUNDLESHS;
-		XLS::BaseObjectPtr               m_FNGROUP;
-		XLS::BaseObjectPtr               m_EXTERNALS;
-		XLS::BaseObjectPtr               m_BrtCalcProp;
-		XLS::BaseObjectPtr               m_BrtOleSize;
-		XLS::BaseObjectPtr               m_BrtWebOpt;
-		XLS::BaseObjectPtr               m_BrtEndBook;
+        XLS::BaseObjectPtr               m_BrtBeginBook;
+        XLS::BaseObjectPtr               m_BrtFileVersion;
+        XLS::BaseObjectPtr               m_BrtFileSharingIso;
+        XLS::BaseObjectPtr               m_BrtFileSharing;
+        XLS::BaseObjectPtr               m_BrtBookProtectionIso;
+        XLS::BaseObjectPtr               m_BrtBookProtection;
+        XLS::BaseObjectPtr               m_BrtWbProp;
+        XLS::BaseObjectPtr               m_ACABSPATH;
+        XLS::BaseObjectPtr               m_BOOKVIEWS;
+        XLS::BaseObjectPtr               m_BUNDLESHS;
+        XLS::BaseObjectPtr               m_FNGROUP;
+        XLS::BaseObjectPtr               m_EXTERNALS;
+        XLS::BaseObjectPtr               m_BrtCalcProp;
+        XLS::BaseObjectPtr               m_BrtOleSize;
+        XLS::BaseObjectPtr               m_BrtWebOpt;
+        XLS::BaseObjectPtr               m_BrtEndBook;
 
         std::vector<XLS::BaseObjectPtr>  m_arBrtName;
         std::vector<XLS::BaseObjectPtr>  m_arBrtUserBookView;
         std::vector<XLS::BaseObjectPtr>  m_arBrtFileRecover;
+
+        void UpdateXti(XLS::GlobalWorkbookInfo* xls_global_info);
 
     };
 

@@ -32,14 +32,15 @@
 
 #include "CFType.h"
 
-namespace XLS
-{
+using namespace XLS;
 
+namespace XLSB
+{
 
 BiffStructurePtr CFType::clone()
 {
     return BiffStructurePtr(new CFType(*this));
 }
 
-} // namespace XLS
+} // namespace XLSB
 

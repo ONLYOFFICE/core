@@ -32,7 +32,9 @@
 
 #include "FRTParsedFormula.h"
 
-namespace XLS
+using namespace XLS;
+
+namespace XLSB
 {
 
 FRTParsedFormula::FRTParsedFormula() :	ParsedFormula(CellRef())

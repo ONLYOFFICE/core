@@ -59,8 +59,8 @@ namespace XLSB
              static const XLS::ElementType	type = XLS::typeBeginCFRule14;
 
 			FRTHeader               FRTheader;
-			XLS::CFType				iType;
-			XLS::CFTemp				iTemplate;
+            CFType                  iType;
+            CFTemp                  iTemplate;
             _UINT32                 dxfId;
             _INT32                  iPri;
             _UINT32                 iParam;

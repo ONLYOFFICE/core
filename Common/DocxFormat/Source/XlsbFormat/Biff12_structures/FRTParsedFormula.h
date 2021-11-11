@@ -33,18 +33,18 @@
 
 #include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/ParsedFormula.h"
 
-namespace XLS
+namespace XLSB
 {
 
-class FRTParsedFormula : public ParsedFormula
+class FRTParsedFormula : public XLS::ParsedFormula
 {
     BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTParsedFormula)
 public:
     FRTParsedFormula();
-	BiffStructurePtr clone();
+    XLS::BiffStructurePtr clone();
 	virtual void load(XLS::CFRecord& record);
 
 };
 
-} // namespace XLS
+} // namespace XLSB
 

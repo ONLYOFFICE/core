@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef CommentsSTREAM_H
-#define CommentsSTREAM_H
+#ifndef COMMENTSSTREAM_H
+#define COMMENTSSTREAM_H
 
 
 #include "../../../../DesktopEditor/common/Types.h"
@@ -67,5 +67,5 @@ namespace XLSB
 
 }
 
-#endif // CommentsSTREAM_H
+#endif // COMMENTSSTREAM_H
 

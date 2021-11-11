@@ -33,8 +33,6 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 

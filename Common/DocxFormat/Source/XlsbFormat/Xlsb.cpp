@@ -82,6 +82,11 @@ bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* o
     return true;
 }
 
+XLS::GlobalWorkbookInfo* OOX::Spreadsheet::CXlsb::GetGlobalinfo()
+{
+    return xls_global_info.get();
+}
+
 void OOX::Spreadsheet::CXlsb::PrepareSi()
 {
     if(m_pStyles && m_pStyles->m_oFonts.IsInit())

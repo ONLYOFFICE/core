@@ -33,6 +33,7 @@
 #include "SUP.h"
 #include "../Biff12_records/SupSelf.h"
 #include "../Biff12_records/SupBookSrc.h"
+#include "../Biff12_records/PlaceholderName.h"
 #include "SUPSAME.h"
 #include "SUPADDIN.h"
 
@@ -71,6 +72,27 @@ namespace XLSB
             }
         }
         m_source = elements_.back();
+        if(m_source->get_type() == XLS::typeSUPSAME)
+        {
+            auto pSUPSAME = dynamic_cast<SUPSAME*>(m_source.get());
+            for(auto &pPlaceholderName : pSUPSAME->m_arBrtPlaceholderName)
+            {
+                auto pBrtPlaceholderName = dynamic_cast<PlaceholderName*>(pPlaceholderName.get());
+                if(pBrtPlaceholderName != nullptr && !pBrtPlaceholderName->name.value().empty())
+                    arNames.push_back(pBrtPlaceholderName->name.value());
+            }
+        }
+
+        if(m_source->get_type() == XLS::typeSUPADDIN)
+        {
+            auto pSUPSAME = dynamic_cast<SUPADDIN*>(m_source.get());
+            for(auto &pPlaceholderName : pSUPSAME->m_arBrtPlaceholderName)
+            {
+                auto pBrtPlaceholderName = dynamic_cast<PlaceholderName*>(pPlaceholderName.get());
+                if(pBrtPlaceholderName != nullptr && !pBrtPlaceholderName->name.value().empty())
+                    arNames.push_back(pBrtPlaceholderName->name.value());
+            }
+        }
         elements_.pop_back();
         return true;
     }

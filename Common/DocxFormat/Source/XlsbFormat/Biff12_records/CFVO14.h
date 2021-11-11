@@ -57,7 +57,7 @@ namespace XLSB
             static const XLS::ElementType	type = XLS::typeCFVO14;
 
             FRTHeader                       FRTheader;
-			XLS::CFVOType14					iType;
+            CFVOType14                      iType;
 			XLS::Xnum						numParam;
             XLS::Boolean<unsigned int>      fSaveGTE;
             XLS::Boolean<unsigned int>      fGTE;

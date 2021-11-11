@@ -32,14 +32,15 @@
 
 #include "CFDateOper.h"
 
-namespace XLS
-{
+using namespace XLS;
 
+namespace XLSB
+{
 
 BiffStructurePtr CFDateOper::clone()
 {
     return BiffStructurePtr(new CFDateOper(*this));
 }
 
-} // namespace XLS
+} // namespace XLSB
 

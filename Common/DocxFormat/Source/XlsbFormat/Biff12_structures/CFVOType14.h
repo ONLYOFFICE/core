@@ -33,13 +33,13 @@
 
 #include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffAttribute.h"
 
-namespace XLS
+namespace XLSB
 {
 
-class CFVOType14 : public BiffAttributeSimple<unsigned int>
+class CFVOType14 : public XLS::BiffAttributeSimple<unsigned int>
 {
 public:
-	BiffStructurePtr clone();
+    XLS::BiffStructurePtr clone();
 
 	enum
 	{
@@ -54,5 +54,5 @@ public:
 	};
 };
 
-} // namespace XLS
+} // namespace XLSB
 

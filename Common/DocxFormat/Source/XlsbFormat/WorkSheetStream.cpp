@@ -47,6 +47,7 @@
 #include "Biff12_records/SheetProtectionIso.h"
 #include "Biff12_records/SheetProtection.h"
 #include "Biff12_unions/LISTPARTS.h"
+#include "Biff12_unions/AUTOFILTER.h"
 #include "Biff12_unions/SORTSTATE.h"
 #include "Biff12_unions/CONDITIONALFORMATTING.h"
 #include "Biff12_unions/FRTWORKSHEET.h"
@@ -207,6 +208,16 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                 if (proc.optional<LISTPARTS>())
                 {
                     m_LISTPARTS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginAFilter:
+            case rt_ACBegin:
+            {
+                if (proc.optional<AUTOFILTER>())
+                {
+                    m_AUTOFILTER = elements_.back();
                     elements_.pop_back();
                 }
             }break;

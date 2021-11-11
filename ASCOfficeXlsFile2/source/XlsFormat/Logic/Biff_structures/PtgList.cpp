@@ -45,7 +45,7 @@ BiffStructurePtr PtgList::clone()
 
 void PtgList::loadFields(CFRecord& record)
 {	
-    record.skipNunBytes(1); // eptg Reserved
+    //record.skipNunBytes(1); // eptg Reserved
     record >> ixti;
 
     unsigned short flags;
@@ -64,6 +64,7 @@ void PtgList::loadFields(CFRecord& record)
 
 void PtgList::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
+    ptg_stack.push(L"");
 }
 
 } // namespace XLS

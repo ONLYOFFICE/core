@@ -32,7 +32,9 @@
 
 #include "CFVOType14.h"
 
-namespace XLS
+using namespace XLS;
+
+namespace XLSB
 {
 
 
@@ -41,5 +43,5 @@ BiffStructurePtr CFVOType14::clone()
     return BiffStructurePtr(new CFVOType14(*this));
 }
 
-} // namespace XLS
+} // namespace XLSB
 

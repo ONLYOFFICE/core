@@ -20,7 +20,7 @@ if not base.is_dir("emsdk"):
   os.chdir("../")
 
 # compile
-compiler_flags = ["-o hash.js",
+compiler_flags = ["-o engine.js",
                   "-O3",
                   "-fno-exceptions",
                   "-fno-rtti",
@@ -35,7 +35,7 @@ compiler_flags = ["-o hash.js",
 exported_functions = ["_malloc",
                       "_free",
                       "_hash",
-					  "_hash2"]
+                      "_hash2"]
 
 sources = []
 sources.append("./../openssl/crypto/sha/keccak1600.c")
@@ -94,22 +94,25 @@ else:
 base.run_as_bat(windows_bat)
 
 # finalize
-base.replaceInFile("./hash.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
-base.replaceInFile("./hash.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
-base.replaceInFile("./hash.js", "function getBinaryPromise()", "function getBinaryPromise2()")
+base.replaceInFile("./engine.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+base.replaceInFile("./engine.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+base.replaceInFile("./engine.js", "function getBinaryPromise()", "function getBinaryPromise2()")
 
-module_js_content = base.readFile("./hash.js")
+module_js_content = base.readFile("./engine.js")
 engine_base_js_content = base.readFile("./hash_base.js")
 string_utf8_content    = base.readFile("./../../../../../../Common/js/string_utf8.js")
 polyfill_js_content    = base.readFile("./../../../../../../Common/3dParty/hunspell/wasm/js/polyfill.js")
+polyfill_js_content = polyfill_js_content.replace("&&window===this?this", "?window")
+
 base64_js_content      = base.readFile("./../../../../../../../sdkjs/common/stringserialize.js")
+base64_js_content      = base64_js_content.replace("(window);", "(self);")
 engine_js_content = engine_base_js_content.replace("//module", module_js_content)
 engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
 engine_js_content = engine_js_content.replace("//polyfill",    polyfill_js_content)
 engine_js_content = engine_js_content.replace("//base64",      base64_js_content)
 
-base.writeFile("./deploy/hash.js", engine_js_content)
-base.copy_file("./hash.wasm", "./deploy/hash.wasm")
+base.writeFile("./deploy/engine.js", engine_js_content)
+base.copy_file("./engine.wasm", "./deploy/engine.wasm")
 
 # ie asm version
 arguments = arguments.replace("WASM=1", "WASM=0")
@@ -127,11 +130,11 @@ else:
 base.run_as_bat(windows_bat)
 
 # finalize
-base.replaceInFile("./hash.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
-base.replaceInFile("./hash.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
-base.replaceInFile("./hash.js", "function getBinaryPromise()", "function getBinaryPromise2()")
+base.replaceInFile("./engine.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+base.replaceInFile("./engine.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){self.onEngineInit();}];")
+base.replaceInFile("./engine.js", "function getBinaryPromise()", "function getBinaryPromise2()")
 
-module_js_content = base.readFile("./hash.js")
+module_js_content = base.readFile("./engine.js")
 engine_base_js_content = base.readFile("./hash_base.js")
 string_utf8_content    = base.readFile("./../../../../../../Common/js/string_utf8.js")
 polyfill_js_content    = base.readFile("./../../../../../../Common/3dParty/hunspell/wasm/js/polyfill.js")
@@ -140,4 +143,4 @@ engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_conte
 engine_js_content = engine_js_content.replace("//polyfill",    polyfill_js_content)
 engine_js_content = engine_js_content.replace("//base64",      base64_js_content)
 
-base.writeFile("./deploy/hash_ie.js", engine_js_content)
+base.writeFile("./deploy/engine_ie.js", engine_js_content)

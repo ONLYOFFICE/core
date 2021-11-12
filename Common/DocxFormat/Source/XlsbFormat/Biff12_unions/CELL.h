@@ -42,7 +42,7 @@ namespace XLSB
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(CELL)
     public:
-        CELL(_INT32 row);
+        CELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
         virtual ~CELL();
 
         XLS::BaseObjectPtr clone();
@@ -55,8 +55,10 @@ namespace XLSB
         XLS::BaseObjectPtr                m_SHRFMLACELL;
         XLS::BaseObjectPtr                m_CELLMETA;
         std::vector<XLS::BaseObjectPtr>   m_arFRT;
-        _INT32                       m_Row;
-        //_INT32                       m_Col;
+        _INT32                            m_Row;
+        //_INT32                          m_Col;
+
+        std::vector<XLS::CellRangeRef>&   shared_formulas_locations_ref_;
 
     };
 

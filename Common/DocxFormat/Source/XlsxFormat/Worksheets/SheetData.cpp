@@ -908,7 +908,7 @@ namespace OOX
                         auto formula = dynamic_cast<XLSB::ShrFmla*>(obj.get());
                         m_sText = formula->formula.getAssembledFormula();
                         m_oRef.Init();
-                        m_oRef = formula->rfx.toString();
+                        m_oRef = formula->rfx.toString();                        
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray:
@@ -1738,6 +1738,8 @@ namespace OOX
                         if(pFMLACELL->m_source != nullptr)
                         {
                             m_oFormula.Init();
+                            if(pFMLACELL->isShared)
+                                m_oFormula->m_oSi = pFMLACELL->m_sharedIndex;
                             m_oFormula->fromBin(pFMLACELL->m_source, SimpleTypes::Spreadsheet::cellformulatypeNormal);
                         }
 
@@ -1747,9 +1749,14 @@ namespace OOX
                             {
                                 m_oFormula.Init();
                                 if(static_cast<BiffRecord*>(pSHRFMLACELL->m_source.get())->getTypeId() == XLSB::rt_ArrFmla)
+                                {
                                     m_oFormula->fromBin(pSHRFMLACELL->m_source, SimpleTypes::Spreadsheet::cellformulatypeArray);
+                                }
                                 else if(static_cast<BiffRecord*>(pSHRFMLACELL->m_source.get())->getTypeId() == XLSB::rt_ShrFmla)
+                                {
+                                    m_oFormula->m_oSi = pSHRFMLACELL->m_sharedIndex;
                                     m_oFormula->fromBin(pSHRFMLACELL->m_source, SimpleTypes::Spreadsheet::cellformulatypeShared);
+                                }
                             }
 
                         }
@@ -1843,55 +1850,8 @@ namespace OOX
                                break;
                         }
                     }
-
                 }
-
-
-            }
-
-            /*
-
-
-            if (XLSB::rt_FmlaString <= nType && nType <= XLSB::rt_FmlaError)
-            {
-                m_oFormula.Init();
-                m_oFormula->fromXLSB(oStream);
-            }
-            //todo it breaks xslb format
-            _UINT16 nFlags = oStream.GetUShort();
-            if(0 != (nFlags & 0x4))
-            {
-                if(!m_oFormula.IsInit())
-                {
-                    m_oFormula.Init();
-                }
-                m_oFormula->fromXLSBExt(oStream, nFlags);
-                if(0 != (nFlags & 0x4000))
-                {
-                    m_oType.reset(NULL);
-                    m_oValue.reset(NULL);
-                }
-            }
-            if(0 != (nFlags & 0x2000))
-            {
-                m_oType.Init();
-                m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
-
-                m_oRichText.Init();
-                m_oRichText->fromXLSBExt(oStream);
-            }
-
-            nullable<CFormula>		m_oFormula;
-            nullable<CSi>			m_oRichText;
-            nullable<CText>			m_oValue;
-            else if (strcmp("ss:Formula", wsName) == 0)
-            {
-                m_oFormula.Init();
-                m_oFormula->m_sText = oReader.GetText();
-                m_oFormula->m_sText = m_oFormula->m_sText.substr(1);
-                //convert R1C1 to ..
-            }*/
-
+            } 
         }
 
 		void CRow::toXMLStart(NSStringUtils::CStringBuilder& writer) const

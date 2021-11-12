@@ -39,7 +39,8 @@ using namespace XLS;
 namespace XLSB
 {
 
-    SHRFMLACELL::SHRFMLACELL(_INT32 row, _INT32 col) : m_Row(row), m_Col(col)
+    SHRFMLACELL::SHRFMLACELL(_INT32 row, _INT32 col, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref)
+        : m_Row(row), m_Col(col), shared_formulas_locations_ref_(shared_formulas_locations_ref), m_sharedIndex(-1)
     {
     }
 
@@ -55,15 +56,26 @@ namespace XLSB
     // SHRFMLACELL = FMLACELL (BrtShrFmla / BrtArrFmla)
     const bool SHRFMLACELL::loadContent(BinProcessor& proc)
     {
-        ShrFmla shrFmla(XLSB::RgceLoc(m_Row, m_Col, true, true));
-        ArrFmla arrFmla(XLSB::RgceLoc(m_Row, m_Col, true, true));
+        bool isShared = true;
+        ShrFmla shrFmla(XLSB::RgceLoc(m_Row - 1, m_Col, true, true));
+        ArrFmla arrFmla(XLSB::RgceLoc(m_Row - 1, m_Col, true, true));
         if(!proc.optional(shrFmla))
         {
             if(!proc.optional(arrFmla))
             {
                 return false;
             }
-        }
+            else
+            {
+                isShared = false;
+            }
+        }       
+
+        m_sharedIndex = shared_formulas_locations_ref_.size();
+        if(isShared)
+            shared_formulas_locations_ref_.push_back(shrFmla.rfx);
+        else
+            shared_formulas_locations_ref_.push_back(arrFmla.rfx);
 
         m_source = elements_.back();
         elements_.pop_back();

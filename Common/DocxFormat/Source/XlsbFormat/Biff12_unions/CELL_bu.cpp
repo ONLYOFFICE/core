@@ -43,7 +43,8 @@ using namespace XLS;
 namespace XLSB
 {
 
-    CELL::CELL(_INT32 row) : m_Row(row)
+    CELL::CELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref)
+        : m_Row(row), shared_formulas_locations_ref_(shared_formulas_locations_ref)
     {
     }
 
@@ -69,11 +70,12 @@ namespace XLSB
 
             if(!proc.optional<DATACELL>())
             {
-                if(proc.optional<FMLACELL>())
+                FMLACELL fmlacell(m_Row, shared_formulas_locations_ref_);
+                if(proc.optional(fmlacell))
                 {
                     m_FMLACELL = elements_.back();
                     elements_.pop_back();
-                    SHRFMLACELL shrfmlacell(static_cast<FMLACELL*>(m_FMLACELL.get())->m_Col, m_Row);
+                    SHRFMLACELL shrfmlacell(m_Row, static_cast<FMLACELL*>(m_FMLACELL.get())->m_Col, shared_formulas_locations_ref_);
                     if(proc.optional(shrfmlacell))
                     {
                         m_SHRFMLACELL = elements_.back();

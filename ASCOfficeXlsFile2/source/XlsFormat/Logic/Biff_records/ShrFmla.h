@@ -56,11 +56,11 @@ public:
 	static const ElementType	type = typeShrFmla;
 
 //-----------------------------
-	RefU								ref_;
-	BackwardOnlyParam<unsigned char>	cUse;
-	SharedParsedFormula					formula;
+        RefU				 ref_;
+        BackwardOnlyParam<unsigned char> cUse;
+        SharedParsedFormula		 formula;
 
-    XLSB::UncheckedRfX                  rfx; //in biff12
+        XLSB::UncheckedRfX               rfx; //in biff12
 
 };
 

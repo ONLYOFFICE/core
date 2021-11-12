@@ -75,7 +75,7 @@ BaseObjectPtr WorkSheetStream::clone()
 const bool WorkSheetStream::loadContent(BinProcessor& proc)
 {
 	int	count = 0;
-	
+    std::vector<CellRangeRef>	shared_formulas_locations;
 	while (true)
 	{
 		CFRecordType::TypeId type = proc.getNextRecordType();
@@ -160,7 +160,8 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
 
             case rt_BeginSheetData:
             {
-                if (proc.optional<CELLTABLE>())
+                CELLTABLE cell_table_temlate(shared_formulas_locations);
+                if (proc.optional(cell_table_temlate))
                 {
                     m_CELLTABLE = elements_.back();
                     elements_.pop_back();

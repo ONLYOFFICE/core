@@ -33,13 +33,15 @@
 #include "FMLACELL.h"
 #include "../Biff12_records/CommonRecords.h"
 #include "../Biff12_records/Fmla.h"
+#include "../Biff12_structures/CellRef.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    FMLACELL::FMLACELL()
+    FMLACELL::FMLACELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref)
+        : m_Row(row), shared_formulas_locations_ref_(shared_formulas_locations_ref), isShared(false), m_sharedIndex(-1)
     {
     }
 
@@ -79,6 +81,16 @@ namespace XLSB
         else
         {
             return false;
+        }
+
+        for (size_t i = 0; i < shared_formulas_locations_ref_.size(); i++)
+        {
+            auto location = XLSB::RgceLoc(m_Row - 1, m_Col, true, true);
+            if (shared_formulas_locations_ref_[i].inRange(location))
+            {
+                m_sharedIndex = i;
+                isShared = true;
+            }
         }
 
         m_source = elements_.back();

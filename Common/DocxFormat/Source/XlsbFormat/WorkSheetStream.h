@@ -64,7 +64,7 @@ namespace XLSB
         static const XLS::ElementType type = XLS::typeWorksheetSubstream;
 
 		XLS::BaseObjectPtr               m_BrtBeginSheet;
-        std::vector<XLS::BaseObjectPtr>  m_arCOLINFOS;
+                std::vector<XLS::BaseObjectPtr>  m_arCOLINFOS;
 		XLS::BaseObjectPtr               m_BrtWsDim;
 		XLS::BaseObjectPtr               m_BrtDrawing;
 		XLS::BaseObjectPtr               m_BrtLegacyDrawing;
@@ -77,9 +77,9 @@ namespace XLSB
 		XLS::BaseObjectPtr               m_BrtSheetProtectionIso;
 		XLS::BaseObjectPtr               m_BrtSheetProtection;
 		XLS::BaseObjectPtr               m_LISTPARTS;
-        XLS::BaseObjectPtr               m_AUTOFILTER;
+                XLS::BaseObjectPtr               m_AUTOFILTER;
 		XLS::BaseObjectPtr               m_SORTSTATE;
-        std::vector<XLS::BaseObjectPtr>  m_arCONDITIONALFORMATTING;
+                std::vector<XLS::BaseObjectPtr>  m_arCONDITIONALFORMATTING;
 		XLS::BaseObjectPtr               m_FRTWORKSHEET;
 
 		XLS::BaseObjectPtr               m_BrtEndSheet;

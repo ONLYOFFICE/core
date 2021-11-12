@@ -48,15 +48,18 @@ PtgAreaN::PtgAreaN(const std::wstring& word, const PtgDataType data_type, const 
 	cell_base_ref(cell_base_ref_init)
 {
 	area -= cell_base_ref;
+    areaXlsb -= cell_base_ref;
 }
 
 void PtgAreaN::set_base_ref(const CellRef& cell_base_ref_new)
 {
 	area += cell_base_ref;
+    areaXlsb += cell_base_ref;
 	
 	cell_base_ref = cell_base_ref_new;
 	
 	area -= cell_base_ref;
+    areaXlsb -= cell_base_ref;
 }
 
 

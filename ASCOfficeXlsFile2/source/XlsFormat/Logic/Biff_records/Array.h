@@ -53,11 +53,11 @@ public:
 	
 	static const ElementType	type = typeArray;
 
-	Ref					ref_;
-	ArrayParsedFormula	formula;
-	bool				fAlwaysCalc;
+        Ref                 ref_;
+        ArrayParsedFormula  formula;
+        bool                fAlwaysCalc;
 
-    RFX                 rfx; //biff12
+        RFX                 rfx; //biff12
 };
 
 typedef boost::shared_ptr<Array> ArrayPtr;

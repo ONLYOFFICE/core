@@ -42,17 +42,20 @@ namespace XLSB
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(FMLACELL)
     public:
-        FMLACELL();
+        FMLACELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
         virtual ~FMLACELL();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-		XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+        XLS::BaseObjectPtr                  m_source;
+        _INT32                              m_Col;
+        _INT32                              m_Row;
 
-
+        std::vector<XLS::CellRangeRef>&     shared_formulas_locations_ref_;
+        int                                 m_sharedIndex;
+        bool                                isShared;
     };
 
 } // namespace XLSB

@@ -43,7 +43,8 @@ using namespace XLS;
 namespace XLSB
 {
 
-    CELLTABLE::CELLTABLE()
+    CELLTABLE::CELLTABLE(std::vector<CellRangeRef>& shared_formulas_locations_ref) :
+        shared_formulas_locations_ref_(shared_formulas_locations_ref)
     {
     }
 
@@ -55,6 +56,11 @@ namespace XLSB
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_CELLTABLE)
     public:
+
+        Parenthesis_CELLTABLE(std::vector<CellRangeRef>& shared_formulas_locations_ref) :
+                                    shared_formulas_locations_ref_(shared_formulas_locations_ref)
+        {
+        }
         BaseObjectPtr clone()
         {
             return BaseObjectPtr(new Parenthesis_CELLTABLE(*this));
@@ -75,7 +81,7 @@ namespace XLSB
             else return false;
 
 
-            CELL cell(static_cast<RowHdr*>(m_BrtRowHdr.get())->rw + 1);
+            CELL cell(static_cast<RowHdr*>(m_BrtRowHdr.get())->rw + 1, shared_formulas_locations_ref_);
 
             int countCELL = proc.repeated(cell, 0, 16384);
 
@@ -102,6 +108,8 @@ namespace XLSB
         BaseObjectPtr               m_BrtRowHdr;
         std::vector<XLS::BaseObjectPtr>  m_arCELL;
         std::vector<XLS::BaseObjectPtr>  m_arFRT;
+
+        std::vector<CellRangeRef>& shared_formulas_locations_ref_;
     };
 
     BaseObjectPtr CELLTABLE::clone()
@@ -117,8 +125,8 @@ namespace XLSB
             m_BrtBeginSheetData = elements_.back();
             elements_.pop_back();
         }
-
-        int countParenthesis_CELLTABLE = proc.repeated<Parenthesis_CELLTABLE>(0, 1048576);
+        Parenthesis_CELLTABLE cell_group(shared_formulas_locations_ref_);
+        int countParenthesis_CELLTABLE = proc.repeated(cell_group, 0, 1048576);
         while(!elements_.empty())
         {
             _data data;

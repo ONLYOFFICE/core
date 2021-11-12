@@ -42,7 +42,7 @@ namespace XLSB
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(CELLTABLE)
     public:
-        CELLTABLE();
+        CELLTABLE(std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
         virtual ~CELLTABLE();
 
         XLS::BaseObjectPtr clone();
@@ -57,9 +57,11 @@ namespace XLSB
         };
 
 
-        XLS::BaseObjectPtr               m_BrtBeginSheetData;
-        std::vector<_data>          m_arParenthesis_CELLTABLE;
-        XLS::BaseObjectPtr               m_BrtEndSheetData;
+        XLS::BaseObjectPtr                   m_BrtBeginSheetData;
+        std::vector<_data>                   m_arParenthesis_CELLTABLE;
+        XLS::BaseObjectPtr                   m_BrtEndSheetData;
+
+        std::vector<XLS::CellRangeRef>&      shared_formulas_locations_ref_;
 
     };
 

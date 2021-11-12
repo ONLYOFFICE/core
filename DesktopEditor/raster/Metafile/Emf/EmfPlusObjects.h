@@ -144,11 +144,6 @@ namespace MetaFile
 		CEmfPlusBrush	*Brush;
 	};
 
-	class CEmfPlusRegion : public CEmfPlusObjectBase
-	{
-
-	};
-
 	typedef  enum
 	{
 		ImageDataTypeUnknown	= 0x00,
@@ -203,6 +198,25 @@ namespace MetaFile
 
                 bool bIsContineudObject;
                 unsigned int unSize;
+        };
+
+        typedef  enum
+        {
+                WrapModeTile        = 0x00,
+                WrapModeTileFlipX   = 0x01,
+                WrapModeTileFlipY   = 0x02,
+                WrapModeTileFlipXY  = 0x03,
+                WrapModeClamp       = 0x04
+        } EEmfPlusWrapMode;
+
+        class CEmfPlusImageAttributes
+        {
+            public:
+                CEmfPlusImageAttributes() {};
+
+                EEmfPlusWrapMode eWrapMode;
+                TEmfPlusARGB     oClampColor;
+                int              nObjectClamp;
         };
 
         class CBitmapDataBase : public CEmfPlusObject
@@ -398,6 +412,51 @@ namespace MetaFile
                 }
 
                 CImageDataBase *pImageData;
+        };
+
+        typedef  enum
+        {
+          RegionNodeDataTypeAnd         = 0x00000001,
+          RegionNodeDataTypeOr          = 0x00000002,
+          RegionNodeDataTypeXor         = 0x00000003,
+          RegionNodeDataTypeExclude     = 0x00000004,
+          RegionNodeDataTypeComplement  = 0x00000005,
+          RegionNodeDataTypeRect        = 0x10000000,
+          RegionNodeDataTypePath        = 0x10000001,
+          RegionNodeDataTypeEmpty       = 0x10000002,
+          RegionNodeDataTypeInfinite    = 0x10000003
+        } EEmfPlusRegionNodeDataType;
+
+        class CEmfPlusRegionNode
+        {
+            public:
+                CEmfPlusRegionNode() : pRect(NULL){};
+                virtual ~CEmfPlusRegionNode()
+                {
+                        RELEASEOBJECT(pRect);
+                };
+
+                EEmfPlusRegionNodeDataType GetType() const
+                {
+                        return eType;
+                }
+
+                TEmfPlusRectF* GetRect() const
+                {
+                        return pRect;
+                }
+
+                EEmfPlusRegionNodeDataType      eType;
+                TEmfPlusRectF*                  pRect;
+        };
+
+        class CEmfPlusRegion : public CEmfPlusObject
+        {
+            public:
+                CEmfPlusRegion() : CEmfPlusObject(0, false) {};
+                virtual ~CEmfPlusRegion(){};
+
+                std::vector<CEmfPlusRegionNode> arNodes;
         };
 
         class CEmfPlusContineudObjectRecord

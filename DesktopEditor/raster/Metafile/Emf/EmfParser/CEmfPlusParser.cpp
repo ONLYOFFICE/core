@@ -179,6 +179,12 @@ namespace MetaFile
 
                 for (EmfPlusPathMap::const_iterator oIter = m_mPaths.begin(); oIter != m_mPaths.end(); ++oIter)
                         delete oIter->second;
+
+                for (EmfPlusRegionMap::const_iterator oIter = m_mRegions.begin(); oIter != m_mRegions.end(); ++oIter)
+                        delete oIter->second;
+
+                for (EmfPlusImageAttributesMap::const_iterator oIter = m_mImageAttributes.begin(); oIter != m_mImageAttributes.end(); ++oIter)
+                        delete oIter->second;
         }
 
         bool CEmfPlusParser::OpenFromFile(const wchar_t *wsFilePath)
@@ -232,7 +238,7 @@ namespace MetaFile
                                 case EMFPLUS_COMMENT: Read_EMFPLUS_COMMENT(); break;
 
                                 //Control Record Types (Типы управляющих записей)
-                                case EMFPLUS_ENDOFFILE: Read_EMFPLUS_ENDOFFILE();       break;
+                                case EMFPLUS_ENDOFFILE: Read_EMFPLUS_ENDOFFILE();       break; break;
                                 case EMFPLUS_GETDC:     Read_EMFPLUS_GETDC();           break;
                                 case EMFPLUS_HEADER:    Read_EMRPLUS_HEADER(unShFlags); break;
 
@@ -411,11 +417,6 @@ namespace MetaFile
                         std::vector<TEmfPlusPointF> arPoints    = ReadPointsF(unPathPointCount);
                         std::vector<char> arPointTypes          = ReadPointTypes(unPathPointCount);
 
-                        if (unPathPointCount > 500)
-                        {
-                                std::wcout << L"TYT" << std::endl;
-                        }
-
                         std::vector<std::pair<char, char>> arFlTp(unPathPointCount);
 
                         CEmfPlusPath *pPath = new CEmfPlusPath();
@@ -442,6 +443,26 @@ namespace MetaFile
                 EmfPlusPathMap::const_iterator oFoundElement = m_mPaths.find(unPathIndex);
 
                 if (m_mPaths.end() != oFoundElement)
+                        return oFoundElement->second;
+
+                return NULL;
+        }
+
+        CEmfPlusRegion *CEmfPlusParser::ReadRegion()
+        {
+                CEmfPlusRegion *pRegion = new CEmfPlusRegion;
+
+                if (NULL != pRegion)
+                        m_oStream >> *pRegion;
+
+                return pRegion;
+        }
+
+        CEmfPlusRegion *CEmfPlusParser::GetRegion(unsigned int unRegionIndex)
+        {
+                EmfPlusRegionMap::const_iterator oFoundElement = m_mRegions.find(unRegionIndex);
+
+                if (m_mRegions.end() != oFoundElement)
                         return oFoundElement->second;
 
                 return NULL;
@@ -497,8 +518,58 @@ namespace MetaFile
 
         }
 
+        void CEmfPlusParser::CombineClip(TEmfPlusRectF oClip, int nMode)
+        {
+                switch (nMode)
+                {
+                        case CombineModeReplace: break;
+                        case CombineModeIntersect: m_pDC->GetClip()->Intersect(oClip); break;
+                        case CombineModeUnion: break;
+                        case CombineModeXOR: break;
+                        case CombineModeExclude:
+                        {
+                                TRectD oBB;
+
+                                // Поскольку мы реализовываем данный тип клипа с помощью разницы внешнего ректа и заданного, и
+                                // пересечением с полученной областью, то нам надо вычесть границу заданного ректа.
+                                if (oClip.dLeft < oClip.dRight)
+                                {
+                                        oClip.dLeft--;
+                                        oClip.dRight++;
+                                }
+                                else
+                                {
+                                        oClip.dLeft++;
+                                        oClip.dRight--;
+                                }
+
+                                if (oClip.dTop < oClip.dBottom)
+                                {
+                                        oClip.dTop--;
+                                        oClip.dBottom++;
+                                }
+                                else
+                                {
+                                        oClip.dTop++;
+                                        oClip.dBottom--;
+                                }
+
+                                TRect* pRect = GetDCBounds();
+                                TranslatePoint(pRect->nLeft, pRect->nTop, oBB.dLeft, oBB.dTop);
+                                TranslatePoint(pRect->nRight, pRect->nBottom, oBB.dRight, oBB.dBottom);
+
+                                m_pDC->GetClip()->Exclude(oClip, oBB);
+                                UpdateOutputDC();
+
+                                break;
+                        }
+                        case CombineModeComplement: break;
+                }
+        }
+
         template<typename T>
-        void CEmfPlusParser::DrawImagePoints(unsigned int unImageIndex, TEmfPlusRectF oSrcRect, std::vector<T> arPoints)
+        void CEmfPlusParser::DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex,
+                                             TEmfPlusRectF oSrcRect, std::vector<T> arPoints)
         {
                 if (NULL == m_pInterpretator)
                         return;
@@ -777,7 +848,7 @@ namespace MetaFile
                 for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
                         m_oStream >> arPoints[unIndex];
 
-                DrawImagePoints(shOgjectIndex, oSrcRect, arPoints);
+                DrawImagePoints(shOgjectIndex, unImageAttributesID, oSrcRect, arPoints);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWLINES(unsigned short unShFlags)
@@ -1143,10 +1214,10 @@ namespace MetaFile
                         case ObjectTypeRegion:
                         {
                                 LOGGING(L"Object Region")
-                                CEmfPlusRegion *pEmfPlusRegion = new CEmfPlusRegion;
-                                m_oStream >> *pEmfPlusRegion;
+                                CEmfPlusRegion *pEmfPlusRegion = ReadRegion();
 
-                                RELEASEOBJECT(pEmfPlusRegion)
+                                if (NULL != pEmfPlusRegion)
+                                        m_mRegions[shObjectIndex] = pEmfPlusRegion;
 
                                 break;
                         }
@@ -1169,6 +1240,15 @@ namespace MetaFile
                         case ObjectTypeImageAttributes:
                         {
                                 LOGGING(L"Object Image Attributes")
+
+                                CEmfPlusImageAttributes *pImageAttributes = new CEmfPlusImageAttributes();
+
+                                if (NULL != pImageAttributes)
+                                {
+                                        m_oStream >> *pImageAttributes;
+                                        m_mImageAttributes[shObjectIndex] = pImageAttributes;
+                                }
+
                                 break;
                         }
                         case ObjectTypeCustomLineCap:
@@ -1188,8 +1268,6 @@ namespace MetaFile
 
                 m_oStream >> oGUID;
                 m_oStream >> unBufferSize;
-
-                m_oStream.Skip(unBufferSize);
 
                 //TODO: реализовать
         }
@@ -1288,6 +1366,8 @@ namespace MetaFile
 
                 m_oStream >> unStackIndex;
 
+//                m_pDC = m_oPlayer.SaveDC();
+
                 //TODO: реализовать
         }
 
@@ -1296,6 +1376,8 @@ namespace MetaFile
                 unsigned int unStackIndex;
 
                 m_oStream >> unStackIndex;
+
+//                m_pDC = m_oPlayer.RestoreDC();
 
                 //TODO: реализовать
         }
@@ -1439,7 +1521,6 @@ namespace MetaFile
         void CEmfPlusParser::Read_EMFPLUS_GETDC()
         {
                 m_bBanEmfProcessing = false;
-                //TODO: реализовать
         }
 
         void CEmfPlusParser::Read_EMRPLUS_OFFSETCLIP()
@@ -1458,7 +1539,7 @@ namespace MetaFile
         {
                 m_bBanEmfProcessing = true;
 
-                //TODO: реализовать
+//                m_pDC->GetClip()->Reset();
         }
 
         void CEmfPlusParser::Read_EMFPLUS_SETCLIPPATH(unsigned short unShFlags)
@@ -1477,15 +1558,36 @@ namespace MetaFile
 
                 m_oStream >> oRect;
 
-                //TODO: реализовать
+                return; // TODO: при добавлении поддержки регионов становится хуже
+                CombineClip(oRect, shCM);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_SETCLIPREGION(unsigned short unShFlags)
         {
                 m_bBanEmfProcessing = true;
 
-                if (m_ulRecordSize == 0)
-                        return;
+                short shObjectIndex = ExpressValue(unShFlags, 0, 7);
+                short shCM = ExpressValue(unShFlags, 8, 11);
+
+                return; // TODO: при добавлении поддержки регионов становится хуже
+                EmfPlusRegionMap::const_iterator oFoundElement = m_mRegions.find(shObjectIndex);
+
+                if (m_mRegions.end() != oFoundElement)
+                {
+                        for (CEmfPlusRegionNode oNode : oFoundElement->second->arNodes)
+                        {
+                                if (oNode.eType == RegionNodeDataTypeInfinite)
+                                {
+                                        TRect* pRect = GetDCBounds();
+                                        TEmfPlusRectF oBB;
+                                        TranslatePoint(pRect->nLeft, pRect->nTop, oBB.dLeft, oBB.dTop);
+                                        TranslatePoint(pRect->nRight, pRect->nBottom, oBB.dRight, oBB.dBottom);
+                                        CombineClip(oBB, CombineModeIntersect);
+                                }
+                                else if (oNode.eType == RegionNodeDataTypeRect)
+                                        CombineClip(*oNode.GetRect(), shCM);
+                        }
+                }
 
                 //TODO: реализовать
         }

@@ -129,6 +129,16 @@ namespace MetaFile
         #define TEmfPlusPoint   TEmfPointS
         #define TEmfPlusPointF  TEmfPointD
         #define TEmfPlusXForm   TEmfXForm
+
+        typedef  enum
+        {
+                CombineModeReplace      = 0x00,
+                CombineModeIntersect    = 0x01,
+                CombineModeUnion        = 0x02,
+                CombineModeXOR          = 0x03,
+                CombineModeExclude      = 0x04,
+                CombineModeComplement   = 0x05
+        } EEmfPlusCombineMode;
 }
 
 #endif // EMFPLUSTYPES_H

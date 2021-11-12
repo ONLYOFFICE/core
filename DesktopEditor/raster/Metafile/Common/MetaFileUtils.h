@@ -860,6 +860,67 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(CEmfPlusRegionNode& oEmfPlusRegionNode)
+		{
+			unsigned int unType;
+
+			*this >> unType;
+
+			switch (unType)
+			{
+				case RegionNodeDataTypeAnd:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeAnd;
+					break;
+				}
+				case RegionNodeDataTypeOr:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeOr;
+					break;
+				}
+				case RegionNodeDataTypeXor:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeXor;
+					break;
+				}
+				case RegionNodeDataTypeExclude:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeExclude;
+					break;
+				}
+				case RegionNodeDataTypeComplement:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeComplement;
+					break;
+				}
+				case RegionNodeDataTypeRect:
+				{
+					oEmfPlusRegionNode.pRect = new TEmfPlusRectF;
+
+					*this >> *oEmfPlusRegionNode.pRect;
+
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeRect;
+					break;
+				}
+				case RegionNodeDataTypePath:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypePath;
+					break;
+				}
+				case RegionNodeDataTypeEmpty:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeEmpty;
+					break;
+				}
+				case RegionNodeDataTypeInfinite:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeInfinite;
+					break;
+				}
+			}
+
+			return *this;
+		}
 		CDataStream& operator>>(CEmfPlusRegion& oEmfPlusRegion)
 		{
 			unsigned int unVersion, unRegionCount;
@@ -867,8 +928,10 @@ namespace MetaFile
 			*this >> unVersion;
 			*this >> unRegionCount;
 
-			if (unRegionCount == 0)
-				return *this;
+			oEmfPlusRegion.arNodes.resize(unRegionCount + 1);
+
+			for (unsigned int unIndex = 0; unIndex <= unRegionCount; ++unIndex)
+				*this >> oEmfPlusRegion.arNodes[unIndex];
 
 			//TODO: реализовать
 
@@ -885,6 +948,24 @@ namespace MetaFile
 			oContineudObjectRecord.SetNeedReadSize(0);
 
 			return *this;
+		}
+		CDataStream& operator>>(CEmfPlusImageAttributes& oAttributes)
+		{
+			Skip(8); //Version, Reserved 1 (4 bytes)
+
+			unsigned int unWrapMode;
+
+			*this >> unWrapMode;
+
+			if (unWrapMode < WrapModeTile || unWrapMode > WrapModeClamp)
+				return *this;
+
+			oAttributes.eWrapMode = static_cast<EEmfPlusWrapMode>(unWrapMode);
+
+			*this >> oAttributes.oClampColor;
+			*this >> oAttributes.nObjectClamp;
+
+			Skip(4); //Reserved 2 (4 bytes)
 		}
 		CDataStream& operator>>(CEmfPlusImage& oImage)
 		{

@@ -34,6 +34,9 @@ namespace MetaFile
                 CEmfPlusPath* ReadPath();
                 CEmfPlusPath* GetPath(unsigned int unPathIndex);
 
+                CEmfPlusRegion* ReadRegion();
+                CEmfPlusRegion* GetRegion(unsigned int unRegionIndex);
+
                 std::vector<TEmfPlusPointF> ReadPointsF(unsigned int unPointCount);
                 std::vector<char> ReadPointTypes(unsigned int unPointCount);
 
@@ -42,7 +45,9 @@ namespace MetaFile
 
                 template<typename T> void DrawLines(std::vector<T> arPoints, bool bCloseFigure);
 
-                template<typename T>void DrawImagePoints(unsigned int unImageIndex, TEmfPlusRectF oSrcRect, std::vector<T> arPoints);
+                template<typename T>void DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex, TEmfPlusRectF oSrcRect, std::vector<T> arPoints);
+
+                void CombineClip(TEmfPlusRectF oBox, int nMode);
 
                 void Read_EMRPLUS_OFFSETCLIP();
                 void Read_EMRPLUS_RESETCLIP();
@@ -132,9 +137,13 @@ namespace MetaFile
 
                 typedef std::map<unsigned int, CEmfPlusImage*>  EmfPlusImageMap;
                 typedef std::map<unsigned int, CEmfPlusPath*>   EmfPlusPathMap;
+                typedef std::map<unsigned int, CEmfPlusRegion*> EmfPlusRegionMap;
+                typedef std::map<unsigned int, CEmfPlusImageAttributes*> EmfPlusImageAttributesMap;
 
-                EmfPlusImageMap m_mImages;
-                EmfPlusPathMap  m_mPaths;
+                EmfPlusImageAttributesMap   m_mImageAttributes;
+                EmfPlusImageMap             m_mImages;
+                EmfPlusPathMap              m_mPaths;
+                EmfPlusRegionMap            m_mRegions;
 
                 CEmfPlusContineudObjectRecord*  m_pContineudObject;
         };

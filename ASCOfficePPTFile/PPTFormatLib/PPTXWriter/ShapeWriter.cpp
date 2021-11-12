@@ -1999,7 +1999,6 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()
     if (pShapeElement->m_pShape && !pShapeElement->m_pShape->m_strXmlString.empty())
     {
         ParseXmlAlternative(pShapeElement->m_pShape->m_strXmlString);
-
     }
     m_oWriter.WriteString(std::wstring(L"<p:sp>"));
 
@@ -2140,18 +2139,6 @@ void PPT_FORMAT::CShapeWriter::ParseXmlAlternative(const std::wstring & xml)
         {
             NSBinPptxRW::CXmlWriter writer(XMLWRITER_DOC_TYPE_PPTX);
             //            shape->spPr.Geometry.toXmlWriter(&writer);
-
-            if (shape->spPr.scene3d.IsInit())
-            {
-                shape->spPr.scene3d->m_namespace = L"a";
-//                shape->spPr.scene3d->toXmlWriter(&writer);
-            }
-
-            if (shape->spPr.sp3d.IsInit())
-            {
-                shape->spPr.sp3d->m_namespace = L"a";
-//                shape->spPr.sp3d->toXmlWriter(&writer);
-            }
 
             shape->toXmlWriter(&writer);
             m_xmlGeomAlternative = writer.GetXmlString();

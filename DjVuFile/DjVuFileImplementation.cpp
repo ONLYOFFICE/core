@@ -508,11 +508,13 @@ void               CDjVuFileImplementation::GetGlyphs(IRenderer* m_pRenderer, co
 
     // m_pInternal->m_oWriter.WriteText(pTempUnicodes, (const int*)pGids, nTempUnicodesLen, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
     bool bIsDumpFont = false;
-    double dFontSize;
+    std::wstring sCurrentFontName; double dFontSize;
+    m_pRenderer->get_FontName(&sCurrentFontName);
     m_pRenderer->get_FontSize(&dFontSize);
-    if (m_lCurrentFont || (dFontSize != m_dCurrentFontSize))
+    int nCurrentFont = 0;
+    if ((nCurrentFont != m_lCurrentFont) || (dFontSize != m_dCurrentFontSize))
     {
-        m_lCurrentFont     = 0;
+        m_lCurrentFont     = nCurrentFont;
         m_dCurrentFontSize = dFontSize;
         bIsDumpFont = true;
     }
@@ -523,11 +525,44 @@ void               CDjVuFileImplementation::GetGlyphs(IRenderer* m_pRenderer, co
     double _y1 = y;
     double _x2 = x + 1;
     double _y2 = y;
+    double sx, shy, shx, sy, tx, ty, tmp;
+    m_pRenderer->GetTransform(&sx, &shy, &shx, &sy, &tx, &ty);
     // m_pTransform->TransformPoint(_x1, _y1);
+    tmp = _x1;
+    _x1 = tmp * sx  + _y1 * shx + tx;
+    _y1 = tmp * shy + _y1 * sy  + ty;
     // m_pTransform->TransformPoint(_x2, _y2);
+    tmp = _x2;
+    _x2 = tmp * sx  + _y2 * shx + tx;
+    _y2 = tmp * shy + _y2 * sy  + ty;
+
+    double _k = 0;
+    double _b = 0;
+    bool _isConstX = false;
+    if (fabs(_x1 - _x2) < 0.001)
+    {
+        _isConstX = true;
+        _b = _x1;
+    }
+    else
+    {
+        _k = (_y1 - _y2) / (_x1 - _x2);
+        _b = _y1 - _k * _x1;
+    }
+
+    double dAbsVec = sqrt((_x1 - _x2) * (_x1 - _x2) + (_y1 - _y2) * (_y1 - _y2));
+    if (dAbsVec == 0)
+        dAbsVec = 1;
 
     LONG nCountChars = m_oLine.GetCountChars();
-    bool bIsNewLine  = 0 == nCountChars;
+    bool bIsNewLine  = true;
+    if (0 != nCountChars)
+    {
+        if (_isConstX && m_oLine.m_bIsConstX && fabs(_b - m_oLine.m_dB) < 0.001)
+            bIsNewLine = false;
+        else if (!_isConstX && !m_oLine.m_bIsConstX && fabs(_k - m_oLine.m_dK) < 0.001 && fabs(_b - m_oLine.m_dB) < 0.001)
+            bIsNewLine = false;
+    }
     if (bIsNewLine && (nCountChars != 0))
     {
         // не совпала baseline. поэтому просто скидываем линию в поток
@@ -539,13 +574,15 @@ void               CDjVuFileImplementation::GetGlyphs(IRenderer* m_pRenderer, co
     double dOffsetX = 0;
     if (nCountChars == 0)
     {
-        m_oLine.m_bIsConstX = false;
+        m_oLine.m_bIsConstX = _isConstX;
+        m_oLine.m_dK = _k;
+        m_oLine.m_dB = _b;
 
         m_oLine.m_dX = _x1;
         m_oLine.m_dY = _y1;
 
-        m_oLine.m_ex = _x2 - _x1;
-        m_oLine.m_ey = _y2 - _y1;
+        m_oLine.m_ex = (_x2 - _x1) / dAbsVec;
+        m_oLine.m_ey = (_y2 - _y1) / dAbsVec;
 
         m_oLine.m_dEndX = _x1;
         m_oLine.m_dEndY = _y1;
@@ -583,13 +620,16 @@ void               CDjVuFileImplementation::GetGlyphs(IRenderer* m_pRenderer, co
             // предварительно сбросив старую
             DumpLine();
 
-            m_oLine.m_bIsConstX = false;
+            m_oLine.m_bIsConstX = _isConstX;
 
             m_oLine.m_dX = _x1;
             m_oLine.m_dY = _y1;
 
-            m_oLine.m_ex = _x2 - _x1;
-            m_oLine.m_ey = _y2 - _y1;
+            m_oLine.m_dK = _k;
+            m_oLine.m_dB = _b;
+
+            m_oLine.m_ex = (_x2 - _x1) / dAbsVec;
+            m_oLine.m_ey = (_y2 - _y1) / dAbsVec;
         }
 
         m_oLine.m_dEndX = _x1;
@@ -597,14 +637,16 @@ void               CDjVuFileImplementation::GetGlyphs(IRenderer* m_pRenderer, co
     }
 
     // смотрим, совпадает ли главная часть матрицы.
-    bool bIsTransform = !(fabs(m_pLastTransform.sx() - 1.0) < 0.001 &&
-                          fabs(m_pLastTransform.sy() - 1.0) < 0.001 &&
-                          fabs(m_pLastTransform.shx()) < 0.001 &&
-                          fabs(m_pLastTransform.shy()) < 0.001);
+    bool bIsTransform = !(fabs(m_pLastTransform.sx()  - sx)  < 0.001 &&
+                          fabs(m_pLastTransform.sy()  - sy)  < 0.001 &&
+                          fabs(m_pLastTransform.shx() - shx) < 0.001 &&
+                          fabs(m_pLastTransform.shy() - shy) < 0.001);
     if (bIsTransform)
         bIsDumpFont = true;
 
-    LONG nColor1 = 0, nAlpha1 = 255;
+    LONG nColor1, nAlpha1;
+    m_pRenderer->get_BrushColor1(&nColor1);
+    m_pRenderer->get_BrushAlpha1(&nAlpha1);
     bool bIsColor = ((nColor1 != m_nLastBrushColor1) || (nAlpha1 != m_nLastBrushAlpha1));
 
     BYTE nLenMetaCommands = 0;
@@ -619,10 +661,10 @@ void               CDjVuFileImplementation::GetGlyphs(IRenderer* m_pRenderer, co
 
     double _dumpSize = dFontSize;
     double _dumpMtx[4];
-    _dumpMtx[0] = 1.0;
-    _dumpMtx[1] = 0.0;
-    _dumpMtx[2] = 0.0;
-    _dumpMtx[3] = 1.0;
+    _dumpMtx[0] = sx;
+    _dumpMtx[1] = shy;
+    _dumpMtx[2] = shx;
+    _dumpMtx[3] = sy;
 
     double dTextScale = std::min(sqrt(_dumpMtx[2] * _dumpMtx[2] + _dumpMtx[3] * _dumpMtx[3]),
                                  sqrt(_dumpMtx[0] * _dumpMtx[0] + _dumpMtx[1] * _dumpMtx[1]));
@@ -639,20 +681,23 @@ void               CDjVuFileImplementation::GetGlyphs(IRenderer* m_pRenderer, co
 
     if (bIsDumpFont)
     {
+        LONG nFontStyle;
+        m_pRenderer->get_FontStyle(&nFontStyle);
+
         m_oMeta.WriteBYTE(41); // CMetafile::ctFontName
-        m_oMeta.AddInt(0); // nCurrentFont
-        m_oMeta.AddInt(0); // get_FontStyle
+        m_oMeta.AddInt(nCurrentFont);
+        m_oMeta.AddInt(nFontStyle);
         m_oMeta.WriteDouble(_dumpSize);
     }
     if (bIsTransform)
     {
-        m_pLastTransform.SetElements(1.0, 0.0, 0.0, 1.0);
+        m_pLastTransform.SetElements(sx, shy, shx, sy);
 
         m_oLine.m_bIsSetUpTransform = true;
-        m_oLine.m_sx  = 1.0;
-        m_oLine.m_shx = 0.0;
-        m_oLine.m_shy = 0.0;
-        m_oLine.m_sy  = 1.0;
+        m_oLine.m_sx  = sx;
+        m_oLine.m_shx = shx;
+        m_oLine.m_shy = shy;
+        m_oLine.m_sy  = sy;
 
         m_oMeta.WriteBYTE(161); // CMetafile::ctCommandTextTransform
         m_oMeta.WriteDouble(_dumpMtx[0]);
@@ -678,13 +723,13 @@ void               CDjVuFileImplementation::GetGlyphs(IRenderer* m_pRenderer, co
     // все, baseline установлен. теперь просто продолжаем линию
     if (bIsDumpFont)
     {
-        m_pFontManager->LoadFontFromFile(L"DjvuEmptyFont", 0, dFontSize, 72.0, 72.0);
+        m_pFontManager->LoadFontFromFile(sCurrentFontName, 0, dFontSize, 72.0, 72.0);
         m_pFontManager->AfterLoad();
     }
 
     double dKoef = dFontSize * 25.4 / (72 * abs(m_pFontManager->GetUnitsPerEm()));
-    double dAscender  = abs(m_pFontManager->GetAscender())  * dKoef;
-    double dDescender = abs(m_pFontManager->GetDescender()) * dKoef;
+    double dAscender  = abs(m_pFontManager->GetAscender())  * dKoef * dAbsVec;
+    double dDescender = abs(m_pFontManager->GetDescender()) * dKoef * dAbsVec;
 
     if (m_oLine.m_dAscent < dAscender)
         m_oLine.m_dAscent = dAscender;
@@ -720,7 +765,7 @@ void               CDjVuFileImplementation::GetGlyphs(IRenderer* m_pRenderer, co
             dPlusOffset += dOffsetX;
         dOffsetX = dBoxW;
 
-        pChar->width = dBoxW;
+        pChar->width = dBoxW * dAbsVec;
 
         if (i != 0)
             m_oMeta.WriteBYTE(0);

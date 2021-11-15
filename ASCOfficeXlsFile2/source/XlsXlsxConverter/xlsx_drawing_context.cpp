@@ -1550,6 +1550,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 		else
 		{
 			customGeom	= convert_custom_shape(drawing_state);
+			drawing_state->bCustom = true;
 		}
 	}
 	else
@@ -1642,7 +1643,24 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 						CP_XML_NODE(L"a:prstGeom")
 						{
 							CP_XML_ATTR(L"prst", prstGeom);
-							if (!drawing_state->wordart.is)	CP_XML_NODE(L"a:avLst");
+							if (false == drawing_state->wordart.is)
+							{
+								CP_XML_NODE(L"a:avLst")
+								{
+									// нужен перерасчет
+									//for (size_t i = 0; i < drawing_state->custom_adjustValues.size(); i++)
+									//{
+									//	if (drawing_state->custom_adjustValues[i])
+									//	{
+									//		CP_XML_NODE(L"a:gd")
+									//		{
+									//			CP_XML_ATTR(L"name", L"adj" + std::to_wstring(i + 1));
+									//			CP_XML_ATTR(L"fmla", L"val " + std::to_wstring(*drawing_state->custom_adjustValues[i]));
+									//		}
+									//	}
+									//}
+								}
+							}
 						}
 					}
 					else if (customGeom.empty() == false)
@@ -2219,9 +2237,14 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 			{
 				if (drawing_state->text.wrap == 2 || drawing_state->wordart.is)
 					CP_XML_ATTR(L"wrap", L"none" );
+				else if (drawing_state->bCustom)
+					CP_XML_ATTR(L"wrap", L"square");
 
 				if (false == drawing_state->text.fit_shape)
-					CP_XML_ATTR(L"vertOverflow", L"clip" ); 
+				{
+					CP_XML_ATTR(L"horzOverflow", L"clip");
+					CP_XML_ATTR(L"vertOverflow", L"clip");
+				}			
 
 				if (drawing_state->wordart.is)
 				{

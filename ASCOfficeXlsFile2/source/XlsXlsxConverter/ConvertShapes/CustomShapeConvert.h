@@ -730,8 +730,7 @@ namespace NSCustomShapesConvert
 
 		void ConvertTextRect ( std::wstring strRect)
 		{
-			if (strRect == _T(""))
-				return;
+			if (strRect.empty()) return;
 
 			std::vector<std::wstring> arBorder;
 			NSStringUtils::ParseString(_T(","), strRect, arBorder);
@@ -744,13 +743,13 @@ namespace NSCustomShapesConvert
 			m_arIndexDst.push_back(m_lIndexDst);
 
 			m_oTextRect.WriteString(_T("<a:rect l=\""));
-			GetValue(m_lIndexDst-4, ptFormula, true, m_oTextRect);
+			GetValue(m_lIndexDst - 4, ptFormula, true, m_oTextRect);
 			m_oTextRect.WriteString(_T("\" t=\""));
-			GetValue(m_lIndexDst-3, ptFormula, true, m_oTextRect);
+			GetValue(m_lIndexDst - 3, ptFormula, true, m_oTextRect);
 			m_oTextRect.WriteString(_T("\" r=\""));
-			GetValue(m_lIndexDst-2, ptFormula, true, m_oTextRect);
+			GetValue(m_lIndexDst - 2, ptFormula, true, m_oTextRect);
 			m_oTextRect.WriteString(_T("\" b=\""));
-			GetValue(m_lIndexDst-1, ptFormula, true, m_oTextRect);
+			GetValue(m_lIndexDst - 1, ptFormula, true, m_oTextRect);
 			m_oTextRect.WriteString(_T("\"/>"));
 		}
 	private:

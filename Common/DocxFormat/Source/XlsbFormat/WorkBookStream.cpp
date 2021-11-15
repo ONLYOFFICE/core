@@ -343,4 +343,69 @@ void WorkBookStream::UpdateXti(XLS::GlobalWorkbookInfo* global_info_)
     }
 }
 
+void WorkBookStream::UpdateDefineNames(XLS::GlobalWorkbookInfo* global_info_)
+{
+    for (size_t s = 0; s < m_arBrtName.size(); s++)
+    {
+        //LBL* LBL_ = dynamic_cast<LBL*>(m_arBrtName[s].get());
+        //if (!LBL_) continue;
+
+        Name *lbl = dynamic_cast<Name*>(m_arBrtName[s].get());
+        if (!lbl) continue;
+
+        std::wstring name;
+        std::wstring comment;
+
+        //if (lbl->fBuiltin)
+        name = lbl->name.value();
+        //if (name.empty())	name = lbl->Name_bin.value();
+
+        //NameCmt *namecmt = dynamic_cast<NameCmt*>(LBL_->m_NameCmt.get());
+        //if (namecmt)
+       // {
+       // if (name.empty())
+            //name = namecmt->name.value();
+        comment = lbl->comment.value();
+        //}
+
+        std::wstring value = lbl->rgce.getAssembledFormula(lbl->fWorkbookParam/*lbl->itab == 0 ? true : false*/);
+
+        if (!value.empty() && !name.empty() && lbl->itab != 0xFFFFFFFF)
+        {
+            int ind_sheet = lbl->itab;
+
+            std::map<std::wstring, std::vector<std::wstring>>::iterator it = global_info_->mapDefineNames.find(name);
+
+            if (it != global_info_->mapDefineNames.end())
+            {
+                while ( it->second.size() <= ind_sheet)
+                {
+                    it->second.push_back(L"");
+                }
+                it->second[ind_sheet] = value;
+                //it->second.push_back(value);
+            }
+            else
+            {
+                std::vector<std::wstring> ar(ind_sheet + 1);
+
+                ar[ind_sheet] = value;
+                //ar.push_back(value);
+
+                global_info_->mapDefineNames.insert(std::make_pair(name, ar));
+            }
+            //LBL_->isSerialize = true;
+        }
+        else
+        {
+            if (lbl->fFunc)
+            {
+                if (name == L"FORMULA") //"general_formulas.xls"
+                        name = L"_xludf." + name;
+            }
+        }
+        global_info_->arDefineNames.push_back(name);// для имен функций - todooo ... не все функции корректны !! БДИ !!
+    }
+}
+
 } // namespace XLSB

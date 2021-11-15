@@ -167,6 +167,7 @@ public:
                 is_wide = true;
                 break;
             case aw_NAME_WIDE:
+                is_wide = true;
                 if(cch >= 255)
                     break;
 		}

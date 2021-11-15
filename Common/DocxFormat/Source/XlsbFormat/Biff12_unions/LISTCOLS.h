@@ -53,6 +53,9 @@ namespace XLSB
         std::vector<XLS::BaseObjectPtr>  m_arLISTCOL;
         XLS::BaseObjectPtr               m_BrtEndListCols;
 
+        ////
+        _UINT32                          indexList;
+
     };
 
 } // namespace XLSB

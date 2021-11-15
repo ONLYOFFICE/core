@@ -201,6 +201,9 @@ public:
 	int								connectionId;
 	std::map<std::wstring, int>		connectionNames;
 
+        std::unordered_map<int, std::wstring>		mapTableNames;
+        std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
+
 	XlsConverter					*xls_converter;
 
 };

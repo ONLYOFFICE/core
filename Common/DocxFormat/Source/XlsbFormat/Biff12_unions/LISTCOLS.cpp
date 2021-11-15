@@ -63,7 +63,9 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        auto count = proc.repeated<LISTCOL>(0, 0);
+        LISTCOL listcol;
+        listcol.indexList = indexList;
+        auto count = proc.repeated(listcol, 0, 0);
         while(count > 0)
         {
             m_arLISTCOL.insert(m_arLISTCOL.begin(), elements_.back());

@@ -66,7 +66,9 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        if (proc.optional<BeginListCol>())
+        BeginListCol beginlistcol;
+        beginlistcol.indexList = indexList;
+        if (proc.optional(beginlistcol))
         {
             m_BrtBeginListCol = elements_.back();
             elements_.pop_back();

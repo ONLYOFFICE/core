@@ -65,6 +65,8 @@ private:
     _UINT16     colFirst;
     _UINT16     colLast;
 
+    GlobalWorkbookInfoPtr	global_info;
+
 };
 
 typedef boost::shared_ptr<PtgList> PtgListPtr;

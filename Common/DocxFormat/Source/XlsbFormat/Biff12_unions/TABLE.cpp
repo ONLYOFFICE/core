@@ -85,7 +85,13 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        if (proc.optional<LISTCOLS>())
+        _UINT32 index = 0;
+        if(m_BrtBeginList != nullptr)
+            index = dynamic_cast<BeginList*>(m_BrtBeginList.get())->idList;
+
+        LISTCOLS listcols;
+        listcols.indexList = index;
+        if (proc.optional(listcols))
         {
             m_LISTCOLS = elements_.back();
             elements_.pop_back();

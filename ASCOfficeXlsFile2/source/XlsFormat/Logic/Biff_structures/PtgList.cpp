@@ -46,6 +46,7 @@ BiffStructurePtr PtgList::clone()
 void PtgList::loadFields(CFRecord& record)
 {	
     //record.skipNunBytes(1); // eptg Reserved
+    global_info = record.getGlobalWorkbookInfo();
     record >> ixti;
 
     unsigned short flags;
@@ -64,7 +65,53 @@ void PtgList::loadFields(CFRecord& record)
 
 void PtgList::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-    ptg_stack.push(L"");
+    //ptg_stack.push(L""); tblExpenses[[#This Row],[Hotel]:[Transport]]
+    std::wstring formula = L"";
+    std::wstring link = L"";
+    std::wstring row = L"";
+    auto list = global_info->mapTableNames.find(listIndex);
+    if (list != global_info->mapTableNames.end())
+    {
+        if (ixti < global_info->arXti_External.size())
+        {
+            link = global_info->arXti_External[ixti].link;
+            if (!link.empty())
+                link += L"!";
+        }
+        //formula += link; пока без названия sheet
+        formula += list->second;
+        formula += L'[';
+        if(!invalid && !nonresident)
+        {
+            switch (rowType)
+            {
+                case 0x00:
+                case 0x04: formula += L"[#Data]"; break;
+                case 0x01: formula += L"[#All]"; break;
+                case 0x02: formula += L"[#Headers]"; break;
+                case 0x06: formula += L"[#Headers],[#Data]"; break;
+                case 0x08: formula += L"[#Totals]"; break;
+                case 0x0C: formula += L"[#Data],[#Totals]"; break;
+                case 0x10: formula += L"[#This Row]"; break;
+            }
+
+            auto arrColumn = global_info->mapTableColumnNames.find(listIndex);
+            if (arrColumn != global_info->mapTableColumnNames.end())
+            {
+                switch (columns)
+                {
+                    case 0x00: break;
+                    case 0x01:
+                    case 0x02:
+                    formula += L",[" + arrColumn->second[colFirst] + L"]"; if(columns == 0x01) break;
+                    formula += L":[" + arrColumn->second[colLast] + L"]"; break;
+                }
+            }
+        }
+
+        formula += L']';
+    }
+    ptg_stack.push(formula);
 }
 
 } // namespace XLS

@@ -63,6 +63,9 @@ namespace XLSB
             XLNullableWideString        stStyleHeader;
             XLNullableWideString        stStyleInsertRow;
             XLNullableWideString        stStyleAgg;
+
+            ////
+            _UINT32                     indexList;
     };
 
 } // namespace XLSB

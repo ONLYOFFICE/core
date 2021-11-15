@@ -54,6 +54,14 @@ namespace XLSB
     {
         record >> idField >> ilta >> nDxfHdr >> nDxfInsertRow >> nDxfAgg >> idqsif >>
                 stName >> stCaption >> stTotal >> stStyleHeader >> stStyleInsertRow >> stStyleAgg;
+
+        if(record.getGlobalWorkbookInfo()->mapTableColumnNames.find(indexList) != record.getGlobalWorkbookInfo()->mapTableColumnNames.end())
+            record.getGlobalWorkbookInfo()->mapTableColumnNames[indexList].push_back(stCaption);
+        else
+        {
+            record.getGlobalWorkbookInfo()->mapTableColumnNames.insert({indexList, std::vector<std::wstring>()});
+            record.getGlobalWorkbookInfo()->mapTableColumnNames[indexList].push_back(stCaption);
+        }
     }
 
 } // namespace XLSB

@@ -234,6 +234,7 @@ namespace PPTX
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
 				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
+				nvSpPr.cNvPr.toXmlWriter2(L"wps", pWriter);
 				nvSpPr.cNvSpPr.toXmlWriter2(L"wps", pWriter);
 			}
 			else

@@ -155,6 +155,7 @@ namespace PPT_FORMAT
 		NSCommon::nullable_base<WORD>	eaFontRef;			// eaFontRef
 		NSCommon::nullable_base<WORD>	ansiFontRef;		// ansiFontRef
 		NSCommon::nullable_base<WORD>	symbolFontRef;		// symFontRef
+        NSCommon::nullable_base<WORD>   pp9rt;
 
 		NSCommon::nullable_base<double>	BaseLineOffset;		// baseline offset
 
@@ -185,7 +186,7 @@ namespace PPT_FORMAT
 			eaFontRef		= oSrc.eaFontRef;
 			ansiFontRef		= oSrc.ansiFontRef;
 			symbolFontRef	= oSrc.symbolFontRef;
-
+            pp9rt           = oSrc.pp9rt;
 			BaseLineOffset	= oSrc.BaseLineOffset;
 
 			Color			= oSrc.Color;

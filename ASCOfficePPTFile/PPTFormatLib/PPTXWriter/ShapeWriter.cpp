@@ -1402,7 +1402,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     }
                     m_oWriter.WriteString(std::wstring(L"/>"));
                 }
-                if (pPF->bulletAutoNum.is_init() && !pPF->bulletChar.is_init())  // TODO Numbering
+                if (pPF->bulletAutoNum.is_init() && !pPF->bulletChar.is_init())
                 {
                     m_oWriter.WriteString(L"<a:buAutoNum type=\"");
                     m_oWriter.WriteString(pPF->bulletAutoNum->type.get());
@@ -1421,11 +1421,11 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 if (pPF->bulletFontProperties.is_init() == false && pPF->bulletSize.is_init() == false)
                 {
                     m_oWriter.WriteString(std::wstring(L"<a:buFontTx/>"));
-                    if (pPF->bulletColor.is_init() == false)
+                    if (pPF->bulletColor.is_init() == false && pPF->bulletAutoNum.is_init() == false)
                         set = false;
                 }
 
-                if (pPF->bulletChar.is_init())
+                if (pPF->bulletChar.is_init() && pPF->bulletAutoNum.is_init() == false)
                 {
                     wchar_t bu = pPF->bulletChar.get();
                     m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));

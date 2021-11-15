@@ -2125,7 +2125,7 @@ void CRecordShapeContainer::ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, C
     }
 
     pText->ApplyThemeStyle(pTheme);
-
+    ApplyAutoNumbering(pText);
 }
 void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels)
 {
@@ -2724,6 +2724,48 @@ void CRecordShapeContainer::ConvertInteractiveInfo(CInteractiveInfo &interactive
     interactiveInfo.m_bCustomShowReturn	= interactiveAtom.m_bCustomShowReturn;
     interactiveInfo.m_bVisited			= interactiveAtom.m_bVisited;
 
+}
+
+void CRecordShapeContainer::ApplyAutoNumbering(CTextAttributesEx *pText)
+{
+
+    std::vector<CRecordOfficeArtClientData*> arrOfficeArtClientData;
+    GetRecordsByType(&arrOfficeArtClientData, true);
+
+    for (auto childOfficeArtClientData : arrOfficeArtClientData)
+    {
+        for (auto prog : childOfficeArtClientData->m_rgShapeClientRoundtripData)
+        {
+            if (prog->m_pTagName && prog->m_pTagContainer && prog->m_pTagName->m_strText == ___PPT9)
+            {
+                auto styleTextPropAtom = dynamic_cast<CRecordPP9ShapeBinaryTagExtension*>(prog->m_pTagContainer)->m_styleTextPropAtom;
+                auto& arrProps9 = styleTextPropAtom.m_rgStyleTextProp9;
+                auto& arrPars  = pText->m_arParagraphs;
+                for (auto& par : arrPars)
+                {
+                    if (par.m_arSpans.empty())
+                        continue;
+                    if (!par.m_arSpans[0].m_oRun.pp9rt.is_init())
+                        continue;
+
+                    WORD pp9st = par.m_arSpans[0].m_oRun.pp9rt.get();
+                    if (pp9st >= arrProps9.size())
+                        continue;
+
+                    auto& prop9 = arrProps9[pp9st];
+                    if (prop9.m_pf9.m_optBulletAutoNumberScheme.is_init())
+                    {
+                        auto* pBuAutoNum = new CBulletAutoNum;
+                        pBuAutoNum->type = prop9.m_pf9.m_optBulletAutoNumberScheme->SchemeToStr();
+                        pBuAutoNum->startAt = prop9.m_pf9.m_optBulletAutoNumberScheme->m_nStartNum;
+
+                        par.m_oPFRun.bulletAutoNum.reset(pBuAutoNum);
+                    }
+                }
+            }
+
+        }
+    }
 }
 
 void CRecordGroupShapeContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)

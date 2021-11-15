@@ -466,6 +466,7 @@ void CTextCFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
             m_oRun.FontUnderline = true;
 		if (0x10 == (0x10 & fontStyle))
             m_oRun.FontShadow = true;
+        m_oRun.pp9rt = (0x3c00 & fontStyle) >> 10;
 	}
 
 	if (typeface_)

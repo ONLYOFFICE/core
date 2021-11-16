@@ -1306,10 +1306,9 @@ namespace NExtractTools
 
         return nRes;
     }
-
-    // csv -> xslx
-    _UINT32 csv2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
-    {
+// csv -> xslx_dir
+	_UINT32 csv2xlsx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
 		OOX::Spreadsheet::CXlsx oXlsx;
 
 		BYTE fileType;
@@ -1320,14 +1319,20 @@ namespace NExtractTools
 
 		_UINT32 nRes = CSVReader::ReadFromCsvToXlsx(sFrom, oXlsx, nCodePage, sDelimiter);
 
+		oXlsx.PrepareToWrite();
+
+		OOX::CContentTypes oContentTypes;
+		nRes = oXlsx.Write(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
+
+		return nRes;
+	}
+// csv -> xslx
+    _UINT32 csv2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+    {
 		std::wstring sResultXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
 		NSDirectory::CreateDirectory(sResultXlsxDir);
 
-		oXlsx.PrepareToWrite();
-		
-		OOX::CContentTypes oContentTypes;
-		nRes = oXlsx.Write(sResultXlsxDir, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
-
+		_UINT32 nRes = csv2xlsx_dir(sFrom, sResultXlsxDir, sTemp, params);
 		if (SUCCEEDED_X2T(nRes))
 		{
 			COfficeUtils oCOfficeUtils(NULL);
@@ -1358,7 +1363,6 @@ namespace NExtractTools
         COfficeUtils oCOfficeUtils(NULL);
         if (S_OK != oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLST, NULL, 0))
             return AVS_FILEUTILS_ERROR_CONVERT;
-
 
         BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
 
@@ -3925,27 +3929,12 @@ namespace NExtractTools
 			bPaid = *params.m_bPaid;
 
        _UINT32 nRes = 0;
-       if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
-       {
-           if(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo || AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo)
-           {
-               nRes = csv2xlst_bin(sFrom, sTo, params);
-           }
-           else
-           {
-			   std::wstring sXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
-               NSDirectory::CreateDirectory(sXlstDir);
-               std::wstring sTFile = sXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
-
-			   nRes = csv2xlst_bin(sFrom, sTFile, params);
-
-               if(SUCCEEDED_X2T(nRes))
-               {
-                   //зануляем sXmlOptions чтобы, при конвертации xlst bin -> xlsx не перепутать с csv
-                   nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params);
-               }
-           }
-       }
+       if (	(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom) &&
+			(AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == nFormatTo ||
+			 AVS_OFFICESTUDIO_FILE_OTHER_JSON == nFormatTo))
+	   {
+		   nRes = csv2xlst_bin(sFrom, sTo, params);
+	   }
        else
        {
 		   std::wstring sXlsxFile;
@@ -4039,7 +4028,11 @@ namespace NExtractTools
            {
                nRes = package2ooxml_dir(sFrom, sXlsxDir, sTemp, params);
            }
-           else
+		   else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
+		   {
+			   nRes = csv2xlsx_dir(sFrom, sXlsxDir, sTemp, params);
+		   }
+		   else
                nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            if(SUCCEEDED_X2T(nRes))
            {

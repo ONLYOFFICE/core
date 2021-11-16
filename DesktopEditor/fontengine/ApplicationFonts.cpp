@@ -173,14 +173,14 @@ namespace NSFonts
         SHORT shXHeight = NSBinarySerialize::Read<SHORT>(pBuffer);
         SHORT shCapHeight = NSBinarySerialize::Read<SHORT>(pBuffer);
 
+        bool bIsRelative = false;
         if (sPath.find(wchar_t('/')) == std::wstring::npos)
-            sPath = strDir + sPath;
-        else if (!sPath.empty())
-        {
-            // путь относительный
-            if (sPath[0] == wchar_t('.'))
-                sPath = strDir + L"/" + sPath;
-        }
+            bIsRelative = true;
+        else if (!sPath.empty() && sPath[0] == wchar_t('.'))
+            bIsRelative = true;
+
+        if (bIsRelative)
+            sPath = strDir + L"/" + sPath;
 
         CFontInfo* pInfo = new CFontInfo(sName,
             L"",

@@ -125,6 +125,12 @@ namespace OOX
                         m_oSheetFormatPr = workSheetStream->m_BrtWsFmtInfo;
                     if (workSheetStream->m_WSVIEWS2 != nullptr)
                         m_oSheetViews = workSheetStream->m_WSVIEWS2;
+                    if (workSheetStream->m_BrtMargins != nullptr)
+                        m_oPageMargins = workSheetStream->m_BrtMargins;
+                    if (workSheetStream->m_BrtPageSetup != nullptr)
+                        m_oPageSetup = workSheetStream->m_BrtPageSetup;
+                    if (workSheetStream->m_BrtPrintOptions != nullptr)
+                        m_oPrintOptions = workSheetStream->m_BrtPrintOptions;
 
                     if (workSheetStream->m_BrtSheetProtectionIso != nullptr)
                         m_oSheetProtection = workSheetStream->m_BrtSheetProtectionIso;

@@ -4304,7 +4304,7 @@ namespace SimpleTypes
 	{
 	public:
 		CPageOrientation() {}
-
+                CPageOrientation(const EPageOrientation & val)	{ this->m_eValue = val; }
         virtual EPageOrientation FromString(std::wstring &sValue)
 		{
             if      ( (L"landscape") == sValue ) this->m_eValue = pageorientLandscape;

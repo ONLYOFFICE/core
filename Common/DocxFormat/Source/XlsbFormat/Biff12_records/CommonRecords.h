@@ -53,6 +53,7 @@
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/TableStyles.h"
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/TableStyle.h"
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/TableStyleElement.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Setup.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 
@@ -311,6 +312,16 @@ namespace XLSB
 		XLS::BaseObjectPtr clone() override
         {
             return XLS::BaseObjectPtr(new DXF15(*this));
+        }
+    };
+
+    class PageSetup : public XLS::Setup
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(PageSetup)
+
+        XLS::BaseObjectPtr clone() override
+        {
+            return XLS::BaseObjectPtr(new PageSetup(*this));
         }
     };
 

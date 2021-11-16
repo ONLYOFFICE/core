@@ -63,26 +63,29 @@ namespace XLSB
 
         static const XLS::ElementType type = XLS::typeWorksheetSubstream;
 
-		XLS::BaseObjectPtr               m_BrtBeginSheet;
-                std::vector<XLS::BaseObjectPtr>  m_arCOLINFOS;
-		XLS::BaseObjectPtr               m_BrtWsDim;
-		XLS::BaseObjectPtr               m_BrtDrawing;
-		XLS::BaseObjectPtr               m_BrtLegacyDrawing;
-		XLS::BaseObjectPtr               m_BrtLegacyDrawingHF;
-		XLS::BaseObjectPtr               m_HLINKS;
-		XLS::BaseObjectPtr               m_MERGECELLS;
-		XLS::BaseObjectPtr               m_CELLTABLE;
-		XLS::BaseObjectPtr               m_BrtWsFmtInfo;
-		XLS::BaseObjectPtr               m_WSVIEWS2;
-		XLS::BaseObjectPtr               m_BrtSheetProtectionIso;
-		XLS::BaseObjectPtr               m_BrtSheetProtection;
-		XLS::BaseObjectPtr               m_LISTPARTS;
-                XLS::BaseObjectPtr               m_AUTOFILTER;
-		XLS::BaseObjectPtr               m_SORTSTATE;
-                std::vector<XLS::BaseObjectPtr>  m_arCONDITIONALFORMATTING;
-		XLS::BaseObjectPtr               m_FRTWORKSHEET;
+        XLS::BaseObjectPtr               m_BrtBeginSheet;
+        std::vector<XLS::BaseObjectPtr>  m_arCOLINFOS;
+        XLS::BaseObjectPtr               m_BrtWsDim;
+        XLS::BaseObjectPtr               m_BrtDrawing;
+        XLS::BaseObjectPtr               m_BrtLegacyDrawing;
+        XLS::BaseObjectPtr               m_BrtLegacyDrawingHF;
+        XLS::BaseObjectPtr               m_HLINKS;
+        XLS::BaseObjectPtr               m_MERGECELLS;
+        XLS::BaseObjectPtr               m_CELLTABLE;
+        XLS::BaseObjectPtr               m_BrtWsFmtInfo;
+        XLS::BaseObjectPtr               m_WSVIEWS2;
+        XLS::BaseObjectPtr               m_BrtMargins;
+        XLS::BaseObjectPtr               m_BrtPageSetup;
+        XLS::BaseObjectPtr               m_BrtPrintOptions;
+        XLS::BaseObjectPtr               m_BrtSheetProtectionIso;
+        XLS::BaseObjectPtr               m_BrtSheetProtection;
+        XLS::BaseObjectPtr               m_LISTPARTS;
+        XLS::BaseObjectPtr               m_AUTOFILTER;
+        XLS::BaseObjectPtr               m_SORTSTATE;
+        std::vector<XLS::BaseObjectPtr>  m_arCONDITIONALFORMATTING;
+        XLS::BaseObjectPtr               m_FRTWORKSHEET;
 
-		XLS::BaseObjectPtr               m_BrtEndSheet;
+        XLS::BaseObjectPtr               m_BrtEndSheet;
 
     };
 

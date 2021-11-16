@@ -44,6 +44,8 @@
 #include "Biff12_unions/CELLTABLE.h"
 #include "Biff12_records/WsFmtInfo.h"
 #include "Biff12_unions/WSVIEWS2.h"
+#include "Biff12_records/Margins.h"
+#include "Biff12_records/PrintOptions.h"
 #include "Biff12_records/SheetProtectionIso.h"
 #include "Biff12_records/SheetProtection.h"
 #include "Biff12_unions/LISTPARTS.h"
@@ -182,6 +184,33 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                 if (proc.optional<WSVIEWS2>())
                 {
                     m_WSVIEWS2 = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_Margins:
+            {
+                if (proc.optional<Margins>())
+                {
+                    m_BrtMargins = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_PageSetup:
+            {
+                if (proc.optional<PageSetup>())
+                {
+                    m_BrtPageSetup = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_PrintOptions:
+            {
+                if (proc.optional<PrintOptions>())
+                {
+                    m_BrtPrintOptions = elements_.back();
                     elements_.pop_back();
                 }
             }break;

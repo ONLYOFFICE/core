@@ -252,7 +252,7 @@ namespace CSVReader
 		pXfs->m_oNumFmtId->SetValue(0);
 		
 		oXlsx.m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
-
+		 
 	// Wrap style
 		pXfs = new OOX::Spreadsheet::CXfs();
 		pXfs->m_oBorderId.Init();
@@ -456,10 +456,9 @@ namespace CSVReader
 		{
 			RELEASEOBJECT(pRow);
 		}
-		pWorksheet.AddRef();
 		oXlsx.m_arWorksheets.push_back(pWorksheet.GetPointer());
-//		oXlsx.m_mapWorksheets.insert(std::make_pair(sSheetRId, pWorksheet));
 		
+		pWorksheet.AddRef();
 		smart_ptr<OOX::File> oWorksheetFile = pWorksheet.smart_dynamic_cast<OOX::File>();
 		const OOX::RId oRid = oXlsx.m_pWorkbook->Add(oWorksheetFile);
 

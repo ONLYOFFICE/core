@@ -63,15 +63,12 @@
                 };
 
                 xhr.send(null);
-
             });
         }
     }
     else
     {
-        getBinaryPromise = function() {
-            return getBinaryPromise2();
-        }
+        getBinaryPromise = function() { return getBinaryPromise2(); }
     }
     
     function getMemoryPathIE(name)

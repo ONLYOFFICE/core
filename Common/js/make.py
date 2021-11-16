@@ -47,7 +47,7 @@ def exec_wasm(data, work, compiler_flags, wasm):
         for item in compile_files["files"]:
             file_name = os.path.splitext(os.path.basename(item))[0]
             if not base.is_file("./o/" + compile_files["name"] + "/" + file_name + ".o"):
-                run_file.append(prefix_call + "emcc -o o/" + compile_files["name"] + "/" + file_name + ".o -c " + arguments + os.path.normpath(work + compile_files["folder"] + item).replace("\\", '/'))
+                run_file.append(prefix_call + "emcc -o o/" + compile_files["name"] + "/" + file_name + ".o -c " + arguments + os.path.normpath(work + os.path.join(compile_files["folder"] + item)).replace("\\", '/'))
             temp_libs += ("o/" + compile_files["name"] + "/" + file_name + ".o ")
         if len(compile_files["files"]) > 10:
             if not base.is_file("./o/" + compile_files["name"] + "/" + compile_files["name"] + ".o"):
@@ -85,8 +85,7 @@ def exec_wasm(data, work, compiler_flags, wasm):
   
     # clear
     base.delete_file("./" + data["name"] + ".js")
-    base.delete_file("./" + data["name"] + ".wasm")
-    base.delete_file("./" + data["name"] + ".js.mem")
+    base.delete_file("./" + data["name"] + (".wasm" if wasm else ".js.mem"))
 
 
 argv = sys.argv
@@ -97,9 +96,9 @@ for param in argv:
         continue
     work_dir = os.path.dirname(param) + "/"
     json_data = json.loads(base.readFile(param))
-  
-    print("before " + json_data["run_before"])
-    if base.is_file(work_dir + json_data["run_before"]):
+
+    if json_data["run_before"] and base.is_file(work_dir + json_data["run_before"]):
+        print("before " + json_data["run_before"])
         base.cmd_in_dir(work_dir, "python", [json_data["run_before"]])
 
     # remove previous version
@@ -111,16 +110,16 @@ for param in argv:
     # wasm or asm
     if json_data["wasm"]:
         print("wasm " + json_data["name"])
-        flags = list(json_data["compiler_flags"])
+        flags = json_data["compiler_flags"].copy()
         flags.append("-s WASM=1")
         exec_wasm(json_data, work_dir, flags, True)
     if json_data["asm"]:
         print("asm " + json_data["name"])
-        flags = list(json_data["compiler_flags"])
+        flags = json_data["compiler_flags"].copy()
         flags.append("-s WASM=0")
         exec_wasm(json_data, work_dir, flags, False)
 
     base.delete_dir("./o")
-    print("after " + json_data["run_after"])
-    if base.is_file(work_dir + json_data["run_after"]):
+    if json_data["run_after"] and base.is_file(work_dir + json_data["run_after"]):
+        print("after " + json_data["run_after"])
         base.cmd_in_dir(work_dir, "python", [json_data["run_after"]])

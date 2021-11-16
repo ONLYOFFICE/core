@@ -175,6 +175,12 @@ namespace NSFonts
 
         if (sPath.find(wchar_t('/')) == std::wstring::npos)
             sPath = strDir + sPath;
+        else if (!sPath.empty())
+        {
+            // путь относительный
+            if (sPath[0] == wchar_t('.'))
+                sPath = strDir + L"/" + sPath;
+        }
 
         CFontInfo* pInfo = new CFontInfo(sName,
             L"",

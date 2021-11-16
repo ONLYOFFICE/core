@@ -583,7 +583,7 @@ namespace MetaFile
 
                 unsigned int unMetafileSize = pImage->GetMetafileSize();
 
-                if (unMetafileSize == 0)
+                if (unMetafileSize == 0 || arPoints.size() != 3)
                         return;
 
                 CEmfParser oEmfParser(m_pInterpretator);
@@ -593,8 +593,52 @@ namespace MetaFile
                 oEmfParser.Scan();
 
                 if (!oEmfParser.CheckError())
-                        oEmfParser.PlayFile();
+                {
+                        double dKoefX = 1, dKoefY = 1, dX = 0, dY = 0;
+                        const std::string sStructName = typeid (T).name();
 
+                        if (sStructName == "struct MetaFile::TEmfPlusPointR")
+                        {
+                                //TODO: реализовать
+                        }
+                        else if (sStructName == "struct MetaFile::TEmfPlusPoint")
+                        {
+                                //TODO: реализовать
+                        }
+                        else if (sStructName == "struct MetaFile::TEmfPointD")
+                        {
+                                TEmfPlusPointF oPoint1, oPoint2, oPoint3;
+
+                                oPoint1 = (TEmfPlusPointF&)(arPoints[0]);
+                                oPoint2 = (TEmfPlusPointF&)(arPoints[1]);
+                                oPoint3 = (TEmfPlusPointF&)(arPoints[2]);
+
+                                oSrcRect.dRight += oSrcRect.dLeft;
+                                oSrcRect.dBottom += oSrcRect.dTop;
+
+                                dKoefX =  (oPoint2.x - oPoint1.x) / (oSrcRect.dRight - oSrcRect.dLeft);
+                                dKoefY =  (oPoint3.y - oPoint1.y) / (oSrcRect.dBottom - oSrcRect.dTop);
+
+                        }
+
+
+                        TEmfPlusXForm oNewTransform(-dKoefX, 0, 0, dKoefY, dX, dY);
+
+                        EmfPlusImageAttributesMap::const_iterator oFountAttributesImage = m_mImageAttributes.find(unImageAttributeIndex);
+
+                        if (m_mImageAttributes.end() != oFountAttributesImage)
+                        {
+                                CEmfPlusImageAttributes *pImageAttributes = oFountAttributesImage->second;
+                                if (pImageAttributes->eWrapMode == WrapModeTileFlipXY)
+                                {
+                                        oNewTransform.M11 *= -1;
+                                        oNewTransform.M22 *= -1;
+                                }
+                        }
+                        oEmfParser.SelectWorkspace(oSrcRect);
+                        oEmfParser.SetTrasform(oNewTransform);
+                        oEmfParser.PlayFile();
+                }
         }
 
         void CEmfPlusParser::Read_EMRPLUS_HEADER(unsigned short unShFlags)

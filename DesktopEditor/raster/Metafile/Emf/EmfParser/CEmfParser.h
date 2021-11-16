@@ -19,6 +19,11 @@ namespace MetaFile
 
                 EmfParserType   GetType()				    override;
                 void            SetStream(BYTE* pBuf, unsigned int unSize);
+
+                void            SetTrasform(TXForm oTransform);
+                void            SelectWorkspace(TRectD oCropBorder);
+
+                bool m_bView = false;
         private:
                 CEmfPlusParser *m_pEmfPlusParser;
 

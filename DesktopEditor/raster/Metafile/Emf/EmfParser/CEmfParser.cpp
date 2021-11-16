@@ -252,6 +252,16 @@ namespace MetaFile
                 m_oStream.SetStream(pBuf, unSize);
         }
 
+        void CEmfParser::SetTrasform(TXForm oTransform)
+        {
+                m_pDC->MultiplyTransform(oTransform, 4);
+        }
+
+        void CEmfParser::SelectWorkspace(TRectD oCropBorder)
+        {
+                m_pDC->GetClip()->Intersect(oCropBorder);
+        }
+
         bool CEmfParser::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)
         {
                 int lHeaderOffset         = offBmi - ulSkip;

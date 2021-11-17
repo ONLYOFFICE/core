@@ -239,6 +239,8 @@
     #include "../Source/XlsbFormat/Biff12_records/CustomRichFilter.cpp"
     #include "../Source/XlsbFormat/Biff12_records/BeginCustomRichFilters.cpp"
     #include "../Source/XlsbFormat/Biff12_records/EndCustomRichFilters.cpp"
+    #include "../Source/XlsbFormat/Biff12_records/Margins.cpp"
+    #include "../Source/XlsbFormat/Biff12_records/PrintOptions.cpp"
 // Biff12_structures
     #include "../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp"
     #include "../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp"

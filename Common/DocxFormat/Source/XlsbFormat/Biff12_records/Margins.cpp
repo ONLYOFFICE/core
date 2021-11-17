@@ -29,44 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/ListTotalRowFunction.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "Margins.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BrtBeginListCol record in BIFF12
-    class BeginListCol: public XLS::BiffRecord
+
+    Margins::Margins()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BeginListCol)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BeginListCol)
-        public:
-            BeginListCol();
-            virtual ~BeginListCol();
+    }
 
-            XLS::BaseObjectPtr clone();
+    Margins::~Margins()
+    {
+    }
 
-            void readFields(XLS::CFRecord& record);
+    BaseObjectPtr Margins::clone()
+    {
+        return BaseObjectPtr(new Margins(*this));
+    }
 
-            _UINT32                     idField;
-            ListTotalRowFunction        ilta;
-            _UINT32                     nDxfHdr;
-            _UINT32                     nDxfInsertRow;
-            _UINT32                     nDxfAgg;
-            _UINT32                     idqsif;
-            XLNullableWideString        stName;
-            XLNullableWideString        stCaption;
-            XLNullableWideString        stTotal;
-            XLNullableWideString        stStyleHeader;
-            XLNullableWideString        stStyleInsertRow;
-            XLNullableWideString        stStyleAgg;
-
-            ////
-            _UINT32                     indexList;
-    };
+    void Margins::readFields(XLS::CFRecord& record)
+    {
+        record >> xnumLeft >> xnumRight >> xnumTop >> xnumBottom >> xnumHeader >> xnumFooter;
+    }
 
 } // namespace XLSB
 

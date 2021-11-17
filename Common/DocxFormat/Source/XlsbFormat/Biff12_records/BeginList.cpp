@@ -63,6 +63,9 @@ namespace XLSB
 
         record >> nDxfHeader >> nDxfData >> nDxfAgg >> nDxfBorder >> nDxfHeaderBorder >> nDxfAggBorder >> dwConnID
                 >> stName >> stDisplayName >> stComment >> stStyleHeader >> stStyleData >> stStyleAgg;
+
+        record.getGlobalWorkbookInfo()->mapTableNames.insert({idList, stDisplayName});
+        record.getGlobalWorkbookInfo()->mapTableColumnNames.insert({idList, std::vector<std::wstring>()});
     }
 
 } // namespace XLSB

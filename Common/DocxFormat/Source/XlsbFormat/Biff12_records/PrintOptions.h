@@ -32,40 +32,27 @@
 #pragma once
 
 #include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/ListTotalRowFunction.h"
-#include "../Biff12_structures/XLWideString.h"
+#include  "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtBeginListCol record in BIFF12
-    class BeginListCol: public XLS::BiffRecord
+    // Logical representation of BrtPrintOptions record in BIFF12
+    class PrintOptions: public XLS::BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BeginListCol)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BeginListCol)
+            BIFF_RECORD_DEFINE_TYPE_INFO(PrintOptions)
+            BASE_OBJECT_DEFINE_CLASS_NAME(PrintOptions)
         public:
-            BeginListCol();
-            virtual ~BeginListCol();
+            PrintOptions();
+            virtual ~PrintOptions();
 
             XLS::BaseObjectPtr clone();
 
             void readFields(XLS::CFRecord& record);
 
-            _UINT32                     idField;
-            ListTotalRowFunction        ilta;
-            _UINT32                     nDxfHdr;
-            _UINT32                     nDxfInsertRow;
-            _UINT32                     nDxfAgg;
-            _UINT32                     idqsif;
-            XLNullableWideString        stName;
-            XLNullableWideString        stCaption;
-            XLNullableWideString        stTotal;
-            XLNullableWideString        stStyleHeader;
-            XLNullableWideString        stStyleInsertRow;
-            XLNullableWideString        stStyleAgg;
-
-            ////
-            _UINT32                     indexList;
+            bool                        fHCenter;
+            bool                        fVCenter;
+            bool                        fPrintHeaders;
+            bool                        fPrintGrid;
     };
 
 } // namespace XLSB

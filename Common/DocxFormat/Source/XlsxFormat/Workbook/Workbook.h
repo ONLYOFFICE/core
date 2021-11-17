@@ -115,6 +115,7 @@ namespace OOX
                     xlsb->ReadBin(oPath, workBookStream.get());
 
                     workBookStream->UpdateXti(xlsb->GetGlobalinfo());
+                    workBookStream->UpdateDefineNames(xlsb->GetGlobalinfo());
 
                     if (workBookStream != nullptr)
                     {

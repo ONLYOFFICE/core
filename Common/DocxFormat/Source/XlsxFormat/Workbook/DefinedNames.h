@@ -100,7 +100,10 @@ namespace OOX
                 m_oFunctionGroupId          = ptr->fGrp;
                 m_oHelp                     = ptr->helpTopic.value();
                 m_oHidden                   = ptr->fHidden;
-                m_oLocalSheetId             = ptr->itab;
+
+                if(ptr->itab != 0xFFFFFFFF)
+                    m_oLocalSheetId         = ptr->itab;
+
                 m_oName                     = ptr->name.value();
                 m_oPublishToServer          = ptr->fPublished;
                 m_oShortcutKey              = std::to_wstring(ptr->chKey);
@@ -108,7 +111,7 @@ namespace OOX
                 m_oVbProcedure              = ptr->fOB;
                 m_oWorkbookParameter        = ptr->fWorkbookParam;
                 m_oXlm                      = ptr->fFutureFunction;
-                //m_oRef                      = ptr->rgce.;
+                m_oRef                      = ptr->rgce.getAssembledFormula();
 
             }
 

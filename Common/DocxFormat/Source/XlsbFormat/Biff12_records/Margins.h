@@ -33,39 +33,31 @@
 
 #include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/ListTotalRowFunction.h"
-#include "../Biff12_structures/XLWideString.h"
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtBeginListCol record in BIFF12
-    class BeginListCol: public XLS::BiffRecord
+
+    // Logical representation of BrtMargins record in BIFF12
+    class Margins: public XLS::BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BeginListCol)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BeginListCol)
-        public:
-            BeginListCol();
-            virtual ~BeginListCol();
+        BIFF_RECORD_DEFINE_TYPE_INFO(Margins)
+        BASE_OBJECT_DEFINE_CLASS_NAME(Margins)
+    public:
+        Margins();
+        ~Margins();
 
-            XLS::BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+        void readFields(XLS::CFRecord& record);
 
-            _UINT32                     idField;
-            ListTotalRowFunction        ilta;
-            _UINT32                     nDxfHdr;
-            _UINT32                     nDxfInsertRow;
-            _UINT32                     nDxfAgg;
-            _UINT32                     idqsif;
-            XLNullableWideString        stName;
-            XLNullableWideString        stCaption;
-            XLNullableWideString        stTotal;
-            XLNullableWideString        stStyleHeader;
-            XLNullableWideString        stStyleInsertRow;
-            XLNullableWideString        stStyleAgg;
+        XLS::Xnum            xnumLeft;
+        XLS::Xnum            xnumRight;
+        XLS::Xnum            xnumTop;
+        XLS::Xnum            xnumBottom;
+        XLS::Xnum            xnumHeader;
+        XLS::Xnum            xnumFooter;
 
-            ////
-            _UINT32                     indexList;
     };
 
 } // namespace XLSB

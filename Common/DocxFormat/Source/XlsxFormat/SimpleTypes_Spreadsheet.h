@@ -2153,7 +2153,7 @@ namespace SimpleTypes
 		{
 		public:
 			CCellComments() {}
-
+                        CCellComments(const ECellComments & val)	{ this->m_eValue = val; }
 			virtual ECellComments FromString(std::wstring &sValue)
 			{
 				if      (L"asDisplayed" == sValue ) this->m_eValue = cellcommentsAsDisplayed;
@@ -2192,7 +2192,7 @@ namespace SimpleTypes
 		{
 		public:
 			CPrintError() {}
-
+                        CPrintError(const EPrintError & val)	{ this->m_eValue = val; }
 			virtual EPrintError FromString(std::wstring &sValue)
 			{
 				if      (L"blank" == sValue ) this->m_eValue = printerrorBlank;
@@ -2231,7 +2231,7 @@ namespace SimpleTypes
 		{
 		public:
 			CPageOrder() {}
-
+                        CPageOrder(const EPageOrder & val)	{ this->m_eValue = val; }
 			virtual EPageOrder FromString(std::wstring &sValue)
 			{
 				if      (L"downThenOver" == sValue ) this->m_eValue = pageorderDownThenOver;

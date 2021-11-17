@@ -173,7 +173,7 @@ void Lbl::readFields(CFRecord& record)
     else
     {
         unsigned int flags;
-        record >> flags >> chKey;
+        record >> flags;
 
         fHidden			= GETBIT(flags, 0);
         fFunc			= GETBIT(flags, 1);

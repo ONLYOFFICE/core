@@ -85,6 +85,7 @@ namespace XLSB
         std::vector<XLS::BaseObjectPtr>  m_arBrtFileRecover;
 
         void UpdateXti(XLS::GlobalWorkbookInfo* xls_global_info);
+        void UpdateDefineNames(XLS::GlobalWorkbookInfo* global_info_);
 
     };
 

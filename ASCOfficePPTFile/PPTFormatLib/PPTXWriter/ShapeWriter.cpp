@@ -2063,11 +2063,20 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()
         pShapeElement->m_pShape->ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, 0.0, 1.0);
     }
 
+    bool wasGeomAltWrote = false;
     if (!m_xmlGeomAlternative.empty())
     {
-        m_oWriter.WriteString(m_xmlGeomAlternative);
+        auto prstGeomStart = m_xmlGeomAlternative.find(L"<a:prstGeom");
+        auto prstGeomEnd = m_xmlGeomAlternative.find(L"</a:prstGeom>");
+        if (prstGeomStart != std::wstring::npos && prstGeomEnd != std::wstring::npos)
+        {
+            UINT prstGeomLen = prstGeomEnd - prstGeomStart + 13; // len </a:prstGeom>
+            auto strPrstGeom = m_xmlGeomAlternative.substr(prstGeomStart, prstGeomLen);
+            m_oWriter.WriteString(strPrstGeom);
+            wasGeomAltWrote = true;
+        }
     }
-    else
+    if (wasGeomAltWrote == false)
     {
         if ((prstGeom.empty() == false || pShapeElement->m_bShapePreset) && prstTxWarp.empty() && !shape->m_bCustomShape)
         {

@@ -199,10 +199,12 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\ListCCFmla.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\ListPart.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\ListTrFmla.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Margins.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\MergeCell.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\MRUColor.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\OleSize.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\PlaceholderName.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\PrintOptions.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\RichFilter.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\RichFilterDateGroupItem.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\RwDescent.h" />
@@ -544,10 +546,12 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\ListCCFmla.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\ListPart.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\ListTrFmla.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Margins.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\MergeCell.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\MRUColor.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\OleSize.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\PlaceholderName.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\PrintOptions.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\RichFilter.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\RichFilterDateGroupItem.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\RwDescent.cpp" />

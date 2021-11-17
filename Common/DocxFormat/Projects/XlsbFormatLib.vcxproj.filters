@@ -1034,6 +1034,12 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Top10RichFilter.h">
       <Filter>records</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\PrintOptions.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Margins.h">
+      <Filter>records</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ACProductVersion.cpp">
@@ -2037,6 +2043,12 @@
       <Filter>records</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Top10RichFilter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\PrintOptions.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Margins.cpp">
       <Filter>records</Filter>
     </ClCompile>
   </ItemGroup>

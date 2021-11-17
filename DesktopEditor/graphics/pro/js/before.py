@@ -1,8 +1,6 @@
 import sys
 sys.path.append("../../../../../build_tools/scripts")
 import base
-import os
-import json
 
 base.configure_common_apps()
 

@@ -83,7 +83,6 @@ libhunspell_src_path = "./hunspell/src/hunspell"
 input_sources = ["affentry.cxx",
                  "affixmgr.cxx",
                  "csutil.cxx",
-                 "dictmgr.cxx",
                  "hashmgr.cxx",
                  "hunspell.cxx",
                  "hunzip.cxx",

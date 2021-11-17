@@ -70,7 +70,12 @@
 	function checkMessage()
 	{
 		var data = window.messageData;
-		var res = AscCommon.Hash.hashOffice(data.password, data.salt, data.spinCount, data.alg).base64();
+		var res = [];
+
+		for (var i = 0, len = data.length; i < len; i++)
+        {
+            res.push(AscCommon.Hash.hashOffice(data[i].password, data[i].salt, data[i].spinCount, data[i].alg).base64());
+        }
 
 		var sender = window.messagePort || window;
 		sender.postMessage({ hashValue : res });

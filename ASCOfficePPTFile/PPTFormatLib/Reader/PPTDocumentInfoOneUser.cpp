@@ -1057,7 +1057,7 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
     if (!pGroupContainer) return;
     if (pGroupContainer->m_arRecords.empty()) return;
 
-    LoadAutoNumbering(pGroupContainer, pTheme);
+//    LoadAutoNumbering(pGroupContainer, pTheme);
 
     CRecordShapeContainer* pShapeGroup = dynamic_cast<CRecordShapeContainer*>(pGroupContainer->m_arRecords[0]);
 
@@ -2584,7 +2584,7 @@ void CPPTUserInfo::LoadAutoNumbering(CRecordGroupShapeContainer *pGroupContainer
             if (prog->m_pTagName && prog->m_pTagContainer && prog->m_pTagName->m_strText == ___PPT9)
             {
                 auto styleTextPropAtom = dynamic_cast<CRecordPP9ShapeBinaryTagExtension*>(prog->m_pTagContainer)->m_styleTextPropAtom;
-                for (auto prop9 : styleTextPropAtom.m_rgStyleTextProp9)
+                for (auto& prop9 : styleTextPropAtom.m_rgStyleTextProp9)
                 {
                     if (prop9.m_pf9.m_optBulletAutoNumberScheme.is_init())
                     {

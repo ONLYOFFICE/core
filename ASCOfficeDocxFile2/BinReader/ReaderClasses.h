@@ -1272,14 +1272,6 @@ public:
 			{
                 pCStringWriter->WriteString(L" w:color=\"" + Color.ToString() + L"\"");
 			}
-			if(bSize)
-			{
-				pCStringWriter->WriteString(L" w:sz=\"" + std::to_wstring(Size) + L"\"");
-			}
-			if(bSpace)
-			{
-				pCStringWriter->WriteString(L" w:space=\"" + std::to_wstring(Space) + L"\"");
-			}
 			if(bThemeColor && ThemeColor.IsNoEmpty())
 			{
 				if(ThemeColor.Auto && !bColor)
@@ -1299,6 +1291,14 @@ public:
 				{
                     pCStringWriter->WriteString(L" w:themeShade=\"" + ThemeColor.ToStringShade() + L"\"");
 				}
+			}
+			if(bSize)
+			{
+				pCStringWriter->WriteString(L" w:sz=\"" + std::to_wstring(Size) + L"\"");
+			}
+			if(bSpace)
+			{
+				pCStringWriter->WriteString(L" w:space=\"" + std::to_wstring(Space) + L"\"");
 			}
             pCStringWriter->WriteString(L"/>");
 		}
@@ -1349,14 +1349,14 @@ public:
 	}
 	void Write(NSStringUtils::CStringBuilder*  pCStringWriter, bool bCell)
 	{
-		if(bLeft)
-            oLeft.Write(L"w:left", pCStringWriter, bCell);
 		if(bTop)
             oTop.Write(L"w:top", pCStringWriter, bCell);
-		if(bRight)
-            oRight.Write(L"w:right", pCStringWriter, bCell);
+		if(bLeft)
+            oLeft.Write(L"w:left", pCStringWriter, bCell);
 		if(bBottom)
             oBottom.Write(L"w:bottom", pCStringWriter, bCell);
+		if(bRight)
+            oRight.Write(L"w:right", pCStringWriter, bCell);
 		if(bInsideH)
             oInsideH.Write(L"w:insideH", pCStringWriter, bCell);
 		if(bInsideV)

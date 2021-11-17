@@ -58,6 +58,8 @@ namespace PPTX
 				if ( oReader.IsEmptyNode() )
 					return;
 
+                m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
@@ -163,7 +165,7 @@ namespace PPTX
 			nullable<LightRig>	lightRig;
 			nullable<Backdrop>	backdrop;
 
-			std::wstring m_namespace;
+            std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

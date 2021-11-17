@@ -843,9 +843,9 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 		{
 			BYTE contextualSpacing = m_oBufferedStream.GetUChar();
 			if(0 != contextualSpacing)
-                pCStringWriter->WriteString(std::wstring(L"<w:contextualSpacing w:val=\"true\"/>"));
+                pCStringWriter->WriteString(std::wstring(L"<w:contextualSpacing/>"));
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(std::wstring(L"<w:contextualSpacing w:val=\"false\"/>"));
+                pCStringWriter->WriteString(std::wstring(L"<w:contextualSpacing w:val=\"0\"/>"));
         }break;
 	case c_oSerProp_pPrType::Ind:
 		{
@@ -876,7 +876,7 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 			if(0 != KeepLines)
                 pCStringWriter->WriteString(std::wstring(L"<w:keepLines/>"));
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(std::wstring(L"<w:keepLines w:val=\"false\"/>"));
+                pCStringWriter->WriteString(std::wstring(L"<w:keepLines w:val=\"0\"/>"));
         }break;
 	case c_oSerProp_pPrType::KeepNext:
 		{
@@ -884,7 +884,7 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 			if(0 != KeepNext)
                 pCStringWriter->WriteString(std::wstring(L"<w:keepNext/>"));
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(std::wstring(L"<w:keepNext w:val=\"false\"/>"));
+                pCStringWriter->WriteString(std::wstring(L"<w:keepNext w:val=\"0\"/>"));
         }break;
 	case c_oSerProp_pPrType::PageBreakBefore:
 		{
@@ -892,7 +892,7 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 			if(0 != pageBreakBefore)
                 pCStringWriter->WriteString(std::wstring(L"<w:pageBreakBefore/>"));
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(std::wstring(L"<w:pageBreakBefore w:val=\"false\"/>"));
+                pCStringWriter->WriteString(std::wstring(L"<w:pageBreakBefore w:val=\"0\"/>"));
 			break;
 		}
 	case c_oSerProp_pPrType::Spacing:
@@ -902,39 +902,18 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 			if(oSpacing.bLine || oSpacing.bLineTwips || oSpacing.bAfter || oSpacing.bAfterAuto || oSpacing.bBefore || oSpacing.bBeforeAuto)
 			{
                 pCStringWriter->WriteString(std::wstring(L"<w:spacing"));
-				BYTE bLineRule = linerule_Auto;
-				//проверяется bLine, а не bLineRule чтобы всегда писать LineRule, если есть w:line
-				if(oSpacing.bLine || oSpacing.bLineTwips)
+
+				if (oSpacing.bBefore)
 				{
-					if(oSpacing.bLineRule)
-						bLineRule = oSpacing.LineRule;
-                    std::wstring sLineRule;
-					switch(oSpacing.LineRule)
-					{
-						case linerule_AtLeast:sLineRule = _T(" w:lineRule=\"atLeast\"");break;
-						case linerule_Exact:sLineRule = _T(" w:lineRule=\"exact\"");break;
-						default:sLineRule = _T(" w:lineRule=\"auto\"");break;
-					}
-					pCStringWriter->WriteString(sLineRule);
+					std::wstring sBefore = L" w:before=\"" + std::to_wstring(oSpacing.Before) + L"\"";
+					pCStringWriter->WriteString(sBefore);
 				}
-				if(oSpacing.bLine)
+				if (oSpacing.bBeforeAuto)
 				{
-                    std::wstring sLine;
-					if(linerule_Auto == bLineRule)
-					{
-						long nLine = SerializeCommon::Round(oSpacing.Line * 240);
-                        sLine = L" w:line=\"" + std::to_wstring(nLine) + L"\"";
-					}
+					if (true == oSpacing.BeforeAuto)
+						pCStringWriter->WriteString(std::wstring(L" w:beforeAutospacing=\"1\""));
 					else
-					{
-						long nLine = SerializeCommon::Round( g_dKoef_mm_to_twips * oSpacing.Line);
-                        sLine = L" w:line=\"" + std::to_wstring(nLine) + L"\"";
-					}
-					pCStringWriter->WriteString(sLine);
-				}
-				else if(oSpacing.bLineTwips)
-				{
-					pCStringWriter->WriteString(L" w:line=\"" + std::to_wstring(oSpacing.LineTwips) + L"\"");
+						pCStringWriter->WriteString(std::wstring(L" w:beforeAutospacing=\"0\""));
 				}
 				if(oSpacing.bAfter)
 				{
@@ -948,19 +927,44 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 					else
                         pCStringWriter->WriteString(std::wstring(L" w:afterAutospacing=\"0\""));
 				}
-				if(oSpacing.bBefore)
+				BYTE bLineRule = linerule_Auto;
+				
+				std::wstring sLineRule;
+				//проверяется bLine, а не bLineRule чтобы всегда писать LineRule, если есть w:line
+				if (oSpacing.bLine || oSpacing.bLineTwips)
 				{
-					std::wstring sBefore = L" w:before=\"" + std::to_wstring(oSpacing.Before) + L"\"";
-					pCStringWriter->WriteString(sBefore);
+					if (oSpacing.bLineRule)
+						bLineRule = oSpacing.LineRule;
+					switch (oSpacing.LineRule)
+					{
+					case linerule_AtLeast:	sLineRule = _T(" w:lineRule=\"atLeast\""); break;
+					case linerule_Exact:	sLineRule = _T(" w:lineRule=\"exact\""); break;
+					default:				sLineRule = _T(" w:lineRule=\"auto\""); break;
+					}
 				}
-				if(oSpacing.bBeforeAuto)
+				if (oSpacing.bLine)
 				{
-					if(true == oSpacing.BeforeAuto)
-                        pCStringWriter->WriteString(std::wstring(L" w:beforeAutospacing=\"1\""));
+					std::wstring sLine;
+					if (linerule_Auto == bLineRule)
+					{
+						long nLine = SerializeCommon::Round(oSpacing.Line * 240);
+						sLine = L" w:line=\"" + std::to_wstring(nLine) + L"\"";
+					}
 					else
-                        pCStringWriter->WriteString(std::wstring(L" w:beforeAutospacing=\"0\""));
+					{
+						long nLine = SerializeCommon::Round(g_dKoef_mm_to_twips * oSpacing.Line);
+						sLine = L" w:line=\"" + std::to_wstring(nLine) + L"\"";
+					}
+					pCStringWriter->WriteString(sLine);
 				}
-                pCStringWriter->WriteString(std::wstring(L"/>"));
+				else if (oSpacing.bLineTwips)
+				{
+					pCStringWriter->WriteString(L" w:line=\"" + std::to_wstring(oSpacing.LineTwips) + L"\"");
+				}
+				if (false == sLineRule.empty())
+					pCStringWriter->WriteString(sLineRule);
+
+				pCStringWriter->WriteString(std::wstring(L"/>"));
 			}
 			break;
 		}

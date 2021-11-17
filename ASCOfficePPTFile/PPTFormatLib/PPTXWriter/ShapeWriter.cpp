@@ -158,12 +158,6 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
                 oWriter.WriteStringXML(std::wstring(&bu, 1));
                 oWriter.WriteString(L"\"/>");
             }
-            //            if (!pPF->bulletAutoNum.is_init())
-            //            {
-            //                oWriter.WriteString(L"<a:buAutoNum type=\"");
-            //                oWriter.WriteString(L"arabicPeriod");
-            //                oWriter.WriteString(L"\"/>");
-            //            }
         }
         else
         {
@@ -1174,12 +1168,6 @@ void PPT_FORMAT::CShapeWriter::Write3dShape()
 }
 void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 {
-    //if (false == m_xmlTxBodyAlternative.empty())
-    //{
-    //	m_oWriter.WriteString(m_xmlTxBodyAlternative);
-
-    //	return;
-    //}
     CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
     if (!pShapeElement) return;
 
@@ -1414,7 +1402,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     }
                     m_oWriter.WriteString(std::wstring(L"/>"));
                 }
-                if (pPF->bulletAutoNum.is_init() && !pPF->bulletChar.is_init())  // TODO Numbering
+                if (pPF->bulletAutoNum.is_init() && !pPF->bulletChar.is_init())
                 {
                     m_oWriter.WriteString(L"<a:buAutoNum type=\"");
                     m_oWriter.WriteString(pPF->bulletAutoNum->type.get());
@@ -1433,11 +1421,11 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 if (pPF->bulletFontProperties.is_init() == false && pPF->bulletSize.is_init() == false)
                 {
                     m_oWriter.WriteString(std::wstring(L"<a:buFontTx/>"));
-                    if (pPF->bulletColor.is_init() == false)
+                    if (pPF->bulletColor.is_init() == false && pPF->bulletAutoNum.is_init() == false)
                         set = false;
                 }
 
-                if (pPF->bulletChar.is_init())
+                if (pPF->bulletChar.is_init() && pPF->bulletAutoNum.is_init() == false)
                 {
                     wchar_t bu = pPF->bulletChar.get();
                     m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
@@ -1448,10 +1436,18 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
                 if (!set)
                 {
-                    wchar_t bu = 0x2022;
-                    m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
-                    m_oWriter.WriteStringXML(std::wstring(&bu, 1));
-                    m_oWriter.WriteString(std::wstring(L"\"/>"));
+                    if (pPF->hasBullet.is_init() && *(pPF->hasBullet) && !pPF->bulletChar.is_init())
+                    {
+                        m_oWriter.WriteString(L"<a:buAutoNum type=\"");
+                        m_oWriter.WriteString(L"arabicPeriod");
+                        m_oWriter.WriteString(L"\"/>");
+                    } else
+                    {
+                        wchar_t bu = 0x2022;
+                        m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
+                        m_oWriter.WriteStringXML(std::wstring(&bu, 1));
+                        m_oWriter.WriteString(std::wstring(L"\"/>"));
+                    }
                 }
             }
             else
@@ -2003,9 +1999,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()
     if (pShapeElement->m_pShape && !pShapeElement->m_pShape->m_strXmlString.empty())
     {
         ParseXmlAlternative(pShapeElement->m_pShape->m_strXmlString);
-
     }
-
     m_oWriter.WriteString(std::wstring(L"<p:sp>"));
 
     WriteShapeInfo();
@@ -2069,11 +2063,20 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()
         pShapeElement->m_pShape->ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, 0.0, 1.0);
     }
 
+    bool wasGeomAltWrote = false;
     if (!m_xmlGeomAlternative.empty())
     {
-        m_oWriter.WriteString(m_xmlGeomAlternative);
+        auto prstGeomStart = m_xmlGeomAlternative.find(L"<a:prstGeom");
+        auto prstGeomEnd = m_xmlGeomAlternative.find(L"</a:prstGeom>");
+        if (prstGeomStart != std::wstring::npos && prstGeomEnd != std::wstring::npos)
+        {
+            UINT prstGeomLen = prstGeomEnd - prstGeomStart + 13; // len </a:prstGeom>
+            auto strPrstGeom = m_xmlGeomAlternative.substr(prstGeomStart, prstGeomLen);
+            m_oWriter.WriteString(strPrstGeom);
+            wasGeomAltWrote = true;
+        }
     }
-    else
+    if (wasGeomAltWrote == false)
     {
         if ((prstGeom.empty() == false || pShapeElement->m_bShapePreset) && prstTxWarp.empty() && !shape->m_bCustomShape)
         {
@@ -2117,7 +2120,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShape()
 
     pShapeElement = NULL;
 
-    return m_xmlGeomAlternative.empty() ? m_oWriter.GetData() : m_xmlGeomAlternative;
+    return m_oWriter.GetData();
 }
 void PPT_FORMAT::CShapeWriter::ParseXmlAlternative(const std::wstring & xml)
 {
@@ -2145,18 +2148,6 @@ void PPT_FORMAT::CShapeWriter::ParseXmlAlternative(const std::wstring & xml)
         {
             NSBinPptxRW::CXmlWriter writer(XMLWRITER_DOC_TYPE_PPTX);
             //            shape->spPr.Geometry.toXmlWriter(&writer);
-
-            if (shape->spPr.scene3d.IsInit())
-            {
-                shape->spPr.scene3d->m_namespace = L"a";
-//                shape->spPr.scene3d->toXmlWriter(&writer);
-            }
-
-            if (shape->spPr.sp3d.IsInit())
-            {
-                shape->spPr.sp3d->m_namespace = L"a";
-//                shape->spPr.sp3d->toXmlWriter(&writer);
-            }
 
             shape->toXmlWriter(&writer);
             m_xmlGeomAlternative = writer.GetXmlString();

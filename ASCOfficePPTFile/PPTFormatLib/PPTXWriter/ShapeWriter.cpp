@@ -1402,6 +1402,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     }
                     m_oWriter.WriteString(std::wstring(L"/>"));
                 }
+                bool donotNeedBullet = true;
                 if (pPF->bulletAutoNum.is_init() && !pPF->bulletChar.is_init())
                 {
                     m_oWriter.WriteString(L"<a:buAutoNum type=\"");
@@ -1415,6 +1416,17 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                         m_oWriter.WriteString(L"\"");
                     }
                     m_oWriter.WriteString(L"/>");
+                    donotNeedBullet = true;
+                }
+                if (pPF->bulletBlip.is_init() && pPF->bulletBlip->tmpImagePath.size())
+                {
+                    auto strRID = m_pRels->WriteImage(pPF->bulletBlip->tmpImagePath);
+                    if (strRID.empty())
+                        break;
+                    m_oWriter.WriteString(L"<a:buBlip><a:blip r:embed=\"");
+                    m_oWriter.WriteString(strRID);
+                    m_oWriter.WriteString(L"\"/></a:buBlip>");
+                    donotNeedBullet = true;
                 }
 
                 bool set = true;
@@ -1434,7 +1446,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     set = true;
                 }
 
-                if (!set)
+                if (!set && !donotNeedBullet)
                 {
                     if (pPF->hasBullet.is_init() && *(pPF->hasBullet) && !pPF->bulletChar.is_init())
                     {
@@ -1626,10 +1638,6 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 std::wstring strT = pParagraph->m_arSpans[nSpan].m_strText;
 
                 CorrectXmlString(strT);
-                if (strT == L"Мой Офис® Защищенный")
-                {
-                    int a = 2;
-                }
 
                 m_oWriter.WriteString(strT);
 

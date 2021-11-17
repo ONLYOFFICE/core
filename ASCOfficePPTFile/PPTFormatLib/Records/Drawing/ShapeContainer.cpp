@@ -2748,11 +2748,11 @@ void CRecordShapeContainer::ApplyAutoNumbering(CTextAttributesEx *pText)
                     if (!par.m_arSpans[0].m_oRun.pp9rt.is_init())
                         continue;
 
-                    WORD pp9st = par.m_arSpans[0].m_oRun.pp9rt.get();
-                    if (pp9st >= arrProps9.size())
+                    WORD pp9rt = par.m_arSpans[0].m_oRun.pp9rt.get();
+                    if (pp9rt >= arrProps9.size())
                         continue;
 
-                    auto& prop9 = arrProps9[pp9st];
+                    auto& prop9 = arrProps9[pp9rt];
                     if (prop9.m_pf9.m_optBulletAutoNumberScheme.is_init())
                     {
                         auto* pBuAutoNum = new CBulletAutoNum;
@@ -2760,6 +2760,13 @@ void CRecordShapeContainer::ApplyAutoNumbering(CTextAttributesEx *pText)
                         pBuAutoNum->startAt = prop9.m_pf9.m_optBulletAutoNumberScheme->m_nStartNum;
 
                         par.m_oPFRun.bulletAutoNum.reset(pBuAutoNum);
+                    }
+                    // TODO not connected with pp9rt? To connect m_optBulletBlipRef with CBulletBlip                    if (prop9.m_pf9.m_optBulletBlipRef.is_init())
+                    {
+//                        auto* pBuBlip = new CBulletBlip;
+//                        pBuBlip->bulletBlipRef = prop9.m_pf9.m_optBulletBlipRef.get();
+
+//                        par.m_oPFRun.bulletBlip.reset(pBuBlip);
                     }
                 }
             }

@@ -1094,7 +1094,7 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
                 CElementPtr pElement = pShapeGroup->GetElement(m_current_level > 1, &m_oExMedia, pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
 
                 CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
-
+                LoadBulletBlip(pShape);
                 if (NULL != pElement)
                 {
                     pElement->m_pParentElements = pParentElements;
@@ -2597,6 +2597,23 @@ void CPPTUserInfo::LoadAutoNumbering(CRecordGroupShapeContainer *pGroupContainer
                 }
             }
 
+        }
+    }
+}
+
+void CPPTUserInfo::LoadBulletBlip(CShapeElement *pShape)
+{
+    if (pShape == nullptr || pShape->m_pShape == nullptr) return;
+    std::vector<CRecordDocInfoListContainer*> arrDocInfoCont;
+    m_oDocument.GetRecordsByType(&arrDocInfoCont, false);
+    // TODO need to find BlipEntity;
+
+    for (auto& par : pShape->m_pShape->m_oText.m_arParagraphs)
+    {
+        if (par.m_oPFRun.bulletBlip.IsInit())
+        {
+            // TODO need to write path of image here
+            par.m_oPFRun.bulletBlip->bulletBlipRef;
         }
     }
 }

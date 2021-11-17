@@ -36,6 +36,7 @@
 #include "ProgStringTagContainer.h"
 #include "TextDefaults9Atom.h"
 #include "OutlineTextProps9Container.h"
+#include "BlipCollection9Container.h"
 
 
 #define ___PPT9  L"___PPT9"
@@ -53,6 +54,7 @@ public:
     std::vector<CRecordTextMasterStyle9Atom*>       m_rgTextMasterStyleAtom;
      nullable<CRecordTextDefaults9Atom>             m_textDefaultsAtom;
      nullable<CRecordOutlineTextProps9Container>    m_outlineTextPropsContainer;
+     nullable<CRecordBlipCollection9Container>      m_blipCollectionContainer;
     // TODO
     CRecordPP9DocBinaryTagExtension()
     {
@@ -102,6 +104,12 @@ public:
             {
                 m_outlineTextPropsContainer = new CRecordOutlineTextProps9Container;
                 m_outlineTextPropsContainer->ReadFromStream(ReadHeader, pStream);
+                break;
+            }
+            case RT_BlipCollection9:
+            {
+                m_blipCollectionContainer = new CRecordBlipCollection9Container;
+                m_blipCollectionContainer->ReadFromStream(ReadHeader, pStream);
                 break;
             }
             default:

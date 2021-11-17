@@ -31,24 +31,26 @@
  */
 #pragma once
 #include "../Reader/Records.h"
+#include "Drawing/ArtBlip.h"
 
 class CRecordBlipEntityAtom : public CUnknownRecord
 {
 public:
-	BYTE m_nWinBlipType;
-	std::pair<boost::shared_array<unsigned char>, _INT32> data;
 	
-	CRecordBlipEntityAtom()
-	{
-	}
+    CRecordBlipEntityAtom();
+    const std::wstring getTmpImgPath() const;
+    const std::wstring getImgExtention() const;
+    ~CRecordBlipEntityAtom();
 
-	~CRecordBlipEntityAtom()
-	{
-	}
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
 
+private:
+    bool writeImage();
+    std::wstring getTempFolder()const;
+
+private:
+    BYTE m_nWinBlipType;
+    CRecordOfficeArtBlip m_oBlip;
+    std::wstring m_tmpFolder;
 };

@@ -118,6 +118,13 @@ namespace PPT_FORMAT
 
     };
 
+    class CBulletBlip
+    {
+    public:
+        std::wstring tmpImagePath;
+        WORD bulletBlipRef;
+    };
+
 	class CFontProperties
 	{
 	public:
@@ -278,8 +285,9 @@ namespace PPT_FORMAT
 		NSCommon::nullable_base<WORD>			bulletSize;
 		NSCommon::nullable_base<WCHAR>			bulletChar;
 		NSCommon::nullable_base<CColor>			bulletColor;
-                NSCommon::nullable_base<CFontProperty>          bulletFontProperties;
-                NSCommon::nullable_base<CBulletAutoNum>         bulletAutoNum;
+        NSCommon::nullable_base<CFontProperty>  bulletFontProperties;
+        NSCommon::nullable_base<CBulletAutoNum> bulletAutoNum;
+        NSCommon::nullable_base<CBulletBlip>    bulletBlip;
 
 		NSCommon::nullable_base<WORD>			textAlignment;
 		NSCommon::nullable_base<LONG>			lineSpacing;
@@ -946,6 +954,7 @@ namespace PPT_FORMAT
 					return false;
 			}
 			return true;
-		}
-	};
+        }
+    };
+
 }

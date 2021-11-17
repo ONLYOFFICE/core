@@ -1626,10 +1626,6 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                 std::wstring strT = pParagraph->m_arSpans[nSpan].m_strText;
 
                 CorrectXmlString(strT);
-                if (strT == L"Мой Офис® Защищенный")
-                {
-                    int a = 2;
-                }
 
                 m_oWriter.WriteString(strT);
 

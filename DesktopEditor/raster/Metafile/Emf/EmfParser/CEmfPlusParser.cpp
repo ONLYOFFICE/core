@@ -594,7 +594,7 @@ namespace MetaFile
 
                 if (!oEmfParser.CheckError())
                 {
-                        double dKoefX = 1, dKoefY = 1, dX = 0, dY = 0;
+                        double dM11 = 1, dM12 = 0, dM21 = 0,  dM22 = 1, dX = 0, dY = 0;
                         const std::string sStructName = typeid (T).name();
 
                         if (sStructName == "struct MetaFile::TEmfPlusPointR")
@@ -613,16 +613,28 @@ namespace MetaFile
                                 oPoint2 = (TEmfPlusPointF&)(arPoints[1]);
                                 oPoint3 = (TEmfPlusPointF&)(arPoints[2]);
 
+                                double dStartX = oPoint1.x, dStartY = oPoint1.y;
+
+                                m_pDC->GetTransform()->Apply(dStartX, dStartY);
+
+                                dM11 = (oPoint2.x - oPoint1.x) / oSrcRect.dRight;
+                                dM21 = (oPoint3.x - oPoint1.x) / oSrcRect.dBottom;
+                                dX = oPoint1.x - dM11 * oSrcRect.dLeft - dM21 * oSrcRect.dTop;
+
+                                dM12 = (oPoint2.y - oPoint1.y) / oSrcRect.dRight;
+                                dM22 = (oPoint3.y - oPoint1.y) / oSrcRect.dBottom;
+                                dY = oPoint1.y - dM12 * oSrcRect.dLeft - dM22 * oSrcRect.dTop;
+
                                 oSrcRect.dRight += oSrcRect.dLeft;
                                 oSrcRect.dBottom += oSrcRect.dTop;
 
-                                dKoefX =  (oPoint2.x - oPoint1.x) / (oSrcRect.dRight - oSrcRect.dLeft);
-                                dKoefY =  (oPoint3.y - oPoint1.y) / (oSrcRect.dBottom - oSrcRect.dTop);
 
-                        }
 
 
                         TEmfPlusXForm oNewTransform(-dKoefX, 0, 0, dKoefY, dX, dY);
+                                dX = -dStartX;
+                                dY = oPoint3.y + oPoint1.y;
+                        }
 
                         EmfPlusImageAttributesMap::const_iterator oFountAttributesImage = m_mImageAttributes.find(unImageAttributeIndex);
 
@@ -631,10 +643,16 @@ namespace MetaFile
                                 CEmfPlusImageAttributes *pImageAttributes = oFountAttributesImage->second;
                                 if (pImageAttributes->eWrapMode == WrapModeTileFlipXY)
                                 {
-                                        oNewTransform.M11 *= -1;
-                                        oNewTransform.M22 *= -1;
+                                        dX += 2  * (dX + (oSrcRect.dRight - oSrcRect.dLeft)) - (oSrcRect.dRight - oSrcRect.dLeft);
+                                        dY += dY * 2;
+
+                                        dM11 *= -1;
+                                        dM22 *= -1;
                                 }
                         }
+
+                        TEmfPlusXForm oNewTransform(-dM11, 0, 0, dM22, dX, dY);
+
                         oEmfParser.SelectWorkspace(oSrcRect);
                         oEmfParser.SetTrasform(oNewTransform);
                         oEmfParser.PlayFile();

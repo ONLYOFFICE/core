@@ -240,6 +240,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndCustomRichFilters.cpp \
     ../Source/XlsbFormat/Biff12_records/Margins.cpp \
     ../Source/XlsbFormat/Biff12_records/PrintOptions.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginHeaderFooter.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndHeaderFooter.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -372,6 +374,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/RICHFILTERCONTENT.cpp \
     ../Source/XlsbFormat/Biff12_unions/RICHFILTERS.cpp \
     ../Source/XlsbFormat/Biff12_unions/CUSTOMRICHFILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/HEADERFOOTER.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -590,6 +593,8 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/EndCustomRichFilters.h \
     ../Source/XlsbFormat/Biff12_records/Margins.h \
     ../Source/XlsbFormat/Biff12_records/PrintOptions.h \
+    ../Source/XlsbFormat/Biff12_records/BeginHeaderFooter.h \
+    ../Source/XlsbFormat/Biff12_records/EndHeaderFooter.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -725,3 +730,4 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/RICHFILTERCONTENT.h \
     ../Source/XlsbFormat/Biff12_unions/RICHFILTERS.h \
     ../Source/XlsbFormat/Biff12_unions/CUSTOMRICHFILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/HEADERFOOTER.h \

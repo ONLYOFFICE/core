@@ -131,6 +131,8 @@ namespace OOX
                         m_oPageSetup = workSheetStream->m_BrtPageSetup;
                     if (workSheetStream->m_BrtPrintOptions != nullptr)
                         m_oPrintOptions = workSheetStream->m_BrtPrintOptions;
+                    if (workSheetStream->m_HEADERFOOTER != nullptr)
+                        m_oHeaderFooter = workSheetStream->m_HEADERFOOTER;
 
                     if (workSheetStream->m_BrtSheetProtectionIso != nullptr)
                         m_oSheetProtection = workSheetStream->m_BrtSheetProtectionIso;

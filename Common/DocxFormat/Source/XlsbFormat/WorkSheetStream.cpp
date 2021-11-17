@@ -46,6 +46,7 @@
 #include "Biff12_unions/WSVIEWS2.h"
 #include "Biff12_records/Margins.h"
 #include "Biff12_records/PrintOptions.h"
+#include "Biff12_unions/HEADERFOOTER.h"
 #include "Biff12_records/SheetProtectionIso.h"
 #include "Biff12_records/SheetProtection.h"
 #include "Biff12_unions/LISTPARTS.h"
@@ -211,6 +212,15 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                 if (proc.optional<PrintOptions>())
                 {
                     m_BrtPrintOptions = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginHeaderFooter:
+            {
+                if (proc.optional<HEADERFOOTER>())
+                {
+                    m_HEADERFOOTER = elements_.back();
                     elements_.pop_back();
                 }
             }break;

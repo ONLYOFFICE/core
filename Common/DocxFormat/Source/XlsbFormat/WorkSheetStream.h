@@ -77,6 +77,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtMargins;
         XLS::BaseObjectPtr               m_BrtPageSetup;
         XLS::BaseObjectPtr               m_BrtPrintOptions;
+        XLS::BaseObjectPtr               m_HEADERFOOTER;
         XLS::BaseObjectPtr               m_BrtSheetProtectionIso;
         XLS::BaseObjectPtr               m_BrtSheetProtection;
         XLS::BaseObjectPtr               m_LISTPARTS;

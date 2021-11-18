@@ -108,7 +108,7 @@ namespace DocFileFormat
 				switch (iter->OpCode)
 				{
 					case sprmOldSGprfIhdt:
-					case sprmSGprfIhdt:
+					//case sprmSGprfIhdt: //betesil_pl_it.doc
 					{
 						fHF = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize );
 					}break;
@@ -162,6 +162,7 @@ namespace DocFileFormat
 		//MUST be ignored if the section does not have page number restart enabled.([MS-DOC] — v20101113. стр 152)
 		bool bWasSprmSFPgnRestart = false;
 		std::wstring wsSprmSPgnStart;
+		int nProperty = 0; // for unknown
 
 		for (std::list<SinglePropertyModifier>::iterator iter = sepx->grpprl->begin(); iter != sepx->grpprl->end(); ++iter)
 		{
@@ -474,9 +475,14 @@ namespace DocFileFormat
 				break;
 
 			default:
+				if (iter->argumentsSize == 2)
 				{
-					int sz = iter->argumentsSize;
-				}break;
+					nProperty = FormatUtils::BytesToUInt16(iter->Arguments, 0, iter->argumentsSize);
+				}
+				else if (iter->argumentsSize == 1)
+				{
+					nProperty = FormatUtils::BytesToUChar(iter->Arguments, 0, iter->argumentsSize);
+				}
 			}
 		}
 

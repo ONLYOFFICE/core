@@ -30,16 +30,9 @@
  *
  */
 #pragma once
-#ifndef DOCX_2_TXT_CONVERTER_INCLUDE_H_
-#define DOCX_2_TXT_CONVERTER_INCLUDE_H_
 
 #include <vector>
 #include <string>
-
-namespace TxtXml
-{
-	class ITxtXmlEvent;
-}
 
 namespace Docx2Txt
 {
@@ -50,7 +43,7 @@ namespace Docx2Txt
 		Converter();
 		~Converter();
 
-		void convert(TxtXml::ITxtXmlEvent& Event);
+		void convert();
     	
         void read	(const std::wstring& path);
         void write	(const std::wstring& path);
@@ -67,5 +60,3 @@ namespace Docx2Txt
 
 	
 } // namespace Docx2Txt
-
-#endif // DOCX_2_TXT_CONVERTER_INCLUDE_H_

@@ -6,7 +6,7 @@
 	"run_before": "before.py",
 	"run_after": "after.py",
 	"base_js_content": "./wasm/js/spell.js",
-	
+
 	"compiler_flags": [
 		"-O3",
 		"-fno-exceptions",
@@ -18,18 +18,18 @@
 	],
 	"exported_functions": [
 		"_malloc",
-        "_free",
-        "_Spellchecker_Malloc",
-        "_Spellchecker_Free",
-        "_Spellchecker_Create",
-        "_Spellchecker_Destroy",
-        "_Spellchecker_AddDictionary",
-        "_Spellchecker_RemoveDicrionary",
-        "_Spellchecker_Load",
-        "_Spellchecker_Spell",
-        "_Spellchecker_Suggest",
-        "_Spellchecker_RemoveEngine",
-        "_Spellchecker_TotalAllocatedMemory"
+		"_free",
+		"_Spellchecker_Malloc",
+		"_Spellchecker_Free",
+		"_Spellchecker_Create",
+		"_Spellchecker_Destroy",
+		"_Spellchecker_AddDictionary",
+		"_Spellchecker_RemoveDicrionary",
+		"_Spellchecker_Load",
+		"_Spellchecker_Spell",
+		"_Spellchecker_Suggest",
+		"_Spellchecker_RemoveEngine",
+		"_Spellchecker_TotalAllocatedMemory"
 	],
 	"include_path": ["./hunspell/src/hunspell", "./wasm/src"],
 	"define": ["WIN32", "NDEBUG", "HUNSPELL_STATIC", "BUILDING_LIBHUNSPELL", "HUNSPELL_WASM_MODULE"],

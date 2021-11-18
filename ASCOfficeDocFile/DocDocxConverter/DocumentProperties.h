@@ -570,7 +570,11 @@ namespace DocFileFormat
 		bool fIgnoreMixedContent;
         // XML Option: Show placeholder text for all empty XML elements
 		bool fShowPlaceholderText;
-		unsigned int grf;
+
+		bool fWord97Doc = false;
+		bool fStyleLockTheme = false;
+		bool fStyleLockQFSet = false;
+
         // Reading mode: ink lock down
 		bool fReadingModeInkLockDown;
         // Track changes: Show ink annotations
@@ -587,9 +591,9 @@ namespace DocFileFormat
 		unsigned short iDocProtCur;
 		bool fDispBkSpSaved;
         // Reading Layout page size lockdown
-		short dxaPageLock;
+		int dxaPageLock;
         // Reading Layout page size lockdown
-		short dyaPageLock;
+		int dyaPageLock;
         // Reading Layout font lockdown
 		int pctFontLock;
 		unsigned char grfitbid;

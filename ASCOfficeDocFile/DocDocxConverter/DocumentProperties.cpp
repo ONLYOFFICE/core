@@ -444,40 +444,50 @@ namespace DocFileFormat
 									rsidRoot = FormatUtils::BytesToInt32(bytes, 588, size);
 									//unused 2
 
-									if (size > 594 && size > 609) //start && stop bound /* && fib->m_FibNew.nFibNew > Fib2002*/
+									if (size > 594 && size > 609)
 									{
-										//split bytes 592,593,594,595 into bits
-										fTreatLockAtnAsReadOnly = FormatUtils::GetBitFromBytes((bytes + 592), 4, 0);
-										fStyleLock = FormatUtils::GetBitFromBytes((bytes + 592), 4, 1);
-										fAutoFmtOverride = FormatUtils::GetBitFromBytes((bytes + 592), 4, 2);
-										fRemoveWordML = FormatUtils::GetBitFromBytes((bytes + 592), 4, 3);
-										fApplyCustomXForm = FormatUtils::GetBitFromBytes((bytes + 592), 4, 4);
-										fStyeLockEnforced = FormatUtils::GetBitFromBytes((bytes + 592), 4, 5);
-										fFakeLockAtn = FormatUtils::GetBitFromBytes((bytes + 592), 4, 6);
-										fIgnoreMixedContent = FormatUtils::GetBitFromBytes((bytes + 592), 4, 7);
-										fShowPlaceholderText = FormatUtils::GetBitFromBytes((bytes + 592), 4, 8);
-										grf = FormatUtils::GetUIntFromBytesBits((bytes + 592), 4, 9, 23);
+										const size_t dop2003_offset = 594;
 
-										//split bytes 596 and 597 into bits
-										fReadingModeInkLockDown = FormatUtils::GetBitFromBytes((bytes + 596), 2, 0);
-										fAcetateShowInkAtn = FormatUtils::GetBitFromBytes((bytes + 596), 2, 1);
-										fFilterDttm = FormatUtils::GetBitFromBytes((bytes + 596), 2, 2);
-										fEnforceDocProt = FormatUtils::GetBitFromBytes((bytes + 596), 2, 3);
-										iDocProtCur = (unsigned short)FormatUtils::GetUIntFromBytesBits((bytes + 596), 2, 4, 3);
-										fDispBkSpSaved = FormatUtils::GetBitFromBytes((bytes + 596), 2, 7);
+										_UINT32 flags = FormatUtils::BytesToUInt32(bytes, dop2003_offset, size);
+										fTreatLockAtnAsReadOnly = GETBIT(flags, 0);
+										fStyleLock = GETBIT(flags, 1);
+										fAutoFmtOverride = GETBIT(flags, 2);
+										fRemoveWordML = GETBIT(flags, 3);
+										fApplyCustomXForm = GETBIT(flags, 4);
+										fStyeLockEnforced = GETBIT(flags, 5);
+										fFakeLockAtn = GETBIT(flags, 6);
+										fIgnoreMixedContent = GETBIT(flags, 7);
+										fShowPlaceholderText = GETBIT(flags, 8);
+										bool unused = GETBIT(flags, 9);
+										fWord97Doc = GETBIT(flags, 10);
+										fStyleLockTheme = GETBIT(flags, 11);
+										fStyleLockQFSet = GETBIT(flags, 12);
+										//empty = 19
 
-										dxaPageLock = FormatUtils::BytesToInt16(bytes, 598, size);
-										dyaPageLock = FormatUtils::BytesToInt16(bytes, 600, size);
-										pctFontLock = FormatUtils::BytesToInt32(bytes, 602, size);
-										grfitbid = bytes[606];
-										//unsigned char 607 is unused
-										ilfoMacAtCleanup = FormatUtils::BytesToUInt16(bytes, 608, size);
+										BYTE flags2 = bytes[dop2003_offset + 4];
+										fReadingModeInkLockDown = GETBIT(flags2, 0);
+										fAcetateShowInkAtn = GETBIT(flags2, 1);
+										fFilterDttm = GETBIT(flags2, 2);
+										fEnforceDocProt = GETBIT(flags2, 3);
+										iDocProtCur = GETBITS(flags2, 4, 6);
+										fDispBkSpSaved = GETBIT(flags2, 7);
+
+										//empty2 = 8
+										dxaPageLock = FormatUtils::BytesToInt32(bytes, dop2003_offset + 6, size);
+										dyaPageLock = FormatUtils::BytesToInt32(bytes, dop2003_offset + 10, size);
+										pctFontLock = FormatUtils::BytesToInt32(bytes, dop2003_offset + 14, size);
+										
+										grfitbid = bytes[dop2003_offset + 18];
+										//empty3  = 8
+										ilfoMacAtCleanup = FormatUtils::BytesToUInt16(bytes, dop2003_offset + 20, size);
 
 										if (size > 616 && size > 621) //start && stop bound /* && fib->m_FibNew.nFibNew > Fib2003*/
 										{
+											const size_t dop2007_offset = 616;
+
 											//4 bytes reserved
-											bool fRMTrackFormatting = FormatUtils::GetBitFromBytes((bytes + 620), 2, 0);
-											bool fRMTrackMoves = FormatUtils::GetBitFromBytes((bytes + 620), 2, 1);
+											bool fRMTrackFormatting = FormatUtils::GetBitFromBytes((bytes + dop2007_offset + 4), 2, 0);
+											bool fRMTrackMoves = FormatUtils::GetBitFromBytes((bytes + dop2007_offset + 4), 2, 1);
 											//dopMth  = 34 bytes from 624 = 658
 
 											if (size > 674/* && fib->m_FibNew.nFibNew > Fib2007*/)
@@ -799,13 +809,12 @@ namespace DocFileFormat
       fFakeLockAtn = false;
       fIgnoreMixedContent = false;
       fShowPlaceholderText = false;
-      grf = 0;
       fReadingModeInkLockDown = false;
       fAcetateShowInkAtn = false;
       fFilterDttm = false;
       fEnforceDocProt = false;
       iDocProtCur = 0;
-      fDispBkSpSaved = true;
+      fDispBkSpSaved = false;
       dxaPageLock = 0;
       dyaPageLock = 0;
       pctFontLock = 0;

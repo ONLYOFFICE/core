@@ -126,7 +126,22 @@ namespace NExtractTools
 		}
 		return res;
 	}
-
+	_UINT32 addContentType(const std::wstring &sDir, const std::wstring &sCT)
+	{
+		_UINT32 nRes = 0;
+		std::wstring sContentTypesPath = sDir + FILE_SEPARATOR_STR + _T("[Content_Types].xml");
+		if (NSFile::CFileBinary::Exists(sContentTypesPath))
+		{
+			std::wstring sData;
+			if (NSFile::CFileBinary::ReadAllTextUtf8(sContentTypesPath, sData))
+			{
+				sData = string_replaceAll(sData, L"</Types>", sCT + L"</Types>");
+				if (false == NSFile::CFileBinary::SaveToFile(sContentTypesPath, sData, true))
+					nRes = AVS_FILEUTILS_ERROR_CONVERT;
+			}
+		}
+		return nRes;
+	}
 	_UINT32 replaceContentType(const std::wstring &sDir, const std::wstring &sCTFrom, const std::wstring &sCTTo)
 	{
         _UINT32 nRes = 0;
@@ -344,7 +359,9 @@ namespace NExtractTools
 
 		if (SUCCEEDED_X2T(nRes) && params.m_nFormatTo)
 		{
-			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == *params.m_nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == *params.m_nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == *params.m_nFormatTo)
+			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == *params.m_nFormatTo || 
+				AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == *params.m_nFormatTo || 
+				AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == *params.m_nFormatTo)
 			{
 				std::wstring sCTFrom = _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
 				std::wstring sCTTo;
@@ -355,6 +372,11 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM: sCTTo = _T("application/vnd.ms-word.template.macroEnabledTemplate.main+xml");break;
 				}
 				nRes = replaceContentType(sResultDocxDir, sCTFrom, sCTTo);
+			}
+			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == *params.m_nFormatTo)
+			{
+				std::wstring sCT = L"<Default Extension=\"oform\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.oform\"/>";
+				nRes = addContentType(sResultDocxDir, sCT);
 			}
 		}
 		if(SUCCEEDED_X2T(nRes))
@@ -3080,6 +3102,7 @@ namespace NExtractTools
                 case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
                 case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM:
 				{
                     return fromDocument(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX, sTemp, params);
                 }break;
@@ -3201,6 +3224,7 @@ namespace NExtractTools
        {
        case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:	
        case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:	
+	   case AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM:
 		   eTypeTo = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;	break;
        case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
 		   eTypeTo = NSDoctRenderer::DoctRendererFormat::FormatFile::PDF;	break;
@@ -3537,25 +3561,33 @@ namespace NExtractTools
 		if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo) && !bIsNeedDoct)
 		{
 			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo ||
-					AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo)
+				AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo ||
+				AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == nFormatTo)
 			{
-				if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo)
+				if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo || 
+					AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX == nFormatTo || 
+					AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo)
 				{
-					std::wstring sCTFrom = _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
+					std::wstring sCTFrom = L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";
 					switch(*params.m_nFormatFrom)
 					{
-					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM: sCTFrom = _T("application/vnd.ms-word.document.macroEnabled.main+xml");break;
-					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX: sCTFrom = _T("application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml");break;
-					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM: sCTFrom = _T("application/vnd.ms-word.template.macroEnabledTemplate.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM: sCTFrom = L"application/vnd.ms-word.document.macroEnabled.main+xml"; break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX: sCTFrom = L"application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml"; break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM: sCTFrom = L"application/vnd.ms-word.template.macroEnabledTemplate.main+xml"; break;
 					}
 					std::wstring sCTTo;
 					switch(nFormatTo)
 					{
-					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM: sCTTo = _T("application/vnd.ms-word.document.macroEnabled.main+xml");break;
-					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX: sCTTo = _T("application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml");break;
-					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM: sCTTo = _T("application/vnd.ms-word.template.macroEnabledTemplate.main+xml");break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM: sCTTo = L"application/vnd.ms-word.document.macroEnabled.main+xml"; break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX: sCTTo = L"application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml"; break;
+					case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM: sCTTo = L"application/vnd.ms-word.template.macroEnabledTemplate.main+xml"; break;
 					}
 					nRes = replaceContentType(sFrom, sCTFrom, sCTTo);
+				}
+				else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == nFormatTo)
+				{
+					std::wstring sCT= L"<Default Extension=\"oform\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.oform\"/>";
+					nRes = addContentType(sFrom, sCT);
 				}
 				if(SUCCEEDED_X2T(nRes))
 				{
@@ -3647,7 +3679,8 @@ namespace NExtractTools
 			std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
 			if (true == NSDirectory::CreateDirectory(sDocxDir))
 			{
-			params.m_bMacro = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo;
+				params.m_bMacro = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM == nFormatTo;
+				
 				nRes = doct_bin2docx_dir(sFrom, sTo, sDocxDir, bFromChanges, sThemeDir, params);
 				if (SUCCEEDED_X2T(nRes))
 				{
@@ -3714,7 +3747,8 @@ namespace NExtractTools
            std::wstring sDocxDir = sTemp + FILE_SEPARATOR_STR + _T("docx_unpacked");
            NSDirectory::CreateDirectory(sDocxDir);
            
-		   if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatFrom)
+		   if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatFrom ||
+			   AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == nFormatFrom)
            {
                nRes = zip2dir(sFrom, sDocxDir);
            }
@@ -4663,6 +4697,12 @@ namespace NExtractTools
 				oInputParams.m_bMacro = false;
 				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX);
 				result =  doct2docx (sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
+			}break;
+			case TCD_DOCT2OFORM:
+			{
+				oInputParams.m_bMacro = false;
+				oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM);
+				result = doct2docx(sFileFrom, sFileTo, sTempDir, bFromChanges, sThemeDir, oInputParams);
 			}break;
 			case TCD_DOCT2DOCM:
 			{

@@ -492,19 +492,20 @@ namespace MetaFile
         {
                 if (NULL != m_pInterpretator)
                 {
+                        TRectD oRectD = oRectangle.GetRectD();
                         if (AD_COUNTERCLOCKWISE != m_pDC->GetArcDirection())
                         {
-                                m_pInterpretator->MoveTo(oRectangle.dLeft,  oRectangle.dTop);
-                                m_pInterpretator->LineTo(oRectangle.dLeft,  oRectangle.dBottom);
-                                m_pInterpretator->LineTo(oRectangle.dRight, oRectangle.dBottom);
-                                m_pInterpretator->LineTo(oRectangle.dRight, oRectangle.dTop);
+                                m_pInterpretator->MoveTo(oRectD.dLeft,  oRectD.dTop);
+                                m_pInterpretator->LineTo(oRectD.dLeft,  oRectD.dBottom);
+                                m_pInterpretator->LineTo(oRectD.dRight, oRectD.dBottom);
+                                m_pInterpretator->LineTo(oRectD.dRight, oRectD.dTop);
                         }
                         else
                         {
-                                m_pInterpretator->MoveTo(oRectangle.dLeft,  oRectangle.dTop);
-                                m_pInterpretator->LineTo(oRectangle.dRight, oRectangle.dTop);
-                                m_pInterpretator->LineTo(oRectangle.dRight, oRectangle.dBottom);
-                                m_pInterpretator->LineTo(oRectangle.dLeft,  oRectangle.dBottom);
+                                m_pInterpretator->MoveTo(oRectD.dLeft,  oRectD.dTop);
+                                m_pInterpretator->LineTo(oRectD.dRight, oRectD.dTop);
+                                m_pInterpretator->LineTo(oRectD.dRight, oRectD.dBottom);
+                                m_pInterpretator->LineTo(oRectD.dLeft,  oRectD.dBottom);
                         }
 
                         m_pInterpretator->ClosePath();
@@ -518,7 +519,50 @@ namespace MetaFile
 
         }
 
-        void CEmfPlusParser::CombineClip(TEmfPlusRectF oClip, int nMode)
+        TEmfPlusARGB CEmfPlusParser::ApplyImageAttributes(TEmfPlusRectF &oRectangle, const CEmfPlusImageAttributes &oImageAttributes)
+        {
+                // oRectangle.dRight - Width, oRectangle.dBottom - Height
+
+                if (oImageAttributes.eWrapMode == WrapModeClamp)
+                {
+                        if (oRectangle.dX < 0 || oRectangle.dX < 0 ||
+                            oRectangle.dX >= oRectangle.dWidth || oRectangle.dY >= oRectangle.dHeight)
+                                return oImageAttributes.oClampColor;
+
+                }
+                else
+                {
+                        if (oRectangle.dX < 0)
+                                oRectangle.dX = oRectangle.dWidth * 2 + (int)oRectangle.dX % (int)(oRectangle.dWidth * 2);
+
+                        if (oRectangle.dY < 0)
+                                oRectangle.dY = oRectangle.dHeight * 2 + (int)oRectangle.dY % (int)(oRectangle.dHeight * 2);
+
+                        if (oImageAttributes.eWrapMode & WrapModeTileFlipX)
+                        {
+                                if ((int)(oRectangle.dX / oRectangle.dWidth) % 2 == 0)
+                                        oRectangle.dX = (int)oRectangle.dX % (int)oRectangle.dWidth;
+                                else
+                                        oRectangle.dX = oRectangle.dWidth - 1 - (int)oRectangle.dX % (int)oRectangle.dWidth;
+                        }
+                        else
+                                oRectangle.dX = (int)oRectangle.dX % (int)oRectangle.dWidth;
+
+                        if (oImageAttributes.eWrapMode & WrapModeTileFlipY)
+                        {
+                                if ((int)(oRectangle.dY / oRectangle.dHeight) % 2 == 0)
+                                        oRectangle.dY = (int)oRectangle.dY % (int)oRectangle.dHeight;
+                                else
+                                        oRectangle.dY = oRectangle.dHeight - 1 - (int)oRectangle.dY % (int)oRectangle.dHeight;
+                        }
+                        else
+                                oRectangle.dY = (int)oRectangle.dY % (int)oRectangle.dHeight;
+                }
+
+                return oImageAttributes.oClampColor;
+        }
+
+        void CEmfPlusParser::CombineClip(TRectD oClip, int nMode)
         {
                 switch (nMode)
                 {
@@ -641,6 +685,9 @@ namespace MetaFile
                         if (m_mImageAttributes.end() != oFountAttributesImage)
                         {
                                 CEmfPlusImageAttributes *pImageAttributes = oFountAttributesImage->second;
+
+                                ApplyImageAttributes(oSrcRect, *pImageAttributes);
+
                                 if (pImageAttributes->eWrapMode == WrapModeTileFlipXY)
                                 {
                                         dX += 2  * (dX + (oSrcRect.dRight - oSrcRect.dLeft)) - (oSrcRect.dRight - oSrcRect.dLeft);
@@ -649,12 +696,25 @@ namespace MetaFile
                                         dM11 *= -1;
                                         dM22 *= -1;
                                 }
+
                         }
 
-                        TEmfPlusXForm oNewTransform(-dM11, 0, 0, dM22, dX, dY);
+//                        m_pDC->GetTransform()->Apply(oSrcRect.dX, oSrcRect.dY);
+//                        m_pDC->GetTransform()->Apply(oSrcRect.dWidth, oSrcRect.dHeight);
 
-                        oEmfParser.SelectWorkspace(oSrcRect);
+                        if (dM11 < 0)
+                        {
+                                oSrcRect.dX -= oSrcRect.dWidth;
+                                dM11 *= -1;
+                        }
+
+                        oSrcRect.dWidth = oSrcRect.dWidth / m_pDC->GetTransform()->M11 + m_pDC->GetTransform()->Dx;
+                        oSrcRect.dHeight = oSrcRect.dHeight / m_pDC->GetTransform()->M22 + m_pDC->GetTransform()->Dy;
+
+                        TEmfPlusXForm oNewTransform(dM11, 0, 0, dM22, dX, dY);
+
                         oEmfParser.SetTrasform(oNewTransform);
+                        oEmfParser.SelectWorkspace(oSrcRect.GetRectD());
                         oEmfParser.PlayFile();
                 }
         }

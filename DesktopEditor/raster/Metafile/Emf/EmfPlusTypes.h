@@ -125,7 +125,26 @@ namespace MetaFile
                 }
         };
 
-        #define TEmfPlusRectF   TRectD
+        struct TEmfPlusRectF
+        {
+                double dX;
+                double dY;
+                double dWidth;
+                double dHeight;
+
+                TRectD GetRectD()
+                {
+                        TRectD oRectangle;
+
+                        oRectangle.dLeft   = dX;
+                        oRectangle.dTop    = dY;
+                        oRectangle.dRight  = dX + dWidth;
+                        oRectangle.dBottom = dY + dHeight;
+
+                        return oRectangle;
+                }
+        };
+
         #define TEmfPlusPoint   TEmfPointS
         #define TEmfPlusPointF  TEmfPointD
         #define TEmfPlusXForm   TEmfXForm

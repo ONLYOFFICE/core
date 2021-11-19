@@ -46,8 +46,9 @@ namespace MetaFile
                 template<typename T> void DrawLines(std::vector<T> arPoints, bool bCloseFigure);
 
                 template<typename T>void DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex, TEmfPlusRectF oSrcRect, std::vector<T> arPoints);
+                TEmfPlusARGB ApplyImageAttributes(TEmfPlusRectF& oRectangle, const CEmfPlusImageAttributes& oImageAttributes);
 
-                void CombineClip(TEmfPlusRectF oBox, int nMode);
+                void CombineClip(TRectD oBox, int nMode);
 
                 void Read_EMRPLUS_OFFSETCLIP();
                 void Read_EMRPLUS_RESETCLIP();

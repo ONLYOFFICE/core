@@ -688,6 +688,15 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(TEmfPlusRectF& oRect)
+		{
+			*this >> oRect.dX;
+			*this >> oRect.dY;
+			*this >> oRect.dWidth;
+			*this >> oRect.dHeight;
+
+			return *this;
+		}
 		CDataStream& operator>>(TEmfPlusARGB &oARGB)
 		{
 			*this >> oARGB.chBlue;

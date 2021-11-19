@@ -91,7 +91,7 @@ namespace Docx2Txt
         int m_lAddition;
         bool m_bCancelled;
         int ListCount;
-        int* Lists;
+        std::vector<int> Lists;
 		
 		int levelPrev;
 		int listNumPrev;
@@ -157,18 +157,13 @@ namespace Docx2Txt
 	const std::wstring Converter_Impl::m_letters = _T("abcdefghijklmnopqrstuvwxyz");
 
 	Converter_Impl::Converter_Impl()
-		:  m_lAddition(0), ListCount(0), Lists(NULL), NoteCount(0), levelPrev(-1), listNumPrev(1)
+		:  m_lAddition(0), Lists(NULL), NoteCount(0), levelPrev(-1), listNumPrev(1)
 	{
 	}
 
 
 	Converter_Impl::~Converter_Impl()
 	{
-		if(Lists != NULL)
-		{
-			delete []Lists;
-			Lists = NULL;
-		}
 	}
 
 	void Converter_Impl::convert()
@@ -180,11 +175,9 @@ namespace Docx2Txt
 		if (pNumbering)
 		{
 			ListCount = (int)pNumbering->m_arrNum.size();
-			Lists = new int[9 * ListCount];
-			if(Lists == NULL)
-				return;
+
 			for (int i = 0; i < 9 * ListCount; i++)
-				Lists[i] = 0;
+				Lists.push_back(0);
 		}
 
 		if (!pDocument) return;
@@ -212,11 +205,6 @@ namespace Docx2Txt
 					bFirst = false;
 				}
 			}
-		}
-		if(Lists != NULL)
-		{
-			delete []Lists;
-			Lists = NULL;
 		}
 	}
 
@@ -464,16 +452,6 @@ namespace Docx2Txt
 	
 		if (listNum > 0 && pNumbering)
 		{
-			int start = (listNum - 1) * 9;
-			if (level > 0)
-			{
-				level--;
-				for(int i = level + 1; i < 9; i++)
-				{
-					Lists[start + i] = 0;
-				}
-			}
-
 			listNum--;
 
 			std::map<int, std::pair<int,size_t>>::iterator pFindNum = pNumbering->m_mapNum.find(listNum);
@@ -481,6 +459,17 @@ namespace Docx2Txt
 			{
 				int abstractNumId = pFindNum->second.first;
 				size_t indexNum = pFindNum->second.second;
+
+				int start = (indexNum) * 9;
+				if (level > 0)
+				{
+					level--;
+					for (int i = level + 1; i < 9; i++)
+					{
+						Lists[start + i] = 0;
+					}
+				}
+
 				nullable_int startLvl;
 				nullable_int restartLvl;
 

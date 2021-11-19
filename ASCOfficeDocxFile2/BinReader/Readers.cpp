@@ -3509,13 +3509,16 @@ int Binary_OtherTableReader::ReadOtherContent(BYTE type, long length, void* poRe
 		{
 			//todooo в отдельный лог
 		}
-		NSBinPptxRW::CXmlWriter xmlWriter;
-		pTheme->toXmlWriter(&xmlWriter);
-		m_oFileWriter.m_oTheme.m_sContent = xmlWriter.GetXmlString();
-
-		if ((m_oFileWriter.m_pDrawingConverter) && (m_oFileWriter.m_pDrawingConverter->m_pTheme))
+		if (false == m_oFileWriter.m_bGlossaryMode)
 		{
-			*m_oFileWriter.m_pDrawingConverter->m_pTheme = pTheme;
+			NSBinPptxRW::CXmlWriter xmlWriter;
+			pTheme->toXmlWriter(&xmlWriter);
+			m_oFileWriter.m_oTheme.m_sContent = xmlWriter.GetXmlString();
+
+			if ((m_oFileWriter.m_pDrawingConverter) && (m_oFileWriter.m_pDrawingConverter->m_pTheme))
+			{
+				*m_oFileWriter.m_pDrawingConverter->m_pTheme = pTheme;
+			}
 		}
 	}
 	else

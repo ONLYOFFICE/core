@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,41 +30,30 @@
  *
  */
 
-#pragma once
+#include "EndDVals.h"
 
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "FRTRefs.h"
-#include "FRTSqrefs.h"
-#include "FRTFormulas.h"
-#include "FRTRelID.h"
+using namespace XLS;
 
 namespace XLSB
 {
-    class FRTHeader : public XLS::BiffStructure
+
+    EndDVals::EndDVals()
     {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTHeader)
-    public:
-        FRTHeader();
-        FRTHeader(XLS::CFRecord& record);
-        virtual ~FRTHeader();
-		XLS::BiffStructurePtr clone();
+    }
 
-        static const XLS::ElementType	type = XLS::typeBiffStructure;
+    EndDVals::~EndDVals()
+    {
+    }
 
-        virtual void load(XLS::CFRecord& record);
+    BaseObjectPtr EndDVals::clone()
+    {
+        return BaseObjectPtr(new EndDVals(*this));
+    }
 
-        bool        fRef;
-        bool        fSqref;
-        bool        fFormula;
-        bool        fRelID;
+    void EndDVals::readFields(XLS::CFRecord& record)
+    {
+        // No data in this record
+    }
 
-        FRTRefs     rgRefs;
-        FRTSqrefs   rgSqrefs;
-        FRTFormulas rgFormulas;
-        FRTRelID    relID;
-    };
+} // namespace XLSB
 
-typedef boost::shared_ptr<FRTHeader> FRTHeaderPtr;
-
-}   // namespace XLSB

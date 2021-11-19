@@ -1038,6 +1038,16 @@ namespace OOX
                             m_arrExt.push_back( oExt );
                     }
 
+                    if(ptr->m_DVALS14 != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri == L"{CCE6A557-97BC-4B89-ADB6-D9C93CAAB3DF}";
+                        oExt->m_oDataValidations = ptr->m_DVALS14;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+
                 }
             }
 

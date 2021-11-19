@@ -773,6 +773,7 @@ namespace XLSB
         rt_SheetProtectionIso =						678,
         rt_CsProtectionIso =						679,
         rt_RangeProtectionIso =						680,
+        rt_DValList =                                                   681,
         rt_RwDescent =								1024,
         rt_KnownFonts =								1025,
         rt_BeginSxTupleSet =						1026,

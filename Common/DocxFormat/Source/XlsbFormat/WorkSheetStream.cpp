@@ -53,6 +53,7 @@
 #include "Biff12_unions/AUTOFILTER.h"
 #include "Biff12_unions/SORTSTATE.h"
 #include "Biff12_unions/CONDITIONALFORMATTING.h"
+#include "Biff12_unions/DVALS.h"
 #include "Biff12_unions/FRTWORKSHEET.h"
 #include "Biff12_records/EndSheet.h"
 
@@ -280,7 +281,16 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                     elements_.pop_back();
                     count--;
                 }
-            }break;           
+            }break;
+
+            case rt_BeginDVals:
+            {
+                if (proc.optional<DVALS>())
+                {
+                    m_DVALS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
 
             case rt_FRTBegin:
             {

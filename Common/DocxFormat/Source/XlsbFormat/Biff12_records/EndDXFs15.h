@@ -34,8 +34,6 @@
 #include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
-
-
 namespace XLSB
 {
     // Logical representation of BrtEndDXFs15 record in BIFF12

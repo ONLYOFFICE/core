@@ -242,6 +242,11 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/PrintOptions.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginHeaderFooter.cpp \
     ../Source/XlsbFormat/Biff12_records/EndHeaderFooter.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginDVals.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndDVals.cpp \
+    ../Source/XlsbFormat/Biff12_records/DValList.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginDVals14.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndDVals14.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -281,6 +286,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/ListType.cpp \
     ../Source/XlsbFormat/Biff12_structures/XmlDataType.cpp \
     ../Source/XlsbFormat/Biff12_structures/ListTotalRowFunction.cpp \
+    ../Source/XlsbFormat/Biff12_structures/DValStrings.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -375,6 +381,9 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/RICHFILTERS.cpp \
     ../Source/XlsbFormat/Biff12_unions/CUSTOMRICHFILTERS.cpp \
     ../Source/XlsbFormat/Biff12_unions/HEADERFOOTER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACDVALLIST.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DVALS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DVALS14.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -595,6 +604,11 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/PrintOptions.h \
     ../Source/XlsbFormat/Biff12_records/BeginHeaderFooter.h \
     ../Source/XlsbFormat/Biff12_records/EndHeaderFooter.h \
+    ../Source/XlsbFormat/Biff12_records/BeginDVals.h \
+    ../Source/XlsbFormat/Biff12_records/EndDVals.h \
+    ../Source/XlsbFormat/Biff12_records/DValList.h \
+    ../Source/XlsbFormat/Biff12_records/BeginDVals14.h \
+    ../Source/XlsbFormat/Biff12_records/EndDVals14.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -637,6 +651,7 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_structures/ListType.h \
     ../Source/XlsbFormat/Biff12_structures/XmlDataType.h \
     ../Source/XlsbFormat/Biff12_structures/ListTotalRowFunction.h \
+    ../Source/XlsbFormat/Biff12_structures/DValStrings.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
     ../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.h \
@@ -731,3 +746,6 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/RICHFILTERS.h \
     ../Source/XlsbFormat/Biff12_unions/CUSTOMRICHFILTERS.h \
     ../Source/XlsbFormat/Biff12_unions/HEADERFOOTER.h \
+    ../Source/XlsbFormat/Biff12_unions/ACDVALLIST.h \
+    ../Source/XlsbFormat/Biff12_unions/DVALS.h \
+    ../Source/XlsbFormat/Biff12_unions/DVALS14.h \

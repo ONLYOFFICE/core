@@ -30,41 +30,35 @@
  *
  */
 
-#pragma once
+#include "DValStrings.h"
 
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "FRTRefs.h"
-#include "FRTSqrefs.h"
-#include "FRTFormulas.h"
-#include "FRTRelID.h"
+using namespace XLS;
 
 namespace XLSB
 {
-    class FRTHeader : public XLS::BiffStructure
+
+    DValStrings::DValStrings()
     {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTHeader)
-    public:
-        FRTHeader();
-        FRTHeader(XLS::CFRecord& record);
-        virtual ~FRTHeader();
-		XLS::BiffStructurePtr clone();
+    }
 
-        static const XLS::ElementType	type = XLS::typeBiffStructure;
+    DValStrings::DValStrings(XLS::CFRecord& record)
+    {
+        load(record);
+    }
 
-        virtual void load(XLS::CFRecord& record);
+    DValStrings::~DValStrings()
+    {
+    }
 
-        bool        fRef;
-        bool        fSqref;
-        bool        fFormula;
-        bool        fRelID;
+    BiffStructurePtr DValStrings::clone()
+    {
+        return BiffStructurePtr(new DValStrings(*this));
+    }
 
-        FRTRefs     rgRefs;
-        FRTSqrefs   rgSqrefs;
-        FRTFormulas rgFormulas;
-        FRTRelID    relID;
-    };
+    void DValStrings::load(XLS::CFRecord& record)
+    {
+        record >> strErrorTitle >> strError >> strPromptTitle >> strPrompt;
+    }
 
-typedef boost::shared_ptr<FRTHeader> FRTHeaderPtr;
+} // namespace XLSB
 
-}   // namespace XLSB

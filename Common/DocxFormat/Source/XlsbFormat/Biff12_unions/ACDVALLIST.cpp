@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,41 +30,52 @@
  *
  */
 
-#pragma once
+#include "ACDVALLIST.h"
+#include "../Biff12_records/ACBegin.h"
+#include "../Biff12_records/DValList.h"
+#include "../Biff12_records/ACEnd.h"
 
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "FRTRefs.h"
-#include "FRTSqrefs.h"
-#include "FRTFormulas.h"
-#include "FRTRelID.h"
+using namespace XLS;
 
 namespace XLSB
 {
-    class FRTHeader : public XLS::BiffStructure
+
+    ACDVALLIST::ACDVALLIST()
     {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTHeader)
-    public:
-        FRTHeader();
-        FRTHeader(XLS::CFRecord& record);
-        virtual ~FRTHeader();
-		XLS::BiffStructurePtr clone();
+    }
 
-        static const XLS::ElementType	type = XLS::typeBiffStructure;
+    ACDVALLIST::~ACDVALLIST()
+    {
+    }
 
-        virtual void load(XLS::CFRecord& record);
+    BaseObjectPtr ACDVALLIST::clone()
+    {
+        return BaseObjectPtr(new ACDVALLIST(*this));
+    }
 
-        bool        fRef;
-        bool        fSqref;
-        bool        fFormula;
-        bool        fRelID;
+    //ACDVALLIST = BrtACBegin BrtDValList BrtACEnd
+    const bool ACDVALLIST::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<ACBegin>())
+        {
+            m_BrtACBegin = elements_.back();
+            elements_.pop_back();
+        }
 
-        FRTRefs     rgRefs;
-        FRTSqrefs   rgSqrefs;
-        FRTFormulas rgFormulas;
-        FRTRelID    relID;
-    };
+        if (proc.optional<DValList>())
+        {
+            m_BrtDValList = elements_.back();
+            elements_.pop_back();
+        }      
 
-typedef boost::shared_ptr<FRTHeader> FRTHeaderPtr;
+        if (proc.optional<ACEnd>())
+        {
+            m_BrtACEnd = elements_.back();
+            elements_.pop_back();
+        }
 
-}   // namespace XLSB
+        return m_BrtACBegin && m_BrtDValList && m_BrtACEnd;
+    }
+
+} // namespace XLSB
+

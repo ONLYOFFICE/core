@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,42 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
 #pragma once
 
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
 #include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "FRTRefs.h"
-#include "FRTSqrefs.h"
-#include "FRTFormulas.h"
-#include "FRTRelID.h"
+#include "../../XlsxFormat/WritingElement.h"
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/DVal.h"
 
 namespace XLSB
 {
-    class FRTHeader : public XLS::BiffStructure
+    // Logical representation of BrtBeginDVals record in BIFF12
+    class BeginDVals: public XLS::BiffRecord
     {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTHeader)
-    public:
-        FRTHeader();
-        FRTHeader(XLS::CFRecord& record);
-        virtual ~FRTHeader();
-		XLS::BiffStructurePtr clone();
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginDVals)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginDVals)
+        public:
+            BeginDVals();
+            virtual ~BeginDVals();
 
-        static const XLS::ElementType	type = XLS::typeBiffStructure;
+            XLS::BaseObjectPtr clone();
 
-        virtual void load(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record);
 
-        bool        fRef;
-        bool        fSqref;
-        bool        fFormula;
-        bool        fRelID;
+            static const XLS::ElementType	type = XLS::typeBeginDVals;
 
-        FRTRefs     rgRefs;
-        FRTSqrefs   rgSqrefs;
-        FRTFormulas rgFormulas;
-        FRTRelID    relID;
+            XLS::DVal   dVals;
+
     };
 
-typedef boost::shared_ptr<FRTHeader> FRTHeaderPtr;
+} // namespace XLSB
 
-}   // namespace XLSB

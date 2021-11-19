@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,42 +29,33 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
 #pragma once
 
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "FRTRefs.h"
-#include "FRTSqrefs.h"
-#include "FRTFormulas.h"
-#include "FRTRelID.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
 namespace XLSB
 {
-    class FRTHeader : public XLS::BiffStructure
+
+    class DVALS14: public XLS::CompositeObject
     {
-        BASE_STRUCTURE_DEFINE_CLASS_NAME(FRTHeader)
+        BASE_OBJECT_DEFINE_CLASS_NAME(DVALS14)
     public:
-        FRTHeader();
-        FRTHeader(XLS::CFRecord& record);
-        virtual ~FRTHeader();
-		XLS::BiffStructurePtr clone();
+        DVALS14();
+        virtual ~DVALS14();
 
-        static const XLS::ElementType	type = XLS::typeBiffStructure;
+        XLS::BaseObjectPtr clone();
 
-        virtual void load(XLS::CFRecord& record);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        bool        fRef;
-        bool        fSqref;
-        bool        fFormula;
-        bool        fRelID;
+        static const XLS::ElementType	type = XLS::typeDVALS14;
 
-        FRTRefs     rgRefs;
-        FRTSqrefs   rgSqrefs;
-        FRTFormulas rgFormulas;
-        FRTRelID    relID;
+        XLS::BaseObjectPtr              m_BrtFRTBegin;
+        XLS::BaseObjectPtr              m_BrtBeginDVals14;
+        std::vector<XLS::BaseObjectPtr>	m_arBrtDVal14;
+        XLS::BaseObjectPtr              m_BrtEndDVals14;
+        XLS::BaseObjectPtr              m_BrtFRTEnd;
+
     };
 
-typedef boost::shared_ptr<FRTHeader> FRTHeaderPtr;
+} // namespace XLSB
 
-}   // namespace XLSB

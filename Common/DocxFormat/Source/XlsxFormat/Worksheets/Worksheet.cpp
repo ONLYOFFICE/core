@@ -149,6 +149,8 @@ namespace OOX
 
                     if (workSheetStream->m_AUTOFILTER != nullptr)
                         m_oAutofilter = workSheetStream->m_AUTOFILTER;
+                    if (workSheetStream->m_DVALS != nullptr)
+                        m_oDataValidations = workSheetStream->m_DVALS;
 
                     if (workSheetStream->m_FRTWORKSHEET != nullptr)
                         m_oExtLst = workSheetStream->m_FRTWORKSHEET;

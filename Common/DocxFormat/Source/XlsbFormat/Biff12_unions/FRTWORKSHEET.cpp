@@ -32,6 +32,7 @@
 
 #include "FRTWORKSHEET.h"
 #include "../Biff12_unions/CONDITIONALFORMATTINGS.h"
+#include "../Biff12_unions/DVALS14.h"
 
 using namespace XLS;
 
@@ -62,7 +63,13 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_CONDITIONALFORMATTINGS != nullptr;
+        if (proc.optional<DVALS14>())
+        {
+            m_DVALS14 = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_CONDITIONALFORMATTINGS || m_DVALS14;
     }
 
 } // namespace XLSB

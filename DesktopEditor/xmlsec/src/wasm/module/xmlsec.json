@@ -4,7 +4,7 @@
 	"wasm": true,
 	"asm": false,
 	"run_before": "before.py",
-	"run_after": "after.py",
+	"run_after": "import sys;sys.path.append(\"../../../../../../build_tools/scripts\");import base;base.replaceInFile(\"./deploy/openssl.js\", \"__ATPOSTRUN__=[];\", \"__ATPOSTRUN__=[function(){self.onEngineInit();}];\");base.replaceInFile(\"./deploy/openssl.js\", \"__ATPOSTRUN__ = [];\", \"__ATPOSTRUN__=[function(){self.onEngineInit();}];\");base.replaceInFile(\"./deploy/openssl.js\", \"function getBinaryPromise()\", \"function getBinaryPromise2()\");base.copy_file(\"./index.html\", \"./deploy/index.html\");base.copy_file(\"./code.js\", \"./deploy/code.js\")",
 	"base_js_content": "./engine.js",
 
 	"compiler_flags": [

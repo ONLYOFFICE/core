@@ -457,10 +457,11 @@ namespace CSVReader
 			RELEASEOBJECT(pRow);
 		}
 		oXlsx.m_arWorksheets.push_back(pWorksheet.GetPointer());
-		
-		pWorksheet.AddRef();
+
 		smart_ptr<OOX::File> oWorksheetFile = pWorksheet.smart_dynamic_cast<OOX::File>();
 		const OOX::RId oRid = oXlsx.m_pWorkbook->Add(oWorksheetFile);
+
+		oXlsx.m_mapWorksheets.insert(std::make_pair(oRid.ToString(), pWorksheet.GetPointer())); // for bin
 
 		OOX::Spreadsheet::CSheet *pSheet = new OOX::Spreadsheet::CSheet();
 

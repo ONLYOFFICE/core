@@ -737,16 +737,16 @@ int CFontList::GetBoldPenalty(INT bCandBold, INT bReqBold)
 	return 0;
 }
 
-int CFontList::GetFontFormatPenalty(EFontFormat eCandFormat, EFontFormat eReqFormat)
+int CFontList::GetFontFormatPenalty(NSFonts::EFontFormat eCandFormat, NSFonts::EFontFormat eReqFormat)
 {
 	// Вообще, на МSDN написано только про TrueType. Но мы будем сравнивать
 	// все типы форматов и при несовпадении даем вес = 4. Если формат не задан
 	// то по умолчанию считаем его TrueType.
 
-    if ( eReqFormat == ffUnknown )
+    if ( eReqFormat == NSFonts::fontUnknown )
 	{
 		// Считаем, что когда формат не известен, значит это 100% не TrueType.
-        if ( eCandFormat == ffTrueType )
+        if ( eCandFormat == NSFonts::fontTrueType )
 			return 4;
 		else
 			return 0;
@@ -827,7 +827,7 @@ int CFontList::GetCapHeightPenalty(SHORT shCandCapHeight, SHORT shReqCapHeight)
 	return abs( shCandCapHeight - shReqCapHeight ) / 20;
 }
 
-EFontFormat CFontList::GetFontFormat(FT_Face pFace)
+NSFonts::EFontFormat CFontList::GetFontFormat(FT_Face pFace)
 {
     return CFontFile::GetFontFormatType(pFace);
 }
@@ -1029,7 +1029,7 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
             else if (NULL != oSelect.sFamilyClass)
                 nCurPenalty += GetFamilyUnlikelyPenalty( pInfo->m_sFamilyClass, *oSelect.sFamilyClass );
 
-            //nCurPenalty += GetFontFormatPenalty( pInfo->m_eFontFormat, fontTrueTypeLN );
+            //nCurPenalty += GetFontFormatPenalty( pInfo->m_eFontFormat, fontTrueType );
             nCurPenalty += GetCharsetPenalty( arrCandRanges, unCharset );
 
             if ( NULL != oSelect.shAvgCharWidth )
@@ -1284,9 +1284,9 @@ void CFontList::LoadFromArrayFiles(std::vector<std::wstring>& oArray, int nFlag)
 				}
 			}
 
-			EFontFormat eFormat = GetFontFormat( pFace );
+            NSFonts::EFontFormat eFormat = GetFontFormat( pFace );
 
-            bool bSupportFont = ((eFormat == ffTrueType) || ((nFlag & 1) && (eFormat == ffOpenType)));
+            bool bSupportFont = ((eFormat == NSFonts::fontTrueType) || ((nFlag & 1) && (eFormat == NSFonts::fontOpenType)));
             if (!bSupportFont)
             {
                 FT_Done_Face( pFace );

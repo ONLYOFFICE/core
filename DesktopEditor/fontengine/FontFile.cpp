@@ -1279,21 +1279,21 @@ std::wstring CFontFile::GetFontFormat()
 	const char* sFormat = FT_Get_X11_Font_Format(m_pFace);
     return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sFormat, strlen(sFormat));
 }
-EFontFormat CFontFile::GetFontFormatType(FT_Face pFace)
+NSFonts::EFontFormat CFontFile::GetFontFormatType(FT_Face pFace)
 {
     if (!pFace)
-        return fontUnknown;
+        return NSFonts::fontUnknown;
 
     std::string wsFormat( FT_Get_X11_Font_Format( pFace ) );
 
     if ( "Windows FNT" == wsFormat )
-        return fontWindowsFNT;
+        return NSFonts::fontWindowsFNT;
     else if ( "TrueType" == wsFormat )
-        return fontTrueType;
+        return NSFonts::fontTrueType;
     else if ( "CFF" == wsFormat )
-        return fontOpenType;
+        return NSFonts::fontOpenType;
 
-    return fontUnknown;
+    return NSFonts::fontUnknown;
 }
 
 unsigned int CFontFile::GetNameIndex(const std::wstring& wsName) const

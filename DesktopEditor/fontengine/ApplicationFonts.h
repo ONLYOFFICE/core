@@ -295,7 +295,7 @@ private:
 	int GetWeightPenalty(USHORT usCandWeight, USHORT usReqWeight);
     int GetItalicPenalty(INT bCandItalic, INT bReqItalic);
     int GetBoldPenalty(INT bCandBold, INT bReqBold);
-    int GetFontFormatPenalty(EFontFormat eCandFormat, EFontFormat eReqFormat);
+    int GetFontFormatPenalty(NSFonts::EFontFormat eCandFormat, NSFonts::EFontFormat eReqFormat);
 	int GetPanosePenalty(BYTE *pCandPanose, BYTE *pReqPanose);
 	int GetAvgWidthPenalty(SHORT shCandWidth, SHORT shReqWidth);
 	int GetAscentPenalty(SHORT shCandAscent, SHORT shReqAscent);
@@ -305,7 +305,7 @@ private:
 	int GetCapHeightPenalty(SHORT shCandCapHeight, SHORT shReqCapHeight);
 
 public:
-    static EFontFormat GetFontFormat(FT_Face pFace);
+    static NSFonts::EFontFormat GetFontFormat(FT_Face pFace);
     virtual void ToBuffer(BYTE** pDstData, LONG* pLen, NSFonts::CFontListToBufferSerializer& oSerializer);
 
 public:

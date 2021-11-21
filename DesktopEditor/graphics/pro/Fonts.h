@@ -39,14 +39,6 @@
 #include <vector>
 #include "../../common/Types.h"
 
-enum EFontFormat
-{
-    ffWindowsFNT = 0, // *.fon
-    ffTrueType   = 1, // *.ttf
-    ffOpenType   = 2, // *.ttf, *.otf (CFF формат)
-    ffUnknown    = 3
-};
-
 struct TBBox
 {
     float fMinX;
@@ -62,6 +54,7 @@ struct TBBoxAdvance
     float fAdvanceX;
     float fAdvanceY;
 };
+
 
 namespace NSBase
 {
@@ -83,6 +76,14 @@ namespace NSBase
 
 namespace NSFonts
 {
+    enum EFontFormat
+    {
+        fontWindowsFNT = 0, // *.fon
+        fontTrueType   = 1, // *.ttf
+        fontOpenType   = 2, // *.ttf, *.otf (CFF формат)
+        fontUnknown    = 3
+    };
+
     class CFontSelectFormat
     {
     public:

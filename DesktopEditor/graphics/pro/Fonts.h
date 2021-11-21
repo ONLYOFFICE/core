@@ -119,6 +119,16 @@ namespace NSFonts
         SHORT*			shXHeight;
         SHORT*			shCapHeight;
 
+        // mask for allowed os2.fsType field
+        // https://docs.microsoft.com/en-us/typography/opentype/spec/os2#fstype
+        // 0: Installable embedding
+        // 2: Restricted License embedding
+        // 4: Preview & Print embedding
+        // 8: Editable embedding
+        // for examle, to exclude "Restricted License embedding" fonts - set up shType to (0 | 4 | 8)
+
+        USHORT*         usType;
+
     public:
         CFontSelectFormat()
         {
@@ -154,6 +164,8 @@ namespace NSFonts
             shLineGap = NULL;
             shXHeight = NULL;
             shCapHeight = NULL;
+
+            usType = NULL;
         }
         ~CFontSelectFormat()
         {
@@ -225,6 +237,9 @@ namespace NSFonts
                 oFormat.shXHeight = new SHORT(*shXHeight);
             if (NULL != shCapHeight)
                 oFormat.shCapHeight = new SHORT(*shCapHeight);
+
+            if (NULL != usType)
+                oFormat.usType = new USHORT(*usType);
         }
         void Destroy(bool isDestroyBI = true)
         {
@@ -263,6 +278,8 @@ namespace NSFonts
             RELEASEOBJECT(shLineGap);
             RELEASEOBJECT(shXHeight);
             RELEASEOBJECT(shCapHeight);
+
+            RELEASEOBJECT(usType);
         }
     };
 
@@ -292,7 +309,8 @@ namespace NSFonts
             SHORT shDescent,
             SHORT shLineGap,
             SHORT shXHeight,
-            SHORT shCapHeight)
+            SHORT shCapHeight,
+            USHORT usType)
         {
             m_wsFontName = wsFontName;
             m_wsFontPath = wsFontPath;
@@ -328,6 +346,8 @@ namespace NSFonts
             m_shLineGap        = shLineGap;
             m_shXHeight        = shXHeight;
             m_shCapHeight      = shCapHeight;
+
+            m_usType = usType;
         }
 
         ~CFontInfo()
@@ -375,7 +395,25 @@ namespace NSFonts
         SHORT        m_shXHeight;        // Высота буквы 'x' (в нижнем регистре)
         SHORT        m_shCapHeight;      // Высота буквы 'H' (в верхнем регистре)
 
+        USHORT       m_usType;
+
         std::vector<std::wstring> names;
+    };
+
+    class CFontListToBufferSerializer
+    {
+    public:
+        std::wstring m_strDirectory;
+        bool m_bIsOnlynames;
+        int m_nVersion;
+
+    public:
+        CFontListToBufferSerializer(const std::wstring& sDir, const bool& bIsOnlynames, const int& nVer)
+        {
+            m_strDirectory = sDir;
+            m_bIsOnlynames = bIsOnlynames;
+            m_nVersion = nVer;
+        }
     };
 
     class CLibrary_private;
@@ -491,6 +529,9 @@ namespace NSFonts
         virtual double GetCharWidth(int gid) = 0;
 
         virtual int GetGIDByUnicode(int code) = 0;
+
+        virtual int GetEmbeddingLicenceType() = 0;
+        virtual void FillFontSelectFormat(CFontSelectFormat& oFormat) = 0;
     };
 
     namespace NSFontFile
@@ -609,7 +650,7 @@ namespace NSFonts
     public:
 		virtual std::vector<NSFonts::CFontInfo*>* GetFonts() = 0;
         virtual CFontInfo* GetByParams(CFontSelectFormat& oSelect, bool bIsDictionaryUse = true) = 0;
-        virtual void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false, int nVersion = -1) = 0;
+        virtual void ToBuffer(BYTE** pDstData, LONG* pLen, CFontListToBufferSerializer& oSerializer) = 0;
     };
 
     class GRAPHICS_DECL IApplicationFonts : public NSBase::CBaseRefCounter

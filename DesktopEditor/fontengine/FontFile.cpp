@@ -1279,6 +1279,23 @@ std::wstring CFontFile::GetFontFormat()
 	const char* sFormat = FT_Get_X11_Font_Format(m_pFace);
     return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sFormat, strlen(sFormat));
 }
+EFontFormat CFontFile::GetFontFormatType(FT_Face pFace)
+{
+    if (!pFace)
+        return fontUnknown;
+
+    std::string wsFormat( FT_Get_X11_Font_Format( pFace ) );
+
+    if ( "Windows FNT" == wsFormat )
+        return fontWindowsFNT;
+    else if ( "TrueType" == wsFormat )
+        return fontTrueType;
+    else if ( "CFF" == wsFormat )
+        return fontOpenType;
+
+    return fontUnknown;
+}
+
 unsigned int CFontFile::GetNameIndex(const std::wstring& wsName) const
 {
 	if (!m_pFace)
@@ -1434,4 +1451,104 @@ bool CFontFile::IsSymbolic(bool bIsOS2Check)
     }
 
     return bIsSymbol;
+}
+
+int CFontFile::GetEmbeddingLicenceType()
+{
+    if (!m_pFace)
+        return 0;
+
+    int nType = 0;
+    TT_OS2* pOS2 = (TT_OS2*)FT_Get_Sfnt_Table(m_pFace, ft_sfnt_os2);
+    if (NULL != pOS2)
+        return (int)pOS2->fsType;
+    return 0;
+}
+void CFontFile::FillFontSelectFormat(NSFonts::CFontSelectFormat& oFormat)
+{
+    if (!m_pFace)
+        return;
+
+    if (NULL == oFormat.wsName)
+        oFormat.wsName = new std::wstring(m_sName);
+
+    if (NULL == oFormat.wsFamilyClass)
+        oFormat.wsFamilyClass = new std::wstring(GetCorrectSfntName(m_pFace->style_name));
+
+    if (NULL == oFormat.bItalic)
+        oFormat.bItalic = new INT(IsItalic() ? 1 : 0);
+
+    if (NULL == oFormat.bBold)
+        oFormat.bBold = new INT(IsBold() ? 1 : 0);
+
+    if (NULL == oFormat.bFixedWidth)
+        oFormat.bFixedWidth = new INT(IsFixedWidth() ? 1 : 0);
+
+    TT_OS2* pOS2 = (TT_OS2*)FT_Get_Sfnt_Table(m_pFace, ft_sfnt_os2);
+    if (NULL != pOS2)
+    {
+        if (NULL == oFormat.pPanose)
+        {
+            oFormat.pPanose = new BYTE[10];
+            memcpy((void*)oFormat.pPanose, pOS2->panose, 10);
+        }
+
+        if (NULL == oFormat.ulRange1)
+            oFormat.ulRange1 = new UINT(pOS2->ulUnicodeRange1);
+        if (NULL == oFormat.ulRange2)
+            oFormat.ulRange2 = new UINT(pOS2->ulUnicodeRange2);
+        if (NULL == oFormat.ulRange3)
+            oFormat.ulRange3 = new UINT(pOS2->ulUnicodeRange3);
+        if (NULL == oFormat.ulRange4)
+            oFormat.ulRange4 = new UINT(pOS2->ulUnicodeRange4);
+
+        if (NULL == oFormat.ulCodeRange1)
+            oFormat.ulCodeRange1 = new UINT(pOS2->ulCodePageRange1);
+        if (NULL == oFormat.ulCodeRange2)
+            oFormat.ulCodeRange2 = new UINT(pOS2->ulCodePageRange2);
+
+        if (NULL == oFormat.usWeight)
+            oFormat.usWeight = new USHORT(pOS2->usWeightClass);
+        if (NULL == oFormat.usWidth)
+            oFormat.usWidth = new USHORT(pOS2->usWidthClass);
+
+        if (0 != m_pFace->units_per_EM)
+        {
+            double dKoef = ( 1000 / (double)m_pFace->units_per_EM );
+
+            if (NULL == oFormat.shAvgCharWidth)
+                oFormat.shAvgCharWidth = new SHORT((SHORT)pOS2->xAvgCharWidth * dKoef);
+            if (NULL == oFormat.shAscent)
+                oFormat.shAscent = new SHORT((SHORT)pOS2->sTypoAscender * dKoef);
+            if (NULL == oFormat.shDescent)
+                oFormat.shDescent = new SHORT((SHORT)pOS2->sTypoDescender * dKoef);
+            if (NULL == oFormat.shLineGap)
+                oFormat.shLineGap = new SHORT((SHORT)pOS2->sTypoLineGap * dKoef);
+            if (NULL == oFormat.shXHeight)
+                oFormat.shXHeight = new SHORT((SHORT)pOS2->sxHeight * dKoef);
+            if (NULL == oFormat.shCapHeight)
+                oFormat.shCapHeight = new SHORT((SHORT)pOS2->sCapHeight * dKoef);
+        }
+        else
+        {
+            if (NULL == oFormat.shAvgCharWidth)
+                oFormat.shAvgCharWidth = new SHORT(pOS2->xAvgCharWidth);
+            if (NULL == oFormat.shAscent)
+                oFormat.shAscent = new SHORT(pOS2->sTypoAscender);
+            if (NULL == oFormat.shDescent)
+                oFormat.shDescent = new SHORT(pOS2->sTypoDescender);
+            if (NULL == oFormat.shLineGap)
+                oFormat.shLineGap = new SHORT(pOS2->sTypoLineGap);
+            if (NULL == oFormat.shXHeight)
+                oFormat.shXHeight = new SHORT(pOS2->sxHeight);
+            if (NULL == oFormat.shCapHeight)
+                oFormat.shCapHeight = new SHORT(pOS2->sCapHeight);
+        }
+
+        if (NULL == oFormat.nFontFormat)
+            oFormat.nFontFormat = new int((int)GetFontFormatType(m_pFace));
+
+        if (NULL == oFormat.usType)
+            oFormat.usType = new USHORT(pOS2->fsType);
+    }
 }

@@ -65,6 +65,7 @@ namespace NExtractTools
         TCD_DOCT2DOCX,
 		TCD_DOCT2DOTX,
 		TCD_DOCT2DOCM,
+		TCD_DOCT2OFORM,
         TCD_DOCX2DOCT_BIN,
         TCD_DOCT_BIN2DOCX,
         TCD_DOTX2DOCX,
@@ -852,9 +853,9 @@ namespace NExtractTools
                     eRes = TCD_CANVAS_PDF2;
 				else if(AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
 					eRes = TCD_MSCRYPT2;
-                else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP			== nFormatFrom	&& AVS_OFFICESTUDIO_FILE_UNKNOWN			== nFormatTo)
+                else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
                     eRes = TCD_UNZIPDIR;
-                else if(AVS_OFFICESTUDIO_FILE_UNKNOWN			== nFormatFrom	&& AVS_OFFICESTUDIO_FILE_OTHER_ZIP			== nFormatTo)
+                else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
                     eRes = TCD_ZIPDIR;
             }
 			else if(NULL != m_sFileFrom && NULL != m_sFileTo)
@@ -1099,7 +1100,7 @@ namespace NExtractTools
             else
                 m_sFileTo->append(FileFormatChecker.GetExtensionByType(toFormat));
           }
-          else if ( AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == toFormat || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == toFormat)
+          else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == toFormat)
           {
               toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
           }

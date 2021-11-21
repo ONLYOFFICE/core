@@ -141,6 +141,11 @@ core_mac {
     QMAKE_LFLAGS += -isysroot $$QMAKE_MAC_SDK_PATH
 
     QMAKE_CFLAGS += "-Wno-implicit-function-declaration"
+
+    greaterThan(QT_MAJOR_VERSION, 5) {
+        QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
+        !apple_silicon:QMAKE_APPLE_DEVICE_ARCHS = x86_64
+    }
 }
 
 # PREFIXES

@@ -566,6 +566,7 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName, bo
 		const char *dotxFormatLine = "application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml";
 		const char *docmFormatLine = "application/vnd.ms-word.document.macroEnabled.main+xml";
 		const char *dotmFormatLine = "application/vnd.ms-word.template.macroEnabledTemplate.main+xml";
+		const char *oformFormatLine = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.oform";
 
 		const char *xlsxFormatLine = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml";
 		const char *xltxFormatLine = "application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml";
@@ -585,7 +586,11 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName, bo
         std::string::size_type res1 = std::string::npos;
         std::string::size_type res = 0;
         
-		if (std::string::npos != strContentTypes.find(docxFormatLine))
+		if (std::string::npos != strContentTypes.find(oformFormatLine))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM;
+		}
+		else if (std::string::npos != strContentTypes.find(docxFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 		}
@@ -981,7 +986,7 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
     if (L".docx" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 	if (L".oform" == ext)
-		return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX; //AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM
+		return AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM;
 	if (L".docxf" == ext)
 		return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX; //AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF
 	if (L".docm" == ext)

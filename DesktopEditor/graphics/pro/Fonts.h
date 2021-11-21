@@ -83,6 +83,123 @@ namespace NSBase
 
 namespace NSFonts
 {
+	class CFontInfo
+	{
+	public:
+		CFontInfo(const std::wstring& wsFontName,
+			const std::wstring& wsStyle,
+			const std::wstring& wsFontPath,
+			long lIndex,
+			INT bBold,
+			INT bItalic,
+			INT bFixedWidth,
+			BYTE *pPanose,
+			UINT ulRange1,
+			UINT ulRange2,
+			UINT ulRange3,
+			UINT ulRange4,
+			UINT ulCodeRange1,
+			UINT ulCodeRange2,
+			USHORT usWeigth,
+			USHORT usWidth,
+			SHORT sFamilyClass,
+			EFontFormat eFormat,
+			SHORT shAvgCharWidth,
+			SHORT shAscent,
+			SHORT shDescent,
+			SHORT shLineGap,
+			SHORT shXHeight,
+			SHORT shCapHeight,
+			USHORT usType)
+		{
+			m_wsFontName = wsFontName;
+			m_wsFontPath = wsFontPath;
+			m_wsStyle    = wsStyle;
+			m_lIndex     = lIndex;
+
+			m_bBold      = bBold;
+			m_bItalic    = bItalic;
+
+			m_bIsFixed   = bFixedWidth;
+
+			if ( pPanose )
+				memcpy( (void*)m_aPanose, (const void *)pPanose, 10 );
+			else
+				memset( (void*)m_aPanose, 0x00, 10 );
+
+			m_ulUnicodeRange1  = ulRange1;
+			m_ulUnicodeRange2  = ulRange2;
+			m_ulUnicodeRange3  = ulRange3;
+			m_ulUnicodeRange4  = ulRange4;
+			m_ulCodePageRange1 = ulCodeRange1;
+			m_ulCodePageRange2 = ulCodeRange2;
+			m_usWeigth         = usWeigth;
+			m_usWidth          = usWidth;
+
+			m_sFamilyClass     = sFamilyClass;
+
+			m_eFontFormat      = eFormat;
+
+			m_shAvgCharWidth   = shAvgCharWidth;
+			m_shAscent         = shAscent;
+			m_shDescent        = shDescent;
+			m_shLineGap        = shLineGap;
+			m_shXHeight        = shXHeight;
+			m_shCapHeight      = shCapHeight;
+
+			m_usType = usType;
+		}
+
+		~CFontInfo()
+		{
+		}
+
+		int IsEquals(const CFontInfo *pFontInfo)
+		{
+			return (m_wsFontName == pFontInfo->m_wsFontName &&
+				m_wsStyle == pFontInfo->m_wsStyle &&
+				m_wsFontPath == pFontInfo->m_wsFontPath &&
+				m_bItalic == pFontInfo->m_bItalic &&
+				m_bBold == pFontInfo->m_bBold);
+		}
+
+	public:
+		std::wstring m_wsFontName;   // Имя шрифта
+		std::wstring m_wsFontPath;   // Путь к файлу с шрифтом
+		long         m_lIndex;       // Номер шрифта в файле(если в файле больше 1 шрифта)
+		std::wstring m_wsStyle;
+
+		INT         m_bBold;            // Bold text
+		INT         m_bItalic;          // Italic text
+		INT         m_bIsFixed;         // Моноширинный шрифт?
+
+		BYTE        m_aPanose[10];
+		UINT	    m_ulUnicodeRange1;  // Bits 0-31
+		UINT        m_ulUnicodeRange2;  // Bits 32-63
+		UINT        m_ulUnicodeRange3;  // Bits 64-95
+		UINT        m_ulUnicodeRange4;  // Bits 96-127
+
+		UINT        m_ulCodePageRange1; // Bits 0-31
+		UINT        m_ulCodePageRange2; // Bits 32-63
+
+		USHORT       m_usWeigth;
+		USHORT       m_usWidth;
+
+		SHORT        m_sFamilyClass;
+		EFontFormat  m_eFontFormat;
+
+		SHORT        m_shAvgCharWidth;   // Средняя ширина символов
+		SHORT        m_shAscent;         // Ascent
+		SHORT        m_shDescent;        // Descent
+		SHORT        m_shLineGap;        // Межсимвольный интервал
+		SHORT        m_shXHeight;        // Высота буквы 'x' (в нижнем регистре)
+		SHORT        m_shCapHeight;      // Высота буквы 'H' (в верхнем регистре)
+
+		USHORT       m_usType;
+
+		std::vector<std::wstring> names;
+	};
+
     class CFontSelectFormat
     {
     public:
@@ -281,124 +398,41 @@ namespace NSFonts
 
             RELEASEOBJECT(usType);
         }
-    };
+		void Fill(CFontInfo* pFontInfo)
+		{
+			Destroy();
 
-    class CFontInfo
-    {
-    public:
-        CFontInfo(const std::wstring& wsFontName,
-            const std::wstring& wsStyle,
-            const std::wstring& wsFontPath,
-            long lIndex,
-            INT bBold,
-            INT bItalic,
-            INT bFixedWidth,
-            BYTE *pPanose,
-            UINT ulRange1,
-            UINT ulRange2,
-            UINT ulRange3,
-            UINT ulRange4,
-            UINT ulCodeRange1,
-            UINT ulCodeRange2,
-            USHORT usWeigth,
-            USHORT usWidth,
-            SHORT sFamilyClass,
-            EFontFormat eFormat,
-            SHORT shAvgCharWidth,
-            SHORT shAscent,
-            SHORT shDescent,
-            SHORT shLineGap,
-            SHORT shXHeight,
-            SHORT shCapHeight,
-            USHORT usType)
-        {
-            m_wsFontName = wsFontName;
-            m_wsFontPath = wsFontPath;
-            m_wsStyle    = wsStyle;
-            m_lIndex     = lIndex;
+			wsName = new std::wstring(pFontInfo->m_wsFontName);
 
-            m_bBold      = bBold;
-            m_bItalic    = bItalic;
+			bItalic     = new INT(pFontInfo->m_bItalic ? 1 : 0);
+			bBold       = new INT(pFontInfo->m_bBold ? 1 : 0);
+			bFixedWidth = new INT(pFontInfo->m_bIsFixed ? 1 : 0);
 
-            m_bIsFixed   = bFixedWidth;
+			pPanose = new BYTE[10];
+			memcpy((void*)pPanose, pFontInfo->m_aPanose, 10);
 
-            if ( pPanose )
-                memcpy( (void*)m_aPanose, (const void *)pPanose, 10 );
-            else
-                memset( (void*)m_aPanose, 0x00, 10 );
+			ulRange1 = new UINT(pFontInfo->m_ulUnicodeRange1);
+			ulRange2 = new UINT(pFontInfo->m_ulUnicodeRange2);
+			ulRange3 = new UINT(pFontInfo->m_ulUnicodeRange3);
+			ulRange4 = new UINT(pFontInfo->m_ulUnicodeRange4);
 
-            m_ulUnicodeRange1  = ulRange1;
-            m_ulUnicodeRange2  = ulRange2;
-            m_ulUnicodeRange3  = ulRange3;
-            m_ulUnicodeRange4  = ulRange4;
-            m_ulCodePageRange1 = ulCodeRange1;
-            m_ulCodePageRange2 = ulCodeRange2;
-            m_usWeigth         = usWeigth;
-            m_usWidth          = usWidth;
+			ulCodeRange1 = new UINT(pFontInfo->m_ulCodePageRange1);
+			ulCodeRange2 = new UINT(pFontInfo->m_ulCodePageRange2);
 
-            m_sFamilyClass     = sFamilyClass;
+			usWeight = new USHORT(pFontInfo->m_usWeigth);
+			usWidth  = new USHORT(pFontInfo->m_usWidth);
 
-            m_eFontFormat      = eFormat;
+			shAvgCharWidth = new SHORT(pFontInfo->m_shAvgCharWidth);
+			shAscent       = new SHORT(pFontInfo->m_shAscent);
+			shDescent      = new SHORT(pFontInfo->m_shDescent);
+			shLineGap      = new SHORT(pFontInfo->m_shLineGap);
+			shXHeight      = new SHORT(pFontInfo->m_shXHeight);
+			shCapHeight    = new SHORT(pFontInfo->m_shCapHeight);
 
-            m_shAvgCharWidth   = shAvgCharWidth;
-            m_shAscent         = shAscent;
-            m_shDescent        = shDescent;
-            m_shLineGap        = shLineGap;
-            m_shXHeight        = shXHeight;
-            m_shCapHeight      = shCapHeight;
+			usType = new USHORT(pFontInfo->m_usType);
+		}
 
-            m_usType = usType;
-        }
-
-        ~CFontInfo()
-        {
-        }
-
-        int IsEquals(const CFontInfo *pFontInfo)
-        {
-            return (m_wsFontName == pFontInfo->m_wsFontName &&
-                m_wsStyle == pFontInfo->m_wsStyle &&
-                m_wsFontPath == pFontInfo->m_wsFontPath &&
-                m_bItalic == pFontInfo->m_bItalic &&
-                m_bBold == pFontInfo->m_bBold);
-        }
-
-    public:
-        std::wstring m_wsFontName;   // Имя шрифта
-        std::wstring m_wsFontPath;   // Путь к файлу с шрифтом
-        long         m_lIndex;       // Номер шрифта в файле(если в файле больше 1 шрифта)
-        std::wstring m_wsStyle;
-
-        INT         m_bBold;            // Bold text
-        INT         m_bItalic;          // Italic text
-        INT         m_bIsFixed;         // Моноширинный шрифт?
-
-        BYTE        m_aPanose[10];
-        UINT	    m_ulUnicodeRange1;  // Bits 0-31
-        UINT        m_ulUnicodeRange2;  // Bits 32-63
-        UINT        m_ulUnicodeRange3;  // Bits 64-95
-        UINT        m_ulUnicodeRange4;  // Bits 96-127
-
-        UINT        m_ulCodePageRange1; // Bits 0-31
-        UINT        m_ulCodePageRange2; // Bits 32-63
-
-        USHORT       m_usWeigth;
-        USHORT       m_usWidth;
-
-        SHORT        m_sFamilyClass;
-        EFontFormat  m_eFontFormat;
-
-        SHORT        m_shAvgCharWidth;   // Средняя ширина символов
-        SHORT        m_shAscent;         // Ascent
-        SHORT        m_shDescent;        // Descent
-        SHORT        m_shLineGap;        // Межсимвольный интервал
-        SHORT        m_shXHeight;        // Высота буквы 'x' (в нижнем регистре)
-        SHORT        m_shCapHeight;      // Высота буквы 'H' (в верхнем регистре)
-
-        USHORT       m_usType;
-
-        std::vector<std::wstring> names;
-    };
+	};
 
     class CFontListToBufferSerializer
     {

@@ -961,14 +961,18 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
     NSFonts::CFontInfo* pInfoMin = NULL;
     CFontSelectFormatCorrection* pSelectCorrection = NULL;
 
-    while (true)
+	unsigned short usType = 0;
+	if (oSelect.usType && *oSelect.usType != 0)
+		usType ^= (~*oSelect.usType);
+
+	while (true)
     {
         for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
         {
             int nCurPenalty = 0;
             NSFonts::CFontInfo* pInfo = *iter;
 
-            if (oSelect.usType && (*oSelect.usType != 0) && ((*oSelect.usType) & pInfo->m_usType) == 0)
+			if (0 != usType && 0 != (usType & pInfo->m_usType))
                 continue;
 
             if ( NULL != oSelect.pPanose )

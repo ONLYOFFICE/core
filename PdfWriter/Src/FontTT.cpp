@@ -51,6 +51,9 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CFontTrueType::CFontTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex) : CFontDict(pXref, pDocument), m_bCanEmbed(false)
 	{
+		CFontFileTrueType* pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
+		m_pFontFile = pFontTT;
+
 		m_wsFontPath  = wsFontPath;
 		m_unFontIndex = unIndex;
 
@@ -72,9 +75,6 @@ namespace PdfWriter
 
 		if (m_bCanEmbed)
 		{
-			CFontFileTrueType* pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
-			m_pFontFile = pFontTT;
-
 			// Выставляем бит Symbolic, а бит NonSymbolic убираем
 			unsigned int nFlags = 0;
 			if (!(nFlags & 4))
@@ -95,7 +95,6 @@ namespace PdfWriter
 			UIntChangeBit(nFlags, 5);
 			pFontDescriptor->Add("Flags", nFlags);
 			m_pFontFileDict = NULL;
-			m_pFontFile     = NULL;
 		}
 
 	}
@@ -106,7 +105,7 @@ namespace PdfWriter
 	}
 	void CFontTrueType::BeforeWrite()
 	{
-		if (m_pFontFile)
+		if (m_pFontFile && m_pFontFileDict)
 		{
 			CStream* pStream = m_pFontFileDict->GetStream();
 			m_pFontFile->WriteTTF(pStream);

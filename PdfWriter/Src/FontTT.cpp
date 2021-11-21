@@ -49,11 +49,8 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CFontTrueType
 	//----------------------------------------------------------------------------------------
-	CFontTrueType::CFontTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex) : CFontDict(pXref, pDocument)
+	CFontTrueType::CFontTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex) : CFontDict(pXref, pDocument), m_bCanEmbed(false)
 	{
-		CFontFileTrueType* pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
-		m_pFontFile = pFontTT;
-
 		m_wsFontPath  = wsFontPath;
 		m_unFontIndex = unIndex;
 
@@ -69,21 +66,38 @@ namespace PdfWriter
 		pFontDescriptor->Add("Type", "FontDescriptor");
 		m_pFontDescriptor = pFontDescriptor;
 
-		// Выставляем бит Symbolic, а бит NonSymbolic убираем
-		unsigned int nFlags = 0;
-		if (!(nFlags & 4))
-			UIntChangeBit(nFlags, 2);
-		if (nFlags & 32)
-			UIntChangeBit(nFlags, 5);
-
-		pFontDescriptor->Add("Flags", nFlags);
-
-		m_pFontFileDict = new CDictObject(m_pXref);
-		pFontDescriptor->Add("FontFile2", m_pFontFileDict);
-
 		Add("FontDescriptor", pFontDescriptor);
 
 		ReadName();
+
+		if (m_bCanEmbed)
+		{
+			CFontFileTrueType* pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
+			m_pFontFile = pFontTT;
+
+			// Выставляем бит Symbolic, а бит NonSymbolic убираем
+			unsigned int nFlags = 0;
+			if (!(nFlags & 4))
+				UIntChangeBit(nFlags, 2);
+			if (nFlags & 32)
+				UIntChangeBit(nFlags, 5);
+
+			pFontDescriptor->Add("Flags", nFlags);
+
+			m_pFontFileDict = new CDictObject(m_pXref);
+			pFontDescriptor->Add("FontFile2", m_pFontFileDict);
+		}
+		else
+		{
+			// Ставим флаг NonSymbolic, т.к. Adobe плохо подбирает шрифт с Symbolic флагом
+			// TODO: Хорошо бы сделать проверку, стоит ли ставить флаг Symbolic
+			unsigned int nFlags = 0;
+			UIntChangeBit(nFlags, 5);
+			pFontDescriptor->Add("Flags", nFlags);
+			m_pFontFileDict = NULL;
+			m_pFontFile     = NULL;
+		}
+
 	}
 	CFontTrueType::~CFontTrueType()
 	{
@@ -176,6 +190,11 @@ namespace PdfWriter
 		m_pFontDescriptor->Add("ItalicAngle", 0);
 		m_pFontDescriptor->Add("StemV", 80);
 		m_pFontDescriptor->Add("FontWeight", m_pFontFile->GetWeight());
+
+		// Сейчас мы этот класс используем для внедрения шрифтов, которые будут использоваться для заполнения
+		// внутри форм. Если класс будет использоваться для чего-то другого, тогда надо задавать ограничения на внедрение
+		FT_UShort fsType = FT_Get_FSType_Flags(pFace);
+		m_bCanEmbed = !(fsType & FT_FSTYPE_RESTRICTED_LICENSE_EMBEDDING) && !(fsType & FT_FSTYPE_PREVIEW_AND_PRINT_EMBEDDING);
 
 		FT_Done_Face(pFace);
 		RELEASEARRAYOBJECTS(pFaceMemory);

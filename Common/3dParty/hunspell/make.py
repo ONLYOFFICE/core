@@ -164,7 +164,7 @@ base.replaceInFile("./spell.js", "function getBinaryPromise(){", "function getBi
 
 spell_js_content = base.readFile("./spell.js")
 engine_base_js_content = base.readFile("./wasm/js/spell.js")
-engine_base_js_polyfill = base.readFile("./wasm/js/polyfill.js")
+engine_base_js_polyfill = base.readFile("./../../js/polyfill.js")
 engine_js_content = base.readFile("./../../license/header.license") + "\n" + engine_base_js_polyfill + "\n\n" + engine_base_js_content.replace("//module", spell_js_content)
 
 # write new version

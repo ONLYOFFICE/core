@@ -150,8 +150,8 @@ static DWORD GetLength(BYTE* x)
 int main()
 {
 #define XPS_TEST  0
-#define DJVU_TEST 1
-#define PDF_TEST  0
+#define DJVU_TEST 0
+#define PDF_TEST  1
 #if PDF_TEST
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;

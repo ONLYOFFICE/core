@@ -97,8 +97,8 @@
 	},
 	{
 		"name": "lib",
-		"folder": "./",
-		"files": ["wasm/src/lib/wasm_jmp.cpp"]
+		"folder": "./wasm/src/",
+		"files": ["lib/wasm_jmp.cpp", "drawingfile.cpp", "metafile.cpp"]
 	},
 	{
 		"name": "f",
@@ -175,6 +175,5 @@
 		"folder": "../../../../UnicodeConverter/",
 		"files": ["UnicodeConverter.cpp"]
 	}
-	],
-	"sources": ["wasm/src/drawingfile.cpp", "wasm/src/metafile.cpp"]
+	]
 }

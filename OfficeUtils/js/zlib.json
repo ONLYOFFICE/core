@@ -41,7 +41,11 @@
 		"name": "z",
 		"folder": "../src/zlib-1.2.11/",
 		"files": ["inflate.c", "zutil.c", "adler32.c", "crc32.c", "inftrees.c", "inffast.c", "deflate.c", "trees.c"]
+	},
+	{
+		"name": "s",
+		"folder": "./",
+		"files": ["../src/ZipBuffer.cpp", "wasm/src/base.cpp"]
 	}
-	],
-	"sources": ["../src/ZipBuffer.cpp", "wasm/src/base.cpp"]
+	]
 }

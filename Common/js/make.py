@@ -43,15 +43,25 @@ def exec_wasm(data, work, compiler_flags, wasm):
     libs = ""
     for compile_files in data["compile_files_array"]:
         base.create_dir("./o/" + compile_files["name"])
+
+        temp_arguments = ""
+        if "include_path" in compile_files and compile_files["include_path"]:
+            for include in compile_files["include_path"]:
+                temp_arguments += ("-I" + os.path.normpath(work + include).replace("\\", '/') + " ")
+        if "define" in compile_files and compile_files["define"]:
+            for define in compile_files["define"]:
+                temp_arguments += ("-D" + define + " ")
+
         temp_libs = ""
         for item in compile_files["files"]:
             file_name = os.path.splitext(os.path.basename(item))[0]
             if not base.is_file("./o/" + compile_files["name"] + "/" + file_name + ".o"):
-                run_file.append(prefix_call + "emcc -o o/" + compile_files["name"] + "/" + file_name + ".o -c " + arguments + os.path.normpath(work + os.path.join(compile_files["folder"], item)).replace("\\", '/'))
+                run_file.append(prefix_call + "emcc -o o/" + compile_files["name"] + "/" + file_name + ".o -c " + arguments + temp_arguments + os.path.normpath(work + os.path.join(compile_files["folder"], item)).replace("\\", '/'))
             temp_libs += ("o/" + compile_files["name"] + "/" + file_name + ".o ")
+
         if len(compile_files["files"]) > 10:
             if not base.is_file("./o/" + compile_files["name"] + "/" + compile_files["name"] + ".o"):
-                run_file.append(prefix_call + "emcc -o o/" + compile_files["name"] + "/" + compile_files["name"] + ".o -r " + arguments + temp_libs)
+                run_file.append(prefix_call + "emcc -o o/" + compile_files["name"] + "/" + compile_files["name"] + ".o -r " + arguments + temp_arguments + temp_libs)
             libs += ("o/" + compile_files["name"] + "/" + compile_files["name"] + ".o ")
         else:
             libs += temp_libs
@@ -62,24 +72,26 @@ def exec_wasm(data, work, compiler_flags, wasm):
     arguments = arguments[:-1]
     arguments += "]\" "
 
-    for item in data["sources"]:
-        arguments += (os.path.normpath(work + item).replace("\\", '/') + " ")
+    if "sources" in data and data["sources"]:
+        for item in data["sources"]:
+            arguments += (os.path.normpath(work + item).replace("\\", '/') + " ")
 
     run_file.append(prefix_call + "emcc -o " + data["name"] + ".js " + arguments + libs)
-    print("run " + data["name"])
+    base.print_info("run " + ("wasm " if wasm else "asm ") + data["name"])
     base.run_as_bat(run_file)
 
     # finalize
-    print("finalize " + data["name"])
+    base.print_info("end " + ("wasm " if wasm else "asm ") + data["name"])
     module_js_content = base.readFile("./" + data["name"] + ".js")
     engine_base_js_content = base.readFile(work + data["base_js_content"])
     string_utf8_content = base.readFile("./string_utf8.js")
     desktop_fetch_content = base.readFile("./desktop_fetch.js")
-    polyfill_js_content = base.readFile("./../3dParty/hunspell/wasm/js/polyfill.js")
+    polyfill_js_content = base.readFile("./polyfill.js")
     engine_js_content = engine_base_js_content.replace("//module", module_js_content)
     engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
     engine_js_content = engine_js_content.replace("//desktop_fetch", desktop_fetch_content)
-    engine_js_content = engine_js_content.replace("//polyfill",    polyfill_js_content)
+    if not wasm:
+        engine_js_content = engine_js_content.replace("//polyfill", polyfill_js_content)
 
     # write new version
     base.writeFile(work + data["res_folder"] + "/" + data["name"] + ("" if wasm else "_ie") + ".js", engine_js_content)
@@ -94,14 +106,14 @@ def exec_wasm(data, work, compiler_flags, wasm):
 argv = sys.argv
 argv.pop(0)
 for param in argv:
-    print(param)
+    base.print_info(param)
     if not base.is_file(param):
         continue
     work_dir = os.path.dirname(param) + "/"
     json_data = json.loads(base.readFile(param))
 
     if json_data["run_before"]:
-        print("before")
+        base.print_info("before")
         if base.is_file(work_dir + json_data["run_before"]):
             base.cmd_in_dir(work_dir, "python", [json_data["run_before"]])
         else:
@@ -115,19 +127,17 @@ for param in argv:
 
     # wasm or asm
     if json_data["wasm"]:
-        print("wasm " + json_data["name"])
         flags = json_data["compiler_flags"].copy()
         flags.append("-s WASM=1")
         exec_wasm(json_data, work_dir, flags, True)
     if json_data["asm"]:
-        print("asm " + json_data["name"])
         flags = json_data["compiler_flags"].copy()
         flags.append("-s WASM=0")
         exec_wasm(json_data, work_dir, flags, False)
 
     base.delete_dir("./o")
     if json_data["run_after"]:
-        print("after")
+        base.print_info("after")
         if base.is_file(work_dir + json_data["run_after"]):
             base.cmd_in_dir(work_dir, "python", [json_data["run_after"]])
         else:

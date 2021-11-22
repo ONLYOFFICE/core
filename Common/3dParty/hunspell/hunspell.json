@@ -38,7 +38,11 @@
 		"name": "h",
 		"folder": "./hunspell/src/hunspell/",
 		"files": ["affentry.cxx", "affixmgr.cxx", "csutil.cxx", "hashmgr.cxx", "hunspell.cxx", "hunzip.cxx", "phonet.cxx", "replist.cxx", "suggestmgr.cxx"]
+	},
+	{
+		"name": "s",
+		"folder": "./wasm/src/",
+		"files": ["filemgr_wrapper_new.cxx", "base.cpp"]
 	}
-	],
-	"sources": ["./wasm/src/filemgr_wrapper_new.cxx", "./wasm/src/base.cpp"]
+	]
 }

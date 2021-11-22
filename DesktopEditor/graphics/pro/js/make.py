@@ -258,7 +258,7 @@ base.replaceInFile("./drawingfile.js", "\"drawingfile.js.mem\"", "getMemoryPathI
 module_js_content = base.readFile("./drawingfile.js")
 engine_base_js_content = base.readFile("./wasm/js/drawingfile_base.js")
 string_utf8_content    = base.readFile("./../../../../Common/js/string_utf8.js")
-polyfill_js_content    = base.readFile("./../../../../Common/3dParty/hunspell/wasm/js/polyfill.js")
+polyfill_js_content    = base.readFile("./../../../../Common/js/polyfill.js")
 engine_js_content = engine_base_js_content.replace("//module", module_js_content)
 engine_js_content = engine_js_content.replace("//string_utf8", string_utf8_content)
 engine_js_content = engine_js_content.replace("//polyfill",    polyfill_js_content)

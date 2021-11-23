@@ -181,7 +181,7 @@ public:
 	std::vector<std::wstring>		external_sheets_info; //current
 
 	std::pair<float, float>			defaultDigitFontSize;
-    NSFonts::IApplicationFonts*     applicationFonts;
+        NSFonts::IApplicationFonts*     applicationFonts;
 	std::wstring					fontsDirectory;
 
 	std::wstring					tempDirectory;
@@ -203,6 +203,7 @@ public:
 
         std::unordered_map<int, std::wstring>		mapTableNames;
         std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
+        std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
 
 	XlsConverter					*xls_converter;
 

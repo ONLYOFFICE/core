@@ -63,6 +63,7 @@ namespace OOX
             bool ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream);			
             XLS::GlobalWorkbookInfo* GetGlobalinfo();
             void PrepareSi();
+            void PrepareTableFormula();
 
         private:
 

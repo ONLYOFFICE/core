@@ -75,11 +75,11 @@ void RevLblName::load(CFRecord& record)
 		case 0x00:        
             if (record.getGlobalWorkbookInfo()->Version < 0x0800)
             {
-                st = static_cast<std::wstring >(st_raw);
+                st = st_raw.value();
             }
             else
             {
-                st = static_cast<std::wstring >(st_raw_xlsb);
+                st = st_raw_xlsb.value();
             }
 			break;
 		case 0x01:

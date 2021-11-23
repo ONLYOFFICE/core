@@ -76,8 +76,9 @@ void DVParsedFormula::load(CFRecord& record)
     {
         unsigned int cb;
         record >> cb;
+        record.skipNunBytes(cb);
 
-        rgcb.load(record, rgce.getPtgs(), true);
+        //rgcb.load(record, rgce.getPtgs(), true);
     }
 }
 

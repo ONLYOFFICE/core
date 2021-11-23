@@ -2247,6 +2247,14 @@ void CPdfRenderer::GetFontPath(const std::wstring &wsFontName, const bool &bBold
 		oFontSelect.bItalic = new INT(bItalic ? 1 : 0);
 		oFontSelect.bBold   = new INT(bBold ? 1 : 0);
 		NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
+		if (pFontInfo->m_usType & FT_FSTYPE_RESTRICTED_LICENSE_EMBEDDING)
+		{
+			oFontSelect.Fill(pFontInfo);
+			if (NULL != oFontSelect.usType)
+				*oFontSelect.usType = (~FT_FSTYPE_RESTRICTED_LICENSE_EMBEDDING);
+
+			pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
+		}
 
 		wsFontPath = pFontInfo->m_wsFontPath;
 		lFaceIndex = pFontInfo->m_lIndex;

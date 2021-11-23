@@ -88,6 +88,7 @@ namespace PdfWriter
 		CDictObject*       m_pFontDescriptor;
 		int                m_nLineHeight;
 		int                m_nAscent;
+		bool               m_bCanEmbed;
 
 
 		friend class CDocument;

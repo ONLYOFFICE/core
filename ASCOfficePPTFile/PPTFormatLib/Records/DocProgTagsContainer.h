@@ -48,13 +48,13 @@
 namespace PPT_FORMAT
 {
 
-class CRecordPP9DocBinaryTagExtension : public CUnknownRecord
+class CRecordPP9DocBinaryTagExtension : public CRecordsContainer
 {
 public:
     std::vector<CRecordTextMasterStyle9Atom*>       m_rgTextMasterStyleAtom;
-     nullable<CRecordTextDefaults9Atom>             m_textDefaultsAtom;
-     nullable<CRecordOutlineTextProps9Container>    m_outlineTextPropsContainer;
-     nullable<CRecordBlipCollection9Container>      m_blipCollectionContainer;
+    nullable<CRecordTextDefaults9Atom>             m_textDefaultsAtom;
+    nullable<CRecordOutlineTextProps9Container>    m_outlineTextPropsContainer;
+    nullable<CRecordBlipCollection9Container>      m_blipCollectionContainer;
     // TODO
     CRecordPP9DocBinaryTagExtension()
     {
@@ -113,7 +113,10 @@ public:
                 break;
             }
             default:
-                StreamUtils::StreamSkip(ReadHeader.RecLen, pStream);
+                IRecord* pRecord = CreateByType(ReadHeader);
+                pRecord->ReadFromStream(ReadHeader, pStream);
+
+                m_arRecords.push_back(pRecord);
                 break;
             }
 

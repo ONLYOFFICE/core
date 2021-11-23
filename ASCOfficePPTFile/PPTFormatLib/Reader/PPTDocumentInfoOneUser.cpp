@@ -2608,12 +2608,12 @@ void CPPTUserInfo::LoadBulletBlip(CShapeElement *pShape)
     m_oDocument.GetRecordsByType(&arrDocInfoCont, false);
     // TODO need to find BlipEntity;
 
-    for (auto& par : pShape->m_pShape->m_oText.m_arParagraphs)
-    {
-        if (par.m_oPFRun.bulletBlip.IsInit())
-        {
-            // TODO need to write path of image here
-            par.m_oPFRun.bulletBlip->bulletBlipRef;
-        }
-    }
+//    for (auto& par : pShape->m_pShape->m_oText.m_arParagraphs)
+//    {
+//        if (par.m_oPFRun.bulletBlip.IsInit())
+//        {
+//            // TODO need to write path of image here
+//            par.m_oPFRun.bulletBlip->bulletBlipRef;
+//        }
+//    }
 }

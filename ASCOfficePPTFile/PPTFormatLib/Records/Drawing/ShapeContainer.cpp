@@ -1965,6 +1965,8 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
                 pShapeElem->m_oTextActions.m_arRanges.push_back(oRange);
             }
         }
+
+        ConvertExtention9(pShapeElem);
         double dAngle = pShapeElem->m_dRotate;
         if (0 <= dAngle)
         {
@@ -2773,6 +2775,36 @@ void CRecordShapeContainer::ApplyAutoNumbering(CTextAttributesEx *pText)
 
         }
     }
+}
+
+void CRecordShapeContainer::ConvertExtention9(CElement* pElement)
+{
+    if (pElement == nullptr)
+        return;
+
+    std::vector<CRecordOfficeArtClientData*> arrOfficeData;
+    GetRecordsByType(&arrOfficeData, false, true);
+
+    if (arrOfficeData.empty())
+        return;
+
+    auto pUnknownBinaryTag =arrOfficeData[0]->getProgTag(___PPT9);
+    if (pUnknownBinaryTag == nullptr)
+        return;
+    auto progTag9 = dynamic_cast<CRecordPP9ShapeBinaryTagExtension*>(pUnknownBinaryTag);
+    if (progTag9 == nullptr)
+        return;
+
+    for (const auto& textProp9 : progTag9->m_styleTextPropAtom.m_rgStyleTextProp9)
+    {
+        if (textProp9.m_pf9.m_optBulletBlipRef.IsInit())
+        {
+            CBulletBlip buBlip;
+            buBlip.bulletBlipRef = textProp9.m_pf9.m_optBulletBlipRef.get();
+            pElement->m_arrBlip.push_back(buBlip);
+        }
+    }
+
 }
 
 void CRecordGroupShapeContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)

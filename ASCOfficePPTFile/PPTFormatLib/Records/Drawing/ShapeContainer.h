@@ -150,5 +150,6 @@ protected:
     static std::vector<std::vector<CInteractiveInfo> > splitInteractive(const std::vector<CInteractiveInfo>& arrInteractive);
     static void ConvertInteractiveInfo(CInteractiveInfo& interactiveInfo, const CRecordMouseInteractiveInfoContainer* interactiveCont, CExMedia* pMapIDs);
     void ApplyAutoNumbering(CTextAttributesEx *pText);
+    void ConvertExtention9(CElement *pElement);
 };
 

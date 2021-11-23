@@ -314,11 +314,6 @@ namespace MetaFile
                 MoveTo(oPoint.x, oPoint.y);
         }
 
-        void CEmfParserBase::MoveTo(TEmfPlusPointR &oPoint)
-        {
-                //TODO: реализовать
-        }
-
         void CEmfParserBase::LineTo(double dX, double dY)
         {
                 if (m_pPath)
@@ -354,11 +349,6 @@ namespace MetaFile
         void CEmfParserBase::LineTo(TEmfPointS &oPoint)
         {
                 LineTo(oPoint.x, oPoint.y);
-        }
-
-        void CEmfParserBase::LineTo(TEmfPlusPointR &oPoint)
-        {
-                //TODO: реализовать
         }
 
         void CEmfParserBase::CurveTo(int nX1, int nY1, int nX2, int nY2, int nXe, int nYe)
@@ -812,9 +802,6 @@ namespace MetaFile
 
         void CEmfParserBase::HANDLE_EMR_HEADER(TEmfHeader &oTEmfHeader)
         {
-                if (NULL != m_pInterpretator)
-                        m_pInterpretator->HANDLE_EMR_HEADER(m_oHeader);
-
                 if (ENHMETA_SIGNATURE != m_oHeader.ulSignature || 0x00010000 != m_oHeader.ulVersion)
                         return SetError();
 
@@ -844,7 +831,10 @@ namespace MetaFile
                 m_oHeader.oFramePx = m_oHeader.oFrameToBounds;
 
                 if (NULL != m_pInterpretator)
+                {
                         m_pInterpretator->Begin();
+                        m_pInterpretator->HANDLE_EMR_HEADER(m_oHeader);
+                }
         }
 
         void CEmfParserBase::HANDLE_EMR_ALPHABLEND(TEmfAlphaBlend &oTEmfAlphaBlend)
@@ -890,7 +880,10 @@ namespace MetaFile
         void CEmfParserBase::HANDLE_EMR_EOF()
         {
                 if (NULL != m_pInterpretator)
+                {
                         m_pInterpretator->HANDLE_EMR_EOF();
+                        m_pInterpretator->End();
+                }
         }
 
         void CEmfParserBase::HANDLE_EMR_SAVEDC()

@@ -421,14 +421,14 @@ namespace MetaFile
 
                         CEmfPlusPath *pPath = new CEmfPlusPath();
 
-                        pPath->MoveTo(arPoints[0].x, arPoints[0].y);
+                        pPath->MoveTo(arPoints[0].X, arPoints[0].Y);
 
                         for (unsigned int unIndex = 1; unIndex < unPathPointCount; ++unIndex)
                         {
                                 if (ExpressValue(arPointTypes[unIndex], 0, 3) == 0)
-                                        pPath->MoveTo(arPoints[unIndex].x, arPoints[unIndex].y);
+                                        pPath->MoveTo(arPoints[unIndex].X, arPoints[unIndex].Y);
                                 else
-                                        pPath->LineTo(arPoints[unIndex].x, arPoints[unIndex].y);
+                                        pPath->LineTo(arPoints[unIndex].X, arPoints[unIndex].Y);
                         }
 
                         return pPath;
@@ -611,9 +611,8 @@ namespace MetaFile
                 }
         }
 
-        template<typename T>
         void CEmfPlusParser::DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex,
-                                             TEmfPlusRectF oSrcRect, std::vector<T> arPoints)
+                                             TEmfPlusRectF oSrcRect, std::vector<TEmfPlusPointF> arPoints)
         {
                 if (NULL == m_pInterpretator)
                         return;
@@ -638,47 +637,29 @@ namespace MetaFile
 
                 if (!oEmfParser.CheckError())
                 {
-                        double dM11 = 1, dM12 = 0, dM21 = 0,  dM22 = 1, dX = 0, dY = 0;
-                        const std::string sStructName = typeid (T).name();
+                        double dM11 = 1, dM12 = 0, dM21 = 0,  dM22 = 1, dX = 0, dY = 0;                            
 
-                        if (sStructName == "struct MetaFile::TEmfPlusPointR")
-                        {
-                                //TODO: реализовать
-                        }
-                        else if (sStructName == "struct MetaFile::TEmfPlusPoint")
-                        {
-                                //TODO: реализовать
-                        }
-                        else if (sStructName == "struct MetaFile::TEmfPointD")
-                        {
-                                TEmfPlusPointF oPoint1, oPoint2, oPoint3;
-
-                                oPoint1 = (TEmfPlusPointF&)(arPoints[0]);
-                                oPoint2 = (TEmfPlusPointF&)(arPoints[1]);
-                                oPoint3 = (TEmfPlusPointF&)(arPoints[2]);
-
-                                double dStartX = oPoint1.x, dStartY = oPoint1.y;
-
-                                m_pDC->GetTransform()->Apply(dStartX, dStartY);
-
-                                dM11 = (oPoint2.x - oPoint1.x) / oSrcRect.dRight;
-                                dM21 = (oPoint3.x - oPoint1.x) / oSrcRect.dBottom;
-                                dX = oPoint1.x - dM11 * oSrcRect.dLeft - dM21 * oSrcRect.dTop;
-
-                                dM12 = (oPoint2.y - oPoint1.y) / oSrcRect.dRight;
-                                dM22 = (oPoint3.y - oPoint1.y) / oSrcRect.dBottom;
-                                dY = oPoint1.y - dM12 * oSrcRect.dLeft - dM22 * oSrcRect.dTop;
-
-                                oSrcRect.dRight += oSrcRect.dLeft;
-                                oSrcRect.dBottom += oSrcRect.dTop;
+                        TEmfPlusRectF oRect;
+                        oRect.dX = arPoints[0].X;
+                        oRect.dY = arPoints[0].Y;
+                        oRect.dWidth = arPoints[1].X - arPoints[0].X;
+                        oRect.dHeight = arPoints[2].Y - arPoints[0].Y;
 
 
 
 
-                        TEmfPlusXForm oNewTransform(-dKoefX, 0, 0, dKoefY, dX, dY);
-                                dX = -dStartX;
-                                dY = oPoint3.y + oPoint1.y;
-                        }
+
+                        dM11 = (arPoints[1].X - arPoints[0].X) / oSrcRect.dWidth;
+                        dM21 = (arPoints[2].X - arPoints[0].X) / oSrcRect.dHeight;
+                        dX = arPoints[0].X - dM11 * oSrcRect.dX - dM21 * oSrcRect.dY;
+
+                        dM12 = (arPoints[1].Y - arPoints[0].Y) / oSrcRect.dWidth;
+                        dM22 = (arPoints[2].Y - arPoints[0].Y) / oSrcRect.dHeight;
+                        dY = arPoints[0].Y - dM12 * oSrcRect.dX - dM22 * oSrcRect.dY;
+
+
+
+
 
                         EmfPlusImageAttributesMap::const_iterator oFountAttributesImage = m_mImageAttributes.find(unImageAttributeIndex);
 
@@ -690,9 +671,6 @@ namespace MetaFile
 
                                 if (pImageAttributes->eWrapMode == WrapModeTileFlipXY)
                                 {
-                                        dX += 2  * (dX + (oSrcRect.dRight - oSrcRect.dLeft)) - (oSrcRect.dRight - oSrcRect.dLeft);
-                                        dY += dY * 2;
-
                                         dM11 *= -1;
                                         dM22 *= -1;
                                 }
@@ -708,8 +686,6 @@ namespace MetaFile
                                 dM11 *= -1;
                         }
 
-                        oSrcRect.dWidth = oSrcRect.dWidth / m_pDC->GetTransform()->M11 + m_pDC->GetTransform()->Dx;
-                        oSrcRect.dHeight = oSrcRect.dHeight / m_pDC->GetTransform()->M22 + m_pDC->GetTransform()->Dy;
 
                         TEmfPlusXForm oNewTransform(dM11, 0, 0, dM22, dX, dY);
 
@@ -970,7 +946,7 @@ namespace MetaFile
                 for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
                         m_oStream >> arPoints[unIndex];
 
-                DrawImagePoints(shOgjectIndex, unImageAttributesID, oSrcRect, arPoints);
+                DrawImagePoints(shOgjectIndex, unImageAttributesID, oSrcRect, GetConvertedPoints(arPoints));
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWLINES(unsigned short unShFlags)
@@ -1010,8 +986,7 @@ namespace MetaFile
 
                 m_oPlayer.SelectObject(shOgjectIndex);
 
-                DrawLines(arPoints, ((unShFlags >>(13)) & 1));
-                //TODO: реализовать
+                DrawLines(GetConvertedPoints(arPoints), ((unShFlags >>(13)) & 1));
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWPATH(unsigned short unShFlags)
@@ -1247,10 +1222,7 @@ namespace MetaFile
                 std::vector<T> arRects(unCount);
 
                 for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
-                {
-                        T oRect;
                         m_oStream >> arRects[unIndex];
-                }
 
                 if ((unShFlags >>(15)) & 1 )//BrushId = Color
                 {
@@ -1598,7 +1570,9 @@ namespace MetaFile
 
                 m_oStream >> dPageScale;
 
-                //TODO: реализовать
+                TXForm oMatrix(dPageScale, 0, 0, dPageScale, 0, 0);
+
+                m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_SETWORLDTRANSFORM()
@@ -1681,7 +1655,7 @@ namespace MetaFile
                 m_oStream >> oRect;
 
                 return; // TODO: при добавлении поддержки регионов становится хуже
-                CombineClip(oRect, shCM);
+                CombineClip(oRect.GetRectD(), shCM);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_SETCLIPREGION(unsigned short unShFlags)
@@ -1701,13 +1675,13 @@ namespace MetaFile
                                 if (oNode.eType == RegionNodeDataTypeInfinite)
                                 {
                                         TRect* pRect = GetDCBounds();
-                                        TEmfPlusRectF oBB;
+                                        TRectD oBB;
                                         TranslatePoint(pRect->nLeft, pRect->nTop, oBB.dLeft, oBB.dTop);
                                         TranslatePoint(pRect->nRight, pRect->nBottom, oBB.dRight, oBB.dBottom);
                                         CombineClip(oBB, CombineModeIntersect);
                                 }
                                 else if (oNode.eType == RegionNodeDataTypeRect)
-                                        CombineClip(*oNode.GetRect(), shCM);
+                                        CombineClip((*oNode.GetRect()).GetRectD(), shCM);
                         }
                 }
 
@@ -1737,18 +1711,45 @@ namespace MetaFile
                 return shValue;
         }
 
-        template<typename T>
-        void CEmfPlusParser::DrawLines(std::vector<T> arPoints, bool bCloseFigure)
+        void CEmfPlusParser::DrawLines(std::vector<TEmfPlusPointF> arPoints, bool bCloseFigure)
         {
-                MoveTo(arPoints[0]);
+                MoveTo(arPoints[0].X, arPoints[0].Y);
 
                 for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
-                        LineTo(arPoints[unIndex]);
+                        LineTo(arPoints[unIndex].X, arPoints[unIndex].Y);
 
                 if (bCloseFigure)
                         ClosePath();
 
                 DrawPath(true, false);
+        }
+
+        template<typename T>
+        std::vector<TEmfPlusPointF> CEmfPlusParser::GetConvertedPoints(std::vector<T> arPoints)
+        {
+                std::vector<TEmfPlusPointF> arConvertdPoints;
+
+                const std::string sStructName = typeid (T).name();
+
+                if (sStructName == "struct MetaFile::TEmfPlusPointR")
+                {
+                        //TODO: реализовать
+                }
+                else if (sStructName == "struct MetaFile::TEmfPlusPoint")
+                {
+                        //TODO: реализовать
+                }
+                else if (sStructName == "struct MetaFile::TEmfPlusPointF")
+                {
+                        arConvertdPoints.resize(arPoints.size());
+
+                        for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
+                                arConvertdPoints[unIndex] = static_cast<TEmfPlusPointF>(arPoints[unIndex]);
+
+                        return arConvertdPoints;
+                }
+
+                return arConvertdPoints;
         }
 
 }

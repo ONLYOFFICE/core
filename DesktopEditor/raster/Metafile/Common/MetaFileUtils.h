@@ -711,6 +711,13 @@ namespace MetaFile
 			//TODO: реализовать
 			return *this;
 		}
+		CDataStream& operator>>(TEmfPlusPointF &oPoint)
+		{
+			*this >> oPoint.X;
+			*this >> oPoint.Y;
+
+			return *this;
+		}
 		CDataStream& operator>>(TEmfPlusRectR &oTEmfPlusRectR)
 		{
 			*this >> oTEmfPlusRectR.chX;

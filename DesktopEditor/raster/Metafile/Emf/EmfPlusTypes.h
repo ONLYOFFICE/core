@@ -98,7 +98,7 @@ namespace MetaFile
 
         struct TEmfPlusPointR
         {
-
+                //TODO: реализовать
         };
 
         struct TGUID
@@ -146,8 +146,26 @@ namespace MetaFile
         };
 
         #define TEmfPlusPoint   TEmfPointS
-        #define TEmfPlusPointF  TEmfPointD
         #define TEmfPlusXForm   TEmfXForm
+
+        struct TEmfPlusPointF
+        {
+                double X;
+                double Y;
+
+                TEmfPlusPointF(){}
+
+                TEmfPlusPointF(const TEmfPlusPoint& oPoint)
+                {
+                        X = (double)oPoint.x;
+                        Y = (double)oPoint.y;
+                }
+
+                TEmfPlusPointF(const TEmfPlusPointR& oPoint)
+                {
+
+                }
+        };
 
         typedef  enum
         {

@@ -43,12 +43,13 @@ namespace MetaFile
                 void DrawRectangle(TEmfPlusRectF oRectangle, bool bStroke, bool bFill);
                 void DrawRectangle(TEmfPlusRect oRectangle, bool bStroke, bool bFill);
 
-                template<typename T> void DrawLines(std::vector<T> arPoints, bool bCloseFigure);
+                void DrawLines(std::vector<TEmfPlusPointF> arPoints, bool bCloseFigure);
 
-                template<typename T>void DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex, TEmfPlusRectF oSrcRect, std::vector<T> arPoints);
+                void DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex, TEmfPlusRectF oSrcRect, std::vector<TEmfPlusPointF> arPoints);
                 TEmfPlusARGB ApplyImageAttributes(TEmfPlusRectF& oRectangle, const CEmfPlusImageAttributes& oImageAttributes);
 
                 void CombineClip(TRectD oBox, int nMode);
+                template<typename T> std::vector<TEmfPlusPointF> GetConvertedPoints(std::vector<T>arPoints);
 
                 void Read_EMRPLUS_OFFSETCLIP();
                 void Read_EMRPLUS_RESETCLIP();

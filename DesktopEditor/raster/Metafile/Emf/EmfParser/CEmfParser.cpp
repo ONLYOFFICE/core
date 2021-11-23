@@ -229,8 +229,6 @@ namespace MetaFile
                 if (!CheckError())
                         m_oStream.SeekToStart();
 
-                if (m_pInterpretator)
-                        m_pInterpretator->End();
         }
 
         void CEmfParser::Scan()

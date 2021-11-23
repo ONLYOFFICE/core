@@ -327,11 +327,19 @@ void CMetafileTreeWidget::slotDeleteItem(QStandardItem *pDeletedItem)
 
 void CMetafileTreeWidget::InsertRecord(QStandardItem *pParentItem, unsigned int unRow, bool bAfterRecord)
 {
+        if (NULL == pParentItem)
+                return;
+
         CRecordCreator *pRecordCreator = new CRecordCreator();
         pRecordCreator->SetMainWindow(m_pMainWindow);
 
         QStandardItem *pItem = pRecordCreator->CreateRecord();
 
         if (NULL != pItem)
+        {
                 pParentItem->insertRow(unRow + ((bAfterRecord) ? 0 : 1), pItem);
+                if (m_pMainWindow->SaveInXmlFile(L"Temp.xml") &&
+                    m_pMainWindow->ConvertToEmf(L"Temp.xml"))
+                        m_pMainWindow->DisplayingFile(L"TempFile.emf", false);
+        }
 }

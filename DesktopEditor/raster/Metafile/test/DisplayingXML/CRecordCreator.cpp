@@ -554,6 +554,8 @@ void CRecordCreator::ConvertWidgets(const QString& qsName)
 
         m_pNewItem = new QStandardItem(QString("<%1>").arg(qsName));
 
+        m_pNewItem->setData("Record", 3);
+
         for (const CSharedWidget* pWidget : m_arWidgets)
                 m_pNewItem->appendRows(pWidget->GetData());
 }

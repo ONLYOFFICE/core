@@ -69,9 +69,6 @@ void CEditItemWidget::SetItem(QStandardItem *pStandardItem)
 
 void CEditItemWidget::slotSaveButtonCliked()
 {
-        if (m_oBind.size() == 0)
-                slotCancelButtonClicked();
-
         for (QStandardItem* oStandardItem : m_oBind)
         {
                 const QTextEdit* pTextEdit = m_oBind.key(oStandardItem);
@@ -92,7 +89,7 @@ void CEditItemWidget::slotSaveButtonCliked()
                         oStandardItem->setText(QString("<%1>%2</%1>").arg(qsName).arg(qsValue));
         }
 
-        if (NULL != m_pMainWindow)
+        if (!m_oBind.empty() && NULL != m_pMainWindow)
         {
                 if (m_pMainWindow->SaveInXmlFile(L"Temp.xml") &&
                     m_pMainWindow->ConvertToEmf(L"Temp.xml"))

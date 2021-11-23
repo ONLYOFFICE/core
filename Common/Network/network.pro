@@ -7,7 +7,7 @@ QT -= core gui
 CONFIG += shared
 CONFIG += plugin
 
-CORE_ROOT_DIR = $$PWD/../../../core
+CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include(../base.pri)
 

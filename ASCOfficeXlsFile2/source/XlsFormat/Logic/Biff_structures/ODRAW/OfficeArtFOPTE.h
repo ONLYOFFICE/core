@@ -41,7 +41,7 @@
 #include "MSOSHADECOLOR.h"
 #include "MSO_enums.h"
 
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
+#include "../../../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
 #include "../../../../XlsXlsxConverter/ConvertShapes/GraphicsPath.h"
 #include "../../../../XlsXlsxConverter/ConvertShapes/FormulaShape.h"
 

@@ -36,8 +36,8 @@
 #include "./Reader/PPTFileReader.h"
 #include "./PPTXWriter/Converter.h"
 
-#include "../../../Common/OfficeFileErrorDescription.h"
-#include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../Common/OfficeFileErrorDescription.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
 
 #ifndef READMODE
     #define READMODE 1

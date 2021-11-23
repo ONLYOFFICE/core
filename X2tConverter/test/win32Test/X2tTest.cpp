@@ -45,7 +45,7 @@
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/UnicodeConverter.lib")
-	#else
+#else
 		#pragma comment(lib, "../../../build/lib/win_64/doctrenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/HtmlRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/PdfReader.lib")
@@ -60,7 +60,7 @@
 		#pragma comment(lib, "../../../build/lib/win_64/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/UnicodeConverter.lib")
 	#endif
-	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+	#pragma comment(lib, "../../../build/bin/icu/win_64/icuuc.lib")
 #elif defined (_WIN32)
 	#if defined(_DEBUG)
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/doctrenderer.lib")

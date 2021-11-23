@@ -35,9 +35,9 @@
 #include "Encoding.h"
 #include "Utility.h"
 
-#include "../../../Common/DocxFormat/Source/Base/unicode_util.h"
-#include "../../../UnicodeConverter/UnicodeConverter.h"
-#include "../../../UnicodeConverter/UnicodeConverter_Encodings.h"
+#include "../../../../Common/DocxFormat/Source/Base/unicode_util.h"
+#include "../../../../UnicodeConverter/UnicodeConverter.h"
+#include "../../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
     #include <string.h>

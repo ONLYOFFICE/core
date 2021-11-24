@@ -63,10 +63,6 @@ namespace DocFileFormat
 		RELEASEOBJECT(_tcPr);
 		RELEASEOBJECT(_tcMar);
 		RELEASEOBJECT(_tcBorders);
-		RELEASEOBJECT(_brcTop);
-		RELEASEOBJECT(_brcLeft);
-		RELEASEOBJECT(_brcRight);
-		RELEASEOBJECT(_brcBottom);
 	}
 }
 
@@ -96,7 +92,6 @@ namespace DocFileFormat
 					break;
 			}
 		}
-
 
 		bool bPresentDefTable = false;
 		for (std::list<SinglePropertyModifier>::reverse_iterator iter = tapx->grpprl->rbegin(); iter != tapx->grpprl->rend(); ++iter)
@@ -190,26 +185,17 @@ namespace DocFileFormat
 
 						if (!IsTableBordersDefined(tapx->grpprl))
 						{
-							RELEASEOBJECT(_brcTop);
-							_brcTop = new BorderCode(*_tcDef.brcTop);
-
-							RELEASEOBJECT(_brcLeft);
-							_brcLeft = new BorderCode(*_tcDef.brcLeft);
-
-							RELEASEOBJECT(_brcRight);
-							_brcRight = new BorderCode(*_tcDef.brcRight);
-
-							RELEASEOBJECT(_brcBottom);
-							_brcBottom = new BorderCode(*_tcDef.brcBottom);
+							_brcTop = std::shared_ptr<BorderCode>(new BorderCode(*_tcDef.brcTop));
+							_brcLeft = std::shared_ptr<BorderCode>(new BorderCode(*_tcDef.brcLeft));
+							_brcRight = std::shared_ptr<BorderCode>(new BorderCode(*_tcDef.brcRight));
+							_brcBottom = std::shared_ptr<BorderCode>(new BorderCode(*_tcDef.brcBottom));
 						}
 					}
 				}
 				break;
-
 				case sprmTDxaCol:
 				{
 				}break;
-
 				case sprmTCellPadding:
 				{
 					unsigned char first		=	iter->Arguments[0];
@@ -248,10 +234,9 @@ namespace DocFileFormat
 						apppendCellShading(iter->Arguments, iter->argumentsSize, _cellIndex);
 					}
 				}break;
-
 				case sprmOldTDefTableShd:
 				case sprmTDefTableShd:
-				{						//	cell shading for cells 0-20
+				{ //	cell shading for cells 0-20
 					apppendCellShading(iter->Arguments, iter->argumentsSize, _cellIndex);
 				}break;
 
@@ -259,14 +244,12 @@ namespace DocFileFormat
 				{						//	cell shading for cells 21-42
 					apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - 21));
 				}break;
-
 				case sprmTDefTableShd3rd:
 				{						//	cell shading for cells 43-62
 					apppendCellShading(iter->Arguments, iter->argumentsSize, (_cellIndex - 43));
 				}break;
-
 				case sprmTCellWidth:
-				{				//width
+				{ //width
 					unsigned char first		=	iter->Arguments[0];
 					unsigned char lim		=	iter->Arguments[1];
 
@@ -276,10 +259,9 @@ namespace DocFileFormat
 						_width		=	FormatUtils::BytesToInt16(iter->Arguments, 3, iter->argumentsSize);
 					}
 				}
-				break;
-				
+				break;				
 				case sprmTVertAlign:
-				{							//vertical alignment
+				{ //vertical alignment
 					unsigned char first		=	iter->Arguments[0];
 					unsigned char lim		=	iter->Arguments[1];
 
@@ -289,7 +271,6 @@ namespace DocFileFormat
 					}
 				}
 				break;
-
 				case sprmTFitText:
 				{				//Autofit
 					unsigned char first = iter->Arguments[0];
@@ -301,10 +282,9 @@ namespace DocFileFormat
 					}
 				}
 				break;
-
 				case sprmOldTSetBrc:
 				case sprmTSetBrc:
-				{					//borders (cell definition)
+				{ //borders (cell definition)
 					unsigned char min = iter->Arguments[0];
 					unsigned char max = iter->Arguments[1];
 
@@ -318,35 +298,34 @@ namespace DocFileFormat
 
 						if( FormatUtils::BitmaskToBool( bordersToApply, 0x01 ) )
 						{
-							RELEASEOBJECT( _brcTop );
-							_brcTop = new BorderCode( brcBytes, brcSize );
+							_brcTop = std::shared_ptr<BorderCode>(new BorderCode( brcBytes, brcSize ));
 						}
-
 						if( FormatUtils::BitmaskToBool( bordersToApply, 0x02 ) )
 						{
-							RELEASEOBJECT( _brcLeft );
-							_brcLeft = new BorderCode( brcBytes, brcSize );
+							_brcLeft = std::shared_ptr<BorderCode>(new BorderCode( brcBytes, brcSize ));
 						}
-
 						if ( FormatUtils::BitmaskToBool( bordersToApply, 0x04 ) )
 						{
-							RELEASEOBJECT( _brcBottom );
-							_brcBottom = new BorderCode( brcBytes, brcSize );
+							_brcBottom = std::shared_ptr<BorderCode>(new BorderCode( brcBytes, brcSize ));
 						}
-
 						if ( FormatUtils::BitmaskToBool( bordersToApply, 0x08 ) )
 						{
-							RELEASEOBJECT( _brcRight );
-							_brcRight = new BorderCode( brcBytes, brcSize );
+							_brcRight = std::shared_ptr<BorderCode>(new BorderCode( brcBytes, brcSize ));
 						}
 					}
-				}
-				break;
+				}break;
+				
 				default:
 					break;
 			}
 		}
-		if (_gridSpan <= 1 && nComputedCellWidth > _width && _width > 1)
+		int nComputedCellWidthsGrid = 0;
+
+		for (size_t ccc = 0; ccc < _grid->size() && ccc <= _gridIndex; ccc++)
+		{
+			nComputedCellWidthsGrid += _grid->at(ccc);
+		}//zadost.doc
+		if (_gridSpan <= 1 && nComputedCellWidth > _width && _width > 1 && nComputedCellWidths > nComputedCellWidthsGrid)
 		{
 			int width_current = 0;
 			for (int i = _gridIndex; i < _grid->size();  i++)
@@ -365,16 +344,10 @@ namespace DocFileFormat
 		XMLTools::XMLAttribute  tcWVal  ( L"w:w", FormatUtils::IntToWideString( _width > 1 ? _width : nComputedCellWidth) );
 		XMLTools::XMLAttribute  tcWType ( L"w:type",  (_width > 1 || nComputedCellWidth > 0) ? FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ) : L"auto");
 
-		tcW.AppendAttribute( tcWType );
 		tcW.AppendAttribute( tcWVal );
+		tcW.AppendAttribute( tcWType );
 		_tcPr->AppendChild( tcW );
 
-		int nComputedCellWidthsGrid = 0;
-
-		for (size_t ccc = 0; ccc < _grid->size() && ccc <= _gridIndex; ccc++)
-		{
-			nComputedCellWidthsGrid += _grid->at(ccc);
-		}
 		if ( _gridSpan == 1 && ( _gridIndex < (int)_grid->size() ) && ( nComputedCellWidths > nComputedCellWidthsGrid ) )
 		{
 			//check the number of merged cells
@@ -405,28 +378,28 @@ namespace DocFileFormat
 		if (_brcTop)
 		{
             XMLTools::XMLElement topBorder( L"w:top" );
-			appendBorderAttributes(_brcTop, &topBorder);
+			appendBorderAttributes(_brcTop.get(), &topBorder);
 			addOrSetBorder(_tcBorders, &topBorder );
 		}
 
 		if (_brcLeft )
 		{
             XMLTools::XMLElement leftBorder( L"w:left" );
-			appendBorderAttributes(_brcLeft, &leftBorder);
+			appendBorderAttributes(_brcLeft.get(), &leftBorder);
 			addOrSetBorder(_tcBorders, &leftBorder);
 		}
 
 		if (_brcBottom)
 		{
             XMLTools::XMLElement bottomBorder( L"w:bottom" );
-			appendBorderAttributes(_brcBottom, &bottomBorder);
+			appendBorderAttributes(_brcBottom.get(), &bottomBorder);
 			addOrSetBorder(_tcBorders, &bottomBorder);
 		}
 
 		if (_brcRight)
 		{
             XMLTools::XMLElement rightBorder( L"w:right" );
-			appendBorderAttributes( _brcRight, &rightBorder );
+			appendBorderAttributes( _brcRight.get(), &rightBorder );
 			addOrSetBorder( _tcBorders, &rightBorder );
 		}
 

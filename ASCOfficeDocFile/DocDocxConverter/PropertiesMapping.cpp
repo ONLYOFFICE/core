@@ -439,15 +439,15 @@ namespace DocFileFormat
             val.SetValue( getBorderType( brc->brcType ));
 			border->AppendAttribute( val );
 
-            XMLTools::XMLAttribute color( L"w:color" );
-            color.SetValue( RGBColor( brc->cv, RedFirst ).SixDigitHexCode);
-			border->AppendAttribute( color );
-
-            XMLTools::XMLAttribute space( L"w:space" , FormatUtils::IntToWideString( brc->dptSpace ));
-			border->AppendAttribute( space );
-
             XMLTools::XMLAttribute sz( L"w:sz", FormatUtils::IntToWideString( brc->dptLineWidth ));
 			border->AppendAttribute( sz );
+           
+            XMLTools::XMLAttribute space( L"w:space" , FormatUtils::IntToWideString( brc->dptSpace ));
+			border->AppendAttribute( space );
+			
+			XMLTools::XMLAttribute color( L"w:color" );
+            color.SetValue( RGBColor( brc->cv, RedFirst ).SixDigitHexCode);
+			border->AppendAttribute( color );
 
 			if ( brc->fShadow )
 			{

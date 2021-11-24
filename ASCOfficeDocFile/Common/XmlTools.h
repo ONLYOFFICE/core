@@ -32,7 +32,7 @@
 #pragma once
 
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <list>
 
 #include <boost/shared_ptr.hpp>
@@ -123,15 +123,15 @@ namespace XMLTools
 	private:
         std::wstring									m_Name;
         std::wstring									m_ElementText;
-        std::map<std::wstring, std::wstring>            m_AttributeMap;
-        std::map<std::wstring, int>						m_ChildMap; //for uniq
+        std::unordered_map<std::wstring, std::wstring>	m_AttributeMap;
+        std::unordered_map<std::wstring, int>			m_ChildMap; //for uniq
         std::list<XMLElement>                           m_Elements;
 
         typedef std::list<XMLElement>::iterator          ElementsIterator;
         typedef std::list<XMLElement>::const_iterator    ElementsIteratorConst;
 
-        typedef std::map<std::wstring, std::wstring>::iterator            AttMapIterator;
-        typedef std::map<std::wstring, std::wstring>::const_iterator      AttMapIteratorConst;
+        typedef std::unordered_map<std::wstring, std::wstring>::iterator            AttMapIterator;
+        typedef std::unordered_map<std::wstring, std::wstring>::const_iterator      AttMapIteratorConst;
 
     public:
 

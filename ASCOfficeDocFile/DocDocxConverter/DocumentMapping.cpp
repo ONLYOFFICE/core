@@ -518,6 +518,7 @@ namespace DocFileFormat
         std::wstring PAGEREF	( L"PAGEREF" );
         std::wstring PAGE		( L"PAGE" );
         std::wstring SHAPE		( L"SHAPE" );
+		std::wstring NREF		( L"NREF");
 
 		if (arField.empty() == false)
 			f = arField[0];
@@ -538,8 +539,9 @@ namespace DocFileFormat
 		bool bEquation		= search( f.begin(), f.end(), Equation.begin(),		Equation.end())			!= f.end();
 		bool bPAGE			= search( f.begin(), f.end(), PAGE.begin(),			PAGE.end())				!= f.end();
 		bool bTOC			= search( f.begin(), f.end(), TOC.begin(),			TOC.end())				!= f.end();
-		bool bSHAPE			= search( f.begin(), f.end(), SHAPE.begin(),		SHAPE.end())				!= f.end();
-		
+		bool bSHAPE			= search( f.begin(), f.end(), SHAPE.begin(),		SHAPE.end())			!= f.end();
+		bool bNREF			= search( f.begin(), f.end(), NREF.begin(),			NREF.end())				!= f.end();
+
 		bool bPAGEREF = false; 
 		if (bHYPERLINK && arField.size() > 1)
 		{

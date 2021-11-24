@@ -53,6 +53,13 @@ namespace DocFileFormat
 	{
 		TablePropertyExceptions* tapx = static_cast<TablePropertyExceptions*>( visited );
 
+		std::shared_ptr<BorderCode> brcLeft;
+		std::shared_ptr<BorderCode> brcTop;
+		std::shared_ptr<BorderCode> brcBottom;
+		std::shared_ptr<BorderCode> brcRight;
+		std::shared_ptr<BorderCode> brcHorz;
+		std::shared_ptr<BorderCode> brcVert;
+
 		//delete infos
 		RevisionData rev( _rowEndChpx );
 
@@ -84,7 +91,7 @@ namespace DocFileFormat
 					}
 				}break;	
 				case sprmTWidthAfter:
-				{						//width after
+				{ //width after
                     XMLTools::XMLElement wAfter( L"w:wAfter" );
                     XMLTools::XMLAttribute wAfterValue( L"w:w", FormatUtils::IntToWideString( FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize ) ) );
 					wAfter.AppendAttribute( wAfterValue );
@@ -94,7 +101,7 @@ namespace DocFileFormat
 					_trPr->AppendChild( wAfter, true );
 				}break;	
 				case sprmTWidthBefore:
-				{						//width before
+				{ //width before
 					short before = FormatUtils::BytesToInt16( iter->Arguments, 1, iter->argumentsSize );
 
 					if ( before != 0 )
@@ -110,7 +117,7 @@ namespace DocFileFormat
 				}break;	
 				case sprmOldTDyaRowHeight:
 				case sprmTDyaRowHeight:
-				{						//row height
+				{ //row height
                     XMLTools::XMLElement rowHeight( L"w:trHeight" );
                     XMLTools::XMLAttribute rowHeightVal( L"w:val" );
                     XMLTools::XMLAttribute rowHeightRule( L"w:hRule" );
@@ -142,113 +149,98 @@ namespace DocFileFormat
 				case sprmOldTFCantSplit:
 				case sprmTFCantSplit:
 				case sprmTFCantSplit90:
-				{						//can't split
+				{ //can't split
 					appendFlagElement( _trPr, *iter, L"cantSplit", true );
-				}break;
-
-					//div id
+				}break;	
 				case sprmTIpgp:// = PGPInfo.ipgpSelf (PGPInfo structure describes the border and margin properties)
+				{	//div id
+				}break;
+				case sprmTCellSpacing:
+				case sprmTCellSpacingDefault:
 				{
+					unsigned char grfbrc = iter->Arguments[2];
+					short wSpc = FormatUtils::BytesToInt16(iter->Arguments, 4, iter->argumentsSize);
+					std::wstring strValue = FormatUtils::IntToWideString(wSpc);
+					if (FormatUtils::BitmaskToBool((int)grfbrc, 0x01))
+					{
+						appendDxaElement(_trPr, L"tblCellSpacing", strValue, true);
+					}
+				}break;
+				case sprmTTableBorders80:
+				{
+					const int size = 4;
+					unsigned char brc80[size];
+
+					memcpy(brc80, iter->Arguments, size);
+					brcTop = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+					memcpy(brc80, (iter->Arguments + 4), size);
+					brcLeft = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+					memcpy(brc80, (iter->Arguments + 8), size);
+					brcBottom = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+					memcpy(brc80, (iter->Arguments + 12), size);
+					brcRight = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+					memcpy(brc80, (iter->Arguments + 16), size);
+					brcHorz = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+
+					memcpy(brc80, (iter->Arguments + 20), size);
+					brcVert = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
 				}break;
 				default:
 					break;
-				//borders 80 exceptions
-				//case SinglePropertyModifier.OperationCode.sprmTTableBorders80:
-				//    unsigned char[] brc80 = new unsigned char[4];
-				//    //top border
-				//    Array.Copy(sprm.Arguments, 0, brc80, 0, 4);
-				//    brcTop = new BorderCode(brc80);
-				//    //left
-				//    Array.Copy(sprm.Arguments, 4, brc80, 0, 4);
-				//    brcLeft = new BorderCode(brc80);
-				//    //bottom
-				//    Array.Copy(sprm.Arguments, 8, brc80, 0, 4);
-				//    brcBottom = new BorderCode(brc80);
-				//    //right
-				//    Array.Copy(sprm.Arguments, 12, brc80, 0, 4);
-				//    brcRight = new BorderCode(brc80);
-				//    //inside H
-				//    Array.Copy(sprm.Arguments, 16, brc80, 0, 4);
-				//    brcHorz = new BorderCode(brc80);
-				//    //inside V
-				//    Array.Copy(sprm.Arguments, 20, brc80, 0, 4);
-				//    brcVert = new BorderCode(brc80);
-				//    break;
-
-				//border exceptions
-				//case SinglePropertyModifier.OperationCode.sprmTTableBorders:
-				//    unsigned char[] brc = new unsigned char[8];
-				//    //top border
-				//    Array.Copy(sprm.Arguments, 0, brc, 0, 8);
-				//    brcTop = new BorderCode(brc);
-				//    //left
-				//    Array.Copy(sprm.Arguments, 8, brc, 0, 8);
-				//    brcLeft = new BorderCode(brc);
-				//    //bottom
-				//    Array.Copy(sprm.Arguments, 16, brc, 0, 8);
-				//    brcBottom = new BorderCode(brc);
-				//    //right
-				//    Array.Copy(sprm.Arguments, 24, brc, 0, 8);
-				//    brcRight = new BorderCode(brc);
-				//    //inside H
-				//    Array.Copy(sprm.Arguments, 32, brc, 0, 8);
-				//    brcHorz = new BorderCode(brc);
-				//    //inside V
-				//    Array.Copy(sprm.Arguments, 40, brc, 0, 8);
-				//    brcVert = new BorderCode(brc);
-				//    break;
 			}
 		}
 
 		//set borders
-		//if (brcTop != null)
-		//{
-		//    XmlNode topBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "top", OpenXmlNamespaces.WordprocessingML);
-		//    appendBorderAttributes(brcTop, topBorder);
-		//    addOrSetBorder(_tblBorders, topBorder);
-		//}
-		//if (brcLeft != null)
-		//{
-		//    XmlNode leftBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "left", OpenXmlNamespaces.WordprocessingML);
-		//    appendBorderAttributes(brcLeft, leftBorder);
-		//    addOrSetBorder(_tblBorders, leftBorder);
-		//}
-		//if (brcBottom != null)
-		//{
-		//    XmlNode bottomBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "bottom", OpenXmlNamespaces.WordprocessingML);
-		//    appendBorderAttributes(brcBottom, bottomBorder);
-		//    addOrSetBorder(_tblBorders, bottomBorder);
-		//}
-		//if (brcRight != null)
-		//{
-		//    XmlNode rightBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "right", OpenXmlNamespaces.WordprocessingML);
-		//    appendBorderAttributes(brcRight, rightBorder);
-		//    addOrSetBorder(_tblBorders, rightBorder);
-		//}
-		//if (brcHorz != null)
-		//{
-		//     XmlNode insideHBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideH", OpenXmlNamespaces.WordprocessingML);
-		//     appendBorderAttributes(brcHorz, insideHBorder);
-		//     addOrSetBorder(_tblBorders, insideHBorder);
-		//}
-		//if (brcVert != null)
-		//{
-		//    XmlNode insideVBorder = _nodeFactory.CreateNode(XmlNodeType.Element, "w", "insideV", OpenXmlNamespaces.WordprocessingML);
-		//    appendBorderAttributes(brcVert, insideVBorder);
-		//    addOrSetBorder(_tblBorders, insideVBorder);
-		//}
-		//if (_tblBorders.ChildNodes.Count > 0)
-		//{
-		//    _tblPrEx.AppendChild(_tblBorders);
-		//}
-
-		//set exceptions
+		XMLTools::XMLElement* _tblBorders = new XMLTools::XMLElement(L"w:tblBorders");
+		if (brcTop)
+		{
+			XMLTools::XMLElement border(L"w:top");
+			appendBorderAttributes(brcTop.get(), &border);
+			addOrSetBorder(_tblBorders, &border);
+		}
+		if (brcLeft)
+		{
+			XMLTools::XMLElement border(L"w:left");
+			appendBorderAttributes(brcLeft.get(), &border);
+			addOrSetBorder(_tblBorders, &border);
+		}
+		if (brcBottom)
+		{
+			XMLTools::XMLElement border(L"w:left");
+			appendBorderAttributes(brcBottom.get(), &border);
+			addOrSetBorder(_tblBorders, &border);
+		}
+		if (brcRight)
+		{
+			XMLTools::XMLElement border(L"w:right");
+			appendBorderAttributes(brcRight.get(), &border);
+			addOrSetBorder(_tblBorders, &border);
+		}
+		if (brcHorz)
+		{
+			XMLTools::XMLElement border(L"w:insideH");
+			appendBorderAttributes(brcHorz.get(), &border);
+			addOrSetBorder(_tblBorders, &border);
+		}
+		if (brcVert)
+		{
+			XMLTools::XMLElement border(L"w:insideV");
+			appendBorderAttributes(brcHorz.get(), &border);
+			addOrSetBorder(_tblBorders, &border);
+		}
+		if (_tblBorders->GetChildCount() > 0)
+		{
+			_tblPrEx->AppendChild(*_tblBorders);
+		}
+//---------------------------------------------------------------------------		
 		if ( _tblPrEx->GetChildCount() > 0 )
 		{
-			_trPr->AppendChild( *(_tblPrEx) );
+			m_pXmlWriter->WriteString(_tblPrEx->GetXMLString());
 		}
-
-		//write Properties
 		if ( ( _trPr->GetChildCount() > 0 ) || ( _trPr->GetAttributeCount() > 0 ) )
 		{
 			m_pXmlWriter->WriteString( _trPr->GetXMLString() );

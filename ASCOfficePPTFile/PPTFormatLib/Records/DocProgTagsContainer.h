@@ -306,11 +306,20 @@ public:
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }
 
-    CRecordPP9DocBinaryTagExtension* getPP19DocBinaryTagExtension()
+    CRecordPP9DocBinaryTagExtension* getPP9DocBinaryTagExtension()
     {
         for (auto* rec : m_arrRgChildRec)
             if (rec->m_pTagName->m_strText == ___PPT9)
                 return (CRecordPP9DocBinaryTagExtension*)rec->m_pTagContainer;
+
+        return nullptr;
+    }
+
+    IRecord* getDocBinaryTagExtension(const std::wstring& extVersion)
+    {
+        for (auto* rec : m_arrRgChildRec)
+            if (rec->m_pTagName->m_strText == extVersion)
+                return rec->m_pTagContainer;
 
         return nullptr;
     }

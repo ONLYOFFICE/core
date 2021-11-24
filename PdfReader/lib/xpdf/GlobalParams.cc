@@ -48,6 +48,20 @@
 #  define strncasecmp strnicmp
 #endif
 
+#ifdef BUILDING_WASM_MODULE
+#include "../../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../../DesktopEditor/common/File.h"
+#include "emscripten.h"
+EM_JS(char*, _js_get_stream_id, (unsigned char* data, unsigned char* status), {
+    return self.AscViewer.CheckStreamId(data, status);
+});
+EM_JS(int, _js_free_id, (unsigned char* data), {
+    self.AscViewer.Free(data);
+    return 1;
+});
+#endif
+
 #if MULTITHREADED
 #  define lockGlobalParams            gLockMutex(&mutex)
 #  define lockUnicodeMapCache         gLockMutex(&unicodeMapCacheMutex)
@@ -2321,6 +2335,37 @@ void GlobalParams::setupBaseFonts(const char *dir) {
     // directories (because SHGetSpecialFolderPath(CSIDL_FONTS)
     // doesn't work on Win 2k Server or Win2003 Server, or with older
     // versions of shell32.dll).
+#ifdef BUILDING_WASM_MODULE
+    BYTE nStatus = 0;
+    NSWasm::CData oRes;
+    oRes.SkipLen();
+    std::string sNameA(displayFontTab[i].name);
+    oRes.WriteString((unsigned char*)sNameA.c_str(), (unsigned int)sNameA.length());
+    oRes.AddInt(sNameA.find("Bold") != std::wstring::npos ? 1 : 0);
+    oRes.AddInt(sNameA.find("Oblique") != std::wstring::npos || sNameA.find("Italic") != std::wstring::npos ? 1 : 0);
+    oRes.WriteLen();
+    char* pFontId = _js_get_stream_id(oRes.GetBuffer(), &nStatus);
+    if (!nStatus)
+    {
+        // шрифт не загружен
+        _js_free_id((unsigned char*)pFontId);
+        continue;
+    }
+    else
+    {
+        std::string wsFileNameA(pFontId);
+        std::wstring wsFileName = UTF8_TO_U(wsFileNameA);
+        NSFonts::IFontStream* pStream = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(wsFileName);
+        if (pStream)
+            fileName = new GString(pFontId);
+        else
+        {
+            _js_free_id((unsigned char*)pFontId);
+            continue;
+        }
+    }
+    _js_free_id((unsigned char*)pFontId);
+#endif
 #ifdef _WIN32
     s = displayFontTab[i].ttFileName;
 #else

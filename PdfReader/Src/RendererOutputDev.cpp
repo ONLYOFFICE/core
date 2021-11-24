@@ -69,7 +69,6 @@ EM_JS(int, js_free_id, (unsigned char* data), {
     self.AscViewer.Free(data);
     return 1;
 });
-
 #endif
 
 class CMemoryFontStream

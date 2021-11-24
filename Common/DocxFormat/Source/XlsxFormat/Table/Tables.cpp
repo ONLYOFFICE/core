@@ -128,7 +128,7 @@ namespace Spreadsheet
             m_oShowColumnStripes    = ptr->fColumnStripes;
             m_oShowFirstColumn      = ptr->fFirstColumn;
             m_oShowLastColumn       = ptr->fLastColumn;
-            m_oShowRowStripes       = ptr->fColumnStripes;
+            m_oShowRowStripes       = ptr->fRowStripes;
         }
     }
 	void CTableStyleInfo::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -509,11 +509,21 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
             if(!ptr->stName.value().empty())
                 m_oName                 = ptr->stName.value();
 
-			if (ptr->crwHeader.value())
-				m_oHeaderRowCount = ptr->crwHeader.value().get();
-			
-			if (ptr->crwTotals.value())
-				m_oTotalsRowCount = ptr->crwTotals.value().get();
+            if ((bool)ptr->crwHeader)
+            {
+                if ((bool)ptr->crwTotals)
+                    m_oTotalsRowCount = ptr->crwTotals.value().get();
+            }
+            else
+            {
+                if ((bool)ptr->crwTotals)
+                {
+                    m_oHeaderRowCount = ptr->crwHeader.value().get();
+                    m_oTotalsRowCount = ptr->crwTotals.value().get();
+                }
+                else
+                    m_oHeaderRowCount = ptr->crwHeader.value().get();
+            }
 
             if(!ptr->stDisplayName.value().empty())
                 m_oDisplayName          = ptr->stDisplayName.value();

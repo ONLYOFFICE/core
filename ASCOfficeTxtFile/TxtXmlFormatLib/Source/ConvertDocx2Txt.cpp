@@ -177,7 +177,7 @@ namespace Docx2Txt
 			ListCount = (int)pNumbering->m_arrNum.size();
 
 			for (int i = 0; i < 9 * ListCount; i++)
-				Lists.push_back(0);
+				Lists.push_back(-1);
 		}
 
 		if (!pDocument) return;
@@ -452,8 +452,6 @@ namespace Docx2Txt
 	
 		if (listNum > 0 && pNumbering)
 		{
-			listNum--;
-
 			std::map<int, std::pair<int,size_t>>::iterator pFindNum = pNumbering->m_mapNum.find(listNum);
 			if (pFindNum != pNumbering->m_mapNum.end())
 			{
@@ -466,7 +464,7 @@ namespace Docx2Txt
 					level--;
 					for (int i = level + 1; i < 9; i++)
 					{
-						Lists[start + i] = 0;
+						Lists[start + i] = -1;
 					}
 				}
 
@@ -524,8 +522,10 @@ namespace Docx2Txt
 
 					levelPrev = level;
 
-					if (reset) Lists[start + level] = startLvl.IsInit() ? *startLvl : 1;
-					else Lists[start + level]++;
+					if (reset || Lists[start + level] < 0)
+						Lists[start + level] = startLvl.IsInit() ? *startLvl : 1;
+					else
+						Lists[start + level]++;
 
 					if (( ind_level >= 0 ) && ( abstractNum->m_arrLvl[ind_level] ))
 					{
@@ -640,14 +640,16 @@ namespace Docx2Txt
 	std::wstring Converter_Impl::IntToLowerLetter(int number)
 	{
 		number--;
-		static const size_t r = (L'z' - L'a' + 1);
+		if (number < 0) return L"";
+
+        static const size_t r = (L'z' - L'a' + 1);
 		std::wstring res;
 		size_t r0 = number / r;
 
 		if (r0 > 0)
 		{
-			std::wstring rest = IntToLowerLetter(number - r * r0);
-			std::wstring res	= IntToLowerLetter(r0-1) + rest;
+			std::wstring rest = IntToLowerLetter(number - r * r0 + 1);
+            std::wstring res	= IntToLowerLetter(r0 - 1 + 1) + rest;
 			return res;
 		}
 		else
@@ -659,14 +661,16 @@ namespace Docx2Txt
 	std::wstring Converter_Impl::IntToUpperLetter(int number)
 	{
 		number--;
+		if (number < 0) return L"";
+		
 		static const size_t r = (L'Z' - L'A' + 1);
 		std::wstring res;
 		size_t r0 = number / r;
 
 		if (r0 > 0)
 		{
-			std::wstring rest = IntToUpperLetter(number - r * r0);
-			std::wstring res = IntToUpperLetter(r0-1) + rest;
+			std::wstring rest = IntToUpperLetter(number - r * r0 + 1);
+            std::wstring res = IntToUpperLetter(r0 - 1 + 1) + rest;
 			return res;
 		}
 		else

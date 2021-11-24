@@ -114,6 +114,7 @@ namespace NExtractTools
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM:
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF:
 				{
 							 if (0 == sExt2.compare(_T(".doct")))		res = TCD_DOCX2DOCT;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_DOCX2DOCT_BIN;
@@ -128,6 +129,7 @@ namespace NExtractTools
 							if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM)
 								res = TCD_DOTM2DOCX;
 							//oform 2 docx ???
+							//docxf 2 docx ???
 						}
                         else if (0 == sExt2.compare(_T(".docm")))	res = TCD_DOTM2DOCM;
 						else if (0 == sExt2.compare(_T(".txt")))	res = TCD_DOCX2TXT;
@@ -212,8 +214,9 @@ namespace NExtractTools
 					}break;
 				case AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY:
 					{
-							 if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOCT2DOCX;
-						else if (0 == sExt2.compare(_T(".oform")))		res = TCD_DOCT2OFORM;
+							 if (0 == sExt2.compare(_T(".oform")))		res = TCD_DOCT2OFORM;
+						else if (0 == sExt2.compare(_T(".docxf")))		res = TCD_DOCT2DOCXF;
+						else if (0 == sExt2.compare(_T(".docx")))		res = TCD_DOCT2DOCX;
 						else if (0 == sExt2.compare(_T(".docm")))		res = TCD_DOCT2DOCM;
 						else if (0 == sExt2.compare(_T(".dotx")))		res = TCD_DOCT2DOTX;
 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_T2BIN;

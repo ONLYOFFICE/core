@@ -9159,6 +9159,8 @@ int Binary_DocumentTableReader::ReadSdt(BYTE type, long length, void* poResult)
 }
 int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult)
 {
+	if (length < 1) return 0;
+
 	int res = 0;
 	SdtWraper* pSdtWraper = static_cast<SdtWraper*>(poResult);
 	OOX::Logic::CSdtPr* pSdtPr = pSdtWraper->m_oSdt.m_oSdtPr.GetPointer();

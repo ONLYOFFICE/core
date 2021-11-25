@@ -266,7 +266,7 @@ class X2t private constructor() {
             {
                 setIcuDataPath(icu)
                 setFonts(arrayOf(fontsJs), fontsDir)
-                createXmlFileTransform(xml, key, mConvertType, from, to, temp, fontsJs, themes, password,
+                createXmlFileTransform(xml, key, mConvertType, from, to, temp, fontsDir, themes, password,
                     delimiterCode.equals(
                         InputParams.DELIMITER_CODE_NONE
                     ).let {

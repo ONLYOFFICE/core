@@ -25,7 +25,8 @@ namespace MetaFile
 
                 bool m_bView = false;
         private:
-                CEmfPlusParser *m_pEmfPlusParser;
+                CEmfPlusParser  *m_pEmfPlusParser;
+                TRectD          *m_pWorkspace;
 
                 bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
                 void Read_EMR_HEADER();

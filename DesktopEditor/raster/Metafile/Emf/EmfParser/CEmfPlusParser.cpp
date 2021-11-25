@@ -660,6 +660,9 @@ namespace MetaFile
 
 
 
+                        m_pDC->GetTransform()->Apply(arPoints[0].X, arPoints[0].Y);
+
+                        dX = arPoints[0].X;
 
                         EmfPlusImageAttributesMap::const_iterator oFountAttributesImage = m_mImageAttributes.find(unImageAttributeIndex);
 
@@ -675,15 +678,6 @@ namespace MetaFile
                                         dM22 *= -1;
                                 }
 
-                        }
-
-//                        m_pDC->GetTransform()->Apply(oSrcRect.dX, oSrcRect.dY);
-//                        m_pDC->GetTransform()->Apply(oSrcRect.dWidth, oSrcRect.dHeight);
-
-                        if (dM11 < 0)
-                        {
-                                oSrcRect.dX -= oSrcRect.dWidth;
-                                dM11 *= -1;
                         }
 
 

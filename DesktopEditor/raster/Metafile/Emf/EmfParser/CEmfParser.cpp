@@ -9,11 +9,13 @@
 namespace MetaFile
 {
         CEmfParser::CEmfParser() :
-                m_pEmfPlusParser(NULL)
+                m_pEmfPlusParser(NULL),
+                m_pWorkspace(NULL)
         {}
 
         CEmfParser::CEmfParser(const CEmfInterpretatorBase *pEmfInterpretatorBase) :
-                m_pEmfPlusParser(NULL)
+                m_pEmfPlusParser(NULL),
+                m_pWorkspace(NULL)
         {
                 if (NULL != pEmfInterpretatorBase)
                 {
@@ -39,7 +41,9 @@ namespace MetaFile
         CEmfParser::~CEmfParser()
         {
                 ClearFile();
+
                 RELEASEOBJECT(m_pEmfPlusParser);
+                RELEASEOBJECT(m_pWorkspace);
         }
 
         bool CEmfParser::OpenFromFile(const wchar_t *wsFilePath)
@@ -59,8 +63,6 @@ namespace MetaFile
                 unsigned int ulRecordIndex	= 0;
                 unsigned int m_ulRecordPos	= 0;
 
-                if (m_pInterpretator)
-                        m_pInterpretator->Begin();
 
                 do
                 {
@@ -229,6 +231,8 @@ namespace MetaFile
                 if (!CheckError())
                         m_oStream.SeekToStart();
 
+//                if (m_pInterpretator)
+//                        m_pInterpretator->End();
         }
 
         void CEmfParser::Scan()
@@ -257,7 +261,10 @@ namespace MetaFile
 
         void CEmfParser::SelectWorkspace(TRectD oCropBorder)
         {
-                m_pDC->GetClip()->Intersect(oCropBorder);
+                m_pWorkspace = new TRectD(oCropBorder);
+
+                if (NULL != m_pWorkspace)
+                        m_pDC->GetClip()->Intersect(*m_pWorkspace);
         }
 
         bool CEmfParser::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)
@@ -712,6 +719,39 @@ namespace MetaFile
 
                 if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
                         HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
+
+                if (NULL != m_pWorkspace)
+                {
+                        TXForm *pForm = m_pDC->GetFinalTransform(GM_COMPATIBLE);
+
+                        m_pDC->GetClip()->Reset();
+
+                        double dWidth = m_pWorkspace->dRight - m_pWorkspace->dLeft;
+                        double dHeight = m_pWorkspace->dBottom - m_pWorkspace->dTop;
+
+                        if (pForm->M11 < 0)
+                        {
+                                m_pWorkspace->dLeft -= dWidth;
+                        }
+
+                        pForm->Dx += m_pWorkspace->dLeft;
+
+                        dWidth /= fabs(pForm->M11);
+                        dHeight /= fabs(pForm->M22);
+
+                        m_pWorkspace->dRight = m_pWorkspace->dLeft + dWidth;
+                        m_pWorkspace->dBottom = m_pWorkspace->dTop + dHeight;
+
+                        if (pForm->M11 < 0)
+                        {
+                                pForm->Dx += (2 * pForm->Dx - fabs(dWidth)) * fabs(pForm->M11);
+                                pForm->M11 *= -1;
+                        }
+
+                        m_pDC->MultiplyTransform(*pForm, 4);
+
+                        m_pDC->GetClip()->Intersect(*m_pWorkspace);
+                }
         }
 
         void CEmfParser::Read_EMR_SETSTRETCHBLTMODE()

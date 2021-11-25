@@ -1488,6 +1488,15 @@ bool CFontList::CheckLoadFromFolderBin(const std::wstring& strDirectory)
     BYTE* pBuffer = new BYTE[dwLen1];
     oFile.ReadFile(pBuffer, dwLen1, dwLen2);
 
+    CheckLoadFromSelectionBin(strDirectory, pBuffer, dwLen1);
+
+    RELEASEARRAYOBJECTS(pBuffer);
+
+    return true;
+}
+
+void CFontList::CheckLoadFromSelectionBin(const std::wstring& strDirectory, BYTE* pBuffer, DWORD nLen)
+{
     BYTE* _pBuffer = pBuffer;
 
     int lCount = NSFonts::NSBinarySerialize::Read<INT>(_pBuffer);
@@ -1498,14 +1507,10 @@ bool CFontList::CheckLoadFromFolderBin(const std::wstring& strDirectory)
         Add(pFontInfo);
     }
 
-    if ((_pBuffer - pBuffer) < dwLen1)
+    if ((_pBuffer - pBuffer) < nLen)
     {
         InitializeRanges(_pBuffer);
     }
-
-    RELEASEARRAYOBJECTS(pBuffer);
-
-    return true;
 }
 
 void CFontList::Add(NSFonts::CFontInfo* pInfo)
@@ -1591,6 +1596,10 @@ void CApplicationFonts::Initialize(bool bIsCheckSelection)
     m_oCache.m_pApplicationFontStreams = &m_oStreams;
 }
 
+void CApplicationFonts::InitializeFromBin(BYTE* pData, unsigned int nLen)
+{
+    m_oList.CheckLoadFromSelectionBin(L"", pData, (DWORD)nLen);
+}
 void CApplicationFonts::InitializeRanges(unsigned char* data)
 {
     m_oList.InitializeRanges(data);

@@ -22,3 +22,11 @@ CXFormWidget::~CXFormWidget()
 {
 
 }
+
+QList<QStandardItem *> CXFormWidget::GetData() const
+{
+        QStandardItem *pForm = new QStandardItem("<XForm>");
+        pForm->appendRows(CSharedWidget::GetData());
+
+        return {pForm};
+}

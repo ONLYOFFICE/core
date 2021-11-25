@@ -380,7 +380,7 @@ namespace NExtractTools
 			}
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == *params.m_nFormatTo)
 			{
-				std::wstring sCT = L"<Default Extension=\"oform\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.docxf\"/>";
+				std::wstring sCT = L"<Default Extension=\"docxf\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.docxf\"/>";
 				nRes = addContentType(sResultDocxDir, sCT);
 			}
 		}
@@ -3598,7 +3598,7 @@ namespace NExtractTools
 				}
 				else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == nFormatTo)
 				{
-					std::wstring sCT = L"<Default Extension=\"oform\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.docxf\"/>";
+					std::wstring sCT = L"<Default Extension=\"docxf\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.docxf\"/>";
 					nRes = addContentType(sFrom, sCT);
 				}
 				if(SUCCEEDED_X2T(nRes))

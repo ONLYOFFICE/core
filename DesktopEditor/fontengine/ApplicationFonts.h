@@ -265,6 +265,22 @@ public:
         RELEASEARRAYOBJECTS(m_pRanges);
 	}
 
+    class CFontListToBufferSerializer
+    {
+    public:
+        std::wstring m_strDirectory;
+        bool m_bIsOnlynames;
+        int m_nVersion;
+
+    public:
+        CFontListToBufferSerializer(const std::wstring& sDir, const bool& bIsOnlynames, const int& nVer = 2)
+        {
+            m_strDirectory = sDir;
+            m_bIsOnlynames = bIsOnlynames;
+            m_nVersion = nVer;
+        }
+    };
+
     virtual std::vector<NSFonts::CFontInfo*>* GetFonts() { return &m_pList; }
 
 private:
@@ -279,7 +295,7 @@ private:
 	int GetWeightPenalty(USHORT usCandWeight, USHORT usReqWeight);
     int GetItalicPenalty(INT bCandItalic, INT bReqItalic);
     int GetBoldPenalty(INT bCandBold, INT bReqBold);
-    int GetFontFormatPenalty(EFontFormat eCandFormat, EFontFormat eReqFormat);
+    int GetFontFormatPenalty(NSFonts::EFontFormat eCandFormat, NSFonts::EFontFormat eReqFormat);
 	int GetPanosePenalty(BYTE *pCandPanose, BYTE *pReqPanose);
 	int GetAvgWidthPenalty(SHORT shCandWidth, SHORT shReqWidth);
 	int GetAscentPenalty(SHORT shCandAscent, SHORT shReqAscent);
@@ -289,8 +305,8 @@ private:
 	int GetCapHeightPenalty(SHORT shCandCapHeight, SHORT shReqCapHeight);
 
 public:
-    static EFontFormat GetFontFormat(FT_Face pFace);
-    virtual void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false, int nVersion = -1);
+    static NSFonts::EFontFormat GetFontFormat(FT_Face pFace);
+    virtual void ToBuffer(BYTE** pDstData, LONG* pLen, NSFonts::CFontListToBufferSerializer& oSerializer);
 
 public:
 	void LoadFromArrayFiles (std::vector<std::wstring>& arrFiles, int nFlag = 0);

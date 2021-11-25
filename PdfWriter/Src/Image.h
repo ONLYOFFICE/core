@@ -68,6 +68,8 @@ namespace PdfWriter
 		void LoadBW(const BYTE* pImage, unsigned int unWidth, unsigned int unHeight, unsigned int unStride);
         void LoadBW(NSImages::CPixJbig2* pPix, unsigned int unWidth, unsigned int unHeight);
         void LoadMask(NSImages::CPixJbig2* pPix, unsigned int unWidth, unsigned int unHeight);
+		unsigned int GetWidth() const;
+		unsigned int GetHeight() const;
 
 	private:
 

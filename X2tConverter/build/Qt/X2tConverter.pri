@@ -90,6 +90,8 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lASCOfficeDocxFile2Lib
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPPTXFormatLib
 #docxformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocxFormatLib
+#xlsbformat
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsbFormatLib
 
 #Crypto++
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib

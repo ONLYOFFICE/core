@@ -33,7 +33,7 @@
 
 #include "Ptg.h"
 #include "CellRangeRef.h"
-
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRangeRef.h"
 namespace XLS
 {
 
@@ -46,14 +46,16 @@ public:
 	PtgExtraMem();
 	PtgExtraMem(CFRecord& record);
 	BiffStructurePtr clone();
-
 	
 	virtual void load(CFRecord& record); // No type info
  // No type info
+    GlobalWorkbookInfoPtr	global_info;
 
 	const std::wstring toString() const;
 private:
 	std::vector<Ref8U> array_;
+
+    std::vector<XLSB::UncheckedRfX> array_xlsb;
 };
 
 typedef boost::shared_ptr<PtgExtraMem> PtgExtraMemPtr;

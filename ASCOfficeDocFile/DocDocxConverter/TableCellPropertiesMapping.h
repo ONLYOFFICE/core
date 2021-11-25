@@ -87,15 +87,15 @@ namespace DocFileFormat
 		const std::vector<short>*	_grid;
 		std::vector<short>			_tGrid;
 
-		short					_width;
+		int						_width;
 		Global::CellWidthType	_ftsWidth;
 		TC80					_tcDef;
 		unsigned int			_depth;
 
-		BorderCode* _brcTop;
-		BorderCode* _brcLeft;
-		BorderCode* _brcRight;
-		BorderCode* _brcBottom;
+		std::shared_ptr<BorderCode> _brcLeft;
+		std::shared_ptr<BorderCode> _brcTop;
+		std::shared_ptr<BorderCode> _brcBottom;
+		std::shared_ptr<BorderCode> _brcRight;
 
 		int		_gridSpan;
 		bool	_bCoverCell;

@@ -229,9 +229,9 @@ int TxO::serialize_vml (std::wostream & _stream)
 						if (font->dyHeight > 0)	CP_XML_ATTR(L"size", font->dyHeight);
 						if (font->bls == 700)	CP_XML_ATTR(L"bold", true);
 						if (font->fItalic)		CP_XML_ATTR(L"italic", true);
-						if (!font->fontName.value().empty())
+                        if (!font->fontName.empty())
 						{
-							CP_XML_ATTR(L"face", font->fontName.value());
+                            CP_XML_ATTR(L"face", font->fontName);
 						}
 						if ( font->icv < 0x7fff )
 						{

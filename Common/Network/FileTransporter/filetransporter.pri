@@ -30,8 +30,7 @@ core_mac {
 
 core_ios {
     OBJECTIVE_SOURCES += \
-        $$PWD/src/FileTransporter_mac.mm \
-        $$PWD/../../../DesktopEditor/common/File_ios.mm
+        $$PWD/src/FileTransporter_mac.mm
 
     LIBS += -framework Foundation
 }
@@ -41,6 +40,4 @@ core_android {
     SOURCES += $$PWD/src/FileTransporter_curl.cpp
 
     !use_external_transport:include($$PWD/../../3dParty/curl/curl.pri)
-
-    DEFINES += NOT_USE_PTHREAD_CANCEL
 }

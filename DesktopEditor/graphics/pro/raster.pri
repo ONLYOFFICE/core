@@ -203,7 +203,9 @@ SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri2.c
 SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri3.c
 
 OFFICEUTILS_PATH = $$PWD/../../../OfficeUtils
-INCLUDEPATH += $$OFFICEUTILS_PATH/src/zlib-1.2.11
+INCLUDEPATH += \
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11 \
+    $$OFFICEUTILS_PATH/src
 
 SOURCES += \
     $$OFFICEUTILS_PATH/src/zlib-1.2.11/crc32.c \
@@ -215,7 +217,8 @@ SOURCES += \
     $$OFFICEUTILS_PATH/src/zlib-1.2.11/trees.c \
     $$OFFICEUTILS_PATH/src/zlib-1.2.11/zutil.c \
     $$OFFICEUTILS_PATH/src/zlib-1.2.11/uncompr.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/compress.c
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11/compress.c \
+    $$OFFICEUTILS_PATH/src/zlib_addon.c
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/mng/libmng_callback_xs.c \

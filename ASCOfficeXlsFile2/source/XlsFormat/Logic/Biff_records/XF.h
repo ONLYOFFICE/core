@@ -95,6 +95,12 @@ namespace XLS
 
 		bool			fHasXFExt;
 		bool			fsxButton;
+
+        //xlsb
+                _UINT16                 iFill;
+                _UINT16                 ixBorder;
+                bool			fMergeCell;
+                unsigned char           xfGrbitAtr;
 	//------------------------------------------------------------------
 		BiffStructurePtrVector ext_props;
 		BiffStructurePtrVector xf_props;

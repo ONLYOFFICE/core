@@ -40,6 +40,7 @@ namespace PdfWriter
 {
 	class CFontDict;
 	class CExtGrState;
+	class CXObject;
 
 	class CResourcesDict : public CDictObject
 	{
@@ -48,6 +49,8 @@ namespace PdfWriter
 
 		const char* GetFontName(CFontDict* pFont);
 		const char* GetExtGrStateName(CExtGrState* pState);
+		const char* GetXObjectName(CXObject* pXObject);
+		void        AddXObjectWithName(const char* sXObjectName, CXObject* pXObject);
 
 	private:
 
@@ -55,6 +58,8 @@ namespace PdfWriter
 		unsigned int m_unFontsCount;
 		CDictObject* m_pExtGStates;
 		unsigned int m_unExtGStatesCount;
+		CDictObject* m_pXObjects;
+		unsigned int m_unXObjectsCount;
 	};
 }
 

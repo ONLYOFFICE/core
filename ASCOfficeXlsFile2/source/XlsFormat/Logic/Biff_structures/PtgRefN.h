@@ -32,6 +32,7 @@
 #pragma once
 
 #include "OperandPtg.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRef.h"
 
 namespace XLS
 {
@@ -60,6 +61,12 @@ private:
 	CellRef cell_base_ref;
 	RgceLocRel loc;
 	bool bUseLocInit;
+
+    //biff12
+    XLSB::RgceLocRel loc_xlsb;
+
+    GlobalWorkbookInfoPtr	global_info;
+
 };
 
 } // namespace XLS

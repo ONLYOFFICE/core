@@ -35,6 +35,7 @@ LIBS += $$DESTDIR -lUnicodeConverter
 
 INCLUDEPATH += ../XlsFormat
 INCLUDEPATH += ../Common
+INCLUDEPATH += ../../../Common/DocxFormat/Source/XlsbFormat
 
 core_release {
 SOURCES += \
@@ -506,6 +507,7 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/PtgAttrChoose.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgAttrGoto.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgAttrIf.cpp \
+    ../XlsFormat/Logic/Biff_structures/PtgAttrIfError.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgAttrSemi.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgAttrSpace.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgAttrSpaceSemi.cpp \
@@ -524,12 +526,15 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/PtgErr.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgExp.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgExtraArray.cpp \
+    ../XlsFormat/Logic/Biff_structures/PtgExtraCol.cpp \
+    ../XlsFormat/Logic/Biff_structures/PtgExtraList.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgExtraElf.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgExtraMem.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgFactory.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgFunc.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgFuncVar.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgInt.cpp \
+    ../XlsFormat/Logic/Biff_structures/PtgList.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgMemArea.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgMemAreaN.cpp \
     ../XlsFormat/Logic/Biff_structures/PtgMemErr.cpp \
@@ -1324,6 +1329,7 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_structures/PtgAttrChoose.h \
     ../XlsFormat/Logic/Biff_structures/PtgAttrGoto.h \
     ../XlsFormat/Logic/Biff_structures/PtgAttrIf.h \
+    ../XlsFormat/Logic/Biff_structures/PtgAttrIfError.h \
     ../XlsFormat/Logic/Biff_structures/PtgAttrSemi.h \
     ../XlsFormat/Logic/Biff_structures/PtgAttrSpace.h \
     ../XlsFormat/Logic/Biff_structures/PtgAttrSpaceSemi.h \
@@ -1342,12 +1348,15 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_structures/PtgErr.h \
     ../XlsFormat/Logic/Biff_structures/PtgExp.h \
     ../XlsFormat/Logic/Biff_structures/PtgExtraArray.h \
+    ../XlsFormat/Logic/Biff_structures/PtgExtraCol.h \
+    ../XlsFormat/Logic/Biff_structures/PtgExtraList.h \
     ../XlsFormat/Logic/Biff_structures/PtgExtraElf.h \
     ../XlsFormat/Logic/Biff_structures/PtgExtraMem.h \
     ../XlsFormat/Logic/Biff_structures/PtgFactory.h \
     ../XlsFormat/Logic/Biff_structures/PtgFunc.h \
     ../XlsFormat/Logic/Biff_structures/PtgFuncVar.h \
     ../XlsFormat/Logic/Biff_structures/PtgInt.h \
+    ../XlsFormat/Logic/Biff_structures/PtgList.h \
     ../XlsFormat/Logic/Biff_structures/PtgMemArea.h \
     ../XlsFormat/Logic/Biff_structures/PtgMemAreaN.h \
     ../XlsFormat/Logic/Biff_structures/PtgMemErr.h \

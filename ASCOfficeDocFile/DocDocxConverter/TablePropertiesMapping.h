@@ -84,12 +84,12 @@ namespace DocFileFormat
 		StyleSheet* _styles;
 		std::vector<short>* _grid;
 		
-		BorderCode* brcLeft;
-		BorderCode* brcTop;
-		BorderCode* brcBottom;
-		BorderCode* brcRight;
-		BorderCode* brcHorz;
-		BorderCode* brcVert;
+		std::shared_ptr<BorderCode> brcLeft;
+		std::shared_ptr<BorderCode> brcTop;
+		std::shared_ptr<BorderCode> brcBottom;
+		std::shared_ptr<BorderCode> brcRight;
+		std::shared_ptr<BorderCode> brcHorz;
+		std::shared_ptr<BorderCode> brcVert;
 
 		bool _isTableStyleNeeded;
 	};

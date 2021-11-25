@@ -247,18 +247,26 @@ docRGB Binary_CommonReader2::ReadColor()
 	oRGB.B = m_oBufferedStream.GetUChar();
 	return oRGB;
 }
-void Binary_CommonReader2::ReadColor2(SimpleTypes::CHexColor<>& color)
+void Binary_CommonReader2::ReadHexColor(SimpleTypes::CHexColor<> *pColor)
 {
-	color.Set_R(m_oBufferedStream.GetUChar());
-	color.Set_G(m_oBufferedStream.GetUChar());
-	color.Set_B(m_oBufferedStream.GetUChar());
+	if (!pColor)
+	{
+		m_oBufferedStream.Skip(3);
+		return;
+	}
+
+	pColor->SetValue(SimpleTypes::hexcolorRGB);
+
+	pColor->Set_R(m_oBufferedStream.GetUChar());
+	pColor->Set_G(m_oBufferedStream.GetUChar());
+	pColor->Set_B(m_oBufferedStream.GetUChar());
 }
 void Binary_CommonReader2::ReadThemeColor(int length, CThemeColor& oCThemeColor)
 {
 	int res = c_oSerConstants::ReadOk;
-	READ2_DEF(length, res, this->_ReadThemeColor, &oCThemeColor);
+	READ2_DEF(length, res, this->ReadThemeColorContent, &oCThemeColor);
 }
-int Binary_CommonReader2::_ReadThemeColor(BYTE type, long length, void* poResult)
+int Binary_CommonReader2::ReadThemeColorContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
 	CThemeColor* pCThemeColor = static_cast<CThemeColor*>(poResult);
@@ -291,39 +299,55 @@ template<typename T> int Binary_CommonReader2::ReadTrackRevision(long length, T*
 	READ1_DEF(length, res, this->ReadTrackRevisionInner, poResult);
 	return res;
 }
-int Binary_CommonReader2::ReadShd(BYTE type, long length, void* poResult)
+int Binary_CommonReader2::ReadShdComplexType(BYTE type, long length, void* poResult)
 {
+	if (length < 0)
+		return 0;
+
 	int res = c_oSerConstants::ReadOk;
-	Shd* pShd = static_cast<Shd*>(poResult);
-	switch(type)
+	ComplexTypes::Word::CShading* pShd = static_cast<ComplexTypes::Word::CShading*>(poResult);
+
+	if (!pShd)
 	{
-	case c_oSerShdType::Value:
-		pShd->bValue = true;
-		pShd->Value = m_oBufferedStream.GetUChar();
-		break;
-	case c_oSerShdType::Color:
-		pShd->bColor = true;
-		pShd->Color = ReadColor();
-		break;
-	case c_oSerShdType::ColorTheme:
-		pShd->bThemeColor = true;
-		ReadThemeColor(length, pShd->ThemeColor);
-		break;
-	case c_oSerShdType::Fill:
-		pShd->bFill = true;
-		pShd->Fill = ReadColor();
-		break;
-	case c_oSerShdType::FillTheme:
-		pShd->bThemeFill = true;
-		ReadThemeColor(length, pShd->ThemeFill);
-		break;
-	default:
-		res = c_oSerConstants::ReadUnknown;
-		break;
+		m_oBufferedStream.Skip(length);
+		return 0;
+	}
+	switch (type)
+	{
+		case c_oSerShdType::Value:
+		{
+			pShd->m_oVal.Init();
+			pShd->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
+		}break;
+		case c_oSerShdType::Color:
+		{
+			pShd->m_oColor.Init();
+			ReadHexColor(pShd->m_oColor.GetPointer());
+		}break;
+		case c_oSerShdType::ColorTheme:
+		{
+			CThemeColor themeColor;
+			ReadThemeColor(length, themeColor);
+			themeColor.ToCThemeColor(pShd->m_oColor, pShd->m_oThemeColor, pShd->m_oThemeTint, pShd->m_oThemeShade);
+		}break;
+		case c_oSerShdType::Fill:
+		{
+			pShd->m_oFill.Init();
+			ReadHexColor(pShd->m_oFill.GetPointer());
+		}break;
+		case c_oSerShdType::FillTheme:
+		{
+			CThemeColor themeColor;
+			ReadThemeColor(length, themeColor);
+			themeColor.ToCThemeColor(pShd->m_oColor, pShd->m_oThemeFill, pShd->m_oThemeFillTint, pShd->m_oThemeFillShade);
+		}break;
+		default:
+		{
+			res = c_oSerConstants::ReadUnknown;
+		}break;
 	}
 	return res;
-};
-
+}
 template<typename T> int Binary_CommonReader2::ReadTrackRevisionInner(BYTE type, long length, T* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -576,10 +600,15 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 		}
 	case c_oSerProp_rPrType::Shd:
 		{
-			Shd oShd;
-			READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, &oShd);
-			orPr->bShd = true;
-			orPr->Shd = oShd.ToString();
+			ComplexTypes::Word::CShading oShd;
+			READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, &oShd);
+			
+			std::wstring sShd = oShd.ToString();
+			if (false == sShd.empty())
+			{
+				orPr->bShd = true;
+				orPr->Shd = L"<w:shd " + sShd + L"/>";
+			}
 			break;
 		}
 	case c_oSerProp_rPrType::RStyle:
@@ -758,6 +787,11 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			orPr->rPrChange = oRPrChange.ToString(L"w:rPrChange");
 		}
 		break;
+	case c_oSerProp_rPrType::CompressText:
+	{
+		orPr->CompressText = m_oBufferedStream.GetLong();
+	}
+	break;
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
@@ -809,9 +843,9 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 		{
 			BYTE contextualSpacing = m_oBufferedStream.GetUChar();
 			if(0 != contextualSpacing)
-                pCStringWriter->WriteString(std::wstring(L"<w:contextualSpacing w:val=\"true\"/>"));
+                pCStringWriter->WriteString(std::wstring(L"<w:contextualSpacing/>"));
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(std::wstring(L"<w:contextualSpacing w:val=\"false\"/>"));
+                pCStringWriter->WriteString(std::wstring(L"<w:contextualSpacing w:val=\"0\"/>"));
         }break;
 	case c_oSerProp_pPrType::Ind:
 		{
@@ -842,7 +876,7 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 			if(0 != KeepLines)
                 pCStringWriter->WriteString(std::wstring(L"<w:keepLines/>"));
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(std::wstring(L"<w:keepLines w:val=\"false\"/>"));
+                pCStringWriter->WriteString(std::wstring(L"<w:keepLines w:val=\"0\"/>"));
         }break;
 	case c_oSerProp_pPrType::KeepNext:
 		{
@@ -850,7 +884,7 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 			if(0 != KeepNext)
                 pCStringWriter->WriteString(std::wstring(L"<w:keepNext/>"));
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(std::wstring(L"<w:keepNext w:val=\"false\"/>"));
+                pCStringWriter->WriteString(std::wstring(L"<w:keepNext w:val=\"0\"/>"));
         }break;
 	case c_oSerProp_pPrType::PageBreakBefore:
 		{
@@ -858,7 +892,7 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 			if(0 != pageBreakBefore)
                 pCStringWriter->WriteString(std::wstring(L"<w:pageBreakBefore/>"));
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(std::wstring(L"<w:pageBreakBefore w:val=\"false\"/>"));
+                pCStringWriter->WriteString(std::wstring(L"<w:pageBreakBefore w:val=\"0\"/>"));
 			break;
 		}
 	case c_oSerProp_pPrType::Spacing:
@@ -868,39 +902,18 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 			if(oSpacing.bLine || oSpacing.bLineTwips || oSpacing.bAfter || oSpacing.bAfterAuto || oSpacing.bBefore || oSpacing.bBeforeAuto)
 			{
                 pCStringWriter->WriteString(std::wstring(L"<w:spacing"));
-				BYTE bLineRule = linerule_Auto;
-				//проверяется bLine, а не bLineRule чтобы всегда писать LineRule, если есть w:line
-				if(oSpacing.bLine || oSpacing.bLineTwips)
+
+				if (oSpacing.bBefore)
 				{
-					if(oSpacing.bLineRule)
-						bLineRule = oSpacing.LineRule;
-                    std::wstring sLineRule;
-					switch(oSpacing.LineRule)
-					{
-						case linerule_AtLeast:sLineRule = _T(" w:lineRule=\"atLeast\"");break;
-						case linerule_Exact:sLineRule = _T(" w:lineRule=\"exact\"");break;
-						default:sLineRule = _T(" w:lineRule=\"auto\"");break;
-					}
-					pCStringWriter->WriteString(sLineRule);
+					std::wstring sBefore = L" w:before=\"" + std::to_wstring(oSpacing.Before) + L"\"";
+					pCStringWriter->WriteString(sBefore);
 				}
-				if(oSpacing.bLine)
+				if (oSpacing.bBeforeAuto)
 				{
-                    std::wstring sLine;
-					if(linerule_Auto == bLineRule)
-					{
-						long nLine = SerializeCommon::Round(oSpacing.Line * 240);
-                        sLine = L" w:line=\"" + std::to_wstring(nLine) + L"\"";
-					}
+					if (true == oSpacing.BeforeAuto)
+						pCStringWriter->WriteString(std::wstring(L" w:beforeAutospacing=\"1\""));
 					else
-					{
-						long nLine = SerializeCommon::Round( g_dKoef_mm_to_twips * oSpacing.Line);
-                        sLine = L" w:line=\"" + std::to_wstring(nLine) + L"\"";
-					}
-					pCStringWriter->WriteString(sLine);
-				}
-				else if(oSpacing.bLineTwips)
-				{
-					pCStringWriter->WriteString(L" w:line=\"" + std::to_wstring(oSpacing.LineTwips) + L"\"");
+						pCStringWriter->WriteString(std::wstring(L" w:beforeAutospacing=\"0\""));
 				}
 				if(oSpacing.bAfter)
 				{
@@ -914,27 +927,55 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
 					else
                         pCStringWriter->WriteString(std::wstring(L" w:afterAutospacing=\"0\""));
 				}
-				if(oSpacing.bBefore)
+				BYTE bLineRule = linerule_Auto;
+				
+				std::wstring sLineRule;
+				//проверяется bLine, а не bLineRule чтобы всегда писать LineRule, если есть w:line
+				if (oSpacing.bLine || oSpacing.bLineTwips)
 				{
-					std::wstring sBefore = L" w:before=\"" + std::to_wstring(oSpacing.Before) + L"\"";
-					pCStringWriter->WriteString(sBefore);
+					if (oSpacing.bLineRule)
+						bLineRule = oSpacing.LineRule;
+					switch (oSpacing.LineRule)
+					{
+					case linerule_AtLeast:	sLineRule = _T(" w:lineRule=\"atLeast\""); break;
+					case linerule_Exact:	sLineRule = _T(" w:lineRule=\"exact\""); break;
+					default:				sLineRule = _T(" w:lineRule=\"auto\""); break;
+					}
 				}
-				if(oSpacing.bBeforeAuto)
+				if (oSpacing.bLine)
 				{
-					if(true == oSpacing.BeforeAuto)
-                        pCStringWriter->WriteString(std::wstring(L" w:beforeAutospacing=\"1\""));
+					std::wstring sLine;
+					if (linerule_Auto == bLineRule)
+					{
+						long nLine = SerializeCommon::Round(oSpacing.Line * 240);
+						sLine = L" w:line=\"" + std::to_wstring(nLine) + L"\"";
+					}
 					else
-                        pCStringWriter->WriteString(std::wstring(L" w:beforeAutospacing=\"0\""));
+					{
+						long nLine = SerializeCommon::Round(g_dKoef_mm_to_twips * oSpacing.Line);
+						sLine = L" w:line=\"" + std::to_wstring(nLine) + L"\"";
+					}
+					pCStringWriter->WriteString(sLine);
 				}
-                pCStringWriter->WriteString(std::wstring(L"/>"));
+				else if (oSpacing.bLineTwips)
+				{
+					pCStringWriter->WriteString(L" w:line=\"" + std::to_wstring(oSpacing.LineTwips) + L"\"");
+				}
+				if (false == sLineRule.empty())
+					pCStringWriter->WriteString(sLineRule);
+
+				pCStringWriter->WriteString(std::wstring(L"/>"));
 			}
 			break;
 		}
 	case c_oSerProp_pPrType::Shd:
 		{
-			Shd oShd;
-			READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, &oShd);
-			pCStringWriter->WriteString(oShd.ToString());
+			ComplexTypes::Word::CShading oShd;
+			READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, &oShd);
+
+			std::wstring sShd = oShd.ToString();
+			if (false == sShd.empty())
+				pCStringWriter->WriteString(L"<w:shd " + sShd + L"/>");
 			break;
 		}
 	case c_oSerProp_pPrType::WidowControl:
@@ -1339,7 +1380,7 @@ int Binary_pPrReader::ReadBorder2(BYTE type, long length, void* poResult)
 	{
 		pBorder->m_oColor.Init();
 		pBorder->m_oColor->SetValue(SimpleTypes::hexcolorRGB);
-		oBinary_CommonReader2.ReadColor2(pBorder->m_oColor.get2());
+		oBinary_CommonReader2.ReadHexColor(pBorder->m_oColor.GetPointer());
 	}
 	else if( c_oSerBorderType::Space == type )
 	{
@@ -2077,9 +2118,14 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 	}
 	else if( c_oSerProp_tblPrType::Shd == type )
 	{
-		Shd oShd;
-		READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, &oShd);
-		pWiterTblPr->Shd = oShd.ToString();
+		ComplexTypes::Word::CShading oShd;
+		READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, &oShd);
+
+		std::wstring sShd = oShd.ToString();
+		if (false == sShd.empty())
+		{
+			pWiterTblPr->Shd = L"<w:shd " + sShd + L"/>";
+		}
 	}
 	else if( c_oSerProp_tblPrType::tblpPr == type )
 	{
@@ -2546,9 +2592,12 @@ int Binary_tblPrReader::Read_CellPr(BYTE type, long length, void* poResult)
 	}
 	else if( c_oSerProp_cellPrType::Shd == type )
 	{
-		Shd oShd;
-		READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, &oShd);
-		pCStringWriter->WriteString(oShd.ToString());
+		ComplexTypes::Word::CShading oShd;
+		READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, &oShd);
+		
+		std::wstring sShd = oShd.ToString();
+		if (false == sShd.empty())
+			pCStringWriter->WriteString(L"<w:shd " + sShd + L"/>");
 	}
 	else if( c_oSerProp_cellPrType::TableCellBorders == type )
 	{
@@ -3460,13 +3509,16 @@ int Binary_OtherTableReader::ReadOtherContent(BYTE type, long length, void* poRe
 		{
 			//todooo в отдельный лог
 		}
-		NSBinPptxRW::CXmlWriter xmlWriter;
-		pTheme->toXmlWriter(&xmlWriter);
-		m_oFileWriter.m_oTheme.m_sContent = xmlWriter.GetXmlString();
-
-		if ((m_oFileWriter.m_pDrawingConverter) && (m_oFileWriter.m_pDrawingConverter->m_pTheme))
+		if (false == m_oFileWriter.m_bGlossaryMode)
 		{
-			*m_oFileWriter.m_pDrawingConverter->m_pTheme = pTheme;
+			NSBinPptxRW::CXmlWriter xmlWriter;
+			pTheme->toXmlWriter(&xmlWriter);
+			m_oFileWriter.m_oTheme.m_sContent = xmlWriter.GetXmlString();
+
+			if ((m_oFileWriter.m_pDrawingConverter) && (m_oFileWriter.m_pDrawingConverter->m_pTheme))
+			{
+				*m_oFileWriter.m_pDrawingConverter->m_pTheme = pTheme;
+			}
 		}
 	}
 	else
@@ -3479,8 +3531,6 @@ Binary_CustomsTableReader::Binary_CustomsTableReader(NSBinPptxRW::CBinaryFileRea
 }
 int Binary_CustomsTableReader::Read()
 {
-	OOX::CCustomXMLProps oCustomXmlProps(NULL);
-
 	int res = c_oSerConstants::ReadOk;
 	READ_TABLE_DEF(res, this->ReadCustom, NULL);
 
@@ -4618,6 +4668,32 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		}
 		READ1_DEF(length, res, this->ReadParagraph, NULL);
         m_oDocumentWriter.m_oContent.WriteString(std::wstring(L"</w:p>"));
+	}
+	else if (c_oSerParType::CommentStart == type)
+	{
+		long nId = 0;
+		READ1_DEF(length, res, this->ReadComment, &nId);
+		if (NULL != m_oFileWriter.m_pComments)
+		{
+			CComment* pComment = m_oFileWriter.m_pComments->get(nId);
+			if (NULL != pComment)
+			{
+				int nNewId = m_oFileWriter.m_pComments->getNextId(pComment->getCount());
+				pComment->setFormatStart(nNewId);
+				GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeStart")), std::wstring(_T(""))));
+			}
+		}
+	}
+	else if (c_oSerParType::CommentEnd == type)
+	{
+		long nId = 0;
+		READ1_DEF(length, res, this->ReadComment, &nId);
+		if (NULL != m_oFileWriter.m_pComments)
+		{
+			CComment* pComment = m_oFileWriter.m_pComments->get(nId);
+			if (NULL != pComment && pComment->bIdFormat)
+				GetRunStringWriter().WriteString(pComment->writeRef(std::wstring(_T("")), std::wstring(_T("w:commentRangeEnd")), std::wstring(_T(""))));
+		}
 	}
 	else if(c_oSerParType::Table == type)
 	{
@@ -9452,7 +9528,7 @@ int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poRe
 	else if (c_oSerSdt::FormPrShd == type)
 	{
 		pFormPr->m_oShd.Init();
-		READ2_DEF(length, res, oBinary_CommonReader2.ReadShd, pFormPr->m_oShd.GetPointer());
+		READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, pFormPr->m_oShd.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

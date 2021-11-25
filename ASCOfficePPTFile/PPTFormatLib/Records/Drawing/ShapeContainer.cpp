@@ -927,6 +927,10 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
         if (utf8Data && utf8DataSize > 0)
         {
             pParentShape->m_strXmlString = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+//            std::string filename = std::to_string(nRTCounter++) + "_shape.xml";
+//            std::ofstream file("data/" + filename, std::ios::out);
+//            file.write((char*)utf8Data, utf8DataSize);
+//            file.close();
 
             delete []utf8Data;
         }
@@ -1510,7 +1514,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     GetRecordsByType(&oArrayOptions, true, /*true*/false/*secondary & tetriary*/);
 
     PPTShapes::ShapeType eType = (PPTShapes::ShapeType)oArrayShape[0]->m_oHeader.RecInstance;
-    ElementType			elType = GetTypeElem((ODRAW::eSPT)oArrayShape[0]->m_oHeader.RecInstance);
+    PPT_FORMAT::ElementType elType = GetTypeElem((ODRAW::eSPT)oArrayShape[0]->m_oHeader.RecInstance);
 
     int lMasterID = -1;
 
@@ -1716,7 +1720,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         CorrectPlaceholderType(pElement->m_lPlaceholderType);
     }
 
-    std::vector<CRecordRoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
+    std::vector<RoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
     GetRecordsByType(&oArrayHFPlaceholder, true, true);
     if (0 < oArrayHFPlaceholder.size())
     {
@@ -2121,7 +2125,7 @@ void CRecordShapeContainer::ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, C
     }
 
     pText->ApplyThemeStyle(pTheme);
-
+    ApplyAutoNumbering(pText);
 }
 void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels)
 {
@@ -2720,6 +2724,48 @@ void CRecordShapeContainer::ConvertInteractiveInfo(CInteractiveInfo &interactive
     interactiveInfo.m_bCustomShowReturn	= interactiveAtom.m_bCustomShowReturn;
     interactiveInfo.m_bVisited			= interactiveAtom.m_bVisited;
 
+}
+
+void CRecordShapeContainer::ApplyAutoNumbering(CTextAttributesEx *pText)
+{
+
+    std::vector<CRecordOfficeArtClientData*> arrOfficeArtClientData;
+    GetRecordsByType(&arrOfficeArtClientData, true);
+
+    for (auto childOfficeArtClientData : arrOfficeArtClientData)
+    {
+        for (auto prog : childOfficeArtClientData->m_rgShapeClientRoundtripData)
+        {
+            if (prog->m_pTagName && prog->m_pTagContainer && prog->m_pTagName->m_strText == ___PPT9)
+            {
+                auto styleTextPropAtom = dynamic_cast<CRecordPP9ShapeBinaryTagExtension*>(prog->m_pTagContainer)->m_styleTextPropAtom;
+                auto& arrProps9 = styleTextPropAtom.m_rgStyleTextProp9;
+                auto& arrPars  = pText->m_arParagraphs;
+                for (auto& par : arrPars)
+                {
+                    if (par.m_arSpans.empty())
+                        continue;
+                    if (!par.m_arSpans[0].m_oRun.pp9rt.is_init())
+                        continue;
+
+                    WORD pp9st = par.m_arSpans[0].m_oRun.pp9rt.get();
+                    if (pp9st >= arrProps9.size())
+                        continue;
+
+                    auto& prop9 = arrProps9[pp9st];
+                    if (prop9.m_pf9.m_optBulletAutoNumberScheme.is_init())
+                    {
+                        auto* pBuAutoNum = new CBulletAutoNum;
+                        pBuAutoNum->type = prop9.m_pf9.m_optBulletAutoNumberScheme->SchemeToStr();
+                        pBuAutoNum->startAt = prop9.m_pf9.m_optBulletAutoNumberScheme->m_nStartNum;
+
+                        par.m_oPFRun.bulletAutoNum.reset(pBuAutoNum);
+                    }
+                }
+            }
+
+        }
+    }
 }
 
 void CRecordGroupShapeContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)

@@ -97,6 +97,10 @@ namespace PdfWriter
 		{
 			return object_type_UNKNOWN;
 		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CObjectBase();
+		}
 		bool IsHidden() const;
 		bool IsDirect() const;
 		bool IsIndirect() const;
@@ -121,6 +125,11 @@ namespace PdfWriter
 	{
 	public:
 
+		virtual CObjectBase* Copy() const
+		{
+			return new CNullObject();
+		}
+
 		EObjectType GetType() const
 		{
 			return object_type_NULL;
@@ -133,6 +142,10 @@ namespace PdfWriter
 		CBoolObject(const bool& bValue)
 		{
 			m_bValue = bValue;
+		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CBoolObject(m_bValue);
 		}
 		EObjectType GetType() const
 		{
@@ -156,6 +169,10 @@ namespace PdfWriter
 		CNumberObject(const int& nValue)
 		{
 			m_nValue = nValue;
+		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CNumberObject(m_nValue);
 		}
 		EObjectType GetType() const
 		{
@@ -187,6 +204,10 @@ namespace PdfWriter
 		CRealObject(double dValue)
 		{
 			Set((float)dValue);
+		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CRealObject(m_fValue);
 		}
 		EObjectType GetType() const
 		{
@@ -221,6 +242,10 @@ namespace PdfWriter
 		{
 			return m_sValue;
 		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CNameObject(m_sValue);
+		}
 		EObjectType GetType() const
 		{
 			return object_type_NAME;
@@ -232,7 +257,7 @@ namespace PdfWriter
 	class CStringObject : public CObjectBase
 	{
 	public:
-        CStringObject(const char* sValue, bool isUTF16 = false);
+        CStringObject(const char* sValue, bool isUTF16 = false, bool isDictValue = false);
 		virtual ~CStringObject();
 		void Set(const char* sValue);
 		const BYTE*  GetString() const
@@ -243,6 +268,10 @@ namespace PdfWriter
 		{
 			return m_unLen;
 		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CStringObject((const char*)m_pValue, m_bUTF16, m_bDictValue);
+		}
 		EObjectType  GetType() const
 		{
 			return object_type_STRING;
@@ -251,11 +280,16 @@ namespace PdfWriter
         {
             return m_bUTF16;
         }
+		bool         IsDictValue() const
+		{
+			return m_bDictValue;
+		}
 
 	private:
 		BYTE*        m_pValue;
 		unsigned int m_unLen;
         bool         m_bUTF16;
+		bool         m_bDictValue;
 	};
 	class CBinaryObject : public CObjectBase
 	{
@@ -270,6 +304,10 @@ namespace PdfWriter
 		unsigned int GetLength() const
 		{
 			return m_unLen;
+		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CBinaryObject(m_pValue, m_unLen);
 		}
 		EObjectType  GetType() const
 		{
@@ -290,6 +328,10 @@ namespace PdfWriter
 		CObjectBase* Get() const
 		{
 			return m_pObject;
+		}
+		virtual CObjectBase* Copy() const
+		{
+			return new CProxyObject(m_pObject);
 		}
 		EObjectType GetType() const
 		{
@@ -312,7 +354,7 @@ namespace PdfWriter
 		{
 			return m_arrList.size();
 		}
-		void         Add(CObjectBase* pObject);
+		void         Add(CObjectBase* pObject, bool bPushBack = true);
 		void         Add(bool bValue);
 		void         Add(int nValue);
 		void         Add(unsigned int unValue);
@@ -328,6 +370,8 @@ namespace PdfWriter
 		}
 		static CArrayObject* CreateBox(const TBox& oBox);
 		static CArrayObject* CreateBox(double dL, double dB, double dR, double dT);
+		virtual CObjectBase* Copy() const;
+
 	protected:
 		std::vector<CObjectBase*> m_arrList;
 	};
@@ -350,7 +394,7 @@ namespace PdfWriter
 		void         Add(const std::string& sKey, float fReal);
 		void         Add(const std::string& sKey, double dReal);
 		void         Add(const std::string& sKey, bool bBool);
-		const char*  GetKey(CObjectBase* pObject);
+		const char*  GetKey(const CObjectBase* pObject);
 		CStream*     GetStream() const
 		{
 			return m_pStream;
@@ -372,6 +416,7 @@ namespace PdfWriter
 		virtual void      BeforeWrite(){}
 		virtual void      Write(CStream* pStream){}
 		virtual void      AfterWrite(){}
+		virtual CObjectBase* Copy() const;
 		virtual EDictType GetDictType() const
 		{
 			return dict_type_UNKNOWN;

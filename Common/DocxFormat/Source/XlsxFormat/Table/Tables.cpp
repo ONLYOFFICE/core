@@ -31,6 +31,20 @@
  */
 #include "Table.h"
 #include "QueryTable.h"
+#include "../../XlsbFormat/Xlsb.h"
+#include "../../XlsbFormat/TableStream.h"
+#include "../../XlsbFormat/Biff12_unions/LISTPARTS.h"
+#include "../../XlsbFormat/Biff12_records/BeginListParts.h"
+#include "../../XlsbFormat/Biff12_records/ListPart.h"
+#include "../../XlsbFormat/Biff12_unions/TABLE.h"
+#include "../../XlsbFormat/Biff12_records/BeginList.h"
+#include "../../XlsbFormat/Biff12_records/TableStyleClient.h"
+#include "../../XlsbFormat/Biff12_unions/LISTCOLS.h"
+#include "../../XlsbFormat/Biff12_unions/LISTCOL.h"
+#include "../../XlsbFormat/Biff12_records/BeginListCol.h"
+#include "../../XlsbFormat/Biff12_records/ListCCFmla.h"
+#include "../../XlsbFormat/Biff12_records/ListTrFmla.h"
+#include "../../XlsbFormat/Biff12_records/List14.h"
 
 namespace OOX
 {
@@ -50,6 +64,10 @@ namespace Spreadsheet
 		if ( !oReader.IsEmptyNode() )
 			oReader.ReadTillEnd();
 	}
+    void CAltTextTable::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        ReadAttributes(obj);
+    }
 	void CAltTextTable::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -57,6 +75,15 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_Read_if     ( oReader, (L"altTextSummary"),      m_oAltTextSummary )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+    void CAltTextTable::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::List14*>(obj.get());
+        if(ptr != nullptr)
+        {
+            m_oAltText              = ptr->stAltText.value();
+            m_oAltTextSummary       = ptr->stAltTextSummary.value();
+        }
+    }
 
 	void CTableStyleInfo::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -88,6 +115,22 @@ namespace Spreadsheet
 		if ( !oReader.IsEmptyNode() )
 			oReader.ReadTillEnd();
 	}
+    void CTableStyleInfo::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        ReadAttributes(obj);
+    }
+    void CTableStyleInfo::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::TableStyleClient*>(obj.get());
+        if(ptr != nullptr)
+        {
+            m_oName                 = ptr->stStyleName.value();
+            m_oShowColumnStripes    = ptr->fColumnStripes;
+            m_oShowFirstColumn      = ptr->fFirstColumn;
+            m_oShowLastColumn       = ptr->fLastColumn;
+            m_oShowRowStripes       = ptr->fColumnStripes;
+        }
+    }
 	void CTableStyleInfo::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -155,6 +198,93 @@ namespace Spreadsheet
 				m_oCalculatedColumnFormula = oReader.GetText3();
 		}
 	}
+    void CTableColumn::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::LISTCOL*>(obj.get());
+        if(ptr != nullptr)
+        {
+            ReadAttributes(ptr->m_BrtBeginListCol);
+
+            if(ptr->m_BrtListCCFmla != nullptr)
+            {
+               auto ptrCCFmla = static_cast<XLSB::ListCCFmla*>(ptr->m_BrtListCCFmla.get());
+               if(ptrCCFmla->fArray)
+                   m_oCalculatedColumnFormula = ptrCCFmla->arrayFormula.getAssembledFormula();
+               else
+                   m_oCalculatedColumnFormula = ptrCCFmla->formula.getAssembledFormula();
+            }
+
+            if(ptr->m_BrtListTrFmla != nullptr)
+            {
+                auto ptrListTrFmla = static_cast<XLSB::ListTrFmla*>(ptr->m_BrtListTrFmla.get());
+                if(ptrListTrFmla->fArray)
+                    m_oTotalsRowFormula = ptrListTrFmla->arrayFormula.getAssembledFormula();
+                else
+                    m_oTotalsRowFormula = ptrListTrFmla->formula.getAssembledFormula();
+            }
+        }
+    }
+    void CTableColumn::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::BeginListCol*>(obj.get());
+        if(ptr != nullptr)
+        {
+            if(!ptr->stStyleInsertRow.value().empty())
+                m_oDataCellStyle        = ptr->stStyleInsertRow.value();
+
+            if(ptr->nDxfInsertRow != 0xFFFFFFFF)
+                m_oTotalsRowDxfId       = ptr->nDxfInsertRow;
+
+            if(!ptr->stStyleHeader.value().empty())
+                m_oHeaderRowCellStyle   = ptr->stStyleHeader.value();
+
+            if(ptr->nDxfHdr != 0xFFFFFFFF)
+                m_oHeaderRowDxfId       = ptr->nDxfHdr;
+
+            if(!ptr->stStyleAgg.value().empty())
+                m_oTotalsRowCellStyle   = ptr->stStyleAgg.value();
+
+            if(ptr->nDxfAgg != 0xFFFFFFFF)
+                m_oDataDxfId            = ptr->nDxfAgg;
+
+            m_oId                       = ptr->idField;
+
+            if(!ptr->stCaption.value().empty())
+                m_oName                 = ptr->stCaption.value();
+
+            m_oQueryTableFieldId        = ptr->idqsif;
+
+            if(!ptr->stTotal.value().empty())
+                m_oTotalsRowLabel       = ptr->stTotal.value();
+
+            if(!ptr->stName.value().empty())
+                m_oUniqueName           = ptr->stName.value();
+
+            switch (ptr->ilta.value().get())
+            {
+                case XLSB::ListTotalRowFunction::ILTA_NONE:
+                    m_oTotalsRowFunction = SimpleTypes::Spreadsheet::ETotalsRowFunction::totalrowfunctionNone; break;
+                case XLSB::ListTotalRowFunction::ILTA_AVERAGE:
+                    m_oTotalsRowFunction = SimpleTypes::Spreadsheet::ETotalsRowFunction::totalrowfunctionAverage; break;
+                case XLSB::ListTotalRowFunction::ILTA_COUNT:
+                    m_oTotalsRowFunction = SimpleTypes::Spreadsheet::ETotalsRowFunction::totalrowfunctionCount; break;
+                case XLSB::ListTotalRowFunction::ILTA_COUNTNUMS:
+                    m_oTotalsRowFunction = SimpleTypes::Spreadsheet::ETotalsRowFunction::totalrowfunctionCountNums; break;
+                case XLSB::ListTotalRowFunction::ILTA_MAX:
+                    m_oTotalsRowFunction = SimpleTypes::Spreadsheet::ETotalsRowFunction::totalrowfunctionMax; break;
+                case XLSB::ListTotalRowFunction::ILTA_MIN:
+                    m_oTotalsRowFunction = SimpleTypes::Spreadsheet::ETotalsRowFunction::totalrowfunctionMin; break;
+                case XLSB::ListTotalRowFunction::ILTA_SUM:
+                    m_oTotalsRowFunction = SimpleTypes::Spreadsheet::ETotalsRowFunction::totalrowfunctionSum; break;
+                case XLSB::ListTotalRowFunction::ILTA_STDDEV:
+                    m_oTotalsRowFunction = SimpleTypes::Spreadsheet::ETotalsRowFunction::totalrowfunctionStdDev; break;
+                case XLSB::ListTotalRowFunction::ILTA_VAR:
+                    m_oTotalsRowFunction = SimpleTypes::Spreadsheet::ETotalsRowFunction::totalrowfunctionVar; break;
+                case XLSB::ListTotalRowFunction::ILTA_CUSTOM:
+                    m_oTotalsRowFunction = SimpleTypes::Spreadsheet::ETotalsRowFunction::totalrowfunctionCustom; break;
+            }
+        }
+    }
 	void CTableColumn::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -207,10 +337,26 @@ namespace Spreadsheet
 				m_arrItems.push_back(new CTableColumn(oReader));
 		}
 	}
+    void CTableColumns::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::LISTCOLS*>(obj.get());
+        if(ptr != nullptr)
+        {
+            ReadAttributes(ptr->m_arLISTCOL);
+
+            for(auto &listcol : ptr->m_arLISTCOL)
+                m_arrItems.push_back(new CTableColumn(listcol));
+        }
+    }
+    void CTableColumns::ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)
+    {
+        if(!obj.empty())
+            m_oCount = (int)obj.size();
+    }
 	void CTableColumns::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if ( oReader, (L"count"), m_oCount )
+            WritingElement_ReadAttributes_Read_if ( oReader, (L"count"), m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
 	}
 
@@ -303,6 +449,28 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 				m_oExtLst = oReader;
 		}
 	}
+
+    void CTable::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::TABLE*>(obj.get());
+
+        ReadAttributes(ptr->m_BrtBeginList);
+
+        if(ptr->m_AUTOFILTER != nullptr)
+            m_oAutoFilter = ptr->m_AUTOFILTER;
+
+        if(ptr->m_SORTSTATE != nullptr)
+            m_oSortState = ptr->m_SORTSTATE;
+
+        if(ptr->m_LISTCOLS != nullptr)
+            m_oTableColumns = ptr->m_LISTCOLS;
+
+        if(ptr->m_BrtTableStyleClient != nullptr)
+            m_oTableStyleInfo = ptr->m_BrtTableStyleClient;
+
+        if(ptr->m_FRTTABLE != nullptr)
+            m_oExtLst = ptr->m_FRTTABLE;
+    }
 	void CTable::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -331,6 +499,77 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		WritingElement_ReadAttributes_End( oReader )
 	}
 
+    void CTable::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::BeginList*>(obj.get());
+        if(ptr != nullptr)
+        {
+            m_oRef                      = ptr->rfxList.toString();
+
+            if(!ptr->stName.value().empty())
+                m_oName                 = ptr->stName.value();
+
+			if (ptr->crwHeader.value())
+				m_oHeaderRowCount = ptr->crwHeader.value().get();
+			
+			if (ptr->crwTotals.value())
+				m_oTotalsRowCount = ptr->crwTotals.value().get();
+
+            if(!ptr->stDisplayName.value().empty())
+                m_oDisplayName          = ptr->stDisplayName.value();
+
+            if(ptr->nDxfBorder != 0xFFFFFFFF)
+                m_oTableBorderDxfId     = ptr->nDxfBorder;
+
+            if(!ptr->stComment.value().empty())
+                m_oComment              = ptr->stComment.value();
+
+            m_oConnectionId             = ptr->dwConnID;
+
+            if(ptr->nDxfData != 0xFFFFFFFF)
+                m_oDataDxfId            = ptr->nDxfData;
+
+            if(!ptr->stStyleData.value().empty())
+                m_oDataCellStyle        = ptr->stStyleData.value();
+
+            if(ptr->nDxfHeaderBorder != 0xFFFFFFFF)
+                m_oHeaderRowBorderDxfId = ptr->nDxfHeaderBorder;
+
+            if(!ptr->stStyleHeader.value().empty())
+                m_oHeaderRowCellStyle   = ptr->stStyleHeader.value();
+
+            if(ptr->nDxfHeader != 0xFFFFFFFF)
+                m_oHeaderRowDxfId       = ptr->nDxfHeader;
+
+            m_oInsertRow                = ptr->fForceInsertToBeVisible;
+            m_oInsertRowShift           = ptr->fInsertRowInsCells;
+            m_oPublished                = ptr->fPublished;
+            m_oId                       = ptr->idList;
+
+            switch (ptr->lt.value().get())
+            {
+                case XLSB::ListType::LTRANGE:
+                    m_oTableType = SimpleTypes::Spreadsheet::ETableType::typeWorksheet; break;
+                case XLSB::ListType::LTXML:
+                    m_oTableType = SimpleTypes::Spreadsheet::ETableType::typeXml; break;
+                case XLSB::ListType::LTEXTDATA:
+                    m_oTableType = SimpleTypes::Spreadsheet::ETableType::typeQueryTable; break;
+            }
+
+            if(ptr->nDxfAggBorder != 0xFFFFFFFF)
+                m_oTotalsRowBorderDxfId = ptr->nDxfAggBorder;
+
+            if(!ptr->stStyleAgg.value().empty())
+                m_oTotalsRowCellStyle   = ptr->stStyleAgg.value();
+
+            if(ptr->nDxfAgg != 0xFFFFFFFF)
+                m_oTotalsRowDxfId       = ptr->nDxfAgg;
+
+            m_oTotalsRowShown           = ptr->fShownTotalRow;
+
+        }
+    }
+
 	void CTablePart::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		if(m_oRId.IsInit())
@@ -347,12 +586,22 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		if ( !oReader.IsEmptyNode() )
 			oReader.ReadTillEnd();
 	}
+    void CTablePart::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        ReadAttributes(obj);
+    }
 	void CTablePart::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start_No_NS( oReader )
 			WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oRId )
 		WritingElement_ReadAttributes_End_No_NS( oReader )
 	}
+    void CTablePart::ReadAttributes(XLS::BaseObjectPtr &obj)
+    {
+        auto ptr = static_cast<XLSB::ListPart*>(obj.get());
+        if(ptr != nullptr)
+            m_oRId = ptr->stRelID.value.value();
+    }
 
 	void CTableParts::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -389,6 +638,18 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		}
 	}
 
+    void CTableParts::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::LISTPARTS*>(obj.get());
+
+        ReadAttributes(ptr->m_BrtBeginListParts);
+
+        for(auto &tablePart : ptr->m_arBrtListPart)
+        {
+            m_arrItems.push_back(new CTablePart(tablePart));
+        }
+    }
+
 	void CTableParts::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -396,10 +657,41 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		WritingElement_ReadAttributes_End( oReader )
 	}
 
+    void CTableParts::ReadAttributes(XLS::BaseObjectPtr &obj)
+    {
+        auto ptr = static_cast<XLSB::BeginListParts*>(obj.get());
+        if(ptr != nullptr)
+            m_oCount = ptr->cParts;
+    }
+
+    void CTableFile::readBin(const CPath& oPath)
+    {
+        CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+        if (xlsb)
+        {
+            XLSB::TableStreamPtr tableStream = std::make_shared<XLSB::TableStream>();
+
+            xlsb->ReadBin(oPath, tableStream.get());
+
+            if (tableStream != nullptr)
+            {
+                if (tableStream->m_TABLE != nullptr)
+                    m_oTable = tableStream->m_TABLE;
+            }
+
+        }
+    }
+
 	void CTableFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
 		m_oReadPath = oPath;
 		IFileContainer::Read( oRootPath, oPath );
+
+        if( m_oReadPath.GetExtention() == _T(".bin"))
+        {
+            readBin(m_oReadPath);
+            return;
+        }
 
 		XmlUtils::CXmlLiteReader oReader;
 

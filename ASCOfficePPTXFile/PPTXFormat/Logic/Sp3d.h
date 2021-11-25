@@ -71,6 +71,7 @@ namespace PPTX
 			}	
 			void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+                m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 				ReadAttributes( oReader );
 
 				if ( oReader.IsEmptyNode() )

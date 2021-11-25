@@ -484,6 +484,11 @@ namespace SimpleTypes
 		CDouble() {}
         virtual ~CDouble() {}
 
+        CDouble(const double& val)
+        {
+            this->m_dValue = (double)val;
+        }
+
         virtual double FromString(std::wstring &sValue)
 		{
             m_dValue = _wtof( sValue.c_str() );
@@ -500,7 +505,7 @@ namespace SimpleTypes
 		{
 			return boost::lexical_cast<std::wstring>(m_dValue);
 		}
-  
+
 		void SetValue(double dValue)
 		{
 			m_dValue = dValue;
@@ -526,6 +531,11 @@ namespace SimpleTypes
 	{
 	public:
 		CDecimalNumber() {}
+
+                CDecimalNumber(const _UINT32& val)
+                {
+                    this->m_eValue = (int)val;
+                }
 
 		virtual int FromString(std::wstring &sValue)
 		{
@@ -554,7 +564,7 @@ namespace SimpleTypes
 		{
 			return std::to_wstring(this->m_eValue);
 		}
-		SimpleType_FromString(int)
+        SimpleType_FromString(int)
 		SimpleType_Operator_Equal(CDecimalNumber)
 		SimpleTypes_AdditionalOpearators(CDecimalNumber)
 	};

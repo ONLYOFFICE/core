@@ -48,7 +48,8 @@ echo "https://www.openssl.org/source/${LIB_NAME}.tar.gz"
 DEVELOPER=$(xcode-select -print-path)
 SDK_VERSION=$(xcrun -sdk iphoneos --show-sdk-version)
 rm -rf "${LIB_DEST_DIR}" "${LIB_NAME}"
-[ -f "${LIB_NAME}.tar.gz" ] || curl https://www.openssl.org/source/${LIB_NAME}.tar.gz >${LIB_NAME}.tar.gz
+[ -f "${LIB_NAME}.tar.gz" ] || curl -L -o ${LIB_NAME}.tar.gz https://www.openssl.org/source/${LIB_NAME}.tar.gz -s
+[ -f "${LIB_NAME}.tar.gz" ] || log_error "openssl download error!"
 
 function configure_make() {
 
@@ -93,6 +94,7 @@ function configure_make() {
 
         # openssl1.1.1d can be set normally, 1.1.0f does not take effect
         ./Configure darwin64-x86_64-cc no-shared --prefix="${PREFIX_DIR}"
+        sed -i -e 's/-mtune=intel//g' "Makefile"
 
     elif [[ "${ARCH}" == "armv7" ]]; then
 
@@ -111,6 +113,7 @@ function configure_make() {
         # openssl1.1.1d can be set normally, 1.1.0f does not take effect
         ./Configure darwin-i386-cc no-shared --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method
         sed -ie "s!-fno-common!-fno-common -fembed-bitcode !" "Makefile"
+        sed -i -e 's/-mtune=intel//g' "Makefile"
 
     else
         log_error "not support" && exit 1

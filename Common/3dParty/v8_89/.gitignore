@@ -1,0 +1,6 @@
+.cipd
+.gclient
+.gclient_entries
+v8
+depot_tools
+v8.data

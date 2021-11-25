@@ -52,7 +52,11 @@ BiffStructurePtr PtgExp::clone()
 
 void PtgExp::loadFields(CFRecord& record)
 {
-	record >> row >> col;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        record >> row >> col;
+    else
+        record >> rowXlsb;
+
 }
 
 

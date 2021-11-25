@@ -31,6 +31,7 @@
  */
 
 #include "Setup.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
 
 namespace XLS
 {
@@ -55,20 +56,60 @@ BaseObjectPtr Setup::clone()
 void Setup::readFields(CFRecord& record)
 {
 	unsigned short flags;
-	record >> iPaperSize >> iScale >> iPageStart >> iFitWidth >> iFitHeight >> flags;
-	
-	fLeftToRight = GETBIT(flags, 0);
-	fPortrait	= GETBIT(flags, 1);
-	fNoPls		= GETBIT(flags, 2);
-	fNoColor	= GETBIT(flags, 3);
-	fDraft		= GETBIT(flags, 4);
-	fNotes		= GETBIT(flags, 5);
-	fNoOrient	= GETBIT(flags, 6);
-	fUsePage	= GETBIT(flags, 7);
-	fEndNotes	= GETBIT(flags, 9);
-	iErrors		= GETBITS(flags, 10, 11);
 
-	record >> iRes >> iVRes >> numHdr >> numFtr >> iCopies;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        _UINT16 iPaperSize_2b;
+        _UINT16 iScale_2b;
+        _INT16 iPageStart_2b;
+        _UINT16 iFitWidth_2b;
+        _UINT16 iFitHeight_2b;
+        _UINT16 iRes_2b;
+        _UINT16 iVRes_2b;
+        _UINT16 iCopies_2b;
+
+        record >> iPaperSize_2b >> iScale_2b >> iPageStart_2b >> iFitWidth_2b >> iFitHeight_2b >> flags;
+
+        fLeftToRight = GETBIT(flags, 0);
+        fPortrait	= GETBIT(flags, 1);
+        fNoPls		= GETBIT(flags, 2);
+        fNoColor	= GETBIT(flags, 3);
+        fDraft		= GETBIT(flags, 4);
+        fNotes		= GETBIT(flags, 5);
+        fNoOrient	= GETBIT(flags, 6);
+        fUsePage	= GETBIT(flags, 7);
+        fEndNotes	= GETBIT(flags, 9);
+        iErrors		= GETBITS(flags, 10, 11);
+
+        record >> iRes_2b >> iVRes_2b >> numHdr >> numFtr >> iCopies_2b;
+
+        iPaperSize = iPaperSize_2b;
+        iScale     = iScale_2b;
+        iPageStart = iPageStart_2b;
+        iFitWidth  = iFitWidth_2b;
+        iFitHeight = iFitHeight_2b;
+        iRes       = iRes_2b;
+        iVRes      = iVRes_2b;
+        iCopies    = iCopies_2b;
+    }
+    else
+    {
+        record >> iPaperSize >> iScale >> iRes >> iVRes >> iCopies >> iPageStart >> iFitWidth >> iFitHeight >> flags;
+
+        fLeftToRight = GETBIT(flags, 0);
+        fLandscape	= GETBIT(flags, 1);
+        fNoColor	= GETBIT(flags, 3);
+        fDraft		= GETBIT(flags, 4);
+        fNotes		= GETBIT(flags, 5);
+        fNoOrient	= GETBIT(flags, 6);
+        fUsePage	= GETBIT(flags, 7);
+        fEndNotes	= GETBIT(flags, 8);
+        iErrors		= GETBITS(flags, 9, 10);
+
+        XLSB::XLNullableWideString str;
+        record >> str;
+        szRelID = str.value();
+    }
 }
 
 } // namespace XLS

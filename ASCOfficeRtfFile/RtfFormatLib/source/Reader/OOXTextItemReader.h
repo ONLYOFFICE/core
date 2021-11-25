@@ -57,14 +57,14 @@ public:
 			{
 				PPTX::Logic::Paragraph * pParagraph = dynamic_cast<PPTX::Logic::Paragraph*>(ooxElement);
 				
-				OOXParagraphReader	m_oParagraphReader(pParagraph);
+				OOXParagraphReader	oParagraphReader(pParagraph);
 				RtfParagraphPtr oNewParagraph ( new RtfParagraph() );
 				//применяем к новому параграфу default property
 				oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
 				oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
 				oNewParagraph->m_oProperty.m_nItap = 0;
 
-				if( true == m_oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle() ))
+				if( true == oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle() ))
 				{
 					m_oTextItems->AddItem( oNewParagraph );
 				}
@@ -73,14 +73,14 @@ public:
 			{
 				OOX::Logic::CParagraph * pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(ooxElement);
 				
-				OOXParagraphReader	m_oParagraphReader(pParagraph);
+				OOXParagraphReader	oParagraphReader(pParagraph);
 				RtfParagraphPtr oNewParagraph ( new RtfParagraph() );
 				//применяем к новому параграфу default property
 				oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
 				oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
 				oNewParagraph->m_oProperty.m_nItap = 0;
 
-				if( true == m_oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle() ))
+				if( true == oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle() ))
 				{
 					m_oTextItems->AddItem( oNewParagraph );
 				}
@@ -120,8 +120,40 @@ public:
 				}
 
 			}break;
-            default:
-                break;
+			case OOX::et_w_commentRangeStart:
+			case OOX::et_w_commentReference:
+			case OOX::et_w_commentRangeEnd:
+			{
+				OOX::Logic::CParagraph oParagraph;
+				oParagraph.m_oParagraphProperty = new OOX::Logic::CParagraphProperty();
+				oParagraph.m_arrItems.push_back(ooxElement);
+				
+				OOXParagraphReader	oParagraphReader(&oParagraph);
+				RtfParagraphPtr oNewParagraph(new RtfParagraph());
+				
+				oParagraph.m_oParagraphProperty->m_oKeepNext.Init();
+				oParagraph.m_oParagraphProperty->m_oKeepNext->m_oVal.SetValue(SimpleTypes::EOnOff::onoffTrue);
+
+				oParagraph.m_oParagraphProperty->m_oKeepLines.Init();
+				oParagraph.m_oParagraphProperty->m_oKeepLines->m_oVal.SetValue(SimpleTypes::EOnOff::onoffTrue);
+				
+			//применяем к новому параграфу default property
+				oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
+				oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
+				oNewParagraph->m_oProperty.m_nItap = 0;
+
+				if (true == oParagraphReader.Parse(oParam, (*oNewParagraph), CcnfStyle()))
+				{
+					m_oTextItems->AddItem(oNewParagraph);
+				}
+
+				oParagraph.m_arrItems.clear();
+				delete oParagraph.m_oParagraphProperty; oParagraph.m_oParagraphProperty = NULL;
+			}break;
+			default:
+			{
+
+			}break;
         }
 		return true;
 	}

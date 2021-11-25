@@ -1,3 +1,5 @@
+OPENSSL_LIBS_DIRECTORY = $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib
+
 core_android {
 
     ABI_PATH = $$replace(CORE_BUILDS_PLATFORM_PREFIX, "android_", "")
@@ -8,28 +10,35 @@ core_android {
 		ABI_PATH = $$replace(ABI_PATH, "arm64_v8a", "arm64-v8a")
 	}
 
-    INCLUDEPATH += $$PWD/../ixwebsocket/IXWebSocket/build/android/$$ABI_PATH/include
-    LIBS        += $$PWD/../ixwebsocket/IXWebSocket/build/android/$$ABI_PATH/lib/libixwebsocket.a
+    INSTALL_FOLDER = $$PWD/IXWebSocket/build/android/$$ABI_PATH
+    exists($$INSTALL_FOLDER/usr):INSTALL_FOLDER=$$INSTALL_FOLDER/usr
+
+    INCLUDEPATH += $$INSTALL_FOLDER/include
+    LIBS        += $$INSTALL_FOLDER/lib/libixwebsocket.a
+
+    OPENSSL_LIBS_DIRECTORY = $$PWD/../openssl/build/android/$$ABI_PATH/lib
 }
 
 core_ios {
 
-    INCLUDEPATH += $$PWD/../ixwebsocket/IXWebSocket/build/ios/openssl-universal/include
-    LIBS        += $$PWD/../ixwebsocket/IXWebSocket/build/ios/ixwebsocket-universal/lib/libixwebsocket.a
+    INCLUDEPATH += $$PWD/IXWebSocket/build/ios/ixwebsocket-universal/include
+    LIBS        += $$PWD/IXWebSocket/build/ios/ixwebsocket-universal/lib/libixwebsocket.a
+
+    OPENSSL_LIBS_DIRECTORY = $$PWD/../openssl/build/ios/openssl-universal/lib
 
 }
 
 core_linux {
 
-    INCLUDEPATH += $$PWD/../ixwebsocket/IXWebSocket/build/linux/$$CORE_BUILDS_PLATFORM_PREFIX/include
-    LIBS        += $$PWD/../ixwebsocket/IXWebSocket/build/linux/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libixwebsocket.a
+    INCLUDEPATH += $$PWD/IXWebSocket/build/linux/$$CORE_BUILDS_PLATFORM_PREFIX/include
+    LIBS        += $$PWD/IXWebSocket/build/linux/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libixwebsocket.a
 
 }
 
 core_mac {
 
-    INCLUDEPATH += $$PWD/../ixwebsocket/IXWebSocket/build/mac/$$CORE_BUILDS_PLATFORM_PREFIX/include
-    LIBS        += $$PWD/../ixwebsocket/IXWebSocket/build/mac/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libixwebsocket.a \
+    INCLUDEPATH += $$PWD/IXWebSocket/build/mac/$$CORE_BUILDS_PLATFORM_PREFIX/include
+    LIBS        += $$PWD/IXWebSocket/build/mac/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libixwebsocket.a \
 }
 
 core_windows {
@@ -50,9 +59,9 @@ core_windows {
 }
 
 core_windows {
-    LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libssl.lib
-    LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libcrypto.lib
+    LIBS += $$OPENSSL_LIBS_DIRECTORY/libssl.lib
+    LIBS += $$OPENSSL_LIBS_DIRECTORY/libcrypto.lib
 } else {
-    LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libssl.a
-    LIBS += $$PWD/../openssl/build/$$CORE_BUILDS_PLATFORM_PREFIX/lib/libcrypto.a
+    LIBS += $$OPENSSL_LIBS_DIRECTORY/libssl.a
+    LIBS += $$OPENSSL_LIBS_DIRECTORY/libcrypto.a
 }

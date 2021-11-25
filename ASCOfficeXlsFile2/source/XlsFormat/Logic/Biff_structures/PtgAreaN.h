@@ -33,6 +33,7 @@
 
 #include "OperandPtg.h"
 #include "CellRangeRef.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRangeRef.h"
 
 namespace XLS
 {
@@ -57,8 +58,11 @@ public:
 
 	static const unsigned short fixed_id = 0x0D;
 
+    GlobalWorkbookInfoPtr	global_info;
+
 	CellRef cell_base_ref;
 	RgceAreaRel area;
+    XLSB::RgceAreaRel areaXlsb; // in biff12
 };
 
 } // namespace XLS

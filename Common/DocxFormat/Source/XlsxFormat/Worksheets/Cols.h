@@ -34,7 +34,7 @@
 #define OOX_COLS_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-
+#include "../../XlsbFormat/Biff12_unions/COLINFOS.h"
 
 namespace OOX
 {
@@ -81,6 +81,10 @@ namespace OOX
 				if (!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType() const
 			{
@@ -90,6 +94,26 @@ namespace OOX
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader); // -> Worksheet.cpp
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::ColInfo*>(obj.get());
+                m_oBestFit                  = ptr->fBestFit;
+                m_oCollapsed                = ptr->fCollapsed;
+                m_oCustomWidth              = ptr->fUserSet;
+                m_oHidden                   = ptr->fHidden;
+                m_oMax                      = ptr->colLast + 1;
+                m_oMin                      = ptr->colFirst + 1;
+                m_oOutlineLevel             = ptr->iOutLevel;
+                m_oPhonetic                 = ptr->fPhonetic;
+                m_oStyle                    = ptr->ixfeXLSB;
+
+                if (ptr->coldx > 0)
+                {
+                        m_oWidth            = (double)ptr->coldx / 256.;
+                }
+
+            }
 
 		public:
 				nullable<SimpleTypes::COnOff<>>					m_oBestFit;
@@ -108,6 +132,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCols)
+            WritingElement_XlsbVectorConstructors(CCols)
 			CCols(OOX::Document *pMain = NULL) : WritingElementWithChilds<CCol>(pMain)
 			{
 			}
@@ -158,6 +183,25 @@ namespace OOX
 					}
 				}
 			}
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                //ReadAttributes(obj);
+
+                if (obj.empty())
+                    return;
+
+                for(auto &COLINFOS : obj)
+                {
+                    auto ptr = static_cast<XLSB::COLINFOS*>(COLINFOS.get())->m_arBrtColInfo;
+                    for(auto &col : ptr)
+                    {
+                        CCol *pCol = new CCol(m_pMainDocument);
+                        pCol->fromBin(col);
+
+                        m_arrItems.push_back(pCol);
+                    }
+                }
+            }
 
 			virtual EElementType getType () const
 			{

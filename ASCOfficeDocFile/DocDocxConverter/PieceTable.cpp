@@ -393,8 +393,15 @@ namespace DocFileFormat
 				//read from pcd.fc to fcEnd
 
 				int cb = fcEnd - (int)pcd.fc;
-				if (cb <= 0)
-					break;				
+				if (cb == 0) //ralph_scovile.doc
+				{
+					if (pcd.cpEnd - pcd.cpStart < 2) // com2010_0624pl01.doc
+						cb = pcdFcEnd - (int)pcd.fc; 
+					if (cb <= 0)
+						break;
+				}
+				else if (cb < 0)
+					break;
 
 				if (!ReadSymbolsBuffer((int)pcd.fc, cb, pcd.code_page, word, encodingChars))
 					break;

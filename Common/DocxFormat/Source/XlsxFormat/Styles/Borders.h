@@ -34,6 +34,7 @@
 #include "../CommonInclude.h"
 
 #include "rPr.h"
+#include "../../XlsbFormat/Biff12_records/Border.h"
 
 namespace OOX
 {
@@ -94,6 +95,49 @@ namespace OOX
 			{
 				return et_x_BorderProp;
 			}
+            void fromBin(XLS::BiffStructure* obj)
+            {
+                auto ptr = static_cast<XLSB::Blxf*>(obj);
+                if(ptr != nullptr)
+                {
+                    m_oColor.Init();
+                    m_oColor->fromBin(dynamic_cast<XLS::BaseObject*>(&ptr->brtColor));
+
+                    switch(ptr->dg)
+                    {
+                        case 0x00:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleNone; break;
+                        case 0x01:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleThin; break;
+                        case 0x02:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMedium; break;
+                        case 0x03:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashed; break;
+                        case 0x04:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDotted; break;
+                        case 0x05:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleThick; break;
+                        case 0x06:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDouble; break;
+                        case 0x07:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleHair; break;
+                        case 0x08:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashed; break;
+                        case 0x09:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashDot; break;
+                        case 0x0A:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashDot; break;
+                        case 0x0B:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashDotDot; break;
+                        case 0x0C:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashDotDot; break;
+                        case 0x0D:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleSlantDashDot; break;
+                    }
+
+                }
+            }
+
 			bool IsEmpty()
 			{
 				return !(m_oStyle.IsInit() || m_oColor.IsInit());
@@ -161,6 +205,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CBorder)
+            WritingElement_XlsbConstructors(CBorder)
 			CBorder()
 			{
 			}
@@ -265,6 +310,11 @@ namespace OOX
 				}
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_Border;
@@ -278,6 +328,29 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outline"),			m_oOutline )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::Border*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oDiagonalDown = ptr->fBdrDiagDown;
+                    m_oDiagonalUp   = ptr->fBdrDiagUp;
+
+                    m_oBottom.Init();
+                    m_oBottom.GetPointer()->fromBin(dynamic_cast<XLS::BiffStructure*>(&ptr->blxfBottom));
+                    m_oDiagonal.Init();
+                    m_oDiagonal.GetPointer()->fromBin(dynamic_cast<XLS::BiffStructure*>(&ptr->blxfDiag));
+                    m_oTop.Init();
+                    m_oTop.GetPointer()->fromBin(dynamic_cast<XLS::BiffStructure*>(&ptr->blxfTop));
+                    m_oStart.Init();
+                    m_oStart.GetPointer()->fromBin(dynamic_cast<XLS::BiffStructure*>(&ptr->blxfLeft));
+                    m_oEnd.Init();
+                    m_oEnd.GetPointer()->fromBin(dynamic_cast<XLS::BiffStructure*>(&ptr->blxfRight));
+                }
+            }
+
+
 		public:
 			nullable<SimpleTypes::COnOff<>>	m_oDiagonalDown;
 			nullable<SimpleTypes::COnOff<>>	m_oDiagonalUp;
@@ -298,6 +371,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CBorders)
+            WritingElement_XlsbVectorConstructors(CBorders)
 			CBorders()
 			{
 			}
@@ -349,7 +423,19 @@ namespace OOX
 					}
 				}
 			}
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                ReadAttributes(obj);
 
+                int index = 0;
+
+                for(auto &border : obj)
+                {
+                    CBorder *pBorder = new CBorder(border);
+                    m_arrItems.push_back(pBorder);
+                    m_mapBorders.insert(std::make_pair(index++, pBorder));
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_Borders;
@@ -362,6 +448,10 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if ( oReader, L"count", m_oCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                m_oCount = (_UINT32)obj.size();
+            }
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
 			std::map<int, CBorder*>							m_mapBorders;

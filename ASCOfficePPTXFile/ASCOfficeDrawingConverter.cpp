@@ -1813,6 +1813,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 	bool bTextBox			= false;
 	bool bPicture			= false;
 	bool bStroked			= true;
+	bool bHidden			= false;
 
     std::wstring strStyleAdvenced = L"";
 
@@ -2077,7 +2078,11 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 		}
 		else if (pPPTShape->m_eType == PPTShapes::sptCFrame)
 		{
-			bPicture= true;
+			bPicture = true;
+		}
+		else if (pPPTShape->m_eType == PPTShapes::sptCNotchedCircularArrow)
+		{
+			bHidden = true;
 		}
         std::wstring strXmlPPTX;
 
@@ -2956,6 +2961,11 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 		PPTX::CCSS oCSSParser;
 		oCSSParser.LoadFromString2(strStyle);
 
+		if (bHidden && false == bIsTop)
+		{
+			pCNvPr->hidden = true;
+		}
+		
 		CSpTreeElemProps oProps;
 		oProps.IsTop = bIsTop;
 		std::wstring strMainPos = GetDrawingMainProps(oNodeShape, oCSSParser, oProps);
@@ -3398,6 +3408,10 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 
 	bool bIsInline = false;
 	bool bIsMargin = false;
+	bool bZIndex = false;
+
+	if (oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.find(L"z-index"))
+		bZIndex = true;
 
 	if (oProps.IsTop == true)
 	{
@@ -3421,8 +3435,9 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 		{
 			pFind = oCssStyles.m_mapSettings.find(L"mso-position-vertical-relative");
 			if (oCssStyles.m_mapSettings.end() != pFind && ((pFind->second == L"text" && !bIsMargin) || pFind->second == L"line"))
-			{		
-				bIsInline = true;
+			{	
+				if (!bZIndex || !bIsMargin) //Liturgie Homberg 2017 mit Abendmahlsteil.docx
+					bIsInline = true;
 			}
 		}	
 

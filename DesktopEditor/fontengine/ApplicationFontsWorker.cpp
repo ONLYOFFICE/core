@@ -44,8 +44,6 @@
 #include "../raster/BgraFrame.h"
 #include "../graphics/pro/Graphics.h"
 
-#define ONLYOFFICE_FONTS_VERSION_ 7
-
 bool g_sort_font_names(const std::wstring& i, const std::wstring& j)
 {
     std::wstring s1 = i;
@@ -561,7 +559,7 @@ public:
         return oWriterJS.GetData();
     }
 
-    void SaveAllFontsJS(NSFonts::IApplicationFonts* applicationFonts, int nVersion = -1)
+    void SaveAllFontsJS(NSFonts::IApplicationFonts* applicationFonts, int nVersion = ONLYOFFICE_ALL_FONTS_VERSION)
     {
         if (CheckBreak()) return;
 
@@ -712,7 +710,7 @@ public:
 
         std::wstring strFontSelectionBin = L"";
         // нужно ли скидывать font_selection.bin
-        if (-1 == nVersion && !m_bIsCheckThumbnailsMode)
+        if (ONLYOFFICE_ALL_FONTS_VERSION == nVersion && !m_bIsCheckThumbnailsMode)
         {
             strFontSelectionBin = m_pMain->m_sDirectory + L"/font_selection.bin";
         }
@@ -730,7 +728,7 @@ public:
         std::wstring sAllFontsPath = m_pMain->m_sDirectory + L"/AllFonts.js";
         if (!m_pMain->m_sAllFontsJSPath.empty())
             sAllFontsPath = m_pMain->m_sAllFontsJSPath;
-        if (nVersion != -1)
+        if (nVersion != ONLYOFFICE_ALL_FONTS_VERSION)
             sAllFontsPath += (L"." + std::to_wstring((int)(nVersion + 1)));
 
         if (m_bIsCheckThumbnailsMode)
@@ -749,8 +747,6 @@ public:
         {
             NSStringUtils::CStringBuilder oWriterJS;
             int nAllFontsVersion = nVersion;
-            if (-1 == nAllFontsVersion)
-                nAllFontsVersion = 1;
             oWriterJS.WriteString(L"window[\"__all_fonts_js_version__\"] = ");
             oWriterJS.AddInt(nAllFontsVersion);
             oWriterJS.WriteString(L";\n\n");
@@ -1104,7 +1100,9 @@ public:
             {
                 BYTE* pData = NULL;
                 LONG lLen = 0;
-                applicationFonts->GetList()->ToBuffer(&pData, &lLen, L"", false, nVersion);
+
+                NSFonts::CFontListToBufferSerializer oSerializer(L"", false, nVersion);
+                applicationFonts->GetList()->ToBuffer(&pData, &lLen, oSerializer);
 
                 char* cData64 = NULL;
                 int nData64Dst = 0;
@@ -1139,7 +1137,8 @@ public:
         {
             BYTE* pData = NULL;
             LONG lLen = 0;
-            applicationFonts->GetList()->ToBuffer(&pData, &lLen, L"", false);
+            NSFonts::CFontListToBufferSerializer oSerializer(L"", false, ONLYOFFICE_ALL_FONTS_VERSION);
+            applicationFonts->GetList()->ToBuffer(&pData, &lLen, oSerializer);
 
             NSFile::CFileBinary oFile;
             oFile.CreateFileW(strFontSelectionBin);
@@ -1515,7 +1514,7 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
             delete[] pBuffer;
         }
         
-#ifdef ONLYOFFICE_FONTS_VERSION_
+#ifdef ONLYOFFICE_FONTS_VERSION
         if (0 != strFonts.size())
         {
             // check version!!!
@@ -1528,7 +1527,7 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
             {
                 std::string sVersion = sOO_Version.substr(25);
                 int nVersion = std::stoi(sVersion);
-                if (nVersion != ONLYOFFICE_FONTS_VERSION_)
+                if (nVersion != ONLYOFFICE_FONTS_VERSION)
                     strFonts.clear();
                 else
                     strFonts.erase(strFonts.begin());
@@ -1597,9 +1596,9 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
 
         // формируем новый набор шрифтов
         NSStringUtils::CStringBuilder oFontsLog;
-#ifdef ONLYOFFICE_FONTS_VERSION_
+#ifdef ONLYOFFICE_FONTS_VERSION
         oFontsLog.WriteString(L"ONLYOFFICE_FONTS_VERSION_");
-        oFontsLog.WriteString(std::to_wstring(ONLYOFFICE_FONTS_VERSION_));
+        oFontsLog.WriteString(std::to_wstring(ONLYOFFICE_FONTS_VERSION));
         oFontsLog.WriteString(L"\n");
 #endif
         int nCount = (int)strFontsW_Cur.size();
@@ -1613,11 +1612,14 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
         pApplicationF->InitializeFromArrayFiles(strFontsW_Cur, nFlag);
 
         // скидываем все
-        m_pInternal->SaveAllFontsJS(pApplicationF, -1);
+        m_pInternal->SaveAllFontsJS(pApplicationF, ONLYOFFICE_ALL_FONTS_VERSION);
 
         // поддержка старой версии AllFonts.js
         if (m_bIsUseAllVersions)
-            m_pInternal->SaveAllFontsJS(pApplicationF, 0);
+        {
+            for (int nVer = 0; nVer < ONLYOFFICE_ALL_FONTS_VERSION; ++nVer)
+                m_pInternal->SaveAllFontsJS(pApplicationF, nVer);
+        }
 
         // скидываем новый набор шрифтов
         if (!m_pInternal->CheckBreak())

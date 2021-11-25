@@ -40,6 +40,7 @@
 
 #include "odf_drawing_context.h"
 #include "odf_chart_context.h"
+#include "odf_math_context.h"
 #include "odf_controls_context.h"
 
 #include "mediaitems.h"
@@ -52,16 +53,28 @@ namespace NSFonts
 namespace cpdoccore { 
 namespace odf_writer {
 
-class office_element;
-typedef shared_ptr<office_element>::Type office_element_ptr;
+//----------------------------------------------------------------------
+	struct _font_metrix
+	{
+		bool IsCalc = false;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-enum _office_type_document
-{
-	TextDocument,
-	SpreadsheetDocument,
-	PresentationDocument
-};
+		std::wstring font_name;
+		double		 font_size = 0;
+		bool		 italic = false;
+		bool		 bold = false;
+
+		double		 approx_symbol_size = 0;//in pt
+	};
+//----------------------------------------------------------------------
+	class office_element;
+	typedef shared_ptr<office_element>::Type office_element_ptr;
+//----------------------------------------------------------------------
+	enum _office_type_document
+	{
+		TextDocument,
+		SpreadsheetDocument,
+		PresentationDocument
+	};
 class odf_conversion_context : boost::noncopyable
 {
 	struct _object
@@ -79,6 +92,8 @@ class odf_conversion_context : boost::noncopyable
 		_mediaitems							mediaitems;
 	
 		boost::unordered_map<std::wstring, int> mapFonts;
+
+		bool content_ext = true;
 	};
 
 public:
@@ -113,12 +128,16 @@ public:
 	odf_settings_context			* settings_context();
 	odf_chart_context				* chart_context();
 	odf_page_layout_context			* page_layout_context();
+	odf_math_context				* math_context();
 
 	odf_number_styles_context		* numbers_styles_context();
 	_mediaitems						* mediaitems();
 
 	void start_chart();
 	void end_chart();
+
+	virtual bool start_math();
+	virtual void end_math();
 
 	void start_spreadsheet();
 	void end_spreadsheet();
@@ -129,7 +148,7 @@ public:
 	void start_presentation();
 	void end_presentation();
 
-	void create_object();
+	void create_object(bool bAddContentExt = true);
 	void end_object();
 
 	std::wstring			get_next_name_object();
@@ -139,19 +158,23 @@ public:
 		void add_tab(_CP_OPT(int) type, _CP_OPT(odf_types::length) length, _CP_OPT(int) leader);
 	void end_tabs();
 
+	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
+	double convert_symbol_width(double val);
 private:
+	_font_metrix font_metrix_;
+
 	odf_element_state temporary_;
 
 	std::vector<_object>		objects_;//"0" = root
 
 	odf_chart_context			chart_context_;
 	odf_page_layout_context		page_layout_context_;	
+	odf_math_context			math_context_;
 
 	void process_styles		(_object & object, bool isRoot);
 	void process_settings	(_object & object, bool isRoot);
 	
 	int	 current_object_;
-
 
 	//page_layout_container & pageLayoutContainer()	{ return page_layout_container_; }
 	//fonts_container		& fontContainer()		{ return fonts_container_; }

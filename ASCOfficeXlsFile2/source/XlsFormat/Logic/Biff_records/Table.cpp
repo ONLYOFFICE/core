@@ -52,26 +52,59 @@ BaseObjectPtr Table::clone()
 
 void Table::readFields(CFRecord& record)
 {
-	R_RwU rwInpRw;
-	Col_NegativeOne colInpRw;
-	R_RwU rwInpCol;
-	Col_NegativeOne colInpCol;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        R_RwU rwInpRw;
+        Col_NegativeOne colInpRw;
+        R_RwU rwInpCol;
+        Col_NegativeOne colInpCol;
 
-	record >> ref_;
-	unsigned short flags;
-	record >> flags;
-	fAlwaysCalc = GETBIT(flags, 0);
-	fRw = GETBIT(flags, 2);
-	fTbl2 = GETBIT(flags, 3);
-	fDeleted1 = GETBIT(flags, 4);
-	fDeleted2 = GETBIT(flags, 5);
+        record >> ref_;
+        unsigned short flags;
+        record >> flags;
+        fAlwaysCalc     = GETBIT(flags, 0);
+        fRw             = GETBIT(flags, 2);
+        fTbl2           = GETBIT(flags, 3);
+        fDeleted1       = GETBIT(flags, 4);
+        fDeleted2       = GETBIT(flags, 5);
 
-	record >> rwInpRw >> colInpRw >> rwInpCol >> colInpCol;
-	r1 = static_cast<std::wstring >(CellRef(rwInpRw, colInpRw, true, true));
-	if(fTbl2)
-	{
-		r2 = static_cast<std::wstring >(CellRef(rwInpCol, colInpCol, true, true));
-	}
+        record >> rwInpRw >> colInpRw >> rwInpCol >> colInpCol;
+        r1 = static_cast<std::wstring >(CellRef(rwInpRw, colInpRw, true, true));
+        if(fTbl2)
+        {
+            r2 = static_cast<std::wstring >(CellRef(rwInpCol, colInpCol, true, true));
+        }
+    }
+    else
+    {
+        UncheckedRw  rwInput1;
+        UncheckedCol colInput1;
+        UncheckedRw  rwInput2;
+        UncheckedCol colInput2;
+
+        record >> rfx;
+        record >> rwInput1 >> colInput1 >> rwInput2 >> colInput2;
+
+        unsigned char flags;
+        record >> flags;
+        fRw             = GETBIT(flags, 0);
+        fTbl2           = GETBIT(flags, 1);
+        fDeleted1       = GETBIT(flags, 2);
+        fDeleted2       = GETBIT(flags, 3);
+        fAlwaysCalc     = GETBIT(flags, 4);
+
+        if(fDeleted1)
+        {
+            rwInput1 = colInput1 = 0;
+        }
+        if(fDeleted2 || !fTbl2)
+        {
+            rwInput2 = colInput2 = 0;
+        }
+
+        r1 = static_cast<std::wstring >(CellRef(rwInput1, colInput1, true, true));
+        r2 = static_cast<std::wstring >(CellRef(rwInput2, colInput2, true, true));
+    }
 }
 
 } // namespace XLS

@@ -34,7 +34,6 @@
 
 #include "Common/Encoding.h"
 
-#include "TxtXmlEvent.h"
 #include "TxtFormat/TxtFormat.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
@@ -70,7 +69,7 @@ namespace Docx2Txt
         Converter_Impl();
         ~Converter_Impl();
 
-		void convert(TxtXml::ITxtXmlEvent& Event);
+		void convert();
 
         void writeUtf8		(const std::wstring& path) const;
         void writeUnicode	(const std::wstring& path) const;
@@ -81,11 +80,10 @@ namespace Docx2Txt
 		OOX::CDocx		m_inputFile;
 
     private:
-        void convert(std::vector<OOX::WritingElement *> & items, std::vector<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event, bool isFirstLevel,
+        void convert(std::vector<OOX::WritingElement *> & items, std::vector<std::wstring>& textOut, bool isFirstLevel,
 							 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
        
-		std::wstring convert( OOX::Logic::CRun* pRun, TxtXml::ITxtXmlEvent& Event,
-			OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles);
+		std::wstring convert( OOX::Logic::CRun* pRun, OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles);
 			
 		std::vector<bool> m_Field;
 
@@ -93,13 +91,12 @@ namespace Docx2Txt
         int m_lAddition;
         bool m_bCancelled;
         int ListCount;
-        int* Lists;
+        std::vector<int> Lists;
 		
 		int levelPrev;
 		int listNumPrev;
 
-		std::wstring convert(OOX::Logic::CParagraph * pParagraph, TxtXml::ITxtXmlEvent& Event,
-									OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
+		std::wstring convert(OOX::Logic::CParagraph * pParagraph, OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
 
         size_t NoteCount;
         std::map<std::wstring, std::vector<std::wstring>> Notes;
@@ -120,9 +117,9 @@ namespace Docx2Txt
         delete converter_;
     }
 
-    void Converter::convert(TxtXml::ITxtXmlEvent& Event)
+    void Converter::convert()
     {
-        return converter_->convert(Event);
+        return converter_->convert();
     }
 
     void Converter::read(const std::wstring & path)
@@ -160,28 +157,17 @@ namespace Docx2Txt
 	const std::wstring Converter_Impl::m_letters = _T("abcdefghijklmnopqrstuvwxyz");
 
 	Converter_Impl::Converter_Impl()
-		:  m_lPercent(0), m_lAddition(0), m_bCancelled(false), ListCount(0), Lists(NULL), NoteCount(0), levelPrev(-1), listNumPrev(1)
+		:  m_lAddition(0), Lists(NULL), NoteCount(0), levelPrev(-1), listNumPrev(1)
 	{
 	}
 
 
 	Converter_Impl::~Converter_Impl()
 	{
-		if(Lists != NULL)
-		{
-			delete []Lists;
-			Lists = NULL;
-		}
 	}
 
-
-	void Converter_Impl::convert(TxtXml::ITxtXmlEvent& Event)
+	void Converter_Impl::convert()
 	{
-		m_lPercent = 100000;
-		m_bCancelled = Event.Progress(0, m_lPercent);
-		if(m_bCancelled)
-			return;
-
 		OOX::CDocument	*pDocument	= m_inputFile.m_oMain.document; 
 		OOX::CStyles	*pStyles	= m_inputFile.m_oMain.styles;
 		OOX::CNumbering *pNumbering = m_inputFile.m_oMain.numbering;
@@ -189,11 +175,9 @@ namespace Docx2Txt
 		if (pNumbering)
 		{
 			ListCount = (int)pNumbering->m_arrNum.size();
-			Lists = new int[9 * ListCount];
-			if(Lists == NULL)
-				return;
+
 			for (int i = 0; i < 9 * ListCount; i++)
-				Lists[i] = 0;
+				Lists.push_back(-1);
 		}
 
 		if (!pDocument) return;
@@ -202,7 +186,7 @@ namespace Docx2Txt
 		m_lAddition = 800000;
 		Notes.clear();
 		
-		convert(pDocument->m_arrItems, m_outputFile.m_listContent, Event, true, pDocument, pNumbering, pStyles);
+		convert(pDocument->m_arrItems, m_outputFile.m_listContent, true, pDocument, pNumbering, pStyles);
 
 		if(NoteCount != 0)
 		{
@@ -222,12 +206,6 @@ namespace Docx2Txt
 				}
 			}
 		}
-		if(Lists != NULL)
-		{
-			delete []Lists;
-			Lists = NULL;
-		}
-		Event.Progress(0, 900000);
 	}
 
 
@@ -255,7 +233,7 @@ namespace Docx2Txt
 	}
 
 
-    void Converter_Impl::convert(std::vector<OOX::WritingElement*> & items, std::vector<std::wstring>& textOut, TxtXml::ITxtXmlEvent& Event,
+    void Converter_Impl::convert(std::vector<OOX::WritingElement*> & items, std::vector<std::wstring>& textOut,
 										bool isFirstLevel, OOX::CDocument *pDocument,  OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)
 	{
 		if (items.empty()) return;
@@ -271,11 +249,11 @@ namespace Docx2Txt
 
 			if (item->getType() == OOX::et_w_p)
 			{
-				textOut.push_back(convert((dynamic_cast<OOX::Logic::CParagraph*>(item)), Event, pDocument, pNumbering, pStyles));
+				textOut.push_back(convert((dynamic_cast<OOX::Logic::CParagraph*>(item)), pDocument, pNumbering, pStyles));
 			}
 			else if (item->getType() == OOX::et_w_r)
 			{
-				textOut.push_back(convert((dynamic_cast<OOX::Logic::CRun*>(item)), Event, pDocument, pNumbering, pStyles));
+				textOut.push_back(convert((dynamic_cast<OOX::Logic::CRun*>(item)), pDocument, pNumbering, pStyles));
 			}
 			/*else if (item.is<OOX::Logic::List>())
 			{
@@ -317,20 +295,12 @@ namespace Docx2Txt
 					
 				if (item_with_items)
 				{
-					convert(item_with_items->m_arrItems, textOut, Event, false, pDocument, pNumbering, pStyles);
+					convert(item_with_items->m_arrItems, textOut, false, pDocument, pNumbering, pStyles);
 				}
-			}
-
-			if(isFirstLevel)
-			{
-				m_lPercent += m_lAddition;
-				m_bCancelled = Event.Progress(0, m_lPercent);
-				if(m_bCancelled)
-					return;
 			}
 		}
 	}
-	std::wstring Converter_Impl::convert(OOX::Logic::CRun* pRun, TxtXml::ITxtXmlEvent& Event,
+	std::wstring Converter_Impl::convert(OOX::Logic::CRun* pRun,
 		OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles)
 	{
 		if (pRun == NULL) return L"";
@@ -396,7 +366,7 @@ namespace Docx2Txt
 
 								if (note && note->m_oId == footnote_ref->m_oId)
 								{
-									convert(m_inputFile.m_oMain.footnotes->m_arrFootnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
+									convert(m_inputFile.m_oMain.footnotes->m_arrFootnote[r]->m_arrItems, notes_content, false, pDocument, pNumbering, pStyles);
 								}
 							}
 							Notes.insert(std::make_pair(ToWString(++NoteCount), notes_content));
@@ -410,7 +380,7 @@ namespace Docx2Txt
 
 								if (note && note->m_oId == endnote_ref->m_oId)
 								{
-									convert(m_inputFile.m_oMain.endnotes->m_arrEndnote[r]->m_arrItems, notes_content, Event, false, pDocument, pNumbering, pStyles);
+									convert(m_inputFile.m_oMain.endnotes->m_arrEndnote[r]->m_arrItems, notes_content, false, pDocument, pNumbering, pStyles);
 								}
 							}
 							Notes.insert(std::make_pair(ToWString(++NoteCount), notes_content));
@@ -424,7 +394,7 @@ namespace Docx2Txt
 		return line;
 	}
 
-	std::wstring Converter_Impl::convert(OOX::Logic::CParagraph* pParagraph, TxtXml::ITxtXmlEvent& Event, 
+	std::wstring Converter_Impl::convert(OOX::Logic::CParagraph* pParagraph, 
 												OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles)
 	{
 		if (pParagraph == NULL) return L"";
@@ -482,48 +452,48 @@ namespace Docx2Txt
 	
 		if (listNum > 0 && pNumbering)
 		{
-			int start = (listNum - 1) * 9;
-			if (level > 0)
+			std::map<int, std::pair<int,size_t>>::iterator pFindNum = pNumbering->m_mapNum.find(listNum);
+			if (pFindNum != pNumbering->m_mapNum.end())
 			{
-				level--;
-				for(int i = level + 1; i < 9; i++)
-				{
-					Lists[start + i] = 0;
-				}
-			}
+				int abstractNumId = pFindNum->second.first;
+				size_t indexNum = pFindNum->second.second;
 
-			listNum--;
-			if ((pNumbering->m_arrNum[listNum]) && (pNumbering->m_arrNum[listNum]->m_oNumId.IsInit()))
-			{
-				size_t abstractNumId = 0;
+				int start = (indexNum) * 9;
+				if (level > 0)
+				{
+					level--;
+					for (int i = level + 1; i < 9; i++)
+					{
+						Lists[start + i] = -1;
+					}
+				}
+
 				nullable_int startLvl;
 				nullable_int restartLvl;
 
-				if ((pNumbering->m_arrNum[listNum]) && (pNumbering->m_arrNum[listNum]->m_oAbstractNumId.IsInit()) &&
-					(pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal.IsInit()))
+				std::map<int, size_t>::iterator pFind = pNumbering->m_arrNum[indexNum]->m_mapLvlOverride.find(level);
+				
+				if (pFind != pNumbering->m_arrNum[indexNum]->m_mapLvlOverride.end())
 				{
-					abstractNumId = *pNumbering->m_arrNum[listNum]->m_oAbstractNumId->m_oVal;
-
-					std::map<int, size_t>::iterator pFind = pNumbering->m_arrNum[listNum]->m_mapLvlOverride.find(level);
-					if (pFind != pNumbering->m_arrNum[listNum]->m_mapLvlOverride.end())
+					OOX::Numbering::CNumLvl* numLvl = pNumbering->m_arrNum[indexNum]->m_arrLvlOverride[pFind->second];
+					if (numLvl)
 					{
-						OOX::Numbering::CNumLvl* numLvl = pNumbering->m_arrNum[listNum]->m_arrLvlOverride[pFind->second];
-						if (numLvl)
+						if (numLvl->m_oStartOverride.IsInit())
+							startLvl = numLvl->m_oStartOverride->m_oVal;
+						if (numLvl->m_oLvl.IsInit())
 						{
-							if (numLvl->m_oStartOverride.IsInit())
-								startLvl = numLvl->m_oStartOverride->m_oVal;
-							if (numLvl->m_oLvl.IsInit())
-							{
-								if (numLvl->m_oLvl->m_oLvlRestart.IsInit())
-									restartLvl = numLvl->m_oLvl->m_oLvlRestart->m_oVal;
-							}
+							if (numLvl->m_oLvl->m_oLvlRestart.IsInit())
+								restartLvl = numLvl->m_oLvl->m_oLvlRestart->m_oVal;
 						}
 					}
 				}
-				
+
 				OOX::Numbering::CAbstractNum* abstractNum = NULL;
-				if (abstractNumId < pNumbering->m_arrAbstractNum.size())
-					abstractNum = pNumbering->m_arrAbstractNum[abstractNumId];
+				
+				std::map<int, size_t>::iterator pFindAbstract = pNumbering->m_mapAbstractNum.find(abstractNumId);
+					
+				if (pFindAbstract != pNumbering->m_mapAbstractNum.end())
+					abstractNum = pNumbering->m_arrAbstractNum[pFindAbstract->second];
 
 				if (abstractNum)
 				{
@@ -552,8 +522,10 @@ namespace Docx2Txt
 
 					levelPrev = level;
 
-					if (reset) Lists[start + level] = startLvl.IsInit() ? *startLvl : 1;
-					else Lists[start + level]++;
+					if (reset || Lists[start + level] < 0)
+						Lists[start + level] = startLvl.IsInit() ? *startLvl : 1;
+					else
+						Lists[start + level]++;
 
 					if (( ind_level >= 0 ) && ( abstractNum->m_arrLvl[ind_level] ))
 					{
@@ -620,7 +592,7 @@ namespace Docx2Txt
 				case OOX::et_w_r:
 				{
 					OOX::Logic::CRun *pRun = dynamic_cast<OOX::Logic::CRun*>(pParagraph->m_arrItems[i]);
-					line += convert(pRun, Event, pDocument, pNumbering, pStyles);
+					line += convert(pRun, pDocument, pNumbering, pStyles);
 				}break;
 				case OOX::et_w_hyperlink:
 				{
@@ -649,7 +621,7 @@ namespace Docx2Txt
 
 						for (size_t j = 0; j < pHyperlink->m_arrItems.size(); ++j)
 						{
-							convert(pHyperlink->m_arrItems, arDisplay, Event, false, pDocument, pNumbering, pStyles);
+							convert(pHyperlink->m_arrItems, arDisplay, false, pDocument, pNumbering, pStyles);
 						}
 						for (size_t j = 0; j < arDisplay.size(); ++j)
 							line += arDisplay[j];
@@ -668,14 +640,16 @@ namespace Docx2Txt
 	std::wstring Converter_Impl::IntToLowerLetter(int number)
 	{
 		number--;
-		static const size_t r = (L'z' - L'a' + 1);
+		if (number < 0) return L"";
+
+        static const size_t r = (L'z' - L'a' + 1);
 		std::wstring res;
 		size_t r0 = number / r;
 
 		if (r0 > 0)
 		{
-			std::wstring rest = IntToLowerLetter(number - r * r0);
-			std::wstring res	= IntToLowerLetter(r0-1) + rest;
+			std::wstring rest = IntToLowerLetter(number - r * r0 + 1);
+            std::wstring res	= IntToLowerLetter(r0 - 1 + 1) + rest;
 			return res;
 		}
 		else
@@ -687,14 +661,16 @@ namespace Docx2Txt
 	std::wstring Converter_Impl::IntToUpperLetter(int number)
 	{
 		number--;
+		if (number < 0) return L"";
+		
 		static const size_t r = (L'Z' - L'A' + 1);
 		std::wstring res;
 		size_t r0 = number / r;
 
 		if (r0 > 0)
 		{
-			std::wstring rest = IntToUpperLetter(number - r * r0);
-			std::wstring res = IntToUpperLetter(r0-1) + rest;
+			std::wstring rest = IntToUpperLetter(number - r * r0 + 1);
+            std::wstring res = IntToUpperLetter(r0 - 1 + 1) + rest;
 			return res;
 		}
 		else

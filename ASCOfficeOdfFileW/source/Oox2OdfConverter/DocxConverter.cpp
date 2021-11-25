@@ -449,7 +449,7 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		case OOX::et_w_tc:
 		{
 			convert(dynamic_cast<OOX::Logic::CTc*>(oox_unknown));
-		}break;
+		}break;		
 		default:
 		{
 			OoxConverter::convert(oox_unknown);
@@ -4283,11 +4283,16 @@ void DocxConverter::convert(OOX::Logic::CCommentRangeStart* oox_comm_start)
 
 	int oox_comm_id = oox_comm_start->m_oId->GetValue();
 
-	bool added = odt_context->start_comment(oox_comm_id);
+	int state = odt_context->start_comment(oox_comm_id);
 
-	if (added == false)
+	if (state > 0)
 	{
 		convert_comment(oox_comm_id);
+
+		//if (state == 2)
+		//{
+		//	odt_context->text_context()->end_element();
+		//}
 	}
 }
 
@@ -4328,12 +4333,17 @@ void DocxConverter::convert(OOX::Logic::CCommentReference* oox_comm_ref)
 
 	int oox_comm_id = oox_comm_ref->m_oId->GetValue();
 
-	bool added = odt_context->start_comment(oox_comm_id);
+	int state = odt_context->start_comment(oox_comm_id);
 
-	if (added == false) // типо тока стартанул
+	if (state > 0) // типо тока стартанул
 	{
 		//значит старт тута а не по RangeStart
 		convert_comment(oox_comm_id);
+
+		if (state == 2)
+		{
+			odt_context->text_context()->end_element();
+		}
 	}
 }
 void DocxConverter::convert(OOX::Logic::CFootnoteReference* oox_ref)
@@ -5321,6 +5331,5 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 
 	return true;
 }
-
 } 
 

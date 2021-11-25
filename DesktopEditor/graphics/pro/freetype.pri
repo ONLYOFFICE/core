@@ -7,6 +7,7 @@ FREETYPE_PATH = $$PWD/../../freetype-$$FREETYPE_VERSION
 
 INCLUDEPATH += \
 	$$OFFICEUTILS_PATH/src/zlib-1.2.11 \
+	$$OFFICEUTILS_PATH/src \
 	$$FREETYPE_PATH/include \
     $$FREETYPE_PATH/include/freetype
 	
@@ -20,7 +21,8 @@ SOURCES += \
     $$OFFICEUTILS_PATH/src/zlib-1.2.11/trees.c \
     $$OFFICEUTILS_PATH/src/zlib-1.2.11/zutil.c \
     $$OFFICEUTILS_PATH/src/zlib-1.2.11/uncompr.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/compress.c
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11/compress.c \
+    $$OFFICEUTILS_PATH/src/zlib_addon.c
 
 SOURCES += \
     $$FREETYPE_PATH/src/autofit/autofit.c \

@@ -123,8 +123,10 @@ namespace odf_writer
 
 		class content_file : public element
 		{
+		private:
+			bool bXmlRootNodeWrite = true;
 		public:
-			void set_content(content_content_ptr & c){content = c;}
+			void set_content(content_content_ptr & c, bool bRootNode = true) { content = c; bXmlRootNodeWrite = bRootNode; }
 			virtual void write(const std::wstring & RootPath, bool add_padding = false);
 			
 			content_content_ptr content;
@@ -203,7 +205,7 @@ namespace odf_writer
 		public:
 			object_files() {}
 			
-			void set_content	(content_content_ptr & _content);
+			void set_content	(content_content_ptr & _content, bool bRootNode = true);
 			
 			void set_styles		(content_simple_ptr & _styles);
 			void set_settings	(content_simple_ptr & _settings);

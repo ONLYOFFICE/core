@@ -387,6 +387,15 @@ namespace BinXlsxRW
 		int ReadPersonList(BYTE type, long length, void* poResult);
 		int ReadPerson(BYTE type, long length, void* poResult);
 	};
+	class BinaryCustomsReader : public Binary_CommonReader
+	{
+		OOX::Spreadsheet::CWorkbook* m_pWorkbook;
+	public:
+		BinaryCustomsReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook* pWorkbook);
+		int Read();
+		int ReadCustom(BYTE type, long length, void* poResult);
+		int ReadCustomContent(BYTE type, long length, void* poResult);
+	};
 	class BinaryFileReader
 	{
 	public: 

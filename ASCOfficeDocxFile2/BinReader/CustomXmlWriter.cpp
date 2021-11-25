@@ -45,7 +45,7 @@ namespace Writers
 		m_nCount++;
 
 		std::wstring sCustomXmlDir = m_sDir + FILE_SEPARATOR_STR;
-		sCustomXmlDir += OOX::FileTypes::CustomXmlProps.DefaultDirectory().GetPath();
+		sCustomXmlDir += OOX::FileTypes::CustomXml.DefaultDirectory().GetPath();
 		
 		std::wstring sCustomXmlRelsDir = sCustomXmlDir + FILE_SEPARATOR_STR + L"_rels";
 		
@@ -54,7 +54,7 @@ namespace Writers
 
 		NSFile::CFileBinary::SaveToFile(sCustomXmlDir + FILE_SEPARATOR_STR + sCustomXMLPropsFilename, sCustomXmlPropertiesContent);
 		OOX::CContentTypes& oContentTypes = *m_pDrawingConverter->GetContentTypes();
-		oContentTypes.Registration( OOX::FileTypes::CustomXmlProps.OverrideType(), OOX::FileTypes::CustomXmlProps.DefaultDirectory(), sCustomXMLPropsFilename );
+		oContentTypes.Registration( OOX::FileTypes::CustomXmlProps.OverrideType(), OOX::FileTypes::CustomXml.DefaultDirectory(), sCustomXMLPropsFilename );
 
 		std::wstring sCustomXmlFilename;
 		sCustomXmlFilename = OOX::FileTypes::CustomXml.DefaultFileName().GetBasename() + std::to_wstring(m_nCount);
@@ -81,7 +81,7 @@ namespace Writers
 		oCustomXMLProps.m_oShemaRefs->m_arrItems.push_back(pShemaRef);
 
 		std::wstring sCustomXmlPropsDir = m_sDir + FILE_SEPARATOR_STR;
-		sCustomXmlPropsDir += OOX::FileTypes::CustomXmlProps.DefaultDirectory().GetPath();
+		sCustomXmlPropsDir += OOX::FileTypes::CustomXml.DefaultDirectory().GetPath();
 		NSDirectory::CreateDirectories(sCustomXmlPropsDir);
 		std::wstring  sCustomXMLPropsFilename = OOX::FileTypes::CustomXmlProps.DefaultFileName().GetBasename();
 		sCustomXMLPropsFilename += std::to_wstring(m_nCount) + OOX::FileTypes::CustomXmlProps.DefaultFileName().GetExtention();

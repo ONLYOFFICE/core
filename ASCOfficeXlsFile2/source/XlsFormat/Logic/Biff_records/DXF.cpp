@@ -52,12 +52,23 @@ BaseObjectPtr DXF::clone()
 
 void DXF::readFields(CFRecord& record)
 {
-	record >> frtRefHeaderU;
-	unsigned short flags;
-	
-	record >> flags >> xfprops;
-	
-	xfprops.fNewBorder = GETBIT(flags, 1);
+    if(record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        record >> frtRefHeaderU;
+        unsigned short flags;
+
+        record >> flags >> xfprops;
+
+        xfprops.fNewBorder = GETBIT(flags, 1);
+    }
+    else
+    {
+        unsigned short flags;
+
+        record >> flags >> xfprops;
+
+        xfprops.fNewBorder = GETBIT(flags, 15);
+    }
 }
 
 int DXF::serialize(std::wostream & stream)

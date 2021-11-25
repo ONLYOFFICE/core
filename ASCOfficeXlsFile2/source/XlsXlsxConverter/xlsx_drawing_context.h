@@ -241,6 +241,7 @@ public:
 	}wordart;
 	
 	bool				bTextBox = false;
+	bool				bCustom = false;
 
 	struct _shadow
 	{

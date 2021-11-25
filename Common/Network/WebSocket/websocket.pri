@@ -1,6 +1,11 @@
-CONFIG += ixwebsocket
-core_mac:CONFIG += socketrocket
-core_ios:CONFIG += socketrocket
+core_mac:CONFIG += apple_platform
+core_ios:CONFIG += apple_platform
+
+apple_platform {
+	CONFIG += socketrocket
+} else {
+	CONFIG += ixwebsocket
+}
 
 HEADERS += \
 	$$PWD/include/websocket.h \
@@ -22,7 +27,9 @@ ixwebsocket {
 
 use_zlib {
     ZLIB_SOURCES = $$PWD/../../../OfficeUtils/src/zlib-1.2.11
-    INCLUDEPATH += $$ZLIB_SOURCES
+    INCLUDEPATH += \
+        $$ZLIB_SOURCES \
+        $$ZLIB_SOURCES/..
     SOURCES += \
         $$ZLIB_SOURCES/adler32.c \
         $$ZLIB_SOURCES/compress.c \
@@ -38,7 +45,8 @@ use_zlib {
         $$ZLIB_SOURCES/inftrees.c \
         $$ZLIB_SOURCES/trees.c \
         $$ZLIB_SOURCES/uncompr.c \
-        $$ZLIB_SOURCES/zutil.c
+        $$ZLIB_SOURCES/zutil.c \
+        $$ZLIB_SOURCES/../zlib_addon.c
 }
 
 socketrocket {

@@ -41,12 +41,9 @@ namespace DocFileFormat
 	class MainDocumentMapping : public DocumentMapping
 	{
 	public:
-		MainDocumentMapping (ConversionContext* ctx, const ProgressCallback* ffCallBack);
+		MainDocumentMapping (ConversionContext* ctx);
 		virtual ~MainDocumentMapping();
+		
 		virtual void Apply (IVisitable* visited);
-
-	private:
-
-		const ProgressCallback* m_ffCallBack;
 	};
 }

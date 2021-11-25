@@ -327,6 +327,10 @@ public:
 	public:
 		CTextFormPr()
 		{
+			m_unMaxCharacters = 0;
+			m_bComb           = false;
+			m_bAutoFit        = false;
+			m_bMultiLine      = false;
 		}
 		void SetTextValue(const std::wstring& wsValue)
 		{
@@ -368,6 +372,14 @@ public:
 		{
 			return m_bMultiLine;
 		}
+		void SetPlaceHolder(const std::wstring& wsPlaceHolder)
+		{
+			m_wsPlaceHolder = wsPlaceHolder;
+		}
+		const std::wstring& GetPlaceHolder() const
+		{
+			return m_wsPlaceHolder;
+		}
 
 	private:
 
@@ -376,12 +388,15 @@ public:
 		bool         m_bComb;
 		bool         m_bAutoFit;
 		bool         m_bMultiLine;
+		std::wstring m_wsPlaceHolder;
 	};
 	class CDropDownFormPr
 	{
 	public:
 		CDropDownFormPr()
-		{}
+		{
+			m_bEditComboBox = false;
+		}
 
 		void SetTextValue(const std::wstring& wsValue)
 		{
@@ -411,18 +426,32 @@ public:
 		{
 			m_vComboBoxItems.push_back(wsItem);
 		}
+		void SetPlaceHolder(const std::wstring& wsPlaceHolder)
+		{
+			m_wsPlaceHolder = wsPlaceHolder;
+		}
+		const std::wstring& GetPlaceHolder() const
+		{
+			return m_wsPlaceHolder;
+		}
 
 	private:
 
 		std::wstring              m_wsTextValue;
 		bool                      m_bEditComboBox;
 		std::vector<std::wstring> m_vComboBoxItems;
+		std::wstring              m_wsPlaceHolder;
 	};
 	class CCheckBoxFormPr
 	{
 	public:
 		CCheckBoxFormPr()
-		{}
+		{
+			m_bChecked          = false;
+			m_unType            = 0;
+			m_unCheckedSymbol   = 0x2612;
+			m_unUncheckedSymbol = 0x2610;
+		}
 		bool IsChecked() const
 		{
 			return m_bChecked;
@@ -430,6 +459,14 @@ public:
 		void SetChecked(const bool& bChecked)
 		{
 			m_bChecked = bChecked;
+		}		
+		unsigned int GetType() const
+		{
+			return m_unType;
+		}
+		void SetType(const unsigned int& unType)
+		{
+			m_unType = unType;
 		}
 		unsigned int GetCheckedSymbol() const
 		{
@@ -479,6 +516,7 @@ public:
 	private:
 
 		bool         m_bChecked;
+		unsigned int m_unType;
 		unsigned int m_unCheckedSymbol;
 		unsigned int m_unUncheckedSymbol;
 		std::wstring m_wsCheckedFont;
@@ -489,7 +527,13 @@ public:
 	{
 	public:
 		CPictureFormPr()
-		{}
+		{
+			m_eScaleType           = EScaleType::Always;
+			m_bRespectBorders      = false;
+			m_bConstantProportions = true;
+			m_lShiftX              = 500;
+			m_lShiftY              = 500;
+		}
 		bool IsConstantProportions() const
 		{
 			return m_bConstantProportions;
@@ -527,13 +571,22 @@ public:
 		{
 			return m_lShiftY;
 		}
+		void SetPicturePath(const std::wstring& wsPath)
+		{
+			m_wsPicturePath = wsPath;
+		}
+		const std::wstring& GetPicturePath() const
+		{
+			return m_wsPicturePath;
+		}
 
 	private:
-		EScaleType m_eScaleType;
-		bool       m_bRespectBorders;
-		bool       m_bConstantProportions;
-		LONG       m_lShiftX;
-		LONG       m_lShiftY;
+		EScaleType   m_eScaleType;
+		bool         m_bRespectBorders;
+		bool         m_bConstantProportions;
+		LONG         m_lShiftX;
+		LONG         m_lShiftY;
+		std::wstring m_wsPicturePath;
 	};
 
 public:
@@ -552,6 +605,13 @@ public:
 		m_bPlaceHolder = false;
 
 		m_nBorderType = 0;
+
+		// 0 - Right
+		// 1 - Left
+		// 2 - Center
+		// 3 - Justify
+		// 4 - Distributed
+		m_nJc = 1;
 
 		m_bHaveShd = false;
 	}
@@ -657,7 +717,14 @@ public:
 		unG = ((m_lShdColor >>  8) & 0xFF);
 		unB = ((m_lShdColor)       & 0xFF);
 	}
-
+	void SetJc(const unsigned char& unJc)
+	{
+		m_nJc = unJc;
+	}
+	BYTE GetJc() const
+	{
+		return m_nJc;
+	}
 
 	bool IsTextField() const
 	{
@@ -726,6 +793,7 @@ private:
 	LONG         m_lBorderColor;
 	bool         m_bHaveShd;
 	LONG         m_lShdColor;
+	BYTE         m_nJc;
 
 	CTextFormPr     m_oTextPr;
 	CDropDownFormPr m_oDropDownPr;

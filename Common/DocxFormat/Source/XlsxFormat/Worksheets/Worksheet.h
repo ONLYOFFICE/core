@@ -74,6 +74,9 @@ namespace OOX
 			CWorksheet(OOX::Document* pMain);
 			CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId);
 			virtual ~CWorksheet();
+
+            void readBin(const CPath& oPath);
+
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. instead use read(const CPath& oRootPath, const CPath& oFilePath)

@@ -29,8 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <string>
-
 #include "TxtXmlFile.h"
 
 #include "ConvertDocx2Txt.h"
@@ -61,15 +59,6 @@ namespace NSBinPptxRW
 
 CTxtXmlFile::CTxtXmlFile()
 {
-}
-
-
-bool CTxtXmlFile::Progress(long ID, long Percent)
-{
-    SHORT res = 0;
-    m_lPercent = Percent;
-    //OnProgressEx(ID, Percent, &res); todooo out event
-    return (res != 0);
 }
 
 static int ParseTxtOptions(const std::wstring & sXmlOptions)
@@ -117,13 +106,10 @@ _UINT32 CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
 	{
 		int encoding  = ParseTxtOptions(sXMLOptions);
 
-		Progress(0, 0);
 		Txt2Docx::Converter converter( encoding);
         converter.read(sSrcFileName);
-		Progress(0, 100000);
-		converter.convert(*this);
+		converter.convert();
 		converter.write(pDocxWriter->get_document_writer().m_oContent);
-		Progress(0, 1000000);
 	}
 	catch(...)
 	{
@@ -143,11 +129,9 @@ _UINT32 CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std
 {
 	try
 	{
-		Progress(0, 0);
 		Docx2Txt::Converter converter;
         converter.read(sSrcPath);
-		Progress(0, 100000);
-		converter.convert(*this);
+		converter.convert();
 
 		int encoding  = ParseTxtOptions(sXMLOptions);
 		
@@ -165,8 +149,6 @@ _UINT32 CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std
 		}
 		else //auto define
             converter.write(sDstFileName);
-
-		Progress(0, 1000000);
 	}
 	catch(...)
 	{

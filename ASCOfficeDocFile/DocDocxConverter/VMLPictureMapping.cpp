@@ -427,7 +427,8 @@ namespace DocFileFormat
 				}break;
 			case ODRAW::posrelh:
 				{
-					appendStyleProperty(strStyle, L"mso-position-horizontal-relative", VMLShapeMapping::mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
+					if (false == m_inGroup)
+						appendStyleProperty(strStyle, L"mso-position-horizontal-relative", VMLShapeMapping::mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
 				}break;
 			case ODRAW::posv:
 				{
@@ -435,6 +436,7 @@ namespace DocFileFormat
 				}break;
 			case ODRAW::posrelv:
 				{
+				if (false == m_inGroup)
 					appendStyleProperty(strStyle, L"mso-position-vertical-relative", VMLShapeMapping::mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
 				}break;
 			case ODRAW::groupShapeBooleanProperties:

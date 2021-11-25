@@ -58,7 +58,8 @@ BiffStructurePtr SerBool::clone()
 void SerBool::load(CFRecord& record)
 {
 	record >> f;
-	record.skipNunBytes(7); // reserved/unused
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        record.skipNunBytes(7); // unused
 }
 
 

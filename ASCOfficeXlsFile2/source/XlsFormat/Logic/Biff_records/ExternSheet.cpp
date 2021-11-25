@@ -71,17 +71,28 @@ void ExternSheet::readFields(CFRecord& record)
 		//	record.getGlobalWorkbookInfo()->arExternalNames.push_back(name);
 
 	}
-	else
+    else if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{
-		record >> cXTI;
-		for(int i = 0; i < cXTI; ++i)
+        _UINT16 cXTI_2b;
+        record >> cXTI_2b;
+        for(int i = 0; i < cXTI_2b; ++i)
 		{
 			XTIPtr xti(new XTI);
 			record >> *xti;
 			rgXTI.push_back(xti);
 		}
+        cXTI = cXTI_2b;
 	}
+    else
+    {
+        record >> cXTI;
+        for(int i = 0; i < cXTI; ++i)
+        {
+            XTIPtr xti(new XTI);
+            record >> *xti;
+            rgXTI.push_back(xti);
+        }
+    }
 }
 
 } // namespace XLS
-

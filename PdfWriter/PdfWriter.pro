@@ -59,12 +59,14 @@ HEADERS += \
     Src/Consts.h \
     Src/Destination.h \
     Src/Document.h \
+    Src/Encodings.h \
     Src/Encrypt.h \
     Src/EncryptDictionary.h \
     Src/Field.h \
     Src/Font.h \
     Src/Font14.h \
     Src/FontCidTT.h \
+    Src/FontTT.h \
     Src/FontTTWriter.h \
     Src/GState.h \
     Src/Image.h \
@@ -95,6 +97,7 @@ SOURCES += \
     Src/Font.cpp \
     Src/Font14.cpp \
     Src/FontCidTT.cpp \
+    Src/FontTT.cpp \
     Src/FontTTWriter.cpp \
     Src/GState.cpp \
     Src/Image.cpp \

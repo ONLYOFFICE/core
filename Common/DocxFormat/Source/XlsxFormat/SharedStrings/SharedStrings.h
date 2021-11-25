@@ -32,10 +32,23 @@
 #pragma once
 
 #include "../Xlsx.h"
+#include "../../XlsbFormat/Xlsb.h"
 #include "../CommonInclude.h"
 
 #include "Si.h"
 #include <map>
+#include <thread>
+#include <algorithm>
+
+#include "../../XlsbFormat/SharedStringsStream.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
+
+#include "../../XlsbFormat/Biff12_records/BeginSst.h"
+#include "../../XlsbFormat/Biff12_unions/SHAREDSTRINGS.h"
+#include "../Styles/Styles.h"
 
 namespace OOX
 {
@@ -68,6 +81,42 @@ namespace OOX
 			{
 				ClearItems();
 			}
+
+            void readBin(const CPath& oPath)
+            {
+                CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+                if (xlsb)
+                {
+                    XLSB::SharedStringsStreamPtr sharedStringsStream = std::make_shared<XLSB::SharedStringsStream>();
+
+                    xlsb->ReadBin(oPath, sharedStringsStream.get());
+
+                    if (sharedStringsStream != nullptr)
+                    {
+                        auto ptr = static_cast<XLSB::SHAREDSTRINGS*>(sharedStringsStream->m_SHAREDSTRINGS.get());
+                        if (ptr != nullptr)
+                        {
+                            ReadAttributes(ptr->m_BrtBeginSst);
+
+                            for(auto &sstItem : ptr->m_arBrtSSTItem)
+                            {
+                                CSi* pItem = new CSi();
+                                auto ptr = static_cast<XLSB::SSTItem*>(sstItem.get());
+                                if(ptr != nullptr)
+                                {
+                                    pItem->fromBin(ptr->richStr);
+                                }
+                                m_arrItems.push_back(pItem);
+                                m_nCount++;
+                            }
+
+                        }
+
+                    }
+                }
+
+            }
+
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -78,6 +127,12 @@ namespace OOX
 			{
 				m_oReadPath = oPath;
 				IFileContainer::Read( oRootPath, oPath );
+
+                if( m_oReadPath.GetExtention() == _T(".bin"))
+                {
+                    readBin(m_oReadPath);
+                    return;
+                }
 
 				XmlUtils::CXmlLiteReader oReader;
 
@@ -90,8 +145,8 @@ namespace OOX
 						return;
 				}
 
-				if ( !oReader.ReadNextNode() )
-					return;
+                if ( !oReader.ReadNextNode() )
+                    return;
 
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("sst") == sName )
@@ -176,9 +231,20 @@ namespace OOX
 			{
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_Read_if ( oReader, _T("count"),		m_oCount )
-					WritingElement_ReadAttributes_Read_if ( oReader, _T("uniqueCount"),	m_oUniqueCount )
+                    WritingElement_ReadAttributes_Read_if ( oReader, _T("uniqueCount"),	m_oUniqueCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BeginSst*>(obj.get());
+
+                if(ptr != nullptr)
+                {
+                    m_oCount        = ptr->cstTotal;
+                    m_oUniqueCount  = ptr->cstUnique;
+                }
+
+            }
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;

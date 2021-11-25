@@ -33,6 +33,7 @@
 
 #include "OperandPtg.h"
 #include "BitMarkedStructs.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRef.h"
 
 namespace XLS
 {
@@ -52,8 +53,12 @@ public:
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
 
 	static const unsigned short fixed_id = 0x04;
+
 private:
-	RgceLoc loc;
+    RgceLoc loc;
+    XLSB::RgceLoc loc_xlsb;
+
+    GlobalWorkbookInfoPtr	global_info;
 };
 
 } // namespace XLS

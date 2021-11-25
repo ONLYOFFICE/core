@@ -38,6 +38,7 @@
 
 namespace XLS
 {
+// Logical representation of SortData record in BIFF8 and BrtBeginSortState record in BIFF12
 
 class SortData: public BiffRecordContinued
 {

@@ -328,7 +328,7 @@ void TxBodyConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRu
         if (val > 0)
             pSpcBef->spcPts = round(12.5 * pPF->spaceBefore.get());
         else if (val < 0 && val > -13200)
-            pSpcBef->spcPts = val * -1000;
+            pSpcBef->spcPct = val * -1000;
 
         oPPr.spcBef = pSpcBef;
     }

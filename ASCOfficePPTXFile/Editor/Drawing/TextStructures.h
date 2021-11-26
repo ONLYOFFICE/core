@@ -122,7 +122,10 @@ namespace PPT_FORMAT
     {
     public:
         std::wstring tmpImagePath;
-        WORD bulletBlipRef;
+        SHORT bulletBlipRef;
+
+        bool hasRef()const
+        {return  bulletBlipRef != -1;}
     };
 
 	class CFontProperties

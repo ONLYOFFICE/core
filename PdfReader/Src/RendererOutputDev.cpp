@@ -1179,14 +1179,25 @@ namespace PdfReader
                     wsFileName = pFontInfo->m_wsFontPath;
                     eFontType  = pFont->isCIDFont() ? fontCIDType2 : fontTrueType;
 
+                    if (pFont->isBold())
+                        std::cout << "1";
+                    if (pFont->isItalic())
+                        std::cout << "2";
+
                 #ifdef BUILDING_WASM_MODULE
                     BYTE nStatus = 0;
                     NSWasm::CData oRes;
                     oRes.SkipLen();
                     std::string sNameA = U_TO_UTF8(pFontInfo->m_wsFontName);
                     oRes.WriteString((unsigned char*)sNameA.c_str(), (unsigned int)sNameA.length());
-                    oRes.AddInt(pFontInfo->m_bBold ? 1 : 0);
-                    oRes.AddInt(pFontInfo->m_bItalic ? 1 : 0);
+                    if (pFontInfo->m_bBold)
+                        oRes.AddInt(1);
+                    else
+                        oRes.AddInt(0);
+                    if (pFontInfo->m_bItalic)
+                        oRes.AddInt(1);
+                    else
+                        oRes.AddInt(0);
                     oRes.WriteLen();
                     char* pFontId = js_get_stream_id(oRes.GetBuffer(), &nStatus);
                     if (!nStatus)

@@ -52,6 +52,7 @@
 #include "../../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../../DesktopEditor/common/File.h"
+/*
 #include "emscripten.h"
 EM_JS(char*, _js_get_stream_id, (unsigned char* data, unsigned char* status), {
     return self.AscViewer.CheckStreamId(data, status);
@@ -60,6 +61,7 @@ EM_JS(int, _js_free_id, (unsigned char* data), {
     self.AscViewer.Free(data);
     return 1;
 });
+*/
 #endif
 
 #if MULTITHREADED
@@ -2344,11 +2346,13 @@ void GlobalParams::setupBaseFonts(const char *dir) {
     oRes.AddInt(sNameA.find("Bold") != std::wstring::npos ? 1 : 0);
     oRes.AddInt(sNameA.find("Oblique") != std::wstring::npos || sNameA.find("Italic") != std::wstring::npos ? 1 : 0);
     oRes.WriteLen();
+    /*
     char* pFontId = _js_get_stream_id(oRes.GetBuffer(), &nStatus);
     if (!nStatus)
     {
         // шрифт не загружен
         _js_free_id((unsigned char*)pFontId);
+        delete fontName;
         continue;
     }
     else
@@ -2361,10 +2365,12 @@ void GlobalParams::setupBaseFonts(const char *dir) {
         else
         {
             _js_free_id((unsigned char*)pFontId);
+            delete fontName;
             continue;
         }
     }
     _js_free_id((unsigned char*)pFontId);
+    */
 #endif
 #ifdef _WIN32
     s = displayFontTab[i].ttFileName;

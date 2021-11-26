@@ -1125,9 +1125,12 @@ namespace PdfReader
 							Stream* pStream = oTemp.GetStream();
 							pStream->Reset();
 
-							Object oFilter;
+							Object oFilter, oTempArray;
+							Array* pArray = NULL;
 							pStreamDict->Search("Filter", &oFilter);
-							if (oFilter.IsNull() || oFilter.IsName("FlateDecode"))
+							if (oFilter.IsNull()
+								|| oFilter.IsName("FlateDecode")
+								|| (oFilter.IsArray() && (pArray = oFilter.GetArray()) && 1 == pArray->GetCount() && pArray->Get(0, &oTempArray) && oTempArray.IsName("FlateDecode")))
 							{
 								int nChar;
 								while (EOF != (nChar = pStream->GetChar()))

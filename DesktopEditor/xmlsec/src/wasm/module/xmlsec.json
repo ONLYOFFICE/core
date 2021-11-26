@@ -31,7 +31,7 @@
 		"_XmlSignature_Sign"
 	],
 	"include_path": [
-		"./xml/libxml2/include", "./xml/libxml2/include/libxml", "./xml/build/qt", "../../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip", "../../../../../OfficeUtils/src/zlib-1.2.11", "openssl/include", "openssl", "emsdk/node/14.15.5_64bit/include/node/openssl/archs/linux-x86_64/no-asm/include"
+		"./xml/libxml2/include", "./xml/libxml2/include/libxml", "./xml/build/qt", "../../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip", "../../../../../OfficeUtils/src/zlib-1.2.11", "../../../../../OfficeUtils/src", "openssl/include", "openssl", "emsdk/node/14.15.5_64bit/include/node/openssl/archs/linux-x86_64/no-asm/include"
 	],
 	"define": [
 		"HAVE_VA_COPY", "LIBXML_READER_ENABLED", "LIBXML_PUSH_ENABLED", "LIBXML_HTML_ENABLED", "LIBXML_XPATH_ENABLED", "LIBXML_OUTPUT_ENABLED", "LIBXML_C14N_ENABLED", "LIBXML_SAX1_ENABLED", "LIBXML_TREE_ENABLED", "LIBXML_XPTR_ENABLED", "IN_LIBXML", "LIBXML_STATIC", "BUILD_ZLIB_AS_SOURCES", "__linux__", "_LINUX"
@@ -50,7 +50,7 @@
 	{
 		"name": "of",
 		"folder": "../../../../../OfficeUtils/src/",
-		"files": ["OfficeUtils.cpp", "ZipBuffer.cpp", "ZipUtilsCP.cpp"]
+		"files": ["OfficeUtils.cpp", "ZipBuffer.cpp", "ZipUtilsCP.cpp", "zlib_addon.c"]
 	},
 	{
 		"name": "mz",

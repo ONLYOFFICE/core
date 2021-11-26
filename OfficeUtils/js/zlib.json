@@ -29,7 +29,7 @@
 		"_Zlib_GetFile",
 		"_Zlib_Save"
 	],
-	"include_path": ["../src/zlib-1.2.11"],
+	"include_path": ["../src/zlib-1.2.11", "../src"],
 	"define": ["__linux__"],
 	"compile_files_array": [
 	{
@@ -45,7 +45,7 @@
 	{
 		"name": "s",
 		"folder": "./",
-		"files": ["../src/ZipBuffer.cpp", "wasm/src/base.cpp"]
+		"files": ["../src/ZipBuffer.cpp", "wasm/src/base.cpp", "../src/zlib_addon.c"]
 	}
 	]
 }

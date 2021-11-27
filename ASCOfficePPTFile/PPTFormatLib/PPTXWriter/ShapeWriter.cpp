@@ -1416,6 +1416,15 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     }
                     m_oWriter.WriteString(L"/>");
                 }
+                if (pPF->bulletBlip.is_init() && pPF->bulletBlip->tmpImagePath.size())
+                {
+                    auto strRID = m_pRels->WriteImage(pPF->bulletBlip->tmpImagePath);
+                    if (strRID.empty())
+                        break;
+                    m_oWriter.WriteString(L"<a:buBlip><a:blip r:embed=\"");
+                    m_oWriter.WriteString(strRID);
+                    m_oWriter.WriteString(L"\"/></a:buBlip>");
+                }
 
                 bool set = true;
                 if (pPF->bulletFontProperties.is_init() == false && pPF->bulletSize.is_init() == false)
@@ -1436,12 +1445,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
                 if (!set)
                 {
-                    if (pPF->hasBullet.is_init() && *(pPF->hasBullet) && !pPF->bulletChar.is_init())
-                    {
-                        m_oWriter.WriteString(L"<a:buAutoNum type=\"");
-                        m_oWriter.WriteString(L"arabicPeriod");
-                        m_oWriter.WriteString(L"\"/>");
-                    } else
+                    if (pPF->hasBullet.is_init() && *(pPF->hasBullet))
                     {
                         wchar_t bu = 0x2022;
                         m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));

@@ -109,6 +109,7 @@ HEADERS += \
     ../Records/Animations/VisualShapeGeneralAtom.h \
     ../Records/Animations/VisualSoundAtom.h \
     ../Records/Animations/_includer.h \
+    ../Records/BlipCollection9Container.h \
     ../Records/BlipEntityAtom.h \
     ../Records/BookmarkEntityAtom.h \
     ../Records/BookmarkSeedAtom.h \
@@ -293,4 +294,5 @@ SOURCES += \
     ../PPTXWriter/TableWriter.cpp \
     ../PPTXWriter/TxBodyConverter.cpp \
     ../Reader/RoundTripExtractor.cpp \
-    ../Records/Animations/TimeVariant.cpp
+    ../Records/Animations/TimeVariant.cpp \
+    ../Records/BlipEntityAtom.cpp

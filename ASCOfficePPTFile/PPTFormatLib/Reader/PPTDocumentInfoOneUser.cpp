@@ -1094,7 +1094,7 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
                 CElementPtr pElement = pShapeGroup->GetElement(m_current_level > 1, &m_oExMedia, pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
 
                 CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
-
+                LoadBulletBlip(pShape);
                 if (NULL != pElement)
                 {
                     pElement->m_pParentElements = pParentElements;
@@ -2597,6 +2597,39 @@ void CPPTUserInfo::LoadAutoNumbering(CRecordGroupShapeContainer *pGroupContainer
                 }
             }
 
+        }
+    }
+}
+
+void CPPTUserInfo::LoadBulletBlip(CShapeElement *pShape)
+{
+    if (pShape == nullptr || pShape->m_pShape == nullptr) return;
+    std::vector<CRecordDocInfoListContainer*> arrDocInfoCont;
+    m_oDocument.GetRecordsByType(&arrDocInfoCont, false, true);
+
+    if (arrDocInfoCont.empty())
+        return;
+    auto& arrPars = pShape->m_pShape->m_oText.m_arParagraphs;
+
+    // TODO need to find BlipEntity;
+    IRecord* pRecPPT9 = arrDocInfoCont[0]->getDocBinaryTagExtension(___PPT9);
+    auto* pProgBinaryTag = dynamic_cast<CRecordPP9DocBinaryTagExtension*>(pRecPPT9);
+    if (pProgBinaryTag == nullptr || !pProgBinaryTag->m_blipCollectionContainer.is_init())
+        return;
+
+    const auto& arrBlipEntity = pProgBinaryTag->m_blipCollectionContainer.get().m_rgBlipEntityAtom;
+    if(arrBlipEntity.empty())
+        return;
+
+    for (auto& par : arrPars)
+    {
+        if (par.m_oPFRun.bulletBlip.IsInit())
+        {
+            auto& buBlip = par.m_oPFRun.bulletBlip.get();
+            if (buBlip.bulletBlipRef >= 0 && (UINT)buBlip.bulletBlipRef < arrBlipEntity.size())
+            {
+                buBlip.tmpImagePath = arrBlipEntity[buBlip.bulletBlipRef]->getTmpImgPath();
+            }
         }
     }
 }

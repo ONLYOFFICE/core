@@ -118,6 +118,16 @@ namespace PPT_FORMAT
 
     };
 
+    class CBulletBlip
+    {
+    public:
+        std::wstring tmpImagePath;
+        SHORT bulletBlipRef;
+
+        bool hasRef()const
+        {return  bulletBlipRef != -1;}
+    };
+
 	class CFontProperties
 	{
 	public:
@@ -218,7 +228,7 @@ namespace PPT_FORMAT
 			if (!eaFontRef.is_init())		eaFontRef = oSrc.eaFontRef;
 			if (!ansiFontRef.is_init())		ansiFontRef = oSrc.ansiFontRef;
 			if (!symbolFontRef.is_init())	symbolFontRef = oSrc.symbolFontRef;
-
+            if (!pp9rt.is_init())           pp9rt = oSrc.pp9rt;
 			if (!BaseLineOffset.is_init())	BaseLineOffset = oSrc.BaseLineOffset;
 			if (!Color.is_init())			Color = oSrc.Color;
 			if (!Size.is_init())			Size = oSrc.Size;
@@ -237,8 +247,9 @@ namespace PPT_FORMAT
 			if (oSrc.FontItalic.is_init())			FontItalic = oSrc.FontItalic;
 			if (oSrc.FontUnderline.is_init())		FontUnderline = oSrc.FontUnderline;
 			if (oSrc.FontStrikeout.is_init())		FontStrikeout = oSrc.FontStrikeout;
-			if (oSrc.FontShadow.is_init())			FontShadow = oSrc.FontShadow;
-			
+            if (oSrc.FontShadow.is_init())			FontShadow = oSrc.FontShadow;
+            if (oSrc.pp9rt.is_init())               pp9rt = oSrc.pp9rt;
+
 			bool bFontRefSetUp = false;
 			if (oSrc.fontRef.is_init())
 			{
@@ -248,8 +259,10 @@ namespace PPT_FORMAT
 			if (oSrc.eaFontRef.is_init())		eaFontRef = oSrc.eaFontRef;
 			if (oSrc.ansiFontRef.is_init())		ansiFontRef = oSrc.ansiFontRef;
 			if (oSrc.symbolFontRef.is_init())	symbolFontRef = oSrc.symbolFontRef;
-			if (oSrc.BaseLineOffset.is_init())	BaseLineOffset = oSrc.BaseLineOffset;
-			if (oSrc.Color.is_init())			Color = oSrc.Color;
+            if (oSrc.BaseLineOffset.is_init())	BaseLineOffset = oSrc.BaseLineOffset;
+            if (oSrc.pp9rt.is_init())           pp9rt = oSrc.pp9rt;
+
+            if (oSrc.Color.is_init())			Color = oSrc.Color;
 			if (oSrc.Size.is_init())			Size = oSrc.Size;
 			if (oSrc.Cap.is_init())				Cap = oSrc.Cap;
 			if (oSrc.Language.is_init())		Language = oSrc.Language;
@@ -278,8 +291,9 @@ namespace PPT_FORMAT
 		NSCommon::nullable_base<WORD>			bulletSize;
 		NSCommon::nullable_base<WCHAR>			bulletChar;
 		NSCommon::nullable_base<CColor>			bulletColor;
-                NSCommon::nullable_base<CFontProperty>          bulletFontProperties;
-                NSCommon::nullable_base<CBulletAutoNum>         bulletAutoNum;
+        NSCommon::nullable_base<CFontProperty>  bulletFontProperties;
+        NSCommon::nullable_base<CBulletAutoNum> bulletAutoNum;
+        NSCommon::nullable_base<CBulletBlip>    bulletBlip;
 
 		NSCommon::nullable_base<WORD>			textAlignment;
 		NSCommon::nullable_base<LONG>			lineSpacing;
@@ -946,6 +960,7 @@ namespace PPT_FORMAT
 					return false;
 			}
 			return true;
-		}
-	};
+        }
+    };
+
 }

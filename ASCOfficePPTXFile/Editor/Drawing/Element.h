@@ -77,6 +77,8 @@ public:
     std::vector<CInteractiveInfo>	m_arrActions;
     std::vector<CInteractiveInfo>   m_textHyperlinks;
 
+    std::vector<CBulletBlip>        m_arrBlip;
+
     CAnimationInfo		m_oAnimations;
     CEffects			m_oEffects;
 

@@ -856,5 +856,8 @@
     <ClCompile Include="..\Reader\RoundTripExtractor.cpp">
       <Filter>Reader</Filter>
     </ClCompile>
+    <ClCompile Include="..\Records\BlipEntityAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -946,6 +946,12 @@ bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const s
 
 	if (pStream)
 	{
+		if (pStream->fail())
+		{
+			delete pStream;
+			delete pStorage;
+			return false;
+		}
 		_UINT16 VersionInfoMajor = 0, VersionInfoMinor = 0;
 		
 		pStream->read((unsigned char*)&VersionInfoMajor, 2);
@@ -963,6 +969,7 @@ bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const s
 			return false;
 		}
 		nEncryptionInfoSize = pStream->read(byteEncryptionInfo, nEncryptionInfoSize);
+		
 		delete pStream;
 
 		if (VersionInfoMajor == 0x0004 && VersionInfoMinor == 0x0004)

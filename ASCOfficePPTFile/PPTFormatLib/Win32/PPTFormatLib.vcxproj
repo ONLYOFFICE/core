@@ -507,6 +507,7 @@
     <ClCompile Include="..\Reader\RoundTripExtractor.cpp" />
     <ClCompile Include="..\Reader\SlidePersist.cpp" />
     <ClCompile Include="..\Records\Animations\TimeVariant.cpp" />
+    <ClCompile Include="..\Records\BlipEntityAtom.cpp" />
     <ClCompile Include="..\Records\Drawing\ArtBlip.cpp" />
     <ClCompile Include="..\Records\Drawing\ShapeContainer.cpp" />
   </ItemGroup>

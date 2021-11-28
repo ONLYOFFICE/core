@@ -287,6 +287,8 @@ namespace NExtractTools
 			{
 				if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
 					return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
+				else if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO)
+					return mitcrypt2oot_bin(sFrom, sTo, sTemp, params);
 				else
 				{
 					if (create_if_empty(sFrom, sTo, L"DOCY;v10;0;"))
@@ -715,6 +717,8 @@ namespace NExtractTools
 						return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
 					}					
 				}
+				else if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO)
+					return mitcrypt2oot_bin(sFrom, sTo, sTemp, params);
 				else
 				{
 					if (create_if_empty(sFrom, sTo, L"XLSY;v10;0;"))
@@ -1146,6 +1150,8 @@ namespace NExtractTools
 			{
 				if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO)
 					return mscrypt2oot_bin(sFrom, sTo, sTemp, params);
+				else if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO)
+					return mitcrypt2oot_bin(sFrom, sTo, sTemp, params);
 				else
 				{
 					if (create_if_empty(sFrom, sTo, L"PPTY;v10;0;"))
@@ -2994,6 +3000,11 @@ namespace NExtractTools
 
 		return 0;
 	}
+	_UINT32 mitcrypt2oox	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+		//todo
+		return AVS_FILEUTILS_ERROR_CONVERT_DRM_UNSUPPORTED;
+	}
 	_UINT32 mscrypt2oot_bin	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
 		//decrypt to temp file
@@ -3065,6 +3076,12 @@ namespace NExtractTools
 		}
 		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
+	_UINT32 mitcrypt2oot_bin	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+		//todo
+		return AVS_FILEUTILS_ERROR_CONVERT_DRM_UNSUPPORTED;
+	}
+
 	_UINT32 oox2mscrypt	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
 		std::wstring password	= params.getSavePassword();
@@ -3135,6 +3152,12 @@ namespace NExtractTools
         }
         return nRes;
 	}
+	_UINT32 fromMitcrypt (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+		//todo
+		return AVS_FILEUTILS_ERROR_CONVERT_DRM_UNSUPPORTED;
+	}
+
 	//html
 	_UINT32 html_array2docx_dir (const std::vector<std::wstring> &arFiles, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
@@ -4030,6 +4053,8 @@ namespace NExtractTools
 									params.m_sPassword = new std::wstring(sOldPassword);
 							}
 						}
+						else if (OfficeFileFormatChecker.nFileType == AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO)
+							nRes = mitcrypt2oox(sFrom, sTo, sTemp, params);
 					}
 				}
            }
@@ -5088,8 +5113,12 @@ namespace NExtractTools
 				result = mscrypt2oot (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_MSCRYPT2BIN:
-				result =  mscrypt2oot_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
 			{
+				result =  mscrypt2oot_bin (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_MITCRYPT2:
+			{
+				result =  fromMitcrypt (sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_HTML2DOCX:
 			{

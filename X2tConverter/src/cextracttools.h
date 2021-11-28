@@ -193,6 +193,8 @@ namespace NExtractTools
 		TCD_MSCRYPT2_RAW,
 		TCD_2MSCRYPT_RAW,
 
+		TCD_MITCRYPT2,
+
 //
 		TCD_HTML2DOCX,
 		TCD_HTML2DOCT,
@@ -839,6 +841,8 @@ namespace NExtractTools
                     eRes = TCD_CANVAS_PDF2;
 				else if(AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
 					eRes = TCD_MSCRYPT2;
+				else if(AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO == nFormatFrom)
+					eRes = TCD_MITCRYPT2;
                 else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
                     eRes = TCD_UNZIPDIR;
                 else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)

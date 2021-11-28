@@ -1086,10 +1086,6 @@ namespace NExtractTools
             else
                 m_sFileTo->append(FileFormatChecker.GetExtensionByType(toFormat));
           }
-          else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == toFormat)
-          {
-              toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-          }
           *m_nFormatTo = toFormat;
         }
         bool getDontSaveAdditional() const

@@ -109,9 +109,9 @@ namespace MetaFile
                 void ArcTo(int nL, int nT, int nR, int nB, double dStart, double dSweep);
 
                 void DrawPath(bool bStroke, bool bFill);
-                void DrawText(std::wstring &wsString, unsigned int unCharsCount, int _nX, int _nY, int *pnDx, int iGraphicsMode);
-                void DrawTextA(TEmfEmrText &oText, int iGraphicsMode);
-                void DrawTextW(TEmfEmrText &oText, int iGraphicsMode);
+                void DrawText(std::wstring &wsString, unsigned int unCharsCount, int _nX, int _nY, int *pnDx, int iGraphicsMode, TEmfScale oScale);
+                void DrawTextA(TEmfEmrText &oText, int iGraphicsMode, TEmfScale oScale = TEmfScale(1, 1));
+                void DrawTextW(TEmfEmrText &oText, int iGraphicsMode, TEmfScale oScale = TEmfScale(1, 1));
 
                 CEmfDC*     GetDC();
                 TEmfRectL*  GetBounds();

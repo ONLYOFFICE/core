@@ -413,7 +413,8 @@ namespace MetaFile
                 }
         }
 
-        void CEmfParserBase::DrawText(std::wstring &wsString, unsigned int unCharsCount, int _nX, int _nY, int *pnDx, int iGraphicsMode)
+        void CEmfParserBase::DrawText(std::wstring &wsString, unsigned int unCharsCount, int _nX, int _nY,
+                                      int *pnDx, int iGraphicsMode, TEmfScale oScale)
         {
                 int nX = _nX;
                 int nY = _nY;
@@ -450,14 +451,14 @@ namespace MetaFile
                                 }
                         }
 
-                        m_pInterpretator->DrawString(wsString, unCharsCount, dX, dY, pdDx, iGraphicsMode);
+                        m_pInterpretator->DrawString(wsString, unCharsCount, dX, dY, pdDx, iGraphicsMode, oScale.dX, oScale.dY);
 
                         if (pdDx)
                                 delete[] pdDx;
                 }
         }
 
-        void CEmfParserBase::DrawTextA(TEmfEmrText &oText, int iGraphicsMode)
+        void CEmfParserBase::DrawTextA(TEmfEmrText &oText, int iGraphicsMode, TEmfScale oScale)
         {
                 if (!oText.OutputString)
                         return SetError();
@@ -532,13 +533,13 @@ namespace MetaFile
                         }
                 }
 
-                DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, pDx, iGraphicsMode);
+                DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, pDx, iGraphicsMode, oScale);
 
                 if (pDx)
                         delete[] pDx;
         }
 
-        void CEmfParserBase::DrawTextW(TEmfEmrText &oText, int iGraphicsMode)
+        void CEmfParserBase::DrawTextW(TEmfEmrText &oText, int iGraphicsMode, TEmfScale oScale)
         {
                 if (!oText.OutputString)
                     return SetError();
@@ -602,7 +603,7 @@ namespace MetaFile
                 }
 
                 if (unLen)
-                        DrawText(wsText, unLen, oText.Reference.x, oText.Reference.y, pDx, iGraphicsMode);
+                        DrawText(wsText, unLen, oText.Reference.x, oText.Reference.y, pDx, iGraphicsMode, oScale);
 
                 if (pDx)
                         delete[] pDx;
@@ -1416,7 +1417,10 @@ namespace MetaFile
                         m_pInterpretator->HANDLE_EMR_EXTTEXTOUTW(oTEmfExtTextoutW);
 
                 if (oTEmfExtTextoutW.wEmrText.Chars > 0)
-                        DrawTextW(oTEmfExtTextoutW.wEmrText, oTEmfExtTextoutW.iGraphicsMode);
+                {
+                        TEmfScale oScale(oTEmfExtTextoutW.exScale, oTEmfExtTextoutW.eyScale);
+                        DrawTextW(oTEmfExtTextoutW.wEmrText, oTEmfExtTextoutW.iGraphicsMode, oScale);
+                }
         }
 
         void CEmfParserBase::HANDLE_EMR_LINETO(TEmfPointL &oPoint)

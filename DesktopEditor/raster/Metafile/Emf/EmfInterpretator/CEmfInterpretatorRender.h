@@ -19,7 +19,8 @@ namespace MetaFile
 
                 void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
 
-                void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx, int iGraphicsMode = 1) override;
+                void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
+                                int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override;
 
                 void StartPath() override;
                 void MoveTo(double dX, double dY) override;

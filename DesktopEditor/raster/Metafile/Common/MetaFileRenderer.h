@@ -207,7 +207,7 @@ namespace MetaFile
 
 			m_pRenderer->DrawImage(&oImage, dImageX, dImageY, dImageW, dImageH);
 		}
-		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode)
+		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode, double dXScale, double dYScale)
 		{
 			CheckEndPath();
 			IFont* pFont = m_pFile->GetFont();
@@ -249,8 +249,8 @@ namespace MetaFile
 			double dM11, dM12, dM21, dM22, dRx, dRy;
 			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
-			if (dM22 > 0)
-			    dSinTheta *= -1;
+			if (dM11 * dM22 > 0)
+				dSinTheta = -dSinTheta;
 
 			float fL = 0, fT = 0, fW = 0, fH = 0;
 			float fUndX1 = 0, fUndY1 = 0, fUndX2 = 0, fUndY2 = 0, fUndSize = 1;
@@ -321,7 +321,6 @@ namespace MetaFile
 				fUndX1 = fL;
 				fUndX2 = fL + fW;
 
-
 				fT = (float)-dFAscent;
 				fH = (float)dFHeight;
 			}
@@ -378,14 +377,12 @@ namespace MetaFile
 
 			if (iGraphicsMode == GM_COMPATIBLE)
 			{
-				// В данной ситуации матрица преобразования должна быть диагональной, в ней могут быть только отражения,
-				// которые в данном случае нужно проправить
-
 				double dShiftX = 0;
 				double dShiftY = 0;
 
-				// Нам нужно знать в следствие чего происходит флип, из-за Window или Viewport
-				if (dM11 < -0.00001)
+				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+
+				if (dXScale < -0.00001)
 				{
 					dX += fabs(fW);
 
@@ -397,9 +394,11 @@ namespace MetaFile
 					{
 						dShiftX = (2 * dX - fabs(fW)) * dM11;
 					}
+
+					dM11 = fabs(dM11);
 				}
 
-				if (dM22 < - 0.00001)
+				if (dYScale < -0.00001)
 				{
 					if (m_pFile->IsWindowFlippedY())
 					{
@@ -409,10 +408,12 @@ namespace MetaFile
 					{
 						dShiftY = (2 * dY) * dM22;
 					}
+
+					dM22 = fabs(dM22);
 				}
 
 				m_pRenderer->ResetTransform();
-				m_pRenderer->SetTransform(fabs(dM11), 0, 0, fabs(dM22), dShiftX + dRx, dShiftY + dRy);
+				m_pRenderer->SetTransform(dM11, dM12, dM21, dM22, dShiftX + dRx, dShiftY + dRy);
 
 				bChangeCTM = true;
 			}
@@ -427,7 +428,10 @@ namespace MetaFile
 				dX = dX * dCosTheta + dY * dSinTheta;
 				dY = dY * dCosTheta - dOldX * dSinTheta;
 
-				m_pRenderer->SetTransform(dCosTheta * fabs(dM11), dSinTheta * fabs(dM11), -dSinTheta * fabs(dM22), dCosTheta * fabs(dM22), dRx, dRy);
+				m_pRenderer->ResetTransform();
+				m_pRenderer->SetTransform(dCosTheta * dM11, dSinTheta * dM22,
+							 -dSinTheta * dM11, dCosTheta * dM22,
+							  dRx, dRy);
 
 				bChangeCTM = true;
 			}

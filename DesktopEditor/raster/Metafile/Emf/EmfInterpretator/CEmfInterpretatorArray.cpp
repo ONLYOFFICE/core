@@ -69,10 +69,11 @@ namespace MetaFile
                         pInterpretator->DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight);
         }
 
-        void CEmfInterpretatorArray::DrawString(std::wstring &wsText, unsigned int unCharsCount, double dX, double dY, double *pDx, int iGraphicsMode)
+        void CEmfInterpretatorArray::DrawString(std::wstring &wsText, unsigned int unCharsCount, double dX, double dY, double *pDx,
+                                                int iGraphicsMode, double dXScale, double dYScale)
         {
                 for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
-                        pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pDx, iGraphicsMode);
+                        pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pDx, iGraphicsMode, dXScale, dYScale);
         }
 
         void CEmfInterpretatorArray::StartPath()

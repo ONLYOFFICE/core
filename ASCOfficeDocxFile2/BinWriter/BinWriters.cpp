@@ -8567,7 +8567,7 @@ void BinarySettingsTableWriter::WriteMathPr(const OOX::Logic::CMathPr &pMathPr)
 }
 void BinarySettingsTableWriter::WriteColorSchemeMapping(const PPTX::Logic::ClrMap& oColorSchemeMapping)
 {
-	int re_index[] = {0, 1, 2, 3, 4, 5, 10, 11, 6, 7, 8, 9, 10, 11, 10, 6, 7};
+	int re_index[] = {0, 1, 2, 3, 4, 5, 10, 11, 6, 7, 9, 8, 10, 11, 10, 6, 7};
 
 	int nCurPos = 0;
 

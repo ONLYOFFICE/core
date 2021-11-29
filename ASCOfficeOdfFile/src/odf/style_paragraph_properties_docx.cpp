@@ -284,9 +284,9 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			CP_XML_NODE(L"w:textAlignment"){CP_XML_ATTR(L"w:val", L"baseline");}
 		}
 
-		if (Context.get_page_break_before())
+		if (Context.get_page_break_before() == 2)
 		{
-			Context.set_page_break_before(false);
+			Context.set_page_break_before(0);
 			CP_XML_NODE(L"w:pageBreakBefore"){CP_XML_ATTR(L"w:val", L"true");  }  
 		}
 		else if (fo_break_before_)
@@ -296,6 +296,8 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				val = L"false";
 			else if (fo_break_before_->get_type() == fo_break::Page)
 				val = L"true";
+			else 
+				Context.set_page_break_before(fo_break_before_->get_type());
 
 			if (!val.empty())
 				CP_XML_NODE(L"w:pageBreakBefore"){CP_XML_ATTR(L"w:val", val);}
@@ -466,12 +468,9 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			}
 		}
 	}
-    if (fo_break_after_ && fo_break_after_->get_type() == fo_break::Page)
+    if (fo_break_after_ && Context.in_automatic_style())
     {
-        if (Context.in_automatic_style())
-        {
-            Context.set_page_break_after(true);
-        }
+		Context.set_page_break_after(fo_break_after_->get_type());
     }
 
 	Context.get_tabs_context().docx_convert(Context);

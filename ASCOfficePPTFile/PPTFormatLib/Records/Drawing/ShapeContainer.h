@@ -149,6 +149,6 @@ protected:
     static void addHyperlinkToSpan(CSpan& oSpan, const std::vector<CInteractiveInfo> &arrInteractive, const CColor& oColor);
     static std::vector<std::vector<CInteractiveInfo> > splitInteractive(const std::vector<CInteractiveInfo>& arrInteractive);
     static void ConvertInteractiveInfo(CInteractiveInfo& interactiveInfo, const CRecordMouseInteractiveInfoContainer* interactiveCont, CExMedia* pMapIDs);
-    void ApplyAutoNumbering(CTextAttributesEx *pText);
+    void ConvertStyleTextProp9(CTextAttributesEx *pText);
 };
 

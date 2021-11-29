@@ -75,6 +75,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(Configuration)\</OutDir>
@@ -87,7 +89,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\..\DesktopEditor\freetype-2.5.2\include;..\..\DesktopEditor\xml\libxml2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\..\DesktopEditor\xml\libxml2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -108,8 +110,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../include;../../../DesktopEditor/freetype-2.5.2/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\..\DesktopEditor\xml\libxml2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -358,7 +360,9 @@
     <ClCompile Include="..\src\odf\style_table_properties.cpp" />
     <ClCompile Include="..\src\odf\style_text_properties.cpp" />
     <ClCompile Include="..\src\odf\svg_parser.cpp" />
-    <ClCompile Include="..\src\odf\table.cpp" />
+    <ClCompile Include="..\src\odf\table.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\src\odf\table_calculation_settings.cpp" />
     <ClCompile Include="..\src\odf\table_database_ranges.cpp" />
     <ClCompile Include="..\src\odf\table_data_pilot_tables.cpp" />
@@ -368,7 +372,9 @@
     <ClCompile Include="..\src\odf\table_xlsx.cpp" />
     <ClCompile Include="..\src\odf\templates.cpp" />
     <ClCompile Include="..\src\odf\text_content.cpp" />
-    <ClCompile Include="..\src\odf\text_elements.cpp" />
+    <ClCompile Include="..\src\odf\text_elements.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cpdoccore\odf\odf_document.h" />

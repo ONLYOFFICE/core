@@ -249,10 +249,17 @@ namespace PdfReader
 				wsXml += std::to_wstring(m_uReal);
 				break;
 			case objString:
-				wsXml += L"(";
-				wsXml += m_uStringExt->GetWString();
+			{
+				wsXml += L"(";				
+				std::wstring wsValue = m_uStringExt->GetWString();
+				ReplaceAll(wsValue, L"\"", L"&quot;");
+				ReplaceAll(wsValue, L"&", L"&amp;");
+				ReplaceAll(wsValue, L"<", L"&lt;");
+				ReplaceAll(wsValue, L">", L"&gt;");
+				wsXml += wsValue;
 				wsXml += L")";
 				break;
+			}
 			case objName:
 				wsXml += L"/";
 				AppendStringToXml(wsXml, m_uName);
@@ -317,6 +324,17 @@ namespace PdfReader
 		std::wstring wsTmp(sString.begin(), sString.end());
 		wsXml += wsTmp;
 	}
+
+	void Object::ReplaceAll(std::wstring& wsString, const std::wstring& wsFrom, const std::wstring& wsTo)
+	{
+		size_t nStartPos = 0;
+		while((nStartPos = wsString.find(wsFrom, nStartPos)) != std::wstring::npos)
+		{
+			wsString.replace(nStartPos, wsFrom.length(), wsTo);
+			nStartPos += wsTo.length();
+		}
+	}
+
 
 	//------------------------------------------------------------------------
 	// Array accessors.

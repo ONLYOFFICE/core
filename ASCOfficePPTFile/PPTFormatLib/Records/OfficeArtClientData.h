@@ -70,6 +70,17 @@ public:
             RELEASEOBJECT ( m_rgShapeClientRoundtripData[i] );
     }
 
+    CRecordShapeProgBinaryTagSubContainerOrAtom* getProgTag(const std::wstring& tagname)
+    {
+        for (auto* progtag : m_rgShapeClientRoundtripData)
+        {
+            if (progtag->m_pTagName->m_strText == tagname)
+                return progtag;
+        }
+
+        return nullptr;
+    }
+
     virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
     {
         m_oHeader = oHeader;

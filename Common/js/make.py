@@ -24,7 +24,7 @@ def exec_wasm(data, work, compiler_flags, wasm):
   os.chdir(work)
 
   for include in data["include_path"]:
-    compiler_flags.append("-I" + os.path.normpath(work + include).replace("\\", '/'))
+    compiler_flags.append("-I" + include)
   for define in data["define"]:
     compiler_flags.append("-D" + define)
 
@@ -50,7 +50,7 @@ def exec_wasm(data, work, compiler_flags, wasm):
     temp_arguments = ""
     if "include_path" in compile_files and compile_files["include_path"]:
       for include in compile_files["include_path"]:
-        temp_arguments += ("-I" + os.path.normpath(work + include).replace("\\", '/') + " ")
+        temp_arguments += ("-I" + include + " ")
     if "define" in compile_files and compile_files["define"]:
       for define in compile_files["define"]:
         temp_arguments += ("-D" + define + " ")
@@ -59,7 +59,7 @@ def exec_wasm(data, work, compiler_flags, wasm):
     for item in compile_files["files"]:
       file_name = os.path.splitext(os.path.basename(item))[0]
       if not base.is_file("./o/" + compile_files["name"] + "/" + file_name + ".o"):
-        run_file.append(prefix_call + "emcc -o o/" + compile_files["name"] + "/" + file_name + ".o -c " + arguments + temp_arguments + os.path.normpath(work + os.path.join(compile_files["folder"], item)).replace("\\", '/'))
+        run_file.append(prefix_call + "emcc -o o/" + compile_files["name"] + "/" + file_name + ".o -c " + arguments + temp_arguments + os.path.join(compile_files["folder"], item))
       temp_libs += ("o/" + compile_files["name"] + "/" + file_name + ".o ")
 
     if len(compile_files["files"]) > 10:
@@ -77,7 +77,7 @@ def exec_wasm(data, work, compiler_flags, wasm):
 
   if "sources" in data and data["sources"]:
     for item in data["sources"]:
-      arguments += (os.path.normpath(work + item).replace("\\", '/') + " ")
+      arguments += (item + " ")
 
   run_file.append(prefix_call + "emcc -o " + data["name"] + ".js " + arguments + libs)
   base.print_info("run " + ("wasm " if wasm else "asm ") + data["name"])
@@ -86,7 +86,7 @@ def exec_wasm(data, work, compiler_flags, wasm):
   # finalize
   base.print_info("end " + ("wasm " if wasm else "asm ") + data["name"])
   module_js_content = base.readFile("./" + data["name"] + ".js")
-  engine_base_js_content = base.readFile(work + data["base_js_content"])
+  engine_base_js_content = base.readFile(data["base_js_content"])
   string_utf8_content = base.readFile(cur_dir + "/string_utf8.js")
   desktop_fetch_content = base.readFile(cur_dir + "/desktop_fetch.js")
   polyfill_js_content = base.readFile(cur_dir + "/polyfill.js")
@@ -97,8 +97,8 @@ def exec_wasm(data, work, compiler_flags, wasm):
     engine_js_content = engine_js_content.replace("//polyfill", polyfill_js_content)
 
   # write new version
-  base.writeFile(work + data["res_folder"] + "/" + data["name"] + ("" if wasm else "_ie") + ".js", engine_js_content)
-  base.copy_file("./" + data["name"] + (".wasm" if wasm else ".js.mem"), work + data["res_folder"] + "/" + data["name"] + (".wasm" if wasm else ".js.mem"))
+  base.writeFile(data["res_folder"] + "/" + data["name"] + ("" if wasm else "_ie") + ".js", engine_js_content)
+  base.copy_file("./" + data["name"] + (".wasm" if wasm else ".js.mem"), data["res_folder"] + "/" + data["name"] + (".wasm" if wasm else ".js.mem"))
 
   # clear
   base.delete_file("./" + data["name"] + ".js")
@@ -125,7 +125,7 @@ for param in argv:
 
   # remove previous version
   common.clear_dir(work_dir + "/o")
-  common.clear_dir(work_dir + json_data["res_folder"])
+  base.create_dir(work_dir + json_data["res_folder"])
 
   # wasm or asm
   if json_data["wasm"]:

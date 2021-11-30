@@ -480,8 +480,8 @@ namespace PdfWriter
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
 
-        if (unFilter & STREAM_FILTER_FLATE_DECODE)
-            return WriteStreamWithDeflate(pStream, pEncrypt);
+		if (unFilter & STREAM_FILTER_FLATE_DECODE)
+			return WriteStreamWithDeflate(pStream, pEncrypt);
 
 #endif
 		pStream->Seek(0, SeekSet);

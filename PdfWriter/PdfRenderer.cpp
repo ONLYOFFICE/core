@@ -89,6 +89,7 @@ using namespace PdfWriter;
 #define LO_SURROGATE_START  0xDC00
 #define LO_SURROGATE_END    0xDFFF
 
+
 static unsigned int* WStringToUtf32(const std::wstring& wsUnicodeText, unsigned int& unLen)
 {
 	if (wsUnicodeText.size() <= 0)
@@ -2247,11 +2248,13 @@ void CPdfRenderer::GetFontPath(const std::wstring &wsFontName, const bool &bBold
 		oFontSelect.bItalic = new INT(bItalic ? 1 : 0);
 		oFontSelect.bBold   = new INT(bBold ? 1 : 0);
 		NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
-		if (pFontInfo->m_usType & FT_FSTYPE_RESTRICTED_LICENSE_EMBEDDING)
+		if (!NSFonts::CFontInfo::CanEmbedForPreviewAndPrint(pFontInfo->m_usType))
 		{
 			oFontSelect.Fill(pFontInfo);
 			if (NULL != oFontSelect.usType)
-				*oFontSelect.usType = (~FT_FSTYPE_RESTRICTED_LICENSE_EMBEDDING);
+				*oFontSelect.usType = NSFONTS_EMBEDDING_RIGHTS_PRINT_AND_PREVIEW;
+			else
+				oFontSelect.usType = new USHORT(NSFONTS_EMBEDDING_RIGHTS_PRINT_AND_PREVIEW);
 
 			pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
 		}

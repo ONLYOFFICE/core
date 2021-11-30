@@ -114,7 +114,7 @@ namespace PPT_FORMAT
             {
                 LONG lLevel = m_arParagraphs[nIndexP].m_lTextLevel;
 
-                nullable_base<bool>		hasBullet;
+                nullable_bool		hasBullet;
 
                 nullable_base<CColor>	bulletColor;
                 nullable_base<WORD>		bulletFontRef;

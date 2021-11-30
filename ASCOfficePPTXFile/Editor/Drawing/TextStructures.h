@@ -285,7 +285,7 @@ namespace PPT_FORMAT
 	{
 	public:
 
-		NSCommon::nullable_base<bool>			hasBullet;
+        NSCommon::nullable_bool                 hasBullet;
 
 		NSCommon::nullable_base<WORD>			bulletFontRef;
 		NSCommon::nullable_base<WORD>			bulletSize;

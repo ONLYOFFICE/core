@@ -2373,6 +2373,28 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 		//nullable<SimpleTypes::CDecimalNumber<>>							m_oRelativeIndent;
 
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CProtection *protection, odf_writer::style_table_cell_properties *cell_properties)
+{
+	if (!protection)return;
+	if (!cell_properties)return;
+
+	if (protection->m_oLocked.IsInit())
+	{
+		if (protection->m_oLocked->ToBool())
+			cell_properties->content_.style_cell_protect_ = odf_types::style_cell_protect(odf_types::style_cell_protect::protected_);
+	}
+	if (protection->m_oHidden.IsInit())
+	{
+		if (protection->m_oHidden->ToBool())
+		{
+			if (cell_properties->content_.style_cell_protect_)
+				cell_properties->content_.style_cell_protect_ = odf_types::style_cell_protect(odf_types::style_cell_protect::protected_formula_hidden);
+			else
+				cell_properties->content_.style_cell_protect_ = odf_types::style_cell_protect(odf_types::style_cell_protect::formula_hidden);
+		}
+	}
+
+}
 void XlsxConverter::convert(OOX::Spreadsheet::CBorder *oox_border, odf_writer::style_table_cell_properties * table_cell_properties)
 {
 	if (!oox_border)return;
@@ -2630,7 +2652,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDxf *dxFmt, int oox_dx_id)
 		
 		convert(dxFmt->m_oAlignment.GetPointer(), paragraph_properties, table_cell_properties); 
 	}
-	//convert(dxFmt->m_oProtection.GetPointer(), table_cell_properties); 
+	convert(dxFmt->m_oProtection.GetPointer(), table_cell_properties); 
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool automatic, bool root)
 {
@@ -2692,6 +2714,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 	if (xfc_style->m_oAligment.IsInit() && xfc_style->m_oApplyAlignment.IsInit())
 	{
 		convert(xfc_style->m_oAligment.GetPointer(), paragraph_properties, table_cell_properties);
+	}
+	if (xfc_style->m_oProtection.IsInit())
+	{
+		convert(xfc_style->m_oProtection.GetPointer(), table_cell_properties);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

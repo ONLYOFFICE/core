@@ -55,6 +55,9 @@
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/TableStyleElement.h"
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Setup.h"
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Dv.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Qsi.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Qsir.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/Qsif.h"
 #include "../Biff12_structures/FRTHeader.h"
 
 #include "../../XlsxFormat/WritingElement.h"
@@ -352,6 +355,36 @@ namespace XLSB
         }
 
         static const XLS::ElementType	type = XLS::typeDVal14;
+    };
+
+    class BeginQSI: public XLS::Qsi
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(BeginQSI)
+
+        XLS::BaseObjectPtr clone() override
+        {
+            return XLS::BaseObjectPtr(new BeginQSI(*this));
+        }
+    };
+
+    class BeginQSIR: public XLS::Qsir
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(BeginQSIR)
+
+        XLS::BaseObjectPtr clone() override
+        {
+            return XLS::BaseObjectPtr(new BeginQSIR(*this));
+        }
+    };
+
+    class BeginQSIF: public XLS::Qsif
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(BeginQSIF)
+
+        XLS::BaseObjectPtr clone() override
+        {
+            return XLS::BaseObjectPtr(new BeginQSIF(*this));
+        }
     };
 
 } // namespace XLSB

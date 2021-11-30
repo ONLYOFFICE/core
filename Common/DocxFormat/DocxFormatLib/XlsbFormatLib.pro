@@ -36,6 +36,7 @@ SOURCES += \
     ../Source/XlsbFormat/StylesStream.cpp \
     ../Source/XlsbFormat/CommentsStream.cpp \
     ../Source/XlsbFormat/TableStream.cpp \
+    ../Source/XlsbFormat/QueryTableStream.cpp \
 ### Biff12_records
     ../Source/XlsbFormat/Biff12_records/BeginBook.cpp \
     ../Source/XlsbFormat/Biff12_records/FRTBegin.cpp \
@@ -247,6 +248,16 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/DValList.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginDVals14.cpp \
     ../Source/XlsbFormat/Biff12_records/EndDVals14.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndQSI.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndQSIR.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndQSIF.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginQSIFs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndQSIFs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginDeletedNames.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndDeletedNames.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginDeletedName.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndDeletedName.cpp \
+    ../Source/XlsbFormat/Biff12_records/Qsi15.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -383,7 +394,14 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/HEADERFOOTER.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACDVALLIST.cpp \
     ../Source/XlsbFormat/Biff12_unions/DVALS.cpp \
-    ../Source/XlsbFormat/Biff12_unions/DVALS14.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DVALS14.cpp \    
+    ../Source/XlsbFormat/Biff12_unions/QSI.cpp \
+    ../Source/XlsbFormat/Biff12_unions/QSIR.cpp \
+    ../Source/XlsbFormat/Biff12_unions/QSIFS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/QSIF.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DELETEDNAMES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DELETEDNAME.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTQSI.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -392,6 +410,7 @@ HEADERS += \
     ../Source/XlsbFormat/WorkBookStream.h \
     ../Source/XlsbFormat/WorkSheetStream.h \
     ../Source/XlsbFormat/TableStream.h \
+    ../Source/XlsbFormat/QueryTableStream.h \
     ../Source/XlsbFormat/Xlsb.h \
     ../Source/XlsbFormat/XlsbElementsType.h \
 ### Biff12_records
@@ -609,6 +628,16 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/DValList.h \
     ../Source/XlsbFormat/Biff12_records/BeginDVals14.h \
     ../Source/XlsbFormat/Biff12_records/EndDVals14.h \
+    ../Source/XlsbFormat/Biff12_records/EndQSI.h \
+    ../Source/XlsbFormat/Biff12_records/EndQSIF.h \
+    ../Source/XlsbFormat/Biff12_records/EndQSIR.h \
+    ../Source/XlsbFormat/Biff12_records/BeginQSIFs.h \
+    ../Source/XlsbFormat/Biff12_records/EndQSIFs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginDeletedNames.h \
+    ../Source/XlsbFormat/Biff12_records/EndDeletedNames.h \
+    ../Source/XlsbFormat/Biff12_records/BeginDeletedName.h \
+    ../Source/XlsbFormat/Biff12_records/EndDeletedName.h \
+    ../Source/XlsbFormat/Biff12_records/Qsi15.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -749,3 +778,10 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/ACDVALLIST.h \
     ../Source/XlsbFormat/Biff12_unions/DVALS.h \
     ../Source/XlsbFormat/Biff12_unions/DVALS14.h \
+    ../Source/XlsbFormat/Biff12_unions/QSI.h \
+    ../Source/XlsbFormat/Biff12_unions/QSIR.h \
+    ../Source/XlsbFormat/Biff12_unions/QSIFS.h \
+    ../Source/XlsbFormat/Biff12_unions/QSIF.h \
+    ../Source/XlsbFormat/Biff12_unions/DELETEDNAMES.h \
+    ../Source/XlsbFormat/Biff12_unions/DELETEDNAME.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTQSI.h \

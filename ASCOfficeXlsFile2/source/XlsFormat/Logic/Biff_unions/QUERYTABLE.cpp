@@ -108,7 +108,7 @@ int QUERYTABLE::serialize(std::wostream & strm)
 	DBQUERY *query = dynamic_cast<DBQUERY*>(m_DBQUERY.get());
 	if (!query) return -1;
 
-	std::wstring name = info->rgchName.value();
+    std::wstring name = info->name;
 
 	query->m_DBQUERYEXT = m_DBQUERYEXT;
 	query->m_Qsi		= m_Qsi;

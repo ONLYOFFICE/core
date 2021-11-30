@@ -793,7 +793,8 @@ enum ElementType
         typeDVALS14,
         typeDVal14,
         typeBeginDVals,
-        typeBeginDVals14
+        typeBeginDVals14,
+        typeFRTQSI
 };
 
 

@@ -31,6 +31,7 @@
  */
 
 #include "Qsif.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
 
 namespace XLS
 {
@@ -50,22 +51,48 @@ BaseObjectPtr Qsif::clone()
 
 void Qsif::readFields(CFRecord& record)
 {
-	unsigned short flags1, flags2;
-	record >> frtHeaderOld >> flags1 >> flags2 >> idField;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        unsigned short  flags1, flags2;
+        XLUnicodeString rgbTitle;
 
-	fUserIns	= GETBIT(flags1, 0);
-	fFillDown	= GETBIT(flags1, 1);
-	fSortDes	= GETBIT(flags1, 2);
-	iSortKey	= GETBITS(flags1, 3, 10);
-	fRowNums	= GETBIT(flags1, 11);
-	fSorted		= GETBIT(flags1, 13);
+        record >> frtHeaderOld >> flags1 >> flags2 >> idField;
 
-	fClipped	= GETBIT(flags2, 0);
+        fUserIns	= GETBIT(flags1, 0);
+        fFillDown	= GETBIT(flags1, 1);
+        fSortDes	= GETBIT(flags1, 2);
+        iSortKey	= GETBITS(flags1, 3, 10);
+        fRowNums	= GETBIT(flags1, 11);
+        fSorted		= GETBIT(flags1, 13);
 
-	if (record.getRdPtr() >= record.getDataSize())
-		return;
+        fClipped	= GETBIT(flags2, 0);
 
-	record >> idList >> rgbTitle;
+        if (record.getRdPtr() >= record.getDataSize())
+            return;
+
+        record >> idList >> rgbTitle;
+
+        name        = rgbTitle.value();
+    }
+
+    else
+    {
+        _UINT32            flags;
+        XLSB::XLWideString irstName;
+        record >> flags >> idField >> idList;
+
+        fUserIns	= GETBIT(flags, 0);
+        fFillDown	= GETBIT(flags, 1);
+        fRowNums	= GETBIT(flags, 2);
+        fClipped	= GETBIT(flags, 3);
+        fIrstName	= GETBIT(flags, 4);
+
+        if(fIrstName)
+        {
+            record >> irstName;
+            name    = irstName.value();
+        }
+    }
 }
 
 } // namespace XLS

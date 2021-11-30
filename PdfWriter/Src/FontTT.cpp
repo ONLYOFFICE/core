@@ -193,7 +193,7 @@ namespace PdfWriter
 		// Сейчас мы этот класс используем для внедрения шрифтов, которые будут использоваться для заполнения
 		// внутри форм. Если класс будет использоваться для чего-то другого, тогда надо задавать ограничения на внедрение
 		FT_UShort fsType = FT_Get_FSType_Flags(pFace);
-		m_bCanEmbed = !(fsType & FT_FSTYPE_RESTRICTED_LICENSE_EMBEDDING) && !(fsType & FT_FSTYPE_PREVIEW_AND_PRINT_EMBEDDING);
+		m_bCanEmbed = NSFonts::CFontInfo::CanEmbedForEdit(fsType);
 
 		FT_Done_Face(pFace);
 		RELEASEARRAYOBJECTS(pFaceMemory);

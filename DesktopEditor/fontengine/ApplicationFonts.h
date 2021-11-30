@@ -303,6 +303,7 @@ private:
 	int GetLineGapPenalty(SHORT shCandLineGap, SHORT shReqLineGap);
 	int GetXHeightPenalty(SHORT shCandXHeight, SHORT shReqXHeight);
 	int GetCapHeightPenalty(SHORT shCandCapHeight, SHORT shReqCapHeight);
+	bool CheckEmbeddingRights(const USHORT* ushRights, const USHORT& fsType);
 
 public:
     static EFontFormat GetFontFormat(FT_Face pFace);

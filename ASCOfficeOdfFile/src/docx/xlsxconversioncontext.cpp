@@ -241,6 +241,13 @@ void xlsx_conversion_context::end_document()
                 CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
                 CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 
+				if (table_structure_protected_)
+				{
+					CP_XML_NODE(L"workbookProtection")
+					{
+						CP_XML_ATTR(L"lockStructure", 1);
+					}
+				}
 				serialize_bookViews (CP_XML_STREAM());
 
                 CP_XML_NODE(L"sheets")
@@ -609,7 +616,10 @@ void xlsx_conversion_context::start_office_spreadsheet(const odf_reader::office_
 {
     spreadsheet_ = elm;
 }
-
+void xlsx_conversion_context::set_table_structure_protected(bool val)
+{
+	table_structure_protected_ = val;
+}
 const odf_reader::office_element * xlsx_conversion_context::get_spreadsheet()
 {
     return spreadsheet_;

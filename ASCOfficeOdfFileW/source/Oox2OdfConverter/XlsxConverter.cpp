@@ -178,6 +178,10 @@ void XlsxConverter::convert_sheets()
 		pWorkbook = xlsx_document->m_pWorkbook;
 		if (!pWorkbook) return;
 
+		if ((pWorkbook->m_oWorkbookProtection.IsInit()) && (pWorkbook->m_oWorkbookProtection->m_oLockStructure.IsInit()))
+		{
+			ods_context->set_tables_structure_lock(pWorkbook->m_oWorkbookProtection->m_oLockStructure->ToBool());
+		}
 		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &mapWorksheets = xlsx_document->m_mapWorksheets;
 		
 		xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(pWorkbook);
@@ -892,27 +896,27 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetProtection *oox_prot)
 
 	if (oox_prot->m_oInsertColumns.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_insert_columns(oox_prot->m_oInsertColumns->ToBool());
+		ods_context->current_table()->set_table_protection_insert_columns(!oox_prot->m_oInsertColumns->ToBool());
 	}
 	if (oox_prot->m_oInsertRows.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_insert_rows(oox_prot->m_oInsertRows->ToBool());
+		ods_context->current_table()->set_table_protection_insert_rows(!oox_prot->m_oInsertRows->ToBool());
 	}
 	if (oox_prot->m_oDeleteColumns.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_delete_columns(oox_prot->m_oDeleteColumns->ToBool());
+		ods_context->current_table()->set_table_protection_delete_columns(!oox_prot->m_oDeleteColumns->ToBool());
 	}
 	if (oox_prot->m_oDeleteRows.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_delete_rows(oox_prot->m_oDeleteRows->ToBool());
+		ods_context->current_table()->set_table_protection_delete_rows(!oox_prot->m_oDeleteRows->ToBool());
 	}
 	if (oox_prot->m_oSelectLockedCells.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_protected_cells(oox_prot->m_oSelectLockedCells->ToBool());
+		ods_context->current_table()->set_table_protection_protected_cells(!oox_prot->m_oSelectLockedCells->ToBool());
 	}
 	if (oox_prot->m_oSelectUnlockedCells.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_unprotected_cells(oox_prot->m_oSelectUnlockedCells->ToBool());
+		ods_context->current_table()->set_table_protection_unprotected_cells(!oox_prot->m_oSelectUnlockedCells->ToBool());
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDataValidations *oox_validations)

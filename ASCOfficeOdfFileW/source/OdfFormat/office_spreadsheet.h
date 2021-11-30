@@ -38,6 +38,7 @@
 #include <xml/nodetype.h>
 
 #include "office_elements_create.h"
+#include "bool.h"
 
 namespace cpdoccore { 
 namespace odf_writer {
@@ -58,6 +59,10 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 	
+	_CP_OPT(odf_types::Bool)	table_structure_protected_;
+	_CP_OPT(std::wstring)		table_protection_key_;
+	_CP_OPT(std::wstring)		table_protection_key_digest_algorithm_;
+
 	office_element_ptr			named_expressions_;
 	office_element_ptr			database_ranges_; 
 	office_element_ptr			data_pilot_tables_;

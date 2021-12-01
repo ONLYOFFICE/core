@@ -2228,8 +2228,24 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertImage()
 
     m_oWriter.WriteString(std::wstring(L"<p:blipFill>"));
 
-    std::wstring strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"/>");
+    std::wstring strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"");
     m_oWriter.WriteString(strWrite);
+    if (false)
+    {
+        m_oWriter.WriteString(L"><a:lum");
+        std::wstring bright = L""; // 0 - min, backgrpund. 50000 - usually. 100000 - max,white
+        std::wstring contrast = L""; // -100000 - min white. 0 - usually. 100000 - color max
+        if (!bright.empty())
+            m_oWriter.WriteString(L" bright=\"" + bright + L"\"");
+        if (!contrast.empty())
+            m_oWriter.WriteString(L" contrast=\"" + contrast + L"\"");
+
+
+        m_oWriter.WriteString(L"/></a:blip>");
+    }else
+    {
+        m_oWriter.WriteString(L"/>");
+    }
 
     m_oWriter.WriteString(std::wstring(L"<a:srcRect"));
     if (pImageElement->m_bCropEnabled)

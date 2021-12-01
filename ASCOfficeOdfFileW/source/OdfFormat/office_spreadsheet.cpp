@@ -106,6 +106,8 @@ void office_spreadsheet::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
+			CP_XML_ATTR_OPT(L"table:structure-protected", table_structure_protected_);
+
 			if (forms_)
 				forms_->serialize(CP_XML_STREAM());
 

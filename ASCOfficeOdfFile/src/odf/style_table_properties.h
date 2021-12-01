@@ -54,6 +54,7 @@
 #include "datatypes/direction.h"
 #include "datatypes/wrapoption.h"
 #include "datatypes/rotationalign.h"
+#include "datatypes/stylecellprotect.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -220,7 +221,7 @@ public:
     _CP_OPT(std::wstring)					style_diagonal_bl_tr_;
     _CP_OPT(odf_types::border_widths)		style_diagonal_bl_tr_widths_;
     _CP_OPT(odf_types::rotation_align)		style_rotation_align_;    
-    _CP_OPT(std::wstring)					style_cell_protect_;
+    _CP_OPT(odf_types::style_cell_protect)	style_cell_protect_;
     _CP_OPT(bool)							style_print_content_;
     _CP_OPT(unsigned int)					style_decimal_places_;
     _CP_OPT(bool)							style_repeat_content_;

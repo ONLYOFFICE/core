@@ -351,6 +351,9 @@
     <ClInclude Include="..\src\odf\datatypes\timeperiod.h">
       <Filter>datatypes odf</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\odf\datatypes\stylecellprotect.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\odf\datatypes\anchortype.cpp">
@@ -678,6 +681,9 @@
       <Filter>datatypes odf</Filter>
     </ClCompile>
     <ClCompile Include="..\src\odf\datatypes\timeperiod.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\odf\datatypes\stylecellprotect.cpp">
       <Filter>datatypes odf</Filter>
     </ClCompile>
   </ItemGroup>

@@ -86,12 +86,16 @@ ods_conversion_context::ods_conversion_context(package::odf_document * outputDoc
 	font_metrix_ = _font_metrix();
 }
 
-
 void ods_conversion_context::start_document()
 {
 	start_spreadsheet();
 	
 	root_spreadsheet_ = dynamic_cast<office_spreadsheet*>(get_current_object_element().get());
+}
+
+void ods_conversion_context::set_tables_structure_lock(bool val)
+{
+	root_spreadsheet_->table_structure_protected_ = val;
 }
 
 void ods_conversion_context::end_document()

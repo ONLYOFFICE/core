@@ -66,6 +66,8 @@ public:
 	virtual void start_document();
 	virtual void end_document();
 
+	void set_tables_structure_lock(bool val);
+
 	void start_sheet();
         void set_sheet_dimension(const std::wstring & ref);
 	void end_sheet();

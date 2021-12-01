@@ -178,6 +178,10 @@ void XlsxConverter::convert_sheets()
 		pWorkbook = xlsx_document->m_pWorkbook;
 		if (!pWorkbook) return;
 
+		if ((pWorkbook->m_oWorkbookProtection.IsInit()) && (pWorkbook->m_oWorkbookProtection->m_oLockStructure.IsInit()))
+		{
+			ods_context->set_tables_structure_lock(pWorkbook->m_oWorkbookProtection->m_oLockStructure->ToBool());
+		}
 		std::map<std::wstring, OOX::Spreadsheet::CWorksheet*> &mapWorksheets = xlsx_document->m_mapWorksheets;
 		
 		xlsx_current_container = dynamic_cast<OOX::IFileContainer*>(pWorkbook);
@@ -892,27 +896,27 @@ void XlsxConverter::convert(OOX::Spreadsheet::CSheetProtection *oox_prot)
 
 	if (oox_prot->m_oInsertColumns.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_insert_columns(oox_prot->m_oInsertColumns->ToBool());
+		ods_context->current_table()->set_table_protection_insert_columns(!oox_prot->m_oInsertColumns->ToBool());
 	}
 	if (oox_prot->m_oInsertRows.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_insert_rows(oox_prot->m_oInsertRows->ToBool());
+		ods_context->current_table()->set_table_protection_insert_rows(!oox_prot->m_oInsertRows->ToBool());
 	}
 	if (oox_prot->m_oDeleteColumns.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_delete_columns(oox_prot->m_oDeleteColumns->ToBool());
+		ods_context->current_table()->set_table_protection_delete_columns(!oox_prot->m_oDeleteColumns->ToBool());
 	}
 	if (oox_prot->m_oDeleteRows.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_delete_rows(oox_prot->m_oDeleteRows->ToBool());
+		ods_context->current_table()->set_table_protection_delete_rows(!oox_prot->m_oDeleteRows->ToBool());
 	}
 	if (oox_prot->m_oSelectLockedCells.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_protected_cells(oox_prot->m_oSelectLockedCells->ToBool());
+		ods_context->current_table()->set_table_protection_protected_cells(!oox_prot->m_oSelectLockedCells->ToBool());
 	}
 	if (oox_prot->m_oSelectUnlockedCells.IsInit())
 	{
-		ods_context->current_table()->set_table_protection_unprotected_cells(oox_prot->m_oSelectUnlockedCells->ToBool());
+		ods_context->current_table()->set_table_protection_unprotected_cells(!oox_prot->m_oSelectUnlockedCells->ToBool());
 	}
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CDataValidations *oox_validations)
@@ -2373,6 +2377,28 @@ void XlsxConverter::convert(OOX::Spreadsheet::CAligment *aligment, odf_writer::s
 		//nullable<SimpleTypes::CDecimalNumber<>>							m_oRelativeIndent;
 
 }
+void XlsxConverter::convert(OOX::Spreadsheet::CProtection *protection, odf_writer::style_table_cell_properties *cell_properties)
+{
+	if (!protection)return;
+	if (!cell_properties)return;
+
+	if (protection->m_oLocked.IsInit())
+	{
+		if (protection->m_oLocked->ToBool())
+			cell_properties->content_.style_cell_protect_ = odf_types::style_cell_protect(odf_types::style_cell_protect::protected_);
+	}
+	if (protection->m_oHidden.IsInit())
+	{
+		if (protection->m_oHidden->ToBool())
+		{
+			if (cell_properties->content_.style_cell_protect_)
+				cell_properties->content_.style_cell_protect_ = odf_types::style_cell_protect(odf_types::style_cell_protect::protected_formula_hidden);
+			else
+				cell_properties->content_.style_cell_protect_ = odf_types::style_cell_protect(odf_types::style_cell_protect::formula_hidden);
+		}
+	}
+
+}
 void XlsxConverter::convert(OOX::Spreadsheet::CBorder *oox_border, odf_writer::style_table_cell_properties * table_cell_properties)
 {
 	if (!oox_border)return;
@@ -2630,7 +2656,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDxf *dxFmt, int oox_dx_id)
 		
 		convert(dxFmt->m_oAlignment.GetPointer(), paragraph_properties, table_cell_properties); 
 	}
-	//convert(dxFmt->m_oProtection.GetPointer(), table_cell_properties); 
+	convert(dxFmt->m_oProtection.GetPointer(), table_cell_properties); 
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool automatic, bool root)
 {
@@ -2692,6 +2718,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CXfs * xfc_style, int oox_id, bool
 	if (xfc_style->m_oAligment.IsInit() && xfc_style->m_oApplyAlignment.IsInit())
 	{
 		convert(xfc_style->m_oAligment.GetPointer(), paragraph_properties, table_cell_properties);
+	}
+	if (xfc_style->m_oProtection.IsInit())
+	{
+		convert(xfc_style->m_oProtection.GetPointer(), table_cell_properties);
 	}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

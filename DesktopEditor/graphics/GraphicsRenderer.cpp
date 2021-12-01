@@ -63,6 +63,9 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 	if ((0 == Type) || (c_BrushTypeSolid == Type))
 	{
         Aggplus::CColor oColor((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1, bIsSwappedRGB);
+        if (m_pRenderer && m_pRenderer->m_bIsDarkMode)
+            oColor.ConvertToDarkMode(bIsSwappedRGB);
+
 		Aggplus::CBrushSolid* pNew = new Aggplus::CBrushSolid(oColor);
 
 		return pNew;
@@ -1120,6 +1123,8 @@ HRESULT CGraphicsRenderer::put_ClipMode(const LONG& lMode)
 // additiaonal params ----------------------------------------------------------------------
 HRESULT CGraphicsRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
 {
+    if (c_nDarkMode == lType && m_pRenderer)
+        m_pRenderer->m_bIsDarkMode = (1 == lCommand);
 	return S_OK;
 }
 HRESULT CGraphicsRenderer::CommandDouble(const LONG& lType, const double& dCommand)

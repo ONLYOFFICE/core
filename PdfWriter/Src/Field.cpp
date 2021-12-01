@@ -626,7 +626,12 @@ namespace PdfWriter
 	void CTextField::SetMaxLen(int nMaxLen)
 	{
 		if (nMaxLen > 0)
-			Add("MaxLen", nMaxLen);
+		{
+			if (m_pParent)
+				m_pParent->Add("MaxLen", nMaxLen);
+			else
+				Add("MaxLen", nMaxLen);
+		}
 	}
 	int CTextField::GetMaxLen() const
 	{

@@ -990,6 +990,7 @@ namespace PdfWriter
 				pParent->Add("Ff", pBase->GetFieldFlag());
 				pParent->Add("FT", pBase->GetFieldType());
 
+
 				pBase->SetParent(pParent);
 				pBase->ClearKidRecords();
 				pParent->AddKid(pBase);
@@ -999,10 +1000,17 @@ namespace PdfWriter
 				pField->SetParent(pParent);
 				pParent->AddKid(pField);
 
-
 				CChoiceField* pChoice = dynamic_cast<CChoiceField*>(pBase);
 				if (pChoice)
 					pChoice->UpdateSelectedIndexToParent();
+
+				CTextField* pTextField = dynamic_cast<CTextField*>(pBase);
+				int nMaxLen = 0;
+				if (pTextField && 0 != (nMaxLen = pTextField->GetMaxLen()))
+				{
+					pBase->Remove("MaxLen");
+					pParent->Add("MaxLen", nMaxLen);
+				}
 
 				pParent->UpdateKidsPlaceHolder();
 			}

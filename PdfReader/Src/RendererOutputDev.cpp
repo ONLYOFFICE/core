@@ -1171,6 +1171,28 @@ namespace PdfReader
                     else
                         oFontSelect.wsName = new std::wstring(wsFontBaseName);
 
+                #ifdef BUILDING_WASM_MODULE
+                    if (wsFontBaseName.find(L"Bold") != std::wstring::npos)
+                        oFontSelect.bBold = new INT(1);
+                    if (wsFontBaseName.find(L"Oblique") != std::wstring::npos || wsFontBaseName.find(L"Italic") != std::wstring::npos)
+                        oFontSelect.bItalic = new INT(1);
+                    if (wsFontBaseName.find(L"Helvetica") != std::wstring::npos)
+                    {
+                        RELEASEOBJECT(oFontSelect.wsName);
+                        oFontSelect.wsName = new std::wstring(L"Arial");
+                    }
+                    else if (wsFontBaseName.find(L"Courier") != std::wstring::npos)
+                    {
+                        RELEASEOBJECT(oFontSelect.wsName);
+                        oFontSelect.wsName = new std::wstring(L"Courier New");
+                    }
+                    else if (wsFontBaseName.find(L"Times") != std::wstring::npos)
+                    {
+                        RELEASEOBJECT(oFontSelect.wsName);
+                        oFontSelect.wsName = new std::wstring(L"Times New Roman");
+                    }
+                #endif
+
                     pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect);
                 }
 
@@ -1179,25 +1201,14 @@ namespace PdfReader
                     wsFileName = pFontInfo->m_wsFontPath;
                     eFontType  = pFont->isCIDFont() ? fontCIDType2 : fontTrueType;
 
-                    if (pFont->isBold())
-                        std::cout << "1";
-                    if (pFont->isItalic())
-                        std::cout << "2";
-
                 #ifdef BUILDING_WASM_MODULE
                     BYTE nStatus = 0;
                     NSWasm::CData oRes;
                     oRes.SkipLen();
                     std::string sNameA = U_TO_UTF8(pFontInfo->m_wsFontName);
                     oRes.WriteString((unsigned char*)sNameA.c_str(), (unsigned int)sNameA.length());
-                    if (pFontInfo->m_bBold)
-                        oRes.AddInt(1);
-                    else
-                        oRes.AddInt(0);
-                    if (pFontInfo->m_bItalic)
-                        oRes.AddInt(1);
-                    else
-                        oRes.AddInt(0);
+                    oRes.AddInt(pFontInfo->m_bBold);
+                    oRes.AddInt(pFontInfo->m_bItalic);
                     oRes.WriteLen();
                     char* pFontId = js_get_stream_id(oRes.GetBuffer(), &nStatus);
                     if (!nStatus)

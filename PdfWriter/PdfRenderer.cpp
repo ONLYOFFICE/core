@@ -2214,14 +2214,12 @@ void CPdfRenderer::UpdateFont()
 	if (L"" != wsFontPath)
 	{
 		m_pFont = GetFont(wsFontPath, lFaceIndex);
-
-        NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
-		if (pFontFile)
+		if (m_pFont)
 		{
-			if (!pFontFile->IsItalic() && m_oFont.IsItalic())
+			if (m_oFont.IsItalic() && !m_pFont->IsItalic())
 				m_oFont.SetNeedDoItalic(true);
 
-			if (!pFontFile->IsBold() && m_oFont.IsBold())
+			if (m_oFont.IsBold() && !m_pFont->IsBold())
 				m_oFont.SetNeedDoBold(true);
 		}
 	}

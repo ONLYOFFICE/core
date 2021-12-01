@@ -3985,7 +3985,7 @@ namespace NExtractTools
    }
 	_UINT32 fromSpreadsheet(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params)
    {
-		std::wstring sTo	= *params.m_sFileTo;
+		std::wstring sTo = *params.m_sFileTo;
 		int nFormatTo = AVS_OFFICESTUDIO_FILE_UNKNOWN;
 		if(NULL != params.m_nFormatTo)
 			nFormatTo = *params.m_nFormatTo;
@@ -4106,7 +4106,8 @@ namespace NExtractTools
            }
 		   else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatFrom)
 		   {
-			   nRes = csv2xlsx_dir(sFrom, sXlsxDir, sTemp, params);
+			   nRes = csv2xlsx_dir(sFrom, sXlsxDir, sTemp, params);	
+			   *params.m_nFormatFrom = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
 		   }
 		   else
                nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;

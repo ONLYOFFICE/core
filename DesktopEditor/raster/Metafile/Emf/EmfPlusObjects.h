@@ -1,6 +1,7 @@
 ﻿#ifndef _METAFILE_EMF_EMFPLUSOBJECTS_H
 #define _METAFILE_EMF_EMFPLUSOBJECTS_H
 
+#include "EmfPath.h"
 #include "EmfObjects.h"
 #include "EmfPlusTypes.h"
 #include "../../../common/File.h"
@@ -23,7 +24,6 @@ namespace MetaFile
         } EEmfPlusObjectType;
 
         #define CEmfPlusObjectBase      CEmfObjectBase
-        #define CEmfPlusPath            CEmfPath
         #define CEmfPlusDC              CEmfDC
 
 	typedef  enum
@@ -170,8 +170,13 @@ namespace MetaFile
         class CEmfPlusObject
         {
             public:
-                CEmfPlusObject(unsigned int unImageSize, bool bIsContineudObject)
-                        : unSize(unImageSize), bIsContineudObject(bIsContineudObject){};
+                CEmfPlusObject(unsigned int unNewSize, bool bIsContineudObject)
+                        : unSize(unNewSize), bIsContineudObject(bIsContineudObject){};
+
+                virtual EEmfPlusObjectType GetObjectType()
+                {
+                        return ObjectTypeInvalid;
+                }
 
                 virtual unsigned int GetSize() const
                 {
@@ -200,6 +205,19 @@ namespace MetaFile
                 unsigned int unSize;
         };
 
+        class CEmfPlusPath : public CEmfPlusObject, public CEmfPath
+        {
+            public:
+                CEmfPlusPath() : CEmfPlusObject(0, false), CEmfPath() {};
+                CEmfPlusPath(CEmfPlusPath* pPath) : CEmfPlusObject(0, false), CEmfPath(pPath) {};
+
+                virtual EEmfPlusObjectType GetObjectType() override
+                {
+                        return ObjectTypeInvalid;
+                }
+        };
+
+
         typedef  enum
         {
                 WrapModeTile        = 0x00,
@@ -209,10 +227,15 @@ namespace MetaFile
                 WrapModeClamp       = 0x04
         } EEmfPlusWrapMode;
 
-        class CEmfPlusImageAttributes
+        class CEmfPlusImageAttributes : public CEmfPlusObject
         {
             public:
-                CEmfPlusImageAttributes() {};
+                CEmfPlusImageAttributes() : CEmfPlusObject(0, false) {};
+
+                virtual EEmfPlusObjectType GetObjectType() override
+                {
+                        return ObjectTypeImageAttributes;
+                }
 
                 EEmfPlusWrapMode eWrapMode;
                 TEmfPlusARGB     oClampColor;
@@ -387,6 +410,11 @@ namespace MetaFile
                         return false;
                 }
 
+                virtual EEmfPlusObjectType GetObjectType() override
+                {
+                        return ObjectTypeImage;
+                }
+
                 virtual unsigned int GetSize() const
                 {
                         if (NULL == pImageData)
@@ -455,6 +483,11 @@ namespace MetaFile
             public:
                 CEmfPlusRegion() : CEmfPlusObject(0, false) {};
                 virtual ~CEmfPlusRegion(){};
+
+                virtual EEmfPlusObjectType GetObjectType() override
+                {
+                        return ObjectTypeRegion;
+                }
 
                 std::vector<CEmfPlusRegionNode> arNodes;
         };

@@ -174,17 +174,8 @@ namespace MetaFile
                 ClearFile();
                 RELEASEOBJECT(m_pInterpretator);
 
-                for (EmfPlusImageMap::const_iterator oIter = m_mImages.begin(); oIter != m_mImages.end(); ++oIter)
-                        delete oIter->second;
-
-                for (EmfPlusPathMap::const_iterator oIter = m_mPaths.begin(); oIter != m_mPaths.end(); ++oIter)
-                        delete oIter->second;
-
-                for (EmfPlusRegionMap::const_iterator oIter = m_mRegions.begin(); oIter != m_mRegions.end(); ++oIter)
-                        delete oIter->second;
-
-                for (EmfPlusImageAttributesMap::const_iterator oIter = m_mImageAttributes.begin(); oIter != m_mImageAttributes.end(); ++oIter)
-                        delete oIter->second;
+                for (EmfPlusObjects::const_iterator pIter = m_mObjects.begin(); pIter != m_mObjects.end(); ++pIter)
+                        delete[] pIter->second;
         }
 
         bool CEmfPlusParser::OpenFromFile(const wchar_t *wsFilePath)
@@ -340,7 +331,7 @@ namespace MetaFile
 
                         m_oStream >> *pImage;
 
-                        m_mImages[shObjectIndex] = pImage;
+                        m_mObjects[shObjectIndex] = pImage;
                 }
                 else
                 {
@@ -357,7 +348,7 @@ namespace MetaFile
                                         return;
                                 }
 
-                                m_mImages[shObjectIndex] = pImage;
+                                m_mObjects[shObjectIndex] = pImage;
 
                                 if (NULL != m_pContineudObject)
                                         m_pContineudObject->SetEmfPlusImage(pImage);
@@ -380,12 +371,12 @@ namespace MetaFile
                         }
         }
 
-        CEmfPlusImage CEmfPlusParser::GetImage(unsigned int unImageIndex)
+        CEmfPlusImage* CEmfPlusParser::GetImage(unsigned int unImageIndex)
         {
-                EmfPlusImageMap::const_iterator oFoundElement = m_mImages.find(unImageIndex);
+                EmfPlusObjects::const_iterator oFoundElement = m_mObjects.find(unImageIndex);
 
-                if (m_mImages.end() != oFoundElement)
-                        return oFoundElement->second;
+                if (m_mObjects.end() != oFoundElement && oFoundElement->second->GetObjectType() == ObjectTypeImage)
+                        return (CEmfPlusImage*)oFoundElement->second;
 
                 return NULL;
         }
@@ -440,10 +431,10 @@ namespace MetaFile
 
         CEmfPlusPath *CEmfPlusParser::GetPath(unsigned int unPathIndex)
         {
-                EmfPlusPathMap::const_iterator oFoundElement = m_mPaths.find(unPathIndex);
+                EmfPlusObjects::const_iterator oFoundElement = m_mObjects.find(unPathIndex);
 
-                if (m_mPaths.end() != oFoundElement)
-                        return oFoundElement->second;
+                if (m_mObjects.end() != oFoundElement && oFoundElement->second->GetObjectType() == ObjectTypePath)
+                        return (CEmfPlusPath*)oFoundElement->second;
 
                 return NULL;
         }
@@ -458,12 +449,22 @@ namespace MetaFile
                 return pRegion;
         }
 
-        CEmfPlusRegion *CEmfPlusParser::GetRegion(unsigned int unRegionIndex)
+        CEmfPlusRegion* CEmfPlusParser::GetRegion(unsigned int unRegionIndex)
         {
-                EmfPlusRegionMap::const_iterator oFoundElement = m_mRegions.find(unRegionIndex);
+                EmfPlusObjects::const_iterator oFoundElement = m_mObjects.find(unRegionIndex);
 
-                if (m_mRegions.end() != oFoundElement)
-                        return oFoundElement->second;
+                if (m_mObjects.end() != oFoundElement && oFoundElement->second->GetObjectType() == ObjectTypePath)
+                        return (CEmfPlusRegion*)oFoundElement->second;
+
+                return NULL;
+        }
+
+        CEmfPlusImageAttributes *CEmfPlusParser::GetImageAttributes(unsigned int unImageAttributesIndex)
+        {
+                EmfPlusObjects::const_iterator oFoundElement = m_mObjects.find(unImageAttributesIndex);
+
+                if (m_mObjects.end() != oFoundElement && oFoundElement->second->GetObjectType() == ObjectTypeImageAttributes)
+                        return (CEmfPlusImageAttributes*)oFoundElement->second;
 
                 return NULL;
         }
@@ -617,12 +618,10 @@ namespace MetaFile
                 if (NULL == m_pInterpretator)
                         return;
 
-                EmfPlusImageMap::const_iterator oPosition = m_mImages.find(unImageIndex);
+                CEmfPlusImage *pImage = GetImage(unImageIndex);
 
-                if (m_mImages.end() == oPosition || NULL == oPosition->second)
+                if (NULL == pImage)
                         return;
-
-                CEmfPlusImage *pImage = oPosition->second;
 
                 unsigned int unMetafileSize = pImage->GetMetafileSize();
 
@@ -664,22 +663,18 @@ namespace MetaFile
 
                         dX = arPoints[0].X;
 
-                        EmfPlusImageAttributesMap::const_iterator oFountAttributesImage = m_mImageAttributes.find(unImageAttributeIndex);
+                        CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
 
-                        if (m_mImageAttributes.end() != oFountAttributesImage)
+                        if (NULL != pImageAttributes)
                         {
-                                CEmfPlusImageAttributes *pImageAttributes = oFountAttributesImage->second;
+//                                ApplyImageAttributes(oSrcRect, *pImageAttributes);
 
-                                ApplyImageAttributes(oSrcRect, *pImageAttributes);
-
-                                if (pImageAttributes->eWrapMode == WrapModeTileFlipXY)
-                                {
+                                if (pImageAttributes->eWrapMode & WrapModeTileFlipX)
                                         dM11 *= -1;
+
+                                if (pImageAttributes->eWrapMode & WrapModeTileFlipY)
                                         dM22 *= -1;
-                                }
-
                         }
-
 
                         TEmfPlusXForm oNewTransform(dM11, 0, 0, dM22, dX, dY);
 
@@ -1295,7 +1290,7 @@ namespace MetaFile
                                 CEmfPlusPath* pPath = ReadPath();
 
                                 if (NULL != pPath)
-                                        m_mPaths[shObjectIndex] = pPath;
+                                        m_mObjects[shObjectIndex] = pPath;
 
                                 break;
                         }
@@ -1305,7 +1300,7 @@ namespace MetaFile
                                 CEmfPlusRegion *pEmfPlusRegion = ReadRegion();
 
                                 if (NULL != pEmfPlusRegion)
-                                        m_mRegions[shObjectIndex] = pEmfPlusRegion;
+                                        m_mObjects[shObjectIndex] = pEmfPlusRegion;
 
                                 break;
                         }
@@ -1334,7 +1329,7 @@ namespace MetaFile
                                 if (NULL != pImageAttributes)
                                 {
                                         m_oStream >> *pImageAttributes;
-                                        m_mImageAttributes[shObjectIndex] = pImageAttributes;
+                                        m_mObjects[shObjectIndex] = pImageAttributes;
                                 }
 
                                 break;
@@ -1660,11 +1655,11 @@ namespace MetaFile
                 short shCM = ExpressValue(unShFlags, 8, 11);
 
                 return; // TODO: при добавлении поддержки регионов становится хуже
-                EmfPlusRegionMap::const_iterator oFoundElement = m_mRegions.find(shObjectIndex);
+                CEmfPlusRegion *pRegion = GetRegion(shObjectIndex);
 
-                if (m_mRegions.end() != oFoundElement)
+                if (NULL != pRegion)
                 {
-                        for (CEmfPlusRegionNode oNode : oFoundElement->second->arNodes)
+                        for (CEmfPlusRegionNode oNode : pRegion->arNodes)
                         {
                                 if (oNode.eType == RegionNodeDataTypeInfinite)
                                 {

@@ -29,13 +29,15 @@ namespace MetaFile
                 bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
 
                 void ReadImage(unsigned short shObjectIndex, bool bIsContineudObject);
-                CEmfPlusImage GetImage(unsigned int unImageIndex);
+                CEmfPlusImage* GetImage(unsigned int unImageIndex);
 
                 CEmfPlusPath* ReadPath();
                 CEmfPlusPath* GetPath(unsigned int unPathIndex);
 
                 CEmfPlusRegion* ReadRegion();
                 CEmfPlusRegion* GetRegion(unsigned int unRegionIndex);
+
+                CEmfPlusImageAttributes* GetImageAttributes(unsigned int unImageAttributesIndex);
 
                 std::vector<TEmfPlusPointF> ReadPointsF(unsigned int unPointCount);
                 std::vector<char> ReadPointTypes(unsigned int unPointCount);
@@ -137,15 +139,9 @@ namespace MetaFile
                 unsigned int    m_unLogicalDpiX;
                 unsigned int    m_unLogicalDpiY;
 
-                typedef std::map<unsigned int, CEmfPlusImage*>  EmfPlusImageMap;
-                typedef std::map<unsigned int, CEmfPlusPath*>   EmfPlusPathMap;
-                typedef std::map<unsigned int, CEmfPlusRegion*> EmfPlusRegionMap;
-                typedef std::map<unsigned int, CEmfPlusImageAttributes*> EmfPlusImageAttributesMap;
+                typedef std::map<unsigned int, CEmfPlusObject*> EmfPlusObjects;
 
-                EmfPlusImageAttributesMap   m_mImageAttributes;
-                EmfPlusImageMap             m_mImages;
-                EmfPlusPathMap              m_mPaths;
-                EmfPlusRegionMap            m_mRegions;
+                EmfPlusObjects m_mObjects;
 
                 CEmfPlusContineudObjectRecord*  m_pContineudObject;
         };

@@ -197,31 +197,31 @@ public:
         wchar_t curReqChar = 0;
         while (true)
         {
+            curNameChar = 0;
             while (curName < lenName)
             {
                 curNameChar = *name_str++;
+                ++curName;
                 if (curNameChar == '-' || curNameChar == ' ' || curNameChar == ',')
-                    ++curName;
+                    continue;
 
                 if (curNameChar >= 'A' && curNameChar <= 'Z')
                     curNameChar += ('a' - 'A');
                 break;
             }
-            if (curName == lenName)
-                curNameChar = 0;
 
+            curReqChar = 0;
             while (curReq < lenReq)
             {
                 curReqChar = *req_str++;
+                ++curReq;
                 if (curReqChar == '-' || curReqChar == ' ' || curReqChar == ',')
-                    ++curReq;
+                    continue;
 
                 if (curReqChar >= 'A' && curReqChar <= 'Z')
                     curReqChar += ('a' - 'A');
                 break;
             }
-            if (curReq == lenReq)
-                curReqChar = 0;
 
             if (curNameChar != curReqChar)
             {
@@ -229,6 +229,8 @@ public:
                     *bIsOneInAnother = (0 == curNameChar || 0 == curReqChar) ? true : false;
                 return false;
             }
+            else if (0 == curNameChar)
+                break;
         }
         return true;
     }

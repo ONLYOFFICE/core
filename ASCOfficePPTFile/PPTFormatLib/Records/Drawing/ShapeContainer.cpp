@@ -883,6 +883,12 @@ void CPPTElement::SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlid
     case pibFlags:
     {
     }break;
+    case pictureContrast:
+        image_element->m_lpictureContrast = (_INT32)pProperty->m_lValue;
+        break;
+    case pictureBrightness:
+        image_element->m_lpictureBrightness = (_INT32)pProperty->m_lValue;
+        break;
     }
 }
 void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)

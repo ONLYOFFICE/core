@@ -430,8 +430,17 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertBrush(CBrush & brush)
         {
             std::wstring strRid = m_pRels->WriteImage(brush.TexturePath);
 
-            brush_writer.WriteString(L"<a:blipFill dpi=\"0\" rotWithShape=\"1\"><a:blip r:embed=\"" + strRid + L"\"/><a:srcRect/>");
+            brush_writer.WriteString(L"<a:blipFill dpi=\"0\" rotWithShape=\"1\"><a:blip r:embed=\"" + strRid + L"\"");
 
+            if (brush.Color2.GetLONG_RGB() == 0xFFFFFF)
+            {
+                brush_writer.WriteString(L"><a:duotone><a:schemeClr val=\"bg1\"/>");
+                brush_writer.WriteString(ConvertColor(brush.Color2, brush.Alpha2));
+                brush_writer.WriteString(L"</a:duotone></a:blip><a:srcRect/>");
+            } else
+            {
+                brush_writer.WriteString(L"/><a:srcRect/>");
+            }
             if (	brush.TextureMode == c_BrushTextureModeTile)
                 brush_writer.WriteString(L"<a:tile/>");
             else
@@ -2230,15 +2239,27 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertImage()
 
     std::wstring strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"");
     m_oWriter.WriteString(strWrite);
-    if (false)
+    if (pImageElement->m_lpictureBrightness != 0 || pImageElement->m_lpictureContrast != 0x10000)
     {
         m_oWriter.WriteString(L"><a:lum");
-        std::wstring bright = L""; // 0 - min, backgrpund. 50000 - usually. 100000 - max,white
-        std::wstring contrast = L""; // -100000 - min white. 0 - usually. 100000 - color max
-        if (!bright.empty())
+        if (pImageElement->m_lpictureBrightness != 0)
+        {
+            std::wstring bright = std::to_wstring((UINT)(pImageElement->m_lpictureBrightness * 3.051705)); // 0 - min, backgrpund. 50000 - usually. 100000 - max,white
             m_oWriter.WriteString(L" bright=\"" + bright + L"\"");
-        if (!contrast.empty())
-            m_oWriter.WriteString(L" contrast=\"" + contrast + L"\"");
+        }
+        if (pImageElement->m_lpictureContrast != 0x10000)
+        {
+            int contrast; // -100000 - min white. 0 - usually. 100000 - color max
+            if (pImageElement->m_lpictureContrast < 0x10000)
+            {
+                contrast = (0x10000 - pImageElement->m_lpictureContrast) * -1.5259;
+            } else
+            {
+//                contrast = (pImageElement->m_lpictureContrast - 0x10000) * 0.76294; // 0.76294 - not correct, * - not correct
+                contrast = 0;
+            }
+            m_oWriter.WriteString(L" contrast=\"" + std::to_wstring(contrast) + L"\"");
+        }
 
 
         m_oWriter.WriteString(L"/></a:blip>");

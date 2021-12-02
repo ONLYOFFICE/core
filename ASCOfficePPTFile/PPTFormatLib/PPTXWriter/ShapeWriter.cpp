@@ -71,8 +71,13 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
     }
     if (pPF->indent.is_init())
     {
-        std::wstring strProp = std::to_wstring(pPF->indent.get() - leftMargin);
-        oWriter.WriteString(L" indent=\"" + strProp + L"\"");
+        std::wstring strIndent;
+        if (pPF->hasBullet.get_value_or(false))
+            strIndent = std::to_wstring(pPF->indent.get());
+        else
+            strIndent = std::to_wstring(pPF->indent.get() - leftMargin);
+
+        oWriter.WriteString(L" indent=\"" + strIndent + L"\"");
     }
     if (pPF->textAlignment.is_init())
     {
@@ -1294,8 +1299,13 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
         if (pPF->indent.is_init())
         {
-            std::wstring strProp = std::to_wstring(pPF->indent.get() - leftMargin);
-            m_oWriter.WriteString(L" indent=\"" + strProp + L"\"");
+            std::wstring strIndent;
+            if (pPF->hasBullet.get_value_or(false))
+                strIndent = std::to_wstring(pPF->indent.get());
+            else
+                strIndent = std::to_wstring(pPF->indent.get() - leftMargin);
+
+            m_oWriter.WriteString(L" indent=\"" + strIndent + L"\"");
         }
         if (pPF->textAlignment.is_init())
         {
@@ -1319,51 +1329,6 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
         }
         m_oWriter.WriteString(L">");
 
-        double dKoef1 = 3.52777778; // :-) чё это не понятно ...
-        if (pPF->lineSpacing.is_init())
-        {
-            LONG val = pPF->lineSpacing.get();
-            //1/1024 master unit or 1/589824 inch.
-            //1 inch = 576 master unit -> 1 master unit = 0.125 pt
-            if (val > 0)//The absolute value specifies spacing in master units.
-            {
-                std::wstring strProp = std::to_wstring( (int)(val* 0.125 * 100/*/ dKoef1*/));
-                m_oWriter.WriteString(L"<a:lnSpc><a:spcPts val=\"" + strProp + L"\"/></a:lnSpc>");
-            }
-            else if (val < 0 && val > -13200)
-            {//0 to 13200, inclusive - The value specifies spacing as a percentage of the text line height.
-                std::wstring strProp = std::to_wstring( -val * 1000);
-                m_oWriter.WriteString(L"<a:lnSpc><a:spcPct val=\"" + strProp + L"\"/></a:lnSpc>");
-            }
-        }
-        if (pPF->spaceAfter.is_init())
-        {
-            LONG val = pPF->spaceAfter.get();
-            if (val > 0)
-            {
-                std::wstring strProp = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
-                m_oWriter.WriteString(L"<a:spcAft><a:spcPts val=\"" + strProp + L"\"/></a:spcAft>");
-            }
-            else if (val < 0 && val > -13200)
-            {
-                std::wstring strProp = std::to_wstring(-val * 1000);
-                m_oWriter.WriteString(L"<a:spcAft><a:spcPct val=\"" + strProp + L"\"/></a:spcAft>");
-            }
-        }
-        if (pPF->spaceBefore.is_init())
-        {
-            LONG val = pPF->spaceBefore.get();
-            if (val > 0)
-            {
-                std::wstring strProp = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
-                m_oWriter.WriteString(L"<a:spcBef><a:spcPts val=\"" + strProp + L"\"/></a:spcBef>");
-            }
-            else if (val < 0 && val > -13200)
-            {
-                std::wstring strProp = std::to_wstring(-val * 1000);
-                m_oWriter.WriteString(L"<a:spcBef><a:spcPct val=\"" + strProp + L"\"/></a:spcBef>");
-            }
-        }
 
         if (pPF->hasBullet.is_init())
         {
@@ -1457,6 +1422,52 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
             else
             {
                 m_oWriter.WriteString(std::wstring(L"<a:buNone/>"));
+            }
+        }
+
+        double dKoef1 = 3.52777778; // :-) чё это не понятно ...
+        if (pPF->lineSpacing.is_init())
+        {
+            LONG val = pPF->lineSpacing.get();
+            //1/1024 master unit or 1/589824 inch.
+            //1 inch = 576 master unit -> 1 master unit = 0.125 pt
+            if (val > 0)//The absolute value specifies spacing in master units.
+            {
+                std::wstring strProp = std::to_wstring( (int)(val* 0.125 * 100/*/ dKoef1*/));
+                m_oWriter.WriteString(L"<a:lnSpc><a:spcPts val=\"" + strProp + L"\"/></a:lnSpc>");
+            }
+            else if (val < 0 && val > -13200)
+            {//0 to 13200, inclusive - The value specifies spacing as a percentage of the text line height.
+                std::wstring strProp = std::to_wstring( -val * 1000);
+                m_oWriter.WriteString(L"<a:lnSpc><a:spcPct val=\"" + strProp + L"\"/></a:lnSpc>");
+            }
+        }
+        if (pPF->spaceAfter.is_init())
+        {
+            LONG val = pPF->spaceAfter.get();
+            if (val > 0)
+            {
+                std::wstring strProp = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
+                m_oWriter.WriteString(L"<a:spcAft><a:spcPts val=\"" + strProp + L"\"/></a:spcAft>");
+            }
+            else if (val < 0 && val > -13200)
+            {
+                std::wstring strProp = std::to_wstring(-val * 1000);
+                m_oWriter.WriteString(L"<a:spcAft><a:spcPct val=\"" + strProp + L"\"/></a:spcAft>");
+            }
+        }
+        if (pPF->spaceBefore.is_init())
+        {
+            LONG val = pPF->spaceBefore.get();
+            if (val > 0)
+            {
+                std::wstring strProp = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
+                m_oWriter.WriteString(L"<a:spcBef><a:spcPts val=\"" + strProp + L"\"/></a:spcBef>");
+            }
+            else if (val < 0 && val > -13200)
+            {
+                std::wstring strProp = std::to_wstring(-val * 1000);
+                m_oWriter.WriteString(L"<a:spcBef><a:spcPct val=\"" + strProp + L"\"/></a:spcBef>");
             }
         }
 
@@ -2217,8 +2228,24 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertImage()
 
     m_oWriter.WriteString(std::wstring(L"<p:blipFill>"));
 
-    std::wstring strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"/>");
+    std::wstring strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"");
     m_oWriter.WriteString(strWrite);
+    if (false)
+    {
+        m_oWriter.WriteString(L"><a:lum");
+        std::wstring bright = L""; // 0 - min, backgrpund. 50000 - usually. 100000 - max,white
+        std::wstring contrast = L""; // -100000 - min white. 0 - usually. 100000 - color max
+        if (!bright.empty())
+            m_oWriter.WriteString(L" bright=\"" + bright + L"\"");
+        if (!contrast.empty())
+            m_oWriter.WriteString(L" contrast=\"" + contrast + L"\"");
+
+
+        m_oWriter.WriteString(L"/></a:blip>");
+    }else
+    {
+        m_oWriter.WriteString(L"/>");
+    }
 
     m_oWriter.WriteString(std::wstring(L"<a:srcRect"));
     if (pImageElement->m_bCropEnabled)

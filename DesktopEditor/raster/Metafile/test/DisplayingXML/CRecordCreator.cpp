@@ -208,8 +208,7 @@ void CRecordCreator::CreatePointWidgets(const QString& qsName)
 {
         this->setWindowTitle(QString("Create: %1").arg(qsName));
 
-        AddSharedWidgets({new CRectangleWidget("Bounds"),
-                          new CPointsWidget()});
+        AddSharedWidgets({new CPointWidget(QString("Offset"))});
 }
 
 void CRecordCreator::CreateFormWidget(const QString& qsName, const QString& qsFormName)

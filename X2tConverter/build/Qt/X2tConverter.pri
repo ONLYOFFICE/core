@@ -98,7 +98,7 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
 #All dynamic libs
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfWriter, PdfReader, HtmlFile2, EpubFile, XpsFile, DjVuFile, HtmlRenderer, doctrenderer)
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfWriter, PdfReader, HtmlFile2, EpubFile, XpsFile, DjVuFile, HtmlRenderer, doctrenderer, DocxRenderer)
 
 
 #####################################################

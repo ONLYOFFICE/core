@@ -45,7 +45,7 @@ bool xlsx_protection::operator == (const xlsx_protection & rVal) const
 {
      const bool res = 
          hidden.get_value_or(false) == rVal.hidden.get_value_or(false) &&
-         locked.get_value_or(false) == rVal.locked.get_value_or(false);
+         locked.get_value_or(true) == rVal.locked.get_value_or(true);
      return res;
 }
 
@@ -102,6 +102,10 @@ xlsx_protection OdfProperties2XlsxProtection(const odf_reader::style_table_cell_
 			case odf_types::style_cell_protect::formula_hidden:
 			{
 				protection.hidden = true;
+			}break;
+			case odf_types::style_cell_protect::none:
+			{
+				protection.locked = false;
 			}break;
 		}
 	}

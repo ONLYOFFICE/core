@@ -3678,11 +3678,16 @@ std::wstring CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, P
 	{ 
 		zIndex = (__int64)parserPoint.FromString(pFind->second);
 		
-        _INT64 zIndex_ = *zIndex >= 0 ? *zIndex : -*zIndex;
+		_INT64 zIndex_ = *zIndex;// >= 0 ? *zIndex : -*zIndex;
 		
-		if (m_nDrawingMaxZIndex == 0 && zIndex_ < 0xF000000 && zIndex_ > 0x80000)
+		if (m_nDrawingMaxZIndex == 0 && ((zIndex_ < 0xF000000 && zIndex_ > 0x80000) || 
+										(zIndex_ > -0xF000000 && zIndex_ < -0x80000)))
 		{
 			zIndex_ = 0xF000000 - 0x80000 + zIndex_;
+		}
+		else
+		{
+			zIndex_ = abs(zIndex_);
 		}
 		
 		oWriter.WriteAttribute(L"relativeHeight", std::to_wstring(zIndex_));

@@ -2382,20 +2382,22 @@ void XlsxConverter::convert(OOX::Spreadsheet::CProtection *protection, odf_write
 	if (!protection)return;
 	if (!cell_properties)return;
 
+	bool bHidden = protection->m_oHidden.IsInit() ? protection->m_oHidden->ToBool() : false;
+
 	if (protection->m_oLocked.IsInit())
 	{
 		if (protection->m_oLocked->ToBool())
 			cell_properties->content_.style_cell_protect_ = odf_types::style_cell_protect(odf_types::style_cell_protect::protected_);
+		else 
+			if (false == bHidden)
+				cell_properties->content_.style_cell_protect_ = odf_types::style_cell_protect(odf_types::style_cell_protect::none);
 	}
-	if (protection->m_oHidden.IsInit())
+	if (bHidden)
 	{
-		if (protection->m_oHidden->ToBool())
-		{
-			if (cell_properties->content_.style_cell_protect_)
-				cell_properties->content_.style_cell_protect_ = odf_types::style_cell_protect(odf_types::style_cell_protect::protected_formula_hidden);
-			else
-				cell_properties->content_.style_cell_protect_ = odf_types::style_cell_protect(odf_types::style_cell_protect::formula_hidden);
-		}
+		if (cell_properties->content_.style_cell_protect_)
+			cell_properties->content_.style_cell_protect_ = odf_types::style_cell_protect(odf_types::style_cell_protect::protected_formula_hidden);
+		else
+			cell_properties->content_.style_cell_protect_ = odf_types::style_cell_protect(odf_types::style_cell_protect::formula_hidden);
 	}
 
 }

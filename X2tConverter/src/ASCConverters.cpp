@@ -4442,7 +4442,7 @@ namespace NExtractTools
            nRes = PdfDjvuXpsToImage(&pReader, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);
 		   RELEASEOBJECT(pReader);
 	   }
-       else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo)
+       else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == nFormatTo)
        {
            IOfficeDrawingFile* pReader = NULL;
            switch (nFormatFrom)
@@ -4468,9 +4468,6 @@ namespace NExtractTools
                CDocxRenderer oDocxRenderer(pApplicationFonts);
 
                NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::TextAssociationTypeNoFrames;
-               //taType = NSDocxRenderer::TextAssociationTypeLine;
-               //taType = NSDocxRenderer::TextAssociationTypeBlock;
-               //taType = NSDocxRenderer::TextAssociationTypeNoFrames;
                oDocxRenderer.SetTextAssociationType(taType);
 
                std::wstring sTempDirOut = sTemp + L"/output";
@@ -4478,7 +4475,7 @@ namespace NExtractTools
                    NSDirectory::CreateDirectory(sTempDirOut);
 
                oDocxRenderer.SetTempFolder(sTempDirOut);
-               oDocxRenderer.Convert(pReader, sTo);
+               oDocxRenderer.Convert(pReader, sTo, AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo);
            }
            else
                nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;

@@ -4468,6 +4468,31 @@ namespace NExtractTools
                CDocxRenderer oDocxRenderer(pApplicationFonts);
 
                NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::TextAssociationTypeNoFrames;
+               if (params.m_oTextParams)
+               {
+                   InputParamsText* oTextParams = params.m_oTextParams;
+                   if (oTextParams->m_nTextAssociationType)
+                       //taType = static_cast<NSDocxRenderer::TextAssociationType>(*oTextParams->m_nTextAssociationType);
+                   {
+                       switch (*oTextParams->m_nTextAssociationType)
+                       {
+                       case 0:
+                           taType = NSDocxRenderer::TextAssociationTypeDefault;
+                           break;
+                       case 1:
+                           taType = NSDocxRenderer::TextAssociationTypeLine;
+                           break;
+                       case 2:
+                           taType = NSDocxRenderer::TextAssociationTypeNoFrames;
+                           break;
+                       case 3:
+                           taType = NSDocxRenderer::TextAssociationTypeBlock;
+                           break;
+                       default:
+                           break;
+                       }
+                   }
+               }
                oDocxRenderer.SetTextAssociationType(taType);
 
                std::wstring sTempDirOut = sTemp + L"/output";

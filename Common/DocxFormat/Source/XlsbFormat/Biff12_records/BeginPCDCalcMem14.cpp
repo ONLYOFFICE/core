@@ -29,31 +29,39 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "BeginPCDCalcMem14.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    BeginPCDCalcMem14::BeginPCDCalcMem14()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    BeginPCDCalcMem14::~BeginPCDCalcMem14()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr BeginPCDCalcMem14::clone()
+    {
+        return BaseObjectPtr(new BeginPCDCalcMem14(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    void BeginPCDCalcMem14::readFields(XLS::CFRecord& record)
+    {
+        BYTE flags;
 
-    };
+        record >> FRTheader >> flags;
+
+        fFlattenHierarchies  = GETBIT(flags, 0);
+        fDynamicSet          = GETBIT(flags, 1);
+        fHierarchizeDistinct = GETBIT(flags, 2);
+
+        record >> irstDisplayFolder >> irstMDXFormulaLong;
+    }
 
 } // namespace XLSB
 

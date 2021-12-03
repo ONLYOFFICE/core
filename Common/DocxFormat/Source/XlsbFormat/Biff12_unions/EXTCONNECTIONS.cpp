@@ -29,31 +29,56 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "EXTCONNECTIONS.h"
+#include "../Biff12_records/BeginExtConnections.h"
+#include "../Biff12_unions/EXTCONNECTION.h"
+#include "../Biff12_records/EndExtConnections.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    EXTCONNECTIONS::EXTCONNECTIONS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    EXTCONNECTIONS::~EXTCONNECTIONS()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr EXTCONNECTIONS::clone()
+    {
+        return BaseObjectPtr(new EXTCONNECTIONS(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //EXTCONNECTIONS = BrtBeginExtConnections 1*EXTCONNECTION BrtEndExtConnectionss
+    const bool EXTCONNECTIONS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginExtConnections>())
+        {
+            m_BrtBeginExtConnections = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        int countEXTCONNECTION = proc.repeated<EXTCONNECTION>(0, 0);
+
+        while(countEXTCONNECTION > 0)
+        {
+            m_arEXTCONNECTION.insert(m_arEXTCONNECTION.begin(), elements_.back());
+            elements_.pop_back();
+            countEXTCONNECTION--;
+        }
+
+        if (proc.optional<EndExtConnections>())
+        {
+            m_BrtEndExtConnections = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginExtConnections && m_BrtEndExtConnections;
+    }
 
 } // namespace XLSB
 

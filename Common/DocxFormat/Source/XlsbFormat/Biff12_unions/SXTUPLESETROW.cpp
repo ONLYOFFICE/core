@@ -29,31 +29,55 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "SXTUPLESETROW.h"
+#include "../Biff12_records/BeginSXTupleSetRow.h"
+#include "../Biff12_records/SXTupleSetRowItem.h"
+#include "../Biff12_records/EndSXTupleSetRow.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    SXTUPLESETROW::SXTUPLESETROW()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    SXTUPLESETROW::~SXTUPLESETROW()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr SXTUPLESETROW::clone()
+    {
+        return BaseObjectPtr(new SXTUPLESETROW(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //SXTUPLESETROW = BrtBeginSXTupleSetRow 1*3000BrtSXTupleSetRowItem BrtEndSXTupleSetRow
+    const bool SXTUPLESETROW::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginSXTupleSetRow>())
+        {
+            m_BrtBeginSXTupleSetRow = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        auto count = proc.repeated<SXTupleSetRowItem>(0, 3000);
+        while(count > 0)
+        {
+            m_arBrtSXTupleSetRowItem.insert(m_arBrtSXTupleSetRowItem.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndSXTupleSetRow>())
+        {
+            m_BrtEndSXTupleSetRow = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginSXTupleSetRow && !m_arBrtSXTupleSetRowItem.empty() && m_BrtEndSXTupleSetRow;
+    }
 
 } // namespace XLSB
 

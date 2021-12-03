@@ -29,31 +29,63 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "EXTCONN15.h"
+#include "../Biff12_records/BeginExtConn15.h"
+#include "../Biff12_unions/OLEDBPR15.h"
+#include "../Biff12_unions/DATAFEEDPR15.h"
+#include "../Biff12_unions/TEXTPR15.h"
+#include "../Biff12_records/RangePr15.h"
+#include "../Biff12_records/EndExtConn15.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    EXTCONN15::EXTCONN15()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    EXTCONN15::~EXTCONN15()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr EXTCONN15::clone()
+    {
+        return BaseObjectPtr(new EXTCONN15(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    // EXTCONN15 = BrtBeginExtConn15 [OLEDBPR15 / DATAFEEDPR15 / TEXTPR15 / BrtRangePr15] BrtEndExtConn15
+    const bool EXTCONN15::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginExtConn15>())
+        {
+            m_BrtBeginExtConn15 = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        bool flag = true;
+        if(!proc.optional<OLEDBPR15>())
+           if(!proc.optional<DATAFEEDPR15>())
+               if(!proc.optional<TEXTPR15>())
+                   if(!proc.optional<RangePr15>())
+                       flag = false;
+
+        if(flag)
+        {
+            m_source = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<EndExtConn15>())
+        {
+            m_BrtEndExtConn15 = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginExtConn15 && m_BrtEndExtConn15;
+    }
 
 } // namespace XLSB
 

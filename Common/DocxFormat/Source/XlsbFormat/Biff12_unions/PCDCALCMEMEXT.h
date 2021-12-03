@@ -33,25 +33,27 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    class PCDCALCMEMEXT: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
+        BASE_OBJECT_DEFINE_CLASS_NAME(PCDCALCMEMEXT)
     public:
-        FILLS();
-        virtual ~FILLS();
+        PCDCALCMEMEXT();
+        virtual ~PCDCALCMEMEXT();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+        XLS::BaseObjectPtr              m_BrtBeginPCDCalcMemExt;
+        XLS::BaseObjectPtr              m_BrtFRTBegin;
+        XLS::BaseObjectPtr              m_PCDCALCMEM14;
+        XLS::BaseObjectPtr              m_BrtFRTEnd;
+        XLS::BaseObjectPtr              m_PCDCALCMEM15;
+        std::vector<XLS::BaseObjectPtr>	m_arFRT;
+        XLS::BaseObjectPtr              m_BrtEndPCDCalcMemExt;
 
     };
 

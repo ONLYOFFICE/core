@@ -29,31 +29,56 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "DBTABLES15.h"
+#include "../Biff12_records/BeginDbTables15.h"
+#include "../Biff12_records/DbTable15.h"
+#include "../Biff12_records/EndDbTables15.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    DBTABLES15::DBTABLES15()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    DBTABLES15::~DBTABLES15()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr DBTABLES15::clone()
+    {
+        return BaseObjectPtr(new DBTABLES15(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //DBTABLES15 = BrtBeginDbTables15 1*BrtDbTable15 BrtEndDbTables15
+    const bool DBTABLES15::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginDbTables15>())
+        {
+            m_BrtBeginDbTables15 = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        int countDbTable15 = proc.repeated<DbTable15>(0, 0);
+
+        while(countDbTable15 > 0)
+        {
+            m_arBrtDbTable15.insert(m_arBrtDbTable15.begin(), elements_.back());
+            elements_.pop_back();
+            countDbTable15--;
+        }
+
+        if (proc.optional<EndDbTables15>())
+        {
+            m_BrtEndDbTables15 = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginDbTables15 && m_BrtEndDbTables15;
+    }
 
 } // namespace XLSB
 

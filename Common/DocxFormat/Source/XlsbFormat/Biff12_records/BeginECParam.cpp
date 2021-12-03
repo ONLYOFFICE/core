@@ -29,31 +29,60 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "BeginECParam.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    BeginECParam::BeginECParam()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    BeginECParam::~BeginECParam()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr BeginECParam::clone()
+    {
+        return BaseObjectPtr(new BeginECParam(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    void BeginECParam::readFields(XLS::CFRecord& record)
+    {
+        _UINT16 flags;
+        record >> flags;
 
-    };
+        pbt              = GETBITS(flags, 0, 2);
+        fAutoRefresh     = GETBIT(flags, 3);
+
+        record >> wTypeSql;
+
+        if(pbt != 0x0)
+            record >> dataType;
+
+        if(pbt == 0x0)
+            record >> fLoadPrompt;
+
+        record >> stName;
+
+        if(pbt == 0x0 && fLoadPrompt == 0x00000001)
+            record >> stPrompt;
+
+        if(pbt == 0x1 && dataType == 0x00000002)
+            record >> stVal;
+
+        if(pbt == 0x1 && (dataType == 0x00000001 || dataType == 0x00008000))
+            record >> xnumVal;
+
+        if(pbt == 0x1 && dataType == 0x00000004)
+            record >> boolVal;
+
+        if(pbt == 0x2)
+            record >> fmla;
+    }
 
 } // namespace XLSB
 

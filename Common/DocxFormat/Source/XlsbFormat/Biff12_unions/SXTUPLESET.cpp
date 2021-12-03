@@ -29,31 +29,60 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "SXTUPLESET.h"
+#include "../Biff12_records/BeginSXTupleSet.h"
+#include "../Biff12_unions/SXTUPLESETHEADER.h"
+#include "../Biff12_unions/SXTUPLESETDATA.h"
+#include "../Biff12_records/EndSXTupleSet.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    SXTUPLESET::SXTUPLESET()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    SXTUPLESET::~SXTUPLESET()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr SXTUPLESET::clone()
+    {
+        return BaseObjectPtr(new SXTUPLESET(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //SXTUPLESET = BrtBeginSXTupleSet SXTUPLESETHEADER SXTUPLESETDATA BrtEndSXTupleSet
+    const bool SXTUPLESET::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginSXTupleSet>())
+        {
+            m_BrtBeginSXTupleSet = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        if (proc.optional<SXTUPLESETHEADER>())
+        {
+            m_SXTUPLESETHEADER = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<SXTUPLESETDATA>())
+        {
+            m_SXTUPLESETDATA = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<EndSXTupleSet>())
+        {
+            m_BrtEndSXTupleSet = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginSXTupleSet && m_SXTUPLESETHEADER && m_SXTUPLESETDATA && m_BrtEndSXTupleSet;
+    }
 
 } // namespace XLSB
 

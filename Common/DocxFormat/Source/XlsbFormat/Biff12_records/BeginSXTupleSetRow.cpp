@@ -29,31 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "BeginSXTupleSetRow.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    BeginSXTupleSetRow::BeginSXTupleSetRow()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    BeginSXTupleSetRow::~BeginSXTupleSetRow()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr BeginSXTupleSetRow::clone()
+    {
+        return BaseObjectPtr(new BeginSXTupleSetRow(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    void BeginSXTupleSetRow::readFields(XLS::CFRecord& record)
+    {
 
-    };
+    }
 
 } // namespace XLSB
 

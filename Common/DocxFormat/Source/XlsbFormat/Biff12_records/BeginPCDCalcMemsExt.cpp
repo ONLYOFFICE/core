@@ -29,31 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "BeginPCDCalcMemsExt.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    BeginPCDCalcMemsExt::BeginPCDCalcMemsExt()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    BeginPCDCalcMemsExt::~BeginPCDCalcMemsExt()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr BeginPCDCalcMemsExt::clone()
+    {
+        return BaseObjectPtr(new BeginPCDCalcMemsExt(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
-
-    };
+    void BeginPCDCalcMemsExt::readFields(XLS::CFRecord& record)
+    {
+        record >> FRTheader >> cCalcMems;
+    }
 
 } // namespace XLSB
 

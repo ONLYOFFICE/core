@@ -29,31 +29,42 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "SXTupleSetRowItem.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    SXTupleSetRowItem::SXTupleSetRowItem()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    SXTupleSetRowItem::~SXTupleSetRowItem()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr SXTupleSetRowItem::clone()
+    {
+        return BaseObjectPtr(new SXTupleSetRowItem(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    void SXTupleSetRowItem::readFields(XLS::CFRecord& record)
+    {
+        BYTE flags;
 
-    };
+        record >> FRTheader >> flags;
+
+        fUnique  = GETBIT(flags, 0);
+        fDisplay = GETBIT(flags, 1);
+
+        if(fUnique)
+            record >> irstUnique;
+
+        if(fDisplay)
+            record >> irstDisplay;
+    }
 
 } // namespace XLSB
 

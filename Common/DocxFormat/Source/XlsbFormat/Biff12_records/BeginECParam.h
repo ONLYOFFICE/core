@@ -31,28 +31,38 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
+#include "../Biff12_structures/XLWideString.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
+#include "../Biff12_structures/ParameterParsedFormula.h"
 
 namespace XLSB
 {
-
-    class FILLS: public XLS::CompositeObject
+    // Logical representation of BrtBeginECParam record in BIFF12
+    class BeginECParam: public XLS::BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginECParam)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginECParam)
+        public:
+            BeginECParam();
+            virtual ~BeginECParam();
 
-        XLS::BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+            void readFields(XLS::CFRecord& record);
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
-
+            BYTE                    pbt;
+            bool                    fAutoRefresh;
+            _INT16                  wTypeSql;
+            _UINT32                 dataType;
+            XLS::Boolean<_UINT32>   fLoadPrompt;
+            XLWideString            stName;
+            XLWideString            stPrompt;
+            XLWideString            stVal;
+            XLS::Xnum               xnumVal;
+            BYTE                    boolVal;
+            ParameterParsedFormula  fmla;
     };
 
 } // namespace XLSB

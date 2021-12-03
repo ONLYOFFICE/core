@@ -29,31 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "EndECTWFldInfoLst15.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    EndECTWFldInfoLst15::EndECTWFldInfoLst15()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    EndECTWFldInfoLst15::~EndECTWFldInfoLst15()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr EndECTWFldInfoLst15::clone()
+    {
+        return BaseObjectPtr(new EndECTWFldInfoLst15(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
-
-    };
+    void EndECTWFldInfoLst15::readFields(XLS::CFRecord& record)
+    {
+        // No data in this record
+    }
 
 } // namespace XLSB
 

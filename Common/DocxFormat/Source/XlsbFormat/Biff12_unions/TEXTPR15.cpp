@@ -29,31 +29,46 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "TEXTPR15.h"
+#include "../Biff12_unions/ECTXTWIZ15.h"
+#include "../Biff12_records/TextPr15.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    TEXTPR15::TEXTPR15()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    TEXTPR15::~TEXTPR15()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr TEXTPR15::clone()
+    {
+        return BaseObjectPtr(new TEXTPR15(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //TEXTPR15 = ECTXTWIZ15 [BrtTextPr15]
+    const bool TEXTPR15::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<ECTXTWIZ15>())
+        {
+            m_ECTXTWIZ15 = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        if (proc.optional<TextPr15>())
+        {
+            m_BrtTextPr15 = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_ECTXTWIZ15 != nullptr;
+    }
 
 } // namespace XLSB
 

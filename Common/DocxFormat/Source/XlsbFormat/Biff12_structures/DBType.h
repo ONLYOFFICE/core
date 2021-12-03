@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,29 +31,30 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffAttribute.h"
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
-    {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+class DBType : public XLS::BiffAttributeSimple<unsigned int>
+{
+public:
+    XLS::BiffStructurePtr clone();
 
-        XLS::BaseObjectPtr clone();
-
-        virtual const bool loadContent(XLS::BinProcessor& proc);
-
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
-
-    };
+	enum
+	{
+            DBTODBC         = 0x00000001,
+            DBTDAO          = 0x00000002,
+            DBTWEB          = 0x00000004,
+            DBTOLEDB        = 0x00000005,
+            DBTTEXT         = 0x00000006,
+            DBTADO          = 0x00000007,
+            DBTOLEDBPP      = 0x00000064,
+            DBTDATAFEED     = 0x00000065,
+            DBTWORKSHEET    = 0x00000066,
+            DBTTEXTPP       = 0x00000067,
+	};
+};
 
 } // namespace XLSB
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,29 +31,20 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/ParsedFormula.h"
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
-    {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+class ParameterParsedFormula : public XLS::ParsedFormula
+{
+    BASE_STRUCTURE_DEFINE_CLASS_NAME(ParameterParsedFormula)
+public:
+    ParameterParsedFormula();
+    XLS::BiffStructurePtr clone();
+	virtual void load(XLS::CFRecord& record);
 
-        XLS::BaseObjectPtr clone();
-
-        virtual const bool loadContent(XLS::BinProcessor& proc);
-
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
-
-    };
+};
 
 } // namespace XLSB
 

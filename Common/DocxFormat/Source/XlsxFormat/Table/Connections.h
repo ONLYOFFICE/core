@@ -32,6 +32,8 @@
 #pragma once
 
 #include "../CommonInclude.h"
+#include "../../XlsbFormat/Xlsb.h"
+#include "../../XlsbFormat/ConnectionsStream.h"
 
 namespace OOX
 {
@@ -848,10 +850,33 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				CPath oRootPath;
 				read(oRootPath, oPath);
 			}
+                        void readBin(const CPath& oPath)
+                        {
+                            CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+                            if (xlsb)
+                            {
+                                XLSB::ConnectionsStreamPtr connectionsStream = std::make_shared<XLSB::ConnectionsStream>();
+
+                                xlsb->ReadBin(oPath, connectionsStream.get());
+
+                                if (connectionsStream != nullptr)
+                                {
+                                    //if (connectionsStream->m_EXTCONNECTIONS != nullptr)
+                                       // m_oConnections = connectionsStream->m_EXTCONNECTIONS;
+                                }
+
+                            }
+                        }
 			virtual void read(const CPath& oRootPath, const CPath& oPath)
 			{
 				m_oReadPath = oPath;
 				IFileContainer::Read( oRootPath, oPath );
+
+                                if( m_oReadPath.GetExtention() == _T(".bin"))
+                                {
+                                    readBin(m_oReadPath);
+                                    return;
+                                }
 
 				XmlUtils::CXmlLiteReader oReader;
 

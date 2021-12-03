@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,51 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ECTxtWizData.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    ECTxtWizData::ECTxtWizData()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ECTxtWizData::ECTxtWizData(XLS::CFRecord& record)
+    {
+        load(record);
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    ECTxtWizData::~ECTxtWizData()
+    {
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    BiffStructurePtr ECTxtWizData::clone()
+    {
+        return BiffStructurePtr(new ECTxtWizData(*this));
+    }
 
-    };
+    void ECTxtWizData::load(XLS::CFRecord& record)
+    {
+        _UINT32 flags;
+        record >> flags;
+
+        iCpid           = GETBITS(flags, 0, 1);
+        iCpidNew        = GETBITS(flags, 2, 11);
+        fDelimited      = GETBIT(flags, 12);
+        fTab            = GETBIT(flags, 13);
+        fSpace          = GETBIT(flags, 14);
+        fComma          = GETBIT(flags, 15);
+        fSemiColon      = GETBIT(flags, 16);
+        fConsecutive    = GETBIT(flags, 17);
+        fTextDelim      = GETBITS(flags, 18, 19);
+        fPromptForFile  = GETBIT(flags, 21);
+        fCustom         = GETBIT(flags, 22);
+
+        record >> chCustom >> rowStartAt >> chDecimal >> chThousSep;
+    }
 
 } // namespace XLSB
 

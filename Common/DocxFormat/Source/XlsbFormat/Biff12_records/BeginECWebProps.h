@@ -31,28 +31,44 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
+#include "../Biff12_structures/DBType.h"
+#include "../Biff12_structures/XLWideString.h"
 
 namespace XLSB
 {
-
-    class FILLS: public XLS::CompositeObject
+    // Logical representation of BrtBeginECWebProps record in BIFF12
+    class BeginECWebProps: public XLS::BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginECWebProps)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginECWebProps)
+        public:
+            BeginECWebProps();
+            virtual ~BeginECWebProps();
 
-        XLS::BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+            void readFields(XLS::CFRecord& record);
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+            //static const XLS::ElementType	type = XLS::typeBeginECWebProps;
 
+            BYTE         wHTMLFmt;
+            bool         fSrcIsXML;
+            bool         fImportSourceData;
+            bool         fParsePreFormatted;
+            bool         fConsecDelim;
+            bool         fSameSettings;
+            bool         fXL97Format;
+            bool         fNoDateRecog;
+            bool         fRefreshedInXL9;
+            bool         fTablesOnlyHTML;
+            bool         fLoadWebPost;
+            bool         fLoadEditWebPage;
+            bool         fLoadURL;
+            XLWideString stURL;
+            XLWideString stWebPost;
+            XLWideString stEditWebPage;
     };
 
 } // namespace XLSB

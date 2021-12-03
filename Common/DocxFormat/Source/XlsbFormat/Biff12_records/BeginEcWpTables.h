@@ -31,28 +31,25 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
-
-    class FILLS: public XLS::CompositeObject
+    // Logical representation of BrtBeginEcWpTables record in BIFF12
+    class BeginEcWpTables: public XLS::BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginEcWpTables)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginEcWpTables)
+        public:
+            BeginEcWpTables();
+            virtual ~BeginEcWpTables();
 
-        XLS::BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+            void readFields(XLS::CFRecord& record);
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
-
+            _UINT32     cTables;
     };
 
 } // namespace XLSB

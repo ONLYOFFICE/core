@@ -29,31 +29,65 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "BeginExtConnection.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    BeginExtConnection::BeginExtConnection()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    BeginExtConnection::~BeginExtConnection()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr BeginExtConnection::clone()
+    {
+        return BaseObjectPtr(new BeginExtConnection(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    void BeginExtConnection::readFields(XLS::CFRecord& record)
+    {
+        _UINT32 flags;
 
-    };
+        record >> bVerRefreshed >> bVerRefreshableMin >> pc;
+
+        record.skipNunBytes(1);
+
+        record >> wInterval >> flags;
+
+        fMaintain                 = GETBIT(flags, 0);
+        fNewQuery                 = GETBIT(flags, 1);
+        fDeleted                  = GETBIT(flags, 2);
+        fAlwaysUseConnectionFile  = GETBIT(flags, 3);
+        fBackgroundQuery          = GETBIT(flags, 4);
+        fRefreshOnLoad            = GETBIT(flags, 5);
+        fSaveData                 = GETBIT(flags, 6);
+        fLoadSourceDataFile       = GETBIT(flags, 16);
+        fLoadSourceConnectionFile = GETBIT(flags, 17);
+        fLoadConnectionDesc       = GETBIT(flags, 18);
+        fLoadSSOApplicationID     = GETBIT(flags, 20);
+
+        record >> idbtype >> irecontype >> dwConnID >> iCredMethod;
+
+        if(fLoadSourceDataFile)
+            record >> stDataFile;
+
+        if(fLoadSourceConnectionFile)
+            record >> stConnectionFile;
+
+        if(fLoadConnectionDesc)
+            record >> stConnDesc;
+
+        record >> stConnName;
+
+        if(fLoadSSOApplicationID)
+            record >> stSso;
+    }
 
 } // namespace XLSB
 

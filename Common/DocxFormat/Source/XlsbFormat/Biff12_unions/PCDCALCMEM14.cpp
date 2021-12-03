@@ -29,31 +29,51 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "PCDCALCMEM14.h"
+#include "../Biff12_records/BeginPCDCalcMem14.h"
+#include "../Biff12_unions/SXTUPLESET.h"
+#include "../Biff12_records/EndPCDCalcMem14.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    PCDCALCMEM14::PCDCALCMEM14()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    PCDCALCMEM14::~PCDCALCMEM14()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr PCDCALCMEM14::clone()
+    {
+        return BaseObjectPtr(new PCDCALCMEM14(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //PCDCALCMEM14 = BrtBeginPCDCalcMem14 [SXTUPLESET] BrtEndPCDCalcMem14
+    const bool PCDCALCMEM14::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginPCDCalcMem14>())
+        {
+            m_BrtBeginPCDCalcMem14 = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<SXTUPLESET>())
+        {
+            m_SXTUPLESET = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<EndPCDCalcMem14>())
+        {
+            m_BrtEndPCDCalcMem14 = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        return m_BrtBeginPCDCalcMem14 && m_SXTUPLESET && m_BrtEndPCDCalcMem14;
+    }
 
 } // namespace XLSB
 

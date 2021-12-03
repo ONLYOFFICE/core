@@ -29,31 +29,56 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ECPARAMS.h"
+#include "../Biff12_records/BeginECParams.h"
+#include "../Biff12_unions/ECPARAM.h"
+#include "../Biff12_records/EndECParams.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    ECPARAMS::ECPARAMS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ECPARAMS::~ECPARAMS()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr ECPARAMS::clone()
+    {
+        return BaseObjectPtr(new ECPARAMS(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //ECPARAMS = BrtBeginECParams 1*ECPARAM BrtEndECParams
+    const bool ECPARAMS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginECParams>())
+        {
+            m_BrtBeginECParams = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        int countECPARAM = proc.repeated<ECPARAM>(0, 0);
+
+        while(countECPARAM > 0)
+        {
+            m_arECPARAM.insert(m_arECPARAM.begin(), elements_.back());
+            elements_.pop_back();
+            countECPARAM--;
+        }
+
+        if (proc.optional<EndECParams>())
+        {
+            m_BrtEndECParams = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginECParams && m_BrtEndECParams;
+    }
 
 } // namespace XLSB
 

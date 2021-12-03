@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,29 +31,26 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffAttribute.h"
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
-    {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+class CmdType : public XLS::BiffAttributeSimple<unsigned int>
+{
+public:
+    XLS::BiffStructurePtr clone();
 
-        XLS::BaseObjectPtr clone();
-
-        virtual const bool loadContent(XLS::BinProcessor& proc);
-
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
-
-    };
+	enum
+	{
+            CMDNULL         = 0x00000000,
+            CMDCUBE         = 0x00000001,
+            CMDSQL          = 0x00000002,
+            CMDTABLE        = 0x00000003,
+            CMDDEFAULT      = 0x00000004,
+            CMDSPLI         = 0x00000005,
+        };
+};
 
 } // namespace XLSB
 

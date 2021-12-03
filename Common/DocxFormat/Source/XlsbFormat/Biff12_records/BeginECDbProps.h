@@ -31,28 +31,34 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
+#include "../Biff12_structures/CmdType.h"
+#include "../Biff12_structures/XLWideString.h"
 
 namespace XLSB
 {
-
-    class FILLS: public XLS::CompositeObject
+    // Logical representation of BrtBeginECDbProps record in BIFF12
+    class BeginECDbProps: public XLS::BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginECDbProps)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginECDbProps)
+        public:
+            BeginECDbProps();
+            virtual ~BeginECDbProps();
 
-        XLS::BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+            void readFields(XLS::CFRecord& record);
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+            //static const XLS::ElementType	type = XLS::typeBeginECDbProps;
 
+            CmdType      icmdtype;
+            bool         fLoadCmdSvr;
+            bool         fLoadCmd;
+            XLWideString stConn;
+            XLWideString stCmd;
+            XLWideString stCmdSvr;
     };
 
 } // namespace XLSB

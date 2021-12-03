@@ -29,31 +29,53 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ECTXTWIZ15.h"
+#include "../Biff12_records/BeginECTxtWiz15.h"
+#include "../Biff12_unions/ECTWFLDINFOLST15.h"
+#include "../Biff12_records/EndECTxtWiz15.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    ECTXTWIZ15::ECTXTWIZ15()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ECTXTWIZ15::~ECTXTWIZ15()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr ECTXTWIZ15::clone()
+    {
+        return BaseObjectPtr(new ECTXTWIZ15(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //ECTXTWIZ15 = BrtBeginECTxtWiz15 ECTWFLDINFOLST15 BrtEndECTxtWiz15
+    const bool ECTXTWIZ15::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginECTxtWiz15>())
+        {
+            m_BrtBeginECTxtWiz15 = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        if (proc.optional<ECTWFLDINFOLST15>())
+        {
+            m_ECTWFLDINFOLST15 = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<EndECTxtWiz15>())
+        {
+            m_BrtEndECTxtWiz15 = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginECTxtWiz15 && m_ECTWFLDINFOLST15 && m_BrtEndECTxtWiz15;
+    }
 
 } // namespace XLSB
 

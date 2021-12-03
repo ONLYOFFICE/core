@@ -29,31 +29,53 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "DATAFEEDPR15.h"
+#include "../Biff12_records/BeginDataFeedPr15.h"
+#include "../Biff12_unions/DBTABLES15.h"
+#include "../Biff12_records/EndDataFeedPr15.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    DATAFEEDPR15::DATAFEEDPR15()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    DATAFEEDPR15::~DATAFEEDPR15()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr DATAFEEDPR15::clone()
+    {
+        return BaseObjectPtr(new DATAFEEDPR15(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //DATAFEEDPR15 = BrtBeginDataFeedPr15 DBTABLES15 BrtEndDataFeedPr15
+    const bool DATAFEEDPR15::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginDataFeedPr15>())
+        {
+            m_BrtBeginDataFeedPr15 = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        if (proc.optional<DBTABLES15>())
+        {
+            m_DBTABLES15 = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<EndDataFeedPr15>())
+        {
+            m_BrtEndDataFeedPr15 = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginDataFeedPr15 && m_DBTABLES15 && m_BrtEndDataFeedPr15;
+    }
 
 } // namespace XLSB
 

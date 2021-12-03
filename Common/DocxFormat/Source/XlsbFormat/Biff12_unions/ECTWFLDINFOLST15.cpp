@@ -29,31 +29,56 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ECTWFLDINFOLST15.h"
+#include "../Biff12_records/BeginECTWFldInfoLst15.h"
+#include "../Biff12_records/BeginECTwFldInfo15.h"
+#include "../Biff12_records/EndECTWFldInfoLst15.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    ECTWFLDINFOLST15::ECTWFLDINFOLST15()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ECTWFLDINFOLST15::~ECTWFLDINFOLST15()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr ECTWFLDINFOLST15::clone()
+    {
+        return BaseObjectPtr(new ECTWFLDINFOLST15(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //ECTWFLDINFOLST15 = BrtBeginECTWFldInfoLst15 1*BrtBeginECTwFldInfo15 BrtEndECTWFldInfoLst15
+    const bool ECTWFLDINFOLST15::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginECTWFldInfoLst15>())
+        {
+            m_BrtBeginECTWFldInfoLst15 = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        int countBeginECTwFldInfo15 = proc.repeated<BeginECTwFldInfo15>(0, 0);
+
+        while(countBeginECTwFldInfo15 > 0)
+        {
+            m_arBrtBeginECTwFldInfo15.insert(m_arBrtBeginECTwFldInfo15.begin(), elements_.back());
+            elements_.pop_back();
+            countBeginECTwFldInfo15--;
+        }
+
+        if (proc.optional<EndECTWFldInfoLst15>())
+        {
+            m_BrtEndECTWFldInfoLst15 = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginECTWFldInfoLst15 && m_BrtEndECTWFldInfoLst15;
+    }
 
 } // namespace XLSB
 

@@ -29,31 +29,51 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "PCDCALCMEM15.h"
+#include "../Biff12_records/FRTBegin.h"
+#include "../Biff12_records/PCDCalcMem15.h"
+#include "../Biff12_records/FRTEnd.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    PCDCALCMEM15::PCDCALCMEM15()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    PCDCALCMEM15::~PCDCALCMEM15()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr PCDCALCMEM15::clone()
+    {
+        return BaseObjectPtr(new PCDCALCMEM15(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //PCDCALCMEM15 = BrtFRTBegin BrtPCDCalcMem15 BrtFRTEnd
+    const bool PCDCALCMEM15::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<FRTBegin>())
+        {
+            m_BrtFRTBegin = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<PCDCalcMem15>())
+        {
+            m_BrtPCDCalcMem15 = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<FRTEnd>())
+        {
+            m_BrtFRTEnd = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        return m_BrtFRTBegin && m_BrtPCDCalcMem15 && m_BrtFRTEnd;
+    }
 
 } // namespace XLSB
 

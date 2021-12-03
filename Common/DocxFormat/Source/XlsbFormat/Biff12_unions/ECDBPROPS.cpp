@@ -29,31 +29,46 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ECDBPROPS.h"
+#include "../Biff12_records/BeginECDbProps.h"
+#include "../Biff12_records/EndECDbProps.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    ECDBPROPS::ECDBPROPS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ECDBPROPS::~ECDBPROPS()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr ECDBPROPS::clone()
+    {
+        return BaseObjectPtr(new ECDBPROPS(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //ECDBPROPS = BrtBeginECDbProps BrtEndECDbProps
+    const bool ECDBPROPS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginECDbProps>())
+        {
+            m_BrtBeginECDbProps = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        if (proc.optional<EndECDbProps>())
+        {
+            m_BrtEndECDbProps = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginECDbProps && m_BrtEndECDbProps;
+    }
 
 } // namespace XLSB
 

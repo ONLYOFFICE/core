@@ -29,31 +29,44 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "BeginECDbProps.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    BeginECDbProps::BeginECDbProps()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    BeginECDbProps::~BeginECDbProps()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr BeginECDbProps::clone()
+    {
+        return BaseObjectPtr(new BeginECDbProps(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    void BeginECDbProps::readFields(XLS::CFRecord& record)
+    {
+        BYTE flags;
 
-    };
+        record >> icmdtype >> flags;
+
+        fLoadCmdSvr = GETBIT(flags, 0);
+        fLoadCmd    = GETBIT(flags, 1);
+
+        record >> stConn;
+
+        if(fLoadCmd)
+            record >> stCmd;
+
+        if(fLoadCmdSvr)
+            record >> stCmdSvr;
+    }
 
 } // namespace XLSB
 

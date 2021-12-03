@@ -29,31 +29,46 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ECOLAPPROPS.h"
+#include "../Biff12_records/BeginECOlapProps.h"
+#include "../Biff12_records/EndECOlapProps.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    ECOLAPPROPS::ECOLAPPROPS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ECOLAPPROPS::~ECOLAPPROPS()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr ECOLAPPROPS::clone()
+    {
+        return BaseObjectPtr(new ECOLAPPROPS(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //ECOLAPPROPS = BrtBeginECOlapProps BrtEndECOlapProps
+    const bool ECOLAPPROPS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginECOlapProps>())
+        {
+            m_BrtBeginECOlapProps = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        if (proc.optional<EndECOlapProps>())
+        {
+            m_BrtEndECOlapProps = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginECOlapProps && m_BrtEndECOlapProps;
+    }
 
 } // namespace XLSB
 

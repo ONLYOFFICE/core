@@ -29,31 +29,46 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ECPARAM.h"
+#include "../Biff12_records/BeginECParam.h"
+#include "../Biff12_records/EndECParam.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    ECPARAM::ECPARAM()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ECPARAM::~ECPARAM()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr ECPARAM::clone()
+    {
+        return BaseObjectPtr(new ECPARAM(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //ECPARAM = BrtBeginECParam BrtEndECParam
+    const bool ECPARAM::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginECParam>())
+        {
+            m_BrtBeginECParam = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        if (proc.optional<EndECParam>())
+        {
+            m_BrtEndECParam = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginECParam && m_BrtEndECParam;
+    }
 
 } // namespace XLSB
 

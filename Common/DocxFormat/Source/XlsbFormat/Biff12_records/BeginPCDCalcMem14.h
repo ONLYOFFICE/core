@@ -31,28 +31,34 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
+#include "../Biff12_structures/FRTBlank.h"
+#include "../Biff12_structures/XLWideString.h"
 
 namespace XLSB
 {
-
-    class FILLS: public XLS::CompositeObject
+    // Logical representation of BrtBeginPCDCalcMem14 record in BIFF12
+    class BeginPCDCalcMem14: public XLS::BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginPCDCalcMem14)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginPCDCalcMem14)
+        public:
+            BeginPCDCalcMem14();
+            virtual ~BeginPCDCalcMem14();
 
-        XLS::BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+            void readFields(XLS::CFRecord& record);
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+            //static const XLS::ElementType	type = XLS::typeBeginPCDCalcMem14;
 
+            FRTBlank            FRTheader;
+            bool                fFlattenHierarchies;
+            bool                fDynamicSet;
+            bool                fHierarchizeDistinct;
+            XLWideString        irstDisplayFolder;
+            XLWideString        irstMDXFormulaLong;
     };
 
 } // namespace XLSB

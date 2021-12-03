@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,54 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "PCDISrvFmt.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    PCDISrvFmt::PCDISrvFmt()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    PCDISrvFmt::PCDISrvFmt(XLS::CFRecord& record)
+    {
+        load(record);
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    PCDISrvFmt::~PCDISrvFmt()
+    {
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    BiffStructurePtr PCDISrvFmt::clone()
+    {
+        return BiffStructurePtr(new PCDISrvFmt(*this));
+    }
 
-    };
+    void PCDISrvFmt::load(XLS::CFRecord& record)
+    {
+        BYTE flags;
+        record >> flags;
+
+        fSrvFmtNum           = GETBIT(flags, 0);
+        fSrvFmtBack          = GETBIT(flags, 1);
+        fSrvFmtFore          = GETBIT(flags, 2);
+        fSrvFmtItalic        = GETBIT(flags, 3);
+        fSrvFmtUnderline     = GETBIT(flags, 4);
+        fSrvFmtBold          = GETBIT(flags, 5);
+        fSrvFmtStrikethrough = GETBIT(flags, 6);
+
+        if(fSrvFmtNum)
+            record >> isfci;
+
+        if(fSrvFmtBack)
+            record >> cvBack;
+
+        if(fSrvFmtFore)
+            record >> cvFore;
+    }
 
 } // namespace XLSB
 

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ECTwFldInfoData.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    ECTwFldInfoData::ECTwFldInfoData()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ECTwFldInfoData::ECTwFldInfoData(XLS::CFRecord& record)
+    {
+        load(record);
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    ECTwFldInfoData::~ECTwFldInfoData()
+    {
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    BiffStructurePtr ECTwFldInfoData::clone()
+    {
+        return BiffStructurePtr(new ECTwFldInfoData(*this));
+    }
 
-    };
+    void ECTwFldInfoData::load(XLS::CFRecord& record)
+    {
+        record >> fieldType >> fieldStart;
+    }
 
 } // namespace XLSB
 

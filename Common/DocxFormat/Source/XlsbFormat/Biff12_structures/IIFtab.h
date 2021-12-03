@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,29 +31,31 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffAttribute.h"
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
-    {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+class IIFtab : public XLS::BiffAttributeSimple<unsigned char>
+{
+public:
+    XLS::BiffStructurePtr clone();
 
-        XLS::BaseObjectPtr clone();
-
-        virtual const bool loadContent(XLS::BinProcessor& proc);
-
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
-
-    };
+	enum
+	{
+            IIFTABAVERAGE    = 0x00,
+            IIFTABCOUNT      = 0x01,
+            IIFTABCOUNTA     = 0x02,
+            IIFTABMAX        = 0x03,
+            IIFTABMIN        = 0x04,
+            IIFTABPRODUCT    = 0x05,
+            IIFTABSTDEV      = 0x06,
+            IIFTABSTDEVP     = 0x07,
+            IIFTABSUM        = 0x08,
+            IIFTABVAR        = 0x09,
+            IIFTABVARP       = 0x0A
+	};
+};
 
 } // namespace XLSB
 

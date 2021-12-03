@@ -29,31 +29,42 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "SXTupleSetHeaderItem.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    SXTupleSetHeaderItem::SXTupleSetHeaderItem()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    SXTupleSetHeaderItem::~SXTupleSetHeaderItem()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr SXTupleSetHeaderItem::clone()
+    {
+        return BaseObjectPtr(new SXTupleSetHeaderItem(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    void SXTupleSetHeaderItem::readFields(XLS::CFRecord& record)
+    {
+        BYTE flags;
 
-    };
+        record >> FRTheader >> flags;
+
+        fUnique  = GETBIT(flags, 0);
+        fHier    = GETBIT(flags, 1);
+
+        if(fUnique)
+            record >> irstUnique;
+
+        if(fHier)
+            record >> irstHier;
+    }
 
 } // namespace XLSB
 

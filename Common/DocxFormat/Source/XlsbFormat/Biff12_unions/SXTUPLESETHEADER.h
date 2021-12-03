@@ -33,25 +33,23 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    class SXTUPLESETHEADER: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
+        BASE_OBJECT_DEFINE_CLASS_NAME(SXTUPLESETHEADER)
     public:
-        FILLS();
-        virtual ~FILLS();
+        SXTUPLESETHEADER();
+        virtual ~SXTUPLESETHEADER();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+        XLS::BaseObjectPtr               m_BrtBeginSXTupleSetHeader;
+        std::vector<XLS::BaseObjectPtr>	 m_arBrtSXTupleSetHeaderItem;
+        XLS::BaseObjectPtr               m_BrtEndSXTupleSetHeader;
 
     };
 

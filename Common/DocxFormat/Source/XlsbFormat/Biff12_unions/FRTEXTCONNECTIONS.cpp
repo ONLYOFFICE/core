@@ -29,31 +29,70 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "FRTEXTCONNECTIONS.h"
+#include "../Biff12_records/FRTBegin.h"
+#include "../Biff12_unions/EXTCONN14.h"
+#include "../Biff12_unions/EXTCONN15.h"
+#include "../Biff12_records/FRTEnd.h"
+#include "../Biff12_unions/FRT.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    FRTEXTCONNECTIONS::FRTEXTCONNECTIONS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    FRTEXTCONNECTIONS::~FRTEXTCONNECTIONS()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr FRTEXTCONNECTIONS::clone()
+    {
+        return BaseObjectPtr(new FRTEXTCONNECTIONS(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    // FRTEXTCONNECTIONS = [BrtFRTBegin [EXTCONN14] [EXTCONN15] BrtFRTEnd] *FRT
+    const bool FRTEXTCONNECTIONS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<FRTBegin>())
+        {
+            m_BrtFRTBegin = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        if (proc.optional<EXTCONN14>())
+        {
+            m_EXTCONN14 = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<EXTCONN15>())
+        {
+            m_EXTCONN15 = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<FRTEnd>())
+        {
+            m_BrtFRTEnd = elements_.back();
+            elements_.pop_back();
+        }
+
+        int count = proc.repeated<FRT>(0, 0);
+
+        while(count > 0)
+        {
+            m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }        
+
+        return m_BrtFRTBegin && m_BrtFRTEnd;
+    }
 
 } // namespace XLSB
 

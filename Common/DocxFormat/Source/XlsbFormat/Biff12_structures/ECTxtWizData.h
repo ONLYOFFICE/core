@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,42 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 
 namespace XLSB
 {
-
-    class FILLS: public XLS::CompositeObject
+    class ECTxtWizData : public XLS::BiffStructure
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(ECTxtWizData)
     public:
-        FILLS();
-        virtual ~FILLS();
+        ECTxtWizData();
+        ECTxtWizData(XLS::CFRecord& record);
+        virtual ~ECTxtWizData();
+       XLS::BiffStructurePtr clone();
 
-        XLS::BaseObjectPtr clone();
+        static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        virtual void load(XLS::CFRecord& record);
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
-
+        BYTE        		iCpid;
+        _UINT16             iCpidNew;
+        bool				fDelimited;
+        bool				fTab;
+        bool				fSpace;
+        bool				fComma;
+        bool				fSemiColon;
+        bool				fConsecutive;
+        BYTE                fTextDelim;
+        bool				fPromptForFile;
+        bool				fCustom;
+        _UINT16             chCustom;
+        _UINT32				rowStartAt;
+        BYTE        		chDecimal;
+        BYTE        		chThousSep;
     };
 
-} // namespace XLSB
-
+}   // namespace XLSB

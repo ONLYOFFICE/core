@@ -29,31 +29,53 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ECWEBPROPS.h"
+#include "../Biff12_records/BeginECWebProps.h"
+#include "../Biff12_unions/ECWPTABLES.h"
+#include "../Biff12_records/EndECWebProps.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    ECWEBPROPS::ECWEBPROPS()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ECWEBPROPS::~ECWEBPROPS()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr ECWEBPROPS::clone()
+    {
+        return BaseObjectPtr(new ECWEBPROPS(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //ECWEBPROPS = BrtBeginECWebProps [ECWPTABLES] BrtEndECWebProps
+    const bool ECWEBPROPS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginECWebProps>())
+        {
+            m_BrtBeginECWebProps = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        if (proc.optional<ECWPTABLES>())
+        {
+            m_ECWPTABLES = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<EndECWebProps>())
+        {
+            m_BrtEndECWebProps = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginECWebProps && m_ECWPTABLES && m_BrtEndECWebProps;
+    }
 
 } // namespace XLSB
 

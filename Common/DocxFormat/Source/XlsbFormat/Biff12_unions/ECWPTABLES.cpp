@@ -29,31 +29,56 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ECWPTABLES.h"
+#include "../Biff12_records/BeginEcWpTables.h"
+#include "../Biff12_unions/PCDI.h"
+#include "../Biff12_records/EndECWPTables.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    ECWPTABLES::ECWPTABLES()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ECWPTABLES::~ECWPTABLES()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr ECWPTABLES::clone()
+    {
+        return BaseObjectPtr(new ECWPTABLES(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //ECWPTABLES = BrtBeginEcWpTables *PCDI BrtEndECWPTabless
+    const bool ECWPTABLES::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginEcWpTables>())
+        {
+            m_BrtBeginEcWpTables = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        int countPCDI = proc.repeated<PCDI>(0, 0);
+
+        while(countPCDI > 0)
+        {
+            m_arPCDI.insert(m_arPCDI.begin(), elements_.back());
+            elements_.pop_back();
+            countPCDI--;
+        }
+
+        if (proc.optional<EndECWPTables>())
+        {
+            m_BrtEndEcWpTables = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginEcWpTables && m_BrtEndEcWpTables;
+    }
 
 } // namespace XLSB
 

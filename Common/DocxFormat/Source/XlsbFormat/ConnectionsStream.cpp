@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,31 +29,55 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#include "ConnectionsStream.h"
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "Biff12_unions/EXTCONNECTIONS.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
-    {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+ConnectionsStream::ConnectionsStream()
+{
+}
 
-        XLS::BaseObjectPtr clone();
+ConnectionsStream::~ConnectionsStream()
+{
+}
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+BaseObjectPtr ConnectionsStream::clone()
+{
+       return BaseObjectPtr(new ConnectionsStream(*this));
+}
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+const bool ConnectionsStream::loadContent(BinProcessor& proc)
+{	
+	while (true)
+	{
+        CFRecordType::TypeId type = proc.getNextRecordType();
 
-    };
+        if (type == rt_NONE) break;
+
+        switch(type)
+        {
+            case rt_BeginExtConnections:
+            {
+                if (proc.optional<EXTCONNECTIONS>())
+                {
+                    m_EXTCONNECTIONS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            default://skip
+            {
+                proc.SkipRecord();
+            }break;
+        }
+	}
+
+	return true;
+}
 
 } // namespace XLSB
-

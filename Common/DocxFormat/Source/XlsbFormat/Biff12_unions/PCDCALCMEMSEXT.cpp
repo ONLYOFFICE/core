@@ -29,31 +29,55 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "PCDCALCMEMSEXT.h"
+#include "../Biff12_records/BeginPCDCalcMemsExt.h"
+#include "../Biff12_unions/PCDCALCMEMEXT.h"
+#include "../Biff12_records/EndPCDCalcMemsExt.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    PCDCALCMEMSEXT::PCDCALCMEMSEXT()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    PCDCALCMEMSEXT::~PCDCALCMEMSEXT()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr PCDCALCMEMSEXT::clone()
+    {
+        return BaseObjectPtr(new PCDCALCMEMSEXT(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //PCDCALCMEMSEXT = BrtBeginPCDCalcMemsExt 1*2147483647PCDCALCMEMEXT BrtEndPCDCalcMemsExt
+    const bool PCDCALCMEMSEXT::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginPCDCalcMemsExt>())
+        {
+            m_BrtBeginPCDCalcMemsExt = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        auto count = proc.repeated<PCDCALCMEMEXT>(0, 2147483647);
+        while(count > 0)
+        {
+            m_arPCDCALCMEMEXT.insert(m_arPCDCALCMEMEXT.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndPCDCalcMemsExt>())
+        {
+            m_BrtEndPCDCalcMemsExt = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginPCDCalcMemsExt && !m_arPCDCALCMEMEXT.empty() && m_BrtEndPCDCalcMemsExt;
+    }
 
 } // namespace XLSB
 

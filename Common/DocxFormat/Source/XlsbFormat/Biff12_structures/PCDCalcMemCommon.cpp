@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,52 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "PCDCalcMemCommon.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    PCDCalcMemCommon::PCDCalcMemCommon()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    PCDCalcMemCommon::PCDCalcMemCommon(XLS::CFRecord& record)
+    {
+        load(record);
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    PCDCalcMemCommon::~PCDCalcMemCommon()
+    {
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    BiffStructurePtr PCDCalcMemCommon::clone()
+    {
+        return BiffStructurePtr(new PCDCalcMemCommon(*this));
+    }
 
-    };
+    void PCDCalcMemCommon::load(XLS::CFRecord& record)
+    {
+        _UINT32 flags;
+        record >> flags;
+
+        fLoadMemberName   = GETBIT(flags, 0);
+        fLoadSourceHier   = GETBIT(flags, 1);
+        fLoadParentUnique = GETBIT(flags, 2);
+
+        record >> wSolveOrder >> fSet >> stName >> stMdx;
+
+        if(fLoadMemberName)
+            record >> stMemberName;
+
+        if(fLoadSourceHier)
+            record >> stSourceHier;
+
+        if(fLoadParentUnique)
+            record >> stParentUnique;
+    }
 
 } // namespace XLSB
 

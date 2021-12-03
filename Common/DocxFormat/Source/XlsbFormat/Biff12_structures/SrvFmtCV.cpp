@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,37 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "SrvFmtCV.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    SrvFmtCV::SrvFmtCV()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    SrvFmtCV::SrvFmtCV(XLS::CFRecord& record)
+    {
+        load(record);
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    SrvFmtCV::~SrvFmtCV()
+    {
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    BiffStructurePtr SrvFmtCV::clone()
+    {
+        return BiffStructurePtr(new SrvFmtCV(*this));
+    }
 
-    };
+    void SrvFmtCV::load(XLS::CFRecord& record)
+    {
+        record >> ciRed >> ciGreen >> ciBlue;
+        record.skipNunBytes(1); // unused
+    }
 
 } // namespace XLSB
 

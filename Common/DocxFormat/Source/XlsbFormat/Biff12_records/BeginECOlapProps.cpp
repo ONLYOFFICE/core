@@ -29,31 +29,46 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "BeginECOlapProps.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    BeginECOlapProps::BeginECOlapProps()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    BeginECOlapProps::~BeginECOlapProps()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr BeginECOlapProps::clone()
+    {
+        return BaseObjectPtr(new BeginECOlapProps(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    void BeginECOlapProps::readFields(XLS::CFRecord& record)
+    {
+        BYTE flags1, flags2;
 
-    };
+        record >> flags1 >> nDrillthroughRows >> flags2;
+
+        fLocalConn                = GETBIT(flags1, 0);
+        fNoRefreshCube            = GETBIT(flags1, 1);
+        fSrvFmtBack               = GETBIT(flags1, 2);
+        fSrvFmtFore               = GETBIT(flags1, 3);
+        fSrvFmtFlags              = GETBIT(flags1, 4);
+        fSrvFmtNum                = GETBIT(flags1, 5);
+        fUseOfficeLcid            = GETBIT(flags1, 6);
+
+        bLoadConnLocal            = GETBIT(flags2, 0);
+
+        if(bLoadConnLocal)
+            record >> stConnLocal;
+    }
 
 } // namespace XLSB
 

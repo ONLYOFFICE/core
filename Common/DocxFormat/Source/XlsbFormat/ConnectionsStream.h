@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,41 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#ifndef CONNECTIONSTREAM_H
+#define CONNECTIONSTREAM_H
 
-
+#include "../../../../DesktopEditor/common/Types.h"
+#include "../Base/Types_32.h"
+#include "../XlsxFormat/WritingElement.h"
+#include <string>
+#include <memory.h>
+#include <iostream>
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
 namespace XLSB
 {
+    class StreamCacheReader;
 
-    class FILLS: public XLS::CompositeObject
+    class ConnectionsStream;
+    typedef std::shared_ptr<ConnectionsStream>		ConnectionsStreamPtr;
+
+    class ConnectionsStream: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
+        BASE_OBJECT_DEFINE_CLASS_NAME(ConnectionsStream)
     public:
-        FILLS();
-        virtual ~FILLS();
+        ConnectionsStream();
+        virtual ~ConnectionsStream();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+        XLS::BaseObjectPtr m_EXTCONNECTIONS;
 
     };
 
-} // namespace XLSB
+}
+
+#endif // CONNECTIONSTREAM_H
 

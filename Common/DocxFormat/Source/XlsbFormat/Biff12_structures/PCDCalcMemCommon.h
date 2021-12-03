@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,38 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "XLWideString.h"
 
 namespace XLSB
 {
-
-    class FILLS: public XLS::CompositeObject
+    class PCDCalcMemCommon : public XLS::BiffStructure
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(PCDCalcMemCommon)
     public:
-        FILLS();
-        virtual ~FILLS();
+        PCDCalcMemCommon();
+        PCDCalcMemCommon(XLS::CFRecord& record);
+        virtual ~PCDCalcMemCommon();
+       XLS::BiffStructurePtr clone();
 
-        XLS::BaseObjectPtr clone();
+        static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        virtual void load(XLS::CFRecord& record);
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
-
+        bool                    fLoadMemberName;
+        bool                    fLoadSourceHier;
+        bool                    fLoadParentUnique;
+        _INT32                  wSolveOrder;
+        XLS::Boolean<_UINT32>   fSet;
+        XLWideString            stName;
+        XLWideString            stMdx;
+        XLWideString            stMemberName;
+        XLWideString            stSourceHier;
+        XLWideString            stParentUnique;
     };
 
-} // namespace XLSB
-
+}   // namespace XLSB

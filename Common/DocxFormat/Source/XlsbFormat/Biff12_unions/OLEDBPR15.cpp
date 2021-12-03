@@ -29,31 +29,60 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "OLEDBPR15.h"
+#include "../Biff12_records/BeginOledbPr15.h"
+#include "../Biff12_unions/DBTABLES15.h"
+#include "../Biff12_records/DbCommand15.h"
+#include "../Biff12_records/EndOledbPr15.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    OLEDBPR15::OLEDBPR15()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    OLEDBPR15::~OLEDBPR15()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr OLEDBPR15::clone()
+    {
+        return BaseObjectPtr(new OLEDBPR15(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    //OLEDBPR15 = BrtBeginOledbPr15 (DBTABLES15 / BrtDbCommand15) BrtEndOledbPr15
+    const bool OLEDBPR15::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginOledbPr15>())
+        {
+            m_BrtBeginOledbPr15 = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        if (proc.optional<DBTABLES15>())
+        {
+            m_DBTABLES15 = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<DbCommand15>())
+        {
+            m_BrtDbCommand15 = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<EndOledbPr15>())
+        {
+            m_BrtEndOledbPr15 = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginOledbPr15 && m_BrtEndOledbPr15;
+    }
 
 } // namespace XLSB
 

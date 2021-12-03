@@ -33,25 +33,31 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    class EXTCONNECTION: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
+        BASE_OBJECT_DEFINE_CLASS_NAME(EXTCONNECTION)
     public:
-        FILLS();
-        virtual ~FILLS();
+        EXTCONNECTION();
+        virtual ~EXTCONNECTION();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+        //static const XLS::ElementType	type = XLS::typeFILTERS;
+
+        XLS::BaseObjectPtr          m_BrtBeginExtConnection;
+        XLS::BaseObjectPtr      	m_ACUID;
+        XLS::BaseObjectPtr      	m_ECDBPROPS;
+        XLS::BaseObjectPtr      	m_ECOLAPPROPS;
+        XLS::BaseObjectPtr      	m_ECPARAMS;
+        XLS::BaseObjectPtr      	m_ECWEBPROPS;
+        XLS::BaseObjectPtr      	m_ECTXTWIZ;
+        XLS::BaseObjectPtr      	m_FRTEXTCONNECTIONS;
+        XLS::BaseObjectPtr          m_BrtEndExtConnection;
 
     };
 

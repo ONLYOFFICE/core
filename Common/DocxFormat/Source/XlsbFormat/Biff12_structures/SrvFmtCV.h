@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,30 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
-
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 
 namespace XLSB
 {
-
-    class FILLS: public XLS::CompositeObject
+    class SrvFmtCV : public XLS::BiffStructure
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(SrvFmtCV)
     public:
-        FILLS();
-        virtual ~FILLS();
+        SrvFmtCV();
+        SrvFmtCV(XLS::CFRecord& record);
+        virtual ~SrvFmtCV();
+        XLS::BiffStructurePtr clone();
 
-        XLS::BaseObjectPtr clone();
+        static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        virtual void load(XLS::CFRecord& record);
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
-
+        BYTE    ciRed;
+        BYTE    ciGreen;
+        BYTE    ciBlue;
     };
 
-} // namespace XLSB
-
+}   // namespace XLSB

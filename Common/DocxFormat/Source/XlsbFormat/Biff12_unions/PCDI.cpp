@@ -29,31 +29,43 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "PCDI.h"
+#include "../Biff12_records/PCDIMissing.h"
+#include "../Biff12_records/PCDIIndex.h"
+#include "../Biff12_records/PCDIString.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    PCDI::PCDI()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    PCDI::~PCDI()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr PCDI::clone()
+    {
+        return BaseObjectPtr(new PCDI(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    // PCDI = BrtPCDIMissing / BrtPCDIIndex / BrtPCDIString
+    const bool PCDI::loadContent(BinProcessor& proc)
+    {
+        if (!proc.optional<PCDIMissing>())
+            if (!proc.optional<PCDIIndex>())
+                if (!proc.optional<PCDIString>())
+                    return false;
 
-    };
+        m_source = elements_.back();
+        elements_.pop_back();
+
+        return m_source != nullptr;
+    }
 
 } // namespace XLSB
 

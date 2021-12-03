@@ -29,31 +29,38 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "BeginExtConn15.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    BeginExtConn15::BeginExtConn15()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    BeginExtConn15::~BeginExtConn15()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr BeginExtConn15::clone()
+    {
+        return BaseObjectPtr(new BeginExtConn15(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    void BeginExtConn15::readFields(XLS::CFRecord& record)
+    {
+        BYTE flags;
 
-    };
+        record >> FRTheader >> flags >> irstId;
+
+        fSandbox                = GETBIT(flags, 1);
+        fExcludeFromRefreshAll  = GETBIT(flags, 2);
+        fAutoDelete             = GETBIT(flags, 3);
+        fUsedByAddin            = GETBIT(flags, 4);
+    }
 
 } // namespace XLSB
 

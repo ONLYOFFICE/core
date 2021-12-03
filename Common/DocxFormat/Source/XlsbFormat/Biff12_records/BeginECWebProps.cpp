@@ -29,31 +29,56 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "BeginECWebProps.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FILLS: public XLS::CompositeObject
+    BeginECWebProps::BeginECWebProps()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FILLS)
-    public:
-        FILLS();
-        virtual ~FILLS();
+    }
 
-        XLS::BaseObjectPtr clone();
+    BeginECWebProps::~BeginECWebProps()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr BeginECWebProps::clone()
+    {
+        return BaseObjectPtr(new BeginECWebProps(*this));
+    }
 
-		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
-		XLS::BaseObjectPtr               m_BrtEndFills;
+    void BeginECWebProps::readFields(XLS::CFRecord& record)
+    {
+        _UINT32 flags;
 
-    };
+        record >> wHTMLFmt >> flags;
+
+        fSrcIsXML              = GETBIT(flags, 0);
+        fImportSourceData      = GETBIT(flags, 1);
+        fParsePreFormatted     = GETBIT(flags, 2);
+        fConsecDelim           = GETBIT(flags, 3);
+        fSameSettings          = GETBIT(flags, 4);
+        fXL97Format            = GETBIT(flags, 5);
+        fNoDateRecog           = GETBIT(flags, 6);
+        fRefreshedInXL9        = GETBIT(flags, 7);
+        fTablesOnlyHTML        = GETBIT(flags, 8);
+
+        fLoadWebPost           = GETBIT(flags, 24);
+        fLoadEditWebPage       = GETBIT(flags, 25);
+        fLoadURL               = GETBIT(flags, 26);
+
+        if(fLoadURL)
+            record >> stURL;
+
+        if(fLoadWebPost)
+            record >> stWebPost;
+
+        if(fLoadEditWebPage)
+            record >> stEditWebPage;
+    }
 
 } // namespace XLSB
 

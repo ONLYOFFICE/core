@@ -846,9 +846,10 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 
     if ( ( zipFile != NULL ) && ( unzipDir != NULL ) )
     {
-      zlip_set_addition_flag(ZLIB_ADDON_FLAG_READ_ONLY);
+      int old = zlip_get_addition_flag();
+      zlip_set_addition_flag(old | ZLIB_ADDON_FLAG_READ_ONLY);
 	  uf = unzOpenHelp (zipFile);
-      zlip_set_addition_flag(ZLIB_ADDON_FLAG_ZERO);
+      zlip_set_addition_flag(old);
     }
 
     if ( uf != NULL )

@@ -31,8 +31,11 @@
  */
 #pragma once
 
-#define ZLIB_ADDON_FLAG_ZERO 0
-#define ZLIB_ADDON_FLAG_READ_ONLY 1
+#ifndef ZLIB_ADDON_FLAG_ZERO
+#define ZLIB_ADDON_FLAG_ZERO                    0
+#define ZLIB_ADDON_FLAG_READ_ONLY               1
+#define ZLIB_ADDON_FLAG_WINDOWS_SHARED_WRITE    2
+#endif
 
 void zlip_set_addition_flag(int flag);
 int zlip_get_addition_flag();

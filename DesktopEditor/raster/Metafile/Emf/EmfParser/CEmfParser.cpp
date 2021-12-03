@@ -264,7 +264,10 @@ namespace MetaFile
                 m_pWorkspace = new TRectD(oCropBorder);
 
                 if (NULL != m_pWorkspace)
+                {
+                        m_pDC->GetClip()->Reset();
                         m_pDC->GetClip()->Intersect(*m_pWorkspace);
+                }
         }
 
         bool CEmfParser::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)
@@ -732,21 +735,19 @@ namespace MetaFile
                         if (pForm->M11 < 0)
                         {
                                 m_pWorkspace->dLeft -= dWidth;
-                        }
 
-                        pForm->Dx += m_pWorkspace->dLeft;
+                                pForm->Dx += dWidth;
+                                pForm->Dx *= pForm->M11;
 
-                        dWidth /= fabs(pForm->M11);
-                        dHeight /= fabs(pForm->M22);
-
-                        m_pWorkspace->dRight = m_pWorkspace->dLeft + dWidth;
-                        m_pWorkspace->dBottom = m_pWorkspace->dTop + dHeight;
-
-                        if (pForm->M11 < 0)
-                        {
-                                pForm->Dx += (2 * pForm->Dx - fabs(dWidth)) * fabs(pForm->M11);
                                 pForm->M11 *= -1;
                         }
+
+                        dWidth  /= fabs(pForm->M11);
+                        dHeight /= fabs(pForm->M22);
+
+                        m_pWorkspace->dLeft *= pForm->M11;
+                        m_pWorkspace->dRight = m_pWorkspace->dLeft + dWidth;
+                        m_pWorkspace->dBottom = m_pWorkspace->dTop + dHeight;
 
                         m_pDC->MultiplyTransform(*pForm, 4);
 

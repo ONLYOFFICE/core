@@ -432,7 +432,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertBrush(CBrush & brush)
 
             brush_writer.WriteString(L"<a:blipFill dpi=\"0\" rotWithShape=\"1\"><a:blip r:embed=\"" + strRid + L"\"");
 
-            if (brush.Color2.GetLONG_RGB() == 0xFFFFFF)
+            if (false)
             {
                 brush_writer.WriteString(L"><a:duotone><a:schemeClr val=\"bg1\"/>");
                 brush_writer.WriteString(ConvertColor(brush.Color2, brush.Alpha2));

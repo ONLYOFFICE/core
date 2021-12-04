@@ -889,6 +889,11 @@ void CPPTElement::SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlid
     case pictureBrightness:
         image_element->m_lpictureBrightness = (_INT32)pProperty->m_lValue;
         break;
+    case fillBackColor:
+        // TODO to fix 53541
+        break;
+    default:
+        break;
     }
 }
 void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)

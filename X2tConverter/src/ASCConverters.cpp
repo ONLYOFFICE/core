@@ -54,6 +54,7 @@
 #include "../../PdfReader/PdfReader.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../../XpsFile/XpsFile.h"
+#include "../../DocxRenderer/DocxRenderer.h"
 #include "../../HtmlRenderer/include/HTMLRenderer3.h"
 #include "../../Fb2File/Fb2File.h"
 #include "../../HtmlFile2/htmlfile2.h"
@@ -4441,6 +4442,70 @@ namespace NExtractTools
            nRes = PdfDjvuXpsToImage(&pReader, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);
 		   RELEASEOBJECT(pReader);
 	   }
+       else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo)
+       {
+           IOfficeDrawingFile* pReader = NULL;
+           switch (nFormatFrom)
+           {
+           case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
+               pReader = new PdfReader::CPdfReader(pApplicationFonts);
+               break;
+           case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
+               pReader = new CXpsFile(pApplicationFonts);
+               break;
+           case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU:
+               pReader = new CDjVuFile(pApplicationFonts);
+               break;
+           default:
+               break;
+           }
+
+           if (pReader)
+           {
+               pReader->SetTempDirectory(sTemp);
+               pReader->LoadFromFile(sFrom);
+
+               CDocxRenderer oDocxRenderer(pApplicationFonts);
+
+               NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::TextAssociationTypeNoFrames;
+               if (params.m_oTextParams)
+               {
+                   InputParamsText* oTextParams = params.m_oTextParams;
+                   if (oTextParams->m_nTextAssociationType)
+                       //taType = static_cast<NSDocxRenderer::TextAssociationType>(*oTextParams->m_nTextAssociationType);
+                   {
+                       switch (*oTextParams->m_nTextAssociationType)
+                       {
+                       case 0:
+                           taType = NSDocxRenderer::TextAssociationTypeDefault;
+                           break;
+                       case 1:
+                           taType = NSDocxRenderer::TextAssociationTypeLine;
+                           break;
+                       case 2:
+                           taType = NSDocxRenderer::TextAssociationTypeNoFrames;
+                           break;
+                       case 3:
+                           taType = NSDocxRenderer::TextAssociationTypeBlock;
+                           break;
+                       default:
+                           break;
+                       }
+                   }
+               }
+               oDocxRenderer.SetTextAssociationType(taType);
+
+               std::wstring sTempDirOut = sTemp + L"/output";
+               if (!NSDirectory::Exists(sTempDirOut))
+                   NSDirectory::CreateDirectory(sTempDirOut);
+
+               oDocxRenderer.SetTempFolder(sTempDirOut);
+               oDocxRenderer.Convert(pReader, sTo, AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo);
+           }
+           else
+               nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+           RELEASEOBJECT(pReader);
+       }
        else
        {
            nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;

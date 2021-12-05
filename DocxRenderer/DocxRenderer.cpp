@@ -60,19 +60,19 @@ CDocxRenderer::~CDocxRenderer()
     RELEASEOBJECT(m_pInternal);
 }
 
-HRESULT CDocxRenderer::CreateNewFile(const std::wstring& wsPath)
+HRESULT CDocxRenderer::CreateNewFile(const std::wstring& wsPath, bool bIsOutCompress)
 {
     m_pInternal->m_oDocument.m_strDstFilePath = wsPath;
-    m_pInternal->m_oDocument.m_strTempDirectory = NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory.empty() ?
-                                                                     NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath()) :
-                                                                     NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory));
+    m_pInternal->m_oDocument.m_strTempDirectory = bIsOutCompress ?
+                NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory.empty() ?
+                                                               NSDirectory::GetTempPath() :
+                                                               m_pInternal->m_sTempDirectory) :
+                wsPath;
     m_pInternal->m_oDocument.CreateDocument();
     return S_OK;
 }
 HRESULT CDocxRenderer::Close()
 {
-    m_pInternal->m_oDocument.Close();
-
     COfficeUtils oCOfficeUtils(NULL);
     HRESULT hr = oCOfficeUtils.CompressFileOrDirectory(m_pInternal->m_oDocument.m_strTempDirectory, m_pInternal->m_oDocument.m_strDstFilePath, true);
     NSDirectory::DeleteDirectory(m_pInternal->m_oDocument.m_strTempDirectory);
@@ -86,9 +86,9 @@ HRESULT CDocxRenderer::SetTextAssociationType(const NSDocxRenderer::TextAssociat
     return S_OK;
 }
 
-int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile)
+int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile, bool bIsOutCompress)
 {
-    CreateNewFile(sDstFile);
+    CreateNewFile(sDstFile, bIsOutCompress);
 
     if (odftPDF == pFile->GetType())
         m_pInternal->m_oDocument.m_bIsNeedPDFTextAnalyzer = true;
@@ -116,7 +116,10 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFi
         EndCommand(c_nPageType);
     }
 
-    HRESULT hr = Close();
+    HRESULT hr = S_OK;
+    m_pInternal->m_oDocument.Close();
+    if (bIsOutCompress)
+        hr = Close();
     return (hr == S_OK) ? 0 : 1;
 }
 

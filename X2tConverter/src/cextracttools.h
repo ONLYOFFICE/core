@@ -391,6 +391,44 @@ namespace NExtractTools
 		}
 	};
 
+	class InputParamsText
+	{
+	public:
+		int* m_nTextAssociationType;
+		InputParamsText()
+		{
+			m_nTextAssociationType = NULL;
+		}
+		~InputParamsText()
+		{
+			RELEASEOBJECT(m_nTextAssociationType);
+		}
+
+		bool FromXmlNode(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNodes oXmlNodes;
+			if (TRUE == oNode.GetChilds(oXmlNodes))
+			{
+				for (int i = 0; i < oXmlNodes.GetCount(); i++)
+				{
+					XmlUtils::CXmlNode oXmlNode;
+					if (oXmlNodes.GetAt(i, oXmlNode))
+					{
+						std::wstring sValue;
+						if (oXmlNode.GetTextIfExist(sValue))
+						{
+							std::wstring sName = oXmlNode.GetName();
+
+							if (_T("m_nTextAssociationType") == sName)
+								m_nTextAssociationType = new int(XmlUtils::GetInteger(sValue));
+						}
+					}
+				}
+			}
+			return true;
+		}
+	};
+
 	class InputLimit
 	{
 	public:
@@ -425,6 +463,7 @@ namespace NExtractTools
 		std::wstring* m_sThemeDir;
         InputParamsMailMerge* m_oMailMergeSend;
 		InputParamsThumbnail* m_oThumbnail;
+		InputParamsText* m_oTextParams;
 		std::wstring* m_sJsonParams;
 		std::wstring* m_sPassword;
 		std::wstring* m_sSavePassword;
@@ -458,6 +497,7 @@ namespace NExtractTools
 			m_sThemeDir = NULL;
             m_oMailMergeSend = NULL;
 			m_oThumbnail = NULL;
+			m_oTextParams = NULL;
 			m_sJsonParams = NULL;
 			m_sPassword = NULL;
 			m_sSavePassword = NULL;
@@ -490,6 +530,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sThemeDir);
             RELEASEOBJECT(m_oMailMergeSend);
 			RELEASEOBJECT(m_oThumbnail);
+			RELEASEOBJECT(m_oTextParams);
 			RELEASEOBJECT(m_sJsonParams);
 			RELEASEOBJECT(m_sPassword);
 			RELEASEOBJECT(m_sSavePassword);
@@ -546,6 +587,12 @@ namespace NExtractTools
 							RELEASEOBJECT(m_oThumbnail);
 							m_oThumbnail = new InputParamsThumbnail();
 							m_oThumbnail->FromXmlNode(oXmlNode);
+						}
+						else if(_T("m_oTextParams") == sName)
+						{
+							RELEASEOBJECT(m_oTextParams);
+							m_oTextParams = new InputParamsText();
+							m_oTextParams->FromXmlNode(oXmlNode);
 						}
 						else if(_T("m_oInputLimits") == sName)
 						{

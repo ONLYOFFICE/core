@@ -4442,7 +4442,7 @@ namespace NExtractTools
            nRes = PdfDjvuXpsToImage(&pReader, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);
 		   RELEASEOBJECT(pReader);
 	   }
-       else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == nFormatTo)
+       else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo)
        {
            IOfficeDrawingFile* pReader = NULL;
            switch (nFormatFrom)

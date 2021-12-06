@@ -297,27 +297,26 @@ namespace Oox2Odf
 		if(oox_eq_arr->m_arrItems[0]->getType() == OOX::EElementType::et_m_eqArrPr)
 			convert(oox_eq_arr->m_arrItems[0]);
 
-		for (size_t i = 1; i < oox_eq_arr->m_arrItems.size() - 1; ++i)
+		CREATE_MATH_TAG(L"mtable");
+		OPEN_MATH_TAG(elm);
 		{
-			CREATE_MATH_TAG(L"munder");
-			OPEN_MATH_TAG(elm);
-			mrow();
-			convert(oox_eq_arr->m_arrItems[i]);
-			endOfMrow();
-			if(i != oox_eq_arr->m_arrItems.size() - 2)
-				mrow();
+			
+			for (size_t i = 1; i < oox_eq_arr->m_arrItems.size(); ++i)
+			{
+				CREATE_MATH_TAG(L"mtr");
+				OPEN_MATH_TAG(elm);
+				{
+					CREATE_MATH_TAG(L"mtd");
+					OPEN_MATH_TAG(elm);
+					mrow();
+					convert(oox_eq_arr->m_arrItems[i]);
+					endOfMrow();
+					CLOSE_MATH_TAG;
+				}
+				CLOSE_MATH_TAG;
+			}			
 		}
-
-		mrow();
-		convert(oox_eq_arr->m_arrItems[oox_eq_arr->m_arrItems.size() - 1]);
-		endOfMrow();
-
-		for (size_t i = 1; i < oox_eq_arr->m_arrItems.size() - 1; ++i)
-		{
-			CLOSE_MATH_TAG;
-			if (i != oox_eq_arr->m_arrItems.size() - 2)
-				endOfMrow();
-		}
+		CLOSE_MATH_TAG;
 	}
 
 	void OoxConverter::convert(OOX::Logic::CEqArrPr *oox_eq_arr_pr)
@@ -861,10 +860,13 @@ namespace Oox2Odf
 	void OoxConverter::convert(OOX::Logic::CNary *oox_nary)
 	{
 		if (!oox_nary) return;
-
-		nullable<SimpleTypes::CHexColor<>>* ref = &(oox_nary->m_oNaryPr->m_oCtrlPr->m_oRPr->m_oColor->m_oVal);
+		nullable<SimpleTypes::CHexColor<>>* ref = NULL;
+		if(oox_nary->m_oNaryPr->m_oCtrlPr->m_oRPr->m_oColor.IsInit())
+		{
+			ref = &(oox_nary->m_oNaryPr->m_oCtrlPr->m_oRPr->m_oColor->m_oVal);
+		}
 		bool flag_color = false;
-		if (ref->IsInit())
+		if (ref != NULL)
 		{
 			std::wstring clr = ref->GetPointer()->ToString();
 			std::wstring clr2(L"#");
@@ -881,25 +883,25 @@ namespace Oox2Odf
 
 		mrow();
 
-		bool flag_nary = false; // TODO REFAC
+		//bool flag_nary = false; // TODO REFAC
 		if ((oox_nary->m_oSub.GetPointer()->m_arrItems.size() != 0) && (oox_nary->m_oSup.GetPointer()->m_arrItems.size() != 0))
 		{
 			CREATE_MATH_TAG(L"munderover");
 			OPEN_MATH_TAG(elm);
-			flag_nary = true;
+			//flag_nary = true;
 		}
 		else if ((oox_nary->m_oSub.GetPointer()->m_arrItems.size() != 0) && (oox_nary->m_oSup.GetPointer()->m_arrItems.size() == 0))
 		{
 			CREATE_MATH_TAG(L"munder");
 			OPEN_MATH_TAG(elm);
-			flag_nary = true;
+			//flag_nary = true;
 		}
 
 		else if ((oox_nary->m_oSub.GetPointer()->m_arrItems.size() == 0) && (oox_nary->m_oSup.GetPointer()->m_arrItems.size() != 0))
 		{
 			CREATE_MATH_TAG(L"mover");
 			OPEN_MATH_TAG(elm);
-			flag_nary = true;
+			//flag_nary = true;
 		}		
 		
 		std::pair<bool,bool>	flags;
@@ -908,29 +910,30 @@ namespace Oox2Odf
 		
 		if (!flags.first)
 		{
-			mrow();
+			//mrow();
 			convert(oox_nary->m_oSub.GetPointer());
-			endOfMrow();
+			//endOfMrow();
 		}
 		if (!flags.second)
 		{
-			mrow();
+			//mrow();
 			convert(oox_nary->m_oSup.GetPointer());
-			endOfMrow();
+			//endOfMrow();
 		}
 
 
-		if (flag_nary)
+		//if (flag_nary)
+		//{
+			CLOSE_MATH_TAG;
+		//}		
+
+		if (flag_color)
 		{
 			CLOSE_MATH_TAG;
 		}
-
-		endOfMrow();
-
-		if(flag_color)
-			CLOSE_MATH_TAG;
 		convert(oox_nary->m_oElement.GetPointer());
 
+		endOfMrow();
 	}
 
 	std::pair<bool, bool> OoxConverter::convert(OOX::Logic::CNaryPr *oox_nary_pr)
@@ -1151,18 +1154,22 @@ namespace Oox2Odf
 
 	void OoxConverter::convert(OOX::Logic::CSub *oox_csub)
 	{
+		mrow();
 		for (size_t i = 0; i < oox_csub->m_arrItems.size(); ++i)
 		{
 			convert(oox_csub->m_arrItems[i]);
 		}
+		endOfMrow();
 	}
 
 	void OoxConverter::convert(OOX::Logic::CSup *oox_csup)
 	{
+		mrow();
 		for (size_t i = 0; i < oox_csup->m_arrItems.size(); ++i)
 		{
 			convert(oox_csup->m_arrItems[i]);
 		}	
+		endOfMrow();
 	}
 
 	void OoxConverter::convert(OOX::Logic::CSSub *oox_ssub)

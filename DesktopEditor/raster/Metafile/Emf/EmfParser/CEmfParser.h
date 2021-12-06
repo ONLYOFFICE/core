@@ -28,6 +28,8 @@ namespace MetaFile
                 CEmfPlusParser  *m_pEmfPlusParser;
                 TRectD          *m_pWorkspace;
 
+                void UpdateWorkspace();
+
                 bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
                 void Read_EMR_HEADER();
                 void Read_EMR_ALPHABLEND();

@@ -270,6 +270,47 @@ namespace MetaFile
                 }
         }
 
+        void CEmfParser::UpdateWorkspace()
+        {
+                if (NULL == m_pWorkspace)
+                        return;
+
+                TXForm *pForm = m_pDC->GetFinalTransform(GM_COMPATIBLE);
+
+                double dWidth = m_pWorkspace->dRight - m_pWorkspace->dLeft;
+                double dHeight = m_pWorkspace->dBottom - m_pWorkspace->dTop;
+
+                if (m_oTransform.M11 < 0)
+                {
+                        m_pWorkspace->dLeft -= dWidth;
+
+                        pForm->Dx += ((m_oTransform.Dx * 2 + dWidth) * m_oTransform.M11);
+                }
+
+                if (m_oTransform.M22 < 0)
+                {
+                        pForm->Dy *= (2 * m_oTransform.M22);
+                        pForm->Dy += ((m_oTransform.Dy + m_pWorkspace->dTop) - dHeight) * pForm->M22;
+                        pForm->M22 *= -1;
+                }
+
+                dWidth  /= fabs(pForm->M11);
+                dHeight /= fabs(pForm->M22);
+
+                //Пока что подобрал коэффициенты, так как пока неизвестно как и когда их высчитывать
+                pForm->M11 = 0.92;
+                pForm->M22 = -2.43;
+                //------------------
+
+                m_pWorkspace->dRight = m_pWorkspace->dLeft + dWidth;
+                m_pWorkspace->dBottom = m_pWorkspace->dTop + dHeight;
+
+                m_pDC->MultiplyTransform(*pForm, 4);
+
+                m_pDC->GetClip()->Reset();
+                m_pDC->GetClip()->Intersect(*m_pWorkspace);
+        }
+
         bool CEmfParser::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)
         {
                 int lHeaderOffset         = offBmi - ulSkip;
@@ -692,6 +733,8 @@ namespace MetaFile
 
                 if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
                         HANDLE_EMR_SETWINDOWORGEX(oOrigin);
+
+                UpdateWorkspace();
         }
 
         void CEmfParser::Read_EMR_SETWINDOWEXTEX()
@@ -722,37 +765,6 @@ namespace MetaFile
 
                 if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
                         HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
-
-                if (NULL != m_pWorkspace)
-                {
-                        TXForm *pForm = m_pDC->GetFinalTransform(GM_COMPATIBLE);
-
-                        m_pDC->GetClip()->Reset();
-
-                        double dWidth = m_pWorkspace->dRight - m_pWorkspace->dLeft;
-                        double dHeight = m_pWorkspace->dBottom - m_pWorkspace->dTop;
-
-                        if (pForm->M11 < 0)
-                        {
-                                m_pWorkspace->dLeft -= dWidth;
-
-                                pForm->Dx += dWidth;
-                                pForm->Dx *= pForm->M11;
-
-                                pForm->M11 *= -1;
-                        }
-
-                        dWidth  /= fabs(pForm->M11);
-                        dHeight /= fabs(pForm->M22);
-
-                        m_pWorkspace->dLeft *= pForm->M11;
-                        m_pWorkspace->dRight = m_pWorkspace->dLeft + dWidth;
-                        m_pWorkspace->dBottom = m_pWorkspace->dTop + dHeight;
-
-                        m_pDC->MultiplyTransform(*pForm, 4);
-
-                        m_pDC->GetClip()->Intersect(*m_pWorkspace);
-                }
         }
 
         void CEmfParser::Read_EMR_SETSTRETCHBLTMODE()

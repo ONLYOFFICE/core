@@ -522,8 +522,6 @@ namespace MetaFile
 
         TEmfPlusARGB CEmfPlusParser::ApplyImageAttributes(TEmfPlusRectF &oRectangle, const CEmfPlusImageAttributes &oImageAttributes)
         {
-                // oRectangle.dRight - Width, oRectangle.dBottom - Height
-
                 if (oImageAttributes.eWrapMode == WrapModeClamp)
                 {
                         if (oRectangle.dX < 0 || oRectangle.dX < 0 ||
@@ -657,17 +655,16 @@ namespace MetaFile
                         dY = arPoints[0].Y - dM12 * oSrcRect.dX - dM22 * oSrcRect.dY;
 
 
-
-
                         m_pDC->GetTransform()->Apply(arPoints[0].X, arPoints[0].Y);
 
-                        dX = arPoints[0].X;
+                        dX += arPoints[0].X;
+                        dY += arPoints[0].Y;
 
                         CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
 
                         if (NULL != pImageAttributes)
                         {
-//                                ApplyImageAttributes(oSrcRect, *pImageAttributes);
+                                ApplyImageAttributes(oSrcRect, *pImageAttributes);
 
                                 if (pImageAttributes->eWrapMode & WrapModeTileFlipX)
                                         dM11 *= -1;
@@ -678,8 +675,8 @@ namespace MetaFile
 
                         TEmfPlusXForm oNewTransform(dM11, 0, 0, dM22, dX, dY);
 
-                        oEmfParser.SetTrasform(oNewTransform);
                         oEmfParser.SelectWorkspace(oSrcRect.GetRectD());
+                        oEmfParser.SetTrasform(oNewTransform);
                         oEmfParser.PlayFile();
                 }
         }

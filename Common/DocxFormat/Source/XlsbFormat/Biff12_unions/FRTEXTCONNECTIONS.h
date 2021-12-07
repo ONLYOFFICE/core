@@ -31,31 +31,30 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/FRTBlank.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtBeginExtConn14 record in BIFF12
-    class BeginExtConn14: public XLS::BiffRecord
+
+    class FRTEXTCONNECTIONS: public XLS::CompositeObject
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(BeginExtConn14)
-            BASE_OBJECT_DEFINE_CLASS_NAME(BeginExtConn14)
-        public:
-            BeginExtConn14();
-            virtual ~BeginExtConn14();
+        BASE_OBJECT_DEFINE_CLASS_NAME(FRTEXTCONNECTIONS)
+    public:
+        FRTEXTCONNECTIONS();
+        virtual ~FRTEXTCONNECTIONS();
 
-            XLS::BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-            static const XLS::ElementType	type = XLS::typeBeginExtConn14;
+        static const XLS::ElementType	type = XLS::typeFRTEXTCONNECTIONS;
 
-            FRTBlank     FRTheader;
-            XLWideString irstCulture;
-            XLWideString irstClientCubeUrn;
+        XLS::BaseObjectPtr               m_BrtFRTBegin;
+        XLS::BaseObjectPtr               m_EXTCONN14;
+        XLS::BaseObjectPtr               m_EXTCONN15;
+        XLS::BaseObjectPtr               m_BrtFRTEnd;
+        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+
     };
 
 } // namespace XLSB

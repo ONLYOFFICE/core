@@ -47,11 +47,11 @@ namespace XLSB
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        //static const XLS::ElementType	type = XLS::typeFILTERS;
+        static const XLS::ElementType	type = XLS::typeEXTCONN15;
 
-        XLS::BaseObjectPtr              m_BrtBeginExtConn15;
+        XLS::BaseObjectPtr          m_BrtBeginExtConn15;
         XLS::BaseObjectPtr      	m_source;
-        XLS::BaseObjectPtr              m_BrtEndExtConn15;
+        XLS::BaseObjectPtr          m_BrtEndExtConn15;
 
     };
 

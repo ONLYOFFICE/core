@@ -794,7 +794,15 @@ enum ElementType
         typeDVal14,
         typeBeginDVals,
         typeBeginDVals14,
-        typeFRTQSI
+        typeFRTQSI,
+        typeFRTEXTCONNECTIONS,
+        typeEXTCONNECTION,
+        typeEXTCONN14,
+        typeEXTCONN15,
+        typeBeginExtConnection,
+        typeBeginExtConn14,
+        typeBeginExtConn15,
+        typeRangePr15,
 };
 
 

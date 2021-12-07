@@ -51,7 +51,7 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
-            //static const XLS::ElementType	type = XLS::typeBeginExtConn15;
+            static const XLS::ElementType	type = XLS::typeBeginExtConn15;
 
             FRTBlank             FRTheader;
             bool                 fSandbox;

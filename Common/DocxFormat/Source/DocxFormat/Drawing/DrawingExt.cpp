@@ -52,6 +52,7 @@
 #include "../../XlsbFormat/Biff12_unions/DXF14S.h"
 #include "../../XlsbFormat/Biff12_unions/FRTTABLE.h"
 #include "../../XlsbFormat/Biff12_unions/FRTQSI.h"
+#include "../../XlsbFormat/Biff12_unions/FRTEXTCONNECTIONS.h"
 
 namespace OOX
 {
@@ -1114,6 +1115,25 @@ namespace OOX
 
                         if (oExt)
                             m_arrExt.push_back( oExt );*/
+                    }
+
+                }
+            }
+
+            else if(obj->get_type() == XLS::typeFRTEXTCONNECTIONS)
+            {
+                auto ptr = static_cast<XLSB::FRTEXTCONNECTIONS*>(obj.get());
+
+                if(ptr != nullptr)
+                {
+                    if(ptr->m_EXTCONN15 != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri == L"{DE250136-89BD-433C-8126-D09CA5730AF9}";
+                        oExt->m_oConnection = ptr->m_EXTCONN15;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
                     }
 
                 }

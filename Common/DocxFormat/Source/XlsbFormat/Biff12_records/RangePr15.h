@@ -51,7 +51,7 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
-            //static const XLS::ElementType	type = XLS::typeRangePr15;
+            static const XLS::ElementType	type = XLS::typeRangePr15;
 
             FRTBlank             FRTheader;;
             XLNullableWideString irstSourceName;

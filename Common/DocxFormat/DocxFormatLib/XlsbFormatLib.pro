@@ -976,7 +976,7 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/SXTUPLESETDATA.h \
     ../Source/XlsbFormat/Biff12_unions/SXTUPLESETROW.h \
     ../Source/XlsbFormat/Biff12_unions/PCDCALCMEM15.h \
-    ../Source/XlsbFormat/Biff12_unions/FRTEXTCONNECTIONS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTEXTCONNECTIONS.h \
     ../Source/XlsbFormat/Biff12_unions/EXTCONN14.h \
     ../Source/XlsbFormat/Biff12_unions/EXTCONN15.h \
     ../Source/XlsbFormat/Biff12_unions/OLEDBPR15.h \

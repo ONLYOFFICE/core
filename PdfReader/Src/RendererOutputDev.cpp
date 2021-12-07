@@ -60,7 +60,20 @@
 #define FONTS_USE_AFM_SETTINGS
 #else
 #define FONTS_USE_ONLY_MEMORY_STREAMS
-#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#include "../Resources/Fontn022003l.h"
+#include "../Resources/Fontn022004l.h"
+#include "../Resources/Fontn022024l.h"
+#include "../Resources/Fontn022023l.h"
+#include "../Resources/Fontn019003l.h"
+#include "../Resources/Fontn019004l.h"
+#include "../Resources/Fontn019024l.h"
+#include "../Resources/Fontn019023l.h"
+#include "../Resources/Fonts050000l.h"
+#include "../Resources/Fontn021004l.h"
+#include "../Resources/Fontn021024l.h"
+#include "../Resources/Fontn021023l.h"
+#include "../Resources/Fontn021003l.h"
+#include "../Resources/Fontd050000l.h"
 #include "emscripten.h"
 EM_JS(char*, js_get_stream_id, (unsigned char* data, unsigned char* status), {
     return self.AscViewer.CheckStreamId(data, status);
@@ -100,6 +113,17 @@ public:
             LONG lSize = 0;
             pStream->GetMemory(m_pData, lSize);
             m_nSize = (int)lSize;
+            m_nPos = 0;
+            m_bIsAttach = true;
+        }
+    }
+
+    void fromBuffer(BYTE* pData, int nSize)
+    {
+        if (pData)
+        {
+            m_pData = pData;
+            m_nSize = nSize;
             m_nPos = 0;
             m_bIsAttach = true;
         }
@@ -747,6 +771,7 @@ namespace PdfReader
             std::wstring wsTempFileName = L"";
             Ref oEmbRef;
             bool bFontSubstitution = false;
+            std::wstring wsFontBaseName = NSStrings::GetString(pFont->getName());
         #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
             CMemoryFontStream oMemoryFontStream;
         #endif
@@ -1063,6 +1088,92 @@ namespace PdfReader
                     }
                 }
             }
+        #ifdef BUILDING_WASM_MODULE
+            else if (wsFontBaseName == L"Courier")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrn022003l, c_nSizen022003l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"Courier-Bold")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrn022004l, c_nSizen022004l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"Courier-BoldOblique")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrn022024l, c_nSizen022024l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"Courier-Oblique")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrn022023l, c_nSizen022023l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"Helvetica")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrn019003l, c_nSizen019003l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"Helvetica-Bold")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrn019004l, c_nSizen019004l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"Helvetica-BoldOblique")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrn019024l, c_nSizen019024l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"Helvetica-Oblique")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrn019023l, c_nSizen019023l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"Symbol")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrs050000l, c_nSizes050000l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"Times-Bold")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrn021004l, c_nSizen021004l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"Times-BoldItalic")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrn021024l, c_nSizen021024l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"Times-Italic")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrn021023l, c_nSizen021023l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"Times-Roman")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrn021003l, c_nSizen021003l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+            else if (wsFontBaseName == L"ZapfDingbats")
+            {
+                oMemoryFontStream.fromBuffer((BYTE*)c_arrd050000l, c_nSized050000l);
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+        #endif
             else if (!pFont->locateFont(m_pXref, false) ||
                 (wsFileName = NSStrings::GetString(pFont->locateFont(m_pXref, false)->path)).length() == 0)
             //else if (0)
@@ -1080,7 +1191,6 @@ namespace PdfReader
                     oRefObject.free();
 
                     NSFonts::CFontSelectFormat oFontSelect;
-                    std::wstring wsFontBaseName = NSStrings::GetString(pFont->getName());
                     if (oFontObject.isDict())
                     {
                         Dict *pFontDict = oFontObject.getDict();
@@ -1170,28 +1280,6 @@ namespace PdfReader
                     }
                     else
                         oFontSelect.wsName = new std::wstring(wsFontBaseName);
-
-                #ifdef BUILDING_WASM_MODULE
-                    if (wsFontBaseName.find(L"Bold") != std::wstring::npos)
-                        oFontSelect.bBold = new INT(1);
-                    if (wsFontBaseName.find(L"Oblique") != std::wstring::npos || wsFontBaseName.find(L"Italic") != std::wstring::npos)
-                        oFontSelect.bItalic = new INT(1);
-                    if (wsFontBaseName.find(L"Helvetica") != std::wstring::npos)
-                    {
-                        RELEASEOBJECT(oFontSelect.wsName);
-                        oFontSelect.wsName = new std::wstring(L"Arial");
-                    }
-                    else if (wsFontBaseName.find(L"Courier") != std::wstring::npos)
-                    {
-                        RELEASEOBJECT(oFontSelect.wsName);
-                        oFontSelect.wsName = new std::wstring(L"Courier New");
-                    }
-                    else if (wsFontBaseName.find(L"Times") != std::wstring::npos)
-                    {
-                        RELEASEOBJECT(oFontSelect.wsName);
-                        oFontSelect.wsName = new std::wstring(L"Times New Roman");
-                    }
-                #endif
 
                     pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect);
                 }

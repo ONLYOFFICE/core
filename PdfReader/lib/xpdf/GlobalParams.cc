@@ -68,21 +68,6 @@
 #include "UnicodeMapTables.h"
 #include "UTF8.h"
 
-#include "../../Resources/Fontn022003l.h"
-#include "../../Resources/Fontn022004l.h"
-#include "../../Resources/Fontn022024l.h"
-#include "../../Resources/Fontn022023l.h"
-#include "../../Resources/Fontn019003l.h"
-#include "../../Resources/Fontn019004l.h"
-#include "../../Resources/Fontn019024l.h"
-#include "../../Resources/Fontn019023l.h"
-#include "../../Resources/Fonts050000l.h"
-#include "../../Resources/Fontn021004l.h"
-#include "../../Resources/Fontn021024l.h"
-#include "../../Resources/Fontn021023l.h"
-#include "../../Resources/Fontn021003l.h"
-#include "../../Resources/Fontd050000l.h"
-
 //------------------------------------------------------------------------
 
 #define cidToUnicodeCacheSize     4
@@ -98,24 +83,22 @@ static struct {
   const char *macFontName;	// font name inside .dfont or .ttc
   const char *obliqueFont;	// name of font to oblique
   double obliqueFactor;		// oblique sheer factor
-  const unsigned char* pT1Buffer;
-  const unsigned int   unSize;
 } displayFontTab[] = {
-  {"Courier",               "n022003l.pfb", "cour.ttf",    "Courier",      "Courier",                NULL,             0,        PdfReader::c_arrn022003l, PdfReader::c_nSizen022003l},
-  {"Courier-Bold",          "n022004l.pfb", "courbd.ttf",  "Courier",      "Courier Bold",           NULL,             0,        PdfReader::c_arrn022004l, PdfReader::c_nSizen022004l},
-  {"Courier-BoldOblique",   "n022024l.pfb", "courbi.ttf",  "Courier",      "Courier Bold Oblique",   "Courier-Bold",   0.212557, PdfReader::c_arrn022024l, PdfReader::c_nSizen022024l},
-  {"Courier-Oblique",       "n022023l.pfb", "couri.ttf",   "Courier",      "Courier Oblique",        "Courier",        0.212557, PdfReader::c_arrn022023l, PdfReader::c_nSizen022023l},
-  {"Helvetica",             "n019003l.pfb", "arial.ttf",   "Helvetica",    "Helvetica",              NULL,             0,        PdfReader::c_arrn019003l, PdfReader::c_nSizen019003l},
-  {"Helvetica-Bold",        "n019004l.pfb", "arialbd.ttf", "Helvetica",    "Helvetica Bold",         NULL,             0,        PdfReader::c_arrn019004l, PdfReader::c_nSizen019004l},
-  {"Helvetica-BoldOblique", "n019024l.pfb", "arialbi.ttf", "Helvetica",    "Helvetica Bold Oblique", "Helvetica-Bold", 0.212557, PdfReader::c_arrn019024l, PdfReader::c_nSizen019024l},
-  {"Helvetica-Oblique",     "n019023l.pfb", "ariali.ttf",  "Helvetica",    "Helvetica Oblique",      "Helvetica",      0.212557, PdfReader::c_arrn019023l, PdfReader::c_nSizen019023l},
-  {"Symbol",                "s050000l.pfb", "symbol.ttf",  "Symbol",       "Symbol",                 NULL,             0,        PdfReader::c_arrs050000l, PdfReader::c_nSizes050000l},
-  {"Times-Bold",            "n021004l.pfb", "timesbd.ttf", "Times",        "Times Bold",             NULL,             0,        PdfReader::c_arrn021004l, PdfReader::c_nSizen021004l},
-  {"Times-BoldItalic",      "n021024l.pfb", "timesbi.ttf", "Times",        "Times Bold Italic",      NULL,             0,        PdfReader::c_arrn021024l, PdfReader::c_nSizen021024l},
-  {"Times-Italic",          "n021023l.pfb", "timesi.ttf",  "Times",        "Times Italic",           NULL,             0,        PdfReader::c_arrn021023l, PdfReader::c_nSizen021023l},
-  {"Times-Roman",           "n021003l.pfb", "times.ttf",   "Times",        "Times Roman",            NULL,             0,        PdfReader::c_arrn021003l, PdfReader::c_nSizen021003l},
-  {"ZapfDingbats",          "d050000l.pfb", NULL,          "ZapfDingbats", "Zapf Dingbats",          NULL,             0,        PdfReader::c_arrd050000l, PdfReader::c_nSized050000l},
-  {NULL, NULL, NULL, NULL, NULL, NULL, 0.0, NULL, 0}
+  {"Courier",               "n022003l.pfb", "cour.ttf",    "Courier",      "Courier",                NULL,             0       },
+  {"Courier-Bold",          "n022004l.pfb", "courbd.ttf",  "Courier",      "Courier Bold",           NULL,             0       },
+  {"Courier-BoldOblique",   "n022024l.pfb", "courbi.ttf",  "Courier",      "Courier Bold Oblique",   "Courier-Bold",   0.212557},
+  {"Courier-Oblique",       "n022023l.pfb", "couri.ttf",   "Courier",      "Courier Oblique",        "Courier",        0.212557},
+  {"Helvetica",             "n019003l.pfb", "arial.ttf",   "Helvetica",    "Helvetica",              NULL,             0       },
+  {"Helvetica-Bold",        "n019004l.pfb", "arialbd.ttf", "Helvetica",    "Helvetica Bold",         NULL,             0       },
+  {"Helvetica-BoldOblique", "n019024l.pfb", "arialbi.ttf", "Helvetica",    "Helvetica Bold Oblique", "Helvetica-Bold", 0.212557},
+  {"Helvetica-Oblique",     "n019023l.pfb", "ariali.ttf",  "Helvetica",    "Helvetica Oblique",      "Helvetica",      0.212557},
+  {"Symbol",                "s050000l.pfb", "symbol.ttf",  "Symbol",       "Symbol",                 NULL,             0       },
+  {"Times-Bold",            "n021004l.pfb", "timesbd.ttf", "Times",        "Times Bold",             NULL,             0       },
+  {"Times-BoldItalic",      "n021024l.pfb", "timesbi.ttf", "Times",        "Times Bold Italic",      NULL,             0       },
+  {"Times-Italic",          "n021023l.pfb", "timesi.ttf",  "Times",        "Times Italic",           NULL,             0       },
+  {"Times-Roman",           "n021003l.pfb", "times.ttf",   "Times",        "Times Roman",            NULL,             0       },
+  {"ZapfDingbats",          "d050000l.pfb", NULL,          "ZapfDingbats", "Zapf Dingbats",          NULL,             0       },
+  {NULL}
 };
 
 #ifdef _WIN32
@@ -2274,9 +2257,6 @@ void GlobalParams::setupBaseFonts(const char *dir) {
 	fileName = NULL;
       }
     }
-#ifdef BUILDING_WASM_MODULE
-    fileName = new GString(displayFontTab[i].name);
-#endif
 #ifdef _WIN32
     if (!fileName && winFontDir[0] && displayFontTab[i].ttFileName) {
       fileName = appendToPath(new GString(winFontDir),

@@ -1089,87 +1089,41 @@ namespace PdfReader
                 }
             }
         #ifdef BUILDING_WASM_MODULE
-            else if (wsFontBaseName == L"Courier")
+            else if ([&oMemoryFontStream, wsFontBaseName]()
             {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrn022003l, c_nSizen022003l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"Courier-Bold")
+                if (wsFontBaseName == L"Courier")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn022003l, c_nSizen022003l);
+                else if (wsFontBaseName == L"Courier-Bold")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn022004l, c_nSizen022004l);
+                else if (wsFontBaseName == L"Courier-BoldOblique")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn022024l, c_nSizen022024l);
+                else if (wsFontBaseName == L"Courier-Oblique")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn022023l, c_nSizen022023l);
+                else if (wsFontBaseName == L"Helvetica")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn019003l, c_nSizen019003l);
+                else if (wsFontBaseName == L"Helvetica-Bold")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn019004l, c_nSizen019004l);
+                else if (wsFontBaseName == L"Helvetica-BoldOblique")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn019024l, c_nSizen019024l);
+                else if (wsFontBaseName == L"Helvetica-Oblique")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn019023l, c_nSizen019023l);
+                else if (wsFontBaseName == L"Symbol")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrs050000l, c_nSizes050000l);
+                else if (wsFontBaseName == L"Times-Bold")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn021004l, c_nSizen021004l);
+                else if (wsFontBaseName == L"Times-BoldItalic")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn021024l, c_nSizen021024l);
+                else if (wsFontBaseName == L"Times-Italic")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn021023l, c_nSizen021023l);
+                else if (wsFontBaseName == L"Times-Roman")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn021003l, c_nSizen021003l);
+                else if (wsFontBaseName == L"ZapfDingbats")
+                    oMemoryFontStream.fromBuffer((BYTE*)c_arrd050000l, c_nSized050000l);
+                else
+                    return false;
+                return true;
+            }())
             {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrn022004l, c_nSizen022004l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"Courier-BoldOblique")
-            {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrn022024l, c_nSizen022024l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"Courier-Oblique")
-            {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrn022023l, c_nSizen022023l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"Helvetica")
-            {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrn019003l, c_nSizen019003l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"Helvetica-Bold")
-            {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrn019004l, c_nSizen019004l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"Helvetica-BoldOblique")
-            {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrn019024l, c_nSizen019024l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"Helvetica-Oblique")
-            {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrn019023l, c_nSizen019023l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"Symbol")
-            {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrs050000l, c_nSizes050000l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"Times-Bold")
-            {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrn021004l, c_nSizen021004l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"Times-BoldItalic")
-            {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrn021024l, c_nSizen021024l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"Times-Italic")
-            {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrn021023l, c_nSizen021023l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"Times-Roman")
-            {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrn021003l, c_nSizen021003l);
-                wsFileName = wsFontBaseName;
-                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-            }
-            else if (wsFontBaseName == L"ZapfDingbats")
-            {
-                oMemoryFontStream.fromBuffer((BYTE*)c_arrd050000l, c_nSized050000l);
                 wsFileName = wsFontBaseName;
                 NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
             }

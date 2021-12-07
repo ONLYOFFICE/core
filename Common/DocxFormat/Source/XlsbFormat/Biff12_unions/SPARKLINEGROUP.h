@@ -36,24 +36,24 @@
 namespace XLSB
 {
 
-    class FRTWORKSHEET: public XLS::CompositeObject
+    class SPARKLINEGROUP: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FRTWORKSHEET)
+        BASE_OBJECT_DEFINE_CLASS_NAME(SPARKLINEGROUP)
     public:
-        FRTWORKSHEET();
-        virtual ~FRTWORKSHEET();
+        SPARKLINEGROUP();
+        virtual ~SPARKLINEGROUP();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        static const XLS::ElementType	type = XLS::typeFRTWORKSHEET;
-
-        XLS::BaseObjectPtr               m_CONDITIONALFORMATTINGS;
-        XLS::BaseObjectPtr               m_DVALS14;
-        XLS::BaseObjectPtr               m_SPARKLINEGROUPS;
+        XLS::BaseObjectPtr               m_BrtBeginSparklineGroup;
+        XLS::BaseObjectPtr               m_ACUID;
+        XLS::BaseObjectPtr               m_BrtBeginSparklines;
+        std::vector<XLS::BaseObjectPtr>	 m_arBrtSparkline;
+        XLS::BaseObjectPtr               m_BrtEndSparklines;
+        XLS::BaseObjectPtr               m_BrtEndSparklineGroup;
 
     };
 
 } // namespace XLSB
-

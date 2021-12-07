@@ -321,6 +321,13 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/BeginECTWFldInfoLst15.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginECTwFldInfo15.cpp \
     ../Source/XlsbFormat/Biff12_records/EndECTWFldInfoLst15.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSparklineGroups.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSparklineGroups.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSparklineGroup.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSparklineGroup.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSparklines.cpp \
+    ../Source/XlsbFormat/Biff12_records/Sparkline.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSparklines.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -502,6 +509,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/TEXTPR15.cpp \
     ../Source/XlsbFormat/Biff12_unions/ECTXTWIZ15.cpp \
     ../Source/XlsbFormat/Biff12_unions/ECTWFLDINFOLST15.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUP.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUPS.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -801,6 +810,13 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/BeginECTWFldInfoLst15.h \
     ../Source/XlsbFormat/Biff12_records/BeginECTwFldInfo15.h \
     ../Source/XlsbFormat/Biff12_records/EndECTWFldInfoLst15.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSparklineGroups.h \
+    ../Source/XlsbFormat/Biff12_records/EndSparklineGroups.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSparklineGroup.h \
+    ../Source/XlsbFormat/Biff12_records/EndSparklineGroup.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSparklines.h \
+    ../Source/XlsbFormat/Biff12_records/Sparkline.h \
+    ../Source/XlsbFormat/Biff12_records/EndSparklines.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -985,3 +1001,5 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/TEXTPR15.h \
     ../Source/XlsbFormat/Biff12_unions/ECTXTWIZ15.h \
     ../Source/XlsbFormat/Biff12_unions/ECTWFLDINFOLST15.h \
+    ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUP.h \
+    ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUPS.h \

@@ -30,53 +30,76 @@
  *
  */
 
-#include "FRTWORKSHEET.h"
-#include "../Biff12_unions/CONDITIONALFORMATTINGS.h"
-#include "../Biff12_unions/DVALS14.h"
-#include "../Biff12_unions/SPARKLINEGROUPS.h"
+#include "SPARKLINEGROUP.h"
+#include "../Biff12_records/BeginSparklineGroup.h"
+#include "../Biff12_unions/ACUID.h"
+#include "../Biff12_records/BeginSparklines.h"
+#include "../Biff12_records/Sparkline.h"
+#include "../Biff12_records/EndSparklines.h"
+#include "../Biff12_records/EndSparklineGroup.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    FRTWORKSHEET::FRTWORKSHEET()
+    SPARKLINEGROUP::SPARKLINEGROUP()
     {
     }
 
-    FRTWORKSHEET::~FRTWORKSHEET()
+    SPARKLINEGROUP::~SPARKLINEGROUP()
     {
     }
 
-    BaseObjectPtr FRTWORKSHEET::clone()
+    BaseObjectPtr SPARKLINEGROUP::clone()
     {
-        return BaseObjectPtr(new FRTWORKSHEET(*this));
+        return BaseObjectPtr(new SPARKLINEGROUP(*this));
     }
 
-    // FRTWORKSHEET = [CONDITIONALFORMATTINGS] [DVALS14] [SPARKLINEGROUPS] [SLICERSEX]
-    //                  [RANGEPROTECTION14] [IGNOREECS14] [WEBEXTENSIONS] [TABLESLICERSEX] [TIMELINESEX] *FRT
-    const bool FRTWORKSHEET::loadContent(BinProcessor& proc)
-    {       
-
-        if (proc.optional<CONDITIONALFORMATTINGS>())
+    //SPARKLINEGROUP = BrtBeginSparklineGroup [ACUID] BrtBeginSparklines 1*2147483647BrtSparkline
+    //          BrtEndSparklines BrtEndSparklineGroup
+    const bool SPARKLINEGROUP::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginSparklineGroup>())
         {
-            m_CONDITIONALFORMATTINGS = elements_.back();
+            m_BrtBeginSparklineGroup = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.optional<DVALS14>())
+        if (proc.optional<ACUID>())
         {
-            m_DVALS14 = elements_.back();
+            m_ACUID = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.optional<SPARKLINEGROUPS>())
+        if (proc.optional<BeginSparklines>())
         {
-            m_SPARKLINEGROUPS = elements_.back();
+            m_BrtBeginSparklines = elements_.back();
             elements_.pop_back();
         }
 
-        return m_CONDITIONALFORMATTINGS || m_DVALS14 || m_SPARKLINEGROUPS;
+        int count = proc.repeated<Sparkline>(0, 2147483647);
+
+        while(count > 0)
+        {
+            m_arBrtSparkline.insert(m_arBrtSparkline.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndSparklines>())
+        {
+            m_BrtEndSparklines = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<EndSparklineGroup>())
+        {
+            m_BrtEndSparklineGroup = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginSparklineGroup && m_BrtBeginSparklines && !m_arBrtSparkline.empty() && m_BrtEndSparklines && m_BrtEndSparklineGroup;
     }
 
 } // namespace XLSB

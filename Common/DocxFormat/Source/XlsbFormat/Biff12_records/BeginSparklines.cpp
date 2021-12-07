@@ -29,31 +29,30 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "BeginSparklines.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class FRTWORKSHEET: public XLS::CompositeObject
+    BeginSparklines::BeginSparklines()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FRTWORKSHEET)
-    public:
-        FRTWORKSHEET();
-        virtual ~FRTWORKSHEET();
+    }
 
-        XLS::BaseObjectPtr clone();
+    BeginSparklines::~BeginSparklines()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr BeginSparklines::clone()
+    {
+        return BaseObjectPtr(new BeginSparklines(*this));
+    }
 
-        static const XLS::ElementType	type = XLS::typeFRTWORKSHEET;
-
-        XLS::BaseObjectPtr               m_CONDITIONALFORMATTINGS;
-        XLS::BaseObjectPtr               m_DVALS14;
-        XLS::BaseObjectPtr               m_SPARKLINEGROUPS;
-
-    };
+    void BeginSparklines::readFields(XLS::CFRecord& record)
+    {
+    }
 
 } // namespace XLSB
 

@@ -31,28 +31,25 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
-
-    class FRTWORKSHEET: public XLS::CompositeObject
+    // Logical representation of BrtBeginSparklineGroups record in BIFF12
+    class BeginSparklineGroups: public XLS::BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(FRTWORKSHEET)
-    public:
-        FRTWORKSHEET();
-        virtual ~FRTWORKSHEET();
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginSparklineGroups)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginSparklineGroups)
+        public:
+            BeginSparklineGroups();
+            virtual ~BeginSparklineGroups();
 
-        XLS::BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+            void readFields(XLS::CFRecord& record);
 
-        static const XLS::ElementType	type = XLS::typeFRTWORKSHEET;
-
-        XLS::BaseObjectPtr               m_CONDITIONALFORMATTINGS;
-        XLS::BaseObjectPtr               m_DVALS14;
-        XLS::BaseObjectPtr               m_SPARKLINEGROUPS;
-
+            //static const XLS::ElementType	type = XLS::typeBeginSparklineGroups;
     };
 
 } // namespace XLSB

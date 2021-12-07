@@ -30,53 +30,57 @@
  *
  */
 
-#include "FRTWORKSHEET.h"
-#include "../Biff12_unions/CONDITIONALFORMATTINGS.h"
-#include "../Biff12_unions/DVALS14.h"
-#include "../Biff12_unions/SPARKLINEGROUPS.h"
+#include "BeginSparklineGroup.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    FRTWORKSHEET::FRTWORKSHEET()
+    BeginSparklineGroup::BeginSparklineGroup()
     {
     }
 
-    FRTWORKSHEET::~FRTWORKSHEET()
+    BeginSparklineGroup::~BeginSparklineGroup()
     {
     }
 
-    BaseObjectPtr FRTWORKSHEET::clone()
+    BaseObjectPtr BeginSparklineGroup::clone()
     {
-        return BaseObjectPtr(new FRTWORKSHEET(*this));
+        return BaseObjectPtr(new BeginSparklineGroup(*this));
     }
 
-    // FRTWORKSHEET = [CONDITIONALFORMATTINGS] [DVALS14] [SPARKLINEGROUPS] [SLICERSEX]
-    //                  [RANGEPROTECTION14] [IGNOREECS14] [WEBEXTENSIONS] [TABLESLICERSEX] [TIMELINESEX] *FRT
-    const bool FRTWORKSHEET::loadContent(BinProcessor& proc)
-    {       
+    void BeginSparklineGroup::readFields(XLS::CFRecord& record)
+    {
+        _UINT16 flags;
+        record >> FRTheader >> flags;
 
-        if (proc.optional<CONDITIONALFORMATTINGS>())
-        {
-            m_CONDITIONALFORMATTINGS = elements_.back();
-            elements_.pop_back();
-        }
+        fDateAxis              = GETBIT(flags, 0);
+        fShowEmptyCellAsZero   = GETBITS(flags, 1, 2);
+        fMarkers               = GETBIT(flags, 3);
+        fHigh                  = GETBIT(flags, 4);
+        fLow                   = GETBIT(flags, 5);
+        fFirst                 = GETBIT(flags, 6);
+        fLast                  = GETBIT(flags, 7);
+        fNegative              = GETBIT(flags, 8);
+        fAxis                  = GETBIT(flags, 9);
+        fDisplayHidden         = GETBIT(flags, 10);
+        fIndividualAutoMax     = GETBIT(flags, 11);
+        fIndividualAutoMin     = GETBIT(flags, 12);
+        fGroupAutoMax          = GETBIT(flags, 13);
+        fGroupAutoMin          = GETBIT(flags, 14);
+        fRTL                   = GETBIT(flags, 15);
 
-        if (proc.optional<DVALS14>())
-        {
-            m_DVALS14 = elements_.back();
-            elements_.pop_back();
-        }
+        brtcolorSeries.readFields(record);
+        brtcolorNegative.readFields(record);
+        brtcolorAxis.readFields(record);
+        brtcolorMarkers.readFields(record);
+        brtcolorFirst.readFields(record);
+        brtcolorLast.readFields(record);
+        brtcolorHigh.readFields(record);
+        brtcolorLow.readFields(record);
 
-        if (proc.optional<SPARKLINEGROUPS>())
-        {
-            m_SPARKLINEGROUPS = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_CONDITIONALFORMATTINGS || m_DVALS14 || m_SPARKLINEGROUPS;
+        record >> dManualMax >> dManualMin >> dLineWeight >> isltype;
     }
 
 } // namespace XLSB

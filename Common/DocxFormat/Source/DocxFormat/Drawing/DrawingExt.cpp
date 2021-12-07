@@ -1050,6 +1050,16 @@ namespace OOX
                             m_arrExt.push_back( oExt );
                     }
 
+                    if(ptr->m_SPARKLINEGROUPS != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}";
+                        oExt->m_oSparklineGroups = ptr->m_SPARKLINEGROUPS;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+
                 }
             }
 

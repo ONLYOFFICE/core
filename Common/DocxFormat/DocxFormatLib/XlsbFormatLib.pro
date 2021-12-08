@@ -38,6 +38,7 @@ SOURCES += \
     ../Source/XlsbFormat/TableStream.cpp \
     ../Source/XlsbFormat/QueryTableStream.cpp \
     ../Source/XlsbFormat/ConnectionsStream.cpp \
+    ../Source/XlsbFormat/SlicersStream.cpp \
 ### Biff12_records
     ../Source/XlsbFormat/Biff12_records/BeginBook.cpp \
     ../Source/XlsbFormat/Biff12_records/FRTBegin.cpp \
@@ -328,6 +329,10 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/BeginSparklines.cpp \
     ../Source/XlsbFormat/Biff12_records/Sparkline.cpp \
     ../Source/XlsbFormat/Biff12_records/EndSparklines.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicers.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicers.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicer.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicer.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -511,6 +516,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/ECTWFLDINFOLST15.cpp \
     ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUP.cpp \
     ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUPS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICER.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -521,6 +528,7 @@ HEADERS += \
     ../Source/XlsbFormat/TableStream.h \
     ../Source/XlsbFormat/QueryTableStream.h \
     ../Source/XlsbFormat/ConnectionsStream.h \
+     ../Source/XlsbFormat/SlicersStream.h \
     ../Source/XlsbFormat/Xlsb.h \
     ../Source/XlsbFormat/XlsbElementsType.h \
 ### Biff12_records
@@ -817,6 +825,10 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/BeginSparklines.h \
     ../Source/XlsbFormat/Biff12_records/Sparkline.h \
     ../Source/XlsbFormat/Biff12_records/EndSparklines.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicers.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicers.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicer.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicer.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -1003,3 +1015,5 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/ECTWFLDINFOLST15.h \
     ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUP.h \
     ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUPS.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERS.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICER.h \

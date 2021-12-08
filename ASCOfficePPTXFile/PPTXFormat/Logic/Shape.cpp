@@ -104,6 +104,10 @@ namespace PPTX
 					txXfrm = oReader;
 				else if (L"txbx" == strName || L"textbox" == strName)
 				{
+					WritingElement_ReadAttributes_Start(oReader)
+						WritingElement_ReadAttributes_Read_if(oReader, L"id", oTextBoxId)
+					WritingElement_ReadAttributes_End(oReader)
+					
 					if ( oReader.IsEmptyNode() )
 						continue;
 							
@@ -119,6 +123,8 @@ namespace PPTX
 						}
 					}
 				}
+				else if (L"linkedTxbx" == strName)
+					oTextBoxLinkedTxbx = oReader;
 				else if (L"cNvPr" == strName)
 					nvSpPr.cNvPr = oReader;
 				else if (L"cNvSpPr" == strName)
@@ -185,6 +191,9 @@ namespace PPTX
 						txBody = oNode.ReadNodeNoNS(L"txBody");
 					else if (L"bodyPr" == strName)
 						oTextBoxBodyPr = oNode;
+					else if (L"linkedTxbx" == strName)
+						oTextBoxLinkedTxbx = oNode;
+
 				}
 			}
 

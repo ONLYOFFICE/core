@@ -312,6 +312,8 @@ namespace DocFileFormat
 		int	nAdjValues			=	0;
 		int	nLTxID				=	-1;
 
+		int nProperty = 0;
+
 		std::wstring				sTextboxStyle;
 				
 		ODRAW::OfficeArtFOPTEPtr	opSegmentInfo;
@@ -841,6 +843,10 @@ namespace DocFileFormat
 						break;
 					}
 				}break;	
+			case ODRAW::hspNext:
+				{
+					appendStyleProperty(sTextboxStyle, L"mso-next-textbox", std::wstring(L"_x0000_s") + FormatUtils::IntToWideString((unsigned int)iter->op));
+				}break;
 			case ODRAW::textBooleanProperties:
 				{
 					ODRAW::TextBooleanProperties *props = dynamic_cast<ODRAW::TextBooleanProperties*>(iter.get());
@@ -850,7 +856,6 @@ namespace DocFileFormat
 						appendStyleProperty(sTextboxStyle, L"mso-fit-shape-to-text", L"t");
 					}
 				}break;
-
 // Word Art
 			case ODRAW::gtextUNICODE:
 				{
@@ -909,7 +914,7 @@ namespace DocFileFormat
 				}break;
 			default:
 				{
-					int val = iter->op;
+					nProperty = iter->op;
 				}break;
 			}
 		}
@@ -1158,8 +1163,8 @@ namespace DocFileFormat
 			//Word appends a OfficeArtClientTextbox record to the container. 
 			//This record stores the index of the textbox.
 
-			int nIndex = pTextBox->GetIndex();
-			if (nIndex)
+			int nIndex = pTextBox->m_nIndex;
+			if (nIndex > 0)
 			{
 				TextboxMapping textboxMapping(m_context, nIndex - 1, m_pXmlWriter, m_pCaller);
 				textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
@@ -1170,12 +1175,6 @@ namespace DocFileFormat
 		}
 		else if( hasTextbox )
 		{
-			//Open Office textbox
-
-			//Open Office doesn't append a OfficeArtClientTextbox record to the container.
-			//We don't know how Word gets the relation to the text, but we assume that the first textbox in the document
-			//get the index 0, the second textbox gets the index 1 (and so on).
-
 			if (-1 != nLTxID)
 			{
 				TextboxMapping textboxMapping(m_context, nLTxID - 1, m_pXmlWriter, m_pCaller);
@@ -1713,7 +1712,7 @@ namespace DocFileFormat
 		switch (val)
 		{
 		case 0:	return L"square";
-		//case 1:	return L"ByPoints";	
+		case 1:	return L"tight";	
 		case 2:	return L"none";
 		//case 3:	return L"TopBottom";
 		//case 3:	return L"Through";

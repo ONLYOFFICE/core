@@ -333,6 +333,8 @@ namespace PPTX
 			nullable_string						strTextBoxShape;
 			nullable<OOX::Logic::CSdtContent>	oTextBoxShape;
 			nullable<BodyPr>					oTextBoxBodyPr;
+			nullable_uint						oTextBoxId;
+			nullable<LinkedTxbx>				oTextBoxLinkedTxbx;
 
 			nullable_string						modelId;
 			nullable_bool						useBgFill;

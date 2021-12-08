@@ -725,7 +725,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	_UINT64 lengthFileSize = file.GetFileSize();
 	DWORD lengthData = lengthFileSize, lengthDataRead = 0 ;
 
-	unsigned char* data		= new unsigned char[lengthData];
+	unsigned char* data = new unsigned char[lengthData];
 	unsigned char* data_out	= NULL;
 	
 	file.ReadFile(data, lengthData, lengthDataRead);
@@ -734,9 +734,10 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	
 	lengthData = cryptor.Encrypt(data, lengthData, data_out);
 
+	delete[]data; data = NULL;
+	
 	if (NULL == data_out)
 	{
-		delete []data;
 		return false;
 	}
 	cryptor.UpdateDataIntegrity(data_out, lengthData);
@@ -910,7 +911,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 //	
 //	if (decryptor.SetPassword(password))
 //	{
-//		unsigned char* data_out2	= NULL;
+//		unsigned char* data_out2 = NULL;
 //		decryptor.Decrypt(data_out, lengthData, data_out2, 0);
 //		
 //		bool bDataIntegrity = decryptor.CheckDataIntegrity(data_out, lengthData);
@@ -1029,7 +1030,7 @@ bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const s
 	{
 		_UINT64 lengthData, lengthRead = pStream->size();
 
-		unsigned char* data		= new unsigned char[lengthRead];
+		unsigned char* data = new unsigned char[lengthRead];
 		unsigned char* data_out	= NULL;
 		
 		int readTrue = pStream->read(data, lengthRead); 

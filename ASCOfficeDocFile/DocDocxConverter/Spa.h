@@ -60,7 +60,6 @@ namespace DocFileFormat
 		}
 
 		Spa();
-
 		virtual ~Spa();
 
         virtual ByteStructure* ConstructObject(VirtualStreamReader* reader, int length);
@@ -68,7 +67,6 @@ namespace DocFileFormat
 		{
 			return spid;
 		}
-
 	private:
 
 		/// Shape Identifier. Used in conjunction with the office art data 

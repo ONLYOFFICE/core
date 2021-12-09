@@ -455,7 +455,7 @@ namespace PPT_FORMAT
         std::wstring ConvertTableCell();
 		void WriteShapeInfo();
 		void WriteImageInfo();
-		void WriteTextInfo();
+        void WriteTextInfo();
 		void Write3dShape();
 	};
 }

@@ -1604,7 +1604,9 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
             if (pCF->font.font.is_init())
             {
-                m_oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->font.font->Name + _T("\"/>"));
+                m_oWriter.WriteString(L"<a:latin");
+                m_oWriter.WriteString(pCF->font.font->getXmlArgsStr());
+                m_oWriter.WriteString(L"/>");
             }
             else if (pCF->fontRef.is_init())
             {
@@ -1627,11 +1629,15 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
             if (pCF->font.ea.is_init())
             {
-                m_oWriter.WriteString(std::wstring(L"<a:ea typeface=\"") + pCF->font.ea->Name + L"\"/>");
+                m_oWriter.WriteString(L"<a:ea");
+                m_oWriter.WriteString(pCF->font.ea->getXmlArgsStr());
+                m_oWriter.WriteString(L"/>");
             }
             if (pCF->font.sym.is_init())
             {
-                m_oWriter.WriteString(std::wstring(L"<a:sym typeface=\"") + pCF->font.sym->Name + _T("\"/>"));
+                m_oWriter.WriteString(L"<a:sym");
+                m_oWriter.WriteString(pCF->font.sym->getXmlArgsStr());
+                m_oWriter.WriteString(L"/>");
             }
 
             //            WriteHyperlink(nIndexPar);

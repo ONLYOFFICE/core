@@ -2676,10 +2676,35 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
 
 void CRecordShapeContainer::addHyperlinkToSpan(CSpan &oSpan, const std::vector<CInteractiveInfo> &arrInteractive, const CColor &oColor)
 {
-    oSpan.m_oRun.Color = oColor;
-    oSpan.m_oRun.FontUnderline = (bool)true;
-    oSpan.m_arrInteractive = arrInteractive;
+    if (isRealHyperlink(arrInteractive))
+    {
+        oSpan.m_oRun.Color = oColor;
+        oSpan.m_oRun.FontUnderline = (bool)true;
+        oSpan.m_arrInteractive = arrInteractive;
+    }
 }
+
+bool CRecordShapeContainer::isRealHyperlink(const std::vector<CInteractiveInfo> &arrInteractive)
+{
+    bool isReal = false;
+    for (const auto& interInfo : arrInteractive)
+    {
+        switch (interInfo.m_lHyperlinkType)
+        {
+        case LT_Url:
+            if (interInfo.m_strHyperlink.size())
+                isReal = true;
+            break;
+        default:
+            isReal = true;
+            break;
+        }
+    }
+
+    return isReal;
+}
+
+
 
 std::vector<std::vector<CInteractiveInfo> > CRecordShapeContainer::splitInteractive(const std::vector<CInteractiveInfo> &arrInteractive)
 {

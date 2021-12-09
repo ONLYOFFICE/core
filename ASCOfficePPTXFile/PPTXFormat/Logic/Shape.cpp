@@ -104,9 +104,20 @@ namespace PPTX
 					txXfrm = oReader;
 				else if (L"txbx" == strName || L"textbox" == strName)
 				{
-					WritingElement_ReadAttributes_Start(oReader)
-						WritingElement_ReadAttributes_Read_if(oReader, L"id", oTextBoxId)
-					WritingElement_ReadAttributes_End(oReader)
+					if (oReader.GetAttributesCount() > 0)
+					{
+						if (oReader.MoveToFirstAttribute())
+						{
+							std::wstring wsNameA = oReader.GetName();
+							while (wsNameA.empty())
+							{
+								if (L"id" == wsNameA) oTextBoxId = oReader.GetText();
+								if (!oReader.MoveToNextAttribute())
+									break; 
+								wsNameA = oReader.GetName();
+							}
+						}
+					}
 					
 					if ( oReader.IsEmptyNode() )
 						continue;
@@ -281,7 +292,11 @@ namespace PPTX
 				bool bIsWritedBodyPr = false;
 				if (strTextBoxShape.is_init())
 				{
-					pWriter->WriteString(L"<wps:txbx>");					
+					if (oTextBoxId.IsInit())
+						pWriter->WriteString(L"<wps:txbx id=\"" + std::to_wstring(*oTextBoxId) + L"\">");
+					else 
+						pWriter->WriteString(L"<wps:txbx>");					
+					
 					//pWriter->WriteString(oTextBoxShape->toXML());
 					pWriter->WriteString(*strTextBoxShape);
 					pWriter->WriteString(L"</wps:txbx>");

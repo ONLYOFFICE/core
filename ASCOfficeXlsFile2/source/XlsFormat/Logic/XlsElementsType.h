@@ -789,6 +789,20 @@ enum ElementType
         typeSUPSAME,
         typeSUPADDIN,
         typeSupBookSrc,
+        typeDVALS,
+        typeDVALS14,
+        typeDVal14,
+        typeBeginDVals,
+        typeBeginDVals14,
+        typeFRTQSI,
+        typeFRTEXTCONNECTIONS,
+        typeEXTCONNECTION,
+        typeEXTCONN14,
+        typeEXTCONN15,
+        typeBeginExtConnection,
+        typeBeginExtConn14,
+        typeBeginExtConn15,
+        typeRangePr15,
 };
 
 

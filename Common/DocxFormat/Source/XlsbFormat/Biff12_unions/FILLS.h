@@ -50,7 +50,7 @@ namespace XLSB
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
 		XLS::BaseObjectPtr               m_BrtBeginFills;
-        std::vector<XLS::BaseObjectPtr>	m_arBrtFill;
+        std::vector<XLS::BaseObjectPtr>	 m_arBrtFill;
 		XLS::BaseObjectPtr               m_BrtEndFills;
 
     };

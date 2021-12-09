@@ -36,6 +36,8 @@
 #include "../../XlsbFormat/Biff12_records/WsFmtInfo.h"
 #include "../../XlsbFormat/Biff12_unions/WSVIEWS2.h"
 #include "../../XlsbFormat/Biff12_unions/WSVIEW2.h"
+#include "../../XlsbFormat/Biff12_unions/HEADERFOOTER.h"
+#include "../../XlsbFormat/Biff12_records/BeginHeaderFooter.h"
 #include "../../XlsbFormat/Biff12_records/SheetProtectionIso.h"
 #include "../../XlsbFormat/Biff12_records/SheetProtection.h"
 #include "../../XlsbFormat/Biff12_records/LegacyDrawingHF.h"
@@ -1349,6 +1351,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CHeaderFooter)
+            WritingElement_XlsbConstructors(CHeaderFooter)
 			CHeaderFooter()
 			{
 			}
@@ -1422,6 +1425,49 @@ namespace OOX
 						m_oOddHeader = oReader;
 				}
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto pHEADERFOOTER = static_cast<XLSB::HEADERFOOTER*>(obj.get());
+                if (pHEADERFOOTER == nullptr)
+                    return;
+
+                ReadAttributes(pHEADERFOOTER->m_BrtBeginHeaderFooter);
+
+                auto ptr = static_cast<XLSB::BeginHeaderFooter*>(pHEADERFOOTER->m_BrtBeginHeaderFooter.get());
+                if(ptr != nullptr)
+                {
+                    if(!ptr->stHeader.value().empty())
+                    {
+                        m_oOddHeader = new CHeaderFooterElement();
+                        m_oOddHeader->m_sText = ptr->stHeader.value();
+                    }
+                    if(!ptr->stFooter.value().empty())
+                    {
+                        m_oOddFooter = new CHeaderFooterElement();
+                        m_oOddFooter->m_sText = ptr->stFooter.value();
+                    }
+                    if(ptr->fHFDiffOddEven && !ptr->stHeaderEven.value().empty())
+                    {
+                        m_oEvenHeader = new CHeaderFooterElement();
+                        m_oEvenHeader->m_sText = ptr->stHeaderEven.value();
+                    }
+                    if(ptr->fHFDiffOddEven && !ptr->stFooterEven.value().empty())
+                    {
+                        m_oEvenFooter = new CHeaderFooterElement();
+                        m_oEvenFooter->m_sText = ptr->stFooterEven.value();
+                    }
+                    if(ptr->fHFDiffFirst && !ptr->stHeaderFirst.value().empty())
+                    {
+                        m_oFirstHeader = new CHeaderFooterElement();
+                        m_oFirstHeader->m_sText = ptr->stHeaderFirst.value();
+                    }
+                    if(ptr->fHFDiffFirst && !ptr->stFooterFirst.value().empty())
+                    {
+                        m_oFirstFooter = new CHeaderFooterElement();
+                        m_oFirstFooter->m_sText = ptr->stFooterFirst.value();
+                    }
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_HeaderFooterWorksheet;
@@ -1437,6 +1483,17 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if	( oReader, (L"scaleWithDoc"),		m_oScaleWithDoc)
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BeginHeaderFooter*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oAlignWithMargins = ptr->fHFAlignMargins;
+                    m_oDifferentFirst   = ptr->fHFDiffFirst;
+                    m_oDifferentOddEven = ptr->fHFDiffOddEven;
+                    m_oScaleWithDoc     = ptr->fHFScaleWithDoc;
+                }
+            }
 
 		public:
 			nullable<CHeaderFooterElement>		m_oEvenFooter;

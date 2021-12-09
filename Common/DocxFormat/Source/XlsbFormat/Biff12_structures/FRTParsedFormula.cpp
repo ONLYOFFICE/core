@@ -55,7 +55,7 @@ void FRTParsedFormula::load(XLS::CFRecord& record)
     record >> cb;
 
     rgce.load(record, cce);
-    rgcb.load(record, rgce.getPtgs(), true);
+    //rgcb.load(record, rgce.getPtgs(), true);
 }
 
 } // namespace XLS

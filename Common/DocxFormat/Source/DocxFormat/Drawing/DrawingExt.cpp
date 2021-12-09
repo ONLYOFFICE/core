@@ -51,6 +51,8 @@
 #include "../../XlsbFormat/Biff12_unions/STYLESHEET14.h"
 #include "../../XlsbFormat/Biff12_unions/DXF14S.h"
 #include "../../XlsbFormat/Biff12_unions/FRTTABLE.h"
+#include "../../XlsbFormat/Biff12_unions/FRTQSI.h"
+#include "../../XlsbFormat/Biff12_unions/FRTEXTCONNECTIONS.h"
 
 namespace OOX
 {
@@ -1038,6 +1040,26 @@ namespace OOX
                             m_arrExt.push_back( oExt );
                     }
 
+                    if(ptr->m_DVALS14 != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri == L"{CCE6A557-97BC-4B89-ADB6-D9C93CAAB3DF}";
+                        oExt->m_oDataValidations = ptr->m_DVALS14;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+
+                    if(ptr->m_SPARKLINEGROUPS != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}";
+                        oExt->m_oSparklineGroups = ptr->m_SPARKLINEGROUPS;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+
                 }
             }
 
@@ -1081,6 +1103,44 @@ namespace OOX
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
                         oExt->m_sUri == L"{504A1905-F514-4f6f-8877-14C23A59335A}";
                         oExt->m_oAltTextTable = ptr->m_BrtList14;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+
+                }
+            }
+
+            else if(obj->get_type() == XLS::typeFRTQSI)
+            {
+                auto ptr = static_cast<XLSB::FRTQSI*>(obj.get());
+
+                if(ptr != nullptr)
+                {
+                    if(ptr->m_BrtQsi15 != nullptr)
+                    {
+                        /*OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri == L"{883FBD77-0823-4A55-B5E3-86C4891E6966}";
+                        oExt->m_o = ptr->m_BrtQsi15;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );*/
+                    }
+
+                }
+            }
+
+            else if(obj->get_type() == XLS::typeFRTEXTCONNECTIONS)
+            {
+                auto ptr = static_cast<XLSB::FRTEXTCONNECTIONS*>(obj.get());
+
+                if(ptr != nullptr)
+                {
+                    if(ptr->m_EXTCONN15 != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri == L"{DE250136-89BD-433C-8126-D09CA5730AF9}";
+                        oExt->m_oConnection = ptr->m_EXTCONN15;
 
                         if (oExt)
                             m_arrExt.push_back( oExt );

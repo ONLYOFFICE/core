@@ -67,5 +67,5 @@ namespace XLSB
 
 }
 
-#endif // TableStream_H
+#endif // TABLESTREAM_H
 

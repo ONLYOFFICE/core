@@ -33,8 +33,6 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 
@@ -52,6 +50,8 @@ namespace XLSB
         static const XLS::ElementType	type = XLS::typeFRTWORKSHEET;
 
         XLS::BaseObjectPtr               m_CONDITIONALFORMATTINGS;
+        XLS::BaseObjectPtr               m_DVALS14;
+        XLS::BaseObjectPtr               m_SPARKLINEGROUPS;
 
     };
 

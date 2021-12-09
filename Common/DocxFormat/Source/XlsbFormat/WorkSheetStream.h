@@ -77,12 +77,14 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtMargins;
         XLS::BaseObjectPtr               m_BrtPageSetup;
         XLS::BaseObjectPtr               m_BrtPrintOptions;
+        XLS::BaseObjectPtr               m_HEADERFOOTER;
         XLS::BaseObjectPtr               m_BrtSheetProtectionIso;
         XLS::BaseObjectPtr               m_BrtSheetProtection;
         XLS::BaseObjectPtr               m_LISTPARTS;
         XLS::BaseObjectPtr               m_AUTOFILTER;
         XLS::BaseObjectPtr               m_SORTSTATE;
         std::vector<XLS::BaseObjectPtr>  m_arCONDITIONALFORMATTING;
+        XLS::BaseObjectPtr               m_DVALS;
         XLS::BaseObjectPtr               m_FRTWORKSHEET;
 
         XLS::BaseObjectPtr               m_BrtEndSheet;

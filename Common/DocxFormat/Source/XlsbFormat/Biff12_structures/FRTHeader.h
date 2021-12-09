@@ -33,7 +33,7 @@
 #pragma once
 
 #include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "FRTRefs.h"
 #include "FRTSqrefs.h"
 #include "FRTFormulas.h"
@@ -60,9 +60,9 @@ namespace XLSB
         bool        fRelID;
 
         FRTRefs     rgRefs;
-		FRTSqrefs   rgSqrefs;
-		FRTFormulas rgFormulas;
-		FRTRelID    relID;
+        FRTSqrefs   rgSqrefs;
+        FRTFormulas rgFormulas;
+        FRTRelID    relID;
     };
 
 typedef boost::shared_ptr<FRTHeader> FRTHeaderPtr;

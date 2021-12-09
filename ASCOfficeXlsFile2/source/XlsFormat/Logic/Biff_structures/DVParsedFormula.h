@@ -46,7 +46,7 @@ public:
 	void load(CFRecord& record, bool bLoad);
 	virtual void load(CFRecord& record);
 private:
-	unsigned short cce;
+    unsigned int cce;
 };
 
 } // namespace XLS

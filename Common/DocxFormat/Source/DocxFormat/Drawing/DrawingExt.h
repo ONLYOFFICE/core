@@ -171,18 +171,18 @@ namespace OOX
 
 		public:
 
-            nullable<std::wstring>  m_sUri;
-            std::wstring            m_sAdditionalNamespace;
+                        nullable<std::wstring>  m_sUri;
+                        std::wstring            m_sAdditionalNamespace;
 
-			nullable<CCompatExt>							m_oCompatExt;
-			nullable<OOX::Spreadsheet::CSparklineGroups>	m_oSparklineGroups;
-			nullable<CDataModelExt>							m_oDataModelExt;
+                        nullable<CCompatExt>					m_oCompatExt;
+                        nullable<OOX::Spreadsheet::CSparklineGroups>            m_oSparklineGroups;
+                        nullable<CDataModelExt>					m_oDataModelExt;
 			nullable<OOX::Spreadsheet::CAltTextTable>		m_oAltTextTable;
-            nullable<std::wstring>							m_oId;
-			nullable<OOX::Spreadsheet::CDataValidations>	m_oDataValidations;
+                        nullable<std::wstring>					m_oId;
+                        nullable<OOX::Spreadsheet::CDataValidations>            m_oDataValidations;
 
 			nullable<OOX::Spreadsheet::CConnection>			m_oConnection;
-			nullable<OOX::Spreadsheet::CDxfs>				m_oDxfs;
+                        nullable<OOX::Spreadsheet::CDxfs>			m_oDxfs;
 
 			nullable<OOX::Spreadsheet::CSlicerRefs>			m_oSlicerList;
 			nullable<OOX::Spreadsheet::CSlicerRefs>			m_oSlicerListExt;
@@ -191,8 +191,8 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CSlicerStyles>		m_oSlicerStyles;
 
 			std::vector<OOX::Spreadsheet::CSlicerCachePivotTable*>	m_oSlicerCachePivotTables;
-			nullable<OOX::Spreadsheet::CTableSlicerCache>			m_oTableSlicerCache;
-			nullable<OOX::Spreadsheet::CSlicerCacheHideNoData>		m_oSlicerCacheHideItemsWithNoData;
+                        nullable<OOX::Spreadsheet::CTableSlicerCache>		m_oTableSlicerCache;
+                        nullable<OOX::Spreadsheet::CSlicerCacheHideNoData>	m_oSlicerCacheHideItemsWithNoData;
 			
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 

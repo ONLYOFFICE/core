@@ -46,12 +46,14 @@
 #include "Biff12_unions/WSVIEWS2.h"
 #include "Biff12_records/Margins.h"
 #include "Biff12_records/PrintOptions.h"
+#include "Biff12_unions/HEADERFOOTER.h"
 #include "Biff12_records/SheetProtectionIso.h"
 #include "Biff12_records/SheetProtection.h"
 #include "Biff12_unions/LISTPARTS.h"
 #include "Biff12_unions/AUTOFILTER.h"
 #include "Biff12_unions/SORTSTATE.h"
 #include "Biff12_unions/CONDITIONALFORMATTING.h"
+#include "Biff12_unions/DVALS.h"
 #include "Biff12_unions/FRTWORKSHEET.h"
 #include "Biff12_records/EndSheet.h"
 
@@ -215,6 +217,15 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                 }
             }break;
 
+            case rt_BeginHeaderFooter:
+            {
+                if (proc.optional<HEADERFOOTER>())
+                {
+                    m_HEADERFOOTER = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
             case rt_SheetProtectionIso:
             {
                 if (proc.optional<SheetProtectionIso>())
@@ -270,7 +281,16 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                     elements_.pop_back();
                     count--;
                 }
-            }break;           
+            }break;
+
+            case rt_BeginDVals:
+            {
+                if (proc.optional<DVALS>())
+                {
+                    m_DVALS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
 
             case rt_FRTBegin:
             {

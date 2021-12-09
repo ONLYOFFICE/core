@@ -150,8 +150,8 @@ static DWORD GetLength(BYTE* x)
 int main()
 {
 #define XPS_TEST  0
-#define DJVU_TEST 0
-#define PDF_TEST  1
+#define DJVU_TEST 1
+#define PDF_TEST  0
 #if PDF_TEST
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
@@ -391,7 +391,7 @@ int main()
     }
     int* info = GetInfo(test);
     int pages_count = *info;
-    int test_page = 0;
+    int test_page = 1;
     int width  = info[test_page * 3 + 1];
     int height = info[test_page * 3 + 2];
     std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;

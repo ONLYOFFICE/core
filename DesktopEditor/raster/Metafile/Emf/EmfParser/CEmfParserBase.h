@@ -229,6 +229,21 @@ namespace MetaFile
                 void HANDLE_EMR_STROKEPATH(TEmfRectL& oBounds);
 
                 void HANDLE_EMR_UNKNOWN(const unsigned int& unRecordSize);
+
+                void HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY);
+                void HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor);
+                void HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRect oRect);
+                void HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRectF oRect);
+                void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointR> arPoints);
+                void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointF> arPoints);
+                void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPoint> arPoints);
+                void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointR> arPoints);
+                void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointF> arPoints);
+                void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPoint> arPoints);
+                void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPoint> arPoints);
+                void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPointF> arPoints);
+                void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId,  TEmfPlusRect oRect);
+                void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId,  TEmfPlusRectF oRect);
         };
 
 }

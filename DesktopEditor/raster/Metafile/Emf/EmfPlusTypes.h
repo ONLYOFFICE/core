@@ -62,6 +62,18 @@ namespace MetaFile
                         shWidth  = oRect.shWidth;
                         shHeight = oRect.shHeight;
                 }
+
+                TEmfRectL GetRectL()
+                {
+                        TEmfRectL oRect;
+
+                        oRect.lLeft      = (int)shX;
+                        oRect.lRight     = (int)(shX + shWidth);
+                        oRect.lTop       = (int)shY;
+                        oRect.lBottom    = (int)(shY + shHeight);
+
+                        return oRect;
+                }
         };
 
         struct TEmfPlusARGB
@@ -140,6 +152,18 @@ namespace MetaFile
                         oRectangle.dTop    = dY;
                         oRectangle.dRight  = dX + dWidth;
                         oRectangle.dBottom = dY + dHeight;
+
+                        return oRectangle;
+                }
+
+                TEmfRectL GetRectL()
+                {
+                        TEmfRectL oRectangle;
+
+                        oRectangle.lLeft   = dX;
+                        oRectangle.lTop    = dY;
+                        oRectangle.lRight  = dX + dWidth;
+                        oRectangle.lBottom = dY + dHeight;
 
                         return oRectangle;
                 }

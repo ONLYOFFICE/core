@@ -691,8 +691,7 @@ namespace MetaFile
                 m_oStream >> m_unLogicalDpiX;
                 m_oStream >> m_unLogicalDpiY;
 
-                if(NULL != m_pInterpretator)
-                        m_pInterpretator->Begin();
+                HANDLE_EMFPLUS_HEADER(((unShFlags >>(15)) & 1 ), ((unEmfPlusFlags >>(31)) & 1 ), m_unLogicalDpiX, m_unLogicalDpiY);
 
                 //TODO: добавить установление нового Dpi
         }
@@ -703,7 +702,7 @@ namespace MetaFile
 
                 m_oStream >> oARGB;
 
-                //TODO: реализовать
+                HANDLE_EMFPLUS_CLEAR(oARGB);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWARC(unsigned short unShFlags)
@@ -724,7 +723,8 @@ namespace MetaFile
                 m_oStream >> dStartAngle;
                 m_oStream >> dSweepAngle;
                 m_oStream >> oRect;
-                //TODO: реализовать
+
+                HANDLE_EMFPLUS_DRAWARC(chOgjectIndex, dStartAngle, dSweepAngle, oRect);
         }
 
 
@@ -756,14 +756,15 @@ namespace MetaFile
 
                 m_oStream >> unCountPoints;
 
+                if (unCountPoints == 0)
+                        return;
+
                 std::vector<T> arPoints(unCountPoints);
 
                 for (unsigned int unIndex = 0; unIndex < unCountPoints; ++unIndex)
-                {
+                        m_oStream >> arPoints[unIndex];
 
-                }
-
-                //TODO: реализовать
+                HANDLE_EMFPLUS_DRAWBEZIERS(shOgjectIndex, arPoints);
                 //TODO: для EmfPlusPointR опредилиться с реализацией
         }
 
@@ -796,12 +797,15 @@ namespace MetaFile
                 m_oStream >> dTension;
                 m_oStream >> unCount;
 
+                if (unCount == 0)
+                        return;
+
                 std::vector<T> arPoints(unCount);
 
                 for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
-                {
-                        //TODO: реализовать
-                }
+                        m_oStream >> arPoints[0];
+
+                HANDLE_EMFPLUS_DRAWCLOSEDCURVE(shOgjectIndex, dTension, arPoints);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWCURVE(unsigned short unShFlags)
@@ -827,9 +831,9 @@ namespace MetaFile
                 std::vector<T> arPoints(unCountPoints);
 
                 for (unsigned int unIndex = 0; unIndex < unCountPoints; ++unIndex)
-                {
-                        //TODO: реализовать
-                }
+                        m_oStream >> arPoints[0];
+
+                HANDLE_EMFPLUS_DRAWCURVE(shOgjectIndex, dTension, unOffset, unNumSegments, arPoints);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWDRIVERSTRING(unsigned short unShFlags)
@@ -862,7 +866,7 @@ namespace MetaFile
 
                 m_oStream >> oRect;
 
-                //TODO: реализовать
+                HANDLE_EMFPLUS_DRAWELLIPSE(shOgjectIndex, oRect);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWIMAGE(unsigned short unShFlags)

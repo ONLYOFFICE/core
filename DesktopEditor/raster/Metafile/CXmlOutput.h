@@ -56,9 +56,12 @@ namespace MetaFile
         void WriteNode(const std::wstring& wsNameNode,  const TXForm&                   oNodeValue);
 
         void WriteNode(const std::wstring& wsNameNode,  const TEmfRectL&                oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfPlusRect&             oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfPlusRectF&            oNodeValue);
         void WriteNode(const std::wstring& wsNameNode,  const TEmfSizeL&                oNodeValue);
         void WriteNode(const std::wstring& wsNameNode,  const TEmfAlphaBlend&           oNodeValue);
         void WriteNode(const std::wstring& wsNameNode,  const TEmfColor&                oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfPlusARGB&             oNodeValue);
         void WriteNode(const std::wstring& wsNameNode,  const TEmfStretchDIBITS&        oNodeValue);
         void WriteNode(const std::wstring& wsNameNode,  const TEmfBitBlt&               oNodeValue);
         void WriteNode(const std::wstring& wsNameNode,  const TEmfSetDiBitsToDevice&    oNodeValue);
@@ -67,6 +70,8 @@ namespace MetaFile
         void WriteNode(const std::wstring& wsNameNode,  const TEmfExtTextoutA&          oNodeValue);
         void WriteNode(const std::wstring& wsNameNode,  const TEmfPointL&               oNodeValue);
         void WriteNode(const std::wstring& wsNameNode,  const TEmfPointS&               oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfPlusPointR&           oNodeValue);
+        void WriteNode(const std::wstring& wsNameNode,  const TEmfPlusPointF&           oNodeValue);
         void WriteNode(const std::wstring& wsNameNode,  const TEmfEmrText&              oNodeValue);
         void WriteNode(const std::wstring& wsNameNode,  const TEmfExtTextoutW&          oNodeValue);
         void WriteNode(const std::wstring& wsNameNode,  const TEmfSmallTextout&         oNodeValue);
@@ -82,9 +87,12 @@ namespace MetaFile
         void WriteTXForm                (const TXForm&                  oTXForm);
 
         void WriteTEmfRectL             (const TEmfRectL&               oTEmfRectL);
+        void WriteTEmfPlusRect          (const TEmfPlusRect&            oTEmfPlusRect);
+        void WriteTEmfPlusRectF         (const TEmfPlusRectF&           oTEmfPlusRectF);
         void WriteTEmfSizeL             (const TEmfSizeL&               oTEmfSizeL);
         void WriteTEmfAlphaBlend        (const TEmfAlphaBlend&          oTEmfAlphaBlend);
         void WriteTEmfColor             (const TEmfColor&               oTEmfColor);
+        void WriteARGB                  (const TEmfPlusARGB&            oTEmfPlusARGB);
         void WriteTEmfStretchDIBITS     (const TEmfStretchDIBITS&       oTEmfStretchDIBITS);
         void WriteTEmfBitBlt            (const TEmfBitBlt&              oTEmfBitBlt);
         void WriteTEmfSetDiBitsToDevice (const TEmfSetDiBitsToDevice&   oTEmfSetDiBitsToDevice);
@@ -94,6 +102,8 @@ namespace MetaFile
         void WriteTEmfEmrText           (const TEmfEmrText&             oTEmfEmrText);
         void WriteTEmfPointL            (const TEmfPointL&              oTEmfPointL);
         void WriteTEmfPointS            (const TEmfPointS&              oTEmfPointS);
+        void WriteTEmfPlusPointR        (const TEmfPlusPointR&          oTEmfPlusPointR);
+        void WriteTEmfPlusPointF        (const TEmfPlusPointF&          oTEmfPlusPointF);
         void WriteTEmfExtTextoutW       (const TEmfExtTextoutW&         oTEmfExtTextoutW);
         void WriteTEmfSmallTextout      (const TEmfSmallTextout&        oTEmfSmallTextout);
 

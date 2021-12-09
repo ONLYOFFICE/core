@@ -186,6 +186,20 @@ namespace MetaFile
         WriteNodeEnd(wsNameNode);
     }
 
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfPlusRect &oNodeValue)
+    {
+            WriteNodeBegin(wsNameNode);
+            WriteTEmfPlusRect(oNodeValue);
+            WriteNodeEnd(wsNameNode);
+    }
+
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfPlusRectF &oNodeValue)
+    {
+            WriteNodeBegin(wsNameNode);
+            WriteTEmfPlusRectF(oNodeValue);
+            WriteNodeEnd(wsNameNode);
+    }
+
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfSizeL &oTEmfSizeL)
     {
         WriteNodeBegin(wsNameNode);
@@ -212,6 +226,13 @@ namespace MetaFile
         WriteNodeBegin(wsNameNode);
         WriteTEmfColor(oNodeValue);
         WriteNodeEnd(wsNameNode);
+    }
+
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfPlusARGB &oNodeValue)
+    {
+            WriteNodeBegin(wsNameNode);
+            WriteARGB(oNodeValue);
+            WriteNodeEnd(wsNameNode);
     }
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfStretchDIBITS &oNodeValue)
@@ -268,6 +289,20 @@ namespace MetaFile
         WriteNodeBegin(wsNameNode);
         WriteTEmfPointS(oNodeValue);
         WriteNodeEnd(wsNameNode);
+    }
+
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfPlusPointR &oNodeValue)
+    {
+            WriteNodeBegin(wsNameNode);
+            WriteTEmfPlusPointR(oNodeValue);
+            WriteNodeEnd(wsNameNode);
+    }
+
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfPlusPointF &oNodeValue)
+    {
+            WriteNodeBegin(wsNameNode);
+            WriteTEmfPlusPointF(oNodeValue);
+            WriteNodeEnd(wsNameNode);
     }
 
     void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TEmfEmrText &oNodeValue)
@@ -327,6 +362,22 @@ namespace MetaFile
         WriteNode(L"Bottom",   oTEmfRectL.lBottom);
     }
 
+    void CXmlOutput::WriteTEmfPlusRect(const TEmfPlusRect &oTEmfPlusRect)
+    {
+            WriteNode(L"X",      oTEmfPlusRect.shX);
+            WriteNode(L"Y",      oTEmfPlusRect.shY);
+            WriteNode(L"Width",  oTEmfPlusRect.shWidth);
+            WriteNode(L"Height", oTEmfPlusRect.shHeight);
+    }
+
+    void CXmlOutput::WriteTEmfPlusRectF(const TEmfPlusRectF &oTEmfPlusRectF)
+    {
+            WriteNode(L"X",      oTEmfPlusRectF.dX);
+            WriteNode(L"Y",      oTEmfPlusRectF.dY);
+            WriteNode(L"Width",  oTEmfPlusRectF.dWidth);
+            WriteNode(L"Height", oTEmfPlusRectF.dHeight);
+    }
+
     void CXmlOutput::WriteTEmfSizeL(const TEmfSizeL &oTEmfSizeL)
     {
         WriteNode(L"cX", oTEmfSizeL.cx);
@@ -378,6 +429,14 @@ namespace MetaFile
         WriteNode(L"Green",     oTEmfColor.g);
         WriteNode(L"Blue",      oTEmfColor.b);
         WriteNode(L"Reserved",  oTEmfColor.a);
+    }
+
+    void CXmlOutput::WriteARGB(const TEmfPlusARGB &oTEmfPlusARGB)
+    {
+            WriteNode(L"Blue",  oTEmfPlusARGB.chBlue);
+            WriteNode(L"Green", oTEmfPlusARGB.chGreen);
+            WriteNode(L"Red",   oTEmfPlusARGB.chRed);
+            WriteNode(L"Alpha", oTEmfPlusARGB.chAlpha);
     }
 
     void CXmlOutput::WriteTEmfStretchDIBITS(const TEmfStretchDIBITS &oTEmfStretchDIBITS)
@@ -503,6 +562,17 @@ namespace MetaFile
     {
         WriteNode(L"X", oTEmfPointS.x);
         WriteNode(L"Y", oTEmfPointS.y);
+    }
+
+    void CXmlOutput::WriteTEmfPlusPointR(const TEmfPlusPointR &oTEmfPlusPointR)
+    {
+            //TODO: реализовать
+    }
+
+    void CXmlOutput::WriteTEmfPlusPointF(const TEmfPlusPointF &oTEmfPlusPointF)
+    {
+            WriteNode(L"X", oTEmfPlusPointF.X);
+            WriteNode(L"Y", oTEmfPlusPointF.Y);
     }
 
     void CXmlOutput::WriteTEmfExtTextoutW(const TEmfExtTextoutW &oTEmfExtTextoutW)

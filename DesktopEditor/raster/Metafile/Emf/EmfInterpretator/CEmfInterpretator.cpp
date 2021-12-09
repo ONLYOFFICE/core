@@ -1713,12 +1713,279 @@ namespace MetaFile
                         m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * unRecordSize - 8);
         }
 
+        void CEmfInterpretator::HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY)
+        {
+                short shType = 0x4001;
+                short shFlags = bIsEmfPlusDual << 15;
+                unsigned int unSize = 0x0000001C;
+                unsigned int unDataSize = 0x00000010;
+                int nVersion;
+                unsigned int unEmfPlusFlags = bIsReferenceDevice << 31;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->write((char *)&nVersion,          sizeof (int));
+                m_pOutStream->write((char *)&unEmfPlusFlags,    sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDpiX,            sizeof (float));
+                m_pOutStream->write((char *)&unDpiY,            sizeof (float));
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor)
+        {
+                short shType = 0x4009;
+                short shFlags = 0;
+                unsigned int unSize = 0x00000010;
+                unsigned int unDataSize = 0x00000004;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+
+                WriteARGB(oColor);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRect oRect)
+        {
+                short shType = 0x4012;
+                short shFlags = chPenId << 8;
+                unsigned int unSize = 0x0000001C;
+                unsigned int unDataSize = 0x00000010;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->write((char *)&dStartAngle,       sizeof (float));
+                m_pOutStream->write((char *)&dSweepAngle,       sizeof (float));
+
+                WriteRectangle(oRect);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRectF oRect)
+        {
+                short shType = 0x4012;
+                short shFlags = 1 << 1 | chPenId << 8;
+                unsigned int unSize = 0x00000024;
+                unsigned int unDataSize = 0x00000018;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->write((char *)&dStartAngle,       sizeof (float));
+                m_pOutStream->write((char *)&dSweepAngle,       sizeof (float));
+
+                WriteRectangle(oRect);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointR> arPoints)
+        {
+                short shType = 0x4019;
+                short shFlags = 1 << 4 | chPenId << 8;
+                unsigned int unCount = arPoints.size();
+                unsigned int unSize = (unCount * 0x00000002) + 0x00000010;
+                unsigned int unDataSize = (unCount * 0x00000002) + 0x00000004;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+
+                for (const TEmfPlusPointR& oPoint : arPoints)
+                        WritePoint(oPoint);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointF> arPoints)
+        {
+                short shType = 0x4019;
+                short shFlags = chPenId << 8;
+                unsigned int unCount = arPoints.size();
+                unsigned int unSize = (unCount * 0x00000008) + 0x00000010;
+                unsigned int unDataSize = (unCount * 0x00000008) + 0x00000004;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+
+                for (const TEmfPlusPointF& oPoint : arPoints)
+                        WritePoint(oPoint);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPoint> arPoints)
+        {
+                short shType = 0x4019;
+                short shFlags = 1 << 1 | chPenId << 8;
+                unsigned int unCount = arPoints.size();
+                unsigned int unSize = (unCount * 0x00000004) + 0x00000010;
+                unsigned int unDataSize = (unCount * 0x00000004) + 0x00000004;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+
+                for (const TEmfPlusPoint& oPoint : arPoints)
+                        WritePoint(oPoint);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointR> arPoints)
+        {
+                short shType = 0x4017;
+                short shFlags = 1 << 4 | chPenId << 8;
+                unsigned int unCount = arPoints.size();
+                unsigned int unSize = ((((unCount * 0x00000002) + 0x00000014 + 0x00000003) / 4) * 4);
+                unsigned int unDataSize = ((((unCount * 0x00000002) + 0x0000008 + 0x00000003) / 4) * 4);
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->write((char *)&dTension,          sizeof (float));
+                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+
+                for (const TEmfPlusPointR& oPoint : arPoints)
+                        WritePoint(oPoint);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointF> arPoints)
+        {
+                short shType = 0x4017;
+                short shFlags = chPenId << 8;
+                unsigned int unCount = arPoints.size();
+                unsigned int unSize = (unCount * 0x00000008) + 0x00000014;
+                unsigned int unDataSize = (unCount * 0x00000008) + 0x00000008;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->write((char *)&dTension,          sizeof (float));
+                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+
+                for (const TEmfPlusPointF oPoint : arPoints)
+                        WritePoint(oPoint);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPoint> arPoints)
+        {
+                short shType = 0x4017;
+                short shFlags = 1 << 1 | chPenId << 8;
+                unsigned int unCount = arPoints.size();
+                unsigned int unSize = (unCount * 0x00000004) + 0x00000014;
+                unsigned int unDataSize = (unCount * 0x00000004) + 0x00000008;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->write((char *)&dTension,          sizeof (float));
+                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+
+                for (const TEmfPlusPoint oPoint : arPoints)
+                        WritePoint(oPoint);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPoint> arPoints)
+        {
+                short shType = 0x4018;
+                short shFlags = 1 << 1 | chPenId << 8;
+                unsigned int unCount = arPoints.size();
+                unsigned int unSize = (unCount * 0x00000004) + 0x0000001C;
+                unsigned int unDataSize = (unCount * 0x00000004) + 0x00000010;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->write((char *)&dTension,          sizeof (float));
+                m_pOutStream->write((char *)&unOffset,          sizeof (unsigned int));
+                m_pOutStream->write((char *)&unNumSegments,     sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+
+                for (const TEmfPlusPoint oPoint : arPoints)
+                        WritePoint(oPoint);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPointF> arPoints)
+        {
+                short shType = 0x4018;
+                short shFlags = chPenId << 8;
+                unsigned int unCount = arPoints.size();
+                unsigned int unSize = (unCount * 0x00000008) + 0x0000001C;
+                unsigned int unDataSize = (unCount * 0x00000008) + 0x00000010;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->write((char *)&dTension,          sizeof (float));
+                m_pOutStream->write((char *)&unOffset,          sizeof (unsigned int));
+                m_pOutStream->write((char *)&unNumSegments,     sizeof (unsigned int));
+                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+
+                for (const TEmfPlusPointF oPoint : arPoints)
+                        WritePoint(oPoint);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRect oRect)
+        {
+                short shType = 0x400F;
+                short shFlags = 1 << 1 | chPenId << 8;
+                unsigned int unSize = 0x00000014;
+                unsigned int unDataSize = 0x00000008;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+
+                WriteRectangle(oRect);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRectF oRect)
+        {
+                short shType = 0x400F;
+                short shFlags = chPenId << 8;
+                unsigned int unSize = 0x0000001C;
+                unsigned int unDataSize = 0x00000010;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+
+                WriteRectangle(oRect);
+        }
+
         void CEmfInterpretator::WriteRectangle(const TEmfRectL &oBounds)
         {
                 m_pOutStream->write((char *)&oBounds.lLeft,   sizeof(int));
                 m_pOutStream->write((char *)&oBounds.lTop,    sizeof(int));
                 m_pOutStream->write((char *)&oBounds.lRight,  sizeof(int));
                 m_pOutStream->write((char *)&oBounds.lBottom, sizeof(int));
+        }
+
+        void CEmfInterpretator::WriteRectangle(const TEmfPlusRect &oRect)
+        {
+                m_pOutStream->write((char *)&oRect.shX,       sizeof(short));
+                m_pOutStream->write((char *)&oRect.shY,       sizeof(short));
+                m_pOutStream->write((char *)&oRect.shWidth,   sizeof(short));
+                m_pOutStream->write((char *)&oRect.shHeight,  sizeof(short));
+        }
+
+        void CEmfInterpretator::WriteRectangle(const TEmfPlusRectF &oRect)
+        {
+                m_pOutStream->write((char *)&oRect.dX,       sizeof(float));
+                m_pOutStream->write((char *)&oRect.dY,       sizeof(float));
+                m_pOutStream->write((char *)&oRect.dWidth,   sizeof(float));
+                m_pOutStream->write((char *)&oRect.dHeight,  sizeof(float));
         }
 
         void CEmfInterpretator::WriteSize(const TEmfSizeL &oSize)
@@ -1743,6 +2010,12 @@ namespace MetaFile
                 m_pOutStream->write((char *)&oRColor.Red,       sizeof (unsigned char));
         }
 
+        void CEmfInterpretator::WriteARGB(const TEmfPlusARGB &oARGB)
+        {
+                int nARGB = (oARGB.chBlue | (oARGB.chGreen << 8) | (oARGB.chRed << 16) | (oARGB.chAlpha << 24));
+                m_pOutStream->write((char *)&nARGB,  sizeof (int));
+        }
+
         void CEmfInterpretator::WriteForm(const TXForm &oForm)
         {
                 WriteFloat(oForm.M11);
@@ -1763,6 +2036,17 @@ namespace MetaFile
         {
                 m_pOutStream->write((char *)&oPoint.x, sizeof (short));
                 m_pOutStream->write((char *)&oPoint.y, sizeof (short));
+        }
+
+        void CEmfInterpretator::WritePoint(const TEmfPlusPointR &oPoint)
+        {
+                //TODO: реализовать
+        }
+
+        void CEmfInterpretator::WritePoint(const TEmfPlusPointF &oPoint)
+        {
+                m_pOutStream->write((char *)&oPoint.X, sizeof (float));
+                m_pOutStream->write((char *)&oPoint.Y, sizeof (float));
         }
 
         void CEmfInterpretator::WriteString(const unsigned short arshString[], const unsigned int &unSize)

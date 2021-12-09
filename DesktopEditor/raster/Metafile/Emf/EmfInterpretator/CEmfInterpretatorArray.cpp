@@ -663,4 +663,88 @@ namespace MetaFile
                 for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
                         pInterpretator->HANDLE_EMR_UNKNOWN(oDataStream);
         }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_HEADER(bIsEmfPlusDual, bIsReferenceDevice, unDpiX, unDpiY);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_CLEAR(oColor);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRect oRect)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWARC(chPenId, dStartAngle, dSweepAngle, oRect);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRectF oRect)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWARC(chPenId, dStartAngle, dSweepAngle, oRect);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointR> arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWBEZIERS(chPenId, arPoints);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointF> arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWBEZIERS(chPenId, arPoints);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPoint> arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWBEZIERS(chPenId, arPoints);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointR> arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWCLOSEDCURVE(chPenId, dTension, arPoints);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointF> arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWCLOSEDCURVE(chPenId, dTension, arPoints);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPoint> arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWCLOSEDCURVE(chPenId, dTension, arPoints);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPoint> arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWCURVE(chPenId, dTension, unOffset, unNumSegments, arPoints);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPointF> arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWCURVE(chPenId, dTension, unOffset, unNumSegments, arPoints);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRect oRect)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWELLIPSE(chPenId, oRect);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRectF oRect)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWELLIPSE(chPenId, oRect);
+        }
 }

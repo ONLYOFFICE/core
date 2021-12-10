@@ -39,6 +39,11 @@
 #include <vector>
 #include "../../common/Types.h"
 
+#define NSFONTS_EMBEDDING_RIGHTS_ANY               0x00
+#define NSFONTS_EMBEDDING_RIGHTS_PRINT_AND_PREVIEW 0x01
+#define NSFONTS_EMBEDDING_RIGHTS_EDITABLE          0x02
+#define NSFONTS_EMBEDDING_RIGHTS_INSTALLABLE       0x03
+
 struct TBBox
 {
     float fMinX;
@@ -163,6 +168,18 @@ namespace NSFonts
                 m_bItalic == pFontInfo->m_bItalic &&
                 m_bBold == pFontInfo->m_bBold);
         }
+		static inline bool CanEmbedForPreviewAndPrint(const USHORT& usType)
+		{
+			return (2 != usType);
+		}
+		static inline bool CanEmbedForEdit(const USHORT& usType)
+		{
+			return (0 == usType || (2 != usType && (usType & 8 || !(usType & 4))));
+		}
+		static inline bool CanEmbedForInstall(const USHORT& usType)
+		{
+			return (0 == usType || !(2 == usType || (usType & 2) || (usType & 4) || (usType & 8) || (usType & 512)));
+		}
 
     public:
         std::wstring m_wsFontName;   // Имя шрифта

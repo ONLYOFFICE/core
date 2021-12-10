@@ -194,6 +194,8 @@ namespace NExtractTools
 		TCD_MSCRYPT2_RAW,
 		TCD_2MSCRYPT_RAW,
 
+		TCD_MITCRYPT2,
+
 //
 		TCD_HTML2DOCX,
 		TCD_HTML2DOCT,
@@ -389,6 +391,44 @@ namespace NExtractTools
 		}
 	};
 
+	class InputParamsText
+	{
+	public:
+		int* m_nTextAssociationType;
+		InputParamsText()
+		{
+			m_nTextAssociationType = NULL;
+		}
+		~InputParamsText()
+		{
+			RELEASEOBJECT(m_nTextAssociationType);
+		}
+
+		bool FromXmlNode(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNodes oXmlNodes;
+			if (TRUE == oNode.GetChilds(oXmlNodes))
+			{
+				for (int i = 0; i < oXmlNodes.GetCount(); i++)
+				{
+					XmlUtils::CXmlNode oXmlNode;
+					if (oXmlNodes.GetAt(i, oXmlNode))
+					{
+						std::wstring sValue;
+						if (oXmlNode.GetTextIfExist(sValue))
+						{
+							std::wstring sName = oXmlNode.GetName();
+
+							if (_T("m_nTextAssociationType") == sName)
+								m_nTextAssociationType = new int(XmlUtils::GetInteger(sValue));
+						}
+					}
+				}
+			}
+			return true;
+		}
+	};
+
 	class InputLimit
 	{
 	public:
@@ -423,6 +463,7 @@ namespace NExtractTools
 		std::wstring* m_sThemeDir;
         InputParamsMailMerge* m_oMailMergeSend;
 		InputParamsThumbnail* m_oThumbnail;
+		InputParamsText* m_oTextParams;
 		std::wstring* m_sJsonParams;
 		std::wstring* m_sPassword;
 		std::wstring* m_sSavePassword;
@@ -456,6 +497,7 @@ namespace NExtractTools
 			m_sThemeDir = NULL;
             m_oMailMergeSend = NULL;
 			m_oThumbnail = NULL;
+			m_oTextParams = NULL;
 			m_sJsonParams = NULL;
 			m_sPassword = NULL;
 			m_sSavePassword = NULL;
@@ -488,6 +530,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sThemeDir);
             RELEASEOBJECT(m_oMailMergeSend);
 			RELEASEOBJECT(m_oThumbnail);
+			RELEASEOBJECT(m_oTextParams);
 			RELEASEOBJECT(m_sJsonParams);
 			RELEASEOBJECT(m_sPassword);
 			RELEASEOBJECT(m_sSavePassword);
@@ -544,6 +587,12 @@ namespace NExtractTools
 							RELEASEOBJECT(m_oThumbnail);
 							m_oThumbnail = new InputParamsThumbnail();
 							m_oThumbnail->FromXmlNode(oXmlNode);
+						}
+						else if(_T("m_oTextParams") == sName)
+						{
+							RELEASEOBJECT(m_oTextParams);
+							m_oTextParams = new InputParamsText();
+							m_oTextParams->FromXmlNode(oXmlNode);
 						}
 						else if(_T("m_oInputLimits") == sName)
 						{
@@ -854,6 +903,8 @@ namespace NExtractTools
                     eRes = TCD_CANVAS_PDF2;
 				else if(AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
 					eRes = TCD_MSCRYPT2;
+				else if(AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO == nFormatFrom)
+					eRes = TCD_MITCRYPT2;
                 else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
                     eRes = TCD_UNZIPDIR;
                 else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
@@ -1100,10 +1151,6 @@ namespace NExtractTools
                 m_sFileTo->replace(nIndex, std::wstring::npos, FileFormatChecker.GetExtensionByType(toFormat));
             else
                 m_sFileTo->append(FileFormatChecker.GetExtensionByType(toFormat));
-          }
-          else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == toFormat)
-          {
-              toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
           }
           *m_nFormatTo = toFormat;
         }

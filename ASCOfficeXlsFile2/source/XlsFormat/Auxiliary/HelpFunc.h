@@ -71,6 +71,7 @@ namespace STR
 	const std::string	bin2str		(const char* buf, const size_t nbuf);
 	const std::wstring  guid2bstr	(const _GUID_ guid);
 	const std::string	guid2str	(const _GUID_ guid);
+    const std::wstring	guidFromStr	(const std::wstring & guid_str);
 	const bool			bstr2guid	(const std::wstring & guid_str, _GUID_& guid);
 	const std::wstring	int2hex_wstr(const int val, const size_t size_of = 4);
 

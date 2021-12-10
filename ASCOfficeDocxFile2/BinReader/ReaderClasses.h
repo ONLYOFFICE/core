@@ -477,6 +477,7 @@ public:
 	bool bLangEA;
 	bool bThemeColor;
 	bool bVanish;
+	bool bSnapToGrid;
 
 	long CompressText;
 	bool bDoNotWriteNullProp;
@@ -496,7 +497,6 @@ public:
 		DStrikeout = false;
 		Caps = false;
 		SmallCaps = false;
-
 		bBold = false;
 		bItalic = false;
 		bUnderline = false;
@@ -527,6 +527,7 @@ public:
 		bThemeColor = false;
 		ThemeColor.Reset();
 		bVanish = false;
+		bSnapToGrid = true;
 
 		nHighLight = 0; //not set
 		Outline.clear();
@@ -536,12 +537,25 @@ public:
 		MoveFrom.clear();
 		MoveTo.clear();
         rPrChange.clear();
+
+		FontAscii.clear();
+		FontHAnsi.clear();
+		FontAE.clear();
+		FontCS.clear();
+		FontAsciiTheme.clear();
+		FontHAnsiTheme.clear();
+		FontAETheme.clear();
+		FontCSTheme.clear();
+		Shd.clear();
+		RStyle.clear();		
+		LangBidi.clear();
+		LangEA.clear();
 		
 		CompressText = -1; //not set
 	}
 	bool IsNoEmpty()
 	{
-		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || nHighLight > 0 || bShd ||
+		return !bSnapToGrid || bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || nHighLight > 0 || bShd ||
 			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish ||
 			!Outline.empty() || !Fill.empty() || !Del.empty() || !Ins.empty() || !MoveFrom.empty() || !MoveTo.empty() || !rPrChange.empty() || !FontAsciiTheme.empty() || !FontHAnsiTheme.empty() || !FontAETheme.empty() || !FontCSTheme.empty();
 	}
@@ -612,42 +626,42 @@ public:
 			if(Bold)
                 pCStringWriter->WriteString(L"<w:b/>");
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(L"<w:b w:val=\"false\"/>");
+                pCStringWriter->WriteString(L"<w:b w:val=\"0\"/>");
 		}
 		if(bBoldCs)
 		{
 			if(BoldCs)
                 pCStringWriter->WriteString(L"<w:bCs/>");
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(L"<w:bCs w:val=\"false\"/>");
+                pCStringWriter->WriteString(L"<w:bCs w:val=\"0\"/>");
 		}
 		if(bItalic)
 		{
 			if(Italic)
                 pCStringWriter->WriteString(L"<w:i/>");
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(L"<w:i w:val=\"false\"/>");
+                pCStringWriter->WriteString(L"<w:i w:val=\"0\"/>");
 		}
 		if(bItalicCs)
 		{
 			if(ItalicCs)
                 pCStringWriter->WriteString(L"<w:iCs />");
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(L"<w:iCs w:val=\"false\"/>");
+                pCStringWriter->WriteString(L"<w:iCs w:val=\"0\"/>");
 		}
 		if(bCaps)
 		{
 			if(Caps)
                 pCStringWriter->WriteString(L"<w:caps/>");
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(L"<w:caps w:val=\"false\"/>");
+                pCStringWriter->WriteString(L"<w:caps w:val=\"0\"/>");
 		}
 		if(bSmallCaps)
 		{
 			if(SmallCaps)
                 pCStringWriter->WriteString(L"<w:smallCaps/>");
 			else if(false == bDoNotWriteNullProp)
-                pCStringWriter->WriteString(L"<w:smallCaps w:val=\"false\"/>");
+                pCStringWriter->WriteString(L"<w:smallCaps w:val=\"0\"/>");
 		}
 		if(bStrikeout)
 		{
@@ -688,6 +702,10 @@ public:
 			}
             sColor += L"/>";
 			pCStringWriter->WriteString(sColor);
+		}
+		if (!bSnapToGrid)
+		{
+			pCStringWriter->WriteString(L"<w:snapToGrid w:val=\"0\"/>");
 		}
 		if(bSpacing)
 		{

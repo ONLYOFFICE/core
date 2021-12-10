@@ -336,9 +336,9 @@ namespace NSDocxRenderer
 			m_oBrush.LinearAngle = dAngle;
 			return S_OK;
 		}
-        HRESULT BrushRect(BOOL val, double left, double top, double width, double height)
+        HRESULT BrushRect(bool val, double left, double top, double width, double height)
 		{
-			m_oBrush.Rectable = val;
+            m_oBrush.Rectable = val ? 1 : 0;
 			m_oBrush.Rect.X = (float)left;
 			m_oBrush.Rect.Y = (float)top;
 			m_oBrush.Rect.Width  = (float)width;
@@ -387,12 +387,12 @@ namespace NSDocxRenderer
 			m_oFont.SetStyle(lStyle);
 			return S_OK;
 		}
-        HRESULT get_FontStringGID(BOOL* bGID)
+        HRESULT get_FontStringGID(INT* bGID)
 		{
 			*bGID = m_oFont.StringGID;
 			return S_OK;
 		}
-        HRESULT put_FontStringGID(BOOL bGID)
+        HRESULT put_FontStringGID(INT bGID)
 		{
 			m_oFont.StringGID = bGID;
 			return S_OK;
@@ -468,12 +468,12 @@ namespace NSDocxRenderer
 			m_oShadow.Alpha = val;
 			return S_OK;
 		}
-        HRESULT get_ShadowVisible(BOOL* val)
+        HRESULT get_ShadowVisible(INT* val)
 		{
 			*val = m_oShadow.Visible;
 			return S_OK;
 		}
-        HRESULT put_ShadowVisible(BOOL val)
+        HRESULT put_ShadowVisible(INT val)
 		{
 			m_oShadow.Visible = val;
 			return S_OK;
@@ -800,8 +800,8 @@ namespace NSDocxRenderer
 			if ((dWidth <= 1) || (dHeight <= 1))
 				lFlags = 0;
 
-			BOOL bFlipX = (0 != (c_nParamFlipX & lFlags));
-			BOOL bFlipY = (0 != (c_nParamFlipY & lFlags));
+            bool bFlipX = (0 != (c_nParamFlipX & lFlags));
+            bool bFlipY = (0 != (c_nParamFlipY & lFlags));
 			
 			double m11 = bFlipX ? -1.0 : 1.0;
 			double m22 = bFlipY ? -1.0 : 1.0;

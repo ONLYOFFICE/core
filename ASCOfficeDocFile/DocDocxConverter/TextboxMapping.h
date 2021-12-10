@@ -39,7 +39,6 @@ namespace DocFileFormat
 	class TextboxMapping : public DocumentMapping
 	{
 	public:
-
 		TextboxMapping(ConversionContext* ctx, int textboxIndex, XMLTools::CStringXmlWriter* writer, IMapping* caller);
 		TextboxMapping(ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, IMapping* caller);
 		

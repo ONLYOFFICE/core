@@ -132,5 +132,89 @@ void OOX::Spreadsheet::CXlsb::PrepareSi()
         }*/
     }
 }
+void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
+{
+    for(auto &worksheet : m_arWorksheets)
+    {
+        auto lambdaFormula = [&](std::wstring& formula) {
+            auto str = STR::guidFromStr(formula);
+            if(!str.empty())
+            {
+                auto guidTableIndex = this->xls_global_info->mapTableGuidsIndex.find(str);
+                if (guidTableIndex != this->xls_global_info->mapTableGuidsIndex.end())
+                {
+                    auto tableIndex = this->xls_global_info->mapTableNames.find(guidTableIndex->second);
+                    if (tableIndex != this->xls_global_info->mapTableNames.end())
+                    {
+                        auto tableName = tableIndex->second;
+                        formula.replace(formula.find(str), str.size(), tableName);
+                    }
+                }
+            }
+        };
+
+        if(worksheet->m_oTableParts.IsInit())
+        {
+            for(size_t i = 0, length = worksheet->m_oTableParts->m_arrItems.size(); i < length; ++i)
+            {
+                auto &oTablePart = worksheet->m_oTableParts->m_arrItems[i];
+                if(oTablePart->m_oRId.IsInit())
+                {
+                    smart_ptr<OOX::File> pFile = worksheet->Find(OOX::RId(oTablePart->m_oRId->GetValue()));
+                    if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::Table == pFile->type())
+                    {
+                        OOX::Spreadsheet::CTableFile* pTableFile = static_cast<OOX::Spreadsheet::CTableFile*>(pFile.GetPointer());
+                        if(pTableFile && pTableFile->m_oTable.IsInit())
+                        {
+                            OOX::Spreadsheet::CTable* pTable = pTableFile->m_oTable.GetPointer();
+                            if(pTable->m_oTableColumns.IsInit())
+                            {
+                                OOX::Spreadsheet::CTableColumns* oTableColumns = pTable->m_oTableColumns.GetPointer();
+
+                                for(size_t i = 0, length = oTableColumns->m_arrItems.size(); i < length; ++i)
+                                {
+                                    auto& oTableColumn = oTableColumns->m_arrItems[i];                                   
+
+                                    if(oTableColumn->m_oCalculatedColumnFormula.IsInit())
+                                    {                                       
+                                       lambdaFormula(oTableColumn->m_oCalculatedColumnFormula.get());
+                                    }
+                                    if(oTableColumn->m_oTotalsRowFormula.IsInit())
+                                    {
+                                        lambdaFormula(oTableColumn->m_oTotalsRowFormula.get());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(worksheet->m_oSheetData.IsInit())
+            {
+                for(size_t i = 0, length = worksheet->m_oSheetData->m_arrItems.size(); i < length; ++i)
+                {
+                    OOX::Spreadsheet::CRow* pRow = worksheet->m_oSheetData->m_arrItems[i];
+                    if(pRow)
+                    {
+                        for(size_t i = 0, length = pRow->m_arrItems.size(); i < length; ++i)
+                        {
+                            OOX::Spreadsheet::CCell* oCell = pRow->m_arrItems[i];
+                            if(oCell->m_oFormula.IsInit())
+                            {
+                                lambdaFormula(oCell->m_oFormula.GetPointer()->m_sText);
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+
+
+
 
 

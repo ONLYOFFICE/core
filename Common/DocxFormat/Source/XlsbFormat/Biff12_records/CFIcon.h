@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../Biff12_structures/FRTBlank.h"
 #include "../../XlsxFormat/WritingElement.h"
 

@@ -826,6 +826,15 @@ int CFontList::GetCapHeightPenalty(SHORT shCandCapHeight, SHORT shReqCapHeight)
 
     return abs( shCandCapHeight - shReqCapHeight ) / 20;
 }
+bool CFontList::CheckEmbeddingRights(const USHORT* ushRights, const USHORT& fsType)
+{
+	if (!ushRights || NSFONTS_EMBEDDING_RIGHTS_ANY == *ushRights || 0 == fsType)
+		return true;
+
+	return ((NSFONTS_EMBEDDING_RIGHTS_PRINT_AND_PREVIEW == *ushRights && NSFonts::CFontInfo::CanEmbedForPreviewAndPrint(fsType))
+			|| (NSFONTS_EMBEDDING_RIGHTS_EDITABLE == *ushRights && NSFonts::CFontInfo::CanEmbedForEdit(fsType))
+			|| NSFonts::CFontInfo::CanEmbedForInstall(fsType));
+}
 
 NSFonts::EFontFormat CFontList::GetFontFormat(FT_Face pFace)
 {
@@ -961,18 +970,14 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
     NSFonts::CFontInfo* pInfoMin = NULL;
     CFontSelectFormatCorrection* pSelectCorrection = NULL;
 
-    unsigned short usType = 0;
-    if (oSelect.usType && *oSelect.usType != 0)
-        usType ^= (~*oSelect.usType);
-
-    while (true)
+	while (true)
     {
         for (std::vector<NSFonts::CFontInfo*>::iterator iter = m_pList.begin(); iter != m_pList.end(); iter++)
         {
             int nCurPenalty = 0;
             NSFonts::CFontInfo* pInfo = *iter;
 
-            if (0 != usType && 0 != (usType & pInfo->m_usType))
+            if (!CheckEmbeddingRights(oSelect.usType, pInfo->m_usType))
                 continue;
 
             if ( NULL != oSelect.pPanose )

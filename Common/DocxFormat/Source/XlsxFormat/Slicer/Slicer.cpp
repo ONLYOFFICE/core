@@ -30,6 +30,11 @@
  *
  */
 #include "Slicer.h"
+#include "../../XlsbFormat/Xlsb.h"
+#include "../../XlsbFormat/SlicersStream.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERS.h"
+#include "../../XlsbFormat/Biff12_unions/SLICER.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicer.h"
 
 namespace OOX
 {
@@ -55,6 +60,15 @@ void CSlicers::fromXML(XmlUtils::CXmlLiteReader& oReader)
 			m_oSlicer.back() = oReader;
 		}
 	}
+}
+void CSlicers::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::SLICERS*>(obj.get());
+    if(ptr != nullptr)
+    {
+        for(auto &slicer : ptr->m_arSLICER)
+            m_oSlicer.push_back(CSlicer(slicer));
+    }
 }
 void CSlicers::toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 {
@@ -146,6 +160,43 @@ void CSlicer::fromXML(XmlUtils::CXmlLiteReader& oReader)
 			m_oExtLst = oReader;
 	}
 }
+void CSlicer::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::SLICER*>(obj.get());
+    if(ptr != nullptr)
+    {
+        ReadAttributes(ptr->m_BrtBeginSlicer);
+    }
+}
+void CSlicer::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::BeginSlicer*>(obj.get());
+    if(ptr != nullptr)
+    {
+        if(!ptr->stName.value().empty())
+            m_oName         = ptr->stName.value();
+
+        if(!ptr->stName.value().empty())
+            m_oUid          = ptr->stName.value();
+
+        if(!ptr->stSlicerCacheName.value().empty())
+            m_oCache        = ptr->stSlicerCacheName.value();
+
+        if(!ptr->stCaption.value().empty())
+            m_oCaption      = ptr->stCaption.value();
+
+        if(!ptr->stStyle.value().empty())
+            m_oStyle        = ptr->stStyle.value();
+
+        m_oStartItem        = ptr->dwStartSlicerItem;
+        m_oColumnCount      = ptr->dwColumnCount;
+        m_oShowCaption      = ptr->fCaptionVisible;
+        m_oLevel            = ptr->dwLevel;
+        m_oLockedPosition   = ptr->fLockedPosition;
+        m_oRowHeight        = ptr->dxRowHeight;
+    }
+}
+
 void CSlicer::toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 {
 	writer.StartNode(sName);
@@ -272,11 +323,34 @@ void CSlicer::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	pReader->Seek(_end_rec);
 }
 
+void CSlicerFile::readBin(const CPath& oPath)
+{
+    CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+    if (xlsb)
+    {
+        XLSB::SlicersStreamPtr slicersStream = std::make_shared<XLSB::SlicersStream>();
+
+        xlsb->ReadBin(oPath, slicersStream.get());
+
+        if (slicersStream != nullptr)
+        {
+            if (slicersStream->m_SLICERS != nullptr)
+                m_oSlicers = slicersStream->m_SLICERS;
+        }
+
+    }
+}
 
 void CSlicerFile::read(const CPath& oRootPath, const CPath& oPath)
 {
 	m_oReadPath = oPath;
 	IFileContainer::Read( oRootPath, oPath );
+
+    if( m_oReadPath.GetExtention() == _T(".bin"))
+    {
+        readBin(m_oReadPath);
+        return;
+    }
 
 	XmlUtils::CXmlLiteReader oReader;
 

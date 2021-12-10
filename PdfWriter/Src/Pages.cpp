@@ -880,8 +880,8 @@ namespace PdfWriter
 			char *pEndPointer = sExtGrStateName + LIMIT_MAX_NAME_LEN;
 
 			pPointer = (char*)StrCpy(sExtGrStateName, "E", pEndPointer);
-			ItoA(pPointer, m_unCompressionMode + 1, pEndPointer);
-			m_unCompressionMode++;
+			ItoA(pPointer, m_unExtGStatesCount + 1, pEndPointer);
+			m_unExtGStatesCount++;
 			m_pExtGStates->Add(sExtGrStateName, pState);
 			sKey = m_pExtGStates->GetKey(pState);
 		}

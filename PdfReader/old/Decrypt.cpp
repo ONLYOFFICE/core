@@ -480,6 +480,9 @@ namespace PdfReader
 		MemoryStream* mem_stream = dynamic_cast<MemoryStream*>(m_pStream);
 		
 		unsigned int size = mem_stream->getCurrentLength();
+
+		if (size < 16) return;
+
 		unsigned char* data = (unsigned char*)mem_stream->getCurrent();
 
 		if (!m_pUncryptedData || m_pUncryptedDataSize < size)

@@ -53,20 +53,37 @@ BaseObjectPtr Qsir::clone()
 
 void Qsir::readFields(CFRecord& record)
 {
-	_UINT32 flags;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        _UINT32 flags;
 
-	record >> frtRefHeaderU >> cbQsirSaved >> cbQsifSaved >> flags >> iSortCustom >> cQsif >> cpstDeleted >> idFieldNext >> ccolExtraLeft >> ccolExtraRight;
-	record >> idList >> rgbTitle;
-	
-	fPersist			= GETBIT(flags, 0);
-	fPersistSort		= GETBIT(flags, 1);
-	fPersistAutoFilter	= GETBIT(flags, 2);
-	fSorted				= GETBIT(flags, 20);
-	fCaseSensSort		= GETBIT(flags, 21);
-	fHdrRowSort			= GETBIT(flags, 22);
-	fidWrapped			= GETBIT(flags, 23);
-	fTitlesOld			= GETBIT(flags, 25);
-	wVerBeforeRefreshAlert = GETBITS(flags, 26, 30);
+        record >> frtRefHeaderU >> cbQsirSaved >> cbQsifSaved >> flags >> iSortCustom >> cQsif >> cpstDeleted >> idFieldNext >> ccolExtraLeft >> ccolExtraRight;
+        record >> idList >> rgbTitle;
+
+        fPersist			= GETBIT(flags, 0);
+        fPersistSort		= GETBIT(flags, 1);
+        fPersistAutoFilter	= GETBIT(flags, 2);
+        fSorted				= GETBIT(flags, 20);
+        fCaseSensSort		= GETBIT(flags, 21);
+        fHdrRowSort			= GETBIT(flags, 22);
+        fidWrapped			= GETBIT(flags, 23);
+        fTitlesOld			= GETBIT(flags, 25);
+        wVerBeforeRefreshAlert = GETBITS(flags, 26, 30);
+    }
+
+    else
+    {
+        _UINT16 flags;
+
+        record >> flags >> idFieldNext >> ccolExtraLeft >> ccolExtraRight;
+
+        fPersist			= GETBIT(flags, 0);
+        fPersistSort		= GETBIT(flags, 1);
+        fPersistAutoFilter	= GETBIT(flags, 2);
+        fidWrapped			= GETBIT(flags, 3);
+        fTitlesOld			= GETBIT(flags, 4);
+        wVerBeforeRefreshAlert = GETBITS(flags, 5, 9);
+    }
 }
 
 } // namespace XLS

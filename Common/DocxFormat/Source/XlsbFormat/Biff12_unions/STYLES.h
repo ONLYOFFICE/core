@@ -51,7 +51,7 @@ namespace XLSB
 
 		XLS::BaseObjectPtr               m_BrtBeginStyles;
         std::vector<XLS::BaseObjectPtr>  m_arACUID;
-        std::vector<XLS::BaseObjectPtr>	m_arBrtStyle;
+        std::vector<XLS::BaseObjectPtr>	 m_arBrtStyle;
         std::vector<XLS::BaseObjectPtr>  m_arFRT;
 		XLS::BaseObjectPtr               m_BrtEndStyles;
 

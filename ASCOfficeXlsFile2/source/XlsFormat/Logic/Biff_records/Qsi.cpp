@@ -31,6 +31,7 @@
  */
 
 #include "Qsi.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
 
 namespace XLS
 {
@@ -50,32 +51,70 @@ BaseObjectPtr Qsi::clone()
 
 void Qsi::readFields(CFRecord& record)
 {
-	unsigned short flags1, flags2; 
-	_UINT32	reserved;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        unsigned short  flags1, flags2;
+        _UINT32         reserved;
+        XLUnicodeString rgchName;
 
-	record >> flags1 >> itblAutoFmt >> flags2 >> reserved >> rgchName;
+        record >> flags1 >> itblAutoFmt >> flags2 >> reserved >> rgchName;
 
-	fTitles			= GETBIT(flags1, 0);
-	fRowNums		= GETBIT(flags1, 1);
-	fDisableRefresh	= GETBIT(flags1, 2);
-	fAsync			= GETBIT(flags1, 3);
-	fNewAsync		= GETBIT(flags1, 4);
-	fAutoRefresh	= GETBIT(flags1, 5);
-	fShrink			= GETBIT(flags1, 6);
-	fFill			= GETBIT(flags1, 7);
-	fAutoFormat		= GETBIT(flags1, 8);
-	fSaveData		= GETBIT(flags1, 9);
-	fDisableEdit	= GETBIT(flags1, 10);
-	fOverwrite		= GETBIT(flags1, 13);
+        fTitles			= GETBIT(flags1, 0);
+        fRowNums		= GETBIT(flags1, 1);
+        fDisableRefresh	= GETBIT(flags1, 2);
+        fAsync			= GETBIT(flags1, 3);
+        fNewAsync		= GETBIT(flags1, 4);
+        fAutoRefresh	= GETBIT(flags1, 5);
+        fShrink			= GETBIT(flags1, 6);
+        fFill			= GETBIT(flags1, 7);
+        fAutoFormat		= GETBIT(flags1, 8);
+        fSaveData		= GETBIT(flags1, 9);
+        fDisableEdit	= GETBIT(flags1, 10);
+        fOverwrite		= GETBIT(flags1, 13);
 
-	fibitAtrNum		= GETBIT(flags2, 0);
-	fibitAtrFnt		= GETBIT(flags2, 1);
-	fibitAtrAlc		= GETBIT(flags2, 2);
-	fibitAtrBdr		= GETBIT(flags2, 3);
-	fibitAtrPat		= GETBIT(flags2, 4);
-	fibitAtrProt	= GETBIT(flags2, 5);
+        fibitAtrNum		= GETBIT(flags2, 0);
+        fibitAtrFnt		= GETBIT(flags2, 1);
+        fibitAtrAlc		= GETBIT(flags2, 2);
+        fibitAtrBdr		= GETBIT(flags2, 3);
+        fibitAtrPat		= GETBIT(flags2, 4);
+        fibitAtrProt	= GETBIT(flags2, 5);
 
-	record.skipNunBytes(2);	//unused
+        name            = rgchName.value();
+
+        record.skipNunBytes(2);	//unused
+    }
+
+    else
+    {
+        _UINT32            flags;
+        XLSB::XLWideString irstName;
+        record >> flags >> itblAutoFmt >> dwConnID >> irstName;
+
+        fTitles			= GETBIT(flags, 0);
+        fRowNums		= GETBIT(flags, 1);
+        fDisableRefresh	= GETBIT(flags, 2);
+        fAsync			= GETBIT(flags, 3);
+        fNewAsync		= GETBIT(flags, 4);
+        fAutoRefresh	= GETBIT(flags, 5);
+        fShrink			= GETBIT(flags, 6);
+
+        fOverwrite		= GETBIT(flags, 7);
+        fFill			= GETBIT(flags, 8);
+        fSaveData		= GETBIT(flags, 9);
+        fDisableEdit	= GETBIT(flags, 10);
+        fPreserveFmt	= GETBIT(flags, 11);
+        fAutoFit        = GETBIT(flags, 12);
+        fDummyList      = GETBIT(flags, 13);
+
+        fibitAtrNum		= GETBIT(flags, 14);
+        fibitAtrFnt		= GETBIT(flags, 15);
+        fibitAtrAlc		= GETBIT(flags, 16);
+        fibitAtrBdr		= GETBIT(flags, 17);
+        fibitAtrPat		= GETBIT(flags, 18);
+        fibitAtrProt	= GETBIT(flags, 19);
+
+        name            = irstName.value();
+    }
 }
 
 } // namespace XLS

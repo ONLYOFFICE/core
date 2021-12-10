@@ -505,6 +505,11 @@ namespace NSEditorApi
             Release = false;
             return *this;
         }
+
+        static void ExternalRelease(void* data)
+        {
+            delete [] (unsigned char*)data;
+        }
     };
     
     class CAscBinaryData

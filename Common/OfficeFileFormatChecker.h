@@ -71,8 +71,9 @@ public:
 	bool isDocFormatFile	(POLE::Storage *storage);
 	bool isXlsFormatFile	(POLE::Storage *storage);
 	bool isPptFormatFile	(POLE::Storage *storage);
-    bool isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage, std::wstring & documentID);
-    bool isMS_OFFCRYPTOFormatFile	(const std::wstring & fileName, std::wstring & documentID);
+    bool isMS_OFFICECRYPTOFormatFile(POLE::Storage * storage, std::wstring & documentID);
+	bool isMS_MITCRYPTOFormatFile(POLE::Storage * storage, std::wstring & documentID);
+	bool isMS_OFFCRYPTOFormatFile	(const std::wstring & fileName, std::wstring & documentID);
 
     std::wstring getDocumentID		(const std::wstring & fileName);
 	

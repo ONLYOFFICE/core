@@ -274,10 +274,14 @@ std::wstring COfficeFileFormatChecker::getDocumentID (const std::wstring & _file
 	POLE::Storage storage(fileName.c_str());
     if (storage.open())
     {
-		if ( isMS_OFFCRYPTOFormatFile(&storage, documentID) )
+		if ( isMS_OFFICECRYPTOFormatFile(&storage, documentID) )
         {
             nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO;
         }
+		else if (isMS_MITCRYPTOFormatFile(&storage, documentID))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO;
+		}
 	}
 	else
 	{
@@ -316,37 +320,36 @@ bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(const std::wstring & _f
 	POLE::Storage storage(fileName.c_str());
     if (storage.open())
     {
-		if ( isMS_OFFCRYPTOFormatFile(&storage, documentID) )
+		if (isMS_OFFICECRYPTOFormatFile(&storage, documentID) )
         {
             nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO;
             return true;
         }
+		if (isMS_MITCRYPTOFormatFile(&storage, documentID))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO;
+			return true;
+		}
 	}
 	return false;
 }
-
-bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage, std::wstring & documentID)
+bool COfficeFileFormatChecker::isMS_OFFICECRYPTOFormatFile(POLE::Storage * storage, std::wstring & documentID)
 {
-    if (storage == NULL) return false;
+	if (storage == NULL) return false;
 
 	documentID.clear();
 
 	bool result = false;
-    std::list<std::wstring> entries = storage->entries(L"DataSpaces");
-    if (entries.size() > 0)
+	std::list<std::wstring> entries = storage->entries(L"DataSpaces");
+	if (/*false == entries.empty() && */storage->exists(L"EncryptionInfo"))
 	{
-        result = true;
+		result = true;
 	}
 
-    if ( storage->exists(L"EncryptionInfo") && 
-				storage->exists(L"EncryptedPackage"))
-	{
-        result = true;
-	}
 	if (result)
 	{
-		POLE::Stream stream(storage, L"DocumentID");	
-		
+		POLE::Stream stream(storage, L"DocumentID");
+
 		std::string sData;
 		sData.resize(stream.size());
 		if (stream.read((BYTE*)sData.c_str(), stream.size()) > 0)
@@ -355,6 +358,22 @@ bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage
 		}
 
 	}
+	return result;
+}
+
+bool COfficeFileFormatChecker::isMS_MITCRYPTOFormatFile	(POLE::Storage * storage, std::wstring & documentID)
+{
+    if (storage == NULL) return false;
+
+	documentID.clear();
+
+	bool result = false;
+    std::list<std::wstring> entries = storage->entries(L"DataSpaces");
+    if (false == entries.empty() && false == storage->exists(L"EncryptionInfo") && storage->exists(L"EncryptedPackage"))
+	{
+        result = true;
+	}
+
 	return result;
 }
 bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
@@ -396,11 +415,16 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
             return true;
         }
-        else if ( isMS_OFFCRYPTOFormatFile(&storage, sDocumentID) )
+        else if ( isMS_OFFICECRYPTOFormatFile(&storage, sDocumentID) )
         {
             nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO;
             return true;
         }
+		else if (isMS_MITCRYPTOFormatFile(&storage, sDocumentID))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO;
+			return true;
+		}
 	}
 
     COfficeUtils OfficeUtils(NULL);

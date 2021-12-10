@@ -320,7 +320,7 @@ namespace PPTX
 													int dstLen = 0;
 
 													if (true)//(bBase64)
-													{
+													{ 
 														bBase64 = true;
 														int dstLenTemp = Base64::Base64DecodeGetRequiredLength(len);
 

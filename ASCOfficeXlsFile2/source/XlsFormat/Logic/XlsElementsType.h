@@ -741,7 +741,7 @@ enum ElementType
 	typeOfficeArtClientData,
         typeOfficeArtClientTextbox,
 
-        //xlsb static const ElementType	type = typeFRTWORKSHEET;
+        //xlsb static const XLS::ElementType	type = XLS::typeSLICERCACHEOLAPIMPL;
         typeCONDITIONALFORMATTING = 4000,
         typeCONDITIONALFORMATTING14,
         typeBeginConditionalFormatting,
@@ -789,6 +789,27 @@ enum ElementType
         typeSUPSAME,
         typeSUPADDIN,
         typeSupBookSrc,
+        typeDVALS,
+        typeDVALS14,
+        typeDVal14,
+        typeBeginDVals,
+        typeBeginDVals14,
+        typeFRTQSI,
+        typeFRTEXTCONNECTIONS,
+        typeEXTCONNECTION,
+        typeEXTCONN14,
+        typeEXTCONN15,
+        typeBeginExtConnection,
+        typeBeginExtConn14,
+        typeBeginExtConn15,
+        typeRangePr15,
+        typeSLICERCACHEOLAPIMPL,
+        typeSLICERCACHENATIVEITEMS,
+        typeFRTSLICERCACHE,
+        typeSLICERSEX,
+        typeTABLESLICERSEX,
+        typeSLICEREX,
+        typeTABLESLICEREX,
 };
 
 

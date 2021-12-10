@@ -930,15 +930,15 @@ namespace DocFileFormat
 			}
 			else if ((TextMark::DrawnObject == code) && fSpec)
 			{
-				Spa* pSpa	=	NULL;
+				Spa* pSpa =	NULL;
 				if (typeid(*this) == typeid(MainDocumentMapping))
 				{
-					pSpa	=	static_cast<Spa*>(m_document->OfficeDrawingPlex->GetStruct(cp));
+					pSpa = static_cast<Spa*>(m_document->OfficeDrawingPlex->GetStruct(cp));
 				}
 				else if ((typeid(*this) == typeid(HeaderMapping) ) || ( typeid(*this) == typeid(FooterMapping)))
 				{
-					int headerCp	=	( cp - m_document->FIB->m_RgLw97.ccpText - m_document->FIB->m_RgLw97.ccpFtn );
-					pSpa	=	static_cast<Spa*>(m_document->OfficeDrawingPlexHeader->GetStruct(headerCp));
+					int headerCp = ( cp - m_document->FIB->m_RgLw97.ccpText - m_document->FIB->m_RgLw97.ccpFtn );
+					pSpa = static_cast<Spa*>(m_document->OfficeDrawingPlexHeader->GetStruct(headerCp));
 				}
 
 				bool bPicture = false;

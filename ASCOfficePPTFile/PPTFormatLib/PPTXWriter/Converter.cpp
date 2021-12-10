@@ -613,20 +613,8 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
     int nStartLayout = 0, nIndexTheme = 0;
 
-    if (!HasRoundTrips())
-    {
-        for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
-        {
-            m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i].get();
-            WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
-            m_pShapeWriter->m_pTheme = NULL;
-        }
-
-        WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
-        WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
-    }
-    else
-    {
+    if (HasRoundTrips() && m_pDocument->m_arThemes.size())
+    {  
         std::unordered_set<std::string> writedFilesHash;
         for (const auto& oIterSlide : m_pUserInfo->m_mapMasters)
         {
@@ -639,6 +627,18 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
         writedFilesHash.clear();
         for (const auto& oIterSlide : m_pUserInfo->m_mapHandoutMasters)
             WriteRoundTripTheme(oIterSlide.second, writedFilesHash, nIndexTheme, nStartLayout);
+    }
+    else
+    {
+        for (size_t i = 0; i < m_pDocument->m_arThemes.size(); i++)
+        {
+            m_pShapeWriter->m_pTheme = m_pDocument->m_arThemes[i].get();
+            WriteTheme(m_pDocument->m_arThemes[i], nIndexTheme, nStartLayout);
+            m_pShapeWriter->m_pTheme = NULL;
+        }
+
+        WriteTheme(m_pDocument->m_pNotesMaster, nIndexTheme, nStartLayout);
+        WriteTheme(m_pDocument->m_pHandoutMaster, nIndexTheme, nStartLayout);
     }
 }
 

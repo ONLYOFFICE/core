@@ -83,6 +83,8 @@ public:
     void start_document	();
     void end_document	();
 
+	void set_table_structure_protected(bool val);
+
     void start_chart(std::wstring name);
     void end_chart	();
 
@@ -189,12 +191,14 @@ private:
     const odf_reader::office_element	*spreadsheet_;
     odf_reader::odf_document			*odf_document_;
 
+	bool								table_structure_protected_ = false;
+
     std::vector<xlsx_xml_worksheet_ptr> sheets_;
     std::vector<oox_chart_context_ptr>  charts_;
 	std::vector<std::wstring>			table_parts_;
  
     std::wstringstream                  defaultOutput_;
-    std::pair<double, double>              maxDigitSize_;
+    std::pair<double, double>			maxDigitSize_;
     num_format_context                  num_format_context_;
     size_t                              default_style_;
     mediaitems_ptr						mediaitems_;

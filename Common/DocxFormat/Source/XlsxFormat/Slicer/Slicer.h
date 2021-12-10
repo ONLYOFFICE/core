@@ -41,6 +41,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSlicer)
+            WritingElement_XlsbConstructors(CSlicer)
 			CSlicer(){}
 			virtual ~CSlicer(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -48,6 +49,8 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
@@ -74,6 +77,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSlicers)
+            WritingElement_XlsbConstructors(CSlicers)
 			CSlicers(){}
 			virtual ~CSlicers(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -81,6 +85,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
@@ -104,6 +109,7 @@ namespace OOX
 
 				read( oRootPath, oPath );
 			}
+            void readBin(const CPath& oPath);
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)

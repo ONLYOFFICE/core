@@ -1210,7 +1210,7 @@ void docx_conversion_context::start_process_style_content()
     styles_context_.start();
 }
 
-void docx_conversion_context::process_section(std::wostream & strm, odf_reader::style_columns * columns)//from page layout
+void docx_conversion_context::process_section(std::wostream & strm, odf_reader::style_columns *columns_page)//from page layout
 {
 	if (root()->odf_context().pageLayoutContainer().linenumbering())
 	{
@@ -1222,7 +1222,8 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 
 	oox::section_context::_section & section = get_section_context().get_last();
 
-	if (!columns)
+	odf_reader::style_columns *columns = columns_page;
+	//if (!columns)
 	{
 		if (const odf_reader::style_instance * secStyle = root()->odf_context().styleContainer().style_by_name(section.style_, odf_types::style_family::Section, process_headers_footers_))
 		{
@@ -1279,20 +1280,27 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 			}		
 			for (size_t i = 0; page_width > 0, i < columns->style_columns_.size(); i++)
 			{
-				odf_reader::style_column * col = dynamic_cast<odf_reader::style_column*>( columns->style_columns_[i].get());
+				odf_reader::style_column *col = dynamic_cast<odf_reader::style_column*>( columns->style_columns_[i].get());
 				if (!col) continue;
 
-				double width = page_width * (col->style_rel_width_ ? col->style_rel_width_->get_value() / 65535. : 0);
+				double percent = col->style_rel_width_ ? col->style_rel_width_->get_value() : 0;
+				if (percent > 1000.) percent /= 100.;
 
-				double space = col->fo_end_indent_ ? col->fo_end_indent_->get_value_unit(odf_types::length::pt) : 0;
+				double width = page_width * percent / 100.;
+
+				double space_end = col->fo_end_indent_ ? col->fo_end_indent_->get_value_unit(odf_types::length::pt) : 0;
+				double space_start = col->fo_start_indent_ ? col->fo_start_indent_->get_value_unit(odf_types::length::pt) : 0;
+
+				width -= space_end;
+				width -= space_start;
 
 				if (i < columns->style_columns_.size() - 1)
 				{
 					col = dynamic_cast<odf_reader::style_column*>( columns->style_columns_[i + 1].get());
-					space += col->fo_start_indent_ ? col->fo_start_indent_->get_value_unit(odf_types::length::pt) : 0;
+					space_start  = col->fo_start_indent_ ? col->fo_start_indent_->get_value_unit(odf_types::length::pt) : 0;
 				}
 				
-				width_space.push_back(std::make_pair(width, space));
+				width_space.push_back(std::make_pair(width, space_start + space_end));
 			}
 		}
 	}
@@ -1467,12 +1475,12 @@ odf_reader::style_text_properties_ptr docx_conversion_context::current_text_prop
     return cur;
 }
 
-void docx_conversion_context::set_page_break_after(bool val)
+void docx_conversion_context::set_page_break_after(int val)
 {
     page_break_after_ = val;
 }
 
-bool docx_conversion_context::get_page_break_after()
+int docx_conversion_context::get_page_break_after()
 {
     return page_break_after_ ;
 }
@@ -1484,12 +1492,12 @@ bool docx_conversion_context::get_page_break()
 {
     return page_break_;
 }
-void docx_conversion_context::set_page_break_before(bool val)
+void docx_conversion_context::set_page_break_before(int val)
 {
     page_break_before_ = val;
 }
 
-bool docx_conversion_context::get_page_break_before()
+int docx_conversion_context::get_page_break_before()
 {
     return page_break_before_;
 }
@@ -1937,15 +1945,8 @@ void docx_conversion_context::process_page_break_after(const odf_reader::style_i
                 _CP_OPT(odf_types::fo_break) fo_break_val = inst->content()->get_style_paragraph_properties()->content_.fo_break_after_;
                 if (fo_break_val)
                 {
-					if (fo_break_val->get_type() == odf_types::fo_break::Page)
-                    {
-                        set_page_break_after(true);     
-                        break;
-                    }
-                    else if (fo_break_val->get_type() == odf_types::fo_break::Auto)
-                    {
-                        break;                    
-                    }
+					set_page_break_after(fo_break_val->get_type());
+					break;
                 }
             }
             inst = inst->parent();

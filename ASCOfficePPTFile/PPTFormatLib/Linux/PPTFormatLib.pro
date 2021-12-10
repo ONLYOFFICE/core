@@ -109,6 +109,7 @@ HEADERS += \
     ../Records/Animations/VisualShapeGeneralAtom.h \
     ../Records/Animations/VisualSoundAtom.h \
     ../Records/Animations/_includer.h \
+    ../Records/BlipCollection9Container.h \
     ../Records/BlipEntityAtom.h \
     ../Records/BookmarkEntityAtom.h \
     ../Records/BookmarkSeedAtom.h \
@@ -272,25 +273,27 @@ SOURCES += \
 
 core_debug {
 SOURCES += \
+    ../Enums/RecordType.cpp \
+    ../PPTFormatLib.cpp \
     ../Reader/ReadStructures.cpp \
+    ../Reader/RoundTripExtractor.cpp \
     ../Reader/PPTDocumentInfoOneUser.cpp \
     ../Reader/Records.cpp \
     ../Reader/PPTFileReader.cpp \
     ../Reader/SlidePersist.cpp \
-    ../Records/Drawing/ArtBlip.cpp \
-    ../Records/Drawing/ShapeContainer.cpp \
     ../PPTXWriter/Converter.cpp \
-    ../PPTXWriter/ShapeWriter.cpp
-}
-
-SOURCES += \
-    ../Enums/RecordType.cpp \
-    ../PPTFormatLib.cpp \
-    ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
-    ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
-    ../../../Common/3dParty/pole/pole.cpp \
+    ../PPTXWriter/ShapeWriter.cpp \
     ../PPTXWriter/Animation.cpp \
     ../PPTXWriter/TableWriter.cpp \
     ../PPTXWriter/TxBodyConverter.cpp \
-    ../Reader/RoundTripExtractor.cpp \
-    ../Records/Animations/TimeVariant.cpp
+    ../Records/Drawing/ArtBlip.cpp \
+    ../Records/Drawing/ShapeContainer.cpp \
+    ../Records/Animations/TimeVariant.cpp \
+    ../Records/BlipEntityAtom.cpp
+}
+
+SOURCES += \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
+    ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
+    ../../../Common/3dParty/pole/pole.cpp
+

@@ -180,9 +180,12 @@ namespace NExtractTools
     _UINT32 pptx_dir2odp    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params, bool bTemplate);
 
 	_UINT32 fromMscrypt		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+	_UINT32 fromMitcrypt	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 	_UINT32 mscrypt2oox		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+	_UINT32 mitcrypt2oox	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 	_UINT32 mscrypt2oot		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 	_UINT32 mscrypt2oot_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+	_UINT32 mitcrypt2oot_bin(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 	
 	_UINT32 oox2mscrypt		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 

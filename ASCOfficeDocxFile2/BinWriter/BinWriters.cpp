@@ -812,6 +812,12 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(rPr->m_oW->m_oVal->GetValue());
 	}
+	if (rPr->m_oSnapToGrid.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::SnapToGrid);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(rPr->m_oSnapToGrid->m_oVal.ToBool());
+	}
 }
 void Binary_rPrWriter::Write_rPrChange(const OOX::Logic::CRPrChange& rPrChange)
 {
@@ -8567,7 +8573,7 @@ void BinarySettingsTableWriter::WriteMathPr(const OOX::Logic::CMathPr &pMathPr)
 }
 void BinarySettingsTableWriter::WriteColorSchemeMapping(const PPTX::Logic::ClrMap& oColorSchemeMapping)
 {
-	int re_index[] = {0, 1, 2, 3, 4, 5, 10, 11, 6, 7, 8, 9, 10, 11, 10, 6, 7};
+	int re_index[] = {0, 1, 2, 3, 4, 5, 10, 11, 6, 7, 9, 8, 10, 11, 10, 6, 7};
 
 	int nCurPos = 0;
 

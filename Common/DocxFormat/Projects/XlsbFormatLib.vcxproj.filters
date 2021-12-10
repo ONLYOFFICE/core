@@ -1040,6 +1040,579 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Margins.h">
       <Filter>records</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ACDVALLIST.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\DATAFEEDPR15.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\DBTABLES15.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\DELETEDNAME.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\DELETEDNAMES.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\DVALS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\DVALS14.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ECDBPROPS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ECOLAPPROPS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ECPARAM.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ECPARAMS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ECTWFLDINFOLST.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ECTWFLDINFOLST15.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ECTXTWIZ.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ECTXTWIZ15.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ECWEBPROPS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\ECWPTABLES.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\EXTCONN14.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\EXTCONN15.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\EXTCONNECTION.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\EXTCONNECTIONS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTEXTCONNECTIONS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTQSI.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\HEADERFOOTER.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\OLEDBPR15.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEM14.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEM15.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEMEXT.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEMSEXT.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PCDI.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\QSI.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\QSIF.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\QSIFS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\QSIR.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICER.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SPARKLINEGROUP.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SPARKLINEGROUPS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SXTUPLESET.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SXTUPLESETDATA.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SXTUPLESETHEADER.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SXTUPLESETROW.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TEXTPR15.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\CmdType.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\DBType.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\DValStrings.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\ECTwFldInfoData.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\ECTxtWizData.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\IIFtab.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\ParameterParsedFormula.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\PCDCalcMemCommon.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\PCDISrvFmt.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\SrvFmtCV.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\TextPr15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SXTupleSetRowItem.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SXTupleSetHeaderItem.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Sparkline.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\RangePr15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\Qsi15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\PCDIString.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\PCDIMissing.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\PCDIIndex.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\PCDCalcMem15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSXTupleSetRow.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSXTupleSetHeader.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSXTupleSetData.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSXTupleSet.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSparklines.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSparklineGroups.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSparklineGroup.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicers.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicer.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndQSIR.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndQSIFs.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndQSIF.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndQSI.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPCDCalcMemsExt.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPCDCalcMemExt.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPCDCalcMem14.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndOledbPr15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndHeaderFooter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndExtConnections.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndExtConnection.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndExtConn15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndExtConn14.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndECWPTables.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndECWebProps.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndECTxtWiz15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndECTxtWiz.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndECTWFldInfoLst15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndECTWFldInfoLst.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndECParams.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndECParam.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndECOlapProps.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndECDbProps.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndDVals14.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndDVals.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndDeletedNames.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndDeletedName.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndDbTables15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndDataFeedPr15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\DValList.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\DbTable15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\DbCommand15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSXTupleSetRow.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSXTupleSetHeader.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSXTupleSetData.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSXTupleSet.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSparklines.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSparklineGroups.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSparklineGroup.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicers.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicer.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginQSIFs.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPCDCalcMemsExt.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPCDCalcMemExt.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPCDCalcMem14.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginOledbPr15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginHeaderFooter.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginExtConnections.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginExtConnection.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginExtConn15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginExtConn14.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginEcWpTables.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginECWebProps.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginECTxtWiz15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginECTxtWiz.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginECTWFldInfoLst15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginECTWFldInfoLst.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginECTwFldInfo15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginECTwFldInfo.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginECParams.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginECParam.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginECOlapProps.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginECDbProps.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginDVals14.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginDVals.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginDeletedNames.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginDeletedName.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginDbTables15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginDataFeedPr15.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\ConnectionsStream.h" />
+    <ClInclude Include="..\Source\XlsbFormat\QueryTableStream.h" />
+    <ClInclude Include="..\Source\XlsbFormat\SlicersStream.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SlicerCacheSelection.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SlicerCachePivotTables.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SlicerCacheOlapItem.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SlicerCacheNativeItem.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SlicerCacheHideItemsWithNoData.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SlicerCacheBookPivotTables.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndTableSlicerCache.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicersEx.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerEx.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheSiRanges.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheSiRange.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheSelections.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheOlapImpl.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheNative.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheLevelsData.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheLevelData.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheDef.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCache.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginTableSlicerCache.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicersEx.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerEx.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheSiRanges.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheSiRange.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheSelections.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheOlapImpl.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheNative.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheLevelsData.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheLevelData.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheDef.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCache.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\SlicerCacheLevelData.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\SlicerCacheNativeItemStruct.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_structures\SlicerCachePivotTable.h">
+      <Filter>structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTSLICERCACHE.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHE.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEBOOKPIVOTTABLES.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHECROSSFILTEREXT.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELDATA.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELSDATA.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHENATIVEITEMS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEOLAPIMPL.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESELECTIONS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESIRANGE.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESIRANGES.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICEREX.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERSEX.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHE.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICEREX.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERSEX.h">
+      <Filter>unions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ACProductVersion.cpp">
@@ -2050,6 +2623,579 @@
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Margins.cpp">
       <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ACDVALLIST.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\DATAFEEDPR15.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\DBTABLES15.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\DELETEDNAME.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\DELETEDNAMES.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\DVALS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\DVALS14.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ECDBPROPS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ECOLAPPROPS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ECPARAM.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ECPARAMS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ECTWFLDINFOLST.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ECTWFLDINFOLST15.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ECTXTWIZ.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ECTXTWIZ15.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ECWEBPROPS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ECWPTABLES.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\EXTCONN14.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\EXTCONN15.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\EXTCONNECTION.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\EXTCONNECTIONS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTEXTCONNECTIONS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTQSI.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\HEADERFOOTER.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\OLEDBPR15.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEM14.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEM15.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEMEXT.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEMSEXT.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDI.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\QSI.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\QSIF.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\QSIFS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\QSIR.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICER.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SPARKLINEGROUP.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SPARKLINEGROUPS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SXTUPLESET.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SXTUPLESETDATA.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SXTUPLESETHEADER.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SXTUPLESETROW.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\CmdType.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\DBType.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\DValStrings.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ECTwFldInfoData.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ECTxtWizData.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\IIFtab.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ParameterParsedFormula.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\PCDCalcMemCommon.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\PCDISrvFmt.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\SrvFmtCV.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\TextPr15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SXTupleSetRowItem.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SXTupleSetHeaderItem.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Sparkline.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\RangePr15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\Qsi15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\PCDIString.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\PCDIMissing.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\PCDIIndex.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\PCDCalcMem15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSXTupleSetRow.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSXTupleSetHeader.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSXTupleSetData.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSXTupleSet.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSparklines.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSparklineGroups.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSparklineGroup.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicers.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicer.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndQSIR.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndQSIFs.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndQSIF.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndQSI.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPCDCalcMemsExt.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPCDCalcMemExt.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPCDCalcMem14.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndOledbPr15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndHeaderFooter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndExtConnections.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndExtConnection.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndExtConn15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndExtConn14.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndECWPTables.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndECWebProps.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndECTxtWiz15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndECTxtWiz.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndECTWFldInfoLst15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndECTWFldInfoLst.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndECParams.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndECParam.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndECOlapProps.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndECDbProps.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndDVals14.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndDVals.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndDeletedNames.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndDeletedName.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndDbTables15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndDataFeedPr15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\DValList.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\DbTable15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\DbCommand15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSXTupleSetRow.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSXTupleSetHeader.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSXTupleSetData.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSXTupleSet.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSparklines.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSparklineGroups.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSparklineGroup.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicers.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicer.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginQSIFs.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPCDCalcMemsExt.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPCDCalcMemExt.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPCDCalcMem14.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginOledbPr15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginHeaderFooter.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginExtConnections.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginExtConnection.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginExtConn15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginExtConn14.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginEcWpTables.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginECWebProps.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginECTxtWiz15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginECTxtWiz.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginECTWFldInfoLst15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginECTWFldInfoLst.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginECTwFldInfo15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginECTwFldInfo.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginECParams.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginECParam.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginECOlapProps.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginECDbProps.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginDVals14.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginDVals.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginDeletedNames.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginDeletedName.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginDbTables15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginDataFeedPr15.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\ConnectionsStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\QueryTableStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\SlicersStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TEXTPR15_bu.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SlicerCacheSelection.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SlicerCachePivotTables.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SlicerCacheOlapItem.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SlicerCacheNativeItem.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SlicerCacheHideItemsWithNoData.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SlicerCacheBookPivotTables.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndTableSlicerCache.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicersEx.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerEx.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheSiRanges.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheSiRange.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheSelections.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheOlapImpl.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheNative.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheLevelsData.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheLevelData.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheDef.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCache.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginTableSlicerCache.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicersEx.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerEx.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheSiRanges.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheSiRange.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheSelections.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheOlapImpl.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheNative.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheLevelsData.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheLevelData.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheDef.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCache.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\SlicerCacheLevelData.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\SlicerCacheNativeItemStruct.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\SlicerCachePivotTable.cpp">
+      <Filter>structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTSLICERCACHE.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHE.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEBOOKPIVOTTABLES.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHECROSSFILTEREXT.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELDATA.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELSDATA.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHENATIVEITEMS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEOLAPIMPL.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESELECTIONS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESIRANGE.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESIRANGES.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICEREX.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERSEX.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHE.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICEREX.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERSEX.cpp">
+      <Filter>unions</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

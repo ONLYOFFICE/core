@@ -301,7 +301,7 @@ namespace NSDocxRenderer
 		}
 
 	public:
-        void LoadFont(std::wstring& strFontName, LONG& lStyle, double& dSize, const BOOL& bIsGID)
+        void LoadFont(std::wstring& strFontName, LONG& lStyle, double& dSize, const bool& bIsGID)
 		{
 			if ((strFontName == m_strFontName) && (lStyle == m_lFontStyle) && (dSize == m_dSize))
 			{

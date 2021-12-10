@@ -566,7 +566,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RT_TextRulerAtom         				, CRecordTextRulerAtom)
             //CREATE_BY_TYPE(RECORD_TYPE_TEXTBOOKMARK_ATOM			, CRecordTextBookmarkAtom)
     CREATE_BY_TYPE(RT_TextBytesAtom         				, CRecordTextBytesAtom)
-            //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordOutlineTextPropsHeaderExAtom)
+    CREATE_BY_TYPE(RT_OutlineTextPropsHeader9Atom			, CRecordOutlineTextPropsHeaderExAtom)
 
     CREATE_BY_TYPE(RT_GuideAtom                             , CRecordGuideAtom)
 

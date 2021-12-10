@@ -296,6 +296,7 @@ public:
 
     // for RGBA painting
     bool    m_bSwapRGB;
+    bool    m_bIsDarkMode;
 
     double m_dDpiTile;
 

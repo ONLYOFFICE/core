@@ -349,7 +349,18 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
     int textStyle = Context.process_paragraph_attr(&attrs_);
 
     Context.add_note_reference();
+	
+	int break_ = Context.get_page_break_before();
+	if (break_ > 0)
+	{
+		Context.set_page_break_before(0);
 
+		is_empty = false;
+		Context.add_new_run(_T(""));
+			 if (break_ == 1) Context.output_stream() << L"<w:br w:type=\"column\"/>";
+		else if (break_ == 2) Context.output_stream() << L"<w:br w:type=\"page\"/>";
+		Context.finish_run();
+	}
   	for (size_t i = index; i < content_.size(); i++)
 	{
 		if (Context.get_page_break())
@@ -396,14 +407,16 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 		Context.docx_convert_delayed();
 	}
 
-    if (Context.get_page_break_after())
+	break_ = Context.get_page_break_after();
+    if (break_ > 0)
     {
-		Context.set_page_break_after(false);
+		Context.set_page_break_after(0);
 
 		is_empty = false;
         Context.add_new_run(_T(""));
-			Context.output_stream() << L"<w:br w:type=\"page\"/>";        
-        Context.finish_run();
+				 if (break_ == 1) Context.output_stream() << L"<w:br w:type=\"column\"/>";
+			else if (break_ == 2) Context.output_stream() << L"<w:br w:type=\"page\"/>";
+		Context.finish_run();		
     }
 
 	if (is_empty)
@@ -439,7 +452,7 @@ void soft_page_break::docx_convert(oox::docx_conversion_context & Context)
 	if (Context.process_headers_footers_) 
 		return;
 	
-	if (!Context.get_page_break_after() && !Context.get_page_break_before())
+	if (0 == Context.get_page_break_after() && 0 == Context.get_page_break_before())
 	{
 		Context.output_stream() << L"<w:lastRenderedPageBreak/>";
 	}

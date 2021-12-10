@@ -626,7 +626,12 @@ namespace PdfWriter
 	void CTextField::SetMaxLen(int nMaxLen)
 	{
 		if (nMaxLen > 0)
-			Add("MaxLen", nMaxLen);
+		{
+			if (m_pParent)
+				m_pParent->Add("MaxLen", nMaxLen);
+			else
+				Add("MaxLen", nMaxLen);
+		}
 	}
 	int CTextField::GetMaxLen() const
 	{
@@ -850,13 +855,19 @@ namespace PdfWriter
 			Add("MK", m_pMK);
 		}
 
-		CArrayObject* pArray = new CArrayObject();
-		pArray->Add(0);
-		m_pMK->Add("BC", pArray);
+		if (!m_nBorderType)
+		{
+			CArrayObject* pArray = new CArrayObject();
+			pArray->Add(0);
+			m_pMK->Add("BC", pArray);
+		}
 
-		pArray = new CArrayObject();
-		pArray->Add(1);
-		m_pMK->Add("BG", pArray);
+		if (!m_bShd)
+		{
+			CArrayObject* pArray = new CArrayObject();
+			pArray->Add(1);
+			m_pMK->Add("BG", pArray);
+		}
 		
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 
@@ -1471,6 +1482,26 @@ namespace PdfWriter
 
 		m_pStream->WriteEscapeName("Tx");
 		m_pStream->WriteStr(" BMC\012");
+
+		if (m_pField->HaveShd())
+		{
+			m_pStream->WriteStr("q\012");
+			TRgb oColor = m_pField->GetShdColor();
+			m_pStream->WriteReal(oColor.r);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(oColor.g);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(oColor.b);
+			m_pStream->WriteStr(" rg\012");
+
+			m_pStream->WriteStr("1 0 0 1 0 0 cm\012");
+			m_pStream->WriteStr("0 0 ");
+			m_pStream->WriteReal(fmax(dWidth, 0.0));
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(fmax(dHeight, 0.0));
+			m_pStream->WriteStr(" re\012f\012");
+			m_pStream->WriteStr("Q\012");
+		}
 
 		double dBorderSize   = 0;
 		double dBorderSize_2 = 0;

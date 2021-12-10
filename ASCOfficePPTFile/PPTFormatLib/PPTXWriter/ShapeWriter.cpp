@@ -71,8 +71,13 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
     }
     if (pPF->indent.is_init())
     {
-        std::wstring strProp = std::to_wstring(pPF->indent.get() - leftMargin);
-        oWriter.WriteString(L" indent=\"" + strProp + L"\"");
+        std::wstring strIndent;
+        if (pPF->hasBullet.get_value_or(false))
+            strIndent = std::to_wstring(pPF->indent.get());
+        else
+            strIndent = std::to_wstring(pPF->indent.get() - leftMargin);
+
+        oWriter.WriteString(L" indent=\"" + strIndent + L"\"");
     }
     if (pPF->textAlignment.is_init())
     {
@@ -425,8 +430,17 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertBrush(CBrush & brush)
         {
             std::wstring strRid = m_pRels->WriteImage(brush.TexturePath);
 
-            brush_writer.WriteString(L"<a:blipFill dpi=\"0\" rotWithShape=\"1\"><a:blip r:embed=\"" + strRid + L"\"/><a:srcRect/>");
+            brush_writer.WriteString(L"<a:blipFill dpi=\"0\" rotWithShape=\"1\"><a:blip r:embed=\"" + strRid + L"\"");
 
+            if (false)
+            {
+                brush_writer.WriteString(L"><a:duotone><a:schemeClr val=\"bg1\"/>");
+                brush_writer.WriteString(ConvertColor(brush.Color2, brush.Alpha2));
+                brush_writer.WriteString(L"</a:duotone></a:blip><a:srcRect/>");
+            } else
+            {
+                brush_writer.WriteString(L"/><a:srcRect/>");
+            }
             if (	brush.TextureMode == c_BrushTextureModeTile)
                 brush_writer.WriteString(L"<a:tile/>");
             else
@@ -1181,8 +1195,12 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
     pShapeElement->m_pShape->GetTextRect(oTextRect);
 
-    std::wstring str =  L" lIns=\"" + std::to_wstring((int)oTextRect.left) + L"\" tIns=\"" + std::to_wstring((int)oTextRect.top) +
-            L"\" rIns=\"" + std::to_wstring((int)oTextRect.right) + L"\" bIns=\"" + std::to_wstring((int)oTextRect.bottom) + L"\"";
+    std::wstring str;
+    if (pShapeElement->m_pShape->m_oText.m_lWrapMode == 2)
+        str = L" wrap=\"none\"";
+    else
+        str =  L" lIns=\"" + std::to_wstring((int)oTextRect.left) + L"\" tIns=\"" + std::to_wstring((int)oTextRect.top) +
+                L"\" rIns=\"" + std::to_wstring((int)oTextRect.right) + L"\" bIns=\"" + std::to_wstring((int)oTextRect.bottom) + L"\"";
 
     m_oWriter.WriteString(str);
 
@@ -1294,8 +1312,13 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
         if (pPF->indent.is_init())
         {
-            std::wstring strProp = std::to_wstring(pPF->indent.get() - leftMargin);
-            m_oWriter.WriteString(L" indent=\"" + strProp + L"\"");
+            std::wstring strIndent;
+            if (pPF->hasBullet.get_value_or(false))
+                strIndent = std::to_wstring(pPF->indent.get());
+            else
+                strIndent = std::to_wstring(pPF->indent.get() - leftMargin);
+
+            m_oWriter.WriteString(L" indent=\"" + strIndent + L"\"");
         }
         if (pPF->textAlignment.is_init())
         {
@@ -1319,51 +1342,6 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
         }
         m_oWriter.WriteString(L">");
 
-        double dKoef1 = 3.52777778; // :-) чё это не понятно ...
-        if (pPF->lineSpacing.is_init())
-        {
-            LONG val = pPF->lineSpacing.get();
-            //1/1024 master unit or 1/589824 inch.
-            //1 inch = 576 master unit -> 1 master unit = 0.125 pt
-            if (val > 0)//The absolute value specifies spacing in master units.
-            {
-                std::wstring strProp = std::to_wstring( (int)(val* 0.125 * 100/*/ dKoef1*/));
-                m_oWriter.WriteString(L"<a:lnSpc><a:spcPts val=\"" + strProp + L"\"/></a:lnSpc>");
-            }
-            else if (val < 0 && val > -13200)
-            {//0 to 13200, inclusive - The value specifies spacing as a percentage of the text line height.
-                std::wstring strProp = std::to_wstring( -val * 1000);
-                m_oWriter.WriteString(L"<a:lnSpc><a:spcPct val=\"" + strProp + L"\"/></a:lnSpc>");
-            }
-        }
-        if (pPF->spaceAfter.is_init())
-        {
-            LONG val = pPF->spaceAfter.get();
-            if (val > 0)
-            {
-                std::wstring strProp = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
-                m_oWriter.WriteString(L"<a:spcAft><a:spcPts val=\"" + strProp + L"\"/></a:spcAft>");
-            }
-            else if (val < 0 && val > -13200)
-            {
-                std::wstring strProp = std::to_wstring(-val * 1000);
-                m_oWriter.WriteString(L"<a:spcAft><a:spcPct val=\"" + strProp + L"\"/></a:spcAft>");
-            }
-        }
-        if (pPF->spaceBefore.is_init())
-        {
-            LONG val = pPF->spaceBefore.get();
-            if (val > 0)
-            {
-                std::wstring strProp = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
-                m_oWriter.WriteString(L"<a:spcBef><a:spcPts val=\"" + strProp + L"\"/></a:spcBef>");
-            }
-            else if (val < 0 && val > -13200)
-            {
-                std::wstring strProp = std::to_wstring(-val * 1000);
-                m_oWriter.WriteString(L"<a:spcBef><a:spcPct val=\"" + strProp + L"\"/></a:spcBef>");
-            }
-        }
 
         if (pPF->hasBullet.is_init())
         {
@@ -1416,6 +1394,15 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
                     }
                     m_oWriter.WriteString(L"/>");
                 }
+                if (pPF->bulletBlip.is_init() && pPF->bulletBlip->tmpImagePath.size())
+                {
+                    auto strRID = m_pRels->WriteImage(pPF->bulletBlip->tmpImagePath);
+                    if (strRID.empty())
+                        break;
+                    m_oWriter.WriteString(L"<a:buBlip><a:blip r:embed=\"");
+                    m_oWriter.WriteString(strRID);
+                    m_oWriter.WriteString(L"\"/></a:buBlip>");
+                }
 
                 bool set = true;
                 if (pPF->bulletFontProperties.is_init() == false && pPF->bulletSize.is_init() == false)
@@ -1436,12 +1423,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
                 if (!set)
                 {
-                    if (pPF->hasBullet.is_init() && *(pPF->hasBullet) && !pPF->bulletChar.is_init())
-                    {
-                        m_oWriter.WriteString(L"<a:buAutoNum type=\"");
-                        m_oWriter.WriteString(L"arabicPeriod");
-                        m_oWriter.WriteString(L"\"/>");
-                    } else
+                    if (pPF->hasBullet.is_init() && *(pPF->hasBullet))
                     {
                         wchar_t bu = 0x2022;
                         m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
@@ -1453,6 +1435,52 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
             else
             {
                 m_oWriter.WriteString(std::wstring(L"<a:buNone/>"));
+            }
+        }
+
+        double dKoef1 = 3.52777778; // :-) чё это не понятно ...
+        if (pPF->lineSpacing.is_init())
+        {
+            LONG val = pPF->lineSpacing.get();
+            //1/1024 master unit or 1/589824 inch.
+            //1 inch = 576 master unit -> 1 master unit = 0.125 pt
+            if (val > 0)//The absolute value specifies spacing in master units.
+            {
+                std::wstring strProp = std::to_wstring( (int)(val* 0.125 * 100/*/ dKoef1*/));
+                m_oWriter.WriteString(L"<a:lnSpc><a:spcPts val=\"" + strProp + L"\"/></a:lnSpc>");
+            }
+            else if (val < 0 && val > -13200)
+            {//0 to 13200, inclusive - The value specifies spacing as a percentage of the text line height.
+                std::wstring strProp = std::to_wstring( -val * 1000);
+                m_oWriter.WriteString(L"<a:lnSpc><a:spcPct val=\"" + strProp + L"\"/></a:lnSpc>");
+            }
+        }
+        if (pPF->spaceAfter.is_init())
+        {
+            LONG val = pPF->spaceAfter.get();
+            if (val > 0)
+            {
+                std::wstring strProp = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
+                m_oWriter.WriteString(L"<a:spcAft><a:spcPts val=\"" + strProp + L"\"/></a:spcAft>");
+            }
+            else if (val < 0 && val > -13200)
+            {
+                std::wstring strProp = std::to_wstring(-val * 1000);
+                m_oWriter.WriteString(L"<a:spcAft><a:spcPct val=\"" + strProp + L"\"/></a:spcAft>");
+            }
+        }
+        if (pPF->spaceBefore.is_init())
+        {
+            LONG val = pPF->spaceBefore.get();
+            if (val > 0)
+            {
+                std::wstring strProp = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
+                m_oWriter.WriteString(L"<a:spcBef><a:spcPts val=\"" + strProp + L"\"/></a:spcBef>");
+            }
+            else if (val < 0 && val > -13200)
+            {
+                std::wstring strProp = std::to_wstring(-val * 1000);
+                m_oWriter.WriteString(L"<a:spcBef><a:spcPct val=\"" + strProp + L"\"/></a:spcBef>");
             }
         }
 
@@ -1580,7 +1608,9 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
             if (pCF->font.font.is_init())
             {
-                m_oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->font.font->Name + _T("\"/>"));
+                m_oWriter.WriteString(L"<a:latin");
+                m_oWriter.WriteString(pCF->font.font->getXmlArgsStr());
+                m_oWriter.WriteString(L"/>");
             }
             else if (pCF->fontRef.is_init())
             {
@@ -1603,11 +1633,15 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
             if (pCF->font.ea.is_init())
             {
-                m_oWriter.WriteString(std::wstring(L"<a:ea typeface=\"") + pCF->font.ea->Name + L"\"/>");
+                m_oWriter.WriteString(L"<a:ea");
+                m_oWriter.WriteString(pCF->font.ea->getXmlArgsStr());
+                m_oWriter.WriteString(L"/>");
             }
             if (pCF->font.sym.is_init())
             {
-                m_oWriter.WriteString(std::wstring(L"<a:sym typeface=\"") + pCF->font.sym->Name + _T("\"/>"));
+                m_oWriter.WriteString(L"<a:sym");
+                m_oWriter.WriteString(pCF->font.sym->getXmlArgsStr());
+                m_oWriter.WriteString(L"/>");
             }
 
             //            WriteHyperlink(nIndexPar);
@@ -2213,8 +2247,36 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertImage()
 
     m_oWriter.WriteString(std::wstring(L"<p:blipFill>"));
 
-    std::wstring strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"/>");
+    std::wstring strWrite = _T("<a:blip r:embed=\"") + strRid + _T("\"");
     m_oWriter.WriteString(strWrite);
+    if (pImageElement->m_lpictureBrightness != 0 || pImageElement->m_lpictureContrast != 0x10000)
+    {
+        m_oWriter.WriteString(L"><a:lum");
+        if (pImageElement->m_lpictureBrightness != 0)
+        {
+            std::wstring bright = std::to_wstring((UINT)(pImageElement->m_lpictureBrightness * 3.051705)); // 0 - min, backgrpund. 50000 - usually. 100000 - max,white
+            m_oWriter.WriteString(L" bright=\"" + bright + L"\"");
+        }
+        if (pImageElement->m_lpictureContrast != 0x10000)
+        {
+            int contrast; // -100000 - min white. 0 - usually. 100000 - color max
+            if (pImageElement->m_lpictureContrast < 0x10000)
+            {
+                contrast = (0x10000 - pImageElement->m_lpictureContrast) * -1.5259;
+            } else
+            {
+//                contrast = (pImageElement->m_lpictureContrast - 0x10000) * 0.76294; // 0.76294 - not correct, * - not correct
+                contrast = 0;
+            }
+            m_oWriter.WriteString(L" contrast=\"" + std::to_wstring(contrast) + L"\"");
+        }
+
+
+        m_oWriter.WriteString(L"/></a:blip>");
+    }else
+    {
+        m_oWriter.WriteString(L"/>");
+    }
 
     m_oWriter.WriteString(std::wstring(L"<a:srcRect"));
     if (pImageElement->m_bCropEnabled)

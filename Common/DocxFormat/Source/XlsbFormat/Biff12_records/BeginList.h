@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 #include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CellRangeRef.h"
 #include "../Biff12_structures/ListType.h"
@@ -55,8 +55,8 @@ namespace XLSB
             XLS::RFX                    rfxList;
             ListType                    lt;
             _UINT32                     idList;
-            XLS::Boolean<_UINT32>		crwHeader;
-            XLS::Boolean<_UINT32>		crwTotals;
+            XLS::Boolean<_UINT32>	crwHeader;
+            XLS::Boolean<_UINT32>	crwTotals;
             bool                        fShownTotalRow;
             bool                        fSingleCell;
             bool                        fForceInsertToBeVisible;

@@ -336,10 +336,18 @@ public:
                 pSymbols = m_pSymbols + nFirstOffset;
                 pSymbolsLast = pSymbols + nCount;
 
-                if (nFirstOffset > 0x4DFF && nFirstOffset < 0x9FFF)
-                    nPriority = (nCount > nSmallRangeLenCJK) ? m_nPriority : (m_nPriority + nSumPriority);
+                if (m_nPriority != 1)
+                {
+                    if (nFirstOffset > 0x4DFF && nFirstOffset < 0x9FFF)
+                        nPriority = (nCount > nSmallRangeLenCJK) ? m_nPriority : (m_nPriority + nSumPriority);
+                    else
+                        nPriority = (nCount > nSmallRangeLen) ? m_nPriority : (m_nPriority + nSumPriority);
+                }
                 else
-                    nPriority = (nCount > nSmallRangeLen) ? m_nPriority : (m_nPriority + nSumPriority);
+                {
+                    // для шрифта ASCW3 допускаем маленькую длину range
+                    nPriority = m_nPriority;
+                }
 
                 while (pSymbols < pSymbolsLast)
                 {
@@ -835,45 +843,48 @@ public:
                 CSymbolSimpleChecker2 oAllChecker(arSymbolsAll, nMaxSymbol);
 
                 std::map<std::wstring, int> mapFontsPriorityStandard;
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Arial", 1));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Times New Roman", 2));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Tahoma", 3));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Cambria", 4));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Calibri", 5));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Verdana", 6));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Georgia", 7));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Open Sans", 8));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Liberation Sans", 9));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Helvetica", 10));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Nimbus Sans L", 11));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"DejaVu Sans", 12));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Liberation Serif", 13));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Trebuchet MS", 14));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Courier New", 15));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Carlito", 16));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Segoe UI", 17));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimSun", 18));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Gothic", 19));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Nirmala UI", 20));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Batang", 21));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Mincho", 22));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Wingdings", 23));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Microsoft JhengHei", 24));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Microsoft JhengHei UI", 25));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Microsoft YaHei", 26));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PMingLiU", 27));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MingLiU", 28));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"DFKai-SB", 29));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"FangSong", 30));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"KaiTi", 31));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimKai", 32));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimHei", 33));
-                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Meiryo", 34));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"ASCW3", 1));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Arial", 2));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Times New Roman", 3));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Tahoma", 4));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Cambria", 5));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Calibri", 6));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Verdana", 7));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Georgia", 8));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Open Sans", 9));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Liberation Sans", 10));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Helvetica", 11));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Nimbus Sans L", 12));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"DejaVu Sans", 13));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Liberation Serif", 14));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Trebuchet MS", 15));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Courier New", 16));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Carlito", 17));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Segoe UI", 18));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimSun", 19));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Gothic", 20));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Nirmala UI", 21));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Batang", 22));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MS Mincho", 23));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Wingdings", 24));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Microsoft JhengHei", 25));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Microsoft JhengHei UI", 26));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Microsoft YaHei", 27));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PMingLiU", 28));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"MingLiU", 29));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"DFKai-SB", 30));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"FangSong", 31));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"KaiTi", 32));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimKai", 33));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"SimHei", 34));
+                mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Meiryo", 35));
 
                 NSFonts::CApplicationFontsSymbols oApplicationChecker;
 
+                // приоритеты шрифтов. по имени (все стили)
+                // если шрифт из mapFontsPriorityStandard, то приоритет из этого map
+                // иначе - максимальный размер из файлов-стиля шрифта (max(regular,italic,bold,bolditalic))
                 std::vector<CFontPriority> arrFontsPriority;
-                std::map<std::wstring, int> mapFontsPriority;
                 for (int index = 0; index < nCountFonts; ++index)
                 {
                     std::map<std::wstring, CFontInfoJS>::iterator pPair = mapFonts.find(arrFonts[index]);
@@ -938,8 +949,11 @@ public:
                     arrFontsPriority.push_back(f);
                 }
 
+                // сортируем по приоритету
                 std::sort(arrFontsPriority.begin(), arrFontsPriority.end(), CFontPriority::Compare);
 
+                // для удобства - делаем map
+                std::map<std::wstring, int> mapFontsPriority;
                 int nIndexPriority = 1;
                 for (std::vector<CFontPriority>::iterator i = arrFontsPriority.begin(); i != arrFontsPriority.end(); i++)
                 {
@@ -971,6 +985,7 @@ public:
 
                     if (1 == nCounterFonts && !bIsSmallRangesDetect)
                     {
+                        // отключили этот режим (bIsSmallRangesDetect всегда true)
                         std::wstring sPathC = L"";
                         int nFaceIndexC = 0;
                         if (-1 != info.m_lIndexR)
@@ -1002,6 +1017,8 @@ public:
                     }
                     else
                     {
+                        // каждый шрифт - анализируем на символы. в массив символов (tmp buffer) -
+                        // пишем m_nStyle
                         int nMask = 0;
                         if (-1 != info.m_lIndexR)
                         {
@@ -1029,9 +1046,18 @@ public:
                         }
 
                         if (bIsSmallRangesDetect)
+                        {
+                            // чекаем все символы, которые есть во ВСЕХ стилях шрифта
+                            // nSumPriority - это добавка для ranges маленькой длины, чтобы если есть
+                            // длинный диапазон но большим приоритетом - то он его перебьет.
+                            // для этого добавка - количество шрифтов. чтобы хватило
                             oAllChecker.Apply2(nMask, nSumPriority);
+                        }
                         else
+                        {
+                            // просто чекаем все символы, которые есть во ВСЕХ стилях шрифта
                             oAllChecker.Apply1(nMask);
+                        }
                     }
                 }
 

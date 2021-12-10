@@ -61,6 +61,9 @@ static void win32_translate_open_mode(int mode,
         *lpdwDesiredAccess = GENERIC_READ;
         *lpdwCreationDisposition = OPEN_EXISTING;
         *lpdwShareMode = FILE_SHARE_READ;
+
+        if (zlip_get_addition_flag() & ZLIB_ADDON_FLAG_WINDOWS_SHARED_WRITE)
+            *lpdwShareMode |= FILE_SHARE_WRITE;
     }
     else if (mode & ZLIB_FILEFUNC_MODE_EXISTING)
     {

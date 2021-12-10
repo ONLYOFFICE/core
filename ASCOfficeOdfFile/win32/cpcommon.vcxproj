@@ -75,8 +75,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\_Work\core\Common\3dParty\boost\build\win_64\include;</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;D:\_Work\core\Common\3dParty\boost\build\win_64\lib;</LibraryPath>
+    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(Configuration)\</OutDir>
@@ -89,7 +89,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\src\odf\datatypes;..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src\odf\datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -110,7 +110,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../include;../src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src\odf\datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -180,6 +180,7 @@
     <ClInclude Include="..\src\odf\datatypes\borderstyle.h" />
     <ClInclude Include="..\src\odf\datatypes\borderwidths.h" />
     <ClInclude Include="..\src\odf\datatypes\calcext_type.h" />
+    <ClInclude Include="..\src\odf\datatypes\stylecellprotect.h" />
     <ClInclude Include="..\src\odf\datatypes\chartclass.h" />
     <ClInclude Include="..\src\odf\datatypes\chartdatalabelnumber.h" />
     <ClInclude Include="..\src\odf\datatypes\charterrorcategory.h" />
@@ -309,6 +310,7 @@
     <ClCompile Include="..\src\odf\datatypes\borderstyle.cpp" />
     <ClCompile Include="..\src\odf\datatypes\borderwidths.cpp" />
     <ClCompile Include="..\src\odf\datatypes\calcext_type.cpp" />
+    <ClCompile Include="..\src\odf\datatypes\stylecellprotect.cpp" />
     <ClCompile Include="..\src\odf\datatypes\chartclass.cpp" />
     <ClCompile Include="..\src\odf\datatypes\chartdatalabelnumber.cpp" />
     <ClCompile Include="..\src\odf\datatypes\charterrorcategory.cpp" />

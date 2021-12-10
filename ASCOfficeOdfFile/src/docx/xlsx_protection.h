@@ -37,6 +37,9 @@
 
 
 namespace cpdoccore {
+	namespace odf_reader {
+		class style_table_cell_properties_attlist;
+	}
 namespace oox {
 
 /// \struct xlsx_protection
@@ -49,9 +52,11 @@ struct xlsx_protection
     bool operator == (const xlsx_protection & rVal) const;
     bool operator != (const xlsx_protection & rVal) const;
     
-    friend void xlsx_serialize(std::wostream & _Wostream, const xlsx_protection & font);
+	friend bool is_default(const xlsx_protection & rVal);
+	friend void xlsx_serialize(std::wostream & _Wostream, const xlsx_protection & font);
     friend std::size_t hash_value(xlsx_protection const & val);
 };
+xlsx_protection OdfProperties2XlsxProtection(const odf_reader::style_table_cell_properties_attlist *cellProp);
 
 }
 }

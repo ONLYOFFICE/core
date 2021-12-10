@@ -236,7 +236,7 @@ namespace NSDocxRenderer
 
                 // нужно перемерять...
                 double ___dSize = (double)((LONG)(m_oFont.Size * 2)) / 2;
-                pManagerLight->LoadFont(m_strPickFontName, m_lPickFontStyle, ___dSize, FALSE);
+                pManagerLight->LoadFont(m_strPickFontName, m_lPickFontStyle, ___dSize, false);
                 double dWidth = pManagerLight->MeasureStringWidth(m_oText.ToStdWString());
 
                 if (fabs(dWidth - m_dWidth) > 2)

@@ -32,6 +32,10 @@
 
 #include "FRTWORKSHEET.h"
 #include "../Biff12_unions/CONDITIONALFORMATTINGS.h"
+#include "../Biff12_unions/DVALS14.h"
+#include "../Biff12_unions/SPARKLINEGROUPS.h"
+#include "../Biff12_unions/SLICERSEX.h"
+#include "../Biff12_unions/TABLESLICERSEX.h"
 
 using namespace XLS;
 
@@ -62,7 +66,31 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_CONDITIONALFORMATTINGS != nullptr;
+        if (proc.optional<DVALS14>())
+        {
+            m_DVALS14 = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<SPARKLINEGROUPS>())
+        {
+            m_SPARKLINEGROUPS = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<SLICERSEX>())
+        {
+            m_SLICERSEX = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<TABLESLICERSEX>())
+        {
+            m_TABLESLICERSEX = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_CONDITIONALFORMATTINGS || m_DVALS14 || m_SPARKLINEGROUPS || m_SLICERSEX || m_TABLESLICERSEX;
     }
 
 } // namespace XLSB

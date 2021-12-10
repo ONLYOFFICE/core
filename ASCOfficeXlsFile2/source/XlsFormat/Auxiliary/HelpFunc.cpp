@@ -282,6 +282,16 @@ const std::string guid2str(const _GUID_ guid)
 	return std::string(s.begin(),s.end());
 }
 
+const std::wstring guidFromStr(const std::wstring & guid_str)
+{
+    boost::wregex match_guid(L"[A-Za-z0-9_]{8}-[A-Za-z0-9_]{4}-[A-Za-z0-9_]{4}-[A-Za-z0-9_]{4}-[A-Za-z0-9_]{12}");
+    boost::wsmatch result;
+    if(boost::regex_search(guid_str, result, match_guid))
+    {
+        return result.str();
+    }
+    return L"";
+}
 
 const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid)
 {

@@ -511,7 +511,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/OLEDBPR15.cpp \
     ../Source/XlsbFormat/Biff12_unions/DBTABLES15.cpp \
     ../Source/XlsbFormat/Biff12_unions/DATAFEEDPR15.cpp \
-    ../Source/XlsbFormat/Biff12_unions/TEXTPR15.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TEXTPR15_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/ECTXTWIZ15.cpp \
     ../Source/XlsbFormat/Biff12_unions/ECTWFLDINFOLST15.cpp \
     ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUP.cpp \

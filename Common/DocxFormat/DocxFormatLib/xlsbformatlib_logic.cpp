@@ -512,7 +512,7 @@
     #include "../Source/XlsbFormat/Biff12_unions/OLEDBPR15.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/DBTABLES15.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/DATAFEEDPR15.cpp"
-    #include "../Source/XlsbFormat/Biff12_unions/TEXTPR15.cpp"
+    #include "../Source/XlsbFormat/Biff12_unions/TEXTPR15_bu.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/ECTXTWIZ15.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/ECTWFLDINFOLST15.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUP.cpp"

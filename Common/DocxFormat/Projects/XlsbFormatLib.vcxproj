@@ -501,7 +501,10 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\WSVIEW2.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\WSVIEWS2.h" />
     <ClInclude Include="..\Source\XlsbFormat\CommentsStream.h" />
+    <ClInclude Include="..\Source\XlsbFormat\ConnectionsStream.h" />
+    <ClInclude Include="..\Source\XlsbFormat\QueryTableStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\SharedStringsStream.h" />
+    <ClInclude Include="..\Source\XlsbFormat\SlicersStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\StylesStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\TableStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\WorkBookStream.h" />
@@ -978,7 +981,7 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLECELL.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESTYLE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESTYLES.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TEXTPR15.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TEXTPR15_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TIMELINESTYLE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TIMELINESTYLES.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\uCFVO.cpp" />
@@ -986,7 +989,10 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\WSVIEW2.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\WSVIEWS2.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\CommentsStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\ConnectionsStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\QueryTableStream.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\SharedStringsStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\SlicersStream.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\StylesStream.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\TableStream.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\WorkBookStream.cpp" />

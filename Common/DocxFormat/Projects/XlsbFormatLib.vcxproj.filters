@@ -1463,6 +1463,9 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginDataFeedPr15.h">
       <Filter>records</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\ConnectionsStream.h" />
+    <ClInclude Include="..\Source\XlsbFormat\QueryTableStream.h" />
+    <ClInclude Include="..\Source\XlsbFormat\SlicersStream.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ACProductVersion.cpp">
@@ -2600,9 +2603,6 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SXTUPLESETROW.cpp">
       <Filter>unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TEXTPR15.cpp">
-      <Filter>unions</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\CmdType.cpp">
       <Filter>structures</Filter>
     </ClCompile>
@@ -2896,6 +2896,12 @@
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginDataFeedPr15.cpp">
       <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\ConnectionsStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\QueryTableStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\SlicersStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TEXTPR15_bu.cpp">
+      <Filter>unions</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

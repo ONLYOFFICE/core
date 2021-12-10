@@ -147,6 +147,7 @@
     <ClCompile Include="..\Oox2OdfConverter\DocxConverter.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\Oox2OdfConverter\MathConverter.cpp" />
     <ClCompile Include="..\Oox2OdfConverter\PptxConverter.cpp" />
     <ClCompile Include="..\Oox2OdfConverter\XlsxConverter.cpp" />
   </ItemGroup>

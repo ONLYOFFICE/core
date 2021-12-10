@@ -355,6 +355,19 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 		table_table_protection* prot = dynamic_cast<table_table_protection*>( table_protection_.get() );
 		if (prot)
 		{
+			if (prot->select_protected_cells)
+				Context.get_table_context().state()->set_protection_select_protected_cells(*prot->select_protected_cells);
+			if (prot->select_unprotected_cells)
+				Context.get_table_context().state()->set_protection_select_unprotected_cells(*prot->select_unprotected_cells);
+
+			if (prot->insert_columns)
+				Context.get_table_context().state()->set_protection_insert_columns(*prot->insert_columns);
+			if (prot->insert_rows)
+				Context.get_table_context().state()->set_protection_insert_rows(*prot->insert_rows);
+			if (prot->delete_columns)
+				Context.get_table_context().state()->set_protection_delete_columns(*prot->delete_columns);
+			if (prot->delete_rows)
+				Context.get_table_context().state()->set_protection_delete_rows(*prot->delete_rows);
 		}
 	}
 

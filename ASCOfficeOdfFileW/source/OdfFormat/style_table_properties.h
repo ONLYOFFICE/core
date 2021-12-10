@@ -53,6 +53,7 @@
 #include "wrapoption.h"
 #include "rotationalign.h"
 #include "bool.h"
+#include "stylecellprotect.h"
 
 namespace cpdoccore { 
 namespace odf_writer {
@@ -213,7 +214,7 @@ public:
 	_CP_OPT(odf_types::wrap_option)		fo_wrap_option_;
 
 	_CP_OPT(odf_types::rotation_align)	style_rotation_align_;    
-	_CP_OPT(std::wstring)				style_cell_protect_;
+	_CP_OPT(odf_types::style_cell_protect)	style_cell_protect_;
 	_CP_OPT(odf_types::Bool)			style_print_content_;
     _CP_OPT(unsigned int)				style_decimal_places_;
     _CP_OPT(odf_types::Bool)			style_repeat_content_;

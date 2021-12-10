@@ -216,6 +216,15 @@ HRESULT COfficeUtils::GetFilesSize(const std::wstring& _zipFile, const std::wstr
 	}
 }
 
+int COfficeUtils::GetAddonFlag()
+{
+    return zlip_get_addition_flag();
+}
+void COfficeUtils::SetAddonFlag(int flag)
+{
+    zlip_set_addition_flag(flag);
+}
+
 class CDeflate_private
 {
 public:

@@ -29,13 +29,58 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#include <boost/algorithm/string.hpp>
 
-#ifndef ZLIB_ADDON_FLAG_ZERO
-#define ZLIB_ADDON_FLAG_ZERO                    0
-#define ZLIB_ADDON_FLAG_READ_ONLY               1
-#define ZLIB_ADDON_FLAG_WINDOWS_SHARED_WRITE    2
-#endif
+#include "stylecellprotect.h"
 
-void zlip_set_addition_flag(int flag);
-int zlip_get_addition_flag();
+#include <ostream>
+
+namespace cpdoccore { namespace odf_types { 
+
+	std::wostream & operator << (std::wostream & _Wostream, const style_cell_protect & _Val)
+	{
+		switch (_Val.get_type())
+		{
+		case style_cell_protect::none:
+			_Wostream << L"none";
+			break;
+		case style_cell_protect::formula_hidden:
+			_Wostream << L"formula-hidden";
+			break;
+		case style_cell_protect::hidden_and_protected:
+			_Wostream << L"hidden-and-protected";
+			break;
+		case style_cell_protect::protected_:
+			_Wostream << L"protected";
+			break;
+		case style_cell_protect::protected_formula_hidden:
+			_Wostream << L"protected formula-hidden";
+			break;
+		default:
+			break;
+		}
+		return _Wostream;
+	}
+
+	style_cell_protect style_cell_protect::parse(const std::wstring & Str)
+	{
+		std::wstring tmp = Str;
+		boost::algorithm::to_lower(tmp);
+
+		if (tmp == L"formula_hidden")
+			return style_cell_protect(formula_hidden);
+		else if (tmp == L"hidden-and-protected")
+			return style_cell_protect(hidden_and_protected);
+		else if (tmp == L"protected")
+			return style_cell_protect(protected_);
+		else if (tmp == L"protected formula-hidden" ||
+				 tmp == L"formula-hidden protected")
+			return style_cell_protect(protected_formula_hidden);
+		else
+		{
+			return style_cell_protect(none);
+		}
+	}
+
+
+} }

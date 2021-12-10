@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_BODYPR_INCLUDE_H_
-#define PPTX_LOGIC_BODYPR_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Limit/TextAnchor.h"
@@ -43,6 +41,7 @@
 #include "Sp3d.h"
 #include "PrstTxWarp.h"
 #include "TextFit.h"
+#include "ExtP.h"
 
 namespace PPTX
 {
@@ -252,7 +251,6 @@ namespace PPTX
 				nullable_property<int> flatTx;
 				nullable_property<Sp3d> sp3d;
 	*/
-				// Attributes
 				if(anchor.IsInit())
 					bodyPr->anchor = *anchor;
 				if(anchorCtr.IsInit())
@@ -487,7 +485,6 @@ namespace PPTX
 			nullable_int				flatTx;
 			nullable<Sp3d>				sp3d;
 
-	// Attributes
 			nullable_limit<Limit::TextAnchor>		anchor;
 			nullable_bool							anchorCtr;
 			nullable_int							bIns;
@@ -525,7 +522,139 @@ namespace PPTX
 				spcCol.normalize_positive();
 			}
 		};
+
+		class LinkedTxbx : public WrapperWritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(LinkedTxbx)
+
+			LinkedTxbx(std::wstring ns = L"a")
+			{
+				m_namespace = ns;
+			}
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+
+				ReadAttributes(oReader);
+
+				if (oReader.IsEmptyNode())
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nCurDepth))
+				{
+					std::wstring strName = oReader.GetName();
+
+					if (L"a:extLst" == strName)
+					{
+						if (oReader.IsEmptyNode())
+							continue;
+
+						int nParentDepth1 = oReader.GetDepth();
+						while (oReader.ReadNextSiblingNode(nParentDepth1))
+						{
+							Ext element;
+							element.fromXML(oReader);
+							extLst.push_back(element);
+						}
+					}
+				}
+				FillParentPointersForChilds();
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, L"id", id)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"seq", seq)
+				WritingElement_ReadAttributes_End(oReader)
+				Normalize();
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+				m_namespace = XmlUtils::GetNamespace(node.GetName());
+
+				XmlMacroReadAttributeBase(node, L"id", id);
+				XmlMacroReadAttributeBase(node, L"seq", seq);
+
+				Normalize();
+				FillParentPointersForChilds();
+			}
+
+			virtual std::wstring toXML() const
+			{
+				if (m_namespace.empty()) m_namespace = L"a";
+
+				XmlUtils::CAttribute oAttr;
+				oAttr.Write(L"id", id);
+				oAttr.Write(L"seq", seq);
+				return XmlUtils::CreateNode(m_namespace + L":linkedTxbx", oAttr);
+			}
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				if (m_namespace.empty()) m_namespace = L"a";
+
+				pWriter->StartNode(m_namespace + L":linkedTxbx");
+
+				pWriter->StartAttributes();
+					pWriter->WriteAttribute2(L"id", id);
+					pWriter->WriteAttribute2(L"seq", seq);
+				pWriter->EndAttributes();
+
+				pWriter->EndNode(m_namespace + L":linkedTxbx");
+			}
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteUInt2(0, id);
+					pWriter->WriteUInt2(1, seq);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+				pReader->Skip(1); // start attributes
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+					case 0:
+					{
+						id = pReader->GetULong();
+						break;
+					}
+					case 1:
+					{
+						seq = pReader->GetULong();
+						break;
+					}
+					default:
+						break;
+					}
+				}
+				pReader->Seek(_end_rec);
+			}
+			nullable_uint id;
+			nullable_uint seq;
+
+			std::vector<Ext> extLst;
+
+			mutable std::wstring m_namespace;
+		protected:
+			virtual void FillParentPointersForChilds()
+			{
+			}
+			AVSINLINE void Normalize()
+			{
+			}
+		};
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_BODYPR_INCLUDE_H

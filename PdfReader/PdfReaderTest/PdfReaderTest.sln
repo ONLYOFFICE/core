@@ -1,12 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PdfReaderTest", "PdfReaderTest.vcproj", "{5F337F52-E630-456E-9081-730A62A89684}"
-	ProjectSection(ProjectDependencies) = postProject
-		{62C7E428-E07C-4C13-A92B-2536D6442C9D} = {62C7E428-E07C-4C13-A92B-2536D6442C9D}
-	EndProjectSection
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PdfReaderTest", "PdfReaderTest.vcxproj", "{5F337F52-E630-456E-9081-730A62A89684}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PdfReader", "..\PdfReader.vcproj", "{62C7E428-E07C-4C13-A92B-2536D6442C9D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PdfReader", "..\PdfReader.vcxproj", "{62C7E428-E07C-4C13-A92B-2536D6442C9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

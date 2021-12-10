@@ -83,102 +83,102 @@ namespace DocFileFormat
 	{
 		m_document = static_cast<WordDocument*>(visited);
 
-		if (m_document)
+		if (!m_document) return;
+
+		m_pXmlWriter->WriteNodeBegin(L"v:textbox", true);
+		if (m_dxTextLeft >= 0 && m_dyTextTop >= 0 && m_dxTextRight >= 0 && m_dyTextBottom >= 0)
 		{
-			//if (m_nTBIndex < m_document->TextboxBreakPlex->Elements.size())
-			//	return;
-
-            m_pXmlWriter->WriteNodeBegin(L"v:textbox", true);
-				if(m_dxTextLeft >= 0 && m_dyTextTop >= 0 && m_dxTextRight >= 0 && m_dyTextBottom >= 0)
-				{
-                    m_pXmlWriter->WriteAttribute( L"inset" , FormatUtils::DoubleToWideString(m_dxTextLeft)  + L"pt," +
-                                                            FormatUtils::DoubleToWideString(m_dyTextTop)    + L"pt," +
-                                                            FormatUtils::DoubleToWideString(m_dxTextRight)  + L"pt," +
-                                                            FormatUtils::DoubleToWideString(m_dyTextBottom) + L"pt");
-				}
-				if (!m_sTextBoxStyle.empty())
-				{
-                    m_pXmlWriter->WriteAttribute( L"style", m_sTextBoxStyle);
-				}
-            m_pXmlWriter->WriteNodeEnd( L"", true, false );
-			
-            m_pXmlWriter->WriteNodeBegin( L"w:txbxContent" );
-
-			int cp		=	0;
-			int cpEnd	=	0;
-			Tbkd* bkd	=	NULL;
-
-			int txtbxSubdocStart	=	
-				m_document->FIB->m_RgLw97.ccpText	+ 
-				m_document->FIB->m_RgLw97.ccpFtn	+ 
-				m_document->FIB->m_RgLw97.ccpHdr	+
-				m_document->FIB->m_RgLw97.ccpAtn	+
-				m_document->FIB->m_RgLw97.ccpEdn	;
-	
-			if (typeid(*_caller) == typeid(MainDocumentMapping))
-			{
-				if (m_nTBIndex < m_document->TextboxBreakPlex->Elements.size() )//file(21).doc
-				{
-					bkd		=	static_cast<Tbkd*>(m_document->TextboxBreakPlex->Elements[m_nTBIndex]);
-				}
-
-				if (m_nTBIndex + 1 < m_document->TextboxBreakPlex->CharacterPositions.size())
-				{				
-					cp		=	txtbxSubdocStart + m_document->TextboxBreakPlex->CharacterPositions[m_nTBIndex];
-					cpEnd	=	txtbxSubdocStart + m_document->TextboxBreakPlex->CharacterPositions[m_nTBIndex + 1];
-				}
-				else if (m_nTBIndex + 1 < m_document->TextboxIndividualPlex->CharacterPositions.size())
-				{
-					//todooo сделать чище
-					cp		=	m_document->TextboxIndividualPlex->CharacterPositions[m_nTBIndex] + 2;
-					cpEnd	=	m_document->TextboxIndividualPlex->CharacterPositions[m_nTBIndex + 1];
-				}
-			}
-			else if ((typeid(*_caller) == typeid(HeaderMapping)) || (typeid(*_caller) == typeid(FooterMapping)))
-			{
-				txtbxSubdocStart	+=	m_document->FIB->m_RgLw97.ccpTxbx;
-				
-				bkd			=	static_cast<Tbkd*>(m_document->TextboxBreakPlexHeader->Elements[m_nTBIndex]);
-			
-				cp			=	txtbxSubdocStart + m_document->TextboxBreakPlexHeader->CharacterPositions[m_nTBIndex];
-				cpEnd		=	txtbxSubdocStart + m_document->TextboxBreakPlexHeader->CharacterPositions[m_nTBIndex + 1];
-			}
-
-			_isTextBoxContent = true;
-
-			//convert the textbox text
-			_lastValidPapx = (*(m_document->AllPapxFkps->begin()))->grppapx[0];
-
-			ParagraphPropertyExceptions* papx_prev = NULL;
-			while (cp < cpEnd)
-			{
-				int fc = m_document->FindFileCharPos(cp);
-				if (fc < 0) break;
-
-				ParagraphPropertyExceptions* papx = findValidPapx( fc );
-				if (papx_prev && papx_prev == papx)//file(21).doc
-					break;
-				papx_prev = papx;
-
-				TableInfo tai( papx, m_document->nWordVersion );
-
-				if ( tai.fInTable )
-				{
-					//this PAPX is for a table
-					Table table( this, cp, ( ( tai.iTap > 0 ) ? ( 1 ) : ( 0 ) ) );
-					table.Convert( this );
-					cp = table.GetCPEnd();
-				}
-				else
-				{
-					//this PAPX is for a normal paragraph
-					cp = writeParagraph( cp, 0x7fffffff );
-				}
-			}
-			_isTextBoxContent = false;
-
-            m_pXmlWriter->WriteNodeEnd( L"w:txbxContent" );
-            m_pXmlWriter->WriteNodeEnd( L"v:textbox" );
+			m_pXmlWriter->WriteAttribute(L"inset", FormatUtils::DoubleToWideString(m_dxTextLeft) + L"pt," +
+				FormatUtils::DoubleToWideString(m_dyTextTop) + L"pt," +
+				FormatUtils::DoubleToWideString(m_dxTextRight) + L"pt," +
+				FormatUtils::DoubleToWideString(m_dyTextBottom) + L"pt");
 		}
+		if (!m_sTextBoxStyle.empty())
+		{
+			m_pXmlWriter->WriteAttribute(L"style", m_sTextBoxStyle);
+		}
+		m_pXmlWriter->WriteNodeEnd(L"", true, false);
+
+		m_pXmlWriter->WriteNodeBegin(L"w:txbxContent");
+
+		int cpStart = 0;
+		int cpEnd = 0;
+		Tbkd* bkd = NULL;
+
+		int txtbxSubdocStart =
+			m_document->FIB->m_RgLw97.ccpText +
+			m_document->FIB->m_RgLw97.ccpFtn +
+			m_document->FIB->m_RgLw97.ccpHdr +
+			m_document->FIB->m_RgLw97.ccpAtn +
+			m_document->FIB->m_RgLw97.ccpEdn;
+
+		if (typeid(*_caller) == typeid(MainDocumentMapping))
+		{
+			if (m_nTBIndex < m_document->TextboxBreakPlex->Elements.size())//file(21).doc
+			{
+				bkd = static_cast<Tbkd*>(m_document->TextboxBreakPlex->Elements[m_nTBIndex]);
+			}
+			
+			if (m_nTBIndex + 1 < m_document->TextboxIndividualPlex->CharacterPositions.size())
+			{//Jukivka.doc
+				cpStart = txtbxSubdocStart + m_document->TextboxIndividualPlex->CharacterPositions[m_nTBIndex];
+				cpEnd = txtbxSubdocStart + m_document->TextboxIndividualPlex->CharacterPositions[m_nTBIndex + 1];
+			}		
+			else if (m_nTBIndex + 1 < m_document->TextboxBreakPlex->CharacterPositions.size())
+			{
+				cpStart = txtbxSubdocStart + m_document->TextboxBreakPlex->CharacterPositions[m_nTBIndex];
+				cpEnd = txtbxSubdocStart + m_document->TextboxBreakPlex->CharacterPositions[m_nTBIndex + 1];
+			}
+
+		}
+		else if ((typeid(*_caller) == typeid(HeaderMapping)) || (typeid(*_caller) == typeid(FooterMapping)))
+		{
+			txtbxSubdocStart += m_document->FIB->m_RgLw97.ccpTxbx;
+
+			bkd = static_cast<Tbkd*>(m_document->TextboxBreakPlexHeader->Elements[m_nTBIndex]);
+
+			cpStart = txtbxSubdocStart + m_document->TextboxBreakPlexHeader->CharacterPositions[m_nTBIndex];
+			cpEnd = txtbxSubdocStart + m_document->TextboxBreakPlexHeader->CharacterPositions[m_nTBIndex + 1];
+		}
+		bool bUsed = bkd ? bkd->bUsed : false;
+		_isTextBoxContent = true;
+
+		//convert the textbox text
+		_lastValidPapx = (*(m_document->AllPapxFkps->begin()))->grppapx[0];
+
+		ParagraphPropertyExceptions* papx_prev = NULL;
+		int cp = cpStart;
+		while (cp < cpEnd && cp >= cpStart && !bUsed)
+		{
+			int fc = m_document->FindFileCharPos(cp);
+			if (fc < 0) break;
+
+			ParagraphPropertyExceptions* papx = findValidPapx(fc);
+			if (papx_prev && papx_prev == papx)//file(21).doc
+				break;
+			papx_prev = papx;
+
+			TableInfo tai(papx, m_document->nWordVersion);
+
+			if (tai.fInTable)
+			{
+				//this PAPX is for a table
+				Table table(this, cp, ((tai.iTap > 0) ? (1) : (0)));
+				table.Convert(this);
+				cp = table.GetCPEnd();
+			}
+			else
+			{
+				//this PAPX is for a normal paragraph
+				cp = writeParagraph(cp, 0x7fffffff);
+			}
+		}
+		_isTextBoxContent = false;
+
+		if (bkd)
+			bkd->bUsed = true;
+
+		m_pXmlWriter->WriteNodeEnd(L"w:txbxContent");
+		m_pXmlWriter->WriteNodeEnd(L"v:textbox");
 	}
 }

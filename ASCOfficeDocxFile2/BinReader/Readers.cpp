@@ -463,35 +463,31 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 	rPr* orPr = static_cast<rPr*>(poResult);
 	switch(type)
 	{
-	case c_oSerProp_rPrType::Bold:
+		case c_oSerProp_rPrType::Bold:
 		{
 			BYTE Bold = m_oBufferedStream.GetUChar();
 			orPr->bBold = true;
-			orPr->Bold = (0 != Bold);
-			break;
-		}
-	case c_oSerProp_rPrType::Italic:
+			orPr->Bold = (0 != Bold);			
+		}break;
+		case c_oSerProp_rPrType::Italic:
 		{
 			BYTE Italic = m_oBufferedStream.GetUChar();
 			orPr->bItalic = true;
-			orPr->Italic = (0 != Italic);
-			break;
-		}
-	case c_oSerProp_rPrType::Underline:
+			orPr->Italic = (0 != Italic);			
+		}break;
+		case c_oSerProp_rPrType::Underline:
 		{
 			BYTE Underline = m_oBufferedStream.GetUChar();
 			orPr->bUnderline = true;
-			orPr->Underline = (0 != Underline);
-			break;
-		}
-	case c_oSerProp_rPrType::Strikeout:
+			orPr->Underline = (0 != Underline);			
+		}break;
+		case c_oSerProp_rPrType::Strikeout:
 		{
 			BYTE Strikeout = m_oBufferedStream.GetUChar();
 			orPr->bStrikeout = true;
-			orPr->Strikeout = (0 != Strikeout);
-			break;
-		}
-	case c_oSerProp_rPrType::FontAscii:
+			orPr->Strikeout = (0 != Strikeout);			
+		}break;
+		case c_oSerProp_rPrType::FontAscii:
 		{
             std::wstring sFontName(m_oBufferedStream.GetString3(length));
 			sFontName = XmlUtils::EncodeXmlString(sFontName);
@@ -499,17 +495,15 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			{
 				orPr->bFontAscii = true;
 				orPr->FontAscii = sFontName;
-			}
-			break;
-		}
-	case c_oSerProp_rPrType::FontAsciiTheme:
+			}			
+		}break;
+		case c_oSerProp_rPrType::FontAsciiTheme:
 		{
 			SimpleTypes::CTheme<> theme;
 			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
-			orPr->FontAsciiTheme = theme.ToString();
-			break;
-		}
-	case c_oSerProp_rPrType::FontHAnsi:
+			orPr->FontAsciiTheme = theme.ToString();			
+		}break;
+		case c_oSerProp_rPrType::FontHAnsi:
 		{
             std::wstring sFontName(m_oBufferedStream.GetString3(length));
 			sFontName = XmlUtils::EncodeXmlString(sFontName);
@@ -518,16 +512,16 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 				orPr->bFontHAnsi = true;
 				orPr->FontHAnsi = sFontName;
 			}
-			break;
-		}
-	case c_oSerProp_rPrType::FontHAnsiTheme:
+			
+		}break;
+		case c_oSerProp_rPrType::FontHAnsiTheme:
 		{
 			SimpleTypes::CTheme<> theme;
 			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
 			orPr->FontHAnsiTheme = theme.ToString();
 			break;
 		}
-	case c_oSerProp_rPrType::FontCS:
+		case c_oSerProp_rPrType::FontCS:
 		{
             std::wstring sFontName(m_oBufferedStream.GetString3(length));
 			sFontName = XmlUtils::EncodeXmlString(sFontName);
@@ -535,17 +529,15 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			{
 				orPr->bFontCS = true;
 				orPr->FontCS = sFontName;
-			}
-			break;
-		}
-	case c_oSerProp_rPrType::FontCSTheme:
+			}			
+		}break;
+		case c_oSerProp_rPrType::FontCSTheme:
 		{
 			SimpleTypes::CTheme<> theme;
 			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
-			orPr->FontCSTheme = theme.ToString();
-			break;
-		}
-	case c_oSerProp_rPrType::FontAE:
+			orPr->FontCSTheme = theme.ToString();			
+		}break;
+		case c_oSerProp_rPrType::FontAE:
 		{
             std::wstring sFontName(m_oBufferedStream.GetString3(length));
 			sFontName = XmlUtils::EncodeXmlString(sFontName);
@@ -553,52 +545,45 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			{
 				orPr->bFontAE = true;
 				orPr->FontAE = sFontName;
-			}
-			break;
-		}
-	case c_oSerProp_rPrType::FontAETheme:
+			}			
+		}break;
+		case c_oSerProp_rPrType::FontAETheme:
 		{
 			SimpleTypes::CTheme<> theme;
 			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
-			orPr->FontAETheme = theme.ToString();
-			break;
-		}
-	case c_oSerProp_rPrType::FontSize:
+			orPr->FontAETheme = theme.ToString();			
+		}break;
+		case c_oSerProp_rPrType::FontSize:
 		{
 			long nFontSize = m_oBufferedStream.GetLong();
 			orPr->bFontSize = true;
-			orPr->FontSize = nFontSize;
-			break;
-		}
-	case c_oSerProp_rPrType::Color:
+			orPr->FontSize = nFontSize;			
+		}break;
+		case c_oSerProp_rPrType::Color:
 		{
 			orPr->bColor = true;
-			orPr->Color = oBinary_CommonReader2.ReadColor();
-			break;
-		}
-	case c_oSerProp_rPrType::VertAlign:
+			orPr->Color = oBinary_CommonReader2.ReadColor();			
+		}break;
+		case c_oSerProp_rPrType::VertAlign:
 		{
 			BYTE VertAlign = m_oBufferedStream.GetUChar();
 			orPr->bVertAlign = true;
-			orPr->VertAlign = VertAlign;
-			break;
-		}
-	case c_oSerProp_rPrType::HighLight:
+			orPr->VertAlign = VertAlign;			
+		}break;
+		case c_oSerProp_rPrType::HighLight:
 		{
 			orPr->nHighLight = 2; //color set
-			orPr->HighLight = oBinary_CommonReader2.ReadColor();
-			break;
-		}
-	case c_oSerProp_rPrType::HighLightTyped:
+			orPr->HighLight = oBinary_CommonReader2.ReadColor();			
+		}break;
+		case c_oSerProp_rPrType::HighLightTyped:
 		{
 			BYTE byteHighLightTyped = m_oBufferedStream.GetUChar();
 			switch(byteHighLightTyped)
 			{
-			case c_oSer_ColorType::None:orPr->nHighLight = 1; break; //type set
-			}
-			break;
-		}
-	case c_oSerProp_rPrType::Shd:
+				case c_oSer_ColorType::None:orPr->nHighLight = 1; break; //type set
+			}			
+		}break;
+		case c_oSerProp_rPrType::Shd:
 		{
 			ComplexTypes::Word::CShading oShd;
 			READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, &oShd);
@@ -608,125 +593,105 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			{
 				orPr->bShd = true;
 				orPr->Shd = L"<w:shd " + sShd + L"/>";
-			}
-			break;
-		}
-	case c_oSerProp_rPrType::RStyle:
+			}			
+		}break;
+		case c_oSerProp_rPrType::RStyle:
 		{
             std::wstring sRStyle(m_oBufferedStream.GetString3(length));
 			orPr->bRStyle = true;
 			orPr->RStyle = sRStyle;
-		}
-		break;
-	case c_oSerProp_rPrType::Spacing:
+		}break;
+		case c_oSerProp_rPrType::Spacing:
 		{
 			orPr->bSpacing = true;
 			orPr->Spacing = SerializeCommon::Round( g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
-		}
-		break;
-	case c_oSerProp_rPrType::SpacingTwips:
+		}break;
+		case c_oSerProp_rPrType::SpacingTwips:
 		{
 			orPr->bSpacing = true;
 			orPr->Spacing = m_oBufferedStream.GetLong();
-		}
-		break;
-	case c_oSerProp_rPrType::DStrikeout:
+		}break;
+		case c_oSerProp_rPrType::DStrikeout:
 		{
 			orPr->bDStrikeout = true;
 			orPr->DStrikeout = (0 != m_oBufferedStream.GetUChar());
-		}
-		break;
-	case c_oSerProp_rPrType::Caps:
+		}break;
+		case c_oSerProp_rPrType::Caps:
 		{
 			orPr->bCaps = true;
 			orPr->Caps = (0 != m_oBufferedStream.GetUChar());
-		}
-		break;
-	case c_oSerProp_rPrType::SmallCaps:
+		}break;
+		case c_oSerProp_rPrType::SmallCaps:
 		{
 			orPr->bSmallCaps = true;
 			orPr->SmallCaps = (0 != m_oBufferedStream.GetUChar());
-		}
-		break;
-	case c_oSerProp_rPrType::Position:
+		}break;
+		case c_oSerProp_rPrType::Position:
 		{
 			orPr->bPosition = true;
 			orPr->Position = SerializeCommon::Round( g_dKoef_mm_to_hps * m_oBufferedStream.GetDouble());
-		}
-		break;
-	case c_oSerProp_rPrType::PositionHps:
+		}break;
+		case c_oSerProp_rPrType::PositionHps:
 		{
 			orPr->bPosition = true;
 			orPr->Position = m_oBufferedStream.GetLong();
-		}
-		break;
-	case c_oSerProp_rPrType::FontHint:
+		}break;
+		case c_oSerProp_rPrType::FontHint:
 		{
 			orPr->bFontHint = true;
 			orPr->FontHint = m_oBufferedStream.GetUChar();
-		}
-		break;
-	case c_oSerProp_rPrType::BoldCs:
+		}break;
+		case c_oSerProp_rPrType::BoldCs:
 		{
 			orPr->bBoldCs = true;
 			orPr->BoldCs = m_oBufferedStream.GetBool();
-		}
-		break;
-	case c_oSerProp_rPrType::ItalicCs:
+		}break;
+		case c_oSerProp_rPrType::ItalicCs:
 		{
 			orPr->bItalicCs = true;
 			orPr->ItalicCs = m_oBufferedStream.GetBool();
-		}
-		break;
-	case c_oSerProp_rPrType::FontSizeCs:
+		}break;
+		case c_oSerProp_rPrType::FontSizeCs:
 		{
 			orPr->bFontSizeCs = true;
 			orPr->FontSizeCs = m_oBufferedStream.GetLong();
-		}
-		break;
-	case c_oSerProp_rPrType::Cs:
+		}break;
+		case c_oSerProp_rPrType::Cs:
 		{
 			orPr->bCs = true;
 			orPr->Cs = m_oBufferedStream.GetBool();
-		}
-		break;
-	case c_oSerProp_rPrType::Rtl:
+		}break;
+		case c_oSerProp_rPrType::Rtl:
 		{
 			orPr->bRtl = true;
 			orPr->Rtl = m_oBufferedStream.GetBool();
-		}
-		break;
-	case c_oSerProp_rPrType::Lang:
+		}break;
+		case c_oSerProp_rPrType::Lang:
 		{
 			orPr->bLang = true;
 			orPr->Lang = m_oBufferedStream.GetString3(length);
-		}
-		break;
-	case c_oSerProp_rPrType::LangBidi:
+		}break;
+		case c_oSerProp_rPrType::LangBidi:
 		{
 			orPr->bLangBidi = true;
 			orPr->LangBidi = m_oBufferedStream.GetString3(length);
-		}
-		break;
-	case c_oSerProp_rPrType::LangEA:
+		}break;
+		case c_oSerProp_rPrType::LangEA:
 		{
 			orPr->bLangEA = true;
 			orPr->LangEA = m_oBufferedStream.GetString3(length);
-		}
-		break;
-	case c_oSerProp_rPrType::ColorTheme:
+		}break;		
+		case c_oSerProp_rPrType::ColorTheme:
 		{
 			orPr->bThemeColor = true;
 			oBinary_CommonReader2.ReadThemeColor(length, orPr->ThemeColor);
-		}
-		break;
-	case c_oSerProp_rPrType::Vanish:
+		}break;
+		case c_oSerProp_rPrType::Vanish:
 		{
 			orPr->bVanish = true;
 			orPr->Vanish = m_oBufferedStream.GetBool();
-		}
-		break;
-	case c_oSerProp_rPrType::TextOutline:
+		}break;
+		case c_oSerProp_rPrType::TextOutline:
 		{
 			if (length > 0)
 			{
@@ -737,9 +702,8 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
                     orPr->Outline = strXml;
 				m_oBufferedStream.Seek(nCurPos + length);
 			}
-		}
-		break;
-	case c_oSerProp_rPrType::TextFill:
+		}break;
+		case c_oSerProp_rPrType::TextFill:
 		{
 			if (length > 0)
 			{
@@ -750,48 +714,45 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
                     orPr->Fill = L"<w14:textFill>" + strXml + L"</w14:textFill>";
 				m_oBufferedStream.Seek(nCurPos + length);
 			}
-		}
-		break;
-	case c_oSerProp_rPrType::Del:
+		}break;
+		case c_oSerProp_rPrType::Del:
 		{
 			TrackRevision oDel;
 			oBinary_CommonReader2.ReadTrackRevision(length, &oDel);
 			orPr->Del = oDel.ToString(L"w:del");
-		}
-		break;
-	case c_oSerProp_rPrType::Ins:
+		}break;
+		case c_oSerProp_rPrType::Ins:
 		{
 			TrackRevision oIns;
 			oBinary_CommonReader2.ReadTrackRevision(length, &oIns);
 			orPr->Ins = oIns.ToString(L"w:ins");
-		}
-		break;
-	case c_oSerProp_rPrType::MoveFrom:
+		}break;
+		case c_oSerProp_rPrType::MoveFrom:
 		{
 			TrackRevision oMoveFrom;
 			oBinary_CommonReader2.ReadTrackRevision(length, &oMoveFrom);
 			orPr->MoveFrom = oMoveFrom.ToString(L"w:moveFrom");
-		}
-		break;
-	case c_oSerProp_rPrType::MoveTo:
+		}break;
+		case c_oSerProp_rPrType::MoveTo:
 		{
 			TrackRevision oMoveTo;
 			oBinary_CommonReader2.ReadTrackRevision(length, &oMoveTo);
 			orPr->MoveTo = oMoveTo.ToString(L"w:moveTo");
-		}
-		break;
-	case c_oSerProp_rPrType::rPrChange:
+		}break;
+		case c_oSerProp_rPrType::rPrChange:
 		{
 			TrackRevision oRPrChange;
 			READ1_DEF(length, res, this->ReadrPrChange, &oRPrChange);
 			orPr->rPrChange = oRPrChange.ToString(L"w:rPrChange");
-		}
-		break;
-	case c_oSerProp_rPrType::CompressText:
-	{
-		orPr->CompressText = m_oBufferedStream.GetLong();
-	}
-	break;
+		}break;		
+		case c_oSerProp_rPrType::CompressText:
+		{
+			orPr->CompressText = m_oBufferedStream.GetLong();
+		}break;
+		case c_oSerProp_rPrType::SnapToGrid:
+		{
+			orPr->bSnapToGrid = m_oBufferedStream.GetBool();
+		}break;	
 	default:
 		res = c_oSerConstants::ReadUnknown;
 		break;
@@ -9159,8 +9120,6 @@ int Binary_DocumentTableReader::ReadSdt(BYTE type, long length, void* poResult)
 }
 int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult)
 {
-	if (length < 1) return 0;
-
 	int res = 0;
 	SdtWraper* pSdtWraper = static_cast<SdtWraper*>(poResult);
 	OOX::Logic::CSdtPr* pSdtPr = pSdtWraper->m_oSdt.m_oSdtPr.GetPointer();

@@ -102,6 +102,12 @@ namespace XmlUtils
 				return;
             m_strValue += L" " + strName + L"=\"" + std::to_wstring(*value) + L"\"";
 		}
+		AVSINLINE void Write(const std::wstring& strName, const nullable_uint& value)
+		{
+			if (!value.IsInit())
+				return;
+			m_strValue += L" " + strName + L"=\"" + std::to_wstring(*value) + L"\"";
+		}
 		AVSINLINE void Write(const std::wstring& strName, const nullable_sizet& value)
 		{
 			if (!value.IsInit())

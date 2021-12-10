@@ -417,7 +417,8 @@ extern int g_nCurFormatVersion;
 		FontHAnsiTheme = 41,
 		FontAETheme = 42,
 		FontCSTheme = 43,
-		CompressText = 44
+		CompressText = 44,
+		SnapToGrid = 45
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{

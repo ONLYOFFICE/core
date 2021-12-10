@@ -1110,19 +1110,15 @@ bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
  	if (bUserStopConvert !=0 ) return false;
 
 	Context.process_styles();	
-	if (UpdateProgress(450000)) return false;
 
     Context.process_fonts();
     Context.process_headers_footers();
-	if (UpdateProgress(500000)) return false;
 
     Context.start_document();
 	
 	if (content_xml_)
         content_xml_->docx_convert(Context);
-
-	if (UpdateProgress(800000)) return false;
-    
+   
 	Context.end_document();
 
     // мы обрабатываем стили списка после того как сконвертировали документ,
@@ -1141,21 +1137,17 @@ bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	try
     {
-        _CP_LOG << L"[info] convert content" << std::endl;
+		_CP_LOG << L"[info] convert content" << std::endl;
        
 		Context.start_document();
- 		if (UpdateProgress(450000)) return false;
-      
+     
 		if (content_xml_)
             content_xml_->xlsx_convert(Context);
-		if (UpdateProgress(700000)) return false;
 
         Context.end_document();
-		if (UpdateProgress(750000)) return false;
 
         _CP_LOG << L"[info] process styles" << std::endl;
         Context.process_styles();
- 		if (UpdateProgress(800000)) return false;
       
 		Context.add_jsaProject(jsaProject_bin_);
     }
@@ -1189,20 +1181,15 @@ bool odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context)
         _CP_LOG << L"[info] convert content" << std::endl;
 	
 		Context.start_document();
-		if (UpdateProgress(450000)) return false;
        
 		if (content_xml_)
             content_xml_->pptx_convert(Context);
-		if (UpdateProgress(700000)) return false;
 		
 		Context.process_layouts();
-		if (UpdateProgress(750000)) return false;
 		
 		Context.process_master_pages();
-		if (UpdateProgress(800000)) return false;
 
         Context.end_document();
-		if (UpdateProgress(850000)) return false;
 		
 		Context.add_jsaProject(jsaProject_bin_);
 	}

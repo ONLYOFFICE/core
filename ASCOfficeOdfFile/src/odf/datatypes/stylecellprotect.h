@@ -31,11 +31,45 @@
  */
 #pragma once
 
-#ifndef ZLIB_ADDON_FLAG_ZERO
-#define ZLIB_ADDON_FLAG_ZERO                    0
-#define ZLIB_ADDON_FLAG_READ_ONLY               1
-#define ZLIB_ADDON_FLAG_WINDOWS_SHARED_WRITE    2
-#endif
+#include <iosfwd>
+#include <string>
+#include "odfattributes.h"
 
-void zlip_set_addition_flag(int flag);
-int zlip_get_addition_flag();
+
+namespace cpdoccore { namespace odf_types { 
+
+class style_cell_protect
+{
+public:
+	enum type
+	{
+		none,
+		formula_hidden,
+		hidden_and_protected,
+		protected_,
+		protected_formula_hidden
+	};
+
+	style_cell_protect() {}
+
+	style_cell_protect(type _Type) : type_(_Type)
+	{}
+
+	type get_type() const
+	{
+		return type_;
+	};
+
+	static style_cell_protect parse(const std::wstring & Str);
+
+private:
+	type type_;
+};
+
+std::wostream & operator << (std::wostream & _Wostream, const style_cell_protect & _Val);
+
+} 
+
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::style_cell_protect);
+
+}

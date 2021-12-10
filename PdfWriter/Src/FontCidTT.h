@@ -106,6 +106,8 @@ namespace PdfWriter
 		bool           HaveChar(const unsigned int& unUnicode);
 		unsigned int   GetWidth(unsigned short ushCode);
 		unsigned int   GetGlyphWidth(unsigned short ushCode);
+		bool           IsItalic();
+		bool           IsBold();
 		EFontType      GetFontType()
 		{
 			return fontCIDType2;

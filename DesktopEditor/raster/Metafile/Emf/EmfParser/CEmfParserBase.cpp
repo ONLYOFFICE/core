@@ -623,8 +623,7 @@ namespace MetaFile
 
         CEmfParserBase::~CEmfParserBase()
         {
-                if (NULL != m_pInterpretator)
-                        delete m_pInterpretator;
+                RELEASEOBJECT(m_pInterpretator)
         }
 
         void CEmfParserBase::PlayMetaFile(){}
@@ -790,10 +789,11 @@ namespace MetaFile
                 if (NULL != m_pInterpretator)
                         delete m_pInterpretator;
 
-                m_pInterpretator = new CEmfInterpretatorArray;
+                CEmfInterpretatorArray* pEmfInterpretatorArray = new CEmfInterpretatorArray;
+                pEmfInterpretatorArray->AddRenderInterpretator(pOutput);
+                pEmfInterpretatorArray->AddXmlInterpretator(wsFilePath);
 
-                ((CEmfInterpretatorArray*)m_pInterpretator)->AddRenderInterpretator(pOutput);
-                ((CEmfInterpretatorArray*)m_pInterpretator)->AddXmlInterpretator(wsFilePath);
+                m_pInterpretator = pEmfInterpretatorArray;
         }
 
         TEmfRectL* CEmfParserBase::GetBounds()

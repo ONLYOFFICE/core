@@ -366,8 +366,8 @@ namespace MetaFile
 
 	struct TEmfSizeL
 	{
-		unsigned int cx;
-		unsigned int cy;
+		int cx;
+		int cy;
 	};
 
 	struct TEmfScale

@@ -39,6 +39,7 @@ SOURCES += \
     ../Source/XlsbFormat/QueryTableStream.cpp \
     ../Source/XlsbFormat/ConnectionsStream.cpp \
     ../Source/XlsbFormat/SlicersStream.cpp \
+    ../Source/XlsbFormat/SlicerCachesStream.cpp \
 ### Biff12_records
     ../Source/XlsbFormat/Biff12_records/BeginBook.cpp \
     ../Source/XlsbFormat/Biff12_records/FRTBegin.cpp \
@@ -333,6 +334,32 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndSlicers.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginSlicer.cpp \
     ../Source/XlsbFormat/Biff12_records/EndSlicer.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCache.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheDef.cpp \
+    ../Source/XlsbFormat/Biff12_records/SlicerCachePivotTables.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheDef.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCache.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheOlapImpl.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheOlapImpl.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheLevelsData.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheLevelsData.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheLevelData.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheLevelData.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheSiRanges.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheSiRanges.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheSiRange.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheSiRange.cpp \
+    ../Source/XlsbFormat/Biff12_records/SlicerCacheOlapItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheSelections.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheSelections.cpp \
+    ../Source/XlsbFormat/Biff12_records/SlicerCacheSelection.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheNative.cpp \
+    ../Source/XlsbFormat/Biff12_records/SlicerCacheNativeItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheNative.cpp \
+    ../Source/XlsbFormat/Biff12_records/SlicerCacheBookPivotTables.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginTableSlicerCache.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndTableSlicerCache.cpp \
+    ../Source/XlsbFormat/Biff12_records/SlicerCacheHideItemsWithNoData.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -382,6 +409,9 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/PCDCalcMemCommon.cpp \
     ../Source/XlsbFormat/Biff12_structures/IIFtab.cpp \
     ../Source/XlsbFormat/Biff12_structures/ParameterParsedFormula.cpp \
+    ../Source/XlsbFormat/Biff12_structures/SlicerCachePivotTable.cpp \
+    ../Source/XlsbFormat/Biff12_structures/SlicerCacheNativeItemStruct.cpp \
+    ../Source/XlsbFormat/Biff12_structures/SlicerCacheLevelData.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -518,6 +548,18 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUPS.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERS.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHECROSSFILTEREXT.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHEBOOKPIVOTTABLES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTSLICERCACHE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHENATIVEITEMS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHESELECTIONS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHESIRANGE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHESIRANGES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHELEVELDATA.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHELEVELSDATA.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHEOLAPIMPL.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHE.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -528,7 +570,8 @@ HEADERS += \
     ../Source/XlsbFormat/TableStream.h \
     ../Source/XlsbFormat/QueryTableStream.h \
     ../Source/XlsbFormat/ConnectionsStream.h \
-     ../Source/XlsbFormat/SlicersStream.h \
+    ../Source/XlsbFormat/SlicersStream.h \
+    ../Source/XlsbFormat/SlicerCachesStream.h \
     ../Source/XlsbFormat/Xlsb.h \
     ../Source/XlsbFormat/XlsbElementsType.h \
 ### Biff12_records
@@ -829,6 +872,32 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/EndSlicers.h \
     ../Source/XlsbFormat/Biff12_records/BeginSlicer.h \
     ../Source/XlsbFormat/Biff12_records/EndSlicer.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCache.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheDef.h \
+    ../Source/XlsbFormat/Biff12_records/SlicerCachePivotTables.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheDef.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCache.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheOlapImpl.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheOlapImpl.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheLevelsData.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheLevelsData.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheLevelData.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheLevelData.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheSiRanges.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheSiRanges.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheSiRange.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheSiRange.h \
+    ../Source/XlsbFormat/Biff12_records/SlicerCacheOlapItem.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheSelections.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheSelections.h \
+    ../Source/XlsbFormat/Biff12_records/SlicerCacheSelection.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheNative.h \
+    ../Source/XlsbFormat/Biff12_records/SlicerCacheNativeItem.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheNative.h \
+    ../Source/XlsbFormat/Biff12_records/SlicerCacheBookPivotTables.h \
+    ../Source/XlsbFormat/Biff12_records/BeginTableSlicerCache.h \
+    ../Source/XlsbFormat/Biff12_records/EndTableSlicerCache.h \
+    ../Source/XlsbFormat/Biff12_records/SlicerCacheHideItemsWithNoData.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -881,6 +950,9 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_structures/PCDCalcMemCommon.h \
     ../Source/XlsbFormat/Biff12_structures/IIFtab.h \
     ../Source/XlsbFormat/Biff12_structures/ParameterParsedFormula.h \
+    ../Source/XlsbFormat/Biff12_structures/SlicerCachePivotTable.h \
+    ../Source/XlsbFormat/Biff12_structures/SlicerCacheNativeItemStruct.h \
+    ../Source/XlsbFormat/Biff12_structures/SlicerCacheLevelData.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
     ../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.h \
@@ -1017,3 +1089,15 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUPS.h \
     ../Source/XlsbFormat/Biff12_unions/SLICERS.h \
     ../Source/XlsbFormat/Biff12_unions/SLICER.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHECROSSFILTEREXT.h \
+    ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHE.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHEBOOKPIVOTTABLES.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTSLICERCACHE.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHENATIVEITEMS.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHESELECTIONS.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHESIRANGE.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHESIRANGES.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHELEVELDATA.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHELEVELSDATA.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHEOLAPIMPL.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHE.h \

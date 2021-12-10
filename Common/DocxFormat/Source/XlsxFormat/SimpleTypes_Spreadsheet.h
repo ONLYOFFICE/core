@@ -4868,6 +4868,7 @@ namespace SimpleTypes
 		{
 		public:
 			CTabularSlicerCacheSortOrder(){}
+                        CTabularSlicerCacheSortOrder(const ETabularSlicerCacheSortOrder & val)	{ this->m_eValue = val; }
 			virtual ETabularSlicerCacheSortOrder FromString(std::wstring &sValue)
 			{
 				if(L"ascending" == sValue)
@@ -4912,6 +4913,7 @@ namespace SimpleTypes
 		{
 		public:
 			CSlicerCacheCrossFilter(){}
+                        CSlicerCacheCrossFilter(const ESlicerCacheCrossFilter & val)	{ this->m_eValue = val; }
 			virtual ESlicerCacheCrossFilter FromString(std::wstring &sValue)
 			{
 				if(L"none" == sValue)
@@ -4961,6 +4963,7 @@ namespace SimpleTypes
 		{
 		public:
 			COlapSlicerCacheSortOrder(){}
+                        COlapSlicerCacheSortOrder(const EOlapSlicerCacheSortOrder & val)	{ this->m_eValue = val; }
 			virtual EOlapSlicerCacheSortOrder FromString(std::wstring &sValue)
 			{
 				if(L"natural" == sValue)

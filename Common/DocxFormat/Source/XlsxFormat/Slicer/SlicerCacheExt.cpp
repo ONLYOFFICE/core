@@ -36,11 +36,28 @@
 #include "../../XlsbFormat/Biff12_records/BeginSlicerStyles.h"
 #include "../../XlsbFormat/Biff12_records/BeginSlicerStyle.h"
 #include "../../XlsbFormat/Biff12_records/SlicerStyleElement.h"
+#include "../../XlsbFormat/Biff12_records/BeginTableSlicerCache.h"
+#include "../../XlsbFormat/Biff12_records/SlicerCacheHideItemsWithNoData.h"
 
 namespace OOX
 {
 namespace Spreadsheet
 {
+void CSlicerCacheOlapLevelName::fromBin(XLS::BiffStructure& obj)
+{
+    ReadAttributes(obj);
+}
+void CSlicerCacheOlapLevelName::ReadAttributes(XLS::BiffStructure& obj)
+{
+    auto ptr = static_cast<XLSB::SlicerCacheLevelData*>(&obj);
+    if(ptr != nullptr)
+    {
+        m_oCount          = ptr->cHiddenItems;
+
+        if(!ptr->stUniqueName.value().empty())
+            m_oUniqueName = ptr->stUniqueName.value();
+    }
+}
 void CSlicerCacheOlapLevelName::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
@@ -108,6 +125,22 @@ void CSlicerCacheOlapLevelName::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader
 		}
 	}
 	pReader->Seek(_end_rec);
+}
+void CSlicerCacheHideNoData::fromBin(XLS::BaseObjectPtr &obj)
+{
+    auto ptr = static_cast<XLSB::SlicerCacheHideItemsWithNoData*>(obj.get());
+    if(ptr != nullptr)
+    {
+        m_oCount = ptr->cHideItemLevelsCount;
+
+        CSlicerCacheOlapLevelName oCSlicerCacheOlapLevelName;
+        for(auto &item : ptr->rgLevels)
+        {
+            oCSlicerCacheOlapLevelName.fromBin(item);
+            m_oSlicerCacheOlapLevelName.push_back(oCSlicerCacheOlapLevelName);
+        }
+
+    }
 }
 void CSlicerCacheHideNoData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -198,6 +231,29 @@ void CSlicerCacheHideNoData::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	}
 	pReader->Seek(_end_rec);
 }
+void CTableSlicerCache::fromBin(XLS::BaseObjectPtr& obj)
+{
+   ReadAttributes(obj);
+}
+void CTableSlicerCache::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::BeginTableSlicerCache*>(obj.get());
+    if(ptr != nullptr)
+    {
+        m_oTableId          = ptr->dwLstd;
+        m_oColumn           = ptr->dwColumn;
+        m_oSortOrder        = (SimpleTypes::Spreadsheet::ETabularSlicerCacheSortOrder)(ptr->fSortOrder - 1);
+        m_oCustomListSort   = ptr->fSortUsingCustomLists;
+
+        if(ptr->iCrossFilter == 1)
+            m_oCrossFilter  = SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter::cslicercachecrossfilterShowItemsWithNoData;
+        else if(ptr->iCrossFilter == 2)
+            m_oCrossFilter  = SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter::cslicercachecrossfilterShowItemsWithDataAtTop;
+        else
+            m_oCrossFilter  = SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter::cslicercachecrossfilterNone;
+    }
+}
+
 void CTableSlicerCache::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)

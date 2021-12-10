@@ -53,6 +53,11 @@
 #include "../../XlsbFormat/Biff12_unions/FRTTABLE.h"
 #include "../../XlsbFormat/Biff12_unions/FRTQSI.h"
 #include "../../XlsbFormat/Biff12_unions/FRTEXTCONNECTIONS.h"
+#include "../../XlsbFormat/Biff12_unions/FRTSLICERCACHE.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHEBOOKPIVOTTABLES.h"
+#include "../../XlsbFormat/Biff12_unions/TABLESLICERCACHE.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHECROSSFILTEREXT.h"
+#include "../../XlsbFormat/Biff12_records/SlicerCacheBookPivotTables.h"
 
 namespace OOX
 {
@@ -1149,6 +1154,58 @@ namespace OOX
                 }
             }
 
+            else if(obj->get_type() == XLS::typeFRTSLICERCACHE)
+            {
+                auto ptr = static_cast<XLSB::FRTSLICERCACHE*>(obj.get());
+
+                if(ptr != nullptr)
+                {
+                    if(ptr->m_SLICERCACHEBOOKPIVOTTABLES != nullptr)
+                    {
+                        auto ptr1 = static_cast<XLSB::SLICERCACHEBOOKPIVOTTABLES*>(ptr->m_SLICERCACHEBOOKPIVOTTABLES.get());
+                        if(ptr1->m_BrtSlicerCacheBookPivotTables != nullptr)
+                        {
+                            OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                            oExt->m_sUri == L"{03082B11-2C62-411c-B77F-237D8FCFBE4C}";
+
+                            auto ptrSCPT = static_cast<XLSB::SlicerCacheBookPivotTables*>(ptr1->m_BrtSlicerCacheBookPivotTables.get());
+                            for(auto &item : ptrSCPT->pivotTables)
+                            {
+                                auto element = new OOX::Spreadsheet::CSlicerCachePivotTable();
+                                element->fromBin(item);
+                                oExt->m_oSlicerCachePivotTables.push_back(element);
+                            }
+
+
+                            if (oExt)
+                                m_arrExt.push_back( oExt );
+                        }
+                    }
+
+                    if(ptr->m_TABLESLICERCACHE != nullptr)
+                    {
+                        auto ptr1 = static_cast<XLSB::TABLESLICERCACHE*>(ptr->m_TABLESLICERCACHE.get());
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri == L"{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}";
+                        oExt->m_oTableSlicerCache = ptr1->m_BrtBeginTableSlicerCache;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+
+                    if(ptr->m_SLICERCACHECROSSFILTEREXT != nullptr)
+                    {
+                        auto ptr1 = static_cast<XLSB::SLICERCACHECROSSFILTEREXT*>(ptr->m_SLICERCACHECROSSFILTEREXT.get());
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri == L"{470722E0-AACD-4C17-9CDC-17EF765DBC7E}";
+                        oExt->m_oSlicerCacheHideItemsWithNoData = ptr1->m_BrtSlicerCacheHideItemsWithNoData;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+
+                }
+            }
 
         }
 	}

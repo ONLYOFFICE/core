@@ -1195,8 +1195,12 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
     pShapeElement->m_pShape->GetTextRect(oTextRect);
 
-    std::wstring str =  L" lIns=\"" + std::to_wstring((int)oTextRect.left) + L"\" tIns=\"" + std::to_wstring((int)oTextRect.top) +
-            L"\" rIns=\"" + std::to_wstring((int)oTextRect.right) + L"\" bIns=\"" + std::to_wstring((int)oTextRect.bottom) + L"\"";
+    std::wstring str;
+    if (pShapeElement->m_pShape->m_oText.m_lWrapMode == 2)
+        str = L" wrap=\"none\"";
+    else
+        str =  L" lIns=\"" + std::to_wstring((int)oTextRect.left) + L"\" tIns=\"" + std::to_wstring((int)oTextRect.top) +
+                L"\" rIns=\"" + std::to_wstring((int)oTextRect.right) + L"\" bIns=\"" + std::to_wstring((int)oTextRect.bottom) + L"\"";
 
     m_oWriter.WriteString(str);
 

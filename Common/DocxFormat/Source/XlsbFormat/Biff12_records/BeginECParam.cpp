@@ -68,7 +68,7 @@ namespace XLSB
 
         record >> stName;
 
-        if(pbt == 0x0 && fLoadPrompt == 0x00000001)
+        if(pbt == 0x0 && fLoadPrompt.operator const bool())
             record >> stPrompt;
 
         if(pbt == 0x1 && dataType == 0x00000002)

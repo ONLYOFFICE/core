@@ -35,7 +35,7 @@
 #include <utils.h>
 #include <boost/algorithm/string.hpp>
 
-#include "../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/DValStrings.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/DValStrings.h"
 
 namespace XLS
 {

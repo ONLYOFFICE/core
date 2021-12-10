@@ -553,6 +553,7 @@
     <ClInclude Include="..\Source\XlsbFormat\ConnectionsStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\QueryTableStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\SharedStringsStream.h" />
+    <ClInclude Include="..\Source\XlsbFormat\SlicerCachesStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\SlicersStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\StylesStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\TableStream.h" />
@@ -947,7 +948,7 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ACSORTCONDS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ACUID.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\AUTOFILTER.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BOOKVIEWS.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BOOKVIEWS_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BORDERS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BUNDLESHS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELL_bu.cpp" />
@@ -1027,7 +1028,7 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\MRUCOLORS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\OLEDBPR15.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEM14.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEM15.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEM15_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEMEXT.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEMSEXT.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDI.cpp" />
@@ -1042,9 +1043,9 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SHRFMLACELL.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICER.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHE.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEBOOKPIVOTTABLES.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEBOOKPIVOTTABLES_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHECROSSFILTEREXT.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELDATA.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELDATA_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELSDATA.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHENATIVEITEMS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEOLAPIMPL.cpp" />
@@ -1090,6 +1091,7 @@
     <ClCompile Include="..\Source\XlsbFormat\ConnectionsStream.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\QueryTableStream.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\SharedStringsStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\SlicerCachesStream.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\SlicersStream.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\StylesStream.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\TableStream.cpp" />

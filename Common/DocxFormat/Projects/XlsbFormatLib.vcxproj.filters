@@ -1613,6 +1613,7 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERSEX.h">
       <Filter>unions</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\SlicerCachesStream.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ACProductVersion.cpp">
@@ -1736,9 +1737,6 @@
       <Filter>unions</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\ACUID.cpp">
-      <Filter>unions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BOOKVIEWS.cpp">
       <Filter>unions</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BORDERS.cpp">
@@ -2702,9 +2700,6 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEM14.cpp">
       <Filter>unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEM15.cpp">
-      <Filter>unions</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEMEXT.cpp">
       <Filter>unions</Filter>
     </ClCompile>
@@ -3155,13 +3150,7 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHE.cpp">
       <Filter>unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEBOOKPIVOTTABLES.cpp">
-      <Filter>unions</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHECROSSFILTEREXT.cpp">
-      <Filter>unions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELDATA.cpp">
       <Filter>unions</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELSDATA.cpp">
@@ -3195,6 +3184,19 @@
       <Filter>unions</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERSEX.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDCALCMEM15_bu.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\SlicerCachesStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELDATA_bu.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BOOKVIEWS_bu.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEBOOKPIVOTTABLES_bu.cpp">
       <Filter>unions</Filter>
     </ClCompile>
   </ItemGroup>

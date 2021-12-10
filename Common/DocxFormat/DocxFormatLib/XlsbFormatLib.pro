@@ -538,7 +538,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/SXTUPLESETHEADER.cpp \
     ../Source/XlsbFormat/Biff12_unions/SXTUPLESETDATA.cpp \
     ../Source/XlsbFormat/Biff12_unions/SXTUPLESETROW.cpp \
-    ../Source/XlsbFormat/Biff12_unions/PCDCALCMEM15.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDCALCMEM15_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/FRTEXTCONNECTIONS.cpp \
     ../Source/XlsbFormat/Biff12_unions/EXTCONN14.cpp \
     ../Source/XlsbFormat/Biff12_unions/EXTCONN15.cpp \
@@ -554,13 +554,13 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/SLICER.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHECROSSFILTEREXT.cpp \
     ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHE.cpp \
-    ../Source/XlsbFormat/Biff12_unions/SLICERCACHEBOOKPIVOTTABLES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHEBOOKPIVOTTABLES_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/FRTSLICERCACHE.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHENATIVEITEMS.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHESELECTIONS.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHESIRANGE.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHESIRANGES.cpp \
-    ../Source/XlsbFormat/Biff12_unions/SLICERCACHELEVELDATA.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHELEVELDATA_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHELEVELSDATA.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHEOLAPIMPL.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHE.cpp \
@@ -972,7 +972,7 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/ACFONTS.h \
     ../Source/XlsbFormat/Biff12_unions/ACSORTCONDS.h \
     ../Source/XlsbFormat/Biff12_unions/ACUID.h \
-    ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.h \
+    ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS_bu.h \
     ../Source/XlsbFormat/Biff12_unions/BORDERS.h \
     ../Source/XlsbFormat/Biff12_unions/BUNDLESHS.h \
     ../Source/XlsbFormat/Biff12_unions/CELL.h \

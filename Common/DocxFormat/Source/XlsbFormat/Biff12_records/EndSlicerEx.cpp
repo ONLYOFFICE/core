@@ -30,67 +30,29 @@
  *
  */
 
-#include "FRTWORKSHEET.h"
-#include "../Biff12_unions/CONDITIONALFORMATTINGS.h"
-#include "../Biff12_unions/DVALS14.h"
-#include "../Biff12_unions/SPARKLINEGROUPS.h"
-#include "../Biff12_unions/SLICERSEX.h"
-#include "../Biff12_unions/TABLESLICERSEX.h"
+#include "EndSlicerEx.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    FRTWORKSHEET::FRTWORKSHEET()
+    EndSlicerEx::EndSlicerEx()
     {
     }
 
-    FRTWORKSHEET::~FRTWORKSHEET()
+    EndSlicerEx::~EndSlicerEx()
     {
     }
 
-    BaseObjectPtr FRTWORKSHEET::clone()
+    BaseObjectPtr EndSlicerEx::clone()
     {
-        return BaseObjectPtr(new FRTWORKSHEET(*this));
+        return BaseObjectPtr(new EndSlicerEx(*this));
     }
 
-    // FRTWORKSHEET = [CONDITIONALFORMATTINGS] [DVALS14] [SPARKLINEGROUPS] [SLICERSEX]
-    //                  [RANGEPROTECTION14] [IGNOREECS14] [WEBEXTENSIONS] [TABLESLICERSEX] [TIMELINESEX] *FRT
-    const bool FRTWORKSHEET::loadContent(BinProcessor& proc)
-    {       
-
-        if (proc.optional<CONDITIONALFORMATTINGS>())
-        {
-            m_CONDITIONALFORMATTINGS = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<DVALS14>())
-        {
-            m_DVALS14 = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<SPARKLINEGROUPS>())
-        {
-            m_SPARKLINEGROUPS = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<SLICERSEX>())
-        {
-            m_SLICERSEX = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<TABLESLICERSEX>())
-        {
-            m_TABLESLICERSEX = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_CONDITIONALFORMATTINGS || m_DVALS14 || m_SPARKLINEGROUPS || m_SLICERSEX || m_TABLESLICERSEX;
+    void EndSlicerEx::readFields(XLS::CFRecord& record)
+    {
+        // No data in this record
     }
 
 } // namespace XLSB

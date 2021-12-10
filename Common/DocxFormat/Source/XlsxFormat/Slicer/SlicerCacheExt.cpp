@@ -38,6 +38,11 @@
 #include "../../XlsbFormat/Biff12_records/SlicerStyleElement.h"
 #include "../../XlsbFormat/Biff12_records/BeginTableSlicerCache.h"
 #include "../../XlsbFormat/Biff12_records/SlicerCacheHideItemsWithNoData.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERSEX.h"
+#include "../../XlsbFormat/Biff12_unions/SLICEREX.h"
+#include "../../XlsbFormat/Biff12_unions/TABLESLICERSEX.h"
+#include "../../XlsbFormat/Biff12_unions/TABLESLICEREX.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicerEx.h"
 
 namespace OOX
 {
@@ -509,6 +514,40 @@ void CSlicerCache::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 {
 	pReader->SkipRecord();
 }
+void CSlicerRef::fromBin(XLS::BaseObjectPtr &obj)
+{
+    ReadAttributes(obj);
+}
+void CSlicerRef::ReadAttributes(XLS::BaseObjectPtr &obj)
+{
+    if(obj->get_type() == XLS::typeSLICEREX)
+    {
+        auto ptr = static_cast<XLSB::SLICEREX*>(obj.get());
+        if(ptr != nullptr)
+        {
+            auto ptr1 = static_cast<XLSB::BeginSlicerEx*>(ptr->m_BrtBeginSlicerEx.get());
+            if(ptr1 != nullptr)
+            {
+                if(!ptr1->FRTheader.relID.relId.value().empty())
+                    m_oRId = ptr1->FRTheader.relID.relId.value();
+            }
+
+        }
+    }
+    else if(obj->get_type() == XLS::typeTABLESLICEREX)
+    {
+        auto ptr = static_cast<XLSB::TABLESLICEREX*>(obj.get());
+        if(ptr != nullptr)
+        {
+            auto ptr1 = static_cast<XLSB::BeginSlicerEx*>(ptr->m_BrtBeginSlicerEx.get());
+            if(ptr1 != nullptr)
+            {
+                if(!ptr1->FRTheader.relID.relId.value().empty())
+                    m_oRId = ptr1->FRTheader.relID.relId.value();
+            }
+        }
+    }
+}
 void CSlicerRef::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
@@ -699,6 +738,35 @@ void CSlicerCaches::toXML(NSStringUtils::CStringBuilder& writer, const std::wstr
 		}
 	}
 	writer.EndNode(sPrefix + sName);
+}
+void CSlicerRefs::fromBin(XLS::BaseObjectPtr &obj)
+{
+    if(obj->get_type() == XLS::typeSLICERSEX)
+    {
+        auto ptr = static_cast<XLSB::SLICERSEX*>(obj.get());
+        if(ptr != nullptr)
+        {
+            for(auto slicerex : ptr->m_arSLICEREX)
+            {
+                m_oSlicer.emplace_back();
+                m_oSlicer.back() = slicerex;
+            }
+
+        }
+    }
+    else if(obj->get_type() == XLS::typeTABLESLICERSEX)
+    {
+        auto ptr = static_cast<XLSB::TABLESLICERSEX*>(obj.get());
+        if(ptr != nullptr)
+        {
+            for(auto tableslicerex : ptr->m_arTABLESLICEREX)
+            {
+                m_oSlicer.emplace_back();
+                m_oSlicer.back() = tableslicerex;
+            }
+
+        }
+    }
 }
 void CSlicerRefs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {

@@ -360,6 +360,10 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/BeginTableSlicerCache.cpp \
     ../Source/XlsbFormat/Biff12_records/EndTableSlicerCache.cpp \
     ../Source/XlsbFormat/Biff12_records/SlicerCacheHideItemsWithNoData.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicersEx.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicersEx.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerEx.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerEx.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -560,6 +564,10 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHELEVELSDATA.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHEOLAPIMPL.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TABLESLICEREX.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TABLESLICERSEX.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICEREX.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERSEX.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -898,6 +906,10 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/BeginTableSlicerCache.h \
     ../Source/XlsbFormat/Biff12_records/EndTableSlicerCache.h \
     ../Source/XlsbFormat/Biff12_records/SlicerCacheHideItemsWithNoData.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicersEx.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicersEx.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerEx.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerEx.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -1101,3 +1113,7 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHELEVELSDATA.h \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHEOLAPIMPL.h \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHE.h \
+    ../Source/XlsbFormat/Biff12_unions/TABLESLICEREX.h \
+    ../Source/XlsbFormat/Biff12_unions/TABLESLICERSEX.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICEREX.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERSEX.h \

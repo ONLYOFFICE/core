@@ -30,67 +30,68 @@
  *
  */
 
-#include "FRTWORKSHEET.h"
-#include "../Biff12_unions/CONDITIONALFORMATTINGS.h"
-#include "../Biff12_unions/DVALS14.h"
-#include "../Biff12_unions/SPARKLINEGROUPS.h"
-#include "../Biff12_unions/SLICERSEX.h"
-#include "../Biff12_unions/TABLESLICERSEX.h"
+#include "SLICERSEX.h"
+#include "../Biff12_records/FRTBegin.h"
+#include "../Biff12_records/BeginSlicersEx.h"
+#include "../Biff12_unions/SLICEREX.h"
+#include "../Biff12_records/EndSlicersEx.h"
+#include "../Biff12_records/FRTEnd.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    FRTWORKSHEET::FRTWORKSHEET()
+    SLICERSEX::SLICERSEX()
     {
     }
 
-    FRTWORKSHEET::~FRTWORKSHEET()
+    SLICERSEX::~SLICERSEX()
     {
     }
 
-    BaseObjectPtr FRTWORKSHEET::clone()
+    BaseObjectPtr SLICERSEX::clone()
     {
-        return BaseObjectPtr(new FRTWORKSHEET(*this));
+        return BaseObjectPtr(new SLICERSEX(*this));
     }
 
-    // FRTWORKSHEET = [CONDITIONALFORMATTINGS] [DVALS14] [SPARKLINEGROUPS] [SLICERSEX]
-    //                  [RANGEPROTECTION14] [IGNOREECS14] [WEBEXTENSIONS] [TABLESLICERSEX] [TIMELINESEX] *FRT
-    const bool FRTWORKSHEET::loadContent(BinProcessor& proc)
-    {       
-
-        if (proc.optional<CONDITIONALFORMATTINGS>())
+    // SLICERSEX = BrtFRTBegin BrtBeginSlicersEx *SLICEREX BrtEndSlicersEx BrtFRTEnd
+    const bool SLICERSEX::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<FRTBegin>())
         {
-            m_CONDITIONALFORMATTINGS = elements_.back();
+            m_BrtFRTBegin = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.optional<DVALS14>())
+        if (proc.optional<BeginSlicersEx>())
         {
-            m_DVALS14 = elements_.back();
+            m_BrtBeginSlicersEx = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.optional<SPARKLINEGROUPS>())
+        int count = proc.repeated<SLICEREX>(0, 0);
+
+        while(count > 0)
         {
-            m_SPARKLINEGROUPS = elements_.back();
+            m_arSLICEREX.insert(m_arSLICEREX.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndSlicersEx>())
+        {
+            m_BrtEndSlicersEx = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.optional<SLICERSEX>())
+        if (proc.optional<FRTEnd>())
         {
-            m_SLICERSEX = elements_.back();
+            m_BrtFRTEnd = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.optional<TABLESLICERSEX>())
-        {
-            m_TABLESLICERSEX = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_CONDITIONALFORMATTINGS || m_DVALS14 || m_SPARKLINEGROUPS || m_SLICERSEX || m_TABLESLICERSEX;
+        return m_BrtBeginSlicersEx && m_BrtEndSlicersEx && m_BrtFRTEnd;
     }
 
 } // namespace XLSB

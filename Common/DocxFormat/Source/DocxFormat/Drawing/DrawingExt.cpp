@@ -58,6 +58,8 @@
 #include "../../XlsbFormat/Biff12_unions/TABLESLICERCACHE.h"
 #include "../../XlsbFormat/Biff12_unions/SLICERCACHECROSSFILTEREXT.h"
 #include "../../XlsbFormat/Biff12_records/SlicerCacheBookPivotTables.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERSEX.h"
+#include "../../XlsbFormat/Biff12_unions/TABLESLICERSEX.h"
 
 namespace OOX
 {
@@ -1060,6 +1062,26 @@ namespace OOX
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
                         oExt->m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}";
                         oExt->m_oSparklineGroups = ptr->m_SPARKLINEGROUPS;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+
+                    if(ptr->m_SLICERSEX != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri == L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}";
+                        oExt->m_oSlicerList = ptr->m_SLICERSEX;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+
+                    if(ptr->m_TABLESLICERSEX != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri == L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}";
+                        oExt->m_oSlicerList = ptr->m_TABLESLICERSEX;
 
                         if (oExt)
                             m_arrExt.push_back( oExt );

@@ -29,69 +29,33 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "FRTWORKSHEET.h"
-#include "../Biff12_unions/CONDITIONALFORMATTINGS.h"
-#include "../Biff12_unions/DVALS14.h"
-#include "../Biff12_unions/SPARKLINEGROUPS.h"
-#include "../Biff12_unions/SLICERSEX.h"
-#include "../Biff12_unions/TABLESLICERSEX.h"
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
 namespace XLSB
 {
 
-    FRTWORKSHEET::FRTWORKSHEET()
+    class TABLESLICERSEX: public XLS::CompositeObject
     {
-    }
+        BASE_OBJECT_DEFINE_CLASS_NAME(TABLESLICERSEX)
+    public:
+        TABLESLICERSEX();
+        virtual ~TABLESLICERSEX();
 
-    FRTWORKSHEET::~FRTWORKSHEET()
-    {
-    }
+        XLS::BaseObjectPtr clone();
 
-    BaseObjectPtr FRTWORKSHEET::clone()
-    {
-        return BaseObjectPtr(new FRTWORKSHEET(*this));
-    }
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-    // FRTWORKSHEET = [CONDITIONALFORMATTINGS] [DVALS14] [SPARKLINEGROUPS] [SLICERSEX]
-    //                  [RANGEPROTECTION14] [IGNOREECS14] [WEBEXTENSIONS] [TABLESLICERSEX] [TIMELINESEX] *FRT
-    const bool FRTWORKSHEET::loadContent(BinProcessor& proc)
-    {       
+        static const XLS::ElementType	type = XLS::typeTABLESLICERSEX;
 
-        if (proc.optional<CONDITIONALFORMATTINGS>())
-        {
-            m_CONDITIONALFORMATTINGS = elements_.back();
-            elements_.pop_back();
-        }
+        XLS::BaseObjectPtr               m_BrtFRTBegin;
+        XLS::BaseObjectPtr               m_BrtBeginSlicersEx;
+        std::vector<XLS::BaseObjectPtr>  m_arTABLESLICEREX;
+        XLS::BaseObjectPtr               m_BrtEndSlicersEx;
+        XLS::BaseObjectPtr               m_BrtFRTEnd;
 
-        if (proc.optional<DVALS14>())
-        {
-            m_DVALS14 = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<SPARKLINEGROUPS>())
-        {
-            m_SPARKLINEGROUPS = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<SLICERSEX>())
-        {
-            m_SLICERSEX = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<TABLESLICERSEX>())
-        {
-            m_TABLESLICERSEX = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_CONDITIONALFORMATTINGS || m_DVALS14 || m_SPARKLINEGROUPS || m_SLICERSEX || m_TABLESLICERSEX;
-    }
+    };
 
 } // namespace XLSB
 

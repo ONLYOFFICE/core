@@ -806,6 +806,10 @@ enum ElementType
         typeSLICERCACHEOLAPIMPL,
         typeSLICERCACHENATIVEITEMS,
         typeFRTSLICERCACHE,
+        typeSLICERSEX,
+        typeTABLESLICERSEX,
+        typeSLICEREX,
+        typeTABLESLICEREX,
 };
 
 

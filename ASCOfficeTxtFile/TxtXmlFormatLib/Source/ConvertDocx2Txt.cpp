@@ -552,6 +552,22 @@ namespace Docx2Txt
 								std::wstring example = strLevelText;
 								for (int i = 0; i < 9; i++)
 								{
+									if (Lists[start + i] < 0)
+									{
+										startLvl.reset();
+										pFind = abstractNum->m_mapLvl.find(i);
+										if (pFind != abstractNum->m_mapLvl.end())
+										{
+											OOX::Numbering::CLvl* lvl = abstractNum->m_arrLvl[pFind->second];
+											if (lvl)
+											{
+												if (lvl->m_oStart.IsInit())
+													startLvl = lvl->m_oStart->m_oVal;
+											}
+										}
+										Lists[start + i] = startLvl.IsInit() ? *startLvl : 1;
+									}
+
 									std::wstring num = L"%" + ToWString(i + 1);
 									while(example.find(num) != example.npos)
 									{

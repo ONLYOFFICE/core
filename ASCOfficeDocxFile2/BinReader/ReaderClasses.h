@@ -497,7 +497,6 @@ public:
 		DStrikeout = false;
 		Caps = false;
 		SmallCaps = false;
-
 		bBold = false;
 		bItalic = false;
 		bUnderline = false;
@@ -538,6 +537,19 @@ public:
 		MoveFrom.clear();
 		MoveTo.clear();
         rPrChange.clear();
+
+		FontAscii.clear();
+		FontHAnsi.clear();
+		FontAE.clear();
+		FontCS.clear();
+		FontAsciiTheme.clear();
+		FontHAnsiTheme.clear();
+		FontAETheme.clear();
+		FontCSTheme.clear();
+		Shd.clear();
+		RStyle.clear();		
+		LangBidi.clear();
+		LangEA.clear();
 		
 		CompressText = -1; //not set
 	}

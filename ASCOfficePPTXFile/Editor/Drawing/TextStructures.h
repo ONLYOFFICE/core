@@ -108,6 +108,15 @@ namespace PPT_FORMAT
 
 			return *this;
 		}
+                std::wstring getXmlArgsStr()const
+                {
+                    std::wstring str = L" typeface=\"" + Name + L"\"";
+                    str += L" pitchFamily=\"" + std::to_wstring(PitchFamily) + L"\"";
+                    if (Charset != 0)
+                        str += L" charset=\"" + std::to_wstring((char)Charset) + L"\"";
+
+                    return str;
+                }
 	};
 
     class CBulletAutoNum
@@ -285,7 +294,7 @@ namespace PPT_FORMAT
 	{
 	public:
 
-		NSCommon::nullable_base<bool>			hasBullet;
+        NSCommon::nullable_bool                 hasBullet;
 
 		NSCommon::nullable_base<WORD>			bulletFontRef;
 		NSCommon::nullable_base<WORD>			bulletSize;

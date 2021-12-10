@@ -318,7 +318,7 @@ public:
     IRecord* getDocBinaryTagExtension(const std::wstring& extVersion)
     {
         for (auto* rec : m_arrRgChildRec)
-            if (rec->m_pTagName->m_strText == extVersion)
+            if (rec->m_pTagName != nullptr && rec->m_pTagName->m_strText == extVersion)
                 return rec->m_pTagContainer;
 
         return nullptr;

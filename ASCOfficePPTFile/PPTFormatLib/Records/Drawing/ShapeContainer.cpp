@@ -883,6 +883,17 @@ void CPPTElement::SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlid
     case pibFlags:
     {
     }break;
+    case pictureContrast:
+        image_element->m_lpictureContrast = (_INT32)pProperty->m_lValue;
+        break;
+    case pictureBrightness:
+        image_element->m_lpictureBrightness = (_INT32)pProperty->m_lValue;
+        break;
+    case fillBackColor:
+        // TODO to fix 53541
+        break;
+    default:
+        break;
     }
 }
 void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
@@ -2665,10 +2676,35 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
 
 void CRecordShapeContainer::addHyperlinkToSpan(CSpan &oSpan, const std::vector<CInteractiveInfo> &arrInteractive, const CColor &oColor)
 {
-    oSpan.m_oRun.Color = oColor;
-    oSpan.m_oRun.FontUnderline = (bool)true;
-    oSpan.m_arrInteractive = arrInteractive;
+    if (isRealHyperlink(arrInteractive))
+    {
+        oSpan.m_oRun.Color = oColor;
+        oSpan.m_oRun.FontUnderline = (bool)true;
+        oSpan.m_arrInteractive = arrInteractive;
+    }
 }
+
+bool CRecordShapeContainer::isRealHyperlink(const std::vector<CInteractiveInfo> &arrInteractive)
+{
+    bool isReal = false;
+    for (const auto& interInfo : arrInteractive)
+    {
+        switch (interInfo.m_lHyperlinkType)
+        {
+        case LT_Url:
+            if (interInfo.m_strHyperlink.size())
+                isReal = true;
+            break;
+        default:
+            isReal = true;
+            break;
+        }
+    }
+
+    return isReal;
+}
+
+
 
 std::vector<std::vector<CInteractiveInfo> > CRecordShapeContainer::splitInteractive(const std::vector<CInteractiveInfo> &arrInteractive)
 {

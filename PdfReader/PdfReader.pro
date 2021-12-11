@@ -56,7 +56,15 @@ SOURCES += \
     Src/GfxClip.cpp \
     PdfReader.cpp
 
-HEADERS +=\
+HEADERS += \
+    Src/RendererOutputDev.h \
+    Src/Adaptors.h \
+    Src/MemoryUtils.h \
+    Src/GfxClip.h \
+    PdfReader.h
+
+# Base fonts
+HEADERS += \
     Resources/Fontd050000l.h \
     Resources/Fontn019003l.h \
     Resources/Fontn019004l.h \
@@ -71,10 +79,9 @@ HEADERS +=\
     Resources/Fontn022023l.h \
     Resources/Fontn022024l.h \
     Resources/Fonts050000l.h \
-    Src/RendererOutputDev.h \
-    Src/Adaptors.h \
-    Src/MemoryUtils.h \
-    Src/GfxClip.h \
-    PdfReader.h
+    Resources/BaseFonts.h
+
+SOURCES += \
+    Resources/BaseFonts.cpp
 
 core_windows:LIBS += -lOle32

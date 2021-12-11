@@ -60,20 +60,7 @@
 #define FONTS_USE_AFM_SETTINGS
 #else
 #define FONTS_USE_ONLY_MEMORY_STREAMS
-#include "../Resources/Fontn022003l.h"
-#include "../Resources/Fontn022004l.h"
-#include "../Resources/Fontn022024l.h"
-#include "../Resources/Fontn022023l.h"
-#include "../Resources/Fontn019003l.h"
-#include "../Resources/Fontn019004l.h"
-#include "../Resources/Fontn019024l.h"
-#include "../Resources/Fontn019023l.h"
-#include "../Resources/Fonts050000l.h"
-#include "../Resources/Fontn021004l.h"
-#include "../Resources/Fontn021024l.h"
-#include "../Resources/Fontn021023l.h"
-#include "../Resources/Fontn021003l.h"
-#include "../Resources/Fontd050000l.h"
+#include "../Resources/BaseFonts.h"
 #include "emscripten.h"
 EM_JS(char*, js_get_stream_id, (unsigned char* data, unsigned char* status), {
     return self.AscViewer.CheckStreamId(data, status);
@@ -1091,37 +1078,14 @@ namespace PdfReader
         #ifdef BUILDING_WASM_MODULE
             else if ([&oMemoryFontStream, wsFontBaseName]()
             {
-                if (wsFontBaseName == L"Courier")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn022003l, c_nSizen022003l);
-                else if (wsFontBaseName == L"Courier-Bold")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn022004l, c_nSizen022004l);
-                else if (wsFontBaseName == L"Courier-BoldOblique")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn022024l, c_nSizen022024l);
-                else if (wsFontBaseName == L"Courier-Oblique")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn022023l, c_nSizen022023l);
-                else if (wsFontBaseName == L"Helvetica")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn019003l, c_nSizen019003l);
-                else if (wsFontBaseName == L"Helvetica-Bold")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn019004l, c_nSizen019004l);
-                else if (wsFontBaseName == L"Helvetica-BoldOblique")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn019024l, c_nSizen019024l);
-                else if (wsFontBaseName == L"Helvetica-Oblique")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn019023l, c_nSizen019023l);
-                else if (wsFontBaseName == L"Symbol")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrs050000l, c_nSizes050000l);
-                else if (wsFontBaseName == L"Times-Bold")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn021004l, c_nSizen021004l);
-                else if (wsFontBaseName == L"Times-BoldItalic")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn021024l, c_nSizen021024l);
-                else if (wsFontBaseName == L"Times-Italic")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn021023l, c_nSizen021023l);
-                else if (wsFontBaseName == L"Times-Roman")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrn021003l, c_nSizen021003l);
-                else if (wsFontBaseName == L"ZapfDingbats")
-                    oMemoryFontStream.fromBuffer((BYTE*)c_arrd050000l, c_nSized050000l);
-                else
-                    return false;
-                return true;
+                const unsigned char* pData14 = NULL;
+                unsigned int nSize14 = 0;
+                if (PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
+                {
+                     oMemoryFontStream.fromBuffer((BYTE*)pData14, nSize14);
+                     return true;
+                }
+                return false;
             }())
             {
                 wsFileName = wsFontBaseName;

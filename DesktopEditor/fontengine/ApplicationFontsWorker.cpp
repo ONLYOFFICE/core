@@ -746,7 +746,7 @@ public:
         std::wstring sFontFilesWeb = L"";
         size_t nFontFilesWeb1 = 0;
         size_t nFontFilesWeb2 = 0;
-        if (!m_pMain->m_sWebFontsDirectory.empty() && !m_pMain->m_sWebAllFontsJSPath.empty())
+        if (!m_pMain->m_sWebFontsDirectory.empty() && !m_pMain->m_sWebAllFontsJSPath.empty() && !m_bIsCheckThumbnailsMode)
         {
             sFontFilesWeb = SaveWebFonts(mapFontFiles);
         }
@@ -1564,14 +1564,32 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
     
     // читаем "новый" набор шрифтов
     NSFonts::IApplicationFonts* pApplicationF = NSFonts::NSApplication::Create();
+    std::vector<std::wstring> strFontsW_CurSrc;
     std::vector<std::wstring> strFontsW_Cur;
     
     if (m_bIsUseSystemFonts)
-        strFontsW_Cur = pApplicationF->GetSetupFontFiles();
+        strFontsW_CurSrc = pApplicationF->GetSetupFontFiles();
     
     for (std::vector<std::wstring>::iterator i = m_arAdditionalFolders.begin(); i != m_arAdditionalFolders.end(); i++)
     {
-        NSDirectory::GetFiles2(*i, strFontsW_Cur, true);
+        NSDirectory::GetFiles2(*i, strFontsW_CurSrc, true);
+    }
+
+    // удаляем папки, которые не нужно парсить
+    strFontsW_Cur.reserve(strFontsW_CurSrc.size());
+    for (std::vector<std::wstring>::iterator i = strFontsW_CurSrc.begin(); i != strFontsW_CurSrc.end(); i++)
+    {
+#ifdef _WIN32
+        if (i->find(L"\\.git\\") == std::wstring::npos)
+            strFontsW_Cur.push_back(*i);
+        //if (i->find(L"\\.svn\\") == std::wstring::npos)
+        //    strFontsW_Cur.push_back(*i);
+#else
+        if (i->find(L"/.git/") == std::wstring::npos)
+            strFontsW_Cur.push_back(*i);
+        //if (i->find(L"/.svn/") == std::wstring::npos)
+        //    strFontsW_Cur.push_back(*i);
+#endif
     }
     
     // сортируем (нужно для сравнения для старого набора)

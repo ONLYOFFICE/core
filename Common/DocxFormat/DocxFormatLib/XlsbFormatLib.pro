@@ -364,6 +364,16 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndSlicersEx.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginSlicerEx.cpp \
     ../Source/XlsbFormat/Biff12_records/EndSlicerEx.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCachesPivotCacheIDs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCachesPivotCacheIDs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCachesPivotCacheID.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCachesPivotCacheID.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheIDs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheIDs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheID.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheID.cpp \
+    ../Source/XlsbFormat/Biff12_records/TableSlicerCacheIDs.cpp \
+    ../Source/XlsbFormat/Biff12_records/TableSlicerCacheID.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -568,6 +578,13 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/TABLESLICERSEX.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICEREX.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERSEX.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHESPIVOTCACHEIDS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHESPIVOTCACHEID.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHEIDS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHEID.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEIDS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEID.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTWORKBOOK.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -910,6 +927,16 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/EndSlicersEx.h \
     ../Source/XlsbFormat/Biff12_records/BeginSlicerEx.h \
     ../Source/XlsbFormat/Biff12_records/EndSlicerEx.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCachesPivotCacheIDs.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCachesPivotCacheIDs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCachesPivotCacheID.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCachesPivotCacheID.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheIDs.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheIDs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSlicerCacheID.h \
+    ../Source/XlsbFormat/Biff12_records/EndSlicerCacheID.h \
+    ../Source/XlsbFormat/Biff12_records/TableSlicerCacheIDs.h \
+    ../Source/XlsbFormat/Biff12_records/TableSlicerCacheID.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -1117,3 +1144,10 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/TABLESLICERSEX.h \
     ../Source/XlsbFormat/Biff12_unions/SLICEREX.h \
     ../Source/XlsbFormat/Biff12_unions/SLICERSEX.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHESPIVOTCACHEIDS.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHESPIVOTCACHEID.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHEIDS.h \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHEID.h \
+    ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEIDS.h \
+    ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEID.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTWORKBOOK.h \

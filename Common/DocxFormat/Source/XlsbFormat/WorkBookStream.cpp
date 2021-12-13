@@ -49,6 +49,7 @@
 #include "Biff12_records/BookProtectionIso.h"
 #include "Biff12_unions/SUP.h"
 #include "Biff12_unions/FRT.h"
+#include "Biff12_unions/FRTWORKBOOK.h"
 
 using namespace XLS;
 
@@ -256,6 +257,15 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                     m_arBrtFileRecover.insert(m_arBrtFileRecover.begin(), elements_.back());
                     elements_.pop_back();
                     count--;
+                }
+            }break;
+
+            case rt_FRTBegin:
+            {
+                if (proc.optional<FRTWORKBOOK>())
+                {
+                    m_FRTWORKBOOK = elements_.back();
+                    elements_.pop_back();
                 }
             }break;
 

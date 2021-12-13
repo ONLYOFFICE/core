@@ -810,6 +810,7 @@ enum ElementType
         typeTABLESLICERSEX,
         typeSLICEREX,
         typeTABLESLICEREX,
+        typeFRTWORKBOOK,
 };
 
 

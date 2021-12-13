@@ -43,6 +43,9 @@
 #include "../../XlsbFormat/Biff12_unions/TABLESLICERSEX.h"
 #include "../../XlsbFormat/Biff12_unions/TABLESLICEREX.h"
 #include "../../XlsbFormat/Biff12_records/BeginSlicerEx.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHEIDS.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHEID.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicerCacheID.h"
 
 namespace OOX
 {
@@ -485,6 +488,24 @@ void CSlicerStyleElement::ReadAttributes(XLS::BaseObjectPtr &obj)
 
     }
 }
+void CSlicerCache::fromBin(XLS::BaseObjectPtr &obj)
+{
+    ReadAttributes(obj);
+}
+void CSlicerCache::ReadAttributes(XLS::BaseObjectPtr &obj)
+{
+    auto ptr = static_cast<XLSB::SLICERCACHEID*>(obj.get());
+    if(ptr != nullptr)
+    {
+        auto ptr1 = static_cast<XLSB::BeginSlicerCacheID*>(ptr->m_BrtBeginSlicerCacheID.get());
+        if(ptr1 != nullptr)
+        {
+            if(!ptr1->FRTheader.relID.relId.value().empty())
+                m_oRId = ptr1->FRTheader.relID.relId.value();
+        }
+
+    }
+}
 void CSlicerCache::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
@@ -697,6 +718,19 @@ void CSlicerStyle::ReadAttributes(XLS::BaseObjectPtr &obj)
     auto ptr = static_cast<XLSB::BeginSlicerStyle*>(obj.get());
     if(ptr != nullptr)
         m_oName = ptr->stName.value();
+}
+
+void CSlicerCaches::fromBin(XLS::BaseObjectPtr &obj)
+{
+    auto ptr = static_cast<XLSB::SLICERCACHEIDS*>(obj.get());
+    if(ptr != nullptr)
+    {
+        for(auto slicerCacheID : ptr->m_arSLICERCACHEID)
+        {
+            m_oSlicerCache.emplace_back();
+            m_oSlicerCache.back() = slicerCacheID;
+        }
+    }
 }
 void CSlicerCaches::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {

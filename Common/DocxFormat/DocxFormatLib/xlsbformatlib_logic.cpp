@@ -40,6 +40,7 @@
     #include "../Source/XlsbFormat/QueryTableStream.cpp"
     #include "../Source/XlsbFormat/ConnectionsStream.cpp"
     #include "../Source/XlsbFormat/SlicersStream.cpp"
+    #include "../Source/XlsbFormat/SlicerCachesStream.cpp"
 // Biff12_records
     #include "../Source/XlsbFormat/Biff12_records/BeginBook.cpp"
     #include "../Source/XlsbFormat/Biff12_records/FRTBegin.cpp"

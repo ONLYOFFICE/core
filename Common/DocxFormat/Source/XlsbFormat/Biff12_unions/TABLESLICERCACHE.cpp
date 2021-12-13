@@ -91,7 +91,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtFRTBegin && m_BrtBeginTableSlicerCache && m_BrtEndTableSlicerCache && m_BrtFRTEnd;
+        return m_BrtBeginTableSlicerCache && m_BrtEndTableSlicerCache && m_BrtFRTEnd;
     }
 
 } // namespace XLSB

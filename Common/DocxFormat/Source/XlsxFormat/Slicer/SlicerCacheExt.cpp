@@ -252,13 +252,7 @@ void CTableSlicerCache::ReadAttributes(XLS::BaseObjectPtr& obj)
         m_oColumn           = ptr->dwColumn;
         m_oSortOrder        = (SimpleTypes::Spreadsheet::ETabularSlicerCacheSortOrder)(ptr->fSortOrder - 1);
         m_oCustomListSort   = ptr->fSortUsingCustomLists;
-
-        if(ptr->iCrossFilter == 1)
-            m_oCrossFilter  = SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter::cslicercachecrossfilterShowItemsWithNoData;
-        else if(ptr->iCrossFilter == 2)
-            m_oCrossFilter  = SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter::cslicercachecrossfilterShowItemsWithDataAtTop;
-        else
-            m_oCrossFilter  = SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter::cslicercachecrossfilterNone;
+        m_oCrossFilter      = (SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter)ptr->iCrossFilter;
     }
 }
 

@@ -597,12 +597,7 @@ void COlapSlicerCacheLevelData::ReadAttributes(XLS::BaseObjectPtr& obj)
         if(!ptr->stSourceCaption.value().empty())
             m_oSourceCaption = ptr->stSourceCaption.value();
 
-        if(ptr->fCrossFilter == 1)
-            m_oCrossFilter   = SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter::cslicercachecrossfilterShowItemsWithNoData;
-        else if(ptr->fCrossFilter == 2)
-            m_oCrossFilter   = SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter::cslicercachecrossfilterShowItemsWithDataAtTop;
-        else
-            m_oCrossFilter   = SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter::cslicercachecrossfilterNone;
+        m_oCrossFilter      = (SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter)ptr->fCrossFilter;
     }
 }
 void COlapSlicerCacheLevelData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -1083,12 +1078,7 @@ void CTabularSlicerCache::ReadAttributes(XLS::BaseObjectPtr& obj)
         m_oCustomListSort   = ptr->fSortUsingCustomLists;
         m_oShowMissing      = ptr->fShowAllItems;
 
-        if(ptr->fCrossFilter == 1)
-            m_oCrossFilter  = SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter::cslicercachecrossfilterShowItemsWithNoData;
-        else if(ptr->fCrossFilter == 2)
-            m_oCrossFilter  = SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter::cslicercachecrossfilterShowItemsWithDataAtTop;
-        else
-            m_oCrossFilter  = SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter::cslicercachecrossfilterNone;
+        m_oCrossFilter      = (SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter)ptr->fCrossFilter;
     }
 }
 void CTabularSlicerCache::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

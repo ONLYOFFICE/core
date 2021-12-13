@@ -2183,6 +2183,12 @@ void BinaryWorkbookTableWriter::WriteProtection(const OOX::Spreadsheet::CWorkboo
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(protection.m_oLockWindows->ToBool());
 	}
+	if (protection.m_oPassword.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::Password);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protection.m_oPassword);
+	}
 }
 void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr)
 {

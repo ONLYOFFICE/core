@@ -234,7 +234,8 @@ namespace BinXlsxRW
 		HashValue = 2,
 		SaltValue = 3,
 		LockStructure = 4,
-		LockWindows = 5
+		LockWindows = 5,
+		Password
 	}; }
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{

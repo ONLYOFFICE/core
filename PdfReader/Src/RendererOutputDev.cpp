@@ -51,6 +51,7 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
+#include "../Resources/BaseFonts.h"
 
 #ifndef DISABLE_PDF_CONVERTATION
 #include "../../PdfWriter/PdfRenderer.h"
@@ -60,7 +61,6 @@
 #define FONTS_USE_AFM_SETTINGS
 #else
 #define FONTS_USE_ONLY_MEMORY_STREAMS
-#include "../Resources/BaseFonts.h"
 #include "emscripten.h"
 EM_JS(char*, js_get_stream_id, (unsigned char* data, unsigned char* status), {
     return self.AscViewer.CheckStreamId(data, status);
@@ -759,6 +759,8 @@ namespace PdfReader
             Ref oEmbRef;
             bool bFontSubstitution = false;
             std::wstring wsFontBaseName = NSStrings::GetString(pFont->getName());
+            const unsigned char* pData14 = NULL;
+            unsigned int nSize14 = 0;
         #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
             CMemoryFontStream oMemoryFontStream;
         #endif
@@ -1075,7 +1077,27 @@ namespace PdfReader
                     }
                 }
             }
-        #ifdef BUILDING_WASM_MODULE
+        #ifndef BUILDING_WASM_MODULE
+            else if (PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
+            {
+                FILE* pFile = NULL;
+                if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pFile, L"wb", L".base",
+                                                      (wchar_t*)((GlobalParamsAdaptor*)globalParams)->GetTempFolder().c_str(), NULL))
+                {
+                    if (!wsTempFileName.empty())
+                        NSFile::CFileBinary::Remove(wsTempFileName);
+
+                    pEntry->bAvailable = true;
+                    return;
+                }
+                fclose(pFile);
+                NSFile::CFileBinary oFile;
+                oFile.CreateFileW(wsTempFileName);
+                oFile.WriteFile((BYTE*)pData14, nSize14);
+                oFile.CloseFile();
+                wsFileName = wsTempFileName;
+            }
+        #else
             else if ([&oMemoryFontStream, wsFontBaseName]()
             {
                 const unsigned char* pData14 = NULL;

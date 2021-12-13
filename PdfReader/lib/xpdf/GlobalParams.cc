@@ -84,20 +84,20 @@ static struct {
   const char *obliqueFont;	// name of font to oblique
   double obliqueFactor;		// oblique sheer factor
 } displayFontTab[] = {
-  {"Courier",               "n022003l.pfb", "cour.ttf",    "Courier",      "Courier",                NULL,             0       },
-  {"Courier-Bold",          "n022004l.pfb", "courbd.ttf",  "Courier",      "Courier Bold",           NULL,             0       },
+  {"Courier",               "n022003l.pfb", "cour.ttf",    "Courier",      "Courier",                NULL,             0},
+  {"Courier-Bold",          "n022004l.pfb", "courbd.ttf",  "Courier",      "Courier Bold",           NULL,             0},
   {"Courier-BoldOblique",   "n022024l.pfb", "courbi.ttf",  "Courier",      "Courier Bold Oblique",   "Courier-Bold",   0.212557},
   {"Courier-Oblique",       "n022023l.pfb", "couri.ttf",   "Courier",      "Courier Oblique",        "Courier",        0.212557},
-  {"Helvetica",             "n019003l.pfb", "arial.ttf",   "Helvetica",    "Helvetica",              NULL,             0       },
-  {"Helvetica-Bold",        "n019004l.pfb", "arialbd.ttf", "Helvetica",    "Helvetica Bold",         NULL,             0       },
+  {"Helvetica",             "n019003l.pfb", "arial.ttf",   "Helvetica",    "Helvetica",              NULL,             0},
+  {"Helvetica-Bold",        "n019004l.pfb", "arialbd.ttf", "Helvetica",    "Helvetica Bold",         NULL,             0},
   {"Helvetica-BoldOblique", "n019024l.pfb", "arialbi.ttf", "Helvetica",    "Helvetica Bold Oblique", "Helvetica-Bold", 0.212557},
   {"Helvetica-Oblique",     "n019023l.pfb", "ariali.ttf",  "Helvetica",    "Helvetica Oblique",      "Helvetica",      0.212557},
-  {"Symbol",                "s050000l.pfb", "symbol.ttf",  "Symbol",       "Symbol",                 NULL,             0       },
-  {"Times-Bold",            "n021004l.pfb", "timesbd.ttf", "Times",        "Times Bold",             NULL,             0       },
-  {"Times-BoldItalic",      "n021024l.pfb", "timesbi.ttf", "Times",        "Times Bold Italic",      NULL,             0       },
-  {"Times-Italic",          "n021023l.pfb", "timesi.ttf",  "Times",        "Times Italic",           NULL,             0       },
-  {"Times-Roman",           "n021003l.pfb", "times.ttf",   "Times",        "Times Roman",            NULL,             0       },
-  {"ZapfDingbats",          "d050000l.pfb", NULL,          "ZapfDingbats", "Zapf Dingbats",          NULL,             0       },
+  {"Symbol",                "s050000l.pfb", NULL,          "Symbol",       "Symbol",                 NULL,             0},
+  {"Times-Bold",            "n021004l.pfb", "timesbd.ttf", "Times",        "Times Bold",             NULL,             0},
+  {"Times-BoldItalic",      "n021024l.pfb", "timesbi.ttf", "Times",        "Times Bold Italic",       NULL,             0},
+  {"Times-Italic",          "n021023l.pfb", "timesi.ttf",  "Times",        "Times Italic",           NULL,             0},
+  {"Times-Roman",           "n021003l.pfb", "times.ttf",   "Times",        "Times Roman",            NULL,             0},
+  {"ZapfDingbats",          "d050000l.pfb", NULL,          "ZapfDingbats", "Zapf Dingbats",          NULL,             0},
   {NULL}
 };
 

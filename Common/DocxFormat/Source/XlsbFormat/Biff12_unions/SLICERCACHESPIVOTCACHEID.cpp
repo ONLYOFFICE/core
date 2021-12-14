@@ -30,51 +30,44 @@
  *
  */
 
-#include "SLICERCACHECROSSFILTEREXT.h"
-#include "../Biff12_records/FRTBegin.h"
-#include "../Biff12_records/SlicerCacheHideItemsWithNoData.h"
-#include "../Biff12_records/FRTEnd.h"
+#include "SLICERCACHESPIVOTCACHEID.h"
+#include "../Biff12_records/BeginSlicerCachesPivotCacheID.h"
+#include "../Biff12_records/EndSlicerCachesPivotCacheID.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    SLICERCACHECROSSFILTEREXT::SLICERCACHECROSSFILTEREXT()
+    SLICERCACHESPIVOTCACHEID::SLICERCACHESPIVOTCACHEID()
     {
     }
 
-    SLICERCACHECROSSFILTEREXT::~SLICERCACHECROSSFILTEREXT()
+    SLICERCACHESPIVOTCACHEID::~SLICERCACHESPIVOTCACHEID()
     {
     }
 
-    BaseObjectPtr SLICERCACHECROSSFILTEREXT::clone()
+    BaseObjectPtr SLICERCACHESPIVOTCACHEID::clone()
     {
-        return BaseObjectPtr(new SLICERCACHECROSSFILTEREXT(*this));
+        return BaseObjectPtr(new SLICERCACHESPIVOTCACHEID(*this));
     }
 
-    //SLICERCACHECROSSFILTEREXT = BrtFRTBegin BrtSlicerCacheHideItemsWithNoData BrtFRTEnd
-    const bool SLICERCACHECROSSFILTEREXT::loadContent(BinProcessor& proc)
+    // SLICERCACHESPIVOTCACHEID = BrtBeginSlicerCachesPivotCacheID BrtEndSlicerCachesPivotCacheID
+    const bool SLICERCACHESPIVOTCACHEID::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<FRTBegin>())
+        if (proc.optional<BeginSlicerCachesPivotCacheID>())
         {
-            m_BrtFRTBegin = elements_.back();
+            m_BrtBeginSlicerCachesPivotCacheID = elements_.back();
+            elements_.pop_back();
+        }     
+
+        if (proc.optional<EndSlicerCachesPivotCacheID>())
+        {
+            m_BrtEndSlicerCachesPivotCacheID = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.optional<SlicerCacheHideItemsWithNoData>())
-        {
-            m_BrtSlicerCacheHideItemsWithNoData = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<FRTEnd>())
-        {
-            m_BrtFRTEnd = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtSlicerCacheHideItemsWithNoData && m_BrtFRTEnd;
+        return m_BrtBeginSlicerCachesPivotCacheID && m_BrtEndSlicerCachesPivotCacheID;
     }
 
 } // namespace XLSB

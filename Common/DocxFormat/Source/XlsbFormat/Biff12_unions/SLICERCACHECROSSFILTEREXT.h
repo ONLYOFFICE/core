@@ -47,9 +47,9 @@ namespace XLSB
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        XLS::BaseObjectPtr           m_BrtFRTBegin;
-        XLS::BaseObjectPtr      	 m_BrtSlicerCacheHideItemsWithNoData;
-        XLS::BaseObjectPtr           m_BrtFRTEnd;
+        XLS::BaseObjectPtr      m_BrtFRTBegin;
+        XLS::BaseObjectPtr      m_BrtSlicerCacheHideItemsWithNoData;
+        XLS::BaseObjectPtr      m_BrtFRTEnd;
 
     };
 

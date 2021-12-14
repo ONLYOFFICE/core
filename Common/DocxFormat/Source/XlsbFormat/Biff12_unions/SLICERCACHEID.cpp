@@ -30,51 +30,44 @@
  *
  */
 
-#include "SLICERCACHECROSSFILTEREXT.h"
-#include "../Biff12_records/FRTBegin.h"
-#include "../Biff12_records/SlicerCacheHideItemsWithNoData.h"
-#include "../Biff12_records/FRTEnd.h"
+#include "SLICERCACHEID.h"
+#include "../Biff12_records/BeginSlicerCacheID.h"
+#include "../Biff12_records/EndSlicerCacheID.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    SLICERCACHECROSSFILTEREXT::SLICERCACHECROSSFILTEREXT()
+    SLICERCACHEID::SLICERCACHEID()
     {
     }
 
-    SLICERCACHECROSSFILTEREXT::~SLICERCACHECROSSFILTEREXT()
+    SLICERCACHEID::~SLICERCACHEID()
     {
     }
 
-    BaseObjectPtr SLICERCACHECROSSFILTEREXT::clone()
+    BaseObjectPtr SLICERCACHEID::clone()
     {
-        return BaseObjectPtr(new SLICERCACHECROSSFILTEREXT(*this));
+        return BaseObjectPtr(new SLICERCACHEID(*this));
     }
 
-    //SLICERCACHECROSSFILTEREXT = BrtFRTBegin BrtSlicerCacheHideItemsWithNoData BrtFRTEnd
-    const bool SLICERCACHECROSSFILTEREXT::loadContent(BinProcessor& proc)
+    // SLICERCACHEID = BrtBeginSlicerCacheID BrtEndSlicerCacheID
+    const bool SLICERCACHEID::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<FRTBegin>())
+        if (proc.optional<BeginSlicerCacheID>())
         {
-            m_BrtFRTBegin = elements_.back();
+            m_BrtBeginSlicerCacheID = elements_.back();
+            elements_.pop_back();
+        }     
+
+        if (proc.optional<EndSlicerCacheID>())
+        {
+            m_BrtEndSlicerCacheID = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.optional<SlicerCacheHideItemsWithNoData>())
-        {
-            m_BrtSlicerCacheHideItemsWithNoData = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<FRTEnd>())
-        {
-            m_BrtFRTEnd = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtSlicerCacheHideItemsWithNoData && m_BrtFRTEnd;
+        return m_BrtBeginSlicerCacheID && m_BrtEndSlicerCacheID;
     }
 
 } // namespace XLSB

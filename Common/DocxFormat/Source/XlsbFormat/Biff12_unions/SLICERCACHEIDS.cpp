@@ -30,9 +30,11 @@
  *
  */
 
-#include "SLICERCACHECROSSFILTEREXT.h"
+#include "SLICERCACHEIDS.h"
 #include "../Biff12_records/FRTBegin.h"
-#include "../Biff12_records/SlicerCacheHideItemsWithNoData.h"
+#include "../Biff12_records/BeginSlicerCacheIDs.h"
+#include "../Biff12_unions/SLICERCACHEID.h"
+#include "../Biff12_records/EndSlicerCacheIDs.h"
 #include "../Biff12_records/FRTEnd.h"
 
 using namespace XLS;
@@ -40,21 +42,21 @@ using namespace XLS;
 namespace XLSB
 {
 
-    SLICERCACHECROSSFILTEREXT::SLICERCACHECROSSFILTEREXT()
+    SLICERCACHEIDS::SLICERCACHEIDS()
     {
     }
 
-    SLICERCACHECROSSFILTEREXT::~SLICERCACHECROSSFILTEREXT()
+    SLICERCACHEIDS::~SLICERCACHEIDS()
     {
     }
 
-    BaseObjectPtr SLICERCACHECROSSFILTEREXT::clone()
+    BaseObjectPtr SLICERCACHEIDS::clone()
     {
-        return BaseObjectPtr(new SLICERCACHECROSSFILTEREXT(*this));
+        return BaseObjectPtr(new SLICERCACHEIDS(*this));
     }
 
-    //SLICERCACHECROSSFILTEREXT = BrtFRTBegin BrtSlicerCacheHideItemsWithNoData BrtFRTEnd
-    const bool SLICERCACHECROSSFILTEREXT::loadContent(BinProcessor& proc)
+    // SLICERCACHEIDS = BrtFRTBegin BrtBeginSlicerCacheIDs 1*SLICERCACHEID BrtEndSlicerCacheIDs BrtFRTEnd
+    const bool SLICERCACHEIDS::loadContent(BinProcessor& proc)
     {
         if (proc.optional<FRTBegin>())
         {
@@ -62,9 +64,24 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        if (proc.optional<SlicerCacheHideItemsWithNoData>())
+        if (proc.optional<BeginSlicerCacheIDs>())
         {
-            m_BrtSlicerCacheHideItemsWithNoData = elements_.back();
+            m_BrtBeginSlicerCacheIDs = elements_.back();
+            elements_.pop_back();
+        }
+
+        int count = proc.repeated<SLICERCACHEID>(0, 0);
+
+        while(count > 0)
+        {
+            m_arSLICERCACHEID.insert(m_arSLICERCACHEID.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndSlicerCacheIDs>())
+        {
+            m_BrtEndSlicerCacheIDs = elements_.back();
             elements_.pop_back();
         }
 
@@ -74,7 +91,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtSlicerCacheHideItemsWithNoData && m_BrtFRTEnd;
+        return m_BrtBeginSlicerCacheIDs && m_BrtEndSlicerCacheIDs && m_BrtFRTEnd;
     }
 
 } // namespace XLSB

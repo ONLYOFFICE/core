@@ -30,51 +30,37 @@
  *
  */
 
-#include "SLICERCACHECROSSFILTEREXT.h"
-#include "../Biff12_records/FRTBegin.h"
-#include "../Biff12_records/SlicerCacheHideItemsWithNoData.h"
-#include "../Biff12_records/FRTEnd.h"
+#include "TABLESLICERCACHEID.h"
+#include "../Biff12_records/TableSlicerCacheID.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    SLICERCACHECROSSFILTEREXT::SLICERCACHECROSSFILTEREXT()
+    TABLESLICERCACHEID::TABLESLICERCACHEID()
     {
     }
 
-    SLICERCACHECROSSFILTEREXT::~SLICERCACHECROSSFILTEREXT()
+    TABLESLICERCACHEID::~TABLESLICERCACHEID()
     {
     }
 
-    BaseObjectPtr SLICERCACHECROSSFILTEREXT::clone()
+    BaseObjectPtr TABLESLICERCACHEID::clone()
     {
-        return BaseObjectPtr(new SLICERCACHECROSSFILTEREXT(*this));
+        return BaseObjectPtr(new TABLESLICERCACHEID(*this));
     }
 
-    //SLICERCACHECROSSFILTEREXT = BrtFRTBegin BrtSlicerCacheHideItemsWithNoData BrtFRTEnd
-    const bool SLICERCACHECROSSFILTEREXT::loadContent(BinProcessor& proc)
-    {
-        if (proc.optional<FRTBegin>())
+    // TABLESLICERCACHEID = TableSlicerCacheID
+    const bool TABLESLICERCACHEID::loadContent(BinProcessor& proc)
+    {        
+        if (proc.optional<TableSlicerCacheID>())
         {
-            m_BrtFRTBegin = elements_.back();
+            m_BrtTableSlicerCacheID = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.optional<SlicerCacheHideItemsWithNoData>())
-        {
-            m_BrtSlicerCacheHideItemsWithNoData = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<FRTEnd>())
-        {
-            m_BrtFRTEnd = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtSlicerCacheHideItemsWithNoData && m_BrtFRTEnd;
+        return m_BrtTableSlicerCacheID != nullptr;
     }
 
 } // namespace XLSB

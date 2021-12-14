@@ -29,53 +29,28 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "SLICERCACHECROSSFILTEREXT.h"
-#include "../Biff12_records/FRTBegin.h"
-#include "../Biff12_records/SlicerCacheHideItemsWithNoData.h"
-#include "../Biff12_records/FRTEnd.h"
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
-
-    SLICERCACHECROSSFILTEREXT::SLICERCACHECROSSFILTEREXT()
+    // Logical representation of BrtBeginSlicerCachesPivotCacheIDs record in BIFF12
+    class BeginSlicerCachesPivotCacheIDs: public XLS::BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginSlicerCachesPivotCacheIDs)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginSlicerCachesPivotCacheIDs)
+        public:
+            BeginSlicerCachesPivotCacheIDs();
+            virtual ~BeginSlicerCachesPivotCacheIDs();
 
-    SLICERCACHECROSSFILTEREXT::~SLICERCACHECROSSFILTEREXT()
-    {
-    }
+            XLS::BaseObjectPtr clone();
 
-    BaseObjectPtr SLICERCACHECROSSFILTEREXT::clone()
-    {
-        return BaseObjectPtr(new SLICERCACHECROSSFILTEREXT(*this));
-    }
+            void readFields(XLS::CFRecord& record);
 
-    //SLICERCACHECROSSFILTEREXT = BrtFRTBegin BrtSlicerCacheHideItemsWithNoData BrtFRTEnd
-    const bool SLICERCACHECROSSFILTEREXT::loadContent(BinProcessor& proc)
-    {
-        if (proc.optional<FRTBegin>())
-        {
-            m_BrtFRTBegin = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<SlicerCacheHideItemsWithNoData>())
-        {
-            m_BrtSlicerCacheHideItemsWithNoData = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<FRTEnd>())
-        {
-            m_BrtFRTEnd = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtSlicerCacheHideItemsWithNoData && m_BrtFRTEnd;
-    }
+            //static const XLS::ElementType	type = XLS::typeBeginSlicerCachesPivotCacheIDs;
+    };
 
 } // namespace XLSB
 

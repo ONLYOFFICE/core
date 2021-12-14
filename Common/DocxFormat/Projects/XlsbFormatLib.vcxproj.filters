@@ -3295,10 +3295,10 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESPIVOTCACHEIDS.cpp">
       <Filter>unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEID.cpp">
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEIDS_bu.cpp">
       <Filter>unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEIDS_bu.cpp">
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEID_bu.cpp">
       <Filter>unions</Filter>
     </ClCompile>
   </ItemGroup>

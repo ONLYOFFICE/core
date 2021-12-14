@@ -582,5 +582,5 @@
     #include "../Source/XlsbFormat/Biff12_unions/SLICERCACHEIDS.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/SLICERCACHEID.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEIDS_bu.cpp"
-    #include "../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEID.cpp"
+    #include "../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEID_bu.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/FRTWORKBOOK.cpp"

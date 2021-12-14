@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -100,6 +100,7 @@ int main(int argc, char *argv[])
     //taType = NSDocxRenderer::TextAssociationTypeLine;
     //taType = NSDocxRenderer::TextAssociationTypeBlock;
     //taType = NSDocxRenderer::TextAssociationTypeNoFrames;
+    //taType = NSDocxRenderer::TextAssociationTypeParagraphNoFrames;
     oDocxRenderer.SetTextAssociationType(taType);
 
     oDocxRenderer.SetTempFolder(sTempDirOut);

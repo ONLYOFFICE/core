@@ -50,10 +50,11 @@ namespace NSDocxRenderer
 {
     enum TextAssociationType
     {
-        TextAssociationTypeDefault	= 0,
-        TextAssociationTypeLine		= 1,
-        TextAssociationTypeNoFrames	= 2,
-        TextAssociationTypeBlock	= 3
+        TextAssociationTypeDefault				= 0,
+        TextAssociationTypeLine					= 1,
+        TextAssociationTypeNoFrames				= 2,
+        TextAssociationTypeBlock				= 3,
+        TextAssociationTypeParagraphNoFrames	= 4
     };
 }
 

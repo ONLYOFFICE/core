@@ -509,6 +509,7 @@ namespace NSDocxRenderer
         CFontManagerLight* m_pManagerLight;
 
         double		m_dSpaceBefore;
+        double      m_dSpaceRight;
         TextAssociationType m_eTextAssociationType;
 
         std::vector<CTextLine*> m_arLines;
@@ -526,6 +527,7 @@ namespace NSDocxRenderer
             m_dHeight	= 0.0;
 
             m_dSpaceBefore = 0.0;
+            m_dSpaceRight  = 0.0;
 
             m_pManagerLight = NULL;
             m_eTextAssociationType = eType;
@@ -611,6 +613,19 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"\" w:line=\"");
                     oWriter.AddInt((int)(m_dHeight * c_dMMToDx));
                     oWriter.WriteString(L"\" w:lineRule=\"exact\"/><w:ind w:left=\"");
+                    oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
+                    oWriter.WriteString(L"\"/></w:pPr>");
+                    break;
+                }
+            case TextAssociationTypeParagraphNoFrames:
+                {
+                    oWriter.WriteString(L"<w:pPr><w:spacing w:before=\"");
+                    oWriter.AddInt((int)(m_dSpaceBefore * c_dMMToDx));
+                    oWriter.WriteString(L"\" w:line=\"");
+                    oWriter.AddInt((int)(m_dHeight * c_dMMToDx));
+                    oWriter.WriteString(L"\" w:lineRule=\"exact\"/><w:ind w:right=\"");
+                    oWriter.AddInt((int)(m_dSpaceRight * c_dMMToDx));
+                    oWriter.WriteString(L"\"  w:left=\"");
                     oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
                     oWriter.WriteString(L"\"/></w:pPr>");
                     break;

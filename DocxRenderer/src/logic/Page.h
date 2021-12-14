@@ -662,6 +662,54 @@ namespace NSDocxRenderer
                         m_arParagraphs.push_back(pParagraph);
 					}
 
+					m_arTextLine.clear();
+					break;
+				}
+			case TextAssociationTypeParagraphNoFrames:
+				{
+					SortElements(m_arTextLine);
+					Merge(STANDART_STRING_HEIGHT_MM / 3);
+
+					double previousStringOffset = 0;
+					size_t nCount = m_arTextLine.size();
+					for (size_t i = 0; i < nCount; ++i)
+					{
+						CTextLine* pTextLine = m_arTextLine[i];
+						double dSpacingRight = this->m_dWidth - pTextLine->m_dX;
+						size_t countConts = pTextLine->m_arConts.size();
+						for (size_t i = 0; i < countConts; ++i){
+							dSpacingRight -= pTextLine->m_arConts[i]->m_dWidth;
+						}
+						double dBeforeSpacing = pTextLine->m_dBaselinePos - previousStringOffset - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;						
+
+						double dHeight = 1;
+						if (abs(pTextLine->m_dHeight) > 0.001)
+						{
+							dHeight = pTextLine->m_dHeight;
+
+							if (dBeforeSpacing < 0)
+								dHeight += dBeforeSpacing;
+						}
+						if (0 == i || abs(pTextLine->m_dX - m_arParagraphs.back()->m_dLeft ) > 0.001){
+							CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+							pParagraph->m_pManagerLight = &m_oManagerLight;
+							pParagraph->m_bIsTextFrameProperties = false;
+
+							pParagraph->m_dSpaceBefore = std::max(dBeforeSpacing, 0.0);
+							pParagraph->m_dLeft	= pTextLine->m_dX;
+							pParagraph->m_dHeight = dHeight;
+							pParagraph->m_arLines.push_back(pTextLine);
+							pParagraph->m_dSpaceRight = dSpacingRight;
+							m_arParagraphs.push_back(pParagraph);
+						}else{
+							if (m_arParagraphs.back()->m_dSpaceRight > dSpacingRight){
+								m_arParagraphs.back()->m_dSpaceRight = dSpacingRight;
+							}
+							m_arParagraphs.back()->m_arLines.push_back(pTextLine);
+						}
+						previousStringOffset = pTextLine->m_dBaselinePos + pTextLine->m_dBaselineOffset;
+					}
+
                     m_arTextLine.clear();
 					break;
 				}

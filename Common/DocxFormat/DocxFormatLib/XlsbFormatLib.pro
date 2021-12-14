@@ -430,7 +430,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.cpp \
-    ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/BUNDLESHS.cpp \
     ../Source/XlsbFormat/Biff12_unions/FNGROUP_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/EXTERNALS.cpp \

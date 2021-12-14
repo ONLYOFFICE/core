@@ -1614,6 +1614,57 @@
       <Filter>unions</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsbFormat\SlicerCachesStream.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\TableSlicerCacheIDs.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\TableSlicerCacheID.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCachesPivotCacheIDs.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCachesPivotCacheID.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheIDs.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheID.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCachesPivotCacheIDs.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCachesPivotCacheID.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheIDs.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheID.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTWORKBOOK.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEID.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEIDS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESPIVOTCACHEID.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESPIVOTCACHEIDS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEID.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEIDS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ACProductVersion.cpp">
@@ -3197,6 +3248,57 @@
       <Filter>unions</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEBOOKPIVOTTABLES_bu.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\TableSlicerCacheIDs.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\TableSlicerCacheID.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCachesPivotCacheIDs.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCachesPivotCacheID.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheIDs.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheID.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCachesPivotCacheIDs.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCachesPivotCacheID.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheIDs.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheID.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTWORKBOOK.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEID.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEIDS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESPIVOTCACHEID.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESPIVOTCACHEIDS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEID.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEIDS.cpp">
       <Filter>unions</Filter>
     </ClCompile>
   </ItemGroup>

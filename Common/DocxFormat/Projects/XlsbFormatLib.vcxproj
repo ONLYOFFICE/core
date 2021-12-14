@@ -104,6 +104,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicer.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCache.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheDef.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheIDs.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheLevelData.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheLevelsData.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheNative.h" />
@@ -111,6 +113,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheSelections.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheSiRange.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheSiRanges.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCachesPivotCacheID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCachesPivotCacheIDs.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerEx.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicers.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginSlicersEx.h" />
@@ -244,6 +248,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicer.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCache.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheDef.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheIDs.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheLevelData.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheLevelsData.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheNative.h" />
@@ -251,6 +257,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheSelections.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheSiRange.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheSiRanges.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCachesPivotCacheID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCachesPivotCacheIDs.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicerEx.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicers.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndSlicersEx.h" />
@@ -334,6 +342,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SupSelf.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SXTupleSetHeaderItem.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SXTupleSetRowItem.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\TableSlicerCacheID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\TableSlicerCacheIDs.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\TableStyleClient.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\TextPr15.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\TimelineStyleElement.h" />
@@ -476,6 +486,7 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTSLICERCACHE.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTSTYLESHEET.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTTABLE.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTWORKBOOK.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\FRTWORKSHEET.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\HEADERFOOTER.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\HLINKS.h" />
@@ -507,6 +518,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHE.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEBOOKPIVOTTABLES.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHECROSSFILTEREXT.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEIDS.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELDATA.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELSDATA.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHENATIVEITEMS.h" />
@@ -514,6 +527,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESELECTIONS.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESIRANGE.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESIRANGES.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESPIVOTCACHEID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESPIVOTCACHEIDS.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICEREX.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERS.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\SLICERSEX.h" />
@@ -538,6 +553,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLE.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLECELL.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHE.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEIDS.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICEREX.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERSEX.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\TABLESTYLE.h" />
@@ -648,6 +665,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicer.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCache.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheDef.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheIDs.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheLevelData.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheLevelsData.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheNative.cpp" />
@@ -655,6 +674,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheSelections.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheSiRange.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCacheSiRanges.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCachesPivotCacheID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerCachesPivotCacheIDs.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicerEx.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicers.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginSlicersEx.cpp" />
@@ -786,6 +807,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicer.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCache.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheDef.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheIDs.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheLevelData.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheLevelsData.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheNative.cpp" />
@@ -793,6 +816,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheSelections.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheSiRange.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCacheSiRanges.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCachesPivotCacheID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerCachesPivotCacheIDs.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicerEx.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicers.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndSlicersEx.cpp" />
@@ -875,6 +900,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SupSelf.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SXTupleSetHeaderItem.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SXTupleSetRowItem.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\TableSlicerCacheID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\TableSlicerCacheIDs.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\TableStyleClient.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\TextPr15.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\TimelineStyleElement.cpp" />
@@ -1014,6 +1041,7 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTSLICERCACHE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTSTYLESHEET.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTTABLE.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTWORKBOOK.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTWORKSHEET.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\HEADERFOOTER.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\HLINKS.cpp" />
@@ -1045,6 +1073,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEBOOKPIVOTTABLES_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHECROSSFILTEREXT.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEIDS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELDATA_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHELEVELSDATA.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHENATIVEITEMS.cpp" />
@@ -1052,6 +1082,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESELECTIONS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESIRANGE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESIRANGES.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESPIVOTCACHEID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESPIVOTCACHEIDS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICEREX.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERSEX.cpp" />
@@ -1076,6 +1108,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLECELL.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHE.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEIDS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICEREX.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERSEX.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESTYLE.cpp" />

@@ -374,6 +374,13 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndSlicerCacheID.cpp \
     ../Source/XlsbFormat/Biff12_records/TableSlicerCacheIDs.cpp \
     ../Source/XlsbFormat/Biff12_records/TableSlicerCacheID.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginOleObjects.cpp \
+    ../Source/XlsbFormat/Biff12_records/OleObject.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndOleObjects.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginActiveXControls.cpp \
+    ../Source/XlsbFormat/Biff12_records/ActiveX_bu.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndActiveXControls.cpp \
+    ../Source/XlsbFormat/Biff12_records/WsProp.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -585,6 +592,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEIDS_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEID_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/FRTWORKBOOK.cpp \
+    ../Source/XlsbFormat/Biff12_unions/OLEOBJECTS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ACTIVEXCONTROLS.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -937,6 +946,13 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/EndSlicerCacheID.h \
     ../Source/XlsbFormat/Biff12_records/TableSlicerCacheIDs.h \
     ../Source/XlsbFormat/Biff12_records/TableSlicerCacheID.h \
+    ../Source/XlsbFormat/Biff12_records/BeginOleObjects.h \
+    ../Source/XlsbFormat/Biff12_records/OleObject.h \
+    ../Source/XlsbFormat/Biff12_records/EndOleObjects.h \
+    ../Source/XlsbFormat/Biff12_records/BeginActiveXControls.h \
+    ../Source/XlsbFormat/Biff12_records/ActiveX.h \
+    ../Source/XlsbFormat/Biff12_records/EndActiveXControls.h \
+    ../Source/XlsbFormat/Biff12_records/WsProp.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -1151,3 +1167,5 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEIDS.h \
     ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEID.h \
     ../Source/XlsbFormat/Biff12_unions/FRTWORKBOOK.h \
+    ../Source/XlsbFormat/Biff12_unions/OLEOBJECTS.h \
+    ../Source/XlsbFormat/Biff12_unions/ACTIVEXCONTROLS.h \

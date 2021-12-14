@@ -85,6 +85,9 @@ namespace XLSB
         XLS::BaseObjectPtr               m_SORTSTATE;
         std::vector<XLS::BaseObjectPtr>  m_arCONDITIONALFORMATTING;
         XLS::BaseObjectPtr               m_DVALS;
+        XLS::BaseObjectPtr               m_OLEOBJECTS;
+        XLS::BaseObjectPtr               m_ACTIVEXCONTROLS;
+        XLS::BaseObjectPtr               m_BrtWsProp;
         XLS::BaseObjectPtr               m_FRTWORKSHEET;
 
         XLS::BaseObjectPtr               m_BrtEndSheet;

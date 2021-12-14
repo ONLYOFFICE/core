@@ -43,6 +43,7 @@
 #include "../../XlsbFormat/Biff12_records/LegacyDrawingHF.h"
 #include "../../XlsbFormat/Biff12_records/Margins.h"
 #include "../../XlsbFormat/Biff12_records/PrintOptions.h"
+#include "../../XlsbFormat/Biff12_records/WsProp.h"
 
 namespace OOX
 {
@@ -1086,6 +1087,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPageSetUpPr)
+            WritingElement_XlsbConstructors(CPageSetUpPr)
 			CPageSetUpPr()
 			{
 			}
@@ -1113,12 +1115,25 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_PageSetUpPr;
 			}
 
 		private:
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::WsProp*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oAutoPageBreaks = ptr->fShowAutoBreaks;
+                    m_oFitToPage      = ptr->fFitToPage;;
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -1135,6 +1150,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COutlinePr)
+            WritingElement_XlsbConstructors(COutlinePr)
 			COutlinePr()
 			{
 			}
@@ -1164,12 +1180,27 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_OutlinePr;
 			}
 
 		private:
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::WsProp*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oApplyStyles          = ptr->fApplyStyles;
+                    m_oShowOutlineSymbols   = ptr->fShowOutlineSymbols;
+                    m_oSummaryBelow         = ptr->fRowSumsBelow;
+                    m_oSummaryRight         = ptr->fColSumsRight;
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
@@ -1191,6 +1222,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheetPr)
+            WritingElement_XlsbConstructors(CSheetPr)
 			CSheetPr()
 			{
 			}
@@ -1252,12 +1284,42 @@ namespace OOX
 						m_oOutlinePr = oReader;
 				}
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                m_oPageSetUpPr = obj;
+                m_oOutlinePr   = obj;
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_SheetPr;
 			}
 
 		private:
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::WsProp*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    if(!ptr->strName.value.value().empty())
+                        m_oCodeName = ptr->strName.value.value();
+
+                    m_oEnableFormatConditionsCalculation = ptr->fCondFmtCalc;
+                    m_oFilterMode                        = ptr->fFilterMode;
+                    m_oPublished                         = ptr->fPublish;
+                    m_oSyncHorizontal                    = ptr->fSyncHoriz;
+                    m_oSyncVertical                      = ptr->fSyncVert;
+                    m_oTransitionEntry                   = ptr->fAltFormulaEntry;
+                    m_oTransitionEvaluation              = ptr->fAltExprEval;
+
+                    if(!ptr->syncRef.empty())
+                        m_oSyncRef = ptr->syncRef;
+
+                    m_oTabColor.Init();
+                    m_oTabColor->fromBin(dynamic_cast<XLS::BaseObject*>(&ptr->brtcolorTab));
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )

@@ -75,7 +75,8 @@ namespace XLSB
 
         brtcolorTab.readFields(record);
         record >> rwSync >> colSync >> strName;
-        syncRef = static_cast<std::wstring >(CellRef(rwSync, colSync, true, true));
+        if(rwSync != 0xFFFFFFFF && colSync != 0xFFFFFFFF)
+            syncRef = static_cast<std::wstring >(CellRef(rwSync, colSync, true, true));
     }
 
 } // namespace XLSB

@@ -378,7 +378,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/OleObject.cpp \
     ../Source/XlsbFormat/Biff12_records/EndOleObjects.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginActiveXControls.cpp \
-    ../Source/XlsbFormat/Biff12_records/ActiveX_bu.cpp \
+    ../Source/XlsbFormat/Biff12_records/ActiveX_br.cpp \
     ../Source/XlsbFormat/Biff12_records/EndActiveXControls.cpp \
     ../Source/XlsbFormat/Biff12_records/WsProp.cpp \
 ### Biff12_structures

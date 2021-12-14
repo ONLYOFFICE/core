@@ -582,7 +582,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHESPIVOTCACHEID.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHEIDS.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHEID.cpp \
-    ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEIDS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEIDS_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHEID.cpp \
     ../Source/XlsbFormat/Biff12_unions/FRTWORKBOOK.cpp \
 }

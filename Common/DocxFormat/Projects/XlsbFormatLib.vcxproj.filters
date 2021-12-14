@@ -3298,7 +3298,7 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEID.cpp">
       <Filter>unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEIDS.cpp">
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEIDS_bu.cpp">
       <Filter>unions</Filter>
     </ClCompile>
   </ItemGroup>

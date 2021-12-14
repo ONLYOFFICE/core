@@ -1109,7 +1109,7 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLECELL.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEID.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEIDS.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEIDS_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICEREX.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERSEX.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESTYLE.cpp" />

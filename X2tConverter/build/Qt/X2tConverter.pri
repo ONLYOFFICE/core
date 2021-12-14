@@ -88,10 +88,10 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lTxtXmlFormatLib
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lASCOfficeDocxFile2Lib
 #pptxformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPPTXFormatLib
-#xlsbformat
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsbFormatLib
 #docxformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocxFormatLib
+#xlsbformat
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsbFormatLib
 
 #Crypto++
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib

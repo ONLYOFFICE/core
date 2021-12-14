@@ -4501,9 +4501,9 @@ namespace NExtractTools
                    NSDirectory::CreateDirectory(sTempDirOut);
 
                oDocxRenderer.SetTempFolder(sTempDirOut);
-               oDocxRenderer.Convert(pReader, sTo, AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo);
+               nRes = oDocxRenderer.Convert(pReader, sTo, AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo);
 
-               if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX != nFormatTo)
+               if (nRes == S_OK && AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX != nFormatTo)
                    nRes = fromDocxDir(sTempDirOut, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params, L"");
            }
            else

@@ -77,7 +77,7 @@ HRESULT CDocxRenderer::Close()
     HRESULT hr = oCOfficeUtils.CompressFileOrDirectory(m_pInternal->m_oDocument.m_strTempDirectory, m_pInternal->m_oDocument.m_strDstFilePath, true);
     NSDirectory::DeleteDirectory(m_pInternal->m_oDocument.m_strTempDirectory);
     m_pInternal->m_oDocument.m_strTempDirectory = L"";
-    return S_OK;
+    return hr;
 }
 
 HRESULT CDocxRenderer::SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType)

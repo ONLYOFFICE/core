@@ -857,7 +857,7 @@
     <xsd:complexContent>
       <xsd:extension base="CT_TrackChange">
         <xsd:sequence>
-          <xsd:group ref="EG_BlockLevelElts" minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:element name="todo_EG_BlockLevelElts" type="CT_String" minOccurs="0"/>
         </xsd:sequence>
         <xsd:attribute name="initials" type="s:ST_String" use="optional"/>
       </xsd:extension>
@@ -948,7 +948,7 @@
     <xsd:complexContent>
       <xsd:extension base="CT_TrackChange">
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
-          <xsd:group ref="EG_ContentRunContent"/>
+          <xsd:element name="todo_EG_ContentRunContent" type="CT_String" minOccurs="0"/>
           <xsd:group ref="m:EG_OMathMathElements"/>
         </xsd:choice>
       </xsd:extension>
@@ -1157,7 +1157,7 @@
   </xsd:complexType>
   <xsd:complexType name="CT_SimpleField">
     <xsd:sequence>
-      <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="instr" type="s:ST_String" use="required"/>
     <xsd:attribute name="fldLock" type="s:ST_OnOff"/>
@@ -1216,7 +1216,9 @@
     <xsd:attribute name="dirty" type="s:ST_OnOff"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Hyperlink">
-    <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+    <xsd:sequence>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
     <xsd:attribute name="tgtFrame" type="s:ST_String" use="optional"/>
     <xsd:attribute name="tooltip" type="s:ST_String" use="optional"/>
     <xsd:attribute name="docLocation" type="s:ST_String" use="optional"/>
@@ -1526,7 +1528,9 @@
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_HdrFtr">
-    <xsd:group ref="EG_BlockLevelElts" minOccurs="1" maxOccurs="unbounded"/>
+    <xsd:sequence>
+      <xsd:element name="todo_EG_BlockLevelElts" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:group name="EG_SectPrContents">
     <xsd:sequence>
@@ -1886,7 +1890,7 @@
   <xsd:group name="EG_RubyContent">
     <xsd:choice>
       <xsd:element name="r" type="CT_R"/>
-      <xsd:group ref="EG_RunLevelElts" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_RunLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_RubyContent">
@@ -2010,15 +2014,19 @@
       <xsd:element name="dir" type="CT_DirContentRun"/>
       <xsd:element name="bdo" type="CT_BdoContentRun"/>
       <xsd:element name="r" type="CT_R"/>
-      <xsd:group ref="EG_RunLevelElts" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_RunLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_DirContentRun">
-    <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+	<xsd:sequence>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
     <xsd:attribute name="val" type="ST_Direction" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_BdoContentRun">
-    <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+	<xsd:sequence>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
     <xsd:attribute name="val" type="ST_Direction" use="optional"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_Direction">
@@ -2028,7 +2036,9 @@
     </xsd:restriction>
   </xsd:simpleType>
   <xsd:complexType name="CT_SdtContentRun">
-    <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+	<xsd:sequence>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:group name="EG_ContentBlockContent">
     <xsd:choice>
@@ -2036,18 +2046,20 @@
       <xsd:element name="sdt" type="CT_SdtBlock"/>
       <xsd:element name="p" type="CT_P" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="tbl" type="CT_Tbl" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:group ref="EG_RunLevelElts" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_RunLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_SdtContentBlock">
-    <xsd:group ref="EG_ContentBlockContent" minOccurs="0" maxOccurs="unbounded"/>
+	<xsd:sequence>
+      <xsd:element name="todo_EG_ContentBlockContent" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:group name="EG_ContentRowContent">
     <xsd:choice>
       <xsd:element name="tr" type="CT_Row" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="customXml" type="CT_CustomXmlRow"/>
       <xsd:element name="sdt" type="CT_SdtRow"/>
-      <xsd:group ref="EG_RunLevelElts" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_RunLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_SdtContentRow">
@@ -2058,7 +2070,7 @@
       <xsd:element name="tc" type="CT_Tc" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="customXml" type="CT_CustomXmlCell"/>
       <xsd:element name="sdt" type="CT_SdtCell"/>
-      <xsd:group ref="EG_RunLevelElts" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_RunLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_SdtContentCell">
@@ -2100,7 +2112,7 @@
   <xsd:complexType name="CT_CustomXmlRun">
     <xsd:sequence>
       <xsd:element name="customXmlPr" type="CT_CustomXmlPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="uri" type="s:ST_String"/>
     <xsd:attribute name="element" type="s:ST_XmlName" use="required"/>
@@ -2108,7 +2120,7 @@
   <xsd:complexType name="CT_SmartTagRun">
     <xsd:sequence>
       <xsd:element name="smartTagPr" type="CT_SmartTagPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="uri" type="s:ST_String"/>
     <xsd:attribute name="element" type="s:ST_XmlName" use="required"/>
@@ -2116,7 +2128,7 @@
   <xsd:complexType name="CT_CustomXmlBlock">
     <xsd:sequence>
       <xsd:element name="customXmlPr" type="CT_CustomXmlPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_ContentBlockContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_ContentBlockContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="uri" type="s:ST_String"/>
     <xsd:attribute name="element" type="s:ST_XmlName" use="required"/>
@@ -2130,7 +2142,7 @@
   <xsd:complexType name="CT_CustomXmlRow">
     <xsd:sequence>
       <xsd:element name="customXmlPr" type="CT_CustomXmlPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_ContentRowContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_ContentRowContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="uri" type="s:ST_String"/>
     <xsd:attribute name="element" type="s:ST_XmlName" use="required"/>
@@ -2138,7 +2150,7 @@
   <xsd:complexType name="CT_CustomXmlCell">
     <xsd:sequence>
       <xsd:element name="customXmlPr" type="CT_CustomXmlPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_ContentCellContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_ContentCellContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="uri" type="s:ST_String"/>
     <xsd:attribute name="element" type="s:ST_XmlName" use="required"/>
@@ -2270,7 +2282,7 @@
   <xsd:complexType name="CT_Tc">
     <xsd:sequence>
       <xsd:element name="tcPr" type="CT_TcPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_BlockLevelElts" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_BlockLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="id" type="s:ST_String" use="optional"/>
   </xsd:complexType>
@@ -2324,7 +2336,7 @@
     <xsd:sequence>
       <xsd:element name="tblPrEx" type="CT_TblPrEx" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="trPr" type="CT_TrPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_ContentCellContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_ContentCellContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="rsidRPr" type="ST_LongHexNumber"/>
     <xsd:attribute name="rsidR" type="ST_LongHexNumber"/>
@@ -2436,7 +2448,7 @@
       <xsd:group ref="EG_RangeMarkupElements" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="tblPr" type="CT_TblPr"/>
       <xsd:element name="tblGrid" type="CT_TblGrid"/>
-      <xsd:group ref="EG_ContentRowContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_ContentRowContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_TblLook">
@@ -2490,7 +2502,7 @@
   </xsd:complexType>
   <xsd:complexType name="CT_FtnEdn">
     <xsd:sequence>
-      <xsd:group ref="EG_BlockLevelElts" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_BlockLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="type" type="ST_FtnEdn" use="optional"/>
     <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
@@ -3208,7 +3220,7 @@
   </xsd:group>
   <xsd:group name="EG_BlockLevelChunkElts">
     <xsd:choice>
-      <xsd:group ref="EG_ContentBlockContent" minOccurs="0" maxOccurs="unbounded"/>
+		<xsd:group ref="EG_ContentBlockContent" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:choice>
   </xsd:group>
   <xsd:group name="EG_BlockLevelElts">

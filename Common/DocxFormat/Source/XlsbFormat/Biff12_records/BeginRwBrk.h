@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,43 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "LPByteBuf.h"
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
-    LPByteBuf::LPByteBuf()
+    // Logical representation of BrtBeginRwBrk record in BIFF12
+    class BeginRwBrk: public XLS::BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginRwBrk)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginRwBrk)
+        public:
+            BeginRwBrk();
+            virtual ~BeginRwBrk();
 
-    LPByteBuf::LPByteBuf(XLS::CFRecord& record)
-    {
-        load(record);
-    }
+            XLS::BaseObjectPtr clone();
 
-    LPByteBuf::~LPByteBuf()
-    {
+            void readFields(XLS::CFRecord& record);
 
-    }
+            static const XLS::ElementType	type = XLS::typeBeginRwBrk;
 
-    BiffStructurePtr LPByteBuf::clone()
-    {
-        return BiffStructurePtr(new LPByteBuf(*this));
-    }
+            _UINT32    ibrkMac;
+            _UINT32    ibrkManMac;
+    };
 
-    void LPByteBuf::load(XLS::CFRecord& record)
-    {
-        record >> cbLength;
-
-        BYTE val;
-
-        for(int i = 0; i < cbLength; ++i)
-        {
-            record >> val;
-            rgbData.push_back(val);
-        }
-    }
 } // namespace XLSB
 

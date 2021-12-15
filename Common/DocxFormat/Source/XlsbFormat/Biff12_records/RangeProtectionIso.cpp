@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,42 +30,30 @@
  *
  */
 
-#include "LPByteBuf.h"
+#include "RangeProtectionIso.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
-    LPByteBuf::LPByteBuf()
+
+    RangeProtectionIso::RangeProtectionIso()
     {
     }
 
-    LPByteBuf::LPByteBuf(XLS::CFRecord& record)
+    RangeProtectionIso::~RangeProtectionIso()
     {
-        load(record);
     }
 
-    LPByteBuf::~LPByteBuf()
+    BaseObjectPtr RangeProtectionIso::clone()
     {
-
+        return BaseObjectPtr(new RangeProtectionIso(*this));
     }
 
-    BiffStructurePtr LPByteBuf::clone()
+    void RangeProtectionIso::readFields(XLS::CFRecord& record)
     {
-        return BiffStructurePtr(new LPByteBuf(*this));
+        record >> dwSpinCount >> sqRfX >> rangeProtectionTitleSDRel >> ipdPasswordData;
     }
 
-    void LPByteBuf::load(XLS::CFRecord& record)
-    {
-        record >> cbLength;
-
-        BYTE val;
-
-        for(int i = 0; i < cbLength; ++i)
-        {
-            record >> val;
-            rgbData.push_back(val);
-        }
-    }
 } // namespace XLSB
 

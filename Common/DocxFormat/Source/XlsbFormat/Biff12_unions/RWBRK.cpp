@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,42 +30,54 @@
  *
  */
 
-#include "LPByteBuf.h"
+#include "RWBRK.h"
+#include "../Biff12_records/BeginRwBrk.h"
+#include "../Biff12_records/Brk.h"
+#include "../Biff12_records/EndRwBrk.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
-    LPByteBuf::LPByteBuf()
+
+    RWBRK::RWBRK()
     {
     }
 
-    LPByteBuf::LPByteBuf(XLS::CFRecord& record)
+    RWBRK::~RWBRK()
     {
-        load(record);
     }
 
-    LPByteBuf::~LPByteBuf()
+    BaseObjectPtr RWBRK::clone()
     {
-
+        return BaseObjectPtr(new RWBRK(*this));
     }
 
-    BiffStructurePtr LPByteBuf::clone()
+    //RWBRK = BrtBeginRwBrk *BrtBrk BrtEndRwBrk
+    const bool RWBRK::loadContent(BinProcessor& proc)
     {
-        return BiffStructurePtr(new LPByteBuf(*this));
-    }
-
-    void LPByteBuf::load(XLS::CFRecord& record)
-    {
-        record >> cbLength;
-
-        BYTE val;
-
-        for(int i = 0; i < cbLength; ++i)
+        if (proc.optional<BeginRwBrk>())
         {
-            record >> val;
-            rgbData.push_back(val);
+            m_BrtBeginRwBrk = elements_.back();
+            elements_.pop_back();
         }
+
+        auto count = proc.repeated<Brk>(0, 0);
+        while(count > 0)
+        {
+            m_arBrtBrk.insert(m_arBrtBrk.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndRwBrk>())
+        {
+            m_BrtEndRwBrk = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginRwBrk && !m_arBrtBrk.empty() && m_BrtEndRwBrk;
     }
+
 } // namespace XLSB
 

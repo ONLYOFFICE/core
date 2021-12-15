@@ -57,6 +57,11 @@
 #include "Biff12_unions/OLEOBJECTS.h"
 #include "Biff12_unions/ACTIVEXCONTROLS.h"
 #include "Biff12_records/WsProp.h"
+#include "Biff12_records/BkHim.h"
+#include "Biff12_unions/RWBRK.h"
+#include "Biff12_unions/COLBRK.h"
+#include "Biff12_records/RangeProtectionIso.h"
+#include "Biff12_records/RangeProtection.h"
 #include "Biff12_unions/FRTWORKSHEET.h"
 #include "Biff12_records/EndSheet.h"
 
@@ -319,6 +324,55 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                 {
                     m_BrtWsProp = elements_.back();
                     elements_.pop_back();
+                }
+            }break;
+
+            case rt_BkHim:
+            {
+                if (proc.optional<BkHim>())
+                {
+                    m_BrtBkHim = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginRwBrk:
+            {
+                if (proc.optional<RWBRK>())
+                {
+                    m_RWBRK = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginColBrk:
+            {
+                if (proc.optional<COLBRK>())
+                {
+                    m_COLBRK = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_RangeProtectionIso:
+            {
+                count = proc.repeated<RangeProtectionIso>(0, 0);
+                while(count > 0)
+                {
+                    m_arBrtRangeProtectionIso.insert(m_arBrtRangeProtectionIso.begin(), elements_.back());
+                    elements_.pop_back();
+                    count--;
+                }
+            }break;
+
+            case rt_RangeProtection:
+            {
+                count = proc.repeated<RangeProtection>(0, 0);
+                while(count > 0)
+                {
+                    m_arBrtRangeProtection.insert(m_arBrtRangeProtection.begin(), elements_.back());
+                    elements_.pop_back();
+                    count--;
                 }
             }break;
 

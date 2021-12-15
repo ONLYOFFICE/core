@@ -30,42 +30,31 @@
  *
  */
 
-#include "LPByteBuf.h"
+#pragma once
 
-using namespace XLS;
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/SecurityDescriptor.h"
+#include "XLWideString.h"
 
 namespace XLSB
 {
-    LPByteBuf::LPByteBuf()
+    class RangeProtectionTitleSDRel : public XLS::BiffStructure
     {
-    }
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(RangeProtectionTitleSDRel)
+    public:
+        RangeProtectionTitleSDRel();
+        RangeProtectionTitleSDRel(XLS::CFRecord& record);
+        virtual ~RangeProtectionTitleSDRel();
+        XLS::BiffStructurePtr clone();
 
-    LPByteBuf::LPByteBuf(XLS::CFRecord& record)
-    {
-        load(record);
-    }
+        static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-    LPByteBuf::~LPByteBuf()
-    {
+        virtual void load(XLS::CFRecord& record);
 
-    }
+        XLWideString             rgchTitle;
+        _UINT32                  dwsdRel;
+        XLS::SecurityDescriptor  sd;
+    };
 
-    BiffStructurePtr LPByteBuf::clone()
-    {
-        return BiffStructurePtr(new LPByteBuf(*this));
-    }
-
-    void LPByteBuf::load(XLS::CFRecord& record)
-    {
-        record >> cbLength;
-
-        BYTE val;
-
-        for(int i = 0; i < cbLength; ++i)
-        {
-            record >> val;
-            rgbData.push_back(val);
-        }
-    }
-} // namespace XLSB
-
+}   // namespace XLSB

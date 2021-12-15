@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,43 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "LPByteBuf.h"
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
 namespace XLSB
 {
-    LPByteBuf::LPByteBuf()
+
+    class COLBRK: public XLS::CompositeObject
     {
-    }
+        BASE_OBJECT_DEFINE_CLASS_NAME(COLBRK)
+    public:
+        COLBRK();
+        virtual ~COLBRK();
 
-    LPByteBuf::LPByteBuf(XLS::CFRecord& record)
-    {
-        load(record);
-    }
+        XLS::BaseObjectPtr clone();
 
-    LPByteBuf::~LPByteBuf()
-    {
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-    }
+        static const XLS::ElementType	type = XLS::typeCOLBRK;
 
-    BiffStructurePtr LPByteBuf::clone()
-    {
-        return BiffStructurePtr(new LPByteBuf(*this));
-    }
+        XLS::BaseObjectPtr               m_BrtBeginColBrk;
+        std::vector<XLS::BaseObjectPtr>	 m_arBrtBrk;
+        XLS::BaseObjectPtr               m_BrtEndColBrk;
 
-    void LPByteBuf::load(XLS::CFRecord& record)
-    {
-        record >> cbLength;
+    };
 
-        BYTE val;
-
-        for(int i = 0; i < cbLength; ++i)
-        {
-            record >> val;
-            rgbData.push_back(val);
-        }
-    }
 } // namespace XLSB
 

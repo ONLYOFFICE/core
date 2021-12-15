@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,43 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "LPByteBuf.h"
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
+#include "../Biff12_structures/UncheckedSqRfX.h"
+#include "../Biff12_structures/RangeProtectionTitleSDRel.h"
+#include "../Biff12_structures/IsoPasswordData.h"
 
 namespace XLSB
 {
-    LPByteBuf::LPByteBuf()
+    // Logical representation of BrtRangeProtectionIso record in BIFF12
+    class RangeProtectionIso: public XLS::BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(RangeProtectionIso)
+            BASE_OBJECT_DEFINE_CLASS_NAME(RangeProtectionIso)
+        public:
+            RangeProtectionIso();
+            virtual ~RangeProtectionIso();
 
-    LPByteBuf::LPByteBuf(XLS::CFRecord& record)
-    {
-        load(record);
-    }
+            XLS::BaseObjectPtr clone();
 
-    LPByteBuf::~LPByteBuf()
-    {
+            void readFields(XLS::CFRecord& record);
 
-    }
+            static const XLS::ElementType	type = XLS::typeRangeProtectionIso;
 
-    BiffStructurePtr LPByteBuf::clone()
-    {
-        return BiffStructurePtr(new LPByteBuf(*this));
-    }
+            _UINT32                     dwSpinCount;
+            UncheckedSqRfX              sqRfX;
+            RangeProtectionTitleSDRel   rangeProtectionTitleSDRel;
+            IsoPasswordData             ipdPasswordData;
+    };
 
-    void LPByteBuf::load(XLS::CFRecord& record)
-    {
-        record >> cbLength;
-
-        BYTE val;
-
-        for(int i = 0; i < cbLength; ++i)
-        {
-            record >> val;
-            rgbData.push_back(val);
-        }
-    }
 } // namespace XLSB
 

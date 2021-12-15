@@ -44,6 +44,14 @@
 #include "../../XlsbFormat/Biff12_records/Margins.h"
 #include "../../XlsbFormat/Biff12_records/PrintOptions.h"
 #include "../../XlsbFormat/Biff12_records/WsProp.h"
+#include "../../XlsbFormat/Biff12_records/BkHim.h"
+#include "../../XlsbFormat/Biff12_unions/RWBRK.h"
+#include "../../XlsbFormat/Biff12_unions/COLBRK.h"
+#include "../../XlsbFormat/Biff12_records/BeginRwBrk.h"
+#include "../../XlsbFormat/Biff12_records/BeginColBrk.h"
+#include "../../XlsbFormat/Biff12_records/Brk.h"
+#include "../../XlsbFormat/Biff12_records/RangeProtectionIso.h"
+#include "../../XlsbFormat/Biff12_records/RangeProtection.h"
 
 namespace OOX
 {
@@ -53,6 +61,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CProtectedRange)
+            WritingElement_XlsbConstructors(CProtectedRange)
 			CProtectedRange()
 			{
 			}
@@ -113,10 +122,49 @@ namespace OOX
 				}
 
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_ProtectedRange;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                if(obj->get_type() == XLS::typeRangeProtectionIso)
+                {
+                    auto ptr = static_cast<XLSB::RangeProtectionIso*>(obj.get());
+                    if(ptr != nullptr)
+                    {
+                        m_oSpinCount            = ptr->dwSpinCount;
+                        m_oSqref                = ptr->sqRfX.strValue;
+
+                        if(!ptr->ipdPasswordData.szAlgName.value().empty())
+                            m_oAlgorithmName    = ptr->ipdPasswordData.szAlgName.value();
+
+                        if(!ptr->rangeProtectionTitleSDRel.rgchTitle.value().empty())
+                                m_oName         = ptr->rangeProtectionTitleSDRel.rgchTitle.value();
+
+                        m_oHashValue            = std::wstring(ptr->ipdPasswordData.rgbHash.rgbData.begin(),
+                                                                  ptr->ipdPasswordData.rgbHash.rgbData.end());
+                        m_oSaltValue            = std::wstring(ptr->ipdPasswordData.rgbSalt.rgbData.begin(),
+                                                                  ptr->ipdPasswordData.rgbSalt.rgbData.end());
+                    }
+                }
+
+                else if(obj->get_type() == XLS::typeRangeProtection)
+                {
+                    auto ptr = static_cast<XLSB::RangeProtection*>(obj.get());
+                    if(ptr != nullptr)
+                    {
+                        m_oSqref                = ptr->sqRfX.strValue;
+
+                        if(!ptr->rangeProtectionTitleSDRel.rgchTitle.value().empty())
+                                m_oName         = ptr->rangeProtectionTitleSDRel.rgchTitle.value();
+                    }
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				nullable_string desc;
@@ -145,6 +193,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CProtectedRanges)
+            WritingElement_XlsbVectorConstructors(CProtectedRanges)
 			CProtectedRanges()
 			{
 			}
@@ -188,6 +237,12 @@ namespace OOX
 						m_arrItems.push_back(new CProtectedRange(oReader));
 				}
 			}
+
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                for(auto &protRange : obj)
+                    m_arrItems.push_back(new CProtectedRange(protRange));
+            }
 
 			virtual EElementType getType() const
 			{
@@ -1691,6 +1746,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPictureWorksheet)
+            WritingElement_XlsbConstructors(CPictureWorksheet)
 			CPictureWorksheet()
 			{
 			}
@@ -1722,12 +1778,26 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_PictureWorksheet;
 			}
 
 		private:
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BkHim*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    if(!ptr->rgb.value.value().empty())
+                        m_oId = ptr->rgb.value.value();
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
@@ -1742,6 +1812,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CBreak)
+            WritingElement_XlsbConstructors(CBreak)
 			CBreak()
 			{
 			}
@@ -1772,12 +1843,29 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_Break;
 			}
 
 		private:
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::Brk*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oId   = ptr->unRwCol;
+                    m_oMan  = ptr->fMan;
+                    m_oMax  = ptr->unColRwStrt;
+                    m_oMin  = ptr->unColRwEnd;
+                    m_oPt   = ptr->fPivot;
+                }
+            }
+
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -1801,6 +1889,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRowColBreaks)
+            WritingElement_XlsbConstructors(CRowColBreaks)
 			CRowColBreaks()
 			{
 			}
@@ -1852,12 +1941,58 @@ namespace OOX
 						m_arrItems.push_back( new CBreak( oReader ));
 				}
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                if(obj->get_type() == XLS::typeRWBRK)
+                {
+                    auto ptr = static_cast<XLSB::RWBRK*>(obj.get());
+                    if(ptr != nullptr)
+                    {
+                        ReadAttributes(ptr->m_BrtBeginRwBrk);
+                        for(auto &brk : ptr->m_arBrtBrk)
+                            m_arrItems.push_back( new CBreak(brk));
+                    }
+                }
+
+                else if(obj->get_type() == XLS::typeCOLBRK)
+                {
+                    auto ptr = static_cast<XLSB::COLBRK*>(obj.get());
+                    if(ptr != nullptr)
+                    {
+                        ReadAttributes(ptr->m_BrtBeginColBrk);
+                        for(auto &brk : ptr->m_arBrtBrk)
+                            m_arrItems.push_back( new CBreak(brk));
+                    }
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_RowColBreaks;
 			}
 
 		private:
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                if(obj->get_type() == XLS::typeBeginRwBrk)
+                {
+                    auto ptr = static_cast<XLSB::BeginRwBrk*>(obj.get());
+                    if(ptr != nullptr)
+                    {
+                        m_oCount            = ptr->ibrkMac;
+                        m_oManualBreakCount = ptr->ibrkManMac;
+                    }
+                }
+
+                else if(obj->get_type() == XLS::typeBeginColBrk)
+                {
+                    auto ptr = static_cast<XLSB::BeginColBrk*>(obj.get());
+                    if(ptr != nullptr)
+                    {
+                        m_oCount            = ptr->ibrkMac;
+                        m_oManualBreakCount = ptr->ibrkManMac;
+                    }
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -1994,10 +2129,10 @@ namespace OOX
 
                     m_oAlgorithmName           = ptr->ipdPasswordData.szAlgName.value();
                     m_oSpinCount               = ptr->dwSpinCount;
-                    m_oHashValue               = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdPasswordData.rgbHash.rgbData),
-                                                              ptr->ipdPasswordData.rgbHash.cbLength/sizeof(wchar_t));
-                    m_oSaltValue               = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdPasswordData.rgbSalt.rgbData),
-                                                              ptr->ipdPasswordData.rgbSalt.cbLength/sizeof(wchar_t));
+                    m_oHashValue               = std::wstring(ptr->ipdPasswordData.rgbHash.rgbData.begin(),
+                                                              ptr->ipdPasswordData.rgbHash.rgbData.end());
+                    m_oSaltValue               = std::wstring(ptr->ipdPasswordData.rgbSalt.rgbData.begin(),
+                                                              ptr->ipdPasswordData.rgbSalt.rgbData.end());
                     m_oAutoFilter              = (bool)ptr->fAutoFilter;
                     m_oContent                 = true;
                     m_oDeleteColumns           = (bool)ptr->fDeleteColumns;

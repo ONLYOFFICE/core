@@ -30,42 +30,38 @@
  *
  */
 
-#include "LPByteBuf.h"
+#include "RangeProtectionTitleSDRel.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
-    LPByteBuf::LPByteBuf()
+
+    RangeProtectionTitleSDRel::RangeProtectionTitleSDRel()
     {
     }
 
-    LPByteBuf::LPByteBuf(XLS::CFRecord& record)
+    RangeProtectionTitleSDRel::RangeProtectionTitleSDRel(XLS::CFRecord& record)
     {
         load(record);
     }
 
-    LPByteBuf::~LPByteBuf()
+    RangeProtectionTitleSDRel::~RangeProtectionTitleSDRel()
     {
-
     }
 
-    BiffStructurePtr LPByteBuf::clone()
+    BiffStructurePtr RangeProtectionTitleSDRel::clone()
     {
-        return BiffStructurePtr(new LPByteBuf(*this));
+        return BiffStructurePtr(new RangeProtectionTitleSDRel(*this));
     }
 
-    void LPByteBuf::load(XLS::CFRecord& record)
+    void RangeProtectionTitleSDRel::load(XLS::CFRecord& record)
     {
-        record >> cbLength;
+        record >> rgchTitle >> dwsdRel;
 
-        BYTE val;
-
-        for(int i = 0; i < cbLength; ++i)
-        {
-            record >> val;
-            rgbData.push_back(val);
-        }
+        if(dwsdRel != 0x00000000)
+            record >> sd;
     }
+
 } // namespace XLSB
 

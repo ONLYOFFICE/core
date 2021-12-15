@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,42 +30,54 @@
  *
  */
 
-#include "LPByteBuf.h"
+#include "COLBRK.h"
+#include "../Biff12_records/BeginColBrk.h"
+#include "../Biff12_records/Brk.h"
+#include "../Biff12_records/EndColBrk.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
-    LPByteBuf::LPByteBuf()
+
+    COLBRK::COLBRK()
     {
     }
 
-    LPByteBuf::LPByteBuf(XLS::CFRecord& record)
+    COLBRK::~COLBRK()
     {
-        load(record);
     }
 
-    LPByteBuf::~LPByteBuf()
+    BaseObjectPtr COLBRK::clone()
     {
-
+        return BaseObjectPtr(new COLBRK(*this));
     }
 
-    BiffStructurePtr LPByteBuf::clone()
+    //COLBRK = BrtBeginColBrk *BrtBrk BrtEndColBrk
+    const bool COLBRK::loadContent(BinProcessor& proc)
     {
-        return BiffStructurePtr(new LPByteBuf(*this));
-    }
-
-    void LPByteBuf::load(XLS::CFRecord& record)
-    {
-        record >> cbLength;
-
-        BYTE val;
-
-        for(int i = 0; i < cbLength; ++i)
+        if (proc.optional<BeginColBrk>())
         {
-            record >> val;
-            rgbData.push_back(val);
+            m_BrtBeginColBrk = elements_.back();
+            elements_.pop_back();
         }
+
+        auto count = proc.repeated<Brk>(0, 0);
+        while(count > 0)
+        {
+            m_arBrtBrk.insert(m_arBrtBrk.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndColBrk>())
+        {
+            m_BrtEndColBrk = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginColBrk && !m_arBrtBrk.empty() && m_BrtEndColBrk;
     }
+
 } // namespace XLSB
 

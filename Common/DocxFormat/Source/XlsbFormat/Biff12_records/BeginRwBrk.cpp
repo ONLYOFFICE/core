@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -30,42 +30,30 @@
  *
  */
 
-#include "LPByteBuf.h"
+#include "BeginRwBrk.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
-    LPByteBuf::LPByteBuf()
+
+    BeginRwBrk::BeginRwBrk()
     {
     }
 
-    LPByteBuf::LPByteBuf(XLS::CFRecord& record)
+    BeginRwBrk::~BeginRwBrk()
     {
-        load(record);
     }
 
-    LPByteBuf::~LPByteBuf()
+    BaseObjectPtr BeginRwBrk::clone()
     {
-
+        return BaseObjectPtr(new BeginRwBrk(*this));
     }
 
-    BiffStructurePtr LPByteBuf::clone()
+    void BeginRwBrk::readFields(XLS::CFRecord& record)
     {
-        return BiffStructurePtr(new LPByteBuf(*this));
+        record >> ibrkMac >> ibrkManMac;
     }
 
-    void LPByteBuf::load(XLS::CFRecord& record)
-    {
-        record >> cbLength;
-
-        BYTE val;
-
-        for(int i = 0; i < cbLength; ++i)
-        {
-            record >> val;
-            rgbData.push_back(val);
-        }
-    }
 } // namespace XLSB
 

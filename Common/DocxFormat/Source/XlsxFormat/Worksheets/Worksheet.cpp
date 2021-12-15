@@ -157,6 +157,17 @@ namespace OOX
                         m_oControls = workSheetStream->m_ACTIVEXCONTROLS;
                     if (workSheetStream->m_BrtWsProp != nullptr)
                         m_oSheetPr = workSheetStream->m_BrtWsProp;
+                    if (workSheetStream->m_BrtBkHim != nullptr)
+                        m_oPicture = workSheetStream->m_BrtBkHim;
+                    if (workSheetStream->m_RWBRK != nullptr)
+                        m_oRowBreaks = workSheetStream->m_RWBRK;
+                    if (workSheetStream->m_COLBRK != nullptr)
+                        m_oColBreaks = workSheetStream->m_COLBRK;
+
+                    if (!workSheetStream->m_arBrtRangeProtectionIso.empty())
+                        m_oProtectedRanges = workSheetStream->m_arBrtRangeProtectionIso;
+                    else if(!workSheetStream->m_arBrtRangeProtection.empty())
+                        m_oProtectedRanges = workSheetStream->m_arBrtRangeProtection;
 
                     if (workSheetStream->m_FRTWORKSHEET != nullptr)
                         m_oExtLst = workSheetStream->m_FRTWORKSHEET;

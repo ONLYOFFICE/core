@@ -381,6 +381,14 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/ActiveX_br.cpp \
     ../Source/XlsbFormat/Biff12_records/EndActiveXControls.cpp \
     ../Source/XlsbFormat/Biff12_records/WsProp.cpp \
+    ../Source/XlsbFormat/Biff12_records/BkHim.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginRwBrk.cpp \
+    ../Source/XlsbFormat/Biff12_records/Brk.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndRwBrk.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginColBrk.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndColBrk.cpp \
+    ../Source/XlsbFormat/Biff12_records/RangeProtection.cpp \
+    ../Source/XlsbFormat/Biff12_records/RangeProtectionIso.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -433,6 +441,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/SlicerCachePivotTable.cpp \
     ../Source/XlsbFormat/Biff12_structures/SlicerCacheNativeItemStruct.cpp \
     ../Source/XlsbFormat/Biff12_structures/SlicerCacheLevelData.cpp \
+    ../Source/XlsbFormat/Biff12_structures/RangeProtectionTitleSDRel.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -594,6 +603,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/FRTWORKBOOK.cpp \
     ../Source/XlsbFormat/Biff12_unions/OLEOBJECTS.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACTIVEXCONTROLS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/RWBRK.cpp \
+    ../Source/XlsbFormat/Biff12_unions/COLBRK.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -953,6 +964,14 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/ActiveX.h \
     ../Source/XlsbFormat/Biff12_records/EndActiveXControls.h \
     ../Source/XlsbFormat/Biff12_records/WsProp.h \
+    ../Source/XlsbFormat/Biff12_records/BkHim.h \
+    ../Source/XlsbFormat/Biff12_records/BeginRwBrk.h \
+    ../Source/XlsbFormat/Biff12_records/Brk.h \
+    ../Source/XlsbFormat/Biff12_records/EndRwBrk.h \
+    ../Source/XlsbFormat/Biff12_records/BeginColBrk.h \
+    ../Source/XlsbFormat/Biff12_records/EndColBrk.h \
+    ../Source/XlsbFormat/Biff12_records/RangeProtection.h \
+    ../Source/XlsbFormat/Biff12_records/RangeProtectionIso.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -1008,6 +1027,7 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_structures/SlicerCachePivotTable.h \
     ../Source/XlsbFormat/Biff12_structures/SlicerCacheNativeItemStruct.h \
     ../Source/XlsbFormat/Biff12_structures/SlicerCacheLevelData.h \
+    ../Source/XlsbFormat/Biff12_structures/RangeProtectionTitleSDRel.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
     ../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.h \
@@ -1169,3 +1189,5 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/FRTWORKBOOK.h \
     ../Source/XlsbFormat/Biff12_unions/OLEOBJECTS.h \
     ../Source/XlsbFormat/Biff12_unions/ACTIVEXCONTROLS.h \
+    ../Source/XlsbFormat/Biff12_unions/RWBRK.h \
+    ../Source/XlsbFormat/Biff12_unions/COLBRK.h \

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,43 +29,30 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "LPByteBuf.h"
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
+#include "../Biff12_structures/RelID.h"
 
 namespace XLSB
 {
-    LPByteBuf::LPByteBuf()
+    // Logical representation of BrtBkHim record in BIFF12
+    class BkHim: public XLS::BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(BkHim)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BkHim)
+        public:
+            BkHim();
+            virtual ~BkHim();
 
-    LPByteBuf::LPByteBuf(XLS::CFRecord& record)
-    {
-        load(record);
-    }
+            XLS::BaseObjectPtr clone();
 
-    LPByteBuf::~LPByteBuf()
-    {
+            void readFields(XLS::CFRecord& record);
 
-    }
+            RelID    rgb;
 
-    BiffStructurePtr LPByteBuf::clone()
-    {
-        return BiffStructurePtr(new LPByteBuf(*this));
-    }
+    };
 
-    void LPByteBuf::load(XLS::CFRecord& record)
-    {
-        record >> cbLength;
-
-        BYTE val;
-
-        for(int i = 0; i < cbLength; ++i)
-        {
-            record >> val;
-            rgbData.push_back(val);
-        }
-    }
 } // namespace XLSB
 

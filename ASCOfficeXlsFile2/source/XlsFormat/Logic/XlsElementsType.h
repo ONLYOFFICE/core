@@ -811,6 +811,12 @@ enum ElementType
         typeSLICEREX,
         typeTABLESLICEREX,
         typeFRTWORKBOOK,
+        typeRWBRK,
+        typeCOLBRK,
+        typeBeginRwBrk,
+        typeBeginColBrk,
+        typeRangeProtection,
+        typeRangeProtectionIso,
 };
 
 

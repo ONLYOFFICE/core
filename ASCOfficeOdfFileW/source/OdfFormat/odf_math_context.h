@@ -43,17 +43,17 @@
 #define CREATE_MATH_TAG(tag)\
 	odf_writer::office_element_ptr elm;\
 	odf_writer::create_element(L"math", tag, elm, odf_context());\
-	//odf_context()->math_context()->debug_stream << tag << "\n";
+	odf_context()->math_context()->debug_stream << tag << "\n";
 
 #define OPEN_MATH_TAG(elm)\
 	odf_context()->math_context()->start_element(elm); \
 	odf_context()->math_context()->counter++; \
-	//odf_context()->math_context()->debug_stream << L"open, counter is " << odf_context()->math_context()->counter << "\n";
+	odf_context()->math_context()->debug_stream << L"open, counter is " << odf_context()->math_context()->counter << "\n";
 
 #define CLOSE_MATH_TAG\
 	odf_context()->math_context()->end_element();\
 	odf_context()->math_context()->counter--; \
-	//odf_context()->math_context()->debug_stream /*std::wcout*/ << L"close, counter is " << odf_context()->math_context()->counter << "\n";
+	odf_context()->math_context()->debug_stream /*std::wcout*/ << L"close, counter is " << odf_context()->math_context()->counter << "\n";
 
 namespace cpdoccore {
 	namespace odf_writer
@@ -88,8 +88,8 @@ namespace cpdoccore {
 
 			void end_math();
 
-			std::wofstream debug_stream;
-
+			std::wofstream debug_stream;// (L"C://RK-Tech//debug.txt", std::wofstream::out);
+			std::string fileName = "C:\\RK-Tech\\debugLog.txt";			
 			bool isEmpty();
 		private:
 			class Impl;

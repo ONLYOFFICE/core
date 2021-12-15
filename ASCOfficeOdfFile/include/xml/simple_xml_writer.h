@@ -225,7 +225,7 @@ namespace writer
         template <class V>
         element& contents(V value) 
         {
-            std::basic_stringstream<T, std::char_traits<T>,	std::allocator<T> > ss;
+            std::basic_stringstream<T, std::char_traits<T>,	std::allocator<T> > ss;              
             ss << value;
             contents(ss.str());
             return *this;

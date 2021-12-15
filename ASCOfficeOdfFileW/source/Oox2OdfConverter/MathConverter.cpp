@@ -7,6 +7,7 @@
 #include "../OdfFormat/odf_conversion_context.h"
 #include "../../ASCOfficeOdfFileW/source/OdfFormat/math_layout_elements.h"
 #include "../../ASCOfficeOdfFileW/source/OdfFormat/math_limit_elements.h"
+#include "../../ASCOfficeOdfFileW/source/OdfFormat/math_token_elements.h"
 #include <set>
 #include <vector>
 #include <fstream>
@@ -234,11 +235,21 @@ namespace Oox2Odf
 			if(oox_del->m_arrItems[i]->getType() == OOX::et_m_dPr)
 				begEndChrs = convert((OOX::Logic::CDelimiterPr*)(oox_del->m_arrItems[i]));
 		}
-
+		mrow();
 		{
 			CREATE_MATH_TAG(L"mo");
 			elm->add_text(begEndChrs.first);
+			typedef odf_writer::math_mo* T;
+
+			T tmp = dynamic_cast<T>(elm.get());
+			if (tmp)
+			{
+				tmp->fence_ = true;
+				tmp->form_ = L"prefix";
+				tmp->stretchy_ = true;
+			}
 			OPEN_MATH_TAG(elm);
+			
 			CLOSE_MATH_TAG;
 		}
 	
@@ -249,11 +260,22 @@ namespace Oox2Odf
 		}
 
 		{
-			CREATE_MATH_TAG(L"mo")
+			CREATE_MATH_TAG(L"mo");
 			elm->add_text(begEndChrs.second);
+			typedef odf_writer::math_mo* T;
+
+			T tmp = dynamic_cast<T>(elm.get());
+			if (tmp)
+			{
+				tmp->fence_ = true;
+				tmp->form_ = L"postfix";
+				tmp->stretchy_ = true;
+			}
 			OPEN_MATH_TAG(elm)
+			
 			CLOSE_MATH_TAG
 		}	
+		endOfMrow();
 	}
 
 	std::pair<std::wstring, std::wstring> OoxConverter::convert(OOX::Logic::CDelimiterPr *oox_del_pr)
@@ -755,23 +777,23 @@ namespace Oox2Odf
 	{
 		if (!oox_r_pr) return false;
 
-		if (oox_r_pr->m_oColor.IsInit())
-		{
-			if (oox_r_pr->m_oColor->m_oVal.IsInit())
-			{
-				std::wstring clr = oox_r_pr->m_oColor->m_oVal.GetPointer()->ToString();
-				std::wstring clr2(L"#");
-				clr.erase(0, 2);
-				clr2 += clr;
-				CREATE_MATH_TAG(L"mstyle");
-				typedef odf_writer::math_mstyle * T;
+		//if (oox_r_pr->m_oColor.IsInit())
+		//{
+		//	if (oox_r_pr->m_oColor->m_oVal.IsInit())
+		//	{
+		//		std::wstring clr = oox_r_pr->m_oColor->m_oVal.GetPointer()->ToString();
+		//		std::wstring clr2(L"#");
+		//		clr.erase(0, 2);
+		//		clr2 += clr;
+		//		CREATE_MATH_TAG(L"mstyle");
+		//		typedef odf_writer::math_mstyle * T;
 
-				T tmp = dynamic_cast<T>(elm.get());
-				tmp->color_ = clr2;
-				OPEN_MATH_TAG(elm);
-				return true;
-			}
-		}
+		//		T tmp = dynamic_cast<T>(elm.get());
+		//		tmp->color_ = clr2;
+		//		OPEN_MATH_TAG(elm);
+		//		return true;
+		//	}
+		//}
 		return false;
 	}
 
@@ -868,7 +890,7 @@ namespace Oox2Odf
 		bool flag_color = false;
 		if (ref != NULL)
 		{
-			std::wstring clr = ref->GetPointer()->ToString();
+			/*std::wstring clr = ref->GetPointer()->ToString();
 			std::wstring clr2(L"#");
 			clr.erase(0, 2);
 			clr2 += clr;
@@ -878,30 +900,30 @@ namespace Oox2Odf
 			T tmp = dynamic_cast<T>(elm.get());
 			tmp->color_ = clr2;
 			OPEN_MATH_TAG(elm);	
-			flag_color = true;
+			flag_color = true;*/
 		}
 
 		mrow();
 
-		//bool flag_nary = false; // TODO REFAC
+		bool flag_nary = false; // TODO REFAC
 		if ((oox_nary->m_oSub.GetPointer()->m_arrItems.size() != 0) && (oox_nary->m_oSup.GetPointer()->m_arrItems.size() != 0))
 		{
 			CREATE_MATH_TAG(L"munderover");
 			OPEN_MATH_TAG(elm);
-			//flag_nary = true;
+			flag_nary = true;
 		}
 		else if ((oox_nary->m_oSub.GetPointer()->m_arrItems.size() != 0) && (oox_nary->m_oSup.GetPointer()->m_arrItems.size() == 0))
 		{
 			CREATE_MATH_TAG(L"munder");
 			OPEN_MATH_TAG(elm);
-			//flag_nary = true;
+			flag_nary = true;
 		}
 
 		else if ((oox_nary->m_oSub.GetPointer()->m_arrItems.size() == 0) && (oox_nary->m_oSup.GetPointer()->m_arrItems.size() != 0))
 		{
 			CREATE_MATH_TAG(L"mover");
 			OPEN_MATH_TAG(elm);
-			//flag_nary = true;
+			flag_nary = true;
 		}		
 		
 		std::pair<bool,bool>	flags;
@@ -922,10 +944,10 @@ namespace Oox2Odf
 		}
 
 
-		//if (flag_nary)
-		//{
+		if (flag_nary)
+		{
 			CLOSE_MATH_TAG;
-		//}		
+		}		
 
 		if (flag_color)
 		{
@@ -1015,7 +1037,7 @@ namespace Oox2Odf
 		nullable<ComplexTypes::Word::CColor> p = oox_rad->m_oRadPr->m_oCtrlPr->m_oRPr->m_oColor;
 		if (p.IsInit())
 		{
-			std::wstring clr = p->m_oVal.GetPointer()->ToString();
+			/*std::wstring clr = p->m_oVal.GetPointer()->ToString();
 			std::wstring clr2(L"#");
 			clr.erase(0, 2);
 			clr2 += clr;
@@ -1024,7 +1046,7 @@ namespace Oox2Odf
 
 			T tmp = dynamic_cast<T>(elm.get());
 			tmp->color_ = clr2;
-			OPEN_MATH_TAG(elm);
+			OPEN_MATH_TAG(elm);*/
 		}
 
 		{
@@ -1043,7 +1065,9 @@ namespace Oox2Odf
 		}
 
 		if (p.IsInit())
-			CLOSE_MATH_TAG;
+		{
+			//CLOSE_MATH_TAG;
+		}
 
 	}
 

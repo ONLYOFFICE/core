@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2020
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,17 +31,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <string>
-#import <vector>
 
-@interface NSString (StringUtils)
-+ (id)stringWithWString:(const std::wstring&)string;
-+ (id)stringWithAString:(const std::string&)string;
-+ (id)stringWithUtf8Buffer:(const char*)string length:(size_t)len;
-+ (NSMutableArray*)stringsArray:(const std::vector<std::wstring>&)sources;
-+ (std::vector<std::wstring>)stringsStdArray:(NSArray<NSString*>*)sources;
-- (std::wstring)stdwstring;
-- (std::string)stdstring;
-+ (NSString *)queryParameter:(NSURL *)url key:(NSString *)key;
-- (NSDictionary *)toDictionary;
+@interface NSDictionary (Utils)
+- (NSString*)jsonString;
 @end

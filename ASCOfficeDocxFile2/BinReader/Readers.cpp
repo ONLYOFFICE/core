@@ -339,7 +339,7 @@ int Binary_CommonReader2::ReadShdComplexType(BYTE type, long length, void* poRes
 		{
 			CThemeColor themeColor;
 			ReadThemeColor(length, themeColor);
-			themeColor.ToCThemeColor(pShd->m_oColor, pShd->m_oThemeFill, pShd->m_oThemeFillTint, pShd->m_oThemeFillShade);
+			themeColor.ToCThemeColor(pShd->m_oFill, pShd->m_oThemeFill, pShd->m_oThemeFillTint, pShd->m_oThemeFillShade);
 		}break;
 		default:
 		{

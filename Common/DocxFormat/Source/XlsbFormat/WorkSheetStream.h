@@ -93,6 +93,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_COLBRK;
         std::vector<XLS::BaseObjectPtr>  m_arBrtRangeProtectionIso;
         std::vector<XLS::BaseObjectPtr>  m_arBrtRangeProtection;
+        XLS::BaseObjectPtr               m_DCON;
         XLS::BaseObjectPtr               m_FRTWORKSHEET;        
 
         XLS::BaseObjectPtr               m_BrtEndSheet;

@@ -163,6 +163,8 @@ namespace OOX
                         m_oRowBreaks = workSheetStream->m_RWBRK;
                     if (workSheetStream->m_COLBRK != nullptr)
                         m_oColBreaks = workSheetStream->m_COLBRK;
+                    if (workSheetStream->m_DCON != nullptr)
+                        m_oDataConsolidate = workSheetStream->m_DCON;
 
                     if (!workSheetStream->m_arBrtRangeProtectionIso.empty())
                         m_oProtectedRanges = workSheetStream->m_arBrtRangeProtectionIso;

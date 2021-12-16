@@ -62,6 +62,7 @@
 #include "Biff12_unions/COLBRK.h"
 #include "Biff12_records/RangeProtectionIso.h"
 #include "Biff12_records/RangeProtection.h"
+#include "Biff12_unions/DCON.h"
 #include "Biff12_unions/FRTWORKSHEET.h"
 #include "Biff12_records/EndSheet.h"
 
@@ -376,6 +377,15 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                 }
             }break;
 
+            case rt_BeginDCon:
+            {
+                if (proc.optional<DCON>())
+                {
+                    m_DCON = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
             case rt_FRTBegin:
             {
                 if (proc.optional<FRTWORKSHEET>())
@@ -384,7 +394,6 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                     elements_.pop_back();
                 }
             }break;
-
 
             case rt_EndSheet:
             {

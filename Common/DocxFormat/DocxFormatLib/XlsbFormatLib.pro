@@ -389,6 +389,11 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndColBrk.cpp \
     ../Source/XlsbFormat/Biff12_records/RangeProtection.cpp \
     ../Source/XlsbFormat/Biff12_records/RangeProtectionIso.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginDCon.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndDCon.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginDRefs.cpp \
+    ../Source/XlsbFormat/Biff12_records/DRef.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndDRefs.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -605,6 +610,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/ACTIVEXCONTROLS.cpp \
     ../Source/XlsbFormat/Biff12_unions/RWBRK.cpp \
     ../Source/XlsbFormat/Biff12_unions/COLBRK.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DCON.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DREFS.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -972,6 +979,11 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/EndColBrk.h \
     ../Source/XlsbFormat/Biff12_records/RangeProtection.h \
     ../Source/XlsbFormat/Biff12_records/RangeProtectionIso.h \
+    ../Source/XlsbFormat/Biff12_records/BeginDCon.h \
+    ../Source/XlsbFormat/Biff12_records/EndDCon.h \
+    ../Source/XlsbFormat/Biff12_records/BeginDRefs.h \
+    ../Source/XlsbFormat/Biff12_records/DRef.h \
+    ../Source/XlsbFormat/Biff12_records/EndDRefs.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -1191,3 +1203,5 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/ACTIVEXCONTROLS.h \
     ../Source/XlsbFormat/Biff12_unions/RWBRK.h \
     ../Source/XlsbFormat/Biff12_unions/COLBRK.h \
+    ../Source/XlsbFormat/Biff12_unions/DCON.h \
+    ../Source/XlsbFormat/Biff12_unions/DREFS.h \

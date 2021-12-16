@@ -52,6 +52,10 @@
 #include "../../XlsbFormat/Biff12_records/Brk.h"
 #include "../../XlsbFormat/Biff12_records/RangeProtectionIso.h"
 #include "../../XlsbFormat/Biff12_records/RangeProtection.h"
+#include "../../XlsbFormat/Biff12_unions/DCON.h"
+#include "../../XlsbFormat/Biff12_records/BeginDCon.h"
+#include "../../XlsbFormat/Biff12_unions/DREFS.h"
+#include "../../XlsbFormat/Biff12_records/DRef.h"
 
 namespace OOX
 {
@@ -2183,6 +2187,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataRef)
+            WritingElement_XlsbConstructors(CDataRef)
 			CDataRef()
 			{
 			}
@@ -2212,11 +2217,32 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_DataRef;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::DRef*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    if(!ptr->relId.value.value().empty())
+                        m_oId = ptr->relId.value.value();
+
+                    if(!ptr->xstrName.value().empty())
+                        m_oName = ptr->xstrName.value();
+
+                    if(!ptr->rfx.toString().empty())
+                        m_oRef = ptr->rfx.toString();
+
+                    if(!ptr->xstrSheet.value().empty())
+                        m_oSheet = ptr->xstrSheet.value();
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -2236,6 +2262,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataRefs)
+            WritingElement_XlsbConstructors(CDataRefs)
 			CDataRefs()
 			{
 			}
@@ -2279,6 +2306,17 @@ namespace OOX
 						m_arrItems.push_back( new CDataRef( oReader ));
 				}
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::DREFS*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oCount = (_UINT32)ptr->m_arBrtDRef.size();
+
+                    for(auto &dref : ptr->m_arBrtDRef)
+                        m_arrItems.push_back( new CDataRef( dref ));
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_DataRefs;
@@ -2299,6 +2337,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataConsolidate)
+            WritingElement_XlsbConstructors(CDataConsolidate)
 			CDataConsolidate()
 			{
 			}
@@ -2339,11 +2378,31 @@ namespace OOX
 						m_oDataRefs = oReader;
 				}
 			}
-
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::DCON*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    ReadAttributes(ptr->m_BrtBeginDCon);
+                    if(ptr->m_DREFS != nullptr)
+                        m_oDataRefs = ptr->m_DREFS;
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_DataConsolidate;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BeginDCon*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oFunction     = (SimpleTypes::Spreadsheet::EDataConsolidateFunction)ptr->iiftab.value().get();
+                    m_oLink         = ptr->fLinkConsol;
+                    m_oStartLabels  = ptr->fLeftCat;
+                    m_oTopLabels    = ptr->fTopCat;
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )

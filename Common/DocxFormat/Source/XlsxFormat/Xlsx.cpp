@@ -64,7 +64,33 @@ OOX::Spreadsheet::CXlsx::~CXlsx()
 	m_arWorksheets.clear();
 	m_mapWorksheets.clear();
 }	
+void OOX::Spreadsheet::CXlsx::init()
+{
+    m_bSpreadsheets		= true;
 
+    m_pApp				= NULL;
+    m_pCore				= NULL;
+
+    m_pWorkbook			= NULL;
+    m_pSharedStrings	= NULL;
+    m_pStyles			= NULL;
+    m_pCalcChain		= NULL;
+    m_pVbaProject		= NULL;
+    m_pJsaProject		= NULL;
+    m_pWorkbookComments = NULL;
+    m_pXlsbWriter       = NULL;
+    m_nLastReadRow      = 0;
+    m_nLastReadCol      = -1;
+    m_bNeedCalcChain    = true;
+
+    bDeleteWorkbook			= false;
+    bDeleteSharedStrings	= false;
+    bDeleteStyles			= false;
+    bDeleteCalcChain		= false;
+    bDeleteWorksheets		= false;
+    bDeleteVbaProject		= false;
+    bDeleteJsaProject		= false;
+}
 bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 {
 	m_sDocumentPath = oFilePath.GetPath();

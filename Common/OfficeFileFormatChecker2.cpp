@@ -597,6 +597,7 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName, bo
 		const char *xltxFormatLine = "application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml";
 		const char *xlsmFormatLine = "application/vnd.ms-excel.sheet.macroEnabled.main+xml";
 		const char *xltmFormatLine = "application/vnd.ms-excel.template.macroEnabled.main+xml";
+		const char *xlsbFormatLine = "application/vnd.ms-excel.sheet.binary.macroEnabled.main";
 
 		const char *pptxFormatLine = "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
 		const char *ppsxFormatLine = "application/vnd.openxmlformats-officedocument.presentationml.slideshow.main+xml";
@@ -653,6 +654,12 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName, bo
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM;
 			bMacroEnabled = true;
+		}
+		else if (std::string::npos != strContentTypes.find(xlsbFormatLine))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB;
+			bMacroEnabled = true;
+
 		}
 		else if (std::string::npos != strContentTypes.find(pptxFormatLine))
 		{
@@ -958,7 +965,8 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
     case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:	return L".xlsm";
     case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:	return L".xltx";
     case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:	return L".xltm";
-    case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS:		return L".xls";
+	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:	return L".xlsb";
+	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS:		return L".xls";
     case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS:		return L".ods";
     case AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV:		return L".csv";
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT:return L".fods";
@@ -1045,7 +1053,6 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
 	if (L".ott" == ext)
 		return AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT;
 
-
     if (L".pptx" == ext)
         return AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
     if (L".pptm" == ext)
@@ -1066,8 +1073,8 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
 		return AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP_FLAT;
 	if (L".otp" == ext)
 		return AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP;
-
-    if (L".xlsx" == ext)
+    
+	if (L".xlsx" == ext)
         return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
     if (L".xlsm" == ext)
         return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM;
@@ -1075,25 +1082,26 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
         return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX;
     if (L".xltm" == ext)
         return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM;
-    if (L".xls" == ext)
-        return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
-    if (L".ods" == ext)
-        return AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
-    if (L".csv" == ext)
-        return AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
 	if (L".xlsm" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM;
 	if (L".xltx" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX;
 	if (L".xltm" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM;
+	if (L".xlsb" == ext)
+		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB;	
+	if (L".xls" == ext)
+        return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;    
+	if (L".csv" == ext)
+        return AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;	
 	if (L".fods" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT;
 	if (L".ots" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS;
-
-
-    if (L".pdf" == ext)
+    if (L".ods" == ext)
+        return AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+   
+	if (L".pdf" == ext)
         return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
     if (L".djvu" == ext)
         return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU;

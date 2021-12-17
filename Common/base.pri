@@ -37,9 +37,9 @@ QMAKE_TARGET_COPYRIGHT = Copyright (C) $${PUBLISHER_NAME} $${CURRENT_YEAR}. All 
 # CONFIGURATION
 CONFIG(debug, debug|release) {
     CONFIG += core_debug
-} else {
-    CONFIG += core_release
 }
+force_debug_info:CONFIG += core_debug
+!core_debug:CONFIG += core_release
 
 not_use_dynamic_libs {
 shared {
@@ -154,6 +154,12 @@ core_windows {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
     QMAKE_CXXFLAGS -= -Zc:strictStrings
     QMAKE_CXXFLAGS += /MP
+
+    vs2019 {
+        QMAKE_CXXFLAGS_RELEASE -= -permissive-
+        QMAKE_CXXFLAGS -= -permissive-
+    }
+
     DEFINES += WINDOWS_IGNORE_PACKING_MISMATCH
 
     OO_WINDOWS_IGNORE_PACKING_MISMATCH = $$(OO_WINDOWS_IGNORE_PACKING_MISMATCH)
@@ -297,8 +303,10 @@ message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 CONFIG += c++11
 
 greaterThan(QT_MAJOR_VERSION, 5) {
-    QMAKE_CXXFLAGS += -Wno-register
-    QMAKE_CFLAGS += -Wno-register
+    !core_windows {
+        QMAKE_CXXFLAGS += -Wno-register
+        QMAKE_CFLAGS += -Wno-register
+    }
 }
 
 core_linux {

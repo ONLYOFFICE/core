@@ -51,12 +51,23 @@ BaseObjectPtr Array::clone()
 
 void Array::readFields(CFRecord& record)
 {
-	record >> ref_;
-	unsigned short flags;
-	record >> flags;
-	fAlwaysCalc = GETBIT(flags, 0);
-	record.skipNunBytes(4); // unused
-	formula.load(record);
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        record >> ref_;
+        unsigned short flags;
+        record >> flags;
+        fAlwaysCalc = GETBIT(flags, 0);
+        record.skipNunBytes(4); // unused
+        formula.load(record);
+    }
+    else
+    {
+        record >> rfx;
+        unsigned char flags;
+        record >> flags;
+        fAlwaysCalc = GETBIT(flags, 0);
+        formula.load(record);
+    }
 }
 
 } // namespace XLS

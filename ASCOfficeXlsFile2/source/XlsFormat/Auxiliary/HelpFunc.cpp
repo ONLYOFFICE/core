@@ -282,6 +282,16 @@ const std::string guid2str(const _GUID_ guid)
 	return std::string(s.begin(),s.end());
 }
 
+const std::wstring guidFromStr(const std::wstring & guid_str)
+{
+    boost::wregex match_guid(L"[A-Za-z0-9_]{8}-[A-Za-z0-9_]{4}-[A-Za-z0-9_]{4}-[A-Za-z0-9_]{4}-[A-Za-z0-9_]{12}");
+    boost::wsmatch result;
+    if(boost::regex_search(guid_str, result, match_guid))
+    {
+        return result.str();
+    }
+    return L"";
+}
 
 const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid)
 {
@@ -359,12 +369,9 @@ const std::wstring unescape_ST_Xstring(const std::wstring& wstr)
     while(true)
 	{
         
-#if defined(__linux__) || defined(_MAC) || defined(_IOS)
 		const auto it_range = boost::make_iterator_range(x_pos_noncopied, wstr_end);
         x_pos_next = boost::algorithm::find_first(it_range, L"_x").begin();
-#else
-        x_pos_next = boost::algorithm::find_first(boost::make_iterator_range(x_pos_noncopied, wstr_end), L"_x").begin();
-#endif
+
         if ( wstr_end == x_pos_next) break;
         if(!boost::regex_search(x_pos_next, wstr_end, match_hex))
 		{

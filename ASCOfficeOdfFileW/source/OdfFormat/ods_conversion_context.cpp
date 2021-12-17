@@ -30,16 +30,7 @@
  *
  */
 
-//#ifndef min
-//#define min(a,b) ((a) < (b) ? (a) : (b))
-//#endif
-//#ifndef max
-//#define max(a,b) ((a) > (b) ? (a) : (b))
-//#endif
-
 #include <boost/algorithm/string.hpp>
-
-#include "../utils.h"
 
 #include "ods_conversion_context.h"
 #include "office_spreadsheet.h"
@@ -57,33 +48,10 @@ namespace cpdoccore {
 
 namespace odf_writer {
 
-namespace utils
-{
-
-void calculate_size_font_symbols(_font_metrix & metrix, NSFonts::IApplicationFonts *appFonts)
-{
-    std::pair<float,float> appr = _graphics_utils_::calculate_size_symbol_asc(metrix.font_name, metrix.font_size, metrix.italic, metrix.bold, appFonts);
-	
-	if (appr.first < 0.01 || appr.second < 0.01)
-	{
-        appr.first = _graphics_utils_::calculate_size_symbol_win(metrix.font_name,metrix.font_size,false/*metrix.italic*/,false/*metrix.bold*/);
-		appr.first = ((int)(appr.first + 0.5) + 2 * (int)appr.first)/3.;
-	}
-
-	if (appr.first > 0)
-	{
-		//pixels to pt
-		metrix.approx_symbol_size = appr.first ;///1.1;//"1.2" волшебное число оО
-		metrix.IsCalc = true;
-	}
-
-}
-}
 ods_conversion_context::ods_conversion_context(package::odf_document * outputDocument) 
 	:	odf_conversion_context		(SpreadsheetDocument, outputDocument), 
 		table_context_(*this), current_text_context_(NULL)
 {
-	font_metrix_ = _font_metrix();
 }
 
 void ods_conversion_context::start_document()
@@ -487,21 +455,6 @@ void ods_conversion_context::end_cell()
 	current_table()->end_cell();
 	end_text_context();
 }
-void ods_conversion_context::calculate_font_metrix(std::wstring name, double size, bool italic, bool bold)
-{
-	if (font_metrix_.IsCalc) return;
-
-	if (size < 1)
-		size = 12;
-
-	font_metrix_.font_size	= size;
-	font_metrix_.italic		= italic;
-	font_metrix_.bold		= bold;
-	font_metrix_.font_name	= name;
-
-////////////////////////////////////////////
-    utils::calculate_size_font_symbols(font_metrix_, applicationFonts_);
-}
 
 void ods_conversion_context::start_columns()
 {
@@ -726,19 +679,6 @@ void ods_conversion_context::add_external_reference(const std::wstring & ref)
 
 	external.ref = ref;
 	externals_.push_back(external);
-}
-double ods_conversion_context::convert_symbol_width(double val)
-{
-	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
-	//width = (int)(((256. * width + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
-	//
-	//_dxR = dxR / 1024. * width * 9525.;  // to emu
-	
-	val = ((int)((val * font_metrix_.approx_symbol_size + 5) / font_metrix_.approx_symbol_size * 256 )) / 256.;
-
-	double pixels = (int)(((256. * val + ((int)(128. / font_metrix_.approx_symbol_size ))) / 256. ) * font_metrix_.approx_symbol_size ); //in pixels
-
-	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
 
 void ods_conversion_context::start_table_view( int view_id )

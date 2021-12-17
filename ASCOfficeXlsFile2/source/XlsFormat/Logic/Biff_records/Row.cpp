@@ -54,25 +54,68 @@ BaseObjectPtr Row::clone()
 
 void Row::readFields(CFRecord& record)
 {
-	global_info_ = record.getGlobalWorkbookInfo();
-	record >> rw >> colMic >> colMac >> miyRw;
 
-	unsigned short flags, flags2, reserved1, unused1;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        Rw			rw_2b;
+        _UINT16     ixfe_val_2b;
 
-	record >> reserved1 >> unused1 >> flags >> flags2;
-	
-	iOutLevel	= GETBITS(flags, 0, 2);
-	fCollapsed	= GETBIT(flags, 4);
-	fDyZero		= GETBIT(flags, 5);
-	fUnsynced	= GETBIT(flags, 6);
-	fGhostDirty = GETBIT(flags, 7);
+        global_info_ = record.getGlobalWorkbookInfo();
 
-	ixfe_val	= GETBITS(flags2, 0, 11);
-	fExAsc		= GETBIT(flags2, 12);
-	fExDes		= GETBIT(flags2, 13);
-	fPhonetic	= GETBIT(flags2, 14);
+        record >> rw_2b >> colMic >> colMac >> miyRw;
 
-	bValid = (flags != 0 || flags2 != 0);
+        unsigned short flags, flags2, reserved1, unused1;
+
+        record >> reserved1 >> unused1 >> flags >> flags2;
+
+        iOutLevel	= GETBITS(flags, 0, 2);
+        fCollapsed	= GETBIT(flags, 4);
+        fDyZero		= GETBIT(flags, 5);
+        fUnsynced	= GETBIT(flags, 6);
+        fGhostDirty = GETBIT(flags, 7);
+
+        ixfe_val_2b	= GETBITS(flags2, 0, 11);
+        fExAsc		= GETBIT(flags2, 12);
+        fExDes		= GETBIT(flags2, 13);
+        fPhonetic	= GETBIT(flags2, 14);
+
+        bValid = (flags != 0 || flags2 != 0);
+
+        rw = rw_2b;
+        ixfe_val = ixfe_val_2b;
+    }
+
+    else
+    {
+        global_info_ = record.getGlobalWorkbookInfo();
+
+        record >> rw >> ixfe_val >> miyRw;
+
+        unsigned short flags;
+        unsigned char  flags2;
+
+        record >> flags >> flags2 >> ccolspan;
+
+        fExAsc      = GETBIT(flags, 0);
+        fExDes      = GETBIT(flags, 1);
+        iOutLevel	= GETBITS(flags, 8, 10);
+        fCollapsed	= GETBIT(flags, 11);
+        fDyZero 	= GETBIT(flags, 12);
+        fUnsynced   = GETBIT(flags, 13);
+        fGhostDirty = GETBIT(flags, 14);
+
+        fPhonetic	= GETBIT(flags2, 0);
+
+        for(auto i = 0; i < ccolspan; i++)
+        {
+            XLSB::ColSpan temp;
+            record >> temp;
+            rgBrtColspan.push_back(temp);
+        }
+
+        bValid = (flags != 0 || flags2 != 0);
+    }
+
 }
 
 int Row::serialize(std::wostream &stream)

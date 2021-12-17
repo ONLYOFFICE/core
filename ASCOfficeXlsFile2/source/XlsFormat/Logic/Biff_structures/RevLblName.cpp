@@ -31,8 +31,8 @@
  */
 
 #include "RevLblName.h"
-#include <Binary/CFRecord.h>
-//#include <Exception/WrongBiffRecord.h>
+#include "../../Binary/CFRecord.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
 
 namespace XLS
 {
@@ -56,14 +56,31 @@ BiffStructurePtr RevLblName::clone()
 
 void RevLblName::load(CFRecord& record)
 {
-	XLUnicodeString st_raw;
-	
+    XLUnicodeString       st_raw;
+    XLSB::XLWideString    st_raw_xlsb;
 	unsigned char iBuiltin;
-	record >> iBuiltin >> st_raw;
+    record >> iBuiltin;
+
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        record >> st_raw;
+    }
+    else
+    {
+        record >> st_raw_xlsb;
+    }
+
 	switch(iBuiltin)
 	{
-		case 0x00:
-			st = static_cast<std::wstring >(st_raw);
+		case 0x00:        
+            if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+            {
+                st = st_raw.value();
+            }
+            else
+            {
+                st = st_raw_xlsb.value();
+            }
 			break;
 		case 0x01:
 			st = L"_xlnm.Consolidate_Area";

@@ -35,6 +35,7 @@
 #include "BinSmartPointers.h"
 #include "../Logic/GlobalWorkbookInfo.h"
 #include "../Logic/Biff_structures/ODRAW/OfficeArtRecordHeader.h"
+#include "../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
 
 namespace XLS
 {
@@ -112,5 +113,20 @@ public:
 private:
 	virtual const size_t readFromStream(const size_t num_of_records_min_necessary);
 	NSFile::CFileBinary file_;
+};
+
+class BinaryStreamCacheReader : public StreamCacheReader
+{
+public:
+    BinaryStreamCacheReader(std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream, const GlobalWorkbookInfoPtr global_info);
+    virtual ~BinaryStreamCacheReader();
+
+    CFRecordPtr getNextRecord(const CFRecordType::TypeId desirable_type, const bool gen_except = false) override;
+    void skipNunBytes(const size_t n) override;
+    void checkAndAppendContinueData() override;
+    bool isEOF() override;
+private:
+    const size_t readFromStream(const size_t num_of_records_min_necessary) override;
+    std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream_;
 };
 } // namespace XLS

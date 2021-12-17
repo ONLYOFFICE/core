@@ -137,6 +137,8 @@ public:
 	inline void SetBounds(const CDoubleRect& oRect) { Bounds = oRect; }
 	inline CDoubleRect& GetBounds() { return Bounds; }
 
+    // info about gradient
+    NSStructures::GradientInfo m_oGradientInfo; // used in 60xx grad types
 protected:
 	CColor m_colors[2];
 	PointF m_points[2];

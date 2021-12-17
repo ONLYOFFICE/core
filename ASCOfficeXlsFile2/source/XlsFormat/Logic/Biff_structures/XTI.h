@@ -48,9 +48,9 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-	unsigned short iSupBook;
-	short itabFirst;
-	short itabLast;
+    _UINT32 iSupBook; //externalLink in biff12
+    _INT32 itabFirst; //firstSheet in biff12
+    _INT32 itabLast; //lastSheet in biff12
 };
 
 typedef boost::shared_ptr<XTI> XTIPtr;

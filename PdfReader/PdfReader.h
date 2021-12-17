@@ -38,17 +38,31 @@
 #include "../DesktopEditor/common/base_export.h"
 #define PDFREADER_DECL_EXPORT Q_DECL_EXPORT
 #endif
-
-#include "Src/ErrorConstants.h"
 #include "../DesktopEditor/common/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace PdfReader
 {
+    typedef enum
+    {
+        errorNone          = 0, // Нет ошибок
+        errorOpenFile      = 1, // Ошибка при открытии PDF файла
+        errorBadCatalog    = 2, // couldn't read the page catalog
+        errorDamaged       = 3, // PDF файл был поврежден и его невозможно восстановить
+        errorEncrypted     = 4, // Файл зашифрован, авторизация не пройдена
+        errorHighlightFile = 5, // nonexistent or invalid highlight file
+        errorBadPrinter    = 6, // плохой принтер
+        errorPrinting      = 7, // ошибка во время печати
+        errorPermission    = 8, // Ошибка связанная с ограничениями наложенными на файл
+        errorBadPageNum    = 9, // Неверное количество страниц
+        errorFileIO        = 10, // Ошибка при чтении/записи
+        errorMemory        = 11  // Memory exceed
+    } EError;
+
     class CPdfReader_Private;
     class PDFREADER_DECL_EXPORT CPdfReader : public IOfficeDrawingFile
-	{
-	public:
+    {
+    public:
 
         CPdfReader(NSFonts::IApplicationFonts* fonts);
         virtual ~CPdfReader();
@@ -58,6 +72,8 @@ namespace PdfReader
 
         virtual void Close();
 
+        virtual OfficeDrawingFileType GetType();
+
         virtual std::wstring GetTempDirectory();
         virtual void SetTempDirectory(const std::wstring& directory);
 
@@ -66,23 +82,23 @@ namespace PdfReader
         virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
         virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1);
 
-        EError       GetError();
+        int          GetError();
         double       GetVersion();
         int          GetPermissions();
-		std::wstring GetPageLabel(int nPageIndex);
+        std::wstring GetPageLabel(int nPageIndex);
 
         bool         ExtractAllImages(const wchar_t* wsDstPath, const wchar_t* wsPrefix = 0);
-		int          GetImagesCount();
+        int          GetImagesCount();
 
         void         SetCMapFolder(const wchar_t* wsCMapFolder);
         NSFonts::IFontManager* GetFontManager();
 
-		std::wstring ToXml(const std::wstring& wsXmlPath);
-				     
-	private:
+        std::wstring ToXml(const std::wstring& wsXmlPath);
+
+    private:
         CPdfReader_Private* m_pInternal;
-        EError              m_eError;
-	};
+        int              m_eError;
+    };
 }
 
 #endif // _PDF_READER_H

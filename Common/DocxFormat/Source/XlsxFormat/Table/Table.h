@@ -43,6 +43,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CAltTextTable)
+            WritingElement_XlsbConstructors(CAltTextTable)
 			CAltTextTable()
 			{
 			}
@@ -58,6 +59,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const
 			{
@@ -66,6 +68,7 @@ namespace OOX
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable<std::wstring > m_oAltText;
 			nullable<std::wstring > m_oAltTextSummary;
@@ -74,6 +77,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTableStyleInfo)
+            WritingElement_XlsbConstructors(CTableStyleInfo)
 			CTableStyleInfo()
 			{
 			}
@@ -90,7 +94,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_TableStyleInfo;
@@ -98,6 +102,7 @@ namespace OOX
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable<std::wstring > m_oName;
 			nullable<SimpleTypes::COnOff<> > m_oShowColumnStripes;
@@ -109,6 +114,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTableColumn)
+            WritingElement_XlsbConstructors(CTableColumn)
 			CTableColumn()
 			{
 			}
@@ -124,6 +130,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_TableColumn;
@@ -131,6 +138,7 @@ namespace OOX
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable_string												m_oDataCellStyle;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oDataDxfId;
@@ -155,6 +163,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTableColumns)
+            WritingElement_XlsbConstructors(CTableColumns)
 			CTableColumns()
 			{
 			}
@@ -171,6 +180,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const
 			{
@@ -179,6 +189,7 @@ namespace OOX
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj);
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oCount;
 		};
@@ -186,6 +197,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTable)
+            WritingElement_XlsbConstructors(CTable)
 			CTable()
 			{
 			}
@@ -203,6 +215,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void toXML2(NSStringUtils::CStringBuilder& writer, int nIndex);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_Table;
@@ -210,6 +223,7 @@ namespace OOX
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable_string										m_oComment;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oConnectionId;
@@ -245,6 +259,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTablePart)
+            WritingElement_XlsbConstructors(CTablePart)
 			CTablePart()
 			{
 			}
@@ -260,6 +275,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_TablePart;
@@ -267,6 +283,7 @@ namespace OOX
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRId;
 		};
@@ -274,6 +291,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTableParts)
+            WritingElement_XlsbConstructors(CTableParts)
 			CTableParts()
 			{
 			}
@@ -289,6 +307,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const
 			{
@@ -297,6 +316,7 @@ namespace OOX
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oCount;
 		};
@@ -317,6 +337,7 @@ namespace OOX
 			virtual ~CTableFile()
 			{
 			}
+            void readBin(const CPath& oPath);
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)

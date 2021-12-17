@@ -270,6 +270,18 @@ void odt_conversion_context::start_drawings()
 
 	drawing_context_.push_back(new_drawing_context_);
 }
+bool odt_conversion_context::start_math()
+{
+	if (false == math_context()->isEmpty()) return false;
+
+	start_drawings();
+	return odf_conversion_context::start_math();
+}
+void odt_conversion_context::end_math()
+{
+	odf_conversion_context::end_math();
+	end_drawings();
+}
 void odt_conversion_context::end_drawings()
 {
 	if (drawing_context_.empty()) return;

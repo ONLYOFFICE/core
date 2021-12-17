@@ -32,14 +32,14 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CellRangeRef.h>
-#include <Logic/Biff_structures/SharedParsedFormula.h>
+#include "../Biff_structures/CellRangeRef.h"
+#include "../Biff_structures/SharedParsedFormula.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRangeRef.h"
 
 namespace XLS
 {
 
-
-// Logical representation of ShrFmla record in BIFF8
+// Logical representation of ShrFmla record in BIFF8 and BrtShrFmla in biff12
 class ShrFmla: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(ShrFmla)
@@ -56,9 +56,11 @@ public:
 	static const ElementType	type = typeShrFmla;
 
 //-----------------------------
-	RefU								ref_;
-	BackwardOnlyParam<unsigned char>	cUse;
-	SharedParsedFormula					formula;
+        RefU				 ref_;
+        BackwardOnlyParam<unsigned char> cUse;
+        SharedParsedFormula		 formula;
+
+        XLSB::UncheckedRfX               rfx; //in biff12
 
 };
 

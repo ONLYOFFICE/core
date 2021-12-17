@@ -36,6 +36,7 @@
 #include "../CommonInclude.h"
 
 #include "Text.h"
+#include "../../XlsbFormat/Biff12_structures/PhRun.h"
 
 namespace OOX
 {
@@ -69,6 +70,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BiffStructure& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_PhoneticPr;
@@ -86,6 +91,49 @@ namespace OOX
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BiffStructure& obj)
+            {
+                auto ptr = static_cast<XLSB::PhRun*>(&obj);
+
+                if(ptr != nullptr)
+                {
+                    switch(ptr->alcH)
+                    {
+                        case 0:
+                            m_oAlignment = SimpleTypes::Spreadsheet::phoneticalignmentNoControl;
+                            break;
+                        case 1:
+                            m_oAlignment = SimpleTypes::Spreadsheet::phoneticalignmentLeft;
+                            break;
+                        case 2:
+                            m_oAlignment = SimpleTypes::Spreadsheet::phoneticalignmentCenter;
+                            break;
+                        case 3:
+                            m_oAlignment = SimpleTypes::Spreadsheet::phoneticalignmentDistributed;
+                            break;
+                    }
+
+                    switch(ptr->phType)
+                    {
+                        case 0:
+                            m_oType = SimpleTypes::Spreadsheet::phonetictypeHalfwidthKatakana;
+                            break;
+                        case 1:
+                            m_oType = SimpleTypes::Spreadsheet::phonetictypeFullwidthKatakana;
+                            break;
+                        case 2:
+                            m_oType = SimpleTypes::Spreadsheet::phonetictypeHiragana;
+                            break;
+                        case 3:
+                            m_oType = SimpleTypes::Spreadsheet::phonetictypeNoConversion;
+                            break;
+                    }
+
+                    m_oFontId = ptr->ifnt;
+
+                }
+            }
 		public:
 				nullable<SimpleTypes::Spreadsheet::CPhoneticAlignment<>>	m_oAlignment;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oFontId;
@@ -129,6 +177,14 @@ namespace OOX
 				}
 			}
 
+            void fromBin(XLS::BiffStructure& obj, std::wstring& str)
+            {
+                auto ptr = new CText();
+                ptr->fromBin(str);
+                m_arrItems.push_back(ptr);
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_rPh;
@@ -145,6 +201,17 @@ namespace OOX
 
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BiffStructure& obj)
+            {
+                auto ptr = static_cast<XLSB::PhRun*>(&obj);
+
+                if(ptr != nullptr)
+                {
+                    m_oEb = ptr->ichMom;
+                    m_oSb = ptr->ichFirst;
+                }
+            }
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oEb;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oSb;

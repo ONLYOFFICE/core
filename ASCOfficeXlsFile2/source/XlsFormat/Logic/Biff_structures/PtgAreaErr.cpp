@@ -56,10 +56,12 @@ BiffStructurePtr PtgAreaErr::clone()
 
 void PtgAreaErr::loadFields(CFRecord& record)
 {
-	record.skipNunBytes(8); // unused
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        record.skipNunBytes(8); // unused
+    else
+        record.skipNunBytes(12); // unused
+
 }
-
-
 void PtgAreaErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	if(!ptg_stack.empty() && 0 == ptg_stack.top().find(L"#PtgElfRadical"))

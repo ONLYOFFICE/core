@@ -266,6 +266,7 @@ protected:
 
 	Aggplus::CMatrix	m_oFullTransform;
 
+
 	double m_dClipLeft;
 	double m_dClipTop;
 	double m_dClipWidth;
@@ -405,6 +406,9 @@ protected:
 	void DoFillPathSolid(CColor dwColor);
 	void DoFillPathGradient(CBrushLinearGradient *pBrush);
 	void DoFillPathGradient2(CBrushLinearGradient *pBrush);
+    //--Test
+    void DoFillPathGradientType(CBrushLinearGradient *pBrush);
+    //--test
 	void DoFillPathHatch(CBrushHatch *pBrush);
 	void DoFillPathTextureClampSz(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride);
 	void DoFillPathTextureClampSz2(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride, BYTE Alpha = 255);
@@ -421,6 +425,11 @@ protected:
 	void PrepareScanlineStorage(agg::scanline_storage_aa8* storage, int x, int y, TGlyphBitmap *pGlyph);
 
 	void UpdateUnits();
+
+    //test 
+    
+	void ScaleGranientInfo(long Type, NSStructures::GradientInfo &ginfo);
+	void ScaleCoords(float &x, float &y);
 };
 }
 

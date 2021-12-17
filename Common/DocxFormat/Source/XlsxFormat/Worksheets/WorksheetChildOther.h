@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -32,6 +32,17 @@
 #pragma once
 
 #include "../CommonInclude.h"
+#include "../../XlsbFormat/Biff12_records/WsDim.h"
+#include "../../XlsbFormat/Biff12_records/WsFmtInfo.h"
+#include "../../XlsbFormat/Biff12_unions/WSVIEWS2.h"
+#include "../../XlsbFormat/Biff12_unions/WSVIEW2.h"
+#include "../../XlsbFormat/Biff12_unions/HEADERFOOTER.h"
+#include "../../XlsbFormat/Biff12_records/BeginHeaderFooter.h"
+#include "../../XlsbFormat/Biff12_records/SheetProtectionIso.h"
+#include "../../XlsbFormat/Biff12_records/SheetProtection.h"
+#include "../../XlsbFormat/Biff12_records/LegacyDrawingHF.h"
+#include "../../XlsbFormat/Biff12_records/Margins.h"
+#include "../../XlsbFormat/Biff12_records/PrintOptions.h"
 
 namespace OOX
 {
@@ -186,6 +197,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPageMargins)
+            WritingElement_XlsbConstructors(CPageMargins)
 			CPageMargins()
 			{
 			}
@@ -220,7 +232,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_PageMargins;
@@ -232,13 +247,37 @@ namespace OOX
 			{
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_Read_if		( oReader, (L"left"),	m_oLeft)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"top"),		m_oTop)
+                    WritingElement_ReadAttributes_Read_else_if	( oReader, (L"top"),	m_oTop)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"right"),	m_oRight)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"bottom"),	m_oBottom)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"header"),	m_oHeader)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"footer"),	m_oFooter)
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::Margins*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oLeft.Init();
+                    m_oLeft->SetValue(ptr->xnumLeft.data.value);
+
+                    m_oTop.Init();
+                    m_oTop->SetValue(ptr->xnumTop.data.value);
+
+                    m_oRight.Init();
+                    m_oRight->SetValue(ptr->xnumRight.data.value);
+
+                    m_oBottom.Init();
+                    m_oBottom->SetValue(ptr->xnumBottom.data.value);
+
+                    m_oHeader.Init();
+                    m_oHeader->SetValue(ptr->xnumHeader.data.value);
+
+                    m_oFooter.Init();
+                    m_oFooter->SetValue(ptr->xnumFooter.data.value);
+                }
+            }
 
 		public:
 			nullable<SimpleTypes::CInch>	m_oLeft;
@@ -252,6 +291,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPageSetup)
+            WritingElement_XlsbConstructors(CPageSetup)
 			CPageSetup()
 			{
 			}
@@ -300,7 +340,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_PageSetup;
@@ -331,6 +374,48 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"verticalDpi"),	m_oVerticalDpi)
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::PageSetup*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oBlackAndWhite        = ptr->fNoColor;
+                    if(ptr->fNoColor)
+                    {
+                        if(ptr->fNotes)
+                            m_oCellComments = SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd;
+                        else
+                            m_oCellComments = SimpleTypes::Spreadsheet::ECellComments::cellcommentsAsDisplayed;
+                    }
+                    else
+                        m_oCellComments     = SimpleTypes::Spreadsheet::ECellComments::cellcommentsNone;
+
+                    m_oCopies               = ptr->iCopies;
+                    m_oDraft                = ptr->fDraft;
+                    m_oErrors               = (SimpleTypes::Spreadsheet::EPrintError)ptr->iErrors;
+                    m_oFirstPageNumber      = ptr->iPageStart;
+                    m_oFitToHeight          = ptr->iFitHeight;
+                    m_oFitToWidth           = ptr->iFitWidth;
+                    m_oHorizontalDpi        = ptr->iRes;
+                    m_oRId                  = ptr->szRelID;
+
+                    if(ptr->fLandscape)
+                        m_oOrientation      = SimpleTypes::EPageOrientation::pageorientLandscape;
+                    else
+                        m_oOrientation      = SimpleTypes::EPageOrientation::pageorientPortrait;
+
+                    if(ptr->fLeftToRight)
+                        m_oPageOrder        = SimpleTypes::Spreadsheet::EPageOrder::pageorderOverThenDown;
+                    else
+                        m_oPageOrder        = SimpleTypes::Spreadsheet::EPageOrder::pageorderDownThenOver;
+
+                    m_oPaperSize            = (SimpleTypes::Spreadsheet::EPageSize)ptr->iPaperSize;
+                    m_oScale                = ptr->iScale;
+                    m_oUseFirstPageNumber   = ptr->fUsePage;
+                    m_oVerticalDpi          = ptr->iVRes;
+
+                }
+            }
 			nullable<SimpleTypes::COnOff<>>							m_oBlackAndWhite;
 			nullable<SimpleTypes::Spreadsheet::CCellComments<>>		m_oCellComments;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oCopies;
@@ -356,6 +441,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPrintOptions)
+            WritingElement_XlsbConstructors(CPrintOptions)
 			CPrintOptions()
 			{
 			}
@@ -387,7 +473,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_PrintOptions;
@@ -405,6 +494,18 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"verticalCentered"),	m_oVerticalCentered)
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::PrintOptions*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oGridLines                = ptr->fPrintGrid;
+                    m_oGridLinesSet             = ptr->fPrintGrid;
+                    m_oHeadings                 = ptr->fPrintHeaders;
+                    m_oHorizontalCentered       = ptr->fHCenter;
+                    m_oVerticalCentered         = ptr->fVCenter;
+                }
+            }
 
 		public:
 			nullable<SimpleTypes::COnOff<>>	m_oGridLines;
@@ -417,6 +518,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDimension)
+            WritingElement_XlsbConstructors(CDimension)
 			CDimension()
 			{
 			}
@@ -440,6 +542,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -454,6 +560,12 @@ namespace OOX
 					WritingElement_ReadAttributes_ReadSingle( oReader, (L"ref"), m_oRef)
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::WsDim*>(obj.get());
+                if(ptr != nullptr)
+                    m_oRef                  = ptr->rfx.toString();
+            }
 
 		public:
 			nullable_string	m_oRef;
@@ -462,6 +574,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheetFormatPr)
+            WritingElement_XlsbConstructors(CSheetFormatPr)
 			CSheetFormatPr()
 			{
 			}
@@ -476,7 +589,7 @@ namespace OOX
 				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
+            {
 				writer.WriteString((L"<sheetFormatPr"));
 				WritingStringNullableAttrInt2(L"baseColWidth", m_oBaseColWidth);
 				WritingStringNullableAttrBool2(L"customHeight", m_oCustomHeight);
@@ -493,9 +606,14 @@ namespace OOX
 			{
 				ReadAttributes( oReader );
 
-				if ( !oReader.IsEmptyNode() )
+                if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
-			}
+            }
+
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -517,7 +635,24 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"thickTop"),			m_oThickTop )
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"zeroHeight"),			m_oZeroHeight )
 				WritingElement_ReadAttributes_End( oReader )
-			}
+            }
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::WsFmtInfo*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oBaseColWidth                  = ptr->dxGCol;
+                    m_oDefaultColWidth               = ptr->cchDefColWidth;
+                    m_oDefaultRowHeight              = ptr->miyDefRwHeight;
+                    m_oCustomHeight                  = ptr->fUnsynced;
+                    m_oOutlineLevelCol               = ptr->iOutLevelCol;
+                    m_oOutlineLevelRow               = ptr->iOutLevelRw;
+                    m_oThickBottom                   = ptr->fExDesc;
+                    m_oThickTop                      = ptr->fExAsc;
+                    m_oZeroHeight                    = ptr->fDyZero;
+                }
+            }
 
 		public:
 				nullable_uint		m_oBaseColWidth;
@@ -534,6 +669,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPane)
+            WritingElement_XlsbConstructors(CPane)
 			CPane()
 			{
 			}
@@ -564,6 +700,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -581,6 +721,32 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"ySplit")		, m_oYSplit)	
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto pPane = static_cast<XLSB::Pane*>(obj.get());
+                if(pPane != nullptr)
+                {
+                    switch (pPane->pnnAcct_xlsb)
+                    {
+                        case 0:  m_oActivePane = SimpleTypes::Spreadsheet::EActivePane::activepaneBottomRight; break;
+                        case 1:  m_oActivePane = SimpleTypes::Spreadsheet::EActivePane::activepaneTopRight; break;
+                        case 2:  m_oActivePane = SimpleTypes::Spreadsheet::EActivePane::activepaneBottomLeft; break;
+                        case 3:  m_oActivePane = SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft; break;
+                    }
+
+                    if(pPane->fFrozen)
+                        m_oState         = SimpleTypes::Spreadsheet::EPaneState::panestateFrozenSplit;
+                    else if(pPane->fFrozenNoSplit)
+                        m_oState         = SimpleTypes::Spreadsheet::EPaneState::panestateFrozen;
+                    else
+                        m_oState         = SimpleTypes::Spreadsheet::EPaneState::panestateSplit;
+
+                    m_oTopLeftCell   = pPane->topLeftCell;
+                    m_oXSplit        = pPane->xnumXSplit.data.value;
+                    m_oYSplit        = pPane->xnumYSplit.data.value;
+                }
+            }
+
 
 		public:
             nullable<SimpleTypes::Spreadsheet::CActivePane<>>   m_oActivePane;
@@ -593,6 +759,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSelection)
+            WritingElement_XlsbConstructors(CSelection)
 			CSelection()
 			{
 			}
@@ -622,6 +789,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -638,6 +809,24 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"pane"),			m_oPane)
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto pSel = static_cast<XLSB::Sel*>(obj.get());
+                if(pSel != nullptr)
+                {
+                    m_oActiveCell    = pSel->activeCell;
+                    m_oActiveCellId  = pSel->irefAct;
+                    m_oSqref         = pSel->sqref;
+                    switch (pSel->pnn_xlsb)
+                    {
+                        case 0:  m_oPane = SimpleTypes::Spreadsheet::EActivePane::activepaneBottomRight; break;
+                        case 1:  m_oPane = SimpleTypes::Spreadsheet::EActivePane::activepaneTopRight; break;
+                        case 2:  m_oPane = SimpleTypes::Spreadsheet::EActivePane::activepaneBottomLeft; break;
+                        case 3:  m_oPane = SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft; break;
+                    }
+                }
+            }
+
 
 		public:
 			nullable_string										m_oActiveCell;
@@ -653,6 +842,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheetView)
+            WritingElement_XlsbConstructors(CSheetView)
 			CSheetView()
 			{
 			}
@@ -723,7 +913,25 @@ namespace OOX
 					}
 				}
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto pWSVIEW2 = static_cast<XLSB::WSVIEW2*>(obj.get());
+                if (pWSVIEW2 == nullptr)
+                    return;
 
+                ReadAttributes(pWSVIEW2->m_BrtBeginWsView);
+
+                m_oPane = pWSVIEW2->m_BrtPane;
+
+                if (pWSVIEW2->m_arBrtSel.empty())
+                    return;
+
+                for(auto &pSel : pWSVIEW2->m_arBrtSel)
+                {
+                    m_arrItems.push_back(new CSelection(pSel));
+
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_SheetView;
@@ -756,6 +964,34 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto pWsView = static_cast<XLSB::BeginWsView*>(obj.get());
+                if(pWsView != nullptr)
+                {
+                    m_oColorId                  = pWsView->icvHdr;
+                    m_oDefaultGridColor         = pWsView->fDefaultHdr;
+                    m_oRightToLeft              = pWsView->fRightToLeft;
+                    m_oShowFormulas             = pWsView->fDspFmlaRt;
+                    m_oShowGridLines            = pWsView->fDspGridRt;
+                    m_oShowOutlineSymbols       = pWsView->fDspGuts;
+                    m_oShowRowColHeaders        = pWsView->fDspRwColRt;
+                    m_oShowRuler                = pWsView->fDspRuler;
+                    m_oShowWhiteSpace           = pWsView->fWhitespaceHidden;
+                    m_oShowZeros                = pWsView->fDspZerosRt;
+                    m_oTabSelected              = pWsView->fSelected;
+                    m_oTopLeftCell              = pWsView->topLeftCell;
+                    m_oView                     = (SimpleTypes::Spreadsheet::ESheetViewType)pWsView->xlView;
+                    m_oWindowProtection         = pWsView->fWnProt;
+                    m_oWorkbookViewId           = pWsView->iWbkView;
+                    m_oZoomScale                = pWsView->wScale;
+                    m_oZoomScaleNormal          = pWsView->wScaleNormal;
+                    m_oZoomScalePageLayoutView  = pWsView->wScalePLV;
+                    m_oZoomScaleSheetLayoutView = pWsView->wScaleSLV;
+                }
+
+            }
+
 		public:
 				nullable<CPane>										m_oPane;
 
@@ -783,6 +1019,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheetViews)
+            WritingElement_XlsbConstructors(CSheetViews)
 			CSheetViews()
 			{
 			}
@@ -826,6 +1063,19 @@ namespace OOX
 						m_arrItems.push_back( new CSheetView( oReader ));
 				}
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto arView = static_cast<XLSB::WSVIEWS2*>(obj.get())->m_arWSVIEW2;
+                if (arView.empty())
+                    return;
+
+                for(auto &pView : arView)
+                {
+                    CSheetView *pSheetView = new CSheetView(pView);
+                    m_arrItems.push_back(pSheetView);
+
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_SheetViews;
@@ -1101,6 +1351,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CHeaderFooter)
+            WritingElement_XlsbConstructors(CHeaderFooter)
 			CHeaderFooter()
 			{
 			}
@@ -1174,6 +1425,49 @@ namespace OOX
 						m_oOddHeader = oReader;
 				}
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto pHEADERFOOTER = static_cast<XLSB::HEADERFOOTER*>(obj.get());
+                if (pHEADERFOOTER == nullptr)
+                    return;
+
+                ReadAttributes(pHEADERFOOTER->m_BrtBeginHeaderFooter);
+
+                auto ptr = static_cast<XLSB::BeginHeaderFooter*>(pHEADERFOOTER->m_BrtBeginHeaderFooter.get());
+                if(ptr != nullptr)
+                {
+                    if(!ptr->stHeader.value().empty())
+                    {
+                        m_oOddHeader = new CHeaderFooterElement();
+                        m_oOddHeader->m_sText = ptr->stHeader.value();
+                    }
+                    if(!ptr->stFooter.value().empty())
+                    {
+                        m_oOddFooter = new CHeaderFooterElement();
+                        m_oOddFooter->m_sText = ptr->stFooter.value();
+                    }
+                    if(ptr->fHFDiffOddEven && !ptr->stHeaderEven.value().empty())
+                    {
+                        m_oEvenHeader = new CHeaderFooterElement();
+                        m_oEvenHeader->m_sText = ptr->stHeaderEven.value();
+                    }
+                    if(ptr->fHFDiffOddEven && !ptr->stFooterEven.value().empty())
+                    {
+                        m_oEvenFooter = new CHeaderFooterElement();
+                        m_oEvenFooter->m_sText = ptr->stFooterEven.value();
+                    }
+                    if(ptr->fHFDiffFirst && !ptr->stHeaderFirst.value().empty())
+                    {
+                        m_oFirstHeader = new CHeaderFooterElement();
+                        m_oFirstHeader->m_sText = ptr->stHeaderFirst.value();
+                    }
+                    if(ptr->fHFDiffFirst && !ptr->stFooterFirst.value().empty())
+                    {
+                        m_oFirstFooter = new CHeaderFooterElement();
+                        m_oFirstFooter->m_sText = ptr->stFooterFirst.value();
+                    }
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_HeaderFooterWorksheet;
@@ -1189,6 +1483,17 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if	( oReader, (L"scaleWithDoc"),		m_oScaleWithDoc)
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BeginHeaderFooter*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oAlignWithMargins = ptr->fHFAlignMargins;
+                    m_oDifferentFirst   = ptr->fHFDiffFirst;
+                    m_oDifferentOddEven = ptr->fHFDiffOddEven;
+                    m_oScaleWithDoc     = ptr->fHFScaleWithDoc;
+                }
+            }
 
 		public:
 			nullable<CHeaderFooterElement>		m_oEvenFooter;
@@ -1209,6 +1514,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CLegacyDrawingHFWorksheet)
+            WritingElement_XlsbConstructors(CLegacyDrawingHFWorksheet)
 			CLegacyDrawingHFWorksheet()
 			{
 			}
@@ -1256,7 +1562,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_LegacyDrawingHFWorksheet;
@@ -1288,6 +1597,12 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"rho"),     m_oRho )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::LegacyDrawingHF*>(obj.get());
+                if(ptr != nullptr)
+                    m_oId = ptr->stRelId.value.value();
+            }
 		public:
 			nullable<SimpleTypes::CRelationshipId >				m_oId;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCfe;
@@ -1497,6 +1812,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheetProtection)
+            WritingElement_XlsbConstructors(CSheetProtection)
 			CSheetProtection()
 			{
 			}
@@ -1544,6 +1860,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -1577,6 +1897,67 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"sort"),			m_oSort)
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptrRecord = static_cast<XLS::BiffRecord*>(obj.get());
+
+                if(ptrRecord != nullptr && ptrRecord->getTypeId() == XLSB::rt_SheetProtection)
+                {
+                    auto ptr = static_cast<XLSB::SheetProtection*>(obj.get());
+
+                    m_oPassword                = std::to_wstring(ptr->protpwd);
+                    m_oAutoFilter              = (bool)ptr->fAutoFilter;
+                    m_oContent                 = true;
+                    m_oDeleteColumns           = (bool)ptr->fDeleteColumns;
+                    m_oDeleteRows              = (bool)ptr->fDeleteRows;
+                    m_oFormatCells             = (bool)ptr->fFormatCells;
+                    m_oFormatColumns           = (bool)ptr->fFormatColumns;
+                    m_oFormatRows              = (bool)ptr->fFormatRows;
+                    m_oInsertColumns           = (bool)ptr->fInsertColumns;
+                    m_oInsertHyperlinks        = (bool)ptr->fInsertHyperlinks;
+                    m_oInsertRows              = (bool)ptr->fInsertRows;
+                    m_oObjects                 = (bool)ptr->fObjects;
+                    m_oPivotTables             = (bool)ptr->fPivotTables;
+                    m_oScenarios               = (bool)ptr->fScenarios;
+                    m_oSelectLockedCells       = (bool)ptr->fSelLockedCells;
+                    m_oSelectUnlockedCells     = (bool)ptr->fSelUnlockedCells;
+                    m_oSheet                   = (bool)ptr->fLocked;
+                    m_oSort                    = (bool)ptr->fSort;
+
+                }
+                else if(ptrRecord != nullptr && ptrRecord->getTypeId() == XLSB::rt_SheetProtectionIso)
+                {
+                    auto ptr = static_cast<XLSB::SheetProtectionIso*>(obj.get());
+
+                    m_oAlgorithmName           = ptr->ipdPasswordData.szAlgName.value();
+                    m_oSpinCount               = ptr->dwSpinCount;
+                    m_oHashValue               = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdPasswordData.rgbHash.rgbData),
+                                                              ptr->ipdPasswordData.rgbHash.cbLength/sizeof(wchar_t));
+                    m_oSaltValue               = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdPasswordData.rgbSalt.rgbData),
+                                                              ptr->ipdPasswordData.rgbSalt.cbLength/sizeof(wchar_t));
+                    m_oAutoFilter              = (bool)ptr->fAutoFilter;
+                    m_oContent                 = true;
+                    m_oDeleteColumns           = (bool)ptr->fDeleteColumns;
+                    m_oDeleteRows              = (bool)ptr->fDeleteRows;
+                    m_oFormatCells             = (bool)ptr->fFormatCells;
+                    m_oFormatColumns           = (bool)ptr->fFormatColumns;
+                    m_oFormatRows              = (bool)ptr->fFormatRows;
+                    m_oInsertColumns           = (bool)ptr->fInsertColumns;
+                    m_oInsertHyperlinks        = (bool)ptr->fInsertHyperlinks;
+                    m_oInsertRows              = (bool)ptr->fInsertRows;
+                    m_oObjects                 = (bool)ptr->fObjects;
+                    m_oPivotTables             = (bool)ptr->fPivotTables;
+                    m_oScenarios               = (bool)ptr->fScenarios;
+                    m_oSelectLockedCells       = (bool)ptr->fSelLockedCells;
+                    m_oSelectUnlockedCells     = (bool)ptr->fSelUnlockedCells;
+                    m_oSheet                   = (bool)ptr->fLocked;
+                    m_oSort                    = (bool)ptr->fSort;
+                }
+
+
+            }
+
 			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oAlgorithmName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
 			nullable_string		m_oHashValue;

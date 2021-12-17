@@ -37,6 +37,7 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include <math.h>
 
 #include "../../Common/kernel_config.h"
 
@@ -296,6 +297,74 @@ namespace NSStringExt
 			res--;
 		}
 		return res;
+	}
+	static bool FromHumanReadableByteCount(const std::wstring& wsString, long long& res)
+	{
+		res = 0;
+		long long coeff = 0;
+		int unit = 1000;
+		int exp  = 0;
+		// Parse leading numeric factor
+		std::size_t pos = 0;
+		try
+		{
+			coeff = std::stoll(wsString, &pos);
+		}
+		catch(...)
+		{
+			return false;
+		}
+
+		// Skip any intermediate white space
+		while (pos < wsString.length() && isspace(wsString[pos])) ++pos;
+
+		// Read off first character which should be an SI prefix
+		if (pos < wsString.length())
+		{
+			switch (toupper(wsString[pos])) {
+				case 'B':  exp =  0; break;
+				case 'K':  exp =  3; break;
+				case 'M':  exp =  6; break;
+				case 'G':  exp =  9; break;
+				case 'T':  exp = 12; break;
+				case 'E':  exp = 15; break;
+				case 'Z':  exp = 18; break;
+				case 'Y':  exp = 21; break;
+
+				default:   return false;
+			}
+			++pos;
+		}
+
+		// If an 'i' or 'I' is present use IEC standard 1024 units
+		if (pos < wsString.length())
+		{
+			if (toupper(wsString[pos]) == 'I') {
+				++pos;
+				unit = 1024;
+			}
+		}
+
+		// Next character must be one of B/empty/whitespace
+		if (pos < wsString.length())
+		{
+			switch (toupper(wsString[pos])) {
+				case 'B':
+				case ' ':
+				case '\t': ++pos;  break;
+
+				default:   return false;
+			}
+		}
+
+		// Skip any remaining white space
+		while (pos < wsString.length() && isspace(wsString[pos])) ++pos;
+
+		// Parse error on anything but a null terminator
+		if (pos < wsString.length()) return false;
+
+		res = exp ? coeff * pow(unit, exp / 3) : coeff;
+		return true;
 	}
 }
 

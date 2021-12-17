@@ -61,109 +61,143 @@ BaseObjectPtr Lbl::clone()
 
 void Lbl::readFields(CFRecord& record)
 {
-	unsigned short flags;
-	record >> flags >> chKey;
-	
-	fHidden			= GETBIT(flags, 0);
-	fFunc			= GETBIT(flags, 1);
-	fOB				= GETBIT(flags, 2);
-	fProc			= GETBIT(flags, 3);
-	fCalcExp		= GETBIT(flags, 4);
-	fBuiltin		= GETBIT(flags, 5);
-	fGrp			= GETBITS(flags, 6, 11);
-	fPublished		= GETBIT(flags, 13);
-	fWorkbookParam	= GETBIT(flags, 14);
-	
-	unsigned char cch;
-	unsigned short cce;
-	record >> cch >> cce;
-	record.skipNunBytes(2);
-	record >> itab;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        unsigned short flags;
+        record >> flags >> chKey;
 
-	record.skipNunBytes(4);
-	
-	if (record.getGlobalWorkbookInfo()->Version < 0x600)
-	{
-		LPAnsiStringNoCch s;
-		s.setSize(cch);
-		record >> s;
-		Name_bin = s;
-	}
-	else
-	{
-		Name_bin.setSize(cch); // this is to process built-in string values
-		record >> Name_bin;
-	}
-	
-	rgce.load(record, cce);
+        fHidden			= GETBIT(flags, 0);
+        fFunc			= GETBIT(flags, 1);
+        fOB				= GETBIT(flags, 2);
+        fProc			= GETBIT(flags, 3);
+        fCalcExp		= GETBIT(flags, 4);
+        fBuiltin		= GETBIT(flags, 5);
+        fGrp			= GETBITS(flags, 6, 11);
+        fPublished		= GETBIT(flags, 13);
+        fWorkbookParam	= GETBIT(flags, 14);
 
-	if(!fBuiltin)
-	{
-		Name = Name_bin.getEscaped_ST_Xstring();
-		
-		for (int i = 0 ; i < 3; i++)
-		{
-			int res = Name_bin.value().find(AutoFilterDefineNames[i]);
-			if (res >=0)
-			{
-				Name = Name_bin = (L"_xlnm._FilterDatabase");
-				break;
-			}
-		}
-	}
-	else
-	{
-		unsigned char index = (static_cast<std::wstring>(Name_bin)).c_str()[0];
-		switch(index)
-		{
-			case 0x00:
-				Name =  (L"_xlnm.Consolidate_Area");
-				break;
-			case 0x01:
-				Name =  (L"_xlnm.Auto_Open");
-				break;
-			case 0x02:
-				Name =  (L"_xlnm.Auto_Close");
-				break;
-			case 0x03:
-				Name =  (L"_xlnm.Extract");
-				break;
-			case 0x04:
-				Name =  (L"_xlnm.Database");
-				break;
-			case 0x05:
-				Name =  (L"_xlnm.Criteria");
-				break;
-			case 0x06:
-				Name =  (L"_xlnm.Print_Area");
-				break;
-			case 0x07:
-				Name =  (L"_xlnm.Print_Titles");
-				break;
-			case 0x08:
-				Name =  (L"_xlnm.Recorder");
-				break;
-			case 0x09:
-				Name =  (L"_xlnm.Data_Form");
-				break;
-			case 0x0A:
-				Name =  (L"_xlnm.Auto_Activate");
-				break;
-			case 0x0B:
-				Name =  (L"_xlnm.Auto_Deactivate");
-				break;
-			case 0x0C:
-				Name =  (L"_xlnm.Sheet_Title");
-				break;
-			case 0x0D:
-				Name =  (L"_xlnm._FilterDatabase");
-				break;
-			default:
-				Name;
-				break;
-				// EXCEPT::RT::WrongBiffRecord(L"Unsupported value of built-in name.", record.getTypeString());
-		}
-	}
+        unsigned char cch;
+        unsigned short cce;
+        record >> cch >> cce;
+        record.skipNunBytes(2);
+        _UINT16	itab_2b;
+        record >> itab_2b;
+        itab = itab_2b;
+
+        record.skipNunBytes(4);
+
+        if (record.getGlobalWorkbookInfo()->Version < 0x600)
+        {
+            LPAnsiStringNoCch s;
+            s.setSize(cch);
+            record >> s;
+            Name_bin = s;
+        }
+        else
+        {
+            Name_bin.setSize(cch); // this is to process built-in string values
+            record >> Name_bin;
+        }
+
+        rgce.load(record, cce);
+
+        if(!fBuiltin)
+        {
+            Name = Name_bin.getEscaped_ST_Xstring();
+
+            for (int i = 0 ; i < 3; i++)
+            {
+                int res = Name_bin.value().find(AutoFilterDefineNames[i]);
+                if (res >=0)
+                {
+                    Name = Name_bin = (L"_xlnm._FilterDatabase");
+                    break;
+                }
+            }
+        }
+        else
+        {
+            unsigned char index = (static_cast<std::wstring>(Name_bin)).c_str()[0];
+            switch(index)
+            {
+                case 0x00:
+                    Name =  (L"_xlnm.Consolidate_Area");
+                    break;
+                case 0x01:
+                    Name =  (L"_xlnm.Auto_Open");
+                    break;
+                case 0x02:
+                    Name =  (L"_xlnm.Auto_Close");
+                    break;
+                case 0x03:
+                    Name =  (L"_xlnm.Extract");
+                    break;
+                case 0x04:
+                    Name =  (L"_xlnm.Database");
+                    break;
+                case 0x05:
+                    Name =  (L"_xlnm.Criteria");
+                    break;
+                case 0x06:
+                    Name =  (L"_xlnm.Print_Area");
+                    break;
+                case 0x07:
+                    Name =  (L"_xlnm.Print_Titles");
+                    break;
+                case 0x08:
+                    Name =  (L"_xlnm.Recorder");
+                    break;
+                case 0x09:
+                    Name =  (L"_xlnm.Data_Form");
+                    break;
+                case 0x0A:
+                    Name =  (L"_xlnm.Auto_Activate");
+                    break;
+                case 0x0B:
+                    Name =  (L"_xlnm.Auto_Deactivate");
+                    break;
+                case 0x0C:
+                    Name =  (L"_xlnm.Sheet_Title");
+                    break;
+                case 0x0D:
+                    Name =  (L"_xlnm._FilterDatabase");
+                    break;
+                default:
+                    Name;
+                    break;
+                    // EXCEPT::RT::WrongBiffRecord(L"Unsupported value of built-in name.", record.getTypeString());
+            }
+        }
+    }
+
+    else
+    {
+        unsigned int flags;
+        record >> flags;
+
+        fHidden			= GETBIT(flags, 0);
+        fFunc			= GETBIT(flags, 1);
+        fOB				= GETBIT(flags, 2);
+        fProc			= GETBIT(flags, 3);
+        fCalcExp		= GETBIT(flags, 4);
+        fBuiltin		= GETBIT(flags, 5);
+        fGrp			= GETBITS(flags, 6, 14);
+        fPublished		= GETBIT(flags, 15);
+        fWorkbookParam	= GETBIT(flags, 16);
+        fFutureFunction	= GETBIT(flags, 17);
+
+        record >> chKey >> itab;
+        record >> name;
+        rgce.load(record);
+        record >> comment;
+        if(fProc)
+        {
+            record >> unusedstring1;
+            record >> description;
+            record >> helpTopic;
+            record >> unusedstring2;
+        }
+    }
 }
 
 

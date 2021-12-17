@@ -53,10 +53,32 @@ BaseObjectPtr Pane::clone()
 
 void Pane::readFields(CFRecord& record)
 {
-	record >> x >> y >> rwTop >> colLeft >> pnnAcct;
-	
-	topLeftCell = static_cast<std::wstring >(CellRef(rwTop, colLeft, true, true));
-	record.skipNunBytes(1); // reserved
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        _UINT16		rwTop_2b;
+        _UINT16		colLeft_2b;
+
+        record >> x >> y >> rwTop_2b >> colLeft_2b >> pnnAcct;
+
+        rwTop   = rwTop_2b;
+        colLeft = colLeft_2b;
+
+        topLeftCell = static_cast<std::wstring >(CellRef(rwTop_2b, colLeft_2b, true, true));
+        record.skipNunBytes(1); // reserved
+    }
+    else
+    {
+        record >> xnumXSplit >> xnumYSplit >> rwTop >> colLeft >> pnnAcct_xlsb;
+        topLeftCell = static_cast<std::wstring >(CellRef(rwTop, colLeft, true, true));
+
+        unsigned char flags;
+        record >> flags;
+
+        fFrozen             = GETBIT(flags, 0);
+        fFrozenNoSplit      = GETBIT(flags, 1);
+
+    }
+
 }
 
 } // namespace XLS

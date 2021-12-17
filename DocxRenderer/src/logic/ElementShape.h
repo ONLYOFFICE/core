@@ -40,7 +40,7 @@ namespace NSDocxRenderer
 		{
 			if (NULL == m_pData)
 			{
-				m_lSize = max(nSize, 500);				
+                m_lSize = std::max(nSize, (size_t)500);
 				m_pData = (double*)malloc(m_lSize * sizeof(double));
 				
 				m_lSizeCur = 0;
@@ -347,16 +347,16 @@ namespace NSDocxRenderer
             oWriter.AddInt((int)m_lCoordSizeY);
             oWriter.WriteString(L"\" path=\"");
             oWriter.WriteString(m_strPath);
-            oWriter.WriteString(L"\" fillcolor=\"");
+            oWriter.WriteString(L"\" fillcolor=\"#");
             oWriter.WriteHexInt3((int)ConvertColor(m_oBrush.Color1));
-            oWriter.WriteString(L"\" strokecolor=\"");
+            oWriter.WriteString(L"\" strokecolor=\"#");
             oWriter.WriteHexInt3((int)ConvertColor(m_oPen.Color));
             oWriter.WriteString(L"\" strokeweight=\"");
             oWriter.AddDouble(m_oPen.Size, 2);
             oWriter.WriteString(L"mm\">");
 
-            static CString g_string_fill_opacity		= _T("<v:fill opacity=\"%.2lf\"/>");
-            static CString g_string_stroke_opacity		= _T("<v:stroke opacity=\"%.2lf\"/>");
+            std::wstring g_string_fill_opacity = L"<v:fill opacity=\"%.2lf\"/>";
+            std::wstring g_string_stroke_opacity = L"<v:stroke opacity=\"%.2lf\"/>";
 
             if (c_BrushTypeTexture == m_oBrush.Type)
 			{

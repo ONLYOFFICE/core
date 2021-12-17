@@ -70,15 +70,23 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 
 		return pNew;
 	}
-	else if	   ((c_BrushTypeHorizontal		== Type) ||
-				(c_BrushTypeVertical		== Type) ||
-				(c_BrushTypeDiagonal1		== Type) ||
-				(c_BrushTypeDiagonal2		== Type) ||
-				(c_BrushTypeCenter			== Type) ||
-				(c_BrushTypePathGradient1	== Type) ||
-				(c_BrushTypePathGradient2	== Type) ||
-				(c_BrushTypeCylinderHor		== Type) ||
-				(c_BrushTypeCylinderVer		== Type))
+	else if	   ((c_BrushTypeHorizontal	    == Type) 		||
+				(c_BrushTypeVertical		== Type) 		||
+				(c_BrushTypeDiagonal1		== Type)		||
+				(c_BrushTypeDiagonal2		== Type)		||
+				(c_BrushTypeCenter			== Type) 		||
+				(c_BrushTypePathGradient1	== Type) 		||
+				(c_BrushTypePathGradient2	== Type) 		||
+				(c_BrushTypeCylinderHor		== Type) 		||
+				(c_BrushTypeCylinderVer		== Type) 		|| 
+                (c_BrushTypePathRadialGradient  == Type) 	||
+                (c_BrushTypePathNewLinearGradient == Type)  ||
+                (c_BrushTypePathConicalGradient == Type) 	||
+                (c_BrushTypePathDiamondGradient == Type) 	||
+                (c_BrushTypeMyTestGradient  == Type)  		||
+                (c_BrushTypeTriagnleMeshGradient  == Type)  ||
+                (c_BrushTypeCurveGradient  == Type)  		||
+                (c_BrushTypeTensorCurveGradient == Type))
 	{
         Aggplus::CColor o1((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1, bIsSwappedRGB);
         Aggplus::CColor o2((BYTE)(pBrush->Alpha2 * m_dGlobalAlpha), pBrush->Color2, bIsSwappedRGB);
@@ -87,7 +95,7 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 		if( pNew )
 		{
 			pNew->SetRelativeCoords( TRUE );
-
+            pNew->m_oGradientInfo = pBrush->m_oGradientInfo;
             int nCountSubColors = pBrush->m_arrSubColors.size();
 			if( nCountSubColors > 0 )
 			{
@@ -124,10 +132,43 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 
 			pNew->SetBounds(pBrush->Bounds);
 		}
-
-		if (pNew && c_BrushTypePathGradient2 == Type)
-			pNew->m_bType = Aggplus::BrushTypePathGradient;
-
+        if(!pNew)
+            return NULL;
+        
+        switch (Type)
+        {
+            case c_BrushTypePathGradient2:
+                pNew->m_bType = Aggplus::BrushTypePathGradient;
+                break;
+            case c_BrushTypeMyTestGradient:
+                pNew->m_bType = Aggplus::BrushTypeMyTestGradient;
+                break;
+            case c_BrushTypePathRadialGradient:
+                pNew->m_bType = Aggplus::BrushTypeRadialGradient;
+                break;
+            case c_BrushTypePathNewLinearGradient:
+                pNew->m_bType = Aggplus::BrushTypeNewLinearGradient;
+                break;
+            case c_BrushTypePathConicalGradient:
+                pNew->m_bType = Aggplus::BrushTypeConicalGradient;
+                break;
+            case c_BrushTypePathDiamondGradient:
+                pNew->m_bType = Aggplus::BrushTypeDiamondGradient;
+                break;
+			case c_BrushTypeTensorCurveGradient:
+                pNew->m_bType = Aggplus::BrushTypeTensorCurveGradient;
+                break;
+			case c_BrushTypeCurveGradient:
+                pNew->m_bType = Aggplus::BrushTypeCurveGradient;
+                break;
+			case c_BrushTypeTriagnleMeshGradient:
+                pNew->m_bType = Aggplus::BrushTypeTriagnleMeshGradient;
+                break;
+            
+            default:
+                break;
+        }
+        
 		return pNew;
 	}
 	else if (c_BrushTypeHatch1 == Type)

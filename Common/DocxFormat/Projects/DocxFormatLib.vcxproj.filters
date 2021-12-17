@@ -97,9 +97,6 @@
     <Filter Include="Utility\FileSys">
       <UniqueIdentifier>{547fea33-88e2-4642-9c2a-c290c3405e3e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{548a010c-e7a5-43ed-ae81-770c2e93141a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Comments">
       <UniqueIdentifier>{bf396d1c-4838-484f-bbc6-1398bb363c27}</UniqueIdentifier>
     </Filter>
@@ -162,9 +159,12 @@
     </Filter>
     <Filter Include="Diagram">
       <UniqueIdentifier>{da1b6ba4-f567-4fa5-afe5-ba031ec0ad29}</UniqueIdentifier>
-     </Filter>
-   <Filter Include="XlsxFormat\Slicer\Styles">
+    </Filter>
+    <Filter Include="XlsxFormat\Slicer\Styles">
       <UniqueIdentifier>{ebf55a86-a27b-4d5d-a95b-1f9cbc890855}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Common">
+      <UniqueIdentifier>{b119b15b-959b-4679-9848-0918f9d71193}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -332,63 +332,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\SystemUtility\SystemUtility.h">
       <Filter>Utility\FileSys</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\AbstractConverter.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Align.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Color.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Common.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\ComplexTypes.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Encoding.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Index.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\NumFormat.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Point.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Position.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Base.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Drawing.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Shared.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Vml.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Word.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Size.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Unit.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Wrap.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\ZIndex.h">
-      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\DocxFormat\Comments.h">
       <Filter>Comments</Filter>
@@ -712,6 +655,30 @@
     <ClInclude Include="..\Source\XlsxFormat\Worksheets\WorksheetChildOther.h">
       <Filter>XlsxFormat\Worksheets</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\Common\ComplexTypes.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Base.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Drawing.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_OMath.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Shared.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Vml.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Word.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Unit.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\DocxFormat\Logic\Table.cpp">
@@ -773,30 +740,6 @@
     </ClCompile>
     <ClCompile Include="..\Source\SystemUtility\SystemUtility.cpp">
       <Filter>Utility\FileSys</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Align.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Color.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Index.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\NumFormat.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Position.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\SimpleTypes_Word.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Wrap.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\ZIndex.cpp">
-      <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Comments.cpp">
       <Filter>Comments</Filter>
@@ -921,6 +864,9 @@
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Settings\Settings.cpp">
       <Filter>Settings\DocumentSettings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\SimpleTypes_Word.cpp">
+      <Filter>Logic\Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

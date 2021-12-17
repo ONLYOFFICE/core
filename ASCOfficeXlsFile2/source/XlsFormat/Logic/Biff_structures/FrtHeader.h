@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Binary/CFRecordType.h>
+#include "../../Binary/CFRecordType.h"
 #include "BitMarkedStructs.h"
 
 namespace XLS

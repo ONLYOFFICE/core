@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h> 
+#include "BiffRecord.h"
 
 namespace XLS
 {

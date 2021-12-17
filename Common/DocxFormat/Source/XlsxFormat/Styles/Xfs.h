@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../CommonInclude.h"
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
 namespace OOX
 {
@@ -41,6 +42,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CAligment)
+            WritingElement_XlsbConstructors(CAligment)
 			CAligment()
 			{
 			}
@@ -81,6 +83,11 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -131,6 +138,60 @@ namespace OOX
 						m_oTextRotation = (unsigned int)(90 - *rotate);
 				}
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptrBiff = dynamic_cast<XLS::BiffRecord*>(obj.get());
+                if(ptrBiff->getTypeId() == XLSB::rt_XF)
+                {
+                    auto ptr = static_cast<XLS::XF*>(obj.get());
+                    if(ptr != nullptr)
+                    {
+                        m_oIndent              = ptr->cIndent;
+                        m_oJustifyLastLine     = ptr->fJustLast;
+                        m_oReadingOrder        = ptr->iReadOrder;
+                        m_oRelativeIndent      = ptr->iReadOrder;
+                        m_oShrinkToFit         = ptr->fShrinkToFit;
+                        m_oTextRotation        = ptr->trot;
+                        m_oWrapText            = ptr->fWrap;
+
+                        switch(ptr->alc)
+                        {
+                            case 0:
+                                m_oHorizontal = SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentGeneral; break;
+                            case 1:
+                                m_oHorizontal = SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentLeft; break;
+                            case 2:
+                                m_oHorizontal = SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentCenter; break;
+                            case 3:
+                                m_oHorizontal = SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentRight; break;
+                            case 4:
+                                m_oHorizontal = SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentFill; break;
+                            case 5:
+                                m_oHorizontal = SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentJustify; break;
+                            case 6:
+                                m_oHorizontal = SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentCenterContinuous; break;
+                            case 7:
+                                m_oHorizontal = SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentDistributed; break;
+                        }
+
+                        switch(ptr->alcV)
+                        {
+                            case 0:
+                                m_oVertical = SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentTop; break;
+                            case 1:
+                                m_oVertical = SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentCenter; break;
+                            case 2:
+                                m_oVertical = SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentBottom; break;
+                            case 3:
+                                m_oVertical = SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentJustify; break;
+                            case 4:
+                                m_oVertical = SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentDistributed; break;
+                        }
+                    }
+                }
+            }
+
 		public:
 			nullable<SimpleTypes::Spreadsheet::CHorizontalAlignment<>>		m_oHorizontal;
 			nullable_uint													m_oIndent;
@@ -146,6 +207,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CProtection)
+            WritingElement_XlsbConstructors(CProtection)
 			CProtection()
 			{
 			}
@@ -178,6 +240,11 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_Protection;
@@ -190,6 +257,17 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("locked"), m_oLocked )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::XF*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oHidden     = ptr->fHidden;
+                    m_oLocked     = ptr->fLocked;
+                }
+            }
+
 		public:
 			nullable<SimpleTypes::COnOff<>> m_oHidden;
 			nullable<SimpleTypes::COnOff<>> m_oLocked;
@@ -200,6 +278,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CXfs)
+            WritingElement_XlsbConstructors(CXfs)
 				CXfs()
 			{
 			}
@@ -264,6 +343,14 @@ namespace OOX
 				return et_x_Xfs;
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+
+                m_oAligment     = obj;
+                m_oProtection   = obj;
+            }
+
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -283,6 +370,31 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("xfId"),      m_oXfId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::XF*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oBorderId     = ptr->ixBorder;
+                    m_oFillId       = ptr->iFill;
+                    m_oFontId       = ptr->font_index;
+                    m_oNumFmtId     = ptr->ifmt;
+                    m_oPivotButton  = ptr->fsxButton;
+                    m_oQuotePrefix  = ptr->f123Prefix;
+
+                    if(ptr->ixfParent != 0xFFFF)
+                        m_oXfId     = ptr->ixfParent;
+
+                    m_oApplyAlignment       = ptr->fAtrAlc;
+                    m_oApplyBorder          = ptr->fAtrBdr;
+                    m_oApplyFill            = ptr->fAtrPat;
+                    m_oApplyFont            = ptr->fAtrFnt;
+                    m_oApplyNumberFormat    = ptr->fAtrNum;
+                    m_oApplyProtection      = ptr->fAtrProt;
+                }
+            }
+
 		public:
 			nullable<SimpleTypes::COnOff<>>					m_oApplyAlignment;
 			nullable<SimpleTypes::COnOff<>>					m_oApplyBorder;
@@ -308,6 +420,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCellXfs)
+            WritingElement_XlsbVectorConstructors(CCellXfs)
 			CCellXfs()
 			{
 			}
@@ -353,6 +466,17 @@ namespace OOX
 				}
 			}
 
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                ReadAttributes(obj);
+
+                for(auto &xfs : obj)
+                {
+                    CXfs *pXfs = new CXfs(xfs);
+                    m_arrItems.push_back(pXfs);
+                }
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_CellXfs;
@@ -368,6 +492,10 @@ namespace OOX
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                m_oCount = (_UINT32)obj.size();
+            }
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
 		};
@@ -375,6 +503,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCellStyleXfs)
+            WritingElement_XlsbVectorConstructors(CCellStyleXfs)
 			CCellStyleXfs()
 			{
 			}
@@ -426,6 +555,17 @@ namespace OOX
 				return et_x_CellStyleXfs;
 			}
 
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                ReadAttributes(obj);
+
+                for(auto &xfs : obj)
+                {
+                    CXfs *pXfs = new CXfs(xfs);
+                    m_arrItems.push_back(pXfs);
+                }
+            }
+
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -433,6 +573,10 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                m_oCount = (_UINT32)obj.size();
+            }
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
 		};

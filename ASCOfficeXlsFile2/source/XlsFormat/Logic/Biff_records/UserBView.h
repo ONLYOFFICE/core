@@ -32,13 +32,13 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
+#include "../Biff_structures/BiffString.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
 
 namespace XLS
 {
 
-
-// Logical representation of UserBView record in BIFF8
+// Logical representation of UserBView record in BIFF8 and BrtUserBookView record in BIFF12
 class UserBView: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(UserBView)
@@ -55,15 +55,17 @@ public:
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-	_UINT16			tabId;
+    //_UINT16			tabId;
+    _UINT32			tabId; //iTabid in biff12
 	std::wstring	guid;
 	
-	_UINT32		x;
-	_UINT32		y;
-	_UINT32		dx;
-	_UINT32		dy;
+    _INT32		x; //xLeft in biff12
+    _INT32		y; //xRight in biff12
+    _INT32		dx; //yTop in biff12
+    _INT32		dy; //yBot in biff12
 
-	_UINT16			wTabRatio;
+    //_UINT16			wTabRatio;
+    _UINT32			wTabRatio; //iTabRatio in biff12
 
 	bool			fDspFmlaBar;
 	bool			fDspStatus;
@@ -88,6 +90,7 @@ public:
 	
 	_UINT16			wMergeInterval;
 	XLUnicodeString st;
+    XLSB::XLWideString stName; //biff12
 
 };
 

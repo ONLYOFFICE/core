@@ -1525,7 +1525,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     GetRecordsByType(&oArrayOptions, true, /*true*/false/*secondary & tetriary*/);
 
     PPTShapes::ShapeType eType = (PPTShapes::ShapeType)oArrayShape[0]->m_oHeader.RecInstance;
-    ElementType			elType = GetTypeElem((ODRAW::eSPT)oArrayShape[0]->m_oHeader.RecInstance);
+    PPT_FORMAT::ElementType elType = GetTypeElem((ODRAW::eSPT)oArrayShape[0]->m_oHeader.RecInstance);
 
     int lMasterID = -1;
 

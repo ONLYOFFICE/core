@@ -7150,11 +7150,15 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			result = CSVReader::ReadFromCsvToXlsx(sInputDir, *pXlsx, nCodePage, sDelimiter);
 		}break;
 		case BinXlsxRW::c_oFileTypes::XLSX:
+        case BinXlsxRW::c_oFileTypes::XLSB:
 		default:
 		{
 			if (bIsNoBase64 && BinXlsxRW::c_oFileTypes::JSON != saveFileType)
 			{
-				pXlsx = new OOX::Spreadsheet::CXlsx();
+                if(fileType == BinXlsxRW::c_oFileTypes::XLSB)
+                    pXlsx = new OOX::Spreadsheet::CXlsb();
+                else
+                    pXlsx = new OOX::Spreadsheet::CXlsx();
 				pXlsx->m_bNeedCalcChain = false;
 
 				NSBinPptxRW::CXlsbBinaryWriter oXlsbWriter;
@@ -7200,7 +7204,13 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 		{
 			RELEASEOBJECT(pXlsx);
 			return AVS_FILEUTILS_ERROR_CONVERT;
-		}	
+        }
+
+        if (fileType == BinXlsxRW::c_oFileTypes::XLSB)
+        {
+            dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsx)->PrepareSi();
+            dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsx)->PrepareTableFormula();
+        }
 	}
 
 	if (BinXlsxRW::c_oFileTypes::JSON == saveFileType)

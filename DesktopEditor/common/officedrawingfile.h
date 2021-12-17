@@ -34,6 +34,15 @@
 
 #include <string>
 class IRenderer;
+
+enum OfficeDrawingFileType
+{
+    odftPDF = 0,
+    odftXPS = 1,
+    odftDJVU = 2,
+    odftUndefined = 255
+};
+
 class IOfficeDrawingFile
 {
 public:
@@ -43,6 +52,8 @@ public:
                                 const std::wstring& owner_password = L"", const std::wstring& user_password = L"") = 0;
 
     virtual void Close() = 0;
+
+    virtual OfficeDrawingFileType GetType() = 0;
 
     virtual std::wstring GetTempDirectory() = 0;
     virtual void SetTempDirectory(const std::wstring& directory) = 0;

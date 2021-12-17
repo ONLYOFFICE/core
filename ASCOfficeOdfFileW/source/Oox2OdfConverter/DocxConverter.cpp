@@ -449,7 +449,7 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		case OOX::et_w_tc:
 		{
 			convert(dynamic_cast<OOX::Logic::CTc*>(oox_unknown));
-		}break;
+		}break;		
 		default:
 		{
 			OoxConverter::convert(oox_unknown);
@@ -5331,6 +5331,5 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 
 	return true;
 }
-
 } 
 

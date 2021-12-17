@@ -55,7 +55,7 @@ public:
 
 private:
 	unsigned short tabid;
-	RevLblName name;
+    RevLblName name;
 };
 
 typedef boost::shared_ptr<RevNameTabid> RevNameTabidPtr;

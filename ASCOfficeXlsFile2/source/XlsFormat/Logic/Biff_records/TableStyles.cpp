@@ -31,6 +31,7 @@
  */
 
 #include "TableStyles.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
 
 namespace XLS
 {
@@ -49,15 +50,32 @@ BaseObjectPtr TableStyles::clone()
 }
 
 void TableStyles::readFields(CFRecord& record)
-{
-	unsigned short cchDefTableStyle;
-	unsigned short cchDefPivotStyle;
-	record >> frtHeader >> cts >> cchDefTableStyle >> cchDefPivotStyle;
-	
-	rgchDefTableStyle.setSize(cchDefTableStyle);
-	rgchDefPivotStyle.setSize(cchDefPivotStyle);
-	
-	record >> rgchDefTableStyle >> rgchDefPivotStyle;
+{	
+    if(record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        unsigned short cchDefTableStyle;
+        unsigned short cchDefPivotStyle;
+        record >> frtHeader >> cts >> cchDefTableStyle >> cchDefPivotStyle;
+
+        LPWideStringNoCch	rgchDefTableStyle_;
+        LPWideStringNoCch	rgchDefPivotStyle_;
+        rgchDefTableStyle_.setSize(cchDefTableStyle);
+        rgchDefPivotStyle_.setSize(cchDefPivotStyle);
+
+        record >> rgchDefTableStyle_ >> rgchDefPivotStyle_;
+
+        rgchDefTableStyle = rgchDefTableStyle_.value();
+        rgchDefPivotStyle = rgchDefPivotStyle_.value();
+    }
+    else
+    {
+        XLSB::XLNullableWideString    strDefList;
+        XLSB::XLNullableWideString    strDefPivot;
+        record >> cts >> strDefList >> strDefPivot;
+
+        rgchDefTableStyle = strDefList.value();
+        rgchDefPivotStyle = strDefPivot.value();
+    }
 }
 
 } // namespace XLS

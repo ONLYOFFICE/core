@@ -97,7 +97,6 @@ namespace NSGraphics
 
         virtual void SaveBrush(NSStructures::CBrush& oBrush) = 0;
         virtual void RestoreBrush(const NSStructures::CBrush& oBrush) = 0;
-
         virtual void put_GlobalAlphaEnabled(const bool& bEnabled, const double& dVal) = 0;
         virtual void put_IntegerGrid(const bool& bEnabled) = 0;
         virtual bool get_IntegerGrid() = 0;
@@ -124,7 +123,9 @@ namespace NSGraphics
         virtual void drawVerLine(BYTE align, double x, double y, double b, double penW) = 0;
         virtual void drawHorLineExt(BYTE align, double y, double x, double r, double penW, double leftMW, double rightMW) = 0;
 
+        // test
 
+        virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) = 0;
     };
 
     GRAPHICS_DECL IGraphicsRenderer* Create();

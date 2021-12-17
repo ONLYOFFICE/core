@@ -53,15 +53,38 @@ BaseObjectPtr ColInfo::clone()
 
 void ColInfo::readFields(CFRecord& record)
 {
-	unsigned short flags;
-	record >> colFirst >> colLast >> coldx >> ixfe >> flags;
-	
-	fHidden		= GETBIT(flags, 0);
-	fUserSet	= GETBIT(flags, 1);
-	fBestFit	= GETBIT(flags, 2);
-	fPhonetic	= GETBIT(flags, 3);
-	iOutLevel	= GETBITS(flags, 8, 10);
-	fCollapsed	= GETBIT(flags, 12);
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        _UINT16		colFirst_2b;
+        _UINT16		colLast_2b;
+        _UINT16		coldx_2b;
+
+        unsigned short flags;
+        record >> colFirst_2b >> colLast_2b >> coldx_2b >> ixfe >> flags;
+
+        fHidden		= GETBIT(flags, 0);
+        fUserSet	= GETBIT(flags, 1);
+        fBestFit	= GETBIT(flags, 2);
+        fPhonetic	= GETBIT(flags, 3);
+        iOutLevel	= GETBITS(flags, 8, 10);
+        fCollapsed	= GETBIT(flags, 12);
+
+        colFirst = colFirst_2b;
+        colLast = colLast_2b;
+        coldx = coldx_2b;
+    }
+    else
+    {
+        unsigned short flags;
+        record >> colFirst >> colLast >> coldx >> ixfeXLSB >> flags;
+
+        fHidden		= GETBIT(flags, 0);
+        fUserSet	= GETBIT(flags, 1);
+        fBestFit	= GETBIT(flags, 2);
+        fPhonetic	= GETBIT(flags, 3);
+        iOutLevel	= GETBITS(flags, 8, 10);
+        fCollapsed	= GETBIT(flags, 12);
+    }
 	
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr()); // unused
 	//0x0600 - 2 bytes; lower - 1 byte

@@ -32,14 +32,14 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/FrtRefHeaderU.h>
-#include <Logic/Biff_structures/XFProps.h>
+#include "../Biff_structures/FrtRefHeaderU.h"
+#include "../Biff_structures/XFProps.h"
 
 namespace XLS
 {
 
 
-// Logical representation of DXF record in BIFF8
+// Logical representation of DXF record in BIFF8 and BIFF12
 class DXF: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(DXF)

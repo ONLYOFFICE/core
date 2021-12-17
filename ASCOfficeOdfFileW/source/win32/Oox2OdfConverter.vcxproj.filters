@@ -32,6 +32,9 @@
     <ClCompile Include="..\Oox2OdfConverter\XlsxConverter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Oox2OdfConverter\MathConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Oox2OdfConverter\Converter.h">

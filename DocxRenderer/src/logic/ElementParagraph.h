@@ -514,6 +514,8 @@ namespace NSDocxRenderer
 
         std::vector<CTextLine*> m_arLines;
 
+        std::wstring m_strAvailable;
+
     public:
         CParagraph(const TextAssociationType& eType) : m_arLines()
         {
@@ -531,6 +533,8 @@ namespace NSDocxRenderer
 
             m_pManagerLight = NULL;
             m_eTextAssociationType = eType;
+
+            m_strAvailable = L"left";
         }
         CParagraph(const CParagraph& oSrc)
         {
@@ -627,6 +631,8 @@ namespace NSDocxRenderer
                     oWriter.AddInt((int)(m_dSpaceRight * c_dMMToDx));
                     oWriter.WriteString(L"\"  w:left=\"");
                     oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
+                    oWriter.WriteString(L"\"/> <w:jc w:val=\"");
+                    oWriter.WriteString(this->m_strAvailable);
                     oWriter.WriteString(L"\"/></w:pPr>");
                     break;
                 }

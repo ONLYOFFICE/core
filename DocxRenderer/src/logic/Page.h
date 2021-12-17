@@ -669,19 +669,35 @@ namespace NSDocxRenderer
 				{
 					SortElements(m_arTextLine);
 					Merge(STANDART_STRING_HEIGHT_MM / 3);
+                    std::cout<<"WIDTH = "<<this->m_dWidth<<"\n";
+                    double previousStringOffset = 0;
+                    double dPrevDiff = 0;
+                    double dPrevWidthLine = 0;
 
-					double previousStringOffset = 0;
-					size_t nCount = m_arTextLine.size();
+                    size_t nCount = m_arTextLine.size();
 					for (size_t i = 0; i < nCount; ++i)
 					{
 						CTextLine* pTextLine = m_arTextLine[i];
-						double dSpacingRight = this->m_dWidth - pTextLine->m_dX;
-						size_t countConts = pTextLine->m_arConts.size();
-						for (size_t i = 0; i < countConts; ++i){
-							dSpacingRight -= pTextLine->m_arConts[i]->m_dWidth;
-						}
-						double dBeforeSpacing = pTextLine->m_dBaselinePos - previousStringOffset - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;						
+                        std::cout<<"line = "<<i<<"\n";
 
+                        double dSpacingRight = this->m_dWidth - pTextLine->m_dX;
+                        double dWidthLine = 0;
+                        size_t countConts = pTextLine->m_arConts.size();
+                        for (size_t i = 0; i < countConts; ++i)
+                        {
+                            dWidthLine += pTextLine->m_arConts[i]->m_dWidth;
+
+                        }
+                        dWidthLine += 1.2; //прибавила ширину пробела
+                        pTextLine->m_dWidth = dWidthLine;
+                        dSpacingRight -= dWidthLine;
+                        std::cout<<"-----------X before =  "<<pTextLine->m_dX<<"\n";
+                        std::cout<<"-----------X after =  "<<pTextLine->m_dX + dWidthLine<<"\n";
+
+
+                        double dBeforeSpacing = pTextLine->m_dBaselinePos - previousStringOffset - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
+                        dBeforeSpacing = std::max(dBeforeSpacing, 0.0);
+                        //std::cout<<"BaselinePos = "<<pTextLine->m_dBaselinePos<<"\n";
 						double dHeight = 1;
 						if (abs(pTextLine->m_dHeight) > 0.001)
 						{
@@ -690,26 +706,88 @@ namespace NSDocxRenderer
 							if (dBeforeSpacing < 0)
 								dHeight += dBeforeSpacing;
 						}
-						if (0 == i || abs(pTextLine->m_dX - m_arParagraphs.back()->m_dLeft ) > 0.001){
+
+                        if (0 == i
+                            || (abs(pTextLine->m_dBaselinePos - m_arTextLine[i-1]->m_dBaselinePos - dPrevDiff) > 0.5 )
+                            || dWidthLine < 1.2
+                            || dPrevWidthLine < 1.2
+                            || dPrevWidthLine < 0.70 * (this->m_dWidth - m_arTextLine[i-1]->m_dX) )
+
+                        {
 							CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
 							pParagraph->m_pManagerLight = &m_oManagerLight;
 							pParagraph->m_bIsTextFrameProperties = false;
 
-							pParagraph->m_dSpaceBefore = std::max(dBeforeSpacing, 0.0);
+                            pParagraph->m_dSpaceBefore = dBeforeSpacing;
 							pParagraph->m_dLeft	= pTextLine->m_dX;
-							pParagraph->m_dHeight = dHeight;
+
+                            if (i == 0)
+                            {
+                                pParagraph->m_dHeight = dHeight;
+                            }
+                            else
+                            {
+                                dPrevDiff = pTextLine->m_dBaselinePos - m_arTextLine[i-1]->m_dBaselinePos;
+                                pParagraph->m_dHeight = dPrevDiff;
+                            }
 							pParagraph->m_arLines.push_back(pTextLine);
 							pParagraph->m_dSpaceRight = dSpacingRight;
 							m_arParagraphs.push_back(pParagraph);
-						}else{
-							if (m_arParagraphs.back()->m_dSpaceRight > dSpacingRight){
+                        }
+                        else
+                        {
+                            if (m_arParagraphs.back()->m_dSpaceRight > dSpacingRight)
 								m_arParagraphs.back()->m_dSpaceRight = dSpacingRight;
-							}
+
 							m_arParagraphs.back()->m_arLines.push_back(pTextLine);
+
 						}
-						previousStringOffset = pTextLine->m_dBaselinePos + pTextLine->m_dBaselineOffset;
+                        previousStringOffset = pTextLine->m_dBaselinePos + pTextLine->m_dBaselineOffset;
+                        dPrevWidthLine = dWidthLine;
 					}
 
+                    for (size_t i = 0; i < this->m_arParagraphs.size(); ++i)
+                    {
+                        if (i > 0)
+                            m_arParagraphs[i]->m_dSpaceBefore = 0;
+
+                        if (this->m_arParagraphs[i]->m_arLines.size() == 1)
+                        {
+                            m_arParagraphs[i]->m_dSpaceRight = 0;
+                            continue;
+                        }
+
+                        size_t CountLine = m_arParagraphs[i]->m_arLines.size();
+                        size_t alignmentLeft = 1;
+                        size_t alignmentRight = 1;
+                        CTextLine* pPrevTextLine = m_arParagraphs[i]->m_arLines[0];
+                        for (size_t k = 1; k < CountLine; ++k)
+                        {
+                            CTextLine* pCurTextLine = m_arParagraphs[i]->m_arLines[k];
+
+                            if ( abs(pPrevTextLine->m_dX - pCurTextLine->m_dX) < 0.5 )
+                                ++alignmentLeft;
+
+                            if ( abs(pPrevTextLine->m_dWidth + pPrevTextLine->m_dX - pCurTextLine->m_dWidth - pCurTextLine->m_dX) < 1.5 )
+                                ++alignmentRight;
+
+                            pPrevTextLine = pCurTextLine;
+                        }
+
+                        if (alignmentLeft == CountLine)
+                        {
+                            m_arParagraphs[i]->m_strAvailable = L"left";
+                            if (alignmentRight >= CountLine/2)
+                                m_arParagraphs[i]->m_strAvailable = L"both";
+                        }
+                        else
+                        {
+                            m_arParagraphs[i]->m_strAvailable = L"center";
+                            if (alignmentRight == CountLine-1) //пока вычитаем 1 т к нужно разобраться с заголовками!
+                                m_arParagraphs[i]->m_strAvailable = L"right";
+                        }
+
+                    }
                     m_arTextLine.clear();
 					break;
 				}

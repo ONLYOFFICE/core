@@ -576,7 +576,7 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
 
     oTcPr.Fill.Fill.reset(pSolidFill);
 
-    if (isInvisibleBorder())
+    if (isInvisibleBorders())
         SetTcPrInvisibleBorders(oTcPr);
 
     for (auto IterBorder : m_mapBorders)
@@ -599,14 +599,19 @@ void TCell::SetTcPrInvisibleBorders(PPTX::Logic::TableCellProperties &oTcPr)
     }
 }
 
-bool TCell::isInvisibleBorder() const
+bool TCell::isInvisibleBorder(const CShapeElement *pBorder)
+{
+    return pBorder && pBorder->m_oBrush.Type == c_BrushTypeNoFill;
+}
+
+bool TCell::isInvisibleBorders() const
 {
     if (m_mapBorders.empty())
         return true;
 
     bool isInvisibele = true;
     for (auto IterBorder : m_mapBorders)
-        if (IterBorder.second->m_oBrush.Type != c_BrushTypeNoFill)
+        if (isInvisibleBorder(IterBorder.second))
             isInvisibele = false;
 
     return isInvisibele;
@@ -623,7 +628,7 @@ void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeEleme
 
     Ln.w = pen.Size;
 
-    if (brush.Type == c_BrushTypeNoFill)
+    if (isInvisibleBorder(pBorder))
         Ln.Fill.Fill.reset(new PPTX::Logic::NoFill);
     else
     {

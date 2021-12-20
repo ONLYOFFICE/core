@@ -139,10 +139,9 @@ namespace OOX
                             m_oExternalReferences = static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP;
                         if (workBookStream->m_BrtFileVersion != nullptr )
                             m_oAppName = static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName.value();
-                        /*
-                        else if ( L"extLst" == sName )
-                            m_oExtLst = oReader;
-                       */
+
+                        if (workBookStream->m_FRTWORKBOOK != nullptr)
+                            m_oExtLst = workBookStream->m_FRTWORKBOOK;
                     }
 
                 }

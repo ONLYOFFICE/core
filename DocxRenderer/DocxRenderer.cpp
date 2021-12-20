@@ -64,10 +64,8 @@ HRESULT CDocxRenderer::CreateNewFile(const std::wstring& wsPath, bool bIsOutComp
 {
     m_pInternal->m_oDocument.m_strDstFilePath = wsPath;
     m_pInternal->m_oDocument.m_strTempDirectory = bIsOutCompress ?
-                NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory.empty() ?
-                                                               NSDirectory::GetTempPath() :
-                                                               m_pInternal->m_sTempDirectory) :
-                wsPath;
+                NSDirectory::CreateDirectoryWithUniqueName(m_pInternal->m_sTempDirectory) :
+                m_pInternal->m_sTempDirectory;
     m_pInternal->m_oDocument.CreateDocument();
     return S_OK;
 }
@@ -75,9 +73,10 @@ HRESULT CDocxRenderer::Close()
 {
     COfficeUtils oCOfficeUtils(NULL);
     HRESULT hr = oCOfficeUtils.CompressFileOrDirectory(m_pInternal->m_oDocument.m_strTempDirectory, m_pInternal->m_oDocument.m_strDstFilePath, true);
-    NSDirectory::DeleteDirectory(m_pInternal->m_oDocument.m_strTempDirectory);
+    if (!m_pInternal->m_oDocument.m_strTempDirectory.empty())
+        NSDirectory::DeleteDirectory(m_pInternal->m_oDocument.m_strTempDirectory);
     m_pInternal->m_oDocument.m_strTempDirectory = L"";
-    return S_OK;
+    return hr;
 }
 
 HRESULT CDocxRenderer::SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType)

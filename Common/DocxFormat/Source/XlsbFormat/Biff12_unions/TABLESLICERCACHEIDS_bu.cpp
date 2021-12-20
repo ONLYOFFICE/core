@@ -30,9 +30,10 @@
  *
  */
 
-#include "SLICERCACHECROSSFILTEREXT.h"
+#include "TABLESLICERCACHEIDS.h"
 #include "../Biff12_records/FRTBegin.h"
-#include "../Biff12_records/SlicerCacheHideItemsWithNoData.h"
+#include "../Biff12_records/TableSlicerCacheIDs.h"
+#include "../Biff12_unions/TABLESLICERCACHEID.h"
 #include "../Biff12_records/FRTEnd.h"
 
 using namespace XLS;
@@ -40,21 +41,21 @@ using namespace XLS;
 namespace XLSB
 {
 
-    SLICERCACHECROSSFILTEREXT::SLICERCACHECROSSFILTEREXT()
+    TABLESLICERCACHEIDS::TABLESLICERCACHEIDS()
     {
     }
 
-    SLICERCACHECROSSFILTEREXT::~SLICERCACHECROSSFILTEREXT()
+    TABLESLICERCACHEIDS::~TABLESLICERCACHEIDS()
     {
     }
 
-    BaseObjectPtr SLICERCACHECROSSFILTEREXT::clone()
+    BaseObjectPtr TABLESLICERCACHEIDS::clone()
     {
-        return BaseObjectPtr(new SLICERCACHECROSSFILTEREXT(*this));
+        return BaseObjectPtr(new TABLESLICERCACHEIDS(*this));
     }
 
-    //SLICERCACHECROSSFILTEREXT = BrtFRTBegin BrtSlicerCacheHideItemsWithNoData BrtFRTEnd
-    const bool SLICERCACHECROSSFILTEREXT::loadContent(BinProcessor& proc)
+    // TABLESLICERCACHEIDS = BrtFRTBegin BrtTableSlicerCacheIDs 1*TABLESLICERCACHEID BrtFRTEnd
+    const bool TABLESLICERCACHEIDS::loadContent(BinProcessor& proc)
     {
         if (proc.optional<FRTBegin>())
         {
@@ -62,10 +63,19 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        if (proc.optional<SlicerCacheHideItemsWithNoData>())
+        if (proc.optional<TableSlicerCacheIDs>())
         {
-            m_BrtSlicerCacheHideItemsWithNoData = elements_.back();
+            m_BrtTableSlicerCacheIDs = elements_.back();
             elements_.pop_back();
+        }
+
+        int count = proc.repeated<TABLESLICERCACHEID>(0, 0);
+
+        while(count > 0)
+        {
+            m_arTABLESLICERCACHEID.insert(m_arTABLESLICERCACHEID.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
         }
 
         if (proc.optional<FRTEnd>())
@@ -74,7 +84,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtSlicerCacheHideItemsWithNoData && m_BrtFRTEnd;
+        return m_BrtTableSlicerCacheIDs && m_BrtFRTEnd;
     }
 
 } // namespace XLSB

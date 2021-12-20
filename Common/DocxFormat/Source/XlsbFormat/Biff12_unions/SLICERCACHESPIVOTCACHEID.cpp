@@ -30,51 +30,44 @@
  *
  */
 
-#include "SLICERCACHEBOOKPIVOTTABLES.h"
-#include "../Biff12_records/FRTBegin.h"
-#include "../Biff12_records/SlicerCacheBookPivotTables.h"
-#include "../Biff12_records/FRTEnd.h"
+#include "SLICERCACHESPIVOTCACHEID.h"
+#include "../Biff12_records/BeginSlicerCachesPivotCacheID.h"
+#include "../Biff12_records/EndSlicerCachesPivotCacheID.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    SLICERCACHEBOOKPIVOTTABLES::SLICERCACHEBOOKPIVOTTABLES()
+    SLICERCACHESPIVOTCACHEID::SLICERCACHESPIVOTCACHEID()
     {
     }
 
-    SLICERCACHEBOOKPIVOTTABLES::~SLICERCACHEBOOKPIVOTTABLES()
+    SLICERCACHESPIVOTCACHEID::~SLICERCACHESPIVOTCACHEID()
     {
     }
 
-    BaseObjectPtr SLICERCACHEBOOKPIVOTTABLES::clone()
+    BaseObjectPtr SLICERCACHESPIVOTCACHEID::clone()
     {
-        return BaseObjectPtr(new SLICERCACHEBOOKPIVOTTABLES(*this));
+        return BaseObjectPtr(new SLICERCACHESPIVOTCACHEID(*this));
     }
 
-    //SLICERCACHEBOOKPIVOTTABLES = BrtFRTBegin BrtSlicerCacheBookPivotTables BrtFRTEnd
-    const bool SLICERCACHEBOOKPIVOTTABLES::loadContent(BinProcessor& proc)
+    // SLICERCACHESPIVOTCACHEID = BrtBeginSlicerCachesPivotCacheID BrtEndSlicerCachesPivotCacheID
+    const bool SLICERCACHESPIVOTCACHEID::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<FRTBegin>())
+        if (proc.optional<BeginSlicerCachesPivotCacheID>())
         {
-            m_BrtFRTBegin = elements_.back();
+            m_BrtBeginSlicerCachesPivotCacheID = elements_.back();
+            elements_.pop_back();
+        }     
+
+        if (proc.optional<EndSlicerCachesPivotCacheID>())
+        {
+            m_BrtEndSlicerCachesPivotCacheID = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.optional<SlicerCacheBookPivotTables>())
-        {
-            m_BrtSlicerCacheBookPivotTables = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<FRTEnd>())
-        {
-            m_BrtFRTEnd = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtFRTBegin && m_BrtSlicerCacheBookPivotTables && m_BrtFRTEnd;
+        return m_BrtBeginSlicerCachesPivotCacheID && m_BrtEndSlicerCachesPivotCacheID;
     }
 
 } // namespace XLSB

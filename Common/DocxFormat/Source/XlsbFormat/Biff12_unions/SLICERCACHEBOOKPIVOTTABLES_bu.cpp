@@ -30,9 +30,9 @@
  *
  */
 
-#include "SLICERCACHECROSSFILTEREXT.h"
+#include "SLICERCACHEBOOKPIVOTTABLES.h"
 #include "../Biff12_records/FRTBegin.h"
-#include "../Biff12_records/SlicerCacheHideItemsWithNoData.h"
+#include "../Biff12_records/SlicerCacheBookPivotTables.h"
 #include "../Biff12_records/FRTEnd.h"
 
 using namespace XLS;
@@ -40,21 +40,21 @@ using namespace XLS;
 namespace XLSB
 {
 
-    SLICERCACHECROSSFILTEREXT::SLICERCACHECROSSFILTEREXT()
+    SLICERCACHEBOOKPIVOTTABLES::SLICERCACHEBOOKPIVOTTABLES()
     {
     }
 
-    SLICERCACHECROSSFILTEREXT::~SLICERCACHECROSSFILTEREXT()
+    SLICERCACHEBOOKPIVOTTABLES::~SLICERCACHEBOOKPIVOTTABLES()
     {
     }
 
-    BaseObjectPtr SLICERCACHECROSSFILTEREXT::clone()
+    BaseObjectPtr SLICERCACHEBOOKPIVOTTABLES::clone()
     {
-        return BaseObjectPtr(new SLICERCACHECROSSFILTEREXT(*this));
+        return BaseObjectPtr(new SLICERCACHEBOOKPIVOTTABLES(*this));
     }
 
-    //SLICERCACHECROSSFILTEREXT = BrtFRTBegin BrtSlicerCacheHideItemsWithNoData BrtFRTEnd
-    const bool SLICERCACHECROSSFILTEREXT::loadContent(BinProcessor& proc)
+    //SLICERCACHEBOOKPIVOTTABLES = BrtFRTBegin BrtSlicerCacheBookPivotTables BrtFRTEnd
+    const bool SLICERCACHEBOOKPIVOTTABLES::loadContent(BinProcessor& proc)
     {
         if (proc.optional<FRTBegin>())
         {
@@ -62,9 +62,9 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        if (proc.optional<SlicerCacheHideItemsWithNoData>())
+        if (proc.optional<SlicerCacheBookPivotTables>())
         {
-            m_BrtSlicerCacheHideItemsWithNoData = elements_.back();
+            m_BrtSlicerCacheBookPivotTables = elements_.back();
             elements_.pop_back();
         }
 
@@ -74,7 +74,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtSlicerCacheHideItemsWithNoData && m_BrtFRTEnd;
+        return m_BrtSlicerCacheBookPivotTables && m_BrtFRTEnd;
     }
 
 } // namespace XLSB

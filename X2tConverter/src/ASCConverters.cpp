@@ -4443,7 +4443,7 @@ namespace NExtractTools
            nRes = PdfDjvuXpsToImage(&pReader, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);
 		   RELEASEOBJECT(pReader);
 	   }
-       else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo)
+       else
        {
            IOfficeDrawingFile* pReader = NULL;
            switch (nFormatFrom)
@@ -4501,15 +4501,14 @@ namespace NExtractTools
                    NSDirectory::CreateDirectory(sTempDirOut);
 
                oDocxRenderer.SetTempFolder(sTempDirOut);
-               oDocxRenderer.Convert(pReader, sTo, AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo);
+               nRes = oDocxRenderer.Convert(pReader, sTo, AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo);
+
+               if (nRes == S_OK && AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX != nFormatTo)
+                   nRes = fromDocxDir(sTempDirOut, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params, L"");
            }
            else
                nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
            RELEASEOBJECT(pReader);
-       }
-       else
-       {
-           nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
        }
        RELEASEOBJECT(pApplicationFonts);
        return nRes;

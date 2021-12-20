@@ -30,51 +30,53 @@
  *
  */
 
-#include "SLICERCACHECROSSFILTEREXT.h"
-#include "../Biff12_records/FRTBegin.h"
-#include "../Biff12_records/SlicerCacheHideItemsWithNoData.h"
-#include "../Biff12_records/FRTEnd.h"
+#include "FRTWORKBOOK.h"
+#include "../Biff12_unions/SLICERCACHESPIVOTCACHEIDS.h"
+#include "../Biff12_unions/SLICERCACHEIDS.h"
+#include "../Biff12_unions/TABLESLICERCACHEIDS.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    SLICERCACHECROSSFILTEREXT::SLICERCACHECROSSFILTEREXT()
+    FRTWORKBOOK::FRTWORKBOOK()
     {
     }
 
-    SLICERCACHECROSSFILTEREXT::~SLICERCACHECROSSFILTEREXT()
+    FRTWORKBOOK::~FRTWORKBOOK()
     {
     }
 
-    BaseObjectPtr SLICERCACHECROSSFILTEREXT::clone()
+    BaseObjectPtr FRTWORKBOOK::clone()
     {
-        return BaseObjectPtr(new SLICERCACHECROSSFILTEREXT(*this));
+        return BaseObjectPtr(new FRTWORKBOOK(*this));
     }
 
-    //SLICERCACHECROSSFILTEREXT = BrtFRTBegin BrtSlicerCacheHideItemsWithNoData BrtFRTEnd
-    const bool SLICERCACHECROSSFILTEREXT::loadContent(BinProcessor& proc)
-    {
-        if (proc.optional<FRTBegin>())
+    // FRTWORKBOOK = [NAMEEXT] [SLICERCACHESPIVOTCACHEIDS] [SLICERCACHEIDS] [WORKBOOKPR14]
+    //      [DECOUPLEDPIVOTCACHEIDS] [PIVOTTABLEREFS] [TIMELINECACHEPIVOTCACHEIDS] [TIMELINECACHEIDS]
+    //      [TABLESLICERCACHEIDS] [WORKBOOKPR15] [DATAMODEL] [CALCFEATURES] *FRT
+    const bool FRTWORKBOOK::loadContent(BinProcessor& proc)
+    {       
+        if (proc.optional<SLICERCACHESPIVOTCACHEIDS>())
         {
-            m_BrtFRTBegin = elements_.back();
+            m_SLICERCACHESPIVOTCACHEIDS = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.optional<SlicerCacheHideItemsWithNoData>())
+        if (proc.optional<SLICERCACHEIDS>())
         {
-            m_BrtSlicerCacheHideItemsWithNoData = elements_.back();
+            m_SLICERCACHEIDS = elements_.back();
+            elements_.pop_back();
+        }        
+
+        if (proc.optional<TABLESLICERCACHEIDS>())
+        {
+            m_TABLESLICERCACHEIDS = elements_.back();
             elements_.pop_back();
         }
 
-        if (proc.optional<FRTEnd>())
-        {
-            m_BrtFRTEnd = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtSlicerCacheHideItemsWithNoData && m_BrtFRTEnd;
+        return m_SLICERCACHESPIVOTCACHEIDS || m_SLICERCACHEIDS || m_TABLESLICERCACHEIDS;
     }
 
 } // namespace XLSB

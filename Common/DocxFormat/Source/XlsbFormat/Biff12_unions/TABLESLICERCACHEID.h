@@ -29,53 +29,27 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "SLICERCACHECROSSFILTEREXT.h"
-#include "../Biff12_records/FRTBegin.h"
-#include "../Biff12_records/SlicerCacheHideItemsWithNoData.h"
-#include "../Biff12_records/FRTEnd.h"
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
 namespace XLSB
 {
 
-    SLICERCACHECROSSFILTEREXT::SLICERCACHECROSSFILTEREXT()
+    class TABLESLICERCACHEID: public XLS::CompositeObject
     {
-    }
+        BASE_OBJECT_DEFINE_CLASS_NAME(TABLESLICERCACHEID)
+    public:
+        TABLESLICERCACHEID();
+        virtual ~TABLESLICERCACHEID();
 
-    SLICERCACHECROSSFILTEREXT::~SLICERCACHECROSSFILTEREXT()
-    {
-    }
+        XLS::BaseObjectPtr clone();
 
-    BaseObjectPtr SLICERCACHECROSSFILTEREXT::clone()
-    {
-        return BaseObjectPtr(new SLICERCACHECROSSFILTEREXT(*this));
-    }
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-    //SLICERCACHECROSSFILTEREXT = BrtFRTBegin BrtSlicerCacheHideItemsWithNoData BrtFRTEnd
-    const bool SLICERCACHECROSSFILTEREXT::loadContent(BinProcessor& proc)
-    {
-        if (proc.optional<FRTBegin>())
-        {
-            m_BrtFRTBegin = elements_.back();
-            elements_.pop_back();
-        }
+        XLS::BaseObjectPtr               m_BrtTableSlicerCacheID;
 
-        if (proc.optional<SlicerCacheHideItemsWithNoData>())
-        {
-            m_BrtSlicerCacheHideItemsWithNoData = elements_.back();
-            elements_.pop_back();
-        }
-
-        if (proc.optional<FRTEnd>())
-        {
-            m_BrtFRTEnd = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtSlicerCacheHideItemsWithNoData && m_BrtFRTEnd;
-    }
+    };
 
 } // namespace XLSB
 

@@ -60,6 +60,7 @@
 #include "../../XlsbFormat/Biff12_records/SlicerCacheBookPivotTables.h"
 #include "../../XlsbFormat/Biff12_unions/SLICERSEX.h"
 #include "../../XlsbFormat/Biff12_unions/TABLESLICERSEX.h"
+#include "../../XlsbFormat/Biff12_unions/FRTWORKBOOK.h"
 
 namespace OOX
 {
@@ -1028,6 +1029,24 @@ namespace OOX
 
         void COfficeArtExtensionList::fromBin(XLS::BaseObjectPtr& obj)
         {
+            if(obj->get_type() == XLS::typeFRTWORKBOOK)
+            {
+                auto ptr = static_cast<XLSB::FRTWORKBOOK*>(obj.get());
+
+                if(ptr != nullptr)
+                {
+                    if(ptr->m_SLICERCACHEIDS != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri == L"{BBE1A952-AA13-448E-AADC-164F8A28A991}";
+                        oExt->m_oSlicerCaches = ptr->m_SLICERCACHEIDS;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+                }
+            }
+
             if(obj->get_type() == XLS::typeFRTWORKSHEET)
             {
                 auto ptr = static_cast<XLSB::FRTWORKSHEET*>(obj.get());

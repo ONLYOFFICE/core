@@ -492,6 +492,28 @@ namespace NSDocxRenderer
 
             pPrev->Write(oWriter, pManagerLight);
         }
+
+        void CalculatingLineWidth()
+        {
+            size_t countConts = m_arConts.size();
+            for (size_t i = 0; i < countConts; ++i)
+            {
+                m_dWidth += m_arConts[i]->m_dWidth;
+            }
+            m_dWidth += 1.2; //прибавила ширину последнего в строке пробела
+        }
+
+        double CalculatingLineWHeight(double dBeforeSpacing)
+        {
+            double dTempHeight = 1;
+            if (abs(m_dHeight) > 0.001)
+            {
+                dTempHeight = m_dHeight;
+                if (dBeforeSpacing < 0)
+                dTempHeight += dBeforeSpacing;
+            }
+            return dTempHeight;
+        }
     };
 
     class CParagraph : public CBaseItem

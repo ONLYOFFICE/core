@@ -681,7 +681,7 @@ namespace NSDocxRenderer
 					{
 						CTextLine* pTextLine = m_arTextLine[i];
 
-						CalculatingLineWidth(i);
+						pTextLine->CalculatingLineWidth();
 						double dSpacingRight = this->m_dWidth - pTextLine->m_dX - pTextLine->m_dWidth;
 
 						double dBeforeSpacing = pTextLine->m_dBaselinePos - previousStringOffset - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
@@ -767,32 +767,9 @@ namespace NSDocxRenderer
 			}
 		}
 
-		void CalculatingLineWidth(size_t nNumLine)
-		{
-			size_t countConts = m_arTextLine[nNumLine]->m_arConts.size();
-			for (size_t i = 0; i < countConts; ++i)
-			{
-				m_arTextLine[nNumLine]->m_dWidth +=  m_arTextLine[nNumLine]->m_arConts[i]->m_dWidth;
-			}
-			m_arTextLine[nNumLine]->m_dWidth += 1.2; //прибавила ширину последнего в строке пробела
-		}
-
-		double CalculatingLineWHeight(size_t nNumLine, double dBeforeSpacing)
-		{
-			double dHeight = 1;
-			if (abs(m_arTextLine[nNumLine]->m_dHeight) > 0.001)
-			{
-				dHeight = m_arTextLine[nNumLine]->m_dHeight;
-
-				if (dBeforeSpacing < 0)
-					dHeight += dBeforeSpacing;
-			}
-			return dHeight;
-		}
-
 		void AddingFirstLine()
 		{
-			CalculatingLineWidth(0);
+			m_arTextLine[0]->CalculatingLineWidth();
 			CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
 			pParagraph->m_pManagerLight = &m_oManagerLight;
 			pParagraph->m_bIsTextFrameProperties = false;
@@ -801,11 +778,11 @@ namespace NSDocxRenderer
 			double dBeforeSpacing = m_arTextLine[0]->m_dBaselinePos - m_arTextLine[0]->m_dHeight + m_arTextLine[0]->m_dBaselineOffset;
 			pParagraph->m_dSpaceBefore = std::max(dBeforeSpacing, 0.0);
 
-			double dHeight = CalculatingLineWHeight(0, dBeforeSpacing);
+			double dHeight = m_arTextLine[0]->CalculatingLineWHeight(dBeforeSpacing);
 			pParagraph->m_dHeight = dHeight;
 
 			pParagraph->m_arLines.push_back(m_arTextLine[0]);
-			pParagraph->m_dSpaceRight = this->m_dWidth - m_arTextLine[0]->m_dX - m_arTextLine[0]->m_dWidth;;
+            pParagraph->m_dSpaceRight = this->m_dWidth - m_arTextLine[0]->m_dX - m_arTextLine[0]->m_dWidth;
 			m_arParagraphs.push_back(pParagraph);
 		}
 

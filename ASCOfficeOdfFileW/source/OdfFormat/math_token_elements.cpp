@@ -107,6 +107,7 @@ void math_mo::serialize(std::wostream & _Wostream)
 		{
 			if (text_)
 			{
+				CP_XML_ATTR_OPT(L"accent", accent_);
 				CP_XML_ATTR_OPT(L"fence", fence_);
 				CP_XML_ATTR_OPT(L"form", form_);
 				CP_XML_ATTR_OPT(L"stretchy", stretchy_);

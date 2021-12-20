@@ -71,6 +71,7 @@ namespace cpdoccore {
 		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMO;
 
+		_CP_OPT(Bool)				accent_;
 		_CP_OPT(Bool)				fence_;
 		_CP_OPT(std::wstring)		form_;
 		_CP_OPT(Bool)				stretchy_;

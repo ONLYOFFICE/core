@@ -43,17 +43,17 @@
 #define CREATE_MATH_TAG(tag)\
 	odf_writer::office_element_ptr elm;\
 	odf_writer::create_element(L"math", tag, elm, odf_context());\
-	odf_context()->math_context()->debug_stream << tag << "\n";
+	//odf_context()->math_context()->debug_stream << tag << "\n";
 
 #define OPEN_MATH_TAG(elm)\
 	odf_context()->math_context()->start_element(elm); \
 	odf_context()->math_context()->counter++; \
-	odf_context()->math_context()->debug_stream << L"open, counter is " << odf_context()->math_context()->counter << "\n";
+	//odf_context()->math_context()->debug_stream << L"open, counter is " << odf_context()->math_context()->counter << "\n";
 
 #define CLOSE_MATH_TAG\
 	odf_context()->math_context()->end_element();\
 	odf_context()->math_context()->counter--; \
-	odf_context()->math_context()->debug_stream /*std::wcout*/ << L"close, counter is " << odf_context()->math_context()->counter << "\n";
+	//odf_context()->math_context()->debug_stream /*std::wcout*/ << L"close, counter is " << odf_context()->math_context()->counter << "\n";
 
 namespace cpdoccore {
 	namespace odf_writer
@@ -85,6 +85,7 @@ namespace cpdoccore {
 			std::vector<int> end_counter;
 			int counter; 
 			std::set<wchar_t> mo;
+			std::map<wchar_t, wchar_t> diakSymbols;
 
 			void end_math();
 

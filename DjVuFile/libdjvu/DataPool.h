@@ -67,7 +67,7 @@
 
 
 #include "GThreads.h"
-#include "DjVuGString.h"
+#include "GString.h"
 #include "GURL.h"
 
 #ifdef HAVE_NAMESPACES

@@ -68,7 +68,7 @@
 
 #include "GSmartPointer.h"
 #include "GContainer.h"
-#include "DjVuGString.h"
+#include "GString.h"
 #include "GRect.h"
 #include "GURL.h"
 

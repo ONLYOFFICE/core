@@ -173,7 +173,7 @@
 //@{
 
 
-#include "DjVuGString.h"
+#include "GString.h"
 #include "ZPCodec.h"
 
 

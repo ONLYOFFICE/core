@@ -71,7 +71,7 @@
 // and added support for non I18N messages. 
 
 
-#include "DjVuGString.h"
+#include "GString.h"
 
 #ifdef HAVE_NAMESPACES
 namespace DJVU {

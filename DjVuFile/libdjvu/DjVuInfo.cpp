@@ -66,7 +66,7 @@
 #include "DjVuInfo.h"
 #include "GException.h"
 #include "ByteStream.h"
-#include "DjVuGString.h"
+#include "GString.h"
 
 
 #ifdef HAVE_NAMESPACES

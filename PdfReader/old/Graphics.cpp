@@ -5145,4 +5145,3 @@ namespace PdfReader
 			m_pResources = NULL;
 	}
 }
-

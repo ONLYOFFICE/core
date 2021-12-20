@@ -132,7 +132,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "GException.h"
-#include "DjVuGString.h"
+#include "GString.h"
 #include "ByteStream.h"
 
 

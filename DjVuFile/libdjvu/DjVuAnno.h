@@ -91,7 +91,7 @@
 //@{
 
 
-#include "DjVuGString.h"
+#include "GString.h"
 
 #ifdef HAVE_NAMESPACES
 namespace DJVU {

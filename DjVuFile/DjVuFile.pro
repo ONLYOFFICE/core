@@ -83,7 +83,7 @@ SOURCES += DjVu.cpp \
     libdjvu/GRect.cpp \
     libdjvu/GScaler.cpp \
     libdjvu/GSmartPointer.cpp \
-    libdjvu/DjVuGString.cpp \
+    libdjvu/GString.cpp \
     libdjvu/GThreads.cpp \
     libdjvu/GUnicode.cpp \
     libdjvu/GURL.cpp \
@@ -139,7 +139,7 @@ HEADERS +=     DjVu.h \
     libdjvu/GRect.h \
     libdjvu/GScaler.h \
     libdjvu/GSmartPointer.h \
-    libdjvu/DjVuGString.h \
+    libdjvu/GString.h \
     libdjvu/GThreads.h \
     libdjvu/GURL.h \
     libdjvu/IFFByteStream.h \

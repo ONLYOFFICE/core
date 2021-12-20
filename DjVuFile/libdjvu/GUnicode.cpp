@@ -63,7 +63,7 @@
 # pragma implementation
 #endif
 
-#include "DjVuGString.h"
+#include "GString.h"
 #if HAS_ICONV
 #include <iconv.h>
 #endif

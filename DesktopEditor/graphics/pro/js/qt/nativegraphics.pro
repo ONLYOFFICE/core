@@ -515,7 +515,7 @@ HEADERS += \
     $$DJVU_ROOT_DIR/libdjvu/GRect.h \
     $$DJVU_ROOT_DIR/libdjvu/GScaler.h \
     $$DJVU_ROOT_DIR/libdjvu/GSmartPointer.h \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuGString.h \
+    $$DJVU_ROOT_DIR/libdjvu/GString.h \
     $$DJVU_ROOT_DIR/libdjvu/GThreads.h \
     $$DJVU_ROOT_DIR/libdjvu/GURL.h \
     $$DJVU_ROOT_DIR/libdjvu/IFFByteStream.h \
@@ -571,7 +571,7 @@ SOURCES += \
     $$DJVU_ROOT_DIR/libdjvu/GRect.cpp \
     $$DJVU_ROOT_DIR/libdjvu/GScaler.cpp \
     $$DJVU_ROOT_DIR/libdjvu/GSmartPointer.cpp \
-    $$DJVU_ROOT_DIR/libdjvu/DjVuGString.cpp \
+    $$DJVU_ROOT_DIR/libdjvu/GString.cpp \
     $$DJVU_ROOT_DIR/libdjvu/GThreads.cpp \
     $$DJVU_ROOT_DIR/libdjvu/GUnicode.cpp \
     #$$DJVU_ROOT_DIR/libdjvu/GURL.cpp \

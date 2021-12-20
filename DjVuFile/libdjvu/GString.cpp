@@ -72,7 +72,7 @@
 # pragma implementation
 #endif
 
-#include "DjVuGString.h"
+#include "GString.h"
 #include "GThreads.h"
 #include "debug.h"
 

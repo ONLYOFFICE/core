@@ -88,7 +88,7 @@
 //@{
 
 #include "DjVuGlobal.h"
-#include "DjVuGString.h"
+#include "GString.h"
 #include "ByteStream.h"
 
 

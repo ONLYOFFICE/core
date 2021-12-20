@@ -70,7 +70,7 @@
 
 #include "GPixmap.h"
 
-#include "DjVuGString.h"
+#include "GString.h"
 #include "GException.h"
 #include "ByteStream.h"
 #include "GRect.h"

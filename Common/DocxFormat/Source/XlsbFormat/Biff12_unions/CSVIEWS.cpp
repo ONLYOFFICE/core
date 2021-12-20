@@ -29,49 +29,66 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
+#include "CSVIEWS.h"
+#include "../Biff12_records/BeginCsViews.h"
+#include "../Biff12_unions/CSVIEW.h"
+#include "../Biff12_unions/FRT.h"
+#include "../Biff12_records/EndCsViews.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BrtSheetProtection record in BIFF12
-    class SheetProtection: public XLS::BiffRecord
+
+    CSVIEWS::CSVIEWS()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(SheetProtection)
-            BASE_OBJECT_DEFINE_CLASS_NAME(SheetProtection)
-        public:
-            SheetProtection();
-            virtual ~SheetProtection();
+    }
 
-            XLS::BaseObjectPtr clone();
+    CSVIEWS::~CSVIEWS()
+    {
+    }
 
-            void readFields(XLS::CFRecord& record);
+    BaseObjectPtr CSVIEWS::clone()
+    {
+        return BaseObjectPtr(new CSVIEWS(*this));
+    }
 
-            static const XLS::ElementType	type = XLS::typeSheetProtection;
+    // CSVIEWS = BrtBeginCsViews 1*CSVIEW *FRT BrtEndCsViews
+    const bool CSVIEWS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginCsViews>())
+        {
+            m_BrtBeginCsViews = elements_.back();
+            elements_.pop_back();
+        }
 
-            _UINT16                     protpwd;
-            XLS::Boolean<unsigned int>  fLocked;
-            XLS::Boolean<unsigned int>  fObjects;
-            XLS::Boolean<unsigned int>  fScenarios;
-            XLS::Boolean<unsigned int>  fFormatCells;
-            XLS::Boolean<unsigned int>  fFormatColumns;
-            XLS::Boolean<unsigned int>  fFormatRows;
-            XLS::Boolean<unsigned int>  fInsertColumns;
-            XLS::Boolean<unsigned int>  fInsertRows;
-            XLS::Boolean<unsigned int>  fInsertHyperlinks;
-            XLS::Boolean<unsigned int>  fDeleteColumns;
-            XLS::Boolean<unsigned int>  fDeleteRows;
-            XLS::Boolean<unsigned int>  fSelLockedCells;
-            XLS::Boolean<unsigned int>  fSort;
-            XLS::Boolean<unsigned int>  fAutoFilter;
-            XLS::Boolean<unsigned int>  fPivotTables;
-            XLS::Boolean<unsigned int>  fSelUnlockedCells;
+        int countCSVIEW = proc.repeated<CSVIEW>(0, 0);
 
-    };
+        while(countCSVIEW > 0)
+        {
+            m_arCSVIEW.insert(m_arCSVIEW.begin(), elements_.back());
+            elements_.pop_back();
+            countCSVIEW--;
+        }
+
+        int count = proc.repeated<FRT>(0, 0);
+
+        while(count > 0)
+        {
+            m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndCsViews>())
+        {
+            m_BrtEndCsViews = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginCsViews && !m_arCSVIEW.empty() && m_BrtEndCsViews;
+    }
 
 } // namespace XLSB
 

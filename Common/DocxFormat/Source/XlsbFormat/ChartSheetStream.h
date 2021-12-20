@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,34 +29,59 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#ifndef CHARTSHEETSTREAM_H
+#define CHARTSHEETSTREAM_H
+
+
+#include "../../../../DesktopEditor/common/Types.h"
+#include "../Base/Types_32.h"
+#include "../XlsxFormat/WritingElement.h"
+#include <string>
+#include <memory.h>
+#include <iostream>
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+typedef BYTE *LPBYTE;
 
 namespace XLSB
 {
+    class StreamCacheReader;
 
-    class WSVIEW2: public XLS::CompositeObject
+    class ChartSheetStream;
+    typedef std::shared_ptr<ChartSheetStream>		ChartSheetStreamPtr;
+
+    class ChartSheetStream: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(WSVIEW2)
+        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
     public:
-        WSVIEW2();
-        virtual ~WSVIEW2();
+        ChartSheetStream();
+        virtual ~ChartSheetStream();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        static const XLS::ElementType	type = XLS::typeWSVIEW2;
+        //static const XLS::ElementType type = XLS::typeWorksheetSubstream;
 
-        XLS::BaseObjectPtr               m_ACUID;
-        XLS::BaseObjectPtr               m_BrtBeginWsView;
-        XLS::BaseObjectPtr               m_BrtPane;
-        std::vector<XLS::BaseObjectPtr>  m_arBrtSel;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
-        XLS::BaseObjectPtr               m_BrtEndWsView;
+        XLS::BaseObjectPtr               m_BrtBeginSheet;
+        XLS::BaseObjectPtr               m_BrtCsProp;
+        XLS::BaseObjectPtr               m_CSVIEWS;
+        XLS::BaseObjectPtr               m_BrtCsProtectionIso;
+        XLS::BaseObjectPtr               m_BrtCsProtection;
+        XLS::BaseObjectPtr               m_USERCSVIEWS;
+        XLS::BaseObjectPtr               m_BrtMargins;
+        XLS::BaseObjectPtr               m_BrtCsPageSetup;
+        XLS::BaseObjectPtr               m_HEADERFOOTER;
+        XLS::BaseObjectPtr               m_BrtDrawing;
+        XLS::BaseObjectPtr               m_BrtLegacyDrawing;
+        XLS::BaseObjectPtr               m_BrtLegacyDrawingHF;       
+        XLS::BaseObjectPtr               m_BrtBkHim;
+        XLS::BaseObjectPtr               m_WEBPUBITEMS;
+        XLS::BaseObjectPtr               m_BrtEndSheet;
 
     };
 
-} // namespace XLSB
+}
+
+#endif // CHARTSHEETSTREAM_H
 

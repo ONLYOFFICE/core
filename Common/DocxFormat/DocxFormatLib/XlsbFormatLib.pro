@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2014-07-03T15:22:54
+# Project created by QtCreator 2ChartSheetStream014-07-03T15:22:54
 #
 #-------------------------------------------------
 
@@ -40,6 +40,7 @@ SOURCES += \
     ../Source/XlsbFormat/ConnectionsStream.cpp \
     ../Source/XlsbFormat/SlicersStream.cpp \
     ../Source/XlsbFormat/SlicerCachesStream.cpp \
+    ../Source/XlsbFormat/ChartSheetStream.cpp \
 ### Biff12_records
     ../Source/XlsbFormat/Biff12_records/BeginBook.cpp \
     ../Source/XlsbFormat/Biff12_records/FRTBegin.cpp \
@@ -394,6 +395,20 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/BeginDRefs.cpp \
     ../Source/XlsbFormat/Biff12_records/DRef.cpp \
     ../Source/XlsbFormat/Biff12_records/EndDRefs.cpp \
+    ../Source/XlsbFormat/Biff12_records/CsProp.cpp \
+    ../Source/XlsbFormat/Biff12_records/CsProtection.cpp \
+    ../Source/XlsbFormat/Biff12_records/CsProtectionIso.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginCsViews.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndCsViews.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndCsView.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginUserCsViews.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndUserCsViews.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginUserCsView.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndUserCsView.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginWebPubItems.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndWebPubItems.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginWebPubItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndWebPubItem.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -447,6 +462,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/SlicerCacheNativeItemStruct.cpp \
     ../Source/XlsbFormat/Biff12_structures/SlicerCacheLevelData.cpp \
     ../Source/XlsbFormat/Biff12_structures/RangeProtectionTitleSDRel.cpp \
+    ../Source/XlsbFormat/Biff12_structures/Tws.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -612,6 +628,12 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/COLBRK.cpp \
     ../Source/XlsbFormat/Biff12_unions/DCON.cpp \
     ../Source/XlsbFormat/Biff12_unions/DREFS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CSVIEWS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CSVIEW.cpp \
+    ../Source/XlsbFormat/Biff12_unions/USERCSVIEWS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/USERCSVIEW.cpp \
+    ../Source/XlsbFormat/Biff12_unions/WEBPUBITEMS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/WEBPUBITEM.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -624,6 +646,7 @@ HEADERS += \
     ../Source/XlsbFormat/ConnectionsStream.h \
     ../Source/XlsbFormat/SlicersStream.h \
     ../Source/XlsbFormat/SlicerCachesStream.h \
+    ../Source/XlsbFormat/ChartSheetStream.h \
     ../Source/XlsbFormat/Xlsb.h \
     ../Source/XlsbFormat/XlsbElementsType.h \
 ### Biff12_records
@@ -984,6 +1007,20 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/BeginDRefs.h \
     ../Source/XlsbFormat/Biff12_records/DRef.h \
     ../Source/XlsbFormat/Biff12_records/EndDRefs.h \
+    ../Source/XlsbFormat/Biff12_records/CsProp.h \
+    ../Source/XlsbFormat/Biff12_records/CsProtection.h \
+    ../Source/XlsbFormat/Biff12_records/CsProtectionIso.h \
+    ../Source/XlsbFormat/Biff12_records/BeginCsViews.h \
+    ../Source/XlsbFormat/Biff12_records/EndCsViews.h \
+    ../Source/XlsbFormat/Biff12_records/EndCsView.h \
+    ../Source/XlsbFormat/Biff12_records/BeginUserCsViews.h \
+    ../Source/XlsbFormat/Biff12_records/EndUserCsViews.h \
+    ../Source/XlsbFormat/Biff12_records/BeginUserCsView.h \
+    ../Source/XlsbFormat/Biff12_records/EndUserCsView.h \
+    ../Source/XlsbFormat/Biff12_records/BeginWebPubItems.h \
+    ../Source/XlsbFormat/Biff12_records/EndWebPubItems.h \
+    ../Source/XlsbFormat/Biff12_records/BeginWebPubItem.h \
+    ../Source/XlsbFormat/Biff12_records/EndWebPubItem.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -1040,6 +1077,7 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_structures/SlicerCacheNativeItemStruct.h \
     ../Source/XlsbFormat/Biff12_structures/SlicerCacheLevelData.h \
     ../Source/XlsbFormat/Biff12_structures/RangeProtectionTitleSDRel.h \
+    ../Source/XlsbFormat/Biff12_structures/Tws.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
     ../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.h \
@@ -1205,3 +1243,9 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/COLBRK.h \
     ../Source/XlsbFormat/Biff12_unions/DCON.h \
     ../Source/XlsbFormat/Biff12_unions/DREFS.h \
+    ../Source/XlsbFormat/Biff12_unions/CSVIEWS.h \
+    ../Source/XlsbFormat/Biff12_unions/CSVIEW.h \
+    ../Source/XlsbFormat/Biff12_unions/USERCSVIEWS.h \
+    ../Source/XlsbFormat/Biff12_unions/USERCSVIEW.h \
+    ../Source/XlsbFormat/Biff12_unions/WEBPUBITEMS.h \
+    ../Source/XlsbFormat/Biff12_unions/WEBPUBITEM.h \

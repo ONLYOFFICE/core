@@ -33,43 +33,36 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
-
-
+#include "../Biff12_structures/Tws.h"
+#include "../Biff12_structures/CellRangeRef.h"
+#include "../Biff12_structures/XLWideString.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtSheetProtection record in BIFF12
-    class SheetProtection: public XLS::BiffRecord
+    // Logical representation of BrtBeginWebPubItem record in BIFF12
+    class BeginWebPubItem: public XLS::BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(SheetProtection)
-            BASE_OBJECT_DEFINE_CLASS_NAME(SheetProtection)
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginWebPubItem)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginWebPubItem)
         public:
-            SheetProtection();
-            virtual ~SheetProtection();
+            BeginWebPubItem();
+            virtual ~BeginWebPubItem();
 
             XLS::BaseObjectPtr clone();
 
             void readFields(XLS::CFRecord& record);
 
-            static const XLS::ElementType	type = XLS::typeSheetProtection;
-
-            _UINT16                     protpwd;
-            XLS::Boolean<unsigned int>  fLocked;
-            XLS::Boolean<unsigned int>  fObjects;
-            XLS::Boolean<unsigned int>  fScenarios;
-            XLS::Boolean<unsigned int>  fFormatCells;
-            XLS::Boolean<unsigned int>  fFormatColumns;
-            XLS::Boolean<unsigned int>  fFormatRows;
-            XLS::Boolean<unsigned int>  fInsertColumns;
-            XLS::Boolean<unsigned int>  fInsertRows;
-            XLS::Boolean<unsigned int>  fInsertHyperlinks;
-            XLS::Boolean<unsigned int>  fDeleteColumns;
-            XLS::Boolean<unsigned int>  fDeleteRows;
-            XLS::Boolean<unsigned int>  fSelLockedCells;
-            XLS::Boolean<unsigned int>  fSort;
-            XLS::Boolean<unsigned int>  fAutoFilter;
-            XLS::Boolean<unsigned int>  fPivotTables;
-            XLS::Boolean<unsigned int>  fSelUnlockedCells;
+            Tws                 tws;
+            bool                fAutoRepublish;
+            bool                fMhtml;
+            _UINT32             nStyleId;
+            UncheckedRfX        rfx;
+            bool                fName;
+            bool                fTitle;
+            XLWideString        stBkmk;
+            XLNameWideString    stName;
+            XLWideString        stFile;
+            XLWideString        stTitle;
 
     };
 

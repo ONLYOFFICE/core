@@ -72,7 +72,7 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeDv;
+        static const ElementType	type = typeDv;
 
 	int serialize(std::wostream & stream);
 

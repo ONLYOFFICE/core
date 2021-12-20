@@ -43,14 +43,14 @@ class Window2: public BiffRecord
 	BIFF_RECORD_DEFINE_TYPE_INFO(Window2)
 	BASE_OBJECT_DEFINE_CLASS_NAME(Window2)
 public:
-	Window2();
+    Window2(bool isChart = false);
 	~Window2();
 
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeWindow2;
+        static const ElementType	type = typeWindow2;
 
     bool fDspFmlaRt; //fDspFmla in biff12
     bool fDspGridRt; //fDspGrid in biff12
@@ -88,6 +88,8 @@ public:
     _UINT16     wScale;
     _UINT16     wScalePLV;
     _UINT32     iWbkView;
+
+    bool        _isChart;
 
 };
 

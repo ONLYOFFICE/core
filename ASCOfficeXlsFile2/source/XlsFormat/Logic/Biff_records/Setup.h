@@ -42,14 +42,14 @@ class Setup: public BiffRecord
 	BIFF_RECORD_DEFINE_TYPE_INFO(Setup)
 	BASE_OBJECT_DEFINE_CLASS_NAME(Setup)
 public:
-	Setup();
+        Setup(bool isChart = false);
 	~Setup();
 
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType type = typeSetup;
+        static const ElementType type = typeSetup;
 
 //-----------------------------
         _UINT32 iPaperSize;
@@ -77,6 +77,8 @@ public:
 
         std::wstring szRelID; // biff12
         bool fLandscape; // biff12
+
+        bool _isChart;
 
 };
 

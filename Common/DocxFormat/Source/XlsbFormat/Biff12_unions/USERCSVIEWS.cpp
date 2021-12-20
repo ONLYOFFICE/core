@@ -29,49 +29,55 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
+#include "USERCSVIEWS.h"
+#include "../Biff12_records/BeginUserCsViews.h"
+#include "../Biff12_unions/USERCSVIEW.h"
+#include "../Biff12_records/EndUserCsViews.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BrtSheetProtection record in BIFF12
-    class SheetProtection: public XLS::BiffRecord
+
+    USERCSVIEWS::USERCSVIEWS()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(SheetProtection)
-            BASE_OBJECT_DEFINE_CLASS_NAME(SheetProtection)
-        public:
-            SheetProtection();
-            virtual ~SheetProtection();
+    }
 
-            XLS::BaseObjectPtr clone();
+    USERCSVIEWS::~USERCSVIEWS()
+    {
+    }
 
-            void readFields(XLS::CFRecord& record);
+    BaseObjectPtr USERCSVIEWS::clone()
+    {
+        return BaseObjectPtr(new USERCSVIEWS(*this));
+    }
 
-            static const XLS::ElementType	type = XLS::typeSheetProtection;
+    //USERCSVIEWS = BrtBeginUserCsViews *USERCSVIEW BrtEndUserCsViews
+    const bool USERCSVIEWS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginUserCsViews>())
+        {
+            m_BrtBeginUserCsViews = elements_.back();
+            elements_.pop_back();
+        }
 
-            _UINT16                     protpwd;
-            XLS::Boolean<unsigned int>  fLocked;
-            XLS::Boolean<unsigned int>  fObjects;
-            XLS::Boolean<unsigned int>  fScenarios;
-            XLS::Boolean<unsigned int>  fFormatCells;
-            XLS::Boolean<unsigned int>  fFormatColumns;
-            XLS::Boolean<unsigned int>  fFormatRows;
-            XLS::Boolean<unsigned int>  fInsertColumns;
-            XLS::Boolean<unsigned int>  fInsertRows;
-            XLS::Boolean<unsigned int>  fInsertHyperlinks;
-            XLS::Boolean<unsigned int>  fDeleteColumns;
-            XLS::Boolean<unsigned int>  fDeleteRows;
-            XLS::Boolean<unsigned int>  fSelLockedCells;
-            XLS::Boolean<unsigned int>  fSort;
-            XLS::Boolean<unsigned int>  fAutoFilter;
-            XLS::Boolean<unsigned int>  fPivotTables;
-            XLS::Boolean<unsigned int>  fSelUnlockedCells;
+        auto count = proc.repeated<USERCSVIEW>(0, 0);
+        while(count > 0)
+        {
+            m_arUSERCSVIEW.insert(m_arUSERCSVIEW.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
 
-    };
+        if (proc.optional<EndUserCsViews>())
+        {
+            m_BrtEndUserCsViews = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginUserCsViews && !m_arUSERCSVIEW.empty() && m_BrtEndUserCsViews;
+    }
 
 } // namespace XLSB
 

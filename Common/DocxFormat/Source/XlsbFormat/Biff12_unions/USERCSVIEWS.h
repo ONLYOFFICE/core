@@ -31,45 +31,25 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-
-
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtSheetProtection record in BIFF12
-    class SheetProtection: public XLS::BiffRecord
+
+    class USERCSVIEWS: public XLS::CompositeObject
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(SheetProtection)
-            BASE_OBJECT_DEFINE_CLASS_NAME(SheetProtection)
-        public:
-            SheetProtection();
-            virtual ~SheetProtection();
+        BASE_OBJECT_DEFINE_CLASS_NAME(USERCSVIEWS)
+    public:
+        USERCSVIEWS();
+        virtual ~USERCSVIEWS();
 
-            XLS::BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-            static const XLS::ElementType	type = XLS::typeSheetProtection;
-
-            _UINT16                     protpwd;
-            XLS::Boolean<unsigned int>  fLocked;
-            XLS::Boolean<unsigned int>  fObjects;
-            XLS::Boolean<unsigned int>  fScenarios;
-            XLS::Boolean<unsigned int>  fFormatCells;
-            XLS::Boolean<unsigned int>  fFormatColumns;
-            XLS::Boolean<unsigned int>  fFormatRows;
-            XLS::Boolean<unsigned int>  fInsertColumns;
-            XLS::Boolean<unsigned int>  fInsertRows;
-            XLS::Boolean<unsigned int>  fInsertHyperlinks;
-            XLS::Boolean<unsigned int>  fDeleteColumns;
-            XLS::Boolean<unsigned int>  fDeleteRows;
-            XLS::Boolean<unsigned int>  fSelLockedCells;
-            XLS::Boolean<unsigned int>  fSort;
-            XLS::Boolean<unsigned int>  fAutoFilter;
-            XLS::Boolean<unsigned int>  fPivotTables;
-            XLS::Boolean<unsigned int>  fSelUnlockedCells;
+        XLS::BaseObjectPtr               m_BrtBeginUserCsViews;
+        std::vector<XLS::BaseObjectPtr>	 m_arUSERCSVIEW;
+        XLS::BaseObjectPtr               m_BrtEndUserCsViews;
 
     };
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,50 +29,18 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_records/Color.h"
-#include "../Biff12_structures/CodeName.h"
+#include "Tws.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BrtWsProp record in BIFF12
-    class WsProp: public XLS::BiffRecord
-    {
-            BIFF_RECORD_DEFINE_TYPE_INFO(WsProp)
-            BASE_OBJECT_DEFINE_CLASS_NAME(WsProp)
-        public:
-            WsProp();
-            virtual ~WsProp();
 
-            XLS::BaseObjectPtr clone();
-
-            void readFields(XLS::CFRecord& record);
-
-            static const XLS::ElementType type = XLS::typeWsProp;
-
-            bool            fShowAutoBreaks;
-            bool            fPublish;
-            bool            fDialog;
-            bool            fApplyStyles;
-            bool            fRowSumsBelow;
-            bool            fColSumsRight;
-            bool            fFitToPage;
-            bool            fShowOutlineSymbols;
-            bool            fSyncHoriz;
-            bool            fSyncVert;
-            bool            fAltExprEval;
-            bool            fAltFormulaEntry;
-            bool            fFilterMode;
-            bool            fCondFmtCalc;
-            Color           brtcolorTab;
-            std::wstring    syncRef;
-            _INT32          rwSync;
-            _INT32          colSync;
-            CodeName        strName;
-    };
+BiffStructurePtr Tws::clone()
+{
+    return BiffStructurePtr(new Tws(*this));
+}
 
 } // namespace XLSB
 

@@ -29,49 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
+#include "CsProtection.h"
 
-
+using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BrtSheetProtection record in BIFF12
-    class SheetProtection: public XLS::BiffRecord
+
+    CsProtection::CsProtection()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(SheetProtection)
-            BASE_OBJECT_DEFINE_CLASS_NAME(SheetProtection)
-        public:
-            SheetProtection();
-            virtual ~SheetProtection();
+    }
 
-            XLS::BaseObjectPtr clone();
+    CsProtection::~CsProtection()
+    {
+    }
 
-            void readFields(XLS::CFRecord& record);
+    BaseObjectPtr CsProtection::clone()
+    {
+        return BaseObjectPtr(new CsProtection(*this));
+    }
 
-            static const XLS::ElementType	type = XLS::typeSheetProtection;
-
-            _UINT16                     protpwd;
-            XLS::Boolean<unsigned int>  fLocked;
-            XLS::Boolean<unsigned int>  fObjects;
-            XLS::Boolean<unsigned int>  fScenarios;
-            XLS::Boolean<unsigned int>  fFormatCells;
-            XLS::Boolean<unsigned int>  fFormatColumns;
-            XLS::Boolean<unsigned int>  fFormatRows;
-            XLS::Boolean<unsigned int>  fInsertColumns;
-            XLS::Boolean<unsigned int>  fInsertRows;
-            XLS::Boolean<unsigned int>  fInsertHyperlinks;
-            XLS::Boolean<unsigned int>  fDeleteColumns;
-            XLS::Boolean<unsigned int>  fDeleteRows;
-            XLS::Boolean<unsigned int>  fSelLockedCells;
-            XLS::Boolean<unsigned int>  fSort;
-            XLS::Boolean<unsigned int>  fAutoFilter;
-            XLS::Boolean<unsigned int>  fPivotTables;
-            XLS::Boolean<unsigned int>  fSelUnlockedCells;
-
-    };
+    void CsProtection::readFields(XLS::CFRecord& record)
+    {
+        record >> protpwd;
+        record >> fLocked >> fObjects;
+    }
 
 } // namespace XLSB
 

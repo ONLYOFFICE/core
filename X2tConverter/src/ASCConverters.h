@@ -205,6 +205,7 @@ namespace NExtractTools
 	_UINT32 fromDocument    (const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params);
 
 	_UINT32 fromXlsxDir     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params, const std::wstring &sXlsxFile);
+	_UINT32 fromXlsbXlsxDir (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params, const std::wstring &sXlsxFile);
     _UINT32 fromXlstBin     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
 	_UINT32 fromSpreadsheet (const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params);
 

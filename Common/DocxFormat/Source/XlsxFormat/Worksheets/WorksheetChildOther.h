@@ -742,9 +742,14 @@ namespace OOX
                 auto ptr = static_cast<XLSB::WsFmtInfo*>(obj.get());
                 if(ptr != nullptr)
                 {
-                    m_oBaseColWidth                  = ptr->dxGCol;
-                    m_oDefaultColWidth               = ptr->cchDefColWidth;
-                    m_oDefaultRowHeight              = ptr->miyDefRwHeight;
+                    if(ptr->dxGCol != 0xFFFFFFFF)
+                        m_oBaseColWidth              = ptr->dxGCol;
+                    else
+                        m_oDefaultColWidth           = ptr->cchDefColWidth;
+
+                    if(ptr->fUnsynced)
+                        m_oDefaultRowHeight          = ptr->miyDefRwHeight;
+
                     m_oCustomHeight                  = ptr->fUnsynced;
                     m_oOutlineLevelCol               = ptr->iOutLevelCol;
                     m_oOutlineLevelRow               = ptr->iOutLevelRw;

@@ -35,6 +35,8 @@
 
 #include "../CommonInclude.h"
 #include "../Drawing/FromTo.h"
+#include "../../XlsbFormat/Biff12_unions/OLEOBJECTS.h"
+#include "../../XlsbFormat/Biff12_records/OleObject.h"
 
 namespace OOX
 {
@@ -227,6 +229,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COleObject)
+                        WritingElement_XlsbConstructors(COleObject)
 			COleObject()
 			{
 			}
@@ -331,13 +334,46 @@ namespace OOX
 					}
 				}
 			}
-
+                        void fromBin(XLS::BaseObjectPtr& obj)
+                        {
+                            ReadAttributes(obj);
+                        }
 			virtual EElementType getType () const
 			{
 				return et_x_OleObject;
 			}
 
 		private:
+                        void ReadAttributes(XLS::BaseObjectPtr& obj)
+                        {
+                            auto ptr = static_cast<XLSB::OleObject*>(obj.get());
+                            if(ptr != nullptr)
+                            {
+                                if(ptr->dwAspect == 0x00000001)
+                                    m_oDvAspect         = SimpleTypes::Spreadsheet::EDvAspect::Content;
+                                else if(ptr->dwAspect == 0x00000004)
+                                    m_oDvAspect         = SimpleTypes::Spreadsheet::EDvAspect::Icon;
+
+                                if(ptr->dwOleUpdate == 0x00000001)
+                                    m_oOleUpdate         = SimpleTypes::Spreadsheet::EOleUpdate::Always;
+                                else if(ptr->dwOleUpdate == 0x00000003)
+                                    m_oOleUpdate         = SimpleTypes::Spreadsheet::EOleUpdate::OnCall;
+
+                                if(ptr->shapeId > 0)
+                                    m_oShapeId = ptr->shapeId;
+
+                                m_oAutoLoad = ptr->fAutoLoad;
+
+                                if(!ptr->strProgID.value().empty())
+                                    m_oProgId = ptr->strProgID.value();
+
+                                if(ptr->fLinked != 0 && !ptr->link.getAssembledFormula().empty())
+                                    m_oLink = ptr->link.getAssembledFormula();
+
+                                if(ptr->fLinked == 0 && !ptr->strRelID.value.value().empty())
+                                    m_oRid = ptr->strRelID.value.value();
+                            }
+                        }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -369,6 +405,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COleObjects)
+                        WritingElement_XlsbConstructors(COleObjects)
 			COleObjects()
 			{
 			}
@@ -460,7 +497,26 @@ namespace OOX
 					}
 				}
 			}
+                        void fromBin(XLS::BaseObjectPtr& obj)
+                        {
+                            auto ptr = static_cast<XLSB::OLEOBJECTS*>(obj.get());
+                            if(ptr != nullptr)
+                            {
+                                for(auto &oleObject: ptr->m_arBrtOleObject)
+                                {
+                                    COleObject* pOleObject = new COleObject(oleObject);
+                                    if(pOleObject->m_oShapeId.IsInit())
+                                    {
+                                            m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
+                                    }
+                                    else
+                                    {
+                                            delete pOleObject;
+                                    }
+                                }
+                            }
 
+                        }
 			virtual EElementType getType () const
 			{
 				return et_x_OleObjects;

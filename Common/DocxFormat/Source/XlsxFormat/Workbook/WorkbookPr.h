@@ -257,17 +257,17 @@ namespace OOX
 
                     m_oWorkbookAlgorithmName   = ptr->ipdBookPasswordData.szAlgName.value();
                     m_oWorkbookSpinCount       = ptr->dwBookSpinCount;
-                    m_oWorkbookHashValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdBookPasswordData.rgbHash.rgbData),
-                                                              ptr->ipdBookPasswordData.rgbHash.cbLength/sizeof(wchar_t));
-                    m_oWorkbookSaltValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdBookPasswordData.rgbSalt.rgbData),
-                                                              ptr->ipdBookPasswordData.rgbSalt.cbLength/sizeof(wchar_t));
+                    m_oWorkbookHashValue       = std::wstring(ptr->ipdBookPasswordData.rgbHash.rgbData.begin(),
+                                                              ptr->ipdBookPasswordData.rgbHash.rgbData.end());
+                    m_oWorkbookSaltValue       = std::wstring(ptr->ipdBookPasswordData.rgbSalt.rgbData.begin(),
+                                                              ptr->ipdBookPasswordData.rgbSalt.rgbData.end());
 
                     m_oRevisionsAlgorithmName   = ptr->ipdRevPasswordData.szAlgName.value();
                     m_oRevisionsSpinCount       = ptr->dwRevSpinCount;
-                    m_oRevisionsHashValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdRevPasswordData.rgbHash.rgbData),
-                                                              ptr->ipdRevPasswordData.rgbHash.cbLength/sizeof(wchar_t));
-                    m_oRevisionsSaltValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdRevPasswordData.rgbSalt.rgbData),
-                                                              ptr->ipdRevPasswordData.rgbSalt.cbLength/sizeof(wchar_t));
+                    m_oRevisionsHashValue       = std::wstring(ptr->ipdRevPasswordData.rgbHash.rgbData.begin(),
+                                                              ptr->ipdRevPasswordData.rgbHash.rgbData.end());
+                    m_oRevisionsSaltValue       = std::wstring(ptr->ipdRevPasswordData.rgbSalt.rgbData.begin(),
+                                                              ptr->ipdRevPasswordData.rgbSalt.rgbData.end());
                 }
 
 

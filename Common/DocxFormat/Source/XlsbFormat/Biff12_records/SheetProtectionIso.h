@@ -52,6 +52,8 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
+            static const XLS::ElementType	type = XLS::typeSheetProtectionIso;
+
             _UINT32                     dwSpinCount;
             XLS::Boolean<unsigned int>  fLocked;
             XLS::Boolean<unsigned int>  fObjects;

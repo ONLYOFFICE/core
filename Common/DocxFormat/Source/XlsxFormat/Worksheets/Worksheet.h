@@ -72,7 +72,7 @@ namespace OOX
 		{
 		public:
 			CWorksheet(OOX::Document* pMain);
-			CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId);
+            CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId, bool isChartSheet = false);
 			virtual ~CWorksheet();
 
             void readBin(const CPath& oPath);
@@ -102,7 +102,7 @@ namespace OOX
 			void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
 			virtual const OOX::FileType type() const
 			{
-				return OOX::Spreadsheet::FileTypes::Worksheet;
+                return m_bIsChartSheet?OOX::Spreadsheet::FileTypes::Chartsheets:OOX::Spreadsheet::FileTypes::Worksheet;
 			}
 			virtual const CPath DefaultDirectory() const
 			{
@@ -132,6 +132,7 @@ namespace OOX
 			
 			bool	m_bPrepareForBinaryWriter;
 			bool	m_bWriteDirectlyToFile;
+            bool    m_bIsChartSheet;
 
 			nullable<OOX::Spreadsheet::CCols>						m_oCols;
 			nullable<OOX::Spreadsheet::CDimension>					m_oDimension;

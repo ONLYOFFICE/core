@@ -35,7 +35,7 @@
 namespace XLS
 {
 
-Window2::Window2()
+Window2::Window2(bool isChart)
 {
 	is_contained_in_chart_substream = false;
 	
@@ -53,6 +53,8 @@ Window2::Window2()
 	fSLV			= false;
 
 	wScaleSLV = wScaleNormal = 0;
+
+    _isChart = isChart;
 }
 
 
@@ -119,33 +121,47 @@ void Window2::readFields(CFRecord& record)
 
     else
     {
+        if(_isChart)
+        {
+            _UINT16 flags;
+            _UINT32 wScale_4b;
 
-        unsigned short flags;
-        record >> flags;
+            record >> flags;
 
-        fWnProt             = GETBIT(flags, 0);
-        fDspFmlaRt          = GETBIT(flags, 1);
-        fDspGridRt          = GETBIT(flags, 2);
-        fDspRwColRt         = GETBIT(flags, 3);
-        fDspZerosRt         = GETBIT(flags, 4);
-        fRightToLeft        = GETBIT(flags, 5);
-        fSelected           = GETBIT(flags, 6);
-        fDspRuler           = GETBIT(flags, 7);
-        fDspGuts            = GETBIT(flags, 8);
-        fDefaultHdr         = GETBIT(flags, 9);
-        fWhitespaceHidden   = GETBIT(flags, 10);
+            fSelected           = GETBIT(flags, 0);
 
-        record >> xlView >> rwTop >> colLeft;
+            record >> wScale_4b >> iWbkView;
+            wScale = wScale_4b;
+        }
+        else
+        {
+            unsigned short flags;
+            record >> flags;
 
-        topLeftCell = static_cast<std::wstring >(CellRef(rwTop, colLeft, true, true));
+            fWnProt             = GETBIT(flags, 0);
+            fDspFmlaRt          = GETBIT(flags, 1);
+            fDspGridRt          = GETBIT(flags, 2);
+            fDspRwColRt         = GETBIT(flags, 3);
+            fDspZerosRt         = GETBIT(flags, 4);
+            fRightToLeft        = GETBIT(flags, 5);
+            fSelected           = GETBIT(flags, 6);
+            fDspRuler           = GETBIT(flags, 7);
+            fDspGuts            = GETBIT(flags, 8);
+            fDefaultHdr         = GETBIT(flags, 9);
+            fWhitespaceHidden   = GETBIT(flags, 10);
 
-        BYTE	icvHdr_1b;
-        record >> icvHdr_1b;
-        icvHdr = icvHdr_1b;
+            record >> xlView >> rwTop >> colLeft;
 
-        record.skipNunBytes(3); // reserved
+            topLeftCell = static_cast<std::wstring >(CellRef(rwTop, colLeft, true, true));
 
-        record >> wScale >> wScaleNormal >> wScaleSLV >> wScalePLV >> iWbkView;
+            BYTE	icvHdr_1b;
+            record >> icvHdr_1b;
+            icvHdr = icvHdr_1b;
+
+            record.skipNunBytes(3); // reserved
+
+            record >> wScale >> wScaleNormal >> wScaleSLV >> wScalePLV >> iWbkView;
+        }
 
     }
 }

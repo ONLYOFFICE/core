@@ -53,7 +53,7 @@ namespace XLSB
 
             static const XLS::ElementType	type = XLS::typeRangePr15;
 
-            FRTBlank             FRTheader;;
+            FRTBlank             FRTheader;
             XLNullableWideString irstSourceName;
     };
 

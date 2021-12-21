@@ -61,6 +61,7 @@
 #define FONTS_USE_AFM_SETTINGS
 #else
 #define FONTS_USE_ONLY_MEMORY_STREAMS
+#ifndef TEST_AS_EXECUTABLE
 #include "emscripten.h"
 EM_JS(char*, js_get_stream_id, (unsigned char* data, unsigned char* status), {
     return self.AscViewer.CheckStreamId(data, status);
@@ -69,6 +70,7 @@ EM_JS(int, js_free_id, (unsigned char* data), {
     self.AscViewer.Free(data);
     return 1;
 });
+#endif
 #endif
 
 class CMemoryFontStream
@@ -1229,7 +1231,7 @@ namespace PdfReader
                     wsFileName = pFontInfo->m_wsFontPath;
                     eFontType  = pFont->isCIDFont() ? fontCIDType2 : fontTrueType;
 
-                #ifdef BUILDING_WASM_MODULE
+                #if defined(BUILDING_WASM_MODULE) && !defined(TEST_AS_EXECUTABLE)
                     BYTE nStatus = 0;
                     NSWasm::CData oRes;
                     oRes.SkipLen();

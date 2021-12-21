@@ -5,6 +5,7 @@ TARGET = wasmgraphics
 TEMPLATE = app
 
 CONFIG += console
+CONFIG += object_parallel_to_source
 CONFIG -= app_bundle
 
 DEFINES += TEST_AS_EXECUTABLE \
@@ -629,6 +630,7 @@ SOURCES += \
     $$PDF_ROOT_DIR/Src/RendererOutputDev.cpp \
     $$PDF_ROOT_DIR/Src/Adaptors.cpp \
     $$PDF_ROOT_DIR/Src/GfxClip.cpp \
+    $$PDF_ROOT_DIR/Resources/BaseFonts.cpp \
     $$PDF_ROOT_DIR/PdfReader.cpp
 
 HEADERS +=\
@@ -646,6 +648,7 @@ HEADERS +=\
     $$PDF_ROOT_DIR/Resources/Fontn022023l.h \
     $$PDF_ROOT_DIR/Resources/Fontn022024l.h \
     $$PDF_ROOT_DIR/Resources/Fonts050000l.h \
+    $$PDF_ROOT_DIR/Resources/BaseFonts.h \
     $$PDF_ROOT_DIR/Src/RendererOutputDev.h \
     $$PDF_ROOT_DIR/Src/Adaptors.h \
     $$PDF_ROOT_DIR/Src/MemoryUtils.h \

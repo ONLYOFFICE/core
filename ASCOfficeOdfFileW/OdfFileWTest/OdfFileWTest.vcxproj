@@ -179,6 +179,7 @@ Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     <ClCompile Include="..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\..\ASCOfficeXlsFile2\source\Common\utils.cpp" />
     <ClCompile Include="..\..\Common\3dParty\pole\pole.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
@@ -209,12 +210,18 @@ Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <Project>{36636678-ae25-4be6-9a34-2561d1bcf302}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\..\ASCOfficeXlsFile2\source\win32\XlsFormat.vcxproj">
+      <Project>{77ddc8d7-5b12-4ff2-9629-26aebca8436d}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\3dParty\cryptopp\cryptlib.vcxproj">
       <Project>{3423ec9a-52e4-4a4d-9753-edebc38785ef}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\Common\DocxFormat\Projects\DocxFormatLib.vcxproj">
       <Project>{a100103a-353e-45e8-a9b8-90b87cc5c0b0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\DocxFormat\Projects\XlsbFormatLib.vcxproj">
+      <Project>{13e13907-49da-482e-ad58-026d06a5cd11}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\OfficeCryptReader\win32\ECMACryptReader.vcxproj">
       <Project>{c27e9a9f-3a17-4482-9c5f-bf15c01e747c}</Project>

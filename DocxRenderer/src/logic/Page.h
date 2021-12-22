@@ -666,7 +666,9 @@ namespace NSDocxRenderer
 					break;
 				}
 			case TextAssociationTypeParagraphNoFrames:
-				{
+				{/*TODO: переписать выравнивание - оно не везде правильно работает (особенно по ширине и прав. краю)
+				  * новый алгоритм объединения работает, но иногда проблемы в последнем абзаце - есть только интервал, без отступа 
+				  */
 					SortElements(m_arTextLine);
 					Merge(STANDART_STRING_HEIGHT_MM / 3);
 
@@ -687,17 +689,17 @@ namespace NSDocxRenderer
 						double dBeforeSpacing = pTextLine->m_dBaselinePos - previousStringOffset - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
 						dBeforeSpacing = std::max(dBeforeSpacing, 0.0);
 
-						if ( IsNewParagraph(pTextLine, pPrevTextLine, dPrevDiffBaselinePos) )
+						if ( IsNewParagraph(pTextLine, pPrevTextLine) )
 						{
 							CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
 							pParagraph->m_pManagerLight = &m_oManagerLight;
 							pParagraph->m_bIsTextFrameProperties = false;
 
-							pParagraph->m_dSpaceBefore = dBeforeSpacing;
 							pParagraph->m_dLeft	= pTextLine->m_dX;
 
 							dPrevDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
-							pParagraph->m_dHeight = dPrevDiffBaselinePos;
+							pParagraph->m_dHeight = dPrevDiffBaselinePos; 
+							pParagraph->m_dSpaceBefore = dPrevDiffBaselinePos;
 
 							pParagraph->m_arLines.push_back(pTextLine);
 							pParagraph->m_dSpaceRight = dSpacingRight;
@@ -708,6 +710,9 @@ namespace NSDocxRenderer
  							if (m_arParagraphs.back()->m_dSpaceRight > dSpacingRight)
 								m_arParagraphs.back()->m_dSpaceRight = dSpacingRight;
 
+							dPrevDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
+							m_arParagraphs.back()->m_dHeight = dPrevDiffBaselinePos;
+
 							m_arParagraphs.back()->m_arLines.push_back(pTextLine);
 						}
 						previousStringOffset = pTextLine->m_dBaselinePos + pTextLine->m_dBaselineOffset;
@@ -716,14 +721,20 @@ namespace NSDocxRenderer
 
 					for (size_t i = 0; i < this->m_arParagraphs.size(); ++i)
 					{
-						if (i > 0)
-							m_arParagraphs[i]->m_dSpaceBefore = 0;
-
-						if (this->m_arParagraphs[i]->m_arLines.size() == 1)
+						if (this->m_arParagraphs[i]->m_arLines.size() == 1 && i > 0 )
 						{
 							m_arParagraphs[i]->m_dSpaceRight = 0;
+							m_arParagraphs[i]->m_dSpaceBefore = 0;
 							continue;
  						}
+						else
+						{
+							if (m_arParagraphs[i]->m_dSpaceBefore > m_arParagraphs[i]->m_dHeight)
+								m_arParagraphs[i]->m_dSpaceBefore -= m_arParagraphs[i]->m_dHeight;
+							else
+								m_arParagraphs[i]->m_dSpaceBefore = 0;
+
+						}
 						AlignmentParagraph(i);
 					}
 					m_arTextLine.clear();
@@ -782,22 +793,21 @@ namespace NSDocxRenderer
 			pParagraph->m_dHeight = dHeight;
 
 			pParagraph->m_arLines.push_back(m_arTextLine[0]);
-            pParagraph->m_dSpaceRight = this->m_dWidth - m_arTextLine[0]->m_dX - m_arTextLine[0]->m_dWidth;
+			pParagraph->m_dSpaceRight = this->m_dWidth - m_arTextLine[0]->m_dX - m_arTextLine[0]->m_dWidth;
 			m_arParagraphs.push_back(pParagraph);
 		}
 
-		bool IsNewParagraph(CTextLine* pTextLine, CTextLine* pPrevTextLine, double dPrevDiffBaselinePos)
+		bool IsNewParagraph(CTextLine* pTextLine, CTextLine* pPrevTextLine)
 		{
-			double dCurDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
 			double dMinWidthLine = 0.70 * (this->m_dWidth - pPrevTextLine->m_dX);
 
-			bool bIsCurLineSpacingEqualPrev = abs(dCurDiffBaselinePos - dPrevDiffBaselinePos) < 0.5 ;
 			bool bIsCurLineNewlineCharacter = pTextLine->m_dWidth < 1.2;
 			bool bIsPrevLineNewlineCharacter = pPrevTextLine->m_dWidth < 1.2;
 			bool bIsShortPrevLine = pPrevTextLine->m_dWidth <  dMinWidthLine;
+			bool bIsPrevWidthLinesLessCur = abs(pPrevTextLine->m_dWidth / pTextLine->m_dWidth) < 0.9;
 
-			return (   !bIsCurLineSpacingEqualPrev  || bIsCurLineNewlineCharacter
-					|| bIsPrevLineNewlineCharacter  || bIsShortPrevLine );
+			return ( 	   bIsCurLineNewlineCharacter	|| bIsPrevLineNewlineCharacter  
+						|| bIsShortPrevLine				|| bIsPrevWidthLinesLessCur);
 		}
 
 		void Merge(double dAffinity)

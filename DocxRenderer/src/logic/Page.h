@@ -689,7 +689,7 @@ namespace NSDocxRenderer
 						double dBeforeSpacing = pTextLine->m_dBaselinePos - previousStringOffset - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
 						dBeforeSpacing = std::max(dBeforeSpacing, 0.0);
 
-						if ( IsNewParagraph(pTextLine, pPrevTextLine) )
+						if ( IsNewParagraph(pTextLine, pPrevTextLine, dPrevDiffBaselinePos) )
 						{
 							CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
 							pParagraph->m_pManagerLight = &m_oManagerLight;
@@ -698,7 +698,7 @@ namespace NSDocxRenderer
 							pParagraph->m_dLeft	= pTextLine->m_dX;
 
 							dPrevDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
-							pParagraph->m_dHeight = dPrevDiffBaselinePos; 
+							pParagraph->m_dHeight = dPrevDiffBaselinePos;
 							pParagraph->m_dSpaceBefore = dPrevDiffBaselinePos;
 
 							pParagraph->m_arLines.push_back(pTextLine);
@@ -764,7 +764,7 @@ namespace NSDocxRenderer
 				pPrevTextLine = pCurTextLine;
 			}
 
-			if (alignmentLeft == CountLine)
+			if (alignmentLeft >= CountLine-1)
 			{
 				m_arParagraphs[i]->m_strAvailable = L"left";
 				if (alignmentRight >= CountLine/2)
@@ -797,17 +797,22 @@ namespace NSDocxRenderer
 			m_arParagraphs.push_back(pParagraph);
 		}
 
-		bool IsNewParagraph(CTextLine* pTextLine, CTextLine* pPrevTextLine)
+		bool IsNewParagraph(CTextLine* pTextLine, CTextLine* pPrevTextLine, double dPrevDiffBaselinePos)
 		{
+			double dCurDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
 			double dMinWidthLine = 0.70 * (this->m_dWidth - pPrevTextLine->m_dX);
+			double dDivLines = pPrevTextLine->m_dWidth / pTextLine->m_dWidth;
 
+			bool bIsCurLineSpacingEqualPrev = abs(dCurDiffBaselinePos - dPrevDiffBaselinePos) > 0.5 ;
 			bool bIsCurLineNewlineCharacter = pTextLine->m_dWidth < 1.2;
 			bool bIsPrevLineNewlineCharacter = pPrevTextLine->m_dWidth < 1.2;
 			bool bIsShortPrevLine = pPrevTextLine->m_dWidth <  dMinWidthLine;
-			bool bIsPrevWidthLinesLessCur = abs(pPrevTextLine->m_dWidth / pTextLine->m_dWidth) < 0.9;
+			bool bIsPrevWidthLineLessCur = dDivLines <= 0.9;
+			bool bIsNotPrevWidthLinesLessCur = dDivLines > 0.9 && dDivLines < 1.1;
 
-			return ( 	   bIsCurLineNewlineCharacter	|| bIsPrevLineNewlineCharacter  
-						|| bIsShortPrevLine				|| bIsPrevWidthLinesLessCur);
+			return ( 	   bIsCurLineNewlineCharacter	 || bIsPrevLineNewlineCharacter  
+						|| bIsShortPrevLine				 || bIsPrevWidthLineLessCur
+						|| (!bIsNotPrevWidthLinesLessCur && bIsCurLineSpacingEqualPrev));
 		}
 
 		void Merge(double dAffinity)

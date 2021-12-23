@@ -668,6 +668,7 @@ namespace NSDocxRenderer
                 CTextLine* pTextLine = m_arLines[i];
                 pTextLine->SortConts();
                 pTextLine->ToXml(oWriter, m_pManagerLight);
+                oWriter.WriteString(L"<w:r><w:t xml:space=\"preserve\"> </w:t></w:r>");
             }
 
             oWriter.WriteString(L"</w:p>");

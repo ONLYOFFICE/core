@@ -85,7 +85,7 @@ namespace cpdoccore {
 			std::vector<int> end_counter;
 			int counter; 
 			std::set<wchar_t> mo;
-			std::map<wchar_t, wchar_t> diakSymbols;
+			std::map<std::wstring, std::wstring> diakSymbols;
 
 			void end_math();
 

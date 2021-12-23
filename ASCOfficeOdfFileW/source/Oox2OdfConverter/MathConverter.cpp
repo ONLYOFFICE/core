@@ -118,11 +118,12 @@ namespace Oox2Odf
 
 		convert(oox_acc->m_oElement.GetPointer());
 		//convert(oox_acc->m_oAccPr.GetPointer());
-		std::atomic_wchar_t diakSymbol = (oox_acc->m_oAccPr->m_oChr.IsInit()) ? oox_acc->m_oAccPr->m_oChr.get().m_val->GetValue()[0] : L'̂';
+		std::wstring diakSymbol = (oox_acc->m_oAccPr->m_oChr.IsInit()) ? oox_acc->m_oAccPr->m_oChr.get().m_val->GetValue() : L"̂";
 		
-		std::map<wchar_t, wchar_t>& map = odf_context()->math_context()->diakSymbols;
-		std::wstring symbol;
-		symbol += (map[diakSymbol]);
+		std::map<std::wstring, std::wstring>& map = odf_context()->math_context()->diakSymbols;
+		std::wstring symbol;		
+		
+		symbol = (map[diakSymbol]);
 		{
 			CREATE_MATH_TAG(L"mo");
 			/*typedef odf_writer::math_mo* T;
@@ -164,18 +165,33 @@ namespace Oox2Odf
 	void OoxConverter::convert(OOX::Logic::CBar *oox_bar)
 	{
 		if (!oox_bar) return;
+		
+		bool flag = convert(oox_bar->m_oBarPr.GetPointer());
+		std::wstring tag;
+		if (flag) tag = L"mover";
+		else	  tag = L"munder";
+		CREATE_MATH_TAG(tag.c_str());
+		OPEN_MATH_TAG(elm);
+		{
+			convert(oox_bar->m_oElement.GetPointer());
+			CREATE_MATH_TAG(L"mo");
+			if (flag) elm->add_text(L"¯");
+			else	  elm->add_text(L"&#713;");
+			
+			OPEN_MATH_TAG(elm);
+			CLOSE_MATH_TAG;
+		}
 
-		convert(oox_bar->m_oBarPr.GetPointer());
-		convert(oox_bar->m_oElement.GetPointer());
+		CLOSE_MATH_TAG;
 
 	}
 
-	void OoxConverter::convert(OOX::Logic::CBarPr	*oox_bar_pr)
+	bool OoxConverter::convert(OOX::Logic::CBarPr	*oox_bar_pr)
 	{
-		if (!oox_bar_pr) return;	
+		if (!oox_bar_pr) return false;	
 
 		convert(oox_bar_pr->m_oCtrlPr.GetPointer());
-		convert(oox_bar_pr->m_oPos.GetPointer());
+		return convert(oox_bar_pr->m_oPos.GetPointer());
 
 	}
 
@@ -540,11 +556,16 @@ namespace Oox2Odf
 			convert(oox_group_ch->m_oGroupChrPr->m_oChr.GetPointer());
 		else
 		{
-			CREATE_MATH_TAG(L"mo");
-			elm->add_text(L" ⏟ ");
-			OPEN_MATH_TAG(elm);
-
-			CLOSE_MATH_TAG;
+			if (!oox_group_ch->m_oGroupChrPr->m_oChr.IsInit())
+			{
+				CREATE_MATH_TAG(L"mo");
+				elm->add_text(L" ⏟ ");
+				OPEN_MATH_TAG(elm);
+				CLOSE_MATH_TAG;
+			}				
+			else
+				convert(oox_group_ch->m_oGroupChrPr->m_oChr.GetPointer());
+			
 		}
 		CLOSE_MATH_TAG;	
 	}
@@ -1023,6 +1044,7 @@ namespace Oox2Odf
 
 	void OoxConverter::convert(OOX::Logic::CChr * oox_chr)
 	{		
+		//if (!oox_chr) return;
 		CREATE_MATH_TAG(L"mo");
 		typedef odf_writer::math_mo* T;
 
@@ -1033,7 +1055,7 @@ namespace Oox2Odf
 		}
 		
 		if (!oox_chr)		
-			elm->add_text(L" ");		
+			elm->add_text(L"∫");		
 		else
 		{
 			/*std::wstring ws = L"&#";
@@ -1041,9 +1063,7 @@ namespace Oox2Odf
 			ss << (oox_chr->m_val->GetValue()[0] & 0xFFFF);
 			ws += ss.str();
 			elm->add_text(ws);*/			
-			std::wstring ws = L" ";
-			ws += oox_chr->m_val->GetValue();
-			elm->add_text(ws);
+			elm->add_text(oox_chr->m_val->GetValue());
 		}
 		OPEN_MATH_TAG(elm);
 		CLOSE_MATH_TAG;

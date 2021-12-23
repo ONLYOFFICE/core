@@ -7,6 +7,7 @@
 #include "../OdfFormat/odf_conversion_context.h"
 #include "../../ASCOfficeOdfFileW/source/OdfFormat/math_layout_elements.h"
 #include "../../ASCOfficeOdfFileW/source/OdfFormat/math_limit_elements.h"
+#include "../../ASCOfficeOdfFileW/source/OdfFormat/math_token_elements.h"
 #include <set>
 #include <vector>
 #include <fstream>
@@ -122,13 +123,37 @@ namespace Oox2Odf
 
 		CREATE_MATH_TAG(L"mover");
 
+		/*typedef odf_writer::math_mover* T;
+		T tmp = dynamic_cast<T>(elm.get());
+		if (tmp)
+		{
+			tmp->accent = true;
+		}*/
+		
 		OPEN_MATH_TAG(elm);
 
 		convert(oox_acc->m_oElement.GetPointer());
-		convert(oox_acc->m_oAccPr.GetPointer());
+		//convert(oox_acc->m_oAccPr.GetPointer());
+		std::wstring diakSymbol = (oox_acc->m_oAccPr->m_oChr.IsInit()) ? oox_acc->m_oAccPr->m_oChr.get().m_val->GetValue() : L"̂";
+		
+		std::map<std::wstring, std::wstring>& map = odf_context()->math_context()->diakSymbols;
+		std::wstring symbol;		
+		
+		symbol = (map[diakSymbol]);
+		{
+			CREATE_MATH_TAG(L"mo");
+			/*typedef odf_writer::math_mo* T;
+			T tmp = dynamic_cast<T>(elm.get());
+			if (tmp)
+			{
+				tmp->stretchy_ = false;
+			}*/
+			elm->add_text(symbol);
+			OPEN_MATH_TAG(elm);
+			CLOSE_MATH_TAG;
 
+		}	
 		CLOSE_MATH_TAG;
-	
 	}
 
 	void OoxConverter::convert(OOX::Logic::CAccPr	*oox_acc_pr)
@@ -156,18 +181,33 @@ namespace Oox2Odf
 	void OoxConverter::convert(OOX::Logic::CBar *oox_bar)
 	{
 		if (!oox_bar) return;
+		
+		bool flag = convert(oox_bar->m_oBarPr.GetPointer());
+		std::wstring tag;
+		if (flag) tag = L"mover";
+		else	  tag = L"munder";
+		CREATE_MATH_TAG(tag.c_str());
+		OPEN_MATH_TAG(elm);
+		{
+			convert(oox_bar->m_oElement.GetPointer());
+			CREATE_MATH_TAG(L"mo");
+			if (flag) elm->add_text(L"¯");
+			else	  elm->add_text(L"&#713;");
+			
+			OPEN_MATH_TAG(elm);
+			CLOSE_MATH_TAG;
+		}
 
-		convert(oox_bar->m_oBarPr.GetPointer());
-		convert(oox_bar->m_oElement.GetPointer());
+		CLOSE_MATH_TAG;
 
 	}
 
-	void OoxConverter::convert(OOX::Logic::CBarPr	*oox_bar_pr)
+	bool OoxConverter::convert(OOX::Logic::CBarPr	*oox_bar_pr)
 	{
-		if (!oox_bar_pr) return;	
+		if (!oox_bar_pr) return false;	
 
 		convert(oox_bar_pr->m_oCtrlPr.GetPointer());
-		convert(oox_bar_pr->m_oPos.GetPointer());
+		return convert(oox_bar_pr->m_oPos.GetPointer());
 
 	}
 
@@ -250,11 +290,21 @@ namespace Oox2Odf
 			if(oox_del->m_arrItems[i]->getType() == OOX::et_m_dPr)
 				begEndChrs = convert((OOX::Logic::CDelimiterPr*)(oox_del->m_arrItems[i]));
 		}
-
+		mrow();
 		{
 			CREATE_MATH_TAG(L"mo");
 			elm->add_text(begEndChrs.first);
+			typedef odf_writer::math_mo* T;
+
+			T tmp = dynamic_cast<T>(elm.get());
+			if (tmp)
+			{
+				tmp->fence_ = true;
+				tmp->form_ = L"prefix";
+				tmp->stretchy_ = true;
+			}
 			OPEN_MATH_TAG(elm);
+			
 			CLOSE_MATH_TAG;
 		}
 	
@@ -265,11 +315,22 @@ namespace Oox2Odf
 		}
 
 		{
-			CREATE_MATH_TAG(L"mo")
+			CREATE_MATH_TAG(L"mo");
 			elm->add_text(begEndChrs.second);
+			typedef odf_writer::math_mo* T;
+
+			T tmp = dynamic_cast<T>(elm.get());
+			if (tmp)
+			{
+				tmp->fence_ = true;
+				tmp->form_ = L"postfix";
+				tmp->stretchy_ = true;
+			}
 			OPEN_MATH_TAG(elm)
+			
 			CLOSE_MATH_TAG
 		}	
+		endOfMrow();
 	}
 
 	std::pair<std::wstring, std::wstring> OoxConverter::convert(OOX::Logic::CDelimiterPr *oox_del_pr)
@@ -313,27 +374,26 @@ namespace Oox2Odf
 		if(oox_eq_arr->m_arrItems[0]->getType() == OOX::EElementType::et_m_eqArrPr)
 			convert(oox_eq_arr->m_arrItems[0]);
 
-		for (size_t i = 1; i < oox_eq_arr->m_arrItems.size() - 1; ++i)
+		CREATE_MATH_TAG(L"mtable");
+		OPEN_MATH_TAG(elm);
 		{
-			CREATE_MATH_TAG(L"munder");
-			OPEN_MATH_TAG(elm);
-			mrow();
-			convert(oox_eq_arr->m_arrItems[i]);
-			endOfMrow();
-			if(i != oox_eq_arr->m_arrItems.size() - 2)
-				mrow();
+			
+			for (size_t i = 1; i < oox_eq_arr->m_arrItems.size(); ++i)
+			{
+				CREATE_MATH_TAG(L"mtr");
+				OPEN_MATH_TAG(elm);
+				{
+					CREATE_MATH_TAG(L"mtd");
+					OPEN_MATH_TAG(elm);
+					mrow();
+					convert(oox_eq_arr->m_arrItems[i]);
+					endOfMrow();
+					CLOSE_MATH_TAG;
+				}
+				CLOSE_MATH_TAG;
+			}			
 		}
-
-		mrow();
-		convert(oox_eq_arr->m_arrItems[oox_eq_arr->m_arrItems.size() - 1]);
-		endOfMrow();
-
-		for (size_t i = 1; i < oox_eq_arr->m_arrItems.size() - 1; ++i)
-		{
-			CLOSE_MATH_TAG;
-			if (i != oox_eq_arr->m_arrItems.size() - 2)
-				endOfMrow();
-		}
+		CLOSE_MATH_TAG;
 	}
 
 	void OoxConverter::convert(OOX::Logic::CEqArrPr *oox_eq_arr_pr)
@@ -508,7 +568,21 @@ namespace Oox2Odf
 		CREATE_MATH_TAG(tag.c_str());
 		OPEN_MATH_TAG(elm);
 		convert(oox_group_ch->m_oElement.GetPointer());
-		convert(oox_group_ch->m_oGroupChrPr->m_oChr.GetPointer());
+		if(flag)
+			convert(oox_group_ch->m_oGroupChrPr->m_oChr.GetPointer());
+		else
+		{
+			if (!oox_group_ch->m_oGroupChrPr->m_oChr.IsInit())
+			{
+				CREATE_MATH_TAG(L"mo");
+				elm->add_text(L" ⏟ ");
+				OPEN_MATH_TAG(elm);
+				CLOSE_MATH_TAG;
+			}				
+			else
+				convert(oox_group_ch->m_oGroupChrPr->m_oChr.GetPointer());
+			
+		}
 		CLOSE_MATH_TAG;	
 	}
 
@@ -546,13 +620,14 @@ namespace Oox2Odf
 		mrow();
 
 			
-			CREATE_MATH_TAG(L"munder")
-			OPEN_MATH_TAG(elm)
+		CREATE_MATH_TAG(L"munder");
+		OPEN_MATH_TAG(elm);
 
-			
+		mrow();
 			convert(oox_lim_low->m_oElement.GetPointer());
-			convert(oox_lim_low->m_oLimLowPr.GetPointer());
-			convert(oox_lim_low->m_oLim.GetPointer());
+		endOfMrow();
+		convert(oox_lim_low->m_oLimLowPr.GetPointer());
+		convert(oox_lim_low->m_oLim.GetPointer());
 
 			CLOSE_MATH_TAG
 
@@ -583,11 +658,12 @@ namespace Oox2Odf
 		if (!oox_lim_upp) return;
 
 		
-		CREATE_MATH_TAG(L"mover")
-		OPEN_MATH_TAG(elm)
+		CREATE_MATH_TAG(L"mover");
+		OPEN_MATH_TAG(elm);
 
-		
-		convert(oox_lim_upp->m_oElement.GetPointer());
+		mrow();
+			convert(oox_lim_upp->m_oElement.GetPointer());
+		endOfMrow();
 		convert(oox_lim_upp->m_oLimUppPr.GetPointer());
 		convert(oox_lim_upp->m_oLim.GetPointer());
 
@@ -772,23 +848,23 @@ namespace Oox2Odf
 	{
 		if (!oox_r_pr) return false;
 
-		if (oox_r_pr->m_oColor.IsInit())
-		{
-			if (oox_r_pr->m_oColor->m_oVal.IsInit())
-			{
-				std::wstring clr = oox_r_pr->m_oColor->m_oVal.GetPointer()->ToString();
-				std::wstring clr2(L"#");
-				clr.erase(0, 2);
-				clr2 += clr;
-				CREATE_MATH_TAG(L"mstyle");
-				typedef odf_writer::math_mstyle * T;
+		//if (oox_r_pr->m_oColor.IsInit())
+		//{
+		//	if (oox_r_pr->m_oColor->m_oVal.IsInit())
+		//	{
+		//		std::wstring clr = oox_r_pr->m_oColor->m_oVal.GetPointer()->ToString();
+		//		std::wstring clr2(L"#");
+		//		clr.erase(0, 2);
+		//		clr2 += clr;
+		//		CREATE_MATH_TAG(L"mstyle");
+		//		typedef odf_writer::math_mstyle * T;
 
-				T tmp = dynamic_cast<T>(elm.get());
-				tmp->color_ = clr2;
-				OPEN_MATH_TAG(elm);
-				return true;
-			}
-		}
+		//		T tmp = dynamic_cast<T>(elm.get());
+		//		tmp->color_ = clr2;
+		//		OPEN_MATH_TAG(elm);
+		//		return true;
+		//	}
+		//}
 		return false;
 	}
 
@@ -877,12 +953,15 @@ namespace Oox2Odf
 	void OoxConverter::convert(OOX::Logic::CNary *oox_nary)
 	{
 		if (!oox_nary) return;
-
-		nullable<SimpleTypes::CHexColor<>>* ref = &(oox_nary->m_oNaryPr->m_oCtrlPr->m_oRPr->m_oColor->m_oVal);
-		bool flag_color = false;
-		if (ref->IsInit())
+		nullable<SimpleTypes::CHexColor<>>* ref = NULL;
+		if(oox_nary->m_oNaryPr->m_oCtrlPr->m_oRPr->m_oColor.IsInit())
 		{
-			std::wstring clr = ref->GetPointer()->ToString();
+			ref = &(oox_nary->m_oNaryPr->m_oCtrlPr->m_oRPr->m_oColor->m_oVal);
+		}
+		bool flag_color = false;
+		if (ref != NULL)
+		{
+			/*std::wstring clr = ref->GetPointer()->ToString();
 			std::wstring clr2(L"#");
 			clr.erase(0, 2);
 			clr2 += clr;
@@ -892,7 +971,7 @@ namespace Oox2Odf
 			T tmp = dynamic_cast<T>(elm.get());
 			tmp->color_ = clr2;
 			OPEN_MATH_TAG(elm);	
-			flag_color = true;
+			flag_color = true;*/
 		}
 
 		mrow();
@@ -924,29 +1003,30 @@ namespace Oox2Odf
 		
 		if (!flags.first)
 		{
-			mrow();
+			//mrow();
 			convert(oox_nary->m_oSub.GetPointer());
-			endOfMrow();
+			//endOfMrow();
 		}
 		if (!flags.second)
 		{
-			mrow();
+			//mrow();
 			convert(oox_nary->m_oSup.GetPointer());
-			endOfMrow();
+			//endOfMrow();
 		}
 
 
 		if (flag_nary)
 		{
 			CLOSE_MATH_TAG;
-		}
+		}		
 
-		endOfMrow();
-
-		if(flag_color)
+		if (flag_color)
+		{
 			CLOSE_MATH_TAG;
+		}
 		convert(oox_nary->m_oElement.GetPointer());
 
+		endOfMrow();
 	}
 
 	std::pair<bool, bool> OoxConverter::convert(OOX::Logic::CNaryPr *oox_nary_pr)
@@ -980,14 +1060,28 @@ namespace Oox2Odf
 
 	void OoxConverter::convert(OOX::Logic::CChr * oox_chr)
 	{		
-		CREATE_MATH_TAG(L"mo")
-		OPEN_MATH_TAG(elm)
+		//if (!oox_chr) return;
+		CREATE_MATH_TAG(L"mo");
+		typedef odf_writer::math_mo* T;
 
+		T tmp = dynamic_cast<T>(elm.get());
+		if (tmp)
+		{
+			tmp->stretchy_ = false;
+		}
+		
 		if (!oox_chr)		
 			elm->add_text(L"∫");		
 		else
+		{
+			/*std::wstring ws = L"&#";
+			std::wstringstream ss;			
+			ss << (oox_chr->m_val->GetValue()[0] & 0xFFFF);
+			ws += ss.str();
+			elm->add_text(ws);*/			
 			elm->add_text(oox_chr->m_val->GetValue());
-
+		}
+		OPEN_MATH_TAG(elm);
 		CLOSE_MATH_TAG;
 	}
 
@@ -1028,7 +1122,7 @@ namespace Oox2Odf
 		nullable<ComplexTypes::Word::CColor> p = oox_rad->m_oRadPr->m_oCtrlPr->m_oRPr->m_oColor;
 		if (p.IsInit())
 		{
-			std::wstring clr = p->m_oVal.GetPointer()->ToString();
+			/*std::wstring clr = p->m_oVal.GetPointer()->ToString();
 			std::wstring clr2(L"#");
 			clr.erase(0, 2);
 			clr2 += clr;
@@ -1037,7 +1131,7 @@ namespace Oox2Odf
 
 			T tmp = dynamic_cast<T>(elm.get());
 			tmp->color_ = clr2;
-			OPEN_MATH_TAG(elm);
+			OPEN_MATH_TAG(elm);*/
 		}
 
 		{
@@ -1056,7 +1150,9 @@ namespace Oox2Odf
 		}
 
 		if (p.IsInit())
-			CLOSE_MATH_TAG;
+		{
+			//CLOSE_MATH_TAG;
+		}
 
 	}
 
@@ -1167,18 +1263,22 @@ namespace Oox2Odf
 
 	void OoxConverter::convert(OOX::Logic::CSub *oox_csub)
 	{
+		mrow();
 		for (size_t i = 0; i < oox_csub->m_arrItems.size(); ++i)
 		{
 			convert(oox_csub->m_arrItems[i]);
 		}
+		endOfMrow();
 	}
 
 	void OoxConverter::convert(OOX::Logic::CSup *oox_csup)
 	{
+		mrow();
 		for (size_t i = 0; i < oox_csup->m_arrItems.size(); ++i)
 		{
 			convert(oox_csup->m_arrItems[i]);
 		}	
+		endOfMrow();
 	}
 
 	void OoxConverter::convert(OOX::Logic::CSSub *oox_ssub)

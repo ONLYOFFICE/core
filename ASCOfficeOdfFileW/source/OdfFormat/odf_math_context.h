@@ -85,11 +85,12 @@ namespace cpdoccore {
 			std::vector<int> end_counter;
 			int counter; 
 			std::set<wchar_t> mo;
+			std::map<std::wstring, std::wstring> diakSymbols;
 
 			void end_math();
 
-            //std::wofstream debug_stream;
-
+			std::wofstream debug_stream;// (L"C://RK-Tech//debug.txt", std::wofstream::out);
+			std::string fileName = "C:\\RK-Tech\\debugLog.txt";			
 			bool isEmpty();
 		private:
 			class Impl;

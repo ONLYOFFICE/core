@@ -1085,7 +1085,7 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/ACFONTS.h \
     ../Source/XlsbFormat/Biff12_unions/ACSORTCONDS.h \
     ../Source/XlsbFormat/Biff12_unions/ACUID.h \
-    ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS_bu.h \
+    ../Source/XlsbFormat/Biff12_unions/BOOKVIEWS.h \
     ../Source/XlsbFormat/Biff12_unions/BORDERS.h \
     ../Source/XlsbFormat/Biff12_unions/BUNDLESHS.h \
     ../Source/XlsbFormat/Biff12_unions/CELL.h \

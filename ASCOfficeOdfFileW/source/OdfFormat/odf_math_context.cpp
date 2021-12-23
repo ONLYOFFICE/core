@@ -127,12 +127,12 @@ namespace odf_writer
 						{L"̿", L"═"}, {L"⏞", L"⏞"}, {L"⃖", L"←"}, {L"⃗", L"→"}, {L"⃡", L"↔"}, {L"⃐", L"↼"}, {L"⃑", L"⇀"}, {L"̲", L"&#45;"}
 						//{L'', L''}, { L'', L'' }, { L'', L'' }, { L'', L'' }, { L'', L'' }, { L'', L'' }, { L'', L'' }
 		};
-		debug_stream.open(fileName);
+		//debug_stream.open(debug_fileName);
 	}
 
 	odf_math_context::~odf_math_context()
 	{
-		debug_stream.close();
+		//debug_stream.close();
 	}
 
 	void odf_math_context::set_styles_context(odf_style_context * style_context)

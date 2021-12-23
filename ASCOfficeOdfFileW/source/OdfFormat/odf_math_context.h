@@ -89,9 +89,11 @@ namespace cpdoccore {
 
 			void end_math();
 
-			std::wofstream debug_stream;// (L"C://RK-Tech//debug.txt", std::wofstream::out);
-			std::string fileName = "C:\\RK-Tech\\debugLog.txt";			
+			std::wofstream debug_stream;
+			std::string debug_fileName = "debugLog.txt";
 			bool isEmpty();
+
+			bool in_text_box_ = false;
 		private:
 			class Impl;
 			_CP_PTR(Impl) impl_;

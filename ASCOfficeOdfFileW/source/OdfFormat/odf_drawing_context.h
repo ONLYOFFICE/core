@@ -152,8 +152,8 @@ public:
 		void set_text_box_tableframe	(bool val);		
 	void end_text_box					();
 
-	void start_object(std::wstring ref); //формулы, диаграммы ... 
-	void end_object();
+	void start_object(std::wstring ref, bool in_frame = true); //формулы, диаграммы ... 
+	void end_object(bool in_frame = true);
 
 	void start_object_ole(std::wstring ref);
 	void end_object_ole();

@@ -954,7 +954,10 @@ namespace Oox2Odf
 	{
 		if (!oox_nary) return;
 		nullable<SimpleTypes::CHexColor<>>* ref = NULL;
-		if(oox_nary->m_oNaryPr->m_oCtrlPr->m_oRPr->m_oColor.IsInit())
+		
+		if (oox_nary->m_oNaryPr->m_oCtrlPr.IsInit() &&
+			oox_nary->m_oNaryPr->m_oCtrlPr->m_oRPr.IsInit() &&
+			oox_nary->m_oNaryPr->m_oCtrlPr->m_oRPr->m_oColor.IsInit())
 		{
 			ref = &(oox_nary->m_oNaryPr->m_oCtrlPr->m_oRPr->m_oColor->m_oVal);
 		}

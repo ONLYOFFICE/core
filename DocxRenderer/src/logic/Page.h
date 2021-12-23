@@ -666,9 +666,7 @@ namespace NSDocxRenderer
 					break;
 				}
 			case TextAssociationTypeParagraphNoFrames:
-				{/*TODO: переписать выравнивание - оно не везде правильно работает (особенно по ширине и прав. краю)
-				  * новый алгоритм объединения работает, но иногда проблемы в последнем абзаце - есть только интервал, без отступа 
-				  */
+				{
 					SortElements(m_arTextLine);
 					Merge(STANDART_STRING_HEIGHT_MM / 3);
 
@@ -686,9 +684,6 @@ namespace NSDocxRenderer
 						pTextLine->CalculatingLineWidth();
 						double dSpacingRight = this->m_dWidth - pTextLine->m_dX - pTextLine->m_dWidth;
 
-						double dBeforeSpacing = pTextLine->m_dBaselinePos - previousStringOffset - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
-						dBeforeSpacing = std::max(dBeforeSpacing, 0.0);
-
 						if ( IsNewParagraph(pTextLine, pPrevTextLine, dPrevDiffBaselinePos) )
 						{
 							CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
@@ -696,6 +691,9 @@ namespace NSDocxRenderer
 							pParagraph->m_bIsTextFrameProperties = false;
 
 							pParagraph->m_dLeft	= pTextLine->m_dX;
+
+							double dBeforeSpacing = pTextLine->m_dBaselinePos - previousStringOffset - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
+							dBeforeSpacing = std::max(dBeforeSpacing, 0.0);
 
 							dPrevDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
 							pParagraph->m_dHeight = dPrevDiffBaselinePos;
@@ -719,9 +717,9 @@ namespace NSDocxRenderer
 						pPrevTextLine = pTextLine;
 					}
 
-					for (size_t i = 0; i < this->m_arParagraphs.size(); ++i)
+					for (size_t i = 1; i < this->m_arParagraphs.size(); ++i)
 					{
-						if (this->m_arParagraphs[i]->m_arLines.size() == 1 && i > 0 )
+						if (this->m_arParagraphs[i]->m_arLines.size() == 1)
 						{
 							m_arParagraphs[i]->m_dSpaceRight = 0;
 							m_arParagraphs[i]->m_dSpaceBefore = 0;
@@ -789,7 +787,7 @@ namespace NSDocxRenderer
 			double dBeforeSpacing = m_arTextLine[0]->m_dBaselinePos - m_arTextLine[0]->m_dHeight + m_arTextLine[0]->m_dBaselineOffset;
 			pParagraph->m_dSpaceBefore = std::max(dBeforeSpacing, 0.0);
 
-			double dHeight = m_arTextLine[0]->CalculatingLineWHeight(dBeforeSpacing);
+			double dHeight = m_arTextLine[0]->CalculatingLineHeight(dBeforeSpacing);
 			pParagraph->m_dHeight = dHeight;
 
 			pParagraph->m_arLines.push_back(m_arTextLine[0]);

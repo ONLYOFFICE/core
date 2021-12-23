@@ -503,14 +503,14 @@ namespace NSDocxRenderer
             m_dWidth += 1.2; //прибавила ширину последнего в строке пробела
         }
 
-        double CalculatingLineWHeight(double dBeforeSpacing)
+        double CalculatingLineHeight(double dBeforeSpacing)
         {
             double dTempHeight = 1;
             if (abs(m_dHeight) > 0.001)
             {
                 dTempHeight = m_dHeight;
                 if (dBeforeSpacing < 0)
-                dTempHeight += dBeforeSpacing;
+                    dTempHeight += dBeforeSpacing;
             }
             return dTempHeight;
         }

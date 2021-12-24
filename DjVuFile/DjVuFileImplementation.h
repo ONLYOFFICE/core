@@ -86,18 +86,6 @@ public:
     BYTE*        GetStructure();
     BYTE*        GetPageGlyphs(int nPageIndex);
     BYTE*        GetPageLinks (int nPageIndex);
-    void         GetGlyphs(IRenderer* pRenderer, const std::wstring& bsUnicodeText, unsigned int* pGids, double x, double y);
-    void         DumpLine();
-    NSWasm::CData m_pPageMeta;
-
-private:
-    double m_dCurrentFontSize = 0.0;
-    NSWasm::CHLine m_oLine;
-    NSWasm::CData  m_oMeta;
-    Aggplus::CMatrix m_pLastTransform;
-    LONG m_lCurrentFont     = -1;
-    LONG m_nLastBrushColor1 = -1;
-    LONG m_nLastBrushAlpha1 = -1;
 #endif
 
 private:

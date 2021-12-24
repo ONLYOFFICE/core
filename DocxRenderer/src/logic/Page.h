@@ -694,9 +694,9 @@ namespace NSDocxRenderer
 
 							double dBeforeSpacing = pTextLine->m_dBaselinePos - previousStringOffset - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
 							dBeforeSpacing = std::max(dBeforeSpacing, 0.0);
+							pParagraph->m_dHeight = m_arTextLine[i]->CalculatingLineHeight(dBeforeSpacing);
 
 							dPrevDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
-							pParagraph->m_dHeight = dPrevDiffBaselinePos;
 							pParagraph->m_dSpaceBefore = dPrevDiffBaselinePos;
 
 							pParagraph->m_arLines.push_back(pTextLine);
@@ -717,23 +717,21 @@ namespace NSDocxRenderer
 						pPrevTextLine = pTextLine;
 					}
 
+					if (m_arParagraphs[0]->m_arLines.size() == 1)
+						m_arParagraphs[0]->m_dSpaceRight = 0;
+
 					for (size_t i = 1; i < this->m_arParagraphs.size(); ++i)
 					{
-						if (this->m_arParagraphs[i]->m_arLines.size() == 1)
-						{
-							m_arParagraphs[i]->m_dSpaceRight = 0;
-							m_arParagraphs[i]->m_dSpaceBefore = 0;
-							continue;
- 						}
+						if (m_arParagraphs[i]->m_dSpaceBefore > m_arParagraphs[i]->m_dHeight)
+							m_arParagraphs[i]->m_dSpaceBefore -= m_arParagraphs[i]->m_dHeight;
 						else
-						{
-							if (m_arParagraphs[i]->m_dSpaceBefore > m_arParagraphs[i]->m_dHeight)
-								m_arParagraphs[i]->m_dSpaceBefore -= m_arParagraphs[i]->m_dHeight;
-							else
-								m_arParagraphs[i]->m_dSpaceBefore = 0;
-
-						}
-						AlignmentParagraph(i);
+							m_arParagraphs[i]->m_dSpaceBefore = 0;
+						
+						if (m_arParagraphs[i]->m_arLines.size() == 1)
+							m_arParagraphs[i]->m_dSpaceRight = 0;
+						else
+							AlignmentParagraph(i);
+						
 					}
 					m_arTextLine.clear();
 					break;
@@ -797,13 +795,14 @@ namespace NSDocxRenderer
 
 		bool IsNewParagraph(CTextLine* pTextLine, CTextLine* pPrevTextLine, double dPrevDiffBaselinePos)
 		{
+			const double dWidthNewlineChar = 1.2;
 			double dCurDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
 			double dMinWidthLine = 0.70 * (this->m_dWidth - pPrevTextLine->m_dX);
 			double dDivLines = pPrevTextLine->m_dWidth / pTextLine->m_dWidth;
 
 			bool bIsCurLineSpacingEqualPrev = abs(dCurDiffBaselinePos - dPrevDiffBaselinePos) > 0.5 ;
-			bool bIsCurLineNewlineCharacter = pTextLine->m_dWidth < 1.2;
-			bool bIsPrevLineNewlineCharacter = pPrevTextLine->m_dWidth < 1.2;
+			bool bIsCurLineNewlineCharacter = pTextLine->m_dWidth < dWidthNewlineChar;
+			bool bIsPrevLineNewlineCharacter = pPrevTextLine->m_dWidth < dWidthNewlineChar;
 			bool bIsShortPrevLine = pPrevTextLine->m_dWidth <  dMinWidthLine;
 			bool bIsPrevWidthLineLessCur = dDivLines <= 0.9;
 			bool bIsNotPrevWidthLinesLessCur = dDivLines > 0.9 && dDivLines < 1.1;

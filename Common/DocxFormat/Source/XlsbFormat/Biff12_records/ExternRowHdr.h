@@ -31,25 +31,25 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
-
-    class DATACELL: public XLS::CompositeObject
+    // Logical representation of BrtExternRowHdr record in BIFF12
+    class ExternRowHdr: public XLS::BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+            BIFF_RECORD_DEFINE_TYPE_INFO(ExternRowHdr)
+            BASE_OBJECT_DEFINE_CLASS_NAME(ExternRowHdr)
+        public:
+            ExternRowHdr();
+            virtual ~ExternRowHdr();
 
-        XLS::BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+            void readFields(XLS::CFRecord& record);
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
-
+            XLS::UncheckedRw                   rw;
     };
 
 } // namespace XLSB

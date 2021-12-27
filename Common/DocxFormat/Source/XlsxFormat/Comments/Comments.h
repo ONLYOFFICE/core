@@ -38,11 +38,6 @@
 
 #include "../../XlsbFormat/CommentsStream.h"
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
-
 #include "../../XlsbFormat/Biff12_unions/COMMENTS.h"
 #include "../../XlsbFormat/Biff12_unions/COMMENTAUTHORS.h"
 #include "../../XlsbFormat/Biff12_unions/COMMENTLIST.h"

@@ -31,25 +31,29 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
+#include "../Biff12_structures/ExternalReferenceType.h"
 
 namespace XLSB
 {
-
-    class DATACELL: public XLS::CompositeObject
+    // Logical representation of BrtBeginSupBook record in BIFF12
+    class BeginSupBook: public XLS::BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginSupBook)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginSupBook)
+        public:
+            BeginSupBook();
+            virtual ~BeginSupBook();
 
-        XLS::BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+            void readFields(XLS::CFRecord& record);
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+            ExternalReferenceType       sbt;
 
+            std::wstring                string1;
+            std::wstring                string2;
     };
 
 } // namespace XLSB

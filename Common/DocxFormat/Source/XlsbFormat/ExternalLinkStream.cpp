@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,28 +29,57 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ExternalLinkStream.h"
+
+#include "Biff12_unions/EXTERNALLINK.h"
+
+using namespace XLS;
 
 namespace XLSB
+{;
+
+ExternalLinkStream::ExternalLinkStream()
 {
+}
 
-    class DATACELL: public XLS::CompositeObject
-    {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+ExternalLinkStream::~ExternalLinkStream()
+{
+}
 
-        XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+BaseObjectPtr ExternalLinkStream::clone()
+{
+        return BaseObjectPtr(new ExternalLinkStream(*this));
+}
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+const bool ExternalLinkStream::loadContent(BinProcessor& proc)
+{
+	while (true)
+	{
+		CFRecordType::TypeId type = proc.getNextRecordType();
+		
+		if (type == rt_NONE) break;
 
-    };
+		switch(type)
+        {
+            case rt_BeginSupBook:
+            {
+                if (proc.optional<EXTERNALLINK>())
+                {
+                    m_EXTERNALLINK = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+			default://skip					
+			{
+				proc.SkipRecord();	
+			}break;
+		}
+	}
+
+	return true;
+}
 
 } // namespace XLSB
-

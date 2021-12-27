@@ -36,19 +36,22 @@
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    class DDEOLEITEMVALUES: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
+        BASE_OBJECT_DEFINE_CLASS_NAME(DDEOLEITEMVALUES)
     public:
-        DATACELL();
-        virtual ~DATACELL();
+        DDEOLEITEMVALUES();
+        virtual ~DDEOLEITEMVALUES();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+        //static const XLS::ElementType	type = XLS::typeDDEOLEITEMVALUES;
+
+        XLS::BaseObjectPtr              m_BrtSupNameValueStart;
+        std::vector<XLS::BaseObjectPtr>	m_arDDEOLEITEMVALUE;
+        XLS::BaseObjectPtr              m_BrtSupNameValueEnd;
 
     };
 

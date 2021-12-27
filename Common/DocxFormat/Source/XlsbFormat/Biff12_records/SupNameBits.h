@@ -31,24 +31,33 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
+#include "../Biff12_structures/ExternalReferenceType.h"
+#include "../Biff12_structures/ExternalNameProperties.h"
+#include "../Biff12_structures/DDEItemProperties.h"
+#include "../Biff12_structures/OLEItemProperties.h"
 
 namespace XLSB
 {
-
-    class DATACELL: public XLS::CompositeObject
+    // Logical representation of BrtSupNameBits record in BIFF12
+    class SupNameBits: public XLS::BiffRecord
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+            BIFF_RECORD_DEFINE_TYPE_INFO(SupNameBits)
+            BASE_OBJECT_DEFINE_CLASS_NAME(SupNameBits)
+        public:
+            SupNameBits(ExternalReferenceType type);
+            virtual ~SupNameBits();
 
-        XLS::BaseObjectPtr clone();
+            XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+            void readFields(XLS::CFRecord& record);
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+            ExternalReferenceType sbt;
+
+            ExternalNameProperties  contentsExtName;
+            DDEItemProperties       contentsDDE;
+            OLEItemProperties       contentsOLE;
 
     };
 

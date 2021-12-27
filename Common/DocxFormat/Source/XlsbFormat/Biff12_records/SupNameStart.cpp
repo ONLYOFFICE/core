@@ -29,28 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "SupNameStart.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    SupNameStart::SupNameStart()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    SupNameStart::~SupNameStart()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr SupNameStart::clone()
+    {
+        return BaseObjectPtr(new SupNameStart(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
-
-    };
+    void SupNameStart::readFields(XLS::CFRecord& record)
+    {
+        record >> name;
+    }
 
 } // namespace XLSB
 

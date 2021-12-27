@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,28 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "XLWideString.h"
+
 
 namespace XLSB
 {
-
-    class DATACELL: public XLS::CompositeObject
+    class OLEItemProperties : public XLS::BiffStructure
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(OLEItemProperties)
     public:
-        DATACELL();
-        virtual ~DATACELL();
+        OLEItemProperties();
+        OLEItemProperties(XLS::CFRecord& record);
+        virtual ~OLEItemProperties();
+        XLS::BiffStructurePtr clone();
 
-        XLS::BaseObjectPtr clone();
+        static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        virtual void load(XLS::CFRecord& record);
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
-
+        bool        fWantAdvise;
+        bool        fWantPict;
+        bool        fIcon;
     };
 
-} // namespace XLSB
-
+}   // namespace XLSB

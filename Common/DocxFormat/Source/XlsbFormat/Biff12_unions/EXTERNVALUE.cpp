@@ -29,28 +29,48 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "EXTERNVALUE.h"
+#include "../Biff12_records/ExternValueMeta.h"
+#include "../Biff12_unions/EXTERNVALUEDATA.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    EXTERNVALUE::EXTERNVALUE(_INT32 row) : m_Row(row)
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    EXTERNVALUE::~EXTERNVALUE()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr EXTERNVALUE::clone()
+    {
+        return BaseObjectPtr(new EXTERNVALUE(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    //EXTERNVALUE = [BrtExternValueMeta] EXTERNVALUEDATA
+    const bool EXTERNVALUE::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<ExternValueMeta>())
+        {
+            m_BrtExternValueMeta = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        EXTERNVALUEDATA externvaluedata(m_Row);
+
+        if (proc.optional(externvaluedata))
+        {
+            m_EXTERNVALUEDATA = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtExternValueMeta || m_EXTERNVALUEDATA;
+    }
 
 } // namespace XLSB
 

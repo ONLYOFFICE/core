@@ -41,6 +41,7 @@ SOURCES += \
     ../Source/XlsbFormat/SlicersStream.cpp \
     ../Source/XlsbFormat/SlicerCachesStream.cpp \
     ../Source/XlsbFormat/ChartSheetStream.cpp \
+    ../Source/XlsbFormat/ExternalLinkStream.cpp \
 ### Biff12_records
     ../Source/XlsbFormat/Biff12_records/BeginBook.cpp \
     ../Source/XlsbFormat/Biff12_records/FRTBegin.cpp \
@@ -409,6 +410,19 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndWebPubItems.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginWebPubItem.cpp \
     ../Source/XlsbFormat/Biff12_records/EndWebPubItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/ExternValueMeta.cpp \
+    ../Source/XlsbFormat/Biff12_records/ExternRowHdr.cpp \
+    ../Source/XlsbFormat/Biff12_records/ExternTableStart.cpp \
+    ../Source/XlsbFormat/Biff12_records/ExternTableEnd.cpp \
+    ../Source/XlsbFormat/Biff12_records/SupNameValueStart.cpp \
+    ../Source/XlsbFormat/Biff12_records/SupNameValueEnd.cpp \
+    ../Source/XlsbFormat/Biff12_records/SupNameStart.cpp \
+    ../Source/XlsbFormat/Biff12_records/SupNameFmla.cpp \
+    ../Source/XlsbFormat/Biff12_records/SupNameBits.cpp \
+    ../Source/XlsbFormat/Biff12_records/SupNameEnd.cpp \
+    ../Source/XlsbFormat/Biff12_records/SupTabs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSupBook.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSupBook.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -463,6 +477,10 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/SlicerCacheLevelData.cpp \
     ../Source/XlsbFormat/Biff12_structures/RangeProtectionTitleSDRel.cpp \
     ../Source/XlsbFormat/Biff12_structures/Tws.cpp \
+    ../Source/XlsbFormat/Biff12_structures/ExternalNameProperties.cpp \
+    ../Source/XlsbFormat/Biff12_structures/DDEItemProperties.cpp \
+    ../Source/XlsbFormat/Biff12_structures/OLEItemProperties.cpp \
+    ../Source/XlsbFormat/Biff12_structures/ExternalReferenceType.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -634,6 +652,17 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/USERCSVIEW.cpp \
     ../Source/XlsbFormat/Biff12_unions/WEBPUBITEMS.cpp \
     ../Source/XlsbFormat/Biff12_unions/WEBPUBITEM.cpp \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNVALUEDATA.cpp \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNVALUE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNROW.cpp \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNTABLE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DDEOLEITEMVALUE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DDEOLEITEMVALUES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DDEOLEITEM.cpp \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNNAME.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DDEOLELINK.cpp \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNALBOOK.cpp \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNALLINK.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -647,6 +676,7 @@ HEADERS += \
     ../Source/XlsbFormat/SlicersStream.h \
     ../Source/XlsbFormat/SlicerCachesStream.h \
     ../Source/XlsbFormat/ChartSheetStream.h \
+    ../Source/XlsbFormat/ExternalLinkStream.h \
     ../Source/XlsbFormat/Xlsb.h \
     ../Source/XlsbFormat/XlsbElementsType.h \
 ### Biff12_records
@@ -1021,6 +1051,21 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/EndWebPubItems.h \
     ../Source/XlsbFormat/Biff12_records/BeginWebPubItem.h \
     ../Source/XlsbFormat/Biff12_records/EndWebPubItem.h \
+    ../Source/XlsbFormat/Biff12_records/ExternCell.h \
+    ../Source/XlsbFormat/Biff12_records/ExternValueMeta.h \
+    ../Source/XlsbFormat/Biff12_records/ExternRowHdr.h \
+    ../Source/XlsbFormat/Biff12_records/ExternTableStart.h \
+    ../Source/XlsbFormat/Biff12_records/ExternTableEnd.h \
+    ../Source/XlsbFormat/Biff12_records/SupName.h \
+    ../Source/XlsbFormat/Biff12_records/SupNameValueStart.h \
+    ../Source/XlsbFormat/Biff12_records/SupNameValueEnd.h \
+    ../Source/XlsbFormat/Biff12_records/SupNameStart.h \
+    ../Source/XlsbFormat/Biff12_records/SupNameFmla.h \
+    ../Source/XlsbFormat/Biff12_records/SupNameBits.h \
+    ../Source/XlsbFormat/Biff12_records/SupNameEnd.h \
+    ../Source/XlsbFormat/Biff12_records/SupTabs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSupBook.h \
+    ../Source/XlsbFormat/Biff12_records/EndSupBook.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -1078,6 +1123,10 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_structures/SlicerCacheLevelData.h \
     ../Source/XlsbFormat/Biff12_structures/RangeProtectionTitleSDRel.h \
     ../Source/XlsbFormat/Biff12_structures/Tws.h \
+    ../Source/XlsbFormat/Biff12_structures/ExternalNameProperties.h \
+    ../Source/XlsbFormat/Biff12_structures/DDEItemProperties.h \
+    ../Source/XlsbFormat/Biff12_structures/OLEItemProperties.h \
+    ../Source/XlsbFormat/Biff12_structures/ExternalReferenceType.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
     ../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.h \
@@ -1249,3 +1298,14 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/USERCSVIEW.h \
     ../Source/XlsbFormat/Biff12_unions/WEBPUBITEMS.h \
     ../Source/XlsbFormat/Biff12_unions/WEBPUBITEM.h \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNVALUEDATA.h \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNVALUE.h \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNROW.h \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNTABLE.h \
+    ../Source/XlsbFormat/Biff12_unions/DDEOLEITEMVALUE.h \
+    ../Source/XlsbFormat/Biff12_unions/DDEOLEITEMVALUES.h \
+    ../Source/XlsbFormat/Biff12_unions/DDEOLEITEM.h \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNNAME.h \
+    ../Source/XlsbFormat/Biff12_unions/DDEOLELINK.h \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNALBOOK.h \
+    ../Source/XlsbFormat/Biff12_unions/EXTERNALLINK.h \

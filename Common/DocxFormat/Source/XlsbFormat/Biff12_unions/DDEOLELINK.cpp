@@ -29,28 +29,43 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "DDEOLELINK.h"
+#include "../Biff12_unions/DDEOLEITEM.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    DDEOLELINK::DDEOLELINK(ExternalReferenceType type) : sbt(type)
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    DDEOLELINK::~DDEOLELINK()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr DDEOLELINK::clone()
+    {
+        return BaseObjectPtr(new DDEOLELINK(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    //DDEOLELINK = *DDEOLEITEM
+    const bool DDEOLELINK::loadContent(BinProcessor& proc)
+    {
+        DDEOLEITEM ddeItem(sbt);
+        int countDDEOLEITEM = proc.repeated(ddeItem, 0, 0);
 
-    };
+        while(countDDEOLEITEM > 0)
+        {
+            m_arDDEOLEITEM.insert(m_arDDEOLEITEM.begin(), elements_.back());
+            elements_.pop_back();
+            countDDEOLEITEM--;
+        }
+
+        return !m_arDDEOLEITEM.empty();
+    }
 
 } // namespace XLSB
 

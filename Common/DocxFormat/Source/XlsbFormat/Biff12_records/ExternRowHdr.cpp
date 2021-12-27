@@ -29,28 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ExternRowHdr.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    ExternRowHdr::ExternRowHdr()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ExternRowHdr::~ExternRowHdr()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr ExternRowHdr::clone()
+    {
+        return BaseObjectPtr(new ExternRowHdr(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
-
-    };
+    void ExternRowHdr::readFields(XLS::CFRecord& record)
+    {
+        record >> rw;
+    }
 
 } // namespace XLSB
 

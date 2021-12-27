@@ -29,28 +29,39 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "SupTabs.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    SupTabs::SupTabs()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    SupTabs::~SupTabs()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr SupTabs::clone()
+    {
+        return BaseObjectPtr(new SupTabs(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    void SupTabs::readFields(XLS::CFRecord& record)
+    {
+        XLWideString str;
+        record >> cTab;
 
-    };
+        for(size_t i = 0; i < cTab; ++i)
+        {
+            record >> str;
+            sheetNames.push_back(str);
+        }
+
+    }
 
 } // namespace XLSB
 

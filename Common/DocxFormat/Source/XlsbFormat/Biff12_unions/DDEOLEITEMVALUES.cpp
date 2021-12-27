@@ -29,28 +29,56 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "DDEOLEITEMVALUES.h"
+#include "../Biff12_records/SupNameValueStart.h"
+#include "../Biff12_unions/DDEOLEITEMVALUE.h"
+#include "../Biff12_records/SupNameValueEnd.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    DDEOLEITEMVALUES::DDEOLEITEMVALUES()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    DDEOLEITEMVALUES::~DDEOLEITEMVALUES()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr DDEOLEITEMVALUES::clone()
+    {
+        return BaseObjectPtr(new DDEOLEITEMVALUES(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    //DDEOLEITEMVALUES = BrtSupNameValueStart *DDEOLEITEMVALUE BrtSupNameValueEnd
+    const bool DDEOLEITEMVALUES::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<SupNameValueStart>())
+        {
+            m_BrtSupNameValueStart = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        int countDDEOLEITEMVALUE = proc.repeated<DDEOLEITEMVALUE>(0, 0);
+
+        while(countDDEOLEITEMVALUE > 0)
+        {
+            m_arDDEOLEITEMVALUE.insert(m_arDDEOLEITEMVALUE.begin(), elements_.back());
+            elements_.pop_back();
+            countDDEOLEITEMVALUE--;
+        }
+
+        if (proc.optional<SupNameValueEnd>())
+        {
+            m_BrtSupNameValueEnd = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtSupNameValueStart && m_BrtSupNameValueEnd;
+    }
 
 } // namespace XLSB
 

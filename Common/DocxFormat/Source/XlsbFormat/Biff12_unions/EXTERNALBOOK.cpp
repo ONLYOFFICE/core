@@ -29,28 +29,60 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "EXTERNALBOOK.h"
+#include "../Biff12_records/SupTabs.h"
+#include "../Biff12_unions/EXTERNNAME.h"
+#include "../Biff12_unions/EXTERNTABLE.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    EXTERNALBOOK::EXTERNALBOOK(ExternalReferenceType type) : sbt(type)
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    EXTERNALBOOK::~EXTERNALBOOK()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr EXTERNALBOOK::clone()
+    {
+        return BaseObjectPtr(new EXTERNALBOOK(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    //EXTERNALBOOK = BrtSupTabs *EXTERNNAME *EXTERNTABLE
+    const bool EXTERNALBOOK::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<SupTabs>())
+        {
+            m_BrtSupTabs = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        EXTERNNAME externname(sbt);
+        int countEXTERNNAME = proc.repeated(externname, 0, 0);
+
+        while(countEXTERNNAME > 0)
+        {
+            m_arEXTERNNAME.insert(m_arEXTERNNAME.begin(), elements_.back());
+            elements_.pop_back();
+            countEXTERNNAME--;
+        }
+
+        int countEXTERNTABLE = proc.repeated<EXTERNTABLE>(0, 0);
+
+        while(countEXTERNTABLE > 0)
+        {
+            m_arEXTERNTABLE.insert(m_arEXTERNTABLE.begin(), elements_.back());
+            elements_.pop_back();
+            countEXTERNTABLE--;
+        }
+
+        return m_BrtSupTabs != nullptr;
+    }
 
 } // namespace XLSB
 

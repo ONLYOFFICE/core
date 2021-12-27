@@ -32,24 +32,28 @@
 #pragma once
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "../Biff12_structures/ExternalReferenceType.h"
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    class EXTERNNAME: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
+        BASE_OBJECT_DEFINE_CLASS_NAME(EXTERNNAME)
     public:
-        DATACELL();
-        virtual ~DATACELL();
+        EXTERNNAME(ExternalReferenceType type);
+        virtual ~EXTERNNAME();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+        XLS::BaseObjectPtr	m_BrtSupNameStart;
+        XLS::BaseObjectPtr	m_BrtSupNameFmla;
+        XLS::BaseObjectPtr	m_BrtSupNameBits;
+        XLS::BaseObjectPtr	m_BrtSupNameEnd;
 
+        ExternalReferenceType sbt;
     };
 
 } // namespace XLSB

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,28 +29,44 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "OLEItemProperties.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    OLEItemProperties::OLEItemProperties()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    OLEItemProperties::OLEItemProperties(XLS::CFRecord& record)
+    {
+        load(record);
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    OLEItemProperties::~OLEItemProperties()
+    {
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    BiffStructurePtr OLEItemProperties::clone()
+    {
+        return BiffStructurePtr(new OLEItemProperties(*this));
+    }
 
-    };
+    void OLEItemProperties::load(XLS::CFRecord& record)
+    {
+        _UINT16 flags;
+
+        record >> flags;
+
+        fWantAdvise  = GETBIT(flags, 1);
+        fWantPict    = GETBIT(flags, 2);
+        fIcon        = GETBIT(flags, 5);
+
+        record.skipNunBytes(5);
+    }
 
 } // namespace XLSB
 

@@ -29,28 +29,56 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "EXTERNTABLE.h"
+#include "../Biff12_records/ExternTableStart.h"
+#include "../Biff12_unions/EXTERNROW.h"
+#include "../Biff12_records/ExternTableEnd.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    EXTERNTABLE::EXTERNTABLE()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    EXTERNTABLE::~EXTERNTABLE()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr EXTERNTABLE::clone()
+    {
+        return BaseObjectPtr(new EXTERNTABLE(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    //EXTERNTABLE = BrtExternTableStart *EXTERNROW BrtExternTableEnd
+    const bool EXTERNTABLE::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<ExternTableStart>())
+        {
+            m_BrtExternTableStart = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        int countEXTERNROW = proc.repeated<EXTERNROW>(0, 0);
+
+        while(countEXTERNROW > 0)
+        {
+            m_arEXTERNROW.insert(m_arEXTERNROW.begin(), elements_.back());
+            elements_.pop_back();
+            countEXTERNROW--;
+        }
+
+        if (proc.optional<ExternTableEnd>())
+        {
+            m_BrtExternTableEnd = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtExternTableStart && m_BrtExternTableEnd;
+    }
 
 } // namespace XLSB
 

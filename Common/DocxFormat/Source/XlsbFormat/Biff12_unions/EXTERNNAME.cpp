@@ -29,28 +29,61 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "EXTERNNAME.h"
+#include "../Biff12_records/SupNameStart.h"
+#include "../Biff12_records/SupNameFmla.h"
+#include "../Biff12_records/SupNameBits.h"
+#include "../Biff12_records/SupNameEnd.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    EXTERNNAME::EXTERNNAME(ExternalReferenceType type) : sbt(type)
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    EXTERNNAME::~EXTERNNAME()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr EXTERNNAME::clone()
+    {
+        return BaseObjectPtr(new EXTERNNAME(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    //EXTERNNAME = BrtSupNameStart BrtSupNameFmla BrtSupNameBits BrtSupNameEnd
+    const bool EXTERNNAME::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<SupNameStart>())
+        {
+            m_BrtSupNameStart = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        if (proc.optional<SupNameFmla>())
+        {
+            m_BrtSupNameFmla = elements_.back();
+            elements_.pop_back();
+        }
+
+        SupNameBits subNameBits(sbt);
+        if (proc.optional(subNameBits))
+        {
+            m_BrtSupNameBits = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<SupNameEnd>())
+        {
+            m_BrtSupNameEnd = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtSupNameStart && m_BrtSupNameFmla && m_BrtSupNameBits && m_BrtSupNameEnd;
+    }
 
 } // namespace XLSB
 

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,28 +29,43 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#ifndef EXTERNALLINKSTREAM_H
+#define EXTERNALLINKSTREAM_H
+
+
+#include "../../../../DesktopEditor/common/Types.h"
+#include "../Base/Types_32.h"
+#include "../XlsxFormat/WritingElement.h"
+#include <string>
+#include <memory.h>
+#include <iostream>
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+typedef BYTE *LPBYTE;
 
 namespace XLSB
 {
+    class StreamCacheReader;
 
-    class DATACELL: public XLS::CompositeObject
+    class ExternalLinkStream;
+    typedef std::shared_ptr<ExternalLinkStream>		ExternalLinkStreamPtr;
+
+    class ExternalLinkStream: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
+        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
     public:
-        DATACELL();
-        virtual ~DATACELL();
+        ExternalLinkStream();
+        virtual ~ExternalLinkStream();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+        XLS::BaseObjectPtr               m_EXTERNALLINK;
 
     };
 
-} // namespace XLSB
+}
+
+#endif // EXTERNALLINKSTREAM_H
 

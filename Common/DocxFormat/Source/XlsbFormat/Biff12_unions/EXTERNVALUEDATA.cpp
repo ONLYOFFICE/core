@@ -29,28 +29,68 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "EXTERNVALUEDATA.h"
+#include "../Biff12_records/ExternCell.h"
+#include "../Biff12_structures/CellRef.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    EXTERNVALUEDATA::EXTERNVALUEDATA(_INT32 row) : m_Row(row)
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    EXTERNVALUEDATA::~EXTERNVALUEDATA()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr EXTERNVALUEDATA::clone()
+    {
+        return BaseObjectPtr(new EXTERNVALUEDATA(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    // EXTERNVALUEDATA = BrtExternCellBlank / BrtExternCellReal / BrtExternCellBool / BrtExternCellError / BrtExternCellString
+    const bool EXTERNVALUEDATA::loadContent(BinProcessor& proc)
+    {
+        ExternCellBlank   externCellBlank;
+        ExternCellReal    externCellReal;
+        ExternCellBool    externCellBool;
+        ExternCellError	  externCellError;
+        ExternCellString  externCellString;
 
-    };
+        if(proc.optional(externCellBlank))
+        {
+            m_Col = externCellBlank.col;
+        }
+        else if(proc.optional(externCellReal))
+        {
+            m_Col = externCellReal.col;
+        }
+        else if(proc.optional(externCellBool))
+        {
+            m_Col = externCellBool.col;
+        }
+        else if(proc.optional(externCellError))
+        {
+            m_Col = externCellError.col;
+        }
+        else if(proc.optional(externCellString))
+        {
+            m_Col = externCellString.col;
+        }
+        else
+        {
+            return false;
+        }
+
+        m_Ref = XLSB::RgceLoc(m_Row - 1, m_Col, true, true).toString();
+
+        m_source = elements_.back();
+        elements_.pop_back();
+        return true;
+    }
 
 } // namespace XLSB
-

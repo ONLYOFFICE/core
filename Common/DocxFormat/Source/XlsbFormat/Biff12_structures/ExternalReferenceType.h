@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -31,26 +31,23 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffAttribute.h"
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
-    {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+class ExternalReferenceType : public XLS::BiffAttributeSimple<unsigned short>
+{
+public:
+    XLS::BiffStructurePtr clone();
 
-        XLS::BaseObjectPtr clone();
-
-        virtual const bool loadContent(XLS::BinProcessor& proc);
-
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
-
-    };
+	enum
+	{
+            WORKBOOK    = 0x0000,
+            DDE         = 0x0001,
+            OLE         = 0x0002
+	};
+};
 
 } // namespace XLSB
 

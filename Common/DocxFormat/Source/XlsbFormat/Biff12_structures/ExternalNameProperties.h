@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,28 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "XLWideString.h"
+
 
 namespace XLSB
 {
-
-    class DATACELL: public XLS::CompositeObject
+    class ExternalNameProperties : public XLS::BiffStructure
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(ExternalNameProperties)
     public:
-        DATACELL();
-        virtual ~DATACELL();
+        ExternalNameProperties();
+        ExternalNameProperties(XLS::CFRecord& record);
+        virtual ~ExternalNameProperties();
+        XLS::BiffStructurePtr clone();
 
-        XLS::BaseObjectPtr clone();
+        static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        virtual void load(XLS::CFRecord& record);
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
-
+        bool        fBuiltIn;
+        _UINT32     iSheet;
     };
 
-} // namespace XLSB
-
+}   // namespace XLSB

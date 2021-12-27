@@ -29,28 +29,61 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "DDEOLEITEM.h"
+#include "../Biff12_records/SupNameStart.h"
+#include "../Biff12_records/SupNameBits.h"
+#include "../Biff12_unions/DDEOLEITEMVALUES.h"
+#include "../Biff12_records/SupNameEnd.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    DDEOLEITEM::DDEOLEITEM(ExternalReferenceType type) : sbt(type)
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    DDEOLEITEM::~DDEOLEITEM()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr DDEOLEITEM::clone()
+    {
+        return BaseObjectPtr(new DDEOLEITEM(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    //DDEOLEITEM = BrtSupNameStart BrtSupNameBits [DDEOLEITEMVALUES] BrtSupNameEnd
+    const bool DDEOLEITEM::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<SupNameStart>())
+        {
+            m_BrtSupNameStart = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        SupNameBits subNameBits(sbt);
+        if (proc.optional(subNameBits))
+        {
+            m_BrtSupNameBits = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<DDEOLEITEMVALUES>())
+        {
+            m_DDEOLEITEMVALUES = elements_.back();
+            elements_.pop_back();
+        }
+
+        if (proc.optional<SupNameEnd>())
+        {
+            m_BrtSupNameEnd = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtSupNameStart && m_BrtSupNameBits && m_BrtSupNameEnd;
+    }
 
 } // namespace XLSB
 

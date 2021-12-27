@@ -29,28 +29,52 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "EXTERNROW.h"
+#include "../Biff12_records/ExternRowHdr.h"
+#include "../Biff12_unions/EXTERNVALUE.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    EXTERNROW::EXTERNROW()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    EXTERNROW::~EXTERNROW()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr EXTERNROW::clone()
+    {
+        return BaseObjectPtr(new EXTERNROW(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    //EXTERNROW = BrtExternRowHdr 1*EXTERNVALUE
+    const bool EXTERNROW::loadContent(BinProcessor& proc)
+    {
+        ExternRowHdr externRowHdr;
+        if (proc.optional(externRowHdr))
+        {
+            m_BrtExternRowHdr = elements_.back();
+            elements_.pop_back();
+        }
 
-    };
+        EXTERNVALUE externvalue(externRowHdr.rw);
+
+        int countEXTERNVALUE = proc.repeated(externvalue, 0, 0);
+
+        while(countEXTERNVALUE > 0)
+        {
+            m_arEXTERNVALUE.insert(m_arEXTERNVALUE.begin(), elements_.back());
+            elements_.pop_back();
+            countEXTERNVALUE--;
+        }
+
+        return m_BrtExternRowHdr != nullptr;
+    }
 
 } // namespace XLSB
 

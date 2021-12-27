@@ -29,28 +29,41 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "DDEOLEITEMVALUE.h"
+#include "../Biff12_records/SupName.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    DDEOLEITEMVALUE::DDEOLEITEMVALUE()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    DDEOLEITEMVALUE::~DDEOLEITEMVALUE()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr DDEOLEITEMVALUE::clone()
+    {
+        return BaseObjectPtr(new DDEOLEITEMVALUE(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    // DDEOLEITEMVALUE = BrtSupNameNum / BrtSupNameBool / BrtSupNameErr / BrtSupNameSt / BrtSupNameNil
+    const bool DDEOLEITEMVALUE::loadContent(BinProcessor& proc)
+    {
+        if(!proc.optional<SupNameNum>())
+            if(!proc.optional<SupNameBool>())
+                if(!proc.optional<SupNameErr>())
+                    if(!proc.optional<SupNameSt>())
+                        if(!proc.optional<SupNameNil>())
+                            return false;
 
-    };
+        m_source = elements_.back();
+        elements_.pop_back();
+        return true;
+    }
 
 } // namespace XLSB
-

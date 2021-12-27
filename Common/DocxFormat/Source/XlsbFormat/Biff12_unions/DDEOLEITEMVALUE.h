@@ -36,19 +36,18 @@
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    class DDEOLEITEMVALUE: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
     public:
-        DATACELL();
-        virtual ~DATACELL();
+        DDEOLEITEMVALUE();
+        virtual ~DDEOLEITEMVALUE();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
         XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
 
     };
 

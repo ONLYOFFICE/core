@@ -44,11 +44,6 @@
 #include "WorkbookPr.h"
 #include "ExternalReferences.h"
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
-
 #include "../../XlsbFormat/WorkBookStream.h"
 
 #include "../../XlsbFormat/Biff12_unions/BOOKVIEWS.h"

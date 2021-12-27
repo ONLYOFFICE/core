@@ -36,19 +36,21 @@
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    class EXTERNVALUE: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
+        BASE_OBJECT_DEFINE_CLASS_NAME(EXTERNVALUE)
     public:
-        DATACELL();
-        virtual ~DATACELL();
+        EXTERNVALUE(_INT32 row);
+        virtual ~EXTERNVALUE();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+        XLS::BaseObjectPtr	m_BrtExternValueMeta;
+        XLS::BaseObjectPtr	m_EXTERNVALUEDATA;
+
+        _INT32                  m_Row;
 
     };
 

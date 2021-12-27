@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,28 +29,42 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "ExternalNameProperties.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    ExternalNameProperties::ExternalNameProperties()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    ExternalNameProperties::ExternalNameProperties(XLS::CFRecord& record)
+    {
+        load(record);
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    ExternalNameProperties::~ExternalNameProperties()
+    {
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+    BiffStructurePtr ExternalNameProperties::clone()
+    {
+        return BiffStructurePtr(new ExternalNameProperties(*this));
+    }
 
-    };
+    void ExternalNameProperties::load(XLS::CFRecord& record)
+    {
+        _UINT16 flags;
+
+        record >> flags >> iSheet;
+
+        fBuiltIn = GETBIT(flags, 0);
+
+        record.skipNunBytes(1);
+    }
 
 } // namespace XLSB
 

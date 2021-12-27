@@ -29,28 +29,63 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "BeginSupBook.h"
+#include "../Biff12_structures/RelID.h"
+#include "../Biff12_structures/XLWideString.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
 
-    class DATACELL: public XLS::CompositeObject
+    BeginSupBook::BeginSupBook()
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
-    public:
-        DATACELL();
-        virtual ~DATACELL();
+    }
 
-        XLS::BaseObjectPtr clone();
+    BeginSupBook::~BeginSupBook()
+    {
+    }
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+    BaseObjectPtr BeginSupBook::clone()
+    {
+        return BaseObjectPtr(new BeginSupBook(*this));
+    }
 
-        XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
-
-    };
+    void BeginSupBook::readFields(XLS::CFRecord& record)
+    {
+        record >> sbt;
+        switch (sbt.value().get())
+        {
+            case ExternalReferenceType::WORKBOOK:
+            {
+                RelID relID;
+                XLNullableWideString str;
+                record >> relID >> str;
+                string1 = relID.value.value();
+                string2 = str.value();
+                break;
+            }
+            case ExternalReferenceType::DDE:
+            {
+                XLWideString str1;
+                XLWideString str2;
+                record >> str1 >> str2;
+                string1 = str1.value();
+                string2 = str2.value();
+                break;
+            }
+            case ExternalReferenceType::OLE:
+            {
+                RelID relID;
+                XLWideString str;
+                record >> relID >> str;
+                string1 = relID.value.value();
+                string2 = str.value();
+                break;
+            }
+        }
+    }
 
 } // namespace XLSB
 

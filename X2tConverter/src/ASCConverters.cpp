@@ -1647,7 +1647,7 @@ namespace NExtractTools
 		if (!NSDirectory::Exists(sImagesDirectory))
 			NSDirectory::CreateDirectory(sImagesDirectory);
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
-		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
+		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
 		oDoctRenderer.Execute(sXml, sResult);
 		if (sResult.find(L"error") != std::wstring::npos)
@@ -1677,7 +1677,7 @@ namespace NExtractTools
 		if (!NSDirectory::Exists(sImagesDirectory))
 			NSDirectory::CreateDirectory(sImagesDirectory);
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
-		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
+		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
 		oDoctRenderer.Execute(sXml, sResult);
 		if (sResult.find(L"error") != std::wstring::npos)
@@ -1705,7 +1705,7 @@ namespace NExtractTools
 		if (!NSDirectory::Exists(sImagesDirectory))
 			NSDirectory::CreateDirectory(sImagesDirectory);
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
-		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
+		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
 		oDoctRenderer.Execute(sXml, sResult);
 		if (sResult.find(L"error") != std::wstring::npos)
@@ -1728,7 +1728,7 @@ namespace NExtractTools
 		if (!NSDirectory::Exists(sImagesDirectory))
 			NSDirectory::CreateDirectory(sImagesDirectory);
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
-		std::wstring sXml = getDoctXml(eFromType, eToType, sFileFromDir, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
+		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sHtmlFile, sImagesDirectory, sThemeDir, -1, L"", params);
 		std::wstring sResult;
 		oDoctRenderer.Execute(sXml, sResult);
 		if (sResult.find(L"error") != std::wstring::npos)
@@ -1753,7 +1753,7 @@ namespace NExtractTools
 		std::wstring sImagesDirectory = sTFileDir + FILE_SEPARATOR_STR + _T("media");
 		std::wstring sPdfBinFile = sTFileDir + FILE_SEPARATOR_STR + _T("pdf.bin");
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
-		std::wstring sXml = getDoctXml(eFromType, eToType, sTFileDir, sPdfBinFile, sImagesDirectory, sThemeDir, -1, _T(""), params);
+		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sPdfBinFile, sImagesDirectory, sThemeDir, -1, _T(""), params);
 		std::wstring sResult;
 		bool bRes = oDoctRenderer.Execute(sXml, sResult);
 		if (sResult.find(L"error") != std::wstring::npos)
@@ -1797,7 +1797,7 @@ namespace NExtractTools
 		std::wstring sImagesDirectory = sTFileDir + FILE_SEPARATOR_STR + _T("media");
 		std::wstring sPdfBinFile = sTFileDir + FILE_SEPARATOR_STR + _T("pdf.bin");
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
-		std::wstring sXml = getDoctXml(eFromType, eToType, sTFileDir, sPdfBinFile, sImagesDirectory, sThemeDir, -1, _T(""), params);
+		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sPdfBinFile, sImagesDirectory, sThemeDir, -1, _T(""), params);
 		std::wstring sResult;
 		bool bRes = oDoctRenderer.Execute(sXml, sResult);
 		if (-1 != sResult.find(_T("error")))

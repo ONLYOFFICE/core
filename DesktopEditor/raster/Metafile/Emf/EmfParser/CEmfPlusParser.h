@@ -52,6 +52,7 @@ namespace MetaFile
 
                 void CombineClip(TRectD oBox, int nMode);
                 template<typename T> std::vector<TEmfPlusPointF> GetConvertedPoints(std::vector<T>arPoints);
+                template<typename T> TEmfPlusRectF GetConvertedRectangle(T oRectangle);
 
                 void Read_EMRPLUS_OFFSETCLIP();
                 void Read_EMRPLUS_RESETCLIP();

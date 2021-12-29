@@ -144,6 +144,24 @@ namespace MetaFile
                 double dWidth;
                 double dHeight;
 
+                TEmfPlusRectF() : dX(0), dY(0), dWidth(0), dHeight(0){}
+
+                TEmfPlusRectF(const TEmfPlusRectF& oRectangle)
+                {
+                        dX      = oRectangle.dX;
+                        dY      = oRectangle.dY;
+                        dWidth  = oRectangle.dWidth;
+                        dHeight = oRectangle.dHeight;
+                }
+
+                TEmfPlusRectF(const TEmfPlusRect& oRectangle)
+                {
+                        dX      = (double)oRectangle.shX;
+                        dY      = (double)oRectangle.shY;
+                        dWidth  = (double)oRectangle.shWidth;
+                        dHeight = (double)oRectangle.shHeight;
+                }
+
                 TRectD GetRectD()
                 {
                         TRectD oRectangle;
@@ -188,6 +206,16 @@ namespace MetaFile
                 TEmfPlusPointF(const TEmfPlusPointR& oPoint)
                 {
 
+                }
+
+                TEmfPointL ToPointL() const
+                {
+                       TEmfPointL oPoint;
+
+                       oPoint.x = (int)X;
+                       oPoint.y = (int)Y;
+
+                       return oPoint;
                 }
         };
 

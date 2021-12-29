@@ -343,7 +343,7 @@ namespace MetaFile
 		int x;
 		int y;
 
-		TEmfPointL& operator=(TEmfPointL& oPoint)
+		TEmfPointL& operator=(const TEmfPointL& oPoint)
 		{
 			x = oPoint.x;
 			y = oPoint.y;

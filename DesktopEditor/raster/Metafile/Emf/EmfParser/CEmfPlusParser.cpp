@@ -515,11 +515,6 @@ namespace MetaFile
                 }
         }
 
-        void CEmfPlusParser::DrawRectangle(TEmfPlusRect oRectangle, bool bStroke, bool bFill)
-        {
-
-        }
-
         TEmfPlusARGB CEmfPlusParser::ApplyImageAttributes(TEmfPlusRectF &oRectangle, const CEmfPlusImageAttributes &oImageAttributes)
         {
                 if (oImageAttributes.eWrapMode == WrapModeClamp)
@@ -629,54 +624,40 @@ namespace MetaFile
                 CEmfParser oEmfParser(m_pInterpretator);
                 oEmfParser.SetStream(pImage->GetMetafileData(), unMetafileSize);
                 oEmfParser.SetFontManager(GetFontManager());
+                oEmfParser.SetHeader(m_oHeader);
                 oEmfParser.m_bView = true;
                 oEmfParser.Scan();
 
                 if (!oEmfParser.CheckError())
                 {
-                        double dM11 = 1, dM12 = 0, dM21 = 0,  dM22 = 1, dX = 0, dY = 0;                            
-
-                        TEmfPlusRectF oRect;
-                        oRect.dX = arPoints[0].X;
-                        oRect.dY = arPoints[0].Y;
-                        oRect.dWidth = arPoints[1].X - arPoints[0].X;
-                        oRect.dHeight = arPoints[2].Y - arPoints[0].Y;
-
-
-
-
+                        double dM11, dM12, dM21,  dM22;
 
                         dM11 = (arPoints[1].X - arPoints[0].X) / oSrcRect.dWidth;
                         dM21 = (arPoints[2].X - arPoints[0].X) / oSrcRect.dHeight;
-                        dX = arPoints[0].X - dM11 * oSrcRect.dX - dM21 * oSrcRect.dY;
+//                        dX = arPoints[0].X - dM11 * oSrcRect.dX - dM21 * oSrcRect.dY;
 
                         dM12 = (arPoints[1].Y - arPoints[0].Y) / oSrcRect.dWidth;
                         dM22 = (arPoints[2].Y - arPoints[0].Y) / oSrcRect.dHeight;
-                        dY = arPoints[0].Y - dM12 * oSrcRect.dX - dM22 * oSrcRect.dY;
+//                        dY = arPoints[0].Y - dM12 * oSrcRect.dX - dM22 * oSrcRect.dY;
 
+//                        CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
 
-                        m_pDC->GetTransform()->Apply(arPoints[0].X, arPoints[0].Y);
+//                        if (NULL != pImageAttributes)
+//                        {
+//                                ApplyImageAttributes(oSrcRect, *pImageAttributes);
 
-                        dX += arPoints[0].X;
-                        dY += arPoints[0].Y;
+//                                if (pImageAttributes->eWrapMode & WrapModeTileFlipX)
+//                                        dM11 *= -1;
 
-                        CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
+//                                if (pImageAttributes->eWrapMode & WrapModeTileFlipY)
+//                                        dM22 *= -1;
+//                        }
 
-                        if (NULL != pImageAttributes)
-                        {
-                                ApplyImageAttributes(oSrcRect, *pImageAttributes);
-
-                                if (pImageAttributes->eWrapMode & WrapModeTileFlipX)
-                                        dM11 *= -1;
-
-                                if (pImageAttributes->eWrapMode & WrapModeTileFlipY)
-                                        dM22 *= -1;
-                        }
-
-                        TEmfPlusXForm oNewTransform(dM11, 0, 0, dM22, dX, dY);
+                        TEmfPlusXForm oNewTransform(dM11, 0, 0, dM22, 0, 0);
 
                         oEmfParser.SelectWorkspace(oSrcRect.GetRectD());
-                        oEmfParser.SetTrasform(oNewTransform);
+                        oEmfParser.SetTrasform(*m_pDC->GetFinalTransform(GM_COMPATIBLE));
+                        oEmfParser.SetStartPoint(arPoints[0].ToPointL());
                         oEmfParser.PlayFile();
                 }
         }
@@ -1043,7 +1024,7 @@ namespace MetaFile
                 for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
                 {
                         m_oStream >> arRects[unIndex];
-                        DrawRectangle(arRects[unIndex], true, false);
+                        DrawRectangle(GetConvertedRectangle(arRects[unIndex]), true, false);
                 }
         }
 
@@ -1226,7 +1207,7 @@ namespace MetaFile
                         m_pDC->SetBrush(&oBrush);
 
                         for (T &oBox : arRects)
-                                DrawRectangle(oBox, false, true);
+                                DrawRectangle(GetConvertedRectangle(oBox), false, true);
 
                         m_pDC->RemoveBrush(&oBrush);
                 }
@@ -1234,7 +1215,7 @@ namespace MetaFile
                 {
                         m_oPlayer.SelectObject(unBrushId);
                         for (T &oBox : arRects)
-                                DrawRectangle(oBox, false, true);
+                                DrawRectangle(GetConvertedRectangle(oBox), false, true);
                 }
         }
 
@@ -1556,6 +1537,10 @@ namespace MetaFile
         void CEmfPlusParser::Read_EMFPLUS_SETPAGETRANSFORM(unsigned short unShFlags)
         {
                 short shPageUnit = ExpressValue(unShFlags, 0, 7);
+
+                if (shPageUnit == UnitTypeDisplay || shPageUnit == UnitTypeWorld)
+                        return;
+
                 double dPageScale;
 
                 m_oStream >> dPageScale;
@@ -1601,6 +1586,8 @@ namespace MetaFile
         {
                 if(NULL != m_pInterpretator)
                         m_pInterpretator->End();
+
+                m_bBanEmfProcessing = false;
                 //TODO: реализовать
         }
 
@@ -1719,17 +1706,15 @@ namespace MetaFile
         {
                 std::vector<TEmfPlusPointF> arConvertdPoints;
 
-                const std::string sStructName = typeid (T).name();
-
-                if (sStructName == "struct MetaFile::TEmfPlusPointR")
+                if (typeid (TEmfPlusPointR) == typeid (T))
                 {
                         //TODO: реализовать
                 }
-                else if (sStructName == "struct MetaFile::TEmfPlusPoint")
+                else if (typeid (TEmfPlusPoint) == typeid (T))
                 {
                         //TODO: реализовать
                 }
-                else if (sStructName == "struct MetaFile::TEmfPlusPointF")
+                else if (typeid (TEmfPlusPointF) == typeid (T))
                 {
                         arConvertdPoints.resize(arPoints.size());
 
@@ -1740,6 +1725,16 @@ namespace MetaFile
                 }
 
                 return arConvertdPoints;
+        }
+
+        template<typename T>
+        TEmfPlusRectF CEmfPlusParser::GetConvertedRectangle(T oRectangle)
+        {
+                if (typeid (TEmfPlusRectF) == typeid (T))
+                        return (TEmfPlusRectF&)oRectangle;
+                else if (typeid (TEmfPlusRect) == typeid (T))
+                        return TEmfPlusRectF((TEmfPlusRect&)oRectangle);
+                else return TEmfPlusRectF();
         }
 
 }

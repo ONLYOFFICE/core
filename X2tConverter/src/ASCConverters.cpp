@@ -4773,18 +4773,6 @@ namespace NExtractTools
 			return AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		}
 
-		// get conversion direction from file extensions
-		if (TCD_AUTO == conversion)
-		{
-			conversion = getConversionDirectionFromExt (sFileFrom, sFileTo);
-		}
-
-		if (TCD_ERROR == conversion)
-		{
-			// print out conversion direction error
-			std::cerr << "Couldn't automatically recognize conversion direction from extensions" << std::endl;
-			return AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
-		}
 		bool bFromChanges = false;
 		if(NULL != oInputParams.m_bFromChanges)
 			bFromChanges = *oInputParams.m_bFromChanges;

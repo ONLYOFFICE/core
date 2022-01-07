@@ -92,14 +92,19 @@ linux-g++:contains(QMAKE_HOST.arch, x86_64): {
     message("linux-64")
     CONFIG += core_linux_64
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64): {
+linux-g++:contains(QMAKE_HOST.arch, arm64): {
+    message("linux-64")
+    CONFIG += core_linux_64
+    CONFIG += core_linux_host_arm64
+}
+linux-g++:contains(QMAKE_HOST.arch, aarch64): {
+    message("linux-64")
+    CONFIG += core_linux_64
+    CONFIG += core_linux_host_arm64
+}
+!core_linux_64: {
     message("linux-32")
     CONFIG += core_linux_32
-}
-linux-g++:contains(DST_ARCH, arm): {
-    message("arm")
-    CONFIG += core_linux_arm
-    DEFINES += LINUX_ARM
 }
 }
 
@@ -133,6 +138,10 @@ core_win_64 {
 
 core_linux {
     DEFINES += LINUX _LINUX
+}
+core_linux_host_arm64 {
+    message("build on arm64")
+    DEFINES += _ARM_ALIGN_
 }
 
 core_mac {
@@ -218,7 +227,7 @@ linux_arm64 {
         !isEmpty(ARM64_TOOLCHAIN_BIN_PREFIX){
 
             ARM64_TOOLCHAIN_BIN_FULL = $$ARM64_TOOLCHAIN_BIN/$$ARM64_TOOLCHAIN_BIN_PREFIX
-            
+
             QMAKE_CC          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "gcc")
             QMAKE_CXX         = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
             QMAKE_LINK        = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")

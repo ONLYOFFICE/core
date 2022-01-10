@@ -174,19 +174,11 @@ int Dv::serialize(std::wostream & stream)
 			}
             if (PromptTitle.size() > 1)
 			{
-<<<<<<< HEAD
-                CP_XML_ATTR(L"promtTitle", PromptTitle);
-=======
-				CP_XML_ATTR(L"promptTitle", PromptTitle.value());
->>>>>>> origin/fix/v7-fix-bugs
+				CP_XML_ATTR(L"promptTitle", PromptTitle);
 			}
             if (Prompt.size() > 1)
 			{
-<<<<<<< HEAD
-                CP_XML_ATTR(L"promt", Prompt);
-=======
-				CP_XML_ATTR(L"prompt", Prompt.value());
->>>>>>> origin/fix/v7-fix-bugs
+				CP_XML_ATTR(L"prompt", Prompt);
 			}
             if (ErrorTitle.size() > 1)
 			{

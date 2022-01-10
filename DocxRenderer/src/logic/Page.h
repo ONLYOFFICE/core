@@ -742,34 +742,34 @@ namespace NSDocxRenderer
 		void AlignmentParagraph(size_t nNumParagraph)
 		{
 			size_t i = nNumParagraph;
-			size_t alignmentLeft = 1;
-			size_t alignmentRight = 1;
+			size_t nAlignmentLeft = 1;
+			size_t nAlignmentRight = 1;
 
 			CTextLine* pPrevTextLine = m_arParagraphs[i]->m_arLines[0];
-			size_t CountLine = m_arParagraphs[i]->m_arLines.size();
-			for (size_t k = 1; k < CountLine; ++k)
+			size_t nCountLine = m_arParagraphs[i]->m_arLines.size();
+			for (size_t k = 1; k < nCountLine; ++k)
 			{
 				CTextLine* pCurTextLine = m_arParagraphs[i]->m_arLines[k];
 
 				if ( abs(pPrevTextLine->m_dX - pCurTextLine->m_dX) < 0.5 )
-					++alignmentLeft;
+					++nAlignmentLeft;
 
 				if ( abs(pPrevTextLine->m_dWidth + pPrevTextLine->m_dX - pCurTextLine->m_dWidth - pCurTextLine->m_dX) < 1.5 )
-					++alignmentRight;
+					++nAlignmentRight;
 
 				pPrevTextLine = pCurTextLine;
 			}
 
-			if (alignmentLeft >= CountLine-1)
+			if ((nCountLine > 0) && (nAlignmentLeft >= nCountLine-1))
 			{
 				m_arParagraphs[i]->m_strAvailable = L"left";
-				if (alignmentRight >= CountLine/2)
+				if (nAlignmentRight >= nCountLine/2)
 					m_arParagraphs[i]->m_strAvailable = L"both";
 			}
 			else
 			{
 				m_arParagraphs[i]->m_strAvailable = L"center";
-				if (alignmentRight >= CountLine-1) 
+				if ((nCountLine > 0) && (nAlignmentRight >= nCountLine-1)) 
 					m_arParagraphs[i]->m_strAvailable = L"right";
 			}
 		}

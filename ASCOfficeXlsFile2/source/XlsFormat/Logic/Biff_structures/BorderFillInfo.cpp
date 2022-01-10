@@ -45,6 +45,16 @@ std::size_t hash_value(FillInfo const & val)
     boost::hash_combine(seed, val.icvBack);
 	boost::hash_combine(seed, val.fls);
 
+	boost::hash_combine(seed, val.backFillInfo_.enabled);
+	boost::hash_combine(seed, val.backFillInfo_.icv);
+	boost::hash_combine(seed, val.backFillInfo_.xclrType);
+	boost::hash_combine(seed, val.backFillInfo_.xclrValue);
+
+	boost::hash_combine(seed, val.foreFillInfo_.enabled);
+	boost::hash_combine(seed, val.foreFillInfo_.icv);
+	boost::hash_combine(seed, val.foreFillInfo_.xclrType);
+	boost::hash_combine(seed, val.foreFillInfo_.xclrValue);
+
 	return seed;
 }
 std::size_t hash_value(BorderInfo const & val)
@@ -302,12 +312,20 @@ int FontInfo::serialize(std::wostream & stream)
 //------------------------------------------------------------------------------------------
 bool FillInfo::operator == (const FillInfo & rVal) const
 {
-    const bool res =     
-		fls		== rVal.fls &&
+	const bool res =
+		fls == rVal.fls &&
 		icvBack == rVal.icvBack &&
-		icvFore	== rVal.icvFore;
+		icvFore == rVal.icvFore;
 
-    return res;
+	const bool res_back_ex = (!backFillInfo_.enabled && !rVal.backFillInfo_.enabled) ||
+		(backFillInfo_.icv == rVal.backFillInfo_.icv && backFillInfo_.xclrType == rVal.backFillInfo_.xclrType &&
+			backFillInfo_.xclrValue == rVal.backFillInfo_.xclrValue && backFillInfo_.nTintShade == rVal.backFillInfo_.nTintShade);
+
+	const bool res_fore_ex = (!foreFillInfo_.enabled && !rVal.foreFillInfo_.enabled) ||
+		(foreFillInfo_.icv == rVal.foreFillInfo_.icv && foreFillInfo_.xclrType == rVal.foreFillInfo_.xclrType &&
+			foreFillInfo_.xclrValue == rVal.foreFillInfo_.xclrValue && foreFillInfo_.nTintShade == rVal.foreFillInfo_.nTintShade);
+
+    return res && res_back_ex && res_fore_ex;
 }
 
 bool FillInfo::operator != (const FillInfo & rVal) const

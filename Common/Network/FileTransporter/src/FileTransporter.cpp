@@ -103,11 +103,11 @@ namespace NSNetwork
         void CFileDownloader::Stop() { m_pInternal->Stop(); }
         int CFileDownloader::IsRunned() { return m_pInternal->IsRunned(); }
 
-        void CFileDownloader::SetEvent_OnProgress(CFileTransporter_OnProgress func)
+        void CFileDownloader::SetEvent_OnProgress(std::function<void(int)> func)
         {
             m_pInternal->GetInternal()->m_func_onProgress = func;
         }
-        void CFileDownloader::SetEvent_OnComplete(CFileTransporter_OnComplete func)
+        void CFileDownloader::SetEvent_OnComplete(std::function<void(int)> func)
         {
             m_pInternal->GetInternal()->m_func_onComplete = func;
         }
@@ -166,11 +166,11 @@ namespace NSNetwork
         void CFileUploader::Stop() { m_pInternal->Stop(); }
         int CFileUploader::IsRunned() { return m_pInternal->IsRunned(); }
 
-        void CFileUploader::SetEvent_OnProgress(CFileTransporter_OnProgress func)
+        void CFileUploader::SetEvent_OnProgress(std::function<void(int)> func)
         {
             m_pInternal->GetInternal()->m_func_onProgress = func;
         }
-        void CFileUploader::SetEvent_OnComplete(CFileTransporter_OnComplete func)
+        void CFileUploader::SetEvent_OnComplete(std::function<void(int)> func)
         {
             m_pInternal->GetInternal()->m_func_onComplete = func;
         }

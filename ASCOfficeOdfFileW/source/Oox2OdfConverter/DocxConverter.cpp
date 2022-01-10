@@ -3139,7 +3139,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 					bSet = true;
 				}
 
-				if (oox_pic->m_oShape->m_sType.IsInit())
+				if ((oox_pic->m_oShape->m_sType.IsInit()) && (false == oox_pic->m_oShape->m_sType->empty()))
 				{
 					std::wstring type( oox_pic->m_oShape->m_sType.get());
 					type = type.substr(1);//without #

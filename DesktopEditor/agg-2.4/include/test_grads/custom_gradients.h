@@ -693,7 +693,7 @@ namespace agg
                 else if (m_oGradientInfo.shading.shading_type == NSStructures::ShadingInfo::Parametric)
                 {
                     float t = calculate_param(x, y);
-                    if (isnan(t))
+                    if (std::isnan(t))
                     {
                         *span++ = {0, 0, 0, 0};
                     }

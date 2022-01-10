@@ -396,7 +396,7 @@ namespace codegen
             {
                 sb.AppendFormat("{0}.prototype.readAttr = function(reader) {{\n", oGenClass.sName);
                 sb.AppendFormat("while (reader.MoveToNextAttribute()) {{\n");
-                sb.AppendFormat("switch (reader.GetNameNoNs()) {{\n");
+                sb.AppendFormat("switch (reader.GetNameNoNS()) {{\n");
                 for (int i = 0; i < aAttributes.Count; ++i)
                 {
                     sb.AppendFormat("case \"{0}\" : {{\n", aAttributes[i].sName);
@@ -404,6 +404,7 @@ namespace codegen
                     sb.AppendFormat("}}\n");
                     ProcessAttributeJSFromXml(sb, oGenClass, aAttributes[i], i, aAttributes[i].sName);
                 }
+                sb.AppendFormat("}}\n");
                 sb.AppendFormat("}}\n");
                 sb.AppendFormat("}}\n");
             }
@@ -417,8 +418,8 @@ namespace codegen
             {
                 sb.AppendFormat("var depth = reader.GetDepth();\n");
                 sb.AppendFormat("while (reader.ReadNextSiblingNode(depth)) {{\n");
-                sb.AppendFormat("var name = reader.GetNameNoNs();\n");
-                sb.AppendFormat("switch (reader.GetNameNoNs()) {{\n");
+                sb.AppendFormat("var name = reader.GetNameNoNS();\n");
+                sb.AppendFormat("switch (reader.GetNameNoNS()) {{\n");
                 for (int i = 0; i < aMembers.Count; ++i)
                 {
                     sb.AppendFormat("case \"{0}\" : {{\n", aMembers[i].sName);
@@ -442,7 +443,7 @@ namespace codegen
                             {
                                 sb.AppendFormat("var subDepth = reader.GetDepth();\n");
                                 sb.AppendFormat("while (reader.ReadNextSiblingNode(subDepth)) {{\n");
-                                sb.AppendFormat("if (\"{0}\" === reader.GetNameNoNs()) {{\n", aMembers[i].sName);
+                                sb.AppendFormat("if (\"{0}\" === reader.GetNameNoNS()) {{\n", aMembers[i].sName);
 
                                 sb.AppendFormat("var elem = new {0}();\n", oGenMemberTmp.sType);
                                 sb.AppendFormat("elem.fromXml(reader);\n");

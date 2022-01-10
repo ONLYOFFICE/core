@@ -29,6 +29,8 @@ LIBS += -lgdi32 \
         -lshell32
 }
 
+core_android:DEFINES += ANDROID
+
 INCLUDEPATH += \
     $$PWD/lib/goo \
     $$PWD/lib/fofi \

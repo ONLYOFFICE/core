@@ -215,6 +215,10 @@ namespace NSDocxRenderer
                 if (m_oFont.Italic)
                     oWriter.WriteString(L"<w:i w:val=\"true\"/>");
 
+                if (m_oFont.Underline)
+                    oWriter.WriteString(L"<w:u w:val=\"single\"/>");
+                if (m_oFont.Strikeout)
+                    oWriter.WriteString(L"<w:strike/>");
                 if (bIsAddSpace)
                 {
                     m_dWidth  += m_dSpaceWidthMM;
@@ -227,6 +231,10 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"<w:b w:val=\"true\"/>");
                 if (0x02 == (0x02 & m_lPickFontStyle))
                     oWriter.WriteString(L"<w:i w:val=\"true\"/>");
+                if (m_oFont.Underline)
+                    oWriter.WriteString(L"<w:u w:val=\"single\"/>");
+                if (m_oFont.Strikeout)
+                    oWriter.WriteString(L"<w:strike/>");
 
                 if (bIsAddSpace)
                 {

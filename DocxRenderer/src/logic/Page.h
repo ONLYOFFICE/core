@@ -293,8 +293,44 @@ namespace NSDocxRenderer
 		{
 			m_oVector.Close();
 		}
+
+		void ApplyUnderline(double dLineLeft, double dLineRight)
+		{
+			for (size_t i = 0; i < m_pCurrentLine->m_arConts.size(); ++i)
+			{
+				if (m_pCurrentLine->m_arConts[i]->m_dX >= dLineLeft && (m_pCurrentLine->m_arConts[i]->m_dX + m_pCurrentLine->m_arConts[i]->m_dWidth - 0.3) <= dLineRight)
+					m_pCurrentLine->m_arConts[i]->m_oFont.Underline = 1;
+			}
+		}
+
+		void ApplyStrikeout(double dLineLeft, double dLineRight)
+		{
+			for (size_t i = 0; i < m_pCurrentLine->m_arConts.size(); ++i)
+			{
+				if (m_pCurrentLine->m_arConts[i]->m_dX >= dLineLeft && (m_pCurrentLine->m_arConts[i]->m_dX + m_pCurrentLine->m_arConts[i]->m_dWidth - 0.3) <= dLineRight)
+					m_pCurrentLine->m_arConts[i]->m_oFont.Strikeout = 1;
+			}
+		}
+
         void DrawPath(LONG lType, LONG lTxId)
 		{
+			if (m_pCurrentLine->m_dBaselinePos < m_oVector.m_dTop)
+			{
+				if (abs (m_pCurrentLine->m_dBaselinePos - m_oVector.m_dTop) < 0.6)
+				{
+					ApplyUnderline(m_oVector.m_dLeft, m_oVector.m_dRight);
+					return;
+				}
+			}
+			else
+			{
+				if (abs (m_pCurrentLine->m_dBaselinePos - m_oVector.m_dTop) < 2)
+				{
+					ApplyStrikeout(m_oVector.m_dLeft, m_oVector.m_dRight);
+					return;
+				}
+			}
+
 			if ((m_oVector.m_dLeft <= m_oVector.m_dRight) && (m_oVector.m_dTop <= m_oVector.m_dBottom))
 			{
 				CShape* pShape = new CShape();

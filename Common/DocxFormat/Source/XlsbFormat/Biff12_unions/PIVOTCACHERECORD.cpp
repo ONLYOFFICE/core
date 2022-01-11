@@ -29,33 +29,41 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/PCDISrvFmt.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "PIVOTCACHERECORD.h"
+#include "../Biff12_records/PCRRecord.h"
+#include "../Biff12_unions/PIVOTCACHERECORDDT.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BrtPCDIString record in BIFF12
-    class PCDIString: public XLS::BiffRecord
+
+    PIVOTCACHERECORD::PIVOTCACHERECORD()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(PCDIString)
-            BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
-        public:
-            PCDIString();
-            virtual ~PCDIString();
+    }
 
-            XLS::BaseObjectPtr clone();
+    PIVOTCACHERECORD::~PIVOTCACHERECORD()
+    {
+    }
 
-            static const XLS::ElementType	type = XLS::typePCDIString;
+    BaseObjectPtr PIVOTCACHERECORD::clone()
+    {
+        return BaseObjectPtr(new PIVOTCACHERECORD(*this));
+    }
 
-            void readFields(XLS::CFRecord& record);
+    // PIVOTCACHERECORD = BrtPCRRecord / PIVOTCACHERECORDDT
+    const bool PIVOTCACHERECORD::loadContent(BinProcessor& proc)
+    {
+        if (!proc.optional<PCRRecord>())
+            if (!proc.optional<PIVOTCACHERECORDDT>())
+                return false;
 
-            XLWideString st;
-            PCDISrvFmt   sxvcellextra;
-    };
+        m_source = elements_.back();
+        elements_.pop_back();
+
+        return m_source != nullptr;
+    }
 
 } // namespace XLSB
 

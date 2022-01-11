@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,33 +29,50 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/PCDISrvFmt.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "PCDIDateTime.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BrtPCDIString record in BIFF12
-    class PCDIString: public XLS::BiffRecord
+
+    PCDIDateTime::PCDIDateTime()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(PCDIString)
-            BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
-        public:
-            PCDIString();
-            virtual ~PCDIString();
+    }
 
-            XLS::BaseObjectPtr clone();
+    PCDIDateTime::PCDIDateTime(XLS::CFRecord& record)
+    {
+        load(record);
+    }
 
-            static const XLS::ElementType	type = XLS::typePCDIString;
+    PCDIDateTime::~PCDIDateTime()
+    {
+    }
 
-            void readFields(XLS::CFRecord& record);
+    BiffStructurePtr PCDIDateTime::clone()
+    {
+        return BiffStructurePtr(new PCDIDateTime(*this));
+    }
 
-            XLWideString st;
-            PCDISrvFmt   sxvcellextra;
-    };
+    void PCDIDateTime::load(XLS::CFRecord& record)
+    {
+        record >> yr >> mon >> dom >> hr >> min >> sec;
+    }
+
+    std::wstring PCDIDateTime::value()
+    {
+        if (mon < 1 || mon > 12) mon = 1;
+        if (dom < 1 || dom > 31) dom = 1;
+
+        if (yr < 1) yr = 1; //???
+
+        std::wstringstream s;
+        s << yr << L"-" << (mon < 10 ? L"0" : L"") << mon << L"-" <<  (dom < 10 ? L"0" : L"") << dom << L"T"
+             << (hr < 10 ? L"0" : L"") << hr << L":" << (min < 10 ? L"0" : L"") << min << L":" << (sec < 10 ? L"0" : L"") << sec;
+
+        return s.str();
+    }
 
 } // namespace XLSB
 

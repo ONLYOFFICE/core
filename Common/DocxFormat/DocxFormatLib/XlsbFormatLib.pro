@@ -42,6 +42,7 @@ SOURCES += \
     ../Source/XlsbFormat/SlicerCachesStream.cpp \
     ../Source/XlsbFormat/ChartSheetStream.cpp \
     ../Source/XlsbFormat/ExternalLinkStream.cpp \
+    ../Source/XlsbFormat/PivotCacheRecordsStream.cpp \
 ### Biff12_records
     ../Source/XlsbFormat/Biff12_records/BeginBook.cpp \
     ../Source/XlsbFormat/Biff12_records/FRTBegin.cpp \
@@ -276,8 +277,12 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/BeginEcWpTables.cpp \
     ../Source/XlsbFormat/Biff12_records/EndECWPTables.cpp \
     ../Source/XlsbFormat/Biff12_records/PCDIMissing.cpp \
-    ../Source/XlsbFormat/Biff12_records/PCDIIndex.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDINumber.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDIBoolean.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDIError.cpp \
     ../Source/XlsbFormat/Biff12_records/PCDIString.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDIDatetime.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDIIndex.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginECTxtWiz.cpp \
     ../Source/XlsbFormat/Biff12_records/EndECTxtWiz.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginECTWFldInfoLst.cpp \
@@ -423,6 +428,10 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/SupTabs.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginSupBook.cpp \
     ../Source/XlsbFormat/Biff12_records/EndSupBook.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPivotCacheRecords.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPivotCacheRecords.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCRRecord.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCRRecordDt.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -481,6 +490,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/DDEItemProperties.cpp \
     ../Source/XlsbFormat/Biff12_structures/OLEItemProperties.cpp \
     ../Source/XlsbFormat/Biff12_structures/ExternalReferenceType.cpp \
+    ../Source/XlsbFormat/Biff12_structures/PCDIDateTime.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -663,6 +673,10 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/DDEOLELINK.cpp \
     ../Source/XlsbFormat/Biff12_unions/EXTERNALBOOK.cpp \
     ../Source/XlsbFormat/Biff12_unions/EXTERNALLINK.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDIDT.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTCACHERECORDDT.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTCACHERECORD.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTCACHERECORDS.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -677,6 +691,7 @@ HEADERS += \
     ../Source/XlsbFormat/SlicerCachesStream.h \
     ../Source/XlsbFormat/ChartSheetStream.h \
     ../Source/XlsbFormat/ExternalLinkStream.h \
+    ../Source/XlsbFormat/PivotCacheRecordsStream.h \
     ../Source/XlsbFormat/Xlsb.h \
     ../Source/XlsbFormat/XlsbElementsType.h \
 ### Biff12_records
@@ -917,8 +932,12 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/BeginEcWpTables.h \
     ../Source/XlsbFormat/Biff12_records/EndECWPTables.h \
     ../Source/XlsbFormat/Biff12_records/PCDIMissing.h \
-    ../Source/XlsbFormat/Biff12_records/PCDIIndex.h \
+    ../Source/XlsbFormat/Biff12_records/PCDINumber.h \
+    ../Source/XlsbFormat/Biff12_records/PCDIBoolean.h \
+    ../Source/XlsbFormat/Biff12_records/PCDIError.h \
     ../Source/XlsbFormat/Biff12_records/PCDIString.h \
+    ../Source/XlsbFormat/Biff12_records/PCDIDatetime.h \
+    ../Source/XlsbFormat/Biff12_records/PCDIIndex.h \
     ../Source/XlsbFormat/Biff12_records/BeginECTxtWiz.h \
     ../Source/XlsbFormat/Biff12_records/EndECTxtWiz.h \
     ../Source/XlsbFormat/Biff12_records/BeginECTWFldInfoLst.h \
@@ -1065,7 +1084,9 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/SupNameEnd.h \
     ../Source/XlsbFormat/Biff12_records/SupTabs.h \
     ../Source/XlsbFormat/Biff12_records/BeginSupBook.h \
-    ../Source/XlsbFormat/Biff12_records/EndSupBook.h \
+    ../Source/XlsbFormat/Biff12_records/EndSupBook.h \    
+    ../Source/XlsbFormat/Biff12_records/BeginPivotCacheRecords.h \
+    ../Source/XlsbFormat/Biff12_records/EndPivotCacheRecords.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -1127,6 +1148,7 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_structures/DDEItemProperties.h \
     ../Source/XlsbFormat/Biff12_structures/OLEItemProperties.h \
     ../Source/XlsbFormat/Biff12_structures/ExternalReferenceType.h \
+    ../Source/XlsbFormat/Biff12_structures/PCDIDateTime.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
     ../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.h \
@@ -1309,3 +1331,7 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/DDEOLELINK.h \
     ../Source/XlsbFormat/Biff12_unions/EXTERNALBOOK.h \
     ../Source/XlsbFormat/Biff12_unions/EXTERNALLINK.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDIDT.h \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTCACHERECORDDT.h \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTCACHERECORD.h \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTCACHERECORDS.h \

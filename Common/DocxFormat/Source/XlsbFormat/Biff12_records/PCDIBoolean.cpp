@@ -29,33 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/PCDISrvFmt.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "PCDIBoolean.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BrtPCDIString record in BIFF12
-    class PCDIString: public XLS::BiffRecord
+
+    PCDIBoolean::PCDIBoolean()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(PCDIString)
-            BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
-        public:
-            PCDIString();
-            virtual ~PCDIString();
+    }
 
-            XLS::BaseObjectPtr clone();
+    PCDIBoolean::~PCDIBoolean()
+    {
+    }
 
-            static const XLS::ElementType	type = XLS::typePCDIString;
+    BaseObjectPtr PCDIBoolean::clone()
+    {
+        return BaseObjectPtr(new PCDIBoolean(*this));
+    }
 
-            void readFields(XLS::CFRecord& record);
-
-            XLWideString st;
-            PCDISrvFmt   sxvcellextra;
-    };
+    void PCDIBoolean::readFields(XLS::CFRecord& record)
+    {
+        record >> f;
+    }
 
 } // namespace XLSB
 

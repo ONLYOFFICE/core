@@ -631,7 +631,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotCharacterValue)
-			
+            WritingElement_XlsbConstructors(CPivotCharacterValue)
 			CPivotCharacterValue(){}
 			virtual ~CPivotCharacterValue() {}
 			
@@ -644,11 +644,13 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_PivotCharacterValue;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			
 			nullable_string		m_oValue;
 			nullable_string		m_oCaption;
@@ -670,7 +672,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotBooleanValue)
-			
+            WritingElement_XlsbConstructors(CPivotBooleanValue)
 			CPivotBooleanValue(){}
 			virtual ~CPivotBooleanValue() {}
 			
@@ -683,12 +685,14 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_PivotBooleanValue;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 			nullable_bool		m_oValue;
 			nullable_string		m_oCaption;
 			nullable_bool		m_oCalculated;
@@ -699,7 +703,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotNumericValue)
-			
+            WritingElement_XlsbConstructors(CPivotNumericValue)
 			CPivotNumericValue(){}
 			virtual ~CPivotNumericValue() {}
 			
@@ -712,11 +716,13 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_PivotNumericValue;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			
 			nullable_double		m_oValue;
 			nullable_string		m_oCaption;
@@ -738,7 +744,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotDateTimeValue)
-			
+            WritingElement_XlsbConstructors(CPivotDateTimeValue)
 			CPivotDateTimeValue(){}
 			virtual ~CPivotDateTimeValue() {}
 			
@@ -751,11 +757,13 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_PivotBooleanValue;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			
 			nullable<SimpleTypes::CDateTime>	m_oValue;
 			nullable_string						m_oCaption;
@@ -767,7 +775,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotErrorValue)
-			
+            WritingElement_XlsbConstructors(CPivotErrorValue)
 			CPivotErrorValue(){}
 			virtual ~CPivotErrorValue() {}
 			
@@ -780,11 +788,13 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_PivotErrorValue;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			
 			nullable_string		m_oValue;
 			nullable_string		m_oCaption;
@@ -806,7 +816,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotNoValue)
-			
+            WritingElement_XlsbConstructors(CPivotNoValue)
 			CPivotNoValue(){}
 			virtual ~CPivotNoValue() {}
 			
@@ -819,11 +829,13 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_PivotNoValue;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			
 			nullable_string		m_oCaption;
 			nullable_bool		m_oCalculated;

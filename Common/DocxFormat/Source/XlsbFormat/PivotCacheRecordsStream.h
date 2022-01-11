@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,33 +29,45 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/PCDISrvFmt.h"
-#include "../Biff12_structures/XLWideString.h"
+#ifndef PIVOTCACHERECORDSSTREAM_H
+#define PIVOTCACHERECORDSSTREAM_H
+
+
+#include "../../../../DesktopEditor/common/Types.h"
+#include "../Base/Types_32.h"
+#include "../XlsxFormat/WritingElement.h"
+#include <string>
+#include <memory.h>
+#include <iostream>
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+typedef BYTE *LPBYTE;
 
 namespace XLSB
 {
-    // Logical representation of BrtPCDIString record in BIFF12
-    class PCDIString: public XLS::BiffRecord
+    class StreamCacheReader;
+
+    class PivotCacheRecordsStream;
+    typedef std::shared_ptr<PivotCacheRecordsStream>		PivotCacheRecordsStreamPtr;
+
+    class PivotCacheRecordsStream: public XLS::CompositeObject
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(PCDIString)
-            BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
-        public:
-            PCDIString();
-            virtual ~PCDIString();
+        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
+    public:
+        PivotCacheRecordsStream();
+        virtual ~PivotCacheRecordsStream();
 
-            XLS::BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-            static const XLS::ElementType	type = XLS::typePCDIString;
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-            void readFields(XLS::CFRecord& record);
+        //static const XLS::ElementType type = XLS::typeWorksheetSubstream;
 
-            XLWideString st;
-            PCDISrvFmt   sxvcellextra;
+        XLS::BaseObjectPtr               m_PIVOTCACHERECORDS;
+
     };
 
-} // namespace XLSB
+}
+
+#endif // PIVOTCACHERECORDSSTREAM_H
 

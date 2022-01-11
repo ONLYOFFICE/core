@@ -33,6 +33,19 @@
 #include "PivotCacheDefinition.h"
 #include "PivotCacheRecords.h"
 
+#include "../../XlsbFormat/Xlsb.h"
+#include "../../XlsbFormat/PivotCacheRecordsStream.h"
+#include "../../XlsbFormat/Biff12_unions/PIVOTCACHERECORDS.h"
+#include "../../XlsbFormat/Biff12_unions/PIVOTCACHERECORD.h"
+#include "../../XlsbFormat/Biff12_unions/PIVOTCACHERECORDDT.h"
+#include "../../XlsbFormat/Biff12_unions/PCDIDT.h"
+#include "../../XlsbFormat/Biff12_records/PCDIBoolean.h"
+#include "../../XlsbFormat/Biff12_records/PCDIMissing.h"
+#include "../../XlsbFormat/Biff12_records/PCDINumber.h"
+#include "../../XlsbFormat/Biff12_records/PCDIError.h"
+#include "../../XlsbFormat/Biff12_records/PCDIString.h"
+#include "../../XlsbFormat/Biff12_records/PCDIDatetime.h"
+
 namespace OOX
 {
 namespace Spreadsheet
@@ -1645,6 +1658,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
 		}
 	}
+    void CPivotCharacterValue::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        ReadAttributes(obj);
+    }
 	void CPivotCharacterValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -1662,6 +1679,29 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"in", m_oFormatIndex )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+    void CPivotCharacterValue::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PCDIString*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oValue        = ptr->st.value();
+
+            m_oBold         = ptr->sxvcellextra.fSrvFmtBold;
+            m_oItalic       = ptr->sxvcellextra.fSrvFmtItalic;
+            m_oStrike       = ptr->sxvcellextra.fSrvFmtStrikethrough;
+            m_oUnderline	= ptr->sxvcellextra.fSrvFmtUnderline;
+
+            if(ptr->sxvcellextra.fSrvFmtNum)
+                m_oFormatIndex  = ptr->sxvcellextra.isfci;
+
+            if(ptr->sxvcellextra.fSrvFmtBack)
+                m_oBackColor    = ptr->sxvcellextra.cvBack.toHex();
+
+            if(ptr->sxvcellextra.fSrvFmtFore)
+                m_oForeColor  = ptr->sxvcellextra.cvFore.toHex();
+        }
+    }
 //------------------------------------
 	void CPivotErrorValue::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -1705,7 +1745,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			if ( L"x" == sName )
 				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
 		}
-	}
+	}    
+    void CPivotErrorValue::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        ReadAttributes(obj);
+    }
 	void CPivotErrorValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -1723,6 +1767,39 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"in", m_oFormatIndex )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+    void CPivotErrorValue::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PCDIError*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            switch(ptr->err)
+            {
+                case 0x00: m_oValue = L"#NULL!"; break;
+                case 0x07: m_oValue = L"#DIV/0!"; break;
+                case 0x0F: m_oValue = L"#VALUE!"; break;
+                case 0x17: m_oValue = L"#REF!"; break;
+                case 0x1D: m_oValue = L"#NAME?"; break;
+                case 0x24: m_oValue = L"#NUM!"; break;
+                case 0x2A: m_oValue = L"#N/A"; break;
+                case 0x2B: m_oValue = L"#GETTING_DATA"; break;
+            }
+
+            m_oBold         = ptr->sxvcellextra.fSrvFmtBold;
+            m_oItalic       = ptr->sxvcellextra.fSrvFmtItalic;
+            m_oStrike       = ptr->sxvcellextra.fSrvFmtStrikethrough;
+            m_oUnderline	= ptr->sxvcellextra.fSrvFmtUnderline;
+
+            if(ptr->sxvcellextra.fSrvFmtNum)
+                m_oFormatIndex  = ptr->sxvcellextra.isfci;
+
+            if(ptr->sxvcellextra.fSrvFmtBack)
+                m_oBackColor    = ptr->sxvcellextra.cvBack.toHex();
+
+            if(ptr->sxvcellextra.fSrvFmtFore)
+                m_oForeColor  = ptr->sxvcellextra.cvFore.toHex();
+        }
+    }
 //------------------------------------
 	void CPivotNumericValue::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -1767,6 +1844,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
 		}
 	}
+    void CPivotNumericValue::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        ReadAttributes(obj);
+    }
 	void CPivotNumericValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -1784,6 +1865,29 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"in", m_oFormatIndex )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+    void CPivotNumericValue::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PCDINumber*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oValue        = ptr->xnum.data.value;
+
+            m_oBold         = ptr->sxvcellextra.fSrvFmtBold;
+            m_oItalic       = ptr->sxvcellextra.fSrvFmtItalic;
+            m_oStrike       = ptr->sxvcellextra.fSrvFmtStrikethrough;
+            m_oUnderline	= ptr->sxvcellextra.fSrvFmtUnderline;
+
+            if(ptr->sxvcellextra.fSrvFmtNum)
+                m_oFormatIndex  = ptr->sxvcellextra.isfci;
+
+            if(ptr->sxvcellextra.fSrvFmtBack)
+                m_oBackColor    = ptr->sxvcellextra.cvBack.toHex();
+
+            if(ptr->sxvcellextra.fSrvFmtFore)
+                m_oForeColor  = ptr->sxvcellextra.cvFore.toHex();
+        }
+    }
 //------------------------------------
 	void CPivotDateTimeValue::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -1820,6 +1924,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
 		}
 	}
+    void CPivotDateTimeValue::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        ReadAttributes(obj);
+    }
 	void CPivotDateTimeValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -1829,7 +1937,16 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"u", m_oUnused )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"cp", m_oCount )
 		WritingElement_ReadAttributes_End( oReader )
-	}
+    }
+    void CPivotDateTimeValue::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PCDIDatetime*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oValue = ptr->datetime.value();
+        }
+    }
 //------------------------------------
 	void CPivotBooleanValue::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -1865,17 +1982,30 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			if ( L"x" == sName )
 				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
 		}
-	}
-	void CPivotBooleanValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-	{
-		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if		( oReader, L"v", m_oValue )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"c", m_oCaption )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"f", m_oCalculated )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"u", m_oUnused )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"cp", m_oCount )
-		WritingElement_ReadAttributes_End( oReader )
-	}
+    }
+    void CPivotBooleanValue::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        ReadAttributes(obj);
+    }
+    void CPivotBooleanValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    {
+        WritingElement_ReadAttributes_Start( oReader )
+            WritingElement_ReadAttributes_Read_if		( oReader, L"v", m_oValue )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"c", m_oCaption )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"f", m_oCalculated )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"u", m_oUnused )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"cp", m_oCount )
+        WritingElement_ReadAttributes_End( oReader )
+    }
+    void CPivotBooleanValue::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PCDIBoolean*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oValue = (bool)ptr->f;
+        }
+    }
 //------------------------------------
 	void CPivotNoValue::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -1919,6 +2049,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
 		}
 	}
+    void CPivotNoValue::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        ReadAttributes(obj);
+    }
+
 	void CPivotNoValue::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -1935,6 +2070,27 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"in", m_oFormatIndex )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+    void CPivotNoValue::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PCDIMissing*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oBold         = ptr->sxvcellextra.fSrvFmtBold;
+            m_oItalic       = ptr->sxvcellextra.fSrvFmtItalic;
+            m_oStrike       = ptr->sxvcellextra.fSrvFmtStrikethrough;
+            m_oUnderline	= ptr->sxvcellextra.fSrvFmtUnderline;
+
+            if(ptr->sxvcellextra.fSrvFmtNum)
+                m_oFormatIndex  = ptr->sxvcellextra.isfci;
+
+            if(ptr->sxvcellextra.fSrvFmtBack)
+                m_oBackColor    = ptr->sxvcellextra.cvBack.toHex();
+
+            if(ptr->sxvcellextra.fSrvFmtFore)
+                m_oForeColor  = ptr->sxvcellextra.cvFore.toHex();
+        }
+    }
 //------------------------------------
 	void CPivotCacheSource::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -2262,10 +2418,32 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		WritingElement_ReadAttributes_End( oReader )
 	}
 //------------------------------------
+    void CPivotCacheRecordsFile::readBin(const CPath& oPath)
+    {
+        CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+        if (xlsb)
+        {
+            XLSB::PivotCacheRecordsStreamPtr pivotCacheRecordsStream = std::make_shared<XLSB::PivotCacheRecordsStream>();
+
+            xlsb->ReadBin(oPath, pivotCacheRecordsStream.get());
+
+            if (pivotCacheRecordsStream != nullptr)
+            {
+                if (pivotCacheRecordsStream->m_PIVOTCACHERECORDS != nullptr)
+                    m_oPivotCacheRecords = pivotCacheRecordsStream->m_PIVOTCACHERECORDS;
+            }
+        }
+    }
 	void CPivotCacheRecordsFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
 		m_oReadPath = oPath;
 		IFileContainer::Read( oRootPath, oPath );
+
+        if( m_oReadPath.GetExtention() == _T(".bin"))
+        {
+            readBin(m_oReadPath);
+            return;
+        }
 
 		return;// todooo option read
 
@@ -2344,6 +2522,20 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_oExtLst = oReader;
 		}
 	}
+    void CPivotCacheRecords::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PIVOTCACHERECORDS*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oCount = (_UINT32)ptr->m_arPIVOTCACHERECORD.size();
+
+            for(auto &item : ptr->m_arPIVOTCACHERECORD)
+            {
+                m_arrItems.push_back(new CPivotCacheRecord(item));
+            }
+        }
+    }
 	void CPivotCacheRecords::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -2393,5 +2585,52 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CSharedItemsIndex(oReader));
 		}
 	}
+    void CPivotCacheRecord::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PIVOTCACHERECORD*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            if(ptr->m_source != nullptr)
+            {
+                if(ptr->m_source->get_type() == XLS::typePIVOTCACHERECORDDT)
+                {
+                    auto ptr1 = static_cast<XLSB::PIVOTCACHERECORDDT*>(ptr->m_source.get());
+
+                    if(ptr1 != nullptr)
+                    {
+                        for(auto &item : ptr1->m_arPCDIDT)
+                        {
+                            switch(item->get_type())
+                            {
+                                case XLS::typePCDIBoolean:
+                                    m_arrItems.push_back(new CPivotBooleanValue(item));
+                                    break;
+                                case XLS::typePCDIDatetime:
+                                    m_arrItems.push_back(new CPivotDateTimeValue(item));
+                                    break;
+                                case XLS::typePCDIError:
+                                    m_arrItems.push_back(new CPivotErrorValue(item));
+                                    break;
+                                case XLS::typePCDIMissing:
+                                    m_arrItems.push_back(new CPivotNoValue(item));
+                                    break;
+                                case XLS::typePCDINumber:
+                                    m_arrItems.push_back(new CPivotNumericValue(item));
+                                    break;
+                                case XLS::typePCDIString:
+                                    m_arrItems.push_back(new CPivotCharacterValue(item));
+                                    break;
+                                case XLS::typePCDIIndex:
+                                    m_arrItems.push_back(new CSharedItemsIndex(item));
+                                    break;
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 } //Spreadsheet
 } // namespace OOX

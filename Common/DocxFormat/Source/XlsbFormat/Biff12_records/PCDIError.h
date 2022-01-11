@@ -34,27 +34,26 @@
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 #include "../Biff12_structures/PCDISrvFmt.h"
-#include "../Biff12_structures/XLWideString.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtPCDIString record in BIFF12
-    class PCDIString: public XLS::BiffRecord
+    // Logical representation of BrtPCDIError record in BIFF12
+    class PCDIError: public XLS::BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(PCDIString)
-            BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
+            BIFF_RECORD_DEFINE_TYPE_INFO(PCDIError)
+            BASE_OBJECT_DEFINE_CLASS_NAME(PCDIError)
         public:
-            PCDIString();
-            virtual ~PCDIString();
+            PCDIError();
+            virtual ~PCDIError();
 
             XLS::BaseObjectPtr clone();
 
-            static const XLS::ElementType	type = XLS::typePCDIString;
+            static const XLS::ElementType	type = XLS::typePCDIError;
 
             void readFields(XLS::CFRecord& record);
 
-            XLWideString st;
-            PCDISrvFmt   sxvcellextra;
+            unsigned char    err;
+            PCDISrvFmt       sxvcellextra;
     };
 
 } // namespace XLSB

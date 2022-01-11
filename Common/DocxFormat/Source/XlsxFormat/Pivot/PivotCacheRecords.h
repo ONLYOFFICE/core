@@ -41,7 +41,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotCacheRecord)
-			
+            WritingElement_XlsbConstructors(CPivotCacheRecord)
 			CPivotCacheRecord(){}
 			virtual ~CPivotCacheRecord() {}
 			
@@ -54,6 +54,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_PivotCacheRecord;
@@ -64,6 +65,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPivotCacheRecords)
+            WritingElement_XlsbConstructors(CPivotCacheRecords)
 			CPivotCacheRecords()
 			{
 			}
@@ -80,6 +82,7 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_PivotCacheRecords;
@@ -113,7 +116,7 @@ namespace OOX
 			{
 				m_nDataLength = 0;
 				RELEASEARRAYOBJECTS(m_pData)
-			}
+            }
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -126,6 +129,7 @@ namespace OOX
 				m_pData = new BYTE[length];
 				memcpy(m_pData, pData, length);
             }
+            void readBin(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 			virtual const OOX::FileType type() const

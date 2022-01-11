@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,33 +29,58 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/PCDISrvFmt.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "PivotCacheRecordsStream.h"
+
+#include "Biff12_unions/PIVOTCACHERECORDS.h"
+
+using namespace XLS;
 
 namespace XLSB
+{;
+
+PivotCacheRecordsStream::PivotCacheRecordsStream()
 {
-    // Logical representation of BrtPCDIString record in BIFF12
-    class PCDIString: public XLS::BiffRecord
+}
+
+PivotCacheRecordsStream::~PivotCacheRecordsStream()
+{
+}
+
+
+BaseObjectPtr PivotCacheRecordsStream::clone()
+{
+        return BaseObjectPtr(new PivotCacheRecordsStream(*this));
+}
+
+const bool PivotCacheRecordsStream::loadContent(BinProcessor& proc)
+{
+
+    while (true)
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(PCDIString)
-            BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
-        public:
-            PCDIString();
-            virtual ~PCDIString();
+        CFRecordType::TypeId type = proc.getNextRecordType();
 
-            XLS::BaseObjectPtr clone();
+        if (type == rt_NONE) break;
 
-            static const XLS::ElementType	type = XLS::typePCDIString;
+        switch(type)
+        {
+            case rt_BeginPivotCacheRecords:
+            {
+                if (proc.optional<PIVOTCACHERECORDS>())
+                {
+                    m_PIVOTCACHERECORDS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
 
-            void readFields(XLS::CFRecord& record);
+            default://skip
+            {
+                proc.SkipRecord();
+            }break;
+        }
+    }
 
-            XLWideString st;
-            PCDISrvFmt   sxvcellextra;
-    };
+    return true;
+}
 
 } // namespace XLSB
-

@@ -31,31 +31,27 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/PCDISrvFmt.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtPCDIString record in BIFF12
-    class PCDIString: public XLS::BiffRecord
+
+    class PIVOTCACHERECORDS: public XLS::CompositeObject
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(PCDIString)
-            BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
-        public:
-            PCDIString();
-            virtual ~PCDIString();
+        BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTCACHERECORDS)
+    public:
+        PIVOTCACHERECORDS();
+        virtual ~PIVOTCACHERECORDS();
 
-            XLS::BaseObjectPtr clone();
+        XLS::BaseObjectPtr clone();
 
-            static const XLS::ElementType	type = XLS::typePCDIString;
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-            void readFields(XLS::CFRecord& record);
+        XLS::BaseObjectPtr               m_BrtBeginPivotCacheRecords;
+        std::vector<XLS::BaseObjectPtr>  m_arPIVOTCACHERECORD;
+        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        XLS::BaseObjectPtr               m_BrtEndPivotCacheRecords;
 
-            XLWideString st;
-            PCDISrvFmt   sxvcellextra;
     };
 
 } // namespace XLSB
-

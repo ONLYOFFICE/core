@@ -33,28 +33,23 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/PCDISrvFmt.h"
-#include "../Biff12_structures/XLWideString.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtPCDIString record in BIFF12
-    class PCDIString: public XLS::BiffRecord
+    // Logical representation of BrtEndPivotCacheRecords record in BIFF12
+    class EndPivotCacheRecords: public XLS::BiffRecord
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(PCDIString)
-            BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
+            BIFF_RECORD_DEFINE_TYPE_INFO(EndPivotCacheRecords)
+            BASE_OBJECT_DEFINE_CLASS_NAME(EndPivotCacheRecords)
         public:
-            PCDIString();
-            virtual ~PCDIString();
+            EndPivotCacheRecords();
+            virtual ~EndPivotCacheRecords();
 
             XLS::BaseObjectPtr clone();
 
-            static const XLS::ElementType	type = XLS::typePCDIString;
-
             void readFields(XLS::CFRecord& record);
 
-            XLWideString st;
-            PCDISrvFmt   sxvcellextra;
+            //static const XLS::ElementType	type = XLS::typeEndPivotCacheRecords;
     };
 
 } // namespace XLSB

@@ -29,33 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/PCDISrvFmt.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "EndPivotCacheRecords.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BrtPCDIString record in BIFF12
-    class PCDIString: public XLS::BiffRecord
+
+    EndPivotCacheRecords::EndPivotCacheRecords()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(PCDIString)
-            BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
-        public:
-            PCDIString();
-            virtual ~PCDIString();
+    }
 
-            XLS::BaseObjectPtr clone();
+    EndPivotCacheRecords::~EndPivotCacheRecords()
+    {
+    }
 
-            static const XLS::ElementType	type = XLS::typePCDIString;
+    BaseObjectPtr EndPivotCacheRecords::clone()
+    {
+        return BaseObjectPtr(new EndPivotCacheRecords(*this));
+    }
 
-            void readFields(XLS::CFRecord& record);
-
-            XLWideString st;
-            PCDISrvFmt   sxvcellextra;
-    };
+    void EndPivotCacheRecords::readFields(XLS::CFRecord& record)
+    {
+        // No data in this record
+    }
 
 } // namespace XLSB
 

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,33 +29,35 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
+#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/PCDISrvFmt.h"
-#include "../Biff12_structures/XLWideString.h"
 
 namespace XLSB
 {
-    // Logical representation of BrtPCDIString record in BIFF12
-    class PCDIString: public XLS::BiffRecord
+    class PCDIDateTime : public XLS::BiffStructure
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(PCDIString)
-            BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
-        public:
-            PCDIString();
-            virtual ~PCDIString();
+        BASE_STRUCTURE_DEFINE_CLASS_NAME(PCDIDateTime)
+    public:
+        PCDIDateTime();
+        PCDIDateTime(XLS::CFRecord& record);
+        virtual ~PCDIDateTime();
+       XLS::BiffStructurePtr clone();
 
-            XLS::BaseObjectPtr clone();
+        static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-            static const XLS::ElementType	type = XLS::typePCDIString;
+        virtual void load(XLS::CFRecord& record);
 
-            void readFields(XLS::CFRecord& record);
+        unsigned short	yr;
+        unsigned short	mon;
+        unsigned char	dom;
+        unsigned char	hr;
+        unsigned char	min;
+        unsigned char	sec;
 
-            XLWideString st;
-            PCDISrvFmt   sxvcellextra;
+        std::wstring value();
     };
 
-} // namespace XLSB
-
+}   // namespace XLSB

@@ -29,33 +29,66 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/PCDISrvFmt.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "PIVOTCACHERECORDS.h"
+#include "../Biff12_records/BeginPivotCacheRecords.h"
+#include "../Biff12_unions/PIVOTCACHERECORD.h"
+#include "../Biff12_unions/FRT.h"
+#include "../Biff12_records/EndPivotCacheRecords.h"
+
+using namespace XLS;
 
 namespace XLSB
 {
-    // Logical representation of BrtPCDIString record in BIFF12
-    class PCDIString: public XLS::BiffRecord
+
+    PIVOTCACHERECORDS::PIVOTCACHERECORDS()
     {
-            BIFF_RECORD_DEFINE_TYPE_INFO(PCDIString)
-            BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
-        public:
-            PCDIString();
-            virtual ~PCDIString();
+    }
 
-            XLS::BaseObjectPtr clone();
+    PIVOTCACHERECORDS::~PIVOTCACHERECORDS()
+    {
+    }
 
-            static const XLS::ElementType	type = XLS::typePCDIString;
+    BaseObjectPtr PIVOTCACHERECORDS::clone()
+    {
+        return BaseObjectPtr(new PIVOTCACHERECORDS(*this));
+    }
 
-            void readFields(XLS::CFRecord& record);
+    // PIVOTCACHERECORDS = BrtBeginPivotCacheRecords *PIVOTCACHERECORD *FRT BrtEndPivotCacheRecords
+    const bool PIVOTCACHERECORDS::loadContent(BinProcessor& proc)
+    {
+        if (proc.optional<BeginPivotCacheRecords>())
+        {
+            m_BrtBeginPivotCacheRecords = elements_.back();
+            elements_.pop_back();
+        }
 
-            XLWideString st;
-            PCDISrvFmt   sxvcellextra;
-    };
+        int countPIVOTCACHERECORD = proc.repeated<PIVOTCACHERECORD>(0, 0);
+
+        while(countPIVOTCACHERECORD > 0)
+        {
+            m_arPIVOTCACHERECORD.insert(m_arPIVOTCACHERECORD.begin(), elements_.back());
+            elements_.pop_back();
+            countPIVOTCACHERECORD--;
+        }
+
+        int count = proc.repeated<FRT>(0, 0);
+
+        while(count > 0)
+        {
+            m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndPivotCacheRecords>())
+        {
+            m_BrtEndPivotCacheRecords = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginPivotCacheRecords && !m_arPIVOTCACHERECORD.empty() && m_BrtEndPivotCacheRecords;
+    }
 
 } // namespace XLSB
 

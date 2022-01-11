@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../CommonInclude.h"
+#include "../../XlsbFormat/Biff12_records/PCDIIndex.h"
 
 namespace OOX
 {
@@ -41,6 +42,7 @@ namespace OOX
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CSharedItemsIndex)
+            WritingElement_XlsbConstructors(CSharedItemsIndex)
 			CSharedItemsIndex()
 			{
 			}
@@ -75,6 +77,10 @@ namespace OOX
 					WritingStringNullableAttrInt(L"v", m_oV, m_oV->GetValue());
 				writer.WriteString(L"/>");
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -83,6 +89,15 @@ namespace OOX
 				WritingElement_ReadAttributes_ReadSingle( oReader, L"v", m_oV )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::PCDIIndex*>(obj.get());
+
+                if(ptr != nullptr)
+                {
+                    m_oV = ptr->iitem;
+                }
+            }
 		public:
 
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oV;

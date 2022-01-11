@@ -78,7 +78,8 @@ private:
     void FillTxBody(PPTX::Logic::TxBody &oTxBody);
     void FillTcPr(PPTX::Logic::TableCellProperties& oTcPr);
     void SetTcPrInvisibleBorders(PPTX::Logic::TableCellProperties& oTcPr);
-    bool isInvisibleBorder()const;
+    static bool isInvisibleBorder(const CShapeElement *pBorder);
+    bool isInvisibleBorders()const;
     void FillLn(PPTX::Logic::Ln& Ln, eBorderPossition eBP, CShapeElement* pBorder);
     void SetLnName(PPTX::Logic::Ln& Ln, eBorderPossition eBP);
     void ApplyLn(PPTX::Logic::TableCellProperties& oTcPr, PPTX::Logic::Ln *pLn, eBorderPossition eBP);

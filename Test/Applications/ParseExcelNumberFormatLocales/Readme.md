@@ -3,7 +3,6 @@ Instruction for the starting:
 
 Step1: run "run-Set_Culture_and_run-macros-datae.js" with mspowershell 
 notes:
-The error on the first locale is OK
 Start-Sleep is needed for excel gracefull shutdown. increase it in case of slow PC or other error
 
 Step2: run get_names_of_the_separators_from_system.ps1 with mspowershell

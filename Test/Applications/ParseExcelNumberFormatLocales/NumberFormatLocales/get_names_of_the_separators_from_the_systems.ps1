@@ -8,7 +8,7 @@ $CultureInfos =([System.Globalization.CultureInfo]::GetCultures( [System.Globali
 foreach($culture in $CultureInfos) {
  $p1 = $culture.Name
 $p2 = $culture.NumberFormat.NumberDecimalSeparator
-$p3 = $culture.NumberFormat.NumberGroupSeparator]
+$p3 = $culture.NumberFormat.NumberGroupSeparator
  $pathMacro = $(pwd).Path + "\$p2.txt" 
  $pathoutput = $(pwd).Path + "\$p1.txt"
 Set-Content "$pathMacro" $p2

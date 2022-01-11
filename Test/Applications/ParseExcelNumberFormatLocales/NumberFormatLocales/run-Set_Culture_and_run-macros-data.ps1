@@ -1,4 +1,4 @@
-$Lcids = ([System.Globalization.CultureInfo]::GetCultures( [System.Globalization.CultureTypes]::AllCultures ) | Select-Object -ExpandProperty Name)
+$Lcids = ([System.Globalization.CultureInfo]::GetCultures( [System.Globalization.CultureTypes]::AllCultures ) | Select-Object -ExpandProperty Name | Select-Object -Skip 1)
 
 foreach($i in $Lcids) {
 
@@ -7,10 +7,9 @@ foreach($i in $Lcids) {
 	Start-Sleep -Seconds 1
 
 	$pathMacro = $(pwd).Path + "\macros-locale-data.xlsm"
-	$pathOutput = $(pwd).Path + "\" + $i + ".txt"
-	echo .\run-macros-data.vbs $i
+	echo .\run-macros-data.vbs $pathMacro $i
  
-	.\run-macros-data.vbs $i
+	.\run-macros-data.vbs $pathMacro $i
 	Start-Sleep -Seconds 7
  
 }

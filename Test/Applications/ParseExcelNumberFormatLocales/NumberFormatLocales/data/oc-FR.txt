@@ -1,0 +1,3 @@
+﻿[$]jj/mm/aaaa;@
+[$]h.mm.ss AM/PM
+Standard

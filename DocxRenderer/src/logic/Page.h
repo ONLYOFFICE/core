@@ -294,22 +294,44 @@ namespace NSDocxRenderer
 			m_oVector.Close();
 		}
 
-		void ApplyUnderline(double dLineLeft, double dLineRight)
+		void ApplyUnderline(double dLineLeftCoord, double dLineRightCoord)
 		{
 			for (size_t i = 0; i < m_pCurrentLine->m_arConts.size(); ++i)
 			{
-				if (m_pCurrentLine->m_arConts[i]->m_dX >= dLineLeft && (m_pCurrentLine->m_arConts[i]->m_dX + m_pCurrentLine->m_arConts[i]->m_dWidth - 0.3) <= dLineRight)
+				double dXCont = m_pCurrentLine->m_arConts[i]->m_dX;
+				double dWidthCont = m_pCurrentLine->m_arConts[i]->m_dWidth;
+
+				bool bIsContIncludeLine = dXCont >= dLineLeftCoord && (dXCont + dWidthCont - 0.3) <= dLineRightCoord;
+				bool bIsLineIncludeCont = dXCont <= dLineLeftCoord && (dXCont + dWidthCont ) >= dLineRightCoord;
+
+				if (bIsContIncludeLine || bIsLineIncludeCont)
 					m_pCurrentLine->m_arConts[i]->m_oFont.Underline = 1;
 			}
 		}
 
-		void ApplyStrikeout(double dLineLeft, double dLineRight)
+		bool ApplyStrikeout(double dLineLeftCoord, double dLineRightCoord)
 		{
+			bool bFlag = false;
+
+			bool bIsFootnote = abs(dLineRightCoord-dLineLeftCoord - 50.8) < 0.1;
+			if (bIsFootnote)
+ 				return bFlag;
+
 			for (size_t i = 0; i < m_pCurrentLine->m_arConts.size(); ++i)
 			{
-				if (m_pCurrentLine->m_arConts[i]->m_dX >= dLineLeft && (m_pCurrentLine->m_arConts[i]->m_dX + m_pCurrentLine->m_arConts[i]->m_dWidth - 0.3) <= dLineRight)
+				double dXCont = m_pCurrentLine->m_arConts[i]->m_dX;
+				double dWidthCont = m_pCurrentLine->m_arConts[i]->m_dWidth;
+
+				bool bIsContIncludeLine = dXCont >= dLineLeftCoord && (dXCont + dWidthCont - 0.3) <= dLineRightCoord;
+				bool bIsLineIncludeCont = dXCont <= dLineLeftCoord && (dXCont + dWidthCont ) >= dLineRightCoord;
+
+				if (bIsContIncludeLine || bIsLineIncludeCont)
+				{
 					m_pCurrentLine->m_arConts[i]->m_oFont.Strikeout = 1;
+					bFlag = true;
+				}
 			}
+			return bFlag;
 		}
 
         void DrawPath(LONG lType, LONG lTxId)
@@ -326,8 +348,8 @@ namespace NSDocxRenderer
 			{
 				if (abs (m_pCurrentLine->m_dBaselinePos - m_oVector.m_dTop) < 2)
 				{
-					ApplyStrikeout(m_oVector.m_dLeft, m_oVector.m_dRight);
-					return;
+					if (ApplyStrikeout(m_oVector.m_dLeft, m_oVector.m_dRight))
+						return;
 				}
 			}
 

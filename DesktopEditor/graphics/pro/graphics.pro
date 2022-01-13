@@ -461,11 +461,13 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/sel2.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/skew.cpp
 
-HEADERS += \
-    ./../../fontengine/ApplicationFontsWorker.h
+# Application fonts worker
+HEADERS += ./../../fontengine/ApplicationFontsWorker.h
+SOURCES += ./../../fontengine/ApplicationFontsWorker.cpp
 
-SOURCES += \
-    ./../../fontengine/ApplicationFontsWorker.cpp
+# drawing file
+HEADERS += ./officedrawingfile.h
+SOURCES += ./officedrawingfile.cpp
 
 # deprecated!!! remove after 6.5 ------------------
 HEADERS += ./../../fontengine/FontsAssistant.h

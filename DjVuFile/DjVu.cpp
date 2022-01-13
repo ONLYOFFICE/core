@@ -67,6 +67,10 @@ OfficeDrawingFileType CDjVuFile::GetType()
 {
     return odftDJVU;
 }
+NSFonts::IApplicationFonts* CDjVuFile::GetFonts()
+{
+    return m_pImplementation->GetFonts();
+}
 
 std::wstring CDjVuFile::GetTempDirectory()
 {
@@ -93,17 +97,6 @@ void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* p
 {
 	if (m_pImplementation)
 		m_pImplementation->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
-}
-BYTE* CDjVuFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip)
-{
-    if (m_pImplementation)
-        return m_pImplementation->ConvertToPixels(nPageIndex, nRasterW, nRasterH, bIsFlip);
-    return NULL;
-}
-void CDjVuFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
-{
-	if (m_pImplementation)
-        m_pImplementation->ConvertToRaster(nPageIndex, wsDstPath, nImageType, nRasterW, nRasterH);
 }
 void CDjVuFile::ConvertToPdf(const std::wstring& wsDstPath)
 {

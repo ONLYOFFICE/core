@@ -38,7 +38,7 @@
 #include "../DesktopEditor/common/base_export.h"
 #define PDFREADER_DECL_EXPORT Q_DECL_EXPORT
 #endif
-#include "../DesktopEditor/common/officedrawingfile.h"
+#include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace PdfReader
@@ -74,6 +74,8 @@ namespace PdfReader
 
         virtual void Close();
 
+        virtual NSFonts::IApplicationFonts* GetFonts();
+
         virtual OfficeDrawingFileType GetType();
 
         virtual std::wstring GetTempDirectory();
@@ -82,8 +84,6 @@ namespace PdfReader
         virtual int GetPagesCount();
         virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
         virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
-        virtual BYTE* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip = false);
-        virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1);
 
         int          GetError();
         double       GetVersion();
@@ -97,13 +97,10 @@ namespace PdfReader
         NSFonts::IFontManager* GetFontManager();
 
         std::wstring ToXml(const std::wstring& wsXmlPath);
+
     #ifdef BUILDING_WASM_MODULE
         virtual BYTE* GetStructure();
-        virtual BYTE* GetGlyphs(int nPageIndex);
-        virtual BYTE* GetLinks (int nPageIndex);
-
-    private:
-        std::pair<int, BYTE*> m_pGlyphs;
+        virtual BYTE* GetLinks(int nPageIndex);
     #endif
 
     private:

@@ -289,21 +289,6 @@ namespace PdfReader
 			m_pbBreak = pbBreak;
 		}
 
-	#ifdef BUILDING_WASM_MODULE
-		void GetGlyphs(const std::wstring& bsUnicodeText, unsigned int* pGids, double x, double y);
-		void DumpLine();
-		NSWasm::CData m_pPageMeta;
-
-	private:
-		double m_dCurrentFontSize = 0.0;
-		NSWasm::CHLine m_oLine;
-		NSWasm::CData  m_oMeta;
-		Aggplus::CMatrix m_pLastTransform;
-		LONG m_lCurrentFont     = -1;
-		LONG m_nLastBrushColor1 = -1;
-		LONG m_nLastBrushAlpha1 = -1;
-	#endif
-
 	private:
 
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);

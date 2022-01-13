@@ -303,18 +303,11 @@ namespace XPS
 		oRes.ClearWithoutAttack();
 		return bRes;
 	}
-	BYTE* CDocument::GetPageGlyphs(int nPageIndex)
-	{
-		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
-		if (oIter != m_mPages.end())
-			return oIter->second->GetGlyphs();
-		return NULL;
-	}
 	BYTE* CDocument::GetPageLinks (int nPageIndex)
 	{
 		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
 		if (oIter != m_mPages.end())
-			return oIter->second->GetLinks();
+            return oIter->second->m_oLinks.Serialize();
 		return NULL;
 	}
 #endif

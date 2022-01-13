@@ -145,6 +145,11 @@ void CXpsFile::Close()
         m_pInternal->m_wsTempFolder = NULL;
 	}
 }
+NSFonts::IApplicationFonts* CXpsFile::GetFonts()
+{
+    return m_pInternal->m_pAppFonts;
+}
+
 OfficeDrawingFileType CXpsFile::GetType()
 {
     return odftXPS;
@@ -174,88 +179,6 @@ void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 		return;
 
     m_pInternal->m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak);
-}
-BYTE* CXpsFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip)
-{
-    NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
-    NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
-    pFontCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
-    pFontManager->SetOwnerCache(pFontCache);
-
-    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-    pRenderer->SetFontManager(pFontManager);
-
-    double dPageDpiX;
-    double dWidth, dHeight;
-    GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiX);
-
-    int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth  * 96 / dPageDpiX);
-    int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 96 / dPageDpiX);
-
-    BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-    if (!pBgraData)
-        return NULL;
-
-    memset(pBgraData, 0xff, nWidth * nHeight * 4);
-    CBgraFrame oFrame;
-    oFrame.put_Data(pBgraData);
-    oFrame.put_Width(nWidth);
-    oFrame.put_Height(nHeight);
-    oFrame.put_Stride((bIsFlip ? 4 : -4) * nWidth);
-
-    pRenderer->CreateFromBgraFrame(&oFrame);
-    pRenderer->SetSwapRGB(true);
-    pRenderer->put_Width(dWidth);
-    pRenderer->put_Height(dHeight);
-
-    bool bBreak = false;
-    DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
-
-    RELEASEINTERFACE(pFontManager);
-    RELEASEOBJECT(pRenderer);
-    oFrame.ClearNoAttack();
-
-    return pBgraData;
-}
-void CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
-{
-    NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
-    NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
-    pFontCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
-	pFontManager->SetOwnerCache(pFontCache);
-
-    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-    pRenderer->SetFontManager(pFontManager);
-
-	double dPageDpiX, dPageDpiY;
-	double dWidth, dHeight;
-	GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
-    int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth * 96 / dPageDpiX);
-    int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 96 / dPageDpiX);
-
-	BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-	if (!pBgraData)
-		return;
-
-	memset(pBgraData, 0xff, nWidth * nHeight * 4);
-	CBgraFrame oFrame;
-	oFrame.put_Data(pBgraData);
-	oFrame.put_Width(nWidth);
-	oFrame.put_Height(nHeight);
-	oFrame.put_Stride(-4 * nWidth);
-
-    pRenderer->CreateFromBgraFrame(&oFrame);
-    pRenderer->SetSwapRGB(false);
-    pRenderer->put_Width(dWidth);
-    pRenderer->put_Height(dHeight);
-
-	bool bBreak = false;
-    DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
-
-	oFrame.SaveFile(wsDstPath, nImageType);
-	RELEASEINTERFACE(pFontManager);
-    RELEASEOBJECT(pRenderer);
 }
 
 #ifndef DISABLE_PDF_CONVERTATION
@@ -297,10 +220,6 @@ void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 BYTE* CXpsFile::GetStructure()
 {
 	return m_pInternal->m_pDocument->GetStructure();
-}
-BYTE* CXpsFile::GetGlyphs(int nPageIndex)
-{
-	return m_pInternal->m_pDocument->GetPageGlyphs(nPageIndex);
 }
 BYTE* CXpsFile::GetLinks (int nPageIndex)
 {

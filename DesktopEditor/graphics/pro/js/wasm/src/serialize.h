@@ -1,9 +1,10 @@
 #ifndef _WASM_SERIALIZE_H
 #define _WASM_SERIALIZE_H
 
-#include "../../../../../common/Types.h"
-#include <string>
-#include <string.h>
+#include "../../../../../graphics/IRenderer.h"
+#include "../../../../../common/StringExt.h"
+#include "../../../../../common/StringUTF32.h"
+#include "../../../../../graphics/pro/Fonts.h"
 
 namespace NSWasm
 {
@@ -377,6 +378,47 @@ namespace NSWasm
         inline LONG GetCountChars()
         {
             return m_lCharsTail;
+        }
+    };
+}
+
+namespace NSWasm
+{
+    struct CPageLinkItem
+    {
+        std::string Link;
+        double Dest;
+
+        double X;
+        double Y;
+        double W;
+        double H;
+    };
+
+    class CPageLink
+    {
+    public:
+        std::vector<CPageLinkItem> m_arLinks;
+
+    public:
+        BYTE* Serialize()
+        {
+            NSWasm::CData oRes;
+            oRes.SkipLen();
+            for (const CPageLinkItem& link : m_arLinks)
+            {
+                oRes.WriteString((BYTE*)link.Link.c_str(), link.Link.length());
+                oRes.AddDouble(link.Dest);
+                oRes.AddDouble(link.X);
+                oRes.AddDouble(link.Y);
+                oRes.AddDouble(link.W);
+                oRes.AddDouble(link.H);
+            }
+            oRes.WriteLen();
+
+            BYTE* res = oRes.GetBuffer();
+            oRes.ClearWithoutAttack();
+            return res;
         }
     };
 }

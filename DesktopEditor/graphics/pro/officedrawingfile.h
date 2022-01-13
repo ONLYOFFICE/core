@@ -32,7 +32,7 @@
 #ifndef _OFFICE_DRAWING_FILE_H
 #define _OFFICE_DRAWING_FILE_H
 
-#include <string>
+#include "./Fonts.h"
 class IRenderer;
 
 enum OfficeDrawingFileType
@@ -43,32 +43,43 @@ enum OfficeDrawingFileType
     odftUndefined = 255
 };
 
-class IOfficeDrawingFile
+class GRAPHICS_DECL IOfficeDrawingFile
 {
 public:
     virtual ~IOfficeDrawingFile() {}
 
+    // Open
     virtual bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",
                                 const std::wstring& owner_password = L"", const std::wstring& user_password = L"") = 0;
     virtual bool LoadFromMemory(unsigned char* data, unsigned long length, const std::wstring& options = L"",
                                 const std::wstring& owner_password = L"", const std::wstring& user_password = L"") = 0;
 
+    // Close
     virtual void Close() = 0;
 
+    // Get IApplicationFonts for wrappers
+    virtual NSFonts::IApplicationFonts* GetFonts() = 0;
+
+    // Type
     virtual OfficeDrawingFileType GetType() = 0;
 
+    // Temp directory
     virtual std::wstring GetTempDirectory() = 0;
     virtual void SetTempDirectory(const std::wstring& directory) = 0;
 
+    // Pages info/draw
     virtual int GetPagesCount() = 0;
     virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) = 0;
     virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak) = 0;
-    virtual unsigned char* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip = false) = 0;
-    virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1) = 0;
+
+    // Common methods/wrappers on GetPageInfo + DrawPageOnRenderer
+    virtual unsigned char* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip = false);
+    virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1, bool bIsFlip = false);
+
+    // Common methods for viewer
 #ifdef BUILDING_WASM_MODULE
     virtual unsigned char* GetStructure() = 0;
-    virtual unsigned char* GetGlyphs(int nPageIndex) = 0;
-    virtual unsigned char* GetLinks (int nPageIndex) = 0;
+    virtual unsigned char* GetLinks(int nPageIndex) = 0;
 #endif
 };
 

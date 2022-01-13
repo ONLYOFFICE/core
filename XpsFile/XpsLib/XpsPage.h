@@ -58,30 +58,7 @@ namespace XPS
 		void Draw(IRenderer* pRenderer, bool* pbBreak);
 
     #ifdef BUILDING_WASM_MODULE
-        BYTE* GetGlyphs();
-        BYTE* GetLinks();
-        void  GetGlyphs(IRenderer* pRenderer, const std::wstring& bsUnicodeText, unsigned short* pGids, double x, double y, bool bChangeFont);
-        void  DumpLine();
-
-    private:
-        struct CPageLink
-        {
-            double dX;
-            double dY;
-            double dW;
-            double dH;
-            std::string sLink;
-        };
-        std::vector<CPageLink> m_vLinks;
-
-        double m_dCurrentFontSize = 0.0;
-        NSWasm::CHLine m_oLine;
-        NSWasm::CData  m_oMeta;
-        NSWasm::CData  m_pPageMeta;
-        Aggplus::CMatrix m_pLastTransform;
-        LONG m_nCurrentFont     = -1;
-        LONG m_nLastBrushColor1 = -1;
-        LONG m_nLastBrushAlpha1 = -1;
+        NSWasm::CPageLink m_oLinks;
     #endif
 
 	private:

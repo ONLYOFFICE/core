@@ -46,7 +46,9 @@
 #define HOR_DPI		96
 
 #include <vector>
+
 #ifdef BUILDING_WASM_MODULE
+#define DISABLE_TEMP_DIRECTORY
 #include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #endif
 
@@ -63,7 +65,7 @@ namespace NSDjvu
 		std::string sString(strText.getbuf());
         return sString;
 	}
-	static int     GetInteger(const std::wstring& wsString)
+    static int GetInteger(const std::wstring& wsString)
 	{
 		if (wsString.size() < 1)
 			return 0;
@@ -90,21 +92,22 @@ namespace NSDjvu
 CDjVuFileImplementation::CDjVuFileImplementation(NSFonts::IApplicationFonts* pFonts)
 {
 	m_pDoc = NULL;
-#ifndef BUILDING_WASM_MODULE
-	std::wstring wsTempPath = NSFile::CFileBinary::GetTempPath();
-	wsTempPath += L"DJVU\\";
-	m_wsTempDirectory = wsTempPath;
-	NSDirectory::CreateDirectory(m_wsTempDirectory);
-#endif
+    m_wsTempDirectory = L"";
+    SetTempDirectory(L"");
     m_pApplicationFonts = pFonts;
 }
 CDjVuFileImplementation::~CDjVuFileImplementation()
 {
-#ifndef BUILDING_WASM_MODULE
+#ifndef DISABLE_TEMP_DIRECTORY
 	NSDirectory::DeleteDirectory(m_wsTempDirectory);
 #endif
 }
-bool               CDjVuFileImplementation::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXMLOptions)
+NSFonts::IApplicationFonts* CDjVuFileImplementation::GetFonts()
+{
+    return m_pApplicationFonts;
+}
+
+bool CDjVuFileImplementation::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXMLOptions)
 {
 	m_pDoc = NULL;
 	try
@@ -121,7 +124,7 @@ bool               CDjVuFileImplementation::LoadFromFile(const std::wstring& wsS
 
 	return true;
 }
-bool               CDjVuFileImplementation::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& wsXmlOptions)
+bool CDjVuFileImplementation::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& wsXmlOptions)
 {
     m_pDoc = NULL;
     try
@@ -137,29 +140,36 @@ bool               CDjVuFileImplementation::LoadFromMemory(BYTE* data, DWORD len
 
     return true;
 }
-void               CDjVuFileImplementation::Close()
+void CDjVuFileImplementation::Close()
 {
 }
-std::wstring       CDjVuFileImplementation::GetTempDirectory() const
+std::wstring CDjVuFileImplementation::GetTempDirectory() const
 {
 	return m_wsTempDirectory;
 }
-void               CDjVuFileImplementation::SetTempDirectory(const std::wstring& wsDirectory)
+void CDjVuFileImplementation::SetTempDirectory(const std::wstring& wsDirectory)
 {
-	NSDirectory::DeleteDirectory(m_wsTempDirectory);
+#ifndef DISABLE_TEMP_DIRECTORY
+    if (!m_wsTempDirectory.empty())
+        NSDirectory::DeleteDirectory(m_wsTempDirectory);
 
-	m_wsTempDirectory = wsDirectory;
-	m_wsTempDirectory += L"\\DJVU\\";
+    m_wsTempDirectory = wsDirectory;
+    if (m_wsTempDirectory.empty())
+        m_wsTempDirectory = NSFile::CFileBinary::GetTempPath();
+
+    m_wsTempDirectory += L"/DJVU/";
 	NSDirectory::CreateDirectory(m_wsTempDirectory);
+#endif
 }
-int                CDjVuFileImplementation::GetPagesCount() const
+
+int CDjVuFileImplementation::GetPagesCount() const
 {
 	if (!m_pDoc)
 		return 0;
 
 	return m_pDoc->get_pages_num();
 }
-void               CDjVuFileImplementation::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) const
+void CDjVuFileImplementation::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) const
 {
 	if (!m_pDoc)
 	{
@@ -191,7 +201,7 @@ void               CDjVuFileImplementation::GetPageInfo(int nPageIndex, double* 
     *pdDpiX = nDpi;
     *pdDpiY = nDpi;
 }
-void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
+void  CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {
 	if (!m_pDoc)
 		return;
@@ -204,19 +214,16 @@ void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRende
 
 		long lRendererType = c_nUnknownRenderer;
 		pRenderer->get_Type(&lRendererType);
-		if (false)//c_nGrRenderer == lRendererType)
-		{
-			CreateGrFrame(pRenderer, pPage, pBreak);
-		}
-        #ifndef BUILDING_WASM_MODULE
-		else if (c_nPDFWriter == lRendererType)
+
+#ifndef BUILDING_WASM_MODULE
+        if (c_nPDFWriter == lRendererType)
 		{
 			XmlUtils::CXmlNode oText = ParseText(pPage);
 			CreatePdfFrame(pRenderer, pPage, nPageIndex, oText);
 		}
-        #endif
-		else
-		{
+        else
+#endif
+        {
 			XmlUtils::CXmlNode oText = ParseText(pPage);
 			CreateFrame(pRenderer, pPage, nPageIndex, oText);
 		}
@@ -226,95 +233,7 @@ void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRende
 		// белая страница
 	}
 }
-BYTE*              CDjVuFileImplementation::ConvertToPixels(int nPageIndex, const int& nRasterW, const int& nRasterH, bool bIsFlip)
-{
-    if (!m_pApplicationFonts)
-        return NULL;
-
-    NSFonts::IFontManager *pFontManager = m_pApplicationFonts->GenerateFontManager();
-    NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
-    pFontCache->SetStreams(m_pApplicationFonts->GetStreams());
-    pFontManager->SetOwnerCache(pFontCache);
-
-    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-    pRenderer->SetFontManager(pFontManager);
-
-    double dPageDpiX;
-    double dWidth, dHeight;
-    GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiX);
-
-    int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth  * 96 / dPageDpiX);
-    int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 96 / dPageDpiX);
-
-    BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-    if (!pBgraData)
-        return NULL;
-
-    memset(pBgraData, 0xff, nWidth * nHeight * 4);
-    CBgraFrame oFrame;
-    oFrame.put_Data(pBgraData);
-    oFrame.put_Width(nWidth);
-    oFrame.put_Height(nHeight);
-    oFrame.put_Stride((bIsFlip ? 4 : -4) * nWidth);
-
-    pRenderer->CreateFromBgraFrame(&oFrame);
-    pRenderer->SetSwapRGB(true);
-    pRenderer->put_Width(dWidth);
-    pRenderer->put_Height(dHeight);
-
-    bool bBreak = false;
-    DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
-
-    RELEASEINTERFACE(pFontManager);
-    RELEASEOBJECT(pRenderer);
-    oFrame.ClearNoAttack();
-
-    return pBgraData;
-}
-void               CDjVuFileImplementation::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int& nRasterW, const int& nRasterH)
-{
-    if (!m_pApplicationFonts)
-        return;
-
-    NSFonts::IFontManager *pFontManager = m_pApplicationFonts->GenerateFontManager();
-    NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
-    pFontCache->SetStreams(m_pApplicationFonts->GetStreams());
-	pFontManager->SetOwnerCache(pFontCache);
-
-    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-    pRenderer->SetFontManager(pFontManager);
-
-	double dPageDpiX, dPageDpiY;
-	double dWidth, dHeight;
-	GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiX);
-
-    int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth * 96 / dPageDpiX);
-    int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 96 / dPageDpiX);
-
-	BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-	if (!pBgraData)
-		return;
-
-	memset(pBgraData, 0xff, nWidth * nHeight * 4);
-	CBgraFrame oFrame;
-	oFrame.put_Data(pBgraData);
-	oFrame.put_Width(nWidth);
-	oFrame.put_Height(nHeight);
-	oFrame.put_Stride(-4 * nWidth);
-
-    pRenderer->CreateFromBgraFrame(&oFrame);
-    pRenderer->SetSwapRGB(false);
-    pRenderer->put_Width(dWidth);
-    pRenderer->put_Height(dHeight);
-
-	bool bBreak = false;
-    DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
-
-	oFrame.SaveFile(wsDstPath, nImageType);
-	RELEASEINTERFACE(pFontManager);
-    RELEASEOBJECT(pRenderer);
-}
-void               CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
+void CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
 {
     CPdfRenderer oPdf(m_pApplicationFonts);
 	
@@ -332,13 +251,14 @@ void               CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsD
 		oPdf.put_Height(dHeight);
 
 		DrawPageOnRenderer(&oPdf, nPageIndex, &bBreak);
-//#ifdef _DEBUG
+#ifdef _DEBUG
 		printf("%d of %d pages\n", nPageIndex + 1, nPagesCount);
-//#endif
+#endif
 	}
 
 	oPdf.SaveToFile(wsDstPath);
 }
+
 #ifdef BUILDING_WASM_MODULE
 void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, NSWasm::CData& out, int level)
 {
@@ -363,7 +283,7 @@ void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, NSWasm::CData& out
         count--;
     }
 }
-BYTE*              CDjVuFileImplementation::GetStructure()
+BYTE* CDjVuFileImplementation::GetStructure()
 {
     GP<DjVmNav> nav = m_pDoc->get_djvm_nav();
     if (!nav)
@@ -382,7 +302,7 @@ BYTE*              CDjVuFileImplementation::GetStructure()
     oRes.ClearWithoutAttack();
     return bRes;
 }
-BYTE*              CDjVuFileImplementation::GetPageGlyphs(int nPageIndex)
+BYTE* CDjVuFileImplementation::GetPageGlyphs(int nPageIndex)
 {
     return NULL;
     try
@@ -445,7 +365,7 @@ BYTE*              CDjVuFileImplementation::GetPageGlyphs(int nPageIndex)
     catch (...) {}
     return NULL;
 }
-BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex)
+BYTE* CDjVuFileImplementation::GetPageLinks(int nPageIndex)
 {
     double dPageDpiX, dPageDpiY;
     double dWidth, dHeight;
@@ -485,7 +405,8 @@ BYTE*              CDjVuFileImplementation::GetPageLinks (int nPageIndex)
     return NULL;
 }
 #endif
-void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
+
+void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
 {
 	int nWidth	= pPage->get_real_width();
 	int nHeight	= pPage->get_real_height();
@@ -688,7 +609,7 @@ void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP
 	pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dRendWidth, dRendHeight);
 	pRenderer->EndCommand(c_nPageType);
 }
-void               CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPageIndex, XmlUtils::CXmlNode& oText)
+void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPageIndex, XmlUtils::CXmlNode& oText)
 {
 	double dPageDpiX, dPageDpiY;
 	double dWidth, dHeight;
@@ -940,166 +861,7 @@ void               CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer,
 
 	pRenderer->EndCommand(c_nPageType);
 }
-void               CDjVuFileImplementation::CreateGrFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, bool* pBreak)
-{
-	int nWidth	= pPage->get_real_width();
-	int nHeight	= pPage->get_real_height();
 
-	BYTE*	pBufferDst	 = NULL;
-	LONG	lImageWidth	 = 0;
-	LONG	lImageHeight = 0;
-
-	// TODO: Реализовать для графического рендерера
-
-	//VARIANT var;
-	//renderer->GetAdditionalParam(L"Pixels", &var);
-	//pBufferDst = (BYTE*)var.lVal;
-
-	//renderer->GetAdditionalParam(L"PixelsWidth", &var);
-	//lImageWidth  = var.lVal;
-	//renderer->GetAdditionalParam(L"PixelsHeight", &var);
-	//lImageHeight = var.lVal;
-
-	volatile bool* pCancel = pBreak;
-
-	if ((NULL != pCancel) && (TRUE == *pCancel))
-		return;
-
-	if (pPage->is_legal_photo() || pPage->is_legal_compound())
-	{
-		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
-		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
-
-		BYTE* pBuffer = pBufferDst;
-		for (int j = 0; j < lImageHeight; ++j)
-		{
-			GPixel* pLine = pImage->operator [](j);
-
-			if ((NULL != pCancel) && (TRUE == *pCancel))
-				return;
-
-			for (int i = 0; i < lImageWidth; ++i, pBuffer += 4, ++pLine)
-			{
-				pBuffer[0] = pLine->b;
-				pBuffer[1] = pLine->g;
-				pBuffer[2] = pLine->r;
-				pBuffer[3] = 255;
-			}
-		}
-	}
-	else if (pPage->is_legal_bilevel())
-	{
-		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
-		GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
-		int nPaletteEntries = pBitmap->get_grays();
-
-        unsigned int* palette = new unsigned int[nPaletteEntries];
-
-		// Create palette for the bitmap
-		int color = 0xff0000;
-		int decrement = color / (nPaletteEntries - 1);
-		for (int i = 0; i < nPaletteEntries; ++i)
-		{
-			BYTE level = (BYTE)(color >> 16);
-			palette[i] = (0xFF000000 | level << 16 | level << 8 | level);
-			color -= decrement;
-		}
-
-        unsigned int* pBuffer = (unsigned int*)pBufferDst;
-		for (int j = 0; j < lImageHeight; ++j)
-		{
-			BYTE* pLine = pBitmap->operator [](j);
-
-			if ((NULL != pCancel) && (TRUE == *pCancel))
-				return;
-
-			for (int i = 0; i < lImageWidth; ++i, ++pBuffer, ++pLine)
-			{
-				if (*pLine < nPaletteEntries)
-				{
-					*pBuffer = palette[*pLine];
-				}
-				else
-				{
-					*pBuffer = palette[0];
-				}
-			}
-		}
-
-		RELEASEARRAYOBJECTS(palette);
-	}
-	else
-	{
-		// белый фрейм??
-		//memset(pBufferDst, 0xFF, 4 * lImageWidth * lImageHeight);
-		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
-		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
-
-		if (NULL != pImage)
-		{
-			BYTE* pBuffer = pBufferDst;
-			for (int j = 0; j < lImageHeight; ++j)
-			{
-				GPixel* pLine = pImage->operator [](j);
-
-				if ((NULL != pCancel) && (TRUE == *pCancel))
-					return;
-
-				for (int i = 0; i < lImageWidth; ++i, pBuffer += 4, ++pLine)
-				{
-					pBuffer[0] = pLine->b;
-					pBuffer[1] = pLine->g;
-					pBuffer[2] = pLine->r;
-					pBuffer[3] = 255;
-				}
-			}
-
-			return;
-		}
-
-		GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
-
-		if (NULL != pBitmap)
-		{
-			int nPaletteEntries = pBitmap->get_grays();
-
-            unsigned int* palette = new unsigned int[nPaletteEntries];
-
-			// Create palette for the bitmap
-			int color = 0xff0000;
-			int decrement = color / (nPaletteEntries - 1);
-			for (int i = 0; i < nPaletteEntries; ++i)
-			{
-				BYTE level = (BYTE)(color >> 16);
-				palette[i] = (0xFF000000 | level << 16 | level << 8 | level);
-				color -= decrement;
-			}
-
-            unsigned int* pBuffer = (unsigned int*)pBufferDst;
-			for (int j = 0; j < lImageHeight; ++j)
-			{
-				BYTE* pLine = pBitmap->operator [](j);
-
-				if ((NULL != pCancel) && (TRUE == *pCancel))
-					return;
-
-				for (int i = 0; i < lImageWidth; ++i, ++pBuffer, ++pLine)
-				{
-					if (*pLine < nPaletteEntries)
-					{
-						*pBuffer = palette[*pLine];
-					}
-					else
-					{
-						*pBuffer = palette[0];
-					}
-				}
-			}
-
-			RELEASEARRAYOBJECTS(palette);
-		}
-	}
-}
 XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage)
 {
 	XmlUtils::CXmlNode paragraph;
@@ -1119,7 +881,7 @@ XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage)
 	}
 	return paragraph;
 }
-void               CDjVuFileImplementation::TextToRenderer(IRenderer* pRenderer, XmlUtils::CXmlNode oTextNode, double dKoef, bool isView)
+void CDjVuFileImplementation::TextToRenderer(IRenderer* pRenderer, XmlUtils::CXmlNode oTextNode, double dKoef, bool isView)
 {
 	// Выставим шрифт пустой (чтобы растягивать по всему ректу)
 	pRenderer->put_FontName(L"DjvuEmptyFont");
@@ -1144,7 +906,7 @@ void               CDjVuFileImplementation::TextToRenderer(IRenderer* pRenderer,
 		}
 	}
 }
-void               CDjVuFileImplementation::DrawPageText(IRenderer* pRenderer, double* pdCoords, const std::wstring& wsText)
+void CDjVuFileImplementation::DrawPageText(IRenderer* pRenderer, double* pdCoords, const std::wstring& wsText)
 {
 	pRenderer->put_FontSize(pdCoords[1] - pdCoords[3]);
 	pRenderer->CommandDrawText(wsText,
@@ -1153,7 +915,7 @@ void               CDjVuFileImplementation::DrawPageText(IRenderer* pRenderer, d
 							   (float)(pdCoords[2] - pdCoords[0]),
 							   (float)(pdCoords[1] - pdCoords[3]));
 }
-void               CDjVuFileImplementation::ParseCoords(const std::wstring& wsCoordsStr, double* pdCoords, double dKoef)
+void CDjVuFileImplementation::ParseCoords(const std::wstring& wsCoordsStr, double* pdCoords, double dKoef)
 {
     std::vector<std::wstring> vCoords = NSStringExt::Split(wsCoordsStr, L',');
 	if (vCoords.size() >= 4)

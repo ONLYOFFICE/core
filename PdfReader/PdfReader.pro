@@ -85,3 +85,12 @@ SOURCES += \
     Resources/BaseFonts.cpp
 
 core_windows:LIBS += -lOle32
+
+#CONFIG += build_viewer_module
+build_viewer_module {
+    DEFINES += BUILDING_WASM_MODULE
+    DEFINES += TEST_AS_EXECUTABLE
+
+    HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
+    SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
+}

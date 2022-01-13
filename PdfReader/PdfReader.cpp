@@ -97,8 +97,6 @@ namespace PdfReader
         ((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pInternal->m_pFontManager);
     #ifndef BUILDING_WASM_MODULE
         globalParams->setupBaseFonts(NULL);
-    #else
-        m_pGlyphs = {-1, NULL};
     #endif
 
         m_eError = errNone;
@@ -122,9 +120,6 @@ namespace PdfReader
         RELEASEOBJECT((m_pInternal->m_pPDFDocument));
         RELEASEOBJECT((globalParams));
         RELEASEINTERFACE((m_pInternal->m_pFontManager));
-    #ifdef BUILDING_WASM_MODULE
-        RELEASEARRAYOBJECTS(m_pGlyphs.second);
-    #endif
 	}
     bool CPdfReader::LoadFromFile(const std::wstring& wsSrcPath, const std::wstring& wsOptions,
                                     const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
@@ -220,6 +215,11 @@ namespace PdfReader
 	{
         RELEASEOBJECT((m_pInternal->m_pPDFDocument));
 	}
+    NSFonts::IApplicationFonts* CPdfReader::GetFonts()
+    {
+        return m_pInternal->m_pAppFonts;
+    }
+
     OfficeDrawingFileType CPdfReader::GetType()
     {
         return odftPDF;
@@ -348,126 +348,10 @@ namespace PdfReader
         if (m_pInternal->m_pPDFDocument && pRenderer)
 		{
             RendererOutputDev oRendererOut(pRenderer, m_pInternal->m_pFontManager, m_pInternal->m_pFontList);
-        #ifdef BUILDING_WASM_MODULE
-            //oRendererOut.m_pPageMeta.SkipLen();
-            oRendererOut.m_pPageMeta.SkipLen();
-            m_pGlyphs.first = _nPageIndex;
-            RELEASEARRAYOBJECTS(m_pGlyphs.second);
-        #endif
             oRendererOut.NewPDF(m_pInternal->m_pPDFDocument->getXRef());
 			oRendererOut.SetBreak(pbBreak);
             m_pInternal->m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, false, true, false);
-        #ifdef BUILDING_WASM_MODULE
-            //oRendererOut.m_pPageMeta.WriteLen();
-            oRendererOut.m_pPageMeta.WriteLen();
-            m_pGlyphs.second = oRendererOut.m_pPageMeta.GetBuffer();
-            /* С конвертацией в Base64
-            char* pDst = NULL;
-            int nDst = 0;
-            NSFile::CBase64Converter::Encode(oRendererOut.m_pPageMeta.GetBuffer(), oRendererOut.m_pPageMeta.GetSize(), pDst, nDst, NSBase64::B64_BASE64_FLAG_NOCRLF);
-
-            std::string sBase64Data;
-            if (0 < nDst)
-                sBase64Data = std::string(pDst);
-
-            sBase64Data = std::to_string(oRendererOut.m_pPageMeta.GetSize()) + ";" + sBase64Data;
-            std::ofstream fout("res.txt");
-            fout << sBase64Data;
-            fout.close();
-            RELEASEARRAYOBJECTS(pDst);
-            */
-            oRendererOut.m_pPageMeta.ClearWithoutAttack();
-        #endif
 		}
-	}
-    BYTE* CPdfReader::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip)
-    {
-        NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
-        NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
-        pFontCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
-        pFontManager->SetOwnerCache(pFontCache);
-
-        NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-        pRenderer->SetFontManager(pFontManager);
-
-        double dWidth, dHeight;
-        double dDpiX, dDpiY;
-        GetPageInfo(nPageIndex, &dWidth, &dHeight, &dDpiX, &dDpiY);
-
-        int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth  * 72 / 25.4);
-        int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 72 / 25.4);
-
-        BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-        if (!pBgraData)
-            return NULL;
-
-        memset(pBgraData, 0xff, nWidth * nHeight * 4);
-        CBgraFrame oFrame;
-        oFrame.put_Data(pBgraData);
-        oFrame.put_Width(nWidth);
-        oFrame.put_Height(nHeight);
-        oFrame.put_Stride((bIsFlip ? 4 : -4) * nWidth);
-
-        pRenderer->CreateFromBgraFrame(&oFrame);
-        pRenderer->SetSwapRGB(true);
-
-        dWidth  *= 25.4 / dDpiX;
-        dHeight *= 25.4 / dDpiY;
-
-        pRenderer->put_Width(dWidth);
-        pRenderer->put_Height(dHeight);
-
-        bool bBreak = false;
-        DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
-
-        oFrame.ClearNoAttack();
-        RELEASEINTERFACE(pFontManager);
-        RELEASEOBJECT(pRenderer);
-        return pBgraData;
-    }
-    void CPdfReader::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
-	{
-        NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
-        NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
-		pFontCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
-		pFontManager->SetOwnerCache(pFontCache);
-
-        NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-        pRenderer->SetFontManager(pFontManager);
-
-		double dWidth, dHeight;
-        double dDpiX, dDpiY;
-        GetPageInfo(nPageIndex, &dWidth, &dHeight, &dDpiX, &dDpiY);
-
-        int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth  * 72 / 25.4);
-        int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 72 / 25.4);
-
-		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-		if (!pBgraData)
-			return;
-
-		memset(pBgraData, 0xff, nWidth * nHeight * 4);
-		CBgraFrame oFrame;
-		oFrame.put_Data(pBgraData);
-		oFrame.put_Width(nWidth);
-		oFrame.put_Height(nHeight);
-		oFrame.put_Stride(-4 * nWidth);
-
-        pRenderer->CreateFromBgraFrame(&oFrame);
-        pRenderer->SetSwapRGB(false);
-
-        dWidth  *= 25.4 / dDpiX;
-        dHeight *= 25.4 / dDpiY;
-
-        pRenderer->put_Width(dWidth);
-        pRenderer->put_Height(dHeight);
-
-		bool bBreak = false;
-        DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
-
-		oFrame.SaveFile(wsDstPath, nImageType);
-		RELEASEINTERFACE(pFontManager);
-        RELEASEOBJECT(pRenderer);
 	}
     int CPdfReader::GetImagesCount()
 	{
@@ -618,37 +502,15 @@ return 0;
         oRes.ClearWithoutAttack();
         return bRes;
     }
-    BYTE* CPdfReader::GetGlyphs(int nPageIndex)
-    {
-        if (nPageIndex != m_pGlyphs.first)
-        {
-            BYTE* res = ConvertToPixels(nPageIndex, 0, 0);
-            RELEASEARRAYOBJECTS(res);
-        }
-        // Будет освобожден в js
-        BYTE* res = m_pGlyphs.second;
-        m_pGlyphs.second = NULL;
-        return res;
-    }
-    BYTE* CPdfReader::GetLinks (int nPageIndex)
+    BYTE* CPdfReader::GetLinks(int nPageIndex)
     {
         if (!m_pInternal->m_pPDFDocument)
             return NULL;
 
         nPageIndex++;
-        NSWasm::CData oRes;
-        oRes.SkipLen();
-        double height = m_pInternal->m_pPDFDocument->getPageCropHeight(nPageIndex);
 
-        struct _link
-        {
-            std::string link;
-            double x;
-            double y;
-            double w;
-            double h;
-        };
-        std::vector<_link> arrLinks;
+        NSWasm::CPageLink oLinks;
+        double height = m_pInternal->m_pPDFDocument->getPageCropHeight(nPageIndex);
 
         // Текст-ссылка
         TextOutputControl textOutControl;
@@ -676,21 +538,10 @@ return 0;
                 link.erase(0, find);
                 double x1, y1, x2, y2;
                 pWord->getBBox(&x1, &y1, &x2, &y2);
-                arrLinks.push_back({link, x1, y1, x2 - x1, y2 - y1});
+                oLinks.m_arLinks.push_back({link, 0, x1, y1, x2 - x1, y2 - y1});
             }
         }
-        for (_link& l : arrLinks)
-        {
-            oRes.WriteString((BYTE*)l.link.c_str(), l.link.length());
-            // Верхний левый угол
-            oRes.AddDouble(0.0);
-            oRes.AddDouble(l.x);
-            oRes.AddDouble(l.y);
-            oRes.AddDouble(l.w);
-            oRes.AddDouble(l.h);
-        }
         RELEASEOBJECT(pTextOut);
-        arrLinks.clear();
 
         // Гиперссылка
         Links* pLinks = m_pInternal->m_pPDFDocument->getLinks(nPageIndex);
@@ -737,24 +588,11 @@ return 0;
             else if (kind == actionURI)
                 str = ((LinkURI*)pLinkAction)->getURI()->copy();
 
-            if (str)
-                oRes.WriteString((BYTE*)str->getCString(), str->getLength());
-            else
-                oRes.WriteString(NULL, 0);
-            // Верхний левый угол
-            oRes.AddDouble(dy);
-            oRes.AddDouble(x1);
-            oRes.AddDouble(y2);
-            oRes.AddDouble(x2 - x1);
-            oRes.AddDouble(y1 - y2);
+            oLinks.m_arLinks.push_back({str ? std::string(str->getCString(), str->getLength()) : "", dy, x1, y2, x2 - x1, y1 - y2});
             RELEASEOBJECT(str);
         }
-        oRes.WriteLen();
-
         RELEASEOBJECT(pLinks);
-        BYTE* res = oRes.GetBuffer();
-        oRes.ClearWithoutAttack();
-        return res;
+        return oLinks.Serialize();
     }
 #endif
 }

@@ -39,7 +39,7 @@
 #define XPS_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
-#include "../DesktopEditor/common/officedrawingfile.h"
+#include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 
 class CXpsFile_Private;
@@ -55,6 +55,7 @@ public:
                                 const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 
     virtual void Close();
+    virtual NSFonts::IApplicationFonts* GetFonts();
 
     virtual OfficeDrawingFileType GetType();
 
@@ -64,17 +65,14 @@ public:
     virtual int GetPagesCount();
     virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
     virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
-    virtual BYTE* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip = false);
-    virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1);
 
 #ifndef DISABLE_PDF_CONVERTATION
-	void         ConvertToPdf(const std::wstring& wsDstPath);
+    void ConvertToPdf(const std::wstring& wsDstPath);
 #endif
 
 #ifdef BUILDING_WASM_MODULE
     virtual BYTE* GetStructure();
-    virtual BYTE* GetGlyphs(int nPageIndex);
-    virtual BYTE* GetLinks (int nPageIndex);
+    virtual BYTE* GetLinks(int nPageIndex);
 #endif
 
 private:

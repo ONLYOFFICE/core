@@ -47,22 +47,18 @@
 #define ZIP_BEST_COMPRESSION       9
 #define ZIP_DEFAULT_COMPRESSION  (-1)
 
-#define UNICODE
-#define _UNICODE
-#define _USE_LIBXML2_READER_
-#define LIBXML_READER_ENABLED
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
+
 #ifdef BUILDING_WASM_MODULE
-#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #endif
 
 class CDjVuFileImplementation
 {
 private:
-
-	std::wstring     m_wsTempDirectory;
+    std::wstring     m_wsTempDirectory;
 	GP<DjVuDocument> m_pDoc;
     NSFonts::IApplicationFonts* m_pApplicationFonts;
 
@@ -70,6 +66,7 @@ public:
 
     CDjVuFileImplementation(NSFonts::IApplicationFonts* pFonts);
 	~CDjVuFileImplementation();
+    NSFonts::IApplicationFonts* GetFonts();
 
 	bool         LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXmlOptions = L"");
 	bool         LoadFromMemory(BYTE* data, DWORD length, const std::wstring& wsXmlOptions = L"");
@@ -79,9 +76,8 @@ public:
 	int          GetPagesCount() const;
 	void         GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) const;
 	void         DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
-    BYTE*        ConvertToPixels(int nPageIndex, const int& nRasterW = -1, const int& nRasterH = -1, bool bIsFlip = false);
-    void         ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int& nRasterW = -1, const int& nRasterH = -1);
     void         ConvertToPdf(const std::wstring& wsDstPath);
+
 #ifdef BUILDING_WASM_MODULE
     BYTE*        GetStructure();
     BYTE*        GetPageGlyphs(int nPageIndex);
@@ -91,8 +87,7 @@ public:
 private:
 
 	void               CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& oText);
-	void               CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& oText);
-	void               CreateGrFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, bool* pBreak);
+    void               CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& oText);
 	XmlUtils::CXmlNode ParseText(GP<DjVuImage> pPage);
 	void               TextToRenderer(IRenderer* pRenderer, XmlUtils::CXmlNode text, double koef, bool isView = true);
 	void               DrawPageText(IRenderer* pRenderer, double* pdCoords, const std::wstring& wsText);

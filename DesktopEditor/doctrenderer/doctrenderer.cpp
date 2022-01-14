@@ -485,14 +485,15 @@ namespace NSDoctRenderer
                 {
                     std::string sHTML_Utf8 = js_result2->toStringA();
 
-                    JSSmart<CJSObject> js_objectCore = js_objectApi->call_func("asc_getCoreProps", 1, args)->toObject();
+                    JSSmart<CJSValue> js_objectCoreVal = js_objectApi->call_func("asc_getCoreProps", 1, args);
                     if(try_catch->Check())
                     {
                         strError = L"code=\"core_props\"";
                         bIsBreak = true;
                     }
-                    else if (js_objectCore->isObject())
+                    else if (js_objectCoreVal->isObject())
                     {
+                        JSSmart<CJSObject> js_objectCore = js_objectCoreVal->toObject();
                         JSSmart<CJSValue> js_results = js_objectCore->call_func("asc_getTitle", 1, args);
                         if(try_catch->Check())
                         {
@@ -921,14 +922,15 @@ namespace NSDoctRenderer
                 // CORE PARAMS
                 if (!bIsBreak && m_oParams.m_eDstFormat == DoctRendererFormat::HTML && !bIsMailMerge)
                 {
-                    JSSmart<CJSObject> js_objectCore = js_objectApi->call_func("asc_getCoreProps", 1, args)->toObject();
+                    JSSmart<CJSValue> js_objectCoreVal = js_objectApi->call_func("asc_getCoreProps", 1, args);
                     if(try_catch->Check())
                     {
                         strError = L"code=\"core_props\"";
                         bIsBreak = true;
                     }
-                    else if (js_objectCore->isObject())
+                    else if (js_objectCoreVal->isObject())
                     {
+                        JSSmart<CJSObject> js_objectCore = js_objectCoreVal->toObject();
                         JSSmart<CJSValue> js_results = js_objectCore->call_func("asc_getTitle", 1, args);
                         if(try_catch->Check())
                         {

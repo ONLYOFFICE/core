@@ -330,6 +330,9 @@ core_release {
     CORE_BUILDS_CONFIGURATION_PREFIX    = release
 }
 
+CONFIG += object_parallel_to_source
+core_windows:CONFIG += no_batch
+
 # MESSAGE
 message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 

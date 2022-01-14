@@ -1980,12 +1980,6 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COMMENTLIST.cpp">
       <Filter>unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COMMENTS.cpp">
-      <Filter>unions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CONDITIONALFORMATTING.cpp">
-      <Filter>unions</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CONDITIONALFORMATTING14.cpp">
       <Filter>unions</Filter>
     </ClCompile>
@@ -2674,9 +2668,6 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\RICHFILTERS.cpp">
       <Filter>unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLE.cpp">
-      <Filter>unions</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ListTotalRowFunction.cpp">
       <Filter>structures</Filter>
     </ClCompile>
@@ -2915,9 +2906,6 @@
       <Filter>unions</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\QSIR.cpp">
-      <Filter>unions</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICER.cpp">
       <Filter>unions</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERS.cpp">
@@ -3343,9 +3331,6 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\FRTSLICERCACHE.cpp">
       <Filter>unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHE.cpp">
-      <Filter>unions</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHECROSSFILTEREXT.cpp">
       <Filter>unions</Filter>
     </ClCompile>
@@ -3591,5 +3576,20 @@
       <Filter>records</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\ChartSheetStream.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COMMENTS_bu.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CONDITIONALFORMATTING_bu.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICER_bu.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHE_bu.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLE_bu.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

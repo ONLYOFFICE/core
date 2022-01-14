@@ -171,6 +171,16 @@
 		"files": ["atomic.cpp", "DjVuMessage.cpp", "GOS.cpp", "GURL.cpp"]
 	},
 	{
+		"name": "df",
+		"folder": "../",
+		"files": ["officedrawingfile.cpp"]
+	},
+	{
+		"name": "hr",
+		"folder": "../../../../HtmlRenderer/src/",
+		"files": ["HTMLRendererText.cpp"]
+	},
+	{
 		"name": "u",
 		"folder": "../../../../UnicodeConverter/",
 		"files": ["UnicodeConverter.cpp"]

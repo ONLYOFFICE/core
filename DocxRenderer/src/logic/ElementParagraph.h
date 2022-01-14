@@ -6,6 +6,14 @@ namespace NSDocxRenderer
 {
     const double c_dMMToDx	 = 72 * 20 / 25.4;
 
+    std::map <long, std::wstring> colorHighlight = {
+        {8388736, L"black"}, {16711680, L"blue"}, {65280, L"green"},
+        {9109504, L"darkBlue"}, {139, L"darkRed"}, {32896, L"darkYellow"},
+        {13882323, L"lightGray"}, {11119017, L"darkGray"}, {25600, L"darkGreen"},
+        {16711935, L"magenta"}, {255, L"red"}, {16776960, L"cyan"},
+        {9145088, L"darkCyan"}, {8388736, L"darkMagenta"}, {65535, L"yellow"}
+    };
+
     // у класса T должен быть метод IsBigger, IsBiggerOrEqual
     template<typename T>
     void SortElements(std::vector<T*>& oArray)
@@ -219,6 +227,12 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"<w:u w:val=\"single\"/>");
                 if (m_oFont.Strikeout)
                     oWriter.WriteString(L"<w:strike/>");
+                if (m_oFont.BackgroundColor > 0)
+                {
+                    oWriter.WriteString(L"<w:highlight w:val=\"");
+                    oWriter.WriteString(colorHighlight[m_oFont.BackgroundColor]);
+                    oWriter.WriteString(L"\"/>");
+                }
                 if (bIsAddSpace)
                 {
                     m_dWidth  += m_dSpaceWidthMM;
@@ -237,7 +251,9 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"<w:strike/>");
                 if (m_oFont.BackgroundColor > 0)
                 {
-                    oWriter.WriteString(L"<w:highlight w:val=\"yellow\"/>");
+                    oWriter.WriteString(L"<w:highlight w:val=\"");
+                    oWriter.WriteString(colorHighlight[m_oFont.BackgroundColor]);
+                    oWriter.WriteString(L"\"/>");
                 }
                 if (bIsAddSpace)
                 {

@@ -42,7 +42,7 @@ namespace NSDocxRenderer
         Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter;
 
 		CVectorGraphics				m_oVector;
-		CShape*						m_pLastShape;
+		NSDocxRenderer::CShape*		m_pLastShape;
 
 		double m_dWidth;
 		double m_dHeight;
@@ -83,6 +83,8 @@ namespace NSDocxRenderer
 			m_eTextAssociationType = TextAssociationTypeNoFrames;
 
 			m_bIsDeleteTextClipPage = true;
+
+ 			m_pLastShape = nullptr;
 		}
 
 	public:
@@ -137,6 +139,8 @@ namespace NSDocxRenderer
 			m_pCurrentLine = NULL;
 
 			m_oWriterVML.ClearNoAttack();
+
+			m_pLastShape = nullptr;
 		}
 
 		~CPage()
@@ -481,13 +485,15 @@ namespace NSDocxRenderer
 				pCont->m_oFont		= m_oManager.m_oFont.m_oFont;
 				pCont->m_oBrush		= *m_pBrush;
 
-				if (m_pLastShape->m_dTop <= dTextY && (m_pLastShape->m_dTop + m_pLastShape->m_dHeight) >= dTextY
-						&& m_pLastShape->m_dLeft <= dTextX && (m_pLastShape->m_dLeft + m_pLastShape->m_dWidth) >= dTextX)
+				if (m_pLastShape)
 				{
-					pCont->m_oFont.BackgroundColor = m_pLastShape->m_oBrush.Color1;
-					if (m_arGraphicItems.size() > 0 && m_pLastShape == m_arGraphicItems.back())
+					bool IsTextIncludeShapeY = m_pLastShape->m_dTop <= dTextY && (m_pLastShape->m_dTop + m_pLastShape->m_dHeight) >= dTextY;
+					bool IsTextIncludeShapeX = m_pLastShape->m_dLeft <= dTextX && (m_pLastShape->m_dLeft + m_pLastShape->m_dWidth) >= dTextX;
+					if (IsTextIncludeShapeY && IsTextIncludeShapeX)
 					{
-						m_arGraphicItems.pop_back();
+						pCont->m_oFont.BackgroundColor = m_pLastShape->m_oBrush.Color1;
+						if (m_arGraphicItems.size() > 0 && m_pLastShape == m_arGraphicItems.back())
+							m_arGraphicItems.pop_back();
 					}
 				}
 
@@ -586,13 +592,15 @@ namespace NSDocxRenderer
 			pCont->m_oFont		= m_oManager.m_oFont.m_oFont;
 			pCont->m_oBrush		= *m_pBrush;
 
-			if (m_pLastShape->m_dTop < dTextY && (m_pLastShape->m_dTop + m_pLastShape->m_dHeight) > dTextY
-					&& m_pLastShape->m_dLeft < dTextX && (m_pLastShape->m_dLeft + m_pLastShape->m_dWidth) > dTextX)
+			if (m_pLastShape)
 			{
-				pCont->m_oFont.BackgroundColor = m_pLastShape->m_oBrush.Color1;
-				if (m_arGraphicItems.size() > 0 && m_pLastShape == m_arGraphicItems.back())
+				bool IsTextIncludeShapeY = m_pLastShape->m_dTop <= dTextY && (m_pLastShape->m_dTop + m_pLastShape->m_dHeight) >= dTextY;
+				bool IsTextIncludeShapeX = m_pLastShape->m_dLeft <= dTextX && (m_pLastShape->m_dLeft + m_pLastShape->m_dWidth) >= dTextX;
+				if (IsTextIncludeShapeY && IsTextIncludeShapeX)
 				{
-					m_arGraphicItems.pop_back();
+					pCont->m_oFont.BackgroundColor = m_pLastShape->m_oBrush.Color1;
+					if (m_arGraphicItems.size() > 0 && m_pLastShape == m_arGraphicItems.back())
+						m_arGraphicItems.pop_back();
 				}
 			}
 

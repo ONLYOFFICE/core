@@ -136,6 +136,10 @@ WASM_EXPORT BYTE* GetStructure(CGraphicsFileDrawing* pGraphics)
 {
     return pGraphics->GetStructure();
 }
+WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
+{
+    return pGraphics->DestroyText();
+}
 
 #ifdef __cplusplus
 }

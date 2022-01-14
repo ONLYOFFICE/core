@@ -60,7 +60,7 @@ public:
                                 const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 
     virtual void Close();
-    virtual NSFonts::IApplicationFonts* GetFonts() = 0;
+    virtual NSFonts::IApplicationFonts* GetFonts();
 
     virtual OfficeDrawingFileType GetType();
 

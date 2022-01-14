@@ -87,7 +87,7 @@ HEADERS += \
     ./../ImageFilesCache.h \
     ./../MetafileToRenderer.h \
     ./../MetafileToRendererCheck.h \
-    ./../MetafileToGraphicsRenderer.h \    
+    ./../MetafileToGraphicsRenderer.h \
     ./../structures.h \
     ./../Graphics.h \
     ./../GraphicsRenderer.h \
@@ -314,9 +314,9 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/ckconfig.c \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/djpeg.c
 
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri.c
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri2.c
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri3.c
+SOURCES += ./libpsd_pri.c
+SOURCES += ./libpsd_pri2.c
+SOURCES += ./libpsd_pri3.c
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/mng/libmng_callback_xs.c \
@@ -434,7 +434,7 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/Encoder/jbig2enc.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/Encoder/jbig2sym.cpp
 
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/lepton_lib_all.cpp
+SOURCES += ./lepton_lib_all.cpp
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/boxbasic.cpp \

@@ -3,21 +3,24 @@
 
 #include "../../../../GraphicsRenderer.h"
 #include "../../../../pro/Graphics.h"
-#include "../../../../../common/officedrawingfile.h"
+#include "../../../../pro/officedrawingfile.h"
 #include "../../../../../../XpsFile/XpsFile.h"
 #include "../../../../../../DjVuFile/DjVu.h"
 #include "../../../../../../PdfReader/PdfReader.h"
+#include "../../../../../../HtmlRenderer/include/HTMLRendererText.h"
 
 class CGraphicsFileDrawing
 {
 private:
     IOfficeDrawingFile* pReader;
     NSFonts::IApplicationFonts* pApplicationFonts;
+    NSHtmlRenderer::CHTMLRendererText* pTextRenderer;
     int nType;
 public:
     CGraphicsFileDrawing(NSFonts::IApplicationFonts* pFonts)
     {
         pReader = NULL;
+        pTextRenderer = NULL;
         pApplicationFonts = pFonts;
 		pApplicationFonts->AddRef();
         nType = -1;
@@ -25,10 +28,11 @@ public:
     ~CGraphicsFileDrawing()
     {
         RELEASEOBJECT(pReader);
+        RELEASEOBJECT(pTextRenderer);
         RELEASEINTERFACE(pApplicationFonts);
         nType = -1;
     }
-    bool  Open   (BYTE* data, DWORD length, int _nType, const char* password)
+    bool Open(BYTE* data, DWORD length, int _nType, const char* password)
     {
         nType = _nType;
         if (nType == 0)
@@ -47,7 +51,7 @@ public:
         }
         return pReader->LoadFromMemory(data, length, L"", sPassword, sPassword);
     }
-    int   GetErrorCode()
+    int GetErrorCode()
     {
         if (!pReader)
             return -1;
@@ -56,11 +60,11 @@ public:
             return ((PdfReader::CPdfReader*)pReader)->GetError();
         return 0; // errNone
     }
-    int   GetPagesCount()
+    int GetPagesCount()
     {
         return pReader->GetPagesCount();
     }
-    void  GetPageInfo(int nPageIndex, int& nWidth, int& nHeight, int& nPageDpiX)
+    void GetPageInfo(int nPageIndex, int& nWidth, int& nHeight, int& nPageDpiX)
     {
         double dPageDpiX, dPageDpiY;
         double dWidth, dHeight;
@@ -75,21 +79,32 @@ public:
         nHeight   = dHeight;
         nPageDpiX = dPageDpiX;
     }
-    BYTE* GetPage    (int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* GetPage(int nPageIndex, int nRasterW, int nRasterH)
     {
         return pReader->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true);
     }
-    BYTE* GetGlyphs  (int nPageIndex)
+    BYTE* GetGlyphs(int nPageIndex)
     {
-        return pReader->GetGlyphs(nPageIndex);
+        if (NULL == pTextRenderer)
+            pTextRenderer = new NSHtmlRenderer::CHTMLRendererText();
+
+        pTextRenderer->Init(pReader);
+        pReader->DrawPageOnRenderer(pTextRenderer, nPageIndex, NULL);
+
+        return pTextRenderer->GetBuffer();
     }
-    BYTE* GetLinks   (int nPageIndex)
+    BYTE* GetLinks(int nPageIndex)
     {
         return pReader->GetLinks(nPageIndex);
     }
     BYTE* GetStructure()
     {
         return pReader->GetStructure();
+    }
+
+    void DestroyText()
+    {
+        RELEASEOBJECT(pTextRenderer);
     }
 };
 

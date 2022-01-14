@@ -289,9 +289,9 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/ckconfig.c \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/djpeg.c
 
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri.c
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri2.c
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri3.c
+SOURCES += ../../libpsd_pri.c
+SOURCES += ../../libpsd_pri2.c
+SOURCES += ../../libpsd_pri3.c
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/mng/libmng_callback_xs.c \
@@ -409,7 +409,7 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/Encoder/jbig2enc.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/Encoder/jbig2sym.cpp
 
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/lepton_lib_all.cpp
+SOURCES += ../../lepton_lib_all.cpp
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/boxbasic.cpp \
@@ -438,11 +438,14 @@ SOURCES += \
 
 HEADERS += \
     ../../../../fontengine/ApplicationFontsWorker.h \
-    ../../../../fontengine/FontsAssistant.h
+    ../../../../fontengine/FontsAssistant.h \
+    ../../officedrawingfile.h
+
 
 SOURCES += \
     ../../../../fontengine/ApplicationFontsWorker.cpp \
-    ../../../../fontengine/FontsAssistant.cpp
+    ../../../../fontengine/FontsAssistant.cpp \
+    ../../officedrawingfile.cpp
 
 # XpsFile
 
@@ -596,9 +599,6 @@ SOURCES += \
     $$DJVU_WRAPPER/GURL.cpp
 
 # PdfReader
-
-DEFINES += CRYPTOPP_DISABLE_ASM
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 PDF_ROOT_DIR = $$PWD/../../../../../PdfReader
 
 INCLUDEPATH += \
@@ -654,6 +654,9 @@ HEADERS +=\
     $$PDF_ROOT_DIR/Src/MemoryUtils.h \
     $$PDF_ROOT_DIR/Src/GfxClip.h \
     $$PDF_ROOT_DIR/PdfReader.h
+
+HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
+SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
 
 HEADERS += \
     ../wasm/src/drawingfile.h \

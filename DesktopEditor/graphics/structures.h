@@ -501,6 +501,8 @@ namespace NSStructures
 
 		int FaceIndex;
 
+		long BackgroundColor;
+
 		int IsEqual(CFont *pFont)
 		{
 			if (NULL == pFont)

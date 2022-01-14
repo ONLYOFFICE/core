@@ -235,7 +235,10 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"<w:u w:val=\"single\"/>");
                 if (m_oFont.Strikeout)
                     oWriter.WriteString(L"<w:strike/>");
-
+                if (m_oFont.BackgroundColor > 0)
+                {
+                    oWriter.WriteString(L"<w:highlight w:val=\"yellow\"/>");
+                }
                 if (bIsAddSpace)
                 {
                     m_dWidth  += pManagerLight->GetSpaceWidth();

@@ -42,6 +42,7 @@ namespace NSDocxRenderer
         Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter;
 
 		CVectorGraphics				m_oVector;
+		CShape*						m_pLastShape;
 
 		double m_dWidth;
 		double m_dHeight;
@@ -336,20 +337,23 @@ namespace NSDocxRenderer
 
         void DrawPath(LONG lType, LONG lTxId)
 		{
-			if (m_pCurrentLine->m_dBaselinePos < m_oVector.m_dTop)
+			if (abs(m_oVector.m_dBottom-m_oVector.m_dTop) < 0.5)
 			{
-				if (abs (m_pCurrentLine->m_dBaselinePos - m_oVector.m_dTop) < 0.6)
+				if (m_pCurrentLine->m_dBaselinePos < m_oVector.m_dTop)
 				{
-					ApplyUnderline(m_oVector.m_dLeft, m_oVector.m_dRight);
-					return;
-				}
-			}
-			else
-			{
-				if (abs (m_pCurrentLine->m_dBaselinePos - m_oVector.m_dTop) < 2)
-				{
-					if (ApplyStrikeout(m_oVector.m_dLeft, m_oVector.m_dRight))
+					if (abs (m_pCurrentLine->m_dBaselinePos - m_oVector.m_dTop) < 0.6)
+					{
+						ApplyUnderline(m_oVector.m_dLeft, m_oVector.m_dRight);
 						return;
+					}
+				}
+				else
+				{
+					if (abs (m_pCurrentLine->m_dBaselinePos - m_oVector.m_dTop) < 2)
+					{
+						if (ApplyStrikeout(m_oVector.m_dLeft, m_oVector.m_dRight))
+							return;
+					}
 				}
 			}
 
@@ -380,6 +384,7 @@ namespace NSDocxRenderer
 
 				pShape->CreateFromVectorData(&m_oVector, m_oWriterVML, 100000, lType);
                 m_arGraphicItems.push_back(pShape);
+                m_pLastShape = pShape;
 			}
 		}
 
@@ -476,6 +481,16 @@ namespace NSDocxRenderer
 				pCont->m_oFont		= m_oManager.m_oFont.m_oFont;
 				pCont->m_oBrush		= *m_pBrush;
 
+				if (m_pLastShape->m_dTop <= dTextY && (m_pLastShape->m_dTop + m_pLastShape->m_dHeight) >= dTextY
+						&& m_pLastShape->m_dLeft <= dTextX && (m_pLastShape->m_dLeft + m_pLastShape->m_dWidth) >= dTextX)
+				{
+					pCont->m_oFont.BackgroundColor = m_pLastShape->m_oBrush.Color1;
+					if (m_arGraphicItems.size() > 0 && m_pLastShape == m_arGraphicItems.back())
+					{
+						m_arGraphicItems.pop_back();
+					}
+				}
+
 				if (bIsPath)
 				{
 					pCont->m_strPickFontName	= m_oManager.m_strCurrentPickFont;
@@ -570,6 +585,16 @@ namespace NSDocxRenderer
 
 			pCont->m_oFont		= m_oManager.m_oFont.m_oFont;
 			pCont->m_oBrush		= *m_pBrush;
+
+			if (m_pLastShape->m_dTop < dTextY && (m_pLastShape->m_dTop + m_pLastShape->m_dHeight) > dTextY
+					&& m_pLastShape->m_dLeft < dTextX && (m_pLastShape->m_dLeft + m_pLastShape->m_dWidth) > dTextX)
+			{
+				pCont->m_oFont.BackgroundColor = m_pLastShape->m_oBrush.Color1;
+				if (m_arGraphicItems.size() > 0 && m_pLastShape == m_arGraphicItems.back())
+				{
+					m_arGraphicItems.pop_back();
+				}
+			}
 
 			if (bIsPath)
 			{

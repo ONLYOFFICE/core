@@ -32,6 +32,7 @@
 #include "ApplicationFonts.h"
 #include "../common/File.h"
 #include "../common/Directory.h"
+#include "../common/SystemUtils.h"
 #include FT_SFNT_NAMES_H
 #include "internal/tttypes.h"
 #include "internal/ftstream.h"
@@ -1756,6 +1757,10 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
      NSDirectory::GetFiles2(L"/usr/X11R6/lib/X11/fonts", _array, true);
      NSDirectory::GetFiles2(L"/usr/local/share/fonts", _array, true);
      NSDirectory::GetFiles2(L"/run/host/fonts", _array, true);
+     std::wstring custom_fonts_path = NSSystemUtils::GetEnvVariable(L"CUSTOM_FONTS_PATH");
+     if (!custom_fonts_path.empty())
+        NSDirectory::GetFiles2(custom_fonts_path, _array, true);
+
      return _array;
 #endif
 

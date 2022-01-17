@@ -67,6 +67,13 @@ CBgraFrame* GetFrame(IOfficeDrawingFile* pFile, int nPageIndex, int nRasterW, in
 
     pRenderer->CreateFromBgraFrame(pFrame);
     pRenderer->SetSwapRGB(bIsSwapRGB);
+
+    if (odftPDF == pFile->GetType())
+    {
+        dWidth  *= 25.4 / dPageDpiX;
+        dHeight *= 25.4 / dPageDpiY;
+    }
+
     pRenderer->put_Width(dWidth);
     pRenderer->put_Height(dHeight);
 

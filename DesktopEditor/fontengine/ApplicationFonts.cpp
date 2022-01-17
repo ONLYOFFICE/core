@@ -1766,9 +1766,12 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
      NSDirectory::GetFiles2(L"/usr/X11R6/lib/X11/fonts", _array, true);
      NSDirectory::GetFiles2(L"/usr/local/share/fonts", _array, true);
      NSDirectory::GetFiles2(L"/run/host/fonts", _array, true);
+
+#ifndef BUILDING_WASM_MODULE
      std::wstring custom_fonts_path = NSSystemUtils::GetEnvVariable(L"CUSTOM_FONTS_PATH");
      if (!custom_fonts_path.empty())
         NSDirectory::GetFiles2(custom_fonts_path, _array, true);
+#endif
 
      return _array;
 #endif

@@ -28,6 +28,8 @@ private:
     };
     // Вектор файлов в архиве
     std::vector<CFile> m_arrFiles;
+
+    friend class CZipFolderMemory;
 public:
     // Создает архив в памяти
     CZipBuffer()

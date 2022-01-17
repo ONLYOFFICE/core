@@ -784,6 +784,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   residentUnicodeMaps->add(map->getEncodingName(), map);
 
   // look for a user config file, then a system-wide config file
+#ifndef BUILDING_WASM_MODULE
   f = NULL;
   fileName = NULL;
   if (cfgFileName && cfgFileName[0]) {
@@ -820,6 +821,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
     delete fileName;
     fclose(f);
   }
+#endif // BUILDING_WASM_MODULE
 }
 
 void GlobalParams::setDataDirVar() {

@@ -17,6 +17,6 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 
 ADD_DEPENDENCY(graphics)
 
-SOURCES += ../wasm/src/base.cpp
+SOURCES += ../wasm/src/raster.cpp
 
-HEADERS += ../wasm/src/base.h
+HEADERS += ../wasm/src/raster.h

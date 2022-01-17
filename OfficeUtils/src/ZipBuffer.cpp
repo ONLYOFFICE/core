@@ -87,16 +87,17 @@ void CZipBuffer::create()
     m_zipFile = NULL;
     m_sizeZip = 0;
 }
-// Открывает архив в память, переданные данные необходимо освободить после использования класса
+// Открывает архив в память, переданные данные необходимо освободить
 void CZipBuffer::open(BYTE* buffer, DWORD size)
 {
-    m_zipFile = buffer;
+    m_zipFile = new BYTE[size];
+    memcpy(m_zipFile, buffer, size);
     m_sizeZip = size;
 
     // Получаем пути в архиве
     BUFFER_IO* buf = new BUFFER_IO;
-    buf->buffer = buffer;
-    buf->nSize  = size;
+    buf->buffer = m_zipFile;
+    buf->nSize  = m_sizeZip;
     unzFile uf  = unzOpenHelp(buf);
 
     do
@@ -194,17 +195,24 @@ void CZipBuffer::getFile(const std::string& sPath, BYTE*& data, DWORD& length)
     it->m_pData   = data;
     RELEASEOBJECT(buf);
 }
-// По относительно пути в архиве добавляет файл, переданные данные будут освобождены после использования класса
+// По относительно пути в архиве добавляет файл, переданные данные необходимо освободить
 void CZipBuffer::addFile   (const std::string& sPath, BYTE* data, DWORD length)
 {
     std::vector<CFile>::iterator it =
             std::find_if(m_arrFiles.begin(), m_arrFiles.end(), [&sPath] (const CFile& oFile) { return oFile.m_sPath == sPath; });
     if (it == m_arrFiles.end())
-        m_arrFiles.push_back(CFile(sPath, data, length));
+    {
+        BYTE* copyData = new BYTE[length];
+        memcpy(copyData, data, length);
+        m_arrFiles.push_back(CFile(sPath, copyData, length));
+    }
     else
     {
-        RELEASEARRAYOBJECTS(it->m_pData);
-        it->m_pData   = data;
+        if (it->m_pData != data)
+        {
+            RELEASEARRAYOBJECTS(it->m_pData);
+            it->m_pData = data;
+        }
         it->m_nLength = length;
     }
 }

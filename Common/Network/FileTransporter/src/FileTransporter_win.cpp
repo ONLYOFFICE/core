@@ -368,9 +368,58 @@ namespace NSNetwork
                     ::fclose( m_pFile );
                     m_pFile = NULL;
                 }
+
+                DownloadProgress progress;
+                progress.func_onProgress = m_func_onProgress;
                 // Скачиваем файл
-                return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, NULL);
-            }
+                return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, static_cast<IBindStatusCallback*>(&progress));
+            }            
+
+            class DownloadProgress : public IBindStatusCallback {
+            public:
+                HRESULT __stdcall QueryInterface(const IID &,void **) {
+                    return E_NOINTERFACE;
+                }
+                ULONG STDMETHODCALLTYPE AddRef(void) {
+                    return 1;
+                }
+                ULONG STDMETHODCALLTYPE Release(void) {
+                    return 1;
+                }
+                HRESULT STDMETHODCALLTYPE OnStartBinding(DWORD dwReserved, IBinding *pib) {
+                    return E_NOTIMPL;
+                }
+                virtual HRESULT STDMETHODCALLTYPE GetPriority(LONG *pnPriority) {
+                    return E_NOTIMPL;
+                }
+                virtual HRESULT STDMETHODCALLTYPE OnLowResource(DWORD reserved) {
+                    return S_OK;
+                }
+                virtual HRESULT STDMETHODCALLTYPE OnStopBinding(HRESULT hresult, LPCWSTR szError) {
+                    return E_NOTIMPL;
+                }
+                virtual HRESULT STDMETHODCALLTYPE GetBindInfo(DWORD *grfBINDF, BINDINFO *pbindinfo) {
+                    return E_NOTIMPL;
+                }
+                virtual HRESULT STDMETHODCALLTYPE OnDataAvailable(DWORD grfBSCF, DWORD dwSize, FORMATETC *pformatetc, STGMEDIUM *pstgmed) {
+                    return E_NOTIMPL;
+                }
+                virtual HRESULT STDMETHODCALLTYPE OnObjectAvailable(REFIID riid, IUnknown *punk) {
+                    return E_NOTIMPL;
+                }
+
+                virtual HRESULT __stdcall OnProgress(ULONG ulProgress, ULONG ulProgressMax, ULONG ulStatusCode, LPCWSTR szStatusText)
+                {
+                    if(ulProgressMax != 0)
+                    {
+                        int percent = static_cast<int>((100.0 * ulProgress) / ulProgressMax);
+                        func_onProgress(percent);
+                    }
+                    return S_OK;
+                }
+
+                std::function<void(int)> func_onProgress;
+            };
 
             bool DownloadFilePS(const std::wstring& sFileURL, const std::wstring& strFileOutput)
             {

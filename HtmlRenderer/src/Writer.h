@@ -1222,7 +1222,6 @@ namespace NSHtmlRenderer
 
         NSStructures::CPen		m_oLastPen;
         NSStructures::CBrush	m_oLastBrush;
-        NSStructures::CFont		m_oLastFont;
 
         int 					m_lCurrentFont;
         double					m_dCurrentFontSize;
@@ -1545,7 +1544,6 @@ namespace NSHtmlRenderer
 
             m_oLastBrush.Color1 = -1;
             m_oLastPen.Color	= -1;
-            m_oLastFont.Name	= L"";
 
             m_lCurrentFont		= -1;
             m_dCurrentFontSize	= 0.0;

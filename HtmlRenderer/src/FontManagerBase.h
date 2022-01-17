@@ -32,7 +32,14 @@
 #ifndef _ASC_HTMLRENDERER_FMBASE_H_
 #define _ASC_HTMLRENDERER_FMBASE_H_
 
-#include "Common.h"
+#include "../../DesktopEditor/common/Types.h"
+#include "../../DesktopEditor/graphics/Matrix.h"
+#include "../../DesktopEditor/graphics/structures.h"
+#include "../../DesktopEditor/common/StringBuilder.h"
+#include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
+
 #include <vector>
 #include <map>
 #include <list>

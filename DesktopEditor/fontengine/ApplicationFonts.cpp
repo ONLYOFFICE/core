@@ -32,6 +32,7 @@
 #include "ApplicationFonts.h"
 #include "../common/File.h"
 #include "../common/Directory.h"
+#include "../common/SystemUtils.h"
 #include FT_SFNT_NAMES_H
 #include "internal/tttypes.h"
 #include "internal/ftstream.h"
@@ -1493,6 +1494,15 @@ bool CFontList::CheckLoadFromFolderBin(const std::wstring& strDirectory)
     BYTE* pBuffer = new BYTE[dwLen1];
     oFile.ReadFile(pBuffer, dwLen1, dwLen2);
 
+    CheckLoadFromSelectionBin(strDirectory, pBuffer, dwLen1);
+
+    RELEASEARRAYOBJECTS(pBuffer);
+
+    return true;
+}
+
+void CFontList::CheckLoadFromSelectionBin(const std::wstring& strDirectory, BYTE* pBuffer, DWORD nLen)
+{
     BYTE* _pBuffer = pBuffer;
 
     int lCount = NSFonts::NSBinarySerialize::Read<INT>(_pBuffer);
@@ -1503,14 +1513,10 @@ bool CFontList::CheckLoadFromFolderBin(const std::wstring& strDirectory)
         Add(pFontInfo);
     }
 
-    if ((_pBuffer - pBuffer) < dwLen1)
+    if ((_pBuffer - pBuffer) < nLen)
     {
         InitializeRanges(_pBuffer);
     }
-
-    RELEASEARRAYOBJECTS(pBuffer);
-
-    return true;
 }
 
 void CFontList::Add(NSFonts::CFontInfo* pInfo)
@@ -1596,6 +1602,10 @@ void CApplicationFonts::Initialize(bool bIsCheckSelection)
     m_oCache.m_pApplicationFontStreams = &m_oStreams;
 }
 
+void CApplicationFonts::InitializeFromBin(BYTE* pData, unsigned int nLen)
+{
+    m_oList.CheckLoadFromSelectionBin(L"", pData, (DWORD)nLen);
+}
 void CApplicationFonts::InitializeRanges(unsigned char* data)
 {
     m_oList.InitializeRanges(data);
@@ -1756,6 +1766,10 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
      NSDirectory::GetFiles2(L"/usr/X11R6/lib/X11/fonts", _array, true);
      NSDirectory::GetFiles2(L"/usr/local/share/fonts", _array, true);
      NSDirectory::GetFiles2(L"/run/host/fonts", _array, true);
+     std::wstring custom_fonts_path = NSSystemUtils::GetEnvVariable(L"CUSTOM_FONTS_PATH");
+     if (!custom_fonts_path.empty())
+        NSDirectory::GetFiles2(custom_fonts_path, _array, true);
+
      return _array;
 #endif
 

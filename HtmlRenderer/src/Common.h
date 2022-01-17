@@ -249,12 +249,7 @@ namespace NSHtmlRenderer
         LONG top;
         LONG right;
         LONG bottom;
-    };
-
-    inline bool IsEqualMain(const Aggplus::CMatrix* pMatrix, const Aggplus::CMatrix* pMatrix2)
-    {
-        return Aggplus::CMatrix::IsEqual(pMatrix, pMatrix2, 0.001, true);
-    }
+    };    
 
     const double c_ag_Inch_to_MM	= 25.4;
     const double c_ag_1pxWidth		= 25.4 / 96;

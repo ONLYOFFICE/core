@@ -35,7 +35,7 @@
 #ifndef __LIBDCR
 #define __LIBDCR
 
-#if defined(BUILDING_WASM_MODULE)
+#if defined(BUILDING_WASM_MODULE) && defined(__linux__)
 #include <setjmp.h>
 #include <time.h>
 #include <unistd.h>

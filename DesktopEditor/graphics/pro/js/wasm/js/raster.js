@@ -55,7 +55,7 @@ function Raster()
         if (0 === imageFileRawData)
             return null;
 
-		var uint8DataBuffer = new Uint8Array(dataBuffer);
+        var uint8DataBuffer = new Uint8Array(dataBuffer);
         Module["HEAP8"].set(uint8DataBuffer, imageFileRawData);
 
         // грузим картинку
@@ -86,7 +86,7 @@ function Raster()
         var canvasCtx = canvas.getContext("2d");
         var imageRGBAClampedArray = new Uint8ClampedArray(Module["HEAP8"].buffer, imageRGBA, 4 * imageW * imageH);
         var canvasData = new ImageData(imageRGBAClampedArray, imageW, imageH);
-		
+
         canvasCtx.putImageData(canvasData, 0, 0);
 
         Module["_Raster_Destroy"](imageFile);

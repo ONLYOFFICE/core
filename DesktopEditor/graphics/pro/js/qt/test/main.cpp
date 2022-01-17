@@ -1,6 +1,6 @@
 #include "../../../../../common/Types.h"
 #include "../../../../../common/File.h"
-#include "../../wasm/src/base.h"
+#include "../../wasm/src/raster.h"
 
 #include <string>
 #include <iostream>
@@ -10,7 +10,7 @@ int main()
     BYTE* pData = NULL;
     DWORD nBytesCount;
     NSFile::CFileBinary oFile;
-    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.wbmp", &pData, nBytesCount))
+    if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.png", &pData, nBytesCount))
         return 1;
     oFile.CloseFile();
 

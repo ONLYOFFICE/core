@@ -1,0 +1,5 @@
+<<<<<<<
+ft_longjmp( ras.jump_buffer, 1 );
+=======
+ft_longjmp_ex( ras.jump_buffer, 1 );
+>>>>>>>

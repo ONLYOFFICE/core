@@ -75,7 +75,6 @@ public:
 
 #ifdef BUILDING_WASM_MODULE
     virtual BYTE* GetStructure();
-    virtual BYTE* GetGlyphs(int nPageIndex);
     virtual BYTE* GetLinks (int nPageIndex);
 #endif
 };

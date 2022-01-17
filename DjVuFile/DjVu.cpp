@@ -110,12 +110,6 @@ BYTE* CDjVuFile::GetStructure()
         return m_pImplementation->GetStructure();
     return NULL;
 }
-BYTE* CDjVuFile::GetGlyphs(int nPageIndex)
-{
-    if (m_pImplementation)
-        return m_pImplementation->GetPageGlyphs(nPageIndex);
-    return NULL;
-}
 BYTE* CDjVuFile::GetLinks (int nPageIndex)
 {
     if (m_pImplementation)

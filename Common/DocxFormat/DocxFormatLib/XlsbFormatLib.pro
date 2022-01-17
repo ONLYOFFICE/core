@@ -432,6 +432,88 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndPivotCacheRecords.cpp \
     ../Source/XlsbFormat/Biff12_records/PCRRecord.cpp \
     ../Source/XlsbFormat/Biff12_records/PCRRecordDt.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXView.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXView.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXLocation.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXLocation.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXVDs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXVDs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginISXVDRws.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndISXVDRws.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXVD.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXVD.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginAutoSortScope.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndAutoSortScope.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPRule.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPRule.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPRFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPRFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPRFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPRFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPRFItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPRFItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXVIs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXVIs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXVI.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXVI.cpp \
+    ../Source/XlsbFormat/Biff12_records/SXVD14.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXLIRws.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXLIRws.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXLI.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXLI.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginISXVIs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndISXVIs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginISXVDCols.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndISXVDCols.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXLICols.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXLICols.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXPIs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXPIs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXPI.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXPI.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXDIs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXDIs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXDI.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXDI.cpp \
+    ../Source/XlsbFormat/Biff12_records/SXDI14.cpp \
+    ../Source/XlsbFormat/Biff12_records/SXDI15.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXFormats.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXFormats.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXFormat.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXFormat.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXCondFmts.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXCondFmts.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXCondFmt.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXCondFmt.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXCrtFormats.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXCrtFormats.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXCrtFormat.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXCrtFormat.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXTHs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXTHs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXTH.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXTH.cpp \
+    ../Source/XlsbFormat/Biff12_records/SXTH14.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXTHItems.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXTHItems.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXTHItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXTHItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXTDMPs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXTDMPs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXTDMP.cpp \
+    ../Source/XlsbFormat/Biff12_records/SXTDMPOrder.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXTDMP.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginISXTHRws.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndISXTHRws.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginISXTHCols.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndISXTHCols.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXFilters.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXFilter.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginSXRules.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndSXRules.cpp \
+    ../Source/XlsbFormat/Biff12_records/SxFilter15.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -491,6 +573,12 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/OLEItemProperties.cpp \
     ../Source/XlsbFormat/Biff12_structures/ExternalReferenceType.cpp \
     ../Source/XlsbFormat/Biff12_structures/PCDIDateTime.cpp \
+    ../Source/XlsbFormat/Biff12_structures/PRuleHeaderData.cpp \
+    ../Source/XlsbFormat/Biff12_structures/PRFilter.cpp \
+    ../Source/XlsbFormat/Biff12_structures/PivotItemType.cpp \
+    ../Source/XlsbFormat/Biff12_structures/DataConsolidationFunction.cpp \
+    ../Source/XlsbFormat/Biff12_structures/ShowDataAs.cpp \
+    ../Source/XlsbFormat/Biff12_structures/PivotNumFmt.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -677,6 +765,50 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/PIVOTCACHERECORDDT.cpp \
     ../Source/XlsbFormat/Biff12_unions/PIVOTCACHERECORD.cpp \
     ../Source/XlsbFormat/Biff12_unions/PIVOTCACHERECORDS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PRFITEM.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PRFILTER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PRFILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTRULE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTSXVD.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXVI.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXVIS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/AUTOSORTSCOPE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXVD.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ISXVDRWS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXVDS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXLOCATION.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXLIRWS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXLI_bu.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ISXVIS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ISXVDCOLS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXLICOLS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXPIS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXPI.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXDIS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXDI.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTSXDI.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXFORMATS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXFORMAT.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXCONDFMTS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXCONDFMT.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXCRTFORMATS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXCRTFORMAT.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXTHS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXTH.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTSXTH.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXTHITEMS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXTHITEM.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXTDMPS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXTDMP.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ISXTHRWS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ISXTHCOLS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXFILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SXFILTER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/AFILTER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTFILTERCOLUMN.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTFILTERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTRULES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTSXFILTER.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -1087,6 +1219,90 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/EndSupBook.h \    
     ../Source/XlsbFormat/Biff12_records/BeginPivotCacheRecords.h \
     ../Source/XlsbFormat/Biff12_records/EndPivotCacheRecords.h \
+    ../Source/XlsbFormat/Biff12_records/PCRRecord.h \
+    ../Source/XlsbFormat/Biff12_records/PCRRecordDt.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXView.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXView.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXLocation.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXLocation.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXVDs.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXVDs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginISXVDRws.h \
+    ../Source/XlsbFormat/Biff12_records/EndISXVDRws.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXVD.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXVD.h \
+    ../Source/XlsbFormat/Biff12_records/BeginAutoSortScope.h \
+    ../Source/XlsbFormat/Biff12_records/EndAutoSortScope.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPRule.h \
+    ../Source/XlsbFormat/Biff12_records/EndPRule.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPRFilters.h \
+    ../Source/XlsbFormat/Biff12_records/EndPRFilters.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPRFilter.h \
+    ../Source/XlsbFormat/Biff12_records/EndPRFilter.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPRFItem.h \
+    ../Source/XlsbFormat/Biff12_records/EndPRFItem.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXVIs.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXVIs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXVI.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXVI.h \
+    ../Source/XlsbFormat/Biff12_records/SXVD14.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXLIRws.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXLIRws.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXLI.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXLI.h \
+    ../Source/XlsbFormat/Biff12_records/BeginISXVIs.h \
+    ../Source/XlsbFormat/Biff12_records/EndISXVIs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginISXVDCols.h \
+    ../Source/XlsbFormat/Biff12_records/EndISXVDCols.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXLICols.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXLICols.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXPIs.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXPIs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXPI.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXPI.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXDIs.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXDIs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXDI.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXDI.h \
+    ../Source/XlsbFormat/Biff12_records/SXDI14.h \
+    ../Source/XlsbFormat/Biff12_records/SXDI15.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXFormats.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXFormats.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXFormat.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXFormat.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXCondFmts.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXCondFmts.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXCondFmt.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXCondFmt.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXCrtFormats.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXCrtFormats.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXCrtFormat.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXCrtFormat.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXTHs.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXTHs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXTH.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXTH.h \
+    ../Source/XlsbFormat/Biff12_records/SXTH14.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXTHItems.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXTHItems.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXTHItem.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXTHItem.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXTDMPs.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXTDMPs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXTDMP.h \
+    ../Source/XlsbFormat/Biff12_records/SXTDMPOrder.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXTDMP.h \
+    ../Source/XlsbFormat/Biff12_records/BeginISXTHRws.h \
+    ../Source/XlsbFormat/Biff12_records/EndISXTHRws.h \
+    ../Source/XlsbFormat/Biff12_records/BeginISXTHCols.h \
+    ../Source/XlsbFormat/Biff12_records/EndISXTHCols.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXFilters.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXFilters.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXFilter.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXFilter.h \
+    ../Source/XlsbFormat/Biff12_records/BeginSXRules.h \
+    ../Source/XlsbFormat/Biff12_records/EndSXRules.h \
+    ../Source/XlsbFormat/Biff12_records/SxFilter15.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -1149,6 +1365,12 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_structures/OLEItemProperties.h \
     ../Source/XlsbFormat/Biff12_structures/ExternalReferenceType.h \
     ../Source/XlsbFormat/Biff12_structures/PCDIDateTime.h \
+    ../Source/XlsbFormat/Biff12_structures/PRuleHeaderData.h \
+    ../Source/XlsbFormat/Biff12_structures/PRFilter.h \
+    ../Source/XlsbFormat/Biff12_structures/PivotItemType.h \
+    ../Source/XlsbFormat/Biff12_structures/DataConsolidationFunction.h \
+    ../Source/XlsbFormat/Biff12_structures/ShowDataAs.h \
+    ../Source/XlsbFormat/Biff12_structures/PivotNumFmt.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
     ../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.h \
@@ -1335,3 +1557,47 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/PIVOTCACHERECORDDT.h \
     ../Source/XlsbFormat/Biff12_unions/PIVOTCACHERECORD.h \
     ../Source/XlsbFormat/Biff12_unions/PIVOTCACHERECORDS.h \
+    ../Source/XlsbFormat/Biff12_unions/PRFITEM.h \
+    ../Source/XlsbFormat/Biff12_unions/PRFILTER.h \
+    ../Source/XlsbFormat/Biff12_unions/PRFILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTRULE.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTSXVD.h \
+    ../Source/XlsbFormat/Biff12_unions/SXVI.h \
+    ../Source/XlsbFormat/Biff12_unions/SXVIS.h \
+    ../Source/XlsbFormat/Biff12_unions/AUTOSORTSCOPE.h \
+    ../Source/XlsbFormat/Biff12_unions/SXVD.h \
+    ../Source/XlsbFormat/Biff12_unions/ISXVDRWS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXVDS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXLOCATION.h \
+    ../Source/XlsbFormat/Biff12_unions/SXLIRWS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXLI.h \
+    ../Source/XlsbFormat/Biff12_unions/ISXVIS.h \
+    ../Source/XlsbFormat/Biff12_unions/ISXVDCOLS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXLICOLS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXPIS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXPI.h \
+    ../Source/XlsbFormat/Biff12_unions/SXDIS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXDI.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTSXDI.h \
+    ../Source/XlsbFormat/Biff12_unions/SXFORMATS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXFORMAT.h \
+    ../Source/XlsbFormat/Biff12_unions/SXCONDFMTS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXCONDFMT.h \
+    ../Source/XlsbFormat/Biff12_unions/SXCRTFORMATS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXCRTFORMAT.h \
+    ../Source/XlsbFormat/Biff12_unions/SXTHS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXTH.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTSXTH.h \
+    ../Source/XlsbFormat/Biff12_unions/SXTHITEMS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXTHITEM.h \
+    ../Source/XlsbFormat/Biff12_unions/SXTDMPS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXTDMP.h \
+    ../Source/XlsbFormat/Biff12_unions/ISXTHRWS.h \
+    ../Source/XlsbFormat/Biff12_unions/ISXTHCOLS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXFILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/SXFILTER.h \
+    ../Source/XlsbFormat/Biff12_unions/AFILTER.h \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTFILTERCOLUMN.h \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTFILTERS.h \
+    ../Source/XlsbFormat/Biff12_unions/PIVOTRULES.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTSXFILTER.h \

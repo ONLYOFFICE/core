@@ -840,6 +840,7 @@ enum ElementType
     typePCDIString,
     typePCDIDatetime,
     typePCDIIndex,
+    typePIVOTFILTERS,
 
 };
 

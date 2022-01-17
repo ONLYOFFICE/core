@@ -29,6 +29,11 @@ namespace Oox2Odf
 		return odf_context()->math_context()->end_counter;
 	}
 
+	std::wstring& OoxConverter::annotation()
+	{
+		return odf_context()->math_context()->annotation;
+	}
+
 	void OoxConverter::mrow() // обертка для тега <mrow>
 	{
 		CREATE_MATH_TAG(L"mrow");
@@ -59,6 +64,17 @@ namespace Oox2Odf
 		{
 			convert(oox_math->m_arrItems[i]);
 		}		
+		CREATE_MATH_TAG(L"annotation");
+		typedef odf_writer::math_annotation * T;
+		T tmp = dynamic_cast<T>(elm.get());
+		if (tmp)
+		{
+			tmp->encoding_ = L"StarMath 5.0";
+		}
+		elm->add_text(annotation());
+		OPEN_MATH_TAG(elm);
+		CLOSE_MATH_TAG;
+		annotation().clear();
 
 		if (bStart) odf_context()->end_math();
 	}
@@ -418,9 +434,15 @@ namespace Oox2Odf
 
 		if (val == L"lin")
 		{
+
+			annotation() += L"{";
+
 			mrow();
 				convert(oox_fraction->m_oNum.GetPointer());
 			endOfMrow();
+
+			annotation() += L"} / {";
+
 			CREATE_MATH_TAG(L"mo");
 			OPEN_MATH_TAG(elm);
 			elm->add_text(L"/");
@@ -428,6 +450,30 @@ namespace Oox2Odf
 			mrow();
 				convert(oox_fraction->m_oDen.GetPointer());
 			endOfMrow();
+
+			annotation() += L"}";
+		}
+		else if (val == L"skw")
+		{
+			CREATE_MATH_TAG(L"mfrac");
+			typedef odf_writer::math_mfrac* T;
+			T tmp = dynamic_cast<T>(elm.get());
+
+			if (tmp)
+			{				
+				tmp->bevelled = true;				
+			}
+			OPEN_MATH_TAG(elm);
+			annotation() += L"{";
+			mrow();
+				convert(oox_fraction->m_oNum.GetPointer());
+			endOfMrow();
+			annotation() += L"} wideslash {";
+			mrow();
+				convert(oox_fraction->m_oDen.GetPointer());
+			endOfMrow();
+			annotation() += L"}";
+			CLOSE_MATH_TAG;
 		}
 		else if (val == L"noBar")
 		{
@@ -439,10 +485,12 @@ namespace Oox2Odf
 				{
 					CREATE_MATH_TAG(L"mtd");
 					OPEN_MATH_TAG(elm);
+					annotation() += L"binom{";
 					mrow();
 						convert(oox_fraction->m_oNum.GetPointer());
 					endOfMrow();
 					CLOSE_MATH_TAG;
+					annotation() += L"} {";
 				}
 				CLOSE_MATH_TAG;
 			}
@@ -456,6 +504,7 @@ namespace Oox2Odf
 						convert(oox_fraction->m_oDen.GetPointer());
 					endOfMrow();
 					CLOSE_MATH_TAG;
+					annotation() += L"}";
 				}
 				CLOSE_MATH_TAG;
 			}
@@ -463,29 +512,17 @@ namespace Oox2Odf
 		}
 		else
 		{
-			CREATE_MATH_TAG(L"mfrac");
-
-			typedef odf_writer::math_mfrac* T;			
-
-			T tmp = dynamic_cast<T>(elm.get());
-			
-
-			if (tmp)
-			{
-				if (val == L"skw")
-				{
-					
-					tmp->bevelled = true;
-				}
-			}
-
+			CREATE_MATH_TAG(L"mfrac");			
+			annotation() += L"{";
 			OPEN_MATH_TAG(elm);
 			mrow();
 				convert(oox_fraction->m_oNum.GetPointer());
 			endOfMrow();
+			annotation() += L"} over {";
 			mrow();
 				convert(oox_fraction->m_oDen.GetPointer());
 			endOfMrow();
+			annotation() += L"}";
 			CLOSE_MATH_TAG;
 		}	
 	}
@@ -889,6 +926,7 @@ namespace Oox2Odf
 					elm->add_text(sub_s_val);
 					OPEN_MATH_TAG(elm);
 					CLOSE_MATH_TAG;
+					annotation() += sub_s_val;
 					sub_s_val.clear();
 				}
 				CREATE_MATH_TAG(L"mtext");
@@ -897,6 +935,7 @@ namespace Oox2Odf
 
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
+				annotation() += std::wstring(1, s_val[i]);
 			}
 
 			else if (w_val <= 57 && w_val >= 48)
@@ -907,6 +946,7 @@ namespace Oox2Odf
 					elm->add_text(sub_s_val);
 					OPEN_MATH_TAG(elm);
 					CLOSE_MATH_TAG;
+					annotation() += sub_s_val;
 					sub_s_val.clear();
 				}
 				
@@ -916,6 +956,7 @@ namespace Oox2Odf
 
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
+				annotation() += std::wstring(1, s_val[i]);
 			}
 			else if (mo.find(w_val) != mo.end())
 			{
@@ -925,6 +966,7 @@ namespace Oox2Odf
 					elm->add_text(sub_s_val);
 					OPEN_MATH_TAG(elm);
 					CLOSE_MATH_TAG;
+					annotation() += sub_s_val;
 					sub_s_val.clear();
 				}
 				
@@ -934,6 +976,7 @@ namespace Oox2Odf
 
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
+				annotation() += std::wstring(1, s_val[i]);
 			}
 			else // <mi>
 			{				
@@ -946,6 +989,7 @@ namespace Oox2Odf
 				elm->add_text(sub_s_val);
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
+				annotation() += sub_s_val;
 			}
 		}	
 	}

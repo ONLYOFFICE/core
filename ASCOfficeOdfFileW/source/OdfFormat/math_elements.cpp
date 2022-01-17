@@ -135,15 +135,24 @@ void math_annotation::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
+			CP_XML_ATTR_OPT(L"encoding", encoding_);
+			if (text_)
+			{
+				CP_XML_CONTENT(text_.get());
+				common_attlist_.serialize(CP_GET_XML_NODE());
+			}
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
 				content_[i]->serialize(CP_XML_STREAM());
 			}
-			CP_XML_ATTR_OPT(L"math:text", text_);
-			CP_XML_ATTR_OPT(L"math:encoding", encoding_);
 		}
 	}
+}
+
+void math_annotation::add_text(const std::wstring& Text)
+{
+	text_ = Text;
 }
 
 //----------------------------------------------------------------------------------------------------

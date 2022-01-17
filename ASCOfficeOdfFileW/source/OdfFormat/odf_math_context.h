@@ -81,6 +81,7 @@ namespace cpdoccore {
 			void end_element();
 
 			std::vector<std::vector<std::wstring>> brackets;
+			std::wstring annotation;
 			int lvl_of_me;
 			std::vector<int> end_counter;
 			int counter; 

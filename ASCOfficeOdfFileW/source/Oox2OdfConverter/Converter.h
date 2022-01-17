@@ -656,6 +656,7 @@ public:
 //math............................................................................................................................
 		std::vector<std::vector<std::wstring>>& brackets();
 		int& lvl_of_me();
+		std::wstring& annotation();
 		std::vector<int>& end_counter();
 		void mrow();
 		void endOfMrow();

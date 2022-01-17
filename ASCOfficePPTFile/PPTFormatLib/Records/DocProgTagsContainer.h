@@ -36,6 +36,7 @@
 #include "ProgStringTagContainer.h"
 #include "TextDefaults9Atom.h"
 #include "OutlineTextProps9Container.h"
+#include "BlipCollection9Container.h"
 
 
 #define ___PPT9  L"___PPT9"
@@ -47,12 +48,13 @@
 namespace PPT_FORMAT
 {
 
-class CRecordPP9DocBinaryTagExtension : public CUnknownRecord
+class CRecordPP9DocBinaryTagExtension : public CRecordsContainer
 {
 public:
     std::vector<CRecordTextMasterStyle9Atom*>       m_rgTextMasterStyleAtom;
-     nullable<CRecordTextDefaults9Atom>             m_textDefaultsAtom;
-     nullable<CRecordOutlineTextProps9Container>    m_outlineTextPropsContainer;
+    nullable<CRecordTextDefaults9Atom>             m_textDefaultsAtom;
+    nullable<CRecordOutlineTextProps9Container>    m_outlineTextPropsContainer;
+    nullable<CRecordBlipCollection9Container>      m_blipCollectionContainer;
     // TODO
     CRecordPP9DocBinaryTagExtension()
     {
@@ -104,8 +106,17 @@ public:
                 m_outlineTextPropsContainer->ReadFromStream(ReadHeader, pStream);
                 break;
             }
+            case RT_BlipCollection9:
+            {
+                m_blipCollectionContainer = new CRecordBlipCollection9Container;
+                m_blipCollectionContainer->ReadFromStream(ReadHeader, pStream);
+                break;
+            }
             default:
-                StreamUtils::StreamSkip(ReadHeader.RecLen, pStream);
+                IRecord* pRecord = CreateByType(ReadHeader);
+                pRecord->ReadFromStream(ReadHeader, pStream);
+
+                m_arRecords.push_back(pRecord);
                 break;
             }
 
@@ -281,7 +292,7 @@ public:
         LONG lCurLen(0);
         SRecordHeader ReadHeader;
 
-        while (lCurLen < m_oHeader.RecLen)
+        while (lCurLen < (LONG)m_oHeader.RecLen)
         {
             if ( ReadHeader.ReadFromStream(pStream) == false)
                 break;
@@ -295,11 +306,20 @@ public:
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }
 
-    CRecordPP9DocBinaryTagExtension* getPP19DocBinaryTagExtension()
+    CRecordPP9DocBinaryTagExtension* getPP9DocBinaryTagExtension()
     {
         for (auto* rec : m_arrRgChildRec)
             if (rec->m_pTagName->m_strText == ___PPT9)
                 return (CRecordPP9DocBinaryTagExtension*)rec->m_pTagContainer;
+
+        return nullptr;
+    }
+
+    IRecord* getDocBinaryTagExtension(const std::wstring& extVersion)
+    {
+        for (auto* rec : m_arrRgChildRec)
+            if (rec->m_pTagName != nullptr && rec->m_pTagName->m_strText == extVersion)
+                return rec->m_pTagContainer;
 
         return nullptr;
     }

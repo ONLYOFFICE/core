@@ -128,6 +128,13 @@ public:
 	void set_rtl(bool val);
 	void set_protection(bool val, const std::wstring &key, const std::wstring &algorithm);
  
+	void set_protection_select_protected_cells(bool val);
+	void set_protection_select_unprotected_cells(bool val);
+	void set_protection_insert_columns(bool val);
+	void set_protection_insert_rows(bool val);
+	void set_protection_delete_columns(bool val);
+	void set_protection_delete_rows(bool val);
+
 	void start_column	(unsigned int repeated, const std::wstring & defaultCellStyleName);
     void start_row		(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
 
@@ -212,9 +219,18 @@ public:
 private:	
     xlsx_conversion_context *			context_;    
 
-	bool								bProtected;
-    std::wstring						protect_key;
-    std::wstring						protect_key_algorithm;
+	struct _protection
+	{
+		bool bEnabled = false;
+		std::wstring protect_key;
+		std::wstring protect_key_algorithm;
+		bool insertColumns = true;
+		bool insertRows = true;
+		bool deleteColumns = true;
+		bool deleteRows = true;
+		bool selectLockedCells = false;
+		bool selectUnockedCells = false;
+	}									protection;
 	bool								bRTL;
 	bool								bEndTable;
 	bool								bHidden;

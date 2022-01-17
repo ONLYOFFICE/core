@@ -102,8 +102,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\_Work\core\Common\3dParty\boost\build\win_64\include;</IncludePath>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;D:\_Work\core\Common\3dParty\boost\build\win_64\lib;</LibraryPath>
+    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(Configuration)\</OutDir>
@@ -260,8 +260,11 @@
     <ClInclude Include="..\Source\DocxFormat\ContentTypes.h" />
     <ClInclude Include="..\Source\DocxFormat\Core.h" />
     <ClInclude Include="..\Source\DocxFormat\CustomXml.h" />
+    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramColors.h" />
     <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramData.h" />
     <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramDrawing.h" />
+    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramLayout.h" />
+    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramQuickStyle.h" />
     <ClInclude Include="..\Source\DocxFormat\Document.h" />
     <ClInclude Include="..\Source\DocxFormat\Docx.h" />
     <ClInclude Include="..\Source\DocxFormat\DocxFlat.h" />
@@ -428,6 +431,7 @@
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\..\..\ASCOfficePPTXFile\PPTXFormat\Folder.cpp" />
     <ClCompile Include="..\Source\Base\unicode_util.cpp" />
@@ -442,12 +446,18 @@
     <ClCompile Include="..\Source\DocxFormat\App.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Comments.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Core.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramColors.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramData.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramDrawing.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramLayout.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramQuickStyle.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Document.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Docx.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\DocxFlat.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigbj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Drawing\DrawingExt.cpp" />
     <ClCompile Include="..\Source\DocxFormat\FileFactory.cpp">
@@ -578,7 +588,9 @@
     <ClCompile Include="..\Source\DocxFormat\Media\ActiveX.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Media\JsaProject.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Media\VbaProject.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Settings\Settings.cpp" />
     <ClCompile Include="..\Source\DocxFormat\VmlDrawing.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\WritingElement.cpp" />
     <ClCompile Include="..\Source\MathEquation\MathEquation.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>

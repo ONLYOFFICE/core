@@ -328,7 +328,7 @@ void TxBodyConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRu
         if (val > 0)
             pSpcBef->spcPts = round(12.5 * pPF->spaceBefore.get());
         else if (val < 0 && val > -13200)
-            pSpcBef->spcPts = val * -1000;
+            pSpcBef->spcPct = val * -1000;
 
         oPPr.spcBef = pSpcBef;
     }
@@ -547,19 +547,23 @@ void TxBodyConverter::FillRPr(PPTX::Logic::RunProperties &oRPr, CTextCFRun &oCFR
 
     if (oCFRun.font.font.is_init())
     {
+        auto charset = oCFRun.font.font->Charset;
         oRPr.latin = new PPTX::Logic::TextFont;
         oRPr.latin->m_name = L"a:latin";
         oRPr.latin->typeface = oCFRun.font.font->Name;
-        oRPr.latin->charset = std::to_wstring(oCFRun.font.font->Charset);
+        if (charset < 128)
+            oRPr.latin->charset = std::to_wstring(charset);
         oRPr.latin->pitchFamily = std::to_wstring(oCFRun.font.font->PitchFamily + 2);
     } // todo else for fontRef.is_init() // it's theme
 
     if (oCFRun.font.ea.is_init())
     {
+        auto charset = oCFRun.font.ea->Charset;
         oRPr.ea = new PPTX::Logic::TextFont;
         oRPr.ea->m_name = L"a:ea";
         oRPr.ea->typeface = oCFRun.font.ea->Name;
-        oRPr.ea->charset = std::to_wstring(oCFRun.font.ea->Charset);
+        if (charset < 128)
+            oRPr.ea->charset = std::to_wstring(oCFRun.font.ea->Charset);
     }
     if (oCFRun.font.sym.is_init())
     {

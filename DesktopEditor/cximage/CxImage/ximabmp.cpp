@@ -155,6 +155,13 @@ bool CxImageBMP::Decode(CxFile * hFile)
 			if (dwCompression == BI_BITFIELDS)
 			{
 				hFile->Read(bfmask, 12, 1);
+
+                if (0xFFFFFFFF == bfmask[0] && 0xFFFFFFFF == bfmask[1] && 0xFFFFFFFF == bfmask[2]) {
+                    bfmask[0]=0x00FF0000;
+                    bfmask[1]=0x0000FF00;
+                    bfmask[2]=0x000000FF;
+                }
+
 			} else {
 				bfmask[0]=0x00FF0000;
 				bfmask[1]=0x0000FF00;

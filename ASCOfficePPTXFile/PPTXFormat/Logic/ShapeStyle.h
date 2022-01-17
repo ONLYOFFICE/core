@@ -138,7 +138,14 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(m_namespace + _T(":style"));
+				std::wstring name_ = L"a:style";
+
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:style";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)		name_ = L"dgm:style";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)	name_ = L"dsp:style";
+				else name_ = m_namespace + L":style";
+
+				pWriter->StartNode(name_);
 				pWriter->EndAttributes();
 
 				lnRef.toXmlWriter(pWriter);
@@ -146,7 +153,7 @@ namespace PPTX
 				effectRef.toXmlWriter(pWriter);
 				fontRef.toXmlWriter(pWriter);
 				
-				pWriter->EndNode(m_namespace + _T(":style"));
+				pWriter->EndNode(name_);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

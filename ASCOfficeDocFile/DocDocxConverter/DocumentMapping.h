@@ -154,7 +154,7 @@ namespace DocFileFormat
 		int								_endnoteNr;
 		int								_commentNr;
 		bool							_isTextBoxContent;
-		int								_isSectionPageBreak; //0 - not set, 1 -page break, 2 - continues, -1 - already
+//		int								_isSectionPageBreak; //0 - not set, 1 -page break, 2 - continues, -1 - already
 		bool							_writeWebHidden;
 		std::wstring					_writeAfterRun;
 		std::wstring					_lastOLEObject;

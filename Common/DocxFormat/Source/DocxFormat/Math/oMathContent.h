@@ -54,7 +54,7 @@ namespace OOX
 			class name : public CMathArgNodes\
 			{\
 			public:\
-				name(OOX::Document *pMain = NULL) : CMathArgNodes(pMain) {}\
+				name(OOX::Document *pMain = NULL) : CMathArgNodes(pMain) {m_eType = type;}\
 				name(XmlUtils::CXmlNode& oNode)\
 				{\
 					fromXML( oNode );\
@@ -91,80 +91,15 @@ namespace OOX
 			virtual ~CCtrlPr()
 			{
 			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlUtils::CXmlNodes oChilds;
-				if ( oNode.GetNodes( _T("*"), oChilds ) )
-				{
-					XmlUtils::CXmlNode oItem;
-					for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
-					{
-						if ( oChilds.GetAt( nIndex, oItem ) )
-						{
-							std::wstring sName = oItem.GetName();
-							WritingElement *pItem = NULL;
-
-							if ( _T("w:rP") == sName )
-								m_oRPr = new OOX::Logic::CRunProperty( oItem );
-							else if ( _T("a:rPr") == sName )
-								m_oARPr = new PPTX::Logic::RunProperties( oItem );
-							else if ( _T("w:ins") == sName )
-								m_oIns = new OOX::Logic::CRPrChange( oItem );
-							else if ( _T("w:del") == sName )
-								m_oDel = new OOX::Logic::CRPrChange( oItem );
-
-						}
-					}
-				}			
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
-					if ( _T("w:rPr") == sName )
-						m_oRPr = oReader;
-					else if ( _T("a:rPr") == sName )
-					{
-						std::wstring sXml = oReader.GetOuterXml();
-						XmlUtils::CXmlNode node;
-						node.FromXmlString(sXml);
-
-						m_oARPr = node;
-					}
-					else if ( _T("w:ins") == sName )
-						m_oIns = oReader;
-					else if ( _T("w:del") == sName )
-						m_oDel = oReader;
-				}
-			}
-			virtual std::wstring      toXML() const
-			{
-				std::wstring sResult = _T("<m:ctrlPr>");
-
-				if ( m_oRPr.IsInit() )
-					sResult += m_oRPr->toXML();
-				if ( m_oARPr.IsInit() )
-					sResult += m_oARPr->toXML();
-				if ( m_oIns.IsInit() )
-					sResult += m_oIns->toXML();
-				if ( m_oDel.IsInit() )
-					sResult += m_oDel->toXML();
-				
-				sResult += _T("</m:ctrlPr>");
-
-				return sResult;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 
 			virtual EElementType getType() const
 			{
 				return et_m_ctrlPr;
 			}
-		public:			
-			//Childs
+
 			nullable<OOX::Logic::CRunProperty> m_oRPr;
 			nullable<PPTX::Logic::RunProperties> m_oARPr;
 			nullable<OOX::Logic::CRPrChange> m_oIns;
@@ -183,8 +118,6 @@ namespace OOX
 			virtual ~CAccPr()
 			{
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNodes oChilds;
@@ -226,8 +159,7 @@ namespace OOX
 			{
 				return et_m_accPr;
 			}
-		public:
-			//Childs
+
 			nullable<OOX::Logic::CChr>			m_oChr;
 			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
 		};
@@ -245,8 +177,6 @@ namespace OOX
 			virtual ~CAcc()
 			{
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNodes oChilds;
@@ -288,8 +218,7 @@ namespace OOX
 			{
 				return et_m_acc;
 			}
-		public:
-			//Childs
+
 			nullable<OOX::Logic::CAccPr>		m_oAccPr;
 			nullable<OOX::Logic::CElement>		m_oElement;
 		};
@@ -307,8 +236,6 @@ namespace OOX
 			virtual ~CArgPr()
 			{
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNodes oChilds;
@@ -356,10 +283,8 @@ namespace OOX
 			{
 				return et_m_argPr;
 			}
-		public:
-			//Childs
-			nullable<OOX::Logic::CArgSz>		m_oArgSz;
 
+			nullable<OOX::Logic::CArgSz> m_oArgSz;
 		};		
 
 		//--------------------------------------------------------------------------------
@@ -417,10 +342,9 @@ namespace OOX
 			{
 				return et_m_barPr;
 			}
-		public:
-			//Childs
-			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
-			nullable<OOX::Logic::CPos>			m_oPos;
+
+			nullable<OOX::Logic::CCtrlPr> m_oCtrlPr;
+			nullable<OOX::Logic::CPos> m_oPos;
 		};		
 
 		//--------------------------------------------------------------------------------
@@ -478,8 +402,7 @@ namespace OOX
 			{
 				return et_m_bar;
 			}
-		public:
-			//Childs
+
 			nullable<OOX::Logic::CBarPr>		m_oBarPr;
 			nullable<OOX::Logic::CElement>		m_oElement;
 
@@ -567,8 +490,7 @@ namespace OOX
 			{
 				return et_m_borderBoxPr;
 			}
-		public:
-			// Childs
+
 			nullable<OOX::Logic::CCtrlPr>			 m_oCtrlPr;
 			nullable<OOX::Logic::CHideBot>			 m_oHideBot;
 			nullable<OOX::Logic::CHideLeft>			 m_oHideLeft;
@@ -634,8 +556,7 @@ namespace OOX
 			{
 				return et_m_borderBox;
 			}
-		public:
-			// Childs
+
 			nullable<OOX::Logic::CBorderBoxPr>	 m_oBorderBoxPr;
 			nullable<OOX::Logic::CElement>		 m_oElement;
 		};		 
@@ -679,14 +600,11 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("m:alnAt"), m_alnAt )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-			// Attr
 			nullable<SimpleTypes::CInteger255<>> m_alnAt;
 		};
 		//--------------------------------------------------------------------------------
@@ -761,8 +679,6 @@ namespace OOX
 				return et_m_boxPr;
 			}
 
-		public:
-			// Childs
 			nullable<OOX::Logic::CAln>			 m_oAln;
 			nullable<OOX::Logic::CBrk>			 m_oBrk;
 			nullable<OOX::Logic::CCtrlPr>		 m_oCtrlPr;
@@ -825,10 +741,9 @@ namespace OOX
 			{
 				return et_m_box;
 			}
-		public:
-			// Childs
-			nullable<OOX::Logic::CBoxPr>			 m_oBoxPr;
-			nullable<OOX::Logic::CElement>			 m_oElement;
+
+			nullable<OOX::Logic::CBoxPr> m_oBoxPr;
+			nullable<OOX::Logic::CElement> m_oElement;
 		};		 
 
 		//--------------------------------------------------------------------------------
@@ -927,14 +842,13 @@ namespace OOX
 			{
 				return et_m_dPr;
 			}
-		public:				
-				//Childs
-				nullable<OOX::Logic::CBegChr>		m_oBegChr;
-				nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
-				nullable<OOX::Logic::CEndChr>		m_oEndChr;
-				nullable<OOX::Logic::CGrow>			m_oGrow;
-				nullable<OOX::Logic::CSepChr>		m_oSepChr;
-				nullable<OOX::Logic::CShp>			m_oShp;
+
+			nullable<OOX::Logic::CBegChr>		m_oBegChr;
+			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
+			nullable<OOX::Logic::CEndChr>		m_oEndChr;
+			nullable<OOX::Logic::CGrow>			m_oGrow;
+			nullable<OOX::Logic::CSepChr>		m_oSepChr;
+			nullable<OOX::Logic::CShp>			m_oShp;
 		};		
 		//--------------------------------------------------------------------------------
 		// CDelimiter 22.1.2.24 (Delimiter Object) 
@@ -950,86 +864,15 @@ namespace OOX
 			virtual ~CDelimiter()
 			{
 			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				m_lColumn = 0;
-				
-				XmlUtils::CXmlNodes oChilds;
-				if ( oNode.GetNodes( _T("*"), oChilds ) )
-				{
-					XmlUtils::CXmlNode oItem;
-					for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
-					{
-						if ( oChilds.GetAt( nIndex, oItem ) )
-						{
-							std::wstring sName = oItem.GetName();
-							WritingElement *pItem = NULL;
-
-							if ( _T("m:dPr") == sName )
-								pItem = new CDelimiterPr( oItem );
-							else if ( _T("m:e") == sName )
-							{
-								pItem = new CElement( oItem );
-								//нужно заранее знать колисество столбцов для отрисовки
-								m_lColumn++;
-							}
-
-							if ( pItem )
-								m_arrItems.push_back( pItem );
-						}
-					}
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				m_lColumn = 0;
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = oReader.GetName();				
-					WritingElement *pItem = NULL;
-
-					if ( _T("m:dPr") == sName )
-						pItem = new CDelimiterPr( oReader );
-					else if ( _T("m:e") == sName )
-					{
-						pItem = new CElement( oReader );
-						//нужно заранее знать колисество столбцов для отрисовки
-						m_lColumn++;
-					}
-
-					if ( pItem )
-						m_arrItems.push_back( pItem );
-					
-				}
-			}
-			virtual std::wstring toXML() const
-			{
-				std::wstring sResult = _T("<m:d>");
-
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        sResult += m_arrItems[i]->toXML();
-                    }
-                }
-				
-				sResult += _T("</m:d>");
-
-				return sResult;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_m_d;
 			}
-		public:
-			// Childs
-			LONG						   m_lColumn;
+
+			LONG m_lColumn;
 		};
 		//--------------------------------------------------------------------------------
 		// CEqArrPr 22.1.2.35 (Array Object)  
@@ -1095,39 +938,13 @@ namespace OOX
 						m_oRSpRule = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const
-			{
-				std::wstring sResult = _T("<m:eqArrPr>");
-
-				if ( m_oBaseJc.IsInit() )
-					sResult += m_oBaseJc->toXML();
-
-				if ( m_oCtrlPr.IsInit() )
-					sResult += m_oCtrlPr->toXML();
-
-				if ( m_oMaxDist.IsInit() )
-					sResult += m_oMaxDist->toXML();
-
-				if ( m_oObjDist.IsInit() )
-					sResult += m_oObjDist->toXML();
-
-				if ( m_oRSp.IsInit() )
-					sResult += m_oRSp->toXML();
-
-				if ( m_oRSpRule.IsInit() )
-					sResult += m_oRSpRule->toXML();
-				
-				sResult += _T("</m:eqArrPr>");
-
-				return sResult;
-			}
+			virtual std::wstring toXML() const;
 
 			virtual EElementType getType() const
 			{
 				return et_m_eqArrPr;
 			}
-		public:				
-			//Childs
+
 			nullable<OOX::Logic::CBaseJc>		m_oBaseJc;
 			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
 			nullable<OOX::Logic::CMaxDist>		m_oMaxDist;
@@ -1218,8 +1035,7 @@ namespace OOX
 			{
 				return et_m_eqArr;
 			}
-		public:
-			// Childs
+
 			LONG    m_lRow;
 		};				
 		//--------------------------------------------------------------------------------
@@ -1284,12 +1100,11 @@ namespace OOX
 
 				return sResult;
 			}
-
 			virtual EElementType getType() const
 			{
 				return et_m_fPr;
 			}
-	//Childs
+
 			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
 			nullable<OOX::Logic::CType>			m_oType;
 		};		
@@ -1352,7 +1167,6 @@ namespace OOX
 				return et_m_f;
 			}
 		
-			//Childs
 			nullable<OOX::Logic::CDen>			m_oDen;
 			nullable<OOX::Logic::CFPr>			m_oFPr;
 			nullable<OOX::Logic::CNum>			m_oNum;
@@ -1417,7 +1231,7 @@ namespace OOX
 			{
 				return et_m_funcPr;
 			}
-	//Childs
+
 			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
 		};		
 		//--------------------------------------------------------------------------------
@@ -1478,7 +1292,7 @@ namespace OOX
 			{
 				return et_m_func;
 			}
-	//Childs
+
 			nullable<OOX::Logic::CElement>		m_oElement;
 			nullable<OOX::Logic::CFName>		m_oFName;
 			nullable<OOX::Logic::CFuncPr>		m_oFuncPr;
@@ -1496,8 +1310,6 @@ namespace OOX
 			virtual ~CGroupChrPr()
 			{
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNodes oChilds;
@@ -1566,8 +1378,6 @@ namespace OOX
 			{
 				return et_m_groupChrPr;
 			}
-		public:				
-			//Childs
 			nullable<OOX::Logic::CChr>			m_oChr;
 			nullable<OOX::Logic::CCtrlPr>		m_oCtrlPr;
 			nullable<OOX::Logic::CPos>			m_oPos;
@@ -1587,8 +1397,6 @@ namespace OOX
 			virtual ~CGroupChr()
 			{
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNodes oChilds;
@@ -1630,8 +1438,7 @@ namespace OOX
 			{
 				return et_m_groupChr;
 			}
-		public:				
-			//Childs
+
 			nullable<OOX::Logic::CElement>		m_oElement;
 			nullable<OOX::Logic::CGroupChrPr>	m_oGroupChrPr;
 		};
@@ -1697,7 +1504,7 @@ namespace OOX
 			{
 				return et_m_limLowPr;
 			}				
-	//Childs
+
 			nullable<OOX::Logic::CCtrlPr> m_oCtrlPr;
 		};		 
 		//--------------------------------------------------------------------------------
@@ -1759,8 +1566,7 @@ namespace OOX
 			{
 				return et_m_limLow;
 			}	
-			
-	//Childs
+
 			nullable<OOX::Logic::CElement>		 m_oElement;
 			nullable<OOX::Logic::CLim>			 m_oLim;
 			nullable<OOX::Logic::CLimLowPr>		 m_oLimLowPr;
@@ -1826,8 +1632,7 @@ namespace OOX
 			{
 				return et_m_limUppPr;
 			}
-		public:				
-			//Childs
+
 			nullable<OOX::Logic::CCtrlPr> m_oCtrlPr;
 		};		
 		//--------------------------------------------------------------------------------
@@ -1843,55 +1648,15 @@ namespace OOX
 			virtual ~CLimUpp()
 			{
 			}
-
-		public:
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlUtils::CXmlNodes oChilds;
-				if ( oNode.GetNodes( _T("*"), oChilds ) )
-				{
-					XmlUtils::CXmlNode oItem;
-					for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
-					{
-						if ( oChilds.GetAt( nIndex, oItem ) )
-						{
-							std::wstring sName = oItem.GetName();
-							WritingElement *pItem = NULL;
-
-							if ( _T("m:e") == sName )
-								m_oElement = new OOX::Logic::CElement( oItem );
-							else if ( _T("m:lim") == sName )
-								m_oLim = new OOX::Logic::CLim( oItem );
-							else if ( _T("m:limUppPr") == sName )
-								m_oLimUppPr = new OOX::Logic::CLimUppPr( oItem );
-						}
-					}
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
-					if ( _T("m:e") == sName )
-						m_oElement = oReader;
-					else if ( _T("m:lim") == sName )
-						m_oLim = oReader;
-					else if ( _T("m:limUppPr") == sName )
-						m_oLimUppPr = oReader;
-				}
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
 
 			virtual EElementType getType() const
 			{
 				return et_m_limUpp;
 			}
-		public:				
-			//Childs
+
 			nullable<OOX::Logic::CElement>		 m_oElement;
 			nullable<OOX::Logic::CLim>			 m_oLim;
 			nullable<OOX::Logic::CLimUppPr>		 m_oLimUppPr;
@@ -1923,8 +1688,8 @@ namespace OOX
 			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<m:mathFont m:val=\"");
-				sResult += m_val.get2();
-				sResult += _T("\" />");
+				sResult += *m_val;
+				sResult += _T("\"/>");
 				return sResult;
 			}
 			virtual EElementType getType() const
@@ -1935,21 +1700,19 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("m:val"), m_val )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 		public:
-			// Attr
-			nullable<std::wstring> m_val;
+			nullable_string m_val;
 		};			 
 
 		//--------------------------------------------------------------------------------
 		// CMathPr 22.1.2.62 (Math Properties) 
 		//--------------------------------------------------------------------------------
-		class CMathPr : public WritingElementWithChilds<>
+		class CMathPr : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CMathPr)
@@ -1959,131 +1722,31 @@ namespace OOX
 			virtual ~CMathPr()
 			{
 			}
-
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlUtils::CXmlNodes oChilds;
-				if ( oNode.GetNodes( _T("*"), oChilds ) )
-				{
-					XmlUtils::CXmlNode oItem;
-					for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
-					{
-						if ( oChilds.GetAt( nIndex, oItem ) )
-						{
-							std::wstring sName = oItem.GetName();
-							WritingElement *pItem = NULL;
-
-							if ( _T("m:brkBin") == sName )
-								pItem = new Logic::CBrkBin( oItem );
-							else if ( _T("m:brkBinSub") == sName )
-								pItem = new CBrkBinSub( oItem );
-							else if ( _T("m:defJc") == sName )
-								pItem = new CDefJc( oItem );
-							else if ( _T("w:dispDef") == sName )
-								pItem = new CDispDef( oItem );
-							else if ( _T("w:interSp") == sName )
-								pItem = new CInterSp( oItem );
-							else if ( _T("m:intLim") == sName )
-								pItem = new CIntLim( oItem );
-							else if ( _T("m:intraSp") == sName )
-								pItem = new CIntraSp( oItem );							
-							else if ( _T("m:lMargin") == sName )
-								pItem = new CLMargin( oItem );
-							else if ( _T("m:mathFont") == sName )
-								pItem = new CMathFont( oItem );
-							else if ( _T("m:naryLim") == sName )
-								pItem = new CNaryLim( oItem );
-							else if ( _T("m:postSp") == sName )
-								pItem = new CPostSp( oItem );
-							else if ( _T("m:preSp") == sName )
-								pItem = new CPreSp( oItem );
-							else if ( _T("m:rMargin") == sName )
-								pItem = new CRMargin( oItem );
-							else if ( _T("m:smallFrac") == sName )
-								pItem = new CSmallFrac( oItem );
-							else if ( _T("m:wrapIndent") == sName )
-								pItem = new CWrapIndent( oItem );
-							else if ( _T("m:wrapRight") == sName )
-								pItem = new CWrapRight( oItem );
-
-							if ( pItem )
-								m_arrItems.push_back( pItem );
-						}
-					}
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = oReader.GetName();				
-					WritingElement *pItem = NULL;
-
-					if ( _T("m:brkBin") == sName )
-						pItem = new Logic::CBrkBin( oReader );
-					else if ( _T("m:brkBinSub") == sName )
-						pItem = new CBrkBinSub( oReader );
-					else if ( _T("m:defJc") == sName )
-						pItem = new CDefJc( oReader );
-					else if ( _T("w:dispDef") == sName )
-						pItem = new CDispDef( oReader );
-					else if ( _T("w:interSp") == sName )
-						pItem = new CInterSp( oReader );
-					else if ( _T("m:intLim") == sName )
-						pItem = new CIntLim( oReader );
-					else if ( _T("m:intraSp") == sName )
-						pItem = new CIntraSp( oReader );							
-					else if ( _T("m:lMargin") == sName )
-						pItem = new CLMargin( oReader );
-					else if ( _T("m:mathFont") == sName )
-						pItem = new CMathFont( oReader );
-					else if ( _T("m:naryLim") == sName )
-						pItem = new CNaryLim( oReader );
-					else if ( _T("m:postSp") == sName )
-						pItem = new CPostSp( oReader );
-					else if ( _T("m:preSp") == sName )
-						pItem = new CPreSp( oReader );
-					else if ( _T("m:rMargin") == sName )
-						pItem = new CRMargin( oReader );
-					else if ( _T("m:smallFrac") == sName )
-						pItem = new CSmallFrac( oReader );
-					else if ( _T("m:wrapIndent") == sName )
-						pItem = new CWrapIndent( oReader );
-					else if ( _T("m:wrapRight") == sName )
-						pItem = new CWrapRight( oReader );
-
-					if ( pItem )
-						m_arrItems.push_back( pItem );
-					
-				}
-			}
-			virtual std::wstring toXML() const
-			{
-                std::wstring sResult = _T("<m:mathPr>");
-
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        sResult += m_arrItems[i]->toXML();
-                    }
-                }
-
-				sResult += _T("</m:mathPr>");
-
-				return sResult;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 
 			virtual EElementType getType() const
 			{
 				return et_m_mathPr;
 			}
-		public:
-			// Childs
+
+			nullable<OOX::Logic::CBrkBin> m_oBrkBin;
+			nullable<OOX::Logic::CBrkBinSub> m_oBrkBinSub;
+			nullable<OOX::Logic::CDefJc> m_oDefJc;
+			nullable<OOX::Logic::CDispDef> m_oDispDef;
+			nullable<OOX::Logic::CInterSp> m_oInterSp;
+			nullable<OOX::Logic::CIntLim> m_oIntLim;
+			nullable<OOX::Logic::CIntraSp> m_oIntraSp;
+			nullable<OOX::Logic::CLMargin> m_oLMargin;
+			nullable<OOX::Logic::CMathFont> m_oMathFont;
+			nullable<OOX::Logic::CNaryLim> m_oNaryLim;
+			nullable<OOX::Logic::CPostSp> m_oPostSp;
+			nullable<OOX::Logic::CPreSp> m_oPreSp;
+			nullable<OOX::Logic::CRMargin> m_oRMargin;
+			nullable<OOX::Logic::CSmallFrac> m_oSmallFrac;
+			nullable<OOX::Logic::CWrapIndent> m_oWrapIndent;
+			nullable<OOX::Logic::CWrapRight> m_oWrapRight;
 		};		
 		//--------------------------------------------------------------------------------
 		// CMcPr 22.1.2.66 (Matrix Column Properties) 
@@ -2098,8 +1761,6 @@ namespace OOX
 			virtual ~CMcPr()
 			{
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNodes oChilds;
@@ -2154,10 +1815,9 @@ namespace OOX
 			{
 				return et_m_mcPr;
 			}
-		public:				
-			//Childs
-			nullable<OOX::Logic::CCount>		m_oCount;
-			nullable<OOX::Logic::CMcJc>			m_oMcJc;
+
+			nullable<OOX::Logic::CCount> m_oCount;
+			nullable<OOX::Logic::CMcJc> m_oMcJc;
 		};		
 		//--------------------------------------------------------------------------------
 		// CMc 22.1.2.64  (Matrix Column)
@@ -2209,8 +1869,8 @@ namespace OOX
 			{
 				return et_m_mc;
 			}
-	//Childs
-			nullable<OOX::Logic::CMcPr>		m_oMcPr;
+
+			nullable<OOX::Logic::CMcPr> m_oMcPr;
 		};		
 		//--------------------------------------------------------------------------------
 		// CMcs 22.1.2.67 (Matrix Columns) 
@@ -2267,7 +1927,6 @@ namespace OOX
 					
 				}
 			}
-
 			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<m:mcs>");
@@ -2283,15 +1942,11 @@ namespace OOX
 				sResult += _T("</m:mcs>");
 
 				return sResult;
-			}
-
-
+			}			
 			virtual EElementType getType() const
 			{
 				return et_m_mcs;
 			}
-		public:				
-			//Childs
 		};
 		//--------------------------------------------------------------------------------
 		// CMPr 22.1.2.68   (Matrix Properties) 
@@ -2310,106 +1965,15 @@ namespace OOX
 			{
 				fromXML( oReader );
 			}
-
-		public:
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlUtils::CXmlNodes oChilds;
-				if ( oNode.GetNodes( _T("*"), oChilds ) )
-				{
-					XmlUtils::CXmlNode oItem;
-					for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
-					{
-						if ( oChilds.GetAt( nIndex, oItem ) )
-						{
-							std::wstring sName = oItem.GetName();
-							WritingElement *pItem = NULL;
-
-							if ( _T("m:baseJc") == sName )
-								m_oBaseJc = new OOX::Logic::CBaseJc( oItem );
-							else if ( _T("m:cGp") == sName )
-								m_oCGp = new OOX::Logic::CCGp( oItem );
-							else if ( _T("m:cGpRule") == sName )
-								m_oCGpRule = new OOX::Logic::CCGpRule( oItem );
-							else if ( _T("m:cSp") == sName )
-								m_oCSp = new OOX::Logic::CCSp( oItem );
-							else if ( _T("m:ctrlPr") == sName )
-								m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
-							else if ( _T("m:mcs") == sName )
-								m_oMcs = new OOX::Logic::CMcs( oItem );
-							else if ( _T("m:plcHide") == sName )
-								m_oPlcHide = new OOX::Logic::CPlcHide( oItem );
-							else if ( _T("m:rSp") == sName )
-								m_oRSp = new OOX::Logic::CRSp( oItem );
-							else if ( _T("m:rSpRule") == sName )
-								m_oRSpRule = new OOX::Logic::CRSpRule( oItem );
-						}
-					}
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
-
-					if ( _T("m:baseJc") == sName )
-						m_oBaseJc = oReader;
-					else if ( _T("m:cGp") == sName )
-						m_oCGp = oReader;						
-					else if ( _T("m:cGpRule") == sName )
-						m_oCGpRule = oReader;
-					else if ( _T("m:cSp") == sName )
-						m_oCSp = oReader;
-					else if ( _T("m:ctrlPr") == sName )
-						m_oCtrlPr = oReader;
-					else if ( _T("m:mcs") == sName )
-						m_oMcs = oReader;
-					else if ( _T("m:plcHide") == sName )
-						m_oPlcHide = oReader;
-					else if ( _T("m:rSp") == sName )
-						m_oRSp = oReader;
-					else if ( _T("m:rSpRule") == sName )
-						m_oRSpRule = oReader;							
-				}
-			}
-			virtual std::wstring toXML() const
-			{
-				std::wstring sResult = _T("<m:mPr>");
-
-				if ( m_oBaseJc.IsInit() )
-					sResult += m_oBaseJc->toXML();
-				if ( m_oCGp.IsInit() )
-					sResult += m_oCGp->toXML();
-				if ( m_oCGpRule.IsInit() )
-					sResult += m_oCGpRule->toXML();
-				if ( m_oCSp.IsInit() )
-					sResult += m_oCSp->toXML();
-				if ( m_oCtrlPr.IsInit() )
-					sResult += m_oCtrlPr->toXML();
-				if ( m_oMcs.IsInit() )
-					sResult += m_oMcs->toXML();
-				if ( m_oPlcHide.IsInit() )
-					sResult += m_oPlcHide->toXML();
-				if ( m_oRSp.IsInit() )
-					sResult += m_oRSp->toXML();
-				if ( m_oRSpRule.IsInit() )
-					sResult += m_oRSpRule->toXML();
-				
-				sResult += _T("</m:mPr>");
-
-				return sResult;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 
 			virtual EElementType getType() const
 			{
 				return et_m_mPr;
 			}
-		public:
-			// Childs
+
 			nullable<OOX::Logic::CBaseJc>		m_oBaseJc;
 			nullable<OOX::Logic::CCGp>			m_oCGp;
 			nullable<OOX::Logic::CCGpRule>		m_oCGpRule;
@@ -2419,7 +1983,6 @@ namespace OOX
 			nullable<OOX::Logic::CPlcHide>		m_oPlcHide;
 			nullable<OOX::Logic::CRSp>			m_oRSp;
 			nullable<OOX::Logic::CRSpRule>		m_oRSpRule;
-
 		};
 		//--------------------------------------------------------------------------------
 		// CMr 22.1.2.69 (Matrix Row)
@@ -2511,8 +2074,7 @@ namespace OOX
 			{
 				return m_lCol;
 			}
-		public:
-			// Childs
+
 			LONG	 m_lCol;
 		};
 		//--------------------------------------------------------------------------------
@@ -2603,7 +2165,7 @@ namespace OOX
 			{
 				return et_m_m;
 			}
-	// Childs
+
 			LONG m_lRow;
 		};
 		//--------------------------------------------------------------------------------
@@ -2619,89 +2181,15 @@ namespace OOX
 			virtual ~CNaryPr()
 			{
 			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlUtils::CXmlNodes oChilds;
-				if ( oNode.GetNodes( _T("*"), oChilds ) )
-				{
-					XmlUtils::CXmlNode oItem;
-					for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
-					{
-						if ( oChilds.GetAt( nIndex, oItem ) )
-						{
-							std::wstring sName = oItem.GetName();
-							WritingElement *pItem = NULL;
-
-							if ( _T("m:ctrlPr") == sName )
-								m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
-							else if ( _T("m:chr") == sName )
-								m_oChr = new OOX::Logic::CChr( oItem );
-							else if ( _T("m:grow") == sName )
-								m_oGrow = new OOX::Logic::CGrow( oItem );
-							else if ( _T("m:limLoc") == sName )
-								m_oLimLoc = new OOX::Logic::CLimLoc( oItem );
-							else if ( _T("m:subHide") == sName )
-								m_oSubHide = new OOX::Logic::CSubHide( oItem );
-							else if ( _T("m:supHide") == sName )
-								m_oSupHide = new OOX::Logic::CSupHide( oItem );
-						}
-					}
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
-					if ( _T("m:chr") == sName )
-						m_oChr = oReader;
-					else if ( _T("m:ctrlPr") == sName )
-						m_oCtrlPr = oReader;
-					else if ( _T("m:grow") == sName )
-						m_oGrow = oReader;
-					else if ( _T("m:limLoc") == sName )
-						m_oLimLoc = oReader;
-					else if ( _T("m:subHide") == sName )
-						m_oSubHide = oReader;
-					else if ( _T("m:supHide") == sName )
-						m_oSupHide = oReader;
-				}
-			}
-			virtual std::wstring toXML() const
-			{
-				std::wstring sResult = _T("<m:naryPr>");
-
-				if ( m_oChr.IsInit() )
-					sResult += m_oChr->toXML();
-
-				if ( m_oCtrlPr.IsInit() )
-					sResult += m_oCtrlPr->toXML();
-
-				if ( m_oGrow.IsInit() )
-					sResult += m_oGrow->toXML();
-
-				if ( m_oLimLoc.IsInit() )
-					sResult += m_oLimLoc->toXML();
-
-				if ( m_oSubHide.IsInit() )
-					sResult += m_oSubHide->toXML();
-
-				if ( m_oSupHide.IsInit() )
-					sResult += m_oSupHide->toXML();
-				
-				sResult += _T("</m:naryPr>");
-
-				return sResult;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 
 			virtual EElementType getType() const
 			{
 				return et_m_naryPr;
 			}
-	//Childs
+
 			nullable<OOX::Logic::CChr>				m_oChr;
 			nullable<OOX::Logic::CCtrlPr>			m_oCtrlPr;
 			nullable<OOX::Logic::CGrow>				m_oGrow;
@@ -2771,7 +2259,7 @@ namespace OOX
 			{
 				return et_m_nary;
 			}
-	//Childs
+
 			nullable<OOX::Logic::CElement>		m_oElement;
 			nullable<OOX::Logic::CNaryPr>		m_oNaryPr;
 			nullable<OOX::Logic::CSub>			m_oSub;
@@ -2839,7 +2327,7 @@ namespace OOX
 			{
 				return et_m_oMathParaPr;
 			}
-	//Childs			
+	
 			nullable<OOX::Logic::CMJc>  m_oMJc;
 		};			
 		//--------------------------------------------------------------------------------
@@ -2937,7 +2425,7 @@ namespace OOX
 			{
 				return et_m_phantPr;
 			}
-	//Childs			
+		
 			nullable<OOX::Logic::CCtrlPr>			m_oCtrlPr;
 			nullable<OOX::Logic::CShow>				m_oShow;
 			nullable<OOX::Logic::CTransp>			m_oTransp;
@@ -2999,7 +2487,7 @@ namespace OOX
 			{
 				return et_m_phant;
 			}
-	//Childs			
+			
 			nullable<OOX::Logic::CElement>  m_oElement;
 			nullable<OOX::Logic::CPhantPr>  m_oPhantPr;
 		};
@@ -3046,14 +2534,11 @@ namespace OOX
 
 				return sResult;
 			}
-
 			virtual EElementType getType() const
 			{
 				return et_m_t;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.GetAttributesCount() <= 0 )
@@ -3080,11 +2565,8 @@ namespace OOX
 				oReader.MoveToElement();
 			}
 		public:
-	// Attributes
 			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
-	// Value
-			std::wstring						m_sText;
-
+			std::wstring m_sText;
 		};		
 		//--------------------------------------------------------------------------------
 		// CMRPr 22.1.2.91   (Run Properties) 
@@ -3099,94 +2581,20 @@ namespace OOX
 			virtual ~CMRPr()
 			{
 			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlUtils::CXmlNodes oChilds;
-				if ( oNode.GetNodes( _T("*"), oChilds ) )
-				{
-					XmlUtils::CXmlNode oItem;
-					for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
-					{
-						if ( oChilds.GetAt( nIndex, oItem ) )
-						{
-							std::wstring sName = oItem.GetName();
-							WritingElement *pItem = NULL;
-
-							if ( _T("m:aln") == sName )
-								m_oAln = new OOX::Logic::CAln( oItem );
-							else if ( _T("m:brk") == sName )
-								m_oBrk = new OOX::Logic::CBrk( oItem );
-							else if ( _T("m:lit") == sName )
-								m_oLit = new OOX::Logic::CLit( oItem );
-							else if ( _T("m:nor") == sName )
-								m_oNor = new OOX::Logic::CNor( oItem );
-							else if ( _T("m:scr") == sName )
-								m_oScr = new OOX::Logic::CScr( oItem );
-							else if ( _T("m:sty") == sName )
-								m_oSty = new OOX::Logic::CSty( oItem );
-						}
-					}
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
-					if ( _T("m:aln") == sName )
-						m_oAln = oReader;
-					else if ( _T("m:brk") == sName )
-						m_oBrk = oReader;
-					else if ( _T("m:lit") == sName )
-						m_oLit = oReader;
-					else if ( _T("m:nor") == sName )
-						m_oNor = oReader;
-					else if ( _T("m:scr") == sName )
-						m_oScr = oReader;
-					else if ( _T("m:sty") == sName )
-						m_oSty = oReader;
-				}
-			}
-			virtual std::wstring toXML() const
-			{
-				std::wstring sResult = _T("<m:rPr>");
-				
-				if ( m_oAln.IsInit() )
-					sResult += m_oAln->toXML();
-
-				if ( m_oBrk.IsInit() )
-					sResult += m_oBrk->toXML();
-
-				if ( m_oLit.IsInit() )
-					sResult += m_oLit->toXML();
-
-				if ( m_oNor.IsInit() )
-					sResult += m_oNor->toXML();
-
-				if ( m_oScr.IsInit() )
-					sResult += m_oScr->toXML();
-
-				if ( m_oSty.IsInit() )
-					sResult += m_oSty->toXML();
-
-				sResult += _T("</m:rPr>");
-				return sResult;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 
 			virtual EElementType getType() const
 			{
 				return et_m_rPr;
 			}
-	//Childs
-			nullable<OOX::Logic::CAln>			m_oAln;
-			nullable<OOX::Logic::CBrk>			m_oBrk;
-			nullable<OOX::Logic::CLit>			m_oLit;
-			nullable<OOX::Logic::CNor>			m_oNor;
-			nullable<OOX::Logic::CScr>			m_oScr;
-			nullable<OOX::Logic::CSty>			m_oSty;
+			nullable<OOX::Logic::CAln> m_oAln;
+			nullable<OOX::Logic::CBrk> m_oBrk;
+			nullable<OOX::Logic::CLit> m_oLit;
+			nullable<OOX::Logic::CNor> m_oNor;
+			nullable<OOX::Logic::CScr> m_oScr;
+			nullable<OOX::Logic::CSty> m_oSty;
 		};		
 		class CMDel;
 		class CMIns;

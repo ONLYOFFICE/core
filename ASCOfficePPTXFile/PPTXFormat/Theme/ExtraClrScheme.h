@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_THEME_EXTRACLRSCHEME_INCLUDE_H_
-#define PPTX_THEME_EXTRACLRSCHEME_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "ClrScheme.h"
@@ -122,5 +120,3 @@ namespace PPTX
 		};
 	} // namespace nsTheme
 } // namespace PPTX
-
-#endif // PPTX_THEME_EXTRACLRSCHEME_INCLUDE_H

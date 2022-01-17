@@ -127,8 +127,8 @@ namespace OOX {
 					OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
 					if(OOX::CSettingsCustom::GetSchemaUrl() == pCustomXml->GetSchemaUrl())
 					{
-						pCustomXml->bUsed = true;
-						return pCustomXml->m_sXml;
+						pCustomXml->m_bUsed = true;
+						return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pCustomXml->m_sXmlA.c_str(), pCustomXml->m_sXmlA.length());
 					}
 				}
 			}

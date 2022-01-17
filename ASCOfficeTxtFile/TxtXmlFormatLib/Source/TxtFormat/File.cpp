@@ -33,7 +33,7 @@
 #include "../Common/Utility.h"
 #include "TxtFile.h"
 
-#include "../../../DesktopEditor/common/File.h"
+#include "../../../../DesktopEditor/common/File.h"
 
 
 namespace Txt

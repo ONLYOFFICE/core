@@ -60,27 +60,3 @@ public:
 		StreamUtils::StreamSkip(2, pStream);
 	}
 };
-
-class CRecordRoundTripHFPlaceholder12Atom : public CUnknownRecord
-{
-public:
-	BYTE m_nPlacementID;
-
-public:
-	
-	CRecordRoundTripHFPlaceholder12Atom()
-	{
-	}
-
-	~CRecordRoundTripHFPlaceholder12Atom()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-
-		m_nPlacementID	= StreamUtils::ReadBYTE(pStream);
-	}
-};
-

@@ -540,8 +540,8 @@ void CPPTUserInfo::FromDocument()
         if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
         {
             m_bHasDate			=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate/* ||
-                                                                    oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
-                                                                    oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
+                                                                            oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
+                                                                            oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
             m_bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
             m_bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
@@ -735,8 +735,8 @@ void CPPTUserInfo::LoadNotes(_UINT32 dwNoteID, CSlide* pNotes)
         if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
         {
             bHasDate		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate/* ||
-                                                                oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
-                                                                oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
+                                                                        oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
+                                                                        oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
             bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
             bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
@@ -967,8 +967,8 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
         if (oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom)
         {
             bHasDate		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasDate/* ||
-                                                                oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
-                                                                oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
+                                                                        oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasTodayDate ||
+                                                                        oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasUserDate*/;
             bHasFooter		=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasFooter;
             bHasSlideNumber	=	oArrayHeadersFootersInfo[0]->m_oHeadersFootersAtom->m_bHasSlideNumber;
 
@@ -1057,7 +1057,7 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
     if (!pGroupContainer) return;
     if (pGroupContainer->m_arRecords.empty()) return;
 
-    LoadAutoNumbering(pGroupContainer, pTheme);
+//    LoadAutoNumbering(pGroupContainer, pTheme);
 
     CRecordShapeContainer* pShapeGroup = dynamic_cast<CRecordShapeContainer*>(pGroupContainer->m_arRecords[0]);
 
@@ -1094,7 +1094,7 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
                 CElementPtr pElement = pShapeGroup->GetElement(m_current_level > 1, &m_oExMedia, pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
 
                 CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
-
+                LoadBulletBlip(pShape);
                 if (NULL != pElement)
                 {
                     pElement->m_pParentElements = pParentElements;
@@ -1141,6 +1141,7 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
         m_current_elements =  m_current_elements->front()->m_pParentElements;
     }
 }
+
 CElementPtr CPPTUserInfo::AddLayoutSlidePlaceholder (CSlide *pSlide, int placeholderType, CLayout *pLayout, bool idx_only)
 {
     CElementPtr pElement;
@@ -1429,7 +1430,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
         // title нужно грузить как обычный слайд.
         return;
     }
-    std::vector<CRecordTripCompositeMasterId12Atom*> oArrayCompId;
+    std::vector<RoundTripCompositeMasterId12Atom*> oArrayCompId;
     pMaster->GetRecordsByType(&oArrayCompId, false, true);
     if (0 != oArrayCompId.size())
     {
@@ -1443,7 +1444,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
     bool bMasterBackGround	= oArraySlideAtoms[0]->m_bMasterBackground;
     bool bMasterObjects		= oArraySlideAtoms[0]->m_bMasterObjects;
 
-    std::vector<CRecordTripOriginalMasterId12Atom*> oArrayOrigId;
+    std::vector<RoundTripOriginalMainMasterId12Atom*> oArrayOrigId;
     pMaster->GetRecordsByType(&oArrayOrigId, false, true);
 
     if (0 != oArrayOrigId.size())
@@ -1632,18 +1633,6 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
         }
     }
     int lLayoutID = AddNewLayout(pTheme, pMaster, false, true);
-
-
-    for (auto& oMaster : m_mapMasters)
-        if (oMaster.second != nullptr)
-            oMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
-//    for (auto& oNoteMaster : m_mapNotesMasters)
-//        if (oNoteMaster.second != nullptr)
-//            oNoteMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
-
-//    for (auto& oHandoutMaster : m_mapHandoutMasters)
-//        if (oHandoutMaster.second != nullptr)
-//        oHandoutMaster.second->GetRecordsByType(&pTheme->m_arrZipXml, false);
 
     if (lLayoutID >= 0 && false == pTheme->m_arLayouts.empty())
     {
@@ -1889,7 +1878,7 @@ void CPPTUserInfo::LoadNoMainMaster(_UINT32 dwMasterID)
 
     if (0 == dwID)
     {
-        std::vector<CRecordTripCompositeMasterId12Atom*> oArrayCompId;
+        std::vector<RoundTripCompositeMasterId12Atom*> oArrayCompId;
         pCurMaster->GetRecordsByType(&oArrayCompId, false, true);
         if (0 != oArrayCompId.size())
         {
@@ -2396,7 +2385,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
         oInfo.m_dwID = pExHyperlink->m_exHyperlinkAtom.m_nHyperlinkID;
 
         bool wasSlide = false;
-//        bool wasLink = false;
+        //        bool wasLink = false;
 
         // it isn't normal that here we should catch slide number.
         if (pExHyperlink->m_friendlyNameAtom.IsInit())
@@ -2595,7 +2584,7 @@ void CPPTUserInfo::LoadAutoNumbering(CRecordGroupShapeContainer *pGroupContainer
             if (prog->m_pTagName && prog->m_pTagContainer && prog->m_pTagName->m_strText == ___PPT9)
             {
                 auto styleTextPropAtom = dynamic_cast<CRecordPP9ShapeBinaryTagExtension*>(prog->m_pTagContainer)->m_styleTextPropAtom;
-                for (auto prop9 : styleTextPropAtom.m_rgStyleTextProp9)
+                for (auto& prop9 : styleTextPropAtom.m_rgStyleTextProp9)
                 {
                     if (prop9.m_pf9.m_optBulletAutoNumberScheme.is_init())
                     {
@@ -2608,6 +2597,39 @@ void CPPTUserInfo::LoadAutoNumbering(CRecordGroupShapeContainer *pGroupContainer
                 }
             }
 
+        }
+    }
+}
+
+void CPPTUserInfo::LoadBulletBlip(CShapeElement *pShape)
+{
+    if (pShape == nullptr || pShape->m_pShape == nullptr) return;
+    std::vector<CRecordDocInfoListContainer*> arrDocInfoCont;
+    m_oDocument.GetRecordsByType(&arrDocInfoCont, false, true);
+
+    if (arrDocInfoCont.empty())
+        return;
+    auto& arrPars = pShape->m_pShape->m_oText.m_arParagraphs;
+
+    // TODO need to find BlipEntity;
+    IRecord* pRecPPT9 = arrDocInfoCont[0]->getDocBinaryTagExtension(___PPT9);
+    auto* pProgBinaryTag = dynamic_cast<CRecordPP9DocBinaryTagExtension*>(pRecPPT9);
+    if (pProgBinaryTag == nullptr || !pProgBinaryTag->m_blipCollectionContainer.is_init())
+        return;
+
+    const auto& arrBlipEntity = pProgBinaryTag->m_blipCollectionContainer.get().m_rgBlipEntityAtom;
+    if(arrBlipEntity.empty())
+        return;
+
+    for (auto& par : arrPars)
+    {
+        if (par.m_oPFRun.bulletBlip.IsInit())
+        {
+            auto& buBlip = par.m_oPFRun.bulletBlip.get();
+            if (buBlip.bulletBlipRef >= 0 && (UINT)buBlip.bulletBlipRef < arrBlipEntity.size())
+            {
+                buBlip.tmpImagePath = arrBlipEntity[buBlip.bulletBlipRef]->getTmpImgPath();
+            }
         }
     }
 }

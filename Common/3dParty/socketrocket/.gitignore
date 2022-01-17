@@ -1,0 +1,4 @@
+*
+# Except this file
+!.gitignore
+!socketrocket.pri

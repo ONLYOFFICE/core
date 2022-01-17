@@ -68,7 +68,6 @@ namespace NSDirectory
     KERNEL_DECL void GetFiles2(std::wstring strDirectory, std::vector<std::wstring>& oArray, bool bIsRecursion = false);
 
     KERNEL_DECL std::vector<std::wstring> GetFiles(std::wstring strDirectory, bool bIsRecursion = false);
-    KERNEL_DECL std::vector<std::wstring> GrepPaths(const std::vector<std::wstring>& paths, const std::wstring& strRegEx);
     KERNEL_DECL std::vector<std::wstring> GetDirectories(std::wstring strDirectory);
     KERNEL_DECL bool Exists(const std::wstring& strDirectory);
     KERNEL_DECL bool CreateDirectory(const std::wstring& strDirectory);

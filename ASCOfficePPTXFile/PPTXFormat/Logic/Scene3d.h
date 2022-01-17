@@ -47,7 +47,7 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(Scene3d)
-			PPTX_LOGIC_BASE2(Scene3d)
+			Scene3d() : m_namespace(L"a") {}
 
 			virtual OOX::EElementType getType() const
 			{
@@ -57,6 +57,8 @@ namespace PPTX
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
+
+                m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
@@ -88,7 +90,7 @@ namespace PPTX
 				oValue.WriteNullable(lightRig);
 				oValue.WriteNullable(backdrop);
 
-				return XmlUtils::CreateNode(L"a:scene3d", oValue);
+				return XmlUtils::CreateNode(m_namespace + L":scene3d", oValue);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -145,7 +147,9 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(L"a:scene3d");
+				std::wstring name_ = m_namespace + L":scene3d";
+
+				pWriter->StartNode(name_);
 				
 				pWriter->StartAttributes();
 				pWriter->EndAttributes();
@@ -154,12 +158,14 @@ namespace PPTX
 				pWriter->Write(lightRig);
 				pWriter->Write(backdrop);
 
-				pWriter->EndNode(L"a:scene3d");	
+				pWriter->EndNode(name_);
 			}
 
 			nullable<Camera>	camera;
 			nullable<LightRig>	lightRig;
 			nullable<Backdrop>	backdrop;
+
+            std::wstring m_namespace;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

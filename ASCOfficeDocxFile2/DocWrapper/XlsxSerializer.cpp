@@ -42,7 +42,6 @@
 #include "ChartWriter.h"
 
 #include "../BinReader/DefaultThemeWriter.h"
-//#include "../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 
 namespace BinXlsxRW{
 	int g_nCurFormatVersion = 0;
@@ -99,16 +98,16 @@ namespace BinXlsxRW{
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;		
 		return oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions, m_bIsMacro);
 	}
-    _UINT32 CXlsxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions)
+	_UINT32 CXlsxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions)
 	{
 		COfficeFontPicker* pFontPicker = new COfficeFontPicker();
 		pFontPicker->Init(m_sFontDir);
-        NSFonts::IFontManager* pFontManager = pFontPicker->get_FontManager();
+		NSFonts::IFontManager* pFontManager = pFontPicker->get_FontManager();
 		DocWrapper::FontProcessor fp;
 		fp.setFontManager(pFontManager);
-		
+
 		NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager = NULL;
-        if(false == m_sEmbeddedFontsDir.empty())
+		if (false == m_sEmbeddedFontsDir.empty())
 		{
 			NSDirectory::CreateDirectory(m_sEmbeddedFontsDir);
 
@@ -121,12 +120,12 @@ namespace BinXlsxRW{
 			//pEmbeddedFontsManager добавляются все цифры
 			//для заголовков
 			pEmbeddedFontsManager->CheckFont(_T("Calibri"), pFontManager);
-            pEmbeddedFontsManager->CheckString(std::wstring(_T("ABCDEFGHIJKLMNOPQRSTUVWXYZ")));
+			pEmbeddedFontsManager->CheckString(std::wstring(_T("ABCDEFGHIJKLMNOPQRSTUVWXYZ")));
 
 			//дополнение для ошибок "#NULL!", "#DIV/0!"...
-            pEmbeddedFontsManager->CheckString(std::wstring(_T("#!/?")));
+			pEmbeddedFontsManager->CheckString(std::wstring(_T("#!/?")));
 			//дополнение для num форматов по умолчанию с id от 0 до 49
-            pEmbeddedFontsManager->CheckString(std::wstring(_T(".%E+-():")));
+			pEmbeddedFontsManager->CheckString(std::wstring(_T(".%E+-():")));
 		}
 
 		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
@@ -140,7 +139,19 @@ namespace BinXlsxRW{
 		RELEASEOBJECT(pFontPicker);
 		return result;
 	}
- 	bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader* pReader, long lLength, NSCommon::smart_ptr<OOX::File> &file, const int& nChartNumber)
+	_UINT32 CXlsxSerializer::xml2Xlsx(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions)
+	{
+		std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
+
+		NSBinPptxRW::CDrawingConverter oDrawingConverter;
+
+		oDrawingConverter.SetDstPath(sDstPath + FILE_SEPARATOR_STR + L"xl");
+		oDrawingConverter.SetSrcPath(strFileInDir, 2);
+
+		BinXlsxRW::BinaryFileReader oBinaryFileReader;
+		return oBinaryFileReader.Xml2Xlsx(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions, m_bIsMacro);
+	}
+ 	bool CXlsxSerializer::saveChart(NSBinPptxRW::CBinaryFileReader* pReader, long lLength, NSCommon::smart_ptr<OOX::File> &file)
 	{
 		if (NULL == pReader) return false;
 		if (NULL == m_pExternalDrawingConverter) return false;
@@ -181,7 +192,7 @@ namespace BinXlsxRW{
 		NSCommon::smart_ptr<OOX::Spreadsheet::CChartFile> chart_file = file.smart_dynamic_cast<OOX::Spreadsheet::CChartFile>();
 		if (chart_file.IsInit())
 		{
-			sFileName = L"chart" + std::to_wstring(nChartNumber) + L".xml";
+			sFileName = L"chart" + std::to_wstring(chart_file->GetGlobalNumber()) + L".xml";
 			
 			bResult = (0 == oBinaryChartReader.ReadCT_ChartFile(lLength, chart_file.GetPointer()));
 
@@ -217,7 +228,7 @@ namespace BinXlsxRW{
 			NSCommon::smart_ptr<OOX::Spreadsheet::CChartExFile> chartEx_file = file.smart_dynamic_cast<OOX::Spreadsheet::CChartExFile>();
 			if (chartEx_file.IsInit())
 			{		
-				sFileName = L"chartEx" + std::to_wstring(nChartNumber) + L".xml";
+				sFileName = L"chartEx" + std::to_wstring(chartEx_file->GetGlobalNumber()) + L".xml";
 
 				bResult = (0 == oBinaryChartReader.ReadCT_ChartExFile(lLength, chartEx_file.GetPointer()));
 				

@@ -67,6 +67,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/CustomXml.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Comments/ThreadedComments.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Slicer/SlicerCache.h"
@@ -2557,6 +2558,20 @@ int BinaryWorkbookTableReader::ReadProtection(BYTE type, long length, void* poRe
 	{
 		m_oWorkbook.m_oWorkbookProtection->m_oWorkbookSaltValue = m_oBufferedStream.GetString4(length);
 	}
+	else if (c_oSerWorkbookProtection::Password == type)
+	{
+		m_oWorkbook.m_oWorkbookProtection->m_oPassword = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerWorkbookProtection::LockStructure == type)
+	{
+		m_oWorkbook.m_oWorkbookProtection->m_oLockStructure.Init();
+		m_oWorkbook.m_oWorkbookProtection->m_oLockStructure->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorkbookProtection::LockWindows == type)
+	{
+		m_oWorkbook.m_oWorkbookProtection->m_oLockWindows.Init();
+		m_oWorkbook.m_oWorkbookProtection->m_oLockWindows->FromBool(m_oBufferedStream.GetBool());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -2567,12 +2582,12 @@ int BinaryWorkbookTableReader::ReadWorkbookPr(BYTE type, long length, void* poRe
 	if(c_oSerWorkbookPrTypes::Date1904 == type)
 	{
 		m_oWorkbook.m_oWorkbookPr->m_oDate1904.Init();
-		m_oWorkbook.m_oWorkbookPr->m_oDate1904->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+		m_oWorkbook.m_oWorkbookPr->m_oDate1904->FromBool(m_oBufferedStream.GetBool());
 	}
 	else if(c_oSerWorkbookPrTypes::DateCompatibility == type)
 	{
 		m_oWorkbook.m_oWorkbookPr->m_oDateCompatibility.Init();
-		m_oWorkbook.m_oWorkbookPr->m_oDateCompatibility->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+		m_oWorkbook.m_oWorkbookPr->m_oDateCompatibility->FromBool(m_oBufferedStream.GetBool());
 	}
 	else if(c_oSerWorkbookPrTypes::HidePivotFieldList == type)
 	{
@@ -3698,8 +3713,7 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	SEEK_TO_POS_END2();
 	if(!oSheetFormatPr.m_oDefaultRowHeight.IsInit())
 	{
-		oSheetFormatPr.m_oDefaultRowHeight.Init();
-		oSheetFormatPr.m_oDefaultRowHeight->SetValue(15);
+		oSheetFormatPr.m_oDefaultRowHeight = 15.;
 	}
 	oSheetFormatPr.toXML(oStreamWriter);
 //-------------------------------------------------------------------------------------------------------------
@@ -4062,108 +4076,107 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 }
 void BinaryWorksheetsTableReader::WriteComments()
 {
-	if(false == m_pCurWorksheet->m_mapComments.empty())
+	if (m_pCurWorksheet->m_mapComments.empty()) return;
+
+	m_pCurVmlDrawing->m_mapComments = &m_pCurWorksheet->m_mapComments;
+
+	boost::unordered_map<std::wstring, unsigned int> mapByAuthors;
+	OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments(NULL);
+
+	pComments->m_oCommentList.Init();
+	std::vector<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
+
+	pComments->m_oAuthors.Init();
+
+	OOX::Spreadsheet::CThreadedComments* pThreadedComments = NULL;
+
+	for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
 	{
-		m_pCurVmlDrawing->m_mapComments = &m_pCurWorksheet->m_mapComments;
-
-		boost::unordered_map<std::wstring, unsigned int> mapByAuthors;
-		OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments(NULL);
-
-		pComments->m_oCommentList.Init();
-		std::vector<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
-
-		pComments->m_oAuthors.Init();
-
-		OOX::Spreadsheet::CThreadedComments* pThreadedComments = NULL;
-
-		for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
+		OOX::Spreadsheet::CCommentItem* pCommentItem = it->second;
+		if (pCommentItem->IsValid())
 		{
-			OOX::Spreadsheet::CCommentItem* pCommentItem = it->second;
-			if(pCommentItem->IsValid())
+			OOX::Spreadsheet::CComment* pNewComment = new OOX::Spreadsheet::CComment();
+			if (pCommentItem->m_nRow.IsInit() && pCommentItem->m_nCol.IsInit())
 			{
-				OOX::Spreadsheet::CComment* pNewComment = new OOX::Spreadsheet::CComment();
-				if(pCommentItem->m_nRow.IsInit() && pCommentItem->m_nCol.IsInit())
-				{
-					pNewComment->m_oRef.Init();
-					pNewComment->m_oRef->SetValue(OOX::Spreadsheet::CCell::combineRef(pCommentItem->m_nRow.get(), pCommentItem->m_nCol.get()));
-				}
-				if(NULL != pCommentItem->m_pThreadedComment)
-				{
-					if(NULL == pThreadedComments)
-					{
-						pThreadedComments = new OOX::Spreadsheet::CThreadedComments(NULL);
-						NSCommon::smart_ptr<OOX::File> pThreadedCommentsFile(pThreadedComments);
-						m_pCurWorksheet->Add(pThreadedCommentsFile);
-					}
-					OOX::Spreadsheet::CThreadedComment* pThreadedComment = pCommentItem->m_pThreadedComment;
-					if( pNewComment->m_oRef.IsInit())
-					{
-						pThreadedComment->ref = pNewComment->m_oRef->ToString();
-					}
-					if(!pThreadedComment->id.IsInit())
-					{
-						pThreadedComment->id = L"{" + XmlUtils::GenerateGuid() + L"}";
-					}
-					pNewComment->m_oUid = pThreadedComment->id->ToString();
-					pCommentItem->m_sAuthor = L"tc=" + pThreadedComment->id->ToString();
-
-					pCommentItem->m_oText.Init();
-					nullable<std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>> mapPersonList;
-					if (m_oWorkbook.m_pPersonList)
-					{
-						mapPersonList = m_oWorkbook.m_pPersonList->GetPersonList();
-					}
-					BinaryCommentReader::addThreadedComment(pCommentItem->m_oText.get2(), pThreadedComment, mapPersonList);
-
-					pThreadedComments->m_arrItems.push_back(pThreadedComment);
-					for(size_t i = 0; i < pThreadedComment->m_arrReplies.size(); ++i)
-					{
-						pThreadedComment->m_arrReplies[i]->parentId = pThreadedComment->id->ToString();
-						pThreadedComment->m_arrReplies[i]->ref = pThreadedComment->ref.get();
-						if(!pThreadedComment->m_arrReplies[i]->id.IsInit())
-						{
-							pThreadedComment->m_arrReplies[i]->id = L"{" + XmlUtils::GenerateGuid() + L"}";
-						}
-						pThreadedComments->m_arrItems.push_back(pThreadedComment->m_arrReplies[i]);
-					}
-				}
-
-				if(pCommentItem->m_sAuthor.IsInit())
-				{
-					const std::wstring& sAuthor = pCommentItem->m_sAuthor.get();
-					boost::unordered_map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
-
-					int nAuthorId;
-					if(pFind != mapByAuthors.end())
-						nAuthorId = (int)pFind->second;
-					else
-					{
-						nAuthorId = (int)mapByAuthors.size();
-
-						mapByAuthors.insert(std::make_pair(sAuthor, nAuthorId));
-
-						pComments->m_oAuthors->m_arrItems.push_back( sAuthor );
-					}
-					pNewComment->m_oAuthorId.Init();
-					pNewComment->m_oAuthorId->SetValue(nAuthorId);
-				}
-				pNewComment->m_oText.reset(pCommentItem->m_oText.GetPointerEmptyNullable());
-
-				aComments.push_back(pNewComment);
+				pNewComment->m_oRef.Init();
+				pNewComment->m_oRef->SetValue(OOX::Spreadsheet::CCell::combineRef(pCommentItem->m_nRow.get(), pCommentItem->m_nCol.get()));
 			}
-			else if(NULL != pCommentItem->m_pThreadedComment)
+			if (NULL != pCommentItem->m_pThreadedComment)
 			{
-				RELEASEOBJECT(pCommentItem->m_pThreadedComment);
-				for(size_t i = 0; i < pCommentItem->m_pThreadedComment->m_arrReplies.size(); ++i)
+				if (NULL == pThreadedComments)
 				{
-					RELEASEOBJECT(pCommentItem->m_pThreadedComment->m_arrReplies[i]);
+					pThreadedComments = new OOX::Spreadsheet::CThreadedComments(NULL);
+					NSCommon::smart_ptr<OOX::File> pThreadedCommentsFile(pThreadedComments);
+					m_pCurWorksheet->Add(pThreadedCommentsFile);
 				}
+				OOX::Spreadsheet::CThreadedComment* pThreadedComment = pCommentItem->m_pThreadedComment;
+				if (pNewComment->m_oRef.IsInit())
+				{
+					pThreadedComment->ref = pNewComment->m_oRef->ToString();
+				}
+				if (!pThreadedComment->id.IsInit())
+				{
+					pThreadedComment->id = L"{" + XmlUtils::GenerateGuid() + L"}";
+				}
+				pNewComment->m_oUid = pThreadedComment->id->ToString();
+				pCommentItem->m_sAuthor = L"tc=" + pThreadedComment->id->ToString();
+
+				pCommentItem->m_oText.Init();
+				nullable<std::unordered_map<std::wstring, OOX::Spreadsheet::CPerson*>> mapPersonList;
+				if (m_oWorkbook.m_pPersonList)
+				{
+					mapPersonList = m_oWorkbook.m_pPersonList->GetPersonList();
+				}
+				BinaryCommentReader::addThreadedComment(pCommentItem->m_oText.get2(), pThreadedComment, mapPersonList);
+
+				pThreadedComments->m_arrItems.push_back(pThreadedComment);
+				for (size_t i = 0; i < pThreadedComment->m_arrReplies.size(); ++i)
+				{
+					pThreadedComment->m_arrReplies[i]->parentId = pThreadedComment->id->ToString();
+					pThreadedComment->m_arrReplies[i]->ref = pThreadedComment->ref.get();
+					if (!pThreadedComment->m_arrReplies[i]->id.IsInit())
+					{
+						pThreadedComment->m_arrReplies[i]->id = L"{" + XmlUtils::GenerateGuid() + L"}";
+					}
+					pThreadedComments->m_arrItems.push_back(pThreadedComment->m_arrReplies[i]);
+				}
+			}
+
+			if (pCommentItem->m_sAuthor.IsInit())
+			{
+				const std::wstring& sAuthor = pCommentItem->m_sAuthor.get();
+				boost::unordered_map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
+
+				int nAuthorId;
+				if (pFind != mapByAuthors.end())
+					nAuthorId = (int)pFind->second;
+				else
+				{
+					nAuthorId = (int)mapByAuthors.size();
+
+					mapByAuthors.insert(std::make_pair(sAuthor, nAuthorId));
+
+					pComments->m_oAuthors->m_arrItems.push_back(sAuthor);
+				}
+				pNewComment->m_oAuthorId.Init();
+				pNewComment->m_oAuthorId->SetValue(nAuthorId);
+			}
+			pNewComment->m_oText.reset(pCommentItem->m_oText.GetPointerEmptyNullable());
+
+			aComments.push_back(pNewComment);
+		}
+		else if (NULL != pCommentItem->m_pThreadedComment)
+		{
+			RELEASEOBJECT(pCommentItem->m_pThreadedComment);
+			for (size_t i = 0; i < pCommentItem->m_pThreadedComment->m_arrReplies.size(); ++i)
+			{
+				RELEASEOBJECT(pCommentItem->m_pThreadedComment->m_arrReplies[i]);
 			}
 		}
-
-		NSCommon::smart_ptr<OOX::File> pCommentsFile(pComments);
-		m_pCurWorksheet->Add(pCommentsFile);
 	}
+
+	NSCommon::smart_ptr<OOX::File> pCommentsFile(pComments);
+	m_pCurWorksheet->Add(pCommentsFile);
 }
 int BinaryWorksheetsTableReader::ReadPivotTable(BYTE type, long length, void* poResult)
 {
@@ -4637,23 +4650,19 @@ int BinaryWorksheetsTableReader::ReadSheetFormatPr(BYTE type, long length, void*
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerSheetFormatPrTypes::DefaultColWidth == type)
 	{
-		pSheetFormatPr->m_oDefaultColWidth.Init();
-		pSheetFormatPr->m_oDefaultColWidth->SetValue(m_oBufferedStream.GetDoubleReal());
+		pSheetFormatPr->m_oDefaultColWidth = m_oBufferedStream.GetDoubleReal();
 	}
 	else if(c_oSerSheetFormatPrTypes::DefaultRowHeight == type)
 	{
-		pSheetFormatPr->m_oDefaultRowHeight.Init();
-		pSheetFormatPr->m_oDefaultRowHeight->SetValue(m_oBufferedStream.GetDoubleReal());
+		pSheetFormatPr->m_oDefaultRowHeight = m_oBufferedStream.GetDoubleReal();
 	}
 	else if (c_oSerSheetFormatPrTypes::BaseColWidth == type)
 	{
-		pSheetFormatPr->m_oBaseColWidth.Init();
-		pSheetFormatPr->m_oBaseColWidth->SetValue(m_oBufferedStream.GetLong());
+		pSheetFormatPr->m_oBaseColWidth = m_oBufferedStream.GetLong();
 	}
 	else if (c_oSerSheetFormatPrTypes::CustomHeight == type)
 	{
-		pSheetFormatPr->m_oCustomHeight.Init();
-		pSheetFormatPr->m_oCustomHeight->FromBool(m_oBufferedStream.GetBool());
+		pSheetFormatPr->m_oCustomHeight = m_oBufferedStream.GetBool();
 	}
 	else if (c_oSerSheetFormatPrTypes::ZeroHeight == type)
 	{
@@ -4741,22 +4750,22 @@ int BinaryWorksheetsTableReader::ReadPageSetup(BYTE type, long length, void* poR
 	else if(c_oSer_PageSetup::FirstPageNumber == type)
 	{
 		pPageSetup->m_oFirstPageNumber.Init();
-		pPageSetup->m_oFirstPageNumber->SetValue(m_oBufferedStream.GetLong());
+		pPageSetup->m_oFirstPageNumber->SetValue(m_oBufferedStream.GetULong());
 	}
 	else if(c_oSer_PageSetup::FitToHeight == type)
 	{
 		pPageSetup->m_oFitToHeight.Init();
-		pPageSetup->m_oFitToHeight->SetValue(m_oBufferedStream.GetLong());
+		pPageSetup->m_oFitToHeight->SetValue(m_oBufferedStream.GetULong());
 	}
 	else if(c_oSer_PageSetup::FitToWidth == type)
 	{
 		pPageSetup->m_oFitToWidth.Init();
-		pPageSetup->m_oFitToWidth->SetValue(m_oBufferedStream.GetLong());
+		pPageSetup->m_oFitToWidth->SetValue(m_oBufferedStream.GetULong());
 	}
 	else if(c_oSer_PageSetup::HorizontalDpi == type)
 	{
 		pPageSetup->m_oHorizontalDpi.Init();
-		pPageSetup->m_oHorizontalDpi->SetValue(m_oBufferedStream.GetLong());
+		pPageSetup->m_oHorizontalDpi->SetValue(m_oBufferedStream.GetULong());
 	}
 	else if(c_oSer_PageSetup::Orientation == type)
 	{
@@ -4791,7 +4800,7 @@ int BinaryWorksheetsTableReader::ReadPageSetup(BYTE type, long length, void* poR
 	else if(c_oSer_PageSetup::Scale == type)
 	{
 		pPageSetup->m_oScale.Init();
-		pPageSetup->m_oScale->SetValue(m_oBufferedStream.GetLong());
+		pPageSetup->m_oScale->SetValue(m_oBufferedStream.GetULong());
 	}
 	else if(c_oSer_PageSetup::UseFirstPageNumber == type)
 	{
@@ -4806,7 +4815,7 @@ int BinaryWorksheetsTableReader::ReadPageSetup(BYTE type, long length, void* poR
 	else if(c_oSer_PageSetup::VerticalDpi == type)
 	{
 		pPageSetup->m_oVerticalDpi.Init();
-		pPageSetup->m_oVerticalDpi->SetValue(m_oBufferedStream.GetLong());
+		pPageSetup->m_oVerticalDpi->SetValue(m_oBufferedStream.GetULong());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -5342,6 +5351,11 @@ int BinaryWorksheetsTableReader::ReadCellAnchor(BYTE type, long length, void* po
 		pCellAnchor->m_oExt.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadExt, pCellAnchor->m_oExt.GetPointer());
 	}
+	else if (c_oSer_DrawingType::ClientData == type)
+	{
+		pCellAnchor->m_oClientData.Init();
+		READ2_DEF_SPREADSHEET(length, res, this->ReadClientData, pCellAnchor->m_oClientData.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -5570,6 +5584,22 @@ int BinaryWorksheetsTableReader::ReadFromTo(BYTE type, long length, void* poResu
 		double dRowOffMm = m_oBufferedStream.GetDoubleReal();
 		pFromTo->m_oRowOff.Init();
 		pFromTo->m_oRowOff->FromMm(dRowOffMm);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadClientData(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CClientData *pClientData = static_cast<OOX::Spreadsheet::CClientData*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_DrawingClientDataType::fLocksWithSheet == type)
+	{
+		pClientData->fLocksWithSheet = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSer_DrawingClientDataType::fPrintsWithSheet == type)
+	{
+		pClientData->fPrintsWithSheet = m_oBufferedStream.GetBool();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7116,10 +7146,171 @@ int BinaryPersonReader::ReadPerson(BYTE type, long length, void* poResult)
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+//------------------------------------------------------------------------------------------------------------------------------------
+BinaryCustomsReader::BinaryCustomsReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook* pWorkbook) : Binary_CommonReader(oBufferedStream), m_pWorkbook(pWorkbook)
+{
+}
+int BinaryCustomsReader::Read()
+{
+	int res = c_oSerConstants::ReadOk;
+	READ_TABLE_DEF(res, this->ReadCustom, NULL);
+	return res;
+}
+int BinaryCustomsReader::ReadCustom(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
 
+	if (c_oSerCustoms::Custom == type)
+	{
+		OOX::CCustomXMLProps *pCustomXmlProps = new OOX::CCustomXMLProps(NULL);
+
+		int res = c_oSerConstants::ReadOk;
+		READ1_DEF(length, res, this->ReadCustomContent, pCustomXmlProps);
+
+		OOX::CCustomXML *pCustomXml = new OOX::CCustomXML(NULL, false);
+		pCustomXml->m_sXmlA = pCustomXmlProps->m_oCustomXmlContentA;
+
+		smart_ptr<OOX::File> oCustomXmlPropsFile(pCustomXmlProps);
+		smart_ptr<OOX::File> oCustomXmlFile(pCustomXml);
+
+		pCustomXml->Add(oCustomXmlPropsFile);
+		m_pWorkbook->Add(oCustomXmlFile);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryCustomsReader::ReadCustomContent(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::CCustomXMLProps* pCustomXMLProps = static_cast<OOX::CCustomXMLProps*>(poResult);
+
+	if (c_oSerCustoms::Uri == type)
+	{
+		if (false == pCustomXMLProps->m_oShemaRefs.IsInit())
+			pCustomXMLProps->m_oShemaRefs.Init();
+
+		pCustomXMLProps->m_oShemaRefs->m_arrItems.push_back(new OOX::CCustomXMLProps::CShemaRef());
+		pCustomXMLProps->m_oShemaRefs->m_arrItems.back()->m_sUri = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerCustoms::ItemId == type)
+	{
+		pCustomXMLProps->m_oItemID.FromString(m_oBufferedStream.GetString3(length));
+	}
+	else if (c_oSerCustoms::Content == type)
+	{
+		pCustomXMLProps->m_oCustomXmlContentA = m_oBufferedStream.GetString2A();
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 //------------------------------------------------------------------------------------------------------------------------------------
 BinaryFileReader::BinaryFileReader()
 {
+}
+int BinaryFileReader::Xml2Xlsx(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bMacro)
+{
+	OOX::Spreadsheet::CXlsxFlat *pXlsxFlat = new OOX::Spreadsheet::CXlsxFlat(OOX::CPath(sSrcFileName));
+
+	if (!pXlsxFlat) return AVS_FILEUTILS_ERROR_CONVERT;
+	if (pXlsxFlat->m_arWorksheets.empty())
+	{
+		delete pXlsxFlat;
+		return AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	OOX::Spreadsheet::CXlsx oXlsx;
+
+	oXlsx.m_pStyles = pXlsxFlat->m_pStyles.GetPointerEmptyNullable(); oXlsx.bDeleteStyles = true;
+	oXlsx.m_pSharedStrings = pXlsxFlat->m_pSharedStrings.GetPointerEmptyNullable(); oXlsx.bDeleteSharedStrings = true;
+	oXlsx.m_pWorkbook = pXlsxFlat->m_pWorkbook.GetPointerEmptyNullable(); oXlsx.bDeleteWorkbook = true;
+	
+	for (size_t i = 0; i < pXlsxFlat->m_arWorksheets.size(); ++i)
+	{
+		OOX::Spreadsheet::CWorksheet *sheet = pXlsxFlat->m_arWorksheets[i];
+		oXlsx.m_arWorksheets.push_back(sheet);
+
+		if (false == oXlsx.m_pWorkbook->m_oSheets.IsInit()) oXlsx.m_pWorkbook->m_oSheets.Init();
+		
+		while (oXlsx.m_pWorkbook->m_oSheets->m_arrItems.size() <= i)
+			oXlsx.m_pWorkbook->m_oSheets->m_arrItems.push_back(new OOX::Spreadsheet::CSheet());
+		{
+			std::wstring rId = L"sId" + std::to_wstring(i + 1);
+			oXlsx.m_pWorkbook->m_oSheets->m_arrItems[i]->m_oRid = new SimpleTypes::CRelationshipId(rId);
+
+			smart_ptr<OOX::File> pFile(sheet);
+			oXlsx.m_pWorkbook->Add(rId, pFile);
+		}
+
+		if (false == sheet->m_mapComments.empty())
+		{
+			OOX::CVmlDrawing *vmlDrawing = new OOX::CVmlDrawing(NULL, false);
+
+			NSCommon::smart_ptr<OOX::File> pVmlDrawingFile(vmlDrawing);
+			const OOX::RId oRId = sheet->Add(pVmlDrawingFile);
+
+			sheet->m_oLegacyDrawing.Init(); sheet->m_oLegacyDrawing->m_oId.Init();
+			sheet->m_oLegacyDrawing->m_oId->SetValue(oRId.get());
+
+			vmlDrawing->m_mapComments = &sheet->m_mapComments;
+
+			boost::unordered_map<std::wstring, unsigned int> mapByAuthors;
+			OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments(NULL);
+
+			pComments->m_oCommentList.Init();
+			std::vector<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;
+
+			pComments->m_oAuthors.Init();
+
+			for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = sheet->m_mapComments.begin(); it != sheet->m_mapComments.end(); ++it)
+			{
+				OOX::Spreadsheet::CCommentItem* pCommentItem = it->second;
+				if (pCommentItem->IsValid())
+				{
+					OOX::Spreadsheet::CComment* pNewComment = new OOX::Spreadsheet::CComment();
+					if (pCommentItem->m_nRow.IsInit() && pCommentItem->m_nCol.IsInit())
+					{
+						pNewComment->m_oRef.Init();
+						pNewComment->m_oRef->SetValue(OOX::Spreadsheet::CCell::combineRef(pCommentItem->m_nRow.get(), pCommentItem->m_nCol.get()));
+					}
+					if (pCommentItem->m_sAuthor.IsInit())
+					{
+						const std::wstring& sAuthor = pCommentItem->m_sAuthor.get();
+						boost::unordered_map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
+
+						int nAuthorId;
+						if (pFind != mapByAuthors.end())
+							nAuthorId = (int)pFind->second;
+						else
+						{
+							nAuthorId = (int)mapByAuthors.size();
+
+							mapByAuthors.insert(std::make_pair(sAuthor, nAuthorId));
+
+							pComments->m_oAuthors->m_arrItems.push_back(sAuthor);
+						}
+						pNewComment->m_oAuthorId.Init();
+						pNewComment->m_oAuthorId->SetValue(nAuthorId);
+					}
+					pNewComment->m_oText.reset(pCommentItem->m_oText.GetPointerEmptyNullable());
+
+					aComments.push_back(pNewComment);
+				}
+			}
+			NSCommon::smart_ptr<OOX::File> pCommentsFile(pComments);
+			sheet->Add(pCommentsFile);
+		}
+	}
+	oXlsx.bDeleteWorksheets = false;
+	pXlsxFlat->m_arWorksheets.clear();
+
+	oXlsx.PrepareToWrite();
+
+	OOX::CContentTypes oContentTypes;
+	oXlsx.Write(sDstPath, oContentTypes);
+//---------------------
+	delete pXlsxFlat;
+	return 0;
 }
 int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bMacro)
 {
@@ -7368,7 +7559,7 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 			return res;
 	}
 
-	for(size_t i = 0, length = aTypes.size(); i < length; ++i)
+	for (size_t i = 0, length = aTypes.size(); i < length; ++i)
 	{
 		BYTE mtiType = aTypes[i];
 		long mtiOffBits = aOffBits[i];
@@ -7376,51 +7567,52 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 		oBufferedStream.Seek(mtiOffBits);
 		switch(mtiType)
 		{
-		case c_oSerTableTypes::App:
+			case c_oSerTableTypes::App:
 			{
 				PPTX::App oApp(NULL);
 				oApp.fromPPTY(&oBufferedStream);
+				
 				OOX::CApp* pApp = new OOX::CApp(NULL);
 				pApp->FromPptxApp(&oApp);
 				pApp->SetRequiredDefaults();
 				oXlsx.m_pApp = pApp;
 				smart_ptr<OOX::File> oCurFile(pApp);
 				oXlsx.Add(oCurFile);
-			}
-			break;
-		case c_oSerTableTypes::Core:
+			}break;			
+			case c_oSerTableTypes::Core:
 			{
 				PPTX::Core oCore(NULL);
 				oCore.fromPPTY(&oBufferedStream);
+				
 				OOX::CCore* pCore = new OOX::CCore(NULL);
 				pCore->FromPptxCore(&oCore);
 				pCore->SetRequiredDefaults();
 				oXlsx.m_pCore = pCore;
 				smart_ptr<OOX::File> oCurFile(pCore);
 				oXlsx.Add(oCurFile);
-			}
-			break;
-		case c_oSerTableTypes::CustomProperties:
+			}break;			
+			case c_oSerTableTypes::CustomProperties:
 			{
 				PPTX::CustomProperties* oCustomProperties = new PPTX::CustomProperties(NULL);
 				oCustomProperties->fromPPTY(&oBufferedStream);
 				smart_ptr<OOX::File> oCurFile(oCustomProperties);
 				oXlsx.Add(oCurFile);
-			}
-			break;
-		case c_oSerTableTypes::Styles:
+			}break;			
+			case c_oSerTableTypes::Styles:
 			{
 				oXlsx.CreateStyles();
 				res = BinaryStyleTableReader(oBufferedStream, *oXlsx.m_pStyles).Read();
-			}
-			break;
-		case c_oSerTableTypes::Worksheets:
+			}break;			
+			case c_oSerTableTypes::Worksheets:
 			{
 				res = BinaryWorksheetsTableReader(oBufferedStream, *oXlsx.m_pWorkbook, oXlsx.m_pSharedStrings, oXlsx.m_arWorksheets, oXlsx.m_mapWorksheets, mapMedia, sOutDir, sMediaDir, oSaveParams, pOfficeDrawingConverter, m_mapPivotCacheDefinitions).Read();
-			}
-			break;
-		}
-		if(c_oSerConstants::ReadOk != res)
+			}break;
+			case c_oSerTableTypes::Customs:
+			{
+				res = BinaryCustomsReader(oBufferedStream, oXlsx.m_pWorkbook).Read();
+			}break;		
+		}	
+		if (c_oSerConstants::ReadOk != res)
 			return res;
 	}
 	for (boost::unordered_map<long, ImageObject*>::const_iterator pPair = mapMedia.begin(); pPair != mapMedia.end(); ++pPair)

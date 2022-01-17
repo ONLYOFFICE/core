@@ -130,9 +130,7 @@ namespace PPTX
 			
 			if(m_oId.IsInit() && ole_file.IsInit() == false) 
 			{
-				OOX::IFileContainer* pRels = NULL;
-				if (pWriter->m_pCurrentContainer->is_init())
-					pRels = pWriter->m_pCurrentContainer->operator ->();
+				OOX::IFileContainer* pRels = pWriter->GetRels().GetPointer();
 
 				ole_file = GetOleObject(m_oId.get(), pRels);
 			}			
@@ -174,12 +172,12 @@ namespace PPTX
 
 					COfficeFileFormatChecker office_checker;
 					office_checker.isOOXFormatFile(oox_file.GetPath());
-					//-----------------------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------------------
 					DocWrapper::FontProcessor oFontProcessor;
 					NSBinPptxRW::CDrawingConverter oDrawingConverter;
-
-					NSCommon::smart_ptr<OOX::IFileContainer>	old_rels = *pWriter->m_pCurrentContainer;
-					NSCommon::smart_ptr<PPTX::Theme>            old_theme = *pWriter->m_pTheme;
+				
+					NSCommon::smart_ptr<OOX::IFileContainer>	old_rels	= pWriter->GetRels();
+					NSCommon::smart_ptr<PPTX::Theme>            old_theme	= *pWriter->m_pTheme;
 
 					NSShapeImageGen::CMediaManager* old_manager = oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager;
 					oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
@@ -206,11 +204,11 @@ namespace PPTX
 						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
 					{
 						type = 2;
-
-						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor);
-						OOX::Spreadsheet::CXlsx oXlsxEmbedded(oox_unpacked);
-
-						xlsxBinaryWriter.intoBindoc(&oXlsxEmbedded, *oDrawingConverter.m_pBinaryWriter, NULL, &oDrawingConverter);
+					
+						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor); 
+						OOX::Spreadsheet::CXlsx oXlsxEmbedded(oox_unpacked);										
+					
+						xlsxBinaryWriter.intoBindoc(&oXlsxEmbedded, *oDrawingConverter.m_pBinaryWriter , NULL, &oDrawingConverter);					
 					}
 					//else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX)
 					//{
@@ -219,10 +217,10 @@ namespace PPTX
 					{//unknown ms package
 						oDrawingConverter.m_pBinaryWriter->WriteString1(2, ole_file->filename().GetFilename());
 					}
-					*pWriter->m_pCurrentContainer = old_rels;
+		
+					pWriter->SetRels(old_rels);
 					*pWriter->m_pTheme = old_theme;
 					oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = old_manager;
-
 //---------------------------------------------------------------------------------------------------------------------					
 					pWriter->StartRecord(1);
 					pWriter->WriteBYTE(type);
@@ -775,6 +773,8 @@ namespace PPTX
 					 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	namespace_ = L"pic";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_ = L"a";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			namespace_ = L"dgm";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		namespace_ = L"dsp";
 
 			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX && 
 				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX &&
@@ -786,10 +786,10 @@ namespace PPTX
 					pWriter->WriteString(L"<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id=\"0\" name=\"\"/><p:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></p:cNvGraphicFramePr><p:nvPr><p:extLst><p:ext uri=\"{D42A27DB-BD31-4B8C-83A1-F6EECF244321}\"><p14:modId xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" val=\"2157879785\"/></p:ext></p:extLst></p:nvPr></p:nvGraphicFramePr>");
 					if(spPr.xfrm.IsInit())
 					{
-						std::wstring oldNamespace = spPr.xfrm->m_ns;
-						spPr.xfrm->m_ns = _T("p");
+						std::wstring oldName = spPr.xfrm->node_name;
+						spPr.xfrm->node_name = _T("p:xfrm");
 						spPr.xfrm->toXmlWriter(pWriter);
-						spPr.xfrm->m_ns = oldNamespace;
+						spPr.xfrm->node_name = oldName;
 					}
 					pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/presentationml/2006/ole\">");
 
@@ -1103,10 +1103,9 @@ namespace PPTX
 				pRels = dynamic_cast<OOX::IFileContainer*>(const_cast<PPTX::WrapperFile*>(parentFile));
 			}
 			//else if ..layout, master
-			else if ((pWriter) && (pWriter->m_pCurrentContainer))
+			else if (pWriter)
 			{
-				if (pWriter->m_pCurrentContainer->is_init())
-					pRels = pWriter->m_pCurrentContainer->operator ->();
+				pRels = pWriter->GetRels().GetPointer();
 			}
 			if (pRels)
 			{

@@ -147,8 +147,9 @@ protected:
     void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels);
     void ApplyHyperlink(CShapeElement* pShape, CColor& oColor);
     static void addHyperlinkToSpan(CSpan& oSpan, const std::vector<CInteractiveInfo> &arrInteractive, const CColor& oColor);
+    static bool isRealHyperlink( const std::vector<CInteractiveInfo> &arrInteractive);
     static std::vector<std::vector<CInteractiveInfo> > splitInteractive(const std::vector<CInteractiveInfo>& arrInteractive);
     static void ConvertInteractiveInfo(CInteractiveInfo& interactiveInfo, const CRecordMouseInteractiveInfoContainer* interactiveCont, CExMedia* pMapIDs);
-
+    void ConvertStyleTextProp9(CTextAttributesEx *pText);
 };
 

@@ -32,6 +32,8 @@
 #pragma once
 
 #include "ImageManager.h"
+#include "../Records/RoundTrip.h"
+#include <unordered_set>
 
 
 class CStylesWriter;
@@ -75,14 +77,15 @@ namespace PPT_FORMAT
 		void WritePresInfo		();
 		void WriteAll			();
 		void WriteThemes		();
-        void WriteRoundTripThemes(const std::vector<CRecordRoundTripThemeAtom *> &arrRTThemes, int& nIndexTheme, int &nStartLayout);
-		void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
-        void WriteTheme         (CRecordRoundTripThemeAtom *pTheme, int &nIndexTheme);
+        bool HasRoundTrips      ()const;
+        bool WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered_set<std::string> &writedFilesHash, int& nIndexTheme, int &nStartLayout);
+        void WriteTheme			(CThemePtr pTheme, int & nIndexTheme, int & nStartLayout);
         void WriteSlides		();
-		void WriteNotes			();
+        void WriteNotes			();
         void WriteLayoutAfterTheme (CThemePtr pTheme, const int nIndexTheme, int &nStartLayout);
         void WriteLayout		(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);
-		void WriteSlide			(int nIndexSlide);
+//		void WriteRelsMaster    (std::wstring path, int type, )
+        void WriteSlide			(int nIndexSlide);
 		void WriteNotes			(int nIndexNotes);
         void WriteTiming        (CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide); // TODO write spec class for timing
 		
@@ -92,7 +95,7 @@ namespace PPT_FORMAT
 		void WriteElement		(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
 		void WriteGroup			(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
         void WriteTable			(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout = NULL);
-		
+        static std::vector<std::wstring> GrepPaths(const std::vector<std::wstring> &paths, const std::wstring &strRegEx);
 
 	};
 }

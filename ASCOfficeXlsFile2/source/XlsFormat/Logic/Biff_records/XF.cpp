@@ -321,11 +321,11 @@ void XF::Update(XFProp* xfProp)
 					font.name = global_info->m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;
 				}
 			}break;
-			case 0x001C:	font.fItalic	= *byte_->value(); break;
-			case 0x001D:	font.fStrikeOut	= *byte_->value(); break;
-			case 0x001E:	font.fOutline	= *byte_->value(); break;
-			case 0x001F:	font.fShadow	= *byte_->value(); break;
-			case 0x0022:	font.bCharSet	= *byte_->value(); break;
+			case 0x001C:	font.fItalic	= (*byte_->value() != 0); break;
+			case 0x001D:	font.fStrikeOut	= (*byte_->value() != 0); break;
+			case 0x001E:	font.fOutline	= (*byte_->value() != 0); break;
+			case 0x001F:	font.fShadow	= (*byte_->value() != 0); break;
+			case 0x0022:	font.bCharSet	= (*byte_->value() != 0); break;
 		}	
 		return;
 	}

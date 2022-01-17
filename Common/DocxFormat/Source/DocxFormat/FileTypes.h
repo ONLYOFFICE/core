@@ -158,11 +158,13 @@ namespace OOX
 
 		const FileType CustomXml		(L"customXml", L"item.xml",
 												L"",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml",
+												L"customXml/item", true, true);
 
-		const FileType CustomXmlProps	(L"customXml", L"itemProps.xml",
+		const FileType CustomXmlProps	(L"", L"itemProps.xml",
 												L"application/vnd.openxmlformats-officedocument.customXmlProperties+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps",
+												L"customXml/itemProps", true, true);
 
 		const FileType HyperLink		(L"", L"", 
 												L"", 
@@ -184,12 +186,27 @@ namespace OOX
 												L"", 
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/media");
 
-		const FileType Data				(L"diagrams", L"data.xml",
+		const FileType DiagramData		(L"diagrams", L"data.xml",
 												L"application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramData", 
 												L"diagrams/data", true, true);
 
-		const FileType DiagDrawing			(L"diagrams", L"drawing.xml",
+		const FileType DiagramQuickStyle(L"diagrams", L"quickStyle.xml",
+												L"application/vnd.openxmlformats-officedocument.drawingml.diagramQuickStyle+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramQuickStyle",
+												L"diagrams/quickStyle", true, true);
+
+		const FileType DiagramLayout	(L"diagrams", L"layout.xml",
+												L"application/vnd.openxmlformats-officedocument.drawingml.diagramLayout+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramLayout",
+												L"diagrams/layout", true, true);
+
+		const FileType DiagramColors	(L"diagrams", L"colors.xml",
+												L"application/vnd.openxmlformats-officedocument.drawingml.diagramColors+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/diagramColors",
+												L"diagrams/colors", true, true);
+
+		const FileType DiagramDrawing	(L"diagrams", L"drawing.xml",
 												L"application/vnd.openxmlformats-officedocument.drawingml.diagramDrawing+xml",
 												L"http://schemas.microsoft.com/office/2007/relationships/diagramDrawing", 
 												L"diagrams/drawing", true, true);

@@ -138,24 +138,12 @@ namespace PdfWriter
 	{
 		Write(&unValue, 1);
 	}
-    void CStream::WriteInt(int nValue)
+	void CStream::WriteInt(int nValue)
 	{
-		//int nLen = 0;
-		//const char* sString = NSFastIntToString::GetString(fabs(nValue), nLen);
-		//if (sString)
-		//{
-		//	if (nValue < 0)
-		//		WriteChar('-');
-
-		//	Write((const BYTE*)sString, nLen);
-		//}
-		//else
-		//{
-			char pBuffer[32];
-			memset(pBuffer, 0x00, 32);
-			ItoA(pBuffer, nValue, pBuffer + 31);
-			return WriteStr(pBuffer);
-		//}
+		char pBuffer[32];
+		memset(pBuffer, 0x00, 32);
+		ItoA(pBuffer, nValue, pBuffer + 31);
+		return WriteStr(pBuffer);
 	}
     void CStream::WriteUInt(unsigned int unValue)
 	{
@@ -283,65 +271,51 @@ namespace PdfWriter
 
 		Write((BYTE*)sTmpChar, StrLen(sTmpChar, -1));
 	}
-    void CStream::WriteEscapeText(const BYTE* sText, unsigned int unLen, bool isUTF16)
+	void CStream::WriteEscapeText(const BYTE* sText, unsigned int unLen, bool isUTF16, bool isDictValue)
 	{
 		if (!unLen || !sText)
+		{
+			Write((BYTE*)"()", 2);
 			return;
+		}
+
+		BYTE* sTxt = const_cast<BYTE*>(sText);
+		unsigned short* pUtf16Data = NULL;
+
+		WriteChar('(');
+
+		if (isUTF16)
+		{
+			std::string sUtf8((char*)sText, unLen);
+			std::wstring sUnicode = UTF8_TO_U(sUtf8);
+			unsigned int unLenUtf16 = 0;
+			pUtf16Data = NSStringExt::CConverter::GetUtf16FromUnicode(sUnicode, unLenUtf16, false);
+
+			sTxt = (BYTE*)pUtf16Data;
+			unLen = unLenUtf16 << 1;
+
+			WriteChar(0xFE);
+			WriteChar(0xFF);
+		}
 
 		char sBuf[TEXT_DEFAULT_LEN];
-
 		unsigned int nIndex = 0;
-
-        BYTE* sTxt = const_cast<BYTE*>(sText);
-		unsigned long nRet = 0;
-
-		sBuf[nIndex++] = '(';
-
-        unsigned short* pUtf16Data = NULL;
-        if (isUTF16)
-        {
-            /*
-            std::string sUtf8((char*)sText, unLen);
-            std::wstring sUnicode = UTF8_TO_U(sUtf8);
-            NSUnicodeConverter::CUnicodeConverter oConverter;
-            std::string sUtf16BE = oConverter.fromUnicode(sUnicode, "UTF-16BE");
-
-            unLen = (unsigned int)sUtf16BE.length();
-            sTxt = (BYTE*)sUtf16BE.c_str();
-            */
-
-            std::string sUtf8((char*)sText, unLen);
-            std::wstring sUnicode = UTF8_TO_U(sUtf8);
-            unsigned int unLenUtf16 = 0;
-            pUtf16Data = NSStringExt::CConverter::GetUtf16FromUnicode(sUnicode, unLenUtf16, false);
-
-            sTxt = (BYTE*)pUtf16Data;
-            unLen = unLenUtf16 << 1;
-
-            sBuf[nIndex++] = 0xFE;
-            sBuf[nIndex++] = 0xFF;
-        }
 
 		for (int nCounter = 0; nCounter < unLen; nCounter++)
 		{
 			BYTE nChar = (BYTE)*sTxt++;
 
-			if (NEEDS_ESCAPE(nChar))
+			if ((isDictValue && NEEDS_ESCAPE_DICTVALUE(nChar)) || (!isDictValue && NEEDS_ESCAPE(nChar)))
 			{
 				sBuf[nIndex++] = '\\';
-
-				sBuf[nIndex]    = nChar >> 6;
-				sBuf[nIndex]   += 0x30;
-				nIndex++;
-				sBuf[nIndex]    = (nChar & 0x38) >> 3;
-				sBuf[nIndex]   += 0x30;
-				nIndex++;
-				sBuf[nIndex]    = (nChar & 0x07);
-				sBuf[nIndex]   += 0x30;
-				nIndex++;
+				sBuf[nIndex++] = 0x30 + (nChar >> 6);
+				sBuf[nIndex++] = 0x30 + ((nChar & 0x38) >> 3);
+				sBuf[nIndex++] = 0x30 + (nChar & 0x07);
 			}
 			else
+			{
 				sBuf[nIndex++] = nChar;
+			}
 
 			if (nIndex > TEXT_DEFAULT_LEN - 4)
 			{
@@ -349,13 +323,13 @@ namespace PdfWriter
 				nIndex = 0;
 			}
 		}
-		sBuf[nIndex++] = ')';
-
-        if (pUtf16Data)
-            delete []pUtf16Data;
 
 		Write((BYTE*)sBuf, nIndex);
-	}            
+		WriteChar(')');
+
+		if (pUtf16Data)
+			delete []pUtf16Data;
+	}
     void CStream::WriteBinary(const BYTE* pData, unsigned int unLen, CEncrypt* pEncrypt)
     {
         char sBuf[TEXT_DEFAULT_LEN];
@@ -496,8 +470,8 @@ namespace PdfWriter
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
 
-        if (unFilter & STREAM_FILTER_FLATE_DECODE)
-            return WriteStreamWithDeflate(pStream, pEncrypt);
+		if (unFilter & STREAM_FILTER_FLATE_DECODE)
+			return WriteStreamWithDeflate(pStream, pEncrypt);
 
 #endif
 		pStream->Seek(0, SeekSet);
@@ -567,7 +541,7 @@ namespace PdfWriter
 		}
 		else
 		{            
-            WriteEscapeText(pString->GetString(), pString->GetLength(), pString->IsUTF16());
+            WriteEscapeText(pString->GetString(), pString->GetLength(), pString->IsUTF16(), pString->IsDictValue());
 		}
 	}
     void CStream::Write(CBinaryObject* pBinary, CEncrypt* pEncrypt)

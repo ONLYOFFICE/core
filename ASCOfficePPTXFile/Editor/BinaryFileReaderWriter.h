@@ -192,6 +192,7 @@ namespace NSBinPptxRW
 		std::wstring								m_strDstMedia;
 		std::wstring								m_strDstEmbed;
 		std::wstring								m_strDstFolder;
+		std::wstring								m_strDstDiagram;
 	public:
         int 										m_nDocumentType;
 		OOX::CContentTypes*							m_pContentTypes;
@@ -209,6 +210,9 @@ namespace NSBinPptxRW
 		void			SetDstCharts(const std::wstring& strDst);
 		std::wstring	GetDstCharts();
 		
+		void			SetDstDiagram(const std::wstring& strDst);
+		std::wstring	GetDstDiagram();
+
 		void			SetDstFolder(const std::wstring& strDst);
 		std::wstring	GetDstFolder();
 
@@ -246,12 +250,18 @@ namespace NSBinPptxRW
 		CCommonWriter*								m_pCommon;
 		std::wstring								m_strMainFolder;
 
-		NSCommon::smart_ptr<OOX::IFileContainer>*	m_pCurrentContainer;
 		BinDocxRW::CDocxSerializer *				m_pMainDocument;
 
 		NSCommon::smart_ptr<PPTX::Theme>*			m_pTheme;
 		NSCommon::smart_ptr<PPTX::Logic::ClrMap>*	m_pClrMap;
+		
+		void SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container);
+		void SetRels(OOX::IFileContainer *container);
+		NSCommon::smart_ptr<OOX::IFileContainer> GetRels();
+
 	protected:
+		NSCommon::smart_ptr<OOX::IFileContainer>*	m_pCurrentContainer;
+		
 		BYTE*		m_pStreamData;
 		BYTE*		m_pStreamCur;
 		_UINT32		m_lSize;
@@ -388,6 +398,7 @@ namespace NSBinPptxRW
 				EndRecord();
 			}
 		}
+		void WriteRecord2(int type, OOX::WritingElement* pVal);
 
 		template<typename T>
 		void WriteRecordArray(int type, int subtype, const std::vector<T>& val)
@@ -509,20 +520,21 @@ namespace NSBinPptxRW
 
 		_INT32 m_lNextId;
 
+		std::vector<CRelsGenerator*>	m_stackRels;
+		int								m_nCurrentRelsStack;
 	public:
+		CRelsGenerator*					m_pRels;
+
 		std::wstring					m_strFolder;
 		std::wstring					m_strFolderThemes;
 		std::wstring					m_strFolderExternalThemes;
 
 		_INT32							m_nCountEmbedded = 1;
 		_INT32							m_nCountCharts = 1;
+		_INT32							m_nCountDiagram = 1;
 
 		BinDocxRW::CDocxSerializer*		m_pMainDocument;
 		int								m_nDocumentType;
-
-		CRelsGenerator*					m_pRels;
-		std::vector<CRelsGenerator*>	m_stackRels;
-		int								m_nCurrentRelsStack;
 	
 		CBinaryFileReader();
 		~CBinaryFileReader();
@@ -579,5 +591,8 @@ namespace NSBinPptxRW
 		_UINT16 XlsbReadRecordType();
 		void XlsbSkipRecord();
 		_UINT32 XlsbReadRecordLength();
+
+		void SetDstContentRels();
+		void SaveDstContentRels(const std::wstring& bsRelsPath);
 	};
 }

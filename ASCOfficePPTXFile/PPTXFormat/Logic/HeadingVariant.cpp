@@ -725,8 +725,8 @@ namespace PPTX
 			XmlUtils::CXmlNode oProperty;
 			oNodes.GetAt(i, oProperty);
 
-			arrProperties.emplace_back();
-			arrProperties.back().fromXML(oProperty);
+			m_arProperties.emplace_back();
+			m_arProperties.back().fromXML(oProperty);
 		}
 	}
 	void CustomProperties::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
@@ -753,7 +753,7 @@ namespace PPTX
 
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-		pWriter->WriteRecordArray(0, 0, arrProperties);
+		pWriter->WriteRecordArray(0, 0, m_arProperties);
 
 		pWriter->EndRecord();
 	}
@@ -767,9 +767,9 @@ namespace PPTX
 		pWriter->WriteAttribute(_T("xmlns:vt"), PPTX::g_Namespaces.vt.m_strLink);
 		pWriter->EndAttributes();
 
-		for(size_t i = 0; i < arrProperties.size(); ++i)
+		for (size_t i = 0; i < m_arProperties.size(); ++i)
 		{
-			arrProperties[i].toXmlWriter(pWriter);
+			m_arProperties[i].toXmlWriter(pWriter);
 		}
 
 		pWriter->EndNode(_T("Properties"));
@@ -800,8 +800,8 @@ namespace PPTX
 					for (LONG i = 0; i < len; ++i)
 					{
 						pReader->Skip(1);
-						arrProperties.emplace_back();
-						arrProperties.back().fromPPTY(pReader);
+						m_arProperties.emplace_back();
+						m_arProperties.back().fromPPTY(pReader);
 					}
 					break;
 				}

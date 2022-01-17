@@ -319,7 +319,7 @@ namespace DocFileFormat
 		for (size_t i = 0; i < options.size(); i++)
 		{
 			ODRAW::OfficeArtFOPTEPtr & iter = options[i];
-			switch ( iter->opid )
+			switch (iter->opid)
 			{
 			case wzEquationXML:
 				{
@@ -328,10 +328,10 @@ namespace DocFileFormat
 					{
 						m_isEquation = true;
 						m_isEmbedded = true;
-						
+
 						m_embeddedData = pXml->data;
 
-						if (ParseEmbeddedEquation( m_embeddedData, m_equationXml))
+						if (ParseEmbeddedEquation(m_embeddedData, m_equationXml))
 						{
 							m_isEmbedded = false;
 						}
@@ -341,74 +341,74 @@ namespace DocFileFormat
 				{//встроенная неведомая хуйня
 					ODRAW::MetroBlob* blob = dynamic_cast<ODRAW::MetroBlob*>(iter.get());
 					if (blob)
-					{						
-						m_isBlob		= true;
-						m_isEmbedded	= true;
+					{
+						m_isBlob = true;
+						m_isEmbedded = true;
 						//if (ParseEmbeddedBlob( blob->data.first, blob->data.second)) // todoooo
 						//{
 						//	m_isEmbedded = false;
 						//}
 					}
 				}break;
-//BORDERS
+			//BORDERS
 			case ODRAW::borderBottomColor:
 				if (!pict->brcBottom)
 				{
-					RGBColor bottomColor( (int)iter->op, RedFirst );
-					m_pXmlWriter->WriteAttribute( L"o:borderbottomcolor", L"#" + bottomColor.SixDigitHexCode);
+					RGBColor bottomColor((int)iter->op, RedFirst);
+					m_pXmlWriter->WriteAttribute(L"o:borderbottomcolor", L"#" + bottomColor.SixDigitHexCode);
 				}
 				break;
 			case ODRAW::borderLeftColor:
 				if (!pict->brcLeft)
-				{  
-					RGBColor leftColor( (int)iter->op, RedFirst );
-					m_pXmlWriter->WriteAttribute( L"o:borderleftcolor", L"#" + leftColor.SixDigitHexCode);
-				}  
+				{
+					RGBColor leftColor((int)iter->op, RedFirst);
+					m_pXmlWriter->WriteAttribute(L"o:borderleftcolor", L"#" + leftColor.SixDigitHexCode);
+				}
 				break;
 			case ODRAW::borderRightColor:
 				if (!pict->brcRight)
-				{  
-					RGBColor rightColor( (int)iter->op, RedFirst );
-					m_pXmlWriter->WriteAttribute( L"o:borderrightcolor",  L"#" + rightColor.SixDigitHexCode);
+				{
+					RGBColor rightColor((int)iter->op, RedFirst);
+					m_pXmlWriter->WriteAttribute(L"o:borderrightcolor", L"#" + rightColor.SixDigitHexCode);
 				}
 				break;
 			case ODRAW::borderTopColor:
 				if (!pict->brcTop)
 				{
-					RGBColor topColor( (int)iter->op, RedFirst );
-					m_pXmlWriter->WriteAttribute( L"o:bordertopcolor", L"#" + topColor.SixDigitHexCode);
+					RGBColor topColor((int)iter->op, RedFirst);
+					m_pXmlWriter->WriteAttribute(L"o:bordertopcolor", L"#" + topColor.SixDigitHexCode);
 				}
 				break;
-//CROPPING
+				//CROPPING
 			case ODRAW::cropFromBottom:
-				{  
+				{
 					//cast to signed integer
 					int cropBottom = (int)iter->op;
-					appendValueAttribute(m_imageData, L"cropbottom", FormatUtils::IntToWideString( cropBottom ) + L"f" );
+					appendValueAttribute(m_imageData, L"cropbottom", FormatUtils::IntToWideString(cropBottom) + L"f");
 				}
 				break;
 			case ODRAW::cropFromLeft:
-				{  
+				{
 					//cast to signed integer
 					int cropLeft = (int)iter->op;
-					appendValueAttribute(m_imageData, L"cropleft", FormatUtils::IntToWideString( cropLeft ) + L"f" );
+					appendValueAttribute(m_imageData, L"cropleft", FormatUtils::IntToWideString(cropLeft) + L"f");
 				}
 				break;
 			case ODRAW::cropFromRight:
 				{
 					//cast to signed integer
 					int cropRight = (int)iter->op;
-					appendValueAttribute(m_imageData, L"cropright", FormatUtils::IntToWideString( cropRight ) + L"f" );
+					appendValueAttribute(m_imageData, L"cropright", FormatUtils::IntToWideString(cropRight) + L"f");
 				}
 				break;
 			case ODRAW::cropFromTop:
 				{
 					//cast to signed integer
 					int cropTop = (int)iter->op;
-					appendValueAttribute(m_imageData, L"croptop", FormatUtils::IntToWideString( cropTop ) + L"f" );
+					appendValueAttribute(m_imageData, L"croptop", FormatUtils::IntToWideString(cropTop) + L"f");
 				}
 				break;
-//------------------------------------------------------------
+			//------------------------------------------------------------
 			case ODRAW::ePropertyId_rotation:
 				{
 					double dAngle = (double)((int)iter->op) / 65535.0;
@@ -427,7 +427,8 @@ namespace DocFileFormat
 				}break;
 			case ODRAW::posrelh:
 				{
-					appendStyleProperty(strStyle, L"mso-position-horizontal-relative", VMLShapeMapping::mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
+					if (false == m_inGroup)
+						appendStyleProperty(strStyle, L"mso-position-horizontal-relative", VMLShapeMapping::mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
 				}break;
 			case ODRAW::posv:
 				{
@@ -435,7 +436,8 @@ namespace DocFileFormat
 				}break;
 			case ODRAW::posrelv:
 				{
-					appendStyleProperty(strStyle, L"mso-position-vertical-relative", VMLShapeMapping::mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
+					if (false == m_inGroup)
+						appendStyleProperty(strStyle, L"mso-position-vertical-relative", VMLShapeMapping::mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
 				}break;
 			case ODRAW::groupShapeBooleanProperties:
 				{
@@ -444,7 +446,7 @@ namespace DocFileFormat
 					if (booleans->fUsefBehindDocument && booleans->fBehindDocument)
 					{
 						//The shape is behind the text, so the z-index must be negative.
-						appendStyleProperty(strStyle, L"z-index", L"-1" );
+						appendStyleProperty(strStyle, L"z-index", L"-1");
 					}
 					//else if (!m_isInlinePicture)
 					//{
@@ -456,8 +458,20 @@ namespace DocFileFormat
 						appendStyleProperty(strStyle, L"visibility", L"hidden");
 					}
 				}break;
+			case ODRAW::blipBooleanProperties:
+				{
+					ODRAW::BlipBooleanProperties * bools = (ODRAW::BlipBooleanProperties *)(iter.get());
+					if (bools)
+					{
+						if (bools->fUsefPictureGray && bools->fPictureGray)
+							appendValueAttribute(m_imageData, L"grayscale", L"t");
+						if (bools->fUsefPictureBiLevel && bools->fPictureBiLevel)
+							appendValueAttribute(m_imageData, L"bilevel", L"t");
+					}
+				}break;
 			default:
-				break;				
+				{
+				}break;
 			}
 		}
 

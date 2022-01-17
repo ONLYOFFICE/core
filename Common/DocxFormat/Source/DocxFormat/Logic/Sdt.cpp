@@ -380,8 +380,6 @@ namespace OOX
 			sResult += L"</w:formPr>";
 
 			return sResult;
-
-			return sResult;
 		}
 		void CFormPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

@@ -35,6 +35,10 @@
 #include "OfficeUtilsCommon.h"
 #include "../../Common/kernel_config.h"
 
+#define ZLIB_ADDON_FLAG_ZERO                    0
+#define ZLIB_ADDON_FLAG_READ_ONLY               1
+#define ZLIB_ADDON_FLAG_WINDOWS_SHARED_WRITE    2
+
 #ifndef Z_DEFLATED
     #define Z_DEFLATED 8
 #endif
@@ -59,6 +63,8 @@ public:
 	HRESULT CompressFilesFromMemory	(const std::wstring& zipFile, const RequestFileCallback& data_source, void* pParam, short compression_level, bool* result);
 	HRESULT GetFilesSize			(const std::wstring& zipFile, const std::wstring& searchPattern, ULONG64& nCommpressed, ULONG64& nUncommpressed);
 
+    static int GetAddonFlag();
+    static void SetAddonFlag(int flag);
 };
 
 #define DEFLATE_NO_FLUSH      0

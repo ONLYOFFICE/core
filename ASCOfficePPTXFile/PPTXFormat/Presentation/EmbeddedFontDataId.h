@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_PRESENTATION_EMBEDDEDFONTDATAID_INCLUDE_H_
-#define PPTX_PRESENTATION_EMBEDDEDFONTDATAID_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 
@@ -64,5 +62,3 @@ namespace PPTX
 		};
 	} // namespace nsPresentation
 } // namespace PPTX
-
-#endif // PPTX_PRESENTATION_EMBEDDEDFONTDATAID_INCLUDE_H_

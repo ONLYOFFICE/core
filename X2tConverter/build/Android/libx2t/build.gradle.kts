@@ -7,16 +7,13 @@ plugins {
 
 android {
 
-    buildToolsVersion("30.0.3")
-    compileSdkVersion(30)
+    buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
+    compileSdk = AppDependency.COMPILE_SDK_VERSION
     ndkVersion = rootProject.extra.get("NDK_VERSION").toString()
 
     defaultConfig {
-
-        minSdkVersion(23)
-        targetSdkVersion(30)
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = AppDependency.MIN_SDK_VERSION
+        targetSdk = AppDependency.TARGET_SDK_VERSION
 
 
         buildConfigField("String", "LIB_X2T", "\"${extra.get("NAME_LIB")}\"")
@@ -41,14 +38,12 @@ android {
     }
 
     buildTypes {
-        getByName(AppDependency.BuildType.RELEASE) {
-            minifyEnabled(false)
+        release {
+            isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
-
-        getByName(AppDependency.BuildType.DEBUG) {
-            debuggable(true)
-            jniDebuggable(true)
+        debug {
+            isJniDebuggable = true
         }
     }
 
@@ -81,9 +76,10 @@ android {
             val dh = file("${extra.get("PATH_LIB_BUILD_TOOLS")}/$abi")
             dh.listFiles().forEach {
                 if (it.name.contains(".so"))
-                    pickFirst("lib/$abi/${it.name}")
+                    jniLibs.pickFirsts.add("lib/$abi/${it.name}")
             }
-            pickFirst("lib/$abi/lib${extra.get("NAME_LIB")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB")}.so")
+            jniLibs.pickFirsts.add("lib/$abi/lib${extra.get("NAME_LIB_KERNEL_NETWORK")}.so")
         }
     }
 }

@@ -739,6 +739,72 @@
     <ClInclude Include="..\Records\FontEmbedFlags10Atom.h">
       <Filter>Records\Text</Filter>
     </ClInclude>
+    <ClInclude Include="..\Reader\RoundTripExtractor.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\BuildAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\CFMasks.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\Comment10Container.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\DocInfoListContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\DocProgTagsContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\KinsokuContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\KinsokuFollowingAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\KinsokuLeadingAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\LinkedShape10Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\LinkedSlide10Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\MouseInteractiveInfoContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\OfficeArtClientData.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\OfficeArtClientTextbox.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\PFMasks.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\ProgStringTagContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\RoundTrip.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\RoundTripNotesMasterTextStyles12Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\ShapeProgBinaryTagSubContainerOrAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\SlideFlags10Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\SlideProgTagsContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Records\SlideTime10Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Reader\PPTDocumentInfoOneUser.cpp">
@@ -786,6 +852,12 @@
     </ClCompile>
     <ClCompile Include="..\PPTXWriter\TxBodyConverter.cpp">
       <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Reader\RoundTripExtractor.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Records\BlipEntityAtom.cpp">
+      <Filter>Records</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

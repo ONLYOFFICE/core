@@ -77,6 +77,7 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
+				sp3d		= oSrc.sp3d;
 				bodyPr		= oSrc.bodyPr;
 				lstStyle	= oSrc.lstStyle;
 				Paragrs		= oSrc.Paragrs;
@@ -97,15 +98,19 @@ namespace PPTX
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
                     std::wstring strName = oReader.GetName();
-					if (_T("a:bodyPr") == strName)
+					if (L"a:bodyPr" == strName)
 					{
 						bodyPr = oReader;
 					}
-					else if (_T("a:lstStyle") == strName)
+					else if (L"a:lstStyle" == strName)
 					{
 						lstStyle = oReader;
 					}
-					else if (_T("a:p") == strName)
+					else if (L"a:sp3d" == strName)
+					{
+						sp3d = oReader;
+					}					
+					else if (L"a:p" == strName)
 					{
 						Paragraph p;
 						Paragrs.push_back(p);
@@ -120,10 +125,11 @@ namespace PPTX
 
 				m_name		= node.GetName();
 				
-				bodyPr		= node.ReadNode(_T("a:bodyPr"));
-				lstStyle	= node.ReadNode(_T("a:lstStyle"));
+				bodyPr		= node.ReadNode(L"a:bodyPr");
+				lstStyle	= node.ReadNode(L"a:lstStyle");
+				sp3d		= node.ReadNode(L"a:sp3d");
 
-				XmlMacroLoadArray(node, _T("a:p"), Paragrs, Paragraph);
+				XmlMacroLoadArray(node, L"a:p", Paragrs, Paragraph);
 
 				FillParentPointersForChilds();
 			}
@@ -145,11 +151,15 @@ namespace PPTX
 
 				if (bodyPr.IsInit())
 				{
-					bodyPr->m_namespace = _T("a");
+					bodyPr->m_namespace = L"a";
 					bodyPr->toXmlWriter(pWriter);
 				}
+				if (sp3d.IsInit())
+				{
+					sp3d->toXmlWriter(pWriter);
+				}
 				if (lstStyle.IsInit())
-					lstStyle->m_name = _T("a:lstStyle");
+					lstStyle->m_name = L"a:lstStyle";
 				pWriter->Write(lstStyle);
 				
 				size_t nCount = Paragrs.size();
@@ -163,12 +173,15 @@ namespace PPTX
 			{
 				if (bodyPr.IsInit())
 				{
-					bodyPr->m_namespace = _T("a");
+					bodyPr->m_namespace = L"a";
 					bodyPr->toXmlWriter(pWriter);
 				}
-
+				if (sp3d.IsInit())
+				{
+					sp3d->toXmlWriter(pWriter);
+				}
 				if (lstStyle.is_init())
-					lstStyle->m_name = _T("a:lstStyle");
+					lstStyle->m_name = L"a:lstStyle";
 				pWriter->Write(lstStyle);
 				
 				size_t nCount = Paragrs.size();
@@ -176,13 +189,13 @@ namespace PPTX
 					Paragrs[i].toXmlWriter(pWriter);
 				
 				/*
-				pWriter->EndNode(_T("c:rich"));
+				pWriter->EndNode(L"c:rich"));
 				*/
 			}
 
 			std::wstring GetText(bool bParagraphSeparator = true)const
 			{
-				std::wstring result = _T("");
+				std::wstring result;
 				size_t count = Paragrs.size();
 
 				for (size_t i = 0; i < count; ++i)
@@ -206,6 +219,7 @@ namespace PPTX
 				pWriter->WriteRecord2(0, bodyPr);
 				pWriter->WriteRecord2(1, lstStyle);
 				pWriter->WriteRecordArray(2, 0, Paragrs);
+				pWriter->WriteRecord2(3, sp3d);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -240,6 +254,12 @@ namespace PPTX
 							}
 							break;
 						}
+						case 3:
+						{
+							sp3d = new Logic::Sp3d();
+							sp3d->fromPPTY(pReader);
+							break;
+						}
 						default:
 						{
 							break;
@@ -253,6 +273,7 @@ namespace PPTX
                     bodyPr = new Logic::BodyPr();
             }
 
+			nullable<Sp3d>			sp3d;
 			nullable<BodyPr>		bodyPr;
 			nullable<TextListStyle> lstStyle;
 			std::vector<Paragraph>	Paragrs;

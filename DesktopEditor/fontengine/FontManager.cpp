@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include "ftsnames.h"
 #include FT_LCD_FILTER_H
+#include "internal/tttypes.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 CFontStream::CFontStream() : NSFonts::IFontStream()
@@ -790,6 +791,17 @@ void CFontManager::GetFace(double& d0, double& d1, double& d2)
                 d2 = -os2->usWinDescent;
             }
         }
+    }
+}
+void CFontManager::GetLimitsY(double& dMin, double& dMax)
+{
+    dMin = m_pFont->m_pFace->descender;
+    dMax = m_pFont->m_pFace->ascender;
+    if (FT_IS_SFNT(m_pFont->m_pFace))
+    {
+        TT_Face ttface = (TT_Face)m_pFont->m_pFace;
+        dMin = ttface->header.yMin;
+        dMax = ttface->header.yMax;
     }
 }
 

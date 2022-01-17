@@ -166,6 +166,7 @@ namespace OOX
 					WritingStringNullableAttrInt(L"workbookSpinCount", m_oWorkbookSpinCount, m_oWorkbookSpinCount->GetValue());
 					WritingStringNullableAttrInt(L"lockStructure", m_oLockStructure, m_oLockStructure->ToBool() ? 1 : 0);
 					WritingStringNullableAttrInt(L"lockWindows", m_oLockWindows, m_oLockWindows->ToBool() ? 1 : 0);
+					WritingStringNullableAttrString(L"workbookPassword", m_oPassword, m_oPassword.get());
 				writer.WriteString(L"/>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -194,6 +195,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if(oReader, (L"lockRevision"), m_oLockRevision)
 					WritingElement_ReadAttributes_Read_else_if(oReader, (L"lockStructure"), m_oLockStructure)
 					WritingElement_ReadAttributes_Read_else_if(oReader, (L"lockWindows"), m_oLockWindows)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"workbookPassword"), m_oPassword)
 				WritingElement_ReadAttributes_End(oReader)
 			}
 			nullable<SimpleTypes::COnOff<>>		m_oLockRevision;
@@ -205,6 +207,8 @@ namespace OOX
 			nullable_string									m_oWorkbookHashValue;
 			nullable_string									m_oWorkbookSaltValue;
 
+			nullable_string									m_oPassword; //for old wrike protection
+			
 			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oRevisionsAlgorithmName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oRevisionsSpinCount;
 			nullable_string									m_oRevisionsHashValue;

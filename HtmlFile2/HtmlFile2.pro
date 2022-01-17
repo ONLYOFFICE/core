@@ -23,7 +23,7 @@ core_windows:CONFIG += no_batch
 include($$CORE_ROOT_DIR/Common/3dParty/html/gumbo.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/html/css/CssCalculator.pri)
 
-ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
+ADD_DEPENDENCY(kernel, UnicodeConverter, graphics, kernel_network)
 
 SOURCES += htmlfile2.cpp
 

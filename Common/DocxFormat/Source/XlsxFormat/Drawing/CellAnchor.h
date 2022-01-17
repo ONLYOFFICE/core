@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_CELLANCHOR_FILE_INCLUDE_H_
-#define OOX_CELLANCHOR_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -45,6 +43,55 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CClientData : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CClientData)
+			CClientData()
+			{
+			}
+			virtual ~CClientData()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<xdr:clientData");
+				WritingStringNullableAttrBool2(L"fLocksWithSheet", fLocksWithSheet);
+				WritingStringNullableAttrBool2(L"fPrintsWithSheet", fPrintsWithSheet);
+				writer.WriteString(L"/>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if (!oReader.IsEmptyNode())
+					oReader.ReadTillEnd();
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_x_ClientData;
+			}
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, L"fLocksWithSheet", fLocksWithSheet)
+					WritingElement_ReadAttributes_Read_if(oReader, L"fPrintsWithSheet", fPrintsWithSheet)
+				WritingElement_ReadAttributes_End(oReader)
+			}
+		public:
+			nullable_bool fLocksWithSheet;
+			nullable_bool fPrintsWithSheet;
+		};
 		class CCellAnchor : public WritingElement
 		{
 		public:
@@ -68,7 +115,7 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-				return _T("");
+				return L"";
 			}
 			std::wstring toVmlXML() const
 			{
@@ -99,7 +146,7 @@ namespace OOX
 				std::wstring sEnd;
 				if(m_oFrom.IsInit() && m_oTo.IsInit())
 				{
-					sEnd	= L"</xdr:twoCellAnchor>";
+					sEnd = L"</xdr:twoCellAnchor>";
 					
 					writer.WriteString(L"<xdr:twoCellAnchor");
 					WritingStringNullableAttrString(L"editAs", m_oEditAs, m_oEditAs->ToString());
@@ -111,7 +158,7 @@ namespace OOX
 				}
 				else if(m_oFrom.IsInit() && m_oExt.IsInit())
 				{
-					sEnd	= L"</xdr:oneCellAnchor>";
+					sEnd = L"</xdr:oneCellAnchor>";
 					
 					writer.WriteString(L"<xdr:oneCellAnchor>");
 					if(m_oFrom.IsInit())
@@ -121,7 +168,7 @@ namespace OOX
 				}
 				else
 				{
-					sEnd	= L"</xdr:absoluteAnchor>";
+					sEnd = L"</xdr:absoluteAnchor>";
 					
 					writer.WriteString(L"<xdr:absoluteAnchor>");
 					if(m_oPos.IsInit())
@@ -150,7 +197,10 @@ namespace OOX
 						writer.WriteString(L"</mc:Choice><mc:Fallback xmlns=\"\"><xdr:sp macro=\"\" textlink=\"\"><xdr:nvSpPr><xdr:cNvPr id=\"0\" name=\"\"/><xdr:cNvSpPr><a:spLocks noTextEdit=\"1\"/></xdr:cNvSpPr></xdr:nvSpPr><xdr:spPr><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:solidFill><a:prstClr val=\"white\"/></a:solidFill><a:ln w=\"1\"><a:solidFill><a:prstClr val=\"green\"/></a:solidFill></a:ln></xdr:spPr><xdr:txBody><a:bodyPr vertOverflow=\"clip\" horzOverflow=\"clip\"/><a:lstStyle/><a:p><a:r><a:rPr lang=\"en-US\" sz=\"1100\"/><a:t>This shape represents a table slicer. Table slicers are not supported in this version of Excel.\n\nIf the shape was modified in an earlier version of Excel, or if the workbook was saved in Excel 2007 or earlier, the slicer can't be used.</a:t></a:r></a:p></xdr:txBody></xdr:sp></mc:Fallback></mc:AlternateContent>");
 					}
 				}
-				writer.WriteString(L"<xdr:clientData/>");
+				if (m_oClientData.IsInit())
+					m_oClientData->toXML(writer);
+				else 
+					writer.WriteString(L"<xdr:clientData/>");
 				writer.WriteString(sEnd);
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -168,14 +218,16 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( L"from" == sName )
+					if (L"from" == sName)
 						m_oFrom = oReader;
-					else if ( L"to" == sName )
+					else if (L"to" == sName)
 						m_oTo = oReader;
-					else if ( L"pos" == sName )
+					else if (L"pos" == sName)
 						m_oPos = oReader;
-					else if ( L"ext" == sName )
+					else if (L"ext" == sName)
 						m_oExt = oReader;
+					else if (L"clientData" == sName)
+						m_oClientData = oReader;
                     else if (L"graphicFrame" == sName || L"pic" == sName || L"sp" == sName || L"grpSp" == sName || L"cxnSp" == sName || L"AlternateContent" == sName)
 					{	
 						//Demo-2010WinterOlympics2.xlsx - AlternateContent
@@ -232,13 +284,13 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("editAs"), m_oEditAs )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"editAs", m_oEditAs )
 				WritingElement_ReadAttributes_End( oReader )
 			}
             void ReadAttributesRequire(XmlUtils::CXmlLiteReader& oReader, std::wstring& sRequire)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("Requires"), sRequire )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"Requires", sRequire )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -251,6 +303,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CFromTo>				m_oTo;
 			nullable<OOX::Spreadsheet::CPos>				m_oPos;
 			nullable<OOX::Spreadsheet::CExt>				m_oExt;
+			nullable<OOX::Spreadsheet::CClientData>			m_oClientData;
 
 			nullable<PPTX::Logic::SpTreeElem>				m_oElement;
 
@@ -260,5 +313,3 @@ namespace OOX
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_CELLANCHOR_FILE_INCLUDE_H_

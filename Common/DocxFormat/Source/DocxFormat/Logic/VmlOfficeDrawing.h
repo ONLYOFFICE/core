@@ -1228,7 +1228,7 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::CExt<>>                                   m_oExt;
+			nullable<SimpleTypes::CExt<>> m_oExt;
 			nullable<SimpleTypes::CFillType<SimpleTypes::filltypeSolid, 1>> m_oType;
 		};
 		//--------------------------------------------------------------------------------
@@ -1260,7 +1260,7 @@ namespace OOX
 				std::wstring sResult = L"<o:idmap ";
 
 				ComplexTypes_WriteAttribute ( L"v:ext=\"", m_oExt );
-				ComplexTypes_WriteAttribute2( L"data=\"",  m_sData );
+				sResult += m_sData.ToAttribute( L"data");
 
 				sResult += L"/>";
 
@@ -1275,7 +1275,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"v:ext", m_oExt )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"data",  m_sData )
@@ -1283,8 +1282,8 @@ namespace OOX
 			}
 
 		public:
-			nullable<std::wstring>			m_sData;
-			nullable<SimpleTypes::CExt<>>	m_oExt;
+			nullable_string m_sData;
+			nullable<SimpleTypes::CExt<>> m_oExt;
 		};
 		//--------------------------------------------------------------------------------
 		// CInk 14.2.2.15 (Part 4)

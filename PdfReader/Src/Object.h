@@ -382,6 +382,7 @@ namespace PdfReader
 		void Print(FILE *pFile = stdout);
 		void ToXml(std::wstring& wsXml);
 		static void AppendStringToXml(std::wstring& wsXml, const std::string& sString);
+		static void ReplaceAll(std::wstring& wsString, const std::wstring& wsFrom, const std::wstring& wsTo);
 
 	private:
 

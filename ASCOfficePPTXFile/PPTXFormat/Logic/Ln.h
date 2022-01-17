@@ -105,7 +105,7 @@ namespace PPTX
 					{
 						Effects.fromXML(oReader);		
 					}			
-					else if ( L"extLst"		== sName )
+					else if ( L"extLst" == sName )
 					{
 						if ( oReader.IsEmptyNode() )
 							continue;

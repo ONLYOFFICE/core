@@ -1,6 +1,10 @@
 ﻿#ifndef _BUILD_NATIVE_CONTROL_V8_BASE_H_
 #define _BUILD_NATIVE_CONTROL_V8_BASE_H_
 
+#ifdef V8_INSPECTOR
+#include "inspector/inspector_interface.h"
+#endif
+
 #include "../js_base.h"
 #include <iostream>
 
@@ -69,6 +73,14 @@ private:
     v8::ArrayBuffer::Allocator* m_pAllocator;
 
 public:
+    v8::Platform* getPlatform()
+    {
+#ifdef V8_VERSION_87_PLUS
+        return m_platform.get();
+#else
+        return m_platform;
+#endif
+    }
     CV8Initializer()
     {
         std::wstring sPrW = NSFile::GetProcessPath();
@@ -410,6 +422,9 @@ namespace NSJSBase
 
         virtual JSSmart<CJSValue> call_func(const char* name, const int argc = 0, JSSmart<CJSValue> argv[] = NULL)
         {
+#ifdef V8_INSPECTOR
+            v8_debug::before(V8ContextFirstArg CV8Worker::getInitializer()->getPlatform(), "");
+#endif
             v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
             v8::Handle<v8::Value> _func = value->Get(V8ContextFirstArg _name).ToLocalChecked();
 

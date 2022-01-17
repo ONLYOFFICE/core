@@ -24,7 +24,6 @@ DEFINES += UNICODE \
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 HEADERS += \
-    ../Source/TxtXmlEvent.h \
     ../Source/TxtXmlFile.h \
     ../Source/Common/Encoding.h \
     ../Source/Common/precompiled_utility.h \

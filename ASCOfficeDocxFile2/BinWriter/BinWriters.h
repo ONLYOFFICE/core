@@ -548,6 +548,8 @@ namespace BinDocxRW
 		void WriteColorSchemeMapping(const PPTX::Logic::ClrMap& oColorSchemeMapping);
 		void WriteCompat(const OOX::Settings::CCompat& oCompat);
 		void WriteCompatSetting(const OOX::Settings::CCompatSetting& oCompatSetting);
+		void WriteDocumentProtection(const OOX::Settings::CDocProtect& oDocProtect);
+		void WriteWriteProtection(const OOX::Settings::CWriteProtection& oWriteProtection);
 	};
 	class BinaryNotesTableWriter
 	{

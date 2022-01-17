@@ -254,6 +254,7 @@ namespace BinXlsxRW
 		void WriteFromTo(const OOX::Spreadsheet::CFromTo& oFromTo);
 		void WritePos(const OOX::Spreadsheet::CPos& oPos);
 		void WriteExt(const OOX::Spreadsheet::CExt& oExt);
+		void WriteClientData(const OOX::Spreadsheet::CClientData& oClientData);
         void WriteComments(boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>& mapComments);
 		void getSavedComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aDatas);
 		void WriteComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas);
@@ -287,6 +288,13 @@ namespace BinXlsxRW
 		void WriteDataValidationsContent(const OOX::Spreadsheet::CDataValidations& oDataValidations);
 		void WriteDataValidation(const OOX::Spreadsheet::CDataValidation& oDataValidation);
 		void WriteSlicers(OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CSlicerRefs& oSlicers);
+	};
+	class BinaryCustomsTableWriter
+	{
+		BinaryCommonWriter m_oBcw;
+	public:
+		BinaryCustomsTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream);
+		void Write(OOX::IFileContainer *pContainer);
 	};
 	class BinaryCalcChainTableWriter
 	{

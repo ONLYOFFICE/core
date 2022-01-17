@@ -42,9 +42,10 @@
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/Fb2File.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/HtmlFile2.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/graphics.lib")
+		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/UnicodeConverter.lib")
-	#else
+#else
 		#pragma comment(lib, "../../../build/lib/win_64/doctrenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/HtmlRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/PdfReader.lib")
@@ -55,10 +56,11 @@
 		#pragma comment(lib, "../../../build/lib/win_64/Fb2File.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/HtmlFile2.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/graphics.lib")
+		#pragma comment(lib, "../../../build/lib/win_64/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/UnicodeConverter.lib")
 	#endif
-	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+	#pragma comment(lib, "../../../build/bin/icu/win_64/icuuc.lib")
 #elif defined (_WIN32)
 	#if defined(_DEBUG)
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/doctrenderer.lib")
@@ -72,6 +74,7 @@
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/HtmlFile2.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/graphics.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/kernel.lib")
+		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
 	#else
 		#pragma comment(lib, "../../../build/lib/win_32/doctrenderer.lib")
@@ -84,6 +87,7 @@
 		#pragma comment(lib, "../../../build/lib/win_32/Fb2File.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/HtmlFile2.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/graphics.lib")
+		#pragma comment(lib, "../../../build/lib/win_32/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/UnicodeConverter.lib")
 	#endif

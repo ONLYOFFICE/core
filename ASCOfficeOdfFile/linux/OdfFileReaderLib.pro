@@ -223,6 +223,7 @@ SOURCES += \
     ../src/odf/datatypes/drawangle.cpp \
     ../src/odf/datatypes/timeperiod.cpp \
     ../src/odf/datatypes/messagetype.cpp \
+    ../src/odf/datatypes/stylecellprotect.cpp \
     ../src/docx/xlsx_conditionalFormatting.cpp \
     ../src/docx/xlsx_dxfs.cpp \
     ../src/docx/docx_content_type.cpp \
@@ -488,6 +489,7 @@ HEADERS += \
     ../src/odf/datatypes/charttimeunit.h \
     ../src/odf/datatypes/timeperiod.h \
     ../src/odf/datatypes/messagetype.h \
+    ./src/odf/datatypes/stylecellprotect.h \
     ../src/docx/docx_content_type.h \
     ../src/docx/docx_conversion_context.h \
     ../src/docx/docx_conversion_state.h \

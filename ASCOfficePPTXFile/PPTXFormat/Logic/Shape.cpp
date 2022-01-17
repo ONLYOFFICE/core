@@ -104,6 +104,21 @@ namespace PPTX
 					txXfrm = oReader;
 				else if (L"txbx" == strName || L"textbox" == strName)
 				{
+					if (oReader.GetAttributesCount() > 0)
+					{
+						if (oReader.MoveToFirstAttribute())
+						{
+							std::wstring wsNameA = oReader.GetName();
+							while (wsNameA.empty())
+							{
+								if (L"id" == wsNameA) oTextBoxId = oReader.GetText();
+								if (!oReader.MoveToNextAttribute())
+									break; 
+								wsNameA = oReader.GetName();
+							}
+						}
+					}
+					
 					if ( oReader.IsEmptyNode() )
 						continue;
 							
@@ -119,6 +134,8 @@ namespace PPTX
 						}
 					}
 				}
+				else if (L"linkedTxbx" == strName)
+					oTextBoxLinkedTxbx = oReader;
 				else if (L"cNvPr" == strName)
 					nvSpPr.cNvPr = oReader;
 				else if (L"cNvSpPr" == strName)
@@ -150,8 +167,10 @@ namespace PPTX
 			m_name = node.GetName();
 
             XmlMacroReadAttributeBase(node,L"useBgFill", useBgFill);
+			XmlMacroReadAttributeBase(node, L"modelId", modelId);
 			XmlMacroReadAttributeBase(node, L"macro", macro);
-
+			XmlMacroReadAttributeBase(node, L"fLocksText", fLocksText);
+			
 			XmlUtils::CXmlNodes oNodes;
 			if (node.GetNodes(L"*", oNodes))
 			{
@@ -183,6 +202,9 @@ namespace PPTX
 						txBody = oNode.ReadNodeNoNS(L"txBody");
 					else if (L"bodyPr" == strName)
 						oTextBoxBodyPr = oNode;
+					else if (L"linkedTxbx" == strName)
+						oTextBoxLinkedTxbx = oNode;
+
 				}
 			}
 
@@ -191,14 +213,18 @@ namespace PPTX
 		std::wstring Shape::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
+
 			oAttr.Write(L"useBgFill", useBgFill);
+			oAttr.Write(L"modelId", modelId);
 			oAttr.Write(L"macro", macro);
+			oAttr.Write(L"fLocksText", fLocksText);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(nvSpPr);
 			oValue.Write(spPr);
 			oValue.WriteNullable(style);
 			oValue.WriteNullable(txBody);
+			oValue.WriteNullable(txXfrm);
 
 			return XmlUtils::CreateNode(m_name, oAttr, oValue);
 		}		
@@ -212,17 +238,23 @@ namespace PPTX
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:sp";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:sp";
 			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:sp";
-				
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			name_ = L"dgm:sp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		name_ = L"dsp:sp";
+
 			pWriter->StartNode(name_);
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(L"macro", macro);
+
 			pWriter->WriteAttribute(L"useBgFill", useBgFill);
+			pWriter->WriteAttribute(L"macro", macro);
+			pWriter->WriteAttribute(L"modelId", modelId);
+			pWriter->WriteAttribute(L"fLocksText", fLocksText);
 			pWriter->EndAttributes();
 
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
 				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
+				nvSpPr.cNvPr.toXmlWriter2(L"wps", pWriter);
 				nvSpPr.cNvSpPr.toXmlWriter2(L"wps", pWriter);
 			}
 			else
@@ -249,6 +281,8 @@ namespace PPTX
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			style->m_namespace = L"xdr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		style->m_namespace = L"a";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	style->m_namespace = L"cdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			style->m_namespace = L"dgm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		style->m_namespace = L"dsp";
 
                 pWriter->Write(style);
             }
@@ -258,7 +292,11 @@ namespace PPTX
 				bool bIsWritedBodyPr = false;
 				if (strTextBoxShape.is_init())
 				{
-					pWriter->WriteString(L"<wps:txbx>");					
+					if (oTextBoxId.IsInit())
+						pWriter->WriteString(L"<wps:txbx id=\"" + std::to_wstring(*oTextBoxId) + L"\">");
+					else 
+						pWriter->WriteString(L"<wps:txbx>");					
+					
 					//pWriter->WriteString(oTextBoxShape->toXML());
 					pWriter->WriteString(*strTextBoxShape);
 					pWriter->WriteString(L"</wps:txbx>");
@@ -297,12 +335,20 @@ namespace PPTX
 				{
 					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)	
 						txBody->m_name = L"xdr:txBody";
-					if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	
+					else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	
 						txBody->m_name = L"cdr:txBody";
+					else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)
+						txBody->m_name = L"dgm:txBody";
+					else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)
+						txBody->m_name = L"dsp:txBody";
 				}
 				pWriter->Write(txBody);
 			}
 
+			if (txXfrm.IsInit() && pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)
+			{
+				txXfrm->toXmlWriter(pWriter);
+			}
 			pWriter->EndNode(name_);
 		}
 		
@@ -323,7 +369,7 @@ namespace PPTX
 					case 0:
 					{
 						useBgFill = pReader->GetBool();						
-					}break;
+					}break;			
 					default:
 						break;
 				}
@@ -385,13 +431,24 @@ namespace PPTX
 					}break;
 					case 6:
 					{
-						txXfrm = new PPTX::Logic::Xfrm();
+						txXfrm = new PPTX::Logic::Xfrm(); txXfrm->node_name = L"dsp:txXfrm";
+
 						txXfrm->fromPPTY(pReader);						
 					}break;
 					case 7:
 					{
 						signatureLine = new OOX::VmlOffice::CSignatureLine();
 						signatureLine->fromPPTY(pReader);						
+					}break;
+					case 8:
+					{
+						pReader->Skip(5); // type + size
+						modelId = pReader->GetString2();
+					}break;
+					case 9:
+					{
+						pReader->Skip(5); // type + size
+						fLocksText = pReader->GetBool();
 					}break;
 					case SPTREE_TYPE_MACRO:
 					{
@@ -417,14 +474,13 @@ namespace PPTX
 				style->SetParentPointer(this);
 			if (txBody.IsInit())
 				txBody->SetParentPointer(this);			
-		}
-		
+		}		
 		void Shape::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter)const
 		{
 			pWriter->StartRecord(SPTREE_TYPE_SHAPE);
 
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteBool2(0, useBgFill);
+				pWriter->WriteBool2(0, useBgFill);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord1(0, nvSpPr);
@@ -491,6 +547,18 @@ namespace PPTX
 			pWriter->WriteRecord2(6, txXfrm);
 			pWriter->WriteRecord2(7, signatureLine);
 			
+			if (modelId.IsInit())
+			{
+				pWriter->StartRecord(8);
+				pWriter->WriteString1(0, *modelId);
+				pWriter->EndRecord();
+			}
+			if (fLocksText.IsInit())
+			{
+				pWriter->StartRecord(9);
+				pWriter->WriteBool1(0, *fLocksText);
+				pWriter->EndRecord();
+			}
 			if (macro.IsInit())
 			{
 				pWriter->StartRecord(SPTREE_TYPE_MACRO);

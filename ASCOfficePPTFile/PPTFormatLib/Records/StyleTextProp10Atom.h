@@ -51,7 +51,7 @@ public:
         LONG lCurPos		=	0;
         StreamUtils::StreamPosition ( lCurPos, pStream );
 
-        while ( lPos + m_oHeader.RecLen > lCurPos)
+        while ( lPos + (LONG)m_oHeader.RecLen > lCurPos)
         {
             STextCFException10 style;
             style.ReadFromStream(pStream);

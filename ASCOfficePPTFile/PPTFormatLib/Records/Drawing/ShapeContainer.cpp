@@ -883,6 +883,17 @@ void CPPTElement::SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlid
     case pibFlags:
     {
     }break;
+    case pictureContrast:
+        image_element->m_lpictureContrast = (_INT32)pProperty->m_lValue;
+        break;
+    case pictureBrightness:
+        image_element->m_lpictureBrightness = (_INT32)pProperty->m_lValue;
+        break;
+    case fillBackColor:
+        // TODO to fix 53541
+        break;
+    default:
+        break;
     }
 }
 void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
@@ -927,6 +938,10 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
         if (utf8Data && utf8DataSize > 0)
         {
             pParentShape->m_strXmlString = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+            //            std::string filename = std::to_string(nRTCounter++) + "_shape.xml";
+            //            std::ofstream file("data/" + filename, std::ios::out);
+            //            file.write((char*)utf8Data, utf8DataSize);
+            //            file.close();
 
             delete []utf8Data;
         }
@@ -1716,7 +1731,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         CorrectPlaceholderType(pElement->m_lPlaceholderType);
     }
 
-    std::vector<CRecordRoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
+    std::vector<RoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
     GetRecordsByType(&oArrayHFPlaceholder, true, true);
     if (0 < oArrayHFPlaceholder.size())
     {
@@ -1836,9 +1851,9 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     }
 
 
-
     //--------- наличие текста --------------------------------------------------------------------------
     CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
+
     if (NULL != pShapeElem)
     {
         CElementInfo oElementInfo;
@@ -1961,6 +1976,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
                 pShapeElem->m_oTextActions.m_arRanges.push_back(oRange);
             }
         }
+
         double dAngle = pShapeElem->m_dRotate;
         if (0 <= dAngle)
         {
@@ -2051,7 +2067,7 @@ bool CRecordShapeContainer::isTable() const
         {
             if ((prop.m_ePID == tableProperties ||
                  prop.m_ePID == tableRowProperties) &&
-                bGroupShape)
+                    bGroupShape)
             {
                 return true;
             }
@@ -2074,26 +2090,26 @@ std::wstring CRecordShapeContainer::getTableXmlStr() const
         ULONG utf8DataSize = 0;
         auto& xmlProp = oArrayOptions[1]->m_oProperties.m_arProperties[2]; //id == 0x2065 ?
 
-		if (xmlProp.m_pOptions && xmlProp.m_lValue > 0) // file513.ppt
-		{
-			std::wstring temp = NSDirectory::GetTempPath();
-			std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
+        if (xmlProp.m_pOptions && xmlProp.m_lValue > 0) // file513.ppt
+        {
+            std::wstring temp = NSDirectory::GetTempPath();
+            std::wstring tempFileName = temp + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
 
-			NSFile::CFileBinary file;
-			if (file.CreateFileW(tempFileName))
-			{
-				file.WriteFile(xmlProp.m_pOptions, xmlProp.m_lValue);
-				file.CloseFile();
-			}
+            NSFile::CFileBinary file;
+            if (file.CreateFileW(tempFileName))
+            {
+                file.WriteFile(xmlProp.m_pOptions, xmlProp.m_lValue);
+                file.CloseFile();
+            }
 
-			if (S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"drs/e2oDoc.xml", &utf8Data, utf8DataSize))
-			{
-				xmlStr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
-			}
+            if (S_OK == officeUtils.LoadFileFromArchive(tempFileName, L"drs/e2oDoc.xml", &utf8Data, utf8DataSize))
+            {
+                xmlStr = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+            }
 
-			delete[] utf8Data;
-			NSFile::CFileBinary::Remove(tempFileName);
-		}
+            delete[] utf8Data;
+            NSFile::CFileBinary::Remove(tempFileName);
+        }
     }
 
     return xmlStr;
@@ -2121,7 +2137,8 @@ void CRecordShapeContainer::ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, C
     }
 
     pText->ApplyThemeStyle(pTheme);
-
+    // AutoNumbering and BulletBlip
+    ConvertStyleTextProp9(pText);
 }
 void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels)
 {
@@ -2588,8 +2605,8 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
             const int posBlockStart = posOrigText;
             const int posOrigSpanEnd = posBlockStart + iterSpan->m_strText.length();
             const int posBlockEnd = isHyperlink ?
-				(std::min)(posOrigSpanEnd, iterRange->m_lEnd)  :
-				(std::min)(posOrigSpanEnd, iterRange->m_lStart);
+                        (std::min)(posOrigSpanEnd, iterRange->m_lEnd)  :
+                        (std::min)(posOrigSpanEnd, iterRange->m_lStart);
             const size_t blockLen = posBlockEnd - posBlockStart;
 
             const bool isNeedToSplit = posBlockEnd < posOrigSpanEnd && isHyperlink;
@@ -2621,13 +2638,13 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
                     iterSpan->m_strText = originalText.substr(posBlockEnd, nextBlockLen);
                     iterSpan->m_arrInteractive.clear();
                     // Return to current span
-					iterSpan--;
+                    iterSpan--;
                 }
 
-				if (iterSpan != arrSpans.end() && iterInteractive != arrSplitedInteractive.end())
-					addHyperlinkToSpan(*iterSpan, *iterInteractive, oColor);
-				else
-					break; //GZoabli_PhD.ppt
+                if (iterSpan != arrSpans.end() && iterInteractive != arrSplitedInteractive.end())
+                    addHyperlinkToSpan(*iterSpan, *iterInteractive, oColor);
+                else
+                    break; //GZoabli_PhD.ppt
 
                 if (posBlockEnd == iterRange->m_lEnd)
                 {
@@ -2648,7 +2665,7 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
                 const size_t nextBlockLen = posOrigSpanEnd - posBlockEnd;
                 iterSpan->m_strText = originalText.substr(posBlockEnd, nextBlockLen);
                 iterSpan->m_arrInteractive.clear();
-                 // Return to current span
+                // Return to current span
                 iterSpan--;
             }
         }
@@ -2659,10 +2676,35 @@ void CRecordShapeContainer::ApplyHyperlink(CShapeElement* pShape, CColor& oColor
 
 void CRecordShapeContainer::addHyperlinkToSpan(CSpan &oSpan, const std::vector<CInteractiveInfo> &arrInteractive, const CColor &oColor)
 {
-    oSpan.m_oRun.Color = oColor;
-    oSpan.m_oRun.FontUnderline = (bool)true;
-    oSpan.m_arrInteractive = arrInteractive;
+    if (isRealHyperlink(arrInteractive))
+    {
+        oSpan.m_oRun.Color = oColor;
+        oSpan.m_oRun.FontUnderline = (bool)true;
+        oSpan.m_arrInteractive = arrInteractive;
+    }
 }
+
+bool CRecordShapeContainer::isRealHyperlink(const std::vector<CInteractiveInfo> &arrInteractive)
+{
+    bool isReal = false;
+    for (const auto& interInfo : arrInteractive)
+    {
+        switch (interInfo.m_lHyperlinkType)
+        {
+        case LT_Url:
+            if (interInfo.m_strHyperlink.size())
+                isReal = true;
+            break;
+        default:
+            isReal = true;
+            break;
+        }
+    }
+
+    return isReal;
+}
+
+
 
 std::vector<std::vector<CInteractiveInfo> > CRecordShapeContainer::splitInteractive(const std::vector<CInteractiveInfo> &arrInteractive)
 {
@@ -2721,6 +2763,96 @@ void CRecordShapeContainer::ConvertInteractiveInfo(CInteractiveInfo &interactive
     interactiveInfo.m_bVisited			= interactiveAtom.m_bVisited;
 
 }
+
+void CRecordShapeContainer::ConvertStyleTextProp9(CTextAttributesEx *pText)
+{
+
+    std::vector<CRecordOfficeArtClientData*> arrOfficeData;
+    GetRecordsByType(&arrOfficeData, false, true);
+
+    if (arrOfficeData.empty())
+        return;
+
+    auto pUnknownBinaryTag =arrOfficeData[0]->getProgTag(___PPT9);
+    if (pUnknownBinaryTag == nullptr)
+        return;
+    auto progTag9 = dynamic_cast<CRecordPP9ShapeBinaryTagExtension*>(pUnknownBinaryTag->m_pTagContainer);
+    if (progTag9 == nullptr)
+        return;
+
+    const auto& arrStyleTextProp9 = progTag9->m_styleTextPropAtom.m_rgStyleTextProp9;
+    if (arrStyleTextProp9.empty())
+        return;
+
+    WORD pp9rt = 0;
+    auto& arrPars  = pText->m_arParagraphs;
+    for (auto& par : arrPars)
+    {
+        if (par.m_arSpans.empty())
+            continue;
+
+        if (par.m_arSpans[0].m_oRun.pp9rt.is_init())
+            pp9rt = par.m_arSpans[0].m_oRun.pp9rt.get();
+
+        if (pp9rt >= arrStyleTextProp9.size())
+            continue;
+
+        auto& prop9 = arrStyleTextProp9[pp9rt];
+
+        if (prop9.m_pf9.m_optBulletAutoNumberScheme.is_init())
+        {
+            auto* pBuAutoNum = new CBulletAutoNum;
+            pBuAutoNum->type = prop9.m_pf9.m_optBulletAutoNumberScheme->SchemeToStr();
+            pBuAutoNum->startAt = prop9.m_pf9.m_optBulletAutoNumberScheme->m_nStartNum;
+
+            par.m_oPFRun.bulletAutoNum.reset(pBuAutoNum);
+        }
+        if (prop9.m_pf9.m_optBulletBlipRef.is_init())
+        {
+            auto* pBuBlip = new CBulletBlip;
+            if (prop9.m_pf9.m_optBulletBlipRef.IsInit())
+                pBuBlip->bulletBlipRef = prop9.m_pf9.m_optBulletBlipRef.get();
+            else
+                pBuBlip->bulletBlipRef = -1;
+
+            par.m_oPFRun.bulletBlip.reset(pBuBlip);
+        }
+    }
+
+}
+
+//void CRecordShapeContainer::ConvertExtention9(CElement* pElement)
+//{
+//    if (pElement == nullptr)
+//        return;
+
+//    std::vector<CRecordOfficeArtClientData*> arrOfficeData;
+//    GetRecordsByType(&arrOfficeData, false, true);
+
+//    if (arrOfficeData.empty())
+//        return;
+
+//    auto pUnknownBinaryTag =arrOfficeData[0]->getProgTag(___PPT9);
+//    if (pUnknownBinaryTag == nullptr)
+//        return;
+//    auto progTag9 = dynamic_cast<CRecordPP9ShapeBinaryTagExtension*>(pUnknownBinaryTag->m_pTagContainer);
+//    if (progTag9 == nullptr)
+//        return;
+
+//    const auto& arrStyleTextProp9 = progTag9->m_styleTextPropAtom.m_rgStyleTextProp9;
+
+//    for (const auto& textProp9 : arrStyleTextProp9)
+//    {
+//        CBulletBlip buBlip;
+//        if (textProp9.m_pf9.m_optBulletBlipRef.IsInit())
+//            buBlip.bulletBlipRef = textProp9.m_pf9.m_optBulletBlipRef.get();
+//        else
+//            buBlip.bulletBlipRef = -1;
+
+//        pElement->m_arrBlip.push_back(buBlip);
+//    }
+
+//}
 
 void CRecordGroupShapeContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 {

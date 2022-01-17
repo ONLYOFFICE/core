@@ -31,13 +31,7 @@
  */
 #pragma once
 
-#include "TxtXmlEvent.h"
-
 #include <string>
-
-#if defined(_WIN32) || defined(_WIN64)
-    #include <windows.h>
-#endif
 
 #include "../../../DesktopEditor/common/ASCVariant.h"
 
@@ -46,11 +40,9 @@ namespace Writers
 	class FileWriter;
 }
 
-class CTxtXmlFile : public TxtXml::ITxtXmlEvent
+class CTxtXmlFile
 {
 public:
-	virtual bool Progress(long ID, long Percent);
-
     _UINT32 txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions);
     _UINT32 txt_SaveToFile	(const std::wstring & sDstFileName, const std::wstring & sSrcPath, const std::wstring & sXMLOptions);
 

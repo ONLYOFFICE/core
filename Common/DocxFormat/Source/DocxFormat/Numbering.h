@@ -943,7 +943,14 @@ namespace OOX
 				else if ( L"w:num" == sName || L"w:list" == sName)
 				{
 					OOX::Numbering::CNum *oNum = new OOX::Numbering::CNum(oReader);
-					if (oNum) m_arrNum.push_back( oNum );
+					if (oNum)
+					{
+						if (oNum->m_oNumId.IsInit() && (oNum->m_oAbstractNumId.IsInit()) && (oNum->m_oAbstractNumId->m_oVal.IsInit()))
+						{
+							m_mapNum.insert(std::make_pair(*oNum->m_oNumId, std::make_pair(*oNum->m_oAbstractNumId->m_oVal, m_arrNum.size())));
+						}
+						m_arrNum.push_back(oNum);
+					}
 				}
 				else if ( L"w:numIdMacAtCleanup" == sName || L"w:ilfoMacAtCleanup" == sName)
 					m_oNumIdMacAtCleanup = oReader;
@@ -1010,6 +1017,7 @@ mc:Ignorable=\"w14 w15\">");
 			return et_w_numbering;
 		}
 
+		std::map<int, std::pair<int, size_t>>			m_mapNum; // numId, abstractNumId/index
 		std::map<int, size_t>							m_mapAbstractNum; //abstractNumId, index m_arrAbstractNum
 		std::vector<OOX::Numbering::CAbstractNum*>		m_arrAbstractNum;
 		std::vector<OOX::Numbering::CNum*>				m_arrNum;

@@ -12,7 +12,7 @@
 #include "../Common/3dParty/html/htmltoxhtml.h"
 #include "../Common/3dParty/html/css/src/CCssCalculator.h"
 #include "../Common/3dParty/html/css/src/xhtml/CDocumentStyle.h"
-#include "../Common/FileDownloader/FileDownloader.h"
+#include "../Common/Network/FileTransporter/include/FileTransporter.h"
 #include "../DesktopEditor/common/Types.h"
 #include "../DesktopEditor/common/Base64.h"
 #include "../DesktopEditor/common/SystemUtils.h"
@@ -443,7 +443,7 @@ public:
                         if(sRef.substr(0, 4) == L"http")
                         {
                             sFName = m_sTmp + L'/' + sFName;
-                            CFileDownloader oDownloadStyle(sRef, false);
+                            NSNetwork::NSFileTransport::CFileDownloader oDownloadStyle(sRef, false);
                             oDownloadStyle.SetFilePath(sFName);
                             if(oDownloadStyle.DownloadSync())
                             {
@@ -486,7 +486,7 @@ public:
                 if(sRef.substr(0, 4) == L"http")
                 {
                     sFName = m_sTmp + L'/' + sFName;
-                    CFileDownloader oDownloadStyle(sRef, false);
+                    NSNetwork::NSFileTransport::CFileDownloader oDownloadStyle(sRef, false);
                     oDownloadStyle.SetFilePath(sFName);
                     if(oDownloadStyle.DownloadSync())
                     {
@@ -1477,7 +1477,7 @@ private:
 
                 sImageName = NSFile::GetFileName(sSrcM);
                 sImageName.erase(std::remove_if(sImageName.begin(), sImageName.end(), [] (wchar_t ch) { return std::iswspace(ch) || (ch == L'^'); }), sImageName.end());
-                CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
+                NSNetwork::NSFileTransport::CFileDownloader oDownloadImg(m_sBase + sSrcM, false);
                 oDownloadImg.SetFilePath(m_sDst + L"/word/media/i" + sImageName);
                 bRes = oDownloadImg.DownloadSync();
             }

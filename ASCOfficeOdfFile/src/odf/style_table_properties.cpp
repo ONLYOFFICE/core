@@ -115,9 +115,8 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
 
     if (common_break_attlist_.fo_break_before_)
     {
-        if (common_break_attlist_.fo_break_before_->get_type()  == fo_break::Page)
-            Context.set_page_break_before(true);
-    }
+		Context.set_page_break_before(common_break_attlist_.fo_break_before_->get_type());
+	}
 
     if (table_align_)
     {

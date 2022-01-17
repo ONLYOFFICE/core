@@ -42,7 +42,7 @@
 
 namespace PPTX
 {
-	class LegacyDiagramText;
+	//class LegacyDiagramText;
 
 	class FileContainer : public OOX::IFileContainer
 	{

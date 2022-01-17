@@ -37,6 +37,8 @@
 #include <iostream>
 #include <iomanip>
 
+using namespace PPT_FORMAT;
+
 std::wstring CUnknownRecord::ReadStringW(const CFStreamPtr &pStream, int lLen)
 {
     if (!pStream) return (L"");
@@ -514,27 +516,33 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RT_SlideShowDocInfoAtom		, CRecordSSDocInfoAtom)
             //CREATE_BY_TYPE(RECORD_TYPE_DOC_ROUTING_SLIP			, CRecordDocRoutingSlipAtom)
     CREATE_BY_TYPE(RT_ExternalObjectListAtom				, CRecordExObjListAtom)
-            //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordGridSpacing10Atom)
-    CREATE_BY_TYPE(RT_RoundTripTheme12Atom					, CRecordRoundTripThemeAtom)
-    CREATE_BY_TYPE(RT_RoundTripColorMapping12Atom			, CRecordRoundTripColorMappingAtom)
             //CREATE_BY_TYPE(RECORD_TYPE_NAMEDSHOW_SLIDES			, CRecordNamedShowSlidesAtom)
             //CREATE_BY_TYPE(RECORD_TYPE_SHEET_PROPERTIES			, CRecordNormalViewSetInfoAtom)
+//    CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordGridSpacing10Atom)
 
     CREATE_BY_TYPE(RT_ColorSchemeAtom                       , CRecordColorSchemeAtom)
 
-    CREATE_BY_TYPE(RT_RoundTripOriginalMainMasterId12Atom	, CRecordTripOriginalMasterId12Atom)
-    CREATE_BY_TYPE(RT_RoundTripCompositeMasterId12Atom		, CRecordTripCompositeMasterId12Atom)
-    CREATE_BY_TYPE(RT_RoundTripContentMasterInfo12Atom  	, CRecordRoundTripContentMasterInfo12Atom)			// ECMA-376 дубль
-            //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPSHAPEID12			, CRecordRoundTripShapeId12Atom)
-    CREATE_BY_TYPE(RT_RoundTripHFPlaceholder12Atom  		, CRecordRoundTripHFPlaceholder12Atom)
-            //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPCONTENTMASTERID	, CRecordRoundTripContentMasterId12Atom)
+    CREATE_BY_TYPE(RT_RoundTripTheme12Atom					, RoundTripTheme12Atom)
+    CREATE_BY_TYPE(RT_RoundTripColorMapping12Atom			, RoundTripColorMapping12Atom)
+    CREATE_BY_TYPE(RT_RoundTripOriginalMainMasterId12Atom	, RoundTripOriginalMainMasterId12Atom)
+    CREATE_BY_TYPE(RT_RoundTripCompositeMasterId12Atom		, RoundTripCompositeMasterId12Atom)
+    CREATE_BY_TYPE(RT_RoundTripContentMasterInfo12Atom  	, RoundTripContentMasterInfo12Atom)			// ECMA-376 дубль
+    CREATE_BY_TYPE(RT_RoundTripShapeId12Atom			    , RoundTripShapeId12Atom)
+    CREATE_BY_TYPE(RT_RoundTripContentMasterId12Atom  		, RoundTripContentMasterId12Atom)
+    CREATE_BY_TYPE(RT_RoundTripOArtTextStyles12Atom  		, RoundTripOArtTextStyles12Atom)
+    CREATE_BY_TYPE(RT_RoundTripHeaderFooterDefaults12Atom  	, RoundTripHeaderFooterDefaults12Atom)
+    CREATE_BY_TYPE(RT_RoundTripDocFlags12Atom               , RoundTripDocFlags12Atom)
+    CREATE_BY_TYPE(RT_RoundTripShapeCheckSumForCL12Atom  	, RoundTripShapeCheckSumForCL12Atom)
+    CREATE_BY_TYPE(RT_RoundTripNotesMasterTextStyles12Atom  , RoundTripNotesMasterTextStyles12Atom)
+    CREATE_BY_TYPE(RT_RoundTripCustomTableStyles12Atom  	, RoundTripCustomTableStyles12Atom)
+    CREATE_BY_TYPE(RT_RoundTripNewPlaceholderId12Atom  		, RoundTripNewPlaceholderId12Atom)
+    CREATE_BY_TYPE(RT_RoundTripAnimationAtom12Atom  		, RoundTripAnimationAtom12Atom)
+    CREATE_BY_TYPE(RT_RoundTripAnimationHashAtom12Atom  	, RoundTripAnimationHashAtom12Atom)
+    CREATE_BY_TYPE(RT_RoundTripSlideSyncInfo12              , RoundTripSlideSyncInfo12Container)
+    CREATE_BY_TYPE(RT_RoundTripSlideSyncInfoAtom12  		, RoundTripSlideSyncInfoAtom12)
 
-    CREATE_BY_TYPE(RT_RoundTripOArtTextStyles12Atom	, CRecordRoundTripOArtTextStyles12Atom)
-    CREATE_BY_TYPE(RT_RoundTripHeaderFooterDefaults12Atom	, CRecordRoundTripHeaderFooterDefaults12Atom)
-    CREATE_BY_TYPE(RT_RoundTripNotesMasterTextStyles12Atom	, CRecordRoundTripNotesMasterTextStyles12Atom)
             //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPDOCFLAGS12						, CRecordRoundTripDocFlags12Atom)
             //CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPSHAPECHECKSUMFORCUSTOMLAYOUTS12	, CRecordRoundTripShapeCheckSumForCustomLayouts12Atom)
-    CREATE_BY_TYPE(RT_RoundTripCustomTableStyles12Atom		, CRecordRoundTripCustomTableStyles12Atom)
 
             //CREATE_BY_TYPE(RECORD_TYPE_BOOKMARK_SEED_ATOM			, CRecordBookmarkSeedAtom)
             //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN, CRecordBlipEntityAtom)
@@ -542,7 +550,6 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RT_PlaceholderAtom           			, CRecordPlaceHolderAtom)
             //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN, CRecordShapeFlagsAtom)
             //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN, CRecordShapeFlags10Atom)
-            //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN, CRecordRoundTripNewPlaceholderId12Atom)
 
     CREATE_BY_TYPE(RT_OutlineTextRefAtom        			, CRecordOutlineTextRefAtom)
     CREATE_BY_TYPE(RT_TextHeaderAtom        				, CRecordTextHeaderAtom)
@@ -559,7 +566,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
     CREATE_BY_TYPE(RT_TextRulerAtom         				, CRecordTextRulerAtom)
             //CREATE_BY_TYPE(RECORD_TYPE_TEXTBOOKMARK_ATOM			, CRecordTextBookmarkAtom)
     CREATE_BY_TYPE(RT_TextBytesAtom         				, CRecordTextBytesAtom)
-            //CREATE_BY_TYPE(RECORD_TYPE_UNKNOWN					, CRecordOutlineTextPropsHeaderExAtom)
+    CREATE_BY_TYPE(RT_OutlineTextPropsHeader9Atom			, CRecordOutlineTextPropsHeaderExAtom)
 
     CREATE_BY_TYPE(RT_GuideAtom                             , CRecordGuideAtom)
 

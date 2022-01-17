@@ -106,10 +106,9 @@ namespace PPTX
 					{
 						OOX::IFileContainer* pRels = dynamic_cast<OOX::IFileContainer*>(const_cast<PPTX::WrapperFile*>(parentFile));
 
-						if (!pRels && (pWriter) && (pWriter->m_pCurrentContainer))
+						if (!pRels && (pWriter))
 						{
-							if (pWriter->m_pCurrentContainer->is_init())
-								pRels = pWriter->m_pCurrentContainer->operator ->();
+							pRels = pWriter->GetRels().GetPointer();
 						}
 
 						smart_ptr<OOX::Media> pMedia;

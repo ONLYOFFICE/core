@@ -95,7 +95,7 @@ public:
         LONG lCurLen = 0;
         SRecordHeader ReadHeader;
 
-        while (lCurLen < m_oHeader.RecLen)
+        while (lCurLen < (LONG)m_oHeader.RecLen)
         {
 
             if (!ReadHeader.ReadFromStream(pStream))
@@ -111,6 +111,22 @@ public:
             m_rgChildRec.push_back(pRec);
         }
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
+    }
+
+    IRecord* getDocBinaryTagExtension(const std::wstring& extVersion)
+    {
+        for (auto* pChild : m_rgChildRec)
+        {
+            if(pChild == nullptr || pChild->m_record.IsInit() == false)
+                continue;
+
+            auto* pDocProgTagsCont = dynamic_cast<CRecordDocProgTagsContainer*>(pChild->m_record.GetPointer());
+            if (pDocProgTagsCont == nullptr)
+                continue;
+
+            return pDocProgTagsCont->getDocBinaryTagExtension(extVersion);
+        }
+        return nullptr;
     }
 
     CRecordVBAInfoAtom* getVBAInfoAtom()const

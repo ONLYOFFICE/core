@@ -83,7 +83,8 @@ namespace BinXlsxRW
 		App = 6,
 		Core = 7,
 		PersonList = 8,
-		CustomProperties = 9
+		CustomProperties = 9,
+		Customs = 10
 	};}
 
 	namespace c_oSerStylesTypes{enum c_oSerStylesTypes
@@ -233,7 +234,8 @@ namespace BinXlsxRW
 		HashValue = 2,
 		SaltValue = 3,
 		LockStructure = 4,
-		LockWindows = 5
+		LockWindows = 5,
+		Password
 	}; }
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{
@@ -580,7 +582,8 @@ namespace BinXlsxRW
 		pptxDrawing = 9,
 		//Chart2 = 10,
 		//ObjectName = 11
-		EditAs = 12
+		EditAs = 12,
+		ClientData = 14
 	};}
 	namespace c_oSer_DrawingFromToType{enum c_oSer_DrawingFromToType
 	{
@@ -598,6 +601,11 @@ namespace BinXlsxRW
 	{
 		Cx = 0,
 		Cy = 1
+	};}
+	namespace c_oSer_DrawingClientDataType {enum c_oSer_DrawingClientDataType
+	{
+		fLocksWithSheet = 0,
+		fPrintsWithSheet = 1
 	};}
 	namespace c_oSer_OtherType{enum c_oSer_OtherType
 	{
@@ -617,6 +625,13 @@ namespace BinXlsxRW
 		Ref = 4,
 		ChildChain = 5,
 		NewThread = 6
+	};}
+	namespace c_oSerCustoms {enum c_oSerCustoms
+	{
+		Custom = 0,
+		ItemId = 1,
+		Uri = 2,
+		Content = 3
 	};}
 	namespace c_oSer_ChartType{enum c_oSer_ChartType
 	{

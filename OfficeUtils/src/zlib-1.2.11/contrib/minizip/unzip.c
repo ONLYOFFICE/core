@@ -611,12 +611,13 @@ local unzFile unzOpenInternal (const void *path,
         us.z_filefunc = *pzlib_filefunc64_32_def;
     us.is64bitOpenFunction = is64bitOpenFunction;
 
-
+    int nMode = ZLIB_FILEFUNC_MODE_READ;
+    if ((zlip_get_addition_flag() & ZLIB_ADDON_FLAG_READ_ONLY) == 0)
+        nMode |= ZLIB_FILEFUNC_MODE_EXISTING;
 
     us.filestream = ZOPEN64(us.z_filefunc,
                                                  path,
-                                                 ZLIB_FILEFUNC_MODE_READ |
-                                                 ZLIB_FILEFUNC_MODE_EXISTING);
+                                                 nMode);
     if (us.filestream==NULL)
         return NULL;
 

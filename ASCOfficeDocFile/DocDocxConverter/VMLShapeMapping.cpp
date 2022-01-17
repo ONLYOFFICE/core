@@ -312,6 +312,8 @@ namespace DocFileFormat
 		int	nAdjValues			=	0;
 		int	nLTxID				=	-1;
 
+		int nProperty = 0;
+
 		std::wstring				sTextboxStyle;
 				
 		ODRAW::OfficeArtFOPTEPtr	opSegmentInfo;
@@ -565,6 +567,7 @@ namespace DocFileFormat
 			case ODRAW::fillFocus:
 			{
 				appendValueAttribute(&m_fill, L"focus", (FormatUtils::IntToWideString(iter->op) + L"%"));
+				appendValueAttribute(&m_fill, L"focusposition", L".5, .5");
 				appendValueAttribute(&m_fill, L"focussize", L"");
 			}break;
 			case ODRAW::fillType:
@@ -602,12 +605,14 @@ namespace DocFileFormat
 			}break;
 			case ODRAW::fillOpacity:
 			{
-				appendValueAttribute(&m_fill, L"opacity", (FormatUtils::IntToWideString(iter->op) + L"f"));
+				double opa = (iter->op / pow((double)2, (double)16));
+				appendValueAttribute(&m_fill, L"opacity", FormatUtils::DoubleToFormattedWideString(opa, L"%.2f"));
 			}
 			break;
 			case ODRAW::fillBackOpacity:
 			{
-				appendValueAttribute(&m_fill, L"o:opacity2", (FormatUtils::IntToWideString(iter->op) + L"f"));
+				double opa = (iter->op / pow((double)2, (double)16));
+				appendValueAttribute(&m_fill, L"o:opacity2", FormatUtils::DoubleToFormattedWideString(opa, L"%.2f"));
 			}break;
 	// SHADOW
 			case ODRAW::shadowType:
@@ -652,8 +657,14 @@ namespace DocFileFormat
 			}break;
 			case ODRAW::shadowStyleBooleanProperties:
 			{
-				//ODRAW::ShadowStyleBooleanProperties
-
+				ODRAW::ShadowStyleBooleanProperties* booleans = dynamic_cast<ODRAW::ShadowStyleBooleanProperties*>(iter.get());
+				if (booleans)
+				{
+					if (booleans->fUsefShadow && booleans->fShadow)
+					{
+						bShadow = true;
+					}
+				}
 			}break;
 	// OLE
 			case ODRAW::pictureId:
@@ -832,6 +843,10 @@ namespace DocFileFormat
 						break;
 					}
 				}break;	
+			case ODRAW::hspNext:
+				{
+					appendStyleProperty(sTextboxStyle, L"mso-next-textbox", std::wstring(L"_x0000_s") + FormatUtils::IntToWideString((unsigned int)iter->op));
+				}break;
 			case ODRAW::textBooleanProperties:
 				{
 					ODRAW::TextBooleanProperties *props = dynamic_cast<ODRAW::TextBooleanProperties*>(iter.get());
@@ -841,7 +856,6 @@ namespace DocFileFormat
 						appendStyleProperty(sTextboxStyle, L"mso-fit-shape-to-text", L"t");
 					}
 				}break;
-
 // Word Art
 			case ODRAW::gtextUNICODE:
 				{
@@ -900,7 +914,7 @@ namespace DocFileFormat
 				}break;
 			default:
 				{
-					int val = iter->op;
+					nProperty = iter->op;
 				}break;
 			}
 		}
@@ -1020,13 +1034,6 @@ namespace DocFileFormat
 			appendValueAttribute(&m_shadow, L"origin", FormatUtils::DoubleToWideString(*ShadowOriginX) + std::wstring(L"," ) + FormatUtils::DoubleToWideString(*ShadowOriginY));
 		}
 
-// write shadow
-		if (m_shadow.GetAttributeCount() > 0)
-		{
-			appendValueAttribute(&m_shadow, L"on", bShadow ? L"t" : L"f" );
-			m_pXmlWriter->WriteString(m_shadow.GetXMLString());
-		}
-
 //write the viewpoint
 		if ( ViewPointX || ViewPointY || ViewPointZ )
 		{
@@ -1095,6 +1102,13 @@ namespace DocFileFormat
 		{
 			m_pXmlWriter->WriteString(m_fill.GetXMLString());
 		}		
+
+// write shadow
+		if (m_shadow.GetAttributeCount() > 0)
+		{
+			appendValueAttribute(&m_shadow, L"on", bShadow ? L"t" : L"f");
+			m_pXmlWriter->WriteString(m_shadow.GetXMLString());
+		}
 // write imagedata
 		if (m_imagedata.GetAttributeCount())
 		{
@@ -1149,8 +1163,8 @@ namespace DocFileFormat
 			//Word appends a OfficeArtClientTextbox record to the container. 
 			//This record stores the index of the textbox.
 
-			int nIndex = pTextBox->GetIndex();
-			if (nIndex)
+			int nIndex = pTextBox->m_nIndex;
+			if (nIndex > 0)
 			{
 				TextboxMapping textboxMapping(m_context, nIndex - 1, m_pXmlWriter, m_pCaller);
 				textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
@@ -1161,12 +1175,6 @@ namespace DocFileFormat
 		}
 		else if( hasTextbox )
 		{
-			//Open Office textbox
-
-			//Open Office doesn't append a OfficeArtClientTextbox record to the container.
-			//We don't know how Word gets the relation to the text, but we assume that the first textbox in the document
-			//get the index 0, the second textbox gets the index 1 (and so on).
-
 			if (-1 != nLTxID)
 			{
 				TextboxMapping textboxMapping(m_context, nLTxID - 1, m_pXmlWriter, m_pCaller);
@@ -1704,7 +1712,7 @@ namespace DocFileFormat
 		switch (val)
 		{
 		case 0:	return L"square";
-		//case 1:	return L"ByPoints";	
+		case 1:	return L"tight";	
 		case 2:	return L"none";
 		//case 3:	return L"TopBottom";
 		//case 3:	return L"Through";
@@ -1762,7 +1770,7 @@ namespace DocFileFormat
 						//за текстом (The shape is behind the text, so the z-index must be negative.)
 						m_isInlineShape = false;
 
-						if (false == bZIndex && false == m_inGroup)
+						if (false == bZIndex/* && false == m_inGroup*/) // Пример.doc
 						{
 							appendStyleProperty(oStyle, L"z-index", FormatUtils::IntToWideString(-zIndex - 0x7ffff));
 							bZIndex = true;
@@ -1817,7 +1825,7 @@ namespace DocFileFormat
 			}
 		}
 		
-		if (nRelH < 0 && m_pSpa)
+		if (nRelH < 0 && m_pSpa && false == m_inGroup)
 		{
 			//if (m_pSpa->bx == TEXT && bZIndex)
 			//{
@@ -1830,7 +1838,7 @@ namespace DocFileFormat
 			else if (m_pSpa->bx == TEXT)
 				appendStyleProperty(oStyle, L"mso-position-horizontal-relative", mapHorizontalPositionRelative(msoprhText));
 		}
-		if (nRelV < 0 && m_pSpa)
+		if (nRelV < 0 && m_pSpa && false == m_inGroup)
 		{
 			//if (m_pSpa->by == TEXT && bZIndex) 
 			//{
@@ -2029,8 +2037,12 @@ namespace DocFileFormat
 		std::wstring result;
 		for (size_t i = 0; i < pColors->complex.data.size(); ++i)
 		{
-			result += FormatUtils::IntToWideString((int)pColors->complex.data[i].dPosition);
-			result += L"f #";
+			if (pColors->complex.data[i].position.Fractional == 0)
+				result += FormatUtils::IntToWideString(pColors->complex.data[i].position.Integral);
+			else
+				result += FormatUtils::IntToWideString(pColors->complex.data[i].position.Fractional) +L"f";
+
+			result += L" #";
 			result += pColors->complex.data[i].color.sColorRGB;
 			result += L";";
 		}

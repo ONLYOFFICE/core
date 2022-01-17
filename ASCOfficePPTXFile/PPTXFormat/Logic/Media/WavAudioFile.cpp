@@ -65,9 +65,7 @@ namespace PPTX
 		}
 		void WavAudioFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
-			OOX::IFileContainer* pRels = NULL;
-			if (pWriter->m_pCurrentContainer->is_init())
-				pRels = pWriter->m_pCurrentContainer->operator ->();
+			OOX::IFileContainer* pRels = pWriter->GetRels().GetPointer();
 
 			std::wstring audioPath = GetPathFromId(pRels, embed.get());
 

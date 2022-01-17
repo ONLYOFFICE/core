@@ -143,7 +143,11 @@ namespace SimpleTypes
 		{
             this->m_eValue = eDefValue;
 		} 
-
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = FromEmu(dValue);
+		}
         virtual double  FromString(std::wstring &sValue)
 		{
             m_sGuide.clear();
@@ -353,9 +357,6 @@ namespace SimpleTypes
 		SimpleType_FromString     (EAnimationChartBuildType)
 		SimpleType_Operator_Equal (CAnimationChartBuildType)
 	};
-
-
-
 	//--------------------------------------------------------------------------------
 	// AnimationChartOnlyBuildType 20.1.10.6 (Part 1)
 	//--------------------------------------------------------------------------------		
@@ -880,13 +881,11 @@ namespace SimpleTypes
 		{
 			return m_dValue;
 		}
-
-		void   SetValue(double dValue)
+		virtual void SetValue(double dValue)
 		{
-			m_bUnit  = false;
+			m_bUnit = false;
 			m_dValue = dValue;
 		}
-
         virtual double  FromString(std::wstring &sValue)
         {
             Parse(sValue, 12700);
@@ -6473,7 +6472,7 @@ namespace SimpleTypes
             return this->m_eValue;
 		}
 
-        virtual std::wstring   ToString() const
+        virtual std::wstring ToString() const
 		{
             switch(this->m_eValue)
 			{
@@ -6488,8 +6487,6 @@ namespace SimpleTypes
 		SimpleType_FromString     (EWrapText)
 		SimpleType_Operator_Equal (CWrapText)
 	};
-
-
 } // SimpleTypes
 
 // Здесь представлены все простые типы Drawing-Spreadsheet из спецификации Office Open Xml (20.5.3)
@@ -6507,6 +6504,1065 @@ namespace SimpleTypes
 // Здесь представлены все простые типы Drawing-Diagrams из спецификации Office Open Xml (21.4.7)
 namespace SimpleTypes
 {
+	enum EHueDirType
+	{
+		hueDirCCw = 0,
+		hueDirCw = 1
+	};
 
+	template<EHueDirType eDefValue = hueDirCw>
+	class CHueDirType : public CSimpleType<EHueDirType, eDefValue>
+	{
+	public:
+		CHueDirType() {}
+
+		virtual EHueDirType FromString(std::wstring &sValue)
+		{
+			if (L"ccw" == sValue) this->m_eValue = hueDirCCw;
+			else if (L"cw" == sValue) this->m_eValue = hueDirCw;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case hueDirCCw: return L"ccw";
+			case hueDirCw: return L"cw";
+			default: return L"cw";
+			}
+		}
+
+		SimpleType_FromString(EHueDirType)
+		SimpleType_Operator_Equal(CHueDirType)
+	};
+	//------------------------------------------------------------
+	enum EColorMethod
+	{
+		colorMethodCycle = 0,
+		colorMethodRepeat = 1,
+		colorMethodSpan = 2
+	};
+
+	template<EColorMethod eDefValue = colorMethodSpan>
+	class CColorMethod : public CSimpleType<EColorMethod, eDefValue>
+	{
+	public:
+		CColorMethod() {}
+
+		virtual EColorMethod FromString(std::wstring &sValue)
+		{
+			if (L"cycle" == sValue) this->m_eValue = colorMethodCycle;
+			else if (L"repeat" == sValue) this->m_eValue = colorMethodRepeat;
+			else if (L"span" == sValue) this->m_eValue = colorMethodSpan;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case colorMethodCycle: return (L"cycle");
+			case colorMethodRepeat: return (L"repeat");
+			case colorMethodSpan:
+			default: return (L"span");
+			}
+		}
+
+		SimpleType_FromString(EColorMethod)
+		SimpleType_Operator_Equal(CColorMethod)
+	};
+//------------------------------------------------------------
+	enum EChOrder
+	{
+		chOrderB = 0,
+		chOrderT = 1
+	};
+	template<EChOrder eDefValue = chOrderB>
+	class CChOrder : public CSimpleType<EChOrder, eDefValue>
+	{
+	public:
+		CChOrder() {}
+
+		virtual EChOrder FromString(std::wstring &sValue)
+		{
+			if (L"b" == sValue) this->m_eValue = chOrderB;
+			else if (L"t" == sValue) this->m_eValue = chOrderT;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case chOrderB: return L"b";
+			case chOrderT: return L"t";
+			default: return L"b";
+			}
+		}
+
+		SimpleType_FromString(EChOrder)
+		SimpleType_Operator_Equal(CChOrder)
+	};
+//------------------------------------------------------------
+	enum EAxisTypes
+	{
+		axisTypes_none = 0,
+		axisTypes_self = 1,
+		axisTypes_ch = 2,
+		axisTypes_des = 3,
+		axisTypes_desOrSelf = 4,
+		axisTypes_par = 5,
+		axisTypes_ancst = 6,
+		axisTypes_ancstOrSelf = 7,
+		axisTypes_followSib = 8,
+		axisTypes_precedSib = 9,
+		axisTypes_follow = 10,
+		axisTypes_preced = 11,
+		axisTypes_root = 12
+	};
+	template<EAxisTypes eDefValue = axisTypes_none>
+	class CAxisTypes : public CSimpleType<EAxisTypes, eDefValue>
+	{
+	public:
+		CAxisTypes() {}
+
+		virtual EAxisTypes FromString(std::wstring &sValue)
+		{
+			if (L"none" == sValue) this->m_eValue = axisTypes_none;
+			else if (L"self" == sValue) this->m_eValue = axisTypes_self;
+			else if (L"ch" == sValue) this->m_eValue = axisTypes_ch;
+			else if (L"des" == sValue) this->m_eValue = axisTypes_des;
+			else if (L"desOrSelf" == sValue) this->m_eValue = axisTypes_desOrSelf;
+			else if (L"par" == sValue) this->m_eValue = axisTypes_par;
+			else if (L"ancst" == sValue) this->m_eValue = axisTypes_ancst;
+			else if (L"ancstOrSelf" == sValue) this->m_eValue = axisTypes_ancstOrSelf;
+			else if (L"followSib" == sValue) this->m_eValue = axisTypes_followSib;
+			else if (L"precedSib" == sValue) this->m_eValue = axisTypes_precedSib;
+			else if (L"follow" == sValue) this->m_eValue = axisTypes_follow;
+			else if (L"preced" == sValue) this->m_eValue = axisTypes_preced;
+			else if (L"root" == sValue) this->m_eValue = axisTypes_root;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+				case axisTypes_self: return L"self";
+				case axisTypes_ch: return L"ch";
+				case axisTypes_des: return L"des";
+				case axisTypes_desOrSelf: return L"desOrSelf";
+				case axisTypes_par: return L"par";
+				case axisTypes_ancst: return L"ancst";
+				case axisTypes_ancstOrSelf: return L"ancstOrSelf";
+				case axisTypes_followSib: return L"followSib";
+				case axisTypes_precedSib: return L"precedSib";
+				case axisTypes_follow: return L"follow";
+				case axisTypes_preced: return L"preced";
+				case axisTypes_root: return L"root";
+				case axisTypes_none:
+				default: return L"none";
+			}
+		}
+
+		SimpleType_FromString(EAxisTypes)
+		SimpleType_Operator_Equal(CAxisTypes)
+	};	
+//------------------------------------------------------------
+	enum EParameterId
+	{
+		parameterId_horzAlign = 0,
+		parameterId_vertAlign = 1,
+		parameterId_chDir = 2,
+		parameterId_chAlign = 3,
+		parameterId_secChAlign = 4,
+		parameterId_linDir = 5,
+		parameterId_secLinDir = 6,
+		parameterId_stElem = 7,
+		parameterId_bendPt = 8,
+		parameterId_connRout = 9,
+		parameterId_begSty = 10,
+		parameterId_endSty = 11,
+		parameterId_dim = 12,
+		parameterId_rotPath = 13,
+		parameterId_ctrShpMap = 14,
+		parameterId_nodeHorzAlign = 15,
+		parameterId_nodeVertAlign = 16,
+		parameterId_fallback = 17,
+		parameterId_txDir = 18,
+		parameterId_pyraAcctPos = 19,
+		parameterId_pyraAcctTxMar = 20,
+		parameterId_txBlDir = 21,
+		parameterId_txAnchorHorz = 22,
+		parameterId_txAnchorVert = 23,
+		parameterId_txAnchorHorzCh = 24,
+		parameterId_txAnchorVertCh = 25,
+		parameterId_parTxLTRAlign = 26,
+		parameterId_parTxRTLAlign = 27,
+		parameterId_shpTxLTRAlignCh = 28,
+		parameterId_shpTxRTLAlignCh = 29,
+		parameterId_autoTxRot = 30,
+		parameterId_grDir = 31,
+		parameterId_flowDir = 32,
+		parameterId_contDir = 33,
+		parameterId_bkpt = 34,
+		parameterId_off = 35,
+		parameterId_hierAlign = 36,
+		parameterId_bkPtFixedVal = 37,
+		parameterId_stBulletLvl = 38,
+		parameterId_stAng = 39,
+		parameterId_spanAng = 40,
+		parameterId_ar = 41,
+		parameterId_lnSpPar = 42,
+		parameterId_lnSpAfParP = 43,
+		parameterId_lnSpCh = 44,
+		parameterId_lnSpAfChP = 45,
+		parameterId_rtShortDist = 46,
+		parameterId_alignTx = 47,
+		parameterId_pyraLvlNode = 48,
+		parameterId_pyraAcctBkgdNode = 49,
+		parameterId_pyraAcctTxNode = 50,
+		parameterId_srcNode = 51,
+		parameterId_dstNode = 52,
+		parameterId_begPts = 53,
+		parameterId_endPts = 54
+	};
+	template<EParameterId eDefValue = parameterId_horzAlign>
+	class CParameterId : public CSimpleType<EParameterId, eDefValue>
+	{
+	public:
+		CParameterId() {}
+
+		virtual EParameterId FromString(std::wstring &sValue)
+		{
+				 if (L"horzAlign" == sValue) this->m_eValue = parameterId_horzAlign;
+			else if (L"vertAlign" == sValue) this->m_eValue = parameterId_vertAlign;
+			else if (L"chDir" == sValue) this->m_eValue = parameterId_chDir;
+			else if (L"chAlign" == sValue) this->m_eValue = parameterId_chAlign;
+			else if (L"secChAlign" == sValue) this->m_eValue = parameterId_secChAlign;
+			else if (L"linDir" == sValue) this->m_eValue = parameterId_linDir;
+			else if (L"secLinDir" == sValue) this->m_eValue = parameterId_secLinDir;
+			else if (L"stElem" == sValue) this->m_eValue = parameterId_stElem;
+			else if (L"bendPt" == sValue) this->m_eValue = parameterId_bendPt;
+			else if (L"connRout" == sValue) this->m_eValue = parameterId_connRout;
+			else if (L"begSty" == sValue) this->m_eValue = parameterId_begSty;
+			else if (L"endSty" == sValue) this->m_eValue = parameterId_endSty;
+			else if (L"dim" == sValue) this->m_eValue = parameterId_dim;
+			else if (L"rotPath" == sValue) this->m_eValue = parameterId_rotPath;
+			else if (L"ctrShpMap" == sValue) this->m_eValue = parameterId_ctrShpMap;
+			else if (L"nodeHorzAlign" == sValue) this->m_eValue = parameterId_nodeHorzAlign;
+			else if (L"nodeVertAlign" == sValue) this->m_eValue = parameterId_nodeVertAlign;
+			else if (L"fallback" == sValue) this->m_eValue = parameterId_fallback;
+			else if (L"txDir" == sValue) this->m_eValue = parameterId_txDir;
+			else if (L"pyraAcctPos" == sValue) this->m_eValue = parameterId_pyraAcctPos;
+			else if (L"pyraAcctTxMar" == sValue) this->m_eValue = parameterId_pyraAcctTxMar;
+			else if (L"txBlDir" == sValue) this->m_eValue = parameterId_txBlDir;
+			else if (L"txAnchorHorz" == sValue) this->m_eValue = parameterId_txAnchorHorz;
+			else if (L"txAnchorVert" == sValue) this->m_eValue = parameterId_txAnchorVert;
+			else if (L"txAnchorHorzCh" == sValue) this->m_eValue = parameterId_txAnchorHorzCh;
+			else if (L"txAnchorVertCh" == sValue) this->m_eValue = parameterId_txAnchorVertCh;
+			else if (L"parTxLTRAlign" == sValue) this->m_eValue = parameterId_parTxLTRAlign;
+			else if (L"parTxRTLAlign" == sValue) this->m_eValue = parameterId_parTxRTLAlign;
+			else if (L"shpTxLTRAlignCh" == sValue) this->m_eValue = parameterId_shpTxLTRAlignCh;
+			else if (L"shpTxRTLAlignCh" == sValue) this->m_eValue = parameterId_shpTxRTLAlignCh;
+			else if (L"autoTxRot" == sValue) this->m_eValue = parameterId_autoTxRot;
+			else if (L"grDir" == sValue) this->m_eValue = parameterId_grDir;
+			else if (L"flowDir" == sValue) this->m_eValue = parameterId_flowDir;
+			else if (L"contDir" == sValue) this->m_eValue = parameterId_contDir;
+			else if (L"bkpt" == sValue) this->m_eValue = parameterId_bkpt;
+			else if (L"off" == sValue) this->m_eValue = parameterId_off;
+			else if (L"hierAlign" == sValue) this->m_eValue = parameterId_hierAlign;
+			else if (L"bkPtFixedVal" == sValue) this->m_eValue = parameterId_bkPtFixedVal;
+			else if (L"stBulletLvl" == sValue) this->m_eValue = parameterId_stBulletLvl;
+			else if (L"stAng" == sValue) this->m_eValue = parameterId_stAng;
+			else if (L"spanAng" == sValue) this->m_eValue = parameterId_spanAng;
+			else if (L"ar" == sValue) this->m_eValue = parameterId_ar;
+			else if (L"lnSpPar" == sValue) this->m_eValue = parameterId_lnSpPar;
+			else if (L"lnSpAfParP" == sValue) this->m_eValue = parameterId_lnSpAfParP;
+			else if (L"lnSpCh" == sValue) this->m_eValue = parameterId_lnSpCh;
+			else if (L"lnSpAfChP" == sValue) this->m_eValue = parameterId_lnSpAfChP;
+			else if (L"rtShortDist" == sValue) this->m_eValue = parameterId_rtShortDist;
+			else if (L"alignTx" == sValue) this->m_eValue = parameterId_alignTx;
+			else if (L"pyraLvlNode" == sValue) this->m_eValue = parameterId_pyraLvlNode;
+			else if (L"pyraAcctBkgdNode" == sValue) this->m_eValue = parameterId_pyraAcctBkgdNode;
+			else if (L"pyraAcctTxNode" == sValue) this->m_eValue = parameterId_pyraAcctTxNode;
+			else if (L"srcNode" == sValue) this->m_eValue = parameterId_srcNode;
+			else if (L"dstNode" == sValue) this->m_eValue = parameterId_dstNode;
+			else if (L"begPts" == sValue) this->m_eValue = parameterId_begPts;
+			else if (L"endPts" == sValue) this->m_eValue = parameterId_endPts;
+
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+				case parameterId_horzAlign: return L"horzAlign";
+				case parameterId_vertAlign: return L"vertAlign";
+				case parameterId_chDir: return L"chDir";
+				case parameterId_chAlign: return L"chAlign";
+				case parameterId_secChAlign: return L"secChAlign";
+				case parameterId_linDir: return L"linDir";
+				case parameterId_secLinDir: return L"secLinDir";
+				case parameterId_stElem: return L"stElem";
+				case parameterId_bendPt: return L"bendPt";
+				case parameterId_connRout: return L"connRout";
+				case parameterId_begSty: return L"begSty";
+				case parameterId_endSty: return L"endSty";
+				case parameterId_dim: return L"dim";
+				case parameterId_rotPath: return L"rotPath";
+				case parameterId_ctrShpMap: return L"ctrShpMap";
+				case parameterId_nodeHorzAlign: return L"nodeHorzAlign";
+				case parameterId_nodeVertAlign: return L"nodeVertAlign";
+				case parameterId_fallback: return L"fallback";
+				case parameterId_txDir: return L"txDir";
+				case parameterId_pyraAcctPos: return L"pyraAcctPos";
+				case parameterId_pyraAcctTxMar: return L"pyraAcctTxMar";
+				case parameterId_txBlDir: return L"txBlDir";
+				case parameterId_txAnchorHorz: return L"txAnchorHorz";
+				case parameterId_txAnchorVert: return L"txAnchorVert";
+				case parameterId_txAnchorHorzCh: return L"txAnchorHorzCh";
+				case parameterId_txAnchorVertCh: return L"txAnchorVertCh";
+				case parameterId_parTxLTRAlign: return L"parTxLTRAlign";
+				case parameterId_parTxRTLAlign: return L"parTxRTLAlign";
+				case parameterId_shpTxLTRAlignCh: return L"shpTxLTRAlignCh";
+				case parameterId_shpTxRTLAlignCh: return L"shpTxRTLAlignCh";
+				case parameterId_autoTxRot: return L"autoTxRot";
+				case parameterId_grDir: return L"grDir";
+				case parameterId_flowDir: return L"flowDir";
+				case parameterId_contDir: return L"contDir";
+				case parameterId_bkpt: return L"bkpt";
+				case parameterId_off: return L"off";
+				case parameterId_hierAlign: return L"hierAlign";
+				case parameterId_bkPtFixedVal: return L"bkPtFixedVal";
+				case parameterId_stBulletLvl: return L"stBulletLvl";
+				case parameterId_stAng: return L"stAng";
+				case parameterId_spanAng: return L"spanAng";
+				case parameterId_ar: return L"ar";
+				case parameterId_lnSpPar: return L"lnSpPar";
+				case parameterId_lnSpAfParP: return L"lnSpAfParP";
+				case parameterId_lnSpCh: return L"lnSpCh";
+				case parameterId_lnSpAfChP: return L"lnSpAfChP";
+				case parameterId_rtShortDist: return L"rtShortDist";
+				case parameterId_alignTx: return L"alignTx";
+				case parameterId_pyraLvlNode: return L"pyraLvlNode";
+				case parameterId_pyraAcctBkgdNode: return L"pyraAcctBkgdNode";
+				case parameterId_pyraAcctTxNode: return L"pyraAcctTxNode";
+				case parameterId_srcNode: return L"srcNode";
+				case parameterId_dstNode: return L"dstNode";
+				case parameterId_begPts: return L"begPts";
+				case parameterId_endPts: return L"endPts";
+				default: return L"horzAlign";
+			}
+		}
+		SimpleType_FromString(EParameterId)
+		SimpleType_Operator_Equal(CParameterId)
+	};
+//------------------------------------------------------------
+	enum EConstraintRelationship
+	{
+		constraintRels_self = 0,
+		constraintRels_ch = 1,
+		constraintRels_des = 2
+	};
+	template<EConstraintRelationship eDefValue = constraintRels_self>
+	class CConstraintRelationship : public CSimpleType<EConstraintRelationship, eDefValue>
+	{
+	public:
+		CConstraintRelationship() {}
+
+		virtual EConstraintRelationship FromString(std::wstring &sValue)
+		{
+			if (L"self" == sValue) this->m_eValue = constraintRels_self;
+			else if (L"ch" == sValue) this->m_eValue = constraintRels_ch;
+			else if (L"des" == sValue) this->m_eValue = constraintRels_des;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case constraintRels_ch: return L"ch";
+			case constraintRels_des: return L"des";
+			case constraintRels_self: 
+			default: return L"self";
+			}
+		}
+
+		SimpleType_FromString(EConstraintRelationship)
+		SimpleType_Operator_Equal(CConstraintRelationship)
+	};
+//------------------------------------------------------------
+	enum EConstraintType
+	{
+		constraintType_none = 0,
+		constraintType_alignOff = 1,
+		constraintType_begMarg = 2,
+		constraintType_bendDist = 3,
+		constraintType_begPad = 4,
+		constraintType_b = 5,
+		constraintType_bMarg = 6,
+		constraintType_bOff = 7,
+		constraintType_ctrX = 8,
+		constraintType_ctrXOff = 9,
+		constraintType_ctrY = 10,
+		constraintType_ctrYOff = 11,
+		constraintType_connDist = 12,
+		constraintType_diam = 13,
+		constraintType_endMarg = 14,
+		constraintType_endPad = 15,
+		constraintType_h = 16,
+		constraintType_hArH = 17,
+		constraintType_l = 18,
+		constraintType_lMarg = 19,
+		constraintType_lOff = 20,
+		constraintType_r = 21,
+		constraintType_rMarg = 22,
+		constraintType_rOff = 23,
+		constraintType_primFontSz = 24,
+		constraintType_pyraAcctRatio = 25,
+		constraintType_secFontSz = 26,
+		constraintType_sibSp = 27,
+		constraintType_secSibSp = 28,
+		constraintType_sp = 29,
+		sconstraintType_temThick = 30,
+		constraintType_t = 31,
+		constraintType_tMarg = 32,
+		constraintType_tOff = 33,
+		constraintType_userA = 34,
+		constraintType_userB = 35,
+		constraintType_userC = 36,
+		constraintType_userD = 37,
+		constraintType_userE = 38,
+		constraintType_userF = 39,
+		constraintType_userG = 40,
+		constraintType_userH = 41,
+		constraintType_userI = 42,
+		constraintType_userJ = 43,
+		constraintType_userK = 44,
+		constraintType_userL = 45,
+		constraintType_userM = 46,
+		constraintType_userN = 47,
+		constraintType_userO = 48,
+		constraintType_userP = 49,
+		constraintType_userQ = 50,
+		constraintType_userR = 51,
+		constraintType_userS = 52,
+		constraintType_userT = 53,
+		constraintType_userU = 54,
+		constraintType_userV = 55,
+		constraintType_userW = 56,
+		constraintType_userX = 57,
+		constraintType_userY = 58,
+		constraintType_userZ = 59,
+		constraintType_w = 60,
+		constraintType_wArH = 61,
+		constraintType_wOff = 62
+	};
+	template<EConstraintType eDefValue = constraintType_none>
+	class CConstraintType : public CSimpleType<EConstraintType, eDefValue>
+	{
+	public:
+		CConstraintType() {}
+
+		virtual EConstraintType FromString(std::wstring &sValue)
+		{
+				 if (L"none" == sValue) this->m_eValue = constraintType_none;
+			else if (L"alignOff" == sValue) this->m_eValue = constraintType_alignOff;
+			else if (L"begMarg" == sValue) this->m_eValue = constraintType_begMarg;
+			else if (L"bendDist" == sValue) this->m_eValue = constraintType_bendDist;
+			else if (L"begPad" == sValue) this->m_eValue = constraintType_begPad;
+			else if (L"b" == sValue) this->m_eValue = constraintType_b;
+			else if (L"bMarg" == sValue) this->m_eValue = constraintType_bMarg;
+			else if (L"bOff" == sValue) this->m_eValue = constraintType_bOff;
+			else if (L"ctrX" == sValue) this->m_eValue = constraintType_ctrX;
+			else if (L"ctrXOff" == sValue) this->m_eValue = constraintType_ctrXOff;
+			else if (L"ctrY" == sValue) this->m_eValue = constraintType_ctrY;
+			else if (L"ctrYOff" == sValue) this->m_eValue = constraintType_ctrYOff;
+			else if (L"connDist" == sValue) this->m_eValue = constraintType_connDist;
+			else if (L"diam" == sValue) this->m_eValue = constraintType_diam;
+			else if (L"endMarg" == sValue) this->m_eValue = constraintType_endMarg;
+			else if (L"endPad" == sValue) this->m_eValue = constraintType_endPad;
+			else if (L"h" == sValue) this->m_eValue = constraintType_h;
+			else if (L"hArH" == sValue) this->m_eValue = constraintType_hArH;
+			else if (L"l" == sValue) this->m_eValue = constraintType_l;
+			else if (L"lMarg" == sValue) this->m_eValue = constraintType_lMarg;
+			else if (L"lOff" == sValue) this->m_eValue = constraintType_lOff;
+			else if (L"r" == sValue) this->m_eValue = constraintType_r;
+			else if (L"rMarg" == sValue) this->m_eValue = constraintType_rMarg;
+			else if (L"rOff" == sValue) this->m_eValue = constraintType_rOff;
+			else if (L"primFontSz" == sValue) this->m_eValue = constraintType_primFontSz;
+			else if (L"pyraAcctRatio" == sValue) this->m_eValue = constraintType_pyraAcctRatio;
+			else if (L"secFontSz" == sValue) this->m_eValue = constraintType_secFontSz;
+			else if (L"sibSp" == sValue) this->m_eValue = constraintType_sibSp;
+			else if (L"secSibSp" == sValue) this->m_eValue = constraintType_secSibSp;
+			else if (L"sp" == sValue) this->m_eValue = constraintType_sp;
+			else if (L"stemThick" == sValue) this->m_eValue = sconstraintType_temThick;
+			else if (L"t" == sValue) this->m_eValue = constraintType_t;
+			else if (L"tMarg" == sValue) this->m_eValue = constraintType_tMarg;
+			else if (L"tOff" == sValue) this->m_eValue = constraintType_tOff;
+			else if (L"userA" == sValue) this->m_eValue = constraintType_userA;
+			else if (L"userB" == sValue) this->m_eValue = constraintType_userB;
+			else if (L"userC" == sValue) this->m_eValue = constraintType_userC;
+			else if (L"userD" == sValue) this->m_eValue = constraintType_userD;
+			else if (L"userE" == sValue) this->m_eValue = constraintType_userE;
+			else if (L"userF" == sValue) this->m_eValue = constraintType_userF;
+			else if (L"userG" == sValue) this->m_eValue = constraintType_userG;
+			else if (L"userH" == sValue) this->m_eValue = constraintType_userH;
+			else if (L"userI" == sValue) this->m_eValue = constraintType_userI;
+			else if (L"userJ" == sValue) this->m_eValue = constraintType_userJ;
+			else if (L"userK" == sValue) this->m_eValue = constraintType_userK;
+			else if (L"userL" == sValue) this->m_eValue = constraintType_userL;
+			else if (L"userM" == sValue) this->m_eValue = constraintType_userM;
+			else if (L"userN" == sValue) this->m_eValue = constraintType_userN;
+			else if (L"userO" == sValue) this->m_eValue = constraintType_userO;
+			else if (L"userP" == sValue) this->m_eValue = constraintType_userP;
+			else if (L"userQ" == sValue) this->m_eValue = constraintType_userQ;
+			else if (L"userR" == sValue) this->m_eValue = constraintType_userR;
+			else if (L"userS" == sValue) this->m_eValue = constraintType_userS;
+			else if (L"userT" == sValue) this->m_eValue = constraintType_userT;
+			else if (L"userU" == sValue) this->m_eValue = constraintType_userU;
+			else if (L"userV" == sValue) this->m_eValue = constraintType_userV;
+			else if (L"userW" == sValue) this->m_eValue = constraintType_userW;
+			else if (L"userX" == sValue) this->m_eValue = constraintType_userX;
+			else if (L"userY" == sValue) this->m_eValue = constraintType_userY;
+			else if (L"userZ" == sValue) this->m_eValue = constraintType_userZ;
+			else if (L"w" == sValue) this->m_eValue = constraintType_w;
+			else if (L"wArH" == sValue) this->m_eValue = constraintType_wArH;
+			else if (L"wOff" == sValue) this->m_eValue = constraintType_wOff;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case constraintType_none: return L"none";
+			case constraintType_alignOff: return L"alignOff";
+			case constraintType_begMarg: return L"begMarg";
+			case constraintType_bendDist: return L"bendDist";
+			case constraintType_begPad: return L"begPad";
+			case constraintType_b: return L"b";
+			case constraintType_bMarg: return L"bMarg";
+			case constraintType_bOff: return L"bOff";
+			case constraintType_ctrX: return L"ctrX";
+			case constraintType_ctrXOff: return L"ctrXOff";
+			case constraintType_ctrY: return L"ctrY";
+			case constraintType_ctrYOff: return L"ctrYOff";
+			case constraintType_connDist: return L"connDist";
+			case constraintType_diam: return L"diam";
+			case constraintType_endMarg: return L"endMarg";
+			case constraintType_endPad: return L"endPad";
+			case constraintType_h: return L"h";
+			case constraintType_hArH: return L"hArH";
+			case constraintType_l: return L"l";
+			case constraintType_lMarg: return L"lMarg";
+			case constraintType_lOff: return L"lOff";
+			case constraintType_r: return L"r";
+			case constraintType_rMarg: return L"rMarg";
+			case constraintType_rOff: return L"rOff";
+			case constraintType_primFontSz: return L"primFontSz";
+			case constraintType_pyraAcctRatio: return L"pyraAcctRatio";
+			case constraintType_secFontSz: return L"secFontSz";
+			case constraintType_sibSp: return L"sibSp";
+			case constraintType_secSibSp: return L"secSibSp";
+			case constraintType_sp: return L"sp";
+			case sconstraintType_temThick: return L"stemThick";
+			case constraintType_t: return L"t";
+			case constraintType_tMarg: return L"tMarg";
+			case constraintType_tOff: return L"tOff";
+			case constraintType_userA: return L"userA";
+			case constraintType_userB: return L"userB";
+			case constraintType_userC: return L"userC";
+			case constraintType_userD: return L"userD";
+			case constraintType_userE: return L"userE";
+			case constraintType_userF: return L"userF";
+			case constraintType_userG: return L"userG";
+			case constraintType_userH: return L"userH";
+			case constraintType_userI: return L"userI";
+			case constraintType_userJ: return L"userJ";
+			case constraintType_userK: return L"userK";
+			case constraintType_userL: return L"userL";
+			case constraintType_userM: return L"userM";
+			case constraintType_userN: return L"userN";
+			case constraintType_userO: return L"userO";
+			case constraintType_userP: return L"userP";
+			case constraintType_userQ: return L"userQ";
+			case constraintType_userR: return L"userR";
+			case constraintType_userS: return L"userS";
+			case constraintType_userT: return L"userT";
+			case constraintType_userU: return L"userU";
+			case constraintType_userV: return L"userV";
+			case constraintType_userW: return L"userW";
+			case constraintType_userX: return L"userX";
+			case constraintType_userY: return L"userY";
+			case constraintType_userZ: return L"userZ";
+			case constraintType_w: return L"w";
+			case constraintType_wArH: return L"wArH";
+			case constraintType_wOff: return L"wOff";
+			default: return L"none";
+			}
+		}
+		SimpleType_FromString(EConstraintType)
+		SimpleType_Operator_Equal(CConstraintType)
+	};
+//------------------------------------------------------------
+	enum EBoolOperator
+	{
+		boolOperator_none = 0,
+		boolOperator_equ = 1,
+		boolOperator_gte = 2,
+		boolOperator_lte = 3
+	};
+	template<EBoolOperator eDefValue = boolOperator_none>
+	class CBoolOperator : public CSimpleType<EBoolOperator, eDefValue>
+	{
+	public:
+		CBoolOperator() {}
+		virtual EBoolOperator FromString(std::wstring &sValue)
+		{
+				 if (L"none" == sValue) this->m_eValue = boolOperator_none;
+			else if (L"equ" == sValue) this->m_eValue = boolOperator_equ;
+			else if (L"gte" == sValue) this->m_eValue = boolOperator_gte;
+			else if (L"lte" == sValue) this->m_eValue = boolOperator_lte;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case boolOperator_equ: return L"equ";
+			case boolOperator_gte: return L"gte";
+			case boolOperator_lte: return L"lte";
+			case boolOperator_none:
+			default: return L"none";
+			}
+		}
+		SimpleType_FromString(EBoolOperator)
+		SimpleType_Operator_Equal(CBoolOperator)
+	};
+//---------------------------------------------------------------------------
+	enum EElementTypes
+	{
+		elementTypes_all = 0,
+		elementTypes_doc = 1,
+		elementTypes_node = 2,
+		elementTypes_norm = 3,
+		elementTypes_nonNorm = 4,
+		elementTypes_asst = 5,
+		elementTypes_nonAsst = 6,
+		elementTypes_parTrans = 7,
+		elementTypes_pres = 8,
+		elementTypes_sibTrans = 9
+	};
+	template<EElementTypes eDefValue = elementTypes_all>
+	class CElementTypes : public CSimpleType<EElementTypes, eDefValue>
+	{
+	public:
+		CElementTypes() {}
+		virtual EElementTypes FromString(std::wstring &sValue)
+		{
+			if (L"all" == sValue) this->m_eValue = elementTypes_all;
+			else if (L"doc" == sValue) this->m_eValue = elementTypes_doc;
+			else if (L"node" == sValue) this->m_eValue = elementTypes_node;
+			else if (L"norm" == sValue) this->m_eValue = elementTypes_norm;
+			else if (L"nonNorm" == sValue) this->m_eValue = elementTypes_nonNorm;
+			else if (L"asst" == sValue) this->m_eValue = elementTypes_asst;
+			else if (L"nonAsst" == sValue) this->m_eValue = elementTypes_nonAsst;
+			else if (L"parTrans" == sValue) this->m_eValue = elementTypes_parTrans;
+			else if (L"pres" == sValue) this->m_eValue = elementTypes_pres;
+			else if (L"sibTrans" == sValue) this->m_eValue = elementTypes_sibTrans;
+			else this->m_eValue = eDefValue;
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case elementTypes_all: return L"all";
+			case elementTypes_doc: return L"doc";
+			case elementTypes_node: return L"node";
+			case elementTypes_norm: return L"norm";
+			case elementTypes_nonNorm: return L"nonNorm";
+			case elementTypes_asst: return L"asst";
+			case elementTypes_nonAsst: return L"nonAsst";
+			case elementTypes_parTrans: return L"parTrans";
+			case elementTypes_pres: return L"pres";
+			case elementTypes_sibTrans: return L"sibTrans";
+			default: return L"all";
+			}
+		}
+		SimpleType_FromString(EElementTypes)
+		SimpleType_Operator_Equal(CElementTypes)
+	};
+//---------------------------------------------------------------------------
+	enum EAlgorithmType
+	{
+		algorithmType_composite = 0,
+		algorithmType_conn = 1,
+		algorithmType_cycle = 2,
+		algorithmType_hierChild = 3,
+		algorithmType_hierRoot = 4,
+		algorithmType_pyra = 5,
+		algorithmType_lin = 6,
+		algorithmType_sp = 7,
+		algorithmType_tx = 8,
+		algorithmType_snake = 9
+	};
+	template<EAlgorithmType eDefValue = algorithmType_composite>
+	class CAlgorithmType : public CSimpleType<EAlgorithmType, eDefValue>
+	{
+	public:
+		CAlgorithmType() {}
+		virtual EAlgorithmType FromString(std::wstring &sValue)
+		{
+				 if (L"composite" == sValue) this->m_eValue = algorithmType_composite;
+			else if (L"conn" == sValue) this->m_eValue = algorithmType_conn;
+			else if (L"cycle" == sValue) this->m_eValue = algorithmType_cycle;
+			else if (L"hierChild" == sValue) this->m_eValue = algorithmType_hierChild;
+			else if (L"hierRoot" == sValue) this->m_eValue = algorithmType_hierRoot;
+			else if (L"pyra" == sValue) this->m_eValue = algorithmType_pyra;
+			else if (L"lin" == sValue) this->m_eValue = algorithmType_lin;
+			else if (L"sp" == sValue) this->m_eValue = algorithmType_sp;
+			else if (L"tx" == sValue) this->m_eValue = algorithmType_tx;
+			else if (L"snake" == sValue) this->m_eValue = algorithmType_snake;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+				case algorithmType_composite: return L"composite";
+				case algorithmType_conn: return L"conn";
+				case algorithmType_cycle: return L"cycle";
+				case algorithmType_hierChild: return L"hierChild";
+				case algorithmType_hierRoot: return L"hierRoot";
+				case algorithmType_pyra: return L"pyra";
+				case algorithmType_lin: return L"lin";
+				case algorithmType_sp: return L"sp";
+				case algorithmType_tx: return L"tx";
+				case algorithmType_snake: return L"snake";
+				default: return L"composite";
+			}
+		}
+		SimpleType_FromString(EAlgorithmType)
+		SimpleType_Operator_Equal(CAlgorithmType)
+	};
+//---------------------------------------------------------------------------
+	enum EFunctionType
+	{
+		functionType_cnt = 0,
+		functionType_pos = 1,
+		functionType_revPos = 2,
+		functionType_posEven = 3,
+		functionType_posOdd = 4,
+		functionType_var = 5,
+		functionType_depth = 6,
+		functionType_maxDepth = 7
+	};
+	template<EFunctionType eDefValue = functionType_cnt>
+	class CFunctionType : public CSimpleType<EFunctionType, eDefValue>
+	{
+	public:
+		CFunctionType() {}
+		virtual EFunctionType FromString(std::wstring &sValue)
+		{
+				 if (L"cnt" == sValue)		this->m_eValue = functionType_cnt;
+			else if (L"pos" == sValue)		this->m_eValue = functionType_pos;
+			else if (L"revPos" == sValue)	this->m_eValue = functionType_revPos;
+			else if (L"posEven" == sValue)	this->m_eValue = functionType_posEven;
+			else if (L"posOdd" == sValue)	this->m_eValue = functionType_posOdd;
+			else if (L"var" == sValue)		this->m_eValue = functionType_var;
+			else if (L"depth" == sValue)	this->m_eValue = functionType_depth;
+			else if (L"maxDepth" == sValue)	this->m_eValue = functionType_maxDepth;
+			else this->m_eValue = eDefValue;
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case functionType_cnt: return L"cnt";
+			case functionType_pos: return L"pos";
+			case functionType_revPos: return L"revPos";
+			case functionType_posEven: return L"posEven";
+			case functionType_posOdd: return L"posOdd";
+			case functionType_var: return L"var";
+			case functionType_depth: return L"depth";
+			case functionType_maxDepth: return L"maxDepth";
+			default: return L"composite";
+			}
+		}
+		SimpleType_FromString(EFunctionType)
+		SimpleType_Operator_Equal(CFunctionType)
+	};
+//---------------------------------------------------------------------------
+	enum EFunctionOperator
+	{
+		functionOperator_equ = 0,
+		functionOperator_neq = 1,
+		functionOperator_gt = 2,
+		functionOperator_lt = 3,
+		functionOperator_gte = 4,
+		functionOperator_lte = 5
+	};
+	template<EFunctionOperator eDefValue = functionOperator_equ>
+	class CFunctionOperator : public CSimpleType<EFunctionOperator, eDefValue>
+	{
+	public:
+		CFunctionOperator() {}
+		virtual EFunctionOperator FromString(std::wstring &sValue)
+		{
+				 if (L"equ" == sValue) this->m_eValue = functionOperator_equ;
+			else if (L"neq" == sValue) this->m_eValue = functionOperator_neq;
+			else if (L"gt" == sValue) this->m_eValue = functionOperator_gt;
+			else if (L"lt" == sValue) this->m_eValue = functionOperator_lt;
+			else if (L"gte" == sValue) this->m_eValue = functionOperator_gte;
+			else if (L"lte" == sValue) this->m_eValue = functionOperator_lte;
+			else this->m_eValue = eDefValue;
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case functionOperator_equ: return L"equ";
+			case functionOperator_neq: return L"neq";
+			case functionOperator_gt: return L"gt";
+			case functionOperator_lt: return L"lt";
+			case functionOperator_gte: return L"gte";
+			case functionOperator_lte: return L"lte";
+			default: return L"equ";
+			}
+		}
+		SimpleType_FromString(EFunctionOperator)
+		SimpleType_Operator_Equal(CFunctionOperator)
+	};
+//---------------------------------------------------------------------------
+	enum EAnimLvlStr
+	{
+		animLvlStr_none = 0,
+		animLvlStr_ctr = 1,
+		animLvlStr_lvl = 2
+	};
+	template<EAnimLvlStr eDefValue = animLvlStr_none>
+	class CAnimLvlStr : public CSimpleType<EAnimLvlStr, eDefValue>
+	{
+	public:
+		CAnimLvlStr() {}
+		virtual EAnimLvlStr FromString(std::wstring &sValue)
+		{
+				 if (L"none" == sValue) this->m_eValue = animLvlStr_none;
+			else if (L"ctr" == sValue) this->m_eValue = animLvlStr_ctr;
+			else if (L"lvl" == sValue) this->m_eValue = animLvlStr_lvl;
+			else this->m_eValue = eDefValue;
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case animLvlStr_ctr: return L"ctr";
+			case animLvlStr_lvl: return L"lvl";
+			default: return L"none";
+			}
+		}
+		SimpleType_FromString(EAnimLvlStr)
+		SimpleType_Operator_Equal(CAnimLvlStr)
+	};
+//---------------------------------------------------------------------------
+	enum EAnimOneStr
+	{
+		animOneStr_none = 0,
+		animOneStr_branch = 1,
+		animOneStr_one = 2
+	};
+	template<EAnimOneStr eDefValue = animOneStr_none>
+	class CAnimOneStr : public CSimpleType<EAnimOneStr, eDefValue>
+	{
+	public:
+		CAnimOneStr() {}
+		virtual EAnimOneStr FromString(std::wstring &sValue)
+		{
+				 if (L"none" == sValue) this->m_eValue = animOneStr_none;
+			else if (L"branch" == sValue) this->m_eValue = animOneStr_branch;
+			else if (L"one" == sValue) this->m_eValue = animOneStr_one;
+			else this->m_eValue = eDefValue;
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case animOneStr_branch: return L"branch";
+			case animOneStr_one: return L"one";
+			default: return L"none";
+			}
+		}
+		SimpleType_FromString(EAnimOneStr)
+		SimpleType_Operator_Equal(CAnimOneStr)
+	};
+//---------------------------------------------------------------------------
+	enum EDirectionDraw
+	{
+		direction_norm = 0,
+		direction_rev = 1
+	};
+	template<EDirectionDraw eDefValue = direction_norm>
+	class CDirectionDraw : public CSimpleType<EDirectionDraw, eDefValue>
+	{
+	public:
+		CDirectionDraw() {}
+		virtual EDirectionDraw FromString(std::wstring &sValue)
+		{
+				 if (L"norm" == sValue) this->m_eValue = direction_norm;
+			else if (L"rev" == sValue) this->m_eValue = direction_rev;
+			else this->m_eValue = eDefValue;
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case direction_rev: return L"rev";
+			default: return L"norm";
+			}
+		}
+		SimpleType_FromString(EDirectionDraw)
+		SimpleType_Operator_Equal(CDirectionDraw)
+	};
+//---------------------------------------------------------------------------
+	enum EHierBranch
+	{
+		hierBranch_hang = 0,
+		hierBranch_init = 1,
+		hierBranch_l = 2,
+		hierBranch_r = 3,
+		hierBranch_std = 4
+	};
+	template<EHierBranch eDefValue = hierBranch_hang>
+	class CHierBranch : public CSimpleType<EHierBranch, eDefValue>
+	{
+	public:
+		CHierBranch() {}
+		virtual EHierBranch FromString(std::wstring &sValue)
+		{
+				 if (L"none" == sValue) this->m_eValue = hierBranch_hang;
+			else if (L"init" == sValue) this->m_eValue = hierBranch_init;
+			else if (L"l" == sValue) this->m_eValue = hierBranch_l;
+			else if (L"r" == sValue) this->m_eValue = hierBranch_r;
+			else if (L"l" == sValue) this->m_eValue = hierBranch_l;
+			else if (L"std" == sValue) this->m_eValue = hierBranch_std;
+			else this->m_eValue = eDefValue;
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case hierBranch_init: return L"init";
+			case hierBranch_l: return L"l";
+			case hierBranch_r: return L"r";
+			case hierBranch_std: return L"std";
+			case hierBranch_hang:
+			default: return L"hang";
+			}
+		}
+		SimpleType_FromString(EHierBranch)
+		SimpleType_Operator_Equal(CHierBranch)
+	};
+//---------------------------------------------------------------------------
+	enum EResizeHandles
+	{
+		resizeHandles_exact = 0,
+		resizeHandles_rel = 1
+	};
+	template<EResizeHandles eDefValue = resizeHandles_exact>
+	class CResizeHandles : public CSimpleType<EResizeHandles, eDefValue>
+	{
+	public:
+		CResizeHandles() {}
+		virtual EResizeHandles FromString(std::wstring &sValue)
+		{
+				 if (L"exact" == sValue) this->m_eValue = resizeHandles_exact;
+			else if (L"rel" == sValue) this->m_eValue = resizeHandles_rel;
+			else this->m_eValue = eDefValue;
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case resizeHandles_rel: return L"rel";
+			case resizeHandles_exact:
+			default: return L"exact";
+			}
+		}
+		SimpleType_FromString(EResizeHandles)
+		SimpleType_Operator_Equal(CResizeHandles)
+	};
+//---------------------------------------------------------------------------
+	enum EPtTypes
+	{
+		ptTypes_node = 0,
+		ptTypes_asst = 1,
+		ptTypes_doc = 2,
+		ptTypes_pres = 3,
+		ptTypes_parTrans = 4,
+		ptTypes_sibTrans = 5
+	};
+	template<EPtTypes eDefValue = ptTypes_node>
+	class CPtTypes : public CSimpleType<EPtTypes, eDefValue>
+	{
+	public:
+		CPtTypes() {}
+		virtual EPtTypes FromString(std::wstring &sValue)
+		{
+			if (L"node" == sValue) this->m_eValue = ptTypes_node;
+			else if (L"asst" == sValue) this->m_eValue = ptTypes_asst;
+			else if (L"doc" == sValue) this->m_eValue = ptTypes_doc;
+			else if (L"pres" == sValue) this->m_eValue = ptTypes_pres;
+			else if (L"parTrans" == sValue) this->m_eValue = ptTypes_parTrans;
+			else if (L"sibTrans" == sValue) this->m_eValue = ptTypes_sibTrans;
+			else this->m_eValue = eDefValue;
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case ptTypes_asst: return L"asst";
+			case ptTypes_doc: return L"doc";
+			case ptTypes_pres: return L"pres";
+			case ptTypes_parTrans: return L"parTrans";
+			case ptTypes_sibTrans: return L"sibTrans";
+			case ptTypes_node:
+			default: return L"node";
+			}
+		}
+		SimpleType_FromString(EPtTypes)
+		SimpleType_Operator_Equal(CPtTypes)
+	};
 } // SimpleTypes
 

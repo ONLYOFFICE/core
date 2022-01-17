@@ -158,7 +158,7 @@ public:
 	void LoadExAudio(CRecordsContainer* pExObject);
 
     void LoadAutoNumbering(CRecordGroupShapeContainer* pGroupContainer, PPT_FORMAT::CTheme* pTheme);
-
+    void LoadBulletBlip(CShapeElement* pShape);
 	void CreateDefaultStyle(PPT_FORMAT::CTextStyles& pStyle, PPT_FORMAT::CTheme* pTheme);
 	void CorrectColorScheme(std::vector<CColor>& oScheme)
 	{

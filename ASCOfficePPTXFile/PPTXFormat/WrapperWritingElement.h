@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_WRAPPER_WRITING_ELEMENT_INCLUDE_H_
-#define PPTX_WRAPPER_WRITING_ELEMENT_INCLUDE_H_
 
 #include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
 #include "WrapperFile.h"
@@ -104,8 +102,6 @@ namespace PPTX
 		{
 			return OOX::et_Unknown;
 		}
-
-
 		template<class T> const bool parentIs()const
 		{
 			if (NULL == parentElement)
@@ -118,7 +114,6 @@ namespace PPTX
 			T* pResult = dynamic_cast<T*>(const_cast<PPTX::WrapperWritingElement*>(parentElement));
 			return *pResult;
 		}
-
 		template<class T> const bool parentFileIs()const
 		{
 			if (NULL == parentFile)
@@ -130,15 +125,6 @@ namespace PPTX
 		{
 			T* pResult = dynamic_cast<T*>(const_cast<PPTX::WrapperFile*>(parentFile));
 			return *pResult;
-		}
-
-		// PPTY format serialise
-		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-		{
-			pReader->SkipRecord();
-		}
-        virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-		{
 		}
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
@@ -152,5 +138,3 @@ namespace PPTX
 		}
 	};
 } // namespace PPTX
-
-#endif // PPTX_WRAPPER_WRITING_ELEMENT_INCLUDE_H_

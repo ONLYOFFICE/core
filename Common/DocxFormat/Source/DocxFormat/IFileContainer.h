@@ -47,10 +47,10 @@ namespace OOX
 	class HyperLink;
 }
 
-namespace PPTX
-{
-	class LegacyDiagramText;
-}
+//namespace PPTX
+//{
+//	class LegacyDiagramText;
+//}
 
 namespace OOX
 {

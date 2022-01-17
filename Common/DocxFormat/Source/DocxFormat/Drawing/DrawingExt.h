@@ -105,9 +105,6 @@ namespace OOX
 			virtual ~CDataModelExt()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
                 //todo
@@ -119,10 +116,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
-			{
-				return _T("");
-			}
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return OOX::et_a_compatExt;
@@ -136,10 +130,8 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if( oReader, _T("relId"), m_oRelId )
 				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
-
 		public:
-
-            nullable<std::wstring> m_oRelId;
+            nullable<OOX::RId> m_oRelId;
 		};
 
 
@@ -159,6 +151,7 @@ namespace OOX
 			{
 				XmlMacroReadAttributeBase(oNode, _T("uri"), m_sUri );
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             virtual std::wstring toXML() const;
             std::wstring toXMLWithNS(const std::wstring& sNamespace) const;
@@ -244,7 +237,8 @@ namespace OOX
 					}
 				}
 			}
-            virtual std::wstring toXML() const
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual std::wstring toXML() const
             {
                 return toXMLWithNS(L"a:");
             }

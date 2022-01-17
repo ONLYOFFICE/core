@@ -34,8 +34,6 @@
 #include <string>
 #include "../../Common/DocxFormat/Source/Base/Types_32.h"
 
-struct ProgressCallback;
-
 namespace DocFileFormat
 {
 	class WordDocument;
@@ -50,9 +48,9 @@ namespace DocFileFormat
 		std::wstring m_sTempFolder;
 		int m_nUserLCID;
 
-		_UINT32 LoadAndConvert(const std::wstring & strSrcFile, const std::wstring &  strDstDirectory, const std::wstring & password, const ProgressCallback* progress, bool &bMacros);
+		_UINT32 LoadAndConvert(const std::wstring & strSrcFile, const std::wstring &  strDstDirectory, const std::wstring & password, bool &bMacros);
 	
 	private:
-		_UINT32 Convert(WordDocument* doc, WordprocessingDocument* docx, const ProgressCallback* progress);	
+		_UINT32 Convert(WordDocument* doc, WordprocessingDocument* docx);	
 	};
 }

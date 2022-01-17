@@ -45,6 +45,8 @@
 
 //CRYPT::_ecmaCryptData cryptDataGlobal; for Test
 
+#define USE_MSSTORAGE
+
 using namespace CRYPT;
 
 #define GETBIT(from, num)				((from & (1 << num)) != 0)
@@ -723,7 +725,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	_UINT64 lengthFileSize = file.GetFileSize();
 	DWORD lengthData = lengthFileSize, lengthDataRead = 0 ;
 
-	unsigned char* data		= new unsigned char[lengthData];
+	unsigned char* data = new unsigned char[lengthData];
 	unsigned char* data_out	= NULL;
 	
 	file.ReadFile(data, lengthData, lengthDataRead);
@@ -732,16 +734,17 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	
 	lengthData = cryptor.Encrypt(data, lengthData, data_out);
 
+	delete[]data; data = NULL;
+	
 	if (NULL == data_out)
 	{
-		delete []data;
 		return false;
 	}
 	cryptor.UpdateDataIntegrity(data_out, lengthData);
 	
 
 //-------------------------------------------------------------------
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
 	IStorage *winStorage = NULL;
 	StgCreateDocfile(file_name_out.c_str(), STGM_CREATE|STGM_SHARE_EXCLUSIVE|STGM_READWRITE,  0, &winStorage);
 	
@@ -759,7 +762,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	POLE::Stream *pStream = NULL;
 #endif
 //-------------------------------------------------------------------
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
 	ULONG nWritten;
 	winStorage->CreateStream(L"EncryptedPackage", STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, 0, &winStream);
 	winStream->Write(data_out, lengthData, &nWritten);
@@ -782,7 +785,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	
 	cryptor.GetCryptData(cryptData);
 
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
 	winStorage->CreateStream(L"EncryptionInfo", STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, 0, &winStream);
 	if (cryptData.bAgile)
 	{
@@ -876,7 +879,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	if (false == documentID.empty())
 	{
 		std::string utfDocumentID = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(documentID);
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
 		winStorage->CreateStream(L"DocumentID", STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, 0, &winStream);
 		winStream->Write((BYTE*)utfDocumentID.c_str(), utfDocumentID.length(), &nWritten);
 		winStream->Release();
@@ -890,7 +893,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 #endif
 	}
 //-------------------------------------------------------------------
-#if defined(_WIN32) || defined(_WIN64)
+#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
 	if (winStorage)
 		winStorage->Release();
 #else
@@ -908,7 +911,7 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 //	
 //	if (decryptor.SetPassword(password))
 //	{
-//		unsigned char* data_out2	= NULL;
+//		unsigned char* data_out2 = NULL;
 //		decryptor.Decrypt(data_out, lengthData, data_out2, 0);
 //		
 //		bool bDataIntegrity = decryptor.CheckDataIntegrity(data_out, lengthData);
@@ -944,6 +947,12 @@ bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const s
 
 	if (pStream)
 	{
+		if (pStream->fail())
+		{
+			delete pStream;
+			delete pStorage;
+			return false;
+		}
 		_UINT16 VersionInfoMajor = 0, VersionInfoMinor = 0;
 		
 		pStream->read((unsigned char*)&VersionInfoMajor, 2);
@@ -961,6 +970,7 @@ bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const s
 			return false;
 		}
 		nEncryptionInfoSize = pStream->read(byteEncryptionInfo, nEncryptionInfoSize);
+		
 		delete pStream;
 
 		if (VersionInfoMajor == 0x0004 && VersionInfoMinor == 0x0004)
@@ -1020,7 +1030,7 @@ bool ECMACryptFile::DecryptOfficeFile(const std::wstring &file_name_inp, const s
 	{
 		_UINT64 lengthData, lengthRead = pStream->size();
 
-		unsigned char* data		= new unsigned char[lengthRead];
+		unsigned char* data = new unsigned char[lengthRead];
 		unsigned char* data_out	= NULL;
 		
 		int readTrue = pStream->read(data, lengthRead); 

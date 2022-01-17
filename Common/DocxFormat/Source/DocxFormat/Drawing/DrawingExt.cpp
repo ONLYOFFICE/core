@@ -682,6 +682,17 @@ namespace OOX
 		{
 		}
 
+		std::wstring CDataModelExt::toXML() const
+		{
+			std::wstring sResult = L"<dsp:dataModelExt xmlns:dsp=\"http://schemas.microsoft.com/office/drawing/2008/diagram\"";
+			if (m_oRelId.IsInit())
+			{
+				sResult += L" relId=\"" + m_oRelId->ToString() + L"\"";
+			}
+			sResult += L" minVer=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\"/>";
+			
+			return sResult;
+		}
 		COfficeArtExtension::~COfficeArtExtension()
 		{
 			m_oSparklineGroups.reset();
@@ -839,7 +850,13 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 		}
-        std::wstring COfficeArtExtension::toXML() const
+		void COfficeArtExtension::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			std::wstring ns = L"a:";
+
+			pWriter->WriteString(toXMLWithNS(ns));
+		}
+		std::wstring COfficeArtExtension::toXML() const
         {
             return toXMLWithNS(L"a:");
         }
@@ -874,7 +891,11 @@ namespace OOX
 				NSStringUtils::CStringBuilder writer;
 				m_oAltTextTable->toXML(writer);
 				sResult += writer.GetData().c_str();
-			}			
+			}
+			if (m_oDataModelExt.IsInit())
+			{
+				sResult += m_oDataModelExt->toXML();
+			}
 			if (false == m_arrConditionalFormatting.empty())
 			{
 				sResult += L"<x14:conditionalFormattings>";
@@ -961,5 +982,31 @@ namespace OOX
 
 			return sResult;
 		}
+		
+		void COfficeArtExtensionList::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (m_arrExt.empty()) return;
+
+			std::wstring ns = L"a:";
+
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)		ns = L"wps:";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			ns = L"xdr:";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		ns = L"a:";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	ns = L"cdr:";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			ns = L"dgm:";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		ns = L"dsp:";
+
+			pWriter->StartNode(ns + L"extLst");
+			pWriter->EndAttributes();
+
+			for (size_t nIndex = 0; nIndex < m_arrExt.size(); nIndex++)
+			{
+				if (m_arrExt[nIndex])
+					m_arrExt[nIndex]->toXmlWriter(pWriter);
+			}
+
+			pWriter->WriteNodeEnd(ns + L"extLst");
+		}	
 	}
 }

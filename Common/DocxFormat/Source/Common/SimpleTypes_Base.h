@@ -127,7 +127,10 @@ namespace SimpleTypes
 		{
 			return m_eValue;
 		}
-
+		void SetValueFromByte(BYTE value)
+		{
+			m_eValue = (E)value;
+		}
 		virtual void SetValue (E eValue)
 		{
 			m_eValue = eValue;
@@ -148,8 +151,9 @@ namespace SimpleTypes
 		CUniversalMeasure() {}
         virtual ~CUniversalMeasure() {}
 
-        virtual double  FromString(std::wstring &sValue)     = 0;
-        virtual std::wstring ToString  () const              = 0;
+        virtual double  FromString(std::wstring &sValue)	= 0;
+        virtual std::wstring ToString  () const				= 0;
+		virtual void SetValue(double val)					= 0;
 
 		double GetValue() const
 		{
@@ -290,7 +294,12 @@ namespace SimpleTypes
 
 		CUniversalMeasureOrPercent() {}
         virtual ~CUniversalMeasureOrPercent() {}
-
+		
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = dValue;
+		}
 		virtual double  FromString(std::wstring &sValue)
 		{
 			m_bUnit = false;
@@ -345,8 +354,12 @@ namespace SimpleTypes
 			Parse(sValue, 1);
 			return m_dValue;
 		}
-
-        virtual std::wstring ToString  () const
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = dValue;
+		}
+        virtual std::wstring ToString () const
 		{
             return boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
 		}
@@ -360,13 +373,7 @@ namespace SimpleTypes
 		{
 			m_dValue = dValue * 72;
 			return m_dValue;
-		}
-
-  
-		void SetValue(double dValue)
-		{
-			m_dValue = dValue;
-		}
+		}  
 		double GetValue () const
 		{
 			return m_dValue;
@@ -386,7 +393,11 @@ namespace SimpleTypes
 			Parse(sValue, 1.0 / 72);
 			return m_dValue;
 		}
-
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = FromInches(dValue);
+		}
         virtual std::wstring ToString  () const
 		{
             return boost::lexical_cast<std::wstring>(ToInches()) + L"in";
@@ -411,7 +422,11 @@ namespace SimpleTypes
 			Parse(sValue, 12700);
 			return m_dValue;
 		}
-
+		virtual void SetValue(double dValue)
+		{
+			m_bUnit = false;
+			m_dValue = FromEmu(dValue);
+		}
         virtual std::wstring ToString  () const
 		{
             return boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
@@ -450,16 +465,12 @@ namespace SimpleTypes
 		{
 			return  (long)Pt_To_Px(m_dValue);
 		}
-		void SetValue(double dValue)
-		{
-			m_dValue = dValue;
-		}
 		double GetValue () const
 		{
 			return m_dValue;
 		}
-		SimpleType_FromString          (double)
-		SimpleType_Operator_Equal      (CEmu)
+		SimpleType_FromString (double)
+		SimpleType_Operator_Equal (CEmu)
 		UniversalMeasure_AdditionalOpearators(CEmu)
 	};
 
@@ -473,7 +484,7 @@ namespace SimpleTypes
 		CDouble() {}
         virtual ~CDouble() {}
 
-        virtual double  FromString(std::wstring &sValue)
+        virtual double FromString(std::wstring &sValue)
 		{
             m_dValue = _wtof( sValue.c_str() );
 			return m_dValue;
@@ -481,7 +492,9 @@ namespace SimpleTypes
 
         virtual std::wstring ToString  () const
 		{
-			return boost::lexical_cast<std::wstring>(m_dValue);
+			if (std::isnan(m_dValue)) return L"NaN";
+			else if (std::isinf(m_dValue)) return L"INF";
+			else return boost::lexical_cast<std::wstring>(m_dValue);
 		}
 		virtual std::wstring ToString2() const
 		{
@@ -504,5 +517,45 @@ namespace SimpleTypes
 		double m_dValue;
 	};
 
+	//--------------------------------------------------------------------------------
+	// DecimalNumber 17.18.10 (Part 1)
+	//--------------------------------------------------------------------------------		
 
+	template<int nDefValue = 0>
+	class CDecimalNumber : public CSimpleType<int, nDefValue>
+	{
+	public:
+		CDecimalNumber() {}
+
+		virtual int FromString(std::wstring &sValue)
+		{
+			try
+			{
+				this->m_eValue = _wtoi(sValue.c_str());
+				return this->m_eValue;
+			}
+			catch (...)
+			{
+			}
+
+			try
+			{
+				this->m_eValue = static_cast<int>(_wtoi64(sValue.c_str()));
+			}
+			catch (...)
+			{
+				this->m_eValue = 0;
+			}
+
+			return this->m_eValue;
+		}
+
+		virtual std::wstring ToString() const
+		{
+			return std::to_wstring(this->m_eValue);
+		}
+		SimpleType_FromString(int)
+		SimpleType_Operator_Equal(CDecimalNumber)
+		SimpleTypes_AdditionalOpearators(CDecimalNumber)
+	};
 } // SimpleTypes

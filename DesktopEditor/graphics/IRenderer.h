@@ -104,6 +104,7 @@ const long c_nFlagHyperlink		= 0x0001;
 const long c_nParamFlipX		= 0x0001;
 const long c_nParamFlipY		= 0x0002;
 const long c_nFlipNextRotate	= 0x0004;
+const long c_nDarkMode          = 0x0008;
 
 // типы рендерера
 const long c_nUnknownRenderer   = 0x0000;
@@ -308,6 +309,283 @@ public:
 class CFormFieldInfo
 {
 public:
+
+	enum EScaleType
+	{
+		Always  = 0x00,
+		Bigger  = 0x01,
+		Smaller = 0x02,
+		Never   = 0x03
+	};
+
+	class CTextFormPr
+	{
+	public:
+		CTextFormPr()
+		{
+			m_unMaxCharacters = 0;
+			m_bComb           = false;
+			m_bAutoFit        = false;
+			m_bMultiLine      = false;
+		}
+		void SetTextValue(const std::wstring& wsValue)
+		{
+			m_wsTextValue = wsValue;
+		}
+		const std::wstring& GetTextValue() const
+		{
+			return m_wsTextValue;
+		}
+		void SetMaxCharacters(const unsigned int unMax)
+		{
+			m_unMaxCharacters = unMax;
+		}
+		unsigned int GetMaxCharacters() const
+		{
+			return m_unMaxCharacters;
+		}
+		void SetComb(const bool& bComb)
+		{
+			m_bComb = bComb;
+		}
+		bool IsComb() const
+		{
+			return m_bComb;
+		}
+		void SetAutoFit(const bool& bAutoFit)
+		{
+			m_bAutoFit = bAutoFit;
+		}
+		bool IsAutoFit() const
+		{
+			return m_bAutoFit;
+		}
+		void SetMultiLine(const bool& bMultiLine)
+		{
+			m_bMultiLine = bMultiLine;
+		}
+		bool IsMultiLine() const
+		{
+			return m_bMultiLine;
+		}
+		void SetPlaceHolder(const std::wstring& wsPlaceHolder)
+		{
+			m_wsPlaceHolder = wsPlaceHolder;
+		}
+		const std::wstring& GetPlaceHolder() const
+		{
+			return m_wsPlaceHolder;
+		}
+
+	private:
+
+		std::wstring m_wsTextValue;
+		unsigned int m_unMaxCharacters;
+		bool         m_bComb;
+		bool         m_bAutoFit;
+		bool         m_bMultiLine;
+		std::wstring m_wsPlaceHolder;
+	};
+	class CDropDownFormPr
+	{
+	public:
+		CDropDownFormPr()
+		{
+			m_bEditComboBox = false;
+		}
+
+		void SetTextValue(const std::wstring& wsValue)
+		{
+			m_wsTextValue = wsValue;
+		}
+		const std::wstring& GetTextValue() const
+		{
+			return m_wsTextValue;
+		}
+		bool IsEditComboBox() const
+		{
+			return m_bEditComboBox;
+		}
+		void SetEditComboBox(const bool& bEdit)
+		{
+			m_bEditComboBox = bEdit;
+		}
+		unsigned int GetComboBoxItemsCount() const
+		{
+			return m_vComboBoxItems.size();
+		}
+		const std::wstring& GetComboBoxItem(const unsigned int& unIndex) const
+		{
+			return m_vComboBoxItems.at(unIndex);
+		}
+		void AddComboBoxItem(const std::wstring& wsItem)
+		{
+			m_vComboBoxItems.push_back(wsItem);
+		}
+		void SetPlaceHolder(const std::wstring& wsPlaceHolder)
+		{
+			m_wsPlaceHolder = wsPlaceHolder;
+		}
+		const std::wstring& GetPlaceHolder() const
+		{
+			return m_wsPlaceHolder;
+		}
+
+	private:
+
+		std::wstring              m_wsTextValue;
+		bool                      m_bEditComboBox;
+		std::vector<std::wstring> m_vComboBoxItems;
+		std::wstring              m_wsPlaceHolder;
+	};
+	class CCheckBoxFormPr
+	{
+	public:
+		CCheckBoxFormPr()
+		{
+			m_bChecked          = false;
+			m_unType            = 0;
+			m_unCheckedSymbol   = 0x2612;
+			m_unUncheckedSymbol = 0x2610;
+		}
+		bool IsChecked() const
+		{
+			return m_bChecked;
+		}
+		void SetChecked(const bool& bChecked)
+		{
+			m_bChecked = bChecked;
+		}		
+		unsigned int GetType() const
+		{
+			return m_unType;
+		}
+		void SetType(const unsigned int& unType)
+		{
+			m_unType = unType;
+		}
+		unsigned int GetCheckedSymbol() const
+		{
+			return m_unCheckedSymbol;
+		}
+		void SetCheckedSymbol(const unsigned int& unCheckedSymbol)
+		{
+			m_unCheckedSymbol = unCheckedSymbol;
+		}
+		unsigned int GetUncheckedSymbol() const
+		{
+			return m_unUncheckedSymbol;
+		}
+		void SetUncheckedSymbol(const unsigned int& unUncheckedSymbol)
+		{
+			m_unUncheckedSymbol = unUncheckedSymbol;
+		}
+		void SetCheckedFont(const std::wstring& wsFontName)
+		{
+			m_wsCheckedFont = wsFontName;
+		}
+		const std::wstring& GetCheckedFontName() const
+		{
+			return m_wsCheckedFont;
+		}
+		void SetUncheckedFont(const std::wstring& wsFontName)
+		{
+			m_wsUncheckedFont = wsFontName;
+		}
+		const std::wstring& GetUncheckedFontName() const
+		{
+			return m_wsUncheckedFont;
+		}
+		bool IsRadioButton() const
+		{
+			return (0 == m_wsGroupKey.length());
+		}
+		void SetGroupKey(const std::wstring& wsGroupKey)
+		{
+			m_wsGroupKey = wsGroupKey;
+		}
+		const std::wstring& GetGroupKey() const
+		{
+			return m_wsGroupKey;
+		}
+
+	private:
+
+		bool         m_bChecked;
+		unsigned int m_unType;
+		unsigned int m_unCheckedSymbol;
+		unsigned int m_unUncheckedSymbol;
+		std::wstring m_wsCheckedFont;
+		std::wstring m_wsUncheckedFont;
+		std::wstring m_wsGroupKey;
+	};
+	class CPictureFormPr
+	{
+	public:
+		CPictureFormPr()
+		{
+			m_eScaleType           = EScaleType::Always;
+			m_bRespectBorders      = false;
+			m_bConstantProportions = true;
+			m_lShiftX              = 500;
+			m_lShiftY              = 500;
+		}
+		bool IsConstantProportions() const
+		{
+			return m_bConstantProportions;
+		}
+		void SetConstantProportions(const bool& bConstant)
+		{
+			m_bConstantProportions = bConstant;
+		}
+		bool IsRespectBorders() const
+		{
+			return m_bRespectBorders;
+		}
+		void SetRespectBorders(const bool& bRespect)
+		{
+			m_bRespectBorders = bRespect;
+		}
+		EScaleType GetScaleType() const
+		{
+			return m_eScaleType;
+		}
+		void SetScaleType(const EScaleType& eType)
+		{
+			m_eScaleType = eType;
+		}
+		void SetShift(const LONG& lShiftX, const LONG& lShiftY)
+		{
+			m_lShiftX = lShiftX;
+			m_lShiftY = lShiftY;
+		}
+		const LONG& GetShiftX() const
+		{
+			return m_lShiftX;
+		}
+		const LONG& GetShiftY() const
+		{
+			return m_lShiftY;
+		}
+		void SetPicturePath(const std::wstring& wsPath)
+		{
+			m_wsPicturePath = wsPath;
+		}
+		const std::wstring& GetPicturePath() const
+		{
+			return m_wsPicturePath;
+		}
+
+	private:
+		EScaleType   m_eScaleType;
+		bool         m_bRespectBorders;
+		bool         m_bConstantProportions;
+		LONG         m_lShiftX;
+		LONG         m_lShiftY;
+		std::wstring m_wsPicturePath;
+	};
+
+public:
 	CFormFieldInfo()
 	{
 		m_nType = 0;
@@ -323,6 +601,15 @@ public:
 		m_bPlaceHolder = false;
 
 		m_nBorderType = 0;
+
+		// 0 - Right
+		// 1 - Left
+		// 2 - Center
+		// 3 - Justify
+		// 4 - Distributed
+		m_nJc = 1;
+
+		m_bHaveShd = false;
 	}
 
 	void SetType(int nType)
@@ -410,126 +697,80 @@ public:
 		unG = ((m_lBorderColor >>  8) & 0xFF);
 		unB = ((m_lBorderColor)       & 0xFF);
 	}
+	bool HaveShd() const
+	{
+		return m_bHaveShd;
+	}
+	void SetShd(const unsigned char& unR, const unsigned char& unG, const unsigned char& unB, const unsigned char& unA)
+	{
+		m_bHaveShd  = true;
+		m_lShdColor =  (((LONG)(unA << 24)) & 0xFFFFFF) | (((LONG)(unR << 16)) & 0xFFFFFF) | (((LONG)(unG << 8)) & 0xFFFFFF) | (LONG)(unB);
+	}
+	void GetShdColor(unsigned char& unR, unsigned char& unG, unsigned char& unB, unsigned char& unA) const
+	{
+		unA = ((m_lShdColor >> 24) & 0xFF);
+		unR = ((m_lShdColor >> 16) & 0xFF);
+		unG = ((m_lShdColor >>  8) & 0xFF);
+		unB = ((m_lShdColor)       & 0xFF);
+	}
+	void SetJc(const unsigned char& unJc)
+	{
+		m_nJc = unJc;
+	}
+	BYTE GetJc() const
+	{
+		return m_nJc;
+	}
 
-	// TextFields
 	bool IsTextField() const
 	{
 		return (m_nType == 1);
 	}
-	void SetTextValue(const std::wstring& wsValue)
-	{
-		m_wsTextValue = wsValue;
-	}
-	const std::wstring& GetTextValue() const
-	{
-		return m_wsTextValue;
-	}
-	void SetMaxCharacters(const unsigned int unMax)
-	{
-		m_unMaxCharacters = unMax;
-	}
-	unsigned int GetMaxCharacters() const
-	{
-		return m_unMaxCharacters;
-	}
-	void SetComb(const bool& bComb)
-	{
-		m_bComb = bComb;
-	}
-	bool IsComb() const
-	{
-		return m_bComb;
-	}
-
-	// ComboBox/DropDownList
-	bool IsComboBox() const
+	bool IsDropDownList() const
 	{
 		return (m_nType == 2);
 	}
-	bool IsEditComboBox() const
-	{
-		return m_bEditComboBox;
-	}
-	void SetEditComboBox(const bool& bEdit)
-	{
-		m_bEditComboBox = bEdit;
-	}
-	unsigned int GetComboBoxItemsCount() const
-	{
-		return m_vComboBoxItems.size();
-	}
-	const std::wstring& GetComboBoxItem(const unsigned int& unIndex) const
-	{
-		return m_vComboBoxItems.at(unIndex);
-	}
-	void AddComboBoxItem(const std::wstring& wsItem)
-	{
-		m_vComboBoxItems.push_back(wsItem);
-	}
-
-	// CheckBox
 	bool IsCheckBox() const
 	{
 		return (m_nType == 3);
 	}
-	bool IsChecked() const
-	{
-		return m_bChecked;
-	}
-	void SetChecked(const bool& bChecked)
-	{
-		m_bChecked = bChecked;
-	}
-	unsigned int GetCheckedSymbol() const
-	{
-		return m_unCheckedSymbol;
-	}
-	void SetCheckedSymbol(const unsigned int& unCheckedSymbol)
-	{
-		m_unCheckedSymbol = unCheckedSymbol;
-	}
-	unsigned int GetUncheckedSymbol() const
-	{
-		return m_unUncheckedSymbol;
-	}
-	void SetUncheckedSymbol(const unsigned int& unUncheckedSymbol)
-	{
-		m_unUncheckedSymbol = unUncheckedSymbol;
-	}
-	void SetCheckedFont(const std::wstring& wsFontName)
-	{
-		m_wsCheckedFont = wsFontName;
-	}
-	const std::wstring& GetCheckedFontName() const
-	{
-		return m_wsCheckedFont;
-	}
-	void SetUncheckedFont(const std::wstring& wsFontName)
-	{
-		m_wsUncheckedFont = wsFontName;
-	}
-	const std::wstring& GetUncheckedFontName() const
-	{
-		return m_wsUncheckedFont;
-	}
-	bool IsRadioButton() const
-	{
-		return (0 == m_wsGroupKey.length());
-	}
-	void SetGroupKey(const std::wstring& wsGroupKey)
-	{
-		m_wsGroupKey = wsGroupKey;
-	}
-	const std::wstring& GetGroupKey() const
-	{
-		return m_wsGroupKey;
-	}
-
-	// Picture
 	bool IsPicture() const
 	{
 		return (m_nType == 4);
 	}
+	CTextFormPr* GetTextFormPr()
+	{
+		return &m_oTextPr;
+	}
+	const CTextFormPr* GetTextPr() const
+	{
+		return &m_oTextPr;
+	}
+	CDropDownFormPr* GetDropDownFormPr()
+	{
+		return &m_oDropDownPr;
+	}
+	const CDropDownFormPr* GetDropDownPr() const
+	{
+		return &m_oDropDownPr;
+	}
+	CCheckBoxFormPr* GetCheckBoxFormPr()
+	{
+		return &m_oCheckBoxPr;
+	}
+	const CCheckBoxFormPr* GetCheckBoxPr() const
+	{
+		return &m_oCheckBoxPr;
+	}
+	CPictureFormPr* GetPictureFormPr()
+	{
+		return &m_oPicturePr;
+	}
+	const CPictureFormPr* GetPicturePr() const
+	{
+		return &m_oPicturePr;
+	}
+
 
 private:
 
@@ -546,23 +787,15 @@ private:
 	int          m_nBorderType;
 	double       m_dBorderSize;
 	LONG         m_lBorderColor;
+	bool         m_bHaveShd;
+	LONG         m_lShdColor;
+	BYTE         m_nJc;
 
-	// Поля для текстовых форм
-	std::wstring m_wsTextValue;
-	unsigned int m_unMaxCharacters;
-	bool         m_bComb;
+	CTextFormPr     m_oTextPr;
+	CDropDownFormPr m_oDropDownPr;
+	CCheckBoxFormPr m_oCheckBoxPr;
+	CPictureFormPr  m_oPicturePr;
 
-	// Поля для выпадающих списков
-	bool                      m_bEditComboBox;
-	std::vector<std::wstring> m_vComboBoxItems;
-
-	// Поля для чекбокса
-	bool         m_bChecked;
-	unsigned int m_unCheckedSymbol;
-	unsigned int m_unUncheckedSymbol;
-	std::wstring m_wsCheckedFont;
-	std::wstring m_wsUncheckedFont;
-	std::wstring m_wsGroupKey;
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)			\

@@ -1174,7 +1174,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:hRule"), m_oHRule )
 				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),   m_oVal )
@@ -2041,27 +2040,33 @@ namespace OOX
 			{
 				std::wstring sResult = _T("<w:tcPr>");
 
-				WritingElement_WriteNode_1( _T("<w:cellDel "),        m_oCellDel );
-				WritingElement_WriteNode_1( _T("<w:cellIns "),        m_oCellIns );
-				WritingElement_WriteNode_1( _T("<w:cellMerge "),      m_oCellMerge );
-				WritingElement_WriteNode_1( _T("<w:cnfStyle "),       m_oCnfStyle );
-				WritingElement_WriteNode_1( _T("<w:gridSpan "),       m_oGridSpan );
-				WritingElement_WriteNode_2( m_oHeaders );
-				WritingElement_WriteNode_1( _T("<w:hideMark "),       m_oHideMark );
-				WritingElement_WriteNode_1( _T("<w:hmerge "),         m_oHMerge );
-				WritingElement_WriteNode_1( _T("<w:noWrap "),         m_oNoWrap );
-				WritingElement_WriteNode_1( _T("<w:shd "),            m_oShd );
-				WritingElement_WriteNode_2( m_oTcBorders );
-				WritingElement_WriteNode_1( _T("<w:tcFitText "),      m_oTcFitText );
-				WritingElement_WriteNode_2( m_oTcMar );
+				WritingElement_WriteNode_1(_T("<w:cnfStyle "), m_oCnfStyle );
+				WritingElement_WriteNode_1(_T("<w:tcW "), m_oTcW);
+				WritingElement_WriteNode_1(_T("<w:gridSpan "), m_oGridSpan);
+				WritingElement_WriteNode_1(_T("<w:hmerge "), m_oHMerge);
+				WritingElement_WriteNode_1(_T("<w:vmerge "), m_oVMerge);
+				
+				WritingElement_WriteNode_2(m_oTcBorders);
+				
+				WritingElement_WriteNode_1(_T("<w:shd "), m_oShd);
+				WritingElement_WriteNode_1(_T("<w:noWrap "), m_oNoWrap);
+				
+				WritingElement_WriteNode_2(m_oTcMar);
+				
+				WritingElement_WriteNode_1(_T("<w:textDirection "), m_oTextDirection);
+				WritingElement_WriteNode_1(_T("<w:tcFitText "), m_oTcFitText);
+
+				WritingElement_WriteNode_1(_T("<w:vAlign "), m_oVAlign);
+				WritingElement_WriteNode_1(_T("<w:hideMark "), m_oHideMark);
+
+				WritingElement_WriteNode_2(m_oHeaders);
+
+				WritingElement_WriteNode_1(_T("<w:cellIns "), m_oCellIns );
+				WritingElement_WriteNode_1(_T("<w:cellDel "), m_oCellDel );
+				WritingElement_WriteNode_1(_T("<w:cellMerge "), m_oCellMerge);
 
 				if ( !m_bTcPrChange )
 					WritingElement_WriteNode_2( m_oTcPrChange );
-
-				WritingElement_WriteNode_1( _T("<w:tcW "),            m_oTcW );
-				WritingElement_WriteNode_1( _T("<w:textDirection "),  m_oTextDirection );
-				WritingElement_WriteNode_1( _T("<w:vAlign "),         m_oVAlign );
-				WritingElement_WriteNode_1( _T("<w:vmerge "),         m_oVMerge );
 
 				sResult += _T("</w:tcPr>");
 

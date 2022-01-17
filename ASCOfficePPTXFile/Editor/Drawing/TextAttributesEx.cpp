@@ -81,7 +81,7 @@ namespace PPT_FORMAT
                     CSpan next	= m_arParagraphs[i].m_arSpans[j];
 
                     next.m_strText								= next.m_strText.substr(lFoundBreak + 1);
-                    m_arParagraphs[i].m_arSpans[j].m_strText	= m_arParagraphs[i].m_arSpans[j].m_strText.substr(0, lFoundBreak - 1);
+                    m_arParagraphs[i].m_arSpans[j].m_strText	= m_arParagraphs[i].m_arSpans[j].m_strText.substr(0, lFoundBreak);
 
                     if( lFoundBreak == 0)
                     {
@@ -114,7 +114,7 @@ namespace PPT_FORMAT
             {
                 LONG lLevel = m_arParagraphs[nIndexP].m_lTextLevel;
 
-                nullable_base<bool>		hasBullet;
+                nullable_bool		hasBullet;
 
                 nullable_base<CColor>	bulletColor;
                 nullable_base<WORD>		bulletFontRef;

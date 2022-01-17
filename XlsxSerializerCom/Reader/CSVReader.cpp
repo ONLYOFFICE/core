@@ -252,7 +252,7 @@ namespace CSVReader
 		pXfs->m_oNumFmtId->SetValue(0);
 		
 		oXlsx.m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
-
+		 
 	// Wrap style
 		pXfs = new OOX::Spreadsheet::CXfs();
 		pXfs->m_oBorderId.Init();
@@ -272,21 +272,9 @@ namespace CSVReader
 		
 		oXlsx.m_pStyles->m_oCellXfs->m_arrItems.push_back(pXfs);
 
-		std::wstring sSheetRId = L"rId1";
-		OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet(NULL);
+		smart_ptr<OOX::Spreadsheet::CWorksheet> pWorksheet(new OOX::Spreadsheet::CWorksheet(NULL));
 		pWorksheet->m_oSheetData.Init();
 		
-		OOX::Spreadsheet::CSheet *pSheet = new OOX::Spreadsheet::CSheet();
-		
-		pSheet->m_oName = L"Sheet1";
-		pSheet->m_oSheetId.Init();
-		pSheet->m_oSheetId->SetValue(1);
-		pSheet->m_oRid.Init();
-		pSheet->m_oRid->SetValue(sSheetRId);
-
-		oXlsx.m_pWorkbook->m_oSheets.Init();
-		oXlsx.m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
-
 //-----------------------------------------------------------------------------------
 		DWORD nFileSize = 0;
 		BYTE* pFileData = new BYTE[oFile.GetFileSize()];
@@ -468,8 +456,23 @@ namespace CSVReader
 		{
 			RELEASEOBJECT(pRow);
 		}
-		oXlsx.m_arWorksheets.push_back(pWorksheet);
-		oXlsx.m_mapWorksheets.insert(std::make_pair(sSheetRId, pWorksheet));
+		oXlsx.m_arWorksheets.push_back(pWorksheet.GetPointer());
+
+		smart_ptr<OOX::File> oWorksheetFile = pWorksheet.smart_dynamic_cast<OOX::File>();
+		const OOX::RId oRid = oXlsx.m_pWorkbook->Add(oWorksheetFile);
+
+		oXlsx.m_mapWorksheets.insert(std::make_pair(oRid.ToString(), pWorksheet.GetPointer())); // for bin
+
+		OOX::Spreadsheet::CSheet *pSheet = new OOX::Spreadsheet::CSheet();
+
+		pSheet->m_oName = L"Sheet1";
+		pSheet->m_oSheetId.Init();
+		pSheet->m_oSheetId->SetValue(1);
+		pSheet->m_oRid.Init();
+		pSheet->m_oRid->SetValue(oRid.ToString());
+
+		oXlsx.m_pWorkbook->m_oSheets.Init();
+		oXlsx.m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 
 		return 0;
 	}

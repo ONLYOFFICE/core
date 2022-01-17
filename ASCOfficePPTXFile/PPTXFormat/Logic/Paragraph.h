@@ -128,7 +128,6 @@ namespace PPTX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
-					WritingElement *pItem = NULL;
 
 					if (_T("pPr") == strName)
 						pPr = oReader;

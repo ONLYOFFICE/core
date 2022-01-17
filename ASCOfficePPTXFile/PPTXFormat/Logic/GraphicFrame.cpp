@@ -411,12 +411,14 @@ namespace PPTX
 			if (xfrm.IsInit() && (!(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
 									pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) || pWriter->m_lGroupIndex >= 0))
 			{				
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)	xfrm->m_ns = L"xdr";
+				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)	xfrm->node_name = L"xdr:xfrm";
 				else if ((pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
-					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) && pWriter->m_lGroupIndex >= 0) xfrm->m_ns = L"wpg";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)						xfrm->m_ns = L"a";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)					xfrm->m_ns = L"cdr";
-				
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) && pWriter->m_lGroupIndex >= 0) xfrm->node_name = L"wpg:xfrm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS) xfrm->node_name = L"a:xfrm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING) xfrm->node_name = L"cdr:xfrm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM) xfrm->node_name = L"dgm:xfrm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING) xfrm->node_name = L"dsp:xfrm";
+
 				xfrm->toXmlWriter(pWriter);
 			}
 			if (table.is_init())
@@ -445,24 +447,43 @@ namespace PPTX
 				slicerExt->toXML(*pWriter, L"sle:slicer");
 				pWriter->WriteString(L"</a:graphicData></a:graphic>");
 			}
+			else if (smartArt.is_init())
+			{
+				pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\">");
+				smartArt->toXmlWriter(pWriter);
+				pWriter->WriteString(L"</a:graphicData></a:graphic>");
+			}
 		}
 		void GraphicFrame::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			std::wstring namespace_ = m_namespace;
-			
-			if ((pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
-				 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) && pWriter->m_lGroupIndex >= 0)		namespace_ = L"wpg";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)				namespace_ = L"xdr";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)										namespace_ = L"a";
-			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)									namespace_ = L"cdr";
+			if (smartArt.is_init() && (	pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+										pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY))
+			{
+				pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\">");
+				smartArt->toXmlWriter(pWriter);
+				pWriter->WriteString(L"</a:graphicData></a:graphic>");
 
-			pWriter->StartNode(namespace_ + L":graphicFrame");
-			pWriter->WriteAttribute(L"macro", macro);
-			pWriter->EndAttributes();
-			
-			toXmlWriter2(pWriter);
+			}
+			else
+			{
+				std::wstring namespace_ = m_namespace;
 
-			pWriter->EndNode(namespace_ + L":graphicFrame");
+				if ((pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) && pWriter->m_lGroupIndex >= 0)		namespace_ = L"wpg";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)				namespace_ = L"xdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)										namespace_ = L"a";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)									namespace_ = L"cdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)											namespace_ = L"dgm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)										namespace_ = L"dsp";
+
+				pWriter->StartNode(namespace_ + L":graphicFrame");
+				pWriter->WriteAttribute(L"macro", macro);
+				pWriter->EndAttributes();
+
+				toXmlWriter2(pWriter);
+
+				pWriter->EndNode(namespace_ + L":graphicFrame");
+			}
 		}
 
 		bool GraphicFrame::IsEmpty() const
@@ -489,65 +510,64 @@ namespace PPTX
 				xml_object_vml = GetVmlXmlBySpid(xml_object_rels);
 			}
 
-			if (smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !slicer.is_init() && !slicerExt.is_init() && !vmlSpid.is_init())
-			{
-				smartArt->LoadDrawing(pWriter);
-				
-				if (smartArt->m_diag.is_init())
-				{
-					if (nvGraphicFramePr.IsInit())
-					{
-						smartArt->m_diag->nvGrpSpPr.cNvPr = nvGraphicFramePr->cNvPr;
-						smartArt->m_diag->nvGrpSpPr.nvPr = nvGraphicFramePr->nvPr;
-					}
+			//if (smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !slicer.is_init() && !slicerExt.is_init() && !vmlSpid.is_init())
+			//{
+			//	smartArt->LoadDrawing(pWriter);
+			//	
+			//	if (smartArt->m_diag.is_init())
+			//	{
+			//		if (nvGraphicFramePr.IsInit())
+			//		{
+			//			smartArt->m_diag->nvGrpSpPr.cNvPr = nvGraphicFramePr->cNvPr;
+			//			smartArt->m_diag->nvGrpSpPr.nvPr = nvGraphicFramePr->nvPr;
+			//		}
 
-					bool bIsInitCoords = false;
-					if (smartArt->m_diag->grpSpPr.xfrm.IsInit())
-					{
-						bIsInitCoords = true;
-					}
-					else if (xfrm.IsInit())
-					{
-						smartArt->m_diag->grpSpPr.xfrm = new PPTX::Logic::Xfrm();
-					}
+			//		bool bIsInitCoords = false;
+			//		if (smartArt->m_diag->grpSpPr.xfrm.IsInit())
+			//		{
+			//			bIsInitCoords = true;
+			//		}
+			//		else if (xfrm.IsInit())
+			//		{
+			//			smartArt->m_diag->grpSpPr.xfrm = new PPTX::Logic::Xfrm();
+			//		}
 
-					PPTX::Logic::Xfrm*	dst = smartArt->m_diag->grpSpPr.xfrm.GetPointer();
-					PPTX::Logic::Xfrm*	src = xfrm.GetPointer();
+			//		PPTX::Logic::Xfrm*	dst = smartArt->m_diag->grpSpPr.xfrm.GetPointer();
+			//		PPTX::Logic::Xfrm*	src = xfrm.GetPointer();
 
-					if (dst && src)
-					{
-						dst->offX = src->offX;
-						dst->offY = src->offY;
-						dst->extX = src->extX;
-						dst->extY = src->extY;
-						
-						if (!bIsInitCoords || !dst->chOffX.is_init() || !dst->chOffY.is_init() || !dst->chExtX.is_init() || !dst->chExtY.is_init())
-						{
-							dst->chOffX = 0;
-							dst->chOffY = 0;
-							dst->chExtX = src->extX;
-							dst->chExtY = src->extY;
-						}
-						
-						dst->flipH = src->flipH;
-						dst->flipV = src->flipV;
-						dst->rot = src->rot;
-					}
-					//удалим индекс плейсхолдера если он есть(p:nvPr) - он будет лишний так как будет имплементация объекта
-					if (smartArt->m_diag->nvGrpSpPr.nvPr.ph.IsInit())
-					{
-						if(smartArt->m_diag->nvGrpSpPr.nvPr.ph->idx.IsInit())
-						{
-							smartArt->m_diag->nvGrpSpPr.nvPr.ph.reset();
-						}
-					}
-					smartArt->toPPTY(pWriter);
-				}
-			
-				return;
-			}
+			//		if (dst && src)
+			//		{
+			//			dst->offX = src->offX;
+			//			dst->offY = src->offY;
+			//			dst->extX = src->extX;
+			//			dst->extY = src->extY;
+			//			
+			//			if (!bIsInitCoords || !dst->chOffX.is_init() || !dst->chOffY.is_init() || !dst->chExtX.is_init() || !dst->chExtY.is_init())
+			//			{
+			//				dst->chOffX = 0;
+			//				dst->chOffY = 0;
+			//				dst->chExtX = src->extX;
+			//				dst->chExtY = src->extY;
+			//			}
+			//			
+			//			dst->flipH = src->flipH;
+			//			dst->flipV = src->flipV;
+			//			dst->rot = src->rot;
+			//		}
+			//		//удалим индекс плейсхолдера если он есть(p:nvPr) - он будет лишний так как будет имплементация объекта
+			//		if (smartArt->m_diag->nvGrpSpPr.nvPr.ph.IsInit())
+			//		{
+			//			if(smartArt->m_diag->nvGrpSpPr.nvPr.ph->idx.IsInit())
+			//			{
+			//				smartArt->m_diag->nvGrpSpPr.nvPr.ph.reset();
+			//			}
+			//		}
+			//		smartArt->toPPTY(pWriter);
+			//	}			
+			//	return;
+			//}
 
-			if (!table.is_init() && !chartRec.is_init() && !slicer.is_init() && !slicerExt.is_init() && xml_object_vml.empty() == false)
+			if (false == xml_object_vml.empty() && !table.IsInit() && !chartRec.IsInit() && !slicer.IsInit() && !slicerExt.IsInit() && !smartArt.IsInit())
 			{
 				std::wstring temp = L"<v:object>";
                 temp += xml_object_vml;
@@ -584,6 +604,10 @@ namespace PPTX
 			if (table.is_init())
 			{
 				pWriter->WriteRecord2(2, table);
+			}
+			else if (smartArt.is_init())
+			{
+				pWriter->WriteRecord2(8, smartArt);
 			}
 			else if (chartRec.is_init())
 			{
@@ -656,8 +680,8 @@ namespace PPTX
 					case 1:
 					{
 						xfrm = new Logic::Xfrm();
+						xfrm->node_name = L"p:xfrm";						
 						xfrm->fromPPTY(pReader);
-						xfrm->m_ns = L"p";						
 					}break;
 					case 2:
 					{
@@ -688,6 +712,11 @@ namespace PPTX
 						chartRec = new Logic::ChartRec();
 						chartRec->m_bChartEx = true;
 						chartRec->fromPPTY(pReader);
+					}break;
+					case 8:
+					{
+						smartArt = new Logic::SmartArt();
+						smartArt->fromPPTY(pReader);
 					}break;
 					case SPTREE_TYPE_MACRO:
 					{
@@ -735,7 +764,8 @@ namespace PPTX
 
 			if (table.IsInit())
 			{
-				sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/table\">";
+				sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/table\">";
                 sXml += table->toXML();
 				sXml += L"</a:graphicData></a:graphic>";
 			}
@@ -749,14 +779,23 @@ namespace PPTX
 			}
 			else if (slicer.IsInit())
 			{
-				sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2010/slicer\">";
+				sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+<a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2010/slicer\">";
 				sXml += slicer->toXML();
 				sXml += L"</a:graphicData></a:graphic>";
 			}
 			else if (slicerExt.IsInit())
 			{
-				sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2010/slicer\">";
+				sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+<a:graphicData uri=\"http://schemas.microsoft.com/office/drawing/2010/slicer\">";
 				sXml += slicerExt->toXML();
+				sXml += L"</a:graphicData></a:graphic>";
+			}
+			else if (smartArt.IsInit())
+			{
+				sXml += L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
+<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\">";
+				sXml += smartArt->toXML();
 				sXml += L"</a:graphicData></a:graphic>";
 			}
 			return sXml;

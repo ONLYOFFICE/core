@@ -59,13 +59,11 @@ namespace BinXlsxRW {
 	public:
 		CXlsxSerializer();
 		~CXlsxSerializer();
-		
-        static void CreateXlsxFolders  (const std::wstring& sXmlOptions, const std::wstring& sDstPath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
 
         _UINT32 loadFromFile	(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sMediaDir, const std::wstring& sEmbedPath);
-        _UINT32 saveToFile		(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
-		
-        bool saveChart          (NSBinPptxRW::CBinaryFileReader* pReader, long lLength, NSCommon::smart_ptr<OOX::File> &file, const int& nChartNumber);
+        _UINT32 saveToFile		(const std::wstring& sDstPath, const std::wstring& sSrcFileName, const std::wstring& sXMLOptions);
+//------------------------------------------------		
+        static void CreateXlsxFolders  (const std::wstring& sXmlOptions, const std::wstring& sDstPath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
 		
         void setFontDir			(const std::wstring& sFontDir);
         void setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir);
@@ -73,6 +71,9 @@ namespace BinXlsxRW {
 		void setIsNoBase64		(bool val);
 		void setMacroEnabled	(bool val);
 
+		_UINT32 xml2Xlsx		(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions);
+		
+		bool saveChart          (NSBinPptxRW::CBinaryFileReader* pReader, long lLength, NSCommon::smart_ptr<OOX::File> &file);
 		bool writeChartXlsx     (const std::wstring& sDstFile, NSCommon::smart_ptr<OOX::File> &file);
 		bool hasPivot			(const std::wstring& sSrcPath);
 	};

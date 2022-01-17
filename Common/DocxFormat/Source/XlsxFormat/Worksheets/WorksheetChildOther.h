@@ -270,26 +270,26 @@ namespace OOX
 				if(m_oPaperSize.IsInit() || m_oOrientation.IsInit())
 				{
 					writer.WriteString(L"<pageSetup");
-					WritingStringNullableAttrBool(L"blackAndWhite", m_oBlackAndWhite);
-					WritingStringNullableAttrString(L"cellComments", m_oCellComments, m_oCellComments->ToString());
-					WritingStringNullableAttrInt(L"copies", m_oCopies, m_oCopies->GetValue());
-					WritingStringNullableAttrBool(L"draft", m_oDraft);
-					WritingStringNullableAttrString(L"errors", m_oErrors, m_oErrors->ToString());
-					WritingStringNullableAttrInt(L"firstPageNumber", m_oFirstPageNumber, m_oFirstPageNumber->GetValue());
-					WritingStringNullableAttrInt(L"fitToHeight", m_oFitToHeight, m_oFitToHeight->GetValue());
-					WritingStringNullableAttrInt(L"fitToWidth", m_oFitToWidth, m_oFitToWidth->GetValue());
-					WritingStringNullableAttrInt(L"horizontalDpi", m_oHorizontalDpi, m_oHorizontalDpi->GetValue());
-					WritingStringNullableAttrString(L"r:id", m_oRId, m_oRId->ToString());
-					WritingStringNullableAttrString(L"orientation", m_oOrientation, m_oOrientation->ToString());
-					WritingStringNullableAttrString(L"pageOrder", m_oPageOrder, m_oPageOrder->ToString());
-					WritingStringNullableAttrDouble(L"paperHeight", m_oPaperHeight, m_oPaperHeight->GetValue());
 					WritingStringNullableAttrString(L"paperSize", m_oPaperSize, m_oPaperSize->ToString());
+					WritingStringNullableAttrDouble(L"paperHeight", m_oPaperHeight, m_oPaperHeight->GetValue());
 					WritingStringNullableAttrDouble(L"paperWidth", m_oPaperWidth, m_oPaperWidth->GetValue());
-					WritingStringNullableAttrString(L"paperUnits", m_oPaperUnits, m_oPaperUnits->ToString());
-					WritingStringNullableAttrInt(L"scale", m_oScale, m_oScale->GetValue());
-					WritingStringNullableAttrBool(L"useFirstPageNumber", m_oUseFirstPageNumber);
+					WritingStringNullableAttrUInt(L"scale", m_oScale, m_oScale->GetValue());
+					WritingStringNullableAttrUInt(L"firstPageNumber", m_oFirstPageNumber, m_oFirstPageNumber->GetValue());
+					WritingStringNullableAttrInt(L"fitToWidth", m_oFitToWidth, m_oFitToWidth->GetValue());
+					WritingStringNullableAttrInt(L"fitToHeight", m_oFitToHeight, m_oFitToHeight->GetValue());
+					WritingStringNullableAttrString(L"pageOrder", m_oPageOrder, m_oPageOrder->ToString());
+					WritingStringNullableAttrString(L"orientation", m_oOrientation, m_oOrientation->ToString());
 					WritingStringNullableAttrBool(L"usePrinterDefaults", m_oUsePrinterDefaults);
-					WritingStringNullableAttrInt(L"verticalDpi", m_oVerticalDpi, m_oVerticalDpi->GetValue());
+					WritingStringNullableAttrBool(L"blackAndWhite", m_oBlackAndWhite);
+					WritingStringNullableAttrBool(L"draft", m_oDraft);
+					WritingStringNullableAttrString(L"cellComments", m_oCellComments, m_oCellComments->ToString());
+					WritingStringNullableAttrBool(L"useFirstPageNumber", m_oUseFirstPageNumber);
+					WritingStringNullableAttrString(L"errors", m_oErrors, m_oErrors->ToString());
+					WritingStringNullableAttrUInt(L"horizontalDpi", m_oHorizontalDpi, m_oHorizontalDpi->GetValue());
+					WritingStringNullableAttrUInt(L"verticalDpi", m_oVerticalDpi, m_oVerticalDpi->GetValue());
+					WritingStringNullableAttrUInt(L"copies", m_oCopies, m_oCopies->GetValue());
+					WritingStringNullableAttrString(L"paperUnits", m_oPaperUnits, m_oPaperUnits->ToString());
+					WritingStringNullableAttrString(L"r:id", m_oRId, m_oRId->ToString());
 					writer.WriteString(L"/>");
 				}
 			}
@@ -471,22 +471,22 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring      toXML() const
+            virtual std::wstring toXML() const
 			{
 				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString((L"<sheetFormatPr"));
-				WritingStringNullableAttrInt(L"baseColWidth", m_oBaseColWidth, m_oBaseColWidth->GetValue());
-				WritingStringNullableAttrBool(L"customHeight", m_oCustomHeight);
-				WritingStringNullableAttrDouble(L"defaultColWidth", m_oDefaultColWidth, m_oDefaultColWidth->GetValue());
-				WritingStringNullableAttrDouble(L"defaultRowHeight", m_oDefaultRowHeight, m_oDefaultRowHeight->GetValue());
-				WritingStringNullableAttrInt(L"outlineLevelCol", m_oOutlineLevelCol, m_oOutlineLevelCol->GetValue());
-				WritingStringNullableAttrInt(L"outlineLevelRow", m_oOutlineLevelRow, m_oOutlineLevelRow->GetValue());
-				WritingStringNullableAttrBool(L"thickBottom", m_oThickBottom);
-				WritingStringNullableAttrBool(L"thickTop", m_oThickTop);
-				WritingStringNullableAttrBool(L"zeroHeight", m_oZeroHeight);
+				WritingStringNullableAttrInt2(L"baseColWidth", m_oBaseColWidth);
+				WritingStringNullableAttrBool2(L"customHeight", m_oCustomHeight);
+				WritingStringNullableAttrDouble2(L"defaultColWidth", m_oDefaultColWidth);
+				WritingStringNullableAttrDouble2(L"defaultRowHeight", m_oDefaultRowHeight);
+				WritingStringNullableAttrInt2(L"outlineLevelCol", m_oOutlineLevelCol);
+				WritingStringNullableAttrInt2(L"outlineLevelRow", m_oOutlineLevelRow);
+				WritingStringNullableAttrBool2(L"thickBottom", m_oThickBottom);
+				WritingStringNullableAttrBool2(L"thickTop", m_oThickTop);
+				WritingStringNullableAttrBool2(L"zeroHeight", m_oZeroHeight);
 				writer.WriteString((L"/>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -520,15 +520,15 @@ namespace OOX
 			}
 
 		public:
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBaseColWidth;
-				nullable<SimpleTypes::COnOff<>>					m_oCustomHeight;
-				nullable<SimpleTypes::CDouble>					m_oDefaultColWidth;
-				nullable<SimpleTypes::CDouble>					m_oDefaultRowHeight;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevelCol;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevelRow;
-				nullable<SimpleTypes::COnOff<>>					m_oThickBottom;
-				nullable<SimpleTypes::COnOff<>>					m_oThickTop;
-				nullable<SimpleTypes::COnOff<>>					m_oZeroHeight;
+				nullable_uint		m_oBaseColWidth;
+				nullable_bool		m_oCustomHeight;
+				nullable_double		m_oDefaultColWidth;
+				nullable_double		m_oDefaultRowHeight;
+				nullable_uint		m_oOutlineLevelCol;
+				nullable_uint		m_oOutlineLevelRow;
+				nullable_bool		m_oThickBottom;
+				nullable_bool		m_oThickTop;
+				nullable_bool		m_oZeroHeight;
 		};
 		class CPane : public WritingElement
 		{

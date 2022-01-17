@@ -57,6 +57,9 @@
 #include "UnknowTypeFile.h"
 #include "Diagram/DiagramDrawing.h"
 #include "Diagram/DiagramData.h"
+#include "Diagram/DiagramColors.h"
+#include "Diagram/DiagramLayout.h"
+#include "Diagram/DiagramQuickStyle.h"
 #include "VmlDrawing.h"
 #include "CustomXml.h"
 
@@ -148,10 +151,16 @@ namespace OOX
 			return smart_ptr<OOX::File>(new Audio( pMain, oFileName, oRelation.IsExternal() ));
 		else if ( oRelation.Type() == FileTypes::Video)
 			return smart_ptr<OOX::File>(new Video( pMain, oFileName, oRelation.IsExternal() ));
-		else if (oRelation.Type() == FileTypes::Data)			
+		else if (oRelation.Type() == FileTypes::DiagramLayout)
+			return smart_ptr<OOX::File>(new CDiagramLayout(pMain, oRootPath, oFileName));
+		else if (oRelation.Type() == FileTypes::DiagramData)
 			return smart_ptr<OOX::File>(new CDiagramData( pMain, oRootPath, oFileName ));
-		else if (oRelation.Type() == FileTypes::DiagDrawing)
+		else if (oRelation.Type() == FileTypes::DiagramDrawing)
 			return smart_ptr<OOX::File>(new CDiagramDrawing( pMain, oRootPath, oFileName )); 
+		else if (oRelation.Type() == FileTypes::DiagramColors)
+			return smart_ptr<OOX::File>(new CDiagramColors(pMain, oRootPath, oFileName));
+		else if (oRelation.Type() == FileTypes::DiagramQuickStyle)
+			return smart_ptr<OOX::File>(new CDiagramQuickStyle(pMain, oRootPath, oFileName));
 		else if (oRelation.Type() == FileTypes::MicrosoftOfficeUnknown) //ms package
 			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName, true ));
 		else if ( oRelation.Type() == OOX::FileTypes::VmlDrawing )
@@ -276,10 +285,16 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentPeople )
 			return smart_ptr<OOX::File>(new CDocumentPeople( pMain, oFileName ));
-		else if (pRelation->Type() == FileTypes::Data)
+		else if (pRelation->Type() == FileTypes::DiagramData)
 			return smart_ptr<OOX::File>(new CDiagramData( pMain, oRootPath, oFileName ));
-		else if (pRelation->Type() == FileTypes::DiagDrawing)
+		else if (pRelation->Type() == FileTypes::DiagramDrawing)
 			return smart_ptr<OOX::File>(new CDiagramDrawing( pMain, oRootPath, oFileName )); 
+		else if (pRelation->Type() == FileTypes::DiagramLayout)
+			return smart_ptr<OOX::File>(new CDiagramLayout(pMain, oRootPath, oFileName));
+		else if (pRelation->Type() == FileTypes::DiagramColors)
+			return smart_ptr<OOX::File>(new CDiagramColors(pMain, oRootPath, oFileName));
+		else if (pRelation->Type() == FileTypes::DiagramQuickStyle)
+			return smart_ptr<OOX::File>(new CDiagramQuickStyle(pMain, oRootPath, oFileName));
 		else if ( pRelation->Type() == OOX::FileTypes::ChartDrawing)
 			return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 		else if (pRelation->Type() == FileTypes::MicrosoftOfficeUnknown) //ms package

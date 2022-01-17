@@ -160,7 +160,10 @@
     <Filter Include="Logic\DocParts">
       <UniqueIdentifier>{744df142-08f4-4564-9383-0594368c1eb2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="XlsxFormat\Slicer\Styles">
+    <Filter Include="Diagram">
+      <UniqueIdentifier>{da1b6ba4-f567-4fa5-afe5-ba031ec0ad29}</UniqueIdentifier>
+     </Filter>
+   <Filter Include="XlsxFormat\Slicer\Styles">
       <UniqueIdentifier>{ebf55a86-a27b-4d5d-a95b-1f9cbc890855}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -317,12 +320,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\DocxFormat\External\HyperLink.h">
       <Filter>External</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramData.h">
-      <Filter>Drawing</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramDrawing.h">
-      <Filter>Drawing</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\DocxFormat\Drawing\Drawing.h">
       <Filter>Drawing</Filter>
@@ -694,6 +691,21 @@
     <ClInclude Include="..\Source\XlsxFormat\Chart\ChartDrawing.h">
       <Filter>XlsxFormat\Chart</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramColors.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramDrawing.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramData.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramLayout.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramQuickStyle.h">
+      <Filter>Diagram</Filter>
+    </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Worksheets\Sparkline.h">
       <Filter>XlsxFormat\Worksheets</Filter>
     </ClInclude>
@@ -890,6 +902,25 @@
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Logic\DocParts.cpp">
       <Filter>Logic\DocParts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\WritingElement.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramDrawing.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramData.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramLayout.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramQuickStyle.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Diagram\DiagramColors.cpp">
+      <Filter>Diagram</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Settings\Settings.cpp">
+      <Filter>Settings\DocumentSettings</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -30,10 +30,13 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_SLIDE_SMARTART_INCLUDE_H_
-#define PPTX_LOGIC_SLIDE_SMARTART_INCLUDE_H_
 
 #include "./SpTree.h"
+
+namespace OOX
+{
+	class CDiagramData;
+}
 
 namespace PPTX
 {
@@ -53,7 +56,6 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				m_diag = oSrc.m_diag;
 				return *this;
 			}
 
@@ -61,20 +63,9 @@ namespace PPTX
 			{
 				return OOX::et_dgm_DiagrammParts;
 			}
-			
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_Read_if	  ( oReader, (L"r:cs"), id_color)
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:dm"), id_data)
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:lo"), id_layout)
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:qs"), id_style)
-				WritingElement_ReadAttributes_End	( oReader )
-			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
-				//FillParentPointersForChilds();
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
@@ -82,40 +73,38 @@ namespace PPTX
 				XmlMacroReadAttributeBase(node, L"r:cs", id_color);
 				XmlMacroReadAttributeBase(node, L"r:lo", id_layout);
 				XmlMacroReadAttributeBase(node, L"r:qs", id_style);
-				//FillParentPointersForChilds();
 			}
-			virtual std::wstring toXML() const
-			{
-				return (L"");
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{				
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->SkipRecord();
-			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			nullable<OOX::RId>				id_data;
-			nullable<OOX::RId>				id_color;
-			nullable<OOX::RId>				id_layout;
-			nullable<OOX::RId>				id_style;
+			bool LoadDrawing(OOX::IFileContainer* pRels);
+			void LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter = NULL);
 
-			nullable<PPTX::Logic::SpTree>	m_diag;
-			smart_ptr<OOX::IFileContainer>	m_pFileContainer;
+			nullable<OOX::RId> id_data;
+			nullable<OOX::RId> id_color;
+			nullable<OOX::RId> id_layout;
+			nullable<OOX::RId> id_style;
+
+			nullable<PPTX::Logic::SpTree> m_oDrawing;
+			smart_ptr<OOX::IFileContainer> m_pDrawingContainer;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				if(m_diag.IsInit())
-					m_diag->SetParentPointer(this);
 			}
-
-		public:
-			void LoadDrawing(NSBinPptxRW::CBinaryFileWriter* pWriter = NULL);
-			bool LoadDrawing(OOX::IFileContainer* pRels);
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, (L"r:cs"), id_color)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:dm"), id_data)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:lo"), id_layout)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:qs"), id_style)
+				WritingElement_ReadAttributes_End(oReader)
+			}
+			smart_ptr<OOX::File> FindDiagramDrawing(OOX::CDiagramData* pDiagramData) const;
 		};
 
 		class ChartRec : public WrapperWritingElement
@@ -189,5 +178,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_SLIDE_SMARTART_INCLUDE_H_

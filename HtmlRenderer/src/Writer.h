@@ -1588,7 +1588,7 @@ namespace NSHtmlRenderer
                 NSFile::CBase64Converter::Encode(m_oPage.GetData(), (int)m_oPage.GetPosition(), pDst, nDst, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
                 if (0 < nDst)
-                    sBase64Data = std::string(pDst);
+                    sBase64Data = std::string(pDst, (size_t)nDst);
 
                 sBase64Data = std::to_string((int)m_oPage.GetPosition()) + ";" + sBase64Data;
 

@@ -681,14 +681,11 @@ namespace OOX
 			}
 
 		public:
+			nullable<SimpleTypes::CDateTime> m_oFullDate;
 
-			// Attributes
-			nullable<SimpleTypes::CDateTime                 > m_oFullDate;
-
-			// Nodes
-			nullable<ComplexTypes::Word::CCalendarType      > m_oCalendar;
-			nullable<ComplexTypes::Word::String           > m_oDateFormat;
-			nullable<ComplexTypes::Word::CLang              > m_oLid;
+			nullable<ComplexTypes::Word::CCalendarType> m_oCalendar;
+			nullable<ComplexTypes::Word::String> m_oDateFormat;
+			nullable<ComplexTypes::Word::CLang> m_oLid;
 			nullable<ComplexTypes::Word::CSdtDateMappingType> m_oStoreMappedDateAs;
 		};
 

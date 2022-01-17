@@ -158,19 +158,23 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
 			}break;
 		case SimpleTypes::Vml::cssptMsoWrapDistanceBottom:
 			{
-				pShape->m_nWrapDistBottom =  (int)(20 * prop->get_Value().dValue );	
+			//todooo проверять на размерность
+			pShape->m_nWrapDistBottom =  (int)(20 * prop->get_Value().oValue.dValue );
 			}break;
 		case SimpleTypes::Vml::cssptMsoWrapDistanceLeft : 
 			{
-				pShape->m_nWrapDistLeft = (int)(20 * prop->get_Value().dValue );		
+			//todooo проверять на размерность
+			pShape->m_nWrapDistLeft = (int)(20 * prop->get_Value().oValue.dValue );
 			}break;
 		case SimpleTypes::Vml::cssptMsoWrapDistanceRight:
 			{
-				pShape->m_nWrapDistRight = (int)(20 * prop->get_Value().dValue );	
+			//todooo проверять на размерность
+			pShape->m_nWrapDistRight = (int)(20 * prop->get_Value().oValue.dValue );
 			}break;
 		case SimpleTypes::Vml::cssptMsoWrapDistanceTop : 
 			{
-				pShape->m_nWrapDistTop =  (int)(20 * prop->get_Value().dValue );		
+			//todooo проверять на размерность
+			pShape->m_nWrapDistTop =  (int)(20 * prop->get_Value().oValue.dValue );
 			}break;
 		case SimpleTypes::Vml::cssptMsoWrapEdited: 
 			break;
@@ -184,7 +188,7 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
 			break;
 		case SimpleTypes::Vml::cssptRotation: 
 			{
-				pShape->m_nRotation = (int)(65536 * prop->get_Value().dValue);
+				pShape->m_nRotation = (int)(65536 * prop->get_Value().oValue.dValue);
 				if(	PROP_DEF != pShape->m_nRelRight 
 					||	PROP_DEF != pShape->m_nRelLeft 
 					||	PROP_DEF != pShape->m_nRelTop 
@@ -228,11 +232,11 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
 			}break;
 		case SimpleTypes::Vml::csspctMsoWidthPercent:
 			{
-				pShape->m_nPctWidth	= (int)prop->get_Value().dValue;
+				pShape->m_nPctWidth	= (int)prop->get_Value().oValue.dValue;
 			}break;
 		case SimpleTypes::Vml::csspctMsoHeightPercent:
 			{
-				pShape->m_nPctHeight	= (int)prop->get_Value().dValue;
+				pShape->m_nPctHeight	= (int)prop->get_Value().oValue.dValue;
 			}break;
 		case SimpleTypes::Vml::cssptVRotateLetters:
 			{
@@ -2180,7 +2184,7 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 	}
 	else
 	{
-		if (pOutput.eDataType == RtfPicture::dt_emf || pOutput.eDataType == RtfPicture::dt_wmf)
+		if (pOutput.eDataType == RtfPicture::dt_emf || pOutput.eDataType == RtfPicture::dt_wmf || pOutput.eDataType == RtfPicture::dt_svg)
 		{
 			if (!oParam.oRtf->m_pAppFonts)
 			{

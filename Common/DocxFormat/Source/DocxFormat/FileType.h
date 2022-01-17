@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_FILE_TYPE_INCLUDE_H_
-#define OOX_FILE_TYPE_INCLUDE_H_
 
 #include "../SystemUtility/SystemUtility.h"
 
@@ -132,5 +130,3 @@ namespace OOX
 		return type == file;
 	}
 } // namespace OOX
-
-#endif // OOX_FILE_TYPE_INCLUDE_H_

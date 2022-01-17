@@ -41,7 +41,7 @@ void TableWriter::FillNvGraphicFramePr(PPTX::Logic::NvGraphicFramePr& oNvGFPr)
 
 void TableWriter::FillXfrm(PPTX::Logic::Xfrm &oXFRM)
 {
-    oXFRM.m_ns = L"p";
+    oXFRM.node_name = L"p:xfrm";
     double multip1 = m_pTableElement->m_bAnchorEnabled ? 1587.5 : 1;
 
     oXFRM.offX = round(m_pTableElement->m_rcAnchor.left * multip1);
@@ -389,23 +389,23 @@ void TableWriter::FillRow(PPTX::Logic::TableRow &oRow, ProtoTableRow& arrCells)
 
 std::wstring TableWriter::getXmlForGraphicFrame(int ID, int idx) const
 {
-	//в таблице могут быть линки и ссылки на другние объекты (картинки???)
-	// yliko_provolis.ppt (+ тут есть смарт арты)
+    //в таблице могут быть линки и ссылки на другние объекты (картинки???)
+    // yliko_provolis.ppt (+ тут есть смарт арты)
 
     auto& rXml = m_pTableElement->m_xmlRawData;
 
-	PPTX::Logic::GraphicFrame graphic_frame;	
-	graphic_frame.fromXMLString(rXml);
-	
-	if (graphic_frame.nvGraphicFramePr.IsInit())
-	{
-		graphic_frame.nvGraphicFramePr->cNvPr.id = ID; // или менять в карте связей для анимаций
-		
-		if (graphic_frame.nvGraphicFramePr->nvPr.ph.IsInit() && idx >= 0)
-		{//проверить
-			graphic_frame.nvGraphicFramePr->nvPr.ph->idx = std::to_wstring(idx);
-		}
-	}
+    PPTX::Logic::GraphicFrame graphic_frame;
+    graphic_frame.fromXMLString(rXml);
+
+    if (graphic_frame.nvGraphicFramePr.IsInit())
+    {
+        graphic_frame.nvGraphicFramePr->cNvPr.id = ID; // или менять в карте связей для анимаций
+
+        if (graphic_frame.nvGraphicFramePr->nvPr.ph.IsInit() && idx >= 0)
+        {//проверить
+            graphic_frame.nvGraphicFramePr->nvPr.ph->idx = std::to_wstring(idx);
+        }
+    }
     return graphic_frame.toXML();
 }
 
@@ -554,8 +554,8 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
         oTcPr.HorzOverflow->set(L"overflow");
     }
 
-    auto pSolidFill = new PPTX::Logic::SolidFill;
     auto& brush = m_pShape->m_oBrush;
+    auto pSolidFill = new PPTX::Logic::SolidFill;
 
     auto& clr = brush.Color1;
     pSolidFill->Color.SetRGBColor(clr.GetR(), clr.GetG(), clr.GetB());
@@ -576,50 +576,69 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
 
     oTcPr.Fill.Fill.reset(pSolidFill);
 
+    if (isInvisibleBorder())
+        SetTcPrInvisibleBorders(oTcPr);
+
     for (auto IterBorder : m_mapBorders)
     {
         auto pLn = new PPTX::Logic::Ln;
         FillLn(*pLn, IterBorder.first, IterBorder.second);
-        switch (IterBorder.first)
-        {
-        case lnL: oTcPr.LnL = pLn; break;
-        case lnR: oTcPr.LnR = pLn; break;
-        case lnT: oTcPr.LnT = pLn; break;
-        case lnB: oTcPr.LnB = pLn; break;
-        case lnBlToTr: oTcPr.LnBlToTr = pLn; break;
-        case lnTlToBr: oTcPr.LnTlToBr = pLn; break;
-        }
+        ApplyLn(oTcPr,pLn, IterBorder.first);
     }
+}
+
+void TCell::SetTcPrInvisibleBorders(PPTX::Logic::TableCellProperties &oTcPr)
+{
+    for (int i = 0; i < 6; i++)
+    {
+        auto eBP = (eBorderPossition)i;
+        auto pLn = new PPTX::Logic::Ln;
+        pLn->Fill.Fill = new PPTX::Logic::NoFill;
+        SetLnName(*pLn, eBP);
+        ApplyLn(oTcPr, pLn, eBP);
+    }
+}
+
+bool TCell::isInvisibleBorder() const
+{
+    if (m_mapBorders.empty())
+        return true;
+
+    bool isInvisibele = true;
+    for (auto IterBorder : m_mapBorders)
+        if (IterBorder.second->m_oBrush.Type != c_BrushTypeNoFill)
+            isInvisibele = false;
+
+    return isInvisibele;
 }
 
 void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeElement *pBorder)
 {
     if (pBorder == nullptr)
         return;
-    switch (eBP)
-    {
-    case lnL: Ln.m_name = L"a:lnL"; break;
-    case lnR: Ln.m_name = L"a:lnR"; break;
-    case lnT: Ln.m_name = L"a:lnT"; break;
-    case lnB: Ln.m_name = L"a:lnB"; break;
-    case lnBlToTr: Ln.m_name = L"a:lnBlToTr"; break;
-    case lnTlToBr: Ln.m_name = L"a:lnTlToBr"; break;
-    }
+    SetLnName(Ln, eBP);
 
     auto& pen = pBorder->m_oPen;
+    auto& brush = pBorder->m_oBrush;
+
     Ln.w = pen.Size;
 
-    auto pSolidFill = new PPTX::Logic::SolidFill;
-    auto& clr = pen.Color;
-    pSolidFill->Color.SetRGBColor(clr.GetR(), clr.GetG(), clr.GetB());
-    if (pen.Alpha && pen.Alpha != 255)
+    if (brush.Type == c_BrushTypeNoFill)
+        Ln.Fill.Fill.reset(new PPTX::Logic::NoFill);
+    else
     {
-        PPTX::Logic::ColorModifier alpha;
-        alpha.name = L"a:alpha";
-        alpha.val = pen.Alpha * 392;
-        pSolidFill->Color.Color->Modifiers.push_back(alpha);
+        auto pSolidFill = new PPTX::Logic::SolidFill;
+        auto& clr = pen.Color;
+        pSolidFill->Color.SetRGBColor(clr.GetR(), clr.GetG(), clr.GetB());
+        if (pen.Alpha && pen.Alpha != 255)
+        {
+            PPTX::Logic::ColorModifier alpha;
+            alpha.name = L"a:alpha";
+            alpha.val = pen.Alpha * 392;
+            pSolidFill->Color.Color->Modifiers.push_back(alpha);
+        }
+        Ln.Fill.Fill.reset(pSolidFill);
     }
-    Ln.Fill.Fill.reset(pSolidFill);
 
     Ln.prstDash = new PPTX::Logic::PrstDash;
     Ln.prstDash->val = new PPTX::Limit::PrstDashVal;
@@ -648,6 +667,32 @@ void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeEleme
     Ln.tailEnd = pLineEnd;
 
     Ln.Join.type = PPTX::Logic::eJoin::JoinRound;
+}
+
+void TCell::SetLnName(PPTX::Logic::Ln &Ln, eBorderPossition eBP)
+{
+    switch (eBP)
+    {
+    case lnL: Ln.m_name = L"a:lnL"; break;
+    case lnR: Ln.m_name = L"a:lnR"; break;
+    case lnT: Ln.m_name = L"a:lnT"; break;
+    case lnB: Ln.m_name = L"a:lnB"; break;
+    case lnBlToTr: Ln.m_name = L"a:lnBlToTr"; break;
+    case lnTlToBr: Ln.m_name = L"a:lnTlToBr"; break;
+    }
+}
+
+void TCell::ApplyLn(PPTX::Logic::TableCellProperties &oTcPr, PPTX::Logic::Ln *pLn, eBorderPossition eBP)
+{
+    switch (eBP)
+    {
+    case lnL: oTcPr.LnL = pLn; break;
+    case lnR: oTcPr.LnR = pLn; break;
+    case lnT: oTcPr.LnT = pLn; break;
+    case lnB: oTcPr.LnB = pLn; break;
+    case lnBlToTr: oTcPr.LnBlToTr = pLn; break;
+    case lnTlToBr: oTcPr.LnTlToBr = pLn; break;
+    }
 }
 
 void TCell::setRowSpan(int rowSpan)

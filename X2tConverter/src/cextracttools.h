@@ -65,6 +65,8 @@ namespace NExtractTools
         TCD_DOCT2DOCX,
 		TCD_DOCT2DOTX,
 		TCD_DOCT2DOCM,
+		TCD_DOCT2OFORM,
+		TCD_DOCT2DOCXF,
         TCD_DOCX2DOCT_BIN,
         TCD_DOCT_BIN2DOCX,
         TCD_DOTX2DOCX,
@@ -81,6 +83,7 @@ namespace NExtractTools
 
 		TCD_XLSXFLAT2XLST,
 		TCD_XLSXFLAT2XLST_BIN,
+		TCD_XLSXFLAT2XLSX,
 
         TCD_XLSX2XLST,
         TCD_XLST2XLSX,
@@ -189,6 +192,8 @@ namespace NExtractTools
 
 		TCD_MSCRYPT2_RAW,
 		TCD_2MSCRYPT_RAW,
+
+		TCD_MITCRYPT2,
 
 //
 		TCD_HTML2DOCX,
@@ -807,7 +812,7 @@ namespace NExtractTools
                                 FileFormatChecker.nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
                     {
                         nFormatFrom = FileFormatChecker.nFileType;
-                        changeFormatFrom(nFormatFrom);
+						changeFormatFrom(nFormatFrom, FileFormatChecker.bMacroEnabled);
                     }
                 }
                 eRes = processDownloadFile();
@@ -836,9 +841,11 @@ namespace NExtractTools
                     eRes = TCD_CANVAS_PDF2;
 				else if(AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
 					eRes = TCD_MSCRYPT2;
-                else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP			== nFormatFrom	&& AVS_OFFICESTUDIO_FILE_UNKNOWN			== nFormatTo)
+				else if(AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO == nFormatFrom)
+					eRes = TCD_MITCRYPT2;
+                else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
                     eRes = TCD_UNZIPDIR;
-                else if(AVS_OFFICESTUDIO_FILE_UNKNOWN			== nFormatFrom	&& AVS_OFFICESTUDIO_FILE_OTHER_ZIP			== nFormatTo)
+                else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
                     eRes = TCD_ZIPDIR;
             }
 			else if(NULL != m_sFileFrom && NULL != m_sFileTo)
@@ -991,7 +998,7 @@ namespace NExtractTools
             }
             return nRes;
         }
-        void changeFormatFrom(int formatFrom)
+		void changeFormatFrom(int formatFrom, bool bMacroEnabled)
         {
           *m_nFormatFrom = formatFrom;
           int toFormat = *m_nFormatTo;
@@ -1014,26 +1021,68 @@ namespace NExtractTools
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
             }
           } 
-		  else if ( AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat) 
+		  else if ( AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat || AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 		  {
             if ( AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || 
 				AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 
 				0 != ( AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) 
 			{
-              toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-            } 
+				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+				{
+					toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+				}
+				else
+				{
+					if (bMacroEnabled)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM;
+					}
+					else
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+					}
+				}
+			} 
 			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || 
 				AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 
 				0 != ( AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) 
 			{
-              toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-            } 
+				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+				{
+					toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
+				}
+				else
+				{
+					if (bMacroEnabled)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM;
+					}
+					else
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+					}
+				}
+			} 
 			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || 
 				AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
 				0 != ( AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
 			{
-              toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-            }
+				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+				{
+					toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+				}
+				else
+				{
+					if (bMacroEnabled)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM;
+					}
+					else
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+					}
+				}
+			}
             size_t nIndex = m_sFileTo->rfind('.');
             COfficeFileFormatChecker FileFormatChecker;
             if(-1 != nIndex)

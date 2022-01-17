@@ -1140,6 +1140,8 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 	unsigned char* data_inp = data_inp_ptr;
 	unsigned char* data_out = data_out_ptr + 8;
 	
+	int result_size_out = 0;
+
 	if (cryptData.bAgile)
 	{	
 		_buf pBlockKey	((unsigned char*)encrKeyValueBlockKey, 8);	
@@ -1204,7 +1206,7 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 
 			enc_size += sz; i++;
 		}
-		return enc_size + 8;
+		result_size_out = enc_size + 8;
 	}
 	else
 	{
@@ -1221,8 +1223,9 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 
 		EncryptCipher(hashKey, empty, pInp, pOut, cryptData.cipherAlgorithm/*, StreamTransformationFilter::ZEROS_PADDING*/);	
 	
-		return size_out + 8;
+		result_size_out = size_out + 8;
 	}
+	return result_size_out;
 }
 //-----------------------------------------------------------------------------------------------------------
 ODFDecryptor::ODFDecryptor()

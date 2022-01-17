@@ -33,7 +33,7 @@
 
 #include <string>
 #include <vector>
-#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 typedef struct  
 {

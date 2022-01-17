@@ -137,11 +137,12 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CStringObject
 	//----------------------------------------------------------------------------------------
-    CStringObject::CStringObject(const char* sValue, bool isUTF16)
+    CStringObject::CStringObject(const char* sValue, bool isUTF16, bool isDictValue)
 	{
-		m_pValue   = NULL;
-		m_unLen    = 0;
-        m_bUTF16   = isUTF16;
+		m_pValue     = NULL;
+		m_unLen      = 0;
+        m_bUTF16     = isUTF16;
+		m_bDictValue = isDictValue;
 		Set(sValue);
 	}
 	CStringObject::~CStringObject()
@@ -197,7 +198,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CArrayObject
 	//----------------------------------------------------------------------------------------
-    void CArrayObject::Add(CObjectBase* pObject)
+    void CArrayObject::Add(CObjectBase* pObject, bool bPushBack)
 	{
 		if (!pObject)
 			return;
@@ -226,7 +227,10 @@ namespace PdfWriter
 
 		pObject->SetDirect();
 
-		m_arrList.push_back(pObject);
+		if (bPushBack)
+			m_arrList.push_back(pObject);
+		else
+			m_arrList.insert(m_arrList.begin(), pObject);
 	}
     void CArrayObject::Add(bool bValue)
 	{
@@ -359,6 +363,19 @@ namespace PdfWriter
 
 		return pArray;
 	}
+	CObjectBase* CArrayObject::Copy() const
+	{
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return NULL;
+
+		for (unsigned int unIndex = 0, unCount = GetCount(); unIndex < unCount; ++unIndex)
+		{
+			pArray->Add(Get(unIndex)->Copy());
+		}
+
+		return pArray;
+	}
 	//----------------------------------------------------------------------------------------
 	// CDictObject
 	//----------------------------------------------------------------------------------------
@@ -468,7 +485,7 @@ namespace PdfWriter
 	{
 		Add(sKey, new CBoolObject(bBool));
 	}
-	const char*   CDictObject::GetKey(CObjectBase* pObject)
+	const char*   CDictObject::GetKey(const CObjectBase* pObject)
 	{
 		for (auto const &oIter : m_mList)
 		{
@@ -521,6 +538,16 @@ namespace PdfWriter
 		}
 
 		m_pStream = pStream;
+	}
+	CObjectBase* CDictObject::Copy() const
+	{
+		CDictObject* pDict = new CDictObject();
+		if (!pDict)
+			return NULL;
+
+		// TODO: Сделать копирование (пока нигде не используется)
+
+		return pDict;
 	}
 	//----------------------------------------------------------------------------------------
 	// CXref

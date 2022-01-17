@@ -57,7 +57,7 @@
 #endif
 
 #ifdef BUIDLER_OPEN_DOWNLOAD_ENABLED
-#include "../../Common/FileDownloader/FileDownloader.h"
+#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
 #endif
 
 #include "../fontengine/ApplicationFontsWorker.h"
@@ -401,7 +401,7 @@ namespace NSDoctRenderer
             //потому что в инсталяции мы кладем файлы в /var/www...
             if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
             {
-                CFileDownloader oDownloader(from, false);
+                NSNetwork::NSFileTransport::CFileDownloader oDownloader(from, false);
                 oDownloader.SetFilePath(to);
                 if (oDownloader.DownloadSync())
                     return;

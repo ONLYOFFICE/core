@@ -67,9 +67,9 @@ int OOXGraphicReader::Parse( ReaderParameter oParam , RtfShapePtr & pOutput)
 	if (m_ooxGraphic->smartArt.IsInit())
 	{
 		m_ooxGraphic->smartArt->LoadDrawing();
-		if (m_ooxGraphic->smartArt->m_diag.IsInit())
+		if (m_ooxGraphic->smartArt->m_oDrawing.IsInit())
 		{
-			OOXShapeGroupReader groupReader(dynamic_cast<PPTX::Logic::SpTree*>(m_ooxGraphic->smartArt->m_diag.GetPointer()));
+			OOXShapeGroupReader groupReader(dynamic_cast<PPTX::Logic::SpTree*>(m_ooxGraphic->smartArt->m_oDrawing.GetPointer()));
 			return (groupReader.Parse(oParam, pOutput) ? 1 : 0);
 		}
 	}

@@ -42,7 +42,6 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
 
 #include "TxtFormat/TxtFormat.h"
-#include "TxtXmlEvent.h"
 
 namespace Txt2Docx
 {
@@ -51,7 +50,7 @@ namespace Txt2Docx
 	public:
 		Converter_Impl(int encoding);
 
-		void convert(TxtXml::ITxtXmlEvent& Event);
+		void convert();
 
 		Txt::File		m_inputFile;
 		OOX::CDocument	m_outputFile;
@@ -66,9 +65,9 @@ namespace Txt2Docx
         delete converter_;
     }
     
-    void Converter::convert(TxtXml::ITxtXmlEvent& Event)
+    void Converter::convert()
     {
-        return converter_->convert(Event);    
+        return converter_->convert();    
     }
 
     void Converter::read(const std::wstring& path)
@@ -93,7 +92,7 @@ namespace Txt2Docx
 		
 	}
 
-	void Converter_Impl::convert(TxtXml::ITxtXmlEvent& Event)
+	void Converter_Impl::convert()
 	{
 		//smart_ptr<OOX::File> pFile = m_outputFile.Find(OOX::FileTypes::Document);
 		
@@ -101,12 +100,6 @@ namespace Txt2Docx
 
 		if (!m_inputFile.m_listContent.empty() /*&& pFile.IsInit() && OOX::FileTypes::Document == pFile->type()*/)
 		{
-			int percent = 100000;
-			int step = 800000 / m_inputFile.m_listContentSize; // !!!!!
-			bool cancel = Event.Progress(0, 100000);
-			if(cancel)
-				return;
-
 			ComplexTypes::Word::CSpacing	space;
 			ComplexTypes::Word::CFonts		font;
 			
@@ -162,13 +155,7 @@ namespace Txt2Docx
                     paragraph->AddText(s_, rPr);
 				}
 				pDocument->m_arrItems.push_back(paragraph);
-
-				percent += step;
-				cancel = Event.Progress(0, percent);
-				if(cancel)
-					return;
 			}
 		}
-		Event.Progress(0, 900000);
 	}
 } // namespace Txt2Docx

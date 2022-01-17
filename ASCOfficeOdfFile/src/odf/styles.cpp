@@ -1466,37 +1466,41 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 			CP_XML_NODE(L"pageSetup")
 			{
 				double h = 0, w = 0;
+				if (attlist_.fo_page_height_)
+				{
+					h = attlist_.fo_page_height_->get_value_unit(length::mm);
+					CP_XML_ATTR(L"paperHeight", (int)h);
+				}		
 				if (attlist_.fo_page_width_)
 				{
 					w =  attlist_.fo_page_width_->get_value_unit(length::mm);
 					CP_XML_ATTR(L"paperWidth", (int)w);
 				}
-				if (attlist_.fo_page_height_)
-				{
-					h = attlist_.fo_page_height_->get_value_unit(length::mm);
-					CP_XML_ATTR(L"paperHeight", (int)h);
-				}
 				CP_XML_ATTR(L"paperUnits", L"mm");
-				if (attlist_.style_print_orientation_)
+
+				if (attlist_.style_scale_to_)
 				{
-					CP_XML_ATTR(L"orientation", *attlist_.style_print_orientation_);
-				}
+					CP_XML_ATTR(L"scale", (int)attlist_.style_scale_to_->get_value());
+				}		
 				if (attlist_.loext_scale_to_X_)
 				{
 					CP_XML_ATTR(L"fitToWidth", *attlist_.loext_scale_to_X_);
 				}
+				if (attlist_.common_page_number_attlist_.style_first_page_number_)
+				{
+					CP_XML_ATTR(L"firstPageNumber", *attlist_.common_page_number_attlist_.style_first_page_number_);
+				}	
 				if (attlist_.loext_scale_to_Y_)
 				{
 					CP_XML_ATTR(L"fitToHeight", *attlist_.loext_scale_to_Y_);
 				}
-				if (attlist_.style_scale_to_)
+				if (attlist_.style_print_orientation_)
 				{
-					CP_XML_ATTR(L"scale", (int)attlist_.style_scale_to_->get_value());
+					CP_XML_ATTR(L"orientation", *attlist_.style_print_orientation_);
 				}
 				if (attlist_.common_page_number_attlist_.style_first_page_number_)
 				{
 					CP_XML_ATTR(L"useFirstPageNumber", 1);
-					CP_XML_ATTR(L"firstPageNumber", *attlist_.common_page_number_attlist_.style_first_page_number_);
 				}
 			}
 		}

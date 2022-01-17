@@ -12,12 +12,14 @@ build_zlib_as_sources {
 
 INCLUDEPATH += \
     $$PWD/src/zlib-1.2.11/contrib/minizip \
-    $$PWD/src/zlib-1.2.11
+    $$PWD/src/zlib-1.2.11 \
+    $$PWD/src
 
 SOURCES +=  \
     $$PWD/src/OfficeUtils.cpp \
     $$PWD/src/ZipBuffer.cpp \
     $$PWD/src/ZipUtilsCP.cpp \
+    $$PWD/src/zlib_addon.c \
     $$PWD/src/zlib-1.2.11/contrib/minizip/ioapi.c \
     $$PWD/src/zlib-1.2.11/contrib/minizip/miniunz.c \
     $$PWD/src/zlib-1.2.11/contrib/minizip/minizip.c \
@@ -53,6 +55,7 @@ HEADERS +=  \
     $$PWD/src/OfficeUtils.h \
     $$PWD/src/ZipBuffer.h \
     $$PWD/src/ZipUtilsCP.h \
+    $$PWD/src/zlib_addon.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/crypt.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/ioapi.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/mztools.h \

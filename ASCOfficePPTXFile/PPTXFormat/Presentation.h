@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_PRESENTATION_FILE_INCLUDE_H_
-#define PPTX_PRESENTATION_FILE_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
@@ -517,5 +515,3 @@ namespace PPTX
 		}
 	};
 } // namespace PPTX
-
-#endif // PPTX_PRESENTATION_FILE_INCLUDE_H_

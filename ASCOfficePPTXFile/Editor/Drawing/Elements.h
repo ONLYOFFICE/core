@@ -293,6 +293,9 @@ namespace PPT_FORMAT
 		_INT32			m_lcropFromTop;
 		_INT32			m_lcropFromBottom;
 
+        _INT32			m_lpictureContrast;
+        _INT32			m_lpictureBrightness;
+
 		bool			m_bStretch;
 		bool			m_bTile;
 
@@ -313,6 +316,9 @@ namespace PPT_FORMAT
 			m_lcropFromLeft			= 0;
 			m_lcropFromTop			= 0;
 			m_lcropFromBottom		= 0;
+
+            m_lpictureContrast = 0x10000;
+            m_lpictureBrightness = 0;
 
 			m_bStretch				= true;
 			m_bTile					= false;

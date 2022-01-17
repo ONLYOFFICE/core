@@ -59,6 +59,7 @@ namespace Aggplus
 
 		m_dGlobalAlpha		= 1.0;
         m_bSwapRGB = false;
+        m_bIsDarkMode = false;
 
 #if defined (_LINUX) || defined (_QT)
         m_bSwapRGB = true;

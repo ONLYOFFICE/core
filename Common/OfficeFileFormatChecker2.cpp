@@ -70,6 +70,12 @@ bool COfficeFileFormatChecker::isHtmlFormatFile(unsigned char* pBuffer, int dwBy
 			{
 				return true;
 			}
+			else if ((0x3C == pBuffer[i]) && (0x2F == pBuffer[i + 1]) && (0x62 == pBuffer[i + 2])
+					&& (0x6f == pBuffer[i + 3])	&& (0x64 == pBuffer[i + 4])	&& (0x79 == pBuffer[i + 5])
+					&& (0x3e == pBuffer[i + 6]))
+			{//</body>
+				return true;
+			}
 		}
 	}
 	else if (dwBytes > 3)
@@ -231,7 +237,18 @@ bool COfficeFileFormatChecker::isDocFlatFormatFile	(unsigned char* pBuffer, int 
 
 	return false;
 }
+bool COfficeFileFormatChecker::isXlsFlatFormatFile(unsigned char* pBuffer, int dwBytes)
+{
+	if (pBuffer == NULL || dwBytes < 2) return false;
 
+	// BOF started
+	if ((pBuffer[1] == 0x08 && pBuffer[0] == 0x09) ||
+		(pBuffer[1] == 0x04 && pBuffer[0] == 0x09) ||
+		(pBuffer[1] == 0x02 && pBuffer[0] == 0x09))
+		return true;
+
+	return false;
+}
 bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)
 {
 	if (storage == NULL) return false;
@@ -257,10 +274,14 @@ std::wstring COfficeFileFormatChecker::getDocumentID (const std::wstring & _file
 	POLE::Storage storage(fileName.c_str());
     if (storage.open())
     {
-		if ( isMS_OFFCRYPTOFormatFile(&storage, documentID) )
+		if ( isMS_OFFICECRYPTOFormatFile(&storage, documentID) )
         {
             nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO;
         }
+		else if (isMS_MITCRYPTOFormatFile(&storage, documentID))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO;
+		}
 	}
 	else
 	{
@@ -299,37 +320,36 @@ bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(const std::wstring & _f
 	POLE::Storage storage(fileName.c_str());
     if (storage.open())
     {
-		if ( isMS_OFFCRYPTOFormatFile(&storage, documentID) )
+		if (isMS_OFFICECRYPTOFormatFile(&storage, documentID) )
         {
             nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO;
             return true;
         }
+		if (isMS_MITCRYPTOFormatFile(&storage, documentID))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO;
+			return true;
+		}
 	}
 	return false;
 }
-
-bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage, std::wstring & documentID)
+bool COfficeFileFormatChecker::isMS_OFFICECRYPTOFormatFile(POLE::Storage * storage, std::wstring & documentID)
 {
-    if (storage == NULL) return false;
+	if (storage == NULL) return false;
 
 	documentID.clear();
 
 	bool result = false;
-    std::list<std::wstring> entries = storage->entries(L"DataSpaces");
-    if (entries.size() > 0)
+	std::list<std::wstring> entries = storage->entries(L"DataSpaces");
+	if (/*false == entries.empty() && */storage->exists(L"EncryptionInfo"))
 	{
-        result = true;
+		result = true;
 	}
 
-    if ( storage->exists(L"EncryptionInfo") && 
-				storage->exists(L"EncryptedPackage"))
-	{
-        result = true;
-	}
 	if (result)
 	{
-		POLE::Stream stream(storage, L"DocumentID");	
-		
+		POLE::Stream stream(storage, L"DocumentID");
+
 		std::string sData;
 		sData.resize(stream.size());
 		if (stream.read((BYTE*)sData.c_str(), stream.size()) > 0)
@@ -338,6 +358,22 @@ bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage
 		}
 
 	}
+	return result;
+}
+
+bool COfficeFileFormatChecker::isMS_MITCRYPTOFormatFile	(POLE::Storage * storage, std::wstring & documentID)
+{
+    if (storage == NULL) return false;
+
+	documentID.clear();
+
+	bool result = false;
+    std::list<std::wstring> entries = storage->entries(L"DataSpaces");
+    if (false == entries.empty() && false == storage->exists(L"EncryptionInfo") && storage->exists(L"EncryptedPackage"))
+	{
+        result = true;
+	}
+
 	return result;
 }
 bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
@@ -379,11 +415,16 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
             return true;
         }
-        else if ( isMS_OFFCRYPTOFormatFile(&storage, sDocumentID) )
+        else if ( isMS_OFFICECRYPTOFormatFile(&storage, sDocumentID) )
         {
             nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO;
             return true;
         }
+		else if (isMS_MITCRYPTOFormatFile(&storage, sDocumentID))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO;
+			return true;
+		}
 	}
 
     COfficeUtils OfficeUtils(NULL);
@@ -467,7 +508,10 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 		{
             nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT; // without compaund container
 		}
-
+		else if (isXlsFlatFormatFile(buffer, sizeRead))// min size - 2
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS; // without compaund container
+		}
 //------------------------------------------------------------------------------------------------
 		file.CloseFile();
 
@@ -506,7 +550,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 	}
 	else if (0 == sExt.compare(L".mht"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
-    else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".xlsx") || 0 == sExt.compare(L".xls"))
+    else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".xlsx"))
 		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
     else if (0 == sExt.compare(L".html") || 0 == sExt.compare(L".htm"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
@@ -546,6 +590,8 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName, bo
 		const char *dotxFormatLine = "application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml";
 		const char *docmFormatLine = "application/vnd.ms-word.document.macroEnabled.main+xml";
 		const char *dotmFormatLine = "application/vnd.ms-word.template.macroEnabledTemplate.main+xml";
+		const char *oformFormatLine = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.oform";
+		const char *docxfFormatLine = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.docxf";
 
 		const char *xlsxFormatLine = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml";
 		const char *xltxFormatLine = "application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml";
@@ -564,7 +610,15 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName, bo
         std::string::size_type res1 = std::string::npos;
         std::string::size_type res = 0;
         
-		if (std::string::npos != strContentTypes.find(docxFormatLine))
+		if (std::string::npos != strContentTypes.find(oformFormatLine))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM;
+		}
+		else if (std::string::npos != strContentTypes.find(docxfFormatLine))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF;
+		}
+		else if (std::string::npos != strContentTypes.find(docxFormatLine))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 		}
@@ -836,6 +890,9 @@ bool COfficeFileFormatChecker::isOOXFlatFormatFile(unsigned char* pBuffer, int d
 	
     const char *docxFormatLine = "xmlns:w=\"http://schemas.microsoft.com/office/word/2003/wordml\"";
     const char *xlsxFormatLine = "xmlns:ss=\"urn:schemas-microsoft-com:office:spreadsheet\"";
+	const char *docxPackage = "progid=\"Word.Document\"";
+	const char *xlsxPackage = "progid=\"Excel.Sheet\"";
+	const char *pptxPackage = "progid=\"PowerPoint.Show\"";
 	const char *packageFormatLine = "xmlns:pkg=\"http://schemas.microsoft.com/office/2006/xmlPackage\"";
 
 	if (std::string::npos != xml_string.find(docxFormatLine))
@@ -848,17 +905,29 @@ bool COfficeFileFormatChecker::isOOXFlatFormatFile(unsigned char* pBuffer, int d
 	}
 	else if (std::string::npos != xml_string.find(packageFormatLine))
 	{
-		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_PACKAGE;
+		if (std::string::npos != xml_string.find(docxPackage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_PACKAGE;
+		}
+		else if (std::string::npos != xml_string.find(xlsxPackage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_PACKAGE;
+		}
+		else if (std::string::npos != xml_string.find(pptxPackage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX_PACKAGE;
+		}
 	}
-	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
 
-	return false;
+	return nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN;
 }
 std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 {
     switch (type)
     {
-    case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:		return L".docx";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM:		return L".oform";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF:		return L".docxf";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:		return L".docx";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:		return L".docm";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:		return L".dotx";
     case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:		return L".dotm";
@@ -920,7 +989,7 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
     case AVS_OFFICESTUDIO_FILE_IMAGE_PSD:           return L".psd";
     case AVS_OFFICESTUDIO_FILE_IMAGE_ICO:           return L".ico";
 
-    case AVS_OFFICESTUDIO_FILE_CANVAS_WORD:
+	case AVS_OFFICESTUDIO_FILE_CANVAS_WORD:
     case AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET:
     case AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION:	return L".bin";
     case AVS_OFFICESTUDIO_FILE_OTHER_OLD_DOCUMENT:
@@ -937,7 +1006,11 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
 {
     if (L".docx" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-    if (L".docm" == ext)
+	if (L".oform" == ext)
+		return AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM;
+	if (L".docxf" == ext)
+		return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF;
+	if (L".docm" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM;
     if (L".dotx" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX;

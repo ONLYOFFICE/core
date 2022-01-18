@@ -1554,7 +1554,7 @@ namespace NSHtmlRenderer
                 }
                 else if (((lRangeNum == 2) && (lRange == 3)) || ((lRangeNum == 1) && (lRange == 31)) || ((lRangeNum == 0) && (lRange == 13)))
                 {
-                    // ебаный арабский язык!!!
+                    // арабский язык!!!
                     dwR1 = 1 << 13;
                     dwR2 = 1 << 31;
                     dwR3 = 1 << 3;

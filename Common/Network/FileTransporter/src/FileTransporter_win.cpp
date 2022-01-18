@@ -369,10 +369,15 @@ namespace NSNetwork
                     m_pFile = NULL;
                 }
 
-                DownloadProgress progress;
-                progress.func_onProgress = m_func_onProgress;
-                // Скачиваем файл
-                return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, static_cast<IBindStatusCallback*>(&progress));
+                if(m_func_onProgress)
+                {
+                    DownloadProgress progress;
+                    progress.func_onProgress = m_func_onProgress;
+                    // Скачиваем файл с возвратом процентов состояния
+                    return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, static_cast<IBindStatusCallback*>(&progress));
+                }
+                else
+                    return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, NULL);
             }            
 
             class DownloadProgress : public IBindStatusCallback {
@@ -413,7 +418,8 @@ namespace NSNetwork
                     if(ulProgressMax != 0)
                     {
                         int percent = static_cast<int>((100.0 * ulProgress) / ulProgressMax);
-                        func_onProgress(percent);
+                        if(func_onProgress)
+                            func_onProgress(percent);
                     }
                     return S_OK;
                 }

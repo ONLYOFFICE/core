@@ -38,6 +38,9 @@
 
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <regex>
 
 namespace NSNetwork
 {
@@ -55,10 +58,9 @@ namespace NSNetwork
             return url.substr(pos);
         }
 
-        int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
+        int download_external(const std::wstring& sUrl, const std::wstring& sOutput, std::function<void(int)> func_onProgress)
         {
             int nReturnCode = -1;
-
             std::string sUrlA = U_TO_UTF8(sUrl);
             //sUrlA =("\"" + sUrlA + "\"");
             std::string sOutputA = U_TO_UTF8(sOutput);
@@ -66,6 +68,10 @@ namespace NSNetwork
 
             if (0 != nReturnCode && NSFile::CFileBinary::Exists(L"/usr/bin/curl"))
             {
+                int pipefd[2];
+                if(func_onProgress)
+                    pipe(pipefd);
+
                 pid_t pid = fork(); // create child process
                 int status;
 
@@ -82,7 +88,7 @@ namespace NSNetwork
                     nargs[2] = sUrlA.c_str();
                     nargs[3] = "--output";
                     nargs[4] = sOutputA.c_str();
-                    nargs[5] = "--silent";
+                    func_onProgress == NULL ? nargs[5] = "--silent" : nargs[5] = "--progress-bar";
                     nargs[6] = "-L";
                     nargs[7] = "--connect-timeout";
                     nargs[8] = "10";
@@ -93,11 +99,56 @@ namespace NSNetwork
                     nenv[1] = "LD_LIBRARY_PATH=";
                     nenv[2] = NULL;
 
+                    if(func_onProgress)
+                    {
+                        close(pipefd[0]);    // close reading end in the child
+
+                        dup2(pipefd[1], 1);  // send stdout to the pipe
+                        dup2(pipefd[1], 2);  // send stderr to the pipe
+
+                        close(pipefd[1]);    // this descriptor is no longer needed
+                    }
+
                     execve("/usr/bin/curl", (char * const *)nargs, (char * const *)nenv);
                     exit(EXIT_SUCCESS);
                     break;
                 }
                 default: // parent process, pid now contains the child pid
+                    if(func_onProgress)
+                    {
+                        size_t size = 81;
+                        char buffer[size];
+                        std::string str;
+                        close(pipefd[1]);  // close the write end of the pipe in the parent
+                        ssize_t res = 1;
+                        while (1)
+                        {
+                            str.clear();
+                            res = read(pipefd[0], buffer, sizeof(buffer));
+
+                            if(res == 0)
+                                break;
+
+                            str.append(buffer);
+
+                            std::regex r(R"(\d+(?:\.\d+)?%)");
+                            std::smatch sm;
+                            std::string percentFull;
+                            std::string percent;
+                            if(regex_search(str, sm, r))
+                            {
+                                percentFull     = sm.str();
+                                percent         = percentFull.substr(0, percentFull.find("."));
+                                int percentInt  = std::stoi(percent);
+
+                                if(percentInt >= 0 && percentInt <= 100)
+                                    func_onProgress(percentInt);
+                            }
+
+                            if(str.find("100.0%") != std::string::npos)
+                                break;
+                        }
+                    }
                     while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
                     if (WIFEXITED(status))
                     {

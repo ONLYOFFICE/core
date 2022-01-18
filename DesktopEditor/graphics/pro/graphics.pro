@@ -133,11 +133,6 @@ SOURCES += \
     ./../../raster/Metafile/svg/SVGFramework.cpp \
     ./../../raster/Metafile/svg/SVGTransformer.cpp
 
-core_release {
-SOURCES += $$PWD/graphics_pri.cpp
-}
-
-core_debug {
 SOURCES += \
     ./../../agg-2.4/src/agg_arc.cpp \
     ./../../agg-2.4/src/agg_bezier_arc.cpp \
@@ -158,7 +153,7 @@ SOURCES += \
     ./../../agg-2.4/src/agg_vcgen_markers_term.cpp \
     ./../../agg-2.4/src/agg_vcgen_smooth_poly1.cpp \
     ./../../agg-2.4/src/agg_vcgen_stroke.cpp \
-\
+    \
     ./../../fontengine/fontconverter/StringExt.cpp \
     ./../../fontengine/fontconverter/Hash.cpp \
     ./../../fontengine/fontconverter/FontConverter.cpp \
@@ -166,10 +161,10 @@ SOURCES += \
     ./../../fontengine/fontconverter/FontFileTrueType.cpp \
     ./../../fontengine/fontconverter/FontFileType1.cpp \
     ./../../fontengine/fontconverter/FontFileType1C.cpp \
-\
+    \
     ./../../raster/Jp2/J2kFile.cpp \
     ./../../raster/Jp2/Reader.cpp \
-\
+    \
     ./../../raster/Metafile/Common/MetaFileTypes.cpp \
     ./../../raster/Metafile/Common/MetaFileUtils.cpp \
     ./../../raster/Metafile/Emf/EmfClip.cpp \
@@ -180,14 +175,13 @@ SOURCES += \
     ./../../raster/Metafile/Wmf/WmfClip.cpp \
     ./../../raster/Metafile/Wmf/WmfObjects.cpp \
     ./../../raster/Metafile/Wmf/WmfPlayer.cpp \
-\
+    \
     ./../../raster/JBig2/source/JBig2File.cpp \
-\
+    \
     ./../../raster/Metafile/StarView/SvmClip.cpp \
     ./../../raster/Metafile/StarView/SvmFile.cpp \
     ./../../raster/Metafile/StarView/SvmObjects.cpp \
     ./../../raster/Metafile/StarView/SvmPlayer.cpp
-}
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jasper/base/jas_cm.c \

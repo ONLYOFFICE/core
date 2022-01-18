@@ -189,7 +189,8 @@
                 "W" : _buffer[_cur++], 
                 "H" : _buffer[_cur++], 
                 "Dpi" : _buffer[_cur++],
-                fonts : []
+                fonts : [],
+                textCommands : null
             });
         }
 
@@ -234,21 +235,46 @@
     };
     CFile.prototype["getGlyphs"] = function(pageIndex)
     {
-        var glyphs = Module["_GetGlyphs"](this.nativeFile, pageIndex);
-        if (glyphs == 0)
-            return;
+        if (this.pages[pageIndex].fonts.length > 0)
+        {
+            // ждем загрузки шрифтов для этой страницы
+            return null;
+        }
 
-        var lenArray = new Int32Array(Module["HEAP8"].buffer, glyphs, 4);
+        self.drawingFileCurrentPageIndex = pageIndex;
+        var retValue = Module["_GetGlyphs"](this.nativeFile, pageIndex);
+        // удалять результат не надо, этот буфер используется в качестве текстового буфера 
+        // для текстовых команд других страниц. После получения ВСЕХ текстовых страниц - 
+        // нужно вызвать destroyTextInfo()
+        self.drawingFileCurrentPageIndex = -1;
+
+        if (this.pages[pageIndex].fonts.length > 0)
+        {
+            // ждем загрузки шрифтов для этой страницы
+            retValue = null;
+        }
+
+        if (null == retValue)
+            return null;
+
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, retValue, 4);
         var len = lenArray[0];
         len -= 4;
         if (len <= 0)
-            return;
+        {
+            return [];
+        }
 
-        this.pages[pageIndex].Lines = [];
-        var buffer = new Uint8Array(Module["HEAP8"].buffer, glyphs + 4, len);
+        var textCommandsSrc = new Uint8Array(Module["HEAP8"].buffer, retValue + 4, len);
+        var textCommands = new Uint8Array(len);
+        textCommands.set(textCommandsSrc);
 
-        Module["_free"](glyphs);
-        return buffer;
+        textCommandsSrc = null;
+        return textCommands;
+    };
+    CFile.prototype["destroyTextInfo"] = function()
+    {
+        Module["_DestroyTextInfo"]();
     };
     CFile.prototype["getLinks"] = function(pageIndex)
     {

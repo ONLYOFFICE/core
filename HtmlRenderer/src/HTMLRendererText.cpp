@@ -216,6 +216,7 @@ namespace NSHtmlRenderer
 
     BYTE* CHTMLRendererText::GetBuffer()
     {
+        m_pInternal->m_oSmartText.ClosePage();
         LONG lPos = m_pInternal->m_oPage.GetPosition();
         m_pInternal->m_oPage.Seek(0);
         m_pInternal->m_oPage.WriteLONG(lPos);

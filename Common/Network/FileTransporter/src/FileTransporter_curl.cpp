@@ -84,7 +84,7 @@ namespace NSNetwork
                 return written;
             }
 
-            int progress_func(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded)
+            /*int progress_func(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded)
             {
                 // It's here you will write the code for the progress message or bar
                 int percent = static_cast<int>((100.0 * NowDownloaded) / TotalToDownload);
@@ -93,6 +93,8 @@ namespace NSNetwork
                     CFileTransporterBase::m_func_onProgress(percent);
                 return 0;
             }
+            */
+
 
             static size_t write_data_to_string(char *contents, size_t size, size_t nmemb, void *userp)
             {
@@ -115,9 +117,9 @@ namespace NSNetwork
                    curl_easy_setopt(curl, CURLOPT_URL, url);
                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
                    curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
-                   curl_easy_setopt(curl, CURLOPT_NOPROGRESS, FALSE);
+                   //curl_easy_setopt(curl, CURLOPT_NOPROGRESS, FALSE);
                    // Install the callback function
-                   curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, progress_func);
+                   //curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, progress_func);
         #if defined(__linux__)
                    //в linux нет встроенных в систему корневых сертификатов, поэтому отключаем проверку
                    //http://curl.haxx.se/docs/sslcerts.html

@@ -69,7 +69,8 @@ namespace NSNetwork
             if (0 != nReturnCode && NSFile::CFileBinary::Exists(L"/usr/bin/curl"))
             {
                 int pipefd[2];
-                pipe(pipefd);
+                if(func_onProgress)
+                    pipe(pipefd);
 
                 pid_t pid = fork(); // create child process
                 int status;
@@ -87,11 +88,10 @@ namespace NSNetwork
                     nargs[2] = sUrlA.c_str();
                     nargs[3] = "--output";
                     nargs[4] = sOutputA.c_str();
-                    //nargs[5] = "--silent";
-                    nargs[5] = "-L";
-                    nargs[6] = "--connect-timeout";
-                    nargs[7] = "10";
-                    nargs[8] = "--progress-bar";
+                    func_onProgress == NULL ? nargs[5] = "--silent" : nargs[5] = "--progress-bar";
+                    nargs[6] = "-L";
+                    nargs[7] = "--connect-timeout";
+                    nargs[8] = "10";
                     nargs[9] = NULL;
 
                     const char* nenv[3];
@@ -99,12 +99,15 @@ namespace NSNetwork
                     nenv[1] = "LD_LIBRARY_PATH=";
                     nenv[2] = NULL;
 
-                    close(pipefd[0]);    // close reading end in the child
+                    if(func_onProgress)
+                    {
+                        close(pipefd[0]);    // close reading end in the child
 
-                    dup2(pipefd[1], 1);  // send stdout to the pipe
-                    dup2(pipefd[1], 2);  // send stderr to the pipe
+                        dup2(pipefd[1], 1);  // send stdout to the pipe
+                        dup2(pipefd[1], 2);  // send stderr to the pipe
 
-                    close(pipefd[1]);    // this descriptor is no longer needed
+                        close(pipefd[1]);    // this descriptor is no longer needed
+                    }
 
                     execve("/usr/bin/curl", (char * const *)nargs, (char * const *)nenv);
                     exit(EXIT_SUCCESS);
@@ -130,13 +133,16 @@ namespace NSNetwork
 
                             std::regex r(R"(\d+(?:\.\d+)?%)");
                             std::smatch sm;
+                            std::string percentFull;
                             std::string percent;
-                            std::string percentInt;
                             if(regex_search(str, sm, r))
                             {
-                                percent = sm.str();
-                                percentInt = percent.substr(0, percent.find("."));
-                                func_onProgress(std::stoi(percentInt));
+                                percentFull     = sm.str();
+                                percent         = percentFull.substr(0, percentFull.find("."));
+                                int percentInt  = std::stoi(percent);
+
+                                if(percentInt >= 0 && percentInt <= 100)
+                                    func_onProgress(percentInt);
                             }
 
                             if(str.find("100.0%") != std::string::npos)

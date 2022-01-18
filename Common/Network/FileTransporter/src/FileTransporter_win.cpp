@@ -413,7 +413,8 @@ namespace NSNetwork
                     if(ulProgressMax != 0)
                     {
                         int percent = static_cast<int>((100.0 * ulProgress) / ulProgressMax);
-                        func_onProgress(percent);
+                        if(func_onProgress)
+                            func_onProgress(percent);
                     }
                     return S_OK;
                 }

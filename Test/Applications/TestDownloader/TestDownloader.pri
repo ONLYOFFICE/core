@@ -23,8 +23,8 @@ DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
 core_windows {
 	DEFINES += _RWSTD_NO_SETRLIMIT
 }
-CORE_BUILDS_LIBRARIES_PATH = $$CORE_ROOT_DIR/build/lib/linux_64/debug
-#CORE_BUILDS_LIBRARIES_PATH = $$CORE_ROOT_DIR/build/lib/win_64/debug windows
+#CORE_BUILDS_LIBRARIES_PATH = $$CORE_ROOT_DIR/build/lib/linux_64/debug #linux
+CORE_BUILDS_LIBRARIES_PATH = $$CORE_ROOT_DIR/build/lib/win_64/debug #windows
 #kernel
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel
 #kernel_network

@@ -87,9 +87,9 @@ void Dv::readFields(CFRecord& record)
 
 	record >> PromptTitle >> ErrorTitle >> Prompt >> Error;
 
-	formula1.load(record, valType != typeDvCustom);
+	formula1.load(record, valType != typeDvNone);
 
-	formula2.load(record, valType != typeDvCustom && valType != typeDvList && valType != typeDvWhole && typOperator < 2);
+	formula2.load(record, valType != typeDvCustom && valType != typeDvList && valType != typeDvNone && typOperator < 2);
 	
 	record >> sqref;
 }
@@ -117,24 +117,27 @@ int Dv::serialize(std::wostream & stream)
 
 			CP_XML_ATTR(L"sqref",				sqref.strValue);
 
-			switch(typOperator)
+			if (valType != typeDvCustom && valType != typeDvList && valType != typeDvNone)
 			{
+				switch (typOperator)
+				{
 				case operatorDvBetween:				CP_XML_ATTR(L"operator", L"between");			break;
 				case operatorDvNotBetween:			CP_XML_ATTR(L"operator", L"notBetween");		break;
 				case operatorDvEquals:				CP_XML_ATTR(L"operator", L"equal");				break;
 				case operatorDvNotEquals:			CP_XML_ATTR(L"operator", L"notEqual");			break;
 				case operatorDvGreaterThan:			CP_XML_ATTR(L"operator", L"greaterThan");		break;
 				case operatorDvLessThan:			CP_XML_ATTR(L"operator", L"lessThan");			break;
-				case operatorDvGreaterThanOrEqual:	CP_XML_ATTR(L"operator", L"greaterThanOrEqual");break;
+				case operatorDvGreaterThanOrEqual:	CP_XML_ATTR(L"operator", L"greaterThanOrEqual"); break;
 				case operatorDvLessThanOrEqual:		CP_XML_ATTR(L"operator", L"lessThanOrEqual");	break;
+				}
 			}
 			if (PromptTitle.value().size() > 1)
 			{
-				CP_XML_ATTR(L"promtTitle", PromptTitle.value());
+				CP_XML_ATTR(L"promptTitle", PromptTitle.value());
 			}
 			if (Prompt.value().size() > 1)
 			{
-				CP_XML_ATTR(L"promt", Prompt.value());
+				CP_XML_ATTR(L"prompt", Prompt.value());
 			}
 			if (ErrorTitle.value().size() > 1)
 			{
@@ -144,11 +147,9 @@ int Dv::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"error", Error.value());
 			}
-			if (formula1.IsVolatile())
-				formula1.set_base_ref(sqref.getLocationFirstCell());
 			
-			if (formula2.IsVolatile())
-				formula2.set_base_ref(sqref.getLocationFirstCell());
+			formula1.set_base_ref(sqref.getLocationFirstCell());			
+			formula2.set_base_ref(sqref.getLocationFirstCell());
 
 			std::wstring sFormula1 = formula1.getAssembledFormula();
 			std::wstring sFormula2 = formula2.getAssembledFormula();

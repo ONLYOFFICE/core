@@ -47,6 +47,8 @@ namespace XLSB
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
+        static const XLS::ElementType	type = XLS::typeSXCONDFMT;
+
         XLS::BaseObjectPtr               m_BrtBeginSXCondFmt;
         std::vector<XLS::BaseObjectPtr>	 m_arFRT;
         XLS::BaseObjectPtr               m_PIVOTRULES;

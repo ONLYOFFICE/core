@@ -50,7 +50,7 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
-            //static const XLS::ElementType	type = XLS::typeBeginSXView;
+            static const XLS::ElementType	type = XLS::typeBeginSXView;
 
             BYTE         bVerSxMacro;
             bool         fDisplayImmediateItems;

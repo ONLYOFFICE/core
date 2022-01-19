@@ -49,6 +49,8 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
+            static const XLS::ElementType	type = XLS::typeBeginSXCondFmt;
+
             _UINT32             sxcondfmtScope;
             _UINT32             sxcondfmtType;
             _UINT32             ipriority;

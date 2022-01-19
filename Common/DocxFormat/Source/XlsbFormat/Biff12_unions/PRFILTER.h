@@ -47,6 +47,8 @@ namespace XLSB
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
+        static const XLS::ElementType	type = XLS::typePRFILTER;
+
         XLS::BaseObjectPtr               m_BrtBeginPRFilter;
         std::vector<XLS::BaseObjectPtr>	 m_arPRFITEM;
         XLS::BaseObjectPtr               m_BrtEndPRFilter;

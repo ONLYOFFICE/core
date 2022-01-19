@@ -49,6 +49,8 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
+            static const XLS::ElementType	type = XLS::typeEndSXCondFmts;
+
     };
 
 } // namespace XLSB

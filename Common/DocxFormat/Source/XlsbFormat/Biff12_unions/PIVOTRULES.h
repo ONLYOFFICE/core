@@ -47,7 +47,7 @@ namespace XLSB
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        //static const XLS::ElementType	type = XLS::typePIVOTRULES;
+        static const XLS::ElementType	type = XLS::typePIVOTRULES;
 
         XLS::BaseObjectPtr               m_BrtBeginSXRules;
         XLS::BaseObjectPtr               m_PIVOTRULE;

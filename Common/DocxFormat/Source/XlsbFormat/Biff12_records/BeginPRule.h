@@ -50,7 +50,7 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
-            //static const XLS::ElementType	type = XLS::typeBeginPRule;
+            static const XLS::ElementType	type = XLS::typeBeginPRule;
 
             PRuleHeaderData pruleheaderdata;
     };

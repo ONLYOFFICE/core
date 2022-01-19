@@ -49,7 +49,7 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
-            //static const XLS::ElementType	type = XLS::typeEndPRFilter;
+            static const XLS::ElementType	type = XLS::typeEndPRFilter;
     };
 
 } // namespace XLSB

@@ -49,7 +49,7 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
-            //static const XLS::ElementType	type = XLS::typeBeginPRFilters;
+            static const XLS::ElementType	type = XLS::typeBeginPRFilters;
 
             _UINT32 cfilters;
     };

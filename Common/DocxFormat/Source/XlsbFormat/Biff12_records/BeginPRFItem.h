@@ -49,7 +49,7 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
-            //static const XLS::ElementType	type = XLS::typeBeginPRFItem;
+            static const XLS::ElementType	type = XLS::typeBeginPRFItem;
 
             _UINT32 iitem;
     };

@@ -319,7 +319,7 @@ namespace PPT_FORMAT
                 std::wstring strRid = L"rId" + pPair->second;
                 return strRid;
             }
-            m_mapHyperlinks[strPath] = m_lNextRelsID;
+            m_mapHyperlinks[strPath] = std::to_wstring( m_lNextRelsID );
 
             std::wstring strRid = L"rId" + std::to_wstring( m_lNextRelsID++);
 

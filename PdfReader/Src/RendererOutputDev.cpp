@@ -579,6 +579,8 @@ namespace PdfReader
 
         if (c_nHtmlRendrerer2 == m_lRendererType)
             m_bDrawOnlyText = (S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0)) ? true : false;
+        else if (c_nHtmlRendrererText == m_lRendererType)
+            m_bDrawOnlyText = true;
         else
             m_bDrawOnlyText = false;
     }

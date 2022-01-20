@@ -14,6 +14,7 @@ class CGraphicsFileDrawing
 private:
     IOfficeDrawingFile* pReader;
     NSFonts::IApplicationFonts* pApplicationFonts;
+    NSFonts::IFontManager* pFontManager;
     NSHtmlRenderer::CHTMLRendererText* pTextRenderer;
     int nType;
 public:
@@ -23,12 +24,20 @@ public:
         pTextRenderer = NULL;
         pApplicationFonts = pFonts;
 		pApplicationFonts->AddRef();
+
+        pFontManager = pApplicationFonts->GenerateFontManager();
+        NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
+        pFontCache->SetStreams(pApplicationFonts->GetStreams());
+        pFontCache->SetCacheSize(8);
+        pFontManager->SetOwnerCache(pFontCache);
+        
         nType = -1;
     }
     ~CGraphicsFileDrawing()
     {
         RELEASEOBJECT(pReader);
         RELEASEOBJECT(pTextRenderer);
+        RELEASEOBJECT(pFontManager);
         RELEASEINTERFACE(pApplicationFonts);
         nType = -1;
     }
@@ -81,14 +90,14 @@ public:
     }
     BYTE* GetPage(int nPageIndex, int nRasterW, int nRasterH)
     {
-        return pReader->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true);
+        return pReader->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, pFontManager);
     }
     BYTE* GetGlyphs(int nPageIndex)
     {
         if (NULL == pTextRenderer)
             pTextRenderer = new NSHtmlRenderer::CHTMLRendererText();
 
-        pTextRenderer->Init(pReader);
+        pTextRenderer->Init(pReader, 8);
         pReader->DrawPageOnRenderer(pTextRenderer, nPageIndex, NULL);
 
         return pTextRenderer->GetBuffer();

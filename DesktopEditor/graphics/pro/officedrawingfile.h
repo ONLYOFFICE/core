@@ -73,8 +73,8 @@ public:
     virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak) = 0;
 
     // Common methods/wrappers on GetPageInfo + DrawPageOnRenderer
-    virtual unsigned char* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip = false);
-    virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1, bool bIsFlip = false);
+    virtual unsigned char* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip = false, NSFonts::IFontManager* pFonts = NULL);
+    virtual void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1, bool bIsFlip = false, NSFonts::IFontManager* pFonts = NULL);
 
     // Common methods for viewer
 #ifdef BUILDING_WASM_MODULE

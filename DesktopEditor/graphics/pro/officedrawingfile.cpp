@@ -33,16 +33,25 @@
 #include "./officedrawingfile.h"
 #include "./Graphics.h"
 
-CBgraFrame* GetFrame(IOfficeDrawingFile* pFile, int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip, bool bIsSwapRGB)
+CBgraFrame* GetFrame(IOfficeDrawingFile* pFile, int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip, bool bIsSwapRGB, NSFonts::IFontManager* pFonts = NULL)
 {
-    NSFonts::IApplicationFonts* pApplicationFonts = pFile->GetFonts();
-    if (!pApplicationFonts)
-        return NULL;
+    NSFonts::IFontManager *pFontManager = pFonts;
 
-    NSFonts::IFontManager *pFontManager = pApplicationFonts->GenerateFontManager();
-    NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
-    pFontCache->SetStreams(pApplicationFonts->GetStreams());
-    pFontManager->SetOwnerCache(pFontCache);
+    if (!pFontManager)
+    {
+        NSFonts::IApplicationFonts* pApplicationFonts = pFile->GetFonts();
+        if (!pApplicationFonts)
+            return NULL;
+
+        NSFonts::IFontManager *pFontManager = pApplicationFonts->GenerateFontManager();
+        NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
+        pFontCache->SetStreams(pApplicationFonts->GetStreams());
+        pFontManager->SetOwnerCache(pFontCache);
+    }
+    else
+    {
+        pFontManager->AddRef();
+    }
 
     NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
     pRenderer->SetFontManager(pFontManager);
@@ -56,7 +65,11 @@ CBgraFrame* GetFrame(IOfficeDrawingFile* pFile, int nPageIndex, int nRasterW, in
 
     BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
     if (!pBgraData)
+    {
+        RELEASEINTERFACE(pFontManager);
+        RELEASEOBJECT(pRenderer);
         return NULL;
+    }
 
     memset(pBgraData, 0xff, nWidth * nHeight * 4);
     CBgraFrame* pFrame = new CBgraFrame();
@@ -86,9 +99,9 @@ CBgraFrame* GetFrame(IOfficeDrawingFile* pFile, int nPageIndex, int nRasterW, in
     return pFrame;
 }
 
-unsigned char* IOfficeDrawingFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip)
+unsigned char* IOfficeDrawingFile::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip, NSFonts::IFontManager* pFonts)
 {
-    CBgraFrame* pFrame = GetFrame(this, nPageIndex, nRasterW, nRasterH, bIsFlip, true);
+    CBgraFrame* pFrame = GetFrame(this, nPageIndex, nRasterW, nRasterH, bIsFlip, true, pFonts);
     if (!pFrame)
         return NULL;
 
@@ -99,9 +112,9 @@ unsigned char* IOfficeDrawingFile::ConvertToPixels(int nPageIndex, int nRasterW,
     return pData;
 }
 
-void IOfficeDrawingFile::ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW, const int nRasterH, bool bIsFlip)
+void IOfficeDrawingFile::ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW, const int nRasterH, bool bIsFlip, NSFonts::IFontManager* pFonts)
 {
-    CBgraFrame* pFrame = GetFrame(this, nPageIndex, nRasterW, nRasterH, bIsFlip, false);
+    CBgraFrame* pFrame = GetFrame(this, nPageIndex, nRasterW, nRasterH, bIsFlip, false, pFonts);
     if (!pFrame)
         return;
 

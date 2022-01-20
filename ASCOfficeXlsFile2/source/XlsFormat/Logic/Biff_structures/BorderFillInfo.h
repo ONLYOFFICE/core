@@ -44,6 +44,8 @@ struct FillInfoExt
 	unsigned char	icv = 0;
 	short			nTintShade = 0;
 	unsigned int	xclrValue = 0;
+	
+	bool operator == (const FillInfoExt & rVal) const;
 };
 
 struct FillInfo

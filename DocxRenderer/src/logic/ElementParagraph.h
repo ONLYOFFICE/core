@@ -137,7 +137,7 @@ namespace NSDocxRenderer
         double m_dPosition;
         double m_dSpaceWidthMM;
 
-        double m_dCalculateWidth;
+        std::vector <double> m_arWidthText;
 
     public:
         CContText()
@@ -156,7 +156,6 @@ namespace NSDocxRenderer
             m_dPosition		= 0;
             m_dSpaceWidthMM	= 0;
 
-            m_dCalculateWidth = 0;
         }
         ~CContText()
         {
@@ -192,8 +191,6 @@ namespace NSDocxRenderer
             m_dPosition = oSrc.m_dPosition;
             m_dSpaceWidthMM = oSrc.m_dSpaceWidthMM;
 
-            m_dCalculateWidth = oSrc.m_dCalculateWidth;
-
             return *this;
         }
 
@@ -204,6 +201,33 @@ namespace NSDocxRenderer
         inline bool IsBiggerOrEqual(const CContText* oSrc)
         {
             return (m_dX >= oSrc->m_dX) ? true : false;
+        }
+
+        void ChangeText(size_t nFrom, size_t nBefore )
+        {
+            std::vector<uint32_t> arNewVec;
+            for (size_t i = nFrom; i <= nBefore; ++i)
+            {
+                uint32_t text = this->m_oText[i];
+                arNewVec.push_back(text);
+            }
+            m_oText = arNewVec;
+
+        }
+
+        void MarkFontProperties(int i)
+        {
+            switch (i) {
+            case 0:
+                m_oFont.Strikeout = 1;
+                break;
+            case 1:
+                m_oFont.Underline = 1;
+                break;
+            default:
+                m_oFont.BackgroundColor = i;
+                break;
+            }
         }
 
         inline void Write(NSStringUtils::CStringBuilder& oWriter, CFontManagerLight* pManagerLight, bool bIsAddSpace = false)
@@ -475,6 +499,98 @@ namespace NSDocxRenderer
                     m_arConts.push_back(pTextLine->m_arConts[i]);
                 }
             }
+        }
+
+        std::vector<CContText*> BreakCont(size_t idx, double dLeftLineCoord, double dRightLineCoord, int bMode)
+        {
+            std::vector<CContText*> arReturnConts;
+
+            std::vector <bool> arTagget;
+            size_t nCountChars = m_arConts[idx]->m_arWidthText.size();
+            for (size_t i = 0; i < nCountChars; ++i)
+            {
+                double dCoordChar = m_arConts[idx]->m_dX + m_arConts[idx]->m_arWidthText[i];
+                if (dCoordChar >= dLeftLineCoord && dCoordChar <= dRightLineCoord)
+                {
+                    arTagget.push_back(true);
+                }
+                else
+                {
+                    arTagget.push_back(false);
+                }
+            }
+
+            bool bPrevTag = arTagget[0];
+            size_t nBlockStart = 0;
+            for (size_t j = 1; j < arTagget.size(); ++j)
+            {
+                if (bPrevTag != arTagget[j])
+                {
+                    CContText* pTempCont = m_arConts[idx];
+                    pTempCont->ChangeText(nBlockStart, j-1);
+
+                    if (arTagget[j-1] == true)
+                        pTempCont->MarkFontProperties(bMode);
+
+                    arReturnConts.push_back(pTempCont);
+                    nBlockStart = j;
+                }
+                bPrevTag = arTagget[j];
+            }
+            if (!nBlockStart)
+                arReturnConts.push_back(m_arConts[idx]);
+
+            return arReturnConts;
+        }
+
+        void SearchInclusions(double dLeftLineCoord, double dRightLineCoord, int bMode)
+        {
+            std::vector<CContText*> arTempConts;
+
+            size_t nCountConts = m_arConts.size();
+            for (size_t i = 0; i < nCountConts; ++i)
+            {
+                double dLeftCont = m_arConts[i]->m_dX;
+                double dRightCont = dLeftCont + m_arConts[i]->m_dWidth;
+
+                if (dRightLineCoord < dRightCont)
+                {
+                    if (dRightLineCoord > dLeftCont)
+                    {
+                        //разбиваем
+                        std::vector<CContText*> arBreakCont = BreakCont(i, dLeftLineCoord, dRightLineCoord, bMode);
+                        for (size_t j = 0; j < arBreakCont.size(); ++j)
+                        {
+                            arTempConts.push_back(arBreakCont[j]);
+                        }
+                    }
+                    else
+                    {
+                        //ничего не делаем
+                        arTempConts.push_back(m_arConts[i]);
+                    }
+                }
+                else
+                {
+                    if (dLeftLineCoord > dLeftCont)
+                    {
+                        //разбиваем
+                        std::vector<CContText*> arBreakCont = BreakCont(i, dLeftLineCoord, dRightLineCoord, bMode);
+                        for (size_t j = 0; j < arBreakCont.size(); ++j)
+                        {
+                            arTempConts.push_back(arBreakCont[j]);
+                        }
+
+                    }
+                    else
+                    {
+                        //помечаем
+                        m_arConts[i]->MarkFontProperties(bMode);
+                        arTempConts.push_back(m_arConts[i]);
+                    }
+                }
+            }
+            this->m_arConts = arTempConts;
         }
 
         void ToXml(NSStringUtils::CStringBuilder& oWriter, CFontManagerLight* pManagerLight)

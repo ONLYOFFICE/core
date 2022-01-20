@@ -42,7 +42,6 @@ namespace NSDocxRenderer
         Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter;
 
 		CVectorGraphics				m_oVector;
-		NSDocxRenderer::CShape*		m_pLastShape;
 
 		double m_dWidth;
 		double m_dHeight;
@@ -84,7 +83,6 @@ namespace NSDocxRenderer
 
 			m_bIsDeleteTextClipPage = true;
 
- 			m_pLastShape = nullptr;
 		}
 
 	public:
@@ -139,8 +137,6 @@ namespace NSDocxRenderer
 			m_pCurrentLine = NULL;
 
 			m_oWriterVML.ClearNoAttack();
-
-			m_pLastShape = nullptr;
 		}
 
 		~CPage()
@@ -299,68 +295,8 @@ namespace NSDocxRenderer
 			m_oVector.Close();
 		}
 
-		void ApplyUnderline(double dLineLeftCoord, double dLineRightCoord)
-		{
-			for (size_t i = 0; i < m_pCurrentLine->m_arConts.size(); ++i)
-			{
-				double dXCont = m_pCurrentLine->m_arConts[i]->m_dX;
-				double dWidthCont = m_pCurrentLine->m_arConts[i]->m_dWidth;
-
-				bool bIsContIncludeLine = dXCont >= dLineLeftCoord && (dXCont + dWidthCont - 0.3) <= dLineRightCoord;
-				bool bIsLineIncludeCont = dXCont <= dLineLeftCoord && (dXCont + dWidthCont ) >= dLineRightCoord;
-
-				if (bIsContIncludeLine || bIsLineIncludeCont)
-					m_pCurrentLine->m_arConts[i]->m_oFont.Underline = 1;
-			}
-		}
-
-		bool ApplyStrikeout(double dLineLeftCoord, double dLineRightCoord)
-		{
-			bool bFlag = false;
-
-			bool bIsFootnote = abs(dLineRightCoord-dLineLeftCoord - 50.8) < 0.1;
-			if (bIsFootnote)
- 				return bFlag;
-
-			for (size_t i = 0; i < m_pCurrentLine->m_arConts.size(); ++i)
-			{
-				double dXCont = m_pCurrentLine->m_arConts[i]->m_dX;
-				double dWidthCont = m_pCurrentLine->m_arConts[i]->m_dWidth;
-
-				bool bIsContIncludeLine = dXCont >= dLineLeftCoord && (dXCont + dWidthCont - 0.3) <= dLineRightCoord;
-				bool bIsLineIncludeCont = dXCont <= dLineLeftCoord && (dXCont + dWidthCont ) >= dLineRightCoord;
-
-				if (bIsContIncludeLine || bIsLineIncludeCont)
-				{
-					m_pCurrentLine->m_arConts[i]->m_oFont.Strikeout = 1;
-					bFlag = true;
-				}
-			}
-			return bFlag;
-		}
-
         void DrawPath(LONG lType, LONG lTxId)
 		{
-			if (abs(m_oVector.m_dBottom-m_oVector.m_dTop) < 0.5)
-			{
-				if (m_pCurrentLine->m_dBaselinePos < m_oVector.m_dTop)
-				{
-					if (abs (m_pCurrentLine->m_dBaselinePos - m_oVector.m_dTop) < 0.6)
-					{
-						ApplyUnderline(m_oVector.m_dLeft, m_oVector.m_dRight);
-						return;
-					}
-				}
-				else
-				{
-					if (abs (m_pCurrentLine->m_dBaselinePos - m_oVector.m_dTop) < 2)
-					{
-						if (ApplyStrikeout(m_oVector.m_dLeft, m_oVector.m_dRight))
-							return;
-					}
-				}
-			}
-
 			if ((m_oVector.m_dLeft <= m_oVector.m_dRight) && (m_oVector.m_dTop <= m_oVector.m_dBottom))
 			{
 				CShape* pShape = new CShape();
@@ -388,7 +324,6 @@ namespace NSDocxRenderer
 
 				pShape->CreateFromVectorData(&m_oVector, m_oWriterVML, 100000, lType);
                 m_arGraphicItems.push_back(pShape);
-                m_pLastShape = pShape;
 			}
 		}
 
@@ -481,21 +416,10 @@ namespace NSDocxRenderer
 				}
 
                 pCont->m_oText = oText;
+				pCont->m_arWidthText.push_back(dTextW);
 
 				pCont->m_oFont		= m_oManager.m_oFont.m_oFont;
 				pCont->m_oBrush		= *m_pBrush;
-
-				if (m_pLastShape)
-				{
-					bool IsTextIncludeShapeY = m_pLastShape->m_dTop <= dTextY && (m_pLastShape->m_dTop + m_pLastShape->m_dHeight) >= dTextY;
-					bool IsTextIncludeShapeX = m_pLastShape->m_dLeft <= dTextX && (m_pLastShape->m_dLeft + m_pLastShape->m_dWidth) >= dTextX;
-					if (IsTextIncludeShapeY && IsTextIncludeShapeX)
-					{
-						pCont->m_oFont.BackgroundColor = m_pLastShape->m_oBrush.Color1;
-						if (m_arGraphicItems.size() > 0 && m_pLastShape == m_arGraphicItems.back())
-							m_arGraphicItems.pop_back();
-					}
-				}
 
 				if (bIsPath)
 				{
@@ -528,6 +452,7 @@ namespace NSDocxRenderer
 					// продолжаем слово
                     pLastCont->m_oText += oText;
 					pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
+					pLastCont->m_arWidthText.push_back(pLastCont->m_dWidth);
 
                     if (!IsSpaceUtf32(oText))
 					{
@@ -549,6 +474,7 @@ namespace NSDocxRenderer
                     pLastCont->m_oText += uint32_t(' ');
                     pLastCont->m_oText += oText;
 					pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
+					pLastCont->m_arWidthText.push_back(pLastCont->m_dWidth);
 
                     if (!IsSpaceUtf32(oText))
 					{
@@ -576,6 +502,8 @@ namespace NSDocxRenderer
 			pCont->m_dWidth		= dTextW;
 			pCont->m_dHeight	= dTextH;
 
+			pCont->m_arWidthText.push_back(dTextW);
+
             if (IsSpaceUtf32(oText))
 			{
 				pCont->m_dWidthWithoutSpaces	= 0;
@@ -592,18 +520,6 @@ namespace NSDocxRenderer
 			pCont->m_oFont		= m_oManager.m_oFont.m_oFont;
 			pCont->m_oBrush		= *m_pBrush;
 
-			if (m_pLastShape)
-			{
-				bool IsTextIncludeShapeY = m_pLastShape->m_dTop <= dTextY && (m_pLastShape->m_dTop + m_pLastShape->m_dHeight) >= dTextY;
-				bool IsTextIncludeShapeX = m_pLastShape->m_dLeft <= dTextX && (m_pLastShape->m_dLeft + m_pLastShape->m_dWidth) >= dTextX;
-				if (IsTextIncludeShapeY && IsTextIncludeShapeX)
-				{
-					pCont->m_oFont.BackgroundColor = m_pLastShape->m_oBrush.Color1;
-					if (m_arGraphicItems.size() > 0 && m_pLastShape == m_arGraphicItems.back())
-						m_arGraphicItems.pop_back();
-				}
-			}
-
 			if (bIsPath)
 			{
 				pCont->m_strPickFontName	= m_oManager.m_strCurrentPickFont;
@@ -617,6 +533,66 @@ namespace NSDocxRenderer
 
 		void Build()
 		{
+			std::vector <size_t> arIdxGraphicItems;
+			size_t nCount = m_arGraphicItems.size();
+			for (size_t i = 0; i < nCount; ++i)
+			{
+				if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
+				{
+					CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
+					if (pShape->m_strPath.size() == 49 || pShape->m_strPath.size() == 46)
+					{
+						size_t nCountTextLine = m_arTextLine.size();
+						for (size_t j = 0; j < nCountTextLine; ++j)
+						{
+							double dTopTextLine = m_arTextLine[j]->m_dBaselinePos - m_arTextLine[j]->m_dHeight;
+							double dBottomTextLine = m_arTextLine[j]->m_dBaselinePos;
+							if ((dTopTextLine < pShape->m_dTop) && (dBottomTextLine > pShape->m_dHeight + pShape->m_dTop))
+							{
+								//это вычеркивание
+								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, 0);
+								arIdxGraphicItems.push_back(i);
+								break;
+							}
+							if (pShape->m_dHeight < 0.5 && abs(pShape->m_dTop - dBottomTextLine) < 0.6 )
+							{
+								//это подчеркивание
+								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, 1);
+								arIdxGraphicItems.push_back(i);
+								break;
+							}
+
+							double dWidthTextLine{};
+							for (size_t k = 0; k < m_arTextLine[j]->m_arConts.size(); ++k)
+							{
+								dWidthTextLine += m_arTextLine[j]->m_arConts[k]->m_dWidth;
+							}
+							if (   pShape->m_dHeight > 0.5
+								&& dTopTextLine/pShape->m_dTop > 0.925
+								&& pShape->m_dTop > dTopTextLine
+								&& dBottomTextLine/(pShape->m_dHeight + pShape->m_dTop) > 0.925
+								&& (pShape->m_dHeight + pShape->m_dTop) > dBottomTextLine
+								&& (pShape->m_dTop) < dBottomTextLine
+								&& pShape->m_dLeft <= m_arTextLine[j]->m_dX
+								&& (pShape->m_dLeft + pShape->m_dWidth) <= (m_arTextLine[j]->m_dX + dWidthTextLine))
+
+							{
+								//это заливка текста
+								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, pShape->m_oBrush.Color1);
+								arIdxGraphicItems.push_back(i);
+								break;
+							}
+						}
+					}
+				}
+			}
+			//убрать предупреждение
+			auto iter = m_arGraphicItems.cbegin();
+			for (size_t i = arIdxGraphicItems.size(); i > 0; --i)
+			{
+				m_arGraphicItems.erase(iter + arIdxGraphicItems[i-1]);
+			}
+
 			if (m_bIsDeleteTextClipPage)
 			{
                 // удалим все линии, которые выходят за границы страницы

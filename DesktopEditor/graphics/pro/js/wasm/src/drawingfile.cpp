@@ -120,9 +120,9 @@ WASM_EXPORT int*  GetInfo   (CGraphicsFileDrawing* pGraphics)
     }
     return buffer;
 }
-WASM_EXPORT BYTE* GetPixmap (CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+WASM_EXPORT BYTE* GetPixmap(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
 {
-    return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH);
+    return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
 }
 WASM_EXPORT BYTE* GetGlyphs (CGraphicsFileDrawing* pGraphics, int nPageIndex)
 {

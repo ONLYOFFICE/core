@@ -88,9 +88,9 @@ public:
         nHeight   = dHeight;
         nPageDpiX = dPageDpiX;
     }
-    BYTE* GetPage(int nPageIndex, int nRasterW, int nRasterH)
+    BYTE* GetPage(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
     {
-        return pReader->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, pFontManager);
+        return pReader->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
     }
     BYTE* GetGlyphs(int nPageIndex)
     {

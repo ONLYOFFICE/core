@@ -1399,7 +1399,8 @@ std::wstring RtfStyle::RenderToRtfEnd( RenderParameter oRenderParameter )
 	RENDER_RTF_INT	( m_nPriority,	sResult, L"spriority" )
 	RENDER_RTF_BOOL	( m_bUnhiddenWhenUse, sResult, L"sunhideused" )
 
-    sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, NULL, true) + L";}";
+	RtfCharProperty* props = NULL;
+	sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, props, true) + L";}";
 	return sResult;
 }
 std::wstring RtfCharStyle::RenderToRtf(RenderParameter oRenderParameter)

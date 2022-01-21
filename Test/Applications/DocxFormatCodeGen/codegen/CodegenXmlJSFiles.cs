@@ -35,11 +35,13 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace codegen
 {
     class CodeGenXmlJSCPP
     {
+        string toXmlNaspace = "w:";
         Dictionary<string, GenClassPivot> m_mapProcessedClasses = new Dictionary<string, GenClassPivot>();
         string[] gc_numeric = { "Null", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine" };
         public static Dictionary<string, string> m_mapNamespaceToPrefix = new Dictionary<string, string>()
@@ -134,6 +136,12 @@ namespace codegen
         }
         #endregion
         #region JS
+        string getClassMemberName(string sName)
+        {
+            //for word
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            return textInfo.ToTitleCase(sName);
+        }
         string GetEnumClassName(string sEnumName)
         {
             return sEnumName;
@@ -148,7 +156,7 @@ namespace codegen
             }
             else
             {
-                //first = first.ToUpper();
+                first = first.ToUpper();
             }
             string name = first + sElemName.Substring(1);
             //https://stackoverflow.com/questions/1661197/what-characters-are-valid-for-javascript-variable-names/9337047#9337047
@@ -164,19 +172,19 @@ namespace codegen
         }
         public void ProcessEnumFromString(StringBuilder sb, GenClassPivot oGenClass)
         {
-            sb.AppendFormat("function FromXml_{0}(val) \n{{\n", GetEnumClassName(oGenClass.sName));
+            sb.AppendFormat("function fromXml_{0}(val) \n{{\n", GetEnumClassName(oGenClass.sName));
             sb.AppendFormat("switch (val) {{\n");
             for (int j = 0; j < oGenClass.aMembers.Count; ++j)
             {
                 sb.AppendFormat("case \"{0}\": return {1}.{2};\n", oGenClass.aMembers[j].sName, GetEnumClassName(oGenClass.sName), GetEnumElemName(oGenClass.aMembers[j].sName));
             }
             sb.AppendFormat("}}\n");
-            sb.AppendFormat("return null;\n");
+            sb.AppendFormat("return undefined;\n");
             sb.AppendFormat("}}\n");
         }
         public void ProcessEnumToString(StringBuilder sb, GenClassPivot oGenClass)
         {
-            sb.AppendFormat("function ToXml_{0}(val) \n{{\n", GetEnumClassName(oGenClass.sName));
+            sb.AppendFormat("function toXml_{0}(val) \n{{\n", GetEnumClassName(oGenClass.sName));
             sb.AppendFormat("switch (val) {{\n");
             for (int j = 0; j < oGenClass.aMembers.Count; ++j)
             {
@@ -242,11 +250,11 @@ namespace codegen
                     GenMemberPivot oGenMember = aAttributes[i];
                     if (!string.IsNullOrEmpty(oGenMember.sDefAttribute))
                     {
-                        sb.AppendFormat("this.{0} = null;//{1}\n", oGenMember.sName, oGenMember.sDefAttribute);
+                        sb.AppendFormat("this.{0} = null;//{1}\n", getClassMemberName(oGenMember.sName), oGenMember.sDefAttribute);
                     }
                     else
                     {
-                        sb.AppendFormat("this.{0} = null;\n", oGenMember.sName);
+                        sb.AppendFormat("this.{0} = null;\n", getClassMemberName(oGenMember.sName));
                     }
                 }
             }
@@ -260,17 +268,17 @@ namespace codegen
                         GenMemberPivot oGenMemberTmp = oGenMember.getArrayTypeIfSimple();
                         if (null != oGenMemberTmp)
                         {
-                            sb.AppendFormat("this.{0} = [];\n", oGenMember.sName);
+                            sb.AppendFormat("this.{0} = [];\n", getClassMemberName(oGenMember.sName));
                         }
                         else
                         {
-                            sb.AppendFormat("//todo {0}\n", oGenMember.sName);
-                            sb.AppendFormat("this.{0} = null;\n", oGenMember.sName);
+                            sb.AppendFormat("//todo {0}\n", getClassMemberName(oGenMember.sName));
+                            sb.AppendFormat("this.{0} = null;\n", getClassMemberName(oGenMember.sName));
                         }
                     }
                     else
                     {
-                        sb.AppendFormat("this.{0} = null;\n", oGenMember.sName);
+                        sb.AppendFormat("this.{0} = null;\n", getClassMemberName(oGenMember.sName));
                     }     
                 }
             }
@@ -284,7 +292,7 @@ namespace codegen
             sb.AppendFormat("writer.WriteXmlNodeStart(name);\n");
             for (int i = 0; i < aAttributes.Count; ++i)
             {
-                ProcessAttributeJSToXml(sb, oGenClass, aAttributes[i], i, aAttributes[i].sName);
+                ProcessAttributeJSToXml(sb, oGenClass, aAttributes[i], i);
             }
             if (aMembers.Count > 0)
             {
@@ -307,22 +315,22 @@ namespace codegen
                             string sElemXmlNameTmp = getNameWithPrefix(oGenClass, oGenMemberTmp, sRootNamespace, out sTodo);
                             if (false == oGenMemberTmp.bIsArrayTypesHidden)
                             {
-                                sb.AppendFormat("//todo {0} minOccurs=0 or 1\n", oGenMember.sName);
-                                sb.AppendFormat("writer.WriteXmlArray(this.{0}, \"{1}\", {2});\n", oGenMember.sName, sElemXmlName, sElemXmlNameTmp);
+                                sb.AppendFormat("//todo {0} minOccurs=0 or 1\n", getClassMemberName(oGenMember.sName));
+                                sb.AppendFormat("writer.WriteXmlArray(this.{0}, \"{1}\", {2});\n", getClassMemberName(oGenMember.sName), sElemXmlName, sElemXmlNameTmp);
                             }
                             else
                             {
-                                sb.AppendFormat("writer.WriteXmlArray(this.{0}, \"{1}\");\n", oGenMember.sName, sElemXmlName);
+                                sb.AppendFormat("writer.WriteXmlArray(this.{0}, \"{1}\");\n", getClassMemberName(oGenMember.sName), sElemXmlName);
                             }
                         }
                         else
                         {
-                            sb.AppendFormat("//todo {0}\n", oGenMember.sName);
+                            sb.AppendFormat("//todo {0}\n", getClassMemberName(oGenMember.sName));
                         }
                     }
                     else
                     {
-                        sb.AppendFormat("writer.WriteXmlNullable(this.{0}, \"{1}\");\n", oGenMember.sName, sElemXmlName);
+                        sb.AppendFormat("writer.WriteXmlNullable(this.{0}, \"{1}\");\n", getClassMemberName(oGenMember.sName), sElemXmlName);
                     }
                 }
                 sb.AppendFormat("writer.WriteXmlNodeEnd(name);\n");
@@ -333,8 +341,9 @@ namespace codegen
             }
             sb.AppendFormat("}};\n");
         }
-        void ProcessAttributeJSToXml(StringBuilder sb, GenClassPivot oGenClass, GenMemberPivot oGenMember, int index, string sElemName)
+        void ProcessAttributeJSToXml(StringBuilder sb, GenClassPivot oGenClass, GenMemberPivot oGenMember, int index)
         {
+            string sElemName = getClassMemberName(oGenMember.sName);
             string sTodo = sElemName;
             string sRootNamespace = "";
             string sElemXmlName = getNameWithPrefix(oGenClass, oGenMember, sRootNamespace, out sTodo);
@@ -357,7 +366,7 @@ namespace codegen
                     if (oGenClassMember.bIsEnum)
                     {
                         sTodo = "";
-                        sb.AppendFormat("writer.WriteXmlNullableAttributeString(\"{0}\", ToXml_{1}(this.{2}));\n", sElemXmlName, GetEnumClassName(oGenClassMember.sName), sElemName);
+                        sb.AppendFormat("writer.WriteXmlNullableAttributeString(\"{0}\", toXml_{1}(this.{2}));\n", sElemXmlName, GetEnumClassName(oGenClassMember.sName), sElemName);
                     }
                 }
             }
@@ -409,7 +418,7 @@ namespace codegen
                 sb.AppendFormat("switch (reader.GetNameNoNS()) {{\n");
                 for (int i = 0; i < aAttributes.Count; ++i)
                 {
-                    ProcessAttributeJSFromXml(sb, oGenClass, aAttributes[i], i, aAttributes[i].sName);
+                    ProcessAttributeJSFromXml(sb, oGenClass, aAttributes[i], i);
                 }
                 sb.AppendFormat("}}\n");
                 sb.AppendFormat("}}\n");
@@ -431,7 +440,7 @@ namespace codegen
                     sb.AppendFormat("case \"{0}\" : {{\n", aMembers[i].sName);
                     if (null == aMembers[i].sType)
                     {
-                        sb.AppendFormat("//todo {0}\n", aMembers[i].sName);
+                        sb.AppendFormat("//todo {0}\n", getClassMemberName(aMembers[i].sName));
                     }
                     else if (aMembers[i].isArray())
                     {
@@ -443,17 +452,17 @@ namespace codegen
                             {
                                 sb.AppendFormat("var elem = new {0}();\n", oGenMemberTmp.sType);
                                 sb.AppendFormat("elem.fromXml(reader);\n");
-                                sb.AppendFormat("this.{0}.push(elem);\n", aMembers[i].sName);
+                                sb.AppendFormat("this.{0}.push(elem);\n", getClassMemberName(aMembers[i].sName));
                             }
                             else
                             {
                                 sb.AppendFormat("var subDepth = reader.GetDepth();\n");
                                 sb.AppendFormat("while (reader.ReadNextSiblingNode(subDepth)) {{\n");
-                                sb.AppendFormat("if (\"{0}\" === reader.GetNameNoNS()) {{\n", aMembers[i].sName);
+                                sb.AppendFormat("if (\"{0}\" === reader.GetNameNoNS()) {{\n", oGenMemberTmp.sName);
 
                                 sb.AppendFormat("var elem = new {0}();\n", oGenMemberTmp.sType);
                                 sb.AppendFormat("elem.fromXml(reader);\n");
-                                sb.AppendFormat("this.{0}.push(elem);\n", aMembers[i].sName);
+                                sb.AppendFormat("this.{0}.push(elem);\n", getClassMemberName(aMembers[i].sName));
 
                                 sb.AppendFormat("}}\n");
                                 sb.AppendFormat("}}\n");
@@ -461,13 +470,13 @@ namespace codegen
                         }
                         else
                         {
-                            sb.AppendFormat("//todo {0}\n", aMembers[i].sName);
+                            sb.AppendFormat("//todo {0}\n", getClassMemberName(aMembers[i].sName));
                         }
                     }
                     else
                     {
-                        sb.AppendFormat("this.{0} = new {1}();\n", aMembers[i].sName, aMembers[i].sType);
-                        sb.AppendFormat("this.{0}.fromXml(reader);\n", aMembers[i].sName);
+                        sb.AppendFormat("this.{0} = new {1}();\n", getClassMemberName(aMembers[i].sName), aMembers[i].sType);
+                        sb.AppendFormat("this.{0}.fromXml(reader);\n", getClassMemberName(aMembers[i].sName));
                     }
                     sb.AppendFormat("break;");
                     sb.AppendFormat("}}\n");                   
@@ -481,13 +490,13 @@ namespace codegen
             }
             sb.AppendFormat("}};\n");
         }
-        void ProcessAttributeJSFromXml(StringBuilder sb, GenClassPivot oGenClass, GenMemberPivot oGenMember, int index, string sElemName)
+        void ProcessAttributeJSFromXml(StringBuilder sb, GenClassPivot oGenClass, GenMemberPivot oGenMember, int index)
         {
             bool bTodo = true;
             if (null != oGenMember.oSystemType)
             {
                 bTodo = false;
-                sb.AppendFormat("case \"{0}\": {{\n this.{1} = reader.{2}();\n break;\n }}\n", sElemName, sElemName, ProcessJSTypeFromXml(Type.GetTypeCode(oGenMember.oSystemType), out bTodo));
+                sb.AppendFormat("case \"{0}\": {{\n this.{1} = reader.{2}();\n break;\n }}\n", oGenMember.sName, getClassMemberName(oGenMember.sName), ProcessJSTypeFromXml(Type.GetTypeCode(oGenMember.oSystemType), out bTodo));
             }
             else if (null != oGenMember.sType)
             {
@@ -498,13 +507,13 @@ namespace codegen
                     if (oGenClassMember.bIsEnum)
                     {
                         bTodo = false;
-                        sb.AppendFormat("case \"{0}\": {{\nthis.{1} = FromXml_{2}(reader.GetValue());\n break;\n }}\n", sElemName, sElemName, GetEnumClassName(oGenClassMember.sName));
+                        sb.AppendFormat("case \"{0}\": {{\nthis.{1} = fromXml_{2}(reader.GetValue());\n break;\n }}\n", oGenMember.sName, getClassMemberName(oGenMember.sName), GetEnumClassName(oGenClassMember.sName));
                     }
                 }
             }
             if (bTodo)
             {
-                sb.AppendFormat("//todo {0}\n", sElemName);
+                sb.AppendFormat("//todo {0}\n", getClassMemberName(oGenMember.sName));
             }
         }
         string ProcessJSTypeFromXml(TypeCode oTypeCode, out bool bTodo)
@@ -516,13 +525,15 @@ namespace codegen
                 case TypeCode.Boolean:
                     sRes = "GetValueBool";
                     break;
-                case TypeCode.Byte:
                 case TypeCode.SByte:
                 case TypeCode.Int16:
                 case TypeCode.Int32:
+                    sRes = "GetValueInt";
+                    break;
+                case TypeCode.Byte:
                 case TypeCode.UInt16:
                 case TypeCode.UInt32:
-                    sRes = "GetValueInt";
+                    sRes = "GetValueUInt";
                     break;
                 case TypeCode.Int64:
                 case TypeCode.UInt64:
@@ -542,7 +553,7 @@ namespace codegen
         string getNameWithPrefix(GenClassPivot oGenClass, GenMemberPivot oGenMember, string sRootNamespace, out string sTodo)
         {
             sTodo = "";
-            return "w:" + oGenMember.sName;
+            return toXmlNaspace + oGenMember.sName;
 
             //string sShortNamespace = "";
             //if (true == oGenMember.bQualified)

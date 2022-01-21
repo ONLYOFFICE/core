@@ -42,34 +42,35 @@ namespace XLS
 		std::size_t seed = 0;
 
 		boost::hash_combine(seed, val.enabled);
-		boost::hash_combine(seed, val.icv);
-		boost::hash_combine(seed, val.xclrType);
-		boost::hash_combine(seed, val.xclrValue);
-
+		if (val.enabled)
+		{
+			boost::hash_combine(seed, val.icv);
+			boost::hash_combine(seed, val.xclrType);
+			boost::hash_combine(seed, val.xclrValue);
+		}
 		return seed;
 	}
 	std::size_t hash_value(FillInfo const & val)
 	{
 		std::size_t seed = 0;
+
+		boost::hash_combine(seed, val.backFillInfo_);
+		boost::hash_combine(seed, val.foreFillInfo_);
+
 		boost::hash_combine(seed, val.icvFore);
 		boost::hash_combine(seed, val.icvBack);
 		boost::hash_combine(seed, val.fls);
-
-		boost::hash_combine(seed, val.backFillInfo_.enabled);
-		boost::hash_combine(seed, val.backFillInfo_.icv);
-		boost::hash_combine(seed, val.backFillInfo_.xclrType);
-		boost::hash_combine(seed, val.backFillInfo_.xclrValue);
-
-		boost::hash_combine(seed, val.foreFillInfo_.enabled);
-		boost::hash_combine(seed, val.foreFillInfo_.icv);
-		boost::hash_combine(seed, val.foreFillInfo_.xclrType);
-		boost::hash_combine(seed, val.foreFillInfo_.xclrValue);
-
+		
 		return seed;
 	}
 	std::size_t hash_value(BorderInfo const & val)
 	{
 		std::size_t seed = 0;
+		boost::hash_combine(seed, val.bottomFillInfo_);
+		boost::hash_combine(seed, val.leftFillInfo_);
+		boost::hash_combine(seed, val.rightFillInfo_);
+		boost::hash_combine(seed, val.topFillInfo_);
+
 		boost::hash_combine(seed, val.dgBottom);
 		boost::hash_combine(seed, val.dgLeft);
 		boost::hash_combine(seed, val.dgRight);
@@ -83,15 +84,12 @@ namespace XLS
 		boost::hash_combine(seed, val.icvTop);
 		boost::hash_combine(seed, val.icvDiag);
 
-		boost::hash_combine(seed, val.bottomFillInfo_);
-		boost::hash_combine(seed, val.leftFillInfo_);
-		boost::hash_combine(seed, val.rightFillInfo_);
-		boost::hash_combine(seed, val.topFillInfo_);
 		return seed;
 	}
 	std::size_t hash_value(FontInfo const & val)
 	{
 		std::size_t seed = 0;
+		boost::hash_combine(seed, val.color);
 		boost::hash_combine(seed, val.dyHeight);
 		boost::hash_combine(seed, val.fItalic);
 		boost::hash_combine(seed, val.fStrikeOut);
@@ -105,7 +103,6 @@ namespace XLS
 		boost::hash_combine(seed, val.uls);
 		boost::hash_combine(seed, val.bFamily);
 		boost::hash_combine(seed, val.bCharSet);
-		boost::hash_combine(seed, val.color);
 		boost::hash_combine(seed, val.scheme);
 		boost::hash_combine(seed, val.name);
 
@@ -152,7 +149,7 @@ bool FontInfo::operator == (const FontInfo & rVal) const
 		uls	== rVal.uls &&
 		bFamily	== rVal.bFamily &&
 		bCharSet	== rVal.bCharSet &&
-		
+
 		((icv == rVal.icv && rVal.color.enabled == false && color.enabled == false)  || 
 
 		(color == rVal.color))

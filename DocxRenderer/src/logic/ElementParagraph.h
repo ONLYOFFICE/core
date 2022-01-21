@@ -137,6 +137,7 @@ namespace NSDocxRenderer
         double m_dPosition;
         double m_dSpaceWidthMM;
 
+        double m_dCalculateWidth;
         std::vector <double> m_arWidthText;
 
     public:
@@ -156,6 +157,7 @@ namespace NSDocxRenderer
             m_dPosition		= 0;
             m_dSpaceWidthMM	= 0;
 
+            m_dCalculateWidth = 0;
         }
         ~CContText()
         {
@@ -191,6 +193,8 @@ namespace NSDocxRenderer
             m_dPosition = oSrc.m_dPosition;
             m_dSpaceWidthMM = oSrc.m_dSpaceWidthMM;
 
+            m_dCalculateWidth = oSrc.m_dCalculateWidth;
+
             return *this;
         }
 
@@ -201,6 +205,71 @@ namespace NSDocxRenderer
         inline bool IsBiggerOrEqual(const CContText* oSrc)
         {
             return (m_dX >= oSrc->m_dX) ? true : false;
+        }
+
+        std::vector<CContText*> BreakCont(double dLeftLineCoord, double dRightLineCoord, int bMode)
+        {
+            std::vector<CContText*> arReturnConts;
+            size_t nCountChars = m_arWidthText.size();
+            bool bPrevMark = false;
+            size_t nLastIdx = 0;
+
+            for (size_t i = 0; i < nCountChars; ++i)
+            {
+                double dCoordChar = m_dX + m_arWidthText[i];
+                if (dCoordChar >= dLeftLineCoord && dCoordChar <= dRightLineCoord+0.3)
+                {
+                    if (0 == i)
+                        bPrevMark = true;
+
+                    if (bPrevMark != true)
+                    {
+                        CContText* pCont = new CContText(*this);
+                        pCont->ChangeText(nLastIdx, i-1);
+                        pCont->m_dSpaceWidthMM = 0;
+                        pCont->m_dX = m_dX + m_arWidthText[nLastIdx];
+                        pCont->m_dLeftWithoutSpaces		= m_dX + m_arWidthText[i-1];
+                        arReturnConts.push_back(pCont) ;
+                        nLastIdx = i;
+                    }
+
+                    bPrevMark = true;
+                }
+                else
+                {
+                    if (0 == i)
+                        bPrevMark = false;
+
+                    if (bPrevMark != false)
+                    {
+                        CContText* pCont = new CContText(*this);
+                        pCont->MarkFontProperties(bMode);
+                        pCont->ChangeText(nLastIdx, i-1);
+                        pCont->m_dSpaceWidthMM = 0;
+                        pCont->m_dX = m_dX + m_arWidthText[nLastIdx];
+                        pCont->m_dLeftWithoutSpaces		= m_dX + m_arWidthText[i-1];
+                        arReturnConts.push_back(pCont) ;
+                        nLastIdx = i;
+                    }
+
+                    bPrevMark = false;
+                }
+            }
+
+            CContText* pCont = new CContText(*this);
+            if (bPrevMark)
+                pCont->MarkFontProperties(bMode);
+
+            pCont->m_dSpaceWidthMM = 0;
+            pCont->m_dX = m_dX + m_arWidthText[nLastIdx];
+            if (nCountChars > 0)
+            {
+                pCont->ChangeText(nLastIdx, nCountChars-1);
+            }
+            else
+                pCont->ChangeText(nLastIdx, 0);
+            arReturnConts.push_back(pCont);
+            return arReturnConts;
         }
 
         void ChangeText(size_t nFrom, size_t nBefore )
@@ -501,48 +570,6 @@ namespace NSDocxRenderer
             }
         }
 
-        std::vector<CContText*> BreakCont(size_t idx, double dLeftLineCoord, double dRightLineCoord, int bMode)
-        {
-            std::vector<CContText*> arReturnConts;
-
-            std::vector <bool> arTagget;
-            size_t nCountChars = m_arConts[idx]->m_arWidthText.size();
-            for (size_t i = 0; i < nCountChars; ++i)
-            {
-                double dCoordChar = m_arConts[idx]->m_dX + m_arConts[idx]->m_arWidthText[i];
-                if (dCoordChar >= dLeftLineCoord && dCoordChar <= dRightLineCoord)
-                {
-                    arTagget.push_back(true);
-                }
-                else
-                {
-                    arTagget.push_back(false);
-                }
-            }
-
-            bool bPrevTag = arTagget[0];
-            size_t nBlockStart = 0;
-            for (size_t j = 1; j < arTagget.size(); ++j)
-            {
-                if (bPrevTag != arTagget[j])
-                {
-                    CContText* pTempCont = m_arConts[idx];
-                    pTempCont->ChangeText(nBlockStart, j-1);
-
-                    if (arTagget[j-1] == true)
-                        pTempCont->MarkFontProperties(bMode);
-
-                    arReturnConts.push_back(pTempCont);
-                    nBlockStart = j;
-                }
-                bPrevTag = arTagget[j];
-            }
-            if (!nBlockStart)
-                arReturnConts.push_back(m_arConts[idx]);
-
-            return arReturnConts;
-        }
-
         void SearchInclusions(double dLeftLineCoord, double dRightLineCoord, int bMode)
         {
             std::vector<CContText*> arTempConts;
@@ -558,7 +585,7 @@ namespace NSDocxRenderer
                     if (dRightLineCoord > dLeftCont)
                     {
                         //разбиваем
-                        std::vector<CContText*> arBreakCont = BreakCont(i, dLeftLineCoord, dRightLineCoord, bMode);
+                        std::vector<CContText*> arBreakCont = m_arConts[i]->BreakCont(dLeftLineCoord, dRightLineCoord, bMode);
                         for (size_t j = 0; j < arBreakCont.size(); ++j)
                         {
                             arTempConts.push_back(arBreakCont[j]);
@@ -575,7 +602,7 @@ namespace NSDocxRenderer
                     if (dLeftLineCoord > dLeftCont)
                     {
                         //разбиваем
-                        std::vector<CContText*> arBreakCont = BreakCont(i, dLeftLineCoord, dRightLineCoord, bMode);
+                        std::vector<CContText*> arBreakCont = m_arConts[i]->BreakCont(dLeftLineCoord, dRightLineCoord, bMode);
                         for (size_t j = 0; j < arBreakCont.size(); ++j)
                         {
                             arTempConts.push_back(arBreakCont[j]);
@@ -590,6 +617,7 @@ namespace NSDocxRenderer
                     }
                 }
             }
+            this->m_arConts.clear();
             this->m_arConts = arTempConts;
         }
 

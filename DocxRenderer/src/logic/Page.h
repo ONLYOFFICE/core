@@ -573,7 +573,7 @@ namespace NSDocxRenderer
 								&& dBottomTextLine/(pShape->m_dHeight + pShape->m_dTop) > 0.925
 								&& (pShape->m_dHeight + pShape->m_dTop) > dBottomTextLine
 								&& (pShape->m_dTop) < dBottomTextLine
-								&& pShape->m_dLeft <= m_arTextLine[j]->m_dX
+								&& pShape->m_dLeft >= m_arTextLine[j]->m_dX
 								&& (pShape->m_dLeft + pShape->m_dWidth) <= (m_arTextLine[j]->m_dX + dWidthTextLine))
 
 							{

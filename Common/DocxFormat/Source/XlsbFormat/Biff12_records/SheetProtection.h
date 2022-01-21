@@ -51,6 +51,8 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
+            static const XLS::ElementType	type = XLS::typeSheetProtection;
+
             _UINT16                     protpwd;
             XLS::Boolean<unsigned int>  fLocked;
             XLS::Boolean<unsigned int>  fObjects;

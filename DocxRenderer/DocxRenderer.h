@@ -33,7 +33,7 @@
 #define _DOCX_RENDERER_H
 
 #include "../DesktopEditor/graphics/IRenderer.h"
-#include "../DesktopEditor/common/officedrawingfile.h"
+#include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include <string>
 #include <vector>

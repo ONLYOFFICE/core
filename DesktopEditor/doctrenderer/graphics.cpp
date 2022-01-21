@@ -1167,7 +1167,7 @@ void CGraphics::put_brushTexture(std::wstring src, int type)
         if(src.find(L"onlyoffice_hatch") != std::wstring::npos)
             bIsOnlyOfficeHatch = true;
         #ifdef _DEBUG
-        std::wcout << L"put_brushTexture " << src << L"  "  << bIsOnlyOfficeHatch << std::endl;
+        std::wcout << L"put_brushTexture " << src << L"  "  << type << std::endl;
         #endif
         src.erase(0, src.find(L',') + 1);
 
@@ -1310,7 +1310,7 @@ int CGraphics::GetLineJoin()
 void CGraphics::put_TextureBounds(double x, double y, double w, double h)
 {
     #ifdef _DEBUG
-    std::cout << "put_TextureBounds " << L"  " << x << "  " << y << L"  " << w << L"  " << h << std::endl;
+    std::cout << "put_TextureBounds " << x << "  " << y << "  " << w << "  " << h << std::endl;
     #endif
     if(m_pRenderer->get_IntegerGrid())
     {

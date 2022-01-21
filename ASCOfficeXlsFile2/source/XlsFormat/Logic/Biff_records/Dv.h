@@ -53,14 +53,14 @@ enum _typOperatorDv
 };
 enum _valTypeDv
 {
-	typeDvCustom = 0,
-	typeDvDate,
-	typeDvDecimal,
-	typeDvList,
-	typeDvNone,
-	typeDvTextLength,
-	typeDvTime,
-	typeDvWhole
+	typeDvNone = 0,
+	typeDvWhole = 1,
+	typeDvDecimal = 2,
+	typeDvList = 3,
+	typeDvDate = 4,
+	typeDvTime = 5,
+	typeDvTextLength = 6,
+	typeDvCustom = 7
 };
 class Dv: public BiffRecord
 {
@@ -72,7 +72,7 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeDv;
+        static const ElementType	type = typeDv;
 
 	int serialize(std::wostream & stream);
 

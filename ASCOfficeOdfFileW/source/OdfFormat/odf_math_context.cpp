@@ -110,23 +110,29 @@ namespace odf_writer
 	static formulasconvert::oox2odf_converter formulas_converter_math;
 
 	odf_math_context::odf_math_context(odf_conversion_context *odf_context)
-        : lvl_of_me(0), counter(0), impl_(new  odf_math_context::Impl(odf_context))
+		: impl_(new  odf_math_context::Impl(odf_context)), lvl_of_me(0), counter(0)
 	{
-		mo  = { L'+', L'-', L'±', L'∓', L'∙', L'×', L'∗', L'÷', L'/', L'≂', L'⊕', L'⊖', L'⊙', L'⊗', L'⊘', L'∘', L'¬', L'∧', L'∨',		// un/bi operators
+		mo = { L'+', L'-', L'±', L'∓', L'∙', L'×', L'∗', L'÷', L'/', L'≂', L'⊕', L'⊖', L'⊙', L'⊗', L'⊘', L'∘', L'¬', L'∧', L'∨',		// un/bi operators
 				L'=', L'≠', L'<', L'≤', L'>', L'≥', L'≪', L'≫', L'≈', L'~', L'≃', L'≡', L'∝', L'∥', L'⟂', L'|', L'∤', L'→', L'⊷',	// relations
 				L'⊶', L'≝', L'⇐', L'⇔', L'⇒', L'≺', L'≻',  L'≼', L'≽', L'≾', L'≿',  L'⊀', L'⊁',										// relationships over sets
-                L'∈', L'∉', L'∋', L'∩', L'∪', L'/', L'/', L'⊂', L'⊆', L'⊃', L'⊇', L'⊄', L'⊈', L'⊅', L'⊉',						//
+				L'∈', L'∉', L'∋', L'∩', L'∪', L'/', L'⊂', L'⊆', L'⊃', L'⊇', L'⊄', L'⊈', L'⊅', L'⊉',						//
 				L'∞', L'∂', L'∇', L'∃', L'∄', L'∀', L'ħ', L'ƛ', L'ℜ', L'ℑ', L'℘', L'ℒ', L'ℱ', L'←', L'→', L'↑', L'↓',					// others
 				L'…', L'⋯', L'⋮', L'⋰', L'⋱', L'∞', L'→',
-                L'∫', L'∬', L'∭', L'∮', L'∯', L'∰',
-				L'∑', L'∏', L'∐', L'⋃', L'⋂', L'⋀', L'⋁', L'≝', L'≞', L'≜'
+				L'∫', L'∬', L'∭', L'∮', L'∯', L'∰',
+				L'∑', L'∏', L'∐', L'⋃', L'⋂', L'⋀', L'⋁', L'≝', L'≞', L'≜',
+				L'˙', L'¨', L'⃛', L'̂', L'̌', L'́'//, L'̆', L'', L'', L'', L'', L'',
 		};
-        //debug_stream.open("LogCounter.txt");
+
+		diakSymbols = { {L"̇", L"˙"}, {L"̈", L"¨"}, {L"⃛", L"⃛"}, {L"̂", L"&#708;"}, {L"̌", L"ˇ"}, {L"́", L"´"}, {L"̀", L"&#715;"}, {L"̆", L"˘"}, {L"̃", L"~"}, {L"̅", L"¯"},
+						{L"̿", L"═"}, {L"⏞", L"⏞"}, {L"⃖", L"←"}, {L"⃗", L"→"}, {L"⃡", L"↔"}, {L"⃐", L"↼"}, {L"⃑", L"⇀"}, {L"̲", L"&#45;"}
+						//{L'', L''}, { L'', L'' }, { L'', L'' }, { L'', L'' }, { L'', L'' }, { L'', L'' }, { L'', L'' }
+		};
+		//debug_stream.open(debug_fileName);
 	}
 
 	odf_math_context::~odf_math_context()
 	{
-        //debug_stream.close();
+		//debug_stream.close();
 	}
 
 	void odf_math_context::set_styles_context(odf_style_context * style_context)

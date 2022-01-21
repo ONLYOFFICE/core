@@ -33,8 +33,6 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 
@@ -48,6 +46,8 @@ namespace XLSB
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
+
+        static const XLS::ElementType	type = XLS::typeWSVIEW2;
 
         XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginWsView;

@@ -87,7 +87,7 @@ HEADERS += \
     ./../ImageFilesCache.h \
     ./../MetafileToRenderer.h \
     ./../MetafileToRendererCheck.h \
-    ./../MetafileToGraphicsRenderer.h \    
+    ./../MetafileToGraphicsRenderer.h \
     ./../structures.h \
     ./../Graphics.h \
     ./../GraphicsRenderer.h \
@@ -133,11 +133,6 @@ SOURCES += \
     ./../../raster/Metafile/svg/SVGFramework.cpp \
     ./../../raster/Metafile/svg/SVGTransformer.cpp
 
-core_release {
-SOURCES += $$PWD/graphics_pri.cpp
-}
-
-core_debug {
 SOURCES += \
     ./../../agg-2.4/src/agg_arc.cpp \
     ./../../agg-2.4/src/agg_bezier_arc.cpp \
@@ -158,7 +153,7 @@ SOURCES += \
     ./../../agg-2.4/src/agg_vcgen_markers_term.cpp \
     ./../../agg-2.4/src/agg_vcgen_smooth_poly1.cpp \
     ./../../agg-2.4/src/agg_vcgen_stroke.cpp \
-\
+    \
     ./../../fontengine/fontconverter/StringExt.cpp \
     ./../../fontengine/fontconverter/Hash.cpp \
     ./../../fontengine/fontconverter/FontConverter.cpp \
@@ -166,10 +161,10 @@ SOURCES += \
     ./../../fontengine/fontconverter/FontFileTrueType.cpp \
     ./../../fontengine/fontconverter/FontFileType1.cpp \
     ./../../fontengine/fontconverter/FontFileType1C.cpp \
-\
+    \
     ./../../raster/Jp2/J2kFile.cpp \
     ./../../raster/Jp2/Reader.cpp \
-\
+    \
     ./../../raster/Metafile/Common/MetaFileTypes.cpp \
     ./../../raster/Metafile/Common/MetaFileUtils.cpp \
     ./../../raster/Metafile/Emf/EmfClip.cpp \
@@ -180,14 +175,13 @@ SOURCES += \
     ./../../raster/Metafile/Wmf/WmfClip.cpp \
     ./../../raster/Metafile/Wmf/WmfObjects.cpp \
     ./../../raster/Metafile/Wmf/WmfPlayer.cpp \
-\
+    \
     ./../../raster/JBig2/source/JBig2File.cpp \
-\
+    \
     ./../../raster/Metafile/StarView/SvmClip.cpp \
     ./../../raster/Metafile/StarView/SvmFile.cpp \
     ./../../raster/Metafile/StarView/SvmObjects.cpp \
     ./../../raster/Metafile/StarView/SvmPlayer.cpp
-}
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jasper/base/jas_cm.c \
@@ -314,9 +308,9 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/ckconfig.c \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/djpeg.c
 
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri.c
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri2.c
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri3.c
+SOURCES += ./libpsd_pri.c
+SOURCES += ./libpsd_pri2.c
+SOURCES += ./libpsd_pri3.c
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/mng/libmng_callback_xs.c \
@@ -434,7 +428,7 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/Encoder/jbig2enc.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/Encoder/jbig2sym.cpp
 
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/lepton_lib_all.cpp
+SOURCES += ./lepton_lib_all.cpp
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/boxbasic.cpp \
@@ -461,11 +455,13 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/sel2.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/skew.cpp
 
-HEADERS += \
-    ./../../fontengine/ApplicationFontsWorker.h
+# Application fonts worker
+HEADERS += ./../../fontengine/ApplicationFontsWorker.h
+SOURCES += ./../../fontengine/ApplicationFontsWorker.cpp
 
-SOURCES += \
-    ./../../fontengine/ApplicationFontsWorker.cpp
+# drawing file
+HEADERS += ./officedrawingfile.h
+SOURCES += ./officedrawingfile.cpp
 
 # deprecated!!! remove after 6.5 ------------------
 HEADERS += ./../../fontengine/FontsAssistant.h

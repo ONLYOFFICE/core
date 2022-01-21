@@ -1,0 +1,5 @@
+<<<<<<<
+ft_longjmp( *(ft_jmp_buf*) jump_buffer, 1 );
+=======
+ft_longjmp_ex( *(ft_jmp_buf*) jump_buffer, 1 );
+>>>>>>>

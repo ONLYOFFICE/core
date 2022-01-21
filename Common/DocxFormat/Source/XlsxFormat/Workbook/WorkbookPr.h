@@ -201,6 +201,7 @@ namespace OOX
 					WritingStringNullableAttrInt(L"workbookSpinCount", m_oWorkbookSpinCount, m_oWorkbookSpinCount->GetValue());
 					WritingStringNullableAttrInt(L"lockStructure", m_oLockStructure, m_oLockStructure->ToBool() ? 1 : 0);
 					WritingStringNullableAttrInt(L"lockWindows", m_oLockWindows, m_oLockWindows->ToBool() ? 1 : 0);
+					WritingStringNullableAttrString(L"workbookPassword", m_oPassword, m_oPassword.get());
 				writer.WriteString(L"/>");
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -234,6 +235,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if(oReader, (L"lockRevision"), m_oLockRevision)
 					WritingElement_ReadAttributes_Read_else_if(oReader, (L"lockStructure"), m_oLockStructure)
 					WritingElement_ReadAttributes_Read_else_if(oReader, (L"lockWindows"), m_oLockWindows)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"workbookPassword"), m_oPassword)
 				WritingElement_ReadAttributes_End(oReader)
 			}
 
@@ -257,17 +259,17 @@ namespace OOX
 
                     m_oWorkbookAlgorithmName   = ptr->ipdBookPasswordData.szAlgName.value();
                     m_oWorkbookSpinCount       = ptr->dwBookSpinCount;
-                    m_oWorkbookHashValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdBookPasswordData.rgbHash.rgbData),
-                                                              ptr->ipdBookPasswordData.rgbHash.cbLength/sizeof(wchar_t));
-                    m_oWorkbookSaltValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdBookPasswordData.rgbSalt.rgbData),
-                                                              ptr->ipdBookPasswordData.rgbSalt.cbLength/sizeof(wchar_t));
+                    m_oWorkbookHashValue       = std::wstring(ptr->ipdBookPasswordData.rgbHash.rgbData.begin(),
+                                                              ptr->ipdBookPasswordData.rgbHash.rgbData.end());
+                    m_oWorkbookSaltValue       = std::wstring(ptr->ipdBookPasswordData.rgbSalt.rgbData.begin(),
+                                                              ptr->ipdBookPasswordData.rgbSalt.rgbData.end());
 
                     m_oRevisionsAlgorithmName   = ptr->ipdRevPasswordData.szAlgName.value();
                     m_oRevisionsSpinCount       = ptr->dwRevSpinCount;
-                    m_oRevisionsHashValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdRevPasswordData.rgbHash.rgbData),
-                                                              ptr->ipdRevPasswordData.rgbHash.cbLength/sizeof(wchar_t));
-                    m_oRevisionsSaltValue       = std::wstring(reinterpret_cast<wchar_t*>(ptr->ipdRevPasswordData.rgbSalt.rgbData),
-                                                              ptr->ipdRevPasswordData.rgbSalt.cbLength/sizeof(wchar_t));
+                    m_oRevisionsHashValue       = std::wstring(ptr->ipdRevPasswordData.rgbHash.rgbData.begin(),
+                                                              ptr->ipdRevPasswordData.rgbHash.rgbData.end());
+                    m_oRevisionsSaltValue       = std::wstring(ptr->ipdRevPasswordData.rgbSalt.rgbData.begin(),
+                                                              ptr->ipdRevPasswordData.rgbSalt.rgbData.end());
                 }
 
 
@@ -282,6 +284,8 @@ namespace OOX
 			nullable_string									m_oWorkbookHashValue;
 			nullable_string									m_oWorkbookSaltValue;
 
+			nullable_string									m_oPassword; //for old wrike protection
+			
 			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oRevisionsAlgorithmName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oRevisionsSpinCount;
 			nullable_string									m_oRevisionsHashValue;

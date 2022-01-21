@@ -2558,6 +2558,10 @@ int BinaryWorkbookTableReader::ReadProtection(BYTE type, long length, void* poRe
 	{
 		m_oWorkbook.m_oWorkbookProtection->m_oWorkbookSaltValue = m_oBufferedStream.GetString4(length);
 	}
+	else if (c_oSerWorkbookProtection::Password == type)
+	{
+		m_oWorkbook.m_oWorkbookProtection->m_oPassword = m_oBufferedStream.GetString4(length);
+	}
 	else if (c_oSerWorkbookProtection::LockStructure == type)
 	{
 		m_oWorkbook.m_oWorkbookProtection->m_oLockStructure.Init();

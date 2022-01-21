@@ -51,8 +51,8 @@ namespace XLSB
 
         virtual void load(XLS::CFRecord& record);
 
-        _UINT32     cbLength;
-        BYTE*       rgbData;
+        _UINT32             cbLength;
+        std::vector<BYTE>   rgbData;
 
     };
 

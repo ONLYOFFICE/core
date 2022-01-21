@@ -49,6 +49,8 @@ public:
 
 public:
     virtual int CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse = NULL);
+    virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear);
+    virtual void GetMemory(BYTE*& pData, LONG& lSize);
 };
 
 class CApplicationFontStreams : public NSFonts::IApplicationFontStreams
@@ -56,8 +58,8 @@ class CApplicationFontStreams : public NSFonts::IApplicationFontStreams
 private:
 	// этот мап нужно периодически опрашивать и удалять неиспользуемые стримы
 	std::map<std::wstring, CFontStream*> m_mapStreams;
-public:
 
+public:
 	CApplicationFontStreams();
     virtual ~CApplicationFontStreams();
 

@@ -47,7 +47,8 @@ namespace codegen
         {
             //(new codegen.CodeGen()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);
             //(new codegen.CodeGenPivot()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);
-            (new codegen.CodeGenSlicer()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);
+            //(new codegen.CodeGenSlicer()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);
+            (new codegen.CodeGenXmlJS()).Start(sDirIn, sDirCppXmlOut, sDirCppBinOut, sDirJsBinOut, ValidationCallback);
         }
         static void ValidationCallback(object sender, ValidationEventArgs args)
         {

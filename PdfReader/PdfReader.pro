@@ -15,12 +15,8 @@ PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)
 
 DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
-DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, HtmlRenderer)
-
-DEFINES += CRYPTOPP_DISABLE_ASM
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 
 core_windows {
 LIBS += -lgdi32 \
@@ -28,6 +24,8 @@ LIBS += -lgdi32 \
         -luser32 \
         -lshell32
 }
+
+core_android:DEFINES += ANDROID
 
 INCLUDEPATH += \
     $$PWD/lib/goo \
@@ -60,7 +58,15 @@ SOURCES += \
     Src/GfxClip.cpp \
     PdfReader.cpp
 
-HEADERS +=\
+HEADERS += \
+    Src/RendererOutputDev.h \
+    Src/Adaptors.h \
+    Src/MemoryUtils.h \
+    Src/GfxClip.h \
+    PdfReader.h
+
+# Base fonts
+HEADERS += \
     Resources/Fontd050000l.h \
     Resources/Fontn019003l.h \
     Resources/Fontn019004l.h \
@@ -75,10 +81,18 @@ HEADERS +=\
     Resources/Fontn022023l.h \
     Resources/Fontn022024l.h \
     Resources/Fonts050000l.h \
-    Src/RendererOutputDev.h \
-    Src/Adaptors.h \
-    Src/MemoryUtils.h \
-    Src/GfxClip.h \
-    PdfReader.h
+    Resources/BaseFonts.h
+
+SOURCES += \
+    Resources/BaseFonts.cpp
 
 core_windows:LIBS += -lOle32
+
+#CONFIG += build_viewer_module
+build_viewer_module {
+    DEFINES += BUILDING_WASM_MODULE
+    DEFINES += TEST_AS_EXECUTABLE
+
+    HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
+    SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
+}

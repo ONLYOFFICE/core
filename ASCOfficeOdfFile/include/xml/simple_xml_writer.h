@@ -83,7 +83,7 @@ namespace writer
         static const wchar_t apos = L'\'';
         static const wchar_t * cdata_open() { return L"<![CDATA["; }
         static const wchar_t * cdata_close() { return L"]]>"; }
-        static const wchar_t * amp_str(){ return L"&amp;"; }
+        static const wchar_t * amp_str(){ return L"&"/* L"&amp;"*/; }
         static const wchar_t * left_brocket_str() { return L"&lt;"; }
         static const wchar_t * right_brocket_str() { return L"&gt;"; }
         static const wchar_t * apos_str() { return L"&apos;"; }
@@ -225,7 +225,7 @@ namespace writer
         template <class V>
         element& contents(V value) 
         {
-            std::basic_stringstream<T, std::char_traits<T>,	std::allocator<T> > ss;
+            std::basic_stringstream<T, std::char_traits<T>,	std::allocator<T> > ss;              
             ss << value;
             contents(ss.str());
             return *this;

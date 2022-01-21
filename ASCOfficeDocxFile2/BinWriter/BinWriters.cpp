@@ -309,13 +309,14 @@ void BinaryCommonWriter::WriteShd(const ComplexTypes::Word::CShading& Shd)
 	if (false != Shd.m_oColor.IsInit())
 		WriteColor(c_oSerShdType::Color, Shd.m_oColor.get());
 	
-	WriteThemeColor(c_oSerShdType::ColorTheme, Shd.m_oFill, Shd.m_oThemeFill, Shd.m_oThemeFillTint, Shd.m_oThemeFillShade);
+	WriteThemeColor(c_oSerShdType::ColorTheme, Shd.m_oColor, Shd.m_oThemeColor, Shd.m_oThemeTint, Shd.m_oThemeShade);
 
 	//Fill
 	if (false != Shd.m_oFill.IsInit())
 		WriteColor(c_oSerShdType::Fill, Shd.m_oFill.get());
 
-	WriteThemeColor(c_oSerShdType::FillTheme, Shd.m_oColor, Shd.m_oThemeColor, Shd.m_oThemeTint, Shd.m_oThemeShade);
+	WriteThemeColor(c_oSerShdType::FillTheme, Shd.m_oFill, Shd.m_oThemeFill, Shd.m_oThemeFillTint, Shd.m_oThemeFillShade);
+
 }
 void BinaryCommonWriter::WritePaddings(const nullable<SimpleTypes::CTwipsMeasure>& left, const nullable<SimpleTypes::CTwipsMeasure>& top,
 	const nullable<SimpleTypes::CTwipsMeasure>& right, const nullable<SimpleTypes::CTwipsMeasure>& bottom)

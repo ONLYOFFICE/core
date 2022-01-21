@@ -4396,7 +4396,7 @@ namespace SimpleTypes
 			functionProduct		=  5,
 			functionStdDev		=  6,
 			functionStdDevP		=  7,
-			functionSum			=  8,
+                        functionSum		=  8,
 			functionVariance	=  9,
 			functionVarP		=  10
 		};

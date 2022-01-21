@@ -36,7 +36,6 @@
 #include "LPByteBuf.h"
 #include "XLWideString.h"
 
-
 namespace XLSB
 {
 

@@ -69,6 +69,7 @@ namespace XLSB
     class FileSharing: public XLS::FileSharing
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(FileSharing)
+        BASE_OBJECT_DEFINE_CLASS_NAME(FileSharing)
 
         XLS::BaseObjectPtr clone() override
         {
@@ -80,6 +81,7 @@ namespace XLSB
     class ExternSheet: public XLS::ExternSheet
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(ExternSheet)
+        BASE_OBJECT_DEFINE_CLASS_NAME(ExternSheet)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -91,6 +93,7 @@ namespace XLSB
     class BookView: public XLS::Window1
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BookView)
+        BASE_OBJECT_DEFINE_CLASS_NAME(BookView)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -101,6 +104,7 @@ namespace XLSB
     class Name: public XLS::Lbl
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(Name)
+        BASE_OBJECT_DEFINE_CLASS_NAME(Name)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -111,6 +115,7 @@ namespace XLSB
     class UserBookView: public XLS::UserBView
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(UserBookView)
+        BASE_OBJECT_DEFINE_CLASS_NAME(UserBookView)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -121,6 +126,7 @@ namespace XLSB
     class WebOpt: public XLS::WOpt
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(WebOpt)
+        BASE_OBJECT_DEFINE_CLASS_NAME(WebOpt)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -131,6 +137,7 @@ namespace XLSB
     class FileRecover: public XLS::BookExt
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(FileRecover)
+        BASE_OBJECT_DEFINE_CLASS_NAME(FileRecover)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -141,6 +148,7 @@ namespace XLSB
     class ColInfo: public XLS::ColInfo
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(ColInfo)
+        BASE_OBJECT_DEFINE_CLASS_NAME(ColInfo)
 
         XLS::BaseObjectPtr clone() override
         {
@@ -151,6 +159,7 @@ namespace XLSB
     class RowHdr: public XLS::Row
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(RowHdr)
+        BASE_OBJECT_DEFINE_CLASS_NAME(RowHdr)
 
         XLS::BaseObjectPtr clone() override
         {
@@ -161,6 +170,7 @@ namespace XLSB
     class Table: public XLS::Table
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(Table)
+        BASE_OBJECT_DEFINE_CLASS_NAME(Table)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -171,6 +181,7 @@ namespace XLSB
     class ShrFmla: public XLS::ShrFmla
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(ShrFmla)
+        BASE_OBJECT_DEFINE_CLASS_NAME(ShrFmla)
         ShrFmla(const XLS::CellRef& cell_base_ref_init) : XLS::ShrFmla(cell_base_ref_init) {}
 
 		XLS::BaseObjectPtr clone() override
@@ -182,6 +193,7 @@ namespace XLSB
     class ArrFmla: public XLS::Array
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(ArrFmla)
+        BASE_OBJECT_DEFINE_CLASS_NAME(ArrFmla)
         ArrFmla(const XLS::CellRef& cell_base_ref_init) : XLS::Array(cell_base_ref_init) {}
 
 		XLS::BaseObjectPtr clone() override
@@ -193,6 +205,9 @@ namespace XLSB
     class BeginWsView: public XLS::Window2
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BeginWsView)
+        BASE_OBJECT_DEFINE_CLASS_NAME(BeginWsView)
+
+        static const XLS::ElementType	type = XLS::typeBeginWsView;
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -203,6 +218,7 @@ namespace XLSB
     class Pane: public XLS::Pane
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(Pane)
+        BASE_OBJECT_DEFINE_CLASS_NAME(Pane)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -213,6 +229,7 @@ namespace XLSB
     class Sel: public XLS::Selection
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(Sel)
+        BASE_OBJECT_DEFINE_CLASS_NAME(Sel)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -223,6 +240,7 @@ namespace XLSB
     class BeginSortState: public XLS::SortData
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BeginSortState)
+        BASE_OBJECT_DEFINE_CLASS_NAME(BeginSortState)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -233,6 +251,7 @@ namespace XLSB
     class Font: public XLS::Font
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(Font)
+        BASE_OBJECT_DEFINE_CLASS_NAME(Font)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -243,6 +262,7 @@ namespace XLSB
     class XF: public XLS::XF
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(XF)
+        BASE_OBJECT_DEFINE_CLASS_NAME(XF)
 
         XF(size_t& cell_xf_current_id, size_t& style_xf_current_id) :
             XLS::XF(cell_xf_current_id, style_xf_current_id) {}
@@ -256,6 +276,7 @@ namespace XLSB
     class DXF: public XLS::DXF
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(DXF)
+        BASE_OBJECT_DEFINE_CLASS_NAME(DXF)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -266,6 +287,7 @@ namespace XLSB
     class BeginTableStyles: public XLS::TableStyles
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BeginTableStyles)
+        BASE_OBJECT_DEFINE_CLASS_NAME(BeginTableStyles)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -276,6 +298,7 @@ namespace XLSB
     class BeginTableStyle: public XLS::TableStyle
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BeginTableStyle)
+        BASE_OBJECT_DEFINE_CLASS_NAME(BeginTableStyle)
 
 		XLS::BaseObjectPtr clone() override
 		{
@@ -286,6 +309,7 @@ namespace XLSB
     class TableStyleElement: public XLS::TableStyleElement
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(TableStyleElement)
+        BASE_OBJECT_DEFINE_CLASS_NAME(TableStyleElement)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -296,6 +320,7 @@ namespace XLSB
     class DXF14: public XLS::DXF
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(DXF14)
+        BASE_OBJECT_DEFINE_CLASS_NAME(DXF14)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -314,6 +339,7 @@ namespace XLSB
     class DXF15: public DXF14
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(DXF15)
+        BASE_OBJECT_DEFINE_CLASS_NAME(DXF15)
 
 		XLS::BaseObjectPtr clone() override
         {
@@ -324,6 +350,9 @@ namespace XLSB
     class PageSetup : public XLS::Setup
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(PageSetup)
+        BASE_OBJECT_DEFINE_CLASS_NAME(PageSetup)
+
+        static const XLS::ElementType	type = XLS::typePageSetup;
 
         XLS::BaseObjectPtr clone() override
         {
@@ -334,18 +363,20 @@ namespace XLSB
     class DVal : public XLS::Dv
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(DVal)
+        BASE_OBJECT_DEFINE_CLASS_NAME(DVal)
 
         XLS::BaseObjectPtr clone() override
         {
             return XLS::BaseObjectPtr(new DVal(*this));
         }
 
-        //static const XLS::ElementType	type = XLS::typeDVal;
+        static const XLS::ElementType	type = XLS::typeDVal;
     };
 
     class DVal14 : public XLS::Dv
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(DVal14)
+        BASE_OBJECT_DEFINE_CLASS_NAME(DVal14)
 
         DVal14(bool ext14 = true) : XLS::Dv(ext14) {}
 
@@ -360,6 +391,7 @@ namespace XLSB
     class BeginQSI: public XLS::Qsi
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BeginQSI)
+        BASE_OBJECT_DEFINE_CLASS_NAME(BeginQSI)
 
         XLS::BaseObjectPtr clone() override
         {
@@ -370,6 +402,7 @@ namespace XLSB
     class BeginQSIR: public XLS::Qsir
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BeginQSIR)
+        BASE_OBJECT_DEFINE_CLASS_NAME(BeginQSIR)
 
         XLS::BaseObjectPtr clone() override
         {
@@ -380,11 +413,43 @@ namespace XLSB
     class BeginQSIF: public XLS::Qsif
     {
         BIFF_RECORD_DEFINE_TYPE_INFO(BeginQSIF)
+        BASE_OBJECT_DEFINE_CLASS_NAME(BeginQSIF)
 
         XLS::BaseObjectPtr clone() override
         {
             return XLS::BaseObjectPtr(new BeginQSIF(*this));
         }
     };
+
+    class CsPageSetup : public XLS::Setup
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(CsPageSetup)
+        BASE_OBJECT_DEFINE_CLASS_NAME(CsPageSetup)
+
+        static const XLS::ElementType	type = XLS::typeCsPageSetup;
+
+        CsPageSetup(bool isChart = true) : XLS::Setup(isChart) {}
+
+        XLS::BaseObjectPtr clone() override
+        {
+            return XLS::BaseObjectPtr(new CsPageSetup(*this));
+        }
+    };
+
+    class BeginCsView: public XLS::Window2
+    {
+        BIFF_RECORD_DEFINE_TYPE_INFO(BeginCsView)
+        BASE_OBJECT_DEFINE_CLASS_NAME(BeginCsView)
+
+        static const XLS::ElementType	type = XLS::typeBeginCsView;
+
+        BeginCsView(bool isChart = true) : XLS::Window2(isChart) {}
+
+        XLS::BaseObjectPtr clone() override
+        {
+            return XLS::BaseObjectPtr(new BeginCsView(*this));
+        }
+    };
+
 
 } // namespace XLSB

@@ -141,8 +141,8 @@ namespace NSNetwork
 
             std::wstring    m_sResponse;       // Ответ сервера
 
-            CFileTransporter_OnComplete m_func_onComplete;
-            CFileTransporter_OnProgress m_func_onProgress;
+            std::function<void(int)> m_func_onComplete;
+            std::function<void(int)> m_func_onProgress;
         };
 
         class CFileTransporter_private : public NSThreads::CBaseThread

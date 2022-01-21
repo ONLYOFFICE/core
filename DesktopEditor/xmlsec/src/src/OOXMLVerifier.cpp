@@ -1,6 +1,6 @@
 #include "./XmlTransform.h"
 #include "./../include/OOXMLVerifier.h"
-#include "./ZipFolder.h"
+#include "../../../../OfficeUtils/src/ZipFolder.h"
 
 class COOXMLSignature_private
 {
@@ -422,7 +422,10 @@ public:
         if (!nodeTransform.IsValid())
         {
             // simple hash
-            sCalcValue = m_pFolder->getFileHash(sFile, m_cert, nAlg);
+            IFolder::CBuffer* buffer = NULL;
+            if (m_pFolder->read(sFile, buffer))
+                sCalcValue = m_cert->GetHash(buffer->Buffer, buffer->Size, (nAlg == -1) ? m_cert->GetHashAlg() : nAlg);
+            RELEASEOBJECT(buffer);
             sValue = U_TO_UTF8((node.ReadNodeText(L"DigestValue")));
             MakeBase64_NOCRLF(sValue);
         }

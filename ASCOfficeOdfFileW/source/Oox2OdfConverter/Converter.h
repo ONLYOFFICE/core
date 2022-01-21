@@ -667,7 +667,7 @@ public:
 		void convert(OOX::Logic::CAccPr					*oox_acc_pr);
 		void convert(OOX::Logic::CArgPr					*oox_arg_pr);
 		void convert(OOX::Logic::CBar					*oox_bar);
-		void convert(OOX::Logic::CBarPr					*oox_bar_pr);
+		bool convert(OOX::Logic::CBarPr					*oox_bar_pr);
 		void convert(OOX::Logic::CBorderBox				*oox_border_box);
 		void convert(OOX::Logic::CBorderBoxPr			*oox_border_box_pr);
 		void convert(OOX::Logic::CBox					*oox_box);

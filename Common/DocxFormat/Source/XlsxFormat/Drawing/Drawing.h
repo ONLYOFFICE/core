@@ -100,7 +100,10 @@ namespace OOX
             {
                 auto ptr = static_cast<XLSB::Drawing*>(obj.get());
                 if(ptr != nullptr)
-                    m_oId = ptr->stRelId.value.value();
+                {
+                    if(!ptr->stRelId.value.value().empty())
+                        m_oId = ptr->stRelId.value.value();
+                }
             }
 		public:
             nullable<SimpleTypes::CRelationshipId > m_oId;

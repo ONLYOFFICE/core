@@ -235,6 +235,8 @@ namespace NExtractTools
         TCSVD_SPACE = 5
     } TCsvDelimiter;
 
+	const TConversionDirection getConversionDirectionFromExt (const std::wstring &sFile1, const std::wstring &sFile2);
+
     static bool copyOrigin(const std::wstring& sFileFrom, const std::wstring& sFileTo)
     {
         size_t nIndex = sFileFrom.rfind('.');
@@ -860,6 +862,17 @@ namespace NExtractTools
 		TConversionDirection getConversionDirection()
 		{
 			TConversionDirection eRes = TCD_AUTO;
+			if((NULL == m_nFormatFrom || AVS_OFFICESTUDIO_FILE_UNKNOWN == *m_nFormatFrom) && NULL == m_nFormatTo && NULL != m_sFileFrom && NULL != m_sFileTo)
+			{
+				eRes = getConversionDirectionFromExt (*m_sFileFrom, *m_sFileTo);
+				if (TCD_ERROR != eRes)
+					return eRes;
+				COfficeFileFormatChecker FileFormatChecker;
+				RELEASEOBJECT(m_nFormatFrom);
+				m_nFormatFrom = new int(FileFormatChecker.GetFormatByExtension(L"." + NSFile::GetFileExtention(*m_sFileFrom)));
+				RELEASEOBJECT(m_nFormatTo);
+				m_nFormatTo = new int(FileFormatChecker.GetFormatByExtension(L"." + NSFile::GetFileExtention(*m_sFileTo)));
+			}
 
 			if(NULL != m_nFormatFrom && NULL != m_nFormatTo)
 			{
@@ -910,23 +923,9 @@ namespace NExtractTools
                 else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
                     eRes = TCD_ZIPDIR;
             }
-			else if(NULL != m_sFileFrom && NULL != m_sFileTo)
-			{
-				eRes = TCD_AUTO;
-			}
 			else
 				eRes = TCD_ERROR;
 			return eRes;
-		}
-		TConversionDirection getConversionDirectionFromExt()
-		{
-			if (NULL != m_sFileTo)
-			{
-				COfficeFileFormatChecker FileFormatChecker;
-				RELEASEOBJECT(m_nFormatTo);
-				m_nFormatTo = new int(FileFormatChecker.GetFormatByExtension(L"." + NSFile::GetFileExtention(*m_sFileTo)));
-			}
-			return getConversionDirection();
 		}
 		TConversionDirection processDownloadFile()
         {
@@ -1321,7 +1320,6 @@ namespace NExtractTools
 		return res;
     }
 
-	const TConversionDirection getConversionDirectionFromExt (const std::wstring &sFile1, const std::wstring &sFile2);
     static bool compare_string_by_length (const std::wstring &x, const std::wstring &y)
 	{
 		if (!x.empty() && !y.empty())

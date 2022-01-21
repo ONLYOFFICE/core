@@ -1,0 +1,16 @@
+<<<<<<<
+            if ( ft_setjmp( FT_VALIDATOR( &valid )->jump_buffer) == 0 )
+            {
+              /* validate this cmap sub-table */
+              error = clazz->validate( cmap, FT_VALIDATOR( &valid ) );
+            }
+=======
+            try
+            {
+              /* validate this cmap sub-table */
+              error = clazz->validate( cmap, FT_VALIDATOR( &valid ) );
+            }
+            catch (int jmp)
+            {              
+            }
+>>>>>>>

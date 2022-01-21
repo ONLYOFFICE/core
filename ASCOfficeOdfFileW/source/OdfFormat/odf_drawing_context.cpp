@@ -1254,8 +1254,16 @@ void odf_drawing_context::start_element(office_element_ptr elm, office_element_p
 {
     size_t level = (int)impl_->current_level_.size();
 	
-	if (false == impl_->current_level_.empty() && elm)
-		impl_->current_level_.back()->add_child_element(elm);
+	//если  фейковый предыдущий уровень (для сохранения порядка выше) - привязывааем к уровню выше
+
+	for (int i = impl_->current_level_.size() - 1; elm && i >= 0; i--)
+	{
+		if (impl_->current_level_[i])
+		{
+			impl_->current_level_[i]->add_child_element(elm);
+			break;
+		}
+	}
 
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
@@ -2641,9 +2649,26 @@ void odf_drawing_context::start_image(std::wstring odf_path)
 			
 	set_image_style_repeat(1);//default
 }
-void odf_drawing_context::start_object(std::wstring name)
+void odf_drawing_context::start_object(std::wstring name, bool in_frame)
 {
-	start_frame();
+	if (in_frame)
+		start_frame();
+	else
+	{
+		//remove text_box - он лишний (оставляя фейковый, который не запишется)
+		impl_->current_level_.back() = office_element_ptr(); // чтоб внутрении элементы добавлялись к тому что выше
+		
+		if (impl_->current_level_.size() > 1)
+		{
+			draw_base* draw = dynamic_cast<draw_base*>(impl_->current_level_[impl_->current_level_.size() - 2].get());
+			if (draw)
+			{
+				if (false == draw->content_.empty())
+					draw->content_.pop_back();
+			}
+
+		}
+	}
 	
 	office_element_ptr object_elm;
 	create_element(L"draw", L"object", object_elm, impl_->odf_context_);
@@ -3033,11 +3058,12 @@ void odf_drawing_context::end_text_box()
 
 	end_frame();
 }
-void odf_drawing_context::end_object()
+void odf_drawing_context::end_object(bool in_frame)
 {
 	end_element();
 
-	end_frame();
+	if (in_frame)
+		end_frame();
 }
 void odf_drawing_context::start_object_ole(std::wstring ref)
 {
@@ -3105,11 +3131,13 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 {
 	if (text_context == NULL || impl_->current_level_.empty() ) return;
 	
+	if (!impl_->current_level_.back()) return; // фейковый текстбокс к примеру
+
 	//if (impl_->is_presentation_ && *impl_->is_presentation_) return; 
 
 	for (size_t i = 0; i < text_context->text_elements_list_.size(); i++)
 	{
-		if (text_context->text_elements_list_[i].level ==0)
+		if (text_context->text_elements_list_[i].level == 0)
 		{
 			impl_->current_level_.back()->add_child_element(text_context->text_elements_list_[i].elm);
 		}

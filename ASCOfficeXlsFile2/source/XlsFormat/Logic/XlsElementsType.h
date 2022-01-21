@@ -739,7 +739,7 @@ enum ElementType
 	typeOfficeArtSplitMenuColorContainer,
 	typeOfficeArtTertiaryFOPT,
 	typeOfficeArtClientData,
-        typeOfficeArtClientTextbox,
+    typeOfficeArtClientTextbox,
 
         //xlsb static const XLS::ElementType	type = XLS::typeSLICERCACHEOLAPIMPL;
         typeCONDITIONALFORMATTING = 4000,
@@ -811,6 +811,27 @@ enum ElementType
         typeSLICEREX,
         typeTABLESLICEREX,
         typeFRTWORKBOOK,
+        typeRWBRK,
+        typeCOLBRK,
+        typeBeginRwBrk,
+        typeBeginColBrk,
+        typeRangeProtection,
+        typeRangeProtectionIso,
+        typeCsProtection,
+        typeCsProtectionIso,
+        typeSheetProtection,
+        typeSheetProtectionIso,
+        typeCSVIEWS,
+        typeCSVIEW,
+        typeBeginCsView,
+        typeWSVIEWS2,
+        typeWSVIEW2,
+        typeBeginWsView,
+        typeCsPageSetup,
+        typePageSetup,
+        typeCsProp,
+        typeWsProp,
+
 };
 
 

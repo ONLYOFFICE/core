@@ -69,25 +69,18 @@ core_mac {
     !use_v8:CONFIG += use_javascript_core
 }
 
+#CONFIG += v8_use_inspector
+include($$PWD/js_internal/js_base.pri)
+
 !use_javascript_core {
-    HEADERS += js_internal/v8/v8_base.h
-    SOURCES += js_internal/v8/v8_base.cpp
     SOURCES += \
         embed/v8/v8_MemoryStream.cpp \
         embed/v8/v8_NativeControl.cpp \
         embed/v8/v8_NativeBuilder.cpp \
         embed/v8/v8_Graphics.cpp
 
-    !build_xp {
-        include(../../Common/3dParty/v8/v8.pri)
-    } else {
-        DEFINES += V8_OS_XP
-        DESTDIR=$$DESTDIR/xp
-        include(../../Common/3dParty/v8/v8_xp/v8.pri)
-    }
+    build_xp:DESTDIR=$$DESTDIR/xp
 } else {
-    HEADERS += js_internal/jsc/jsc_base.h
-    OBJECTIVE_SOURCES += js_internal/jsc/jsc_base.mm
     OBJECTIVE_SOURCES += ../common/Mac/NSString+StringUtils.mm
     OBJECTIVE_SOURCES += \
         embed/jsc/jsc_Graphics.mm \
@@ -95,10 +88,7 @@ core_mac {
         embed/jsc/jsc_NativeControl.mm \
         embed/jsc/jsc_NativeBuilder.mm
 
-    QMAKE_OBJECTIVE_CFLAGS += -fobjc-arc -fobjc-weak
-
     LIBS += -framework Foundation
-    LIBS += -framework JavaScriptCore
 }
 }
 

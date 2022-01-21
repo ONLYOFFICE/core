@@ -47,7 +47,7 @@ namespace XLSB
 
     LPByteBuf::~LPByteBuf()
     {
-        delete[] rgbData;
+
     }
 
     BiffStructurePtr LPByteBuf::clone()
@@ -58,11 +58,14 @@ namespace XLSB
     void LPByteBuf::load(XLS::CFRecord& record)
     {
         record >> cbLength;
-        if(cbLength > 0)
-            rgbData = new BYTE[cbLength];
+
+        BYTE val;
 
         for(int i = 0; i < cbLength; ++i)
-            record >> rgbData[i];
+        {
+            record >> val;
+            rgbData.push_back(val);
+        }
     }
 } // namespace XLSB
 

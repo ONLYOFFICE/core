@@ -34,6 +34,7 @@
 
 #include "FontManager.h"
 #include "../../Common/OfficeFileFormats.h"
+#include "Meta.h"
 
 #ifdef min
 #undef min
@@ -338,7 +339,7 @@ namespace NSHtmlRenderer
     public:
         inline void LoadCurrentFont(bool bIsAttack, int lFaceIndex = 0)
         {
-            if (L"" == m_pFont->Path)
+            if (m_pFont->Path.empty())
             {
                 std::wstring sFind = m_pFont->Name + L"__ASC_FONT__" + std::to_wstring(m_pFont->GetStyle());
 
@@ -466,7 +467,6 @@ namespace NSHtmlRenderer
         NSStructures::CFont*	m_pFont;
 
         NSStructures::CBrush*	m_pLastBrush;
-        NSStructures::CFont*	m_pLastFont;
 
         Aggplus::CMatrix*		m_pTransform;
         Aggplus::CMatrix*		m_pLastTransform;
@@ -505,7 +505,6 @@ namespace NSHtmlRenderer
             m_pFont		= writer->m_pFont;
 
             m_pLastBrush	= &writer->m_oLastBrush;
-            m_pLastFont		= &writer->m_oLastFont;
 
             m_pTransform		= writer->m_pTransform;
             m_pLastTransform	= &writer->m_oLastTransform;

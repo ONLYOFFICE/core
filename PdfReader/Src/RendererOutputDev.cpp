@@ -1853,7 +1853,7 @@ namespace PdfReader
                                 int nChar = 0;
                                 while ((nChar = oDictItem.streamGetChar()) != EOF)
                                 {
-                                    sBuffer+=(char*)nChar;
+                                    sBuffer+=(char)nChar;
                                 }
                                 oDictItem.streamClose();
 
@@ -2151,7 +2151,7 @@ namespace PdfReader
                             int nChar = 0;
                             while ((nChar = oDictItem.streamGetChar()) != EOF)
                             {
-                                sBuffer+=(char *)nChar;
+                                sBuffer+=(char)nChar;
                             }
                             oDictItem.streamClose();
 
@@ -2260,7 +2260,7 @@ namespace PdfReader
                                     int nChar = 0;
                                     while ((nChar = oEncItem.streamGetChar()) != EOF)
                                     {
-                                        sBuffer+=(char *)nChar;
+                                        sBuffer+=(char)nChar;
                                     }
                                     oEncItem.streamClose();
 
@@ -2286,7 +2286,7 @@ namespace PdfReader
                             int nChar = 0;
                             while ((nChar = oDictItem.streamGetChar()) != EOF)
                             {
-                                sBuffer+=(char *)nChar;
+                                sBuffer+=(char)nChar;
                             }
                             oDictItem.streamClose();
                             CBase64 oBase64;
@@ -2704,7 +2704,7 @@ namespace PdfReader
                                             int nChar = 0;
                                             while ((nChar = oFontItem.streamGetChar()) != EOF)
                                             {
-                                                sBuffer+=(char *)nChar;
+                                                sBuffer+=(char)nChar;
                                             }
                                             oFontItem.streamClose();
 

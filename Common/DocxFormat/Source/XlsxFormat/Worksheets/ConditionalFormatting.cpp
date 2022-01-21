@@ -550,8 +550,8 @@ void CConditionalFormattingRule::toXML2(NSStringUtils::CStringBuilder& writer, b
 	std::wstring node_name = bExtendedWrite ? L"x14:cfRule" : L"cfRule";
 	
 	writer.WriteString(L"<" + node_name);
-		WritingStringAttrString(L"type", m_oType->ToString());
-		WritingStringAttrInt(L"priority", m_oPriority->GetValue());
+		WritingStringNullableAttrString(L"type", m_oType, m_oType->ToString());
+		WritingStringNullableAttrInt(L"priority", m_oPriority, m_oPriority->GetValue());
 		if (m_oAboveAverage.IsInit() && false == m_oAboveAverage->ToBool())
 			writer.WriteString(L" aboveAverage=\"0\"");
 		if (m_oBottom.IsInit() && true == m_oBottom->ToBool())

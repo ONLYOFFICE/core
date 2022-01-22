@@ -59,8 +59,8 @@ namespace NSNetwork
                 m_sResponse = L"";
 
 
-                m_func_onComplete = NULL;
-                m_func_onProgress = NULL;
+                m_func_onComplete = nullptr;
+                m_func_onProgress = nullptr;
 
                 m_bIsExit = nullptr;
             }
@@ -82,8 +82,8 @@ namespace NSNetwork
                 m_sResponse = L"";
 
 
-                m_func_onComplete = NULL;
-                m_func_onProgress = NULL;
+                m_func_onComplete = nullptr;
+                m_func_onProgress = nullptr;
 
                 m_bIsExit = nullptr;
             }
@@ -105,8 +105,8 @@ namespace NSNetwork
                 m_sResponse = L"";
 
 
-                m_func_onComplete = NULL;
-                m_func_onProgress = NULL;
+                m_func_onComplete = nullptr;
+                m_func_onProgress = nullptr;
 
                 m_bIsExit = nullptr;
             }
@@ -118,6 +118,7 @@ namespace NSNetwork
                     NSFile::CFileBinary::Remove(m_sDownloadFilePath);
                     m_sDownloadFilePath = L"";
                 }
+                m_bIsExit = nullptr;
             }
 
             virtual int DownloadFile() = 0;

@@ -32,7 +32,6 @@
 
 #include "FileTransporter_private.h"
 
-
 #include <wininet.h>
 #pragma comment(lib, "Wininet")
 #pragma comment(lib, "Ole32.lib")
@@ -90,8 +89,15 @@ namespace NSNetwork
                 CoInitialize ( NULL );
                 if ( /*S_OK != _DownloadFile ( m_sFileUrl )*/TRUE )
                 {
+                    DeleteUrlCacheEntry(m_sDownloadFileUrl.c_str());
                     HRESULT hrResultAll = DownloadFileAll(m_sDownloadFileUrl, m_sDownloadFilePath);
 
+                    if(E_ABORT == hrResultAll && m_bIsExit->load())
+                    {
+                        //DeleteUrlCacheEntry(m_sDownloadFileUrl.c_str());
+                        CoUninitialize ();
+                        return hrResultAll;
+                    }
                     if (S_OK != hrResultAll)
                     {
                         hrResultAll = (true == DownloadFilePS(m_sDownloadFileUrl, m_sDownloadFilePath)) ? S_OK : S_FALSE;
@@ -369,15 +375,11 @@ namespace NSNetwork
                     m_pFile = NULL;
                 }
 
-                if(m_func_onProgress)
-                {
-                    DownloadProgress progress;
-                    progress.func_onProgress = m_func_onProgress;
-                    // Скачиваем файл с возвратом процентов состояния
-                    return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, static_cast<IBindStatusCallback*>(&progress));
-                }
-                else
-                    return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, NULL);
+                DownloadProgress progress;
+                progress.bIsExit = m_bIsExit;
+                progress.func_onProgress = m_func_onProgress;
+                // Скачиваем файл с возвратом процентов состояния
+                return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, static_cast<IBindStatusCallback*>(&progress));
             }            
 
             class DownloadProgress : public IBindStatusCallback {
@@ -415,6 +417,10 @@ namespace NSNetwork
 
                 virtual HRESULT __stdcall OnProgress(ULONG ulProgress, ULONG ulProgressMax, ULONG ulStatusCode, LPCWSTR szStatusText)
                 {
+                    if(bIsExit && bIsExit->load())
+                    {
+                        return E_ABORT;
+                    }
                     if(ulProgressMax != 0)
                     {
                         int percent = static_cast<int>((100.0 * ulProgress) / ulProgressMax);
@@ -424,7 +430,8 @@ namespace NSNetwork
                     return S_OK;
                 }
 
-                std::function<void(int)> func_onProgress;
+                std::atomic<bool>* bIsExit = nullptr;
+                std::function<void(int)> func_onProgress = nullptr;
             };
 
             bool DownloadFilePS(const std::wstring& sFileURL, const std::wstring& strFileOutput)

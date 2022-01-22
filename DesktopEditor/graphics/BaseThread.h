@@ -59,7 +59,7 @@ namespace NSThreads
     class KERNEL_DECL CBaseThread
 	{
 	protected:
-		CThreadDescriptor*	m_hThread;
+        CThreadDescriptor*  m_hThread;
         INT                 m_bRunThread;
         INT                 m_bSuspend;
 

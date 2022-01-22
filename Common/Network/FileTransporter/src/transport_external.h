@@ -46,9 +46,7 @@
 namespace NSNetwork
 {
     namespace NSFileTransport
-    {
-        pid_t pid;
-        std::atomic<bool>* m_isExit;
+    {        
         std::string wget_url_validate(const std::string& url)
         {
             std::string::size_type pos = 0;
@@ -63,8 +61,8 @@ namespace NSNetwork
 
         int download_external(const std::wstring& sUrl, const std::wstring& sOutput, std::function<void(int)> func_onProgress, std::atomic<bool>* isExit)
         {
+            pid_t pid;
             int nReturnCode = -1;
-            m_isExit = isExit;
             std::string sUrlA = U_TO_UTF8(sUrl);
             //sUrlA =("\"" + sUrlA + "\"");
             std::string sOutputA = U_TO_UTF8(sOutput);
@@ -134,7 +132,7 @@ namespace NSNetwork
 
                         while (1)
                         {
-                            if(m_isExit->load())
+                            if(isExit && isExit->load())
                             {
                                 kill(pid, SIGTERM);
                                 //while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
@@ -168,7 +166,7 @@ namespace NSNetwork
                         int waitres;
                         while (1) // wait for child to complete
                         {
-                            if(m_isExit->load())
+                            if(isExit && isExit->load())
                             {
                                 kill(pid, SIGTERM);
                                 return nReturnCode;
@@ -222,7 +220,7 @@ namespace NSNetwork
                     int waitres;
                     while (1) // wait for child to complete
                     {
-                        if(m_isExit->load())
+                        if(isExit && isExit->load())
                         {
                             kill(pid, SIGTERM);
                             return nReturnCode;

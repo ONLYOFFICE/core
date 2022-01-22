@@ -1,16 +1,14 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2014-10-03T18:30:31
-#
-#-------------------------------------------------
+QT += core gui
 
-QT       -= core
-QT       -= gui
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CORE_ROOT_DIR = $$PWD/../../..
+CONFIG += c++11
+#CONFIG += console
+
+CORE_ROOT_DIR = $$PWD/../../../../core
 PWD_ROOT_DIR = $$PWD
 
-include(../../../Common/base.pri)
+include($$CORE_ROOT_DIR/Common/base.pri)
 
 core_windows {
     QMAKE_LFLAGS += /INCREMENTAL:NO
@@ -21,8 +19,9 @@ core_windows {
 DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
 
 core_windows {
-	DEFINES += _RWSTD_NO_SETRLIMIT
+        DEFINES += _RWSTD_NO_SETRLIMIT
 }
+
 #CORE_BUILDS_LIBRARIES_PATH = $$CORE_ROOT_DIR/build/lib/linux_64/debug #linux
 CORE_BUILDS_LIBRARIES_PATH = $$CORE_ROOT_DIR/build/lib/win_64/debug #windows
 #kernel
@@ -36,10 +35,26 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel_network
 
 #BOOST
 CONFIG += core_boost_regex
-include($$PWD/../../../Common/3dParty/boost/boost.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
 
 core_windows {
     LIBS += -lAdvapi32
 }
 ########################################################
 
+
+
+SOURCES += \
+    main.cpp \
+    mainwindow.cpp
+
+HEADERS += \
+    mainwindow.h
+
+FORMS += \
+    mainwindow.ui
+
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target

@@ -354,6 +354,14 @@ namespace MetaFile
         WriteNodeEnd(wsNameNode);
     }
 
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const std::vector<TEmfPlusPointF>& arValues)
+    {
+            WriteNodeBegin(wsNameNode);
+            for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
+                    WriteNode(L"Point" + std::to_wstring(unIndex + 1), arValues[unIndex]);
+            WriteNodeEnd(wsNameNode);
+    }
+
     void CXmlOutput::WriteTEmfRectL(const TEmfRectL &oTEmfRectL)
     {
         WriteNode(L"Left",     oTEmfRectL.lLeft);

@@ -1732,6 +1732,9 @@ namespace MetaFile
         template<typename T>
         void CEmfParserBase::HANDLE_EMR_POLYLINE_BASE(TEmfRectL &oBounds, std::vector<T> &arPoints)
         {
+                if (arPoints.empty())
+                        return;
+
                 MoveTo(arPoints[0]);
 
                 for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
@@ -1938,9 +1941,6 @@ namespace MetaFile
                 if (NULL != m_pInterpretator)
                         m_pInterpretator->HANDLE_EMFPLUS_DRAWELLIPSE(chPenId, oRect);
 
-                if (NULL != m_pInterpretator)
-                        m_pInterpretator->HANDLE_EMFPLUS_DRAWELLIPSE(chPenId, oRect);
-
                 TEmfRectL oBox = oRect.GetRectL();
 
                 if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
@@ -1949,5 +1949,41 @@ namespace MetaFile
                         ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
 
                 DrawPath(true, true);
+        }
+
+        void CEmfParserBase::HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos)
+        {
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMFPLUS_DRAWDRIVERSTRING(chFontId, unBrushId, unDriverStringOptionsFlags, unMatrixPresent, wsString, arGlyphPos);
+                //TODO:: реализовать
+        }
+
+        void CEmfParserBase::HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const TEmfPlusRect &oRectData)
+        {
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMFPLUS_DRAWIMAGE(chEmfPlusImageId, unImageAttributesId, nSrcUnit, oSrcRect, oRectData);
+                //TODO:: реализовать
+        }
+
+        void CEmfParserBase::HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const TEmfPlusRectF &oRectData)
+        {
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMFPLUS_DRAWIMAGE(chEmfPlusImageId, unImageAttributesId, nSrcUnit, oSrcRect, oRectData);
+                //TODO:: реализовать
+        }
+
+        void CEmfParserBase::HANDLE_EMFPLUS_DRAWIMAGEPOINTS(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const std::vector<TEmfPlusPointR> &arPointData)
+        {
+
+        }
+
+        void CEmfParserBase::HANDLE_EMFPLUS_DRAWIMAGEPOINTS(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const std::vector<TEmfPointS> &arPointData)
+        {
+
+        }
+
+        void CEmfParserBase::HANDLE_EMFPLUS_DRAWIMAGEPOINTS(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const std::vector<TEmfPlusPointF> &arPointData)
+        {
+
         }
 }

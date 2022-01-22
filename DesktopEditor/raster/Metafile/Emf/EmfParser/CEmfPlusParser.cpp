@@ -368,7 +368,7 @@ namespace MetaFile
                                 m_pContineudObject->UpdateImage();
                                 RELEASEOBJECT(m_pContineudObject);
                         }
-                        }
+                }
         }
 
         CEmfPlusImage* CEmfPlusParser::GetImage(unsigned int unImageIndex)
@@ -605,6 +605,79 @@ namespace MetaFile
                 }
         }
 
+        BYTE* GetClipedImage(const BYTE* pBuffer, LONG lWidth, LONG lHeight, TEmfRectL oNewRect)
+        {
+                if (NULL == pBuffer ||
+                    oNewRect.lLeft < 0 || oNewRect.lRight  < 0 ||
+                    oNewRect.lTop  < 0 || oNewRect.lBottom < 0 ||
+                    oNewRect.lLeft == oNewRect.lRight ||
+                    oNewRect.lTop  == oNewRect.lBottom)
+                        return NULL;
+
+                int nBeginX, nBeginY, nEndX, nEndY;
+
+                nBeginX = (std::min)(oNewRect.lLeft, oNewRect.lRight);
+                nBeginY = (std::min)(oNewRect.lTop,  oNewRect.lBottom);
+
+                nEndX   = (std::max)(oNewRect.lLeft, oNewRect.lRight);
+                nEndY   = (std::max)(oNewRect.lTop,  oNewRect.lBottom);
+
+                int nWidth = nEndX - nBeginX;
+                int nHeight = nEndY - nBeginY;
+
+                if(nWidth > lWidth || nHeight > lHeight)
+                        return NULL;
+
+                BYTE* pNewBuffer = new BYTE[nWidth * nHeight * 4];
+
+                ULONG ulPos = 0;
+
+                for (ULONG ulPosY = nBeginY * 4; ulPosY < nEndY * 4; ulPosY += 4)
+                {
+                        for (ULONG ulPosX = nBeginX * 4; ulPosX < nEndX * 4; ulPosX += 4)
+                        {
+                                pNewBuffer[ulPos + 0]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 0];
+                                pNewBuffer[ulPos + 1]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 1];
+                                pNewBuffer[ulPos + 2]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 2];
+                                pNewBuffer[ulPos + 3]   = (BYTE)pBuffer[ulPosY * lWidth + ulPosX + 3];
+                                ulPos += 4;
+                        }
+                }
+
+                return pNewBuffer;
+        }
+
+        HRESULT FlipYImage(BYTE* pImageBuffer, LONG lWidth, LONG lHeight)
+        {
+                if (NULL == pImageBuffer || lWidth == 0 || lHeight == 0)
+                        return S_FALSE;
+
+                BYTE oBuffer[4] = {0, 0, 0, 0};
+
+                for (ULONG ulPosY = 0; ulPosY < lHeight / 2 * 4; ulPosY += 4)
+                {
+                        for (ULONG ulPosX = 0; ulPosX < lWidth * 4; ulPosX += 4)
+                        {
+                                oBuffer[0] = pImageBuffer[ulPosY * lWidth + ulPosX + 0];
+                                oBuffer[1] = pImageBuffer[ulPosY * lWidth + ulPosX + 1];
+                                oBuffer[2] = pImageBuffer[ulPosY * lWidth + ulPosX + 2];
+                                oBuffer[3] = pImageBuffer[ulPosY * lWidth + ulPosX + 3];
+
+                                pImageBuffer[ulPosY * lWidth + ulPosX + 0] = pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 0];
+                                pImageBuffer[ulPosY * lWidth + ulPosX + 1] = pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 1];
+                                pImageBuffer[ulPosY * lWidth + ulPosX + 2] = pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 2];
+                                pImageBuffer[ulPosY * lWidth + ulPosX + 3] = pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 3];
+
+                                pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 0] = oBuffer[0];
+                                pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 1] = oBuffer[1];
+                                pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 2] = oBuffer[2];
+                                pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 3] = oBuffer[3];
+                        }
+                }
+
+                return S_OK;
+        }
+
         void CEmfPlusParser::DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex,
                                              TEmfPlusRectF oSrcRect, std::vector<TEmfPlusPointF> arPoints)
         {
@@ -621,44 +694,77 @@ namespace MetaFile
                 if (unMetafileSize == 0 || arPoints.size() != 3)
                         return;
 
-                CEmfParser oEmfParser(m_pInterpretator);
+                CEmfParser oEmfParser;
                 oEmfParser.SetStream(pImage->GetMetafileData(), unMetafileSize);
                 oEmfParser.SetFontManager(GetFontManager());
-                oEmfParser.SetHeader(m_oHeader);
-                oEmfParser.m_bView = true;
                 oEmfParser.Scan();
 
                 if (!oEmfParser.CheckError())
                 {
-                        double dM11, dM12, dM21,  dM22;
-
-                        dM11 = (arPoints[1].X - arPoints[0].X) / oSrcRect.dWidth;
-                        dM21 = (arPoints[2].X - arPoints[0].X) / oSrcRect.dHeight;
-//                        dX = arPoints[0].X - dM11 * oSrcRect.dX - dM21 * oSrcRect.dY;
-
-                        dM12 = (arPoints[1].Y - arPoints[0].Y) / oSrcRect.dWidth;
-                        dM22 = (arPoints[2].Y - arPoints[0].Y) / oSrcRect.dHeight;
-//                        dY = arPoints[0].Y - dM12 * oSrcRect.dX - dM22 * oSrcRect.dY;
-
 //                        CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
 
-//                        if (NULL != pImageAttributes)
-//                        {
-//                                ApplyImageAttributes(oSrcRect, *pImageAttributes);
+                        CGraphicsRenderer oRenderer;
+                        oRenderer.SetFontManager(GetFontManager());
 
-//                                if (pImageAttributes->eWrapMode & WrapModeTileFlipX)
-//                                        dM11 *= -1;
+                        TEmfRectL *pEmfBounds = oEmfParser.GetBounds();
 
-//                                if (pImageAttributes->eWrapMode & WrapModeTileFlipY)
-//                                        dM22 *= -1;
-//                        }
+                        int nWidth = fabs(pEmfBounds->lRight - pEmfBounds->lLeft);
+                        int nHeight = fabs(pEmfBounds->lBottom - pEmfBounds->lTop);
 
-                        TEmfPlusXForm oNewTransform(dM11, 0, 0, dM22, 0, 0);
+                        double dWidth  = 25.4 * nWidth / 96;
+                        double dHeight = 25.4 * nHeight / 96;
 
-                        oEmfParser.SelectWorkspace(oSrcRect.GetRectD());
-                        oEmfParser.SetTrasform(*m_pDC->GetFinalTransform(GM_COMPATIBLE));
-                        oEmfParser.SetStartPoint(arPoints[0].ToPointL());
+                        BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+
+                        if (!pBgraData)
+                                return;
+
+                        unsigned __int32 alfa = 0xffffff;
+                        //дефолтный тон должен быть прозрачным, а не белым
+                        //memset(pBgraData, 0xff, nWidth * nHeight * 4);
+                        for (int i = 0; i < nWidth * nHeight; i++)
+                        {
+                                ((unsigned __int32*)pBgraData)[i] = alfa;
+                        }
+
+                        CBgraFrame oFrame;
+                        oFrame.put_Data(pBgraData);
+                        oFrame.put_Width(nWidth);
+                        oFrame.put_Height(nHeight);
+                        oFrame.put_Stride(-4 * nWidth);
+
+                        oRenderer.CreateFromBgraFrame(&oFrame);
+                        oRenderer.SetSwapRGB(false);
+                        oRenderer.put_Width(dWidth);
+                        oRenderer.put_Height(dHeight);
+
+                        oRenderer.BeginCommand(c_nImageType);
+
+                        CMetaFileRenderer oEmfOut(&oEmfParser, &oRenderer, 0, 0, dWidth, dHeight);
+                        oEmfParser.SetInterpretator(&oEmfOut);
+
                         oEmfParser.PlayFile();
+
+                        oRenderer.EndCommand(c_nImageType);
+
+                        LONG lWidth, lHeight;
+
+                        BYTE* pPixels = oRenderer.GetPixels(lWidth, lHeight);
+
+                        if (oEmfParser.GetTransform()->M22 < 0)
+                                FlipYImage(pPixels, lWidth, lHeight);
+
+                        TEmfRectL oClipRect;
+
+                        oClipRect.lLeft = oSrcRect.dX;
+                        oClipRect.lTop = oSrcRect.dY;
+                        oClipRect.lRight = (oSrcRect.dX + oSrcRect.dWidth);
+                        oClipRect.lBottom = (oSrcRect.dY + oSrcRect.dHeight);
+
+                        BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
+
+                        m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y, pNewBuffer, fabs(oClipRect.lRight - oClipRect.lLeft), fabs(oClipRect.lBottom - oClipRect.lTop));
+
                 }
         }
 
@@ -674,7 +780,7 @@ namespace MetaFile
 
                 HANDLE_EMFPLUS_HEADER(((unShFlags >>(15)) & 1 ), ((unEmfPlusFlags >>(31)) & 1 ), m_unLogicalDpiX, m_unLogicalDpiY);
 
-                //TODO: добавить установление нового Dpi
+                //TODO: добавить установление нового Dpi (нужно ли?)
         }
 
         void CEmfPlusParser::Read_EMFPLUS_CLEAR()
@@ -827,7 +933,13 @@ namespace MetaFile
                 m_oStream >> unMatrixPresent;
                 m_oStream >> unGlyphCount;
 
-                //TODO: реализовать
+                if (unGlyphCount == 0)
+                        return;
+
+                std::wstring wsString;
+                std::vector<TEmfPlusPointF> arGlyphPos(unGlyphCount);
+
+                HANDLE_EMFPLUS_DRAWDRIVERSTRING(shOgjectIndex, unBrushId, unDriverStringOptionsFlags, unMatrixPresent, wsString, arGlyphPos);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWELLIPSE(unsigned short unShFlags)
@@ -841,13 +953,11 @@ namespace MetaFile
         template<typename T>
         void CEmfPlusParser::Read_EMFPLUS_DRAWELLIPSE_BASE(unsigned short unShFlags)
         {
-                short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
-
                 T oRect;
 
                 m_oStream >> oRect;
 
-                HANDLE_EMFPLUS_DRAWELLIPSE(shOgjectIndex, oRect);
+                HANDLE_EMFPLUS_DRAWELLIPSE(ExpressValue(unShFlags, 0, 7), oRect);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWIMAGE(unsigned short unShFlags)
@@ -874,7 +984,7 @@ namespace MetaFile
 
                 m_oStream >> oRectData;
 
-                //TODO: реализовать
+                HANDLE_EMFPLUS_DRAWIMAGE(shOgjectIndex, unImageAttributesID, nSrcUnit, oSrcRect, oRectData);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWIMAGEPOINTS(unsigned short unShFlags)
@@ -1690,6 +1800,9 @@ namespace MetaFile
 
         void CEmfPlusParser::DrawLines(std::vector<TEmfPlusPointF> arPoints, bool bCloseFigure)
         {
+                if (arPoints.empty())
+                        return;
+
                 MoveTo(arPoints[0].X, arPoints[0].Y);
 
                 for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
@@ -1704,22 +1817,32 @@ namespace MetaFile
         template<typename T>
         std::vector<TEmfPlusPointF> CEmfPlusParser::GetConvertedPoints(std::vector<T> arPoints)
         {
-                std::vector<TEmfPlusPointF> arConvertdPoints;
+                if (arPoints.empty())
+                        return {};
+
+                std::vector<TEmfPlusPointF> arConvertdPoints(arPoints.size());
 
                 if (typeid (TEmfPlusPointR) == typeid (T))
                 {
-                        //TODO: реализовать
+                        arConvertdPoints[0] = reinterpret_cast<TEmfPlusPointR&>(arPoints[0]);
+
+                        for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
+                                arConvertdPoints[unIndex] = arConvertdPoints[unIndex - 1] + reinterpret_cast<TEmfPlusPointR&>(arPoints[unIndex]);
+
+                        return arConvertdPoints;
+                        //TODO: реализовать при встрече примера
                 }
                 else if (typeid (TEmfPlusPoint) == typeid (T))
                 {
-                        //TODO: реализовать
+                        for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
+                                arConvertdPoints[unIndex] = reinterpret_cast<TEmfPlusPoint&>(arPoints[unIndex]);
+
+                        return arConvertdPoints;
                 }
                 else if (typeid (TEmfPlusPointF) == typeid (T))
                 {
-                        arConvertdPoints.resize(arPoints.size());
-
                         for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
-                                arConvertdPoints[unIndex] = static_cast<TEmfPlusPointF>(arPoints[unIndex]);
+                                arConvertdPoints[unIndex] = reinterpret_cast<TEmfPlusPointF&>(arPoints[unIndex]);
 
                         return arConvertdPoints;
                 }

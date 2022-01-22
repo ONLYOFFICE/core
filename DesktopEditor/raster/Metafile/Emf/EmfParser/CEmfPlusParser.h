@@ -43,7 +43,6 @@ namespace MetaFile
                 std::vector<char> ReadPointTypes(unsigned int unPointCount);
 
                 void DrawRectangle(TEmfPlusRectF oRectangle, bool bStroke, bool bFill);
-                void DrawRectangle(TEmfPlusRect oRectangle, bool bStroke, bool bFill);
 
                 void DrawLines(std::vector<TEmfPlusPointF> arPoints, bool bCloseFigure);
 

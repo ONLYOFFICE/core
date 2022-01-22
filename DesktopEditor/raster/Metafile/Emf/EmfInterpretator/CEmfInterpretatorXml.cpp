@@ -841,6 +841,42 @@ namespace MetaFile
                         m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWELLIPSE");
         }
 
+        void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos)
+        {
+                m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWDRIVERSTRING");
+                        m_pOutputXml->WriteNode(L"FontId", (int)chFontId);
+                        m_pOutputXml->WriteNode(L"BrushId", unBrushId);
+                        m_pOutputXml->WriteNode(L"DriverStringOptionsFlags", unDriverStringOptionsFlags);
+                        m_pOutputXml->WriteNode(L"MatrixPresent", unMatrixPresent);
+                        m_pOutputXml->WriteNode(L"String", wsString);
+                        m_pOutputXml->WriteNode(L"GlyphPos", arGlyphPos);
+                        m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWDRIVERSTRING");
+        }
+
+        void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const TEmfPlusRect &oRectData)
+        {
+                m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWIMAGE");
+                        m_pOutputXml->WriteNode(L"FontId", (int)chEmfPlusImageId);
+                        m_pOutputXml->WriteNode(L"ImageAttributesID", unImageAttributesId);
+                        m_pOutputXml->WriteNode(L"SrcUnit", nSrcUnit);
+                        m_pOutputXml->WriteNode(L"SrcRect", oSrcRect);
+                        m_pOutputXml->WriteNode(L"IsCopressed", 1);
+                        m_pOutputXml->WriteNode(L"RectData", oRectData);
+                        m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWIMAGE");
+        }
+
+        void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const TEmfPlusRectF &oRectData)
+        {
+                m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWIMAGE");
+                        m_pOutputXml->WriteNode(L"FontId", (int)chEmfPlusImageId);
+                        m_pOutputXml->WriteNode(L"ImageAttributesID", unImageAttributesId);
+                        m_pOutputXml->WriteNode(L"SrcUnit", nSrcUnit);
+                        m_pOutputXml->WriteNode(L"SrcRect", oSrcRect);
+                        m_pOutputXml->WriteNode(L"IsCopressed", 0);
+                        m_pOutputXml->WriteNode(L"RectData", oRectData);
+                        m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWIMAGE");
+        }
+
         void CEmfInterpretatorXml::Begin()
         {
                 if (NULL == m_pOutputXml)

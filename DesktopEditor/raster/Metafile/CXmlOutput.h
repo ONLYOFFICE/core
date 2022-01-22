@@ -81,6 +81,8 @@ namespace MetaFile
         void WriteNode(const std::wstring& wsNameNode,  const CEmfLogPen&               oNodeValue);
         void WriteNode(const std::wstring& wsNameNode,  const CEmfLogPalette&           oNodeValue);
 
+        void WriteNode(const std::wstring& wsNameNode, const std::vector<TEmfPlusPointF>& arValues);
+
     private:
         XmlUtils::CXmlWriter        *m_pXmlWriter;
 

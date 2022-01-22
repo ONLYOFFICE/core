@@ -197,17 +197,6 @@ namespace MetaFile
 
                 TEmfPlusPointF(){}
 
-                TEmfPlusPointF(const TEmfPlusPoint& oPoint)
-                {
-                        X = (double)oPoint.x;
-                        Y = (double)oPoint.y;
-                }
-
-                TEmfPlusPointF(const TEmfPlusPointR& oPoint)
-                {
-
-                }
-
                 TEmfPointL ToPointL() const
                 {
                        TEmfPointL oPoint;
@@ -216,6 +205,26 @@ namespace MetaFile
                        oPoint.y = (int)Y;
 
                        return oPoint;
+                }
+
+                TEmfPlusPointF& operator=(const TEmfPlusPoint& oPoint)
+                {
+                        X = (double)oPoint.x;
+                        Y = (double)oPoint.y;
+
+                        return *this;
+                }
+
+                TEmfPlusPointF& operator=(const TEmfPlusPointR& oPoint)
+                {
+                        //TODO: реализовать
+                        return *this;
+                }
+
+                TEmfPlusPointF& operator+(const TEmfPlusPointR& oPoint)
+                {
+                        //TODO: реализовать
+                        return *this;
                 }
         };
 

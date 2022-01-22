@@ -244,6 +244,12 @@ namespace MetaFile
                 void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPointF> arPoints);
                 void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId,  TEmfPlusRect oRect);
                 void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId,  TEmfPlusRectF oRect);
+                void HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos);
+                void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRect& oRectData);
+                void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRectF& oRectData);
+                void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect,  const std::vector<TEmfPlusPointR>& arPointData);
+                void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect,  const std::vector<TEmfPlusPoint>& arPointData);
+                void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect,  const std::vector<TEmfPlusPointF>& arPointData);
         };
 
 }

@@ -1964,6 +1964,49 @@ namespace MetaFile
                 WriteRectangle(oRect);
         }
 
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos)
+        {
+                //TODO:: реализовать
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const TEmfPlusRect &oRectData)
+        {
+                short shType = 0x401A;
+                short shFlags = chEmfPlusImageId << 8 | 1 << 15;
+                unsigned int unSize = 0x0000002C;
+                unsigned int unDataSize = 0x00000020;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+
+                m_pOutStream->write((char *)&unImageAttributesId,       sizeof (unsigned int));
+                m_pOutStream->write((char *)&nSrcUnit,                  sizeof (int));
+
+                WriteRectangle(oSrcRect);
+                WriteRectangle(oRectData);
+        }
+
+        void CEmfInterpretator::HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const TEmfPlusRectF &oRectData)
+        {
+                short shType = 0x401A;
+                short shFlags = chEmfPlusImageId << 8;
+                unsigned int unSize = 0x00000034;
+                unsigned int unDataSize = 0x00000028;
+
+                m_pOutStream->write((char *)&shType,            sizeof (short));
+                m_pOutStream->write((char *)&shFlags,           sizeof (short));
+                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
+                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+
+                m_pOutStream->write((char *)&unImageAttributesId,       sizeof (unsigned int));
+                m_pOutStream->write((char *)&nSrcUnit,                  sizeof (int));
+
+                WriteRectangle(oSrcRect);
+                WriteRectangle(oRectData);
+        }
+
         void CEmfInterpretator::WriteRectangle(const TEmfRectL &oBounds)
         {
                 m_pOutStream->write((char *)&oBounds.lLeft,   sizeof(int));

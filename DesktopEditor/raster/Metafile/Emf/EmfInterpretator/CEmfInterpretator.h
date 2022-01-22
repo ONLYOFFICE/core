@@ -114,6 +114,9 @@ namespace MetaFile
                 void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPointF> arPoints) override;
                 void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRect oRect) override;
                 void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRectF oRect) override;
+                void HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos) override;
+                void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRect& oRectData) override;
+                void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRectF& oRectData) override;
         private:
                 std::ofstream   *m_pOutStream;
 

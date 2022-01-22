@@ -9,15 +9,11 @@
 namespace MetaFile
 {
         CEmfParser::CEmfParser() :
-                m_pEmfPlusParser(NULL),
-                m_pWorkspace(NULL),
-                m_pNewTransform(NULL)
+                m_pEmfPlusParser(NULL)
         {}
 
         CEmfParser::CEmfParser(const CEmfInterpretatorBase *pEmfInterpretatorBase) :
-                m_pEmfPlusParser(NULL),
-                m_pWorkspace(NULL),
-                m_pNewTransform(NULL)
+                m_pEmfPlusParser(NULL)
         {
                 if (NULL != pEmfInterpretatorBase)
                 {
@@ -45,8 +41,6 @@ namespace MetaFile
                 ClearFile();
 
                 RELEASEOBJECT(m_pEmfPlusParser);
-                RELEASEOBJECT(m_pWorkspace);
-                RELEASEOBJECT(m_pNewTransform);
         }
 
         bool CEmfParser::OpenFromFile(const wchar_t *wsFilePath)
@@ -65,7 +59,6 @@ namespace MetaFile
 
                 unsigned int ulRecordIndex	= 0;
                 unsigned int m_ulRecordPos	= 0;
-
 
                 do
                 {
@@ -233,9 +226,6 @@ namespace MetaFile
 
                 if (!CheckError())
                         m_oStream.SeekToStart();
-
-//                if (m_pInterpretator)
-//                        m_pInterpretator->End();
         }
 
         void CEmfParser::Scan()
@@ -255,63 +245,6 @@ namespace MetaFile
         void CEmfParser::SetStream(BYTE *pBuf, unsigned int unSize)
         {
                 m_oStream.SetStream(pBuf, unSize);
-        }
-
-        void CEmfParser::SetTrasform(TXForm& oTransform)
-        {
-                RELEASEOBJECT(m_pNewTransform);
-                m_pNewTransform = new TXForm(oTransform);
-
-//                oTransform.Dx = oTransform.Dy = 0;
-
-                m_pDC->MultiplyTransform(oTransform, 4);
-        }
-
-        void CEmfParser::SelectWorkspace(const TRectD& oCropBorder)
-        {
-                m_pWorkspace = new TRectD(oCropBorder);
-
-                if (NULL != m_pWorkspace)
-                {
-                        m_pDC->GetClip()->Reset();
-                        m_pDC->GetClip()->Intersect(*m_pWorkspace);
-                }
-        }
-
-        void CEmfParser::SetHeader(const TEmfHeader& oHeader)
-        {
-                m_oHeader = oHeader;
-        }
-
-        void CEmfParser::SetStartPoint(const TEmfPointL& oStartPoint)
-        {
-                m_oStartPoint = oStartPoint;
-
-        void CEmfParser::UpdateWorkSpace()
-        {
-                if (NULL == m_pWorkspace || NULL == m_pNewTransform || NULL == m_pInterpretator)
-                        return;
-
-                TEmfWindow *pWindow = m_pDC->GetWindow();
-
-                TRectD oRectD;
-
-                oRectD.dLeft    = (double)(pWindow->lX + m_pWorkspace->dLeft    / m_pDC->GetPixelWidth());
-                oRectD.dRight   = (double)(pWindow->lX + m_pWorkspace->dRight   / m_pDC->GetPixelWidth());
-                oRectD.dTop     = (double)(pWindow->lY - m_pWorkspace->dTop     / m_pDC->GetPixelHeight());
-                oRectD.dBottom  = (double)(pWindow->lY - m_pWorkspace->dBottom  / m_pDC->GetPixelHeight());
-
-                m_pDC->GetClip()->Reset();
-                m_pDC->GetClip()->Intersect(oRectD);
-
-                TEmfPointL oPoint;
-
-
-                oPoint.x = oRectD.dLeft * m_pNewTransform->M11 - m_oStartPoint.x / m_pDC->GetPixelWidth()  * m_pNewTransform->M11;
-                oPoint.y = oRectD.dTop  * m_pNewTransform->M22 - m_oStartPoint.y / m_pDC->GetPixelHeight() * m_pNewTransform->M22;
-
-
-                m_pDC->SetWindowOrigin(oPoint);
         }
 
         bool CEmfParser::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)
@@ -353,18 +286,8 @@ namespace MetaFile
 
         void CEmfParser::Read_EMR_HEADER()
         {
-                if (m_oHeader.ulSize != 0)
-                {
-//                        m_oStream.Skip(32);
-                        m_oStream >> m_oSecondHeader.oBounds;
-                        m_oStream >> m_oSecondHeader.oFrame;
-                }
-                else
-                {
-                        m_oStream >> m_oHeader.oBounds;
-                        m_oStream >> m_oHeader.oFrame;
-                }
-
+                m_oStream >> m_oHeader.oBounds;
+                m_oStream >> m_oHeader.oFrame;
                 m_oStream >> m_oHeader.ulSignature;
                 m_oStream >> m_oHeader.ulVersion;
                 m_oStream >> m_oHeader.ulSize;
@@ -746,10 +669,6 @@ namespace MetaFile
 
                 if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
                         HANDLE_EMR_SETWINDOWORGEX(oOrigin);
-
-
-
-                UpdateWorkSpace();
         }
 
         void CEmfParser::Read_EMR_SETWINDOWEXTEX()
@@ -1204,9 +1123,6 @@ namespace MetaFile
                 for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
                         m_oStream >> arPoints[ulIndex];
 
-                if (NULL == m_pWorkspace || NULL == m_pNewTransform || NULL == m_pInterpretator)
-                        return;
-
                 if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
                         HANDLE_EMR_POLYGON_BASE(oBounds, arPoints);
         }
@@ -1234,9 +1150,7 @@ namespace MetaFile
 
                 std::vector<T> arPoints(ulCount);
 
-                m_oStream >> arPoints[0];
-
-                for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
+                for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
                         m_oStream >> arPoints[ulIndex];
 
                 if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())

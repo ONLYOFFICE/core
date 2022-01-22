@@ -6,7 +6,8 @@
 
 namespace MetaFile
 {
-        class CEmfParser : public CEmfParserBase
+        class
+                        CEmfParser : public CEmfParserBase
         {
         public:
                 CEmfParser();
@@ -20,21 +21,8 @@ namespace MetaFile
                 EmfParserType   GetType()				    override;
                 void            SetStream(BYTE* pBuf, unsigned int unSize);
 
-                void            SetTrasform(TXForm& oTransform);
-                void            SelectWorkspace(const TRectD& oCropBorder);
-                void            SetHeader(const TEmfHeader& oHeader);
-                void            SetStartPoint(const TEmfPointL& oStartPoint);
-
-                bool m_bView = false;
         private:
                 CEmfPlusParser  *m_pEmfPlusParser;
-                TRectD          *m_pWorkspace;
-                TXForm          *m_pNewTransform;
-                TEmfPointL      m_oStartPoint;
-
-                TEmfHeader      m_oSecondHeader;
-
-                void UpdateWorkSpace();
 
                 bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
                 void Read_EMR_HEADER();

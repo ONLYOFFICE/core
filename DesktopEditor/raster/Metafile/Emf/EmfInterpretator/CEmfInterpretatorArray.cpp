@@ -747,4 +747,22 @@ namespace MetaFile
                 for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
                         pInterpretator->HANDLE_EMFPLUS_DRAWELLIPSE(chPenId, oRect);
         }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWDRIVERSTRING(chFontId, unBrushId, unDriverStringOptionsFlags, unMatrixPresent, wsString, arGlyphPos);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const TEmfPlusRect &oRectData)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWIMAGE(chEmfPlusImageId, unImageAttributesId, nSrcUnit, oSrcRect, oRectData);
+        }
+
+        void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const TEmfPlusRectF &oRectData)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMFPLUS_DRAWIMAGE(chEmfPlusImageId, unImageAttributesId, nSrcUnit, oSrcRect, oRectData);
+        }
 }

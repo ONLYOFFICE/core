@@ -121,6 +121,9 @@ namespace MetaFile
                 virtual void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPointF> arPoints) = 0;
                 virtual void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRect oRect) = 0;
                 virtual void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRectF oRect) = 0;
+                virtual void HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos) = 0;
+                virtual void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRect& oRectData) = 0;
+                virtual void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRectF& oRectData) = 0;
         };
 }
 

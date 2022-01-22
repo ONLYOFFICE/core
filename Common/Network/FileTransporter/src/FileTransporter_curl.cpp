@@ -241,7 +241,7 @@ namespace NSNetwork
                     if (NSFile::CFileBinary::Exists(m_sDownloadFilePath))
                         NSFile::CFileBinary::Remove(m_sDownloadFilePath);
                 }
-                return download_external(m_sDownloadFileUrl, m_sDownloadFilePath, m_func_onProgress);
+                return download_external(m_sDownloadFileUrl, m_sDownloadFilePath, m_func_onProgress, m_bIsExit);
             }
             virtual int UploadData() override
             {

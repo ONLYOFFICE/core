@@ -41,11 +41,14 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <regex>
+#include <atomic>
 
 namespace NSNetwork
 {
     namespace NSFileTransport
     {
+        pid_t pid;
+        std::atomic<bool>* m_isExit;
         std::string wget_url_validate(const std::string& url)
         {
             std::string::size_type pos = 0;
@@ -58,9 +61,10 @@ namespace NSNetwork
             return url.substr(pos);
         }
 
-        int download_external(const std::wstring& sUrl, const std::wstring& sOutput, std::function<void(int)> func_onProgress)
+        int download_external(const std::wstring& sUrl, const std::wstring& sOutput, std::function<void(int)> func_onProgress, std::atomic<bool>* isExit)
         {
             int nReturnCode = -1;
+            m_isExit = isExit;
             std::string sUrlA = U_TO_UTF8(sUrl);
             //sUrlA =("\"" + sUrlA + "\"");
             std::string sOutputA = U_TO_UTF8(sOutput);
@@ -72,7 +76,7 @@ namespace NSNetwork
                 if(func_onProgress)
                     pipe(pipefd);
 
-                pid_t pid = fork(); // create child process
+                pid = fork(); // create child process
                 int status;
 
                 switch (pid)
@@ -116,13 +120,27 @@ namespace NSNetwork
                 default: // parent process, pid now contains the child pid
                     if(func_onProgress)
                     {
+                        close(pipefd[1]);
+                        // close the write end of the pipe in the parent
                         size_t size = 81;
                         char buffer[size];
                         std::string str;
-                        close(pipefd[1]);  // close the write end of the pipe in the parent
                         ssize_t res = 1;
+                        std::regex r(R"(\d+(?:\.\d+)?%)");
+                        std::smatch sm;
+                        std::string percentFull;
+                        std::string percent;
+                        int percentInt;
+
                         while (1)
                         {
+                            if(m_isExit->load())
+                            {
+                                kill(pid, SIGTERM);
+                                //while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
+                                return nReturnCode;
+                            }
+
                             str.clear();
                             res = read(pipefd[0], buffer, sizeof(buffer));
 
@@ -131,15 +149,11 @@ namespace NSNetwork
 
                             str.append(buffer);
 
-                            std::regex r(R"(\d+(?:\.\d+)?%)");
-                            std::smatch sm;
-                            std::string percentFull;
-                            std::string percent;
                             if(regex_search(str, sm, r))
                             {
                                 percentFull     = sm.str();
                                 percent         = percentFull.substr(0, percentFull.find("."));
-                                int percentInt  = std::stoi(percent);
+                                percentInt      = std::stoi(percent);
 
                                 if(percentInt >= 0 && percentInt <= 100)
                                     func_onProgress(percentInt);
@@ -147,14 +161,28 @@ namespace NSNetwork
 
                             if(str.find("100.0%") != std::string::npos)
                                 break;
+
                         }
                     }
-                    while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
-                    if (WIFEXITED(status))
-                    {
-                        nReturnCode =  WEXITSTATUS(status);
+                    else {
+                        int waitres;
+                        while (1) // wait for child to complete
+                        {
+                            if(m_isExit->load())
+                            {
+                                kill(pid, SIGTERM);
+                                return nReturnCode;
+                            }
+                            else if((waitres = waitpid(pid, &status, WNOHANG)) > 0)
+                            {
+                                if (WIFEXITED(status))
+                                {
+                                    nReturnCode =  WEXITSTATUS(status);
+                                }
+                                break;
+                            }
+                        }
                     }
-                    break;
                 }
             }
 
@@ -162,7 +190,7 @@ namespace NSNetwork
             {
                 std::string sUrlValidateA = wget_url_validate(sUrlA);
 
-                pid_t pid = fork(); // create child process
+                pid = fork(); // create child process
                 int status;
 
                 switch (pid)
@@ -191,12 +219,23 @@ namespace NSNetwork
                     break;
                 }
                 default: // parent process, pid now contains the child pid
-                    while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
-                    if (WIFEXITED(status))
+                    int waitres;
+                    while (1) // wait for child to complete
                     {
-                        nReturnCode =  WEXITSTATUS(status);
+                        if(m_isExit->load())
+                        {
+                            kill(pid, SIGTERM);
+                            return nReturnCode;
+                        }
+                        else if((waitres = waitpid(pid, &status, WNOHANG)) > 0)
+                        {
+                            if (WIFEXITED(status))
+                            {
+                                nReturnCode =  WEXITSTATUS(status);
+                            }
+                            break;
+                        }
                     }
-                    break;
                 }
             }
 

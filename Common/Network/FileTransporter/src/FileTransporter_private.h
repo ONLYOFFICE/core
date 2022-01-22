@@ -61,6 +61,8 @@ namespace NSNetwork
 
                 m_func_onComplete = NULL;
                 m_func_onProgress = NULL;
+
+                m_bIsExit = nullptr;
             }
 
             CFileTransporterBase(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
@@ -82,6 +84,8 @@ namespace NSNetwork
 
                 m_func_onComplete = NULL;
                 m_func_onProgress = NULL;
+
+                m_bIsExit = nullptr;
             }
 
             CFileTransporterBase(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
@@ -103,6 +107,8 @@ namespace NSNetwork
 
                 m_func_onComplete = NULL;
                 m_func_onProgress = NULL;
+
+                m_bIsExit = nullptr;
             }
 
             virtual ~CFileTransporterBase ()
@@ -143,6 +149,8 @@ namespace NSNetwork
 
             std::function<void(int)> m_func_onComplete;
             std::function<void(int)> m_func_onProgress;
+
+            std::atomic<bool>*   m_bIsExit; // Для остановки и выхода потока
         };
 
         class CFileTransporter_private : public NSThreads::CBaseThread
@@ -234,6 +242,7 @@ namespace NSNetwork
             virtual DWORD ThreadProc ()
             {
                 m_pInternal->m_bComplete = false;
+                m_pInternal->m_bIsExit = NSThreads::CBaseThread::m_bIsExit;
 
                 int hrResultAll = 0;
                 if(m_pInternal->m_eLoadType == m_pInternal->DOWNLOADFILE)
@@ -245,6 +254,11 @@ namespace NSNetwork
 
                 if (0 == hrResultAll)
                     m_pInternal->m_bComplete = true;
+                else
+                {
+                    if (NSFile::CFileBinary::Exists(m_pInternal->m_sDownloadFilePath))
+                        NSFile::CFileBinary::Remove(m_pInternal->m_sDownloadFilePath);
+                }
 
                 if (m_pInternal->m_func_onComplete)
                     m_pInternal->m_func_onComplete(hrResultAll);

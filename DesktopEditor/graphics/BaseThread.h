@@ -33,6 +33,7 @@
 #define _BUILD_BASETHREAD_H_
 
 #include "../common/Types.h"
+#include <atomic>
 
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
 #include <windows.h>
@@ -66,6 +67,7 @@ namespace NSThreads
         int                 m_lThreadPriority;
 
         bool                m_bIsNeedDestroy;
+        std::atomic<bool>*  m_bIsExit;
 
 	public:
         CBaseThread();
@@ -77,6 +79,7 @@ namespace NSThreads
         virtual void Stop();
         virtual void StopNoJoin();
         virtual void DestroyOnFinish();
+        virtual void Cancel();
 
         INT IsSuspended();
         INT IsRunned();

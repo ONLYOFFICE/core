@@ -114,7 +114,7 @@ namespace NSThreads
     };
 #else
     void* CBaseThread::__ThreadProc(void* pv)
-    {   
+    {
 #ifndef NOT_USE_PTHREAD_CANCEL
         int old_thread_type;
         pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &old_thread_type);
@@ -155,6 +155,7 @@ namespace NSThreads
         m_lThreadPriority	= 0;
 
         m_bIsNeedDestroy = false;
+        m_bIsExit        = new std::atomic<bool>(false);
     }
     CBaseThread::~CBaseThread()
     {
@@ -170,6 +171,8 @@ namespace NSThreads
         m_hThread = new __native_thread();
 
         m_bRunThread = TRUE;
+
+         m_bIsExit->exchange(false);
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
         DWORD dwTemp;
         ((__native_thread*)m_hThread)->m_thread = CreateThread(NULL, 0, &__ThreadProc, (void*)this, 0, &dwTemp);
@@ -227,6 +230,22 @@ namespace NSThreads
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
         WaitForSingleObject(((__native_thread*)m_hThread)->m_thread, INFINITE);
 #else
+        pthread_join(((__native_thread*)m_hThread)->m_thread, 0);
+#endif
+    }
+
+    void CBaseThread::Cancel()
+    {
+        if (NULL == m_hThread)
+            return;
+
+         m_bIsExit->exchange(true);
+
+#if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
+        //WaitForSingleObject(((__native_thread*)m_hThread)->m_thread, INFINITE);
+#else
+        //pthread_cancel(((__native_thread*)m_hThread)->m_thread);
+        //pthread_kill(((__native_thread*)m_hThread)->m_thread, SIGUSR1);
         pthread_join(((__native_thread*)m_hThread)->m_thread, 0);
 #endif
     }

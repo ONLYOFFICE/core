@@ -102,6 +102,15 @@ bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 
  	return true;
 }
+bool OOX::Spreadsheet::CXlsx::WriteNative(const CPath& oDirPath, OOX::CContentTypes &oContentTypes)
+{
+	if (NULL == m_pWorkbook || m_arWorksheets.empty())
+		return false;
+
+	IFileContainer::Write(oDirPath / L"", OOX::CPath(_T("")), oContentTypes);
+
+	oContentTypes.Write(oDirPath);
+}
 bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &oContentTypes)
 {
     PrepareToWrite();

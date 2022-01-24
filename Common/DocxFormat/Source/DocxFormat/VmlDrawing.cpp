@@ -234,7 +234,6 @@ namespace OOX
 
 		//так как это не совсем xml - поправим
 
-		std::wstring fileContent;
 		NSFile::CFileBinary file;
 		if (file.OpenFile(oPath.GetPath()))
 		{
@@ -244,7 +243,7 @@ namespace OOX
 			if (Data)
 			{
 				file.ReadFile(Data, DataSize, DataSize); 
-				fileContent = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(Data,DataSize);
+				m_sFileContent = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(Data,DataSize);
 
 				delete []Data;
 			}
@@ -252,33 +251,42 @@ namespace OOX
 		}
 
 
-		if (false == fileContent.empty())
+		if (false == m_sFileContent.empty())
 		{
 			// элементы вида <br> без </br>
 			// test_vml4.xlsx
-			XmlUtils::replace_all(fileContent, _T("<br>"), _T(""));
+			XmlUtils::replace_all(m_sFileContent, _T("<br>"), _T(""));
 
 
 			// элементы вида <![if ...]>, <![endif]>
 			// Zigmunds.pptx
 			while(true)
 			{
-				int res1 = (int)fileContent.find(_T("<!["));
+				int res1 = (int)m_sFileContent.find(_T("<!["));
 				if (res1 < 0) break;
 
-				int res2 = (int)fileContent.find(_T(">"), res1);
+				int res2 = (int)m_sFileContent.find(_T(">"), res1);
 
 				if (res1 >=0 && res2>=0)
 				{
-					fileContent = fileContent.erase(res1 ,res2 - res1 + 1);
+					m_sFileContent = m_sFileContent.erase(res1 ,res2 - res1 + 1);
 				}
 			}
-			read(fileContent);
+			read(m_sFileContent);
 		}
 	}
 	void CVmlDrawing::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
-		if((!m_mapComments || m_mapComments->empty()) && m_arObjectXml.empty() && m_arControlXml.empty()) return;
+		if ((!m_mapComments || m_mapComments->empty()) && m_arObjectXml.empty() && m_arControlXml.empty())
+		{
+			if (false == m_sFileContent.empty())
+			{
+				NSFile::CFileBinary::SaveToFile(oPath.GetPath(), m_sFileContent);
+				oContent.AddDefault(oPath.GetExtention(false));
+				IFileContainer::Write(oPath, oDirectory, oContent);
+			}
+			return;
+		}
 		
 		//for Comment SpreadsheetML & others vml (hf, objects, ...) !!
 

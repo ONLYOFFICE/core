@@ -42,10 +42,11 @@ SOURCES += \
     ../Source/DocxFormat/Logic/Sdt.cpp \
     ../Source/DocxFormat/Logic/SectionProperty.cpp \
     ../Source/DocxFormat/Logic/SmartTag.cpp \
-    ../Source/DocxFormat/Logic/Table.cpp \
+     ../Source/DocxFormat/Logic/Table.cpp \
     ../Source/DocxFormat/Logic/TableProperty.cpp \
     ../Source/DocxFormat/Logic/Vml.cpp \
     ../Source/DocxFormat/Logic/DocParts.cpp \
+    ../Source/DocxFormat/Media/Media.cpp \
     ../Source/DocxFormat/Media/VbaProject.cpp \
     ../Source/DocxFormat/Media/JsaProject.cpp \
     ../Source/DocxFormat/Media/ActiveX.cpp \

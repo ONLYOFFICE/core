@@ -36,6 +36,7 @@
 #include "../../XlsxFormat/ComplexTypes_Spreadsheet.h"
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../IFileContainer.h"
+#include "../Document.h"
 
 #include <boost/smart_ptr/shared_array.hpp>
 
@@ -214,7 +215,7 @@ namespace OOX
 		}
 		ActiveX_xml(OOX::Document *pMain, const CPath& oRootPath, const CPath& filename) : File(pMain), OOX::IFileContainer(pMain)
 		{
-			m_bDocument = false;
+			m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
 			read( oRootPath, filename );
 		}
 		virtual ~ActiveX_xml();

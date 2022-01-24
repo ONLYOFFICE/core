@@ -571,6 +571,7 @@
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Media\ActiveX.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Media\JsaProject.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\Media\Media.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Media\VbaProject.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Settings\Settings.cpp" />
     <ClCompile Include="..\Source\DocxFormat\VmlDrawing.cpp" />

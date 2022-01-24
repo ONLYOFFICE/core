@@ -91,6 +91,17 @@ void OOX::Spreadsheet::CXlsx::init()
     bDeleteVbaProject		= false;
     bDeleteJsaProject		= false;
 }
+bool OOX::Spreadsheet::CXlsx::ReadNative(const CPath& oFilePath)
+{
+	m_sDocumentPath = oFilePath.GetPath();
+
+	OOX::CRels oRels(oFilePath / FILE_SEPARATOR_STR);
+	IFileContainer::Read(oRels, oFilePath, oFilePath);
+
+	if (!m_pWorkbook) return false;
+
+	return true;
+}
 bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 {
 	m_sDocumentPath = oFilePath.GetPath();
@@ -100,7 +111,12 @@ bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 
 	if (!m_pWorkbook) return false;
 
- 	return true;
+	for (size_t i = 0; i < m_arWorksheets.size(); ++i)
+	{
+		if (m_arWorksheets[i])
+			m_arWorksheets[i]->PrepareAfterRead();
+	}
+	return true;
 }
 bool OOX::Spreadsheet::CXlsx::WriteNative(const CPath& oDirPath, OOX::CContentTypes &oContentTypes)
 {

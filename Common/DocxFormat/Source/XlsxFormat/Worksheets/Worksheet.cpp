@@ -230,26 +230,24 @@ namespace OOX
             if( m_oReadPath.GetExtention() == _T(".bin"))
             {
                 readBin(m_oReadPath);
-                PrepareComments(m_pComments, m_pThreadedComments, m_oLegacyDrawing.GetPointer());
-                PrepareConditionalFormatting();
-                PrepareDataValidations();
-                return;
-            }
-
-			XmlUtils::CXmlLiteReader oReader;
-
-			if ( !oReader.FromFile( oPath.GetPath() ) )
-				return;
-
-			if ( !oReader.ReadNextNode() )
-				return;
-
-			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-			if ( L"worksheet" == sName || L"chartsheet" == sName)
-			{
-				fromXML(oReader);
 			}
+			else
+			{
+				XmlUtils::CXmlLiteReader oReader;
+				if (!oReader.FromFile(oPath.GetPath()))
+					return;
+				if (!oReader.ReadNextNode())
+					return;
 
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if (L"worksheet" == sName || L"chartsheet" == sName)
+				{
+					fromXML(oReader);
+				}
+			}
+		}
+		void CWorksheet::PrepareAfterRead()
+		{
 			PrepareComments(m_pComments, m_pThreadedComments, m_oLegacyDrawing.GetPointer());
 			PrepareConditionalFormatting();
 			PrepareDataValidations();
@@ -578,7 +576,6 @@ namespace OOX
 							{
 								pCommentItem->m_sAuthor = arAuthors[nAuthorId];
 							}
-
 							OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
 							if(NULL != pSi)
 								pCommentItem->m_oText.reset(pSi);

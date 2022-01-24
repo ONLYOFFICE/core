@@ -96,16 +96,15 @@ namespace NSThreads
     {
         friend class CBaseThread;
     private:
-        HANDLE m_thread;
+        HANDLE m_thread = nullptr;
 
     public:
         __native_thread() : CThreadDescriptor()
         {
-            m_thread = NULL;
         }
         virtual ~__native_thread()
         {
-            if (m_thread != NULL)
+            if (m_thread)
             {
                 CloseHandle(m_thread);
                 m_thread = NULL;

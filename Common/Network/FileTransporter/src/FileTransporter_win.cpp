@@ -60,19 +60,16 @@ namespace NSNetwork
             CFileTransporterBaseWin(const std::wstring &sDownloadFileUrl, bool bDelete = true) :
                 CFileTransporterBase(sDownloadFileUrl, bDelete)
             {
-                m_pFile     = NULL;
             }
 
             CFileTransporterBaseWin(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize) :
                 CFileTransporterBase(sUploadUrl, cData, nSize)
             {
-                m_pFile     = NULL;
             }
 
             CFileTransporterBaseWin(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath) :
                 CFileTransporterBase(sUploadUrl, sUploadFilePath)
             {
-                m_pFile     = NULL;
             }
 
             virtual ~CFileTransporterBaseWin()
@@ -124,7 +121,7 @@ namespace NSNetwork
             }
 
         protected:
-            FILE			*m_pFile;           // Хэндл на временный файл
+            FILE * m_pFile = nullptr;           // Хэндл на временный файл
             unsigned int _DownloadFile(std::wstring sFileUrl)
             {
                 // Проверяем состояние соединения
@@ -490,18 +487,18 @@ namespace NSNetwork
         };
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete)
+            : m_pInternal(new CFileTransporterBaseWin(sDownloadFileUrl, bDelete))
         {
-            m_pInternal = new CFileTransporterBaseWin(sDownloadFileUrl, bDelete);
         }
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
+            : m_pInternal(new CFileTransporterBaseWin(sUploadUrl, cData, nSize))
         {
-            m_pInternal = new CFileTransporterBaseWin(sUploadUrl, cData, nSize);
         }
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+            : m_pInternal(new CFileTransporterBaseWin(sUploadUrl, sUploadFilePath))
         {
-            m_pInternal = new CFileTransporterBaseWin(sUploadUrl, sUploadFilePath);
         }
     }
 }

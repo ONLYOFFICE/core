@@ -56,11 +56,6 @@ namespace NSNetwork
                 m_cData = NULL;
                 m_nSize = 0;
 
-                m_sResponse = L"";
-
-
-                m_func_onComplete = nullptr;
-                m_func_onProgress = nullptr;
 
                 m_bIsExit = nullptr;
             }
@@ -79,11 +74,6 @@ namespace NSNetwork
                 m_cData = cData;
                 m_nSize = nSize;
 
-                m_sResponse = L"";
-
-
-                m_func_onComplete = nullptr;
-                m_func_onProgress = nullptr;
 
                 m_bIsExit = nullptr;
             }
@@ -102,11 +92,6 @@ namespace NSNetwork
                 m_cData = NULL;
                 m_nSize = 0;
 
-                m_sResponse = L"";
-
-
-                m_func_onComplete = nullptr;
-                m_func_onProgress = nullptr;
 
                 m_bIsExit = nullptr;
             }
@@ -146,10 +131,10 @@ namespace NSNetwork
             const unsigned char*  m_cData;     // Данные в сыром виде для выгрузки
             int             m_nSize;           // Размер данных
 
-            std::wstring    m_sResponse;       // Ответ сервера
+            std::wstring    m_sResponse = L"";       // Ответ сервера
 
-            std::function<void(int)> m_func_onComplete;
-            std::function<void(int)> m_func_onProgress;
+            std::function<void(int)> m_func_onComplete = nullptr;
+            std::function<void(int)> m_func_onProgress = nullptr;
 
             std::atomic<bool>*   m_bIsExit; // Для остановки и выхода потока
         };

@@ -56,8 +56,7 @@ namespace NSNetwork
                 m_cData = NULL;
                 m_nSize = 0;
 
-
-                m_bIsExit = nullptr;
+//                m_bIsExit = nullptr;
             }
 
             CFileTransporterBase(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
@@ -74,8 +73,7 @@ namespace NSNetwork
                 m_cData = cData;
                 m_nSize = nSize;
 
-
-                m_bIsExit = nullptr;
+//                m_bIsExit = nullptr;
             }
 
             CFileTransporterBase(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
@@ -92,8 +90,7 @@ namespace NSNetwork
                 m_cData = NULL;
                 m_nSize = 0;
 
-
-                m_bIsExit = nullptr;
+//                m_bIsExit = nullptr;
             }
 
             virtual ~CFileTransporterBase ()
@@ -103,7 +100,7 @@ namespace NSNetwork
                     NSFile::CFileBinary::Remove(m_sDownloadFilePath);
                     m_sDownloadFilePath = L"";
                 }
-                m_bIsExit = nullptr;
+//                m_bIsExit = nullptr;
             }
 
             virtual int DownloadFile() = 0;
@@ -135,8 +132,9 @@ namespace NSNetwork
 
             std::function<void(int)> m_func_onComplete = nullptr;
             std::function<void(int)> m_func_onProgress = nullptr;
+            std::function<bool(void)> m_check_aborted = nullptr;
 
-            std::atomic<bool>*   m_bIsExit; // Для остановки и выхода потока
+//            std::atomic<bool>*   m_bIsExit; // Для остановки и выхода потока
         };
 
         class CFileTransporter_private : public NSThreads::CBaseThread
@@ -228,7 +226,6 @@ namespace NSNetwork
             virtual DWORD ThreadProc ()
             {
                 m_pInternal->m_bComplete = false;
-                m_pInternal->m_bIsExit = NSThreads::CBaseThread::m_bIsExit;
 
                 int hrResultAll = 0;
                 if(m_pInternal->m_eLoadType == m_pInternal->DOWNLOADFILE)

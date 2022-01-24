@@ -154,7 +154,6 @@ namespace NSThreads
         m_lThreadPriority	= 0;
 
         m_bIsNeedDestroy = false;
-        m_bIsExit        = nullptr;
     }
     CBaseThread::~CBaseThread()
     {
@@ -171,7 +170,7 @@ namespace NSThreads
 
         m_bRunThread = TRUE;
 
-        m_bIsExit = new std::atomic<bool>(false);
+        m_bIsExit.store(false);
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
         DWORD dwTemp;
         ((__native_thread*)m_hThread)->m_thread = CreateThread(NULL, 0, &__ThreadProc, (void*)this, 0, &dwTemp);
@@ -193,10 +192,11 @@ namespace NSThreads
     {
         if (!m_bRunThread)
             return;
+
+        m_bIsExit.store(true);
         m_bRunThread = FALSE;
 
         Join();
-        RELEASEOBJECT(m_bIsExit);
         RELEASEOBJECT(m_hThread);
     }
     void CBaseThread::StopNoJoin()
@@ -213,6 +213,7 @@ namespace NSThreads
     INT CBaseThread::IsSuspended() { return m_bSuspend; }
     INT CBaseThread::IsRunned() { return m_bRunThread; }
     int CBaseThread::GetError() { return m_lError; }
+    bool CBaseThread::isAborted() {return m_bIsExit && m_bIsExit.load();}
 
     CThreadDescriptor* CBaseThread::GetDescriptor() { return m_hThread; }
     int CBaseThread::GetPriority() { return m_lThreadPriority; }
@@ -240,12 +241,11 @@ namespace NSThreads
         if (NULL == m_hThread)
             return;
 
-         m_bIsExit->exchange(true);
+         m_bIsExit.store(true);
 
          m_bRunThread = FALSE;
 
          Join();
-         RELEASEOBJECT(m_bIsExit);
          RELEASEOBJECT(m_hThread);
     }
 }

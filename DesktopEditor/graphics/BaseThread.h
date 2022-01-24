@@ -67,7 +67,7 @@ namespace NSThreads
         int                 m_lThreadPriority;
 
         bool                m_bIsNeedDestroy;
-        std::atomic<bool>*  m_bIsExit;
+        std::atomic<bool>   m_bIsExit{false};
 
 	public:
         CBaseThread();
@@ -83,6 +83,7 @@ namespace NSThreads
 
         INT IsSuspended();
         INT IsRunned();
+        bool isAborted();
         int GetError();
 
         CThreadDescriptor* GetDescriptor();

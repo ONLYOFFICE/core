@@ -202,7 +202,7 @@ namespace NSThreads
     void CBaseThread::StopNoJoin()
     {
         m_bRunThread = FALSE;
-        RELEASEOBJECT(m_bIsExit);
+        m_bIsExit.store(true);
         RELEASEOBJECT(m_hThread);
     }
     void CBaseThread::DestroyOnFinish()

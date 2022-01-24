@@ -175,8 +175,12 @@ namespace OOX
 		}
 		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(L"<ocxPr>");
-			writer.WriteString(L"</ocxPr>");
+			writer.WriteString(L"<ocxPr");
+			if (m_oName.IsInit())
+				writer.WriteString(L" ax:name=\"" + *m_oName + L"\"");
+			if (m_oValue.IsInit())
+				writer.WriteString(L" ax:value=\"" + *m_oValue + L"\"");
+			writer.WriteString(L"/>");
 		}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -229,9 +233,8 @@ namespace OOX
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		void read_bin(const CPath& oPath);
 
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
-		{
-		}
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const;
+
 		virtual const FileType type() const
 		{
 			return OOX::FileTypes::ActiveX_xml;
@@ -271,9 +274,6 @@ namespace OOX
 		virtual void read(const CPath& filename)
 		{
 			Media::read(filename);
-		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
-		{
 		}
 		virtual const FileType type() const
 		{

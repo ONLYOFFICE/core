@@ -376,7 +376,7 @@ namespace NSNetwork
                 }
 
                 DownloadProgress progress;
-                progress.bIsExit = m_bIsExit;
+                progress.func_getAborted = std::bind(&CFileTransporterBaseWin::getAborted, this);
                 progress.func_onProgress = m_func_onProgress;
                 // Скачиваем файл с возвратом процентов состояния
                 return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, static_cast<IBindStatusCallback*>(&progress));
@@ -417,7 +417,7 @@ namespace NSNetwork
 
                 virtual HRESULT __stdcall OnProgress(ULONG ulProgress, ULONG ulProgressMax, ULONG ulStatusCode, LPCWSTR szStatusText)
                 {
-                    if(bIsExit && bIsExit->load())
+                    if(func_getAborted && func_getAborted())
                     {
                         return E_ABORT;
                     }
@@ -430,9 +430,13 @@ namespace NSNetwork
                     return S_OK;
                 }
 
-                std::atomic<bool>* bIsExit = nullptr;
+                std::function<bool(void)> func_getAborted = nullptr;
                 std::function<void(int)> func_onProgress = nullptr;
             };
+
+            bool getAborted() const {
+                return m_bIsExit && m_bIsExit->load();
+            }
 
             bool DownloadFilePS(const std::wstring& sFileURL, const std::wstring& strFileOutput)
             {

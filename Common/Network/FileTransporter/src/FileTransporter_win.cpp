@@ -486,19 +486,19 @@ namespace NSNetwork
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete)
             : m_pInternal(new CFileTransporterBaseWin(sDownloadFileUrl, bDelete))
         {
-            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);;
+            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);
         }
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
             : m_pInternal(new CFileTransporterBaseWin(sUploadUrl, cData, nSize))
         {
-            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);;
+            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);
         }
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
             : m_pInternal(new CFileTransporterBaseWin(sUploadUrl, sUploadFilePath))
         {
-            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);;
+            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);
         }
     }
 }

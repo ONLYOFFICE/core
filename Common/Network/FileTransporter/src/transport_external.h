@@ -59,7 +59,7 @@ namespace NSNetwork
             return url.substr(pos);
         }
 
-        int download_external(const std::wstring& sUrl, const std::wstring& sOutput, std::function<void(int)> func_onProgress, std::atomic<bool>* isExit)
+        int download_external(const std::wstring& sUrl, const std::wstring& sOutput, std::function<void(int)> func_onProgress, std::function<bool(void)> func_checkAborted = nullptr)
         {
             pid_t pid;
             int nReturnCode = -1;
@@ -132,7 +132,7 @@ namespace NSNetwork
 
                         while (1)
                         {
-                            if(isExit && isExit->load())
+                            if(func_checkAborted && func_checkAborted())
                             {
                                 kill(pid, SIGTERM);
                                 //while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
@@ -166,7 +166,7 @@ namespace NSNetwork
                         int waitres;
                         while (1) // wait for child to complete
                         {
-                            if(isExit && isExit->load())
+                            if(func_checkAborted && func_checkAborted())
                             {
                                 kill(pid, SIGTERM);
                                 return nReturnCode;
@@ -220,7 +220,7 @@ namespace NSNetwork
                     int waitres;
                     while (1) // wait for child to complete
                     {
-                        if(isExit && isExit->load())
+                        if(func_checkAborted && func_checkAborted())
                         {
                             kill(pid, SIGTERM);
                             return nReturnCode;

@@ -32,51 +32,16 @@
 
 (function(window, undefined) {
 
-    var printErr = undefined;
-    var FS = undefined;
-    var print = undefined;
-
-    var getBinaryPromise = null;
-    if (window["AscDesktopEditor"] && document.currentScript && 0 == document.currentScript.src.indexOf("file:///"))
-    {
-        // fetch not support file:/// scheme
-        window.fetch = undefined;
-
-        getBinaryPromise = function() {
-
-            var wasmPath = "ascdesktop://fonts/" + wasmBinaryFile.substr(8);
-            return new Promise(function (resolve, reject) {
-
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', wasmPath, true);
-                xhr.responseType = 'arraybuffer';
-
-                if (xhr.overrideMimeType)
-                    xhr.overrideMimeType('text/plain; charset=x-user-defined');
-                else
-                    xhr.setRequestHeader('Accept-Charset', 'x-user-defined');
-
-                xhr.onload = function () {
-                    if (this.status == 200) {
-                        resolve(new Uint8Array(this.response));
-                    }
-                };
-
-                xhr.send(null);
-            });
-        }
-    }
-    else
-    {
-        getBinaryPromise = function() { return getBinaryPromise2(); }
-    }
-    
     function getMemoryPathIE(name)
     {
         if (self["AscViewer"] && self["AscViewer"]["baseUrl"])
             return self["AscViewer"]["baseUrl"] + name;
         return name;
     }
+	
+	var FS = undefined;
+	
+	//desktop_fetch
 
     //polyfill
 

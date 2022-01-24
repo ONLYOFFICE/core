@@ -367,7 +367,7 @@ void TxBodyConverter::FillBuChar(PPTX::Logic::Bullet &oBullet, WCHAR symbol)
 
 void TxBodyConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF)
 {
-
+    // TODO refactoring
     if (pPF->hasBullet.is_init())
     {
         if (pPF->hasBullet.get())

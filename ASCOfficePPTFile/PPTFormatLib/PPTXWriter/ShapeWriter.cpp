@@ -62,108 +62,15 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 
     oWriter.WriteString(str1);
 
-    PPT_FORMAT::CTextPFRun* pPF = &oLevel.m_oPFRun;
 
-    int leftMargin = 0;
-    if (pPF->leftMargin.is_init())
-    {
-        leftMargin = pPF->leftMargin.get();
-        std::wstring strProp = std::to_wstring(leftMargin);
-        oWriter.WriteString(L" marL=\"" + strProp + L"\"");
-    }
-    if (pPF->indent.is_init())
-    {
-        std::wstring strIndent;
-        if (pPF->hasBullet.get_value_or(false))
-            strIndent = std::to_wstring(pPF->indent.get());
-        else
-            strIndent = std::to_wstring(pPF->indent.get() - leftMargin);
+    // <a:pPr>
+    auto pPPr = new PPTX::Logic::TextParagraphPr;
+    TxBodyConverter::ConvertPFRun(*pPPr, &oLevel.m_oPFRun, nullptr);
+    std::wstring strPPr = pPPr->toXML().substr(6); // remove <a:pPr
+    strPPr = strPPr.substr(0, strPPr.size() - 8);  // remove </a:pPr>
+    delete pPPr;
+    oWriter.WriteString(strPPr);
 
-        oWriter.WriteString(L" indent=\"" + strIndent + L"\"");
-    }
-    if (pPF->textAlignment.is_init())
-    {
-        std::wstring strProp = GetTextAlign(pPF->textAlignment.get());
-        oWriter.WriteString(L" algn=\"" + strProp + L"\"");
-    }
-    if (pPF->defaultTabSize.is_init())
-    {
-        std::wstring strProp = std::to_wstring(pPF->defaultTabSize.get());
-        oWriter.WriteString(L" defTabSz=\"" + strProp + L"\"");
-    }
-    if (pPF->textDirection.is_init())
-    {
-        if (pPF->textDirection.get() == 1)	oWriter.WriteString(L" rtl=\"1\"");
-        else								oWriter.WriteString(L" rtl=\"0\"");
-    }
-    if (pPF->fontAlign.is_init())
-    {
-        std::wstring strProp = GetFontAlign(pPF->fontAlign.get());
-        oWriter.WriteString(L" fontAlgn=\"" + strProp + L"\"");
-    }
-    oWriter.WriteString(L">");
-
-    if (pPF->tabStops.size() > 0)
-    {
-        oWriter.WriteString(L"<a:tabLst>");
-        for (size_t t = 0 ; t < pPF->tabStops.size(); t++)
-        {
-            std::wstring strTabPos = std::to_wstring(pPF->tabStops[t].first);
-            oWriter.WriteString(L"<a:tab pos=\"" + strTabPos + L"\"");
-
-            if		(pPF->tabStops[t].second == 1)	oWriter.WriteString(L" algn=\"ctr\"/>");
-            else if (pPF->tabStops[t].second == 2)	oWriter.WriteString(L" algn=\"r\"/>");
-            else if (pPF->tabStops[t].second == 3)	oWriter.WriteString(L" algn=\"dec\"/>");
-            else									oWriter.WriteString(L" algn=\"l\"/>");
-        }
-        oWriter.WriteString(L"</a:tabLst>");
-    }
-
-    oWriter.WriteString(CShapeWriter::WriteBullets(pPF, nullptr));
-
-    double dKoef1 = 3.52777778;
-    if (pPF->lineSpacing.is_init())
-    {
-        LONG val = pPF->lineSpacing.get();
-        if (val > 0)
-        {
-            std::wstring str = std::to_wstring( (int)(val * 0.125 * 100/*/ dKoef1*/));
-            oWriter.WriteString(L"<a:lnSpc><a:spcPts val=\"" + str + L"\"/></a:lnSpc>");
-        }
-        else if (val < 0 && val > -13200)
-        {
-            std::wstring str = std::to_wstring(-val * 1000);
-            oWriter.WriteString(L"<a:lnSpc><a:spcPct val=\"" + str + L"\"/></a:lnSpc>");
-        }
-    }
-    if (pPF->spaceAfter.is_init())
-    {
-        LONG val = pPF->spaceAfter.get();
-        if (val > 0)
-        {
-            std::wstring str = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
-            oWriter.WriteString(L"<a:spcAft><a:spcPts val=\"" + str + L"\"/></a:spcAft>");
-        }
-        else if (val < 0 && val > -13200)
-        {
-            std::wstring str = std::to_wstring(-val * 1000);
-            oWriter.WriteString(L"<a:spcAft><a:spcPct val=\"" + str + L"\"/></a:spcAft>");
-        }
-    }
-    if (pPF->spaceBefore.is_init())
-    {
-        LONG val = pPF->spaceBefore.get();
-        if (val > 0)
-        {
-            std::wstring str = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
-            oWriter.WriteString(L"<a:spcBef><a:spcPts val=\"" + str + L"\"/></a:spcBef>");
-        }
-        else if (val < 0 && val > -13200)
-        {
-            std::wstring str = std::to_wstring(-val * 1000);
-            oWriter.WriteString(L"<a:spcBef><a:spcPct val=\"" + str + L"\"/></a:spcBef>");
-        }
-    }
 
     oWriter.WriteString(L"<a:defRPr");
 
@@ -1247,102 +1154,14 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
         //	if (pParagraph->m_arSpans.size() == 1 && pParagraph->m_arSpans[0].m_strText.empty()) break;
         //}
 
-        m_oWriter.WriteString(L"<a:p><a:pPr");
+        m_oWriter.WriteString(L"<a:p>");
 
-        PPT_FORMAT::CTextPFRun* pPF = &pParagraph->m_oPFRun;
+        // <a:pPr>
+        auto pPPr = new PPTX::Logic::TextParagraphPr;
+        TxBodyConverter::ConvertPFRun(*pPPr, &pParagraph->m_oPFRun, m_pRels);
+        m_oWriter.WriteString(pPPr->toXML());
+        delete pPPr;
 
-        int leftMargin = 0;
-        if (pPF->leftMargin.is_init())
-        {
-            leftMargin = pPF->leftMargin.get();
-            std::wstring strProp = std::to_wstring( leftMargin );
-            m_oWriter.WriteString(L" marL=\"" + strProp + L"\"");
-        }
-        std::wstring _strLevel = std::to_wstring(pParagraph->m_lTextLevel);
-        m_oWriter.WriteString(L" lvl=\"" + _strLevel + L"\"");
-
-
-        if (pPF->indent.is_init())
-        {
-            std::wstring strIndent;
-            if (pPF->hasBullet.get_value_or(false))
-                strIndent = std::to_wstring(pPF->indent.get());
-            else
-                strIndent = std::to_wstring(pPF->indent.get() - leftMargin);
-
-            m_oWriter.WriteString(L" indent=\"" + strIndent + L"\"");
-        }
-        if (pPF->textAlignment.is_init())
-        {
-            std::wstring strProp = CStylesWriter::GetTextAlign(pPF->textAlignment.get());
-            m_oWriter.WriteString(L" algn=\"" + strProp + L"\"");
-        }
-        if (pPF->defaultTabSize.is_init())
-        {
-            std::wstring strProp= std::to_wstring( pPF->defaultTabSize.get());
-            m_oWriter.WriteString(L" defTabSz=\"" + strProp + L"\"");
-        }
-        if (pPF->textDirection.is_init())
-        {
-            if (pPF->textDirection.get() == 1)	m_oWriter.WriteString(std::wstring(L" rtl=\"1\""));
-            else								m_oWriter.WriteString(std::wstring(L" rtl=\"0\""));
-        }
-        if (pPF->fontAlign.is_init())
-        {
-            std::wstring strProp = CStylesWriter::GetFontAlign(pPF->fontAlign.get());
-            m_oWriter.WriteString(std::wstring(L" fontAlgn=\"") + strProp + L"\"");
-        }
-        m_oWriter.WriteString(L">");
-
-        m_oWriter.WriteString(WriteBullets(pPF, m_pRels));
-
-        double dKoef1 = 3.52777778; // :-) чё это не понятно ...
-        if (pPF->lineSpacing.is_init())
-        {
-            LONG val = pPF->lineSpacing.get();
-            //1/1024 master unit or 1/589824 inch.
-            //1 inch = 576 master unit -> 1 master unit = 0.125 pt
-            if (val > 0)//The absolute value specifies spacing in master units.
-            {
-                std::wstring strProp = std::to_wstring( (int)(val* 0.125 * 100/*/ dKoef1*/));
-                m_oWriter.WriteString(L"<a:lnSpc><a:spcPts val=\"" + strProp + L"\"/></a:lnSpc>");
-            }
-            else if (val < 0 && val > -13200)
-            {//0 to 13200, inclusive - The value specifies spacing as a percentage of the text line height.
-                std::wstring strProp = std::to_wstring( -val * 1000);
-                m_oWriter.WriteString(L"<a:lnSpc><a:spcPct val=\"" + strProp + L"\"/></a:lnSpc>");
-            }
-        }
-        if (pPF->spaceAfter.is_init())
-        {
-            LONG val = pPF->spaceAfter.get();
-            if (val > 0)
-            {
-                std::wstring strProp = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
-                m_oWriter.WriteString(L"<a:spcAft><a:spcPts val=\"" + strProp + L"\"/></a:spcAft>");
-            }
-            else if (val < 0 && val > -13200)
-            {
-                std::wstring strProp = std::to_wstring(-val * 1000);
-                m_oWriter.WriteString(L"<a:spcAft><a:spcPct val=\"" + strProp + L"\"/></a:spcAft>");
-            }
-        }
-        if (pPF->spaceBefore.is_init())
-        {
-            LONG val = pPF->spaceBefore.get();
-            if (val > 0)
-            {
-                std::wstring strProp = std::to_wstring((int)(val * 0.125 * 100/*/ dKoef1*/));
-                m_oWriter.WriteString(L"<a:spcBef><a:spcPts val=\"" + strProp + L"\"/></a:spcBef>");
-            }
-            else if (val < 0 && val > -13200)
-            {
-                std::wstring strProp = std::to_wstring(-val * 1000);
-                m_oWriter.WriteString(L"<a:spcBef><a:spcPct val=\"" + strProp + L"\"/></a:spcBef>");
-            }
-        }
-
-        m_oWriter.WriteString(std::wstring(L"</a:pPr>"));
 
         std::wstring typeRun = L"a:r";
 

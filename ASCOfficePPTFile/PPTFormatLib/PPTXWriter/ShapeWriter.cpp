@@ -1594,7 +1594,7 @@ std::wstring CShapeWriter::WriteBullets(CTextPFRun *pPF, CRelsGenerator* pRels)
                     buWrt.WriteString(L"\"/></a:buBlip>");
                 }
             }
-            else if (pPF->bulletChar.is_init())
+            else if (pPF->bulletChar.is_init() && (pPF->bulletAutoNum.is_init() ? pPF->bulletAutoNum->isDefault() : true))
             {
                 wchar_t bu = pPF->bulletChar.get();
                 buWrt.WriteString(std::wstring(L"<a:buChar char=\""));

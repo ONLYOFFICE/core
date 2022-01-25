@@ -3664,46 +3664,10 @@ namespace PdfReader
             unGidsCount = 1;
         }
 
-        std::wstring wsSrcCodeText;
-        if (c_nPDFWriter == m_lRendererType)
-        {
-            int nCurCode = (0 == nCode ? 65534 : nCode);
-            if (pGState->getFont()->isCIDFont())
-            {
-                // Мы посылаем и сам CID и внутренний Code с его длинной
-                CXmlWriter oWriter;
-                oWriter.WriteNodeBegin(L"PDF-Text", true);
-                oWriter.WriteAttribute(L"cid", nCurCode);
-                oWriter.WriteAttribute(L"code", (unsigned short)(pUnicode[0]));
-                oWriter.WriteAttribute(L"len", nUnicodeLen);
-                oWriter.WriteNodeEnd(L"PDF-Text", true, true);
-                wsSrcCodeText = oWriter.GetXmlString();
-            }
-            else
-            {
-                // Мы посылаем и сам CID и внутренний Code с его длинной
-                CXmlWriter oWriter;
-                oWriter.WriteNodeBegin(L"PDF-Text", true);
-                oWriter.WriteAttribute(L"code", nCurCode);
-                oWriter.WriteNodeEnd(L"PDF-Text", true, true);
-                wsSrcCodeText = oWriter.GetXmlString();
-            }
-        }
-
         float fAscent = pGState->getFontSize();
         if (nRenderMode == 0 || nRenderMode == 2 || nRenderMode == 4 || nRenderMode == 6)
         {
-            if (c_nPDFWriter == m_lRendererType)
-            {
-                #ifndef DISABLE_PDF_CONVERTATION
-                CPdfRenderer* pPdfRenderer = (CPdfRenderer*)m_pRenderer;
-                //pPdfRenderer->CommandDrawTextPdf(wsUnicodeText, &unGid, unGidsCount, wsSrcCodeText, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
-                #endif
-            }
-            else
-            {
-                m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
-            }
+            m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
         }
 
         if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)

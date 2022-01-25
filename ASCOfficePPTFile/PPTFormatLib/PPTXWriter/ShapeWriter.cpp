@@ -31,6 +31,8 @@
  */
 #include "ShapeWriter.h"
 #include "StylesWriter.h"
+#include "TxBodyConverter.h"
+
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Theme.h"
 
 #include "../../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ShapeType.h"

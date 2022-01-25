@@ -53,16 +53,18 @@ private:
     void ConvertShapeTxBody(PPTX::Logic::TxBody& oTxBody);
     void FillMergedTxBody(PPTX::Logic::TxBody& oTxBody);
 
+public:
+    static void FillPPr(PPTX::Logic::TextParagraphPr& oPPr, CParagraph &paragraph, CRelsGenerator *pRels);
+    static void ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, PPT_FORMAT::CTextPFRun* pPF, CRelsGenerator *pRels);
+
 private:
     void FillBodyPr(PPTX::Logic::BodyPr& oBodyPr);
     void FillLstStyles(PPTX::Logic::TextListStyle& oTLS, CTextStyles& oStyles);
     void FillParagraph(PPTX::Logic::Paragraph& p, CParagraph& paragraph);
-    void FillPPr(PPTX::Logic::TextParagraphPr& oPPr, CParagraph &paragraph);
-    void ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, PPT_FORMAT::CTextPFRun* pPF);
-    void ConvertTabStops(std::vector<PPTX::Logic::Tab>& arrTabs, std::vector<std::pair<int, int>>& arrTabStops);
-    void FillBuChar(PPTX::Logic::Bullet& oBullet, WCHAR symbol);
-    void ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF);
-    void FillBuClr(PPTX::Logic::BulletColor& oBuClr, CColor& oColor);
+    static void ConvertTabStops(std::vector<PPTX::Logic::Tab>& arrTabs, std::vector<std::pair<int, int>>& arrTabStops);
+    static void FillBuChar(PPTX::Logic::Bullet& oBullet, WCHAR symbol);
+    static void ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF, CRelsGenerator *pRels);
+    static void FillBuClr(PPTX::Logic::BulletColor& oBuClr, CColor& oColor);
     void FillRun(PPTX::Logic::Run& oRun, CSpan &oSpan);
     PPTX::Logic::RunProperties* getNewEndParaRPr(const int dirty = -1, const int sz = -1, const std::wstring& lang = L"");
     void FillRPr(PPTX::Logic::RunProperties& oRPr, CTextCFRun& oCFRun);

@@ -404,6 +404,8 @@ namespace NSDocxRenderer
 				pCont->m_dWidth		= dTextW;
 				pCont->m_dHeight	= dTextH;
 
+                pCont->m_arWidthText.push_back(dTextW);
+
                 if (IsSpaceUtf32(oText))
 				{
 					pCont->m_dWidthWithoutSpaces	= 0;
@@ -416,7 +418,6 @@ namespace NSDocxRenderer
 				}
 
                 pCont->m_oText = oText;
-				pCont->m_arWidthText.push_back(dTextW);
 
 				pCont->m_oFont		= m_oManager.m_oFont.m_oFont;
 				pCont->m_oBrush		= *m_pBrush;
@@ -540,7 +541,8 @@ namespace NSDocxRenderer
 				if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
 				{
 					CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
-					if (pShape->m_strPath.size() == 49 || pShape->m_strPath.size() == 46)
+					//TODO: заменить на поиск включения части
+					if (pShape->m_strPath.size() == 49 || pShape->m_strPath.size() == 46 || pShape->m_strPath.size() == 44 || pShape->m_strPath.size() == 47)
 					{
 						size_t nCountTextLine = m_arTextLine.size();
 						for (size_t j = 0; j < nCountTextLine; ++j)
@@ -550,14 +552,14 @@ namespace NSDocxRenderer
 							if ((dTopTextLine < pShape->m_dTop) && (dBottomTextLine > pShape->m_dHeight + pShape->m_dTop))
 							{
 								//это вычеркивание
-								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, 0);
+								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, -2);
 								arIdxGraphicItems.push_back(i);
 								break;
 							}
 							if (pShape->m_dHeight < 0.5 && abs(pShape->m_dTop - dBottomTextLine) < 0.6 )
 							{
 								//это подчеркивание
-								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, 1);
+								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, -1);
 								arIdxGraphicItems.push_back(i);
 								break;
 							}
